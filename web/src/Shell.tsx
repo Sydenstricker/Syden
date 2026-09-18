@@ -5,6 +5,7 @@ import { API_URL, api } from './api';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import type { Channel, User, VoiceMember } from './types';
+import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
 
@@ -45,9 +46,11 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
     }, console.error);
   }, []);
 
-  const selected = channels.find((c) => c.id === selectedId);
+  const [showUsage, setShowUsage] = useState(false);
+  const selected = showUsage ? undefined : channels.find((c) => c.id === selectedId);
 
   function selectChannel(channel: Channel) {
+    setShowUsage(false);
     setSelectedId(channel.id);
     if (channel.type === 'voice') void voice.join(channel.id);
   }
@@ -63,10 +66,12 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
         <Sidebar
           user={user}
           channels={channels}
-          selectedId={selectedId}
+          selectedId={showUsage ? null : selectedId}
+          usageActive={showUsage}
           voiceMembers={voiceMembers}
           voice={voice}
           onSelect={selectChannel}
+          onOpenUsage={() => setShowUsage(true)}
           onLogout={logout}
         />
         <main className="main">
@@ -84,7 +89,8 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
               members={voiceMembers.filter((m) => m.channelId === selected.id)}
             />
           )}
-          {!selected && <div className="empty">Escolha um canal à esquerda.</div>}
+          {showUsage && <UsageDashboard voiceMembers={voiceMembers} />}
+          {!selected && !showUsage && <div className="empty">Escolha um canal à esquerda.</div>}
         </main>
         {selected?.type === 'text' && (
           <aside className="members">

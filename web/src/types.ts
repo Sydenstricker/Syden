@@ -27,3 +27,15 @@ export interface VoiceMember {
   video: boolean;
   screen: boolean;
 }
+
+export type Traffic =
+  | { status: 'unconfigured' }
+  | { status: 'error'; message: string }
+  | { status: 'ok'; outgoingBytes: number; includedBytes: number; projectedBytes: number | null; serverName: string };
+
+export interface UsageSummary {
+  monthStart: string;
+  monthProgress: number;
+  traffic: Traffic;
+  users: { userId: number; username: string; voiceSeconds: number; screenSeconds: number }[];
+}

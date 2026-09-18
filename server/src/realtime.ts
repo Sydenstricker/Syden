@@ -15,13 +15,32 @@ export interface VoiceMember {
 
 type Ack = (result: { ok: true } | { ok: false; error: string }) => void;
 
+interface VoiceSession extends VoiceMember {
+  socketId: string;
+  voiceSessionId: number;
+  screenSessionId: number | null;
+}
+
 // Estado em memória: suficiente para uma instância. Para rodar várias instâncias do servidor,
 // isto passa para o Redis (junto com o @socket.io/redis-adapter).
-const voiceMembers = new Map<number, VoiceMember & { socketId: string }>();
+const voiceMembers = new Map<number, VoiceSession>();
 const onlineSockets = new Map<number, { username: string; sockets: Set<string> }>();
 
+const USAGE_HEARTBEAT_MS = 60_000;
+
 function voiceState(): VoiceMember[] {
-  return [...voiceMembers.values()].map(({ socketId: _, ...member }) => member);
+  return [...voiceMembers.values()].map(({ socketId: _s, voiceSessionId: _v, screenSessionId: _c, ...member }) => member);
+}
+
+function activeUsageSessionIds(session: VoiceSession) {
+  return session.screenSessionId === null ? [session.voiceSessionId] : [session.voiceSessionId, session.screenSessionId];
+}
+
+function endVoiceSession(userId: number) {
+  const session = voiceMembers.get(userId);
+  if (!session) return;
+  db.touchUsageSessions(activeUsageSessionIds(session));
+  voiceMembers.delete(userId);
 }
 
 function onlineUsers(): db.User[] {
@@ -36,6 +55,10 @@ export function setupRealtime(io: IOServer) {
     socket.data.user = user;
     next();
   });
+
+  setInterval(() => {
+    db.touchUsageSessions([...voiceMembers.values()].flatMap(activeUsageSessionIds));
+  }, USAGE_HEARTBEAT_MS).unref();
 
   io.on('connection', (socket: Socket) => {
     const user = socket.data.user as db.User;
@@ -58,6 +81,7 @@ export function setupRealtime(io: IOServer) {
     socket.on('voice:join', (payload: { channelId?: number }, ack?: Ack) => {
       const channel = db.findChannel(Number(payload?.channelId));
       if (!channel || channel.type !== 'voice') return ack?.({ ok: false, error: 'Sala inválida.' });
+      endVoiceSession(user.id); // trocou de sala, ou entrou por outra aba
       voiceMembers.set(user.id, {
         userId: user.id,
         username: user.username,
@@ -67,6 +91,8 @@ export function setupRealtime(io: IOServer) {
         video: false,
         screen: false,
         socketId: socket.id,
+        voiceSessionId: db.startUsageSession('voice', user.id),
+        screenSessionId: null,
       });
       io.emit('voice:state', voiceState());
       ack?.({ ok: true });
@@ -78,13 +104,19 @@ export function setupRealtime(io: IOServer) {
       for (const key of ['muted', 'deafened', 'video', 'screen'] as const) {
         if (typeof patch?.[key] === 'boolean') member[key] = patch[key];
       }
+      if (member.screen && member.screenSessionId === null) {
+        member.screenSessionId = db.startUsageSession('screen', user.id);
+      } else if (!member.screen && member.screenSessionId !== null) {
+        db.touchUsageSessions([member.screenSessionId]);
+        member.screenSessionId = null;
+      }
       io.emit('voice:state', voiceState());
     });
 
     const leaveVoice = () => {
       // Só remove se a sessão de voz pertence a esta aba (o usuário pode ter entrado por outra).
       if (voiceMembers.get(user.id)?.socketId === socket.id) {
-        voiceMembers.delete(user.id);
+        endVoiceSession(user.id);
         io.emit('voice:state', voiceState());
       }
     };

@@ -50,6 +50,18 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
   CREATE INDEX IF NOT EXISTS idx_messages_channel ON messages(channel_id, id);
+
+  -- Tempo em chamada e compartilhando tela, para o painel de uso.
+  -- Enquanto a sessão está ativa, ended_at é atualizado a cada minuto; se o servidor cair,
+  -- a sessão fica registrada até o último minuto visto.
+  CREATE TABLE IF NOT EXISTS usage_sessions (
+    id         INTEGER PRIMARY KEY,
+    kind       TEXT NOT NULL CHECK (kind IN ('voice', 'screen')),
+    user_id    INTEGER NOT NULL REFERENCES users(id),
+    started_at TEXT NOT NULL,
+    ended_at   TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_usage_sessions_ended ON usage_sessions(ended_at);
 `);
 
 const { n: channelCount } = db.prepare('SELECT COUNT(*) AS n FROM channels').get() as { n: number };
@@ -120,6 +132,52 @@ export function listMessages(channelId: number, beforeId: number | undefined, li
     .prepare(`${messageSelect} WHERE m.channel_id = ? AND m.id < ? ORDER BY m.id DESC LIMIT ?`)
     .all(channelId, beforeId ?? Number.MAX_SAFE_INTEGER, limit) as unknown as MessageRow[];
   return rows.reverse().map(toMessage);
+}
+
+export type UsageKind = 'voice' | 'screen';
+
+export function startUsageSession(kind: UsageKind, userId: number): number {
+  const now = new Date().toISOString();
+  const result = db
+    .prepare('INSERT INTO usage_sessions (kind, user_id, started_at, ended_at) VALUES (?, ?, ?, ?)')
+    .run(kind, userId, now, now);
+  return Number(result.lastInsertRowid);
+}
+
+/** Marca as sessões como vistas agora (usado para encerrar uma sessão e no pulso de cada minuto). */
+export function touchUsageSessions(ids: number[]) {
+  if (ids.length === 0) return;
+  const stmt = db.prepare('UPDATE usage_sessions SET ended_at = ? WHERE id = ?');
+  const now = new Date().toISOString();
+  for (const id of ids) stmt.run(now, id);
+}
+
+export interface UsageByUser {
+  userId: number;
+  username: string;
+  voiceSeconds: number;
+  screenSeconds: number;
+}
+
+/** Segundos em chamada e compartilhando tela por pessoa, contando só o que caiu a partir de `since`. */
+export function usageSince(since: string): UsageByUser[] {
+  const rows = db
+    .prepare(
+      `SELECT u.id AS userId, u.username, s.kind,
+              SUM((julianday(s.ended_at) - julianday(MAX(s.started_at, ?))) * 86400) AS seconds
+       FROM usage_sessions s JOIN users u ON u.id = s.user_id
+       WHERE s.ended_at >= ?
+       GROUP BY u.id, s.kind`,
+    )
+    .all(since, since) as unknown as { userId: number; username: string; kind: UsageKind; seconds: number }[];
+
+  const byUser = new Map<number, UsageByUser>();
+  for (const row of rows) {
+    const entry = byUser.get(row.userId) ?? { userId: row.userId, username: row.username, voiceSeconds: 0, screenSeconds: 0 };
+    entry[row.kind === 'voice' ? 'voiceSeconds' : 'screenSeconds'] = Math.round(row.seconds);
+    byUser.set(row.userId, entry);
+  }
+  return [...byUser.values()].sort((a, b) => b.voiceSeconds - a.voiceSeconds);
 }
 
 export function createMessage(channelId: number, userId: number, content: string): Message {

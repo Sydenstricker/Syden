@@ -4,6 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
+import { usageSummary } from './usage.js';
 
 const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
 
@@ -67,6 +68,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get('/api/me', async (request) => request.user);
 
     authed.get('/api/channels', async () => db.listChannels());
+
+    authed.get('/api/usage', async () => usageSummary());
 
     authed.post<{ Body: { name?: string; type?: db.ChannelType } }>('/api/channels', async (request, reply) => {
       const name = request.body?.name?.trim() ?? '';

@@ -810,6 +810,241 @@ textarea {
   background: var(--red-hover);
 }
 
+/* ---------- Painel de uso ---------- */
+
+.usage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.usage-link {
+  margin-bottom: 8px;
+}
+
+.usage-body {
+  --viz-accent: #6b76f5; /* roxo do app clareado para passar 3:1 sobre o cartão */
+  --viz-track: rgba(107, 118, 245, 0.22);
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-critical: #d03b3b;
+  --card: var(--bg-sidebar);
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 920px;
+  width: 100%;
+  transition: opacity 0.2s;
+}
+
+.usage-period {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.usage-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.usage-card h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.usage-muted {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.usage-muted.small {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.usage-muted code {
+  background: var(--bg-darkest);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.usage-hero {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.usage-hero-value {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text-strong);
+}
+
+.usage-hero-of {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+/* Medidor: trilho no mesmo tom da cor de preenchimento, só mais apagado. */
+.usage-meter {
+  --fill: var(--viz-accent);
+  margin: 14px 0 10px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--viz-track);
+  overflow: hidden;
+}
+
+.usage-meter.warning {
+  --fill: var(--status-warning);
+  background: rgba(250, 178, 25, 0.22);
+}
+
+.usage-meter.critical {
+  --fill: var(--status-critical);
+  background: rgba(208, 59, 59, 0.25);
+}
+
+.usage-meter span {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: 4px;
+  background: var(--fill);
+}
+
+.usage-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.status-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.status-icon.good {
+  color: var(--status-good);
+}
+
+.status-icon.warning {
+  color: var(--status-warning);
+}
+
+.status-icon.critical {
+  color: var(--status-critical);
+}
+
+.usage-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-tile {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.stat-note {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.usage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.usage-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0 0 8px;
+  border-bottom: 1px solid #3f4147;
+}
+
+.usage-table td {
+  padding: 10px 0;
+  border-bottom: 1px solid #36383d;
+  color: var(--text);
+}
+
+.usage-table tr:last-child td {
+  border-bottom: none;
+}
+
+.usage-table td:first-child {
+  width: 30%;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.usage-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.usage-bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 24px;
+}
+
+.usage-bar-track {
+  flex: 1;
+  min-width: 40px;
+}
+
+/* Barra fina, reta na base e arredondada na ponta. */
+.usage-bar {
+  display: block;
+  height: 8px;
+  min-width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--viz-accent);
+}
+
+.usage-bar-cell .num {
+  width: 96px;
+  text-align: left;
+}
+
 /* ---------- Telas pequenas ---------- */
 
 @media (max-width: 900px) {

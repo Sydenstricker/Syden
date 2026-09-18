@@ -1,5 +1,6 @@
 import { useSpeakingParticipants } from '@livekit/components-react';
 import {
+  BarChart3,
   Download,
   Hash,
   Headphones,
@@ -26,11 +27,23 @@ interface Props {
   selectedId: number | null;
   voiceMembers: VoiceMember[];
   voice: Voice;
+  usageActive: boolean;
   onSelect: (channel: Channel) => void;
+  onOpenUsage: () => void;
   onLogout: () => void;
 }
 
-export function Sidebar({ user, channels, selectedId, voiceMembers, voice, onSelect, onLogout }: Props) {
+export function Sidebar({
+  user,
+  channels,
+  selectedId,
+  usageActive,
+  voiceMembers,
+  voice,
+  onSelect,
+  onOpenUsage,
+  onLogout,
+}: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
@@ -47,6 +60,10 @@ export function Sidebar({ user, channels, selectedId, voiceMembers, voice, onSel
       </header>
 
       <div className="channel-list">
+        <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
+          <BarChart3 size={18} /> Uso do servidor
+        </button>
+
         <ChannelGroup title="Canais de texto" type="text">
           {channels
             .filter((c) => c.type === 'text')

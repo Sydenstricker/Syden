@@ -100,6 +100,17 @@ de assinatura de código, que é pago.
 - Servidor: `git pull && docker compose up -d --build` dentro de `deploy/`.
 - Backup: o banco é um arquivo SQLite no volume `janja_data`.
 
+## Painel de uso
+
+Todos os usuários veem, em **Uso do servidor** (topo da barra lateral):
+- o tráfego de saída do mês em relação à franquia da VPS, com a projeção para o fim do mês;
+- as horas em chamada e compartilhando tela, no total e por pessoa;
+- quem está em chamada agora.
+
+As horas funcionam sem configuração. O tráfego vem da API da Hetzner: gere um token **somente leitura** no painel
+(seu projeto → Security → API tokens) e coloque-o em `HETZNER_API_TOKEN`, no `deploy/.env`. O servidor descobre
+sozinho qual VPS consultar.
+
 ## Quanto aguenta e como escalar
 
 O tráfego que importa é o que **sai** do LiveKit: cada stream é copiado para cada pessoa que assiste.
