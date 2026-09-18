@@ -1,0 +1,17 @@
+{
+  "name": "janja",
+  "private": true,
+  "workspaces": [
+    "server",
+    "web",
+    "desktop"
+  ],
+  "scripts": {
+    "dev:livekit": "docker compose -f docker-compose.dev.yml up",
+    "dev:server": "npm run dev -w server",
+    "dev:web": "npm run dev -w web",
+    "build": "npm run build -w server && npm run build -w web",
+    "dev:desktop": "npm run dev -w desktop",
+    "dist:desktop": "npm run dist -w desktop"
+  }
+}

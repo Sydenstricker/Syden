@@ -1,0 +1,45 @@
+# Produção na VPS (Hetzner). Rode de dentro desta pasta: docker compose up -d --build
+# Tudo em network_mode: host porque o LiveKit precisa de uma faixa grande de portas UDP,
+# e mapear milhares de portas pelo Docker é lento e frágil.
+services:
+  caddy:
+    image: caddy:2
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      API_DOMAIN: ${API_DOMAIN}
+      LIVEKIT_DOMAIN: ${LIVEKIT_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  livekit:
+    image: livekit/livekit-server:latest
+    network_mode: host
+    restart: unless-stopped
+    command: --config /etc/livekit.yaml
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+
+  api:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    network_mode: host
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_PATH: /data/janja.db
+      LIVEKIT_URL: wss://${LIVEKIT_DOMAIN}
+    volumes:
+      - janja_data:/data
+
+volumes:
+  caddy_data:
+  caddy_config:
+  janja_data:

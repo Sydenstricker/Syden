@@ -1,0 +1,10 @@
+# O Caddy emite e renova os certificados HTTPS (Let's Encrypt) sozinho.
+# O navegador exige HTTPS/WSS para usar microfone, câmera e compartilhamento de tela.
+
+{$API_DOMAIN} {
+	reverse_proxy localhost:3001
+}
+
+{$LIVEKIT_DOMAIN} {
+	reverse_proxy localhost:7880
+}

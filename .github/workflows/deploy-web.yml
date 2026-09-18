@@ -1,0 +1,51 @@
+name: Publicar site no GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', 'package-lock.json', '.github/workflows/deploy-web.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Sem o endereço da API o site publicado não funcionaria; espera o servidor estar configurado.
+    if: vars.VITE_API_URL != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1 # o site não precisa do Electron
+      - run: npm run build -w web
+        env:
+          # Configure em Settings → Secrets and variables → Actions → Variables
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_BASE: /${{ github.event.repository.name }}/
+          # Botão "Baixar para Windows": sempre o instalador da Release mais recente deste repositório.
+          VITE_DESKTOP_DOWNLOAD_URL: ${{ vars.DESKTOP_DOWNLOAD_URL || format('https://github.com/{0}/releases/latest/download/Janja-Setup.exe', github.repository) }}
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

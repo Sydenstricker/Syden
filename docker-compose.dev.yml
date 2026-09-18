@@ -1,0 +1,10 @@
+# LiveKit para desenvolvimento local (chaves fixas devkey/secret).
+# Para testar com amigos na mesma rede Wi-Fi, troque LIVEKIT_NODE_IP pelo IP do seu PC na rede (ex.: 192.168.0.10).
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --dev --bind 0.0.0.0 --node-ip ${LIVEKIT_NODE_IP:-127.0.0.1}
+    ports:
+      - "7880:7880"      # sinalização (WebSocket)
+      - "7881:7881"      # mídia via TCP (fallback)
+      - "7882:7882/udp"  # mídia via UDP

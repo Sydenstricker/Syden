@@ -1,0 +1,9 @@
+# As chaves vêm da variável LIVEKIT_KEYS (definida no docker-compose a partir do .env).
+port: 7880 # sinalização; fica atrás do Caddy e NÃO deve ser aberta no firewall
+rtc:
+  tcp_port: 7881 # fallback de mídia para redes que bloqueiam UDP
+  port_range_start: 50000
+  port_range_end: 60000
+  use_external_ip: true # descobre o IP público da VPS via STUN
+logging:
+  level: info
