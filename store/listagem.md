@@ -10,9 +10,9 @@ Cole cada bloco no campo correspondente do Partner Center. Tudo em português do
 | Categoria | Social (subcategoria: Mensagens) |
 | Preço | Grátis |
 | Visibilidade | Oculto na loja; disponível só por link direto (grupo privado de amigos) |
-| Política de privacidade | https://sydenstricker.github.io/syden/privacidade.html |
-| Site do aplicativo | https://sydenstricker.github.io/syden/ |
-| Contato de suporte | https://github.com/Sydenstricker/syden/issues |
+| Política de privacidade | https://sydenstricker.github.io/Syden/privacidade.html |
+| Site do aplicativo | https://sydenstricker.github.io/Syden/ |
+| Contato de suporte | https://github.com/Sydenstricker/Syden/issues |
 
 ## Descrição curta
 
@@ -79,7 +79,7 @@ How to test:
 
 Voice, video and screen sharing are relayed in real time and never recorded.
 The app is in Brazilian Portuguese.
-Privacy policy: https://sydenstricker.github.io/syden/privacidade.html
+Privacy policy: https://sydenstricker.github.io/Syden/privacidade.html
 ```
 
 ## Capturas de tela (mínimo 1, recomendado 4)
