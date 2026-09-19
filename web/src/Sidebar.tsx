@@ -5,19 +5,22 @@ import {
   Hash,
   Headphones,
   HeadphoneOff,
-  LogOut,
   Mic,
   MicOff,
   Monitor,
+  Pencil,
   PhoneOff,
   Plus,
+  Settings,
+  Trash2,
   Video,
   Volume2,
 } from 'lucide-react';
-import { type KeyboardEvent, useState } from 'react';
+import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
+import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
-import { Avatar } from './Shell';
+import { Avatar } from './Avatar';
 import type { Channel, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -30,7 +33,7 @@ interface Props {
   usageActive: boolean;
   onSelect: (channel: Channel) => void;
   onOpenUsage: () => void;
-  onLogout: () => void;
+  onOpenSettings: () => void;
 }
 
 export function Sidebar({
@@ -42,11 +45,24 @@ export function Sidebar({
   voice,
   onSelect,
   onOpenUsage,
-  onLogout,
+  onOpenSettings,
 }: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
+  const [deleting, setDeleting] = useState<Channel | null>(null);
+
+  const canManage = (channel: Channel) => user.isAdmin || channel.createdBy === user.id;
+  const row = (channel: Channel, icon: ReactNode) => (
+    <ChannelRow
+      channel={channel}
+      icon={icon}
+      active={channel.id === selectedId}
+      manageable={canManage(channel)}
+      onSelect={() => onSelect(channel)}
+      onDelete={() => setDeleting(channel)}
+    />
+  );
 
   return (
     <nav className="sidebar">
@@ -68,9 +84,7 @@ export function Sidebar({
           {channels
             .filter((c) => c.type === 'text')
             .map((c) => (
-              <button key={c.id} className={`channel${c.id === selectedId ? ' active' : ''}`} onClick={() => onSelect(c)}>
-                <Hash size={18} /> {c.name}
-              </button>
+              <div key={c.id}>{row(c, <Hash size={18} />)}</div>
             ))}
         </ChannelGroup>
 
@@ -79,14 +93,12 @@ export function Sidebar({
             .filter((c) => c.type === 'voice')
             .map((c) => (
               <div key={c.id}>
-                <button className={`channel${c.id === selectedId ? ' active' : ''}`} onClick={() => onSelect(c)}>
-                  <Volume2 size={18} /> {c.name}
-                </button>
+                {row(c, <Volume2 size={18} />)}
                 {voiceMembers
                   .filter((m) => m.channelId === c.id)
                   .map((m) => (
                     <div key={m.userId} className="voice-member">
-                      <Avatar name={m.username} size={22} speaking={speaking.has(String(m.userId))} />
+                      <Avatar name={m.username} userId={m.userId} size={22} speaking={speaking.has(String(m.userId))} />
                       <span className="voice-member-name">{m.username}</span>
                       {m.screen && <span className="live-badge">AO VIVO</span>}
                       {m.video && <Video size={14} />}
@@ -117,7 +129,7 @@ export function Sidebar({
       {voice.connecting && <div className="voice-panel voice-panel-status">Conectando…</div>}
 
       <div className="user-panel">
-        <Avatar name={user.username} online />
+        <Avatar name={user.username} userId={user.id} online />
         <span className="user-panel-name">{user.username}</span>
         <div className="icon-row">
           <IconButton
@@ -136,16 +148,123 @@ export function Sidebar({
           >
             {voice.deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
           </IconButton>
-          <IconButton label="Sair" onClick={onLogout}>
-            <LogOut size={18} />
+          <IconButton label="Configurações" onClick={onOpenSettings}>
+            <Settings size={18} />
           </IconButton>
         </div>
       </div>
+
+      {deleting && <DeleteChannelDialog channel={deleting} onClose={() => setDeleting(null)} />}
     </nav>
   );
 }
 
-function ChannelGroup({ title, type, children }: { title: string; type: Channel['type']; children: React.ReactNode }) {
+function ChannelRow({
+  channel,
+  icon,
+  active,
+  manageable,
+  onSelect,
+  onDelete,
+}: {
+  channel: Channel;
+  icon: ReactNode;
+  active: boolean;
+  manageable: boolean;
+  onSelect: () => void;
+  onDelete: () => void;
+}) {
+  const [renaming, setRenaming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Escape') {
+      setRenaming(false);
+      setError(null);
+      return;
+    }
+    if (event.key !== 'Enter') return;
+    const name = event.currentTarget.value.trim();
+    if (!name || name === channel.name) return setRenaming(false);
+    try {
+      await api<Channel>(`/api/channels/${channel.id}`, { method: 'PATCH', body: { name } });
+      setRenaming(false);
+      setError(null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  if (renaming) {
+    return (
+      <>
+        <input
+          className="channel-input"
+          defaultValue={channel.name}
+          aria-label={`Novo nome para ${channel.name}`}
+          autoFocus
+          onFocus={(e) => e.currentTarget.select()}
+          onKeyDown={onKeyDown}
+          onBlur={() => !error && setRenaming(false)}
+        />
+        {error && <p className="form-error small">{error}</p>}
+      </>
+    );
+  }
+
+  return (
+    <div className={`channel-row${active ? ' active' : ''}`}>
+      <button className={`channel${active ? ' active' : ''}`} onClick={onSelect}>
+        {icon} <span className="channel-name">{channel.name}</span>
+      </button>
+      {manageable && (
+        <div className="channel-actions">
+          <button className="icon-plain" title="Renomear" aria-label={`Renomear ${channel.name}`} onClick={() => setRenaming(true)}>
+            <Pencil size={14} />
+          </button>
+          <button className="icon-plain" title="Excluir" aria-label={`Excluir ${channel.name}`} onClick={onDelete}>
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DeleteChannelDialog({ channel, onClose }: { channel: Channel; onClose: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function confirm() {
+    setBusy(true);
+    try {
+      await api(`/api/channels/${channel.id}`, { method: 'DELETE' });
+      onClose();
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
+
+  const label = channel.type === 'text' ? `#${channel.name}` : channel.name;
+  return (
+    <ConfirmDialog
+      title={channel.type === 'text' ? 'Excluir canal' : 'Excluir sala de voz'}
+      confirmLabel="Excluir"
+      busy={busy}
+      error={error}
+      onConfirm={confirm}
+      onCancel={onClose}
+    >
+      Tem certeza que quer excluir <strong>{label}</strong>?{' '}
+      {channel.type === 'text'
+        ? 'Todas as mensagens do canal serão apagadas para todos. Não dá para desfazer.'
+        : 'Quem estiver na sala será desconectado.'}
+    </ConfirmDialog>
+  );
+}
+
+function ChannelGroup({ title, type, children }: { title: string; type: Channel['type']; children: ReactNode }) {
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -201,7 +320,7 @@ export function IconButton({
   active?: boolean;
   danger?: boolean;
   disabled?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button

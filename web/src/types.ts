@@ -1,6 +1,25 @@
 export interface User {
   id: number;
   username: string;
+  isAdmin: boolean;
+  avatarVersion: number | null;
+}
+
+export type UserRef = Pick<User, 'id' | 'username'>;
+
+export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion'>;
+
+export interface Emoji {
+  id: number;
+  name: string;
+  createdBy: number | null;
+}
+
+export interface Sound {
+  id: number;
+  name: string;
+  icon: string;
+  createdBy: number | null;
 }
 
 export interface Channel {
@@ -8,6 +27,7 @@ export interface Channel {
   name: string;
   type: 'text' | 'voice';
   position: number;
+  createdBy: number | null;
 }
 
 export interface Message {
@@ -15,7 +35,7 @@ export interface Message {
   channelId: number;
   content: string;
   createdAt: string;
-  author: User;
+  author: UserRef;
 }
 
 export interface VoiceMember {

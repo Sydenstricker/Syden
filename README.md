@@ -6,8 +6,8 @@ Um app estilo Discord para a galera: canais de texto, salas de voz, câmera e co
 |---|---|---|
 | `web/` | React + Vite + LiveKit Components | GitHub Pages |
 | `desktop/` | Electron (o mesmo que o Discord usa) | PC de cada pessoa (instalador `.exe`) |
-| `server/` | Node 24 + Fastify + Socket.IO + SQLite | Servidor na nuvem (Oracle Cloud, grátis) |
-| Mídia (voz/vídeo/tela) | [LiveKit](https://livekit.io) (SFU open source) | Servidor na nuvem (Oracle Cloud, grátis) |
+| `server/` | Node 24 + Fastify + Socket.IO + SQLite | VPS na nuvem (Hetzner) |
+| Mídia (voz/vídeo/tela) | [LiveKit](https://livekit.io) (SFU open source) | VPS na nuvem (Hetzner) |
 
 Como funciona: o navegador faz login no `server`, que emite um token para a sala de voz. Com o token, o navegador
 se conecta direto ao LiveKit, que recebe o áudio e o vídeo de cada pessoa uma vez e repassa para os outros
@@ -35,35 +35,53 @@ Para testar com alguém na mesma rede Wi-Fi, suba o LiveKit com o IP do seu PC n
 
 ## Publicar
 
-### 1. Servidor na Oracle Cloud "Always Free" (API + LiveKit)
+### 1. Servidor (API + LiveKit)
 
-O plano grátis da Oracle tem datacenter em São Paulo e inclui ~10 TB de tráfego de saída por mês. Qualquer VPS
-Linux com Docker serve; os passos abaixo são os da Oracle.
+Qualquer VPS Linux com Docker serve. O Janja roda na **Hetzner**; a Oracle Cloud (plano grátis) também
+funciona e está descrita no fim desta seção.
 
-1. Crie a conta com **Home Region: Brazil East (Sao Paulo)**. A região não pode ser trocada depois, e o plano
-   grátis só vale nela.
-2. Crie uma instância **Ubuntu 24.04**, shape **VM.Standard.A1.Flex** (Ampere/ARM), com 2 OCPUs e 12 GB. Ela
-   precisa aparecer como *Always Free-eligible*. Cole sua chave SSH pública e mantenha o IPv4 público ligado.
-3. Libere as portas na **Security List** da subnet (Ingress, Source `0.0.0.0/0`): TCP `80`, `443` e `7881`, e
-   UDP `50000-60000`. A porta 22 (SSH) já vem liberada.
-4. Aponte dois domínios para o IP público (registro DNS `A`), por exemplo `api.seudominio.com` e
+**Portas que precisam estar abertas para a internet:** TCP `22` (SSH), `80` e `443` (HTTPS), `7881` (mídia via
+TCP) e UDP `50000-60000` (mídia).
+
+#### Hetzner
+
+1. Crie um servidor **Ubuntu 24.04** do tipo compartilhado (*Shared vCPU*) mais barato com 2 vCPU. Para quem
+   está no Brasil, a localização com menor atraso é **Ashburn (EUA)**. Ative os **backups** (~20% a mais).
+2. Cole sua chave SSH pública e crie um **firewall** com as portas acima (entrada, origem "Any").
+3. Anote a franquia de tráfego do plano (coluna *Traffic*) para o `TRAFFIC_ALLOWANCE_GB` do `deploy/.env`.
+
+#### Em qualquer provedor, depois de criar o servidor
+
+1. Aponte dois domínios para o IP público (registro DNS `A`), por exemplo `api.seudominio.com` e
    `live.seudominio.com`. Sem domínio próprio, o [DuckDNS](https://www.duckdns.org) dá subdomínios grátis.
-5. Na instância (usuário `ubuntu`). O Ubuntu da Oracle traz um firewall interno que bloqueia tudo além do SSH,
-   então as duas primeiras linhas liberam as mesmas portas:
+2. No servidor:
    ```bash
-   sudo iptables -I INPUT 5 -p tcp -m multiport --dports 80,443,7881 -j ACCEPT
-   sudo iptables -I INPUT 5 -p udp --dport 50000:60000 -j ACCEPT
-   sudo netfilter-persistent save
    curl -fsSL https://get.docker.com | sudo sh
    git clone https://github.com/<usuario>/<repo>.git janja && cd janja/deploy
    cp .env.example .env && nano .env      # preencha tudo
    sudo docker compose up -d --build
    ```
-6. Confira em `https://api.seudominio.com/api/health`. A resposta deve ser `{"ok":true}`.
+3. Confira em `https://api.seudominio.com/api/health`. A resposta deve ser `{"ok":true}`.
 
-A Oracle pode desligar instâncias grátis que ficam ociosas por muito tempo. Para evitar isso, converta a conta
-para **Pay As You Go**: os recursos *Always Free* continuam sem custo. Nesse caso, crie um alerta de orçamento
-(Billing → Budgets) de US$1 para ser avisado se algo pago for criado por engano.
+#### Oracle Cloud "Always Free" (alternativa grátis)
+
+Tem datacenter em São Paulo e ~10 TB de tráfego por mês, mas a configuração é mais trabalhosa.
+
+1. Crie a conta com **Home Region: Brazil East (Sao Paulo)**. A região não muda depois, e o plano grátis só vale nela.
+2. Crie primeiro a rede em **Networking → Virtual cloud networks → Start VCN Wizard → Create VCN with Internet
+   Connectivity**. Criar a rede dentro da tela do servidor pode travar a opção de IP público.
+3. Crie uma instância **Ubuntu 24.04**, shape **VM.Standard.A1.Flex** (2 OCPUs, 12 GB, *Always Free-eligible*), na
+   subnet pública dessa rede, com IPv4 público.
+4. Libere as portas na **Security List** da subnet (a 22 já vem liberada).
+5. O Ubuntu da Oracle traz um firewall interno que bloqueia tudo além do SSH. Antes dos passos gerais, rode:
+   ```bash
+   sudo iptables -I INPUT 5 -p tcp -m multiport --dports 80,443,7881 -j ACCEPT
+   sudo iptables -I INPUT 5 -p udp --dport 50000:60000 -j ACCEPT
+   sudo netfilter-persistent save
+   ```
+
+A Oracle pode desligar instâncias grátis ociosas. Para evitar, converta a conta para **Pay As You Go** (os recursos
+*Always Free* continuam sem custo) e crie um alerta de orçamento de US$1 em Billing → Budgets.
 
 ### 2. Site no GitHub Pages
 
@@ -120,9 +138,9 @@ Todos os usuários veem, em **Uso do servidor** (topo da barra lateral):
 - quem está em chamada agora.
 
 Não precisa configurar nada. O próprio servidor mede os bytes enviados pela máquina (contadores do Linux) e
-compara com a franquia, que por padrão é de 10 TB (a do plano grátis da Oracle). Em outro provedor, ajuste
-`TRAFFIC_ALLOWANCE_GB` no `deploy/.env`. A medição começa quando o servidor é instalado; o painel avisa se ela
-começou no meio do mês.
+compara com a franquia definida em `TRAFFIC_ALLOWANCE_GB`, no `deploy/.env`. Coloque ali a franquia do seu plano;
+o padrão, 10 TB, é o da Oracle. A medição começa quando o servidor é instalado; o painel avisa se ela começou no
+meio do mês.
 
 ## Quanto aguenta e como escalar
 
@@ -131,7 +149,7 @@ O tráfego que importa é o que **sai** do LiveKit: cada stream é copiado para 
 | Situação | Saída aproximada |
 |---|---|
 | 10 pessoas em voz (~40 kbps cada) | ~4 Mbps |
-| 1 tela 1080p30 (~3 Mbps) assistida por 9 | ~27 Mbps |
+| 1 tela 1080p30 (até 5 Mbps) assistida por 9 | até ~45 Mbps |
 
 Uma VPS pequena aguenta isso com folga. Caminho para crescer, na ordem:
 

@@ -1,0 +1,14 @@
+[
+  { "file": "boom.wav", "name": "Boom dramático", "icon": "💥" },
+  { "file": "badumtss.wav", "name": "Ba-dum-tss", "icon": "🥁" },
+  { "file": "aplausos.wav", "name": "Aplausos", "icon": "👏" },
+  { "file": "trombone-triste.wav", "name": "Trombone triste", "icon": "🎺" },
+  { "file": "buzina.wav", "name": "Buzina", "icon": "📯" },
+  { "file": "rufar.wav", "name": "Rufar de tambores", "icon": "🪘" },
+  { "file": "disco-arranhado.wav", "name": "Disco arranhado", "icon": "💿" },
+  { "file": "boing.wav", "name": "Boing", "icon": "🤡" },
+  { "file": "grilos.wav", "name": "Grilos", "icon": "🦗" },
+  { "file": "suspense.wav", "name": "Suspense", "icon": "😱" },
+  { "file": "vitoria.wav", "name": "Vitória", "icon": "🏆" },
+  { "file": "ding.wav", "name": "Ding", "icon": "🔔" }
+]

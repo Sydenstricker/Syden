@@ -2,9 +2,12 @@ import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
 import { useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
 import { API_URL, api } from './api';
+import { Avatar } from './Avatar';
+import { loadDirectory, syncDirectory } from './directory';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
-import type { Channel, User, VoiceMember } from './types';
+import { SettingsModal } from './SettingsModal';
+import type { Channel, User, UserRef, VoiceMember } from './types';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
@@ -14,11 +17,14 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
   const [online, setOnline] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [presence, setPresence] = useState<User[]>([]);
+  const [presence, setPresence] = useState<UserRef[]>([]);
   const [voiceMembers, setVoiceMembers] = useState<VoiceMember[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const voice = useVoice(socket);
   const onLogoutRef = useRef(onLogout);
   onLogoutRef.current = onLogout;
+  const voiceRef = useRef(voice);
+  voiceRef.current = voice;
 
   useEffect(() => {
     const s = io(API_URL, { auth: { token } });
@@ -33,18 +39,35 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
     s.on('channel:created', (channel: Channel) =>
       setChannels((list) => (list.some((c) => c.id === channel.id) ? list : [...list, channel])),
     );
+    s.on('channel:updated', (channel: Channel) =>
+      setChannels((list) => list.map((c) => (c.id === channel.id ? channel : c))),
+    );
+    s.on('channel:deleted', ({ id }: { id: number }) => {
+      setChannels((list) => list.filter((c) => c.id !== id));
+      if (voiceRef.current.channelId === id) voiceRef.current.leave();
+    });
+    const unsync = syncDirectory(s);
     setSocket(s);
     return () => {
+      unsync();
       s.disconnect();
     };
   }, [token]);
 
   useEffect(() => {
+    loadDirectory().catch(console.error);
     api<Channel[]>('/api/channels').then((list) => {
       setChannels(list);
       setSelectedId((current) => current ?? list.find((c) => c.type === 'text')?.id ?? null);
     }, console.error);
   }, []);
+
+  // O canal aberto foi excluído (por você ou por outra pessoa): volta para o primeiro canal de texto.
+  useEffect(() => {
+    if (channels.length > 0 && !channels.some((c) => c.id === selectedId)) {
+      setSelectedId(channels.find((c) => c.type === 'text')?.id ?? null);
+    }
+  }, [channels, selectedId]);
 
   const [showUsage, setShowUsage] = useState(false);
   const selected = showUsage ? undefined : channels.find((c) => c.id === selectedId);
@@ -72,7 +95,7 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
           voice={voice}
           onSelect={selectChannel}
           onOpenUsage={() => setShowUsage(true)}
-          onLogout={logout}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
         <main className="main">
           {!online && <div className="banner">Reconectando ao servidor…</div>}
@@ -97,29 +120,17 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
             <h3>Online — {presence.length}</h3>
             {presence.map((p) => (
               <div key={p.id} className="member">
-                <Avatar name={p.username} online />
+                <Avatar name={p.username} userId={p.id} online />
                 <span>{p.username}</span>
               </div>
             ))}
           </aside>
         )}
       </div>
+      {settingsOpen && (
+        <SettingsModal user={user} voice={voice} onClose={() => setSettingsOpen(false)} onLogout={logout} />
+      )}
       <RoomAudioRenderer muted={voice.deafened} />
     </RoomContext.Provider>
-  );
-}
-
-const AVATAR_COLORS = ['#5865f2', '#3ba55d', '#faa61a', '#ed4245', '#eb459e', '#00a8fc', '#9b59b6', '#e67e22'];
-
-export function Avatar({ name, online, speaking, size = 32 }: { name: string; online?: boolean; speaking?: boolean; size?: number }) {
-  const hash = [...name].reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return (
-    <span
-      className={`avatar${speaking ? ' speaking' : ''}`}
-      style={{ width: size, height: size, background: AVATAR_COLORS[hash % AVATAR_COLORS.length], fontSize: size * 0.42 }}
-    >
-      {name.slice(0, 1).toUpperCase()}
-      {online && <span className="avatar-status" />}
-    </span>
   );
 }

@@ -4,8 +4,8 @@ import { api } from './api';
 import type { Traffic, UsageSummary, VoiceMember } from './types';
 
 const REFRESH_MS = 60_000;
-// Tela 1080p30 ≈ 3 Mbps ≈ 1,35 GB por hora para cada pessoa assistindo.
-const SCREEN_GB_PER_VIEWER_HOUR = 1.35;
+// Tela 1080p30: até 5 Mbps ≈ 2,25 GB por hora para cada pessoa assistindo (telas paradas gastam bem menos).
+const SCREEN_GB_PER_VIEWER_HOUR = 2.25;
 
 export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }) {
   const [usage, setUsage] = useState<UsageSummary | null>(null);
@@ -148,7 +148,7 @@ function TrafficPanel({ traffic, monthStart }: { traffic: Traffic; monthStart: s
       </div>
       <p className="usage-muted small">
         {startedMidMonth && <>Medindo desde {formatDay(traffic.measuringSince)}. </>}
-        Compartilhar tela é o que mais consome: cerca de {formatNumber(SCREEN_GB_PER_VIEWER_HOUR)} GB por hora para cada
+        Compartilhar tela é o que mais consome: até {formatNumber(SCREEN_GB_PER_VIEWER_HOUR)} GB por hora para cada
         pessoa assistindo. Voz quase não pesa.
       </p>
     </>

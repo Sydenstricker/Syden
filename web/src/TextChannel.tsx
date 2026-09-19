@@ -1,8 +1,10 @@
-import { Hash } from 'lucide-react';
+import { Hash, Smile } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { api } from './api';
-import { Avatar } from './Shell';
+import { api, mediaUrl } from './api';
+import { Avatar } from './Avatar';
+import { useDirectory } from './directory';
+import { EmojiPicker } from './EmojiPicker';
 import type { Channel, Message } from './types';
 
 const PAGE_SIZE = 50;
@@ -13,7 +15,9 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
   const [hasMore, setHasMore] = useState(false);
   const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const stickToBottom = useRef(true);
 
   useEffect(() => {
@@ -59,6 +63,21 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
       setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
     });
     setDraft('');
+  }
+
+  /** Insere o emoji onde está o cursor, com espaço antes quando precisa. */
+  function insertAtCursor(text: string) {
+    const input = inputRef.current;
+    const start = input?.selectionStart ?? draft.length;
+    const end = input?.selectionEnd ?? draft.length;
+    const before = draft.slice(0, start);
+    const insert = (before && !/\s$/.test(before) ? ' ' : '') + text + ' ';
+    setDraft(before + insert + draft.slice(end));
+    requestAnimationFrame(() => {
+      input?.focus();
+      const caret = start + insert.length;
+      input?.setSelectionRange(caret, caret);
+    });
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -107,7 +126,7 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
             </div>
           ) : (
             <div key={message.id} className="message">
-              <Avatar name={message.author.username} size={40} />
+              <Avatar name={message.author.username} userId={message.author.id} size={40} />
               <div className="message-body">
                 <div className="message-meta">
                   <span className="message-author">{message.author.username}</span>
@@ -122,31 +141,68 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
 
       <div className="composer">
         {error && <p className="form-error small">{error}</p>}
-        <textarea
-          rows={1}
-          value={draft}
-          maxLength={2000}
-          placeholder={`Conversar em #${channel.name}`}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={onKeyDown}
-        />
+        <div className="composer-box">
+          <textarea
+            ref={inputRef}
+            rows={1}
+            value={draft}
+            maxLength={2000}
+            placeholder={`Conversar em #${channel.name}`}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={onKeyDown}
+          />
+          <div className="composer-emoji">
+            <button
+              className={`icon-plain composer-emoji-button${pickerOpen ? ' active' : ''}`}
+              title="Emojis"
+              aria-label="Emojis"
+              onClick={() => setPickerOpen(!pickerOpen)}
+            >
+              <Smile size={22} />
+            </button>
+            {pickerOpen && <EmojiPicker onPick={insertAtCursor} onClose={() => setPickerOpen(false)} />}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 const URL_RE = /(https?:\/\/[^\s<]+)/g;
+const EMOJI_TOKEN_RE = /:([a-z0-9_]{2,32}):/g;
+// Caracteres que não contam como "texto" para decidir se a mensagem é só de emojis.
+const UNICODE_EMOJI_RE = /[\p{Extended_Pictographic}‍️\s]/gu;
+const JUMBO_LIMIT = 27; // como no Discord: até 27 emojis sem texto aparecem grandes
 
 function MessageText({ content }: { content: string }) {
+  const { emojisByName } = useDirectory();
+
+  // Troca :nome: pela imagem quando o emoji existe; nomes desconhecidos ficam como texto.
+  const withEmojis = (text: string, keyPrefix: string) =>
+    text.split(EMOJI_TOKEN_RE).map((part, i) => {
+      const emoji = i % 2 === 1 ? emojisByName.get(part) : undefined;
+      if (i % 2 === 1 && !emoji) return `:${part}:`;
+      return emoji ? (
+        <img key={`${keyPrefix}-${i}`} className="emoji" src={mediaUrl.emoji(emoji.id)} alt={`:${part}:`} title={`:${part}:`} />
+      ) : (
+        part
+      );
+    });
+
+  const customCount = [...content.matchAll(EMOJI_TOKEN_RE)].filter((m) => emojisByName.has(m[1])).length;
+  const rest = content.replace(EMOJI_TOKEN_RE, (token, name) => (emojisByName.has(name) ? '' : token)).replace(UNICODE_EMOJI_RE, '');
+  const unicodeCount = [...content.matchAll(/\p{Extended_Pictographic}/gu)].length;
+  const jumbo = rest === '' && customCount + unicodeCount > 0 && customCount + unicodeCount <= JUMBO_LIMIT;
+
   return (
-    <p className="message-text">
+    <p className={`message-text${jumbo ? ' jumbo' : ''}`}>
       {content.split(URL_RE).map((part, i) =>
         i % 2 === 1 ? (
           <a key={i} href={part} target="_blank" rel="noreferrer noopener">
             {part}
           </a>
         ) : (
-          part
+          withEmojis(part, String(i))
         ),
       )}
     </p>

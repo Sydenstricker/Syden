@@ -4,6 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
+import { removeVoiceChannelMembers } from './realtime.js';
 import { usageSummary } from './usage.js';
 
 const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
@@ -12,13 +13,26 @@ export function voiceRoomName(channelId: number) {
   return `channel-${channelId}`;
 }
 
+/** Canais de texto seguem o padrão do Discord: minúsculas e hífens no lugar de espaços. */
+function channelName(raw: string | undefined, type: db.ChannelType): string | null {
+  const name = raw?.trim() ?? '';
+  if (name.length < 1 || name.length > 50) return null;
+  return type === 'text' ? name.toLowerCase().replace(/\s+/g, '-') : name;
+}
+
+function canManage(user: db.User, channel: db.Channel) {
+  return user.isAdmin || channel.createdBy === user.id;
+}
+
+const forbiddenMessage = 'Só quem criou o canal ou o administrador pode alterá-lo.';
+
 declare module 'fastify' {
   interface FastifyRequest {
     user: db.User;
   }
 }
 
-async function requireUser(request: FastifyRequest, reply: FastifyReply) {
+export async function requireUser(request: FastifyRequest, reply: FastifyReply) {
   const token = request.headers.authorization?.replace(/^Bearer /, '');
   const userId = await verifySession(token);
   const user = userId === null ? undefined : db.findUserById(userId);
@@ -58,7 +72,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     if (!found || !(await verifyPassword(request.body?.password ?? '', found.passwordHash))) {
       return reply.code(401).send({ error: 'Usuário ou senha incorretos.' });
     }
-    const user = { id: found.id, username: found.username };
+    const { passwordHash: _, ...user } = found;
     return { token: await signSession(user), user };
   });
 
@@ -67,22 +81,59 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/me', async (request) => request.user);
 
+    authed.post<{ Body: { currentPassword?: string; newPassword?: string } }>(
+      '/api/me/password',
+      async (request, reply) => {
+        const newPassword = request.body?.newPassword ?? '';
+        if (!(await verifyPassword(request.body?.currentPassword ?? '', db.findPasswordHash(request.user.id)))) {
+          return reply.code(400).send({ error: 'A senha atual está incorreta.' });
+        }
+        if (newPassword.length < 6) {
+          return reply.code(400).send({ error: 'A nova senha precisa ter pelo menos 6 caracteres.' });
+        }
+        db.updatePassword(request.user.id, await hashPassword(newPassword));
+        return { ok: true };
+      },
+    );
+
     authed.get('/api/channels', async () => db.listChannels());
 
     authed.get('/api/usage', async () => usageSummary());
 
     authed.post<{ Body: { name?: string; type?: db.ChannelType } }>('/api/channels', async (request, reply) => {
-      const name = request.body?.name?.trim() ?? '';
       const type = request.body?.type;
-      if (name.length < 1 || name.length > 50) {
-        return reply.code(400).send({ error: 'O nome do canal deve ter de 1 a 50 caracteres.' });
-      }
       if (type !== 'text' && type !== 'voice') {
         return reply.code(400).send({ error: 'Tipo de canal inválido.' });
       }
-      const channel = db.createChannel(type === 'text' ? name.toLowerCase().replace(/\s+/g, '-') : name, type);
+      const name = channelName(request.body?.name, type);
+      if (!name) return reply.code(400).send({ error: 'O nome do canal deve ter de 1 a 50 caracteres.' });
+      const channel = db.createChannel(name, type, request.user.id);
       io.emit('channel:created', channel);
       return channel;
+    });
+
+    authed.patch<{ Params: { id: string }; Body: { name?: string } }>('/api/channels/:id', async (request, reply) => {
+      const channel = db.findChannel(Number(request.params.id));
+      if (!channel) return reply.code(404).send({ error: 'Canal não encontrado.' });
+      if (!canManage(request.user, channel)) return reply.code(403).send({ error: forbiddenMessage });
+      const name = channelName(request.body?.name, channel.type);
+      if (!name) return reply.code(400).send({ error: 'O nome do canal deve ter de 1 a 50 caracteres.' });
+      const updated = db.renameChannel(channel.id, name);
+      io.emit('channel:updated', updated);
+      return updated;
+    });
+
+    authed.delete<{ Params: { id: string } }>('/api/channels/:id', async (request, reply) => {
+      const channel = db.findChannel(Number(request.params.id));
+      if (!channel) return reply.code(404).send({ error: 'Canal não encontrado.' });
+      if (!canManage(request.user, channel)) return reply.code(403).send({ error: forbiddenMessage });
+      if (channel.type === 'text' && db.countChannels('text') === 1) {
+        return reply.code(400).send({ error: 'Precisa existir pelo menos um canal de texto.' });
+      }
+      db.deleteChannel(channel.id);
+      removeVoiceChannelMembers(io, channel.id);
+      io.emit('channel:deleted', { id: channel.id });
+      return { ok: true };
     });
 
     authed.get<{ Params: { id: string }; Querystring: { before?: string } }>(

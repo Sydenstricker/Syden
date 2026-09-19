@@ -43,7 +43,15 @@ function endVoiceSession(userId: number) {
   voiceMembers.delete(userId);
 }
 
-function onlineUsers(): db.User[] {
+/** Sala de voz excluída: encerra as sessões de quem estava nela (os apps saem da chamada ao receber channel:deleted). */
+export function removeVoiceChannelMembers(io: IOServer, channelId: number) {
+  const inChannel = [...voiceMembers.values()].filter((m) => m.channelId === channelId);
+  if (inChannel.length === 0) return;
+  for (const member of inChannel) endVoiceSession(member.userId);
+  io.emit('voice:state', voiceState());
+}
+
+function onlineUsers(): db.UserRef[] {
   return [...onlineSockets.entries()].map(([id, { username }]) => ({ id, username }));
 }
 

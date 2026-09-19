@@ -18,6 +18,8 @@ COPY web/package.json web/
 COPY desktop/package.json desktop/
 RUN ELECTRON_SKIP_BINARY_DOWNLOAD=1 npm ci -w server --omit=dev && npm cache clean --force
 COPY --from=build /app/server/dist server/dist
+# Pacote de demonstração (emojis e sons) instalado na primeira inicialização.
+COPY server/assets server/assets
 WORKDIR /app/server
 # Pasta do banco SQLite (volume no docker-compose); precisa ser gravável pelo usuário sem privilégios.
 RUN mkdir -p /data && chown node:node /data

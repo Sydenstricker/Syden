@@ -47,3 +47,10 @@ export async function api<T>(path: string, options: { method?: string; body?: un
   if (!response.ok) throw new ApiError(data.error ?? `Erro ${response.status}`, response.status);
   return data as T;
 }
+
+/** URLs públicas de arquivos (servidas com cache longo: a URL muda quando o arquivo muda). */
+export const mediaUrl = {
+  avatar: (userId: number, version: number) => `${API_URL}/api/users/${userId}/avatar?v=${version}`,
+  emoji: (id: number) => `${API_URL}/api/emojis/${id}/image`,
+  sound: (id: number) => `${API_URL}/api/sounds/${id}/audio`,
+};
