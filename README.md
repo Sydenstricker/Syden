@@ -1,4 +1,4 @@
-# Janja
+# Syden
 
 Um app estilo Discord para a galera: canais de texto, salas de voz, câmera e compartilhamento de tela.
 
@@ -37,7 +37,7 @@ Para testar com alguém na mesma rede Wi-Fi, suba o LiveKit com o IP do seu PC n
 
 ### 1. Servidor (API + LiveKit)
 
-Qualquer VPS Linux com Docker serve. O Janja roda na **Hetzner**; a Oracle Cloud (plano grátis) também
+Qualquer VPS Linux com Docker serve. O Syden roda na **Hetzner**; a Oracle Cloud (plano grátis) também
 funciona e está descrita no fim desta seção.
 
 **Portas que precisam estar abertas para a internet:** TCP `22` (SSH), `80` e `443` (HTTPS), `7881` (mídia via
@@ -108,10 +108,10 @@ Para testar no seu PC com o ambiente de desenvolvimento rodando: `npm run dev:de
 Para publicar:
 
 1. Crie uma tag de versão: `git tag v0.1.0 && git push --tags`.
-2. O workflow **Publicar app de desktop** gera o `Janja-Setup.exe` e o anexa a uma Release do GitHub.
+2. O workflow **Publicar app de desktop** gera o `Syden-Setup.exe` e o anexa a uma Release do GitHub.
 3. O site mostra um botão **Baixar para Windows**, na tela de login e no topo da barra lateral, que baixa sempre
    a versão mais recente. Os amigos não precisam abrir o GitHub. O link segue o formato
-   `https://github.com/<usuario>/<repo>/releases/latest/download/Janja-Setup.exe`. Para usar outro, crie a
+   `https://github.com/<usuario>/<repo>/releases/latest/download/Syden-Setup.exe`. Para usar outro, crie a
    variável `DESKTOP_DOWNLOAD_URL` no repositório. O botão só aparece no navegador do Windows (não dentro do app).
    Enquanto não existir nenhuma Release, o link dá erro 404, então publique a primeira antes de divulgar o site.
 4. O app aponta sozinho para `https://<usuario>.github.io/<repo>/`. Para usar outro endereço, crie a variável
