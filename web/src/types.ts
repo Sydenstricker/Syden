@@ -29,9 +29,8 @@ export interface VoiceMember {
 }
 
 export type Traffic =
-  | { status: 'unconfigured' }
-  | { status: 'error'; message: string }
-  | { status: 'ok'; outgoingBytes: number; includedBytes: number; projectedBytes: number | null; serverName: string };
+  | { status: 'unavailable'; message: string }
+  | { status: 'ok'; outgoingBytes: number; includedBytes: number; projectedBytes: number | null; measuringSince: string };
 
 export interface UsageSummary {
   monthStart: string;

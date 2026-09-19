@@ -62,6 +62,17 @@ db.exec(`
     ended_at   TEXT NOT NULL
   );
   CREATE INDEX IF NOT EXISTS idx_usage_sessions_ended ON usage_sessions(ended_at);
+
+  -- Bytes enviados pela máquina em cada mês (chave 'AAAA-MM', UTC), medidos pelo próprio servidor.
+  CREATE TABLE IF NOT EXISTS traffic_months (
+    month TEXT PRIMARY KEY,
+    bytes INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS kv (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
 `);
 
 const { n: channelCount } = db.prepare('SELECT COUNT(*) AS n FROM channels').get() as { n: number };
@@ -178,6 +189,24 @@ export function usageSince(since: string): UsageByUser[] {
     byUser.set(row.userId, entry);
   }
   return [...byUser.values()].sort((a, b) => b.voiceSeconds - a.voiceSeconds);
+}
+
+export function getKv(key: string): string | undefined {
+  return (db.prepare('SELECT value FROM kv WHERE key = ?').get(key) as { value: string } | undefined)?.value;
+}
+
+export function setKv(key: string, value: string) {
+  db.prepare('INSERT INTO kv (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value').run(key, value);
+}
+
+export function addTraffic(month: string, bytes: number) {
+  db.prepare(
+    'INSERT INTO traffic_months (month, bytes) VALUES (?, ?) ON CONFLICT(month) DO UPDATE SET bytes = bytes + excluded.bytes',
+  ).run(month, bytes);
+}
+
+export function trafficForMonth(month: string): number {
+  return (db.prepare('SELECT bytes FROM traffic_months WHERE month = ?').get(month) as { bytes: number } | undefined)?.bytes ?? 0;
 }
 
 export function createMessage(channelId: number, userId: number, content: string): Message {

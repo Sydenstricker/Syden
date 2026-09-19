@@ -1,17 +1,18 @@
 import { config } from './config.js';
 import * as db from './db.js';
+import { monthKey, trafficSupported } from './traffic.js';
 
 export type Traffic =
-  | { status: 'unconfigured' }
-  | { status: 'error'; message: string }
+  | { status: 'unavailable'; message: string }
   | {
       status: 'ok';
-      /** Só o tráfego de saída conta para a franquia da Hetzner. */
+      /** Só o tráfego de saída conta para a franquia. */
       outgoingBytes: number;
       includedBytes: number;
-      /** Estimativa para o fim do mês no ritmo atual; null no começo do mês, quando ainda não diz nada. */
+      /** Estimativa para o mês inteiro no ritmo medido; null enquanto há poucos dias de medição. */
       projectedBytes: number | null;
-      serverName: string;
+      /** Quando a medição começou neste mês (depois do dia 1 se o servidor foi instalado no meio do mês). */
+      measuringSince: string;
     };
 
 export interface UsageSummary {
@@ -22,63 +23,41 @@ export interface UsageSummary {
   users: db.UsageByUser[];
 }
 
-const TRAFFIC_CACHE_MS = 5 * 60_000;
-const METADATA_URL = 'http://169.254.169.254/hetzner/v1/metadata/instance-id';
-
-let trafficCache: { at: number; value: Traffic } | null = null;
-let detectedServerId: string | null = null;
+const MIN_DAYS_FOR_PROJECTION = 2;
+const DAY_MS = 86_400_000;
 
 function monthBounds(now: Date) {
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
-  return { start, progress: (now.getTime() - start.getTime()) / (end.getTime() - start.getTime()) };
+  return { start, end, progress: (now.getTime() - start.getTime()) / (end.getTime() - start.getTime()) };
 }
 
-async function serverId(): Promise<string> {
-  if (config.hetzner.serverId) return config.hetzner.serverId;
-  if (detectedServerId) return detectedServerId;
-  const response = await fetch(METADATA_URL, { signal: AbortSignal.timeout(2000) });
-  if (!response.ok) throw new Error(`metadados responderam ${response.status}`);
-  detectedServerId = (await response.text()).trim();
-  return detectedServerId;
-}
-
-async function fetchTraffic(monthProgress: number): Promise<Traffic> {
-  if (!config.hetzner.token) return { status: 'unconfigured' };
-  try {
-    const id = await serverId();
-    const response = await fetch(`${config.hetzner.apiUrl}/servers/${id}`, {
-      headers: { authorization: `Bearer ${config.hetzner.token}` },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) throw new Error(`API da Hetzner respondeu ${response.status}`);
-    const { server } = (await response.json()) as {
-      server: { name: string; outgoing_traffic: number | null; included_traffic: number };
-    };
-    const outgoing = server.outgoing_traffic ?? 0;
-    return {
-      status: 'ok',
-      outgoingBytes: outgoing,
-      includedBytes: server.included_traffic,
-      projectedBytes: monthProgress >= 0.1 ? Math.round(outgoing / monthProgress) : null,
-      serverName: server.name,
-    };
-  } catch (error) {
-    console.error('Falha ao consultar o tráfego na Hetzner:', error);
-    return { status: 'error', message: 'Não foi possível consultar a Hetzner agora.' };
+function currentTraffic(now: Date, start: Date, end: Date): Traffic {
+  if (!trafficSupported) {
+    return { status: 'unavailable', message: 'O tráfego é medido no servidor Linux; aparece aqui depois da publicação.' };
   }
+  const since = new Date(Math.max(start.getTime(), Date.parse(db.getKv('traffic.since') ?? now.toISOString())));
+  const measuredMs = now.getTime() - since.getTime();
+  const outgoing = db.trafficForMonth(monthKey(now));
+  return {
+    status: 'ok',
+    outgoingBytes: outgoing,
+    includedBytes: config.trafficAllowanceGb * 1e9,
+    projectedBytes:
+      measuredMs >= MIN_DAYS_FOR_PROJECTION * DAY_MS
+        ? Math.round((outgoing / measuredMs) * (end.getTime() - start.getTime()))
+        : null,
+    measuringSince: since.toISOString(),
+  };
 }
 
-export async function usageSummary(): Promise<UsageSummary> {
+export function usageSummary(): UsageSummary {
   const now = new Date();
-  const { start, progress } = monthBounds(now);
-  if (!trafficCache || now.getTime() - trafficCache.at > TRAFFIC_CACHE_MS) {
-    trafficCache = { at: now.getTime(), value: await fetchTraffic(progress) };
-  }
+  const { start, end, progress } = monthBounds(now);
   return {
     monthStart: start.toISOString(),
     monthProgress: progress,
-    traffic: trafficCache.value,
+    traffic: currentTraffic(now, start, end),
     users: db.usageSince(start.toISOString()),
   };
 }

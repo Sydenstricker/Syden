@@ -1,4 +1,4 @@
-# Produção na VPS (Hetzner). Rode de dentro desta pasta: docker compose up -d --build
+# Produção no servidor (Oracle Cloud ou qualquer VPS Linux). Rode de dentro desta pasta: docker compose up -d --build
 # Tudo em network_mode: host porque o LiveKit precisa de uma faixa grande de portas UDP,
 # e mapear milhares de portas pelo Docker é lento e frágil.
 services:

@@ -19,11 +19,6 @@ export const config = {
     apiKey: env('LIVEKIT_API_KEY', 'devkey'),
     apiSecret: env('LIVEKIT_API_SECRET', 'secret'),
   },
-  // Opcional: sem token, o painel de uso mostra só as horas de chamada.
-  hetzner: {
-    token: process.env.HETZNER_API_TOKEN ?? '',
-    // Vazio = descobre sozinho pelo serviço de metadados da própria VPS.
-    serverId: process.env.HETZNER_SERVER_ID ?? '',
-    apiUrl: process.env.HETZNER_API_URL || 'https://api.hetzner.cloud/v1',
-  },
+  // Franquia mensal de tráfego de saída do provedor, em GB. Padrão: 10 TB do plano grátis da Oracle.
+  trafficAllowanceGb: Number(process.env.TRAFFIC_ALLOWANCE_GB || 10_000),
 };

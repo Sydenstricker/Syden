@@ -54,7 +54,7 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
 
             <section className="usage-card">
               <h2>Tráfego de saída este mês</h2>
-              <TrafficPanel traffic={usage.traffic} />
+              <TrafficPanel traffic={usage.traffic} monthStart={usage.monthStart} />
             </section>
 
             <div className="usage-kpis">
@@ -108,16 +108,8 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
   );
 }
 
-function TrafficPanel({ traffic }: { traffic: Traffic }) {
-  if (traffic.status === 'unconfigured') {
-    return (
-      <p className="usage-muted">
-        O tráfego aparece aqui quando o servidor estiver na Hetzner com o token da API configurado
-        (<code>HETZNER_API_TOKEN</code>).
-      </p>
-    );
-  }
-  if (traffic.status === 'error') return <p className="usage-muted">{traffic.message}</p>;
+function TrafficPanel({ traffic, monthStart }: { traffic: Traffic; monthStart: string }) {
+  if (traffic.status === 'unavailable') return <p className="usage-muted">{traffic.message}</p>;
 
   const used = traffic.outgoingBytes / traffic.includedBytes;
   const projected = traffic.projectedBytes === null ? null : traffic.projectedBytes / traffic.includedBytes;
@@ -127,14 +119,15 @@ function TrafficPanel({ traffic }: { traffic: Traffic }) {
   const statusLabel = {
     good: 'Dentro da franquia',
     warning: 'Perto do limite da franquia',
-    critical: used >= 1 ? 'Franquia ultrapassada: o excedente é cobrado' : 'No ritmo atual, vai passar da franquia',
+    critical: used >= 1 ? 'Franquia do mês ultrapassada' : 'No ritmo atual, vai passar da franquia',
   }[status];
+  const startedMidMonth = Date.parse(traffic.measuringSince) > Date.parse(monthStart);
 
   return (
     <>
       <div className="usage-hero">
         <span className="usage-hero-value">{formatBytes(traffic.outgoingBytes)}</span>
-        <span className="usage-hero-of">de {formatBytes(traffic.includedBytes)} incluídos</span>
+        <span className="usage-hero-of">de {formatBytes(traffic.includedBytes)} grátis por mês</span>
       </div>
       <div
         className={`usage-meter ${status}`}
@@ -154,6 +147,7 @@ function TrafficPanel({ traffic }: { traffic: Traffic }) {
         </span>
       </div>
       <p className="usage-muted small">
+        {startedMidMonth && <>Medindo desde {formatDay(traffic.measuringSince)}. </>}
         Compartilhar tela é o que mais consome: cerca de {formatNumber(SCREEN_GB_PER_VIEWER_HOUR)} GB por hora para cada
         pessoa assistindo. Voz quase não pesa.
       </p>
@@ -171,18 +165,17 @@ function StatTile({ label, value, note }: { label: string; value: string; note?:
   );
 }
 
-const TB = 1024 ** 4;
-const GB = 1024 ** 3;
-const MB = 1024 ** 2;
+// Unidades decimais, como os provedores anunciam a franquia (10 TB = 10 × 1000⁴ bytes).
+const TB = 1e12;
+const GB = 1e9;
+const MB = 1e6;
 
 function formatNumber(value: number, digits = 1) {
   return value.toLocaleString('pt-BR', { maximumFractionDigits: digits });
 }
 
-// Unidades binárias, como a própria Hetzner mostra a franquia (ex.: 20 TB = 20 × 1024⁴ bytes).
 function formatBytes(bytes: number) {
-  // A partir de 1.000 GB já mostra em TB: "1.021 GB" confunde mais do que "1 TB".
-  if (bytes >= 1000 * GB) return `${formatNumber(bytes / TB)} TB`;
+  if (bytes >= TB) return `${formatNumber(bytes / TB)} TB`;
   if (bytes >= GB) return `${formatNumber(bytes / GB, bytes >= 100 * GB ? 0 : 1)} GB`;
   return `${formatNumber(bytes / MB, 0)} MB`;
 }
@@ -198,6 +191,10 @@ function formatDuration(seconds: number) {
   if (hours === 0) return `${minutes} min`;
   if (hours >= 100) return `${hours} h`;
   return minutes > 0 ? `${hours} h ${minutes} min` : `${hours} h`;
+}
+
+function formatDay(iso: string) {
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
 }
 
 function formatMonth(iso: string) {
