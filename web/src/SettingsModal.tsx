@@ -1,5 +1,5 @@
 import { Room } from 'livekit-client';
-import { AudioLines, Bell, CircleUser, LogOut, Mic, Play, Smile, Trash2, UserX, Users, X } from 'lucide-react';
+import { AudioLines, Bell, CircleUser, LogOut, Mic, Play, ShieldOff, ShieldPlus, Smile, Trash2, UserX, Users, X } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
@@ -211,12 +211,33 @@ function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
 
 // ---------- Membros do servidor ----------
 
+function RoleBadge({ member }: { member: Pick<User, 'isAdmin' | 'isOwner'> }) {
+  if (member.isOwner) return <span className="badge badge-owner">Dono</span>;
+  if (member.isAdmin) return <span className="badge">Administrador</span>;
+  return null;
+}
+
 function MembersSection({ user }: { user: User }) {
   const { users } = useDirectory();
   const [removing, setRemoving] = useState<{ id: number; username: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const members = [...users.values()].sort((a, b) => Number(b.isAdmin) - Number(a.isAdmin) || a.username.localeCompare(b.username));
+  const [roleError, setRoleError] = useState<string | null>(null);
+  const rank = (m: User) => Number(m.isOwner) * 2 + Number(m.isAdmin);
+  const members = [...users.values()].sort((a, b) => rank(b) - rank(a) || a.username.localeCompare(b.username));
+
+  // Mesmas regras do servidor: administrador remove membro comum; outro administrador, só o dono; o dono, ninguém.
+  const canRemove = (member: User) =>
+    member.id !== user.id && !member.isOwner && (user.isOwner || (user.isAdmin && !member.isAdmin));
+
+  async function toggleAdmin(member: User) {
+    setRoleError(null);
+    try {
+      await api(`/api/users/${member.id}/admin`, { method: 'PUT', body: { isAdmin: !member.isAdmin } });
+    } catch (e) {
+      setRoleError((e as Error).message);
+    }
+  }
 
   async function confirmRemove() {
     if (!removing) return;
@@ -236,16 +257,33 @@ function MembersSection({ user }: { user: User }) {
       <h2>Membros</h2>
       <p className="settings-lead">
         {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} no servidor.
-        {user.isAdmin && ' Como administrador, você pode remover quem não deve mais participar.'}
+        {user.isOwner
+          ? ' Como dono, você escolhe quem é administrador e pode remover qualquer pessoa.'
+          : user.isAdmin && ' Como administrador, você pode remover membros que não são administradores.'}
       </p>
+      <p className="settings-hint">
+        Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons e remover
+        membros. Só o dono dá e tira esse cargo.
+      </p>
+      {roleError && <p className="form-error">{roleError}</p>}
       <div className="expression-list">
         {members.map((member) => (
           <div key={member.id} className="expression-row">
             <Avatar name={member.username} userId={member.id} size={32} />
             <span className="expression-name">{member.username}</span>
-            {member.isAdmin && <span className="badge">Administrador</span>}
+            <RoleBadge member={member} />
             {member.id === user.id && <span className="expression-author">você</span>}
-            {user.isAdmin && member.id !== user.id && (
+            {user.isOwner && !member.isOwner && (
+              <button
+                className="icon-plain expression-play"
+                title={member.isAdmin ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
+                aria-label={member.isAdmin ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
+                onClick={() => toggleAdmin(member)}
+              >
+                {member.isAdmin ? <ShieldOff size={16} /> : <ShieldPlus size={16} />}
+              </button>
+            )}
+            {canRemove(member) && (
               <button className="icon-plain expression-delete" title={`Remover ${member.username}`} aria-label={`Remover ${member.username}`} onClick={() => setRemoving(member)}>
                 <UserX size={16} />
               </button>
@@ -304,7 +342,7 @@ function AvatarEditor({ user }: { user: User }) {
         <Avatar name={user.username} userId={user.id} size={80} />
         <div className="account-info">
           <div className="account-name">{user.username}</div>
-          {user.isAdmin && <span className="badge">Administrador</span>}
+          <RoleBadge member={user} />
         </div>
         <div className="account-actions">
           <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={upload}>

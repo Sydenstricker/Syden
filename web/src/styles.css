@@ -935,6 +935,15 @@ textarea {
   font-weight: 600;
 }
 
+.badge-owner {
+  background: rgba(240, 178, 50, 0.22);
+  color: #f5c96a;
+}
+
+.expression-row .badge {
+  margin-top: 0;
+}
+
 /* ---------- Janela de confirmação ---------- */
 
 .dialog-backdrop {

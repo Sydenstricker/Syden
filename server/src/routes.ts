@@ -70,6 +70,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(409).send({ error: 'Esse nome de usuário já está em uso.' });
       }
       const user = db.createUser(username, await hashPassword(password));
+      io.emit('user:updated', user); // entra na lista de membros de quem já está com o app aberto
       return { token: await signSession(user), user };
     },
   );
@@ -119,8 +120,27 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (target.id === request.user.id) {
         return reply.code(400).send({ error: 'Para sair, use "Excluir minha conta" em Minha conta.' });
       }
+      // Administradores removem membros comuns; outro administrador, só o dono. E o dono ninguém remove.
+      if (target.isOwner) return reply.code(403).send({ error: 'O dono do servidor não pode ser removido.' });
+      if (target.isAdmin && !request.user.isOwner) {
+        return reply.code(403).send({ error: 'Só o dono do servidor pode remover um administrador.' });
+      }
       removeAccount(io, target.id);
       return { ok: true };
+    });
+
+    // Cargo de administrador: só o dono dá e tira, e o dele não sai.
+    authed.put<{ Params: { id: string }; Body: { isAdmin?: boolean } }>('/api/users/:id/admin', async (request, reply) => {
+      if (!request.user.isOwner) {
+        return reply.code(403).send({ error: 'Só o dono do servidor pode dar ou tirar o cargo de administrador.' });
+      }
+      if (typeof request.body?.isAdmin !== 'boolean') return reply.code(400).send({ error: 'Pedido inválido.' });
+      const target = db.findUserById(Number(request.params.id));
+      if (!target) return reply.code(404).send({ error: 'Membro não encontrado.' });
+      if (target.isOwner) return reply.code(400).send({ error: 'O dono do servidor é sempre administrador.' });
+      const user = db.setAdmin(target.id, request.body.isAdmin)!;
+      io.emit('user:updated', user);
+      return user;
     });
 
     authed.delete<{ Params: { id: string } }>('/api/messages/:id', async (request, reply) => {

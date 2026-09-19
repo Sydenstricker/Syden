@@ -6,8 +6,10 @@ export type ChannelType = 'text' | 'voice';
 export interface User {
   id: number;
   username: string;
-  /** O primeiro usuário cadastrado administra o servidor (pode gerenciar qualquer canal). */
+  /** Administradores moderam o servidor: canais, mensagens, emojis e sons de todos, e membros comuns. */
   isAdmin: boolean;
+  /** O dono (o primeiro cadastro) também é administrador e é quem dá e tira o cargo de administrador. */
+  isOwner: boolean;
   avatarVersion: number | null;
 }
 
@@ -15,7 +17,7 @@ export interface User {
 export type UserRef = Pick<User, 'id' | 'username'>;
 
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin'>;
+export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner'>;
 
 export interface Emoji {
   id: number;
@@ -133,16 +135,22 @@ addColumnIfMissing('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
 addColumnIfMissing('users', 'avatar_version', 'INTEGER');
+addColumnIfMissing('users', 'is_owner', 'INTEGER NOT NULL DEFAULT 0');
 
 // O emoji ":f:" do primeiro pacote tinha 1 letra, abaixo do mínimo de 2, e não funcionava nas mensagens.
 if (!db.prepare("SELECT 1 FROM emojis WHERE name = 'pressf'").get()) {
   db.prepare("UPDATE emojis SET name = 'pressf' WHERE name = 'f' AND created_by IS NULL").run();
 }
 
-// Banco que já tinha usuários antes de existir administrador: o mais antigo assume.
-if (!db.prepare('SELECT 1 FROM users WHERE is_admin = 1').get()) {
-  db.exec('UPDATE users SET is_admin = 1 WHERE id = (SELECT MIN(id) FROM users)');
+/**
+ * Todo servidor com membros tem um dono, que também é administrador. Sem dono (banco de antes dos cargos, ou o
+ * dono excluiu a conta), o administrador mais antigo assume; se não houver administrador, o membro mais antigo.
+ */
+function ensureOwner() {
+  if (db.prepare('SELECT 1 FROM users WHERE is_owner = 1').get()) return;
+  db.exec('UPDATE users SET is_owner = 1, is_admin = 1 WHERE id = (SELECT id FROM users ORDER BY is_admin DESC, id LIMIT 1)');
 }
+ensureOwner();
 
 const { n: channelCount } = db.prepare('SELECT COUNT(*) AS n FROM channels').get() as { n: number };
 if (channelCount === 0) {
@@ -153,12 +161,20 @@ if (channelCount === 0) {
   insert.run('Sala 2', 'voice', 3);
 }
 
-const userColumns = 'id, username, is_admin AS isAdmin, avatar_version AS avatarVersion';
+const userColumns = 'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion';
 
-type UserRow = { id: number; username: string; isAdmin: number; avatarVersion: number | null };
+type UserRow = { id: number; username: string; isAdmin: number; isOwner: number; avatarVersion: number | null };
 
 function toUser(row: UserRow | undefined): User | undefined {
-  return row && { id: row.id, username: row.username, isAdmin: row.isAdmin === 1, avatarVersion: row.avatarVersion };
+  return (
+    row && {
+      id: row.id,
+      username: row.username,
+      isAdmin: row.isAdmin === 1,
+      isOwner: row.isOwner === 1,
+      avatarVersion: row.avatarVersion,
+    }
+  );
 }
 
 export function findUserByName(username: string) {
@@ -169,11 +185,13 @@ export function findUserByName(username: string) {
 }
 
 export function listPublicUsers(): PublicUser[] {
-  return (
-    db.prepare('SELECT id, username, avatar_version AS avatarVersion, is_admin AS isAdmin FROM users ORDER BY id').all() as unknown as (
-      Omit<PublicUser, 'isAdmin'> & { isAdmin: number }
-    )[]
-  ).map((u) => ({ ...u, isAdmin: u.isAdmin === 1 }));
+  return (db.prepare(`SELECT ${userColumns} FROM users ORDER BY id`).all() as UserRow[]).map((row) => toUser(row)!);
+}
+
+/** Dá ou tira o cargo de administrador. O dono é administrador sempre. */
+export function setAdmin(userId: number, isAdmin: boolean): User | undefined {
+  db.prepare('UPDATE users SET is_admin = ? WHERE id = ? AND is_owner = 0').run(isAdmin ? 1 : 0, userId);
+  return findUserById(userId);
 }
 
 export function setAvatar(userId: number, avatar: { mime: string; data: Buffer } | null): User {
@@ -258,17 +276,18 @@ export function findPasswordHash(userId: number) {
   return (db.prepare('SELECT password_hash AS hash FROM users WHERE id = ?').get(userId) as { hash: string }).hash;
 }
 
-/** O primeiro cadastro do servidor vira administrador. */
+/** O primeiro cadastro do servidor vira dono e administrador. */
 export function createUser(username: string, passwordHash: string): User {
+  const first = !db.prepare('SELECT 1 FROM users').get();
   const result = db
-    .prepare('INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, NOT EXISTS (SELECT 1 FROM users))')
-    .run(username, passwordHash);
+    .prepare('INSERT INTO users (username, password_hash, is_admin, is_owner) VALUES (?, ?, ?, ?)')
+    .run(username, passwordHash, first ? 1 : 0, first ? 1 : 0);
   return findUserById(Number(result.lastInsertRowid))!;
 }
 
 /**
  * Apaga a conta e os dados pessoais dela (mensagens, avatar, histórico de uso). Canais, emojis e sons que a
- * pessoa criou continuam no servidor, sem dono. Se era o administrador, o membro mais antigo assume.
+ * pessoa criou continuam no servidor, sem dono. Se era o dono do servidor, outra pessoa assume (ensureOwner).
  */
 export function deleteAccount(userId: number) {
   db.exec('BEGIN');
@@ -280,9 +299,7 @@ export function deleteAccount(userId: number) {
       db.prepare(`UPDATE ${table} SET created_by = NULL WHERE created_by = ?`).run(userId);
     }
     db.prepare('DELETE FROM users WHERE id = ?').run(userId);
-    if (!db.prepare('SELECT 1 FROM users WHERE is_admin = 1').get()) {
-      db.exec('UPDATE users SET is_admin = 1 WHERE id = (SELECT MIN(id) FROM users)');
-    }
+    ensureOwner();
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');

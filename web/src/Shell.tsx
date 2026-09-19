@@ -15,9 +15,14 @@ import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
 
 export function Shell({ token, user: loggedUser, onLogout }: { token: string; user: User; onLogout: () => void }) {
-  // Quem é administrador pode mudar com o app aberto (ex.: o admin excluiu a conta e outro assumiu).
+  // Os cargos podem mudar com o app aberto (o dono deu ou tirou o de administrador, ou excluiu a conta e outro assumiu).
   const { users } = useDirectory();
-  const user: User = { ...loggedUser, isAdmin: users.get(loggedUser.id)?.isAdmin ?? loggedUser.isAdmin };
+  const current = users.get(loggedUser.id);
+  const user: User = {
+    ...loggedUser,
+    isAdmin: current?.isAdmin ?? loggedUser.isAdmin,
+    isOwner: current?.isOwner ?? loggedUser.isOwner ?? false,
+  };
   const [socket, setSocket] = useState<Socket | null>(null);
   const [online, setOnline] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);

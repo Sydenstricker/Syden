@@ -2,12 +2,14 @@ export interface User {
   id: number;
   username: string;
   isAdmin: boolean;
+  /** O dono do servidor é quem dá e tira o cargo de administrador. */
+  isOwner: boolean;
   avatarVersion: number | null;
 }
 
 export type UserRef = Pick<User, 'id' | 'username'>;
 
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin'>;
+export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner'>;
 
 export interface Emoji {
   id: number;

@@ -23,7 +23,11 @@ function isAppOrigin(/** @type {string | undefined} */ url) {
 }
 
 // O app se chamava Janja; mantém a pasta de dados antiga para ninguém perder o login ao atualizar.
-app.setPath('userData', path.join(app.getPath('appData'), 'Janja'));
+// A versão de desenvolvimento usa pasta e identidade próprias: se dividisse com o Syden instalado, abrir um
+// desviava para a janela do outro (trava de instância única) e a barra de tarefas os misturava ao fixar.
+const DEV = !app.isPackaged;
+app.setPath('userData', path.join(app.getPath('appData'), DEV ? 'Janja-dev' : 'Janja'));
+const APP_USER_MODEL_ID = DEV ? 'com.janja.app.dev' : 'com.janja.app';
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -31,7 +35,7 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', showMainWindow);
   app.on('before-quit', () => (quitting = true));
   app.whenReady().then(() => {
-    app.setAppUserModelId('com.janja.app');
+    app.setAppUserModelId(APP_USER_MODEL_ID);
     Menu.setApplicationMenu(null);
     setupPermissions();
     setupScreenShare();
