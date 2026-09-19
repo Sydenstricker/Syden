@@ -1,9 +1,11 @@
 import { Room } from 'livekit-client';
-import { AudioLines, Bell, CircleUser, LogOut, Mic, Play, Smile, Trash2, X } from 'lucide-react';
+import { AudioLines, Bell, CircleUser, LogOut, Mic, Play, Smile, Trash2, UserX, Users, X } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
+import { ConfirmDialog } from './ConfirmDialog';
+import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { useDirectory } from './directory';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
@@ -11,15 +13,16 @@ import type { Emoji, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, emojiNameFromFile, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
 
-type Section = 'account' | 'voice' | 'sounds' | 'emojis' | 'soundboard';
+type Section = 'account' | 'voice' | 'sounds' | 'members' | 'emojis' | 'soundboard';
 
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'account', label: 'Minha conta', icon: <CircleUser size={18} /> },
   { id: 'voice', label: 'Voz e vídeo', icon: <Mic size={18} /> },
-  { id: 'sounds', label: 'Sons de aviso', icon: <Bell size={18} /> },
+  { id: 'sounds', label: 'Notificações', icon: <Bell size={18} /> },
 ];
 
 const SERVER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
+  { id: 'members', label: 'Membros', icon: <Users size={18} /> },
   { id: 'emojis', label: 'Emojis', icon: <Smile size={18} /> },
   { id: 'soundboard', label: 'Soundboard', icon: <AudioLines size={18} /> },
 ];
@@ -71,7 +74,8 @@ export function SettingsModal({
 
       <main className="settings-content">
         <div className="settings-content-inner">
-          {section === 'account' && <AccountSection user={user} />}
+          {section === 'account' && <AccountSection user={user} onDeleted={onLogout} />}
+          {section === 'members' && <MembersSection user={user} />}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
           {section === 'emojis' && <EmojisSection user={user} />}
@@ -90,7 +94,7 @@ export function SettingsModal({
 
 // ---------- Minha conta ----------
 
-function AccountSection({ user }: { user: User }) {
+function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void }) {
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -137,6 +141,135 @@ function AccountSection({ user }: { user: User }) {
           {busy ? 'Salvando…' : 'Salvar nova senha'}
         </button>
       </form>
+
+      <DeleteAccount onDeleted={onDeleted} />
+
+      <p className="settings-legal">
+        <a href="privacidade.html" target="_blank" rel="noreferrer">
+          Política de privacidade
+        </a>
+        {' · '}
+        <a href="termos.html" target="_blank" rel="noreferrer">
+          Termos de uso
+        </a>
+      </p>
+    </>
+  );
+}
+
+function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      await api('/api/me/delete', { method: 'POST', body: { password } });
+      onDeleted();
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <h3>Excluir conta</h3>
+      <div className="settings-card danger-zone">
+        <p>
+          Apaga a sua conta, as suas mensagens e o seu avatar. Os canais, emojis e sons que você criou continuam no
+          servidor para os outros. <strong>Não dá para desfazer.</strong>
+        </p>
+        {open ? (
+          <form className="settings-form" onSubmit={submit}>
+            <label>
+              Digite sua senha para confirmar
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" autoFocus required />
+            </label>
+            {error && <p className="form-error">{error}</p>}
+            <div className="danger-actions">
+              <button type="button" className="link-button" onClick={() => setOpen(false)}>
+                Cancelar
+              </button>
+              <button className="btn-danger" disabled={busy || !password}>
+                {busy ? 'Excluindo…' : 'Excluir minha conta para sempre'}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <button className="btn-danger" onClick={() => setOpen(true)}>
+            Excluir minha conta
+          </button>
+        )}
+      </div>
+    </>
+  );
+}
+
+// ---------- Membros do servidor ----------
+
+function MembersSection({ user }: { user: User }) {
+  const { users } = useDirectory();
+  const [removing, setRemoving] = useState<{ id: number; username: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const members = [...users.values()].sort((a, b) => Number(b.isAdmin) - Number(a.isAdmin) || a.username.localeCompare(b.username));
+
+  async function confirmRemove() {
+    if (!removing) return;
+    setBusy(true);
+    try {
+      await api(`/api/users/${removing.id}`, { method: 'DELETE' });
+      setRemoving(null);
+      setError(null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <>
+      <h2>Membros</h2>
+      <p className="settings-lead">
+        {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} no servidor.
+        {user.isAdmin && ' Como administrador, você pode remover quem não deve mais participar.'}
+      </p>
+      <div className="expression-list">
+        {members.map((member) => (
+          <div key={member.id} className="expression-row">
+            <Avatar name={member.username} userId={member.id} size={32} />
+            <span className="expression-name">{member.username}</span>
+            {member.isAdmin && <span className="badge">Administrador</span>}
+            {member.id === user.id && <span className="expression-author">você</span>}
+            {user.isAdmin && member.id !== user.id && (
+              <button className="icon-plain expression-delete" title={`Remover ${member.username}`} aria-label={`Remover ${member.username}`} onClick={() => setRemoving(member)}>
+                <UserX size={16} />
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      {removing && (
+        <ConfirmDialog
+          title="Remover membro"
+          confirmLabel="Remover"
+          busy={busy}
+          error={error}
+          onConfirm={confirmRemove}
+          onCancel={() => {
+            setRemoving(null);
+            setError(null);
+          }}
+        >
+          Remover <strong>{removing.username}</strong> do servidor? A conta e as mensagens dessa pessoa serão apagadas, e ela
+          sai de qualquer chamada na hora. Para impedir que ela crie outra conta, troque também o código de convite do
+          servidor.
+        </ConfirmDialog>
+      )}
     </>
   );
 }
@@ -490,7 +623,7 @@ function soundNameFromFile(fileName: string) {
 }
 
 function authorLabel(createdBy: number | null, users: Map<number, { username: string }>) {
-  if (createdBy === null) return 'Pacote do Janja';
+  if (createdBy === null) return 'Pacote do Syden';
   return `por ${users.get(createdBy)?.username ?? 'alguém'}`;
 }
 
@@ -595,6 +728,16 @@ function VoiceSection({ voice }: { voice: Voice }) {
       </div>
 
       <MicTest deviceId={settings.audioInput} />
+
+      {desktopBridge && (
+        <>
+          <h3>Teclas de atalho</h3>
+          <p className="settings-hint shortcuts">
+            Funcionam mesmo com o Syden minimizado, durante uma chamada: <kbd>{SHORTCUT_LABELS.mute}</kbd> silencia ou
+            ativa o microfone, e <kbd>{SHORTCUT_LABELS.deafen}</kbd> ensurdece ou volta a ouvir.
+          </p>
+        </>
+      )}
 
       <h3>Processamento de voz</h3>
       <Toggle
@@ -727,9 +870,29 @@ function MicTest({ deviceId }: { deviceId: string }) {
 
 function SoundsSection() {
   const settings = useSettings();
+  const supported = typeof Notification !== 'undefined';
+  const [permission, setPermission] = useState(supported ? Notification.permission : 'denied');
+
+  async function toggleNotifications(value: boolean) {
+    updateSettings({ notifications: value });
+    // No navegador é preciso pedir permissão; no app de desktop ela já vem liberada.
+    if (value && supported && Notification.permission === 'default') setPermission(await Notification.requestPermission());
+  }
+
   return (
     <>
-      <h2>Sons</h2>
+      <h2>Notificações</h2>
+      <Toggle
+        label="Notificações na área de trabalho"
+        description="Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal."
+        checked={settings.notifications && permission !== 'denied'}
+        onChange={(value) => void toggleNotifications(value)}
+      />
+      {permission === 'denied' && (
+        <p className="settings-hint">
+          O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.
+        </p>
+      )}
       <Toggle
         label="Sons de aviso"
         description="Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece."

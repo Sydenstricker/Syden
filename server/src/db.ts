@@ -15,7 +15,7 @@ export interface User {
 export type UserRef = Pick<User, 'id' | 'username'>;
 
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion'>;
+export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin'>;
 
 export interface Emoji {
   id: number;
@@ -169,7 +169,11 @@ export function findUserByName(username: string) {
 }
 
 export function listPublicUsers(): PublicUser[] {
-  return db.prepare('SELECT id, username, avatar_version AS avatarVersion FROM users ORDER BY id').all() as unknown as PublicUser[];
+  return (
+    db.prepare('SELECT id, username, avatar_version AS avatarVersion, is_admin AS isAdmin FROM users ORDER BY id').all() as unknown as (
+      Omit<PublicUser, 'isAdmin'> & { isAdmin: number }
+    )[]
+  ).map((u) => ({ ...u, isAdmin: u.isAdmin === 1 }));
 }
 
 export function setAvatar(userId: number, avatar: { mime: string; data: Buffer } | null): User {
@@ -260,6 +264,40 @@ export function createUser(username: string, passwordHash: string): User {
     .prepare('INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, NOT EXISTS (SELECT 1 FROM users))')
     .run(username, passwordHash);
   return findUserById(Number(result.lastInsertRowid))!;
+}
+
+/**
+ * Apaga a conta e os dados pessoais dela (mensagens, avatar, histórico de uso). Canais, emojis e sons que a
+ * pessoa criou continuam no servidor, sem dono. Se era o administrador, o membro mais antigo assume.
+ */
+export function deleteAccount(userId: number) {
+  db.exec('BEGIN');
+  try {
+    db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
+    for (const table of ['channels', 'emojis', 'sounds']) {
+      db.prepare(`UPDATE ${table} SET created_by = NULL WHERE created_by = ?`).run(userId);
+    }
+    db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+    if (!db.prepare('SELECT 1 FROM users WHERE is_admin = 1').get()) {
+      db.exec('UPDATE users SET is_admin = 1 WHERE id = (SELECT MIN(id) FROM users)');
+    }
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
+}
+
+export function findMessage(id: number) {
+  return db.prepare('SELECT id, channel_id AS channelId, user_id AS userId FROM messages WHERE id = ?').get(id) as
+    | { id: number; channelId: number; userId: number }
+    | undefined;
+}
+
+export function deleteMessage(id: number) {
+  db.prepare('DELETE FROM messages WHERE id = ?').run(id);
 }
 
 export function updatePassword(userId: number, passwordHash: string) {

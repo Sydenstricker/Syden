@@ -1,21 +1,23 @@
-import { Hash, Smile } from 'lucide-react';
+import { Hash, Smile, Trash2 } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
+import { ConfirmDialog } from './ConfirmDialog';
 import { useDirectory } from './directory';
 import { EmojiPicker } from './EmojiPicker';
-import type { Channel, Message } from './types';
+import type { Channel, Message, User } from './types';
 
 const PAGE_SIZE = 50;
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
-export function TextChannel({ channel, socket }: { channel: Channel; socket: Socket }) {
+export function TextChannel({ channel, socket, user }: { channel: Channel; socket: Socket; user: User }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [deleting, setDeleting] = useState<Message | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const stickToBottom = useRef(true);
@@ -31,9 +33,16 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
     const onMessage = (message: Message) => {
       if (message.channelId === channel.id) setMessages((list) => [...list, message]);
     };
+    const onDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.id !== id));
+    // Conta excluída: as mensagens dela somem da tela também.
+    const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
     socket.on('message:new', onMessage);
+    socket.on('message:deleted', onDeleted);
+    socket.on('user:deleted', onUserDeleted);
     return () => {
       socket.off('message:new', onMessage);
+      socket.off('message:deleted', onDeleted);
+      socket.off('user:deleted', onUserDeleted);
     };
   }, [channel.id, socket]);
 
@@ -80,6 +89,26 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
     });
   }
 
+  const canDelete = (message: Message) => message.author.id === user.id || user.isAdmin;
+
+  /** Shift + clique apaga sem perguntar. */
+  function requestDelete(message: Message, skipConfirm: boolean) {
+    if (skipConfirm) void api(`/api/messages/${message.id}`, { method: 'DELETE' }).catch((e) => setError((e as Error).message));
+    else setDeleting(message);
+  }
+
+  const deleteButton = (message: Message) =>
+    canDelete(message) && (
+      <button
+        className="message-action"
+        title="Apagar mensagem (Shift + clique apaga direto)"
+        aria-label="Apagar mensagem"
+        onClick={(e) => requestDelete(message, e.shiftKey)}
+      >
+        <Trash2 size={16} />
+      </button>
+    );
+
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -123,6 +152,7 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
           return grouped ? (
             <div key={message.id} className="message grouped">
               <MessageText content={message.content} />
+              {deleteButton(message)}
             </div>
           ) : (
             <div key={message.id} className="message">
@@ -134,10 +164,15 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
                 </div>
                 <MessageText content={message.content} />
               </div>
+              {deleteButton(message)}
             </div>
           );
         })}
       </div>
+
+      {deleting && (
+        <DeleteMessageDialog message={deleting} onClose={() => setDeleting(null)} />
+      )}
 
       <div className="composer">
         {error && <p className="form-error small">{error}</p>}
@@ -165,6 +200,29 @@ export function TextChannel({ channel, socket }: { channel: Channel; socket: Soc
         </div>
       </div>
     </div>
+  );
+}
+
+function DeleteMessageDialog({ message, onClose }: { message: Message; onClose: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function confirm() {
+    setBusy(true);
+    try {
+      await api(`/api/messages/${message.id}`, { method: 'DELETE' });
+      onClose();
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <ConfirmDialog title="Apagar mensagem" confirmLabel="Apagar" busy={busy} error={error} onConfirm={confirm} onCancel={onClose}>
+      Tem certeza que quer apagar esta mensagem de <strong>{message.author.username}</strong>? Ela some para todos.
+      <blockquote className="dialog-quote">{message.content}</blockquote>
+    </ConfirmDialog>
   );
 }
 

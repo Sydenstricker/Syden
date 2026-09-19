@@ -1,8 +1,17 @@
 # Produção no servidor (Oracle Cloud ou qualquer VPS Linux). Rode de dentro desta pasta: docker compose up -d --build
 # Tudo em network_mode: host porque o LiveKit precisa de uma faixa grande de portas UDP,
 # e mapear milhares de portas pelo Docker é lento e frágil.
+
+# Registros técnicos (com IPs) limitados a ~30 MB por serviço; os mais antigos são descartados.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
 services:
   caddy:
+    logging: *logging
     image: caddy:2
     network_mode: host
     restart: unless-stopped
@@ -15,6 +24,7 @@ services:
       - caddy_config:/config
 
   livekit:
+    logging: *logging
     image: livekit/livekit-server:latest
     network_mode: host
     restart: unless-stopped
@@ -25,6 +35,7 @@ services:
       - ./livekit.yaml:/etc/livekit.yaml:ro
 
   api:
+    logging: *logging
     build:
       context: ..
       dockerfile: server/Dockerfile

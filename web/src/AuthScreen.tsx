@@ -1,8 +1,8 @@
 import { Download } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { api } from './api';
-import heroImage from './assets/login-hero.webp';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
+import { Logo } from './Logo';
 import type { User } from './types';
 
 export function AuthScreen({ onAuthenticated }: { onAuthenticated: (token: string, user: User) => void }) {
@@ -33,63 +33,76 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: (token: strin
   return (
     <div className="auth">
       <div className="auth-panel">
-        <form className="auth-card" onSubmit={submit}>
-          <h1>{mode === 'login' ? 'Bem-vindo de volta!' : 'Criar uma conta'}</h1>
-          <p className="auth-subtitle">{mode === 'login' ? 'Que bom te ver de novo.' : 'Chame a galera e bora.'}</p>
+        <div className="auth-column">
+          <div className="auth-brand">
+            <Logo size={64} />
+            <span>Syden</span>
+          </div>
+          <form className="auth-card" onSubmit={submit}>
+            <h1>{mode === 'login' ? 'Bem-vindo de volta!' : 'Criar uma conta'}</h1>
+            <p className="auth-subtitle">{mode === 'login' ? 'Que bom te ver de novo.' : 'Chame a galera e bora.'}</p>
 
-          <label>
-            Nome de usuário
-            <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus required />
-          </label>
-          <label>
-            Senha
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              required
-            />
-          </label>
-          {mode === 'register' && (
             <label>
-              Código de convite
-              <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} />
+              Nome de usuário
+              <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus required />
             </label>
-          )}
+            <label>
+              Senha
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                required
+              />
+            </label>
+            {mode === 'register' && (
+              <label>
+                Código de convite
+                <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} />
+              </label>
+            )}
 
-          {error && <p className="form-error">{error}</p>}
+            {error && <p className="form-error">{error}</p>}
 
-          <button className="btn-primary" disabled={busy}>
-            {busy ? 'Aguarde…' : mode === 'login' ? 'Entrar' : 'Cadastrar'}
-          </button>
-
-          <p className="auth-switch">
-            {mode === 'login' ? 'Precisa de uma conta? ' : 'Já tem uma conta? '}
-            <button
-              type="button"
-              className="link"
-              onClick={() => {
-                setMode(mode === 'login' ? 'register' : 'login');
-                setError(null);
-              }}
-            >
-              {mode === 'login' ? 'Cadastre-se' : 'Entrar'}
+            <button className="btn-primary" disabled={busy}>
+              {busy ? 'Aguarde…' : mode === 'login' ? 'Entrar' : 'Cadastrar'}
             </button>
-          </p>
 
-          {showDesktopDownload && (
-            <div className="auth-download">
-              <span>Prefere usar como programa, igual ao Discord?</span>
-              <a className="btn-secondary" href={DESKTOP_DOWNLOAD_URL}>
-                <Download size={18} /> Baixar para Windows
+            <p className="auth-switch">
+              {mode === 'login' ? 'Precisa de uma conta? ' : 'Já tem uma conta? '}
+              <button
+                type="button"
+                className="link"
+                onClick={() => {
+                  setMode(mode === 'login' ? 'register' : 'login');
+                  setError(null);
+                }}
+              >
+                {mode === 'login' ? 'Cadastre-se' : 'Entrar'}
+              </button>
+            </p>
+
+            <p className="auth-legal">
+              <a href="privacidade.html" target="_blank" rel="noreferrer">
+                Privacidade
               </a>
-            </div>
-          )}
-        </form>
-      </div>
-      <div className="auth-hero" aria-hidden="true">
-        <img src={heroImage} alt="" />
+              {' · '}
+              <a href="termos.html" target="_blank" rel="noreferrer">
+                Termos de uso
+              </a>
+            </p>
+
+            {showDesktopDownload && (
+              <div className="auth-download">
+                <span>Prefere usar como programa no Windows?</span>
+                <a className="btn-secondary" href={DESKTOP_DOWNLOAD_URL}>
+                  <Download size={18} /> Baixar para Windows
+                </a>
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );

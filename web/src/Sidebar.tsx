@@ -20,6 +20,7 @@ import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
+import { Logo } from './Logo';
 import { Avatar } from './Avatar';
 import type { Channel, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -67,7 +68,10 @@ export function Sidebar({
   return (
     <nav className="sidebar">
       <header className="sidebar-header">
-        Janja
+        <span className="sidebar-brand">
+          <Logo size={22} />
+          Syden
+        </span>
         {showDesktopDownload && (
           <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title="Baixar o app para Windows" aria-label="Baixar o app para Windows">
             <Download size={18} />

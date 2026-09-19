@@ -7,7 +7,7 @@ export interface User {
 
 export type UserRef = Pick<User, 'id' | 'username'>;
 
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion'>;
+export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin'>;
 
 export interface Emoji {
   id: number;

@@ -16,6 +16,8 @@ export interface Settings {
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
   soundboardVolume: number;
+  /** Notificação do Windows para mensagens novas quando o Syden não está em primeiro plano. */
+  notifications: boolean;
 }
 
 const DEFAULTS: Settings = {
@@ -27,6 +29,7 @@ const DEFAULTS: Settings = {
   screenQuality: 'standard',
   sounds: true,
   soundboardVolume: 0.6,
+  notifications: true,
 };
 
 const STORAGE_KEY = 'janja.settings';

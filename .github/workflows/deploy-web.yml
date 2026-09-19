@@ -35,7 +35,7 @@ jobs:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_BASE: /${{ github.event.repository.name }}/
           # Botão "Baixar para Windows": sempre o instalador da Release mais recente deste repositório.
-          VITE_DESKTOP_DOWNLOAD_URL: ${{ vars.DESKTOP_DOWNLOAD_URL || format('https://github.com/{0}/releases/latest/download/Janja-Setup.exe', github.repository) }}
+          VITE_DESKTOP_DOWNLOAD_URL: ${{ vars.DESKTOP_DOWNLOAD_URL || format('https://github.com/{0}/releases/latest/download/Syden-Setup.exe', github.repository) }}
       - uses: actions/upload-pages-artifact@v4
         with:
           path: web/dist

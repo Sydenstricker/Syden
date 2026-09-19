@@ -1,5 +1,5 @@
 // @ts-check
-const { app, BrowserWindow, Menu, Tray, desktopCapturer, ipcMain, nativeImage, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, Tray, desktopCapturer, globalShortcut, ipcMain, nativeImage, session, shell } = require('electron');
 const path = require('node:path');
 const config = require('../app.config.json');
 
@@ -22,6 +22,9 @@ function isAppOrigin(/** @type {string | undefined} */ url) {
   }
 }
 
+// O app se chamava Janja; mantém a pasta de dados antiga para ninguém perder o login ao atualizar.
+app.setPath('userData', path.join(app.getPath('appData'), 'Janja'));
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
@@ -34,7 +37,9 @@ if (!app.requestSingleInstanceLock()) {
     setupScreenShare();
     createMainWindow();
     createTray();
+    registerShortcuts();
   });
+  app.on('will-quit', () => globalShortcut.unregisterAll());
 }
 
 function showMainWindow() {
@@ -50,7 +55,7 @@ function createMainWindow() {
     height: 800,
     minWidth: 940,
     minHeight: 560,
-    title: 'Janja',
+    title: 'Syden',
     icon: ICON,
     backgroundColor: '#313338',
     show: false,
@@ -59,6 +64,7 @@ function createMainWindow() {
       sandbox: true,
       nodeIntegration: false,
       backgroundThrottling: false, // mantém a chamada estável com a janela minimizada
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -104,14 +110,29 @@ function createMainWindow() {
   mainWindow.on('closed', () => (mainWindow = null));
 }
 
+// Teclas de atalho que funcionam mesmo com o Syden minimizado ou em segundo plano (ex.: durante um jogo).
+// Combinações pouco usadas, porque um atalho global vale para o Windows inteiro.
+const SHORTCUTS = { 'Control+Alt+M': 'mute', 'Control+Alt+D': 'deafen' };
+
+function registerShortcuts() {
+  for (const [accelerator, action] of Object.entries(SHORTCUTS)) {
+    // Se outro programa já usa a combinação, o registro falha e o Syden simplesmente não a usa.
+    globalShortcut.register(accelerator, () => mainWindow?.webContents.send('app:shortcut', action));
+  }
+}
+
+ipcMain.on('app:focus', (event) => {
+  if (mainWindow && event.sender === mainWindow.webContents) showMainWindow();
+});
+
 function createTray() {
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16, height: 16 }));
-  tray.setToolTip('Janja');
+  tray.setToolTip('Syden');
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      { label: 'Abrir Janja', click: showMainWindow },
+      { label: 'Abrir Syden', click: showMainWindow },
       { type: 'separator' },
-      { label: 'Sair do Janja', click: () => app.quit() },
+      { label: 'Sair do Syden', click: () => app.quit() },
     ]),
   );
   tray.on('click', showMainWindow);

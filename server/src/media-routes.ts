@@ -55,13 +55,13 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       const media = parseMedia(request.body?.image, 'image', LIMITS.avatar);
       if (typeof media === 'string') return reply.code(400).send({ error: media });
       const user = db.setAvatar(request.user.id, media);
-      io.emit('user:updated', { id: user.id, username: user.username, avatarVersion: user.avatarVersion });
+      io.emit('user:updated', { id: user.id, username: user.username, avatarVersion: user.avatarVersion, isAdmin: user.isAdmin });
       return user;
     });
 
     authed.delete('/api/me/avatar', async (request) => {
       const user = db.setAvatar(request.user.id, null);
-      io.emit('user:updated', { id: user.id, username: user.username, avatarVersion: null });
+      io.emit('user:updated', { id: user.id, username: user.username, avatarVersion: null, isAdmin: user.isAdmin });
       return user;
     });
 

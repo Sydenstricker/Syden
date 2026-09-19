@@ -40,6 +40,8 @@ export function syncDirectory(socket: Socket) {
   const onEmojiDeleted = ({ id }: { id: number }) => set({ emojis: state.emojis.filter((e) => e.id !== id) });
   const onSoundCreated = (sound: Sound) => set({ sounds: [...state.sounds.filter((s) => s.id !== sound.id), sound] });
   const onSoundDeleted = ({ id }: { id: number }) => set({ sounds: state.sounds.filter((s) => s.id !== id) });
+  // Conta excluída: a lista nova já vem com quem virou administrador, se foi o caso.
+  const onUserDeleted = ({ users }: { id: number; users: PublicUser[] }) => set({ users: new Map(users.map((u) => [u.id, u])) });
 
   // Ao reconectar (ex.: o servidor reiniciou com um pacote de sons novo), recarrega tudo.
   let connectedBefore = socket.connected;
@@ -54,6 +56,7 @@ export function syncDirectory(socket: Socket) {
   socket.on('emoji:deleted', onEmojiDeleted);
   socket.on('sound:created', onSoundCreated);
   socket.on('sound:deleted', onSoundDeleted);
+  socket.on('user:deleted', onUserDeleted);
   return () => {
     socket.off('connect', onConnect);
     socket.off('user:updated', onUser);
@@ -61,6 +64,7 @@ export function syncDirectory(socket: Socket) {
     socket.off('emoji:deleted', onEmojiDeleted);
     socket.off('sound:created', onSoundCreated);
     socket.off('sound:deleted', onSoundDeleted);
+    socket.off('user:deleted', onUserDeleted);
   };
 }
 

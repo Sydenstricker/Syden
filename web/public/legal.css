@@ -1,0 +1,65 @@
+/* Estilo das páginas de política de privacidade e termos de uso. */
+:root {
+  --bg: #313338;
+  --text: #dbdee1;
+  --strong: #f2f3f5;
+  --muted: #949ba4;
+  --link: #00a8fc;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 16px 64px;
+}
+
+h1 {
+  color: var(--strong);
+  font-size: 28px;
+  line-height: 1.25;
+  margin: 0 0 4px;
+}
+
+h2 {
+  color: var(--strong);
+  font-size: 19px;
+  margin: 32px 0 8px;
+}
+
+.updated {
+  color: var(--muted);
+  margin: 0 0 24px;
+  font-size: 14px;
+}
+
+ul {
+  padding-left: 22px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+a {
+  color: var(--link);
+}
+
+strong {
+  color: var(--strong);
+}
+
+.back {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #3f4147;
+  font-size: 14px;
+}

@@ -4,7 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
-import { removeVoiceChannelMembers } from './realtime.js';
+import { disconnectUser, removeVoiceChannelMembers } from './realtime.js';
 import { usageSummary } from './usage.js';
 
 const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
@@ -25,6 +25,13 @@ function canManage(user: db.User, channel: db.Channel) {
 }
 
 const forbiddenMessage = 'Só quem criou o canal ou o administrador pode alterá-lo.';
+
+function removeAccount(io: IOServer, userId: number) {
+  db.deleteAccount(userId);
+  disconnectUser(io, userId);
+  // Os apps tiram a pessoa da lista, apagam as mensagens dela da tela e atualizam quem é administrador.
+  io.emit('user:deleted', { id: userId, users: db.listPublicUsers() });
+}
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -95,6 +102,37 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return { ok: true };
       },
     );
+
+    // Excluir a própria conta exige a senha, para ninguém fazer isso por engano (ou com o PC de outra pessoa).
+    authed.post<{ Body: { password?: string } }>('/api/me/delete', async (request, reply) => {
+      if (!(await verifyPassword(request.body?.password ?? '', db.findPasswordHash(request.user.id)))) {
+        return reply.code(400).send({ error: 'Senha incorreta.' });
+      }
+      removeAccount(io, request.user.id);
+      return { ok: true };
+    });
+
+    authed.delete<{ Params: { id: string } }>('/api/users/:id', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só o administrador pode remover membros.' });
+      const target = db.findUserById(Number(request.params.id));
+      if (!target) return reply.code(404).send({ error: 'Membro não encontrado.' });
+      if (target.id === request.user.id) {
+        return reply.code(400).send({ error: 'Para sair, use "Excluir minha conta" em Minha conta.' });
+      }
+      removeAccount(io, target.id);
+      return { ok: true };
+    });
+
+    authed.delete<{ Params: { id: string } }>('/api/messages/:id', async (request, reply) => {
+      const message = db.findMessage(Number(request.params.id));
+      if (!message) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      if (message.userId !== request.user.id && !request.user.isAdmin) {
+        return reply.code(403).send({ error: 'Só o autor ou o administrador pode apagar a mensagem.' });
+      }
+      db.deleteMessage(message.id);
+      io.emit('message:deleted', { id: message.id, channelId: message.channelId });
+      return { ok: true };
+    });
 
     authed.get('/api/channels', async () => db.listChannels());
 

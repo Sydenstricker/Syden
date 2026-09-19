@@ -66,7 +66,8 @@ textarea {
 .auth {
   height: 100%;
   display: flex;
-  background: radial-gradient(circle at 25% 20%, #4a1d24 0, #1e1f22 65%);
+  /* Minimalista: fundo escuro liso com um brilho vermelho bem suave no alto, na cor do logo. */
+  background: radial-gradient(ellipse at 50% -10%, rgba(224, 17, 43, 0.14) 0, rgba(30, 31, 34, 0) 55%), #1e1f22;
 }
 
 .auth-panel {
@@ -74,39 +75,33 @@ textarea {
   min-width: 0;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 24px 16px;
   overflow-y: auto;
 }
 
-/* Pôster vertical (2:3) ocupando a altura toda; a largura acompanha para não cortar a imagem. */
-.auth-hero {
-  position: relative;
-  height: 100%;
-  aspect-ratio: 2 / 3;
-  max-width: 50%;
-  flex-shrink: 0;
+.auth-column {
+  width: min(440px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
-.auth-hero img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-strong);
 }
 
-/* Funde a borda esquerda da imagem com o fundo. */
-.auth-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, #1e1f22 0, rgba(30, 31, 34, 0) 18%);
-}
-
-@media (max-width: 900px) {
-  .auth-hero {
-    display: none;
-  }
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .auth-card {
@@ -1354,6 +1349,87 @@ textarea {
   }
 }
 
+/* ---------- Apagar mensagem ---------- */
+
+.message {
+  position: relative;
+}
+
+.message-action {
+  position: absolute;
+  top: -12px;
+  right: 16px;
+  display: none;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  border: 1px solid #1e1f22;
+  border-radius: 6px;
+  background: var(--bg-main);
+  color: var(--text-muted);
+}
+
+.message:hover .message-action,
+.message-action:focus-visible {
+  display: grid;
+}
+
+.message-action:hover {
+  color: #fa777c;
+}
+
+.dialog-quote {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid #4e5058;
+  background: var(--bg-sidebar);
+  border-radius: 4px;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+/* ---------- Excluir conta, links legais ---------- */
+
+.danger-zone {
+  border: 1px solid rgba(218, 55, 60, 0.5);
+}
+
+.danger-zone p {
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.danger-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.settings-legal,
+.auth-legal {
+  margin: 32px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.auth-legal {
+  margin: 0;
+  text-align: center;
+}
+
+.settings-legal a,
+.auth-legal a {
+  color: var(--text-muted);
+}
+
+.settings-legal a:hover,
+.auth-legal a:hover {
+  color: var(--text);
+}
+
 /* ---------- Avatar com foto ---------- */
 
 .avatar img {
@@ -2065,4 +2141,16 @@ textarea {
   .stage-strip .tile {
     width: 140px;
   }
+}
+
+.shortcuts kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid #4e5058;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font-family: inherit;
+  font-size: 12px;
 }

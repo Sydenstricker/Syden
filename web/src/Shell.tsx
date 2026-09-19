@@ -1,18 +1,23 @@
 import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
 import { useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
-import { API_URL, api } from './api';
+import { API_URL, ApiError, api } from './api';
 import { Avatar } from './Avatar';
-import { loadDirectory, syncDirectory } from './directory';
+import { desktopBridge } from './desktop';
+import { loadDirectory, syncDirectory, useDirectory } from './directory';
+import { getSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import { SettingsModal } from './SettingsModal';
-import type { Channel, User, UserRef, VoiceMember } from './types';
+import type { Channel, Message, User, UserRef, VoiceMember } from './types';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
 
-export function Shell({ token, user, onLogout }: { token: string; user: User; onLogout: () => void }) {
+export function Shell({ token, user: loggedUser, onLogout }: { token: string; user: User; onLogout: () => void }) {
+  // Quem é administrador pode mudar com o app aberto (ex.: o admin excluiu a conta e outro assumiu).
+  const { users } = useDirectory();
+  const user: User = { ...loggedUser, isAdmin: users.get(loggedUser.id)?.isAdmin ?? loggedUser.isAdmin };
   const [socket, setSocket] = useState<Socket | null>(null);
   const [online, setOnline] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -20,6 +25,7 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
   const [presence, setPresence] = useState<UserRef[]>([]);
   const [voiceMembers, setVoiceMembers] = useState<VoiceMember[]>([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [showUsage, setShowUsage] = useState(false);
   const voice = useVoice(socket);
   const onLogoutRef = useRef(onLogout);
   onLogoutRef.current = onLogout;
@@ -29,7 +35,16 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
   useEffect(() => {
     const s = io(API_URL, { auth: { token } });
     s.on('connect', () => setOnline(true));
-    s.on('disconnect', () => setOnline(false));
+    s.on('disconnect', (reason) => {
+      setOnline(false);
+      // O servidor só derruba a conexão de propósito quando a conta foi excluída; nos outros casos, reconecta.
+      if (reason === 'io server disconnect') {
+        api('/api/me').then(
+          () => s.connect(),
+          (error) => (error instanceof ApiError && error.status === 401 ? onLogoutRef.current() : s.connect()),
+        );
+      }
+    });
     s.on('connect_error', (error) => {
       setOnline(false);
       if (error.message === 'unauthorized') onLogoutRef.current();
@@ -62,6 +77,52 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
     }, console.error);
   }, []);
 
+  // Notificação do Windows para mensagens novas de outras pessoas, quando o Syden não está à vista
+  // ou a mensagem é de outro canal. Clicar leva direto ao canal.
+  const channelsRef = useRef(channels);
+  channelsRef.current = channels;
+  const selectedIdRef = useRef(selectedId);
+  selectedIdRef.current = selectedId;
+  useEffect(() => {
+    if (!socket) return;
+    const onMessage = (message: Message) => {
+      if (message.author.id !== loggedUser.id) notifyMessage(message);
+    };
+    const notifyMessage = (message: Message) => {
+      if (!getSettings().notifications || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      const lookingAtIt = document.hasFocus() && !document.hidden && selectedIdRef.current === message.channelId;
+      if (lookingAtIt) return;
+      const channel = channelsRef.current.find((c) => c.id === message.channelId);
+      const notification = new Notification(`${message.author.username} em #${channel?.name ?? 'canal'}`, {
+        body: message.content.length > 140 ? `${message.content.slice(0, 140)}…` : message.content,
+        tag: `channel-${message.channelId}`, // várias mensagens seguidas do mesmo canal viram uma notificação só
+      });
+      notification.onclick = () => {
+        desktopBridge?.focus();
+        window.focus();
+        setShowUsage(false);
+        setSelectedId(message.channelId);
+        notification.close();
+      };
+    };
+    socket.on('message:new', onMessage);
+    return () => {
+      socket.off('message:new', onMessage);
+    };
+  }, [socket, loggedUser.id]);
+
+  // Teclas de atalho globais do app de desktop (mudo e ensurdecer), só durante uma chamada.
+  useEffect(
+    () =>
+      desktopBridge?.onShortcut((action) => {
+        const current = voiceRef.current;
+        if (current.channelId === null) return;
+        if (action === 'mute') void current.toggleMute();
+        else void current.toggleDeafen();
+      }),
+    [],
+  );
+
   // O canal aberto foi excluído (por você ou por outra pessoa): volta para o primeiro canal de texto.
   useEffect(() => {
     if (channels.length > 0 && !channels.some((c) => c.id === selectedId)) {
@@ -69,7 +130,6 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
     }
   }, [channels, selectedId]);
 
-  const [showUsage, setShowUsage] = useState(false);
   const selected = showUsage ? undefined : channels.find((c) => c.id === selectedId);
 
   function selectChannel(channel: Channel) {
@@ -104,7 +164,7 @@ export function Shell({ token, user, onLogout }: { token: string; user: User; on
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
-          {selected?.type === 'text' && socket && <TextChannel key={selected.id} channel={selected} socket={socket} />}
+          {selected?.type === 'text' && socket && <TextChannel key={selected.id} channel={selected} socket={socket} user={user} />}
           {selected?.type === 'voice' && (
             <VoiceStage
               channel={selected}

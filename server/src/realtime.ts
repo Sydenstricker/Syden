@@ -51,6 +51,17 @@ export function removeVoiceChannelMembers(io: IOServer, channelId: number) {
   io.emit('voice:state', voiceState());
 }
 
+/** Conta excluída: tira a pessoa das salas de voz e derruba as conexões abertas (o app volta ao login). */
+export function disconnectUser(io: IOServer, userId: number) {
+  const hadVoice = voiceMembers.has(userId);
+  endVoiceSession(userId);
+  const online = onlineSockets.get(userId);
+  onlineSockets.delete(userId);
+  for (const socketId of online?.sockets ?? []) io.sockets.sockets.get(socketId)?.disconnect(true);
+  if (hadVoice) io.emit('voice:state', voiceState());
+  io.emit('presence', onlineUsers());
+}
+
 function onlineUsers(): db.UserRef[] {
   return [...onlineSockets.entries()].map(([id, { username }]) => ({ id, username }));
 }

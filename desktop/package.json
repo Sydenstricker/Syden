@@ -1,9 +1,9 @@
 {
-  "name": "janja",
-  "productName": "Janja",
+  "name": "syden",
+  "productName": "Syden",
   "version": "0.1.2",
   "private": true,
-  "description": "Janja para desktop",
+  "description": "Syden para desktop",
   "main": "src/main.js",
   "devDependencies": {
     "electron": "44.4.3",
@@ -15,7 +15,7 @@
   },
   "build": {
     "appId": "com.janja.app",
-    "productName": "Janja",
+    "productName": "Syden",
     "directories": {
       "output": "release",
       "buildResources": "build"
@@ -36,9 +36,9 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Janja",
-      "uninstallDisplayName": "Janja",
-      "artifactName": "Janja-Setup.${ext}",
+      "shortcutName": "Syden",
+      "uninstallDisplayName": "Syden",
+      "artifactName": "Syden-Setup.${ext}",
       "installerLanguages": [
         "pt_BR",
         "en_US",
@@ -60,5 +60,5 @@
       "icon": "build/icon.png"
     }
   },
-  "author": "Janja"
+  "author": "Syden"
 }
