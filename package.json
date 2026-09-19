@@ -1,5 +1,5 @@
 {
-  "name": "janja",
+  "name": "janja-monorepo",
   "private": true,
   "workspaces": [
     "server",
