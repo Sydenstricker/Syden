@@ -120,6 +120,16 @@ Para publicar:
 Para gerar o instalador localmente, ajuste a URL em `desktop/app.config.json` e rode `npm run dist:desktop`.
 O arquivo sai em `desktop/release/`.
 
+### Instalar pelo navegador (PWA)
+
+O site também se instala como programa: no Edge ou no Chrome aparece **Instalar** na barra de endereço, e a tela
+de login tem o botão **Instalar o Syden**. Vira uma janela própria, com ícone no menu iniciar, sem download de
+instalador e sem o aviso do Windows para programas sem assinatura. Ficam de fora os atalhos globais de microfone,
+o ícone na bandeja e continuar aberto em segundo plano — para isso, o instalador.
+
+O `web/public/sw.js` existe só porque o navegador exige um service worker para oferecer a instalação; ele não
+guarda nada em cache, então ninguém fica preso numa versão antiga.
+
 O instalador não tem assinatura digital, então o Windows mostra "O Windows protegeu o computador" na primeira
 vez. É só clicar em **Mais informações → Executar assim mesmo**. Para remover o aviso, é preciso um certificado
 de assinatura de código, que é pago.

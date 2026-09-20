@@ -1,0 +1,19 @@
+{
+  "name": "Syden",
+  "short_name": "Syden",
+  "description": "Conversas por voz, vídeo e texto com os amigos.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#313338",
+  "theme_color": "#313338",
+  "categories": ["social", "communication"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

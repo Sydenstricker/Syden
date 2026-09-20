@@ -1,11 +1,13 @@
-import { Download } from 'lucide-react';
+import { Download, MonitorDown } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { api } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
+import { installApp, useCanInstall } from './install';
 import { Logo } from './Logo';
 import type { User } from './types';
 
 export function AuthScreen({ onAuthenticated }: { onAuthenticated: (token: string, user: User) => void }) {
+  const canInstall = useCanInstall();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -93,12 +95,19 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: (token: strin
               </a>
             </p>
 
-            {showDesktopDownload && (
+            {(canInstall || showDesktopDownload) && (
               <div className="auth-download">
-                <span>Prefere usar como programa no Windows?</span>
-                <a className="btn-secondary" href={DESKTOP_DOWNLOAD_URL}>
-                  <Download size={18} /> Baixar para Windows
-                </a>
+                <span>Prefere usar como programa?</span>
+                {canInstall && (
+                  <button type="button" className="btn-secondary" onClick={() => void installApp()}>
+                    <MonitorDown size={18} /> Instalar o Syden
+                  </button>
+                )}
+                {showDesktopDownload && (
+                  <a className="btn-secondary" href={DESKTOP_DOWNLOAD_URL}>
+                    <Download size={18} /> Baixar para Windows
+                  </a>
+                )}
               </div>
             )}
           </form>
