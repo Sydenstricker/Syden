@@ -1,10 +1,14 @@
 # O Caddy emite e renova os certificados HTTPS (Let's Encrypt) sozinho.
 # O navegador exige HTTPS/WSS para usar microfone, câmera e compartilhamento de tela.
 
+# O registro de acessos mostra se o pedido de alguém chegou até aqui: sem ele, um problema de rede
+# do lado de quem usa fica indistinguível de um problema do servidor. A rotação de logs está no compose.
 {$API_DOMAIN} {
+	log
 	reverse_proxy localhost:3001
 }
 
 {$LIVEKIT_DOMAIN} {
+	log
 	reverse_proxy localhost:7880
 }
