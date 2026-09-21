@@ -8,11 +8,12 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
-import { Track } from 'livekit-client';
+import { Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
   HeadphoneOff,
   Headphones,
+  Info,
   Maximize,
   Mic,
   MicOff,
@@ -26,7 +27,9 @@ import {
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
+import { QualityAdvisor } from './QualityAdvisor';
 import { IconButton } from './Sidebar';
+import { describeStats, useStreamStats } from './streamStats';
 import type { Channel, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -150,6 +153,38 @@ function Soundboard({ voice, onClose }: { voice: Voice; onClose: () => void }) {
   );
 }
 
+/**
+ * O "i" no canto da transmissão: passando o mouse, mostra em que formato ela está chegando de verdade
+ * (não o que foi escolhido nas configurações, mas o que o navegador conseguiu entregar).
+ */
+function StreamInfoBadge({ publication, local }: { publication: TrackPublication | undefined; local: boolean }) {
+  const [open, setOpen] = useState(false);
+  const stats = useStreamStats(publication, { local });
+  const formato = describeStats(stats);
+
+  return (
+    <div className="stream-info" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button className="stream-info-button" aria-label="Informações da transmissão" onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+        <Info size={16} />
+      </button>
+      {open && (
+        <div className="stream-info-card" role="tooltip">
+          {formato ? (
+            <>
+              <strong>{formato}</strong>
+              <span>{local ? 'é o que você está enviando' : 'é o que está chegando até você'}</span>
+              {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">Seu computador está segurando a qualidade.</span>}
+              {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">Sua internet está segurando a qualidade.</span>}
+            </>
+          ) : (
+            <span>Medindo…</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
   const tracks = useTracks(
     [
@@ -192,6 +227,9 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
         <div className="stage-focus">
           <div className="stage-main" ref={focusRef}>
             {tile(focused, 80)}
+            {focused.source === Track.Source.ScreenShare && (
+              <StreamInfoBadge publication={focused.publication} local={focused.participant.isLocal} />
+            )}
             <button
               className="fullscreen-button"
               title="Tela cheia"
@@ -208,6 +246,8 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
           {tracks.map((ref) => tile(ref, card.avatar))}
         </div>
       )}
+
+      <QualityAdvisor voice={voice} />
 
       <StartAudio label="Clique para ativar o áudio" className="start-audio" />
 

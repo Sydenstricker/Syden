@@ -2515,6 +2515,114 @@ textarea {
   vertical-align: baseline;
 }
 
+/* ---------- Informações e conselho da transmissão ---------- */
+
+.stream-info {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+}
+
+.stream-info-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+.stream-info-card {
+  position: absolute;
+  top: 34px;
+  left: 0;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stream-info-card strong {
+  font-size: 15px;
+  color: var(--text-strong);
+}
+
+.stream-info-warn {
+  color: #faa61a;
+}
+
+.advisor {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(680px, 92%);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.advisor-text {
+  flex: 1;
+}
+
+/* ---------- Lista de pessoas ---------- */
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.member-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-status.live {
+  color: #fa777c;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+.member.offline {
+  opacity: 0.45;
+}
+
 /* ---------- Saúde do servidor ---------- */
 
 .tab-row {

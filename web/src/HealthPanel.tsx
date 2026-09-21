@@ -48,7 +48,7 @@ export function HealthPanel() {
             label="Conversas por voz"
             value={health.livekitOk === false ? 'Fora do ar' : 'Funcionando'}
             status={health.livekitOk === false ? 'critical' : 'good'}
-            note={health.livekitOk === null ? 'primeira checagem em instantes' : 'checado a cada 5 minutos'}
+            note={health.livekitOk === null ? 'primeira checagem em instantes' : 'checado a cada minuto'}
           />
           <HealthTile
             label="Chat e login"
@@ -89,13 +89,31 @@ export function HealthPanel() {
         <h2>Últimas 24 horas</h2>
         {health.samples.length < 2 ? (
           <p className="usage-muted">
-            O histórico começa depois de algumas medições. O servidor tira uma a cada 5 minutos, e elas ficam
+            O histórico começa depois de algumas medições. O servidor tira uma por minuto, e elas ficam
             guardadas por uma semana.
           </p>
         ) : (
           <div className="spark-grid">
             <Sparkline title="Processador" samples={health.samples} pick={(s) => s.cpu} color="#06b6d4" />
             <Sparkline title="Memória" samples={health.samples} pick={(s) => s.memory} color="#8b5cf6" />
+            {health.samples.some((s) => s.networkOut !== null) && (
+              <Sparkline
+                title="Rede enviando"
+                samples={health.samples}
+                pick={(s) => s.networkOut ?? 0}
+                color="#ed4245"
+                format={formatBits}
+              />
+            )}
+            {health.samples.some((s) => s.networkIn !== null) && (
+              <Sparkline
+                title="Rede recebendo"
+                samples={health.samples}
+                pick={(s) => s.networkIn ?? 0}
+                color="#5865f2"
+                format={formatBits}
+              />
+            )}
           </div>
         )}
         <p className="usage-muted small">
@@ -147,11 +165,14 @@ function Sparkline({
   samples,
   pick,
   color,
+  format = formatPercent,
 }: {
   title: string;
   samples: HealthSample[];
   pick: (sample: HealthSample) => number;
   color: string;
+  /** Como escrever o valor: porcentagem (processador, memória) ou velocidade (rede). */
+  format?: (value: number) => string;
 }) {
   const [hover, setHover] = useState<HealthSample | null>(null);
   const width = 100;
@@ -166,10 +187,10 @@ function Sparkline({
   return (
     <figure className="spark">
       <figcaption>
-        {title} <span className="spark-now">{formatPercent(hover ? pick(hover) : last)}</span>
+        {title} <span className="spark-now">{format(hover ? pick(hover) : last)}</span>
         {hover && <span className="spark-when">{formatTime(hover.at)}</span>}
       </figcaption>
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={`${title}: pico de ${formatPercent(max)}`}>
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={`${title}: pico de ${format(max)}`}>
         <polyline points={points} fill="none" stroke={color} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
       </svg>
       <div
@@ -182,7 +203,7 @@ function Sparkline({
         }}
       />
       <span className="spark-scale">
-        pico {formatPercent(max)} · {formatTime(samples[0].at)} até agora
+        pico {format(max)} · {formatTime(samples[0].at)} até agora
       </span>
     </figure>
   );
@@ -207,6 +228,12 @@ function EventRow({ event }: { event: HealthEvent }) {
       </span>
     </li>
   );
+}
+
+function formatBits(bitsPerSecond: number) {
+  if (bitsPerSecond >= 1e9) return `${(bitsPerSecond / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} Gbps`;
+  if (bitsPerSecond >= 1e6) return `${(bitsPerSecond / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} Mbps`;
+  return `${Math.round(bitsPerSecond / 1e3)} kbps`;
 }
 
 function formatPercent(fraction: number) {

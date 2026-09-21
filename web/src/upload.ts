@@ -46,6 +46,32 @@ export async function prepareImage(file: File, options: { size: number; fit: 'co
   return readAsDataUrl(blob);
 }
 
+/**
+ * Imagem que veio de um Ctrl+C: tanto de um evento de colar quanto do botão "Colar imagem", que lê a área
+ * de transferência direto (o navegador pede permissão na primeira vez).
+ */
+export function imageFromClipboardEvent(event: ClipboardEvent): File | null {
+  for (const item of event.clipboardData?.items ?? []) {
+    if (item.type.startsWith('image/')) return item.getAsFile();
+  }
+  return null;
+}
+
+export async function imageFromClipboard(): Promise<File> {
+  if (!navigator.clipboard?.read) throw new Error('Este navegador não deixa colar imagem por botão. Use Ctrl+V.');
+  const items = await navigator.clipboard.read().catch(() => {
+    throw new Error('Não foi possível ler a área de transferência. Autorize o acesso ou use Ctrl+V.');
+  });
+  for (const item of items) {
+    const type = item.types.find((t) => t.startsWith('image/'));
+    if (type) {
+      const blob = await item.getType(type);
+      return new File([blob], 'colado.png', { type });
+    }
+  }
+  throw new Error('Não há imagem copiada. Copie uma imagem (Ctrl+C) e tente de novo.');
+}
+
 export const MAX_SOUND_SECONDS = 7;
 
 export async function prepareSound(file: File, maxBytes: number) {

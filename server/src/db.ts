@@ -148,7 +148,7 @@ db.exec(`
     bytes INTEGER NOT NULL
   );
 
-  -- Saúde do servidor: uma amostra a cada 5 minutos, guardadas por uma semana.
+  -- Saúde do servidor: uma amostra por minuto, guardadas por uma semana.
   CREATE TABLE IF NOT EXISTS health_samples (
     at         TEXT PRIMARY KEY,
     cpu        REAL NOT NULL,
@@ -156,7 +156,9 @@ db.exec(`
     disk_free  INTEGER,
     disk_total INTEGER,
     livekit_ok INTEGER NOT NULL,
-    errors     INTEGER NOT NULL DEFAULT 0
+    errors     INTEGER NOT NULL DEFAULT 0,
+    net_in     INTEGER,
+    net_out    INTEGER
   );
 
   -- Acontecimentos dignos de nota: reinícios, voz fora do ar, rajadas de erro.
@@ -217,6 +219,9 @@ addColumnIfMissing('users', 'avatar_version', 'INTEGER');
 addColumnIfMissing('users', 'is_owner', 'INTEGER NOT NULL DEFAULT 0');
 // Imagem da comunidade: chegou depois das comunidades.
 addColumnIfMissing('communities', 'icon_version', 'INTEGER');
+// Velocidade de rede: chegou depois do painel de saúde.
+addColumnIfMissing('health_samples', 'net_in', 'INTEGER');
+addColumnIfMissing('health_samples', 'net_out', 'INTEGER');
 
 // O emoji ":f:" do primeiro pacote tinha 1 letra, abaixo do mínimo de 2, e não funcionava nas mensagens.
 if (!db.prepare("SELECT 1 FROM emojis WHERE name = 'pressf'").get()) {
@@ -755,6 +760,9 @@ export interface HealthSample {
   diskTotal: number | null;
   livekitOk: boolean;
   errors: number;
+  /** Velocidade de rede no intervalo, em bits por segundo (null fora do Linux). */
+  networkIn: number | null;
+  networkOut: number | null;
 }
 
 export interface HealthEvent {
@@ -765,15 +773,26 @@ export interface HealthEvent {
 
 export function addHealthSample(sample: HealthSample) {
   db.prepare(
-    `INSERT INTO health_samples (at, cpu, memory, disk_free, disk_total, livekit_ok, errors)
-     VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(at) DO NOTHING`,
-  ).run(sample.at, sample.cpu, sample.memory, sample.diskFree, sample.diskTotal, sample.livekitOk ? 1 : 0, sample.errors);
+    `INSERT INTO health_samples (at, cpu, memory, disk_free, disk_total, livekit_ok, errors, net_in, net_out)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(at) DO NOTHING`,
+  ).run(
+    sample.at,
+    sample.cpu,
+    sample.memory,
+    sample.diskFree,
+    sample.diskTotal,
+    sample.livekitOk ? 1 : 0,
+    sample.errors,
+    sample.networkIn,
+    sample.networkOut,
+  );
 }
 
 export function listHealthSamples(since: string): HealthSample[] {
   const rows = db
     .prepare(
-      `SELECT at, cpu, memory, disk_free AS diskFree, disk_total AS diskTotal, livekit_ok AS livekitOk, errors
+      `SELECT at, cpu, memory, disk_free AS diskFree, disk_total AS diskTotal, livekit_ok AS livekitOk, errors,
+              net_in AS networkIn, net_out AS networkOut
        FROM health_samples WHERE at >= ? ORDER BY at`,
     )
     .all(since) as unknown as (Omit<HealthSample, 'livekitOk'> & { livekitOk: number })[];

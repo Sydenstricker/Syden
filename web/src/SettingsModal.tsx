@@ -4,6 +4,7 @@ import {
   Bell,
   Check,
   CircleUser,
+  ClipboardPaste,
   Hash,
   LogOut,
   Mic,
@@ -31,7 +32,7 @@ import { ImageCropper } from './ImageCropper';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
-import { MAX_SOUND_SECONDS, emojiNameFromFile, prepareImage, prepareSound } from './upload';
+import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
 
 type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emojis' | 'soundboard';
@@ -441,6 +442,7 @@ function CommunityIconEditor({ community, onChanged }: { community: Community; o
           <FilePicker accept="image/png,image/jpeg,image/webp" disabled={busy} onFile={setCropping}>
             {busy ? 'Enviando…' : community.iconVersion === null ? 'Enviar imagem' : 'Trocar imagem'}
           </FilePicker>
+          <PasteImage onImage={setCropping} onError={setError} />
           {community.iconVersion !== null && (
             <button className="link-button" onClick={remove} disabled={busy}>
               Remover
@@ -611,6 +613,7 @@ function AvatarEditor({ user }: { user: User }) {
           <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={setCropping}>
             {busy ? 'Enviando…' : hasAvatar ? 'Trocar avatar' : 'Enviar avatar'}
           </FilePicker>
+          <PasteImage onImage={setCropping} onError={setError} />
           {hasAvatar && (
             <button className="link-button" onClick={remove} disabled={busy}>
               Remover
@@ -623,6 +626,34 @@ function AvatarEditor({ user }: { user: User }) {
         <ImageCropper file={cropping} title="Ajustar o avatar" shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
       )}
     </>
+  );
+}
+
+/**
+ * Botão "Colar imagem" ao lado do de escolher arquivo, e Ctrl+V funcionando na tela toda: serve para quem
+ * copiou uma imagem da internet ou recortou algo na tela, sem precisar salvar arquivo antes.
+ */
+function PasteImage({ onImage, onError }: { onImage: (file: File) => void; onError: (message: string) => void }) {
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      const file = imageFromClipboardEvent(event);
+      if (file) {
+        event.preventDefault();
+        onImage(file);
+      }
+    };
+    window.addEventListener('paste', onPaste);
+    return () => window.removeEventListener('paste', onPaste);
+  }, [onImage]);
+
+  return (
+    <button
+      type="button"
+      className="link-button"
+      onClick={() => imageFromClipboard().then(onImage, (e: Error) => onError(e.message))}
+    >
+      <ClipboardPaste size={14} /> Colar imagem
+    </button>
   );
 }
 

@@ -85,6 +85,9 @@ export interface HealthSample {
   diskTotal: number | null;
   livekitOk: boolean;
   errors: number;
+  /** Velocidade de rede no intervalo, em bits por segundo. */
+  networkIn: number | null;
+  networkOut: number | null;
 }
 
 export interface HealthEvent {

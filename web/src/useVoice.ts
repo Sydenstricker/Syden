@@ -36,6 +36,17 @@ const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
   smooth: new VideoPreset(1920, 1080, 8_000_000, 60), // jogos; até 8 Mbps
 };
 
+/**
+ * Quando falta banda ou processador, o navegador precisa escolher o que sacrificar. Em jogo, imagem travada
+ * é pior que imagem menos nítida, então mandamos ele manter os quadros por segundo; em apresentação de slides
+ * ou planilha, o contrário: melhor nitidez e menos quadros.
+ */
+const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; degradation: RTCDegradationPreference }> = {
+  light: { contentHint: 'detail', degradation: 'maintain-resolution' },
+  standard: { contentHint: 'detail', degradation: 'balanced' },
+  smooth: { contentHint: 'motion', degradation: 'maintain-framerate' },
+};
+
 const SOUNDBOARD_TOPIC = 'soundboard';
 const SEND_COOLDOWN_MS = 1500;
 const RECEIVE_COOLDOWN_MS = 1000;
@@ -257,6 +268,33 @@ export function useVoice(socket: Socket | null) {
     [room, connecting],
   );
 
+  /**
+   * Troca a qualidade da transmissão em andamento sem pedir para escolher a tela de novo: mexe direto nos
+   * parâmetros de envio (quadros por segundo e taxa) do que já está sendo enviado.
+   */
+  const setScreenQuality = useCallback(
+    async (quality: ScreenQuality) => {
+      updateSettings({ screenQuality: quality });
+      const track = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
+      const sender = track?.sender;
+      if (!track || !sender) return;
+
+      const preset = SCREEN_PRESETS[quality];
+      const hints = SCREEN_HINTS[quality];
+      track.mediaStreamTrack.contentHint = hints.contentHint;
+      const parameters = sender.getParameters();
+      parameters.degradationPreference = hints.degradation;
+      for (const encoding of parameters.encodings) {
+        // Com camadas, as menores mantêm a proporção de taxa que já tinham.
+        const share = encoding.maxBitrate ? encoding.maxBitrate / Math.max(...parameters.encodings.map((e) => e.maxBitrate ?? 1)) : 1;
+        encoding.maxFramerate = preset.encoding.maxFramerate;
+        encoding.maxBitrate = Math.round(preset.encoding.maxBitrate * share);
+      }
+      await sender.setParameters(parameters).catch(console.error);
+    },
+    [room],
+  );
+
   const leave = useCallback(() => {
     if (channelRef.current !== null) sounds.selfLeave();
     void room.disconnect();
@@ -304,11 +342,14 @@ export function useVoice(socket: Socket | null) {
 
   const toggleScreen = useCallback(async () => {
     const lp = room.localParticipant;
-    const preset = SCREEN_PRESETS[getSettings().screenQuality];
+    const quality = getSettings().screenQuality;
+    const preset = SCREEN_PRESETS[quality];
+    const hints = SCREEN_HINTS[quality];
     try {
       await lp.setScreenShareEnabled(
         !lp.isScreenShareEnabled,
         {
+          contentHint: hints.contentHint,
           audio: true, // áudio da aba/sistema, quando o navegador suporta
           systemAudio: 'include',
           selfBrowserSurface: 'exclude',
@@ -319,7 +360,7 @@ export function useVoice(socket: Socket | null) {
           surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
           resolution: preset.resolution,
         },
-        { screenShareEncoding: preset.encoding },
+        { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
       );
     } catch (e) {
       // Fechar o seletor de tela sem escolher nada não é erro.
@@ -383,6 +424,7 @@ export function useVoice(socket: Socket | null) {
     toggleDeafen,
     toggleCamera,
     toggleScreen,
+    setScreenQuality,
     switchDevice,
     setAudioProcessing,
     recentSounds,

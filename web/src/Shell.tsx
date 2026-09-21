@@ -7,6 +7,7 @@ import { CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
 import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
+import { MemberList } from './MemberList';
 import { getSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
@@ -272,16 +273,7 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
           {community && !selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
         </main>
         {selected?.type === 'text' && (
-          <aside className="members">
-            {/* Só quem participa desta comunidade: não dá para espiar quem está em outra. */}
-            <h3>Online — {onlineHere.length}</h3>
-            {onlineHere.map((p) => (
-              <div key={p.id} className="member">
-                <Avatar name={p.username} userId={p.id} online />
-                <span>{p.username}</span>
-              </div>
-            ))}
-          </aside>
+          <MemberList online={onlineHere} voiceMembers={voiceMembers} channels={channels} />
         )}
       </div>
       {settingsOpen && (

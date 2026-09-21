@@ -8,20 +8,27 @@ const SAMPLE_INTERVAL_MS = 60_000;
 // Interfaces internas (loopback, Docker, VPN) não são tráfego com a internet.
 const IGNORED_INTERFACES = /^(lo|docker\d*|br-|veth|virbr|tun|tailscale|wg)/;
 
-/** Soma dos bytes transmitidos pelas interfaces de rede externas, ou null fora do Linux. */
-function readTransmittedBytes(): number | null {
+/** Bytes recebidos e transmitidos pelas interfaces de rede externas, ou null fora do Linux. */
+export function readInterfaceBytes(): { received: number; sent: number } | null {
   try {
-    let total = 0;
-    // Formato: "  eth0: <8 campos de recepção> <bytes transmitidos> ..."
+    let received = 0;
+    let sent = 0;
+    // Formato: "  eth0: <bytes recebidos> <7 campos> <bytes transmitidos> ..."
     for (const line of readFileSync('/proc/net/dev', 'utf8').split('\n').slice(2)) {
       const [name, fields] = line.split(':');
       if (!fields || IGNORED_INTERFACES.test(name.trim())) continue;
-      total += Number(fields.trim().split(/\s+/)[8]);
+      const columns = fields.trim().split(/\s+/);
+      received += Number(columns[0]);
+      sent += Number(columns[8]);
     }
-    return total;
+    return { received, sent };
   } catch {
     return null;
   }
+}
+
+function readTransmittedBytes(): number | null {
+  return readInterfaceBytes()?.sent ?? null;
 }
 
 function readBootId(): string | null {

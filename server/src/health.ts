@@ -2,19 +2,35 @@ import { statfsSync } from 'node:fs';
 import { cpus, freemem, loadavg, totalmem } from 'node:os';
 import { config } from './config.js';
 import * as db from './db.js';
+import { readInterfaceBytes } from './traffic.js';
 
-// Saúde do servidor: uma amostra a cada 5 minutos (processador, memória, disco, servidor de voz e erros)
+// Saúde do servidor: uma amostra por minuto (processador, memória, disco, rede, servidor de voz e erros)
 // e um diário de acontecimentos (reinícios, voz fora do ar, rajadas de erro). Serve para o administrador
 // saber se houve instabilidade sem precisar abrir o terminal.
 
-const SAMPLE_MS = 5 * 60_000;
+const SAMPLE_MS = 60_000;
 const KEEP_DAYS = 7;
-/** A partir daqui a amostra vira aviso no diário: 20 erros em 5 minutos não é coisa normal. */
+/** A partir daqui a amostra vira aviso no diário: 20 erros em um minuto não é coisa normal. */
 const ERROR_BURST = 20;
 
 const startedAt = new Date();
 let errorsSinceSample = 0;
 let livekitOk: boolean | null = null;
+/** Contadores de rede da amostra anterior, para calcular a velocidade entre uma e outra. */
+let lastNetwork: { at: number; received: number; sent: number } | null = null;
+
+/** Velocidade de rede desde a última amostra, em bits por segundo. */
+function networkRate() {
+  const counters = readInterfaceBytes();
+  const now = Date.now();
+  if (!counters) return { in: null, out: null };
+  const previous = lastNetwork;
+  lastNetwork = { at: now, ...counters };
+  if (!previous || now <= previous.at) return { in: null, out: null };
+  const seconds = (now - previous.at) / 1000;
+  const rate = (current: number, before: number) => (current >= before ? Math.round(((current - before) * 8) / seconds) : null);
+  return { in: rate(counters.received, previous.received), out: rate(counters.sent, previous.sent) };
+}
 
 /** Contabiliza uma resposta com erro do servidor (5xx). */
 export function countServerError() {
@@ -56,6 +72,7 @@ async function sample() {
   const wasOk = livekitOk;
   livekitOk = await checkLivekit();
   const space = disk();
+  const network = networkRate();
 
   db.addHealthSample({
     at: new Date().toISOString(),
@@ -65,13 +82,15 @@ async function sample() {
     diskTotal: space?.total ?? null,
     livekitOk,
     errors,
+    networkIn: network.in,
+    networkOut: network.out,
   });
 
   if (wasOk !== null && wasOk !== livekitOk) {
     db.addHealthEvent(livekitOk ? 'livekit_up' : 'livekit_down', livekitOk ? 'Servidor de voz voltou.' : 'Servidor de voz parou de responder.');
   }
   if (errors >= ERROR_BURST) {
-    db.addHealthEvent('errors', `${errors} erros do servidor em 5 minutos.`);
+    db.addHealthEvent('errors', `${errors} erros do servidor em um minuto.`);
   }
   db.pruneHealth(new Date(Date.now() - KEEP_DAYS * 86_400_000).toISOString());
 }
