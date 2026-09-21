@@ -6,6 +6,21 @@ import type { Traffic, UsageSummary, VoiceMember } from './types';
 const REFRESH_MS = 60_000;
 // Tela 1080p30: até 5 Mbps ≈ 2,25 GB por hora para cada pessoa assistindo (telas paradas gastam bem menos).
 const SCREEN_GB_PER_VIEWER_HOUR = 2.25;
+// Voz: ~48 kbps por pessoa ouvindo ≈ 0,02 GB por hora. É o que faz a tela pesar ~100 vezes mais.
+const VOICE_GB_PER_LISTENER_HOUR = 0.02;
+
+/**
+ * Divide o tráfego medido entre voz e tela. O servidor mede o total de bytes que saíram, mas não sabe dizer
+ * quanto foi de cada coisa; a divisão usa o tempo de cada atividade e o peso típico de cada uma.
+ */
+function splitTraffic(voiceSeconds: number, screenSeconds: number, totalBytes: number) {
+  const voiceWeight = (voiceSeconds / 3600) * VOICE_GB_PER_LISTENER_HOUR;
+  const screenWeight = (screenSeconds / 3600) * SCREEN_GB_PER_VIEWER_HOUR;
+  const total = voiceWeight + screenWeight;
+  if (total === 0) return { voiceBytes: 0, screenBytes: 0, screenShare: 0 };
+  const screenShare = screenWeight / total;
+  return { voiceBytes: totalBytes * (1 - screenShare), screenBytes: totalBytes * screenShare, screenShare };
+}
 
 export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }) {
   const [usage, setUsage] = useState<UsageSummary | null>(null);
@@ -55,11 +70,14 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
             <section className="usage-card">
               <h2>Tráfego de saída este mês</h2>
               <TrafficPanel traffic={usage.traffic} monthStart={usage.monthStart} />
+              {usage.traffic.status === 'ok' && (
+                <SplitPanel voiceSeconds={totalVoice} screenSeconds={totalScreen} totalBytes={usage.traffic.outgoingBytes} />
+              )}
             </section>
 
             <div className="usage-kpis">
-              <StatTile label="Horas em chamada" value={formatDuration(totalVoice)} note="somando todos" />
-              <StatTile label="Horas compartilhando tela" value={formatDuration(totalScreen)} note="somando todos" />
+              <StatTile label="Horas em chamada" value={formatDuration(totalVoice)} note="somando todos" kind="voice" />
+              <StatTile label="Horas compartilhando tela" value={formatDuration(totalScreen)} note="somando todos" kind="screen" />
               <StatTile
                 label="Em chamada agora"
                 value={String(inCall)}
@@ -76,9 +94,11 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
                   <thead>
                     <tr>
                       <th scope="col">Pessoa</th>
-                      <th scope="col">Em chamada</th>
-                      <th scope="col" className="num">
-                        Compartilhando tela
+                      <th scope="col">
+                        <span className="legend-dot voice" aria-hidden="true" /> Em chamada
+                      </th>
+                      <th scope="col">
+                        <span className="legend-dot screen" aria-hidden="true" /> Compartilhando tela
                       </th>
                     </tr>
                   </thead>
@@ -89,12 +109,20 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
                         <td>
                           <div className="usage-bar-cell">
                             <div className="usage-bar-track">
-                              <span className="usage-bar" style={{ width: `${(u.voiceSeconds / maxVoice) * 100}%` }} />
+                              <span className="usage-bar voice" style={{ width: `${(u.voiceSeconds / maxVoice) * 100}%` }} />
                             </div>
                             <span className="num">{formatDuration(u.voiceSeconds)}</span>
                           </div>
                         </td>
-                        <td className="num">{u.screenSeconds > 0 ? formatDuration(u.screenSeconds) : '—'}</td>
+                        <td>
+                          {/* Na mesma escala da coluna do lado: dá para ver de relance quanto do tempo virou transmissão. */}
+                          <div className="usage-bar-cell">
+                            <div className="usage-bar-track">
+                              <span className="usage-bar screen" style={{ width: `${(u.screenSeconds / maxVoice) * 100}%` }} />
+                            </div>
+                            <span className="num">{u.screenSeconds > 0 ? formatDuration(u.screenSeconds) : '—'}</span>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -155,10 +183,49 @@ function TrafficPanel({ traffic, monthStart }: { traffic: Traffic; monthStart: s
   );
 }
 
-function StatTile({ label, value, note }: { label: string; value: string; note?: string }) {
+/** Quanto do tráfego foi voz e quanto foi tela, em cores: azul para a voz, vermelho para a tela. */
+function SplitPanel({
+  voiceSeconds,
+  screenSeconds,
+  totalBytes,
+}: {
+  voiceSeconds: number;
+  screenSeconds: number;
+  totalBytes: number;
+}) {
+  const { voiceBytes, screenBytes, screenShare } = splitTraffic(voiceSeconds, screenSeconds, totalBytes);
+  if (totalBytes === 0 || voiceSeconds + screenSeconds === 0) return null;
+
   return (
-    <div className="stat-tile">
-      <span className="stat-label">{label}</span>
+    <div className="usage-split">
+      <div className="usage-split-bar" role="img" aria-label={`${formatPercent(1 - screenShare)} de voz e ${formatPercent(screenShare)} de tela`}>
+        <span className="voice" style={{ width: `${(1 - screenShare) * 100}%` }} />
+        <span className="screen" style={{ width: `${screenShare * 100}%` }} />
+      </div>
+      <div className="usage-split-legend">
+        <span>
+          <span className="legend-dot voice" aria-hidden="true" /> Voz: {formatBytes(voiceBytes)} · {formatDuration(voiceSeconds)}
+        </span>
+        <span>
+          <span className="legend-dot screen" aria-hidden="true" /> Tela: {formatBytes(screenBytes)} ·{' '}
+          {formatDuration(screenSeconds)}
+        </span>
+      </div>
+      <p className="usage-muted small">
+        A divisão é uma estimativa: o servidor mede o total que saiu, e aqui ele é repartido pelo tempo de cada
+        atividade e pelo peso de cada uma (uma hora de tela pesa cerca de cem horas de voz).
+      </p>
+    </div>
+  );
+}
+
+function StatTile({ label, value, note, kind }: { label: string; value: string; note?: string; kind?: 'voice' | 'screen' }) {
+  return (
+    <div className={`stat-tile${kind ? ` ${kind}` : ''}`}>
+      <span className="stat-label">
+        {kind && <span className={`legend-dot ${kind}`} aria-hidden="true" />}
+        {label}
+      </span>
       <span className="stat-value">{value}</span>
       {note && <span className="stat-note">{note}</span>}
     </div>

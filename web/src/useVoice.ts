@@ -240,7 +240,9 @@ export function useVoice(socket: Socket | null) {
         sounds.selfJoin();
       } catch (e) {
         console.error(e);
-        setError('Não foi possível conectar à sala de voz.');
+        // Causa mais comum: bloqueador de anúncios ou antivírus derrubando a conexão com o servidor de voz,
+        // que fica num endereço gratuito (duckdns.org) presente em várias listas de bloqueio.
+        setError('Não foi possível conectar à sala de voz. Se você usa bloqueador de anúncios (uBlock, AdGuard), antivírus com proteção web ou VPN, desative para este site e tente de novo.');
         setConnecting(false);
         return;
       }

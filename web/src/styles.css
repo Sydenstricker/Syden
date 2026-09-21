@@ -697,6 +697,12 @@ textarea {
   padding: 0 16px;
 }
 
+.live-preview-hint {
+  display: block;
+  margin-top: 3px;
+  color: var(--text);
+}
+
 .live-preview-caption {
   padding: 8px 10px;
   font-size: 12px;
@@ -2481,6 +2487,60 @@ textarea {
   min-width: 4px;
   border-radius: 0 4px 4px 0;
   background: var(--viz-accent);
+}
+
+/* Duas cores no painel inteiro: azul é voz, vermelho é tela compartilhada. */
+.usage-bar.voice,
+.usage-split-bar .voice,
+.legend-dot.voice {
+  background: #5865f2;
+}
+
+.usage-bar.screen,
+.usage-split-bar .screen,
+.legend-dot.screen {
+  background: #ed4245;
+}
+
+.usage-bar.screen[style*='width: 0'] {
+  min-width: 0;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: baseline;
+}
+
+.usage-split {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #3f4147;
+}
+
+.usage-split-bar {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-input, #1e1f22);
+}
+
+.usage-split-bar span {
+  display: block;
+  height: 100%;
+}
+
+.usage-split-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text);
 }
 
 .usage-bar-cell .num {

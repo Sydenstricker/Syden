@@ -403,6 +403,31 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true };
     });
 
+    /**
+     * Token só para espiar: entra na sala invisível, sem publicar nada, para mostrar a prévia da tela de quem
+     * está transmitindo antes de a pessoa decidir entrar. Ninguém na sala vê quem está espiando.
+     */
+    authed.post<{ Params: { id: string } }>('/api/channels/:id/peek-token', async (request, reply) => {
+      const channel = channelAccess(request, reply, false);
+      if (!channel) return reply;
+      if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
+
+      const token = new AccessToken(config.livekit.apiKey, config.livekit.apiSecret, {
+        identity: `peek-${request.user.id}`,
+        name: request.user.username,
+        ttl: '10m',
+      });
+      token.addGrant({
+        room: voiceRoomName(channel.id),
+        roomJoin: true,
+        canPublish: false,
+        canPublishData: false,
+        canSubscribe: true,
+        hidden: true,
+      });
+      return { url: config.livekit.url, token: await token.toJwt() };
+    });
+
     // Emite o token que autoriza o navegador a entrar na sala do LiveKit correspondente ao canal de voz.
     authed.post<{ Params: { id: string } }>('/api/channels/:id/voice-token', async (request, reply) => {
       const channel = channelAccess(request, reply, false);
