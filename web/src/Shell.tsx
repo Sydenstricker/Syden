@@ -176,8 +176,12 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
       const lookingAtIt = here && document.hasFocus() && !document.hidden && selectedIdRef.current === message.channelId;
       if (lookingAtIt) return;
       const channel = here ? channelsRef.current.find((c) => c.id === message.channelId) : undefined;
+      // Mensagem sem texto (só arquivo ou enquete) precisa de uma descrição na notificação.
+      const text =
+        message.content ||
+        (message.poll ? `Enquete: ${message.poll.question}` : message.attachments.length > 0 ? 'Mandou um arquivo' : '');
       const notification = new Notification(`${message.author.username} em #${channel?.name ?? 'canal'}`, {
-        body: message.content.length > 140 ? `${message.content.slice(0, 140)}…` : message.content,
+        body: text.length > 140 ? `${text.slice(0, 140)}…` : text,
         tag: `channel-${message.channelId}`, // várias mensagens seguidas do mesmo canal viram uma notificação só
       });
       notification.onclick = () => {

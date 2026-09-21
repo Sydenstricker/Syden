@@ -15,6 +15,7 @@ import {
   HeadphoneOff,
   Headphones,
   Info,
+  LayoutGrid,
   Maximize,
   Mic,
   MicOff,
@@ -26,7 +27,7 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import { QualityAdvisor } from './QualityAdvisor';
@@ -258,6 +259,29 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
   );
 }
 
+/**
+ * Um quadro grande da tela (o que está em foco, ou cada uma quando a tela está dividida): o vídeo,
+ * os controles da transmissão e o botão de tela cheia deste quadro.
+ */
+function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPlaceholder; voice: Voice; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <div className="stage-main" ref={ref}>
+      {children}
+      {trackRef.source === Track.Source.ScreenShare && (
+        <div className="stream-controls">
+          <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
+          <StreamAudio voice={voice} publisher={trackRef.participant} />
+        </div>
+      )}
+      <button className="fullscreen-button" title="Tela cheia" onClick={() => void ref.current?.requestFullscreen()}>
+        <Maximize size={18} />
+      </button>
+    </div>
+  );
+}
+
 function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
   const tracks = useTracks(
     [
@@ -267,17 +291,29 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
     { onlySubscribed: false },
   );
   const [pinned, setPinned] = useState<string | null>(null);
+  const [split, setSplit] = useState(false);
   const [soundboardOpen, setSoundboardOpen] = useState(false);
-  const focusRef = useRef<HTMLDivElement>(null);
+
+  const screens = tracks.filter((t) => t.source === Track.Source.ScreenShare);
+  // Só faz sentido dividir a tela quando há mais de uma transmissão.
+  const splitting = split && screens.length > 1;
 
   // Foco: o que o usuário fixou; senão, a primeira tela compartilhada (como o Discord faz).
-  const focused =
-    tracks.find((t) => trackKey(t) === pinned) ?? tracks.find((t) => t.source === Track.Source.ScreenShare);
-  const others = focused ? tracks.filter((t) => t !== focused) : tracks;
+  const focused = splitting
+    ? undefined
+    : (tracks.find((t) => trackKey(t) === pinned) ?? tracks.find((t) => t.source === Track.Source.ScreenShare));
+  const others = splitting ? tracks.filter((t) => t.source !== Track.Source.ScreenShare) : focused ? tracks.filter((t) => t !== focused) : tracks;
   const card = cardSize(tracks.length);
 
-  const togglePin = (ref: TrackReferenceOrPlaceholder) =>
+  /** Clicar num quadro fixa ou solta o foco; no modo dividido, volta para o foco naquela tela. */
+  const togglePin = (ref: TrackReferenceOrPlaceholder) => {
+    if (splitting) {
+      setSplit(false);
+      setPinned(trackKey(ref));
+      return;
+    }
     setPinned(focused && trackKey(focused) === trackKey(ref) ? null : trackKey(ref));
+  };
 
   const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number) => (
     <div key={trackKey(ref)} className="tile" onClick={() => togglePin(ref)}>
@@ -296,24 +332,23 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
 
   return (
     <div className="stage" data-lk-theme="default">
-      {focused ? (
+      {splitting ? (
+        // Todas as transmissões do mesmo tamanho, lado a lado.
         <div className="stage-focus">
-          <div className="stage-main" ref={focusRef}>
-            {tile(focused, 80)}
-            {focused.source === Track.Source.ScreenShare && (
-              <div className="stream-controls">
-                <StreamInfoBadge publication={focused.publication} local={focused.participant.isLocal} />
-                <StreamAudio voice={voice} publisher={focused.participant} />
-              </div>
-            )}
-            <button
-              className="fullscreen-button"
-              title="Tela cheia"
-              onClick={() => void focusRef.current?.requestFullscreen()}
-            >
-              <Maximize size={18} />
-            </button>
+          <div className="stage-split">
+            {screens.map((ref) => (
+              <FocusPane key={trackKey(ref)} trackRef={ref} voice={voice}>
+                {tile(ref, 80)}
+              </FocusPane>
+            ))}
           </div>
+          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48))}</div>}
+        </div>
+      ) : focused ? (
+        <div className="stage-focus">
+          <FocusPane trackRef={focused} voice={voice}>
+            {tile(focused, 80)}
+          </FocusPane>
           {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48))}</div>}
         </div>
       ) : (
@@ -348,6 +383,15 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
         >
           {voice.media.screen ? <MonitorOff /> : <Monitor />}
         </IconButton>
+        {screens.length > 1 && (
+          <IconButton
+            label={split ? 'Focar em uma transmissão' : `Ver as ${screens.length} transmissões lado a lado`}
+            active={split}
+            onClick={() => setSplit(!split)}
+          >
+            <LayoutGrid />
+          </IconButton>
+        )}
         <div className="soundboard-anchor">
           <IconButton label="Soundboard" active={soundboardOpen} onClick={() => setSoundboardOpen(!soundboardOpen)}>
             <AudioLines />

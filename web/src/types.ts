@@ -53,12 +53,57 @@ export interface Channel {
   createdBy: number | null;
 }
 
+/** Arquivo mandado junto com uma mensagem (imagem, vídeo, áudio ou qualquer outro). */
+export interface Attachment {
+  id: number;
+  /** Parte secreta do endereço do arquivo: sem ela o arquivo não abre. */
+  key: string;
+  name: string;
+  mime: string;
+  size: number;
+  width: number | null;
+  height: number | null;
+}
+
+export interface PollOption {
+  id: number;
+  text: string;
+  votes: number;
+  /** Se você votou nesta opção. */
+  mine: boolean;
+}
+
+export interface Poll {
+  id: number;
+  question: string;
+  multiple: boolean;
+  closed: boolean;
+  options: PollOption[];
+  /** Quantas pessoas votaram. */
+  voters: number;
+}
+
+/** Um tópico pendurado numa mensagem: conversa à parte, sem atravessar o canal. */
+export interface ThreadSummary {
+  id: number;
+  channelId: number;
+  parentMessageId: number;
+  title: string;
+  replyCount: number;
+  lastAt: string | null;
+}
+
 export interface Message {
   id: number;
   channelId: number;
   content: string;
   createdAt: string;
   author: UserRef;
+  /** null quando a mensagem está no canal; o id do tópico quando é resposta de um. */
+  threadId: number | null;
+  attachments: Attachment[];
+  poll: Poll | null;
+  thread: ThreadSummary | null;
 }
 
 export interface VoiceMember {

@@ -94,6 +94,93 @@ export async function prepareSound(file: File, maxBytes: number) {
   return readAsDataUrl(file);
 }
 
+const MB = 1024 * KB;
+/** O mesmo teto do servidor. */
+export const MAX_ATTACHMENT_BYTES = 8 * MB;
+/** Acima disso a imagem é reduzida antes de subir: ninguém precisa de 6000 pixels numa conversa. */
+const MAX_IMAGE_SIDE = 1920;
+
+export interface PreparedFile {
+  name: string;
+  /** O arquivo em data URL, pronto para ir no JSON. */
+  data: string;
+  size: number;
+  mime: string;
+  width: number | null;
+  height: number | null;
+}
+
+export function formatBytes(bytes: number) {
+  if (bytes >= MB) return `${(bytes / MB).toFixed(1).replace('.', ',')} MB`;
+  if (bytes >= KB) return `${Math.round(bytes / KB)} KB`;
+  return `${bytes} bytes`;
+}
+
+/** Tamanho real de um data URL base64, sem contar o cabeçalho. */
+function dataUrlBytes(dataUrl: string) {
+  const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+  return Math.floor((base64.length * 3) / 4) - (base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0);
+}
+
+/**
+ * Arquivo escolhido no chat: fotos grandes encolhem aqui mesmo (sobe rápido e ocupa menos no servidor);
+ * GIFs e os demais arquivos vão como estão, respeitando o limite.
+ */
+export async function prepareAttachment(file: File): Promise<PreparedFile> {
+  const isShrinkable = file.type.startsWith('image/') && file.type !== 'image/gif' && file.type !== 'image/svg+xml';
+  if (!isShrinkable) {
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      throw new Error(`"${file.name}" tem ${formatBytes(file.size)}: o limite é ${formatBytes(MAX_ATTACHMENT_BYTES)} por arquivo.`);
+    }
+    const data = await readAsDataUrl(file);
+    const size = { width: null as number | null, height: null as number | null };
+    if (file.type.startsWith('image/')) {
+      const bitmap = await createImageBitmap(file).catch(() => null);
+      if (bitmap) {
+        size.width = bitmap.width;
+        size.height = bitmap.height;
+        bitmap.close();
+      }
+    }
+    return { name: file.name, data, size: file.size, mime: file.type, ...size };
+  }
+
+  const bitmap = await createImageBitmap(file).catch(() => {
+    throw new Error(`Não foi possível abrir "${file.name}".`);
+  });
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.85));
+  // Se a conversão não ajudou (imagem já pequena e bem comprimida), manda a original.
+  if (!blob || blob.size >= file.size) {
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      throw new Error(`"${file.name}" tem ${formatBytes(file.size)}: o limite é ${formatBytes(MAX_ATTACHMENT_BYTES)} por arquivo.`);
+    }
+    return { name: file.name, data: await readAsDataUrl(file), size: file.size, mime: file.type, width, height };
+  }
+  if (blob.size > MAX_ATTACHMENT_BYTES) {
+    throw new Error(`"${file.name}" continua com ${formatBytes(blob.size)} depois de reduzida: o limite é ${formatBytes(MAX_ATTACHMENT_BYTES)}.`);
+  }
+  const data = await readAsDataUrl(blob);
+  return {
+    name: file.name.replace(/\.[^.]+$/, '') + '.webp',
+    data,
+    size: dataUrlBytes(data),
+    mime: 'image/webp',
+    width,
+    height,
+  };
+}
+
 /** "Coração Feliz.png" → "coracao_feliz" (o mesmo formato que o servidor aceita). */
 export function emojiNameFromFile(fileName: string) {
   return fileName

@@ -1,12 +1,13 @@
-import { Hash, Smile, Trash2 } from 'lucide-react';
-import { type KeyboardEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Hash } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { api, mediaUrl } from './api';
-import { Avatar } from './Avatar';
+import { api } from './api';
+import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
-import { useDirectory } from './directory';
-import { EmojiPicker } from './EmojiPicker';
-import type { Channel, Message, Role, User } from './types';
+import { MessageItem, MessageText } from './MessageItem';
+import { applyTally, applyThread, removeThread, replacePoll, type PollTally } from './messageState';
+import { ThreadPanel } from './ThreadPanel';
+import type { Channel, Message, Role, ThreadSummary, User } from './types';
 
 const PAGE_SIZE = 50;
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
@@ -14,12 +15,13 @@ const GROUP_WINDOW_MS = 5 * 60 * 1000;
 export function TextChannel({ channel, socket, user, role }: { channel: Channel; socket: Socket; user: User; role: Role }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMore, setHasMore] = useState(false);
-  const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [pickerOpen, setPickerOpen] = useState(false);
   const [deleting, setDeleting] = useState<Message | null>(null);
+  const [threadFor, setThreadFor] = useState<Message | null>(null);
+  const [openThread, setOpenThread] = useState<ThreadSummary | null>(null);
+  const [dragging, setDragging] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const composerRef = useRef<ComposerHandle>(null);
   const stickToBottom = useRef(true);
 
   useEffect(() => {
@@ -31,18 +33,35 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
     }, console.error);
 
     const onMessage = (message: Message) => {
-      if (message.channelId === channel.id) setMessages((list) => [...list, message]);
+      // Respostas de tópico ficam no painel do tópico, não no meio do canal.
+      if (message.channelId === channel.id && message.threadId === null) setMessages((list) => [...list, message]);
     };
     const onDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.id !== id));
     // Conta excluída: as mensagens dela somem da tela também.
     const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
+    const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
+    const onThread = (thread: ThreadSummary) => {
+      if (thread.channelId === channel.id) setMessages((list) => applyThread(list, thread));
+    };
+    const onThreadDeleted = ({ id }: { id: number }) => {
+      setMessages((list) => removeThread(list, id));
+      setOpenThread((current) => (current?.id === id ? null : current));
+    };
     socket.on('message:new', onMessage);
     socket.on('message:deleted', onDeleted);
     socket.on('user:deleted', onUserDeleted);
+    socket.on('poll:tally', onTally);
+    socket.on('thread:created', onThread);
+    socket.on('thread:updated', onThread);
+    socket.on('thread:deleted', onThreadDeleted);
     return () => {
       socket.off('message:new', onMessage);
       socket.off('message:deleted', onDeleted);
       socket.off('user:deleted', onUserDeleted);
+      socket.off('poll:tally', onTally);
+      socket.off('thread:created', onThread);
+      socket.off('thread:updated', onThread);
+      socket.off('thread:deleted', onThreadDeleted);
     };
   }, [channel.id, socket]);
 
@@ -50,6 +69,13 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
     const el = listRef.current;
     if (el && stickToBottom.current) el.scrollTop = el.scrollHeight;
   }, [messages]);
+
+  // A mensagem que abriu o tópico some (foi apagada): o painel fecha junto.
+  useEffect(() => {
+    if (openThread && messages.length > 0 && !messages.some((m) => m.id === openThread.parentMessageId)) {
+      setOpenThread(null);
+    }
+  }, [messages, openThread]);
 
   async function loadOlder() {
     const el = listRef.current;
@@ -64,32 +90,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
     });
   }
 
-  function send() {
-    const content = draft.trim();
-    if (!content) return;
-    stickToBottom.current = true;
-    socket.emit('message:send', { channelId: channel.id, content }, (result: { ok: boolean; error?: string }) => {
-      setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
-    });
-    setDraft('');
-  }
-
-  /** Insere o emoji onde está o cursor, com espaço antes quando precisa. */
-  function insertAtCursor(text: string) {
-    const input = inputRef.current;
-    const start = input?.selectionStart ?? draft.length;
-    const end = input?.selectionEnd ?? draft.length;
-    const before = draft.slice(0, start);
-    const insert = (before && !/\s$/.test(before) ? ' ' : '') + text + ' ';
-    setDraft(before + insert + draft.slice(end));
-    requestAnimationFrame(() => {
-      input?.focus();
-      const caret = start + insert.length;
-      input?.setSelectionRange(caret, caret);
-    });
-  }
-
-  const canDelete = (message: Message) => message.author.id === user.id || role === 'owner' || role === 'admin';
+  const canManage = (message: Message) => message.author.id === user.id || role === 'owner' || role === 'admin';
 
   /** Shift + clique apaga sem perguntar. */
   function requestDelete(message: Message, skipConfirm: boolean) {
@@ -97,108 +98,115 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
     else setDeleting(message);
   }
 
-  const deleteButton = (message: Message) =>
-    canDelete(message) && (
-      <button
-        className="message-action"
-        title="Apagar mensagem (Shift + clique apaga direto)"
-        aria-label="Apagar mensagem"
-        onClick={(e) => requestDelete(message, e.shiftKey)}
-      >
-        <Trash2 size={16} />
-      </button>
-    );
-
-  function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      send();
-    }
-  }
-
   return (
-    <div className="text-channel">
-      <header className="main-header">
-        <Hash size={22} className="muted-icon" /> {channel.name}
-      </header>
-
+    <div className="channel-layout">
       <div
-        className="messages"
-        ref={listRef}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+        className="text-channel"
+        onDragOver={(e) => {
+          if (!e.dataTransfer.types.includes('Files')) return;
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={(e) => e.currentTarget.contains(e.relatedTarget as Node) || setDragging(false)}
+        onDrop={(e) => {
+          const files = [...e.dataTransfer.files];
+          setDragging(false);
+          if (files.length === 0) return;
+          e.preventDefault();
+          composerRef.current?.addFiles(files);
         }}
       >
-        {hasMore ? (
-          <button className="load-older" onClick={loadOlder}>
-            Carregar mensagens anteriores
-          </button>
-        ) : (
-          <div className="channel-intro">
-            <div className="channel-intro-icon">
-              <Hash size={36} />
+        <header className="main-header">
+          <Hash size={22} className="muted-icon" /> {channel.name}
+        </header>
+
+        <div
+          className="messages"
+          ref={listRef}
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+          }}
+        >
+          {hasMore ? (
+            <button className="load-older" onClick={loadOlder}>
+              Carregar mensagens anteriores
+            </button>
+          ) : (
+            <div className="channel-intro">
+              <div className="channel-intro-icon">
+                <Hash size={36} />
+              </div>
+              <h2>Bem-vindo a #{channel.name}!</h2>
+              <p>Este é o começo do canal.</p>
             </div>
-            <h2>Bem-vindo a #{channel.name}!</h2>
-            <p>Este é o começo do canal.</p>
-          </div>
+          )}
+
+          {messages.map((message, i) => {
+            const previous = messages[i - 1];
+            const grouped =
+              previous?.author.id === message.author.id &&
+              !message.poll &&
+              !previous.thread &&
+              Date.parse(message.createdAt) - Date.parse(previous.createdAt) < GROUP_WINDOW_MS;
+            return (
+              <MessageItem
+                key={message.id}
+                message={message}
+                grouped={grouped}
+                canDelete={canManage(message)}
+                canManagePoll={canManage(message)}
+                onDelete={requestDelete}
+                onPollChange={(poll) => setMessages((list) => replacePoll(list, poll))}
+                onOpenThread={setOpenThread}
+                onCreateThread={setThreadFor}
+              />
+            );
+          })}
+        </div>
+
+        {error && (
+          <p className="form-error small" onClick={() => setError(null)}>
+            {error}
+          </p>
         )}
 
-        {messages.map((message, i) => {
-          const previous = messages[i - 1];
-          const grouped =
-            previous?.author.id === message.author.id &&
-            Date.parse(message.createdAt) - Date.parse(previous.createdAt) < GROUP_WINDOW_MS;
-          return grouped ? (
-            <div key={message.id} className="message grouped">
-              <MessageText content={message.content} />
-              {deleteButton(message)}
-            </div>
-          ) : (
-            <div key={message.id} className="message">
-              <Avatar name={message.author.username} userId={message.author.id} size={40} />
-              <div className="message-body">
-                <div className="message-meta">
-                  <span className="message-author">{message.author.username}</span>
-                  <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
-                </div>
-                <MessageText content={message.content} />
-              </div>
-              {deleteButton(message)}
-            </div>
-          );
-        })}
+        <Composer
+          ref={composerRef}
+          channelId={channel.id}
+          socket={socket}
+          placeholder={`Conversar em #${channel.name}`}
+          onSent={() => (stickToBottom.current = true)}
+        />
+
+        {dragging && <div className="drop-overlay">Solte para enviar o arquivo</div>}
       </div>
 
-      {deleting && (
-        <DeleteMessageDialog message={deleting} onClose={() => setDeleting(null)} />
+      {openThread && (
+        <ThreadPanel
+          key={openThread.id}
+          thread={openThread}
+          parent={messages.find((m) => m.id === openThread.parentMessageId)}
+          socket={socket}
+          user={user}
+          role={role}
+          onClose={() => setOpenThread(null)}
+          onDeleteMessage={requestDelete}
+        />
       )}
 
-      <div className="composer">
-        {error && <p className="form-error small">{error}</p>}
-        <div className="composer-box">
-          <textarea
-            ref={inputRef}
-            rows={1}
-            value={draft}
-            maxLength={2000}
-            placeholder={`Conversar em #${channel.name}`}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={onKeyDown}
-          />
-          <div className="composer-emoji">
-            <button
-              className={`icon-plain composer-emoji-button${pickerOpen ? ' active' : ''}`}
-              title="Emojis"
-              aria-label="Emojis"
-              onClick={() => setPickerOpen(!pickerOpen)}
-            >
-              <Smile size={22} />
-            </button>
-            {pickerOpen && <EmojiPicker onPick={insertAtCursor} onClose={() => setPickerOpen(false)} />}
-          </div>
-        </div>
-      </div>
+      {deleting && <DeleteMessageDialog message={deleting} onClose={() => setDeleting(null)} />}
+      {threadFor && (
+        <NewThreadDialog
+          message={threadFor}
+          onClose={() => setThreadFor(null)}
+          onCreated={(thread) => {
+            setMessages((list) => applyThread(list, thread));
+            setOpenThread(thread);
+            setThreadFor(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -218,59 +226,76 @@ function DeleteMessageDialog({ message, onClose }: { message: Message; onClose: 
     }
   }
 
+  const preview = message.content || (message.poll ? `Enquete: ${message.poll.question}` : `${message.attachments.length} arquivo(s)`);
+
   return (
     <ConfirmDialog title="Apagar mensagem" confirmLabel="Apagar" busy={busy} error={error} onConfirm={confirm} onCancel={onClose}>
       Tem certeza que quer apagar esta mensagem de <strong>{message.author.username}</strong>? Ela some para todos.
-      <blockquote className="dialog-quote">{message.content}</blockquote>
+      <blockquote className="dialog-quote">{preview}</blockquote>
     </ConfirmDialog>
   );
 }
 
-const URL_RE = /(https?:\/\/[^\s<]+)/g;
-const EMOJI_TOKEN_RE = /:([a-z0-9_]{2,32}):/g;
-// Caracteres que não contam como "texto" para decidir se a mensagem é só de emojis.
-const UNICODE_EMOJI_RE = /[\p{Extended_Pictographic}‍️\s]/gu;
-const JUMBO_LIMIT = 27; // como no Discord: até 27 emojis sem texto aparecem grandes
+/** Nome do tópico: já vem preenchido com o começo da mensagem, como o Discord sugere. */
+function NewThreadDialog({
+  message,
+  onClose,
+  onCreated,
+}: {
+  message: Message;
+  onClose: () => void;
+  onCreated: (thread: ThreadSummary) => void;
+}) {
+  const [title, setTitle] = useState(() => (message.content || message.poll?.question || 'Novo tópico').slice(0, 60));
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-function MessageText({ content }: { content: string }) {
-  const { emojisByName } = useDirectory();
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
-  // Troca :nome: pela imagem quando o emoji existe; nomes desconhecidos ficam como texto.
-  const withEmojis = (text: string, keyPrefix: string) =>
-    text.split(EMOJI_TOKEN_RE).map((part, i) => {
-      const emoji = i % 2 === 1 ? emojisByName.get(part) : undefined;
-      if (i % 2 === 1 && !emoji) return `:${part}:`;
-      return emoji ? (
-        <img key={`${keyPrefix}-${i}`} className="emoji" src={mediaUrl.emoji(emoji.id)} alt={`:${part}:`} title={`:${part}:`} />
-      ) : (
-        part
-      );
-    });
-
-  const customCount = [...content.matchAll(EMOJI_TOKEN_RE)].filter((m) => emojisByName.has(m[1])).length;
-  const rest = content.replace(EMOJI_TOKEN_RE, (token, name) => (emojisByName.has(name) ? '' : token)).replace(UNICODE_EMOJI_RE, '');
-  const unicodeCount = [...content.matchAll(/\p{Extended_Pictographic}/gu)].length;
-  const jumbo = rest === '' && customCount + unicodeCount > 0 && customCount + unicodeCount <= JUMBO_LIMIT;
+  async function create() {
+    setBusy(true);
+    try {
+      onCreated(await api<ThreadSummary>(`/api/messages/${message.id}/thread`, { method: 'POST', body: { title: title.trim() } }));
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
 
   return (
-    <p className={`message-text${jumbo ? ' jumbo' : ''}`}>
-      {content.split(URL_RE).map((part, i) =>
-        i % 2 === 1 ? (
-          <a key={i} href={part} target="_blank" rel="noreferrer noopener">
-            {part}
-          </a>
-        ) : (
-          withEmojis(part, String(i))
-        ),
-      )}
-    </p>
+    <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="thread-dialog-title">
+        <h2 id="thread-dialog-title">Criar tópico</h2>
+        <div className="dialog-body">
+          <label>
+            Nome do tópico
+            <input
+              autoFocus
+              value={title}
+              maxLength={100}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && title.trim() && void create()}
+            />
+          </label>
+          <p className="dialog-note">A conversa do tópico fica separada, pendurada nesta mensagem:</p>
+          <blockquote className="dialog-quote">
+            <MessageText content={message.content || (message.poll ? `Enquete: ${message.poll.question}` : 'Arquivo')} />
+          </blockquote>
+        </div>
+        {error && <p className="form-error">{error}</p>}
+        <div className="dialog-actions">
+          <button className="link-button" onClick={onClose}>
+            Cancelar
+          </button>
+          <button className="btn-primary" disabled={busy || !title.trim()} onClick={() => void create()}>
+            {busy ? 'Criando…' : 'Criar tópico'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
-}
-
-function formatTime(iso: string) {
-  const date = new Date(iso);
-  const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const today = new Date();
-  if (date.toDateString() === today.toDateString()) return `Hoje às ${time}`;
-  return `${date.toLocaleDateString('pt-BR')} ${time}`;
 }

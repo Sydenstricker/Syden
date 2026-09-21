@@ -4,6 +4,7 @@ import { Server as IOServer } from 'socket.io';
 import { config } from './config.js';
 import { setupRealtime } from './realtime.js';
 import { seedFirstCommunity } from './expressions.js';
+import { registerChatRoutes } from './chat-routes.js';
 import { registerMediaRoutes } from './media-routes.js';
 import { registerRoutes } from './routes.js';
 import { startTrafficSampling } from './traffic.js';
@@ -23,6 +24,7 @@ seedFirstCommunity();
 setupRealtime(io);
 registerRoutes(app, io);
 registerMediaRoutes(app, io);
+registerChatRoutes(app, io);
 startTrafficSampling();
 startHealthSampling();
 

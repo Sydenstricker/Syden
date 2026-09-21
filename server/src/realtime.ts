@@ -126,16 +126,29 @@ export function setupRealtime(io: IOServer) {
       socket.emit('voice:state', { communityId: id, members: voiceState(id) });
     }
 
-    socket.on('message:send', (payload: { channelId?: number; content?: string }, ack?: Ack) => {
+    socket.on('message:send', (payload: { channelId?: number; content?: string; threadId?: number }, ack?: Ack) => {
       const content = String(payload?.content ?? '').trim();
       const channel = db.findChannel(Number(payload?.channelId));
       if (!channel || channel.type !== 'text') return ack?.({ ok: false, error: 'Canal inválido.' });
       if (!db.memberRole(channel.communityId, user.id)) return ack?.({ ok: false, error: 'Você não participa desta comunidade.' });
       if (!content || content.length > 2000) return ack?.({ ok: false, error: 'Mensagem vazia ou longa demais.' });
+
+      // Resposta dentro de um tópico: ele tem que ser deste canal.
+      let threadId: number | null = null;
+      if (payload?.threadId !== undefined && payload.threadId !== null) {
+        const thread = db.threadLocation(Number(payload.threadId));
+        if (!thread || thread.channelId !== channel.id) return ack?.({ ok: false, error: 'Tópico não encontrado.' });
+        threadId = thread.id;
+      }
+
       io.to(communityRoom(channel.communityId)).emit('message:new', {
-        ...db.createMessage(channel.id, user.id, content),
+        ...db.createMessage(channel.id, user.id, content, threadId),
         communityId: channel.communityId,
       });
+      if (threadId !== null) {
+        const thread = db.findThread(threadId);
+        if (thread) io.to(communityRoom(channel.communityId)).emit('thread:updated', { ...thread, communityId: channel.communityId });
+      }
       ack?.({ ok: true });
     });
 

@@ -47,3 +47,27 @@ export function parseMedia(dataUrl: unknown, kind: MediaKind, maxBytes: number):
 export function sniffMime(data: Buffer): string | undefined {
   return SIGNATURES.find((s) => s.matches(data))?.mime;
 }
+
+/**
+ * Tipo de um arquivo qualquer mandado no chat. O que o navegador declarou é ignorado: vale o que está
+ * nos primeiros bytes. O que não é reconhecido vira "octet-stream", que o navegador só baixa, nunca abre.
+ */
+export function sniffAttachmentMime(data: Buffer): string {
+  // Matroska serve para áudio e vídeo; no chat, o caso comum é vídeo.
+  if (data.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]))) return 'video/webm';
+  const known = sniffMime(data);
+  if (known) return known;
+  if (data.subarray(4, 8).toString('latin1') === 'ftyp') return 'video/mp4';
+  if (data.subarray(0, 5).toString('latin1') === '%PDF-') return 'application/pdf';
+  return 'application/octet-stream';
+}
+
+/** Data URL → bytes, sem olhar o tipo declarado. Devolve o erro em português quando não dá. */
+export function decodeDataUrl(dataUrl: unknown, maxBytes: number): Buffer | string {
+  const match = typeof dataUrl === 'string' ? /^data:[\w/+.-]*;base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl) : null;
+  if (!match) return 'Arquivo inválido.';
+  const data = Buffer.from(match[1], 'base64');
+  if (data.length === 0) return 'Arquivo vazio.';
+  if (data.length > maxBytes) return `Cada arquivo pode ter até ${Math.round(maxBytes / (1024 * 1024))} MB.`;
+  return data;
+}

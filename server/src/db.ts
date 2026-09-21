@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { config } from './config.js';
 
@@ -67,12 +68,60 @@ export interface Channel {
   createdBy: number | null;
 }
 
+/** Arquivo enviado junto com uma mensagem. Os bytes ficam no banco; aqui vai só a ficha dele. */
+export interface Attachment {
+  id: number;
+  /** Parte secreta do endereço do arquivo: quem não recebeu o link não consegue abri-lo. */
+  key: string;
+  name: string;
+  mime: string;
+  size: number;
+  width: number | null;
+  height: number | null;
+}
+
+export interface PollOption {
+  id: number;
+  text: string;
+  votes: number;
+  /** Se quem está lendo votou nesta opção. */
+  mine: boolean;
+}
+
+export interface Poll {
+  id: number;
+  question: string;
+  /** Deixa escolher mais de uma opção. */
+  multiple: boolean;
+  closed: boolean;
+  options: PollOption[];
+  /** Quantas pessoas votaram (não quantos votos). */
+  voters: number;
+}
+
+/** O tópico de uma mensagem, do jeito que aparece embaixo dela. */
+export interface ThreadSummary {
+  id: number;
+  channelId: number;
+  parentMessageId: number;
+  title: string;
+  replyCount: number;
+  /** Quando foi a última mensagem do tópico; null quando ninguém respondeu ainda. */
+  lastAt: string | null;
+}
+
 export interface Message {
   id: number;
   channelId: number;
   content: string;
   createdAt: string;
   author: UserRef;
+  /** null quando a mensagem está no canal; o id do tópico quando ela é resposta de um. */
+  threadId: number | null;
+  attachments: Attachment[];
+  poll: Poll | null;
+  /** O tópico que pendura nesta mensagem, quando alguém criou um. */
+  thread: ThreadSummary | null;
 }
 
 const db = new DatabaseSync(config.databasePath);
@@ -201,6 +250,56 @@ db.exec(`
     data         BLOB NOT NULL,
     created_by   INTEGER
   );
+
+  -- Arquivos e imagens enviados numa mensagem. AUTOINCREMENT pelo mesmo motivo dos emojis:
+  -- o id nunca se repete, então o navegador pode guardar o arquivo em cache para sempre.
+  CREATE TABLE IF NOT EXISTS attachments (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    -- Parte secreta do endereço: sem ela ninguém abre o arquivo, nem adivinhando o número.
+    key        TEXT NOT NULL,
+    name       TEXT NOT NULL,
+    mime       TEXT NOT NULL,
+    size       INTEGER NOT NULL,
+    width      INTEGER,
+    height     INTEGER,
+    data       BLOB NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_attachments_message ON attachments(message_id);
+
+  -- Enquetes: cada uma é uma mensagem com pergunta e opções.
+  CREATE TABLE IF NOT EXISTS polls (
+    id         INTEGER PRIMARY KEY,
+    message_id INTEGER NOT NULL UNIQUE REFERENCES messages(id) ON DELETE CASCADE,
+    question   TEXT NOT NULL,
+    multiple   INTEGER NOT NULL DEFAULT 0,
+    closed     INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS poll_options (
+    id       INTEGER PRIMARY KEY,
+    poll_id  INTEGER NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
+    position INTEGER NOT NULL,
+    text     TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_poll_options_poll ON poll_options(poll_id, position);
+
+  CREATE TABLE IF NOT EXISTS poll_votes (
+    poll_id   INTEGER NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
+    option_id INTEGER NOT NULL REFERENCES poll_options(id) ON DELETE CASCADE,
+    user_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (option_id, user_id)
+  );
+
+  -- Tópicos: uma conversa à parte pendurada numa mensagem, para não atravessar o canal.
+  CREATE TABLE IF NOT EXISTS threads (
+    id                INTEGER PRIMARY KEY,
+    channel_id        INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    parent_message_id INTEGER NOT NULL UNIQUE REFERENCES messages(id) ON DELETE CASCADE,
+    title             TEXT NOT NULL,
+    created_by        INTEGER,
+    created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
 `);
 
 // Colunas que chegaram depois da primeira versão: bancos antigos ganham elas na inicialização.
@@ -222,6 +321,9 @@ addColumnIfMissing('communities', 'icon_version', 'INTEGER');
 // Velocidade de rede: chegou depois do painel de saúde.
 addColumnIfMissing('health_samples', 'net_in', 'INTEGER');
 addColumnIfMissing('health_samples', 'net_out', 'INTEGER');
+// Mensagem de tópico: null quando ela está no canal, como todas as mensagens antigas.
+addColumnIfMissing('messages', 'thread_id', 'INTEGER REFERENCES threads(id) ON DELETE CASCADE');
+db.exec('CREATE INDEX IF NOT EXISTS idx_messages_thread ON messages(thread_id, id)');
 
 // O emoji ":f:" do primeiro pacote tinha 1 letra, abaixo do mínimo de 2, e não funcionava nas mensagens.
 if (!db.prepare("SELECT 1 FROM emojis WHERE name = 'pressf'").get()) {
@@ -605,7 +707,7 @@ export function deleteAccount(userId: number) {
     db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
-    for (const table of ['channels', 'emojis', 'sounds']) {
+    for (const table of ['channels', 'emojis', 'sounds', 'threads']) {
       db.prepare(`UPDATE ${table} SET created_by = NULL WHERE created_by = ?`).run(userId);
     }
     db.prepare('DELETE FROM users WHERE id = ?').run(userId);
@@ -621,10 +723,10 @@ export function deleteAccount(userId: number) {
 export function findMessage(id: number) {
   return db
     .prepare(
-      `SELECT m.id, m.channel_id AS channelId, m.user_id AS userId, c.community_id AS communityId
+      `SELECT m.id, m.channel_id AS channelId, m.user_id AS userId, m.thread_id AS threadId, c.community_id AS communityId
        FROM messages m JOIN channels c ON c.id = m.channel_id WHERE m.id = ?`,
     )
-    .get(id) as { id: number; channelId: number; userId: number; communityId: number } | undefined;
+    .get(id) as { id: number; channelId: number; userId: number; threadId: number | null; communityId: number } | undefined;
 }
 
 export function deleteMessage(id: number) {
@@ -677,12 +779,13 @@ interface MessageRow {
   channelId: number;
   content: string;
   createdAt: string;
+  threadId: number | null;
   userId: number;
   username: string;
 }
 
 const messageSelect = `
-  SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt,
+  SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt, m.thread_id AS threadId,
          u.id AS userId, u.username
   FROM messages m JOIN users u ON u.id = m.user_id`;
 
@@ -692,16 +795,258 @@ function toMessage(row: MessageRow): Message {
     channelId: row.channelId,
     content: row.content,
     createdAt: row.createdAt,
+    threadId: row.threadId,
     author: { id: row.userId, username: row.username },
+    attachments: [],
+    poll: null,
+    thread: null,
   };
 }
 
+/** Lista de ids para um `IN (...)`. São números vindos do próprio banco, então não há o que escapar. */
+const idList = (ids: number[]) => ids.join(',');
+
+/**
+ * Completa as mensagens com o que está em outras tabelas: arquivos, enquete e tópico. Uma consulta por
+ * assunto para a página inteira, em vez de uma por mensagem. `viewerId` decide o "você votou aqui".
+ */
+function hydrate(messages: Message[], viewerId: number): Message[] {
+  if (messages.length === 0) return messages;
+  const byId = new Map(messages.map((m) => [m.id, m]));
+  const ids = idList([...byId.keys()]);
+
+  const files = db
+    .prepare(
+      `SELECT id, message_id AS messageId, key, name, mime, size, width, height
+       FROM attachments WHERE message_id IN (${ids}) ORDER BY id`,
+    )
+    .all() as unknown as (Attachment & { messageId: number })[];
+  for (const { messageId, ...file } of files) byId.get(messageId)?.attachments.push(file);
+
+  for (const thread of threadRows(`t.parent_message_id IN (${ids})`)) {
+    const parent = byId.get(thread.parentMessageId);
+    if (parent) parent.thread = thread;
+  }
+
+  const polls = db
+    .prepare(`SELECT id, message_id AS messageId, question, multiple, closed FROM polls WHERE message_id IN (${ids})`)
+    .all() as unknown as { id: number; messageId: number; question: string; multiple: number; closed: number }[];
+  if (polls.length > 0) {
+    const tallies = pollTallies(
+      polls.map((p) => p.id),
+      viewerId,
+    );
+    for (const row of polls) {
+      const message = byId.get(row.messageId);
+      if (!message) continue;
+      const tally = tallies.get(row.id)!;
+      message.poll = {
+        id: row.id,
+        question: row.question,
+        multiple: row.multiple === 1,
+        closed: row.closed === 1,
+        options: tally.options,
+        voters: tally.voters,
+      };
+    }
+  }
+  return messages;
+}
+
 /** Mensagens mais recentes do canal (ou anteriores a `beforeId`), em ordem cronológica. */
-export function listMessages(channelId: number, beforeId: number | undefined, limit = 50): Message[] {
+export function listMessages(channelId: number, beforeId: number | undefined, viewerId: number, limit = 50): Message[] {
   const rows = db
-    .prepare(`${messageSelect} WHERE m.channel_id = ? AND m.id < ? ORDER BY m.id DESC LIMIT ?`)
+    .prepare(`${messageSelect} WHERE m.channel_id = ? AND m.thread_id IS NULL AND m.id < ? ORDER BY m.id DESC LIMIT ?`)
     .all(channelId, beforeId ?? Number.MAX_SAFE_INTEGER, limit) as unknown as MessageRow[];
-  return rows.reverse().map(toMessage);
+  return hydrate(rows.reverse().map(toMessage), viewerId);
+}
+
+/** As respostas de um tópico, no mesmo formato das mensagens do canal. */
+export function listThreadMessages(threadId: number, beforeId: number | undefined, viewerId: number, limit = 50): Message[] {
+  const rows = db
+    .prepare(`${messageSelect} WHERE m.thread_id = ? AND m.id < ? ORDER BY m.id DESC LIMIT ?`)
+    .all(threadId, beforeId ?? Number.MAX_SAFE_INTEGER, limit) as unknown as MessageRow[];
+  return hydrate(rows.reverse().map(toMessage), viewerId);
+}
+
+export function findMessageFull(id: number, viewerId: number): Message | undefined {
+  const row = db.prepare(`${messageSelect} WHERE m.id = ?`).get(id) as unknown as MessageRow | undefined;
+  return row && hydrate([toMessage(row)], viewerId)[0];
+}
+
+// ---------- Arquivos das mensagens ----------
+
+export interface NewAttachment {
+  name: string;
+  mime: string;
+  data: Buffer;
+  width: number | null;
+  height: number | null;
+}
+
+export function addAttachment(messageId: number, file: NewAttachment): Attachment {
+  const key = randomBytes(12).toString('hex');
+  const result = db
+    .prepare('INSERT INTO attachments (message_id, key, name, mime, size, width, height, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+    .run(messageId, key, file.name, file.mime, file.data.length, file.width, file.height, file.data);
+  return {
+    id: Number(result.lastInsertRowid),
+    key,
+    name: file.name,
+    mime: file.mime,
+    size: file.data.length,
+    width: file.width,
+    height: file.height,
+  };
+}
+
+/** O arquivo só sai daqui com o id e a chave certos. */
+export function findAttachmentFile(id: number, key: string) {
+  return db.prepare('SELECT name, mime, data FROM attachments WHERE id = ? AND key = ?').get(id, key) as
+    | { name: string; mime: string; data: Uint8Array }
+    | undefined;
+}
+
+// ---------- Enquetes ----------
+
+/** Votos de cada opção das enquetes pedidas, já sabendo o que `viewerId` votou. */
+function pollTallies(pollIds: number[], viewerId: number) {
+  const ids = idList(pollIds);
+  const options = db
+    .prepare(
+      `SELECT o.id, o.poll_id AS pollId, o.text,
+              (SELECT COUNT(*) FROM poll_votes v WHERE v.option_id = o.id) AS votes,
+              (SELECT COUNT(*) FROM poll_votes v WHERE v.option_id = o.id AND v.user_id = ?) AS mine
+       FROM poll_options o WHERE o.poll_id IN (${ids}) ORDER BY o.position, o.id`,
+    )
+    .all(viewerId) as unknown as { id: number; pollId: number; text: string; votes: number; mine: number }[];
+  const voters = db
+    .prepare(`SELECT poll_id AS pollId, COUNT(DISTINCT user_id) AS voters FROM poll_votes WHERE poll_id IN (${ids}) GROUP BY poll_id`)
+    .all() as unknown as { pollId: number; voters: number }[];
+
+  const result = new Map<number, { options: PollOption[]; voters: number }>();
+  for (const id of pollIds) result.set(id, { options: [], voters: 0 });
+  for (const option of options) {
+    result.get(option.pollId)?.options.push({ id: option.id, text: option.text, votes: option.votes, mine: option.mine > 0 });
+  }
+  for (const row of voters) {
+    const tally = result.get(row.pollId);
+    if (tally) tally.voters = row.voters;
+  }
+  return result;
+}
+
+export interface PollLocation {
+  id: number;
+  messageId: number;
+  channelId: number;
+  communityId: number;
+  threadId: number | null;
+  createdBy: number;
+  multiple: boolean;
+  closed: boolean;
+}
+
+export function findPoll(id: number): PollLocation | undefined {
+  const row = db
+    .prepare(
+      `SELECT p.id, p.message_id AS messageId, p.multiple, p.closed, m.channel_id AS channelId, m.thread_id AS threadId,
+              m.user_id AS createdBy, c.community_id AS communityId
+       FROM polls p JOIN messages m ON m.id = p.message_id JOIN channels c ON c.id = m.channel_id
+       WHERE p.id = ?`,
+    )
+    .get(id) as
+    | { id: number; messageId: number; multiple: number; closed: number; channelId: number; threadId: number | null; createdBy: number; communityId: number }
+    | undefined;
+  return row && { ...row, multiple: row.multiple === 1, closed: row.closed === 1 };
+}
+
+export function createPoll(messageId: number, question: string, options: string[], multiple: boolean) {
+  const result = db
+    .prepare('INSERT INTO polls (message_id, question, multiple) VALUES (?, ?, ?)')
+    .run(messageId, question, multiple ? 1 : 0);
+  const pollId = Number(result.lastInsertRowid);
+  const insert = db.prepare('INSERT INTO poll_options (poll_id, position, text) VALUES (?, ?, ?)');
+  options.forEach((text, position) => insert.run(pollId, position, text));
+  return pollId;
+}
+
+/** Marca ou desmarca um voto. Em enquete de resposta única, o voto anterior sai. */
+export function votePoll(pollId: number, optionId: number, userId: number, multiple: boolean) {
+  const had = db.prepare('SELECT 1 FROM poll_votes WHERE option_id = ? AND user_id = ?').get(optionId, userId);
+  if (had) {
+    db.prepare('DELETE FROM poll_votes WHERE option_id = ? AND user_id = ?').run(optionId, userId);
+    return;
+  }
+  if (!multiple) db.prepare('DELETE FROM poll_votes WHERE poll_id = ? AND user_id = ?').run(pollId, userId);
+  db.prepare('INSERT INTO poll_votes (poll_id, option_id, user_id) VALUES (?, ?, ?)').run(pollId, optionId, userId);
+}
+
+export function closePoll(pollId: number) {
+  db.prepare('UPDATE polls SET closed = 1 WHERE id = ?').run(pollId);
+}
+
+export function optionBelongsToPoll(pollId: number, optionId: number) {
+  return db.prepare('SELECT 1 FROM poll_options WHERE id = ? AND poll_id = ?').get(optionId, pollId) !== undefined;
+}
+
+/** O estado da enquete para mandar a quem está olhando (os votos de cada um vêm de `viewerId`). */
+export function pollState(pollId: number, viewerId: number) {
+  const tally = pollTallies([pollId], viewerId).get(pollId)!;
+  const row = db.prepare('SELECT question, multiple, closed FROM polls WHERE id = ?').get(pollId) as
+    | { question: string; multiple: number; closed: number }
+    | undefined;
+  if (!row) return undefined;
+  return {
+    id: pollId,
+    question: row.question,
+    multiple: row.multiple === 1,
+    closed: row.closed === 1,
+    options: tally.options,
+    voters: tally.voters,
+  } satisfies Poll;
+}
+
+// ---------- Tópicos ----------
+
+function threadRows(where: string, ...params: unknown[]): ThreadSummary[] {
+  return db
+    .prepare(
+      `SELECT t.id, t.channel_id AS channelId, t.parent_message_id AS parentMessageId, t.title,
+              (SELECT COUNT(*) FROM messages m WHERE m.thread_id = t.id) AS replyCount,
+              (SELECT MAX(m.created_at) FROM messages m WHERE m.thread_id = t.id) AS lastAt
+       FROM threads t WHERE ${where}`,
+    )
+    .all(...(params as never[])) as unknown as ThreadSummary[];
+}
+
+export function findThread(id: number): ThreadSummary | undefined {
+  return threadRows('t.id = ?', id)[0];
+}
+
+export function findThreadByMessage(messageId: number): ThreadSummary | undefined {
+  return threadRows('t.parent_message_id = ?', messageId)[0];
+}
+
+export function createThread(channelId: number, parentMessageId: number, title: string, createdBy: number): ThreadSummary {
+  const result = db
+    .prepare('INSERT INTO threads (channel_id, parent_message_id, title, created_by) VALUES (?, ?, ?, ?)')
+    .run(channelId, parentMessageId, title, createdBy);
+  return findThread(Number(result.lastInsertRowid))!;
+}
+
+/** Em que comunidade e canal um tópico vive, para conferir quem pode escrever nele. */
+export function threadLocation(id: number) {
+  return db
+    .prepare(
+      `SELECT t.id, t.channel_id AS channelId, t.created_by AS createdBy, c.community_id AS communityId, c.type AS channelType
+       FROM threads t JOIN channels c ON c.id = t.channel_id WHERE t.id = ?`,
+    )
+    .get(id) as { id: number; channelId: number; createdBy: number | null; communityId: number; channelType: ChannelType } | undefined;
+}
+
+export function deleteThread(id: number) {
+  db.prepare('DELETE FROM threads WHERE id = ?').run(id);
 }
 
 export type UsageKind = 'voice' | 'screen';
@@ -832,10 +1177,10 @@ export function trafficForMonth(month: string): number {
   return (db.prepare('SELECT bytes FROM traffic_months WHERE month = ?').get(month) as { bytes: number } | undefined)?.bytes ?? 0;
 }
 
-export function createMessage(channelId: number, userId: number, content: string): Message {
+export function createMessage(channelId: number, userId: number, content: string, threadId: number | null = null): Message {
   const result = db
-    .prepare('INSERT INTO messages (channel_id, user_id, content) VALUES (?, ?, ?)')
-    .run(channelId, userId, content);
+    .prepare('INSERT INTO messages (channel_id, user_id, content, thread_id) VALUES (?, ?, ?, ?)')
+    .run(channelId, userId, content, threadId);
   const row = db.prepare(`${messageSelect} WHERE m.id = ?`).get(result.lastInsertRowid) as unknown as MessageRow;
   return toMessage(row);
 }

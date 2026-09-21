@@ -488,7 +488,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         if (!channel) return reply;
         if (channel.type !== 'text') return reply.code(404).send({ error: 'Canal não encontrado.' });
         const before = request.query.before ? Number(request.query.before) : undefined;
-        return db.listMessages(channel.id, before);
+        return db.listMessages(channel.id, before, request.user.id);
       },
     );
 
@@ -500,7 +500,16 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(403).send({ error: 'Só o autor ou quem administra a comunidade pode apagar a mensagem.' });
       }
       db.deleteMessage(message.id);
-      io.to(communityRoom(message.communityId)).emit('message:deleted', { id: message.id, channelId: message.channelId });
+      io.to(communityRoom(message.communityId)).emit('message:deleted', {
+        id: message.id,
+        channelId: message.channelId,
+        threadId: message.threadId,
+      });
+      // Era resposta de um tópico: a contagem embaixo da mensagem-mãe muda.
+      if (message.threadId !== null) {
+        const thread = db.findThread(message.threadId);
+        if (thread) io.to(communityRoom(message.communityId)).emit('thread:updated', { ...thread, communityId: message.communityId });
+      }
       return { ok: true };
     });
 

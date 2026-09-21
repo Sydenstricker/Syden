@@ -54,4 +54,5 @@ export const mediaUrl = {
   communityIcon: (id: number, version: number) => `${API_URL}/api/communities/${id}/icon?v=${version}`,
   emoji: (id: number) => `${API_URL}/api/emojis/${id}/image`,
   sound: (id: number) => `${API_URL}/api/sounds/${id}/audio`,
+  attachment: (id: number, key: string) => `${API_URL}/api/attachments/${id}/${key}`,
 };
