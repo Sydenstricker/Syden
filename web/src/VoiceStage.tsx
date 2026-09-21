@@ -29,6 +29,7 @@ import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import { QualityAdvisor } from './QualityAdvisor';
 import { IconButton } from './Sidebar';
+import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import type { Channel, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -118,6 +119,7 @@ function PersonTile({
 /** Painel do soundboard: clicar num som toca para todos na sala. */
 function Soundboard({ voice, onClose }: { voice: Voice; onClose: () => void }) {
   const { sounds } = useDirectory();
+  const settings = useSettings();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -137,6 +139,19 @@ function Soundboard({ voice, onClose }: { voice: Voice; onClose: () => void }) {
   return (
     <div className="soundboard" ref={ref} role="dialog" aria-label="Soundboard">
       <div className="soundboard-title">Soundboard</div>
+      {/* Volume à mão: um som que estoura no ouvido não pode exigir abrir as configurações. */}
+      <label className="soundboard-volume">
+        Volume: {Math.round(settings.soundboardVolume * 100)}%
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.05}
+          value={settings.soundboardVolume}
+          aria-label="Volume do soundboard"
+          onChange={(e) => updateSettings({ soundboardVolume: Number(e.target.value) })}
+        />
+      </label>
       {sounds.length === 0 ? (
         <p className="soundboard-empty">Nenhum som ainda. Adicione em Configurações → Soundboard.</p>
       ) : (

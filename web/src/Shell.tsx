@@ -119,6 +119,12 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
       ),
     );
     s.on('community:deleted', ({ id }: { id: number }) => setCommunities((list) => list.filter((c) => c.id !== id)));
+    // Um administrador te puxou para outra sala de voz: o app entra nela sozinho, como no Discord.
+    s.on('voice:move', ({ channelId: to }: { channelId: number }) => {
+      setSelectedId(to);
+      setShowUsage(false);
+      void voiceRef.current.join(to);
+    });
     // Removido (ou saiu por outra aba) de uma comunidade: ela some da coluna.
     s.on('member:removed', ({ communityId: id, userId }: { communityId: number; userId: number }) => {
       if (userId === loggedUser.id) setCommunities((list) => list.filter((c) => c.id !== id));

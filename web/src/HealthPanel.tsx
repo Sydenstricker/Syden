@@ -1,7 +1,7 @@
 import { AlertOctagon, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import type { HealthEvent, HealthReport, HealthSample } from './types';
+import type { HealthEvent, HealthReport, HealthSample, ProviderMetrics } from './types';
 
 const REFRESH_MS = 60_000;
 
@@ -124,6 +124,8 @@ export function HealthPanel() {
         </p>
       </section>
 
+      <ProviderPanel />
+
       <section className="usage-card">
         <h2>Acontecimentos</h2>
         {health.events.length === 0 ? (
@@ -139,6 +141,62 @@ export function HealthPanel() {
     </div>
   );
 }
+
+/**
+ * Os mesmos gráficos da aba "Graphs" da Hetzner, buscados pelo servidor com um token só de leitura.
+ * Sem token configurado a API devolve vazio, e esta parte simplesmente não aparece.
+ */
+function ProviderPanel() {
+  const [metrics, setMetrics] = useState<ProviderMetrics | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = () =>
+      api<ProviderMetrics>('/api/status/provider').then(
+        (data) => !cancelled && setMetrics(data),
+        () => {},
+      );
+    void load();
+    const timer = setInterval(() => void load(), REFRESH_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, []);
+
+  if (!metrics?.series.length) return null;
+  const color = (label: string) =>
+    label.startsWith('Processador') ? '#06b6d4' : label.startsWith('Rede') ? '#8b5cf6' : '#e0a458';
+
+  return (
+    <section className="usage-card">
+      <h2>Medido pela {metrics.name}</h2>
+      <p className="usage-muted small">
+        Os mesmos números do painel do provedor, das últimas 24 horas. Inclui o disco, que o servidor não mede
+        sozinho.
+      </p>
+      <div className="spark-grid">
+        {metrics.series.map((serie) => (
+          <Sparkline
+            key={serie.label}
+            title={serie.label}
+            samples={serie.points.map((p) => ({ at: p.at, value: p.value }))}
+            pick={(s) => s.value}
+            color={color(serie.label)}
+            format={UNIT_FORMAT[serie.unit]}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+const UNIT_FORMAT: Record<ProviderMetrics['series'][number]['unit'], (value: number) => string> = {
+  percent: (value) => `${Math.round(value * 100)}%`,
+  bps: formatBits,
+  iops: (value) => `${Math.round(value)} op/s`,
+  pps: (value) => `${Math.round(value)} pacotes/s`,
+};
 
 type Status = 'good' | 'warning' | 'critical';
 
@@ -160,7 +218,7 @@ function HealthTile({ label, value, status, note }: { label: string; value: stri
 }
 
 /** Linha fina com o histórico de uma medida; o valor exato aparece ao passar o mouse. */
-function Sparkline({
+function Sparkline<T extends { at: string }>({
   title,
   samples,
   pick,
@@ -168,13 +226,13 @@ function Sparkline({
   format = formatPercent,
 }: {
   title: string;
-  samples: HealthSample[];
-  pick: (sample: HealthSample) => number;
+  samples: T[];
+  pick: (sample: T) => number;
   color: string;
   /** Como escrever o valor: porcentagem (processador, memória) ou velocidade (rede). */
   format?: (value: number) => string;
 }) {
-  const [hover, setHover] = useState<HealthSample | null>(null);
+  const [hover, setHover] = useState<T | null>(null);
   const width = 100;
   const height = 30;
   const values = samples.map(pick);

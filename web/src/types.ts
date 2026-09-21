@@ -96,6 +96,16 @@ export interface HealthEvent {
   detail: string;
 }
 
+/** Gráficos vindos do provedor (Hetzner), os mesmos do painel deles. */
+export interface ProviderMetrics {
+  name: string;
+  series: {
+    label: string;
+    unit: 'percent' | 'bps' | 'iops' | 'pps';
+    points: { at: string; value: number }[];
+  }[];
+}
+
 export interface HealthReport {
   startedAt: string;
   uptimeSeconds: number;

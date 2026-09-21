@@ -21,6 +21,11 @@ export const config = {
   },
   // Franquia mensal de tráfego de saída do provedor, em GB. Padrão: 10 TB do plano grátis da Oracle.
   trafficAllowanceGb: Number(process.env.TRAFFIC_ALLOWANCE_GB || 10_000),
+  // Gráficos do provedor no painel de saúde (opcional). Token só de leitura, criado no painel da Hetzner.
+  hetzner: {
+    token: process.env.HETZNER_TOKEN ?? '',
+    serverId: process.env.HETZNER_SERVER_ID ?? '',
+  },
   // Freios do multi-comunidade: o consumo do servidor cresce com quanta gente usa ao mesmo tempo, então
   // cada pessoa só cria algumas comunidades e cada comunidade tem um teto de membros.
   maxCommunitiesPerUser: Number(process.env.MAX_COMMUNITIES_PER_USER || 3),

@@ -50,6 +50,13 @@ export function joinCommunityRoom(io: IOServer, userId: number, communityId: num
   }
 }
 
+/** Manda um aviso só para as abas de uma pessoa (ex.: "você foi movido para outra sala"). */
+export function emitToUser(io: IOServer, userId: number, event: string, payload: unknown) {
+  for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
+    io.sockets.sockets.get(socketId)?.emit(event, payload);
+  }
+}
+
 export function leaveCommunityRoom(io: IOServer, userId: number, communityId: number) {
   for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
     io.sockets.sockets.get(socketId)?.leave(communityRoom(communityId));

@@ -5,8 +5,16 @@ import { hashPassword, signSession, verifyPassword, verifySession } from './auth
 import { config } from './config.js';
 import * as db from './db.js';
 import { seedExpressions } from './expressions.js';
-import { communityRoom, disconnectUser, joinCommunityRoom, leaveCommunityRoom, removeVoiceChannelMembers } from './realtime.js';
+import {
+  communityRoom,
+  disconnectUser,
+  emitToUser,
+  joinCommunityRoom,
+  leaveCommunityRoom,
+  removeVoiceChannelMembers,
+} from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
+import { providerMetrics } from './provider.js';
 import { usageSummary } from './usage.js';
 
 /** Cliente de administração do LiveKit: é por ele que o servidor silencia alguém na sala. */
@@ -347,6 +355,44 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       },
     );
 
+    /** Puxar alguém para outra sala de voz da mesma comunidade, como o "mover" do Discord. */
+    authed.post<{ Params: { id: string }; Body: { userId?: number; toChannelId?: number } }>(
+      '/api/channels/:id/move',
+      async (request, reply) => {
+        const channel = channelAccess(request, reply, false);
+        if (!channel) return reply;
+        if (!manages(roleIn(request.user, channel.communityId))) {
+          return reply.code(403).send({ error: 'Só quem administra a comunidade pode mover alguém de sala.' });
+        }
+        const destination = db.findChannel(Number(request.body?.toChannelId));
+        if (!destination || destination.type !== 'voice' || destination.communityId !== channel.communityId) {
+          return reply.code(400).send({ error: 'Sala de destino inválida.' });
+        }
+        const targetId = Number(request.body?.userId);
+        if (!db.memberRole(channel.communityId, targetId)) {
+          return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
+        }
+        emitToUser(io, targetId, 'voice:move', { channelId: destination.id, channelName: destination.name });
+        return { ok: true };
+      },
+    );
+
+    /** Tirar alguém da chamada (sem removê-lo da comunidade), quando está atrapalhando. */
+    authed.post<{ Params: { id: string }; Body: { userId?: number } }>('/api/channels/:id/kick', async (request, reply) => {
+      const channel = channelAccess(request, reply, false);
+      if (!channel) return reply;
+      const role = roleIn(request.user, channel.communityId);
+      if (!manages(role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode desconectar alguém.' });
+      const targetId = Number(request.body?.userId);
+      const targetRole = db.memberRole(channel.communityId, targetId);
+      if (!targetRole) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
+      if (targetRole === 'owner' && role !== 'owner') {
+        return reply.code(403).send({ error: 'Quem criou a comunidade não pode ser desconectado.' });
+      }
+      await rooms.removeParticipant(voiceRoomName(channel.id), String(targetId)).catch(() => {});
+      return { ok: true };
+    });
+
     // Erro no app de alguém (microfone, câmera, conexão): vai para o diário da aba de saúde, para o
     // administrador enxergar problemas que acontecem no computador dos outros.
     authed.post<{ Body: { kind?: string; message?: string } }>('/api/client-errors', async (request, reply) => {
@@ -367,6 +413,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get('/api/status', async (request, reply) => {
       if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
       return healthReport();
+    });
+
+    // Os mesmos gráficos do painel da Hetzner, quando o token de leitura está configurado.
+    authed.get('/api/status/provider', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      return (await providerMetrics()) ?? { name: '', series: [] };
     });
 
     // ---------- Canais ----------

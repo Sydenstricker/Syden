@@ -22,6 +22,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { Avatar } from './Avatar';
 import { LivePreview } from './LivePreview';
+import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import type { Channel, Community, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -56,6 +57,7 @@ export function Sidebar({
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
   const [deleting, setDeleting] = useState<Channel | null>(null);
   const menu = usePersonMenu();
+  const { members } = useDirectory();
 
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';
@@ -179,6 +181,10 @@ export function Sidebar({
           voice={voice}
           role={community.role}
           channelId={voice.channelId}
+          communityId={community.id}
+          channels={channels}
+          inVoiceChannel={voiceMembers.find((m) => m.userId === menu.target!.userId)?.channelId ?? null}
+          targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === user.id}
         />
       )}
