@@ -217,7 +217,11 @@ const EVENT_LABEL: Record<string, { text: string; status: Status }> = {
 };
 
 function EventRow({ event }: { event: HealthEvent }) {
-  const known = EVENT_LABEL[event.kind] ?? { text: event.kind, status: 'warning' as Status };
+  // "app:microfone" é um problema no computador de alguém, contado pelo próprio app.
+  const fromApp = event.kind.startsWith('app:');
+  const known = fromApp
+    ? { text: `Problema de ${event.kind.slice(4)}`, status: 'warning' as Status }
+    : (EVENT_LABEL[event.kind] ?? { text: event.kind, status: 'warning' as Status });
   const Icon = event.kind === 'start' ? Info : STATUS_ICON[known.status];
   return (
     <li className="event-row">

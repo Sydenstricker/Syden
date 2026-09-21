@@ -32,6 +32,14 @@ function networkRate() {
   return { in: rate(counters.received, previous.received), out: rate(counters.sent, previous.sent) };
 }
 
+/**
+ * Erro que aconteceu no app de alguém (microfone bloqueado, conexão de voz barrada). O servidor não tem como
+ * ver isso sozinho, então o próprio app conta, e o diário guarda para o administrador.
+ */
+export function recordClientError(username: string, kind: string, message: string) {
+  db.addHealthEvent(`app:${kind}`, `${username}: ${message}`);
+}
+
 /** Contabiliza uma resposta com erro do servidor (5xx). */
 export function countServerError() {
   errorsSinceSample++;

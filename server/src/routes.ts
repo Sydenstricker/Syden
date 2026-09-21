@@ -1,13 +1,16 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { AccessToken } from 'livekit-server-sdk';
+import { AccessToken, RoomServiceClient, TrackSource } from 'livekit-server-sdk';
 import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
 import { seedExpressions } from './expressions.js';
 import { communityRoom, disconnectUser, joinCommunityRoom, leaveCommunityRoom, removeVoiceChannelMembers } from './realtime.js';
-import { healthReport } from './health.js';
+import { healthReport, recordClientError } from './health.js';
 import { usageSummary } from './usage.js';
+
+/** Cliente de administração do LiveKit: é por ele que o servidor silencia alguém na sala. */
+const rooms = new RoomServiceClient(config.livekit.url.replace(/^ws/, 'http'), config.livekit.apiKey, config.livekit.apiSecret);
 
 const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
 
@@ -313,6 +316,45 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const user = db.setAdmin(target.id, request.body.isAdmin)!;
       io.emit('user:updated', user);
       return user;
+    });
+
+    /**
+     * Silenciar o microfone de alguém na sala, como o Discord: quem administra a comunidade corta a fala de
+     * quem está atrapalhando. É feito no servidor de mídia, então vale mesmo se o app da pessoa não colaborar.
+     */
+    authed.post<{ Params: { id: string }; Body: { userId?: number; muted?: boolean } }>(
+      '/api/channels/:id/mute',
+      async (request, reply) => {
+        const channel = channelAccess(request, reply, false);
+        if (!channel) return reply;
+        const role = roleIn(request.user, channel.communityId);
+        if (!manages(role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode silenciar alguém.' });
+        const targetId = Number(request.body?.userId);
+        const muted = request.body?.muted !== false;
+        const targetRole = db.memberRole(channel.communityId, targetId);
+        if (!targetRole) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
+        if (targetRole === 'owner' && role !== 'owner') {
+          return reply.code(403).send({ error: 'Quem criou a comunidade não pode ser silenciado.' });
+        }
+
+        const room = voiceRoomName(channel.id);
+        const participants = await rooms.listParticipants(room).catch(() => []);
+        const target = participants.find((p) => p.identity === String(targetId));
+        const audio = target?.tracks.find((t) => t.source === TrackSource.MICROPHONE);
+        if (!audio) return reply.code(404).send({ error: 'Essa pessoa não está com microfone nesta sala.' });
+        await rooms.mutePublishedTrack(room, String(targetId), audio.sid, muted);
+        return { ok: true };
+      },
+    );
+
+    // Erro no app de alguém (microfone, câmera, conexão): vai para o diário da aba de saúde, para o
+    // administrador enxergar problemas que acontecem no computador dos outros.
+    authed.post<{ Body: { kind?: string; message?: string } }>('/api/client-errors', async (request, reply) => {
+      const kind = String(request.body?.kind ?? '').slice(0, 24) || 'app';
+      const message = String(request.body?.message ?? '').trim().slice(0, 200);
+      if (!message) return reply.code(400).send({ error: 'Mensagem vazia.' });
+      recordClientError(request.user.username, kind, message);
+      return { ok: true };
     });
 
     // Consumo do servidor (tráfego e horas): informação de quem administra o Syden.

@@ -22,6 +22,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { Avatar } from './Avatar';
 import { LivePreview } from './LivePreview';
+import { PersonMenu, usePersonMenu } from './PersonMenu';
 import type { Channel, Community, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -54,6 +55,7 @@ export function Sidebar({
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
   const [deleting, setDeleting] = useState<Channel | null>(null);
+  const menu = usePersonMenu();
 
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';
@@ -107,7 +109,12 @@ export function Sidebar({
                 {voiceMembers
                   .filter((m) => m.channelId === c.id)
                   .map((m) => (
-                    <div key={m.userId} className="voice-member">
+                    <div
+                      key={m.userId}
+                      className="voice-member"
+                      // Botão direito abre o menu da pessoa (volume, silenciar), como no Discord.
+                      onContextMenu={(e) => menu.open(e, m.userId, m.username)}
+                    >
                       <Avatar name={m.username} userId={m.userId} size={22} speaking={speaking.has(String(m.userId))} />
                       <span className="voice-member-name">{m.username}</span>
                       {m.screen && <LivePreview userId={m.userId} username={m.username} channelId={c.id} connected={voice.channelId === c.id} />}
@@ -165,6 +172,16 @@ export function Sidebar({
       </div>
 
       {deleting && <DeleteChannelDialog channel={deleting} onClose={() => setDeleting(null)} />}
+      {menu.target && (
+        <PersonMenu
+          target={menu.target}
+          onClose={menu.close}
+          voice={voice}
+          role={community.role}
+          channelId={voice.channelId}
+          isSelf={menu.target.userId === user.id}
+        />
+      )}
     </nav>
   );
 }

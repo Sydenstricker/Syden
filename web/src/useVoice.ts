@@ -17,6 +17,7 @@ import { api } from './api';
 import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard } from './soundboard';
+import { applyAllVolumes } from './voiceVolumes';
 import { sounds } from './sounds';
 
 export interface LocalMedia {
@@ -54,6 +55,15 @@ const SOUND_BADGE_MS = 2500;
 
 function isCancelledPicker(error: unknown) {
   return error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'AbortError');
+}
+
+/**
+ * Conta ao servidor um problema que só acontece no computador da pessoa (microfone bloqueado, voz barrada
+ * pela rede). Vira uma linha no diário da aba de saúde, e é assim que o administrador descobre o que houve
+ * sem precisar perguntar. Falhar aqui não pode atrapalhar nada, então o erro é engolido.
+ */
+function reportProblem(kind: 'microfone' | 'câmera' | 'conexão', message: string) {
+  void api('/api/client-errors', { method: 'POST', body: { kind, message } }).catch(() => {});
 }
 
 /**
@@ -145,6 +155,21 @@ export function useVoice(socket: Socket | null) {
         .off(RoomEvent.TrackMuted, syncIfLocal)
         .off(RoomEvent.TrackUnmuted, syncIfLocal)
         .off(RoomEvent.Disconnected, onDisconnected);
+    };
+  }, [room]);
+
+  // Volume que você escolheu para cada pessoa vale de novo sempre que ela chega ou volta a falar.
+  useEffect(() => {
+    const restore = () => applyAllVolumes(room);
+    room
+      .on(RoomEvent.ParticipantConnected, restore)
+      .on(RoomEvent.TrackSubscribed, restore)
+      .on(RoomEvent.Connected, restore);
+    return () => {
+      room
+        .off(RoomEvent.ParticipantConnected, restore)
+        .off(RoomEvent.TrackSubscribed, restore)
+        .off(RoomEvent.Connected, restore);
     };
   }, [room]);
 
@@ -276,6 +301,7 @@ export function useVoice(socket: Socket | null) {
         // Causa mais comum: bloqueador de anúncios ou antivírus derrubando a conexão com o servidor de voz,
         // que fica num endereço gratuito (duckdns.org) presente em várias listas de bloqueio.
         setError('Não foi possível conectar à sala de voz. Se você usa bloqueador de anúncios (uBlock, AdGuard), antivírus com proteção web ou VPN, desative para este site e tente de novo.');
+        reportProblem('conexão', 'Não conseguiu conectar à sala de voz (provável bloqueio de rede).');
         setConnecting(false);
         return;
       }
@@ -284,7 +310,9 @@ export function useVoice(socket: Socket | null) {
         await room.localParticipant.setMicrophoneEnabled(true);
       } catch (e) {
         console.error(e);
-        setError(deviceErrorMessage(e, 'microfone'));
+        const message = deviceErrorMessage(e, 'microfone');
+        setError(message);
+        reportProblem('microfone', message);
       }
     },
     [room, connecting],
@@ -337,7 +365,9 @@ export function useVoice(socket: Socket | null) {
       (enable ? sounds.unmute : sounds.mute)();
     } catch (e) {
       console.error(e);
-      setError(deviceErrorMessage(e, 'microfone'));
+      const message = deviceErrorMessage(e, 'microfone');
+      setError(message);
+      reportProblem('microfone', message);
     }
   }, [room, setDeafenedState]);
 
@@ -354,7 +384,9 @@ export function useVoice(socket: Socket | null) {
       await lp.setCameraEnabled(!lp.isCameraEnabled);
     } catch (e) {
       console.error(e);
-      setError(deviceErrorMessage(e, 'câmera'));
+      const message = deviceErrorMessage(e, 'câmera');
+      setError(message);
+      reportProblem('câmera', message);
     }
   }, [room]);
 
