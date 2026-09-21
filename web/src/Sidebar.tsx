@@ -21,6 +21,7 @@ import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { Avatar } from './Avatar';
+import { LivePreview } from './LivePreview';
 import type { Channel, Community, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -109,7 +110,7 @@ export function Sidebar({
                     <div key={m.userId} className="voice-member">
                       <Avatar name={m.username} userId={m.userId} size={22} speaking={speaking.has(String(m.userId))} />
                       <span className="voice-member-name">{m.username}</span>
-                      {m.screen && <span className="live-badge">AO VIVO</span>}
+                      {m.screen && <LivePreview userId={m.userId} username={m.username} connected={voice.channelId === c.id} />}
                       {m.video && <Video size={14} />}
                       {m.deafened ? <HeadphoneOff size={14} className="muted-icon" /> : m.muted && <MicOff size={14} className="muted-icon" />}
                     </div>
