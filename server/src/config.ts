@@ -21,4 +21,8 @@ export const config = {
   },
   // Franquia mensal de tráfego de saída do provedor, em GB. Padrão: 10 TB do plano grátis da Oracle.
   trafficAllowanceGb: Number(process.env.TRAFFIC_ALLOWANCE_GB || 10_000),
+  // Freios do multi-comunidade: o consumo do servidor cresce com quanta gente usa ao mesmo tempo, então
+  // cada pessoa só cria algumas comunidades e cada comunidade tem um teto de membros.
+  maxCommunitiesPerUser: Number(process.env.MAX_COMMUNITIES_PER_USER || 3),
+  maxMembersPerCommunity: Number(process.env.MAX_MEMBERS_PER_COMMUNITY || 25),
 };

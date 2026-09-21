@@ -102,6 +102,10 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .auth-card {
@@ -227,12 +231,152 @@ textarea {
   overflow: hidden;
 }
 
+/* Coluna das comunidades, à esquerda de tudo (como as bolinhas de servidor do Discord). */
+.rail {
+  width: 68px;
+  flex-shrink: 0;
+  background: var(--bg-rail, #1e1f22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  overflow-y: auto;
+}
+
+.rail-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2b2d31;
+  width: 40px;
+}
+
+.rail-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.rail-item {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: var(--bg-main);
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-radius 0.15s, background 0.15s;
+}
+
+.rail-item:hover,
+.rail-item.active {
+  border-radius: 14px;
+  background: var(--accent, #5865f2);
+  color: #fff;
+}
+
+.rail-action {
+  background: transparent;
+  color: #3ba55d;
+  border: 1px solid #3f4147;
+}
+
+.rail-action:hover {
+  background: #3ba55d;
+  color: #fff;
+}
+
 .sidebar {
   width: 240px;
   flex-shrink: 0;
   background: var(--bg-sidebar);
   display: flex;
   flex-direction: column;
+}
+
+/* Quem não participa de nenhuma comunidade vê isto no lugar da barra lateral. */
+.no-community {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
+}
+
+.no-community h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-strong);
+}
+
+.no-community p {
+  margin: 0;
+  max-width: 460px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.no-community-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.auth-hint {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.invite-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.invite-code {
+  flex: 1;
+  min-width: 140px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: var(--bg-input, #1e1f22);
+  color: var(--text-strong);
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* Formulários dentro de uma janela de diálogo seguem o visual das configurações. */
+.dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dialog input {
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #1e1f22;
+  background: var(--bg-input, #1e1f22);
+  color: var(--text-strong);
+  font-size: 15px;
+  font-weight: 400;
+  text-transform: none;
 }
 
 .sidebar-header,

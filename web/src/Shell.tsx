@@ -1,34 +1,61 @@
 import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
 import { API_URL, ApiError, api } from './api';
 import { Avatar } from './Avatar';
+import { CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
-import { loadDirectory, syncDirectory, useDirectory } from './directory';
+import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
+import { EmptyCommunities } from './EmptyCommunities';
 import { getSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import { SettingsModal } from './SettingsModal';
-import type { Channel, Message, User, UserRef, VoiceMember } from './types';
+import type { Channel, Community, Message, User, UserRef, VoiceMember } from './types';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
 
+/** Última comunidade aberta, para o app voltar onde a pessoa estava. */
+const LAST_COMMUNITY_KEY = 'syden.community';
+
+function rememberCommunity(id: number | null) {
+  try {
+    if (id === null) localStorage.removeItem(LAST_COMMUNITY_KEY);
+    else localStorage.setItem(LAST_COMMUNITY_KEY, String(id));
+  } catch {
+    // navegador sem armazenamento (janela anônima): só não lembra
+  }
+}
+
+function rememberedCommunity(): number | null {
+  try {
+    const saved = Number(localStorage.getItem(LAST_COMMUNITY_KEY));
+    return Number.isInteger(saved) && saved > 0 ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
 export function Shell({ token, user: loggedUser, onLogout }: { token: string; user: User; onLogout: () => void }) {
   // Os cargos podem mudar com o app aberto (o dono deu ou tirou o de administrador, ou excluiu a conta e outro assumiu).
-  const { users } = useDirectory();
-  const current = users.get(loggedUser.id);
+  const { members } = useDirectory();
+  const me = members.get(loggedUser.id);
   const user: User = {
     ...loggedUser,
-    isAdmin: current?.isAdmin ?? loggedUser.isAdmin,
-    isOwner: current?.isOwner ?? loggedUser.isOwner ?? false,
+    isAdmin: me?.isAdmin ?? loggedUser.isAdmin,
+    isOwner: me?.isOwner ?? loggedUser.isOwner ?? false,
   };
   const [socket, setSocket] = useState<Socket | null>(null);
   const [online, setOnline] = useState(true);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communityId, setCommunityId] = useState<number | null>(rememberedCommunity());
+  const [loadingCommunities, setLoadingCommunities] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [presence, setPresence] = useState<UserRef[]>([]);
-  const [voiceMembers, setVoiceMembers] = useState<VoiceMember[]>([]);
+  // Quem está em chamada, por comunidade: a barra lateral só mostra a da comunidade aberta.
+  const [voiceByCommunity, setVoiceByCommunity] = useState<Record<number, VoiceMember[]>>({});
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showUsage, setShowUsage] = useState(false);
   const voice = useVoice(socket);
@@ -36,6 +63,22 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
   onLogoutRef.current = onLogout;
   const voiceRef = useRef(voice);
   voiceRef.current = voice;
+
+  const community = communities.find((c) => c.id === communityId);
+  const voiceMembers = communityId === null ? [] : (voiceByCommunity[communityId] ?? []);
+  const onlineHere = presence.filter((p) => members.has(p.id));
+
+  const reloadCommunities = useCallback(async () => {
+    const list = await api<Community[]>('/api/communities');
+    setCommunities(list);
+    setCommunityId((current) => (list.some((c) => c.id === current) ? current : (list[0]?.id ?? null)));
+    setLoadingCommunities(false);
+    return list;
+  }, []);
+
+  useEffect(() => {
+    reloadCommunities().catch(console.error);
+  }, [reloadCommunities]);
 
   useEffect(() => {
     const s = io(API_URL, { auth: { token } });
@@ -55,9 +98,11 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
       if (error.message === 'unauthorized') onLogoutRef.current();
     });
     s.on('presence', setPresence);
-    s.on('voice:state', setVoiceMembers);
+    s.on('voice:state', ({ communityId: id, members: list }: { communityId: number; members: VoiceMember[] }) =>
+      setVoiceByCommunity((current) => ({ ...current, [id]: list })),
+    );
     s.on('channel:created', (channel: Channel) =>
-      setChannels((list) => (list.some((c) => c.id === channel.id) ? list : [...list, channel])),
+      setChannels((list) => (list.some((c) => c.id === channel.id) || !isOpenCommunity(channel.communityId) ? list : [...list, channel])),
     );
     s.on('channel:updated', (channel: Channel) =>
       setChannels((list) => list.map((c) => (c.id === channel.id ? channel : c))),
@@ -66,21 +111,43 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
       setChannels((list) => list.filter((c) => c.id !== id));
       if (voiceRef.current.channelId === id) voiceRef.current.leave();
     });
+    s.on('community:updated', (updated: Pick<Community, 'id' | 'name'>) =>
+      setCommunities((list) => list.map((c) => (c.id === updated.id ? { ...c, name: updated.name } : c))),
+    );
+    s.on('community:deleted', ({ id }: { id: number }) => setCommunities((list) => list.filter((c) => c.id !== id)));
+    // Removido (ou saiu por outra aba) de uma comunidade: ela some da coluna.
+    s.on('member:removed', ({ communityId: id, userId }: { communityId: number; userId: number }) => {
+      if (userId === loggedUser.id) setCommunities((list) => list.filter((c) => c.id !== id));
+    });
     const unsync = syncDirectory(s);
     setSocket(s);
     return () => {
       unsync();
       s.disconnect();
     };
-  }, [token]);
+  }, [token, loggedUser.id]);
+
+  // A comunidade aberta muda: recarrega membros, emojis, sons e canais dela.
+  const openCommunityRef = useRef<number | null>(communityId);
+  openCommunityRef.current = communityId;
+  const isOpenCommunity = (id: number) => openCommunityRef.current === id;
 
   useEffect(() => {
-    loadDirectory().catch(console.error);
-    api<Channel[]>('/api/channels').then((list) => {
+    rememberCommunity(communityId);
+    if (communityId === null) {
+      clearDirectory();
+      setChannels([]);
+      setSelectedId(null);
+      return;
+    }
+    setShowUsage(false);
+    loadDirectory(communityId).catch(console.error);
+    api<Channel[]>(`/api/communities/${communityId}/channels`).then((list) => {
+      if (openCommunityRef.current !== communityId) return; // trocou de comunidade enquanto carregava
       setChannels(list);
-      setSelectedId((current) => current ?? list.find((c) => c.type === 'text')?.id ?? null);
+      setSelectedId(list.find((c) => c.type === 'text')?.id ?? null);
     }, console.error);
-  }, []);
+  }, [communityId]);
 
   // Notificação do Windows para mensagens novas de outras pessoas, quando o Syden não está à vista
   // ou a mensagem é de outro canal. Clicar leva direto ao canal.
@@ -90,14 +157,15 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
   selectedIdRef.current = selectedId;
   useEffect(() => {
     if (!socket) return;
-    const onMessage = (message: Message) => {
+    const onMessage = (message: Message & { communityId: number }) => {
       if (message.author.id !== loggedUser.id) notifyMessage(message);
     };
-    const notifyMessage = (message: Message) => {
+    const notifyMessage = (message: Message & { communityId: number }) => {
       if (!getSettings().notifications || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-      const lookingAtIt = document.hasFocus() && !document.hidden && selectedIdRef.current === message.channelId;
+      const here = isOpenCommunity(message.communityId);
+      const lookingAtIt = here && document.hasFocus() && !document.hidden && selectedIdRef.current === message.channelId;
       if (lookingAtIt) return;
-      const channel = channelsRef.current.find((c) => c.id === message.channelId);
+      const channel = here ? channelsRef.current.find((c) => c.id === message.channelId) : undefined;
       const notification = new Notification(`${message.author.username} em #${channel?.name ?? 'canal'}`, {
         body: message.content.length > 140 ? `${message.content.slice(0, 140)}…` : message.content,
         tag: `channel-${message.channelId}`, // várias mensagens seguidas do mesmo canal viram uma notificação só
@@ -106,6 +174,7 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
         desktopBridge?.focus();
         window.focus();
         setShowUsage(false);
+        setCommunityId(message.communityId);
         setSelectedId(message.channelId);
         notification.close();
       };
@@ -147,23 +216,40 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
 
   function logout() {
     voice.leave();
+    rememberCommunity(null);
     onLogout();
+  }
+
+  async function afterCommunityChange(changed: Community | null) {
+    const list = await reloadCommunities().catch(() => null);
+    if (changed && list?.some((c) => c.id === changed.id)) setCommunityId(changed.id);
   }
 
   return (
     <RoomContext.Provider value={voice.room}>
       <div className="app">
-        <Sidebar
-          user={user}
-          channels={channels}
-          selectedId={usageOpen ? null : selectedId}
-          usageActive={usageOpen}
-          voiceMembers={voiceMembers}
-          voice={voice}
-          onSelect={selectChannel}
-          onOpenUsage={() => setShowUsage(true)}
-          onOpenSettings={() => setSettingsOpen(true)}
+        <CommunityRail
+          communities={communities}
+          currentId={communityId}
+          onSelect={setCommunityId}
+          onChanged={(created) => void afterCommunityChange(created)}
         />
+        {community ? (
+          <Sidebar
+            user={user}
+            community={community}
+            channels={channels}
+            selectedId={usageOpen ? null : selectedId}
+            usageActive={usageOpen}
+            voiceMembers={voiceMembers}
+            voice={voice}
+            onSelect={selectChannel}
+            onOpenUsage={() => setShowUsage(true)}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+        ) : (
+          !loadingCommunities && <EmptyCommunities onDone={(created) => void afterCommunityChange(created)} />
+        )}
         <main className="main">
           {!online && <div className="banner">Reconectando ao servidor…</div>}
           {voice.error && (
@@ -171,7 +257,7 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
-          {selected?.type === 'text' && socket && <TextChannel key={selected.id} channel={selected} socket={socket} user={user} />}
+          {selected?.type === 'text' && socket && <TextChannel key={selected.id} channel={selected} socket={socket} user={user} role={community?.role ?? 'member'} />}
           {selected?.type === 'voice' && (
             <VoiceStage
               channel={selected}
@@ -180,12 +266,13 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
             />
           )}
           {usageOpen && <UsageDashboard voiceMembers={voiceMembers} />}
-          {!selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
+          {community && !selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
         </main>
         {selected?.type === 'text' && (
           <aside className="members">
-            <h3>Online — {presence.length}</h3>
-            {presence.map((p) => (
+            {/* Só quem participa desta comunidade: não dá para espiar quem está em outra. */}
+            <h3>Online — {onlineHere.length}</h3>
+            {onlineHere.map((p) => (
               <div key={p.id} className="member">
                 <Avatar name={p.username} userId={p.id} online />
                 <span>{p.username}</span>
@@ -195,7 +282,14 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
         )}
       </div>
       {settingsOpen && (
-        <SettingsModal user={user} voice={voice} onClose={() => setSettingsOpen(false)} onLogout={logout} />
+        <SettingsModal
+          user={user}
+          community={community}
+          voice={voice}
+          onClose={() => setSettingsOpen(false)}
+          onLogout={logout}
+          onCommunityChanged={() => void afterCommunityChange(null)}
+        />
       )}
       <RoomAudioRenderer muted={voice.deafened} />
     </RoomContext.Provider>

@@ -1,5 +1,5 @@
 import { Room } from 'livekit-client';
-import { AudioLines, Bell, CircleUser, LogOut, Mic, Play, ShieldOff, ShieldPlus, Smile, Trash2, UserX, Users, X } from 'lucide-react';
+import { AudioLines, Bell, CircleUser, Hash, LogOut, Mic, Play, ShieldOff, ShieldPlus, Smile, Trash2, UserX, Users, X } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
@@ -9,11 +9,11 @@ import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { useDirectory } from './directory';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
-import type { Emoji, Sound, User } from './types';
+import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, emojiNameFromFile, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
 
-type Section = 'account' | 'voice' | 'sounds' | 'members' | 'emojis' | 'soundboard';
+type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emojis' | 'soundboard';
 
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'account', label: 'Minha conta', icon: <CircleUser size={18} /> },
@@ -21,7 +21,8 @@ const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'sounds', label: 'Notificações', icon: <Bell size={18} /> },
 ];
 
-const SERVER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
+const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
+  { id: 'community', label: 'Comunidade', icon: <Hash size={18} /> },
   { id: 'members', label: 'Membros', icon: <Users size={18} /> },
   { id: 'emojis', label: 'Emojis', icon: <Smile size={18} /> },
   { id: 'soundboard', label: 'Soundboard', icon: <AudioLines size={18} /> },
@@ -31,14 +32,18 @@ const KB = 1024;
 
 export function SettingsModal({
   user,
+  community,
   voice,
   onClose,
   onLogout,
+  onCommunityChanged,
 }: {
   user: User;
+  community: Community | undefined;
   voice: Voice;
   onClose: () => void;
   onLogout: () => void;
+  onCommunityChanged: () => void;
 }) {
   const [section, setSection] = useState<Section>('account');
 
@@ -58,13 +63,17 @@ export function SettingsModal({
               {s.icon} {s.label}
             </button>
           ))}
-          <hr />
-          <h4>Servidor</h4>
-          {SERVER_SECTIONS.map((s) => (
-            <button key={s.id} className={`settings-tab${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
-              {s.icon} {s.label}
-            </button>
-          ))}
+          {community && (
+            <>
+              <hr />
+              <h4 title={community.name}>{community.name}</h4>
+              {COMMUNITY_SECTIONS.map((s) => (
+                <button key={s.id} className={`settings-tab${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
+                  {s.icon} {s.label}
+                </button>
+              ))}
+            </>
+          )}
           <hr />
           <button className="settings-tab danger" onClick={onLogout}>
             <LogOut size={18} /> Sair da conta
@@ -75,11 +84,21 @@ export function SettingsModal({
       <main className="settings-content">
         <div className="settings-content-inner">
           {section === 'account' && <AccountSection user={user} onDeleted={onLogout} />}
-          {section === 'members' && <MembersSection user={user} />}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
-          {section === 'emojis' && <EmojisSection user={user} />}
-          {section === 'soundboard' && <SoundboardSection user={user} />}
+          {community && section === 'community' && (
+            <CommunitySection
+              community={community}
+              onChanged={onCommunityChanged}
+              onLeft={() => {
+                onCommunityChanged();
+                onClose();
+              }}
+            />
+          )}
+          {community && section === 'members' && <MembersSection user={user} community={community} />}
+          {community && section === 'emojis' && <EmojisSection user={user} community={community} />}
+          {community && section === 'soundboard' && <SoundboardSection user={user} community={community} />}
         </div>
         <button className="settings-close" onClick={onClose} aria-label="Fechar configurações">
           <span className="settings-close-circle">
@@ -209,31 +228,183 @@ function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
   );
 }
 
-// ---------- Membros do servidor ----------
+// ---------- A comunidade em si ----------
 
-function RoleBadge({ member }: { member: Pick<User, 'isAdmin' | 'isOwner'> }) {
-  if (member.isOwner) return <span className="badge badge-owner">Dono</span>;
-  if (member.isAdmin) return <span className="badge">Administrador</span>;
+function CommunitySection({
+  community,
+  onChanged,
+  onLeft,
+}: {
+  community: Community;
+  onChanged: () => void;
+  onLeft: () => void;
+}) {
+  const [name, setName] = useState(community.name);
+  const [invite, setInvite] = useState(community.inviteCode);
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState<'leave' | 'delete' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const isOwner = community.role === 'owner';
+  const manages = isOwner || community.role === 'admin';
+
+  async function rename(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      await api(`/api/communities/${community.id}`, { method: 'PATCH', body: { name } });
+      setMessage({ ok: true, text: 'Nome alterado.' });
+      onChanged();
+    } catch (e) {
+      setMessage({ ok: false, text: (e as Error).message });
+    }
+    setBusy(false);
+  }
+
+  async function newInvite() {
+    setBusy(true);
+    try {
+      const { inviteCode } = await api<{ inviteCode: string }>(`/api/communities/${community.id}/invite`, { method: 'POST' });
+      setInvite(inviteCode);
+      setMessage({ ok: true, text: 'Código novo criado. O anterior parou de funcionar.' });
+      onChanged();
+    } catch (e) {
+      setMessage({ ok: false, text: (e as Error).message });
+    }
+    setBusy(false);
+  }
+
+  async function confirm() {
+    setBusy(true);
+    try {
+      if (confirming === 'leave') await api(`/api/communities/${community.id}/leave`, { method: 'POST' });
+      else await api(`/api/communities/${community.id}`, { method: 'DELETE' });
+      setConfirming(null);
+      onLeft();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <>
+      <h2>Comunidade</h2>
+      <p className="settings-lead">
+        {community.memberCount} {community.memberCount === 1 ? 'pessoa participa' : 'pessoas participam'} de {community.name}.
+      </p>
+
+      {manages && (
+        <>
+          <h3>Convite</h3>
+          <div className="settings-card">
+            <p className="settings-hint">
+              Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de
+              entrar, se já usa o Syden.
+            </p>
+            <div className="invite-row">
+              <code className="invite-code">{invite}</code>
+              <button
+                className="btn-secondary"
+                onClick={() => {
+                  void navigator.clipboard?.writeText(invite ?? '');
+                  setMessage({ ok: true, text: 'Código copiado.' });
+                }}
+              >
+                Copiar
+              </button>
+              <button className="link-button" onClick={newInvite} disabled={busy}>
+                Gerar outro
+              </button>
+            </div>
+          </div>
+
+          <h3>Nome</h3>
+          <form className="settings-form" onSubmit={rename}>
+            <label>
+              Nome da comunidade
+              <input value={name} onChange={(e) => setName(e.target.value)} minLength={2} maxLength={40} required />
+            </label>
+            <button className="btn-primary" disabled={busy || name === community.name}>
+              Salvar nome
+            </button>
+          </form>
+        </>
+      )}
+      {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
+
+      <h3>{isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}</h3>
+      <div className="settings-card danger-zone">
+        <p>
+          {isOwner
+            ? 'Apaga a comunidade para todo mundo, com os canais, as mensagens, os emojis e os sons dela. Não dá para desfazer.'
+            : 'Você perde o acesso aos canais desta comunidade. Para voltar, vai precisar de um convite novo.'}
+        </p>
+        <div className="danger-actions">
+          <button className="btn-danger" onClick={() => setConfirming(isOwner ? 'delete' : 'leave')}>
+            {isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}
+          </button>
+        </div>
+      </div>
+
+      {confirming && (
+        <ConfirmDialog
+          title={confirming === 'delete' ? 'Apagar comunidade' : 'Sair da comunidade'}
+          confirmLabel={confirming === 'delete' ? 'Apagar' : 'Sair'}
+          busy={busy}
+          error={error}
+          onConfirm={confirm}
+          onCancel={() => {
+            setConfirming(null);
+            setError(null);
+          }}
+        >
+          {confirming === 'delete' ? (
+            <>
+              Apagar <strong>{community.name}</strong> para todos os {community.memberCount} membros? Os canais, as
+              mensagens, os emojis e os sons somem junto.
+            </>
+          ) : (
+            <>
+              Sair de <strong>{community.name}</strong>? As suas mensagens continuam lá para quem ficou.
+            </>
+          )}
+        </ConfirmDialog>
+      )}
+    </>
+  );
+}
+
+// ---------- Membros da comunidade ----------
+
+function RoleBadge({ role }: { role: Role }) {
+  if (role === 'owner') return <span className="badge badge-owner">Dono</span>;
+  if (role === 'admin') return <span className="badge">Administrador</span>;
   return null;
 }
 
-function MembersSection({ user }: { user: User }) {
-  const { users } = useDirectory();
-  const [removing, setRemoving] = useState<{ id: number; username: string } | null>(null);
+function MembersSection({ user, community }: { user: User; community: Community }) {
+  const { members: directory } = useDirectory();
+  const [removing, setRemoving] = useState<CommunityMember | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
-  const rank = (m: User) => Number(m.isOwner) * 2 + Number(m.isAdmin);
-  const members = [...users.values()].sort((a, b) => rank(b) - rank(a) || a.username.localeCompare(b.username));
+  const rank = (m: CommunityMember) => (m.role === 'owner' ? 2 : m.role === 'admin' ? 1 : 0);
+  const members = [...directory.values()].sort((a, b) => rank(b) - rank(a) || a.username.localeCompare(b.username));
+  const isOwner = community.role === 'owner';
+  const manages = isOwner || community.role === 'admin';
 
   // Mesmas regras do servidor: administrador remove membro comum; outro administrador, só o dono; o dono, ninguém.
-  const canRemove = (member: User) =>
-    member.id !== user.id && !member.isOwner && (user.isOwner || (user.isAdmin && !member.isAdmin));
+  const canRemove = (member: CommunityMember) =>
+    member.id !== user.id && member.role !== 'owner' && (isOwner || (manages && member.role !== 'admin'));
 
-  async function toggleAdmin(member: User) {
+  async function toggleAdmin(member: CommunityMember) {
     setRoleError(null);
     try {
-      await api(`/api/users/${member.id}/admin`, { method: 'PUT', body: { isAdmin: !member.isAdmin } });
+      await api(`/api/communities/${community.id}/members/${member.id}`, {
+        method: 'PUT',
+        body: { role: member.role === 'admin' ? 'member' : 'admin' },
+      });
     } catch (e) {
       setRoleError((e as Error).message);
     }
@@ -243,7 +414,7 @@ function MembersSection({ user }: { user: User }) {
     if (!removing) return;
     setBusy(true);
     try {
-      await api(`/api/users/${removing.id}`, { method: 'DELETE' });
+      await api(`/api/communities/${community.id}/members/${removing.id}`, { method: 'DELETE' });
       setRemoving(null);
       setError(null);
     } catch (e) {
@@ -256,14 +427,14 @@ function MembersSection({ user }: { user: User }) {
     <>
       <h2>Membros</h2>
       <p className="settings-lead">
-        {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} no servidor.
-        {user.isOwner
-          ? ' Como dono, você escolhe quem é administrador e pode remover qualquer pessoa.'
-          : user.isAdmin && ' Como administrador, você pode remover membros que não são administradores.'}
+        {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} em {community.name}.
+        {isOwner
+          ? ' Como dono, você escolhe quem administra e pode remover qualquer pessoa.'
+          : manages && ' Como administrador, você pode remover membros que não são administradores.'}
       </p>
       <p className="settings-hint">
-        Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons e remover
-        membros. Só o dono dá e tira esse cargo.
+        Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons desta
+        comunidade e remover membros. Só o dono dá e tira esse cargo.
       </p>
       {roleError && <p className="form-error">{roleError}</p>}
       <div className="expression-list">
@@ -271,16 +442,16 @@ function MembersSection({ user }: { user: User }) {
           <div key={member.id} className="expression-row">
             <Avatar name={member.username} userId={member.id} size={32} />
             <span className="expression-name">{member.username}</span>
-            <RoleBadge member={member} />
+            <RoleBadge role={member.role} />
             {member.id === user.id && <span className="expression-author">você</span>}
-            {user.isOwner && !member.isOwner && (
+            {isOwner && member.role !== 'owner' && (
               <button
                 className="icon-plain expression-play"
-                title={member.isAdmin ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
-                aria-label={member.isAdmin ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
+                title={member.role === 'admin' ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
+                aria-label={member.role === 'admin' ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
                 onClick={() => toggleAdmin(member)}
               >
-                {member.isAdmin ? <ShieldOff size={16} /> : <ShieldPlus size={16} />}
+                {member.role === 'admin' ? <ShieldOff size={16} /> : <ShieldPlus size={16} />}
               </button>
             )}
             {canRemove(member) && (
@@ -303,9 +474,9 @@ function MembersSection({ user }: { user: User }) {
             setError(null);
           }}
         >
-          Remover <strong>{removing.username}</strong> do servidor? A conta e as mensagens dessa pessoa serão apagadas, e ela
-          sai de qualquer chamada na hora. Para impedir que ela crie outra conta, troque também o código de convite do
-          servidor.
+          Remover <strong>{removing.username}</strong> de {community.name}? A pessoa perde o acesso aos canais e sai de
+          qualquer chamada na hora. A conta dela no Syden continua existindo. Para ela não voltar com o mesmo convite,
+          troque o código em "Comunidade".
         </ConfirmDialog>
       )}
     </>
@@ -313,8 +484,8 @@ function MembersSection({ user }: { user: User }) {
 }
 
 function AvatarEditor({ user }: { user: User }) {
-  const { users } = useDirectory();
-  const hasAvatar = (users.get(user.id)?.avatarVersion ?? null) !== null;
+  const { members } = useDirectory();
+  const hasAvatar = (members.get(user.id)?.avatarVersion ?? null) !== null;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -342,7 +513,7 @@ function AvatarEditor({ user }: { user: User }) {
         <Avatar name={user.username} userId={user.id} size={80} />
         <div className="account-info">
           <div className="account-name">{user.username}</div>
-          <RoleBadge member={user} />
+          
         </div>
         <div className="account-actions">
           <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={upload}>
@@ -399,8 +570,8 @@ function FilePicker({
 
 // ---------- Emojis do servidor ----------
 
-function EmojisSection({ user }: { user: User }) {
-  const { emojis, users } = useDirectory();
+function EmojisSection({ user, community }: { user: User; community: Community }) {
+  const { emojis, members } = useDirectory();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -423,7 +594,7 @@ function EmojisSection({ user }: { user: User }) {
     if (!preview) return;
     setBusy(true);
     try {
-      const created = await api<Emoji>('/api/emojis', { method: 'POST', body: { name, image: preview } });
+      const created = await api<Emoji>(`/api/communities/${community.id}/emojis`, { method: 'POST', body: { name, image: preview } });
       setMessage({ ok: true, text: `Pronto! Use :${created.name}: nas mensagens.` });
       setFile(null);
       setPreview(null);
@@ -469,7 +640,7 @@ function EmojisSection({ user }: { user: User }) {
           <div key={emoji.id} className="expression-row">
             <img className="expression-emoji" src={mediaUrl.emoji(emoji.id)} alt="" />
             <span className="expression-name">:{emoji.name}:</span>
-            <span className="expression-author">{authorLabel(emoji.createdBy, users)}</span>
+            <span className="expression-author">{authorLabel(emoji.createdBy, members)}</span>
             {(user.isAdmin || emoji.createdBy === user.id) && (
               <DeleteButton label={`Excluir :${emoji.name}:`} path={`/api/emojis/${emoji.id}`} />
             )}
@@ -482,8 +653,8 @@ function EmojisSection({ user }: { user: User }) {
 
 // ---------- Soundboard do servidor ----------
 
-function SoundboardSection({ user }: { user: User }) {
-  const { sounds, users } = useDirectory();
+function SoundboardSection({ user, community }: { user: User; community: Community }) {
+  const { sounds, members } = useDirectory();
   const settings = useSettings();
   const [audio, setAudio] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
@@ -508,7 +679,7 @@ function SoundboardSection({ user }: { user: User }) {
     if (!audio) return;
     setBusy(true);
     try {
-      await api<Sound>('/api/sounds', { method: 'POST', body: { name, icon, audio } });
+      await api<Sound>(`/api/communities/${community.id}/sounds`, { method: 'POST', body: { name, icon, audio } });
       setMessage({ ok: true, text: `"${name}" já está no soundboard.` });
       setAudio(null);
       setFileName('');
@@ -541,7 +712,7 @@ function SoundboardSection({ user }: { user: User }) {
       </label>
 
       <h3>Adicionar vários de uma vez</h3>
-      <BulkSoundUpload />
+      <BulkSoundUpload community={community} />
 
       <h3>Adicionar um som</h3>
       <form className="settings-card upload-card" onSubmit={submit}>
@@ -578,7 +749,7 @@ function SoundboardSection({ user }: { user: User }) {
           <div key={sound.id} className="expression-row">
             <span className="expression-icon">{sound.icon}</span>
             <span className="expression-name">{sound.name}</span>
-            <span className="expression-author">{authorLabel(sound.createdBy, users)}</span>
+            <span className="expression-author">{authorLabel(sound.createdBy, members)}</span>
             <button className="icon-plain expression-play" title="Ouvir" aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
               <Play size={16} />
             </button>
@@ -596,7 +767,7 @@ function SoundboardSection({ user }: { user: User }) {
  * Envia vários sons de uma vez. O nome vem do nome do arquivo, e um emoji no começo do nome vira o ícone:
  * "🤡 Errou.mp3" → som "Errou" com ícone 🤡.
  */
-function BulkSoundUpload() {
+function BulkSoundUpload({ community }: { community: Community }) {
   const [results, setResults] = useState<{ file: string; ok: boolean; text: string }[]>([]);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
 
@@ -607,7 +778,7 @@ function BulkSoundUpload() {
       const { name, icon } = soundNameFromFile(file.name);
       try {
         const audio = await prepareSound(file, 1024 * KB);
-        await api<Sound>('/api/sounds', { method: 'POST', body: { name, icon, audio } });
+        await api<Sound>(`/api/communities/${community.id}/sounds`, { method: 'POST', body: { name, icon, audio } });
         setResults((list) => [...list, { file: file.name, ok: true, text: `${icon} ${name}` }]);
       } catch (e) {
         setResults((list) => [...list, { file: file.name, ok: false, text: (e as Error).message }]);
@@ -660,9 +831,9 @@ function soundNameFromFile(fileName: string) {
   return { name: (base || 'Som').slice(0, 32).trim(), icon };
 }
 
-function authorLabel(createdBy: number | null, users: Map<number, { username: string }>) {
+function authorLabel(createdBy: number | null, members: Map<number, { username: string }>) {
   if (createdBy === null) return 'Pacote do Syden';
-  return `por ${users.get(createdBy)?.username ?? 'alguém'}`;
+  return `por ${members.get(createdBy)?.username ?? 'alguém'}`;
 }
 
 function DeleteButton({ label, path }: { label: string; path: string }) {

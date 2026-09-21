@@ -6,12 +6,12 @@ import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
 import { useDirectory } from './directory';
 import { EmojiPicker } from './EmojiPicker';
-import type { Channel, Message, User } from './types';
+import type { Channel, Message, Role, User } from './types';
 
 const PAGE_SIZE = 50;
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
-export function TextChannel({ channel, socket, user }: { channel: Channel; socket: Socket; user: User }) {
+export function TextChannel({ channel, socket, user, role }: { channel: Channel; socket: Socket; user: User; role: Role }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [draft, setDraft] = useState('');
@@ -89,7 +89,7 @@ export function TextChannel({ channel, socket, user }: { channel: Channel; socke
     });
   }
 
-  const canDelete = (message: Message) => message.author.id === user.id || user.isAdmin;
+  const canDelete = (message: Message) => message.author.id === user.id || role === 'owner' || role === 'admin';
 
   /** Shift + clique apaga sem perguntar. */
   function requestDelete(message: Message, skipConfirm: boolean) {

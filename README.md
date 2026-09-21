@@ -1,6 +1,12 @@
 # Syden
 
-Um app estilo Discord para a galera: canais de texto, salas de voz, câmera e compartilhamento de tela.
+Um app estilo Discord para a galera: comunidades com canais de texto, salas de voz, câmera e compartilhamento
+de tela.
+
+Cada **comunidade** é um "servidor" no sentido do Discord: tem os próprios canais, membros, emojis, sons e
+cargos, e entra-se nela por um código de convite. Quem cria é o dono; ele dá e tira o cargo de administrador.
+Uma instalação do Syden hospeda várias comunidades, com dois freios (em `deploy/.env`) para o consumo não fugir
+do controle: `MAX_COMMUNITIES_PER_USER` e `MAX_MEMBERS_PER_COMMUNITY`.
 
 | Parte | Tecnologia | Onde roda |
 |---|---|---|

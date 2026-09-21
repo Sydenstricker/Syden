@@ -3,6 +3,23 @@ import { config } from './config.js';
 
 export type ChannelType = 'text' | 'voice';
 
+/** Cargo dentro de uma comunidade (o "servidor" do Discord). */
+export type Role = 'owner' | 'admin' | 'member';
+
+export interface Community {
+  id: number;
+  name: string;
+  createdBy: number | null;
+}
+
+/** Uma comunidade vista por quem participa dela. */
+export interface CommunityForUser extends Community {
+  role: Role;
+  memberCount: number;
+  /** Só vai para quem administra: é o que convida gente nova. Para os outros, null. */
+  inviteCode: string | null;
+}
+
 export interface User {
   id: number;
   username: string;
@@ -19,14 +36,19 @@ export type UserRef = Pick<User, 'id' | 'username'>;
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner'>;
 
+/** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
+export type CommunityMember = PublicUser & { role: Role };
+
 export interface Emoji {
   id: number;
+  communityId: number;
   name: string;
   createdBy: number | null;
 }
 
 export interface Sound {
   id: number;
+  communityId: number;
   name: string;
   /** Um emoji comum que representa o som no soundboard. */
   icon: string;
@@ -35,6 +57,7 @@ export interface Sound {
 
 export interface Channel {
   id: number;
+  communityId: number;
   name: string;
   type: ChannelType;
   position: number;
@@ -62,11 +85,30 @@ db.exec(`
     created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
 
+  -- Cada comunidade é um "servidor" no sentido do Discord: canais, emojis, sons e membros próprios.
+  CREATE TABLE IF NOT EXISTS communities (
+    id          INTEGER PRIMARY KEY,
+    name        TEXT NOT NULL,
+    invite_code TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    created_by  INTEGER,
+    created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS community_members (
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role         TEXT NOT NULL CHECK (role IN ('owner', 'admin', 'member')) DEFAULT 'member',
+    joined_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (community_id, user_id)
+  );
+
   CREATE TABLE IF NOT EXISTS channels (
-    id       INTEGER PRIMARY KEY,
-    name     TEXT NOT NULL,
-    type     TEXT NOT NULL CHECK (type IN ('text', 'voice')),
-    position INTEGER NOT NULL DEFAULT 0
+    id           INTEGER PRIMARY KEY,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    name         TEXT NOT NULL,
+    type         TEXT NOT NULL CHECK (type IN ('text', 'voice')),
+    position     INTEGER NOT NULL DEFAULT 0,
+    created_by   INTEGER
   );
 
   CREATE TABLE IF NOT EXISTS messages (
@@ -108,21 +150,25 @@ db.exec(`
   );
 
   -- AUTOINCREMENT: um id nunca é reaproveitado, então a URL de cada arquivo pode ficar em cache para sempre.
+  -- O nome é único dentro da comunidade: duas comunidades podem ter o seu próprio :boom:.
   CREATE TABLE IF NOT EXISTS emojis (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    name       TEXT NOT NULL UNIQUE COLLATE NOCASE,
-    mime       TEXT NOT NULL,
-    data       BLOB NOT NULL,
-    created_by INTEGER
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    name         TEXT NOT NULL COLLATE NOCASE,
+    mime         TEXT NOT NULL,
+    data         BLOB NOT NULL,
+    created_by   INTEGER,
+    UNIQUE (community_id, name)
   );
 
   CREATE TABLE IF NOT EXISTS sounds (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    name       TEXT NOT NULL,
-    icon       TEXT NOT NULL,
-    mime       TEXT NOT NULL,
-    data       BLOB NOT NULL,
-    created_by INTEGER
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    name         TEXT NOT NULL,
+    icon         TEXT NOT NULL,
+    mime         TEXT NOT NULL,
+    data         BLOB NOT NULL,
+    created_by   INTEGER
   );
 `);
 
@@ -131,6 +177,10 @@ function addColumnIfMissing(table: string, column: string, definition: string) {
   const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
   if (!columns.some((c) => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
 }
+function hasColumn(table: string, column: string) {
+  return (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
+}
+
 addColumnIfMissing('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
@@ -152,13 +202,170 @@ function ensureOwner() {
 }
 ensureOwner();
 
-const { n: channelCount } = db.prepare('SELECT COUNT(*) AS n FROM channels').get() as { n: number };
-if (channelCount === 0) {
-  const insert = db.prepare('INSERT INTO channels (name, type, position) VALUES (?, ?, ?)');
-  insert.run('geral', 'text', 0);
-  insert.run('jogos', 'text', 1);
-  insert.run('Sala 1', 'voice', 2);
-  insert.run('Sala 2', 'voice', 3);
+/** Código de convite curto e fácil de ditar por voz (sem 0/O nem 1/I, que confundem). */
+export function newInviteCode() {
+  const alphabet = 'abcdefghjkmnpqrstuvwxyz23456789';
+  return Array.from({ length: 8 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+}
+
+/**
+ * Antes das comunidades existia um conjunto único de canais, emojis e sons. Tudo isso vira a primeira
+ * comunidade, com os membros de hoje dentro dela e o dono do Syden como dono dela.
+ */
+function migrateToCommunities() {
+  if (hasColumn('channels', 'community_id')) return; // banco novo, ou já migrado
+  db.exec('BEGIN');
+  try {
+    const owner = db.prepare('SELECT id FROM users ORDER BY is_owner DESC, is_admin DESC, id LIMIT 1').get() as
+      | { id: number }
+      | undefined;
+    const { lastInsertRowid } = db
+      .prepare('INSERT INTO communities (name, invite_code, created_by) VALUES (?, ?, ?)')
+      .run('Syden', config.inviteCode || newInviteCode(), owner?.id ?? null);
+    const communityId = Number(lastInsertRowid);
+
+    db.prepare(
+      `INSERT INTO community_members (community_id, user_id, role)
+       SELECT ?, id, CASE WHEN is_owner = 1 THEN 'owner' WHEN is_admin = 1 THEN 'admin' ELSE 'member' END FROM users`,
+    ).run(communityId);
+
+    for (const table of ['channels', 'sounds']) {
+      db.exec(`ALTER TABLE ${table} ADD COLUMN community_id INTEGER`);
+      db.prepare(`UPDATE ${table} SET community_id = ?`).run(communityId);
+    }
+
+    // A tabela de emojis exigia nome único no servidor inteiro; agora o nome é único dentro da comunidade.
+    // Mudar isso no SQLite significa recriar a tabela e copiar os dados (os ids são preservados).
+    db.exec(`
+      CREATE TABLE emojis_new (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+        name         TEXT NOT NULL COLLATE NOCASE,
+        mime         TEXT NOT NULL,
+        data         BLOB NOT NULL,
+        created_by   INTEGER,
+        UNIQUE (community_id, name)
+      )`);
+    db.prepare('INSERT INTO emojis_new (id, community_id, name, mime, data, created_by) SELECT id, ?, name, mime, data, created_by FROM emojis').run(
+      communityId,
+    );
+    db.exec('DROP TABLE emojis; ALTER TABLE emojis_new RENAME TO emojis;');
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
+}
+migrateToCommunities();
+
+/** Canais que toda comunidade nova ganha, para ninguém começar numa tela vazia. */
+export function seedChannels(communityId: number) {
+  const insert = db.prepare('INSERT INTO channels (community_id, name, type, position) VALUES (?, ?, ?, ?)');
+  insert.run(communityId, 'geral', 'text', 0);
+  insert.run(communityId, 'jogos', 'text', 1);
+  insert.run(communityId, 'Sala 1', 'voice', 2);
+  insert.run(communityId, 'Sala 2', 'voice', 3);
+}
+
+// ---------- Comunidades ----------
+
+const communityColumns = 'id, name, created_by AS createdBy';
+
+export function listCommunitiesForUser(userId: number): CommunityForUser[] {
+  return db
+    .prepare(
+      `SELECT c.id, c.name, c.created_by AS createdBy, m.role,
+              (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
+              CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
+       FROM communities c JOIN community_members m ON m.community_id = c.id
+       WHERE m.user_id = ? ORDER BY m.joined_at, c.id`,
+    )
+    .all(userId) as unknown as CommunityForUser[];
+}
+
+export function findCommunity(id: number) {
+  return db.prepare(`SELECT ${communityColumns} FROM communities WHERE id = ?`).get(id) as Community | undefined;
+}
+
+export function findCommunityByInvite(code: string) {
+  return db.prepare(`SELECT ${communityColumns} FROM communities WHERE invite_code = ?`).get(code.trim()) as Community | undefined;
+}
+
+export function communityInviteCode(id: number) {
+  return (db.prepare('SELECT invite_code AS code FROM communities WHERE id = ?').get(id) as { code: string } | undefined)?.code;
+}
+
+export function setCommunityInviteCode(id: number, code: string) {
+  db.prepare('UPDATE communities SET invite_code = ? WHERE id = ?').run(code, id);
+}
+
+/** A comunidade mais antiga: é a de todo mundo que se cadastra sem código de outra. */
+export function defaultCommunity() {
+  return db.prepare(`SELECT ${communityColumns} FROM communities ORDER BY id LIMIT 1`).get() as Community | undefined;
+}
+
+export function createCommunity(name: string, ownerId: number, inviteCode: string): Community {
+  const result = db
+    .prepare('INSERT INTO communities (name, invite_code, created_by) VALUES (?, ?, ?)')
+    .run(name, inviteCode, ownerId);
+  const id = Number(result.lastInsertRowid);
+  addMember(id, ownerId, 'owner');
+  seedChannels(id);
+  return findCommunity(id)!;
+}
+
+export function renameCommunity(id: number, name: string) {
+  db.prepare('UPDATE communities SET name = ? WHERE id = ?').run(name, id);
+  return findCommunity(id)!;
+}
+
+/** Apaga a comunidade inteira: canais, mensagens, emojis, sons e a lista de membros (ON DELETE CASCADE). */
+export function deleteCommunity(id: number) {
+  db.prepare('DELETE FROM communities WHERE id = ?').run(id);
+}
+
+export function countCommunitiesCreatedBy(userId: number) {
+  return (db.prepare('SELECT COUNT(*) AS n FROM communities WHERE created_by = ?').get(userId) as { n: number }).n;
+}
+
+export function countMembers(communityId: number) {
+  return (db.prepare('SELECT COUNT(*) AS n FROM community_members WHERE community_id = ?').get(communityId) as { n: number }).n;
+}
+
+export function memberRole(communityId: number, userId: number): Role | undefined {
+  return (db.prepare('SELECT role FROM community_members WHERE community_id = ? AND user_id = ?').get(communityId, userId) as
+    | { role: Role }
+    | undefined)?.role;
+}
+
+export function addMember(communityId: number, userId: number, role: Role = 'member') {
+  db.prepare('INSERT OR IGNORE INTO community_members (community_id, user_id, role) VALUES (?, ?, ?)').run(communityId, userId, role);
+}
+
+export function setMemberRole(communityId: number, userId: number, role: Role) {
+  db.prepare('UPDATE community_members SET role = ? WHERE community_id = ? AND user_id = ?').run(role, communityId, userId);
+}
+
+export function removeMember(communityId: number, userId: number) {
+  db.prepare('DELETE FROM community_members WHERE community_id = ? AND user_id = ?').run(communityId, userId);
+}
+
+export function listCommunityMembers(communityId: number): CommunityMember[] {
+  const rows = db
+    .prepare(
+      `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, m.role
+       FROM community_members m JOIN users u ON u.id = m.user_id
+       WHERE m.community_id = ? ORDER BY u.id`,
+    )
+    .all(communityId) as unknown as (UserRow & { role: Role })[];
+  return rows.map((row) => ({ ...toUser(row)!, role: row.role }));
+}
+
+/** Comunidades de que a pessoa participa, só os ids (para as salas do socket). */
+export function communityIdsForUser(userId: number): number[] {
+  return (db.prepare('SELECT community_id AS id FROM community_members WHERE user_id = ?').all(userId) as { id: number }[]).map(
+    (row) => row.id,
+  );
 }
 
 const userColumns = 'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion';
@@ -215,20 +422,24 @@ export function findAvatar(userId: number) {
 
 // ---------- Emojis e sons do servidor ----------
 
-export function listEmojis(): Emoji[] {
-  return db.prepare('SELECT id, name, created_by AS createdBy FROM emojis ORDER BY name').all() as unknown as Emoji[];
+const emojiColumns = 'id, community_id AS communityId, name, created_by AS createdBy';
+
+export function listEmojis(communityId: number): Emoji[] {
+  return db.prepare(`SELECT ${emojiColumns} FROM emojis WHERE community_id = ? ORDER BY name`).all(communityId) as unknown as Emoji[];
 }
 
 export function findEmoji(id: number) {
-  return db.prepare('SELECT id, name, created_by AS createdBy FROM emojis WHERE id = ?').get(id) as Emoji | undefined;
+  return db.prepare(`SELECT ${emojiColumns} FROM emojis WHERE id = ?`).get(id) as Emoji | undefined;
 }
 
-export function emojiNameTaken(name: string) {
-  return !!db.prepare('SELECT 1 FROM emojis WHERE name = ?').get(name);
+export function emojiNameTaken(communityId: number, name: string) {
+  return !!db.prepare('SELECT 1 FROM emojis WHERE community_id = ? AND name = ?').get(communityId, name);
 }
 
-export function createEmoji(name: string, mime: string, data: Buffer, createdBy: number | null): Emoji {
-  const result = db.prepare('INSERT INTO emojis (name, mime, data, created_by) VALUES (?, ?, ?, ?)').run(name, mime, data, createdBy);
+export function createEmoji(communityId: number, name: string, mime: string, data: Buffer, createdBy: number | null): Emoji {
+  const result = db
+    .prepare('INSERT INTO emojis (community_id, name, mime, data, created_by) VALUES (?, ?, ?, ?, ?)')
+    .run(communityId, name, mime, data, createdBy);
   return findEmoji(Number(result.lastInsertRowid))!;
 }
 
@@ -240,18 +451,27 @@ export function findEmojiFile(id: number) {
   return db.prepare('SELECT mime, data FROM emojis WHERE id = ?').get(id) as { mime: string; data: Uint8Array } | undefined;
 }
 
-export function listSounds(): Sound[] {
-  return db.prepare('SELECT id, name, icon, created_by AS createdBy FROM sounds ORDER BY id').all() as unknown as Sound[];
+const soundColumns = 'id, community_id AS communityId, name, icon, created_by AS createdBy';
+
+export function listSounds(communityId: number): Sound[] {
+  return db.prepare(`SELECT ${soundColumns} FROM sounds WHERE community_id = ? ORDER BY id`).all(communityId) as unknown as Sound[];
 }
 
 export function findSound(id: number) {
-  return db.prepare('SELECT id, name, icon, created_by AS createdBy FROM sounds WHERE id = ?').get(id) as Sound | undefined;
+  return db.prepare(`SELECT ${soundColumns} FROM sounds WHERE id = ?`).get(id) as Sound | undefined;
 }
 
-export function createSound(name: string, icon: string, mime: string, data: Buffer, createdBy: number | null): Sound {
+export function createSound(
+  communityId: number,
+  name: string,
+  icon: string,
+  mime: string,
+  data: Buffer,
+  createdBy: number | null,
+): Sound {
   const result = db
-    .prepare('INSERT INTO sounds (name, icon, mime, data, created_by) VALUES (?, ?, ?, ?, ?)')
-    .run(name, icon, mime, data, createdBy);
+    .prepare('INSERT INTO sounds (community_id, name, icon, mime, data, created_by) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(communityId, name, icon, mime, data, createdBy);
   return findSound(Number(result.lastInsertRowid))!;
 }
 
@@ -260,8 +480,8 @@ export function deleteSound(id: number) {
 }
 
 /** Remove os sons do pacote de demonstração (os que ninguém enviou), para trocar por uma versão nova. */
-export function deletePackSounds() {
-  db.prepare('DELETE FROM sounds WHERE created_by IS NULL').run();
+export function deletePackSounds(communityId: number) {
+  db.prepare('DELETE FROM sounds WHERE community_id = ? AND created_by IS NULL').run(communityId);
 }
 
 export function findSoundFile(id: number) {
@@ -286,8 +506,32 @@ export function createUser(username: string, passwordHash: string): User {
 }
 
 /**
+ * Comunidade sem dono (quem criou saiu ou excluiu a conta): o administrador mais antigo assume, ou o membro
+ * mais antigo. Comunidade que ficou sem ninguém é apagada, junto com os canais, mensagens, emojis e sons.
+ */
+export function ensureCommunityOwners() {
+  const orphans = db
+    .prepare(
+      `SELECT c.id FROM communities c
+       WHERE NOT EXISTS (SELECT 1 FROM community_members m WHERE m.community_id = c.id AND m.role = 'owner')`,
+    )
+    .all() as { id: number }[];
+  for (const { id } of orphans) {
+    const heir = db
+      .prepare(
+        `SELECT user_id AS userId FROM community_members WHERE community_id = ?
+         ORDER BY CASE role WHEN 'admin' THEN 0 ELSE 1 END, joined_at, user_id LIMIT 1`,
+      )
+      .get(id) as { userId: number } | undefined;
+    if (heir) setMemberRole(id, heir.userId, 'owner');
+    else deleteCommunity(id);
+  }
+}
+
+/**
  * Apaga a conta e os dados pessoais dela (mensagens, avatar, histórico de uso). Canais, emojis e sons que a
- * pessoa criou continuam no servidor, sem dono. Se era o dono do servidor, outra pessoa assume (ensureOwner).
+ * pessoa criou continuam onde estão, sem dono. Cargos que ela tinha passam para outra pessoa (ensureOwner e
+ * ensureCommunityOwners).
  */
 export function deleteAccount(userId: number) {
   db.exec('BEGIN');
@@ -300,6 +544,7 @@ export function deleteAccount(userId: number) {
     }
     db.prepare('DELETE FROM users WHERE id = ?').run(userId);
     ensureOwner();
+    ensureCommunityOwners();
     db.exec('COMMIT');
   } catch (error) {
     db.exec('ROLLBACK');
@@ -308,9 +553,12 @@ export function deleteAccount(userId: number) {
 }
 
 export function findMessage(id: number) {
-  return db.prepare('SELECT id, channel_id AS channelId, user_id AS userId FROM messages WHERE id = ?').get(id) as
-    | { id: number; channelId: number; userId: number }
-    | undefined;
+  return db
+    .prepare(
+      `SELECT m.id, m.channel_id AS channelId, m.user_id AS userId, c.community_id AS communityId
+       FROM messages m JOIN channels c ON c.id = m.channel_id WHERE m.id = ?`,
+    )
+    .get(id) as { id: number; channelId: number; userId: number; communityId: number } | undefined;
 }
 
 export function deleteMessage(id: number) {
@@ -321,21 +569,25 @@ export function updatePassword(userId: number, passwordHash: string) {
   db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
 }
 
-const channelColumns = 'id, name, type, position, created_by AS createdBy';
+const channelColumns = 'id, community_id AS communityId, name, type, position, created_by AS createdBy';
 
-export function listChannels() {
-  return db.prepare(`SELECT ${channelColumns} FROM channels ORDER BY position, id`).all() as unknown as Channel[];
+export function listChannels(communityId: number) {
+  return db
+    .prepare(`SELECT ${channelColumns} FROM channels WHERE community_id = ? ORDER BY position, id`)
+    .all(communityId) as unknown as Channel[];
 }
 
 export function findChannel(id: number) {
   return db.prepare(`SELECT ${channelColumns} FROM channels WHERE id = ?`).get(id) as Channel | undefined;
 }
 
-export function createChannel(name: string, type: ChannelType, createdBy: number): Channel {
-  const { next } = db.prepare('SELECT COALESCE(MAX(position), -1) + 1 AS next FROM channels').get() as { next: number };
+export function createChannel(communityId: number, name: string, type: ChannelType, createdBy: number): Channel {
+  const { next } = db
+    .prepare('SELECT COALESCE(MAX(position), -1) + 1 AS next FROM channels WHERE community_id = ?')
+    .get(communityId) as { next: number };
   const result = db
-    .prepare('INSERT INTO channels (name, type, position, created_by) VALUES (?, ?, ?, ?)')
-    .run(name, type, next, createdBy);
+    .prepare('INSERT INTO channels (community_id, name, type, position, created_by) VALUES (?, ?, ?, ?, ?)')
+    .run(communityId, name, type, next, createdBy);
   return findChannel(Number(result.lastInsertRowid))!;
 }
 
@@ -349,8 +601,9 @@ export function deleteChannel(id: number) {
   db.prepare('DELETE FROM channels WHERE id = ?').run(id);
 }
 
-export function countChannels(type: ChannelType) {
-  return (db.prepare('SELECT COUNT(*) AS n FROM channels WHERE type = ?').get(type) as { n: number }).n;
+export function countChannels(communityId: number, type: ChannelType) {
+  return (db.prepare('SELECT COUNT(*) AS n FROM channels WHERE community_id = ? AND type = ?').get(communityId, type) as { n: number })
+    .n;
 }
 
 interface MessageRow {

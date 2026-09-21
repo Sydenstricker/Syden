@@ -11,14 +11,32 @@ export type UserRef = Pick<User, 'id' | 'username'>;
 
 export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner'>;
 
+/** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */
+export type Role = 'owner' | 'admin' | 'member';
+
+export type CommunityMember = PublicUser & { role: Role };
+
+/** Uma comunidade (o "servidor" do Discord) do jeito que quem participa dela enxerga. */
+export interface Community {
+  id: number;
+  name: string;
+  createdBy: number | null;
+  role: Role;
+  memberCount: number;
+  /** Só quem administra recebe o código; para os outros vem null. */
+  inviteCode: string | null;
+}
+
 export interface Emoji {
   id: number;
+  communityId: number;
   name: string;
   createdBy: number | null;
 }
 
 export interface Sound {
   id: number;
+  communityId: number;
   name: string;
   icon: string;
   createdBy: number | null;
@@ -26,6 +44,7 @@ export interface Sound {
 
 export interface Channel {
   id: number;
+  communityId: number;
   name: string;
   type: 'text' | 'voice';
   position: number;
@@ -43,6 +62,7 @@ export interface Message {
 export interface VoiceMember {
   userId: number;
   username: string;
+  communityId: number;
   channelId: number;
   muted: boolean;
   deafened: boolean;

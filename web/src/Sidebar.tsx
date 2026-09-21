@@ -20,13 +20,13 @@ import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
-import { Logo } from './Logo';
 import { Avatar } from './Avatar';
-import type { Channel, User, VoiceMember } from './types';
+import type { Channel, Community, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
 interface Props {
   user: User;
+  community: Community;
   channels: Channel[];
   selectedId: number | null;
   voiceMembers: VoiceMember[];
@@ -39,6 +39,7 @@ interface Props {
 
 export function Sidebar({
   user,
+  community,
   channels,
   selectedId,
   usageActive,
@@ -53,7 +54,9 @@ export function Sidebar({
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
   const [deleting, setDeleting] = useState<Channel | null>(null);
 
-  const canManage = (channel: Channel) => user.isAdmin || channel.createdBy === user.id;
+  // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
+  const managesCommunity = community.role === 'owner' || community.role === 'admin';
+  const canManage = (channel: Channel) => managesCommunity || channel.createdBy === user.id;
   const row = (channel: Channel, icon: ReactNode) => (
     <ChannelRow
       channel={channel}
@@ -68,9 +71,8 @@ export function Sidebar({
   return (
     <nav className="sidebar">
       <header className="sidebar-header">
-        <span className="sidebar-brand">
-          <Logo size={22} />
-          Syden
+        <span className="sidebar-brand" title={community.name}>
+          {community.name}
         </span>
         {showDesktopDownload && (
           <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title="Baixar o app para Windows" aria-label="Baixar o app para Windows">
@@ -87,7 +89,7 @@ export function Sidebar({
           </button>
         )}
 
-        <ChannelGroup title="Canais de texto" type="text">
+        <ChannelGroup title="Canais de texto" type="text" communityId={community.id}>
           {channels
             .filter((c) => c.type === 'text')
             .map((c) => (
@@ -95,7 +97,7 @@ export function Sidebar({
             ))}
         </ChannelGroup>
 
-        <ChannelGroup title="Canais de voz" type="voice">
+        <ChannelGroup title="Canais de voz" type="voice" communityId={community.id}>
           {channels
             .filter((c) => c.type === 'voice')
             .map((c) => (
@@ -271,7 +273,17 @@ function DeleteChannelDialog({ channel, onClose }: { channel: Channel; onClose: 
   );
 }
 
-function ChannelGroup({ title, type, children }: { title: string; type: Channel['type']; children: ReactNode }) {
+function ChannelGroup({
+  title,
+  type,
+  communityId,
+  children,
+}: {
+  title: string;
+  type: Channel['type'];
+  communityId: number;
+  children: ReactNode;
+}) {
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -281,7 +293,7 @@ function ChannelGroup({ title, type, children }: { title: string; type: Channel[
     const name = event.currentTarget.value.trim();
     if (!name) return;
     try {
-      await api<Channel>('/api/channels', { method: 'POST', body: { name, type } });
+      await api<Channel>(`/api/communities/${communityId}/channels`, { method: 'POST', body: { name, type } });
       setAdding(false);
       setError(null);
     } catch (e) {

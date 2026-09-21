@@ -17,8 +17,8 @@ export function Avatar({
   speaking?: boolean;
   size?: number;
 }) {
-  const { users } = useDirectory();
-  const version = userId === undefined ? null : (users.get(userId)?.avatarVersion ?? null);
+  const { members } = useDirectory();
+  const version = userId === undefined ? null : (members.get(userId)?.avatarVersion ?? null);
   // Hash que espalha bem nomes parecidos (ana1, ana2...) entre as cores; somar os códigos repetia muito.
   const hash = [...name].reduce((acc, ch) => (Math.imul(acc, 31) + ch.charCodeAt(0)) >>> 0, 7);
 

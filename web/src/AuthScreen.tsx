@@ -62,6 +62,7 @@ export function AuthScreen({ onAuthenticated }: { onAuthenticated: (token: strin
               <label>
                 Código de convite
                 <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} />
+                <span className="auth-hint">O código que um amigo te passou. Ele já te coloca na comunidade dele.</span>
               </label>
             )}
 

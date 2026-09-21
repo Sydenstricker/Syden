@@ -3,7 +3,7 @@ import Fastify from 'fastify';
 import { Server as IOServer } from 'socket.io';
 import { config } from './config.js';
 import { setupRealtime } from './realtime.js';
-import { seedExpressions } from './expressions.js';
+import { seedFirstCommunity } from './expressions.js';
 import { registerMediaRoutes } from './media-routes.js';
 import { registerRoutes } from './routes.js';
 import { startTrafficSampling } from './traffic.js';
@@ -13,7 +13,7 @@ const app = Fastify({ logger: { level: 'info' }, trustProxy: true });
 await app.register(cors, { origin: config.corsOrigins, methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'] });
 
 const io = new IOServer(app.server, { cors: { origin: config.corsOrigins } });
-seedExpressions();
+seedFirstCommunity();
 setupRealtime(io);
 registerRoutes(app, io);
 registerMediaRoutes(app, io);
