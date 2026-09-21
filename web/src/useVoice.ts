@@ -310,6 +310,11 @@ export function useVoice(socket: Socket | null) {
           audio: true, // áudio da aba/sistema, quando o navegador suporta
           systemAudio: 'include',
           selfBrowserSurface: 'exclude',
+          // Quase sempre a pessoa quer mostrar a tela inteira (um jogo, por exemplo), não a aba do navegador:
+          // o Chrome e o Edge já abrem o seletor em "Tela inteira" por causa disto.
+          video: { displaySurface: 'monitor' },
+          preferCurrentTab: false,
+          surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
           resolution: preset.resolution,
         },
         { screenShareEncoding: preset.encoding },
