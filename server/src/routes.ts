@@ -156,7 +156,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/channels', async () => db.listChannels());
 
-    authed.get('/api/usage', async () => usageSummary());
+    // Consumo do servidor (tráfego e horas): informação de quem administra.
+    authed.get('/api/usage', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o uso do servidor.' });
+      return usageSummary();
+    });
 
     authed.post<{ Body: { name?: string; type?: db.ChannelType } }>('/api/channels', async (request, reply) => {
       const type = request.body?.type;

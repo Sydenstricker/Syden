@@ -80,9 +80,12 @@ export function Sidebar({
       </header>
 
       <div className="channel-list">
-        <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
-          <BarChart3 size={18} /> Uso do servidor
-        </button>
+        {/* Consumo do servidor interessa a quem cuida dele: só os administradores veem. */}
+        {user.isAdmin && (
+          <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
+            <BarChart3 size={18} /> Uso do servidor
+          </button>
+        )}
 
         <ChannelGroup title="Canais de texto" type="text">
           {channels

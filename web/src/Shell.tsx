@@ -135,7 +135,9 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
     }
   }, [channels, selectedId]);
 
-  const selected = showUsage ? undefined : channels.find((c) => c.id === selectedId);
+  // Painel de consumo é só para administradores; se alguém perder o cargo com ele aberto, a tela volta ao normal.
+  const usageOpen = showUsage && user.isAdmin;
+  const selected = usageOpen ? undefined : channels.find((c) => c.id === selectedId);
 
   function selectChannel(channel: Channel) {
     setShowUsage(false);
@@ -154,8 +156,8 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
         <Sidebar
           user={user}
           channels={channels}
-          selectedId={showUsage ? null : selectedId}
-          usageActive={showUsage}
+          selectedId={usageOpen ? null : selectedId}
+          usageActive={usageOpen}
           voiceMembers={voiceMembers}
           voice={voice}
           onSelect={selectChannel}
@@ -177,8 +179,8 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
               members={voiceMembers.filter((m) => m.channelId === selected.id)}
             />
           )}
-          {showUsage && <UsageDashboard voiceMembers={voiceMembers} />}
-          {!selected && !showUsage && <div className="empty">Escolha um canal à esquerda.</div>}
+          {usageOpen && <UsageDashboard voiceMembers={voiceMembers} />}
+          {!selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
         </main>
         {selected?.type === 'text' && (
           <aside className="members">
