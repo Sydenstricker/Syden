@@ -5,10 +5,11 @@ import {
   type TrackReferenceOrPlaceholder,
   useIsMuted,
   useIsSpeaking,
+  useParticipantTracks,
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
-import { Track, type TrackPublication } from 'livekit-client';
+import { type Participant, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
   HeadphoneOff,
@@ -23,6 +24,7 @@ import {
   Video,
   VideoOff,
   Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { Avatar } from './Avatar';
@@ -31,6 +33,7 @@ import { QualityAdvisor } from './QualityAdvisor';
 import { IconButton } from './Sidebar';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
+import { getScreenVolume, setScreenVolume } from './voiceVolumes';
 import type { Channel, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -200,6 +203,61 @@ function StreamInfoBadge({ publication, local }: { publication: TrackPublication
   );
 }
 
+/**
+ * Som da transmissão: volume próprio, separado da voz da pessoa. Quando a transmissão vem sem som, explica
+ * por quê — quase sempre é a caixinha "compartilhar áudio", que passa despercebida na hora de escolher a tela.
+ */
+function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participant }) {
+  const [open, setOpen] = useState(false);
+  const userId = Number(publisher.identity);
+  const [volume, setVolume] = useState(() => getScreenVolume(userId));
+  // Reavalia quando o participante publica ou tira faixas (o som pode chegar depois da imagem).
+  const tracks = useParticipantTracks([Track.Source.ScreenShareAudio], publisher.identity);
+  const comSom = tracks.length > 0;
+
+  if (publisher.isLocal) {
+    return comSom ? null : (
+      <div className="stream-audio">
+        <span className="stream-audio-warn">
+          <VolumeX size={16} /> Sua transmissão está sem som: ao escolher a tela, marque "compartilhar áudio".
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="stream-audio" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button className="stream-info-button" aria-label="Som da transmissão" onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+        {comSom && volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
+      </button>
+      {open && (
+        <div className="stream-info-card">
+          {comSom ? (
+            <label className="stream-audio-volume">
+              Som da transmissão: {Math.round(volume * 100)}%
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={volume}
+                aria-label="Volume da transmissão"
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setVolume(value);
+                  setScreenVolume(voice.room, userId, value);
+                }}
+              />
+            </label>
+          ) : (
+            <span>Esta transmissão está sem som. Quem transmite precisa marcar "compartilhar áudio" ao escolher a tela.</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
   const tracks = useTracks(
     [
@@ -243,7 +301,10 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
           <div className="stage-main" ref={focusRef}>
             {tile(focused, 80)}
             {focused.source === Track.Source.ScreenShare && (
-              <StreamInfoBadge publication={focused.publication} local={focused.participant.isLocal} />
+              <div className="stream-controls">
+                <StreamInfoBadge publication={focused.publication} local={focused.participant.isLocal} />
+                <StreamAudio voice={voice} publisher={focused.participant} />
+              </div>
             )}
             <button
               className="fullscreen-button"
