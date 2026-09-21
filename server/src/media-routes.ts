@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { restorePack } from './expressions.js';
 import { parseMedia } from './media.js';
 import { communityRoom } from './realtime.js';
 import { manages, requireUser, roleIn } from './routes.js';
@@ -106,6 +107,17 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       return community;
     });
 
+    /** Repõe os emojis e sons de demonstração que foram apagados (nada é duplicado). */
+    authed.post<{ Params: { id: string } }>('/api/communities/:id/restore-pack', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode restaurar o pacote.' });
+      const added = restorePack(access.communityId);
+      for (const emoji of db.listEmojis(access.communityId)) io.to(communityRoom(access.communityId)).emit('emoji:created', emoji);
+      for (const sound of db.listSounds(access.communityId)) io.to(communityRoom(access.communityId)).emit('sound:created', sound);
+      return added;
+    });
+
     // ---------- Emojis da comunidade ----------
 
     authed.get<{ Params: { id: string } }>('/api/communities/:id/emojis', async (request, reply) => {
@@ -132,6 +144,22 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         return emoji;
       },
     );
+
+    authed.patch<{ Params: { id: string }; Body: { name?: string } }>('/api/emojis/:id', async (request, reply) => {
+      const emoji = db.findEmoji(Number(request.params.id));
+      if (!emoji || !roleIn(request.user, emoji.communityId)) return reply.code(404).send({ error: 'Emoji não encontrado.' });
+      if (!canDelete(request.user, emoji)) {
+        return reply.code(403).send({ error: 'Só quem enviou o emoji ou quem administra a comunidade pode renomeá-lo.' });
+      }
+      const name = emojiName(request.body?.name);
+      if (!name) return reply.code(400).send({ error: 'O nome do emoji deve ter de 2 a 32 letras, números ou _.' });
+      if (name !== emoji.name && db.emojiNameTaken(emoji.communityId, name)) {
+        return reply.code(409).send({ error: `Já existe um emoji chamado :${name}: nesta comunidade.` });
+      }
+      const updated = db.renameEmoji(emoji.id, name);
+      io.to(communityRoom(emoji.communityId)).emit('emoji:created', updated); // a lista troca o item pelo id
+      return updated;
+    });
 
     authed.delete<{ Params: { id: string } }>('/api/emojis/:id', async (request, reply) => {
       const emoji = db.findEmoji(Number(request.params.id));
@@ -169,6 +197,21 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         return sound;
       },
     );
+
+    authed.patch<{ Params: { id: string }; Body: { name?: string; icon?: string } }>('/api/sounds/:id', async (request, reply) => {
+      const sound = db.findSound(Number(request.params.id));
+      if (!sound || !roleIn(request.user, sound.communityId)) return reply.code(404).send({ error: 'Som não encontrado.' });
+      if (!canDelete(request.user, sound)) {
+        return reply.code(403).send({ error: 'Só quem enviou o som ou quem administra a comunidade pode renomeá-lo.' });
+      }
+      const name = String(request.body?.name ?? '').trim();
+      if (name.length < 1 || name.length > 32) return reply.code(400).send({ error: 'O nome do som deve ter de 1 a 32 caracteres.' });
+      const icon = String(request.body?.icon ?? '').trim() || '🔊';
+      if ([...icon].length > 4) return reply.code(400).send({ error: 'Use um único emoji como ícone.' });
+      const updated = db.updateSound(sound.id, name, icon);
+      io.to(communityRoom(sound.communityId)).emit('sound:created', updated); // a lista troca o item pelo id
+      return updated;
+    });
 
     authed.delete<{ Params: { id: string } }>('/api/sounds/:id', async (request, reply) => {
       const sound = db.findSound(Number(request.params.id));

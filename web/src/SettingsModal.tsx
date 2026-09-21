@@ -1,5 +1,24 @@
 import { Room } from 'livekit-client';
-import { AudioLines, Bell, CircleUser, Hash, LogOut, Mic, Play, ShieldOff, ShieldPlus, Smile, Trash2, UserX, Users, X } from 'lucide-react';
+import {
+  AudioLines,
+  Bell,
+  Check,
+  CircleUser,
+  Hash,
+  LogOut,
+  Mic,
+  Pencil,
+  Play,
+  Plus,
+  RotateCcw,
+  ShieldOff,
+  ShieldPlus,
+  Smile,
+  Trash2,
+  UserX,
+  Users,
+  X,
+} from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
@@ -31,6 +50,9 @@ const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
 ];
 
 const KB = 1024;
+
+/** Quem administra a comunidade aberta (dono ou administrador) mexe em tudo o que é dela. */
+const manages = (community: Community) => community.role === 'owner' || community.role === 'admin';
 
 export function SettingsModal({
   user,
@@ -248,7 +270,7 @@ function CommunitySection({
   const [confirming, setConfirming] = useState<'leave' | 'delete' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isOwner = community.role === 'owner';
-  const manages = isOwner || community.role === 'admin';
+  const canManage = isOwner || community.role === 'admin';
 
   async function rename(event: FormEvent) {
     event.preventDefault();
@@ -296,7 +318,7 @@ function CommunitySection({
         {community.memberCount} {community.memberCount === 1 ? 'pessoa participa' : 'pessoas participam'} de {community.name}.
       </p>
 
-      {manages && (
+      {canManage && (
         <>
           <h3>Imagem</h3>
           <CommunityIconEditor community={community} onChanged={onChanged} />
@@ -461,11 +483,11 @@ function MembersSection({ user, community }: { user: User; community: Community 
   const rank = (m: CommunityMember) => (m.role === 'owner' ? 2 : m.role === 'admin' ? 1 : 0);
   const members = [...directory.values()].sort((a, b) => rank(b) - rank(a) || a.username.localeCompare(b.username));
   const isOwner = community.role === 'owner';
-  const manages = isOwner || community.role === 'admin';
+  const canManage = isOwner || community.role === 'admin';
 
   // Mesmas regras do servidor: administrador remove membro comum; outro administrador, só o dono; o dono, ninguém.
   const canRemove = (member: CommunityMember) =>
-    member.id !== user.id && member.role !== 'owner' && (isOwner || (manages && member.role !== 'admin'));
+    member.id !== user.id && member.role !== 'owner' && (isOwner || (canManage && member.role !== 'admin'));
 
   async function toggleAdmin(member: CommunityMember) {
     setRoleError(null);
@@ -499,7 +521,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
         {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} em {community.name}.
         {isOwner
           ? ' Como dono, você escolhe quem administra e pode remover qualquer pessoa.'
-          : manages && ' Como administrador, você pode remover membros que não são administradores.'}
+          : canManage && ' Como administrador, você pode remover membros que não são administradores.'}
       </p>
       <p className="settings-hint">
         Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons desta
@@ -641,7 +663,7 @@ function FilePicker({
   );
 }
 
-// ---------- Emojis do servidor ----------
+// ---------- Emojis da comunidade ----------
 
 function EmojisSection({ user, community }: { user: User; community: Community }) {
   const { emojis, members } = useDirectory();
@@ -649,7 +671,21 @@ function EmojisSection({ user, community }: { user: User; community: Community }
   const [preview, setPreview] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<Emoji | null>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const canEdit = (emoji: Emoji) => manages(community) || emoji.createdBy === user.id;
+
+  async function rename(emoji: Emoji, newName: string) {
+    if (newName === emoji.name) return setEditing(null);
+    try {
+      await api(`/api/emojis/${emoji.id}`, { method: 'PATCH', body: { name: newName } });
+      setEditing(null);
+      setMessage(null);
+    } catch (e) {
+      setMessage({ ok: false, text: (e as Error).message });
+    }
+  }
 
   async function choose(chosen: File) {
     setMessage(null);
@@ -672,6 +708,7 @@ function EmojisSection({ user, community }: { user: User; community: Community }
       setFile(null);
       setPreview(null);
       setName('');
+      setAdding(false);
     } catch (e) {
       setMessage({ ok: false, text: (e as Error).message });
     }
@@ -680,51 +717,150 @@ function EmojisSection({ user, community }: { user: User; community: Community }
 
   return (
     <>
-      <h2>Emojis do servidor</h2>
+      <h2>Emojis da comunidade</h2>
       <p className="settings-lead">
-        Todo mundo do servidor pode usar estes emojis escrevendo <code>:nome:</code> ou pelo botão de emoji do chat. Sem
+        Todo mundo desta comunidade pode usar estes emojis escrevendo <code>:nome:</code> ou pelo botão de emoji do chat. Sem
         assinatura: está tudo liberado.
       </p>
 
-      <form className="settings-card upload-card" onSubmit={submit}>
-        <div className="upload-preview">{preview ? <img src={preview} alt="" /> : <Smile size={28} />}</div>
-        <div className="upload-fields">
-          <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={choose}>
-            {file ? 'Trocar imagem' : 'Escolher imagem'}
-          </FilePicker>
-          <label className="settings-field">
-            Nome
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: gato_feliz" maxLength={32} />
-          </label>
-          <button className="btn-primary" disabled={!preview || !name || busy}>
-            {busy ? 'Enviando…' : 'Adicionar emoji'}
-          </button>
-        </div>
-      </form>
-      {message ? (
-        <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>
-      ) : (
-        <p className="settings-hint">PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.</p>
-      )}
+      <div className="section-head">
+        <h3>{emojis.length} emojis</h3>
+        <button className="btn-secondary" onClick={() => setAdding(!adding)}>
+          <Plus size={16} /> Adicionar emoji
+        </button>
+      </div>
 
-      <h3>{emojis.length} emojis</h3>
+      {adding && (
+        <>
+          <form className="settings-card upload-card" onSubmit={submit}>
+            <div className="upload-preview">{preview ? <img src={preview} alt="" /> : <Smile size={28} />}</div>
+            <div className="upload-fields">
+              <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={choose}>
+                {file ? 'Trocar imagem' : 'Escolher imagem'}
+              </FilePicker>
+              <label className="settings-field">
+                Nome
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: gato_feliz" maxLength={32} />
+              </label>
+              <button className="btn-primary" disabled={!preview || !name || busy}>
+                {busy ? 'Enviando…' : 'Enviar emoji'}
+              </button>
+            </div>
+          </form>
+          <p className="settings-hint">PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.</p>
+        </>
+      )}
+      {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
+
       <div className="expression-list">
         {emojis.map((emoji) => (
           <div key={emoji.id} className="expression-row">
             <img className="expression-emoji" src={mediaUrl.emoji(emoji.id)} alt="" />
-            <span className="expression-name">:{emoji.name}:</span>
-            <span className="expression-author">{authorLabel(emoji.createdBy, members)}</span>
-            {(user.isAdmin || emoji.createdBy === user.id) && (
-              <DeleteButton label={`Excluir :${emoji.name}:`} path={`/api/emojis/${emoji.id}`} />
+            {editing?.id === emoji.id ? (
+              <InlineRename
+                value={emoji.name}
+                label={`Novo nome para :${emoji.name}:`}
+                onCancel={() => setEditing(null)}
+                onSave={(newName) => rename(emoji, newName)}
+              />
+            ) : (
+              <>
+                <span className="expression-name">:{emoji.name}:</span>
+                <span className="expression-author">{authorLabel(emoji.createdBy, members)}</span>
+                {canEdit(emoji) && (
+                  <>
+                    <button
+                      className="icon-plain expression-play"
+                      title={`Renomear :${emoji.name}:`}
+                      aria-label={`Renomear :${emoji.name}:`}
+                      onClick={() => setEditing(emoji)}
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <DeleteButton label={`Excluir :${emoji.name}:`} path={`/api/emojis/${emoji.id}`} />
+                  </>
+                )}
+              </>
             )}
           </div>
         ))}
       </div>
+
+      <RestorePack community={community} />
     </>
   );
 }
 
-// ---------- Soundboard do servidor ----------
+/** Campo de renomear que aparece no lugar do nome, na própria linha da lista. */
+function InlineRename({
+  value,
+  label,
+  onCancel,
+  onSave,
+}: {
+  value: string;
+  label: string;
+  onCancel: () => void;
+  onSave: (value: string) => void;
+}) {
+  return (
+    <input
+      className="channel-input"
+      defaultValue={value}
+      aria-label={label}
+      autoFocus
+      onFocus={(e) => e.currentTarget.select()}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onCancel();
+        if (e.key === 'Enter') onSave(e.currentTarget.value.trim());
+      }}
+      onBlur={(e) => onSave(e.currentTarget.value.trim())}
+    />
+  );
+}
+
+/**
+ * Traz de volta os emojis e sons que vêm com o Syden, caso alguém tenha apagado. O que a comunidade enviou
+ * não é tocado, e nada é duplicado.
+ */
+function RestorePack({ community }: { community: Community }) {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  if (!manages(community)) return null;
+
+  async function restore() {
+    setBusy(true);
+    try {
+      const added = await api<{ emojis: number; sounds: number }>(`/api/communities/${community.id}/restore-pack`, { method: 'POST' });
+      const parts = [
+        added.emojis > 0 && `${added.emojis} ${added.emojis === 1 ? 'emoji' : 'emojis'}`,
+        added.sounds > 0 && `${added.sounds} ${added.sounds === 1 ? 'som' : 'sons'}`,
+      ].filter(Boolean);
+      setMessage(parts.length > 0 ? `De volta: ${parts.join(' e ')}.` : 'Nada faltando: o pacote está completo.');
+    } catch (e) {
+      setMessage((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <div className="settings-card restore-card">
+      <div>
+        <strong>Apagou algo sem querer?</strong>
+        <p className="settings-hint">
+          Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira
+          cópia repetida.
+        </p>
+        {message && <p className="form-success">{message}</p>}
+      </div>
+      <button className="btn-secondary" onClick={restore} disabled={busy}>
+        <RotateCcw size={16} /> {busy ? 'Restaurando…' : 'Restaurar o pacote'}
+      </button>
+    </div>
+  );
+}
+
+// ---------- Soundboard da comunidade ----------
 
 function SoundboardSection({ user, community }: { user: User; community: Community }) {
   const { sounds, members } = useDirectory();
@@ -734,7 +870,21 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('🔊');
   const [busy, setBusy] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<Sound | null>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const canEdit = (sound: Sound) => manages(community) || sound.createdBy === user.id;
+
+  async function saveEdit(sound: Sound, values: { name: string; icon: string }) {
+    if (values.name === sound.name && values.icon === sound.icon) return setEditing(null);
+    try {
+      await api(`/api/sounds/${sound.id}`, { method: 'PATCH', body: values });
+      setEditing(null);
+      setMessage(null);
+    } catch (e) {
+      setMessage({ ok: false, text: (e as Error).message });
+    }
+  }
 
   async function choose(file: File) {
     setMessage(null);
@@ -757,6 +907,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       setAudio(null);
       setFileName('');
       setName('');
+      setAdding(false);
       setIcon('🔊');
     } catch (e) {
       setMessage({ ok: false, text: (e as Error).message });
@@ -766,7 +917,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
 
   return (
     <>
-      <h2>Soundboard do servidor</h2>
+      <h2>Soundboard da comunidade</h2>
       <p className="settings-lead">
         Durante uma chamada, o botão <AudioLines size={14} /> toca estes sons para todos na sala. Sem assinatura: está
         tudo liberado.
@@ -784,54 +935,122 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
         />
       </label>
 
-      <h3>Adicionar vários de uma vez</h3>
-      <BulkSoundUpload community={community} />
+      <div className="section-head">
+        <h3>{sounds.length} sons</h3>
+        <button className="btn-secondary" onClick={() => setAdding(!adding)}>
+          <Plus size={16} /> Adicionar som
+        </button>
+      </div>
 
-      <h3>Adicionar um som</h3>
-      <form className="settings-card upload-card" onSubmit={submit}>
-        <div className="upload-preview upload-icon">{icon || '🔊'}</div>
-        <div className="upload-fields">
-          <FilePicker accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,.mp3,.ogg,.wav" disabled={busy} onFile={choose}>
-            {fileName ? 'Trocar áudio' : 'Escolher áudio'}
-          </FilePicker>
-          {fileName && <span className="settings-hint">{fileName}</span>}
-          <div className="upload-row">
-            <label className="settings-field icon-field">
-              Ícone
-              <input value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} />
-            </label>
-            <label className="settings-field">
-              Nome
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Risada" maxLength={32} />
-            </label>
-          </div>
-          <button className="btn-primary" disabled={!audio || !name.trim() || busy}>
-            {busy ? 'Enviando…' : 'Adicionar som'}
-          </button>
-        </div>
-      </form>
-      {message ? (
-        <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>
-      ) : (
-        <p className="settings-hint">MP3, OGG ou WAV, até {MAX_SOUND_SECONDS} segundos e 1 MB.</p>
+      {adding && (
+        <>
+          <form className="settings-card upload-card" onSubmit={submit}>
+            <div className="upload-preview upload-icon">{icon || '🔊'}</div>
+            <div className="upload-fields">
+              <FilePicker accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,.mp3,.ogg,.wav" disabled={busy} onFile={choose}>
+                {fileName ? 'Trocar áudio' : 'Escolher áudio'}
+              </FilePicker>
+              {fileName && <span className="settings-hint">{fileName}</span>}
+              <div className="upload-row">
+                <label className="settings-field icon-field">
+                  Ícone
+                  <input value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} />
+                </label>
+                <label className="settings-field">
+                  Nome
+                  <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Risada" maxLength={32} />
+                </label>
+              </div>
+              <button className="btn-primary" disabled={!audio || !name.trim() || busy}>
+                {busy ? 'Enviando…' : 'Enviar som'}
+              </button>
+            </div>
+          </form>
+          <p className="settings-hint">MP3, OGG ou WAV, até {MAX_SOUND_SECONDS} segundos e 1 MB.</p>
+
+          <h3>Vários de uma vez</h3>
+          <BulkSoundUpload community={community} />
+        </>
       )}
+      {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
 
-      <h3>{sounds.length} sons</h3>
       <div className="expression-list">
         {sounds.map((sound) => (
           <div key={sound.id} className="expression-row">
-            <span className="expression-icon">{sound.icon}</span>
-            <span className="expression-name">{sound.name}</span>
-            <span className="expression-author">{authorLabel(sound.createdBy, members)}</span>
-            <button className="icon-plain expression-play" title="Ouvir" aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
-              <Play size={16} />
-            </button>
-            {(user.isAdmin || sound.createdBy === user.id) && (
-              <DeleteButton label={`Excluir ${sound.name}`} path={`/api/sounds/${sound.id}`} />
+            {editing?.id === sound.id ? (
+              <SoundRename sound={sound} onCancel={() => setEditing(null)} onSave={(values) => saveEdit(sound, values)} />
+            ) : (
+              <>
+                <span className="expression-icon">{sound.icon}</span>
+                <span className="expression-name">{sound.name}</span>
+                <span className="expression-author">{authorLabel(sound.createdBy, members)}</span>
+                <button className="icon-plain expression-play" title="Ouvir" aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
+                  <Play size={16} />
+                </button>
+                {canEdit(sound) && (
+                  <>
+                    <button
+                      className="icon-plain expression-play"
+                      title={`Renomear ${sound.name}`}
+                      aria-label={`Renomear ${sound.name}`}
+                      onClick={() => setEditing(sound)}
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <DeleteButton label={`Excluir ${sound.name}`} path={`/api/sounds/${sound.id}`} />
+                  </>
+                )}
+              </>
             )}
           </div>
         ))}
       </div>
+
+      <RestorePack community={community} />
+    </>
+  );
+}
+
+/** Renomear um som: o ícone e o nome, na própria linha. */
+function SoundRename({
+  sound,
+  onCancel,
+  onSave,
+}: {
+  sound: Sound;
+  onCancel: () => void;
+  onSave: (values: { name: string; icon: string }) => void;
+}) {
+  const [icon, setIcon] = useState(sound.icon);
+  const [name, setName] = useState(sound.name);
+  const save = () => onSave({ name: name.trim() || sound.name, icon: icon.trim() || sound.icon });
+
+  return (
+    <>
+      <input
+        className="channel-input icon-input"
+        value={icon}
+        aria-label={`Ícone de ${sound.name}`}
+        maxLength={8}
+        onChange={(e) => setIcon(e.target.value)}
+        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+      />
+      <input
+        className="channel-input"
+        value={name}
+        aria-label={`Novo nome para ${sound.name}`}
+        maxLength={32}
+        autoFocus
+        onFocus={(e) => e.currentTarget.select()}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') onCancel();
+          if (e.key === 'Enter') save();
+        }}
+      />
+      <button className="icon-plain expression-play" title="Salvar" aria-label={`Salvar ${sound.name}`} onClick={save}>
+        <Check size={16} />
+      </button>
     </>
   );
 }

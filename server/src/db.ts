@@ -475,6 +475,11 @@ export function createEmoji(communityId: number, name: string, mime: string, dat
   return findEmoji(Number(result.lastInsertRowid))!;
 }
 
+export function renameEmoji(id: number, name: string): Emoji {
+  db.prepare('UPDATE emojis SET name = ? WHERE id = ?').run(name, id);
+  return findEmoji(id)!;
+}
+
 export function deleteEmoji(id: number) {
   db.prepare('DELETE FROM emojis WHERE id = ?').run(id);
 }
@@ -505,6 +510,11 @@ export function createSound(
     .prepare('INSERT INTO sounds (community_id, name, icon, mime, data, created_by) VALUES (?, ?, ?, ?, ?, ?)')
     .run(communityId, name, icon, mime, data, createdBy);
   return findSound(Number(result.lastInsertRowid))!;
+}
+
+export function updateSound(id: number, name: string, icon: string): Sound {
+  db.prepare('UPDATE sounds SET name = ?, icon = ? WHERE id = ?').run(name, icon, id);
+  return findSound(id)!;
 }
 
 export function deleteSound(id: number) {

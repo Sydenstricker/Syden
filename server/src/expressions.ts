@@ -42,6 +42,37 @@ export function seedExpressions(communityId: number, { sounds }: { sounds: boole
 }
 
 /**
+ * Repõe os itens do pacote de demonstração que foram apagados, sem mexer no que a comunidade enviou nem
+ * duplicar o que já está lá. É o "desfazer" de quem apagou tudo por engano.
+ */
+export function restorePack(communityId: number): { emojis: number; sounds: number } {
+  const emojiDir = new URL('emojis/', ASSETS);
+  let emojis = 0;
+  for (const file of readdirSync(emojiDir).filter((f) => f.endsWith('.png'))) {
+    const name = file.replace(/\.png$/, '');
+    if (!db.emojiNameTaken(communityId, name)) {
+      db.createEmoji(communityId, name, 'image/png', readFileSync(new URL(file, emojiDir)), null);
+      emojis++;
+    }
+  }
+
+  const soundDir = new URL('sounds/', ASSETS);
+  const manifest = JSON.parse(readFileSync(new URL('sounds.json', soundDir), 'utf8')) as { file: string; name: string; icon: string }[];
+  const existing = new Set(db.listSounds(communityId).map((s) => s.name.toLowerCase()));
+  let sounds = 0;
+  for (const sound of manifest) {
+    if (existing.has(sound.name.toLowerCase())) continue;
+    const data = readFileSync(new URL(sound.file, soundDir));
+    db.createSound(communityId, sound.name, sound.icon, sniffMime(data) ?? 'audio/wav', data, null);
+    sounds++;
+  }
+
+  db.setKv(seededKey(communityId), db.getKv(seededKey(communityId)) ?? new Date().toISOString());
+  db.setKv(soundPackKey(communityId), String(SOUND_PACK_VERSION));
+  return { emojis, sounds };
+}
+
+/**
  * Na subida do servidor, garante o pacote na comunidade mais antiga. Ela existia antes das chaves por
  * comunidade, então herda o que foi marcado como instalado na versão anterior.
  */

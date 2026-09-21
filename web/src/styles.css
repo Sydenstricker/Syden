@@ -2109,6 +2109,51 @@ textarea {
   color: var(--text-muted);
 }
 
+/* Título da lista com o botão de adicionar do lado. */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.section-head h3 {
+  margin: 0;
+}
+
+.section-head .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.restore-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.restore-card .settings-hint {
+  margin: 4px 0 0;
+}
+
+.restore-card .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.icon-input {
+  width: 64px;
+  flex: none;
+  text-align: center;
+}
+
 .expression-list {
   display: flex;
   flex-direction: column;
