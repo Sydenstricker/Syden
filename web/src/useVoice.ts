@@ -56,6 +56,28 @@ function isCancelledPicker(error: unknown) {
   return error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'AbortError');
 }
 
+/**
+ * O navegador diz por que o microfone (ou a câmera) não abriu, e cada motivo tem uma saída diferente.
+ * Sem isso, todo problema virava "libere a permissão", o que não ajuda quem tem o aparelho ocupado por
+ * outro programa, por exemplo.
+ */
+function deviceErrorMessage(error: unknown, device: 'microfone' | 'câmera') {
+  const name = error instanceof DOMException ? error.name : '';
+  switch (name) {
+    case 'NotAllowedError':
+    case 'SecurityError':
+      return `Sem acesso ao ${device}: o navegador bloqueou. Clique no cadeado na barra de endereço, permita o ${device} e tente de novo.`;
+    case 'NotFoundError':
+    case 'OverconstrainedError':
+      return `Nenhum ${device} encontrado. Ligue o aparelho e confira se ele aparece em Configurações → Voz e vídeo.`;
+    case 'NotReadableError':
+    case 'AbortError':
+      return `O ${device} está ocupado por outro programa (jogo, Discord, OBS). Feche o outro programa ou escolha outro aparelho em Configurações → Voz e vídeo.`;
+    default:
+      return `Não foi possível usar o ${device}. Tente escolher outro aparelho em Configurações → Voz e vídeo.`;
+  }
+}
+
 export type Voice = ReturnType<typeof useVoice>;
 
 /**
@@ -262,7 +284,7 @@ export function useVoice(socket: Socket | null) {
         await room.localParticipant.setMicrophoneEnabled(true);
       } catch (e) {
         console.error(e);
-        setError('Sem acesso ao microfone. Libere a permissão no navegador (ícone do cadeado na barra de endereço).');
+        setError(deviceErrorMessage(e, 'microfone'));
       }
     },
     [room, connecting],
@@ -315,7 +337,7 @@ export function useVoice(socket: Socket | null) {
       (enable ? sounds.unmute : sounds.mute)();
     } catch (e) {
       console.error(e);
-      setError('Sem acesso ao microfone. Libere a permissão no navegador.');
+      setError(deviceErrorMessage(e, 'microfone'));
     }
   }, [room, setDeafenedState]);
 
@@ -332,11 +354,7 @@ export function useVoice(socket: Socket | null) {
       await lp.setCameraEnabled(!lp.isCameraEnabled);
     } catch (e) {
       console.error(e);
-      setError(
-        isCancelledPicker(e)
-          ? 'Sem acesso à câmera. Libere a permissão no navegador.'
-          : 'Não foi possível ligar a câmera.',
-      );
+      setError(deviceErrorMessage(e, 'câmera'));
     }
   }, [room]);
 
