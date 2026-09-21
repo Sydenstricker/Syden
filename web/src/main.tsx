@@ -10,6 +10,12 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 );
 
+// Arquivo solto fora da conversa (na barra lateral, por exemplo): o padrão do navegador seria abrir o arquivo
+// no lugar do Syden. Aqui ele é ignorado; quem trata o arrastar é a área de mensagens.
+for (const event of ['dragover', 'drop'] as const) {
+  window.addEventListener(event, (e) => e.preventDefault());
+}
+
 // Registra o service worker para o navegador oferecer "Instalar" (o Syden vira um programa com janela própria).
 // Só no site publicado: em desenvolvimento ele atrapalharia a atualização automática das telas.
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
