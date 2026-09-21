@@ -36,6 +36,9 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
   app.get<{ Params: { id: string } }>('/api/users/:id/avatar', async (request, reply) =>
     sendFile(reply, db.findAvatar(Number(request.params.id))),
   );
+  app.get<{ Params: { id: string } }>('/api/communities/:id/icon', async (request, reply) =>
+    sendFile(reply, db.findCommunityIcon(Number(request.params.id))),
+  );
   app.get<{ Params: { id: string } }>('/api/emojis/:id/image', async (request, reply) =>
     sendFile(reply, db.findEmojiFile(Number(request.params.id))),
   );
@@ -75,6 +78,32 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       const user = db.setAvatar(request.user.id, null);
       io.emit('user:updated', user);
       return user;
+    });
+
+    // ---------- Imagem da comunidade ----------
+
+    authed.put<{ Params: { id: string }; Body: { image?: string } }>(
+      '/api/communities/:id/icon',
+      { bodyLimit: UPLOAD_BODY_LIMIT },
+      async (request, reply) => {
+        const access = requireRole(request, reply);
+        if (!access) return reply;
+        if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a imagem.' });
+        const media = parseMedia(request.body?.image, 'image', LIMITS.avatar);
+        if (typeof media === 'string') return reply.code(400).send({ error: media });
+        const community = db.setCommunityIcon(access.communityId, media);
+        io.to(communityRoom(community.id)).emit('community:updated', community);
+        return community;
+      },
+    );
+
+    authed.delete<{ Params: { id: string } }>('/api/communities/:id/icon', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode tirar a imagem.' });
+      const community = db.setCommunityIcon(access.communityId, null);
+      io.to(communityRoom(community.id)).emit('community:updated', community);
+      return community;
     });
 
     // ---------- Emojis da comunidade ----------

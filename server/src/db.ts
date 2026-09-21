@@ -10,6 +10,8 @@ export interface Community {
   id: number;
   name: string;
   createdBy: number | null;
+  /** Muda a cada troca de imagem e entra na URL, para o navegador buscar a nova. null = sem imagem. */
+  iconVersion: number | null;
 }
 
 /** Uma comunidade vista por quem participa dela. */
@@ -87,11 +89,19 @@ db.exec(`
 
   -- Cada comunidade é um "servidor" no sentido do Discord: canais, emojis, sons e membros próprios.
   CREATE TABLE IF NOT EXISTS communities (
-    id          INTEGER PRIMARY KEY,
-    name        TEXT NOT NULL,
-    invite_code TEXT NOT NULL UNIQUE COLLATE NOCASE,
-    created_by  INTEGER,
-    created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+    id           INTEGER PRIMARY KEY,
+    name         TEXT NOT NULL,
+    invite_code  TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    created_by   INTEGER,
+    icon_version INTEGER,
+    created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
+  -- Imagem da comunidade (o "ícone do servidor"), no mesmo formato dos avatares.
+  CREATE TABLE IF NOT EXISTS community_icons (
+    community_id INTEGER PRIMARY KEY REFERENCES communities(id) ON DELETE CASCADE,
+    mime         TEXT NOT NULL,
+    data         BLOB NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS community_members (
@@ -186,6 +196,8 @@ addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
 addColumnIfMissing('users', 'avatar_version', 'INTEGER');
 addColumnIfMissing('users', 'is_owner', 'INTEGER NOT NULL DEFAULT 0');
+// Imagem da comunidade: chegou depois das comunidades.
+addColumnIfMissing('communities', 'icon_version', 'INTEGER');
 
 // O emoji ":f:" do primeiro pacote tinha 1 letra, abaixo do mínimo de 2, e não funcionava nas mensagens.
 if (!db.prepare("SELECT 1 FROM emojis WHERE name = 'pressf'").get()) {
@@ -269,12 +281,12 @@ export function seedChannels(communityId: number) {
 
 // ---------- Comunidades ----------
 
-const communityColumns = 'id, name, created_by AS createdBy';
+const communityColumns = 'id, name, created_by AS createdBy, icon_version AS iconVersion';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
     .prepare(
-      `SELECT c.id, c.name, c.created_by AS createdBy, m.role,
+      `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion, m.role,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
@@ -322,6 +334,26 @@ export function renameCommunity(id: number, name: string) {
 /** Apaga a comunidade inteira: canais, mensagens, emojis, sons e a lista de membros (ON DELETE CASCADE). */
 export function deleteCommunity(id: number) {
   db.prepare('DELETE FROM communities WHERE id = ?').run(id);
+}
+
+/** Guarda (ou apaga, com null) a imagem da comunidade e marca a versão nova. */
+export function setCommunityIcon(communityId: number, icon: { mime: string; data: Buffer } | null): Community {
+  if (icon) {
+    db.prepare(
+      'INSERT INTO community_icons (community_id, mime, data) VALUES (?, ?, ?) ON CONFLICT(community_id) DO UPDATE SET mime = excluded.mime, data = excluded.data',
+    ).run(communityId, icon.mime, icon.data);
+    db.prepare('UPDATE communities SET icon_version = ? WHERE id = ?').run(Date.now(), communityId);
+  } else {
+    db.prepare('DELETE FROM community_icons WHERE community_id = ?').run(communityId);
+    db.prepare('UPDATE communities SET icon_version = NULL WHERE id = ?').run(communityId);
+  }
+  return findCommunity(communityId)!;
+}
+
+export function findCommunityIcon(communityId: number) {
+  return db.prepare('SELECT mime, data FROM community_icons WHERE community_id = ?').get(communityId) as
+    | { mime: string; data: Uint8Array }
+    | undefined;
 }
 
 export function countCommunitiesCreatedBy(userId: number) {

@@ -264,6 +264,7 @@ textarea {
   width: 46px;
   height: 46px;
   border-radius: 16px;
+  overflow: hidden;
   background: var(--bg-main);
   color: var(--text-strong);
   font-size: 15px;
@@ -330,6 +331,136 @@ textarea {
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.community-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.community-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.community-badge.standalone {
+  flex-shrink: 0;
+  border-radius: 22%;
+  background: var(--bg-sidebar);
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+/* ---------- Recortar imagem ---------- */
+
+/* Mais largo que um diálogo comum, para a prévia caber ao lado da área de edição. */
+.dialog.cropper {
+  width: min(700px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.cropper-body {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.cropper-view {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #1e1f22;
+  cursor: grab;
+  touch-action: none;
+  flex-shrink: 0;
+}
+
+.cropper-view:active {
+  cursor: grabbing;
+}
+
+.cropper-view img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none;
+  user-select: none;
+}
+
+/* Escurece o que fica fora do formato final, para a pessoa ver o recorte de verdade. */
+.cropper-mask {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45) inset;
+}
+
+.cropper-view.circle .cropper-mask {
+  border-radius: 50%;
+  box-shadow: 0 0 0 9999px rgba(30, 31, 34, 0.7);
+}
+
+.cropper-view.rounded .cropper-mask {
+  border-radius: 22%;
+  box-shadow: 0 0 0 9999px rgba(30, 31, 34, 0.7);
+}
+
+.cropper-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.cropper-preview h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cropper-thumb {
+  width: 88px;
+  height: 88px;
+  background: #1e1f22;
+}
+
+.cropper-thumb.small {
+  width: 40px;
+  height: 40px;
+}
+
+.cropper-thumb.circle {
+  border-radius: 50%;
+}
+
+.cropper-thumb.rounded {
+  border-radius: 22%;
+}
+
+.cropper-zoom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cropper-zoom input {
+  flex: 1;
+  accent-color: var(--accent, #5865f2);
 }
 
 .auth-hint {

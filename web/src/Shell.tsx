@@ -111,8 +111,11 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
       setChannels((list) => list.filter((c) => c.id !== id));
       if (voiceRef.current.channelId === id) voiceRef.current.leave();
     });
-    s.on('community:updated', (updated: Pick<Community, 'id' | 'name'>) =>
-      setCommunities((list) => list.map((c) => (c.id === updated.id ? { ...c, name: updated.name } : c))),
+    // Nome ou imagem da comunidade mudou (por você ou por outro administrador).
+    s.on('community:updated', (updated: Pick<Community, 'id' | 'name' | 'iconVersion'>) =>
+      setCommunities((list) =>
+        list.map((c) => (c.id === updated.id ? { ...c, name: updated.name, iconVersion: updated.iconVersion } : c)),
+      ),
     );
     s.on('community:deleted', ({ id }: { id: number }) => setCommunities((list) => list.filter((c) => c.id !== id)));
     // Removido (ou saiu por outra aba) de uma comunidade: ela some da coluna.

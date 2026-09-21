@@ -1,17 +1,9 @@
 import { LogIn, Plus } from 'lucide-react';
 import { type FormEvent, useState } from 'react';
 import { api } from './api';
+import { CommunityIcon } from './CommunityIcon';
 import { Logo } from './Logo';
 import type { Community } from './types';
-
-const LINKING_WORDS = new Set(['do', 'da', 'de', 'dos', 'das', 'e']);
-
-/** Iniciais do nome, como o Discord faz quando a comunidade não tem imagem: "Time do Valorant" → "TV". */
-function initials(name: string) {
-  const words = name.trim().split(/\s+/).filter((word) => !LINKING_WORDS.has(word.toLowerCase()));
-  const letters = words.length > 1 ? words[0][0] + words[1][0] : name.trim().slice(0, 2);
-  return letters.toUpperCase();
-}
 
 interface Props {
   communities: Community[];
@@ -38,7 +30,7 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged }: P
             aria-current={community.id === currentId}
             onClick={() => onSelect(community.id)}
           >
-            {initials(community.name)}
+            <CommunityIcon community={community} />
           </button>
         ))}
       </div>

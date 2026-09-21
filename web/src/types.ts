@@ -21,6 +21,8 @@ export interface Community {
   id: number;
   name: string;
   createdBy: number | null;
+  /** Muda a cada troca de imagem; entra na URL para o navegador buscar a nova. null = sem imagem. */
+  iconVersion: number | null;
   role: Role;
   memberCount: number;
   /** Só quem administra recebe o código; para os outros vem null. */

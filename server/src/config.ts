@@ -24,5 +24,5 @@ export const config = {
   // Freios do multi-comunidade: o consumo do servidor cresce com quanta gente usa ao mesmo tempo, então
   // cada pessoa só cria algumas comunidades e cada comunidade tem um teto de membros.
   maxCommunitiesPerUser: Number(process.env.MAX_COMMUNITIES_PER_USER || 3),
-  maxMembersPerCommunity: Number(process.env.MAX_MEMBERS_PER_COMMUNITY || 25),
+  maxMembersPerCommunity: Number(process.env.MAX_MEMBERS_PER_COMMUNITY || 100),
 };

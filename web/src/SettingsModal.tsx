@@ -7,6 +7,8 @@ import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { useDirectory } from './directory';
+import { CommunityIcon } from './CommunityIcon';
+import { ImageCropper } from './ImageCropper';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
@@ -296,6 +298,8 @@ function CommunitySection({
 
       {manages && (
         <>
+          <h3>Imagem</h3>
+          <CommunityIconEditor community={community} onChanged={onChanged} />
           <h3>Convite</h3>
           <div className="settings-card">
             <p className="settings-hint">
@@ -370,6 +374,71 @@ function CommunitySection({
             </>
           )}
         </ConfirmDialog>
+      )}
+    </>
+  );
+}
+
+function CommunityIconEditor({ community, onChanged }: { community: Community; onChanged: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [cropping, setCropping] = useState<File | null>(null);
+
+  async function upload(image: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/api/communities/${community.id}/icon`, { method: 'PUT', body: { image } });
+      setCropping(null);
+      onChanged();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  async function remove() {
+    setBusy(true);
+    try {
+      await api(`/api/communities/${community.id}/icon`, { method: 'DELETE' });
+      onChanged();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <>
+      <div className="settings-card account-card">
+        <CommunityIcon community={community} size={80} standalone />
+        <div className="account-info">
+          <div className="account-name">{community.name}</div>
+        </div>
+        <div className="account-actions">
+          <FilePicker accept="image/png,image/jpeg,image/webp" disabled={busy} onFile={setCropping}>
+            {busy ? 'Enviando…' : community.iconVersion === null ? 'Enviar imagem' : 'Trocar imagem'}
+          </FilePicker>
+          {community.iconVersion !== null && (
+            <button className="link-button" onClick={remove} disabled={busy}>
+              Remover
+            </button>
+          )}
+        </div>
+      </div>
+      {error ? (
+        <p className="form-error">{error}</p>
+      ) : (
+        <p className="settings-hint">Sem imagem, a comunidade aparece com as iniciais do nome.</p>
+      )}
+      {cropping && (
+        <ImageCropper
+          file={cropping}
+          title={`Imagem de ${community.name}`}
+          shape="rounded"
+          onCancel={() => setCropping(null)}
+          onDone={upload}
+        />
       )}
     </>
   );
@@ -488,13 +557,14 @@ function AvatarEditor({ user }: { user: User }) {
   const hasAvatar = (members.get(user.id)?.avatarVersion ?? null) !== null;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cropping, setCropping] = useState<File | null>(null);
 
-  async function upload(file: File) {
+  async function upload(image: string) {
     setBusy(true);
     setError(null);
     try {
-      const image = await prepareImage(file, { size: 256, fit: 'cover', maxBytes: 2048 * KB });
       await api('/api/me/avatar', { method: 'PUT', body: { image } });
+      setCropping(null);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -516,7 +586,7 @@ function AvatarEditor({ user }: { user: User }) {
           
         </div>
         <div className="account-actions">
-          <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={upload}>
+          <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={setCropping}>
             {busy ? 'Enviando…' : hasAvatar ? 'Trocar avatar' : 'Enviar avatar'}
           </FilePicker>
           {hasAvatar && (
@@ -526,7 +596,10 @@ function AvatarEditor({ user }: { user: User }) {
           )}
         </div>
       </div>
-      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">PNG, JPG ou WEBP. GIF animado também vale (até 2 MB).</p>}
+      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.</p>}
+      {cropping && (
+        <ImageCropper file={cropping} title="Ajustar o avatar" shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
+      )}
     </>
   );
 }
