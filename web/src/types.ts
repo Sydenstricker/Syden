@@ -76,6 +76,37 @@ export type Traffic =
   | { status: 'unavailable'; message: string }
   | { status: 'ok'; outgoingBytes: number; includedBytes: number; projectedBytes: number | null; measuringSince: string };
 
+export interface HealthSample {
+  at: string;
+  /** Fração de 0 a 1. */
+  cpu: number;
+  memory: number;
+  diskFree: number | null;
+  diskTotal: number | null;
+  livekitOk: boolean;
+  errors: number;
+}
+
+export interface HealthEvent {
+  at: string;
+  kind: string;
+  detail: string;
+}
+
+export interface HealthReport {
+  startedAt: string;
+  uptimeSeconds: number;
+  livekitOk: boolean | null;
+  cpu: number;
+  memory: number;
+  diskFree: number | null;
+  diskTotal: number | null;
+  errorsNow: number;
+  errors24h: number;
+  samples: HealthSample[];
+  events: HealthEvent[];
+}
+
 export interface UsageSummary {
   monthStart: string;
   monthProgress: number;

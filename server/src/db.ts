@@ -148,6 +148,25 @@ db.exec(`
     bytes INTEGER NOT NULL
   );
 
+  -- Saúde do servidor: uma amostra a cada 5 minutos, guardadas por uma semana.
+  CREATE TABLE IF NOT EXISTS health_samples (
+    at         TEXT PRIMARY KEY,
+    cpu        REAL NOT NULL,
+    memory     REAL NOT NULL,
+    disk_free  INTEGER,
+    disk_total INTEGER,
+    livekit_ok INTEGER NOT NULL,
+    errors     INTEGER NOT NULL DEFAULT 0
+  );
+
+  -- Acontecimentos dignos de nota: reinícios, voz fora do ar, rajadas de erro.
+  CREATE TABLE IF NOT EXISTS health_events (
+    id     INTEGER PRIMARY KEY,
+    at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    kind   TEXT NOT NULL,
+    detail TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS kv (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
@@ -724,6 +743,56 @@ export function usageSince(since: string): UsageByUser[] {
     byUser.set(row.userId, entry);
   }
   return [...byUser.values()].sort((a, b) => b.voiceSeconds - a.voiceSeconds);
+}
+
+// ---------- Saúde do servidor ----------
+
+export interface HealthSample {
+  at: string;
+  cpu: number;
+  memory: number;
+  diskFree: number | null;
+  diskTotal: number | null;
+  livekitOk: boolean;
+  errors: number;
+}
+
+export interface HealthEvent {
+  at: string;
+  kind: string;
+  detail: string;
+}
+
+export function addHealthSample(sample: HealthSample) {
+  db.prepare(
+    `INSERT INTO health_samples (at, cpu, memory, disk_free, disk_total, livekit_ok, errors)
+     VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(at) DO NOTHING`,
+  ).run(sample.at, sample.cpu, sample.memory, sample.diskFree, sample.diskTotal, sample.livekitOk ? 1 : 0, sample.errors);
+}
+
+export function listHealthSamples(since: string): HealthSample[] {
+  const rows = db
+    .prepare(
+      `SELECT at, cpu, memory, disk_free AS diskFree, disk_total AS diskTotal, livekit_ok AS livekitOk, errors
+       FROM health_samples WHERE at >= ? ORDER BY at`,
+    )
+    .all(since) as unknown as (Omit<HealthSample, 'livekitOk'> & { livekitOk: number })[];
+  return rows.map((row) => ({ ...row, livekitOk: row.livekitOk === 1 }));
+}
+
+export function addHealthEvent(kind: string, detail: string) {
+  db.prepare('INSERT INTO health_events (kind, detail) VALUES (?, ?)').run(kind, detail);
+}
+
+export function listHealthEvents(limit: number): HealthEvent[] {
+  return db
+    .prepare('SELECT at, kind, detail FROM health_events ORDER BY at DESC, id DESC LIMIT ?')
+    .all(limit) as unknown as HealthEvent[];
+}
+
+export function pruneHealth(before: string) {
+  db.prepare('DELETE FROM health_samples WHERE at < ?').run(before);
+  db.prepare('DELETE FROM health_events WHERE at < ?').run(before);
 }
 
 export function getKv(key: string): string | undefined {

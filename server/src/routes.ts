@@ -6,6 +6,7 @@ import { config } from './config.js';
 import * as db from './db.js';
 import { seedExpressions } from './expressions.js';
 import { communityRoom, disconnectUser, joinCommunityRoom, leaveCommunityRoom, removeVoiceChannelMembers } from './realtime.js';
+import { healthReport } from './health.js';
 import { usageSummary } from './usage.js';
 
 const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
@@ -318,6 +319,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get('/api/usage', async (request, reply) => {
       if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o uso do servidor.' });
       return usageSummary();
+    });
+
+    // Saúde do servidor: como está agora e o que aconteceu nas últimas 24 horas.
+    authed.get('/api/status', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      return healthReport();
     });
 
     // ---------- Canais ----------

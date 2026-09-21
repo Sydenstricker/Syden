@@ -1,6 +1,7 @@
 import { AlertOctagon, AlertTriangle, BarChart3, CheckCircle2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
+import { HealthPanel } from './HealthPanel';
 import type { Traffic, UsageSummary, VoiceMember } from './types';
 
 const REFRESH_MS = 60_000;
@@ -23,6 +24,7 @@ function splitTraffic(voiceSeconds: number, screenSeconds: number, totalBytes: n
 }
 
 export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }) {
+  const [tab, setTab] = useState<'consumo' | 'saude'>('consumo');
   const [usage, setUsage] = useState<UsageSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,10 +60,24 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
     <div className="usage">
       <header className="main-header">
         <BarChart3 size={22} className="muted-icon" /> Uso do servidor
+        <div className="tab-row" role="tablist" aria-label="Painéis do servidor">
+          <button role="tab" aria-selected={tab === 'consumo'} className={`tab${tab === 'consumo' ? ' active' : ''}`} onClick={() => setTab('consumo')}>
+            Consumo
+          </button>
+          <button role="tab" aria-selected={tab === 'saude'} className={`tab${tab === 'saude' ? ' active' : ''}`} onClick={() => setTab('saude')}>
+            Saúde do servidor
+          </button>
+        </div>
       </header>
 
+      {tab === 'saude' && (
+        <div className="usage-body">
+          <HealthPanel />
+        </div>
+      )}
+
       {/* Ao recarregar, mantém os números anteriores esmaecidos em vez de piscar a tela. */}
-      <div className="usage-body" style={{ opacity: loading && usage ? 0.6 : 1 }}>
+      <div className="usage-body" style={{ opacity: loading && usage ? 0.6 : 1, display: tab === 'consumo' ? undefined : 'none' }}>
         {error && !usage && <p className="form-error">{error}</p>}
         {usage && (
           <>
