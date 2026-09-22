@@ -5,6 +5,7 @@ import {
   type RemoteParticipant,
   Room,
   RoomEvent,
+  AudioPresets,
   ScreenSharePresets,
   Track,
   type TrackPublication,
@@ -20,6 +21,7 @@ import { playSoundboard } from './soundboard';
 import { applyAllVolumes } from './voiceVolumes';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
+import { type AppAudio, captureAppAudio } from './screenAudio';
 import { sounds } from './sounds';
 
 export interface LocalMedia {
@@ -127,6 +129,8 @@ export function useVoice(socket: Socket | null) {
 
   // Refs para os handlers de eventos lerem o valor atual sem precisar se reinscrever.
   const channelRef = useRef<number | null>(null);
+  // O efeito que escuta o LiveKit é montado uma vez só; esta ref deixa ele chamar a versão atual.
+  const stopAppAudioRef = useRef<() => void>(() => {});
   const deafenedRef = useRef(false);
   const socketRef = useRef(socket);
   socketRef.current = socket;
@@ -135,6 +139,8 @@ export function useVoice(socket: Socket | null) {
     const lp = room.localParticipant;
     const sync = () => {
       const next = readLocalMedia(lp);
+      // A transmissão pode acabar por fora (barra do Windows, botão do navegador): o som vai junto.
+      if (!next.screen) stopAppAudioRef.current();
       setMedia(next);
       if (channelRef.current !== null) socketRef.current?.emit('voice:update', next);
     };
@@ -431,6 +437,43 @@ export function useVoice(socket: Socket | null) {
   }, [room]);
 
   /**
+   * Som da transmissão pelo caminho do app de desktop: o Windows entrega o som do computador sem o do
+   * próprio Syden, então as vozes da chamada não voltam como eco. Vai como uma faixa à parte, do tipo que
+   * o LiveKit reserva para o áudio de tela — é assim que quem assiste ouve junto com a imagem.
+   */
+  const appAudioRef = useRef<AppAudio | null>(null);
+
+  const stopAppAudio = useCallback(() => {
+    const current = appAudioRef.current;
+    if (!current) return;
+    appAudioRef.current = null;
+    void room.localParticipant.unpublishTrack(current.track).catch(console.error);
+    current.stop();
+  }, [room]);
+
+  stopAppAudioRef.current = stopAppAudio;
+
+  const startAppAudio = useCallback(async () => {
+    if (appAudioRef.current) return;
+    const audio = await captureAppAudio();
+    if (!audio) return; // no navegador, ou sem o módulo nativo: segue o caminho antigo
+    try {
+      await room.localParticipant.publishTrack(audio.track, {
+        source: Track.Source.ScreenShareAudio,
+        // Som de jogo e de música não é voz: nada de cortar silêncio nem de mono.
+        audioPreset: AudioPresets.musicHighQualityStereo,
+        dtx: false,
+        red: false,
+        forceStereo: true,
+      });
+      appAudioRef.current = audio;
+    } catch (e) {
+      console.error(e);
+      audio.stop();
+    }
+  }, [room]);
+
+  /**
    * Começa (ou troca) a transmissão. `surface` decide o que o seletor do navegador abre primeiro:
    * tela inteira, uma janela/app específico ou uma aba — janela e aba tendem a vir com áudio só daquele
    * programa; tela inteira traz o som do sistema inteiro junto (o que inclui a própria chamada, se ela
@@ -458,6 +501,7 @@ export function useVoice(socket: Socket | null) {
           },
           { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
         );
+        await startAppAudio();
       } catch (e) {
         // Fechar o seletor de tela sem escolher nada não é erro.
         if (!isCancelledPicker(e)) {
@@ -466,12 +510,13 @@ export function useVoice(socket: Socket | null) {
         }
       }
     },
-    [room],
+    [room, startAppAudio],
   );
 
   const stopScreen = useCallback(async () => {
+    stopAppAudio();
     await room.localParticipant.setScreenShareEnabled(false).catch(console.error);
-  }, [room]);
+  }, [room, stopAppAudio]);
 
   /** Troca microfone, alto-falante ou câmera; vale na hora e fica salvo para as próximas vezes. */
   const switchDevice = useCallback(

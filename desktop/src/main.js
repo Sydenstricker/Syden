@@ -2,6 +2,7 @@
 const { app, BrowserWindow, Menu, Tray, desktopCapturer, globalShortcut, ipcMain, nativeImage, session, shell } = require('electron');
 const path = require('node:path');
 const config = require('../app.config.json');
+const { setupScreenAudio, screenAudioAvailable, stopScreenAudio } = require('./screen-audio');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
 const APP_URL = process.env.JANJA_URL || (app.isPackaged ? config.url : 'http://localhost:5173');
@@ -33,12 +34,16 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.on('second-instance', showMainWindow);
-  app.on('before-quit', () => (quitting = true));
+  app.on('before-quit', () => {
+    quitting = true;
+    stopScreenAudio();
+  });
   app.whenReady().then(() => {
     app.setAppUserModelId(APP_USER_MODEL_ID);
     Menu.setApplicationMenu(null);
     setupPermissions();
     setupScreenShare();
+    setupScreenAudio();
     createMainWindow();
     createTray();
     registerShortcuts();
@@ -172,7 +177,10 @@ function setupScreenShare() {
     try {
       const choice = await pickSource(request.audioRequested);
       if (!choice) return callback({});
-      callback({ video: choice.source, ...(choice.audio && { audio: 'loopback' }) });
+      // Com o módulo nativo, o som vem por fora (sem as vozes da chamada); sem ele, sobra o jeito antigo,
+      // que é a mistura do computador inteiro.
+      const legacyAudio = choice.audio && !screenAudioAvailable();
+      callback({ video: choice.source, ...(legacyAudio && { audio: 'loopback' }) });
     } catch (error) {
       console.error(error);
       callback({});

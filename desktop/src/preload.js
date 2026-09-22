@@ -5,6 +5,20 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('sydenDesktop', {
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
   focus: () => ipcRenderer.send('app:focus'),
+  /**
+   * Som da transmissão sem a própria chamada dentro (só no Windows, com o módulo nativo instalado).
+   * start() responde { ok, source }; onChunk entrega pedaços de som (Float32, dois canais, 48 kHz).
+   */
+  screenAudio: {
+    available: () => ipcRenderer.invoke('screen-audio:available'),
+    start: () => ipcRenderer.invoke('screen-audio:start'),
+    stop: () => ipcRenderer.send('screen-audio:stop'),
+    onChunk: (callback) => {
+      const handler = (_event, pcm) => callback(pcm);
+      ipcRenderer.on('screen-audio:chunk', handler);
+      return () => ipcRenderer.off('screen-audio:chunk', handler);
+    },
+  },
   /** Recebe 'mute' ou 'deafen' quando a tecla de atalho global é pressionada; devolve a função que desliga. */
   onShortcut: (callback) => {
     const handler = (_event, action) => callback(action);
