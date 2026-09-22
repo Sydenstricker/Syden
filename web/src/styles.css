@@ -91,6 +91,9 @@ textarea {
    suavemente enquanto confere a sessão — só toca uma vez, ao carregar (ver SplashLogo.tsx). */
 .splash-logo-stage {
   position: relative;
+  /* Bem grande, para dar tempo de perceber que um coelho vira o outro — mas nunca maior que a tela. */
+  width: min(280px, 55vw, 45vh);
+  height: min(280px, 55vw, 45vh);
 }
 
 .splash-logo-stage img {
@@ -102,15 +105,15 @@ textarea {
 
 .splash-logo-from {
   z-index: 1;
-  animation: splash-dissolve-out 1.05s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: splash-dissolve-out 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .splash-logo-to {
   z-index: 2;
   opacity: 0;
   animation:
-    splash-materialize-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards,
-    splash-breathe 1.8s ease-in-out 1.25s infinite;
+    splash-materialize-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards,
+    splash-breathe 1.8s ease-in-out 1.45s infinite;
 }
 
 @keyframes splash-dissolve-out {
@@ -125,7 +128,7 @@ textarea {
   100% {
     opacity: 0;
     transform: scale(1.25) rotate(8deg);
-    filter: blur(10px);
+    filter: blur(16px);
   }
 }
 
@@ -133,7 +136,7 @@ textarea {
   0% {
     opacity: 0;
     transform: scale(0.6) rotate(-6deg);
-    filter: blur(10px);
+    filter: blur(16px);
   }
   60% {
     opacity: 1;

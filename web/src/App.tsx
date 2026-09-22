@@ -20,7 +20,7 @@ function readInviteFromUrl(): string | null {
 
 // Tempo mínimo do splash ao abrir o app: sem isso, num servidor rápido a checagem da sessão termina antes
 // da animação (~1,3s) acabar de tocar, e ninguém chega a ver o coelho se formar.
-const SPLASH_MIN_MS = 1400;
+const SPLASH_MIN_MS = 1600;
 
 export function App() {
   const [session, setSession] = useState<Session>({ status: 'loading' });
@@ -56,7 +56,7 @@ export function App() {
       <div className="app-body">
         {session.status === 'loading' && (
           <div className="splash">
-            <SplashLogo size={88} />
+            <SplashLogo />
           </div>
         )}
         {session.status === 'anonymous' && (
