@@ -56,11 +56,23 @@ export interface Sound {
 
 export interface Channel {
   id: number;
-  communityId: number;
+  /** null nas conversas privadas: elas não pertencem a nenhuma comunidade. */
+  communityId: number | null;
   name: string;
-  type: 'text' | 'voice';
+  type: 'text' | 'voice' | 'dm';
   position: number;
   createdBy: number | null;
+}
+
+/** Uma conversa privada (direta ou em grupo) do jeito que ela aparece na lista. */
+export interface DirectChannel {
+  id: number;
+  /** Nome do grupo; vazio na conversa de duas pessoas (aí o nome é o da outra pessoa). */
+  name: string;
+  createdBy: number | null;
+  members: UserRef[];
+  lastMessageAt: string | null;
+  lastMessage: string | null;
 }
 
 /** Arquivo mandado junto com uma mensagem (imagem, vídeo, áudio ou qualquer outro). */

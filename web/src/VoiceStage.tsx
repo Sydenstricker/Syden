@@ -73,8 +73,9 @@ export function VoiceStage({
         <MobileBackButton onBack={onMobileBack} />
         <Volume2 size={22} className="muted-icon" /> {channel.name}
       </header>
+      {/* Sala de voz sempre pertence a uma comunidade (conversa privada não tem voz por enquanto). */}
       {inThisRoom ? (
-        <Stage voice={voice} members={members} communityId={channel.communityId} />
+        <Stage voice={voice} members={members} communityId={channel.communityId ?? 0} />
       ) : (
         <div className="voice-lobby">
           <div className="voice-lobby-avatars">

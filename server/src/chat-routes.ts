@@ -3,8 +3,8 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
-import { communityRoom } from './realtime.js';
-import { manages, requireUser, roleIn } from './routes.js';
+import { channelRoom, communityRoom } from './realtime.js';
+import { canUseChannel, manages, requireUser, roleIn } from './routes.js';
 
 const MB = 1024 * 1024;
 export const MAX_ATTACHMENT_BYTES = 8 * MB;
@@ -56,26 +56,27 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
      */
     function destination(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply, threadId: unknown) {
       const channel = db.findChannel(Number(request.params.id));
-      const role = channel && roleIn(request.user, channel.communityId);
-      if (!channel || !role || channel.type !== 'text') {
+      const podeEscrever = channel && (channel.type === 'text' || channel.type === 'dm') && canUseChannel(request.user, channel);
+      if (!channel || !podeEscrever) {
         reply.code(404).send({ error: 'Canal não encontrado.' });
         return null;
       }
-      if (threadId === undefined || threadId === null) return { channel, role, threadId: null as number | null };
+      if (threadId === undefined || threadId === null) return { channel, threadId: null as number | null };
       const thread = db.threadLocation(Number(threadId));
       if (!thread || thread.channelId !== channel.id) {
         reply.code(404).send({ error: 'Tópico não encontrado.' });
         return null;
       }
-      return { channel, role, threadId: thread.id };
+      return { channel, threadId: thread.id };
     }
 
-    /** Manda a mensagem pronta para todo mundo da comunidade, como o envio por socket faz. */
-    function publish(communityId: number, message: db.Message) {
-      io.to(communityRoom(communityId)).emit('message:new', { ...message, communityId });
+    /** Manda a mensagem pronta para quem tem que receber: a comunidade toda, ou só a conversa privada. */
+    function publish(channel: db.Channel, message: db.Message) {
+      const room = channelRoom(channel);
+      io.to(room).emit('message:new', { ...message, communityId: channel.communityId });
       if (message.threadId !== null) {
         const thread = db.findThread(message.threadId);
-        if (thread) io.to(communityRoom(communityId)).emit('thread:updated', { ...thread, communityId });
+        if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
       }
       return message;
     }
@@ -113,7 +114,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
       const message = db.createMessage(where.channel.id, request.user.id, content, where.threadId);
       for (const file of prepared) message.attachments.push(db.addAttachment(message.id, file));
-      return publish(where.channel.communityId, message);
+      return publish(where.channel, message);
     });
 
     // ---------- Enquetes ----------
@@ -139,15 +140,25 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
         const message = db.createMessage(where.channel.id, request.user.id, '', where.threadId);
         const pollId = db.createPoll(message.id, question, options, request.body?.multiple === true);
         message.poll = db.pollState(pollId, request.user.id)!;
-        return publish(where.channel.communityId, message);
+        return publish(where.channel, message);
       },
     );
+
+    /** O canal de uma mensagem/enquete/tópico, já conferindo que a pessoa pode mexer ali. */
+    function channelFor(channelId: number, user: db.User): db.Channel | null {
+      const channel = db.findChannel(channelId);
+      return channel && canUseChannel(user, channel) ? channel : null;
+    }
+
+    /** Em conversa privada não existe administrador: vale só quem criou a coisa. */
+    const managesChannel = (channel: db.Channel, user: db.User) =>
+      channel.communityId !== null && manages(roleIn(user, channel.communityId));
 
     /** Votar de novo na mesma opção tira o voto, como no Discord. */
     authed.post<{ Params: { id: string }; Body: { optionId?: number } }>('/api/polls/:id/vote', async (request, reply) => {
       const poll = db.findPoll(Number(request.params.id));
-      const role = poll && roleIn(request.user, poll.communityId);
-      if (!poll || !role) return reply.code(404).send({ error: 'Enquete não encontrada.' });
+      const channel = poll && channelFor(poll.channelId, request.user);
+      if (!poll || !channel) return reply.code(404).send({ error: 'Enquete não encontrada.' });
       if (poll.closed) return reply.code(400).send({ error: 'Esta enquete já foi encerrada.' });
       const optionId = Number(request.body?.optionId);
       if (!db.optionBelongsToPoll(poll.id, optionId)) return reply.code(400).send({ error: 'Opção inválida.' });
@@ -155,7 +166,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       db.votePoll(poll.id, optionId, request.user.id, poll.multiple);
       const state = db.pollState(poll.id, request.user.id)!;
       // Para os outros vai só a contagem: quem votou no quê é de cada um.
-      io.to(communityRoom(poll.communityId)).emit('poll:tally', {
+      io.to(channelRoom(channel)).emit('poll:tally', {
         pollId: poll.id,
         channelId: poll.channelId,
         closed: state.closed,
@@ -167,14 +178,14 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.post<{ Params: { id: string } }>('/api/polls/:id/close', async (request, reply) => {
       const poll = db.findPoll(Number(request.params.id));
-      const role = poll && roleIn(request.user, poll.communityId);
-      if (!poll || !role) return reply.code(404).send({ error: 'Enquete não encontrada.' });
-      if (poll.createdBy !== request.user.id && !manages(role)) {
+      const channel = poll && channelFor(poll.channelId, request.user);
+      if (!poll || !channel) return reply.code(404).send({ error: 'Enquete não encontrada.' });
+      if (poll.createdBy !== request.user.id && !managesChannel(channel, request.user)) {
         return reply.code(403).send({ error: 'Só quem criou a enquete ou quem administra a comunidade pode encerrá-la.' });
       }
       db.closePoll(poll.id);
       const state = db.pollState(poll.id, request.user.id)!;
-      io.to(communityRoom(poll.communityId)).emit('poll:tally', {
+      io.to(channelRoom(channel)).emit('poll:tally', {
         pollId: poll.id,
         channelId: poll.channelId,
         closed: true,
@@ -188,8 +199,8 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.post<{ Params: { id: string }; Body: { title?: string } }>('/api/messages/:id/thread', async (request, reply) => {
       const message = db.findMessage(Number(request.params.id));
-      const role = message && roleIn(request.user, message.communityId);
-      if (!message || !role) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      const channel = message && channelFor(message.channelId, request.user);
+      if (!message || !channel) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
       if (message.threadId !== null) return reply.code(400).send({ error: 'Não dá para abrir um tópico dentro de outro.' });
 
       const existing = db.findThreadByMessage(message.id);
@@ -198,13 +209,13 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       const title = String(request.body?.title ?? '').trim().slice(0, 100);
       if (title.length < 1) return reply.code(400).send({ error: 'Dê um nome ao tópico.' });
       const thread = db.createThread(message.channelId, message.id, title, request.user.id);
-      io.to(communityRoom(message.communityId)).emit('thread:created', { ...thread, communityId: message.communityId });
+      io.to(channelRoom(channel)).emit('thread:created', { ...thread, communityId: channel.communityId });
       return thread;
     });
 
     authed.get<{ Params: { id: string }; Querystring: { before?: string } }>('/api/threads/:id/messages', async (request, reply) => {
       const location = db.threadLocation(Number(request.params.id));
-      if (!location || !roleIn(request.user, location.communityId)) {
+      if (!location || !channelFor(location.channelId, request.user)) {
         return reply.code(404).send({ error: 'Tópico não encontrado.' });
       }
       const before = request.query.before ? Number(request.query.before) : undefined;
@@ -213,14 +224,14 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.delete<{ Params: { id: string } }>('/api/threads/:id', async (request, reply) => {
       const location = db.threadLocation(Number(request.params.id));
-      const role = location && roleIn(request.user, location.communityId);
-      if (!location || !role) return reply.code(404).send({ error: 'Tópico não encontrado.' });
-      if (location.createdBy !== request.user.id && !manages(role)) {
+      const channel = location && channelFor(location.channelId, request.user);
+      if (!location || !channel) return reply.code(404).send({ error: 'Tópico não encontrado.' });
+      if (location.createdBy !== request.user.id && !managesChannel(channel, request.user)) {
         return reply.code(403).send({ error: 'Só quem criou o tópico ou quem administra a comunidade pode apagá-lo.' });
       }
       const thread = db.findThread(location.id);
       db.deleteThread(location.id);
-      io.to(communityRoom(location.communityId)).emit('thread:deleted', {
+      io.to(channelRoom(channel)).emit('thread:deleted', {
         id: location.id,
         channelId: location.channelId,
         parentMessageId: thread?.parentMessageId ?? null,
@@ -230,23 +241,29 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
     // ---------- Reações ----------
 
-    /** :nome: de um emoji da comunidade, ou um emoji comum curto (👍, ❤️, 🎉…). */
-    function validReaction(raw: unknown, communityId: number): string | null {
+    /**
+     * :nome: de um emoji da comunidade, ou um emoji comum curto (👍, ❤️, 🎉…). Em conversa privada não há
+     * comunidade, então lá só valem os emojis comuns — o outro lado não teria de onde carregar a imagem.
+     */
+    function validReaction(raw: unknown, communityId: number | null): string | null {
       const value = String(raw ?? '').trim();
       const customName = /^:([a-z0-9_]{2,32}):$/.exec(value);
-      if (customName) return db.emojiNameTaken(communityId, customName[1]) ? `:${customName[1]}:` : null;
+      if (customName) {
+        return communityId !== null && db.emojiNameTaken(communityId, customName[1]) ? `:${customName[1]}:` : null;
+      }
       // Emoji comum: no máximo um punhado de pontos de código (cobre bandeiras, tom de pele, ZWJ).
       return value.length >= 1 && [...value].length <= 8 ? value : null;
     }
 
     authed.post<{ Params: { id: string }; Body: { emoji?: string } }>('/api/messages/:id/reactions', async (request, reply) => {
       const message = db.findMessage(Number(request.params.id));
-      if (!message || !roleIn(request.user, message.communityId)) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
-      const emoji = validReaction(request.body?.emoji, message.communityId);
+      const channel = message && channelFor(message.channelId, request.user);
+      if (!message || !channel) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      const emoji = validReaction(request.body?.emoji, channel.communityId);
       if (!emoji) return reply.code(400).send({ error: 'Emoji inválido.' });
 
       db.toggleReaction(message.id, emoji, request.user.id);
-      io.to(communityRoom(message.communityId)).emit('reaction:updated', {
+      io.to(channelRoom(channel)).emit('reaction:updated', {
         messageId: message.id,
         channelId: message.channelId,
         threadId: message.threadId,

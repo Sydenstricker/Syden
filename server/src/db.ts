@@ -2,7 +2,8 @@ import { randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { config } from './config.js';
 
-export type ChannelType = 'text' | 'voice';
+/** 'dm' são as conversas privadas (direta entre duas pessoas ou grupo), fora de qualquer comunidade. */
+export type ChannelType = 'text' | 'voice' | 'dm';
 
 /** Cargo dentro de uma comunidade (o "servidor" do Discord). */
 export type Role = 'owner' | 'admin' | 'member';
@@ -60,12 +61,24 @@ export interface Sound {
 
 export interface Channel {
   id: number;
-  communityId: number;
+  /** null nas conversas privadas: elas não pertencem a nenhuma comunidade. */
+  communityId: number | null;
   name: string;
   type: ChannelType;
   position: number;
   /** Quem criou o canal; null nos canais que vêm de fábrica. */
   createdBy: number | null;
+}
+
+/** Uma conversa privada do jeito que ela aparece na lista: com quem é e qual foi a última mensagem. */
+export interface DirectChannel {
+  id: number;
+  /** Nome do grupo; vazio nas conversas de duas pessoas (o nome vem de quem está do outro lado). */
+  name: string;
+  createdBy: number | null;
+  members: UserRef[];
+  lastMessageAt: string | null;
+  lastMessage: string | null;
 }
 
 /** Arquivo enviado junto com uma mensagem. Os bytes ficam no banco; aqui vai só a ficha dele. */
@@ -170,14 +183,24 @@ db.exec(`
     PRIMARY KEY (community_id, user_id)
   );
 
+  -- Canais de uma comunidade e também as conversas privadas: nelas community_id é null, o tipo é 'dm'
+  -- e quem participa está em channel_members (uma conversa direta tem 2; um grupo, quantos quiserem).
   CREATE TABLE IF NOT EXISTS channels (
     id           INTEGER PRIMARY KEY,
-    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    community_id INTEGER REFERENCES communities(id) ON DELETE CASCADE,
     name         TEXT NOT NULL,
-    type         TEXT NOT NULL CHECK (type IN ('text', 'voice')),
+    type         TEXT NOT NULL CHECK (type IN ('text', 'voice', 'dm')),
     position     INTEGER NOT NULL DEFAULT 0,
     created_by   INTEGER
   );
+
+  CREATE TABLE IF NOT EXISTS channel_members (
+    channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    joined_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (channel_id, user_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_channel_members_user ON channel_members(user_id);
 
   CREATE TABLE IF NOT EXISTS messages (
     id         INTEGER PRIMARY KEY,
@@ -415,6 +438,48 @@ function migrateToCommunities() {
   }
 }
 migrateToCommunities();
+
+/**
+ * As conversas privadas moram na mesma tabela dos canais (assim herdam anexos, reações, enquetes e
+ * tópicos de graça), mas sem comunidade e com o tipo 'dm'. Bancos antigos têm community_id NOT NULL e
+ * o tipo limitado a text/voice, então a tabela precisa ser recriada — é o caminho oficial do SQLite para
+ * afrouxar uma restrição. As chaves estrangeiras ficam desligadas durante a troca: sem isso, o DROP da
+ * tabela antiga apagaria em cascata todas as mensagens e tópicos.
+ */
+function migrateChannelsForDirectMessages() {
+  const schema = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'channels'").get() as
+    | { sql: string }
+    | undefined;
+  if (!schema || schema.sql.includes("'dm'")) return; // banco novo, ou já migrado
+
+  db.exec('PRAGMA foreign_keys = OFF');
+  db.exec('BEGIN');
+  try {
+    db.exec(`
+      CREATE TABLE channels_new (
+        id           INTEGER PRIMARY KEY,
+        community_id INTEGER REFERENCES communities(id) ON DELETE CASCADE,
+        name         TEXT NOT NULL,
+        type         TEXT NOT NULL CHECK (type IN ('text', 'voice', 'dm')),
+        position     INTEGER NOT NULL DEFAULT 0,
+        created_by   INTEGER
+      )`);
+    db.exec(
+      'INSERT INTO channels_new (id, community_id, name, type, position, created_by) SELECT id, community_id, name, type, position, created_by FROM channels',
+    );
+    db.exec('DROP TABLE channels');
+    db.exec('ALTER TABLE channels_new RENAME TO channels');
+    const quebradas = db.prepare('PRAGMA foreign_key_check').all();
+    if (quebradas.length > 0) throw new Error(`Chaves estrangeiras quebradas após migrar canais: ${JSON.stringify(quebradas)}`);
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  } finally {
+    db.exec('PRAGMA foreign_keys = ON');
+  }
+}
+migrateChannelsForDirectMessages();
 
 /** Canais que toda comunidade nova ganha, para ninguém começar numa tela vazia. */
 export function seedChannels(communityId: number) {
@@ -746,7 +811,7 @@ export function findMessage(id: number) {
       `SELECT m.id, m.channel_id AS channelId, m.user_id AS userId, m.thread_id AS threadId, c.community_id AS communityId
        FROM messages m JOIN channels c ON c.id = m.channel_id WHERE m.id = ?`,
     )
-    .get(id) as { id: number; channelId: number; userId: number; threadId: number | null; communityId: number } | undefined;
+    .get(id) as { id: number; channelId: number; userId: number; threadId: number | null; communityId: number | null } | undefined;
 }
 
 export function deleteMessage(id: number) {
@@ -792,6 +857,79 @@ export function deleteChannel(id: number) {
 export function countChannels(communityId: number, type: ChannelType) {
   return (db.prepare('SELECT COUNT(*) AS n FROM channels WHERE community_id = ? AND type = ?').get(communityId, type) as { n: number })
     .n;
+}
+
+// ---------- Conversas privadas (direta e em grupo) ----------
+
+export function isChannelMember(channelId: number, userId: number) {
+  return db.prepare('SELECT 1 FROM channel_members WHERE channel_id = ? AND user_id = ?').get(channelId, userId) !== undefined;
+}
+
+export function channelMemberIds(channelId: number): number[] {
+  return (db.prepare('SELECT user_id AS id FROM channel_members WHERE channel_id = ?').all(channelId) as { id: number }[]).map(
+    (row) => row.id,
+  );
+}
+
+export function addChannelMember(channelId: number, userId: number) {
+  db.prepare('INSERT OR IGNORE INTO channel_members (channel_id, user_id) VALUES (?, ?)').run(channelId, userId);
+}
+
+export function removeChannelMember(channelId: number, userId: number) {
+  db.prepare('DELETE FROM channel_members WHERE channel_id = ? AND user_id = ?').run(channelId, userId);
+}
+
+/** Cria a conversa (sem nome = conversa direta; com nome = grupo) já com todo mundo dentro. */
+export function createDirectChannel(name: string, createdBy: number, userIds: number[]): Channel {
+  const result = db
+    .prepare("INSERT INTO channels (community_id, name, type, position, created_by) VALUES (NULL, ?, 'dm', 0, ?)")
+    .run(name, createdBy);
+  const id = Number(result.lastInsertRowid);
+  for (const userId of new Set([createdBy, ...userIds])) addChannelMember(id, userId);
+  return findChannel(id)!;
+}
+
+/** A conversa direta que já existe entre duas pessoas (sem nome e com exatamente as duas dentro). */
+export function findDirectBetween(a: number, b: number): Channel | undefined {
+  const row = db
+    .prepare(
+      `SELECT ${channelColumns} FROM channels c
+       WHERE c.type = 'dm' AND c.name = ''
+         AND (SELECT COUNT(*) FROM channel_members m WHERE m.channel_id = c.id) = 2
+         AND EXISTS (SELECT 1 FROM channel_members m WHERE m.channel_id = c.id AND m.user_id = ?)
+         AND EXISTS (SELECT 1 FROM channel_members m WHERE m.channel_id = c.id AND m.user_id = ?)
+       LIMIT 1`,
+    )
+    .get(a, b) as Channel | undefined;
+  return row;
+}
+
+/** As conversas privadas de alguém, da mais recente para a mais antiga. */
+export function listDirectChannels(userId: number): DirectChannel[] {
+  const rows = db
+    .prepare(
+      `SELECT c.id, c.name, c.created_by AS createdBy,
+              (SELECT MAX(m.created_at) FROM messages m WHERE m.channel_id = c.id) AS lastMessageAt,
+              (SELECT m.content FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessage
+       FROM channels c
+       JOIN channel_members mine ON mine.channel_id = c.id AND mine.user_id = ?
+       WHERE c.type = 'dm'
+       ORDER BY COALESCE(lastMessageAt, '') DESC, c.id DESC`,
+    )
+    .all(userId) as unknown as Omit<DirectChannel, 'members'>[];
+  if (rows.length === 0) return [];
+
+  const members = db
+    .prepare(
+      `SELECT m.channel_id AS channelId, u.id, u.username
+       FROM channel_members m JOIN users u ON u.id = m.user_id
+       WHERE m.channel_id IN (${idList(rows.map((r) => r.id))})`,
+    )
+    .all() as unknown as { channelId: number; id: number; username: string }[];
+
+  const byChannel = new Map<number, UserRef[]>(rows.map((row) => [row.id, []]));
+  for (const { channelId, ...user } of members) byChannel.get(channelId)?.push(user);
+  return rows.map((row) => ({ ...row, members: byChannel.get(row.id) ?? [] }));
 }
 
 interface MessageRow {

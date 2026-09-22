@@ -6,7 +6,9 @@ import { config } from './config.js';
 import * as db from './db.js';
 import { seedExpressions } from './expressions.js';
 import {
+  channelRoom,
   communityRoom,
+  directRoom,
   disconnectUser,
   emitToUser,
   joinCommunityRoom,
@@ -49,6 +51,17 @@ export function roleIn(user: db.User, communityId: number): db.Role | undefined 
 }
 
 export const manages = (role: db.Role | undefined) => role === 'owner' || role === 'admin';
+
+/** Canal que pertence a uma comunidade (ou seja, não é conversa privada). */
+export type CommunityChannel = db.Channel & { communityId: number };
+
+/**
+ * Quem pode ler e escrever num canal: nos canais de comunidade, quem participa dela; nas conversas
+ * privadas, só quem está na conversa.
+ */
+export function canUseChannel(user: db.User, channel: db.Channel): boolean {
+  return channel.communityId === null ? db.isChannelMember(channel.id, user.id) : roleIn(user, channel.communityId) !== undefined;
+}
 
 const NOT_MEMBER = 'Você não participa desta comunidade.';
 
@@ -439,7 +452,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         const name = channelName(request.body?.name, type);
         if (!name) return reply.code(400).send({ error: 'O nome do canal deve ter de 1 a 50 caracteres.' });
         const channel = db.createChannel(access.community.id, name, type, request.user.id);
-        io.to(communityRoom(channel.communityId)).emit('channel:created', channel);
+        io.to(communityRoom(access.community.id)).emit("channel:created", channel);
         return channel;
       },
     );
@@ -447,8 +460,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     /** Canal existente: quem criou o canal, ou quem administra a comunidade. */
     const channelAccess = (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply, manage: boolean) => {
       const channel = db.findChannel(Number(request.params.id));
-      const role = channel && roleIn(request.user, channel.communityId);
-      if (!channel || !role) {
+      // Conversa privada não é canal de comunidade: quem chega aqui por uma delas recebe "não encontrado".
+      const role = channel?.communityId === null ? undefined : channel && roleIn(request.user, channel.communityId!);
+      if (!channel || channel.communityId === null || !role) {
         reply.code(404).send({ error: 'Canal não encontrado.' });
         return null;
       }
@@ -456,7 +470,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         reply.code(403).send({ error: 'Só quem criou o canal ou quem administra a comunidade pode alterá-lo.' });
         return null;
       }
-      return channel;
+      return channel as CommunityChannel;
     };
 
     authed.patch<{ Params: { id: string }; Body: { name?: string } }>('/api/channels/:id', async (request, reply) => {
@@ -484,9 +498,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get<{ Params: { id: string }; Querystring: { before?: string } }>(
       '/api/channels/:id/messages',
       async (request, reply) => {
-        const channel = channelAccess(request, reply, false);
-        if (!channel) return reply;
-        if (channel.type !== 'text') return reply.code(404).send({ error: 'Canal não encontrado.' });
+        // Vale tanto para canal de texto da comunidade quanto para conversa privada.
+        const channel = db.findChannel(Number(request.params.id));
+        if (!channel || (channel.type !== 'text' && channel.type !== 'dm') || !canUseChannel(request.user, channel)) {
+          return reply.code(404).send({ error: 'Canal não encontrado.' });
+        }
         const before = request.query.before ? Number(request.query.before) : undefined;
         return db.listMessages(channel.id, before, request.user.id);
       },
@@ -494,13 +510,18 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.delete<{ Params: { id: string } }>('/api/messages/:id', async (request, reply) => {
       const message = db.findMessage(Number(request.params.id));
-      const role = message && roleIn(request.user, message.communityId);
-      if (!message || !role) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
-      if (message.userId !== request.user.id && !manages(role)) {
+      const channel = message && db.findChannel(message.channelId);
+      if (!message || !channel || !canUseChannel(request.user, channel)) {
+        return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      }
+      // Em conversa privada não existe administrador: só o autor apaga o que escreveu.
+      const canManage = channel.communityId !== null && manages(roleIn(request.user, channel.communityId));
+      if (message.userId !== request.user.id && !canManage) {
         return reply.code(403).send({ error: 'Só o autor ou quem administra a comunidade pode apagar a mensagem.' });
       }
       db.deleteMessage(message.id);
-      io.to(communityRoom(message.communityId)).emit('message:deleted', {
+      const room = channelRoom(channel);
+      io.to(room).emit('message:deleted', {
         id: message.id,
         channelId: message.channelId,
         threadId: message.threadId,
@@ -508,7 +529,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       // Era resposta de um tópico: a contagem embaixo da mensagem-mãe muda.
       if (message.threadId !== null) {
         const thread = db.findThread(message.threadId);
-        if (thread) io.to(communityRoom(message.communityId)).emit('thread:updated', { ...thread, communityId: message.communityId });
+        if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
       }
       return { ok: true };
     });

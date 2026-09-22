@@ -7,13 +7,15 @@ import { CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
 import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
+import { DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
+import { NewGroupDialog } from './NewGroupDialog';
 import { loadMyStatus, saveMyStatus } from './presenceStatus';
 import { getSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import { SettingsModal } from './SettingsModal';
-import type { Channel, Community, Message, PresenceEntry, PresenceStatus, User, VoiceMember } from './types';
+import type { Channel, Community, DirectChannel, Message, PresenceEntry, PresenceStatus, User, VoiceMember } from './types';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
@@ -74,6 +76,11 @@ export function Shell({
   // Em tela estreita só cabe uma coluna por vez: esta decide se é a lista de canais ou a conversa/chamada
   // que aparece. Em tela larga (a maioria) isto não muda nada — as duas colunas aparecem sempre.
   const [mobileChannels, setMobileChannels] = useState(true);
+  // Conversas privadas: a barra lateral troca a lista de canais pela lista de conversas.
+  const [view, setView] = useState<'community' | 'direct'>('community');
+  const [directs, setDirects] = useState<DirectChannel[]>([]);
+  const [directId, setDirectId] = useState<number | null>(null);
+  const [newGroupOpen, setNewGroupOpen] = useState(false);
   const voice = useVoice(socket);
   const onLogoutRef = useRef(onLogout);
   onLogoutRef.current = onLogout;
@@ -81,6 +88,16 @@ export function Shell({
   voiceRef.current = voice;
 
   const community = communities.find((c) => c.id === communityId);
+  const openDirect = directs.find((c) => c.id === directId);
+  // A conversa privada aberta vira um "canal" para a tela de conversa poder ser a mesma dos canais de texto.
+  const directAsChannel: Channel | undefined = openDirect && {
+    id: openDirect.id,
+    communityId: null,
+    name: directName(openDirect, user.id),
+    type: 'dm',
+    position: 0,
+    createdBy: openDirect.createdBy,
+  };
   const voiceMembers = communityId === null ? [] : (voiceByCommunity[communityId] ?? []);
   const onlineHere = presence.filter((p) => members.has(p.id));
   const myStatus = presence.find((p) => p.id === user.id)?.status ?? loadMyStatus();
@@ -102,19 +119,41 @@ export function Shell({
     reloadCommunities().catch(console.error);
   }, [reloadCommunities]);
 
+  useEffect(() => {
+    api<DirectChannel[]>('/api/direct').then(setDirects, console.error);
+  }, []);
+
+  /** Abre uma conversa privada (vindo da lista ou do menu de alguém) e troca a barra lateral para ela. */
+  function openConversation(conversa: DirectChannel) {
+    setDirects((list) => (list.some((c) => c.id === conversa.id) ? list : [conversa, ...list]));
+    setView('direct');
+    setDirectId(conversa.id);
+    setShowUsage(false);
+    setMobileChannels(false);
+  }
+
+  /** "Enviar mensagem" no menu de alguém: abre a conversa que já existe, ou começa uma. */
+  async function startConversation(userId: number) {
+    try {
+      openConversation(await api<DirectChannel>('/api/direct', { method: 'POST', body: { userIds: [userId] } }));
+    } catch (e) {
+      setNotice((e as Error).message);
+    }
+  }
+
   // Chegou por um link de convite (?convite=xxxx): entra nessa comunidade assim que a sessão abre. Quem já
   // participa (ex.: o próprio link de quem convidou) simplesmente não vê nada de diferente.
-  const [inviteBanner, setInviteBanner] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   useEffect(() => {
     if (!pendingInviteCode) return;
     api<Community>('/api/communities/join', { method: 'POST', body: { code: pendingInviteCode } }).then(
       (community) => {
-        setInviteBanner(`Você entrou em ${community.name}.`);
+        setNotice(`Você entrou em ${community.name}.`);
         void afterCommunityChange(community);
       },
       (error) => {
         if (error instanceof ApiError && error.status === 409) return; // já participava: nada a avisar
-        setInviteBanner((error as Error).message);
+        setNotice((error as Error).message);
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,11 +182,38 @@ export function Shell({
       if (error.message === 'unauthorized') onLogoutRef.current();
     });
     s.on('presence', setPresence);
+    // Conversas privadas: entram, mudam de nome/gente ou somem da lista na hora.
+    const upsertDirect = (conversa: DirectChannel) =>
+      setDirects((list) => [conversa, ...list.filter((c) => c.id !== conversa.id)]);
+    s.on('direct:created', upsertDirect);
+    s.on('direct:updated', (conversa: DirectChannel) => {
+      if (conversa.members) upsertDirect(conversa);
+      else void api<DirectChannel[]>('/api/direct').then(setDirects, console.error);
+    });
+    s.on('direct:removed', ({ id }: { id: number }) => {
+      setDirects((list) => list.filter((c) => c.id !== id));
+      setDirectId((current) => (current === id ? null : current));
+    });
+    // Mensagem nova numa conversa privada: atualiza a prévia e sobe ela para o topo da lista.
+    s.on('message:new', (message: Message & { communityId: number | null }) => {
+      if (message.communityId !== null) return;
+      setDirects((list) => {
+        const conversa = list.find((c) => c.id === message.channelId);
+        if (!conversa) return list;
+        const atualizada = { ...conversa, lastMessage: message.content, lastMessageAt: message.createdAt };
+        return [atualizada, ...list.filter((c) => c.id !== message.channelId)];
+      });
+    });
     s.on('voice:state', ({ communityId: id, members: list }: { communityId: number; members: VoiceMember[] }) =>
       setVoiceByCommunity((current) => ({ ...current, [id]: list })),
     );
     s.on('channel:created', (channel: Channel) =>
-      setChannels((list) => (list.some((c) => c.id === channel.id) || !isOpenCommunity(channel.communityId) ? list : [...list, channel])),
+      setChannels((list) =>
+        // Conversa privada não entra na lista de canais da comunidade (ela tem lista própria).
+        list.some((c) => c.id === channel.id) || channel.communityId === null || !isOpenCommunity(channel.communityId)
+          ? list
+          : [...list, channel],
+      ),
     );
     s.on('channel:updated', (channel: Channel) =>
       setChannels((list) => list.map((c) => (c.id === channel.id ? channel : c))),
@@ -298,9 +364,25 @@ export function Shell({
       <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}`}>
         <CommunityRail
           communities={communities}
-          currentId={communityId}
-          onSelect={setCommunityId}
+          currentId={view === 'direct' ? null : communityId}
+          onSelect={(id) => {
+            setView('community');
+            setCommunityId(id);
+          }}
           onChanged={(created) => void afterCommunityChange(created)}
+          top={
+            communities.length > 0 && (
+              <DirectRailButton
+                active={view === 'direct'}
+                unread={false}
+                onClick={() => {
+                  setView('direct');
+                  setShowUsage(false);
+                  setMobileChannels(true);
+                }}
+              />
+            )
+          }
         />
         {community ? (
           <Sidebar
@@ -314,21 +396,32 @@ export function Shell({
             myStatus={myStatus}
             onSetStatus={setMyStatus}
             onWatchStream={watchStream}
+            onSendMessage={(id) => void startConversation(id)}
             onSelect={selectChannel}
             onOpenUsage={() => {
               setShowUsage(true);
               setMobileChannels(false);
             }}
             onOpenSettings={() => setSettingsOpen(true)}
+            directMode={view === 'direct'}
+            directList={
+              <DirectList
+                conversas={directs}
+                selectedId={directId}
+                selfId={user.id}
+                onSelect={openConversation}
+                onNewGroup={() => setNewGroupOpen(true)}
+              />
+            }
           />
         ) : (
           !loadingCommunities && <EmptyCommunities onDone={(created) => void afterCommunityChange(created)} />
         )}
         <main className="main">
           {!online && <div className="banner">Reconectando ao servidor…</div>}
-          {inviteBanner && (
-            <div className="banner" onClick={() => setInviteBanner(null)}>
-              {inviteBanner} <span className="banner-close">✕</span>
+          {notice && (
+            <div className="banner" onClick={() => setNotice(null)}>
+              {notice} <span className="banner-close">✕</span>
             </div>
           )}
           {voice.error && (
@@ -336,7 +429,21 @@ export function Shell({
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
-          {selected?.type === 'text' && socket && (
+          {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
+          {view === 'direct' && directAsChannel && socket && (
+            <TextChannel
+              key={`dm-${directAsChannel.id}`}
+              channel={directAsChannel}
+              socket={socket}
+              user={user}
+              role="member"
+              onMobileBack={() => setMobileChannels(true)}
+            />
+          )}
+          {view === 'direct' && !directAsChannel && (
+            <div className="empty">Escolha uma conversa à esquerda, ou comece uma nova.</div>
+          )}
+          {view === 'community' && selected?.type === 'text' && socket && (
             <TextChannel
               key={selected.id}
               channel={selected}
@@ -346,7 +453,7 @@ export function Shell({
               onMobileBack={() => setMobileChannels(true)}
             />
           )}
-          {selected?.type === 'voice' && (
+          {view === 'community' && selected?.type === 'voice' && (
             <VoiceStage
               channel={selected}
               voice={voice}
@@ -354,10 +461,14 @@ export function Shell({
               onMobileBack={() => setMobileChannels(true)}
             />
           )}
-          {usageOpen && <UsageDashboard voiceMembers={voiceMembers} onMobileBack={() => setMobileChannels(true)} />}
-          {community && !selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
+          {view === 'community' && usageOpen && (
+            <UsageDashboard voiceMembers={voiceMembers} onMobileBack={() => setMobileChannels(true)} />
+          )}
+          {view === 'community' && community && !selected && !usageOpen && (
+            <div className="empty">Escolha um canal à esquerda.</div>
+          )}
         </main>
-        {selected?.type === 'text' && (
+        {view === 'community' && selected?.type === 'text' && (
           <MemberList
             online={onlineHere}
             voiceMembers={voiceMembers}
@@ -367,9 +478,20 @@ export function Shell({
             communityId={communityId ?? 0}
             selfId={user.id}
             onWatchStream={watchStream}
+            onSendMessage={(id) => void startConversation(id)}
           />
         )}
       </div>
+      {newGroupOpen && (
+        <NewGroupDialog
+          selfId={user.id}
+          onClose={() => setNewGroupOpen(false)}
+          onCreated={(conversa) => {
+            setNewGroupOpen(false);
+            openConversation(conversa);
+          }}
+        />
+      )}
       {settingsOpen && (
         <SettingsModal
           user={user}

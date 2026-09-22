@@ -5,6 +5,13 @@ import * as db from './db.js';
 /** Sala do socket com todo mundo que participa de uma comunidade. */
 export const communityRoom = (communityId: number) => `community:${communityId}`;
 
+/** Sala do socket de uma conversa privada (direta ou em grupo). */
+export const directRoom = (channelId: number) => `dm:${channelId}`;
+
+/** Para onde vai o aviso de uma mensagem: a comunidade toda, ou só quem está na conversa privada. */
+export const channelRoom = (channel: { id: number; communityId: number | null }) =>
+  channel.communityId === null ? directRoom(channel.id) : communityRoom(channel.communityId);
+
 /** Status de presença, como no Discord. "invisivel" faz o cliente tratar a pessoa como offline (ver
  * web/src/MemberList.tsx) — a marcação em si é só de boa-fé, não é escondida de verdade no servidor. */
 export type PresenceStatus = 'online' | 'ausente' | 'ocupado' | 'invisivel';
@@ -53,6 +60,19 @@ function broadcastVoice(io: IOServer, communityId: number) {
 export function joinCommunityRoom(io: IOServer, userId: number, communityId: number) {
   for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
     io.sockets.sockets.get(socketId)?.join(communityRoom(communityId));
+  }
+}
+
+/** Alguém entrou numa conversa privada: as abas dela passam a receber as mensagens de lá na hora. */
+export function joinDirectRoom(io: IOServer, userId: number, channelId: number) {
+  for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
+    io.sockets.sockets.get(socketId)?.join(directRoom(channelId));
+  }
+}
+
+export function leaveDirectRoom(io: IOServer, userId: number, channelId: number) {
+  for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
+    io.sockets.sockets.get(socketId)?.leave(directRoom(channelId));
   }
 }
 
@@ -132,6 +152,8 @@ export function setupRealtime(io: IOServer) {
       socket.join(communityRoom(id));
       socket.emit('voice:state', { communityId: id, members: voiceState(id) });
     }
+    // E também as conversas privadas de que ela participa.
+    for (const conversa of db.listDirectChannels(user.id)) socket.join(directRoom(conversa.id));
 
     // Ocupado, ausente, invisível... como no Discord. Vale para a pessoa (todas as abas dela juntas).
     socket.on('presence:set', (status: unknown) => {
@@ -145,8 +167,11 @@ export function setupRealtime(io: IOServer) {
     socket.on('message:send', (payload: { channelId?: number; content?: string; threadId?: number }, ack?: Ack) => {
       const content = String(payload?.content ?? '').trim();
       const channel = db.findChannel(Number(payload?.channelId));
-      if (!channel || channel.type !== 'text') return ack?.({ ok: false, error: 'Canal inválido.' });
-      if (!db.memberRole(channel.communityId, user.id)) return ack?.({ ok: false, error: 'Você não participa desta comunidade.' });
+      if (!channel || (channel.type !== 'text' && channel.type !== 'dm')) return ack?.({ ok: false, error: 'Canal inválido.' });
+      // Canal de comunidade: tem que participar dela. Conversa privada: tem que estar na conversa.
+      const pode =
+        channel.communityId === null ? db.isChannelMember(channel.id, user.id) : !!db.memberRole(channel.communityId, user.id);
+      if (!pode) return ack?.({ ok: false, error: 'Você não participa desta conversa.' });
       if (!content || content.length > 2000) return ack?.({ ok: false, error: 'Mensagem vazia ou longa demais.' });
 
       // Resposta dentro de um tópico: ele tem que ser deste canal.
@@ -157,20 +182,23 @@ export function setupRealtime(io: IOServer) {
         threadId = thread.id;
       }
 
-      io.to(communityRoom(channel.communityId)).emit('message:new', {
+      const room = channelRoom(channel);
+      io.to(room).emit('message:new', {
         ...db.createMessage(channel.id, user.id, content, threadId),
         communityId: channel.communityId,
       });
       if (threadId !== null) {
         const thread = db.findThread(threadId);
-        if (thread) io.to(communityRoom(channel.communityId)).emit('thread:updated', { ...thread, communityId: channel.communityId });
+        if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
       }
       ack?.({ ok: true });
     });
 
     socket.on('voice:join', (payload: { channelId?: number }, ack?: Ack) => {
       const channel = db.findChannel(Number(payload?.channelId));
-      if (!channel || channel.type !== 'voice') return ack?.({ ok: false, error: 'Sala inválida.' });
+      if (!channel || channel.type !== 'voice' || channel.communityId === null) {
+        return ack?.({ ok: false, error: 'Sala inválida.' });
+      }
       if (!db.memberRole(channel.communityId, user.id)) return ack?.({ ok: false, error: 'Você não participa desta comunidade.' });
       const previous = voiceMembers.get(user.id)?.communityId;
       endVoiceSession(user.id); // trocou de sala, ou entrou por outra aba

@@ -1,4 +1,4 @@
-import { Hash } from 'lucide-react';
+import { AtSign, Hash } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
@@ -46,6 +46,8 @@ export function TextChannel({
   const listRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<ComposerHandle>(null);
   const stickToBottom = useRef(true);
+  // Conversa privada: o cabeçalho e a abertura mudam de texto (não é um canal de comunidade).
+  const privada = channel.type === 'dm';
 
   useEffect(() => {
     api<Message[]>(`/api/channels/${channel.id}/messages`).then((page) => {
@@ -144,7 +146,7 @@ export function TextChannel({
       >
         <header className="main-header">
           <MobileBackButton onBack={onMobileBack} />
-          <Hash size={22} className="muted-icon" /> {channel.name}
+          {privada ? <AtSign size={22} className="muted-icon" /> : <Hash size={22} className="muted-icon" />} {channel.name}
         </header>
 
         <div
@@ -161,11 +163,9 @@ export function TextChannel({
             </button>
           ) : (
             <div className="channel-intro">
-              <div className="channel-intro-icon">
-                <Hash size={36} />
-              </div>
-              <h2>Bem-vindo a #{channel.name}!</h2>
-              <p>Este é o começo do canal.</p>
+              <div className="channel-intro-icon">{privada ? <AtSign size={36} /> : <Hash size={36} />}</div>
+              <h2>{privada ? channel.name : `Bem-vindo a #${channel.name}!`}</h2>
+              <p>{privada ? 'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.' : 'Este é o começo do canal.'}</p>
             </div>
           )}
 
@@ -203,7 +203,7 @@ export function TextChannel({
           ref={composerRef}
           channelId={channel.id}
           socket={socket}
-          placeholder={`Conversar em #${channel.name}`}
+          placeholder={privada ? `Conversar com ${channel.name}` : `Conversar em #${channel.name}`}
           onSent={() => (stickToBottom.current = true)}
         />
 

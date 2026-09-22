@@ -1,4 +1,4 @@
-import { MicOff, MonitorPlay, PhoneOff, ShieldOff, ShieldPlus, Volume2, VolumeX } from 'lucide-react';
+import { MessageSquare, MicOff, MonitorPlay, PhoneOff, ShieldOff, ShieldPlus, Volume2, VolumeX } from 'lucide-react';
 import { type MouseEvent, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
@@ -34,6 +34,7 @@ export function PersonMenu({
   targetRole,
   isSelf,
   onWatchStream,
+  onSendMessage,
 }: {
   target: { userId: number; username: string; x: number; y: number };
   onClose: () => void;
@@ -52,6 +53,8 @@ export function PersonMenu({
   isSelf: boolean;
   /** Abre a sala da pessoa na tela (não só conecta por baixo) — usado por "Assistir transmissão". */
   onWatchStream: (channelId: number) => void;
+  /** Abre (ou cria) a conversa privada com a pessoa. */
+  onSendMessage: (userId: number) => void;
 }) {
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
   const [muted, setMuted] = useState(() => isLocallyMuted(target.userId));
@@ -100,6 +103,18 @@ export function PersonMenu({
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="person-menu-name">{target.username}</div>
+
+      {!isSelf && (
+        <button
+          className="person-menu-item"
+          onClick={() => {
+            onSendMessage(target.userId);
+            onClose();
+          }}
+        >
+          <MessageSquare size={16} /> Enviar mensagem
+        </button>
+      )}
 
       {!isSelf && targetScreen && inVoiceChannel !== null && (
         <button

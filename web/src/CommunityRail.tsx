@@ -1,5 +1,5 @@
 import { Link, LogIn, Plus } from 'lucide-react';
-import { type FormEvent, type MouseEvent, useEffect, useState } from 'react';
+import { type FormEvent, type MouseEvent, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
 import { CommunityIcon } from './CommunityIcon';
@@ -11,9 +11,11 @@ interface Props {
   currentId: number | null;
   onSelect: (id: number) => void;
   onChanged: (community: Community) => void;
+  /** Botão extra acima das comunidades (as conversas privadas ficam aqui). */
+  top?: ReactNode;
 }
 
-export function CommunityRail({ communities, currentId, onSelect, onChanged }: Props) {
+export function CommunityRail({ communities, currentId, onSelect, onChanged, top }: Props) {
   const [dialog, setDialog] = useState<'create' | 'join' | null>(null);
   const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
 
@@ -22,6 +24,7 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged }: P
       <div className="rail-logo" title="Syden">
         <Logo size={26} />
       </div>
+      {top}
       <div className="rail-list">
         {communities.map((community) => (
           <button

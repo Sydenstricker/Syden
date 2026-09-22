@@ -26,6 +26,7 @@ export function MemberList({
   communityId,
   selfId,
   onWatchStream,
+  onSendMessage,
 }: {
   online: PresenceEntry[];
   voiceMembers: VoiceMember[];
@@ -37,6 +38,8 @@ export function MemberList({
   selfId: number;
   /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
   onWatchStream: (channelId: number) => void;
+  /** Abre a conversa privada com alguém, pelo menu do botão direito. */
+  onSendMessage: (userId: number) => void;
 }) {
   const { members } = useDirectory();
   const menu = usePersonMenu();
@@ -120,6 +123,7 @@ export function MemberList({
           targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === selfId}
           onWatchStream={onWatchStream}
+          onSendMessage={onSendMessage}
         />
       )}
     </aside>

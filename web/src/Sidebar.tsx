@@ -41,6 +41,11 @@ interface Props {
   onSetStatus: (status: PresenceStatus) => void;
   /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
   onWatchStream: (channelId: number) => void;
+  /** Abre a conversa privada com alguém, pelo menu do botão direito. */
+  onSendMessage: (userId: number) => void;
+  /** No modo conversas, a lista de canais dá lugar à lista de conversas privadas. */
+  directMode: boolean;
+  directList: ReactNode;
   onSelect: (channel: Channel) => void;
   onOpenUsage: () => void;
   onOpenSettings: () => void;
@@ -57,6 +62,9 @@ export function Sidebar({
   myStatus,
   onSetStatus,
   onWatchStream,
+  onSendMessage,
+  directMode,
+  directList,
   onSelect,
   onOpenUsage,
   onOpenSettings,
@@ -86,8 +94,8 @@ export function Sidebar({
   return (
     <nav className="sidebar">
       <header className="sidebar-header">
-        <span className="sidebar-brand" title={community.name}>
-          {community.name}
+        <span className="sidebar-brand" title={directMode ? 'Conversas' : community.name}>
+          {directMode ? 'Conversas' : community.name}
         </span>
         {showDesktopDownload && (
           <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title="Baixar o app para Windows" aria-label="Baixar o app para Windows">
@@ -96,7 +104,9 @@ export function Sidebar({
         )}
       </header>
 
-      <div className="channel-list">
+      {directMode && directList}
+
+      <div className="channel-list" hidden={directMode}>
         {/* Consumo do servidor interessa a quem cuida dele: só os administradores veem. */}
         {user.isAdmin && (
           <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
@@ -198,6 +208,7 @@ export function Sidebar({
           targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === user.id}
           onWatchStream={onWatchStream}
+          onSendMessage={onSendMessage}
         />
       )}
       {statusMenu.open && (
