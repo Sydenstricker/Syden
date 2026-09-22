@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { ApiError, api, loadToken, saveToken } from './api';
 import { AuthScreen } from './AuthScreen';
 import { DesktopTitleBar } from './DesktopTitleBar';
-import { Logo } from './Logo';
 import { Shell } from './Shell';
+import { SplashLogo } from './SplashLogo';
 import type { User } from './types';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
@@ -40,7 +40,7 @@ export function App() {
       <div className="app-body">
         {session.status === 'loading' && (
           <div className="splash">
-            <Logo size={72} className="splash-logo" />
+            <SplashLogo size={88} />
           </div>
         )}
         {session.status === 'anonymous' && (
