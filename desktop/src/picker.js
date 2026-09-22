@@ -8,11 +8,12 @@ let sources = [];
 let kind = 'screen';
 let selectedId = null;
 
-// O aviso muda conforme a aba: numa janela específica, o som costuma ficar restrito àquele programa
-// (bem menos chance de devolver eco da própria chamada); na tela inteira, vai o som do sistema todo.
+// O Windows não deixa capturar o som de um programa só: o que o app consegue pegar é a mistura do
+// computador inteiro, que inclui as vozes desta chamada. Por isso o aviso é o mesmo nas duas abas — e é
+// melhor avisar do que deixar a pessoa descobrir no meio da transmissão.
 const AUDIO_HINT = {
-  window: 'Fica restrito àquele programa — o jeito de não ouvir a própria chamada de volta.',
-  screen: 'Vai o som do computador inteiro, inclusive esta chamada. Prefira fones de ouvido.',
+  window: 'Vai o som do computador inteiro, inclusive esta chamada. O Windows não separa o som por programa.',
+  screen: 'Vai o som do computador inteiro, inclusive esta chamada. O Windows não separa o som por programa.',
 };
 
 function updateAudioHint() {

@@ -4,14 +4,24 @@ import { IconButton } from './IconButton';
 import type { Voice } from './useVoice';
 
 const OPTIONS: { surface: 'monitor' | 'window' | 'browser'; label: string; hint: string; icon: ReactNode }[] = [
-  { surface: 'monitor', label: 'Tela inteira', hint: 'Tudo o que está na tela; o som do sistema vem junto.', icon: <Monitor size={16} /> },
+  {
+    surface: 'monitor',
+    label: 'Tela inteira',
+    hint: 'Tudo o que está na tela. O som vai ser o do computador inteiro — inclusive esta chamada.',
+    icon: <Monitor size={16} />,
+  },
   {
     surface: 'window',
     label: 'Uma janela ou app',
-    hint: 'Só aquele programa — o jeito de não trazer a própria chamada junto no som.',
+    hint: 'Só aquele programa. No Windows o som dele não vem junto: a transmissão fica muda.',
     icon: <AppWindow size={16} />,
   },
-  { surface: 'browser', label: 'Uma aba do navegador', hint: 'Só o que está naquela aba, com o som dela.', icon: <Globe size={16} /> },
+  {
+    surface: 'browser',
+    label: 'Uma aba do navegador',
+    hint: 'Só aquela aba, com o som dela — a única forma de mandar som sem devolver a chamada junto.',
+    icon: <Globe size={16} />,
+  },
 ];
 
 /**
