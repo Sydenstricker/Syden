@@ -48,10 +48,35 @@ export interface Emoji {
 
 export interface Sound {
   id: number;
-  communityId: number;
+  /** Comunidade dona do som; null quando ele vem de um pacote do catálogo. */
+  communityId: number | null;
+  /** Pacote de onde ele veio, com o nome para agrupar na tela; null se alguém enviou direto. */
+  packId: number | null;
+  packName: string | null;
+  /** Marcado como preferido por mim: vai para o topo do soundboard. */
+  favorite: boolean;
   name: string;
   icon: string;
   createdBy: number | null;
+}
+
+/** Pacote de sons do catálogo, com autor, quantas pessoas baixaram e a nota em estrelas. */
+export interface Pack {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  createdBy: number | null;
+  authorName: string | null;
+  builtin: boolean;
+  createdAt: string;
+  soundCount: number;
+  installs: number;
+  /** Média das estrelas (null se ninguém avaliou) e quantas notas formaram a média. */
+  stars: number | null;
+  ratings: number;
+  myStars: number | null;
+  installed: boolean;
 }
 
 export interface Channel {

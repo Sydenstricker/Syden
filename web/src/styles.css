@@ -4019,3 +4019,290 @@ textarea {
 .settings-hint.inline {
   margin: 0;
 }
+
+/* ---------- Soundboard com favoritos e pacotes ---------- */
+
+.soundboard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.soundboard-stop {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.soundboard-stop:hover {
+  background: #4e5058;
+  color: var(--text-strong);
+}
+
+.soundboard-search {
+  width: 100%;
+  margin: 8px 0 4px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font-size: 13px;
+}
+
+.soundboard-group {
+  margin: 12px 4px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* O som e a estrelinha de favorito moram no mesmo quadrado. */
+.soundboard-item {
+  position: relative;
+  min-width: 0;
+}
+
+.soundboard-item .soundboard-sound {
+  width: 100%;
+}
+
+.soundboard-star {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: none;
+  padding: 3px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.soundboard-item:hover .soundboard-star,
+.soundboard-star.on {
+  display: flex;
+}
+
+.soundboard-star.on {
+  color: #f0b232;
+}
+
+.soundboard-star:hover {
+  color: #f0b232;
+}
+
+/* ---------- Catálogo de pacotes ---------- */
+
+.settings-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 16px 0 8px;
+  border-bottom: 1px solid var(--bg-active);
+}
+
+.settings-tabs button {
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-tabs button:hover {
+  color: var(--text-strong);
+}
+
+.settings-tabs button.active {
+  color: var(--text-strong);
+  border-bottom-color: var(--accent);
+}
+
+.pack-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pack-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--bg-sidebar);
+}
+
+.pack-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background: var(--bg-darkest);
+  font-size: 24px;
+}
+
+.pack-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pack-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pack-head h4 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-strong);
+}
+
+.pack-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(35, 165, 90, 0.15);
+  color: #23a55a;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pack-description {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.pack-meta {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pack-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.pack-star {
+  padding: 2px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.pack-star.on {
+  color: #f0b232;
+}
+
+/* A própria nota fica cheia; a média dos outros, só contornada. */
+.pack-star.on svg {
+  fill: currentColor;
+}
+
+.pack-stars-count {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pack-sounds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.pack-sound {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  border: none;
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text-strong);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pack-sound:hover {
+  background: #4e5058;
+}
+
+.pack-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 150px;
+}
+
+.pack-actions button {
+  justify-content: center;
+}
+
+.link-button.danger {
+  color: #fa777c;
+}
+
+.pack-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.pack-sound-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pack-sound-row input:not(.soundboard-add-icon) {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .pack-card {
+    flex-wrap: wrap;
+  }
+
+  .pack-actions {
+    width: 100%;
+    flex-direction: row;
+  }
+}

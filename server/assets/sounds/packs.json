@@ -1,0 +1,101 @@
+[
+  {
+    "folder": "basico",
+    "name": "Básico",
+    "icon": "🎛️",
+    "description": "Os clássicos de sempre: rimshot, trombone triste, grilos e o \"acabou\".",
+    "sounds": [
+      { "file": "rimshot.mp3", "name": "Ba-dum-tss", "icon": "🥁" },
+      { "file": "sad-trombone-sound-effect-wah-wah-wah-fail-sound-fail-horns.mp3", "name": "Trombone triste", "icon": "🎺" },
+      { "file": "grilo-silencio.mp3", "name": "Grilos", "icon": "🦗" },
+      { "file": "acabou.mp3", "name": "Acabou", "icon": "🏁" },
+      { "file": "vamo-sim-po-claro.mp3", "name": "Vamo sim, pô!", "icon": "👍" },
+      { "file": "vinheta-xaropinho-rapaz_dx3f4Be.mp3", "name": "Xaropinho, rapaz", "icon": "😂" }
+    ]
+  },
+  {
+    "folder": "meme",
+    "name": "Meme",
+    "icon": "😂",
+    "description": "Os áudios que todo mundo já ouviu em algum vídeo.",
+    "sounds": [
+      { "file": "dun-dun-dun-sound-effect-brass_8nFBccR.mp3", "name": "Dun dun dun", "icon": "😱" },
+      { "file": "kids-saying-yay-sound-effect_3.mp3", "name": "Yaaay!", "icon": "🎉" },
+      { "file": "spongebob-fail.mp3", "name": "Fracasso do Bob Esponja", "icon": "🧽" },
+      { "file": "spiderman-meme-song.mp3", "name": "Homem-Aranha", "icon": "🕷️" },
+      { "file": "drip-goku-meme-song-original-dragon-ball-super-music-clash-of-gods-in-description.mp3", "name": "Drip Goku", "icon": "🕶️" },
+      { "file": "meme-de-creditos-finales.mp3", "name": "Créditos finais", "icon": "🎬" },
+      { "file": "nao-sobrou-nada_fZprXSC.mp3", "name": "Não sobrou nada", "icon": "💀" },
+      { "file": "parabens-da-xuxa.mp3", "name": "Parabéns da Xuxa", "icon": "🎂" },
+      { "file": "maldito-o-homem-cariani.mp3", "name": "Maldito, o homem!", "icon": "🏋️" },
+      { "file": "tmpq7mpzzl9.mp3", "name": "Surpresa", "icon": "🎲" }
+    ]
+  },
+  {
+    "folder": "futebol",
+    "name": "Futebol",
+    "icon": "⚽",
+    "description": "Narração, CR7 e resenha de mesa redonda.",
+    "sounds": [
+      { "file": "ele-fezz-de-novo-incansavel.mp3", "name": "Ele fez de novo!", "icon": "⚽" },
+      { "file": "o-homem-uma-maquina-uma-besta-enjaulada.mp3", "name": "Uma besta enjaulada", "icon": "🦁" },
+      { "file": "bom-dia-do-cr7.mp3", "name": "Bom dia do CR7", "icon": "☀️" },
+      { "file": "bem-amigos-terminou.mp3", "name": "Bem, amigos, terminou", "icon": "📺" }
+    ]
+  },
+  {
+    "folder": "estourado",
+    "name": "Estourado",
+    "icon": "🚨",
+    "description": "Para acordar a sala inteira de uma vez.",
+    "sounds": [
+      { "file": "sirene-alarme-bom-para-acordar.mp3", "name": "Sirene de alarme", "icon": "🚨" },
+      { "file": "rojao-super-estourado.mp3", "name": "Rojão", "icon": "🧨" },
+      { "file": "peao-todo-tatuado.mp3", "name": "Peão todo tatuado", "icon": "💪" }
+    ]
+  },
+  {
+    "folder": "streamer",
+    "name": "Streamer",
+    "icon": "🎮",
+    "description": "Cortes e bordões de quem vive de live.",
+    "sounds": [
+      { "file": "acorda-monark.mp3", "name": "Acorda, Monark", "icon": "⏰" },
+      { "file": "agora-sou-eu-e-voce.mp3", "name": "Agora sou eu e você", "icon": "😠" },
+      { "file": "nao-choraxx-estourados.mp3", "name": "Não chora", "icon": "😭" },
+      { "file": "smzinho-meu-heroi-nao-usa-capa.mp3", "name": "Meu herói não usa capa", "icon": "🦸" }
+    ]
+  },
+  {
+    "folder": "anime",
+    "name": "Anime",
+    "icon": "🎌",
+    "description": "Gritos e reações de anime.",
+    "sounds": [
+      { "file": "anime-wow-sound-effect.mp3", "name": "Wow de anime", "icon": "✨" },
+      { "file": "anime-ahh.mp3", "name": "Ahh de anime", "icon": "😳" },
+      { "file": "ah-lee.mp3", "name": "Ah Lee", "icon": "🎌" }
+    ]
+  },
+  {
+    "folder": "lula-e-bolso",
+    "name": "Lula e Bolso",
+    "icon": "🇧🇷",
+    "description": "Política brasileira em forma de áudio. Use com moderação.",
+    "sounds": [
+      { "file": "faz-o-l-vinheta.mp3", "name": "Faz o L", "icon": "✋" },
+      { "file": "lula-por-favor-me-ajuda.mp3", "name": "Por favor, me ajuda", "icon": "🙏" },
+      { "file": "lula-por-favor-me-ajuda_5UqDBWj.mp3", "name": "Me ajuda (de novo)", "icon": "🙏" },
+      { "file": "lula-eu-to-meio-gripadinha.mp3", "name": "Tô meio gripadinha", "icon": "🤧" },
+      { "file": "lula-e-pra-apanhar-e-ficar-calado.mp3", "name": "Apanhar e ficar calado", "icon": "🤐" },
+      { "file": "lula-vai-todo-mundo-se-fud.mp3", "name": "Vai todo mundo se f…", "icon": "💣" },
+      { "file": "lula-game.mp3", "name": "Lula game", "icon": "🎮" },
+      { "file": "para-de-mentir-lula.mp3", "name": "Para de mentir", "icon": "🤥" },
+      { "file": "bolsonaro-risada.mp3", "name": "Risada do Bolsonaro", "icon": "😆" },
+      { "file": "bolsonaro-pegaram-meu-telefone.mp3", "name": "Pegaram meu telefone", "icon": "📱" },
+      { "file": "bolsonaro-porcaria-bosta-bosta.mp3", "name": "Que porcaria", "icon": "🤬" },
+      { "file": "e-agora-vai-entra-o-grosso.mp3", "name": "Vai entrar o grosso", "icon": "😬" },
+      { "file": "nao-me-liga-quando-tive-jogando-ff.mp3", "name": "Não me liga no FF", "icon": "🎮" }
+    ]
+  }
+]

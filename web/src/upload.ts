@@ -72,7 +72,7 @@ export async function imageFromClipboard(): Promise<File> {
   throw new Error('Não há imagem copiada. Copie uma imagem (Ctrl+C) e tente de novo.');
 }
 
-export const MAX_SOUND_SECONDS = 7;
+export const MAX_SOUND_SECONDS = 30;
 
 export async function prepareSound(file: File, maxBytes: number) {
   if (!file.type.startsWith('audio/')) throw new Error('Escolha um arquivo de áudio (MP3, OGG ou WAV).');

@@ -6,3 +6,13 @@ dist/
 .env.local
 desktop/release/
 imagem/
+# Pasta de trabalho dos sons: as cópias que o Syden usa ficam em server/assets/sounds.
+SFX/
+
+# Fotos de tela dos testes, que rodam na raiz do projeto.
+*.png
+!imagem/*.png
+!desktop/build/*.png
+!web/public/*.png
+!server/assets/emojis/*.png
+!web/src/assets/*.png

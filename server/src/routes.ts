@@ -4,7 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
-import { seedExpressions } from './expressions.js';
+import { installDefaultPack, seedExpressions } from './expressions.js';
 import {
   channelRoom,
   communityRoom,
@@ -116,13 +116,14 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const invited = found && db.countMembers(found.id) < config.maxMembersPerCommunity ? found : undefined;
 
       const user = db.createUser(username, await hashPassword(password));
+      installDefaultPack(user.id); // soundboard já começa com o pacote básico do Syden
       if (invited) {
         db.addMember(invited.id, user.id);
         io.to(communityRoom(invited.id)).emit('member:updated', { communityId: invited.id, member: { ...user, role: 'member' } });
       } else if (!found) {
         // Primeiro cadastro do Syden inteiro: ganha a comunidade inicial.
         const community = db.createCommunity('Syden', user.id, config.inviteCode || db.newInviteCode());
-        seedExpressions(community.id, { sounds: true });
+        seedExpressions(community.id);
       }
       return { token: await signSession(user), user };
     },
@@ -179,7 +180,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           .send({ error: `Cada pessoa pode criar até ${config.maxCommunitiesPerUser} comunidades. Apague uma para criar outra.` });
       }
       const community = db.createCommunity(name, request.user.id, db.newInviteCode());
-      seedExpressions(community.id, { sounds: false }); // emojis de demonstração; sons cada comunidade envia os seus
+      seedExpressions(community.id);
       joinCommunityRoom(io, request.user.id, community.id);
       return db.listCommunitiesForUser(request.user.id).find((c) => c.id === community.id);
     });

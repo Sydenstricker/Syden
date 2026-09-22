@@ -52,7 +52,10 @@ export interface Emoji {
 
 export interface Sound {
   id: number;
-  communityId: number;
+  /** Comunidade dona do som; null quando ele vem de um pacote do catálogo. */
+  communityId: number | null;
+  /** Pacote a que ele pertence; null quando alguém o enviou direto para a comunidade. */
+  packId: number | null;
   name: string;
   /** Um emoji comum que representa o som no soundboard. */
   icon: string;
@@ -273,9 +276,46 @@ db.exec(`
     UNIQUE (community_id, name)
   );
 
+  -- Pacote de sons: uma coleção com nome, autor e nota, que cada pessoa instala no seu soundboard.
+  -- Os sons de um pacote ficam guardados uma vez só para o servidor inteiro, não por comunidade.
+  CREATE TABLE IF NOT EXISTS packs (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    name        TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    icon        TEXT NOT NULL DEFAULT '📦',
+    created_by  INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    builtin     INTEGER NOT NULL DEFAULT 0,
+    created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
+  -- Quem instalou cada pacote. É essa contagem que aparece como "baixaram".
+  CREATE TABLE IF NOT EXISTS pack_installs (
+    pack_id      INTEGER NOT NULL REFERENCES packs(id) ON DELETE CASCADE,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    installed_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (pack_id, user_id)
+  );
+
+  -- Uma nota de 1 a 5 estrelas por pessoa, como no VS Code.
+  CREATE TABLE IF NOT EXISTS pack_ratings (
+    pack_id INTEGER NOT NULL REFERENCES packs(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    stars   INTEGER NOT NULL CHECK (stars BETWEEN 1 AND 5),
+    PRIMARY KEY (pack_id, user_id)
+  );
+
+  -- Sons preferidos de cada pessoa, que aparecem primeiro no soundboard.
+  CREATE TABLE IF NOT EXISTS favorite_sounds (
+    user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sound_id INTEGER NOT NULL REFERENCES sounds(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, sound_id)
+  );
+
+  -- Um som é de uma comunidade (alguém de lá enviou) ou de um pacote (catálogo do servidor), nunca dos dois.
   CREATE TABLE IF NOT EXISTS sounds (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    community_id INTEGER REFERENCES communities(id) ON DELETE CASCADE,
+    pack_id      INTEGER REFERENCES packs(id) ON DELETE CASCADE,
     name         TEXT NOT NULL,
     icon         TEXT NOT NULL,
     mime         TEXT NOT NULL,
@@ -480,6 +520,50 @@ function migrateChannelsForDirectMessages() {
   }
 }
 migrateChannelsForDirectMessages();
+
+/**
+ * Os sons deixaram de ser só "da comunidade": agora existem também os de pacote, que ficam guardados uma
+ * vez só para o servidor inteiro (community_id null, pack_id preenchido). Bancos antigos têm community_id
+ * NOT NULL e nenhuma coluna pack_id, então a tabela precisa ser recriada — é o caminho do SQLite para
+ * afrouxar uma restrição. As chaves estrangeiras ficam desligadas durante a troca: sem isso, o DROP da
+ * tabela antiga apagaria em cascata os favoritos que apontam para ela.
+ */
+function migrateSoundsForPacks() {
+  if (hasColumn('sounds', 'pack_id')) return; // banco novo, ou já migrado
+
+  db.exec('PRAGMA foreign_keys = OFF');
+  db.exec('BEGIN');
+  try {
+    db.exec(`
+      CREATE TABLE sounds_new (
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        community_id INTEGER REFERENCES communities(id) ON DELETE CASCADE,
+        pack_id      INTEGER REFERENCES packs(id) ON DELETE CASCADE,
+        name         TEXT NOT NULL,
+        icon         TEXT NOT NULL,
+        mime         TEXT NOT NULL,
+        data         BLOB NOT NULL,
+        created_by   INTEGER
+      )`);
+    db.exec(
+      'INSERT INTO sounds_new (id, community_id, name, icon, mime, data, created_by) SELECT id, community_id, name, icon, mime, data, created_by FROM sounds',
+    );
+    db.exec('DROP TABLE sounds');
+    db.exec('ALTER TABLE sounds_new RENAME TO sounds');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_sounds_pack ON sounds(pack_id)');
+    const quebradas = db.prepare('PRAGMA foreign_key_check').all();
+    if (quebradas.length > 0) throw new Error(`Chaves estrangeiras quebradas após migrar sons: ${JSON.stringify(quebradas)}`);
+    db.exec('COMMIT');
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  } finally {
+    db.exec('PRAGMA foreign_keys = ON');
+  }
+}
+migrateSoundsForPacks();
+// Depois da migração a coluna existe em qualquer banco, novo ou antigo.
+db.exec('CREATE INDEX IF NOT EXISTS idx_sounds_pack ON sounds(pack_id)');
 
 /** Canais que toda comunidade nova ganha, para ninguém começar numa tela vazia. */
 export function seedChannels(communityId: number) {
@@ -699,7 +783,7 @@ export function findEmojiFile(id: number) {
   return db.prepare('SELECT mime, data FROM emojis WHERE id = ?').get(id) as { mime: string; data: Uint8Array } | undefined;
 }
 
-const soundColumns = 'id, community_id AS communityId, name, icon, created_by AS createdBy';
+const soundColumns = 'id, community_id AS communityId, pack_id AS packId, name, icon, created_by AS createdBy';
 
 export function listSounds(communityId: number): Sound[] {
   return db.prepare(`SELECT ${soundColumns} FROM sounds WHERE community_id = ? ORDER BY id`).all(communityId) as unknown as Sound[];
@@ -732,13 +816,169 @@ export function deleteSound(id: number) {
   db.prepare('DELETE FROM sounds WHERE id = ?').run(id);
 }
 
-/** Remove os sons do pacote de demonstração (os que ninguém enviou), para trocar por uma versão nova. */
-export function deletePackSounds(communityId: number) {
-  db.prepare('DELETE FROM sounds WHERE community_id = ? AND created_by IS NULL').run(communityId);
+/** Tira das comunidades os sons do antigo pacote de demonstração, que agora vive como pacote do catálogo. */
+export function deleteLegacyPackSounds() {
+  db.prepare('DELETE FROM sounds WHERE community_id IS NOT NULL AND created_by IS NULL').run();
 }
 
 export function findSoundFile(id: number) {
   return db.prepare('SELECT mime, data FROM sounds WHERE id = ?').get(id) as { mime: string; data: Uint8Array } | undefined;
+}
+
+// ---------- Pacotes de sons ----------
+
+export interface Pack {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  /** Quem montou o pacote; null nos que vêm de fábrica com o Syden. */
+  createdBy: number | null;
+  authorName: string | null;
+  builtin: boolean;
+  createdAt: string;
+  soundCount: number;
+  /** Quantas pessoas instalaram: o "baixaram" do catálogo. */
+  installs: number;
+  /** Média das estrelas (null quando ninguém avaliou) e quantas notas formaram a média. */
+  stars: number | null;
+  ratings: number;
+  /** A nota de quem está olhando, e se ele já tem o pacote. */
+  myStars: number | null;
+  installed: boolean;
+}
+
+/** Um som como ele aparece no soundboard de alguém: com o pacote de origem e a marca de favorito. */
+export interface BoardSound extends Sound {
+  packName: string | null;
+  favorite: boolean;
+}
+
+const packColumns = `
+  p.id, p.name, p.description, p.icon, p.created_by AS createdBy, p.builtin, p.created_at AS createdAt,
+  u.username AS authorName,
+  (SELECT COUNT(*) FROM sounds s WHERE s.pack_id = p.id) AS soundCount,
+  (SELECT COUNT(*) FROM pack_installs i WHERE i.pack_id = p.id) AS installs,
+  (SELECT COUNT(*) FROM pack_ratings r WHERE r.pack_id = p.id) AS ratings,
+  (SELECT AVG(r.stars) FROM pack_ratings r WHERE r.pack_id = p.id) AS stars,
+  (SELECT r.stars FROM pack_ratings r WHERE r.pack_id = p.id AND r.user_id = ?) AS myStars,
+  (SELECT 1 FROM pack_installs i WHERE i.pack_id = p.id AND i.user_id = ?) AS installed`;
+
+function toPack(row: Record<string, unknown>): Pack {
+  return {
+    ...(row as unknown as Pack),
+    builtin: Boolean(row.builtin),
+    installed: Boolean(row.installed),
+    stars: row.stars === null ? null : Math.round(Number(row.stars) * 10) / 10,
+  };
+}
+
+/** Catálogo inteiro, do mais bem avaliado para o menos; sem nota, vale quantas pessoas baixaram. */
+export function listPacks(userId: number): Pack[] {
+  const rows = db
+    .prepare(
+      `SELECT ${packColumns} FROM packs p LEFT JOIN users u ON u.id = p.created_by
+       ORDER BY stars IS NULL, stars DESC, installs DESC, p.name COLLATE NOCASE`,
+    )
+    .all(userId, userId) as Record<string, unknown>[];
+  return rows.map(toPack);
+}
+
+export function findPack(id: number, userId: number): Pack | undefined {
+  const row = db
+    .prepare(`SELECT ${packColumns} FROM packs p LEFT JOIN users u ON u.id = p.created_by WHERE p.id = ?`)
+    .get(userId, userId, id) as Record<string, unknown> | undefined;
+  return row ? toPack(row) : undefined;
+}
+
+export function findPackByName(name: string) {
+  return db.prepare('SELECT id, builtin FROM packs WHERE name = ? COLLATE NOCASE').get(name) as
+    | { id: number; builtin: number }
+    | undefined;
+}
+
+export function createPack(name: string, description: string, icon: string, createdBy: number | null, builtin = false): number {
+  const result = db
+    .prepare('INSERT INTO packs (name, description, icon, created_by, builtin) VALUES (?, ?, ?, ?, ?)')
+    .run(name, description, icon, createdBy, builtin ? 1 : 0);
+  return Number(result.lastInsertRowid);
+}
+
+export function updatePack(id: number, name: string, description: string, icon: string) {
+  db.prepare('UPDATE packs SET name = ?, description = ?, icon = ? WHERE id = ?').run(name, description, icon, id);
+}
+
+export function countPacksCreatedBy(userId: number): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM packs WHERE created_by = ?').get(userId) as { n: number }).n;
+}
+
+export function deletePack(id: number) {
+  db.prepare('DELETE FROM packs WHERE id = ?').run(id); // os sons dele saem junto, em cascata
+}
+
+export function packSounds(packId: number): Sound[] {
+  return db.prepare(`SELECT ${soundColumns} FROM sounds WHERE pack_id = ? ORDER BY id`).all(packId) as unknown as Sound[];
+}
+
+export function createPackSound(packId: number, name: string, icon: string, mime: string, data: Buffer): Sound {
+  const result = db
+    .prepare('INSERT INTO sounds (pack_id, name, icon, mime, data, created_by) VALUES (?, ?, ?, ?, ?, NULL)')
+    .run(packId, name, icon, mime, data);
+  return findSound(Number(result.lastInsertRowid))!;
+}
+
+export function installPack(packId: number, userId: number) {
+  db.prepare('INSERT OR IGNORE INTO pack_installs (pack_id, user_id) VALUES (?, ?)').run(packId, userId);
+}
+
+export function uninstallPack(packId: number, userId: number) {
+  db.prepare('DELETE FROM pack_installs WHERE pack_id = ? AND user_id = ?').run(packId, userId);
+}
+
+export function ratePack(packId: number, userId: number, stars: number) {
+  db.prepare(
+    `INSERT INTO pack_ratings (pack_id, user_id, stars) VALUES (?, ?, ?)
+     ON CONFLICT (pack_id, user_id) DO UPDATE SET stars = excluded.stars`,
+  ).run(packId, userId, stars);
+}
+
+export function clearRating(packId: number, userId: number) {
+  db.prepare('DELETE FROM pack_ratings WHERE pack_id = ? AND user_id = ?').run(packId, userId);
+}
+
+/**
+ * O soundboard de uma pessoa numa comunidade: o que a comunidade enviou mais os pacotes que ela instalou.
+ * Os favoritos vêm marcados para a tela colocá-los na frente.
+ */
+export function boardSounds(communityId: number, userId: number): BoardSound[] {
+  const rows = db
+    .prepare(
+      `SELECT s.id, s.community_id AS communityId, s.pack_id AS packId, s.name, s.icon, s.created_by AS createdBy,
+              p.name AS packName,
+              (SELECT 1 FROM favorite_sounds f WHERE f.sound_id = s.id AND f.user_id = ?) AS favorite
+       FROM sounds s
+       LEFT JOIN packs p ON p.id = s.pack_id
+       WHERE s.community_id = ?
+          OR s.pack_id IN (SELECT pack_id FROM pack_installs WHERE user_id = ?)
+       ORDER BY s.pack_id IS NOT NULL, p.name COLLATE NOCASE, s.id`,
+    )
+    .all(userId, communityId, userId) as Record<string, unknown>[];
+  return rows.map((row) => ({ ...(row as unknown as BoardSound), favorite: Boolean(row.favorite) }));
+}
+
+/** Quem pode tocar este som: quem é da comunidade dele, ou qualquer um, se ele for de um pacote. */
+export function soundIsPublic(sound: Sound) {
+  return sound.packId !== null;
+}
+
+export function setFavoriteSound(userId: number, soundId: number, favorite: boolean) {
+  if (favorite) db.prepare('INSERT OR IGNORE INTO favorite_sounds (user_id, sound_id) VALUES (?, ?)').run(userId, soundId);
+  else db.prepare('DELETE FROM favorite_sounds WHERE user_id = ? AND sound_id = ?').run(userId, soundId);
+}
+
+/** Todo mundo que já tem conta, para instalar um pacote de fábrica em quem entrou antes dele existir. */
+export function allUserIds(): number[] {
+  return (db.prepare('SELECT id FROM users').all() as { id: number }[]).map((row) => row.id);
 }
 
 export function findUserById(id: number) {

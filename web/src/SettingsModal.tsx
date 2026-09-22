@@ -34,6 +34,7 @@ import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
+import { PackCatalog } from './PackCatalog';
 import { EFFECT_ICONS } from './VoiceEffectButton';
 import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
@@ -906,6 +907,9 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Sound | null>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [tab, setTab] = useState<'sons' | 'pacotes'>('sons');
+  // Aqui só entram os sons enviados para esta comunidade; os de pacote se resolvem na aba ao lado.
+  const ownSounds = sounds.filter((sound) => sound.communityId !== null);
   const canEdit = (sound: Sound) => manages(community) || sound.createdBy === user.id;
 
   async function saveEdit(sound: Sound, values: { name: string; icon: string }) {
@@ -950,11 +954,25 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
 
   return (
     <>
-      <h2>Soundboard da comunidade</h2>
+      <h2>Soundboard</h2>
       <p className="settings-lead">
-        Durante uma chamada, o botão <AudioLines size={14} /> toca estes sons para todos na sala. Sem assinatura: está
-        tudo liberado.
+        Durante uma chamada, o botão <AudioLines size={14} /> toca estes sons para todos na sala. Instale pacotes prontos
+        ou envie os seus; o que é seu favorito fica na frente do painel.
       </p>
+
+      <div className="settings-tabs" role="tablist">
+        <button role="tab" aria-selected={tab === 'sons'} className={tab === 'sons' ? 'active' : ''} onClick={() => setTab('sons')}>
+          Sons da comunidade
+        </button>
+        <button role="tab" aria-selected={tab === 'pacotes'} className={tab === 'pacotes' ? 'active' : ''} onClick={() => setTab('pacotes')}>
+          Pacotes
+        </button>
+      </div>
+
+      {tab === 'pacotes' ? (
+        <PackCatalog user={user} />
+      ) : (
+        <>
 
       <label className="settings-field volume-field">
         Volume do soundboard (só para você): {Math.round(settings.soundboardVolume * 100)}%
@@ -969,7 +987,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       </label>
 
       <div className="section-head">
-        <h3>{sounds.length} sons</h3>
+        <h3>{ownSounds.length} sons enviados por vocês</h3>
         <button className="btn-secondary" onClick={() => setAdding(!adding)}>
           <Plus size={16} /> Adicionar som
         </button>
@@ -1008,7 +1026,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
 
       <div className="expression-list">
-        {sounds.map((sound) => (
+        {ownSounds.map((sound) => (
           <div key={sound.id} className="expression-row">
             {editing?.id === sound.id ? (
               <SoundRename sound={sound} onCancel={() => setEditing(null)} onSave={(values) => saveEdit(sound, values)} />
@@ -1040,6 +1058,8 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       </div>
 
       <RestorePack community={community} />
+        </>
+      )}
     </>
   );
 }

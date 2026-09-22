@@ -21,6 +21,8 @@ import {
   MicOff,
   PhoneOff,
   Plus,
+  Square,
+  Star,
   Video,
   VideoOff,
   Volume2,
@@ -29,7 +31,7 @@ import {
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
-import { useDirectory } from './directory';
+import { reloadSounds, useDirectory } from './directory';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
@@ -38,8 +40,9 @@ import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
+import { stopAllSounds } from './soundboard';
 import { getScreenVolume, setScreenVolume } from './voiceVolumes';
-import type { Channel, VoiceMember } from './types';
+import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
 function trackKey(ref: TrackReferenceOrPlaceholder) {
@@ -146,11 +149,17 @@ function PersonTile({
 }
 
 /** Painel do soundboard: clicar num som toca para todos na sala. */
+/**
+ * Painel do soundboard dentro da chamada. Com os pacotes, a lista ficou grande: por isso os favoritos de
+ * cada um vêm na frente (como as figurinhas preferidas do WhatsApp), o resto fica separado por pacote e
+ * há uma busca por nome.
+ */
 function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId: number; onClose: () => void }) {
   const { sounds } = useDirectory();
   const settings = useSettings();
   const ref = useRef<HTMLDivElement>(null);
   const [adding, setAdding] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && !adding && onClose();
@@ -166,9 +175,56 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
     };
   }, [onClose, adding]);
 
+  const term = search.trim().toLowerCase();
+  const found = term ? sounds.filter((s) => s.name.toLowerCase().includes(term)) : sounds;
+  const favorites = found.filter((s) => s.favorite);
+  const groups = new Map<string, Sound[]>();
+  for (const sound of found.filter((s) => !s.favorite)) {
+    const group = sound.packName ?? 'Da comunidade';
+    const list = groups.get(group);
+    if (list) list.push(sound);
+    else groups.set(group, [sound]);
+  }
+
+  async function toggleFavorite(sound: Sound) {
+    try {
+      await api(`/api/sounds/${sound.id}/favorite`, { method: 'PUT', body: { favorite: !sound.favorite } });
+      await reloadSounds();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const grid = (list: Sound[]) => (
+    <div className="soundboard-grid">
+      {list.map((sound) => (
+        <div key={sound.id} className="soundboard-item">
+          <button className="soundboard-sound" onClick={() => void voice.playSound(sound.id)}>
+            <span className="soundboard-icon">{sound.icon}</span>
+            <span className="soundboard-name">{sound.name}</span>
+          </button>
+          <button
+            className={`soundboard-star${sound.favorite ? ' on' : ''}`}
+            title={sound.favorite ? 'Tirar dos favoritos' : 'Marcar como favorito'}
+            aria-label={sound.favorite ? `Tirar ${sound.name} dos favoritos` : `Marcar ${sound.name} como favorito`}
+            onClick={() => void toggleFavorite(sound)}
+          >
+            <Star size={12} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="soundboard" ref={ref} role="dialog" aria-label="Soundboard">
-      <div className="soundboard-title">Soundboard</div>
+      <div className="soundboard-head">
+        <div className="soundboard-title">Soundboard</div>
+        <button className="soundboard-stop" onClick={stopAllSounds} title="Parar o que está tocando aqui">
+          <Square size={12} /> Parar
+        </button>
+      </div>
+
       {/* Volume à mão: um som que estoura no ouvido não pode exigir abrir as configurações. */}
       <label className="soundboard-volume">
         Volume: {Math.round(settings.soundboardVolume * 100)}%
@@ -182,23 +238,46 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
           onChange={(e) => updateSettings({ soundboardVolume: Number(e.target.value) })}
         />
       </label>
-      {sounds.length === 0 && !adding && <p className="soundboard-empty">Nenhum som ainda. Adicione um abaixo.</p>}
-      <div className="soundboard-grid">
-        {sounds.map((sound) => (
-          <button key={sound.id} className="soundboard-sound" onClick={() => void voice.playSound(sound.id)}>
-            <span className="soundboard-icon">{sound.icon}</span>
-            <span className="soundboard-name">{sound.name}</span>
-          </button>
-        ))}
-        {!adding && (
-          <button className="soundboard-sound soundboard-add" onClick={() => setAdding(true)} title="Adicionar som">
-            <span className="soundboard-icon">
-              <Plus size={20} />
-            </span>
-            <span className="soundboard-name">Adicionar</span>
-          </button>
-        )}
-      </div>
+
+      {sounds.length > 8 && (
+        <input
+          className="soundboard-search"
+          value={search}
+          placeholder="Procurar som"
+          aria-label="Procurar som"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      )}
+
+      {sounds.length === 0 && !adding && (
+        <p className="soundboard-empty">
+          Nenhum som ainda. Adicione um abaixo, ou instale um pacote em Configurações → Soundboard.
+        </p>
+      )}
+      {sounds.length > 0 && found.length === 0 && <p className="soundboard-empty">Nenhum som com esse nome.</p>}
+
+      {favorites.length > 0 && (
+        <>
+          <div className="soundboard-group">⭐ Favoritos</div>
+          {grid(favorites)}
+        </>
+      )}
+
+      {[...groups].map(([group, list]) => (
+        <div key={group}>
+          <div className="soundboard-group">{group}</div>
+          {grid(list)}
+        </div>
+      ))}
+
+      {!adding && (
+        <button className="soundboard-sound soundboard-add" onClick={() => setAdding(true)} title="Adicionar som">
+          <span className="soundboard-icon">
+            <Plus size={20} />
+          </span>
+          <span className="soundboard-name">Adicionar som</span>
+        </button>
+      )}
       {adding && <SoundboardAddForm communityId={communityId} onDone={() => setAdding(false)} />}
     </div>
   );

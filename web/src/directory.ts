@@ -34,6 +34,12 @@ export async function loadDirectory(communityId: number) {
   set({ communityId, members: new Map(members.map((m) => [m.id, m])), emojis, sounds });
 }
 
+/** Relê o soundboard: usado quando a pessoa instala, tira ou monta um pacote. */
+export async function reloadSounds() {
+  if (state.communityId === null) return;
+  set({ sounds: await api<Sound[]>(`/api/communities/${state.communityId}/sounds`) });
+}
+
 export function clearDirectory() {
   set(empty);
 }
@@ -68,7 +74,8 @@ export function syncDirectory(socket: Socket) {
     if (mine(communityId)) set({ emojis: state.emojis.filter((e) => e.id !== id) });
   };
   const onSoundCreated = (sound: Sound) => {
-    if (mine(sound.communityId)) set({ sounds: [...state.sounds.filter((s) => s.id !== sound.id), sound] });
+    // Sons de pacote não chegam por aqui (eles não são de comunidade nenhuma).
+    if (sound.communityId !== null && mine(sound.communityId)) set({ sounds: [...state.sounds.filter((s) => s.id !== sound.id), sound] });
   };
   const onSoundDeleted = ({ id, communityId }: { id: number; communityId: number }) => {
     if (mine(communityId)) set({ sounds: state.sounds.filter((s) => s.id !== id) });

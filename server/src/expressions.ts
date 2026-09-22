@@ -2,34 +2,70 @@ import { readdirSync, readFileSync } from 'node:fs';
 import * as db from './db.js';
 import { sniffMime } from './media.js';
 
-// Pacote de demonstração (emojis e sons criados para o Syden), instalado em cada comunidade nova.
-// Se alguém apagar um item depois, ele não volta. Quando o pacote de sons ganha uma versão nova,
-// os sons antigos do pacote são trocados pelos novos; os enviados pelos usuários não são tocados.
-// Os sons são arquivos grandes, então só a primeira comunidade os recebe: as outras enviam os seus.
+// Emojis de demonstração (instalados em cada comunidade nova) e os pacotes de sons que vêm de fábrica
+// com o Syden. Os pacotes são do servidor inteiro: os arquivos ficam guardados uma vez só e cada pessoa
+// escolhe quais quer no seu soundboard.
 const ASSETS = new URL('../assets/', import.meta.url);
+const SOUND_DIR = new URL('sounds/', ASSETS);
 const seededKey = (communityId: number) => `expressions.seeded.${communityId}`;
-const soundPackKey = (communityId: number) => `sounds.pack.${communityId}`;
-const SOUND_PACK_VERSION = 2;
+const PACKS_KEY = 'sounds.packs.version';
+// Ao subir este número, os pacotes de fábrica são conferidos de novo (o que falta é reposto).
+const PACKS_VERSION = 1;
+/** O pacote que já vem instalado para quem cria conta; os outros ficam a um clique no catálogo. */
+const DEFAULT_PACK = 'Básico';
 
-function installSoundPack(communityId: number) {
-  const soundDir = new URL('sounds/', ASSETS);
-  const manifest = JSON.parse(readFileSync(new URL('sounds.json', soundDir), 'utf8')) as { file: string; name: string; icon: string }[];
-  for (const sound of manifest) {
-    const data = readFileSync(new URL(sound.file, soundDir));
-    db.createSound(communityId, sound.name, sound.icon, sniffMime(data) ?? 'audio/wav', data, null);
-  }
-  db.setKv(soundPackKey(communityId), String(SOUND_PACK_VERSION));
+interface PackManifest {
+  folder: string;
+  name: string;
+  icon: string;
+  description: string;
+  sounds: { file: string; name: string; icon: string }[];
 }
 
-export function seedExpressions(communityId: number, { sounds }: { sounds: boolean }) {
-  if (db.getKv(seededKey(communityId))) {
-    if (sounds && Number(db.getKv(soundPackKey(communityId)) ?? 1) < SOUND_PACK_VERSION) {
-      db.deletePackSounds(communityId);
-      installSoundPack(communityId);
-    }
-    return;
-  }
+function readManifest(): PackManifest[] {
+  return JSON.parse(readFileSync(new URL('packs.json', SOUND_DIR), 'utf8')) as PackManifest[];
+}
 
+/** Repõe os sons que faltam num pacote de fábrica, sem duplicar o que já está lá. */
+function fillPack(packId: number, manifest: PackManifest): number {
+  const existing = new Set(db.packSounds(packId).map((s) => s.name.toLowerCase()));
+  let added = 0;
+  for (const sound of manifest.sounds) {
+    if (existing.has(sound.name.toLowerCase())) continue;
+    const data = readFileSync(new URL(`${manifest.folder}/${sound.file}`, SOUND_DIR));
+    db.createPackSound(packId, sound.name, sound.icon, sniffMime(data) ?? 'audio/mpeg', data);
+    added++;
+  }
+  return added;
+}
+
+/**
+ * Cria os pacotes que acompanham o Syden. Roda na subida do servidor; se alguém apagar um som de um
+ * pacote de fábrica, ele volta na próxima subida em que a versão do manifesto mudar.
+ */
+export function seedSoundPacks() {
+  if (Number(db.getKv(PACKS_KEY) ?? 0) >= PACKS_VERSION) return;
+  // O pacote antigo morava dentro de cada comunidade; os sons dele saem para dar lugar aos pacotes.
+  db.deleteLegacyPackSounds();
+
+  for (const manifest of readManifest()) {
+    const found = db.findPackByName(manifest.name);
+    const packId = found?.id ?? db.createPack(manifest.name, manifest.description, manifest.icon, null, true);
+    fillPack(packId, manifest);
+    // Quem já tinha conta antes dos pacotes existirem recebe o básico, para não abrir um soundboard vazio.
+    if (manifest.name === DEFAULT_PACK) for (const userId of db.allUserIds()) db.installPack(packId, userId);
+  }
+  db.setKv(PACKS_KEY, String(PACKS_VERSION));
+}
+
+/** Quem cria conta já começa com o pacote básico no soundboard. */
+export function installDefaultPack(userId: number) {
+  const pack = db.findPackByName(DEFAULT_PACK);
+  if (pack) db.installPack(pack.id, userId);
+}
+
+export function seedExpressions(communityId: number) {
+  if (db.getKv(seededKey(communityId))) return;
   const emojiDir = new URL('emojis/', ASSETS);
   for (const file of readdirSync(emojiDir).filter((f) => f.endsWith('.png'))) {
     const name = file.replace(/\.png$/, '');
@@ -37,13 +73,12 @@ export function seedExpressions(communityId: number, { sounds }: { sounds: boole
       db.createEmoji(communityId, name, 'image/png', readFileSync(new URL(file, emojiDir)), null);
     }
   }
-  if (sounds) installSoundPack(communityId);
   db.setKv(seededKey(communityId), new Date().toISOString());
 }
 
 /**
- * Repõe os itens do pacote de demonstração que foram apagados, sem mexer no que a comunidade enviou nem
- * duplicar o que já está lá. É o "desfazer" de quem apagou tudo por engano.
+ * Repõe o que foi apagado do que vem de fábrica: os emojis da comunidade e os sons dos pacotes do Syden.
+ * É o "desfazer" de quem apagou tudo por engano.
  */
 export function restorePack(communityId: number): { emojis: number; sounds: number } {
   const emojiDir = new URL('emojis/', ASSETS);
@@ -56,35 +91,27 @@ export function restorePack(communityId: number): { emojis: number; sounds: numb
     }
   }
 
-  const soundDir = new URL('sounds/', ASSETS);
-  const manifest = JSON.parse(readFileSync(new URL('sounds.json', soundDir), 'utf8')) as { file: string; name: string; icon: string }[];
-  const existing = new Set(db.listSounds(communityId).map((s) => s.name.toLowerCase()));
   let sounds = 0;
-  for (const sound of manifest) {
-    if (existing.has(sound.name.toLowerCase())) continue;
-    const data = readFileSync(new URL(sound.file, soundDir));
-    db.createSound(communityId, sound.name, sound.icon, sniffMime(data) ?? 'audio/wav', data, null);
-    sounds++;
+  for (const manifest of readManifest()) {
+    const found = db.findPackByName(manifest.name);
+    const packId = found?.id ?? db.createPack(manifest.name, manifest.description, manifest.icon, null, true);
+    sounds += fillPack(packId, manifest);
   }
 
   db.setKv(seededKey(communityId), db.getKv(seededKey(communityId)) ?? new Date().toISOString());
-  db.setKv(soundPackKey(communityId), String(SOUND_PACK_VERSION));
   return { emojis, sounds };
 }
 
 /**
- * Na subida do servidor, garante o pacote na comunidade mais antiga. Ela existia antes das chaves por
- * comunidade, então herda o que foi marcado como instalado na versão anterior.
+ * Na subida do servidor: os emojis da comunidade mais antiga (que existia antes das chaves por comunidade)
+ * e os pacotes de sons de fábrica.
  */
 export function seedFirstCommunity() {
   const community = db.defaultCommunity();
-  if (!community) return; // servidor novo: a primeira comunidade nasce no primeiro cadastro
-  for (const [old, current] of [
-    ['expressions.seeded', seededKey(community.id)],
-    ['sounds.pack', soundPackKey(community.id)],
-  ]) {
-    const value = db.getKv(old);
-    if (value && !db.getKv(current)) db.setKv(current, value);
+  if (community) {
+    const old = db.getKv('expressions.seeded');
+    if (old && !db.getKv(seededKey(community.id))) db.setKv(seededKey(community.id), old);
+    seedExpressions(community.id);
   }
-  seedExpressions(community.id, { sounds: true });
+  seedSoundPacks();
 }

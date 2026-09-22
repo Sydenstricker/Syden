@@ -62,8 +62,8 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
     };
 
     /** Quem enviou o arquivo, ou quem administra a comunidade dele. */
-    const canDelete = (user: db.User, item: { communityId: number; createdBy: number | null }) =>
-      item.createdBy === user.id || manages(roleIn(user, item.communityId));
+    const canDelete = (user: db.User, item: { communityId: number | null; createdBy: number | null }) =>
+      item.createdBy === user.id || (item.communityId !== null && manages(roleIn(user, item.communityId)));
 
     // ---------- Avatar ----------
 
@@ -177,7 +177,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
     authed.get<{ Params: { id: string } }>('/api/communities/:id/sounds', async (request, reply) => {
       const access = requireRole(request, reply);
       if (!access) return reply;
-      return db.listSounds(access.communityId);
+      return db.boardSounds(access.communityId, request.user.id);
     });
 
     authed.post<{ Params: { id: string }; Body: { name?: string; icon?: string; audio?: string } }>(
@@ -200,7 +200,9 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.patch<{ Params: { id: string }; Body: { name?: string; icon?: string } }>('/api/sounds/:id', async (request, reply) => {
       const sound = db.findSound(Number(request.params.id));
-      if (!sound || !roleIn(request.user, sound.communityId)) return reply.code(404).send({ error: 'Som não encontrado.' });
+      // Som de pacote não se mexe por aqui: ele pertence ao pacote, e quem o montou cuida dele.
+      if (!sound || sound.communityId === null || !roleIn(request.user, sound.communityId))
+        return reply.code(404).send({ error: 'Som não encontrado.' });
       if (!canDelete(request.user, sound)) {
         return reply.code(403).send({ error: 'Só quem enviou o som ou quem administra a comunidade pode renomeá-lo.' });
       }
@@ -215,7 +217,9 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.delete<{ Params: { id: string } }>('/api/sounds/:id', async (request, reply) => {
       const sound = db.findSound(Number(request.params.id));
-      if (!sound || !roleIn(request.user, sound.communityId)) return reply.code(404).send({ error: 'Som não encontrado.' });
+      // Som de pacote não se mexe por aqui: ele pertence ao pacote, e quem o montou cuida dele.
+      if (!sound || sound.communityId === null || !roleIn(request.user, sound.communityId))
+        return reply.code(404).send({ error: 'Som não encontrado.' });
       if (!canDelete(request.user, sound)) {
         return reply.code(403).send({ error: 'Só quem enviou o som ou quem administra a comunidade pode excluí-lo.' });
       }
