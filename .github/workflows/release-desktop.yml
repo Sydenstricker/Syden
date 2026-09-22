@@ -31,6 +31,9 @@ jobs:
         shell: bash
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
         working-directory: desktop
+      - name: Compilar o módulo de som (C++)
+        run: npm run build:native
+        working-directory: desktop
       - run: npx electron-builder --win --publish never
         working-directory: desktop
       - uses: softprops/action-gh-release@v2

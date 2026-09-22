@@ -16,3 +16,6 @@ SFX/
 !web/public/*.png
 !server/assets/emojis/*.png
 !web/src/assets/*.png
+
+# Pasta de trabalho de ícones animados (Lottie) que o usuário está avaliando.
+IconesAnimados/

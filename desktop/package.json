@@ -7,11 +7,14 @@
   "main": "src/main.js",
   "devDependencies": {
     "electron": "44.4.3",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "node-addon-api": "^8.5.0",
+    "node-gyp": "^11.4.2"
   },
   "scripts": {
     "dev": "electron .",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win",
+    "build:native": "node scripts/build-native.js"
   },
   "build": {
     "appId": "com.janja.app",
@@ -24,7 +27,8 @@
       "src/**",
       "app.config.json",
       "build/icon.png",
-      "package.json"
+      "package.json",
+      "native/build/Release/*.node"
     ],
     "win": {
       "target": "nsis",
@@ -58,7 +62,10 @@
     "linux": {
       "target": "AppImage",
       "icon": "build/icon.png"
-    }
+    },
+    "asarUnpack": [
+      "native/build/Release/*.node"
+    ]
   },
   "author": "Syden"
 }

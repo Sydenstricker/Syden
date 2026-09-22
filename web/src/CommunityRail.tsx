@@ -13,17 +13,29 @@ interface Props {
   onChanged: (community: Community) => void;
   /** Botão extra acima das comunidades (as conversas privadas ficam aqui). */
   top?: ReactNode;
+  /** O logo no alto abre a tela inicial. */
+  onHome: () => void;
+  homeActive: boolean;
+  /** Tem novidade que a pessoa ainda não viu: uma bolinha aparece no logo. */
+  homeBadge: boolean;
 }
 
-export function CommunityRail({ communities, currentId, onSelect, onChanged, top }: Props) {
+export function CommunityRail({ communities, currentId, onSelect, onChanged, top, onHome, homeActive, homeBadge }: Props) {
   const [dialog, setDialog] = useState<'create' | 'join' | null>(null);
   const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
 
   return (
     <nav className="rail" aria-label="Comunidades">
-      <div className="rail-logo" title="Syden">
+      <button
+        className={`rail-logo${homeActive ? ' active' : ''}`}
+        title="Início do Syden"
+        aria-label="Início do Syden"
+        aria-current={homeActive}
+        onClick={onHome}
+      >
         <Logo size={26} />
-      </div>
+        {homeBadge && <span className="rail-logo-dot" aria-hidden="true" />}
+      </button>
       {top}
       <div className="rail-list">
         {communities.map((community) => (

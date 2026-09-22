@@ -22,10 +22,12 @@ const CHUNK_FRAMES = (SAMPLE_RATE * CHUNK_MS) / 1000;
 /** @type {{ start(onChunk: (pcm: Float32Array) => void, options: { sampleRate: number, channels: number, excludePid: number }): void, stop(): void } | null} */
 let native = null;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  native = require('syden-audio');
+  const path = require('node:path');
+  // Empacotado, o módulo fica fora do asar (o Windows só carrega biblioteca nativa de arquivo de verdade).
+  const base = __dirname.includes('app.asar') ? __dirname.replace('app.asar', 'app.asar.unpacked') : __dirname;
+  native = require(path.join(base, '..', 'native', 'build', 'Release', 'syden_audio.node'));
 } catch {
-  native = null; // ainda não compilado para esta máquina: o app funciona sem
+  native = null; // ainda não compilado nesta máquina: o app funciona sem, do jeito antigo
 }
 
 const fake = process.env.SYDEN_FAKE_AUDIO === '1';

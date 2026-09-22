@@ -7,6 +7,8 @@ import { CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
 import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
+import { Home } from './Home';
+import { temNovidade } from './changelog';
 import { DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
@@ -22,6 +24,33 @@ import { VoiceStage } from './VoiceStage';
 
 /** Última comunidade aberta, para o app voltar onde a pessoa estava. */
 const LAST_COMMUNITY_KEY = 'syden.community';
+/** Última tela aberta (início, comunidade ou conversas), pelo mesmo motivo. */
+const LAST_VIEW_KEY = 'syden.view';
+
+type View = 'home' | 'community' | 'direct';
+
+function rememberView(view: View) {
+  try {
+    localStorage.setItem(LAST_VIEW_KEY, view);
+  } catch {
+    // sem armazenamento: abre na tela inicial da próxima vez, e tudo bem
+  }
+}
+
+/**
+ * Onde o Syden abre: onde a pessoa parou. Só cai na tela inicial quem nunca entrou, quem estava lá, ou
+ * quem tem novidade para ver — assim quem só quer conversar não ganha um clique a mais todo dia.
+ */
+function firstView(): View {
+  try {
+    const saved = localStorage.getItem(LAST_VIEW_KEY);
+    if (temNovidade()) return 'home';
+    if (saved === 'community' || saved === 'direct' || saved === 'home') return saved;
+  } catch {
+    // sem armazenamento
+  }
+  return 'home';
+}
 
 function rememberCommunity(id: number | null) {
   try {
@@ -78,7 +107,7 @@ export function Shell({
   // que aparece. Em tela larga (a maioria) isto não muda nada — as duas colunas aparecem sempre.
   const [mobileChannels, setMobileChannels] = useState(true);
   // Conversas privadas: a barra lateral troca a lista de canais pela lista de conversas.
-  const [view, setView] = useState<'community' | 'direct'>('community');
+  const [view, setView] = useState<View>(firstView);
   const [directs, setDirects] = useState<DirectChannel[]>([]);
   const [directId, setDirectId] = useState<number | null>(null);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
@@ -87,6 +116,13 @@ export function Shell({
   onLogoutRef.current = onLogout;
   const voiceRef = useRef(voice);
   voiceRef.current = voice;
+
+  useEffect(() => rememberView(view), [view]);
+  // A bolinha do logo some assim que a tela inicial é aberta.
+  const [novidade, setNovidade] = useState(temNovidade);
+  useEffect(() => {
+    if (view === 'home') setNovidade(false);
+  }, [view]);
 
   const community = communities.find((c) => c.id === communityId);
   const openDirect = directs.find((c) => c.id === directId);
@@ -333,10 +369,11 @@ export function Shell({
   }, [channels, selectedId]);
 
   // Painel de consumo é só para administradores; se alguém perder o cargo com ele aberto, a tela volta ao normal.
-  const usageOpen = showUsage && user.isAdmin;
-  const selected = usageOpen ? undefined : channels.find((c) => c.id === selectedId);
+  const usageOpen = showUsage && user.isAdmin && view === 'community';
+  const selected = usageOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
 
   function selectChannel(channel: Channel) {
+    setView('community'); // vindo da tela inicial ou de uma conversa privada, volta para a comunidade
     setShowUsage(false);
     setSelectedId(channel.id);
     setMobileChannels(false);
@@ -365,12 +402,19 @@ export function Shell({
       <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}`}>
         <CommunityRail
           communities={communities}
-          currentId={view === 'direct' ? null : communityId}
+          currentId={view === 'community' ? communityId : null}
           onSelect={(id) => {
             setView('community');
             setCommunityId(id);
           }}
           onChanged={(created) => void afterCommunityChange(created)}
+          onHome={() => {
+            setView('home');
+            setShowUsage(false);
+            setMobileChannels(false);
+          }}
+          homeActive={view === 'home'}
+          homeBadge={view !== 'home' && novidade}
           top={
             communities.length > 0 && (
               <DirectRailButton
@@ -400,6 +444,7 @@ export function Shell({
             onSendMessage={(id) => void startConversation(id)}
             onSelect={selectChannel}
             onOpenUsage={() => {
+              setView('community');
               setShowUsage(true);
               setMobileChannels(false);
             }}
@@ -430,6 +475,7 @@ export function Shell({
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
+          {view === 'home' && <Home />}
           {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
           {view === 'direct' && directAsChannel && socket && (
             <TextChannel

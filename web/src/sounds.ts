@@ -78,6 +78,8 @@ export const sounds = {
   unmute: () => play([{ freq: D5, at: 0, dur: 0.09 }, { freq: G5, at: 0.05, dur: 0.14 }]),
   deafen: () => play([{ freq: E5, at: 0, dur: 0.1 }, { freq: G4, at: 0.06, dur: 0.18 }]),
   undeafen: () => play([{ freq: G4, at: 0, dur: 0.1 }, { freq: E5, at: 0.06, dur: 0.18 }]),
+  /** Coelho cutucado na tela inicial: dois pulinhos curtos, bem discretos. */
+  bunny: () => play([{ freq: A5, at: 0, dur: 0.08 }, { freq: C6, at: 0.06, dur: 0.12 }]),
   screenShareStart: () =>
     play([
       { freq: C5, at: 0, dur: 0.12 },

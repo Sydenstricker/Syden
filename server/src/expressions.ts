@@ -9,10 +9,9 @@ const ASSETS = new URL('../assets/', import.meta.url);
 const SOUND_DIR = new URL('sounds/', ASSETS);
 const seededKey = (communityId: number) => `expressions.seeded.${communityId}`;
 const PACKS_KEY = 'sounds.packs.version';
-// Ao subir este número, os pacotes de fábrica são conferidos de novo (o que falta é reposto).
-const PACKS_VERSION = 1;
-/** O pacote que já vem instalado para quem cria conta; os outros ficam a um clique no catálogo. */
-const DEFAULT_PACK = 'Básico';
+// Ao subir este número, os pacotes de fábrica são conferidos de novo (o que falta é reposto) e voltam
+// para o soundboard de todo mundo.
+const PACKS_VERSION = 2;
 
 interface PackManifest {
   folder: string;
@@ -52,16 +51,18 @@ export function seedSoundPacks() {
     const found = db.findPackByName(manifest.name);
     const packId = found?.id ?? db.createPack(manifest.name, manifest.description, manifest.icon, null, true);
     fillPack(packId, manifest);
-    // Quem já tinha conta antes dos pacotes existirem recebe o básico, para não abrir um soundboard vazio.
-    if (manifest.name === DEFAULT_PACK) for (const userId of db.allUserIds()) db.installPack(packId, userId);
+    // Todo mundo começa com os pacotes do Syden no soundboard; tirar o que não gostar é um clique.
+    for (const userId of db.allUserIds()) db.installPack(packId, userId);
   }
   db.setKv(PACKS_KEY, String(PACKS_VERSION));
 }
 
-/** Quem cria conta já começa com o pacote básico no soundboard. */
+/** Quem cria conta já começa com todos os pacotes que acompanham o Syden. */
 export function installDefaultPack(userId: number) {
-  const pack = db.findPackByName(DEFAULT_PACK);
-  if (pack) db.installPack(pack.id, userId);
+  for (const manifest of readManifest()) {
+    const pack = db.findPackByName(manifest.name);
+    if (pack) db.installPack(pack.id, userId);
+  }
 }
 
 export function seedExpressions(communityId: number) {
