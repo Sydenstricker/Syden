@@ -28,6 +28,32 @@ body,
   margin: 0;
 }
 
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Faixa arrastável no lugar da barra de título clara do Windows; só existe dentro do app de desktop. */
+.desktop-titlebar {
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font-size: 13px;
+  font-weight: 600;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.app-body {
+  flex: 1;
+  min-height: 0;
+}
+
 body {
   background: var(--bg-main);
   color: var(--text);
@@ -59,6 +85,23 @@ textarea {
   place-items: center;
   height: 100%;
   color: var(--text-muted);
+}
+
+/* Respiração suave enquanto o app confere a sessão — minimalista, sem texto piscando. */
+.splash-logo {
+  animation: splash-breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes splash-breathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ---------- Login ---------- */
@@ -1166,6 +1209,57 @@ textarea {
   border-radius: 0;
 }
 
+/* O "i" de formato, na câmera das pessoas: discreto, só aparece ao passar o mouse no quadro. */
+.tile-info {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.tile:hover .tile-info {
+  opacity: 1;
+}
+
+.tile-info .stream-info-button {
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+}
+
+.muted-warning {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  animation: muted-warning-in 0.15s ease-out;
+}
+
+@keyframes muted-warning-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 .start-audio {
   position: absolute;
   top: 16px;
@@ -1997,6 +2091,64 @@ textarea {
   flex-shrink: 0;
 }
 
+.soundboard-add {
+  color: var(--text-muted);
+  border: 1px dashed #4e5058;
+  background: none;
+}
+
+.soundboard-add:hover {
+  color: var(--text-strong);
+  border-color: var(--text-muted);
+  background: var(--bg-hover);
+}
+
+.soundboard-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #3f4147;
+}
+
+.soundboard-file {
+  align-self: flex-start;
+}
+
+.soundboard-add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.soundboard-add-icon {
+  width: 48px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.soundboard-add-icon,
+.soundboard-add-name {
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #1e1f22;
+  background: var(--bg-input);
+  color: var(--text-strong);
+  font-size: 14px;
+}
+
+.soundboard-add-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.soundboard-add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  align-items: center;
+}
+
 /* Nome em até duas linhas; o que passar disso vira reticências. */
 .soundboard-name {
   min-width: 0;
@@ -2720,6 +2872,54 @@ textarea {
   color: #fff;
 }
 
+.screenshare-anchor {
+  position: relative;
+}
+
+.screenshare-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+}
+
+.screenshare-menu-title {
+  padding: 4px 8px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.screenshare-option-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.screenshare-option-text small {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.person-menu-hint {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 /* ---------- Lista de pessoas ---------- */
 
 .member-info {
@@ -2732,6 +2932,16 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.member-name.role-owner {
+  color: #f0b232;
+  font-weight: 600;
+}
+
+.member-name.role-admin {
+  color: #8ea1ff;
+  font-weight: 600;
 }
 
 .member-status {
@@ -3318,6 +3528,53 @@ textarea {
 }
 
 /* ---------- Tópicos ---------- */
+
+/* ---------- Reações ---------- */
+
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.reaction-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.reaction-pill:hover {
+  border-color: var(--text-muted);
+}
+
+.reaction-pill.mine {
+  border-color: var(--accent, #5865f2);
+  background: rgba(88, 101, 242, 0.16);
+}
+
+.reaction-emoji {
+  font-size: 15px;
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+}
+
+.reaction-count {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.reaction-picker-anchor {
+  z-index: 70;
+}
 
 .thread-chip {
   display: flex;

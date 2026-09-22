@@ -116,6 +116,8 @@ export function useVoice(socket: Socket | null) {
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // "Você está silenciado!": true por alguns segundos quando a pessoa fala com o microfone mudo.
+  const [mutedWarning, setMutedWarning] = useState(false);
 
   // Refs para os handlers de eventos lerem o valor atual sem precisar se reinscrever.
   const channelRef = useRef<number | null>(null);
@@ -390,35 +392,47 @@ export function useVoice(socket: Socket | null) {
     }
   }, [room]);
 
-  const toggleScreen = useCallback(async () => {
-    const lp = room.localParticipant;
-    const quality = getSettings().screenQuality;
-    const preset = SCREEN_PRESETS[quality];
-    const hints = SCREEN_HINTS[quality];
-    try {
-      await lp.setScreenShareEnabled(
-        !lp.isScreenShareEnabled,
-        {
-          contentHint: hints.contentHint,
-          audio: true, // áudio da aba/sistema, quando o navegador suporta
-          systemAudio: 'include',
-          selfBrowserSurface: 'exclude',
-          // Quase sempre a pessoa quer mostrar a tela inteira (um jogo, por exemplo), não a aba do navegador:
-          // o Chrome e o Edge já abrem o seletor em "Tela inteira" por causa disto.
-          video: { displaySurface: 'monitor' },
-          preferCurrentTab: false,
-          surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
-          resolution: preset.resolution,
-        },
-        { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
-      );
-    } catch (e) {
-      // Fechar o seletor de tela sem escolher nada não é erro.
-      if (!isCancelledPicker(e)) {
-        console.error(e);
-        setError('Não foi possível compartilhar a tela neste navegador.');
+  /**
+   * Começa (ou troca) a transmissão. `surface` decide o que o seletor do navegador abre primeiro:
+   * tela inteira, uma janela/app específico ou uma aba — janela e aba tendem a vir com áudio só daquele
+   * programa; tela inteira traz o som do sistema inteiro junto (o que inclui a própria chamada, se ela
+   * estiver tocando pelo alto-falante). Chamar já compartilhando troca para a tela nova.
+   */
+  const shareScreen = useCallback(
+    async (surface: 'monitor' | 'window' | 'browser') => {
+      const lp = room.localParticipant;
+      const quality = getSettings().screenQuality;
+      const preset = SCREEN_PRESETS[quality];
+      const hints = SCREEN_HINTS[quality];
+      try {
+        if (lp.isScreenShareEnabled) await lp.setScreenShareEnabled(false);
+        await lp.setScreenShareEnabled(
+          true,
+          {
+            contentHint: hints.contentHint,
+            audio: true, // áudio da aba/janela/sistema, quando o navegador suporta
+            systemAudio: 'include',
+            selfBrowserSurface: 'exclude',
+            video: { displaySurface: surface },
+            preferCurrentTab: false,
+            surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
+            resolution: preset.resolution,
+          },
+          { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
+        );
+      } catch (e) {
+        // Fechar o seletor de tela sem escolher nada não é erro.
+        if (!isCancelledPicker(e)) {
+          console.error(e);
+          setError('Não foi possível compartilhar a tela neste navegador.');
+        }
       }
-    }
+    },
+    [room],
+  );
+
+  const stopScreen = useCallback(async () => {
+    await room.localParticipant.setScreenShareEnabled(false).catch(console.error);
   }, [room]);
 
   /** Troca microfone, alto-falante ou câmera; vale na hora e fica salvo para as próximas vezes. */
@@ -460,6 +474,78 @@ export function useVoice(socket: Socket | null) {
     [room],
   );
 
+  // Avisa "Você está silenciado!" quando a pessoa fala com o microfone mudo, como no Discord. O LiveKit
+  // para de mandar áudio ao mutar, então isto ouve um microfone à parte, só para medir o volume da voz —
+  // não é o mesmo fluxo que vai para a chamada.
+  const MUTED_TALK_THRESHOLD = 0.045;
+  const MUTED_TALK_SUSTAIN_MS = 250;
+  const MUTED_TALK_COOLDOWN_MS = 4000;
+  const MUTED_TALK_BANNER_MS = 3500;
+  useEffect(() => {
+    if (channelId === null || !media.muted) {
+      setMutedWarning(false);
+      return;
+    }
+    let cancelled = false;
+    let raf = 0;
+    let stream: MediaStream | null = null;
+    let ctx: AudioContext | null = null;
+    let aboveSince: number | null = null;
+    let lastWarnAt = 0;
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+
+    (async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          audio: { deviceId: getSettings().audioInput || undefined, echoCancellation: true, noiseSuppression: true },
+        });
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+        ctx = new AudioContext();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 512;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        const data = new Uint8Array(analyser.frequencyBinCount);
+
+        const tick = () => {
+          analyser.getByteTimeDomainData(data);
+          let sum = 0;
+          for (const v of data) {
+            const d = v - 128;
+            sum += d * d;
+          }
+          const level = Math.sqrt(sum / data.length) / 128;
+          const now = Date.now();
+          if (level > MUTED_TALK_THRESHOLD) {
+            aboveSince ??= now;
+            if (now - aboveSince > MUTED_TALK_SUSTAIN_MS && now - lastWarnAt > MUTED_TALK_COOLDOWN_MS) {
+              lastWarnAt = now;
+              setMutedWarning(true);
+              clearTimeout(hideTimer);
+              hideTimer = setTimeout(() => setMutedWarning(false), MUTED_TALK_BANNER_MS);
+            }
+          } else {
+            aboveSince = null;
+          }
+          raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+      } catch {
+        // Sem acesso a um segundo fluxo do microfone aqui: só não há como avisar, nada quebra.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      clearTimeout(hideTimer);
+      stream?.getTracks().forEach((t) => t.stop());
+      void ctx?.close();
+    };
+  }, [channelId, media.muted]);
+
   return {
     room,
     channelId,
@@ -467,13 +553,15 @@ export function useVoice(socket: Socket | null) {
     media,
     deafened,
     error,
+    mutedWarning,
     clearError: () => setError(null),
     join,
     leave,
     toggleMute,
     toggleDeafen,
     toggleCamera,
-    toggleScreen,
+    shareScreen,
+    stopScreen,
     setScreenQuality,
     switchDevice,
     setAudioProcessing,

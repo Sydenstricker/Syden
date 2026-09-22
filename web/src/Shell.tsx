@@ -38,7 +38,18 @@ function rememberedCommunity(): number | null {
   }
 }
 
-export function Shell({ token, user: loggedUser, onLogout }: { token: string; user: User; onLogout: () => void }) {
+export function Shell({
+  token,
+  user: loggedUser,
+  pendingInviteCode,
+  onLogout,
+}: {
+  token: string;
+  user: User;
+  /** Veio de um link de convite (?convite=xxxx): entra nessa comunidade assim que a sessão abre. */
+  pendingInviteCode?: string | null;
+  onLogout: () => void;
+}) {
   // Os cargos podem mudar com o app aberto (o dono deu ou tirou o de administrador, ou excluiu a conta e outro assumiu).
   const { members } = useDirectory();
   const me = members.get(loggedUser.id);
@@ -80,6 +91,24 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
   useEffect(() => {
     reloadCommunities().catch(console.error);
   }, [reloadCommunities]);
+
+  // Chegou por um link de convite (?convite=xxxx): entra nessa comunidade assim que a sessão abre. Quem já
+  // participa (ex.: o próprio link de quem convidou) simplesmente não vê nada de diferente.
+  const [inviteBanner, setInviteBanner] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pendingInviteCode) return;
+    api<Community>('/api/communities/join', { method: 'POST', body: { code: pendingInviteCode } }).then(
+      (community) => {
+        setInviteBanner(`Você entrou em ${community.name}.`);
+        void afterCommunityChange(community);
+      },
+      (error) => {
+        if (error instanceof ApiError && error.status === 409) return; // já participava: nada a avisar
+        setInviteBanner((error as Error).message);
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingInviteCode]);
 
   useEffect(() => {
     const s = io(API_URL, { auth: { token } });
@@ -266,6 +295,11 @@ export function Shell({ token, user: loggedUser, onLogout }: { token: string; us
         )}
         <main className="main">
           {!online && <div className="banner">Reconectando ao servidor…</div>}
+          {inviteBanner && (
+            <div className="banner" onClick={() => setInviteBanner(null)}>
+              {inviteBanner} <span className="banner-close">✕</span>
+            </div>
+          )}
           {voice.error && (
             <div className="banner banner-error" onClick={voice.clearError} role="alert">
               {voice.error} <span className="banner-close">✕</span>

@@ -5,8 +5,8 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem } from './MessageItem';
-import { applyTally, replacePoll, type PollTally } from './messageState';
-import type { Message, Role, ThreadSummary, User } from './types';
+import { applyReactionUpdate, applyTally, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
+import type { Message, Reaction, Role, ThreadSummary, User } from './types';
 
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
@@ -22,6 +22,7 @@ export function ThreadPanel({
   role,
   onClose,
   onDeleteMessage,
+  onParentReactionsChange,
 }: {
   thread: ThreadSummary;
   /** A mensagem que originou o tópico, quando ela está carregada na tela. */
@@ -31,6 +32,8 @@ export function ThreadPanel({
   role: Role;
   onClose: () => void;
   onDeleteMessage: (message: Message, skipConfirm: boolean) => void;
+  /** Reagir à mensagem-mãe também atualiza ela lá no canal. */
+  onParentReactionsChange: (messageId: number, reactions: Reaction[]) => void;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -51,15 +54,18 @@ export function ThreadPanel({
     const onDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.id !== id));
     const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
     const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
+    const onReaction = (update: ReactionUpdate) => setMessages((list) => applyReactionUpdate(list, update));
     socket.on('message:new', onMessage);
     socket.on('message:deleted', onDeleted);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
+    socket.on('reaction:updated', onReaction);
     return () => {
       socket.off('message:new', onMessage);
       socket.off('message:deleted', onDeleted);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);
+      socket.off('reaction:updated', onReaction);
     };
   }, [socket, thread.id]);
 
@@ -123,6 +129,7 @@ export function ThreadPanel({
               canManagePoll={false}
               onDelete={() => {}}
               onPollChange={() => {}}
+              onReactionsChange={onParentReactionsChange}
             />
             <div className="thread-parent-line">Respostas</div>
           </div>
@@ -145,6 +152,7 @@ export function ThreadPanel({
               canManagePoll={canManage(message)}
               onDelete={onDeleteMessage}
               onPollChange={(poll) => setMessages((list) => replacePoll(list, poll))}
+              onReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}
             />
           );
         })}

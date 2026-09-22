@@ -2,10 +2,22 @@ const grid = document.getElementById('grid');
 const shareButton = document.getElementById('share');
 const audioOption = document.getElementById('audio-option');
 const audioCheckbox = document.getElementById('audio');
+const audioHint = document.getElementById('audio-hint');
 
 let sources = [];
 let kind = 'screen';
 let selectedId = null;
+
+// O aviso muda conforme a aba: numa janela específica, o som costuma ficar restrito àquele programa
+// (bem menos chance de devolver eco da própria chamada); na tela inteira, vai o som do sistema todo.
+const AUDIO_HINT = {
+  window: 'Fica restrito àquele programa — o jeito de não ouvir a própria chamada de volta.',
+  screen: 'Vai o som do computador inteiro, inclusive esta chamada. Prefira fones de ouvido.',
+};
+
+function updateAudioHint() {
+  audioHint.textContent = AUDIO_HINT[kind] ?? AUDIO_HINT.screen;
+}
 
 function share() {
   if (selectedId) window.picker.choose(selectedId, audioCheckbox.checked);
@@ -60,6 +72,7 @@ for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => {
     kind = tab.dataset.kind;
     for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t === tab);
+    updateAudioHint();
     render();
   });
 }
@@ -74,6 +87,7 @@ document.addEventListener('keydown', (event) => {
 window.picker.onSources((data) => {
   sources = data.sources;
   audioOption.hidden = !data.audioSupported;
+  updateAudioHint();
   const screens = sources.filter((s) => s.kind === 'screen');
   document.querySelector('[data-kind="screen"]').textContent = `Telas (${screens.length})`;
   document.querySelector('[data-kind="window"]').textContent = `Janelas (${sources.length - screens.length})`;

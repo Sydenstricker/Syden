@@ -1,10 +1,13 @@
-import { Download, FileText, MessageSquarePlus, MessagesSquare, Trash2 } from 'lucide-react';
-import { mediaUrl } from './api';
+import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, Trash2 } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
+import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
-import type { Attachment, Message, Poll, ThreadSummary } from './types';
+import type { Attachment, Message, Poll, Reaction, ThreadSummary } from './types';
 
 /** Caixa máxima de uma imagem no chat; o resto encolhe proporcionalmente. */
 const IMAGE_BOX = { width: 400, height: 300 };
@@ -54,6 +57,75 @@ function Attachments({ files }: { files: Attachment[] }) {
   );
 }
 
+/** Uma reação, com a imagem do emoji da comunidade quando é o caso. */
+function ReactionGlyph({ emoji }: { emoji: string }) {
+  const { emojisByName } = useDirectory();
+  const custom = /^:([a-z0-9_]{2,32}):$/.exec(emoji);
+  const found = custom && emojisByName.get(custom[1]);
+  if (found) return <img className="reaction-emoji" src={mediaUrl.emoji(found.id)} alt={emoji} />;
+  return <span className="reaction-emoji">{emoji}</span>;
+}
+
+/** As reações embaixo da mensagem: cada pílula mostra quantos marcaram; a sua fica destacada. */
+function ReactionBar({ reactions, onToggle }: { reactions: Reaction[]; onToggle: (emoji: string) => void }) {
+  if (reactions.length === 0) return null;
+  return (
+    <div className="reactions">
+      {reactions.map((reaction) => (
+        <button
+          key={reaction.emoji}
+          className={`reaction-pill${reaction.mine ? ' mine' : ''}`}
+          title={reaction.emoji}
+          onClick={() => onToggle(reaction.emoji)}
+        >
+          <ReactionGlyph emoji={reaction.emoji} />
+          <span className="reaction-count">{reaction.count}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Botão de "+" que abre o painel de emojis para escolher a reação nova. */
+function AddReactionButton({ onPick }: { onPick: (emoji: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  function toggle() {
+    if (!open) {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      setPos(rect ? { x: rect.left, y: rect.bottom + 6 } : null);
+    }
+    setOpen(!open);
+  }
+
+  return (
+    <>
+      <button ref={buttonRef} className="message-action" title="Reagir" aria-label="Reagir" onClick={toggle}>
+        <SmilePlus size={16} />
+      </button>
+      {open &&
+        pos &&
+        createPortal(
+          <div
+            className="reaction-picker-anchor"
+            style={{ position: 'fixed', top: pos.y, left: Math.min(pos.x, window.innerWidth - 356) }}
+          >
+            <EmojiPicker
+              onPick={(emoji) => {
+                setOpen(false);
+                onPick(emoji);
+              }}
+              onClose={() => setOpen(false)}
+            />
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+}
+
 function ThreadChip({ thread, onOpen }: { thread: ThreadSummary; onOpen: () => void }) {
   return (
     <button className="thread-chip" onClick={onOpen}>
@@ -78,6 +150,7 @@ export function MessageItem({
   canManagePoll,
   onDelete,
   onPollChange,
+  onReactionsChange,
   onOpenThread,
   onCreateThread,
 }: {
@@ -87,21 +160,33 @@ export function MessageItem({
   canManagePoll: boolean;
   onDelete: (message: Message, skipConfirm: boolean) => void;
   onPollChange: (poll: Poll) => void;
+  onReactionsChange: (messageId: number, reactions: Reaction[]) => void;
   /** Ausente dentro do painel do tópico: lá não há tópico de tópico. */
   onOpenThread?: (thread: ThreadSummary) => void;
   onCreateThread?: (message: Message) => void;
 }) {
+  async function reactWith(emoji: string) {
+    try {
+      const reactions = await api<Reaction[]>(`/api/messages/${message.id}/reactions`, { method: 'POST', body: { emoji } });
+      onReactionsChange(message.id, reactions);
+    } catch {
+      // Reagir é secundário: se falhar (mensagem apagada nesse meio-tempo etc.), não interrompe a leitura.
+    }
+  }
+
   const body = (
     <>
       {message.content && <MessageText content={message.content} />}
       {message.attachments.length > 0 && <Attachments files={message.attachments} />}
       {message.poll && <PollCard poll={message.poll} canClose={canManagePoll} onChange={onPollChange} />}
       {message.thread && onOpenThread && <ThreadChip thread={message.thread} onOpen={() => onOpenThread(message.thread!)} />}
+      <ReactionBar reactions={message.reactions} onToggle={(emoji) => void reactWith(emoji)} />
     </>
   );
 
   const actions = (
     <div className="message-actions">
+      <AddReactionButton onPick={(emoji) => void reactWith(emoji)} />
       {onCreateThread && !message.thread && (
         <button
           className="message-action"

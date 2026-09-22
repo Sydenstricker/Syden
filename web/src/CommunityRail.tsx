@@ -1,5 +1,6 @@
-import { LogIn, Plus } from 'lucide-react';
-import { type FormEvent, useState } from 'react';
+import { Link, LogIn, Plus } from 'lucide-react';
+import { type FormEvent, type MouseEvent, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from './api';
 import { CommunityIcon } from './CommunityIcon';
 import { Logo } from './Logo';
@@ -14,6 +15,7 @@ interface Props {
 
 export function CommunityRail({ communities, currentId, onSelect, onChanged }: Props) {
   const [dialog, setDialog] = useState<'create' | 'join' | null>(null);
+  const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
 
   return (
     <nav className="rail" aria-label="Comunidades">
@@ -29,6 +31,10 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged }: P
             aria-label={community.name}
             aria-current={community.id === currentId}
             onClick={() => onSelect(community.id)}
+            onContextMenu={(e: MouseEvent) => {
+              e.preventDefault();
+              setMenu({ community, x: e.clientX, y: e.clientY });
+            }}
           >
             <CommunityIcon community={community} />
           </button>
@@ -51,7 +57,55 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged }: P
           }}
         />
       )}
+
+      {menu && <CommunityMenu community={menu.community} x={menu.x} y={menu.y} onClose={() => setMenu(null)} />}
     </nav>
+  );
+}
+
+/**
+ * Menu do botão direito em cima de uma comunidade na barra: por enquanto, só o link de convite —
+ * só existe para quem administra (é quem recebe o código; ver server/src/db.ts, listCommunitiesForUser).
+ */
+function CommunityMenu({ community, x, y, onClose }: { community: Community; x: number; y: number; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const close = () => onClose();
+    window.addEventListener('pointerdown', close);
+    window.addEventListener('keydown', close);
+    return () => {
+      window.removeEventListener('pointerdown', close);
+      window.removeEventListener('keydown', close);
+    };
+  }, [onClose]);
+
+  function copyLink() {
+    const url = new URL(window.location.href);
+    url.search = `?convite=${community.inviteCode}`;
+    url.hash = '';
+    void navigator.clipboard?.writeText(url.toString());
+    setCopied(true);
+    setTimeout(onClose, 900);
+  }
+
+  return createPortal(
+    <div
+      className="person-menu"
+      role="menu"
+      style={{ top: Math.min(y, window.innerHeight - 100), left: Math.min(x, window.innerWidth - 250) }}
+      onPointerDown={(e) => e.stopPropagation()}
+    >
+      <div className="person-menu-name">{community.name}</div>
+      {community.inviteCode ? (
+        <button className="person-menu-item" onClick={copyLink}>
+          <Link size={16} /> {copied ? 'Link copiado!' : 'Copiar link de convite'}
+        </button>
+      ) : (
+        <p className="person-menu-hint">Só quem administra pode convidar gente nova.</p>
+      )}
+    </div>,
+    document.body,
   );
 }
 

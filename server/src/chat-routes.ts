@@ -227,5 +227,33 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       });
       return { ok: true };
     });
+
+    // ---------- Reações ----------
+
+    /** :nome: de um emoji da comunidade, ou um emoji comum curto (👍, ❤️, 🎉…). */
+    function validReaction(raw: unknown, communityId: number): string | null {
+      const value = String(raw ?? '').trim();
+      const customName = /^:([a-z0-9_]{2,32}):$/.exec(value);
+      if (customName) return db.emojiNameTaken(communityId, customName[1]) ? `:${customName[1]}:` : null;
+      // Emoji comum: no máximo um punhado de pontos de código (cobre bandeiras, tom de pele, ZWJ).
+      return value.length >= 1 && [...value].length <= 8 ? value : null;
+    }
+
+    authed.post<{ Params: { id: string }; Body: { emoji?: string } }>('/api/messages/:id/reactions', async (request, reply) => {
+      const message = db.findMessage(Number(request.params.id));
+      if (!message || !roleIn(request.user, message.communityId)) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      const emoji = validReaction(request.body?.emoji, message.communityId);
+      if (!emoji) return reply.code(400).send({ error: 'Emoji inválido.' });
+
+      db.toggleReaction(message.id, emoji, request.user.id);
+      io.to(communityRoom(message.communityId)).emit('reaction:updated', {
+        messageId: message.id,
+        channelId: message.channelId,
+        threadId: message.threadId,
+        reactions: db.reactionCounts(message.id),
+      });
+      // Só para quem agiu: a lista já com "mine" certo, pronta para substituir o estado local.
+      return db.reactionsForMessage(message.id, request.user.id);
+    });
   });
 }

@@ -7,7 +7,6 @@ import {
   HeadphoneOff,
   Mic,
   MicOff,
-  Monitor,
   Pencil,
   PhoneOff,
   Plus,
@@ -21,9 +20,11 @@ import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { Avatar } from './Avatar';
+import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
 import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
+import { ScreenShareButton } from './ScreenShareButton';
 import type { Channel, Community, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -136,9 +137,7 @@ export function Sidebar({
             <div className="voice-panel-channel">{connectedChannel.name}</div>
           </div>
           <div className="icon-row">
-            <IconButton label="Compartilhar tela" active={voice.media.screen} onClick={voice.toggleScreen}>
-              <Monitor size={18} />
-            </IconButton>
+            <ScreenShareButton voice={voice} />
             <IconButton label="Desconectar" onClick={voice.leave}>
               <PhoneOff size={18} />
             </IconButton>
@@ -350,30 +349,3 @@ function ChannelGroup({
   );
 }
 
-export function IconButton({
-  label,
-  onClick,
-  active,
-  danger,
-  disabled,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  active?: boolean;
-  danger?: boolean;
-  disabled?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      className={`icon-button${active ? ' active' : ''}${danger ? ' danger' : ''}`}
-      title={label}
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-}

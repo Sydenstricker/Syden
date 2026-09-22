@@ -1,10 +1,17 @@
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
-import type { Channel, UserRef, VoiceMember } from './types';
+import type { Channel, CommunityMember, Role, UserRef, VoiceMember } from './types';
+
+/** Como no Discord: dono destacado, depois administradores, depois o resto — cada um com sua cor. */
+const GROUPS: { role: Role; label: string; className: string }[] = [
+  { role: 'owner', label: 'Dono', className: 'role-owner' },
+  { role: 'admin', label: 'Administradores', className: 'role-admin' },
+  { role: 'member', label: 'Disponível', className: '' },
+];
 
 /**
- * Coluna da direita: quem participa da comunidade, com o que cada um está fazendo agora, como no Discord.
- * Offline fica no fim, esmaecido, para a lista não sumir quando o pessoal desconecta.
+ * Coluna da direita: quem participa da comunidade, dividido por cargo como no Discord, com o que cada
+ * um está fazendo agora. Offline fica numa lista à parte no fim, esmaecida, sem separar por cargo.
  */
 export function MemberList({
   online,
@@ -32,24 +39,35 @@ export function MemberList({
     return { text: `Em ${channelName(voice.channelId)}`, live: false };
   };
 
+  const row = (member: CommunityMember, className: string) => {
+    const agora = status(member.id);
+    return (
+      <div key={member.id} className="member">
+        <Avatar name={member.username} userId={member.id} online />
+        <span className="member-info">
+          <span className={`member-name ${className}`}>{member.username}</span>
+          {agora && (
+            <span className={`member-status${agora.live ? ' live' : ''}`}>
+              {agora.live && <span className="live-dot" aria-hidden="true" />}
+              {agora.text}
+            </span>
+          )}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <aside className="members">
-      {/* Só quem participa desta comunidade: não dá para espiar quem está em outra. */}
-      <h3>Online — {aqui.length}</h3>
-      {aqui.map((member) => {
-        const agora = status(member.id);
+      {GROUPS.map(({ role, label, className }) => {
+        const group = aqui.filter((m) => m.role === role);
+        if (group.length === 0) return null;
         return (
-          <div key={member.id} className="member">
-            <Avatar name={member.username} userId={member.id} online />
-            <span className="member-info">
-              <span className="member-name">{member.username}</span>
-              {agora && (
-                <span className={`member-status${agora.live ? ' live' : ''}`}>
-                  {agora.live && <span className="live-dot" aria-hidden="true" />}
-                  {agora.text}
-                </span>
-              )}
-            </span>
+          <div key={role}>
+            <h3>
+              {label} — {group.length}
+            </h3>
+            {group.map((member) => row(member, className))}
           </div>
         );
       })}

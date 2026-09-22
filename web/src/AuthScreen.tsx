@@ -6,12 +6,19 @@ import { installApp, useCanInstall } from './install';
 import { Logo } from './Logo';
 import type { User } from './types';
 
-export function AuthScreen({ onAuthenticated }: { onAuthenticated: (token: string, user: User) => void }) {
+export function AuthScreen({
+  onAuthenticated,
+  initialInviteCode,
+}: {
+  onAuthenticated: (token: string, user: User) => void;
+  /** Veio de um link de convite (?convite=xxxx): já entra na tela de cadastro com o código preenchido. */
+  initialInviteCode?: string | null;
+}) {
   const canInstall = useCanInstall();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register'>(initialInviteCode ? 'register' : 'login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [inviteCode, setInviteCode] = useState('');
+  const [inviteCode, setInviteCode] = useState(initialInviteCode ?? '');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 

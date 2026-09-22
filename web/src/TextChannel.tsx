@@ -5,7 +5,16 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
-import { applyTally, applyThread, removeThread, replacePoll, type PollTally } from './messageState';
+import {
+  applyReactionUpdate,
+  applyTally,
+  applyThread,
+  removeThread,
+  replacePoll,
+  replaceReactions,
+  type PollTally,
+  type ReactionUpdate,
+} from './messageState';
 import { ThreadPanel } from './ThreadPanel';
 import type { Channel, Message, Role, ThreadSummary, User } from './types';
 
@@ -40,6 +49,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
     // Conta excluída: as mensagens dela somem da tela também.
     const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
     const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
+    const onReaction = (update: ReactionUpdate) => setMessages((list) => applyReactionUpdate(list, update));
     const onThread = (thread: ThreadSummary) => {
       if (thread.channelId === channel.id) setMessages((list) => applyThread(list, thread));
     };
@@ -51,6 +61,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
     socket.on('message:deleted', onDeleted);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
+    socket.on('reaction:updated', onReaction);
     socket.on('thread:created', onThread);
     socket.on('thread:updated', onThread);
     socket.on('thread:deleted', onThreadDeleted);
@@ -59,6 +70,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
       socket.off('message:deleted', onDeleted);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);
+      socket.off('reaction:updated', onReaction);
       socket.off('thread:created', onThread);
       socket.off('thread:updated', onThread);
       socket.off('thread:deleted', onThreadDeleted);
@@ -158,6 +170,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
                 canManagePoll={canManage(message)}
                 onDelete={requestDelete}
                 onPollChange={(poll) => setMessages((list) => replacePoll(list, poll))}
+                onReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}
                 onOpenThread={setOpenThread}
                 onCreateThread={setThreadFor}
               />
@@ -192,6 +205,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
           role={role}
           onClose={() => setOpenThread(null)}
           onDeleteMessage={requestDelete}
+          onParentReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}
         />
       )}
 

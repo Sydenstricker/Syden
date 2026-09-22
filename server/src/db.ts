@@ -110,6 +110,14 @@ export interface ThreadSummary {
   lastAt: string | null;
 }
 
+/** Uma reação (👍, ❤️, ou :nome: de um emoji da comunidade) e quantos marcaram. */
+export interface Reaction {
+  emoji: string;
+  count: number;
+  /** Se quem está lendo reagiu com este emoji. */
+  mine: boolean;
+}
+
 export interface Message {
   id: number;
   channelId: number;
@@ -122,6 +130,7 @@ export interface Message {
   poll: Poll | null;
   /** O tópico que pendura nesta mensagem, quando alguém criou um. */
   thread: ThreadSummary | null;
+  reactions: Reaction[];
 }
 
 const db = new DatabaseSync(config.databasePath);
@@ -300,6 +309,17 @@ db.exec(`
     created_by        INTEGER,
     created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
+
+  -- Reação numa mensagem: "emoji" é um caractere Unicode ou ":nome:" de um emoji da comunidade.
+  -- Cada pessoa reage no máximo uma vez com o mesmo emoji na mesma mensagem.
+  CREATE TABLE IF NOT EXISTS message_reactions (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    emoji      TEXT NOT NULL,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (message_id, emoji, user_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_reactions_message ON message_reactions(message_id, id);
 `);
 
 // Colunas que chegaram depois da primeira versão: bancos antigos ganham elas na inicialização.
@@ -800,6 +820,7 @@ function toMessage(row: MessageRow): Message {
     attachments: [],
     poll: null,
     thread: null,
+    reactions: [],
   };
 }
 
@@ -850,6 +871,17 @@ function hydrate(messages: Message[], viewerId: number): Message[] {
       };
     }
   }
+
+  const reactionRows = db
+    .prepare(
+      `SELECT message_id AS messageId, emoji, COUNT(*) AS count, MAX(CASE WHEN user_id = ? THEN 1 ELSE 0 END) AS mine
+       FROM message_reactions WHERE message_id IN (${ids}) GROUP BY message_id, emoji ORDER BY MIN(id)`,
+    )
+    .all(viewerId) as unknown as { messageId: number; emoji: string; count: number; mine: number }[];
+  for (const row of reactionRows) {
+    byId.get(row.messageId)?.reactions.push({ emoji: row.emoji, count: row.count, mine: row.mine === 1 });
+  }
+
   return messages;
 }
 
@@ -1183,4 +1215,35 @@ export function createMessage(channelId: number, userId: number, content: string
     .run(channelId, userId, content, threadId);
   const row = db.prepare(`${messageSelect} WHERE m.id = ?`).get(result.lastInsertRowid) as unknown as MessageRow;
   return toMessage(row);
+}
+
+// ---------- Reações ----------
+
+/** Marca ou desmarca a reação; devolve se ficou marcada (true) ou foi tirada (false). */
+export function toggleReaction(messageId: number, emoji: string, userId: number): boolean {
+  const had = db.prepare('SELECT 1 FROM message_reactions WHERE message_id = ? AND emoji = ? AND user_id = ?').get(messageId, emoji, userId);
+  if (had) {
+    db.prepare('DELETE FROM message_reactions WHERE message_id = ? AND emoji = ? AND user_id = ?').run(messageId, emoji, userId);
+    return false;
+  }
+  db.prepare('INSERT INTO message_reactions (message_id, emoji, user_id) VALUES (?, ?, ?)').run(messageId, emoji, userId);
+  return true;
+}
+
+/** As reações de uma mensagem, já sabendo o que `viewerId` marcou — para responder a quem acabou de agir. */
+export function reactionsForMessage(messageId: number, viewerId: number): Reaction[] {
+  const rows = db
+    .prepare(
+      `SELECT emoji, COUNT(*) AS count, MAX(CASE WHEN user_id = ? THEN 1 ELSE 0 END) AS mine
+       FROM message_reactions WHERE message_id = ? GROUP BY emoji ORDER BY MIN(id)`,
+    )
+    .all(viewerId, messageId) as unknown as { emoji: string; count: number; mine: number }[];
+  return rows.map((r) => ({ emoji: r.emoji, count: r.count, mine: r.mine === 1 }));
+}
+
+/** Só as contagens, sem "mine": é o que vai para todo mundo — quem marcou o quê fica só com cada um. */
+export function reactionCounts(messageId: number): { emoji: string; count: number }[] {
+  return db
+    .prepare('SELECT emoji, COUNT(*) AS count FROM message_reactions WHERE message_id = ? GROUP BY emoji ORDER BY MIN(id)')
+    .all(messageId) as unknown as { emoji: string; count: number }[];
 }

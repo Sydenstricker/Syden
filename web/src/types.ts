@@ -83,6 +83,14 @@ export interface Poll {
   voters: number;
 }
 
+/** Uma reação (emoji comum ou :nome: de um emoji da comunidade) e quantos marcaram. */
+export interface Reaction {
+  emoji: string;
+  count: number;
+  /** Se você reagiu com este emoji. */
+  mine: boolean;
+}
+
 /** Um tópico pendurado numa mensagem: conversa à parte, sem atravessar o canal. */
 export interface ThreadSummary {
   id: number;
@@ -104,6 +112,7 @@ export interface Message {
   attachments: Attachment[];
   poll: Poll | null;
   thread: ThreadSummary | null;
+  reactions: Reaction[];
 }
 
 export interface VoiceMember {

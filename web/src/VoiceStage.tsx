@@ -19,21 +19,23 @@ import {
   Maximize,
   Mic,
   MicOff,
-  Monitor,
-  MonitorOff,
   PhoneOff,
+  Plus,
   Video,
   VideoOff,
   Volume2,
   VolumeX,
 } from 'lucide-react';
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import { api } from './api';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
+import { IconButton } from './IconButton';
 import { QualityAdvisor } from './QualityAdvisor';
-import { IconButton } from './Sidebar';
+import { ScreenShareButton } from './ScreenShareButton';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
+import { prepareSound } from './upload';
 import { getScreenVolume, setScreenVolume } from './voiceVolumes';
 import type { Channel, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -59,7 +61,7 @@ export function VoiceStage({ channel, voice, members }: { channel: Channel; voic
         <Volume2 size={22} className="muted-icon" /> {channel.name}
       </header>
       {inThisRoom ? (
-        <Stage voice={voice} members={members} />
+        <Stage voice={voice} members={members} communityId={channel.communityId} />
       ) : (
         <div className="voice-lobby">
           <div className="voice-lobby-avatars">
@@ -98,13 +100,21 @@ function PersonTile({
   const cameraMuted = useIsMuted(trackRef);
   const name = trackRef.participant.name || trackRef.participant.identity;
 
+  const hasVideo = isTrackReference(trackRef) && !cameraMuted;
+
   return (
     <ParticipantTile trackRef={trackRef}>
-      {isTrackReference(trackRef) && !cameraMuted ? (
+      {hasVideo ? (
         <VideoTrack trackRef={trackRef} />
       ) : (
         <div className="tile-avatar">
           <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} />
+        </div>
+      )}
+      {/* Mesma informação de formato da transmissão, só que discreta: aparece ao passar o mouse. */}
+      {hasVideo && (
+        <div className="tile-info">
+          <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
         </div>
       )}
       <div className="tile-name">
@@ -121,13 +131,14 @@ function PersonTile({
 }
 
 /** Painel do soundboard: clicar num som toca para todos na sala. */
-function Soundboard({ voice, onClose }: { voice: Voice; onClose: () => void }) {
+function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId: number; onClose: () => void }) {
   const { sounds } = useDirectory();
   const settings = useSettings();
   const ref = useRef<HTMLDivElement>(null);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && !adding && onClose();
     const onPointer = (event: PointerEvent) => {
       // Fecha ao clicar fora (o próprio botão do soundboard fica fora, mas ele mesmo alterna).
       if (!ref.current?.parentElement?.contains(event.target as Node)) onClose();
@@ -138,7 +149,7 @@ function Soundboard({ voice, onClose }: { voice: Voice; onClose: () => void }) {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('pointerdown', onPointer);
     };
-  }, [onClose]);
+  }, [onClose, adding]);
 
   return (
     <div className="soundboard" ref={ref} role="dialog" aria-label="Soundboard">
@@ -156,18 +167,91 @@ function Soundboard({ voice, onClose }: { voice: Voice; onClose: () => void }) {
           onChange={(e) => updateSettings({ soundboardVolume: Number(e.target.value) })}
         />
       </label>
-      {sounds.length === 0 ? (
-        <p className="soundboard-empty">Nenhum som ainda. Adicione em Configurações → Soundboard.</p>
-      ) : (
-        <div className="soundboard-grid">
-          {sounds.map((sound) => (
-            <button key={sound.id} className="soundboard-sound" onClick={() => void voice.playSound(sound.id)}>
-              <span className="soundboard-icon">{sound.icon}</span>
-              <span className="soundboard-name">{sound.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {sounds.length === 0 && !adding && <p className="soundboard-empty">Nenhum som ainda. Adicione um abaixo.</p>}
+      <div className="soundboard-grid">
+        {sounds.map((sound) => (
+          <button key={sound.id} className="soundboard-sound" onClick={() => void voice.playSound(sound.id)}>
+            <span className="soundboard-icon">{sound.icon}</span>
+            <span className="soundboard-name">{sound.name}</span>
+          </button>
+        ))}
+        {!adding && (
+          <button className="soundboard-sound soundboard-add" onClick={() => setAdding(true)} title="Adicionar som">
+            <span className="soundboard-icon">
+              <Plus size={20} />
+            </span>
+            <span className="soundboard-name">Adicionar</span>
+          </button>
+        )}
+      </div>
+      {adding && <SoundboardAddForm communityId={communityId} onDone={() => setAdding(false)} />}
+    </div>
+  );
+}
+
+/** Formulário compacto para gravar um som novo sem sair da chamada, direto no painel do soundboard. */
+function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDone: () => void }) {
+  const [file, setFile] = useState<File | null>(null);
+  const [audio, setAudio] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState('🔊');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function choose(chosen: File) {
+    setError(null);
+    try {
+      setAudio(await prepareSound(chosen, 1024 * 1024));
+      setFile(chosen);
+      if (!name) setName(chosen.name.replace(/\.[^.]+$/, '').slice(0, 32));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function submit() {
+    if (!audio || !name.trim()) return;
+    setBusy(true);
+    try {
+      await api(`/api/communities/${communityId}/sounds`, { method: 'POST', body: { name, icon, audio } });
+      onDone();
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="soundboard-add-form">
+      <label className="soundboard-file file-picker btn-secondary">
+        {file ? file.name : 'Escolher áudio'}
+        <input
+          type="file"
+          accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,.mp3,.ogg,.wav"
+          hidden
+          onChange={(e) => e.target.files?.[0] && void choose(e.target.files[0])}
+        />
+      </label>
+      <div className="soundboard-add-row">
+        <input className="soundboard-add-icon" value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} aria-label="Ícone" />
+        <input
+          className="soundboard-add-name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nome do som"
+          aria-label="Nome do som"
+          maxLength={32}
+        />
+      </div>
+      {error && <p className="form-error small">{error}</p>}
+      <div className="soundboard-add-actions">
+        <button className="link-button" onClick={onDone}>
+          Cancelar
+        </button>
+        <button className="btn-primary" disabled={!audio || !name.trim() || busy} onClick={() => void submit()}>
+          {busy ? 'Enviando…' : 'Enviar som'}
+        </button>
+      </div>
     </div>
   );
 }
@@ -282,7 +366,7 @@ function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPl
   );
 }
 
-function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
+function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMember[]; communityId: number }) {
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -360,6 +444,12 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
 
       <QualityAdvisor voice={voice} />
 
+      {voice.mutedWarning && (
+        <div className="muted-warning" role="status">
+          <MicOff size={16} /> Você está silenciado!
+        </div>
+      )}
+
       <StartAudio label="Clique para ativar o áudio" className="start-audio" />
 
       <div className="stage-controls">
@@ -376,13 +466,7 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
         <IconButton label={voice.media.video ? 'Desligar câmera' : 'Ligar câmera'} active={voice.media.video} onClick={voice.toggleCamera}>
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
-        <IconButton
-          label={voice.media.screen ? 'Parar de compartilhar' : 'Compartilhar tela'}
-          active={voice.media.screen}
-          onClick={voice.toggleScreen}
-        >
-          {voice.media.screen ? <MonitorOff /> : <Monitor />}
-        </IconButton>
+        <ScreenShareButton voice={voice} />
         {screens.length > 1 && (
           <IconButton
             label={split ? 'Focar em uma transmissão' : `Ver as ${screens.length} transmissões lado a lado`}
@@ -396,7 +480,7 @@ function Stage({ voice, members }: { voice: Voice; members: VoiceMember[] }) {
           <IconButton label="Soundboard" active={soundboardOpen} onClick={() => setSoundboardOpen(!soundboardOpen)}>
             <AudioLines />
           </IconButton>
-          {soundboardOpen && <Soundboard voice={voice} onClose={() => setSoundboardOpen(false)} />}
+          {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
         </div>
         <button className="leave-button" title="Desconectar" onClick={voice.leave}>
           <PhoneOff />

@@ -63,6 +63,11 @@ function createMainWindow() {
     icon: ICON,
     backgroundColor: '#313338',
     show: false,
+    // Barra de título escura, como o resto do app (o padrão do Windows desenha uma clara). Os botões de
+    // minimizar/maximizar/fechar continuam nativos, só a cor muda; quem desenha o texto é o próprio site
+    // (ver .desktop-titlebar), numa faixa arrastável do tamanho de "height" aqui embaixo.
+    titleBarStyle: 'hidden',
+    titleBarOverlay: { color: '#1e1f22', symbolColor: '#dbdee1', height: 36 },
     webPreferences: {
       contextIsolation: true,
       sandbox: true,
