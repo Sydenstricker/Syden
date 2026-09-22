@@ -5,6 +5,7 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
+import { MobileBackButton } from './MobileBackButton';
 import {
   applyReactionUpdate,
   applyTally,
@@ -21,7 +22,20 @@ import type { Channel, Message, Role, ThreadSummary, User } from './types';
 const PAGE_SIZE = 50;
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
-export function TextChannel({ channel, socket, user, role }: { channel: Channel; socket: Socket; user: User; role: Role }) {
+export function TextChannel({
+  channel,
+  socket,
+  user,
+  role,
+  onMobileBack,
+}: {
+  channel: Channel;
+  socket: Socket;
+  user: User;
+  role: Role;
+  /** Tela estreita: volta para a lista de canais. */
+  onMobileBack: () => void;
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -129,6 +143,7 @@ export function TextChannel({ channel, socket, user, role }: { channel: Channel;
         }}
       >
         <header className="main-header">
+          <MobileBackButton onBack={onMobileBack} />
           <Hash size={22} className="muted-icon" /> {channel.name}
         </header>
 

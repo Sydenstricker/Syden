@@ -2,6 +2,7 @@ import { AlertOctagon, AlertTriangle, BarChart3, CheckCircle2 } from 'lucide-rea
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { HealthPanel } from './HealthPanel';
+import { MobileBackButton } from './MobileBackButton';
 import type { Traffic, UsageSummary, VoiceMember } from './types';
 
 const REFRESH_MS = 60_000;
@@ -23,7 +24,14 @@ function splitTraffic(voiceSeconds: number, screenSeconds: number, totalBytes: n
   return { voiceBytes: totalBytes * (1 - screenShare), screenBytes: totalBytes * screenShare, screenShare };
 }
 
-export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }) {
+export function UsageDashboard({
+  voiceMembers,
+  onMobileBack,
+}: {
+  voiceMembers: VoiceMember[];
+  /** Tela estreita: volta para a lista de canais. */
+  onMobileBack: () => void;
+}) {
   const [tab, setTab] = useState<'consumo' | 'saude'>('consumo');
   const [usage, setUsage] = useState<UsageSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,6 +67,7 @@ export function UsageDashboard({ voiceMembers }: { voiceMembers: VoiceMember[] }
   return (
     <div className="usage">
       <header className="main-header">
+        <MobileBackButton onBack={onMobileBack} />
         <BarChart3 size={22} className="muted-icon" /> Uso do servidor
         <div className="tab-row" role="tablist" aria-label="Painéis do servidor">
           <button role="tab" aria-selected={tab === 'consumo'} className={`tab${tab === 'consumo' ? ' active' : ''}`} onClick={() => setTab('consumo')}>

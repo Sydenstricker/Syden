@@ -31,6 +31,7 @@ import { api } from './api';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import { IconButton } from './IconButton';
+import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
 import { ScreenShareButton } from './ScreenShareButton';
 import { updateSettings, useSettings } from './settings';
@@ -52,12 +53,24 @@ function cardSize(count: number) {
   return { width: 180, avatar: 56 };
 }
 
-export function VoiceStage({ channel, voice, members }: { channel: Channel; voice: Voice; members: VoiceMember[] }) {
+export function VoiceStage({
+  channel,
+  voice,
+  members,
+  onMobileBack,
+}: {
+  channel: Channel;
+  voice: Voice;
+  members: VoiceMember[];
+  /** Tela estreita: volta para a lista de canais. */
+  onMobileBack: () => void;
+}) {
   const inThisRoom = voice.channelId === channel.id;
 
   return (
     <div className="voice-stage">
       <header className="main-header">
+        <MobileBackButton onBack={onMobileBack} />
         <Volume2 size={22} className="muted-icon" /> {channel.name}
       </header>
       {inThisRoom ? (

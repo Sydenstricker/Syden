@@ -70,6 +70,9 @@ export function Shell({
   const [voiceByCommunity, setVoiceByCommunity] = useState<Record<number, VoiceMember[]>>({});
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showUsage, setShowUsage] = useState(false);
+  // Em tela estreita só cabe uma coluna por vez: esta decide se é a lista de canais ou a conversa/chamada
+  // que aparece. Em tela larga (a maioria) isto não muda nada — as duas colunas aparecem sempre.
+  const [mobileChannels, setMobileChannels] = useState(true);
   const voice = useVoice(socket);
   const onLogoutRef = useRef(onLogout);
   onLogoutRef.current = onLogout;
@@ -152,6 +155,7 @@ export function Shell({
     s.on('voice:move', ({ channelId: to }: { channelId: number }) => {
       setSelectedId(to);
       setShowUsage(false);
+      setMobileChannels(false);
       void voiceRef.current.join(to);
     });
     // Removido (ou saiu por outra aba) de uma comunidade: ela some da coluna.
@@ -180,6 +184,7 @@ export function Shell({
       return;
     }
     setShowUsage(false);
+    setMobileChannels(true); // troca de comunidade: mostra a lista de canais dela, não a conversa da anterior
     loadDirectory(communityId).catch(console.error);
     api<Channel[]>(`/api/communities/${communityId}/channels`).then((list) => {
       if (openCommunityRef.current !== communityId) return; // trocou de comunidade enquanto carregava
@@ -217,6 +222,7 @@ export function Shell({
         desktopBridge?.focus();
         window.focus();
         setShowUsage(false);
+        setMobileChannels(false);
         setCommunityId(message.communityId);
         setSelectedId(message.channelId);
         notification.close();
@@ -254,6 +260,7 @@ export function Shell({
   function selectChannel(channel: Channel) {
     setShowUsage(false);
     setSelectedId(channel.id);
+    setMobileChannels(false);
     if (channel.type === 'voice') void voice.join(channel.id);
   }
 
@@ -270,7 +277,7 @@ export function Shell({
 
   return (
     <RoomContext.Provider value={voice.room}>
-      <div className="app">
+      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}`}>
         <CommunityRail
           communities={communities}
           currentId={communityId}
@@ -287,7 +294,10 @@ export function Shell({
             voiceMembers={voiceMembers}
             voice={voice}
             onSelect={selectChannel}
-            onOpenUsage={() => setShowUsage(true)}
+            onOpenUsage={() => {
+              setShowUsage(true);
+              setMobileChannels(false);
+            }}
             onOpenSettings={() => setSettingsOpen(true)}
           />
         ) : (
@@ -305,15 +315,25 @@ export function Shell({
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
-          {selected?.type === 'text' && socket && <TextChannel key={selected.id} channel={selected} socket={socket} user={user} role={community?.role ?? 'member'} />}
+          {selected?.type === 'text' && socket && (
+            <TextChannel
+              key={selected.id}
+              channel={selected}
+              socket={socket}
+              user={user}
+              role={community?.role ?? 'member'}
+              onMobileBack={() => setMobileChannels(true)}
+            />
+          )}
           {selected?.type === 'voice' && (
             <VoiceStage
               channel={selected}
               voice={voice}
               members={voiceMembers.filter((m) => m.channelId === selected.id)}
+              onMobileBack={() => setMobileChannels(true)}
             />
           )}
-          {usageOpen && <UsageDashboard voiceMembers={voiceMembers} />}
+          {usageOpen && <UsageDashboard voiceMembers={voiceMembers} onMobileBack={() => setMobileChannels(true)} />}
           {community && !selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
         </main>
         {selected?.type === 'text' && (

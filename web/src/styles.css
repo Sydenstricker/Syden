@@ -3184,17 +3184,55 @@ textarea {
 
 /* ---------- Telas pequenas ---------- */
 
+/* Seta de "voltar aos canais": só existe em tela estreita (ver @media abaixo). */
+.mobile-back {
+  display: none;
+  border: none;
+  background: none;
+}
+
 @media (max-width: 900px) {
   .members {
     display: none;
   }
 }
 
-@media (max-width: 640px) {
-  .sidebar {
-    width: 200px;
+/* Abaixo disso, a barra de canais e a conversa não cabem lado a lado: mostra uma coisa de cada vez,
+   com a coluna de comunidades (ícones) sempre visível — Shell.tsx decide qual das duas aparece
+   (classe .mobile-channels ou .mobile-main em .app) e MobileBackButton.tsx volta de uma para a outra. */
+@media (max-width: 760px) {
+  .mobile-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: var(--text-muted);
   }
 
+  .mobile-back:hover {
+    background: var(--bg-hover);
+    color: var(--text-strong);
+  }
+
+  .app.mobile-channels .main {
+    display: none;
+  }
+
+  .app.mobile-main .sidebar {
+    display: none;
+  }
+
+  .app.mobile-channels .sidebar,
+  .app.mobile-channels .no-community {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
   .stage {
     padding: 8px;
   }
