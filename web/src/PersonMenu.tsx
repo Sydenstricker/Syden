@@ -1,4 +1,4 @@
-import { MicOff, PhoneOff, ShieldOff, ShieldPlus, Volume2, VolumeX } from 'lucide-react';
+import { MicOff, MonitorPlay, PhoneOff, ShieldOff, ShieldPlus, Volume2, VolumeX } from 'lucide-react';
 import { type MouseEvent, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
@@ -30,8 +30,10 @@ export function PersonMenu({
   communityId,
   channels,
   inVoiceChannel,
+  targetScreen,
   targetRole,
   isSelf,
+  onWatchStream,
 }: {
   target: { userId: number; username: string; x: number; y: number };
   onClose: () => void;
@@ -44,8 +46,12 @@ export function PersonMenu({
   channels: Channel[];
   /** A sala em que a PESSOA está, ou null se ela não está em chamada. */
   inVoiceChannel: number | null;
+  /** Se a pessoa está transmitindo a tela agora. */
+  targetScreen: boolean;
   targetRole: Role;
   isSelf: boolean;
+  /** Abre a sala da pessoa na tela (não só conecta por baixo) — usado por "Assistir transmissão". */
+  onWatchStream: (channelId: number) => void;
 }) {
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
   const [muted, setMuted] = useState(() => isLocallyMuted(target.userId));
@@ -94,6 +100,18 @@ export function PersonMenu({
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="person-menu-name">{target.username}</div>
+
+      {!isSelf && targetScreen && inVoiceChannel !== null && (
+        <button
+          className="person-menu-item"
+          onClick={() => {
+            onWatchStream(inVoiceChannel);
+            onClose();
+          }}
+        >
+          <MonitorPlay size={16} /> Assistir transmissão
+        </button>
+      )}
 
       {!isSelf && (
         <>

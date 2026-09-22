@@ -2928,6 +2928,12 @@ textarea {
   color: #fff;
 }
 
+.person-menu-item.active {
+  background: var(--bg-active);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
 .screenshare-anchor {
   position: relative;
 }

@@ -9,6 +9,16 @@ export interface User {
 
 export type UserRef = Pick<User, 'id' | 'username'>;
 
+/** Status de presença, como no Discord. "invisivel" faz a pessoa aparecer offline para os outros. */
+export type PresenceStatus = 'online' | 'ausente' | 'ocupado' | 'invisivel';
+
+/** O que a lista de presença traz de cada pessoa conectada. */
+export interface PresenceEntry {
+  id: number;
+  username: string;
+  status: PresenceStatus;
+}
+
 export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner'>;
 
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */

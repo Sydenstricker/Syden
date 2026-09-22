@@ -5,6 +5,12 @@ import * as db from './db.js';
 /** Sala do socket com todo mundo que participa de uma comunidade. */
 export const communityRoom = (communityId: number) => `community:${communityId}`;
 
+/** Status de presença, como no Discord. "invisivel" faz o cliente tratar a pessoa como offline (ver
+ * web/src/MemberList.tsx) — a marcação em si é só de boa-fé, não é escondida de verdade no servidor. */
+export type PresenceStatus = 'online' | 'ausente' | 'ocupado' | 'invisivel';
+const PRESENCE_STATUSES: PresenceStatus[] = ['online', 'ausente', 'ocupado', 'invisivel'];
+const isPresenceStatus = (value: unknown): value is PresenceStatus => PRESENCE_STATUSES.includes(value as PresenceStatus);
+
 /** O que aparece na barra lateral sob cada sala de voz. */
 export interface VoiceMember {
   userId: number;
@@ -28,7 +34,7 @@ interface VoiceSession extends VoiceMember {
 // Estado em memória: suficiente para uma instância. Para rodar várias instâncias do servidor,
 // isto passa para o Redis (junto com o @socket.io/redis-adapter).
 const voiceMembers = new Map<number, VoiceSession>();
-const onlineSockets = new Map<number, { username: string; sockets: Set<string> }>();
+const onlineSockets = new Map<number, { username: string; sockets: Set<string>; status: PresenceStatus }>();
 
 const USAGE_HEARTBEAT_MS = 60_000;
 
@@ -94,8 +100,8 @@ export function disconnectUser(io: IOServer, userId: number) {
   io.emit('presence', onlineUsers());
 }
 
-function onlineUsers(): db.UserRef[] {
-  return [...onlineSockets.entries()].map(([id, { username }]) => ({ id, username }));
+function onlineUsers(): (db.UserRef & { status: PresenceStatus })[] {
+  return [...onlineSockets.entries()].map(([id, { username, status }]) => ({ id, username, status }));
 }
 
 export function setupRealtime(io: IOServer) {
@@ -114,7 +120,8 @@ export function setupRealtime(io: IOServer) {
   io.on('connection', (socket: Socket) => {
     const user = socket.data.user as db.User;
 
-    const online = onlineSockets.get(user.id) ?? { username: user.username, sockets: new Set<string>() };
+    // Nova aba de quem já estava online mantém o status escolhido; a primeira conexão começa "online".
+    const online = onlineSockets.get(user.id) ?? { username: user.username, sockets: new Set<string>(), status: 'online' as PresenceStatus };
     online.sockets.add(socket.id);
     onlineSockets.set(user.id, online);
     io.emit('presence', onlineUsers());
@@ -125,6 +132,15 @@ export function setupRealtime(io: IOServer) {
       socket.join(communityRoom(id));
       socket.emit('voice:state', { communityId: id, members: voiceState(id) });
     }
+
+    // Ocupado, ausente, invisível... como no Discord. Vale para a pessoa (todas as abas dela juntas).
+    socket.on('presence:set', (status: unknown) => {
+      if (!isPresenceStatus(status)) return;
+      const entry = onlineSockets.get(user.id);
+      if (!entry) return;
+      entry.status = status;
+      io.emit('presence', onlineUsers());
+    });
 
     socket.on('message:send', (payload: { channelId?: number; content?: string; threadId?: number }, ack?: Ack) => {
       const content = String(payload?.content ?? '').trim();

@@ -8,11 +8,12 @@ import { desktopBridge } from './desktop';
 import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { MemberList } from './MemberList';
+import { loadMyStatus, saveMyStatus } from './presenceStatus';
 import { getSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import { SettingsModal } from './SettingsModal';
-import type { Channel, Community, Message, User, UserRef, VoiceMember } from './types';
+import type { Channel, Community, Message, PresenceEntry, PresenceStatus, User, VoiceMember } from './types';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
@@ -65,7 +66,7 @@ export function Shell({
   const [loadingCommunities, setLoadingCommunities] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [presence, setPresence] = useState<UserRef[]>([]);
+  const [presence, setPresence] = useState<PresenceEntry[]>([]);
   // Quem está em chamada, por comunidade: a barra lateral só mostra a da comunidade aberta.
   const [voiceByCommunity, setVoiceByCommunity] = useState<Record<number, VoiceMember[]>>({});
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -82,6 +83,12 @@ export function Shell({
   const community = communities.find((c) => c.id === communityId);
   const voiceMembers = communityId === null ? [] : (voiceByCommunity[communityId] ?? []);
   const onlineHere = presence.filter((p) => members.has(p.id));
+  const myStatus = presence.find((p) => p.id === user.id)?.status ?? loadMyStatus();
+
+  function setMyStatus(status: PresenceStatus) {
+    saveMyStatus(status);
+    socket?.emit('presence:set', status);
+  }
 
   const reloadCommunities = useCallback(async () => {
     const list = await api<Community[]>('/api/communities');
@@ -115,7 +122,12 @@ export function Shell({
 
   useEffect(() => {
     const s = io(API_URL, { auth: { token } });
-    s.on('connect', () => setOnline(true));
+    s.on('connect', () => {
+      setOnline(true);
+      // O servidor sempre começa te vendo como "online"; se você tinha escolhido outro status, reafirma.
+      const saved = loadMyStatus();
+      if (saved !== 'online') s.emit('presence:set', saved);
+    });
     s.on('disconnect', (reason) => {
       setOnline(false);
       // O servidor só derruba a conexão de propósito quando a conta foi excluída; nos outros casos, reconecta.
@@ -264,6 +276,12 @@ export function Shell({
     if (channel.type === 'voice') void voice.join(channel.id);
   }
 
+  /** "Assistir transmissão" no menu de alguém: abre a sala dela na tela, não só conecta por baixo. */
+  function watchStream(channelId: number) {
+    const channel = channels.find((c) => c.id === channelId);
+    if (channel) selectChannel(channel);
+  }
+
   function logout() {
     voice.leave();
     rememberCommunity(null);
@@ -293,6 +311,9 @@ export function Shell({
             usageActive={usageOpen}
             voiceMembers={voiceMembers}
             voice={voice}
+            myStatus={myStatus}
+            onSetStatus={setMyStatus}
+            onWatchStream={watchStream}
             onSelect={selectChannel}
             onOpenUsage={() => {
               setShowUsage(true);
@@ -337,7 +358,16 @@ export function Shell({
           {community && !selected && !usageOpen && <div className="empty">Escolha um canal à esquerda.</div>}
         </main>
         {selected?.type === 'text' && (
-          <MemberList online={onlineHere} voiceMembers={voiceMembers} channels={channels} />
+          <MemberList
+            online={onlineHere}
+            voiceMembers={voiceMembers}
+            channels={channels}
+            voice={voice}
+            role={community?.role ?? 'member'}
+            communityId={communityId ?? 0}
+            selfId={user.id}
+            onWatchStream={watchStream}
+          />
         )}
       </div>
       {settingsOpen && (

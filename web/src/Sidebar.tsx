@@ -25,7 +25,8 @@ import { LivePreview } from './LivePreview';
 import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ScreenShareButton } from './ScreenShareButton';
-import type { Channel, Community, User, VoiceMember } from './types';
+import { StatusMenu, useStatusMenu } from './StatusMenu';
+import type { Channel, Community, PresenceStatus, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
 interface Props {
@@ -36,6 +37,10 @@ interface Props {
   voiceMembers: VoiceMember[];
   voice: Voice;
   usageActive: boolean;
+  myStatus: PresenceStatus;
+  onSetStatus: (status: PresenceStatus) => void;
+  /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
+  onWatchStream: (channelId: number) => void;
   onSelect: (channel: Channel) => void;
   onOpenUsage: () => void;
   onOpenSettings: () => void;
@@ -49,6 +54,9 @@ export function Sidebar({
   usageActive,
   voiceMembers,
   voice,
+  myStatus,
+  onSetStatus,
+  onWatchStream,
   onSelect,
   onOpenUsage,
   onOpenSettings,
@@ -57,6 +65,7 @@ export function Sidebar({
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
   const [deleting, setDeleting] = useState<Channel | null>(null);
+  const statusMenu = useStatusMenu();
   const menu = usePersonMenu();
   const { members } = useDirectory();
 
@@ -147,7 +156,9 @@ export function Sidebar({
       {voice.connecting && <div className="voice-panel voice-panel-status">Conectando…</div>}
 
       <div className="user-panel">
-        <Avatar name={user.username} userId={user.id} online />
+        <span onContextMenu={statusMenu.onOpen} title="Botão direito para mudar o status">
+          <Avatar name={user.username} userId={user.id} online status={myStatus} />
+        </span>
         <span className="user-panel-name">{user.username}</span>
         <div className="icon-row">
           <IconButton
@@ -183,9 +194,14 @@ export function Sidebar({
           communityId={community.id}
           channels={channels}
           inVoiceChannel={voiceMembers.find((m) => m.userId === menu.target!.userId)?.channelId ?? null}
+          targetScreen={voiceMembers.find((m) => m.userId === menu.target!.userId)?.screen ?? false}
           targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === user.id}
+          onWatchStream={onWatchStream}
         />
+      )}
+      {statusMenu.open && (
+        <StatusMenu x={statusMenu.open.x} y={statusMenu.open.y} current={myStatus} onChoose={onSetStatus} onClose={statusMenu.close} />
       )}
     </nav>
   );
