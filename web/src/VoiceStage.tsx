@@ -23,6 +23,7 @@ import {
   Plus,
   Square,
   Star,
+  Users,
   Video,
   VideoOff,
   Volume2,
@@ -62,12 +63,17 @@ export function VoiceStage({
   voice,
   members,
   onMobileBack,
+  membersOpen,
+  onToggleMembers,
 }: {
   channel: Channel;
   voice: Voice;
   members: VoiceMember[];
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
+  /** A lista de pessoas da comunidade está aberta à direita? */
+  membersOpen: boolean;
+  onToggleMembers: () => void;
 }) {
   const inThisRoom = voice.channelId === channel.id;
 
@@ -76,6 +82,16 @@ export function VoiceStage({
       <header className="main-header">
         <MobileBackButton onBack={onMobileBack} />
         <Volume2 size={22} className="muted-icon" /> {channel.name}
+        {/* Transmissão ocupa a tela toda; por isso dá para esconder a lista de pessoas e trazer de volta. */}
+        <button
+          className={`header-toggle${membersOpen ? ' active' : ''}`}
+          title={membersOpen ? 'Esconder a lista de pessoas' : 'Mostrar a lista de pessoas'}
+          aria-label={membersOpen ? 'Esconder a lista de pessoas' : 'Mostrar a lista de pessoas'}
+          aria-pressed={membersOpen}
+          onClick={onToggleMembers}
+        >
+          <Users size={20} />
+        </button>
       </header>
       {/* Sala de voz sempre pertence a uma comunidade (conversa privada não tem voz por enquanto). */}
       {inThisRoom ? (

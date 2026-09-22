@@ -18,6 +18,7 @@ import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard } from './soundboard';
 import { applyAllVolumes } from './voiceVolumes';
+import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
 import { sounds } from './sounds';
 
@@ -48,6 +49,9 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
   standard: { contentHint: 'detail', degradation: 'balanced' },
   smooth: { contentHint: 'motion', degradation: 'maintain-framerate' },
 };
+
+// De quanto em quanto tempo a otimização dinâmica confere como a transmissão está indo.
+const SCREEN_CHECK_MS = 4000;
 
 const SOUNDBOARD_TOPIC = 'soundboard';
 const SEND_COOLDOWN_MS = 1500;
@@ -507,6 +511,56 @@ export function useVoice(socket: Socket | null) {
     },
     [room],
   );
+
+  /**
+   * Otimização dinâmica da transmissão. Quando falta processador ou banda, o navegador sozinho costuma
+   * segurar o tamanho da imagem e deixar os quadros despencarem — o contrário do que quem assiste a um
+   * jogo quer. Este efeito mede a transmissão de quatro em quatro segundos e, pela regra de nextQuality,
+   * encolhe a imagem para segurar a fluidez (ou devolve a nitidez quando sobra folga).
+   *
+   * Não vale para a qualidade "Leve", onde a pessoa pediu nitidez de propósito.
+   */
+  useEffect(() => {
+    if (!media.screen || getSettings().screenQuality === 'light') return;
+    let quality: AutoQuality = { step: 0, comfortable: 0 };
+    let base: (number | undefined)[] | null = null;
+    let busy = false;
+
+    const check = async () => {
+      if (busy) return;
+      const sender = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack?.sender;
+      if (!sender) return;
+      busy = true;
+      try {
+        let fps = 0;
+        let limitedBy: StreamStats['limitedBy'] = 'none';
+        (await sender.getStats()).forEach((entry: Record<string, unknown>) => {
+          if (entry.type !== 'outbound-rtp' || entry.kind !== 'video') return;
+          fps = Math.max(fps, Number(entry.framesPerSecond ?? 0));
+          const reason = String(entry.qualityLimitationReason ?? 'none');
+          if (reason === 'cpu' || reason === 'bandwidth') limitedBy = reason;
+        });
+
+        const next = nextQuality(quality, { fps, limitedBy });
+        if (next.step !== quality.step) {
+          const parameters = sender.getParameters();
+          // Guarda a proporção original de cada camada: com simulcast elas já nascem em tamanhos diferentes.
+          base ??= parameters.encodings.map((encoding) => encoding.scaleResolutionDownBy);
+          parameters.degradationPreference = 'maintain-framerate';
+          parameters.encodings.forEach((encoding, index) => {
+            encoding.scaleResolutionDownBy = (base?.[index] ?? 1) * SCALE_STEPS[next.step];
+          });
+          await sender.setParameters(parameters).catch(console.error);
+        }
+        quality = next;
+      } finally {
+        busy = false;
+      }
+    };
+
+    const timer = setInterval(() => void check(), SCREEN_CHECK_MS);
+    return () => clearInterval(timer);
+  }, [media.screen, room]);
 
   // Avisa "Você está silenciado!" quando a pessoa fala com o microfone mudo, como no Discord. O LiveKit
   // para de mandar áudio ao mutar, então isto ouve um microfone à parte, só para medir o volume da voz —

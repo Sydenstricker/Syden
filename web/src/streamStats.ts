@@ -78,3 +78,40 @@ export function useStreamStats(publication: Publication | undefined, { local = f
 
   return stats;
 }
+
+// ---------- Otimização dinâmica da transmissão ----------
+
+/** Piso de quadros por segundo abaixo do qual a imagem visivelmente engasga. */
+export const FPS_FLOOR = 20;
+/** Acima disto, e com folga, dá para tentar devolver a nitidez. */
+export const FPS_COMFORT = 27;
+/** Degraus de redução da imagem: 1 = tamanho cheio, 2 = metade da largura e da altura. */
+export const SCALE_STEPS = [1, 1.5, 2, 3];
+/** Quantas medições folgadas seguidas antes de subir de novo (evita ficar subindo e descendo). */
+const PATIENCE = 3;
+
+export interface AutoQuality {
+  /** Posição em SCALE_STEPS. */
+  step: number;
+  /** Medições folgadas seguidas até agora. */
+  comfortable: number;
+}
+
+/**
+ * Decide o próximo degrau de qualidade a partir da última medição. Regra: quem assiste sente mais a
+ * imagem travando do que a imagem menor, então, quando falta processador ou banda, encolhe-se a imagem
+ * para segurar os quadros; a nitidez só volta depois de um tempo bom com folga.
+ */
+export function nextQuality(current: AutoQuality, sample: { fps: number; limitedBy: StreamStats['limitedBy'] }): AutoQuality {
+  if (sample.fps <= 0) return current; // ainda medindo, ou ninguém assistindo
+  const struggling = sample.fps < FPS_FLOOR && (sample.limitedBy === 'cpu' || sample.limitedBy === 'bandwidth');
+
+  if (struggling) {
+    return { step: Math.min(current.step + 1, SCALE_STEPS.length - 1), comfortable: 0 };
+  }
+  if (current.step > 0 && sample.fps >= FPS_COMFORT && sample.limitedBy === 'none') {
+    const comfortable = current.comfortable + 1;
+    return comfortable >= PATIENCE ? { step: current.step - 1, comfortable: 0 } : { step: current.step, comfortable };
+  }
+  return { step: current.step, comfortable: 0 };
+}

@@ -3,10 +3,12 @@ import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-clien
 // Modificador de voz: o som do microfone passa por uma cadeia de efeitos do próprio navegador antes de
 // sair para a chamada. Não custa nada (roda no computador de quem fala) e não depende de servidor.
 
-export type VoiceEffectId = 'none' | 'radio' | 'helicopter' | 'robot' | 'deep' | 'chipmunk' | 'cave';
+export type VoiceEffectId = 'none' | 'female' | 'male' | 'radio' | 'helicopter' | 'robot' | 'deep' | 'chipmunk' | 'cave';
 
 export const VOICE_EFFECTS: { id: VoiceEffectId; name: string; hint: string }[] = [
   { id: 'none', name: 'Sua voz', hint: 'Sem efeito nenhum.' },
+  { id: 'female', name: 'Voz feminina', hint: 'Tom mais alto e mais claro.' },
+  { id: 'male', name: 'Voz masculina', hint: 'Tom mais baixo e mais encorpado.' },
   { id: 'radio', name: 'Rádio de avião', hint: 'Voz espremida e chiada, como a do piloto no rádio.' },
   { id: 'helicopter', name: 'Helicóptero', hint: 'Corta a voz em batidas, como as pás girando.' },
   { id: 'robot', name: 'Robô', hint: 'Voz metálica de robô de filme antigo.' },
@@ -110,6 +112,24 @@ function pitchShift(ctx: BaseAudioContext, input: AudioNode, output: AudioNode, 
  */
 export function connectVoiceEffect(ctx: BaseAudioContext, effect: VoiceEffectId, input: AudioNode, output: AudioNode): () => void {
   switch (effect) {
+    case 'female': {
+      // Voz feminina: o tom sobe um pouco (bem menos que o esquilo) e o brilho dos agudos aumenta, que é
+      // o que o ouvido usa para reconhecer uma voz mais fina. Fica convincente em voz grave; em voz que já
+      // é aguda, soa só um pouco mais clara.
+      const body = filter(ctx, 'highpass', 160, 0.7);
+      const stop = pitchShift(ctx, input, body, 1.26);
+      chain(body, filter(ctx, 'peaking', 3800, 1.1, 5), filter(ctx, 'highshelf', 6000, 0.7, 3), gain(ctx, 0.74), output);
+      return stop;
+    }
+
+    case 'male': {
+      // Voz masculina: o caminho contrário — tom um pouco abaixo e mais corpo nos graves.
+      const body = filter(ctx, 'lowpass', 5000, 0.7);
+      const stop = pitchShift(ctx, input, body, 0.8);
+      chain(body, filter(ctx, 'lowshelf', 260, 0.7, 5), filter(ctx, 'peaking', 700, 1, 2), gain(ctx, 0.81), output);
+      return stop;
+    }
+
     case 'radio': {
       // Faixa estreita de rádio (nada de grave nem de agudo) + saturação, que é o que dá o chiado.
       const drive = ctx.createWaveShaper();

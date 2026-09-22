@@ -11,7 +11,7 @@ import { DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
 import { loadMyStatus, saveMyStatus } from './presenceStatus';
-import { getSettings } from './settings';
+import { getSettings, updateSettings, useSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import { SettingsModal } from './SettingsModal';
@@ -72,6 +72,7 @@ export function Shell({
   // Quem está em chamada, por comunidade: a barra lateral só mostra a da comunidade aberta.
   const [voiceByCommunity, setVoiceByCommunity] = useState<Record<number, VoiceMember[]>>({});
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const preferences = useSettings();
   const [showUsage, setShowUsage] = useState(false);
   // Em tela estreita só cabe uma coluna por vez: esta decide se é a lista de canais ou a conversa/chamada
   // que aparece. Em tela larga (a maioria) isto não muda nada — as duas colunas aparecem sempre.
@@ -459,6 +460,8 @@ export function Shell({
               voice={voice}
               members={voiceMembers.filter((m) => m.channelId === selected.id)}
               onMobileBack={() => setMobileChannels(true)}
+              membersOpen={preferences.showMembers}
+              onToggleMembers={() => updateSettings({ showMembers: !preferences.showMembers })}
             />
           )}
           {view === 'community' && usageOpen && (
@@ -468,7 +471,8 @@ export function Shell({
             <div className="empty">Escolha um canal à esquerda.</div>
           )}
         </main>
-        {view === 'community' && selected?.type === 'text' && (
+        {/* A lista de pessoas acompanha tanto o canal de texto quanto a sala de voz (aí, se a pessoa quiser). */}
+        {view === 'community' && (selected?.type === 'text' || (selected?.type === 'voice' && preferences.showMembers)) && (
           <MemberList
             online={onlineHere}
             voiceMembers={voiceMembers}

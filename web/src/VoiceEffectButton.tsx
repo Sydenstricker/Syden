@@ -1,4 +1,4 @@
-import { Bot, Check, Ghost, Helicopter, MicVocal, Mountain, Rabbit, Radio, Wand2 } from 'lucide-react';
+import { Bot, Check, Ghost, Helicopter, MicVocal, Mountain, Rabbit, Radio, User, UserRound, Wand2 } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { IconButton } from './IconButton';
 import type { Voice } from './useVoice';
@@ -6,6 +6,8 @@ import { VOICE_EFFECTS, type VoiceEffectId } from './voiceEffects';
 
 export const EFFECT_ICONS: Record<VoiceEffectId, ReactNode> = {
   none: <MicVocal size={16} />,
+  female: <UserRound size={16} />,
+  male: <User size={16} />,
   radio: <Radio size={16} />,
   helicopter: <Helicopter size={16} />,
   robot: <Bot size={16} />,

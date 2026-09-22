@@ -4306,3 +4306,24 @@ textarea {
     flex-direction: row;
   }
 }
+
+/* Botão do canto do cabeçalho da sala de voz: esconde e traz de volta a lista de pessoas. */
+.header-toggle {
+  margin-left: auto;
+  display: flex;
+  padding: 4px;
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.header-toggle:hover {
+  color: var(--text-strong);
+  background: var(--bg-active);
+}
+
+.header-toggle.active {
+  color: var(--text-strong);
+}
