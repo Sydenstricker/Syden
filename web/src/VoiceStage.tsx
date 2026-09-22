@@ -34,6 +34,7 @@ import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
 import { ScreenShareButton } from './ScreenShareButton';
+import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
@@ -481,6 +482,7 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         <ScreenShareButton voice={voice} />
+        <VoiceEffectButton voice={voice} />
         {screens.length > 1 && (
           <IconButton
             label={split ? 'Focar em uma transmissão' : `Ver as ${screens.length} transmissões lado a lado`}

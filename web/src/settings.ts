@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import type { VoiceEffectId } from './voiceEffects';
 
 // Preferências de cada pessoa, guardadas só neste computador (localStorage).
 
@@ -12,6 +13,8 @@ export interface Settings {
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
+  /** Modificador de voz aplicado ao microfone na chamada. */
+  voiceEffect: VoiceEffectId;
   /** Sons de entrada, saída, mudo etc. */
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
@@ -27,6 +30,7 @@ const DEFAULTS: Settings = {
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
+  voiceEffect: 'none',
   sounds: true,
   soundboardVolume: 0.6,
   notifications: true,

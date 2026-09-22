@@ -34,6 +34,8 @@ import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
+import { EFFECT_ICONS } from './VoiceEffectButton';
+import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
 type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emojis' | 'soundboard';
 
@@ -1261,6 +1263,8 @@ function VoiceSection({ voice }: { voice: Voice }) {
 
       <MicTest deviceId={settings.audioInput} />
 
+      <VoiceEffectPicker voice={voice} />
+
       {desktopBridge && (
         <>
           <h3>Teclas de atalho</h3>
@@ -1395,6 +1399,86 @@ function MicTest({ deviceId }: { deviceId: string }) {
         {error ?? (testing ? 'Fale algo: a barra deve se mexer com a sua voz.' : 'Veja se o microfone está captando a sua voz.')}
       </p>
     </div>
+  );
+}
+
+const PREVIEW_MS = 3000;
+
+/**
+ * Escolha do modificador de voz fora da chamada, com um teste: grava três segundos e toca de volta já
+ * com o efeito. Gravar e só então tocar evita o apito de microfone que daria ao se ouvir ao vivo.
+ */
+function VoiceEffectPicker({ voice }: { voice: Voice }) {
+  const settings = useSettings();
+  const [stage, setStage] = useState<'idle' | 'recording' | 'playing'>('idle');
+  const [error, setError] = useState<string | null>(null);
+
+  async function preview() {
+    setError(null);
+    let stream: MediaStream | undefined;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: settings.audioInput || undefined } });
+      setStage('recording');
+      const pieces: Blob[] = [];
+      const recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = (event) => pieces.push(event.data);
+      const recorded = new Promise<void>((resolve) => (recorder.onstop = () => resolve()));
+      recorder.start();
+      await new Promise((resolve) => setTimeout(resolve, PREVIEW_MS));
+      recorder.stop();
+      await recorded;
+      stream.getTracks().forEach((track) => track.stop());
+
+      const context = new AudioContext();
+      const audio = await context.decodeAudioData(await new Blob(pieces).arrayBuffer());
+      const source = context.createBufferSource();
+      source.buffer = audio;
+      const stopEffect = connectVoiceEffect(context, settings.voiceEffect, source, context.destination);
+      setStage('playing');
+      source.start();
+      source.onended = () => {
+        // Um instante a mais para o eco da "caverna" terminar em vez de ser cortado.
+        setTimeout(() => {
+          stopEffect();
+          void context.close();
+          setStage('idle');
+        }, 800);
+      };
+    } catch {
+      stream?.getTracks().forEach((track) => track.stop());
+      setError('Não foi possível usar o microfone para o teste.');
+      setStage('idle');
+    }
+  }
+
+  return (
+    <>
+      <h3>Modificador de voz</h3>
+      <p className="settings-hint">Muda como os outros ouvem você na chamada. Vale na hora, e você pode trocar durante a conversa.</p>
+      <div className="effect-options" role="radiogroup" aria-label="Modificador de voz">
+        {VOICE_EFFECTS.map((effect) => (
+          <label key={effect.id} className={`effect-option${settings.voiceEffect === effect.id ? ' selected' : ''}`}>
+            <input
+              type="radio"
+              name="voice-effect"
+              checked={settings.voiceEffect === effect.id}
+              onChange={() => void voice.setVoiceEffect(effect.id)}
+            />
+            <span className="effect-option-icon">{EFFECT_ICONS[effect.id]}</span>
+            <span className="effect-option-text">
+              <strong>{effect.name}</strong>
+              <small>{effect.hint}</small>
+            </span>
+          </label>
+        ))}
+      </div>
+      <div className="mic-test-row">
+        <button type="button" className="btn-secondary" disabled={stage !== 'idle'} onClick={() => void preview()}>
+          {stage === 'recording' ? 'Gravando… fale algo' : stage === 'playing' ? 'Tocando…' : 'Gravar 3 segundos e ouvir'}
+        </button>
+        <p className="settings-hint inline">{error ?? 'Grava a sua voz e toca de volta com o efeito, só para você.'}</p>
+      </div>
+    </>
   );
 }
 

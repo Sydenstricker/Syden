@@ -18,6 +18,7 @@ import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard } from './soundboard';
 import { applyAllVolumes } from './voiceVolumes';
+import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
 import { sounds } from './sounds';
 
 export interface LocalMedia {
@@ -116,6 +117,7 @@ export function useVoice(socket: Socket | null) {
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [voiceEffect, setVoiceEffectState] = useState<VoiceEffectId>(() => getSettings().voiceEffect);
   // "Você está silenciado!": true por alguns segundos quando a pessoa fala com o microfone mudo.
   const [mutedWarning, setMutedWarning] = useState(false);
 
@@ -281,6 +283,36 @@ export function useVoice(socket: Socket | null) {
     };
   }, [room]);
 
+  /**
+   * Encaixa o modificador de voz no microfone que já está na chamada. O som continua saindo do mesmo
+   * microfone: o efeito só entra no meio do caminho, antes de virar o que os outros ouvem.
+   */
+  const applyVoiceEffect = useCallback(
+    async (effect: VoiceEffectId) => {
+      const track = room.localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
+      if (!track) return;
+      await room.startAudio().catch(() => {}); // sem o áudio ligado, o navegador não deixa processar
+      if (effect === 'none') await track.stopProcessor();
+      else await track.setProcessor(new VoiceEffectProcessor(effect));
+    },
+    [room],
+  );
+
+  /** Escolhe o efeito de voz; vale na hora e fica guardado para as próximas chamadas. */
+  const setVoiceEffect = useCallback(
+    async (effect: VoiceEffectId) => {
+      updateSettings({ voiceEffect: effect });
+      setVoiceEffectState(effect);
+      try {
+        await applyVoiceEffect(effect);
+      } catch (e) {
+        console.error(e);
+        setError('Não foi possível aplicar o efeito de voz. Sua voz continua saindo normal.');
+      }
+    },
+    [applyVoiceEffect],
+  );
+
   const join = useCallback(
     async (id: number) => {
       if (channelRef.current === id || connecting || !socketRef.current) return;
@@ -310,6 +342,8 @@ export function useVoice(socket: Socket | null) {
       setConnecting(false);
       try {
         await room.localParticipant.setMicrophoneEnabled(true);
+        // O efeito escolhido da última vez volta sozinho ao entrar na sala.
+        if (getSettings().voiceEffect !== 'none') await applyVoiceEffect(getSettings().voiceEffect).catch(console.error);
       } catch (e) {
         console.error(e);
         const message = deviceErrorMessage(e, 'microfone');
@@ -317,7 +351,7 @@ export function useVoice(socket: Socket | null) {
         reportProblem('microfone', message);
       }
     },
-    [room, connecting],
+    [room, connecting, applyVoiceEffect],
   );
 
   /**
@@ -567,5 +601,7 @@ export function useVoice(socket: Socket | null) {
     setAudioProcessing,
     recentSounds,
     playSound,
+    voiceEffect,
+    setVoiceEffect,
   };
 }

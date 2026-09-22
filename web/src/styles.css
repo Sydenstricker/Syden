@@ -2934,11 +2934,14 @@ textarea {
   font-weight: 600;
 }
 
-.screenshare-anchor {
+/* Menus que saem dos botões da barra da chamada: compartilhar tela e modificador de voz. */
+.screenshare-anchor,
+.voice-effect-anchor {
   position: relative;
 }
 
-.screenshare-menu {
+.screenshare-menu,
+.voice-effect-menu {
   position: absolute;
   bottom: calc(100% + 12px);
   left: 50%;
@@ -3933,4 +3936,86 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ---------- Modificador de voz ---------- */
+
+.voice-effect-option {
+  width: 100%;
+}
+
+.voice-effect-check {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+/* A mesma escolha, nas configurações: cartões em vez de lista. */
+.effect-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.effect-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--bg-sidebar);
+  cursor: pointer;
+}
+
+.effect-option:hover {
+  background: #35373c;
+}
+
+.effect-option.selected {
+  border-color: var(--accent);
+}
+
+.effect-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.effect-option:has(input:focus-visible) {
+  outline: 2px solid #00a8fc;
+}
+
+.effect-option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+}
+
+.effect-option-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.effect-option-text strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.effect-option-text small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.settings-hint.inline {
+  margin: 0;
 }
