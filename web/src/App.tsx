@@ -52,7 +52,7 @@ export function App() {
 
   return (
     <>
-      <DesktopTitleBar />
+      <DesktopTitleBar minimal={session.status === 'loading'} />
       <div className="app-body">
         {session.status === 'loading' && (
           <div className="splash">
