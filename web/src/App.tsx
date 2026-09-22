@@ -18,20 +18,36 @@ function readInviteFromUrl(): string | null {
   return code;
 }
 
+// Tempo mínimo do splash ao abrir o app: sem isso, num servidor rápido a checagem da sessão termina antes
+// da animação (~1,3s) acabar de tocar, e ninguém chega a ver o coelho se formar.
+const SPLASH_MIN_MS = 1400;
+
 export function App() {
-  const [session, setSession] = useState<Session>(() => (loadToken() ? { status: 'loading' } : { status: 'anonymous' }));
+  const [session, setSession] = useState<Session>({ status: 'loading' });
   const [inviteCode] = useState(readInviteFromUrl);
 
   useEffect(() => {
+    let cancelled = false;
+    const minWait = new Promise((resolve) => setTimeout(resolve, SPLASH_MIN_MS));
     const token = loadToken();
-    if (!token) return;
-    api<User>('/api/me', { token })
-      .then((user) => setSession({ status: 'ready', token, user }))
-      .catch((error) => {
-        // Só descarta o token se o servidor recusou; se estiver fora do ar, tenta de novo ao recarregar.
-        if (error instanceof ApiError && error.status === 401) saveToken(null);
-        setSession({ status: 'anonymous' });
-      });
+    const auth = token
+      ? api<User>('/api/me', { token }).then(
+          (user): Session => ({ status: 'ready', token, user }),
+          (error): Session => {
+            // Só descarta o token se o servidor recusou; se estiver fora do ar, tenta de novo ao recarregar.
+            if (error instanceof ApiError && error.status === 401) saveToken(null);
+            return { status: 'anonymous' };
+          },
+        )
+      : Promise.resolve<Session>({ status: 'anonymous' });
+
+    // Sem token nenhum, não há o que esperar do servidor: só o tempo mínimo do splash mesmo.
+    Promise.all([auth, minWait]).then(([result]) => {
+      if (!cancelled) setSession(result);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
