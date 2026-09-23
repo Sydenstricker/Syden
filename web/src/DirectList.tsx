@@ -1,5 +1,6 @@
 import { MessagesSquare, Plus, Users } from 'lucide-react';
 import { Avatar } from './Avatar';
+import { isUnread } from './unread';
 import type { DirectChannel, UserRef } from './types';
 
 /** Nome que aparece na lista: o do grupo, ou o da outra pessoa numa conversa de dois. */
@@ -51,10 +52,11 @@ export function DirectList({
         {conversas.map((conversa) => {
           const face = faceOf(conversa, selfId);
           const grupo = conversa.members.length > 2;
+          const nova = isUnread(conversa) && conversa.id !== selectedId;
           return (
             <button
               key={conversa.id}
-              className={`direct-row${conversa.id === selectedId ? ' active' : ''}`}
+              className={`direct-row${conversa.id === selectedId ? ' active' : ''}${nova ? ' unread' : ''}`}
               onClick={() => onSelect(conversa)}
             >
               {grupo ? (
@@ -70,6 +72,7 @@ export function DirectList({
                   {conversa.lastMessage || (grupo ? `${conversa.members.length} pessoas` : 'Sem mensagens ainda')}
                 </span>
               </span>
+              {nova && <span className="direct-row-dot" aria-label="mensagem nova" />}
             </button>
           );
         })}
@@ -79,17 +82,17 @@ export function DirectList({
 }
 
 /** Botão do topo da coluna de comunidades que abre as conversas privadas. */
-export function DirectRailButton({ active, unread, onClick }: { active: boolean; unread: boolean; onClick: () => void }) {
+export function DirectRailButton({ active, unread, onClick }: { active: boolean; unread: number; onClick: () => void }) {
   return (
     <button
       className={`rail-item rail-action direct-rail${active ? ' active' : ''}`}
-      title="Conversas"
-      aria-label="Conversas"
+      title={unread > 0 ? `Conversas (${unread} com mensagem nova)` : 'Conversas'}
+      aria-label={unread > 0 ? `Conversas, ${unread} com mensagem nova` : 'Conversas'}
       aria-current={active}
       onClick={onClick}
     >
       <MessagesSquare size={20} />
-      {unread && <span className="direct-unread" aria-hidden="true" />}
+      {unread > 0 && <span className="direct-unread">{unread > 9 ? '9+' : unread}</span>}
     </button>
   );
 }

@@ -82,6 +82,8 @@ export interface DirectChannel {
   members: UserRef[];
   lastMessageAt: string | null;
   lastMessage: string | null;
+  /** Número da última mensagem: é com ele que o cliente sabe o que ainda não foi lido. */
+  lastMessageId: number | null;
 }
 
 /** Arquivo enviado junto com uma mensagem. Os bytes ficam no banco; aqui vai só a ficha dele. */
@@ -1150,7 +1152,8 @@ export function listDirectChannels(userId: number): DirectChannel[] {
     .prepare(
       `SELECT c.id, c.name, c.created_by AS createdBy,
               (SELECT MAX(m.created_at) FROM messages m WHERE m.channel_id = c.id) AS lastMessageAt,
-              (SELECT m.content FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessage
+              (SELECT m.content FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessage,
+              (SELECT m.id FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessageId
        FROM channels c
        JOIN channel_members mine ON mine.channel_id = c.id AND mine.user_id = ?
        WHERE c.type = 'dm'

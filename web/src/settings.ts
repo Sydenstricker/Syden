@@ -15,6 +15,9 @@ export interface Settings {
   screenQuality: ScreenQuality;
   /** Modificador de voz aplicado ao microfone na chamada. */
   voiceEffect: VoiceEffectId;
+  /** Microfone e áudio desligados de propósito, valendo já fora da chamada e ao entrar na próxima. */
+  startMuted: boolean;
+  startDeafened: boolean;
   /** Mostrar a lista de pessoas à direita também dentro das salas de voz. */
   showMembers: boolean;
   /** Sons de entrada, saída, mudo etc. */
@@ -33,6 +36,8 @@ const DEFAULTS: Settings = {
   echoCancellation: true,
   screenQuality: 'standard',
   voiceEffect: 'none',
+  startMuted: false,
+  startDeafened: false,
   showMembers: true,
   sounds: true,
   soundboardVolume: 0.6,

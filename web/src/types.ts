@@ -98,6 +98,8 @@ export interface DirectChannel {
   members: UserRef[];
   lastMessageAt: string | null;
   lastMessage: string | null;
+  /** Número da última mensagem, para saber o que ainda não foi lido. */
+  lastMessageId: number | null;
 }
 
 /** Arquivo mandado junto com uma mensagem (imagem, vídeo, áudio ou qualquer outro). */

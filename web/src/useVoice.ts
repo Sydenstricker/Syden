@@ -17,7 +17,7 @@ import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
-import { playSoundboard } from './soundboard';
+import { playSoundboard, stopAllSounds } from './soundboard';
 import { applyAllVolumes } from './voiceVolumes';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
@@ -124,6 +124,9 @@ export function useVoice(socket: Socket | null) {
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [voiceEffect, setVoiceEffectState] = useState<VoiceEffectId>(() => getSettings().voiceEffect);
+  // Dá para silenciar antes de entrar numa sala: a escolha fica guardada e vale ao entrar na próxima.
+  const [wantMuted, setWantMuted] = useState(() => getSettings().startMuted);
+  const [wantDeafened, setWantDeafened] = useState(() => getSettings().startDeafened);
   // "Você está silenciado!": true por alguns segundos quando a pessoa fala com o microfone mudo.
   const [mutedWarning, setMutedWarning] = useState(false);
 
@@ -148,6 +151,7 @@ export function useVoice(socket: Socket | null) {
       if (participant === lp) sync();
     };
     const onDisconnected = () => {
+      stopAllSounds(); // som de soundboard é da sala: não acompanha quem saiu
       if (channelRef.current !== null) socketRef.current?.emit('voice:leave');
       channelRef.current = null;
       deafenedRef.current = false;
@@ -323,6 +327,12 @@ export function useVoice(socket: Socket | null) {
     [applyVoiceEffect],
   );
 
+  const setDeafenedState = useCallback((value: boolean) => {
+    deafenedRef.current = value;
+    setDeafened(value);
+    socketRef.current?.emit('voice:update', { deafened: value });
+  }, []);
+
   const join = useCallback(
     async (id: number) => {
       if (channelRef.current === id || connecting || !socketRef.current) return;
@@ -351,7 +361,14 @@ export function useVoice(socket: Socket | null) {
       }
       setConnecting(false);
       try {
-        await room.localParticipant.setMicrophoneEnabled(true);
+        const settings = getSettings();
+        if (settings.startDeafened) setDeafenedState(true);
+        await room.localParticipant.setMicrophoneEnabled(!settings.startMuted && !settings.startDeafened);
+        // Entrando mudo, o LiveKit não publica faixa nenhuma e nenhum evento avisa a tela: o estado
+        // precisa ser dito na mão, senão o botão mostraria o microfone ligado com ele desligado.
+        const estado = readLocalMedia(room.localParticipant);
+        setMedia(estado);
+        socketRef.current?.emit('voice:update', { ...estado, deafened: deafenedRef.current });
         // O efeito escolhido da última vez volta sozinho ao entrar na sala.
         if (getSettings().voiceEffect !== 'none') await applyVoiceEffect(getSettings().voiceEffect).catch(console.error);
       } catch (e) {
@@ -361,7 +378,7 @@ export function useVoice(socket: Socket | null) {
         reportProblem('microfone', message);
       }
     },
-    [room, connecting, applyVoiceEffect],
+    [room, connecting, applyVoiceEffect, setDeafenedState],
   );
 
   /**
@@ -396,17 +413,21 @@ export function useVoice(socket: Socket | null) {
     void room.disconnect();
   }, [room]);
 
-  const setDeafenedState = useCallback((value: boolean) => {
-    deafenedRef.current = value;
-    setDeafened(value);
-    socketRef.current?.emit('voice:update', { deafened: value });
-  }, []);
-
   const toggleMute = useCallback(async () => {
+    // Fora de uma sala não há microfone ligado: aqui só se guarda a escolha, que vale ao entrar.
+    if (channelRef.current === null) {
+      const next = !getSettings().startMuted;
+      updateSettings({ startMuted: next });
+      setWantMuted(next);
+      (next ? sounds.mute : sounds.unmute)();
+      return;
+    }
     const lp = room.localParticipant;
     const enable = !lp.isMicrophoneEnabled;
     try {
       await lp.setMicrophoneEnabled(enable);
+      updateSettings({ startMuted: !enable });
+      setWantMuted(!enable);
       if (enable && deafenedRef.current) setDeafenedState(false); // falar implica ouvir, como no Discord
       (enable ? sounds.unmute : sounds.mute)();
     } catch (e) {
@@ -418,8 +439,18 @@ export function useVoice(socket: Socket | null) {
   }, [room, setDeafenedState]);
 
   const toggleDeafen = useCallback(async () => {
+    if (channelRef.current === null) {
+      const next = !getSettings().startDeafened;
+      updateSettings({ startDeafened: next, startMuted: next || getSettings().startMuted });
+      setWantDeafened(next);
+      setWantMuted(next || getSettings().startMuted);
+      (next ? sounds.deafen : sounds.undeafen)();
+      return;
+    }
     const next = !deafenedRef.current;
     setDeafenedState(next);
+    updateSettings({ startDeafened: next });
+    setWantDeafened(next);
     (next ? sounds.deafen : sounds.undeafen)();
     await room.localParticipant.setMicrophoneEnabled(!next).catch(console.error);
   }, [room, setDeafenedState]);
@@ -683,8 +714,9 @@ export function useVoice(socket: Socket | null) {
     room,
     channelId,
     connecting,
-    media,
-    deafened,
+    // Fora de uma sala, o que vale é a escolha guardada (a pessoa pode se silenciar antes de entrar).
+    media: channelId === null ? { ...media, muted: wantMuted } : media,
+    deafened: channelId === null ? wantDeafened : deafened,
     error,
     mutedWarning,
     clearError: () => setError(null),

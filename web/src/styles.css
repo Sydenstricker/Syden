@@ -3840,13 +3840,39 @@ textarea {
 
 .direct-unread {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
   background: var(--red);
   border: 2px solid var(--bg-rail, #1e1f22);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Conversa com mensagem nova: nome em destaque e um ponto no fim da linha. */
+.direct-row.unread .direct-name {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.direct-row.unread .direct-preview {
+  color: var(--text);
+}
+
+.direct-row-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
 }
 
 .direct-empty {

@@ -9,6 +9,7 @@ import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './di
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
 import { temNovidade } from './changelog';
+import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread';
 import { DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
@@ -111,6 +112,8 @@ export function Shell({
   const [directs, setDirects] = useState<DirectChannel[]>([]);
   const [directId, setDirectId] = useState<number | null>(null);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
+  // Qual conversa está aberta agora, para o aviso de mensagem nova não marcar a bolinha nela.
+  const openRef = useRef<number | null>(null);
   const voice = useVoice(socket);
   const onLogoutRef = useRef(onLogout);
   onLogoutRef.current = onLogout;
@@ -118,6 +121,16 @@ export function Shell({
   voiceRef.current = voice;
 
   useEffect(() => rememberView(view), [view]);
+
+  // Mensagens não lidas das conversas privadas: a bolinha do ícone de conversas.
+  const [unreadTick, setUnreadTick] = useState(0);
+  useEffect(() => subscribeUnread(() => setUnreadTick((n) => n + 1)), []);
+  // Só depois que a lista chega: com ela vazia (logo ao abrir), a limpeza apagaria tudo o que já foi lido.
+  useEffect(() => {
+    if (directs.length > 0) forgetMissing(directs.map((c) => c.id));
+  }, [directs]);
+  const unreadDirects = countUnread(directs);
+  void unreadTick; // só para a tela redesenhar quando algo é marcado como lido
   // A bolinha do logo some assim que a tela inicial é aberta.
   const [novidade, setNovidade] = useState(temNovidade);
   useEffect(() => {
@@ -135,6 +148,7 @@ export function Shell({
     position: 0,
     createdBy: openDirect.createdBy,
   };
+  openRef.current = view === 'direct' ? directId : null;
   const voiceMembers = communityId === null ? [] : (voiceByCommunity[communityId] ?? []);
   const onlineHere = presence.filter((p) => members.has(p.id));
   const myStatus = presence.find((p) => p.id === user.id)?.status ?? loadMyStatus();
@@ -162,6 +176,7 @@ export function Shell({
 
   /** Abre uma conversa privada (vindo da lista ou do menu de alguém) e troca a barra lateral para ela. */
   function openConversation(conversa: DirectChannel) {
+    markRead(conversa.id, conversa.lastMessageId);
     setDirects((list) => (list.some((c) => c.id === conversa.id) ? list : [conversa, ...list]));
     setView('direct');
     setDirectId(conversa.id);
@@ -237,7 +252,13 @@ export function Shell({
       setDirects((list) => {
         const conversa = list.find((c) => c.id === message.channelId);
         if (!conversa) return list;
-        const atualizada = { ...conversa, lastMessage: message.content, lastMessageAt: message.createdAt };
+        const atualizada = {
+          ...conversa,
+          lastMessage: message.content,
+          lastMessageAt: message.createdAt,
+          lastMessageId: message.id,
+        };
+        if (openRef.current === message.channelId) markRead(message.channelId, message.id);
         return [atualizada, ...list.filter((c) => c.id !== message.channelId)];
       });
     });
@@ -419,7 +440,7 @@ export function Shell({
             communities.length > 0 && (
               <DirectRailButton
                 active={view === 'direct'}
-                unread={false}
+                unread={unreadDirects}
                 onClick={() => {
                   setView('direct');
                   setShowUsage(false);

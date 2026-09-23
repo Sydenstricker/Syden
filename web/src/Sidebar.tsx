@@ -171,18 +171,17 @@ export function Sidebar({
         </span>
         <span className="user-panel-name">{user.username}</span>
         <div className="icon-row">
+          {/* Funciona fora de qualquer sala: quem se silencia aqui entra mudo na próxima chamada. */}
           <IconButton
             label={voice.media.muted ? 'Ativar microfone' : 'Silenciar'}
-            danger={voice.channelId !== null && voice.media.muted}
-            disabled={voice.channelId === null}
+            danger={voice.media.muted}
             onClick={voice.toggleMute}
           >
-            {voice.channelId !== null && voice.media.muted ? <MicOff size={18} /> : <Mic size={18} />}
+            {voice.media.muted ? <MicOff size={18} /> : <Mic size={18} />}
           </IconButton>
           <IconButton
             label={voice.deafened ? 'Ativar áudio' : 'Desativar áudio'}
             danger={voice.deafened}
-            disabled={voice.channelId === null}
             onClick={voice.toggleDeafen}
           >
             {voice.deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
