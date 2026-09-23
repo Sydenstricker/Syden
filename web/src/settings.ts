@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import type { Theme } from './theme';
 import type { VoiceEffectId } from './voiceEffects';
 
 // Preferências de cada pessoa, guardadas só neste computador (localStorage).
@@ -15,6 +16,8 @@ export interface Settings {
   screenQuality: ScreenQuality;
   /** Modificador de voz aplicado ao microfone na chamada. */
   voiceEffect: VoiceEffectId;
+  /** Cores do app: escuro (padrão) ou claro. */
+  theme: Theme;
   /** Microfone e áudio desligados de propósito, valendo já fora da chamada e ao entrar na próxima. */
   startMuted: boolean;
   startDeafened: boolean;
@@ -35,6 +38,7 @@ const DEFAULTS: Settings = {
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
+  theme: 'dark',
   voiceEffect: 'none',
   startMuted: false,
   startDeafened: false,

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSettings } from './settings';
 
 // Ícones animados (formato Lottie, os que o usuário baixou na pasta IconesAnimados) para os botões de
 // destaque: parados eles são um desenho comum, e ao passar o mouse ou clicar fazem a animação curta que
@@ -91,17 +92,25 @@ function recolor(animation: unknown, primary: string, secondary: string) {
   });
 }
 
+/** Lê uma cor do tema atual (as variáveis do CSS), para o desenho combinar com o resto da tela. */
+function themeColor(variable: string, fallback: string): string {
+  const valor = getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+  return /^#[0-9a-fA-F]{6}$/.test(valor) ? valor : fallback;
+}
+
 interface Props {
   name: AnimatedIconName;
   size?: number;
-  /** Cor da parte principal do desenho; o detalhe usa `accent`. */
+  /** Cor da parte principal do desenho; por padrão, a cor do texto do tema. O detalhe usa `accent`. */
   color?: string;
   accent?: string;
   /** Um clique também dispara a animação (além do passar do mouse). */
   className?: string;
 }
 
-export function AnimatedIcon({ name, size = 22, color = '#dbdee1', accent = '#5865f2', className }: Props) {
+export function AnimatedIcon({ name, size = 22, color, accent, className }: Props) {
+  // O tema entra como dependência: trocando de claro para escuro, o desenho é remontado na cor certa.
+  const { theme } = useSettings();
   const box = useRef<HTMLSpanElement>(null);
   const player = useRef<{ playSegments: (s: number[], f: boolean) => void; destroy: () => void; goToAndStop: (v: number, f?: boolean) => void } | null>(null);
   const segment = useRef<[number, number] | null>(null);
@@ -115,7 +124,7 @@ export function AnimatedIcon({ name, size = 22, color = '#dbdee1', accent = '#58
       try {
         const [lottie, data] = await Promise.all([loadLottie(), loadIcon(name)]);
         if (cancelled || !box.current) return;
-        recolor(data, color, accent);
+        recolor(data, color ?? themeColor('--text', '#dbdee1'), accent ?? themeColor('--accent', '#5865f2'));
 
         // O arquivo traz marcadores: "hover-pinch" é a animação de reagir ao toque.
         const marcadores = (data as { markers?: { cm: string; tm: number; dr: number }[] }).markers ?? [];
@@ -144,7 +153,7 @@ export function AnimatedIcon({ name, size = 22, color = '#dbdee1', accent = '#58
       instance?.destroy();
       player.current = null;
     };
-  }, [name, color, accent]);
+  }, [name, color, accent, theme]);
 
   function play() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

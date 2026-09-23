@@ -3,6 +3,8 @@
 interface DesktopBridge {
   focus(): void;
   onShortcut(callback: (action: 'mute' | 'deafen') => void): () => void;
+  /** Pinta a barra de título do app (desenhada pelo Windows) com as cores do tema. */
+  setTitleBarTheme?(cores: { color: string; symbolColor: string }): void;
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;

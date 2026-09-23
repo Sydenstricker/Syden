@@ -5,6 +5,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('sydenDesktop', {
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
   focus: () => ipcRenderer.send('app:focus'),
+  /** Pinta a barra de título (que é do Windows, não do site) com as cores do tema escolhido. */
+  setTitleBarTheme: (cores) => ipcRenderer.send('app:title-bar', cores),
   /**
    * Som da transmissão sem a própria chamada dentro (só no Windows, com o módulo nativo instalado).
    * start() responde { ok, source }; onChunk entrega pedaços de som (Float32, dois canais, 48 kHz).

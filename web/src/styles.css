@@ -13,8 +13,39 @@
   --green: #23a55a;
   --red: #da373c;
   --red-hover: #a12828;
+  /* Superfícies que sobem um degrau do fundo (menus, campos, bolhas). */
+  --bg-raised: #3f4147;
+  --bg-raised-hover: #4e5058;
+  --shadow: rgba(0, 0, 0, 0.45);
+  /* Plaquinhas escuras por cima de vídeo (nome na tela, aviso de som): valem nos dois temas. */
+  --overlay: rgba(0, 0, 0, 0.55);
   --radius: 8px;
   color-scheme: dark;
+}
+
+/**
+ * Tema claro, ligado no sol da tela inicial. Só as cores mudam: o resto do app não sabe que existe tema
+ * nenhum, porque tudo passa por estas variáveis.
+ */
+:root[data-theme='light'] {
+  --bg-darkest: #e3e5e8;
+  --bg-sidebar: #f2f3f5;
+  --bg-main: #ffffff;
+  --bg-input: #ebedef;
+  --bg-hover: rgba(6, 6, 7, 0.04);
+  --bg-active: rgba(6, 6, 7, 0.08);
+  --bg-raised: #e7e9ec;
+  --bg-raised-hover: #dcdfe4;
+  --text: #2e3338;
+  --text-strong: #060607;
+  --text-muted: #5c5e66;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --green: #248046;
+  --red: #d83c3e;
+  --red-hover: #a12828;
+  --shadow: rgba(0, 0, 0, 0.16);
+  color-scheme: light;
 }
 
 * {
@@ -166,7 +197,7 @@ textarea {
   height: 100%;
   display: flex;
   /* Minimalista: fundo escuro liso com um brilho vermelho bem suave no alto, na cor do logo. */
-  background: radial-gradient(ellipse at 50% -10%, rgba(224, 17, 43, 0.14) 0, rgba(30, 31, 34, 0) 55%), #1e1f22;
+  background: radial-gradient(ellipse at 50% -10%, rgba(224, 17, 43, 0.14) 0, rgba(30, 31, 34, 0) 55%), var(--bg-darkest);
 }
 
 .auth-panel {
@@ -297,7 +328,7 @@ textarea {
 }
 
 .btn-secondary:hover {
-  background: #4e5058;
+  background: var(--bg-raised-hover);
 }
 
 .auth-download {
@@ -305,7 +336,7 @@ textarea {
   flex-direction: column;
   gap: 10px;
   padding-top: 16px;
-  border-top: 1px solid #3f4147;
+  border-top: 1px solid var(--bg-raised);
   text-align: center;
   font-size: 14px;
   color: var(--text-muted);
@@ -334,7 +365,7 @@ textarea {
 .rail {
   width: 68px;
   flex-shrink: 0;
-  background: var(--bg-rail, #1e1f22);
+  background: var(--bg-rail, var(--bg-darkest));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -350,7 +381,7 @@ textarea {
   justify-content: center;
   padding: 4px 0 8px;
   border: none;
-  border-bottom: 1px solid #2b2d31;
+  border-bottom: 1px solid var(--bg-sidebar);
   border-radius: 12px 12px 0 0;
   background: none;
   width: 40px;
@@ -399,7 +430,7 @@ textarea {
 .rail-action {
   background: transparent;
   color: #3ba55d;
-  border: 1px solid #3f4147;
+  border: 1px solid var(--bg-raised);
 }
 
 .rail-action:hover {
@@ -491,7 +522,7 @@ textarea {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius);
-  background: #1e1f22;
+  background: var(--bg-darkest);
   cursor: grab;
   touch-action: none;
   flex-shrink: 0;
@@ -514,7 +545,7 @@ textarea {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45) inset;
+  box-shadow: 0 0 0 9999px var(--shadow) inset;
 }
 
 .cropper-view.circle .cropper-mask {
@@ -546,7 +577,7 @@ textarea {
 .cropper-thumb {
   width: 88px;
   height: 88px;
-  background: #1e1f22;
+  background: var(--bg-darkest);
 }
 
 .cropper-thumb.small {
@@ -596,7 +627,7 @@ textarea {
   min-width: 140px;
   padding: 8px 12px;
   border-radius: 4px;
-  background: var(--bg-input, #1e1f22);
+  background: var(--bg-input, var(--bg-darkest));
   color: var(--text-strong);
   font-size: 18px;
   letter-spacing: 2px;
@@ -616,8 +647,8 @@ textarea {
 .dialog input {
   padding: 10px 12px;
   border-radius: 4px;
-  border: 1px solid #1e1f22;
-  background: var(--bg-input, #1e1f22);
+  border: 1px solid var(--bg-darkest);
+  background: var(--bg-input, var(--bg-darkest));
   color: var(--text-strong);
   font-size: 15px;
   font-weight: 400;
@@ -671,7 +702,7 @@ textarea {
 
 .banner {
   background: #f0b232;
-  color: #1e1f22;
+  color: var(--bg-darkest);
   padding: 6px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -799,7 +830,7 @@ textarea {
   background: var(--bg-main);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 28px var(--shadow);
   cursor: default;
 }
 
@@ -1233,7 +1264,7 @@ textarea {
   gap: 6px;
   padding: 3px 8px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay);
   color: white;
   font-size: 13px;
   font-weight: 600;
@@ -1297,7 +1328,7 @@ textarea {
 .tile-info .stream-info-button {
   width: 24px;
   height: 24px;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay);
   border-radius: 50%;
 }
 
@@ -1316,7 +1347,7 @@ textarea {
   color: #fff;
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px var(--shadow);
   animation: muted-warning-in 0.15s ease-out;
 }
 
@@ -1484,7 +1515,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--shadow);
 }
 
 .dialog h2 {
@@ -1545,7 +1576,7 @@ textarea {
   width: calc(100% - 20px);
   margin: 8px 10px;
   border: none;
-  border-top: 1px solid #3f4147;
+  border-top: 1px solid var(--bg-raised);
 }
 
 .settings-tab {
@@ -1735,7 +1766,7 @@ textarea {
   justify-content: space-between;
   gap: 24px;
   padding: 14px 0;
-  border-bottom: 1px solid #3f4147;
+  border-bottom: 1px solid var(--bg-raised);
   cursor: pointer;
 }
 
@@ -1812,7 +1843,7 @@ textarea {
 }
 
 .quality-option:hover {
-  background: #35373c;
+  background: var(--bg-raised);
 }
 
 .quality-option.selected {
@@ -1897,7 +1928,7 @@ textarea {
   place-items: center;
   width: 32px;
   height: 28px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   border-radius: 6px;
   background: var(--bg-main);
   color: var(--text-muted);
@@ -1919,7 +1950,7 @@ textarea {
 .dialog-quote {
   margin: 12px 0 0;
   padding: 8px 12px;
-  border-left: 3px solid #4e5058;
+  border-left: 3px solid var(--bg-raised-hover);
   background: var(--bg-sidebar);
   border-radius: 4px;
   color: var(--text-muted);
@@ -2037,7 +2068,7 @@ textarea {
   flex-direction: column;
   background: var(--bg-sidebar);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
 .emoji-picker-scroll {
@@ -2086,7 +2117,7 @@ textarea {
 
 .emoji-picker-footer {
   padding: 8px 12px;
-  border-top: 1px solid #1e1f22;
+  border-top: 1px solid var(--bg-darkest);
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
@@ -2111,7 +2142,7 @@ textarea {
   padding: 12px;
   background: var(--bg-sidebar);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
 .soundboard-title {
@@ -2150,7 +2181,7 @@ textarea {
 }
 
 .soundboard-sound:hover {
-  background: #4e5058;
+  background: var(--bg-raised-hover);
 }
 
 .soundboard-sound:active {
@@ -2164,7 +2195,7 @@ textarea {
 
 .soundboard-add {
   color: var(--text-muted);
-  border: 1px dashed #4e5058;
+  border: 1px dashed var(--bg-raised-hover);
   background: none;
 }
 
@@ -2180,7 +2211,7 @@ textarea {
   gap: 8px;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid #3f4147;
+  border-top: 1px solid var(--bg-raised);
 }
 
 .soundboard-file {
@@ -2202,7 +2233,7 @@ textarea {
 .soundboard-add-name {
   padding: 8px 10px;
   border-radius: 4px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   background: var(--bg-input);
   color: var(--text-strong);
   font-size: 14px;
@@ -2476,7 +2507,7 @@ textarea {
   align-items: center;
   gap: 12px;
   padding: 8px 4px;
-  border-bottom: 1px solid #3f4147;
+  border-bottom: 1px solid var(--bg-raised);
 }
 
 .expression-emoji {
@@ -2707,7 +2738,7 @@ textarea {
   font-weight: 600;
   color: var(--text-muted);
   padding: 0 0 8px;
-  border-bottom: 1px solid #3f4147;
+  border-bottom: 1px solid var(--bg-raised);
 }
 
 .usage-table td {
@@ -2816,7 +2847,7 @@ textarea {
   max-width: 420px;
   padding: 6px 10px;
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay);
   color: #faa61a;
   font-size: 13px;
 }
@@ -2828,7 +2859,7 @@ textarea {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay);
   color: #fff;
 }
 
@@ -2843,7 +2874,7 @@ textarea {
   padding: 10px 12px;
   border-radius: var(--radius);
   background: var(--bg-main);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 28px var(--shadow);
   font-size: 13px;
   color: var(--text-muted);
 }
@@ -2870,7 +2901,7 @@ textarea {
   padding: 10px 14px;
   border-radius: var(--radius);
   background: var(--bg-main);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 28px var(--shadow);
   font-size: 14px;
   color: var(--text);
 }
@@ -2891,14 +2922,14 @@ textarea {
   padding: 8px;
   border-radius: var(--radius);
   background: var(--bg-main);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 28px var(--shadow);
 }
 
 .person-menu-name {
   padding: 4px 8px 8px;
   font-weight: 700;
   color: var(--text-strong);
-  border-bottom: 1px solid #3f4147;
+  border-bottom: 1px solid var(--bg-raised);
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2969,7 +3000,7 @@ textarea {
   padding: 8px;
   border-radius: var(--radius);
   background: var(--bg-main);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 8px 28px var(--shadow);
 }
 
 .screenshare-menu-title {
@@ -3160,7 +3191,7 @@ textarea {
   align-items: baseline;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid #3f4147;
+  border-bottom: 1px solid var(--bg-raised);
   font-size: 14px;
   color: var(--text);
 }
@@ -3179,7 +3210,7 @@ textarea {
 .usage-split {
   margin-top: 18px;
   padding-top: 16px;
-  border-top: 1px solid #3f4147;
+  border-top: 1px solid var(--bg-raised);
 }
 
 .usage-split-bar {
@@ -3187,7 +3218,7 @@ textarea {
   height: 12px;
   border-radius: 6px;
   overflow: hidden;
-  background: var(--bg-input, #1e1f22);
+  background: var(--bg-input, var(--bg-darkest));
 }
 
 .usage-split-bar span {
@@ -3276,7 +3307,7 @@ textarea {
 .shortcuts kbd {
   display: inline-block;
   padding: 1px 6px;
-  border: 1px solid #4e5058;
+  border: 1px solid var(--bg-raised-hover);
   border-bottom-width: 2px;
   border-radius: 4px;
   background: var(--bg-darkest);
@@ -3379,7 +3410,7 @@ textarea {
   padding: 6px;
   background: var(--bg-sidebar);
   border-radius: var(--radius);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
 .composer-menu button {
@@ -3464,7 +3495,7 @@ textarea {
   gap: 12px;
   max-width: 420px;
   padding: 10px 12px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   border-radius: var(--radius);
   background: var(--bg-input);
   color: var(--text);
@@ -3499,7 +3530,7 @@ textarea {
   max-width: 460px;
   margin-top: 6px;
   padding: 12px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   border-radius: var(--radius);
   background: var(--bg-input);
 }
@@ -3603,7 +3634,7 @@ textarea {
   flex: 1;
   padding: 10px 12px;
   border-radius: 4px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   background: var(--bg-input);
   color: var(--text-strong);
   font-size: 15px;
@@ -3701,7 +3732,7 @@ textarea {
   max-width: 460px;
   margin-top: 6px;
   padding: 8px 12px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   border-radius: var(--radius);
   background: var(--bg-input);
   color: var(--text-muted);
@@ -3739,7 +3770,7 @@ textarea {
   flex-direction: column;
   min-height: 0;
   background: var(--bg-main);
-  border-left: 1px solid #1e1f22;
+  border-left: 1px solid var(--bg-darkest);
 }
 
 .thread-header {
@@ -3764,7 +3795,7 @@ textarea {
 }
 
 .thread-parent {
-  border-bottom: 1px solid #1e1f22;
+  border-bottom: 1px solid var(--bg-darkest);
   padding-bottom: 8px;
   margin-bottom: 8px;
 }
@@ -3850,7 +3881,7 @@ textarea {
   justify-content: center;
   border-radius: 999px;
   background: var(--red);
-  border: 2px solid var(--bg-rail, #1e1f22);
+  border: 2px solid var(--bg-rail, var(--bg-darkest));
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -3945,7 +3976,7 @@ textarea {
   max-height: 280px;
   overflow-y: auto;
   padding: 4px;
-  border: 1px solid #1e1f22;
+  border: 1px solid var(--bg-darkest);
   border-radius: var(--radius);
   background: var(--bg-darkest);
 }
@@ -4011,7 +4042,7 @@ textarea {
 }
 
 .effect-option:hover {
-  background: #35373c;
+  background: var(--bg-raised);
 }
 
 .effect-option.selected {
@@ -4085,7 +4116,7 @@ textarea {
 }
 
 .soundboard-stop:hover {
-  background: #4e5058;
+  background: var(--bg-raised-hover);
   color: var(--text-strong);
 }
 
@@ -4126,7 +4157,7 @@ textarea {
   padding: 3px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--overlay);
   color: var(--text-muted);
   cursor: pointer;
 }
@@ -4293,7 +4324,7 @@ textarea {
 }
 
 .pack-sound:hover {
-  background: #4e5058;
+  background: var(--bg-raised-hover);
 }
 
 .pack-actions {
@@ -4702,7 +4733,7 @@ textarea {
   animation: respira 3.2s ease-in-out infinite;
 }
 
-.scene-noite .bunny-art { filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.45)) brightness(0.82); }
+.scene-noite .bunny-art { filter: drop-shadow(0 4px 3px var(--shadow)) brightness(0.82); }
 
 @keyframes respira {
   0%, 100% { transform: scaleY(1); }
@@ -4717,9 +4748,16 @@ textarea {
   70% { transform: translateY(-4px) scaleY(0.96); }
 }
 
-.bunny:hover .bunny-ear.left { transform-box: fill-box; transform-origin: bottom center; transform: rotate(-12deg); }
-.bunny:hover .bunny-ear.right { transform-box: fill-box; transform-origin: bottom center; transform: rotate(12deg); }
-.bunny-ear { transition: transform 0.25s ease; }
+/* Girar cada orelha soltava ela da cabeça (o giro é em volta do próprio desenho, não do corpo).
+   Agora o coelho inteiro se inclina de leve, que dá a mesma ideia de "prestou atenção". */
+.bunny-art {
+  transform-origin: bottom center;
+  transition: transform 0.25s ease;
+}
+
+.bunny:hover .bunny-art {
+  transform: rotate(-4deg) scale(1.06);
+}
 
 .bunny-talk {
   position: absolute;
@@ -4901,4 +4939,62 @@ textarea {
 
 .animated-icon svg {
   display: block;
+}
+
+/* Bandeirinha vermelha no telhado e o trigo do emblema no meio das flores. */
+.house-flag {
+  position: absolute;
+  left: 44px;
+  top: -18px;
+  width: 2px;
+  height: 22px;
+  background: #8a5a3a;
+}
+
+.house-flag::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 1px;
+  width: 16px;
+  height: 11px;
+  background: #c8102e;
+  clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+  transform-origin: left center;
+  animation: tremula 3.5s ease-in-out infinite;
+}
+
+@keyframes tremula {
+  0%, 100% { transform: skewY(0deg); }
+  50% { transform: skewY(-4deg); }
+}
+
+.wheat {
+  position: absolute;
+  bottom: 16%;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: linear-gradient(to top, #6f8f4a, #d9b154 45%);
+  transform-origin: bottom center;
+  animation: balanca 4s ease-in-out infinite;
+}
+
+.wheat::before,
+.wheat::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  width: 4px;
+  height: 7px;
+  border-radius: 60% 60% 40% 40%;
+  background: #d9b154;
+}
+
+.wheat::before { left: -3px; transform: rotate(-22deg); }
+.wheat::after { right: -3px; transform: rotate(22deg); }
+
+@keyframes balanca {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
 }

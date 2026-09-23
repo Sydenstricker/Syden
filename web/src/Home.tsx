@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
 import { sounds } from './sounds';
+import { getTheme, toggleTheme } from './theme';
 
 // Tela inicial do Syden: um cantinho tranquilo com coelhos que respondem quando a gente cutuca, e as
 // novidades do app ao lado. Nada aqui é essencial para conversar — é o lugar de chegar, dar uma olhada
@@ -21,10 +22,23 @@ const FALAS = [
   'cadê a turma?',
 ];
 
-/** Cores de pelo dos coelhos: o branco do logo, um cinza e dois tons quentes. */
-const PELOS = ['#f7f3ee', '#d9d2c8', '#e8c9a0', '#f7f3ee', '#cbb9a6'];
+/** Pelagem: o branco do coelho do logo manda, com dois cinzas quentes para a turma não ficar igual. */
+const PELOS = ['#f7f3ee', '#eae4dc', '#f7f3ee', '#ddd5ca', '#f7f3ee'];
+
+/** O vermelho do logo, usado no lenço, na estrela e na bandeirinha da casa. */
+const VERMELHO = '#c8102e';
+
+/** O que cada coelho veste: lenço no pescoço, estrela no peito, ou nada. */
+type Adorno = 'lenco' | 'estrela' | 'nada';
+const ADORNOS: Adorno[] = ['lenco', 'estrela', 'nada', 'lenco', 'estrela'];
 
 type Periodo = 'manha' | 'tarde' | 'entardecer' | 'noite';
+
+/** De dia a cena segue o relógio; se já for noite pelo relógio, mostra a tarde. */
+function periodoClaro(): Periodo {
+  const hora = periodoDoDia(new Date().getHours());
+  return hora === 'noite' ? 'tarde' : hora;
+}
 
 function periodoDoDia(hora: number): Periodo {
   if (hora >= 6 && hora < 12) return 'manha';
@@ -33,7 +47,18 @@ function periodoDoDia(hora: number): Periodo {
   return 'noite';
 }
 
-function Coelho({ cor }: { cor: string }) {
+/** Estrela de cinco pontas, a mesma do logo, desenhada em volta de um ponto. */
+function estrela(cx: number, cy: number, raio: number) {
+  const pontos = [];
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 === 0 ? raio : raio * 0.42;
+    const angulo = (Math.PI / 5) * i - Math.PI / 2;
+    pontos.push(`${(cx + r * Math.cos(angulo)).toFixed(2)},${(cy + r * Math.sin(angulo)).toFixed(2)}`);
+  }
+  return pontos.join(' ');
+}
+
+function Coelho({ cor, adorno }: { cor: string; adorno: Adorno }) {
   return (
     <svg className="bunny-art" viewBox="0 0 40 48" aria-hidden="true">
       <ellipse className="bunny-ear left" cx="14" cy="11" rx="4.2" ry="10.5" fill={cor} />
@@ -50,6 +75,14 @@ function Coelho({ cor }: { cor: string }) {
       <path d="M20 26.4 l-1.7 1.5 h3.4 z" fill="#e88ea0" />
       <ellipse cx="13.5" cy="45" rx="5" ry="2.5" fill={cor} />
       <ellipse cx="26.5" cy="45" rx="5" ry="2.5" fill={cor} />
+      {/* O lenço vermelho no pescoço e a estrela no peito são o aceno ao coelho do logo. */}
+      {adorno === 'lenco' && (
+        <>
+          <path d="M12.5 31.5 Q20 35 27.5 31.5 L27 33.5 Q20 37 13 33.5 Z" fill={VERMELHO} />
+          <path d="M19 34 L21 34 L20.4 40 L19.6 40 Z" fill={VERMELHO} />
+        </>
+      )}
+      {adorno === 'estrela' && <polygon points={estrela(20, 35, 4.6)} fill={VERMELHO} />}
     </svg>
   );
 }
@@ -59,6 +92,7 @@ interface CoelhoNaTela {
   x: number; // posição em % da largura da cena
   escala: number;
   cor: string;
+  adorno: Adorno;
   fala: string | null;
   pulando: boolean;
 }
@@ -69,6 +103,7 @@ function novoCoelho(id: number): CoelhoNaTela {
     x: 8 + Math.random() * 78,
     escala: 0.75 + Math.random() * 0.45,
     cor: PELOS[id % PELOS.length],
+    adorno: ADORNOS[id % ADORNOS.length],
     fala: null,
     pulando: false,
   };
@@ -77,7 +112,7 @@ function novoCoelho(id: number): CoelhoNaTela {
 export function Home() {
   const [coelhos, setCoelhos] = useState<CoelhoNaTela[]>(() => [0, 1, 2, 3, 4].map(novoCoelho));
   // O céu segue o relógio, mas dá para mudar na mão — às vezes a gente quer a noite estrelada de dia.
-  const [periodo, setPeriodo] = useState<Periodo>(() => periodoDoDia(new Date().getHours()));
+  const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [cenoura, setCenoura] = useState<{ x: number; id: number } | null>(null);
   const [cutucados, setCutucados] = useState(0);
 
@@ -129,13 +164,11 @@ export function Home() {
 
   const noite = periodo === 'noite';
 
-  /** Botão do sol/lua: de dia anoitece; de noite volta ao período do relógio (ou à tarde, se já for noite). */
+/**
+   * O sol (ou a lua) troca o tema do app inteiro, e a cena acompanha: claro é dia, escuro é noite.
+   */
   function alternarLuz() {
-    setPeriodo((atual) => {
-      if (atual !== 'noite') return 'noite';
-      const doRelogio = periodoDoDia(new Date().getHours());
-      return doRelogio === 'noite' ? 'tarde' : doRelogio;
-    });
+    setPeriodo(toggleTheme() === 'light' ? periodoClaro() : 'noite');
   }
 
   return (
@@ -148,8 +181,8 @@ export function Home() {
             ))}
           <button
             className="sky-light"
-            title={noite ? 'Trazer o dia de volta' : 'Deixar a noite cair'}
-            aria-label={noite ? 'Trazer o dia de volta' : 'Deixar a noite cair'}
+            title={noite ? 'Clarear o Syden' : 'Escurecer o Syden'}
+            aria-label={noite ? 'Clarear o Syden' : 'Escurecer o Syden'}
             onClick={alternarLuz}
           >
             {noite ? '🌙' : '☀️'}
@@ -169,6 +202,7 @@ export function Home() {
             <span className="house-roof" />
             <span className="house-body" />
             <span className={`house-window${noite ? ' lit' : ''}`} />
+            <span className="house-flag" />
           </div>
 
           <span className="tree tree-1">
@@ -181,8 +215,8 @@ export function Home() {
           </span>
 
           <span className="fence" />
-          {[12, 30, 47, 63, 81, 92].map((x) => (
-            <span key={x} className="flower" style={{ left: `${x}%` }} />
+          {[12, 30, 47, 63, 81, 92].map((x, i) => (
+            <span key={x} className={i % 2 === 0 ? 'wheat' : 'flower'} style={{ left: `${x}%` }} />
           ))}
 
           {noite &&
@@ -211,7 +245,7 @@ export function Home() {
               }}
             >
               {coelho.fala && <span className="bunny-talk">{coelho.fala}</span>}
-              <Coelho cor={coelho.cor} />
+              <Coelho cor={coelho.cor} adorno={coelho.adorno} />
             </button>
           ))}
         </div>

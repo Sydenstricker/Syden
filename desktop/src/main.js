@@ -44,6 +44,15 @@ if (!app.requestSingleInstanceLock()) {
     setupPermissions();
     setupScreenShare();
     setupScreenAudio();
+    // O site avisa quando a pessoa troca de tema, para a faixa do Windows acompanhar.
+    ipcMain.on('app:title-bar', (_event, cores) => {
+      if (!mainWindow || typeof cores?.color !== 'string' || typeof cores?.symbolColor !== 'string') return;
+      try {
+        mainWindow.setTitleBarOverlay({ color: cores.color, symbolColor: cores.symbolColor, height: 36 });
+      } catch {
+        // Sistema sem barra de título desenhada pelo app: nada a fazer.
+      }
+    });
     createMainWindow();
     createTray();
     registerShortcuts();
