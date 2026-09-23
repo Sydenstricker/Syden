@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
 import { API_URL, ApiError, api } from './api';
 import { Avatar } from './Avatar';
-import { CommunityRail } from './CommunityRail';
+import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
 import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
@@ -17,7 +17,7 @@ import { loadMyStatus, saveMyStatus } from './presenceStatus';
 import { getSettings, updateSettings, useSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
-import { SettingsModal } from './SettingsModal';
+import { type SettingsSection, SettingsModal } from './SettingsModal';
 import type { Channel, Community, DirectChannel, Message, PresenceEntry, PresenceStatus, User, VoiceMember } from './types';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
@@ -101,7 +101,10 @@ export function Shell({
   const [presence, setPresence] = useState<PresenceEntry[]>([]);
   // Quem está em chamada, por comunidade: a barra lateral só mostra a da comunidade aberta.
   const [voiceByCommunity, setVoiceByCommunity] = useState<Record<number, VoiceMember[]>>({});
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  // As configurações abrem numa aba escolhida: a vila manda direto para os pacotes de sons.
+  const [settingsOpen, setSettingsOpen] = useState<SettingsSection | null>(null);
+  // "Explorar", na vila, abre a mesma janela de adicionar comunidade da barra lateral.
+  const [explorarAberto, setExplorarAberto] = useState(false);
   const preferences = useSettings();
   const [showUsage, setShowUsage] = useState(false);
   // Em tela estreita só cabe uma coluna por vez: esta decide se é a lista de canais ou a conversa/chamada
@@ -469,7 +472,7 @@ export function Shell({
               setShowUsage(true);
               setMobileChannels(false);
             }}
-            onOpenSettings={() => setSettingsOpen(true)}
+            onOpenSettings={() => setSettingsOpen('account')}
             directMode={view === 'direct'}
             directList={
               <DirectList
@@ -496,7 +499,16 @@ export function Shell({
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
-          {view === 'home' && <Home />}
+          {view === 'home' && (
+            <Home
+              comunidade={community?.name}
+              salas={channels.filter((c) => c.type === 'voice')}
+              naVoz={voiceMembers}
+              aoEntrar={watchStream}
+              aoAbrirLoja={() => setSettingsOpen('soundboard')}
+              aoExplorar={() => setExplorarAberto(true)}
+            />
+          )}
           {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
           {view === 'direct' && directAsChannel && socket && (
             <TextChannel
@@ -553,6 +565,16 @@ export function Shell({
           />
         )}
       </div>
+      {explorarAberto && (
+        <CommunityDialog
+          mode="choose"
+          onClose={() => setExplorarAberto(false)}
+          onDone={(criada) => {
+            setExplorarAberto(false);
+            void afterCommunityChange(criada);
+          }}
+        />
+      )}
       {newGroupOpen && (
         <NewGroupDialog
           selfId={user.id}
@@ -563,12 +585,13 @@ export function Shell({
           }}
         />
       )}
-      {settingsOpen && (
+      {settingsOpen !== null && (
         <SettingsModal
+          secaoInicial={settingsOpen}
           user={user}
           community={community}
           voice={voice}
-          onClose={() => setSettingsOpen(false)}
+          onClose={() => setSettingsOpen(null)}
           onLogout={logout}
           onCommunityChanged={() => void afterCommunityChange(null)}
         />

@@ -1,262 +1,132 @@
-import { useEffect, useState } from 'react';
+import { BookOpen, Compass, ShoppingBag, Users, Volume2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
-import { sounds } from './sounds';
 import { getTheme, toggleTheme } from './theme';
+import type { Channel, VoiceMember } from './types';
+import { balaoDaCasa, CASAS, type Periodo, type PinoVila, Vila } from './Vila';
 
-// Tela inicial do Syden: um cantinho tranquilo com coelhos que respondem quando a gente cutuca, e as
-// novidades do app ao lado. Nada aqui é essencial para conversar — é o lugar de chegar, dar uma olhada
-// no que mudou e brincar um pouco antes de entrar numa sala.
-//
-// Tudo é desenhado em SVG e animado por CSS: nenhuma imagem externa, nenhum som baixado.
-
-const FALAS = [
-  'oi!',
-  'cenoura?',
-  'pula pula',
-  'zzz…',
-  'tem alguém na Sala 1?',
-  'toca um som aí',
-  'que dia bonito',
-  'só passando',
-  'me cutuca de novo',
-  'cadê a turma?',
-];
-
-/** Pelagem: o branco do coelho do logo manda, com dois cinzas quentes para a turma não ficar igual. */
-const PELOS = ['#f7f3ee', '#eae4dc', '#f7f3ee', '#ddd5ca', '#f7f3ee'];
-
-/** O vermelho do logo, usado no lenço, na estrela e na bandeirinha da casa. */
-const VERMELHO = '#c8102e';
-
-/** O que cada coelho veste: lenço no pescoço, estrela no peito, ou nada. */
-type Adorno = 'lenco' | 'estrela' | 'nada';
-const ADORNOS: Adorno[] = ['lenco', 'estrela', 'nada', 'lenco', 'estrela'];
-
-type Periodo = 'manha' | 'tarde' | 'entardecer' | 'noite';
+// Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
+// e cutucar uns coelhos antes de entrar numa sala. As quatro casas não são enfeite: cada uma leva a uma
+// parte de verdade do app.
 
 /** De dia a cena segue o relógio; se já for noite pelo relógio, mostra a tarde. */
 function periodoClaro(): Periodo {
-  const hora = periodoDoDia(new Date().getHours());
-  return hora === 'noite' ? 'tarde' : hora;
-}
-
-function periodoDoDia(hora: number): Periodo {
+  const hora = new Date().getHours();
   if (hora >= 6 && hora < 12) return 'manha';
   if (hora >= 12 && hora < 17) return 'tarde';
-  if (hora >= 17 && hora < 20) return 'entardecer';
-  return 'noite';
+  return 'entardecer';
 }
 
-/** Estrela de cinco pontas, a mesma do logo, desenhada em volta de um ponto. */
-function estrela(cx: number, cy: number, raio: number) {
-  const pontos = [];
-  for (let i = 0; i < 10; i++) {
-    const r = i % 2 === 0 ? raio : raio * 0.42;
-    const angulo = (Math.PI / 5) * i - Math.PI / 2;
-    pontos.push(`${(cx + r * Math.cos(angulo)).toFixed(2)},${(cy + r * Math.sin(angulo)).toFixed(2)}`);
-  }
-  return pontos.join(' ');
-}
-
-function Coelho({ cor, adorno }: { cor: string; adorno: Adorno }) {
-  return (
-    <svg className="bunny-art" viewBox="0 0 40 48" aria-hidden="true">
-      <ellipse className="bunny-ear left" cx="14" cy="11" rx="4.2" ry="10.5" fill={cor} />
-      <ellipse className="bunny-ear right" cx="26" cy="11" rx="4.2" ry="10.5" fill={cor} />
-      <ellipse cx="14" cy="12" rx="1.9" ry="7" fill="#f0a9b6" opacity="0.85" />
-      <ellipse cx="26" cy="12" rx="1.9" ry="7" fill="#f0a9b6" opacity="0.85" />
-      <ellipse cx="20" cy="35" rx="13" ry="11.5" fill={cor} />
-      <ellipse cx="33" cy="36" rx="3.4" ry="3.2" fill="#fffdf9" />
-      <circle cx="20" cy="24" r="10" fill={cor} />
-      <circle cx="16.4" cy="23" r="1.7" fill="#3b3a38" />
-      <circle cx="23.6" cy="23" r="1.7" fill="#3b3a38" />
-      <circle cx="16.9" cy="22.4" r="0.6" fill="#fff" />
-      <circle cx="24.1" cy="22.4" r="0.6" fill="#fff" />
-      <path d="M20 26.4 l-1.7 1.5 h3.4 z" fill="#e88ea0" />
-      <ellipse cx="13.5" cy="45" rx="5" ry="2.5" fill={cor} />
-      <ellipse cx="26.5" cy="45" rx="5" ry="2.5" fill={cor} />
-      {/* O lenço vermelho no pescoço e a estrela no peito são o aceno ao coelho do logo. */}
-      {adorno === 'lenco' && (
-        <>
-          <path d="M12.5 31.5 Q20 35 27.5 31.5 L27 33.5 Q20 37 13 33.5 Z" fill={VERMELHO} />
-          <path d="M19 34 L21 34 L20.4 40 L19.6 40 Z" fill={VERMELHO} />
-        </>
-      )}
-      {adorno === 'estrela' && <polygon points={estrela(20, 35, 4.6)} fill={VERMELHO} />}
-    </svg>
-  );
-}
-
-interface CoelhoNaTela {
-  id: number;
-  x: number; // posição em % da largura da cena
-  escala: number;
-  cor: string;
-  adorno: Adorno;
-  fala: string | null;
-  pulando: boolean;
-}
-
-function novoCoelho(id: number): CoelhoNaTela {
-  return {
-    id,
-    x: 8 + Math.random() * 78,
-    escala: 0.75 + Math.random() * 0.45,
-    cor: PELOS[id % PELOS.length],
-    adorno: ADORNOS[id % ADORNOS.length],
-    fala: null,
-    pulando: false,
-  };
-}
-
-export function Home() {
-  const [coelhos, setCoelhos] = useState<CoelhoNaTela[]>(() => [0, 1, 2, 3, 4].map(novoCoelho));
-  // O céu segue o relógio, mas dá para mudar na mão — às vezes a gente quer a noite estrelada de dia.
+export function Home({
+  comunidade,
+  salas,
+  naVoz,
+  aoEntrar,
+  aoAbrirLoja,
+  aoExplorar,
+}: {
+  /** Nome da comunidade aberta agora, se houver. */
+  comunidade?: string;
+  /** As salas de voz dessa comunidade. */
+  salas: Channel[];
+  /** Quem está em cada sala, para a lista mostrar companhia. */
+  naVoz: VoiceMember[];
+  aoEntrar: (channelId: number) => void;
+  aoAbrirLoja: () => void;
+  aoExplorar: () => void;
+}) {
+  // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
-  const [cenoura, setCenoura] = useState<{ x: number; id: number } | null>(null);
-  const [cutucados, setCutucados] = useState(0);
+  const [destaque, setDestaque] = useState<string | null>(null);
+  const [salasAbertas, setSalasAbertas] = useState(false);
+  const novidadesRef = useRef<HTMLElement | null>(null);
 
   // Abriu a tela inicial: as novidades deixam de ser novidade (a bolinha do logo apaga).
   useEffect(marcarNovidadesVistas, []);
 
-  // Vida própria: de tempos em tempos, um coelho dá uns pulinhos e anda um pouco para o lado.
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCoelhos((lista) => {
-        const sorteado = Math.floor(Math.random() * lista.length);
-        return lista.map((coelho, i) =>
-          i === sorteado
-            ? { ...coelho, x: Math.min(92, Math.max(4, coelho.x + (Math.random() * 24 - 12))), pulando: true }
-            : coelho,
-        );
-      });
-      setTimeout(() => setCoelhos((lista) => lista.map((c) => ({ ...c, pulando: false }))), 900);
-    }, 3800);
-    return () => clearInterval(timer);
-  }, []);
-
-  /** Cutucar um coelho: ele pula, fala alguma bobagem e some com a fala depois de uns segundos. */
-  function cutucar(id: number) {
-    sounds.bunny();
-    setCutucados((n) => n + 1);
-    const fala = FALAS[Math.floor(Math.random() * FALAS.length)];
-    setCoelhos((lista) => lista.map((c) => (c.id === id ? { ...c, fala, pulando: true } : c)));
-    setTimeout(() => setCoelhos((lista) => lista.map((c) => (c.id === id ? { ...c, pulando: false } : c))), 700);
-    setTimeout(() => setCoelhos((lista) => lista.map((c) => (c.id === id ? { ...c, fala: null } : c))), 2600);
-  }
-
-  /** Clicar na grama planta uma cenoura, e a turma toda vai atrás dela. */
-  function plantarCenoura(event: React.MouseEvent<HTMLDivElement>) {
-    const area = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - area.left) / area.width) * 100;
-    const id = Date.now();
-    setCenoura({ x, id });
-    setCoelhos((lista) =>
-      lista.map((coelho, i) => ({
-        ...coelho,
-        x: Math.min(94, Math.max(3, x + (i - (lista.length - 1) / 2) * 7)),
-        pulando: true,
-      })),
-    );
-    setTimeout(() => setCoelhos((lista) => lista.map((c) => ({ ...c, pulando: false }))), 1200);
-    setTimeout(() => setCenoura((atual) => (atual?.id === id ? null : atual)), 2600);
-  }
-
-  const noite = periodo === 'noite';
-
-/**
-   * O sol (ou a lua) troca o tema do app inteiro, e a cena acompanha: claro é dia, escuro é noite.
-   */
   function alternarLuz() {
     setPeriodo(toggleTheme() === 'light' ? periodoClaro() : 'noite');
   }
 
+  const pinos: PinoVila[] = [
+    {
+      id: 'salas',
+      titulo: 'Salas',
+      sub: comunidade ? `Converse e jogue em ${comunidade}` : 'Converse e jogue',
+      icone: <Users size={18} />,
+      ...balaoDaCasa(CASAS.salas),
+      onClick: () => setSalasAbertas((aberto) => !aberto),
+    },
+    {
+      id: 'loja',
+      titulo: 'Sons',
+      sub: 'Pacotes de efeitos',
+      icone: <ShoppingBag size={18} />,
+      ...balaoDaCasa(CASAS.loja),
+      onClick: aoAbrirLoja,
+    },
+    {
+      id: 'aprender',
+      titulo: 'Novidades',
+      sub: 'O que mudou no Syden',
+      icone: <BookOpen size={18} />,
+      ...balaoDaCasa(CASAS.aprender),
+      onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    },
+    {
+      id: 'explorar',
+      titulo: 'Explorar',
+      sub: 'Entrar em outra comunidade',
+      icone: <Compass size={18} />,
+      ...balaoDaCasa(CASAS.explorar),
+      onClick: aoExplorar,
+    },
+  ];
+
   return (
     <div className="home">
-      <section className={`scene scene-${periodo}`} aria-label="Cantinho dos coelhos">
-        <div className="scene-sky">
-          {noite &&
-            Array.from({ length: 28 }, (_, i) => (
-              <span key={i} className="star" style={{ left: `${(i * 37) % 100}%`, top: `${(i * 23) % 60}%`, animationDelay: `${i * 0.2}s` }} />
-            ))}
-          <button
-            className="sky-light"
-            title={noite ? 'Clarear o Syden' : 'Escurecer o Syden'}
-            aria-label={noite ? 'Clarear o Syden' : 'Escurecer o Syden'}
-            onClick={alternarLuz}
-          >
-            {noite ? '🌙' : '☀️'}
-          </button>
-          <span className="cloud cloud-1" />
-          <span className="cloud cloud-2" />
-          <span className="cloud cloud-3" />
-        </div>
-
-        <div className="scene-hills">
-          <span className="hill hill-back" />
-          <span className="hill hill-front" />
-        </div>
-
-        <div className="scene-ground" onClick={plantarCenoura}>
-          <div className="house">
-            <span className="house-roof" />
-            <span className="house-body" />
-            <span className={`house-window${noite ? ' lit' : ''}`} />
-            <span className="house-flag" />
+      <div className="home-cena">
+        <Vila periodo={periodo} onLuz={alternarLuz} pinos={pinos} destaque={destaque} onDestaque={setDestaque} />
+        {salasAbertas && (
+          <div className="vila-painel" role="dialog" aria-label="Salas de voz">
+            <header>
+              <h3>{comunidade ? `Salas de ${comunidade}` : 'Salas'}</h3>
+              <button className="vila-painel-fechar" aria-label="Fechar" onClick={() => setSalasAbertas(false)}>
+                ✕
+              </button>
+            </header>
+            {salas.length === 0 ? (
+              <p className="vila-painel-vazio">
+                {comunidade ? 'Esta comunidade ainda não tem sala de voz.' : 'Entre numa comunidade para ver as salas.'}
+              </p>
+            ) : (
+              <ul>
+                {salas.map((sala) => {
+                  const gente = naVoz.filter((m) => m.channelId === sala.id);
+                  return (
+                    <li key={sala.id}>
+                      <button
+                        onClick={() => {
+                          setSalasAbertas(false);
+                          aoEntrar(sala.id);
+                        }}
+                      >
+                        <Volume2 size={16} aria-hidden="true" />
+                        <span className="vila-sala-nome">{sala.name}</span>
+                        <span className={`vila-sala-gente${gente.length > 0 ? ' cheia' : ''}`}>
+                          {gente.length === 0 ? 'vazia' : gente.map((g) => g.username).join(', ')}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
+        )}
+      </div>
 
-          <span className="tree tree-1">
-            <span className="tree-top" />
-            <span className="tree-trunk" />
-          </span>
-          <span className="tree tree-2">
-            <span className="tree-top" />
-            <span className="tree-trunk" />
-          </span>
-
-          <span className="fence" />
-          {[12, 30, 47, 63, 81, 92].map((x, i) => (
-            <span key={x} className={i % 2 === 0 ? 'wheat' : 'flower'} style={{ left: `${x}%` }} />
-          ))}
-
-          {noite &&
-            Array.from({ length: 7 }, (_, i) => (
-              <span key={i} className="firefly" style={{ left: `${10 + i * 12}%`, animationDelay: `${i * 0.9}s` }} />
-            ))}
-
-          {cenoura && (
-            <span className="carrot" style={{ left: `${cenoura.x}%` }} aria-hidden="true">
-              🥕
-            </span>
-          )}
-
-          {coelhos.map((coelho) => (
-            <button
-              key={coelho.id}
-              className={`bunny${coelho.pulando ? ' hop' : ''}`}
-              style={{ left: `${coelho.x}%`, transform: `scale(${coelho.escala})` }}
-              title="Cutucar o coelho"
-              // Sem foco no clique: a cena rolaria para dentro da tela e sairia o enquadramento.
-              onMouseDown={(e) => e.preventDefault()}
-              aria-label="Cutucar o coelho"
-              onClick={(e) => {
-                e.stopPropagation();
-                cutucar(coelho.id);
-              }}
-            >
-              {coelho.fala && <span className="bunny-talk">{coelho.fala}</span>}
-              <Coelho cor={coelho.cor} adorno={coelho.adorno} />
-            </button>
-          ))}
-        </div>
-
-        <p className="scene-hint">
-          Cutuque os coelhos, clique na grama para plantar uma cenoura.
-          {cutucados > 0 && ` · ${cutucados} ${cutucados === 1 ? 'cutucada' : 'cutucadas'} hoje`}
-        </p>
-      </section>
-
-      <section className="home-news" aria-label="Novidades do Syden">
+      <section className="home-news" aria-label="Novidades do Syden" ref={novidadesRef}>
         <h2>Novidades</h2>
         <p className="home-news-lead">O que mudou por aqui, do mais novo para o mais antigo.</p>
         {CHANGELOG.map((update, index) => (
@@ -267,7 +137,9 @@ export function Home() {
               </span>
               <div>
                 <h3>{update.title}</h3>
-                <time dateTime={update.date}>{new Date(update.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</time>
+                <time dateTime={update.date}>
+                  {new Date(update.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
+                </time>
               </div>
               {index === 0 && <span className="update-badge">novo</span>}
             </header>

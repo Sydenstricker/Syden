@@ -4426,399 +4426,558 @@ textarea {
   background: var(--bg-main);
 }
 
-/* A cena inteira é desenhada com divs e SVG; as cores do céu mudam com a hora do dia. */
-.scene {
+/* ---------- A vila ---------- */
+
+/* A cena é um SVG de 1200x780 e a moldura tem exatamente essa proporção: assim os balões, que são HTML
+   posicionados em %, caem sempre em cima das casas certas. */
+.home-cena {
   position: relative;
-  height: min(440px, 46vh);
-  min-height: 300px;
-  overflow: hidden;
+}
+
+.vila {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  aspect-ratio: 1200 / 740;
   user-select: none;
-  --ceu-alto: #7ec8f2;
-  --ceu-baixo: #cfe9f7;
-  --grama: #7fb069;
-  --grama-escura: #6a9a57;
-  --colina: #9ccb7e;
-  --colina-longe: #b7dc99;
-  --luz: rgba(255, 246, 214, 0);
+  /* As cores da vila moram todas aqui: o período do dia só troca estes valores. */
+  --v-ceu-alto: #9ed3ef;
+  --v-ceu-baixo: #ffe7d0;
+  --v-mar-alto: #56a3b8;
+  --v-mar-baixo: #226179;
+  --v-montanha: #a96a62;
+  --v-montanha-longe: #cd958c;
+  --v-grama: #7ea455;
+  --v-grama-clara: #8fb462;
+  --v-terra: #8a6a49;
+  --v-terra-clara: #9d7b58;
+  --v-rocha: #6d5f52;
+  --v-rocha-clara: #857467;
+  --v-pedra-solta: #7f7164;
+  --v-pedra: #e7ddcc;
+  --v-junta: rgba(90, 70, 45, 0.16);
+  --v-parede: #f7eddf;
+  --v-parede-sombra: #e2d4c1;
+  --v-telhado: #d04338;
+  --v-telhado-escuro: #9d2f27;
+  --v-telhado-medio: #b93a31;
+  --v-telhado-claro: #e2564a;
+  --v-madeira: #a87d51;
+  --v-madeira-escura: #7b5a39;
+  --v-folha: #5d8d4c;
+  --v-folha-escura: #47703d;
+  --v-folha-clara: #77a85c;
+  --v-tronco: #7b5a39;
+  --v-ferro: #4a4540;
+  --v-estrela: #f3c73f;
+  --v-vermelho: #c8102e;
+  --v-sombra: rgba(40, 28, 16, 0.2);
+  --v-janela: #b9a78d;
+  --v-janela-acesa: #ffd98a;
+  --v-pedestal: #b9b1a6;
+  --v-pedestal-claro: #d2cbc1;
+  --v-pedestal-escuro: #9c948a;
+  --v-estatua: #cfc7bc;
+  --v-disco: #fff6df;
+  --v-halo-cor: #fff5d6;
+  --v-nuvem: rgba(255, 255, 255, 0.82);
 }
 
-.scene-manha {
-  --ceu-alto: #8fd0f5;
-  --ceu-baixo: #ffe9c9;
-  --luz: rgba(255, 236, 190, 0.25);
+.vila-manha {
+  --v-ceu-alto: #a9dcf5;
+  --v-ceu-baixo: #ffe3c2;
+  --v-montanha: #a87a72;
+  --v-montanha-longe: #cfa197;
 }
 
-.scene-tarde {
-  --ceu-alto: #6ec0ee;
-  --ceu-baixo: #d7eefb;
+.vila-tarde {
+  --v-ceu-alto: #7cc6ec;
+  --v-ceu-baixo: #dcefdc;
+  --v-montanha: #8d7a76;
+  --v-montanha-longe: #b3a09b;
 }
 
-.scene-entardecer {
-  --ceu-alto: #f0956c;
-  --ceu-baixo: #ffd9a0;
-  --grama: #6f9a5e;
-  --grama-escura: #5c834d;
-  --colina: #86ac6f;
-  --colina-longe: #a2c288;
-  --luz: rgba(255, 180, 120, 0.25);
+.vila-entardecer {
+  --v-ceu-alto: #eb9a72;
+  --v-ceu-baixo: #ffd9a6;
+  --v-mar-alto: #57859b;
+  --v-mar-baixo: #26506b;
+  --v-montanha: #9c5a56;
+  --v-montanha-longe: #c07f78;
+  --v-grama: #74964e;
+  --v-grama-clara: #85a55a;
+  --v-disco: #fff1cb;
+  --v-halo-cor: #ffcb8c;
 }
 
-.scene-noite {
-  --ceu-alto: #15204a;
-  --ceu-baixo: #2b3a6b;
-  --grama: #2f4a38;
-  --grama-escura: #263d2e;
-  --colina: #35543f;
-  --colina-longe: #3e6049;
-  --luz: rgba(120, 150, 255, 0.12);
+.vila-noite {
+  --v-ceu-alto: #141d44;
+  --v-ceu-baixo: #2e3a68;
+  --v-mar-alto: #21456a;
+  --v-mar-baixo: #12253f;
+  --v-montanha: #2f3350;
+  --v-montanha-longe: #3d4266;
+  --v-grama: #33502f;
+  --v-grama-clara: #3b5b35;
+  --v-terra: #4a3a2a;
+  --v-terra-clara: #55432f;
+  --v-rocha: #3b352f;
+  --v-rocha-clara: #4a433b;
+  --v-pedra-solta: #453e37;
+  --v-pedra: #6f6a5f;
+  --v-junta: rgba(0, 0, 0, 0.3);
+  --v-parede: #9b8f7e;
+  --v-parede-sombra: #7d7263;
+  --v-telhado: #8c2f2a;
+  --v-telhado-escuro: #64211d;
+  --v-telhado-medio: #782823;
+  --v-telhado-claro: #a03b34;
+  --v-madeira: #6b5136;
+  --v-madeira-escura: #4e3b27;
+  --v-folha: #3a5c34;
+  --v-folha-escura: #2c4829;
+  --v-folha-clara: #486c3e;
+  --v-tronco: #4e3b27;
+  --v-estatua: #8d8880;
+  --v-pedestal: #767069;
+  --v-pedestal-claro: #8a847c;
+  --v-pedestal-escuro: #5f5a54;
+  --v-sombra: rgba(0, 0, 0, 0.3);
+  --v-disco: #e9eefc;
+  --v-halo-cor: #c8d8ff;
+  --v-nuvem: rgba(180, 195, 235, 0.32);
 }
 
-.scene-sky {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, var(--ceu-alto), var(--ceu-baixo));
-  transition: background 1.2s ease;
-}
-
-.scene-sky::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--luz);
-  transition: background 1.2s ease;
-}
-
-.sky-light {
-  position: absolute;
-  top: 18px;
-  right: 28px;
-  z-index: 3;
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform 0.25s ease, background 0.25s ease;
-}
-
-.sky-light:hover {
-  transform: scale(1.12) rotate(12deg);
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.star {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: #fff;
-  opacity: 0.85;
-  animation: pisca 3.5s ease-in-out infinite;
-}
-
-@keyframes pisca {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.95; }
-}
-
-.cloud {
-  position: absolute;
-  height: 26px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 26px 6px 0 -4px rgba(255, 255, 255, 0.85), -24px 8px 0 -6px rgba(255, 255, 255, 0.85);
-  animation: passeia linear infinite;
-}
-
-.scene-noite .cloud {
-  background: rgba(200, 210, 240, 0.18);
-  box-shadow: 26px 6px 0 -4px rgba(200, 210, 240, 0.18), -24px 8px 0 -6px rgba(200, 210, 240, 0.18);
-}
-
-.cloud-1 { top: 16%; width: 70px; animation-duration: 90s; }
-.cloud-2 { top: 30%; width: 54px; animation-duration: 130s; animation-delay: -40s; }
-.cloud-3 { top: 9%; width: 88px; animation-duration: 160s; animation-delay: -90s; }
-
-@keyframes passeia {
-  from { left: -140px; }
-  to { left: 108%; }
-}
-
-.scene-hills {
-  position: absolute;
-  inset: auto 0 34% 0;
-  height: 40%;
-}
-
-.hill {
-  position: absolute;
-  bottom: 0;
-  border-radius: 50% 50% 0 0;
-  transition: background 1.2s ease;
-}
-
-.hill-back {
-  left: -6%;
-  width: 62%;
-  height: 100%;
-  background: var(--colina-longe);
-}
-
-.hill-front {
-  right: -10%;
-  width: 70%;
-  height: 76%;
-  background: var(--colina);
-}
-
-/* O chão é onde tudo acontece: clicar aqui planta a cenoura. */
-.scene-ground {
-  position: absolute;
-  inset: 66% 0 0 0;
-  background: linear-gradient(to bottom, var(--grama), var(--grama-escura));
-  cursor: crosshair;
-  transition: background 1.2s ease;
-}
-
-.scene-ground::before {
-  content: '';
-  position: absolute;
-  inset: -6px 0 auto 0;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--grama);
-  transition: background 1.2s ease;
-}
-
-.house {
-  position: absolute;
-  left: 6%;
-  bottom: 52%;
-  width: 92px;
-  height: 66px;
-}
-
-.house-body {
-  position: absolute;
-  inset: 26px 0 0 0;
-  border-radius: 4px;
-  background: #c98a5b;
-}
-
-.house-roof {
-  position: absolute;
-  left: -8px;
-  top: 0;
-  width: 0;
-  height: 0;
-  border-left: 54px solid transparent;
-  border-right: 54px solid transparent;
-  border-bottom: 30px solid #9c4d3c;
-}
-
-.house-window {
-  position: absolute;
-  left: 34px;
-  top: 40px;
-  width: 24px;
-  height: 20px;
-  border-radius: 3px;
-  background: #6b7f93;
-  box-shadow: inset 0 0 0 2px #8a5a3a;
-  transition: background 0.8s ease, box-shadow 0.8s ease;
-}
-
-.house-window.lit {
-  background: #ffd98a;
-  box-shadow: inset 0 0 0 2px #8a5a3a, 0 0 18px 6px rgba(255, 217, 138, 0.45);
-}
-
-.tree {
-  position: absolute;
-  bottom: 46%;
-}
-
-.tree-1 { right: 12%; transform: scale(1.1); }
-.tree-2 { right: 26%; transform: scale(0.8); }
-
-.tree-top {
-  position: absolute;
-  bottom: 22px;
-  left: -22px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50% 50% 46% 46%;
-  background: #4f8b4a;
-  box-shadow: inset -6px -6px 0 rgba(0, 0, 0, 0.08);
-}
-
-.scene-noite .tree-top { background: #3d6849; }
-
-.tree-trunk {
-  position: absolute;
-  bottom: 0;
-  left: -5px;
-  width: 10px;
-  height: 26px;
-  border-radius: 3px;
-  background: #8a5a3a;
-}
-
-.fence {
-  position: absolute;
-  left: 46%;
-  right: 4%;
-  bottom: 60%;
-  height: 14px;
-  background: repeating-linear-gradient(to right, #d8b98f 0 5px, transparent 5px 24px);
-  opacity: 0.4;
-}
-
-.fence::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 4px 0;
-  height: 3px;
-  background: #d8b98f;
-  opacity: 0.8;
-}
-
-.flower {
-  position: absolute;
-  bottom: 18%;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #f2d06b;
-  box-shadow: 0 6px 0 -2px #5f8f4f;
-}
-
-.firefly {
-  position: absolute;
-  bottom: 30%;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #f5f39a;
-  box-shadow: 0 0 10px 3px rgba(245, 243, 154, 0.6);
-  animation: vagalume 6s ease-in-out infinite;
-}
-
-@keyframes vagalume {
-  0%, 100% { transform: translate(0, 0); opacity: 0.15; }
-  25% { transform: translate(18px, -22px); opacity: 1; }
-  50% { transform: translate(-12px, -34px); opacity: 0.5; }
-  75% { transform: translate(14px, -14px); opacity: 0.9; }
-}
-
-.carrot {
-  position: absolute;
-  bottom: 22%;
-  font-size: 22px;
-  transform: translateX(-50%);
-  animation: plantada 0.4s ease-out;
-}
-
-@keyframes plantada {
-  from { transform: translateX(-50%) scale(0) rotate(-40deg); }
-  to { transform: translateX(-50%) scale(1) rotate(0); }
-}
-
-/* ---------- Os coelhos ---------- */
-
-.bunny {
-  position: absolute;
-  bottom: 8%;
-  width: 66px;
-  height: 78px;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  transform-origin: bottom center;
-  /* A posição muda com calma: eles andam até a cenoura em vez de teletransportar. */
-  transition: left 1.1s cubic-bezier(0.32, 0.72, 0.4, 1);
-}
-
-.bunny-art {
+.vila-art {
+  display: block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.25));
-  animation: respira 3.2s ease-in-out infinite;
 }
 
-.scene-noite .bunny-art { filter: drop-shadow(0 4px 3px var(--shadow)) brightness(0.82); }
+/* ---------- as peças do desenho ---------- */
 
-@keyframes respira {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(0.97); }
+.v-ceu-alto { stop-color: var(--v-ceu-alto); }
+.v-ceu-baixo { stop-color: var(--v-ceu-baixo); }
+.v-mar-alto { stop-color: var(--v-mar-alto); }
+.v-mar-baixo { stop-color: var(--v-mar-baixo); }
+.v-halo-dentro { stop-color: var(--v-halo-cor); stop-opacity: 0.5; }
+.v-halo-fora { stop-color: var(--v-halo-cor); stop-opacity: 0; }
+
+.v-montanha { fill: var(--v-montanha); }
+.v-montanha-longe { fill: var(--v-montanha-longe); }
+.v-grama { fill: var(--v-grama); }
+.v-grama-clara { fill: var(--v-grama-clara); }
+.v-terra { fill: var(--v-terra); }
+.v-terra-clara { fill: var(--v-terra-clara); }
+.v-rocha { fill: var(--v-rocha); }
+.v-rocha-clara { fill: var(--v-rocha-clara); }
+.v-pedra-solta { fill: var(--v-pedra-solta); }
+.v-pedra { fill: var(--v-pedra); }
+.v-parede { fill: var(--v-parede); }
+.v-parede-sombra { fill: var(--v-parede-sombra); }
+.v-porta { fill: var(--v-madeira-escura); }
+.v-telhado { fill: var(--v-telhado); }
+.v-telhado-fundo { fill: var(--v-telhado-escuro); }
+.v-telhado-lado { fill: var(--v-telhado-escuro); }
+.v-telhado-lado-claro { fill: var(--v-telhado-medio); }
+.v-madeira { fill: var(--v-madeira); }
+.v-madeira-escura { fill: var(--v-madeira-escura); }
+.v-tronco { fill: var(--v-tronco); }
+.v-folha { fill: var(--v-folha); }
+.v-folha-escura { fill: var(--v-folha-escura); }
+.v-folha-clara { fill: var(--v-folha-clara); }
+.v-ferro { fill: var(--v-ferro); }
+.v-estrela { fill: var(--v-estrela); }
+.v-bandeira { fill: var(--v-vermelho); }
+.v-sombra { fill: var(--v-sombra); }
+.v-pedestal { fill: var(--v-pedestal); }
+.v-pedestal-sombra { fill: var(--v-pedestal-escuro); }
+.v-pedestal-topo { fill: var(--v-pedestal-claro); }
+.v-estatua-corpo { fill: var(--v-vermelho); }
+.v-estatua-escura { fill: var(--v-pedestal-escuro); }
+.v-estatua-olho { fill: #f7f1e6; }
+.v-estatua-bone { fill: #8f0c20; }
+.v-casco { fill: var(--v-madeira-escura); }
+.v-fonte-borda { fill: var(--v-pedestal-claro); }
+.v-fonte-parede { fill: var(--v-pedestal); }
+.v-agua-fonte { fill: #63b6d4; }
+.v-flor-a { fill: #f0d357; }
+.v-flor-b { fill: #e8879c; }
+.v-reflexo { fill: rgba(255, 255, 255, 0.14); }
+.vila-noite .v-agua-fonte { fill: #3b7c9c; }
+
+.v-junta {
+  stroke: var(--v-junta);
+  stroke-width: 1.2;
 }
 
-.bunny.hop .bunny-art { animation: pula 0.42s ease-in-out 2; }
-
-@keyframes pula {
-  0%, 100% { transform: translateY(0) scaleY(1); }
-  30% { transform: translateY(-16px) scaleY(1.06); }
-  70% { transform: translateY(-4px) scaleY(0.96); }
+.v-trave {
+  stroke: var(--v-madeira);
+  stroke-width: 3;
+  stroke-linecap: round;
 }
 
-/* Girar cada orelha soltava ela da cabeça (o giro é em volta do próprio desenho, não do corpo).
-   Agora o coelho inteiro se inclina de leve, que dá a mesma ideia de "prestou atenção". */
-.bunny-art {
-  transform-origin: bottom center;
+.v-janela {
+  fill: var(--v-janela);
+}
+
+.v-janela.acesa {
+  fill: var(--v-janela-acesa);
+}
+
+.v-cumeeira {
+  stroke: var(--v-telhado-escuro);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.v-lampada { fill: var(--v-ferro); }
+.v-lampada.acesa { fill: var(--v-janela-acesa); }
+
+.v-brilho {
+  fill: var(--v-janela-acesa);
+  opacity: 0.16;
+}
+
+.v-disco {
+  fill: var(--v-disco);
+}
+
+.v-halo {
+  pointer-events: none;
+  animation: v-respirar 6s ease-in-out infinite;
+}
+
+.v-lua-mordida {
+  fill: var(--v-ceu-alto);
+}
+
+.v-luz {
+  cursor: pointer;
+  /* Sem a moldura padrão do navegador: ela desenharia um retângulo em volta do brilho inteiro do sol.
+     Quem chega pelo teclado continua vendo o sol contornado (regra abaixo). */
+  outline: none;
+}
+
+.v-luz:focus-visible .v-disco {
+  stroke: #fff;
+  stroke-width: 4;
+}
+
+.v-estrelinha {
+  fill: #fff;
+  animation: v-piscar 3.4s ease-in-out infinite;
+}
+
+.v-nuvem {
+  fill: var(--v-nuvem);
+}
+
+.v-nuvem.n1 { animation: v-passear 90s linear infinite; }
+.v-nuvem.n2 { animation: v-passear 130s linear infinite; }
+.v-nuvem.n3 { animation: v-passear 110s linear infinite; }
+
+.v-onda {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 3;
+  stroke-linecap: round;
+  animation: v-ondular 7s ease-in-out infinite;
+}
+
+.v-pano {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: v-tremular 4.5s ease-in-out infinite;
+}
+
+.v-esguicho {
+  animation: v-borbulhar 2.6s ease-in-out infinite;
+}
+
+.v-barco {
+  animation: v-boiar 5s ease-in-out infinite;
+}
+
+.v-chao-clicavel {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+.v-cenoura {
+  animation: v-brotar 0.4s ease-out;
+}
+
+/* ---------- casas e coelhos ---------- */
+
+.v-casa {
   transition: transform 0.25s ease;
 }
 
-.bunny:hover .bunny-art {
-  transform: rotate(-4deg) scale(1.06);
+.v-casa.destaque {
+  transform: translateY(-8px);
 }
 
-.bunny-talk {
-  position: absolute;
-  bottom: calc(100% + 4px);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: #fffdf7;
-  color: #3b3a38;
-  font-size: 12px;
+.v-casa.destaque .v-telhado {
+  fill: var(--v-telhado-claro);
+}
+
+.v-coelho {
+  cursor: pointer;
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+
+.v-coelho:focus-visible {
+  outline: none;
+}
+
+.v-coelho:focus-visible .v-coelho-corpo {
+  filter: drop-shadow(0 0 4px #fff);
+}
+
+/* O balanço de quem anda o tempo todo, e o pulo de quem levou uma cutucada. */
+.v-coelho-corpo {
+  animation: v-balancar 0.9s ease-in-out infinite;
+}
+
+.v-coelho.cutucado .v-coelho-corpo {
+  animation: v-pular 0.45s ease-out 2;
+}
+
+.v-fala {
+  animation: v-falar 0.25s ease-out;
+}
+
+.v-fala rect {
+  fill: rgba(20, 16, 12, 0.82);
+}
+
+.v-fala path {
+  fill: rgba(20, 16, 12, 0.82);
+}
+
+.v-fala text {
+  fill: #fff;
+  font-size: 15px;
   font-weight: 600;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  animation: fala 0.25s ease-out;
 }
 
-.bunny-talk::after {
-  content: '';
+/* ---------- os balões que levam a algum lugar ---------- */
+
+.vila-pino {
   position: absolute;
-  top: 100%;
+  transform: translate(-50%, -100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(20, 16, 14, 0.82);
+  backdrop-filter: blur(3px);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+  white-space: nowrap;
+}
+
+.vila-pino:hover,
+.vila-pino.aceso,
+.vila-pino:focus-visible {
+  background: rgba(30, 24, 20, 0.94);
+  transform: translate(-50%, -100%) scale(1.05);
+}
+
+.vila-pino-icone {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--v-vermelho, #c8102e);
+  color: #fff;
+  flex: none;
+}
+
+.vila-pino-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.vila-pino-texto strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.vila-pino-texto small {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* A listinha de salas que aparece quando se clica na casa das Salas. */
+.vila-painel {
+  position: absolute;
   left: 50%;
-  margin-left: -5px;
-  border: 5px solid transparent;
-  border-top-color: #fffdf7;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  width: min(360px, 88%);
+  padding: 14px 16px 16px;
+  border-radius: 14px;
+  background: var(--bg-float, #1e1f22);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
 }
 
-@keyframes fala {
-  from { opacity: 0; transform: translate(-50%, 6px) scale(0.85); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.vila-painel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.scene-hint {
+.vila-painel h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.vila-painel-fechar {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.vila-painel-vazio {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.vila-painel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vila-painel li button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.vila-painel li button:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.06));
+}
+
+.vila-sala-nome {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vila-sala-gente {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 55%;
+}
+
+.vila-sala-gente.cheia {
+  color: var(--green, #23a55a);
+}
+
+.vila-dica {
   position: absolute;
   left: 16px;
-  top: 16px;
+  bottom: 12px;
   margin: 0;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
   font-size: 12px;
   color: rgba(255, 255, 255, 0.92);
   pointer-events: none;
+}
+
+/* ---------- movimento ---------- */
+
+@keyframes v-balancar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+
+@keyframes v-pular {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-14px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes v-falar {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes v-respirar {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes v-piscar {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+@keyframes v-passear {
+  from { transform: translateX(-260px); }
+  to { transform: translateX(1300px); }
+}
+
+@keyframes v-ondular {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(26px); opacity: 0.85; }
+}
+
+@keyframes v-tremular {
+  0%, 100% { transform: skewY(0deg); }
+  50% { transform: skewY(-3.5deg); }
+}
+
+@keyframes v-borbulhar {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+@keyframes v-boiar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes v-brotar {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Novidades ---------- */
@@ -4905,21 +5064,22 @@ textarea {
 }
 
 @media (max-width: 760px) {
-  .scene {
-    height: 260px;
-    min-height: 0;
-  }
-
-  .house { left: 3%; transform: scale(0.8); transform-origin: left bottom; }
+  .vila-pino { padding: 6px 10px 6px 6px; }
+  .vila-pino-icone { width: 24px; height: 24px; }
+  .vila-pino-texto strong { font-size: 13px; }
+  .vila-pino-texto small { display: none; }
   .home-news { padding: 20px 16px 40px; }
   .update ul { padding-left: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cloud,
-  .star,
-  .firefly,
-  .bunny-art {
+  .v-nuvem,
+  .v-estrelinha,
+  .v-onda,
+  .v-pano,
+  .v-barco,
+  .v-halo,
+  .v-coelho-corpo {
     animation: none;
   }
 }
@@ -4958,63 +5118,6 @@ textarea {
   display: block;
 }
 
-/* Bandeirinha vermelha no telhado e o trigo do emblema no meio das flores. */
-.house-flag {
-  position: absolute;
-  left: 44px;
-  top: -18px;
-  width: 2px;
-  height: 22px;
-  background: #8a5a3a;
-}
-
-.house-flag::after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 1px;
-  width: 16px;
-  height: 11px;
-  background: #c8102e;
-  clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
-  transform-origin: left center;
-  animation: tremula 3.5s ease-in-out infinite;
-}
-
-@keyframes tremula {
-  0%, 100% { transform: skewY(0deg); }
-  50% { transform: skewY(-4deg); }
-}
-
-.wheat {
-  position: absolute;
-  bottom: 16%;
-  width: 3px;
-  height: 16px;
-  border-radius: 2px;
-  background: linear-gradient(to top, #6f8f4a, #d9b154 45%);
-  transform-origin: bottom center;
-  animation: balanca 4s ease-in-out infinite;
-}
-
-.wheat::before,
-.wheat::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  width: 4px;
-  height: 7px;
-  border-radius: 60% 60% 40% 40%;
-  background: #d9b154;
-}
-
-.wheat::before { left: -3px; transform: rotate(-22deg); }
-.wheat::after { right: -3px; transform: rotate(22deg); }
-
-@keyframes balanca {
-  0%, 100% { transform: rotate(-3deg); }
-  50% { transform: rotate(3deg); }
-}
 
 /* Escolha entre criar uma comunidade e entrar por convite, dentro da mesma janela. */
 .community-choice {

@@ -39,6 +39,8 @@ import { PackCatalog } from './PackCatalog';
 import { EFFECT_ICONS } from './VoiceEffectButton';
 import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
+export type SettingsSection = Section;
+
 type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
@@ -65,6 +67,7 @@ const KB = 1024;
 const manages = (community: Community) => community.role === 'owner' || community.role === 'admin';
 
 export function SettingsModal({
+  secaoInicial = 'account',
   user,
   community,
   voice,
@@ -72,6 +75,8 @@ export function SettingsModal({
   onLogout,
   onCommunityChanged,
 }: {
+  /** Em que aba a janela abre: a vila manda direto para os pacotes de sons. */
+  secaoInicial?: Section;
   user: User;
   community: Community | undefined;
   voice: Voice;
@@ -79,7 +84,7 @@ export function SettingsModal({
   onLogout: () => void;
   onCommunityChanged: () => void;
 }) {
-  const [section, setSection] = useState<Section>('account');
+  const [section, setSection] = useState<Section>(secaoInicial);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
