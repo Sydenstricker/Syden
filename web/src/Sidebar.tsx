@@ -19,6 +19,7 @@ import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
+import { AnimatedIcon } from './AnimatedIcon';
 import { Avatar } from './Avatar';
 import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
@@ -177,7 +178,8 @@ export function Sidebar({
             danger={voice.media.muted}
             onClick={voice.toggleMute}
           >
-            {voice.media.muted ? <MicOff size={18} /> : <Mic size={18} />}
+            {/* Mudo continua com o ícone de traço: ali o desenho precisa gritar que está desligado. */}
+            {voice.media.muted ? <MicOff size={18} /> : <AnimatedIcon name="microfone" size={20} />}
           </IconButton>
           <IconButton
             label={voice.deafened ? 'Ativar áudio' : 'Desativar áudio'}
