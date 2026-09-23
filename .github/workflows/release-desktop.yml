@@ -57,6 +57,18 @@ jobs:
           exit "$codigo"
       - run: npx electron-builder --win --publish never
         working-directory: desktop
+      - name: Conferir que o módulo de som entrou no instalador
+        shell: bash
+        working-directory: desktop
+        run: |
+          alvo=release/win-unpacked/resources/app.asar.unpacked/native/build/Release/syden_audio.node
+          if [ -f "$alvo" ]; then
+            echo "módulo de som empacotado: $(stat -c%s "$alvo") bytes"
+          else
+            echo "::error title=Instalador sem o módulo de som::não achei $alvo — a transmissão sairia sem o som limpo, então a versão não vai ser publicada"
+            find release -name '*.node' | head -20
+            exit 1
+          fi
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
