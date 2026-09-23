@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import type { Socket } from 'socket.io-client';
-import { AnimatedIcon } from './AnimatedIcon';
 import { api } from './api';
 import { EmojiPicker } from './EmojiPicker';
 import { PollDialog } from './PollDialog';
@@ -241,7 +240,7 @@ export const Composer = forwardRef<ComposerHandle, {
             aria-label="Emojis"
             onClick={() => setPickerOpen(!pickerOpen)}
           >
-            <AnimatedIcon name="emoji" size={22} />
+            <Smile size={22} />
           </button>
           {pickerOpen && <EmojiPicker onPick={insertAtCursor} onClose={() => setPickerOpen(false)} />}
         </div>

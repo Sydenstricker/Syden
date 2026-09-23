@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
+import { AnimatedIcon } from './AnimatedIcon';
 import { api, mediaUrl } from './api';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
@@ -40,17 +41,21 @@ import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
 type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emojis' | 'soundboard';
 
+// Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
+// o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
-  { id: 'account', label: 'Minha conta', icon: <CircleUser size={18} /> },
-  { id: 'voice', label: 'Voz e vídeo', icon: <Mic size={18} /> },
-  { id: 'sounds', label: 'Notificações', icon: <Bell size={18} /> },
+  { id: 'account', label: 'Minha conta', icon: <AnimatedIcon name="avatar" size={20} /> },
+  { id: 'voice', label: 'Voz e vídeo', icon: <AnimatedIcon name="microfone" size={20} /> },
+  { id: 'sounds', label: 'Notificações', icon: <AnimatedIcon name="alarme" size={20} /> },
 ];
 
 const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
+  // Comunidade e Membros seguem com os ícones de traço: o desenho de videochamada é colorido demais para
+  // o menu, e o de pessoa não aparece direito parado.
   { id: 'community', label: 'Comunidade', icon: <Hash size={18} /> },
   { id: 'members', label: 'Membros', icon: <Users size={18} /> },
-  { id: 'emojis', label: 'Emojis', icon: <Smile size={18} /> },
-  { id: 'soundboard', label: 'Soundboard', icon: <AudioLines size={18} /> },
+  { id: 'emojis', label: 'Emojis', icon: <AnimatedIcon name="emoji" size={20} /> },
+  { id: 'soundboard', label: 'Soundboard', icon: <AnimatedIcon name="musica" size={20} /> },
 ];
 
 const KB = 1024;
