@@ -1,5 +1,4 @@
 import { desktopBridge } from './desktop';
-import { Logo } from './Logo';
 
 /**
  * Faixa escura no topo, só dentro do app de desktop: o Windows desenha uma barra de título clara por
@@ -10,14 +9,9 @@ export function DesktopTitleBar({ minimal }: { minimal?: boolean }) {
   if (!desktopBridge) return null;
   return (
     <div className="desktop-titlebar">
-      {/* Enquanto a animação de abertura toca, o coelho pequeno aqui em cima fica redundante com o
-          grande no centro — a faixa continua existindo (para arrastar a janela), só sem o logo. */}
-      {!minimal && (
-        <>
-          <Logo size={16} />
-          <span>Syden</span>
-        </>
-      )}
+      {/* Só o nome: o coelho já está logo abaixo, no botão de início, e repetido aqui ficava poluído.
+          Durante a animação de abertura nem o nome aparece — a faixa continua servindo para arrastar. */}
+      {!minimal && <span>Syden</span>}
     </div>
   );
 }

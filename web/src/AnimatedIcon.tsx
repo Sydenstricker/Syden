@@ -98,6 +98,29 @@ function themeColor(variable: string, fallback: string): string {
   return /^#[0-9a-fA-F]{6}$/.test(valor) ? valor : fallback;
 }
 
+/**
+ * Há desenho visível aí dentro? Soma a área das formas, descontando as que estão transparentes — inclusive
+ * por causa de um grupo acima delas, que é como o Lottie some com o desenho entre uma cena e outra.
+ */
+function temDesenho(box: HTMLElement | null): boolean {
+  if (!box) return false;
+  let area = 0;
+  for (const el of box.querySelectorAll('path, rect, circle, ellipse')) {
+    let opacidade = 1;
+    for (let atual: Element | null = el; atual && atual !== box; atual = atual.parentElement) {
+      opacidade *= Number(getComputedStyle(atual).opacity || 1);
+    }
+    if (opacidade < 0.05) continue;
+    try {
+      const caixa = (el as SVGGraphicsElement).getBBox();
+      area += caixa.width * caixa.height;
+    } catch {
+      // Forma ainda não medível: ignora.
+    }
+  }
+  return area > 1000;
+}
+
 interface Props {
   name: AnimatedIconName;
   size?: number;
@@ -126,10 +149,18 @@ export function AnimatedIcon({ name, size = 22, color, accent, className }: Prop
         if (cancelled || !box.current) return;
         recolor(data, color ?? themeColor('--text', '#dbdee1'), accent ?? themeColor('--accent', '#5865f2'));
 
-        // O arquivo traz marcadores: "hover-pinch" é a animação de reagir ao toque.
+        // O arquivo traz marcadores: "hover-pinch" é a animação de reagir ao toque, e "in-reveal" é a de
+        // entrada, que termina com o desenho inteiro na tela.
         const marcadores = (data as { markers?: { cm: string; tm: number; dr: number }[] }).markers ?? [];
         const marcador = marcadores.find((m) => m.cm.includes('hover-pinch')) ?? marcadores.at(-1);
+        const entrada = marcadores.find((m) => m.cm.includes('in-reveal'));
         segment.current = marcador ? [marcador.tm, marcador.tm + marcador.dr] : null;
+        const candidatos = [
+          entrada ? entrada.tm + entrada.dr - 1 : null,
+          marcador ? marcador.tm : 0,
+          marcador ? marcador.tm + marcador.dr - 1 : null,
+          marcador ? Math.round(marcador.tm + marcador.dr / 2) : null,
+        ].filter((quadro): quadro is number => quadro !== null);
 
         const anim = lottie.loadAnimation({
           container: box.current,
@@ -140,8 +171,11 @@ export function AnimatedIcon({ name, size = 22, color, accent, className }: Prop
         });
         instance = anim;
         player.current = anim as unknown as typeof player.current;
-        // Parado, mostra o primeiro quadro da animação de reagir (o desenho "em repouso").
-        anim.goToAndStop(segment.current ? segment.current[0] : 0, true);
+        // Fica no primeiro quadro em que o desenho realmente aparece.
+        for (const quadro of candidatos) {
+          anim.goToAndStop(quadro, true);
+          if (temDesenho(box.current)) break;
+        }
         setReady(true);
       } catch {
         // Sem a biblioteca ou sem o arquivo: fica o espaço vazio e o botão continua funcionando.
@@ -155,20 +189,34 @@ export function AnimatedIcon({ name, size = 22, color, accent, className }: Prop
     };
   }, [name, color, accent, theme]);
 
-  function play() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const anim = player.current;
-    if (!anim || !segment.current) return;
-    anim.playSegments(segment.current, true);
-  }
+  /**
+   * Quem dispara a animação é a linha inteira (o botão ou a etiqueta em volta), não só o desenho: passar
+   * o mouse no texto "Voz e vídeo" tem que mexer o microfone do lado.
+   */
+  useEffect(() => {
+    if (!ready || !box.current) return;
+    const alvo = box.current.closest('button, label, a') ?? box.current;
+
+    const play = () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const anim = player.current;
+      if (!anim || !segment.current) return;
+      anim.playSegments(segment.current, true);
+    };
+
+    alvo.addEventListener('mouseenter', play);
+    alvo.addEventListener('click', play);
+    return () => {
+      alvo.removeEventListener('mouseenter', play);
+      alvo.removeEventListener('click', play);
+    };
+  }, [ready]);
 
   return (
     <span
       ref={box}
       className={`animated-icon${ready ? ' ready' : ''}${className ? ` ${className}` : ''}`}
       style={{ width: size, height: size }}
-      onMouseEnter={play}
-      onClick={play}
       aria-hidden="true"
     />
   );

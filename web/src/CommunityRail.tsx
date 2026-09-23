@@ -33,7 +33,7 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
         aria-current={homeActive}
         onClick={onHome}
       >
-        <Logo size={26} />
+        <Logo size={34} />
         {homeBadge && <span className="rail-logo-dot" aria-hidden="true" />}
       </button>
       {top}

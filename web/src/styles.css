@@ -375,27 +375,44 @@ textarea {
 }
 
 /* O logo é o botão da tela inicial: acende quando ela está aberta. */
+/* Botão de início: é a porta de entrada do app, então tem o maior alvo da coluna e um anel próprio. */
 .rail-logo {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 0 8px;
-  border: none;
-  border-bottom: 1px solid var(--bg-sidebar);
-  border-radius: 12px 12px 0 0;
-  background: none;
-  width: 40px;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 10px;
+  padding: 0;
+  border: 2px solid var(--bg-raised);
+  border-radius: 18px;
+  background: var(--bg-sidebar);
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, border-radius 0.15s ease;
+}
+
+.rail-logo::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 24px;
+  height: 2px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: var(--bg-raised);
 }
 
 .rail-logo:hover {
-  background: var(--bg-active);
+  border-color: var(--red);
   transform: scale(1.06);
 }
 
 .rail-logo.active {
-  background: var(--bg-active);
+  border-color: var(--red);
+  border-radius: 16px;
+  background: var(--bg-raised);
 }
 
 .rail-list {
