@@ -5596,3 +5596,45 @@ textarea {
 @media (max-width: 760px) {
   .ideias { padding: 20px 16px 0; }
 }
+
+/* Quem engordou pode voltar à forma: o botãozinho na dica da vila. */
+.vila-dica {
+  pointer-events: none;
+}
+
+.vila-dieta {
+  pointer-events: auto;
+  border: none;
+  background: none;
+  padding: 0;
+  color: #ffd98a;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* O momento em que a barriga cresce: um empurrãozinho, para a mudança não ser um pulo seco. */
+.v-gordo {
+  /* Num <g>, a escala do CSS gira em torno do centro do desenho INTEIRO se a gente não disser o
+     contrário — o coelho sairia voando pela vila. Aqui ela cresce a partir dos pés dele. */
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: v-encher 0.5s ease-out;
+}
+
+@keyframes v-encher {
+  0% { transform: scale(0.86, 1.06); }
+  55% { transform: scale(1.1, 0.95); }
+  100% { transform: scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-gordo { animation: none; }
+}
+
+/* No tema claro o coelho é branco sobre fundo claro e quase some, sobrando só a estrela. Um contorno
+   fininho devolve a silhueta sem sujar o desenho (no tema escuro ele já se destaca sozinho). */
+:root[data-theme='light'] .rail-logo img,
+:root[data-theme='light'] .splash-logo-to {
+  filter: drop-shadow(0 0 0.6px rgba(60, 40, 40, 0.55)) drop-shadow(0 0 1.4px rgba(60, 40, 40, 0.3));
+}

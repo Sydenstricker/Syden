@@ -399,6 +399,26 @@ function Pier() {
  */
 const SENTIMENTOS = ['❤️', '✨', '🥕', '😴', '🎵', '🌸', '😊', '👀', '🥰', '😮', '🌟', '🍀', '☀️', '🫧'];
 
+/** Quantas cenouras é preciso plantar para a turma engordar. */
+const CENOURAS_PARA_ENGORDAR = 5;
+const CHAVE_CENOURAS = 'syden.cenouras';
+
+function lerCenouras(): number {
+  try {
+    return Number(localStorage.getItem(CHAVE_CENOURAS)) || 0;
+  } catch {
+    return 0; // navegador sem armazenamento: os coelhos só não guardam a dieta
+  }
+}
+
+function guardarCenouras(quantas: number) {
+  try {
+    localStorage.setItem(CHAVE_CENOURAS, String(quantas));
+  } catch {
+    // sem armazenamento: vale só enquanto a aba estiver aberta
+  }
+}
+
 /** Onde os coelhos podem andar: a praça e o gramado da frente. */
 const PASSEIO = { c0: -2.6, c1: 2.8, r0: -0.6, r1: 2.8 };
 /** Velocidade: quantos pisos por segundo. */
@@ -426,6 +446,16 @@ interface CoelhoNaVila {
 /** Onde fica a fonte: ninguém anda por dentro dela. */
 const FONTE = { c: 0.6, r: 1.9, raio: 1.35 };
 
+/** Empurra um ponto para fora da fonte: cenoura dentro d'água faria a turma toda pisar nela. */
+function foraDaFonte(ponto: { c: number; r: number }) {
+  const dc = ponto.c - FONTE.c;
+  const dr = ponto.r - FONTE.r;
+  const dist = Math.hypot(dc, dr);
+  if (dist >= FONTE.raio) return ponto;
+  if (dist < 0.001) return { c: FONTE.c, r: FONTE.r + FONTE.raio };
+  return { c: FONTE.c + (dc / dist) * FONTE.raio, r: FONTE.r + (dr / dist) * FONTE.raio };
+}
+
 function sorteioNoPasseio() {
   for (let tentativa = 0; tentativa < 12; tentativa++) {
     const ponto = {
@@ -437,34 +467,53 @@ function sorteioNoPasseio() {
   return { c: PASSEIO.c0, r: PASSEIO.r0 };
 }
 
-function CoelhoArte({ id }: { id: number }) {
+/**
+ * O coelho. Bem alimentado (cinco cenouras plantadas), ele engorda: a barriga alarga, as bochechas
+ * crescem e as orelhas encolhem um pouco — é o "BigChunkus" que o usuário desenhou, em movimento.
+ */
+function CoelhoArte({ id, gordo = false }: { id: number; gordo?: boolean }) {
   const u = UNIFORMES[id % UNIFORMES.length];
+  // Uma medida só comanda a silhueta inteira, para o gordo continuar sendo o mesmo bicho.
+  const barriga = gordo ? 12.6 : 8.6;
+  const altura = gordo ? 10.4 : 9.6;
+  const cabeca = gordo ? 9.2 : 7.8;
+  const orelha = gordo ? 7.6 : 9;
+  const patas = gordo ? 7 : 5;
+  const centro = gordo ? -11.5 : -11;
+  const topo = gordo ? -24.5 : -23;
+  const pontaOrelha = topo - (gordo ? 7 : 8);
   return (
-    <g>
-      <ellipse cx={0} cy={0} rx={12} ry={5} className="v-sombra" />
+    <g className={gordo ? 'v-gordo' : undefined}>
+      <ellipse cx={0} cy={0} rx={gordo ? 15 : 12} ry={gordo ? 6 : 5} className="v-sombra" />
       {/* orelhas */}
-      <ellipse cx={-4.6} cy={-31} rx={3.2} ry={9} fill="#f7f1e6" transform="rotate(-10 -4.6 -31)" />
-      <ellipse cx={4.6} cy={-31} rx={3.2} ry={9} fill="#f7f1e6" transform="rotate(10 4.6 -31)" />
-      <ellipse cx={-4.6} cy={-31} rx={1.4} ry={5.4} fill="#efaab6" transform="rotate(-10 -4.6 -31)" />
-      <ellipse cx={4.6} cy={-31} rx={1.4} ry={5.4} fill="#efaab6" transform="rotate(10 4.6 -31)" />
+      <ellipse cx={-4.6} cy={pontaOrelha} rx={3.2} ry={orelha} fill="#f7f1e6" transform={`rotate(-10 -4.6 ${pontaOrelha})`} />
+      <ellipse cx={4.6} cy={pontaOrelha} rx={3.2} ry={orelha} fill="#f7f1e6" transform={`rotate(10 4.6 ${pontaOrelha})`} />
+      <ellipse cx={-4.6} cy={pontaOrelha} rx={1.4} ry={orelha * 0.6} fill="#efaab6" transform={`rotate(-10 -4.6 ${pontaOrelha})`} />
+      <ellipse cx={4.6} cy={pontaOrelha} rx={1.4} ry={orelha * 0.6} fill="#efaab6" transform={`rotate(10 4.6 ${pontaOrelha})`} />
       {/* pés e corpo de uniforme */}
-      <ellipse cx={-5} cy={-2} rx={4} ry={2.4} fill={u.sombra} />
-      <ellipse cx={5} cy={-2} rx={4} ry={2.4} fill={u.sombra} />
-      <ellipse cx={0} cy={-11} rx={8.6} ry={9.6} fill={u.pano} />
-      <ellipse cx={-7.4} cy={-11} rx={2.6} ry={5} fill={u.sombra} />
-      <ellipse cx={7.4} cy={-11} rx={2.6} ry={5} fill={u.sombra} />
-      <polygon points={estrela(0, -11, 3.6)} className="v-estrela" />
+      <ellipse cx={-patas} cy={-2} rx={4} ry={2.4} fill={u.sombra} />
+      <ellipse cx={patas} cy={-2} rx={4} ry={2.4} fill={u.sombra} />
+      <ellipse cx={0} cy={centro} rx={barriga} ry={altura} fill={u.pano} />
+      <ellipse cx={-(barriga - 1.2)} cy={centro} rx={2.6} ry={5} fill={u.sombra} />
+      <ellipse cx={barriga - 1.2} cy={centro} rx={2.6} ry={5} fill={u.sombra} />
+      <polygon points={estrela(0, centro, gordo ? 4.4 : 3.6)} className="v-estrela" />
       {/* cabeça */}
-      <circle cx={0} cy={-23} r={7.8} fill="#f7f1e6" />
-      <circle cx={-3} cy={-23.4} r={1.3} fill="#3b3a38" />
-      <circle cx={3} cy={-23.4} r={1.3} fill="#3b3a38" />
-      <circle cx={-2.6} cy={-23.9} r={0.45} fill="#fff" />
-      <circle cx={3.4} cy={-23.9} r={0.45} fill="#fff" />
-      <path d="M0,-21 l-1.3,1.2 h2.6 z" fill="#e0879a" />
+      <circle cx={0} cy={topo} r={cabeca} fill="#f7f1e6" />
+      {gordo && (
+        <>
+          <ellipse cx={-cabeca * 0.78} cy={topo + 2.6} rx={3.4} ry={3} fill="#f7f1e6" />
+          <ellipse cx={cabeca * 0.78} cy={topo + 2.6} rx={3.4} ry={3} fill="#f7f1e6" />
+        </>
+      )}
+      <circle cx={-3} cy={topo - 0.4} r={1.3} fill="#3b3a38" />
+      <circle cx={3} cy={topo - 0.4} r={1.3} fill="#3b3a38" />
+      <circle cx={-2.6} cy={topo - 0.9} r={0.45} fill="#fff" />
+      <circle cx={3.4} cy={topo - 0.9} r={0.45} fill="#fff" />
+      <path d={`M0,${topo + 2} l-1.3,1.2 h2.6 z`} fill="#e0879a" />
       {/* boné com estrela */}
-      <path d="M-8.4,-27.4 Q0,-33.6 8.4,-27.4 L8.4,-25.6 Q0,-30.4 -8.4,-25.6 Z" fill={u.pano} />
-      <path d="M-9.8,-26 Q0,-29.6 5.4,-25.4 L-9.6,-24.4 Z" fill={u.sombra} />
-      <polygon points={estrela(0, -29.4, 2.4)} className="v-estrela" />
+      <path d={`M-8.4,${topo - 4.4} Q0,${topo - 10.6} 8.4,${topo - 4.4} L8.4,${topo - 2.6} Q0,${topo - 7.4} -8.4,${topo - 2.6} Z`} fill={u.pano} />
+      <path d={`M-9.8,${topo - 3} Q0,${topo - 6.6} 5.4,${topo - 2.4} L-9.6,${topo - 1.4} Z`} fill={u.sombra} />
+      <polygon points={estrela(0, topo - 6.4, 2.4)} className="v-estrela" />
     </g>
   );
 }
@@ -521,6 +570,8 @@ export function Vila({
   );
   const [cenoura, setCenoura] = useState<{ c: number; r: number; id: number } | null>(null);
   const [cutucados, setCutucados] = useState(0);
+  // Cenouras plantadas até hoje. Passando de cinco, a turma engorda — e continua gorda no próximo dia.
+  const [cenouras, setCenouras] = useState(lerCenouras);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // Vida própria: de tempos em tempos um ou outro resolve dar uma volta.
@@ -547,12 +598,17 @@ export function Vila({
     const x = ((event.clientX - caixa.left) / caixa.width) * LARGURA;
     const y = ((event.clientY - caixa.top) / caixa.height) * ALTURA;
     const ponto = deIso(x, y);
-    const alvo = {
+    const alvo = foraDaFonte({
       c: Math.min(PASSEIO.c1, Math.max(PASSEIO.c0, ponto.c)),
       r: Math.min(PASSEIO.r1, Math.max(PASSEIO.r0, ponto.r)),
-    };
+    });
     const id = Date.now();
     setCenoura({ ...alvo, id });
+    setCenouras((quantas) => {
+      const proxima = quantas + 1;
+      guardarCenouras(proxima);
+      return proxima;
+    });
     setCoelhos((lista) =>
       lista.map((coelho, i) =>
         caminhar(coelho, {
@@ -562,6 +618,15 @@ export function Vila({
       ),
     );
     setTimeout(() => setCenoura((atual) => (atual?.id === id ? null : atual)), 5200);
+  }
+
+  /** Bem alimentados: passou de cinco cenouras, a turma engorda. */
+  const gordos = cenouras >= CENOURAS_PARA_ENGORDAR;
+
+  /** Quem engordou pode voltar à forma: zera a conta das cenouras. */
+  function reiniciarDieta() {
+    setCenouras(0);
+    guardarCenouras(0);
   }
 
   const cenouraPonto = cenoura ? iso(cenoura.c, cenoura.r) : null;
@@ -723,7 +788,7 @@ export function Vila({
               {/* o tamanho vai no atributo, não no CSS: assim a animação de andar mexe só na posição */}
               <g transform={`scale(${(coelho.olhandoEsquerda ? -escala : escala).toFixed(2)} ${escala.toFixed(2)})`}>
                 <g className="v-coelho-corpo">
-                  <CoelhoArte id={coelho.id} />
+                  <CoelhoArte id={coelho.id} gordo={gordos} />
                 </g>
               </g>
               {coelho.fala && (
@@ -768,6 +833,15 @@ export function Vila({
       <p className="vila-dica">
         Cutuque os coelhos, clique na grama para plantar uma cenoura.
         {cutucados > 0 && ` · ${cutucados} ${cutucados === 1 ? 'cutucada' : 'cutucadas'} hoje`}
+        {cenouras > 0 && ` · 🥕 ${cenouras}`}
+        {gordos && (
+          <>
+            {' · a turma engordou! '}
+            <button className="vila-dieta" onClick={reiniciarDieta}>
+              colocar de dieta
+            </button>
+          </>
+        )}
       </p>
     </div>
   );

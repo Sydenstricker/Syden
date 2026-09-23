@@ -11,6 +11,15 @@ export interface Update {
 export const CHANGELOG: Update[] = [
   {
     date: '2026-09-23',
+    title: 'Ícone novo e coelhos bem alimentados',
+    icon: '🥕',
+    items: [
+      'O Syden ganhou um desenho novo: o mesmo coelho na estrela, mais limpo e com sorriso, no ícone do app, na aba do navegador e na abertura.',
+      'Plante cinco cenouras na vila e a turma engorda. Dá para colocá-los de dieta pela própria dica, no canto da cena.',
+    ],
+  },
+  {
+    date: '2026-09-23',
     title: 'A tela inicial virou uma vila',
     icon: '🏡',
     items: [
