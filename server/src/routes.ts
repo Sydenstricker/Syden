@@ -143,6 +143,18 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/me', async (request) => request.user);
 
+    // Enfeites do perfil. O servidor não conhece as cores: guarda o nome da opção e confia no app para
+    // desenhar — assim dá para acrescentar cor nova sem tocar no banco. Só limita o tamanho do texto.
+    authed.put<{ Body: { nameColor?: string | null; banner?: string | null } }>('/api/me/profile', async (request) => {
+      const limpa = (valor: unknown) => (typeof valor === 'string' && valor.length > 0 && valor.length <= 24 ? valor : null);
+      const user = db.setProfile(request.user.id, {
+        nameColor: limpa(request.body?.nameColor),
+        banner: limpa(request.body?.banner),
+      });
+      io.emit('user:updated', user);
+      return user;
+    });
+
     authed.post<{ Body: { currentPassword?: string; newPassword?: string } }>(
       '/api/me/password',
       async (request, reply) => {

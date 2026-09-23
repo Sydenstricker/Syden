@@ -10,6 +10,26 @@ export interface Update {
 
 export const CHANGELOG: Update[] = [
   {
+    date: '2026-09-23',
+    title: 'A tela inicial virou uma vila',
+    icon: '🏡',
+    items: [
+      'A tela de início agora é uma vila vista de cima, com coelhos que andam por conta própria pela praça — cutuque um para ver o que ele fala, ou clique na grama para plantar uma cenoura.',
+      'As casas levam a algum lugar: Salas mostra quem está em cada sala de voz, Sons abre o catálogo de pacotes, Novidades traz esta lista e Explorar abre outra comunidade.',
+      'Clicar no sol continua acendendo e apagando a luz do Syden inteiro.',
+    ],
+  },
+  {
+    date: '2026-09-23',
+    title: 'Seu perfil do seu jeito',
+    icon: '🎨',
+    items: [
+      'Em Configurações → Minha conta dá para escolher a cor do seu nome, entre dez, e um fundo para o seu perfil — quatro deles com movimento.',
+      'Clicando em alguém na lista da direita abre o cartão da pessoa, com o fundo e a cor que ela escolheu.',
+      'Seu nome sai colorido na lista, nas mensagens e ali embaixo, ao lado da sua foto.',
+    ],
+  },
+  {
     date: '2026-09-22',
     title: 'Pacotes de sons e modificador de voz',
     icon: '🎛️',

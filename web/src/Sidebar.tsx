@@ -24,6 +24,7 @@ import { Avatar } from './Avatar';
 import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
 import { useDirectory } from './directory';
+import { corDoNome } from './profileStyles';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ScreenShareButton } from './ScreenShareButton';
 import { StatusMenu, useStatusMenu } from './StatusMenu';
@@ -170,7 +171,9 @@ export function Sidebar({
         <span onContextMenu={statusMenu.onOpen} title="Botão direito para mudar o status">
           <Avatar name={user.username} userId={user.id} online status={myStatus} />
         </span>
-        <span className="user-panel-name">{user.username}</span>
+        <span className="user-panel-name" data-cor={corDoNome(members.get(user.id)?.nameColor)}>
+          {user.username}
+        </span>
         <div className="icon-row">
           {/* Funciona fora de qualquer sala: quem se silencia aqui entra mudo na próxima chamada. */}
           <IconButton

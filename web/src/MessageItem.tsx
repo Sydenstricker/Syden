@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
+import { corDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
@@ -54,6 +55,16 @@ function Attachments({ files }: { files: Attachment[] }) {
         );
       })}
     </div>
+  );
+}
+
+/** O nome de quem escreveu, na cor que a pessoa escolheu no perfil (a escolha vem do diretório). */
+function AutorNome({ id, nome }: { id: number; nome: string }) {
+  const { members } = useDirectory();
+  return (
+    <span className="message-author" data-cor={corDoNome(members.get(id)?.nameColor)}>
+      {nome}
+    </span>
   );
 }
 
@@ -224,7 +235,7 @@ export function MessageItem({
       <Avatar name={message.author.username} userId={message.author.id} size={40} />
       <div className="message-body">
         <div className="message-meta">
-          <span className="message-author">{message.author.username}</span>
+          <AutorNome id={message.author.id} nome={message.author.username} />
           <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
         </div>
         {body}

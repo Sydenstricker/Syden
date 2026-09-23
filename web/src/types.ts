@@ -5,6 +5,10 @@ export interface User {
   /** O dono do servidor é quem dá e tira o cargo de administrador. */
   isOwner: boolean;
   avatarVersion: number | null;
+  /** Nome da cor escolhida para o nome (ver profileStyles), ou null para a cor do cargo. */
+  nameColor: string | null;
+  /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
+  banner: string | null;
 }
 
 export type UserRef = Pick<User, 'id' | 'username'>;
@@ -19,7 +23,7 @@ export interface PresenceEntry {
   status: PresenceStatus;
 }
 
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner'>;
+export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner'>;
 
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */
 export type Role = 'owner' | 'admin' | 'member';

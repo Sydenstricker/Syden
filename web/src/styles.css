@@ -1060,6 +1060,10 @@ textarea {
 
 .message-author {
   font-weight: 600;
+}
+
+/* A cor padrão vale para quem não escolheu nenhuma no perfil. */
+.message-author:not([data-cor]) {
   color: var(--text-strong);
 }
 
@@ -3062,12 +3066,18 @@ textarea {
   white-space: nowrap;
 }
 
-.member-name.role-owner {
+/* Dono e administrador continuam em negrito mesmo quando escolhem uma cor própria. */
+.member-name.role-owner,
+.member-name.role-admin {
+  font-weight: 600;
+}
+
+.member-name.role-owner:not([data-cor]) {
   color: #f0b232;
   font-weight: 600;
 }
 
-.member-name.role-admin {
+.member-name.role-admin:not([data-cor]) {
   color: #8ea1ff;
   font-weight: 600;
 }
@@ -5166,4 +5176,262 @@ textarea {
 .community-choice-option small {
   font-size: 12px;
   color: var(--text-muted);
+}
+
+/* ---------- Enfeites de perfil ---------- */
+
+/* Cada cor tem duas versões: uma que brilha no tema escuro e uma mais fechada para o claro, senão o
+   amarelo bonito do escuro some no branco. Quem escolhe é o CSS, pelo data-cor. */
+[data-cor='carmim'] { color: #ef7b72; }
+[data-cor='laranja'] { color: #f0a15e; }
+[data-cor='ouro'] { color: #e2c14e; }
+[data-cor='limao'] { color: #a4d364; }
+[data-cor='menta'] { color: #4fd4b2; }
+[data-cor='ceu'] { color: #63bdec; }
+[data-cor='anil'] { color: #8b9cf0; }
+[data-cor='lavanda'] { color: #b494f0; }
+[data-cor='rosa'] { color: #f090bd; }
+
+:root[data-theme='light'] [data-cor='carmim'] { color: #c0392b; }
+:root[data-theme='light'] [data-cor='laranja'] { color: #b3651a; }
+:root[data-theme='light'] [data-cor='ouro'] { color: #8f6f11; }
+:root[data-theme='light'] [data-cor='limao'] { color: #557a22; }
+:root[data-theme='light'] [data-cor='menta'] { color: #1a7d68; }
+:root[data-theme='light'] [data-cor='ceu'] { color: #1f6f9c; }
+:root[data-theme='light'] [data-cor='anil'] { color: #40509e; }
+:root[data-theme='light'] [data-cor='lavanda'] { color: #6b45a8; }
+:root[data-theme='light'] [data-cor='rosa'] { color: #a83d70; }
+
+/* Os fundos. Três são parados e quatro têm movimento — de leve, que é para enfeitar, não para distrair. */
+.fundo-nenhum { background: var(--bg-raised, #2b2d31); }
+
+.fundo-vila {
+  background: linear-gradient(120deg, #8f1024 0%, #c8102e 45%, #e0553f 100%);
+}
+
+.fundo-poente {
+  background: linear-gradient(120deg, #43297a 0%, #c2497a 55%, #f0a35e 100%);
+}
+
+.fundo-floresta {
+  background: linear-gradient(120deg, #1d4433 0%, #3c7a4e 55%, #8ab861 100%);
+}
+
+.fundo-aurora {
+  background: linear-gradient(120deg, #2b1b58, #1f6f9c, #2fa88c, #8f6fd6, #2b1b58);
+  background-size: 400% 400%;
+  animation: fundo-desliza 18s ease infinite;
+}
+
+.fundo-brasa {
+  background: linear-gradient(120deg, #4a0d12, #c8102e, #f0873a, #c8102e, #4a0d12);
+  background-size: 400% 400%;
+  animation: fundo-desliza 14s ease infinite;
+}
+
+.fundo-oceano {
+  background: linear-gradient(120deg, #06243f, #12557a, #2f9db8, #12557a, #06243f);
+  background-size: 400% 400%;
+  animation: fundo-desliza 16s ease infinite;
+}
+
+/* A noite estrelada é o único com desenho: pontinhos que acendem e apagam sobre o azul escuro. */
+.fundo-estrelas {
+  background:
+    radial-gradient(1.5px 1.5px at 12% 30%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 34% 62%, #fff, transparent),
+    radial-gradient(2px 2px at 58% 22%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 76% 55%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 90% 34%, #fff, transparent),
+    radial-gradient(2px 2px at 22% 78%, #fff, transparent),
+    linear-gradient(160deg, #0d1330 0%, #232c63 100%);
+  animation: fundo-pisca 5s ease-in-out infinite;
+}
+
+@keyframes fundo-desliza {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes fundo-pisca {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.82; }
+}
+
+/* ---------- O cartão de perfil ---------- */
+
+.perfil-sombra {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+.perfil-cartao {
+  position: fixed;
+  width: 300px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-float, #1e1f22);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.perfil-banner {
+  height: 84px;
+}
+
+.perfil-avatar {
+  margin: -36px 0 0 18px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg-float, #1e1f22);
+}
+
+.perfil-corpo {
+  padding: 8px 18px 18px;
+}
+
+.perfil-nome {
+  margin: 0;
+  font-size: 19px;
+}
+
+.perfil-nome:not([data-cor]) {
+  color: var(--text-strong, #fff);
+}
+
+.perfil-linha {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.perfil-acao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent, #5865f2);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.perfil-acao:hover {
+  filter: brightness(1.1);
+}
+
+/* ---------- O editor, nas configurações ---------- */
+
+.perfil-previa {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.perfil-previa strong {
+  font-size: 18px;
+}
+
+.perfil-previa strong:not([data-cor]) {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.perfil-titulo {
+  margin: 18px 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.perfil-cores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.perfil-cor {
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--bg-input, #1e1f22);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* O "A" de cada quadradinho já vem pintado pelo data-cor; só o padrão usa a cor do texto. */
+.perfil-cor:not([data-cor]) {
+  color: var(--text);
+}
+
+.perfil-cor.ativa {
+  border-color: currentColor;
+}
+
+.perfil-fundos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.perfil-fundo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  height: 72px;
+  padding: 8px 10px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.perfil-fundo span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.perfil-fundo small {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.perfil-fundo.ativo {
+  border-color: var(--accent, #5865f2);
+}
+
+.perfil-fundo.fundo-nenhum {
+  color: var(--text);
+  text-shadow: none;
+}
+
+/* A lista de membros agora responde ao clique: o cursor precisa contar isso. */
+.member[role='button'] {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fundo-aurora,
+  .fundo-brasa,
+  .fundo-oceano,
+  .fundo-estrelas {
+    animation: none;
+  }
 }

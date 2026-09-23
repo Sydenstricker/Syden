@@ -32,6 +32,10 @@ export interface User {
   /** O dono (o primeiro cadastro) também é administrador e é quem dá e tira o cargo de administrador. */
   isOwner: boolean;
   avatarVersion: number | null;
+  /** Nome da cor escolhida para o nome, ou null para a cor padrão do cargo. */
+  nameColor: string | null;
+  /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
+  banner: string | null;
 }
 
 /** Identificação pública de alguém (autor de mensagem, lista de online). */
@@ -401,6 +405,10 @@ addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
 addColumnIfMissing('users', 'avatar_version', 'INTEGER');
 addColumnIfMissing('users', 'is_owner', 'INTEGER NOT NULL DEFAULT 0');
+// Enfeites do perfil: a cor do nome e o fundo do cartão de perfil. Os dois guardam só o NOME da opção
+// escolhida (ex.: 'carmim', 'aurora'); as cores de verdade moram no app, para dar para mexer sem migrar.
+addColumnIfMissing('users', 'name_color', 'TEXT');
+addColumnIfMissing('users', 'banner', 'TEXT');
 // Imagem da comunidade: chegou depois das comunidades.
 addColumnIfMissing('communities', 'icon_version', 'INTEGER');
 // Velocidade de rede: chegou depois do painel de saúde.
@@ -682,7 +690,8 @@ export function removeMember(communityId: number, userId: number) {
 export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
-      `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, m.role
+      `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion,
+              u.name_color AS nameColor, u.banner, m.role
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
     )
@@ -697,9 +706,18 @@ export function communityIdsForUser(userId: number): number[] {
   );
 }
 
-const userColumns = 'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion';
+const userColumns =
+  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner';
 
-type UserRow = { id: number; username: string; isAdmin: number; isOwner: number; avatarVersion: number | null };
+type UserRow = {
+  id: number;
+  username: string;
+  isAdmin: number;
+  isOwner: number;
+  avatarVersion: number | null;
+  nameColor: string | null;
+  banner: string | null;
+};
 
 function toUser(row: UserRow | undefined): User | undefined {
   return (
@@ -709,6 +727,8 @@ function toUser(row: UserRow | undefined): User | undefined {
       isAdmin: row.isAdmin === 1,
       isOwner: row.isOwner === 1,
       avatarVersion: row.avatarVersion,
+      nameColor: row.nameColor,
+      banner: row.banner,
     }
   );
 }
@@ -740,6 +760,12 @@ export function setAvatar(userId: number, avatar: { mime: string; data: Buffer }
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
     db.prepare('UPDATE users SET avatar_version = NULL WHERE id = ?').run(userId);
   }
+  return findUserById(userId)!;
+}
+
+/** Cor do nome e fundo do perfil. Passar null em qualquer um dos dois volta ao padrão. */
+export function setProfile(userId: number, perfil: { nameColor: string | null; banner: string | null }): User {
+  db.prepare('UPDATE users SET name_color = ?, banner = ? WHERE id = ?').run(perfil.nameColor, perfil.banner, userId);
   return findUserById(userId)!;
 }
 

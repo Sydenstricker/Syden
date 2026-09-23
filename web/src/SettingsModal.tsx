@@ -36,6 +36,7 @@ import type { Community, CommunityMember, Emoji, Role, Sound, User } from './typ
 import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
 import { PackCatalog } from './PackCatalog';
+import { classeDoFundo, CORES_DE_NOME, corDoNome, FUNDOS } from './profileStyles';
 import { EFFECT_ICONS } from './VoiceEffectButton';
 import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
@@ -179,6 +180,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
     <>
       <h2>Minha conta</h2>
       <AvatarEditor user={user} />
+      <PerfilEditor user={user} />
 
       <h3>Trocar senha</h3>
       <form className="settings-form" onSubmit={submit}>
@@ -586,6 +588,77 @@ function MembersSection({ user, community }: { user: User; community: Community 
           troque o código em "Comunidade".
         </ConfirmDialog>
       )}
+    </>
+  );
+}
+
+/**
+ * Os enfeites do perfil: a cor do nome e o fundo do cartão. Muda na hora, sem botão de salvar — cada
+ * clique já manda para o servidor, que avisa todo mundo.
+ */
+function PerfilEditor({ user }: { user: User }) {
+  const { members } = useDirectory();
+  const eu = members.get(user.id);
+  const [cor, setCor] = useState(eu?.nameColor ?? 'padrao');
+  const [fundo, setFundo] = useState(eu?.banner ?? 'nenhum');
+  const [erro, setErro] = useState<string | null>(null);
+
+  async function guardar(proximaCor: string, proximoFundo: string) {
+    setCor(proximaCor);
+    setFundo(proximoFundo);
+    setErro(null);
+    try {
+      await api('/api/me/profile', {
+        method: 'PUT',
+        body: { nameColor: proximaCor === 'padrao' ? null : proximaCor, banner: proximoFundo === 'nenhum' ? null : proximoFundo },
+      });
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
+
+  return (
+    <>
+      <h3>Meu perfil</h3>
+      <p className="settings-hint">É assim que os outros veem você na lista e nas conversas.</p>
+
+      <div className={`perfil-previa ${classeDoFundo(fundo)}`}>
+        <Avatar name={user.username} userId={user.id} size={56} />
+        <strong data-cor={corDoNome(cor)}>{user.username}</strong>
+      </div>
+
+      <h4 className="perfil-titulo">Cor do nome</h4>
+      <div className="perfil-cores">
+        {CORES_DE_NOME.map((opcao) => (
+          <button
+            key={opcao.id}
+            className={`perfil-cor${cor === opcao.id ? ' ativa' : ''}`}
+            title={opcao.label}
+            aria-label={opcao.label}
+            aria-pressed={cor === opcao.id}
+            data-cor={corDoNome(opcao.id)}
+            onClick={() => void guardar(opcao.id, fundo)}
+          >
+            <span aria-hidden="true">A</span>
+          </button>
+        ))}
+      </div>
+
+      <h4 className="perfil-titulo">Fundo do perfil</h4>
+      <div className="perfil-fundos">
+        {FUNDOS.map((opcao) => (
+          <button
+            key={opcao.id}
+            className={`perfil-fundo ${classeDoFundo(opcao.id)}${fundo === opcao.id ? ' ativo' : ''}`}
+            aria-pressed={fundo === opcao.id}
+            onClick={() => void guardar(cor, opcao.id)}
+          >
+            <span>{opcao.label}</span>
+            {opcao.animado && <small>com movimento</small>}
+          </button>
+        ))}
+      </div>
+      {erro && <p className="form-error">{erro}</p>}
     </>
   );
 }

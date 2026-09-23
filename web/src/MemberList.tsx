@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
+import { ProfileCard } from './ProfileCard';
+import { corDoNome } from './profileStyles';
 import type { Channel, CommunityMember, PresenceEntry, Role, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -43,6 +46,8 @@ export function MemberList({
 }) {
   const { members } = useDirectory();
   const menu = usePersonMenu();
+  // Clicar em alguém abre o cartão de perfil, com o fundo e a cor de nome que a pessoa escolheu.
+  const [perfil, setPerfil] = useState<{ membro: CommunityMember; x: number; y: number } | null>(null);
   // "Invisível" só é de boa-fé: o servidor manda o status real, e é o cliente que trata como offline
   // para todo mundo, menos para a própria pessoa (que continua se vendo normalmente).
   const presenceById = new Map(online.map((p) => [p.id, p]));
@@ -65,10 +70,25 @@ export function MemberList({
   const row = (member: CommunityMember, className: string) => {
     const agora = status(member.id);
     return (
-      <div key={member.id} className="member" onContextMenu={(e) => menu.open(e, member.id, member.username)}>
+      <div
+        key={member.id}
+        className="member"
+        role="button"
+        tabIndex={0}
+        onClick={(e) => setPerfil({ membro: member, x: e.clientX - 150, y: e.clientY - 40 })}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            const caixa = e.currentTarget.getBoundingClientRect();
+            setPerfil({ membro: member, x: caixa.left - 160, y: caixa.top });
+          }
+        }}
+        onContextMenu={(e) => menu.open(e, member.id, member.username)}
+      >
         <Avatar name={member.username} userId={member.id} online status={presenceById.get(member.id)?.status} />
         <span className="member-info">
-          <span className={`member-name ${className}`}>{member.username}</span>
+          <span className={`member-name ${className}`} data-cor={corDoNome(member.nameColor)}>
+            {member.username}
+          </span>
           {agora && (
             <span className={`member-status${agora.live ? ' live' : ''}`}>
               {agora.live && <span className="live-dot" aria-hidden="true" />}
@@ -99,14 +119,35 @@ export function MemberList({
         <>
           <h3>Offline — {fora.length}</h3>
           {fora.map((member) => (
-            <div key={member.id} className="member offline" onContextMenu={(e) => menu.open(e, member.id, member.username)}>
+            <div
+              key={member.id}
+              className="member offline"
+              role="button"
+              tabIndex={0}
+              onClick={(e) => setPerfil({ membro: member, x: e.clientX - 150, y: e.clientY - 40 })}
+              onContextMenu={(e) => menu.open(e, member.id, member.username)}
+            >
               <Avatar name={member.username} userId={member.id} />
               <span className="member-info">
-                <span className="member-name">{member.username}</span>
+                <span className="member-name" data-cor={corDoNome(member.nameColor)}>
+                  {member.username}
+                </span>
               </span>
             </div>
           ))}
         </>
+      )}
+
+      {perfil && (
+        <ProfileCard
+          membro={perfil.membro}
+          status={presenceById.get(perfil.membro.id)?.status}
+          x={perfil.x}
+          y={perfil.y}
+          isSelf={perfil.membro.id === selfId}
+          onClose={() => setPerfil(null)}
+          onSendMessage={onSendMessage}
+        />
       )}
 
       {menu.target && (
