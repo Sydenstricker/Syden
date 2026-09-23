@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function CommunityRail({ communities, currentId, onSelect, onChanged, top, onHome, homeActive, homeBadge }: Props) {
-  const [dialog, setDialog] = useState<'create' | 'join' | null>(null);
+  const [dialog, setDialog] = useState<CommunityDialogMode | null>(null);
   const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
 
   return (
@@ -55,11 +55,15 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
           </button>
         ))}
       </div>
-      <button className="rail-item rail-action" title="Criar comunidade" aria-label="Criar comunidade" onClick={() => setDialog('create')}>
+      {/* Um botão só: criar do zero e entrar por convite são dois caminhos da mesma coisa (ter mais uma
+          comunidade na lista), e a escolha fica dentro da janela. */}
+      <button
+        className="rail-item rail-action"
+        title="Adicionar comunidade"
+        aria-label="Adicionar comunidade"
+        onClick={() => setDialog('choose')}
+      >
         <Plus size={20} />
-      </button>
-      <button className="rail-item rail-action" title="Entrar com um convite" aria-label="Entrar com um convite" onClick={() => setDialog('join')}>
-        <LogIn size={18} />
       </button>
 
       {dialog && (
@@ -124,20 +128,64 @@ function CommunityMenu({ community, x, y, onClose }: { community: Community; x: 
   );
 }
 
-/** Criar uma comunidade nova ou entrar numa que já existe, pelo código de convite. */
+export type CommunityDialogMode = 'choose' | 'create' | 'join';
+
+/**
+ * Ter mais uma comunidade na lista: criando do zero ou entrando na de alguém com o código. Começando em
+ * "choose", a janela pergunta primeiro qual dos dois — é o mesmo lugar, com dois caminhos.
+ */
 export function CommunityDialog({
-  mode,
+  mode: modoInicial,
   onClose,
   onDone,
 }: {
-  mode: 'create' | 'join';
+  mode: CommunityDialogMode;
   onClose: () => void;
   onDone: (community: Community) => void;
 }) {
+  const [mode, setMode] = useState<CommunityDialogMode>(modoInicial);
   const [value, setValue] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const creating = mode === 'create';
+
+  function escolher(proximo: CommunityDialogMode) {
+    setValue('');
+    setError(null);
+    setMode(proximo);
+  }
+
+  if (mode === 'choose') {
+    return (
+      <div className="dialog-backdrop" onClick={onClose}>
+        <div className="dialog" role="dialog" aria-label="Adicionar comunidade" onClick={(e) => e.stopPropagation()}>
+          <h2>Adicionar comunidade</h2>
+          <p className="dialog-body">Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.</p>
+          <div className="community-choice">
+            <button className="community-choice-option" onClick={() => escolher('create')}>
+              <Plus size={22} />
+              <span>
+                <strong>Criar a minha</strong>
+                <small>Um lugar novo, com canais próprios, e você decide quem entra.</small>
+              </span>
+            </button>
+            <button className="community-choice-option" onClick={() => escolher('join')}>
+              <LogIn size={20} />
+              <span>
+                <strong>Entrar com um convite</strong>
+                <small>Já recebeu um código de alguém? É por aqui.</small>
+              </span>
+            </button>
+          </div>
+          <div className="dialog-actions">
+            <button type="button" className="link-button" onClick={onClose}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -175,8 +223,12 @@ export function CommunityDialog({
         </label>
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
-          <button type="button" className="link-button" onClick={onClose}>
-            Cancelar
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => (modoInicial === 'choose' ? escolher('choose') : onClose())}
+          >
+            {modoInicial === 'choose' ? 'Voltar' : 'Cancelar'}
           </button>
           <button className="btn-primary" disabled={busy}>
             {busy ? 'Aguarde…' : creating ? 'Criar' : 'Entrar'}
