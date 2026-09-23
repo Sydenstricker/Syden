@@ -42,8 +42,10 @@ jobs:
           npm run build:native 2>&1 | tee compilacao.log
           codigo=${PIPESTATUS[0]}
           if [ "$codigo" -ne 0 ]; then
-            resumo=$(grep -iE "error|fatal|gyp ERR!|MSB[0-9]|LNK[0-9]|cannot open" compilacao.log | tail -12 | tr '\n' '~' | cut -c1-900)
-            echo "::error title=Falha ao compilar o módulo de som::${resumo}"
+            compilador=$(grep -iE "error C[0-9]|error MSB|fatal error|LNK[0-9]|cannot open|No such file|not found" compilacao.log | head -10 | tr '\n' '~' | cut -c1-900)
+            pilha=$(grep -v "^npm error" compilacao.log | grep -iE "gyp ERR!|gyp info|Error:" | head -14 | tr '\n' '~' | cut -c1-900)
+            echo "::error title=Erro do compilador::${compilador:-(nenhuma linha de erro de compilação)}"
+            echo "::error title=Onde parou::${pilha}"
             echo "### Falha ao compilar o módulo de som" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             tail -60 compilacao.log >> "$GITHUB_STEP_SUMMARY"
