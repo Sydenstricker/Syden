@@ -5,7 +5,7 @@ import type { Community } from './types';
 
 /** Tela de quem ainda não participa de nenhuma comunidade (conta nova, ou saiu de todas). */
 export function EmptyCommunities({ onDone }: { onDone: (community: Community) => void }) {
-  const [dialog, setDialog] = useState<'create' | 'join' | null>(null);
+  const [abrindo, setAbrindo] = useState(false);
 
   return (
     <div className="no-community">
@@ -16,19 +16,17 @@ export function EmptyCommunities({ onDone }: { onDone: (community: Community) =>
         com o código de convite dele, ou crie a sua.
       </p>
       <div className="no-community-actions">
-        <button className="btn-primary" onClick={() => setDialog('join')}>
-          Entrar com um convite
-        </button>
-        <button className="btn-secondary" onClick={() => setDialog('create')}>
-          Criar a minha comunidade
+        {/* Um caminho só, igual ao botão da coluna: a escolha entre criar e entrar mora dentro da janela. */}
+        <button className="btn-primary" onClick={() => setAbrindo(true)}>
+          Adicionar comunidade
         </button>
       </div>
-      {dialog && (
+      {abrindo && (
         <CommunityDialog
-          mode={dialog}
-          onClose={() => setDialog(null)}
+          mode="choose"
+          onClose={() => setAbrindo(false)}
           onDone={(community) => {
-            setDialog(null);
+            setAbrindo(false);
             onDone(community);
           }}
         />
