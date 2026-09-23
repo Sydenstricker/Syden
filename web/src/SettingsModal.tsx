@@ -46,7 +46,8 @@ type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emoji
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'account', label: 'Minha conta', icon: <AnimatedIcon name="avatar" size={20} /> },
   { id: 'voice', label: 'Voz e vídeo', icon: <AnimatedIcon name="microfone" size={20} /> },
-  { id: 'sounds', label: 'Notificações', icon: <AnimatedIcon name="alarme" size={20} /> },
+  // O despertador sacode forte demais no ritmo original; num menu, meia velocidade basta para dar vida.
+  { id: 'sounds', label: 'Notificações', icon: <AnimatedIcon name="alarme" size={20} speed={0.5} /> },
 ];
 
 const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [

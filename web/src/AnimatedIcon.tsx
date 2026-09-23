@@ -127,15 +127,24 @@ interface Props {
   /** Cor da parte principal do desenho; por padrão, a cor do texto do tema. O detalhe usa `accent`. */
   color?: string;
   accent?: string;
-  /** Um clique também dispara a animação (além do passar do mouse). */
+  /**
+   * Ritmo da animação: 1 é o que vem no arquivo, menos que isso deixa o movimento mais calmo. Alguns
+   * desenhos (o despertador, por exemplo) sacodem demais no ritmo original para um menu.
+   */
+  speed?: number;
   className?: string;
 }
 
-export function AnimatedIcon({ name, size = 22, color, accent, className }: Props) {
+export function AnimatedIcon({ name, size = 22, color, accent, speed = 1, className }: Props) {
   // O tema entra como dependência: trocando de claro para escuro, o desenho é remontado na cor certa.
   const { theme } = useSettings();
   const box = useRef<HTMLSpanElement>(null);
-  const player = useRef<{ playSegments: (s: number[], f: boolean) => void; destroy: () => void; goToAndStop: (v: number, f?: boolean) => void } | null>(null);
+  const player = useRef<{
+    playSegments: (s: number[], f: boolean) => void;
+    destroy: () => void;
+    goToAndStop: (v: number, f?: boolean) => void;
+    setSpeed: (s: number) => void;
+  } | null>(null);
   const segment = useRef<[number, number] | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -171,6 +180,7 @@ export function AnimatedIcon({ name, size = 22, color, accent, className }: Prop
         });
         instance = anim;
         player.current = anim as unknown as typeof player.current;
+        anim.setSpeed(speed);
         // Fica no primeiro quadro em que o desenho realmente aparece.
         for (const quadro of candidatos) {
           anim.goToAndStop(quadro, true);
@@ -187,7 +197,7 @@ export function AnimatedIcon({ name, size = 22, color, accent, className }: Prop
       instance?.destroy();
       player.current = null;
     };
-  }, [name, color, accent, theme]);
+  }, [name, color, accent, speed, theme]);
 
   /**
    * Quem dispara a animação é a linha inteira (o botão ou a etiqueta em volta), não só o desenho: passar
