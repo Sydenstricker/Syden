@@ -27,17 +27,20 @@ export function TextChannel({
   socket,
   user,
   role,
+  mensagensIniciais,
   onMobileBack,
 }: {
   channel: Channel;
   socket: Socket;
   user: User;
   role: Role;
+  /** Mensagens já buscadas por quem abriu o canal (troca de comunidade): evita a conversa chegar depois. */
+  mensagensIniciais?: Message[];
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
 }) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [hasMore, setHasMore] = useState(false);
+  const [messages, setMessages] = useState<Message[]>(mensagensIniciais ?? []);
+  const [hasMore, setHasMore] = useState((mensagensIniciais?.length ?? 0) === PAGE_SIZE);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<Message | null>(null);
   const [threadFor, setThreadFor] = useState<Message | null>(null);
@@ -50,12 +53,15 @@ export function TextChannel({
   const privada = channel.type === 'dm';
 
   useEffect(() => {
-    api<Message[]>(`/api/channels/${channel.id}/messages`).then((page) => {
-      // Preserva mensagens que chegaram pelo socket enquanto o histórico carregava.
-      const lastId = page.at(-1)?.id ?? 0;
-      setMessages((live) => [...page, ...live.filter((m) => m.id > lastId)]);
-      setHasMore(page.length === PAGE_SIZE);
-    }, console.error);
+    // Se o histórico já veio pronto de fora, não busca de novo.
+    if (!mensagensIniciais) {
+      api<Message[]>(`/api/channels/${channel.id}/messages`).then((page) => {
+        // Preserva mensagens que chegaram pelo socket enquanto o histórico carregava.
+        const lastId = page.at(-1)?.id ?? 0;
+        setMessages((live) => [...page, ...live.filter((m) => m.id > lastId)]);
+        setHasMore(page.length === PAGE_SIZE);
+      }, console.error);
+    }
 
     const onMessage = (message: Message) => {
       // Respostas de tópico ficam no painel do tópico, não no meio do canal.

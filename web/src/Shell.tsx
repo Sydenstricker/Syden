@@ -5,7 +5,7 @@ import { API_URL, ApiError, api } from './api';
 import { Avatar } from './Avatar';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
-import { clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
+import { aplicarComunidade, buscarComunidade, clearDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
 import { temNovidade } from './changelog';
@@ -95,6 +95,8 @@ export function Shell({
   const [online, setOnline] = useState(true);
   const [communities, setCommunities] = useState<Community[]>([]);
   const [communityId, setCommunityId] = useState<number | null>(rememberedCommunity());
+  // A comunidade que está DESENHADA na tela. Só vira a nova quando tudo dela chegou.
+  const [visivelId, setVisivelId] = useState<number | null>(communityId);
   const [loadingCommunities, setLoadingCommunities] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -105,6 +107,10 @@ export function Shell({
   const [settingsOpen, setSettingsOpen] = useState<SettingsSection | null>(null);
   // "Explorar", na vila, abre a mesma janela de adicionar comunidade da barra lateral.
   const [explorarAberto, setExplorarAberto] = useState(false);
+  // Troca de comunidade em andamento: a tela de agora continua no lugar até a nova estar inteira.
+  const [trocando, setTrocando] = useState(false);
+  // As mensagens do primeiro canal, buscadas junto com o resto para a conversa não chegar atrasada.
+  const [preCarregado, setPreCarregado] = useState<{ channelId: number; mensagens: Message[] } | null>(null);
   const preferences = useSettings();
   const [showUsage, setShowUsage] = useState(false);
   // Em tela estreita só cabe uma coluna por vez: esta decide se é a lista de canais ou a conversa/chamada
@@ -125,6 +131,12 @@ export function Shell({
 
   useEffect(() => rememberView(view), [view]);
 
+  // As mensagens pré-carregadas servem uma vez só: depois que a conversa nasceu com elas, apaga a cópia
+  // para quem voltar a este canal mais tarde buscar o que chegou nesse meio-tempo.
+  useEffect(() => {
+    if (preCarregado) setPreCarregado(null);
+  }, [preCarregado]);
+
   // Mensagens não lidas das conversas privadas: a bolinha do ícone de conversas.
   const [unreadTick, setUnreadTick] = useState(0);
   useEffect(() => subscribeUnread(() => setUnreadTick((n) => n + 1)), []);
@@ -140,7 +152,7 @@ export function Shell({
     if (view === 'home') setNovidade(false);
   }, [view]);
 
-  const community = communities.find((c) => c.id === communityId);
+  const community = communities.find((c) => c.id === visivelId);
   const openDirect = directs.find((c) => c.id === directId);
   // A conversa privada aberta vira um "canal" para a tela de conversa poder ser a mesma dos canais de texto.
   const directAsChannel: Channel | undefined = openDirect && {
@@ -152,7 +164,7 @@ export function Shell({
     createdBy: openDirect.createdBy,
   };
   openRef.current = view === 'direct' ? directId : null;
-  const voiceMembers = communityId === null ? [] : (voiceByCommunity[communityId] ?? []);
+  const voiceMembers = visivelId === null ? [] : (voiceByCommunity[visivelId] ?? []);
   const onlineHere = presence.filter((p) => members.has(p.id));
   const myStatus = presence.find((p) => p.id === user.id)?.status ?? loadMyStatus();
 
@@ -320,16 +332,40 @@ export function Shell({
       clearDirectory();
       setChannels([]);
       setSelectedId(null);
+      setVisivelId(null);
       return;
     }
     setShowUsage(false);
     setMobileChannels(true); // troca de comunidade: mostra a lista de canais dela, não a conversa da anterior
-    loadDirectory(communityId).catch(console.error);
-    api<Channel[]>(`/api/communities/${communityId}/channels`).then((list) => {
-      if (openCommunityRef.current !== communityId) return; // trocou de comunidade enquanto carregava
-      setChannels(list);
-      setSelectedId(list.find((c) => c.type === 'text')?.id ?? null);
-    }, console.error);
+
+    // Trocar de comunidade é uma troca só: em vez de cada pedaço entrar na tela quando fica pronto
+    // (membros, depois canais, depois as mensagens), a tela anterior fica de pé até TUDO chegar, e aí
+    // troca de uma vez. São duas idas ao servidor porque as mensagens dependem de saber o canal.
+    let cancelado = false;
+    setTrocando(true);
+    void (async () => {
+      try {
+        const [dados, lista] = await Promise.all([
+          buscarComunidade(communityId),
+          api<Channel[]>(`/api/communities/${communityId}/channels`),
+        ]);
+        const primeiro = lista.find((c) => c.type === 'text');
+        const mensagens = primeiro ? await api<Message[]>(`/api/channels/${primeiro.id}/messages`).catch(() => null) : null;
+        if (cancelado || openCommunityRef.current !== communityId) return;
+        aplicarComunidade(dados);
+        setVisivelId(communityId);
+        setChannels(lista);
+        setSelectedId(primeiro?.id ?? null);
+        setPreCarregado(primeiro && mensagens ? { channelId: primeiro.id, mensagens } : null);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (!cancelado) setTrocando(false);
+      }
+    })();
+    return () => {
+      cancelado = true;
+    };
   }, [communityId]);
 
   // Notificação do Windows para mensagens novas de outras pessoas, quando o Syden não está à vista
@@ -423,7 +459,10 @@ export function Shell({
 
   return (
     <RoomContext.Provider value={voice.room}>
-      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}`}>
+      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}${trocando ? ' trocando' : ''}`}>
+        {/* Enquanto a comunidade nova não chega inteira, uma barrinha avisa que algo está a caminho.
+            Ela só aparece depois de um tempinho: numa troca rápida ninguém chega a ver. */}
+        {trocando && <span className="troca-barra" aria-hidden="true" />}
         <CommunityRail
           communities={communities}
           currentId={view === 'community' ? communityId : null}
@@ -507,6 +546,7 @@ export function Shell({
               aoEntrar={watchStream}
               aoAbrirLoja={() => setSettingsOpen('soundboard')}
               aoExplorar={() => setExplorarAberto(true)}
+              souODono={user.isOwner}
             />
           )}
           {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
@@ -530,6 +570,7 @@ export function Shell({
               socket={socket}
               user={user}
               role={community?.role ?? 'member'}
+              mensagensIniciais={preCarregado?.channelId === selected.id ? preCarregado.mensagens : undefined}
               onMobileBack={() => setMobileChannels(true)}
             />
           )}
@@ -558,7 +599,7 @@ export function Shell({
             channels={channels}
             voice={voice}
             role={community?.role ?? 'member'}
-            communityId={communityId ?? 0}
+            communityId={visivelId ?? 0}
             selfId={user.id}
             onWatchStream={watchStream}
             onSendMessage={(id) => void startConversation(id)}

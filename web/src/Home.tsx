@@ -1,6 +1,8 @@
-import { BookOpen, Compass, ShoppingBag, Users, Volume2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { BookOpen, Compass, Lightbulb, Send, ShoppingBag, Users, Volume2 } from 'lucide-react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { api } from './api';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
+import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, VoiceMember } from './types';
 import { balaoDaCasa, CASAS, type Periodo, type PinoVila, Vila } from './Vila';
@@ -8,6 +10,75 @@ import { balaoDaCasa, CASAS, type Periodo, type PinoVila, Vila } from './Vila';
 // Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
 // e cutucar uns coelhos antes de entrar numa sala. As quatro casas não são enfeite: cada uma leva a uma
 // parte de verdade do app.
+
+/**
+ * A caixa de ideias da vila. Por baixo não existe caixa nenhuma: o que a pessoa escreve vira uma
+ * mensagem privada para quem cuida do Syden, na mesma conversa de sempre — assim ele lê no lugar em que
+ * já lê tudo, e pode responder ali mesmo.
+ */
+function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
+  const { members } = useDirectory();
+  const dono = [...members.values()].find((m) => m.isOwner);
+  const [texto, setTexto] = useState('');
+  const [estado, setEstado] = useState<'parado' | 'enviando' | 'enviado'>('parado');
+  const [erro, setErro] = useState<string | null>(null);
+
+  // Quem recebe as ideias não precisa de uma caixa para mandar ideia a si mesmo.
+  if (souODono) return null;
+
+  async function enviar(event: FormEvent) {
+    event.preventDefault();
+    if (texto.trim().length < 4) return setErro('Escreva um pouco mais sobre a sua ideia.');
+    setEstado('enviando');
+    setErro(null);
+    try {
+      await api('/api/suggestions', { method: 'POST', body: { content: texto.trim() } });
+      setTexto('');
+      setEstado('enviado');
+    } catch (e) {
+      setErro((e as Error).message);
+      setEstado('parado');
+    }
+  }
+
+  return (
+    <section className="ideias" aria-label="Sugestões de melhoria">
+      <h2>
+        <Lightbulb size={20} aria-hidden="true" />
+        Tem uma ideia para o Syden?
+      </h2>
+      <p className="ideias-lead">
+        Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para{' '}
+        {dono ? <strong>{dono.username}</strong> : 'quem cuida do Syden'}, e a resposta volta pela mesma conversa.
+      </p>
+      {estado === 'enviado' ? (
+        <div className="ideias-obrigado">
+          <p>Chegou. Obrigado!</p>
+          <button onClick={() => setEstado('parado')}>Mandar outra</button>
+        </div>
+      ) : (
+        <form onSubmit={enviar}>
+          <textarea
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            maxLength={1500}
+            rows={3}
+            placeholder="Seria bom se…"
+            aria-label="Sua ideia"
+          />
+          <div className="ideias-rodape">
+            <span className="ideias-conta">{texto.length > 0 && `${texto.length}/1500`}</span>
+            <button type="submit" disabled={estado === 'enviando'}>
+              <Send size={16} aria-hidden="true" />
+              {estado === 'enviando' ? 'Enviando…' : 'Enviar'}
+            </button>
+          </div>
+          {erro && <p className="form-error">{erro}</p>}
+        </form>
+      )}
+    </section>
+  );
+}
 
 /** De dia a cena segue o relógio; se já for noite pelo relógio, mostra a tarde. */
 function periodoClaro(): Periodo {
@@ -24,6 +95,7 @@ export function Home({
   aoEntrar,
   aoAbrirLoja,
   aoExplorar,
+  souODono,
 }: {
   /** Nome da comunidade aberta agora, se houver. */
   comunidade?: string;
@@ -34,6 +106,8 @@ export function Home({
   aoEntrar: (channelId: number) => void;
   aoAbrirLoja: () => void;
   aoExplorar: () => void;
+  /** Quem cuida do Syden recebe as ideias em vez de mandar: para ele a caixa não aparece. */
+  souODono: boolean;
 }) {
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
@@ -125,6 +199,8 @@ export function Home({
           </div>
         )}
       </div>
+
+      <CaixaDeIdeias souODono={souODono} />
 
       <section className="home-news" aria-label="Novidades do Syden" ref={novidadesRef}>
         <h2>Novidades</h2>

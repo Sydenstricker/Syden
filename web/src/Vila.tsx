@@ -393,18 +393,11 @@ function Pier() {
 // Os coelhos
 // ---------------------------------------------------------------------------------------------------
 
-const FALAS = [
-  'oi!',
-  'cenoura?',
-  'pula pula',
-  'zzz…',
-  'tem alguém na Sala 1?',
-  'toca um som aí',
-  'que dia bonito',
-  'só passando',
-  'me cutuca de novo',
-  'cadê a turma?',
-];
+/**
+ * Coelho não fala: sente. Cutucado, ele solta um sentimento numa bolha — e o mesmo desenho serve para
+ * qualquer pessoa, em qualquer idioma.
+ */
+const SENTIMENTOS = ['❤️', '✨', '🥕', '😴', '🎵', '🌸', '😊', '👀', '🥰', '😮', '🌟', '🍀', '☀️', '🫧'];
 
 /** Onde os coelhos podem andar: a praça e o gramado da frente. */
 const PASSEIO = { c0: -2.6, c1: 2.8, r0: -0.6, r1: 2.8 };
@@ -541,7 +534,7 @@ export function Vila({
   function cutucar(id: number) {
     sounds.bunny();
     setCutucados((n) => n + 1);
-    const fala = FALAS[Math.floor(Math.random() * FALAS.length)];
+    const fala = SENTIMENTOS[Math.floor(Math.random() * SENTIMENTOS.length)];
     setCoelhos((lista) => lista.map((c) => (c.id === id ? { ...c, fala, pulando: true } : c)));
     setTimeout(() => setCoelhos((lista) => lista.map((c) => (c.id === id ? { ...c, pulando: false } : c))), 800);
     setTimeout(() => setCoelhos((lista) => lista.map((c) => (c.id === id ? { ...c, fala: null } : c))), 2800);
@@ -735,9 +728,10 @@ export function Vila({
               </g>
               {coelho.fala && (
                 <g className="v-fala">
-                  <rect x={-54} y={-74} width={108} height={26} rx={13} />
-                  <path d="M-6,-49 L0,-41 L6,-49 Z" />
-                  <text x={0} y={-56} textAnchor="middle">
+                  <circle cx={0} cy={-58} r={17} />
+                  <circle cx={-5} cy={-38} r={4} />
+                  <circle cx={-10} cy={-30} r={2.4} />
+                  <text x={0} y={-51} textAnchor="middle">
                     {coelho.fala}
                   </text>
                 </g>

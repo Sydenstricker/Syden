@@ -14,9 +14,20 @@ export const CHANGELOG: Update[] = [
     title: 'A tela inicial virou uma vila',
     icon: '🏡',
     items: [
-      'A tela de início agora é uma vila vista de cima, com coelhos que andam por conta própria pela praça — cutuque um para ver o que ele fala, ou clique na grama para plantar uma cenoura.',
+      'A tela de início agora é uma vila vista de cima, com coelhos que andam por conta própria pela praça — cutuque um para ver o que ele sente, ou clique na grama para plantar uma cenoura.',
+      'Coelho não fala: ele mostra um sentimento numa bolha de pensamento.',
+      'E tem uma caixa de ideias logo abaixo da vila: escreva o que você gostaria que existisse no Syden e chega como conversa privada para quem cuida dele — com direito a resposta.',
       'As casas levam a algum lugar: Salas mostra quem está em cada sala de voz, Sons abre o catálogo de pacotes, Novidades traz esta lista e Explorar abre outra comunidade.',
       'Clicar no sol continua acendendo e apagando a luz do Syden inteiro.',
+    ],
+  },
+  {
+    date: '2026-09-23',
+    title: 'Trocar de comunidade ficou mais suave',
+    icon: '🔀',
+    items: [
+      'Antes, ao trocar de comunidade, cada pedaço da tela chegava na sua hora: primeiro os canais, depois as pessoas, depois a conversa.',
+      'Agora a tela anterior fica de pé até tudo da nova estar pronto, e troca de uma vez só.',
     ],
   },
   {

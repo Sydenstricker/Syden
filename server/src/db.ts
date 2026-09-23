@@ -740,6 +740,11 @@ export function findUserByName(username: string) {
   return row && { ...toUser(row)!, passwordHash: row.passwordHash };
 }
 
+/** O dono do Syden: é para ele que vão as sugestões mandadas pela tela inicial. */
+export function findOwner(): User | undefined {
+  return toUser(db.prepare(`SELECT ${userColumns} FROM users WHERE is_owner = 1`).get() as UserRow | undefined);
+}
+
 export function listPublicUsers(): PublicUser[] {
   return (db.prepare(`SELECT ${userColumns} FROM users ORDER BY id`).all() as UserRow[]).map((row) => toUser(row)!);
 }

@@ -35,6 +35,43 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/direct', async (request) => db.listDirectChannels(request.user.id));
 
+    // ---------- Sugestões da tela inicial ----------
+    //
+    // A pessoa escreve uma ideia na vila e ela chega ao dono do Syden como conversa privada comum — com
+    // resposta, histórico e aviso de mensagem nova, sem caixa de correio separada para ninguém esquecer
+    // de olhar. O dono responde ali mesmo e a pessoa vê a resposta na conversa.
+    const ultimaSugestao = new Map<number, number>();
+    const ESPERA_ENTRE_SUGESTOES = 30_000;
+
+    authed.post<{ Body: { content?: string } }>('/api/suggestions', async (request, reply) => {
+      const texto = String(request.body?.content ?? '').trim();
+      if (texto.length < 4) return reply.code(400).send({ error: 'Escreva um pouco mais sobre a sua ideia.' });
+      if (texto.length > 1500) return reply.code(400).send({ error: 'Ideia comprida demais: resuma em até 1500 letras.' });
+
+      const dono = db.findOwner();
+      if (!dono) return reply.code(503).send({ error: 'Não há ninguém para receber sugestões agora.' });
+      if (dono.id === request.user.id) {
+        return reply.code(400).send({ error: 'As sugestões chegam até você — não precisa mandar para si mesmo.' });
+      }
+
+      const agora = Date.now();
+      const anterior = ultimaSugestao.get(request.user.id) ?? 0;
+      if (agora - anterior < ESPERA_ENTRE_SUGESTOES) {
+        return reply.code(429).send({ error: 'Calma aí: espere meio minuto antes de mandar outra.' });
+      }
+
+      const existente = db.findDirectBetween(request.user.id, dono.id);
+      const conversa = existente ?? db.createDirectChannel('', request.user.id, [dono.id]);
+      announce(conversa.id, existente ? 'direct:updated' : 'direct:created');
+
+      // A marca diz de onde veio, para o dono separar ideia de conversa do dia a dia.
+      const message = db.createMessage(conversa.id, request.user.id, `💡 Ideia pela tela inicial:\n${texto}`);
+      io.to(directRoom(conversa.id)).emit('message:new', { ...message, communityId: null });
+      ultimaSugestao.set(request.user.id, agora);
+      return { ok: true };
+    });
+
+
     /** Abre (ou reabre) uma conversa: sem nome e com uma pessoa só = conversa direta; com nome = grupo. */
     authed.post<{ Body: { userIds?: number[]; name?: string } }>('/api/direct', async (request, reply) => {
       const wanted = [...new Set((Array.isArray(request.body?.userIds) ? request.body.userIds : []).map(Number))].filter(

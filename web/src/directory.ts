@@ -25,13 +25,34 @@ function set(patch: Partial<Omit<Directory, 'emojisByName'>>) {
   for (const listener of listeners) listener();
 }
 
-export async function loadDirectory(communityId: number) {
+/** O que uma comunidade traz consigo, ainda sem entrar na tela. */
+export interface DadosDaComunidade {
+  communityId: number;
+  members: Map<number, CommunityMember>;
+  emojis: Emoji[];
+  sounds: Sound[];
+}
+
+/**
+ * Busca tudo de uma comunidade SEM trocar a tela. Quem chama decide a hora de aplicar — é assim que a
+ * troca de comunidade acontece de uma vez só, em vez de cada pedaço aparecer quando fica pronto.
+ */
+export async function buscarComunidade(communityId: number): Promise<DadosDaComunidade> {
   const [members, emojis, sounds] = await Promise.all([
     api<CommunityMember[]>(`/api/communities/${communityId}/members`),
     api<Emoji[]>(`/api/communities/${communityId}/emojis`),
     api<Sound[]>(`/api/communities/${communityId}/sounds`),
   ]);
-  set({ communityId, members: new Map(members.map((m) => [m.id, m])), emojis, sounds });
+  return { communityId, members: new Map(members.map((m) => [m.id, m])), emojis, sounds };
+}
+
+/** Põe na tela o que `buscarComunidade` trouxe. */
+export function aplicarComunidade(dados: DadosDaComunidade) {
+  set(dados);
+}
+
+export async function loadDirectory(communityId: number) {
+  aplicarComunidade(await buscarComunidade(communityId));
 }
 
 /** Relê o soundboard: usado quando a pessoa instala, tira ou monta um pacote. */

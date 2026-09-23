@@ -356,6 +356,7 @@ textarea {
 /* ---------- Layout ---------- */
 
 .app {
+  position: relative; /* a barrinha da troca de comunidade se apoia aqui */
   display: flex;
   height: 100%;
   overflow: hidden;
@@ -4736,9 +4737,8 @@ textarea {
   cursor: pointer;
   transition-property: transform;
   transition-timing-function: linear;
-}
-
-.v-coelho:focus-visible {
+  /* Sem a moldura padrão do navegador: num <g> ela sai do tamanho da caixa inteira e vira um retângulo
+     em volta do coelho. Quem chega pelo teclado vê o brilho da regra abaixo. */
   outline: none;
 }
 
@@ -4759,18 +4759,15 @@ textarea {
   animation: v-falar 0.25s ease-out;
 }
 
-.v-fala rect {
-  fill: rgba(20, 16, 12, 0.82);
-}
-
-.v-fala path {
-  fill: rgba(20, 16, 12, 0.82);
+/* Bolha de pensamento, não de fala: coelho não conversa, sente. */
+.v-fala circle {
+  fill: rgba(255, 252, 246, 0.95);
+  stroke: rgba(40, 28, 16, 0.12);
+  stroke-width: 1.5;
 }
 
 .v-fala text {
-  fill: #fff;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 19px;
 }
 
 /* ---------- os balões que levam a algum lugar ---------- */
@@ -5434,4 +5431,168 @@ textarea {
   .fundo-estrelas {
     animation: none;
   }
+}
+
+/* ---------- Troca de comunidade ---------- */
+
+/* A tela da comunidade anterior fica de pé até a nova estar inteira (membros, canais e conversa juntos).
+   Esta barrinha é o único sinal de que algo está a caminho, e ela só aparece se a espera passar de meio
+   segundo — numa rede boa a troca é instantânea e ninguém chega a vê-la. */
+.troca-barra {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 40;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--accent, #5865f2), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation:
+    troca-aparece 0.2s ease-out 0.5s forwards,
+    troca-anda 1.1s ease-in-out 0.5s infinite;
+}
+
+/* Durante a troca a tela antiga não aceita cliques: evita abrir um canal que já vai sumir. */
+.app.trocando .sidebar,
+.app.trocando .members {
+  pointer-events: none;
+}
+
+@keyframes troca-aparece {
+  to { opacity: 1; }
+}
+
+@keyframes troca-anda {
+  from { background-position: -40% 0; }
+  to { background-position: 140% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .troca-barra {
+    animation: troca-aparece 0.2s ease-out 0.5s forwards;
+    background: var(--accent, #5865f2);
+    background-size: 100% 100%;
+    opacity: 0.4;
+  }
+}
+
+/* ---------- Caixa de ideias da tela inicial ---------- */
+
+.ideias {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+
+.ideias h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--text-strong);
+}
+
+.ideias h2 svg {
+  color: var(--accent);
+}
+
+.ideias-lead {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.ideias form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+}
+
+.ideias textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.ideias textarea:focus {
+  outline: 2px solid var(--accent);
+}
+
+.ideias-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ideias-conta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ideias button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ideias button:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.ideias button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ideias-obrigado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+}
+
+.ideias-obrigado p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.ideias-obrigado button {
+  background: none;
+  color: var(--accent);
+  padding: 6px 10px;
+}
+
+@media (max-width: 760px) {
+  .ideias { padding: 20px 16px 0; }
 }
