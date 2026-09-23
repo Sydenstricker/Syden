@@ -4884,3 +4884,21 @@ textarea {
   background: var(--red, #f23f43);
   box-shadow: 0 0 0 2px var(--bg-darkest);
 }
+
+/* Ícones animados (Lottie): enquanto o desenho não chega, o espaço já fica reservado. */
+.animated-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.animated-icon.ready {
+  opacity: 1;
+}
+
+.animated-icon svg {
+  display: block;
+}

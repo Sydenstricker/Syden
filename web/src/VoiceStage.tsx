@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api } from './api';
+import { AnimatedIcon } from './AnimatedIcon';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
 import { IconButton } from './IconButton';
@@ -589,7 +590,7 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
         )}
         <div className="soundboard-anchor">
           <IconButton label="Soundboard" active={soundboardOpen} onClick={() => setSoundboardOpen(!soundboardOpen)}>
-            <AudioLines />
+            <AnimatedIcon name="musica" size={24} />
           </IconButton>
           {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
         </div>

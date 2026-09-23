@@ -1,5 +1,6 @@
 import { AppWindow, Globe, Monitor, MonitorOff, MonitorX } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { AnimatedIcon } from './AnimatedIcon';
 import { IconButton } from './IconButton';
 import type { Voice } from './useVoice';
 
@@ -45,7 +46,8 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
   return (
     <div className="screenshare-anchor" ref={ref}>
       <IconButton label={sharing ? 'Opções da transmissão' : 'Compartilhar tela'} active={sharing} onClick={() => setOpen(!open)}>
-        {sharing ? <MonitorOff /> : <Monitor />}
+        {/* Transmitindo, o ícone precisa avisar que dá para parar: aí volta o desenho comum. */}
+        {sharing ? <MonitorOff /> : <AnimatedIcon name="tela" size={24} />}
       </IconButton>
       {open && (
         <div className="screenshare-menu" role="menu">
