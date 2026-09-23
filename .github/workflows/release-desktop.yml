@@ -32,8 +32,24 @@ jobs:
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
         working-directory: desktop
       - name: Compilar o módulo de som (C++)
-        run: npm run build:native
+        shell: bash
         working-directory: desktop
+        # Se a compilação falhar, o erro vira uma "anotação" do GitHub. Os registros completos do Actions
+        # só abrem para quem tem acesso de administrador ao repositório; as anotações são públicas, então
+        # é por elas que dá para descobrir o que houve sem depender de ninguém entrar na conta.
+        run: |
+          set +e
+          npm run build:native 2>&1 | tee compilacao.log
+          codigo=${PIPESTATUS[0]}
+          if [ "$codigo" -ne 0 ]; then
+            resumo=$(grep -iE "error|fatal|gyp ERR!|MSB[0-9]|LNK[0-9]|cannot open" compilacao.log | tail -12 | tr '\n' '~' | cut -c1-900)
+            echo "::error title=Falha ao compilar o módulo de som::${resumo}"
+            echo "### Falha ao compilar o módulo de som" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            tail -60 compilacao.log >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$codigo"
       - run: npx electron-builder --win --publish never
         working-directory: desktop
       - uses: softprops/action-gh-release@v2
