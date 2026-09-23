@@ -8,16 +8,18 @@ let sources = [];
 let kind = 'screen';
 let selectedId = null;
 
-// O Windows não deixa capturar o som de um programa só: o que o app consegue pegar é a mistura do
-// computador inteiro, que inclui as vozes desta chamada. Por isso o aviso é o mesmo nas duas abas — e é
-// melhor avisar do que deixar a pessoa descobrir no meio da transmissão.
+// O Windows não separa o som por programa, mas sabe fazer o contrário: entregar tudo MENOS o de um
+// programa. Com o módulo de som instalado (só no app de desktop), é isso que o Syden usa, e as vozes da
+// chamada ficam de fora. Sem ele, sobra a mistura inteira — e aí é melhor avisar.
 const AUDIO_HINT = {
-  window: 'Vai o som do computador inteiro, inclusive esta chamada. O Windows não separa o som por programa.',
-  screen: 'Vai o som do computador inteiro, inclusive esta chamada. O Windows não separa o som por programa.',
+  comModulo: 'Vai o som do computador (jogo, vídeo, música), sem as vozes desta chamada.',
+  semModulo: 'Vai o som do computador inteiro, inclusive esta chamada. Prefira fones de ouvido.',
 };
 
+let semEco = false;
+
 function updateAudioHint() {
-  audioHint.textContent = AUDIO_HINT[kind] ?? AUDIO_HINT.screen;
+  audioHint.textContent = semEco ? AUDIO_HINT.comModulo : AUDIO_HINT.semModulo;
 }
 
 function share() {
@@ -87,6 +89,7 @@ document.addEventListener('keydown', (event) => {
 
 window.picker.onSources((data) => {
   sources = data.sources;
+  semEco = Boolean(data.semEco);
   audioOption.hidden = !data.audioSupported;
   updateAudioHint();
   const screens = sources.filter((s) => s.kind === 'screen');

@@ -19,3 +19,6 @@ SFX/
 
 # Pasta de trabalho de ícones animados (Lottie) que o usuário está avaliando.
 IconesAnimados/
+
+# Resultado da compilação do módulo de som (gerado por npm run build:native -w desktop).
+desktop/native/build/

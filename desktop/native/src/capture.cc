@@ -12,18 +12,27 @@
 #include <napi.h>
 
 #include <windows.h>
+#include <objidl.h>
 #include <audioclient.h>
 #include <audioclientactivationparams.h>
 #include <mmdeviceapi.h>
 
 #include <atomic>
+#include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 
 namespace {
 
-// Espera a ativação do cliente de áudio, que o Windows faz em outra thread.
-class ActivationHandler : public IActivateAudioInterfaceCompletionHandler {
+/**
+ * Espera a ativação do cliente de áudio, que o Windows faz em outra thread.
+ *
+ * O IAgileObject a mais não é decoração: sem ele o Windows recusa a chamada com E_ILLEGAL_METHOD_CALL e
+ * não diz por quê. É a forma de avisar que este objeto pode ser usado de qualquer thread, o que o
+ * sistema exige de quem recebe o aviso de "ativação terminada".
+ */
+class ActivationHandler : public IActivateAudioInterfaceCompletionHandler, public IAgileObject {
  public:
   ActivationHandler() : done_(CreateEventW(nullptr, TRUE, FALSE, nullptr)) {}
   ~ActivationHandler() {
@@ -43,7 +52,12 @@ class ActivationHandler : public IActivateAudioInterfaceCompletionHandler {
 
   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** object) override {
     if (riid == __uuidof(IUnknown) || riid == __uuidof(IActivateAudioInterfaceCompletionHandler)) {
-      *object = this;
+      *object = static_cast<IActivateAudioInterfaceCompletionHandler*>(this);
+      AddRef();
+      return S_OK;
+    }
+    if (riid == __uuidof(IAgileObject)) {
+      *object = static_cast<IAgileObject*>(this);
       AddRef();
       return S_OK;
     }
@@ -95,34 +109,47 @@ class Capture {
   /** Liga a captura. Devolve uma mensagem de erro (vazia quando deu certo). */
   std::string Start(Napi::Env env, Napi::Function on_chunk, DWORD exclude_pid, int sample_rate, int channels) {
     Stop();
-    channels_ = channels;
 
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      start_error_.clear();
+    }
+    ready_ = CreateEventW(nullptr, TRUE, FALSE, nullptr);
     tsfn_ = Napi::ThreadSafeFunction::New(env, on_chunk, "syden-audio", 0, 1);
     running_ = true;
 
-    std::string error;
-    HANDLE ready = CreateEventW(nullptr, TRUE, FALSE, nullptr);
-    worker_ = std::thread([this, exclude_pid, sample_rate, channels, ready, &error]() {
-      error = Run(exclude_pid, sample_rate, channels, ready);
+    worker_ = std::thread([this, exclude_pid, sample_rate, channels]() {
+      const std::string erro = Run(exclude_pid, sample_rate, channels);
+      if (!erro.empty()) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        start_error_ = erro;
+      }
+      // Se a abertura falhou, quem chamou ainda está esperando aqui.
+      if (ready_) SetEvent(ready_);
     });
-    // A abertura precisa ser resolvida aqui: quem chamou quer saber na hora se o som vai vir ou não.
-    WaitForSingleObject(ready, 5000);
-    CloseHandle(ready);
 
-    if (!error.empty()) {
+    // A abertura precisa ser resolvida aqui: quem chamou quer saber na hora se o som vai vir ou não.
+    WaitForSingleObject(ready_, 5000);
+    std::string erro;
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      erro = start_error_;
+    }
+    if (!erro.empty()) {
       Stop();
-      return error;
+      return erro;
     }
     return {};
   }
 
   void Stop() {
-    if (!running_.exchange(false)) {
-      if (worker_.joinable()) worker_.join();
-      return;
-    }
-    if (stop_event_) SetEvent(stop_event_);
+    const bool estava = running_.exchange(false);
+    if (estava && stop_event_) SetEvent(stop_event_);
     if (worker_.joinable()) worker_.join();
+    if (ready_) {
+      CloseHandle(ready_);
+      ready_ = nullptr;
+    }
     if (tsfn_) {
       tsfn_.Release();
       tsfn_ = nullptr;
@@ -131,9 +158,8 @@ class Capture {
 
  private:
   /** Roda na thread de captura: abre o fluxo, avisa quem chamou e depois só lê som até mandarem parar. */
-  std::string Run(DWORD exclude_pid, int sample_rate, int channels, HANDLE ready) {
+  std::string Run(DWORD exclude_pid, int sample_rate, int channels) {
     const auto fail = [&](const char* what, HRESULT hr) {
-      SetEvent(ready);
       char buffer[160];
       snprintf(buffer, sizeof(buffer), "%s (erro 0x%08lX)", what, static_cast<unsigned long>(hr));
       return std::string(buffer);
@@ -192,7 +218,7 @@ class Capture {
       return fail("A captura de som não começou", hr);
     }
 
-    SetEvent(ready); // daqui em diante é só ouvir
+    SetEvent(ready_); // daqui em diante é só ouvir
 
     HANDLE waits[2] = {stop_event_, audio_event};
     while (running_) {
@@ -237,6 +263,9 @@ class Capture {
   std::thread worker_;
   std::atomic<bool> running_{false};
   HANDLE stop_event_ = nullptr;
+  HANDLE ready_ = nullptr;
+  std::mutex mutex_;
+  std::string start_error_;
   Napi::ThreadSafeFunction tsfn_;
   int channels_ = 2;
 };

@@ -524,12 +524,16 @@ export function useVoice(socket: Socket | null) {
             contentHint: hints.contentHint,
             audio: true, // áudio da aba/janela/sistema, quando o navegador suporta
             systemAudio: 'include',
+            // Tira da captura o som que o PRÓPRIO Syden está tocando — ou seja, as vozes da chamada.
+            // É o que resolve o eco no navegador; existe no Chrome 141 em diante e é ignorado nos
+            // navegadores que não conhecem (aí o comportamento é o de antes).
+            restrictOwnAudio: true,
             selfBrowserSurface: 'exclude',
             video: { displaySurface: surface },
             preferCurrentTab: false,
             surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
             resolution: preset.resolution,
-          },
+          } as Parameters<typeof lp.setScreenShareEnabled>[1],
           { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
         );
         await startAppAudio();

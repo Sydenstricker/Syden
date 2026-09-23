@@ -231,6 +231,8 @@ async function pickSource(audioRequested) {
   const payload = {
     // Capturar o áudio do sistema só é suportado no Windows.
     audioSupported: audioRequested && process.platform === 'win32',
+    // Com o módulo nativo, o som vai sem as vozes da chamada; sem ele, vai a mistura inteira.
+    semEco: screenAudioAvailable(),
     sources: sources.map((s) => ({
       id: s.id,
       name: s.name,

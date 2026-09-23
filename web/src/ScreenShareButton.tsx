@@ -7,19 +7,19 @@ const OPTIONS: { surface: 'monitor' | 'window' | 'browser'; label: string; hint:
   {
     surface: 'monitor',
     label: 'Tela inteira',
-    hint: 'Tudo o que está na tela. O som vai ser o do computador inteiro — inclusive esta chamada.',
+    hint: 'Tudo o que está na tela, com o som do computador. O Syden pede ao navegador para tirar as vozes desta chamada do som.',
     icon: <Monitor size={16} />,
   },
   {
     surface: 'window',
     label: 'Uma janela ou app',
-    hint: 'Só aquele programa. No Windows o som dele não vem junto: a transmissão fica muda.',
+    hint: 'Só aquele programa. No navegador, o som de uma janela não vem junto: a transmissão fica muda.',
     icon: <AppWindow size={16} />,
   },
   {
     surface: 'browser',
     label: 'Uma aba do navegador',
-    hint: 'Só aquela aba, com o som dela — a única forma de mandar som sem devolver a chamada junto.',
+    hint: 'Só aquela aba, com o som dela — o jeito mais garantido de mandar som limpo.',
     icon: <Globe size={16} />,
   },
 ];
