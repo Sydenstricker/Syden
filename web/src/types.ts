@@ -177,6 +177,8 @@ export interface VoiceMember {
   deafened: boolean;
   video: boolean;
   screen: boolean;
+  /** O que a pessoa está transmitindo, quando dá para saber pelo título da janela. */
+  screenName: string | null;
 }
 
 export type Traffic =

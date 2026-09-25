@@ -15,11 +15,14 @@ const HEIGHT = 216; // vídeo 16:9 mais a legenda
 export function LivePreview({
   userId,
   username,
+  transmitindo,
   channelId,
   connected,
 }: {
   userId: number;
   username: string;
+  /** O que a pessoa está transmitindo, quando dá para saber. */
+  transmitindo?: string | null;
   channelId: number;
   connected: boolean;
 }) {
@@ -45,7 +48,7 @@ export function LivePreview({
         className="live-badge"
         tabIndex={0}
         role="button"
-        aria-label={`Ver o que ${username} está compartilhando`}
+        aria-label={transmitindo ? `Ver ${username} transmitindo ${transmitindo}` : `Ver o que ${username} está compartilhando`}
         onMouseEnter={(e) => show(e.currentTarget)}
         onMouseLeave={() => setAt(null)}
         onFocus={(e) => show(e.currentTarget)}
@@ -65,7 +68,7 @@ export function LivePreview({
               <div className="live-preview-empty">{peeked.error ?? 'Carregando a imagem…'}</div>
             )}
             <div className="live-preview-caption">
-              {username} está compartilhando a tela
+              {transmitindo ? `${username} está transmitindo ${transmitindo}` : `${username} está compartilhando a tela`}
               {!connected && <span className="live-preview-hint">Clique na sala para entrar e assistir.</span>}
             </div>
           </div>,

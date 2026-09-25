@@ -28,6 +28,8 @@ export interface VoiceMember {
   deafened: boolean;
   video: boolean;
   screen: boolean;
+  /** O que está sendo transmitido ("League of Legends"), quando dá para saber. */
+  screenName: string | null;
 }
 
 type Ack = (result: { ok: true } | { ok: false; error: string }) => void;
@@ -211,6 +213,7 @@ export function setupRealtime(io: IOServer) {
         deafened: false,
         video: false,
         screen: false,
+        screenName: null,
         socketId: socket.id,
         voiceSessionId: db.startUsageSession('voice', user.id),
         screenSessionId: null,
@@ -220,12 +223,16 @@ export function setupRealtime(io: IOServer) {
       ack?.({ ok: true });
     });
 
-    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen'>>) => {
+    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName'>>) => {
       const member = voiceMembers.get(user.id);
       if (!member || member.socketId !== socket.id) return;
       for (const key of ['muted', 'deafened', 'video', 'screen'] as const) {
         if (typeof patch?.[key] === 'boolean') member[key] = patch[key];
       }
+      // O nome do que está sendo transmitido vem do título da janela, então chega como texto de fora:
+      // corta no tamanho e só vale enquanto a transmissão estiver de pé.
+      const nome = typeof patch?.screenName === 'string' ? patch.screenName.trim().slice(0, 60) : null;
+      member.screenName = member.screen ? nome || null : null;
       if (member.screen && member.screenSessionId === null) {
         member.screenSessionId = db.startUsageSession('screen', user.id);
       } else if (!member.screen && member.screenSessionId !== null) {

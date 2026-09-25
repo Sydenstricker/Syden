@@ -3094,8 +3094,23 @@ textarea {
   white-space: nowrap;
 }
 
+/* "Transmitindo League of Legends em Sala 1" não cabe numa linha desta coluna. Quem está transmitindo
+   ganha até duas linhas; o resto da lista continua com uma só, e as linhas ficam mais juntas para a
+   altura da pessoa não pular tanto. */
 .member-status.live {
   color: #fa777c;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+  line-height: 1.25;
+}
+
+.member-status.live .live-dot {
+  /* dentro de uma caixa de texto, a bolinha precisa acompanhar a primeira linha */
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
 }
 
 .live-dot {

@@ -141,7 +141,15 @@ export function Sidebar({
                     >
                       <Avatar name={m.username} userId={m.userId} size={22} speaking={speaking.has(String(m.userId))} />
                       <span className="voice-member-name">{m.username}</span>
-                      {m.screen && <LivePreview userId={m.userId} username={m.username} channelId={c.id} connected={voice.channelId === c.id} />}
+                      {m.screen && (
+                        <LivePreview
+                          userId={m.userId}
+                          username={m.username}
+                          transmitindo={m.screenName}
+                          channelId={c.id}
+                          connected={voice.channelId === c.id}
+                        />
+                      )}
                       {m.video && <Video size={14} />}
                       {m.deafened ? <HeadphoneOff size={14} className="muted-icon" /> : m.muted && <MicOff size={14} className="muted-icon" />}
                     </div>

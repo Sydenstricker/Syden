@@ -18,6 +18,7 @@ import { api } from './api';
 import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
+import { nomeDaTransmissao } from './streamName';
 import { applyAllVolumes } from './voiceVolumes';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
@@ -120,6 +121,8 @@ export function useVoice(socket: Socket | null) {
   });
   const [channelId, setChannelId] = useState<number | null>(null);
   const [connecting, setConnecting] = useState(false);
+  // O que está sendo transmitido agora, em palavras ("League of Legends"), para os outros verem.
+  const nomeDaTelaRef = useRef<string | null>(null);
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -143,9 +146,14 @@ export function useVoice(socket: Socket | null) {
     const sync = () => {
       const next = readLocalMedia(lp);
       // A transmissão pode acabar por fora (barra do Windows, botão do navegador): o som vai junto.
-      if (!next.screen) stopAppAudioRef.current();
+      if (!next.screen) {
+        stopAppAudioRef.current();
+        nomeDaTelaRef.current = null;
+      }
       setMedia(next);
-      if (channelRef.current !== null) socketRef.current?.emit('voice:update', next);
+      if (channelRef.current !== null) {
+        socketRef.current?.emit('voice:update', { ...next, screenName: next.screen ? nomeDaTelaRef.current : null });
+      }
     };
     const syncIfLocal = (_: TrackPublication, participant: Participant) => {
       if (participant === lp) sync();
@@ -536,6 +544,13 @@ export function useVoice(socket: Socket | null) {
           } as Parameters<typeof lp.setScreenShareEnabled>[1],
           { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
         );
+        // O rótulo da captura é o que dá o nome do jogo/janela; no navegador costuma vir um código
+        // interno, e aí sobra o tipo ("a tela", "uma janela"). Ver streamName.ts.
+        const capturado = lp.getTrackPublication(Track.Source.ScreenShare)?.videoTrack?.mediaStreamTrack?.label;
+        nomeDaTelaRef.current = nomeDaTransmissao(capturado, surface);
+        if (channelRef.current !== null) {
+          socketRef.current?.emit('voice:update', { ...readLocalMedia(lp), screenName: nomeDaTelaRef.current });
+        }
         await startAppAudio();
       } catch (e) {
         // Fechar o seletor de tela sem escolher nada não é erro.

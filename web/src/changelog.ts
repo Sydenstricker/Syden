@@ -10,6 +10,15 @@ export interface Update {
 
 export const CHANGELOG: Update[] = [
   {
+    date: '2026-09-25',
+    title: 'Dá para ver o que a pessoa está transmitindo',
+    icon: '🎮',
+    items: [
+      'Antes a lista só dizia "Transmitindo em Sala 1". Agora diz o quê: "Transmitindo League of Legends em Sala 1".',
+      'O nome vem do título da janela que a pessoa escolheu compartilhar. Compartilhando a tela inteira, aparece "a tela"; pelo navegador, que não conta o título, aparece o tipo (a tela, uma janela, uma aba).',
+    ],
+  },
+  {
     date: '2026-09-23',
     title: 'Ícone novo e coelhos bem alimentados',
     icon: '🥕',

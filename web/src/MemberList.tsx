@@ -4,6 +4,7 @@ import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
 import { corDoNome } from './profileStyles';
+import { fraseDaTransmissao } from './streamName';
 import type { Channel, CommunityMember, PresenceEntry, Role, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -62,7 +63,7 @@ export function MemberList({
   const status = (id: number) => {
     const voice = voiceById.get(id);
     if (!voice) return null;
-    if (voice.screen) return { text: `Transmitindo em ${channelName(voice.channelId)}`, live: true };
+    if (voice.screen) return { text: fraseDaTransmissao(voice.screenName, channelName(voice.channelId)), live: true };
     if (voice.video) return { text: `Com câmera em ${channelName(voice.channelId)}`, live: false };
     return { text: `Em ${channelName(voice.channelId)}`, live: false };
   };
