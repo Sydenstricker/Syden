@@ -21,6 +21,7 @@ import { healthReport, recordClientError } from './health.js';
 import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
+import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
 /** Cliente de administração do LiveKit: é por ele que o servidor silencia alguém na sala. */
@@ -651,6 +652,15 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get('/api/status/provider', async (request, reply) => {
       if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
       return (await providerMetrics()) ?? { name: '', series: [] };
+    });
+
+    /**
+     * Quanto o Syden ficou no ar, visto de fora. Devolve nulo quando não há chave do UptimeRobot — a
+     * tela some inteira nesse caso, em vez de mostrar zeros que pareceriam queda.
+     */
+    authed.get('/api/status/uptime', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      return (await disponibilidade()) ?? null;
     });
 
     // ---------- Canais ----------

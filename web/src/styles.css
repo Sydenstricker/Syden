@@ -3002,6 +3002,89 @@ textarea {
   text-align: center;
 }
 
+/* ---------- Disponibilidade vista de fora (UptimeRobot) ---------- */
+
+.disponibilidade-agora {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.disponibilidade-agora .bolinha {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.disponibilidade-agora.boa {
+  color: #3ba55d;
+}
+
+.disponibilidade-agora.ruim {
+  color: #d83c3e;
+}
+
+.disponibilidade-numeros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.disponibilidade-numeros div {
+  padding: 10px 12px;
+  border: 1px solid var(--bg-raised);
+  border-radius: var(--radius);
+  background: var(--bg-sidebar);
+  text-align: center;
+}
+
+.disponibilidade-numeros strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+}
+
+.disponibilidade-numeros small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.disponibilidade-titulo {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.disponibilidade-quedas {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.disponibilidade-quedas li {
+  display: flex;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--bg-raised);
+}
+
+.disponibilidade-quedas li:last-child {
+  border-bottom: 0;
+}
+
+.disponibilidade-quedas time {
+  min-width: 116px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- O registro de moderação ---------- */
 
 .auditoria-lista {

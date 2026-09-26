@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { PainelAuditoria } from './PainelAuditoria';
 import { PainelDenuncias } from './PainelDenuncias';
+import { PainelDisponibilidade } from './PainelDisponibilidade';
 import { HealthPanel } from './HealthPanel';
 import { MobileBackButton } from './MobileBackButton';
 import type { Traffic, UsageSummary, VoiceMember } from './types';
@@ -103,6 +104,8 @@ export function UsageDashboard({
 
       {tab === 'saude' && (
         <div className="usage-body">
+          {/* O de fora vem primeiro: é a única medição que não depende do próprio servidor estar bem. */}
+          <PainelDisponibilidade />
           <HealthPanel />
         </div>
       )}

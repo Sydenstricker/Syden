@@ -59,6 +59,9 @@ export const config = {
   },
   /** Endereço do site, para montar os links que vão dentro do e-mail. */
   siteUrl: (process.env.SITE_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173').trim().replace(/\/$/, ''),
+  // Historico de disponibilidade visto de fora (UptimeRobot). Chave só de leitura, criada em
+  // uptimerobot.com -> My Settings -> API. Sem ela, a secao nao aparece no painel.
+  uptimeRobotKey: process.env.UPTIMEROBOT_API_KEY ?? '',
   // Turnstile da Cloudflare: a unica defesa que funciona contra enxame de robos vindo de muitos
   // endereços diferentes. Sem chave, fica desligado e o cadastro funciona como sempre.
   turnstile: {
