@@ -22,3 +22,6 @@ IconesAnimados/
 
 # Resultado da compilação do módulo de som (gerado por npm run build:native -w desktop).
 desktop/native/build/
+
+# Vídeos de referência que o Sydenstricker grava para mostrar o que quer (pesados, não versionar).
+video/

@@ -35,6 +35,21 @@ npm run dev:web       # terminal 3: site em http://localhost:5173
 Crie uma conta com o código de convite `amigos` (definido em `server/.env`). Para testar a voz sozinho, abra
 duas janelas (uma delas anônima) com contas diferentes.
 
+### Testes
+
+```bash
+npm test -w server        # 32 testes, ~5 s, sem precisar de Docker nem de porta livre
+npm run typecheck -w server
+```
+
+Os testes do servidor sobem a API inteira em memória (`buildApp`), com um banco SQLite novo em pasta
+temporária, e batem nas rotas de verdade com `app.inject()`. Cobrem o que quebra em silêncio: quem pode ler
+o quê, o freio contra tentativa de senha, e o que derruba uma sessão. Rodam também a cada push, no
+[workflow Verificar](.github/workflows/verificar.yml), junto com a compilação do site e o `npm audit`.
+
+Os testes de ponta a ponta (`e2e/`) abrem o Syden num navegador de verdade e precisam da API e do site no ar;
+veja o [e2e/LEIA.md](e2e/LEIA.md).
+
 Para testar com alguém na mesma rede Wi-Fi, suba o LiveKit com o IP do seu PC na rede:
 `LIVEKIT_NODE_IP=192.168.0.10 npm run dev:livekit`. Lembre que o navegador só libera o microfone em
 `localhost` ou em HTTPS, então o teste com amigos de verdade é mais fácil já na VPS.
@@ -58,8 +73,12 @@ TCP) e UDP `50000-60000` (mídia).
 
 #### Em qualquer provedor, depois de criar o servidor
 
-1. Aponte dois domínios para o IP público (registro DNS `A`), por exemplo `api.seudominio.com` e
-   `live.seudominio.com`. Sem domínio próprio, o [DuckDNS](https://www.duckdns.org) dá subdomínios grátis.
+1. Aponte dois subdomínios para o IP público, com registro DNS `A`: `api.syden.chat` e `live.syden.chat`.
+   Sem domínio próprio, o [DuckDNS](https://www.duckdns.org) dá subdomínios grátis.
+
+   > **Na Cloudflare, os dois têm que ficar em "DNS only" (nuvem cinza).** Com o proxy ligado (nuvem
+   > laranja) a chamada de voz não conecta: a mídia do LiveKit é UDP, e o proxy da Cloudflare não
+   > repassa UDP. O certificado continua sendo emitido pelo Caddy, como sempre.
 2. No servidor:
    ```bash
    curl -fsSL https://get.docker.com | sudo sh
@@ -67,7 +86,7 @@ TCP) e UDP `50000-60000` (mídia).
    cp .env.example .env && nano .env      # preencha tudo
    sudo docker compose up -d --build
    ```
-3. Confira em `https://api.seudominio.com/api/health`. A resposta deve ser `{"ok":true}`.
+3. Confira em `https://api.syden.chat/api/health`. A resposta deve ser `{"ok":true}`.
 
 #### Oracle Cloud "Always Free" (alternativa grátis)
 
@@ -94,11 +113,33 @@ A Oracle pode desligar instâncias grátis ociosas. Para evitar, converta a cont
 1. Suba o repositório para o GitHub.
 2. Em **Settings → Pages**, escolha **Source: GitHub Actions**.
 3. Em **Settings → Secrets and variables → Actions → Variables**, crie `VITE_API_URL` com
-   `https://api.seudominio.com`.
+   `https://api.syden.chat`.
 4. Faça um push na `main` (ou rode o workflow manualmente). O site fica em `https://<usuario>.github.io/<repo>/`.
 5. Confirme que `CORS_ORIGIN` no `deploy/.env` é `https://<usuario>.github.io`.
 
-### 3. App de desktop (Windows)
+### 3. E-mail (recuperar senha e confirmar endereço)
+
+O Syden funciona sem isto: com `RESEND_API_KEY` vazia, as mensagens vão para o registro do servidor em
+vez de saírem. Mas sem envio de verdade, **quem esquece a senha perde a conta** — não há para onde mandar
+o link.
+
+1. Crie a chave em [resend.com](https://resend.com) → **API Keys**, com permissão apenas de envio
+   (*Sending access*). Ela aparece uma vez só; copie na hora.
+2. Em **Domains → Add Domain**, cadastre `syden.chat`. O Resend devolve três registros de DNS (um `MX` e
+   dois `TXT`, para SPF e DKIM). Copie os três no painel da Cloudflare, em **DNS → Records**.
+3. Espere o domínio ficar **Verified** no Resend. Costuma levar de alguns minutos a algumas horas.
+4. Só então troque o remetente no `deploy/.env`:
+
+   ```
+   EMAIL_FROM=Syden <nao-responda@syden.chat>
+   SITE_URL=https://endereco-do-site        # é daqui que saem os links dentro do e-mail
+   ```
+
+**Antes da verificação, o remetente de teste do Resend só entrega para o e-mail dono da conta.** Um amigo
+que pedir recuperação de senha não recebe nada — e não vê erro nenhum, porque a tela nunca conta se o
+endereço existe. Por isso: não anuncie a recuperação de senha antes de o domínio estar verificado.
+
+### 4. App de desktop (Windows)
 
 O app é uma janela do Electron que carrega o site do GitHub Pages. Por isso, as atualizações do site chegam
 para todos sem reinstalar nada. Só é preciso gerar um instalador novo quando algo muda na pasta `desktop/`.
@@ -148,7 +189,7 @@ de assinatura de código, que é pago.
 
 ## Painel de uso
 
-Todos os usuários veem, em **Uso do servidor** (topo da barra lateral):
+Os administradores veem, em **Uso do servidor** (topo da barra lateral):
 - o tráfego de saída do mês em relação à franquia da VPS, com a projeção para o fim do mês;
 - as horas em chamada e compartilhando tela, no total e por pessoa;
 - quem está em chamada agora.
@@ -167,7 +208,31 @@ O tráfego que importa é o que **sai** do LiveKit: cada stream é copiado para 
 | 10 pessoas em voz (~40 kbps cada) | ~4 Mbps |
 | 1 tela 1080p30 (até 5 Mbps) assistida por 9 | até ~45 Mbps |
 
-Uma VPS pequena aguenta isso com folga. Caminho para crescer, na ordem:
+Uma VPS pequena aguenta isso com folga.
+
+### Onde está o teto, medido
+
+O gargalo do Syden **não é a voz**: é que avatares, emojis, anexos e recados em vídeo ficam guardados
+dentro do próprio banco, e o `node:sqlite` é síncrono. Enquanto o servidor lê um arquivo, o processo
+inteiro para — nada de voz, nada de chat, para ninguém. `npm run medir:blobs` mede isso:
+
+| Arquivo | Servidor travado em 1 leitura | Em 10 leituras seguidas |
+|---|---|---|
+| Avatar (50 KB) | 0,1 ms | 0,9 ms |
+| Emoji grande (0,5 MB) | 0,7 ms | 6 ms |
+| Foto (2 MB) | 3,6 ms | 28 ms |
+| Clipe curto (8 MB) | 12 ms | 115 ms |
+| Recado em vídeo (20 MB) | **28 ms** | **288 ms** |
+
+Lendo assim: um recado em vídeo de 20 MB deixa o servidor surdo por ~28 ms. A voz começa a engasgar
+quando isso passa de uns 50 a 100 ms, então **três ou quatro vídeos pedidos ao mesmo tempo já dão para
+ouvir**. Com dez amigos nunca acontece; com cem pessoas ativas, acontece todo dia.
+
+Quando chegar essa hora, a correção é tirar os arquivos do banco e pôr num armazenamento de objetos
+(Cloudflare R2 ou S3), com o navegador baixando direto de lá. Enquanto o número da tabela acima não
+incomodar ninguém, mexer nisso é trabalho sem retorno — e é por isso que ainda não foi feito.
+
+Caminho para crescer, na ordem:
 
 1. **VPS maior.** Um único LiveKit aguenta centenas de participantes.
 2. **Vários LiveKit.** Com Redis, o LiveKit distribui as salas entre várias máquinas (`redis:` no `livekit.yaml`).
