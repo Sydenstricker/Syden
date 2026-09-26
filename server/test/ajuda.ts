@@ -29,6 +29,22 @@ export async function servidorDeTeste() {
   process.env.FREIO_CADASTROS_POR_DIA ??= '10000';
 
   const { buildApp } = await import('../src/app.js');
+
+  // PARA-RAIOS. O config.ts lê DATABASE_PATH no PRIMEIRO import de qualquer módulo do servidor e
+  // congela o valor. Se o arquivo de teste importou alguma coisa do servidor antes de chamar isto — e
+  // basta um import que pareça inofensivo, porque quase todos arrastam o config junto —, o banco aberto
+  // é o DE DESENVOLVIMENTO. O teste passa, e só se descobre quando um nome de usuário colide dias
+  // depois. Aconteceu de verdade. Melhor estourar aqui, com o motivo escrito.
+  const { config } = await import('../src/config.js');
+  if (config.databasePath !== arquivo) {
+    throw new Error(
+      `O banco aberto é ${config.databasePath}, e não o de teste.
+` +
+        `Alguma coisa do servidor foi importada ANTES de servidorDeTeste(). Ponha o import dele primeiro,
+` +
+        `e os outros depois — inclusive os que não parecem mexer com banco.`,
+    );
+  }
   const { app, io } = await buildApp({ background: false });
   await app.ready();
 

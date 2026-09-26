@@ -6,12 +6,15 @@ import { after, test } from 'node:test';
 process.env.GOOGLE_CLIENT_ID = 'teste-cliente';
 process.env.GOOGLE_CLIENT_SECRET = 'teste-segredo';
 
-const { resumo, sortear } = await import('../src/social.js');
+// A ORDEM DESTAS LINHAS IMPORTA, e errar nela não dá erro nenhum: dá um teste que passa escrevendo no
+// banco de desenvolvimento de verdade. O config.ts congela o caminho do banco no PRIMEIRO import de
+// qualquer módulo do servidor, e quem troca esse caminho é o servidorDeTeste. Então ele vem antes de
+// tudo — inclusive antes do social.js, que parece inofensivo mas arrasta o config junto.
 const { servidorDeTeste } = await import('./ajuda.js');
-
 const { app, fechar } = await servidorDeTeste();
 after(fechar);
 
+const { resumo, sortear } = await import('../src/social.js');
 const db = await import('../src/db.js');
 
 /** Começa uma entrada como o navegador começaria, e devolve o segredo e o estado sorteado pelo servidor. */
