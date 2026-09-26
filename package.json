@@ -12,6 +12,13 @@
     "dev:web": "npm run dev -w web",
     "build": "npm run build -w server && npm run build -w web",
     "dev:desktop": "npm run dev -w desktop",
-    "dist:desktop": "npm run dist -w desktop"
+    "dist:desktop": "npm run dist -w desktop",
+    "test": "npm test -w server && npm test -w web",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w web",
+    "test:e2e": "node e2e/rodar.mjs",
+    "medir:blobs": "node scripts/medir-blobs.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
   }
 }

@@ -1,0 +1,24 @@
+# Abre um pull request quando sai versão nova de alguma dependência. Sem isto, o "0 vulnerabilidades"
+# de hoje vira "3 vulnerabilidades" em alguns meses sem ninguém ficar sabendo.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Um pull request por semana já dá trabalho de revisar; mais do que isso vira ruído e ninguém lê.
+    open-pull-requests-limit: 3
+    groups:
+      # Atualizações pequenas vêm todas juntas, num pull request só.
+      miudezas:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: 'dependências'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'ações'

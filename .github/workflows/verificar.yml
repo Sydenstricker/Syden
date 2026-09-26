@@ -1,0 +1,48 @@
+# Roda a cada push e a cada pull request: é o portão que impede uma mudança quebrada de chegar no servidor.
+# O deploy do site (deploy-web.yml) continua separado, porque publicar é outra coisa de conferir.
+name: Verificar
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Um push novo cancela a verificação do anterior: não adianta conferir código que já foi substituído.
+concurrency:
+  group: verificar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: Instalar as dependências
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1 # o Electron só é preciso para gerar o instalador
+
+      - name: Conferir os tipos do servidor
+        run: npm run typecheck -w server
+
+      - name: Testar o servidor
+        run: npm test -w server
+
+      - name: Testar as regras do site que não precisam de navegador
+        run: npm test -w web
+
+      # `npm run build -w web` já roda o tsc antes do vite: se um tipo estiver errado, a compilação para.
+      - name: Compilar o site
+        run: npm run build -w web
+        env:
+          VITE_API_URL: https://exemplo.invalido # só para compilar; o endereço de verdade vem no deploy
+
+      # Falha apenas em vulnerabilidade alta ou crítica, e só nas dependências que vão para produção.
+      # Aviso de pacote de desenvolvimento não pode travar o trabalho de quem está programando.
+      - name: Conferir vulnerabilidades conhecidas
+        run: npm audit --omit=dev --audit-level=high
