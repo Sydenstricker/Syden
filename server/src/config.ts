@@ -15,7 +15,14 @@ function env(name: string, devFallback: string): string {
  * escrever CADASTRO_ABERTO=sim, que é uma decisão consciente e fica registrada no arquivo.
  */
 const inviteCode = (process.env.INVITE_CODE ?? '').trim();
-const cadastroAberto = process.env.CADASTRO_ABERTO === 'sim';
+/**
+ * Aceita as formas que alguém escreveria de verdade num arquivo de configuração: "sim", "SIM", " sim ",
+ * "true", "1". Exigir exatamente `sim` fazia a variável parecer ignorada quando estava só com uma letra
+ * maiúscula — e o sintoma disso (o cadastro continuar fechado sem nenhum aviso) é difícil de adivinhar.
+ */
+const ligado = (valor: string | undefined) => ['sim', 'true', '1', 'yes'].includes((valor ?? '').trim().toLowerCase());
+
+const cadastroAberto = ligado(process.env.CADASTRO_ABERTO);
 if (isProd && !inviteCode && !cadastroAberto) {
   throw new Error(
     'INVITE_CODE está vazio: o cadastro ficaria aberto para qualquer pessoa. ' +
