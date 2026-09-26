@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ApiError, api, loadToken, saveToken } from './api';
 import { AuthScreen } from './AuthScreen';
 import { AvisoGeral } from './AvisoGeral';
+import { concluir, lerVolta, RECADOS } from './entradaSocial';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
 import { SplashLogo } from './SplashLogo';
@@ -39,6 +40,10 @@ export function App() {
   // Confirmar o e-mail funciona estando logado ou não: o link pode ser aberto em qualquer navegador.
   const [confirmacao, setConfirmacao] = useState<{ ok: boolean; texto: string } | null>(null);
   const [codigoDeConfirmacao] = useState(lerConfirmacaoDaUrl);
+  // A volta do Google/Discord. Lida UMA VEZ, no primeiro desenho, e já apagada da barra de endereço:
+  // recarregar a página não pode tentar usar de novo um comprovante que já foi gasto.
+  const [volta] = useState(lerVolta);
+  const [erroSocial, setErroSocial] = useState<string | null>(volta && volta.situacao !== 'ok' ? RECADOS[volta.situacao] : null);
 
   useEffect(() => {
     if (!codigoDeConfirmacao) return;
@@ -51,6 +56,27 @@ export function App() {
   useEffect(() => {
     let cancelled = false;
     const minWait = new Promise((resolve) => setTimeout(resolve, SPLASH_MIN_MS));
+
+    // Voltou do Google com um comprovante: troca por um token de verdade, apresentando o segredo que
+    // ficou nesta aba. É esse par que impede que um link plantado por outra pessoa entre em alguma
+    // conta (ver entradaSocial.ts). Falhando, cai na tela de entrada com o motivo escrito.
+    if (volta?.situacao === 'ok' && volta.comprovante) {
+      void Promise.all([concluir(volta.comprovante), minWait])
+        .then(([{ token: novo, user }]) => {
+          if (cancelled) return;
+          saveToken(novo);
+          setSession({ status: 'ready', token: novo, user });
+        })
+        .catch((e) => {
+          if (cancelled) return;
+          setErroSocial((e as Error).message);
+          setSession({ status: 'anonymous' });
+        });
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const token = loadToken();
     const auth = token
       ? api<User>('/api/me', { token }).then(
@@ -70,7 +96,7 @@ export function App() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [volta]);
 
   return (
     <>
@@ -78,6 +104,14 @@ export function App() {
       {/* Fica FORA do app-body de propósito: assim o recado aparece na tela de entrada também, que é
           onde ele mais faz falta — quem não consegue entrar é quem mais precisa saber do porquê. */}
       {session.status !== 'loading' && <AvisoGeral />}
+      {erroSocial && (
+        <p className="aviso-topo ruim" role="alert">
+          {erroSocial}
+          <button type="button" className="link" onClick={() => setErroSocial(null)} aria-label="Fechar aviso">
+            ✕
+          </button>
+        </p>
+      )}
       {confirmacao && (
         <p className={`aviso-topo${confirmacao.ok ? '' : ' ruim'}`} role="status">
           {confirmacao.texto}

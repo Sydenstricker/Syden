@@ -24,6 +24,7 @@ import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
 import { lerServidor, TETO_POR_COMUNIDADE } from './jogos.js';
 import { CATALOGO, podeVestir } from './loja.js';
+import { provedoresLigados } from './social.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
@@ -145,6 +146,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     // O recado geral vai aqui, e não numa rota própria, porque esta é a chamada que a tela de entrada
     // já faz: assim ele chega em quem NÃO CONSEGUE ENTRAR, que é justamente quem mais precisa dele.
     aviso: avisoDeAgora(),
+    // Só os que têm as duas chaves configuradas: um botão do Google sem chave levaria a um erro.
+    social: provedoresLigados(),
   }));
 
   // Freios das portas caras. O de endereço protege o SERVIDOR: conferir uma senha custa ~0,1 s de

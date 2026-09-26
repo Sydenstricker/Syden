@@ -480,6 +480,33 @@ db.exec(`
   -- item mora no app, não aqui: o banco guarda só o código, para trocar arte sem mexer em banco.
   -- Os servidores de jogo de uma comunidade: uma agenda de endereços, nada mais. O Syden não fala
   -- com esses servidores (ver server/src/jogos.ts).
+  -- Entrar com Google/Discord: a ligação entre uma conta do Syden e a conta de lá.
+  -- Uma pessoa pode ligar os dois provedores na mesma conta, e por isso a chave é o par.
+  CREATE TABLE IF NOT EXISTS social_accounts (
+    provedor   TEXT NOT NULL,
+    sub        TEXT NOT NULL,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (provedor, sub)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_social_accounts_user ON social_accounts(user_id);
+
+  -- As idas e vindas em andamento. Nasce quando o navegador pede para entrar, morre quando ele
+  -- troca o comprovante pelo token — ou quando vence, meia hora depois.
+  CREATE TABLE IF NOT EXISTS social_states (
+    state      TEXT PRIMARY KEY,
+    provedor   TEXT NOT NULL,
+    -- O sha256 do segredo que ficou SÓ no navegador que começou. É o que impede login CSRF.
+    resumo     TEXT NOT NULL,
+    -- Preenchido quando o provedor volta: o comprovante de uso único e de quem é a conta.
+    entrega    TEXT,
+    user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_social_states_entrega ON social_states(entrega);
+
   CREATE TABLE IF NOT EXISTS game_servers (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
@@ -2681,6 +2708,93 @@ export function reactionsForMessage(messageId: number, viewerId: number): Reacti
     )
     .all(viewerId, messageId) as unknown as { emoji: string; count: number; mine: number }[];
   return rows.map((r) => ({ emoji: r.emoji, count: r.count, mine: r.mine === 1 }));
+}
+
+// ---------- Entrar com Google/Discord ----------
+
+export function contaSocial(provedor: string, sub: string): number | undefined {
+  const linha = db.prepare('SELECT user_id AS userId FROM social_accounts WHERE provedor = ? AND sub = ?').get(provedor, sub) as
+    | { userId: number }
+    | undefined;
+  return linha?.userId;
+}
+
+export function ligarContaSocial(provedor: string, sub: string, userId: number) {
+  db.prepare(
+    'INSERT INTO social_accounts (provedor, sub, user_id) VALUES (?, ?, ?) ON CONFLICT(provedor, sub) DO UPDATE SET user_id = excluded.user_id',
+  ).run(provedor, sub, userId);
+}
+
+/** Quais provedores esta pessoa já ligou. A tela de conta mostra isso. */
+export function contasSociaisDe(userId: number): string[] {
+  return (db.prepare('SELECT provedor FROM social_accounts WHERE user_id = ?').all(userId) as unknown as { provedor: string }[]).map(
+    (l) => l.provedor,
+  );
+}
+
+export function desligarContaSocial(provedor: string, userId: number) {
+  db.prepare('DELETE FROM social_accounts WHERE provedor = ? AND user_id = ?').run(provedor, userId);
+}
+
+export function criarEstadoSocial(state: string, provedor: string, resumo: string) {
+  db.prepare('INSERT INTO social_states (state, provedor, resumo) VALUES (?, ?, ?)').run(state, provedor, resumo);
+}
+
+export function acharEstadoSocial(state: string) {
+  return db
+    .prepare('SELECT state, provedor, resumo, entrega, user_id AS userId, created_at AS createdAt FROM social_states WHERE state = ?')
+    .get(state) as
+    | { state: string; provedor: string; resumo: string; entrega: string | null; userId: number | null; createdAt: string }
+    | undefined;
+}
+
+export function guardarEntregaSocial(state: string, entrega: string, userId: number) {
+  db.prepare('UPDATE social_states SET entrega = ?, user_id = ? WHERE state = ?').run(entrega, userId, state);
+}
+
+export function acharEntregaSocial(entrega: string) {
+  return db
+    .prepare('SELECT state, provedor, resumo, user_id AS userId, created_at AS createdAt FROM social_states WHERE entrega = ?')
+    .get(entrega) as { state: string; provedor: string; resumo: string; userId: number | null; createdAt: string } | undefined;
+}
+
+/** Uso único: o comprovante some no instante em que é trocado pelo token. */
+export function consumirEstadoSocial(state: string) {
+  db.prepare('DELETE FROM social_states WHERE state = ?').run(state);
+}
+
+/** Limpeza do que ficou pelo caminho (a pessoa desistiu na tela do Google e fechou a aba). */
+export function limparEstadosSociais(antesDe: string) {
+  db.prepare('DELETE FROM social_states WHERE created_at < ?').run(antesDe);
+}
+
+/** Cria uma conta SEM SENHA, para quem entrou pelo Google. Ver o comentário em criarUsuarioSocial. */
+export function createUserSemSenha(username: string, email: string | null): User {
+  const first = !db.prepare('SELECT 1 FROM users').get();
+  const resultado = db
+    .prepare('INSERT INTO users (username, password_hash, is_admin, is_owner, email, email_verified_at) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(
+      username,
+      // A coluna é NOT NULL. Este valor NÃO É um hash de senha nenhuma: o formato do scrypt tem
+      // partes separadas por ':', e um texto sem isso nunca confere com senha alguma. É assim que
+      // a conta nasce sem porta de senha — e ganha uma quando a pessoa definir uma.
+      'sem-senha',
+      first ? 1 : 0,
+      first ? 1 : 0,
+      email,
+      email ? new Date().toISOString() : null,
+    );
+  return findUserById(Number(resultado.lastInsertRowid))!;
+}
+
+/** Esta conta tem senha? Sem isso, a tela de conta ofereceria "trocar a senha" a quem nunca teve uma. */
+export function temSenha(userId: number): boolean {
+  const linha = db.prepare('SELECT password_hash AS hash FROM users WHERE id = ?').get(userId) as { hash: string } | undefined;
+  return Boolean(linha && linha.hash.includes(':'));
+}
+
+export function definirSenha(userId: number, passwordHash: string) {
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
 }
 
 // ---------- Servidores de jogo ----------

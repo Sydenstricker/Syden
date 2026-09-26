@@ -1,6 +1,7 @@
 import { Download, MonitorDown, Ticket } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
+import { entrarCom, NOMES, type Provedor } from './entradaSocial';
 import { Turnstile } from './Turnstile';
 import { api } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
@@ -41,12 +42,19 @@ export function AuthScreen({
   const [cadastroAberto, setCadastroAberto] = useState(false);
   const [turnstileSiteKey, setTurnstileSiteKey] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  // Quais provedores o servidor tem configurados. Sem chave, o botão nem aparece: um botão do Google
+  // que leva a um erro é pior do que não ter botão nenhum.
+  const [provedores, setProvedores] = useState<Provedor[]>([]);
+  const [indoPara, setIndoPara] = useState<Provedor | null>(null);
 
   useEffect(() => {
-    void api<{ cadastroAberto: boolean; turnstileSiteKey: string | null }>('/api/inicio', { token: null })
+    void api<{ cadastroAberto: boolean; turnstileSiteKey: string | null; social?: Provedor[] }>('/api/inicio', {
+      token: null,
+    })
       .then((inicio) => {
         setCadastroAberto(inicio.cadastroAberto);
         setTurnstileSiteKey(inicio.turnstileSiteKey);
+        setProvedores(inicio.social ?? []);
       })
       .catch(() => {}); // servidor velho ou fora do ar: segue pedindo convite, que é o mais seguro
   }, []);
@@ -84,6 +92,36 @@ export function AuthScreen({
           <form className="auth-card" onSubmit={submit}>
             <h1>{mode === 'login' ? t('Bem-vindo de volta!') : t('Criar uma conta')}</h1>
             <p className="auth-subtitle">{mode === 'login' ? t('Que bom te ver de novo.') : t('Chame a galera e bora.')}</p>
+
+            {provedores.length > 0 && (
+              <>
+                <div className="auth-social">
+                  {provedores.map((provedor) => (
+                    <button
+                      key={provedor}
+                      type="button"
+                      className="btn-secondary auth-social-botao"
+                      disabled={indoPara !== null}
+                      onClick={() => {
+                        setIndoPara(provedor);
+                        setError(null);
+                        // Dando certo, a página sai do ar antes de o then rodar. O catch é para o
+                        // caso de o servidor recusar: aí a pessoa continua aqui e precisa saber.
+                        void entrarCom(provedor).catch((e) => {
+                          setError((e as Error).message);
+                          setIndoPara(null);
+                        });
+                      }}
+                    >
+                      {indoPara === provedor ? t('Abrindo…') : `Entrar com ${NOMES[provedor]}`}
+                    </button>
+                  ))}
+                </div>
+                <div className="auth-ou">
+                  <span>{t('ou')}</span>
+                </div>
+              </>
+            )}
 
             <label>
               {t('Nome de usuário')}

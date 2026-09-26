@@ -7828,3 +7828,37 @@ textarea {
   display: flex;
   gap: 8px;
 }
+
+/* ---------- Entrar com Google/Discord ---------- */
+
+.auth-social {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.auth-social-botao {
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+}
+
+/* A linha com "ou" no meio: separa o caminho curto do formulário sem parecer outro cartão. */
+.auth-ou {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 2px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.auth-ou::before,
+.auth-ou::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}

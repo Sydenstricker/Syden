@@ -91,6 +91,24 @@ export const config = {
   cotaPorPessoaBytes: Number(process.env.COTA_POR_PESSOA_MB || 300) * 1024 * 1024,
   // Freios do multi-comunidade: o consumo do servidor cresce com quanta gente usa ao mesmo tempo, então
   // cada pessoa só cria algumas comunidades e cada comunidade tem um teto de membros.
+  // Entrar com a conta do Google ou do Discord. Sem as duas chaves de um provedor, ele nem aparece
+  // na tela de entrada — e a rota dele responde 404, para não anunciar o que não existe.
+  social: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+    },
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID ?? '',
+      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',
+    },
+    /**
+     * O endereço PÚBLICO desta API. O provedor devolve o navegador para cá, e o endereço tem que
+     * bater letra por letra com o que foi cadastrado lá — por isso é uma variável, e não um palpite
+     * a partir do pedido que chegou: atrás do Caddy, o pedido chega como "localhost:3001".
+     */
+    apiUrl: (process.env.API_URL || 'http://localhost:3001').trim().replace(/\/$/, ''),
+  },
   maxCommunitiesPerUser: Number(process.env.MAX_COMMUNITIES_PER_USER || 3),
   maxMembersPerCommunity: Number(process.env.MAX_MEMBERS_PER_COMMUNITY || 100),
 };

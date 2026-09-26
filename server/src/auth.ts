@@ -14,6 +14,10 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [saltHex, hashHex] = stored.split(':');
+  // Conta criada pelo Google não tem senha nenhuma, e o que está guardado ali não é um hash. Sem esta
+  // linha, Buffer.from(undefined) estoura e a tentativa de entrar vira erro 500 em vez de senha errada
+  // — que, além de feio, contaria a quem tentou que aquela conta é diferente das outras.
+  if (!saltHex || !hashHex) return false;
   const expected = Buffer.from(hashHex, 'hex');
   const actual = await scrypt(password, Buffer.from(saltHex, 'hex'), expected.length);
   return timingSafeEqual(expected, actual);
