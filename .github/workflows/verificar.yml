@@ -42,6 +42,20 @@ jobs:
         env:
           VITE_API_URL: https://exemplo.invalido # só para compilar; o endereço de verdade vem no deploy
 
+      # O Caddyfile não é código TypeScript, então nada o conferia — e foi ele que derrubou o Syden uma
+      # vez: um nome de domínio escrito no arquivo coincidiu com o valor da variável, o Caddy viu o mesmo
+      # endereço duas vezes e se recusou a iniciar. Fora do ar, e só descobrimos por acaso.
+      #
+      # A validação usa os domínios DE VERDADE nas variáveis, e não valores de exemplo: é assim que uma
+      # colisão como aquela volta a aparecer aqui, antes de chegar no servidor.
+      - name: Conferir a configuração do Caddy
+        run: |
+          docker run --rm \
+            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            -e API_DOMAIN=api.syden.chat \
+            -e LIVEKIT_DOMAIN=live.syden.chat \
+            caddy:2 caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile
+
       # Falha apenas em vulnerabilidade alta ou crítica, e só nas dependências que vão para produção.
       # Aviso de pacote de desenvolvimento não pode travar o trabalho de quem está programando.
       - name: Conferir vulnerabilidades conhecidas

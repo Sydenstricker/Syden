@@ -35,6 +35,17 @@ npm run dev:web       # terminal 3: site em http://localhost:5173
 Crie uma conta com o código de convite `amigos` (definido em `server/.env`). Para testar a voz sozinho, abra
 duas janelas (uma delas anônima) com contas diferentes.
 
+### Antes de uma mudança grande no servidor
+
+Não existe ambiente de teste separado, e é decisão consciente: uma segunda VPS custaria dinheiro e
+manutenção para um app deste tamanho. Em troca, duas precauções cobrem as duas classes de problema que
+a máquina de desenvolvimento **não** pega, porque são do ambiente e não do código:
+
+- **Migração que mexe em dados:** restaure um backup do servidor localmente e rode a migração contra ele
+  antes de publicar. Banco vazio tem casos que banco de gente de verdade não tem.
+- **Configuração do Caddy:** o CI valida o Caddyfile com os domínios de verdade a cada push. Foi uma
+  colisão de nomes ali que derrubou o Syden uma vez, e nada conferia esse arquivo.
+
 ### Testes
 
 ```bash
