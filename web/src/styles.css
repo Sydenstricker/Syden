@@ -2986,6 +2986,56 @@ textarea {
   flex: 1;
 }
 
+/* ---------- O registro de moderação ---------- */
+
+.auditoria-lista {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auditoria-linha {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 2px;
+  border-bottom: 1px solid var(--bg-raised);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.auditoria-linha:last-child {
+  border-bottom: 0;
+}
+
+.auditoria-linha time {
+  flex: 0 0 auto;
+  min-width: 116px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.auditoria-linha strong {
+  color: var(--text-strong);
+}
+
+/* Excluir conta e mexer em cargo pesam mais do que apagar uma mensagem: ficam marcadas. */
+.auditoria-linha.grave {
+  border-left: 3px solid #c9803b;
+  padding-left: 9px;
+  margin-left: -12px;
+}
+
+.auditoria-linha small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
 /* ---------- A fila de denúncias, no painel de quem cuida do Syden ---------- */
 
 .denuncias-lista {

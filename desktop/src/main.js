@@ -5,7 +5,7 @@ const config = require('../app.config.json');
 const { setupScreenAudio, screenAudioAvailable, stopScreenAudio } = require('./screen-audio');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
-const APP_URL = process.env.JANJA_URL || (app.isPackaged ? config.url : 'http://localhost:5173');
+const APP_URL = process.env.SYDEN_URL || process.env.JANJA_URL || (app.isPackaged ? config.url : 'http://localhost:5173');
 const APP_ORIGIN = new URL(APP_URL).origin;
 const ICON = path.join(__dirname, '..', 'build', 'icon.png');
 

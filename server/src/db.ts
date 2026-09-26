@@ -540,6 +540,46 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, id DESC);
 `);
 
+/**
+ * Migrações com nome, que rodam uma vez só e ficam registradas.
+ *
+ * As mudanças de ESTRUTURA (coluna nova, tabela nova) se conferem sozinhas: `addColumnIfMissing` olha o
+ * que existe antes de mexer, e `CREATE TABLE IF NOT EXISTS` não repete. Já as mudanças de CONTEÚDO — as
+ * que reescrevem dados de gente de verdade — não podem depender disso: rodar duas vezes pode estragar o
+ * que a primeira arrumou. Estas passam por aqui.
+ *
+ * O registro também responde, meses depois, "esta correção já rodou neste servidor?" — que é a pergunta
+ * que não tinha resposta quando o banco só evoluía em silêncio.
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS schema_migrations (
+    name    TEXT PRIMARY KEY,
+    ran_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+function migrar(nome: string, passo: () => void) {
+  if (db.prepare('SELECT 1 FROM schema_migrations WHERE name = ?').get(nome)) return;
+  db.exec('BEGIN');
+  try {
+    passo();
+    db.prepare('INSERT INTO schema_migrations (name) VALUES (?)').run(nome);
+    db.exec('COMMIT');
+  } catch (erro) {
+    // Sem gravar o nome: na próxima inicialização ela tenta de novo, em vez de ficar pela metade.
+    db.exec('ROLLBACK');
+    throw erro;
+  }
+}
+
+/** O que já rodou neste banco, para o painel de quem cuida do servidor. */
+export function migracoesAplicadas() {
+  return db.prepare('SELECT name, ran_at AS ranAt FROM schema_migrations ORDER BY ran_at, name').all() as unknown as {
+    name: string;
+    ranAt: string;
+  }[];
+}
+
 // Colunas que chegaram depois da primeira versão: bancos antigos ganham elas na inicialização.
 function addColumnIfMissing(table: string, column: string, definition: string) {
   const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
@@ -576,15 +616,28 @@ db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email) WHERE
 
 // Quem já tinha medalha de ideia acolhida antes de o inventário existir passa a tê-la como item — já
 // revelada, porque essas pessoas viram o confete na época, e já na vitrine, para o perfil continuar
-// exatamente como estava. Roda uma vez: o INSERT OR IGNORE não repete.
-db.exec(`
-  INSERT OR IGNORE INTO user_items (user_id, code, reason, revealed_at)
-  SELECT id, 'ideia-acolhida', 'Ideia acolhida no Syden', strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
-  FROM users WHERE accepted_ideas > 0;
+// exatamente como estava.
+//
+// Esta mexe em DADOS, e por isso é uma migração com nome: se rodasse de novo depois de alguém escolher
+// esconder a medalha do perfil, ela a devolveria à vitrine sem a pessoa pedir.
+const MEDALHA_VIRA_ITEM = '2026-09-26-medalha-vira-item';
+// Esta migração foi ao ar antes de existir o registro de migrações, então há bancos onde ela já rodou
+// sem deixar rastro. Se o inventário já tem medalhas de ideia acolhida, ela já passou por aqui: marcamos
+// como aplicada em vez de repetir — repetir devolveria a medalha ao perfil de quem escolheu escondê-la.
+if (db.prepare("SELECT 1 FROM user_items WHERE code = 'ideia-acolhida' LIMIT 1").get()) {
+  db.prepare('INSERT OR IGNORE INTO schema_migrations (name) VALUES (?)').run(MEDALHA_VIRA_ITEM);
+}
 
-  UPDATE users SET vitrine = 'ideia-acolhida'
-  WHERE accepted_ideas > 0 AND (vitrine IS NULL OR vitrine = '');
-`);
+migrar(MEDALHA_VIRA_ITEM, () => {
+  db.exec(`
+    INSERT OR IGNORE INTO user_items (user_id, code, reason, revealed_at)
+    SELECT id, 'ideia-acolhida', 'Ideia acolhida no Syden', strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+    FROM users WHERE accepted_ideas > 0;
+
+    UPDATE users SET vitrine = 'ideia-acolhida'
+    WHERE accepted_ideas > 0 AND (vitrine IS NULL OR vitrine = '');
+  `);
+});
 // De qual pacote o emoji veio, para dar para tirar o pacote inteiro depois. Null = enviado à mão.
 addColumnIfMissing('emojis', 'pack_id', 'INTEGER');
 // Recados em vídeo de tela ocupam muito espaço, então têm prazo: passado o dia marcado, somem sozinhos.
@@ -837,7 +890,7 @@ export function setCommunityIcon(communityId: number, icon: { mime: string; data
 }
 
 export function findCommunityIcon(communityId: number) {
-  return db.prepare('SELECT mime, data FROM community_icons WHERE community_id = ?').get(communityId) as
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM community_icons WHERE community_id = ?').get(communityId)) as
     | { mime: string; data: Uint8Array }
     | undefined;
 }
@@ -987,6 +1040,33 @@ export function usarCodigo(kind: TipoDeCodigo, tokenHash: string): number | null
 // ---------------------------------------------------------------------------------------------------
 // Consultas de apoio da moderação e da exportação de dados
 // ---------------------------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------
+// Medidor das leituras de arquivo
+// ---------------------------------------------------------------------------------------------------
+
+/**
+ * Quem recebe o tempo de cada leitura. Fica como função registrável para o banco não precisar conhecer
+ * o módulo de saúde — seria uma dependência circular, já que a saúde consulta o banco.
+ */
+let anotarLeitura: (ms: number) => void = () => {};
+export function aoLerArquivo(fn: (ms: number) => void) {
+  anotarLeitura = fn;
+}
+
+/**
+ * Envolve uma leitura de arquivo guardado no banco e mede quanto tempo ela levou. Como o node:sqlite é
+ * síncrono, esse tempo É o tempo que o servidor inteiro ficou surdo: nada de voz nem de chat enquanto
+ * durar. É o teto conhecido do projeto, e é isto que avisa quando ele começar a ser alcançado.
+ */
+function lendoArquivo<T>(consulta: () => T): T {
+  const comeco = performance.now();
+  try {
+    return consulta();
+  } finally {
+    anotarLeitura(performance.now() - comeco);
+  }
+}
 
 /** O texto de uma mensagem, para copiar dentro da denúncia antes que ela possa ser apagada. */
 export function findMessageContent(id: number): string | null {
@@ -1298,7 +1378,7 @@ export function setProfile(userId: number, perfil: { nameColor: string | null; b
 }
 
 export function findAvatar(userId: number) {
-  return db.prepare('SELECT mime, data FROM avatars WHERE user_id = ?').get(userId) as
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM avatars WHERE user_id = ?').get(userId)) as
     | { mime: string; data: Uint8Array }
     | undefined;
 }
@@ -1330,7 +1410,7 @@ export function findKaraokeSong(id: number): KaraokeSong | undefined {
 }
 
 export function findKaraokeFile(id: number) {
-  return db.prepare('SELECT mime, data FROM karaoke_songs WHERE id = ?').get(id) as
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM karaoke_songs WHERE id = ?').get(id)) as
     | { mime: string; data: Uint8Array }
     | undefined;
 }
@@ -1460,7 +1540,7 @@ export function listEmojiPackItems(packId: number): EmojiPackItem[] {
 }
 
 export function findEmojiPackItemFile(id: number) {
-  return db.prepare('SELECT mime, data FROM emoji_pack_items WHERE id = ?').get(id) as
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM emoji_pack_items WHERE id = ?').get(id)) as
     | { mime: string; data: Uint8Array }
     | undefined;
 }
@@ -1623,7 +1703,7 @@ export function deleteEmoji(id: number) {
 }
 
 export function findEmojiFile(id: number) {
-  return db.prepare('SELECT mime, data FROM emojis WHERE id = ?').get(id) as { mime: string; data: Uint8Array } | undefined;
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM emojis WHERE id = ?').get(id)) as { mime: string; data: Uint8Array } | undefined;
 }
 
 const soundColumns = 'id, community_id AS communityId, pack_id AS packId, name, icon, created_by AS createdBy';
@@ -1665,7 +1745,7 @@ export function deleteLegacyPackSounds() {
 }
 
 export function findSoundFile(id: number) {
-  return db.prepare('SELECT mime, data FROM sounds WHERE id = ?').get(id) as { mime: string; data: Uint8Array } | undefined;
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM sounds WHERE id = ?').get(id)) as { mime: string; data: Uint8Array } | undefined;
 }
 
 // ---------- Pacotes de sons ----------
@@ -2232,7 +2312,9 @@ export function addAttachment(messageId: number, file: NewAttachment): Attachmen
 
 /** O arquivo só sai daqui com o id e a chave certos. */
 export function findAttachmentFile(id: number, key: string) {
-  return db.prepare('SELECT name, mime, data FROM attachments WHERE id = ? AND key = ?').get(id, key) as
+  // Os anexos são os maiores: um recado em vídeo chega a dezenas de megabytes, e é esta leitura que mais
+  // tempo deixa o servidor parado. É a que mais interessa medir.
+  return lendoArquivo(() => db.prepare('SELECT name, mime, data FROM attachments WHERE id = ? AND key = ?').get(id, key)) as
     | { name: string; mime: string; data: Uint8Array }
     | undefined;
 }

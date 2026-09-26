@@ -62,7 +62,7 @@ function sample() {
     const delta = last.bootId === bootId && counter >= last.counter ? counter - last.counter : counter;
     if (delta > 0) db.addTraffic(monthKey(now), delta);
   } else {
-    // Primeira amostra: o que a máquina enviou antes da instalação não é do Janja.
+    // Primeira amostra: o que a máquina enviou antes da instalação não é do Syden.
     db.setKv('traffic.since', now.toISOString());
   }
   db.setKv('traffic.last', JSON.stringify({ bootId, counter }));

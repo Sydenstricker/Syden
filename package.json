@@ -1,5 +1,5 @@
 {
-  "name": "janja-monorepo",
+  "name": "syden",
   "private": true,
   "workspaces": [
     "server",

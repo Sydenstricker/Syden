@@ -3,12 +3,36 @@
 
 # O registro de acessos mostra se o pedido de alguém chegou até aqui: sem ele, um problema de rede
 # do lado de quem usa fica indistinguível de um problema do servidor. A rotação de logs está no compose.
+
+# ---------------------------------------------------------------------------------------------------
+# MUDANÇA DE DOMÍNIO EM ANDAMENTO (setembro de 2026): duckdns -> syden.chat
+#
+# Os nomes velhos e os novos respondem AO MESMO TEMPO, de propósito. Trocar de uma vez significaria
+# ficar fora do ar enquanto o DNS se espalha e o Caddy emite os certificados novos — e "fora do ar"
+# aqui é uma chamada caindo no meio. Com os dois no ar, ninguém percebe a troca.
+#
+# Depois que o site já estiver apontando para api.syden.chat e passarem alguns dias sem ninguém usar
+# os endereços antigos, apague os dois blocos marcados com "ANTIGO".
+# ---------------------------------------------------------------------------------------------------
+
+# ANTIGO — remover depois da transição
 {$API_DOMAIN} {
 	log
 	reverse_proxy localhost:3001
 }
 
+# ANTIGO — remover depois da transição
 {$LIVEKIT_DOMAIN} {
+	log
+	reverse_proxy localhost:7880
+}
+
+api.syden.chat {
+	log
+	reverse_proxy localhost:3001
+}
+
+live.syden.chat {
 	log
 	reverse_proxy localhost:7880
 }

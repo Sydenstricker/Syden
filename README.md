@@ -139,6 +139,22 @@ o link.
 que pedir recuperação de senha não recebe nada — e não vê erro nenhum, porque a tela nunca conta se o
 endereço existe. Por isso: não anuncie a recuperação de senha antes de o domínio estar verificado.
 
+### Saber quando algo quebra
+
+O servidor avisa sozinho por e-mail quem administra (endereço confirmado) quando a voz cai, quando há
+rajada de erros ou quando ler um arquivo começa a travar o processo. Tem um limite conhecido, e é bom
+ser explícito sobre ele: **servidor morto não manda e-mail.**
+
+Para saber que a máquina inteira caiu, é preciso alguém de fora cutucando. Configure um serviço de ping
+gratuito — o [UptimeRobot](https://uptimerobot.com) leva cinco minutos — apontando para:
+
+```
+https://api.syden.chat/api/health
+```
+
+Ele responde `{"ok":true}` e não exige login, justamente para servir de sinal de vida. Peça alerta por
+e-mail a cada 5 minutos de silêncio.
+
 ### 4. App de desktop (Windows)
 
 O app é uma janela do Electron que carrega o site do GitHub Pages. Por isso, as atualizações do site chegam

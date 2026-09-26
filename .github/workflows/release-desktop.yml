@@ -25,7 +25,7 @@ jobs:
       - name: Apontar o app para o site no GitHub Pages
         shell: bash
         run: |
-          url="${{ vars.JANJA_URL }}"
+          url="${{ vars.SYDEN_URL || vars.JANJA_URL }}"
           [ -z "$url" ] && url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           echo "{ \"url\": \"$url\" }" > desktop/app.config.json
           cat desktop/app.config.json

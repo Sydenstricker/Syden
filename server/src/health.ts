@@ -46,6 +46,22 @@ export function countServerError() {
   errorsSinceSample++;
 }
 
+/**
+ * A leitura de arquivo mais demorada desde a última amostra.
+ *
+ * Os arquivos moram dentro do banco, e o node:sqlite é síncrono: enquanto ele lê, o servidor inteiro
+ * fica parado. Este número é, literalmente, quanto tempo ninguém conseguiu falar nem receber mensagem.
+ * Acima de uns 50 ms a voz começa a engasgar — por isso o aviso dispara aí, e não quando já doeu.
+ */
+let piorLeituraMs = 0;
+let leiturasDesdeAmostra = 0;
+const LEITURA_PREOCUPANTE_MS = 50;
+
+db.aoLerArquivo((ms) => {
+  leiturasDesdeAmostra++;
+  if (ms > piorLeituraMs) piorLeituraMs = ms;
+});
+
 /** Fração de processador em uso (0 a 1), pela média de carga do último minuto. */
 function cpuLoad() {
   return Math.min(1, loadavg()[0] / Math.max(1, cpus().length));
@@ -131,6 +147,17 @@ async function sample() {
     db.addHealthEvent(livekitOk ? 'livekit_up' : 'livekit_down', livekitOk ? 'Servidor de voz voltou.' : 'Servidor de voz parou de responder.');
     if (!livekitOk) void avisar('O servidor de voz parou de responder', 'Quem tentar entrar numa sala agora não vai conseguir falar.');
   }
+  // O teto conhecido do projeto: arquivo guardado dentro do banco trava o servidor enquanto é lido.
+  const pior = piorLeituraMs;
+  const quantas = leiturasDesdeAmostra;
+  piorLeituraMs = 0;
+  leiturasDesdeAmostra = 0;
+  if (pior >= LEITURA_PREOCUPANTE_MS) {
+    const texto = `O servidor ficou ${Math.round(pior)} ms parado lendo um arquivo (${quantas} leituras no minuto).`;
+    db.addHealthEvent('arquivo-lento', texto);
+    void avisar('Ler arquivo está travando o servidor', `${texto} É o sinal de que está na hora de tirar os arquivos de dentro do banco — veja "Onde está o teto, medido" no README.`);
+  }
+
   if (errors >= ERROR_BURST) {
     db.addHealthEvent('errors', `${errors} erros do servidor em um minuto.`);
     void avisar(`${errors} erros do servidor em um minuto`, 'Alguma coisa quebrou. Veja o painel de saúde e os registros do servidor.');
