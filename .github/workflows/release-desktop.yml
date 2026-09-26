@@ -26,7 +26,9 @@ jobs:
         shell: bash
         run: |
           url="${{ vars.SYDEN_URL || vars.JANJA_URL }}"
-          [ -z "$url" ] && url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          # Sem variável definida, vale o que está no repositório: desktop/app.config.json é a fonte
+          # da verdade, e não um valor escondido nas configurações do GitHub.
+          [ -z "$url" ] && url=$(node -p "require('./desktop/app.config.json').url")
           echo "{ \"url\": \"$url\" }" > desktop/app.config.json
           cat desktop/app.config.json
       - name: Usar o número da tag como versão do app (v0.1.2 → 0.1.2)

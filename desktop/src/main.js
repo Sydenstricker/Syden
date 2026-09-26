@@ -15,9 +15,20 @@ let mainWindow = null;
 let tray = null;
 let quitting = false;
 
+/**
+ * De quais endereços o app aceita carregar — e, o que mais importa, para quais ele libera microfone,
+ * câmera e compartilhamento de tela.
+ *
+ * É uma LISTA, e não um endereço só, por uma lição aprendida: quando o site mudou de endereço, a versão
+ * instalada continuou liberando o microfone apenas para o endereço antigo. O app abria, carregava a
+ * página nova e negava o microfone em silêncio — a pessoa entrava na chamada e ninguém a ouvia, sem
+ * nenhuma mensagem dizendo por quê. Com a lista, uma mudança de endereço deixa de ser uma armadilha.
+ */
+const APP_ORIGINS = new Set([APP_ORIGIN, 'https://syden.chat', 'https://sydenstricker.github.io']);
+
 function isAppOrigin(/** @type {string | undefined} */ url) {
   try {
-    return !!url && new URL(url).origin === APP_ORIGIN;
+    return !!url && APP_ORIGINS.has(new URL(url).origin);
   } catch {
     return false;
   }
