@@ -26,6 +26,7 @@ export async function servidorDeTeste() {
   process.env.FREIO_TENTATIVAS_POR_ENDERECO ??= '10000';
   process.env.FREIO_EMAILS_POR_ENDERECO ??= '10000';
   process.env.FREIO_EMAILS_POR_CAIXA ??= '10000';
+  process.env.FREIO_CADASTROS_POR_DIA ??= '10000';
 
   const { buildApp } = await import('../src/app.js');
   const { app, io } = await buildApp({ background: false });

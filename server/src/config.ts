@@ -59,6 +59,12 @@ export const config = {
   },
   /** Endereço do site, para montar os links que vão dentro do e-mail. */
   siteUrl: (process.env.SITE_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173').trim().replace(/\/$/, ''),
+  // Turnstile da Cloudflare: a unica defesa que funciona contra enxame de robos vindo de muitos
+  // endereços diferentes. Sem chave, fica desligado e o cadastro funciona como sempre.
+  turnstile: {
+    siteKey: process.env.TURNSTILE_SITE_KEY ?? '',
+    secretKey: process.env.TURNSTILE_SECRET_KEY ?? '',
+  },
   // Freios das portas de autenticação. O de endereço conta TODA tentativa vinda do mesmo IP em 1 minuto
   // (protege o processador do servidor); o de conta conta só os ERROS de senha de uma conta em 15 minutos
   // (protege a pessoa). Dá para afrouxar por variável de ambiente se muita gente sair pelo mesmo IP.
@@ -69,7 +75,17 @@ export const config = {
     // de destino em 1 hora (para ninguém usar o Syden para encher a caixa de outra pessoa).
     emailsPorEndereco: Number(process.env.FREIO_EMAILS_POR_ENDERECO || 6),
     emailsPorCaixa: Number(process.env.FREIO_EMAILS_POR_CAIXA || 4),
+    // Contas criadas por dia a partir do mesmo endereco. O freio por minuto corta a rajada; este corta o
+    // robo paciente, que cadastraria devagar durante horas. Conta so o que deu certo, para quem errou o
+    // nome de usuario tres vezes nao gastar o dia. Amigos atras do mesmo Wi-Fi somam entre si: se alguem
+    // reclamar de "muitas tentativas", e aqui que se afrouxa.
+    cadastrosPorDia: Number(process.env.FREIO_CADASTROS_POR_DIA || 10),
   },
+  // Teto de arquivos por pessoa. Os arquivos moram dentro do banco, que mora no disco da maquina: sem
+  // teto, UMA conta consegue encher o disco e derrubar o Syden de todo mundo. Nao e defesa contra enxame
+  // (para isso existe o Turnstile) — e o limite do estrago que uma conta sozinha faz.
+  // Recado em video conta aqui, mas vence sozinho e libera o espaco de volta.
+  cotaPorPessoaBytes: Number(process.env.COTA_POR_PESSOA_MB || 300) * 1024 * 1024,
   // Freios do multi-comunidade: o consumo do servidor cresce com quanta gente usa ao mesmo tempo, então
   // cada pessoa só cria algumas comunidades e cada comunidade tem um teto de membros.
   maxCommunitiesPerUser: Number(process.env.MAX_COMMUNITIES_PER_USER || 3),

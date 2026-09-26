@@ -147,6 +147,19 @@ async function sample() {
     db.addHealthEvent(livekitOk ? 'livekit_up' : 'livekit_down', livekitOk ? 'Servidor de voz voltou.' : 'Servidor de voz parou de responder.');
     if (!livekitOk) void avisar('O servidor de voz parou de responder', 'Quem tentar entrar numa sala agora não vai conseguir falar.');
   }
+  // Disco enchendo: os arquivos moram dentro do banco, entao o disco e o limite fisico do Syden. Quando
+  // ele acaba, o servidor para de aceitar mensagem, avatar e recado — e o aviso vem tarde demais se for
+  // a pessoa a perceber. 15% livres ainda da tempo de agir com calma.
+  if (space && space.total > 0) {
+    const livre = space.free / space.total;
+    if (livre < 0.15) {
+      const gb = (n: number) => (n / 1024 ** 3).toFixed(1);
+      const texto = `Restam ${gb(space.free)} GB de ${gb(space.total)} GB (${Math.round(livre * 100)}% livre).`;
+      db.addHealthEvent('disco', texto);
+      void avisar('O disco do servidor esta enchendo', `${texto} Quando acabar, o Syden para de aceitar mensagem, avatar e recado.`);
+    }
+  }
+
   // O teto conhecido do projeto: arquivo guardado dentro do banco trava o servidor enquanto é lido.
   const pior = piorLeituraMs;
   const quantas = leiturasDesdeAmostra;

@@ -4,7 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
 import { channelRoom, communityRoom } from './realtime.js';
-import { canUseChannel, manages, poderDeOperador, requireUser, roleIn } from './routes.js';
+import { canUseChannel, cotaEsgotada, manages, poderDeOperador, requireUser, roleIn } from './routes.js';
 
 const MB = 1024 * 1024;
 export const MAX_ATTACHMENT_BYTES = 8 * MB;
@@ -132,6 +132,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       Params: { id: string };
       Body: { content?: string; threadId?: number; files?: { name?: string; data?: string; width?: number; height?: number }[] };
     }>('/api/channels/:id/messages', { bodyLimit: UPLOAD_BODY_LIMIT }, async (request, reply) => {
+      if (cotaEsgotada(request, reply)) return reply;
       const where = destination(request, reply, request.body?.threadId);
       if (!where) return reply;
 

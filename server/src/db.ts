@@ -1068,6 +1068,27 @@ function lendoArquivo<T>(consulta: () => T): T {
   }
 }
 
+/**
+ * Quanto espaço os arquivos de uma pessoa ocupam no banco, em bytes.
+ *
+ * Existe porque, com o cadastro aberto, qualquer conta pode subir avatar, emoji, som e anexo — e os
+ * arquivos moram dentro do banco, que mora no disco da máquina. Sem um teto por pessoa, algumas milhares
+ * de contas automáticas enchem o disco, e disco cheio é o Syden parando de aceitar mensagem de todo mundo.
+ *
+ * A soma passa por todas as tabelas que guardam bytes de alguém. Sai de graça: `length()` num BLOB do
+ * SQLite lê o cabeçalho, não o conteúdo.
+ */
+export function espacoUsado(userId: number): number {
+  const somas = [
+    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM avatars WHERE user_id = ?',
+    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM emojis WHERE created_by = ?',
+    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM sounds WHERE created_by = ?',
+    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM karaoke_songs WHERE created_by = ?',
+    'SELECT COALESCE(SUM(length(a.data)), 0) AS n FROM attachments a JOIN messages m ON m.id = a.message_id WHERE m.user_id = ?',
+  ];
+  return somas.reduce((total, sql) => total + (db.prepare(sql).get(userId) as { n: number }).n, 0);
+}
+
 /** O texto de uma mensagem, para copiar dentro da denúncia antes que ela possa ser apagada. */
 export function findMessageContent(id: number): string | null {
   return (db.prepare('SELECT content FROM messages WHERE id = ?').get(id) as { content: string } | undefined)?.content ?? null;

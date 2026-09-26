@@ -19,6 +19,7 @@ import {
 } from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
 import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
+import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
 import { usageSummary } from './usage.js';
 
@@ -94,6 +95,22 @@ declare module 'fastify' {
   }
 }
 
+/**
+ * Já responde 413 e devolve true quando a pessoa encheu a parte dela do disco.
+ *
+ * Fica numa função só, chamada por toda rota que aceita arquivo, para o teto não valer em umas e em
+ * outras não — a conta que quisesse abusar procuraria justamente a que ficou de fora.
+ */
+export function cotaEsgotada(request: FastifyRequest, reply: FastifyReply): boolean {
+  const usado = db.espacoUsado(request.user.id);
+  if (usado < config.cotaPorPessoaBytes) return false;
+  const mb = Math.round(config.cotaPorPessoaBytes / 1024 / 1024);
+  reply.code(413).send({
+    error: `Você já usa os ${mb} MB de arquivos que cabem por pessoa. Apague algum anexo, som ou emoji antigo para liberar espaço.`,
+  });
+  return true;
+}
+
 export async function requireUser(request: FastifyRequest, reply: FastifyReply) {
   const token = request.headers.authorization?.replace(/^Bearer /, '');
   const sessao = await verifySession(token);
@@ -118,7 +135,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
    *
    * Não conta nada que já não se descubra tentando criar uma conta.
    */
-  app.get('/api/inicio', async () => ({ cadastroAberto: config.cadastroAberto }));
+  app.get('/api/inicio', async () => ({ cadastroAberto: config.cadastroAberto, turnstileSiteKey: config.turnstile.siteKey || null }));
 
   // Freios das portas caras. O de endereço protege o SERVIDOR: conferir uma senha custa ~0,1 s de
   // processador de propósito, então uma enxurrada de tentativas engasga a voz de quem está em chamada.
@@ -126,6 +143,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
   // e conta só os erros, para que entrar certo muitas vezes nunca tranque ninguém do lado de fora.
   const freioPorEndereco = new Freio(config.freio.tentativasPorEndereco, 60_000);
   const freioPorConta = new Freio(config.freio.errosPorConta, 15 * 60_000);
+  const freioDeCadastro = new Freio(config.freio.cadastrosPorDia, 24 * 60 * 60_000);
 
   /** Já responde 429 e devolve true quando este endereço está batendo demais. */
   function enderecoFreado(request: FastifyRequest, reply: FastifyReply): boolean {
@@ -137,7 +155,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     return true;
   }
 
-  app.post<{ Body: { username?: string; password?: string; inviteCode?: string } }>(
+  app.post<{ Body: { username?: string; password?: string; inviteCode?: string; turnstile?: string } }>(
     '/api/auth/register',
     async (request, reply) => {
       if (enderecoFreado(request, reply)) return reply;
@@ -149,6 +167,18 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const convidado =
         config.cadastroAberto || (!!config.inviteCode && code === config.inviteCode) || !!db.findCommunityByInvite(code);
       if (!convidado) return reply.code(403).send({ error: 'Código de convite inválido.' });
+
+      // A prova de que é gente, quando o Turnstile está configurado. Fica antes de gastar processador
+      // com a senha e antes de escrever qualquer coisa no banco.
+      if (turnstileLigado() && !(await pessoaDeVerdade(request.body?.turnstile, request.ip))) {
+        return reply.code(403).send({ error: 'Não deu para confirmar que você é uma pessoa. Recarregue a página e tente de novo.' });
+      }
+
+      // Teto diário do endereço. Só é conferido aqui, depois do convite, para quem tem código não ser
+      // barrado por causa de um robô que veio da mesma rede.
+      if (freioDeCadastro.bloqueado(request.ip)) {
+        return reply.code(429).send({ error: 'Muitas contas criadas deste lugar hoje. Tente amanhã ou peça um convite.' });
+      }
       if (!USERNAME_RE.test(username)) {
         return reply.code(400).send({ error: 'Nome de usuário deve ter 2 a 32 letras, números, _ . ou -.' });
       }
@@ -189,6 +219,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           member: { ...user, role: 'member' },
         });
       }
+      // Conta só o que deu certo: quem errou o nome de usuário três vezes não gasta o dia inteiro.
+      freioDeCadastro.tentar(request.ip);
       conferirPresentes(user); // conta nova entre as 25 primeiras já sai com a insígnia esperando
       return { token: await signSession(user, 1), user };
     },

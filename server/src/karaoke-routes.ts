@@ -3,7 +3,7 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { decodeDataUrl, sniffMime } from './media.js';
 import { communityRoom } from './realtime.js';
-import { requireUser } from './routes.js';
+import { cotaEsgotada, requireUser } from './routes.js';
 
 // Karaokê: as músicas de cada comunidade. O Syden não traz música nenhuma — quem sobe é quem tem o
 // arquivo. O áudio não passa pela chamada: na hora de cantar, cada computador toca a própria cópia,
@@ -57,6 +57,7 @@ export function registerKaraokeRoutes(app: FastifyInstance, io: IOServer) {
       Params: { id: string };
       Body: { title?: string; artist?: string; audio?: string; lyrics?: string; seconds?: number };
     }>('/api/communities/:id/karaoke', { bodyLimit: UPLOAD_BODY_LIMIT }, async (request, reply) => {
+      if (cotaEsgotada(request, reply)) return reply;
       const access = membership(request, reply, request.params.id);
       if (!access) return reply;
 

@@ -4,7 +4,7 @@ import * as db from './db.js';
 import { restorePack } from './expressions.js';
 import { parseMedia } from './media.js';
 import { communityRoom } from './realtime.js';
-import { manages, requireUser, roleIn } from './routes.js';
+import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
 const KB = 1024;
 const LIMITS = { avatar: 2048 * KB, emoji: 512 * KB, sound: 1024 * KB }; // avatar maior por causa de GIF animado
@@ -68,6 +68,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
     // ---------- Avatar ----------
 
     authed.put<{ Body: { image?: string } }>('/api/me/avatar', { bodyLimit: UPLOAD_BODY_LIMIT }, async (request, reply) => {
+      if (cotaEsgotada(request, reply)) return reply;
       const media = parseMedia(request.body?.image, 'image', LIMITS.avatar);
       if (typeof media === 'string') return reply.code(400).send({ error: media });
       const user = db.setAvatar(request.user.id, media);

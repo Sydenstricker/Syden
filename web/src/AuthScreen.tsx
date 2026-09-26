@@ -1,6 +1,7 @@
 import { Download, MonitorDown, Ticket } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
+import { Turnstile } from './Turnstile';
 import { api } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { installApp, useCanInstall } from './install';
@@ -38,10 +39,15 @@ export function AuthScreen({
   const [busy, setBusy] = useState(false);
   // Este Syden aceita qualquer pessoa ou só quem foi convidado? Muda o que a tela pede.
   const [cadastroAberto, setCadastroAberto] = useState(false);
+  const [turnstileSiteKey, setTurnstileSiteKey] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   useEffect(() => {
-    void api<{ cadastroAberto: boolean }>('/api/inicio', { token: null })
-      .then((inicio) => setCadastroAberto(inicio.cadastroAberto))
+    void api<{ cadastroAberto: boolean; turnstileSiteKey: string | null }>('/api/inicio', { token: null })
+      .then((inicio) => {
+        setCadastroAberto(inicio.cadastroAberto);
+        setTurnstileSiteKey(inicio.turnstileSiteKey);
+      })
       .catch(() => {}); // servidor velho ou fora do ar: segue pedindo convite, que é o mais seguro
   }, []);
 
@@ -52,7 +58,7 @@ export function AuthScreen({
     try {
       const result = await api<{ token: string; user: User }>(`/api/auth/${mode}`, {
         method: 'POST',
-        body: { username, password, inviteCode },
+        body: { username, password, inviteCode, turnstile: turnstileToken },
         token: null,
       });
       onAuthenticated(result.token, result.user);
@@ -116,6 +122,9 @@ export function AuthScreen({
                   </span>
                 </label>
               ))}
+
+            {/* Só existe se o servidor tiver chave configurada. Na maioria das vezes resolve sozinho. */}
+            {mode === 'register' && turnstileSiteKey && <Turnstile siteKey={turnstileSiteKey} aoResolver={setTurnstileToken} />}
 
             {error && <p className="form-error">{error}</p>}
 
