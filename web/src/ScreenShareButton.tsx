@@ -1,26 +1,42 @@
-import { AppWindow, Globe, Monitor, MonitorOff, MonitorX } from 'lucide-react';
+import { AppWindow, Globe, Monitor, MonitorOff, MonitorX, Volume2 } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { IconButton } from './IconButton';
+import { appAudioSupported } from './screenAudio';
 import type { Voice } from './useVoice';
 
-const OPTIONS: { surface: 'monitor' | 'window' | 'browser'; label: string; hint: string; icon: ReactNode }[] = [
+type Superficie = 'monitor' | 'window' | 'browser';
+
+interface Opcao {
+  surface: Superficie;
+  label: string;
+  icon: ReactNode;
+  /** No app de desktop o som do computador vai sozinho; no navegador depende da caixinha do seletor. */
+  noApp: string;
+  noNavegador: string;
+}
+
+const OPTIONS: Opcao[] = [
   {
     surface: 'monitor',
     label: 'Tela inteira',
-    hint: 'Tudo o que está na tela, com o som do computador. O Syden pede ao navegador para tirar as vozes desta chamada do som.',
     icon: <Monitor size={16} />,
+    noApp: 'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.',
+    noNavegador:
+      'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.',
   },
   {
     surface: 'window',
     label: 'Uma janela ou app',
-    hint: 'Só aquele programa. No navegador, o som de uma janela não vem junto: a transmissão fica muda.',
     icon: <AppWindow size={16} />,
+    noApp: 'Só aquele programa, e o som do computador vai junto mesmo assim.',
+    noNavegador: 'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.',
   },
   {
     surface: 'browser',
     label: 'Uma aba do navegador',
-    hint: 'Só aquela aba, com o som dela — o jeito mais garantido de mandar som limpo.',
     icon: <Globe size={16} />,
+    noApp: 'Só aquela aba, com o som dela.',
+    noNavegador: 'Só aquela aba. É a única em que o navegador já vem com o som marcado.',
   },
 ];
 
@@ -32,6 +48,17 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const sharing = voice.media.screen;
+  // No app de desktop existe um caminho nativo que entrega o som do computador sem as vozes da chamada.
+  // Saber disso muda tudo o que o menu diz, então a resposta é buscada uma vez só, ao montar.
+  const [somAutomatico, setSomAutomatico] = useState(false);
+
+  useEffect(() => {
+    let vivo = true;
+    void appAudioSupported().then((pode) => vivo && setSomAutomatico(pode));
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -50,6 +77,16 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
       {open && (
         <div className="screenshare-menu" role="menu">
           <div className="screenshare-menu-title">{sharing ? 'Trocar para…' : 'O que compartilhar?'}</div>
+          {somAutomatico ? (
+            <p className="screenshare-menu-som">
+              <Volume2 size={14} aria-hidden="true" /> O som do computador vai junto sozinho.
+            </p>
+          ) : (
+            <p className="screenshare-menu-som atencao">
+              <Volume2 size={14} aria-hidden="true" /> No navegador, o som só vai se você marcar a caixinha de áudio na
+              janelinha que abrir. No app do Syden ele vai sozinho.
+            </p>
+          )}
           {OPTIONS.map((option) => (
             <button
               key={option.surface}
@@ -63,7 +100,7 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
               {option.icon}
               <span className="screenshare-option-text">
                 <span>{option.label}</span>
-                <small>{option.hint}</small>
+                <small>{somAutomatico ? option.noApp : option.noNavegador}</small>
               </span>
             </button>
           ))}

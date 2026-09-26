@@ -22,6 +22,8 @@ import { nomeDaTransmissao } from './streamName';
 import { applyAllVolumes } from './voiceVolumes';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { filaUltimaVale } from './fila';
+import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
+import type { DisparoVisual } from './CamadaDeEfeitos';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { sounds } from './sounds';
@@ -75,6 +77,8 @@ const SCREEN_CHECK_MS = 4000;
 const SOUNDBOARD_TOPIC = 'soundboard';
 /** Avisos do karaokê: começar e parar a música, para todos ao mesmo tempo. */
 const KARAOKE_TOPIC = 'karaoke';
+// Confete, fogos e corações. Vão pelo mesmo caminho do soundboard: aviso pequeno, cada um desenha o seu.
+const EFEITO_TOPIC = 'efeito-visual';
 const SEND_COOLDOWN_MS = 1500;
 const RECEIVE_COOLDOWN_MS = 1000;
 const SOUND_BADGE_MS = 2500;
@@ -149,9 +153,18 @@ export function useVoice(socket: Socket | null) {
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
   // A transmissão está levando as vozes da chamada junto? Quando sim, a tela avisa quem transmite.
   const [ecoNaTransmissao, setEcoNaTransmissao] = useState(false);
+  // O que foi escolhido da última vez (tela, janela, aba). Serve para o aviso de "saiu sem som"
+  // poder abrir o seletor de novo na mesma opção, em vez de mandar a pessoa procurar o menu.
+  const [telaCompartilhada, setTelaCompartilhada] = useState<'monitor' | 'window' | 'browser' | null>(null);
+  // O último efeito visual pedido na sala, por quem quer que seja. A tela desenha e ele fica: a
+  // chave é o que faz o MESMO efeito, clicado duas vezes seguidas, valer as duas.
+  const [disparoVisual, setDisparoVisual] = useState<DisparoVisual | null>(null);
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [voiceEffect, setVoiceEffectState] = useState<VoiceEffectId>(() => getSettings().voiceEffect);
+  // O modificador de voz vale SÓ NA CHAMADA EM QUE FOI ESCOLHIDO. Antes ele ficava guardado, e a
+  // pessoa entrava na sala seguinte com a voz de esquilo de ontem sem lembrar que tinha ligado — e
+  // sem entender por que estava saindo assim. Ao entrar, é sempre a voz da pessoa.
+  const [voiceEffect, setVoiceEffectState] = useState<VoiceEffectId>('none');
   // Dá para silenciar antes de entrar numa sala: a escolha fica guardada e vale ao entrar na próxima.
   const [wantMuted, setWantMuted] = useState(() => getSettings().startMuted);
   const [wantDeafened, setWantDeafened] = useState(() => getSettings().startDeafened);
@@ -286,6 +299,19 @@ export function useVoice(socket: Socket | null) {
         }
         return;
       }
+      if (topic === EFEITO_TOPIC && participant) {
+        // Mesmo freio do soundboard: clique repetido de uma pessoa só não vira chuva sem fim.
+        const quando = Date.now();
+        if (quando - (lastHeardRef.current.get(participant.identity) ?? 0) < RECEIVE_COOLDOWN_MS) return;
+        lastHeardRef.current.set(participant.identity, quando);
+        try {
+          const aviso = JSON.parse(new TextDecoder().decode(payload));
+          if (ehEfeitoVisual(aviso?.efeito)) setDisparoVisual({ id: aviso.efeito, chave: quando + Math.random() });
+        } catch {
+          // aviso torto: ignora
+        }
+        return;
+      }
       if (topic !== SOUNDBOARD_TOPIC || !participant) return;
       let soundId: unknown;
       try {
@@ -322,6 +348,26 @@ export function useVoice(socket: Socket | null) {
         .catch(console.error);
     },
     [room, showSound],
+  );
+
+  /**
+   * Manda um efeito visual para a sala. Quem mandou também vê, na hora, sem esperar a volta da rede.
+   *
+   * Não passa pelo servidor nem fica guardado em lugar nenhum: é enfeite de momento, e some em
+   * segundos. Fora de uma sala não faz nada.
+   */
+  const mandarEfeitoVisual = useCallback(
+    async (efeito: EfeitoVisualId) => {
+      if (channelRef.current === null) return;
+      const agora = Date.now();
+      if (agora - lastSentRef.current < SEND_COOLDOWN_MS) return;
+      lastSentRef.current = agora;
+      setDisparoVisual({ id: efeito, chave: agora + Math.random() });
+      await room.localParticipant
+        .publishData(new TextEncoder().encode(JSON.stringify({ efeito })), { reliable: true, topic: EFEITO_TOPIC })
+        .catch(console.error);
+    },
+    [room],
   );
 
   /** Põe uma música para a sala inteira, ou para o que estiver tocando. */
@@ -387,7 +433,7 @@ export function useVoice(socket: Socket | null) {
   );
 
   /**
-   * Escolhe o efeito de voz; vale na hora e fica guardado para as próximas chamadas.
+   * Escolhe o efeito de voz. Vale na hora e até o fim desta chamada — não é lembrado na próxima.
    *
    * As trocas são postas NUMA FILA, uma de cada vez. Trocar o efeito desmonta o caminho do microfone e
    * monta outro; duas trocas ao mesmo tempo se atropelam — a segunda monta o caminho novo e a primeira,
@@ -401,7 +447,6 @@ export function useVoice(socket: Socket | null) {
 
   const setVoiceEffect = useCallback(
     async (effect: VoiceEffectId) => {
-      updateSettings({ voiceEffect: effect });
       setVoiceEffectState(effect);
 
       await enfileirarEfeito(async () => {
@@ -464,8 +509,9 @@ export function useVoice(socket: Socket | null) {
         const estado = readLocalMedia(room.localParticipant);
         setMedia(estado);
         socketRef.current?.emit('voice:update', { ...estado, deafened: deafenedRef.current });
-        // O efeito escolhido da última vez volta sozinho ao entrar na sala.
-        if (getSettings().voiceEffect !== 'none') await applyVoiceEffect(getSettings().voiceEffect).catch(console.error);
+        // Entrando, é a voz da pessoa. Se ela estava com um efeito na sala anterior, ele fica para trás:
+        // o caminho do microfone é montado do zero aqui, então basta não reaplicar nada e zerar a tela.
+        setVoiceEffectState('none');
       } catch (e) {
         console.error(e);
         const message = deviceErrorMessage(e, 'microfone');
@@ -584,6 +630,7 @@ export function useVoice(socket: Socket | null) {
 
   const leave = useCallback(() => {
     if (channelRef.current !== null) sounds.selfLeave();
+    setVoiceEffectState('none');
     void room.disconnect();
   }, [room]);
 
@@ -691,6 +738,7 @@ export function useVoice(socket: Socket | null) {
       const preset = SCREEN_PRESETS[quality];
       const hints = SCREEN_HINTS[quality];
       try {
+        setTelaCompartilhada(surface);
         if (lp.isScreenShareEnabled) await lp.setScreenShareEnabled(false);
         await lp.setScreenShareEnabled(
           true,
@@ -931,6 +979,9 @@ export function useVoice(socket: Socket | null) {
     switchDevice,
     setAudioProcessing,
     ecoNaTransmissao,
+    telaCompartilhada,
+    disparoVisual,
+    mandarEfeitoVisual,
     assistindo,
     assistir,
     recentSounds,

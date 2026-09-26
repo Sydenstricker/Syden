@@ -1748,11 +1748,14 @@ function MicTest({ deviceId }: { deviceId: string }) {
 const PREVIEW_MS = 3000;
 
 /**
- * Escolha do modificador de voz fora da chamada, com um teste: grava três segundos e toca de volta já
- * com o efeito. Gravar e só então tocar evita o apito de microfone que daria ao se ouvir ao vivo.
+ * Escolha do modificador de voz, com um teste: grava três segundos e toca de volta já com o efeito.
+ * Gravar e só então tocar evita o apito de microfone que daria ao se ouvir ao vivo.
+ *
+ * A escolha vem da CHAMADA, não das configurações guardadas: o efeito acaba junto com a conversa.
  */
 function VoiceEffectPicker({ voice }: { voice: Voice }) {
   const settings = useSettings();
+  const escolhido = voice.voiceEffect;
   const [stage, setStage] = useState<'idle' | 'recording' | 'playing'>('idle');
   const [error, setError] = useState<string | null>(null);
 
@@ -1776,7 +1779,7 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
       const audio = await context.decodeAudioData(await new Blob(pieces).arrayBuffer());
       const source = context.createBufferSource();
       source.buffer = audio;
-      const stopEffect = connectVoiceEffect(context, settings.voiceEffect, source, context.destination);
+      const stopEffect = connectVoiceEffect(context, escolhido, source, context.destination);
       setStage('playing');
       source.start();
       source.onended = () => {
@@ -1797,14 +1800,17 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
   return (
     <>
       <h3>Modificador de voz</h3>
-      <p className="settings-hint">Muda como os outros ouvem você na chamada. Vale na hora, e você pode trocar durante a conversa.</p>
+      <p className="settings-hint">
+        Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai
+        da sala: na próxima você entra com a sua voz.
+      </p>
       <div className="effect-options" role="radiogroup" aria-label="Modificador de voz">
         {VOICE_EFFECTS.map((effect) => (
-          <label key={effect.id} className={`effect-option${settings.voiceEffect === effect.id ? ' selected' : ''}`}>
+          <label key={effect.id} className={`effect-option${escolhido === effect.id ? ' selected' : ''}`}>
             <input
               type="radio"
               name="voice-effect"
-              checked={settings.voiceEffect === effect.id}
+              checked={escolhido === effect.id}
               onChange={() => void voice.setVoiceEffect(effect.id)}
             />
             <span className="effect-option-icon">{EFFECT_ICONS[effect.id]}</span>
@@ -1852,6 +1858,12 @@ function SoundsSection() {
           O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.
         </p>
       )}
+      <Toggle
+        label="Efeitos visuais na chamada"
+        description="Confete, fogos e corações que qualquer pessoa da sala pode mandar. Desligue se o seu computador engasgar durante a chamada — desligado, você não vê nem manda."
+        checked={settings.efeitosVisuais}
+        onChange={(value) => updateSettings({ efeitosVisuais: value })}
+      />
       <Toggle
         label="Sons de aviso"
         description="Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece."

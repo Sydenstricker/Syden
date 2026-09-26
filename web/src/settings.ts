@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from 'react';
 import type { Theme } from './theme';
-import type { VoiceEffectId } from './voiceEffects';
 
 // Preferências de cada pessoa, guardadas só neste computador (localStorage).
 
@@ -14,8 +13,6 @@ export interface Settings {
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
-  /** Modificador de voz aplicado ao microfone na chamada. */
-  voiceEffect: VoiceEffectId;
   /** Cores do app: escuro (padrão) ou claro. */
   theme: Theme;
   /** Microfone e áudio desligados de propósito, valendo já fora da chamada e ao entrar na próxima. */
@@ -34,6 +31,8 @@ export interface Settings {
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
   soundboardVolume: number;
+  /** Confete, fogos e corações que qualquer um da sala manda. Desligado, nem vê nem manda. */
+  efeitosVisuais: boolean;
   /** Notificação do Windows para mensagens novas quando o Syden não está em primeiro plano. */
   notifications: boolean;
 }
@@ -46,7 +45,6 @@ const DEFAULTS: Settings = {
   echoCancellation: true,
   screenQuality: 'standard',
   theme: 'dark',
-  voiceEffect: 'none',
   startMuted: false,
   startDeafened: false,
   showMembers: true,
@@ -54,6 +52,7 @@ const DEFAULTS: Settings = {
   screenCodec: 'vp8',
   sounds: true,
   soundboardVolume: 0.6,
+  efeitosVisuais: true,
   notifications: true,
 };
 

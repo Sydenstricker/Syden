@@ -43,6 +43,8 @@ import { QualityAdvisor } from './QualityAdvisor';
 import { ClipButton } from './ClipButton';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
+import { CamadaDeEfeitos } from './CamadaDeEfeitos';
+import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
@@ -428,11 +430,19 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
 
   if (publisher.isLocal) {
     if (!comSom) {
+      // Sem som é o caso mais comum de todos, e o mais chato: quem transmite não percebe, porque do
+      // lado dele o som continua tocando normalmente. Por isso o aviso não é só texto — ele resolve.
       return (
         <div className="stream-audio">
           <span className="stream-audio-warn">
-            <VolumeX size={16} /> Sua transmissão está sem som: ao escolher a tela, marque "compartilhar áudio".
+            <VolumeX size={16} /> Sua transmissão está <strong>sem som</strong>. O navegador só manda o som se você marcar
+            "compartilhar áudio" na janelinha de escolher a tela.
           </span>
+          {voice.telaCompartilhada && (
+            <button className="btn-secondary stream-audio-retry" onClick={() => void voice.shareScreen(voice.telaCompartilhada!)}>
+              Escolher de novo, marcando o som
+            </button>
+          )}
         </div>
       );
     }
@@ -679,6 +689,8 @@ function Stage({
         </div>
       )}
 
+      <CamadaDeEfeitos disparo={voice.disparoVisual} />
+
       <QualityAdvisor voice={voice} />
 
       {voice.mutedWarning && (
@@ -705,6 +717,7 @@ function Stage({
         </IconButton>
         <ScreenShareButton voice={voice} />
         <VoiceEffectButton voice={voice} />
+        <EfeitoVisualButton voice={voice} />
         <ClipButton stream={transmissaoNaTela} de={quemTransmite} canais={canaisDeTexto} />
         {abertas.length > 1 && (
           <IconButton

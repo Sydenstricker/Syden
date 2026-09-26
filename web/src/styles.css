@@ -7311,3 +7311,49 @@ textarea {
   .karaoke-linha { transition: none; }
   .karaoke-letra { scroll-behavior: auto; }
 }
+
+/* Aviso de transmissão sem som: o texto explica, o botão resolve sem procurar o menu de novo. */
+.stream-audio-retry {
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* A linha sobre o som, no alto do menu de compartilhar tela. */
+.screenshare-menu-som {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 280px;
+  margin: 0 0 6px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  background: var(--overlay);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.screenshare-menu-som.atencao {
+  color: #faa61a;
+}
+
+.screenshare-menu-som svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* A camada dos efeitos da chamada: cobre tudo, mas é atravessada pelo clique. */
+.efeitos-visuais {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  pointer-events: none;
+}
+
+.efeito-visual-emoji {
+  width: 16px;
+  font-size: 15px;
+  line-height: 1;
+  text-align: center;
+}
