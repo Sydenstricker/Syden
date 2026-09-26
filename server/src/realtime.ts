@@ -59,6 +59,21 @@ function broadcastVoice(io: IOServer, communityId: number) {
 }
 
 /** Entrou numa comunidade com o app aberto: as abas dela passam a receber os avisos de lá. */
+/**
+ * Avisa quem está junto que o perfil desta pessoa mudou — insígnia nova, por exemplo. Sem isto, a lista
+ * de membros e o cartão de perfil só descobrem a mudança quando alguém recarrega o Syden.
+ */
+export function anunciarPerfil(io: IOServer, userId: number) {
+  const user = db.findUserById(userId);
+  if (!user) return;
+  for (const comunidade of db.listCommunitiesForUser(userId)) {
+    io.to(communityRoom(comunidade.id)).emit('member:updated', {
+      communityId: comunidade.id,
+      member: { ...user, role: db.memberRole(comunidade.id, userId) ?? 'member' },
+    });
+  }
+}
+
 export function joinCommunityRoom(io: IOServer, userId: number, communityId: number) {
   for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
     io.sockets.sockets.get(socketId)?.join(communityRoom(communityId));
@@ -128,10 +143,11 @@ function onlineUsers(): (db.UserRef & { status: PresenceStatus })[] {
 
 export function setupRealtime(io: IOServer) {
   io.use(async (socket, next) => {
-    const userId = await verifySession(socket.handshake.auth?.token);
-    const user = userId === null ? undefined : db.findUserById(userId);
-    if (!user) return next(new Error('unauthorized'));
-    socket.data.user = user;
+    const sessao = await verifySession(socket.handshake.auth?.token);
+    const achado = sessao === null ? undefined : db.findUserForSession(sessao.userId);
+    // Mesma conferência das rotas: token de sessão derrubada não abre conexão em tempo real.
+    if (!achado || achado.sessionVersion !== sessao!.sessionVersion) return next(new Error('unauthorized'));
+    socket.data.user = achado.user;
     next();
   });
 

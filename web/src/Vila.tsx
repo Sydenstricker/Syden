@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { coelhoAtual, escolherCoelho, useCoelho } from './coelho';
 import { sounds } from './sounds';
 
 // A vila do Syden: uma praça vista de cima e de lado, como nos jogos de fazenda, desenhada inteira em
@@ -317,16 +318,33 @@ function Fonte({ c, r }: { c: number; r: number }) {
   );
 }
 
-/** A estátua do coelho no meio da praça: o mesmo do logo, de pedra, com a bandeira na mão. */
-function Estatua({ c, r }: { c: number; r: number }) {
+/**
+ * A estátua do coelho no meio da praça: o mesmo do logo, de pedra, com a bandeira na mão. Clicando, ela
+ * troca de modelo — o OurBunny, que é o coelho do Syden, e o BigChunkus, o gordinho. A escolha fica
+ * guardada neste computador, como as cenouras.
+ */
+function Estatua({ c, r, big, onTrocar }: { c: number; r: number; big: boolean; onTrocar: () => void }) {
   const base = iso(c, r);
   const a = iso(c - 0.72, r - 0.72);
   const b = iso(c + 0.72, r - 0.72);
   const d = iso(c + 0.72, r + 0.72);
   const e = iso(c - 0.72, r + 0.72);
   const h = 42;
+  const dica = big ? 'Trocar pelo OurBunny' : 'Trocar pelo BigChunkus';
+
   return (
-    <g>
+    <g
+      className="v-estatua"
+      role="button"
+      tabIndex={0}
+      aria-label={dica}
+      onClick={(e) => {
+        e.stopPropagation();
+        onTrocar();
+      }}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onTrocar()}
+    >
+      <title>{dica}</title>
       <ellipse cx={base.x} cy={base.y + 3} rx={42} ry={19} className="v-sombra" />
       <polygon points={pts(e, d, sobe(d, h), sobe(e, h))} className="v-pedestal" />
       <polygon points={pts(d, b, sobe(b, h), sobe(d, h))} className="v-pedestal-sombra" />
@@ -337,7 +355,16 @@ function Estatua({ c, r }: { c: number; r: number }) {
       <g transform={`translate(${base.x} ${base.y - h - 2}) scale(2.2)`}>
         <rect x={9} y={-46} width={2} height={46} rx={1} className="v-estatua-escura" />
         <path d="M11,-46 L29,-41 L29,-27 L11,-32 Z" className="v-bandeira" />
-        <CoelhoArte id={0} />
+        <g className="v-estatua-coelho">
+          <CoelhoArte id={0} gordo={big} />
+        </g>
+      </g>
+      {/* O convite só aparece com o mouse em cima (ou pelo teclado): parado, a praça fica limpa. */}
+      <g className="v-estatua-dica" transform={`translate(${base.x} ${base.y - h - 128})`}>
+        <rect x={-74} y={-17} width={148} height={26} rx={13} />
+        <text x={0} y={1} textAnchor="middle">
+          {dica}
+        </text>
       </g>
     </g>
   );
@@ -418,6 +445,7 @@ function guardarCenouras(quantas: number) {
     // sem armazenamento: vale só enquanto a aba estiver aberta
   }
 }
+
 
 /** Onde os coelhos podem andar: a praça e o gramado da frente. */
 const PASSEIO = { c0: -2.6, c1: 2.8, r0: -0.6, r1: 2.8 };
@@ -543,6 +571,9 @@ export const CASAS = {
   explorar: { c: -4.2, r: 2.4, w: 2.2, d: 1.8, alt: 46 },
 };
 
+/** Onde fica a estátua da praça: a aba dos coelhos aponta para ela. */
+export const ESTATUA = { c: -0.4, r: -0.4, alt: 150 };
+
 /** Onde o balão de uma casa deve flutuar, em % da cena: logo acima do telhado. */
 export function balaoDaCasa(casa: { c: number; r: number; alt: number }, telhado = TELHADO) {
   const p = iso(casa.c, casa.r, casa.alt + telhado);
@@ -572,6 +603,8 @@ export function Vila({
   const [cutucados, setCutucados] = useState(0);
   // Cenouras plantadas até hoje. Passando de cinco, a turma engorda — e continua gorda no próximo dia.
   const [cenouras, setCenouras] = useState(lerCenouras);
+  // Quem está posando na estátua da praça é o coelho escolhido para o Syden inteiro (ver coelho.ts).
+  const estatuaBig = useCoelho() === 'big';
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // Vida própria: de tempos em tempos um ou outro resolve dar uma volta.
@@ -623,6 +656,12 @@ export function Vila({
   /** Bem alimentados: passou de cinco cenouras, a turma engorda. */
   const gordos = cenouras >= CENOURAS_PARA_ENGORDAR;
 
+  /** Clicar na estátua troca o coelho do Syden — o mesmo que a aba dos coelhos escolhe. */
+  function trocarEstatua() {
+    sounds.bunny();
+    escolherCoelho(coelhoAtual() === 'big' ? 'our' : 'big');
+  }
+
   /** Quem engordou pode voltar à forma: zera a conta das cenouras. */
   function reiniciarDieta() {
     setCenouras(0);
@@ -630,6 +669,131 @@ export function Vila({
   }
 
   const cenouraPonto = cenoura ? iso(cenoura.c, cenoura.r) : null;
+
+  /**
+   * Tudo que fica em pé na ilha, na ordem em que precisa ser desenhado: de trás para a frente.
+   *
+   * Numa cena vista de canto como esta, quem está mais à frente cobre quem está atrás — e "mais à frente"
+   * quer dizer ter a maior soma de coluna + fileira. Antes a ordem era simplesmente a ordem em que eu
+   * tinha escrito as linhas, e ela mentia: a horta ficava por cima da casa, e a ponte por cima da cabana.
+   *
+   * O que ocupa espaço (casa, fonte, horta, estátua) conta pelo CANTO DA FRENTE, que é a parte capaz de
+   * cobrir o vizinho. Os coelhos entram na mesma conta, então eles passam POR TRÁS da fonte e da estátua
+   * quando estão atrás delas, em vez de deslizar por cima de tudo.
+   */
+  const frente = (c: number, r: number, larg = 0, fundo = 0) => c + r + (larg + fundo) / 2;
+  const cenario: { p: number; no: ReactNode }[] = [
+    { p: frente(-1.4, -3.2), no: <Arvore key="arv-a" c={-1.4} r={-3.2} escala={0.95} /> },
+    { p: frente(3.0, -3.2), no: <Arvore key="arv-b" c={3.0} r={-3.2} escala={0.85} /> },
+    { p: frente(5.0, -3.0), no: <Arvore key="arv-c" c={5.0} r={-3.0} escala={0.9} /> },
+    { p: frente(-5.0, -2.4), no: <Arvore key="arv-d" c={-5.0} r={-2.4} escala={0.8} /> },
+    { p: frente(-4.6, 0.6), no: <Arvore key="arv-e" c={-4.6} r={0.6} escala={0.75} /> },
+    { p: frente(4.9, 2.9), no: <Arvore key="arv-g" c={4.9} r={2.9} escala={0.7} /> },
+
+    { p: frente(-0.4, -3.3), no: <Bandeira key="ban-a" c={-0.4} r={-3.3} /> },
+    { p: frente(4.2, -3.2), no: <Bandeira key="ban-b" c={4.2} r={-3.2} altura={72} /> },
+
+    { p: frente(CASAS.loja.c, CASAS.loja.r, CASAS.loja.w, CASAS.loja.d), no: <Casa key="casa-loja" {...CASAS.loja} aceso={noite} destaque={destaque === 'loja'} /> },
+    { p: frente(CASAS.salas.c, CASAS.salas.r, CASAS.salas.w, CASAS.salas.d), no: <Casa key="casa-salas" {...CASAS.salas} aceso={noite} destaque={destaque === 'salas'} /> },
+    { p: frente(CASAS.aprender.c, CASAS.aprender.r, CASAS.aprender.w, CASAS.aprender.d), no: <Casa key="casa-aprender" {...CASAS.aprender} aceso={noite} destaque={destaque === 'aprender'} /> },
+    { p: frente(CASAS.explorar.c, CASAS.explorar.r, CASAS.explorar.w, CASAS.explorar.d), no: <Casa key="casa-explorar" {...CASAS.explorar} aceso={noite} destaque={destaque === 'explorar'} /> },
+
+    { p: frente(4.4, 1.9, 2.2, 1.6), no: <Horta key="horta" c={4.4} r={1.9} /> },
+    { p: frente(-0.4, -0.4, 1.44, 1.44), no: <Estatua key="estatua" c={-0.4} r={-0.4} big={estatuaBig} onTrocar={trocarEstatua} /> },
+    { p: frente(0.6, 1.9, 2, 2), no: <Fonte key="fonte" c={0.6} r={1.9} /> },
+
+    { p: frente(-2.6, -0.9), no: <Lanterna key="lan-a" c={-2.6} r={-0.9} aceso={noite} /> },
+    { p: frente(2.9, -0.9), no: <Lanterna key="lan-b" c={2.9} r={-0.9} aceso={noite} /> },
+    { p: frente(-2.9, 2.6), no: <Lanterna key="lan-c" c={-2.9} r={2.6} aceso={noite} /> },
+    { p: frente(3.1, 2.4), no: <Lanterna key="lan-d" c={3.1} r={2.4} aceso={noite} /> },
+
+    // A ponte sai da ilha em diagonal: as duas pontas têm a mesma profundidade.
+    { p: frente(-5.0, 3.0), no: <Ponte key="ponte" c={-5.0} r={3.0} /> },
+    // A cerca é comprida: vale a ponta mais à frente, que é a que pode cobrir alguém.
+    { p: frente(-2.2, 3.35), no: <Cerca key="cerca-a" de={[-5.3, 3.35]} para={[-2.2, 3.35]} /> },
+    { p: frente(5.3, 3.35), no: <Cerca key="cerca-b" de={[1.4, 3.35]} para={[5.3, 3.35]} /> },
+  ];
+
+  // Florzinhas soltas na grama: baixinhas, mas entram na mesma fila.
+  for (const [i, [fc, fr]] of ([
+    [-1.9, 3.0],
+    [-0.7, 3.1],
+    [1.0, 3.1],
+    [2.2, 2.9],
+    [-3.4, 2.0],
+    [4.6, 0.2],
+  ] as [number, number][]).entries()) {
+    const ponto = iso(fc, fr);
+    cenario.push({
+      p: frente(fc, fr),
+      no: (
+        <g key={`flor-${i}`}>
+          <circle cx={ponto.x} cy={ponto.y - 4} r={3} className={i % 2 === 0 ? 'v-flor-a' : 'v-flor-b'} />
+          <rect x={ponto.x - 0.8} y={ponto.y - 4} width={1.6} height={5} className="v-folha-escura" />
+        </g>
+      ),
+    });
+  }
+
+  if (cenoura && cenouraPonto) {
+    cenario.push({
+      p: frente(cenoura.c, cenoura.r),
+      no: (
+        <g key="cenoura" transform={`translate(${cenouraPonto.x} ${cenouraPonto.y})`}>
+          {/* o desenho fica num grupo de dentro: a animação mexe no transform, e o de fora é a posição */}
+          <g className="v-cenoura">
+            <ellipse cx={0} cy={0} rx={9} ry={4} className="v-sombra" />
+            <path d="M-6,-20 L6,-20 L0,0 Z" fill="#e8762c" />
+            <path d="M0,-20 q-8,-8 -11,-3 q7,1 9,5 z" fill="#5f9a4a" />
+            <path d="M0,-20 q8,-8 11,-3 q-7,1 -9,5 z" fill="#4f8a3c" />
+          </g>
+        </g>
+      ),
+    });
+  }
+
+  for (const coelho of coelhos) {
+    const ponto = iso(coelho.c, coelho.r);
+    const escala = 0.95 + ((coelho.r - PASSEIO.r0) / (PASSEIO.r1 - PASSEIO.r0)) * 0.3;
+    cenario.push({
+      p: frente(coelho.c, coelho.r),
+      no: (
+        <g
+          key={`coelho-${coelho.id}`}
+          className={`v-coelho${coelho.pulando ? ' cutucado' : ''}`}
+          style={{ transform: `translate(${ponto.x}px, ${ponto.y}px)`, transitionDuration: `${coelho.dur}s` }}
+          role="button"
+          tabIndex={0}
+          aria-label="Cutucar o coelho"
+          onClick={(e) => {
+            e.stopPropagation();
+            cutucar(coelho.id);
+          }}
+          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && cutucar(coelho.id)}
+        >
+          <title>Cutucar o coelho</title>
+          {/* o tamanho vai no atributo, não no CSS: assim a animação de andar mexe só na posição */}
+          <g transform={`scale(${(coelho.olhandoEsquerda ? -escala : escala).toFixed(2)} ${escala.toFixed(2)})`}>
+            <g className="v-coelho-corpo">
+              <CoelhoArte id={coelho.id} gordo={gordos} />
+            </g>
+          </g>
+          {coelho.fala && (
+            <g className="v-fala">
+              <circle cx={0} cy={-58} r={17} />
+              <circle cx={-5} cy={-38} r={4} />
+              <circle cx={-10} cy={-30} r={2.4} />
+              <text x={0} y={-51} textAnchor="middle">
+                {coelho.fala}
+              </text>
+            </g>
+          )}
+        </g>
+      ),
+    });
+  }
+
+  cenario.sort((a, b) => a.p - b.p);
 
   return (
     <div className={`vila vila-${periodo}`}>
@@ -698,112 +862,22 @@ export function Vila({
           <line key={y} className="v-onda" x1={60 + (i % 3) * 130} y1={y} x2={280 + (i % 3) * 170} y2={y} style={{ animationDelay: `${i * 0.6}s` }} />
         ))}
 
+        {/* O chão: ilha, praça e caminhos ficam debaixo de tudo. */}
         <Ilha />
         <Praca />
         <Caminho c={CASAS.loja.c} r={CASAS.loja.r + 1.1} passos={1.4} />
         <Caminho c={CASAS.salas.c + 1.0} r={CASAS.salas.r + 1.3} passos={1.4} />
 
-        {/* o fundo da vila */}
-        <Arvore c={-1.4} r={-3.2} escala={0.95} />
-        <Arvore c={3.0} r={-3.2} escala={0.85} />
-        <Arvore c={5.0} r={-3.0} escala={0.9} />
-        <Arvore c={-5.0} r={-2.4} escala={0.8} />
-        <Bandeira c={-0.4} r={-3.3} />
-        <Bandeira c={4.2} r={-3.2} altura={72} />
-
-        <Casa {...CASAS.loja} aceso={noite} destaque={destaque === 'loja'} />
-        <Casa {...CASAS.salas} aceso={noite} destaque={destaque === 'salas'} />
-        <Casa {...CASAS.aprender} aceso={noite} destaque={destaque === 'aprender'} />
-
-        <Horta c={3.4} r={-2.6} />
-        <Estatua c={-0.4} r={-0.4} />
-        <Lanterna c={-2.6} r={-0.9} aceso={noite} />
-        <Lanterna c={2.9} r={-0.9} aceso={noite} />
-
-        <Casa {...CASAS.explorar} aceso={noite} destaque={destaque === 'explorar'} />
-        <Ponte c={-5.0} r={3.0} />
-        <Cerca de={[-5.3, 3.35]} para={[-2.2, 3.35]} />
-        <Cerca de={[1.4, 3.35]} para={[5.3, 3.35]} />
-        <Arvore c={-4.6} r={0.6} escala={0.75} />
-        <Arvore c={5.0} r={1.2} escala={0.75} />
-        <Arvore c={4.4} r={2.4} escala={0.7} />
-
-        <Fonte c={0.6} r={1.9} />
-        <Lanterna c={-2.9} r={2.6} aceso={noite} />
-        <Lanterna c={3.1} r={2.4} aceso={noite} />
-        {/* florzinhas soltas na grama da frente */}
-        {[
-          [-1.9, 3.0],
-          [-0.7, 3.1],
-          [1.0, 3.1],
-          [2.2, 2.9],
-          [-3.4, 2.0],
-          [4.6, 0.2],
-        ].map(([fc, fr], i) => {
-          const p = iso(fc, fr);
-          return (
-            <g key={`f${i}`}>
-              <circle cx={p.x} cy={p.y - 4} r={3} className={i % 2 === 0 ? 'v-flor-a' : 'v-flor-b'} />
-              <rect x={p.x - 0.8} y={p.y - 4} width={1.6} height={5} className="v-folha-escura" />
-            </g>
-          );
-        })}
-
-        {/* o gramado que aceita cenoura */}
+        {/* O gramado que aceita cenoura vem ANTES do cenário: assim a casa, a árvore e a estátua ficam
+            por cima dele e recebem o próprio clique, em vez de virar chão de plantar. */}
         <polygon className="v-chao-clicavel" points={pts(CANTO_TOPO, CANTO_DIR, CANTO_BAIXO, CANTO_ESQ)} onClick={plantar}>
           <title>Plantar uma cenoura</title>
         </polygon>
 
-        {cenouraPonto && (
-          <g transform={`translate(${cenouraPonto.x} ${cenouraPonto.y})`}>
-            {/* o desenho fica num grupo de dentro: a animação mexe no transform, e o de fora é a posição */}
-            <g className="v-cenoura">
-              <ellipse cx={0} cy={0} rx={9} ry={4} className="v-sombra" />
-              <path d="M-6,-20 L6,-20 L0,0 Z" fill="#e8762c" />
-              <path d="M0,-20 q-8,-8 -11,-3 q7,1 9,5 z" fill="#5f9a4a" />
-              <path d="M0,-20 q8,-8 11,-3 q-7,1 -9,5 z" fill="#4f8a3c" />
-            </g>
-          </g>
-        )}
-
-        {/* os coelhos, sempre por cima do cenário do meio */}
-        {coelhos.map((coelho) => {
-          const p = iso(coelho.c, coelho.r);
-          const escala = 0.95 + ((coelho.r - PASSEIO.r0) / (PASSEIO.r1 - PASSEIO.r0)) * 0.3;
-          return (
-            <g
-              key={coelho.id}
-              className={`v-coelho${coelho.pulando ? ' cutucado' : ''}`}
-              style={{ transform: `translate(${p.x}px, ${p.y}px)`, transitionDuration: `${coelho.dur}s` }}
-              role="button"
-              tabIndex={0}
-              aria-label="Cutucar o coelho"
-              onClick={(e) => {
-                e.stopPropagation();
-                cutucar(coelho.id);
-              }}
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && cutucar(coelho.id)}
-            >
-              <title>Cutucar o coelho</title>
-              {/* o tamanho vai no atributo, não no CSS: assim a animação de andar mexe só na posição */}
-              <g transform={`scale(${(coelho.olhandoEsquerda ? -escala : escala).toFixed(2)} ${escala.toFixed(2)})`}>
-                <g className="v-coelho-corpo">
-                  <CoelhoArte id={coelho.id} gordo={gordos} />
-                </g>
-              </g>
-              {coelho.fala && (
-                <g className="v-fala">
-                  <circle cx={0} cy={-58} r={17} />
-                  <circle cx={-5} cy={-38} r={4} />
-                  <circle cx={-10} cy={-30} r={2.4} />
-                  <text x={0} y={-51} textAnchor="middle">
-                    {coelho.fala}
-                  </text>
-                </g>
-              )}
-            </g>
-          );
-        })}
+        {/* E aqui a vila inteira, do fundo para a frente (ver `cenario`). O grupo não recebe clique: a
+            casa e a árvore não podem engolir a cenoura de quem clicou na grama atrás delas. Só o coelho e
+            a estátua respondem, e isso está no CSS (.v-cenario). */}
+        <g className="v-cenario">{cenario.map((coisa) => coisa.no)}</g>
 
         <Pier />
       </svg>

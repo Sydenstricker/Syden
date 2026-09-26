@@ -148,6 +148,27 @@ ipcMain.on('app:focus', (event) => {
   if (mainWindow && event.sender === mainWindow.webContents) showMainWindow();
 });
 
+/**
+ * O número vermelho sobre o ícone da barra de tarefas, como no Discord.
+ *
+ * No Windows isso é um "overlay icon": uma imagenzinha que o sistema desenha no canto do ícone. Quem
+ * desenha o selo é o site, porque lá existe canvas e aqui não — o processo principal só recebe o PNG
+ * pronto e o coloca. `app.setBadgeCount` fica junto porque é o caminho no macOS e no Linux.
+ */
+ipcMain.on('app:badge', (event, { quantas, selo }) => {
+  if (!mainWindow || event.sender !== mainWindow.webContents) return;
+  try {
+    if (quantas > 0 && selo) {
+      mainWindow.setOverlayIcon(nativeImage.createFromDataURL(selo), `${quantas} ${quantas === 1 ? 'aviso' : 'avisos'}`);
+    } else {
+      mainWindow.setOverlayIcon(null, '');
+    }
+    if (typeof app.setBadgeCount === 'function') app.setBadgeCount(quantas);
+  } catch {
+    // Sistema que não tem esse recurso: o Syden continua igual, só sem o número no ícone.
+  }
+});
+
 function createTray() {
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16, height: 16 }));
   tray.setToolTip('Syden');

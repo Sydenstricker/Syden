@@ -41,7 +41,7 @@ export function MemberList({
   communityId: number;
   selfId: number;
   /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
-  onWatchStream: (channelId: number) => void;
+  onWatchStream: (channelId: number, userId: number) => void;
   /** Abre a conversa privada com alguém, pelo menu do botão direito. */
   onSendMessage: (userId: number) => void;
 }) {
@@ -166,6 +166,10 @@ export function MemberList({
           isSelf={menu.target.userId === selfId}
           onWatchStream={onWatchStream}
           onSendMessage={onSendMessage}
+          onOpenProfile={(userId, x, y) => {
+            const alvo = members.get(userId);
+            if (alvo) setPerfil({ membro: alvo, x, y });
+          }}
         />
       )}
     </aside>

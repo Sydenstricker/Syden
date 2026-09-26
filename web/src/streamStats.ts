@@ -13,6 +13,12 @@ export interface StreamStats {
   /** Só para quem transmite: 'cpu' (processador), 'bandwidth' (internet) ou 'none'. */
   limitedBy: 'cpu' | 'bandwidth' | 'other' | 'none';
   kbps: number;
+  /** O codec em uso ("H264", "VP8"…): é o que permite comparar um contra o outro na prática. */
+  codec: string | null;
+  /** Nome do codificador que o navegador escolheu; serve para saber se é a placa de vídeo. */
+  encoder: string | null;
+  /** O navegador diz que este codificador é o econômico (normalmente, o da placa de vídeo). */
+  naPlaca: boolean | null;
 }
 
 type Publication = TrackPublication | LocalTrackPublication | RemoteTrackPublication;
@@ -32,6 +38,13 @@ async function read(publication: Publication | undefined, local: boolean): Promi
     const report = await track.getRTCStatsReport();
     if (!report) return null;
     let stats: StreamStats | null = null;
+    // O nome do codec vive numa entrada à parte do relatório, apontada por codecId.
+    const codecs = new Map<string, string>();
+    report.forEach((entry: Record<string, unknown>) => {
+      if (entry.type === 'codec' && typeof entry.mimeType === 'string') {
+        codecs.set(String(entry.id), entry.mimeType.replace(/^video\//i, '').toUpperCase());
+      }
+    });
     report.forEach((entry: Record<string, unknown>) => {
       const type = entry.type as string;
       if (type !== (local ? 'outbound-rtp' : 'inbound-rtp') || entry.kind !== 'video') return;
@@ -46,6 +59,9 @@ async function read(publication: Publication | undefined, local: boolean): Promi
         fps: Number(entry.framesPerSecond ?? 0),
         limitedBy: reason === 'cpu' || reason === 'bandwidth' || reason === 'none' ? reason : 'other',
         kbps: 0,
+        codec: codecs.get(String(entry.codecId ?? '')) ?? null,
+        encoder: typeof entry.encoderImplementation === 'string' ? entry.encoderImplementation : null,
+        naPlaca: typeof entry.powerEfficientEncoder === 'boolean' ? entry.powerEfficientEncoder : null,
       };
     });
     return stats;

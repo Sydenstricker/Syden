@@ -1,11 +1,12 @@
-import { BookOpen, Compass, Lightbulb, Send, ShoppingBag, Users, Volume2 } from 'lucide-react';
+import { BookOpen, Compass, Lightbulb, Rabbit, Send, ShoppingBag, Users, Volume2 } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
 import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, VoiceMember } from './types';
-import { balaoDaCasa, CASAS, type Periodo, type PinoVila, Vila } from './Vila';
+import { PainelCoelhos } from './PainelCoelhos';
+import { balaoDaCasa, CASAS, ESTATUA, type Periodo, type PinoVila, Vila } from './Vila';
 
 // Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
 // e cutucar uns coelhos antes de entrar numa sala. As quatro casas não são enfeite: cada uma leva a uma
@@ -23,8 +24,6 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
   const [estado, setEstado] = useState<'parado' | 'enviando' | 'enviado'>('parado');
   const [erro, setErro] = useState<string | null>(null);
 
-  // Quem recebe as ideias não precisa de uma caixa para mandar ideia a si mesmo.
-  if (souODono) return null;
 
   async function enviar(event: FormEvent) {
     event.preventDefault();
@@ -39,6 +38,34 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
       setErro((e as Error).message);
       setEstado('parado');
     }
+  }
+
+  // Quem RECEBE as ideias não manda ideia a si mesmo: para ele a caixa fica como demonstração, para
+  // saber o que os amigos veem aqui e por onde as ideias chegam.
+  if (souODono) {
+    return (
+      <section className="ideias exemplo" aria-label="Caixa de ideias (como os outros veem)">
+        <h2>
+          <Lightbulb size={20} aria-hidden="true" />
+          Tem uma ideia para o Syden?
+        </h2>
+        <p className="ideias-lead">
+          É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa
+          privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o
+          joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.
+        </p>
+        <form onSubmit={(e) => e.preventDefault()} aria-hidden="true">
+          <textarea rows={3} placeholder="Seria bom se…" disabled />
+          <div className="ideias-rodape">
+            <span className="ideias-conta" />
+            <button type="button" disabled>
+              <Send size={16} aria-hidden="true" />
+              Enviar
+            </button>
+          </div>
+        </form>
+      </section>
+    );
   }
 
   return (
@@ -113,6 +140,7 @@ export function Home({
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [destaque, setDestaque] = useState<string | null>(null);
   const [salasAbertas, setSalasAbertas] = useState(false);
+  const [coelhosAbertos, setCoelhosAbertos] = useState(false);
   const novidadesRef = useRef<HTMLElement | null>(null);
 
   // Abriu a tela inicial: as novidades deixam de ser novidade (a bolinha do logo apaga).
@@ -148,6 +176,14 @@ export function Home({
       onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
     },
     {
+      id: 'coelhos',
+      titulo: 'Coelhos',
+      sub: 'Escolha o seu',
+      icone: <Rabbit size={18} />,
+      ...balaoDaCasa(ESTATUA, 0),
+      onClick: () => setCoelhosAbertos((aberto) => !aberto),
+    },
+    {
       id: 'explorar',
       titulo: 'Explorar',
       sub: 'Entrar em outra comunidade',
@@ -161,6 +197,7 @@ export function Home({
     <div className="home">
       <div className="home-cena">
         <Vila periodo={periodo} onLuz={alternarLuz} pinos={pinos} destaque={destaque} onDestaque={setDestaque} />
+        {coelhosAbertos && <PainelCoelhos aoFechar={() => setCoelhosAbertos(false)} />}
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label="Salas de voz">
             <header>

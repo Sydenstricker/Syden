@@ -4,10 +4,18 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
 import { channelRoom, communityRoom } from './realtime.js';
-import { canUseChannel, manages, requireUser, roleIn } from './routes.js';
+import { canUseChannel, manages, poderDeOperador, requireUser, roleIn } from './routes.js';
 
 const MB = 1024 * 1024;
 export const MAX_ATTACHMENT_BYTES = 8 * MB;
+/**
+ * Recado em vídeo de tela: é o único arquivo grande que o Syden aceita, e o preço disso é ter prazo.
+ * Dez minutos de tela a uns 800 kbps dão uns 60 MB; o teto fica um pouco acima, para caber um recado
+ * mais pesado sem virar depósito.
+ */
+export const MAX_RECADO_BYTES = 90 * MB;
+export const DIAS_DO_RECADO = 7;
+export const MAX_RECADO_SEGUNDOS = 10 * 60;
 const MAX_FILES_PER_MESSAGE = 5;
 // base64 ocupa ~33% a mais que o arquivo, e ainda cabe o texto e os nomes.
 const UPLOAD_BODY_LIMIT = Math.round(MAX_FILES_PER_MESSAGE * MAX_ATTACHMENT_BYTES * 1.4);
@@ -81,6 +89,43 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       return message;
     }
 
+    /**
+     * Recado em vídeo de tela: chega como arquivo cru, não como JSON. Sessenta megabytes viram oitenta
+     * em base64, e transformar isso em texto para caber num JSON gastaria memória dos dois lados à toa.
+     */
+    authed.post<{ Params: { id: string }; Querystring: { segundos?: string; nome?: string } }>(
+      '/api/channels/:id/screen-video',
+      { bodyLimit: MAX_RECADO_BYTES + MB },
+      async (request, reply) => {
+        const where = destination(request, reply, null);
+        if (!where) return reply;
+
+        const data = request.body as Buffer;
+        if (!Buffer.isBuffer(data) || data.length === 0) return reply.code(400).send({ error: 'Vídeo vazio.' });
+        if (data.length > MAX_RECADO_BYTES) {
+          return reply.code(400).send({ error: `Um recado em vídeo pode ter até ${MAX_RECADO_BYTES / MB} MB.` });
+        }
+        const mime = sniffAttachmentMime(data);
+        if (!mime.startsWith('video/')) return reply.code(400).send({ error: 'Isto não é um vídeo.' });
+
+        const segundos = Math.min(Math.max(Number(request.query.segundos) || 0, 0), MAX_RECADO_SEGUNDOS);
+        const vence = new Date(Date.now() + DIAS_DO_RECADO * 24 * 60 * 60 * 1000).toISOString();
+        const message = db.createMessage(where.channel.id, request.user.id, '', null);
+        message.attachments.push(
+          db.addAttachment(message.id, {
+            name: safeName(request.query.nome ?? 'Recado em vídeo.webm'),
+            mime,
+            data,
+            width: null,
+            height: null,
+            expiresAt: vence,
+          }),
+        );
+        void segundos;
+        return publish(where.channel, message);
+      },
+    );
+
     // ---------- Mensagem com arquivos ----------
 
     authed.post<{
@@ -150,9 +195,19 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       return channel && canUseChannel(user, channel) ? channel : null;
     }
 
-    /** Em conversa privada não existe administrador: vale só quem criou a coisa. */
+    /**
+     * Em conversa privada não existe administrador: vale só quem criou a coisa.
+     *
+     * Quem cuida do Syden também alcança aqui — é obrigação de quem opera o serviço poder tirar do ar
+     * conteúdo ilegal sem esperar o dono da comunidade acordar —, mas por um caminho separado e registrado
+     * na auditoria, e não por ser confundido com administrador daquela comunidade.
+     */
     const managesChannel = (channel: db.Channel, user: db.User) =>
       channel.communityId !== null && manages(roleIn(user, channel.communityId));
+
+    const podeModerarMensagem = (channel: db.Channel, user: db.User, oQue: string) =>
+      managesChannel(channel, user) ||
+      poderDeOperador(user, 'moderacao.mensagem', { target: oQue, communityId: channel.communityId, detail: `canal ${channel.name}` });
 
     /** Votar de novo na mesma opção tira o voto, como no Discord. */
     authed.post<{ Params: { id: string }; Body: { optionId?: number } }>('/api/polls/:id/vote', async (request, reply) => {
@@ -180,7 +235,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       const poll = db.findPoll(Number(request.params.id));
       const channel = poll && channelFor(poll.channelId, request.user);
       if (!poll || !channel) return reply.code(404).send({ error: 'Enquete não encontrada.' });
-      if (poll.createdBy !== request.user.id && !managesChannel(channel, request.user)) {
+      if (poll.createdBy !== request.user.id && !podeModerarMensagem(channel, request.user, 'enquete ' + poll.id)) {
         return reply.code(403).send({ error: 'Só quem criou a enquete ou quem administra a comunidade pode encerrá-la.' });
       }
       db.closePoll(poll.id);
@@ -226,7 +281,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       const location = db.threadLocation(Number(request.params.id));
       const channel = location && channelFor(location.channelId, request.user);
       if (!location || !channel) return reply.code(404).send({ error: 'Tópico não encontrado.' });
-      if (location.createdBy !== request.user.id && !managesChannel(channel, request.user)) {
+      if (location.createdBy !== request.user.id && !podeModerarMensagem(channel, request.user, 'tópico ' + location.id)) {
         return reply.code(403).send({ error: 'Só quem criou o tópico ou quem administra a comunidade pode apagá-lo.' });
       }
       const thread = db.findThread(location.id);

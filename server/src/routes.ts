@@ -4,8 +4,10 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
+import { Freio } from './freio.js';
 import { installDefaultPack, seedExpressions } from './expressions.js';
 import {
+  anunciarPerfil,
   channelRoom,
   communityRoom,
   directRoom,
@@ -16,6 +18,7 @@ import {
   removeVoiceChannelMembers,
 } from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
+import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { providerMetrics } from './provider.js';
 import { usageSummary } from './usage.js';
 
@@ -41,13 +44,26 @@ function communityName(raw: unknown): string | null {
 }
 
 /**
- * Cargo da pessoa na comunidade, ou undefined se ela não participa. Quem administra o Syden inteiro modera
- * as comunidades de que participa, mesmo sem ter sido promovido ali.
+ * Cargo da pessoa NAQUELA comunidade, ou undefined se ela não participa.
+ *
+ * Quem administra o Syden inteiro NÃO vira administrador das comunidades alheias por tabela. Antes virava,
+ * e para um grupo de amigos era só conveniente; num Syden com gente de fora, é o operador do serviço com
+ * poder dentro do espaço dos outros — renomear canais, trocar convites, mexer nos emojis de uma comunidade
+ * que não é dele. O poder de operador continua existindo, mas só onde precisa mesmo (tirar do ar conteúdo
+ * ilegal, excluir conta), é pedido explicitamente por `poderDeOperador` e fica registrado na auditoria.
  */
 export function roleIn(user: db.User, communityId: number): db.Role | undefined {
-  const role = db.memberRole(communityId, user.id);
-  if (!role) return undefined;
-  return role === 'member' && user.isAdmin ? 'admin' : role;
+  return db.memberRole(communityId, user.id);
+}
+
+/**
+ * O poder de quem cuida do Syden, para o que é obrigação de quem opera o serviço e não pode depender do
+ * dono de uma comunidade estar acordado. Todo uso é registrado: é isso que separa "moderação" de "abuso".
+ */
+export function poderDeOperador(user: db.User, action: string, sobre: { target?: string; communityId?: number | null; detail?: string }) {
+  if (!user.isAdmin) return false;
+  db.registrarAuditoria({ actor: user, action, ...sobre });
+  return true;
 }
 
 export const manages = (role: db.Role | undefined) => role === 'owner' || role === 'admin';
@@ -80,10 +96,14 @@ declare module 'fastify' {
 
 export async function requireUser(request: FastifyRequest, reply: FastifyReply) {
   const token = request.headers.authorization?.replace(/^Bearer /, '');
-  const userId = await verifySession(token);
-  const user = userId === null ? undefined : db.findUserById(userId);
-  if (!user) return reply.code(401).send({ error: 'Sessão inválida. Entre novamente.' });
-  request.user = user;
+  const sessao = await verifySession(token);
+  const achado = sessao === null ? undefined : db.findUserForSession(sessao.userId);
+  // O número da sessão precisa bater com o do banco: é assim que trocar a senha (ou mandar sair de todos
+  // os aparelhos) derruba na hora um token que já está no computador de alguém.
+  if (!achado || achado.sessionVersion !== sessao!.sessionVersion) {
+    return reply.code(401).send({ error: 'Sessão inválida. Entre novamente.' });
+  }
+  request.user = achado.user;
 }
 
 export function registerRoutes(app: FastifyInstance, io: IOServer) {
@@ -91,15 +111,35 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
   app.get('/api/health', async () => ({ ok: true }));
 
+  // Freios das portas caras. O de endereço protege o SERVIDOR: conferir uma senha custa ~0,1 s de
+  // processador de propósito, então uma enxurrada de tentativas engasga a voz de quem está em chamada.
+  // O de conta protege UMA PESSOA de quem tenta adivinhar a senha dela a partir de vários lugares —
+  // e conta só os erros, para que entrar certo muitas vezes nunca tranque ninguém do lado de fora.
+  const freioPorEndereco = new Freio(config.freio.tentativasPorEndereco, 60_000);
+  const freioPorConta = new Freio(config.freio.errosPorConta, 15 * 60_000);
+
+  /** Já responde 429 e devolve true quando este endereço está batendo demais. */
+  function enderecoFreado(request: FastifyRequest, reply: FastifyReply): boolean {
+    const espera = freioPorEndereco.tentar(request.ip);
+    if (!espera) return false;
+    reply.header('retry-after', String(espera)).code(429).send({
+      error: `Muitas tentativas seguidas. Espere ${espera} segundo${espera === 1 ? '' : 's'} e tente de novo.`,
+    });
+    return true;
+  }
+
   app.post<{ Body: { username?: string; password?: string; inviteCode?: string } }>(
     '/api/auth/register',
     async (request, reply) => {
+      if (enderecoFreado(request, reply)) return reply;
       const username = request.body?.username?.trim() ?? '';
       const password = request.body?.password ?? '';
       const code = request.body?.inviteCode?.trim() ?? '';
-      if (config.inviteCode && code !== config.inviteCode && !db.findCommunityByInvite(code)) {
-        return reply.code(403).send({ error: 'Código de convite inválido.' });
-      }
+      // Fechado por padrão: ou o código geral do Syden, ou o convite de alguma comunidade. Cadastro aberto
+      // para qualquer pessoa da internet só acontece se estiver escrito CADASTRO_ABERTO=sim no .env.
+      const convidado =
+        config.cadastroAberto || (!!config.inviteCode && code === config.inviteCode) || !!db.findCommunityByInvite(code);
+      if (!convidado) return reply.code(403).send({ error: 'Código de convite inválido.' });
       if (!USERNAME_RE.test(username)) {
         return reply.code(400).send({ error: 'Nome de usuário deve ter 2 a 32 letras, números, _ . ou -.' });
       }
@@ -125,23 +165,47 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         const community = db.createCommunity('Syden', user.id, config.inviteCode || db.newInviteCode());
         seedExpressions(community.id);
       }
-      return { token: await signSession(user), user };
+      conferirPresentes(user); // conta nova entre as 25 primeiras já sai com a insígnia esperando
+      return { token: await signSession(user, 1), user };
     },
   );
 
   app.post<{ Body: { username?: string; password?: string } }>('/api/auth/login', async (request, reply) => {
-    const found = db.findUserByName(request.body?.username?.trim() ?? '');
+    if (enderecoFreado(request, reply)) return reply;
+    const nome = request.body?.username?.trim() ?? '';
+    const chave = nome.toLowerCase();
+
+    const espera = freioPorConta.bloqueado(chave);
+    if (espera) {
+      const minutos = Math.ceil(espera / 60);
+      return reply
+        .header('retry-after', String(espera))
+        .code(429)
+        .send({
+          error: `Senha errada vezes demais nesta conta. Tente de novo em ${minutos} minuto${minutos === 1 ? '' : 's'}.`,
+        });
+    }
+
+    const found = db.findUserByName(nome);
     if (!found || !(await verifyPassword(request.body?.password ?? '', found.passwordHash))) {
+      freioPorConta.tentar(chave);
       return reply.code(401).send({ error: 'Usuário ou senha incorretos.' });
     }
+    freioPorConta.liberar(chave); // quem sabe a senha não é quem estava tentando adivinhar
     const { passwordHash: _, ...user } = found;
-    return { token: await signSession(user), user };
+    conferirPresentes(user); // ganhou alguma insígnia enquanto estava fora? chega agora
+    return { token: await signSession(user, db.sessionVersion(found.id)), user };
   });
 
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
 
-    authed.get('/api/me', async (request) => request.user);
+    // Abrir o Syden também confere: quem já estava logado (o app de desktop fica aberto dias) não fica
+    // esperando o próximo login para receber o que passou a ter direito.
+    authed.get('/api/me', async (request) => {
+      const novos = conferirPresentes(request.user);
+      return novos.length ? db.findUserById(request.user.id) : request.user;
+    });
 
     // Enfeites do perfil. O servidor não conhece as cores: guarda o nome da opção e confia no app para
     // desenhar — assim dá para acrescentar cor nova sem tocar no banco. Só limita o tamanho do texto.
@@ -158,6 +222,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Body: { currentPassword?: string; newPassword?: string } }>(
       '/api/me/password',
       async (request, reply) => {
+        if (enderecoFreado(request, reply)) return reply;
         const newPassword = request.body?.newPassword ?? '';
         if (!(await verifyPassword(request.body?.currentPassword ?? '', db.findPasswordHash(request.user.id)))) {
           return reply.code(400).send({ error: 'A senha atual está incorreta.' });
@@ -166,12 +231,64 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           return reply.code(400).send({ error: 'A nova senha precisa ter pelo menos 6 caracteres.' });
         }
         db.updatePassword(request.user.id, await hashPassword(newPassword));
-        return { ok: true };
+        // Trocar a senha desconecta os outros aparelhos: é exatamente o que alguém espera ao fazer isso
+        // depois de desconfiar que a senha vazou. Quem trocou continua logado, com um token novo.
+        const token = await signSession(request.user, db.bumpSessionVersion(request.user.id));
+        return { ok: true, token };
       },
     );
 
+    // ---------- Inventário: o que a pessoa tem, e o que ela ainda não viu ----------
+
+    authed.get('/api/me/itens', async (request) => ({
+      itens: db.itensDaPessoa(request.user.id),
+      vitrine: request.user.vitrine,
+      limite: LIMITE_DA_VITRINE,
+    }));
+
+    /** A fila da tela de destaque: o que a pessoa ganhou e ainda não abriu. */
+    authed.get('/api/me/itens/novidades', async (request) => db.itensPorRevelar(request.user.id));
+
+    /**
+     * Resgatar: é o clique que fecha a tela de destaque. Além de marcar que ela já viu, põe a insígnia no
+     * perfil se ainda houver espaço — ganhar e não aparecer em lugar nenhum seria estranho.
+     */
+    authed.post<{ Params: { code: string } }>('/api/me/itens/:code/resgatar', async (request, reply) => {
+      const code = request.params.code;
+      if (!db.temItem(request.user.id, code)) return reply.code(404).send({ error: 'Você não tem este item.' });
+      db.marcarRevelado(request.user.id, code);
+      db.exibirSeCouber(request.user.id, code, LIMITE_DA_VITRINE);
+      return { ok: true, user: db.findUserById(request.user.id) };
+    });
+
+    /** Quais insígnias exibir no perfil, e em que ordem. Quem escolhe é a dona delas. */
+    authed.put<{ Body: { codigos?: string[] } }>('/api/me/vitrine', async (request, reply) => {
+      const pedidos = request.body?.codigos;
+      if (!Array.isArray(pedidos) || pedidos.some((c) => typeof c !== 'string')) {
+        return reply.code(400).send({ error: 'Pedido inválido.' });
+      }
+      if (pedidos.length > LIMITE_DA_VITRINE) {
+        return reply.code(400).send({ error: `Dá para exibir no máximo ${LIMITE_DA_VITRINE} insígnias.` });
+      }
+      db.definirVitrine(request.user.id, pedidos);
+      // A lista de membros mostra as insígnias de todo mundo: quem está junto vê a mudança na hora.
+      anunciarPerfil(io, request.user.id);
+      return db.findUserById(request.user.id)!;
+    });
+
+    /**
+     * "Sair de todos os aparelhos": derruba qualquer sessão aberta em outro computador ou celular.
+     * Sem isto, um token que vazou continuaria valendo até vencer, e não haveria nada a fazer.
+     */
+    authed.post('/api/me/sessions/revoke', async (request) => {
+      const token = await signSession(request.user, db.bumpSessionVersion(request.user.id));
+      disconnectUser(io, request.user.id);
+      return { ok: true, token };
+    });
+
     // Excluir a própria conta exige a senha, para ninguém fazer isso por engano (ou com o PC de outra pessoa).
     authed.post<{ Body: { password?: string } }>('/api/me/delete', async (request, reply) => {
+      if (enderecoFreado(request, reply)) return reply;
       if (!(await verifyPassword(request.body?.password ?? '', db.findPasswordHash(request.user.id)))) {
         return reply.code(400).send({ error: 'Senha incorreta.' });
       }
@@ -222,7 +339,10 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const community = db.findCommunity(communityId);
       const role = community && roleIn(request.user, communityId);
       if (!community || !role) {
-        reply.code(403).send({ error: NOT_MEMBER });
+        // 404, e não 403, de propósito: os números das comunidades são sequenciais, então um "403 - você
+        // não participa" contaria a quem estivesse tentando de 1 em 1 quais comunidades existem e quantas
+        // são. Para quem está de fora, uma comunidade da qual ele não faz parte simplesmente não existe.
+        reply.code(404).send({ error: NOT_MEMBER });
         return null;
       }
       return { community, role };
@@ -315,6 +435,13 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (target === 'admin' && access.role !== 'owner') {
         return reply.code(403).send({ error: 'Só quem criou a comunidade pode remover um administrador.' });
       }
+      db.registrarAuditoria({
+        actor: request.user,
+        action: 'membro.removido',
+        target: db.findUserById(targetId)?.username ?? String(targetId),
+        communityId: access.community.id,
+        detail: access.community.name,
+      });
       db.removeMember(access.community.id, targetId);
       leaveCommunityRoom(io, targetId, access.community.id);
       io.to(communityRoom(access.community.id)).emit('member:removed', { communityId: access.community.id, userId: targetId });
@@ -334,6 +461,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (target.isAdmin && !request.user.isOwner) {
         return reply.code(403).send({ error: 'Só o dono do Syden pode remover quem também administra.' });
       }
+      db.registrarAuditoria({ actor: request.user, action: 'conta.excluida', target: target.username });
       removeAccount(io, target.id);
       return { ok: true };
     });
@@ -348,6 +476,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (!target) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
       if (target.isOwner) return reply.code(400).send({ error: 'O dono do Syden é sempre administrador.' });
       const user = db.setAdmin(target.id, request.body.isAdmin)!;
+      db.registrarAuditoria({
+        actor: request.user,
+        action: request.body.isAdmin ? 'admin.dado' : 'admin.tirado',
+        target: target.username,
+      });
       io.emit('user:updated', user);
       return user;
     });
@@ -430,6 +563,15 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     });
 
     // Consumo do servidor (tráfego e horas): informação de quem administra o Syden.
+    /**
+     * O registro de auditoria. Só quem administra o Syden lê — e, quando alguém reclama de uma mensagem
+     * apagada ou de uma conta excluída, é aqui que está a resposta, com nome e hora.
+     */
+    authed.get<{ Querystring: { limite?: string } }>('/api/audit', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o registro.' });
+      return db.lerAuditoria(Number(request.query?.limite) || 200);
+    });
+
     authed.get('/api/usage', async (request, reply) => {
       if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o uso do servidor.' });
       return usageSummary();
@@ -527,8 +669,17 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (!message || !channel || !canUseChannel(request.user, channel)) {
         return reply.code(404).send({ error: 'Mensagem não encontrada.' });
       }
-      // Em conversa privada não existe administrador: só o autor apaga o que escreveu.
-      const canManage = channel.communityId !== null && manages(roleIn(request.user, channel.communityId));
+      // Em conversa privada não existe administrador: só o autor apaga o que escreveu. Quem cuida do Syden
+      // alcança qualquer mensagem de comunidade — é obrigação de quem opera o serviço poder tirar do ar
+      // conteúdo ilegal —, mas isso fica registrado na auditoria com nome e hora.
+      const canManage =
+        channel.communityId !== null &&
+        (manages(roleIn(request.user, channel.communityId)) ||
+          poderDeOperador(request.user, 'moderacao.mensagem', {
+            target: `mensagem ${message.id}`,
+            communityId: channel.communityId,
+            detail: `de ${db.findUserById(message.userId)?.username ?? message.userId} em #${channel.name}`,
+          }));
       if (message.userId !== request.user.id && !canManage) {
         return reply.code(403).send({ error: 'Só o autor ou quem administra a comunidade pode apagar a mensagem.' });
       }

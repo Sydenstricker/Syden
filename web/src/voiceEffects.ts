@@ -47,6 +47,15 @@ function gain(ctx: BaseAudioContext, value: number): GainNode {
   return node;
 }
 
+/** Faz o que pode e não deixa um erro impedir o resto da limpeza. */
+function comCuidado(fn: () => void) {
+  try {
+    fn();
+  } catch {
+    // Nó já parado ou já solto: era isso que se queria mesmo.
+  }
+}
+
 /** Liga uma fila de nós em sequência, do primeiro ao último. */
 function chain(...nodes: AudioNode[]) {
   for (let i = 0; i < nodes.length - 1; i++) nodes[i].connect(nodes[i + 1]);
@@ -101,7 +110,9 @@ function pitchShift(ctx: BaseAudioContext, input: AudioNode, output: AudioNode, 
     sources.push(rampSource, fadeSource);
   }
 
-  return () => sources.forEach((source) => source.stop());
+  // Cada um para por conta própria: se um falhasse no meio, os outros continuariam tocando para sempre,
+  // gastando processador a cada troca de efeito até a chamada começar a engasgar.
+  return () => sources.forEach((source) => comCuidado(() => source.stop()));
 }
 
 /**
@@ -152,7 +163,7 @@ export function connectVoiceEffect(ctx: BaseAudioContext, effect: VoiceEffectId,
       drive.curve = saturation(2.5);
       chain(input, filter(ctx, 'highpass', 400, 0.8), filter(ctx, 'lowpass', 2600, 0.8), drive, chop);
       chain(chop, gain(ctx, 1.1), output);
-      return () => blades.stop();
+      return () => comCuidado(() => blades.stop());
     }
 
     case 'robot': {
@@ -165,7 +176,7 @@ export function connectVoiceEffect(ctx: BaseAudioContext, effect: VoiceEffectId,
 
       chain(input, filter(ctx, 'highpass', 200, 0.7), ring);
       chain(ring, filter(ctx, 'peaking', 1200, 1.5, 6), gain(ctx, 1.3), output);
-      return () => carrier.stop();
+      return () => comCuidado(() => carrier.stop());
     }
 
     case 'deep': {
@@ -191,7 +202,7 @@ export function connectVoiceEffect(ctx: BaseAudioContext, effect: VoiceEffectId,
       chain(delay, filter(ctx, 'lowpass', 2000, 0.7), feedback, delay);
       chain(input, delay, gain(ctx, 0.65), output);
       chain(input, gain(ctx, 0.85), output);
-      return () => feedback.disconnect();
+      return () => comCuidado(() => feedback.disconnect());
     }
 
     default:
@@ -214,6 +225,9 @@ export class VoiceEffectProcessor implements TrackProcessor<Track.Kind.Audio, Au
   constructor(private readonly effect: VoiceEffectId) {}
 
   async init(options: AudioProcessorOptions) {
+    // Desmonta antes de montar: `init` pode ser chamado de novo sem `destroy` no meio (ao trocar de
+    // microfone, por exemplo), e sem isto ficariam dois caminhos de som vivos ao mesmo tempo.
+    this.teardown();
     this.build(options.audioContext, options.track);
   }
 
@@ -241,8 +255,11 @@ export class VoiceEffectProcessor implements TrackProcessor<Track.Kind.Audio, Au
       // Já parado: nada a fazer.
     }
     this.stopEffect = () => {};
-    this.source?.disconnect();
-    this.destination?.disconnect();
+    comCuidado(() => this.source?.disconnect());
+    comCuidado(() => this.destination?.disconnect());
+    // O som processado sai por uma faixa própria, criada aqui. Sem encerrá-la, cada troca de efeito
+    // deixa mais uma faixa viva presa ao contexto de áudio.
+    for (const faixa of this.destination?.stream.getTracks() ?? []) comCuidado(() => faixa.stop());
     this.source = undefined;
     this.destination = undefined;
   }

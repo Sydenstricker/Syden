@@ -23,6 +23,13 @@ export interface Settings {
   startDeafened: boolean;
   /** Mostrar a lista de pessoas à direita também dentro das salas de voz. */
   showMembers: boolean;
+  /**
+   * Abrir a transmissão dos outros sozinho ao entrar na sala. Desligado: a transmissão aparece como convite
+   * e só é baixada quando você clica em "Assistir" — o que poupa internet e processador de todo mundo.
+   */
+  abrirTransmissaoSozinha: boolean;
+  /** Codec da transmissão de tela. O H.264 costuma usar o codificador da placa de vídeo; o VP8, não. */
+  screenCodec: 'vp8' | 'h264';
   /** Sons de entrada, saída, mudo etc. */
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
@@ -43,6 +50,8 @@ const DEFAULTS: Settings = {
   startMuted: false,
   startDeafened: false,
   showMembers: true,
+  abrirTransmissaoSozinha: false,
+  screenCodec: 'vp8',
   sounds: true,
   soundboardVolume: 0.6,
   notifications: true,

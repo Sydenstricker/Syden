@@ -1,4 +1,4 @@
-import { BarChart3, FileText, ImageUp, Plus, Smile, X } from 'lucide-react';
+import { BarChart3, FileText, ImageUp, MonitorPlay, Plus, Smile, X } from 'lucide-react';
 import {
   type ClipboardEvent,
   type KeyboardEvent,
@@ -9,7 +9,9 @@ import {
   useState,
 } from 'react';
 import type { Socket } from 'socket.io-client';
+import { aoPedirMencao } from './mencao';
 import { api } from './api';
+import { podeGravarTela, ScreenMessage } from './ScreenMessage';
 import { EmojiPicker } from './EmojiPicker';
 import { PollDialog } from './PollDialog';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
@@ -42,6 +44,8 @@ export const Composer = forwardRef<ComposerHandle, {
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Recado em vídeo de tela: aparece acima da caixa enquanto está sendo gravado.
+  const [gravandoTela, setGravandoTela] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -73,6 +77,17 @@ export const Composer = forwardRef<ComposerHandle, {
   }
 
   useImperativeHandle(ref, () => ({ addFiles: (files) => void addFiles(files) }));
+
+  // "Mencionar" no menu do botão direito em alguém: o nome cai aqui no fim do texto, com o cursor
+  // pronto para continuar escrevendo. O pedido vem de outro canto da tela (ver mencao.ts).
+  useEffect(
+    () =>
+      aoPedirMencao((nome) => {
+        setDraft((texto) => (texto.endsWith(" ") || texto === "" ? texto : texto + " ") + "@" + nome + " ");
+        inputRef.current?.focus();
+      }),
+    [],
+  );
 
   async function send() {
     const content = draft.trim();
@@ -175,6 +190,15 @@ export const Composer = forwardRef<ComposerHandle, {
         </div>
       )}
 
+      {gravandoTela && (
+        <div className="composer-recado">
+          <ScreenMessage channelId={channelId} onEnviado={() => setGravandoTela(false)} />
+          <button className="icon-plain" title="Fechar o gravador" aria-label="Fechar o gravador" onClick={() => setGravandoTela(false)}>
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <div className="composer-box">
         <div className="composer-plus">
           <button
@@ -206,6 +230,17 @@ export const Composer = forwardRef<ComposerHandle, {
               >
                 <BarChart3 size={18} /> Criar enquete
               </button>
+              {podeGravarTela() && (
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setGravandoTela(true);
+                  }}
+                >
+                  <MonitorPlay size={18} /> Gravar um recado em vídeo
+                </button>
+              )}
             </div>
           )}
           <input

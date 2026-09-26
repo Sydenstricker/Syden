@@ -21,14 +21,16 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
 import { Avatar } from './Avatar';
+import { useT } from './i18n';
 import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
 import { useDirectory } from './directory';
 import { corDoNome } from './profileStyles';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
+import { ProfileCard } from './ProfileCard';
 import { ScreenShareButton } from './ScreenShareButton';
 import { StatusMenu, useStatusMenu } from './StatusMenu';
-import type { Channel, Community, PresenceStatus, User, VoiceMember } from './types';
+import type { Channel, Community, CommunityMember, PresenceStatus, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
 interface Props {
@@ -42,7 +44,7 @@ interface Props {
   myStatus: PresenceStatus;
   onSetStatus: (status: PresenceStatus) => void;
   /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
-  onWatchStream: (channelId: number) => void;
+  onWatchStream: (channelId: number, userId: number) => void;
   /** Abre a conversa privada com alguém, pelo menu do botão direito. */
   onSendMessage: (userId: number) => void;
   /** No modo conversas, a lista de canais dá lugar à lista de conversas privadas. */
@@ -76,8 +78,11 @@ export function Sidebar({
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
   const [deleting, setDeleting] = useState<Channel | null>(null);
   const statusMenu = useStatusMenu();
+  const t = useT();
   const menu = usePersonMenu();
   const { members } = useDirectory();
+  // Cartão de perfil aberto pelo menu do botão direito aqui da barra lateral.
+  const [perfil, setPerfil] = useState<{ membro: CommunityMember; x: number; y: number } | null>(null);
 
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';
@@ -96,8 +101,8 @@ export function Sidebar({
   return (
     <nav className="sidebar">
       <header className="sidebar-header">
-        <span className="sidebar-brand" title={directMode ? 'Conversas' : community.name}>
-          {directMode ? 'Conversas' : community.name}
+        <span className="sidebar-brand" title={directMode ? t('Conversas') : community.name}>
+          {directMode ? t('Conversas') : community.name}
         </span>
         {showDesktopDownload && (
           <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title="Baixar o app para Windows" aria-label="Baixar o app para Windows">
@@ -116,7 +121,7 @@ export function Sidebar({
           </button>
         )}
 
-        <ChannelGroup title="Canais de texto" type="text" communityId={community.id}>
+        <ChannelGroup title={t('Canais de texto')} type="text" communityId={community.id}>
           {channels
             .filter((c) => c.type === 'text')
             .map((c) => (
@@ -124,7 +129,7 @@ export function Sidebar({
             ))}
         </ChannelGroup>
 
-        <ChannelGroup title="Canais de voz" type="voice" communityId={community.id}>
+        <ChannelGroup title={t('Canais de voz')} type="voice" communityId={community.id}>
           {channels
             .filter((c) => c.type === 'voice')
             .map((c) => (
@@ -199,7 +204,7 @@ export function Sidebar({
           >
             {voice.deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
           </IconButton>
-          <IconButton label="Configurações" onClick={onOpenSettings}>
+          <IconButton label={t('Configurações')} onClick={onOpenSettings}>
             <Settings size={18} />
           </IconButton>
         </div>
@@ -220,6 +225,22 @@ export function Sidebar({
           targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === user.id}
           onWatchStream={onWatchStream}
+          onSendMessage={onSendMessage}
+          onOpenProfile={(userId, x, y) => {
+            const alvo = members.get(userId);
+            if (alvo) setPerfil({ membro: alvo, x, y });
+          }}
+        />
+      )}
+      {perfil && (
+        <ProfileCard
+          membro={perfil.membro}
+          /* Quem aparece aqui está numa sala de voz: está online, por definição. */
+          status={perfil.membro.id === user.id ? myStatus : 'online'}
+          x={perfil.x}
+          y={perfil.y}
+          isSelf={perfil.membro.id === user.id}
+          onClose={() => setPerfil(null)}
           onSendMessage={onSendMessage}
         />
       )}

@@ -9,6 +9,10 @@ export interface User {
   nameColor: string | null;
   /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
   banner: string | null;
+  /** Os códigos das insígnias que ela escolheu exibir no perfil, na ordem (ver insignias.ts). */
+  vitrine: string[];
+  /** Quantas ideias desta pessoa já entraram no Syden: é a medalha de contribuição do perfil. */
+  acceptedIdeas: number;
 }
 
 export type UserRef = Pick<User, 'id' | 'username'>;
@@ -23,7 +27,10 @@ export interface PresenceEntry {
   status: PresenceStatus;
 }
 
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner'>;
+export type PublicUser = Pick<
+  User,
+  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner' | 'vitrine' | 'acceptedIdeas'
+>;
 
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */
 export type Role = 'owner' | 'admin' | 'member';
@@ -116,6 +123,8 @@ export interface Attachment {
   size: number;
   width: number | null;
   height: number | null;
+  /** Recados em vídeo somem sozinhos; nos outros anexos isto vem null. */
+  expiresAt?: string | null;
 }
 
 export interface PollOption {
@@ -166,6 +175,8 @@ export interface Message {
   poll: Poll | null;
   thread: ThreadSummary | null;
   reactions: Reaction[];
+  /** Quando a mensagem é uma ideia mandada pela tela inicial: o número dela e se já foi acolhida. */
+  suggestion: { id: number; accepted: boolean } | null;
 }
 
 export interface VoiceMember {
@@ -234,4 +245,42 @@ export interface UsageSummary {
   monthProgress: number;
   traffic: Traffic;
   users: { userId: number; username: string; voiceSeconds: number; screenSeconds: number }[];
+}
+
+/** Um pacote de emojis do catálogo. Diferente do pacote de sons, ele é instalado na COMUNIDADE. */
+export interface EmojiPack {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  createdBy: number | null;
+  authorName: string | null;
+  createdAt: string;
+  emojiCount: number;
+  /** Em quantas comunidades o pacote está instalado. */
+  installs: number;
+  stars: number | null;
+  ratings: number;
+  myStars: number | null;
+  /** Se a comunidade aberta agora já tem o pacote. */
+  installed: boolean;
+}
+
+export interface EmojiPackItem {
+  id: number;
+  packId: number;
+  name: string;
+}
+
+/** Uma música do karaokê da comunidade. */
+export interface KaraokeSong {
+  id: number;
+  communityId: number;
+  title: string;
+  artist: string;
+  /** Duração em segundos, lida do arquivo na hora de subir (0 quando não deu para saber). */
+  seconds: number;
+  /** A letra: .lrc com o tempo de cada linha, ou texto simples. Vazio = sem letra. */
+  lyrics: string;
+  createdBy: number | null;
 }

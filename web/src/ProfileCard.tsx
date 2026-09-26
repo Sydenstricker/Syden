@@ -2,6 +2,8 @@ import { MessageSquare } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Avatar } from './Avatar';
+import { Vitrine, legendaDaVitrine } from './Vitrine';
+import { useNota } from './notas';
 import { classeDoFundo, corDoNome } from './profileStyles';
 import type { CommunityMember, PresenceStatus } from './types';
 
@@ -34,6 +36,7 @@ export function ProfileCard({
   onSendMessage: (userId: number) => void;
   isSelf: boolean;
 }) {
+  const nota = useNota(membro.id);
   const ref = useRef<HTMLDivElement | null>(null);
   const [lugar, setLugar] = useState({ left: x, top: y });
 
@@ -73,6 +76,24 @@ export function ProfileCard({
           </h3>
           <p className="perfil-linha">{CARGO[membro.role] ?? 'Membro'}</p>
           <p className="perfil-linha">{status ? PRESENCA[status] : 'Offline'}</p>
+          {membro.vitrine?.length > 0 && (
+            <span className="medalha-linha">
+              <Vitrine membro={membro} tamanho={72} />
+              <span className="medalha-legenda">
+                <strong>{legendaDaVitrine(membro)}</strong>
+                {membro.acceptedIdeas > 0 && (
+                  <small>
+                    {membro.acceptedIdeas === 1 ? 'Uma ideia dela entrou no app' : membro.acceptedIdeas + ' ideias dela entraram no app'}
+                  </small>
+                )}
+              </span>
+            </span>
+          )}
+          {nota && (
+            <p className="perfil-nota" title="Anotação sua, guardada só neste computador">
+              {nota}
+            </p>
+          )}
           {!isSelf && (
             <button
               className="perfil-acao"

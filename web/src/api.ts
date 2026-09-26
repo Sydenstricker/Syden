@@ -53,6 +53,9 @@ export const mediaUrl = {
   avatar: (userId: number, version: number) => `${API_URL}/api/users/${userId}/avatar?v=${version}`,
   communityIcon: (id: number, version: number) => `${API_URL}/api/communities/${id}/icon?v=${version}`,
   emoji: (id: number) => `${API_URL}/api/emojis/${id}/image`,
+  /** O desenho de um emoji que ainda está só no catálogo, antes de alguém instalar o pacote. */
+  emojiDoPacote: (id: number) => `${API_URL}/api/emoji-pack-items/${id}/image`,
   sound: (id: number) => `${API_URL}/api/sounds/${id}/audio`,
+  karaoke: (id: number) => `${API_URL}/api/karaoke/${id}/audio`,
   attachment: (id: number, key: string) => `${API_URL}/api/attachments/${id}/${key}`,
 };

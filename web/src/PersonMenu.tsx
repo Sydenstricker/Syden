@@ -1,14 +1,35 @@
-import { MessageSquare, MicOff, MonitorPlay, PhoneOff, ShieldOff, ShieldPlus, Volume2, VolumeX } from 'lucide-react';
-import { type MouseEvent, useEffect, useState } from 'react';
+import {
+  AtSign,
+  Flag,
+  IdCard,
+  MessageSquare,
+  MicOff,
+  MonitorPlay,
+  PhoneOff,
+  ShieldOff,
+  ShieldPlus,
+  StickyNote,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+import { type MouseEvent, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
+import { Avatar } from './Avatar';
+import { useDirectory } from './directory';
+import { DialogoDeDenuncia } from './Denuncia';
+import { Vitrine } from './Vitrine';
+import { pedirMencao } from './mencao';
+import { guardarNota, LIMITE_DA_NOTA, useNota } from './notas';
+import { corDoNome } from './profileStyles';
 import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume } from './voiceVolumes';
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
 
 /**
- * Menu do botão direito em cima de alguém na sala, como no Discord: volume só para você, silenciar só para
- * você, e — para quem administra a comunidade — silenciar o microfone da pessoa para todo mundo.
+ * Menu do botão direito em cima de alguém, como no Discord: abrir o perfil, mencionar, mandar mensagem,
+ * anotar um lembrete só seu, mexer no volume dela para os seus ouvidos — e, para quem administra a
+ * comunidade, as ações de moderação, separadas embaixo para ninguém clicar sem querer.
  */
 export function usePersonMenu() {
   const [target, setTarget] = useState<{ userId: number; username: string; x: number; y: number } | null>(null);
@@ -19,6 +40,30 @@ export function usePersonMenu() {
   };
 
   return { target, open, close: () => setTarget(null) };
+}
+
+const CARGO: Record<Role, string> = { owner: 'Dono da comunidade', admin: 'Administra a comunidade', member: 'Membro' };
+
+/** Uma linha do menu. Separada para o teclado poder andar por todas elas do mesmo jeito. */
+function Item({
+  icone,
+  children,
+  perigo,
+  onClick,
+}: {
+  icone: ReactNode;
+  children: ReactNode;
+  perigo?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button className={`person-menu-item${perigo ? ' danger' : ''}`} role="menuitem" onClick={onClick}>
+      <span className="person-menu-icone" aria-hidden="true">
+        {icone}
+      </span>
+      <span className="person-menu-texto">{children}</span>
+    </button>
+  );
 }
 
 export function PersonMenu({
@@ -35,6 +80,7 @@ export function PersonMenu({
   isSelf,
   onWatchStream,
   onSendMessage,
+  onOpenProfile,
 }: {
   target: { userId: number; username: string; x: number; y: number };
   onClose: () => void;
@@ -51,24 +97,57 @@ export function PersonMenu({
   targetScreen: boolean;
   targetRole: Role;
   isSelf: boolean;
-  /** Abre a sala da pessoa na tela (não só conecta por baixo) — usado por "Assistir transmissão". */
-  onWatchStream: (channelId: number) => void;
+  /** Abre a sala da pessoa na tela E abre a transmissão dela — usado por "Assistir transmissão". */
+  onWatchStream: (channelId: number, userId: number) => void;
   /** Abre (ou cria) a conversa privada com a pessoa. */
   onSendMessage: (userId: number) => void;
+  /** Abre o cartão de perfil dela, no mesmo lugar em que o menu estava. */
+  onOpenProfile?: (userId: number, x: number, y: number) => void;
 }) {
+  const { members } = useDirectory();
+  const membro = members.get(target.userId);
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
   const [muted, setMuted] = useState(() => isLocallyMuted(target.userId));
   const [error, setError] = useState<string | null>(null);
+  const nota = useNota(target.userId);
+  const [anotando, setAnotando] = useState(false);
+  const [denunciando, setDenunciando] = useState(false);
+  const [rascunho, setRascunho] = useState(nota);
+  const ref = useRef<HTMLDivElement>(null);
+  const [lugar, setLugar] = useState({ left: target.x, top: target.y });
   const voiceChannels = channels.filter((c) => c.type === 'voice');
   const manages = role === 'owner' || role === 'admin';
 
+  // O menu nasce onde o mouse clicou, mas não pode ficar metade fora da tela. A altura é MEDIDA, porque
+  // ela muda conforme o que cada um pode fazer (moderar, mover de sala, anotar…) — antes era um número
+  // fixo no código, e o menu do administrador vazava pelo rodapé.
+  useLayoutEffect(() => {
+    const caixa = ref.current?.getBoundingClientRect();
+    if (!caixa) return;
+    setLugar({
+      left: Math.max(8, Math.min(target.x, window.innerWidth - caixa.width - 8)),
+      top: Math.max(8, Math.min(target.y, window.innerHeight - caixa.height - 8)),
+    });
+  }, [target.x, target.y, anotando]);
+
   useEffect(() => {
-    const close = () => onClose();
-    window.addEventListener('pointerdown', close);
-    window.addEventListener('keydown', close);
+    const fora = () => onClose();
+    /** Escape fecha; as setas andam pelas opções, como em qualquer menu. */
+    const tecla = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') return onClose();
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+      const itens = [...(ref.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
+      if (itens.length === 0) return;
+      event.preventDefault();
+      const atual = itens.indexOf(document.activeElement as HTMLElement);
+      const passo = event.key === 'ArrowDown' ? 1 : -1;
+      itens[(atual + passo + itens.length) % itens.length].focus();
+    };
+    window.addEventListener('pointerdown', fora);
+    window.addEventListener('keydown', tecla);
     return () => {
-      window.removeEventListener('pointerdown', close);
-      window.removeEventListener('keydown', close);
+      window.removeEventListener('pointerdown', fora);
+      window.removeEventListener('keydown', tecla);
     };
   }, [onClose]);
 
@@ -83,6 +162,12 @@ export function PersonMenu({
     setLocalMute(voice.room, target.userId, next);
   }
 
+  function salvarNota() {
+    guardarNota(target.userId, rascunho);
+    setAnotando(false);
+    onClose(); // guardou, acabou: o menu sai da frente como em qualquer outra ação daqui
+  }
+
   /** Ação de administrador sobre a pessoa; fecha o menu quando dá certo, mostra o motivo quando não dá. */
   async function act(path: string, body: Record<string, unknown>, method: 'POST' | 'PUT' = 'POST') {
     try {
@@ -93,43 +178,130 @@ export function PersonMenu({
     }
   }
 
-  const muteForEveryone = () => act(`/api/channels/${channelId}/mute`, { muted: true });
+  const moderando = manages && !isSelf && (channelId !== null || inVoiceChannel !== null || role === 'owner');
 
   return createPortal(
     <div
+      ref={ref}
       className="person-menu"
       role="menu"
-      style={{ top: Math.min(target.y, window.innerHeight - 260), left: Math.min(target.x, window.innerWidth - 250) }}
+      aria-label={`Opções de ${target.username}`}
+      style={{ top: lugar.top, left: lugar.left }}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <div className="person-menu-name">{target.username}</div>
+      {/* O topo é a identificação: avatar, nome na cor da pessoa e o cargo dela aqui. */}
+      <div className="person-menu-topo">
+        <Avatar name={target.username} userId={target.userId} size={36} />
+        <div className="person-menu-quem">
+          <strong data-cor={corDoNome(membro?.nameColor ?? null)}>{target.username}</strong>
+          <small>{CARGO[targetRole]}</small>
+        </div>
+      </div>
+      {(membro?.vitrine?.length ?? 0) > 0 && (
+        <span className="medalha-linha person-menu-medalha">
+          <Vitrine membro={membro!} tamanho={34} />
+        </span>
+      )}
+
+      {onOpenProfile && (
+        <Item
+          icone={<IdCard size={16} />}
+          onClick={() => {
+            onOpenProfile(target.userId, target.x, target.y);
+            onClose();
+          }}
+        >
+          Ver perfil
+        </Item>
+      )}
 
       {!isSelf && (
-        <button
-          className="person-menu-item"
+        <Item
+          icone={<AtSign size={16} />}
+          onClick={() => {
+            pedirMencao(target.username);
+            onClose();
+          }}
+        >
+          Mencionar na conversa
+        </Item>
+      )}
+
+      {!isSelf && (
+        <Item
+          icone={<MessageSquare size={16} />}
           onClick={() => {
             onSendMessage(target.userId);
             onClose();
           }}
         >
-          <MessageSquare size={16} /> Enviar mensagem
-        </button>
+          Enviar mensagem
+        </Item>
       )}
 
       {!isSelf && targetScreen && inVoiceChannel !== null && (
-        <button
-          className="person-menu-item"
+        <Item
+          icone={<MonitorPlay size={16} />}
           onClick={() => {
-            onWatchStream(inVoiceChannel);
+            onWatchStream(inVoiceChannel, target.userId);
             onClose();
           }}
         >
-          <MonitorPlay size={16} /> Assistir transmissão
-        </button>
+          Assistir transmissão
+        </Item>
       )}
+
+      {/* A anotação é sua e só sua: fica neste computador e ninguém mais vê. */}
+      {!isSelf &&
+        (anotando ? (
+          <div className="person-menu-nota">
+            <textarea
+              autoFocus
+              rows={2}
+              value={rascunho}
+              maxLength={LIMITE_DA_NOTA}
+              placeholder={`Anotação sobre ${target.username}`}
+              aria-label={`Anotação sobre ${target.username}`}
+              onChange={(e) => setRascunho(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  salvarNota();
+                }
+              }}
+            />
+            <div className="person-menu-nota-rodape">
+              <span>Só você vê</span>
+              <button className="link-button" onClick={salvarNota}>
+                Guardar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <Item
+            icone={<StickyNote size={16} />}
+            onClick={() => {
+              setRascunho(nota);
+              setAnotando(true);
+            }}
+          >
+            {nota ? (
+              <>
+                {nota}
+                <small>Sua anotação — clique para mudar</small>
+              </>
+            ) : (
+              <>
+                Anotar sobre esta pessoa
+                <small>Só você vê</small>
+              </>
+            )}
+          </Item>
+        ))}
 
       {!isSelf && (
         <>
+          <hr className="person-menu-linha" />
           <label className="person-menu-volume">
             Volume para você: {Math.round(volume * 100)}%
             <input
@@ -143,23 +315,42 @@ export function PersonMenu({
             />
           </label>
 
-          <button className="person-menu-item" onClick={toggleLocalMute}>
-            {muted ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          <Item icone={muted ? <Volume2 size={16} /> : <VolumeX size={16} />} onClick={toggleLocalMute}>
             {muted ? 'Ouvir de novo' : 'Silenciar só para mim'}
-          </button>
+          </Item>
+
+          {/* Fica disponível para todo mundo, e não só para quem modera: é justamente quem não tem poder
+              nenhum que precisa de um caminho para dizer que algo está errado. */}
+          <Item icone={<Flag size={16} />} onClick={() => setDenunciando(true)}>
+            Denunciar esta pessoa
+          </Item>
         </>
       )}
 
-      {manages && !isSelf && (
+      {denunciando && (
+        <DialogoDeDenuncia
+          titulo={`Denunciar ${target.username}`}
+          corpo={{ tipo: 'pessoa', alvo: target.userId }}
+          aoFechar={() => {
+            setDenunciando(false);
+            onClose();
+          }}
+        />
+      )}
+
+      {moderando && (
         <>
+          <hr className="person-menu-linha" />
+          <div className="person-menu-grupo">Moderação</div>
+
           {channelId !== null && (
             <>
-              <button className="person-menu-item danger" onClick={muteForEveryone}>
-                <MicOff size={16} /> Silenciar microfone para todos
-              </button>
-              <button className="person-menu-item danger" onClick={() => act(`/api/channels/${channelId}/kick`, {})}>
-                <PhoneOff size={16} /> Desconectar da chamada
-              </button>
+              <Item icone={<MicOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/mute`, { muted: true })}>
+                Silenciar microfone para todos
+              </Item>
+              <Item icone={<PhoneOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/kick`, {})}>
+                Desconectar da chamada
+              </Item>
             </>
           )}
 
@@ -187,15 +378,14 @@ export function PersonMenu({
           )}
 
           {role === 'owner' && targetRole !== 'owner' && (
-            <button
-              className="person-menu-item"
+            <Item
+              icone={targetRole === 'admin' ? <ShieldOff size={16} /> : <ShieldPlus size={16} />}
               onClick={() =>
                 act(`/api/communities/${communityId}/members/${target.userId}`, { role: targetRole === 'admin' ? 'member' : 'admin' }, 'PUT')
               }
             >
-              {targetRole === 'admin' ? <ShieldOff size={16} /> : <ShieldPlus size={16} />}
               {targetRole === 'admin' ? 'Tirar o cargo de administrador' : 'Tornar administrador'}
-            </button>
+            </Item>
           )}
         </>
       )}

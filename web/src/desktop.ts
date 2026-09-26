@@ -5,6 +5,11 @@ interface DesktopBridge {
   onShortcut(callback: (action: 'mute' | 'deafen') => void): () => void;
   /** Pinta a barra de título do app (desenhada pelo Windows) com as cores do tema. */
   setTitleBarTheme?(cores: { color: string; symbolColor: string }): void;
+  /**
+   * Põe o número vermelho sobre o ícone na barra de tarefas. O desenho vai pronto (data URL) porque
+   * quem sabe desenhar é o navegador; o processo principal só o coloca sobre o ícone. `null` limpa.
+   */
+  setBadge?(quantas: number, selo: string | null): void;
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;

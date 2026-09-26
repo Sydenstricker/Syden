@@ -2,6 +2,7 @@ import { AtSign, Hash } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
+import { useT } from './i18n';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
@@ -39,6 +40,7 @@ export function TextChannel({
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
 }) {
+  const t = useT();
   const [messages, setMessages] = useState<Message[]>(mensagensIniciais ?? []);
   const [hasMore, setHasMore] = useState((mensagensIniciais?.length ?? 0) === PAGE_SIZE);
   const [error, setError] = useState<string | null>(null);
@@ -126,6 +128,22 @@ export function TextChannel({
 
   const canManage = (message: Message) => message.author.id === user.id || role === 'owner' || role === 'admin';
 
+  /**
+   * O joinha nas ideias que chegam pela tela inicial: marca que aquilo entrou no Syden. Do outro lado
+   * cai confete e a pessoa ganha a medalha; aqui a mensagem só troca de cara, sem recarregar nada.
+   */
+  async function acolherIdeia(message: Message) {
+    if (!message.suggestion) return;
+    try {
+      await api(`/api/suggestions/${message.suggestion.id}/accept`, { method: 'POST' });
+      setMessages((list) =>
+        list.map((m) => (m.id === message.id && m.suggestion ? { ...m, suggestion: { ...m.suggestion, accepted: true } } : m)),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   /** Shift + clique apaga sem perguntar. */
   function requestDelete(message: Message, skipConfirm: boolean) {
     if (skipConfirm) void api(`/api/messages/${message.id}`, { method: 'DELETE' }).catch((e) => setError((e as Error).message));
@@ -170,8 +188,8 @@ export function TextChannel({
           ) : (
             <div className="channel-intro">
               <div className="channel-intro-icon">{privada ? <AtSign size={36} /> : <Hash size={36} />}</div>
-              <h2>{privada ? channel.name : `Bem-vindo a #${channel.name}!`}</h2>
-              <p>{privada ? 'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.' : 'Este é o começo do canal.'}</p>
+              <h2>{privada ? channel.name : t('Bem-vindo a #{nome}!', { nome: channel.name })}</h2>
+              <p>{privada ? t('Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.') : t('Este é o começo do canal.')}</p>
             </div>
           )}
 
@@ -194,6 +212,7 @@ export function TextChannel({
                 onReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}
                 onOpenThread={setOpenThread}
                 onCreateThread={setThreadFor}
+                onAcolher={user.isOwner ? acolherIdeia : undefined}
               />
             );
           })}
@@ -209,7 +228,7 @@ export function TextChannel({
           ref={composerRef}
           channelId={channel.id}
           socket={socket}
-          placeholder={privada ? `Conversar com ${channel.name}` : `Conversar em #${channel.name}`}
+          placeholder={privada ? t('Conversar com {nome}', { nome: channel.name }) : t('Conversar em #{nome}', { nome: channel.name })}
           onSent={() => (stickToBottom.current = true)}
         />
 

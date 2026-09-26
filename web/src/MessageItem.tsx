@@ -1,8 +1,9 @@
-import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, Trash2 } from 'lucide-react';
+import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
+import { corrigirDuracao } from './clips';
 import { useDirectory } from './directory';
 import { corDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
@@ -19,6 +20,15 @@ function imageSize(file: Attachment) {
   return { width: Math.round(file.width * scale), height: Math.round(file.height * scale) };
 }
 
+/** "em 6 dias", "amanhã", "hoje" — só para os anexos que têm prazo. */
+function quantoFalta(quando: string | null | undefined): string | null {
+  if (!quando) return null;
+  const dias = Math.ceil((new Date(quando).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+  if (dias <= 0) return 'hoje';
+  if (dias === 1) return 'amanhã';
+  return `em ${dias} dias`;
+}
+
 function Attachments({ files }: { files: Attachment[] }) {
   return (
     <div className="attachments">
@@ -33,7 +43,21 @@ function Attachments({ files }: { files: Attachment[] }) {
           );
         }
         if (file.mime.startsWith('video/')) {
-          return <video key={file.id} className="attachment-video" src={url} controls preload="metadata" />;
+          const somePor = quantoFalta(file.expiresAt);
+          return (
+            <div key={file.id} className="attachment-video-wrap">
+              <video
+                className="attachment-video"
+                // Clipes e recados são gravados pelo navegador e vêm sem a duração escrita: sem isto,
+                // a barra do player fica sem fim.
+                onLoadedMetadata={(e) => corrigirDuracao(e.currentTarget)}
+                src={url}
+                controls
+                preload="metadata"
+              />
+              {somePor && <span className="attachment-expira">Some {somePor}</span>}
+            </div>
+          );
         }
         if (file.mime.startsWith('audio/')) {
           return (
@@ -164,6 +188,7 @@ export function MessageItem({
   onReactionsChange,
   onOpenThread,
   onCreateThread,
+  onAcolher,
 }: {
   message: Message;
   grouped: boolean;
@@ -175,6 +200,8 @@ export function MessageItem({
   /** Ausente dentro do painel do tópico: lá não há tópico de tópico. */
   onOpenThread?: (thread: ThreadSummary) => void;
   onCreateThread?: (message: Message) => void;
+  /** Só para quem cuida do Syden, e só em mensagem de ideia: o joinha que acolhe a sugestão. */
+  onAcolher?: (message: Message) => void;
 }) {
   async function reactWith(emoji: string) {
     try {
@@ -191,6 +218,11 @@ export function MessageItem({
       {message.attachments.length > 0 && <Attachments files={message.attachments} />}
       {message.poll && <PollCard poll={message.poll} canClose={canManagePoll} onChange={onPollChange} />}
       {message.thread && onOpenThread && <ThreadChip thread={message.thread} onOpen={() => onOpenThread(message.thread!)} />}
+      {message.suggestion?.accepted && (
+        <span className="ideia-acolhida">
+          <ThumbsUp size={13} aria-hidden="true" /> Ideia acolhida no Syden
+        </span>
+      )}
       <ReactionBar reactions={message.reactions} onToggle={(emoji) => void reactWith(emoji)} />
     </>
   );
@@ -198,6 +230,16 @@ export function MessageItem({
   const actions = (
     <div className="message-actions">
       <AddReactionButton onPick={(emoji) => void reactWith(emoji)} />
+      {onAcolher && message.suggestion && !message.suggestion.accepted && (
+        <button
+          className="message-action acolher"
+          title="Acolher: esta ideia entrou no Syden"
+          aria-label="Acolher a ideia"
+          onClick={() => onAcolher(message)}
+        >
+          <ThumbsUp size={16} />
+        </button>
+      )}
       {onCreateThread && !message.thread && (
         <button
           className="message-action"

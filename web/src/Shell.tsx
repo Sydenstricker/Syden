@@ -1,19 +1,22 @@
 import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
-import { API_URL, ApiError, api } from './api';
+import { API_URL, ApiError, api, loadToken } from './api';
 import { Avatar } from './Avatar';
+import { Comemoracao } from './Comemoracao';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { desktopBridge } from './desktop';
-import { aplicarComunidade, buscarComunidade, clearDirectory, syncDirectory, useDirectory } from './directory';
+import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
 import { temNovidade } from './changelog';
+import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
 import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread';
 import { DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
 import { loadMyStatus, saveMyStatus } from './presenceStatus';
+import { Revelacao } from './Revelacao';
 import { getSettings, updateSettings, useSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
@@ -113,6 +116,13 @@ export function Shell({
   const [preCarregado, setPreCarregado] = useState<{ channelId: number; mensagens: Message[] } | null>(null);
   const preferences = useSettings();
   const [showUsage, setShowUsage] = useState(false);
+  // Ideias suas que o dono acolheu e você ainda não viu comemorar. Cai confete uma de cada vez.
+  const [comemorar, setComemorar] = useState<{ id: number; content: string }[]>([]);
+  // Itens que você ganhou e ainda não abriu. A tela de destaque mostra um de cada vez, em fila.
+  const [porRevelar, setPorRevelar] = useState<string[]>([]);
+  // A fila de itens só pode começar depois que se sabe se há festa de ideia acolhida esperando. Sem isso,
+  // o presente aparecia e sumia meio segundo depois, quando a resposta da festa chegava.
+  const [festasConferidas, setFestasConferidas] = useState(false);
   // Em tela estreita só cabe uma coluna por vez: esta decide se é a lista de canais ou a conversa/chamada
   // que aparece. Em tela larga (a maioria) isto não muda nada — as duas colunas aparecem sempre.
   const [mobileChannels, setMobileChannels] = useState(true);
@@ -146,6 +156,32 @@ export function Shell({
   }, [directs]);
   const unreadDirects = countUnread(directs);
   void unreadTick; // só para a tela redesenhar quando algo é marcado como lido
+
+  // O número vermelho no ícone do Syden soma o que é dirigido a você: conversas diretas por ler e
+  // menções ao seu nome. Aqui entra a parte das diretas; as menções se contam sozinhas ao chegarem.
+  useEffect(() => definirDiretasNaoLidas(unreadDirects), [unreadDirects]);
+  const [avisosTick, setAvisosTick] = useState(0);
+  useEffect(() => assinar(() => setAvisosTick((n) => n + 1)), []);
+  void avisosTick;
+
+  /**
+   * As menções de um canal somem quando a pessoa está de fato olhando para ele: canal aberto E janela
+   * na frente. Não basta o canal estar selecionado — com o Syden minimizado ou em outra aba, a menção
+   * tem que continuar acesa, que é justamente quando ela serve para alguma coisa.
+   */
+  useEffect(() => {
+    if (selectedId === null) return;
+    const limparSeOlhando = () => {
+      if (document.hasFocus() && !document.hidden) limparMencoes(selectedId);
+    };
+    limparSeOlhando();
+    window.addEventListener('focus', limparSeOlhando);
+    document.addEventListener('visibilitychange', limparSeOlhando);
+    return () => {
+      window.removeEventListener('focus', limparSeOlhando);
+      document.removeEventListener('visibilitychange', limparSeOlhando);
+    };
+  }, [selectedId]);
   // A bolinha do logo some assim que a tela inicial é aberta.
   const [novidade, setNovidade] = useState(temNovidade);
   useEffect(() => {
@@ -227,7 +263,9 @@ export function Shell({
   }, [pendingInviteCode]);
 
   useEffect(() => {
-    const s = io(API_URL, { auth: { token } });
+    // O token é lido a cada tentativa de conexão, e não uma vez só: trocar a senha ou sair dos outros
+    // aparelhos emite um token novo, e a reconexão precisa usar o novo, não o que estava aqui guardado.
+    const s = io(API_URL, { auth: (pronto) => pronto({ token: loadToken() ?? token }) });
     s.on('connect', () => {
       setOnline(true);
       // O servidor sempre começa te vendo como "online"; se você tinha escolhido outro status, reafirma.
@@ -377,7 +415,16 @@ export function Shell({
   useEffect(() => {
     if (!socket) return;
     const onMessage = (message: Message & { communityId: number }) => {
-      if (message.author.id !== loggedUser.id) notifyMessage(message);
+      if (message.author.id === loggedUser.id) return;
+
+      // Menção ao seu nome (ou @todos) num canal que você não está olhando: acende o número no ícone.
+      // Se você está com o canal aberto e na frente da tela, não há o que avisar — você já está vendo.
+      const olhando = document.hasFocus() && !document.hidden && selectedIdRef.current === message.channelId;
+      // Só em canal de comunidade: conversa direta já conta como não lida, e contaria duas vezes.
+      const emComunidade = message.communityId !== null;
+      if (emComunidade && !olhando && mencionaVoce(message.content, loggedUser.username)) marcarMencao(message.channelId);
+
+      notifyMessage(message);
     };
     const notifyMessage = (message: Message & { communityId: number }) => {
       if (!getSettings().notifications || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
@@ -408,6 +455,57 @@ export function Shell({
       socket.off('message:new', onMessage);
     };
   }, [socket, loggedUser.id]);
+
+  /**
+   * A festa de quando uma ideia sua é acolhida. Ela chega por dois caminhos: pelo aviso ao vivo, se
+   * você estiver com o Syden aberto na hora do joinha, e pela lista de pendentes ao entrar — assim
+   * quem estava offline também vê o confete, uma vez só.
+   */
+  useEffect(() => {
+    if (!socket) return;
+    const aoAcolher = (ideia: { id: number; content: string }) =>
+      setComemorar((fila) => (fila.some((i) => i.id === ideia.id) ? fila : [...fila, ideia]));
+    socket.on('suggestion:accepted', aoAcolher);
+    void api<{ id: number; content: string }[]>('/api/suggestions/celebrations')
+      .then((lista) => lista.length > 0 && setComemorar((fila) => [...fila, ...lista.filter((i) => !fila.some((f) => f.id === i.id))]))
+      .catch(() => {})
+      .finally(() => setFestasConferidas(true));
+    return () => {
+      socket.off('suggestion:accepted', aoAcolher);
+    };
+  }, [socket]);
+
+  /**
+   * A fila da tela de destaque. É buscada ao abrir o Syden porque é aí que o servidor confere se a pessoa
+   * passou a ter direito a alguma insígnia — inclusive uma que ela ganhou enquanto estava com o app fechado.
+   */
+  useEffect(() => {
+    void api<{ code: string }[]>('/api/me/itens/novidades')
+      .then((itens) => setPorRevelar(itens.map((item) => item.code)))
+      .catch(() => {});
+  }, []);
+
+  /**
+   * Resgatar tira o item da fila e avisa o servidor, que marca como visto e põe a insígnia na vitrine.
+   * Depois relê a comunidade aberta, como a comemoração faz, para a insígnia aparecer no perfil na hora.
+   */
+  function resgatar(code: string) {
+    setPorRevelar((fila) => fila.filter((c) => c !== code));
+    void api(`/api/me/itens/${encodeURIComponent(code)}/resgatar`, { method: 'POST' })
+      .then(() => {
+        if (communityId !== null) void loadDirectory(communityId);
+      })
+      .catch(() => {});
+  }
+
+  /** Fecha o cartão da festa e avisa o servidor, para o confete não cair de novo amanhã. */
+  function fecharComemoracao(id: number) {
+    setComemorar((fila) => fila.filter((i) => i.id !== id));
+    void api(`/api/suggestions/${id}/celebrated`, { method: 'POST' }).catch(() => {});
+    // A medalha é contada no perfil de quem teve a ideia: relê a comunidade aberta para ela aparecer
+    // na hora, sem precisar recarregar o Syden.
+    if (communityId !== null) void loadDirectory(communityId).catch(() => {});
+  }
 
   // Teclas de atalho globais do app de desktop (mudo e ensurdecer), só durante uma chamada.
   useEffect(
@@ -440,10 +538,16 @@ export function Shell({
     if (channel.type === 'voice') void voice.join(channel.id);
   }
 
-  /** "Assistir transmissão" no menu de alguém: abre a sala dela na tela, não só conecta por baixo. */
-  function watchStream(channelId: number) {
+  /**
+   * "Assistir transmissão" no menu de alguém: abre a sala dela na tela e já abre a transmissão. Quem clicou
+   * aqui pediu para ver — seria bobo mostrar o convite "Assistir" de novo do outro lado.
+   */
+  function watchStream(channelId: number, userId?: number) {
     const channel = channels.find((c) => c.id === channelId);
-    if (channel) selectChannel(channel);
+    if (!channel) return;
+    // Sem userId (entrar na sala pela vila, por exemplo) é só entrar; com userId, já abre a transmissão dela.
+    if (userId !== undefined) voice.assistir(String(userId), true);
+    selectChannel(channel);
   }
 
   function logout() {
@@ -579,6 +683,7 @@ export function Shell({
               channel={selected}
               voice={voice}
               members={voiceMembers.filter((m) => m.channelId === selected.id)}
+              canaisDeTexto={channels.filter((c) => c.type === 'text')}
               onMobileBack={() => setMobileChannels(true)}
               membersOpen={preferences.showMembers}
               onToggleMembers={() => updateSettings({ showMembers: !preferences.showMembers })}
@@ -626,6 +731,15 @@ export function Shell({
           }}
         />
       )}
+      {/* Ideia acolhida: confete na tela, uma festa de cada vez. */}
+      {comemorar[0] && <Comemoracao ideia={comemorar[0].content} aoFechar={() => fecharComemoracao(comemorar[0].id)} />}
+      {/*
+        Um anúncio de cada vez, e nesta ordem: primeiro a festa da ideia acolhida (a notícia), depois a
+        insígnia que veio com ela (o prêmio). Os dois juntos na tela se atropelavam — literalmente: um
+        ficava por cima do botão do outro. Os itens da fila também esperam a vez, um por um.
+      */}
+      {festasConferidas && !comemorar[0] && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
+
       {settingsOpen !== null && (
         <SettingsModal
           secaoInicial={settingsOpen}

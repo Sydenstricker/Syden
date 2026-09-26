@@ -43,16 +43,11 @@
       "shortcutName": "Syden",
       "uninstallDisplayName": "Syden",
       "artifactName": "Syden-Setup.${ext}",
-      "installerLanguages": [
-        "pt_BR",
-        "en_US",
-        "es_ES"
-      ],
       "language": "1046",
       "include": "build/installer.nsh",
       "runAfterFinish": true,
-      "multiLanguageInstaller": true,
-      "displayLanguageSelector": true
+      "multiLanguageInstaller": false,
+      "displayLanguageSelector": false
     },
     "mac": {
       "target": "dmg",

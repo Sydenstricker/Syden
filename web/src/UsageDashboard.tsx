@@ -1,6 +1,7 @@
 import { AlertOctagon, AlertTriangle, BarChart3, CheckCircle2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
+import { PainelDenuncias } from './PainelDenuncias';
 import { HealthPanel } from './HealthPanel';
 import { MobileBackButton } from './MobileBackButton';
 import type { Traffic, UsageSummary, VoiceMember } from './types';
@@ -32,7 +33,7 @@ export function UsageDashboard({
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
 }) {
-  const [tab, setTab] = useState<'consumo' | 'saude'>('consumo');
+  const [tab, setTab] = useState<'consumo' | 'saude' | 'denuncias'>('consumo');
   const [usage, setUsage] = useState<UsageSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,8 +77,18 @@ export function UsageDashboard({
           <button role="tab" aria-selected={tab === 'saude'} className={`tab${tab === 'saude' ? ' active' : ''}`} onClick={() => setTab('saude')}>
             Saúde do servidor
           </button>
+          <button
+            role="tab"
+            aria-selected={tab === 'denuncias'}
+            className={`tab${tab === 'denuncias' ? ' active' : ''}`}
+            onClick={() => setTab('denuncias')}
+          >
+            Denúncias
+          </button>
         </div>
       </header>
+
+      {tab === 'denuncias' && <PainelDenuncias />}
 
       {tab === 'saude' && (
         <div className="usage-body">

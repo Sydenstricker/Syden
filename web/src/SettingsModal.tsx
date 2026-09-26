@@ -1,5 +1,5 @@
 import { Room } from 'livekit-client';
-import {
+import { Languages,
   AudioLines,
   Bell,
   Check,
@@ -22,7 +22,11 @@ import {
 } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
-import { api, mediaUrl } from './api';
+import { useT } from './i18n';
+import { IdiomaSection } from './IdiomaSection';
+import { api, mediaUrl, saveToken } from './api';
+import { Insignia } from './Medalha';
+import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -35,6 +39,7 @@ import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
 import type { Voice } from './useVoice';
+import { EmojiPackCatalog } from './EmojiPackCatalog';
 import { PackCatalog } from './PackCatalog';
 import { classeDoFundo, CORES_DE_NOME, corDoNome, FUNDOS } from './profileStyles';
 import { EFFECT_ICONS } from './VoiceEffectButton';
@@ -42,7 +47,7 @@ import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'voice' | 'sounds' | 'community' | 'members' | 'emojis' | 'soundboard';
+type Section = 'account' | 'voice' | 'sounds' | 'idioma' | 'community' | 'members' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
@@ -51,6 +56,7 @@ const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'voice', label: 'Voz e vídeo', icon: <AnimatedIcon name="microfone" size={20} /> },
   // O despertador sacode forte demais no ritmo original; num menu, meia velocidade basta para dar vida.
   { id: 'sounds', label: 'Notificações', icon: <AnimatedIcon name="alarme" size={20} speed={0.5} /> },
+  { id: 'idioma', label: 'Idioma', icon: <Languages size={20} /> },
 ];
 
 const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
@@ -85,6 +91,7 @@ export function SettingsModal({
   onLogout: () => void;
   onCommunityChanged: () => void;
 }) {
+  const t = useT();
   const [section, setSection] = useState<Section>(secaoInicial);
 
   useEffect(() => {
@@ -97,10 +104,10 @@ export function SettingsModal({
     <div className="settings" role="dialog" aria-modal="true" aria-label="Configurações">
       <nav className="settings-nav">
         <div className="settings-nav-inner">
-          <h4>Configurações do usuário</h4>
+          <h4>{t('Configurações do usuário')}</h4>
           {USER_SECTIONS.map((s) => (
             <button key={s.id} className={`settings-tab${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
-              {s.icon} {s.label}
+              {s.icon} {t(s.label)}
             </button>
           ))}
           {community && (
@@ -109,14 +116,14 @@ export function SettingsModal({
               <h4 title={community.name}>{community.name}</h4>
               {COMMUNITY_SECTIONS.map((s) => (
                 <button key={s.id} className={`settings-tab${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
-                  {s.icon} {s.label}
+                  {s.icon} {t(s.label)}
                 </button>
               ))}
             </>
           )}
           <hr />
           <button className="settings-tab danger" onClick={onLogout}>
-            <LogOut size={18} /> Sair da conta
+            <LogOut size={18} /> {t('Sair da conta')}
           </button>
         </div>
       </nav>
@@ -126,6 +133,7 @@ export function SettingsModal({
           {section === 'account' && <AccountSection user={user} onDeleted={onLogout} />}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
+          {section === 'idioma' && <IdiomaSection />}
           {community && section === 'community' && (
             <CommunitySection
               community={community}
@@ -151,6 +159,193 @@ export function SettingsModal({
   );
 }
 
+/**
+ * O e-mail da conta. É opcional, e a tela diz para que serve: sem ele, quem esquece a senha perde a conta,
+ * porque não há para onde mandar o link. Trocar o endereço pede a senha, já que ele é a chave da
+ * recuperação — com o computador destravado, trocar o e-mail seria tomar a conta.
+ */
+function EmailDaConta() {
+  const [atual, setAtual] = useState<{ email: string | null; verifiedAt: string | null; envioLigado: boolean } | null>(null);
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [recado, setRecado] = useState<{ ok: boolean; texto: string } | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+
+  useEffect(() => {
+    void api<{ email: string | null; verifiedAt: string | null; envioLigado: boolean }>('/api/me/email')
+      .then((dados) => {
+        setAtual(dados);
+        setEmail(dados.email ?? '');
+      })
+      .catch(() => {});
+  }, []);
+
+  async function salvar(evento: FormEvent) {
+    evento.preventDefault();
+    setOcupado(true);
+    setRecado(null);
+    try {
+      const r = await api<{ email: string; rascunho: boolean }>('/api/me/email', {
+        method: 'PUT',
+        body: { email, password: senha },
+      });
+      setSenha('');
+      setAtual({ email: r.email, verifiedAt: null, envioLigado: atual?.envioLigado ?? false });
+      setRecado({
+        ok: true,
+        texto: r.rascunho
+          ? 'Endereço guardado. O envio de e-mail ainda não está ligado neste servidor, então o link de confirmação ficou no registro do servidor.'
+          : 'Endereço guardado. Confira a sua caixa de entrada para confirmar.',
+      });
+    } catch (e) {
+      setRecado({ ok: false, texto: (e as Error).message });
+    }
+    setOcupado(false);
+  }
+
+  if (!atual) return null;
+
+  return (
+    <>
+      <h3>E-mail</h3>
+      <p className="settings-hint">
+        Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida
+        não tem volta.
+      </p>
+      {atual.email && (
+        <p className={atual.verifiedAt ? 'form-success' : 'settings-hint'}>
+          {atual.verifiedAt ? `${atual.email} — confirmado` : `${atual.email} — ainda não confirmado`}
+        </p>
+      )}
+      <form className="settings-form" onSubmit={salvar}>
+        <label>
+          Endereço
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
+        </label>
+        <label>
+          Sua senha, para confirmar que é você
+          <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} autoComplete="current-password" required />
+        </label>
+        {recado && <p className={recado.ok ? 'form-success' : 'form-error'}>{recado.texto}</p>}
+        <button className="btn-primary" disabled={ocupado}>
+          {ocupado ? 'Salvando…' : atual.email ? 'Trocar o e-mail' : 'Salvar o e-mail'}
+        </button>
+      </form>
+    </>
+  );
+}
+
+/**
+ * As insígnias que a pessoa tem, e a escolha de quais exibir no perfil. A escolha é dela: pode mostrar
+ * todas, uma só ou nenhuma. A ordem dos cliques é a ordem em que elas aparecem no perfil.
+ */
+function MinhasInsignias() {
+  const [itens, setItens] = useState<string[] | null>(null);
+  const [vitrine, setVitrine] = useState<string[]>([]);
+  const [limite, setLimite] = useState(5);
+  const [erro, setErro] = useState<string | null>(null);
+
+  useEffect(() => {
+    void api<{ itens: { code: string }[]; vitrine: string[]; limite: number }>('/api/me/itens')
+      .then((resposta) => {
+        setItens(resposta.itens.map((i) => i.code));
+        setVitrine(resposta.vitrine ?? []);
+        setLimite(resposta.limite);
+      })
+      .catch(() => setItens([]));
+  }, []);
+
+  function alternar(codigo: string) {
+    const nova = vitrine.includes(codigo) ? vitrine.filter((c) => c !== codigo) : [...vitrine, codigo];
+    if (nova.length > limite) return setErro(`Dá para exibir no máximo ${limite} insígnias ao mesmo tempo.`);
+    setErro(null);
+    setVitrine(nova); // a tela responde na hora; se o servidor recusar, a mensagem aparece embaixo
+    void api('/api/me/vitrine', { method: 'PUT', body: { codigos: nova } }).catch((e) => setErro((e as Error).message));
+  }
+
+  if (itens === null) return null;
+
+  return (
+    <>
+      <h3>Minhas insígnias</h3>
+      {itens.length === 0 ? (
+        <p className="settings-hint">
+          Você ainda não tem nenhuma. Elas chegam como presente ou como recompensa — por exemplo, quando uma ideia sua
+          entra no Syden.
+        </p>
+      ) : (
+        <>
+          <p className="settings-hint">Clique para escolher quais aparecem no seu perfil (até {limite}).</p>
+          <div className="insignias-grade">
+            {itens.map((codigo) => {
+              const insignia = acharInsignia(codigo);
+              if (!insignia) return null;
+              const exibindo = vitrine.includes(codigo);
+              return (
+                <button
+                  key={codigo}
+                  type="button"
+                  className={`insignia-escolha${exibindo ? ' exibindo' : ''}`}
+                  onClick={() => alternar(codigo)}
+                  aria-pressed={exibindo}
+                >
+                  <Insignia arte={insignia.arte} titulo={insignia.nome} moldura={insignia.moldura} tamanho={40} />
+                  <span>
+                    <strong>{insignia.nome}</strong>
+                    <small>{exibindo ? 'Aparecendo no perfil' : insignia.descricao}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+      {erro && <p className="form-error">{erro}</p>}
+    </>
+  );
+}
+
+/**
+ * "Sair dos outros aparelhos". Serve para o dia em que alguém esquece o Syden aberto no computador de
+ * outra pessoa, ou perde o celular: sem isto, a sessão de lá continuaria valendo por 30 dias e não
+ * haveria nada a fazer a respeito.
+ */
+function OutrosAparelhos() {
+  const [feito, setFeito] = useState(false);
+  const [ocupado, setOcupado] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  async function sair() {
+    setOcupado(true);
+    setErro(null);
+    try {
+      const { token } = await api<{ token: string }>('/api/me/sessions/revoke', { method: 'POST' });
+      saveToken(token); // esta janela continua logada, com a sessão nova
+      setFeito(true);
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+    setOcupado(false);
+  }
+
+  return (
+    <>
+      <h3>Outros aparelhos</h3>
+      <p className="settings-hint">
+        Desconecta o Syden em todos os outros computadores e celulares. Você continua conectado aqui.
+      </p>
+      {feito ? (
+        <p className="form-success">Pronto: só este aparelho continua conectado.</p>
+      ) : (
+        <button type="button" className="btn-secondary" onClick={sair} disabled={ocupado}>
+          {ocupado ? 'Desconectando…' : 'Sair dos outros aparelhos'}
+        </button>
+      )}
+      {erro && <p className="form-error">{erro}</p>}
+    </>
+  );
+}
+
 // ---------- Minha conta ----------
 
 function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void }) {
@@ -165,8 +360,14 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
     if (next !== confirm) return setMessage({ ok: false, text: 'A confirmação não bate com a nova senha.' });
     setBusy(true);
     try {
-      await api('/api/me/password', { method: 'POST', body: { currentPassword: current, newPassword: next } });
-      setMessage({ ok: true, text: 'Senha alterada.' });
+      // O servidor devolve um token novo porque trocar a senha derruba as sessões antigas — inclusive a
+      // desta janela, se não guardarmos o novo aqui na hora.
+      const { token } = await api<{ token: string }>('/api/me/password', {
+        method: 'POST',
+        body: { currentPassword: current, newPassword: next },
+      });
+      saveToken(token);
+      setMessage({ ok: true, text: 'Senha alterada. Os outros aparelhos foram desconectados.' });
       setCurrent('');
       setNext('');
       setConfirm('');
@@ -201,6 +402,12 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
           {busy ? 'Salvando…' : 'Salvar nova senha'}
         </button>
       </form>
+
+      <EmailDaConta />
+
+      <MinhasInsignias />
+
+      <OutrosAparelhos />
 
       <DeleteAccount onDeleted={onDeleted} />
 
@@ -905,6 +1112,8 @@ function EmojisSection({ user, community }: { user: User; community: Community }
       </div>
 
       <RestorePack community={community} />
+
+      <EmojiPackCatalog user={user} community={community} podeInstalar={manages(community)} />
     </>
   );
 }
@@ -1401,6 +1610,14 @@ function VoiceSection({ voice }: { voice: Voice }) {
         onChange={(id) => void voice.switchDevice('videoinput', id)}
       />
 
+      <h3>Transmissões dos outros</h3>
+      <Toggle
+        label="Abrir a transmissão sozinha"
+        description="Desligado, a transmissão de quem está na sala aparece como convite e só começa a ser baixada quando você clica em Assistir. Isso poupa internet e processador — principalmente em sala cheia."
+        checked={settings.abrirTransmissaoSozinha}
+        onChange={(value) => updateSettings({ abrirTransmissaoSozinha: value })}
+      />
+
       <h3>Qualidade do compartilhamento de tela</h3>
       <p className="settings-hint">Vale a partir do próximo compartilhamento.</p>
       <div className="quality-options" role="radiogroup">
@@ -1418,6 +1635,28 @@ function VoiceSection({ voice }: { voice: Voice }) {
               checked={settings.screenQuality === id}
               onChange={() => updateSettings({ screenQuality: id })}
             />
+            <span className="quality-title">{title}</span>
+            <span className="quality-spec">{spec}</span>
+            <span className="quality-hint">{hint}</span>
+          </label>
+        ))}
+      </div>
+
+      <h3>Como a imagem é comprimida</h3>
+      <p className="settings-hint">
+        Em muitos computadores o H.264 usa o codificador dedicado da placa de vídeo e sobra processador para o jogo; em
+        outros não muda nada. Não dá para adivinhar: troque, transmita, e passe o mouse no "i" da transmissão — ele diz
+        qual codificador entrou e se foi pela placa. Vale a partir do próximo compartilhamento.
+      </p>
+      <div className="quality-options" role="radiogroup">
+        {(
+          [
+            ['vp8', 'VP8', 'o de sempre', 'Funciona em tudo. É o que o Syden usava até agora.'],
+            ['h264', 'H.264', 'costuma usar a placa', 'Pode aliviar o processador em jogo. Teste e compare.'],
+          ] as ['vp8' | 'h264', string, string, string][]
+        ).map(([id, title, spec, hint]) => (
+          <label key={id} className={`quality-option${settings.screenCodec === id ? ' selected' : ''}`}>
+            <input type="radio" name="screen-codec" checked={settings.screenCodec === id} onChange={() => updateSettings({ screenCodec: id })} />
             <span className="quality-title">{title}</span>
             <span className="quality-spec">{spec}</span>
             <span className="quality-hint">{hint}</span>

@@ -19,7 +19,10 @@ import {
   Maximize,
   Mic,
   MicOff,
+  Music,
+  MonitorOff,
   PhoneOff,
+  Play,
   Plus,
   Square,
   Star,
@@ -29,13 +32,16 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import { useMemo, type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
+import { useT } from './i18n';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
+import { ClipButton } from './ClipButton';
+import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
@@ -62,6 +68,7 @@ export function VoiceStage({
   channel,
   voice,
   members,
+  canaisDeTexto,
   onMobileBack,
   membersOpen,
   onToggleMembers,
@@ -69,6 +76,8 @@ export function VoiceStage({
   channel: Channel;
   voice: Voice;
   members: VoiceMember[];
+  /** Para onde o clipe pode ser mandado. */
+  canaisDeTexto: Channel[];
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
   /** A lista de pessoas da comunidade está aberta à direita? */
@@ -95,7 +104,7 @@ export function VoiceStage({
       </header>
       {/* Sala de voz sempre pertence a uma comunidade (conversa privada não tem voz por enquanto). */}
       {inThisRoom ? (
-        <Stage voice={voice} members={members} communityId={channel.communityId ?? 0} />
+        <Stage voice={voice} members={members} communityId={channel.communityId ?? 0} canaisDeTexto={canaisDeTexto} />
       ) : (
         <div className="voice-lobby">
           <div className="voice-lobby-avatars">
@@ -386,6 +395,13 @@ function StreamInfoBadge({ publication, local }: { publication: TrackPublication
             <>
               <strong>{formato}</strong>
               <span>{local ? 'é o que você está enviando' : 'é o que está chegando até você'}</span>
+              {stats?.codec && (
+                <span>
+                  {stats.codec}
+                  {stats.encoder ? ' · ' + stats.encoder : ''}
+                  {stats.naPlaca === true ? ' · pela placa de vídeo' : stats.naPlaca === false ? ' · pelo processador' : ''}
+                </span>
+              )}
               {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">Seu computador está segurando a qualidade.</span>}
               {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">Sua internet está segurando a qualidade.</span>}
             </>
@@ -411,13 +427,27 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
   const comSom = tracks.length > 0;
 
   if (publisher.isLocal) {
-    return comSom ? null : (
-      <div className="stream-audio">
-        <span className="stream-audio-warn">
-          <VolumeX size={16} /> Sua transmissão está sem som: ao escolher a tela, marque "compartilhar áudio".
-        </span>
-      </div>
-    );
+    if (!comSom) {
+      return (
+        <div className="stream-audio">
+          <span className="stream-audio-warn">
+            <VolumeX size={16} /> Sua transmissão está sem som: ao escolher a tela, marque "compartilhar áudio".
+          </span>
+        </div>
+      );
+    }
+    // O navegador não conseguiu tirar as vozes da chamada do som capturado: a sala vai se ouvir.
+    if (voice.ecoNaTransmissao) {
+      return (
+        <div className="stream-audio">
+          <span className="stream-audio-warn">
+            <VolumeX size={16} /> As vozes desta chamada estão indo junto no som da transmissão. Compartilhe só uma
+            aba, ou use o app do Syden, que separa o som do jogo das vozes.
+          </span>
+        </div>
+      );
+    }
+    return null;
   }
 
   return (
@@ -454,6 +484,39 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
 }
 
 /**
+ * A transmissão de alguém que você ainda não abriu. Fica como convite de propósito: enquanto ninguém clica,
+ * o computador não baixa nem decodifica nada desta tela. Numa sala de cinco pessoas com três transmitindo,
+ * é a diferença entre decodificar três vídeos e decodificar nenhum.
+ */
+function ConviteDeTransmissao({
+  trackRef,
+  membro,
+  onAssistir,
+}: {
+  trackRef: TrackReferenceOrPlaceholder;
+  membro?: VoiceMember;
+  onAssistir: () => void;
+}) {
+  const nome = trackRef.participant.name || trackRef.participant.identity;
+  const oQue = membro?.screenName;
+
+  return (
+    <div className="stream-invite">
+      <Avatar name={nome} userId={Number(trackRef.participant.identity)} size={44} />
+      <strong className="stream-invite-name">{nome}</strong>
+      <span className="stream-invite-what">{oQue ? `está transmitindo ${oQue}` : 'está transmitindo'}</span>
+      <button
+        className="btn-primary stream-invite-button"
+        title="Nada é baixado enquanto você não abrir"
+        onClick={onAssistir}
+      >
+        <Play size={16} /> Assistir
+      </button>
+    </div>
+  );
+}
+
+/**
  * Um quadro grande da tela (o que está em foco, ou cada uma quando a tela está dividida): o vídeo,
  * os controles da transmissão e o botão de tela cheia deste quadro.
  */
@@ -467,6 +530,20 @@ function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPl
         <div className="stream-controls">
           <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
           <StreamAudio voice={voice} publisher={trackRef.participant} />
+          {/* Fechar corta o download na hora: dá para continuar na conversa sem gastar internet com a tela. */}
+          {!trackRef.participant.isLocal && (
+            <button
+              className="stream-info-button"
+              title="Parar de assistir esta transmissão"
+              aria-label="Parar de assistir esta transmissão"
+              onClick={(e) => {
+                e.stopPropagation();
+                voice.assistir(trackRef.participant.identity, false);
+              }}
+            >
+              <MonitorOff size={16} />
+            </button>
+          )}
         </div>
       )}
       <button className="fullscreen-button" title="Tela cheia" onClick={() => void ref.current?.requestFullscreen()}>
@@ -476,7 +553,34 @@ function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPl
   );
 }
 
-function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMember[]; communityId: number }) {
+/**
+ * A transmissão que está na tela, imagem e som no mesmo pacote — é o que o clipe grava. Sem transmissão,
+ * devolve null e o botão de clipe nem aparece.
+ */
+function useTransmissaoNaTela(screen: TrackReferenceOrPlaceholder | undefined) {
+  const identity = screen?.participant.identity ?? '';
+  const sons = useParticipantTracks([Track.Source.ScreenShareAudio], identity);
+  const video = screen && isTrackReference(screen) ? screen.publication.track?.mediaStreamTrack : undefined;
+  const somReferencia = sons[0];
+  const audio = somReferencia && isTrackReference(somReferencia) ? somReferencia.publication.track?.mediaStreamTrack : undefined;
+  return useMemo(() => {
+    if (!video) return null;
+    return new MediaStream(audio ? [video, audio] : [video]);
+  }, [video, audio]);
+}
+
+function Stage({
+  voice,
+  members,
+  communityId,
+  canaisDeTexto,
+}: {
+  voice: Voice;
+  members: VoiceMember[];
+  communityId: number;
+  canaisDeTexto: Channel[];
+}) {
+  const t = useT();
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -487,17 +591,26 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
   const [pinned, setPinned] = useState<string | null>(null);
   const [split, setSplit] = useState(false);
   const [soundboardOpen, setSoundboardOpen] = useState(false);
+  // O karaokê abre sozinho para todo mundo quando alguém põe uma música.
+  const [karaokeOpen, setKaraokeOpen] = useState(false);
 
   const screens = tracks.filter((t) => t.source === Track.Source.ScreenShare);
-  // Só faz sentido dividir a tela quando há mais de uma transmissão.
-  const splitting = split && screens.length > 1;
+  /** A sua própria tela você sempre vê; a dos outros, só depois de abrir. */
+  const aberta = (ref: TrackReferenceOrPlaceholder) =>
+    ref.participant.isLocal || voice.assistindo.has(ref.participant.identity);
+  const abertas = screens.filter(aberta);
+  // Só faz sentido dividir a tela quando há mais de uma transmissão aberta.
+  const splitting = split && abertas.length > 1;
 
-  // Foco: o que o usuário fixou; senão, a primeira tela compartilhada (como o Discord faz).
-  const focused = splitting
-    ? undefined
-    : (tracks.find((t) => trackKey(t) === pinned) ?? tracks.find((t) => t.source === Track.Source.ScreenShare));
-  const others = splitting ? tracks.filter((t) => t.source !== Track.Source.ScreenShare) : focused ? tracks.filter((t) => t !== focused) : tracks;
+  // Foco: o que o usuário fixou; senão, a primeira transmissão ABERTA. Sem nenhuma aberta não há foco, e a
+  // sala fica na grade de cartões — é lá que o convite de cada transmissão aparece.
+  const focused = splitting ? undefined : (tracks.find((t) => trackKey(t) === pinned && aberta(t)) ?? abertas[0]);
+  const others = splitting ? tracks.filter((t) => !abertas.includes(t)) : focused ? tracks.filter((t) => t !== focused) : tracks;
   const card = cardSize(tracks.length);
+  // O clipe segue o que está grande na tela; com a tela dividida, a primeira transmissão.
+  const paraClipar = (focused?.source === Track.Source.ScreenShare ? focused : undefined) ?? abertas[0];
+  const transmissaoNaTela = useTransmissaoNaTela(paraClipar);
+  const quemTransmite = paraClipar ? paraClipar.participant.name || paraClipar.participant.identity : '';
 
   /** Clicar num quadro fixa ou solta o foco; no modo dividido, volta para o foco naquela tela. */
   const togglePin = (ref: TrackReferenceOrPlaceholder) => {
@@ -509,7 +622,20 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
     setPinned(focused && trackKey(focused) === trackKey(ref) ? null : trackKey(ref));
   };
 
-  const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number) => (
+  const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number) => {
+    // Transmissão que você ainda não abriu vira convite, e clicar nele abre (não fixa).
+    if (ref.source === Track.Source.ScreenShare && !aberta(ref)) {
+      return (
+        <div key={trackKey(ref)} className="tile" onClick={() => voice.assistir(ref.participant.identity, true)}>
+          <ConviteDeTransmissao
+            trackRef={ref}
+            membro={members.find((m) => String(m.userId) === ref.participant.identity)}
+            onAssistir={() => voice.assistir(ref.participant.identity, true)}
+          />
+        </div>
+      );
+    }
+    return (
     <div key={trackKey(ref)} className="tile" onClick={() => togglePin(ref)}>
       {ref.source === Track.Source.Camera ? (
         <PersonTile
@@ -522,7 +648,8 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
         <ParticipantTile trackRef={ref} />
       )}
     </div>
-  );
+    );
+  };
 
   return (
     <div className="stage" data-lk-theme="default">
@@ -530,7 +657,7 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
         // Todas as transmissões do mesmo tamanho, lado a lado.
         <div className="stage-focus">
           <div className="stage-split">
-            {screens.map((ref) => (
+            {abertas.map((ref) => (
               <FocusPane key={trackKey(ref)} trackRef={ref} voice={voice}>
                 {tile(ref, 80)}
               </FocusPane>
@@ -564,23 +691,24 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
 
       <div className="stage-controls">
         <IconButton
-          label={voice.media.muted ? 'Ativar microfone' : 'Silenciar'}
+          label={voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
           danger={voice.media.muted}
           onClick={voice.toggleMute}
         >
           {voice.media.muted ? <MicOff /> : <Mic />}
         </IconButton>
-        <IconButton label={voice.deafened ? 'Ativar áudio' : 'Desativar áudio'} danger={voice.deafened} onClick={voice.toggleDeafen}>
+        <IconButton label={voice.deafened ? t('Ativar áudio') : t('Desativar áudio')} danger={voice.deafened} onClick={voice.toggleDeafen}>
           {voice.deafened ? <HeadphoneOff /> : <Headphones />}
         </IconButton>
-        <IconButton label={voice.media.video ? 'Desligar câmera' : 'Ligar câmera'} active={voice.media.video} onClick={voice.toggleCamera}>
+        <IconButton label={voice.media.video ? t('Desligar câmera') : t('Ligar câmera')} active={voice.media.video} onClick={voice.toggleCamera}>
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         <ScreenShareButton voice={voice} />
         <VoiceEffectButton voice={voice} />
-        {screens.length > 1 && (
+        <ClipButton stream={transmissaoNaTela} de={quemTransmite} canais={canaisDeTexto} />
+        {abertas.length > 1 && (
           <IconButton
-            label={split ? 'Focar em uma transmissão' : `Ver as ${screens.length} transmissões lado a lado`}
+            label={split ? 'Focar em uma transmissão' : `Ver as ${abertas.length} transmissões lado a lado`}
             active={split}
             onClick={() => setSplit(!split)}
           >
@@ -588,12 +716,24 @@ function Stage({ voice, members, communityId }: { voice: Voice; members: VoiceMe
           </IconButton>
         )}
         <div className="soundboard-anchor">
+          <IconButton
+            label="Karaokê"
+            active={karaokeOpen || voice.karaoke !== null}
+            onClick={() => setKaraokeOpen(!karaokeOpen)}
+          >
+            <Music />
+          </IconButton>
+          {(karaokeOpen || voice.karaoke !== null) && (
+            <Karaoke voice={voice} communityId={communityId} onClose={() => setKaraokeOpen(false)} />
+          )}
+        </div>
+        <div className="soundboard-anchor">
           <IconButton label="Soundboard" active={soundboardOpen} onClick={() => setSoundboardOpen(!soundboardOpen)}>
             <AudioLines />
           </IconButton>
           {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
         </div>
-        <button className="leave-button" title="Desconectar" onClick={voice.leave}>
+        <button className="leave-button" title={t('Desconectar')} onClick={voice.leave}>
           <PhoneOff />
         </button>
       </div>

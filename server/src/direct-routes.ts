@@ -3,7 +3,8 @@
 import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
-import { directRoom, emitToUser, joinDirectRoom, leaveDirectRoom } from './realtime.js';
+import { INSIGNIAS, entregar } from './presentes.js';
+import { anunciarPerfil, directRoom, emitToUser, joinDirectRoom, leaveDirectRoom } from './realtime.js';
 import { requireUser } from './routes.js';
 
 const MAX_GROUP_MEMBERS = 20;
@@ -66,8 +67,61 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
 
       // A marca diz de onde veio, para o dono separar ideia de conversa do dia a dia.
       const message = db.createMessage(conversa.id, request.user.id, `💡 Ideia pela tela inicial:\n${texto}`);
-      io.to(directRoom(conversa.id)).emit('message:new', { ...message, communityId: null });
+      db.createSuggestion(request.user.id, message.id, texto);
+      io.to(directRoom(conversa.id)).emit('message:new', { ...db.findMessageFull(message.id, request.user.id) ?? message, communityId: null });
+
+      // Resposta automática, na hora: quem escreveu precisa saber que a ideia chegou a alguém, sem
+      // esperar o dono acordar. Ela não fecha assunto nenhum — a conversa continua aberta dos dois
+      // lados, e é por ela que ele vai tirar dúvidas sobre a ideia.
+      const recibo = db.createMessage(
+        conversa.id,
+        dono.id,
+        `🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.`,
+      );
+      io.to(directRoom(conversa.id)).emit('message:new', { ...recibo, communityId: null });
+
       ultimaSugestao.set(request.user.id, agora);
+      return { ok: true };
+    });
+
+    /**
+     * O joinha do dono: a ideia entrou no Syden. Do lado de quem teve a ideia cai confete, a conversa
+     * ganha o aviso e o perfil ganha mais uma medalha de contribuição.
+     */
+    authed.post<{ Params: { id: string } }>('/api/suggestions/:id/accept', async (request, reply) => {
+      if (!request.user.isOwner) return reply.code(403).send({ error: 'Só quem cuida do Syden pode acolher uma ideia.' });
+      const ideia = db.findSuggestion(Number(request.params.id));
+      if (!ideia) return reply.code(404).send({ error: 'Ideia não encontrada.' });
+      if (!db.acceptSuggestion(ideia.id)) return { ok: true }; // clique repetido: não conta duas vezes
+
+      const mensagem = db.findMessage(ideia.messageId);
+      if (mensagem) {
+        const aviso = db.createMessage(
+          mensagem.channelId,
+          request.user.id,
+          `🎉 Ideia acolhida! Isto entrou no Syden: "${ideia.content.slice(0, 200)}". Obrigado — acompanhe as novidades na tela inicial.`,
+        );
+        io.to(directRoom(mensagem.channelId)).emit('message:new', { ...aviso, communityId: null });
+      }
+
+      // A medalha entra no inventário de quem teve a ideia (a primeira vez; da segunda em diante só o
+      // contador aumenta, e é ele que vira o número no canto da medalha).
+      entregar(ideia.userId, INSIGNIAS.IDEIA, 'Ideia acolhida no Syden');
+      // E a lista de membros de quem está junto é avisada, para a insígnia aparecer no perfil dela sem
+      // ninguém precisar recarregar o Syden.
+      anunciarPerfil(io, ideia.userId);
+
+      // O confete cai na hora para quem estiver com o Syden aberto; quem não estiver vê ao entrar.
+      emitToUser(io, ideia.userId, 'suggestion:accepted', { id: ideia.id, content: ideia.content });
+      return { ok: true };
+    });
+
+    /** O que ainda não foi comemorado por esta pessoa (ela pode ter estado offline na hora do joinha). */
+    authed.get('/api/suggestions/celebrations', async (request) => db.suggestionsToCelebrate(request.user.id));
+
+    /** O confete caiu: não cai de novo. */
+    authed.post<{ Params: { id: string } }>('/api/suggestions/:id/celebrated', async (request) => {
+      db.markCelebrated(Number(request.params.id), request.user.id);
       return { ok: true };
     });
 

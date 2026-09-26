@@ -3,10 +3,13 @@ import './styles.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { iniciarIdioma } from './i18n';
 import { applyTheme, getTheme } from './theme';
 
-// O tema vem antes de qualquer tela: assim ninguém vê o app piscar do escuro para o claro.
+// O tema e o idioma vêm antes de qualquer tela: assim ninguém vê o app piscar do escuro para o claro,
+// nem em português para depois virar inglês.
 applyTheme(getTheme());
+iniciarIdioma();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

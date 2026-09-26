@@ -2,6 +2,7 @@ import { statfsSync } from 'node:fs';
 import { cpus, freemem, loadavg, totalmem } from 'node:os';
 import { config } from './config.js';
 import * as db from './db.js';
+import { enviarEmail, envioConfigurado } from './email.js';
 import { readInterfaceBytes } from './traffic.js';
 
 // Saúde do servidor: uma amostra por minuto (processador, memória, disco, rede, servidor de voz e erros)
@@ -74,6 +75,38 @@ async function checkLivekit(): Promise<boolean> {
   }
 }
 
+/**
+ * Avisa por e-mail quem cuida do Syden quando algo quebra.
+ *
+ * O limite do que isto alcança, e é bom ser claro: **servidor morto não manda e-mail**. Isto pega o
+ * servidor vivo e doente (erros em rajada, voz fora do ar), que é a maioria dos casos. Para saber que a
+ * máquina inteira caiu, é preciso alguém de fora cutucando — um serviço de ping como o UptimeRobot, que
+ * é grátis e leva cinco minutos para configurar.
+ *
+ * Há um freio de uma hora por assunto: um problema que se repete a cada minuto não pode virar 60 e-mails.
+ */
+const ultimoAviso = new Map<string, number>();
+const INTERVALO_ENTRE_AVISOS = 60 * 60_000;
+
+async function avisar(assunto: string, explicacao: string) {
+  if (!envioConfigurado()) return; // sem provedor de e-mail, o painel de saúde continua sendo o caminho
+  const agora = Date.now();
+  if (agora - (ultimoAviso.get(assunto) ?? 0) < INTERVALO_ENTRE_AVISOS) return;
+  ultimoAviso.set(assunto, agora);
+
+  const quando = new Date().toLocaleString('pt-BR');
+  for (const admin of db.listAdmins()) {
+    const { email, verifiedAt } = db.emailDe(admin.id);
+    if (!email || !verifiedAt) continue;
+    await enviarEmail({
+      para: email,
+      assunto: `Syden: ${assunto}`,
+      texto: `${explicacao}\n\nQuando: ${quando}\n\nEste aviso é automático e só se repete depois de uma hora.`,
+      html: `<p>${explicacao}</p><p style="color:#6b7280;font-size:13px">Quando: ${quando}<br>Este aviso é automático e só se repete depois de uma hora.</p>`,
+    });
+  }
+}
+
 async function sample() {
   const errors = errorsSinceSample;
   errorsSinceSample = 0;
@@ -96,9 +129,11 @@ async function sample() {
 
   if (wasOk !== null && wasOk !== livekitOk) {
     db.addHealthEvent(livekitOk ? 'livekit_up' : 'livekit_down', livekitOk ? 'Servidor de voz voltou.' : 'Servidor de voz parou de responder.');
+    if (!livekitOk) void avisar('O servidor de voz parou de responder', 'Quem tentar entrar numa sala agora não vai conseguir falar.');
   }
   if (errors >= ERROR_BURST) {
     db.addHealthEvent('errors', `${errors} erros do servidor em um minuto.`);
+    void avisar(`${errors} erros do servidor em um minuto`, 'Alguma coisa quebrou. Veja o painel de saúde e os registros do servidor.');
   }
   db.pruneHealth(new Date(Date.now() - KEEP_DAYS * 86_400_000).toISOString());
 }

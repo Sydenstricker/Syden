@@ -21,6 +21,7 @@ import { playSoundboard, stopAllSounds } from './soundboard';
 import { nomeDaTransmissao } from './streamName';
 import { applyAllVolumes } from './voiceVolumes';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
+import { filaUltimaVale } from './fila';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { sounds } from './sounds';
@@ -53,10 +54,27 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
   smooth: { contentHint: 'motion', degradation: 'maintain-framerate' },
 };
 
+/**
+ * Camadas da transmissão de tela ("simulcast"): a mesma tela sai em dois ou três tamanhos ao mesmo tempo, e
+ * o servidor entrega a cada pessoa só o tamanho que ela está de fato mostrando na tela — quem tem a
+ * transmissão numa miniatura da fileira de baixo pede a pequena, quem está em tela cheia pede a grande.
+ *
+ * Sem isso existe uma camada só, a maior, e aí o adaptiveStream/dynacast não têm o que escolher: todo mundo
+ * baixa e decodifica 1080p para ver um quadradinho de 200 pixels. As camadas que ninguém pede não são nem
+ * codificadas, então elas não custam processador de graça para quem transmite.
+ */
+const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
+  light: [new VideoPreset(640, 360, 400_000, 15)],
+  standard: [new VideoPreset(640, 360, 400_000, 15), new VideoPreset(1280, 720, 2_000_000, 30)],
+  smooth: [new VideoPreset(640, 360, 500_000, 15), new VideoPreset(1280, 720, 3_000_000, 30)],
+};
+
 // De quanto em quanto tempo a otimização dinâmica confere como a transmissão está indo.
 const SCREEN_CHECK_MS = 4000;
 
 const SOUNDBOARD_TOPIC = 'soundboard';
+/** Avisos do karaokê: começar e parar a música, para todos ao mesmo tempo. */
+const KARAOKE_TOPIC = 'karaoke';
 const SEND_COOLDOWN_MS = 1500;
 const RECEIVE_COOLDOWN_MS = 1000;
 const SOUND_BADGE_MS = 2500;
@@ -70,7 +88,7 @@ function isCancelledPicker(error: unknown) {
  * pela rede). Vira uma linha no diário da aba de saúde, e é assim que o administrador descobre o que houve
  * sem precisar perguntar. Falhar aqui não pode atrapalhar nada, então o erro é engolido.
  */
-function reportProblem(kind: 'microfone' | 'câmera' | 'conexão', message: string) {
+function reportProblem(kind: 'microfone' | 'câmera' | 'conexão' | 'efeito de voz', message: string) {
   void api('/api/client-errors', { method: 'POST', body: { kind, message } }).catch(() => {});
 }
 
@@ -116,7 +134,12 @@ export function useVoice(socket: Socket | null) {
       },
       videoCaptureDefaults: { resolution: VideoPresets.h720.resolution, deviceId: settings.videoInput || undefined },
       audioOutput: settings.audioOutput ? { deviceId: settings.audioOutput } : undefined,
-      publishDefaults: { screenShareEncoding: ScreenSharePresets.h1080fps30.encoding, dtx: true, red: true },
+      publishDefaults: {
+        screenShareEncoding: ScreenSharePresets.h1080fps30.encoding,
+        screenShareSimulcastLayers: SCREEN_LAYERS[settings.screenQuality],
+        dtx: true,
+        red: true,
+      },
     });
   });
   const [channelId, setChannelId] = useState<number | null>(null);
@@ -124,6 +147,8 @@ export function useVoice(socket: Socket | null) {
   // O que está sendo transmitido agora, em palavras ("League of Legends"), para os outros verem.
   const nomeDaTelaRef = useRef<string | null>(null);
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
+  // A transmissão está levando as vozes da chamada junto? Quando sim, a tela avisa quem transmite.
+  const [ecoNaTransmissao, setEcoNaTransmissao] = useState(false);
   const [deafened, setDeafened] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [voiceEffect, setVoiceEffectState] = useState<VoiceEffectId>(() => getSettings().voiceEffect);
@@ -149,6 +174,7 @@ export function useVoice(socket: Socket | null) {
       if (!next.screen) {
         stopAppAudioRef.current();
         nomeDaTelaRef.current = null;
+        setEcoNaTransmissao(false);
       }
       setMedia(next);
       if (channelRef.current !== null) {
@@ -163,6 +189,7 @@ export function useVoice(socket: Socket | null) {
       if (channelRef.current !== null) socketRef.current?.emit('voice:leave');
       channelRef.current = null;
       deafenedRef.current = false;
+      setAssistindo(new Set()); // transmissão aberta é coisa daquela sala
       setChannelId(null);
       setDeafened(false);
       setMedia(readLocalMedia(lp));
@@ -224,6 +251,9 @@ export function useVoice(socket: Socket | null) {
 
   // Soundboard: o ícone do som aparece por alguns segundos no quadro de quem tocou.
   const [recentSounds, setRecentSounds] = useState<Map<string, { icon: string; key: number }>>(new Map());
+  // O karaokê tocando agora na sala: a música, quem pôs e quando começou. O áudio não viaja pela
+  // chamada — cada computador toca a própria cópia, como o soundboard.
+  const [karaoke, setKaraoke] = useState<{ songId: number; quem: string; comecouEm: number } | null>(null);
   const lastSentRef = useRef(0);
   const lastHeardRef = useRef(new Map<string, number>());
 
@@ -242,6 +272,20 @@ export function useVoice(socket: Socket | null) {
 
   useEffect(() => {
     const onData = (payload: Uint8Array, participant?: RemoteParticipant, _kind?: unknown, topic?: string) => {
+      if (topic === KARAOKE_TOPIC && participant) {
+        try {
+          const aviso = JSON.parse(new TextDecoder().decode(payload));
+          if (aviso?.acao === 'tocar' && Number.isInteger(aviso.songId)) {
+            // "comecouEm" é o relógio de QUEM RECEBE: o aviso chega em poucos milissegundos, e quem
+            // demorar a carregar o áudio adianta a música nesse tanto para todo mundo cantar junto.
+            setKaraoke({ songId: aviso.songId, quem: participant.name || participant.identity, comecouEm: Date.now() });
+          }
+          if (aviso?.acao === 'parar') setKaraoke(null);
+        } catch {
+          // aviso torto: ignora
+        }
+        return;
+      }
       if (topic !== SOUNDBOARD_TOPIC || !participant) return;
       let soundId: unknown;
       try {
@@ -279,6 +323,28 @@ export function useVoice(socket: Socket | null) {
     },
     [room, showSound],
   );
+
+  /** Põe uma música para a sala inteira, ou para o que estiver tocando. */
+  const comandarKaraoke = useCallback(
+    async (songId: number | null) => {
+      if (channelRef.current === null) return;
+      const aviso = songId === null ? { acao: 'parar' } : { acao: 'tocar', songId };
+      setKaraoke(
+        songId === null
+          ? null
+          : { songId, quem: room.localParticipant.name || room.localParticipant.identity, comecouEm: Date.now() },
+      );
+      await room.localParticipant
+        .publishData(new TextEncoder().encode(JSON.stringify(aviso)), { reliable: true, topic: KARAOKE_TOPIC })
+        .catch(console.error);
+    },
+    [room],
+  );
+
+  // Saiu da sala: o karaokê morre junto.
+  useEffect(() => {
+    if (channelId === null) setKaraoke(null);
+  }, [channelId]);
 
   // Se o socket cair e voltar (ou o servidor reiniciar), reanuncia em qual sala estamos.
   useEffect(() => {
@@ -320,19 +386,37 @@ export function useVoice(socket: Socket | null) {
     [room],
   );
 
-  /** Escolhe o efeito de voz; vale na hora e fica guardado para as próximas chamadas. */
+  /**
+   * Escolhe o efeito de voz; vale na hora e fica guardado para as próximas chamadas.
+   *
+   * As trocas são postas NUMA FILA, uma de cada vez. Trocar o efeito desmonta o caminho do microfone e
+   * monta outro; duas trocas ao mesmo tempo se atropelam — a segunda monta o caminho novo e a primeira,
+   * que ainda estava terminando, o desmonta em seguida. O resultado é o microfone mudo para os outros,
+   * sem erro nenhum na tela. É o que acontece quando alguém fica experimentando os efeitos em sequência.
+   *
+   * E vale sempre a ÚLTIMA escolha: se três trocas entram na fila, as do meio são puladas em vez de
+   * serem montadas e desmontadas à toa.
+   */
+  const enfileirarEfeito = useRef(filaUltimaVale()).current;
+
   const setVoiceEffect = useCallback(
     async (effect: VoiceEffectId) => {
       updateSettings({ voiceEffect: effect });
       setVoiceEffectState(effect);
-      try {
-        await applyVoiceEffect(effect);
-      } catch (e) {
-        console.error(e);
-        setError('Não foi possível aplicar o efeito de voz. Sua voz continua saindo normal.');
-      }
+
+      await enfileirarEfeito(async () => {
+        try {
+          await applyVoiceEffect(effect);
+        } catch (e) {
+          console.error(e);
+          setError('Não foi possível aplicar o efeito de voz. Sua voz continua saindo normal.');
+          // Sem isto, a falha morria no computador de quem estava falando e não chegava a lugar nenhum:
+          // não havia como o administrador saber que alguém teve problema com os efeitos.
+          reportProblem('efeito de voz', `Falhou ao aplicar "${effect}": ${e instanceof Error ? e.message : String(e)}`);
+        }
+      });
     },
-    [applyVoiceEffect],
+    [applyVoiceEffect, enfileirarEfeito],
   );
 
   const setDeafenedState = useCallback((value: boolean) => {
@@ -353,7 +437,10 @@ export function useVoice(socket: Socket | null) {
         const { url, token } = await api<{ url: string; token: string }>(`/api/channels/${id}/voice-token`, {
           method: 'POST',
         });
-        await room.connect(url, token);
+        // autoSubscribe: false — quem decide o que baixar é o Syden, logo abaixo (aplicarInscricoes).
+        // Antes o servidor empurrava TODAS as faixas de todos ao entrar, transmissões de tela incluídas:
+        // numa sala com quatro telas ligadas o computador decodificava quatro vídeos que ninguém pediu.
+        await room.connect(url, token, { autoSubscribe: false });
         channelRef.current = id;
         setChannelId(id);
         socketRef.current.emit('voice:join', { channelId: id });
@@ -388,6 +475,85 @@ export function useVoice(socket: Socket | null) {
     },
     [room, connecting, applyVoiceEffect, setDeafenedState],
   );
+
+  /**
+   * Quais transmissões de tela esta pessoa mandou abrir, pelo identificador de quem transmite. Voz e câmera
+   * chegam sempre; tela, só depois de clicar em "Assistir". É o que faz entrar numa sala com várias
+   * transmissões ligadas custar o mesmo que entrar numa sala sem nenhuma.
+   */
+  const [assistindo, setAssistindo] = useState<ReadonlySet<string>>(() => new Set());
+  // Os eventos do LiveKit são presos uma vez só; a ref deixa eles lerem a escolha atual.
+  const assistindoRef = useRef<ReadonlySet<string>>(assistindo);
+  assistindoRef.current = assistindo;
+
+  /**
+   * Diz ao servidor, faixa por faixa, o que este computador quer receber. Chamado a cada mudança (alguém
+   * chegou, alguém começou a transmitir, você abriu ou fechou uma transmissão), porque só o servidor pode
+   * parar de mandar — recusar o vídeo depois de baixado não economizaria nem internet nem processador.
+   */
+  const aplicarInscricoes = useCallback(() => {
+    for (const pessoa of room.remoteParticipants.values()) {
+      for (const publicacao of pessoa.trackPublications.values()) {
+        const deTela =
+          publicacao.source === Track.Source.ScreenShare || publicacao.source === Track.Source.ScreenShareAudio;
+        // O som da transmissão acompanha a imagem: quem não abriu a tela também não baixa o som do jogo.
+        const querido = !deTela || assistindoRef.current.has(pessoa.identity);
+        if (publicacao.isDesired !== querido) publicacao.setSubscribed(querido);
+      }
+    }
+  }, [room]);
+
+  useEffect(() => {
+    aplicarInscricoes();
+    /** Quem tem "abrir sozinho" ligado volta ao jeito antigo: a transmissão nova já entra assistida. */
+    const aoPublicar = (publicacao: TrackPublication, participante: RemoteParticipant) => {
+      if (publicacao.source === Track.Source.ScreenShare && getSettings().abrirTransmissaoSozinha) {
+        setAssistindo((atual) => new Set(atual).add(participante.identity));
+      }
+      aplicarInscricoes();
+    };
+    /**
+     * Quem tem "abrir sozinho" ligado também quer ver as transmissões que JÁ estavam no ar quando entrou.
+     * Elas não passam pelo evento acima: chegam prontas na resposta de entrada da sala.
+     */
+    const aoConectar = () => {
+      if (getSettings().abrirTransmissaoSozinha) {
+        const transmitindo = [...room.remoteParticipants.values()]
+          .filter((pessoa) => pessoa.getTrackPublication(Track.Source.ScreenShare))
+          .map((pessoa) => pessoa.identity);
+        if (transmitindo.length > 0) setAssistindo((atual) => new Set([...atual, ...transmitindo]));
+      }
+      aplicarInscricoes();
+    };
+    room
+      .on(RoomEvent.Connected, aoConectar)
+      .on(RoomEvent.Reconnected, aoConectar)
+      .on(RoomEvent.ParticipantConnected, aplicarInscricoes)
+      .on(RoomEvent.TrackPublished, aoPublicar)
+      .on(RoomEvent.TrackUnpublished, aplicarInscricoes);
+    return () => {
+      room
+        .off(RoomEvent.Connected, aoConectar)
+        .off(RoomEvent.Reconnected, aoConectar)
+        .off(RoomEvent.ParticipantConnected, aplicarInscricoes)
+        .off(RoomEvent.TrackPublished, aoPublicar)
+        .off(RoomEvent.TrackUnpublished, aplicarInscricoes);
+    };
+  }, [room, aplicarInscricoes, assistindo]);
+
+  /**
+   * Abre ou fecha a transmissão de alguém. Fechar corta o download na hora. A escolha vale enquanto você
+   * está na sala: se a pessoa parar e voltar a transmitir, volta aberta — você já tinha dito que quer ver.
+   */
+  const assistir = useCallback((identity: string, abrir: boolean) => {
+    setAssistindo((atual) => {
+      if (atual.has(identity) === abrir) return atual;
+      const proximo = new Set(atual);
+      if (abrir) proximo.add(identity);
+      else proximo.delete(identity);
+      return proximo;
+    });
+  }, []);
 
   /**
    * Troca a qualidade da transmissão em andamento sem pedir para escolher a tela de novo: mexe direto nos
@@ -530,20 +696,35 @@ export function useVoice(socket: Socket | null) {
           true,
           {
             contentHint: hints.contentHint,
-            audio: true, // áudio da aba/janela/sistema, quando o navegador suporta
+            // "restrictOwnAudio" tira da captura o som que o PRÓPRIO Syden está tocando — as vozes da
+            // chamada. ELE VAI DENTRO DE `audio`, porque é uma restrição da FAIXA de som, não uma opção
+            // solta do getDisplayMedia. Estava no lugar errado, o navegador ignorava calado, e o som da
+            // chamada voltava para dentro da transmissão: todo mundo se ouvia. Logo abaixo, o app
+            // confere se a opção pegou de verdade, em vez de confiar.
+            audio: { restrictOwnAudio: true },
             systemAudio: 'include',
-            // Tira da captura o som que o PRÓPRIO Syden está tocando — ou seja, as vozes da chamada.
-            // É o que resolve o eco no navegador; existe no Chrome 141 em diante e é ignorado nos
-            // navegadores que não conhecem (aí o comportamento é o de antes).
-            restrictOwnAudio: true,
             selfBrowserSurface: 'exclude',
             video: { displaySurface: surface },
             preferCurrentTab: false,
             surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
             resolution: preset.resolution,
           } as Parameters<typeof lp.setScreenShareEnabled>[1],
-          { screenShareEncoding: preset.encoding, degradationPreference: hints.degradation },
+          {
+            screenShareEncoding: preset.encoding,
+            degradationPreference: hints.degradation,
+            // Escolhido nas configurações: dá para comparar VP8 e H.264 numa chamada de verdade, que é
+            // o único lugar onde a diferença aparece (num teste isolado os números não se repetem).
+            videoCodec: getSettings().screenCodec,
+            screenShareSimulcastLayers: SCREEN_LAYERS[quality],
+          },
         );
+        // O navegador diz, na própria faixa, se conseguiu tirar o som da chamada da captura. Quando não
+        // conseguiu (navegador antigo, ou o tipo de tela escolhido não tem som de sistema), quem está
+        // transmitindo precisa saber — senão a sala inteira se ouve e ninguém entende por quê.
+        const faixaDeSom = lp.getTrackPublication(Track.Source.ScreenShareAudio)?.audioTrack?.mediaStreamTrack;
+        const ajuste = faixaDeSom?.getSettings() as (MediaTrackSettings & { restrictOwnAudio?: boolean }) | undefined;
+        setEcoNaTransmissao(Boolean(faixaDeSom) && ajuste?.restrictOwnAudio !== true);
+
         // O rótulo da captura é o que dá o nome do jogo/janela; no navegador costuma vir um código
         // interno, e aí sobra o tipo ("a tela", "uma janela"). Ver streamName.ts.
         const capturado = lp.getTrackPublication(Track.Source.ScreenShare)?.videoTrack?.mediaStreamTrack?.label;
@@ -749,8 +930,13 @@ export function useVoice(socket: Socket | null) {
     setScreenQuality,
     switchDevice,
     setAudioProcessing,
+    ecoNaTransmissao,
+    assistindo,
+    assistir,
     recentSounds,
     playSound,
+    karaoke,
+    comandarKaraoke,
     voiceEffect,
     setVoiceEffect,
   };
