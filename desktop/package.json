@@ -14,7 +14,8 @@
   "scripts": {
     "dev": "electron .",
     "dist": "electron-builder --win",
-    "build:native": "node scripts/build-native.js"
+    "build:native": "node scripts/build-native.js",
+    "dist:loja": "electron-builder --win appx"
   },
   "build": {
     "appId": "com.janja.app",
@@ -60,7 +61,18 @@
     },
     "asarUnpack": [
       "native/build/Release/*.node"
-    ]
+    ],
+    "appx": {
+      "identityName": "${env.MSSTORE_IDENTITY_NAME}",
+      "publisher": "${env.MSSTORE_PUBLISHER}",
+      "publisherDisplayName": "${env.MSSTORE_PUBLISHER_DISPLAY_NAME}",
+      "applicationId": "Syden",
+      "displayName": "Syden",
+      "languages": [
+        "pt-BR"
+      ],
+      "addAutoLaunchExtension": false
+    }
   },
   "author": "Syden"
 }
