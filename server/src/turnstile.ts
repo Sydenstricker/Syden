@@ -13,21 +13,26 @@
  *   TURNSTILE_SECRET_KEY fica só no servidor
  */
 import { config } from './config.js';
+import * as db from './db.js';
 
 const VERIFICACAO = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 export const turnstileLigado = () => Boolean(config.turnstile.secretKey);
 
+export type Veredito = 'pessoa' | 'recusado' | 'indisponivel';
+
 /**
- * Confere o comprovante que o navegador mandou. Devolve true quando pode seguir.
+ * Confere o comprovante que o navegador mandou.
  *
- * Se a Cloudflare não responder, DEIXA PASSAR — de propósito. A alternativa seria uma indisponibilidade
- * deles virar "ninguém consegue criar conta no Syden", e um cadastro a mais de robô é um problema menor
- * do que um cadastro a menos de gente. Quem prefere o contrário muda o `return true` do catch.
+ * **Se a Cloudflare não responder, NÃO deixa passar.** Foi decisão do dono do Syden, e a troca é esta: a
+ * Cloudflare cai muito pouco, então o risco de barrar gente de verdade é pequeno — enquanto deixar passar
+ * durante uma queda abriria exatamente a janela que um enxame procura. O preço é que uma indisponibilidade
+ * deles trava o cadastro aqui; por isso o caso é separado de "recusado", vira evento no painel de saúde,
+ * e quem tenta se cadastrar recebe "tente daqui a pouco" em vez de "você parece um robô".
  */
-export async function pessoaDeVerdade(comprovante: string | undefined, endereco: string): Promise<boolean> {
-  if (!turnstileLigado()) return true;
-  if (!comprovante) return false;
+export async function pessoaDeVerdade(comprovante: string | undefined, endereco: string): Promise<Veredito> {
+  if (!turnstileLigado()) return 'pessoa';
+  if (!comprovante) return 'recusado';
 
   try {
     const resposta = await fetch(VERIFICACAO, {
@@ -36,10 +41,14 @@ export async function pessoaDeVerdade(comprovante: string | undefined, endereco:
       body: JSON.stringify({ secret: config.turnstile.secretKey, response: comprovante, remoteip: endereco }),
       signal: AbortSignal.timeout(8000),
     });
-    if (!resposta.ok) return true;
+    if (!resposta.ok) {
+      db.addHealthEvent('turnstile', `A verificação da Cloudflare respondeu ${resposta.status}; o cadastro está barrado.`);
+      return 'indisponivel';
+    }
     const resultado = (await resposta.json()) as { success?: boolean };
-    return resultado.success === true;
-  } catch {
-    return true;
+    return resultado.success === true ? 'pessoa' : 'recusado';
+  } catch (erro) {
+    db.addHealthEvent('turnstile', `A verificação da Cloudflare não respondeu (${String(erro).slice(0, 80)}); o cadastro está barrado.`);
+    return 'indisponivel';
   }
 }

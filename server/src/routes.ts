@@ -170,8 +170,16 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
       // A prova de que é gente, quando o Turnstile está configurado. Fica antes de gastar processador
       // com a senha e antes de escrever qualquer coisa no banco.
-      if (turnstileLigado() && !(await pessoaDeVerdade(request.body?.turnstile, request.ip))) {
-        return reply.code(403).send({ error: 'Não deu para confirmar que você é uma pessoa. Recarregue a página e tente de novo.' });
+      if (turnstileLigado()) {
+        const veredito = await pessoaDeVerdade(request.body?.turnstile, request.ip);
+        // Fora do ar é diferente de recusado, e a pessoa merece saber qual dos dois foi: mandar alguém
+        // "provar que não é robô de novo" quando o problema é nosso só gera tentativa em vão.
+        if (veredito === 'indisponivel') {
+          return reply.code(503).send({ error: 'A verificação de segurança está fora do ar. Tente de novo daqui a alguns minutos.' });
+        }
+        if (veredito === 'recusado') {
+          return reply.code(403).send({ error: 'Não deu para confirmar que você é uma pessoa. Recarregue a página e tente de novo.' });
+        }
       }
 
       // Teto diário do endereço. Só é conferido aqui, depois do convite, para quem tem código não ser
