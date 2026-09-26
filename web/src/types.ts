@@ -287,6 +287,22 @@ export interface KaraokeSong {
   createdBy: number | null;
 }
 
+/**
+ * Um servidor de jogo cadastrado numa comunidade. O Syden guarda o endereço e mostra; ele não fala
+ * com esses servidores nem sabe se estão no ar — é uma agenda.
+ */
+export interface ServidorDeJogo {
+  id: number;
+  communityId: number;
+  nome: string;
+  jogo: string;
+  endereco: string;
+  senha: string | null;
+  observacao: string | null;
+  createdBy: number;
+  createdAt: string;
+}
+
 /** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */
 export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia';
 

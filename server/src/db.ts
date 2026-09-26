@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { config } from './config.js';
+import type { NovoServidor, ServidorDeJogo } from './jogos.js';
 
 /** 'dm' são as conversas privadas (direta entre duas pessoas ou grupo), fora de qualquer comunidade. */
 export type ChannelType = 'text' | 'voice' | 'dm';
@@ -477,6 +478,22 @@ db.exec(`
   -- O que cada pessoa tem. Serve para presente do sistema (a insígnia dos 25 primeiros), para recompensa
   -- (a medalha de ideia acolhida) e, mais para frente, para o que for comprado na loja. O DESENHO de cada
   -- item mora no app, não aqui: o banco guarda só o código, para trocar arte sem mexer em banco.
+  -- Os servidores de jogo de uma comunidade: uma agenda de endereços, nada mais. O Syden não fala
+  -- com esses servidores (ver server/src/jogos.ts).
+  CREATE TABLE IF NOT EXISTS game_servers (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    nome         TEXT NOT NULL,
+    jogo         TEXT NOT NULL,
+    endereco     TEXT NOT NULL,
+    senha        TEXT,
+    observacao   TEXT,
+    created_by   INTEGER NOT NULL REFERENCES users(id),
+    created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_game_servers_community ON game_servers(community_id, jogo, nome);
+
   CREATE TABLE IF NOT EXISTS user_items (
     user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     code        TEXT NOT NULL,
@@ -2664,6 +2681,51 @@ export function reactionsForMessage(messageId: number, viewerId: number): Reacti
     )
     .all(viewerId, messageId) as unknown as { emoji: string; count: number; mine: number }[];
   return rows.map((r) => ({ emoji: r.emoji, count: r.count, mine: r.mine === 1 }));
+}
+
+// ---------- Servidores de jogo ----------
+
+const COLUNAS_JOGO =
+  'id, community_id AS communityId, nome, jogo, endereco, senha, observacao, created_by AS createdBy, created_at AS createdAt';
+
+/** A agenda de uma comunidade, agrupada na tela pelo jogo — por isso a ordem já vem por jogo. */
+export function servidoresDeJogo(communityId: number): ServidorDeJogo[] {
+  return db
+    .prepare(`SELECT ${COLUNAS_JOGO} FROM game_servers WHERE community_id = ? ORDER BY jogo, nome`)
+    .all(communityId) as unknown as ServidorDeJogo[];
+}
+
+export function contarServidoresDeJogo(communityId: number): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM game_servers WHERE community_id = ?').get(communityId) as { n: number }).n;
+}
+
+export function acharServidorDeJogo(id: number): ServidorDeJogo | undefined {
+  return db.prepare(`SELECT ${COLUNAS_JOGO} FROM game_servers WHERE id = ?`).get(id) as unknown as ServidorDeJogo | undefined;
+}
+
+export function criarServidorDeJogo(communityId: number, criadoPor: number, novo: NovoServidor): ServidorDeJogo {
+  const { lastInsertRowid } = db
+    .prepare(
+      'INSERT INTO game_servers (community_id, nome, jogo, endereco, senha, observacao, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    )
+    .run(communityId, novo.nome, novo.jogo, novo.endereco, novo.senha, novo.observacao, criadoPor);
+  return acharServidorDeJogo(Number(lastInsertRowid))!;
+}
+
+export function atualizarServidorDeJogo(id: number, novo: NovoServidor): ServidorDeJogo | undefined {
+  db.prepare('UPDATE game_servers SET nome = ?, jogo = ?, endereco = ?, senha = ?, observacao = ? WHERE id = ?').run(
+    novo.nome,
+    novo.jogo,
+    novo.endereco,
+    novo.senha,
+    novo.observacao,
+    id,
+  );
+  return acharServidorDeJogo(id);
+}
+
+export function apagarServidorDeJogo(id: number) {
+  db.prepare('DELETE FROM game_servers WHERE id = ?').run(id);
 }
 
 /** Só as contagens, sem "mine": é o que vai para todo mundo — quem marcou o quê fica só com cada um. */

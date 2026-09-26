@@ -22,6 +22,7 @@ import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
+import { lerServidor, TETO_POR_COMUNIDADE } from './jogos.js';
 import { CATALOGO, podeVestir } from './loja.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
@@ -368,6 +369,63 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
      * a graça de uma loja é ver o que existe. O que o app NÃO pode fazer é decidir o que ela pode
      * vestir a partir disso; quem decide é a rota do perfil, que confere de novo.
      */
+    // ---------- Servidores de jogo ----------
+    //
+    // Uma agenda de endereços da comunidade. O Syden guarda e mostra; não fala com esses servidores
+    // (o porquê está em jogos.ts). Ver é de quem é membro; mexer é de quem administra a comunidade —
+    // é a mesma régua dos canais, e pela mesma razão: o endereço errado manda a turma para outro lugar.
+
+    authed.get<{ Params: { id: string } }>('/api/communities/:id/jogos', async (request, reply) => {
+      const communityId = Number(request.params.id);
+      if (!roleIn(request.user, communityId)) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
+      return db.servidoresDeJogo(communityId);
+    });
+
+    authed.post<{ Params: { id: string } }>('/api/communities/:id/jogos', async (request, reply) => {
+      const communityId = Number(request.params.id);
+      const cargo = roleIn(request.user, communityId);
+      if (!cargo) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
+      if (cargo === 'member') return reply.code(403).send({ error: 'Só quem administra a comunidade mexe na lista de servidores.' });
+
+      if (db.contarServidoresDeJogo(communityId) >= TETO_POR_COMUNIDADE) {
+        return reply
+          .code(409)
+          .send({ error: `A lista já tem ${TETO_POR_COMUNIDADE} servidores. Apague um antes de pôr outro.` });
+      }
+
+      const lido = lerServidor(request.body);
+      if ('erro' in lido) return reply.code(400).send({ error: lido.erro });
+      return db.criarServidorDeJogo(communityId, request.user.id, lido.servidor);
+    });
+
+    authed.put<{ Params: { id: string; jogoId: string } }>('/api/communities/:id/jogos/:jogoId', async (request, reply) => {
+      const communityId = Number(request.params.id);
+      const cargo = roleIn(request.user, communityId);
+      if (!cargo) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
+      if (cargo === 'member') return reply.code(403).send({ error: 'Só quem administra a comunidade mexe na lista de servidores.' });
+
+      // Confere que o servidor é MESMO desta comunidade: sem isto, quem administra a sua comunidade
+      // editaria, pelo número, o servidor de qualquer outra.
+      const atual = db.acharServidorDeJogo(Number(request.params.jogoId));
+      if (!atual || atual.communityId !== communityId) return reply.code(404).send({ error: 'Esse servidor não existe aqui.' });
+
+      const lido = lerServidor(request.body);
+      if ('erro' in lido) return reply.code(400).send({ error: lido.erro });
+      return db.atualizarServidorDeJogo(atual.id, lido.servidor);
+    });
+
+    authed.delete<{ Params: { id: string; jogoId: string } }>('/api/communities/:id/jogos/:jogoId', async (request, reply) => {
+      const communityId = Number(request.params.id);
+      const cargo = roleIn(request.user, communityId);
+      if (!cargo) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
+      if (cargo === 'member') return reply.code(403).send({ error: 'Só quem administra a comunidade mexe na lista de servidores.' });
+
+      const atual = db.acharServidorDeJogo(Number(request.params.jogoId));
+      if (!atual || atual.communityId !== communityId) return reply.code(404).send({ error: 'Esse servidor não existe aqui.' });
+      db.apagarServidorDeJogo(atual.id);
+      return { ok: true };
+    });
+
     authed.get('/api/loja', async (request) => {
       const tem = new Set(db.codigosDoInventario(request.user.id));
       return {

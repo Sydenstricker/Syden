@@ -7705,3 +7705,126 @@ textarea {
 .loja-rodape {
   margin-top: 24px;
 }
+
+/* ---------- Servidores de jogo ---------- */
+
+.jogos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.jogos-novo {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jogos-corpo {
+  overflow-y: auto;
+  flex: 1;
+  padding: 20px;
+}
+
+.jogos-vazio {
+  max-width: 460px;
+  color: var(--text-muted);
+}
+
+.jogo-grupo h3 {
+  margin: 20px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.jogo-cartao {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 620px;
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.jogo-cartao-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.jogo-cartao-texto small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* O endereço inteiro é o botão: o alvo de clique é o texto, que é o que a pessoa quer pegar. */
+.jogo-copiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--overlay);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.jogo-copiar:hover {
+  background: var(--overlay-strong, var(--border));
+}
+
+.jogo-copiar code {
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jogo-senha {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.jogo-cartao-acoes {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+.jogo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 620px;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.jogo-form-linha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.jogo-form-acoes {
+  display: flex;
+  gap: 8px;
+}

@@ -9,6 +9,7 @@ import { desktopBridge } from './desktop';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
+import { ServidoresDeJogo } from './ServidoresDeJogo';
 import { TelaDaLoja } from './TelaDaLoja';
 import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
@@ -117,6 +118,9 @@ export function Shell({
   const [preCarregado, setPreCarregado] = useState<{ channelId: number; mensagens: Message[] } | null>(null);
   const preferences = useSettings();
   const [showUsage, setShowUsage] = useState(false);
+  // A agenda de servidores de jogo toma o lugar do canal aberto, igual ao painel de uso. Os dois nunca
+  // ficam abertos ao mesmo tempo: abrir um fecha o outro.
+  const [showJogos, setShowJogos] = useState(false);
   // Ideias suas que o dono acolheu e você ainda não viu comemorar. Cai confete uma de cada vez.
   const [comemorar, setComemorar] = useState<{ id: number; content: string }[]>([]);
   // Itens que você ganhou e ainda não abriu. A tela de destaque mostra um de cada vez, em fila.
@@ -233,6 +237,7 @@ export function Shell({
     setView('direct');
     setDirectId(conversa.id);
     setShowUsage(false);
+    setShowJogos(false);
     setMobileChannels(false);
   }
 
@@ -345,6 +350,7 @@ export function Shell({
     s.on('voice:move', ({ channelId: to }: { channelId: number }) => {
       setSelectedId(to);
       setShowUsage(false);
+      setShowJogos(false);
       setMobileChannels(false);
       void voiceRef.current.join(to);
     });
@@ -375,6 +381,7 @@ export function Shell({
       return;
     }
     setShowUsage(false);
+    setShowJogos(false);
     setMobileChannels(true); // troca de comunidade: mostra a lista de canais dela, não a conversa da anterior
 
     // Trocar de comunidade é uma troca só: em vez de cada pedaço entrar na tela quando fica pronto
@@ -445,6 +452,7 @@ export function Shell({
         desktopBridge?.focus();
         window.focus();
         setShowUsage(false);
+        setShowJogos(false);
         setMobileChannels(false);
         setCommunityId(message.communityId);
         setSelectedId(message.channelId);
@@ -529,11 +537,13 @@ export function Shell({
 
   // Painel de consumo é só para administradores; se alguém perder o cargo com ele aberto, a tela volta ao normal.
   const usageOpen = showUsage && user.isAdmin && view === 'community';
-  const selected = usageOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
+  const jogosOpen = showJogos && !usageOpen && view === 'community';
+  const selected = usageOpen || jogosOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
 
   function selectChannel(channel: Channel) {
     setView('community'); // vindo da tela inicial ou de uma conversa privada, volta para a comunidade
     setShowUsage(false);
+    setShowJogos(false);
     setSelectedId(channel.id);
     setMobileChannels(false);
     if (channel.type === 'voice') void voice.join(channel.id);
@@ -579,6 +589,7 @@ export function Shell({
           onHome={() => {
             setView('home');
             setShowUsage(false);
+            setShowJogos(false);
             setMobileChannels(false);
           }}
           homeActive={view === 'home'}
@@ -591,6 +602,7 @@ export function Shell({
                 onClick={() => {
                   setView('direct');
                   setShowUsage(false);
+                  setShowJogos(false);
                   setMobileChannels(true);
                 }}
               />
@@ -602,8 +614,14 @@ export function Shell({
             user={user}
             community={community}
             channels={channels}
-            selectedId={usageOpen ? null : selectedId}
+            selectedId={usageOpen || jogosOpen ? null : selectedId}
             usageActive={usageOpen}
+            jogosActive={jogosOpen}
+            onOpenJogos={() => {
+              setShowJogos(true);
+              setShowUsage(false);
+              setMobileChannels(false);
+            }}
             voiceMembers={voiceMembers}
             voice={voice}
             myStatus={myStatus}
@@ -614,6 +632,7 @@ export function Shell({
             onOpenUsage={() => {
               setView('community');
               setShowUsage(true);
+              setShowJogos(false);
               setMobileChannels(false);
             }}
             onOpenSettings={() => setSettingsOpen('account')}
@@ -701,7 +720,10 @@ export function Shell({
           {view === 'community' && usageOpen && (
             <UsageDashboard voiceMembers={voiceMembers} onMobileBack={() => setMobileChannels(true)} />
           )}
-          {view === 'community' && community && !selected && !usageOpen && (
+          {view === 'community' && jogosOpen && community && (
+            <ServidoresDeJogo community={community} onMobileBack={() => setMobileChannels(true)} />
+          )}
+          {view === 'community' && community && !selected && !usageOpen && !jogosOpen && (
             <div className="empty">Escolha um canal à esquerda.</div>
           )}
         </main>

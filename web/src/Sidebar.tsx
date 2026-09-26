@@ -2,6 +2,7 @@ import { useSpeakingParticipants } from '@livekit/components-react';
 import {
   BarChart3,
   Download,
+  Gamepad2,
   Hash,
   Headphones,
   HeadphoneOff,
@@ -41,6 +42,7 @@ interface Props {
   voiceMembers: VoiceMember[];
   voice: Voice;
   usageActive: boolean;
+  jogosActive: boolean;
   myStatus: PresenceStatus;
   onSetStatus: (status: PresenceStatus) => void;
   /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
@@ -52,6 +54,7 @@ interface Props {
   directList: ReactNode;
   onSelect: (channel: Channel) => void;
   onOpenUsage: () => void;
+  onOpenJogos: () => void;
   onOpenSettings: () => void;
 }
 
@@ -61,6 +64,7 @@ export function Sidebar({
   channels,
   selectedId,
   usageActive,
+  jogosActive,
   voiceMembers,
   voice,
   myStatus,
@@ -71,6 +75,7 @@ export function Sidebar({
   directList,
   onSelect,
   onOpenUsage,
+  onOpenJogos,
   onOpenSettings,
 }: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
@@ -114,6 +119,11 @@ export function Sidebar({
       {directMode && directList}
 
       <div className="channel-list" hidden={directMode}>
+        {/* A agenda de servidores de jogo é da comunidade inteira: todo mundo vê, quem administra mexe. */}
+        <button className={`channel jogos-link${jogosActive ? ' active' : ''}`} onClick={onOpenJogos}>
+          <Gamepad2 size={18} /> Servidores de jogos
+        </button>
+
         {/* Consumo do servidor interessa a quem cuida dele: só os administradores veem. */}
         {user.isAdmin && (
           <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
