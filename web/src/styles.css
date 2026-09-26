@@ -2986,6 +2986,22 @@ textarea {
   flex: 1;
 }
 
+/* Quem chegou por um link de convite vê isto no lugar do campo de código. */
+.auth-convidado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--bg-raised);
+  border-radius: var(--radius);
+  background: var(--bg-input, rgba(255, 255, 255, 0.04));
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
 /* ---------- O registro de moderação ---------- */
 
 .auditoria-lista {

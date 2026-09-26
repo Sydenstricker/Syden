@@ -111,6 +111,15 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
   app.get('/api/health', async () => ({ ok: true }));
 
+  /**
+   * O que a tela de entrada precisa saber antes de alguém ter conta. Hoje é só uma coisa: se o cadastro
+   * está aberto a qualquer pessoa ou se exige convite — sem isso, a tela pediria um código obrigatório
+   * num Syden aberto, ou ofereceria cadastro livre num que vai recusar.
+   *
+   * Não conta nada que já não se descubra tentando criar uma conta.
+   */
+  app.get('/api/inicio', async () => ({ cadastroAberto: config.cadastroAberto }));
+
   // Freios das portas caras. O de endereço protege o SERVIDOR: conferir uma senha custa ~0,1 s de
   // processador de propósito, então uma enxurrada de tentativas engasga a voz de quem está em chamada.
   // O de conta protege UMA PESSOA de quem tenta adivinhar a senha dela a partir de vários lugares —
@@ -150,20 +159,35 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(409).send({ error: 'Esse nome de usuário já está em uso.' });
       }
 
-      // O código serve para duas coisas: entrar no Syden e já cair na comunidade de quem convidou.
-      // Se a comunidade estiver cheia, a conta é criada assim mesmo e a pessoa escolhe outra na tela seguinte.
-      const found = db.findCommunityByInvite(code) ?? db.defaultCommunity();
-      const invited = found && db.countMembers(found.id) < config.maxMembersPerCommunity ? found : undefined;
+      /*
+       * DOIS PORTÕES DIFERENTES, e é isso que permite crescer sem abrir a casa dos outros:
+       *
+       *   1. ter conta no Syden  — pode ser aberto a qualquer pessoa (CADASTRO_ABERTO=sim);
+       *   2. entrar numa comunidade — sempre por convite de quem já está lá.
+       *
+       * É como o Discord funciona, e é o contrário do que o Syden fazia: sem código válido, a pessoa
+       * caía na comunidade padrão. Com o cadastro aberto, isso despejaria todo estranho da internet
+       * dentro da primeira comunidade — a dos amigos de quem montou o servidor.
+       *
+       * Quem chega sem convite fica sem comunidade nenhuma e vê a tela de "você ainda não participa de
+       * nenhuma": pode criar a sua ou entrar com um código depois.
+       */
+      const convidadoPara = code ? db.findCommunityByInvite(code) : undefined;
+      const temEspaco = convidadoPara && db.countMembers(convidadoPara.id) < config.maxMembersPerCommunity;
 
       const user = db.createUser(username, await hashPassword(password));
       installDefaultPack(user.id); // soundboard já começa com o pacote básico do Syden
-      if (invited) {
-        db.addMember(invited.id, user.id);
-        io.to(communityRoom(invited.id)).emit('member:updated', { communityId: invited.id, member: { ...user, role: 'member' } });
-      } else if (!found) {
+
+      if (!db.defaultCommunity()) {
         // Primeiro cadastro do Syden inteiro: ganha a comunidade inicial.
         const community = db.createCommunity('Syden', user.id, config.inviteCode || db.newInviteCode());
         seedExpressions(community.id);
+      } else if (temEspaco) {
+        db.addMember(convidadoPara.id, user.id);
+        io.to(communityRoom(convidadoPara.id)).emit('member:updated', {
+          communityId: convidadoPara.id,
+          member: { ...user, role: 'member' },
+        });
       }
       conferirPresentes(user); // conta nova entre as 25 primeiras já sai com a insígnia esperando
       return { token: await signSession(user, 1), user };

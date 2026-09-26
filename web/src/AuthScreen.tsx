@@ -1,5 +1,5 @@
-import { Download, MonitorDown } from 'lucide-react';
-import { type FormEvent, useState } from 'react';
+import { Download, MonitorDown, Ticket } from 'lucide-react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
 import { api } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
@@ -36,6 +36,14 @@ export function AuthScreen({
   const [inviteCode, setInviteCode] = useState(initialInviteCode ?? '');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Este Syden aceita qualquer pessoa ou só quem foi convidado? Muda o que a tela pede.
+  const [cadastroAberto, setCadastroAberto] = useState(false);
+
+  useEffect(() => {
+    void api<{ cadastroAberto: boolean }>('/api/inicio', { token: null })
+      .then((inicio) => setCadastroAberto(inicio.cadastroAberto))
+      .catch(() => {}); // servidor velho ou fora do ar: segue pedindo convite, que é o mais seguro
+  }, []);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -85,13 +93,29 @@ export function AuthScreen({
                 required
               />
             </label>
-            {mode === 'register' && (
-              <label>
-                {t('Código de convite')}
-                <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} />
-                <span className="auth-hint">{t('O código que um amigo te passou. Ele já te coloca na comunidade dele.')}</span>
-              </label>
-            )}
+            {/*
+              Quem chegou por um link de convite não vê campo nenhum: o código já veio no endereço, e
+              pedir que a pessoa confira um código que ela não digitou é atrito à toa. O campo só aparece
+              para quem digitou o endereço do Syden na mão — e aí ele é mesmo necessário, porque é o que
+              separa "fui convidado" de "achei o site".
+            */}
+            {mode === 'register' &&
+              (initialInviteCode ? (
+                <p className="auth-convidado">
+                  <Ticket size={16} aria-hidden="true" />
+                  {t('Você foi convidado. É só escolher um nome e uma senha.')}
+                </p>
+              ) : (
+                <label>
+                  {cadastroAberto ? t('Código de convite (opcional)') : t('Código de convite')}
+                  <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} />
+                  <span className="auth-hint">
+                    {cadastroAberto
+                      ? t('Tem um código de amigo? Ele já te coloca na comunidade dele. Sem código, você entra e cria a sua.')
+                      : t('O código que um amigo te passou. Ele já te coloca na comunidade dele.')}
+                  </span>
+                </label>
+              ))}
 
             {error && <p className="form-error">{error}</p>}
 
