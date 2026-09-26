@@ -7,6 +7,10 @@ que não roda, tela que quebra no navegador.
 São lentos e precisam do Syden no ar — por isso ficam fora do `npm test` e fora do CI. Rode-os antes de
 publicar uma mudança grande na interface.
 
+> **O `producao` é o único que pode rodar contra o Syden de verdade.** Todos os outros criam contas e
+> mandam mensagens: contra a produção, encheriam a comunidade de gente falsa. Rode-os sempre contra a
+> cópia local descrita abaixo.
+
 ## Antes de rodar
 
 Toda conta nova cai entre as 25 primeiras e ganha a insígnia de presente, que cobre a tela na entrada — por
@@ -60,6 +64,7 @@ As fotos de tela vão para `e2e/fotos/` e não entram no Git.
 | `menu-elegante` | o menu do botão direito no nome de alguém: as ações, o teclado e as notas | API + site, **banco limpo** |
 | `vila-ordem` | a ordem de desenho da vila (nada aparecendo na frente do que deveria tampá-lo) e a estátua | API + site |
 | `sob-demanda` | transmissão só chega a quem abriu: quem não abriu não gasta banda nem processador | API + site + **LiveKit** |
+| `producao` | **só olha, não cria nada**: confere o Syden que está no ar — arquivos, endereço da API, tela de entrada e páginas legais | nada (roda contra a internet) |
 | `insignias` | a insígnia dos 25 primeiros: o presente espera, é resgatado com um clique e só então vai para o perfil | API + site |
 
 "Banco limpo" quer dizer que o teste conta com um Syden recém-criado, porque **a primeira conta criada vira
