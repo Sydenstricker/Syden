@@ -21,6 +21,7 @@ import { healthReport, recordClientError } from './health.js';
 import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
+import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
@@ -136,7 +137,13 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
    *
    * Não conta nada que já não se descubra tentando criar uma conta.
    */
-  app.get('/api/inicio', async () => ({ cadastroAberto: config.cadastroAberto, turnstileSiteKey: config.turnstile.siteKey || null }));
+  app.get('/api/inicio', async () => ({
+    cadastroAberto: config.cadastroAberto,
+    turnstileSiteKey: config.turnstile.siteKey || null,
+    // O recado geral vai aqui, e não numa rota própria, porque esta é a chamada que a tela de entrada
+    // já faz: assim ele chega em quem NÃO CONSEGUE ENTRAR, que é justamente quem mais precisa dele.
+    aviso: avisoDeAgora(),
+  }));
 
   // Freios das portas caras. O de endereço protege o SERVIDOR: conferir uma senha custa ~0,1 s de
   // processador de propósito, então uma enxurrada de tentativas engasga a voz de quem está em chamada.
@@ -264,6 +271,39 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
+
+    /**
+     * O recado geral do Syden, escrito por quem administra e visto por todo mundo — inclusive por quem
+     * ainda não entrou. Fica no banco, e não numa variável de ambiente, para poder ser ligado e
+     * desligado pela tela: é no meio de uma manutenção que menos se quer reiniciar o servidor de novo.
+     */
+    const soQuemAdministra = (request: { user: db.User }, reply: FastifyReply) =>
+      request.user.isAdmin
+        ? null
+        : reply.code(403).send({ error: 'Só quem administra o Syden escreve o recado geral.' });
+
+    authed.get('/api/aviso', async (request, reply) => {
+      if (soQuemAdministra(request, reply)) return reply;
+      // Devolve o GUARDADO, e não o que está valendo: quem vai editar precisa ver o que escreveu
+      // antes, mesmo que a hora já tenha passado e o recado tenha sumido da tela dos outros.
+      return { aviso: avisoGuardado(), valendo: avisoDeAgora() !== null };
+    });
+
+    authed.put('/api/aviso', async (request, reply) => {
+      if (soQuemAdministra(request, reply)) return reply;
+      const lido = lerAviso(request.body);
+      if ('erro' in lido) return reply.code(400).send({ error: lido.erro });
+      guardarAviso(lido.aviso);
+      poderDeOperador(request.user, 'aviso.escrito', { detail: lido.aviso.texto });
+      return { aviso: lido.aviso, valendo: avisoDeAgora() !== null };
+    });
+
+    authed.delete('/api/aviso', async (request, reply) => {
+      if (soQuemAdministra(request, reply)) return reply;
+      apagarAviso();
+      poderDeOperador(request.user, 'aviso.apagado', {});
+      return { aviso: null, valendo: false };
+    });
 
     // Abrir o Syden também confere: quem já estava logado (o app de desktop fica aberto dias) não fica
     // esperando o próximo login para receber o que passou a ter direito.

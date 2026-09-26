@@ -7357,3 +7357,103 @@ textarea {
   line-height: 1;
   text-align: center;
 }
+
+/* ---------- Recado do Syden ---------- */
+
+/* A faixa no alto da tela. Fica acima de tudo, inclusive da tela de entrada. */
+.aviso-geral {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  background: #faa61a;
+}
+
+.aviso-geral.manutencao {
+  background: #faa61a;
+}
+
+/* Problema é o único em vermelho: se tudo fosse vermelho, nada seria. */
+.aviso-geral.problema {
+  color: #fff;
+  background: #c8102e;
+}
+
+.aviso-geral.recado {
+  color: #fff;
+  background: #4a8fd8;
+}
+
+.aviso-geral svg {
+  flex: none;
+}
+
+.aviso-geral span {
+  flex: 1;
+}
+
+.aviso-geral .link {
+  color: inherit;
+  opacity: 0.8;
+}
+
+/* ---------- Onde o recado é escrito ---------- */
+
+.painel-aviso {
+  max-width: 620px;
+}
+
+.painel-aviso h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.painel-aviso-estado {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: var(--overlay);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.painel-aviso-estado.valendo {
+  color: #faa61a;
+}
+
+.painel-aviso-tons {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.painel-aviso-horas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.painel-aviso-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.painel-aviso-atalhos .btn-secondary {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.painel-aviso-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}

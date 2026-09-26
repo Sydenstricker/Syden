@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ApiError, api, loadToken, saveToken } from './api';
 import { AuthScreen } from './AuthScreen';
+import { AvisoGeral } from './AvisoGeral';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
 import { SplashLogo } from './SplashLogo';
@@ -74,6 +75,9 @@ export function App() {
   return (
     <>
       <DesktopTitleBar minimal={session.status === 'loading'} />
+      {/* Fica FORA do app-body de propósito: assim o recado aparece na tela de entrada também, que é
+          onde ele mais faz falta — quem não consegue entrar é quem mais precisa saber do porquê. */}
+      {session.status !== 'loading' && <AvisoGeral />}
       {confirmacao && (
         <p className={`aviso-topo${confirmacao.ok ? '' : ' ruim'}`} role="status">
           {confirmacao.texto}
