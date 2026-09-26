@@ -161,8 +161,8 @@ export function Home({
     },
     {
       id: 'loja',
-      titulo: 'Sons',
-      sub: 'Pacotes de efeitos',
+      titulo: 'Loja',
+      sub: 'Enfeites, sons e emojis',
       icone: <ShoppingBag size={18} />,
       ...balaoDaCasa(CASAS.loja),
       onClick: aoAbrirLoja,

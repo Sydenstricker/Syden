@@ -36,6 +36,8 @@ export interface User {
   nameColor: string | null;
   /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
   banner: string | null;
+  /** Nome da moldura escolhida para o avatar, ou null para nenhuma. */
+  moldura: string | null;
   /** As insígnias que a pessoa escolheu exibir no perfil, na ordem em que ela pôs. */
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden. É o que vira a medalha no perfil. */
@@ -46,7 +48,10 @@ export interface User {
 export type UserRef = Pick<User, 'id' | 'username'>;
 
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
-export type PublicUser = Pick<User, 'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'vitrine' | 'acceptedIdeas'>;
+export type PublicUser = Pick<
+  User,
+  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'moldura' | 'vitrine' | 'acceptedIdeas'
+>;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
 export type CommunityMember = PublicUser & { role: Role };
@@ -606,6 +611,8 @@ addColumnIfMissing('users', 'session_version', 'INTEGER NOT NULL DEFAULT 1');
 // Quais insígnias a pessoa escolheu exibir, e em que ordem: os códigos separados por vírgula. Fica aqui,
 // e não numa consulta à user_items, porque a lista de membros mostra isto de todo mundo o tempo todo.
 addColumnIfMissing('users', 'vitrine', 'TEXT');
+// A moldura do avatar, cosmético da loja. Guarda só o NOME da escolha ('prata'); o desenho mora no app.
+addColumnIfMissing('users', 'moldura', 'TEXT');
 // O e-mail é opcional: quem já tem conta continua entrando sem ele. Serve para recuperar a senha e para
 // avisar de um incidente — sem endereço nenhum, quem esquece a senha perde a conta para sempre.
 addColumnIfMissing('users', 'email', 'TEXT');
@@ -925,7 +932,7 @@ export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
       `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion,
-              u.name_color AS nameColor, u.banner, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role
+              u.name_color AS nameColor, u.banner, u.moldura, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
     )
@@ -941,7 +948,7 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, vitrine, accepted_ideas AS acceptedIdeas';
+  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, vitrine, accepted_ideas AS acceptedIdeas';
 
 type UserRow = {
   id: number;
@@ -951,6 +958,7 @@ type UserRow = {
   avatarVersion: number | null;
   nameColor: string | null;
   banner: string | null;
+  moldura: string | null;
   vitrine: string | null;
   acceptedIdeas: number;
 };
@@ -965,6 +973,7 @@ function toUser(row: UserRow | undefined): User | undefined {
       avatarVersion: row.avatarVersion,
       nameColor: row.nameColor,
       banner: row.banner,
+      moldura: row.moldura,
       vitrine: lerVitrine(row.vitrine),
       acceptedIdeas: row.acceptedIdeas ?? 0,
     }
@@ -1393,9 +1402,24 @@ export function setAvatar(userId: number, avatar: { mime: string; data: Buffer }
 }
 
 /** Cor do nome e fundo do perfil. Passar null em qualquer um dos dois volta ao padrão. */
-export function setProfile(userId: number, perfil: { nameColor: string | null; banner: string | null }): User {
-  db.prepare('UPDATE users SET name_color = ?, banner = ? WHERE id = ?').run(perfil.nameColor, perfil.banner, userId);
+export function setProfile(
+  userId: number,
+  perfil: { nameColor: string | null; banner: string | null; moldura: string | null },
+): User {
+  db.prepare('UPDATE users SET name_color = ?, banner = ?, moldura = ? WHERE id = ?').run(
+    perfil.nameColor,
+    perfil.banner,
+    perfil.moldura,
+    userId,
+  );
   return findUserById(userId)!;
+}
+
+/** Só os códigos que a pessoa tem no inventário. É o que a loja precisa para saber o que liberar. */
+export function codigosDoInventario(userId: number): string[] {
+  return (db.prepare('SELECT code FROM user_items WHERE user_id = ?').all(userId) as unknown as { code: string }[]).map(
+    (linha) => linha.code,
+  );
 }
 
 export function findAvatar(userId: number) {

@@ -9,6 +9,7 @@ import { desktopBridge } from './desktop';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
+import { TelaDaLoja } from './TelaDaLoja';
 import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
 import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread';
@@ -31,7 +32,7 @@ const LAST_COMMUNITY_KEY = 'syden.community';
 /** Última tela aberta (início, comunidade ou conversas), pelo mesmo motivo. */
 const LAST_VIEW_KEY = 'syden.view';
 
-type View = 'home' | 'community' | 'direct';
+type View = 'home' | 'community' | 'direct' | 'loja';
 
 function rememberView(view: View) {
   try {
@@ -648,11 +649,19 @@ export function Shell({
               salas={channels.filter((c) => c.type === 'voice')}
               naVoz={voiceMembers}
               aoEntrar={watchStream}
-              aoAbrirLoja={() => setSettingsOpen('soundboard')}
+              aoAbrirLoja={() => setView('loja')}
               aoExplorar={() => setExplorarAberto(true)}
               souODono={user.isOwner}
             />
           )}
+          {view === 'loja' && (
+            <TelaDaLoja
+              user={user}
+              aoAbrirPacotes={() => setSettingsOpen('soundboard')}
+              aoVoltar={() => setView('home')}
+            />
+          )}
+
           {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
           {view === 'direct' && directAsChannel && socket && (
             <TextChannel

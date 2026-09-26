@@ -30,13 +30,19 @@ export function Avatar({
   size?: number;
 }) {
   const { members } = useDirectory();
-  const version = userId === undefined ? null : (members.get(userId)?.avatarVersion ?? null);
+  const membro = userId === undefined ? undefined : members.get(userId);
+  const version = membro?.avatarVersion ?? null;
+  // A moldura vem do DIRETÓRIO, e não de quem chamou: assim ela aparece em toda parte onde já se
+  // desenha um avatar (lista de membros, chamada, mensagem) sem passar a escolha de mão em mão. E
+  // muda sozinha quando a pessoa troca, pelo mesmo "user:updated" que já atualiza o nome.
+  const moldura = membro?.moldura ?? undefined;
   // Hash que espalha bem nomes parecidos (ana1, ana2...) entre as cores; somar os códigos repetia muito.
   const hash = [...name].reduce((acc, ch) => (Math.imul(acc, 31) + ch.charCodeAt(0)) >>> 0, 7);
 
   return (
     <span
       className={`avatar${speaking ? ' speaking' : ''}`}
+      data-moldura={moldura || undefined}
       style={{
         width: size,
         height: size,

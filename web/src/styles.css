@@ -7457,3 +7457,251 @@ textarea {
   gap: 8px;
   margin-top: 16px;
 }
+
+/* ---------- Molduras do avatar ---------- */
+
+/* O anel fica FORA do avatar, num pseudo-elemento, para não comer o espaço da foto: um `border` no
+   próprio avatar encolheria a imagem, e a moldura mais grossa deixaria a foto menor que as outras. */
+.avatar[data-moldura]::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  padding: 2px;
+  /* O truque do anel: um fundo que só aparece na borda, recortado pelo miolo. */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.avatar[data-moldura='prata']::after {
+  background: linear-gradient(140deg, #e8e8ec, #9aa0a6, #e8e8ec);
+}
+.avatar[data-moldura='bronze']::after {
+  background: linear-gradient(140deg, #d89a5c, #8a5a2b, #d89a5c);
+}
+.avatar[data-moldura='folha']::after {
+  background: linear-gradient(140deg, #8fce6a, #3f7a2e, #8fce6a);
+}
+.avatar[data-moldura='mar']::after {
+  background: linear-gradient(140deg, #7fd4f0, #1f6fa8, #7fd4f0);
+}
+.avatar[data-moldura='brasa-moldura']::after {
+  background: linear-gradient(140deg, #ffb45c, #c8102e, #ffb45c);
+}
+.avatar[data-moldura='ouro-moldura']::after {
+  background: linear-gradient(140deg, #ffe08a, #b8860b, #fff3c4, #b8860b);
+  background-size: 300% 300%;
+  animation: moldura-brilho 6s linear infinite;
+}
+.avatar[data-moldura='esmeralda-moldura']::after {
+  background: linear-gradient(140deg, #7ff0c0, #0d7a54, #bff7e0, #0d7a54);
+  background-size: 300% 300%;
+  animation: moldura-brilho 6s linear infinite;
+}
+.avatar[data-moldura='rubi']::after {
+  background: linear-gradient(140deg, #ff8fa0, #8b0020, #ffc9d2, #8b0020);
+  background-size: 300% 300%;
+  animation: moldura-brilho 5s linear infinite;
+}
+.avatar[data-moldura='prisma-moldura']::after {
+  background: conic-gradient(#e2574c, #e0822f, #c79a1e, #77a93a, #2fa88c, #3d97cc, #5b6fd6, #8f6fd6, #d45f95, #e2574c);
+  animation: moldura-girar 8s linear infinite;
+}
+
+@keyframes moldura-brilho {
+  to {
+    background-position: 300% 0;
+  }
+}
+
+@keyframes moldura-girar {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Quem pediu menos movimento no Windows não leva anel girando na cara. */
+@media (prefers-reduced-motion: reduce) {
+  .avatar[data-moldura]::after {
+    animation: none;
+  }
+}
+
+/* ---------- A loja ---------- */
+
+.loja {
+  overflow-y: auto;
+  flex: 1;
+  padding: 24px;
+}
+
+.loja-cabecalho h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.loja-cabecalho p {
+  margin: 4px 0 16px;
+  color: var(--text-muted);
+}
+
+.loja-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 16px 0 28px;
+}
+
+.loja-cartao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.loja-cartao.vestido {
+  border-color: var(--green);
+}
+
+/* Trancado continua visível e legível: a graça de uma loja é ver o que existe. */
+.loja-cartao.trancado {
+  opacity: 0.75;
+}
+
+.loja-cartao-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.loja-cartao-texto small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.loja-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.loja-etiqueta.contribuinte {
+  color: #ff5c8a;
+  background: rgba(255, 92, 138, 0.12);
+}
+
+.loja-etiqueta.conquista {
+  color: #faa61a;
+  background: rgba(250, 166, 26, 0.12);
+}
+
+.loja-amostra {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.loja-amostra.cor {
+  font-size: 20px;
+  font-weight: 700;
+  background: var(--overlay);
+}
+
+.loja-amostra.fundo {
+  background-size: cover;
+}
+
+.loja-amostra-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--overlay);
+}
+
+.loja-vestido {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font-size: 13px;
+  color: var(--green);
+}
+
+.loja-trancado {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.loja-contribuir,
+.loja-pacotes {
+  max-width: 720px;
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.loja-contribuir h3,
+.loja-pacotes h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.loja-niveis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.loja-niveis li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: var(--overlay);
+}
+
+.loja-niveis strong {
+  font-size: 18px;
+}
+
+.loja-niveis small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.loja-rodape {
+  margin-top: 24px;
+}

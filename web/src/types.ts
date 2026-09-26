@@ -9,6 +9,8 @@ export interface User {
   nameColor: string | null;
   /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
   banner: string | null;
+  /** Nome da moldura do avatar escolhida na loja, ou null para nenhuma. */
+  moldura: string | null;
   /** Os códigos das insígnias que ela escolheu exibir no perfil, na ordem (ver insignias.ts). */
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden: é a medalha de contribuição do perfil. */
@@ -29,7 +31,7 @@ export interface PresenceEntry {
 
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner' | 'vitrine' | 'acceptedIdeas'
+  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner' | 'moldura' | 'vitrine' | 'acceptedIdeas'
 >;
 
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */
@@ -283,4 +285,24 @@ export interface KaraokeSong {
   /** A letra: .lrc com o tempo de cada linha, ou texto simples. Vazio = sem letra. */
   lyrics: string;
   createdBy: number | null;
+}
+
+/** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */
+export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia';
+
+/** Como se põe a mão num item: de graça, fazendo alguma coisa, ou ajudando a pagar o servidor. */
+export type ComoSeGanha = 'livre' | 'conquista' | 'contribuinte';
+
+export interface ItemDaLoja {
+  codigo: string;
+  tipo: TipoDeItem;
+  comoSeGanha: ComoSeGanha;
+  nivel?: 1 | 2 | 3 | 4;
+  /** Já é seu? Item livre é de todo mundo; os outros dependem do inventário. */
+  tenho: boolean;
+}
+
+export interface Loja {
+  itens: ItemDaLoja[];
+  vestindo: { cor: string | null; fundo: string | null; moldura: string | null; insignias: string[] };
 }

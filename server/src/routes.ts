@@ -22,6 +22,7 @@ import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
+import { CATALOGO, podeVestir } from './loja.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
@@ -314,15 +315,29 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     // Enfeites do perfil. O servidor não conhece as cores: guarda o nome da opção e confia no app para
     // desenhar — assim dá para acrescentar cor nova sem tocar no banco. Só limita o tamanho do texto.
-    authed.put<{ Body: { nameColor?: string | null; banner?: string | null } }>('/api/me/profile', async (request) => {
-      const limpa = (valor: unknown) => (typeof valor === 'string' && valor.length > 0 && valor.length <= 24 ? valor : null);
-      const user = db.setProfile(request.user.id, {
-        nameColor: limpa(request.body?.nameColor),
-        banner: limpa(request.body?.banner),
-      });
-      io.emit('user:updated', user);
-      return user;
-    });
+    authed.put<{ Body: { nameColor?: string | null; banner?: string | null; moldura?: string | null } }>(
+      '/api/me/profile',
+      async (request, reply) => {
+        const limpa = (valor: unknown) => (typeof valor === 'string' && valor.length > 0 && valor.length <= 24 ? valor : null);
+        const nameColor = limpa(request.body?.nameColor);
+        const banner = limpa(request.body?.banner);
+        const moldura = limpa(request.body?.moldura);
+
+        // Antes a rota aceitava qualquer texto curto e confiava no app para só mandar o que existe.
+        // Agora que há item que se GANHA, confiar no app deixou de servir: um pedido feito à mão
+        // vestiria a insígnia dos 25 primeiros em quem chegou ontem. Quem decide é o servidor.
+        const tem = db.codigosDoInventario(request.user.id);
+        const errado =
+          (!podeVestir(nameColor, 'cor', tem) && 'cor') ||
+          (!podeVestir(banner, 'fundo', tem) && 'fundo') ||
+          (!podeVestir(moldura, 'moldura', tem) && 'moldura');
+        if (errado) return reply.code(403).send({ error: 'Esse item de ' + errado + ' não é seu.' });
+
+        const user = db.setProfile(request.user.id, { nameColor, banner, moldura });
+        io.emit('user:updated', user);
+        return user;
+      },
+    );
 
     authed.post<{ Body: { currentPassword?: string; newPassword?: string } }>(
       '/api/me/password',
@@ -344,6 +359,27 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     );
 
     // ---------- Inventário: o que a pessoa tem, e o que ela ainda não viu ----------
+
+    /**
+     * A loja: o catálogo inteiro mais o que ESTA pessoa já tem e o que está vestindo.
+     *
+     * Vem tudo numa chamada só porque a loja mostra as três coisas juntas — separar em três daria três
+     * idas ao servidor para desenhar uma tela. E vem o catálogo inteiro, inclusive o que ela não tem:
+     * a graça de uma loja é ver o que existe. O que o app NÃO pode fazer é decidir o que ela pode
+     * vestir a partir disso; quem decide é a rota do perfil, que confere de novo.
+     */
+    authed.get('/api/loja', async (request) => {
+      const tem = new Set(db.codigosDoInventario(request.user.id));
+      return {
+        itens: CATALOGO.map((item) => ({ ...item, tenho: item.comoSeGanha === 'livre' || tem.has(item.codigo) })),
+        vestindo: {
+          cor: request.user.nameColor,
+          fundo: request.user.banner,
+          moldura: request.user.moldura,
+          insignias: request.user.vitrine,
+        },
+      };
+    });
 
     authed.get('/api/me/itens', async (request) => ({
       itens: db.itensDaPessoa(request.user.id),
