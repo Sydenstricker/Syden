@@ -6,7 +6,7 @@
   "description": "Syden para desktop",
   "main": "src/main.js",
   "devDependencies": {
-    "electron": "44.4.3",
+    "electron": "44.4.5",
     "electron-builder": "^26.15.3",
     "node-addon-api": "^8.5.0",
     "node-gyp": "^11.4.2"
