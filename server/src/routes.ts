@@ -895,6 +895,21 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return (await audiencia()) ?? null;
     });
 
+    /**
+     * O panorama das comunidades: quantas existem, de que tamanho e com quanta conversa.
+     *
+     * Só METADADO — nunca o conteúdo de mensagem nenhuma. A janela vem em dias, porque "mais ativa"
+     * depende do período: em 7 dias aparece quem está movimentada agora, em 90 aparece quem tem
+     * história. O teto de 365 existe para ninguém pedir uma varredura do banco inteiro sem querer.
+     */
+    authed.get<{ Querystring: { dias?: string } }>('/api/status/comunidades', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      const pedido = Number(request.query?.dias);
+      const dias = Number.isFinite(pedido) ? Math.min(365, Math.max(1, Math.round(pedido))) : 7;
+      const desde = new Date(Date.now() - dias * 86_400_000).toISOString();
+      return { dias, comunidades: db.panoramaDeComunidades(desde) };
+    });
+
     // ---------- Canais ----------
 
     authed.get<{ Params: { id: string } }>('/api/communities/:id/channels', async (request, reply) => {

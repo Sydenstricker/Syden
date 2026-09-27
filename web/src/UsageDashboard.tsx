@@ -6,6 +6,7 @@ import { PainelDeAviso } from './PainelDeAviso';
 import { PainelDeCrescimento } from './PainelDeCrescimento';
 import { PainelDenuncias } from './PainelDenuncias';
 import { PainelDeAudiencia } from './PainelDeAudiencia';
+import { PainelDeComunidades } from './PainelDeComunidades';
 import { PainelDisponibilidade } from './PainelDisponibilidade';
 import { HealthPanel } from './HealthPanel';
 import { MobileBackButton } from './MobileBackButton';
@@ -133,6 +134,9 @@ export function UsageDashboard({
             {/* Vem antes do tráfego de propósito: quantas pessoas existem é a pergunta que se faz
                 primeiro, e o consumo só faz sentido sabendo entre quantos ele está dividido. */}
             <PainelDeCrescimento contas={usage.contas} online={usage.online} />
+
+            {/* Logo depois de quantas PESSOAS existem: onde elas estão é a pergunta seguinte. */}
+            <PainelDeComunidades />
 
             <section className="usage-card">
               <h2>Tráfego de saída este mês</h2>

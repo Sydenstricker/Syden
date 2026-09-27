@@ -3141,6 +3141,97 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Panorama das comunidades ---------- */
+
+.comunidades-janela {
+  display: flex;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+
+.comunidades-janela .chip {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.comunidades-janela .chip:hover {
+  background: var(--bg-hover);
+}
+
+.comunidades-janela .chip.ativo {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.comunidades-tabela {
+  width: 100%;
+  margin-top: 12px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.comunidades-tabela th,
+.comunidades-tabela td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--bg-raised);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.comunidades-tabela thead th {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* A primeira coluna é o nome: alinhada à esquerda e com o contexto embaixo, em letra menor. */
+.comunidades-tabela th:first-child,
+.comunidades-tabela tbody th {
+  text-align: left;
+  font-weight: 400;
+}
+
+.comunidades-tabela tbody th strong {
+  display: block;
+  color: var(--text-strong);
+}
+
+.comunidades-tabela tbody th small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* "nunca" é informação, não ausência de informação: fica apagado, mas legível. */
+.comunidades-tabela td.muda {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.comunidades-mais {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.comunidades-mais:hover {
+  background: var(--bg-hover);
+}
+
 /* ---------- Audiência do site (Web Analytics da Cloudflare) ---------- */
 
 /* A chave vence em um ano, e quando vencer a seção sumiria sem dizer nada — parecendo que o site

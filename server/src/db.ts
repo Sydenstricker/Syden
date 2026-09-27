@@ -2973,3 +2973,56 @@ export function reactionCounts(messageId: number): { emoji: string; count: numbe
     .prepare('SELECT emoji, COUNT(*) AS count FROM message_reactions WHERE message_id = ? GROUP BY emoji ORDER BY MIN(id)')
     .all(messageId) as unknown as { emoji: string; count: number }[];
 }
+
+/**
+ * Panorama das comunidades, para quem cuida do Syden inteiro.
+ *
+ * POR QUE ISTO EXISTE. Com o cadastro aberto, qualquer pessoa cria a sua comunidade, e quem mantém o
+ * servidor deixou de ter ideia do que existe nele. Isso é um problema de duas pontas: não dá para
+ * saber onde vale investir energia, nem para perceber que apareceu um lugar que não devia existir.
+ * Hoje a única forma de descobrir é alguém de dentro denunciar.
+ *
+ * O QUE ISTO NÃO FAZ, e é de propósito: nada aqui lê o CONTEÚDO de mensagem nenhuma. Só se conta
+ * quantas houve, de quantas pessoas diferentes e quando foi a última. É a diferença entre saber que
+ * uma sala está cheia e ficar escutando a conversa — e é a linha que separa administrar de vigiar.
+ *
+ * A atividade de VOZ não aparece porque não dá: usage_sessions guarda a sessão por pessoa, sem
+ * registrar em qual comunidade ela estava. Inventar um número aqui seria pior do que não ter.
+ */
+export interface PanoramaDeComunidade {
+  id: number;
+  nome: string;
+  criadaEm: string;
+  /** Quem criou. Nulo quando a conta já foi excluída. */
+  criadaPor: string | null;
+  membros: number;
+  canais: number;
+  /** Mensagens dentro da janela pedida, e quantas pessoas diferentes escreveram nela. */
+  mensagens: number;
+  pessoasQueEscreveram: number;
+  /** Quando foi a última mensagem, de qualquer época. Nulo em comunidade onde ninguém falou nunca. */
+  ultimaMensagemEm: string | null;
+}
+
+export function panoramaDeComunidades(desde: string): PanoramaDeComunidade[] {
+  return db
+    .prepare(
+      `SELECT
+         c.id                                                        AS id,
+         c.name                                                      AS nome,
+         c.created_at                                                AS criadaEm,
+         u.username                                                  AS criadaPor,
+         (SELECT COUNT(*) FROM community_members m WHERE m.community_id = c.id)  AS membros,
+         (SELECT COUNT(*) FROM channels ch WHERE ch.community_id = c.id)         AS canais,
+         (SELECT COUNT(*)          FROM messages ms JOIN channels ch ON ch.id = ms.channel_id
+            WHERE ch.community_id = c.id AND ms.created_at >= ?)                 AS mensagens,
+         (SELECT COUNT(DISTINCT ms.user_id) FROM messages ms JOIN channels ch ON ch.id = ms.channel_id
+            WHERE ch.community_id = c.id AND ms.created_at >= ?)                 AS pessoasQueEscreveram,
+         (SELECT MAX(ms.created_at) FROM messages ms JOIN channels ch ON ch.id = ms.channel_id
+            WHERE ch.community_id = c.id)                                        AS ultimaMensagemEm
+       FROM communities c
+       LEFT JOIN users u ON u.id = c.created_by
+       ORDER BY mensagens DESC, membros DESC, c.id ASC`,
+    )
+    .all(desde, desde) as unknown as PanoramaDeComunidade[];
+}
