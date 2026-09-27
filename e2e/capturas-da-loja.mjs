@@ -233,35 +233,39 @@ for (const idioma of IDIOMAS) {
     console.log(`  idioma trocado para ${idioma.nome}`);
   }
 
-  // Volta para a tela inicial antes de cada rodada, para as quatro fotos saírem sempre da mesma
-  // sequência de cliques — em qualquer idioma.
-  await page.locator('.rail-home, .rail-item').first().click().catch(() => {});
-  await page.locator('.vila').waitFor({ timeout: 20_000 }).catch(() => {});
+  // Volta para a TELA INICIAL antes de cada rodada.
+  //
+  // O botão de início da barra se chama .rail-logo. Antes estava escrito .rail-home, que não existe
+  // — e como o seletor tinha ".rail-item" como alternativa, o clique caía na primeira COMUNIDADE da
+  // lista. O app nunca chegava à vila, a primeira foto saía errada e a Loja "não era encontrada",
+  // porque o balão dela só existe na tela inicial. Um seletor errado que casa com outra coisa é
+  // pior do que um que não casa com nada: este não deu erro, só fez a coisa errada em silêncio.
+  await page.locator('.rail-logo').click();
+  await page.locator('.vila').waitFor({ timeout: 20_000 });
 
-  // 1. A vila. Vem primeiro porque é o que o Syden tem que os outros não têm: é a imagem que faz
+  // 1. A VILA. Vem primeiro porque é o que o Syden tem que os outros não têm: é a imagem que faz
   //    alguém parar de rolar a lista de aplicativos.
-  console.log('  1. A vila');
+  console.log('  1. A tela inicial');
   await foto('1-inicio', 2500);
 
-  // 2. A loja. Antes das conversas de propósito: é a única tela que não mostra mensagem de
-  //    ninguém, então é a única em que não há nada a conferir depois.
-  console.log('  2. A loja de enfeites');
-  const loja = page.getByText(/^(Loja|Shop|Tienda)$/).first();
-  if (await loja.isVisible().catch(() => false)) {
-    await loja.click();
-    await foto('2-loja', 1800);
-    await page.getByRole('button', { name: /Voltar|Back|Volver/ }).first().click().catch(() => {});
-    await page.locator('.vila').waitFor({ timeout: 10_000 }).catch(() => {});
-  } else {
-    console.log('    (não achei a Loja na tela inicial — pulei)');
+  /** Clica num balão da vila pelo título e espera a tela trocar. */
+  async function abrirBalao(titulo) {
+    const balao = page.locator('.vila-pino').filter({ hasText: titulo }).first();
+    if (!(await balao.isVisible().catch(() => false))) return false;
+    await balao.click();
+    await page.waitForTimeout(1200);
+    return true;
   }
 
-  // 3. Um canal de texto.
-  //
-  //    Confere DE NOVO em qual comunidade está antes de fotografar conversa. A verificação lá de
-  //    cima valeu para aquele momento; daqui até aqui houve cliques, e um deles pode ter mudado de
-  //    lugar. Conferir de novo custa uma linha; a foto errada não tem desfazer.
-  console.log('  3. Um canal de texto');
+  /** Volta da tela cheia para a vila. */
+  async function voltarParaAVila() {
+    await page.getByRole('button', { name: /Voltar|Back|Volver|←/ }).first().click().catch(() => {});
+    await page.locator('.vila').waitFor({ timeout: 10_000 }).catch(() => {});
+  }
+
+  // 2. A CONVERSA. É o que mais gente reconhece à primeira vista, e é onde o Syden se parece com o
+  //    que a pessoa já sabe usar.
+  console.log('  2. A conversa');
   await abrirAComunidade();
   const ondeEstou = await comunidadeAberta();
   if (ondeEstou !== COMUNIDADE) {
@@ -272,24 +276,38 @@ for (const idioma of IDIOMAS) {
   const canal = page.locator('.channel-name').first();
   if (await canal.isVisible().catch(() => false)) {
     await canal.click();
-    await foto('3-conversa', 2000);
+    await foto('2-conversa', 2000);
   } else {
     console.log('    (não achei um canal de texto — tire esta à mão)');
   }
 
-  // 4. Uma sala de voz.
-  //
-  //    O script NÃO entra na sala: entrar abriria o microfone e poria a conta de demonstração
-  //    dentro de uma chamada de verdade, possivelmente com gente lá. Ele fotografa a antessala, que
-  //    já mostra quem está dentro e o botão de entrar.
-  console.log('  4. Uma sala de voz');
-  const salaDeVoz = page.locator('.channel-item').filter({ has: page.locator('.channel-voice, [class*="volume"]') }).first();
-  const alvo = (await salaDeVoz.isVisible().catch(() => false)) ? salaDeVoz : page.locator('.channel-name').nth(1);
-  if (await alvo.isVisible().catch(() => false)) {
-    await alvo.click();
-    await foto('4-voz', 2000);
+  // 3. A LOJA. Mostra o que o Syden tem de diferente no modelo: tudo de graça, nada travado.
+  console.log('  3. A loja de enfeites');
+  await page.locator('.rail-logo').click();
+  await page.locator('.vila').waitFor({ timeout: 20_000 }).catch(() => {});
+  if (await abrirBalao(/Loja|Shop|Tienda/)) {
+    await foto('3-loja', 1800);
+    await voltarParaAVila();
   } else {
-    console.log('    (não achei uma sala de voz — tire esta à mão)');
+    console.log('    (não achei o balão da Loja na vila — tire esta à mão)');
+  }
+
+  // 4. OS AMIGOS.
+  //
+  //    Antes esta era a antessala de uma sala de voz, e não acrescentava nada: numa comunidade de
+  //    demonstração não há ninguém em chamada, então a foto era uma sala vazia com um botão. Voz é
+  //    o coração do Syden, mas não dá para simular gente numa chamada — quem está numa sala vive na
+  //    memória do servidor, não no banco, e forjar isso seria construir um teatro inteiro para uma
+  //    foto.
+  //
+  //    A tela de amigos, ao contrário, fica cheia sozinha: as pessoas da comunidade de demonstração
+  //    aparecem como sugestões, com o motivo escrito ao lado de cada uma.
+  console.log('  4. Os amigos');
+  if (await abrirBalao(/Amigos|Friends|Amigos/)) {
+    await foto('4-amigos', 1800);
+    await voltarParaAVila();
+  } else {
+    console.log('    (não achei o balão de Amigos na vila — tire esta à mão)');
   }
 }
 
