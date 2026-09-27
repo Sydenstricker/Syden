@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { PainelAuditoria } from './PainelAuditoria';
 import { PainelDeAviso } from './PainelDeAviso';
+import { PainelDeCrescimento } from './PainelDeCrescimento';
 import { PainelDenuncias } from './PainelDenuncias';
 import { PainelDisponibilidade } from './PainelDisponibilidade';
 import { HealthPanel } from './HealthPanel';
@@ -126,6 +127,10 @@ export function UsageDashboard({
         {usage && (
           <>
             <p className="usage-period">{formatMonth(usage.monthStart)} · atualiza a cada minuto</p>
+
+            {/* Vem antes do tráfego de propósito: quantas pessoas existem é a pergunta que se faz
+                primeiro, e o consumo só faz sentido sabendo entre quantos ele está dividido. */}
+            <PainelDeCrescimento contas={usage.contas} online={usage.online} />
 
             <section className="usage-card">
               <h2>Tráfego de saída este mês</h2>

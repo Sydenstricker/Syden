@@ -2769,6 +2769,33 @@ export function quemVejoOnline(userId: number): Set<number> {
   return new Set(linhas.map((l) => l.id));
 }
 
+/**
+ * Quantas contas existem, e como elas chegaram. É o painel de crescimento.
+ *
+ * `insigniaDosPrimeiros` é o teto da promoção dos 25 primeiros: com ele na tela dá para responder
+ * "ainda cabe alguém?" sem contar na mão nem abrir o banco.
+ */
+export function resumoDeContas(insigniaDosPrimeiros: number) {
+  const uma = (sql: string, ...args: unknown[]) => (db.prepare(sql).get(...(args as never[])) as { n: number }).n;
+  const agora = Date.now();
+  const desde = (dias: number) => new Date(agora - dias * 86_400_000).toISOString();
+
+  return {
+    total: uma('SELECT COUNT(*) AS n FROM users'),
+    hoje: uma('SELECT COUNT(*) AS n FROM users WHERE created_at >= ?', desde(1)),
+    seteDias: uma('SELECT COUNT(*) AS n FROM users WHERE created_at >= ?', desde(7)),
+    trintaDias: uma('SELECT COUNT(*) AS n FROM users WHERE created_at >= ?', desde(30)),
+    /** Sem comunidade nenhuma: chegou, não usou um convite e ainda não criou a sua. */
+    semComunidade: uma('SELECT COUNT(*) AS n FROM users u WHERE NOT EXISTS (SELECT 1 FROM community_members m WHERE m.user_id = u.id)'),
+    /** Entrou por Google, Discord, GitHub ou Steam em algum momento. */
+    comProvedor: uma('SELECT COUNT(DISTINCT user_id) AS n FROM social_accounts'),
+    /** Cadastrou por senha e ainda não abriu o link: é o atrito da porta de entrada, em número. */
+    porConfirmar: uma('SELECT COUNT(*) AS n FROM users WHERE exige_confirmacao = 1 AND email_verified_at IS NULL'),
+    /** Quantas vagas restam na insígnia dos primeiros, para responder "ainda dá tempo?". */
+    vagasNaInsignia: Math.max(0, insigniaDosPrimeiros - uma('SELECT COUNT(*) AS n FROM users')),
+  };
+}
+
 // ---------- Entrar com Google/Discord ----------
 
 export function contaSocial(provedor: string, sub: string): number | undefined {

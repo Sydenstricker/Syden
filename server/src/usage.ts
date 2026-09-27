@@ -1,5 +1,7 @@
 import { config } from './config.js';
 import * as db from './db.js';
+import { QUANTOS_PRIMEIROS } from './presentes.js';
+import { quantosOnline } from './realtime.js';
 import { monthKey, trafficSupported } from './traffic.js';
 
 export type Traffic =
@@ -21,6 +23,10 @@ export interface UsageSummary {
   monthProgress: number;
   traffic: Traffic;
   users: db.UsageByUser[];
+  /** Quantas contas existem e como elas chegaram. É o painel de crescimento. */
+  contas: ReturnType<typeof db.resumoDeContas>;
+  /** Pessoas com o Syden aberto agora, no Syden inteiro — não só nesta comunidade. */
+  online: number;
 }
 
 const MIN_DAYS_FOR_PROJECTION = 2;
@@ -59,5 +65,7 @@ export function usageSummary(): UsageSummary {
     monthProgress: progress,
     traffic: currentTraffic(now, start, end),
     users: db.usageSince(start.toISOString()),
+    contas: db.resumoDeContas(QUANTOS_PRIMEIROS),
+    online: quantosOnline(),
   };
 }

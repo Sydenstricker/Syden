@@ -137,6 +137,17 @@ export function disconnectUser(io: IOServer, userId: number) {
   broadcastPresence(io);
 }
 
+/**
+ * Quantas pessoas estão com o Syden aberto agora, no Syden inteiro.
+ *
+ * É por PESSOA, e não por conexão: quem deixa o app no computador e o site no celular conta uma vez.
+ * Contar conexões faria o painel dizer que há o dobro de gente, e a diferença apareceria justamente
+ * quando alguém estivesse acompanhando o crescimento.
+ */
+export function quantosOnline(): number {
+  return onlineSockets.size;
+}
+
 function onlineUsers(): (db.UserRef & { status: PresenceStatus })[] {
   return [...onlineSockets.entries()].map(([id, { username, status }]) => ({ id, username, status }));
 }

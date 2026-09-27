@@ -27,7 +27,7 @@ import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
 import { type AppAudio, captureAppAudio } from './screenAudio';
-import { sounds } from './sounds';
+import { definirSurdez, sounds } from './sounds';
 
 export interface LocalMedia {
   muted: boolean;
@@ -203,6 +203,7 @@ export function useVoice(socket: Socket | null) {
       if (channelRef.current !== null) socketRef.current?.emit('voice:leave');
       channelRef.current = null;
       deafenedRef.current = false;
+      definirSurdez(false);
       setAssistindo(new Set()); // transmissão aberta é coisa daquela sala
       setChannelId(null);
       setDeafened(false);
@@ -467,6 +468,7 @@ export function useVoice(socket: Socket | null) {
 
   const setDeafenedState = useCallback((value: boolean) => {
     deafenedRef.current = value;
+    definirSurdez(value);
     setDeafened(value);
     socketRef.current?.emit('voice:update', { deafened: value });
   }, []);

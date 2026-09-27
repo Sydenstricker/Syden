@@ -7955,7 +7955,9 @@ textarea {
      Centralizar não resolve: o bloco tem a largura do texto, e "Entrar com Steam" é mais curto que
      "Entrar com Discord" — cada botão centralizaria uma largura diferente e a pilha ficaria torta de
      novo, só que por poucos pixels, que é o pior tipo de torto. */
-  grid-template-columns: 20px 1fr;
+  /* 24px, e não 20: a marca do Discord precisa crescer para PARECER do mesmo tamanho (ver
+     MarcasSociais.tsx), e a coluna tem que caber a maior sem empurrar o texto de lugar. */
+  grid-template-columns: 24px 1fr;
   align-items: center;
   gap: 12px;
   padding-left: 22px;
@@ -8055,4 +8057,88 @@ textarea {
 .confirme-email p {
   margin: 0;
   line-height: 1.5;
+}
+
+/*
+ * Ordem de empilhamento dos balões da vila.
+ *
+ * Eles são posicionados em pontos fixos da cena e podem chegar perto uns dos outros. Quando dois se
+ * tocam, o clique cai no que está POR CIMA — e o de baixo parece não funcionar, que é o pior sintoma
+ * possível: o botão está lá, visível, e não faz nada. Foi o que aconteceu com "Coelhos", escondido atrás
+ * de "Salas".
+ *
+ * Passar o mouse traz o balão para a frente, então o que está sendo apontado é sempre o que recebe o
+ * clique. É a regra que faz sobreposição virar detalhe estético em vez de defeito.
+ */
+.vila-pino {
+  z-index: 1;
+}
+
+.vila-pino:hover,
+.vila-pino:focus-visible,
+.vila-pino.aceso {
+  z-index: 2;
+}
+
+/* ---------- Painel de crescimento ---------- */
+
+.crescimento {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.crescimento h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.crescimento-numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crescimento-numeros li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--overlay);
+}
+
+.crescimento-numeros strong {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.crescimento-numeros li.destaque strong {
+  font-size: 30px;
+  color: var(--text-strong);
+}
+
+.crescimento-numeros span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-muted);
+}
+
+/* A segunda fileira é menor: são números para agir, não para comemorar. */
+.crescimento-numeros.secundarios {
+  margin-top: 10px;
+}
+
+.crescimento-numeros.secundarios strong {
+  font-size: 17px;
 }

@@ -1,4 +1,5 @@
 import { desktopBridge } from './desktop';
+import { comTeto } from './limitador';
 
 // Som da transmissão vindo do app de desktop: lá o Windows entrega o som do computador MENOS o do
 // próprio Syden, e aqui ele vira uma faixa de áudio comum, que a chamada publica junto com a imagem.
@@ -54,7 +55,11 @@ export async function captureAppAudio(): Promise<AppAudio | null> {
 
   const player = new AudioWorkletNode(context, 'syden-pcm', { outputChannelCount: [2] });
   const destination = context.createMediaStreamDestination();
-  player.connect(destination);
+  // O teto vai AQUI, antes de sair para a sala, e não em cada ouvinte: o som do computador de quem
+  // transmite chega cru, com o volume que o jogo estiver, e uma explosão no jogo vira um estouro no
+  // ouvido de todo mundo ao mesmo tempo. Consertar na origem conserta para a sala inteira.
+  const teto = comTeto(context, destination);
+  player.connect(teto ?? destination);
   const unsubscribe = bridge.onChunk((pcm) => player.port.postMessage(pcm, [pcm.buffer]));
 
   const track = destination.stream.getAudioTracks()[0];
@@ -64,6 +69,7 @@ export async function captureAppAudio(): Promise<AppAudio | null> {
       unsubscribe();
       bridge.stop();
       player.disconnect();
+      teto?.disconnect();
       track.stop();
       void context.close();
     },

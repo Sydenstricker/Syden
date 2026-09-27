@@ -9,12 +9,52 @@
 # Caddy vê o mesmo endereço duas vezes, recusa a configuração e NÃO INICIA — derrubando tudo, inclusive
 # os endereços que estavam funcionando. Um lugar só para cada endereço, e esse lugar é o .env.
 
+# ---------------------------------------------------------------------------------------------------
+# Cabeçalhos de segurança
+# ---------------------------------------------------------------------------------------------------
+# O que cada um faz, e por que está aqui — porque "o site tirou nota F" não é motivo para ligar coisa
+# que não se entende, e dois destes valem de verdade neste projeto:
+#
+#   X-Content-Type-Options: nosniff
+#     É O MAIS IMPORTANTE AQUI, e não é formalidade. Esta API entrega ARQUIVOS QUE AS PESSOAS ENVIAM:
+#     avatares, emojis, sons, anexos. Sem "nosniff", o navegador pode ignorar o tipo que declaramos e
+#     adivinhar pelo conteúdo — então alguém envia um "avatar" que por dentro é HTML, o navegador o
+#     trata como página, e aquele HTML roda no endereço api.syden.chat, com acesso ao que houver ali.
+#
+#   Strict-Transport-Security
+#     Diz ao navegador para nunca mais falar com este endereço sem HTTPS, nem que alguém o empurre para
+#     isso. Vale um ano e inclui os subdomínios.
+#
+#   Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+#     Uma API responde JSON e arquivos, nunca páginas. Esta linha diz "nada do que eu respondo tem
+#     direito de carregar mais nada nem de ser posto dentro de um quadro". Não afeta as imagens sendo
+#     mostradas pelo site: a regra vale para o que a RESPOSTA carregaria, e uma imagem não carrega nada.
+#
+#   Referrer-Policy e Permissions-Policy
+#     Os dois menores: o primeiro impede que o endereço completo de onde a pessoa veio vaze para fora,
+#     e o segundo recusa sensores que esta API jamais usaria.
+(seguranca) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=()"
+		# O Caddy anuncia a si mesmo por padrão. Não é uma falha, mas também não ajuda ninguém de fora
+		# saber qual servidor e qual versão estão rodando aqui.
+		-Server
+	}
+}
+
 {$API_DOMAIN} {
 	log
+	import seguranca
 	reverse_proxy localhost:3001
 }
 
 {$LIVEKIT_DOMAIN} {
 	log
+	import seguranca
 	reverse_proxy localhost:7880
 }

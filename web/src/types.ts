@@ -242,11 +242,26 @@ export interface HealthReport {
   events: HealthEvent[];
 }
 
+/** Quantas contas existem e como elas chegaram. Ver server/src/db.ts -> resumoDeContas. */
+export interface ResumoDeContas {
+  total: number;
+  hoje: number;
+  seteDias: number;
+  trintaDias: number;
+  semComunidade: number;
+  comProvedor: number;
+  porConfirmar: number;
+  vagasNaInsignia: number;
+}
+
 export interface UsageSummary {
   monthStart: string;
   monthProgress: number;
   traffic: Traffic;
   users: { userId: number; username: string; voiceSeconds: number; screenSeconds: number }[];
+  contas: ResumoDeContas;
+  /** Pessoas com o Syden aberto agora, no Syden inteiro. */
+  online: number;
 }
 
 /** Um pacote de emojis do catálogo. Diferente do pacote de sons, ele é instalado na COMUNIDADE. */
