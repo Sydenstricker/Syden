@@ -69,7 +69,20 @@ const CANAIS = [
  * comunidade de demonstração. Quem tivesse a senha poderia escrever lá dentro, e nada além disso.
  * A senha é sorteada e mostrada uma vez; rodar o script de novo troca todas.
  */
-const SENHA = randomBytes(12).toString('base64url');
+// Dá para ESCOLHER a senha, e isso não é preguiça: a senha sorteada precisa ser copiada do console
+// do servidor para o terminal da outra máquina, e em console web o Ctrl+V não funciona. Digitar à
+// mão uma sequência aleatória de dezesseis caracteres erra — errou. Escolhendo, não há o que copiar.
+//
+//   node scripts/comunidade-de-demonstracao.mjs --senha uma-que-voce-lembre
+//
+// Continua sendo conta sem poder nenhum, sem e-mail, só na comunidade de demonstração.
+const escolhida = process.argv.includes('--senha') ? process.argv[process.argv.indexOf('--senha') + 1] : null;
+const SENHA = escolhida && escolhida.length >= 6 ? escolhida : randomBytes(12).toString('base64url');
+
+if (escolhida && escolhida.length < 6) {
+  console.error('A senha escolhida precisa ter pelo menos 6 caracteres.');
+  process.exit(1);
+}
 
 async function guardarSenha(senha) {
   const sal = randomBytes(16);
