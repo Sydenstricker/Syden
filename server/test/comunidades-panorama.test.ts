@@ -103,3 +103,31 @@ describe('panorama das comunidades', () => {
     assert.equal(resposta.statusCode, 401);
   });
 });
+
+describe('tempo de voz por comunidade', () => {
+  it('soma as sessões da comunidade, e ignora as que não sabem onde aconteceram', async () => {
+    const db = await import('../src/db.js');
+    const { comunidades } = (await dono('GET', '/api/status/comunidades')).json();
+    const clube = comunidades.find((c: { nome: string }) => c.nome === 'Clube do Zeca');
+
+    // Uma sessão COM comunidade e outra SEM (como são todas as anteriores a 27/09/2026). Só a
+    // primeira pode entrar na conta: a segunda não tem como saber onde a pessoa estava, e chutar que
+    // foi ali inflaria o número da comunidade errada.
+    const comDono = db.startUsageSession('voice', 1, clube.id);
+    const orfa = db.startUsageSession('voice', 1, null);
+    db.touchUsageSessions([comDono, orfa]);
+
+    const depois = (await dono('GET', '/api/status/comunidades')).json();
+    const clubeDepois = depois.comunidades.find((c: { nome: string }) => c.nome === 'Clube do Zeca');
+    assert.equal(typeof clubeDepois.segundosDeVoz, 'number');
+    assert.ok(clubeDepois.segundosDeVoz >= 0);
+    assert.equal(clubeDepois.segundosDeTela, 0);
+  });
+
+  it('comunidade sem chamada nenhuma devolve zero, não nulo', async () => {
+    const { comunidades } = (await dono('GET', '/api/status/comunidades')).json();
+    const vazia = comunidades.find((c: { nome: string }) => c.nome === 'Sala Vazia');
+    assert.equal(vazia.segundosDeVoz, 0);
+    assert.equal(vazia.segundosDeTela, 0);
+  });
+});

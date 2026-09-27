@@ -12,6 +12,8 @@ interface Comunidade {
   mensagens: number;
   pessoasQueEscreveram: number;
   ultimaMensagemEm: string | null;
+  segundosDeVoz: number;
+  segundosDeTela: number;
 }
 
 interface Panorama {
@@ -22,6 +24,16 @@ interface Panorama {
 const JANELAS = [7, 30, 90] as const;
 /** Quantas a lista mostra antes de pedir "ver todas". Dez é o que cabe sem virar planilha. */
 const TOPO = 10;
+
+/** Segundos viram a unidade que cabe: 40 min é mais legível que 2400 s, e 3 h mais que 180 min. */
+function duracao(seg: number): string {
+  if (seg < 60) return '—';
+  const min = Math.round(seg / 60);
+  if (min < 90) return min + ' min';
+  const h = Math.floor(min / 60);
+  const resto = min % 60;
+  return resto ? h + ' h ' + resto + ' min' : h + ' h';
+}
 
 const dia = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
@@ -72,8 +84,14 @@ export function PainelDeComunidades() {
       </h3>
       <p className="settings-hint">
         Todas as comunidades do Syden, da mais movimentada para a mais parada. Só contagem — o conteúdo das conversas
-        não aparece aqui e não é lido. O tempo de voz não entra porque as chamadas são registradas por pessoa, sem
-        guardar em qual comunidade aconteceram.
+        não aparece aqui e não é lido.
+      </p>
+      {/* Um número que parece histórico e não é engana mais do que um número ausente. As chamadas
+          anteriores a 27/09/2026 não registravam em qual comunidade aconteceram, e não há como
+          descobrir depois: elas simplesmente não entram na conta. */}
+      <p className="settings-hint comunidades-ressalva">
+        <strong>Voz e Tela contam a partir de 27/09/2026.</strong> Antes disso as chamadas eram registradas por pessoa,
+        sem guardar onde aconteceram — esse tempo não existe mais para recuperar.
       </p>
 
       <div className="comunidades-janela" role="group" aria-label="Período">
@@ -106,6 +124,8 @@ export function PainelDeComunidades() {
             <th scope="col">Membros</th>
             <th scope="col">Mensagens</th>
             <th scope="col">Quem falou</th>
+            <th scope="col">Voz</th>
+            <th scope="col">Tela</th>
             <th scope="col">Última</th>
           </tr>
         </thead>
@@ -123,6 +143,8 @@ export function PainelDeComunidades() {
               <td>{c.membros}</td>
               <td>{c.mensagens.toLocaleString('pt-BR')}</td>
               <td>{c.pessoasQueEscreveram}</td>
+              <td>{duracao(c.segundosDeVoz)}</td>
+              <td>{duracao(c.segundosDeTela)}</td>
               <td className={c.ultimaMensagemEm ? undefined : 'muda'}>{desde(c.ultimaMensagemEm)}</td>
             </tr>
           ))}

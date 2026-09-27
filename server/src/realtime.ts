@@ -277,7 +277,7 @@ export function setupRealtime(io: IOServer) {
         screen: false,
         screenName: null,
         socketId: socket.id,
-        voiceSessionId: db.startUsageSession('voice', user.id),
+        voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId),
         screenSessionId: null,
       });
       if (previous !== undefined && previous !== channel.communityId) broadcastVoice(io, previous);
@@ -296,7 +296,7 @@ export function setupRealtime(io: IOServer) {
       const nome = typeof patch?.screenName === 'string' ? patch.screenName.trim().slice(0, 60) : null;
       member.screenName = member.screen ? nome || null : null;
       if (member.screen && member.screenSessionId === null) {
-        member.screenSessionId = db.startUsageSession('screen', user.id);
+        member.screenSessionId = db.startUsageSession('screen', user.id, member.communityId);
       } else if (!member.screen && member.screenSessionId !== null) {
         db.touchUsageSessions([member.screenSessionId]);
         member.screenSessionId = null;

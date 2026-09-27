@@ -638,6 +638,10 @@ function hasColumn(table: string, column: string) {
   return (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
 }
 
+// Em qual comunidade a chamada aconteceu. Fica NULO nas sessões antigas, e é isso que permite dizer
+// na tela "contado a partir de tal dia" em vez de mostrar um número que parece o histórico inteiro e
+// não é. Sem ON DELETE: a comunidade pode sumir e o registro de uso continua valendo para o total.
+addColumnIfMissing('usage_sessions', 'community_id', 'INTEGER');
 addColumnIfMissing('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
@@ -2583,11 +2587,11 @@ export function deleteThread(id: number) {
 
 export type UsageKind = 'voice' | 'screen';
 
-export function startUsageSession(kind: UsageKind, userId: number): number {
+export function startUsageSession(kind: UsageKind, userId: number, communityId: number | null = null): number {
   const now = new Date().toISOString();
   const result = db
-    .prepare('INSERT INTO usage_sessions (kind, user_id, started_at, ended_at) VALUES (?, ?, ?, ?)')
-    .run(kind, userId, now, now);
+    .prepare('INSERT INTO usage_sessions (kind, user_id, started_at, ended_at, community_id) VALUES (?, ?, ?, ?, ?)')
+    .run(kind, userId, now, now, communityId);
   return Number(result.lastInsertRowid);
 }
 
@@ -2986,8 +2990,10 @@ export function reactionCounts(messageId: number): { emoji: string; count: numbe
  * quantas houve, de quantas pessoas diferentes e quando foi a última. É a diferença entre saber que
  * uma sala está cheia e ficar escutando a conversa — e é a linha que separa administrar de vigiar.
  *
- * A atividade de VOZ não aparece porque não dá: usage_sessions guarda a sessão por pessoa, sem
- * registrar em qual comunidade ela estava. Inventar um número aqui seria pior do que não ter.
+ * A atividade de VOZ só existe A PARTIR DE 27/09/2026, quando usage_sessions passou a guardar em qual
+ * comunidade a chamada aconteceu. As sessões anteriores têm community_id nulo e ficam de fora — não dá
+ * para descobrir depois onde alguém estava. Por isso a tela diz desde quando conta, em vez de mostrar
+ * um número que parece o histórico inteiro e não é.
  */
 export interface PanoramaDeComunidade {
   id: number;
@@ -3002,6 +3008,10 @@ export interface PanoramaDeComunidade {
   pessoasQueEscreveram: number;
   /** Quando foi a última mensagem, de qualquer época. Nulo em comunidade onde ninguém falou nunca. */
   ultimaMensagemEm: string | null;
+  /** Segundos em chamada e transmitindo tela dentro da janela. Só contam as sessões que sabem onde
+   *  aconteceram — as de antes de 27/09/2026 não sabem. */
+  segundosDeVoz: number;
+  segundosDeTela: number;
 }
 
 export function panoramaDeComunidades(desde: string): PanoramaDeComunidade[] {
@@ -3019,10 +3029,18 @@ export function panoramaDeComunidades(desde: string): PanoramaDeComunidade[] {
          (SELECT COUNT(DISTINCT ms.user_id) FROM messages ms JOIN channels ch ON ch.id = ms.channel_id
             WHERE ch.community_id = c.id AND ms.created_at >= ?)                 AS pessoasQueEscreveram,
          (SELECT MAX(ms.created_at) FROM messages ms JOIN channels ch ON ch.id = ms.channel_id
-            WHERE ch.community_id = c.id)                                        AS ultimaMensagemEm
+            WHERE ch.community_id = c.id)                                        AS ultimaMensagemEm,
+         -- O tempo sai da diferença entre início e fim de cada sessão, somada. strftime('%s') devolve
+         -- segundos desde 1970, que é o que permite subtrair duas datas em SQLite.
+         (SELECT COALESCE(SUM(strftime('%s', s.ended_at) - strftime('%s', s.started_at)), 0)
+            FROM usage_sessions s
+            WHERE s.community_id = c.id AND s.kind = 'voice' AND s.ended_at >= ?)  AS segundosDeVoz,
+         (SELECT COALESCE(SUM(strftime('%s', s.ended_at) - strftime('%s', s.started_at)), 0)
+            FROM usage_sessions s
+            WHERE s.community_id = c.id AND s.kind = 'screen' AND s.ended_at >= ?) AS segundosDeTela
        FROM communities c
        LEFT JOIN users u ON u.id = c.created_by
        ORDER BY mensagens DESC, membros DESC, c.id ASC`,
     )
-    .all(desde, desde) as unknown as PanoramaDeComunidade[];
+    .all(desde, desde, desde, desde) as unknown as PanoramaDeComunidade[];
 }
