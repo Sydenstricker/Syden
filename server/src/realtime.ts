@@ -8,6 +8,14 @@ export const communityRoom = (communityId: number) => `community:${communityId}`
 /** Sala do socket de uma conversa privada (direta ou em grupo). */
 export const directRoom = (channelId: number) => `dm:${channelId}`;
 
+/**
+ * Sala do socket de UMA PESSOA, juntando todas as abas e aparelhos dela.
+ *
+ * Serve para o que é dirigido à pessoa e não a um lugar — hoje, os pedidos de amizade. Sem ela,
+ * avisar alguém exigiria varrer todos os sockets à procura dos que pertencem àquela conta.
+ */
+export const salaDaPessoa = (userId: number) => `user:${userId}`;
+
 /** Para onde vai o aviso de uma mensagem: a comunidade toda, ou só quem está na conversa privada. */
 export const channelRoom = (channel: { id: number; communityId: number | null }) =>
   channel.communityId === null ? directRoom(channel.id) : communityRoom(channel.communityId);
@@ -218,6 +226,11 @@ export function setupRealtime(io: IOServer) {
     }
     // E também as conversas privadas de que ela participa.
     for (const conversa of db.listDirectChannels(user.id)) socket.join(directRoom(conversa.id));
+
+    // Uma sala por PESSOA, juntando todas as abas dela. É por onde chega o que é dirigido a ela e
+    // não a um lugar — hoje, os pedidos de amizade. Sem ela, avisar alguém exigiria procurar todos
+    // os sockets daquela conta a cada vez.
+    socket.join(salaDaPessoa(user.id));
 
     // Ocupado, ausente, invisível... como no Discord. Vale para a pessoa (todas as abas dela juntas).
     socket.on('presence:set', (status: unknown) => {

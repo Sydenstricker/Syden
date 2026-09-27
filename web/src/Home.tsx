@@ -1,4 +1,4 @@
-import { BookOpen, Compass, Lightbulb, Rabbit, Send, ShoppingBag, Users, Volume2 } from 'lucide-react';
+import { BookOpen, Compass, Lightbulb, Rabbit, Send, ShoppingBag, UserPlus, Users, Volume2 } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
@@ -6,7 +6,7 @@ import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, VoiceMember } from './types';
 import { PainelCoelhos } from './PainelCoelhos';
-import { balaoDaCasa, CASAS, ESTATUA, type Periodo, type PinoVila, Vila } from './Vila';
+import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type Periodo, type PinoVila, Vila } from './Vila';
 
 // Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
 // e cutucar uns coelhos antes de entrar numa sala. As quatro casas não são enfeite: cada uma leva a uma
@@ -121,6 +121,7 @@ export function Home({
   naVoz,
   aoEntrar,
   aoAbrirLoja,
+  aoAbrirAmigos,
   aoExplorar,
   souODono,
 }: {
@@ -132,6 +133,7 @@ export function Home({
   naVoz: VoiceMember[];
   aoEntrar: (channelId: number) => void;
   aoAbrirLoja: () => void;
+  aoAbrirAmigos: () => void;
   aoExplorar: () => void;
   /** Quem cuida do Syden recebe as ideias em vez de mandar: para ele a caixa não aparece. */
   souODono: boolean;
@@ -158,6 +160,14 @@ export function Home({
       icone: <Users size={18} />,
       ...balaoDaCasa(CASAS.salas),
       onClick: () => setSalasAbertas((aberto) => !aberto),
+    },
+    {
+      id: 'amigos',
+      titulo: 'Amigos',
+      sub: 'Quem anda com você',
+      icone: <UserPlus size={18} />,
+      ...balaoDaCasa(PRACA_DOS_AMIGOS, 0),
+      onClick: aoAbrirAmigos,
     },
     {
       id: 'loja',

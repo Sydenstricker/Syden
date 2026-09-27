@@ -573,6 +573,27 @@ db.exec(`
   -- As preferências de cada pessoa, para não se perderem na troca de navegador ou de aparelho.
   -- Um JSON só, porque o conjunto muda com frequência e cada preferência nova viraria uma migração.
   -- O servidor não interpreta o conteúdo: quem decide o que sobe é o site (ver preferencias.ts).
+  -- Amizades.
+  --
+  -- UMA LINHA POR PAR, não duas. Guardar os dois sentidos parece mais simples na hora de consultar e
+  -- cobra caro depois: as duas linhas podem discordar entre si — aceita de um lado, pendente do
+  -- outro — e nada no banco impediria isso. Aqui o par é sempre gravado com o MENOR id primeiro, e
+  -- então a chave primária garante sozinha que não existe pedido repetido nem invertido.
+  --
+  -- quem_pediu registra de que lado veio o convite. É o que permite mostrar "você pediu" para um e
+  -- "quer ser seu amigo" para o outro a partir da mesma linha.
+  CREATE TABLE IF NOT EXISTS friendships (
+    menor_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    maior_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    quem_pediu INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    situacao   TEXT NOT NULL CHECK (situacao IN ('pendente', 'aceita')) DEFAULT 'pendente',
+    criada_em  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    aceita_em  TEXT,
+    PRIMARY KEY (menor_id, maior_id),
+    CHECK (menor_id < maior_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_friendships_maior ON friendships(maior_id);
+
   CREATE TABLE IF NOT EXISTS user_prefs (
     user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     data       TEXT NOT NULL,
@@ -3072,4 +3093,124 @@ export function guardarPreferencias(userId: number, data: string) {
     `INSERT INTO user_prefs (user_id, data, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
      ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
   ).run(userId, data);
+}
+
+// ---------- Amizades ----------
+
+/**
+ * O par, sempre na mesma ordem.
+ *
+ * Toda consulta e toda gravação passam por aqui. É o que faz a chave primária valer: sem a ordem
+ * fixa, (3,7) e (7,3) seriam dois pedidos diferentes para a mesma dupla, e o banco aceitaria os dois.
+ */
+function par(a: number, b: number): [number, number] {
+  return a < b ? [a, b] : [b, a];
+}
+
+export type SituacaoDeAmizade = 'pendente' | 'aceita';
+
+export interface Amizade {
+  /** A OUTRA pessoa — quem pergunta nunca aparece na própria lista. */
+  userId: number;
+  username: string;
+  avatarVersion: number | null;
+  situacao: SituacaoDeAmizade;
+  /** Verdadeiro quando o pedido partiu de quem está perguntando. Só vale enquanto pendente. */
+  euPedi: boolean;
+  desde: string;
+}
+
+const amizadeSelect = `
+  SELECT
+    CASE WHEN f.menor_id = ? THEN f.maior_id ELSE f.menor_id END AS userId,
+    u.username        AS username,
+    u.avatar_version  AS avatarVersion,
+    f.situacao        AS situacao,
+    f.quem_pediu = ?  AS euPedi,
+    COALESCE(f.aceita_em, f.criada_em) AS desde
+  FROM friendships f
+  JOIN users u ON u.id = CASE WHEN f.menor_id = ? THEN f.maior_id ELSE f.menor_id END
+  WHERE ? IN (f.menor_id, f.maior_id)
+`;
+
+export function listarAmizades(userId: number): Amizade[] {
+  const linhas = db
+    .prepare(`${amizadeSelect} ORDER BY u.username COLLATE NOCASE`)
+    .all(userId, userId, userId, userId) as unknown as (Omit<Amizade, 'euPedi'> & { euPedi: number })[];
+  // O SQLite devolve 0 e 1 para comparação, não booleano: converte aqui para a tela não precisar saber.
+  return linhas.map((l) => ({ ...l, euPedi: Boolean(l.euPedi) }));
+}
+
+export function amizadeEntre(a: number, b: number): { situacao: SituacaoDeAmizade; quemPediu: number } | null {
+  const [menor, maior] = par(a, b);
+  const linha = db
+    .prepare('SELECT situacao, quem_pediu AS quemPediu FROM friendships WHERE menor_id = ? AND maior_id = ?')
+    .get(menor, maior) as { situacao: SituacaoDeAmizade; quemPediu: number } | undefined;
+  return linha ?? null;
+}
+
+/** Devolve falso quando já existia alguma relação — o chamador decide o que dizer nesse caso. */
+export function pedirAmizade(de: number, para: number): boolean {
+  const [menor, maior] = par(de, para);
+  const resultado = db
+    .prepare(
+      `INSERT INTO friendships (menor_id, maior_id, quem_pediu, situacao) VALUES (?, ?, ?, 'pendente')
+       ON CONFLICT(menor_id, maior_id) DO NOTHING`,
+    )
+    .run(menor, maior, de);
+  return resultado.changes > 0;
+}
+
+export function aceitarAmizade(quemAceita: number, oOutro: number): boolean {
+  const [menor, maior] = par(quemAceita, oOutro);
+  // `quem_pediu <> ?` é a trava que importa: sem ela, quem pediu aceitaria o próprio pedido e viraria
+  // amigo de quem nunca respondeu. É uma linha de SQL no lugar de uma checagem que dá para esquecer.
+  const resultado = db
+    .prepare(
+      `UPDATE friendships SET situacao = 'aceita', aceita_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+       WHERE menor_id = ? AND maior_id = ? AND situacao = 'pendente' AND quem_pediu <> ?`,
+    )
+    .run(menor, maior, quemAceita);
+  return resultado.changes > 0;
+}
+
+/** Serve para recusar um pedido e para desfazer uma amizade: nos dois casos a linha some. */
+export function desfazerAmizade(a: number, b: number): boolean {
+  const [menor, maior] = par(a, b);
+  return db.prepare('DELETE FROM friendships WHERE menor_id = ? AND maior_id = ?').run(menor, maior).changes > 0;
+}
+
+/**
+ * Quem poderia ser seu amigo: gente que divide comunidade com você e ainda não tem relação nenhuma.
+ *
+ * A sugestão sai SÓ de comunidades em comum, e isso é decisão de privacidade, não de algoritmo. Uma
+ * lista de "pessoas que talvez você conheça" montada sobre o Syden inteiro entregaria a existência de
+ * estranhos a estranhos — quem se cadastrou ontem apareceria na tela de alguém que nunca o viu.
+ * Dividir comunidade já significa que vocês se veem na lista de membros.
+ *
+ * Ordena por quantas comunidades vocês dividem: duas em comum é um conhecido melhor do que uma.
+ */
+export function sugestoesDeAmizade(userId: number, limite = 12): { userId: number; username: string; avatarVersion: number | null; emComum: number }[] {
+  return db
+    .prepare(
+      `SELECT u.id AS userId, u.username AS username, u.avatar_version AS avatarVersion,
+              COUNT(DISTINCT m.community_id) AS emComum
+         FROM community_members m
+         JOIN community_members meus ON meus.community_id = m.community_id AND meus.user_id = ?
+         JOIN users u ON u.id = m.user_id
+        WHERE m.user_id <> ?
+          AND NOT EXISTS (
+            SELECT 1 FROM friendships f
+             WHERE (f.menor_id = MIN(?, u.id) AND f.maior_id = MAX(?, u.id))
+          )
+        GROUP BY u.id
+        ORDER BY emComum DESC, u.username COLLATE NOCASE
+        LIMIT ?`,
+    )
+    .all(userId, userId, userId, userId, limite) as unknown as {
+    userId: number;
+    username: string;
+    avatarVersion: number | null;
+    emComum: number;
+  }[];
 }

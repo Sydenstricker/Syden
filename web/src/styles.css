@@ -3141,6 +3141,159 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Amigos ---------- */
+
+/* Botão discreto, para ação que acompanha uma linha de lista. Nasceu na tela de amigos e serve a
+   qualquer lista: o destaque tem de ficar no nome da pessoa, não no botão ao lado dele. */
+.btn-sutil {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.btn-sutil:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.btn-sutil:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Desfazer amizade e recusar pedido só ficam vermelhos ao passar o mouse: uma lista de amigos com
+   botões vermelhos permanentes parece uma lista de problemas. */
+.btn-sutil.perigo:hover:not(:disabled) {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.tela-com-volta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.amigos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 680px;
+}
+
+.amigos-abas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.amigos-selo {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--red);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.amigos-titulo {
+  margin: 14px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.amigos-lista {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amigos-lista li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--bg-raised);
+}
+
+.amigos-lista li:last-child {
+  border-bottom: 0;
+}
+
+/* O nome empurra os botões para a direita e fica com todo o espaço que sobra. */
+.amigos-nome {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--text-strong);
+}
+
+.amigos-nome small {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.amigos-esperando {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.amigos-vazio {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.amigos-aviso {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.amigos-busca {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.amigos-busca > div {
+  display: flex;
+  gap: 8px;
+}
+
+.amigos-busca input {
+  flex: 1;
+  min-width: 0;
+}
+
+.amigos-busca small {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
 /* ---------- Panorama das comunidades ---------- */
 
 .comunidades-janela {

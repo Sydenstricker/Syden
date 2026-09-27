@@ -2,6 +2,25 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useCoelho } from './coelho';
 import { sounds } from './sounds';
 
+import {
+  ALTURA,
+  balaoDaCasa,
+  CASAS,
+  deIso,
+  ESTATUA,
+  iso,
+  LARGURA,
+  type P,
+  TH,
+  TW,
+  PRACA_DOS_AMIGOS,
+  TELHADO,
+} from './vilaGeometria';
+
+// Reexportados para quem já importava daqui — a geometria mudou de arquivo, não de nome.
+export { ALTURA, balaoDaCasa, CASAS, ESTATUA, LARGURA, PRACA_DOS_AMIGOS };
+
+
 // A vila do Syden: uma praça vista de cima e de lado, como nos jogos de fazenda, desenhada inteira em
 // SVG — nenhuma imagem, nenhum download. As casas levam a lugares de verdade do app, e os coelhos andam
 // por conta própria pela praça.
@@ -10,31 +29,6 @@ import { sounds } from './sounds';
 // ângulo: andar uma casa para o lado move meia largura de piso na horizontal e meia altura na vertical.
 
 /** Metade da largura e da altura de um piso do tabuleiro. */
-const TW = 48;
-const TH = 24;
-/** Onde fica a coluna 0, fileira 0 dentro do desenho. */
-const OX = 600;
-const OY = 300;
-export const LARGURA = 1200;
-export const ALTURA = 740;
-
-interface P {
-  x: number;
-  y: number;
-}
-
-/** Leva um ponto do tabuleiro (coluna, fileira, altura em pixels) para o desenho. */
-function iso(c: number, r: number, h = 0): P {
-  return { x: OX + (c - r) * TW, y: OY + (c + r) * TH - h };
-}
-
-/** O caminho de volta: de um ponto do desenho para o tabuleiro (usado no clique na grama). */
-function deIso(x: number, y: number) {
-  const a = (x - OX) / TW;
-  const b = (y - OY) / TH;
-  return { c: (a + b) / 2, r: (b - a) / 2 };
-}
-
 const pts = (...lista: P[]) => lista.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 const lerp = (a: P, b: P, t: number): P => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
 const sobe = (p: P, h: number): P => ({ x: p.x, y: p.y - h });
@@ -143,9 +137,6 @@ function Caminho({ c, r, passos }: { c: number; r: number; passos: number }) {
 // ---------------------------------------------------------------------------------------------------
 // As casas
 // ---------------------------------------------------------------------------------------------------
-
-/** Altura do telhado de todas as casas: o balão precisa saber disso para flutuar na altura certa. */
-const TELHADO = 38;
 
 function Casa({
   c,
@@ -561,24 +552,6 @@ export interface PinoVila {
   x: number;
   y: number;
   onClick: () => void;
-}
-
-/** Onde cada casa fica no tabuleiro — os balões apontam para elas, e nenhuma pode passar da borda. */
-export const CASAS = {
-  salas: { c: -3.6, r: -1.4, w: 3.0, d: 2.4, alt: 58 },
-  loja: { c: 1.0, r: -2.4, w: 2.6, d: 2.0, alt: 52 },
-  aprender: { c: 4.0, r: -0.6, w: 2.6, d: 2.2, alt: 56 },
-  explorar: { c: -4.2, r: 2.4, w: 2.2, d: 1.8, alt: 46 },
-};
-
-/** Onde fica a estátua da praça: a aba dos coelhos aponta para ela. */
-export const ESTATUA = { c: -0.4, r: -0.4, alt: 150 };
-
-/** Onde o balão de uma casa deve flutuar, em % da cena: logo acima do telhado. */
-export function balaoDaCasa(casa: { c: number; r: number; alt: number }, telhado = TELHADO) {
-  const p = iso(casa.c, casa.r, casa.alt + telhado);
-  // O balão cresce para cima a partir daqui; abaixo de 10% ele sairia pela borda de cima da cena.
-  return { x: (p.x / LARGURA) * 100, y: Math.max(10, (p.y / ALTURA) * 100) };
 }
 
 export function Vila({

@@ -11,6 +11,7 @@ import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
 import { ServidoresDeJogo } from './ServidoresDeJogo';
 import { TelaDaLoja } from './TelaDaLoja';
+import { TelaDeAmigos } from './TelaDeAmigos';
 import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
 import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread';
@@ -33,7 +34,7 @@ const LAST_COMMUNITY_KEY = 'syden.community';
 /** Última tela aberta (início, comunidade ou conversas), pelo mesmo motivo. */
 const LAST_VIEW_KEY = 'syden.view';
 
-type View = 'home' | 'community' | 'direct' | 'loja';
+type View = 'home' | 'community' | 'direct' | 'loja' | 'amigos';
 
 function rememberView(view: View) {
   try {
@@ -675,6 +676,7 @@ export function Shell({
               naVoz={voiceMembers}
               aoEntrar={watchStream}
               aoAbrirLoja={() => setView('loja')}
+              aoAbrirAmigos={() => setView('amigos')}
               aoExplorar={() => setExplorarAberto(true)}
               souODono={user.isOwner}
             />
@@ -685,6 +687,17 @@ export function Shell({
               aoAbrirPacotes={() => setSettingsOpen('soundboard')}
               aoVoltar={() => setView('home')}
             />
+          )}
+
+          {view === 'amigos' && (
+            <div className="tela-com-volta">
+              <button className="btn-sutil" onClick={() => setView('home')}>
+                ← Voltar
+              </button>
+              {/* Conversar com um amigo abre a conversa privada que já existe: a amizade não inventa
+                  um canal novo, só torna a pessoa fácil de achar de novo depois. */}
+              <TelaDeAmigos aoConversar={(userId) => void startConversation(userId)} />
+            </div>
           )}
 
           {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
