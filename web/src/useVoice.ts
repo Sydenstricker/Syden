@@ -47,13 +47,19 @@ const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
 };
 
 /**
- * Quando falta banda ou processador, o navegador precisa escolher o que sacrificar. Em jogo, imagem travada
- * é pior que imagem menos nítida, então mandamos ele manter os quadros por segundo; em apresentação de slides
- * ou planilha, o contrário: melhor nitidez e menos quadros.
+ * Quando falta banda ou processador, o navegador precisa escolher o que sacrificar: nitidez ou fluidez.
+ *
+ * O PADRÃO ESCOLHIA NITIDEZ, e era a escolha errada para o que as pessoas fazem aqui. Com "balanced" e
+ * "detail", um jogo apertado virava 804p a 7 QUADROS POR SEGUNDO — uma sequência de fotos nítidas, que
+ * é a pior forma possível de assistir alguém jogar. O mesmo aperto com "maintain-framerate" dá 720p ou
+ * 540p a 30 fps, que é fluido e continua perfeitamente legível.
+ *
+ * Nitidez acima de tudo continua existindo, mas onde ela faz sentido: em "Leve", que é a opção de quem
+ * está mostrando planilha, slide ou código, onde ler a letra importa mais do que o movimento.
  */
 const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; degradation: RTCDegradationPreference }> = {
   light: { contentHint: 'detail', degradation: 'maintain-resolution' },
-  standard: { contentHint: 'detail', degradation: 'balanced' },
+  standard: { contentHint: 'motion', degradation: 'maintain-framerate' },
   smooth: { contentHint: 'motion', degradation: 'maintain-framerate' },
 };
 
@@ -800,6 +806,25 @@ export function useVoice(socket: Socket | null) {
     [room, startAppAudio],
   );
 
+  /**
+   * Troca o codec da transmissão.
+   *
+   * Precisa RECOMEÇAR a transmissão: o codec é escolhido no momento em que a faixa é publicada, e não
+   * dá para trocar com ela no ar. Quem assiste vê a imagem sumir e voltar em um ou dois segundos.
+   *
+   * Já transmitindo, o seletor de tela abre de novo — não há como recomeçar sem pedir a tela outra vez,
+   * porque a permissão de captura morre junto com a faixa. É por isso que isto não acontece sozinho:
+   * quem decide é a pessoa, clicando no conselho.
+   */
+  const setScreenCodec = useCallback(
+    (codec: 'vp8' | 'h264') => {
+      updateSettings({ screenCodec: codec });
+      const tela = telaCompartilhada;
+      if (room.localParticipant.isScreenShareEnabled && tela) void shareScreen(tela);
+    },
+    [room, shareScreen, telaCompartilhada],
+  );
+
   const stopScreen = useCallback(async () => {
     stopAppAudio();
     await room.localParticipant.setScreenShareEnabled(false).catch(console.error);
@@ -988,6 +1013,7 @@ export function useVoice(socket: Socket | null) {
     setAudioProcessing,
     ecoNaTransmissao,
     telaCompartilhada,
+    setScreenCodec,
     disparoVisual,
     mandarEfeitoVisual,
     assistindo,
