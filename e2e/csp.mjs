@@ -26,6 +26,12 @@ const SITE = process.env.SITE ?? 'https://syden.chat';
  *   style-src     'unsafe-inline' é inevitável: o React escreve `style=` direto nos elementos, e o
  *                 LiveKit injeta folhas de estilo próprias. Sem isso a tela abre sem formatação nenhuma.
  *   frame-src     o Turnstile da Cloudflare é um quadro dentro da nossa página.
+ *   static.cloudflareinsights.com
+ *                 a medição de audiência, que a Cloudflare injeta sozinha nas páginas enquanto o proxy
+ *                 está ligado. Ela só pode estar liberada aqui porque está DECLARADA na política de
+ *                 privacidade, na seção "Medição do site" — essa é a condição, e se um dia a medição
+ *                 for desligada no painel, esta linha sai junto. O envio dela vai para /cdn-cgi/rum,
+ *                 no NOSSO domínio, então connect-src 'self' já cobre: não há um segundo endereço.
  *   fonts.*       a letra do Syden vem do Google Fonts (ver web/index.html). Vale saber o preço disso:
  *                 cada pessoa que abre o Syden faz um pedido aos servidores do Google, e o Google vê o
  *                 endereço de rede dela. Hospedar a fonte junto com o site resolveria e tiraria duas
@@ -36,7 +42,7 @@ const SITE = process.env.SITE ?? 'https://syden.chat';
  */
 export const CSP = [
   "default-src 'self'",
-  "script-src 'self' https://challenges.cloudflare.com",
+  "script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://api.syden.chat",
   "media-src 'self' blob: https://api.syden.chat",
@@ -89,22 +95,12 @@ async function visitar(caminho, oQueEsperar) {
   await page.waitForTimeout(2500);
   const nome = caminho || '/';
 
-  // A Cloudflare INJETA um script de análise nas nossas páginas quando o proxy está ligado. Ele
-  // aparece aqui como violação, e a resposta certa NÃO é liberá-lo na política: é desligá-lo lá.
-  //
-  // Dois motivos. O primeiro é que a nossa política de privacidade promete, com todas as letras, que
-  // "não usamos ferramentas de rastreamento ou de análise de terceiros" — ligar o proxy tornou essa
-  // frase falsa sem ninguém decidir isso. O segundo é que o Syden já tem contagem de pessoas própria,
-  // no painel de uso, sem mandar o endereço de rede de ninguém para fora.
-  const beacon = violacoes.filter((v) => v.includes('cloudflareinsights'));
-  const resto = violacoes.filter((v) => !v.includes('cloudflareinsights'));
-  if (beacon.length) {
-    console.log(`  ATENÇÃO  ${nome}: a Cloudflare está injetando o script de análise dela.`);
-    console.log('           Desligue em Web Analytics, no painel da Cloudflare — não libere na política.');
-  }
-  if (resto.length === 0) return console.log(`  OK  ${nome}`);
+  // A medição da Cloudflare é uma ESCOLHA declarada, não um acidente do proxy: está liberada na
+  // política acima e descrita na política de privacidade. Por isso ela deixou de ser tratada como
+  // aviso aqui — se o script aparecer como violação, o erro é da nossa política e tem de falhar.
+  if (violacoes.length === 0) return console.log(`  OK  ${nome}`);
   console.log(`  BARROU  ${nome}`);
-  for (const v of [...new Set(resto)].slice(0, 8)) console.log('        ' + v.slice(0, 200));
+  for (const v of [...new Set(violacoes)].slice(0, 8)) console.log('        ' + v.slice(0, 200));
   process.exitCode = 1;
 }
 

@@ -13,19 +13,22 @@
       <p class="updated">Atualizada em 27 de setembro de 2026</p>
 
       <p>
-        O Syden é um aplicativo gratuito de voz, vídeo e chat para um grupo fechado de amigos, com acesso só por convite.
-        É um projeto pessoal, sem fins lucrativos, mantido por Sydenstricker. Não há anúncios, não vendemos dados e não
-        usamos ferramentas de rastreamento ou de análise de terceiros.
+        O Syden é um aplicativo gratuito de voz, vídeo e chat. Qualquer pessoa pode criar uma conta, confirmando um
+        e-mail. Entrar numa comunidade, essa sim, continua sendo por convite de quem já está lá. É um projeto pessoal,
+        sem fins lucrativos, mantido por Sydenstricker. <strong>Não há anúncios e não vendemos os seus dados</strong> —
+        nem para anunciante, nem para ninguém. Usamos uma única ferramenta de medição, e ela está descrita em
+        <a href="#medicao">Medição do site</a>, com o que ela faz e o que ela não faz.
       </p>
 
       <h2>O que guardamos</h2>
       <ul>
         <li><strong>Conta:</strong> seu nome de usuário e sua senha. A senha nunca é guardada como texto: guardamos só uma versão embaralhada (hash) que não permite descobri-la.</li>
         <li>
-          <strong>E-mail, se você quiser dar:</strong> é opcional. Serve para você recuperar a senha se esquecê-la e para
-          avisarmos você se algo grave acontecer com o Syden. Sem e-mail, o app funciona igual — só que uma senha
-          esquecida não tem volta. Você pode apagar o endereço quando quiser, em
-          <em>Configurações → Minha conta</em>.
+          <strong>E-mail:</strong> quem cria uma conta agora precisa informar um endereço e confirmá-lo antes de entrar.
+          Ele serve para devolver a sua conta se você esquecer a senha e para avisarmos você se algo grave acontecer com
+          o Syden. <strong>Quem já tinha conta antes de 27 de setembro de 2026 não foi obrigado a nada</strong>: nessas
+          contas o e-mail continua opcional. Você pode trocar ou apagar o endereço quando quiser, em
+          <em>Configurações → Minha conta</em> — apagando, uma senha esquecida deixa de ter volta.
         </li>
         <li><strong>Mensagens:</strong> o texto das mensagens que você envia, em qual canal e quando.</li>
         <li><strong>Imagens e sons que você envia:</strong> avatar, emojis e sons do soundboard.</li>
@@ -50,6 +53,25 @@
         <li>Não coletamos localização, contatos nem número de telefone.</li>
       </ul>
 
+      <h2 id="medicao">Medição do site</h2>
+      <p>
+        O endereço syden.chat usa o <strong>Web Analytics da Cloudflare</strong>, que conta quantas visitas a página
+        recebe e quanto tempo ela demora para abrir. É a única ferramenta de medição do projeto, e ela está aqui por um
+        motivo prático: sem medir, uma tela que demora demais para abrir não é um problema que alguém conserta — é um
+        problema que ninguém descobre.
+      </p>
+      <p>Vale dizer o que ela <em>não</em> faz, porque a palavra "análise" costuma significar coisa pior:</p>
+      <ul>
+        <li><strong>Não usa cookie</strong> e não guarda nada no seu navegador: nem identificador, nem armazenamento local.</li>
+        <li><strong>Não reconhece você entre uma visita e outra</strong>, e não tem como acompanhar você fora do Syden.</li>
+        <li><strong>Não lê o que vem depois do "?" no endereço.</strong> Um link com código de convite não é enviado.</li>
+        <li><strong>Não faz impressão digital do aparelho</strong> — a técnica de identificar alguém pelas características do navegador.</li>
+      </ul>
+      <p>
+        O que ela registra é a página aberta, o tempo de carregamento, o tipo de navegador e o país. Isso vale para tudo
+        o que é servido em syden.chat, incluindo o próprio aplicativo. As chamadas de voz e vídeo não passam por lá.
+      </p>
+
       <h2>O que fica no seu computador</h2>
       <p>
         O app guarda no seu computador um token de login, que vale 30 dias, e as suas preferências: microfone,
@@ -68,6 +90,19 @@
           e-mails de confirmação e de recuperação de senha são enviados pela Resend, a partir da região de São Paulo — só
           o seu endereço e o texto da mensagem passam por lá. O endereço do servidor usa o serviço DuckDNS apenas para a
           tradução de nomes na internet.
+        </li>
+        <li>
+          <strong>Cloudflare:</strong> as páginas de syden.chat passam por ela antes de chegar até você. Ela entrega o
+          site, protege o cadastro contra robôs (Turnstile) e faz a medição descrita acima. Por estar nesse caminho, ela
+          enxerga o endereço IP e a página pedida em cada visita — isso vale mesmo sem a medição ligada, e é o preço de
+          ter o site protegido por ela. As chamadas de voz e vídeo não passam pela Cloudflare.
+        </li>
+        <li>
+          <strong>Google, Discord, GitHub ou Steam — só se você escolher entrar por eles.</strong> Nesse momento o
+          provedor fica sabendo que você entrou no Syden, e o Syden recebe dele o seu nome, a sua foto e o seu e-mail
+          quando houver (a Steam não informa e-mail). Não pedimos nada além disso: não lemos as suas mensagens, não
+          vemos os seus contatos e não publicamos nada em seu nome. Desfazer a ligação em
+          <em>Configurações → Conta → Entrar com</em> encerra o assunto.
         </li>
       </ul>
       <p>Não compartilhamos seus dados com mais ninguém, exceto quando exigido por lei.</p>
