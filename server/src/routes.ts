@@ -26,6 +26,7 @@ import { lerServidor, TETO_POR_COMUNIDADE } from './jogos.js';
 import { CATALOGO, podeVestir } from './loja.js';
 import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
+import { audiencia } from './audiencia.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
@@ -883,6 +884,15 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get('/api/status/uptime', async (request, reply) => {
       if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
       return (await disponibilidade()) ?? null;
+    });
+
+    /**
+     * Quanta gente ABRE o site, e quanto ele demora para abrir na casa dela. Vem da Cloudflare, e some
+     * do mesmo jeito que a de cima quando não há chave configurada.
+     */
+    authed.get('/api/status/audiencia', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      return (await audiencia()) ?? null;
     });
 
     // ---------- Canais ----------

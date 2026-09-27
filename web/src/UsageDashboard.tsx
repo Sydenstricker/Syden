@@ -5,6 +5,7 @@ import { PainelAuditoria } from './PainelAuditoria';
 import { PainelDeAviso } from './PainelDeAviso';
 import { PainelDeCrescimento } from './PainelDeCrescimento';
 import { PainelDenuncias } from './PainelDenuncias';
+import { PainelDeAudiencia } from './PainelDeAudiencia';
 import { PainelDisponibilidade } from './PainelDisponibilidade';
 import { HealthPanel } from './HealthPanel';
 import { MobileBackButton } from './MobileBackButton';
@@ -117,6 +118,7 @@ export function UsageDashboard({
         <div className="usage-body">
           {/* O de fora vem primeiro: é a única medição que não depende do próprio servidor estar bem. */}
           <PainelDisponibilidade />
+          <PainelDeAudiencia />
           <HealthPanel />
         </div>
       )}

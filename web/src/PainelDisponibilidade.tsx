@@ -51,7 +51,7 @@ export function PainelDisponibilidade() {
         {dados.situacao === 'no ar' ? 'No ar agora' : `Situação: ${dados.situacao}`}
       </p>
 
-      <div className="disponibilidade-numeros">
+      <div className="painel-numeros">
         {[
           { rotulo: 'Últimas 24 h', valor: dados.umDia },
           { rotulo: '7 dias', valor: dados.seteDias },

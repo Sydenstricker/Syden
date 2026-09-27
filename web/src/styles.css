@@ -13,6 +13,8 @@
   --green: #23a55a;
   --red: #da373c;
   --red-hover: #a12828;
+  /* Atenção: o que ainda funciona mas vai parar. Nem verde nem vermelho. */
+  --amber: #f0b232;
   /* Superfícies que sobem um degrau do fundo (menus, campos, bolhas). */
   --bg-raised: #3f4147;
   --bg-raised-hover: #4e5058;
@@ -61,6 +63,7 @@
   --green: #248046;
   --red: #d83c3e;
   --red-hover: #a12828;
+  --amber: #a8730a;
   --shadow: rgba(0, 0, 0, 0.16);
   color-scheme: light;
 }
@@ -3081,14 +3084,14 @@ textarea {
   color: #d83c3e;
 }
 
-.disponibilidade-numeros {
+.painel-numeros {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 12px;
 }
 
-.disponibilidade-numeros div {
+.painel-numeros div {
   padding: 10px 12px;
   border: 1px solid var(--bg-raised);
   border-radius: var(--radius);
@@ -3096,14 +3099,14 @@ textarea {
   text-align: center;
 }
 
-.disponibilidade-numeros strong {
+.painel-numeros strong {
   display: block;
   color: var(--text-strong);
   font-size: 19px;
   font-variant-numeric: tabular-nums;
 }
 
-.disponibilidade-numeros small {
+.painel-numeros small {
   color: var(--text-muted);
   font-size: 11px;
 }
@@ -3135,6 +3138,110 @@ textarea {
 .disponibilidade-quedas time {
   min-width: 116px;
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Audiência do site (Web Analytics da Cloudflare) ---------- */
+
+/* A chave vence em um ano, e quando vencer a seção sumiria sem dizer nada — parecendo que o site
+   esvaziou. Estes dois blocos existem para que isso seja impossível de não ver. */
+.audiencia-parou {
+  border-left: 3px solid var(--red);
+}
+
+.audiencia-parou h3 {
+  color: var(--red);
+}
+
+.audiencia-motivo {
+  margin: 8px 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-strong);
+}
+
+.audiencia-vencendo {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.audiencia-vencendo svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--amber);
+}
+
+.audiencia-parou code,
+.audiencia-vencendo code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-raised);
+  font-size: 12px;
+}
+
+.audiencia-p75 {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.audiencia-p75 strong {
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.audiencia-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audiencia-barras li {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  /* A altura fixa é o que dá às barras uma base comum: sem ela cada coluna mede a si mesma e a
+     comparação entre os dias, que é o motivo do gráfico existir, deixa de funcionar. */
+  justify-content: flex-end;
+  min-height: 84px;
+}
+
+.audiencia-barra {
+  width: 100%;
+  max-width: 28px;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--accent);
+}
+
+/* O número e a data ficam em cor de texto, nunca na cor da barra: a cor identifica a barra, e o texto
+   ao lado dela é que se lê. */
+.audiencia-barras b {
+  order: -1;
+  margin-bottom: 4px;
+  color: var(--text-strong);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.audiencia-barras small {
+  order: 1;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 

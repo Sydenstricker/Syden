@@ -78,6 +78,14 @@ export const config = {
   // Historico de disponibilidade visto de fora (UptimeRobot). Chave só de leitura, criada em
   // uptimerobot.com -> My Settings -> API. Sem ela, a secao nao aparece no painel.
   uptimeRobotKey: process.env.UPTIMEROBOT_API_KEY ?? '',
+  // Audiencia do site (Web Analytics da Cloudflare). Token so de leitura, uma permissao so:
+  // Account -> Account Analytics -> Read. O identificador da conta e do site saem de
+  // `node server/scripts/audiencia.mjs`. Faltando qualquer um dos tres, a secao nao aparece.
+  cloudflare: {
+    apiToken: process.env.CLOUDFLARE_API_TOKEN ?? '',
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID ?? '',
+    siteTag: process.env.CLOUDFLARE_SITE_TAG ?? '',
+  },
   // Turnstile da Cloudflare: a unica defesa que funciona contra enxame de robos vindo de muitos
   // endereços diferentes. Sem chave, fica desligado e o cadastro funciona como sempre.
   turnstile: {

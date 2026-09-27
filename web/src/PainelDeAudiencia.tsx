@@ -1,0 +1,147 @@
+import { useEffect, useState } from 'react';
+import { Gauge, KeyRound, TriangleAlert } from 'lucide-react';
+import { api } from './api';
+
+interface Dados {
+  pageviews: number;
+  visitas: number;
+  medianaMs: number | null;
+  p75Ms: number | null;
+  porDia: { dia: string; visitas: number; pageviews: number }[];
+}
+
+type Audiencia =
+  | ({ situacao: 'ok'; aviso: { venceEm: string; diasAteVencer: number } | null } & Dados)
+  | { situacao: 'falhou'; motivo: string; chaveVencida: boolean };
+
+/** Abaixo de um segundo, milissegundo é mais legível; acima, segundo com uma casa. */
+const tempo = (ms: number | null) => (ms === null ? '—' : ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)} s`);
+
+const diaCurto = (iso: string) =>
+  new Date(iso + 'T12:00:00Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+
+const dataLonga = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { dateStyle: 'long' });
+
+const ONDE = 'dash.cloudflare.com → perfil → API Tokens';
+
+/**
+ * Quanta gente abre o site, e quanto ele demora para abrir na casa dela.
+ *
+ * É o único número do painel que vem de FORA do nosso servidor. O painel de crescimento conta contas,
+ * que é coisa nossa; este conta visitas, inclusive de quem nunca se cadastrou — e mede o carregamento
+ * na rede de quem está abrindo, que é a única medição que a nossa máquina não sabe fazer.
+ *
+ * Três estados, e a diferença entre eles é o ponto principal desta tela:
+ *
+ *   nulo      sem chave configurada. A seção não existe. É o estado de quem nunca ligou isto.
+ *   'falhou'  chave configurada e não funcionando. GRITA em vermelho, com o motivo e onde resolver —
+ *             porque a chave vence em um ano, e sumir em silêncio faria parecer que o site esvaziou.
+ *   'ok'      os números. E, se o vencimento estiver a menos de 30 dias, um aviso âmbar por cima
+ *             deles: o melhor momento para renovar é enquanto ainda funciona.
+ */
+export function PainelDeAudiencia() {
+  const [dados, setDados] = useState<Audiencia | null | 'carregando'>('carregando');
+
+  useEffect(() => {
+    api<Audiencia | null>('/api/status/audiencia')
+      .then(setDados)
+      .catch(() => setDados(null));
+  }, []);
+
+  if (dados === 'carregando' || dados === null) return null;
+
+  if (dados.situacao === 'falhou') {
+    return (
+      <section className="usage-card audiencia-parou">
+        <h3>
+          <TriangleAlert size={16} aria-hidden="true" /> A medição de audiência parou
+        </h3>
+        <p className="audiencia-motivo">{dados.motivo}</p>
+        {dados.chaveVencida ? (
+          <p className="settings-hint">
+            A chave de leitura da Cloudflare tinha validade e chegou ao fim. Crie outra em <strong>{ONDE}</strong>, com
+            a permissão <strong>Account · Account Analytics · Read</strong>, e troque o valor de{' '}
+            <code>CLOUDFLARE_API_TOKEN</code> no <code>.env</code> do servidor.
+          </p>
+        ) : (
+          <p className="settings-hint">
+            Enquanto isto aparecer, os números abaixo não existem — <strong>não é que ninguém esteja entrando no
+            site</strong>. O motivo acima veio da própria Cloudflare, e o registro do servidor tem a mensagem completa.
+          </p>
+        )}
+      </section>
+    );
+  }
+
+  // O maior dia define a altura das barras. Sem ele (ou com tudo zerado) não se divide por zero.
+  const teto = Math.max(1, ...dados.porDia.map((d) => d.visitas));
+
+  return (
+    <section className="usage-card">
+      <h3>
+        <Gauge size={16} aria-hidden="true" /> Quem abre o site
+      </h3>
+      <p className="settings-hint">
+        Últimos 7 dias, medidos pelo Web Analytics da Cloudflare. Conta quem abre a página, tenha conta ou não — e o
+        tempo de carregamento é o da rede de quem abriu, não o da nossa.
+      </p>
+
+      {dados.aviso && (
+        <p className="audiencia-vencendo">
+          <KeyRound size={15} aria-hidden="true" />
+          <span>
+            {dados.aviso.diasAteVencer <= 0 ? (
+              <>
+                A chave da Cloudflare <strong>vence hoje</strong>.
+              </>
+            ) : (
+              <>
+                A chave da Cloudflare vence em <strong>{dados.aviso.diasAteVencer} dias</strong> (
+                {dataLonga(dados.aviso.venceEm)}).
+              </>
+            )}{' '}
+            Renove agora, enquanto ainda funciona: {ONDE}, permissão <strong>Account · Account Analytics · Read</strong>
+            , e troque <code>CLOUDFLARE_API_TOKEN</code> no <code>.env</code> do servidor.
+          </span>
+        </p>
+      )}
+
+      <div className="painel-numeros">
+        <div>
+          <strong>{dados.visitas.toLocaleString('pt-BR')}</strong>
+          <small>Visitas</small>
+        </div>
+        <div>
+          <strong>{dados.pageviews.toLocaleString('pt-BR')}</strong>
+          <small>Páginas abertas</small>
+        </div>
+        <div>
+          <strong>{tempo(dados.medianaMs)}</strong>
+          <small>Carregamento típico</small>
+        </div>
+      </div>
+
+      {dados.p75Ms !== null && (
+        <p className="audiencia-p75">
+          Na quarta parte mais lenta, o site levou <strong>{tempo(dados.p75Ms)}</strong> para abrir. É esse número que
+          diz se alguém desistiu de esperar — a média esconde exatamente quem teve a pior experiência.
+        </p>
+      )}
+
+      {dados.porDia.length > 0 && (
+        <>
+          <h4 className="disponibilidade-titulo">Visitas por dia</h4>
+          <ul className="audiencia-barras">
+            {dados.porDia.map((d) => (
+              <li key={d.dia} title={`${diaCurto(d.dia)}: ${d.visitas} visitas, ${d.pageviews} páginas`}>
+                <span className="audiencia-barra" style={{ height: `${Math.round((d.visitas / teto) * 100)}%` }} />
+                <small>{diaCurto(d.dia)}</small>
+                <b>{d.visitas}</b>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
