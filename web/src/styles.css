@@ -16,6 +16,17 @@
   /* Superfícies que sobem um degrau do fundo (menus, campos, bolhas). */
   --bg-raised: #3f4147;
   --bg-raised-hover: #4e5058;
+  /* Painéis que FLUTUAM por cima de tudo (karaokê, listas da vila): precisam ser opacos, senão o que
+     está atrás atravessa o texto. Mais escuro que o fundo, para o painel se destacar da tela. */
+  --bg-float: #1e1f22;
+  /* Linha de contorno de cartões e painéis. */
+  --border: rgba(255, 255, 255, 0.08);
+  /* Superfície de cartão dentro de uma tela: um degrau abaixo do fundo principal. */
+  --bg-secondary: #2b2d31;
+  /* A coluna das comunidades, à esquerda de tudo. */
+  --bg-rail: #1e1f22;
+  /* O escurecido por cima de vídeo, na versão mais forte (usado em botão apertado). */
+  --overlay-strong: rgba(0, 0, 0, 0.75);
   --shadow: rgba(0, 0, 0, 0.45);
   /* Plaquinhas escuras por cima de vídeo (nome na tela, aviso de som): valem nos dois temas. */
   --overlay: rgba(0, 0, 0, 0.55);
@@ -36,6 +47,12 @@
   --bg-active: rgba(6, 6, 7, 0.08);
   --bg-raised: #e7e9ec;
   --bg-raised-hover: #dcdfe4;
+  /* No tema claro o painel flutuante é BRANCO. A cor de reserva que existia antes era escura e fixa,
+     então no claro aparecia um retângulo preto no meio da tela. */
+  --bg-float: #ffffff;
+  --border: rgba(6, 6, 7, 0.1);
+  --bg-secondary: #f2f3f5;
+  --bg-rail: #e3e5e8;
   --text: #2e3338;
   --text-strong: #060607;
   --text-muted: #5c5e66;
@@ -375,7 +392,7 @@ textarea {
 .rail {
   width: 68px;
   flex-shrink: 0;
-  background: var(--bg-rail, var(--bg-darkest));
+  background: var(--bg-rail);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -5214,7 +5231,7 @@ textarea {
   justify-content: center;
   border-radius: 999px;
   background: var(--red);
-  border: 2px solid var(--bg-rail, var(--bg-darkest));
+  border: 2px solid var(--bg-rail);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -6208,8 +6225,8 @@ textarea {
   width: min(360px, 88%);
   padding: 14px 16px 16px;
   border-radius: 14px;
-  background: var(--bg-float, #1e1f22);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--bg-float);
+  border: 1px solid var(--border);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
 }
 
@@ -6639,8 +6656,8 @@ textarea {
   width: 300px;
   border-radius: 14px;
   overflow: hidden;
-  background: var(--bg-float, #1e1f22);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--bg-float);
+  border: 1px solid var(--border);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 
@@ -6655,7 +6672,7 @@ textarea {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--bg-float, #1e1f22);
+  background: var(--bg-float);
 }
 
 .perfil-corpo {
@@ -7842,7 +7859,7 @@ textarea {
 }
 
 .jogo-copiar:hover {
-  background: var(--overlay-strong, var(--border));
+  background: var(--overlay-strong);
 }
 
 .jogo-copiar code {
@@ -8141,4 +8158,42 @@ textarea {
 
 .crescimento-numeros.secundarios strong {
   font-size: 17px;
+}
+
+/* ---------- O "..." da barra da chamada ---------- */
+
+.mais-anchor {
+  position: relative;
+}
+
+/*
+ * O menu abre PARA CIMA, em coluna. Para cima porque a barra vive no pé da tela; em coluna porque em
+ * fileira ele só mudaria o lugar da poluição, sem tirá-la.
+ */
+.mais-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-float);
+  box-shadow: 0 10px 30px var(--shadow);
+}
+
+/* A bolinha que avisa que tem coisa ligada lá dentro, com o menu fechado. */
+.mais-aceso {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--bg-main);
+  border-radius: 50%;
+  background: var(--green);
+  pointer-events: none;
 }

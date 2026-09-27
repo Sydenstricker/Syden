@@ -45,6 +45,7 @@ import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
+import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
@@ -716,9 +717,11 @@ function Stage({
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         <ScreenShareButton voice={voice} />
-        <VoiceEffectButton voice={voice} />
-        <EfeitoVisualButton voice={voice} />
-        <ClipButton stream={transmissaoNaTela} de={quemTransmite} canais={canaisDeTexto} />
+        {/*
+          Ver lado a lado fica FORA do menu: só aparece quando há mais de uma transmissão aberta, e
+          nesse momento é exatamente o que a pessoa quer fazer. Botão que só existe quando é útil não
+          polui nada.
+        */}
         {abertas.length > 1 && (
           <IconButton
             label={split ? 'Focar em uma transmissão' : `Ver as ${abertas.length} transmissões lado a lado`}
@@ -728,24 +731,37 @@ function Stage({
             <LayoutGrid />
           </IconButton>
         )}
-        <div className="soundboard-anchor">
-          <IconButton
-            label="Karaokê"
-            active={karaokeOpen || voice.karaoke !== null}
-            onClick={() => setKaraokeOpen(!karaokeOpen)}
-          >
-            <Music />
-          </IconButton>
-          {(karaokeOpen || voice.karaoke !== null) && (
-            <Karaoke voice={voice} communityId={communityId} onClose={() => setKaraokeOpen(false)} />
-          )}
-        </div>
+
+        <MaisNaChamada quantosAtivos={voice.voiceEffect !== 'none' ? 1 : 0}>
+          <VoiceEffectButton voice={voice} />
+          <EfeitoVisualButton voice={voice} />
+          <ClipButton stream={transmissaoNaTela} de={quemTransmite} canais={canaisDeTexto} />
+          <div className="soundboard-anchor">
+            <IconButton
+              label="Karaokê"
+              active={karaokeOpen || voice.karaoke !== null}
+              onClick={() => setKaraokeOpen(!karaokeOpen)}
+            >
+              <Music />
+            </IconButton>
+          </div>
         <div className="soundboard-anchor">
           <IconButton label="Soundboard" active={soundboardOpen} onClick={() => setSoundboardOpen(!soundboardOpen)}>
             <AudioLines />
           </IconButton>
-          {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
-        </div>
+          </div>
+        </MaisNaChamada>
+
+        {/*
+          Os painéis do karaokê e do soundboard ficam FORA do menu "Mais", mesmo sendo abertos por
+          botões que estão dentro dele. Se ficassem dentro, sumiriam junto com o menu no primeiro
+          clique — e o menu se fecha ao clicar em qualquer coisa, que é o comportamento certo para ele.
+        */}
+        {(karaokeOpen || voice.karaoke !== null) && (
+          <Karaoke voice={voice} communityId={communityId} onClose={() => setKaraokeOpen(false)} />
+        )}
+        {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
+
         <button className="leave-button" title={t('Desconectar')} onClick={voice.leave}>
           <PhoneOff />
         </button>
