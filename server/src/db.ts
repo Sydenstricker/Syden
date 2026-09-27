@@ -657,6 +657,11 @@ addColumnIfMissing('users', 'session_version', 'INTEGER NOT NULL DEFAULT 1');
 addColumnIfMissing('users', 'vitrine', 'TEXT');
 // A moldura do avatar, cosmético da loja. Guarda só o NOME da escolha ('prata'); o desenho mora no app.
 addColumnIfMissing('users', 'moldura', 'TEXT');
+// Ligar um provedor a uma conta QUE JÁ EXISTE é o mesmo passeio até o provedor, com outro destino no
+// fim: em vez de achar/criar conta, pendura a conta de lá nesta aqui. Quem é "esta aqui" fica em
+// ligar_user_id, escrito quando o passeio começa — por um pedido autenticado, que é o que prova quem é.
+addColumnIfMissing('social_states', 'ligar_user_id', 'INTEGER');
+addColumnIfMissing('social_states', 'sub', 'TEXT');
 // O e-mail é opcional: quem já tem conta continua entrando sem ele. Serve para recuperar a senha e para
 // avisar de um incidente — sem endereço nenhum, quem esquece a senha perde a conta para sempre.
 addColumnIfMissing('users', 'email', 'TEXT');
@@ -2725,6 +2730,12 @@ export function ligarContaSocial(provedor: string, sub: string, userId: number) 
   ).run(provedor, sub, userId);
 }
 
+/** De quem é esta conta de provedor, se for de alguém. Serve para recusar a ligação dizendo de quem. */
+export function donoDaContaSocial(provedor: string, sub: string): User | undefined {
+  const userId = contaSocial(provedor, sub);
+  return userId === undefined ? undefined : findUserById(userId);
+}
+
 /** Quais provedores esta pessoa já ligou. A tela de conta mostra isso. */
 export function contasSociaisDe(userId: number): string[] {
   return (db.prepare('SELECT provedor FROM social_accounts WHERE user_id = ?').all(userId) as unknown as { provedor: string }[]).map(
@@ -2736,26 +2747,59 @@ export function desligarContaSocial(provedor: string, userId: number) {
   db.prepare('DELETE FROM social_accounts WHERE provedor = ? AND user_id = ?').run(provedor, userId);
 }
 
-export function criarEstadoSocial(state: string, provedor: string, resumo: string) {
-  db.prepare('INSERT INTO social_states (state, provedor, resumo) VALUES (?, ?, ?)').run(state, provedor, resumo);
+/** `ligarUserId` só vem quando a ida ao provedor é para LIGAR numa conta que já existe. */
+export function criarEstadoSocial(state: string, provedor: string, resumo: string, ligarUserId?: number) {
+  db.prepare('INSERT INTO social_states (state, provedor, resumo, ligar_user_id) VALUES (?, ?, ?, ?)').run(
+    state,
+    provedor,
+    resumo,
+    ligarUserId ?? null,
+  );
 }
 
 export function acharEstadoSocial(state: string) {
   return db
-    .prepare('SELECT state, provedor, resumo, entrega, user_id AS userId, created_at AS createdAt FROM social_states WHERE state = ?')
+    .prepare(
+      'SELECT state, provedor, resumo, entrega, user_id AS userId, ligar_user_id AS ligarUserId, sub, created_at AS createdAt FROM social_states WHERE state = ?',
+    )
     .get(state) as
-    | { state: string; provedor: string; resumo: string; entrega: string | null; userId: number | null; createdAt: string }
+    | {
+        state: string;
+        provedor: string;
+        resumo: string;
+        entrega: string | null;
+        userId: number | null;
+        ligarUserId: number | null;
+        sub: string | null;
+        createdAt: string;
+      }
     | undefined;
 }
 
-export function guardarEntregaSocial(state: string, entrega: string, userId: number) {
-  db.prepare('UPDATE social_states SET entrega = ?, user_id = ? WHERE state = ?').run(entrega, userId, state);
+/**
+ * Guarda o comprovante. `userId` é quem vai entrar (login); `sub` é a conta de lá que vai ser ligada
+ * (ligação). Uma ida ao provedor é uma coisa ou a outra, nunca as duas.
+ */
+export function guardarEntregaSocial(state: string, entrega: string, userId: number | null, sub: string | null = null) {
+  db.prepare('UPDATE social_states SET entrega = ?, user_id = ?, sub = ? WHERE state = ?').run(entrega, userId, sub, state);
 }
 
 export function acharEntregaSocial(entrega: string) {
   return db
-    .prepare('SELECT state, provedor, resumo, user_id AS userId, created_at AS createdAt FROM social_states WHERE entrega = ?')
-    .get(entrega) as { state: string; provedor: string; resumo: string; userId: number | null; createdAt: string } | undefined;
+    .prepare(
+      'SELECT state, provedor, resumo, user_id AS userId, ligar_user_id AS ligarUserId, sub, created_at AS createdAt FROM social_states WHERE entrega = ?',
+    )
+    .get(entrega) as
+    | {
+        state: string;
+        provedor: string;
+        resumo: string;
+        userId: number | null;
+        ligarUserId: number | null;
+        sub: string | null;
+        createdAt: string;
+      }
+    | undefined;
 }
 
 /** Uso único: o comprovante some no instante em que é trocado pelo token. */

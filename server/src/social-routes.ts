@@ -11,6 +11,7 @@
 import type { FastifyInstance } from 'fastify';
 import { signSession } from './auth.js';
 import { config } from './config.js';
+import { requireUser } from './routes.js';
 import * as db from './db.js';
 import {
   buscarPerfil,
@@ -21,6 +22,7 @@ import {
   ligado,
   nomeDisponivel,
   perfilDaSteam,
+  provedoresLigados,
   resumo,
   sortear,
   type PerfilSocial,
@@ -108,9 +110,24 @@ export function registerSocialRoutes(app: FastifyInstance) {
         return reply.redirect(voltarComErro('provedor'));
       }
 
-      const userId = acharOuCriarConta(provedor, perfil);
       const entrega = sortear();
-      db.guardarEntregaSocial(state, entrega, userId);
+
+      if (guardado.ligarUserId !== null) {
+        // Ligando numa conta que já existe. A conta do provedor não pode estar pendurada em OUTRA conta
+        // do Syden: duas contas com a mesma entrada seria uma porta que ninguém sabe para onde leva.
+        const jaEDe = db.donoDaContaSocial(provedor, perfil.sub);
+        if (jaEDe && jaEDe.id !== guardado.ligarUserId) {
+          db.consumirEstadoSocial(state);
+          return reply.redirect(voltarComErro('jaligada'));
+        }
+        // A ligação em si só acontece lá no "concluir", depois de o segredo bater. Aqui só se anota o
+        // que foi descoberto: sem essa espera, quem plantasse o link de volta penduraria a conta DELE
+        // na conta de outra pessoa — e passaria a entrar nela para sempre.
+        db.guardarEntregaSocial(state, entrega, null, perfil.sub);
+        return reply.redirect(`${config.siteUrl}/?entrada=ligar&comprovante=${encodeURIComponent(entrega)}`);
+      }
+
+      db.guardarEntregaSocial(state, entrega, acharOuCriarConta(provedor, perfil));
       return reply.redirect(`${config.siteUrl}/?entrada=ok&comprovante=${encodeURIComponent(entrega)}`);
     },
   );
@@ -123,7 +140,8 @@ export function registerSocialRoutes(app: FastifyInstance) {
     }
 
     const guardado = db.acharEntregaSocial(comprovante);
-    if (!guardado || guardado.userId === null || venceu(guardado.createdAt)) {
+    const resolvido = guardado && (guardado.userId !== null || (guardado.ligarUserId !== null && guardado.sub !== null));
+    if (!guardado || !resolvido || venceu(guardado.createdAt)) {
       return reply.code(400).send({ error: 'Essa entrada não vale mais. Tente entrar de novo.' });
     }
 
@@ -135,10 +153,81 @@ export function registerSocialRoutes(app: FastifyInstance) {
     }
 
     db.consumirEstadoSocial(guardado.state);
-    const user = db.findUserById(guardado.userId);
+
+    // Ligação: a pessoa já está dentro, e o que sai daqui não é token nenhum.
+    if (guardado.ligarUserId !== null && guardado.sub !== null) {
+      const dono = db.findUserById(guardado.ligarUserId);
+      if (!dono) return reply.code(400).send({ error: 'Essa conta não existe mais.' });
+      const jaEDe = db.donoDaContaSocial(guardado.provedor, guardado.sub);
+      if (jaEDe && jaEDe.id !== dono.id) {
+        return reply.code(409).send({ error: `Essa conta já está ligada ao usuário ${jaEDe.username} aqui no Syden.` });
+      }
+      db.ligarContaSocial(guardado.provedor, guardado.sub, dono.id);
+      return { ligado: guardado.provedor };
+    }
+
+    const user = db.findUserById(guardado.userId!);
     if (!user) return reply.code(400).send({ error: 'Essa conta não existe mais.' });
 
     return { token: await signSession(user, db.sessionVersion(user.id)), user };
+  });
+
+  // ---------- Ligar e desligar, estando dentro ----------
+
+  app.register(async (dentro) => {
+    dentro.addHook('preHandler', requireUser);
+
+    /** O que já está ligado, e se ainda existe senha. A tela precisa das duas coisas juntas. */
+    dentro.get('/api/me/social', async (request) => ({
+      ligados: db.contasSociaisDe(request.user.id),
+      possiveis: provedoresLigados(),
+      temSenha: db.temSenha(request.user.id),
+    }));
+
+    /**
+     * Começa a ida ao provedor para LIGAR nesta conta.
+     *
+     * É este pedido, autenticado, que decide em qual conta a ligação vai cair — e não nada que venha do
+     * provedor depois. Deixar isso para a volta seria deixar quem planta um link escolher a conta.
+     */
+    dentro.post<{ Body: { provedor?: string; desafio?: string } }>('/api/me/social/inicio', async (request, reply) => {
+      const provedor = request.body?.provedor;
+      if (!ehProvedor(provedor) || !ligado(provedor)) {
+        return reply.code(404).send({ error: 'Esse jeito de entrar não está disponível aqui.' });
+      }
+      const desafio = request.body?.desafio;
+      if (typeof desafio !== 'string' || desafio.length < 43 || desafio.length > 128) {
+        return reply.code(400).send({ error: 'Pedido inválido.' });
+      }
+      const estado = sortear();
+      db.criarEstadoSocial(estado, provedor, desafio, request.user.id);
+      db.limparEstadosSociais(new Date(Date.now() - VALIDADE_MS).toISOString());
+      return { url: enderecoDeEntrada(provedor, estado) };
+    });
+
+    /**
+     * Desliga um provedor.
+     *
+     * **Nunca o último jeito de entrar.** Sem esta conferência, quem criou a conta pelo Google e nunca
+     * pôs senha desligaria o Google e ficaria trancado do lado de fora da própria conta, sem nenhum
+     * caminho de volta — nem a recuperação por e-mail resolveria, porque ela devolve uma senha para uma
+     * conta que não tem porta de senha.
+     */
+    dentro.delete<{ Params: { provedor: string } }>('/api/me/social/:provedor', async (request, reply) => {
+      const provedor = request.params.provedor;
+      if (!ehProvedor(provedor)) return reply.code(404).send({ error: 'Esse jeito de entrar não existe.' });
+
+      const ligados = db.contasSociaisDe(request.user.id);
+      if (!ligados.includes(provedor)) return reply.code(404).send({ error: 'Esse jeito de entrar não está ligado nesta conta.' });
+      if (!db.temSenha(request.user.id) && ligados.length === 1) {
+        return reply.code(409).send({
+          error: 'Esse é o seu único jeito de entrar. Defina uma senha, ou ligue outro serviço, antes de desligar este.',
+        });
+      }
+
+      db.desligarContaSocial(provedor, request.user.id);
+      return { ligados: db.contasSociaisDe(request.user.id) };
+    });
   });
 }
 

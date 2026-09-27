@@ -57,10 +57,26 @@ function sortear(): string {
  * Só volta se der errado — quando dá certo, a página já saiu do ar.
  */
 export async function entrarCom(provedor: Provedor): Promise<void> {
+  return comecar(provedor, '/api/auth/social/inicio', null);
+}
+
+/**
+ * Liga este provedor à conta em que a pessoa JÁ ESTÁ.
+ *
+ * A diferença para o entrarCom é uma rota e um token: o pedido vai autenticado, e é ele que decide em
+ * qual conta a ligação vai cair. Nada que venha do provedor depois muda isso — se a conta viesse da
+ * volta, quem plantasse o link escolheria a conta.
+ */
+export async function ligarCom(provedor: Provedor): Promise<void> {
+  return comecar(provedor, '/api/me/social/inicio', undefined);
+}
+
+async function comecar(provedor: Provedor, rota: string, token: null | undefined): Promise<void> {
   const segredo = sortear();
-  const { url } = await api<{ url: string }>('/api/auth/social/inicio', {
+  // token: null = sem autenticação (entrar); undefined = usa o token guardado (ligar).
+  const { url } = await api<{ url: string }>(rota, {
     method: 'POST',
-    token: null,
+    ...(token === null ? { token: null } : {}),
     body: { provedor, desafio: await resumir(segredo) },
   });
   // Guarda DEPOIS de o servidor aceitar: se o pedido falhar, não fica lixo esperando na aba.
@@ -70,7 +86,8 @@ export async function entrarCom(provedor: Provedor): Promise<void> {
 
 export interface VoltaSocial {
   /** 'ok' quando há um comprovante para trocar; os outros são recados de por que não deu. */
-  situacao: 'ok' | 'cancelado' | 'expirado' | 'provedor' | 'incompleto';
+  /** 'ok' = entrar; 'ligar' = pendurar o provedor na conta de quem já está dentro. */
+  situacao: 'ok' | 'ligar' | 'cancelado' | 'expirado' | 'provedor' | 'incompleto' | 'jaligada';
   comprovante: string | null;
 }
 
@@ -89,20 +106,26 @@ export function lerVolta(): VoltaSocial | null {
   url.searchParams.delete('comprovante');
   window.history.replaceState(null, '', url.pathname + url.search + url.hash);
 
-  const conhecidas: VoltaSocial['situacao'][] = ['ok', 'cancelado', 'expirado', 'provedor', 'incompleto'];
+  const conhecidas: VoltaSocial['situacao'][] = ['ok', 'ligar', 'cancelado', 'expirado', 'provedor', 'incompleto', 'jaligada'];
   const situacao = (conhecidas as string[]).includes(entrada) ? (entrada as VoltaSocial['situacao']) : 'incompleto';
   return { situacao, comprovante };
 }
 
-export const RECADOS: Record<Exclude<VoltaSocial['situacao'], 'ok'>, string> = {
-  cancelado: 'Você cancelou a entrada. Nada foi feito.',
-  expirado: 'Essa entrada demorou demais e não vale mais. Tente de novo.',
+export const RECADOS: Record<Exclude<VoltaSocial['situacao'], 'ok' | 'ligar'>, string> = {
+  cancelado: 'Você cancelou. Nada foi feito.',
+  expirado: 'Isso demorou demais e não vale mais. Tente de novo.',
   provedor: 'Não deu para falar com o provedor agora. Tente de novo, ou entre com a sua senha.',
-  incompleto: 'A volta veio incompleta. Tente entrar de novo.',
+  incompleto: 'A volta veio incompleta. Tente de novo.',
+  jaligada: 'Essa conta já está ligada a outro usuário aqui no Syden. Desligue lá antes de ligar aqui.',
 };
 
-/** Troca o comprovante pelo token de verdade, apresentando o segredo que ficou nesta aba. */
-export async function concluir(comprovante: string): Promise<{ token: string; user: User }> {
+/**
+ * Apresenta o comprovante E o segredo que ficou nesta aba.
+ *
+ * Volta com o token, quando era para entrar, ou com o nome do provedor, quando era para ligar — a
+ * pessoa já estava dentro, e nesse caso não há sessão nova nenhuma para abrir.
+ */
+export async function concluir(comprovante: string): Promise<{ token?: string; user?: User; ligado?: Provedor }> {
   const segredo = sessionStorage.getItem(CHAVE);
   sessionStorage.removeItem(CHAVE);
   if (!segredo) {
@@ -110,7 +133,7 @@ export async function concluir(comprovante: string): Promise<{ token: string; us
     // parar no aplicativo do e-mail, por exemplo). E é exatamente o que acontece com um link plantado.
     throw new Error('Esta entrada foi começada em outra aba ou em outro navegador. Comece de novo aqui.');
   }
-  return api<{ token: string; user: User }>('/api/auth/social/concluir', {
+  return api<{ token?: string; user?: User; ligado?: Provedor }>('/api/auth/social/concluir', {
     method: 'POST',
     token: null,
     body: { comprovante, segredo },

@@ -42,6 +42,7 @@ import type { Voice } from './useVoice';
 import { EmojiPackCatalog } from './EmojiPackCatalog';
 import { PackCatalog } from './PackCatalog';
 import { classeDoFundo, CORES_DE_NOME, corDoNome, FUNDOS } from './profileStyles';
+import { EntradasLigadas } from './EntradasLigadas';
 import { EFFECT_ICONS } from './VoiceEffectButton';
 import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
@@ -404,6 +405,8 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
       </form>
 
       <EmailDaConta />
+
+      <EntradasLigadas />
 
       <MinhasInsignias />
 

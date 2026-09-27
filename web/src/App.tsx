@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ApiError, api, loadToken, saveToken } from './api';
 import { AuthScreen } from './AuthScreen';
 import { AvisoGeral } from './AvisoGeral';
-import { concluir, lerVolta, RECADOS } from './entradaSocial';
+import { concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
 import { SplashLogo } from './SplashLogo';
@@ -43,7 +43,11 @@ export function App() {
   // A volta do Google/Discord. Lida UMA VEZ, no primeiro desenho, e já apagada da barra de endereço:
   // recarregar a página não pode tentar usar de novo um comprovante que já foi gasto.
   const [volta] = useState(lerVolta);
-  const [erroSocial, setErroSocial] = useState<string | null>(volta && volta.situacao !== 'ok' ? RECADOS[volta.situacao] : null);
+  // A volta pode ser de três tipos: entrar, ligar um provedor numa conta que já existe, ou deu errado.
+  const recadoDaVolta = volta && volta.situacao !== 'ok' && volta.situacao !== 'ligar' ? RECADOS[volta.situacao] : null;
+  const [erroSocial, setErroSocial] = useState<string | null>(recadoDaVolta);
+  /** "Conta do GitHub ligada." — a janela de configurações já fechou quando a volta chega. */
+  const [ligacaoFeita, setLigacaoFeita] = useState<string | null>(null);
 
   useEffect(() => {
     if (!codigoDeConfirmacao) return;
@@ -60,21 +64,41 @@ export function App() {
     // Voltou do Google com um comprovante: troca por um token de verdade, apresentando o segredo que
     // ficou nesta aba. É esse par que impede que um link plantado por outra pessoa entre em alguma
     // conta (ver entradaSocial.ts). Falhando, cai na tela de entrada com o motivo escrito.
-    if (volta?.situacao === 'ok' && volta.comprovante) {
-      void Promise.all([concluir(volta.comprovante), minWait])
-        .then(([{ token: novo, user }]) => {
+    const voltandoDoProvedor = (volta?.situacao === 'ok' || volta?.situacao === 'ligar') && volta.comprovante;
+    if (voltandoDoProvedor) {
+      void Promise.all([concluir(volta!.comprovante!), minWait])
+        .then(([resultado]) => {
           if (cancelled) return;
-          saveToken(novo);
-          setSession({ status: 'ready', token: novo, user });
+          // Ligação: a pessoa já estava dentro, então não há sessão nova. Só o aviso, e a sessão que
+          // já existia segue o caminho normal logo abaixo.
+          if (resultado.ligado) {
+            setLigacaoFeita(NOMES[resultado.ligado]);
+            return entrarComOTokenGuardado();
+          }
+          if (!resultado.token || !resultado.user) throw new Error('A resposta veio sem a sua conta. Tente de novo.');
+          saveToken(resultado.token);
+          setSession({ status: 'ready', token: resultado.token, user: resultado.user });
         })
         .catch((e) => {
           if (cancelled) return;
           setErroSocial((e as Error).message);
-          setSession({ status: 'anonymous' });
+          void entrarComOTokenGuardado();
         });
       return () => {
         cancelled = true;
       };
+    }
+
+    // Abrir a sessão que já estava guardada. É o caminho de sempre, e também para onde a ligação e o
+    // erro caem depois — em nenhum dos dois a pessoa deve ser jogada para fora do que já estava aberto.
+    async function entrarComOTokenGuardado() {
+      const guardado = loadToken();
+      if (!guardado) return setSession({ status: 'anonymous' });
+      try {
+        setSession({ status: 'ready', token: guardado, user: await api<User>('/api/me', { token: guardado }) });
+      } catch {
+        setSession({ status: 'anonymous' });
+      }
     }
 
     const token = loadToken();
@@ -104,6 +128,14 @@ export function App() {
       {/* Fica FORA do app-body de propósito: assim o recado aparece na tela de entrada também, que é
           onde ele mais faz falta — quem não consegue entrar é quem mais precisa saber do porquê. */}
       {session.status !== 'loading' && <AvisoGeral />}
+      {ligacaoFeita && (
+        <p className="aviso-topo" role="status">
+          Conta do {ligacaoFeita} ligada. Agora dá para entrar por ela.
+          <button type="button" className="link" onClick={() => setLigacaoFeita(null)} aria-label="Fechar aviso">
+            ✕
+          </button>
+        </p>
+      )}
       {erroSocial && (
         <p className="aviso-topo ruim" role="alert">
           {erroSocial}

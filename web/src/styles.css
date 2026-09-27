@@ -7888,3 +7888,53 @@ textarea {
 .auth-social-botao svg {
   flex: none;
 }
+
+/* ---------- "Entrar com", nas configurações da conta ---------- */
+
+.entradas-ligadas {
+  display: grid;
+  gap: 8px;
+  max-width: 540px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entradas-ligadas li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.entradas-ligadas li > svg {
+  flex: none;
+}
+
+.entradas-ligadas-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.entradas-ligadas-texto small {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.entradas-ligadas-travado {
+  color: #faa61a !important;
+}
+
+.entradas-ligadas button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
