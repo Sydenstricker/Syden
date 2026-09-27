@@ -7,11 +7,16 @@
 // Aqui a política é injetada no cabeçalho da PÁGINA, exatamente como a Cloudflare faria, e o navegador
 // conta tudo o que ela barrou. Nenhuma violação = pode publicar.
 //
-//   node e2e/csp.mjs
+//   node e2e/csp.mjs              prova a política CANDIDATA daqui, injetando-a na resposta
+//   AO_VIVO=1 node e2e/csp.mjs    não injeta nada: mede a política que JÁ ESTÁ no ar
 //   SITE=https://syden.chat node e2e/csp.mjs
+//
+// O modo AO_VIVO é o de depois de publicar. Injetar por cima de uma política já publicada faria o
+// navegador aplicar as DUAS ao mesmo tempo, e o que ele barrasse não diria qual das duas barrou.
 import { chromium } from 'playwright-core';
 
 const SITE = process.env.SITE ?? 'https://syden.chat';
+const AO_VIVO = Boolean(process.env.AO_VIVO);
 
 /**
  * A política proposta.
@@ -73,8 +78,9 @@ await page.route('**/*', async (rota) => {
   const tipo = resposta.headers()['content-type'] ?? '';
   // SÓ NAS NOSSAS PÁGINAS. A Cloudflare põe cabeçalho nas respostas do nosso domínio e em mais nada;
   // pôr no quadro do Turnstile, que é de outro site, inventava uma violação que não existe.
+  // No modo AO_VIVO não se injeta nada: quem responde é a política de verdade, já publicada.
   const nossa = rota.request().url().startsWith(SITE);
-  if (!nossa || !tipo.includes('text/html')) return rota.fulfill({ response: resposta });
+  if (AO_VIVO || !nossa || !tipo.includes('text/html')) return rota.fulfill({ response: resposta });
   await rota.fulfill({ response: resposta, headers: { ...resposta.headers(), 'content-security-policy': CSP } });
 });
 
@@ -85,7 +91,7 @@ page.on('console', (m) => {
 });
 page.on('pageerror', (e) => violacoes.push('erro de página: ' + e.message));
 
-console.log('política em teste:\n  ' + CSP.split('; ').join('\n  ') + '\n');
+console.log(AO_VIVO ? 'medindo a política que JÁ ESTÁ no ar\n' : 'política em teste:\n  ' + CSP.split('; ').join('\n  ') + '\n');
 
 async function visitar(caminho, oQueEsperar) {
   violacoes.length = 0;
@@ -117,6 +123,10 @@ await visitar('/contribuir.html');
 await browser.close();
 console.log(
   process.exitCode
-    ? '\nNÃO publique: a política barra coisa que o Syden precisa.'
-    : '\nNada do Syden foi barrado. Pode publicar a política.',
+    ? AO_VIVO
+      ? '\nA política QUE ESTÁ NO AR barra coisa do Syden. Desative a regra na Cloudflare.'
+      : '\nNÃO publique: a política barra coisa que o Syden precisa.'
+    : AO_VIVO
+      ? '\nNada barrado pela política que está no ar.'
+      : '\nNada do Syden foi barrado. Pode publicar a política.',
 );
