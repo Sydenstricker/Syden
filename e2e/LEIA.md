@@ -79,3 +79,14 @@ rm -f server/teste.db server/teste.db-wal server/teste.db-shm
 `vila-ordem` deixa os coelhos de fora da conferência de ordem de desenho, de propósito: eles andam o tempo
 todo e são sempre desenhados por cima do cenário. O comentário dentro do teste explica o porquê e o que
 aconteceria se um dia eles passeassem atrás das casas.
+
+## csp.mjs — a política de segurança de conteúdo, antes de ir ao ar
+
+Roda contra o Syden de verdade (`node e2e/csp.mjs`) e SÓ OLHA — como o producao.mjs.
+
+Existe porque uma CSP errada não avisa: ela barra um arquivo em silêncio e o Syden abre em branco,
+para todo mundo ao mesmo tempo, sem erro no servidor e sem nada no registro. É a única mudança de
+configuração do projeto capaz de derrubar o app inteiro sem tocar no código.
+
+A política proposta fica no próprio arquivo, comentada linha a linha. Mexeu nela, rode o teste antes
+de publicar na Cloudflare.
