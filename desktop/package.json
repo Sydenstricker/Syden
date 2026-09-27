@@ -63,9 +63,9 @@
       "native/build/Release/*.node"
     ],
     "appx": {
-      "identityName": "${env.MSSTORE_IDENTITY_NAME}",
-      "publisher": "${env.MSSTORE_PUBLISHER}",
-      "publisherDisplayName": "${env.MSSTORE_PUBLISHER_DISPLAY_NAME}",
+      "identityName": "SydenstrickerLabs.Syden",
+      "publisher": "CN=6BB9587E-F5D5-4058-85CD-5397F16F0919",
+      "publisherDisplayName": "Sydenstricker Labs",
       "applicationId": "Syden",
       "displayName": "Syden",
       "languages": [
