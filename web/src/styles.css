@@ -2921,26 +2921,42 @@ textarea {
 
 /* Transmissão de alguém que você ainda não abriu: convite, não vídeo. */
 .stream-invite {
+  /* Faz desta caixa a referência do "cqh" usado abaixo: as peças medem o CARTÃO, não a janela. */
+  container-type: size;
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 10px;
+  gap: clamp(1px, 2cqh, 4px);
+  padding: clamp(4px, 5cqh, 10px);
   text-align: center;
   border-radius: var(--radius);
   background: var(--bg-sidebar);
 }
 
-/* O quadro tem altura fixa (16/9). Sem isto, o texto encolhe até zero de altura e some sem aviso. */
+/* Encolher é permitido; sumir, não. O que passar da caixa é escondido em vez de vazar por cima. */
 .stream-invite > * {
   flex-shrink: 0;
   max-width: 100%;
 }
 
+/*
+ * O avatar chega com largura e altura em PIXEL, escritas no elemento pelo componente — ele não tem
+ * como saber o tamanho do cartão em que vai cair. Sobrescrever assim é feio e é o único jeito sem
+ * passar o tamanho da caixa de mão em mão pela árvore inteira de componentes.
+ */
+.stream-invite .avatar {
+  width: clamp(22px, 26cqh, 44px) !important;
+  height: clamp(22px, 26cqh, 44px) !important;
+  font-size: clamp(10px, 11cqh, 19px) !important;
+}
+
 .stream-invite-name {
   margin-top: 2px;
+  font-size: clamp(11px, 11cqh, 16px);
+  line-height: 1.2;
   color: var(--text-strong);
 }
 
@@ -2948,15 +2964,35 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: clamp(9px, 9cqh, 13px);
+  line-height: 1.2;
   color: var(--text-muted);
+}
+
+/*
+ * Cartão muito baixo: a linha do meio sai. Das quatro peças ela é a única dispensável — o nome diz
+ * de quem é, e o botão é o que a pessoa veio fazer. Melhor perder a explicação do que cortar o botão.
+ */
+@container (max-height: 130px) {
+  .stream-invite-what {
+    display: none;
+  }
 }
 
 .stream-invite-button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 4px;
+  gap: clamp(3px, 4cqh, 6px);
+  margin-top: clamp(1px, 3cqh, 4px);
+  padding: clamp(3px, 5cqh, 9px) clamp(8px, 9cqh, 16px);
+  font-size: clamp(11px, 10cqh, 15px);
+  line-height: 1.1;
+}
+
+/* O ícone do botão acompanha, senão numa caixa baixa ele fica maior que a própria palavra. */
+.stream-invite-button svg {
+  width: clamp(11px, 10cqh, 16px);
+  height: clamp(11px, 10cqh, 16px);
 }
 
 /* Na fileira de miniaturas o cartão é pequeno: sobra só o essencial. */
