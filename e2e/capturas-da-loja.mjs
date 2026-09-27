@@ -34,6 +34,17 @@ const USUARIO = process.env.SYDEN_USUARIO;
 const SENHA = process.env.SYDEN_SENHA;
 const RAIZ = 'e2e/fotos/loja';
 
+/**
+ * A comunidade fotografada.
+ *
+ * Aponta para a de DEMONSTRAÇÃO, e não para a primeira da lista. As imagens vão para uma página
+ * pública e sem desfazer: a de demonstração tem gente e conversa inventadas, então o que a foto
+ * mostra é o Syden, e não pessoas de verdade. Crie-a com:
+ *
+ *   docker compose exec api node scripts/comunidade-de-demonstracao.mjs
+ */
+const COMUNIDADE = process.env.COMUNIDADE ?? 'Sala de Estar';
+
 /** O tamanho que a Microsoft Store espera para computador. O mínimo é 1366x768; este é o bonito. */
 const LARGURA = 1920;
 const ALTURA = 1080;
@@ -93,6 +104,24 @@ async function foto(nome, espera = 1200) {
   console.log('    ✓ ' + caminho);
 }
 
+/**
+ * Entra na comunidade de demonstração, procurando pelo NOME na barra lateral.
+ *
+ * Pegar "a primeira da lista" era o que o script fazia antes, e foi assim que as primeiras fotos
+ * saíram com os nomes e as mensagens de gente de verdade. A barra guarda o nome de cada comunidade
+ * no atributo do botão, então dá para escolher a certa sem depender da ordem.
+ */
+async function abrirAComunidade() {
+  const botao = page.locator(`.rail-item[title="${COMUNIDADE}"]`);
+  if (await botao.isVisible().catch(() => false)) {
+    await botao.click();
+    await page.waitForTimeout(800);
+    return true;
+  }
+  console.log(`    (não achei a comunidade "${COMUNIDADE}" — rode scripts/comunidade-de-demonstracao.mjs)`);
+  return false;
+}
+
 /** Abre Configurações. Serve para trocar o idioma e é o mesmo caminho em qualquer língua. */
 async function abrirConfiguracoes() {
   await page.locator('button[aria-label="Configurações"], button[aria-label="Settings"], button[aria-label="Ajustes"]').first().click();
@@ -145,6 +174,7 @@ console.log('Presentes dispensados');
 // O script não sabe distinguir a comunidade de demonstração da comunidade dos amigos. Mas sabe
 // contar quanta gente está à vista — e desconfiar em voz alta custa seis segundos, enquanto o erro
 // contrário não tem desfazer.
+await abrirAComunidade();
 const quantos = await page.locator('.member-name').count().catch(() => 0);
 if (quantos > 4) {
   console.log(`\n  ATENÇÃO: esta comunidade tem ${quantos} pessoas à vista.`);
@@ -188,7 +218,7 @@ for (const idioma of IDIOMAS) {
 
   // 3. Um canal de texto.
   console.log('  3. Um canal de texto');
-  await page.locator('.rail-list .rail-item').first().click().catch(() => {});
+  await abrirAComunidade();
   const canal = page.locator('.channel-name').first();
   if (await canal.isVisible().catch(() => false)) {
     await canal.click();

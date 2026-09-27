@@ -1,6 +1,7 @@
 import { Check, ExternalLink, Gift, Heart, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
+import { desktopBridge } from './desktop';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA, VALORES } from './loja';
@@ -106,8 +107,20 @@ function Cartao({
  * a cobrança passe pelo sistema de pagamento delas. Uma página aberta no navegador não é venda dentro
  * do app. A regra para não errar isso no futuro: este bloco pode DIZER que a página existe; o que ele
  * não pode é abrir cobrança por dentro do Syden.
+ *
+ * E ele NÃO APARECE NO APLICATIVO INSTALADO — só no navegador.
+ *
+ * A diferença importa por dois motivos. O primeiro é a regra da Microsoft Store: um pedido de
+ * dinheiro dentro de um app baixado dela, apontando para pagamento por fora, é justamente o que ela
+ * cobra porcentagem para intermediar — e discutir se é ou não é venda custaria uma reprovação. O
+ * segundo é mais simples: no navegador isto é uma página do site levando a outra página do site, e
+ * não há loja nenhuma no meio.
+ *
+ * A ponte do Electron só existe dentro do aplicativo. É por ela que o Syden sabe onde está.
  */
 function Contribuir() {
+  if (desktopBridge) return null;
+
   return (
     <section className="loja-contribuir">
       <h3>
