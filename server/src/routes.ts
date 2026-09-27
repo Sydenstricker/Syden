@@ -6,7 +6,7 @@ import { config } from './config.js';
 import * as db from './db.js';
 import { Freio } from './freio.js';
 import { installDefaultPack, seedExpressions } from './expressions.js';
-import {
+import { salaDaPessoa,
   anunciarPerfil,
   channelRoom,
   communityRoom,
@@ -521,6 +521,68 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
      * permitidas — os ids de microfone e câmera ficam de fora de propósito, porque identificam um
      * aparelho e não a pessoa. Ver preferencias.ts.
      */
+    /**
+     * Quais selos eu posso vestir, e qual estou vestindo.
+     *
+     * A escolha é de cada pessoa — como as insígnias do perfil. A comunidade conquista e define o
+     * selo; quem é dela decide se quer usá-lo, e qual, quando pertence a mais de uma.
+     */
+    /**
+     * Bloquear alguém.
+     *
+     * O bloqueio é DIRECIONAL no banco e vale NOS DOIS SENTIDOS no efeito: se eu bloqueio você, nem
+     * eu falo com você nem você fala comigo. Um bloqueio que calasse só um lado não protegeria
+     * ninguém — quem bloqueou continuaria recebendo mensagem.
+     *
+     * E ele é INVISÍVEL para quem foi bloqueado. Não há aviso, e as recusas que ele encontra são as
+     * mesmas de qualquer outra recusa. Avisar transformaria um ato de defesa num conflito, e é
+     * justamente quem mais precisa bloquear que menos pode pagar esse preço.
+     */
+    authed.get('/api/me/bloqueios', async (request) => db.listarBloqueios(request.user.id));
+
+    authed.post<{ Body: { userId?: number } }>('/api/me/bloqueios', async (request, reply) => {
+      const alvo = Number(request.body?.userId);
+      if (!Number.isInteger(alvo)) return reply.code(400).send({ error: 'Pedido inválido.' });
+      if (alvo === request.user.id) return reply.code(400).send({ error: 'Você não pode bloquear a si mesmo.' });
+      if (!db.bloquear(request.user.id, alvo)) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
+
+      // Só quem bloqueou recebe aviso. O outro lado não fica sabendo de nada.
+      io.to(salaDaPessoa(request.user.id)).emit('bloqueios:mudou', db.listarBloqueios(request.user.id));
+      io.to(salaDaPessoa(request.user.id)).emit('amigos:mudou', db.listarAmizades(request.user.id));
+      io.to(salaDaPessoa(alvo)).emit('amigos:mudou', db.listarAmizades(alvo));
+      return { ok: true, bloqueios: db.listarBloqueios(request.user.id) };
+    });
+
+    authed.delete<{ Params: { id: string } }>('/api/me/bloqueios/:id', async (request, reply) => {
+      const alvo = Number(request.params.id);
+      if (!Number.isInteger(alvo)) return reply.code(400).send({ error: 'Pedido inválido.' });
+      // Desbloquear NÃO devolve a amizade: ela foi desfeita, e refazê-la é escolha das duas pessoas.
+      if (!db.desbloquear(request.user.id, alvo)) return reply.code(404).send({ error: 'Essa pessoa não está bloqueada.' });
+      io.to(salaDaPessoa(request.user.id)).emit('bloqueios:mudou', db.listarBloqueios(request.user.id));
+      return { ok: true, bloqueios: db.listarBloqueios(request.user.id) };
+    });
+
+    authed.get('/api/me/selo', async (request) => ({
+      podeVestir: db.selosQuePodeVestir(request.user.id),
+      vestindo: db.findUserById(request.user.id)?.selo ?? null,
+    }));
+
+    authed.put<{ Body: { communityId?: number | null } }>('/api/me/selo', async (request, reply) => {
+      const pedido = request.body?.communityId;
+      const communityId = pedido === null || pedido === undefined ? null : Number(pedido);
+      if (communityId !== null && !Number.isInteger(communityId)) {
+        return reply.code(400).send({ error: 'Escolha inválida.' });
+      }
+      // A conferência é do servidor. A lista de opções sai daqui, mas um pedido feito à mão pediria
+      // a camiseta de um time do qual a pessoa nunca fez parte.
+      if (!db.vestirSelo(request.user.id, communityId)) {
+        return reply.code(403).send({ error: 'Esse selo não é seu para usar.' });
+      }
+      const user = db.findUserById(request.user.id);
+      io.emit('user:updated', user);
+      return { vestindo: user?.selo ?? null };
+    });
+
     authed.get('/api/me/preferencias', async (request) => prefs.ler(request.user.id));
 
     authed.put<{ Body: unknown }>('/api/me/preferencias', async (request, reply) => {
@@ -741,6 +803,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (!access) return reply;
       if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade escolhe o selo.' });
       db.guardarSelo(access.community.id, null);
+      // A comunidade perdeu o selo: quem o vestia para de vesti-lo. Sem isto, a camiseta ficaria no
+      // corpo de gente cujo time não tem mais camiseta, e nada daria erro.
+      db.despirSeloDaComunidade(access.community.id);
       io.to(communityRoom(access.community.id)).emit('selo:mudou', { communityId: access.community.id, selo: null });
       return { selo: null };
     });

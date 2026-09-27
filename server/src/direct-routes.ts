@@ -29,6 +29,10 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
      * conversa com qualquer um — exatamente o que estas duas portas existem para impedir.
      */
     function podeConversar(a: number, b: number) {
+      // O bloqueio vem ANTES de tudo: nem amizade antiga nem comunidade em comum abrem a porta
+      // depois que alguém a fechou. É a primeira linha de propósito — uma exceção acrescentada
+      // acima dela passaria por cima da proteção sem ninguém notar.
+      if (db.haBloqueio(a, b)) return false;
       if (db.amizadeEntre(a, b)?.situacao === 'aceita') return true;
       const mine = new Set(db.communityIdsForUser(a));
       return db.communityIdsForUser(b).some((id) => mine.has(id));

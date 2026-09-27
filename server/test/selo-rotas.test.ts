@@ -116,3 +116,53 @@ describe('depois de conquistar', () => {
     assert.equal((await dona('GET', `/api/communities/${comunidadeId}/selo`)).json().selo, null);
   });
 });
+
+describe('vestir o selo é escolha de cada pessoa', () => {
+  before(async () => {
+    // Recoloca o selo, que o teste anterior tirou.
+    await dona('PUT', `/api/communities/${comunidadeId}/selo`, SELO);
+  });
+
+  it('quem é da comunidade pode vestir o selo dela', async () => {
+    const { podeVestir } = (await membro('GET', '/api/me/selo')).json();
+    assert.equal(podeVestir.length, 1);
+    assert.equal(podeVestir[0].texto, 'ZECA');
+
+    assert.equal((await membro('PUT', '/api/me/selo', { communityId: comunidadeId })).statusCode, 200);
+    assert.equal((await membro('GET', '/api/me/selo')).json().vestindo.texto, 'ZECA');
+  });
+
+  it('A CONFERÊNCIA É DO SERVIDOR: não dá para vestir o selo de um time do qual você não é', async () => {
+    const resposta = await deFora('PUT', '/api/me/selo', { communityId: comunidadeId });
+    assert.equal(resposta.statusCode, 403, 'vestiu o selo de uma comunidade de que não participa');
+    assert.equal((await deFora('GET', '/api/me/selo')).json().vestindo, null);
+  });
+
+  it('dá para tirar a camiseta a qualquer momento', async () => {
+    assert.equal((await membro('PUT', '/api/me/selo', { communityId: null })).statusCode, 200);
+    assert.equal((await membro('GET', '/api/me/selo')).json().vestindo, null);
+  });
+
+  it('SAIR DA COMUNIDADE DEVOLVE A CAMISETA', async () => {
+    const db = await import('../src/db.js');
+    await membro('PUT', '/api/me/selo', { communityId: comunidadeId });
+    assert.ok((await membro('GET', '/api/me/selo')).json().vestindo, 'não vestiu antes de sair');
+
+    await membro('POST', `/api/communities/${comunidadeId}/leave`);
+
+    // O sintoma de esquecer isto seria mudo: a pessoa continuaria exibindo o selo de um lugar de
+    // que não faz mais parte, e nada daria erro em canto nenhum.
+    assert.equal((await membro('GET', '/api/me/selo')).json().vestindo, null);
+    assert.equal(db.findUserById(1)?.selo !== undefined, true);
+  });
+
+  it('a comunidade perder o selo tira do corpo de quem vestia', async () => {
+    const db = await import('../src/db.js');
+    const caio = db.findUserByName('caio')!;
+    db.vestirSelo(caio.id, comunidadeId);
+    assert.ok(db.findUserById(caio.id)?.selo, 'não vestiu');
+
+    await dona('DELETE', `/api/communities/${comunidadeId}/selo`);
+    assert.equal(db.findUserById(caio.id)?.selo, null, 'a camiseta ficou no corpo de um time sem camiseta');
+  });
+});

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Avatar } from './Avatar';
+import { SeloDaComunidade } from './SeloDaComunidade';
 import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
@@ -90,6 +91,7 @@ export function MemberList({
           <span className={`member-name ${className}`} data-cor={corDoNome(member.nameColor)}>
             {member.username}
           </span>
+          {member.selo && <SeloDaComunidade selo={member.selo} />}
           {agora && (
             <span className={`member-status${agora.live ? ' live' : ''}`}>
               {agora.live && <span className="live-dot" aria-hidden="true" />}

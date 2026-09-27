@@ -2,6 +2,7 @@ import { AtSign, Hash } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
+import { useBloqueados } from './bloqueios';
 import { useT } from './i18n';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -42,6 +43,7 @@ export function TextChannel({
 }) {
   const t = useT();
   const [messages, setMessages] = useState<Message[]>(mensagensIniciais ?? []);
+  const bloqueados = useBloqueados();
   const [hasMore, setHasMore] = useState((mensagensIniciais?.length ?? 0) === PAGE_SIZE);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<Message | null>(null);
@@ -193,8 +195,12 @@ export function TextChannel({
             </div>
           )}
 
-          {messages.map((message, i) => {
-            const previous = messages[i - 1];
+          {/* As mensagens de quem está bloqueado somem ANTES do agrupamento: filtrar depois deixaria
+              buracos na conversa e agruparia mensagens que não são seguidas de verdade. */}
+          {messages
+            .filter((m) => !bloqueados.has(m.author.id))
+            .map((message, i, visiveis) => {
+            const previous = visiveis[i - 1];
             const grouped =
               previous?.author.id === message.author.id &&
               !message.poll &&

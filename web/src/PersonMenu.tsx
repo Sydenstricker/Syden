@@ -1,4 +1,4 @@
-import {
+import { Ban,
   AtSign,
   Flag,
   IdCard,
@@ -15,6 +15,7 @@ import {
 import { type MouseEvent, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
+import { carregarBloqueios, useBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import { DialogoDeDenuncia } from './Denuncia';
@@ -112,6 +113,26 @@ export function PersonMenu({
   const nota = useNota(target.userId);
   const [anotando, setAnotando] = useState(false);
   const [denunciando, setDenunciando] = useState(false);
+
+  const bloqueados = useBloqueados();
+  const bloqueado = bloqueados.has(target.userId);
+
+  /**
+   * Bloquear e desbloquear são o mesmo botão, porque são a mesma decisão vista de dois momentos.
+   *
+   * Não há confirmação: bloquear é reversível num clique, e uma caixa de "tem certeza?" na frente de
+   * uma ação de defesa põe um obstáculo justamente em quem está incomodado agora.
+   */
+  async function bloquearPessoa() {
+    try {
+      if (bloqueado) await api(`/api/me/bloqueios/${target.userId}`, { method: 'DELETE' });
+      else await api('/api/me/bloqueios', { method: 'POST', body: { userId: target.userId } });
+      await carregarBloqueios();
+    } catch {
+      // Falhou: a lista continua como está, e a pessoa pode tentar de novo.
+    }
+    onClose();
+  }
   const [rascunho, setRascunho] = useState(nota);
   const ref = useRef<HTMLDivElement>(null);
   const [lugar, setLugar] = useState({ left: target.x, top: target.y });
@@ -323,6 +344,16 @@ export function PersonMenu({
               nenhum que precisa de um caminho para dizer que algo está errado. */}
           <Item icone={<Flag size={16} />} onClick={() => setDenunciando(true)}>
             Denunciar esta pessoa
+          </Item>
+
+          {/*
+            Bloquear é a única ação desta lista que resolve sozinha, na hora, sem depender de
+            ninguém. Denunciar espera alguém ler; silenciar só cala a voz e deixa o texto passar.
+            Por isso ela existe: quem está sendo incomodado não pode ficar refém de um administrador
+            aparecer.
+          */}
+          <Item icone={<Ban size={16} />} perigo onClick={() => void bloquearPessoa()}>
+            {bloqueado ? 'Desbloquear esta pessoa' : 'Bloquear esta pessoa'}
           </Item>
         </>
       )}

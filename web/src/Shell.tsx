@@ -2,6 +2,7 @@ import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
 import { API_URL, ApiError, api, loadToken } from './api';
+import { carregarBloqueios, guardarBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
 import { Comemoracao } from './Comemoracao';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
@@ -188,6 +189,26 @@ export function Shell({
       document.removeEventListener('visibilitychange', limparSeOlhando);
     };
   }, [selectedId]);
+  /**
+   * A lista de bloqueados chega ao entrar e se atualiza sozinha.
+   *
+   * Precisa vir CEDO: se a tela desenhar a conversa antes da lista chegar, a mensagem de quem foi
+   * bloqueado pisca na frente da pessoa antes de sumir — que é exatamente o que ela bloqueou para
+   * não ver. Por isso o pedido sai no primeiro desenho, sem esperar nada.
+   */
+  useEffect(() => {
+    void carregarBloqueios();
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    const aoMudar = (lista: { userId: number }[]) => guardarBloqueados(lista.map((b) => b.userId));
+    socket.on('bloqueios:mudou', aoMudar);
+    return () => {
+      socket.off('bloqueios:mudou', aoMudar);
+    };
+  }, [socket]);
+
   // A bolinha do logo some assim que a tela inicial é aberta.
   const [novidade, setNovidade] = useState(temNovidade);
   useEffect(() => {

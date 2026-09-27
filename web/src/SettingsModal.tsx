@@ -22,6 +22,8 @@ import { Languages,
 } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
+import { EscolherSelo } from './EscolherSelo';
+import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { useT } from './i18n';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
@@ -132,7 +134,15 @@ export function SettingsModal({
 
       <main className="settings-content">
         <div className="settings-content-inner">
-          {section === 'account' && <AccountSection user={user} onDeleted={onLogout} />}
+          {section === 'account' && (
+            <>
+              <AccountSection user={user} onDeleted={onLogout} />
+              {/* O selo e os bloqueios são escolhas da PESSOA, não da comunidade: por isso moram na
+                  aba da conta, junto com o resto do que só diz respeito a ela. */}
+              <EscolherSelo />
+              <PessoasBloqueadas />
+            </>
+          )}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
           {section === 'idioma' && <IdiomaSection />}

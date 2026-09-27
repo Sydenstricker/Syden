@@ -2,6 +2,7 @@ import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, Thumb
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
+import { SeloDaComunidade } from './SeloDaComunidade';
 import { Avatar } from './Avatar';
 import { corrigirDuracao } from './clips';
 import { useDirectory } from './directory';
@@ -85,10 +86,17 @@ function Attachments({ files }: { files: Attachment[] }) {
 /** O nome de quem escreveu, na cor que a pessoa escolheu no perfil (a escolha vem do diretório). */
 function AutorNome({ id, nome }: { id: number; nome: string }) {
   const { members } = useDirectory();
+  const membro = members.get(id);
   return (
-    <span className="message-author" data-cor={corDoNome(members.get(id)?.nameColor)}>
-      {nome}
-    </span>
+    <>
+      <span className="message-author" data-cor={corDoNome(membro?.nameColor)}>
+        {nome}
+      </span>
+      {/* O selo vem do DIRETÓRIO, como a moldura do avatar: assim ele aparece em toda parte onde já
+          se desenha um nome, sem passar a escolha de mão em mão, e muda sozinho pelo mesmo
+          "user:updated" que já atualiza o resto do perfil. */}
+      {membro?.selo && <SeloDaComunidade selo={membro.selo} />}
+    </>
   );
 }
 

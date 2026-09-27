@@ -15,6 +15,8 @@ export interface User {
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden: é a medalha de contribuição do perfil. */
   acceptedIdeas: number;
+  /** O selo da comunidade que ela escolheu vestir, já resolvido. Nulo quando não veste nenhum. */
+  selo?: { texto: string; icone: string; cor: string } | null;
 }
 
 export type UserRef = Pick<User, 'id' | 'username'>;
@@ -31,7 +33,7 @@ export interface PresenceEntry {
 
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner' | 'moldura' | 'vitrine' | 'acceptedIdeas'
+  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner' | 'moldura' | 'vitrine' | 'acceptedIdeas' | 'selo'
 >;
 
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */

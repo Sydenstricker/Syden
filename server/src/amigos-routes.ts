@@ -60,7 +60,11 @@ export function registerAmigosRoutes(app: FastifyInstance, io: Server) {
       // do Syden — e o texto é o único lugar onde esse vazamento apareceria.
       const recusa = { error: 'Não deu para enviar o pedido. Confira o nome e tente de novo.' };
 
-      if (!alvo || alvo.id === request.user.id) return reply.code(404).send(recusa);
+      // A MESMA recusa de "não existe": quem foi bloqueado não descobre que foi. Uma mensagem
+      // diferente aqui contaria a ele exatamente o que o bloqueio existe para não contar.
+      if (!alvo || alvo.id === request.user.id || db.haBloqueio(request.user.id, alvo.id)) {
+        return reply.code(404).send(recusa);
+      }
       if (db.amizadeEntre(request.user.id, alvo.id)) return reply.code(409).send(recusa);
       if (!db.pedirAmizade(request.user.id, alvo.id)) return reply.code(409).send(recusa);
 

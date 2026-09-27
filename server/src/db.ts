@@ -48,6 +48,8 @@ export interface User {
   banner: string | null;
   /** Nome da moldura escolhida para o avatar, ou null para nenhuma. */
   moldura: string | null;
+  /** O selo que a pessoa escolheu vestir, ja resolvido. Nulo quando ela nao veste nenhum. */
+  selo?: { texto: string; icone: string; cor: string } | null;
   /** As insígnias que a pessoa escolheu exibir no perfil, na ordem em que ela pôs. */
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden. É o que vira a medalha no perfil. */
@@ -60,7 +62,7 @@ export type UserRef = Pick<User, 'id' | 'username'>;
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'moldura' | 'vitrine' | 'acceptedIdeas'
+  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'moldura' | 'vitrine' | 'acceptedIdeas' | 'selo'
 >;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
@@ -603,6 +605,23 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_friendships_maior ON friendships(maior_id);
 
+  -- Bloqueios.
+  --
+  -- DIRECIONAL, ao contrário da amizade: eu posso bloquear você sem que você me bloqueie. E, também
+  -- ao contrário da amizade, ele NÃO precisa do consentimento do outro lado nem é visível para ele —
+  -- quem bloqueia não deve nenhuma explicação, e avisar transformaria um ato de defesa num conflito.
+  --
+  -- O efeito vale NOS DOIS SENTIDOS mesmo sendo guardado num só: se eu bloqueio você, nem eu falo com
+  -- você nem você fala comigo. Um bloqueio que só cala um lado não protege ninguém.
+  CREATE TABLE IF NOT EXISTS blocks (
+    quem_bloqueou INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    bloqueado     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    criado_em     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (quem_bloqueou, bloqueado),
+    CHECK (quem_bloqueou <> bloqueado)
+  );
+  CREATE INDEX IF NOT EXISTS idx_blocks_bloqueado ON blocks(bloqueado);
+
   CREATE TABLE IF NOT EXISTS user_prefs (
     user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     data       TEXT NOT NULL,
@@ -705,6 +724,10 @@ addColumnIfMissing('users', 'session_version', 'INTEGER NOT NULL DEFAULT 1');
 addColumnIfMissing('users', 'vitrine', 'TEXT');
 // A moldura do avatar, cosmético da loja. Guarda só o NOME da escolha ('prata'); o desenho mora no app.
 addColumnIfMissing('users', 'moldura', 'TEXT');
+// Qual SELO a pessoa escolheu vestir. Guarda o numero da comunidade, e nao uma copia do selo: assim,
+// quando a comunidade troca o dela, o de quem veste troca junto, sem ninguem precisar reescolher.
+// ON DELETE nao se aplica (e uma coluna solta): quem le confere se a comunidade ainda existe.
+addColumnIfMissing('users', 'selo_comunidade', 'INTEGER');
 // Ligar um provedor a uma conta QUE JÁ EXISTE é o mesmo passeio até o provedor, com outro destino no
 // fim: em vez de achar/criar conta, pendura a conta de lá nesta aqui. Quem é "esta aqui" fica em
 // ligar_user_id, escrito quando o passeio começa — por um pedido autenticado, que é o que prova quem é.
@@ -1035,6 +1058,11 @@ export function setMemberRole(communityId: number, userId: number, role: Role) {
 
 export function removeMember(communityId: number, userId: number) {
   db.prepare('DELETE FROM community_members WHERE community_id = ? AND user_id = ?').run(communityId, userId);
+  // Quem sai do time devolve a camiseta. Fica AQUI, e não em cada rota que remove alguém, porque
+  // sair de uma comunidade acontece por vários caminhos — pedido próprio, expulsão, conta excluída —
+  // e um deles esqueceria. O sintoma seria mudo: a pessoa continuaria exibindo o selo de uma
+  // comunidade de que não faz mais parte, e nada daria erro.
+  db.prepare('UPDATE users SET selo_comunidade = NULL WHERE id = ? AND selo_comunidade = ?').run(userId, communityId);
 }
 
 export function listCommunityMembers(communityId: number): CommunityMember[] {
@@ -1057,7 +1085,12 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, vitrine, accepted_ideas AS acceptedIdeas';
+  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, vitrine, accepted_ideas AS acceptedIdeas, ' +
+  // O selo vestido, resolvido aqui mesmo. Guarda-se o NÚMERO da comunidade e não uma cópia do selo:
+  // quando ela troca o dela, o de quem veste troca junto, sem ninguém precisar reescolher.
+  '(SELECT selo_texto FROM communities c WHERE c.id = users.selo_comunidade) AS seloTexto, ' +
+  '(SELECT selo_icone FROM communities c WHERE c.id = users.selo_comunidade) AS seloIcone, ' +
+  '(SELECT selo_cor   FROM communities c WHERE c.id = users.selo_comunidade) AS seloCor';
 
 type UserRow = {
   id: number;
@@ -1070,6 +1103,9 @@ type UserRow = {
   moldura: string | null;
   vitrine: string | null;
   acceptedIdeas: number;
+  seloTexto: string | null;
+  seloIcone: string | null;
+  seloCor: string | null;
 };
 
 function toUser(row: UserRow | undefined): User | undefined {
@@ -1085,6 +1121,11 @@ function toUser(row: UserRow | undefined): User | undefined {
       moldura: row.moldura,
       vitrine: lerVitrine(row.vitrine),
       acceptedIdeas: row.acceptedIdeas ?? 0,
+      // As três partes vêm juntas ou nenhuma vem: um selo pela metade não se desenha.
+      selo:
+        row.seloTexto && row.seloIcone && row.seloCor
+          ? { texto: row.seloTexto, icone: row.seloIcone, cor: row.seloCor }
+          : null,
     }
   );
 }
@@ -3317,4 +3358,131 @@ export function guardarSelo(communityId: number, selo: { texto: string; icone: s
     selo?.cor ?? null,
     communityId,
   );
+}
+
+/**
+ * Quais selos esta pessoa pode vestir.
+ *
+ * Só das comunidades de que ela PARTICIPA e que já conquistaram o selo. As duas condições valem
+ * sempre, e não só na hora de escolher: alguém que saiu da comunidade não continua usando a
+ * camiseta do time, e é por isso que quem lê confere de novo.
+ */
+export function selosQuePodeVestir(userId: number) {
+  return db
+    .prepare(
+      `SELECT c.id AS communityId, c.name AS nome,
+              c.selo_texto AS texto, c.selo_icone AS icone, c.selo_cor AS cor
+         FROM community_members m
+         JOIN communities c ON c.id = m.community_id
+        WHERE m.user_id = ? AND c.selo_texto IS NOT NULL AND c.selo_icone IS NOT NULL AND c.selo_cor IS NOT NULL
+        ORDER BY c.name COLLATE NOCASE`,
+    )
+    .all(userId) as unknown as { communityId: number; nome: string; texto: string; icone: string; cor: string }[];
+}
+
+/** Devolve falso quando a pessoa não pode vestir esse selo — e aí nada é gravado. */
+export function vestirSelo(userId: number, communityId: number | null): boolean {
+  if (communityId === null) {
+    db.prepare('UPDATE users SET selo_comunidade = NULL WHERE id = ?').run(userId);
+    return true;
+  }
+  // A conferência é do servidor, e não da tela: a lista de opções vem daqui, mas um pedido feito à
+  // mão pediria a camiseta de um time do qual a pessoa nunca fez parte.
+  if (!selosQuePodeVestir(userId).some((s) => s.communityId === communityId)) return false;
+  db.prepare('UPDATE users SET selo_comunidade = ? WHERE id = ?').run(communityId, userId);
+  return true;
+}
+
+/**
+ * Tira o selo de quem não pode mais usá-lo.
+ *
+ * Roda quando alguém sai (ou é removido) de uma comunidade, e quando uma comunidade perde o selo.
+ * Sem isso, a camiseta continuaria no corpo de quem saiu do time — e ninguém repararia, porque nada
+ * daria erro.
+ */
+export function limparSelosInvalidos(communityId: number) {
+  db.prepare(
+    `UPDATE users SET selo_comunidade = NULL
+      WHERE selo_comunidade = ?
+        AND id NOT IN (SELECT user_id FROM community_members WHERE community_id = ?)`,
+  ).run(communityId, communityId);
+}
+
+/** Tira este selo do corpo de todo mundo: usado quando a comunidade deixa de ter selo. */
+export function despirSeloDaComunidade(communityId: number) {
+  db.prepare('UPDATE users SET selo_comunidade = NULL WHERE selo_comunidade = ?').run(communityId);
+}
+
+// ---------- Bloqueios ----------
+
+/**
+ * Existe bloqueio entre estes dois, em qualquer sentido?
+ *
+ * É esta pergunta — e não "fulano bloqueou beltrano" — que o resto do programa faz. Um bloqueio que
+ * calasse só um dos lados não protegeria ninguém: quem bloqueou continuaria recebendo mensagem.
+ */
+export function haBloqueio(a: number, b: number): boolean {
+  const linha = db
+    .prepare(
+      `SELECT 1 AS n FROM blocks
+        WHERE (quem_bloqueou = ? AND bloqueado = ?) OR (quem_bloqueou = ? AND bloqueado = ?) LIMIT 1`,
+    )
+    .get(a, b, b, a);
+  return linha !== undefined;
+}
+
+/** Quem esta pessoa bloqueou. Só ela vê a própria lista. */
+export function listarBloqueios(userId: number): { userId: number; username: string; desde: string }[] {
+  return db
+    .prepare(
+      `SELECT u.id AS userId, u.username AS username, b.criado_em AS desde
+         FROM blocks b JOIN users u ON u.id = b.bloqueado
+        WHERE b.quem_bloqueou = ? ORDER BY u.username COLLATE NOCASE`,
+    )
+    .all(userId) as unknown as { userId: number; username: string; desde: string }[];
+}
+
+/**
+ * Bloquear DESFAZ a amizade e qualquer pedido pendente.
+ *
+ * Sem isso sobraria um estado sem sentido: "amigo" de alguém com quem não se pode trocar mensagem.
+ * E, pior, a pessoa continuaria aparecendo na lista de amigos de quem a bloqueou.
+ */
+export function bloquear(quemBloqueou: number, bloqueado: number): boolean {
+  if (quemBloqueou === bloqueado) return false;
+  if (!findUserById(bloqueado)) return false;
+  db.exec('BEGIN');
+  try {
+    db.prepare('INSERT INTO blocks (quem_bloqueou, bloqueado) VALUES (?, ?) ON CONFLICT DO NOTHING').run(
+      quemBloqueou,
+      bloqueado,
+    );
+    const [menor, maior] = quemBloqueou < bloqueado ? [quemBloqueou, bloqueado] : [bloqueado, quemBloqueou];
+    db.prepare('DELETE FROM friendships WHERE menor_id = ? AND maior_id = ?').run(menor, maior);
+    db.exec('COMMIT');
+    return true;
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
+}
+
+/** Desbloquear NÃO devolve a amizade: ela foi desfeita, e refazê-la é escolha das duas pessoas. */
+export function desbloquear(quemBloqueou: number, bloqueado: number): boolean {
+  return (
+    db.prepare('DELETE FROM blocks WHERE quem_bloqueou = ? AND bloqueado = ?').run(quemBloqueou, bloqueado).changes > 0
+  );
+}
+
+/** Os números de quem esta pessoa bloqueou OU que a bloquearam: é o que a tela usa para esconder. */
+export function idsBloqueadosDe(userId: number): number[] {
+  return (
+    db
+      .prepare(
+        `SELECT bloqueado AS id FROM blocks WHERE quem_bloqueou = ?
+         UNION
+         SELECT quem_bloqueou AS id FROM blocks WHERE bloqueado = ?`,
+      )
+      .all(userId, userId) as { id: number }[]
+  ).map((linha) => linha.id);
 }
