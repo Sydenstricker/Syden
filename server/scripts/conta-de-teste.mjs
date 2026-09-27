@@ -23,7 +23,9 @@ import { DatabaseSync } from 'node:sqlite';
 const scrypt = promisify(scryptCb);
 
 const CAMINHO = process.env.DATABASE_PATH || './janja.db';
-const NOME = process.argv[2] || 'microsoft-teste';
+// O nome é o primeiro argumento que NÃO seja uma opção. Sem esta filtragem, rodar com --senha
+// criaria uma conta chamada '--senha'.
+const NOME = process.argv.slice(2).find((a) => !a.startsWith('--') && process.argv[process.argv.indexOf(a) - 1] !== '--senha') || 'microsoft-teste';
 
 /**
  * O MESMO formato de senha que o servidor usa (ver server/src/auth.ts): sal e hash em hexadecimal,
@@ -48,8 +50,27 @@ function sortearSenha() {
   return [...randomBytes(20)].map((b) => letras[b % letras.length]).join('');
 }
 
+/**
+ * Dá para ESCOLHER a senha, e não é preguiça.
+ *
+ * A sorteada precisa ser copiada do console do servidor para o terminal da outra máquina, e em
+ * console web o Ctrl+V não funciona. Digitar vinte caracteres aleatórios à mão erra — errou. E o
+ * exemplo que eu escrevi no lugar dela ("a-senha-da-conta-de-teste") era parecido demais com um
+ * valor de verdade: foi colado como se fosse a senha.
+ *
+ *   node scripts/conta-de-teste.mjs --senha uma-que-voce-lembre
+ *
+ * Esta senha vai parar no campo de notas do Partner Center de qualquer jeito, onde só a Microsoft
+ * lê. O que ela protege é uma conta comum, sem poder nenhum.
+ */
+const escolhida = process.argv.includes('--senha') ? process.argv[process.argv.indexOf('--senha') + 1] : null;
+if (escolhida && escolhida.length < 6) {
+  console.error('A senha escolhida precisa ter pelo menos 6 caracteres.');
+  process.exit(1);
+}
+
 const db = new DatabaseSync(CAMINHO);
-const senha = sortearSenha();
+const senha = escolhida || sortearSenha();
 const hash = await guardarSenha(senha);
 
 const existente = db.prepare('SELECT id FROM users WHERE username = ?').get(NOME);
@@ -97,4 +118,26 @@ console.log('');
 console.log('  Usuário: ' + NOME);
 console.log('  Senha:   ' + senha);
 console.log('');
-console.log('Copie agora: a senha não fica guardada em lugar nenhum e não aparece de novo.');
+if (!escolhida) console.log('Copie agora: a senha sorteada não fica guardada e não aparece de novo.');
+
+// A PROVA. Tenta entrar com a senha que acabou de definir, batendo na API de verdade.
+//
+// Escrever no banco e imprimir um texto não prova nada: a senha pode estar num formato que o
+// servidor não reconhece, ou a conta pode estar barrada por confirmação de e-mail. Sem isto, o
+// primeiro a descobrir seria quem tentasse usá-la do outro lado — e ele não teria como saber de
+// quem era a culpa. Aconteceu duas vezes hoje.
+const API_LOCAL = process.env.API_LOCAL ?? 'http://localhost:3001';
+try {
+  const resposta = await fetch(`${API_LOCAL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ username: NOME, password: senha }),
+  });
+  if (resposta.ok) {
+    console.log(`\nConferido: "${NOME}" entra com esta senha.`);
+  } else {
+    console.log(`\nATENÇÃO: a senha NÃO funcionou (${resposta.status}). Não adianta usá-la.`);
+  }
+} catch (erro) {
+  console.log(`\n(não deu para conferir daqui: ${erro.message})`);
+}
