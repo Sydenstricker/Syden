@@ -3141,6 +3141,71 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Modo sessão: assistir junto ---------- */
+
+/* Fora da sessão, o palco ocupa tudo como sempre — esta camada não muda nada até ser ligada. */
+.palco-e-conversa {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.palco-e-conversa > .voice-stage {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Na sessão, a conversa ganha uma coluna fixa à direita. Fixa, e não proporcional: o que tem de
+   crescer quando a janela cresce é o vídeo, não a caixa de texto. */
+.palco-e-conversa.sessao > .sessao-conversa {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 340px;
+  min-width: 0;
+  border-left: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.palco-e-conversa.sessao > .sessao-conversa > * {
+  flex: 1;
+  min-height: 0;
+}
+
+/* O fundo do palco escurece: numa sessão o que importa é o que está sendo transmitido, e cinza
+   claro em volta de um vídeo rouba contraste dele. */
+.palco-e-conversa.sessao > .voice-stage {
+  background: #000;
+}
+
+/* As pessoas viram uma faixa menor, encostada embaixo. Elas continuam ali — assistir junto sem ver
+   com quem seria assistir sozinho — mas param de disputar espaço com o vídeo. */
+.palco-e-conversa.sessao .stage-strip {
+  padding: 6px;
+  gap: 6px;
+}
+
+.palco-e-conversa.sessao .stage-strip .tile {
+  width: 96px;
+  height: 56px;
+}
+
+/* Numa janela estreita não cabem vídeo e conversa lado a lado. A conversa desce e divide a altura,
+   que é pior do que ao lado e muito melhor do que espremer os dois na largura. */
+@media (max-width: 900px) {
+  .palco-e-conversa.sessao {
+    flex-direction: column;
+  }
+
+  .palco-e-conversa.sessao > .sessao-conversa {
+    width: auto;
+    height: 45%;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+
 /* ---------- Amigos ---------- */
 
 /* Botão discreto, para ação que acompanha uma linha de lista. Nasceu na tela de amigos e serve a

@@ -537,6 +537,17 @@ export function Shell({
   }, [channels, selectedId]);
 
   // Painel de consumo é só para administradores; se alguém perder o cargo com ele aberto, a tela volta ao normal.
+  /**
+   * Modo sessão: assistir junto.
+   *
+   * Mora no Shell, e não dentro do palco, porque ele muda o LAYOUT DA PÁGINA — o vídeo cresce e a
+   * conversa aparece ao lado. Dentro do palco só daria para mexer no que está dentro do palco.
+   */
+  const [sessao, setSessao] = useState(false);
+
+  /** Onde a sessão conversa: o primeiro canal de texto da comunidade, que é o geral em quase todas. */
+  const canalDaSessao = channels.find((c) => c.type === 'text');
+
   const usageOpen = showUsage && user.isAdmin && view === 'community';
   const jogosOpen = showJogos && !usageOpen && view === 'community';
   const selected = usageOpen || jogosOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
@@ -726,15 +737,34 @@ export function Shell({
             />
           )}
           {view === 'community' && selected?.type === 'voice' && (
-            <VoiceStage
-              channel={selected}
-              voice={voice}
-              members={voiceMembers.filter((m) => m.channelId === selected.id)}
-              canaisDeTexto={channels.filter((c) => c.type === 'text')}
-              onMobileBack={() => setMobileChannels(true)}
-              membersOpen={preferences.showMembers}
-              onToggleMembers={() => updateSettings({ showMembers: !preferences.showMembers })}
-            />
+            <div className={`palco-e-conversa${sessao ? ' sessao' : ''}`}>
+              <VoiceStage
+                channel={selected}
+                voice={voice}
+                members={voiceMembers.filter((m) => m.channelId === selected.id)}
+                canaisDeTexto={channels.filter((c) => c.type === 'text')}
+                onMobileBack={() => setMobileChannels(true)}
+                membersOpen={preferences.showMembers}
+                onToggleMembers={() => updateSettings({ showMembers: !preferences.showMembers })}
+                sessao={sessao}
+                aoAlternarSessao={() => setSessao((ligada) => !ligada)}
+              />
+              {/* A conversa ao lado é o que separa "assistir junto" de "assistir ao mesmo tempo" —
+                  sem ela, cada um comenta no vazio. Reaproveita o canal de texto que já existe: a
+                  sessão não inventa um lugar novo, e o que for dito continua lá quando ela acabar. */}
+              {sessao && canalDaSessao && socket && (
+                <aside className="sessao-conversa">
+                  <TextChannel
+                    key={`sessao-${canalDaSessao.id}`}
+                    channel={canalDaSessao}
+                    socket={socket}
+                    user={user}
+                    role={community?.role ?? 'member'}
+                    onMobileBack={() => setSessao(false)}
+                  />
+                </aside>
+              )}
+            </div>
           )}
           {view === 'community' && usageOpen && (
             <UsageDashboard voiceMembers={voiceMembers} onMobileBack={() => setMobileChannels(true)} />

@@ -24,6 +24,7 @@ import {
   PhoneOff,
   Play,
   Plus,
+  Popcorn,
   Square,
   Star,
   Users,
@@ -75,6 +76,8 @@ export function VoiceStage({
   onMobileBack,
   membersOpen,
   onToggleMembers,
+  sessao,
+  aoAlternarSessao,
 }: {
   channel: Channel;
   voice: Voice;
@@ -86,8 +89,12 @@ export function VoiceStage({
   /** A lista de pessoas da comunidade está aberta à direita? */
   membersOpen: boolean;
   onToggleMembers: () => void;
+  /** Modo sessão: assistir junto, com o vídeo grande e a conversa ao lado. */
+  sessao: boolean;
+  aoAlternarSessao: () => void;
 }) {
   const inThisRoom = voice.channelId === channel.id;
+  const alguemTransmitindo = members.some((m) => m.screen);
 
   return (
     <div className="voice-stage">
@@ -104,6 +111,21 @@ export function VoiceStage({
         >
           <Users size={20} />
         </button>
+        {/*
+          O botão da sessão só existe quando ALGUÉM ESTÁ TRANSMITINDO. Sem transmissão não há o que
+          assistir junto, e um "Assistir junto" que não faz nada ensina a ignorar o botão.
+        */}
+        {inThisRoom && alguemTransmitindo && (
+          <button
+            className={`header-toggle${sessao ? ' active' : ''}`}
+            title={sessao ? 'Sair do modo sessão' : 'Assistir junto: vídeo grande e conversa ao lado'}
+            aria-label={sessao ? 'Sair do modo sessão' : 'Assistir junto'}
+            aria-pressed={sessao}
+            onClick={aoAlternarSessao}
+          >
+            <Popcorn size={20} />
+          </button>
+        )}
       </header>
       {/* Sala de voz sempre pertence a uma comunidade (conversa privada não tem voz por enquanto). */}
       {inThisRoom ? (
