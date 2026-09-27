@@ -893,6 +893,9 @@ export function Vila({
           onMouseLeave={() => onDestaque(null)}
           onFocus={() => onDestaque(pino.id)}
           onBlur={() => onDestaque(null)}
+          // Numa cena estreita o subtítulo é escondido para os balões não se atravessarem; aqui ele
+          // continua acessível ao passar o mouse e a quem usa leitor de tela.
+          title={`${pino.titulo} — ${pino.sub}`}
         >
           <span className="vila-pino-icone" aria-hidden="true">
             {pino.icone}

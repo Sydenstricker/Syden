@@ -5716,6 +5716,8 @@ textarea {
 
 .vila {
   position: relative;
+  /* Faz desta caixa a referência do "cqw" usado pelos balões: eles medem a CENA, não a janela. */
+  container-type: inline-size;
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
@@ -6088,8 +6090,8 @@ textarea {
   transform: translate(-50%, -100%);
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 16px 8px 10px;
+  gap: clamp(5px, 0.85cqw, 10px);
+  padding: clamp(4px, 0.68cqw, 8px) clamp(8px, 1.35cqw, 16px) clamp(4px, 0.68cqw, 8px) clamp(5px, 0.85cqw, 10px);
   border: none;
   border-radius: 999px;
   background: rgba(20, 16, 14, 0.82);
@@ -6114,12 +6116,18 @@ textarea {
 .vila-pino-icone {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: clamp(18px, 2.55cqw, 30px);
+  height: clamp(18px, 2.55cqw, 30px);
   border-radius: 50%;
   background: var(--v-vermelho, #c8102e);
   color: #fff;
   flex: none;
+}
+
+/* O desenho de dentro vem com tamanho fixo do lucide; aqui ele passa a acompanhar a bolinha. */
+.vila-pino-icone svg {
+  width: 60%;
+  height: 60%;
 }
 
 .vila-pino-texto {
@@ -6129,13 +6137,29 @@ textarea {
 }
 
 .vila-pino-texto strong {
-  font-size: 15px;
+  font-size: clamp(11px, 1.28cqw, 15px);
   font-weight: 700;
 }
 
 .vila-pino-texto small {
-  font-size: 11px;
+  font-size: clamp(9px, 0.94cqw, 11px);
   color: rgba(255, 255, 255, 0.72);
+}
+
+/*
+ * Numa cena estreita, encolher a letra não basta: cinco balões com subtítulo não cabem lado a lado de
+ * jeito nenhum. Aí a explicação sai e fica só o nome — que é o que a pessoa lê mesmo. O subtítulo
+ * continua no title do botão e para quem usa leitor de tela.
+ */
+@container (max-width: 700px) {
+  .vila-pino-texto small {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 /* A listinha de salas que aparece quando se clica na casa das Salas. */
@@ -7937,4 +7961,11 @@ textarea {
   align-items: center;
   gap: 6px;
   flex: none;
+}
+
+.loja-contribuir-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
 }

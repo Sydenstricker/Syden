@@ -1,9 +1,15 @@
-import { Check, Gift, Heart, Lock, Music, Sparkles } from 'lucide-react';
+import { Check, ExternalLink, Gift, Heart, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA, VALORES } from './loja';
+
+/**
+ * O endereço do site. No navegador é a própria origem; no app de desktop, que roda de um arquivo
+ * local, "origin" não serve para nada — daí o endereço de verdade como reserva.
+ */
+const SITE = window.location.protocol.startsWith('http') ? window.location.origin : 'https://syden.chat';
 import { MobileBackButton } from './MobileBackButton';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
 
@@ -92,7 +98,15 @@ function Cartao({
   );
 }
 
-/** A explicação de por que existe dinheiro numa loja em que tudo é de graça. */
+/**
+ * A explicação de por que existe dinheiro numa loja em que tudo é de graça — e um link.
+ *
+ * **A contribuição mora NO SITE, fora do app, e nunca aqui dentro.** As lojas de aplicativo (Apple,
+ * Google, Microsoft) cobram uma porcentagem sobre o que é vendido dentro do app, e algumas exigem que
+ * a cobrança passe pelo sistema de pagamento delas. Uma página aberta no navegador não é venda dentro
+ * do app. A regra para não errar isso no futuro: este bloco pode DIZER que a página existe; o que ele
+ * não pode é abrir cobrança por dentro do Syden.
+ */
 function Contribuir() {
   return (
     <section className="loja-contribuir">
@@ -113,9 +127,16 @@ function Contribuir() {
           </li>
         ))}
       </ul>
+      <p>
+        <a className="btn-secondary loja-contribuir-link" href={`${SITE}/contribuir.html`} target="_blank" rel="noreferrer">
+          Ler sobre isso no site
+          <ExternalLink size={15} aria-hidden="true" />
+        </a>
+      </p>
       <p className="settings-hint">
-        Ainda não dá para contribuir por aqui: falta ligar o Syden a um meio de pagamento. Quando der, vai ser por fora
-        do app, e continuará não mudando nada do que você pode fazer aqui dentro.
+        A contribuição acontece no site, no navegador, e não aqui dentro — assim ela não vira compra dentro do
+        aplicativo, que é o que as lojas de celular cobram porcentagem para intermediar. Ainda não está no ar: falta
+        ligar o Syden a um meio de pagamento.
       </p>
     </section>
   );

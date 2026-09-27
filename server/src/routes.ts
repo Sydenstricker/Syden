@@ -348,7 +348,13 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       async (request, reply) => {
         if (enderecoFreado(request, reply)) return reply;
         const newPassword = request.body?.newPassword ?? '';
-        if (!(await verifyPassword(request.body?.currentPassword ?? '', db.findPasswordHash(request.user.id)))) {
+
+        // Conta que nasceu pelo Google/GitHub NÃO TEM SENHA ATUAL para conferir. Exigir uma seria
+        // exigir o impossível: a pessoa ficaria sem jeito nenhum de criar a primeira, e sem poder
+        // desligar o provedor (que é a única porta dela). Aqui ela DEFINE a primeira; a sessão dela,
+        // que já está aberta, é a prova de que é ela.
+        const primeiraSenha = !db.temSenha(request.user.id);
+        if (!primeiraSenha && !(await verifyPassword(request.body?.currentPassword ?? '', db.findPasswordHash(request.user.id)))) {
           return reply.code(400).send({ error: 'A senha atual está incorreta.' });
         }
         if (newPassword.length < 6) {
@@ -488,12 +494,28 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true, token };
     });
 
-    // Excluir a própria conta exige a senha, para ninguém fazer isso por engano (ou com o PC de outra pessoa).
-    authed.post<{ Body: { password?: string } }>('/api/me/delete', async (request, reply) => {
+    /**
+     * Excluir a própria conta. Pede uma confirmação deliberada, para ninguém fazer isso por engano nem
+     * com o computador de outra pessoa aberto.
+     *
+     * **Quem entrou pelo Google/GitHub não tem senha para digitar**, e por isso confirma escrevendo o
+     * próprio nome de usuário — o mesmo caminho que o GitHub usa para apagar repositório. Sem isto, uma
+     * conta criada por engano no caminho social ficava impossível de apagar, que foi o que aconteceu.
+     */
+    authed.post<{ Body: { password?: string; confirmacao?: string } }>('/api/me/delete', async (request, reply) => {
       if (enderecoFreado(request, reply)) return reply;
-      if (!(await verifyPassword(request.body?.password ?? '', db.findPasswordHash(request.user.id)))) {
-        return reply.code(400).send({ error: 'Senha incorreta.' });
+
+      if (db.temSenha(request.user.id)) {
+        if (!(await verifyPassword(request.body?.password ?? '', db.findPasswordHash(request.user.id)))) {
+          return reply.code(400).send({ error: 'Senha incorreta.' });
+        }
+      } else {
+        const escrito = (request.body?.confirmacao ?? '').trim();
+        if (escrito.toLowerCase() !== request.user.username.toLowerCase()) {
+          return reply.code(400).send({ error: `Escreva exatamente ${request.user.username} para confirmar.` });
+        }
       }
+
       removeAccount(io, request.user.id);
       return { ok: true };
     });

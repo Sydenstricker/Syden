@@ -350,6 +350,18 @@ function OutrosAparelhos() {
 // ---------- Minha conta ----------
 
 function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void }) {
+  // Conta criada pelo Google/GitHub não tem senha nenhuma. Isso muda dois formulários desta tela: o
+  // de senha (que passa a DEFINIR a primeira, sem pedir a atual) e o de excluir (que confirma pelo
+  // nome, porque não há senha para digitar).
+  const [temSenha, setTemSenha] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    void api<{ temSenha: boolean }>('/api/me/social')
+      .then((r) => setTemSenha(r.temSenha))
+      // Servidor antigo, sem essa rota: segue como sempre foi, pedindo a senha atual.
+      .catch(() => setTemSenha(true));
+  }, []);
+
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -368,7 +380,11 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
         body: { currentPassword: current, newPassword: next },
       });
       saveToken(token);
-      setMessage({ ok: true, text: 'Senha alterada. Os outros aparelhos foram desconectados.' });
+      setTemSenha(true);
+      setMessage({
+        ok: true,
+        text: temSenha === false ? 'Senha definida. Agora dá para entrar com nome e senha também.' : 'Senha alterada. Os outros aparelhos foram desconectados.',
+      });
       setCurrent('');
       setNext('');
       setConfirm('');
@@ -384,12 +400,19 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
       <AvatarEditor user={user} />
       <PerfilEditor user={user} />
 
-      <h3>Trocar senha</h3>
+      <h3>{temSenha === false ? 'Definir uma senha' : 'Trocar senha'}</h3>
       <form className="settings-form" onSubmit={submit}>
-        <label>
-          Senha atual
-          <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" required />
-        </label>
+        {temSenha === false ? (
+          <p className="settings-hint">
+            Você entrou por um serviço de fora e ainda não tem senha nesta conta. Defina uma aqui: passa a valer como
+            segundo jeito de entrar, e é o que permite desligar aquele serviço depois.
+          </p>
+        ) : (
+          <label>
+            Senha atual
+            <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" required />
+          </label>
+        )}
         <label>
           Nova senha
           <input type="password" value={next} onChange={(e) => setNext(e.target.value)} autoComplete="new-password" minLength={6} required />
@@ -400,7 +423,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
         </label>
         {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
         <button className="btn-primary" disabled={busy}>
-          {busy ? 'Salvando…' : 'Salvar nova senha'}
+          {busy ? 'Salvando…' : temSenha === false ? 'Definir a minha senha' : 'Salvar nova senha'}
         </button>
       </form>
 
@@ -412,7 +435,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
 
       <OutrosAparelhos />
 
-      <DeleteAccount onDeleted={onDeleted} />
+      <DeleteAccount onDeleted={onDeleted} temSenha={temSenha !== false} username={user.username} />
 
       <p className="settings-legal">
         <a href="privacidade.html" target="_blank" rel="noreferrer">
@@ -427,9 +450,17 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
   );
 }
 
-function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
+/**
+ * Excluir a conta, com uma confirmação deliberada.
+ *
+ * Quem entrou pelo Google/GitHub **não tem senha para digitar**, e confirma escrevendo o próprio nome
+ * — o mesmo caminho que o GitHub usa para apagar repositório. Sem isto, uma conta criada por engano no
+ * caminho social ficava impossível de apagar.
+ */
+function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => void; temSenha: boolean; username: string }) {
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState('');
+  const [confirmacao, setConfirmacao] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -437,7 +468,7 @@ function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
     event.preventDefault();
     setBusy(true);
     try {
-      await api('/api/me/delete', { method: 'POST', body: { password } });
+      await api('/api/me/delete', { method: 'POST', body: { password, confirmacao } });
       onDeleted();
     } catch (e) {
       setError((e as Error).message);
@@ -455,16 +486,30 @@ function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
         </p>
         {open ? (
           <form className="settings-form" onSubmit={submit}>
-            <label>
-              Digite sua senha para confirmar
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" autoFocus required />
-            </label>
+            {temSenha ? (
+              <label>
+                Digite sua senha para confirmar
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  autoFocus
+                  required
+                />
+              </label>
+            ) : (
+              <label>
+                Escreva <strong>{username}</strong> para confirmar
+                <input value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)} autoComplete="off" autoFocus required />
+              </label>
+            )}
             {error && <p className="form-error">{error}</p>}
             <div className="danger-actions">
               <button type="button" className="link-button" onClick={() => setOpen(false)}>
                 Cancelar
               </button>
-              <button className="btn-danger" disabled={busy || !password}>
+              <button className="btn-danger" disabled={busy || (temSenha ? !password : confirmacao.trim().toLowerCase() !== username.toLowerCase())}>
                 {busy ? 'Excluindo…' : 'Excluir minha conta para sempre'}
               </button>
             </div>

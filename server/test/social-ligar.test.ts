@@ -117,3 +117,68 @@ test('não dá para desligar o ÚNICO jeito de entrar', async () => {
   assert.ok(tentativa.json().error.includes('único'), tentativa.json().error);
   assert.deepEqual((await ela('GET', '/api/me/social')).json().ligados, ['google'], 'continua ligado');
 });
+
+// ---------------------------------------------------------------------------------------------------
+// Conta que nasceu sem senha: ela precisa conseguir DEFINIR uma e conseguir SER APAGADA. Sem as duas
+// coisas, uma conta criada por engano no caminho social fica presa para sempre — foi o que aconteceu de
+// verdade, e é por isso que estes testes existem.
+// ---------------------------------------------------------------------------------------------------
+
+/** Entra como uma conta sem senha e devolve o atalho autenticado dela. */
+async function entrarSemSenha(nome: string) {
+  const pessoa = db.createUserSemSenha(nome, null);
+  const segredo = sortear();
+  const estado = sortear();
+  db.criarEstadoSocial(estado, 'google', resumo(segredo));
+  const comprovante = sortear();
+  db.guardarEntregaSocial(estado, comprovante, pessoa.id);
+  const entrada = await app.inject({ method: 'POST', url: '/api/auth/social/concluir', payload: { comprovante, segredo } });
+  assert.equal(entrada.statusCode, 200, entrada.body);
+  return { pessoa, comoEla: comToken(app, entrada.json().token) };
+}
+
+test('conta sem senha consegue definir a primeira, sem ter que informar uma atual', async () => {
+  const { pessoa, comoEla } = await entrarSemSenha('primeirasenha');
+  assert.equal(db.temSenha(pessoa.id), false);
+
+  const resposta = await comoEla('POST', '/api/me/password', { newPassword: 'senhanova123' });
+  assert.equal(resposta.statusCode, 200, resposta.body);
+  assert.equal(db.temSenha(pessoa.id), true);
+
+  // E ela passa a valer de verdade na porta da frente.
+  const entrada = await app.inject({
+    method: 'POST',
+    url: '/api/auth/login',
+    payload: { username: 'primeirasenha', password: 'senhanova123' },
+  });
+  assert.equal(entrada.statusCode, 200, 'a senha recém-definida tem que servir para entrar');
+});
+
+test('quem JÁ tem senha continua tendo que informar a atual para trocar', async () => {
+  const errada = await dona('POST', '/api/me/password', { currentPassword: 'chute', newPassword: 'outrasenha123' });
+  assert.equal(errada.statusCode, 400);
+  assert.ok(errada.json().error.includes('atual'), errada.json().error);
+});
+
+test('conta sem senha se apaga escrevendo o próprio nome', async () => {
+  const { pessoa, comoEla } = await entrarSemSenha('vouembora');
+
+  const semNada = await comoEla('POST', '/api/me/delete', {});
+  assert.equal(semNada.statusCode, 400, 'confirmação em branco não apaga nada');
+  assert.ok(db.findUserById(pessoa.id), 'a conta tem que continuar viva');
+
+  const nomeErrado = await comoEla('POST', '/api/me/delete', { confirmacao: 'outrapessoa' });
+  assert.equal(nomeErrado.statusCode, 400);
+  assert.ok(db.findUserById(pessoa.id));
+
+  const certo = await comoEla('POST', '/api/me/delete', { confirmacao: 'vouembora' });
+  assert.equal(certo.statusCode, 200, certo.body);
+  assert.equal(db.findUserById(pessoa.id), undefined, 'agora sim');
+});
+
+test('quem tem senha continua apagando com a senha, e não com o nome', async () => {
+  const token = (await criarConta(app, 'comsenha')).token;
+  const ela = comToken(app, token);
+  assert.equal((await ela('POST', '/api/me/delete', { confirmacao: 'comsenha' })).statusCode, 400, 'o nome não basta aqui');
+  assert.equal((await ela('POST', '/api/me/delete', { password: 'segredo123' })).statusCode, 200);
+});
