@@ -115,11 +115,22 @@ async function abrirAComunidade() {
   const botao = page.locator(`.rail-item[title="${COMUNIDADE}"]`);
   if (await botao.isVisible().catch(() => false)) {
     await botao.click();
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(1200);
     return true;
   }
-  console.log(`    (não achei a comunidade "${COMUNIDADE}" — rode scripts/comunidade-de-demonstracao.mjs)`);
+
+  // Quando não acha, DIZ O QUE ACHOU. "Não encontrei" sozinho não ajuda ninguém a descobrir se o
+  // nome está diferente, se a conta não participa da comunidade, ou se a barra nem carregou.
+  const titulos = await page.locator('.rail-item').evaluateAll((itens) =>
+    itens.map((i) => i.getAttribute('title')).filter(Boolean),
+  );
+  console.log(`    (não achei "${COMUNIDADE}". A barra mostra: ${JSON.stringify(titulos)})`);
   return false;
+}
+
+/** Em qual comunidade a tela está agora, segundo o cabeçalho da barra lateral. */
+async function comunidadeAberta() {
+  return (await page.locator('.sidebar-brand').first().innerText().catch(() => '')).trim();
 }
 
 /** Abre Configurações. Serve para trocar o idioma e é o mesmo caminho em qualquer língua. */
@@ -190,14 +201,27 @@ if (!(await abrirAComunidade())) {
 
 // Mesmo dentro da comunidade certa, conta quanta gente aparece. A de demonstração tem seis; se
 // aparecerem muitas, é sinal de que se entrou na comunidade errada apesar de tudo.
+// A conferência é pelo NOME que a tela mostra, e não pela suposição de que o clique funcionou.
+// Clicar num botão e seguir em frente sem olhar onde se chegou foi o que deixou as fotos saírem da
+// comunidade errada duas vezes.
+const aberta = await comunidadeAberta();
 const quantos = await page.locator('.member-name').count().catch(() => 0);
+
+if (aberta !== COMUNIDADE) {
+  console.error(`\nPAREI. Cliquei em "${COMUNIDADE}", mas a tela está mostrando "${aberta}".`);
+  console.error('Nenhuma foto foi tirada. Sem isto, elas sairiam com gente de verdade.\n');
+  await browser.close();
+  process.exit(1);
+}
+
 if (quantos > 8) {
   console.error(`\nPAREI. A comunidade "${COMUNIDADE}" tem ${quantos} pessoas à vista.`);
   console.error('A de demonstração deveria ter seis. Confira em qual comunidade o script entrou.\n');
   await browser.close();
   process.exit(1);
 }
-console.log(`Na comunidade "${COMUNIDADE}", com ${quantos} pessoas à vista.`);
+
+console.log(`Na comunidade "${aberta}", com ${quantos} pessoas à vista.`);
 
 for (const idioma of IDIOMAS) {
   console.log(`\n── ${idioma.pasta} ──`);
@@ -233,8 +257,18 @@ for (const idioma of IDIOMAS) {
   }
 
   // 3. Um canal de texto.
+  //
+  //    Confere DE NOVO em qual comunidade está antes de fotografar conversa. A verificação lá de
+  //    cima valeu para aquele momento; daqui até aqui houve cliques, e um deles pode ter mudado de
+  //    lugar. Conferir de novo custa uma linha; a foto errada não tem desfazer.
   console.log('  3. Um canal de texto');
   await abrirAComunidade();
+  const ondeEstou = await comunidadeAberta();
+  if (ondeEstou !== COMUNIDADE) {
+    console.error(`\nPAREI antes da foto da conversa: a tela está em "${ondeEstou}", não em "${COMUNIDADE}".\n`);
+    await browser.close();
+    process.exit(1);
+  }
   const canal = page.locator('.channel-name').first();
   if (await canal.isVisible().catch(() => false)) {
     await canal.click();
