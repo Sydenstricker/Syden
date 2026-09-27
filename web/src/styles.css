@@ -3141,6 +3141,176 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Selo da comunidade ---------- */
+
+/* Ele aparece ao lado do nome das pessoas, MUITAS VEZES na mesma tela. Por isso acompanha o tamanho
+   da letra em volta (em, não px) em vez de impor um tamanho fixo que brigaria com cada contexto. */
+.selo-comunidade {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  /* Texto branco em todas as cores da lista: elas foram escolhidas para funcionar assim nos dois
+     temas — ver CORES em selos.ts. */
+  color: #fff;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.selo-comunidade.so-icone {
+  padding: 3px;
+}
+
+.marcos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marcos li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bg-raised);
+}
+
+.marcos li:last-child {
+  border-bottom: 0;
+}
+
+.marcos-icone {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-raised);
+  color: var(--text-muted);
+}
+
+.marcos li.feito .marcos-icone {
+  background: var(--green);
+  color: #fff;
+}
+
+.marcos-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.marcos-texto strong {
+  color: var(--text-strong);
+  font-size: 13.5px;
+}
+
+.marcos li:not(.feito) .marcos-texto strong {
+  color: var(--text);
+}
+
+.marcos-texto small {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.marcos-barra {
+  display: block;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: 2px;
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.marcos-barra > span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.selo-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.selo-editor input {
+  max-width: 140px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.selo-rotulo {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.selo-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.selo-opcao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* A borda do escolhido usa a cor do texto, e não a do próprio selo: sobre um botão da mesma cor,
+   uma borda colorida desapareceria justamente no item selecionado. */
+.selo-opcao.escolhida {
+  border-color: var(--text-strong);
+}
+
+.selo-previa {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--bg-sidebar);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.selo-previa em {
+  color: var(--text-strong);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.selo-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 /* ---------- Modo sessão: assistir junto ---------- */
 
 /* Fora da sessão, o palco ocupa tudo como sempre — esta camada não muda nada até ser ligada. */

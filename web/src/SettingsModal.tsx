@@ -33,6 +33,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { useDirectory } from './directory';
 import { CommunityIcon } from './CommunityIcon';
+import { PainelDoSelo } from './PainelDoSelo';
 import { ImageCropper } from './ImageCropper';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
@@ -136,14 +137,19 @@ export function SettingsModal({
           {section === 'sounds' && <SoundsSection />}
           {section === 'idioma' && <IdiomaSection />}
           {community && section === 'community' && (
-            <CommunitySection
-              community={community}
-              onChanged={onCommunityChanged}
-              onLeft={() => {
-                onCommunityChanged();
-                onClose();
-              }}
-            />
+            <>
+              <CommunitySection
+                community={community}
+                onChanged={onCommunityChanged}
+                onLeft={() => {
+                  onCommunityChanged();
+                  onClose();
+                }}
+              />
+              {/* Depois do nome e do ícone: o selo é a identidade que a comunidade CONQUISTOU, e
+                  faz sentido lê-la logo abaixo da que ela simplesmente escolheu. */}
+              <PainelDoSelo communityId={community.id} />
+            </>
           )}
           {community && section === 'members' && <MembersSection user={user} community={community} />}
           {community && section === 'emojis' && <EmojisSection user={user} community={community} />}

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
+import { SeloDaComunidade } from './SeloDaComunidade';
 import { ConfirmDialog } from './ConfirmDialog';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
@@ -108,6 +109,13 @@ export function Sidebar({
       <header className="sidebar-header">
         <span className="sidebar-brand" title={directMode ? t('Conversas') : community.name}>
           {directMode ? t('Conversas') : community.name}
+          {/* O selo fica ao lado do nome da comunidade: é onde a conquista dela faz sentido ser
+              lida, e é a primeira coisa que quem entra vê. */}
+          {!directMode && community.seloTexto && community.seloIcone && community.seloCor && (
+            <SeloDaComunidade
+              selo={{ texto: community.seloTexto, icone: community.seloIcone, cor: community.seloCor }}
+            />
+          )}
         </span>
         {showDesktopDownload && (
           <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title="Baixar o app para Windows" aria-label="Baixar o app para Windows">

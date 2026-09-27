@@ -46,6 +46,10 @@ export interface Community {
   createdBy: number | null;
   /** Muda a cada troca de imagem; entra na URL para o navegador buscar a nova. null = sem imagem. */
   iconVersion: number | null;
+  /** O selo que a comunidade conquistou. As três partes vêm juntas ou nenhuma vem. */
+  seloTexto?: string | null;
+  seloIcone?: string | null;
+  seloCor?: string | null;
   role: Role;
   memberCount: number;
   /** Só quem administra recebe o código; para os outros vem null. */

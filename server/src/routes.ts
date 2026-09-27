@@ -28,6 +28,7 @@ import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
 import { audiencia } from './audiencia.js';
 import * as prefs from './preferencias.js';
+import { conferirSelo, CORES, ICONES, MARCOS, marcosAlcancados, podeUsarSelo } from './selos.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
@@ -663,6 +664,85 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const community = db.renameCommunity(access.community.id, name);
       io.to(communityRoom(community.id)).emit('community:updated', community);
       return community;
+    });
+
+
+    /**
+     * Os marcos da comunidade e o selo dela.
+     *
+     * Aberto a QUALQUER MEMBRO, e não só a quem administra: o selo é mérito do grupo, então o grupo
+     * tem de poder ver quanto falta para o próximo. Esconder o progresso de quem o está construindo
+     * tiraria metade da graça — ninguém se esforça por uma meta que não enxerga.
+     */
+    authed.get<{ Params: { id: string } }>('/api/communities/:id/selo', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+
+      const fatos = db.fatosDaComunidade(access.community.id);
+      const alcancados = new Set(marcosAlcancados(fatos));
+
+      return {
+        selo: db.lerSelo(access.community.id),
+        destravado: podeUsarSelo(fatos),
+        podeEditar: manages(access.role),
+        fatos,
+        marcos: MARCOS.map((m) => ({
+          codigo: m.codigo,
+          nome: m.nome,
+          comoSeGanha: m.comoSeGanha,
+          alcancado: alcancados.has(m.codigo),
+          progresso: m.progresso(fatos),
+        })),
+        // A tela não inventa as opções: elas vêm de cá, então acrescentar um ícone é mudança de um
+        // lugar só, e nunca aparece na tela uma opção que o servidor recusaria.
+        icones: ICONES,
+        cores: CORES,
+      };
+    });
+
+    authed.put<{ Params: { id: string }; Body: unknown }>('/api/communities/:id/selo', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade escolhe o selo.' });
+
+      // A trava do marco fica AQUI, no servidor, e não só no botão desabilitado da tela. Um selo que
+      // se consegue com um pedido feito à mão não é conquista nenhuma, e a tela é a parte do Syden
+      // que qualquer pessoa consegue contornar.
+      if (!podeUsarSelo(db.fatosDaComunidade(access.community.id))) {
+        return reply.code(403).send({ error: 'Esta comunidade ainda não alcançou o primeiro marco.' });
+      }
+
+      const conferido = conferirSelo(request.body);
+      if (!conferido.ok) return reply.code(400).send({ error: conferido.erro });
+
+      db.guardarSelo(access.community.id, conferido.selo);
+      db.registrarAuditoria({
+        actor: request.user,
+        action: 'selo',
+        target: conferido.selo.texto,
+        communityId: access.community.id,
+      });
+      io.to(communityRoom(access.community.id)).emit('selo:mudou', {
+        communityId: access.community.id,
+        selo: conferido.selo,
+      });
+      return { selo: conferido.selo };
+    });
+
+    /**
+     * Tirar o selo tem rota própria, e não é "PUT com corpo vazio".
+     *
+     * Corpo nulo num PUT é ambíguo: o Fastify recusa antes de chegar aqui, e mesmo que chegasse,
+     * "não mandei nada" e "quero apagar" viram a mesma coisa. Quem conquistou também pode preferir
+     * não exibir, e essa escolha merece ser dita de forma clara.
+     */
+    authed.delete<{ Params: { id: string } }>('/api/communities/:id/selo', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade escolhe o selo.' });
+      db.guardarSelo(access.community.id, null);
+      io.to(communityRoom(access.community.id)).emit('selo:mudou', { communityId: access.community.id, selo: null });
+      return { selo: null };
     });
 
     /** Troca o código de convite: o antigo para de funcionar na hora. */

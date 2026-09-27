@@ -15,6 +15,15 @@ export interface Community {
   createdBy: number | null;
   /** Muda a cada troca de imagem e entra na URL, para o navegador buscar a nova. null = sem imagem. */
   iconVersion: number | null;
+  /**
+   * O selo conquistado, ou nulo enquanto não houver. Ver selos.ts.
+   *
+   * Viaja junto com a comunidade em vez de ter um pedido próprio: quem já desenha o nome passa a
+   * poder desenhar o selo sem ir buscar nada, e o selo aparece em muitos lugares.
+   */
+  seloTexto?: string | null;
+  seloIcone?: string | null;
+  seloCor?: string | null;
 }
 
 /** Uma comunidade vista por quem participa dela. */
@@ -672,6 +681,11 @@ function hasColumn(table: string, column: string) {
 // na tela "contado a partir de tal dia" em vez de mostrar um número que parece o histórico inteiro e
 // não é. Sem ON DELETE: a comunidade pode sumir e o registro de uso continua valendo para o total.
 addColumnIfMissing('usage_sessions', 'community_id', 'INTEGER');
+// O selo da comunidade: quatro caracteres, um icone e uma cor, exibidos ao lado do nome dos membros.
+// Fica nulo enquanto a comunidade nao alcancou o primeiro marco, ou nao escolheu o selo dela.
+addColumnIfMissing('communities', 'selo_texto', 'TEXT');
+addColumnIfMissing('communities', 'selo_icone', 'TEXT');
+addColumnIfMissing('communities', 'selo_cor', 'TEXT');
 addColumnIfMissing('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
@@ -920,12 +934,14 @@ export function seedChannels(communityId: number) {
 
 // ---------- Comunidades ----------
 
-const communityColumns = 'id, name, created_by AS createdBy, icon_version AS iconVersion';
+const communityColumns =
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
     .prepare(
-      `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion, m.role,
+      `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
+              c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
@@ -3255,4 +3271,50 @@ export function sugestoesDeAmizade(userId: number, limite = 12): SugestaoDeAmiza
       // O SQLite devolve 0 e 1 no lugar de booleano; a tela não precisa saber disso.
       return { ...linha, jaConversaram: Boolean(linha.jaConversaram) };
     });
+}
+
+// ---------- O selo da comunidade ----------
+
+/**
+ * Os fatos que decidem quais marcos a comunidade alcançou.
+ *
+ * Tudo sai de contagem: quantos membros, quantas contas diferentes escreveram, em quantos DIAS
+ * diferentes houve conversa e quanto tempo de voz. Nenhuma linha aqui lê o texto de uma mensagem.
+ */
+export function fatosDaComunidade(communityId: number) {
+  const uma = (sql: string) => (db.prepare(sql).get(communityId) as { n: number }).n;
+
+  return {
+    membros: uma('SELECT COUNT(*) AS n FROM community_members WHERE community_id = ?'),
+    pessoasQueEscreveram: uma(
+      `SELECT COUNT(DISTINCT ms.user_id) AS n FROM messages ms
+         JOIN channels ch ON ch.id = ms.channel_id WHERE ch.community_id = ?`,
+    ),
+    // substr(...,1,10) recorta o "AAAA-MM-DD" da data ISO: é assim que dias diferentes viram contagem.
+    diasComConversa: uma(
+      `SELECT COUNT(DISTINCT substr(ms.created_at, 1, 10)) AS n FROM messages ms
+         JOIN channels ch ON ch.id = ms.channel_id WHERE ch.community_id = ?`,
+    ),
+    segundosDeVoz: uma(
+      `SELECT COALESCE(SUM(strftime('%s', ended_at) - strftime('%s', started_at)), 0) AS n
+         FROM usage_sessions WHERE community_id = ? AND kind = 'voice'`,
+    ),
+  };
+}
+
+export function lerSelo(communityId: number): { texto: string; icone: string; cor: string } | null {
+  const linha = db
+    .prepare('SELECT selo_texto AS texto, selo_icone AS icone, selo_cor AS cor FROM communities WHERE id = ?')
+    .get(communityId) as { texto: string | null; icone: string | null; cor: string | null } | undefined;
+  if (!linha?.texto || !linha.icone || !linha.cor) return null;
+  return { texto: linha.texto, icone: linha.icone, cor: linha.cor };
+}
+
+export function guardarSelo(communityId: number, selo: { texto: string; icone: string; cor: string } | null) {
+  db.prepare('UPDATE communities SET selo_texto = ?, selo_icone = ?, selo_cor = ? WHERE id = ?').run(
+    selo?.texto ?? null,
+    selo?.icone ?? null,
+    selo?.cor ?? null,
+    communityId,
+  );
 }
