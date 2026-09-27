@@ -2715,6 +2715,34 @@ export function reactionsForMessage(messageId: number, viewerId: number): Reacti
   return rows.map((r) => ({ emoji: r.emoji, count: r.count, mine: r.mine === 1 }));
 }
 
+/**
+ * Quem esta pessoa pode ver online: quem divide alguma comunidade com ela, mais quem tem conversa
+ * privada com ela.
+ *
+ * Existe porque a presença era mandada para TODO MUNDO: o servidor emitia a lista inteira de quem
+ * estava online no Syden para o navegador de cada pessoa. A tela filtrava antes de desenhar, então
+ * não aparecia nada de errado — mas o nome e o estado de todo mundo estavam ali, ao alcance de quem
+ * abrisse as ferramentas do navegador. Entre amigos numa comunidade só isso não tinha consequência.
+ * Com o cadastro aberto, tem: um estranho que se cadastra veria a lista de quem está online aqui.
+ */
+export function quemVejoOnline(userId: number): Set<number> {
+  const linhas = db
+    .prepare(
+      `SELECT DISTINCT outro.user_id AS id
+         FROM community_members meu
+         JOIN community_members outro ON outro.community_id = meu.community_id
+        WHERE meu.user_id = ?
+        UNION
+       SELECT DISTINCT outro.user_id AS id
+         FROM channel_members meu
+         JOIN channel_members outro ON outro.channel_id = meu.channel_id
+         JOIN channels c ON c.id = meu.channel_id
+        WHERE meu.user_id = ? AND c.type = 'dm'`,
+    )
+    .all(userId, userId) as unknown as { id: number }[];
+  return new Set(linhas.map((l) => l.id));
+}
+
 // ---------- Entrar com Google/Discord ----------
 
 export function contaSocial(provedor: string, sub: string): number | undefined {

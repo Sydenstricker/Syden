@@ -134,11 +134,46 @@ export function disconnectUser(io: IOServer, userId: number) {
   onlineSockets.delete(userId);
   for (const socketId of online?.sockets ?? []) io.sockets.sockets.get(socketId)?.disconnect(true);
   if (communityId !== undefined) broadcastVoice(io, communityId);
-  io.emit('presence', onlineUsers());
+  broadcastPresence(io);
 }
 
 function onlineUsers(): (db.UserRef & { status: PresenceStatus })[] {
   return [...onlineSockets.entries()].map(([id, { username, status }]) => ({ id, username, status }));
+}
+
+/**
+ * Manda a presença para cada pessoa, com só quem ela pode ver.
+ *
+ * Antes isto era um `io.emit`, que manda a MESMA lista para todo mundo — a lista inteira de quem está
+ * online no Syden. A tela filtrava antes de desenhar, e por isso nada parecia errado; mas o nome e o
+ * estado de todos estavam no navegador de qualquer um. Agora a conta é feita aqui, e o que não é para
+ * a pessoa ver não sai do servidor.
+ *
+ * O custo é uma consulta por pessoa conectada a cada mudança de presença. Numa casa deste tamanho
+ * isso não se mede; o cache abaixo existe só porque uma pessoa costuma ter duas ou três abas abertas.
+ */
+function broadcastPresence(io: IOServer) {
+  const todos = onlineUsers();
+  const cache = new Map<number, Set<number>>();
+  const vejo = (id: number) => {
+    let lista = cache.get(id);
+    if (!lista) {
+      lista = db.quemVejoOnline(id);
+      cache.set(id, lista);
+    }
+    return lista;
+  };
+
+  for (const socket of io.sockets.sockets.values()) {
+    const user = socket.data.user as db.User | undefined;
+    if (!user) continue;
+    const visiveis = vejo(user.id);
+    // A própria pessoa vai sempre: é dela que a tela lê o próprio estado (online, ausente, ocupado).
+    socket.emit(
+      'presence',
+      todos.filter((p) => p.id === user.id || visiveis.has(p.id)),
+    );
+  }
 }
 
 export function setupRealtime(io: IOServer) {
@@ -162,7 +197,7 @@ export function setupRealtime(io: IOServer) {
     const online = onlineSockets.get(user.id) ?? { username: user.username, sockets: new Set<string>(), status: 'online' as PresenceStatus };
     online.sockets.add(socket.id);
     onlineSockets.set(user.id, online);
-    io.emit('presence', onlineUsers());
+    broadcastPresence(io);
 
     // Só chegam a esta aba os avisos das comunidades de que a pessoa participa.
     const myCommunities = db.communityIdsForUser(user.id);
@@ -179,7 +214,7 @@ export function setupRealtime(io: IOServer) {
       const entry = onlineSockets.get(user.id);
       if (!entry) return;
       entry.status = status;
-      io.emit('presence', onlineUsers());
+      broadcastPresence(io);
     });
 
     socket.on('message:send', (payload: { channelId?: number; content?: string; threadId?: number }, ack?: Ack) => {
@@ -272,7 +307,7 @@ export function setupRealtime(io: IOServer) {
       leaveVoice();
       online.sockets.delete(socket.id);
       if (online.sockets.size === 0) onlineSockets.delete(user.id);
-      io.emit('presence', onlineUsers());
+      broadcastPresence(io);
     });
   });
 }
