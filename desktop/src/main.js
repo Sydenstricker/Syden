@@ -38,8 +38,19 @@ function isAppOrigin(/** @type {string | undefined} */ url) {
 // A versão de desenvolvimento usa pasta e identidade próprias: se dividisse com o Syden instalado, abrir um
 // desviava para a janela do outro (trava de instância única) e a barra de tarefas os misturava ao fixar.
 const DEV = !app.isPackaged;
+// A pasta continua chamando "Janja", e isso É DE PROPÓSITO. É onde moram as configurações, a sessão
+// aberta e os dados do site dentro do app. Renomear não renomeia nada: cria uma pasta nova e vazia, e
+// quem tinha o app instalado é deslogado e perde as escolhas de microfone, volume e tema. Ninguém vê
+// este nome — o app, os atalhos e a barra de tarefas dizem "Syden" —, então a troca custaria incômodo
+// real a quem usa em troca de nada. Dá para renomear com migração; enquanto não houver, fica.
 app.setPath('userData', path.join(app.getPath('appData'), DEV ? 'Janja-dev' : 'Janja'));
-const APP_USER_MODEL_ID = DEV ? 'com.janja.app.dev' : 'com.janja.app';
+// A identidade do app para o Windows, em domínio ao contrário (syden.chat -> chat.syden). É por ela
+// que o sistema agrupa as janelas na barra de tarefas e sabe de quem é cada notificação.
+//
+// TROCAR ISTO DEPOIS DE PUBLICADO TEM PREÇO: o Windows passa a entender o app como outro programa,
+// instala do lado do antigo em vez de atualizar, e os atalhos fixados na barra se soltam. Foi trocado
+// em 2026-09-27, quando só uma pessoa tinha o app instalado. Não se troca de novo.
+const APP_USER_MODEL_ID = DEV ? 'chat.syden.app.dev' : 'chat.syden.app';
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();

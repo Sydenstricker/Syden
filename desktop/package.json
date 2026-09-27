@@ -18,7 +18,7 @@
     "dist:loja": "electron-builder --win appx"
   },
   "build": {
-    "appId": "com.janja.app",
+    "appId": "chat.syden.app",
     "productName": "Syden",
     "directories": {
       "output": "release",
