@@ -49,6 +49,23 @@ services:
       LIVEKIT_URL: wss://${LIVEKIT_DOMAIN}
     volumes:
       - janja_data:/data
+    # O Docker pergunta de tempo em tempo se o servidor está vivo (server/scripts/saude.mjs).
+    #
+    # Vale por dois motivos. O primeiro é `docker compose up -d --build --wait`: com isto, o comando de
+    # atualizar só devolve o terminal depois que o servidor NOVO estiver respondendo — e falha na cara
+    # de quem atualizou se ele não subir. Sem isso, um .env errado derruba o Syden e ninguém fica
+    # sabendo até um amigo reclamar no dia seguinte.
+    #
+    # O segundo é o `docker ps`, que passa a mostrar "healthy" em vez de só "up" — "up" é verdade até
+    # para um servidor que subiu e está engasgado.
+    healthcheck:
+      test: ["CMD", "node", "scripts/saude.mjs"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      # Tempo para o servidor abrir o banco e as migrações antes de a primeira pergunta valer. Durante
+      # ele, falhar não conta como queda — só adia o "healthy".
+      start_period: 30s
 
 volumes:
   caddy_data:

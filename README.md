@@ -95,7 +95,7 @@ TCP) e UDP `50000-60000` (mídia).
    curl -fsSL https://get.docker.com | sudo sh
    git clone https://github.com/<usuario>/<repo>.git janja && cd janja/deploy
    cp .env.example .env && nano .env      # preencha tudo
-   sudo docker compose up -d --build
+   sudo docker compose up -d --build --wait
    ```
 3. Confira em `https://api.syden.chat/api/health`. A resposta deve ser `{"ok":true}`.
 
@@ -211,7 +211,21 @@ de assinatura de código, que é pago.
 ### Atualizar
 
 - Site: basta dar push, o GitHub Actions publica.
-- Servidor: `git pull && docker compose up -d --build` dentro de `deploy/`.
+- Servidor: `git pull && docker compose up -d --build --wait` dentro de `deploy/`.
+
+  **O `--wait` não é enfeite.** Sem ele o comando devolve o terminal assim que o container é criado,
+  e um servidor que sobe e morre em seguida (um `.env` errado, por exemplo) passa despercebido: você
+  fecha o terminal achando que deu certo e descobre pelo amigo no dia seguinte. Com ele, o comando só
+  termina depois que o servidor novo responde de verdade — e falha na sua cara se não responder.
+
+  Vale saber o que acontece nesse comando, porque assusta menos do que parece: **a construção inteira
+  roda com o servidor velho no ar**, e só a troca no fim derruba a API — por volta de dois segundos.
+  A voz não cai junto, porque ela passa pelo LiveKit, que é outro container e não é reiniciado. O site
+  mostra "Reconectando ao servidor…" e volta sozinho. O que falha nesses dois segundos é mensagem
+  enviada na hora exata e quem tentar ENTRAR numa sala de voz (a senha de entrada vem da API).
+
+  Para conferir depois, sem entrar no servidor: `curl -s https://api.syden.chat/api/inicio` traz
+  `construidoEm`, que é quando a imagem no ar foi construída.
 - Backup: o banco é um arquivo SQLite no volume `janja_data`.
 
 ## Painel de uso
