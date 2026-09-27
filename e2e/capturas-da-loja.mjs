@@ -169,19 +169,35 @@ console.log('Entrou como ' + USUARIO);
 await dispensarPresentes(page);
 console.log('Presentes dispensados');
 
-// ---------- O aviso de privacidade ----------
+// ---------- A trava de privacidade ----------
 //
-// O script não sabe distinguir a comunidade de demonstração da comunidade dos amigos. Mas sabe
-// contar quanta gente está à vista — e desconfiar em voz alta custa seis segundos, enquanto o erro
-// contrário não tem desfazer.
-await abrirAComunidade();
-const quantos = await page.locator('.member-name').count().catch(() => 0);
-if (quantos > 4) {
-  console.log(`\n  ATENÇÃO: esta comunidade tem ${quantos} pessoas à vista.`);
-  console.log('  As capturas vão para uma página PÚBLICA. Se esta for a comunidade dos seus amigos,');
-  console.log('  pare agora (Ctrl+C) e use uma comunidade feita para demonstração.');
-  await page.waitForTimeout(6000);
+// ELE PARA, e não apenas avisa.
+//
+// A primeira versão avisava e seguia em frente, o que na prática é a mesma coisa que não avisar: a
+// comunidade que ele fotografaria em seguida seria justamente a dos amigos. Um aviso que não impede
+// nada é só um jeito de dizer depois "mas eu tinha avisado".
+//
+// Aqui o padrão é o seguro: sem a comunidade de demonstração, nenhuma foto é tirada.
+if (!(await abrirAComunidade())) {
+  console.error(`\nPAREI. Não achei a comunidade "${COMUNIDADE}".`);
+  console.error('\nSem ela, as fotos sairiam com nomes e mensagens de pessoas de verdade — e elas vão');
+  console.error('para uma página pública, sem desfazer. No servidor, crie a comunidade de mentira:\n');
+  console.error('  docker compose exec api node scripts/comunidade-de-demonstracao.mjs\n');
+  console.error('Se ela já existe com outro nome, diga qual:  COMUNIDADE="O Nome" node e2e/capturas-da-loja.mjs\n');
+  await browser.close();
+  process.exit(1);
 }
+
+// Mesmo dentro da comunidade certa, conta quanta gente aparece. A de demonstração tem seis; se
+// aparecerem muitas, é sinal de que se entrou na comunidade errada apesar de tudo.
+const quantos = await page.locator('.member-name').count().catch(() => 0);
+if (quantos > 8) {
+  console.error(`\nPAREI. A comunidade "${COMUNIDADE}" tem ${quantos} pessoas à vista.`);
+  console.error('A de demonstração deveria ter seis. Confira em qual comunidade o script entrou.\n');
+  await browser.close();
+  process.exit(1);
+}
+console.log(`Na comunidade "${COMUNIDADE}", com ${quantos} pessoas à vista.`);
 
 for (const idioma of IDIOMAS) {
   console.log(`\n── ${idioma.pasta} ──`);
