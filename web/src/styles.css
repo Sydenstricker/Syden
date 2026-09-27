@@ -3234,15 +3234,21 @@ textarea {
   flex: 1;
   flex-direction: column;
   align-items: center;
-  /* A altura fixa é o que dá às barras uma base comum: sem ela cada coluna mede a si mesma e a
-     comparação entre os dias, que é o motivo do gráfico existir, deixa de funcionar. */
-  justify-content: flex-end;
-  min-height: 84px;
+}
+
+/* O trilho é o que dá às barras uma base comum. A altura dele é FIXA de propósito: altura em
+   porcentagem só significa alguma coisa dentro de um pai com altura definida, e `min-height` não é
+   altura definida — com ela, toda barra desaba para o mínimo e o gráfico deixa de comparar nada. */
+.audiencia-trilho {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 28px;
+  height: 64px;
 }
 
 .audiencia-barra {
   width: 100%;
-  max-width: 28px;
   min-height: 2px;
   border-radius: 4px 4px 0 0;
   background: var(--accent);
@@ -3251,7 +3257,6 @@ textarea {
 /* O número e a data ficam em cor de texto, nunca na cor da barra: a cor identifica a barra, e o texto
    ao lado dela é que se lê. */
 .audiencia-barras b {
-  order: -1;
   margin-bottom: 4px;
   color: var(--text-strong);
   font-size: 12px;
@@ -3259,7 +3264,6 @@ textarea {
 }
 
 .audiencia-barras small {
-  order: 1;
   margin-top: 6px;
   color: var(--text-muted);
   font-size: 11px;

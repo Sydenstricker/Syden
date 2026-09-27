@@ -136,7 +136,18 @@ interface Grupo {
 }
 
 const inteiro = (n: unknown): number => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n) : 0);
-const talvez = (n: unknown): number | null => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n) : null);
+
+/**
+ * Os tempos da Cloudflare vêm em MICROSSEGUNDOS, e isso não está escrito em lugar nenhum no esquema:
+ * o campo se chama `largestContentfulPaintP50` e pronto. Descobriu-se olhando o número na tela — 644000
+ * para uma página que a própria Cloudflare classifica como rápida. Onze minutos seria absurdo; 644 ms
+ * bate com o painel dela, que marca essa mesma medição como "Good" (abaixo de 2,5 s).
+ *
+ * Fica dividido aqui, na fronteira com a API, e não na tela: assim o resto do programa lida com uma
+ * unidade só, e ninguém precisa lembrar disto de novo.
+ */
+const emMs = (n: unknown): number | null =>
+  typeof n === 'number' && Number.isFinite(n) ? Math.round(n / 1000) : null;
 
 /**
  * Separado da rede de propósito: é aqui que mora a chance de errar, e é o que os testes conseguem
@@ -164,9 +175,9 @@ export function lerResposta(dados: unknown): Dados | null {
   return {
     pageviews,
     visitas,
-    lcpMedianaMs: talvez(velocidade?.largestContentfulPaintP50),
-    lcpP75Ms: talvez(velocidade?.largestContentfulPaintP75),
-    ttfbMedianaMs: talvez(velocidade?.timeToFirstByteP50),
+    lcpMedianaMs: emMs(velocidade?.largestContentfulPaintP50),
+    lcpP75Ms: emMs(velocidade?.largestContentfulPaintP75),
+    ttfbMedianaMs: emMs(velocidade?.timeToFirstByteP50),
     porDia,
   };
 }

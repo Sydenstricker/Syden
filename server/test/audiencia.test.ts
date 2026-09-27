@@ -18,7 +18,7 @@ const resposta = (total: unknown[], porDia: unknown[], velocidade: unknown[] = [
 const VELOCIDADE = [
   {
     count: 20,
-    quantiles: { largestContentfulPaintP50: 1800, largestContentfulPaintP75: 3200, timeToFirstByteP50: 210 },
+    quantiles: { largestContentfulPaintP50: 1800000, largestContentfulPaintP75: 3200000, timeToFirstByteP50: 210500 },
   },
 ];
 
@@ -38,7 +38,7 @@ test('lê os totais e a série por dia', () => {
   assert.equal(lido?.visitas, 13);
   assert.equal(lido?.lcpMedianaMs, 1800);
   assert.equal(lido?.lcpP75Ms, 3200);
-  assert.equal(lido?.ttfbMedianaMs, 210);
+  assert.equal(lido?.ttfbMedianaMs, 211);
   assert.deepEqual(lido?.porDia, [
     { dia: '2026-09-26', visitas: 4, pageviews: 10 },
     { dia: '2026-09-27', visitas: 9, pageviews: 30 },
@@ -131,4 +131,22 @@ test('chave sem validade nunca avisa — não há o que avisar', () => {
   assert.equal(diasAteVencer('', AGORA), null);
   assert.equal(diasAteVencer('não é data', AGORA), null);
   assert.equal(avisoDaChave(null, AGORA), null);
+});
+
+// ---------- A unidade dos tempos ----------
+//
+// A Cloudflare devolve MICROSSEGUNDOS, e o esquema dela não diz isso em lugar nenhum. O defeito
+// apareceu na tela: "644,0 s para a página abrir", quando a própria Cloudflare classificava a mesma
+// medição como rápida. Um erro de mil vezes não estoura nada — só mente com convicção.
+
+test('microssegundos viram milissegundos', () => {
+  const lido = lerResposta(resposta([{ count: 1, sum: { visits: 1 } }], [], VELOCIDADE));
+  assert.equal(lido?.lcpMedianaMs, 1800);
+  assert.equal(lido?.lcpP75Ms, 3200);
+});
+
+test('a conversão arredonda em vez de truncar', () => {
+  const lido = lerResposta(resposta([{ count: 1, sum: { visits: 1 } }], [], VELOCIDADE));
+  // 210500 µs = 210,5 ms, que arredonda para 211 e não para 210.
+  assert.equal(lido?.ttfbMedianaMs, 211);
 });

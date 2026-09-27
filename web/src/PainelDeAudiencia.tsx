@@ -160,9 +160,14 @@ export function PainelDeAudiencia() {
           <ul className="audiencia-barras">
             {dados.porDia.map((d) => (
               <li key={d.dia} title={`${diaCurto(d.dia)}: ${d.visitas} visitas, ${d.pageviews} páginas`}>
-                <span className="audiencia-barra" style={{ height: `${Math.round((d.visitas / teto) * 100)}%` }} />
-                <small>{diaCurto(d.dia)}</small>
                 <b>{d.visitas}</b>
+                {/* O trilho tem altura FIXA, e é isso que faz a porcentagem da barra significar algo.
+                    Com `min-height` a altura não é definida, a porcentagem não resolve, e toda barra
+                    desaba para o mínimo — vira um risco de 2px igual para todos os dias. */}
+                <span className="audiencia-trilho">
+                  <span className="audiencia-barra" style={{ height: `${Math.round((d.visitas / teto) * 100)}%` }} />
+                </span>
+                <small>{diaCurto(d.dia)}</small>
               </li>
             ))}
           </ul>
