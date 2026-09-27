@@ -6,6 +6,8 @@ import { after, test } from 'node:test';
 process.env.GOOGLE_CLIENT_ID = 'teste-cliente';
 process.env.GOOGLE_CLIENT_SECRET = 'teste-segredo';
 process.env.STEAM_API_KEY = 'teste-steam';
+process.env.DISCORD_CLIENT_ID = 'teste-discord';
+process.env.DISCORD_CLIENT_SECRET = 'teste-discord-segredo';
 
 // A ORDEM DESTAS LINHAS IMPORTA, e errar nela não dá erro nenhum: dá um teste que passa escrevendo no
 // banco de desenvolvimento de verdade. O config.ts congela o caminho do banco no PRIMEIRO import de
@@ -37,7 +39,7 @@ async function comecar(provedor = 'google') {
 
 test('a tela de entrada fica sabendo quais provedores existem', async () => {
   const inicio = await app.inject({ method: 'GET', url: '/api/inicio' });
-  assert.deepEqual(inicio.json().social, ['google', 'steam'], 'Discord e GitHub não têm chave neste teste');
+  assert.deepEqual(inicio.json().social, ['google', 'discord', 'steam'], 'o GitHub não tem chave neste teste');
 });
 
 // Um estado nasce amarrado ao provedor que o pediu. Sem isso, dava para começar pelo Google (que
@@ -88,9 +90,25 @@ test('provedor sem chave configurada não existe', async () => {
   const resposta = await app.inject({
     method: 'POST',
     url: '/api/auth/social/inicio',
-    payload: { provedor: 'discord', desafio: resumo(sortear()) },
+    payload: { provedor: 'github', desafio: resumo(sortear()) },
   });
   assert.equal(resposta.statusCode, 404, 'sem chave, o botão nem aparece — e a rota não anuncia nada');
+});
+
+// O endereço que o Discord vai receber. Errar um parâmetro aqui dá uma tela de erro do lado DELES,
+// que não explica nada — então vale conferir cada um antes de depender disso em produção.
+test('o começo manda para o Discord com tudo o que ele espera', async () => {
+  const { url } = await comecar('discord');
+  assert.equal(url.origin + url.pathname, 'https://discord.com/oauth2/authorize');
+  assert.equal(url.searchParams.get('client_id'), 'teste-discord');
+  assert.equal(url.searchParams.get('response_type'), 'code');
+  assert.equal(url.searchParams.get('scope'), 'identify email', 'sem o email não dá para reconhecer conta que já existe');
+  assert.ok(url.searchParams.get('state'));
+  assert.equal(
+    url.searchParams.get('redirect_uri'),
+    'http://localhost:3001/api/auth/social/discord/volta',
+    'este endereço tem que ser cadastrado LETRA POR LETRA no painel do Discord',
+  );
 });
 
 test('desafio curto é recusado: um segredo adivinhável não protege ninguém', async () => {
