@@ -99,6 +99,9 @@ const PROVEDORES: Record<ProvedorOAuth, Config> = {
  *    entrada até funcionaria, mas a pessoa nasceria chamada "jogador123456" — por isso a chave é
  *    exigida para o botão aparecer.
  */
+/** Quem está chamando. A API do GitHub responde 403 a pedido sem isto, e não diz por quê. */
+const CHAMADOR = 'Syden';
+
 const STEAM_LOGIN = 'https://steamcommunity.com/openid/login';
 const STEAM_PERFIL = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/';
 
@@ -164,13 +167,51 @@ export function enderecoDeEntrada(provedor: Provedor, estado: string): string {
   return `${c.autorizar}?${parametros}`;
 }
 
-/** Troca o código por um perfil. Devolve null quando o provedor recusou ou respondeu torto. */
-export async function buscarPerfil(provedor: ProvedorOAuth, codigo: string): Promise<PerfilSocial | null> {
+/**
+ * O corpo da resposta do token virando o token em si.
+ *
+ * **Nem todo provedor responde JSON.** O GitHub responde `access_token=gho_x&scope=&token_type=bearer`,
+ * em formato de formulário, e só manda JSON se a gente pedir — coisa que este código não fazia, e por
+ * isso a entrada pelo GitHub falhava em produção sem deixar rastro nenhum. O pedido agora pede JSON, e
+ * esta função aceita os dois formatos de qualquer jeito: depender de um provedor não mudar de ideia é
+ * apostar, e aqui não custa nada não apostar.
+ */
+export function lerToken(tipoDeConteudo: string, corpo: string): string | null {
+  const texto = corpo.trim();
+  if (tipoDeConteudo.includes('json') || texto.startsWith('{')) {
+    try {
+      const lido = JSON.parse(texto) as { access_token?: unknown };
+      return typeof lido.access_token === 'string' && lido.access_token ? lido.access_token : null;
+    } catch {
+      return null;
+    }
+  }
+  const token = new URLSearchParams(texto).get('access_token');
+  return token || null;
+}
+
+/**
+ * Troca o código por um perfil. Devolve null quando o provedor recusou ou respondeu torto.
+ *
+ * `anotar` recebe o motivo de ter dado errado, para ir parar no registro do servidor. Antes esta
+ * função engolia tudo em silêncio: a pessoa via "não deu para falar com o provedor" e não havia como
+ * saber, nem olhando o servidor, em qual dos quatro passos tinha parado.
+ */
+export async function buscarPerfil(
+  provedor: ProvedorOAuth,
+  codigo: string,
+  anotar: (motivo: string) => void = () => {},
+): Promise<PerfilSocial | null> {
   const c = PROVEDORES[provedor];
   try {
     const resposta = await fetch(c.token, {
       method: 'POST',
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        // Sem isto o GitHub responde em formato de formulário, e a leitura como JSON estoura.
+        accept: 'application/json',
+        'user-agent': CHAMADOR,
+      },
       body: new URLSearchParams({
         client_id: c.clientId,
         client_secret: c.clientSecret,
@@ -180,31 +221,46 @@ export async function buscarPerfil(provedor: ProvedorOAuth, codigo: string): Pro
       }),
       signal: AbortSignal.timeout(10_000),
     });
-    if (!resposta.ok) return null;
-    const { access_token } = (await resposta.json()) as { access_token?: string };
-    if (!access_token) return null;
+    if (!resposta.ok) {
+      anotar(`o pedido do token respondeu ${resposta.status}`);
+      return null;
+    }
+    const access_token = lerToken(resposta.headers.get('content-type') ?? '', await resposta.text());
+    if (!access_token) {
+      anotar('a resposta do token veio sem access_token');
+      return null;
+    }
 
     const perfil = await fetch(c.perfil, {
-      headers: { authorization: `Bearer ${access_token}`, accept: `application/json` },
+      // A API do GitHub RECUSA pedido sem "user-agent", com 403 e sem explicar. As outras não se
+      // importam, então vai em todas.
+      headers: { authorization: `Bearer ${access_token}`, accept: 'application/json', 'user-agent': CHAMADOR },
       signal: AbortSignal.timeout(10_000),
     });
-    if (!perfil.ok) return null;
+    if (!perfil.ok) {
+      anotar(`o pedido do perfil respondeu ${perfil.status}`);
+      return null;
+    }
     const lido = lerPerfil(provedor, await perfil.json());
-    if (!lido) return null;
+    if (!lido) {
+      anotar('o perfil veio num formato que não dá para ler');
+      return null;
+    }
 
     // O GitHub só põe o e-mail no perfil quando a pessoa o deixou PÚBLICO, e a maioria não deixa. O
     // endereço de verdade — e o "este foi confirmado" — mora numa lista à parte.
     if (provedor === 'github') {
       const emails = await fetch(`${c.perfil}/emails`, {
-        headers: { authorization: `Bearer ${access_token}`, accept: `application/json` },
+        headers: { authorization: `Bearer ${access_token}`, accept: 'application/json', 'user-agent': CHAMADOR },
         signal: AbortSignal.timeout(10_000),
       });
       if (emails.ok) return { ...lido, ...(emailDoGithub(await emails.json()) ?? {}) };
     }
     return lido;
-  } catch {
+  } catch (e) {
     // Provedor fora do ar, rede caída, resposta que não é JSON: nada disso vira erro 500 na cara de
-    // quem só queria entrar. Vira "não deu, tente pela senha".
+    // quem só queria entrar. Vira "não deu, tente pela senha" — mas o motivo fica no registro.
+    anotar(e instanceof Error ? e.message : String(e));
     return null;
   }
 }

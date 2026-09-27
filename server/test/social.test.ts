@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ehOAuth, ehProvedor, emailDoGithub, lerPerfil, nomeDisponivel, resumo, sortear, steamIdDe } from '../src/social.js';
+import { ehOAuth, ehProvedor, emailDoGithub, lerPerfil, lerToken, nomeDisponivel, resumo, sortear, steamIdDe } from '../src/social.js';
 
 // Este arquivo não abre banco nem rede: são as regras puras do login social.
 
@@ -101,4 +101,29 @@ test('nome curto demais não vira nome de usuário inválido', () => {
   // "Jô" vira "J", que tem uma letra só: não serve, e a função tem que resolver sozinha.
   const nome = nomeDisponivel('Jô', () => false);
   assert.ok(nome.length >= 3, 'saiu "' + nome + '", que é curto demais');
+});
+
+// ESTE É O TESTE DO DEFEITO QUE CHEGOU EM PRODUÇÃO. O GitHub não responde JSON: ele devolve o token em
+// formato de formulário, a não ser que a gente peça JSON. A leitura estourava, o erro era engolido, e
+// quem tentava entrar só via "não deu para falar com o provedor" — sem rastro nenhum no servidor.
+test('o token é lido tanto em JSON quanto em formato de formulário', () => {
+  assert.equal(lerToken('application/json', '{"access_token":"abc123","token_type":"bearer"}'), 'abc123');
+  assert.equal(
+    lerToken('application/x-www-form-urlencoded; charset=utf-8', 'access_token=gho_abc123&scope=&token_type=bearer'),
+    'gho_abc123',
+    'é assim que o GitHub responde quando não se pede JSON',
+  );
+});
+
+test('o formato é reconhecido pelo conteúdo, e não só pelo cabeçalho', () => {
+  // Provedor que manda JSON com o cabeçalho errado (acontece) continua funcionando.
+  assert.equal(lerToken('text/plain', '{"access_token":"abc"}'), 'abc');
+});
+
+test('resposta sem token nenhum não vira token vazio', () => {
+  assert.equal(lerToken('application/json', '{"error":"bad_verification_code"}'), null);
+  assert.equal(lerToken('application/x-www-form-urlencoded', 'error=bad_verification_code'), null);
+  assert.equal(lerToken('application/json', 'isto não é json'), null);
+  assert.equal(lerToken('application/json', ''), null);
+  assert.equal(lerToken('application/x-www-form-urlencoded', 'access_token='), null, 'token vazio é o mesmo que não ter token');
 });

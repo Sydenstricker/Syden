@@ -96,7 +96,13 @@ export function registerSocialRoutes(app: FastifyInstance) {
         return reply.redirect(voltarComErro('expirado'));
       }
 
-      const perfil = ehOAuth(provedor) ? await buscarPerfil(provedor, code!) : await perfilDaSteamConferida(request.query);
+      // O motivo de ter dado errado vai para o registro do servidor. Do lado de quem tentou entrar a
+      // mensagem é sempre a mesma e sempre vaga, de propósito; do lado de dentro, precisa ser específica,
+      // senão não há como descobrir em qual dos passos parou.
+      const anotar = (motivo: string) => request.log.warn({ provedor }, `entrada social falhou: ${motivo}`);
+      const perfil = ehOAuth(provedor)
+        ? await buscarPerfil(provedor, code!, anotar)
+        : await perfilDaSteamConferida(request.query, anotar);
       if (!perfil) {
         db.consumirEstadoSocial(state);
         return reply.redirect(voltarComErro('provedor'));
@@ -144,9 +150,16 @@ export function registerSocialRoutes(app: FastifyInstance) {
  * qualquer conta. Por isso tudo é mandado de volta para a Steam com a pergunta 'isto saiu de você?',
  * e só a resposta dela vale.
  */
-async function perfilDaSteamConferida(query: Record<string, string | undefined>): Promise<PerfilSocial | null> {
+async function perfilDaSteamConferida(
+  query: Record<string, string | undefined>,
+  anotar: (motivo: string) => void,
+): Promise<PerfilSocial | null> {
   const steamId = await conferirComASteam(query);
-  return steamId ? perfilDaSteam(steamId) : null;
+  if (!steamId) {
+    anotar('a Steam não confirmou esta volta');
+    return null;
+  }
+  return perfilDaSteam(steamId);
 }
 
 /**
