@@ -302,6 +302,24 @@ for (const idioma of IDIOMAS) {
   //
   //    A tela de amigos, ao contrário, fica cheia sozinha: as pessoas da comunidade de demonstração
   //    aparecem como sugestões, com o motivo escrito ao lado de cada uma.
+  // 5. A CHAMADA (só se houver gente na sala).
+  //
+  //    Depende de e2e/sala-cheia.mjs estar rodando noutra janela: sem ele a sala está vazia e a
+  //    foto não diz nada, que era o problema da versão anterior. Quando há gente, a antessala
+  //    mostra os avatares e os nomes de quem está dentro.
+  console.log('  5. A chamada');
+  const salaDeVoz = page.locator('.channel-name').filter({ hasText: /Sala/ }).first();
+  if (await salaDeVoz.isVisible().catch(() => false)) {
+    await salaDeVoz.click();
+    await page.waitForTimeout(1500);
+    const naSala = await page.locator('.voice-lobby-avatars img, .voice-lobby-avatars .avatar').count().catch(() => 0);
+    if (naSala > 0) {
+      await foto('5-chamada', 1500);
+    } else {
+      console.log('    (a sala está vazia — rode e2e/sala-cheia.mjs noutra janela e refaça só esta)');
+    }
+  }
+
   console.log('  4. Os amigos');
   if (await abrirBalao(/Amigos|Friends|Amigos/)) {
     await foto('4-amigos', 1800);

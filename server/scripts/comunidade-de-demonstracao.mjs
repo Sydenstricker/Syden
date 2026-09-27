@@ -58,10 +58,22 @@ const CANAIS = [
   { nome: 'Sala 2', tipo: 'voice' },
 ];
 
-async function senhaImpossivel() {
-  // Sorteada e jogada fora: ninguém precisa entrar nestas contas, nem deve.
+/**
+ * A senha das contas de mentira.
+ *
+ * Elas PRECISAM de uma senha conhecida, e isso é uma mudança de ideia consciente: sem poder entrar
+ * com elas, não dá para pôr gente numa sala de voz — e a foto da chamada é a que mais importa para
+ * um aplicativo de voz.
+ *
+ * O risco é pequeno e vale medir: são contas sem poder nenhum, sem e-mail, que existem só na
+ * comunidade de demonstração. Quem tivesse a senha poderia escrever lá dentro, e nada além disso.
+ * A senha é sorteada e mostrada uma vez; rodar o script de novo troca todas.
+ */
+const SENHA = randomBytes(12).toString('base64url');
+
+async function guardarSenha(senha) {
   const sal = randomBytes(16);
-  const hash = await scrypt(randomBytes(32).toString('hex'), sal, 64);
+  const hash = await scrypt(senha, sal, 64);
   return `${sal.toString('hex')}:${hash.toString('hex')}`;
 }
 
@@ -106,9 +118,10 @@ for (const nome of GENTE) {
         `INSERT INTO users (username, password_hash, is_admin, is_owner, email, exige_confirmacao, email_verified_at)
          VALUES (?, ?, 0, 0, NULL, 0, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
       )
-      .run(nome, await senhaImpossivel());
+      .run(nome, await guardarSenha(SENHA));
     pessoa = { id: Number(criada.lastInsertRowid) };
   }
+  else db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(await guardarSenha(SENHA), pessoa.id);
   ids.set(nome, pessoa.id);
 
   const jaEsta = db
@@ -170,4 +183,10 @@ console.log('');
 console.log('Pronto. Agora tire as fotos apontando para esta comunidade:');
 console.log('  node e2e/capturas-da-loja.mjs');
 console.log('');
+console.log('Para pôr gente numa sala de voz antes da foto da chamada:');
+console.log('');
+console.log('  Usuários: ' + GENTE.join(', '));
+console.log('  Senha:    ' + SENHA);
+console.log('');
+console.log('Copie a senha: ela é sorteada e não aparece de novo.');
 console.log('Confira as imagens mesmo assim: nenhuma pode ter nome de pessoa real.');
