@@ -3766,10 +3766,46 @@ textarea {
   color: var(--text-muted);
 }
 
+.coelhos-lead strong {
+  color: var(--text);
+}
+
 .coelhos-grade {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+/* A confirmação da troca. Guarda o próprio espaço mesmo vazia, para o painel não pular de altura
+   quando ela aparece — um salto na tela chama mais atenção que o próprio aviso, pela razão errada. */
+.coelhos-confirmacao {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 34px;
+  margin: 10px 0 0;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+}
+
+.coelhos-confirmacao.visivel {
+  background: var(--bg-raised);
+  opacity: 1;
+}
+
+.coelhos-confirmacao svg {
+  flex: none;
+  color: var(--green);
+}
+
+.coelhos-confirmacao strong {
+  color: var(--text-strong);
 }
 
 .coelho-cartao {

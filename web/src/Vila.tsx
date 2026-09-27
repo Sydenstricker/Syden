@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { coelhoAtual, escolherCoelho, useCoelho } from './coelho';
+import { useCoelho } from './coelho';
 import { sounds } from './sounds';
 
 // A vila do Syden: uma praça vista de cima e de lado, como nos jogos de fazenda, desenhada inteira em
@@ -330,7 +330,7 @@ function Estatua({ c, r, big, onTrocar }: { c: number; r: number; big: boolean; 
   const d = iso(c + 0.72, r + 0.72);
   const e = iso(c - 0.72, r + 0.72);
   const h = 42;
-  const dica = big ? 'Trocar pelo OurBunny' : 'Trocar pelo BigChunkus';
+  const dica = 'Escolher o coelho do Syden';
 
   return (
     <g
@@ -587,6 +587,7 @@ export function Vila({
   pinos,
   destaque,
   onDestaque,
+  aoEscolherCoelho,
 }: {
   periodo: Periodo;
   onLuz: () => void;
@@ -594,6 +595,8 @@ export function Vila({
   /** O balão sob o mouse acende a casa correspondente. */
   destaque: string | null;
   onDestaque: (id: string | null) => void;
+  /** Clicar na estátua ABRE A ESCOLHA. Ver o comentário em trocarEstatua. */
+  aoEscolherCoelho: () => void;
 }) {
   const noite = periodo === 'noite';
   const [coelhos, setCoelhos] = useState<CoelhoNaVila[]>(() =>
@@ -656,10 +659,17 @@ export function Vila({
   /** Bem alimentados: passou de cinco cenouras, a turma engorda. */
   const gordos = cenouras >= CENOURAS_PARA_ENGORDAR;
 
-  /** Clicar na estátua troca o coelho do Syden — o mesmo que a aba dos coelhos escolhe. */
+  /**
+   * Clicar na estátua ABRE a aba dos coelhos, em vez de trocar na hora.
+   *
+   * Antes ela alternava direto, e o efeito passava despercebido: a escolha não muda só a estátua —
+   * muda o ícone do aplicativo e a tela de entrada. Quem clicava por curiosidade via o Syden inteiro
+   * mudar de cara sem entender o que tinha feito, nem como desfazer. Um clique que altera a aparência
+   * do app todo precisa mostrar as opções e dizer o que está em jogo.
+   */
   function trocarEstatua() {
     sounds.bunny();
-    escolherCoelho(coelhoAtual() === 'big' ? 'our' : 'big');
+    aoEscolherCoelho();
   }
 
   /** Quem engordou pode voltar à forma: zera a conta das cenouras. */

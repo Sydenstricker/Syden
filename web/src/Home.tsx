@@ -196,7 +196,14 @@ export function Home({
   return (
     <div className="home">
       <div className="home-cena">
-        <Vila periodo={periodo} onLuz={alternarLuz} pinos={pinos} destaque={destaque} onDestaque={setDestaque} />
+        <Vila
+          periodo={periodo}
+          onLuz={alternarLuz}
+          pinos={pinos}
+          destaque={destaque}
+          onDestaque={setDestaque}
+          aoEscolherCoelho={() => setCoelhosAbertos(true)}
+        />
         {coelhosAbertos && <PainelCoelhos aoFechar={() => setCoelhosAbertos(false)} />}
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label="Salas de voz">

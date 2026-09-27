@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Check } from 'lucide-react';
 import { COELHOS, type Coelho, escolherCoelho, useCoelho } from './coelho';
 
@@ -10,6 +11,25 @@ import { COELHOS, type Coelho, escolherCoelho, useCoelho } from './coelho';
 export function PainelCoelhos({ aoFechar }: { aoFechar: () => void }) {
   const escolhido = useCoelho();
 
+  // A confirmação existe porque a escolha muda coisas que NÃO ESTÃO À VISTA neste painel: o ícone do
+  // aplicativo, na barra de tarefas, e a tela de entrada. Sem ela a pessoa troca, fecha, e só descobre
+  // depois que o Syden mudou de cara — sem ligar uma coisa à outra.
+  const [confirmando, setConfirmando] = useState(false);
+  const primeiraVez = useRef(true);
+
+  useEffect(() => {
+    // Não confirma o que a pessoa não fez: ao abrir, já existe um coelho escolhido.
+    if (primeiraVez.current) {
+      primeiraVez.current = false;
+      return;
+    }
+    setConfirmando(true);
+    const relogio = setTimeout(() => setConfirmando(false), 6000);
+    return () => clearTimeout(relogio);
+  }, [escolhido]);
+
+  const nome = COELHOS.find((c) => c.id === escolhido)?.nome ?? '';
+
   return (
     <div className="vila-painel coelhos" role="dialog" aria-label="Escolher o coelho do Syden">
       <header>
@@ -18,7 +38,11 @@ export function PainelCoelhos({ aoFechar }: { aoFechar: () => void }) {
           ✕
         </button>
       </header>
-      <p className="coelhos-lead">Escolha quem representa o seu Syden: o ícone do app e a estátua da praça seguem a sua escolha.</p>
+      <p className="coelhos-lead">
+        Escolha quem representa o seu Syden. Muda em três lugares: o <strong>ícone do aplicativo</strong>, a{' '}
+        <strong>tela de entrada</strong> e a <strong>estátua da praça</strong>. Vale só neste computador — ninguém mais
+        vê a sua escolha.
+      </p>
 
       <div className="coelhos-grade">
         {COELHOS.map((coelho) => (
@@ -57,6 +81,16 @@ export function PainelCoelhos({ aoFechar }: { aoFechar: () => void }) {
           </button>
         ))}
       </div>
+
+      {/* `aria-live` faz o leitor de tela anunciar isto quando aparece, sem tirar o foco de onde está. */}
+      <p className={`coelhos-confirmacao${confirmando ? ' visivel' : ''}`} role="status" aria-live="polite">
+        {confirmando && (
+          <>
+            <Check size={14} aria-hidden="true" /> Pronto: o <strong>{nome}</strong> agora é o ícone do aplicativo e a
+            cara da tela de entrada. Para voltar, é só escolher o outro.
+          </>
+        )}
+      </p>
     </div>
   );
 }
