@@ -306,15 +306,14 @@ export interface ServidorDeJogo {
 /** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */
 export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia';
 
-/** Como se põe a mão num item: de graça, fazendo alguma coisa, ou ajudando a pagar o servidor. */
-export type ComoSeGanha = 'livre' | 'conquista' | 'contribuinte';
+/** Como se põe a mão num item. Nenhum dos dois jeitos é pagando — ver server/src/loja.ts. */
+export type ComoSeGanha = 'livre' | 'conquista';
 
 export interface ItemDaLoja {
   codigo: string;
   tipo: TipoDeItem;
   comoSeGanha: ComoSeGanha;
-  nivel?: 1 | 2 | 3 | 4;
-  /** Já é seu? Item livre é de todo mundo; os outros dependem do inventário. */
+  /** Já é seu? Item livre é de todo mundo; conquista depende de ter acontecido. */
   tenho: boolean;
 }
 

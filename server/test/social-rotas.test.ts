@@ -5,6 +5,7 @@ import { after, test } from 'node:test';
 // Não são chaves de verdade: nenhum teste daqui fala com o Google — o que se testa é o caminho de casa.
 process.env.GOOGLE_CLIENT_ID = 'teste-cliente';
 process.env.GOOGLE_CLIENT_SECRET = 'teste-segredo';
+process.env.STEAM_API_KEY = 'teste-steam';
 
 // A ORDEM DESTAS LINHAS IMPORTA, e errar nela não dá erro nenhum: dá um teste que passa escrevendo no
 // banco de desenvolvimento de verdade. O config.ts congela o caminho do banco no PRIMEIRO import de
@@ -18,21 +19,60 @@ const { resumo, sortear } = await import('../src/social.js');
 const db = await import('../src/db.js');
 
 /** Começa uma entrada como o navegador começaria, e devolve o segredo e o estado sorteado pelo servidor. */
-async function comecar() {
+async function comecar(provedor = 'google') {
   const segredo = sortear();
   const resposta = await app.inject({
     method: 'POST',
     url: '/api/auth/social/inicio',
-    payload: { provedor: 'google', desafio: resumo(segredo) },
+    payload: { provedor, desafio: resumo(segredo) },
   });
   assert.equal(resposta.statusCode, 200, resposta.body);
   const url = new URL(resposta.json().url);
-  return { segredo, estado: url.searchParams.get('state')!, url };
+  // No OAuth o state é um parâmetro do endereço. No OpenID da Steam ele não existe: vai pendurado
+  // dentro do 'openid.return_to'. Procurar no lugar errado dá null, e aí o teste testa outra coisa.
+  const estado = url.searchParams.get('state') ?? new URL(url.searchParams.get('openid.return_to')!).searchParams.get('state');
+  assert.ok(estado, 'não achei o state no endereço de entrada');
+  return { segredo, estado, url };
 }
 
 test('a tela de entrada fica sabendo quais provedores existem', async () => {
   const inicio = await app.inject({ method: 'GET', url: '/api/inicio' });
-  assert.deepEqual(inicio.json().social, ['google'], 'o Discord não tem chave neste teste');
+  assert.deepEqual(inicio.json().social, ['google', 'steam'], 'Discord e GitHub não têm chave neste teste');
+});
+
+// Um estado nasce amarrado ao provedor que o pediu. Sem isso, dava para começar pelo Google (que
+// confere de um jeito) e terminar pela Steam (que confere de outro), procurando a fresta entre os dois.
+test('estado de um provedor não vale no outro', async () => {
+  const { estado } = await comecar('google');
+  const resposta = await app.inject({ method: `GET`, url: `/api/auth/social/steam/volta?state=${estado}&openid.mode=id_res` });
+  assert.ok(resposta.headers.location?.includes('entrada=expirado'), resposta.headers.location);
+});
+
+// A Steam devolve o número da conta escrito na PRÓPRIA URL. Aceitar isso de cara seria aceitar um
+// crachá feito em casa: qualquer pessoa monta o endereço à mão dizendo ser a conta que quiser. Aqui a
+// volta vem sem assinatura nenhuma — não chega nem a ser perguntado à Steam, e não passa.
+test('volta de Steam sem assinatura não vira conta nenhuma', async () => {
+  const { estado } = await comecar('steam');
+  const forjado = new URLSearchParams({
+    state: estado,
+    'openid.mode': 'id_res',
+    'openid.claimed_id': 'https://steamcommunity.com/openid/id/76561198000000000',
+  });
+  const resposta = await app.inject({ method: `GET`, url: `/api/auth/social/steam/volta?${forjado}` });
+  assert.equal(resposta.statusCode, 302);
+  assert.ok(resposta.headers.location?.includes('entrada=provedor'), resposta.headers.location);
+  assert.ok(!resposta.headers.location?.includes('comprovante'), 'não pode sair comprovante nenhum daí');
+});
+
+test('o começo da Steam monta o OpenID, e não uma chamada de OAuth', async () => {
+  const { url } = await comecar('steam');
+  assert.equal(url.origin + url.pathname, 'https://steamcommunity.com/openid/login');
+  assert.equal(url.searchParams.get('openid.mode'), 'checkid_setup');
+  // O OpenID 2.0 não tem campo "state": o nosso vai pendurado no endereço de volta, que a Steam
+  // devolve intacto. É por isso que o state ainda chega como query lá na volta.
+  const volta = new URL(url.searchParams.get('openid.return_to')!);
+  assert.ok(volta.searchParams.get('state'), 'sem o state pendurado, a volta da Steam não teria como ser reconhecida');
+  assert.ok(volta.pathname.endsWith('/api/auth/social/steam/volta'));
 });
 
 test('o começo manda para o Google com tudo o que ele espera', async () => {

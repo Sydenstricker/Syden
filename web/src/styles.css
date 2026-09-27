@@ -7862,3 +7862,17 @@ textarea {
   height: 1px;
   background: var(--border);
 }
+
+.auth-social-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* O aviso da Steam (ela não informa e-mail) fica colado no botão dela, e não num rodapé genérico:
+   é a diferença entre "você foi avisado" e "estava escrito em algum lugar". */
+.auth-social-aviso {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-muted);
+}

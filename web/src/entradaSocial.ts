@@ -12,13 +12,26 @@
 import { api } from './api';
 import type { User } from './types';
 
-export type Provedor = 'google' | 'discord';
+export type Provedor = 'google' | 'discord' | 'github' | 'steam';
 
 const CHAVE = 'syden.entrada-social';
 
 export const NOMES: Record<Provedor, string> = {
   google: 'Google',
   discord: 'Discord',
+  github: 'GitHub',
+  steam: 'Steam',
+};
+
+/**
+ * O que dizer embaixo do botão, quando há algo a dizer.
+ *
+ * A Steam é a única com aviso, e ele é necessário: ela NÃO entrega e-mail nenhum (o protocolo dela nem
+ * tem esse campo). Sem e-mail não há recuperação de senha — e a pessoa precisa saber disso antes de
+ * escolher esse caminho, não no dia em que perder o acesso.
+ */
+export const AVISOS: Partial<Record<Provedor, string>> = {
+  steam: 'A Steam não informa e-mail. Cadastre um depois, nas configurações, para conseguir recuperar o acesso.',
 };
 
 /** O resumo (sha256, base64url) que o servidor vai guardar no lugar do segredo. */

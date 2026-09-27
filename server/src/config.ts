@@ -102,6 +102,17 @@ export const config = {
       clientId: process.env.DISCORD_CLIENT_ID ?? '',
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',
     },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID ?? '',
+      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',
+    },
+    /**
+     * A Steam não tem "cliente" nem "segredo": o login dela é OpenID 2.0, que não precisa de nenhum dos
+     * dois. Esta chave serve só para buscar o NOME de quem entrou. Sem ela a entrada funcionaria, mas a
+     * pessoa nasceria chamada "jogador" — então ela é o que decide se o botão aparece.
+     * Sai de graça, em segundos, em steamcommunity.com/dev/apikey.
+     */
+    steamApiKey: process.env.STEAM_API_KEY ?? '',
     /**
      * O endereço PÚBLICO desta API. O provedor devolve o navegador para cá, e o endereço tem que
      * bater letra por letra com o que foi cadastrado lá — por isso é uma variável, e não um palpite

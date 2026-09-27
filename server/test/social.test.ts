@@ -1,15 +1,55 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ehProvedor, lerPerfil, nomeDisponivel, resumo, sortear } from '../src/social.js';
+import { ehOAuth, ehProvedor, emailDoGithub, lerPerfil, nomeDisponivel, resumo, sortear, steamIdDe } from '../src/social.js';
 
 // Este arquivo não abre banco nem rede: são as regras puras do login social.
 
-test('só google e discord são provedores', () => {
-  assert.ok(ehProvedor('google'));
-  assert.ok(ehProvedor('discord'));
-  assert.equal(ehProvedor('steam'), false, 'Steam usa OpenID 2.0, que é outro protocolo');
-  assert.equal(ehProvedor('../../etc/passwd'), false);
+test('são quatro provedores, e só eles', () => {
+  for (const bom of ['google', 'discord', 'github', 'steam']) assert.ok(ehProvedor(bom), bom);
+  assert.equal(ehProvedor('facebook'), false);
+  assert.equal(ehProvedor('../../etc/passwd'), false, 'o nome vira caminho de URL: não pode aceitar qualquer texto');
   assert.equal(ehProvedor(null), false);
+});
+
+// A Steam segue outro caminho no código inteiro; confundir os dois daria uma chamada de OAuth para
+// quem não fala OAuth, e um erro sem explicação na cara de quem só queria entrar.
+test('a Steam não é OAuth, e os outros três são', () => {
+  assert.equal(ehOAuth('steam'), false);
+  for (const oauth of ['google', 'discord', 'github'] as const) assert.ok(ehOAuth(oauth), oauth);
+});
+
+test('perfil do GitHub vira o formato de casa, com o id virando texto', () => {
+  const perfil = lerPerfil('github', { id: 98765, login: 'sydenstricker', email: 'a@b.com' });
+  assert.equal(perfil?.sub, '98765', 'o GitHub manda número; guardar ora número ora texto faria duas contas');
+  assert.equal(perfil?.apelido, 'sydenstricker');
+  assert.equal(perfil?.emailVerificado, false, "o e-mail do perfil do GitHub não vem com selo; quem confirma é a lista");
+});
+
+test('do GitHub só serve o e-mail que é principal E confirmado', () => {
+  assert.deepEqual(
+    emailDoGithub([{ email: 'antigo@b.com', primary: false, verified: true }, { email: 'Novo@B.com', primary: true, verified: true }]),
+    { email: 'novo@b.com', emailVerificado: true },
+  );
+  assert.equal(emailDoGithub([{ email: 'a@b.com', primary: true, verified: false }]), null, 'não confirmado não junta contas');
+  assert.equal(emailDoGithub([]), null);
+  assert.equal(emailDoGithub('nada disso'), null);
+});
+
+test('perfil da Steam nunca traz e-mail, porque o protocolo dela não tem esse campo', () => {
+  const perfil = lerPerfil('steam', { steamid: '76561198000000000', personaname: 'Fulano' });
+  assert.equal(perfil?.sub, '76561198000000000');
+  assert.equal(perfil?.apelido, 'Fulano');
+  assert.equal(perfil?.email, null);
+  assert.equal(perfil?.emailVerificado, false);
+});
+
+// O número da conta chega escrito na URL. Aceitar qualquer formato seria aceitar crachá feito em casa.
+test('só um endereço de Steam de verdade vira número de conta', () => {
+  assert.equal(steamIdDe('https://steamcommunity.com/openid/id/76561198000000000'), '76561198000000000');
+  assert.equal(steamIdDe('https://steamcommunity.com.br/openid/id/76561198000000000'), null, 'domínio parecido não serve');
+  assert.equal(steamIdDe('https://steamcommunity.com/openid/id/123'), null, 'o número tem 17 dígitos');
+  assert.equal(steamIdDe('https://steamcommunity.com/openid/id/7656119800000000x'), null);
+  assert.equal(steamIdDe(undefined), null);
 });
 
 test('o resumo do segredo é estável e o segredo é diferente a cada vez', () => {

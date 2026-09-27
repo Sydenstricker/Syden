@@ -69,25 +69,20 @@ export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | unde
 }
 
 /**
- * Os níveis de contribuição.
+ * Os valores de contribuição.
  *
- * **Nada aqui compra vantagem.** São cor de nome, fundo e moldura — enfeite. O Syden inteiro funciona
- * sem pagar nada, e é para continuar assim: quem contribui está ajudando a pagar o servidor, e o
- * enfeite é o obrigado. É por isso que os valores são baixos e não existe "versão pro".
+ * **Não compram nada.** Quem contribui já tinha acesso à loja inteira antes de contribuir, e continua
+ * tendo depois — é doação para ajudar a pagar o servidor, e mais nada. Os valores existem só para
+ * quem quiser contribuir não precisar escolher um número do nada.
  */
-export const NIVEIS: { nivel: 1 | 2 | 3 | 4; nome: string; preco: string }[] = [
-  { nivel: 1, nome: 'Apoio', preco: 'R$ 1,99' },
-  { nivel: 2, nome: 'Apoio prata', preco: 'R$ 4,99' },
-  { nivel: 3, nome: 'Apoio ouro', preco: 'R$ 9,99' },
-  { nivel: 4, nome: 'Mecenas', preco: 'R$ 19,99' },
+export const VALORES: { nome: string; preco: string }[] = [
+  { nome: 'Um cafezinho', preco: 'R$ 1,99' },
+  { nome: 'Um lanche', preco: 'R$ 4,99' },
+  { nome: 'Uma rodada', preco: 'R$ 9,99' },
+  { nome: 'Segurando a conta', preco: 'R$ 19,99' },
 ];
-
-export function nomeDoNivel(nivel: number | undefined): string {
-  return NIVEIS.find((n) => n.nivel === nivel)?.nome ?? 'Contribuinte';
-}
 
 export const COMO_SE_GANHA: Record<ComoSeGanha, string> = {
   livre: 'De graça, para qualquer pessoa',
   conquista: 'Ganha fazendo alguma coisa no Syden',
-  contribuinte: 'De quem ajuda a pagar o servidor',
 };

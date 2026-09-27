@@ -14,12 +14,16 @@ import { config } from './config.js';
 import * as db from './db.js';
 import {
   buscarPerfil,
+  conferirComASteam,
+  ehOAuth,
   ehProvedor,
   enderecoDeEntrada,
   ligado,
   nomeDisponivel,
+  perfilDaSteam,
   resumo,
   sortear,
+  type PerfilSocial,
   type Provedor,
 } from './social.js';
 
@@ -67,7 +71,11 @@ export function registerSocialRoutes(app: FastifyInstance) {
    * E ela NÃO ENTREGA O TOKEN. Entregar aqui é o furo do login CSRF: o link desta rota pode ser
    * plantado. O que sai daqui é um comprovante que só serve para quem tem o segredo do começo.
    */
-  app.get<{ Params: { provedor: string }; Querystring: { code?: string; state?: string; error?: string } }>(
+  app.get<{
+    Params: { provedor: string };
+    // A Steam devolve uma penca de campos "openid.*"; os outros três são do caminho OAuth.
+    Querystring: Record<string, string | undefined> & { code?: string; state?: string; error?: string };
+  }>(
     '/api/auth/social/:provedor/volta',
     async (request, reply) => {
       const provedor = request.params.provedor;
@@ -77,7 +85,9 @@ export function registerSocialRoutes(app: FastifyInstance) {
       if (request.query.error) return reply.redirect(voltarComErro('cancelado'));
 
       const { code, state } = request.query;
-      if (!code || !state) return reply.redirect(voltarComErro('incompleto'));
+      // No caminho OAuth faltar o "code" já é o fim. Na Steam não existe "code" nenhum: o que precisa
+      // estar lá são os campos assinados, e quem confere isso é a própria Steam, logo abaixo.
+      if (!state || (ehOAuth(provedor) && !code)) return reply.redirect(voltarComErro('incompleto'));
 
       const guardado = db.acharEstadoSocial(state);
       if (!guardado || guardado.provedor !== provedor || guardado.entrega || venceu(guardado.createdAt)) {
@@ -86,7 +96,7 @@ export function registerSocialRoutes(app: FastifyInstance) {
         return reply.redirect(voltarComErro('expirado'));
       }
 
-      const perfil = await buscarPerfil(provedor, code);
+      const perfil = ehOAuth(provedor) ? await buscarPerfil(provedor, code!) : await perfilDaSteamConferida(request.query);
       if (!perfil) {
         db.consumirEstadoSocial(state);
         return reply.redirect(voltarComErro('provedor'));
@@ -124,6 +134,19 @@ export function registerSocialRoutes(app: FastifyInstance) {
 
     return { token: await signSession(user, db.sessionVersion(user.id)), user };
   });
+}
+
+/**
+ * A volta da Steam, conferida com ela antes de valer qualquer coisa.
+ *
+ * A Steam devolve o navegador com o número da conta escrito na própria URL. Aceitar isso de cara seria
+ * o mesmo que aceitar um crachá feito em casa: qualquer pessoa monta o endereço à mão dizendo ser
+ * qualquer conta. Por isso tudo é mandado de volta para a Steam com a pergunta 'isto saiu de você?',
+ * e só a resposta dela vale.
+ */
+async function perfilDaSteamConferida(query: Record<string, string | undefined>): Promise<PerfilSocial | null> {
+  const steamId = await conferirComASteam(query);
+  return steamId ? perfilDaSteam(steamId) : null;
 }
 
 /**

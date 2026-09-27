@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
-import { acharVisual, COMO_SE_GANHA, NIVEIS, nomeDoNivel } from './loja';
+import { acharVisual, COMO_SE_GANHA, VALORES } from './loja';
 import { MobileBackButton } from './MobileBackButton';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
 
@@ -69,11 +69,6 @@ function Cartao({
       <div className="loja-cartao-texto">
         <strong>{visual.nome}</strong>
         <small>{visual.descricao}</small>
-        {item.comoSeGanha === 'contribuinte' && (
-          <span className="loja-etiqueta contribuinte">
-            <Heart size={12} aria-hidden="true" /> {nomeDoNivel(item.nivel)}
-          </span>
-        )}
         {item.comoSeGanha === 'conquista' && (
           <span className="loja-etiqueta conquista">
             <Gift size={12} aria-hidden="true" /> {COMO_SE_GANHA.conquista}
@@ -105,22 +100,22 @@ function Contribuir() {
         <Heart size={18} aria-hidden="true" /> Ajudar a pagar o servidor
       </h3>
       <p>
-        O Syden é de graça e vai continuar sendo — inteiro, sem travar nada, sem "versão pro". Isto aqui não é
-        assinatura: é uma forma de dividir a conta do servidor com quem usa e quiser ajudar. Nada do que está abaixo
-        muda o que você pode fazer no Syden. São enfeites.
+        O Syden é de graça e vai continuar sendo — inteiro, sem travar nada, sem "versão pro". <strong>Contribuir não
+        desbloqueia nada</strong>, e isso é de propósito: tudo o que está nesta loja já é seu, antes e depois. O que a
+        contribuição faz é ajudar a pagar o servidor onde a sua voz e os seus arquivos moram.
       </p>
       <ul className="loja-niveis">
-        {NIVEIS.map((nivel) => (
-          <li key={nivel.nivel}>
-            <strong>{nivel.preco}</strong>
-            <span>{nivel.nome}</span>
+        {VALORES.map((valor) => (
+          <li key={valor.preco}>
+            <strong>{valor.preco}</strong>
+            <span>{valor.nome}</span>
             <small>por mês</small>
           </li>
         ))}
       </ul>
       <p className="settings-hint">
-        Ainda não dá para contribuir: falta ligar o Syden a um meio de pagamento, e isso tem burocracia (nota, imposto,
-        regra das lojas de aplicativo). Os enfeites já estão aqui para você ver o que vai existir.
+        Ainda não dá para contribuir por aqui: falta ligar o Syden a um meio de pagamento. Quando der, vai ser por fora
+        do app, e continuará não mudando nada do que você pode fazer aqui dentro.
       </p>
     </section>
   );

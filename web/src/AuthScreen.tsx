@@ -1,7 +1,7 @@
 import { Download, MonitorDown, Ticket } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
-import { entrarCom, NOMES, type Provedor } from './entradaSocial';
+import { AVISOS, entrarCom, NOMES, type Provedor } from './entradaSocial';
 import { Turnstile } from './Turnstile';
 import { api } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
@@ -97,8 +97,8 @@ export function AuthScreen({
               <>
                 <div className="auth-social">
                   {provedores.map((provedor) => (
+                    <span key={provedor} className="auth-social-item">
                     <button
-                      key={provedor}
                       type="button"
                       className="btn-secondary auth-social-botao"
                       disabled={indoPara !== null}
@@ -115,6 +115,8 @@ export function AuthScreen({
                     >
                       {indoPara === provedor ? t('Abrindo…') : `Entrar com ${NOMES[provedor]}`}
                     </button>
+                    {AVISOS[provedor] && <small className="auth-social-aviso">{AVISOS[provedor]}</small>}
+                    </span>
                   ))}
                 </div>
                 <div className="auth-ou">

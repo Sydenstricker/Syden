@@ -12,10 +12,22 @@ test('não existe código repetido no catálogo', () => {
   }
 });
 
-test('todo item de contribuinte tem nível, e nenhum outro tem', () => {
+// A LOJA NÃO TEM ITEM DE PAGANTE, e isto é o que garante que ninguém acrescente um por distração.
+// Quem contribui já tinha acesso a tudo antes de contribuir: a contribuição é doação, não compra.
+// Só insígnia pode ser exclusiva, porque ela significa uma história, e não um pagamento.
+test('a loja inteira é grátis; só insígnia depende de ter acontecido alguma coisa', () => {
   for (const item of CATALOGO) {
-    if (item.comoSeGanha === 'contribuinte') assert.ok(item.nivel, item.codigo + ' precisa de nível');
-    else assert.equal(item.nivel, undefined, item.codigo + ' não devia ter nível');
+    assert.ok(
+      item.comoSeGanha === 'livre' || item.tipo === 'insignia',
+      item.codigo + ' não é livre e não é insígnia — virou item de pagante sem querer?',
+    );
+  }
+});
+
+test('todo cosmético do catálogo se veste sem ter nada no inventário', () => {
+  for (const item of CATALOGO) {
+    if (item.tipo === 'insignia') continue;
+    assert.ok(podeVestir(item.codigo, item.tipo, []), item.codigo + ' tinha que ser de graça');
   }
 });
 
@@ -25,11 +37,6 @@ test('cor e fundo grátis se vestem sem ter nada no inventário', () => {
   assert.ok(podeVestir(null, 'cor', []), 'tirar a cor é sempre permitido');
 });
 
-// Este é o teste que importa: a loja não pode virar um jeito de conseguir de graça o que é dos outros.
-test('item de contribuinte só se veste tendo no inventário', () => {
-  assert.equal(podeVestir('prisma', 'cor', []), false);
-  assert.ok(podeVestir('prisma', 'cor', ['prisma']));
-});
 
 test('insígnia de conquista não se veste só porque se pediu', () => {
   assert.equal(podeVestir('primeiros-25', 'insignia', []), false);

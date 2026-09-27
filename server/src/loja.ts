@@ -1,10 +1,16 @@
 /**
- * A loja de cosméticos do Syden. **Tudo o que está nela é de graça.**
+ * A loja de cosméticos do Syden. **Tudo o que está nela é de graça, para todo mundo.**
  *
  * Isso não é um detalhe de implementação, é o modelo do produto: a filosofia é a do WinRAR — o programa
- * funciona inteiro, sem cobrar, sem travar, sem "versão pro". Quem quiser ajudar a pagar o servidor
- * contribui porque quis, e ganha enfeites exclusivos por isso. Nada do que se paga aqui compra vantagem:
- * é cor de nome e fundo de perfil.
+ * funciona inteiro, sem cobrar, sem travar, sem "versão pro". E não existe cosmético de pagante: quem
+ * contribui **já tinha acesso a tudo** antes de contribuir, e continua tendo depois. A contribuição é
+ * doação para ajudar a pagar o servidor, e não compra de enfeite.
+ *
+ * Isso é decisão do dono do projeto, tomada de propósito, e vale a pena registrar por quê: no instante
+ * em que um enfeite passa a ser exclusivo de quem paga, o dinheiro deixa de ser doação e vira venda de
+ * bem digital — o que muda o tratamento fiscal, aciona a regra de compra dentro do app das lojas de
+ * celular, e transforma a loja num catálogo de coisas que a maioria não pode ter. Nada disso é o que se
+ * quer aqui.
  *
  * **O SERVIDOR SÓ CONHECE CÓDIGOS E COMO SE GANHA CADA UM.** A arte, o nome bonito e a descrição moram
  * no app (web/src/loja.ts), pela mesma razão das insígnias e das cores de nome: dá para trocar um
@@ -15,30 +21,23 @@
 export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia';
 
 /**
- * Como se põe a mão num item.
+ * Como se põe a mão num item. São só dois jeitos, e nenhum deles é pagando.
  *
- * - `livre`: qualquer pessoa usa, sem pedir nada a ninguém. É a maior parte da loja.
+ * - `livre`: qualquer pessoa usa, sem pedir nada a ninguém. É a loja inteira.
  * - `conquista`: veio de ter feito alguma coisa (estar entre os 25 primeiros, ter uma ideia acolhida).
- *    Não se escolhe: aparece no inventário quando acontece.
- * - `contribuinte`: reservado a quem ajuda a pagar o servidor, por nível. **Ainda não dá para obter** —
- *    aparece na loja marcado, mostrando o que existe, e é honesto sobre isso.
+ *    Não se escolhe e não se compra: aparece no inventário quando acontece. É a única coisa que alguém
+ *    pode ter e outro não — e é assim de propósito, porque significa uma história, não um pagamento.
  */
-export type ComoSeGanha = 'livre' | 'conquista' | 'contribuinte';
+export type ComoSeGanha = 'livre' | 'conquista';
 
 export interface ItemDaLoja {
   codigo: string;
   tipo: TipoDeItem;
   comoSeGanha: ComoSeGanha;
-  /** Só para os de contribuinte: 1 é o nível mais barato, 4 o mais alto. */
-  nivel?: 1 | 2 | 3 | 4;
 }
 
 function livres(tipo: TipoDeItem, codigos: string[]): ItemDaLoja[] {
   return codigos.map((codigo) => ({ codigo, tipo, comoSeGanha: 'livre' as const }));
-}
-
-function deContribuinte(tipo: TipoDeItem, pares: [string, 1 | 2 | 3 | 4][]): ItemDaLoja[] {
-  return pares.map(([codigo, nivel]) => ({ codigo, tipo, comoSeGanha: 'contribuinte' as const, nivel }));
 }
 
 export const CATALOGO: ItemDaLoja[] = [
@@ -48,25 +47,11 @@ export const CATALOGO: ItemDaLoja[] = [
   ...livres('fundo', ['nenhum', 'vila', 'poente', 'floresta', 'aurora', 'brasa', 'oceano', 'estrelas']),
   ...livres('moldura', ['nenhuma', 'prata', 'bronze', 'folha', 'mar', 'brasa-moldura']),
 
-  // Exclusivos de quem contribui. Existem no catálogo desde já, marcados, para a loja poder mostrar o
-  // que se ganha antes de a contribuição existir — e para ninguém achar que apareceram do nada depois.
-  ...deContribuinte('cor', [
-    ['cobre', 1],
-    ['jade', 2],
-    ['ametista', 3],
-    ['prisma', 4],
-  ]),
-  ...deContribuinte('fundo', [
-    ['nebulosa', 2],
-    ['vitral', 3],
-    ['cosmos', 4],
-  ]),
-  ...deContribuinte('moldura', [
-    ['ouro-moldura', 1],
-    ['esmeralda-moldura', 2],
-    ['rubi', 3],
-    ['prisma-moldura', 4],
-  ]),
+  // Os mais chamativos. Chegaram junto com a loja e são livres como todo o resto: a graça deles é serem
+  // bonitos, não serem difíceis.
+  ...livres('cor', ['cobre', 'jade', 'ametista', 'prisma']),
+  ...livres('fundo', ['nebulosa', 'vitral', 'cosmos']),
+  ...livres('moldura', ['ouro-moldura', 'esmeralda-moldura', 'rubi', 'prisma-moldura']),
 
   { codigo: 'primeiros-25', tipo: 'insignia', comoSeGanha: 'conquista' },
   { codigo: 'ideia-acolhida', tipo: 'insignia', comoSeGanha: 'conquista' },
@@ -93,11 +78,3 @@ export function podeVestir(codigo: string | null, tipo: TipoDeItem, tem: readonl
   if (!item || item.tipo !== tipo) return false;
   return item.comoSeGanha === 'livre' || tem.includes(codigo);
 }
-
-/** Os níveis de contribuição, como aparecem na loja. Os valores em reais moram no app. */
-export const NIVEIS: { nivel: 1 | 2 | 3 | 4; nome: string }[] = [
-  { nivel: 1, nome: 'Apoio' },
-  { nivel: 2, nome: 'Apoio prata' },
-  { nivel: 3, nome: 'Apoio ouro' },
-  { nivel: 4, nome: 'Mecenas' },
-];
