@@ -7876,3 +7876,15 @@ textarea {
   line-height: 1.35;
   color: var(--text-muted);
 }
+
+/* O logo e o texto no mesmo eixo, e o logo sem encolher quando o nome é comprido. */
+.auth-social-botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.auth-social-botao svg {
+  flex: none;
+}

@@ -2,6 +2,7 @@ import { Download, MonitorDown, Ticket } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
 import { AVISOS, entrarCom, NOMES, type Provedor } from './entradaSocial';
+import { MarcaSocial } from './MarcasSociais';
 import { Turnstile } from './Turnstile';
 import { api } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
@@ -113,6 +114,7 @@ export function AuthScreen({
                         });
                       }}
                     >
+                      <MarcaSocial provedor={provedor} />
                       {indoPara === provedor ? t('Abrindo…') : `Entrar com ${NOMES[provedor]}`}
                     </button>
                     {AVISOS[provedor] && <small className="auth-social-aviso">{AVISOS[provedor]}</small>}
