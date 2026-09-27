@@ -46,10 +46,16 @@ export interface Dados {
   pageviews: number;
   /** Visitas: chegadas ao site vindas de fora. Menor que pageviews, e é o número de "quanta gente". */
   visitas: number;
-  /** Tempo de carregamento em milissegundos. A mediana é a experiência típica... */
-  medianaMs: number | null;
-  /** ...e o P75 é a experiência de quem está na pior quarta parte, que é quem desiste. */
-  p75Ms: number | null;
+  /**
+   * LCP em milissegundos: o instante em que o MAIOR elemento da tela termina de desenhar. É a medida
+   * que mais se parece com "a página está pronta", e é a que o Google usa para julgar um site.
+   * A mediana é a experiência típica...
+   */
+  lcpMedianaMs: number | null;
+  /** ...e o P75 é a da pior quarta parte, que é quem desiste. A média esconderia justamente essa. */
+  lcpP75Ms: number | null;
+  /** TTFB: quanto o servidor levou para começar a responder. Separa "servidor lento" de "página pesada". */
+  ttfbMedianaMs: number | null;
   /** Um ponto por dia, do mais antigo para o mais recente. */
   porDia: { dia: string; visitas: number; pageviews: number }[];
 }
@@ -73,13 +79,17 @@ let cache: { at: number; data: Audiencia | null } | null = null;
 /**
  * A consulta.
  *
- * AINDA NÃO PROVADA contra a API de verdade — falta o token. Os nomes dos campos abaixo são a melhor
- * leitura da documentação, e leitura de documentação erra. Antes de confiar nesta tela, rode
- * `node server/scripts/audiencia.mjs`: ele pergunta o esquema à própria Cloudflare e diz quais campos
- * existem com que nome. Enquanto isso não for feito, um nome errado aqui cai no estado 'falhou', que
- * aparece na tela com o motivo escrito — e não em silêncio.
+ * PROVADA contra a API de verdade, campo por campo, por introspecção do esquema. Vale registrar o que
+ * a primeira tentativa errou, porque nada disso está óbvio na documentação:
  *
- * Duas consultas no mesmo pedido: o total da janela e a série por dia. Uma viagem só à rede.
+ *   - `quantiles` NÃO existe em rumPageloadEventsAdaptiveGroups. Esse conjunto só tem `count`,
+ *     `sum { visits }`, `avg { sampleInterval }` e as dimensões. Nenhum tempo.
+ *   - Tempo mora em rumWebVitalsEventsAdaptiveGroups, que é um conjunto SEPARADO — daí a terceira
+ *     consulta. Por isso as duas viram três, e não por capricho.
+ *   - Não existe "page load time" na API, apesar de o painel da Cloudflare mostrar um. O que existe
+ *     são as métricas do Core Web Vitals, e a que responde "quando a página fica pronta" é a LCP.
+ *
+ * Três consultas num pedido só: o total da janela, a série por dia e a velocidade. Uma viagem à rede.
  */
 const CONSULTA = `
   query Audiencia($conta: string!, $site: string!, $desde: Time!, $ate: Time!) {
@@ -91,7 +101,6 @@ const CONSULTA = `
         ) {
           count
           sum { visits }
-          quantiles { pageLoadTimeP50 pageLoadTimeP75 }
         }
         porDia: rumPageloadEventsAdaptiveGroups(
           filter: { siteTag: $site, datetime_geq: $desde, datetime_leq: $ate }
@@ -102,6 +111,13 @@ const CONSULTA = `
           sum { visits }
           dimensions { date }
         }
+        velocidade: rumWebVitalsEventsAdaptiveGroups(
+          filter: { siteTag: $site, datetime_geq: $desde, datetime_leq: $ate }
+          limit: 1
+        ) {
+          count
+          quantiles { largestContentfulPaintP50 largestContentfulPaintP75 timeToFirstByteP50 }
+        }
       }
     }
   }
@@ -111,7 +127,11 @@ const CONSULTA = `
 interface Grupo {
   count?: number;
   sum?: { visits?: number };
-  quantiles?: { pageLoadTimeP50?: number; pageLoadTimeP75?: number };
+  quantiles?: {
+    largestContentfulPaintP50?: number;
+    largestContentfulPaintP75?: number;
+    timeToFirstByteP50?: number;
+  };
   dimensions?: { date?: string };
 }
 
@@ -123,10 +143,13 @@ const talvez = (n: unknown): number | null => (typeof n === 'number' && Number.i
  * alcançar sem inventar um servidor da Cloudflare.
  */
 export function lerResposta(dados: unknown): Dados | null {
-  const conta = (dados as { viewer?: { accounts?: { total?: Grupo[]; porDia?: Grupo[] }[] } })?.viewer?.accounts?.[0];
+  const conta = (
+    dados as { viewer?: { accounts?: { total?: Grupo[]; porDia?: Grupo[]; velocidade?: Grupo[] }[] } }
+  )?.viewer?.accounts?.[0];
   if (!conta) return null;
 
   const total = conta.total?.[0];
+  const velocidade = conta.velocidade?.[0]?.quantiles;
   const porDia = (conta.porDia ?? [])
     .filter((g) => typeof g.dimensions?.date === 'string')
     .map((g) => ({ dia: g.dimensions!.date!, visitas: inteiro(g.sum?.visits), pageviews: inteiro(g.count) }));
@@ -141,8 +164,9 @@ export function lerResposta(dados: unknown): Dados | null {
   return {
     pageviews,
     visitas,
-    medianaMs: talvez(total?.quantiles?.pageLoadTimeP50),
-    p75Ms: talvez(total?.quantiles?.pageLoadTimeP75),
+    lcpMedianaMs: talvez(velocidade?.largestContentfulPaintP50),
+    lcpP75Ms: talvez(velocidade?.largestContentfulPaintP75),
+    ttfbMedianaMs: talvez(velocidade?.timeToFirstByteP50),
     porDia,
   };
 }
@@ -253,7 +277,14 @@ export async function audiencia(): Promise<Audiencia | null> {
     const dados = lerResposta(corpo?.data);
     // Consulta boa e nenhuma visita é um site parado, não um defeito: mostra zeros de verdade em vez
     // de alarme falso.
-    const vazio: Dados = { pageviews: 0, visitas: 0, medianaMs: null, p75Ms: null, porDia: [] };
+    const vazio: Dados = {
+      pageviews: 0,
+      visitas: 0,
+      lcpMedianaMs: null,
+      lcpP75Ms: null,
+      ttfbMedianaMs: null,
+      porDia: [],
+    };
     return guardar({ situacao: 'ok', aviso: avisoDaChave(chave?.expiraEm, agora), ...(dados ?? vazio) });
   } catch (erro) {
     return await falhou(erro instanceof Error ? erro.message : 'Não deu para falar com a Cloudflare.');

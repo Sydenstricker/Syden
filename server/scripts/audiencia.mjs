@@ -120,16 +120,38 @@ const contas = CONTA ? [{ id: CONTA, name: '(a do .env)' }] : await rest('/accou
 for (const conta of contas) {
   console.log(`   conta: ${conta.name}`);
   console.log(`   CLOUDFLARE_ACCOUNT_ID=${conta.id}`);
+  // O identificador do site SAI DOS PRÓPRIOS DADOS, e não da rota /rum/site_info/list — essa exige
+  // permissão de administrar o Web Analytics, que este token de propósito não tem (ele só lê números).
+  //
+  // E não adianta tentar adivinhar: o `token` que a Cloudflare injeta na página NÃO é o site_tag.
+  // São dois valores de 32 caracteres, parecidos e diferentes. Supor que fossem o mesmo produziria o
+  // pior defeito possível aqui — consulta válida, sem erro nenhum, devolvendo zero visita para sempre.
+  //
+  // O jeito certo é perguntar sem filtrar e deixar a Cloudflare dizer qual é.
+  const DESCOBRIR = `
+    query Sites($conta: string!, $desde: Time!, $ate: Time!) {
+      viewer {
+        accounts(filter: { accountTag: $conta }) {
+          rumPageloadEventsAdaptiveGroups(filter: { datetime_geq: $desde, datetime_leq: $ate }, limit: 20) {
+            count
+            dimensions { siteTag requestHost }
+          }
+        }
+      }
+    }
+  `;
+  const ate = new Date();
+  const desde = new Date(ate.getTime() - 7 * 24 * 60 * 60_000);
   try {
-    const sites = await rest(`/accounts/${conta.id}/rum/site_info/list`);
-    if (!sites.length) console.log('     (nenhum site com Web Analytics nesta conta)');
-    for (const site of sites) {
-      console.log(`     site: ${site.host ?? site.ruleset?.zone_name ?? '(sem host)'}`);
-      console.log(`     CLOUDFLARE_SITE_TAG=${site.site_tag}`);
+    const dados = await graphql(DESCOBRIR, { conta: conta.id, desde: desde.toISOString(), ate: ate.toISOString() });
+    const linhas = dados?.viewer?.accounts?.[0]?.rumPageloadEventsAdaptiveGroups ?? [];
+    if (!linhas.length) console.log('     (nenhuma visita nos últimos 7 dias — não dá para descobrir o site assim)');
+    for (const linha of linhas) {
+      console.log(`     site: ${linha.dimensions?.requestHost} (${linha.count} páginas abertas em 7 dias)`);
+      console.log(`     CLOUDFLARE_SITE_TAG=${linha.dimensions?.siteTag}`);
     }
   } catch (erro) {
-    console.log(`     não deu para listar os sites: ${erro.message}`);
-    console.log('     (falta a permissão "Account Analytics: Read" no token?)');
+    console.log(`     não deu para descobrir o site: ${erro.message}`);
   }
 }
 

@@ -3187,6 +3187,27 @@ textarea {
   font-size: 12px;
 }
 
+/* O veredito ao lado do número. A cor reforça, mas quem carrega o sentido é a palavra escrita. */
+.audiencia-veredito {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.audiencia-veredito.bom {
+  color: var(--green);
+}
+
+.audiencia-veredito.medio {
+  color: var(--amber);
+}
+
+.audiencia-veredito.ruim {
+  color: var(--red);
+}
+
 .audiencia-p75 {
   margin: 12px 0 0;
   font-size: 13px;

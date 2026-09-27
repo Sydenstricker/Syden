@@ -9,23 +9,36 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { AVISAR_A_PARTIR_DE, avisoDaChave, diasAteVencer, lerResposta } from '../src/audiencia.js';
 
-const resposta = (total: unknown[], porDia: unknown[]) => ({ viewer: { accounts: [{ total, porDia }] } });
+// A velocidade vem de um conjunto SEPARADO da Cloudflare (rumWebVitalsEventsAdaptiveGroups), e não do
+// mesmo que traz as visitas — por isso ela é um terceiro bloco aqui, e não um campo dentro do total.
+const resposta = (total: unknown[], porDia: unknown[], velocidade: unknown[] = []) => ({
+  viewer: { accounts: [{ total, porDia, velocidade }] },
+});
+
+const VELOCIDADE = [
+  {
+    count: 20,
+    quantiles: { largestContentfulPaintP50: 1800, largestContentfulPaintP75: 3200, timeToFirstByteP50: 210 },
+  },
+];
 
 test('lê os totais e a série por dia', () => {
   const lido = lerResposta(
     resposta(
-      [{ count: 40, sum: { visits: 13 }, quantiles: { pageLoadTimeP50: 547, pageLoadTimeP75: 1320 } }],
+      [{ count: 40, sum: { visits: 13 }, quantiles: {} }],
       [
         { count: 10, sum: { visits: 4 }, dimensions: { date: '2026-09-26' } },
         { count: 30, sum: { visits: 9 }, dimensions: { date: '2026-09-27' } },
       ],
+      VELOCIDADE,
     ),
   );
 
   assert.equal(lido?.pageviews, 40);
   assert.equal(lido?.visitas, 13);
-  assert.equal(lido?.medianaMs, 547);
-  assert.equal(lido?.p75Ms, 1320);
+  assert.equal(lido?.lcpMedianaMs, 1800);
+  assert.equal(lido?.lcpP75Ms, 3200);
+  assert.equal(lido?.ttfbMedianaMs, 210);
   assert.deepEqual(lido?.porDia, [
     { dia: '2026-09-26', visitas: 4, pageviews: 10 },
     { dia: '2026-09-27', visitas: 9, pageviews: 30 },
@@ -49,8 +62,9 @@ test('sem o bloco de total, soma os dias em vez de mostrar zero', () => {
 
 test('tempo ausente vira nulo, não zero — zero diria "abriu instantaneamente"', () => {
   const lido = lerResposta(resposta([{ count: 5, sum: { visits: 2 }, quantiles: {} }], []));
-  assert.equal(lido?.medianaMs, null);
-  assert.equal(lido?.p75Ms, null);
+  assert.equal(lido?.lcpMedianaMs, null);
+  assert.equal(lido?.lcpP75Ms, null);
+  assert.equal(lido?.ttfbMedianaMs, null);
   assert.equal(lido?.visitas, 2);
 });
 
@@ -77,11 +91,11 @@ test('dia sem data é descartado: sem data não há onde pôr a barra', () => {
 
 test('número quebrado é arredondado, e texto no lugar de número vira zero', () => {
   const lido = lerResposta(
-    resposta([{ count: 7.4, sum: { visits: '13' }, quantiles: { pageLoadTimeP50: 546.7 } }], []),
+    resposta([{ count: 7.4, sum: { visits: '13' }, quantiles: {} }], []),
   );
   assert.equal(lido?.pageviews, 7);
   assert.equal(lido?.visitas, 0);
-  assert.equal(lido?.medianaMs, 547);
+  assert.equal(lido?.lcpMedianaMs, null);
 });
 
 // ---------- O aviso de vencimento da chave ----------

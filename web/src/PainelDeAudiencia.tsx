@@ -5,8 +5,9 @@ import { api } from './api';
 interface Dados {
   pageviews: number;
   visitas: number;
-  medianaMs: number | null;
-  p75Ms: number | null;
+  lcpMedianaMs: number | null;
+  lcpP75Ms: number | null;
+  ttfbMedianaMs: number | null;
   porDia: { dia: string; visitas: number; pageviews: number }[];
 }
 
@@ -23,6 +24,20 @@ const diaCurto = (iso: string) =>
 const dataLonga = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { dateStyle: 'long' });
 
 const ONDE = 'dash.cloudflare.com → perfil → API Tokens';
+
+// As faixas são as oficiais do Core Web Vitals, as mesmas que o Google usa para julgar um site.
+// Mostrar "2,8 s" sem dizer que 2,8 s é ruim deixa a conclusão por conta de quem olha — e quem olha
+// não tem obrigação de saber onde fica a linha.
+const LCP_BOM = 2500;
+const LCP_RUIM = 4000;
+
+/** O veredito vem ESCRITO, nunca só na cor: quem não distingue as cores precisa ler a mesma coisa. */
+function julgar(ms: number | null): { texto: string; classe: string } | null {
+  if (ms === null) return null;
+  if (ms <= LCP_BOM) return { texto: 'bom', classe: 'bom' };
+  if (ms <= LCP_RUIM) return { texto: 'dá para melhorar', classe: 'medio' };
+  return { texto: 'ruim', classe: 'ruim' };
+}
 
 /**
  * Quanta gente abre o site, e quanto ele demora para abrir na casa dela.
@@ -75,6 +90,7 @@ export function PainelDeAudiencia() {
 
   // O maior dia define a altura das barras. Sem ele (ou com tudo zerado) não se divide por zero.
   const teto = Math.max(1, ...dados.porDia.map((d) => d.visitas));
+  const veredito = julgar(dados.lcpMedianaMs);
 
   return (
     <section className="usage-card">
@@ -116,15 +132,25 @@ export function PainelDeAudiencia() {
           <small>Páginas abertas</small>
         </div>
         <div>
-          <strong>{tempo(dados.medianaMs)}</strong>
-          <small>Carregamento típico</small>
+          <strong>{tempo(dados.lcpMedianaMs)}</strong>
+          <small>Tela pronta</small>
+          {veredito && <em className={`audiencia-veredito ${veredito.classe}`}>{veredito.texto}</em>}
         </div>
       </div>
 
-      {dados.p75Ms !== null && (
+      {dados.lcpP75Ms !== null && (
         <p className="audiencia-p75">
-          Na quarta parte mais lenta, o site levou <strong>{tempo(dados.p75Ms)}</strong> para abrir. É esse número que
-          diz se alguém desistiu de esperar — a média esconde exatamente quem teve a pior experiência.
+          <strong>Tela pronta</strong> é o instante em que o maior elemento da página termina de desenhar — a medida
+          que mais se parece com “já dá para usar”. Até {tempo(LCP_BOM)} é bom; acima de {tempo(LCP_RUIM)}, ruim. Na
+          quarta parte mais lenta o Syden levou <strong>{tempo(dados.lcpP75Ms)}</strong>, e é esse número que diz se
+          alguém desistiu de esperar — a média esconde justamente quem teve a pior experiência.
+          {dados.ttfbMedianaMs !== null && (
+            <>
+              {' '}
+              Desse tempo, <strong>{tempo(dados.ttfbMedianaMs)}</strong> foi só o servidor começar a responder: se esse
+              pedaço for grande, o lento é o servidor; se for pequeno, é a página que está pesada.
+            </>
+          )}
         </p>
       )}
 
