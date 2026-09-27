@@ -648,7 +648,13 @@ export function Shell({
             }
           />
         ) : (
-          !loadingCommunities && <EmptyCommunities onDone={(created) => void afterCommunityChange(created)} />
+          !loadingCommunities && (
+            <EmptyCommunities
+              onDone={(created) => void afterCommunityChange(created)}
+              aoAbrirConfiguracoes={() => setSettingsOpen('account')}
+              aoSair={onLogout}
+            />
+          )
         )}
         <main className="main">
           {!online && <div className="banner">Reconectando ao servidor…</div>}

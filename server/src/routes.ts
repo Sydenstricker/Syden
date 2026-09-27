@@ -143,6 +143,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
   app.get('/api/inicio', async () => ({
     cadastroAberto: config.cadastroAberto,
     turnstileSiteKey: config.turnstile.siteKey || null,
+    // Quando esta versão do servidor foi construída. Vai na rota pública de propósito: é assim que dá
+    // para conferir de fora se o servidor já pegou a atualização, sem entrar nele.
+    construidoEm: config.construidoEm || null,
     // O recado geral vai aqui, e não numa rota própria, porque esta é a chamada que a tela de entrada
     // já faz: assim ele chega em quem NÃO CONSEGUE ENTRAR, que é justamente quem mais precisa dele.
     aviso: avisoDeAgora(),

@@ -7969,3 +7969,22 @@ textarea {
   gap: 8px;
   text-decoration: none;
 }
+
+/* As saídas da tela de "nenhuma comunidade": sem elas, quem chega pelo Google fica preso aqui. */
+.no-community-saidas {
+  display: flex;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.no-community-saidas .link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.no-community-saidas .link:hover {
+  color: var(--text);
+}

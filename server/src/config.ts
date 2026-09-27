@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 const isProd = process.env.NODE_ENV === 'production';
 
 /** Lê uma variável de ambiente. O fallback só vale fora de produção, para não subir com segredos de dev. */
@@ -120,6 +122,22 @@ export const config = {
      */
     apiUrl: (process.env.API_URL || 'http://localhost:3001').trim().replace(/\/$/, ''),
   },
+  /**
+   * Quando esta versão do servidor foi construída. O Dockerfile escreve o arquivo; fora do Docker ele
+   * não existe, e aí fica vazio mesmo.
+   *
+   * Serve para responder, de fora e sem adivinhação, a pergunta "o servidor já foi atualizado?". O
+   * site publica sozinho a cada push e o servidor não: os dois saem de sincronia com facilidade, e o
+   * sintoma é uma tela nova conversando com uma rota velha — que dá erro em lugar nenhum, só uma
+   * mensagem errada na cara de quem usa.
+   */
+  construidoEm: (() => {
+    try {
+      return readFileSync('construido-em.txt', 'utf8').trim();
+    } catch {
+      return '';
+    }
+  })(),
   maxCommunitiesPerUser: Number(process.env.MAX_COMMUNITIES_PER_USER || 3),
   maxMembersPerCommunity: Number(process.env.MAX_MEMBERS_PER_COMMUNITY || 100),
 };

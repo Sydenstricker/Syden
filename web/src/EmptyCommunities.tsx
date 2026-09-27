@@ -1,10 +1,25 @@
+import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { CommunityDialog } from './CommunityRail';
 import { Logo } from './Logo';
 import type { Community } from './types';
 
-/** Tela de quem ainda não participa de nenhuma comunidade (conta nova, ou saiu de todas). */
-export function EmptyCommunities({ onDone }: { onDone: (community: Community) => void }) {
+/**
+ * Tela de quem ainda não participa de nenhuma comunidade (conta nova, ou saiu de todas).
+ *
+ * As configurações e o "sair" precisam estar AQUI, e não só na barra lateral: a barra só existe
+ * quando há comunidade, e sem eles esta tela é um beco sem saída. É onde cai quem acabou de criar
+ * conta pelo Google/GitHub — a primeira tela de boa parte de quem chega.
+ */
+export function EmptyCommunities({
+  onDone,
+  aoAbrirConfiguracoes,
+  aoSair,
+}: {
+  onDone: (community: Community) => void;
+  aoAbrirConfiguracoes: () => void;
+  aoSair: () => void;
+}) {
   const [abrindo, setAbrindo] = useState(false);
 
   return (
@@ -19,6 +34,15 @@ export function EmptyCommunities({ onDone }: { onDone: (community: Community) =>
         {/* Um caminho só, igual ao botão da coluna: a escolha entre criar e entrar mora dentro da janela. */}
         <button className="btn-primary" onClick={() => setAbrindo(true)}>
           Adicionar comunidade
+        </button>
+      </div>
+
+      <div className="no-community-saidas">
+        <button type="button" className="link" onClick={aoAbrirConfiguracoes}>
+          <Settings size={15} aria-hidden="true" /> Configurações da conta
+        </button>
+        <button type="button" className="link" onClick={aoSair}>
+          <LogOut size={15} aria-hidden="true" /> Sair da conta
         </button>
       </div>
       {abrindo && (
