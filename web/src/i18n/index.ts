@@ -77,6 +77,7 @@ export async function trocarIdioma(codigo: string) {
   } catch {
     // sem armazenamento: vale até fechar
   }
+  void import('../preferencias').then((m) => m.guardarEmBreve());
   dicionario = carregar ? (await carregar()).default : {};
   atual = codigo;
   prepararFonte(codigo);

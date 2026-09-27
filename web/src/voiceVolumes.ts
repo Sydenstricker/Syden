@@ -43,12 +43,14 @@ export function setUserVolume(room: Room, userId: number, volume: number) {
   // O navegador só aceita de 0 a 1 no volume de um áudio; passar disso dá erro e derruba o som.
   volumes = { ...volumes, [String(userId)]: Math.min(1, Math.max(0, volume)) };
   write(KEY, volumes);
+  void import('./preferencias').then((m) => m.guardarEmBreve());
   apply(room, userId);
 }
 
 export function setLocalMute(room: Room, userId: number, muted: boolean) {
   mutes = { ...mutes, [String(userId)]: muted };
   write(MUTED_KEY, mutes);
+  void import('./preferencias').then((m) => m.guardarEmBreve());
   apply(room, userId);
 }
 
@@ -71,6 +73,7 @@ function screenAudioTrack(room: Room, userId: number) {
 export function setScreenVolume(room: Room, userId: number, volume: number) {
   screenVolumes = { ...screenVolumes, [String(userId)]: Math.min(1, Math.max(0, volume)) };
   write(SCREEN_KEY, screenVolumes);
+  void import('./preferencias').then((m) => m.guardarEmBreve());
   screenAudioTrack(room, userId)?.setVolume(getScreenVolume(userId));
 }
 

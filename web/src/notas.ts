@@ -27,6 +27,7 @@ export function notaDe(userId: number): string {
 
 /** Guarda (ou apaga, se vier vazia) a nota de alguém. */
 export function guardarNota(userId: number, texto: string) {
+  void import('./preferencias').then((m) => m.guardarEmBreve());
   const limpo = texto.trim().slice(0, LIMITE);
   const proximo = { ...atual };
   if (limpo) proximo[String(userId)] = limpo;

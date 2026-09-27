@@ -27,6 +27,7 @@ import { CATALOGO, podeVestir } from './loja.js';
 import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
 import { audiencia } from './audiencia.js';
+import * as prefs from './preferencias.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
 
@@ -510,6 +511,23 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           insignias: request.user.vitrine,
         },
       };
+    });
+
+    /**
+     * As preferências da pessoa, para seguirem com ela entre navegadores e entre o site e o aplicativo.
+     *
+     * O servidor GUARDA, não interpreta: quem decide o que sobe é o site, numa lista de chaves
+     * permitidas — os ids de microfone e câmera ficam de fora de propósito, porque identificam um
+     * aparelho e não a pessoa. Ver preferencias.ts.
+     */
+    authed.get('/api/me/preferencias', async (request) => prefs.ler(request.user.id));
+
+    authed.put<{ Body: unknown }>('/api/me/preferencias', async (request, reply) => {
+      const conferido = prefs.conferir(request.body);
+      // Recusar com o motivo escrito, em vez de engolir em silêncio: preferência que some sem
+      // explicação é o defeito que ninguém relata — a pessoa só acha que o Syden esqueceu.
+      if (!conferido.ok) return reply.code(400).send({ error: conferido.erro });
+      return prefs.guardar(request.user.id, conferido.texto);
     });
 
     authed.get('/api/me/itens', async (request) => ({

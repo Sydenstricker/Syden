@@ -15,6 +15,7 @@ export function loadMyStatus(): PresenceStatus {
 }
 
 export function saveMyStatus(status: PresenceStatus) {
+  void import('./preferencias').then((m) => m.guardarEmBreve());
   try {
     localStorage.setItem(KEY, status);
   } catch {

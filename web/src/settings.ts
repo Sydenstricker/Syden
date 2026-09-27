@@ -1,7 +1,10 @@
 import { useSyncExternalStore } from 'react';
 import type { Theme } from './theme';
+import { guardarEmBreve } from './preferencias';
 
-// Preferências de cada pessoa, guardadas só neste computador (localStorage).
+// Preferências de cada pessoa. Ficam neste computador E sobem para o servidor, para seguirem com
+// ela ao trocar de navegador — menos os ids de microfone, alto-falante e câmera, que identificam um
+// APARELHO e não fariam sentido na outra máquina. A separação está em preferencias.ts.
 
 export type ScreenQuality = 'light' | 'standard' | 'smooth';
 
@@ -81,6 +84,7 @@ export function updateSettings(patch: Partial<Settings>) {
     // Sem localStorage: vale só até fechar o app.
   }
   for (const listener of listeners) listener();
+  guardarEmBreve();
 }
 
 function subscribe(listener: () => void) {

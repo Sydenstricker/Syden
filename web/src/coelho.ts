@@ -1,12 +1,14 @@
 import { useSyncExternalStore } from 'react';
 import ourUrl from './assets/logo.png';
 import bigUrl from './assets/logo-big.png';
+import { guardarEmBreve } from './preferencias';
 
 // Qual coelho é o SEU Syden.
 //
 // São dois: o OurBunny, esguio, que é o padrão, e o BigChunkus, o gordinho. A escolha vale para o ícone
 // na barra lateral, para a tela de entrada e para a estátua da praça na tela inicial — é sempre o mesmo
-// bicho, para o app não ficar com duas caras ao mesmo tempo. Fica só neste computador.
+// bicho, para o app não ficar com duas caras ao mesmo tempo. A escolha sobe para o servidor, então
+// segue com a pessoa ao trocar de navegador ou ir do site para o aplicativo.
 
 export type Coelho = 'our' | 'big';
 
@@ -50,6 +52,7 @@ export function escolherCoelho(id: Coelho) {
     // sem armazenamento: vale até fechar
   }
   for (const ouvinte of ouvintes) ouvinte();
+  guardarEmBreve();
 }
 
 function assinar(ouvinte: () => void) {

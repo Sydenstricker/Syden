@@ -1,4 +1,9 @@
-export const API_URL: string = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// `import.meta.env` é invenção do Vite e não existe quando o módulo roda direto no Node, que é como
+// os testes rodam. Sem esta proteção, QUALQUER teste que encoste em api.ts — mesmo sem chegar perto da
+// rede — estoura na primeira linha, antes da primeira asserção.
+const ambiente = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
+
+export const API_URL: string = ambiente?.VITE_API_URL || 'http://localhost:3001';
 
 const TOKEN_KEY = 'janja.token';
 

@@ -570,6 +570,15 @@ db.exec(`
   -- Denúncias. Quem recebe pessoas de fora precisa de um caminho para alguém dizer "isto aqui está errado"
   -- sem ter que achar o dono no particular. O texto denunciado é copiado para cá porque a mensagem pode
   -- ser apagada antes de alguém olhar a denúncia — e aí não sobraria o que julgar.
+  -- As preferências de cada pessoa, para não se perderem na troca de navegador ou de aparelho.
+  -- Um JSON só, porque o conjunto muda com frequência e cada preferência nova viraria uma migração.
+  -- O servidor não interpreta o conteúdo: quem decide o que sobe é o site (ver preferencias.ts).
+  CREATE TABLE IF NOT EXISTS user_prefs (
+    user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    data       TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
   CREATE TABLE IF NOT EXISTS reports (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
@@ -2106,6 +2115,10 @@ export function deleteAccount(userId: number) {
     db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
+    // O ON DELETE CASCADE já daria conta, mas aqui dentro estão as ANOTAÇÕES QUE A PESSOA ESCREVEU
+    // SOBRE OUTRAS — dado pessoal de terceiro. Apagar por efeito indireto de uma configuração que
+    // alguém pode desligar sem perceber é frágil demais para esse conteúdo.
+    db.prepare('DELETE FROM user_prefs WHERE user_id = ?').run(userId);
     for (const table of ['channels', 'emojis', 'sounds', 'threads']) {
       db.prepare(`UPDATE ${table} SET created_by = NULL WHERE created_by = ?`).run(userId);
     }
@@ -3043,4 +3056,20 @@ export function panoramaDeComunidades(desde: string): PanoramaDeComunidade[] {
        ORDER BY mensagens DESC, membros DESC, c.id ASC`,
     )
     .all(desde, desde, desde, desde) as unknown as PanoramaDeComunidade[];
+}
+
+// ---------- Preferências de cada pessoa ----------
+
+export function lerPreferencias(userId: number): { data: string; em: string } | null {
+  const linha = db
+    .prepare('SELECT data, updated_at AS em FROM user_prefs WHERE user_id = ?')
+    .get(userId) as { data: string; em: string } | undefined;
+  return linha ?? null;
+}
+
+export function guardarPreferencias(userId: number, data: string) {
+  db.prepare(
+    `INSERT INTO user_prefs (user_id, data, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
+  ).run(userId, data);
 }

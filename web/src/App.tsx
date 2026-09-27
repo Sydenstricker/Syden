@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ApiError, api, loadToken, saveToken } from './api';
+import { sincronizarAoEntrar } from './preferencias';
 import { AuthScreen } from './AuthScreen';
 import { AvisoGeral } from './AvisoGeral';
 import { concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
@@ -67,7 +68,7 @@ export function App() {
     const voltandoDoProvedor = (volta?.situacao === 'ok' || volta?.situacao === 'ligar') && volta.comprovante;
     if (voltandoDoProvedor) {
       void Promise.all([concluir(volta!.comprovante!), minWait])
-        .then(([resultado]) => {
+        .then(async ([resultado]) => {
           if (cancelled) return;
           // Ligação: a pessoa já estava dentro, então não há sessão nova. Só o aviso, e a sessão que
           // já existia segue o caminho normal logo abaixo.
@@ -77,6 +78,7 @@ export function App() {
           }
           if (!resultado.token || !resultado.user) throw new Error('A resposta veio sem a sua conta. Tente de novo.');
           saveToken(resultado.token);
+          await sincronizarAoEntrar();
           setSession({ status: 'ready', token: resultado.token, user: resultado.user });
         })
         .catch((e) => {
@@ -95,7 +97,9 @@ export function App() {
       const guardado = loadToken();
       if (!guardado) return setSession({ status: 'anonymous' });
       try {
-        setSession({ status: 'ready', token: guardado, user: await api<User>('/api/me', { token: guardado }) });
+        const user = await api<User>('/api/me', { token: guardado });
+        await sincronizarAoEntrar();
+        setSession({ status: 'ready', token: guardado, user });
       } catch {
         setSession({ status: 'anonymous' });
       }
@@ -104,7 +108,14 @@ export function App() {
     const token = loadToken();
     const auth = token
       ? api<User>('/api/me', { token }).then(
-          (user): Session => ({ status: 'ready', token, user }),
+          async (user): Promise<Session> => {
+            // As preferências chegam ANTES de a tela montar. Aplicá-las depois faria o Syden abrir no
+            // tema errado e trocar na cara de quem está olhando — e, pior, os componentes já teriam
+            // lido o idioma antigo. O `await` custa um pedido, e é o que faz a troca de navegador
+            // parecer que não houve troca nenhuma.
+            await sincronizarAoEntrar();
+            return { status: 'ready', token, user };
+          },
           (error): Session => {
             // Só descarta o token se o servidor recusou; se estiver fora do ar, tenta de novo ao recarregar.
             if (error instanceof ApiError && error.status === 401) saveToken(null);
@@ -161,8 +172,13 @@ export function App() {
         {session.status === 'anonymous' && (
           <AuthScreen
             initialInviteCode={inviteCode}
-            onAuthenticated={(token, user) => {
+            onAuthenticated={async (token, user) => {
               saveToken(token);
+              // As preferências descem ANTES de a tela montar. Existem três portas de entrada no
+              // Syden — esta, a volta do login social e a sessão já guardada — e todas passam por
+              // uma chamada destas. Deixar uma de fora faria a sincronia funcionar em alguns dias e
+              // em outros não, que é o pior comportamento possível para quem tenta entender.
+              await sincronizarAoEntrar();
               setSession({ status: 'ready', token, user });
             }}
           />
