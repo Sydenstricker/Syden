@@ -2,7 +2,22 @@
 // no navegador; com ela, ganha as teclas de atalho globais e consegue trazer a janela para frente.
 const { contextBridge, ipcRenderer } = require('electron');
 
+// O nome da janela escolhida no seletor. Fica guardado aqui, e não entregue por evento, porque quem
+// precisa dele (o site) só vai perguntar depois que a transmissão começar — e aí o evento já passou.
+let ultimaTelaEscolhida = null;
+ipcRenderer.on('tela:escolhida', (_event, nome) => {
+  ultimaTelaEscolhida = nome;
+});
+
 contextBridge.exposeInMainWorld('sydenDesktop', {
+  /**
+   * O título da janela escolhida da última vez no seletor de tela ("League of Legends").
+   *
+   * O navegador não entrega isso de jeito nenhum: o rótulo da faixa de vídeo é um código interno, de
+   * propósito, para uma página não descobrir que programas você tem abertos. Dentro do app a escolha
+   * passa pelo nosso seletor, então o título é sabido — e é só aqui que ele pode vir.
+   */
+  telaEscolhida: () => ultimaTelaEscolhida,
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
   focus: () => ipcRenderer.send('app:focus'),
   /** Põe o número de avisos sobre o ícone na barra de tarefas. selo = PNG pronto (data URL), ou null. */

@@ -218,6 +218,10 @@ function setupScreenShare() {
     try {
       const choice = await pickSource(request.audioRequested);
       if (!choice) return callback({});
+      // O TÍTULO DA JANELA só existe aqui. O site, do outro lado, só recebe a faixa de vídeo — e o
+      // rótulo dela é um código interno ("window:12345:0"), não "League of Legends". Por isso o nome
+      // é mandado à parte, agora, enquanto ainda se sabe qual foi a escolha.
+      mainWindow.webContents.send('tela:escolhida', choice.source.name || null);
       // Com o módulo nativo, o som vem por fora (sem as vozes da chamada); sem ele, sobra o jeito antigo,
       // que é a mistura do computador inteiro.
       const legacyAudio = choice.audio && !screenAudioAvailable();

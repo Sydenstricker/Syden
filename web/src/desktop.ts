@@ -3,6 +3,8 @@
 interface DesktopBridge {
   focus(): void;
   onShortcut(callback: (action: 'mute' | 'deafen') => void): () => void;
+  /** O título da janela escolhida no seletor do app ("League of Legends"), ou null. */
+  telaEscolhida?(): string | null;
   /** Pinta a barra de título do app (desenhada pelo Windows) com as cores do tema. */
   setTitleBarTheme?(cores: { color: string; symbolColor: string }): void;
   /**

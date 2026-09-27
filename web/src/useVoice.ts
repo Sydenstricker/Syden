@@ -22,6 +22,7 @@ import { nomeDaTransmissao } from './streamName';
 import { applyAllVolumes } from './voiceVolumes';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { filaUltimaVale } from './fila';
+import { desktopBridge } from './desktop';
 import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
@@ -773,10 +774,15 @@ export function useVoice(socket: Socket | null) {
         const ajuste = faixaDeSom?.getSettings() as (MediaTrackSettings & { restrictOwnAudio?: boolean }) | undefined;
         setEcoNaTransmissao(Boolean(faixaDeSom) && ajuste?.restrictOwnAudio !== true);
 
-        // O rótulo da captura é o que dá o nome do jogo/janela; no navegador costuma vir um código
-        // interno, e aí sobra o tipo ("a tela", "uma janela"). Ver streamName.ts.
+        // De onde sai "League of Legends" na lista dos outros.
+        //
+        // No APP, do seletor: só o processo principal do Electron conhece o título da janela, e ele o
+        // manda por fora (ver desktop/src/preload.js). No NAVEGADOR isso não existe, e não é falha de
+        // ninguém: o rótulo da faixa é um código interno de propósito, para uma página não conseguir
+        // descobrir que programas a pessoa tem abertos. Lá sobra o tipo — "a tela", "uma janela".
+        const doSeletor = desktopBridge?.telaEscolhida?.();
         const capturado = lp.getTrackPublication(Track.Source.ScreenShare)?.videoTrack?.mediaStreamTrack?.label;
-        nomeDaTelaRef.current = nomeDaTransmissao(capturado, surface);
+        nomeDaTelaRef.current = nomeDaTransmissao(doSeletor || capturado, surface);
         if (channelRef.current !== null) {
           socketRef.current?.emit('voice:update', { ...readLocalMedia(lp), screenName: nomeDaTelaRef.current });
         }
