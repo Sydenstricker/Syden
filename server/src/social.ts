@@ -99,8 +99,14 @@ const PROVEDORES: Record<ProvedorOAuth, Config> = {
  *    entrada até funcionaria, mas a pessoa nasceria chamada "jogador123456" — por isso a chave é
  *    exigida para o botão aparecer.
  */
-/** Quem está chamando. A API do GitHub responde 403 a pedido sem isto, e não diz por quê. */
-const CHAMADOR = 'Syden';
+/**
+ * Quem está chamando, no formato que a web inteira usa: nome/versão e um endereço para contato.
+ *
+ * Não é enfeite. A API do GitHub responde 403 a pedido SEM user-agent, e não diz por quê. E a do
+ * Discord fica atrás da Cloudflare, que trata identificação de uma palavra só como coisa de robô
+ * anônimo e pode barrar — devolvendo uma página HTML de bloqueio onde o código espera JSON.
+ */
+const CHAMADOR = 'Syden/1.0 (+https://syden.chat)';
 
 const STEAM_LOGIN = 'https://steamcommunity.com/openid/login';
 const STEAM_PERFIL = 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/';
@@ -222,7 +228,13 @@ export async function buscarPerfil(
       signal: AbortSignal.timeout(10_000),
     });
     if (!resposta.ok) {
-      anotar(`o pedido do token respondeu ${resposta.status}`);
+      // O CORPO da recusa é o que resolve o problema, e o número sozinho não resolve: "invalid_client"
+      // é segredo errado, "invalid_grant" é código vencido ou endereço de volta diferente, e uma
+      // página HTML no lugar de JSON é a Cloudflare barrando. Três causas, três consertos, um número.
+      //
+      // Não vaza nada: resposta de ERRO não traz token nenhum. O corte existe porque uma página de
+      // bloqueio vem com dezenas de milhares de letras, e o registro não é lugar para isso.
+      anotar(`o pedido do token respondeu ${resposta.status}: ${(await resposta.text()).slice(0, 200).replace(/\s+/g, ' ')}`);
       return null;
     }
     const access_token = lerToken(resposta.headers.get('content-type') ?? '', await resposta.text());
@@ -238,7 +250,7 @@ export async function buscarPerfil(
       signal: AbortSignal.timeout(10_000),
     });
     if (!perfil.ok) {
-      anotar(`o pedido do perfil respondeu ${perfil.status}`);
+      anotar(`o pedido do perfil respondeu ${perfil.status}: ${(await perfil.text()).slice(0, 200).replace(/\s+/g, ' ')}`);
       return null;
     }
     const lido = lerPerfil(provedor, await perfil.json());
