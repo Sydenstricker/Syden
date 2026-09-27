@@ -35,19 +35,26 @@ function novoCodigo(userId: number, kind: db.TipoDeCodigo) {
 const linkDe = (kind: db.TipoDeCodigo, codigo: string) =>
   `${config.siteUrl}/?${kind === 'verificar' ? 'confirmar' : 'recuperar'}=${codigo}`;
 
+/**
+ * Monta e manda um e-mail com código. Devolve o link só FORA DE PRODUÇÃO, para os testes seguirem o
+ * fluxo sem caixa de entrada — em produção ele nunca sai daqui, senão a resposta HTTP entregaria a
+ * chave que deveria chegar só no e-mail da pessoa.
+ *
+ * Mora fora do registro de rotas porque o cadastro (em routes.ts) também precisa mandar o primeiro.
+ */
+export async function mandarCodigo(userId: number, nome: string, para: string, kind: db.TipoDeCodigo) {
+  const codigo = novoCodigo(userId, kind);
+  const link = linkDe(kind, codigo);
+  const corpo = kind === 'verificar' ? mensagemDeVerificacao(nome, link) : mensagemDeRecuperacao(nome, link);
+  const resultado = await enviarEmail({ para, ...corpo });
+  return { resultado, link: process.env.NODE_ENV === 'production' ? undefined : link };
+}
+
 export function registerEmailRoutes(app: FastifyInstance) {
   // Mandar e-mail custa dinheiro e incomoda quem recebe: dois freios, por endereço de rede e por conta.
   const freioDeEnvio = new Freio(config.freio.emailsPorEndereco, 15 * 60_000);
   const freioPorAlvo = new Freio(config.freio.emailsPorCaixa, 60 * 60_000);
-
-  /** Monta e manda. Devolve o link só fora de produção, para os testes seguirem o fluxo sem caixa de entrada. */
-  async function mandar(userId: number, nome: string, para: string, kind: db.TipoDeCodigo) {
-    const codigo = novoCodigo(userId, kind);
-    const link = linkDe(kind, codigo);
-    const corpo = kind === 'verificar' ? mensagemDeVerificacao(nome, link) : mensagemDeRecuperacao(nome, link);
-    const resultado = await enviarEmail({ para, ...corpo });
-    return { resultado, link: process.env.NODE_ENV === 'production' ? undefined : link };
-  }
+  const mandar = mandarCodigo;
 
   // ---------- Quem já está dentro: pôr e confirmar o endereço ----------
 

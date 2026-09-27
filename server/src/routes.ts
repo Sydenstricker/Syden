@@ -24,6 +24,7 @@ import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
 import { lerServidor, TETO_POR_COMUNIDADE } from './jogos.js';
 import { CATALOGO, podeVestir } from './loja.js';
+import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
@@ -131,6 +132,9 @@ export async function requireUser(request: FastifyRequest, reply: FastifyReply) 
 export function registerRoutes(app: FastifyInstance, io: IOServer) {
   app.decorateRequest('user', null as unknown as db.User);
 
+  /** Endereço com cara de endereço. A conferência de verdade é o link que chega na caixa. */
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
   app.get('/api/health', async () => ({ ok: true }));
 
   /**
@@ -171,12 +175,13 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     return true;
   }
 
-  app.post<{ Body: { username?: string; password?: string; inviteCode?: string; turnstile?: string } }>(
+  app.post<{ Body: { username?: string; password?: string; email?: string; inviteCode?: string; turnstile?: string } }>(
     '/api/auth/register',
     async (request, reply) => {
       if (enderecoFreado(request, reply)) return reply;
       const username = request.body?.username?.trim() ?? '';
       const password = request.body?.password ?? '';
+      const email = request.body?.email?.trim().toLowerCase() ?? '';
       const code = request.body?.inviteCode?.trim() ?? '';
       // Fechado por padrão: ou o código geral do Syden, ou o convite de alguma comunidade. Cadastro aberto
       // para qualquer pessoa da internet só acontece se estiver escrito CADASTRO_ABERTO=sim no .env.
@@ -212,6 +217,14 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (db.findUserByName(username)) {
         return reply.code(409).send({ error: 'Esse nome de usuário já está em uso.' });
       }
+      if (!EMAIL_RE.test(email)) {
+        return reply.code(400).send({ error: 'Escreva um e-mail válido: é por ele que você confirma a conta.' });
+      }
+      // Dois cadastros no mesmo endereço fariam duas contas disputando a mesma recuperação de senha —
+      // e a de e-mail confirmado seria juntada ao provedor social, deixando a outra órfã.
+      if (db.findUserByEmail(email)) {
+        return reply.code(409).send({ error: 'Já existe uma conta com esse e-mail. Entre por ela, ou use "Esqueci a minha senha".' });
+      }
 
       /*
        * DOIS PORTÕES DIFERENTES, e é isso que permite crescer sem abrir a casa dos outros:
@@ -229,7 +242,13 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const convidadoPara = code ? db.findCommunityByInvite(code) : undefined;
       const temEspaco = convidadoPara && db.countMembers(convidadoPara.id) < config.maxMembersPerCommunity;
 
-      const user = db.createUser(username, await hashPassword(password));
+      // Nasce PRECISANDO CONFIRMAR: é o que separa "alguém digitou um endereço" de "alguém tem acesso
+      // àquela caixa", e é o que garante que toda conta nova tenha recuperação de senha funcionando.
+      //
+      // Mas só quando o e-mail de fato sai daqui. Sem envio configurado, exigir confirmação trancaria
+      // a conta e jogaria fora a chave — ver o comentário em config.email.exigirConfirmacao.
+      const exigir = config.email.exigirConfirmacao;
+      const user = db.createUser(username, await hashPassword(password), email, exigir);
       installDefaultPack(user.id); // soundboard já começa com o pacote básico do Syden
 
       if (!db.defaultCommunity()) {
@@ -246,9 +265,40 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       // Conta só o que deu certo: quem errou o nome de usuário três vezes não gasta o dia inteiro.
       freioDeCadastro.tentar(request.ip);
       conferirPresentes(user); // conta nova entre as 25 primeiras já sai com a insígnia esperando
-      return { token: await signSession(user, 1), user };
+
+      // O link de confirmação sai de qualquer jeito: mesmo sem exigência, ter o e-mail confirmado é o
+      // que faz a recuperação de senha funcionar no dia em que ela for precisa.
+      const { link } = await mandarCodigo(user.id, user.username, email, 'verificar');
+
+      // Exigindo confirmação, NENHUM TOKEN SAI DAQUI: a conta existe, mas só abre depois que a pessoa
+      // clicar no link. Sem exigência, o cadastro entra na hora, como antes.
+      if (exigir) return { precisaConfirmar: true, email, link };
+      return { token: await signSession(user, 1), user, link };
     },
   );
+
+  /**
+   * Reenviar o link de confirmação para quem ainda não entrou.
+   *
+   * Precisa existir sem login: quem não confirmou não consegue entrar, então não teria como pedir de
+   * dentro. E precisa ser cuidadosa por isso mesmo — é uma porta que faz o servidor MANDAR E-MAIL a
+   * pedido de qualquer um. Por isso: freio por endereço de rede, e a RESPOSTA É SEMPRE A MESMA, exista
+   * a conta ou não. Sem isso, a tela viraria um consultório para descobrir quem tem conta no Syden.
+   */
+  app.post<{ Body: { username?: string } }>('/api/auth/reenviar-confirmacao', async (request, reply) => {
+    if (enderecoFreado(request, reply)) return reply;
+    const mesmaResposta = { ok: true, aviso: 'Se essa conta existir e ainda não estiver confirmada, o link acabou de sair.' };
+
+    const nome = request.body?.username?.trim() ?? '';
+    const achado = nome ? db.findUserByName(nome) : undefined;
+    if (!achado || !db.precisaConfirmar(achado.id)) return mesmaResposta;
+
+    const { email } = db.emailDe(achado.id);
+    if (!email) return mesmaResposta;
+
+    const { link } = await mandarCodigo(achado.id, achado.username, email, 'verificar');
+    return { ...mesmaResposta, link };
+  });
 
   app.post<{ Body: { username?: string; password?: string } }>('/api/auth/login', async (request, reply) => {
     if (enderecoFreado(request, reply)) return reply;
@@ -272,6 +322,16 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return reply.code(401).send({ error: 'Usuário ou senha incorretos.' });
     }
     freioPorConta.liberar(chave); // quem sabe a senha não é quem estava tentando adivinhar
+
+    // Cadastrou e não confirmou: a conta existe, a senha está certa, e mesmo assim não entra. Vale só
+    // para quem nasceu com a exigência — conta antiga e conta de provedor nunca caem aqui.
+    if (db.precisaConfirmar(found.id)) {
+      return reply.code(403).send({
+        error: 'Falta confirmar o seu e-mail. Abra o link que enviamos para entrar.',
+        precisaConfirmar: true,
+      });
+    }
+
     const { passwordHash: _, ...user } = found;
     conferirPresentes(user); // ganhou alguma insígnia enquanto estava fora? chega agora
     return { token: await signSession(user, db.sessionVersion(found.id)), user };

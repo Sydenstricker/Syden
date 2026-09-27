@@ -23,6 +23,15 @@ export class ApiError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    /**
+     * O corpo inteiro da resposta de erro.
+     *
+     * Existe porque a mensagem sozinha não basta para decidir o que a tela faz. Entrar sem ter
+     * confirmado o e-mail e entrar com a senha errada são as duas coisas mais parecidas que existem do
+     * lado de fora, e levam a telas completamente diferentes; quem separa é um campo na resposta, não
+     * o texto. Ler o texto para decidir seria depender da redação da mensagem nunca mudar.
+     */
+    readonly corpo: unknown = undefined,
   ) {
     super(message);
   }
@@ -44,7 +53,7 @@ export async function api<T>(path: string, options: { method?: string; body?: un
     throw new ApiError('Não foi possível falar com o servidor.', 0);
   }
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new ApiError(data.error ?? `Erro ${response.status}`, response.status);
+  if (!response.ok) throw new ApiError(data.error ?? `Erro ${response.status}`, response.status, data);
   return data as T;
 }
 

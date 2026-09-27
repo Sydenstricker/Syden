@@ -662,6 +662,16 @@ addColumnIfMissing('users', 'moldura', 'TEXT');
 // ligar_user_id, escrito quando o passeio começa — por um pedido autenticado, que é o que prova quem é.
 addColumnIfMissing('social_states', 'ligar_user_id', 'INTEGER');
 addColumnIfMissing('social_states', 'sub', 'TEXT');
+
+/**
+ * Esta conta precisa confirmar o e-mail antes de entrar?
+ *
+ * É uma COLUNA, e não uma conta de datas, porque quem já tinha conta antes da regra existir não pode
+ * ser trancado do lado de fora por ela. As linhas antigas ficam em 0 e seguem entrando como sempre;
+ * só o cadastro novo por senha nasce com 1. Quem entra por Google/Discord/GitHub/Steam também nasce
+ * com 0: o provedor já é a prova de que a pessoa existe, que é o que a confirmação vai buscar.
+ */
+addColumnIfMissing('users', 'exige_confirmacao', 'INTEGER NOT NULL DEFAULT 0');
 // O e-mail é opcional: quem já tem conta continua entrando sem ele. Serve para recuperar a senha e para
 // avisar de um incidente — sem endereço nenhum, quem esquece a senha perde a conta para sempre.
 addColumnIfMissing('users', 'email', 'TEXT');
@@ -2034,12 +2044,28 @@ export function findPasswordHash(userId: number) {
 }
 
 /** O primeiro cadastro do servidor vira dono e administrador. */
-export function createUser(username: string, passwordHash: string): User {
+/** `email` e `exigeConfirmacao` vêm do cadastro por senha; o caminho social usa createUserSemSenha. */
+export function createUser(username: string, passwordHash: string, email: string | null = null, exigeConfirmacao = false): User {
   const first = !db.prepare('SELECT 1 FROM users').get();
   const result = db
-    .prepare('INSERT INTO users (username, password_hash, is_admin, is_owner) VALUES (?, ?, ?, ?)')
-    .run(username, passwordHash, first ? 1 : 0, first ? 1 : 0);
+    .prepare(
+      'INSERT INTO users (username, password_hash, is_admin, is_owner, email, exige_confirmacao) VALUES (?, ?, ?, ?, ?, ?)',
+    )
+    .run(username, passwordHash, first ? 1 : 0, first ? 1 : 0, email?.trim().toLowerCase() ?? null, exigeConfirmacao ? 1 : 0);
   return findUserById(Number(result.lastInsertRowid))!;
+}
+
+/**
+ * Falta confirmar o e-mail desta conta para ela poder entrar?
+ *
+ * Só vale para quem nasceu com a exigência. Conta antiga e conta de provedor respondem false sempre —
+ * ver o comentário da coluna, mais acima.
+ */
+export function precisaConfirmar(userId: number): boolean {
+  const linha = db
+    .prepare('SELECT exige_confirmacao AS exige, email_verified_at AS confirmadoEm FROM users WHERE id = ?')
+    .get(userId) as { exige: number; confirmadoEm: string | null } | undefined;
+  return Boolean(linha && linha.exige === 1 && !linha.confirmadoEm);
 }
 
 /**

@@ -21,7 +21,9 @@ describe('cadastrar o e-mail', () => {
     const como = comToken(app, token);
     const semSenha = await como('PUT', '/api/me/email', { email: 'ana@exemplo.com', password: 'chute' });
     assert.equal(semSenha.statusCode, 400);
-    assert.equal((await como('GET', '/api/me/email')).json().email, null, 'não podia ter trocado');
+    // A conta já nasce com um e-mail (o do cadastro). O que este teste prova é que a senha errada NÃO
+    // troca o endereço — e agora isso se vê comparando com o original, não com vazio.
+    assert.equal((await como('GET', '/api/me/email')).json().email, 'ana@exemplo.teste', 'não podia ter trocado');
   });
 
   it('aceita com a senha certa e já manda o link de confirmação', async () => {

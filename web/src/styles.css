@@ -8041,3 +8041,18 @@ textarea {
 .no-community-saidas .link:hover {
   color: var(--text);
 }
+
+/* A tela de "falta confirmar o e-mail", logo depois do cadastro. */
+.confirme-email {
+  text-align: center;
+}
+
+.confirme-email-icone {
+  align-self: center;
+  color: var(--green);
+}
+
+.confirme-email p {
+  margin: 0;
+  line-height: 1.5;
+}

@@ -1,10 +1,11 @@
 import { Download, MonitorDown, Ticket } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
+import { ConfirmeSeuEmail } from './ConfirmeSeuEmail';
 import { AVISOS, entrarCom, NOMES, type Provedor } from './entradaSocial';
 import { MarcaSocial } from './MarcasSociais';
 import { Turnstile } from './Turnstile';
-import { api } from './api';
+import { api, ApiError } from './api';
 import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { installApp, useCanInstall } from './install';
 import { useT } from './i18n';
@@ -36,7 +37,10 @@ export function AuthScreen({
   const [recuperacao, setRecuperacao] = useState<'nao' | 'pedindo' | string>(() => lerCodigoDaUrl() ?? 'nao');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [inviteCode, setInviteCode] = useState(initialInviteCode ?? '');
+  const [inviteCode] = useState(initialInviteCode ?? '');
+  const [email, setEmail] = useState('');
+  /** Cadastrou e falta abrir o link: a tela sai do formulário e vira o aviso. */
+  const [aguardandoConfirmacao, setAguardandoConfirmacao] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   // Este Syden aceita qualquer pessoa ou só quem foi convidado? Muda o que a tela pede.
@@ -65,13 +69,26 @@ export function AuthScreen({
     setBusy(true);
     setError(null);
     try {
-      const result = await api<{ token: string; user: User }>(`/api/auth/${mode}`, {
+      const result = await api<{ token?: string; user?: User; precisaConfirmar?: boolean }>(`/api/auth/${mode}`, {
         method: 'POST',
-        body: { username, password, inviteCode, turnstile: turnstileToken },
+        body: { username, password, email, inviteCode, turnstile: turnstileToken },
         token: null,
       });
+      // Cadastro não devolve mais sessão: devolve a tarefa de abrir o e-mail.
+      if (result.precisaConfirmar || !result.token || !result.user) {
+        setAguardandoConfirmacao(email || username);
+        setBusy(false);
+        return;
+      }
       onAuthenticated(result.token, result.user);
     } catch (e) {
+      // Entrar sem ter confirmado não é erro de senha: é a mesma tarefa pendente, e a tela leva para lá
+      // em vez de repetir "usuário ou senha incorretos", que mandaria a pessoa procurar no lugar errado.
+      if (e instanceof ApiError && e.status === 403 && (e.corpo as { precisaConfirmar?: boolean })?.precisaConfirmar) {
+        setAguardandoConfirmacao(username);
+        setBusy(false);
+        return;
+      }
       setError((e as Error).message);
       setBusy(false);
     }
@@ -89,7 +106,17 @@ export function AuthScreen({
           {recuperacao !== 'nao' && recuperacao !== 'pedindo' && (
             <EscolherSenhaNova codigo={recuperacao} aoTerminar={() => setRecuperacao('nao')} />
           )}
-          {recuperacao === 'nao' && (
+          {aguardandoConfirmacao !== null && (
+            <ConfirmeSeuEmail
+              paraOndeFoi={aguardandoConfirmacao}
+              username={username}
+              aoVoltar={() => {
+                setAguardandoConfirmacao(null);
+                setMode('login');
+              }}
+            />
+          )}
+          {aguardandoConfirmacao === null && recuperacao === 'nao' && (
           <form className="auth-card" onSubmit={submit}>
             <h1>{mode === 'login' ? t('Bem-vindo de volta!') : t('Criar uma conta')}</h1>
             <p className="auth-subtitle">{mode === 'login' ? t('Que bom te ver de novo.') : t('Chame a galera e bora.')}</p>
@@ -133,6 +160,21 @@ export function AuthScreen({
               {t('Nome de usuário')}
               <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus required />
             </label>
+            {mode === 'register' && (
+              <label>
+                {t('E-mail')}
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+                <span className="auth-hint">
+                  {t('Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.')}
+                </span>
+              </label>
+            )}
             <label>
               {t('Senha')}
               <input
@@ -149,23 +191,19 @@ export function AuthScreen({
               para quem digitou o endereço do Syden na mão — e aí ele é mesmo necessário, porque é o que
               separa "fui convidado" de "achei o site".
             */}
-            {mode === 'register' &&
-              (initialInviteCode ? (
-                <p className="auth-convidado">
-                  <Ticket size={16} aria-hidden="true" />
-                  {t('Você foi convidado. É só escolher um nome e uma senha.')}
-                </p>
-              ) : (
-                <label>
-                  {cadastroAberto ? t('Código de convite (opcional)') : t('Código de convite')}
-                  <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} />
-                  <span className="auth-hint">
-                    {cadastroAberto
-                      ? t('Tem um código de amigo? Ele já te coloca na comunidade dele. Sem código, você entra e cria a sua.')
-                      : t('O código que um amigo te passou. Ele já te coloca na comunidade dele.')}
-                  </span>
-                </label>
-              ))}
+            {/*
+              O CAMPO DE CÓDIGO SAIU DAQUI, e o código não sumiu: ele continua chegando pelo LINK de
+              convite (?convite=…), que é como as pessoas de fato compartilham, e continua podendo ser
+              digitado DENTRO do app, em "Adicionar comunidade". Tirar da porta de entrada deixa o
+              cadastro com três campos em vez de quatro, e nenhum deles opcional — que é o que faz uma
+              tela de cadastro parecer séria.
+            */}
+            {mode === 'register' && initialInviteCode && (
+              <p className="auth-convidado">
+                <Ticket size={16} aria-hidden="true" />
+                {t('Você foi convidado. É só escolher um nome, um e-mail e uma senha.')}
+              </p>
+            )}
 
             {/* Só existe se o servidor tiver chave configurada. Na maioria das vezes resolve sozinho. */}
             {mode === 'register' && turnstileSiteKey && <Turnstile siteKey={turnstileSiteKey} aoResolver={setTurnstileToken} />}

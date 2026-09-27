@@ -58,6 +58,20 @@ export const config = {
     resendKey: process.env.RESEND_API_KEY ?? '',
     // Enquanto não houver domínio próprio, o endereço de teste do Resend só entrega para o dono da conta.
     remetente: process.env.EMAIL_FROM || 'Syden <onboarding@resend.dev>',
+    /**
+     * O cadastro exige confirmar o e-mail antes de entrar?
+     *
+     * **Segue o envio, e isso é uma trava de segurança, não conveniência.** Se ficasse sempre ligado,
+     * um dia sem chave do Resend — ou com a conta do Resend suspensa — viraria um Syden onde NINGUÉM
+     * MAIS CONSEGUE SE CADASTRAR: a conta nasceria trancada e o link para destrancá-la nunca sairia.
+     * Ninguém veria erro nenhum; as pessoas simplesmente sumiriam na porta.
+     *
+     * Dá para forçar pela variável, o que os testes usam para exercitar a regra sem mandar e-mail de
+     * verdade. Em produção, deixe em branco: seguir o envio é o comportamento certo.
+     */
+    exigirConfirmacao: process.env.EXIGIR_CONFIRMACAO_EMAIL
+      ? ligado(process.env.EXIGIR_CONFIRMACAO_EMAIL)
+      : Boolean(process.env.RESEND_API_KEY),
   },
   /** Endereço do site, para montar os links que vão dentro do e-mail. */
   siteUrl: (process.env.SITE_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173').trim().replace(/\/$/, ''),

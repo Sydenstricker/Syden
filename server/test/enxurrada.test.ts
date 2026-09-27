@@ -38,7 +38,12 @@ describe('enxurrada de pedidos do mesmo lugar', () => {
     const r = await app.inject({
       method: 'POST',
       url: '/api/auth/register',
-      payload: { username: 'depois-da-enxurrada', password: 'segredo123', inviteCode: 'convite-de-teste' },
+      payload: {
+        username: 'depois-da-enxurrada',
+        password: 'segredo123',
+        email: 'depois@exemplo.teste',
+        inviteCode: 'convite-de-teste',
+      },
     });
     assert.equal(r.statusCode, 429);
   });

@@ -40,7 +40,7 @@ const cadastrar = (username: string, turnstile?: string) =>
   app.inject({
     method: 'POST',
     url: '/api/auth/register',
-    payload: { username, password: 'segredo123', inviteCode: CONVITE, turnstile },
+    payload: { username, password: 'segredo123', email: `${username}@exemplo.teste`, inviteCode: CONVITE, turnstile },
   });
 
 describe('verificação de pessoa no cadastro', () => {

@@ -16,7 +16,7 @@ describe('porta de entrada', () => {
     const resposta = await app.inject({
       method: 'POST',
       url: '/api/auth/register',
-      payload: { username: 'intruso', password: 'segredo123', inviteCode: 'chute' },
+      payload: { username: 'intruso', password: 'segredo123', email: 'intruso@exemplo.teste', inviteCode: 'chute' },
     });
     assert.equal(resposta.statusCode, 403);
   });
@@ -25,17 +25,19 @@ describe('porta de entrada', () => {
     const resposta = await app.inject({
       method: 'POST',
       url: '/api/auth/register',
-      payload: { username: 'ana', password: 'segredo123', inviteCode: CONVITE },
+      payload: { username: 'ana', password: 'segredo123', email: 'ana@exemplo.teste', inviteCode: CONVITE },
     });
-    assert.equal(resposta.statusCode, 200);
-    assert.ok(resposta.json().token, 'devia vir com token de sessão');
+    assert.equal(resposta.statusCode, 200, resposta.body);
+    // O token NÃO vem aqui: vem depois de confirmar o e-mail. É o portão novo do cadastro.
+    assert.equal(resposta.json().precisaConfirmar, true);
+    assert.equal(resposta.json().token, undefined);
   });
 
   it('recusa senha curta demais', async () => {
     const resposta = await app.inject({
       method: 'POST',
       url: '/api/auth/register',
-      payload: { username: 'curta', password: '123', inviteCode: CONVITE },
+      payload: { username: 'curta', password: '123', email: 'curta@exemplo.teste', inviteCode: CONVITE },
     });
     assert.equal(resposta.statusCode, 400);
   });
@@ -44,7 +46,7 @@ describe('porta de entrada', () => {
     const resposta = await app.inject({
       method: 'POST',
       url: '/api/auth/register',
-      payload: { username: 'ANA', password: 'segredo123', inviteCode: CONVITE },
+      payload: { username: 'ANA', password: 'segredo123', email: 'outra@exemplo.teste', inviteCode: CONVITE },
     });
     assert.equal(resposta.statusCode, 409, 'o nome não diferencia maiúscula de minúscula');
   });

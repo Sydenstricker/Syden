@@ -27,6 +27,9 @@ export async function servidorDeTeste() {
   process.env.FREIO_EMAILS_POR_ENDERECO ??= '10000';
   process.env.FREIO_EMAILS_POR_CAIXA ??= '10000';
   process.env.FREIO_CADASTROS_POR_DIA ??= '10000';
+  // A confirmação de e-mail segue o envio, que nos testes não existe. Aqui ela é FORÇADA, para os
+  // testes exercitarem a regra de verdade sem precisar de caixa de entrada — o link volta na resposta.
+  process.env.EXIGIR_CONFIRMACAO_EMAIL ??= 'sim';
 
   const { buildApp } = await import('../src/app.js');
 
@@ -64,16 +67,38 @@ export async function servidorDeTeste() {
   };
 }
 
-/** Cria uma conta e devolve o token dela, que é o que as rotas autenticadas pedem. */
+/**
+ * Cria uma conta PRONTA PARA USAR e devolve o token dela.
+ *
+ * São três passos, e não um, porque cadastro agora exige e-mail confirmado: criar, abrir o link de
+ * confirmação e entrar. Fora de produção o servidor devolve o link na própria resposta, justamente
+ * para o teste poder seguir o caminho sem caixa de entrada — em produção ele nunca sai de lá.
+ *
+ * Os testes que querem exercitar a confirmação em si não usam esta função: chamam as rotas na mão.
+ */
 export async function criarConta(app: FastifyInstance, username: string, password = 'segredo123') {
-  const resposta = await app.inject({
+  const cadastro = await app.inject({
     method: 'POST',
     url: '/api/auth/register',
-    payload: { username, password, inviteCode: CONVITE },
+    payload: { username, password, email: `${username}@exemplo.teste`, inviteCode: CONVITE },
   });
-  if (resposta.statusCode !== 200) throw new Error(`não consegui criar ${username}: ${resposta.body}`);
-  const { token, user } = resposta.json();
+  if (cadastro.statusCode !== 200) throw new Error(`não consegui criar ${username}: ${cadastro.body}`);
+
+  const codigo = codigoDoLink(cadastro.json().link);
+  const confirmada = await app.inject({ method: 'POST', url: '/api/auth/confirmar-email', payload: { codigo } });
+  if (confirmada.statusCode !== 200) throw new Error(`não consegui confirmar ${username}: ${confirmada.body}`);
+
+  const entrada = await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username, password } });
+  if (entrada.statusCode !== 200) throw new Error(`não consegui entrar como ${username}: ${entrada.body}`);
+  const { token, user } = entrada.json();
   return { token, user, password };
+}
+
+/** O código dentro do link de confirmação (…/?confirmar=XXXX). */
+export function codigoDoLink(link: string | undefined): string {
+  const codigo = link ? new URL(link).searchParams.get('confirmar') : null;
+  if (!codigo) throw new Error('a resposta não trouxe o link de confirmação: ' + link);
+  return codigo;
 }
 
 /** Atalho para um pedido autenticado. */
