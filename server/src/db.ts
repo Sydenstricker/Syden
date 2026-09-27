@@ -3181,36 +3181,78 @@ export function desfazerAmizade(a: number, b: number): boolean {
 }
 
 /**
- * Quem poderia ser seu amigo: gente que divide comunidade com você e ainda não tem relação nenhuma.
+ * Quem poderia ser seu amigo, e por quê.
  *
- * A sugestão sai SÓ de comunidades em comum, e isso é decisão de privacidade, não de algoritmo. Uma
- * lista de "pessoas que talvez você conheça" montada sobre o Syden inteiro entregaria a existência de
- * estranhos a estranhos — quem se cadastrou ontem apareceria na tela de alguém que nunca o viu.
- * Dividir comunidade já significa que vocês se veem na lista de membros.
+ * DUAS ORIGENS, e a ordem entre elas não é detalhe:
  *
- * Ordena por quantas comunidades vocês dividem: duas em comum é um conhecido melhor do que uma.
+ *   1. quem você JÁ CONVERSOU em conversa privada. É o sinal mais forte que existe — vocês já se
+ *      falam, só não há nada guardado dizendo isso. Vem primeiro na lista.
+ *   2. quem divide comunidade com você, ordenado por quantas: duas em comum é um conhecido melhor
+ *      do que uma.
+ *
+ * O QUE NÃO ENTRA, e é decisão de privacidade e não limitação: qualquer pessoa com quem você não
+ * tenha nenhuma dessas duas ligações. Uma lista de "pessoas que talvez você conheça" montada sobre o
+ * Syden inteiro entregaria a existência de estranhos a estranhos — quem se cadastrou ontem apareceria
+ * na tela de alguém que nunca o viu. Dividir comunidade já significa que vocês se veem na lista de
+ * membros; ter conversado significa muito mais que isso.
+ *
+ * Mensagem em canal de comunidade NÃO é uma terceira origem: quem escreve num canal já é membro dela,
+ * então já está coberto pela segunda — e usar "escreveu perto de você" acabaria sugerindo alguém que
+ * você nunca notou num canal de mil pessoas.
  */
-export function sugestoesDeAmizade(userId: number, limite = 12): { userId: number; username: string; avatarVersion: number | null; emComum: number }[] {
+export interface SugestaoDeAmizade {
+  userId: number;
+  username: string;
+  avatarVersion: number | null;
+  /** Quantas comunidades vocês dividem. Pode ser zero quando a ligação é só a conversa privada. */
+  emComum: number;
+  /** Vocês já têm uma conversa privada aberta. É o motivo mais forte, e a tela diz isso. */
+  jaConversaram: boolean;
+}
+
+export function sugestoesDeAmizade(userId: number, limite = 12): SugestaoDeAmizade[] {
+  // Uma consulta só, com as duas origens somadas por UNION ALL e depois agrupadas: assim quem
+  // aparece pelos dois motivos vira uma linha, e não duas.
   return db
     .prepare(
-      `SELECT u.id AS userId, u.username AS username, u.avatar_version AS avatarVersion,
-              COUNT(DISTINCT m.community_id) AS emComum
-         FROM community_members m
-         JOIN community_members meus ON meus.community_id = m.community_id AND meus.user_id = ?
-         JOIN users u ON u.id = m.user_id
-        WHERE m.user_id <> ?
-          AND NOT EXISTS (
-            SELECT 1 FROM friendships f
-             WHERE (f.menor_id = MIN(?, u.id) AND f.maior_id = MAX(?, u.id))
-          )
+      `WITH candidatos AS (
+         -- 1. Quem divide comunidade.
+         SELECT m.user_id AS id, m.community_id AS comunidade, 0 AS conversa
+           FROM community_members m
+           JOIN community_members meus
+             ON meus.community_id = m.community_id AND meus.user_id = ?
+          WHERE m.user_id <> ?
+
+         UNION ALL
+
+         -- 2. Quem já está numa conversa privada com você. Vale para a conversa de dois e para o
+         --    grupo: nos dois casos vocês já trocaram mensagem no mesmo lugar.
+         SELECT cm.user_id AS id, NULL AS comunidade, 1 AS conversa
+           FROM channel_members cm
+           JOIN channels ch ON ch.id = cm.channel_id AND ch.type = 'dm'
+           JOIN channel_members meus ON meus.channel_id = ch.id AND meus.user_id = ?
+          WHERE cm.user_id <> ?
+       )
+       SELECT u.id                                AS userId,
+              u.username                          AS username,
+              u.avatar_version                    AS avatarVersion,
+              COUNT(DISTINCT c.comunidade)        AS emComum,
+              MAX(c.conversa)                     AS jaConversaram
+         FROM candidatos c
+         JOIN users u ON u.id = c.id
+        WHERE NOT EXISTS (
+                SELECT 1 FROM friendships f
+                 WHERE f.menor_id = MIN(?, u.id) AND f.maior_id = MAX(?, u.id)
+              )
         GROUP BY u.id
-        ORDER BY emComum DESC, u.username COLLATE NOCASE
+        -- Quem você já conversou vem antes de quem só divide comunidade.
+        ORDER BY jaConversaram DESC, emComum DESC, u.username COLLATE NOCASE
         LIMIT ?`,
     )
-    .all(userId, userId, userId, userId, limite) as unknown as {
-    userId: number;
-    username: string;
-    avatarVersion: number | null;
-    emComum: number;
-  }[];
+    .all(userId, userId, userId, userId, userId, userId, limite)
+    .map((l) => {
+      const linha = l as { userId: number; username: string; avatarVersion: number | null; emComum: number; jaConversaram: number };
+      // O SQLite devolve 0 e 1 no lugar de booleano; a tela não precisa saber disso.
+      return { ...linha, jaConversaram: Boolean(linha.jaConversaram) };
+    });
 }

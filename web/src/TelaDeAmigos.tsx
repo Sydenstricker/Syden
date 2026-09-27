@@ -17,6 +17,20 @@ interface Sugestao {
   username: string;
   avatarVersion: number | null;
   emComum: number;
+  /** Vocês já têm conversa privada: é o motivo mais forte, e vem escrito na tela. */
+  jaConversaram: boolean;
+}
+
+/**
+ * Por que esta pessoa apareceu.
+ *
+ * Dizer o motivo não é enfeite. Sem ele, uma lista de nomes parece o Syden entregando gente ao
+ * acaso — e a primeira pergunta de quem olha é "por que esta pessoa está aqui?". Com o motivo
+ * escrito, ela reconhece a ligação e decide com informação em vez de desconfiança.
+ */
+function porQue(s: Sugestao): string {
+  if (s.jaConversaram) return s.emComum > 0 ? 'vocês já conversam · mesma comunidade' : 'vocês já conversam';
+  return s.emComum === 1 ? '1 comunidade em comum' : `${s.emComum} comunidades em comum`;
 }
 
 type Aba = 'amigos' | 'pedidos' | 'adicionar';
@@ -231,9 +245,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 <Avatar name={s.username} userId={s.userId} size={36} />
                 <span className="amigos-nome">
                   {s.username}
-                  <small>
-                    {s.emComum} {s.emComum === 1 ? 'comunidade em comum' : 'comunidades em comum'}
-                  </small>
+                  <small>{porQue(s)}</small>
                 </span>
                 <button className="btn-sutil" disabled={ocupado} onClick={() => pedir(s.username)}>
                   <UserPlus size={15} aria-hidden="true" /> Adicionar

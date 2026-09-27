@@ -144,3 +144,62 @@ describe('sugestões', () => {
     assert.ok(!sugestoes.some((s: { userId: number }) => s.userId === zecaId));
   });
 });
+
+describe('quem você já conversou entra nas sugestões, e vem primeiro', () => {
+  it('conversa privada mantém a sugestão mesmo depois de sair da comunidade', async () => {
+    const db = await import('../src/db.js');
+    const caio = await criarConta(app, 'caio');
+    const oCaio = comToken(app, caio.token);
+
+    // Enquanto dividem comunidade, os dois abrem uma conversa privada.
+    const conversa = await oCaio('POST', '/api/direct', { userIds: [anaId] });
+    assert.equal(conversa.statusCode, 200, conversa.body);
+
+    // Agora o Caio sai de todas as comunidades. Sem a conversa, ele sumiria das sugestões da Ana —
+    // e é justamente esse o caso que a segunda origem existe para cobrir: gente com quem ela já
+    // fala, mas que deixou de dividir um lugar com ela.
+    for (const c of db.listCommunitiesForUser(caio.user.id)) db.removeMember(c.id, caio.user.id);
+
+    const sugestoes = (await ana('GET', '/api/amigos')).json().sugestoes;
+    const oQueVeio = sugestoes.find((s: { username: string }) => s.username === 'caio');
+    assert.ok(oQueVeio, 'sumiu das sugestões alguém com quem ela já conversa');
+    assert.equal(oQueVeio.jaConversaram, true);
+    assert.equal(oQueVeio.emComum, 0, 'não divide comunidade nenhuma, e ainda assim foi sugerido');
+  });
+  it('quem já conversou vem antes de quem só divide comunidade', async () => {
+    const sugestoes = (await ana('GET', '/api/amigos')).json().sugestoes;
+    const posicaoDoCaio = sugestoes.findIndex((s: { username: string }) => s.username === 'caio');
+    const primeiroSemConversa = sugestoes.findIndex((s: { jaConversaram: boolean }) => !s.jaConversaram);
+    if (primeiroSemConversa >= 0) {
+      assert.ok(posicaoDoCaio < primeiroSemConversa, 'a conversa privada é o sinal mais forte e devia vir antes');
+    }
+  });
+
+  it('quem aparece pelos dois motivos vira UMA linha, não duas', async () => {
+    const sugestoes = (await ana('GET', '/api/amigos')).json().sugestoes;
+    const nomes = sugestoes.map((s: { username: string }) => s.username);
+    assert.equal(new Set(nomes).size, nomes.length, 'a mesma pessoa apareceu mais de uma vez');
+  });
+});
+
+describe('ser amigo dá direito de conversar', () => {
+  it('amigos aceitos conversam mesmo sem dividir comunidade nenhuma', async () => {
+    const db = await import('../src/db.js');
+    const duda = await criarConta(app, 'duda');
+    const aDuda = comToken(app, duda.token);
+    for (const c of db.listCommunitiesForUser(duda.user.id)) db.removeMember(c.id, duda.user.id);
+
+    // Sem nenhuma ligação, a porta está fechada — é a regra que impede mensagem de estranho.
+    assert.equal((await aDuda('POST', '/api/direct', { userIds: [anaId] })).statusCode, 403);
+
+    // Um pedido PENDENTE não abre a porta. Se abrisse, mandar pedido viraria a forma de furar a
+    // regra: qualquer um alcançaria qualquer um sem que o outro tivesse dito sim.
+    await aDuda('POST', '/api/amigos', { username: 'ana' });
+    assert.equal((await aDuda('POST', '/api/direct', { userIds: [anaId] })).statusCode, 403);
+
+    // Aceita dos dois lados, a conversa abre.
+    assert.equal((await ana('POST', `/api/amigos/${duda.user.id}/aceitar`)).statusCode, 200);
+    const conversa = await aDuda('POST', '/api/direct', { userIds: [anaId] });
+    assert.equal(conversa.statusCode, 200, conversa.body);
+  });
+});

@@ -13,8 +13,23 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
 
-    /** Só dá para conversar com quem divide alguma comunidade com você — nada de mensagem de estranho. */
-    function sharesCommunity(a: number, b: number) {
+    /**
+     * Você pode conversar com esta pessoa?
+     *
+     * Duas portas, e nenhuma delas abre para estranho:
+     *
+     *   - dividir alguma comunidade — a regra original, que impede mensagem de quem você nunca viu;
+     *   - **ser amigo aceito** — os dois disseram sim, um de cada vez.
+     *
+     * A segunda porta entrou junto com as amizades, e sem ela a coisa ficava pela metade: dava para
+     * ser amigo de alguém e não poder falar com ele, bastando um dos dois sair da comunidade onde se
+     * conheceram. Amizade que não sobrevive a isso não serve para nada.
+     *
+     * Repare que pedido PENDENTE não conta. Se contasse, mandar um pedido viraria a maneira de abrir
+     * conversa com qualquer um — exatamente o que estas duas portas existem para impedir.
+     */
+    function podeConversar(a: number, b: number) {
+      if (db.amizadeEntre(a, b)?.situacao === 'aceita') return true;
       const mine = new Set(db.communityIdsForUser(a));
       return db.communityIdsForUser(b).some((id) => mine.has(id));
     }
@@ -137,8 +152,8 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       }
       for (const id of wanted) {
         if (!db.findUserById(id)) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
-        if (!sharesCommunity(request.user.id, id)) {
-          return reply.code(403).send({ error: 'Você só pode conversar com quem está numa comunidade sua.' });
+        if (!podeConversar(request.user.id, id)) {
+          return reply.code(403).send({ error: 'Você só conversa com quem divide uma comunidade com você ou já é seu amigo.' });
         }
       }
 
@@ -177,7 +192,7 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       if (!channel) return reply.code(404).send({ error: 'Conversa não encontrada.' });
       const userId = Number(request.body?.userId);
       if (!db.findUserById(userId)) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
-      if (!sharesCommunity(request.user.id, userId)) {
+      if (!podeConversar(request.user.id, userId)) {
         return reply.code(403).send({ error: 'Você só pode chamar quem está numa comunidade sua.' });
       }
       const members = db.channelMemberIds(channel.id);
