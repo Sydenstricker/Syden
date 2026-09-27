@@ -18,6 +18,7 @@
 // Sai em e2e/fotos/loja/1-inicio.png … 4-loja.png
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright-core';
+import { dispensarPresentes } from './ajuda.mjs';
 
 const SITE = process.env.SITE ?? 'https://syden.chat';
 const USUARIO = process.env.SYDEN_USUARIO;
@@ -70,7 +71,16 @@ await page.getByRole('button', { name: 'Entrar', exact: true }).click();
 
 // A vila é a tela inicial: quando ela aparece, a conta entrou.
 await page.locator('.vila').waitFor({ timeout: 45_000 });
-console.log('Entrou como ' + USUARIO + '\n');
+console.log('Entrou como ' + USUARIO);
+
+// A conta de teste caiu entre as 25 primeiras, então a tela do presente cobre o Syden logo na
+// entrada. Sem dispensá-la, ela fica na frente de tudo e nenhum clique chega ao que está embaixo —
+// foi assim que a primeira tentativa deste script morreu, esperando um botão que o próprio
+// Playwright dizia estar "visível, habilitado e estável", e que simplesmente tinha um diálogo por
+// cima. O revisor da Microsoft vai ver essa mesma tela, e tudo bem: é o Syden dando as boas-vindas.
+// Só não serve para a foto.
+await dispensarPresentes(page);
+console.log('Presentes dispensados\n');
 
 // ---------- O aviso de privacidade ----------
 //
