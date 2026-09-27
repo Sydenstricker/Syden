@@ -114,8 +114,10 @@ export function AuthScreen({
                         });
                       }}
                     >
-                      <MarcaSocial provedor={provedor} />
-                      {indoPara === provedor ? t('Abrindo…') : `Entrar com ${NOMES[provedor]}`}
+                      <span className="auth-social-conteudo">
+                        <MarcaSocial provedor={provedor} size={20} />
+                        <span>{indoPara === provedor ? t('Abrindo…') : `Entrar com ${NOMES[provedor]}`}</span>
+                      </span>
                     </button>
                     {AVISOS[provedor] && <small className="auth-social-aviso">{AVISOS[provedor]}</small>}
                     </span>

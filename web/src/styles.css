@@ -7937,16 +7937,33 @@ textarea {
   color: var(--text-muted);
 }
 
-/* O logo e o texto no mesmo eixo, e o logo sem encolher quando o nome é comprido. */
+/*
+ * Os quatro botões com os logos e os textos EM COLUNA, um debaixo do outro.
+ *
+ * Centralizar o conjunto "logo + texto" parece a coisa certa e não é: como "Entrar com Google" e
+ * "Entrar com Steam" têm larguras diferentes, cada logo para num ponto diferente e a pilha fica
+ * torta. A correção é um bloco de largura fixa, centralizado no botão, com o logo numa coluna
+ * própria — aí os quatro logos ficam na mesma vertical e os quatro textos começam no mesmo ponto.
+ */
 .auth-social-botao {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  display: block;
 }
 
-.auth-social-botao svg {
-  flex: none;
+.auth-social-conteudo {
+  display: grid;
+  /* Coluna fixa para o logo, resto para o texto, tudo ancorado À ESQUERDA.
+     Centralizar não resolve: o bloco tem a largura do texto, e "Entrar com Steam" é mais curto que
+     "Entrar com Discord" — cada botão centralizaria uma largura diferente e a pilha ficaria torta de
+     novo, só que por poucos pixels, que é o pior tipo de torto. */
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding-left: 22px;
+  text-align: left;
+}
+
+.auth-social-conteudo svg {
+  justify-self: center;
 }
 
 /* ---------- "Entrar com", nas configurações da conta ---------- */
