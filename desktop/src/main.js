@@ -61,7 +61,20 @@ if (!app.requestSingleInstanceLock()) {
     stopScreenAudio();
   });
   app.whenReady().then(() => {
-    app.setAppUserModelId(APP_USER_MODEL_ID);
+    /*
+     * INSTALADO PELA MICROSOFT STORE, NÃO SE MEXE NISTO.
+     *
+     * Num pacote MSIX quem define a identidade é o próprio pacote, e o Windows a registra sozinho
+     * (algo como "SydenstrickerLabs.Syden_xxxx!Syden"). Escrever outra por cima não dá erro nenhum —
+     * mas as notificações param de aparecer, porque o Windows só entrega notificação para uma
+     * identidade que ele mesmo registrou.
+     *
+     * Seria um defeito calado e difícil de achar: o app abre, a voz funciona, tudo parece certo, e só
+     * os avisos de mensagem nunca chegam. A certificação da Store não pegaria isso.
+     *
+     * `process.windowsStore` é como o Electron conta que está rodando empacotado.
+     */
+    if (!process.windowsStore) app.setAppUserModelId(APP_USER_MODEL_ID);
     Menu.setApplicationMenu(null);
     setupPermissions();
     setupScreenShare();
