@@ -77,13 +77,46 @@ async function graphql(query, variables) {
 }
 
 // ---------- 1. O token serve, e para quê? ----------
+//
+// O VALOR NUNCA É IMPRESSO. O que se imprime é o tamanho e os defeitos de colagem — aspas que vieram
+// junto, espaço sobrando —, porque é isso que resolve o problema sem pôr o segredo na tela nem no
+// histórico do terminal. Já aconteceu neste projeto de um segredo estar errado e a pista ter sido
+// justamente o número de caracteres.
 console.log('1) Conferindo o token\n');
-const vistoria = await rest('/user/tokens/verify');
+console.log(`   tamanho: ${TOKEN.length} caracteres`);
+if (/^["']|["']$/.test(TOKEN)) console.log('   ATENÇÃO: veio com aspas. Tire as aspas do .env.');
+if (TOKEN !== TOKEN.trim()) console.log('   ATENÇÃO: tem espaço sobrando no começo ou no fim.');
+if (/\s/.test(TOKEN.trim())) console.log('   ATENÇÃO: tem espaço no meio — a colagem provavelmente cortou.');
+
+// DOIS TIPOS DE TOKEN, DOIS ENDEREÇOS.
+//
+// O formato novo da Cloudflare é `cfat_` + 40 caracteres + 8 de conferência (53 ao todo), e é um token
+// DE CONTA, criado em Manage Account -> Account API Tokens. Ele NÃO se valida em /user/tokens/verify:
+// esse endereço é só para token de usuário, e responde "Invalid API Token" a um token de conta que
+// está perfeitamente bom. O engano custa tempo porque a mensagem parece dizer que o token é ruim.
+//
+// Um token de conta também não enxerga /accounts, então o identificador da conta tem de vir de fora:
+// ele está na barra de endereço do painel, logo depois de dash.cloudflare.com/.
+const CONTA = env.CLOUDFLARE_ACCOUNT_ID;
+const deConta = TOKEN.startsWith('cfat_');
+
+if (deConta && !CONTA) {
+  console.error('\n   Este é um token DE CONTA (começa com cfat_), e para validá-lo preciso do');
+  console.error('   identificador da conta. Ele está na barra de endereço do painel da Cloudflare:');
+  console.error('     dash.cloudflare.com/ESTE-PEDACO-AQUI/...');
+  console.error('   Escreva no .env: CLOUDFLARE_ACCOUNT_ID=esse-valor  e rode de novo.');
+  process.exit(1);
+}
+
+const vistoria = await rest(CONTA ? `/accounts/${CONTA}/tokens/verify` : '/user/tokens/verify');
+console.log(`   tipo: ${deConta ? 'token de conta (cfat_)' : 'token de usuário'}`);
 console.log(`   situação: ${vistoria.status}`);
+if (vistoria.expires_on) console.log(`   vence em: ${new Date(vistoria.expires_on).toLocaleDateString('pt-BR')}`);
 
 // ---------- 2. Qual conta, e qual o identificador do site ----------
 console.log('\n2) Contas e sites com medição ligada\n');
-const contas = await rest('/accounts');
+// Com token de conta, /accounts não responde: ele já nasce preso a uma conta só. Usa a que veio no .env.
+const contas = CONTA ? [{ id: CONTA, name: '(a do .env)' }] : await rest('/accounts');
 for (const conta of contas) {
   console.log(`   conta: ${conta.name}`);
   console.log(`   CLOUDFLARE_ACCOUNT_ID=${conta.id}`);

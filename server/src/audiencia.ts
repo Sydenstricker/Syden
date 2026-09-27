@@ -34,6 +34,7 @@ import { config } from './config.js';
 
 const GRAPHQL = 'https://api.cloudflare.com/client/v4/graphql';
 const VERIFICAR = 'https://api.cloudflare.com/client/v4/user/tokens/verify';
+const CONTAS = 'https://api.cloudflare.com/client/v4/accounts';
 const CACHE_MS = 5 * 60_000;
 /** Quantos dias o painel mostra. A Cloudflare guarda bem mais, mas o gráfico fica ilegível. */
 const DIAS = 7;
@@ -172,18 +173,27 @@ export function avisoDaChave(expiraEm: unknown, agora: Date): AvisoDaChave | nul
  * é uma instrução, "erro ao consultar" não é. No sucesso, é de onde sai o aviso antecipado.
  */
 async function estadoDaChave(): Promise<{ status: string; expiraEm: unknown } | null> {
-  try {
-    const r = await fetch(VERIFICAR, {
-      headers: { authorization: `Bearer ${config.cloudflare.apiToken}` },
-      signal: AbortSignal.timeout(10_000),
-    });
-    const corpo = (await r.json()) as { result?: { status?: string; expires_on?: unknown }; errors?: { code?: number }[] };
-    // 1000 é "token inválido"; um token vencido também cai aqui, e a Cloudflare não distingue os dois.
-    if (!corpo.result?.status) return { status: r.status === 401 || r.status === 403 ? 'expired' : 'desconhecido', expiraEm: null };
-    return { status: corpo.result.status, expiraEm: corpo.result.expires_on };
-  } catch {
-    return null;
+  // DOIS TIPOS DE TOKEN, DOIS ENDEREÇOS. O formato novo da Cloudflare é `cfat_...`, um token DE CONTA,
+  // e ele não se valida em /user/tokens/verify — esse endereço é só para token de usuário, e responde
+  // "Invalid API Token" a um token de conta perfeitamente válido. O de conta vem primeiro porque é o
+  // que o painel cria hoje; o de usuário fica como reserva para quem tiver um token antigo.
+  for (const onde of [`${CONTAS}/${config.cloudflare.accountId}/tokens/verify`, VERIFICAR]) {
+    try {
+      const r = await fetch(onde, {
+        headers: { authorization: `Bearer ${config.cloudflare.apiToken}` },
+        signal: AbortSignal.timeout(10_000),
+      });
+      const corpo = (await r.json()) as { result?: { status?: string; expires_on?: unknown } };
+      if (corpo.result?.status) return { status: corpo.result.status, expiraEm: corpo.result.expires_on };
+    } catch {
+      // Rede ruim não é token vencido. Tenta o outro endereço.
+    }
   }
+
+  // NUNCA deduzir "venceu" de um erro. Um endereço errado, uma queda de rede ou uma permissão a menos
+  // responderiam igual — e o painel gritaria "a chave venceu" mandando trocar uma chave que está boa,
+  // que é pior do que não avisar nada. Vencido só quando a Cloudflare escreve `expired`.
+  return null;
 }
 
 export async function audiencia(): Promise<Audiencia | null> {
