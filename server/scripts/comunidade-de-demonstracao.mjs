@@ -179,6 +179,33 @@ CONVERSA.forEach(([quem, texto], i) => {
 });
 console.log(`${CONVERSA.length} mensagens escritas em #geral.`);
 
+// ---------- A prova ----------
+//
+// O script tenta entrar com a senha que acabou de definir, batendo na API de verdade.
+//
+// Existe porque escrever no banco e imprimir um texto não prova nada: a senha pode estar num
+// formato que o servidor não reconhece, a conta pode estar barrada por confirmação de e-mail, ou o
+// script pode ter escrito numa coluna que ninguém lê. Sem esta conferência, o primeiro a descobrir
+// seria quem tentasse usar a senha do outro lado — e ele não teria como saber de quem é a culpa.
+const API_LOCAL = process.env.API_LOCAL ?? 'http://localhost:3001';
+try {
+  const resposta = await fetch(`${API_LOCAL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ username: GENTE[0], password: SENHA }),
+  });
+  if (resposta.ok) {
+    console.log(`\nConferido: ${GENTE[0]} consegue entrar com esta senha.`);
+  } else {
+    const erro = await resposta.text();
+    console.log(`\nATENÇÃO: a senha NÃO funcionou (${resposta.status}). O servidor disse: ${erro.slice(0, 200)}`);
+    console.log('Não adianta usá-la; me mostre esta mensagem.');
+  }
+} catch (erro) {
+  console.log(`\n(não deu para conferir a senha daqui: ${erro.message})`);
+  console.log('Não é necessariamente um problema — pode ser só o endereço interno da API.');
+}
+
 console.log('');
 console.log('Pronto. Agora tire as fotos apontando para esta comunidade:');
 console.log('  node e2e/capturas-da-loja.mjs');

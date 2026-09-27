@@ -60,7 +60,26 @@ async function pedir(caminho, corpo, token) {
 //
 // Precisa de alguém logado para listar os canais, e a primeira pessoa da lista serve.
 console.log(`Entrando como ${GENTE[0]} para achar a sala…`);
-const primeira = await pedir('/api/auth/login', { username: GENTE[0], password: SENHA });
+// O tamanho, e não o valor: é o que permite ver uma colagem com espaço sobrando sem pôr a senha na
+// tela. A impressa pelo servidor tem 16 caracteres.
+console.log(`  (a senha recebida tem ${SENHA.length} caracteres)`);
+
+let primeira;
+try {
+  primeira = await pedir('/api/auth/login', { username: GENTE[0], password: SENHA });
+} catch (erro) {
+  console.error(`\n${erro.message}\n`);
+  console.error('A senha não bate. As causas, em ordem de frequência:\n');
+  console.error('  1. O container do servidor não foi reconstruído depois do git pull. Os scripts');
+  console.error('     ficam DENTRO da imagem, e o git pull sozinho não os troca:\n');
+  console.error('       cd /opt/janja/deploy && docker compose up -d --build --wait');
+  console.error('       docker compose exec api node scripts/comunidade-de-demonstracao.mjs\n');
+  console.error('     A versão nova imprime uma linha "Senha:" no fim, e confere sozinha se ela');
+  console.error('     funciona. Se essa linha não apareceu, é este o caso.\n');
+  console.error('  2. A senha veio com espaço ou quebra de linha na colagem. Compare o número de');
+  console.error('     caracteres acima com o da senha que o servidor mostrou.\n');
+  process.exit(1);
+}
 
 const comunidades = await pedir('/api/communities', null, primeira.token);
 const comunidade = comunidades.find((c) => c.name === COMUNIDADE);
