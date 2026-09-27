@@ -5,6 +5,15 @@ const ambiente = (import.meta as unknown as { env?: Record<string, string | unde
 
 export const API_URL: string = ambiente?.VITE_API_URL || 'http://localhost:3001';
 
+/**
+ * Quanto tempo se espera por uma resposta antes de desistir.
+ *
+ * Trinta segundos é muito mais do que qualquer resposta legítima do Syden leva — as lentas são as
+ * de enviar arquivo, e mesmo essas ficam bem abaixo. E é muito menos do que a paciência de quem
+ * está olhando uma tela parada sem nada escrito.
+ */
+const TEMPO_LIMITE_MS = 30_000;
+
 const TOKEN_KEY = 'janja.token';
 
 export function loadToken(): string | null {
@@ -42,7 +51,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function api<T>(path: string, options: { method?: string; body?: unknown; token?: string | null } = {}) {
+export async function api<T>(
+  path: string,
+  options: { method?: string; body?: unknown; token?: string | null; signal?: AbortSignal } = {},
+) {
   const token = options.token === undefined ? loadToken() : options.token;
   let response: Response;
   try {
@@ -53,8 +65,22 @@ export async function api<T>(path: string, options: { method?: string; body?: un
         ...(token && { authorization: `Bearer ${token}` }),
       },
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      // PRAZO. Sem ele o fetch espera para sempre, e "para sempre" é um estado que acontece de
+      // verdade: rede que aceita a conexão e não responde, servidor engasgado, túnel de VPN que
+      // caiu no meio. A tela fica carregando sem nada escrito e sem nada a fazer.
+      //
+      // Ficou urgente quando a entrada passou a esperar as preferências antes de montar a tela: um
+      // pedido pendurado ali tranca a pessoa do lado de fora do Syden inteiro, e não só de uma
+      // parte dele. Trinta segundos é muito mais do que qualquer resposta legítima leva, e muito
+      // menos do que a paciência de quem está olhando.
+      signal: options.signal ?? AbortSignal.timeout(TEMPO_LIMITE_MS),
     });
-  } catch {
+  } catch (erro) {
+    // Desistir por prazo e não conseguir falar com o servidor são coisas diferentes para quem lê:
+    // a primeira sugere tentar de novo, a segunda sugere olhar a internet.
+    if (erro instanceof DOMException && erro.name === 'TimeoutError') {
+      throw new ApiError('O servidor demorou demais para responder. Tente de novo.', 0);
+    }
     throw new ApiError('Não foi possível falar com o servidor.', 0);
   }
   const data = await response.json().catch(() => ({}));

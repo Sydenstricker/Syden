@@ -163,12 +163,43 @@ async function trocarIdioma(idioma) {
 
 console.log(`Abrindo ${SITE} em ${LARGURA}x${ALTURA}\n`);
 
-await page.goto(SITE, { waitUntil: 'networkidle', timeout: 45_000 });
-await page.getByLabel('Nome de usuário').fill(USUARIO);
+/**
+ * Quando algo não aparece, MOSTRA O QUE ESTAVA NA TELA.
+ *
+ * "Timeout esperando .vila" descreve o que o script queria e não diz nada sobre o que havia — e o
+ * que havia é a única informação útil. Uma foto e as primeiras linhas de texto respondem em dois
+ * segundos o que a mensagem de erro sozinha custa meia hora.
+ */
+async function desistir(motivo) {
+  const caminho = `${RAIZ}/erro.png`;
+  mkdirSync(RAIZ, { recursive: true });
+  await page.screenshot({ path: caminho }).catch(() => {});
+  const visivel = (await page.locator('body').innerText().catch(() => '')).split('\n').filter(Boolean).slice(0, 12);
+  console.error(`\nPAREI: ${motivo}\n`);
+  console.error('O que estava escrito na tela:');
+  for (const linha of visivel) console.error('  ' + linha);
+  console.error(`\nA tela inteira está em ${caminho}\n`);
+  await browser.close();
+  process.exit(1);
+}
+
+// `domcontentloaded` e não `networkidle`. O Syden nunca fica com a rede em silêncio — há sempre
+// alguma coisa conversando com o servidor —, então esperar silêncio é esperar o que não vem. O que
+// interessa é o campo de entrada existir, e é isso que se espera logo abaixo.
+await page.goto(SITE, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+
+const campoDeNome = page.getByLabel('Nome de usuário');
+if (!(await campoDeNome.waitFor({ timeout: 30_000 }).then(() => true, () => false))) {
+  await desistir('a tela de entrada não apareceu.');
+}
+
+await campoDeNome.fill(USUARIO);
 await page.getByLabel('Senha').fill(SENHA);
 await page.getByRole('button', { name: 'Entrar', exact: true }).click();
 
-await page.locator('.vila').waitFor({ timeout: 45_000 });
+if (!(await page.locator('.vila').waitFor({ timeout: 45_000 }).then(() => true, () => false))) {
+  await desistir(`entrei como "${USUARIO}" e a tela inicial não apareceu. Senha errada, provavelmente.`);
+}
 console.log('Entrou como ' + USUARIO);
 
 // A conta de teste cai entre as 25 primeiras, então o diálogo da insígnia cobre o Syden logo na
