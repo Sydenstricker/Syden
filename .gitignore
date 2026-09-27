@@ -25,3 +25,10 @@ desktop/native/build/
 
 # Vídeos de referência que o Sydenstricker grava para mostrar o que quer (pesados, não versionar).
 video/
+
+# As capturas para a página da Microsoft Store.
+#
+# Ficam de fora do git de propósito: são fotos de conversas dentro do app, e este repositório é
+# público. Mesmo com uma comunidade de demonstração, elas se refazem em um comando
+# (e2e/capturas-da-loja.mjs) e não há por que carregá-las para sempre no histórico.
+e2e/fotos/loja/
