@@ -1,4 +1,16 @@
 
+
+Os três valores de identidade já estão no  — são públicos (o Publisher aparece
+dentro de todo MSIX) e ficam ali para não haver chance de digitar errado na hora de gerar.
+
+**O pacote sai SEM ASSINATURA, e é assim mesmo:** quem assina é a Microsoft, na publicação. A
+consequência prática é que ele **não dá para instalar na sua máquina para testar** — o Windows recusa
+pacote sem assinatura. Quem testa é a certificação da Store.
+
+**Um aviso de erro no fim da geração é esperado** nesta máquina: o electron-builder tenta extrair as
+ferramentas de assinatura, que contêm links simbólicos do macOS, e o Windows recusa criá-los sem Modo
+de Desenvolvedor. O  já foi escrito antes disso. Confira que ele existe em  e
+siga em frente.
 ## Publicar na Microsoft Store (tira o aviso do Windows)
 
 O aviso de "aplicativo não reconhecido" some quando o pacote é assinado por uma autoridade em que o
