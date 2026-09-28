@@ -11,7 +11,7 @@
 // No servidor, dentro do contêiner da API (é lá que o .env está carregado):
 //   docker compose exec api node scripts/conferir-shield.mjs
 
-const ENDERECO = 'https://shield.projectarachnid.ca/v1/media/';
+const ENDERECO = 'https://shield.projectarachnid.com/v1/media/';
 
 const usuario = process.env.SHIELD_USUARIO ?? '';
 const senha = process.env.SHIELD_SENHA ?? '';
@@ -66,7 +66,28 @@ try {
   console.log('Um pixel branco dando "no-known-match" é exatamente o esperado — a resposta certa aqui é');
   console.log('o Shield dizer que não conhece este arquivo. O que se provou foi a credencial e o caminho.');
 } catch (erro) {
-  console.log(`Não deu para falar com o Shield: ${erro.message}`);
-  console.log('Se for tempo esgotado, pode ser a saída de rede do servidor bloqueando HTTPS para fora.');
+  /**
+   * SEPARA OS TRÊS MOTIVOS, porque o Node não separa.
+   *
+   * "fetch failed" é o que ele diz para nome que não existe, para porta fechada e para servidor fora do
+   * ar — três problemas com soluções opostas. Na primeira vez que isto rodou, a mensagem genérica me fez
+   * suspeitar da rede do servidor, e a causa era um domínio escrito errado por mim (.ca em vez de .com).
+   * Uma pergunta ao DNS separa os casos em um segundo.
+   */
+  const causa = erro.cause?.code ?? erro.code ?? '';
+  console.log(`Não deu para falar com o Shield: ${erro.message}${causa ? ' (' + causa + ')' : ''}`);
+  console.log('');
+
+  const { lookup } = await import('node:dns/promises');
+  const dominio = new URL(ENDERECO).hostname;
+  try {
+    const { address } = await lookup(dominio);
+    console.log(`O nome ${dominio} resolve para ${address}, então o DNS está bem.`);
+    console.log('Sobra a saída de rede: o servidor pode estar bloqueando HTTPS para fora, ou o Shield');
+    console.log('está fora do ar. Teste com:  curl -sS -o /dev/null -w "%{http_code}\n" ' + ENDERECO);
+  } catch {
+    console.log(`O nome ${dominio} NÃO RESOLVE. Não é a sua rede: é o endereço.`);
+    console.log('Confira o domínio em server/src/shield.ts — foi exatamente aqui que eu errei uma vez.');
+  }
   process.exit(1);
 }

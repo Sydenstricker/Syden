@@ -32,7 +32,15 @@
 import { createHash } from 'node:crypto';
 import { config } from './config.js';
 
-const ENDERECO = 'https://shield.projectarachnid.ca/v1/media/';
+/**
+ * O endereço, e um aviso para quem for mexer: é **.com**, não .ca.
+ *
+ * Eu escrevi .ca aqui na primeira versão, lido de uma descrição do SDK — e o domínio .ca não existe.
+ * O sintoma foi "fetch failed", sem mais nada: em Node, falha de DNS e servidor fora do ar dão a mesma
+ * mensagem. Parecia bloqueio de rede do servidor, e era um domínio errado. Os termos de uso diziam
+ * projectarachnid.com desde o começo.
+ */
+const ENDERECO = 'https://shield.projectarachnid.com/v1/media/';
 
 /** Quanto se espera pela resposta antes de considerar o Shield indisponível. */
 const TEMPO_LIMITE_MS = 8_000;

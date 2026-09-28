@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self'" />
     <title>Syden</title>
+    <!--
+      A TELA QUE APARECE QUANDO O SYDEN NÃO CONSEGUE ABRIR.
+
+      Ela é a ÚNICA do Syden que não pode vir do site, e não por escolha: se houvesse internet para
+      buscá-la, ela não estaria aparecendo. Por isso o desenho está escrito aqui dentro, o texto tem um
+      dicionário próprio, e nada nesta página pede nada à rede.
+
+      O código de erro fica junto da explicação. "OFFLINE" sozinho não diz nada a quem só queria
+      conversar com os amigos; "sem conexão" sozinho não dá o que repetir ao pedir ajuda.
+    -->
     <style>
       html,
       body {
@@ -17,6 +27,13 @@
         color: #dbdee1;
         font-family: 'Segoe UI', system-ui, sans-serif;
         text-align: center;
+        padding: 16px;
+        box-sizing: border-box;
+      }
+      .coelho {
+        width: 200px;
+        height: 200px;
+        margin-bottom: 4px;
       }
       h1 {
         color: #f2f3f5;
@@ -26,6 +43,8 @@
       p {
         color: #949ba4;
         margin: 0 0 20px;
+        max-width: 34em;
+        line-height: 1.5;
       }
       button {
         background: #5865f2;
@@ -40,12 +59,111 @@
       button:hover {
         background: #4752c4;
       }
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      /* O desenho é o mesmo do estúdio de animações (animacaoSVG/SemInternet.svg). */
+      @keyframes sadBreathe {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(5px);
+        }
+      }
+      @keyframes pulseWifi {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      .bg-circle {
+        fill: #1e293b;
+      }
+      .star-shape {
+        fill: #334155;
+      }
+      /* A transparência é do GRUPO INTEIRO. Com ela só na cabeça, as orelhas ficavam mais claras que o
+         crânio e o olho lia duas peças em vez de um corpo. */
+      .bunny-head {
+        fill: #ffffff;
+      }
+      .bunny-ears-inner {
+        fill: #b7c3d1;
+      }
+      .sad-group {
+        opacity: 0.88;
+        animation: sadBreathe 3s ease-in-out infinite;
+      }
+      .ear-left {
+        transform-origin: 165px 180px;
+        transform: rotate(-35deg) translate(-15px, 10px);
+      }
+      .ear-right {
+        transform-origin: 235px 180px;
+        transform: rotate(35deg) translate(15px, 10px);
+      }
+      .wifi-icon {
+        stroke: #64748b;
+        stroke-width: 8;
+        stroke-linecap: round;
+        fill: none;
+        animation: pulseWifi 2s infinite;
+      }
     </style>
   </head>
   <body>
     <div>
-      <h1>Não foi possível conectar</h1>
-      <p>Verifique sua internet. O servidor também pode estar fora do ar.</p>
+      <svg class="coelho" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-hidden="true">
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        <polygon
+          class="star-shape"
+          points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145"
+        />
+        <g class="sad-group">
+          <g class="ear-left">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          </g>
+          <g class="ear-right">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          <circle cx="200" cy="240" r="72" class="bunny-head" />
+          <path d="M 158 225 Q 168 220 178 225" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" fill="none" />
+          <path d="M 222 225 Q 232 220 242 225" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" fill="none" />
+          <path d="M 194 243 Q 200 239 206 243 Q 200 251 194 243 Z" fill="#b91c1c" opacity="0.6" />
+          <path d="M 190 260 Q 200 252 210 260" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" />
+        </g>
+        <g transform="translate(160, 52) scale(0.8)">
+          <path d="M 20 80 Q 50 50 80 80" class="wifi-icon" />
+          <path d="M 0 60 Q 50 10 100 60" class="wifi-icon" />
+          <circle cx="50" cy="95" r="5" fill="#64748b" />
+          <path d="M -10 110 L 110 30" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
+        </g>
+        <g>
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text
+            id="codigo"
+            x="200"
+            y="372"
+            text-anchor="middle"
+            font-family="ui-monospace, monospace"
+            font-size="14"
+            font-weight="700"
+            fill="#94a3b8"
+          >
+            OFFLINE — Sem conexão
+          </text>
+        </g>
+      </svg>
+      <h1 id="titulo">Não foi possível conectar</h1>
+      <p id="explicacao">Verifique sua internet. O servidor também pode estar fora do ar.</p>
       <button id="retry">Tentar de novo</button>
     </div>
     <script src="offline.js"></script>

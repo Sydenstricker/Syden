@@ -95,7 +95,7 @@ describe('com credencial', () => {
     const shield = await carregarShield();
     await shield.conferir(IMAGEM, 'image/jpeg');
 
-    assert.equal(chamadas[0].url, 'https://shield.projectarachnid.ca/v1/media/');
+    assert.equal(chamadas[0].url, 'https://shield.projectarachnid.com/v1/media/');
     const esperado = 'Basic ' + Buffer.from('syden:segredo').toString('base64');
     assert.equal(chamadas[0].headers.authorization, esperado);
     assert.equal(chamadas[0].headers['content-type'], 'image/jpeg', 'o tipo tem de ser o real do arquivo');
