@@ -47,8 +47,13 @@
       "language": "1046",
       "include": "build/installer.nsh",
       "runAfterFinish": true,
-      "multiLanguageInstaller": false,
-      "displayLanguageSelector": false
+      "multiLanguageInstaller": true,
+      "displayLanguageSelector": true,
+      "installerLanguages": [
+        "pt_BR",
+        "en_US",
+        "es_ES"
+      ]
     },
     "mac": {
       "target": "dmg",
