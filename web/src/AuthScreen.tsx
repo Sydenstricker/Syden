@@ -6,7 +6,7 @@ import { AVISOS, entrarCom, NOMES, type Provedor } from './entradaSocial';
 import { MarcaSocial } from './MarcasSociais';
 import { Turnstile } from './Turnstile';
 import { api, ApiError } from './api';
-import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
+import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
 import { installApp, useCanInstall } from './install';
 import { useT } from './i18n';
 import { Logo } from './Logo';
@@ -255,8 +255,8 @@ export function AuthScreen({
                   </button>
                 )}
                 {showDesktopDownload && (
-                  <a className="btn-secondary" href={DESKTOP_DOWNLOAD_URL}>
-                    <Download size={18} /> {t('Baixar para Windows')}
+                  <a className="btn-secondary" href={LINK_PRINCIPAL}>
+                    <Download size={18} /> {PELA_STORE ? t('Baixar na Microsoft Store') : t('Baixar para Windows')}
                   </a>
                 )}
               </div>

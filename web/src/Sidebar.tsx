@@ -21,7 +21,7 @@ import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { ConfirmDialog } from './ConfirmDialog';
-import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
+import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
 import { Avatar } from './Avatar';
 import { useT } from './i18n';
@@ -125,7 +125,12 @@ export function Sidebar({
           )}
         </span>
         {showDesktopDownload && (
-          <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title={t('Baixar o app para Windows')} aria-label={t('Baixar o app para Windows')}>
+          <a
+            className="icon-button"
+            href={LINK_PRINCIPAL}
+            title={PELA_STORE ? t('Baixar na Microsoft Store') : t('Baixar o app para Windows')}
+            aria-label={PELA_STORE ? t('Baixar na Microsoft Store') : t('Baixar o app para Windows')}
+          >
             <Download size={18} />
           </a>
         )}

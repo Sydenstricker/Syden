@@ -385,4 +385,5 @@ export default {
   'Querem falar': 'Want to speak',
   'Seu microfone está desligado enquanto você assiste': 'Your microphone is off while you watch',
   'Tirar a palavra': 'Take the floor back',
+  'Baixar na Microsoft Store': 'Get it on the Microsoft Store',
 } satisfies Record<string, string>;
