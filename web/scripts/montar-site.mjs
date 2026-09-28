@@ -16,7 +16,8 @@
 //
 // Então a regra aqui é fechada: **a raiz de dist/ é exatamente web/site/ mais a pasta app/, e nada
 // mais.** O que não se encaixa é removido, e o script diz o que removeu.
-import { cpSync, existsSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const AQUI = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
@@ -79,6 +80,46 @@ for (const sobra of sobras) {
   console.log(`  removido da raiz: ${sobra} (sobrou de um build anterior)`);
 }
 
+/**
+ * CADA SCRIPT E CADA FOLHA DE ESTILO GANHA A IMPRESSÃO DIGITAL DO PRÓPRIO CONTEÚDO NO ENDEREÇO.
+ *
+ * POR QUE ISTO PRECISOU EXISTIR, e custou horas em 28/09/2026. O desviar-para-o-app.js é servido com
+ * `cache-control: max-age=14400` — QUATRO HORAS no navegador de quem visitou. O nome do arquivo nunca
+ * muda, então o navegador não tem como saber que existe versão nova: ele usa a que tem. Uma correção
+ * nesse arquivo, que é justamente o que decide para onde vai quem volta do Google e quem clica no link
+ * do e-mail, levava quatro horas para chegar em quem mais precisava dela — e no meio disso o defeito
+ * "continua acontecendo", sem que o conserto tenha nada de errado.
+ *
+ * Com a impressão digital no endereço, arquivo novo é endereço novo, e endereço novo o navegador busca.
+ * Quem manda passa a ser o HTML, que vive dez minutos de cache — e não quatro horas.
+ *
+ * A conta é do CONTEÚDO, e não da data: assim o endereço só muda quando o arquivo muda de verdade, e
+ * uma publicação que não mexeu em nada não joga fora o cache de ninguém.
+ */
+const impressaoDigital = (caminho) => createHash('sha256').update(readFileSync(caminho)).digest('hex').slice(0, 8);
+
+function versionarReferencias(pasta, paginas) {
+  let versionadas = 0;
+  for (const pagina of paginas) {
+    const caminho = join(pasta, pagina);
+    if (!existsSync(caminho)) continue;
+    const antes = readFileSync(caminho, 'utf8');
+    // Só endereços relativos e sem busca: o `[^"?:#]` deixa de fora https://... e o que já tem ?v=.
+    const depois = antes.replace(/(src|href)="([^"?:#]+\.(?:js|css))"/g, (inteiro, atributo, arquivo) => {
+      const alvo = join(pasta, arquivo);
+      if (!existsSync(alvo)) return inteiro;
+      versionadas++;
+      return `${atributo}="${arquivo}?v=${impressaoDigital(alvo)}"`;
+    });
+    if (depois !== antes) writeFileSync(caminho, depois);
+  }
+  return versionadas;
+}
+
+const versionadas =
+  versionarReferencias(DIST, doSite.filter((nome) => nome.endsWith('.html'))) +
+  versionarReferencias(join(DIST, 'app'), TAMBEM_DENTRO_DO_APP.filter((nome) => nome.endsWith('.html')));
+
 /** Sem estes três, o site publicado está quebrado de um jeito que o build não acusa. */
 const OBRIGATORIOS = [
   ['index.html', 'sem ele, syden.chat mostra a lista de arquivos em vez da página inicial'],
@@ -103,5 +144,5 @@ const tamanho = (pasta) =>
 
 const mb = (n) => (n / (1024 * 1024)).toFixed(2) + ' MB';
 console.log(`Site montado em dist/ — ${mb(tamanho(DIST))} no total`);
-console.log(`  /          apresentação  (${doSite.length} arquivos de web/site/)`);
+console.log(`  /          apresentação  (${doSite.length} arquivos de web/site/, ${versionadas} com impressão digital)`);
 console.log(`  /app/      o Syden       (${mb(tamanho(join(DIST, 'app')))})`);

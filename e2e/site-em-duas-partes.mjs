@@ -118,6 +118,26 @@ console.log('');
 }
 
 {
+  /**
+   * O DESVIO PRECISA CHEGAR RÁPIDO A QUEM JÁ VISITOU O SITE.
+   *
+   * Ele é servido com quatro horas de cache no navegador, e o nome do arquivo não muda — então uma
+   * correção nele demorava quatro horas para valer para quem tinha acabado de visitar. Aconteceu de
+   * verdade: o conserto da volta do Google estava publicado e continuava sem funcionar, porque o
+   * navegador seguia usando o script antigo. A impressão digital no endereço (ver montar-site.mjs) faz
+   * arquivo novo virar endereço novo, e quem manda passa a ser o HTML, que vive dez minutos.
+   */
+  const { page, contexto } = await abrir();
+  await page.goto(BASE + '/', { waitUntil: 'load' });
+  const endereco = await page.evaluate(() => document.querySelector('script[src*="desviar"]')?.getAttribute('src') ?? '');
+  const ok = /\?v=[0-9a-f]{8}$/.test(endereco);
+  console.log(`  ${ok ? 'OK ' : 'XX '} o desvio tem impressão digital, e não fica preso no cache`);
+  console.log(`        ${endereco}`);
+  if (!ok) problemas.push(`o desvio é carregado como "${endereco}": uma correção nele levaria horas para chegar`);
+  await contexto.close();
+}
+
+{
   const { page, contexto, barrados } = await abrir({ comoApp: true });
   await page.goto(BASE + '/', { waitUntil: 'load' });
   // O desvio é uma troca de página; esperar a rede parar não serve, porque o app nunca para.
