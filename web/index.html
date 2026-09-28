@@ -15,9 +15,120 @@
     <link rel="apple-touch-icon" href="icon-192.png" />
     <link rel="icon" href="icon-192.png" />
     <title>Syden</title>
+
+    <!--
+      A ESPERA ANTES DA ESPERA.
+
+      O Syden tem uma abertura bonita (SplashLogo.tsx), e ela só começa depois que o JavaScript chega:
+      são 1,26 MB para baixar e interpretar. Até lá esta página era um retângulo BRANCO e vazio — branco
+      porque a folha de estilo do app também ainda não chegou. Em internet boa passa num piscar; em
+      internet ruim são segundos parecendo que o app não abriu.
+
+      Por isso o fundo e o coelho estão escritos AQUI, nesta página, e não vêm de arquivo nenhum: nada
+      para baixar, nada para esperar. Aparecem no primeiro quadro.
+
+      E NÃO TEM TEXTO, de propósito (ver CLAUDE.md). Nesta altura o mecanismo de idiomas ainda não
+      existe — traduzi-lo exigiria um segundo sistema de tradução só para esta tela. Um coelho girando
+      dispensa legenda e resolve os 74 idiomas de uma vez.
+    -->
+    <style>
+      /* O fundo primeiro: é o que impede o clarão branco antes de a folha de estilo do app chegar. */
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #313338;
+      }
+
+      #abertura {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        /* Abaixo de qualquer coisa do app: se por algum motivo ela não sumir, não trava clique nenhum. */
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      #abertura svg {
+        width: min(220px, 45vw, 40vh);
+        height: min(220px, 45vw, 40vh);
+      }
+
+      /*
+        SOME SOZINHA, SEM UMA LINHA DE JAVASCRIPT.
+
+        Enquanto o React não montou, #root está vazio. Quando ele monta, deixa de estar — e o seletor
+        esconde a abertura. Fazer isso por script exigiria um <script> embutido, que a política de
+        segurança do site recusa (script-src 'self'), e o bloqueio seria silencioso: a abertura ficaria
+        para sempre por cima do Syden.
+      */
+      #root:not(:empty) ~ #abertura {
+        display: none;
+      }
+
+      @keyframes abertura-gira {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes abertura-respira {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.06);
+        }
+      }
+
+      .abertura-arco {
+        fill: none;
+        stroke: #bc1d1d;
+        stroke-width: 6;
+        stroke-linecap: round;
+        stroke-dasharray: 90 400;
+        transform-origin: 200px 200px;
+        animation: abertura-gira 2.5s linear infinite;
+      }
+
+      .abertura-respira {
+        transform-origin: 200px 240px;
+        animation: abertura-respira 1.8s ease-in-out infinite;
+      }
+
+      /* Quem pediu menos movimento ao sistema vê o desenho parado. O coelho continua ali dizendo
+         "carregando"; o que some é o giro, que é o que incomoda quem tem enxaqueca ou vertigem. */
+      @media (prefers-reduced-motion: reduce) {
+        .abertura-arco,
+        .abertura-respira {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- O desenho vem de animacaoSVG/loadingMinimalista.svg, escolhido entre os do estúdio porque é o
+         único que sobrevive pequeno e não tem fundo próprio — aqui ele fica sobre o fundo do Syden. -->
+    <div id="abertura" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+        <circle class="abertura-arco" cx="200" cy="200" r="150" />
+        <g class="abertura-respira">
+          <path fill="#ffffff" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
+          <path fill="#f48fb1" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
+          <path fill="#ffffff" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
+          <path fill="#f48fb1" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
+          <circle fill="#ffffff" cx="200" cy="230" r="66" />
+        </g>
+      </svg>
+    </div>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
