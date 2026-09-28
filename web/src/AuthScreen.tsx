@@ -2,7 +2,7 @@ import { Download, MonitorDown, Ticket } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { EscolherSenhaNova, EsqueciASenha } from './Recuperacao';
 import { ConfirmeSeuEmail } from './ConfirmeSeuEmail';
-import { AVISOS, entrarCom, NOMES, type Provedor } from './entradaSocial';
+import { AVISOS, entrarCom, NOMES, voltaPeloApp, type Provedor } from './entradaSocial';
 import { MarcaSocial } from './MarcasSociais';
 import { Turnstile } from './Turnstile';
 import { api, ApiError } from './api';
@@ -51,6 +51,18 @@ export function AuthScreen({
   // que leva a um erro é pior do que não ter botão nenhum.
   const [provedores, setProvedores] = useState<Provedor[]>([]);
   const [indoPara, setIndoPara] = useState<Provedor | null>(null);
+  /**
+   * A ESPERA PRECISA TER FIM, e antes não tinha.
+   *
+   * No app, clicar em "Entrar com Google" abre o navegador e a tela fica em "Abrindo…" até a volta
+   * chegar por syden://. Quando essa volta NÃO chega — o Windows entregou o link ao Syden errado, o
+   * esquema ficou registrado num caminho que não existe mais, a pessoa autorizou e fechou o navegador —
+   * o botão ficava assim para sempre, sem mensagem e sem saída. Aconteceu de verdade em 28/09/2026.
+   *
+   * Não é um cancelamento: a autorização continua valendo do outro lado, e por isso o que aparece é uma
+   * explicação e um jeito de tentar de novo, não um erro.
+   */
+  const [demorou, setDemorou] = useState(false);
 
   useEffect(() => {
     void api<{ cadastroAberto: boolean; turnstileSiteKey: string | null; social?: Provedor[] }>('/api/inicio', {
@@ -63,6 +75,20 @@ export function AuthScreen({
       })
       .catch(() => {}); // servidor velho ou fora do ar: segue pedindo convite, que é o mais seguro
   }, []);
+
+  /**
+   * O relógio da espera. Vinte e cinco segundos é folgado para uma autorização já logada no Google e
+   * curto o bastante para não parecer que o app travou — e o aviso não interrompe nada: quem estiver no
+   * meio do caminho lá no navegador continua, e a volta ainda é aceita quando chegar.
+   */
+  useEffect(() => {
+    if (indoPara === null) {
+      setDemorou(false);
+      return;
+    }
+    const relogio = setTimeout(() => setDemorou(true), 25_000);
+    return () => clearTimeout(relogio);
+  }, [indoPara]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -150,6 +176,25 @@ export function AuthScreen({
                     </span>
                   ))}
                 </div>
+                {/* A saída da espera. Só aparece depois de 25 segundos, e não substitui o botão: a
+                    autorização lá fora continua valendo, e dizer o contrário seria mentir. */}
+                {demorou && indoPara !== null && (
+                  <p className="auth-social-aviso">
+                    {voltaPeloApp
+                      ? t('A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.')
+                      : t('Isso está demorando mais do que o normal.')}{' '}
+                    <button
+                      type="button"
+                      className="link"
+                      onClick={() => {
+                        setIndoPara(null);
+                        setError(null);
+                      }}
+                    >
+                      {t('Tentar de novo')}
+                    </button>
+                  </p>
+                )}
                 <div className="auth-ou">
                   <span>{t('ou')}</span>
                 </div>

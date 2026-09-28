@@ -86,6 +86,10 @@ export default {
   Cancelar: 'Cancelar',
   'Salvar e entrar': 'Guardar y entrar',
   'Abrindo…': 'Abriendo…',
+  'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
+    'La autorización se abrió en el navegador y sigue valiendo. Si ya autorizaste y aquí no pasó nada, la respuesta no llegó a Syden.',
+  'Isso está demorando mais do que o normal.': 'Esto está tardando más de lo normal.',
+  'Tentar de novo': 'Intentar de nuevo',
   ou: 'o',
   'Você foi convidado. É só escolher um nome, um e-mail e uma senha.':
     'Te invitaron. Solo elige un nombre, un correo y una contraseña.',

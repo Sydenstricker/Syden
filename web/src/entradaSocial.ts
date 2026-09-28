@@ -72,20 +72,28 @@ export async function ligarCom(provedor: Provedor): Promise<void> {
   return comecar(provedor, '/api/me/social/inicio', undefined);
 }
 
+/**
+ * NO APP, O CAMINHO É OUTRO — e é a correção de uma coisa que simplesmente não funcionava.
+ *
+ * No navegador a página sai para o Google e volta sozinha. No app instalado, navegar para fora é
+ * bloqueado de propósito, então o endereço do Google era aberto no navegador do sistema — e a volta
+ * caía lá, num navegador que NÃO TEM o segredo guardado aqui. O app ficava esperando para sempre.
+ *
+ * Agora o app avisa o servidor de onde o fluxo começou (`doApp`), e o servidor devolve a pessoa por
+ * `syden://`, que o Windows entrega de volta a esta janela. O Google continua abrindo num navegador
+ * de verdade, que é o que ele exige — embutir a página dele numa janela nossa é contra a política.
+ *
+ * As DUAS funções, e não uma: sem o abrirFora não há como mandar a pessoa ao Google, e sem o
+ * aoVoltarDaEntrada não há como receber a volta. Meia ponte é um beco sem saída.
+ *
+ * Fica exportado porque a tela de entrada precisa da mesma resposta: é ela que espera a volta, e o que
+ * ela mostra enquanto espera depende de por onde a volta vem.
+ */
+export const voltaPeloApp = Boolean(desktopBridge?.abrirFora && desktopBridge?.aoVoltarDaEntrada);
+
 async function comecar(provedor: Provedor, rota: string, token: null | undefined): Promise<void> {
   const segredo = sortear();
-  /**
-   * NO APP, O CAMINHO É OUTRO — e é a correção de uma coisa que simplesmente não funcionava.
-   *
-   * No navegador a página sai para o Google e volta sozinha. No app instalado, navegar para fora é
-   * bloqueado de propósito, então o endereço do Google era aberto no navegador do sistema — e a volta
-   * caía lá, num navegador que NÃO TEM o segredo guardado aqui. O app ficava esperando para sempre.
-   *
-   * Agora o app avisa o servidor de onde o fluxo começou (`doApp`), e o servidor devolve a pessoa por
-   * `syden://`, que o Windows entrega de volta a esta janela. O Google continua abrindo num navegador
-   * de verdade, que é o que ele exige — embutir a página dele numa janela nossa é contra a política.
-   */
-  const noApp = Boolean(desktopBridge?.abrirFora && desktopBridge?.aoVoltarDaEntrada);
+  const noApp = voltaPeloApp;
 
   // token: null = sem autenticação (entrar); undefined = usa o token guardado (ligar).
   const { url } = await api<{ url: string }>(rota, {

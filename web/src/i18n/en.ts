@@ -86,6 +86,10 @@ export default {
   Cancelar: 'Cancel',
   'Salvar e entrar': 'Save and enter',
   'Abrindo…': 'Opening…',
+  'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
+    "Authorization opened in your browser and is still valid. If you already authorized it and nothing happened here, the answer didn't reach Syden.",
+  'Isso está demorando mais do que o normal.': 'This is taking longer than usual.',
+  'Tentar de novo': 'Try again',
   ou: 'or',
   'Você foi convidado. É só escolher um nome, um e-mail e uma senha.':
     'You have been invited. Just pick a name, an e-mail and a password.',
