@@ -13,6 +13,10 @@ SFX/
 *.png
 !imagem/*.png
 !desktop/build/*.png
+# Os ícones do pacote da Microsoft Store. Sem esta exceção eles não são versionados, e o
+# electron-builder cai nos ícones de exemplo dele — foi assim que o Syden foi publicado com o
+# logo do Electron. Ver desktop/scripts/icones-da-loja.mjs.
+!desktop/build/appx/*.png
 !web/public/*.png
 !server/assets/emojis/*.png
 !web/src/assets/*.png
