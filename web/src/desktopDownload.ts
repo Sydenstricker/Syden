@@ -20,7 +20,7 @@
  * Fica no código, e não numa variável do painel do GitHub, pela mesma razão do endereço do app: uma
  * variável de painel pode estar com outro valor guardado de meses atrás, e ninguém lembra de conferir.
  */
-const ID_NA_STORE = '';
+const ID_NA_STORE = '9NPVXDKV471H';
 
 /** O endereço https, e não o ms-windows-store://. O https funciona em qualquer lugar — e no Windows o
  *  próprio sistema oferece abrir a Store. O outro esquema falha em silêncio fora do Windows. */

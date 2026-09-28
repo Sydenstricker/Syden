@@ -56,15 +56,18 @@
       }
 
       /*
-        SOME SOZINHA, SEM UMA LINHA DE JAVASCRIPT.
+        QUEM TIRA A ABERTURA É O APP, e não um seletor de CSS.
 
-        Enquanto o React não montou, #root está vazio. Quando ele monta, deixa de estar — e o seletor
-        esconde a abertura. Fazer isso por script exigiria um <script> embutido, que a política de
-        segurança do site recusa (script-src 'self'), e o bloqueio seria silencioso: a abertura ficaria
-        para sempre por cima do Syden.
+        A primeira versão usava #root:not(:empty), que esconde assim que o React monta — e o React
+        monta ANTES de a sessão ser conferida. A pessoa via o coelho sumir e uma tela vazia no lugar,
+        esperando o servidor. Agora quem decide é web/src/abertura.ts, que só a dispensa quando há o
+        que mostrar, e nunca antes de dois segundos.
+
+        Se o pacote nunca chegar, ela fica — que é o certo: não há nada para pôr no lugar.
       */
-      #root:not(:empty) ~ #abertura {
-        display: none;
+      #abertura.saindo {
+        opacity: 0;
+        transition: opacity 0.32s ease-out;
       }
 
       @keyframes abertura-gira {

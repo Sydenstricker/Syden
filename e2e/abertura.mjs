@@ -113,20 +113,37 @@ checa(antes.largura > 100, 'com tamanho de verdade', antes.largura + 'px');
 checa(antes.fundo === 'rgb(49, 51, 56)', 'o fundo já é escuro, sem clarão branco', antes.fundo);
 checa(antes.texto === '', 'sem texto, porque aqui não há como traduzir', JSON.stringify(antes.texto));
 
-// Agora deixa o app chegar.
+// O React monta antes de a sessão ser conferida. A abertura NÃO pode sair aí: sairia para dar lugar a
+// uma tela vazia esperando o servidor — que foi exatamente o defeito da primeira versão, que usava um
+// seletor de CSS disparado pela montagem.
 await page.waitForSelector('#root *', { timeout: 20_000 }).catch(() => {});
-await page.waitForTimeout(500);
+const montouEm = await page.evaluate(() => performance.now());
+const aindaNaTela = await page.evaluate(() => Boolean(document.getElementById('abertura')));
+checa(aindaNaTela, 'a abertura continua na tela depois de o React montar', Math.round(montouEm) + 'ms');
 
-const depois = await page.evaluate(() => {
-  const abertura = document.getElementById('abertura');
-  return {
-    appMontado: (document.getElementById('root')?.childElementCount ?? 0) > 0,
-    visivel: abertura ? getComputedStyle(abertura).display !== 'none' : false,
-  };
-});
+// Espera ela sair sozinha, e mede QUANDO.
+const saiuEm = await page.evaluate(
+  () =>
+    new Promise((pronto) => {
+      const olhar = () => {
+        if (!document.getElementById('abertura')) return pronto(performance.now());
+        setTimeout(olhar, 30);
+      };
+      olhar();
+    }),
+);
+
+const depois = await page.evaluate(() => ({
+  appMontado: (document.getElementById('root')?.childElementCount ?? 0) > 0,
+  aindaTem: Boolean(document.getElementById('abertura')),
+}));
 
 checa(depois.appMontado, 'o Syden montou');
-checa(!depois.visivel, 'e a abertura sumiu sozinha, sem JavaScript nenhum');
+checa(!depois.aindaTem, 'e a abertura saiu de cena');
+// O PISO DE DOIS SEGUNDOS é a razão de este teste existir na forma atual. Sem ele, em internet boa a
+// abertura vira um piscar que ninguém identifica — e um borrão de meio segundo passa impressão de
+// falha, não de identidade. O desconto de 100ms é folga de relógio, não de regra.
+checa(saiuEm >= 2000 - 100, 'ficou pelo menos dois segundos na tela', Math.round(saiuEm) + 'ms');
 checa(barrados.length === 0, 'a política de segurança não barrou nada', barrados[0] ?? '');
 
 await browser.close();

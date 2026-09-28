@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { esconderAbertura } from './abertura';
 import { ApiError, api, loadToken, saveToken } from './api';
 import { sincronizarAoEntrar } from './preferencias';
 import { AuthScreen } from './AuthScreen';
@@ -6,7 +7,6 @@ import { AvisoGeral } from './AvisoGeral';
 import { aoVoltarPeloApp, concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
-import { SplashLogo } from './SplashLogo';
 import type { User } from './types';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
@@ -21,9 +21,11 @@ function readInviteFromUrl(): string | null {
   return code;
 }
 
-// Tempo mínimo do splash ao abrir o app: sem isso, num servidor rápido a checagem da sessão termina antes
-// da animação (~1,3s) acabar de tocar, e ninguém chega a ver o coelho se formar.
-const SPLASH_MIN_MS = 1600;
+// O TEMPO MÍNIMO SAIU DAQUI e foi para web/src/abertura.ts, junto com a tela que ele segura.
+//
+// Ele existia para ninguém perder a animação do brasão num servidor rápido. Aquela animação não existe
+// mais — é o coelho da abertura que espera agora, e o piso dele é contado desde o começo da página.
+// Manter os dois somaria os tempos: dois segundos de coelho MAIS um segundo e meio de espera inventada.
 
 /** O código do link de confirmação de e-mail (?confirmar=...), lido uma vez e tirado da barra. */
 function lerConfirmacaoDaUrl(): string | null {
@@ -65,6 +67,18 @@ export function App() {
   /** "Conta do GitHub ligada." — a janela de configurações já fechou quando a volta chega. */
   const [ligacaoFeita, setLigacaoFeita] = useState<string | null>(null);
 
+  /**
+   * A abertura sai quando o Syden tem o que mostrar — seja lá por qual caminho ele chegou lá.
+   *
+   * Num efeito sobre o estado, e não numa chamada em cada lugar que resolve a sessão: são três portas
+   * (a sessão guardada, a volta do login social e quem não tem conta nenhuma), e uma chamada esquecida
+   * em qualquer uma delas deixaria o coelho por cima do app até a pessoa recarregar. O estado é o único
+   * ponto por onde as três passam.
+   */
+  useEffect(() => {
+    if (session.status !== 'loading') esconderAbertura();
+  }, [session.status]);
+
   useEffect(() => {
     if (!codigoDeConfirmacao) return;
     void api('/api/auth/confirmar-email', { method: 'POST', body: { codigo: codigoDeConfirmacao }, token: null }).then(
@@ -75,15 +89,14 @@ export function App() {
 
   useEffect(() => {
     let cancelled = false;
-    const minWait = new Promise((resolve) => setTimeout(resolve, SPLASH_MIN_MS));
 
     // Voltou do Google com um comprovante: troca por um token de verdade, apresentando o segredo que
     // ficou nesta aba. É esse par que impede que um link plantado por outra pessoa entre em alguma
     // conta (ver entradaSocial.ts). Falhando, cai na tela de entrada com o motivo escrito.
     const voltandoDoProvedor = (volta?.situacao === 'ok' || volta?.situacao === 'ligar') && volta.comprovante;
     if (voltandoDoProvedor) {
-      void Promise.all([concluir(volta!.comprovante!), minWait])
-        .then(async ([resultado]) => {
+      void concluir(volta!.comprovante!)
+        .then(async (resultado) => {
           if (cancelled) return;
           // Ligação: a pessoa já estava dentro, então não há sessão nova. Só o aviso, e a sessão que
           // já existia segue o caminho normal logo abaixo.
@@ -139,9 +152,9 @@ export function App() {
         )
       : Promise.resolve<Session>({ status: 'anonymous' });
 
-    // Sem token nenhum, não há o que esperar do servidor: só o tempo mínimo do splash mesmo.
-    Promise.all([auth, minWait]).then(([result]) => {
-      if (!cancelled) setSession(result);
+    void auth.then((result) => {
+      if (cancelled) return;
+      setSession(result);
     });
     return () => {
       cancelled = true;
@@ -179,11 +192,9 @@ export function App() {
         </p>
       )}
       <div className="app-body">
-        {session.status === 'loading' && (
-          <div className="splash">
-            <SplashLogo />
-          </div>
-        )}
+        {/* Enquanto carrega não se desenha nada: quem está na tela é a abertura (web/index.html), e
+            ela só sai quando esta espera acaba. Duas animações em fila para o mesmo ato de abrir o
+            app faziam a segunda parecer que algo tinha recomeçado. */}
         {session.status === 'anonymous' && (
           <AuthScreen
             initialInviteCode={inviteCode}
