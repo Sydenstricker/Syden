@@ -34,6 +34,33 @@ O gerador continua no projeto como **ferramenta de teste**, para ter um arquivo 
 sincronizada ao mexer no karaokê. Não é produto: a saída dele não mora em `web/public/`, e por isso
 nunca vai para o site.
 
+## O servidor na Alemanha NÃO põe o Syden na Europa
+
+Eu afirmei que o servidor na Hetzner colocava o Syden dentro do DSA. **Estava errado**, e a correção
+muda o que se declara em formulários e o que se implementa.
+
+**O que decide o DSA é onde estão os USUÁRIOS, não onde está o servidor.** O Artigo 2(1) aplica-se a
+serviços oferecidos a destinatários estabelecidos ou localizados na União, *"irrespective of where the
+providers... have their place of establishment"*. E, explicitamente, a mera acessibilidade técnica a
+partir da União não cria conexão substancial. Usuários no Brasil, app em português do Brasil, domínio
+.chat: hoje não há conexão substancial com a União.
+
+**O mesmo vale para o RGPD.** O Considerando 36 e as Diretrizes 3/2018 do EDPB dizem que meios
+técnicos — servidor, centro de dados — **não constituem estabelecimento** por si sós. Alugar máquina na
+Alemanha não estabelece o Syden na Europa.
+
+**Em formulário, "located" é onde VOCÊ está: Brasil.** Foi assim no cadastro do Shield, e declarar EEA
+seria declaração falsa (a Seção 3 dos termos deles é uma lista de garantias).
+
+**O QUE SOBREVIVE À CORREÇÃO, e é o que sustenta a detecção:** a lei penal alemã alcança conteúdo
+fisicamente armazenado na Alemanha, independentemente do DSA. CSAM num servidor alemão é crime na
+Alemanha. Some-se o ECA Digital (Lei 15.211/2025), que alcança o Syden porque ele e os usuários estão
+no Brasil: remoção e comunicação às autoridades são imediatas e independem de denúncia.
+
+**O que muda a resposta no futuro:** abrir empresa, ganhar número relevante de usuários num país da UE,
+ou mirar a UE de propósito — inclusive publicar a listagem da Store em mercados europeus, já que
+português é língua da União (Portugal). Se isso acontecer, o DSA passa a valer e é preciso revisar.
+
 ## Animações: quem espera não tem texto, quem falhou tem
 
 A regra vale para as telas desenhadas em SVG (ver `animacaoSVG/`):
