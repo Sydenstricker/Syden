@@ -372,4 +372,6 @@ export default {
   'Também dá para arrastar a borda de cada barra na tela. Dois cliques na borda volta ao padrão.': 'You can also drag the edge of each bar on screen. Double-clicking the edge resets it.',
   'Voltar ao padrão': 'Reset to default',
   'Canais': 'Channels',
+  'Abrir em outra janela': 'Open in another window',
+  'Trazer de volta para esta janela': 'Bring back to this window',
 } satisfies Record<string, string>;

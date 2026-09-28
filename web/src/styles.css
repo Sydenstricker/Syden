@@ -9232,3 +9232,64 @@ body.arrastando-barra {
   font-size: 13px;
   text-align: right;
 }
+
+/* O botão de destacar o vídeo numa janela à parte (ver BotaoDestacar.tsx).
+   Aparece ao passar o mouse pelo quadro, como a etiqueta de formato — botão sempre visível em cima de
+   cada rosto da chamada sujaria a tela inteira. */
+.tile-destacar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.14s ease, background 0.14s ease;
+  z-index: 3;
+}
+
+.lk-participant-tile:hover .tile-destacar,
+.tile-destacar:focus-visible,
+.tile-destacar.ativo {
+  opacity: 1;
+}
+
+.tile-destacar:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.tile-destacar.ativo {
+  background: var(--accent);
+}
+
+/* Dentro da janela destacada: o vídeo ocupa tudo, com o nome de quem transmite num canto. */
+.janela-destacada {
+  margin: 0;
+  background: #000;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.janela-destacada video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.janela-destacada-nome {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 500 13px 'Segoe UI', system-ui, sans-serif;
+}

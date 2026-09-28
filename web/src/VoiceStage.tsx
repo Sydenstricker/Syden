@@ -42,6 +42,7 @@ import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
 import { ClipButton } from './ClipButton';
+import { BotaoDestacar } from './BotaoDestacar';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
@@ -185,6 +186,9 @@ function PersonTile({
           <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
         </div>
       )}
+      {/* Destacar só faz sentido com imagem, e só para a de OUTRA pessoa: pôr a própria câmera numa
+          janela à parte é olhar para si mesmo em dobro. */}
+      {hasVideo && !trackRef.participant.isLocal && <BotaoDestacar nome={name} />}
       <div className="tile-name">
         {member?.deafened ? <HeadphoneOff size={14} /> : member?.muted && <MicOff size={14} />}
         <span>{name}</span>

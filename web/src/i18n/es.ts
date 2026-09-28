@@ -372,4 +372,6 @@ export default {
   'Também dá para arrastar a borda de cada barra na tela. Dois cliques na borda volta ao padrão.': 'También puedes arrastrar el borde de cada barra en la pantalla. Doble clic en el borde lo devuelve a lo normal.',
   'Voltar ao padrão': 'Volver a lo normal',
   'Canais': 'Canales',
+  'Abrir em outra janela': 'Abrir en otra ventana',
+  'Trazer de volta para esta janela': 'Traer de vuelta a esta ventana',
 } satisfies Record<string, string>;
