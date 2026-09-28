@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { IconButton } from './IconButton';
 import type { Voice } from './useVoice';
 import { VOICE_EFFECTS, type VoiceEffectId } from './voiceEffects';
+import { useT } from './i18n';
 
 export const EFFECT_ICONS: Record<VoiceEffectId, ReactNode> = {
   none: <MicVocal size={16} />,
@@ -18,6 +19,7 @@ export const EFFECT_ICONS: Record<VoiceEffectId, ReactNode> = {
 
 /** Botão da barra da chamada que escolhe o efeito aplicado à sua voz. */
 export function VoiceEffectButton({ voice }: { voice: Voice }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const active = voice.voiceEffect !== 'none';
@@ -58,7 +60,7 @@ export function VoiceEffectButton({ voice }: { voice: Voice }) {
               {effect.id === voice.voiceEffect && <Check size={16} className="voice-effect-check" />}
             </button>
           ))}
-          <p className="person-menu-hint">Os outros passam a ouvir o efeito na hora. Você continua sem se escutar.</p>
+          <p className="person-menu-hint">{t('Os outros passam a ouvir o efeito na hora. Você continua sem se escutar.')}</p>
         </div>
       )}
     </div>

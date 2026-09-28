@@ -118,7 +118,7 @@ export function Sidebar({
           )}
         </span>
         {showDesktopDownload && (
-          <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title="Baixar o app para Windows" aria-label="Baixar o app para Windows">
+          <a className="icon-button" href={DESKTOP_DOWNLOAD_URL} title={t('Baixar o app para Windows')} aria-label={t('Baixar o app para Windows')}>
             <Download size={18} />
           </a>
         )}
@@ -199,7 +199,7 @@ export function Sidebar({
       {voice.connecting && <div className="voice-panel voice-panel-status">Conectando…</div>}
 
       <div className="user-panel">
-        <span onContextMenu={statusMenu.onOpen} title="Botão direito para mudar o status">
+        <span onContextMenu={statusMenu.onOpen} title={t('Botão direito para mudar o status')}>
           <Avatar name={user.username} userId={user.id} online status={myStatus} />
         </span>
         <span className="user-panel-name" data-cor={corDoNome(members.get(user.id)?.nameColor)}>
@@ -342,6 +342,7 @@ function ChannelRow({
 }
 
 function DeleteChannelDialog({ channel, onClose }: { channel: Channel; onClose: () => void }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -366,7 +367,7 @@ function DeleteChannelDialog({ channel, onClose }: { channel: Channel; onClose: 
       onConfirm={confirm}
       onCancel={onClose}
     >
-      Tem certeza que quer excluir <strong>{label}</strong>?{' '}
+      {t('Tem certeza que quer excluir')} <strong>{label}</strong>?{' '}
       {channel.type === 'text'
         ? 'Todas as mensagens do canal serão apagadas para todos. Não dá para desfazer.'
         : 'Quem estiver na sala será desconectado.'}
@@ -385,6 +386,7 @@ function ChannelGroup({
   communityId: number;
   children: ReactNode;
 }) {
+  const t = useT();
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -406,7 +408,7 @@ function ChannelGroup({
     <section className="channel-group">
       <div className="channel-group-title">
         <span>{title}</span>
-        <button className="icon-plain" title="Criar canal" onClick={() => setAdding(!adding)}>
+        <button className="icon-plain" title={t('Criar canal')} onClick={() => setAdding(!adding)}>
           <Plus size={16} />
         </button>
       </div>

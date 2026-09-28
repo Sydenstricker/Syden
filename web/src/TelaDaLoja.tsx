@@ -7,6 +7,7 @@ import { acharVisual, COMO_SE_GANHA } from './loja';
 
 import { MobileBackButton } from './MobileBackButton';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
+import { useT } from './i18n';
 
 // A loja de cosméticos do Syden. **Tudo o que está nela é de graça.**
 //
@@ -60,6 +61,7 @@ function Cartao({
   vestido: boolean;
   onVestir: (item: ItemDaLoja) => void;
 }) {
+  const t = useT();
   const visual = item.tipo === 'insignia' ? acharInsignia(item.codigo) : acharVisual(item.tipo, item.codigo);
   // Código que o servidor conhece e este site ainda não: some, em vez de virar um quadro vazio.
   if (!visual) return null;
@@ -82,7 +84,7 @@ function Cartao({
           <Check size={16} /> Em uso
         </span>
       ) : trancado ? (
-        <span className="loja-trancado" aria-label="Você ainda não tem este item">
+        <span className="loja-trancado" aria-label={t('Você ainda não tem este item')}>
           <Lock size={16} />
         </span>
       ) : (
@@ -115,6 +117,7 @@ export function TelaDaLoja({
   aoAbrirPacotes: () => void;
   aoVoltar: () => void;
 }) {
+  const t = useT();
   const [dados, setDados] = useState<LojaDados | null>(null);
   const [aba, setAba] = useState<TipoDeItem>('cor');
   const [erro, setErro] = useState<string | null>(null);
@@ -174,10 +177,10 @@ export function TelaDaLoja({
         <h2>
           <Sparkles size={22} aria-hidden="true" /> Loja
         </h2>
-        <p>Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.</p>
+        <p>{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
       </header>
 
-      <div className="tab-row" role="tablist" aria-label="Tipos de cosmético">
+      <div className="tab-row" role="tablist" aria-label={t('Tipos de cosmético')}>
         {ABAS.map((opcao) => (
           <button
             key={opcao.tipo}

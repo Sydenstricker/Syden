@@ -2,6 +2,7 @@ import { Megaphone } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
 import type { AvisoDoServidor } from './AvisoGeral';
+import { useT } from './i18n';
 
 // Onde quem administra escreve o recado que todo mundo vê — inclusive quem ainda nem entrou.
 //
@@ -30,6 +31,7 @@ function daquiA(minutos: number): string {
 }
 
 export function PainelDeAviso() {
+  const t = useT();
   const [texto, setTexto] = useState('');
   const [tom, setTom] = useState<AvisoDoServidor['tom']>('manutencao');
   const [de, setDe] = useState('');
@@ -117,12 +119,12 @@ export function PainelDeAviso() {
 
       <form onSubmit={salvar}>
         <label className="campo">
-          O que dizer
+          {t('O que dizer')}
           <textarea
             rows={3}
             maxLength={300}
             value={texto}
-            placeholder="O Syden vai ficar fora do ar por uns 10 minutos para uma atualização."
+            placeholder={t('O Syden vai ficar fora do ar por uns 10 minutos para uma atualização.')}
             onChange={(e) => setTexto(e.target.value)}
           />
           <small>{300 - texto.length} letras restantes</small>
@@ -142,14 +144,14 @@ export function PainelDeAviso() {
 
         <div className="painel-aviso-horas">
           <label className="campo">
-            Começa a aparecer
+            {t('Começa a aparecer')}
             <input type="datetime-local" value={de} onChange={(e) => setDe(e.target.value)} />
-            <small>Em branco: já.</small>
+            <small>{t('Em branco: já.')}</small>
           </label>
           <label className="campo">
-            Some sozinho às
+            {t('Some sozinho às')}
             <input type="datetime-local" value={ate} onChange={(e) => setAte(e.target.value)} />
-            <small>Em branco: fica até você apagar.</small>
+            <small>{t('Em branco: fica até você apagar.')}</small>
           </label>
         </div>
 

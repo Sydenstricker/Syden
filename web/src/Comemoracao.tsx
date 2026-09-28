@@ -2,6 +2,7 @@ import { PartyPopper } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Medalha } from './Medalha';
+import { useT } from './i18n';
 
 // A comemoração de quando uma ideia é acolhida no Syden: confete caindo na tela inteira e um cartão
 // dizendo o que foi aceito. É o momento em que a pessoa descobre que a sugestão dela virou app de
@@ -102,6 +103,7 @@ function Confete() {
 
 /** O cartão que explica a festa, com a ideia que foi acolhida. */
 export function Comemoracao({ ideia, aoFechar }: { ideia: string; aoFechar: () => void }) {
+  const t = useT();
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === 'Escape' && aoFechar();
     window.addEventListener('keydown', aoTeclar);
@@ -111,11 +113,11 @@ export function Comemoracao({ ideia, aoFechar }: { ideia: string; aoFechar: () =
   return createPortal(
     <div className="comemoracao-fundo" onClick={aoFechar}>
       <Confete />
-      <div className="comemoracao" role="dialog" aria-label="Sua ideia foi acolhida" onClick={(e) => e.stopPropagation()}>
+      <div className="comemoracao" role="dialog" aria-label={t('Sua ideia foi acolhida')} onClick={(e) => e.stopPropagation()}>
         <span className="comemoracao-icone" aria-hidden="true">
           <PartyPopper size={40} />
         </span>
-        <h2>Sua ideia entrou no Syden!</h2>
+        <h2>{t('Sua ideia entrou no Syden!')}</h2>
         <blockquote className="comemoracao-ideia">{ideia}</blockquote>
         <p>
           Obrigado de verdade. Fique de olho nas novidades da tela inicial para ver a sua ideia funcionando — e a
@@ -123,7 +125,7 @@ export function Comemoracao({ ideia, aoFechar }: { ideia: string; aoFechar: () =
         </p>
         <Medalha tamanho={132} />
         <button className="btn-primary" onClick={aoFechar}>
-          Que legal!
+          {t('Que legal!')}
         </button>
       </div>
     </div>,

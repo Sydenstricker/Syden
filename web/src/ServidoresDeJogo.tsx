@@ -4,6 +4,7 @@ import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MobileBackButton } from './MobileBackButton';
 import type { Community, ServidorDeJogo } from './types';
+import { useT } from './i18n';
 
 // A agenda de servidores de jogo da comunidade: Minecraft, Palworld, Valheim, o que a turma jogar.
 //
@@ -46,6 +47,7 @@ function Formulario({
   onSalvar: (dados: typeof VAZIO) => void;
   onCancelar: () => void;
 }) {
+  const t = useT();
   const [dados, setDados] = useState(inicial);
   const campo = (chave: keyof typeof VAZIO) => ({
     value: dados[chave],
@@ -61,8 +63,8 @@ function Formulario({
     <form className="jogo-form" onSubmit={enviar}>
       <div className="jogo-form-linha">
         <label className="campo">
-          Nome
-          <input {...campo('nome')} placeholder="O survival do Léo" maxLength={60} />
+          {t('Nome')}
+          <input {...campo('nome')} placeholder={t('O survival do Léo')} maxLength={60} />
         </label>
         <label className="campo">
           Jogo
@@ -70,17 +72,17 @@ function Formulario({
         </label>
       </div>
       <label className="campo">
-        Endereço
-        <input {...campo('endereco')} placeholder="mc.exemplo.com:25565" maxLength={120} />
+        {t('Endereço')}
+        <input {...campo('endereco')} placeholder={t('mc.exemplo.com:25565')} maxLength={120} />
       </label>
       <div className="jogo-form-linha">
         <label className="campo">
-          Senha (se tiver)
+          {t('Senha (se tiver)')}
           <input {...campo('senha')} maxLength={60} />
         </label>
         <label className="campo">
-          Observação
-          <input {...campo('observacao')} placeholder="Versão 1.21, sem PvP" maxLength={300} />
+          {t('Observação')}
+          <input {...campo('observacao')} placeholder={t('Versão 1.21, sem PvP')} maxLength={300} />
         </label>
       </div>
       <div className="jogo-form-acoes">
@@ -96,6 +98,7 @@ function Formulario({
 }
 
 export function ServidoresDeJogo({ community, onMobileBack }: { community: Community; onMobileBack: () => void }) {
+  const t = useT();
   const [servidores, setServidores] = useState<ServidorDeJogo[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [editando, setEditando] = useState<number | 'novo' | null>(null);
@@ -202,7 +205,7 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
                     <BotaoCopiar texto={servidor.endereco} rotulo="o endereço" />
                     {servidor.senha && (
                       <span className="jogo-senha">
-                        Senha: <BotaoCopiar texto={servidor.senha} rotulo="a senha" />
+                        {t('Senha:')} <BotaoCopiar texto={servidor.senha} rotulo="a senha" />
                       </span>
                     )}
                     {servidor.observacao && <small>{servidor.observacao}</small>}

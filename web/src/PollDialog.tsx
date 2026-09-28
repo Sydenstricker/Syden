@@ -2,6 +2,7 @@ import { Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import type { Message } from './types';
+import { useT } from './i18n';
 
 const MAX_OPTIONS = 10;
 
@@ -17,6 +18,7 @@ export function PollDialog({
   onClose: () => void;
   onCreated?: (message: Message) => void;
 }) {
+  const t = useT();
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '']);
   const [multiple, setMultiple] = useState(false);
@@ -58,13 +60,13 @@ export function PollDialog({
               autoFocus
               value={question}
               maxLength={300}
-              placeholder="O que vamos jogar hoje?"
+              placeholder={t('O que vamos jogar hoje?')}
               onChange={(e) => setQuestion(e.target.value)}
             />
           </label>
 
           <div className="poll-dialog-options">
-            <span className="poll-dialog-label">Opções</span>
+            <span className="poll-dialog-label">{t('Opções')}</span>
             {options.map((option, i) => (
               <div key={i} className="poll-dialog-option">
                 <input
@@ -84,7 +86,7 @@ export function PollDialog({
                   <button
                     className="icon-plain"
                     aria-label={`Tirar opção ${i + 1}`}
-                    title="Tirar opção"
+                    title={t('Tirar opção')}
                     onClick={() => setOptions((list) => list.filter((_, j) => j !== i))}
                   >
                     <X size={16} />
@@ -94,14 +96,14 @@ export function PollDialog({
             ))}
             {options.length < MAX_OPTIONS && (
               <button className="poll-dialog-add" onClick={() => setOptions((list) => [...list, ''])}>
-                <Plus size={16} /> Adicionar opção
+                <Plus size={16} /> {t('Adicionar opção')}
               </button>
             )}
           </div>
 
           <label className="poll-dialog-multi">
             <input type="checkbox" checked={multiple} onChange={(e) => setMultiple(e.target.checked)} />
-            Deixar marcar mais de uma opção
+            {t('Deixar marcar mais de uma opção')}
           </label>
         </div>
 

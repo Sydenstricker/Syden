@@ -29,6 +29,7 @@ import type { Channel, Community, DirectChannel, Message, PresenceEntry, Presenc
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
+import { useT } from './i18n';
 
 /** Última comunidade aberta, para o app voltar onde a pessoa estava. */
 const LAST_COMMUNITY_KEY = 'syden.community';
@@ -90,6 +91,7 @@ export function Shell({
   pendingInviteCode?: string | null;
   onLogout: () => void;
 }) {
+  const t = useT();
   // Os cargos podem mudar com o app aberto (o dono deu ou tirou o de administrador, ou excluiu a conta e outro assumiu).
   const { members } = useDirectory();
   const me = members.get(loggedUser.id);
@@ -744,7 +746,7 @@ export function Shell({
             />
           )}
           {view === 'direct' && !directAsChannel && (
-            <div className="empty">Escolha uma conversa à esquerda, ou comece uma nova.</div>
+            <div className="empty">{t('Escolha uma conversa à esquerda, ou comece uma nova.')}</div>
           )}
           {view === 'community' && selected?.type === 'text' && socket && (
             <TextChannel
@@ -794,7 +796,7 @@ export function Shell({
             <ServidoresDeJogo community={community} onMobileBack={() => setMobileChannels(true)} />
           )}
           {view === 'community' && community && !selected && !usageOpen && !jogosOpen && (
-            <div className="empty">Escolha um canal à esquerda.</div>
+            <div className="empty">{t('Escolha um canal à esquerda.')}</div>
           )}
         </main>
         {/* A lista de pessoas acompanha tanto o canal de texto quanto a sala de voz (aí, se a pessoa quiser). */}

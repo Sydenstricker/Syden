@@ -6,6 +6,7 @@ import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
 import { classeDoFundo, corDoNome } from './profileStyles';
 import type { CommunityMember, PresenceStatus } from './types';
+import { useT } from './i18n';
 
 const CARGO: Record<string, string> = { owner: 'Dono da comunidade', admin: 'Administra a comunidade', member: 'Membro' };
 const PRESENCA: Record<PresenceStatus, string> = {
@@ -36,6 +37,7 @@ export function ProfileCard({
   onSendMessage: (userId: number) => void;
   isSelf: boolean;
 }) {
+  const t = useT();
   const nota = useNota(membro.id);
   const ref = useRef<HTMLDivElement | null>(null);
   const [lugar, setLugar] = useState({ left: x, top: y });
@@ -90,7 +92,7 @@ export function ProfileCard({
             </span>
           )}
           {nota && (
-            <p className="perfil-nota" title="Anotação sua, guardada só neste computador">
+            <p className="perfil-nota" title={t('Anotação sua, guardada só neste computador')}>
               {nota}
             </p>
           )}
@@ -103,7 +105,7 @@ export function ProfileCard({
               }}
             >
               <MessageSquare size={16} aria-hidden="true" />
-              Mandar mensagem
+              {t('Mandar mensagem')}
             </button>
           )}
         </div>

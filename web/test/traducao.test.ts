@@ -26,7 +26,7 @@ const { cravados, chaves } = varrerTextos(raiz);
  * **Para baixar este número:** marque textos com t() e rode `node scripts/textos-sem-traducao.mjs` para
  * ver o novo total. Para subi-lo não há motivo legítimo — texto novo já nasce marcado.
  */
-const CATRACA = 209;
+const CATRACA = 0;
 
 describe('a dívida da tradução não cresce', () => {
   it(`há no máximo ${CATRACA} textos cravados`, () => {

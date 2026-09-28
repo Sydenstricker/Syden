@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
 import { api } from './api';
+import { useT } from './i18n';
 
 interface Comunidade {
   id: number;
@@ -60,6 +61,7 @@ function desde(iso: string | null): string {
  * que a sala está cheia e ficar escutando a conversa.
  */
 export function PainelDeComunidades() {
+  const t = useT();
   const [dias, setDias] = useState<number>(7);
   const [dados, setDados] = useState<Panorama | null | 'carregando'>('carregando');
   const [todas, setTodas] = useState(false);
@@ -94,7 +96,7 @@ export function PainelDeComunidades() {
         sem guardar onde aconteceram — esse tempo não existe mais para recuperar.
       </p>
 
-      <div className="comunidades-janela" role="group" aria-label="Período">
+      <div className="comunidades-janela" role="group" aria-label={t('Período')}>
         {JANELAS.map((n) => (
           <button key={n} className={`chip${dias === n ? ' ativo' : ''}`} onClick={() => setDias(n)} aria-pressed={dias === n}>
             {n} dias
@@ -113,7 +115,7 @@ export function PainelDeComunidades() {
         </div>
         <div>
           <strong>{paradas}</strong>
-          <small>Com gente e sem conversa</small>
+          <small>{t('Com gente e sem conversa')}</small>
         </div>
       </div>
 
@@ -126,7 +128,7 @@ export function PainelDeComunidades() {
             <th scope="col">Quem falou</th>
             <th scope="col">Voz</th>
             <th scope="col">Tela</th>
-            <th scope="col">Última</th>
+            <th scope="col">{t('Última')}</th>
           </tr>
         </thead>
         <tbody>
@@ -157,7 +159,7 @@ export function PainelDeComunidades() {
         </button>
       )}
 
-      {dados.comunidades.length === 0 && <p className="settings-hint">Ainda não existe nenhuma comunidade.</p>}
+      {dados.comunidades.length === 0 && <p className="settings-hint">{t('Ainda não existe nenhuma comunidade.')}</p>}
     </section>
   );
 }

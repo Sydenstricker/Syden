@@ -3,6 +3,7 @@ import { Ban } from 'lucide-react';
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { carregarBloqueios } from './bloqueios';
+import { useT } from './i18n';
 
 interface Bloqueado {
   userId: number;
@@ -23,6 +24,7 @@ const quando = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { date
  * quem te bloqueou não serve para nada além de alimentar um conflito.
  */
 export function PessoasBloqueadas() {
+  const t = useT();
   const [lista, setLista] = useState<Bloqueado[] | null>(null);
   const [ocupado, setOcupado] = useState(false);
 
@@ -60,11 +62,11 @@ export function PessoasBloqueadas() {
       </h3>
       <p className="settings-hint">
         Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não
-        pode te mandar pedido de amizade. <strong>Ninguém é avisado de que foi bloqueado.</strong>
+        pode te mandar pedido de amizade. <strong>{t('Ninguém é avisado de que foi bloqueado.')}</strong>
       </p>
 
       {lista.length === 0 ? (
-        <p className="settings-hint">Você não bloqueou ninguém.</p>
+        <p className="settings-hint">{t('Você não bloqueou ninguém.')}</p>
       ) : (
         <ul className="amigos-lista">
           {lista.map((b) => (

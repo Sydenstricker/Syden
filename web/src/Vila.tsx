@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useCoelho } from './coelho';
 import { sounds } from './sounds';
+import { useT } from './i18n';
 
 import {
   ALTURA,
@@ -571,6 +572,7 @@ export function Vila({
   /** Clicar na estátua ABRE A ESCOLHA. Ver o comentário em trocarEstatua. */
   aoEscolherCoelho: () => void;
 }) {
+  const t = useT();
   const noite = periodo === 'noite';
   const [coelhos, setCoelhos] = useState<CoelhoNaVila[]>(() =>
     [0, 1, 2, 3, 4, 5].map((id) => ({ id, ...sorteioNoPasseio(), dur: 0, olhandoEsquerda: id % 2 === 0, fala: null, pulando: false })),
@@ -854,7 +856,7 @@ export function Vila({
         {/* O gramado que aceita cenoura vem ANTES do cenário: assim a casa, a árvore e a estátua ficam
             por cima dele e recebem o próprio clique, em vez de virar chão de plantar. */}
         <polygon className="v-chao-clicavel" points={pts(CANTO_TOPO, CANTO_DIR, CANTO_BAIXO, CANTO_ESQ)} onClick={plantar}>
-          <title>Plantar uma cenoura</title>
+          <title>{t('Plantar uma cenoura')}</title>
         </polygon>
 
         {/* E aqui a vila inteira, do fundo para a frente (ver `cenario`). O grupo não recebe clique: a

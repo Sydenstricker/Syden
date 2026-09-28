@@ -2,6 +2,7 @@ import { MessagesSquare, Plus, Users } from 'lucide-react';
 import { Avatar } from './Avatar';
 import { isUnread } from './unread';
 import type { DirectChannel, UserRef } from './types';
+import { useT } from './i18n';
 
 /** Nome que aparece na lista: o do grupo, ou o da outra pessoa numa conversa de dois. */
 export function directName(conversa: DirectChannel, selfId: number): string {
@@ -33,6 +34,7 @@ export function DirectList({
   onSelect: (conversa: DirectChannel) => void;
   onNewGroup: () => void;
 }) {
+  const t = useT();
   return (
     <div className="channel-list">
       <div className="channel-group">
@@ -72,7 +74,7 @@ export function DirectList({
                   {conversa.lastMessage || (grupo ? `${conversa.members.length} pessoas` : 'Sem mensagens ainda')}
                 </span>
               </span>
-              {nova && <span className="direct-row-dot" aria-label="mensagem nova" />}
+              {nova && <span className="direct-row-dot" aria-label={t('mensagem nova')} />}
             </button>
           );
         })}

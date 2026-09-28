@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Gift, Sparkles } from 'lucide-react';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
+import { useT } from './i18n';
 
 /**
  * A tela de destaque de um item novo, no formato que o usuário pediu (referência: a loja do Warzone).
@@ -22,6 +23,7 @@ type Fase = 'presente' | 'estouro' | 'nome';
 const MENOS_ANIMACAO = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: () => void }) {
+  const t = useT();
   const [fase, setFase] = useState<Fase>('presente');
   const insignia = acharInsignia(codigo);
 
@@ -60,7 +62,7 @@ export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: 
             <Gift size={13} aria-hidden="true" />
             {insignia.etiqueta}
           </span>
-          <p className="revelacao-chamada">Você recebeu um item</p>
+          <p className="revelacao-chamada">{t('Você recebeu um item')}</p>
 
           <div className="revelacao-arte">
             <span className="revelacao-brilho" aria-hidden="true" />
@@ -91,7 +93,7 @@ export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: 
           <Insignia arte={insignia.arte} titulo={insignia.nome} moldura={insignia.moldura} tamanho={150} />
           <h2>{insignia.nome}</h2>
           <p className="revelacao-frase">{insignia.descricao}</p>
-          <p className="revelacao-onde">Já está no seu perfil. Em Configurações você escolhe quais insígnias exibir.</p>
+          <p className="revelacao-onde">{t('Já está no seu perfil. Em Configurações você escolhe quais insígnias exibir.')}</p>
           <button className="btn-primary" onClick={aoResgatar} autoFocus>
             Fechar
           </button>

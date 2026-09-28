@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
+import { useT } from './i18n';
 
 interface Opcao {
   communityId: number;
@@ -22,6 +23,7 @@ interface Opcao {
  * significar alguma coisa.
  */
 export function EscolherSelo() {
+  const t = useT();
   const [opcoes, setOpcoes] = useState<Opcao[] | null>(null);
   const [vestindo, setVestindo] = useState<number | null>(null);
   const [salvando, setSalvando] = useState(false);
@@ -58,9 +60,9 @@ export function EscolherSelo() {
 
   return (
     <section className="settings-block">
-      <h3>Selo que você veste</h3>
+      <h3>{t('Selo que você veste')}</h3>
       <p className="settings-hint">
-        Aparece ao lado do seu nome em todo o Syden. Só as comunidades que <strong>conquistaram</strong> o selo delas
+        {t('Aparece ao lado do seu nome em todo o Syden. Só as comunidades que')} <strong>conquistaram</strong> o selo delas
         entram nesta lista — e você veste um de cada vez.
       </p>
 
@@ -73,7 +75,7 @@ export function EscolherSelo() {
             onClick={() => void escolher(null)}
           >
             <span className="selo-escolha-nada">nenhum</span>
-            <small>Só o seu nome, sem selo</small>
+            <small>{t('Só o seu nome, sem selo')}</small>
           </button>
         </li>
         {opcoes.map((o) => (

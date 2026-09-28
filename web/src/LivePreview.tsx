@@ -3,6 +3,7 @@ import { type RemoteTrack, type RemoteTrackPublication, Room, RoomEvent, Track }
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
+import { useT } from './i18n';
 
 const WIDTH = 320;
 const HEIGHT = 216; // vídeo 16:9 mais a legenda
@@ -26,6 +27,7 @@ export function LivePreview({
   channelId: number;
   connected: boolean;
 }) {
+  const t = useT();
   const [at, setAt] = useState<{ top: number; left: number } | null>(null);
   const open = at !== null;
 
@@ -69,7 +71,7 @@ export function LivePreview({
             )}
             <div className="live-preview-caption">
               {transmitindo ? `${username} está transmitindo ${transmitindo}` : `${username} está compartilhando a tela`}
-              {!connected && <span className="live-preview-hint">Clique na sala para entrar e assistir.</span>}
+              {!connected && <span className="live-preview-hint">{t('Clique na sala para entrar e assistir.')}</span>}
             </div>
           </div>,
           document.body,

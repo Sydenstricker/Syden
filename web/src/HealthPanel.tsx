@@ -2,11 +2,13 @@ import { AlertOctagon, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import type { HealthEvent, HealthReport, HealthSample, ProviderMetrics } from './types';
+import { useT } from './i18n';
 
 const REFRESH_MS = 60_000;
 
 /** Estado do servidor agora e o que aconteceu nas últimas 24 horas. */
 export function HealthPanel() {
+  const t = useT();
   const [health, setHealth] = useState<HealthReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,7 +88,7 @@ export function HealthPanel() {
       </section>
 
       <section className="usage-card">
-        <h2>Últimas 24 horas</h2>
+        <h2>{t('Últimas 24 horas')}</h2>
         {health.samples.length < 2 ? (
           <p className="usage-muted">
             O histórico começa depois de algumas medições. O servidor tira uma por minuto, e elas ficam
@@ -95,7 +97,7 @@ export function HealthPanel() {
         ) : (
           <div className="spark-grid">
             <Sparkline title="Processador" samples={health.samples} pick={(s) => s.cpu} color="#06b6d4" />
-            <Sparkline title="Memória" samples={health.samples} pick={(s) => s.memory} color="#8b5cf6" />
+            <Sparkline title={t('Memória')} samples={health.samples} pick={(s) => s.memory} color="#8b5cf6" />
             {health.samples.some((s) => s.networkOut !== null) && (
               <Sparkline
                 title="Rede enviando"
@@ -129,7 +131,7 @@ export function HealthPanel() {
       <section className="usage-card">
         <h2>Acontecimentos</h2>
         {health.events.length === 0 ? (
-          <p className="usage-muted">Nada digno de nota até agora.</p>
+          <p className="usage-muted">{t('Nada digno de nota até agora.')}</p>
         ) : (
           <ul className="event-list">
             {health.events.map((event) => (

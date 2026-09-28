@@ -4,6 +4,7 @@ import { api } from './api';
 import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import type { DirectChannel } from './types';
+import { useT } from './i18n';
 
 /**
  * Criar uma conversa em grupo: escolhe quem entra (entre quem está na comunidade aberta) e, se quiser,
@@ -18,6 +19,7 @@ export function NewGroupDialog({
   onClose: () => void;
   onCreated: (conversa: DirectChannel) => void;
 }) {
+  const t = useT();
   const { members } = useDirectory();
   const [chosen, setChosen] = useState<number[]>([]);
   const [name, setName] = useState('');
@@ -52,10 +54,10 @@ export function NewGroupDialog({
       <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="group-dialog-title">
         <h2 id="group-dialog-title">Nova conversa</h2>
         <div className="dialog-body">
-          <p className="dialog-note">Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.</p>
+          <p className="dialog-note">{t('Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.')}</p>
 
           <div className="group-people">
-            {pessoas.length === 0 && <p className="settings-hint">Ninguém mais nesta comunidade ainda.</p>}
+            {pessoas.length === 0 && <p className="settings-hint">{t('Ninguém mais nesta comunidade ainda.')}</p>}
             {pessoas.map((pessoa) => (
               <button
                 key={pessoa.id}
@@ -72,7 +74,7 @@ export function NewGroupDialog({
 
           {chosen.length > 1 && (
             <label>
-              Nome do grupo (opcional)
+              {t('Nome do grupo (opcional)')}
               <input value={name} maxLength={50} placeholder="Ex.: Time do Valorant" onChange={(e) => setName(e.target.value)} />
             </label>
           )}

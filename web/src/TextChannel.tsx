@@ -238,7 +238,7 @@ export function TextChannel({
           onSent={() => (stickToBottom.current = true)}
         />
 
-        {dragging && <div className="drop-overlay">Solte para enviar o arquivo</div>}
+        {dragging && <div className="drop-overlay">{t('Solte para enviar o arquivo')}</div>}
       </div>
 
       {openThread && (
@@ -272,6 +272,7 @@ export function TextChannel({
 }
 
 function DeleteMessageDialog({ message, onClose }: { message: Message; onClose: () => void }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -289,8 +290,8 @@ function DeleteMessageDialog({ message, onClose }: { message: Message; onClose: 
   const preview = message.content || (message.poll ? `Enquete: ${message.poll.question}` : `${message.attachments.length} arquivo(s)`);
 
   return (
-    <ConfirmDialog title="Apagar mensagem" confirmLabel="Apagar" busy={busy} error={error} onConfirm={confirm} onCancel={onClose}>
-      Tem certeza que quer apagar esta mensagem de <strong>{message.author.username}</strong>? Ela some para todos.
+    <ConfirmDialog title={t('Apagar mensagem')} confirmLabel="Apagar" busy={busy} error={error} onConfirm={confirm} onCancel={onClose}>
+      {t('Tem certeza que quer apagar esta mensagem de')} <strong>{message.author.username}</strong>? Ela some para todos.
       <blockquote className="dialog-quote">{preview}</blockquote>
     </ConfirmDialog>
   );
@@ -306,6 +307,7 @@ function NewThreadDialog({
   onClose: () => void;
   onCreated: (thread: ThreadSummary) => void;
 }) {
+  const t = useT();
   const [title, setTitle] = useState(() => (message.content || message.poll?.question || 'Novo tópico').slice(0, 60));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -329,10 +331,10 @@ function NewThreadDialog({
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="thread-dialog-title">
-        <h2 id="thread-dialog-title">Criar tópico</h2>
+        <h2 id="thread-dialog-title">{t('Criar tópico')}</h2>
         <div className="dialog-body">
           <label>
-            Nome do tópico
+            {t('Nome do tópico')}
             <input
               autoFocus
               value={title}
@@ -341,7 +343,7 @@ function NewThreadDialog({
               onKeyDown={(e) => e.key === 'Enter' && title.trim() && void create()}
             />
           </label>
-          <p className="dialog-note">A conversa do tópico fica separada, pendurada nesta mensagem:</p>
+          <p className="dialog-note">{t('A conversa do tópico fica separada, pendurada nesta mensagem:')}</p>
           <blockquote className="dialog-quote">
             <MessageText content={message.content || (message.poll ? `Enquete: ${message.poll.question}` : 'Arquivo')} />
           </blockquote>

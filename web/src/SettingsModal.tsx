@@ -105,7 +105,7 @@ export function SettingsModal({
   }, [onClose]);
 
   return (
-    <div className="settings" role="dialog" aria-modal="true" aria-label="Configurações">
+    <div className="settings" role="dialog" aria-modal="true" aria-label={t('Configurações')}>
       <nav className="settings-nav">
         <div className="settings-nav-inner">
           <h4>{t('Configurações do usuário')}</h4>
@@ -165,7 +165,7 @@ export function SettingsModal({
           {community && section === 'emojis' && <EmojisSection user={user} community={community} />}
           {community && section === 'soundboard' && <SoundboardSection user={user} community={community} />}
         </div>
-        <button className="settings-close" onClick={onClose} aria-label="Fechar configurações">
+        <button className="settings-close" onClick={onClose} aria-label={t('Fechar configurações')}>
           <span className="settings-close-circle">
             <X size={18} />
           </span>
@@ -182,6 +182,7 @@ export function SettingsModal({
  * recuperação — com o computador destravado, trocar o e-mail seria tomar a conta.
  */
 function EmailDaConta() {
+  const t = useT();
   const [atual, setAtual] = useState<{ email: string | null; verifiedAt: string | null; envioLigado: boolean } | null>(null);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -236,11 +237,11 @@ function EmailDaConta() {
       )}
       <form className="settings-form" onSubmit={salvar}>
         <label>
-          Endereço
+          {t('Endereço')}
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
         </label>
         <label>
-          Sua senha, para confirmar que é você
+          {t('Sua senha, para confirmar que é você')}
           <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} autoComplete="current-password" required />
         </label>
         {recado && <p className={recado.ok ? 'form-success' : 'form-error'}>{recado.texto}</p>}
@@ -257,6 +258,7 @@ function EmailDaConta() {
  * todas, uma só ou nenhuma. A ordem dos cliques é a ordem em que elas aparecem no perfil.
  */
 function MinhasInsignias() {
+  const t = useT();
   const [itens, setItens] = useState<string[] | null>(null);
   const [vitrine, setVitrine] = useState<string[]>([]);
   const [limite, setLimite] = useState(5);
@@ -284,7 +286,7 @@ function MinhasInsignias() {
 
   return (
     <>
-      <h3>Minhas insígnias</h3>
+      <h3>{t('Minhas insígnias')}</h3>
       {itens.length === 0 ? (
         <p className="settings-hint">
           Você ainda não tem nenhuma. Elas chegam como presente ou como recompensa — por exemplo, quando uma ideia sua
@@ -328,6 +330,7 @@ function MinhasInsignias() {
  * haveria nada a fazer a respeito.
  */
 function OutrosAparelhos() {
+  const t = useT();
   const [feito, setFeito] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -352,7 +355,7 @@ function OutrosAparelhos() {
         Desconecta o Syden em todos os outros computadores e celulares. Você continua conectado aqui.
       </p>
       {feito ? (
-        <p className="form-success">Pronto: só este aparelho continua conectado.</p>
+        <p className="form-success">{t('Pronto: só este aparelho continua conectado.')}</p>
       ) : (
         <button type="button" className="btn-secondary" onClick={sair} disabled={ocupado}>
           {ocupado ? 'Desconectando…' : 'Sair dos outros aparelhos'}
@@ -366,6 +369,7 @@ function OutrosAparelhos() {
 // ---------- Minha conta ----------
 
 function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void }) {
+  const t = useT();
   // Conta criada pelo Google/GitHub não tem senha nenhuma. Isso muda dois formulários desta tela: o
   // de senha (que passa a DEFINIR a primeira, sem pedir a atual) e o de excluir (que confirma pelo
   // nome, porque não há senha para digitar).
@@ -412,7 +416,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
 
   return (
     <>
-      <h2>Minha conta</h2>
+      <h2>{t('Minha conta')}</h2>
       <AvatarEditor user={user} />
       <PerfilEditor user={user} />
 
@@ -425,16 +429,16 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
           </p>
         ) : (
           <label>
-            Senha atual
+            {t('Senha atual')}
             <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" required />
           </label>
         )}
         <label>
-          Nova senha
+          {t('Nova senha')}
           <input type="password" value={next} onChange={(e) => setNext(e.target.value)} autoComplete="new-password" minLength={6} required />
         </label>
         <label>
-          Confirmar nova senha
+          {t('Confirmar nova senha')}
           <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" required />
         </label>
         {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
@@ -455,7 +459,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
 
       <p className="settings-legal">
         <a href="privacidade.html" target="_blank" rel="noreferrer">
-          Política de privacidade
+          {t('Política de privacidade')}
         </a>
         {' · '}
         <a href="termos.html" target="_blank" rel="noreferrer">
@@ -474,6 +478,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
  * caminho social ficava impossível de apagar.
  */
 function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => void; temSenha: boolean; username: string }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmacao, setConfirmacao] = useState('');
@@ -494,17 +499,17 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
 
   return (
     <>
-      <h3>Excluir conta</h3>
+      <h3>{t('Excluir conta')}</h3>
       <div className="settings-card danger-zone">
         <p>
           Apaga a sua conta, as suas mensagens e o seu avatar. Os canais, emojis e sons que você criou continuam no
-          servidor para os outros. <strong>Não dá para desfazer.</strong>
+          servidor para os outros. <strong>{t('Não dá para desfazer.')}</strong>
         </p>
         {open ? (
           <form className="settings-form" onSubmit={submit}>
             {temSenha ? (
               <label>
-                Digite sua senha para confirmar
+                {t('Digite sua senha para confirmar')}
                 <input
                   type="password"
                   value={password}
@@ -532,7 +537,7 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
           </form>
         ) : (
           <button className="btn-danger" onClick={() => setOpen(true)}>
-            Excluir minha conta
+            {t('Excluir minha conta')}
           </button>
         )}
       </div>
@@ -551,6 +556,7 @@ function CommunitySection({
   onChanged: () => void;
   onLeft: () => void;
 }) {
+  const t = useT();
   const [name, setName] = useState(community.name);
   const [invite, setInvite] = useState(community.inviteCode);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
@@ -633,14 +639,14 @@ function CommunitySection({
             </div>
           </div>
 
-          <h3>Nome</h3>
+          <h3>{t('Nome')}</h3>
           <form className="settings-form" onSubmit={rename}>
             <label>
-              Nome da comunidade
+              {t('Nome da comunidade')}
               <input value={name} onChange={(e) => setName(e.target.value)} minLength={2} maxLength={40} required />
             </label>
             <button className="btn-primary" disabled={busy || name === community.name}>
-              Salvar nome
+              {t('Salvar nome')}
             </button>
           </form>
         </>
@@ -690,6 +696,7 @@ function CommunitySection({
 }
 
 function CommunityIconEditor({ community, onChanged }: { community: Community; onChanged: () => void }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cropping, setCropping] = useState<File | null>(null);
@@ -740,7 +747,7 @@ function CommunityIconEditor({ community, onChanged }: { community: Community; o
       {error ? (
         <p className="form-error">{error}</p>
       ) : (
-        <p className="settings-hint">Sem imagem, a comunidade aparece com as iniciais do nome.</p>
+        <p className="settings-hint">{t('Sem imagem, a comunidade aparece com as iniciais do nome.')}</p>
       )}
       {cropping && (
         <ImageCropper
@@ -868,6 +875,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
  * clique já manda para o servidor, que avisa todo mundo.
  */
 function PerfilEditor({ user }: { user: User }) {
+  const t = useT();
   const { members } = useDirectory();
   const eu = members.get(user.id);
   const [cor, setCor] = useState(eu?.nameColor ?? 'padrao');
@@ -891,14 +899,14 @@ function PerfilEditor({ user }: { user: User }) {
   return (
     <>
       <h3>Meu perfil</h3>
-      <p className="settings-hint">É assim que os outros veem você na lista e nas conversas.</p>
+      <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
 
       <div className={`perfil-previa ${classeDoFundo(fundo)}`}>
         <Avatar name={user.username} userId={user.id} size={56} />
         <strong data-cor={corDoNome(cor)}>{user.username}</strong>
       </div>
 
-      <h4 className="perfil-titulo">Cor do nome</h4>
+      <h4 className="perfil-titulo">{t('Cor do nome')}</h4>
       <div className="perfil-cores">
         {CORES_DE_NOME.map((opcao) => (
           <button
@@ -935,6 +943,7 @@ function PerfilEditor({ user }: { user: User }) {
 }
 
 function AvatarEditor({ user }: { user: User }) {
+  const t = useT();
   const { members } = useDirectory();
   const hasAvatar = (members.get(user.id)?.avatarVersion ?? null) !== null;
   const [busy, setBusy] = useState(false);
@@ -979,7 +988,7 @@ function AvatarEditor({ user }: { user: User }) {
           )}
         </div>
       </div>
-      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.</p>}
+      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.')}</p>}
       {cropping && (
         <ImageCropper file={cropping} title="Ajustar o avatar" shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
       )}
@@ -1055,6 +1064,7 @@ function FilePicker({
 // ---------- Emojis da comunidade ----------
 
 function EmojisSection({ user, community }: { user: User; community: Community }) {
+  const t = useT();
   const { emojis, members } = useDirectory();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -1128,7 +1138,7 @@ function EmojisSection({ user, community }: { user: User; community: Community }
                 {file ? 'Trocar imagem' : 'Escolher imagem'}
               </FilePicker>
               <label className="settings-field">
-                Nome
+                {t('Nome')}
                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: gato_feliz" maxLength={32} />
               </label>
               <button className="btn-primary" disabled={!preview || !name || busy}>
@@ -1136,7 +1146,7 @@ function EmojisSection({ user, community }: { user: User; community: Community }
               </button>
             </div>
           </form>
-          <p className="settings-hint">PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.</p>
+          <p className="settings-hint">{t('PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.')}</p>
         </>
       )}
       {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
@@ -1215,6 +1225,7 @@ function InlineRename({
  * não é tocado, e nada é duplicado.
  */
 function RestorePack({ community }: { community: Community }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   if (!manages(community)) return null;
@@ -1237,7 +1248,7 @@ function RestorePack({ community }: { community: Community }) {
   return (
     <div className="settings-card restore-card">
       <div>
-        <strong>Apagou algo sem querer?</strong>
+        <strong>{t('Apagou algo sem querer?')}</strong>
         <p className="settings-hint">
           Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira
           cópia repetida.
@@ -1254,6 +1265,7 @@ function RestorePack({ community }: { community: Community }) {
 // ---------- Soundboard da comunidade ----------
 
 function SoundboardSection({ user, community }: { user: User; community: Community }) {
+  const t = useT();
   const { sounds, members } = useDirectory();
   const settings = useSettings();
   const [audio, setAudio] = useState<string | null>(null);
@@ -1313,7 +1325,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
     <>
       <h2>Soundboard</h2>
       <p className="settings-lead">
-        Durante uma chamada, o botão <AudioLines size={14} /> toca estes sons para todos na sala. Instale pacotes prontos
+        {t('Durante uma chamada, o botão')} <AudioLines size={14} /> toca estes sons para todos na sala. Instale pacotes prontos
         ou envie os seus; o que é seu favorito fica na frente do painel.
       </p>
 
@@ -1361,11 +1373,11 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
               {fileName && <span className="settings-hint">{fileName}</span>}
               <div className="upload-row">
                 <label className="settings-field icon-field">
-                  Ícone
+                  {t('Ícone')}
                   <input value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} />
                 </label>
                 <label className="settings-field">
-                  Nome
+                  {t('Nome')}
                   <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Risada" maxLength={32} />
                 </label>
               </div>
@@ -1376,7 +1388,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
           </form>
           <p className="settings-hint">MP3, OGG ou WAV, até {MAX_SOUND_SECONDS} segundos e 1 MB.</p>
 
-          <h3>Vários de uma vez</h3>
+          <h3>{t('Vários de uma vez')}</h3>
           <BulkSoundUpload community={community} />
         </>
       )}
@@ -1592,17 +1604,18 @@ function DeviceSelect({
   value: string;
   onChange: (deviceId: string) => void;
 }) {
+  const t = useT();
   const { devices, needsPermission, requestPermission } = useDevices(kind);
   return (
     <label className="settings-field">
       {label}
       {needsPermission ? (
         <button type="button" className="btn-secondary" onClick={() => void requestPermission()}>
-          Permitir acesso para ver os dispositivos
+          {t('Permitir acesso para ver os dispositivos')}
         </button>
       ) : (
         <select value={devices.some((d) => d.deviceId === value) ? value : ''} onChange={(e) => onChange(e.target.value)}>
-          <option value="">Padrão do sistema</option>
+          <option value="">{t('Padrão do sistema')}</option>
           {devices.map((d, i) => (
             <option key={d.deviceId} value={d.deviceId}>
               {d.label || `Dispositivo ${i + 1}`}
@@ -1615,11 +1628,12 @@ function DeviceSelect({
 }
 
 function VoiceSection({ voice }: { voice: Voice }) {
+  const t = useT();
   const settings = useSettings();
 
   return (
     <>
-      <h2>Voz e vídeo</h2>
+      <h2>{t('Voz e vídeo')}</h2>
 
       <div className="settings-grid">
         <DeviceSelect
@@ -1646,7 +1660,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
         <>
           <h3>Teclas de atalho</h3>
           <p className="settings-hint shortcuts">
-            Funcionam mesmo com o Syden minimizado, durante uma chamada: <kbd>{SHORTCUT_LABELS.mute}</kbd> silencia ou
+            {t('Funcionam mesmo com o Syden minimizado, durante uma chamada:')} <kbd>{SHORTCUT_LABELS.mute}</kbd> silencia ou
             ativa o microfone, e <kbd>{SHORTCUT_LABELS.deafen}</kbd> ensurdece ou volta a ouvir.
           </p>
         </>
@@ -1666,7 +1680,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
         onChange={(value) => void voice.setAudioProcessing({ echoCancellation: value })}
       />
 
-      <h3>Vídeo</h3>
+      <h3>{t('Vídeo')}</h3>
       <DeviceSelect
         label="Câmera"
         kind="videoinput"
@@ -1674,7 +1688,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
         onChange={(id) => void voice.switchDevice('videoinput', id)}
       />
 
-      <h3>Transmissões dos outros</h3>
+      <h3>{t('Transmissões dos outros')}</h3>
       <Toggle
         label="Abrir a transmissão sozinha"
         description="Desligado, a transmissão de quem está na sala aparece como convite e só começa a ser baixada quando você clica em Assistir. Isso poupa internet e processador — principalmente em sala cheia."
@@ -1683,7 +1697,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
       />
 
       <h3>Qualidade do compartilhamento de tela</h3>
-      <p className="settings-hint">Vale a partir do próximo compartilhamento.</p>
+      <p className="settings-hint">{t('Vale a partir do próximo compartilhamento.')}</p>
       <div className="quality-options" role="radiogroup">
         {(
           [
@@ -1706,7 +1720,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
         ))}
       </div>
 
-      <h3>Como a imagem é comprimida</h3>
+      <h3>{t('Como a imagem é comprimida')}</h3>
       <p className="settings-hint">
         Em muitos computadores o H.264 usa o codificador dedicado da placa de vídeo e sobra processador para o jogo; em
         outros não muda nada. Não dá para adivinhar: troque, transmita, e passe o mouse no "i" da transmissão — ele diz
@@ -1898,6 +1912,7 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
 // ---------- Sons ----------
 
 function SoundsSection() {
+  const t = useT();
   const settings = useSettings();
   const supported = typeof Notification !== 'undefined';
   const [permission, setPermission] = useState(supported ? Notification.permission : 'denied');
@@ -1910,7 +1925,7 @@ function SoundsSection() {
 
   return (
     <>
-      <h2>Notificações</h2>
+      <h2>{t('Notificações')}</h2>
       <Toggle
         label="Notificações na área de trabalho"
         description="Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal."

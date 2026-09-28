@@ -3,6 +3,7 @@ import { type MouseEvent, type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { STATUS_LABEL } from './presenceStatus';
 import type { PresenceStatus } from './types';
+import { useT } from './i18n';
 
 const OPTIONS: { status: PresenceStatus; icon: ReactNode; color: string }[] = [
   { status: 'online', icon: <Circle size={16} />, color: 'var(--green)' },
@@ -40,6 +41,7 @@ export function StatusMenu({
   onChoose: (status: PresenceStatus) => void;
   onClose: () => void;
 }) {
+  const t = useT();
   useEffect(() => {
     const close = () => onClose();
     window.addEventListener('pointerdown', close);
@@ -57,7 +59,7 @@ export function StatusMenu({
       style={{ top: Math.min(y, window.innerHeight - 220), left: Math.min(x, window.innerWidth - 220) }}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <div className="person-menu-name">Seu status</div>
+      <div className="person-menu-name">{t('Seu status')}</div>
       {OPTIONS.map((option) => (
         <button
           key={option.status}

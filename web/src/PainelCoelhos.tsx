@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check } from 'lucide-react';
 import { COELHOS, type Coelho, escolherCoelho, useCoelho } from './coelho';
+import { useT } from './i18n';
 
 // A aba dos coelhos da tela inicial: os dois lado a lado, para escolher qual representa o Syden.
 //
@@ -9,6 +10,7 @@ import { COELHOS, type Coelho, escolherCoelho, useCoelho } from './coelho';
 // texto explicando quem é quem.
 
 export function PainelCoelhos({ aoFechar }: { aoFechar: () => void }) {
+  const t = useT();
   const escolhido = useCoelho();
 
   // A confirmação existe porque a escolha muda coisas que NÃO ESTÃO À VISTA neste painel: o ícone do
@@ -39,7 +41,7 @@ export function PainelCoelhos({ aoFechar }: { aoFechar: () => void }) {
         </button>
       </header>
       <p className="coelhos-lead">
-        Escolha quem representa o seu Syden. Muda em três lugares: o <strong>ícone do aplicativo</strong>, a{' '}
+        {t('Escolha quem representa o seu Syden. Muda em três lugares: o')} <strong>ícone do aplicativo</strong>, a{' '}
         <strong>tela de entrada</strong> e a <strong>estátua da praça</strong>. Vale só neste computador — ninguém mais
         vê a sua escolha.
       </p>

@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Flag } from 'lucide-react';
 import { api } from './api';
+import { useT } from './i18n';
 
 /**
  * A caixa de denúncia. Fica disponível para qualquer pessoa, e não só para quem modera — é justamente
@@ -19,6 +20,7 @@ export function DialogoDeDenuncia({
   corpo: { tipo: 'mensagem' | 'pessoa'; alvo: number };
   aoFechar: () => void;
 }) {
+  const t = useT();
   const [motivo, setMotivo] = useState('');
   const [enviada, setEnviada] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function DialogoDeDenuncia({
         {enviada ? (
           <>
             <h2>
-              <Flag size={18} aria-hidden="true" /> Denúncia enviada
+              <Flag size={18} aria-hidden="true" /> {t('Denúncia enviada')}
             </h2>
             <p>Quem cuida do Syden vai olhar. Obrigado por avisar.</p>
             <button type="button" className="btn-primary" onClick={aoFechar} autoFocus>
@@ -55,7 +57,7 @@ export function DialogoDeDenuncia({
             <h2>
               <Flag size={18} aria-hidden="true" /> {titulo}
             </h2>
-            <p className="settings-hint">Conte em poucas palavras o que houve. Quem cuida do Syden vai ler.</p>
+            <p className="settings-hint">{t('Conte em poucas palavras o que houve. Quem cuida do Syden vai ler.')}</p>
             <label>
               
               <textarea
@@ -65,7 +67,7 @@ export function DialogoDeDenuncia({
                 rows={4}
                 required
                 autoFocus
-                placeholder="O que aconteceu?"
+                placeholder={t('O que aconteceu?')}
               />
             </label>
             {erro && <p className="form-error">{erro}</p>}

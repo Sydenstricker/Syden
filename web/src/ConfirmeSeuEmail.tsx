@@ -1,6 +1,7 @@
 import { MailCheck } from 'lucide-react';
 import { useState } from 'react';
 import { api } from './api';
+import { useT } from './i18n';
 
 // A tela de quem acabou de se cadastrar, ou de quem tentou entrar sem ter confirmado.
 //
@@ -12,6 +13,7 @@ import { api } from './api';
 // lembrar do spam, e o botão de mandar de novo.
 
 export function ConfirmeSeuEmail({ paraOndeFoi, username, aoVoltar }: { paraOndeFoi: string; username: string; aoVoltar: () => void }) {
+  const t = useT();
   const [estado, setEstado] = useState<'parado' | 'enviando' | 'enviado'>('parado');
   const [erro, setErro] = useState<string | null>(null);
 
@@ -30,9 +32,9 @@ export function ConfirmeSeuEmail({ paraOndeFoi, username, aoVoltar }: { paraOnde
   return (
     <div className="auth-card confirme-email">
       <MailCheck size={40} aria-hidden="true" className="confirme-email-icone" />
-      <h1>Falta só confirmar</h1>
+      <h1>{t('Falta só confirmar')}</h1>
       <p>
-        Mandamos um link para <strong>{paraOndeFoi}</strong>. Abra ele e a sua conta está pronta — é o que garante que
+        {t('Mandamos um link para')} <strong>{paraOndeFoi}</strong>. Abra ele e a sua conta está pronta — é o que garante que
         você consiga recuperar a senha um dia, se esquecer.
       </p>
       <p className="settings-hint">
@@ -40,14 +42,14 @@ export function ConfirmeSeuEmail({ paraOndeFoi, username, aoVoltar }: { paraOnde
       </p>
 
       {erro && <p className="form-error">{erro}</p>}
-      {estado === 'enviado' && <p className="form-success">Enviado. Confira a sua caixa.</p>}
+      {estado === 'enviado' && <p className="form-success">{t('Enviado. Confira a sua caixa.')}</p>}
 
       <button type="button" className="btn-primary" disabled={estado === 'enviando'} onClick={() => void reenviar()}>
         {estado === 'enviando' ? 'Enviando…' : 'Mandar o link de novo'}
       </button>
       <p className="auth-switch">
         <button type="button" className="link" onClick={aoVoltar}>
-          Voltar para a entrada
+          {t('Voltar para a entrada')}
         </button>
       </p>
     </div>

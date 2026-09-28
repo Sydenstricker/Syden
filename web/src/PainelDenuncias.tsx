@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Flag } from 'lucide-react';
 import { api } from './api';
+import { useT } from './i18n';
 
 interface Denuncia {
   id: number;
@@ -22,6 +23,7 @@ const quando = (iso: string) => new Date(iso).toLocaleString('pt-BR', { dateStyl
  * para o registro de auditoria e que responde, meses depois, "por que essa conta foi removida?".
  */
 export function PainelDenuncias() {
+  const t = useT();
   const [denuncias, setDenuncias] = useState<Denuncia[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [resolvendo, setResolvendo] = useState<number | null>(null);
@@ -52,9 +54,9 @@ export function PainelDenuncias() {
     return (
       <section className="usage-card">
         <h3>
-          <Flag size={16} aria-hidden="true" /> Denúncias
+          <Flag size={16} aria-hidden="true" /> {t('Denúncias')}
         </h3>
-        <p className="settings-hint">Nenhuma denúncia até agora.</p>
+        <p className="settings-hint">{t('Nenhuma denúncia até agora.')}</p>
       </section>
     );
   }
@@ -62,7 +64,7 @@ export function PainelDenuncias() {
   return (
     <section className="usage-card">
       <h3>
-        <Flag size={16} aria-hidden="true" /> Denúncias
+        <Flag size={16} aria-hidden="true" /> {t('Denúncias')}
       </h3>
       <ul className="denuncias-lista">
         {denuncias.map((d) => (
@@ -89,7 +91,7 @@ export function PainelDenuncias() {
                   value={texto}
                   onChange={(e) => setTexto(e.target.value)}
                   rows={2}
-                  placeholder="O que você fez a respeito?"
+                  placeholder={t('O que você fez a respeito?')}
                   autoFocus
                 />
                 <div className="dialog-actions">

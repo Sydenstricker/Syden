@@ -7,6 +7,7 @@ import { getTheme, toggleTheme } from './theme';
 import type { Channel, VoiceMember } from './types';
 import { PainelCoelhos } from './PainelCoelhos';
 import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type Periodo, type PinoVila, Vila } from './Vila';
+import { useT } from './i18n';
 
 // Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
 // e cutucar uns coelhos antes de entrar numa sala. As quatro casas não são enfeite: cada uma leva a uma
@@ -18,6 +19,7 @@ import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type Periodo, type PinoV
  * já lê tudo, e pode responder ali mesmo.
  */
 function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
+  const t = useT();
   const { members } = useDirectory();
   const dono = [...members.values()].find((m) => m.isOwner);
   const [texto, setTexto] = useState('');
@@ -47,7 +49,7 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
       <section className="ideias exemplo" aria-label="Caixa de ideias (como os outros veem)">
         <h2>
           <Lightbulb size={20} aria-hidden="true" />
-          Tem uma ideia para o Syden?
+          {t('Tem uma ideia para o Syden?')}
         </h2>
         <p className="ideias-lead">
           É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa
@@ -69,10 +71,10 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
   }
 
   return (
-    <section className="ideias" aria-label="Sugestões de melhoria">
+    <section className="ideias" aria-label={t('Sugestões de melhoria')}>
       <h2>
         <Lightbulb size={20} aria-hidden="true" />
-        Tem uma ideia para o Syden?
+        {t('Tem uma ideia para o Syden?')}
       </h2>
       <p className="ideias-lead">
         Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para{' '}
@@ -91,7 +93,7 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
             maxLength={1500}
             rows={3}
             placeholder="Seria bom se…"
-            aria-label="Sua ideia"
+            aria-label={t('Sua ideia')}
           />
           <div className="ideias-rodape">
             <span className="ideias-conta">{texto.length > 0 && `${texto.length}/1500`}</span>
@@ -138,6 +140,7 @@ export function Home({
   /** Quem cuida do Syden recebe as ideias em vez de mandar: para ele a caixa não aparece. */
   souODono: boolean;
 }) {
+  const t = useT();
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [destaque, setDestaque] = useState<string | null>(null);
@@ -258,7 +261,7 @@ export function Home({
 
       <section className="home-news" aria-label="Novidades do Syden" ref={novidadesRef}>
         <h2>Novidades</h2>
-        <p className="home-news-lead">O que mudou por aqui, do mais novo para o mais antigo.</p>
+        <p className="home-news-lead">{t('O que mudou por aqui, do mais novo para o mais antigo.')}</p>
         {CHANGELOG.map((update, index) => (
           <article key={update.date + update.title} className={`update${index === 0 ? ' latest' : ''}`}>
             <header>

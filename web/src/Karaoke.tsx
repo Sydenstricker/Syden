@@ -6,6 +6,7 @@ import { getSettings } from './settings';
 import type { KaraokeSong } from './types';
 import { readAsDataUrl } from './upload';
 import type { Voice } from './useVoice';
+import { useT } from './i18n';
 
 // Karaokê da sala. A música NÃO passa pela chamada: quem aperta "cantar" manda um aviso, e o
 // computador de cada um toca a própria cópia do arquivo. Isso mantém a qualidade (a chamada é feita
@@ -25,8 +26,9 @@ function ListaDeMusicas({
   onCantar: (song: KaraokeSong) => void;
   onApagar: (song: KaraokeSong) => void;
 }) {
+  const t = useT();
   if (musicas.length === 0) {
-    return <p className="settings-hint">Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.</p>;
+    return <p className="settings-hint">{t('Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.')}</p>;
   }
   return (
     <ul className="karaoke-lista">
@@ -49,6 +51,7 @@ function ListaDeMusicas({
 
 /** A letra rolando, com a linha do momento acesa. */
 function Letra({ linhas, soltas, segundos }: { linhas: LinhaDaLetra[]; soltas: string[]; segundos: number }) {
+  const t = useT();
   const atual = linhaAtual(linhas, segundos);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -61,7 +64,7 @@ function Letra({ linhas, soltas, segundos }: { linhas: LinhaDaLetra[]; soltas: s
     return (
       <div className="karaoke-letra" ref={ref}>
         {soltas.length === 0 ? (
-          <p className="settings-hint">Esta música não tem letra. Dá para subir de novo com um arquivo .lrc junto.</p>
+          <p className="settings-hint">{t('Esta música não tem letra. Dá para subir de novo com um arquivo .lrc junto.')}</p>
         ) : (
           soltas.map((linha, i) => (
             <p key={i} className="karaoke-linha">
@@ -85,6 +88,7 @@ function Letra({ linhas, soltas, segundos }: { linhas: LinhaDaLetra[]; soltas: s
 }
 
 function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song: KaraokeSong) => void }) {
+  const t = useT();
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [audio, setAudio] = useState<{ data: string; segundos: number; nome: string } | null>(null);
@@ -134,8 +138,8 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
         <input type="file" accept="audio/*" hidden onChange={(e) => e.target.files?.[0] && void escolherAudio(e.target.files[0])} />
       </label>
       <label className="settings-field">
-        Nome
-        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} placeholder="ex.: Evidências" />
+        {t('Nome')}
+        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} placeholder={t('ex.: Evidências')} />
       </label>
       <label className="settings-field">
         Quem canta
@@ -151,7 +155,7 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
         />
       </label>
       <p className="settings-hint">
-        Suba músicas que você já tem. Um arquivo <code>.lrc</code> faz a letra acender sozinha no tempo certo; um{' '}
+        {t('Suba músicas que você já tem. Um arquivo')} <code>.lrc</code> faz a letra acender sozinha no tempo certo; um{' '}
         <code>.txt</code> comum mostra a letra parada, para acompanhar.
       </p>
       {erro && <p className="form-error">{erro}</p>}
@@ -163,6 +167,7 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
 }
 
 export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communityId: number; onClose: () => void }) {
+  const t = useT();
   const [musicas, setMusicas] = useState<KaraokeSong[] | null>(null);
   const [subindo, setSubindo] = useState(false);
   const [segundos, setSegundos] = useState(0);
@@ -226,10 +231,10 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
   const soltas = song ? letraSemTempo(song.lyrics) : [];
 
   return (
-    <div className="karaoke" role="dialog" aria-label="Karaokê">
+    <div className="karaoke" role="dialog" aria-label={t('Karaokê')}>
       <header className="karaoke-topo">
         <h3>
-          <Music size={17} /> Karaokê
+          <Music size={17} /> {t('Karaokê')}
         </h3>
         <div className="karaoke-topo-acoes">
           {!emCartaz && (
@@ -237,7 +242,7 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
               {subindo ? 'Cancelar' : 'Subir música'}
             </button>
           )}
-          <button className="icon-plain" aria-label="Fechar o karaokê" onClick={onClose}>
+          <button className="icon-plain" aria-label={t('Fechar o karaokê')} onClick={onClose}>
             ✕
           </button>
         </div>

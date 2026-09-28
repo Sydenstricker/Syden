@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Check, UserPlus, UserX, X } from 'lucide-react';
 import { ApiError, api } from './api';
 import { Avatar } from './Avatar';
+import { useT } from './i18n';
 
 interface Amigo {
   userId: number;
@@ -47,6 +48,7 @@ type Aba = 'amigos' | 'pedidos' | 'adicionar';
  * ficar perdido no meio de nomes já conhecidos — e pedido que ninguém vê é pedido recusado na prática.
  */
 export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) => void }) {
+  const t = useT();
   const [aba, setAba] = useState<Aba>('amigos');
   const [amigos, setAmigos] = useState<Amigo[]>([]);
   const [sugestoes, setSugestoes] = useState<Sugestao[]>([]);
@@ -148,7 +150,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           ))}
           {aceitos.length === 0 && (
             <li className="amigos-vazio">
-              Você ainda não tem amigos no Syden. A aba <strong>Adicionar</strong> mostra quem divide comunidade com
+              {t('Você ainda não tem amigos no Syden. A aba')} <strong>Adicionar</strong> mostra quem divide comunidade com
               você.
             </li>
           )}
@@ -157,7 +159,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
 
       {aba === 'pedidos' && (
         <>
-          <h4 className="amigos-titulo">Esperando você responder</h4>
+          <h4 className="amigos-titulo">{t('Esperando você responder')}</h4>
           <ul className="amigos-lista">
             {recebidos.map((a) => (
               <li key={a.userId}>
@@ -183,7 +185,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
             {recebidos.length === 0 && <li className="amigos-vazio">Nenhum pedido esperando.</li>}
           </ul>
 
-          <h4 className="amigos-titulo">Pedidos que você enviou</h4>
+          <h4 className="amigos-titulo">{t('Pedidos que você enviou')}</h4>
           <ul className="amigos-lista">
             {enviados.map((a) => (
               <li key={a.userId}>
@@ -200,7 +202,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 </button>
               </li>
             ))}
-            {enviados.length === 0 && <li className="amigos-vazio">Você não enviou nenhum pedido.</li>}
+            {enviados.length === 0 && <li className="amigos-vazio">{t('Você não enviou nenhum pedido.')}</li>}
           </ul>
         </>
       )}
@@ -216,13 +218,13 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
               void pedir(alvo).then(() => setNome(''));
             }}
           >
-            <label htmlFor="amigos-nome">Nome de usuário</label>
+            <label htmlFor="amigos-nome">{t('Nome de usuário')}</label>
             <div>
               <input
                 id="amigos-nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="o nome exato da pessoa"
+                placeholder={t('o nome exato da pessoa')}
                 autoComplete="off"
               />
               <button type="submit" disabled={ocupado || !nome.trim()}>
@@ -238,7 +240,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
             </small>
           </form>
 
-          <h4 className="amigos-titulo">Pessoas das suas comunidades</h4>
+          <h4 className="amigos-titulo">{t('Pessoas das suas comunidades')}</h4>
           <ul className="amigos-lista">
             {sugestoes.map((s) => (
               <li key={s.userId}>
@@ -253,7 +255,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
               </li>
             ))}
             {sugestoes.length === 0 && (
-              <li className="amigos-vazio">Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.</li>
+              <li className="amigos-vazio">{t('Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.')}</li>
             )}
           </ul>
         </>

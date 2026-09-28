@@ -5,6 +5,7 @@ import { reloadSounds } from './directory';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import type { Pack, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, prepareSound } from './upload';
+import { useT } from './i18n';
 
 // Catálogo de pacotes de sons: os que vêm com o Syden e os que as pessoas montam. Cada um instala os que
 // quiser no próprio soundboard e dá de uma a cinco estrelas, como nas extensões do VS Code.
@@ -136,6 +137,7 @@ function PackCard({ pack, user, onChange }: { pack: Pack; user: User; onChange: 
 
 /** Monta um pacote novo: escolhe vários áudios de uma vez e dá nome a cada um. */
 function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
+  const t = useT();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('📦');
@@ -177,26 +179,26 @@ function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
     <div className="settings-card pack-form">
       <div className="upload-row">
         <label className="settings-field icon-field">
-          Ícone
+          {t('Ícone')}
           <input value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} />
         </label>
         <label className="settings-field">
-          Nome do pacote
+          {t('Nome do pacote')}
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Zoeira da turma" maxLength={32} />
         </label>
       </div>
       <label className="settings-field">
-        Descrição
+        {t('Descrição')}
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="O que tem dentro do pacote"
+          placeholder={t('O que tem dentro do pacote')}
           maxLength={200}
         />
       </label>
 
       <label className="file-picker btn-secondary">
-        <Plus size={16} /> Escolher áudios
+        <Plus size={16} /> {t('Escolher áudios')}
         <input
           type="file"
           accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,.mp3,.ogg,.wav"

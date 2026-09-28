@@ -11,6 +11,7 @@ import { PainelDisponibilidade } from './PainelDisponibilidade';
 import { HealthPanel } from './HealthPanel';
 import { MobileBackButton } from './MobileBackButton';
 import type { Traffic, UsageSummary, VoiceMember } from './types';
+import { useT } from './i18n';
 
 const REFRESH_MS = 60_000;
 // Tela 1080p30: até 5 Mbps ≈ 2,25 GB por hora para cada pessoa assistindo (telas paradas gastam bem menos).
@@ -39,6 +40,7 @@ export function UsageDashboard({
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
 }) {
+  const t = useT();
   const [tab, setTab] = useState<'consumo' | 'saude' | 'denuncias' | 'auditoria' | 'aviso'>('consumo');
   const [usage, setUsage] = useState<UsageSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,12 +78,12 @@ export function UsageDashboard({
       <header className="main-header">
         <MobileBackButton onBack={onMobileBack} />
         <BarChart3 size={22} className="muted-icon" /> Uso do servidor
-        <div className="tab-row" role="tablist" aria-label="Painéis do servidor">
+        <div className="tab-row" role="tablist" aria-label={t('Painéis do servidor')}>
           <button role="tab" aria-selected={tab === 'consumo'} className={`tab${tab === 'consumo' ? ' active' : ''}`} onClick={() => setTab('consumo')}>
             Consumo
           </button>
           <button role="tab" aria-selected={tab === 'saude'} className={`tab${tab === 'saude' ? ' active' : ''}`} onClick={() => setTab('saude')}>
-            Saúde do servidor
+            {t('Saúde do servidor')}
           </button>
           <button
             role="tab"
@@ -89,7 +91,7 @@ export function UsageDashboard({
             className={`tab${tab === 'denuncias' ? ' active' : ''}`}
             onClick={() => setTab('denuncias')}
           >
-            Denúncias
+            {t('Denúncias')}
           </button>
           <button
             role="tab"
@@ -139,7 +141,7 @@ export function UsageDashboard({
             <PainelDeComunidades />
 
             <section className="usage-card">
-              <h2>Tráfego de saída este mês</h2>
+              <h2>{t('Tráfego de saída este mês')}</h2>
               <TrafficPanel traffic={usage.traffic} monthStart={usage.monthStart} />
               {usage.traffic.status === 'ok' && (
                 <SplitPanel voiceSeconds={totalVoice} screenSeconds={totalScreen} totalBytes={usage.traffic.outgoingBytes} />
@@ -157,9 +159,9 @@ export function UsageDashboard({
             </div>
 
             <section className="usage-card">
-              <h2>Por pessoa, este mês</h2>
+              <h2>{t('Por pessoa, este mês')}</h2>
               {usage.users.length === 0 ? (
-                <p className="usage-muted">Ninguém entrou em chamada este mês ainda.</p>
+                <p className="usage-muted">{t('Ninguém entrou em chamada este mês ainda.')}</p>
               ) : (
                 <table className="usage-table">
                   <thead>
@@ -208,6 +210,7 @@ export function UsageDashboard({
 }
 
 function TrafficPanel({ traffic, monthStart }: { traffic: Traffic; monthStart: string }) {
+  const t = useT();
   if (traffic.status === 'unavailable') return <p className="usage-muted">{traffic.message}</p>;
 
   const used = traffic.outgoingBytes / traffic.includedBytes;
@@ -234,7 +237,7 @@ function TrafficPanel({ traffic, monthStart }: { traffic: Traffic; monthStart: s
         aria-valuemin={0}
         aria-valuemax={traffic.includedBytes}
         aria-valuenow={traffic.outgoingBytes}
-        aria-label="Tráfego usado da franquia"
+        aria-label={t('Tráfego usado da franquia')}
       >
         <span style={{ width: `${Math.min(used, 1) * 100}%` }} />
       </div>

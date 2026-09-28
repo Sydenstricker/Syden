@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ScrollText } from 'lucide-react';
 import { api } from './api';
+import { useT } from './i18n';
 
 interface Linha {
   id: number;
@@ -35,6 +36,7 @@ const quando = (iso: string) => new Date(iso).toLocaleString('pt-BR', { dateStyl
  * mensagem apagada ou de uma conta removida, é aqui que está a resposta — com nome e hora.
  */
 export function PainelAuditoria() {
+  const t = useT();
   const [linhas, setLinhas] = useState<Linha[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -50,10 +52,10 @@ export function PainelAuditoria() {
   return (
     <section className="usage-card">
       <h3>
-        <ScrollText size={16} aria-hidden="true" /> Registro de moderação
+        <ScrollText size={16} aria-hidden="true" /> {t('Registro de moderação')}
       </h3>
       {linhas.length === 0 ? (
-        <p className="settings-hint">Nada registrado ainda. Só aparecem aqui as ações com poder sobre os outros.</p>
+        <p className="settings-hint">{t('Nada registrado ainda. Só aparecem aqui as ações com poder sobre os outros.')}</p>
       ) : (
         <>
           <p className="settings-hint">

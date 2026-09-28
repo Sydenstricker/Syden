@@ -205,6 +205,7 @@ function PersonTile({
  * há uma busca por nome.
  */
 function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId: number; onClose: () => void }) {
+  const t = useT();
   const { sounds } = useDirectory();
   const settings = useSettings();
   const ref = useRef<HTMLDivElement>(null);
@@ -270,7 +271,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
     <div className="soundboard" ref={ref} role="dialog" aria-label="Soundboard">
       <div className="soundboard-head">
         <div className="soundboard-title">Soundboard</div>
-        <button className="soundboard-stop" onClick={stopAllSounds} title="Parar o que está tocando aqui">
+        <button className="soundboard-stop" onClick={stopAllSounds} title={t('Parar o que está tocando aqui')}>
           <Square size={12} /> Parar
         </button>
       </div>
@@ -304,7 +305,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
           Nenhum som ainda. Adicione um abaixo, ou instale um pacote em Configurações → Soundboard.
         </p>
       )}
-      {sounds.length > 0 && found.length === 0 && <p className="soundboard-empty">Nenhum som com esse nome.</p>}
+      {sounds.length > 0 && found.length === 0 && <p className="soundboard-empty">{t('Nenhum som com esse nome.')}</p>}
 
       {favorites.length > 0 && (
         <>
@@ -335,6 +336,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
 
 /** Formulário compacto para gravar um som novo sem sair da chamada, direto no painel do soundboard. */
 function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDone: () => void }) {
+  const t = useT();
   const [file, setFile] = useState<File | null>(null);
   const [audio, setAudio] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -377,13 +379,13 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
         />
       </label>
       <div className="soundboard-add-row">
-        <input className="soundboard-add-icon" value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} aria-label="Ícone" />
+        <input className="soundboard-add-icon" value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} aria-label={t('Ícone')} />
         <input
           className="soundboard-add-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Nome do som"
-          aria-label="Nome do som"
+          placeholder={t('Nome do som')}
+          aria-label={t('Nome do som')}
           maxLength={32}
         />
       </div>
@@ -405,13 +407,14 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
  * (não o que foi escolhido nas configurações, mas o que o navegador conseguiu entregar).
  */
 function StreamInfoBadge({ publication, local }: { publication: TrackPublication | undefined; local: boolean }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const stats = useStreamStats(publication, { local });
   const formato = describeStats(stats);
 
   return (
     <div className="stream-info" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className="stream-info-button" aria-label="Informações da transmissão" onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+      <button className="stream-info-button" aria-label={t('Informações da transmissão')} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
         <Info size={16} />
       </button>
       {open && (
@@ -427,8 +430,8 @@ function StreamInfoBadge({ publication, local }: { publication: TrackPublication
                   {stats.naPlaca === true ? ' · pela placa de vídeo' : stats.naPlaca === false ? ' · pelo processador' : ''}
                 </span>
               )}
-              {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">Seu computador está segurando a qualidade.</span>}
-              {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">Sua internet está segurando a qualidade.</span>}
+              {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">{t('Seu computador está segurando a qualidade.')}</span>}
+              {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">{t('Sua internet está segurando a qualidade.')}</span>}
             </>
           ) : (
             <span>Medindo…</span>
@@ -444,6 +447,7 @@ function StreamInfoBadge({ publication, local }: { publication: TrackPublication
  * por quê — quase sempre é a caixinha "compartilhar áudio", que passa despercebida na hora de escolher a tela.
  */
 function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participant }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const userId = Number(publisher.identity);
   const [volume, setVolume] = useState(() => getScreenVolume(userId));
@@ -458,7 +462,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
       return (
         <div className="stream-audio">
           <span className="stream-audio-warn">
-            <VolumeX size={16} /> Sua transmissão está <strong>sem som</strong>. O navegador só manda o som se você marcar
+            <VolumeX size={16} /> {t('Sua transmissão está')} <strong>sem som</strong>. O navegador só manda o som se você marcar
             "compartilhar áudio" na janelinha de escolher a tela.
           </span>
           {voice.telaCompartilhada && (
@@ -485,7 +489,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
 
   return (
     <div className="stream-audio" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className="stream-info-button" aria-label="Som da transmissão" onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+      <button className="stream-info-button" aria-label={t('Som da transmissão')} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
         {comSom && volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
       </button>
       {open && (
@@ -499,7 +503,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
                 max={1}
                 step={0.05}
                 value={volume}
-                aria-label="Volume da transmissão"
+                aria-label={t('Volume da transmissão')}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   setVolume(value);
@@ -530,6 +534,7 @@ function ConviteDeTransmissao({
   membro?: VoiceMember;
   onAssistir: () => void;
 }) {
+  const t = useT();
   const nome = trackRef.participant.name || trackRef.participant.identity;
   const oQue = membro?.screenName;
 
@@ -540,7 +545,7 @@ function ConviteDeTransmissao({
       <span className="stream-invite-what">{oQue ? `está transmitindo ${oQue}` : 'está transmitindo'}</span>
       <button
         className="btn-primary stream-invite-button"
-        title="Nada é baixado enquanto você não abrir"
+        title={t('Nada é baixado enquanto você não abrir')}
         onClick={onAssistir}
       >
         <Play size={16} /> Assistir
@@ -554,6 +559,7 @@ function ConviteDeTransmissao({
  * os controles da transmissão e o botão de tela cheia deste quadro.
  */
 function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPlaceholder; voice: Voice; children: ReactNode }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -567,8 +573,8 @@ function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPl
           {!trackRef.participant.isLocal && (
             <button
               className="stream-info-button"
-              title="Parar de assistir esta transmissão"
-              aria-label="Parar de assistir esta transmissão"
+              title={t('Parar de assistir esta transmissão')}
+              aria-label={t('Parar de assistir esta transmissão')}
               onClick={(e) => {
                 e.stopPropagation();
                 voice.assistir(trackRef.participant.identity, false);
@@ -718,7 +724,7 @@ function Stage({
 
       {voice.mutedWarning && (
         <div className="muted-warning" role="status">
-          <MicOff size={16} /> Você está silenciado!
+          <MicOff size={16} /> {t('Você está silenciado!')}
         </div>
       )}
 

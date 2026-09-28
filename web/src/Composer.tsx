@@ -16,6 +16,7 @@ import { EmojiPicker } from './EmojiPicker';
 import { PollDialog } from './PollDialog';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
 import type { Message } from './types';
+import { useT } from './i18n';
 
 const MAX_FILES = 5;
 
@@ -39,6 +40,7 @@ export const Composer = forwardRef<ComposerHandle, {
   placeholder: string;
   onSent?: () => void;
 }>(function Composer({ channelId, threadId = null, socket, placeholder, onSent }, ref) {
+  const t = useT();
   const [draft, setDraft] = useState('');
   const [staged, setStaged] = useState<Staged[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -180,7 +182,7 @@ export const Composer = forwardRef<ComposerHandle, {
               <button
                 className="composer-file-remove"
                 aria-label={`Tirar ${file.name}`}
-                title="Tirar da mensagem"
+                title={t('Tirar da mensagem')}
                 onClick={() => setStaged((list) => list.filter((f) => f.key !== file.key))}
               >
                 <X size={14} />
@@ -238,7 +240,7 @@ export const Composer = forwardRef<ComposerHandle, {
                     setGravandoTela(true);
                   }}
                 >
-                  <MonitorPlay size={18} /> Gravar um recado em vídeo
+                  <MonitorPlay size={18} /> {t('Gravar um recado em vídeo')}
                 </button>
               )}
             </div>

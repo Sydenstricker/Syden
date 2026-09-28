@@ -1,5 +1,6 @@
 import { type PointerEvent as ReactPointerEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { readAsDataUrl } from './upload';
+import { useT } from './i18n';
 
 const EDITOR = 300; // lado da área de edição, em pixels de tela
 const OUTPUT = 256; // lado da imagem salva
@@ -23,6 +24,7 @@ export function ImageCropper({
   onCancel: () => void;
   onDone: (image: string) => Promise<void> | void;
 }) {
+  const t = useT();
   const [bitmap, setBitmap] = useState<ImageBitmap | null>(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -157,7 +159,7 @@ export function ImageCropper({
           </div>
 
           <aside className="cropper-preview">
-            <h3>Como vão te ver</h3>
+            <h3>{t('Como vão te ver')}</h3>
             <canvas ref={previewRef} className={`cropper-thumb ${shape}`} width={88} height={88} />
             <canvas ref={smallRef} className={`cropper-thumb small ${shape}`} width={40} height={40} />
             <p className="settings-hint">Na lista e na barra lateral.</p>

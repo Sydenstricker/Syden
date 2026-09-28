@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api, mediaUrl } from './api';
 import type { Community, EmojiPack, EmojiPackItem, User } from './types';
 import { prepareImage } from './upload';
+import { useT } from './i18n';
 
 // Catálogo de pacotes de emoji. A diferença para o de sons: som cada um instala no seu soundboard, emoji
 // entra na COMUNIDADE inteira — só faz sentido se todo mundo na conversa enxergar o mesmo desenho. Por
@@ -229,6 +230,7 @@ function PackCard({
 
 /** Monta um pacote novo com imagens escolhidas do computador. */
 function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
+  const t = useT();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('😀');
@@ -266,17 +268,17 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
     <div className="settings-card pack-form">
       <div className="upload-row">
         <label className="settings-field icon-field">
-          Ícone
+          {t('Ícone')}
           <input value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} />
         </label>
         <label className="settings-field">
-          Nome do pacote
+          {t('Nome do pacote')}
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Caras da turma" maxLength={32} />
         </label>
       </div>
       <label className="settings-field">
-        Descrição
-        <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="O que tem dentro" maxLength={140} />
+        {t('Descrição')}
+        <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t('O que tem dentro')} maxLength={140} />
       </label>
 
       <label className="file-picker btn-secondary">
@@ -304,7 +306,7 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
         ))}
       </div>
 
-      {nomesRepetidos && <p className="form-error">Dois emojis com o mesmo nome: cada um precisa do seu.</p>}
+      {nomesRepetidos && <p className="form-error">{t('Dois emojis com o mesmo nome: cada um precisa do seu.')}</p>}
       {error && <p className="form-error">{error}</p>}
       <button
         className="btn-primary"
@@ -319,6 +321,7 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
 
 /** Publica os emojis que a comunidade já tem, para outras comunidades poderem instalar. */
 function PublicarDaComunidade({ community, onDone }: { community: Community; onDone: (created: EmojiPack) => void }) {
+  const t = useT();
   const [name, setName] = useState(`Emojis de ${community.name}`.slice(0, 32));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -342,11 +345,11 @@ function PublicarDaComunidade({ community, onDone }: { community: Community; onD
   return (
     <div className="settings-card pack-form">
       <label className="settings-field">
-        Nome do pacote
+        {t('Nome do pacote')}
         <input value={name} onChange={(e) => setName(e.target.value)} maxLength={32} />
       </label>
       <p className="settings-hint">
-        Junta todos os emojis que <strong>{community.name}</strong> tem hoje num pacote só, para as suas outras comunidades (ou
+        {t('Junta todos os emojis que')} <strong>{community.name}</strong> tem hoje num pacote só, para as suas outras comunidades (ou
         as dos seus amigos) instalarem de uma vez.
       </p>
       {error && <p className="form-error">{error}</p>}
@@ -358,6 +361,7 @@ function PublicarDaComunidade({ community, onDone }: { community: Community; onD
 }
 
 export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User; community: Community; podeInstalar: boolean }) {
+  const t = useT();
   const [packs, setPacks] = useState<EmojiPack[] | null>(null);
   const [criando, setCriando] = useState(false);
   const [publicando, setPublicando] = useState(false);
@@ -399,7 +403,7 @@ export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User
         </div>
       </div>
       <p className="settings-hint">
-        Um pacote instalado entra para <strong>toda a comunidade</strong>: os emojis dele passam a valer nas mensagens de todo
+        {t('Um pacote instalado entra para')} <strong>toda a comunidade</strong>: os emojis dele passam a valer nas mensagens de todo
         mundo. {podeInstalar ? '' : 'Só quem administra pode instalar ou tirar.'}
       </p>
 

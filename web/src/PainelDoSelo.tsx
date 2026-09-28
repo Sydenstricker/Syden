@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { ApiError, api } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
+import { useT } from './i18n';
 
 interface Selo {
   texto: string;
@@ -37,6 +38,7 @@ interface Dados {
  * comunidade, e é o que faz alguém querer o próximo.
  */
 export function PainelDoSelo({ communityId }: { communityId: number }) {
+  const t = useT();
   const [dados, setDados] = useState<Dados | null>(null);
   const [rascunho, setRascunho] = useState<Selo | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -87,7 +89,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
       <h3>Selo da comunidade</h3>
       <p className="settings-hint">
         Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.{' '}
-        <strong>Não se compra: conquista-se.</strong> Os marcos abaixo foram escolhidos para não haver
+        <strong>{t('Não se compra: conquista-se.')}</strong> Os marcos abaixo foram escolhidos para não haver
         como alcançá-los sozinho — todos precisam de mais de uma pessoa, ao longo do tempo.
       </p>
 
@@ -130,7 +132,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
         <div className="selo-editor">
           <h4 className="disponibilidade-titulo">Escolha o selo</h4>
 
-          <label htmlFor="selo-texto">Texto (até 4 caracteres)</label>
+          <label htmlFor="selo-texto">{t('Texto (até 4 caracteres)')}</label>
           <input
             id="selo-texto"
             value={rascunho.texto}
@@ -139,7 +141,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
             placeholder="ZECA"
           />
 
-          <span className="selo-rotulo">Ícone</span>
+          <span className="selo-rotulo">{t('Ícone')}</span>
           <div className="selo-opcoes">
             {dados.icones.map((icone) => (
               <button
@@ -193,7 +195,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
         <p className="settings-hint">
           {dados.selo ? (
             <>
-              O selo desta comunidade é <SeloDaComunidade selo={dados.selo} />. Quem administra escolhe qual é.
+              {t('O selo desta comunidade é')} <SeloDaComunidade selo={dados.selo} />. Quem administra escolhe qual é.
             </>
           ) : (
             'A comunidade já conquistou o selo, e quem administra ainda não escolheu qual será.'

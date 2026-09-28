@@ -7,6 +7,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem } from './MessageItem';
 import { applyReactionUpdate, applyTally, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
 import type { Message, Reaction, Role, ThreadSummary, User } from './types';
+import { useT } from './i18n';
 
 const GROUP_WINDOW_MS = 5 * 60 * 1000;
 
@@ -35,6 +36,7 @@ export function ThreadPanel({
   /** Reagir à mensagem-mãe também atualiza ela lá no canal. */
   onParentReactionsChange: (messageId: number, reactions: Reaction[]) => void;
 }) {
+  const t = useT();
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -103,11 +105,11 @@ export function ThreadPanel({
           Tópico · {thread.title}
         </span>
         {canDeleteThread && (
-          <button className="icon-plain" title="Apagar tópico" aria-label="Apagar tópico" onClick={() => setDeleting(true)}>
+          <button className="icon-plain" title={t('Apagar tópico')} aria-label={t('Apagar tópico')} onClick={() => setDeleting(true)}>
             <Trash2 size={18} />
           </button>
         )}
-        <button className="icon-plain" title="Fechar tópico" aria-label="Fechar tópico" onClick={onClose}>
+        <button className="icon-plain" title={t('Fechar tópico')} aria-label={t('Fechar tópico')} onClick={onClose}>
           <X size={20} />
         </button>
       </header>
@@ -136,7 +138,7 @@ export function ThreadPanel({
         )}
 
         {error && <p className="form-error small">{error}</p>}
-        {messages.length === 0 && !error && <p className="thread-empty">Ninguém respondeu neste tópico ainda.</p>}
+        {messages.length === 0 && !error && <p className="thread-empty">{t('Ninguém respondeu neste tópico ainda.')}</p>}
 
         {messages.map((message, i) => {
           const previous = messages[i - 1];
@@ -163,18 +165,18 @@ export function ThreadPanel({
         channelId={thread.channelId}
         threadId={thread.id}
         socket={socket}
-        placeholder="Responder no tópico"
+        placeholder={t('Responder no tópico')}
         onSent={() => (stick.current = true)}
       />
 
       {deleting && (
         <ConfirmDialog
-          title="Apagar tópico"
+          title={t('Apagar tópico')}
           confirmLabel="Apagar"
           onConfirm={() => void deleteThread()}
           onCancel={() => setDeleting(false)}
         >
-          Apagar o tópico <strong>{thread.title}</strong> apaga também todas as respostas dele. A mensagem original continua no
+          {t('Apagar o tópico')} <strong>{thread.title}</strong> apaga também todas as respostas dele. A mensagem original continua no
           canal.
         </ConfirmDialog>
       )}

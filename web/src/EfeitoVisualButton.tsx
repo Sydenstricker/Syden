@@ -4,6 +4,7 @@ import { EFEITOS_VISUAIS } from './efeitosVisuais';
 import { IconButton } from './IconButton';
 import { useSettings } from './settings';
 import type { Voice } from './useVoice';
+import { useT } from './i18n';
 
 /**
  * Manda um efeito visual para a sala inteira: confete, fogos ou corações.
@@ -13,6 +14,7 @@ import type { Voice } from './useVoice';
  * dados da chamada que o soundboard já usa, e cada computador desenha o seu.
  */
 export function EfeitoVisualButton({ voice }: { voice: Voice }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const ligado = useSettings().efeitosVisuais;
@@ -36,7 +38,7 @@ export function EfeitoVisualButton({ voice }: { voice: Voice }) {
       </IconButton>
       {open && (
         <div className="screenshare-menu" role="menu">
-          <div className="screenshare-menu-title">Efeito para a sala</div>
+          <div className="screenshare-menu-title">{t('Efeito para a sala')}</div>
           {EFEITOS_VISUAIS.map((efeito) => (
             <button
               key={efeito.id}

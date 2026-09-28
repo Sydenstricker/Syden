@@ -26,6 +26,7 @@ import { corDoNome } from './profileStyles';
 import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume } from './voiceVolumes';
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
+import { useT } from './i18n';
 
 /**
  * Menu do botão direito em cima de alguém, como no Discord: abrir o perfil, mencionar, mandar mensagem,
@@ -105,6 +106,7 @@ export function PersonMenu({
   /** Abre o cartão de perfil dela, no mesmo lugar em que o menu estava. */
   onOpenProfile?: (userId: number, x: number, y: number) => void;
 }) {
+  const t = useT();
   const { members } = useDirectory();
   const membro = members.get(target.userId);
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
@@ -256,7 +258,7 @@ export function PersonMenu({
             onClose();
           }}
         >
-          Enviar mensagem
+          {t('Enviar mensagem')}
         </Item>
       )}
 
@@ -268,7 +270,7 @@ export function PersonMenu({
             onClose();
           }}
         >
-          Assistir transmissão
+          {t('Assistir transmissão')}
         </Item>
       )}
 
@@ -292,7 +294,7 @@ export function PersonMenu({
               }}
             />
             <div className="person-menu-nota-rodape">
-              <span>Só você vê</span>
+              <span>{t('Só você vê')}</span>
               <button className="link-button" onClick={salvarNota}>
                 Guardar
               </button>
@@ -309,12 +311,12 @@ export function PersonMenu({
             {nota ? (
               <>
                 {nota}
-                <small>Sua anotação — clique para mudar</small>
+                <small>{t('Sua anotação — clique para mudar')}</small>
               </>
             ) : (
               <>
                 Anotar sobre esta pessoa
-                <small>Só você vê</small>
+                <small>{t('Só você vê')}</small>
               </>
             )}
           </Item>
@@ -372,12 +374,12 @@ export function PersonMenu({
       {moderando && (
         <>
           <hr className="person-menu-linha" />
-          <div className="person-menu-grupo">Moderação</div>
+          <div className="person-menu-grupo">{t('Moderação')}</div>
 
           {channelId !== null && (
             <>
               <Item icone={<MicOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/mute`, { muted: true })}>
-                Silenciar microfone para todos
+                {t('Silenciar microfone para todos')}
               </Item>
               <Item icone={<PhoneOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/kick`, {})}>
                 Desconectar da chamada
@@ -388,14 +390,14 @@ export function PersonMenu({
           {/* Mover de sala: só faz sentido para quem está em alguma, e só para as outras salas. */}
           {inVoiceChannel !== null && voiceChannels.length > 1 && (
             <label className="person-menu-volume">
-              Mover para outra sala
+              {t('Mover para outra sala')}
               <select
                 value=""
                 aria-label={`Mover ${target.username} para outra sala`}
                 onChange={(e) => act(`/api/channels/${inVoiceChannel}/move`, { toChannelId: Number(e.target.value) })}
               >
                 <option value="" disabled>
-                  Escolha a sala…
+                  {t('Escolha a sala…')}
                 </option>
                 {voiceChannels
                   .filter((c) => c.id !== inVoiceChannel)

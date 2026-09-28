@@ -11,6 +11,7 @@ import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
 import type { Attachment, Message, Poll, Reaction, ThreadSummary } from './types';
+import { useT } from './i18n';
 
 /** Caixa máxima de uma imagem no chat; o resto encolhe proporcionalmente. */
 const IMAGE_BOX = { width: 400, height: 300 };
@@ -170,6 +171,7 @@ function AddReactionButton({ onPick }: { onPick: (emoji: string) => void }) {
 }
 
 function ThreadChip({ thread, onOpen }: { thread: ThreadSummary; onOpen: () => void }) {
+  const t = useT();
   return (
     <button className="thread-chip" onClick={onOpen}>
       <MessagesSquare size={16} />
@@ -177,7 +179,7 @@ function ThreadChip({ thread, onOpen }: { thread: ThreadSummary; onOpen: () => v
       <span className="thread-chip-count">
         {thread.replyCount === 1 ? '1 mensagem' : `${thread.replyCount} mensagens`}
       </span>
-      <span className="thread-chip-open">Ver tópico</span>
+      <span className="thread-chip-open">{t('Ver tópico')}</span>
     </button>
   );
 }
@@ -211,6 +213,7 @@ export function MessageItem({
   /** Só para quem cuida do Syden, e só em mensagem de ideia: o joinha que acolhe a sugestão. */
   onAcolher?: (message: Message) => void;
 }) {
+  const t = useT();
   async function reactWith(emoji: string) {
     try {
       const reactions = await api<Reaction[]>(`/api/messages/${message.id}/reactions`, { method: 'POST', body: { emoji } });
@@ -251,8 +254,8 @@ export function MessageItem({
       {onCreateThread && !message.thread && (
         <button
           className="message-action"
-          title="Criar tópico a partir desta mensagem"
-          aria-label="Criar tópico"
+          title={t('Criar tópico a partir desta mensagem')}
+          aria-label={t('Criar tópico')}
           onClick={() => onCreateThread(message)}
         >
           <MessageSquarePlus size={16} />
@@ -261,8 +264,8 @@ export function MessageItem({
       {canDelete && (
         <button
           className="message-action danger"
-          title="Apagar mensagem (Shift + clique apaga direto)"
-          aria-label="Apagar mensagem"
+          title={t('Apagar mensagem (Shift + clique apaga direto)')}
+          aria-label={t('Apagar mensagem')}
           onClick={(e) => onDelete(message, e.shiftKey)}
         >
           <Trash2 size={16} />

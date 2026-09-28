@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { CommunityDialog } from './CommunityRail';
 import { Logo } from './Logo';
 import type { Community } from './types';
+import { useT } from './i18n';
 
 /**
  * Tela de quem ainda não participa de nenhuma comunidade (conta nova, ou saiu de todas).
@@ -20,12 +21,13 @@ export function EmptyCommunities({
   aoAbrirConfiguracoes: () => void;
   aoSair: () => void;
 }) {
+  const t = useT();
   const [abrindo, setAbrindo] = useState(false);
 
   return (
     <div className="no-community">
       <Logo size={56} />
-      <h2>Você ainda não está em nenhuma comunidade</h2>
+      <h2>{t('Você ainda não está em nenhuma comunidade')}</h2>
       <p>
         Uma comunidade é um lugar com canais de texto e salas de voz, como um servidor do Discord. Entre na de um amigo
         com o código de convite dele, ou crie a sua.
@@ -39,10 +41,10 @@ export function EmptyCommunities({
 
       <div className="no-community-saidas">
         <button type="button" className="link" onClick={aoAbrirConfiguracoes}>
-          <Settings size={15} aria-hidden="true" /> Configurações da conta
+          <Settings size={15} aria-hidden="true" /> {t('Configurações da conta')}
         </button>
         <button type="button" className="link" onClick={aoSair}>
-          <LogOut size={15} aria-hidden="true" /> Sair da conta
+          <LogOut size={15} aria-hidden="true" /> {t('Sair da conta')}
         </button>
       </div>
       {abrindo && (

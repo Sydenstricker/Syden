@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Activity } from 'lucide-react';
 import { api } from './api';
+import { useT } from './i18n';
 
 interface Disponibilidade {
   nome: string;
@@ -25,6 +26,7 @@ const porcento = (n: number | null) => (n === null ? '—' : `${n.toFixed(2)}%`)
  * responde "o Syden é confiável?" com número em vez de impressão.
  */
 export function PainelDisponibilidade() {
+  const t = useT();
   const [dados, setDados] = useState<Disponibilidade | null | 'carregando'>('carregando');
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export function PainelDisponibilidade() {
 
       {dados.quedas.length > 0 && (
         <>
-          <h4 className="disponibilidade-titulo">Últimas quedas</h4>
+          <h4 className="disponibilidade-titulo">{t('Últimas quedas')}</h4>
           <ul className="disponibilidade-quedas">
             {dados.quedas.map((q) => (
               <li key={q.quando}>

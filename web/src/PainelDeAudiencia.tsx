@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Gauge, KeyRound, TriangleAlert } from 'lucide-react';
 import { api } from './api';
+import { useT } from './i18n';
 
 interface Dados {
   pageviews: number;
@@ -55,6 +56,7 @@ function julgar(ms: number | null): { texto: string; classe: string } | null {
  *             deles: o melhor momento para renovar é enquanto ainda funciona.
  */
 export function PainelDeAudiencia() {
+  const t = useT();
   const [dados, setDados] = useState<Audiencia | null | 'carregando'>('carregando');
 
   useEffect(() => {
@@ -69,7 +71,7 @@ export function PainelDeAudiencia() {
     return (
       <section className="usage-card audiencia-parou">
         <h3>
-          <TriangleAlert size={16} aria-hidden="true" /> A medição de audiência parou
+          <TriangleAlert size={16} aria-hidden="true" /> {t('A medição de audiência parou')}
         </h3>
         <p className="audiencia-motivo">{dados.motivo}</p>
         {dados.chaveVencida ? (
@@ -80,7 +82,7 @@ export function PainelDeAudiencia() {
           </p>
         ) : (
           <p className="settings-hint">
-            Enquanto isto aparecer, os números abaixo não existem — <strong>não é que ninguém esteja entrando no
+            {t('Enquanto isto aparecer, os números abaixo não existem —')} <strong>não é que ninguém esteja entrando no
             site</strong>. O motivo acima veio da própria Cloudflare, e o registro do servidor tem a mensagem completa.
           </p>
         )}
@@ -129,7 +131,7 @@ export function PainelDeAudiencia() {
         </div>
         <div>
           <strong>{dados.pageviews.toLocaleString('pt-BR')}</strong>
-          <small>Páginas abertas</small>
+          <small>{t('Páginas abertas')}</small>
         </div>
         <div>
           <strong>{tempo(dados.lcpMedianaMs)}</strong>

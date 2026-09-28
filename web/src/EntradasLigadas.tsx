@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { AVISOS, ligarCom, NOMES, type Provedor } from './entradaSocial';
 import { MarcaSocial } from './MarcasSociais';
+import { useT } from './i18n';
 
 // "Entrar com", nas configurações da conta: ligar e desligar Google, Discord, GitHub e Steam numa conta
 // que já existe.
@@ -19,6 +20,7 @@ interface Estado {
 }
 
 export function EntradasLigadas() {
+  const t = useT();
   const [estado, setEstado] = useState<Estado | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState<Provedor | null>(null);
@@ -62,7 +64,7 @@ export function EntradasLigadas() {
 
   return (
     <>
-      <h3>Entrar com</h3>
+      <h3>{t('Entrar com')}</h3>
       <p className="settings-hint">
         Ligue a sua conta do Google, Discord, GitHub ou Steam para entrar no Syden por lá, sem digitar senha. Dá para
         ligar mais de um, e todos levam a esta mesma conta.
@@ -80,7 +82,7 @@ export function EntradasLigadas() {
               <span className="entradas-ligadas-texto">
                 <strong>{NOMES[provedor]}</strong>
                 <small>{ligado ? 'Ligado a esta conta' : (AVISOS[provedor] ?? 'Não está ligado')}</small>
-                {trancado && <small className="entradas-ligadas-travado">É o seu único jeito de entrar. Defina uma senha antes de desligar.</small>}
+                {trancado && <small className="entradas-ligadas-travado">{t('É o seu único jeito de entrar. Defina uma senha antes de desligar.')}</small>}
               </span>
               <button
                 type="button"
