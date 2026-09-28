@@ -1,0 +1,268 @@
+/* A página de apresentação do Syden (index.html).
+ *
+ * As cores são as MESMAS do app (ver web/src/styles.css) de propósito: quem vem daqui para dentro do
+ * Syden não deve sentir que trocou de produto.
+ *
+ * Não há framework nem fonte de fora. A política de segurança do site permite `style-src 'self'` com
+ * inline, mas não script de terceiro — e uma página de apresentação que depende de CDN é uma página que
+ * abre quebrada quando o CDN cai. */
+
+:root {
+  --bg: #313338;
+  --bg-fundo: #1e1f22;
+  --bg-cartao: #383a40;
+  --text: #dbdee1;
+  --strong: #f2f3f5;
+  --muted: #949ba4;
+  --link: #00a8fc;
+  --marca: #5865f2;
+  --marca-escura: #4752c4;
+  --borda: #3f4147;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--link);
+}
+
+/* ---------- barra de cima ---------- */
+
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(30, 31, 34, 0.92);
+  border-bottom: 1px solid var(--borda);
+  backdrop-filter: blur(8px);
+}
+
+.topo-dentro {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--strong);
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.marca img {
+  width: 32px;
+  height: 32px;
+}
+
+.topo nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 15px;
+}
+
+.topo nav a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.topo nav a:hover {
+  color: var(--strong);
+  text-decoration: underline;
+}
+
+/* ---------- botões ---------- */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.botao-marca {
+  background: var(--marca);
+  color: #fff;
+}
+
+.botao-marca:hover {
+  background: var(--marca-escura);
+}
+
+.botao-vazio {
+  background: transparent;
+  color: var(--strong);
+  border-color: #5c5e66;
+}
+
+.botao-vazio:hover {
+  background: #404349;
+}
+
+/* ---------- abertura ---------- */
+
+.abertura {
+  background: linear-gradient(180deg, var(--bg-fundo), var(--bg) 70%);
+  padding: 72px 16px 64px;
+  text-align: center;
+}
+
+.abertura img {
+  width: 128px;
+  height: 128px;
+}
+
+.abertura h1 {
+  color: var(--strong);
+  font-size: clamp(30px, 6vw, 46px);
+  line-height: 1.15;
+  margin: 20px auto 12px;
+  max-width: 18em;
+}
+
+.abertura p {
+  color: var(--text);
+  font-size: clamp(17px, 2.4vw, 20px);
+  margin: 0 auto 28px;
+  max-width: 34em;
+}
+
+.acoes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.miudo {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 18px;
+}
+
+/* ---------- seções ---------- */
+
+section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 56px 16px;
+}
+
+section h2 {
+  color: var(--strong);
+  font-size: clamp(22px, 3.4vw, 28px);
+  margin: 0 0 8px;
+}
+
+.subtitulo {
+  color: var(--muted);
+  margin: 0 0 32px;
+  max-width: 44em;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.cartao {
+  background: var(--bg-cartao);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.cartao h3 {
+  color: var(--strong);
+  font-size: 17px;
+  margin: 0 0 6px;
+}
+
+.cartao p {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* O bloco de destaque: uma coisa só, a que diferencia o Syden. */
+.destaque {
+  background: var(--bg-fundo);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 28px;
+}
+
+.destaque h2 {
+  margin-top: 0;
+}
+
+.destaque p {
+  max-width: 48em;
+}
+
+.destaque p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- honestidade ---------- */
+
+.aviso {
+  border-left: 3px solid var(--marca);
+  padding: 4px 0 4px 16px;
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ---------- pé ---------- */
+
+footer {
+  border-top: 1px solid var(--borda);
+  background: var(--bg-fundo);
+  padding: 32px 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.pe-dentro {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+footer nav {
+  margin-left: auto;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}

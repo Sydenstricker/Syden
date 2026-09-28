@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#313338" />
+    <title>Syden — conversas por voz, vídeo e texto com os amigos</title>
+    <meta
+      name="description"
+      content="Voz, vídeo, tela compartilhada e conversa com os amigos. De graça, inteiro, sem versão paga."
+    />
+
+    <!-- Para quando alguém cola o link num grupo. Sem isto o endereço aparece pelado. -->
+    <meta property="og:title" content="Syden" />
+    <meta property="og:description" content="Voz, vídeo, tela compartilhada e conversa com os amigos. De graça." />
+    <meta property="og:image" content="https://syden.chat/icon-512.png" />
+    <meta property="og:url" content="https://syden.chat/" />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" href="icon-192.png" />
+    <link rel="stylesheet" href="site.css" />
+
+    <!-- O APP DE DESKTOP NÃO PARA AQUI: este script o manda para /app/.
+         Os pacotes já instalados carregam a raiz, e sem o desvio não teriam como entrar. É arquivo
+         separado porque a política de segurança do site não permite script escrito dentro do HTML. -->
+    <script src="desviar-para-o-app.js"></script>
+  </head>
+
+  <body>
+    <header class="topo">
+      <div class="topo-dentro">
+        <a class="marca" href="./">
+          <img src="icon-192.png" alt="" />
+          Syden
+        </a>
+        <nav>
+          <a href="#o-que-faz">O que faz</a>
+          <a href="#karaoke">Karaokê</a>
+          <a href="contribuir.html">Contribuir</a>
+          <a href="/app/">Abrir o Syden</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="abertura">
+        <img src="icon-512.png" alt="O coelho do Syden" width="128" height="128" />
+        <h1>Conversar com os amigos sem pagar nada por isso</h1>
+        <p>
+          Voz, vídeo, tela compartilhada e conversa por texto. O Syden é gratuito por inteiro — sem versão paga, sem
+          recurso trancado, sem propaganda.
+        </p>
+        <div class="acoes">
+          <a class="botao botao-marca" href="/app/">Abrir no navegador</a>
+          <a class="botao botao-vazio" href="https://github.com/Sydenstricker/Syden/releases/latest/download/Syden-Setup.exe">
+            Baixar para Windows
+          </a>
+        </div>
+        <p class="miudo">Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.</p>
+      </div>
+
+      <section id="o-que-faz">
+        <h2>O que o Syden faz</h2>
+        <p class="subtitulo">
+          As comunidades têm canais de texto e de voz, como você já conhece. O que está abaixo é o que costuma
+          surpreender quem chega.
+        </p>
+
+        <div class="grade">
+          <div class="cartao">
+            <h3>Voz e vídeo em grupo</h3>
+            <p>
+              Entra e sai da conversa sem ligar para ninguém. A qualidade se ajusta sozinha à internet de cada um, então
+              uma pessoa com conexão ruim não atrapalha a chamada dos outros.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Tela compartilhada com o som</h3>
+            <p>
+              No programa para Windows, quem compartilha a tela pode mandar o som do computador junto — o jogo, o vídeo,
+              a música — sem mandar a própria voz duas vezes.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Assistir junto</h3>
+            <p>
+              O modo sessão põe o vídeo grande no meio e a conversa do lado, para o grupo acompanhar a mesma coisa ao
+              mesmo tempo e comentar sem perder a imagem.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Karaokê</h3>
+            <p>
+              Cada comunidade tem as próprias músicas, com a letra acendendo no tempo certo na tela de todo mundo. Há
+              uma música que já vem com o Syden, para experimentar sem precisar subir nada.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Amigos e conversa reservada</h3>
+            <p>
+              Dá para ter amizade e conversa particular fora das comunidades. E dá para bloquear alguém: quem foi
+              bloqueado não descobre, e some dos dois lados.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Enfeites que não se compram</h3>
+            <p>
+              Cor de nome, fundo de perfil, moldura de avatar e insígnias — tudo de graça. Alguns são conquistados
+              usando o Syden; nenhum é vendido, e nenhum dá vantagem sobre ninguém.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Selo da comunidade</h3>
+            <p>
+              Comunidades ganham selos por marcos que ninguém alcança sozinho — precisa de gente participando junto. É
+              conquistado, nunca comprado.
+            </p>
+          </div>
+
+          <div class="cartao">
+            <h3>Sons e emojis</h3>
+            <p>
+              Painel de sons para a hora certa, e pacotes de emoji próprios da comunidade. Quem não quer ouvir desliga,
+              e ninguém é obrigado a escutar o que o outro toca.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="karaoke">
+        <div class="destaque">
+          <h2>Por que o karaokê aqui funciona</h2>
+          <p>
+            A maneira comum de cantar junto à distância é uma pessoa compartilhar a tela e tocar a música. Isso quase
+            nunca dá certo: o som chega comprimido, a letra atrasa, e quem tem internet pior ouve tudo picado.
+          </p>
+          <p>
+            No Syden a música <strong>não passa pela chamada</strong>. Cada computador toca a própria cópia do arquivo, e
+            a letra anda pelo tempo da música, não pela rede. O resultado é que a qualidade não depende da internet de
+            quem pôs a música, e a letra aparece certa na tela de cada um.
+          </p>
+          <p>
+            As músicas são de quem participa: cada comunidade sobe as suas, com um arquivo <code>.lrc</code> para a letra
+            acender no tempo. O Syden não traz acervo de música de ninguém.
+          </p>
+        </div>
+      </section>
+
+      <section id="honesto">
+        <h2>O que ainda não está pronto</h2>
+        <p class="subtitulo">
+          O Syden está em uso de verdade, mas é novo. Preferimos dizer isto aqui do que deixar você descobrir sozinho.
+        </p>
+        <div class="grade">
+          <div class="cartao">
+            <h3>Só em português, por enquanto</h3>
+            <p>
+              A tradução para outras línguas está começando. Até ela ficar de verdade, o Syden fala português.
+            </p>
+          </div>
+          <div class="cartao">
+            <h3>Comunidades ainda por convite</h3>
+            <p>
+              Você entra numa comunidade pelo código de quem já está nela. A lista pública de comunidades para
+              descobrir gente nova está a caminho.
+            </p>
+          </div>
+          <div class="cartao">
+            <h3>Um servidor, pequeno</h3>
+            <p>
+              O Syden roda num único servidor pago do bolso. Funciona bem para grupos de amigos; não é feito hoje para
+              multidão.
+            </p>
+          </div>
+        </div>
+        <p class="aviso">
+          O Syden é gratuito e vai continuar sendo. Quem quiser ajudar a pagar o servidor pode
+          <a href="contribuir.html">contribuir</a> — e isso não desbloqueia nada, porque não há nada trancado.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="pe-dentro">
+        <span>Syden</span>
+        <nav>
+          <a href="/app/">Abrir o Syden</a>
+          <a href="contribuir.html">Contribuir</a>
+          <a href="privacidade.html">Privacidade</a>
+          <a href="termos.html">Termos de uso</a>
+          <a href="https://github.com/Sydenstricker/Syden">Código</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

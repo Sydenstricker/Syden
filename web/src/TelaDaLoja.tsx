@@ -1,28 +1,23 @@
-import { Check, ExternalLink, Gift, Heart, Lock, Music, Sparkles } from 'lucide-react';
+import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import { desktopBridge } from './desktop';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
-import { acharVisual, COMO_SE_GANHA, VALORES } from './loja';
+import { acharVisual, COMO_SE_GANHA } from './loja';
 
-/**
- * O endereço do site. No navegador é a própria origem; no app de desktop, que roda de um arquivo
- * local, "origin" não serve para nada — daí o endereço de verdade como reserva.
- */
-const SITE = window.location.protocol.startsWith('http') ? window.location.origin : 'https://syden.chat';
 import { MobileBackButton } from './MobileBackButton';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
 
 // A loja de cosméticos do Syden. **Tudo o que está nela é de graça.**
 //
 // Não é um detalhe de implementação, é o modelo do produto: a filosofia é a do WinRAR — o programa
-// funciona inteiro, sem cobrar, sem travar, sem "versão pro". Quem quiser ajudar a pagar o servidor
-// contribui porque quis, e ganha enfeites por isso. Nada aqui compra vantagem: é cor de nome, fundo de
-// perfil e anel em volta do avatar.
+// funciona inteiro, sem cobrar, sem travar, sem "versão pro". Nada aqui compra vantagem: é cor de nome,
+// fundo de perfil e anel em volta do avatar.
 //
-// Os itens de contribuinte aparecem desde já, marcados e sem esconder que ainda não dá para obtê-los.
-// Mostrar o que vai existir é honesto; fingir que não existe e um dia aparecer do nada, não.
+// E NÃO SE PEDE DINHEIRO NESTA TELA. Quem quiser ajudar a pagar o servidor encontra isso numa aba do
+// site, fora do app. Aqui os itens só se dividem entre os que já são seus e os que se conquistam usando
+// o Syden — os trancados aparecem marcados, em vez de escondidos: mostrar o que existe é honesto,
+// fingir que não existe e um dia aparecer do nada, não.
 
 const ABAS: { tipo: TipoDeItem; nome: string }[] = [
   { tipo: 'cor', nome: 'Cor do nome' },
@@ -99,61 +94,16 @@ function Cartao({
   );
 }
 
-/**
- * A explicação de por que existe dinheiro numa loja em que tudo é de graça — e um link.
- *
- * **A contribuição mora NO SITE, fora do app, e nunca aqui dentro.** As lojas de aplicativo (Apple,
- * Google, Microsoft) cobram uma porcentagem sobre o que é vendido dentro do app, e algumas exigem que
- * a cobrança passe pelo sistema de pagamento delas. Uma página aberta no navegador não é venda dentro
- * do app. A regra para não errar isso no futuro: este bloco pode DIZER que a página existe; o que ele
- * não pode é abrir cobrança por dentro do Syden.
- *
- * E ele NÃO APARECE NO APLICATIVO INSTALADO — só no navegador.
- *
- * A diferença importa por dois motivos. O primeiro é a regra da Microsoft Store: um pedido de
- * dinheiro dentro de um app baixado dela, apontando para pagamento por fora, é justamente o que ela
- * cobra porcentagem para intermediar — e discutir se é ou não é venda custaria uma reprovação. O
- * segundo é mais simples: no navegador isto é uma página do site levando a outra página do site, e
- * não há loja nenhuma no meio.
- *
- * A ponte do Electron só existe dentro do aplicativo. É por ela que o Syden sabe onde está.
- */
-function Contribuir() {
-  if (desktopBridge) return null;
-
-  return (
-    <section className="loja-contribuir">
-      <h3>
-        <Heart size={18} aria-hidden="true" /> Ajudar a pagar o servidor
-      </h3>
-      <p>
-        O Syden é de graça e vai continuar sendo — inteiro, sem travar nada, sem "versão pro". <strong>Contribuir não
-        desbloqueia nada</strong>, e isso é de propósito: tudo o que está nesta loja já é seu, antes e depois. O que a
-        contribuição faz é ajudar a pagar o servidor onde a sua voz e os seus arquivos moram.
-      </p>
-      <ul className="loja-niveis">
-        {VALORES.map((valor) => (
-          <li key={valor.preco}>
-            <strong>{valor.preco}</strong>
-            <span>{valor.nome}</span>
-            <small>por mês</small>
-          </li>
-        ))}
-      </ul>
-      <p>
-        <a className="btn-secondary loja-contribuir-link" href={`${SITE}/contribuir.html`} target="_blank" rel="noreferrer">
-          Ler sobre isso no site
-          <ExternalLink size={15} aria-hidden="true" />
-        </a>
-      </p>
-      <p className="settings-hint">
-        A contribuição acontece no site, no navegador, e não aqui dentro — assim ela não vira compra dentro do
-        aplicativo, que é o que as lojas de celular cobram porcentagem para intermediar. Ainda não está no ar: falta
-        ligar o Syden a um meio de pagamento.
-      </p>
-    </section>
-  );
-}
+// A LOJA NÃO PEDE DINHEIRO, EM LUGAR NENHUM.
+//
+// Aqui havia um bloco de contribuição que aparecia no navegador e se escondia no aplicativo instalado.
+// Saiu inteiro: a contribuição agora mora numa aba do site (web/site/contribuir.html), e só lá.
+//
+// Duas razões. A primeira é de produto: dinheiro no meio de uma loja onde tudo é de graça faz a pessoa
+// procurar o que está trancado — e não há nada trancado, então a pergunta não devia nascer. A segunda é
+// de regra de loja de aplicativo: Apple, Google e Microsoft cobram porcentagem sobre o que é vendido
+// dentro do app, e algumas exigem que o pagamento passe por elas. Sem nenhum pedido de dinheiro aqui,
+// não há o que discutir — e discutir custaria uma reprovação.
 
 export function TelaDaLoja({
   user,
@@ -269,7 +219,6 @@ export function TelaDaLoja({
         </button>
       </section>
 
-      <Contribuir />
       <p className="settings-hint loja-rodape">
         Enfeitando o perfil de <strong>{user.username}</strong>.
       </p>

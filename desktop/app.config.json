@@ -1,3 +1,14 @@
 {
-  "url": "https://syden.chat/"
+  "_comentario": [
+    "O endereço que o app de desktop carrega. Passou a ser /app/ porque a raiz de syden.chat virou a",
+    "página de apresentação do produto.",
+    "",
+    "OS PACOTES JÁ INSTALADOS NÃO QUEBRAM COM ISSO: eles continuam carregando a raiz, e a página de",
+    "apresentação os desvia para /app/ (ver web/site/desviar-para-o-app.js). Esta linha só faz o app",
+    "NOVO ir direto, sem a parada no meio.",
+    "",
+    "ORDEM IMPORTA: publique o site antes de gerar uma build com este endereço. Uma build apontando",
+    "para /app/ antes de /app/ existir abre na tela de sem conexão."
+  ],
+  "url": "https://syden.chat/app/"
 }

@@ -68,19 +68,11 @@ export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | unde
   return undefined;
 }
 
-/**
- * Os valores de contribuição.
- *
- * **Não compram nada.** Quem contribui já tinha acesso à loja inteira antes de contribuir, e continua
- * tendo depois — é doação para ajudar a pagar o servidor, e mais nada. Os valores existem só para
- * quem quiser contribuir não precisar escolher um número do nada.
- */
-export const VALORES: { nome: string; preco: string }[] = [
-  { nome: 'Um cafezinho', preco: 'R$ 1,99' },
-  { nome: 'Um lanche', preco: 'R$ 4,99' },
-  { nome: 'Uma rodada', preco: 'R$ 9,99' },
-  { nome: 'Segurando a conta', preco: 'R$ 19,99' },
-];
+// OS VALORES DE CONTRIBUIÇÃO NÃO MORAM MAIS AQUI.
+//
+// Eles saíram junto com o bloco de contribuição da loja: agora existem numa aba do site
+// (web/site/contribuir.html) e em nenhum outro lugar. Deixar a lista aqui seria guardar o mesmo número
+// em dois arquivos, e um dia mudar só um dos dois.
 
 export const COMO_SE_GANHA: Record<ComoSeGanha, string> = {
   livre: 'De graça, para qualquer pessoa',

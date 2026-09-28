@@ -8395,11 +8395,6 @@ textarea {
   font-weight: 600;
 }
 
-.loja-etiqueta.contribuinte {
-  color: #ff5c8a;
-  background: rgba(255, 92, 138, 0.12);
-}
-
 .loja-etiqueta.conquista {
   color: #faa61a;
   background: rgba(250, 166, 26, 0.12);
@@ -8446,7 +8441,6 @@ textarea {
   color: var(--text-muted);
 }
 
-.loja-contribuir,
 .loja-pacotes {
   max-width: 720px;
   margin-top: 28px;
@@ -8456,7 +8450,6 @@ textarea {
   background: var(--bg-secondary);
 }
 
-.loja-contribuir h3,
 .loja-pacotes h3 {
   display: flex;
   align-items: center;
@@ -8464,32 +8457,8 @@ textarea {
   margin-top: 0;
 }
 
-.loja-niveis {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
-  margin: 14px 0;
-  padding: 0;
-  list-style: none;
-}
-
-.loja-niveis li {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px;
-  border-radius: var(--radius);
-  background: var(--overlay);
-}
-
-.loja-niveis strong {
-  font-size: 18px;
-}
-
-.loja-niveis small {
-  color: var(--text-muted);
-  font-size: 11px;
-}
+/* Os estilos dos valores de contribuição saíram daqui junto com o bloco que os usava: a contribuição
+   agora mora só no site (web/site/contribuir.html), com o estilo dele. */
 
 .loja-rodape {
   margin-top: 24px;
@@ -8747,12 +8716,6 @@ textarea {
   flex: none;
 }
 
-.loja-contribuir-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-}
 
 /* As saídas da tela de "nenhuma comunidade": sem elas, quem chega pelo Google fica preso aqui. */
 .no-community-saidas {
