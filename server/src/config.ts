@@ -54,6 +54,16 @@ export const config = {
   // Envio de e-mail (confirmar endereço, recuperar senha). Sem a chave, o Syden funciona igual: as
   // mensagens vão para o registro do servidor em vez de saírem — dá para desenvolver e testar o fluxo
   // inteiro antes de existir domínio e conta no provedor.
+  // Shield, do Project Arachnid: confere imagens contra a base de material de abuso infantil (ver
+  // shield.ts). Sem as credenciais, fica desligado e o Syden funciona exatamente como antes.
+  // LIDO NA HORA DO USO, e não no import — repare no `get`. O resto deste arquivo congela os valores
+  // quando o módulo carrega, o que é certo para endereço e porta. Para credencial não é: ela pode ser
+  // preenchida depois de o processo começar, e congelar significaria que preencher não teria efeito até
+  // alguém reiniciar — sem nenhuma mensagem dizendo isso.
+  get shield() {
+    return { usuario: process.env.SHIELD_USUARIO ?? '', senha: process.env.SHIELD_SENHA ?? '' };
+  },
+
   email: {
     resendKey: process.env.RESEND_API_KEY ?? '',
     // Enquanto não houver domínio próprio, o endereço de teste do Resend só entrega para o dono da conta.

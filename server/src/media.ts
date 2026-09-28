@@ -71,3 +71,33 @@ export function decodeDataUrl(dataUrl: unknown, maxBytes: number): Buffer | stri
   if (data.length > maxBytes) return `Cada arquivo pode ter até ${Math.round(maxBytes / (1024 * 1024))} MB.`;
   return data;
 }
+
+/**
+ * A porta única por onde toda imagem passa antes de ficar guardada.
+ *
+ * POR QUE AQUI. `media.ts` já é o funil que decide o tipo de todo arquivo pelos bytes — avatar, emoji,
+ * ícone de comunidade, anexo de mensagem. Pôr a conferência num lugar só significa que nenhum caminho
+ * novo de envio escapa dela por esquecimento; espalhá-la pelas rotas significaria o contrário.
+ *
+ * A POLÍTICA DE FALHA É ACEITAR E RECONFERIR DEPOIS, por decisão dele, e vale dizer por quê. Barrar
+ * tudo quando o Shield cai é a escolha que parece mais segura e é pior na prática: os termos deles
+ * (Seção 23) dizem que podem suspender ou encerrar o acesso a qualquer momento, sem aviso — e o Syden
+ * ficaria sem troca de imagem nenhuma por causa de uma indisponibilidade de terceiro. O material fica
+ * na fila e é conferido quando o serviço volta.
+ *
+ * Devolve `null` quando pode seguir, ou o motivo da recusa.
+ */
+export async function conferirAntesDeGuardar(
+  dados: Buffer,
+  mime: string,
+  aoFicarNaFila: (sha256: string) => void,
+): Promise<string | null> {
+  if (!mime.startsWith('image/')) return null;
+
+  const { conferir } = await import('./shield.js');
+  const resultado = await conferir(dados, mime);
+
+  if (resultado.veredito === 'bloqueado') return 'RECUSADO';
+  if (resultado.veredito === 'indisponivel') aoFicarNaFila(resultado.sha256);
+  return null;
+}
