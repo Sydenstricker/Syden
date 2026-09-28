@@ -34,6 +34,22 @@ O gerador continua no projeto como **ferramenta de teste**, para ter um arquivo 
 sincronizada ao mexer no karaokê. Não é produto: a saída dele não mora em `web/public/`, e por isso
 nunca vai para o site.
 
+## Animações: quem espera não tem texto, quem falhou tem
+
+A regra vale para as telas desenhadas em SVG (ver `animacaoSVG/`):
+
+- **Carregamento, entrada e espera → só o desenho, sem texto.** Um coelho comendo cenoura não precisa de
+  legenda, e isso resolve 74 idiomas de uma vez. Há também um motivo técnico que não tem contorno: a tela
+  de carregamento aparece ANTES de o JavaScript carregar, então `t()` ainda não existe. Traduzi-la
+  exigiria um segundo mecanismo de idioma, só para ela.
+- **Erro (404, 500, offline) → texto traduzido, com o código.** Aqui o texto é informação, não enfeite:
+  quem está diante de um erro precisa saber o que houve e ter um código para repetir ao pedir ajuda. O
+  formato é sempre `CÓDIGO — descrição`, no mesmo lugar nas três telas.
+
+A exceção da exceção: a tela offline do app de desktop (`desktop/src/offline.html`) mora dentro do pacote
+e não tem acesso ao i18n. Ela precisa do próprio dicionário pequeno, lendo `navigator.language` — porque
+se houvesse internet para buscar a tradução, ela não estaria aparecendo.
+
 ## Idioma: detectar pelo navegador, nunca pelo IP
 
 O Syden já começa no idioma da pessoa, lendo `navigator.languages` (ver `web/src/i18n/index.ts`).

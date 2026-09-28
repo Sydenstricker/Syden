@@ -36,7 +36,11 @@ function chavesDoArquivo(codigo) {
   const texto = readFileSync(caminho, 'utf8');
   const achadas = new Set();
   // 'chave': '...'  |  "chave": "..."  |  chave: '...' (identificador sem aspas)
-  for (const m of texto.matchAll(/^\s{2}(?:(['"])((?:(?!\1).)+)\1|([A-Za-zÀ-ú_$][\w$]*))\s*:/gm)) {
+  //
+  // O [\wÀ-ú$] do meio é obrigatório, e custou uma investigação. `\w` é só [A-Za-z0-9_] — não inclui
+  // acento. Com `[\w$]*`, a chave sem aspas `Configurações:` casava só até o "Configura" e a chave era
+  // lida errada, então a ferramenta jurava que faltava traduzir uma palavra que estava ali na frente.
+  for (const m of texto.matchAll(/^\s{2}(?:(['"])((?:(?!\1).)+)\1|([A-Za-zÀ-ú_$][\wÀ-ú$]*))\s*:/gm)) {
     achadas.add(m[2] ?? m[3]);
   }
   return achadas;

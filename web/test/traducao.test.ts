@@ -64,7 +64,9 @@ function idiomasLigados(): string[] {
 function chavesDoDicionario(codigo: string): Set<string> {
   const texto = readFileSync(`${pastaI18n}${codigo}.ts`, 'utf8');
   const achadas = new Set<string>();
-  for (const m of texto.matchAll(/^\s{2}(?:(['"])((?:(?!\1).)+)\1|([A-Za-zÀ-ú_$][\w$]*))\s*:/gm)) {
+  // O [\wÀ-ú$] importa: `\w` não inclui acento, e sem ele a chave sem aspas `Configurações:` era lida
+  // como "Configura" — e a ferramenta dizia que faltava traduzir uma palavra que já estava traduzida.
+  for (const m of texto.matchAll(/^\s{2}(?:(['"])((?:(?!\1).)+)\1|([A-Za-zÀ-ú_$][\wÀ-ú$]*))\s*:/gm)) {
     achadas.add(m[2] ?? m[3]);
   }
   return achadas;
