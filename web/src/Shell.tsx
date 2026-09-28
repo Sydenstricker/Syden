@@ -687,6 +687,8 @@ export function Shell({
             selectedId={usageOpen || jogosOpen ? null : selectedId}
             usageActive={usageOpen}
             jogosActive={jogosOpen}
+            inicioActive={mostrandoBoasVindas}
+            onOpenInicio={() => setMostrandoBoasVindas(true)}
             onOpenJogos={() => {
               setShowJogos(true);
               setShowUsage(false);

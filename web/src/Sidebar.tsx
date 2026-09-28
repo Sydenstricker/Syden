@@ -15,6 +15,7 @@ import {
   Trash2,
   Video,
   Volume2,
+  Home,
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
@@ -44,6 +45,7 @@ interface Props {
   voice: Voice;
   usageActive: boolean;
   jogosActive: boolean;
+  inicioActive: boolean;
   myStatus: PresenceStatus;
   onSetStatus: (status: PresenceStatus) => void;
   /** Abre e entra na sala de quem está transmitindo, direto pelo menu do botão direito. */
@@ -56,6 +58,7 @@ interface Props {
   onSelect: (channel: Channel) => void;
   onOpenUsage: () => void;
   onOpenJogos: () => void;
+  onOpenInicio: () => void;
   onOpenSettings: () => void;
 }
 
@@ -66,6 +69,7 @@ export function Sidebar({
   selectedId,
   usageActive,
   jogosActive,
+  inicioActive,
   voiceMembers,
   voice,
   myStatus,
@@ -77,6 +81,7 @@ export function Sidebar({
   onSelect,
   onOpenUsage,
   onOpenJogos,
+  onOpenInicio,
   onOpenSettings,
 }: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
@@ -127,6 +132,14 @@ export function Sidebar({
       {directMode && directList}
 
       <div className="channel-list" hidden={directMode}>
+        {/* O INÍCIO DA COMUNIDADE FICA SEMPRE AQUI, e não só na primeira entrada.
+            A tela de boas-vindas abre sozinha uma vez; este botão é o que a torna um LUGAR. Sem ele,
+            o recado do dono e a arte da comunidade viveriam um instante e sumiriam para sempre — e
+            quem chegou distraído nunca mais acharia o caminho de volta. */}
+        <button className={`channel inicio-link${inicioActive ? ' active' : ''}`} onClick={onOpenInicio}>
+          <Home size={18} /> {t('Início')}
+        </button>
+
         {/* A agenda de servidores de jogo é da comunidade inteira: todo mundo vê, quem administra mexe. */}
         <button className={`channel jogos-link${jogosActive ? ' active' : ''}`} onClick={onOpenJogos}>
           <Gamepad2 size={18} /> Servidores de jogos

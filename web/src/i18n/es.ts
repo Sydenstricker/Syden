@@ -362,4 +362,5 @@ export default {
   'Usar': 'Usar',
   'Visitas': 'Visitas',
   'Voz': 'Voz',
+  'Início': 'Inicio',
 } satisfies Record<string, string>;
