@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { LIMIAR, TETO_DE_VOZES, lembrarFalantes, quemOuvir } from '../src/quemOuvir.js';
+import { LIMIAR, TETO_DE_VOZES, lembrarFalantes, quemOuvir, queroEstaFaixa } from '../src/quemOuvir.js';
 
 const sala = (quantos: number) => Array.from({ length: quantos }, (_, i) => ({ id: `p${i}` }));
 const ids = (conjunto: Set<string>) => [...conjunto].sort();
@@ -87,5 +87,34 @@ describe('a memória de quem falou', () => {
   it('ninguém falando não apaga a memória', () => {
     // É isto que impede a fala cortada na pausa para respirar: silêncio não é motivo para esquecer.
     assert.deepEqual(lembrarFalantes(['a', 'b'], []), ['a', 'b']);
+  });
+});
+
+describe('qual faixa baixar', () => {
+  const vozes = new Set(['10', '11']);
+  const assistindo = new Set(['20']);
+
+  it('microfone segue a regra de quem ouvir', () => {
+    assert.equal(queroEstaFaixa('microfone', '10', vozes, assistindo), true);
+    assert.equal(queroEstaFaixa('microfone', '99', vozes, assistindo), false);
+  });
+
+  it('tela e som da tela só descem para quem abriu a transmissão', () => {
+    assert.equal(queroEstaFaixa('tela', '20', vozes, assistindo), true);
+    assert.equal(queroEstaFaixa('som-da-tela', '20', vozes, assistindo), true);
+    assert.equal(queroEstaFaixa('tela', '10', vozes, assistindo), false);
+    assert.equal(queroEstaFaixa('som-da-tela', '10', vozes, assistindo), false);
+  });
+
+  it('a câmera NÃO é cortada de quem está calado', () => {
+    // Cortar a câmera de quem não fala é visível na hora: o rosto da pessoa congela ou apaga no meio
+    // da conversa. O adaptiveStream do LiveKit já resolve o custo do vídeo de outra forma.
+    assert.equal(queroEstaFaixa('camera', '99', vozes, assistindo), true);
+  });
+
+  it('assistir alguém não faz baixar a voz dele por essa via', () => {
+    // A voz de quem se assiste desce porque ele entra em "preferidos" na conta de quemOuvir, e não por
+    // uma exceção aqui. Duas portas para a mesma coisa é como se esquece de fechar uma delas.
+    assert.equal(queroEstaFaixa('microfone', '20', vozes, assistindo), false);
   });
 });

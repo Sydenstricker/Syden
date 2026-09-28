@@ -92,6 +92,35 @@ export function quemOuvir(
   return escolhidos;
 }
 
+/** As fontes de faixa que o Syden trata de forma diferente. Espelha Track.Source do LiveKit. */
+export type Fonte = 'microfone' | 'camera' | 'tela' | 'som-da-tela' | 'outra';
+
+/**
+ * Esta faixa deve ser baixada?
+ *
+ * ISTO É UMA FUNÇÃO SEPARADA PORQUE ERRAR AQUI NÃO DÁ ERRO. Dentro do useVoice era um ternário
+ * aninhado decidindo inscrição por faixa, e as duas formas de errá-lo são silenciosas: ou ninguém
+ * ouve ninguém, ou todo mundo baixa tudo e a economia não acontece. Nenhuma das duas aparece no
+ * console — a primeira aparece numa chamada com amigos esperando, a segunda só quando o servidor cai.
+ *
+ * @param vozes      quem passou pela regra de quemOuvir (só vale para microfone)
+ * @param assistindo de quem esta pessoa abriu a transmissão de tela
+ */
+export function queroEstaFaixa(
+  fonte: Fonte,
+  id: string,
+  vozes: ReadonlySet<string>,
+  assistindo: ReadonlySet<string>,
+): boolean {
+  // Tela e som da tela andam juntos: quem não abriu a imagem também não baixa o som do jogo.
+  if (fonte === 'tela' || fonte === 'som-da-tela') return assistindo.has(id);
+  // Só o microfone passa pela regra de sala grande.
+  if (fonte === 'microfone') return vozes.has(id);
+  // Câmera e o resto continuam como sempre: adaptiveStream e dynacast já cuidam de não mandar vídeo
+  // em tamanho que ninguém está vendo, e cortar a câmera de quem está calado seria visível na hora.
+  return true;
+}
+
 /**
  * Atualiza a lista de quem falou, do mais recente para o mais antigo.
  *

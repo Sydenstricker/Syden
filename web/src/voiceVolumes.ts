@@ -34,6 +34,17 @@ export function isLocallyMuted(userId: number) {
   return mutes[String(userId)] === true;
 }
 
+/**
+ * De quem esta pessoa mexeu no volume e não silenciou.
+ *
+ * Serve para a regra de quem ouvir em sala grande (ver quemOuvir.ts): mexer no volume de alguém é
+ * escolha explícita, e escolha explícita vence a regra automática. Quem foi silenciado localmente fica
+ * de fora — a pessoa já disse que não quer ouvir.
+ */
+export function idsComVolumeAjustado(): string[] {
+  return Object.keys(volumes).filter((id) => (volumes[id] ?? 0) > 0 && mutes[id] !== true);
+}
+
 function apply(room: Room, userId: number) {
   const participant = room.remoteParticipants.get(String(userId));
   participant?.setVolume(isLocallyMuted(userId) ? 0 : getUserVolume(userId));

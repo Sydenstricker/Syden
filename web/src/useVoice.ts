@@ -19,7 +19,8 @@ import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import { nomeDaTransmissao } from './streamName';
-import { applyAllVolumes } from './voiceVolumes';
+import { applyAllVolumes, idsComVolumeAjustado } from './voiceVolumes';
+import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOuvir';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
@@ -542,17 +543,46 @@ export function useVoice(socket: Socket | null) {
   assistindoRef.current = assistindo;
 
   /**
+   * Quem falou, do mais recente para o mais antigo. É a memória que a regra de sala grande usa.
+   *
+   * Fica numa ref e não num estado porque muda a cada fala de cada pessoa: virar estado redesenharia a
+   * tela toda vez que alguém abre a boca, e ninguém veria diferença nenhuma no desenho.
+   */
+  const falantesRef = useRef<string[]>([]);
+
+  /** Traduz a fonte do LiveKit para o nome que a regra usa, para a regra não depender da biblioteca. */
+  const fonteDa = (publicacao: TrackPublication): Fonte => {
+    if (publicacao.source === Track.Source.ScreenShare) return 'tela';
+    if (publicacao.source === Track.Source.ScreenShareAudio) return 'som-da-tela';
+    if (publicacao.source === Track.Source.Microphone) return 'microfone';
+    if (publicacao.source === Track.Source.Camera) return 'camera';
+    return 'outra';
+  };
+
+  /**
    * Diz ao servidor, faixa por faixa, o que este computador quer receber. Chamado a cada mudança (alguém
-   * chegou, alguém começou a transmitir, você abriu ou fechou uma transmissão), porque só o servidor pode
-   * parar de mandar — recusar o vídeo depois de baixado não economizaria nem internet nem processador.
+   * chegou, alguém começou a transmitir, alguém falou, você abriu ou fechou uma transmissão), porque só o
+   * servidor pode parar de mandar — recusar o vídeo depois de baixado não economizaria nem internet nem
+   * processador.
    */
   const aplicarInscricoes = useCallback(() => {
+    /**
+     * EM SALA GRANDE, O ÁUDIO DE QUEM ESTÁ CALADO NÃO É BAIXADO.
+     *
+     * Esta é a conta que decidia se o Syden escala: um SFU repassa em vez de misturar, então todo mundo
+     * baixando todo mundo dá N×(N−1) fluxos. Dez pessoas são 90 e ninguém sente; cinquenta são 2.450 e o
+     * servidor cai. A regra inteira — com os porquês de cada linha — está em quemOuvir.ts, e o mais
+     * importante dela é o que ela NÃO faz: abaixo de doze pessoas, nada muda.
+     */
+    const todos = [...room.remoteParticipants.values()].map((pessoa) => ({ id: pessoa.identity }));
+    // Quem a pessoa escolheu ouvir vence a regra automática: quem ela está assistindo (se abriu a tela de
+    // alguém, quer a voz dessa pessoa) e de quem ela mexeu no volume.
+    const preferidos = new Set<string>([...assistindoRef.current, ...idsComVolumeAjustado()]);
+    const vozesQueridas = quemOuvir(todos, falantesRef.current, preferidos);
+
     for (const pessoa of room.remoteParticipants.values()) {
       for (const publicacao of pessoa.trackPublications.values()) {
-        const deTela =
-          publicacao.source === Track.Source.ScreenShare || publicacao.source === Track.Source.ScreenShareAudio;
-        // O som da transmissão acompanha a imagem: quem não abriu a tela também não baixa o som do jogo.
-        const querido = !deTela || assistindoRef.current.has(pessoa.identity);
+        const querido = queroEstaFaixa(fonteDa(publicacao), pessoa.identity, vozesQueridas, assistindoRef.current);
         if (publicacao.isDesired !== querido) publicacao.setSubscribed(querido);
       }
     }
@@ -580,10 +610,28 @@ export function useVoice(socket: Socket | null) {
       }
       aplicarInscricoes();
     };
+    /**
+     * Quem está falando agora entra na memória, e a inscrição é refeita.
+     *
+     * O servidor avisa quem fala mesmo de quem NÃO se está baixando — é um aviso de controle, não o áudio.
+     * Sem isso a regra não funcionaria: ninguém que estivesse fora da lista conseguiria entrar nela.
+     */
+    const aoFalar = (falando: Participant[]) => {
+      const agora = falando.filter((p) => p !== room.localParticipant).map((p) => p.identity);
+      falantesRef.current = lembrarFalantes(falantesRef.current, agora);
+      aplicarInscricoes();
+    };
+    /** Quem saiu não precisa continuar na memória de falantes para sempre. */
+    const aoSair = (participante: RemoteParticipant) => {
+      falantesRef.current = falantesRef.current.filter((id) => id !== participante.identity);
+      aplicarInscricoes();
+    };
     room
       .on(RoomEvent.Connected, aoConectar)
       .on(RoomEvent.Reconnected, aoConectar)
       .on(RoomEvent.ParticipantConnected, aplicarInscricoes)
+      .on(RoomEvent.ParticipantDisconnected, aoSair)
+      .on(RoomEvent.ActiveSpeakersChanged, aoFalar)
       .on(RoomEvent.TrackPublished, aoPublicar)
       .on(RoomEvent.TrackUnpublished, aplicarInscricoes);
     return () => {
@@ -591,6 +639,8 @@ export function useVoice(socket: Socket | null) {
         .off(RoomEvent.Connected, aoConectar)
         .off(RoomEvent.Reconnected, aoConectar)
         .off(RoomEvent.ParticipantConnected, aplicarInscricoes)
+        .off(RoomEvent.ParticipantDisconnected, aoSair)
+        .off(RoomEvent.ActiveSpeakersChanged, aoFalar)
         .off(RoomEvent.TrackPublished, aoPublicar)
         .off(RoomEvent.TrackUnpublished, aplicarInscricoes);
     };
