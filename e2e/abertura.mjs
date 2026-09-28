@@ -179,6 +179,19 @@ checa(!depois.aindaTem, 'e a abertura saiu de cena');
 // abertura vira um piscar que ninguém identifica — e um borrão de meio segundo passa impressão de
 // falha, não de identidade. O desconto de 100ms é folga de relógio, não de regra.
 checa(saiuEm >= 2000 - 100, 'ficou pelo menos dois segundos na tela', Math.round(saiuEm) + 'ms');
+/**
+ * A CSP servida aqui é a DE PRODUÇÃO, e o pacote conferido é o que está em web/dist. Construir sem a
+ * variável do endereço da API deixa o pacote apontando para localhost:3001 — que a CSP de produção não
+ * permite, e com razão. O teste então acusava a política de barrar algo, o que é verdade e é irrelevante:
+ * o problema é o pacote, não a política. Dizer qual dos dois é custa duas linhas e poupa a investigação.
+ */
+const porLocalhost = barrados.filter((b) => b.includes('localhost'));
+if (porLocalhost.length && barrados.length === porLocalhost.length) {
+  console.log('');
+  console.log('  Este pacote foi construído apontando para a API local, e a CSP de produção barra isso.');
+  console.log('  Construa com o endereço de produção antes de medir:');
+  console.log('    VITE_API_URL=https://api.syden.chat npm run build -w web');
+}
 checa(barrados.length === 0, 'a política de segurança não barrou nada', barrados[0] ?? '');
 
 await browser.close();
