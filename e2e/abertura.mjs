@@ -121,6 +121,41 @@ const montouEm = await page.evaluate(() => performance.now());
 const aindaNaTela = await page.evaluate(() => Boolean(document.getElementById('abertura')));
 checa(aindaNaTela, 'a abertura continua na tela depois de o React montar', Math.round(montouEm) + 'ms');
 
+/**
+ * ELA PRECISA ESCONDER O QUE ESTÁ ATRÁS — e esta é a verificação que faltava.
+ *
+ * A primeira versão não tinha fundo próprio nem camada acima do app: o Syden desenhava a tela de
+ * entrada por baixo, e o coelho ficava boiando por cima dos botões. Apareceu na tela de quem usou,
+ * não aqui, porque eu estava medindo se ela EXISTIA e não se ela COBRIA.
+ *
+ * elementFromPoint no meio da tela responde a pergunta certa: quem está na frente, de verdade?
+ */
+const cobrindo = await page.evaluate(() => {
+  const abertura = document.getElementById('abertura');
+  const estilo = abertura ? getComputedStyle(abertura) : null;
+
+  // O pointer-events: none faz o elementFromPoint PULAR a abertura — ela existe, cobre a tela, e a
+  // busca responde o que está embaixo. Foi assim que este teste acusou um defeito que já estava
+  // corrigido. Ligar o clique por um instante pergunta o que interessa de verdade: na disputa de
+  // camadas, quem fica na frente?
+  const antes = abertura.style.pointerEvents;
+  abertura.style.pointerEvents = 'auto';
+  const meio = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+  abertura.style.pointerEvents = antes;
+
+  return {
+    quemEstaNaFrente: meio?.closest('#abertura') ? 'abertura' : (meio?.tagName ?? 'nada'),
+    fundo: estilo?.backgroundColor ?? '',
+    camada: estilo?.zIndex ?? '',
+    // E o clique tem de continuar atravessando depois da medição: é a salvaguarda de nunca travar o app.
+    atravessaClique: estilo?.pointerEvents === 'none',
+  };
+});
+checa(cobrindo.atravessaClique, 'o clique atravessa, para nunca travar o app se ela ficar', cobrindo.camada);
+checa(cobrindo.quemEstaNaFrente === 'abertura', 'ela está na frente do app, e não atrás', cobrindo.quemEstaNaFrente);
+checa(cobrindo.fundo !== 'rgba(0, 0, 0, 0)', 'ela é opaca, e não deixa a tela de entrada aparecer atrás', cobrindo.fundo);
+checa(Number(cobrindo.camada) > 3000, 'acima de tudo do Syden, inclusive das janelas', 'z-index ' + cobrindo.camada);
+
 // Espera ela sair sozinha, e mede QUANDO.
 const saiuEm = await page.evaluate(
   () =>

@@ -45,10 +45,25 @@
         inset: 0;
         display: grid;
         place-items: center;
-        /* Abaixo de qualquer coisa do app: se por algum motivo ela não sumir, não trava clique nenhum. */
-        z-index: 1;
+
+        /* ELA PRECISA SER OPACA, e não foi na primeira versão — o defeito apareceu na tela: sem fundo
+           próprio, o app desenhava por baixo e o coelho ficava boiando por cima dos botões de entrar.
+           O fundo do <body> não bastava, porque o que o React desenha pinta por cima dele. */
+        background: #313338;
+
+        /* Acima de tudo do Syden, inclusive das janelas (o maior z-index do app é 3000). Uma abertura
+           que fica ATRÁS do que ela deveria esconder não esconde nada. */
+        z-index: 9000;
+
+        /* O clique atravessa, de propósito. São dois riscos, e este é o menor: se um dia ela deixar de
+           ser removida, um clique perdido é ruim, mas um app permanentemente travado por uma camada
+           invisível é pior — e o segundo é o que aconteceria com pointer-events normal. */
         pointer-events: none;
       }
+
+      /* A ABERTURA É SEMPRE ESCURA, inclusive para quem usa o tema claro. Não é descuido: o coelho é
+         uma silhueta BRANCA, e sobre fundo claro sobraria só o arco vermelho girando sozinho. Dois
+         segundos de tela escura no começo é o que todo app faz — e é curto demais para incomodar. */
 
       #abertura svg {
         width: min(220px, 45vw, 40vh);
