@@ -26,6 +26,25 @@ const ATRIBUTOS = /(?:title|aria-label|placeholder|alt)="([^"]{3,})"/g;
 const SOLTOS = />\s*([A-ZÀ-Ú][^<>{}\n]{3,80}?)\s*</g;
 
 /**
+ * UMA PALAVRA SÓ entre tags: <h2>Comunidade</h2>.
+ *
+ * Precisa de regra própria porque a de cima exige que o texto PAREÇA português — e "Comunidade",
+ * "Imagem", "Convite", "Membros" não têm acento nem caem na lista de palavras comuns. Vinte e dois
+ * rótulos escaparam por essa fresta, e o sintoma seria o pior possível: a tela em inglês com meia
+ * dúzia de títulos em português no meio, parecendo tradução malfeita em vez de tradução faltando.
+ *
+ * Aqui a suspeita se inverte: um rótulo de uma palavra, com inicial maiúscula, é para traduzir até
+ * prova em contrário — e a prova é a lista de exceções logo abaixo.
+ */
+const PALAVRA_SOLTA = />\s*([A-ZÀ-Ú][A-Za-zÀ-ú]{2,30})\s*</g;
+
+/** O que NÃO se traduz: o nome do produto, e palavras que são as mesmas em toda língua. */
+const NAO_TRADUZ = new Set(['Syden', 'Discord', 'Windows', 'GIF', 'PNG', 'JPG', 'WEBP', 'Emojis', 'Soundboard']);
+
+/** Linha de TypeScript, e não de tela: `Promise<T>` casa com a busca de palavra solta, e não é texto. */
+const PARECE_TIPO = /\b(Promise|Array|Record|Map|Set|Partial|Pick|Omit)\s*</;
+
+/**
  * Tudo o que já passa por t('...') ou está marcado com chave('...').
  *
  * O `chave()` é obrigatório aqui, e não um luxo. Onde o texto se separa do t() — um rótulo guardado numa
@@ -65,17 +84,27 @@ export function varrerTextos(raiz = 'web/src') {
       const linhas = texto.split('\n');
       const linhaDe = (indice) => texto.slice(0, indice).split('\n').length;
 
+      const vistos = new Set();
       for (const [regex, tipo] of [
         [ATRIBUTOS, 'atributo'],
         [SOLTOS, 'solto'],
+        [PALAVRA_SOLTA, 'palavra'],
       ]) {
         for (const m of texto.matchAll(regex)) {
           const conteudo = m[1].trim();
-          if (!PARECE_PORTUGUES.test(conteudo)) continue;
+          // A busca de palavra solta não exige parecer português: ver o comentário dela.
+          if (tipo !== 'palavra' && !PARECE_PORTUGUES.test(conteudo)) continue;
+          if (tipo === 'palavra' && NAO_TRADUZ.has(conteudo)) continue;
           const linha = linhaDe(m.index);
-          // Comentário não vai para a tela.
           const bruta = linhas[linha - 1] ?? '';
+          // Comentário não vai para a tela.
           if (/^\s*(\/\/|\*|\/\*)/.test(bruta)) continue;
+          if (tipo === 'palavra' && PARECE_TIPO.test(bruta)) continue;
+          // A busca de frase e a de palavra se sobrepõem num texto de uma palavra só; contar duas
+          // vezes inflaria a dívida e faria a catraca pedir para baixar um número que nunca desce.
+          const marca = linha + '\u0000' + conteudo;
+          if (vistos.has(marca)) continue;
+          vistos.add(marca);
           cravados.push({ arquivo: caminho.replace(/\\/g, '/'), linha, tipo, conteudo });
         }
       }

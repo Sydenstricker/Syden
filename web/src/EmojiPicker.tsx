@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import { EMOJI_GROUPS, emojiLabel, searchEmojis } from './emojiData';
+import { useT } from './i18n';
 
 const RECENT_KEY = 'syden.recentEmojis';
 const MAX_RECENT = 16;
@@ -28,6 +29,7 @@ function rememberRecent(char: string) {
  * próprio caractere. A busca é em português ("bolo", "coração", "risada").
  */
 export function EmojiPicker({ onPick, onClose }: { onPick: (text: string) => void; onClose: () => void }) {
+  const t = useT();
   const { emojis } = useDirectory();
   const [hovered, setHovered] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -130,7 +132,7 @@ export function EmojiPicker({ onPick, onClose }: { onPick: (text: string) => voi
         {search ? (
           found.length > 0 ? (
             <>
-              <div className="emoji-picker-section">Resultados</div>
+              <div className="emoji-picker-section">{t('Resultados')}</div>
               <div className="emoji-picker-grid">{found.map((char) => unicodeButton(char, char))}</div>
             </>
           ) : (

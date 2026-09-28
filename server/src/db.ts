@@ -705,6 +705,27 @@ addColumnIfMissing('usage_sessions', 'community_id', 'INTEGER');
 addColumnIfMissing('communities', 'selo_texto', 'TEXT');
 addColumnIfMissing('communities', 'selo_icone', 'TEXT');
 addColumnIfMissing('communities', 'selo_cor', 'TEXT');
+
+// O ESPAÇO DE BOAS-VINDAS da comunidade: a primeira coisa que alguém vê ao entrar.
+//
+// Antes, entrar numa comunidade era cair numa lista de canais — correto e frio, como chegar numa casa
+// e ver só o corredor. Aqui o dono escreve o que quiser dizer, escolhe uma arte, e aponta o que a
+// pessoa deve fazer primeiro.
+//
+// A ARTE É UM CÓDIGO, e não uma imagem. Pela mesma razão das molduras da loja: trocar um degradê ou
+// acrescentar uma arte nova vira uma mudança no site, publicada sozinha, sem tocar no servidor nem
+// migrar banco. O desenho mora em web/src/boasVindas.ts.
+addColumnIfMissing('communities', 'bv_titulo', 'TEXT');
+addColumnIfMissing('communities', 'bv_texto', 'TEXT');
+addColumnIfMissing('communities', 'bv_arte', 'TEXT');
+
+// Quando esta pessoa viu as boas-vindas desta comunidade. Nulo = nunca viu.
+//
+// FICA NO SERVIDOR, e não no navegador, de propósito: a pessoa que entra pelo computador de casa e
+// depois pelo do trabalho não deve receber as boas-vindas duas vezes. É uma data, e não um sim/não,
+// porque um dia vai ser útil saber QUANDO — e porque data que já existe não precisa de migração nova
+// quando a pergunta mudar.
+addColumnIfMissing('community_members', 'viu_boas_vindas', 'TEXT');
 addColumnIfMissing('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
@@ -3485,4 +3506,54 @@ export function idsBloqueadosDe(userId: number): number[] {
       )
       .all(userId, userId) as { id: number }[]
   ).map((linha) => linha.id);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// O ESPAÇO DE BOAS-VINDAS DA COMUNIDADE
+// ---------------------------------------------------------------------------------------------------
+
+export interface BoasVindas {
+  titulo: string;
+  texto: string;
+  /** Código da arte de fundo; o desenho mora em web/src/boasVindas.ts. */
+  arte: string;
+}
+
+/** O que o dono escreveu. Nulo quando a comunidade ainda não montou o espaço dela. */
+export function lerBoasVindas(communityId: number): BoasVindas | null {
+  const linha = db
+    .prepare('SELECT bv_titulo AS titulo, bv_texto AS texto, bv_arte AS arte FROM communities WHERE id = ?')
+    .get(communityId) as { titulo: string | null; texto: string | null; arte: string | null } | undefined;
+  if (!linha?.titulo && !linha?.texto) return null;
+  return { titulo: linha.titulo ?? '', texto: linha.texto ?? '', arte: linha.arte ?? 'aurora' };
+}
+
+export function guardarBoasVindas(communityId: number, bv: BoasVindas | null) {
+  db.prepare('UPDATE communities SET bv_titulo = ?, bv_texto = ?, bv_arte = ? WHERE id = ?').run(
+    bv?.titulo ?? null,
+    bv?.texto ?? null,
+    bv?.arte ?? null,
+    communityId,
+  );
+}
+
+/** Esta pessoa já viu as boas-vindas desta comunidade? */
+export function jaViuBoasVindas(communityId: number, userId: number): boolean {
+  const linha = db
+    .prepare('SELECT viu_boas_vindas AS quando FROM community_members WHERE community_id = ? AND user_id = ?')
+    .get(communityId, userId) as { quando: string | null } | undefined;
+  return Boolean(linha?.quando);
+}
+
+/**
+ * Marca que viu. É idempotente de propósito: guarda a PRIMEIRA vez, e chamadas seguintes não mexem.
+ *
+ * Sem o `IS NULL`, cada abertura sobrescreveria a data e a informação "quando esta pessoa chegou de
+ * verdade" se perderia na primeira vez que alguém reabrisse a tela por curiosidade.
+ */
+export function marcarViuBoasVindas(communityId: number, userId: number) {
+  db.prepare(
+    `UPDATE community_members SET viu_boas_vindas = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+     WHERE community_id = ? AND user_id = ? AND viu_boas_vindas IS NULL`,
+  ).run(communityId, userId);
 }

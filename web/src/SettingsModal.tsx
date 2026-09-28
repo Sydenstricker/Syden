@@ -24,6 +24,7 @@ import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'rea
 import { AnimatedIcon } from './AnimatedIcon';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
+import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { chave, useT } from './i18n';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
@@ -169,7 +170,7 @@ export function SettingsModal({
           <span className="settings-close-circle">
             <X size={18} />
           </span>
-          ESC
+          {t('ESC')}
         </button>
       </main>
     </div>
@@ -521,14 +522,14 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
               </label>
             ) : (
               <label>
-                Escreva <strong>{username}</strong> para confirmar
+                {t('Escreva')} <strong>{username}</strong> para confirmar
                 <input value={confirmacao} onChange={(e) => setConfirmacao(e.target.value)} autoComplete="off" autoFocus required />
               </label>
             )}
             {error && <p className="form-error">{error}</p>}
             <div className="danger-actions">
               <button type="button" className="link-button" onClick={() => setOpen(false)}>
-                Cancelar
+                {t('Cancelar')}
               </button>
               <button className="btn-danger" disabled={busy || (temSenha ? !password : confirmacao.trim().toLowerCase() !== username.toLowerCase())}>
                 {busy ? 'Excluindo…' : 'Excluir minha conta para sempre'}
@@ -607,16 +608,17 @@ function CommunitySection({
 
   return (
     <>
-      <h2>Comunidade</h2>
+      <h2>{t('Comunidade')}</h2>
       <p className="settings-lead">
         {community.memberCount} {community.memberCount === 1 ? 'pessoa participa' : 'pessoas participam'} de {community.name}.
       </p>
 
       {canManage && (
         <>
-          <h3>Imagem</h3>
+          <EditorDeBoasVindas community={community} />
+          <h3>{t('Imagem')}</h3>
           <CommunityIconEditor community={community} onChanged={onChanged} />
-          <h3>Convite</h3>
+          <h3>{t('Convite')}</h3>
           <div className="settings-card">
             <p className="settings-hint">
               Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de
@@ -631,7 +633,7 @@ function CommunitySection({
                   setMessage({ ok: true, text: 'Código copiado.' });
                 }}
               >
-                Copiar
+                {t('Copiar')}
               </button>
               <button className="link-button" onClick={newInvite} disabled={busy}>
                 Gerar outro
@@ -681,7 +683,7 @@ function CommunitySection({
         >
           {confirming === 'delete' ? (
             <>
-              Apagar <strong>{community.name}</strong> para todos os {community.memberCount} membros? Os canais, as
+              {t('Apagar')} <strong>{community.name}</strong> para todos os {community.memberCount} membros? Os canais, as
               mensagens, os emojis e os sons somem junto.
             </>
           ) : (
@@ -739,7 +741,7 @@ function CommunityIconEditor({ community, onChanged }: { community: Community; o
           <PasteImage onImage={setCropping} onError={setError} />
           {community.iconVersion !== null && (
             <button className="link-button" onClick={remove} disabled={busy}>
-              Remover
+              {t('Remover')}
             </button>
           )}
         </div>
@@ -765,12 +767,14 @@ function CommunityIconEditor({ community, onChanged }: { community: Community; o
 // ---------- Membros da comunidade ----------
 
 function RoleBadge({ role }: { role: Role }) {
-  if (role === 'owner') return <span className="badge badge-owner">Dono</span>;
-  if (role === 'admin') return <span className="badge">Administrador</span>;
+  const t = useT();
+  if (role === 'owner') return <span className="badge badge-owner">{t('Dono')}</span>;
+  if (role === 'admin') return <span className="badge">{t('Administrador')}</span>;
   return null;
 }
 
 function MembersSection({ user, community }: { user: User; community: Community }) {
+  const t = useT();
   const { members: directory } = useDirectory();
   const [removing, setRemoving] = useState<CommunityMember | null>(null);
   const [busy, setBusy] = useState(false);
@@ -812,7 +816,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
 
   return (
     <>
-      <h2>Membros</h2>
+      <h2>{t('Membros')}</h2>
       <p className="settings-lead">
         {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} em {community.name}.
         {isOwner
@@ -861,7 +865,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
             setError(null);
           }}
         >
-          Remover <strong>{removing.username}</strong> de {community.name}? A pessoa perde o acesso aos canais e sai de
+          {t('Remover')} <strong>{removing.username}</strong> de {community.name}? A pessoa perde o acesso aos canais e sai de
           qualquer chamada na hora. A conta dela no Syden continua existindo. Para ela não voltar com o mesmo convite,
           troque o código em "Comunidade".
         </ConfirmDialog>
@@ -983,7 +987,7 @@ function AvatarEditor({ user }: { user: User }) {
           <PasteImage onImage={setCropping} onError={setError} />
           {hasAvatar && (
             <button className="link-button" onClick={remove} disabled={busy}>
-              Remover
+              {t('Remover')}
             </button>
           )}
         </div>
@@ -1334,7 +1338,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
           Sons da comunidade
         </button>
         <button role="tab" aria-selected={tab === 'pacotes'} className={tab === 'pacotes' ? 'active' : ''} onClick={() => setTab('pacotes')}>
-          Pacotes
+          {t('Pacotes')}
         </button>
       </div>
 

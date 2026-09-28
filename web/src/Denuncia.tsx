@@ -49,7 +49,7 @@ export function DialogoDeDenuncia({
             </h2>
             <p>Quem cuida do Syden vai olhar. Obrigado por avisar.</p>
             <button type="button" className="btn-primary" onClick={aoFechar} autoFocus>
-              Fechar
+              {t('Fechar')}
             </button>
           </>
         ) : (
@@ -73,7 +73,7 @@ export function DialogoDeDenuncia({
             {erro && <p className="form-error">{erro}</p>}
             <div className="dialog-actions">
               <button type="button" className="btn-secondary" onClick={aoFechar}>
-                Cancelar
+                {t('Cancelar')}
               </button>
               <button className="btn-primary" disabled={ocupado || motivo.trim().length < 3}>
                 {ocupado ? 'Enviando…' : 'Enviar denúncia'}

@@ -83,7 +83,7 @@ export function NewGroupDialog({
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
           <button className="link-button" onClick={onClose}>
-            Cancelar
+            {t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={chosen.length === 0 || busy} onClick={() => void create()}>
             {busy ? 'Criando…' : 'Começar conversa'}

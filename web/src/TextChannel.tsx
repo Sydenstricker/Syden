@@ -351,7 +351,7 @@ function NewThreadDialog({
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
           <button className="link-button" onClick={onClose}>
-            Cancelar
+            {t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={busy || !title.trim()} onClick={() => void create()}>
             {busy ? 'Criando…' : 'Criar tópico'}

@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect } from 'react';
+import { useT } from './i18n';
 
 export function ConfirmDialog({
   title,
@@ -17,6 +18,7 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const t = useT();
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onCancel();
     window.addEventListener('keydown', onKey);
@@ -31,7 +33,7 @@ export function ConfirmDialog({
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
           <button className="link-button" onClick={onCancel}>
-            Cancelar
+            {t('Cancelar')}
           </button>
           <button className="btn-danger" onClick={onConfirm} disabled={busy} autoFocus>
             {busy ? 'Aguarde…' : confirmLabel}

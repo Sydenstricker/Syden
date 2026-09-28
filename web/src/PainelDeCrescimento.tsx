@@ -1,5 +1,6 @@
 import { Gift, MailQuestion, UserPlus, Users } from 'lucide-react';
 import type { ResumoDeContas } from './types';
+import { useT } from './i18n';
 
 // Quantas pessoas existem no Syden, e como elas chegaram.
 //
@@ -20,10 +21,11 @@ function Numero({ valor, rotulo, icone, destaque }: { valor: number; rotulo: str
 }
 
 export function PainelDeCrescimento({ contas, online }: { contas: ResumoDeContas; online: number }) {
+  const t = useT();
   return (
     <section className="crescimento">
       <h3>
-        <Users size={18} aria-hidden="true" /> Pessoas
+        <Users size={18} aria-hidden="true" /> {t('Pessoas')}
       </h3>
 
       <ul className="crescimento-numeros">

@@ -74,7 +74,7 @@ export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: 
 
           <button className="btn-primary revelacao-resgatar" onClick={resgatar} autoFocus>
             <Sparkles size={16} aria-hidden="true" />
-            Resgatar
+            {t('Resgatar')}
           </button>
         </div>
       )}
@@ -84,7 +84,7 @@ export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: 
           <span className="revelacao-losango" />
           <span className="revelacao-raios" />
           <span className="revelacao-clarao" />
-          <p className="revelacao-palavra">Desbloqueado</p>
+          <p className="revelacao-palavra">{t('Desbloqueado')}</p>
         </div>
       )}
 
@@ -95,7 +95,7 @@ export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: 
           <p className="revelacao-frase">{insignia.descricao}</p>
           <p className="revelacao-onde">{t('Já está no seu perfil. Em Configurações você escolhe quais insígnias exibir.')}</p>
           <button className="btn-primary" onClick={aoResgatar} autoFocus>
-            Fechar
+            {t('Fechar')}
           </button>
         </div>
       )}

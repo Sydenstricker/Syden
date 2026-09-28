@@ -55,7 +55,7 @@ export function PollDialog({
         <h2 id="poll-dialog-title">Criar enquete</h2>
         <div className="dialog-body">
           <label>
-            Pergunta
+            {t('Pergunta')}
             <input
               autoFocus
               value={question}
@@ -110,7 +110,7 @@ export function PollDialog({
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
           <button className="link-button" onClick={onClose}>
-            Cancelar
+            {t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={!ready || busy} onClick={() => void create()}>
             {busy ? 'Criando…' : 'Criar enquete'}

@@ -127,7 +127,7 @@ export function PainelDeAudiencia() {
       <div className="painel-numeros">
         <div>
           <strong>{dados.visitas.toLocaleString('pt-BR')}</strong>
-          <small>Visitas</small>
+          <small>{t('Visitas')}</small>
         </div>
         <div>
           <strong>{dados.pageviews.toLocaleString('pt-BR')}</strong>

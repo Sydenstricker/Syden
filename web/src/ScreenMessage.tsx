@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { corrigirDuracao } from './clips';
 import { formatBytes } from './upload';
+import { useT } from './i18n';
 
 // Recado em vídeo de tela: para explicar uma coisa mostrando, quando a pessoa não está online. Grava até
 // dez minutos da tela (com a sua voz, se quiser), manda na conversa como um vídeo comum e some sozinho
@@ -34,6 +35,7 @@ function relogio(segundos: number): string {
 type Fase = 'parado' | 'gravando' | 'pronto';
 
 export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onEnviado?: () => void }) {
+  const t = useT();
   const [fase, setFase] = useState<Fase>('parado');
   const [comVoz, setComVoz] = useState(true);
   const [segundos, setSegundos] = useState(0);
@@ -205,7 +207,7 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
           {relogio(gravado?.segundos ?? 0)} · {formatBytes(gravado?.blob.size ?? 0)} · some em 7 dias
         </span>
         <button className="link-button danger" onClick={descartar}>
-          <Trash2 size={15} /> Descartar
+          <Trash2 size={15} /> {t('Descartar')}
         </button>
         <button className="btn-primary" disabled={enviando} onClick={() => void enviar()}>
           <Send size={15} /> {enviando ? 'Enviando…' : 'Mandar na conversa'}

@@ -80,7 +80,7 @@ export function UsageDashboard({
         <BarChart3 size={22} className="muted-icon" /> Uso do servidor
         <div className="tab-row" role="tablist" aria-label={t('Painéis do servidor')}>
           <button role="tab" aria-selected={tab === 'consumo'} className={`tab${tab === 'consumo' ? ' active' : ''}`} onClick={() => setTab('consumo')}>
-            Consumo
+            {t('Consumo')}
           </button>
           <button role="tab" aria-selected={tab === 'saude'} className={`tab${tab === 'saude' ? ' active' : ''}`} onClick={() => setTab('saude')}>
             {t('Saúde do servidor')}
@@ -99,10 +99,10 @@ export function UsageDashboard({
             className={`tab${tab === 'auditoria' ? ' active' : ''}`}
             onClick={() => setTab('auditoria')}
           >
-            Registro
+            {t('Registro')}
           </button>
           <button role="tab" aria-selected={tab === 'aviso'} className={`tab${tab === 'aviso' ? ' active' : ''}`} onClick={() => setTab('aviso')}>
-            Recado
+            {t('Recado')}
           </button>
         </div>
       </header>
@@ -166,7 +166,7 @@ export function UsageDashboard({
                 <table className="usage-table">
                   <thead>
                     <tr>
-                      <th scope="col">Pessoa</th>
+                      <th scope="col">{t('Pessoa')}</th>
                       <th scope="col">
                         <span className="legend-dot voice" aria-hidden="true" /> Em chamada
                       </th>

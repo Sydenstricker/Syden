@@ -183,7 +183,7 @@ export function PainelDeAviso() {
           </button>
           {existe && (
             <button type="button" className="btn-secondary danger" disabled={estado === 'salvando'} onClick={() => void apagar()}>
-              Apagar
+              {t('Apagar')}
             </button>
           )}
         </div>

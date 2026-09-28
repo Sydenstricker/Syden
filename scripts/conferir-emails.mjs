@@ -11,8 +11,21 @@
 //
 //   node scripts/conferir-emails.mjs
 import { readdirSync, readFileSync } from 'node:fs';
-import { resolveMx } from 'node:dns/promises';
+import { Resolver } from 'node:dns/promises';
 import { join } from 'node:path';
+
+/**
+ * A pergunta vai a um resolvedor PÚBLICO, e não ao do computador.
+ *
+ * O resolvedor do Windows guarda respostas em cache, inclusive a resposta "não existe" — e ela costuma
+ * durar bem mais do que a gente espera. Recém-ativado o Email Routing, esta ferramenta continuou
+ * dizendo "SEM REGISTRO MX" enquanto o 1.1.1.1 e o 8.8.8.8 já respondiam certo. Uma ferramenta que diz
+ * que não está pronto quando já está é tão ruim quanto o contrário: faz desfazer trabalho que estava
+ * certo.
+ */
+const resolvedor = new Resolver();
+resolvedor.setServers(['1.1.1.1', '8.8.8.8']);
+const resolveMx = (dominio) => resolvedor.resolveMx(dominio);
 
 const SITE = 'web/site';
 
@@ -68,3 +81,10 @@ if (mortos.length) {
   process.exit(1);
 }
 console.log('Todos os endereços do site têm para onde receber.');
+console.log('');
+console.log('MAS ISTO NÃO PROVA QUE CADA ENDEREÇO FUNCIONA. O MX diz que o DOMÍNIO aceita e-mail; se');
+console.log('"direitos@" tem regra de encaminhamento, e se a caixa de destino foi confirmada, só quem');
+console.log('sabe é o painel da Cloudflare — de fora não dá para ver, e nenhuma ferramenta consegue.');
+console.log('');
+console.log('A prova de verdade leva um minuto: mande um e-mail do celular para cada endereço e veja');
+console.log('se chega. Um endereço sem regra é recusado em silêncio, e o silêncio se parece com "chegou".');

@@ -5,6 +5,7 @@ import { type Clipe, corrigirDuracao, type GravacaoEmRolagem, gravarEmRolagem, n
 import { IconButton } from './IconButton';
 import type { Channel } from './types';
 import { formatBytes, readAsDataUrl } from './upload';
+import { useT } from './i18n';
 
 // O botão de clipe e a janelinha que abre depois dele. A gravação em si mora em clips.ts; aqui é só a
 // parte que a pessoa vê: um botão que fica aceso enquanto há o que clipar, e uma prévia com dois
@@ -26,6 +27,7 @@ function Previa({
   canais: Channel[];
   onFechar: () => void;
 }) {
+  const t = useT();
   const [canalId, setCanalId] = useState(canais[0]?.id ?? 0);
   const [enviando, setEnviando] = useState(false);
   const [pronto, setPronto] = useState(false);
@@ -107,7 +109,7 @@ function Previa({
         {erro && <p className="form-error">{erro}</p>}
         <div className="dialog-actions">
           <button type="button" className="link-button" onClick={onFechar}>
-            <X size={15} /> Descartar
+            <X size={15} /> {t('Descartar')}
           </button>
           <button type="button" className="btn-secondary" onClick={baixar}>
             <Download size={15} /> Guardar no computador

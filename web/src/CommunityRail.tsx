@@ -183,7 +183,7 @@ export function CommunityDialog({
           </div>
           <div className="dialog-actions">
             <button type="button" className="link-button" onClick={onClose}>
-              Cancelar
+              {t('Cancelar')}
             </button>
           </div>
         </div>

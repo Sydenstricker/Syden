@@ -77,7 +77,7 @@ export function PessoasBloqueadas() {
                 <small>bloqueada em {quando(b.desde)}</small>
               </span>
               <button className="btn-sutil" disabled={ocupado} onClick={() => void desbloquear(b.userId)}>
-                Desbloquear
+                {t('Desbloquear')}
               </button>
             </li>
           ))}

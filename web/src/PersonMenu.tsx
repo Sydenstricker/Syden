@@ -296,7 +296,7 @@ export function PersonMenu({
             <div className="person-menu-nota-rodape">
               <span>{t('Só você vê')}</span>
               <button className="link-button" onClick={salvarNota}>
-                Guardar
+                {t('Guardar')}
               </button>
             </div>
           </div>

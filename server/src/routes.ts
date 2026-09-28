@@ -810,6 +810,65 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { selo: null };
     });
 
+    // ----------------------------------------------------------------------------------------------
+    // O ESPAÇO DE BOAS-VINDAS
+    // ----------------------------------------------------------------------------------------------
+
+    authed.get<{ Params: { id: string } }>('/api/communities/:id/boas-vindas', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+
+      return {
+        boasVindas: db.lerBoasVindas(access.community.id),
+        podeEditar: manages(access.role),
+        // O cliente usa isto para decidir se abre sozinho. A decisão fica aqui porque o servidor é
+        // quem sabe — no navegador, entrar pelo computador do trabalho pareceria a primeira vez.
+        jaViu: db.jaViuBoasVindas(access.community.id, request.user.id),
+      };
+    });
+
+    authed.put<{ Params: { id: string }; Body: { titulo?: string; texto?: string; arte?: string } }>(
+      '/api/communities/:id/boas-vindas',
+      async (request, reply) => {
+        const access = requireRole(request, reply);
+        if (!access) return reply;
+        if (!manages(access.role)) {
+          return reply.code(403).send({ error: 'Só quem administra a comunidade monta as boas-vindas.' });
+        }
+
+        const titulo = String(request.body?.titulo ?? '').trim().slice(0, 80);
+        const texto = String(request.body?.texto ?? '').trim().slice(0, 1000);
+        const arte = String(request.body?.arte ?? '').trim().slice(0, 40);
+
+        // Tudo em branco desmonta o espaço, e a comunidade volta a abrir direto nos canais. É a saída
+        // para quem experimentou e não gostou — sem ela, montar seria irreversível.
+        if (!titulo && !texto) {
+          db.guardarBoasVindas(access.community.id, null);
+          io.to(communityRoom(access.community.id)).emit('boas-vindas:mudou', { communityId: access.community.id });
+          return { boasVindas: null };
+        }
+        if (titulo.length < 2) {
+          return reply.code(400).send({ error: 'O título precisa de pelo menos 2 letras.' });
+        }
+
+        // A arte NÃO é validada contra uma lista aqui, e isso é deliberado: o catálogo mora no site
+        // (web/src/boasVindas.ts), e um código que a tela não conhece simplesmente cai no padrão em vez
+        // de virar erro. É o mesmo acordo da loja — arte nova se publica sem mexer no servidor.
+        const boasVindas = { titulo, texto, arte: arte || 'aurora' };
+        db.guardarBoasVindas(access.community.id, boasVindas);
+        io.to(communityRoom(access.community.id)).emit('boas-vindas:mudou', { communityId: access.community.id });
+        return { boasVindas };
+      },
+    );
+
+    /** Marca que esta pessoa já viu. Guarda só a primeira vez (ver db.marcarViuBoasVindas). */
+    authed.post<{ Params: { id: string } }>('/api/communities/:id/boas-vindas/visto', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      db.marcarViuBoasVindas(access.community.id, request.user.id);
+      return { ok: true };
+    });
+
     /** Troca o código de convite: o antigo para de funcionar na hora. */
     authed.post<{ Params: { id: string } }>('/api/communities/:id/invite', async (request, reply) => {
       const access = requireRole(request, reply);

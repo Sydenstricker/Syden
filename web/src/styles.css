@@ -8881,3 +8881,256 @@ textarea {
   padding-left: 10px;
   margin-top: 8px;
 }
+
+/* ===================================================================================================
+   O ESPAÇO DE BOAS-VINDAS DA COMUNIDADE (ver InicioDaComunidade.tsx)
+
+   A referência é vitrine de jogo: painel grande em cima, blocos grandes embaixo. O que faz aquilo
+   funcionar não é o brilho — é que cada coisa é um ALVO GRANDE com uma palavra curta. Lista de texto
+   obriga a ler para escolher; painel grande deixa escolher e só depois ler.
+   =================================================================================================== */
+
+.bv {
+  /* Valor de reserva: a cor de verdade chega por style inline, vinda da arte escolhida. Tê-lo aqui
+     mantém a tela apresentável caso o componente não passe nada. */
+  --bv-destaque: #5865f2;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0 32px;
+}
+
+/* ---------- o painel grande ---------- */
+
+.bv-arte {
+  position: relative;
+  padding: 40px 32px 32px;
+  overflow: hidden;
+  color: #fff;
+}
+
+.bv[data-tom='claro'] .bv-arte {
+  color: #10212e;
+}
+
+/* As faixas diagonais: é o que dá ar de vitrine sem custar uma imagem sequer. */
+.bv-faixas {
+  position: absolute;
+  inset: -40% -10%;
+  background: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.06) 0 2px,
+    transparent 2px 46px
+  );
+  pointer-events: none;
+}
+
+.bv[data-tom='claro'] .bv-faixas {
+  background: repeating-linear-gradient(115deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 46px);
+}
+
+.bv-cabeca {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.bv-cabeca h1 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.bv-nome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.75;
+}
+
+.bv-recado {
+  position: relative;
+  max-width: 62ch;
+  margin: 20px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  /* A quebra de linha do que o dono escreveu é respeitada: ele escreveu em parágrafos, e juntar tudo
+     numa linha só transformaria um recado em um muro de texto. */
+  white-space: pre-wrap;
+}
+
+.bv-fechar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  cursor: pointer;
+}
+
+.bv-fechar:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.bv[data-tom='claro'] .bv-fechar {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* ---------- os blocos ---------- */
+
+.bv-blocos {
+  display: grid;
+  /* auto-fit com minmax: em tela larga vira uma vitrine de quatro colunas, em celular uma coluna só,
+     sem media query nenhuma e sem tamanho quebrado no meio do caminho. */
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  padding: 22px 32px 0;
+}
+
+.bv-bloco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 116px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  /* O canto cortado é o detalhe que muda o ar da coisa: quadrado é formulário, chanfrado é vitrine. */
+  border-radius: var(--radius);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  background: var(--bg-secondary);
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+
+.bv-bloco:hover {
+  transform: translateY(-3px);
+  border-color: var(--bv-destaque);
+  background: var(--bg-raised-hover);
+}
+
+.bv-bloco svg {
+  color: var(--bv-destaque);
+}
+
+.bv-bloco strong {
+  font-size: 15px;
+  color: var(--text-strong);
+}
+
+.bv-bloco small {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* O bloco que só informa não se move nem muda de cor: mexer ao passar o mouse promete um clique. */
+.bv-bloco-parado {
+  cursor: default;
+}
+
+.bv-bloco-parado:hover {
+  transform: none;
+  border-color: var(--border);
+  background: var(--bg-secondary);
+}
+
+.bv-bloco-dono {
+  border-style: dashed;
+}
+
+.bv-pular {
+  display: block;
+  margin: 22px auto 0;
+  padding: 9px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.bv-pular:hover {
+  color: var(--text);
+  border-color: var(--bv-destaque);
+}
+
+@media (max-width: 640px) {
+  .bv-arte {
+    padding: 28px 18px 24px;
+  }
+
+  .bv-blocos {
+    padding: 18px 18px 0;
+  }
+}
+
+/* O editor da tela de boas-vindas (ver EditorDeBoasVindas.tsx). */
+
+.bv-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 560px;
+  margin-bottom: 28px;
+}
+
+.bv-artes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  gap: 8px;
+}
+
+.bv-arte-opcao {
+  height: 46px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* A borda branca por fora e a escura por dentro: a marca de escolhido tem de aparecer tanto sobre
+   degradê claro quanto escuro, e uma cor só não consegue os dois. */
+.bv-arte-opcao.escolhida {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--bg-darkest);
+}
+
+.bv-previa {
+  padding: 18px;
+  border-radius: var(--radius);
+  color: #fff;
+}
+
+.bv-previa[data-tom='claro'] {
+  color: #10212e;
+}
+
+.bv-previa strong {
+  display: block;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.bv-previa p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  opacity: 0.9;
+}

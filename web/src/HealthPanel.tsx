@@ -44,7 +44,7 @@ export function HealthPanel() {
   return (
     <div style={{ opacity: loading ? 0.6 : 1 }}>
       <section className="usage-card">
-        <h2>Agora</h2>
+        <h2>{t('Agora')}</h2>
         <div className="health-grid">
           <HealthTile
             label="Conversas por voz"
@@ -129,7 +129,7 @@ export function HealthPanel() {
       <ProviderPanel />
 
       <section className="usage-card">
-        <h2>Acontecimentos</h2>
+        <h2>{t('Acontecimentos')}</h2>
         {health.events.length === 0 ? (
           <p className="usage-muted">{t('Nada digno de nota até agora.')}</p>
         ) : (

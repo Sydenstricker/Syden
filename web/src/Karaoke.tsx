@@ -271,7 +271,7 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
               {song?.seconds ? ` / ${relogio(song.seconds)}` : ''}
             </div>
             <button className="btn-secondary" onClick={() => void voice.comandarKaraoke(null)}>
-              <Square size={14} /> Parar
+              <Square size={14} /> {t('Parar')}
             </button>
           </div>
           <Letra linhas={linhas} soltas={soltas} segundos={segundos} />

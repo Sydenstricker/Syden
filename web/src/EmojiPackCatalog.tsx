@@ -59,6 +59,7 @@ function PackCard({
   podeInstalar: boolean;
   onChange: (pack: EmojiPack | null) => void;
 }) {
+  const t = useT();
   const [emojis, setEmojis] = useState<EmojiPackItem[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -185,7 +186,7 @@ function PackCard({
             ))}
             {meu && (
               <label className="file-picker btn-secondary small">
-                <Plus size={14} /> Acrescentar
+                <Plus size={14} /> {t('Acrescentar')}
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/gif,image/webp"
@@ -207,11 +208,11 @@ function PackCard({
         >
           {pack.installed ? (
             <>
-              <X size={14} /> Tirar
+              <X size={14} /> {t('Tirar')}
             </>
           ) : (
             <>
-              <Download size={14} /> Instalar
+              <Download size={14} /> {t('Instalar')}
             </>
           )}
         </button>

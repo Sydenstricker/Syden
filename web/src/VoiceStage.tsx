@@ -272,7 +272,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
       <div className="soundboard-head">
         <div className="soundboard-title">Soundboard</div>
         <button className="soundboard-stop" onClick={stopAllSounds} title={t('Parar o que está tocando aqui')}>
-          <Square size={12} /> Parar
+          <Square size={12} /> {t('Parar')}
         </button>
       </div>
 
@@ -392,7 +392,7 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
       {error && <p className="form-error small">{error}</p>}
       <div className="soundboard-add-actions">
         <button className="link-button" onClick={onDone}>
-          Cancelar
+          {t('Cancelar')}
         </button>
         <button className="btn-primary" disabled={!audio || !name.trim() || busy} onClick={() => void submit()}>
           {busy ? 'Enviando…' : 'Enviar som'}
@@ -548,7 +548,7 @@ function ConviteDeTransmissao({
         title={t('Nada é baixado enquanto você não abrir')}
         onClick={onAssistir}
       >
-        <Play size={16} /> Assistir
+        <Play size={16} /> {t('Assistir')}
       </button>
     </div>
   );

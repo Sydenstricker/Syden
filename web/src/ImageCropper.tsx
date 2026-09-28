@@ -167,7 +167,7 @@ export function ImageCropper({
         </div>
 
         <label className="cropper-zoom">
-          Aproximar
+          {t('Aproximar')}
           <input
             type="range"
             min={1}
@@ -182,7 +182,7 @@ export function ImageCropper({
         {error && <p className="form-error">{error}</p>}
         <div className="dialog-actions">
           <button type="button" className="link-button" onClick={onCancel}>
-            Cancelar
+            {t('Cancelar')}
           </button>
           <button className="btn-primary" onClick={save} disabled={busy || !bitmap}>
             {busy ? 'Enviando…' : 'Usar esta imagem'}

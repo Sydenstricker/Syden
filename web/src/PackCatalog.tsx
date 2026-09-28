@@ -39,6 +39,7 @@ function Stars({ pack, onRate }: { pack: Pack; onRate: (stars: number) => void }
 }
 
 function PackCard({ pack, user, onChange }: { pack: Pack; user: User; onChange: (pack: Pack | null) => void }) {
+  const t = useT();
   const [sounds, setSounds] = useState<Sound[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +106,7 @@ function PackCard({ pack, user, onChange }: { pack: Pack; user: User; onChange: 
               </button>
             ))}
             <button className="link-button" onClick={stopAllSounds}>
-              Parar
+              {t('Parar')}
             </button>
           </div>
         )}
@@ -114,11 +115,11 @@ function PackCard({ pack, user, onChange }: { pack: Pack; user: User; onChange: 
         <button className={pack.installed ? 'btn-secondary' : 'btn-primary'} disabled={busy} onClick={() => void install()}>
           {pack.installed ? (
             <>
-              <X size={14} /> Tirar
+              <X size={14} /> {t('Tirar')}
             </>
           ) : (
             <>
-              <Download size={14} /> Instalar
+              <Download size={14} /> {t('Instalar')}
             </>
           )}
         </button>

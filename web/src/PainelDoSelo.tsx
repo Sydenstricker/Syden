@@ -156,7 +156,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
             ))}
           </div>
 
-          <span className="selo-rotulo">Cor</span>
+          <span className="selo-rotulo">{t('Cor')}</span>
           <div className="selo-opcoes">
             {dados.cores.map((cor) => (
               <button

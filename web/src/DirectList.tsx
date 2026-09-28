@@ -39,7 +39,7 @@ export function DirectList({
     <div className="channel-list">
       <div className="channel-group">
         <div className="channel-group-title">
-          <span>Conversas</span>
+          <span>{t('Conversas')}</span>
           <button className="icon-plain" title="Nova conversa em grupo" aria-label="Nova conversa em grupo" onClick={onNewGroup}>
             <Plus size={16} />
           </button>

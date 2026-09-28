@@ -133,7 +133,7 @@ export function ThreadPanel({
               onPollChange={() => {}}
               onReactionsChange={onParentReactionsChange}
             />
-            <div className="thread-parent-line">Respostas</div>
+            <div className="thread-parent-line">{t('Respostas')}</div>
           </div>
         )}
 

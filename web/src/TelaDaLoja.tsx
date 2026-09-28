@@ -89,7 +89,7 @@ function Cartao({
         </span>
       ) : (
         <button type="button" className="btn-secondary" onClick={() => onVestir(item)}>
-          Usar
+          {t('Usar')}
         </button>
       )}
     </div>
@@ -175,7 +175,7 @@ export function TelaDaLoja({
       <header className="loja-cabecalho">
         <MobileBackButton onBack={aoVoltar} />
         <h2>
-          <Sparkles size={22} aria-hidden="true" /> Loja
+          <Sparkles size={22} aria-hidden="true" /> {t('Loja')}
         </h2>
         <p>{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
       </header>

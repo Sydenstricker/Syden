@@ -62,7 +62,7 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
             <span className="ideias-conta" />
             <button type="button" disabled>
               <Send size={16} aria-hidden="true" />
-              Enviar
+              {t('Enviar')}
             </button>
           </div>
         </form>
@@ -260,7 +260,7 @@ export function Home({
       <CaixaDeIdeias souODono={souODono} />
 
       <section className="home-news" aria-label="Novidades do Syden" ref={novidadesRef}>
-        <h2>Novidades</h2>
+        <h2>{t('Novidades')}</h2>
         <p className="home-news-lead">{t('O que mudou por aqui, do mais novo para o mais antigo.')}</p>
         {CHANGELOG.map((update, index) => (
           <article key={update.date + update.title} className={`update${index === 0 ? ' latest' : ''}`}>

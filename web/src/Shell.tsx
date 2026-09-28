@@ -10,6 +10,7 @@ import { desktopBridge } from './desktop';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
+import { InicioDaComunidade, type DadosDeBoasVindas } from './InicioDaComunidade';
 import { ServidoresDeJogo } from './ServidoresDeJogo';
 import { TelaDaLoja } from './TelaDaLoja';
 import { TelaDeAmigos } from './TelaDeAmigos';
@@ -218,6 +219,40 @@ export function Shell({
   }, [view]);
 
   const community = communities.find((c) => c.id === visivelId);
+
+  /**
+   * O espaço de boas-vindas da comunidade aberta.
+   *
+   * ELE ABRE SOZINHO UMA VEZ SÓ, e quem decide é o servidor: `jaViu` vem de lá porque a mesma pessoa
+   * entrando pelo computador do trabalho não pode receber as boas-vindas de novo. Guardar isso no
+   * navegador daria certo até o dia em que alguém trocasse de máquina.
+   *
+   * Depois disso, a tela continua alcançável pelo botão de início da comunidade — quem quiser rever o
+   * recado não precisa apagar nada.
+   */
+  const [boasVindas, setBoasVindas] = useState<DadosDeBoasVindas | null>(null);
+  const [mostrandoBoasVindas, setMostrandoBoasVindas] = useState(false);
+
+  useEffect(() => {
+    if (visivelId === null) {
+      setBoasVindas(null);
+      return;
+    }
+    let valeu = true;
+    void api<DadosDeBoasVindas>(`/api/communities/${visivelId}/boas-vindas`)
+      .then((dados) => {
+        if (!valeu) return;
+        setBoasVindas(dados);
+        // Só abre sozinho quando há o que mostrar E a pessoa nunca viu. Comunidade que não montou o
+        // espaço continua abrindo direto nos canais, como sempre foi.
+        if (dados.boasVindas && !dados.jaViu) setMostrandoBoasVindas(true);
+      })
+      // Falhar aqui não pode atrapalhar: quem entrou quer conversar, não ver uma tela de aviso.
+      .catch(() => {});
+    return () => {
+      valeu = false;
+    };
+  }, [visivelId]);
   const openDirect = directs.find((c) => c.id === directId);
   // A conversa privada aberta vira um "canal" para a tela de conversa poder ser a mesma dos canais de texto.
   const directAsChannel: Channel | undefined = openDirect && {
@@ -748,7 +783,32 @@ export function Shell({
           {view === 'direct' && !directAsChannel && (
             <div className="empty">{t('Escolha uma conversa à esquerda, ou comece uma nova.')}</div>
           )}
-          {view === 'community' && selected?.type === 'text' && socket && (
+          {/* O espaço de boas-vindas cobre o conteúdo da comunidade enquanto está aberto. Fica ANTES
+              dos canais na ordem do código porque é o que a pessoa deve ver primeiro — e porque assim
+              nenhuma das condições abaixo precisa saber que ele existe. */}
+          {view === 'community' && mostrandoBoasVindas && community && boasVindas && (
+            <InicioDaComunidade
+              community={community}
+              dados={boasVindas}
+              canais={channels}
+              quantosMembros={onlineHere.length || members.size}
+              quantosNaVoz={voiceMembers.length}
+              aoAbrirCanal={(canal) => {
+                setMostrandoBoasVindas(false);
+                setSelectedId(canal.id);
+              }}
+              aoAbrirLoja={() => {
+                setMostrandoBoasVindas(false);
+                setView('loja');
+              }}
+              aoEditar={() => {
+                setMostrandoBoasVindas(false);
+                setSettingsOpen('community');
+              }}
+              aoFechar={() => setMostrandoBoasVindas(false)}
+            />
+          )}
+          {view === 'community' && !mostrandoBoasVindas && selected?.type === 'text' && socket && (
             <TextChannel
               key={selected.id}
               channel={selected}

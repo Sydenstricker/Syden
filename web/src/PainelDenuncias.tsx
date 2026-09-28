@@ -96,7 +96,7 @@ export function PainelDenuncias() {
                 />
                 <div className="dialog-actions">
                   <button type="button" className="btn-secondary" onClick={() => setResolvendo(null)}>
-                    Cancelar
+                    {t('Cancelar')}
                   </button>
                   <button type="button" className="btn-primary" disabled={!texto.trim()} onClick={() => resolver(d.id)}>
                     Marcar como resolvida
@@ -105,7 +105,7 @@ export function PainelDenuncias() {
               </div>
             ) : (
               <button type="button" className="btn-secondary" onClick={() => setResolvendo(d.id)}>
-                Resolver
+                {t('Resolver')}
               </button>
             )}
           </li>

@@ -82,7 +82,7 @@ export function PainelDeComunidades() {
   return (
     <section className="usage-card">
       <h3>
-        <Users size={16} aria-hidden="true" /> Comunidades
+        <Users size={16} aria-hidden="true" /> {t('Comunidades')}
       </h3>
       <p className="settings-hint">
         Todas as comunidades do Syden, da mais movimentada para a mais parada. Só contagem — o conteúdo das conversas
@@ -107,7 +107,7 @@ export function PainelDeComunidades() {
       <div className="painel-numeros">
         <div>
           <strong>{dados.comunidades.length}</strong>
-          <small>Comunidades</small>
+          <small>{t('Comunidades')}</small>
         </div>
         <div>
           <strong>{dados.comunidades.reduce((s, c) => s + c.mensagens, 0).toLocaleString('pt-BR')}</strong>
@@ -122,12 +122,12 @@ export function PainelDeComunidades() {
       <table className="comunidades-tabela">
         <thead>
           <tr>
-            <th scope="col">Comunidade</th>
-            <th scope="col">Membros</th>
-            <th scope="col">Mensagens</th>
+            <th scope="col">{t('Comunidade')}</th>
+            <th scope="col">{t('Membros')}</th>
+            <th scope="col">{t('Mensagens')}</th>
             <th scope="col">Quem falou</th>
-            <th scope="col">Voz</th>
-            <th scope="col">Tela</th>
+            <th scope="col">{t('Voz')}</th>
+            <th scope="col">{t('Tela')}</th>
             <th scope="col">{t('Última')}</th>
           </tr>
         </thead>

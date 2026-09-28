@@ -67,7 +67,7 @@ function Formulario({
           <input {...campo('nome')} placeholder={t('O survival do Léo')} maxLength={60} />
         </label>
         <label className="campo">
-          Jogo
+          {t('Jogo')}
           <input {...campo('jogo')} placeholder="Minecraft" maxLength={40} />
         </label>
       </div>
@@ -87,10 +87,10 @@ function Formulario({
       </div>
       <div className="jogo-form-acoes">
         <button type="submit" disabled={salvando}>
-          Salvar
+          {t('Salvar')}
         </button>
         <button type="button" className="btn-secondary" onClick={onCancelar}>
-          Cancelar
+          {t('Cancelar')}
         </button>
       </div>
     </form>
@@ -160,7 +160,7 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
         <Gamepad2 size={22} className="muted-icon" /> Servidores de jogos
         {administra && editando === null && (
           <button className="btn-secondary jogos-novo" onClick={() => setEditando('novo')}>
-            <Plus size={16} /> Adicionar
+            <Plus size={16} /> {t('Adicionar')}
           </button>
         )}
       </header>

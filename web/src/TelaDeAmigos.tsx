@@ -134,7 +134,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
               <span className="amigos-nome">{a.username}</span>
               {aoConversar && (
                 <button className="btn-sutil" onClick={() => aoConversar(a.userId)}>
-                  Conversar
+                  {t('Conversar')}
                 </button>
               )}
               <button
@@ -150,7 +150,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           ))}
           {aceitos.length === 0 && (
             <li className="amigos-vazio">
-              {t('Você ainda não tem amigos no Syden. A aba')} <strong>Adicionar</strong> mostra quem divide comunidade com
+              {t('Você ainda não tem amigos no Syden. A aba')} <strong>{t('Adicionar')}</strong> mostra quem divide comunidade com
               você.
             </li>
           )}
@@ -170,7 +170,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                   disabled={ocupado}
                   onClick={() => agir(() => api(`/api/amigos/${a.userId}/aceitar`, { method: 'POST' }))}
                 >
-                  <Check size={15} aria-hidden="true" /> Aceitar
+                  <Check size={15} aria-hidden="true" /> {t('Aceitar')}
                 </button>
                 <button
                   className="btn-sutil perigo"
@@ -250,7 +250,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                   <small>{porQue(s)}</small>
                 </span>
                 <button className="btn-sutil" disabled={ocupado} onClick={() => pedir(s.username)}>
-                  <UserPlus size={15} aria-hidden="true" /> Adicionar
+                  <UserPlus size={15} aria-hidden="true" /> {t('Adicionar')}
                 </button>
               </li>
             ))}
