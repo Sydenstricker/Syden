@@ -26,7 +26,7 @@ const NOMES = {
   3: 'Linhas (Draw)',
   4: 'Pulo Progressivo',
   5: 'Minimalista',
-  9: 'Comendo Cenoura', 10: 'Boas-vindas', 11: 'Centrífuga',
+  9: 'Comendo Cenoura', 10: 'Boas-vindas', 11: 'Buraco Negro',
   6: 'Sem Internet',
   7: 'Erro 500',
   8: 'Erro 404',
@@ -71,6 +71,36 @@ for (const n of [1, 2, 3, 4, 5, 9, 10, 11, 6, 7, 8]) {
       (m.aviso ? '   <- caiu no aviso de preset sem desenho' : ''),
   );
   if (!ok) problemas.push(`preset ${n} (${NOMES[n]}) não desenhou como esperado`);
+}
+
+// OS TRÊS ERROS MOSTRAM O CÓDIGO, E NO MESMO LUGAR.
+//
+// "No mesmo lugar" é o ponto, e é por isso que isto é medido em vez de olhado: um código de erro é
+// informação, e informação tem de estar onde o olho já sabe procurar. O 404 tinha três dígitos soltos em
+// posições escolhidas para parecer "flutuante", que na tela só pareceram desalinhadas. Se um dia alguém
+// mover o código de uma das telas, a diferença aparece aqui em pixels.
+const CODIGOS = { 6: 'OFFLINE', 7: '500', 8: '404' };
+const alturas = [];
+for (const [n, esperado] of Object.entries(CODIGOS)) {
+  await page.click(`#presetBtn${n}`);
+  await page.waitForTimeout(150);
+  const achado = await page.evaluate(() => {
+    const texto = document.querySelector('#loaderStage .codigo text');
+    if (!texto) return null;
+    return { texto: texto.textContent.trim(), y: Number(texto.getAttribute('y')) };
+  });
+  if (!achado) {
+    problemas.push(`preset ${n}: não tem o código do erro na tela`);
+    continue;
+  }
+  if (achado.texto !== esperado) problemas.push(`preset ${n}: código "${achado.texto}", esperado "${esperado}"`);
+  alturas.push(achado.y);
+}
+if (alturas.length && new Set(alturas).size !== 1) {
+  problemas.push(`os códigos de erro estão em alturas diferentes: ${alturas.join(', ')}`);
+} else if (alturas.length) {
+  console.log('');
+  console.log(`  os três erros mostram o código, todos na mesma altura (y=${alturas[0]})`);
 }
 
 // OS PONTINHOS "..." SÓ APARECEM EM QUEM ESTÁ ESPERANDO ALGO.

@@ -228,7 +228,7 @@
           </button>
           <button onclick="setPreset(11)" id="presetBtn11" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
             <span class="text-lg">🌀</span>
-            <span>11. Centrífuga</span>
+            <span>11. Buraco Negro</span>
           </button>
         </div>
       </div>
@@ -382,7 +382,7 @@
       8: "Erro: Não Encontrado (404)",
       9: "Modo 9: Comendo Cenoura",
       10: "Modo 10: Boas-vindas",
-      11: "Modo 11: Centrífuga"
+      11: "Modo 11: Buraco Negro"
     };
 
     // Textos padrão sugeridos ao trocar de Preset
@@ -397,7 +397,7 @@
       8: "Página não encontrada (Erro 404).",
       9: "Só uma mordidinha e já volto...",
       10: "Que bom te ver por aqui!",
-      11: "Centrifugando os dados..."
+      11: "A estrela está engolindo tudo..."
     };
 
     // Inicialização ao carregar a página
@@ -488,7 +488,14 @@
                 }
                 @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
                 @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                
+                /* A ampulheta gira ao contrário da órbita, na MESMA duração: as duas rotações se
+                   cancelam e ela atravessa o céu sempre em pé. Sem isto ela cambalhotaria, e ampulheta
+                   de cabeça para baixo conta o tempo ao contrário — o olho percebe, mesmo sem saber. */
+                @keyframes orbitDesfaz { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+                /* A areia caindo: some em cima, junta embaixo. */
+                @keyframes areiaCai { 0% { transform: scaleY(1); } 100% { transform: scaleY(0); } }
+                @keyframes areiaJunta { 0% { transform: scaleY(0); } 100% { transform: scaleY(1); } }
+
                 .bg-circle { fill: ${colors.bg}; }
                 .star-shape { fill: ${colors.star}; transform-origin: 200px 200px; animation: starPulse ${durPulse} ease-in-out infinite; }
                 .bunny-head { fill: ${colors.bunny}; }
@@ -499,16 +506,31 @@
                    piscada encolhia o olho E o arrastava para o meio da cara. */
                 .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.8s infinite; }
                 .orbit-ring { transform-origin: 200px 200px; animation: orbit ${durOrbit} linear infinite; }
+                .ampulheta { transform-origin: 360px 200px; animation: orbitDesfaz ${durOrbit} linear infinite; }
+                .areia-cima { transform-origin: 360px 188px; animation: areiaCai ${durOrbit} linear infinite; }
+                .areia-baixo { transform-origin: 360px 212px; animation: areiaJunta ${durOrbit} linear infinite; }
               </style>
             </defs>
 
             <!-- Fundo Arredondado -->
             <rect width="400" height="400" rx="60" class="bg-circle" />
 
-            <!-- Anel de Órbita Luminosa -->
+            <!-- Anel de Órbita Luminosa, com uma ampulheta no lugar da bolinha branca. -->
             <g class="orbit-ring">
               <circle cx="200" cy="200" r="160" fill="none" stroke="${colors.star}" stroke-width="3" stroke-dasharray="120 400" stroke-linecap="round" opacity="0.6"/>
-              <circle cx="360" cy="200" r="7" fill="#ffffff" filter="drop-shadow(0 0 6px #fff)"/>
+
+              <g class="ampulheta">
+                <!-- Tampas de madeira, em cima e embaixo. -->
+                <rect x="347" y="176" width="26" height="5" rx="2.5" fill="#c8973f"/>
+                <rect x="347" y="219" width="26" height="5" rx="2.5" fill="#c8973f"/>
+                <!-- O vidro: dois triângulos que se encontram na cintura. -->
+                <path d="M 349 181 L 371 181 L 361 200 L 371 219 L 349 219 L 359 200 Z" fill="#cfe8ff" opacity="0.28" stroke="#eaf4ff" stroke-width="1.6"/>
+                <!-- A areia de cima escoa; a de baixo cresce. As duas dentro do vidro. -->
+                <path class="areia-cima" d="M 351 182 L 369 182 L 360 199 Z" fill="#f0b429"/>
+                <path class="areia-baixo" d="M 360 201 L 369 218 L 351 218 Z" fill="#f0b429"/>
+                <!-- O fio de areia no meio. -->
+                <line x1="360" y1="198" x2="360" y2="214" stroke="#f0b429" stroke-width="1.4" opacity="0.85"/>
+              </g>
             </g>
 
             <!-- Estrela Vermelha -->
@@ -680,9 +702,20 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
         <defs>
           <style>
+            /* A TRAVESSIA NÃO VOLTA: ele entra pela esquerda, atravessa e some na direita.
+               Antes ia e voltava (direction alternate) — e ir e voltar não significa progresso, significa
+               espera. Assim vira a imagem certa para envio de arquivo: sai de um lado e chega no outro.
+               (Sem acento grave neste comentário: ele fecharia a template string que envolve todo o SVG.) */
             @keyframes travessia {
-              0%   { transform: translateX(-80px); }
-              100% { transform: translateX(80px); }
+              0%   { transform: translateX(-110px); }
+              100% { transform: translateX(110px); }
+            }
+            /* Aparece entrando, desaparece chegando. Sem isto, ele salta de volta para a esquerda num
+               piscar, e o salto é o que faria a travessia parecer um erro de desenho. */
+            @keyframes entraESai {
+              0%          { opacity: 0; }
+              12%, 80%    { opacity: 1; }
+              100%        { opacity: 0; }
             }
             @keyframes pulo {
               0%, 100% { transform: translateY(0) scale(1, 1); }
@@ -702,7 +735,7 @@
             .star-fundo { fill: ${colors.star}; opacity: 0.35; }
             .bunny-ears-inner { fill: ${colors.ears}; }
 
-            .anda { animation: travessia ${durOrbit} ease-in-out infinite alternate; }
+            .anda { animation: travessia ${durOrbit} linear infinite, entraESai ${durOrbit} linear infinite; }
             .pula { transform-origin: 200px 300px; animation: pulo ${durHop} cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
             .sombra { transform-box: fill-box; transform-origin: center; animation: sombra ${durHop} cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
             .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.8s infinite; }
@@ -820,8 +853,10 @@
             .orelha-dir { transform-origin: 230px 180px; animation: orelhaFeliz ${durCiclo} infinite; animation-delay: 0.1s; }
             .eye { transform-box: fill-box; transform-origin: center; animation: blink 4.2s infinite; }
 
-            /* A origem fica na ponta das folhas: encolher a partir dali afasta a ponta mordida da boca. */
-            .cenoura { transform-origin: 345px 232px; animation: mordidas ${durCiclo} steps(4, end) infinite; }
+            /* A origem fica na ponta das folhas: encolher a partir dali afasta a ponta mordida da boca.
+               As coordenadas são as do próprio desenho, antes da inclinação — o rotate do grupo de fora
+               não entra nesta conta. */
+            .cenoura { transform-origin: 345px 244px; animation: mordidas ${durCiclo} steps(4, end) infinite; }
             .migalha { animation: migalha ${durMastiga} ease-in infinite; }
             .migalha-2 { animation-delay: 0.25s; }
           </style>
@@ -829,18 +864,6 @@
 
         <rect width="400" height="400" rx="60" class="bg-circle" />
         <polygon class="star-fundo" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
-
-        <!-- As folhas, paradas: é o cabo que a mão segura. -->
-        <g>
-          <path d="M 345 232 C 358 208, 372 206, 370 222 C 368 234, 354 236, 345 232 Z" fill="#3f9142" />
-          <path d="M 345 232 C 352 206, 366 198, 368 214 C 369 228, 354 236, 345 232 Z" fill="#4caf50" />
-        </g>
-
-        <!-- A cenoura, que encurta em quatro mordidas. -->
-        <g class="cenoura">
-          <path d="M 345 220 L 345 244 L 244 236 Q 236 232 244 228 Z" fill="#e8730c" />
-          <path d="M 340 225 L 340 233 L 262 231 Z" fill="#f59b3c" opacity="0.7" />
-        </g>
 
         <g class="cabeca">
           <g class="orelha-esq">
@@ -864,14 +887,32 @@
           </g>
 
           <path d="M 194 226 Q 200 222 206 226 Q 200 234 194 226 Z" fill="#b91c1c" />
-          <!-- A boca mastigando: aberta de lado, na altura em que a cenoura chega. -->
-          <path d="M 206 238 Q 218 244 230 236" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" />
-          <ellipse cx="226" cy="240" rx="11" ry="7" fill="#1e1e1e" opacity="0.55" />
+          <!-- A boca: só a linha, desenhada em arco para o lado onde a cenoura chega.
+               A mancha escura que havia aqui saiu. Ela era uma elipse preta a 55% para fazer "boca
+               aberta", e num rosto branco isso não leu como boca: leu como sujeira. Boca fechada
+               mastigando é mais legível do que boca aberta mal desenhada. -->
+          <path d="M 202 238 Q 216 247 232 235" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" />
+        </g>
+
+        <!-- A CENOURA VEM DEPOIS DA CABEÇA, e é por isso que ela aparece.
+             Antes era desenhada antes, e em SVG quem vem antes fica atrás: a cabeça cobria justamente a
+             ponta que está sendo mordida. Aqui ela fica na frente, inclinada e apontando para a boca —
+             inclinada porque cenoura deitada na horizontal parece cano, e de viés parece segurada. -->
+        <g transform="rotate(-24 240 244)">
+          <!-- As folhas, paradas: é o cabo que a mão segura. -->
+          <path d="M 345 244 C 358 220, 372 218, 370 234 C 368 246, 354 248, 345 244 Z" fill="#3f9142" />
+          <path d="M 345 244 C 352 218, 366 210, 368 226 C 369 240, 354 248, 345 244 Z" fill="#4caf50" />
+
+          <!-- A cenoura, que encurta em quatro mordidas. -->
+          <g class="cenoura">
+            <path d="M 345 232 L 345 256 L 236 248 Q 228 244 236 240 Z" fill="#e8730c" />
+            <path d="M 338 238 L 338 246 L 256 244 Z" fill="#f7b267" opacity="0.75" />
+          </g>
         </g>
 
         <!-- Migalhas caindo: é o detalhe que faz parecer comida de verdade. -->
-        <circle class="migalha" cx="232" cy="256" r="3" fill="#e8730c" />
-        <circle class="migalha migalha-2" cx="240" cy="252" r="2.2" fill="#f59b3c" />
+        <circle class="migalha" cx="228" cy="262" r="3" fill="#e8730c" />
+        <circle class="migalha migalha-2" cx="238" cy="258" r="2.2" fill="#f59b3c" />
       </svg>
     `;
   } else if (currentPreset === 10) {
@@ -958,88 +999,103 @@
           </g>
         </g>
 
-        <circle class="faisca" cx="92" cy="110" r="5" fill="#ffffff" />
-        <circle class="faisca faisca-2" cx="312" cy="128" r="4" fill="#ffffff" />
-        <circle class="faisca faisca-3" cx="300" cy="320" r="4.5" fill="#ffffff" />
+        <!-- As três bolinhas brancas saíram: com os raios abrindo, as bochechas e a patinha acenando,
+             já havia movimento suficiente. Faísca solta num canto não acrescenta nada — só ocupa. -->
       </svg>
     `;
   } else if (currentPreset === 11) {
-    // PRESET 11: Centrífuga — para tela de carregamento.
+    // PRESET 11: Buraco Negro — a estrela engole o coelho, e ele volta.
     //
-    // O QUE FAZ PARECER CENTRÍFUGA, e não só "círculos girando", são três coisas juntas: anéis em
-    // velocidades DIFERENTES, sentidos alternados, e traços curtos em vez de círculos fechados. Anel
-    // fechado girando não se vê girar — não há de onde o olho pegar o movimento. Arco curto, sim.
+    // A IDEIA DELE É MELHOR DO QUE A PRIMEIRA VERSÃO, e vale dizer por quê. Antes eram três anéis
+    // girando em volta de um coelho parado: bonito e sem sentido — nada explicava por que giravam. Aqui
+    // o giro tem causa. A estrela suga, o coelho cai para dentro dela, e volta a aparecer na borda: um
+    // carregador que CONTA ALGO em vez de só ocupar o tempo.
     //
-    // O de fora gira mais devagar que o de dentro, como numa máquina de verdade: quanto menor o raio,
-    // maior a rotação para a mesma velocidade de borda.
+    // SÃO TRÊS GRUPOS ENCAIXADOS, pelo mesmo motivo dos dois do pulo progressivo. O de fora só gira, o
+    // do meio só se aproxima do centro, e o de dentro só encolhe e desbota. Um grupo tentando fazer as
+    // três coisas precisaria de keyframes combinando rotação, distância e tamanho em cada passo —
+    // impossível de ajustar depois. Separados, dá para mexer na velocidade da queda sem tocar no giro.
     innerContent = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
         <defs>
           <style>
-            @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-            @keyframes girarAoContrario { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-            @keyframes respira { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-            @keyframes blink { 0%, 91%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-
-            .bg-circle { fill: ${colors.bg}; }
-            .bunny-ears-inner { fill: ${colors.ears}; }
-            .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.6s infinite; }
-            .miolo { transform-origin: 200px 215px; animation: respira ${durPulse} ease-in-out infinite; }
-
-            .anel {
-              fill: none;
-              stroke-linecap: round;
-              transform-origin: 200px 200px;
+            @keyframes espiral { from { transform: rotate(0deg); } to { transform: rotate(540deg); } }
+            @keyframes cair { from { transform: translateX(150px); } to { transform: translateX(6px); } }
+            /* Encolher E esticar: o que cai num buraco negro afina no caminho. É o detalhe que
+               transforma "ficou pequeno" em "foi sugado". */
+            @keyframes sumir {
+              0%   { transform: scale(1, 1); opacity: 0; }
+              12%  { opacity: 1; }
+              70%  { transform: scale(0.5, 0.62); opacity: 1; }
+              92%  { transform: scale(0.06, 0.34); opacity: 0.55; }
+              100% { transform: scale(0, 0.2); opacity: 0; }
             }
-            /* Velocidades diferentes e sentidos alternados: é daí que vem a sensação de máquina. */
-            .anel-1 { stroke: ${colors.star}; stroke-width: 7; stroke-dasharray: 150 1000; animation: girar ${durOrbit} linear infinite; }
-            .anel-2 { stroke: #ffffff; stroke-width: 4; stroke-dasharray: 70 1000; opacity: 0.55; animation: girarAoContrario ${durPulse} linear infinite; }
-            .anel-3 { stroke: ${colors.star}; stroke-width: 5; stroke-dasharray: 55 1000; opacity: 0.8; animation: girar ${durMastiga} linear infinite; }
+            @keyframes girarDisco { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes girarAoContrario { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+            @keyframes pulsarNucleo {
+              0%, 100% { transform: scale(1); }
+              50%      { transform: scale(1.06); filter: drop-shadow(0 0 22px ${colors.star}); }
+            }
 
-            /* As bolinhas atiradas para fora, cada uma no seu anel. */
-            .peso { transform-origin: 200px 200px; }
-            .peso-1 { animation: girar ${durOrbit} linear infinite; }
-            .peso-2 { animation: girarAoContrario ${durPulse} linear infinite; }
-            .peso-3 { animation: girar ${durMastiga} linear infinite; }
+            .bg-circle { fill: #0b0d14; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+
+            /* A estrela fica ESCURA, com a borda acesa. Estrela clara no meio não engole nada: o olho
+               lê o claro como o que está mais próximo, e o coelho pareceria passar na frente dela. */
+            .nucleo { transform-origin: 200px 200px; animation: pulsarNucleo ${durPulse} ease-in-out infinite; }
+
+            .disco { fill: none; stroke-linecap: round; transform-origin: 200px 200px; }
+            .disco-1 { stroke: ${colors.star}; stroke-width: 6; stroke-dasharray: 190 1000; opacity: 0.9; animation: girarDisco ${durOrbit} linear infinite; }
+            .disco-2 { stroke: #ffd7a8; stroke-width: 3; stroke-dasharray: 90 1000; opacity: 0.5; animation: girarAoContrario ${durPulse} linear infinite; }
+            .disco-3 { stroke: ${colors.star}; stroke-width: 4; stroke-dasharray: 60 1000; opacity: 0.7; animation: girarDisco ${durMastiga} linear infinite; }
+
+            .gira { transform-origin: 200px 200px; animation: espiral ${durEntrada} linear infinite; }
+            .aproxima { animation: cair ${durEntrada} ease-in infinite; }
+            .encolhe { transform-box: fill-box; transform-origin: center; animation: sumir ${durEntrada} ease-in infinite; }
           </style>
         </defs>
 
         <rect width="400" height="400" rx="60" class="bg-circle" />
 
-        <!-- Os trilhos, quase invisíveis: dão a forma da máquina sem competir com o que se move. -->
-        <circle cx="200" cy="200" r="178" fill="none" stroke="${colors.bunny}" stroke-width="1" opacity="0.08" />
-        <circle cx="200" cy="200" r="148" fill="none" stroke="${colors.bunny}" stroke-width="1" opacity="0.08" />
-        <circle cx="200" cy="200" r="118" fill="none" stroke="${colors.bunny}" stroke-width="1" opacity="0.08" />
+        <!-- O disco de acreção: arcos curtos em velocidades diferentes. Anel fechado girando não se vê
+             girar, porque não há de onde o olho pegar o movimento. -->
+        <circle class="disco disco-1" cx="200" cy="200" r="168" />
+        <circle class="disco disco-2" cx="200" cy="200" r="140" />
+        <circle class="disco disco-3" cx="200" cy="200" r="112" />
 
-        <circle class="anel anel-1" cx="200" cy="200" r="178" />
-        <circle class="anel anel-2" cx="200" cy="200" r="148" />
-        <circle class="anel anel-3" cx="200" cy="200" r="118" />
+        <!-- O halo que sobra em volta da estrela escura: é o que a faz parecer luz sendo torcida. -->
+        <circle cx="200" cy="200" r="86" fill="none" stroke="${colors.star}" stroke-width="2" opacity="0.28" />
 
-        <g class="peso peso-1"><circle cx="378" cy="200" r="7" fill="#ffffff" /></g>
-        <g class="peso peso-2"><circle cx="200" cy="52" r="5" fill="${colors.star}" /></g>
-        <g class="peso peso-3"><circle cx="82" cy="200" r="5.5" fill="#ffffff" opacity="0.8" /></g>
+        <!-- O COELHO PASSA POR TRÁS DA ESTRELA, e é essa ordem que faz a absorção funcionar: ele
+             desaparece atrás dela em vez de encolher em cima dela. -->
+        <g class="gira">
+          <g class="aproxima">
+            <g class="encolhe">
+              <path d="M 178 194 C 160 140, 182 116, 192 134 C 198 146, 192 176, 186 194 Z" fill="${colors.bunny}" />
+              <path d="M 181 188 C 167 146, 182 128, 188 140 C 193 150, 188 172, 184 188 Z" class="bunny-ears-inner" />
+              <path d="M 222 194 C 240 140, 218 116, 208 134 C 202 146, 208 176, 214 194 Z" fill="${colors.bunny}" />
+              <path d="M 219 188 C 233 146, 218 128, 212 140 C 207 150, 212 172, 216 188 Z" class="bunny-ears-inner" />
 
-        <!-- O coelho fica QUIETO no meio. É o eixo: se ele girasse também, não haveria referência
-             parada e a tela inteira pareceria tremer. -->
-        <g class="miolo">
-          <path d="M 170 190 C 145 118, 176 86, 189 110 C 197 126, 189 166, 181 190 Z" fill="${colors.bunny}" />
-          <path d="M 174 182 C 154 126, 176 102, 184 118 C 191 130, 184 162, 178 182 Z" class="bunny-ears-inner" />
-          <path d="M 230 190 C 255 118, 224 86, 211 110 C 203 126, 211 166, 219 190 Z" fill="${colors.bunny}" />
-          <path d="M 226 182 C 246 126, 224 102, 216 118 C 209 130, 216 162, 222 182 Z" class="bunny-ears-inner" />
+              <circle cx="200" cy="218" r="40" fill="${colors.bunny}" />
 
-          <circle cx="200" cy="222" r="54" fill="${colors.bunny}" />
+              <!-- Olhos arregalados: ele sabe o que está acontecendo. Numa figura de 40px de raio, o
+                   susto tem de estar no tamanho do olho, porque expressão fina desaparece. -->
+              <circle cx="187" cy="212" r="7" fill="#1e1e1e" />
+              <circle cx="185" cy="209" r="2.4" fill="#ffffff" />
+              <circle cx="213" cy="212" r="7" fill="#1e1e1e" />
+              <circle cx="211" cy="209" r="2.4" fill="#ffffff" />
 
-          <g class="eye">
-            <circle cx="182" cy="214" r="6" fill="#1e1e1e" />
-            <circle cx="180.5" cy="212" r="2" fill="#ffffff" />
+              <ellipse cx="200" cy="230" rx="5" ry="7" fill="#1e1e1e" opacity="0.8" />
+            </g>
           </g>
-          <g class="eye">
-            <circle cx="218" cy="214" r="6" fill="#1e1e1e" />
-            <circle cx="216.5" cy="212" r="2" fill="#ffffff" />
-          </g>
+        </g>
 
-          <path d="M 195 226 Q 200 223 205 226 Q 200 232 195 226 Z" fill="#b91c1c" />
-          <path d="M 190 235 Q 200 243 210 235" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round" />
+        <!-- A estrela, na frente do coelho e escura no meio. -->
+        <g class="nucleo">
+          <polygon points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145"
+                   fill="#14161f" stroke="${colors.star}" stroke-width="3" />
+          <polygon points="200,90 230,160 305,164 245,214 263,290 200,250 137,290 155,214 95,164 170,160"
+                   fill="#000000" opacity="0.85" />
         </g>
       </svg>
     `;
@@ -1059,9 +1115,15 @@
             }
             .bg-circle { fill: #1e293b; }
             .star-shape { fill: #334155; }
-            .bunny-head { fill: ${colors.bunny}; opacity: 0.9; }
-            .bunny-ears-inner { fill: #94a3b8; }
-            .sad-group { animation: sadBreathe 3s ease-in-out infinite; }
+
+            /* A ORELHA PARECIA DESCOLADA DA CABEÇA, e a causa era esta: a cabeça tinha opacity 0.9 e as
+               orelhas pintavam com a cor cheia. Duas peças do mesmo corpo em claridades diferentes o
+               olho lê como duas peças, não como um corpo — e nenhuma linha de contorno conserta isso.
+               Agora a transparência é do GRUPO INTEIRO, então tudo desbota junto, e cabeça e orelhas
+               voltam a ser a mesma coisa. */
+            .bunny-head { fill: ${colors.bunny}; }
+            .bunny-ears-inner { fill: #b7c3d1; }
+            .sad-group { opacity: 0.88; animation: sadBreathe 3s ease-in-out infinite; }
             .ear-left { transform-origin: 165px 180px; transform: rotate(-35deg) translate(-15px, 10px); }
             .ear-right { transform-origin: 235px 180px; transform: rotate(35deg) translate(15px, 10px); }
             .wifi-icon { stroke: #64748b; stroke-width: 8; stroke-linecap: round; fill: none; animation: pulseWifi 2s infinite; }
@@ -1089,11 +1151,18 @@
         </g>
 
         <!-- Ícone Wi-Fi Cortado -->
-        <g transform="translate(160, 60) scale(0.8)">
+        <g transform="translate(160, 52) scale(0.8)">
           <path d="M 20 80 Q 50 50 80 80" class="wifi-icon" />
           <path d="M 0 60 Q 50 10 100 60" class="wifi-icon" />
           <circle cx="50" cy="95" r="5" fill="#64748b" />
           <path d="M -10 110 L 110 30" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
+        </g>
+
+        <!-- O código, no mesmo lugar e no mesmo estilo dos outros dois erros. Sem conexão não tem número
+             de HTTP — quem não chegou ao servidor não recebeu código nenhum — então o código é a palavra. -->
+        <g class="codigo">
+          <rect x="136" y="352" width="128" height="30" rx="15" fill="#000000" opacity="0.35" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="15" font-weight="700" fill="#94a3b8" letter-spacing="2">OFFLINE</text>
         </g>
       </svg>
     `;
@@ -1146,12 +1215,15 @@
           <path d="M 185 245 L 195 240 L 205 245 L 215 240" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
         </g>
 
-        <!-- Faíscas/Erro -->
-        <!-- style= e não animation=: SVG não tem atributo "animation", então as faíscas ficavam
-             paradas. O navegador ignora o atributo em silêncio, sem erro nenhum. -->
-        <circle cx="150" cy="120" r="8" fill="#f87171" opacity="0.6" style="animation: fireFlicker 0.5s infinite; transform-box: fill-box; transform-origin: center;" />
-        <circle cx="250" cy="100" r="12" fill="#fca5a5" opacity="0.4" style="animation: fireFlicker 0.7s infinite; transform-box: fill-box; transform-origin: center;" />
-        <circle cx="210" cy="80" r="16" fill="#fef08a" opacity="0.3" style="animation: fireFlicker 0.6s infinite; transform-box: fill-box; transform-origin: center;" />
+        <!-- As bolinhas de "faísca" saíram. Elas eram três círculos borrados atrás da cabeça e não
+             leram como fogo nem como erro: leram como manchas. O tremor da cabeça e a estrela piscando
+             já dizem que algo deu errado. -->
+
+        <!-- O código do erro, no mesmo lugar e no mesmo estilo dos outros dois. -->
+        <g class="codigo">
+          <rect x="152" y="352" width="96" height="30" rx="15" fill="#000000" opacity="0.35" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="17" font-weight="700" fill="#fca5a5" letter-spacing="2">500</text>
+        </g>
       </svg>
     `;
   } else if (currentPreset === 8) {
@@ -1203,16 +1275,21 @@
           <circle cx="200" cy="245" r="5" fill="#1e1e1e" />
         </g>
 
-        <!-- Lupa Gigante (Magnifying Glass) -->
+        <!-- A lupa, puxada para fora e para baixo. Antes o círculo dela em 260 invadia a cabeça, que
+             chega a 272 — dois desenhos ocupando o mesmo lugar, e nenhum dos dois legível. -->
         <g class="magnifying-glass">
-          <circle cx="260" cy="230" r="35" fill="#93c5fd" opacity="0.4" stroke="#ffffff" stroke-width="8" />
-          <line x1="285" y1="255" x2="320" y2="290" stroke="#ffffff" stroke-width="12" stroke-linecap="round" />
+          <circle cx="288" cy="256" r="30" fill="#93c5fd" opacity="0.35" stroke="#ffffff" stroke-width="7" />
+          <line x1="309" y1="277" x2="336" y2="304" stroke="#ffffff" stroke-width="11" stroke-linecap="round" />
         </g>
-        
-        <!-- Texto 404 flutuante subtil no fundo -->
-        <text x="70" y="120" font-family="monospace" font-size="40" font-weight="bold" fill="#ffffff" opacity="0.2">4</text>
-        <text x="100" y="100" font-family="monospace" font-size="40" font-weight="bold" fill="#ffffff" opacity="0.2">0</text>
-        <text x="130" y="130" font-family="monospace" font-size="40" font-weight="bold" fill="#ffffff" opacity="0.2">4</text>
+
+        <!-- O CÓDIGO ALINHADO, no mesmo lugar e no mesmo estilo dos outros dois erros.
+             Antes eram três letras soltas em x=70/100/130 e y=120/100/130 — posições escolhidas para
+             parecer "flutuante", que na tela só pareceram desalinhadas. Um código de erro é informação:
+             ele tem de estar num lugar previsível, sempre o mesmo, para o olho achar sem procurar. -->
+        <g class="codigo">
+          <rect x="152" y="352" width="96" height="30" rx="15" fill="#000000" opacity="0.35" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="17" font-weight="700" fill="#ffffff" opacity="0.75" letter-spacing="2">404</text>
+        </g>
       </svg>
     `;
   }
