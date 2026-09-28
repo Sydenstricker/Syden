@@ -25,6 +25,7 @@ import { DESKTOP_DOWNLOAD_URL, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
 import { Avatar } from './Avatar';
 import { useT } from './i18n';
+import { Puxador } from './Puxador';
 import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
 import { useDirectory } from './directory';
@@ -111,6 +112,7 @@ export function Sidebar({
 
   return (
     <nav className="sidebar">
+      <Puxador barra="sidebar" lado="direita" />
       <header className="sidebar-header">
         <span className="sidebar-brand" title={directMode ? t('Conversas') : community.name}>
           {directMode ? t('Conversas') : community.name}

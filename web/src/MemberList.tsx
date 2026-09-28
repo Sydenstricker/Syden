@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Puxador } from './Puxador';
 import { Avatar } from './Avatar';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { useDirectory } from './directory';
@@ -105,6 +106,7 @@ export function MemberList({
 
   return (
     <aside className="members">
+      <Puxador barra="membros" lado="esquerda" />
       {GROUPS.map(({ role: groupRole, label, className }) => {
         const group = aqui.filter((m) => m.role === groupRole);
         if (group.length === 0) return null;

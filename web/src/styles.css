@@ -10,6 +10,13 @@
   --text-muted: #949ba4;
   --accent: #5865f2;
   --accent-hover: #4752c4;
+
+  /* A LARGURA DAS BARRAS mora aqui, e não só no JavaScript (ver larguras.ts).
+     Definida no CSS, a tela já nasce no tamanho certo — sem isto ela apareceria sem largura nenhuma
+     até o script rodar, e o Syden piscaria a cada abertura. Quem ajusta o tamanho sobrescreve estas
+     duas no <html>. */
+  --largura-sidebar: 240px;
+  --largura-membros: 240px;
   --green: #23a55a;
   --red: #da373c;
   --red-hover: #a12828;
@@ -486,7 +493,10 @@ textarea {
 }
 
 .sidebar {
-  width: 240px;
+  /* A largura vem de uma variável para o ajuste de acessibilidade valer na hora (ver larguras.ts).
+     O valor padrão está definido em :root, então a tela nasce certa mesmo antes do script. */
+  width: var(--largura-sidebar);
+  position: relative;
   flex-shrink: 0;
   background: var(--bg-sidebar);
   display: flex;
@@ -1130,7 +1140,8 @@ textarea {
 }
 
 .members {
-  width: 240px;
+  width: var(--largura-membros);
+  position: relative;
   flex-shrink: 0;
   background: var(--bg-sidebar);
   padding: 16px 8px;
@@ -9133,4 +9144,91 @@ textarea {
   line-height: 1.5;
   white-space: pre-wrap;
   opacity: 0.9;
+}
+
+/* O puxador que muda a largura das barras (ver Puxador.tsx).
+   Ele é uma faixa fina e invisível; o que aparece é uma linha ao passar o mouse ou ao focar pelo
+   teclado. Barra visível o tempo todo viraria mais um traço na tela, e a tela já tem traços demais. */
+.puxador {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.puxador-direita {
+  right: -4px;
+}
+
+.puxador-esquerda {
+  left: -4px;
+}
+
+.puxador::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+  background: transparent;
+  transition: background 0.12s ease;
+}
+
+.puxador:hover::after,
+.puxador:focus-visible::after {
+  background: var(--accent, #5865f2);
+}
+
+.puxador:focus-visible {
+  outline: none;
+}
+
+/* Durante o arrasto, nada de selecionar texto: puxar a barra por cima de uma conversa selecionaria
+   meia tela de mensagens. */
+body.arrastando-barra {
+  user-select: none;
+  cursor: col-resize;
+}
+
+/* Em celular as barras ocupam a tela inteira por vez; puxador ali não teria o que ajustar. */
+@media (max-width: 768px) {
+  .puxador {
+    display: none;
+  }
+}
+
+/* O ajuste das barras, em Configurações → Acessibilidade (ver AjusteDasBarras.tsx). */
+.ajuste-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 480px;
+  align-items: flex-start;
+}
+
+.ajuste-linha {
+  display: grid;
+  grid-template-columns: 110px 1fr 56px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.ajuste-linha input[type='range'] {
+  width: 100%;
+}
+
+/* O número em fonte de largura fixa: sem isso os controles dançam para os lados a cada movimento do
+   cursor, e o olho persegue o número em vez de olhar a barra mudando. */
+.ajuste-linha output {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: right;
 }

@@ -36,7 +36,18 @@ test('toda cor do tema escuro tem o par dela no tema claro', () => {
 
   // Estas valem nos dois temas de propósito: medidas não têm cor, e o escurecido fica por cima de
   // VÍDEO, que é escuro nos dois casos.
-  const IGUAIS_NOS_DOIS = new Set(['--radius', '--overlay', '--overlay-strong', '--shadow']);
+  //
+  // As larguras das barras entram aqui pelo mesmo motivo das outras medidas — e por um a mais: elas são
+  // ajuste de ACESSIBILIDADE (ver larguras.ts). Quem alargou a barra de canais porque enxerga melhor
+  // assim alargou-a para sempre, não para o tema escuro.
+  const IGUAIS_NOS_DOIS = new Set([
+    '--radius',
+    '--overlay',
+    '--overlay-strong',
+    '--shadow',
+    '--largura-sidebar',
+    '--largura-membros',
+  ]);
 
   const soNoEscuro = [...noEscuro].filter((v) => !noClaro.has(v) && !IGUAIS_NOS_DOIS.has(v));
   assert.deepEqual(soNoEscuro, [], 'sem par no tema claro: ' + soNoEscuro.join(', '));

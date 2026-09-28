@@ -363,4 +363,13 @@ export default {
   'Visitas': 'Visits',
   'Voz': 'Voice',
   'Início': 'Home',
+  'Acessibilidade': 'Accessibility',
+  'Ajustes de tamanho e de leitura, para o Syden caber do seu jeito.': 'Size and reading adjustments, so Syden fits the way you need.',
+  'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Drag to change the width. Double-click resets it.',
+  'As duas juntas': 'Both together',
+  'Largura das barras': 'Width of the side bars',
+  'Mudar a largura de {barra}': 'Change the width of {barra}',
+  'Também dá para arrastar a borda de cada barra na tela. Dois cliques na borda volta ao padrão.': 'You can also drag the edge of each bar on screen. Double-clicking the edge resets it.',
+  'Voltar ao padrão': 'Reset to default',
+  'Canais': 'Channels',
 } satisfies Record<string, string>;
