@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animação de Carregamento - Logo Coelho Estrela</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0d1a14;
+      color: #e2e8f0;
+    }
+
+    /* Keyframes customizados para as animações de carregamento */
+    
+    /* 1. Coelhinho Pulando (Hop) */
+    @keyframes bunnyHop {
+      0%, 100% { transform: translateY(0) scale(1, 1); }
+      30% { transform: translateY(-18px) scale(0.96, 1.05); }
+      50% { transform: translateY(0) scale(1.08, 0.92); }
+      65% { transform: translateY(-6px) scale(0.98, 1.02); }
+      75% { transform: translateY(0) scale(1.02, 0.98); }
+    }
+
+    /* 2. Estrela Girando */
+    @keyframes starRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 3. Estrela Pulsando */
+    @keyframes starPulse {
+      0%, 100% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 15px rgba(220,38,38,0.6)); }
+    }
+
+    /* 4. Piscar Olhos */
+    @keyframes blinkEyes {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.1); }
+    }
+
+    /* 5. Mexer Orelhas */
+    @keyframes earTwitchLeft {
+      0%, 80%, 100% { transform: rotate(0deg); }
+      85% { transform: rotate(-6deg); }
+      90% { transform: rotate(3deg); }
+    }
+    
+    @keyframes earTwitchRight {
+      0%, 82%, 100% { transform: rotate(0deg); }
+      87% { transform: rotate(6deg); }
+      92% { transform: rotate(-3deg); }
+    }
+
+    /* 6. Animação de Desenho de Linhas (Stroke Dash) */
+    @keyframes drawStroke {
+      0% { stroke-dashoffset: 1000; opacity: 0.2; }
+      50% { stroke-dashoffset: 0; opacity: 1; }
+      100% { stroke-dashoffset: -1000; opacity: 0.2; }
+    }
+
+    /* 7. Animação da Órbita */
+    @keyframes orbitSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Classes Utilitárias de Animação */
+    .anim-hop { animation: bunnyHop 1.2s cubic-bezier(0.28, 0.84, 0.42, 1) infinite; transform-origin: bottom center; }
+    .anim-star-rotate { animation: starRotate 8s linear infinite; transform-origin: 200px 200px; }
+    .anim-star-pulse { animation: starPulse 1.8s ease-in-out infinite; transform-origin: 200px 200px; }
+    .anim-blink { animation: blinkEyes 4s infinite; transform-origin: center; }
+    .anim-ear-left { animation: earTwitchLeft 3.5s infinite; transform-origin: 165px 150px; }
+    .anim-ear-right { animation: earTwitchRight 3.5s infinite; transform-origin: 235px 150px; }
+    .anim-orbit { animation: orbitSpin 2.5s linear infinite; transform-origin: 200px 200px; }
+
+    /* Efeito Shimmer e Progress Bar */
+    .progress-bar-fill {
+      transition: width 0.3s ease-out;
+      background: linear-gradient(90deg, #dc2626 0%, #f87171 50%, #dc2626 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite linear;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Glowing Dots */
+    .dot-flashing {
+      animation: dotFlashing 1s infinite alternate;
+    }
+    .dot-flashing:nth-child(2) { animation-delay: 0.2s; }
+    .dot-flashing:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotFlashing {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Novos Keyframes para Telas de Erro */
+    @keyframes sadEarDrop {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(-25deg); }
+    }
+    @keyframes sadEarDropRight {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(25deg); }
+    }
+    @keyframes shakeDizzy {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-2px, 2px) rotate(-1deg); }
+      50% { transform: translate(2px, -2px) rotate(1deg); }
+      75% { transform: translate(-2px, -2px) rotate(0deg); }
+    }
+    @keyframes pulseWarning {
+      0%, 100% { opacity: 0.5; transform: scale(0.95); }
+      50% { opacity: 1; transform: scale(1.05); filter: drop-shadow(0 0 10px #ef4444); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+
+  <!-- Header Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center">
+          <svg viewBox="0 0 400 400" class="w-7 h-7">
+            <polygon points="200,20 247,135 370,143 275,223 305,343 200,277 95,343 125,223 30,143 153,135" fill="#dc2626"/>
+            <circle cx="200" cy="220" r="65" fill="#ffffff"/>
+            <circle cx="180" cy="210" r="6" fill="#000"/>
+            <circle cx="220" cy="210" r="6" fill="#000"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-white leading-tight">Animações de Carregamento</h1>
+          <p class="text-xs text-slate-400">Suíte de Preloaders com a Logo do Coelho</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-3">
+        <button id="btnSimulate" onclick="triggerSimulation()" class="px-4 py-2 text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition flex items-center gap-2 shadow-lg shadow-emerald-900/20">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Simular Carregamento Real
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl mx-auto px-4 py-8 w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Left Column: Loader Preview Stage (lg:col-span-7) -->
+    <section class="lg:col-span-7 flex flex-col gap-6">
+      
+      <!-- Screen Container (Preview Canvas) -->
+      <div class="relative bg-gradient-to-b from-slate-900 to-emerald-950/40 border border-slate-800 rounded-2xl p-8 flex flex-col items-center justify-center min-h-[460px] overflow-hidden shadow-2xl group">
+        
+        <!-- Grid Background Pattern -->
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#34d399_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
+
+        <!-- Dynamic Loader Display Container -->
+        <div id="loaderStage" class="relative z-10 flex flex-col items-center justify-center w-full max-w-md transition-all duration-500">
+          <!-- O SVG será injetado/atualizado via Javascript aqui -->
+        </div>
+
+        <!-- Simulation Overlay Progress Bar -->
+        <div id="simProgressContainer" class="w-full max-w-xs mt-8 flex flex-col items-center gap-2 z-10">
+          <div class="w-full h-2 bg-slate-800/80 rounded-full overflow-hidden border border-slate-700/50">
+            <div id="simProgressBar" class="h-full progress-bar-fill w-0"></div>
+          </div>
+          <div class="flex justify-between w-full text-xs text-slate-400 font-mono">
+            <span id="simStatusText">A carregar os recursos...</span>
+            <span id="simPercentText">0%</span>
+          </div>
+        </div>
+
+        <!-- Watermark / Style indicator -->
+        <span id="loaderPresetTitle" class="absolute bottom-4 right-4 text-xs font-semibold uppercase tracking-wider text-slate-500 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800">
+          Modo 1: Pulse & Orbit
+        </span>
+      </div>
+
+      <!-- Preset Selector Buttons -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <button onclick="setPreset(1)" id="presetBtn1" class="preset-btn px-3 py-3 rounded-xl border border-red-500/50 bg-red-950/30 text-white font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+          <span class="text-lg">🌀</span>
+          <span>1. Órbita & Pulo</span>
+        </button>
+        <button onclick="setPreset(2)" id="presetBtn2" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+          <span class="text-lg">⭐</span>
+          <span>2. Giro Mágico</span>
+        </button>
+        <button onclick="setPreset(3)" id="presetBtn3" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+          <span class="text-lg">✏️</span>
+          <span>3. Linhas (Draw)</span>
+        </button>
+        <button onclick="setPreset(4)" id="presetBtn4" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+          <span class="text-lg">🐰</span>
+          <span>4. Pulo Progressivo</span>
+        </button>
+        <button onclick="setPreset(5)" id="presetBtn5" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+          <span class="text-lg">🧘</span>
+          <span>5. Minimalista</span>
+        </button>
+      </div>
+
+      <!-- Secção de Telas de Erro -->
+      <div class="mt-6 border-t border-slate-800 pt-5">
+        <h3 class="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          Estados de Erro / Feedback
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <button onclick="setPreset(6)" id="presetBtn6" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">📶</span>
+            <span>6. Sem Internet</span>
+          </button>
+          <button onclick="setPreset(7)" id="presetBtn7" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">🔥</span>
+            <span>7. Erro 500</span>
+          </button>
+          <button onclick="setPreset(8)" id="presetBtn8" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">❓</span>
+            <span>8. Erro 404</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Controls & Export Options (lg:col-span-5) -->
+    <section class="lg:col-span-5 flex flex-col gap-6">
+      
+      <!-- Customization Panel -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-5">
+        <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          Personalização do Loader
+        </h2>
+
+        <!-- Colors Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Cor do Fundo da Logo</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="colorBg" value="#0f2e1b" onchange="updateCustomColors()" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+              <span id="colorBgText" class="text-xs font-mono text-slate-300">#0f2e1b</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Cor da Estrela</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="colorStar" value="#bc1d1d" onchange="updateCustomColors()" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+              <span id="colorStarText" class="text-xs font-mono text-slate-300">#bc1d1d</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Cor da Cabeça</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="colorBunny" value="#ffffff" onchange="updateCustomColors()" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+              <span id="colorBunnyText" class="text-xs font-mono text-slate-300">#ffffff</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Interior Orelhas</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="colorEars" value="#f48fb1" onchange="updateCustomColors()" class="w-8 h-8 rounded border-0 cursor-pointer bg-transparent">
+              <span id="colorEarsText" class="text-xs font-mono text-slate-300">#f48fb1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text Label Customization -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Texto de Acompanhamento</label>
+          <input type="text" id="loaderText" value="A carregar a experiência..." oninput="updateLoaderText()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <!-- Speed Slider -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-semibold text-slate-400">Velocidade da Animação</label>
+            <span id="speedVal" class="text-xs font-mono text-emerald-400">1.0x</span>
+          </div>
+          <input type="range" id="speedSlider" min="0.5" max="2.5" step="0.1" value="1.0" oninput="updateSpeed()" class="w-full accent-emerald-500 bg-slate-950 h-2 rounded-lg cursor-pointer">
+        </div>
+      </div>
+
+      <!-- Export & Code Copy -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+        <h2 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          Exportar Código
+        </h2>
+
+        <p class="text-xs text-slate-400 leading-relaxed">
+          O código gerado é totalmente autónomo, contendo todo o CSS dos keyframes embutido no próprio elemento SVG.
+        </p>
+
+        <div class="flex gap-3">
+          <button onclick="copySVGCode()" class="flex-1 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition border border-slate-700 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            Copiar SVG
+          </button>
+          <button onclick="downloadSVGFile()" class="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs transition shadow-lg shadow-red-900/30 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Descarregar .SVG
+          </button>
+        </div>
+
+        <button onclick="copyHTMLSnippet()" class="w-full py-2 px-4 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/50 border border-emerald-800/50 text-emerald-300 font-semibold text-xs transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          Copiar Snippet HTML + CSS Completo
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
+    Animações preparadas para web e mobile. Código SVG vetorial otimizado.
+  </footer>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl font-medium text-sm transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-2 z-50">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span id="toastMsg">Copiado com sucesso!</span>
+  </div>
+
+  <script>
+    // Configurações Globais de Estado
+    let currentPreset = 1;
+    let colors = {
+      bg: '#0f2e1b',
+      star: '#bc1d1d',
+      bunny: '#ffffff',
+      ears: '#f48fb1'
+    };
+    let currentSpeed = 1.0;
+    let customText = "A carregar a experiência...";
+    let simulationInterval = null;
+
+    // Nomes dos Presets
+    const presetNames = {
+      1: "Modo 1: Pulse & Orbit",
+      2: "Modo 2: Giro Mágico",
+      3: "Modo 3: Desenho de Linhas",
+      4: "Modo 4: Pulo Progressivo",
+      5: "Modo 5: Minimalista",
+      6: "Erro: Sem Internet (Offline)",
+      7: "Erro: Servidor (500)",
+      8: "Erro: Não Encontrado (404)"
+    };
+
+    // Textos padrão sugeridos ao trocar de Preset
+    const presetDefaultTexts = {
+      1: "A carregar a experiência...",
+      2: "A preparar a magia...",
+      3: "A desenhar os elementos...",
+      4: "A saltar para o conteúdo...",
+      5: "A carregar...",
+      6: "Sem ligação à internet. Tente novamente.",
+      7: "Ops! Ocorreu um erro interno no servidor.",
+      8: "Página não encontrada (Erro 404)."
+    };
+
+    // Inicialização ao carregar a página
+    window.onload = function() {
+      renderCurrentPreset();
+    };
+
+    function setPreset(id) {
+      currentPreset = id;
+      
+      // Auto-update do texto com base no preset, para facilitar a visualização
+      if (presetDefaultTexts[id]) {
+        customText = presetDefaultTexts[id];
+        const textInput = document.getElementById('loaderText');
+        if(textInput) textInput.value = customText;
+      }
+
+      // Atualizar botões
+      document.querySelectorAll('.preset-btn').forEach((btn) => {
+        const btnId = parseInt(btn.id.replace('presetBtn', ''));
+        if (btnId === id) {
+          btn.className = "preset-btn px-3 py-3 rounded-xl border border-red-500/50 bg-red-950/30 text-white font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition shadow-lg shadow-red-950/50";
+        } else {
+          btn.className = "preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition";
+        }
+      });
+
+      document.getElementById('loaderPresetTitle').innerText = presetNames[id];
+      renderCurrentPreset();
+    }
+
+    function updateCustomColors() {
+      colors.bg = document.getElementById('colorBg').value;
+      colors.star = document.getElementById('colorStar').value;
+      colors.bunny = document.getElementById('colorBunny').value;
+      colors.ears = document.getElementById('colorEars').value;
+
+      document.getElementById('colorBgText').innerText = colors.bg;
+      document.getElementById('colorStarText').innerText = colors.star;
+      document.getElementById('colorBunnyText').innerText = colors.bunny;
+      document.getElementById('colorEarsText').innerText = colors.ears;
+
+      renderCurrentPreset();
+    }
+
+    function updateSpeed() {
+      currentSpeed = parseFloat(document.getElementById('speedSlider').value);
+      document.getElementById('speedVal').innerText = currentSpeed.toFixed(1) + 'x';
+      renderCurrentPreset();
+    }
+
+    function updateLoaderText() {
+      customText = document.getElementById('loaderText').value;
+      const textElem = document.getElementById('dynamicTextSpan');
+      if (textElem) textElem.innerText = customText;
+    }
+
+    // Gerador de SVG de acordo com o Preset Ativo
+    function generateSVGString() {
+      const durHop = (1.2 / currentSpeed).toFixed(2) + 's';
+      const durRotate = (8 / currentSpeed).toFixed(2) + 's';
+      const durPulse = (1.8 / currentSpeed).toFixed(2) + 's';
+      const durOrbit = (2.5 / currentSpeed).toFixed(2) + 's';
+      const durDraw = (2.5 / currentSpeed).toFixed(2) + 's';
+
+      let innerContent = '';
+
+      if (currentPreset === 1) {
+        // PRESET 1: Órbita com Brilho + Pulo Fofo
+        innerContent = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+            <defs>
+              <style>
+                @keyframes bunnyHop { 
+                  0%, 100% { transform: translateY(0) scale(1, 1); } 
+                  30% { transform: translateY(-16px) scale(0.96, 1.05); } 
+                  50% { transform: translateY(0) scale(1.08, 0.92); } 
+                  65% { transform: translateY(-6px) scale(0.98, 1.02); } 
+                }
+                @keyframes starPulse { 
+                  0%, 100% { transform: scale(1); } 
+                  50% { transform: scale(1.05); filter: drop-shadow(0 0 12px ${colors.star}88); } 
+                }
+                @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+                @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                
+                .bg-circle { fill: ${colors.bg}; }
+                .star-shape { fill: ${colors.star}; transform-origin: 200px 200px; animation: starPulse ${durPulse} ease-in-out infinite; }
+                .bunny-head { fill: ${colors.bunny}; }
+                .bunny-ears-inner { fill: ${colors.ears}; }
+                .bunny-group { transform-origin: 200px 280px; animation: bunnyHop ${durHop} cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
+                /* transform-box: fill-box é obrigatório. Sem ele, "center" num elemento SVG
+                   significa o centro do viewBox inteiro (200,200) e não o centro do olho — a
+                   piscada encolhia o olho E o arrastava para o meio da cara. */
+                .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.8s infinite; }
+                .orbit-ring { transform-origin: 200px 200px; animation: orbit ${durOrbit} linear infinite; }
+              </style>
+            </defs>
+
+            <!-- Fundo Arredondado -->
+            <rect width="400" height="400" rx="60" class="bg-circle" />
+
+            <!-- Anel de Órbita Luminosa -->
+            <g class="orbit-ring">
+              <circle cx="200" cy="200" r="160" fill="none" stroke="${colors.star}" stroke-width="3" stroke-dasharray="120 400" stroke-linecap="round" opacity="0.6"/>
+              <circle cx="360" cy="200" r="7" fill="#ffffff" filter="drop-shadow(0 0 6px #fff)"/>
+            </g>
+
+            <!-- Estrela Vermelha -->
+            <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+            <!-- Grupo do Coelho Animado -->
+            <g class="bunny-group">
+              <!-- Orelha Esquerda -->
+              <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+              <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+
+              <!-- Orelha Direita -->
+              <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+              <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+
+              <!-- Cabeça -->
+              <circle cx="200" cy="225" r="72" class="bunny-head" />
+
+              <!-- Olhos com Brilho -->
+              <g class="eye">
+                <circle cx="168" cy="215" r="8" fill="#1e1e1e" />
+                <circle cx="166" cy="212" r="2.5" fill="#ffffff" />
+              </g>
+              <g class="eye">
+                <circle cx="232" cy="215" r="8" fill="#1e1e1e" />
+                <circle cx="230" cy="212" r="2.5" fill="#ffffff" />
+              </g>
+
+              <!-- Nariz e Boca -->
+              <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 192 237 Q 200 245 200 236 Q 200 245 208 237" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" />
+        </g>
+      </svg>
+    `;
+  } else if (currentPreset === 2) {
+    // PRESET 2: Giro Mágico — a estrela gira devagar atrás de um coelho parado, que só respira.
+    // Duas coisas girando em sentidos opostos dão sensação de profundidade com pouquíssimo código.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes spinBack { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+            @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+            @keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+            @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+
+            .bg-circle { fill: ${colors.bg}; }
+            .star-spin { fill: ${colors.star}; transform-origin: 200px 200px; animation: spin ${durRotate} linear infinite; }
+            .sparks { transform-origin: 200px 200px; animation: spinBack ${durOrbit} linear infinite; }
+            .spark { fill: #ffffff; animation: twinkle 1.4s ease-in-out infinite; }
+            .spark:nth-child(2) { animation-delay: 0.35s; }
+            .spark:nth-child(3) { animation-delay: 0.7s; }
+            .spark:nth-child(4) { animation-delay: 1.05s; }
+            .bunny-group { transform-origin: 200px 250px; animation: breathe ${durPulse} ease-in-out infinite; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+            .eye { transform-box: fill-box; transform-origin: center; animation: blink 4s infinite; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <polygon class="star-spin" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <g class="sparks">
+          <circle class="spark" cx="200" cy="52" r="5" />
+          <circle class="spark" cx="348" cy="200" r="4" />
+          <circle class="spark" cx="200" cy="348" r="5" />
+          <circle class="spark" cx="52" cy="200" r="4" />
+        </g>
+
+        <g class="bunny-group">
+          <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+          <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+          <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+
+          <circle cx="200" cy="225" r="72" fill="${colors.bunny}" />
+
+          <g class="eye">
+            <circle cx="168" cy="215" r="8" fill="#1e1e1e" />
+            <circle cx="166" cy="212" r="2.5" fill="#ffffff" />
+          </g>
+          <g class="eye">
+            <circle cx="232" cy="215" r="8" fill="#1e1e1e" />
+            <circle cx="230" cy="212" r="2.5" fill="#ffffff" />
+          </g>
+
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 192 237 Q 200 245 200 236 Q 200 245 208 237" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" />
+        </g>
+      </svg>
+    `;
+  } else if (currentPreset === 3) {
+    // PRESET 3: Desenho de Linhas — o contorno se desenha sozinho e depois some pelo outro lado.
+    //
+    // O TRUQUE DO pathLength="100": normalmente animar stroke-dashoffset exige saber o comprimento
+    // real de cada traço, que muda a cada curva editada. Declarando pathLength="100", o navegador
+    // finge que todo traço mede 100 — então "dasharray 100 / dashoffset 100 → 0" desenha qualquer
+    // forma por inteiro, sem medir nada. É por isso que todos os traços aqui usam os mesmos números.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes draw {
+              0%   { stroke-dashoffset: 100; }
+              45%  { stroke-dashoffset: 0; }
+              70%  { stroke-dashoffset: 0; }
+              100% { stroke-dashoffset: -100; }
+            }
+            @keyframes fillIn {
+              0%, 45%  { fill-opacity: 0; }
+              60%, 70% { fill-opacity: 1; }
+              100%     { fill-opacity: 0; }
+            }
+
+            .bg-circle { fill: ${colors.bg}; }
+
+            .traco {
+              fill: none;
+              stroke-width: 3;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-dasharray: 100;
+              animation: draw ${durDraw} ease-in-out infinite;
+            }
+            .traco-estrela { stroke: ${colors.star}; }
+            .traco-coelho  { stroke: ${colors.bunny}; }
+            .traco-orelha  { stroke: ${colors.ears}; }
+
+            /* Cada parte entra um pouco depois da anterior: é o atraso que faz parecer um
+               desenho sendo feito, e não cinco traços aparecendo juntos. */
+            .atraso-1 { animation-delay: 0s; }
+            .atraso-2 { animation-delay: 0.12s; }
+            .atraso-3 { animation-delay: 0.24s; }
+            .atraso-4 { animation-delay: 0.36s; }
+
+            /* O preenchimento chega depois do contorno fechar. */
+            .pintar { animation: fillIn ${durDraw} ease-in-out infinite; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <polygon pathLength="100" class="traco traco-estrela atraso-1 pintar" fill="${colors.star}"
+                 points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <path pathLength="100" class="traco traco-coelho atraso-2" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
+        <path pathLength="100" class="traco traco-orelha atraso-3" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
+        <path pathLength="100" class="traco traco-coelho atraso-2" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
+        <path pathLength="100" class="traco traco-orelha atraso-3" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
+
+        <circle pathLength="100" class="traco traco-coelho atraso-3" cx="200" cy="225" r="72" />
+
+        <circle pathLength="100" class="traco traco-coelho atraso-4 pintar" fill="#1e1e1e" cx="168" cy="215" r="8" />
+        <circle pathLength="100" class="traco traco-coelho atraso-4 pintar" fill="#1e1e1e" cx="232" cy="215" r="8" />
+        <path   pathLength="100" class="traco atraso-4" stroke="#b91c1c" d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" />
+        <path   pathLength="100" class="traco atraso-4" stroke="#b91c1c" d="M 192 237 Q 200 245 200 236 Q 200 245 208 237" />
+      </svg>
+    `;
+  } else if (currentPreset === 4) {
+    // PRESET 4: Pulo Progressivo — o coelho atravessa a tela pulando, com sombra no chão.
+    //
+    // SÃO DOIS GRUPOS ENCAIXADOS, e isso é o ponto: o de fora só anda para o lado, o de dentro só
+    // pula. Um único grupo tentando fazer as duas coisas precisaria de keyframes que combinam X e Y
+    // em cada passo — impossível de ajustar depois. Separados, você mexe na altura do pulo sem
+    // tocar na travessia.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes travessia {
+              0%   { transform: translateX(-80px); }
+              100% { transform: translateX(80px); }
+            }
+            @keyframes pulo {
+              0%, 100% { transform: translateY(0) scale(1, 1); }
+              30%      { transform: translateY(-38px) scale(0.94, 1.08); }
+              55%      { transform: translateY(0) scale(1.1, 0.9); }
+              70%      { transform: translateY(-8px) scale(0.99, 1.01); }
+            }
+            /* A sombra encolhe quando ele sobe: é o que diz ao olho a que altura ele está. */
+            @keyframes sombra {
+              0%, 100% { transform: scale(1); opacity: 0.35; }
+              30%      { transform: scale(0.55); opacity: 0.12; }
+              55%      { transform: scale(1.15); opacity: 0.4; }
+            }
+            @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+            .bg-circle { fill: ${colors.bg}; }
+            .star-fundo { fill: ${colors.star}; opacity: 0.35; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+
+            .anda { animation: travessia ${durOrbit} ease-in-out infinite alternate; }
+            .pula { transform-origin: 200px 300px; animation: pulo ${durHop} cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
+            .sombra { transform-box: fill-box; transform-origin: center; animation: sombra ${durHop} cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
+            .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.8s infinite; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <polygon class="star-fundo" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <!-- O chão. Sem uma linha de apoio, o pulo parece o desenho tremendo no vazio. -->
+        <line x1="60" y1="318" x2="340" y2="318" stroke="${colors.bunny}" stroke-width="2" opacity="0.2" stroke-linecap="round" />
+
+        <g class="anda">
+          <ellipse class="sombra" cx="200" cy="316" rx="52" ry="9" fill="#000000" />
+
+          <g class="pula">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+
+            <circle cx="200" cy="240" r="68" fill="${colors.bunny}" />
+
+            <g class="eye">
+              <circle cx="170" cy="230" r="8" fill="#1e1e1e" />
+              <circle cx="168" cy="227" r="2.5" fill="#ffffff" />
+            </g>
+            <g class="eye">
+              <circle cx="230" cy="230" r="8" fill="#1e1e1e" />
+              <circle cx="228" cy="227" r="2.5" fill="#ffffff" />
+            </g>
+
+            <path d="M 194 243 Q 200 239 206 243 Q 200 251 194 243 Z" fill="#b91c1c" />
+            <path d="M 190 254 Q 200 264 210 254" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" />
+          </g>
+        </g>
+      </svg>
+    `;
+  } else if (currentPreset === 5) {
+    // PRESET 5: Minimalista — sem fundo, sem estrela, sem olhos. Só a silhueta e um arco girando.
+    //
+    // É o preset para usar DENTRO do app, num canto pequeno: com 32px de largura, dois olhos e uma
+    // estrela de dez pontas viram sujeira. Aqui não há nada que suma ao encolher.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-56 h-56">
+        <defs>
+          <style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes respira { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+            .silhueta { fill: ${colors.bunny}; }
+            .silhueta-orelha { fill: ${colors.ears}; }
+            .respira { transform-origin: 200px 240px; animation: respira ${durPulse} ease-in-out infinite; }
+            .arco {
+              fill: none;
+              stroke: ${colors.star};
+              stroke-width: 6;
+              stroke-linecap: round;
+              stroke-dasharray: 90 400;
+              transform-origin: 200px 200px;
+              animation: spin ${durOrbit} linear infinite;
+            }
+          </style>
+        </defs>
+
+        <circle class="arco" cx="200" cy="200" r="150" />
+
+        <g class="respira">
+          <path class="silhueta" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
+          <path class="silhueta-orelha" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
+          <path class="silhueta" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
+          <path class="silhueta-orelha" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
+          <circle class="silhueta" cx="200" cy="230" r="66" />
+        </g>
+      </svg>
+    `;
+  } else if (currentPreset === 6) {
+    // PRESET 6: Erro Sem Internet (Offline)
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes sadBreathe {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(5px); }
+            }
+            @keyframes pulseWifi {
+              0%, 100% { opacity: 0.4; }
+              50% { opacity: 1; }
+            }
+            .bg-circle { fill: #1e293b; }
+            .star-shape { fill: #334155; }
+            .bunny-head { fill: ${colors.bunny}; opacity: 0.9; }
+            .bunny-ears-inner { fill: #94a3b8; }
+            .sad-group { animation: sadBreathe 3s ease-in-out infinite; }
+            .ear-left { transform-origin: 165px 180px; transform: rotate(-35deg) translate(-15px, 10px); }
+            .ear-right { transform-origin: 235px 180px; transform: rotate(35deg) translate(15px, 10px); }
+            .wifi-icon { stroke: #64748b; stroke-width: 8; stroke-linecap: round; fill: none; animation: pulseWifi 2s infinite; }
+          </style>
+        </defs>
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+        
+        <g class="sad-group">
+          <g class="ear-left">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          </g>
+          <g class="ear-right">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          
+          <circle cx="200" cy="240" r="72" class="bunny-head" />
+          <path d="M 158 225 Q 168 220 178 225" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" fill="none" />
+          <path d="M 222 225 Q 232 220 242 225" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" fill="none" />
+          <path d="M 194 243 Q 200 239 206 243 Q 200 251 194 243 Z" fill="#b91c1c" opacity="0.6" />
+          <path d="M 190 260 Q 200 252 210 260" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" />
+        </g>
+
+        <!-- Ícone Wi-Fi Cortado -->
+        <g transform="translate(160, 60) scale(0.8)">
+          <path d="M 20 80 Q 50 50 80 80" class="wifi-icon" />
+          <path d="M 0 60 Q 50 10 100 60" class="wifi-icon" />
+          <circle cx="50" cy="95" r="5" fill="#64748b" />
+          <path d="M -10 110 L 110 30" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
+        </g>
+      </svg>
+    `;
+  } else if (currentPreset === 7) {
+    // PRESET 7: Erro de Servidor (500)
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes dizzyShake {
+              0%, 100% { transform: translate(0, 0) rotate(0deg); }
+              25% { transform: translate(-2px, 2px) rotate(-1deg); }
+              50% { transform: translate(2px, -2px) rotate(1deg); }
+              75% { transform: translate(-2px, -2px) rotate(0deg); }
+            }
+            @keyframes fireFlicker {
+              0%, 100% { opacity: 0.8; transform: scale(0.98); }
+              50% { opacity: 1; transform: scale(1.02); }
+            }
+            .bg-circle { fill: #450a0a; }
+            .star-shape { fill: #991b1b; animation: fireFlicker 0.4s infinite alternate; transform-origin: center; } 
+            .bunny-head { fill: ${colors.bunny}; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+            .dizzy-group { transform-origin: 200px 200px; animation: dizzyShake 0.4s infinite; }
+            .eye-x { stroke: #1e1e1e; stroke-width: 4; stroke-linecap: round; }
+          </style>
+        </defs>
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+        
+        <g class="dizzy-group">
+          <g transform="rotate(-15 165 180)">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          </g>
+          <g transform="rotate(10 235 180)">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          
+          <circle cx="200" cy="225" r="72" class="bunny-head" />
+          
+          <!-- Olhos Fechados com X -->
+          <path d="M 160 210 L 176 226 M 176 210 L 160 226" class="eye-x" />
+          <path d="M 224 210 L 240 226 M 240 210 L 224 226" class="eye-x" />
+          
+          <!-- Expressão de tontura -->
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 185 245 L 195 240 L 205 245 L 215 240" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- Faíscas/Erro -->
+        <!-- style= e não animation=: SVG não tem atributo "animation", então as faíscas ficavam
+             paradas. O navegador ignora o atributo em silêncio, sem erro nenhum. -->
+        <circle cx="150" cy="120" r="8" fill="#f87171" opacity="0.6" style="animation: fireFlicker 0.5s infinite; transform-box: fill-box; transform-origin: center;" />
+        <circle cx="250" cy="100" r="12" fill="#fca5a5" opacity="0.4" style="animation: fireFlicker 0.7s infinite; transform-box: fill-box; transform-origin: center;" />
+        <circle cx="210" cy="80" r="16" fill="#fef08a" opacity="0.3" style="animation: fireFlicker 0.6s infinite; transform-box: fill-box; transform-origin: center;" />
+      </svg>
+    `;
+  } else if (currentPreset === 8) {
+    // PRESET 8: Não Encontrado (404)
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes floatMagnify {
+              0%, 100% { transform: translateY(0) rotate(0deg); }
+              50% { transform: translateY(-8px) rotate(5deg); }
+            }
+            @keyframes lookAround {
+              0%, 100% { transform: translateX(0); }
+              25% { transform: translateX(-6px); }
+              75% { transform: translateX(6px); }
+            }
+            .bg-circle { fill: ${colors.bg}; }
+            .star-shape { fill: ${colors.star}; opacity: 0.5; }
+            .bunny-head { fill: ${colors.bunny}; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+            .magnifying-glass { animation: floatMagnify 3s ease-in-out infinite; transform-origin: 280px 200px; }
+            .eyes-moving { animation: lookAround 4s ease-in-out infinite; }
+          </style>
+        </defs>
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+        
+        <g>
+          <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+          <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          <g transform="rotate(40 235 180)">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          
+          <circle cx="200" cy="225" r="72" class="bunny-head" />
+          
+          <g class="eyes-moving">
+            <circle cx="168" cy="215" r="8" fill="#1e1e1e" />
+            <circle cx="166" cy="212" r="2.5" fill="#ffffff" />
+            <circle cx="232" cy="215" r="8" fill="#1e1e1e" />
+            <circle cx="230" cy="212" r="2.5" fill="#ffffff" />
+          </g>
+          
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <!-- Boca em "O" de surpresa -->
+          <circle cx="200" cy="245" r="5" fill="#1e1e1e" />
+        </g>
+
+        <!-- Lupa Gigante (Magnifying Glass) -->
+        <g class="magnifying-glass">
+          <circle cx="260" cy="230" r="35" fill="#93c5fd" opacity="0.4" stroke="#ffffff" stroke-width="8" />
+          <line x1="285" y1="255" x2="320" y2="290" stroke="#ffffff" stroke-width="12" stroke-linecap="round" />
+        </g>
+        
+        <!-- Texto 404 flutuante subtil no fundo -->
+        <text x="70" y="120" font-family="monospace" font-size="40" font-weight="bold" fill="#ffffff" opacity="0.2">4</text>
+        <text x="100" y="100" font-family="monospace" font-size="40" font-weight="bold" fill="#ffffff" opacity="0.2">0</text>
+        <text x="130" y="130" font-family="monospace" font-size="40" font-weight="bold" fill="#ffffff" opacity="0.2">4</text>
+      </svg>
+    `;
+  }
+
+  // SE UM PRESET CAIR FORA DE TODOS OS "IF", ISTO APARECE.
+  //
+  // Era o que faltava: os presets 2 a 5 não existiam nesta função, então ela devolvia texto vazio e
+  // a tela ficava em branco — sem erro, sem aviso, sem pista. Meia hora procurando o que havia
+  // "quebrado" numa página que nunca funcionou. Uma falha silenciosa custa mais do que uma feia.
+  if (!innerContent.trim()) {
+    return `
+      <div class="w-64 h-64 rounded-2xl border-2 border-dashed border-amber-500/60 bg-amber-950/20 flex flex-col items-center justify-center gap-2 text-center px-6">
+        <span class="text-3xl">🚧</span>
+        <p class="text-sm font-bold text-amber-300">Preset ${currentPreset} não tem desenho</p>
+        <p class="text-xs text-amber-200/70 leading-relaxed">Falta o bloco <code>currentPreset === ${currentPreset}</code> dentro de <code>generateSVGString()</code>.</p>
+      </div>
+    `;
+  }
+
+  return innerContent;
+}
+
+function renderCurrentPreset() {
+  const stage = document.getElementById('loaderStage');
+  const svgHTML = generateSVGString();
+
+  // Para os estados de erro, removemos os pontos piscantes ("...") e ajustamos a cor
+  const isErrorState = currentPreset >= 6;
+  const dotsHTML = isErrorState ? '' : `
+    <div class="flex gap-1 ml-1">
+      <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-flashing"></span>
+      <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-flashing"></span>
+      <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-flashing"></span>
+    </div>
+  `;
+  
+  const textStyle = isErrorState ? 'text-slate-300 text-center px-4 max-w-sm' : 'text-slate-200';
+
+  stage.innerHTML = `
+    <div class="flex flex-col items-center justify-center gap-4">
+      ${svgHTML}
+      <div class="flex items-center gap-2 ${textStyle} font-semibold text-sm tracking-wide mt-2">
+        <span id="dynamicTextSpan">${customText}</span>
+        ${dotsHTML}
+      </div>
+    </div>
+  `;
+}
+
+// Simulação de Carregamento Real de 0% a 100%
+    function triggerSimulation() {
+      if (simulationInterval) clearInterval(simulationInterval);
+
+      const btn = document.getElementById('btnSimulate');
+      const progressBar = document.getElementById('simProgressBar');
+      const statusText = document.getElementById('simStatusText');
+      const percentText = document.getElementById('simPercentText');
+
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      let progress = 0;
+      const steps = [
+        "A ligar ao servidor...",
+        "A carregar modelos vetoriais...",
+        "A processar texturas...",
+        "Quase pronto..."
+      ];
+
+      progressBar.style.width = '0%';
+      percentText.innerText = '0%';
+      statusText.innerText = steps[0];
+
+      simulationInterval = setInterval(() => {
+        progress += Math.floor(Math.random() * 8) + 3;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(simulationInterval);
+          statusText.innerText = "Concluído!";
+          percentText.innerText = "100%";
+          progressBar.style.width = "100%";
+
+          setTimeout(() => {
+            showToast("Simulação concluída!");
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          }, 500);
+        } else {
+          progressBar.style.width = progress + '%';
+          percentText.innerText = progress + '%';
+
+          if (progress > 75) statusText.innerText = steps[3];
+          else if (progress > 50) statusText.innerText = steps[2];
+          else if (progress > 25) statusText.innerText = steps[1];
+        }
+      }, 150);
+    }
+
+    // Ações de Exportação
+    function copySVGCode() {
+      const svgCode = generateSVGString();
+      copyToClipboard(svgCode);
+      showToast("Código SVG copiado!");
+    }
+
+    function downloadSVGFile() {
+      const svgCode = generateSVGString();
+      const blob = new Blob([svgCode], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `logo-loader-preset-${currentPreset}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Ficheiro SVG descarregado!");
+    }
+
+    function copyHTMLSnippet() {
+      const svgCode = generateSVGString();
+      const fullSnippet = `
+<!-- Loader Container HTML -->
+<div class="logo-loader-wrapper">
+  ${svgCode}
+  <p class="loader-text">${customText}...</p>
+</div>
+
+<style>
+  .logo-loader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #0b130f;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  .loader-text {
+    color: #ffffff;
+    margin-top: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+</style>
+      `.trim();
+
+      copyToClipboard(fullSnippet);
+      showToast("Snippet HTML+CSS copiado!");
+    }
+
+    function copyToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = message;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
