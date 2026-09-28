@@ -149,6 +149,77 @@ console.log('');
 }
 
 {
+  /**
+   * QUEM CHEGA À RAIZ COM UM CÓDIGO NA MÃO PRECISA SER LEVADO AO SYDEN.
+   *
+   * Quatro endereços do Syden mandavam a pessoa para a raiz, porque a raiz ERA o Syden: a volta da
+   * entrada social, o link de confirmação de e-mail, o de recuperação de senha e o convite. Depois da
+   * mudança, todos passaram a cair na página de apresentação, que não faz nada com eles — e o sintoma é
+   * o pior possível: o site abre bonito, e simplesmente não acontece nada. Nenhum erro, em lugar nenhum.
+   *
+   * A busca inteira tem de chegar do outro lado. Perder o `comprovante` no caminho é o mesmo que não
+   * desviar: o Syden abre e não tem o que concluir.
+   */
+  const { page, contexto, barrados } = await abrir();
+  const visitados = [];
+  page.on('framenavigated', (frame) => {
+    if (frame === page.mainFrame()) visitados.push(frame.url());
+  });
+
+  for (const busca of ['?entrada=ok&comprovante=abc123', '?confirmar=xyz', '?recuperar=xyz', '?convite=xyz']) {
+    visitados.length = 0;
+    await page.goto(BASE + '/' + busca, { waitUntil: 'load' });
+    await page.waitForURL(/\/app\//, { timeout: 10_000 }).catch(() => {});
+
+    // Olhar o endereço FINAL não serve: o Syden limpa a barra assim que lê o código (senão, recarregar
+    // gastaria de novo um comprovante já usado). O que interessa é se ele CHEGOU lá com a busca inteira.
+    const chegouInteiro = visitados.some((endereco) => {
+      const url = new URL(endereco);
+      return url.pathname.startsWith('/app') && url.search === busca;
+    });
+    console.log(`  ${chegouInteiro ? 'OK ' : 'XX '} a raiz leva ${busca} para /app/ sem perder nada`);
+    if (!chegouInteiro) {
+      problemas.push(`${busca} não chegou inteiro a /app/ (passou por: ${visitados.join(' → ') || 'nada'})`);
+    }
+  }
+  if (barrados.length) problemas.push(`a política barrou o reencaminhamento: ${barrados[0]}`);
+  await contexto.close();
+}
+
+{
+  /**
+   * A PÁGINA QUE DEVOLVE A PESSOA AO APLICATIVO, nos dois endereços em que ela precisa existir.
+   *
+   * Ela é apontada pelo servidor a partir do SITE_URL dele, que pode estar na raiz ou em /app — e um 404
+   * aqui não é uma página quebrada qualquer: é ninguém conseguindo entrar no app de desktop por Google,
+   * Discord, GitHub ou Steam.
+   *
+   * O href do link é o melhor detector que existe para esta página: no HTML ele é `syden://entrada`
+   * pelado, e quem lhe acrescenta a busca é o script. Se a política de segurança bloquear o script — o
+   * jeito silencioso de esta página falhar —, o endereço fica sem o comprovante, e é isso que se mede.
+   */
+  const { page, contexto, barrados } = await abrir();
+  const BUSCA = '?entrada=ok&comprovante=abc123';
+  for (const caminho of ['/voltar-para-o-app.html', '/app/voltar-para-o-app.html']) {
+    // 'domcontentloaded', e não 'load': a página tenta abrir o aplicativo sozinha logo depois de
+    // carregar, e num navegador sem o Syden instalado (como este) essa tentativa fica pendurada. Esperar
+    // o 'load' aqui seria esperar por um navegador que nunca vai responder.
+    const resposta = await page.goto(BASE + caminho + BUSCA, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(700);
+    const href = await page.locator('#abrir').getAttribute('href');
+    const texto = (await page.locator('#titulo').textContent())?.trim() ?? '';
+
+    const ok = resposta?.status() === 200 && href === 'syden://entrada' + BUSCA && texto.length > 0;
+    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} devolve ao app com o comprovante`);
+    console.log(`        link: ${href}`);
+    if (resposta?.status() !== 200) problemas.push(`${caminho} não existe (${resposta?.status()}): o app de desktop ficaria sem volta`);
+    else if (href !== 'syden://entrada' + BUSCA) problemas.push(`${caminho}: o link ficou "${href}" — o script não montou o endereço`);
+  }
+  if (barrados.length) problemas.push(`a política barrou algo na página de volta: ${barrados[0]}`);
+  await contexto.close();
+}
+
+{
   // As páginas que a Microsoft Store e a política de privacidade apontam NÃO PODEM ter mudado de
   // endereço. Uma delas é o link de privacidade declarado no envio, e um link quebrado ali é reprovação.
   const { page, contexto } = await abrir();

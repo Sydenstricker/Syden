@@ -143,7 +143,8 @@ o link.
 
    ```
    EMAIL_FROM=Syden <nao-responda@syden.chat>
-   SITE_URL=https://endereco-do-site        # é daqui que saem os links dentro do e-mail
+   SITE_URL=https://syden.chat/app          # ONDE O SYDEN MORA, com o /app: é daqui que saem os
+                                            # links dos e-mails e para cá volta a entrada social
    ```
 
 **Antes da verificação, o remetente de teste do Resend só entrega para o e-mail dono da conta.** Um amigo

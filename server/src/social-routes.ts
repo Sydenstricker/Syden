@@ -52,9 +52,23 @@ function venceu(createdAt: string, agora = Date.now()): boolean {
  * desktop/src/main.js). É o caminho que a norma para aplicativos nativos manda usar: o provedor abre
  * no navegador de verdade — que é o que o Google exige, e por isso não dá para embutir a página dele
  * numa janela nossa — e o resultado volta para o app por aqui.
+ *
+ * MAS NÃO DIRETO PARA O syden://, E SIM POR UMA PÁGINA NOSSA. Mandar o navegador direto fazia o Windows
+ * perguntar "Permitir que https://api.syden.chat abra o link syden com Syden?" — o nome do servidor de
+ * API, que ninguém reconhece, no meio de uma pergunta sobre deixar um site abrir um programa. E quando
+ * o navegador barrava a tentativa (abrir programa sem clique é coisa que eles barram), sobrava uma aba
+ * em branco e o app esperando para sempre. A página do meio resolve as duas: o nome que aparece passa a
+ * ser o do site, e existe um botão para o caso de a tentativa automática não passar. Ver
+ * web/site/voltar-para-o-app.html.
+ *
+ * SITE_URL PRECISA APONTAR PARA ONDE O SYDEN MORA (hoje https://syden.chat/app). Quando o app saiu da
+ * raiz e ninguém mexeu nesta variável, tudo o que volta por aqui — e também os links dos e-mails de
+ * confirmação e de recuperação — passou a cair na página de apresentação, que não faz nada com eles. A
+ * página de apresentação hoje reencaminha esses endereços por segurança, mas isso é rede de proteção
+ * para links antigos, não o caminho certo.
  */
 function paraOndeVoltar(doApp: boolean): string {
-  return doApp ? 'syden://entrada' : `${config.siteUrl}/`;
+  return doApp ? `${config.siteUrl}/voltar-para-o-app.html` : `${config.siteUrl}/`;
 }
 
 /** Manda de volta com um recado, quando alguma coisa deu errado no meio. */

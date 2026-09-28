@@ -49,6 +49,28 @@ for (const icone of ICONES_DA_MARCA) {
   cpSync(de, join(DIST, icone));
 }
 
+/**
+ * A PÁGINA DE VOLTA AO APLICATIVO FICA NOS DOIS LUGARES, e isso é de propósito.
+ *
+ * Quem aponta para ela é o servidor, montando o endereço a partir do SITE_URL dele. Esse SITE_URL pode
+ * estar como `https://syden.chat` (como estava) ou `https://syden.chat/app` (como passa a ser), e o
+ * arquivo precisa existir nos dois casos — porque um 404 aqui não é uma página quebrada qualquer: é
+ * ninguém conseguindo entrar no app de desktop por Google, Discord, GitHub ou Steam, e só se descobre
+ * tentando entrar.
+ *
+ * Duas cópias, UMA FONTE: o arquivo mora em web/site/ e é copiado. Manter duas cópias à mão daria a
+ * mesma dor dos ícones da marca, logo acima — um dia só uma delas mudaria.
+ */
+const TAMBEM_DENTRO_DO_APP = ['voltar-para-o-app.html', 'voltar-para-o-app.js'];
+for (const arquivo of TAMBEM_DENTRO_DO_APP) {
+  const de = join(SITE, arquivo);
+  if (!existsSync(de)) {
+    console.error(`${arquivo} não está em web/site/: a entrada social do app de desktop ficaria sem volta.`);
+    process.exit(1);
+  }
+  cpSync(de, join(DIST, 'app', arquivo));
+}
+
 // Fora o que veio de web/site/, os ícones da marca e a pasta do app, nada tem o que fazer na raiz.
 const permitidos = new Set([...doSite, ...ICONES_DA_MARCA, 'app']);
 const sobras = readdirSync(DIST).filter((nome) => !permitidos.has(nome));
@@ -62,6 +84,8 @@ const OBRIGATORIOS = [
   ['index.html', 'sem ele, syden.chat mostra a lista de arquivos em vez da página inicial'],
   ['CNAME', 'sem ele, o domínio syden.chat para de apontar para o site'],
   ['app/index.html', 'sem ele, syden.chat/app/ não abre o Syden'],
+  ['voltar-para-o-app.html', 'sem ela, entrar com Google no app de desktop não tem como voltar'],
+  ['app/voltar-para-o-app.html', 'a mesma página, para quando o SITE_URL do servidor apontar para /app'],
 ];
 
 const faltando = OBRIGATORIOS.filter(([arquivo]) => !existsSync(join(DIST, arquivo)));

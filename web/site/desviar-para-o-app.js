@@ -23,5 +23,36 @@
  * e a pessoa fica na apresentação — que é o certo: é para ela que a página foi escrita.
  */
 if (window.sydenDesktop) {
-  window.location.replace('/app/');
+  window.location.replace('/app/' + window.location.search + window.location.hash);
+}
+
+/**
+ * O QUE CHEGA AQUI COM UM CÓDIGO NA MÃO NÃO É VISITA: é alguém no meio de uma tarefa.
+ *
+ * Quatro coisas do Syden mandam a pessoa de volta por um endereço, e todas as quatro apontavam para a
+ * RAIZ, porque a raiz era o Syden até a mudança de endereço:
+ *
+ *   ?entrada=    a volta do Google, Discord, GitHub ou Steam
+ *   ?confirmar=  o link do e-mail de confirmação de cadastro
+ *   ?recuperar=  o link do e-mail de recuperação de senha
+ *   ?convite=    o convite que alguém mandou para um amigo
+ *
+ * Depois da mudança, esses endereços passaram a cair na página de apresentação — que é bonita e não faz
+ * nada com eles. O sintoma é cruel: a pessoa clica no link do e-mail, vê o site do Syden abrir
+ * normalmente, e nada acontece. Ela não tem como saber que faltou alguma coisa. Foi o que aconteceu com
+ * a entrada pelo Google em 28/09/2026, e valia igual para todo e-mail já enviado antes daquele dia.
+ *
+ * O servidor também foi corrigido para apontar direto para /app/ (ver SITE_URL), mas isto FICA: links
+ * antigos continuam existindo em caixas de entrada, e uma correção que só vale para o que vem depois
+ * não é uma correção para quem clicou ontem.
+ *
+ * A busca vai inteira, e o sessionStorage sobrevive: é o mesmo endereço (syden.chat) na mesma aba, então
+ * o segredo guardado no começo da entrada continua lá do outro lado — sem isso, o comprovante do Google
+ * chegaria ao Syden sem a metade que o valida.
+ */
+const PARAMETROS_DE_QUEM_ESTA_NO_MEIO_DE_ALGO = ['entrada', 'confirmar', 'recuperar', 'convite'];
+const busca = new URLSearchParams(window.location.search);
+
+if (PARAMETROS_DE_QUEM_ESTA_NO_MEIO_DE_ALGO.some((nome) => busca.has(nome))) {
+  window.location.replace('/app/' + window.location.search + window.location.hash);
 }

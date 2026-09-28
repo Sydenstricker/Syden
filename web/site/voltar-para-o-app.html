@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#313338" />
+    <meta name="robots" content="noindex" />
+    <title>Syden</title>
+
+    <!--
+      A PÁGINA QUE DEVOLVE A PESSOA AO APLICATIVO, depois de entrar com Google, Discord, GitHub ou Steam.
+
+      POR QUE ELA PRECISOU EXISTIR. Antes, o servidor mandava o navegador direto para `syden://`, e o
+      Windows perguntava: "Permitir que https://api.syden.chat abra o link syden com Syden?". Três
+      problemas numa pergunta só:
+
+        1. o nome que aparece é api.syden.chat — um endereço que ninguém nunca viu, no meio de uma
+           pergunta sobre segurança. Quem desconfia, cancela; e cancelar ali é não conseguir entrar.
+        2. a pergunta chega sem contexto nenhum, numa aba em branco, sem nada explicando o que houve.
+        3. quando o navegador engole a tentativa — e alguns engolem, porque abrir um programa a partir
+           de um redirecionamento sem clique é coisa que eles barram —, não sobra NADA na tela. A aba
+           fica vazia e o app esperando, e ninguém tem como saber o que fazer.
+
+      Com esta página no meio, o nome na pergunta passa a ser syden.chat, a pergunta vem depois de uma
+      tela que explica o que vai acontecer, e existe um BOTÃO — que é um clique de verdade, e clique de
+      verdade os navegadores não barram.
+
+      A PERGUNTA EM SI NÃO TEM COMO SUMIR. É o Windows protegendo a pessoa de um site que quer abrir um
+      programa, e vale para todo aplicativo que faz isso (Discord, Spotify, Teams). O que dá para mudar
+      é o nome que aparece nela e o que a pessoa sabe quando ela aparece.
+
+      O TEXTO TEM DICIONÁRIO PRÓPRIO (ver voltar-para-o-app.js), pelo mesmo motivo da tela de sem
+      conexão: esta página não é o Syden, é um pedaço de site estático, e o i18n do app não chega aqui.
+
+      E O SCRIPT É UM ARQUIVO SEPARADO. A política de segurança usa `script-src 'self'`: script escrito
+      dentro do HTML é bloqueado EM SILÊNCIO, e o sintoma seria uma página bonita que não faz nada.
+    -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #313338;
+        color: #f2f3f5;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      .caixa {
+        max-width: 420px;
+      }
+
+      svg {
+        width: 120px;
+        height: 120px;
+      }
+
+      h1 {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 20px 0 10px;
+      }
+
+      p {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #b5bac1;
+        margin: 0 0 20px;
+      }
+
+      .abrir {
+        display: inline-block;
+        background: #bc1d1d;
+        color: #fff;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 28px;
+        border-radius: 8px;
+      }
+
+      .abrir:hover {
+        background: #a71919;
+      }
+
+      .miudo {
+        font-size: 12px;
+        color: #80848e;
+        margin: 18px 0 0;
+      }
+
+      /* O giro é enfeite; parado, a página continua dizendo a mesma coisa. */
+      @keyframes gira {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .arco {
+        fill: none;
+        stroke: #bc1d1d;
+        stroke-width: 6;
+        stroke-linecap: round;
+        stroke-dasharray: 90 400;
+        transform-origin: 200px 200px;
+        animation: gira 2.5s linear infinite;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .arco {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="caixa">
+        <!-- O mesmo coelho da abertura do Syden: quem chega aqui tem de reconhecer de cara onde está. -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" aria-hidden="true">
+          <circle class="arco" cx="200" cy="200" r="150" />
+          <path fill="#ffffff" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
+          <path fill="#f48fb1" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
+          <path fill="#ffffff" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
+          <path fill="#f48fb1" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
+          <circle fill="#ffffff" cx="200" cy="230" r="66" />
+        </svg>
+
+        <h1 id="titulo">Voltando para o Syden</h1>
+        <p id="explicacao">
+          O navegador vai perguntar se pode abrir o Syden. Pode permitir: é assim que a sua entrada volta
+          para o aplicativo.
+        </p>
+        <!-- É um link de verdade, e não um botão com JavaScript: clicar num link é um clique que o
+             navegador reconhece como seu, e é isso que o deixa abrir o programa sem reclamar. -->
+        <a class="abrir" id="abrir" href="syden://entrada">Abrir o Syden</a>
+        <p class="miudo" id="miudo">
+          Marcando “sempre permitir”, esta pergunta não aparece mais. Depois, pode fechar esta aba.
+        </p>
+      </div>
+    </main>
+
+    <script src="voltar-para-o-app.js"></script>
+  </body>
+</html>
