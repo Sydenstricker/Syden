@@ -24,7 +24,7 @@ import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'rea
 import { AnimatedIcon } from './AnimatedIcon';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
 import { Insignia } from './Medalha';
@@ -56,20 +56,20 @@ type Section = 'account' | 'voice' | 'sounds' | 'idioma' | 'community' | 'member
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
-  { id: 'account', label: 'Minha conta', icon: <AnimatedIcon name="avatar" size={20} /> },
-  { id: 'voice', label: 'Voz e vídeo', icon: <AnimatedIcon name="microfone" size={20} /> },
+  { id: 'account', label: chave('Minha conta'), icon: <AnimatedIcon name="avatar" size={20} /> },
+  { id: 'voice', label: chave('Voz e vídeo'), icon: <AnimatedIcon name="microfone" size={20} /> },
   // O despertador sacode forte demais no ritmo original; num menu, meia velocidade basta para dar vida.
-  { id: 'sounds', label: 'Notificações', icon: <AnimatedIcon name="alarme" size={20} speed={0.5} /> },
-  { id: 'idioma', label: 'Idioma', icon: <Languages size={20} /> },
+  { id: 'sounds', label: chave('Notificações'), icon: <AnimatedIcon name="alarme" size={20} speed={0.5} /> },
+  { id: 'idioma', label: chave('Idioma'), icon: <Languages size={20} /> },
 ];
 
 const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   // Comunidade e Membros seguem com os ícones de traço: o desenho de videochamada é colorido demais para
   // o menu, e o de pessoa não aparece direito parado.
-  { id: 'community', label: 'Comunidade', icon: <Hash size={18} /> },
-  { id: 'members', label: 'Membros', icon: <Users size={18} /> },
-  { id: 'emojis', label: 'Emojis', icon: <AnimatedIcon name="emoji" size={20} /> },
-  { id: 'soundboard', label: 'Soundboard', icon: <AnimatedIcon name="musica" size={20} /> },
+  { id: 'community', label: chave('Comunidade'), icon: <Hash size={18} /> },
+  { id: 'members', label: chave('Membros'), icon: <Users size={18} /> },
+  { id: 'emojis', label: chave('Emojis'), icon: <AnimatedIcon name="emoji" size={20} /> },
+  { id: 'soundboard', label: chave('Soundboard'), icon: <AnimatedIcon name="musica" size={20} /> },
 ];
 
 const KB = 1024;

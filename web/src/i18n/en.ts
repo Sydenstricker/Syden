@@ -10,8 +10,6 @@ export default {
   'Nome de usuário': 'Username',
   Senha: 'Password',
   'Código de convite': 'Invite code',
-  'O código que um amigo te passou. Ele já te coloca na comunidade dele.':
-    'The code a friend gave you. It also puts you straight into their community.',
   'Aguarde…': 'Please wait…',
   Entrar: 'Log in',
   Cadastrar: 'Sign up',
@@ -65,4 +63,53 @@ export default {
     'Syden can already write in any of these — what is missing is the translation of the texts. Until it arrives, anything untranslated shows up in Portuguese, and every alphabet still renders properly, with no empty boxes.',
   'Hoje dá para atender {paises} países da ONU; a lista abaixo cobre praticamente todos os outros.':
     'Today it covers {paises} UN countries; the list below reaches nearly all the rest.',
+  // Senha esquecida, cadastro e telas de entrada
+  'Esqueceu a senha?': 'Forgot your password?',
+  'Esqueci a minha senha': 'I forgot my password',
+  'Diga o e-mail da sua conta e mandamos um link para escolher outra.':
+    'Tell us your account e-mail and we will send a link to pick a new one.',
+  'E-mail': 'E-mail',
+  'Mandar o link': 'Send the link',
+  'Olhe o seu e-mail': 'Check your e-mail',
+  'Se existir uma conta com esse endereço, o link para escolher uma senha nova chegou lá. Ele vale por 1 hora.':
+    'If an account exists for that address, the link to pick a new password has arrived there. It is valid for 1 hour.',
+  'Não chegou? Veja também a caixa de spam.': 'Did not arrive? Check your spam folder too.',
+  'Escolha uma senha nova': 'Pick a new password',
+  'Nova senha': 'New password',
+  'Confirmar nova senha': 'Confirm new password',
+  'A confirmação não bate com a nova senha.': 'The confirmation does not match the new password.',
+  'Senha trocada': 'Password changed',
+  'Já pode entrar com a senha nova. Os aparelhos que estavam conectados foram desconectados, por segurança.':
+    'You can log in with the new password now. Devices that were signed in have been signed out, for safety.',
+  'Voltar para a entrada': 'Back to sign in',
+  Voltar: 'Back',
+  Cancelar: 'Cancel',
+  'Salvar e entrar': 'Save and enter',
+  'Abrindo…': 'Opening…',
+  ou: 'or',
+  'Você foi convidado. É só escolher um nome, um e-mail e uma senha.':
+    'You have been invited. Just pick a name, an e-mail and a password.',
+  'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
+    'We sent a link to confirm it. That is how you recover your password if you ever forget it.',
+
+  // Comunidades
+  Comunidades: 'Communities',
+  'Início do Syden': 'Syden home',
+  'Link copiado!': 'Link copied!',
+  'Copiar link de convite': 'Copy invite link',
+  'Só quem administra pode convidar gente nova.': 'Only admins can invite new people.',
+  'Adicionar comunidade': 'Add a community',
+  'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
+    'Start your own, or join someone elses with the code they gave you.',
+  'Criar a minha': 'Create mine',
+  'Um lugar novo, com canais próprios, e você decide quem entra.':
+    'A new place, with its own channels, and you decide who gets in.',
+  'Entrar com um convite': 'Join with an invite',
+  'Já recebeu um código de alguém? É por aqui.': 'Got a code from someone? This way.',
+  'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
+    'A new place, with its own channels. You choose who gets in, through the invite code.',
+  'Cole aqui o código que alguém te passou.': 'Paste the code someone gave you here.',
+  'Nome da comunidade': 'Community name',
+  'Ex.: Time do Valorant': 'e.g. Valorant squad',
+  'Ex.: k3m9xq2p': 'e.g. k3m9xq2p',
 } satisfies Record<string, string>;

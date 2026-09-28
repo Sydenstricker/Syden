@@ -108,9 +108,19 @@ export async function trocarIdioma(codigo: string) {
   avisar();
 }
 
-/** Traduz um texto. Sem tradução para ele, devolve o próprio português — nunca uma tela vazia. */
+/**
+ * Traduz um texto. Sem tradução para ele, devolve o próprio português — nunca uma tela vazia.
+ *
+ * O `|| texto` É PROPOSITAL, E NÃO `??`. Os dois se comportam igual para chave ausente; a diferença é a
+ * STRING VAZIA. O esqueleto de um idioma novo (node scripts/idiomas.mjs --novo xx) nasce com todas as
+ * chaves presentes e todos os valores vazios, justamente para dar uma lista de trabalho — e com `??`
+ * cada uma dessas chaves devolveria "" e apagaria o texto da tela. Escolher um idioma recém-criado
+ * mostraria botões sem rótulo e títulos invisíveis, em vez de português.
+ *
+ * Também cobre a tradução deixada pela metade à mão, que é o caso comum de quem traduz aos poucos.
+ */
 export function t(texto: string, valores?: Record<string, string | number>): string {
-  const traduzido = dicionario[texto] ?? texto;
+  const traduzido = dicionario[texto] || texto;
   if (!valores) return traduzido;
   return traduzido.replace(/\{(\w+)\}/g, (inteiro, nome) => String(valores[nome] ?? inteiro));
 }
@@ -128,6 +138,27 @@ export function useT() {
   useSyncExternalStore(assinar, idiomaAtual);
   return t;
 }
+
+/**
+ * Marca um texto que vai ser traduzido MAIS TARDE, por `t(variável)`.
+ *
+ * Em tempo de execução ela não faz nada: devolve o mesmo texto. Ela existe para as FERRAMENTAS.
+ *
+ * O problema que resolve, e que quase custou caro: os rótulos das abas de configurações moram numa
+ * lista no topo do arquivo, e a tela desenha `t(s.label)`. A tradução funciona perfeitamente — mas
+ * `scripts/idiomas.mjs` só encontra chave escrita como `t('texto')`, com o texto ali. Ele concluiu que
+ * nove traduções boas eram lixo e mandou apagá-las. Uma ferramenta que manda apagar o que funciona é
+ * pior do que ferramenta nenhuma, porque ela tem autoridade.
+ *
+ * Então onde o texto se separa do `t()`, ele vai marcado:
+ *
+ *   const ABAS = [{ id: 'account', label: chave('Minha conta') }];
+ *   …
+ *   {t(aba.label)}
+ *
+ * Duas linhas, e a chave volta a ser visível para quem conta.
+ */
+export const chave = (texto: string) => texto;
 
 /** Chamado uma vez, ao abrir o app. */
 export function iniciarIdioma() {

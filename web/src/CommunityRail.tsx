@@ -3,6 +3,7 @@ import { type FormEvent, type MouseEvent, type ReactNode, useEffect, useState } 
 import { createPortal } from 'react-dom';
 import { api } from './api';
 import { CommunityIcon } from './CommunityIcon';
+import { useT } from './i18n';
 import { Logo } from './Logo';
 import type { Community } from './types';
 
@@ -21,15 +22,16 @@ interface Props {
 }
 
 export function CommunityRail({ communities, currentId, onSelect, onChanged, top, onHome, homeActive, homeBadge }: Props) {
+  const t = useT();
   const [dialog, setDialog] = useState<CommunityDialogMode | null>(null);
   const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
 
   return (
-    <nav className="rail" aria-label="Comunidades">
+    <nav className="rail" aria-label={t('Comunidades')}>
       <button
         className={`rail-logo${homeActive ? ' active' : ''}`}
-        title="Início do Syden"
-        aria-label="Início do Syden"
+        title={t('Início do Syden')}
+        aria-label={t('Início do Syden')}
         aria-current={homeActive}
         onClick={onHome}
       >
@@ -60,7 +62,7 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
       <button
         className="rail-item rail-action"
         title="Adicionar comunidade"
-        aria-label="Adicionar comunidade"
+        aria-label={t('Adicionar comunidade')}
         onClick={() => setDialog('choose')}
       >
         <Plus size={20} />
@@ -87,6 +89,7 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
  * só existe para quem administra (é quem recebe o código; ver server/src/db.ts, listCommunitiesForUser).
  */
 function CommunityMenu({ community, x, y, onClose }: { community: Community; x: number; y: number; onClose: () => void }) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -118,10 +121,10 @@ function CommunityMenu({ community, x, y, onClose }: { community: Community; x: 
       <div className="person-menu-name">{community.name}</div>
       {community.inviteCode ? (
         <button className="person-menu-item" onClick={copyLink}>
-          <Link size={16} /> {copied ? 'Link copiado!' : 'Copiar link de convite'}
+          <Link size={16} /> {copied ? t('Link copiado!') : t('Copiar link de convite')}
         </button>
       ) : (
-        <p className="person-menu-hint">Só quem administra pode convidar gente nova.</p>
+        <p className="person-menu-hint">{t('Só quem administra pode convidar gente nova.')}</p>
       )}
     </div>,
     document.body,
@@ -143,6 +146,7 @@ export function CommunityDialog({
   onClose: () => void;
   onDone: (community: Community) => void;
 }) {
+  const t = useT();
   const [mode, setMode] = useState<CommunityDialogMode>(modoInicial);
   const [value, setValue] = useState('');
   const [busy, setBusy] = useState(false);
@@ -158,22 +162,22 @@ export function CommunityDialog({
   if (mode === 'choose') {
     return (
       <div className="dialog-backdrop" onClick={onClose}>
-        <div className="dialog" role="dialog" aria-label="Adicionar comunidade" onClick={(e) => e.stopPropagation()}>
-          <h2>Adicionar comunidade</h2>
-          <p className="dialog-body">Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.</p>
+        <div className="dialog" role="dialog" aria-label={t('Adicionar comunidade')} onClick={(e) => e.stopPropagation()}>
+          <h2>{t('Adicionar comunidade')}</h2>
+          <p className="dialog-body">{t('Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.')}</p>
           <div className="community-choice">
             <button className="community-choice-option" onClick={() => escolher('create')}>
               <Plus size={22} />
               <span>
-                <strong>Criar a minha</strong>
-                <small>Um lugar novo, com canais próprios, e você decide quem entra.</small>
+                <strong>{t('Criar a minha')}</strong>
+                <small>{t('Um lugar novo, com canais próprios, e você decide quem entra.')}</small>
               </span>
             </button>
             <button className="community-choice-option" onClick={() => escolher('join')}>
               <LogIn size={20} />
               <span>
-                <strong>Entrar com um convite</strong>
-                <small>Já recebeu um código de alguém? É por aqui.</small>
+                <strong>{t('Entrar com um convite')}</strong>
+                <small>{t('Já recebeu um código de alguém? É por aqui.')}</small>
               </span>
             </button>
           </div>
@@ -208,15 +212,15 @@ export function CommunityDialog({
         <h2>{creating ? 'Criar comunidade' : 'Entrar com um convite'}</h2>
         <p className="dialog-body">
           {creating
-            ? 'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.'
-            : 'Cole aqui o código que alguém te passou.'}
+            ? t('Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.')
+            : t('Cole aqui o código que alguém te passou.')}
         </p>
         <label>
-          {creating ? 'Nome da comunidade' : 'Código de convite'}
+          {creating ? t('Nome da comunidade') : t('Código de convite')}
           <input
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder={creating ? 'Ex.: Time do Valorant' : 'Ex.: k3m9xq2p'}
+            placeholder={creating ? t('Ex.: Time do Valorant') : t('Ex.: k3m9xq2p')}
             autoFocus
             required
           />
