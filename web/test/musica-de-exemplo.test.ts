@@ -3,14 +3,18 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { lerLetra, letraSemTempo } from '../src/lrc';
 
-// A música que vem com o Syden é gerada por scripts/musica-de-exemplo.mjs, e estes testes existem para
+// AMOSTRA DE TESTE, E NÃO PRODUTO. Ver CLAUDE.md: o Syden não faz música própria. Este arquivo existe
+// só para haver um áudio com letra sincronizada ao mexer no karaokê, e por isso mora em web/test/ e
+// não em web/public/ — de web/public/ ele iria para o site publicado.
+//
+// Estes testes existem para
 // uma coisa só: garantir que o arquivo gerado é lido pelo LEITOR DE VERDADE do Syden, e não por uma
 // cópia da lógica dentro do teste.
 //
 // O risco que isto pega é o pior de um karaokê: letra que anda fora do tempo. Ninguém percebe olhando
 // o .lrc — percebe cantando, na frente dos amigos.
 
-const PASTA = new URL('../public/musica/', import.meta.url);
+const PASTA = new URL('./amostras/', import.meta.url);
 const lrc = readFileSync(new URL('hoje-e-seu-dia.lrc', PASTA), 'utf8');
 const wav = readFileSync(new URL('hoje-e-seu-dia.wav', PASTA));
 

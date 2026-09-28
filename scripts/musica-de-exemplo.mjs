@@ -15,6 +15,9 @@
 // nem se eu mudar o andamento, nem se eu acrescentar um verso no meio. Um .lrc ajustado à mão sobre um
 // .mp3 perde isso na primeira edição.
 //
+// ATENÇÃO: ISTO É FERRAMENTA DE TESTE, NÃO PRODUTO. Ver CLAUDE.md — o Syden não faz música própria.
+// A saída cai em web/test/amostras/ de propósito: de web/public/ ela iria para o site publicado.
+//
 //   node scripts/musica-de-exemplo.mjs
 //   node scripts/musica-de-exemplo.mjs --taxa 22050 --bpm 100
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -26,7 +29,7 @@ const opcao = (nome, padrao) => {
 
 const TAXA = Number(opcao('taxa', 44100));
 const BPM = Number(opcao('bpm', 108));
-const SAIDA = opcao('saida', 'musica/hoje-e-seu-dia');
+const SAIDA = opcao('saida', 'web/test/amostras/hoje-e-seu-dia');
 
 const TITULO = 'Hoje É Seu Dia';
 const ARTISTA = 'Syden';

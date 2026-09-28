@@ -162,14 +162,19 @@ console.log('');
 }
 
 {
-  // A música que vem com o Syden é servida como arquivo estático. Se o endereço dela mudar de lugar, o
-  // karaokê de exemplo abre sem som — e o sintoma não aponta para a causa.
+  // O SYDEN NÃO PUBLICA MÚSICA NENHUMA, e isto confere que continua assim.
+  //
+  // Ver CLAUDE.md: não fazemos música própria, e música de terceiro precisa de licença. Houve uma
+  // amostra gerada em web/public/musica/, que dali iria para o site publicado — hoje ela vive em
+  // web/test/amostras/, como material de teste. Este teste existe para o dia em que alguém puser um
+  // arquivo de áudio em web/public/ sem pensar: publicar música sem licença é o tipo de erro que só
+  // aparece quando chega uma notificação.
   const { page, contexto } = await abrir();
-  for (const caminho of ['/app/musica/hoje-e-seu-dia.wav', '/app/musica/hoje-e-seu-dia.lrc']) {
+  for (const caminho of ['/app/musica/hoje-e-seu-dia.wav', '/app/musica/']) {
     const resposta = await page.goto(BASE + caminho, { waitUntil: 'commit' });
-    const ok = resposta?.status() === 200;
-    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} (${resposta?.status()})`);
-    if (!ok) problemas.push(`${caminho} não está no site publicado`);
+    const ok = resposta?.status() === 404;
+    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} não está publicado (${resposta?.status()})`);
+    if (!ok) problemas.push(`${caminho} está sendo publicado, e não deveria: música precisa de licença`);
   }
   await contexto.close();
 }
