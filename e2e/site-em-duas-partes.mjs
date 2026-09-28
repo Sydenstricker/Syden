@@ -165,6 +165,32 @@ console.log('');
   console.log(`  ${ok ? 'OK ' : 'XX '} /app/ carrega o Syden (${montou} elementos desenhados)`);
   if (!ok) problemas.push('/app/ não desenhou nada: o app não carregou no novo endereço');
   if (daPolitica.length) problemas.push(`a política barrou algo no app: ${daPolitica[0]}`);
+
+  /**
+   * QUEM VAI PODE VOLTAR, e os links do rodapé têm de existir de verdade.
+   *
+   * Duas coisas que a mudança de endereço quebrou sem fazer barulho:
+   *
+   *   - da tela de entrada não havia caminho de volta ao site. Quem chegou e ainda não tem conta só sai
+   *     apagando o "/app/" do endereço à mão, e ninguém faz isso;
+   *   - os links de Privacidade e Termos eram relativos, então dentro de /app/ apontavam para
+   *     /app/privacidade.html, que não existe. O da privacidade é o endereço declarado no envio da
+   *     Microsoft Store: um 404 ali é reprovação, e ele estava 404.
+   */
+  const rodape = await page.evaluate(() =>
+    [...document.querySelectorAll('.auth-legal a')].map((a) => ({ texto: a.textContent, destino: a.getAttribute('href') })),
+  );
+  const paraOSite = rodape.some((l) => l.destino === '/');
+  console.log(`  ${paraOSite ? 'OK ' : 'XX '} a tela de entrada tem caminho de volta para o site`);
+  if (!paraOSite) problemas.push('não há link de volta ao site na tela de entrada: quem chega sem conta fica preso');
+
+  for (const { texto, destino } of rodape) {
+    if (destino === '/') continue;
+    const resposta = await page.request.get(new URL(destino, BASE + '/app/').href);
+    const existe = resposta.status() === 200;
+    console.log(`  ${existe ? 'OK ' : 'XX '} o link "${texto?.trim()}" leva a uma página que existe (${destino})`);
+    if (!existe) problemas.push(`o link "${texto?.trim()}" da tela de entrada dá ${resposta.status()} em ${destino}`);
+  }
   await contexto.close();
 }
 

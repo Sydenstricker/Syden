@@ -17,6 +17,7 @@ export default {
   'Já tem uma conta? ': '¿Ya tienes una cuenta? ',
   'Cadastre-se': 'Regístrate',
   Privacidade: 'Privacidad',
+  'Site do Syden': 'Sitio de Syden',
   'Termos de uso': 'Términos de uso',
   'Prefere usar como programa?': '¿Prefieres usarlo como programa?',
   'Instalar o Syden': 'Instalar Syden',

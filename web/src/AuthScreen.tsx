@@ -6,6 +6,7 @@ import { AVISOS, entrarCom, NOMES, voltaPeloApp, type Provedor } from './entrada
 import { MarcaSocial } from './MarcasSociais';
 import { Turnstile } from './Turnstile';
 import { api, ApiError } from './api';
+import { desktopBridge } from './desktop';
 import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
 import { installApp, useCanInstall } from './install';
 import { useT } from './i18n';
@@ -281,12 +282,27 @@ export function AuthScreen({
               </button>
             </p>
 
+            {/*
+              OS ENDEREÇOS SÃO ABSOLUTOS, e isso é correção de um 404 que passou despercebido: estas
+              páginas moram na RAIZ do site, e o Syden mudou para /app/. Escritas sem a barra, viravam
+              /app/privacidade.html, que não existe. O link da privacidade é declarado no envio da
+              Microsoft Store — um 404 ali é motivo de reprovação, e ninguém teria visto antes.
+            */}
             <p className="auth-legal">
-              <a href="privacidade.html" target="_blank" rel="noreferrer">
+              {/* QUEM VAI PODE VOLTAR. Sem isto, quem chega na tela de entrada e ainda não tem conta só
+                  sai daqui apagando o /app/ do endereço à mão — e ninguém faz isso. No app de desktop
+                  não aparece: lá o site é o próprio app, e o desvio traria a pessoa de volta na hora. */}
+              {!desktopBridge && (
+                <>
+                  <a href="/">{t('Site do Syden')}</a>
+                  {' · '}
+                </>
+              )}
+              <a href="/privacidade.html" target="_blank" rel="noreferrer">
                 {t('Privacidade')}
               </a>
               {' · '}
-              <a href="termos.html" target="_blank" rel="noreferrer">
+              <a href="/termos.html" target="_blank" rel="noreferrer">
                 {t('Termos de uso')}
               </a>
             </p>

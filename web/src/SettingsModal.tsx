@@ -461,12 +461,14 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
 
       <DeleteAccount onDeleted={onDeleted} temSenha={temSenha !== false} username={user.username} />
 
+      {/* Com a barra na frente: estas páginas moram na raiz do site, e o Syden mora em /app/. Sem ela
+          o navegador procurava /app/privacidade.html, que não existe — ver AuthScreen.tsx. */}
       <p className="settings-legal">
-        <a href="privacidade.html" target="_blank" rel="noreferrer">
+        <a href="/privacidade.html" target="_blank" rel="noreferrer">
           {t('Política de privacidade')}
         </a>
         {' · '}
-        <a href="termos.html" target="_blank" rel="noreferrer">
+        <a href="/termos.html" target="_blank" rel="noreferrer">
           Termos de uso
         </a>
       </p>
