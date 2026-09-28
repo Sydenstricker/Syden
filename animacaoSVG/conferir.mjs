@@ -26,6 +26,7 @@ const NOMES = {
   3: 'Linhas (Draw)',
   4: 'Pulo Progressivo',
   5: 'Minimalista',
+  9: 'Comendo Cenoura', 10: 'Boas-vindas', 11: 'Centrífuga',
   6: 'Sem Internet',
   7: 'Erro 500',
   8: 'Erro 404',
@@ -41,7 +42,7 @@ await page.goto(ARQUIVO, { waitUntil: 'load' });
 // O Tailwind vem de CDN e reescreve as classes; sem esta espera as medidas de tamanho saem zeradas.
 await page.waitForTimeout(2000);
 
-for (const n of [1, 2, 3, 4, 5, 6, 7, 8]) {
+for (const n of [1, 2, 3, 4, 5, 9, 10, 11, 6, 7, 8]) {
   await page.click(`#presetBtn${n}`);
   await page.waitForTimeout(400);
 
@@ -71,6 +72,24 @@ for (const n of [1, 2, 3, 4, 5, 6, 7, 8]) {
   );
   if (!ok) problemas.push(`preset ${n} (${NOMES[n]}) não desenhou como esperado`);
 }
+
+// OS PONTINHOS "..." SÓ APARECEM EM QUEM ESTÁ ESPERANDO ALGO.
+//
+// Isto é conferido porque foi quase um defeito: o código decidia "é tela de erro" com um
+// `currentPreset >= 6`, e ao acrescentar os presets 9, 10 e 11 os três cairiam nessa conta. Um número
+// mágico com "maior que" vira mentira na primeira vez que a lista cresce. A tela de boas-vindas também
+// não leva pontinhos — ela não espera nada, está cumprimentando.
+const PONTINHOS = { 1: true, 2: true, 3: true, 4: true, 5: true, 9: true, 11: true, 10: false, 6: false, 7: false, 8: false };
+for (const [n, deveria] of Object.entries(PONTINHOS)) {
+  await page.click(`#presetBtn${n}`);
+  await page.waitForTimeout(150);
+  const tem = (await page.locator('#loaderStage .dot-flashing').count()) > 0;
+  if (tem !== deveria) {
+    problemas.push(`preset ${n}: ${tem ? 'tem' : 'não tem'} pontinhos, e devia ${deveria ? 'ter' : 'não ter'}`);
+  }
+}
+console.log('');
+console.log('  pontinhos "..." só nos presets que estão esperando algo: conferido nos onze');
 
 // O controle de velocidade também é parte do ajuste fino: se ele não muda a duração, não serve de
 // nada, e o sintoma seria "mexi no controle e não mudou" — fácil de confundir com impressão.
@@ -104,4 +123,4 @@ if (problemas.length) {
   for (const p of problemas) console.log('  - ' + p);
   process.exit(1);
 }
-console.log('Os oito presets desenham e animam, e o controle de velocidade responde.');
+console.log('Os onze presets desenham e animam, e o controle de velocidade responde.');

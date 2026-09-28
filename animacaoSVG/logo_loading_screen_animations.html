@@ -211,6 +211,28 @@
         </button>
       </div>
 
+      <!-- As três pedidas depois: duas de carregamento e uma de entrada. -->
+      <div class="mt-6 border-t border-slate-800 pt-5">
+        <h3 class="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          Carregamento e entrada
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <button onclick="setPreset(9)" id="presetBtn9" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">🥕</span>
+            <span>9. Comendo Cenoura</span>
+          </button>
+          <button onclick="setPreset(10)" id="presetBtn10" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">👋</span>
+            <span>10. Boas-vindas</span>
+          </button>
+          <button onclick="setPreset(11)" id="presetBtn11" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">🌀</span>
+            <span>11. Centrífuga</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Secção de Telas de Erro -->
       <div class="mt-6 border-t border-slate-800 pt-5">
         <h3 class="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider flex items-center gap-2">
@@ -357,7 +379,10 @@
       5: "Modo 5: Minimalista",
       6: "Erro: Sem Internet (Offline)",
       7: "Erro: Servidor (500)",
-      8: "Erro: Não Encontrado (404)"
+      8: "Erro: Não Encontrado (404)",
+      9: "Modo 9: Comendo Cenoura",
+      10: "Modo 10: Boas-vindas",
+      11: "Modo 11: Centrífuga"
     };
 
     // Textos padrão sugeridos ao trocar de Preset
@@ -369,7 +394,10 @@
       5: "A carregar...",
       6: "Sem ligação à internet. Tente novamente.",
       7: "Ops! Ocorreu um erro interno no servidor.",
-      8: "Página não encontrada (Erro 404)."
+      8: "Página não encontrada (Erro 404).",
+      9: "Só uma mordidinha e já volto...",
+      10: "Que bom te ver por aqui!",
+      11: "Centrifugando os dados..."
     };
 
     // Inicialização ao carregar a página
@@ -434,6 +462,11 @@
       const durPulse = (1.8 / currentSpeed).toFixed(2) + 's';
       const durOrbit = (2.5 / currentSpeed).toFixed(2) + 's';
       const durDraw = (2.5 / currentSpeed).toFixed(2) + 's';
+      /** O ciclo da cenoura: quatro mordidas antes de voltar ao começo. */
+      const durCiclo = (3.6 / currentSpeed).toFixed(2) + 's';
+      /** Uma mastigada por mordida — é o durCiclo dividido pelas quatro mordidas. */
+      const durMastiga = (0.9 / currentSpeed).toFixed(2) + 's';
+      const durEntrada = (2.8 / currentSpeed).toFixed(2) + 's';
 
       let innerContent = '';
 
@@ -747,6 +780,269 @@
         </g>
       </svg>
     `;
+  } else if (currentPreset === 9) {
+    // PRESET 9: Comendo Cenoura — para tela de carregamento.
+    //
+    // O TRUQUE DAS MORDIDAS é steps(4) no lugar de uma transição contínua. Uma cenoura encurtando
+    // suavemente parece derreter; encurtando em quatro saltos, parece mordida. E a cabeça dá uma
+    // mastigada a cada salto, porque é o movimento que diz ao olho que ele está comendo, e não que a
+    // cenoura está sumindo sozinha.
+    //
+    // As folhas ficam FORA do grupo que encolhe. Se estivessem dentro, elas encolheriam junto e a
+    // cenoura inteira pareceria recuar em vez de ser comida.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes mordidas { from { transform: scaleX(1); } to { transform: scaleX(0.04); } }
+            @keyframes mastigar {
+              0%, 100% { transform: translateY(0) scale(1, 1); }
+              45%      { transform: translateY(3px) scale(1.02, 0.97); }
+            }
+            @keyframes orelhaFeliz {
+              0%, 70%, 100% { transform: rotate(0deg); }
+              78%           { transform: rotate(-7deg); }
+              86%           { transform: rotate(4deg); }
+            }
+            @keyframes blink { 0%, 88%, 100% { transform: scaleY(1); } 93% { transform: scaleY(0.1); } }
+            @keyframes migalha {
+              0%   { opacity: 0; transform: translate(0, 0); }
+              20%  { opacity: 0.9; }
+              100% { opacity: 0; transform: translate(-6px, 34px); }
+            }
+
+            .bg-circle { fill: ${colors.bg}; }
+            .star-fundo { fill: ${colors.star}; opacity: 0.4; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+
+            .cabeca { transform-origin: 200px 290px; animation: mastigar ${durMastiga} ease-in-out infinite; }
+            .orelha-esq { transform-origin: 170px 180px; animation: orelhaFeliz ${durCiclo} infinite; }
+            .orelha-dir { transform-origin: 230px 180px; animation: orelhaFeliz ${durCiclo} infinite; animation-delay: 0.1s; }
+            .eye { transform-box: fill-box; transform-origin: center; animation: blink 4.2s infinite; }
+
+            /* A origem fica na ponta das folhas: encolher a partir dali afasta a ponta mordida da boca. */
+            .cenoura { transform-origin: 345px 232px; animation: mordidas ${durCiclo} steps(4, end) infinite; }
+            .migalha { animation: migalha ${durMastiga} ease-in infinite; }
+            .migalha-2 { animation-delay: 0.25s; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        <polygon class="star-fundo" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <!-- As folhas, paradas: é o cabo que a mão segura. -->
+        <g>
+          <path d="M 345 232 C 358 208, 372 206, 370 222 C 368 234, 354 236, 345 232 Z" fill="#3f9142" />
+          <path d="M 345 232 C 352 206, 366 198, 368 214 C 369 228, 354 236, 345 232 Z" fill="#4caf50" />
+        </g>
+
+        <!-- A cenoura, que encurta em quatro mordidas. -->
+        <g class="cenoura">
+          <path d="M 345 220 L 345 244 L 244 236 Q 236 232 244 228 Z" fill="#e8730c" />
+          <path d="M 340 225 L 340 233 L 262 231 Z" fill="#f59b3c" opacity="0.7" />
+        </g>
+
+        <g class="cabeca">
+          <g class="orelha-esq">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          </g>
+          <g class="orelha-dir">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+
+          <circle cx="200" cy="225" r="72" fill="${colors.bunny}" />
+
+          <g class="eye">
+            <circle cx="172" cy="212" r="8" fill="#1e1e1e" />
+            <circle cx="170" cy="209" r="2.5" fill="#ffffff" />
+          </g>
+          <g class="eye">
+            <circle cx="228" cy="212" r="8" fill="#1e1e1e" />
+            <circle cx="226" cy="209" r="2.5" fill="#ffffff" />
+          </g>
+
+          <path d="M 194 226 Q 200 222 206 226 Q 200 234 194 226 Z" fill="#b91c1c" />
+          <!-- A boca mastigando: aberta de lado, na altura em que a cenoura chega. -->
+          <path d="M 206 238 Q 218 244 230 236" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" />
+          <ellipse cx="226" cy="240" rx="11" ry="7" fill="#1e1e1e" opacity="0.55" />
+        </g>
+
+        <!-- Migalhas caindo: é o detalhe que faz parecer comida de verdade. -->
+        <circle class="migalha" cx="232" cy="256" r="3" fill="#e8730c" />
+        <circle class="migalha migalha-2" cx="240" cy="252" r="2.2" fill="#f59b3c" />
+      </svg>
+    `;
+  } else if (currentPreset === 10) {
+    // PRESET 10: Boas-vindas — a tela de quem acabou de entrar.
+    //
+    // NÃO É UM CARREGADOR, e a diferença é de propósito: um carregador precisa girar para sempre sem
+    // cansar, e isto precisa ACONTECER — chegar, cumprimentar e ficar quieto. Daí a entrada com um
+    // pulinho além do tamanho final (o 1.06 no meio do caminho), os raios que abrem uma vez e somem, e
+    // a patinha acenando devagar em vez de rápido.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes entrar {
+              0%   { transform: scale(0.55); opacity: 0; }
+              55%  { transform: scale(1.06); opacity: 1; }
+              75%  { transform: scale(0.99); }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes raios {
+              0%   { opacity: 0; transform: scale(0.65); }
+              35%  { opacity: 0.45; }
+              100% { opacity: 0; transform: scale(1.45); }
+            }
+            @keyframes brilho {
+              0%, 100% { transform: scale(1); }
+              50%      { transform: scale(1.04); filter: drop-shadow(0 0 16px ${colors.star}aa); }
+            }
+            @keyframes acenar {
+              0%, 100% { transform: rotate(0deg); }
+              25%      { transform: rotate(-22deg); }
+              60%      { transform: rotate(14deg); }
+            }
+            @keyframes faisca {
+              0%, 100% { opacity: 0.2; transform: scale(0.8); }
+              50%      { opacity: 1; transform: scale(1.15); }
+            }
+
+            .bg-circle { fill: ${colors.bg}; }
+            .star-shape { fill: ${colors.star}; transform-origin: 200px 200px; animation: brilho ${durPulse} ease-in-out infinite; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+
+            .tudo { transform-origin: 200px 240px; animation: entrar ${durEntrada} cubic-bezier(0.34, 1.4, 0.5, 1) infinite; }
+            .raio { transform-origin: 200px 210px; animation: raios ${durEntrada} ease-out infinite; }
+            .raio-2 { animation-delay: 0.3s; }
+            .patinha { transform-origin: 268px 272px; animation: acenar ${durPulse} ease-in-out infinite; }
+            .faisca { animation: faisca 1.6s ease-in-out infinite; }
+            .faisca-2 { animation-delay: 0.5s; }
+            .faisca-3 { animation-delay: 1s; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <!-- Os raios que abrem uma vez a cada entrada. Ficam atrás de tudo. -->
+        <circle class="raio" cx="200" cy="210" r="120" fill="none" stroke="${colors.star}" stroke-width="10" />
+        <circle class="raio raio-2" cx="200" cy="210" r="120" fill="none" stroke="#ffffff" stroke-width="4" />
+
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <g class="tudo">
+          <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+          <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+          <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+
+          <circle cx="200" cy="225" r="72" fill="${colors.bunny}" />
+
+          <!-- Olhos fechados de contentamento, em arco. Sorriso sem boca é mais quente que dois pontos. -->
+          <path d="M 160 212 Q 172 202 184 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+          <path d="M 216 212 Q 228 202 240 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 186 240 Q 200 254 214 240" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" />
+
+          <!-- Bochechas rosadas. -->
+          <ellipse cx="158" cy="234" rx="12" ry="7" fill="${colors.ears}" opacity="0.5" />
+          <ellipse cx="242" cy="234" rx="12" ry="7" fill="${colors.ears}" opacity="0.5" />
+
+          <!-- A patinha que acena. -->
+          <g class="patinha">
+            <ellipse cx="268" cy="258" rx="17" ry="22" fill="${colors.bunny}" />
+            <ellipse cx="268" cy="248" rx="9" ry="7" fill="${colors.ears}" opacity="0.6" />
+          </g>
+        </g>
+
+        <circle class="faisca" cx="92" cy="110" r="5" fill="#ffffff" />
+        <circle class="faisca faisca-2" cx="312" cy="128" r="4" fill="#ffffff" />
+        <circle class="faisca faisca-3" cx="300" cy="320" r="4.5" fill="#ffffff" />
+      </svg>
+    `;
+  } else if (currentPreset === 11) {
+    // PRESET 11: Centrífuga — para tela de carregamento.
+    //
+    // O QUE FAZ PARECER CENTRÍFUGA, e não só "círculos girando", são três coisas juntas: anéis em
+    // velocidades DIFERENTES, sentidos alternados, e traços curtos em vez de círculos fechados. Anel
+    // fechado girando não se vê girar — não há de onde o olho pegar o movimento. Arco curto, sim.
+    //
+    // O de fora gira mais devagar que o de dentro, como numa máquina de verdade: quanto menor o raio,
+    // maior a rotação para a mesma velocidade de borda.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes girarAoContrario { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+            @keyframes respira { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+            @keyframes blink { 0%, 91%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+            .bg-circle { fill: ${colors.bg}; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+            .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.6s infinite; }
+            .miolo { transform-origin: 200px 215px; animation: respira ${durPulse} ease-in-out infinite; }
+
+            .anel {
+              fill: none;
+              stroke-linecap: round;
+              transform-origin: 200px 200px;
+            }
+            /* Velocidades diferentes e sentidos alternados: é daí que vem a sensação de máquina. */
+            .anel-1 { stroke: ${colors.star}; stroke-width: 7; stroke-dasharray: 150 1000; animation: girar ${durOrbit} linear infinite; }
+            .anel-2 { stroke: #ffffff; stroke-width: 4; stroke-dasharray: 70 1000; opacity: 0.55; animation: girarAoContrario ${durPulse} linear infinite; }
+            .anel-3 { stroke: ${colors.star}; stroke-width: 5; stroke-dasharray: 55 1000; opacity: 0.8; animation: girar ${durMastiga} linear infinite; }
+
+            /* As bolinhas atiradas para fora, cada uma no seu anel. */
+            .peso { transform-origin: 200px 200px; }
+            .peso-1 { animation: girar ${durOrbit} linear infinite; }
+            .peso-2 { animation: girarAoContrario ${durPulse} linear infinite; }
+            .peso-3 { animation: girar ${durMastiga} linear infinite; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <!-- Os trilhos, quase invisíveis: dão a forma da máquina sem competir com o que se move. -->
+        <circle cx="200" cy="200" r="178" fill="none" stroke="${colors.bunny}" stroke-width="1" opacity="0.08" />
+        <circle cx="200" cy="200" r="148" fill="none" stroke="${colors.bunny}" stroke-width="1" opacity="0.08" />
+        <circle cx="200" cy="200" r="118" fill="none" stroke="${colors.bunny}" stroke-width="1" opacity="0.08" />
+
+        <circle class="anel anel-1" cx="200" cy="200" r="178" />
+        <circle class="anel anel-2" cx="200" cy="200" r="148" />
+        <circle class="anel anel-3" cx="200" cy="200" r="118" />
+
+        <g class="peso peso-1"><circle cx="378" cy="200" r="7" fill="#ffffff" /></g>
+        <g class="peso peso-2"><circle cx="200" cy="52" r="5" fill="${colors.star}" /></g>
+        <g class="peso peso-3"><circle cx="82" cy="200" r="5.5" fill="#ffffff" opacity="0.8" /></g>
+
+        <!-- O coelho fica QUIETO no meio. É o eixo: se ele girasse também, não haveria referência
+             parada e a tela inteira pareceria tremer. -->
+        <g class="miolo">
+          <path d="M 170 190 C 145 118, 176 86, 189 110 C 197 126, 189 166, 181 190 Z" fill="${colors.bunny}" />
+          <path d="M 174 182 C 154 126, 176 102, 184 118 C 191 130, 184 162, 178 182 Z" class="bunny-ears-inner" />
+          <path d="M 230 190 C 255 118, 224 86, 211 110 C 203 126, 211 166, 219 190 Z" fill="${colors.bunny}" />
+          <path d="M 226 182 C 246 126, 224 102, 216 118 C 209 130, 216 162, 222 182 Z" class="bunny-ears-inner" />
+
+          <circle cx="200" cy="222" r="54" fill="${colors.bunny}" />
+
+          <g class="eye">
+            <circle cx="182" cy="214" r="6" fill="#1e1e1e" />
+            <circle cx="180.5" cy="212" r="2" fill="#ffffff" />
+          </g>
+          <g class="eye">
+            <circle cx="218" cy="214" r="6" fill="#1e1e1e" />
+            <circle cx="216.5" cy="212" r="2" fill="#ffffff" />
+          </g>
+
+          <path d="M 195 226 Q 200 223 205 226 Q 200 232 195 226 Z" fill="#b91c1c" />
+          <path d="M 190 235 Q 200 243 210 235" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round" />
+        </g>
+      </svg>
+    `;
   } else if (currentPreset === 6) {
     // PRESET 6: Erro Sem Internet (Offline)
     innerContent = `
@@ -943,9 +1239,17 @@ function renderCurrentPreset() {
   const stage = document.getElementById('loaderStage');
   const svgHTML = generateSVGString();
 
-  // Para os estados de erro, removemos os pontos piscantes ("...") e ajustamos a cor
-  const isErrorState = currentPreset >= 6;
-  const dotsHTML = isErrorState ? '' : `
+  // Para os estados de erro, removemos os pontos piscantes ("...") e ajustamos a cor.
+  //
+  // ATENÇÃO AO INTERVALO. Isto era `currentPreset >= 6`, o que funcionava enquanto os erros eram os
+  // últimos. Ao acrescentar os presets 9, 10 e 11, eles passariam a ser tratados como erro — sem
+  // pontinhos e com o texto centralizado de mensagem de falha. Um número mágico com "maior que" vira
+  // mentira na primeira vez que a lista cresce; por isso agora são os erros LISTADOS.
+  const ERROS = [6, 7, 8];
+  const isErrorState = ERROS.includes(currentPreset);
+  // A tela de boas-vindas também não leva pontinhos: ela não está esperando nada, está cumprimentando.
+  const estaCarregando = !isErrorState && currentPreset !== 10;
+  const dotsHTML = !estaCarregando ? '' : `
     <div class="flex gap-1 ml-1">
       <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-flashing"></span>
       <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-flashing"></span>
