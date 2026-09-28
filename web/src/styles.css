@@ -8872,3 +8872,12 @@ textarea {
   background: var(--green);
   pointer-events: none;
 }
+
+/* O aviso de direito autoral na tela de karaokê. Amarelo discreto: tem de ser notado sem parecer erro —
+   quem vai subir uma música não fez nada de errado ainda. */
+.karaoke-aviso {
+  /* O mesmo âmbar que o resto do Syden usa para chamar atenção sem alarmar (ver .loja-etiqueta.conquista). */
+  border-left: 2px solid #faa61a;
+  padding-left: 10px;
+  margin-top: 8px;
+}

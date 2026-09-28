@@ -155,8 +155,16 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
         />
       </label>
       <p className="settings-hint">
-        {t('Suba músicas que você já tem. Um arquivo')} <code>.lrc</code> faz a letra acender sozinha no tempo certo; um{' '}
-        <code>.txt</code> comum mostra a letra parada, para acompanhar.
+        {t('Suba músicas que você já tem. Um arquivo')} <code>.lrc</code>{' '}
+        {t('faz a letra acender sozinha no tempo certo; um')} <code>.txt</code>{' '}
+        {t('comum mostra a letra parada, para acompanhar.')}
+      </p>
+      {/* O AVISO FICA AQUI, E NÃO SÓ NOS TERMOS.
+          Termo que ninguém lê não avisa ninguém. A frase precisa estar onde a decisão é tomada — na hora
+          de escolher o arquivo — porque é ali que a pessoa ainda pode escolher outro. E ela é curta de
+          propósito: aviso comprido é aviso pulado. */}
+      <p className="settings-hint karaoke-aviso">
+        {t('Suba só o que é seu ou o que você tem direito de usar. Ter o arquivo não é o mesmo que ter direito de tocar para outras pessoas.')}
       </p>
       {erro && <p className="form-error">{erro}</p>}
       <button className="btn-primary" disabled={busy || !audio || title.trim().length < 2} onClick={() => void subir()}>
