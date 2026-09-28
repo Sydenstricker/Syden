@@ -42,7 +42,9 @@ import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
 import { ClipButton } from './ClipButton';
+import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
+import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
@@ -79,6 +81,7 @@ export function VoiceStage({
   onToggleMembers,
   sessao,
   aoAlternarSessao,
+  socket,
 }: {
   channel: Channel;
   voice: Voice;
@@ -93,7 +96,10 @@ export function VoiceStage({
   /** Modo sessão: assistir junto, com o vídeo grande e a conversa ao lado. */
   sessao: boolean;
   aoAlternarSessao: () => void;
+  /** Por onde chegam os avisos de quem ganhou ou perdeu a palavra na apresentação. */
+  socket: Socket | null;
 }) {
+  const { estado: palco } = usarPalco(channel.type === 'voice' ? channel.id : null, socket);
   const inThisRoom = voice.channelId === channel.id;
   const alguemTransmitindo = members.some((m) => m.screen);
 
@@ -116,6 +122,8 @@ export function VoiceStage({
           O botão da sessão só existe quando ALGUÉM ESTÁ TRANSMITINDO. Sem transmissão não há o que
           assistir junto, e um "Assistir junto" que não faz nada ensina a ignorar o botão.
         */}
+        {/* Apresentar só faz sentido para quem administra, e só numa sala de voz. */}
+        {palco?.souApresentador && <BotaoApresentacao channelId={channel.id} estado={palco} />}
         {inThisRoom && alguemTransmitindo && (
           <button
             className={`header-toggle${sessao ? ' active' : ''}`}
@@ -128,6 +136,7 @@ export function VoiceStage({
           </button>
         )}
       </header>
+      {palco?.apresentacao && <FaixaDoPalco channelId={channel.id} estado={palco} />}
       {/* Sala de voz sempre pertence a uma comunidade (conversa privada não tem voz por enquanto). */}
       {inThisRoom ? (
         <Stage voice={voice} members={members} communityId={channel.communityId ?? 0} canaisDeTexto={canaisDeTexto} />

@@ -1241,6 +1241,131 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true };
     });
 
+
+    // ----------------------------------------------------------------------------------------------
+    // MODO APRESENTAÇÃO: uma pessoa fala, as outras assistem
+    // ----------------------------------------------------------------------------------------------
+
+    /**
+     * Muda ao vivo o que uma pessoa pode publicar na sala do LiveKit.
+     *
+     * ISTO É O QUE FAZ A COISA FUNCIONAR DE VERDADE, e é fácil de esquecer: o token é conferido na
+     * ENTRADA da sala. Quem já está dentro com canPublish verdadeiro continua podendo publicar para
+     * sempre, por mais que o banco diga o contrário — trocar a linha na tabela não tira o microfone de
+     * ninguém. Só esta chamada tira.
+     *
+     * Se ela falhar (LiveKit fora do ar, pessoa que já saiu), engole-se o erro: a permissão volta ao
+     * certo na próxima entrada, pelo token, e derrubar a resposta HTTP por causa disso deixaria a tela
+     * de quem apresenta parecendo quebrada.
+     */
+    async function ajustarPermissao(channelId: number, userId: number, podePublicar: boolean) {
+      await rooms
+        .updateParticipant(voiceRoomName(channelId), String(userId), undefined, {
+          canPublish: podePublicar,
+          canSubscribe: true,
+          canPublishData: true,
+        })
+        .catch(() => {});
+    }
+
+    /** O estado do palco vai para todo mundo da comunidade: a tela de cada um se ajusta sozinha. */
+    function avisarPalco(channel: CommunityChannel) {
+      io.to(communityRoom(channel.communityId)).emit('palco:mudou', {
+        channelId: channel.id,
+        apresentacao: db.ehApresentacao(channel.id),
+        palco: db.lerPalco(channel.id),
+      });
+    }
+
+    authed.get<{ Params: { id: string } }>('/api/channels/:id/palco', async (request, reply) => {
+      const channel = channelAccess(request, reply, false);
+      if (!channel) return reply;
+      if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
+
+      const role = roleIn(request.user, channel.communityId);
+      return {
+        apresentacao: db.ehApresentacao(channel.id),
+        palco: db.lerPalco(channel.id),
+        souApresentador: manages(role),
+        minhaSituacao: db.situacaoNoPalco(channel.id, request.user.id),
+      };
+    });
+
+    /** Liga ou desliga a apresentação. Só quem administra. */
+    authed.put<{ Params: { id: string }; Body: { ligado?: boolean } }>(
+      '/api/channels/:id/palco',
+      async (request, reply) => {
+        const channel = channelAccess(request, reply, true);
+        if (!channel) return reply;
+        if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
+
+        const ligado = Boolean(request.body?.ligado);
+        db.definirApresentacao(channel.id, ligado);
+
+        // Quem está na sala AGORA precisa ter a permissão trocada na hora. Ao ligar, cala todo mundo
+        // que não administra; ao desligar, devolve a voz a todos — inclusive a quem estava calado.
+        const naSala = await rooms.listParticipants(voiceRoomName(channel.id)).catch(() => []);
+        for (const participante of naSala) {
+          const id = Number(participante.identity);
+          if (!Number.isInteger(id)) continue;
+          const papel = db.memberRole(channel.communityId, id);
+          const podeFalar = !ligado || manages(papel);
+          await ajustarPermissao(channel.id, id, podeFalar);
+        }
+        avisarPalco(channel);
+        return { apresentacao: ligado, palco: db.lerPalco(channel.id) };
+      },
+    );
+
+    /** Levantar ou baixar a mão. Qualquer um da plateia. */
+    authed.post<{ Params: { id: string }; Body: { levantada?: boolean } }>(
+      '/api/channels/:id/palco/mao',
+      async (request, reply) => {
+        const channel = channelAccess(request, reply, false);
+        if (!channel) return reply;
+        if (!db.ehApresentacao(channel.id)) {
+          return reply.code(409).send({ error: 'Esta sala não está em apresentação.' });
+        }
+
+        const levantada = request.body?.levantada !== false;
+        if (levantada) {
+          // Quem já está no palco não precisa pedir a palavra: já a tem.
+          if (db.situacaoNoPalco(channel.id, request.user.id) === 'palco') return { minhaSituacao: 'palco' };
+          db.porNoPalco(channel.id, request.user.id, 'mao');
+        } else {
+          db.tirarDoPalco(channel.id, request.user.id);
+        }
+        avisarPalco(channel);
+        return { minhaSituacao: db.situacaoNoPalco(channel.id, request.user.id) };
+      },
+    );
+
+    /** Dá ou tira a palavra de alguém. Só quem administra. */
+    authed.post<{ Params: { id: string; userId: string }; Body: { palco?: boolean } }>(
+      '/api/channels/:id/palco/:userId',
+      async (request, reply) => {
+        const channel = channelAccess(request, reply, true);
+        if (!channel) return reply;
+        if (!db.ehApresentacao(channel.id)) {
+          return reply.code(409).send({ error: 'Esta sala não está em apresentação.' });
+        }
+
+        const alvo = Number(request.params.userId);
+        if (!Number.isInteger(alvo) || !db.memberRole(channel.communityId, alvo)) {
+          return reply.code(404).send({ error: 'Pessoa não encontrada nesta comunidade.' });
+        }
+
+        const subir = request.body?.palco !== false;
+        if (subir) db.porNoPalco(channel.id, alvo, 'palco');
+        else db.tirarDoPalco(channel.id, alvo);
+
+        // A permissão muda na hora, sem a pessoa precisar sair e voltar da chamada.
+        await ajustarPermissao(channel.id, alvo, subir);
+        avisarPalco(channel);
+        return { palco: db.lerPalco(channel.id) };
+      },
+    );
+
     /**
      * Token só para espiar: entra na sala invisível, sem publicar nada, para mostrar a prévia da tela de quem
      * está transmitindo antes de a pessoa decidir entrar. Ninguém na sala vê quem está espiando.
@@ -1272,6 +1397,20 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (!channel) return reply;
       if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
 
+      /**
+       * EM MODO APRESENTAÇÃO, QUEM NÃO ESTÁ NO PALCO ENTRA SEM PODER PUBLICAR.
+       *
+       * A trava fica no TOKEN, e não na tela. Um botão de microfone desabilitado no navegador é uma
+       * sugestão: quem abrir o console publica assim mesmo. O LiveKit recusa a publicação de quem tem
+       * canPublish falso, e é isso que faz a plateia ser plateia de verdade.
+       *
+       * Quem administra a comunidade publica sempre — precisa poder falar para organizar a sessão sem
+       * ter que se dar palco primeiro.
+       */
+      const apresentando = db.ehApresentacao(channel.id);
+      const role = roleIn(request.user, channel.communityId);
+      const podeFalar = !apresentando || manages(role) || db.situacaoNoPalco(channel.id, request.user.id) === 'palco';
+
       const token = new AccessToken(config.livekit.apiKey, config.livekit.apiSecret, {
         identity: String(request.user.id),
         name: request.user.username,
@@ -1280,8 +1419,10 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       token.addGrant({
         room: voiceRoomName(channel.id),
         roomJoin: true,
-        canPublish: true,
+        canPublish: podeFalar,
         canSubscribe: true,
+        // Continua verdadeiro na plateia: é por aqui que passam os avisos do próprio LiveKit. Cortar
+        // isto mudaria coisas que não têm nada a ver com falar.
         canPublishData: true,
       });
       return { url: config.livekit.url, token: await token.toJwt() };

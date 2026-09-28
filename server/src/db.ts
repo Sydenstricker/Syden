@@ -228,6 +228,19 @@ db.exec(`
     created_by   INTEGER
   );
 
+  -- QUEM ESTÁ NO PALCO de uma sala em modo apresentação, e quem levantou a mão.
+  --
+  -- Uma tabela só para as duas coisas, com uma coluna dizendo qual: quem sobe ao palco normalmente é
+  -- quem tinha levantado a mão, e duas tabelas obrigariam a apagar de uma e inserir na outra a cada
+  -- passagem de palavra — duas escritas onde uma basta, e a chance de sobrar linha nas duas.
+  CREATE TABLE IF NOT EXISTS channel_palco (
+    channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    situacao   TEXT NOT NULL CHECK (situacao IN ('palco', 'mao')),
+    desde      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (channel_id, user_id)
+  );
+
   CREATE TABLE IF NOT EXISTS channel_members (
     channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
     user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -715,6 +728,12 @@ addColumnIfMissing('communities', 'selo_cor', 'TEXT');
 // A ARTE É UM CÓDIGO, e não uma imagem. Pela mesma razão das molduras da loja: trocar um degradê ou
 // acrescentar uma arte nova vira uma mudança no site, publicada sozinha, sem tocar no servidor nem
 // migrar banco. O desenho mora em web/src/boasVindas.ts.
+// MODO APRESENTAÇÃO da sala de voz: uma pessoa fala e as outras assistem.
+//
+// Nulo ou 0 é o comum — todo mundo fala, como sempre foi. Ligado, só quem está no palco publica voz,
+// câmera e tela; o resto entra como plateia e pode levantar a mão.
+addColumnIfMissing('channels', 'apresentacao', 'INTEGER NOT NULL DEFAULT 0');
+
 addColumnIfMissing('communities', 'bv_titulo', 'TEXT');
 addColumnIfMissing('communities', 'bv_texto', 'TEXT');
 addColumnIfMissing('communities', 'bv_arte', 'TEXT');
@@ -3556,4 +3575,76 @@ export function marcarViuBoasVindas(communityId: number, userId: number) {
     `UPDATE community_members SET viu_boas_vindas = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
      WHERE community_id = ? AND user_id = ? AND viu_boas_vindas IS NULL`,
   ).run(communityId, userId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// MODO APRESENTAÇÃO: uma pessoa fala, as outras assistem
+// ---------------------------------------------------------------------------------------------------
+
+export type SituacaoNoPalco = 'palco' | 'mao';
+
+export function ehApresentacao(channelId: number): boolean {
+  const linha = db.prepare('SELECT apresentacao FROM channels WHERE id = ?').get(channelId) as
+    | { apresentacao: number }
+    | undefined;
+  return linha?.apresentacao === 1;
+}
+
+/**
+ * Liga ou desliga o modo apresentação.
+ *
+ * Desligar LIMPA o palco e as mãos. Sem isso, uma sala que voltasse ao normal e fosse posta em
+ * apresentação de novo reapareceria com o palco de semanas atrás — e ninguém entenderia por que aquelas
+ * pessoas específicas podem falar.
+ */
+export function definirApresentacao(channelId: number, ligado: boolean) {
+  db.prepare('UPDATE channels SET apresentacao = ? WHERE id = ?').run(ligado ? 1 : 0, channelId);
+  if (!ligado) db.prepare('DELETE FROM channel_palco WHERE channel_id = ?').run(channelId);
+}
+
+export interface NoPalco {
+  userId: number;
+  username: string;
+  situacao: SituacaoNoPalco;
+  desde: string;
+}
+
+/** Quem está no palco e quem levantou a mão, em ordem de chegada. */
+export function lerPalco(channelId: number): NoPalco[] {
+  return db
+    .prepare(
+      `SELECT p.user_id AS userId, u.username, p.situacao, p.desde
+       FROM channel_palco p JOIN users u ON u.id = p.user_id
+       WHERE p.channel_id = ?
+       ORDER BY p.desde`,
+    )
+    .all(channelId) as unknown as NoPalco[];
+}
+
+export function situacaoNoPalco(channelId: number, userId: number): SituacaoNoPalco | null {
+  const linha = db
+    .prepare('SELECT situacao FROM channel_palco WHERE channel_id = ? AND user_id = ?')
+    .get(channelId, userId) as { situacao: SituacaoNoPalco } | undefined;
+  return linha?.situacao ?? null;
+}
+
+/**
+ * Põe alguém no palco ou na fila de mãos levantadas.
+ *
+ * O `desde` só é reescrito quando a situação MUDA. Assim quem levantou a mão primeiro continua sendo o
+ * primeiro da fila mesmo que alguma outra coisa toque nesta linha — e a fila de mão levantada só é justa
+ * se a ordem for a de quem pediu antes.
+ */
+export function porNoPalco(channelId: number, userId: number, situacao: SituacaoNoPalco) {
+  db.prepare(
+    `INSERT INTO channel_palco (channel_id, user_id, situacao) VALUES (?, ?, ?)
+     ON CONFLICT (channel_id, user_id) DO UPDATE SET
+       situacao = excluded.situacao,
+       desde = CASE WHEN channel_palco.situacao = excluded.situacao THEN channel_palco.desde
+                    ELSE strftime('%Y-%m-%dT%H:%M:%fZ', 'now') END`,
+  ).run(channelId, userId, situacao);
+}
+
+export function tirarDoPalco(channelId: number, userId: number) {
+  db.prepare('DELETE FROM channel_palco WHERE channel_id = ? AND user_id = ?').run(channelId, userId);
 }

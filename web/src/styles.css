@@ -9293,3 +9293,104 @@ body.arrastando-barra {
   color: #fff;
   font: 500 13px 'Segoe UI', system-ui, sans-serif;
 }
+
+/* A faixa do modo apresentação (ver Palco.tsx).
+   Ela aparece sob o cabeçalho da sala e é a única coisa na tela que explica por que o microfone da
+   plateia não funciona. Silêncio sem explicação é indistinguível de defeito, e a primeira reação de
+   quem acha que o app quebrou é sair da chamada. */
+.palco-faixa {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 10px 16px;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.palco-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 11px;
+}
+
+.palco-quem {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.palco-mao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.palco-mao:hover {
+  background: var(--bg-hover);
+}
+
+/* Mão levantada fica acesa: a pessoa precisa saber que o pedido está de pé, senão pede de novo. */
+.palco-mao.levantada {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.palco-fila {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.palco-fila-titulo {
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.palco-fila-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.palco-fila-item:hover {
+  border-color: var(--accent);
+}
+
+.palco-fila-item.tirar:hover {
+  border-color: #ed4245;
+  color: #ed4245;
+}
+
+.palco-aviso {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
