@@ -44,6 +44,45 @@ export function parseMedia(dataUrl: unknown, kind: MediaKind, maxBytes: number):
   return { mime: signature.mime, data };
 }
 
+/**
+ * O MESMO parseMedia, mas conferindo a imagem antes de deixá-la entrar.
+ *
+ * POR QUE AQUI, E NÃO EM CADA ROTA. Este é o funil por onde passa avatar, imagem de comunidade e
+ * emoji — e o dia em que alguém criar um envio novo, ele vai usar esta função e a conferência vem
+ * junto. Espalhada pelas rotas, a próxima seria esquecida, e o esquecimento não daria erro nenhum.
+ *
+ * `onde` e `alvoId` dizem em que tabela a imagem vai ficar, para a fila saber onde achá-la depois.
+ */
+export async function parseMediaConferida(
+  dataUrl: unknown,
+  kind: MediaKind,
+  maxBytes: number,
+  onde: string,
+  alvoId: number,
+): Promise<Media | string> {
+  const media = parseMedia(dataUrl, kind, maxBytes);
+  if (typeof media === 'string') return media;
+  if (kind !== 'image') return media;
+
+  const { conferir } = await import('./shield.js');
+  const resultado = await conferir(media.data, media.mime);
+
+  if (resultado.veredito === 'bloqueado') {
+    // A MENSAGEM NÃO DIZ O QUE FOI ENCONTRADO, de propósito. Quem enviou material conhecido não deve
+    // receber confirmação de que a base o conhece — isso vira uma ferramenta para descobrir o que
+    // passa e o que não passa. Quem errou de arquivo lê "não foi aceita" e manda outra.
+    const { anotarBloqueio } = await import('./shield.js');
+    anotarBloqueio(resultado, onde, alvoId);
+    return 'Esta imagem não foi aceita.';
+  }
+
+  if (resultado.veredito === 'indisponivel') {
+    const db = await import('./db.js');
+    db.porNaFilaDoShield(resultado.sha256, onde, alvoId);
+  }
+  return media;
+}
+
 export function sniffMime(data: Buffer): string | undefined {
   return SIGNATURES.find((s) => s.matches(data))?.mime;
 }
@@ -72,32 +111,3 @@ export function decodeDataUrl(dataUrl: unknown, maxBytes: number): Buffer | stri
   return data;
 }
 
-/**
- * A porta única por onde toda imagem passa antes de ficar guardada.
- *
- * POR QUE AQUI. `media.ts` já é o funil que decide o tipo de todo arquivo pelos bytes — avatar, emoji,
- * ícone de comunidade, anexo de mensagem. Pôr a conferência num lugar só significa que nenhum caminho
- * novo de envio escapa dela por esquecimento; espalhá-la pelas rotas significaria o contrário.
- *
- * A POLÍTICA DE FALHA É ACEITAR E RECONFERIR DEPOIS, por decisão dele, e vale dizer por quê. Barrar
- * tudo quando o Shield cai é a escolha que parece mais segura e é pior na prática: os termos deles
- * (Seção 23) dizem que podem suspender ou encerrar o acesso a qualquer momento, sem aviso — e o Syden
- * ficaria sem troca de imagem nenhuma por causa de uma indisponibilidade de terceiro. O material fica
- * na fila e é conferido quando o serviço volta.
- *
- * Devolve `null` quando pode seguir, ou o motivo da recusa.
- */
-export async function conferirAntesDeGuardar(
-  dados: Buffer,
-  mime: string,
-  aoFicarNaFila: (sha256: string) => void,
-): Promise<string | null> {
-  if (!mime.startsWith('image/')) return null;
-
-  const { conferir } = await import('./shield.js');
-  const resultado = await conferir(dados, mime);
-
-  if (resultado.veredito === 'bloqueado') return 'RECUSADO';
-  if (resultado.veredito === 'indisponivel') aoFicarNaFila(resultado.sha256);
-  return null;
-}

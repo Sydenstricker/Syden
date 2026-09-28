@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { restorePack } from './expressions.js';
-import { parseMedia } from './media.js';
+import { parseMedia, parseMediaConferida } from './media.js';
 import { communityRoom } from './realtime.js';
 import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
@@ -69,7 +69,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.put<{ Body: { image?: string } }>('/api/me/avatar', { bodyLimit: UPLOAD_BODY_LIMIT }, async (request, reply) => {
       if (cotaEsgotada(request, reply)) return reply;
-      const media = parseMedia(request.body?.image, 'image', LIMITS.avatar);
+      const media = await parseMediaConferida(request.body?.image, 'image', LIMITS.avatar, 'avatar', request.user.id);
       if (typeof media === 'string') return reply.code(400).send({ error: media });
       const user = db.setAvatar(request.user.id, media);
       io.emit('user:updated', user);
@@ -91,7 +91,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         const access = requireRole(request, reply);
         if (!access) return reply;
         if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a imagem.' });
-        const media = parseMedia(request.body?.image, 'image', LIMITS.avatar);
+        const media = await parseMediaConferida(request.body?.image, 'image', LIMITS.avatar, 'icone-comunidade', access.communityId);
         if (typeof media === 'string') return reply.code(400).send({ error: media });
         const community = db.setCommunityIcon(access.communityId, media);
         io.to(communityRoom(community.id)).emit('community:updated', community);
@@ -138,7 +138,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         if (db.emojiNameTaken(access.communityId, name)) {
           return reply.code(409).send({ error: `Já existe um emoji chamado :${name}: nesta comunidade.` });
         }
-        const media = parseMedia(request.body?.image, 'image', LIMITS.emoji);
+        const media = await parseMediaConferida(request.body?.image, 'image', LIMITS.emoji, 'emoji', access.communityId);
         if (typeof media === 'string') return reply.code(400).send({ error: media });
         const emoji = db.createEmoji(access.communityId, name, media.mime, media.data, request.user.id);
         io.to(communityRoom(access.communityId)).emit('emoji:created', emoji);

@@ -1,0 +1,64 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes floatMagnify {
+              0%, 100% { transform: translateY(0) rotate(0deg); }
+              50% { transform: translateY(-8px) rotate(5deg); }
+            }
+            @keyframes lookAround {
+              0%, 100% { transform: translateX(0); }
+              25% { transform: translateX(-6px); }
+              75% { transform: translateX(6px); }
+            }
+            .bg-circle { fill: #000000; }
+            .star-shape { fill: #bc1d1d; opacity: 0.5; }
+            .bunny-head { fill: #ffffff; }
+            .bunny-ears-inner { fill: #f48fb1; }
+            .magnifying-glass { animation: floatMagnify 3s ease-in-out infinite; transform-origin: 280px 200px; }
+            .eyes-moving { animation: lookAround 4s ease-in-out infinite; }
+          </style>
+        </defs>
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+        
+        <g>
+          <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+          <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          <g transform="rotate(40 235 180)">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          
+          <circle cx="200" cy="225" r="72" class="bunny-head" />
+          
+          <g class="eyes-moving">
+            <circle cx="168" cy="215" r="8" fill="#1e1e1e" />
+            <circle cx="166" cy="212" r="2.5" fill="#ffffff" />
+            <circle cx="232" cy="215" r="8" fill="#1e1e1e" />
+            <circle cx="230" cy="212" r="2.5" fill="#ffffff" />
+          </g>
+          
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <!-- Boca em "O" de surpresa -->
+          <circle cx="200" cy="245" r="5" fill="#1e1e1e" />
+        </g>
+
+        <!-- A lupa, puxada para fora e para baixo. Antes o círculo dela em 260 invadia a cabeça, que
+             chega a 272 — dois desenhos ocupando o mesmo lugar, e nenhum dos dois legível. -->
+        <g class="magnifying-glass">
+          <circle cx="288" cy="256" r="30" fill="#93c5fd" opacity="0.35" stroke="#ffffff" stroke-width="7" />
+          <line x1="309" y1="277" x2="336" y2="304" stroke="#ffffff" stroke-width="11" stroke-linecap="round" />
+        </g>
+
+        <!-- O CÓDIGO ALINHADO, no mesmo lugar e no mesmo estilo dos outros dois erros.
+             Antes eram três letras soltas em x=70/100/130 e y=120/100/130 — posições escolhidas para
+             parecer "flutuante", que na tela só pareceram desalinhadas. Um código de erro é informação:
+             ele tem de estar num lugar previsível, sempre o mesmo, para o olho achar sem procurar. -->
+        <g class="codigo">
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#ffffff" opacity="0.8">ERRO 404 — Página não encontrada</text>
+        </g>
+      </svg>
+    

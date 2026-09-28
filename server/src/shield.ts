@@ -129,3 +129,22 @@ export async function conferir(dados: Buffer, mime: string): Promise<Resultado> 
     return { veredito: 'indisponivel', sha256 };
   }
 }
+
+/**
+ * Registra um bloqueio.
+ *
+ * ISTO NÃO APAGA NADA, e é deliberado. As duas leis que alcançam o Syden — o ECA Digital no Brasil e
+ * a lei penal alemã, onde o servidor está — querem REMOÇÃO E COMUNICAÇÃO, não destruição. O material
+ * nem chegou a ser guardado (a imagem é recusada antes de entrar no banco), e o que fica aqui é o
+ * rastro: quando, quem, onde, e o que o Shield disse.
+ *
+ * Vai para o registro do servidor em letras garrafais porque é a única coisa neste arquivo que exige
+ * uma pessoa olhando. Um bloqueio não é estatística: é o momento de notificar as autoridades, e a
+ * Seção 17 dos termos do Shield é explícita em que usá-lo não cumpre essa obrigação por você.
+ */
+export function anotarBloqueio(resultado: Resultado, onde: string, alvoId: number) {
+  anotar(
+    `SHIELD BLOQUEOU UM ENVIO — olhe isto. classificação=${resultado.classificacao ?? '?'} ` +
+      `tipo=${resultado.tipo ?? '?'} sha256=${resultado.sha256} destino=${onde}#${alvoId}`,
+  );
+}

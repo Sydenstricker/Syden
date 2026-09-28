@@ -1,0 +1,84 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes espiral { from { transform: rotate(0deg); } to { transform: rotate(540deg); } }
+            @keyframes cair { from { transform: translateX(150px); } to { transform: translateX(6px); } }
+            /* Encolher E esticar: o que cai num buraco negro afina no caminho. É o detalhe que
+               transforma "ficou pequeno" em "foi sugado". */
+            @keyframes sumir {
+              0%   { transform: scale(1, 1); opacity: 0; }
+              12%  { opacity: 1; }
+              70%  { transform: scale(0.5, 0.62); opacity: 1; }
+              92%  { transform: scale(0.06, 0.34); opacity: 0.55; }
+              100% { transform: scale(0, 0.2); opacity: 0; }
+            }
+            @keyframes girarDisco { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes girarAoContrario { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+            @keyframes pulsarNucleo {
+              0%, 100% { transform: scale(1); }
+              50%      { transform: scale(1.06); filter: drop-shadow(0 0 22px #bc1d1d); }
+            }
+
+            .bg-circle { fill: #0b0d14; }
+            .bunny-ears-inner { fill: #f48fb1; }
+
+            /* A estrela fica ESCURA, com a borda acesa. Estrela clara no meio não engole nada: o olho
+               lê o claro como o que está mais próximo, e o coelho pareceria passar na frente dela. */
+            .nucleo { transform-origin: 200px 200px; animation: pulsarNucleo 1.80s ease-in-out infinite; }
+
+            .disco { fill: none; stroke-linecap: round; transform-origin: 200px 200px; }
+            .disco-1 { stroke: #bc1d1d; stroke-width: 6; stroke-dasharray: 190 1000; opacity: 0.9; animation: girarDisco 2.50s linear infinite; }
+            .disco-2 { stroke: #ffd7a8; stroke-width: 3; stroke-dasharray: 90 1000; opacity: 0.5; animation: girarAoContrario 1.80s linear infinite; }
+            .disco-3 { stroke: #bc1d1d; stroke-width: 4; stroke-dasharray: 60 1000; opacity: 0.7; animation: girarDisco 0.90s linear infinite; }
+
+            .gira { transform-origin: 200px 200px; animation: espiral 2.80s linear infinite; }
+            .aproxima { animation: cair 2.80s ease-in infinite; }
+            .encolhe { transform-box: fill-box; transform-origin: center; animation: sumir 2.80s ease-in infinite; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <!-- O disco de acreção: arcos curtos em velocidades diferentes. Anel fechado girando não se vê
+             girar, porque não há de onde o olho pegar o movimento. -->
+        <circle class="disco disco-1" cx="200" cy="200" r="168" />
+        <circle class="disco disco-2" cx="200" cy="200" r="140" />
+        <circle class="disco disco-3" cx="200" cy="200" r="112" />
+
+        <!-- O halo que sobra em volta da estrela escura: é o que a faz parecer luz sendo torcida. -->
+        <circle cx="200" cy="200" r="86" fill="none" stroke="#bc1d1d" stroke-width="2" opacity="0.28" />
+
+        <!-- O COELHO PASSA POR TRÁS DA ESTRELA, e é essa ordem que faz a absorção funcionar: ele
+             desaparece atrás dela em vez de encolher em cima dela. -->
+        <g class="gira">
+          <g class="aproxima">
+            <g class="encolhe">
+              <path d="M 178 194 C 160 140, 182 116, 192 134 C 198 146, 192 176, 186 194 Z" fill="#ffffff" />
+              <path d="M 181 188 C 167 146, 182 128, 188 140 C 193 150, 188 172, 184 188 Z" class="bunny-ears-inner" />
+              <path d="M 222 194 C 240 140, 218 116, 208 134 C 202 146, 208 176, 214 194 Z" fill="#ffffff" />
+              <path d="M 219 188 C 233 146, 218 128, 212 140 C 207 150, 212 172, 216 188 Z" class="bunny-ears-inner" />
+
+              <circle cx="200" cy="218" r="40" fill="#ffffff" />
+
+              <!-- Olhos arregalados: ele sabe o que está acontecendo. Numa figura de 40px de raio, o
+                   susto tem de estar no tamanho do olho, porque expressão fina desaparece. -->
+              <circle cx="187" cy="212" r="7" fill="#1e1e1e" />
+              <circle cx="185" cy="209" r="2.4" fill="#ffffff" />
+              <circle cx="213" cy="212" r="7" fill="#1e1e1e" />
+              <circle cx="211" cy="209" r="2.4" fill="#ffffff" />
+
+              <ellipse cx="200" cy="230" rx="5" ry="7" fill="#1e1e1e" opacity="0.8" />
+            </g>
+          </g>
+        </g>
+
+        <!-- A estrela, na frente do coelho e escura no meio. -->
+        <g class="nucleo">
+          <polygon points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145"
+                   fill="#14161f" stroke="#bc1d1d" stroke-width="3" />
+          <polygon points="200,90 230,160 305,164 245,214 263,290 200,250 137,290 155,214 95,164 170,160"
+                   fill="#000000" opacity="0.85" />
+        </g>
+      </svg>
+    

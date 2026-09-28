@@ -1,0 +1,69 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes sadBreathe {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(5px); }
+            }
+            @keyframes pulseWifi {
+              0%, 100% { opacity: 0.4; }
+              50% { opacity: 1; }
+            }
+            .bg-circle { fill: #1e293b; }
+            .star-shape { fill: #334155; }
+
+            /* A ORELHA PARECIA DESCOLADA DA CABEÇA, e a causa era esta: a cabeça tinha opacity 0.9 e as
+               orelhas pintavam com a cor cheia. Duas peças do mesmo corpo em claridades diferentes o
+               olho lê como duas peças, não como um corpo — e nenhuma linha de contorno conserta isso.
+               Agora a transparência é do GRUPO INTEIRO, então tudo desbota junto, e cabeça e orelhas
+               voltam a ser a mesma coisa. */
+            .bunny-head { fill: #ffffff; }
+            .bunny-ears-inner { fill: #b7c3d1; }
+            .sad-group { opacity: 0.88; animation: sadBreathe 3s ease-in-out infinite; }
+            .ear-left { transform-origin: 165px 180px; transform: rotate(-35deg) translate(-15px, 10px); }
+            .ear-right { transform-origin: 235px 180px; transform: rotate(35deg) translate(15px, 10px); }
+            .wifi-icon { stroke: #64748b; stroke-width: 8; stroke-linecap: round; fill: none; animation: pulseWifi 2s infinite; }
+          </style>
+        </defs>
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+        
+        <g class="sad-group">
+          <g class="ear-left">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          </g>
+          <g class="ear-right">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          
+          <circle cx="200" cy="240" r="72" class="bunny-head" />
+          <path d="M 158 225 Q 168 220 178 225" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" fill="none" />
+          <path d="M 222 225 Q 232 220 242 225" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round" fill="none" />
+          <path d="M 194 243 Q 200 239 206 243 Q 200 251 194 243 Z" fill="#b91c1c" opacity="0.6" />
+          <path d="M 190 260 Q 200 252 210 260" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" />
+        </g>
+
+        <!-- Ícone Wi-Fi Cortado -->
+        <g transform="translate(160, 52) scale(0.8)">
+          <path d="M 20 80 Q 50 50 80 80" class="wifi-icon" />
+          <path d="M 0 60 Q 50 10 100 60" class="wifi-icon" />
+          <circle cx="50" cy="95" r="5" fill="#64748b" />
+          <path d="M -10 110 L 110 30" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
+        </g>
+
+        <!-- CÓDIGO E DESCRIÇÃO, no mesmo lugar e no mesmo formato dos outros dois erros.
+             O código sozinho não ajuda ninguém: "404" diz algo para quem programa e nada para quem só
+             quer conversar com os amigos. E a descrição sozinha não ajuda a resolver: é o código que a
+             pessoa consegue repetir ao pedir socorro. Os dois juntos servem às duas pessoas.
+             Sem conexão não tem número de HTTP — quem não chegou ao servidor não recebeu código nenhum —
+             então o código é a palavra que o próprio navegador usa. -->
+        <g class="codigo">
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#94a3b8">OFFLINE — Sem conexão</text>
+        </g>
+      </svg>
+    

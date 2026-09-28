@@ -1,0 +1,81 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes entrar {
+              0%   { transform: scale(0.55); opacity: 0; }
+              55%  { transform: scale(1.06); opacity: 1; }
+              75%  { transform: scale(0.99); }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            @keyframes raios {
+              0%   { opacity: 0; transform: scale(0.65); }
+              35%  { opacity: 0.45; }
+              100% { opacity: 0; transform: scale(1.45); }
+            }
+            @keyframes brilho {
+              0%, 100% { transform: scale(1); }
+              50%      { transform: scale(1.04); filter: drop-shadow(0 0 16px #bc1d1daa); }
+            }
+            @keyframes acenar {
+              0%, 100% { transform: rotate(0deg); }
+              25%      { transform: rotate(-22deg); }
+              60%      { transform: rotate(14deg); }
+            }
+            @keyframes faisca {
+              0%, 100% { opacity: 0.2; transform: scale(0.8); }
+              50%      { opacity: 1; transform: scale(1.15); }
+            }
+
+            .bg-circle { fill: #000000; }
+            .star-shape { fill: #bc1d1d; transform-origin: 200px 200px; animation: brilho 1.80s ease-in-out infinite; }
+            .bunny-ears-inner { fill: #f48fb1; }
+
+            .tudo { transform-origin: 200px 240px; animation: entrar 2.80s cubic-bezier(0.34, 1.4, 0.5, 1) infinite; }
+            .raio { transform-origin: 200px 210px; animation: raios 2.80s ease-out infinite; }
+            .raio-2 { animation-delay: 0.3s; }
+            .patinha { transform-origin: 268px 272px; animation: acenar 1.80s ease-in-out infinite; }
+            .faisca { animation: faisca 1.6s ease-in-out infinite; }
+            .faisca-2 { animation-delay: 0.5s; }
+            .faisca-3 { animation-delay: 1s; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <!-- Os raios que abrem uma vez a cada entrada. Ficam atrás de tudo. -->
+        <circle class="raio" cx="200" cy="210" r="120" fill="none" stroke="#bc1d1d" stroke-width="10" />
+        <circle class="raio raio-2" cx="200" cy="210" r="120" fill="none" stroke="#ffffff" stroke-width="4" />
+
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <g class="tudo">
+          <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+          <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+          <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+
+          <circle cx="200" cy="225" r="72" fill="#ffffff" />
+
+          <!-- Olhos fechados de contentamento, em arco. Sorriso sem boca é mais quente que dois pontos. -->
+          <path d="M 160 212 Q 172 202 184 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+          <path d="M 216 212 Q 228 202 240 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 186 240 Q 200 254 214 240" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" />
+
+          <!-- Bochechas rosadas. -->
+          <ellipse cx="158" cy="234" rx="12" ry="7" fill="#f48fb1" opacity="0.5" />
+          <ellipse cx="242" cy="234" rx="12" ry="7" fill="#f48fb1" opacity="0.5" />
+
+          <!-- A patinha que acena. -->
+          <g class="patinha">
+            <ellipse cx="268" cy="258" rx="17" ry="22" fill="#ffffff" />
+            <ellipse cx="268" cy="248" rx="9" ry="7" fill="#f48fb1" opacity="0.6" />
+          </g>
+        </g>
+
+        <!-- As três bolinhas brancas saíram: com os raios abrindo, as bochechas e a patinha acenando,
+             já havia movimento suficiente. Faísca solta num canto não acrescenta nada — só ocupa. -->
+      </svg>
+    

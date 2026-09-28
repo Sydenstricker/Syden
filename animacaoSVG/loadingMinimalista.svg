@@ -1,0 +1,33 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-56 h-56">
+        <defs>
+          <style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes respira { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+            .silhueta { fill: #ffffff; }
+            .silhueta-orelha { fill: #f48fb1; }
+            .respira { transform-origin: 200px 240px; animation: respira 1.80s ease-in-out infinite; }
+            .arco {
+              fill: none;
+              stroke: #bc1d1d;
+              stroke-width: 6;
+              stroke-linecap: round;
+              stroke-dasharray: 90 400;
+              transform-origin: 200px 200px;
+              animation: spin 2.50s linear infinite;
+            }
+          </style>
+        </defs>
+
+        <circle class="arco" cx="200" cy="200" r="150" />
+
+        <g class="respira">
+          <path class="silhueta" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
+          <path class="silhueta-orelha" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
+          <path class="silhueta" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
+          <path class="silhueta-orelha" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
+          <circle class="silhueta" cx="200" cy="230" r="66" />
+        </g>
+      </svg>
+    

@@ -149,9 +149,25 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       for (const file of files) {
         const data = decodeDataUrl(file?.data, MAX_ATTACHMENT_BYTES);
         if (typeof data === 'string') return reply.code(400).send({ error: data });
+        const mime = sniffAttachmentMime(data);
+
+        // O anexo do chat passa pela MESMA conferência do avatar e do emoji. Áudio, documento e vídeo
+        // seguem direto: a base do Shield é de imagem.
+        if (mime.startsWith('image/')) {
+          const { conferir, anotarBloqueio } = await import('./shield.js');
+          const veredito = await conferir(data, mime);
+          if (veredito.veredito === 'bloqueado') {
+            anotarBloqueio(veredito, 'anexo', request.user.id);
+            return reply.code(400).send({ error: 'Esta imagem não foi aceita.' });
+          }
+          if (veredito.veredito === 'indisponivel') {
+            db.porNaFilaDoShield(veredito.sha256, 'anexo', request.user.id);
+          }
+        }
+
         prepared.push({
           name: safeName(file?.name),
-          mime: sniffAttachmentMime(data),
+          mime,
           data,
           width: dimension(file?.width),
           height: dimension(file?.height),

@@ -233,6 +233,22 @@ db.exec(`
   -- Uma tabela só para as duas coisas, com uma coluna dizendo qual: quem sobe ao palco normalmente é
   -- quem tinha levantado a mão, e duas tabelas obrigariam a apagar de uma e inserir na outra a cada
   -- passagem de palavra — duas escritas onde uma basta, e a chance de sobrar linha nas duas.
+  -- IMAGENS QUE ENTRARAM SEM CONFERÊNCIA, para reconferir quando o Shield voltar.
+  --
+  -- A política, decidida por ele, é aceitar e reconferir depois: barrar tudo quando o serviço de um
+  -- terceiro cai deixaria o Syden sem troca de imagem por motivo que não é nosso. A dívida fica aqui.
+  --
+  -- Guarda ONDE a imagem está (tabela e id) porque, quando a conferência acusar, é preciso achá-la para
+  -- apagar. Guardar só o hash daria uma resposta sem endereço.
+  CREATE TABLE IF NOT EXISTS shield_fila (
+    sha256   TEXT NOT NULL,
+    onde     TEXT NOT NULL,
+    alvo_id  INTEGER NOT NULL,
+    quando   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    tentativas INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (sha256, onde, alvo_id)
+  );
+
   CREATE TABLE IF NOT EXISTS channel_palco (
     channel_id INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
     user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -3647,4 +3663,58 @@ export function porNoPalco(channelId: number, userId: number, situacao: Situacao
 
 export function tirarDoPalco(channelId: number, userId: number) {
   db.prepare('DELETE FROM channel_palco WHERE channel_id = ? AND user_id = ?').run(channelId, userId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A FILA DE RECONFERÊNCIA DO SHIELD
+// ---------------------------------------------------------------------------------------------------
+
+export interface NaFila {
+  sha256: string;
+  onde: string;
+  alvoId: number;
+  quando: string;
+  tentativas: number;
+}
+
+/**
+ * Anota uma imagem que entrou sem conferência.
+ *
+ * O `ON CONFLICT DO NOTHING` importa: a mesma imagem pode entrar em vários lugares durante uma queda
+ * do Shield, e cada um deles precisa da própria linha — mas a mesma imagem no mesmo lugar não.
+ */
+export function porNaFilaDoShield(sha256: string, onde: string, alvoId: number) {
+  db.prepare(
+    'INSERT INTO shield_fila (sha256, onde, alvo_id) VALUES (?, ?, ?) ON CONFLICT DO NOTHING',
+  ).run(sha256, onde, alvoId);
+}
+
+export function lerFilaDoShield(quantos = 20): NaFila[] {
+  return db
+    .prepare(
+      `SELECT sha256, onde, alvo_id AS alvoId, quando, tentativas FROM shield_fila
+       ORDER BY tentativas, quando LIMIT ?`,
+    )
+    .all(quantos) as unknown as NaFila[];
+}
+
+export function tamanhoDaFilaDoShield(): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM shield_fila').get() as { n: number }).n;
+}
+
+export function tirarDaFilaDoShield(sha256: string, onde: string, alvoId: number) {
+  db.prepare('DELETE FROM shield_fila WHERE sha256 = ? AND onde = ? AND alvo_id = ?').run(sha256, onde, alvoId);
+}
+
+/**
+ * Conta mais uma tentativa que falhou.
+ *
+ * Sem isto, um item que o Shield nunca consegue conferir ficaria eternamente na frente da fila e os
+ * outros nunca seriam vistos — a ordenação é por tentativas primeiro, justamente para o que já falhou
+ * ir para o fim.
+ */
+export function maisUmaTentativaNoShield(sha256: string, onde: string, alvoId: number) {
+  db.prepare(
+    'UPDATE shield_fila SET tentativas = tentativas + 1 WHERE sha256 = ? AND onde = ? AND alvo_id = ?',
+  ).run(sha256, onde, alvoId);
 }

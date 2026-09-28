@@ -1,0 +1,84 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            /* A TRAVESSIA NÃO VOLTA: ele entra pela esquerda, atravessa e some na direita.
+               Antes ia e voltava (direction alternate) — e ir e voltar não significa progresso, significa
+               espera. Assim vira a imagem certa para envio de arquivo: sai de um lado e chega no outro.
+               (Sem acento grave neste comentário: ele fecharia a template string que envolve todo o SVG.) */
+            @keyframes travessia {
+              0%   { transform: translateX(-110px); }
+              100% { transform: translateX(110px); }
+            }
+            /* Aparece entrando, desaparece chegando. Sem isto, ele salta de volta para a esquerda num
+               piscar, e o salto é o que faria a travessia parecer um erro de desenho. */
+            @keyframes entraESai {
+              0%          { opacity: 0; }
+              12%, 80%    { opacity: 1; }
+              100%        { opacity: 0; }
+            }
+            @keyframes pulo {
+              0%, 100% { transform: translateY(0) scale(1, 1); }
+              30%      { transform: translateY(-38px) scale(0.94, 1.08); }
+              55%      { transform: translateY(0) scale(1.1, 0.9); }
+              70%      { transform: translateY(-8px) scale(0.99, 1.01); }
+            }
+            /* A sombra encolhe quando ele sobe: é o que diz ao olho a que altura ele está. */
+            @keyframes sombra {
+              0%, 100% { transform: scale(1); opacity: 0.35; }
+              30%      { transform: scale(0.55); opacity: 0.12; }
+              55%      { transform: scale(1.15); opacity: 0.4; }
+            }
+            @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+            .bg-circle { fill: #000000; }
+            .star-fundo { fill: #bc1d1d; opacity: 0.35; }
+            .bunny-ears-inner { fill: #f48fb1; }
+
+            .anda { animation: travessia 2.50s linear infinite, entraESai 2.50s linear infinite; }
+            .pula { transform-origin: 200px 300px; animation: pulo 1.20s cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
+            .sombra { transform-box: fill-box; transform-origin: center; animation: sombra 1.20s cubic-bezier(0.28, 0.84, 0.42, 1) infinite; }
+            .eye { transform-box: fill-box; transform-origin: center; animation: blink 3.8s infinite; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <polygon class="star-fundo" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+
+        <!-- O chão. Sem uma linha de apoio, o pulo parece o desenho tremendo no vazio. -->
+        <line x1="60" y1="318" x2="340" y2="318" stroke="#ffffff" stroke-width="2" opacity="0.2" stroke-linecap="round" />
+
+        <g class="anda">
+          <ellipse class="sombra" cx="200" cy="316" rx="52" ry="9" fill="#000000" />
+
+          <g class="pula">
+            <!-- AS ORELHAS DESCEM 22px COM A CABEÇA, e é por isso que este translate existe.
+                 Neste preset a cabeça está em cy=240 r=68 (começa em y=172), enquanto nos outros está em
+                 cy=225 r=72 (começa em y=153). As orelhas terminam em y=180 — nos outros presets elas
+                 entram 27px dentro do crânio, aqui entravam 8px, e 8px de encaixe o olho lê como duas
+                 peças encostadas em vez de um corpo. Descer as orelhas devolve o encaixe. -->
+            <g transform="translate(0, 22)">
+              <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+              <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+              <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+              <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+            </g>
+
+            <circle cx="200" cy="240" r="68" fill="#ffffff" />
+
+            <g class="eye">
+              <circle cx="170" cy="230" r="8" fill="#1e1e1e" />
+              <circle cx="168" cy="227" r="2.5" fill="#ffffff" />
+            </g>
+            <g class="eye">
+              <circle cx="230" cy="230" r="8" fill="#1e1e1e" />
+              <circle cx="228" cy="227" r="2.5" fill="#ffffff" />
+            </g>
+
+            <path d="M 194 243 Q 200 239 206 243 Q 200 251 194 243 Z" fill="#b91c1c" />
+            <path d="M 190 254 Q 200 264 210 254" fill="none" stroke="#b91c1c" stroke-width="3" stroke-linecap="round" />
+          </g>
+        </g>
+      </svg>
+    

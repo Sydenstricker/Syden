@@ -1,0 +1,58 @@
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes dizzyShake {
+              0%, 100% { transform: translate(0, 0) rotate(0deg); }
+              25% { transform: translate(-2px, 2px) rotate(-1deg); }
+              50% { transform: translate(2px, -2px) rotate(1deg); }
+              75% { transform: translate(-2px, -2px) rotate(0deg); }
+            }
+            @keyframes fireFlicker {
+              0%, 100% { opacity: 0.8; transform: scale(0.98); }
+              50% { opacity: 1; transform: scale(1.02); }
+            }
+            .bg-circle { fill: #450a0a; }
+            .star-shape { fill: #991b1b; animation: fireFlicker 0.4s infinite alternate; transform-origin: center; } 
+            .bunny-head { fill: #ffffff; }
+            .bunny-ears-inner { fill: #f48fb1; }
+            .dizzy-group { transform-origin: 200px 200px; animation: dizzyShake 0.4s infinite; }
+            .eye-x { stroke: #1e1e1e; stroke-width: 4; stroke-linecap: round; }
+          </style>
+        </defs>
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+        
+        <polygon class="star-shape" points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145" />
+        
+        <g class="dizzy-group">
+          <g transform="rotate(-15 165 180)">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+          </g>
+          <g transform="rotate(10 235 180)">
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+          
+          <circle cx="200" cy="225" r="72" class="bunny-head" />
+          
+          <!-- Olhos Fechados com X -->
+          <path d="M 160 210 L 176 226 M 176 210 L 160 226" class="eye-x" />
+          <path d="M 224 210 L 240 226 M 240 210 L 224 226" class="eye-x" />
+          
+          <!-- Expressão de tontura -->
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 185 245 L 195 240 L 205 245 L 215 240" fill="none" stroke="#1e1e1e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+
+        <!-- As bolinhas de "faísca" saíram. Elas eram três círculos borrados atrás da cabeça e não
+             leram como fogo nem como erro: leram como manchas. O tremor da cabeça e a estrela piscando
+             já dizem que algo deu errado. -->
+
+        <!-- Código e descrição, no mesmo lugar e no mesmo formato dos outros dois erros. -->
+        <g class="codigo">
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#fca5a5">ERRO 500 — Problema no servidor</text>
+        </g>
+      </svg>
+    
