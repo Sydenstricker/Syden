@@ -1,8 +1,9 @@
 // @ts-check
-const { app, BrowserWindow, Menu, Tray, desktopCapturer, globalShortcut, ipcMain, nativeImage, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, session, shell } = require('electron');
 const path = require('node:path');
 const config = require('../app.config.json');
 const { setupScreenAudio, screenAudioAvailable, stopScreenAudio } = require('./screen-audio');
+const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
 const APP_URL = process.env.SYDEN_URL || process.env.JANJA_URL || (app.isPackaged ? config.url : 'http://localhost:5173');
@@ -51,6 +52,15 @@ app.setPath('userData', path.join(app.getPath('appData'), DEV ? 'Janja-dev' : 'J
 // instala do lado do antigo em vez de atualizar, e os atalhos fixados na barra se soltam. Foi trocado
 // em 2026-09-27, quando só uma pessoa tinha o app instalado. Não se troca de novo.
 const APP_USER_MODEL_ID = DEV ? 'chat.syden.app.dev' : 'chat.syden.app';
+
+/**
+ * Quem este Syden é — versão e de onde foi aberto. Serve para se comparar com um outro Syden instalado
+ * no mesmo computador, que é uma situação normal (a Store e o instalador convivem) e que até aqui
+ * acontecia em silêncio. O porquê inteiro está em duas-instalacoes.js.
+ */
+const ESTA_INSTALACAO = { versao: app.getVersion(), caminho: process.execPath };
+/** Fica em userData, que é por pasta de dados — então o Syden de desenvolvimento não se mistura com o instalado. */
+const ARQUIVO_DE_QUEM_ABRIU = path.join(app.getPath('userData'), 'instancia-aberta.json');
 
 /**
  * O ENDEREÇO syden:// — é por ele que a entrada por Google, Discord, GitHub e Steam volta para o app.
@@ -105,13 +115,49 @@ function acharNosArgumentos(argv) {
   return argv.find((a) => typeof a === 'string' && a.startsWith(ESQUEMA + '://'));
 }
 
-if (!app.requestSingleInstanceLock()) {
-  app.quit();
+/**
+ * A identidade vai na trava, e não só no disco: é assim que o Syden que JÁ ESTÁ ABERTO fica sabendo
+ * quem tentou abrir. Um Syden anterior a esta mudança não manda nada — e essa ausência é, ela mesma, a
+ * informação de que o outro é de outra versão.
+ */
+if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
+  const jaAberto = lerQuemAbriu(ARQUIVO_DE_QUEM_ABRIU);
+  if (mesmaInstalacao(ESTA_INSTALACAO, jaAberto)) {
+    // O caso de todo dia: clicar no atalho com o Syden já na bandeja. A janela do outro vem para frente
+    // e este sai de cena, que é o certo — é o MESMO app.
+    app.quit();
+  } else {
+    // Outro Syden ficou com a janela. Sair calado aqui foi o que fez alguém testar a versão errada
+    // acreditando estar testando esta.
+    const comEntrada = Boolean(acharNosArgumentos(process.argv));
+    app.whenReady().then(() => {
+      const { opcoes } = recadoDeDoisSydens({
+        papel: 'naoAbriu',
+        daqui: ESTA_INSTALACAO,
+        outro: jaAberto,
+        comEntrada,
+        idiomas: app.getPreferredSystemLanguages?.() ?? [],
+      });
+      dialog.showMessageBoxSync(opcoes);
+      app.quit();
+    });
+  }
 } else {
+  anotarQuemAbriu(ARQUIVO_DE_QUEM_ABRIU, ESTA_INSTALACAO);
+
   // SEGUNDA INSTÂNCIA É COMO O WINDOWS ENTREGA O LINK com o app já aberto: ele tenta abrir o app de
   // novo, passando a URL nos argumentos, e a trava de instância única redireciona para cá.
-  app.on('second-instance', (_evento, argv) => {
+  app.on('second-instance', (_evento, argv, _pasta, outro) => {
     const url = acharNosArgumentos(argv);
+    /**
+     * SEM IDENTIDADE, é um Syden anterior a esta conferência: ele saiu de cena sem poder avisar nada, e
+     * quem tem de falar é esta janela. Vindo a identidade, o outro lado já avisou — dois avisos para o
+     * mesmo fato é pior do que um.
+     *
+     * O caminho vem dos argumentos porque é o único lugar onde ele existe nesse caso (argv[0] é o
+     * executável de quem tentou abrir). A versão fica desconhecida, e o recado não a inventa.
+     */
+    if (!outro || typeof outro.versao !== 'string') avisarQueTemOutroSyden(argv[0]);
     if (url) entregarVolta(url);
     else showMainWindow();
   });
@@ -158,6 +204,26 @@ if (!app.requestSingleInstanceLock()) {
     registerShortcuts();
   });
   app.on('will-quit', () => globalShortcut.unregisterAll());
+}
+
+/**
+ * Conta que existe outro Syden instalado, quando quem tentou abrir era antigo demais para contar.
+ *
+ * O botão de sair está aqui porque sair é exatamente o que a pessoa precisa fazer para ver o outro — e
+ * caçar o ícone na bandeja é o passo em que se desiste e se aceita a versão errada.
+ */
+function avisarQueTemOutroSyden(caminhoDoOutro) {
+  const { opcoes, botaoDeSair } = recadoDeDoisSydens({
+    papel: 'jaEstavaAberto',
+    daqui: ESTA_INSTALACAO,
+    outro: typeof caminhoDoOutro === 'string' && caminhoDoOutro ? { versao: null, caminho: caminhoDoOutro } : null,
+    idiomas: app.getPreferredSystemLanguages?.() ?? [],
+  });
+  // Sem janela, o dialog vai solto: passar `undefined` como janela-mãe não é a mesma coisa que não passar.
+  const mostrar = mainWindow ? dialog.showMessageBox(mainWindow, opcoes) : dialog.showMessageBox(opcoes);
+  void mostrar.then(({ response }) => {
+    if (response === botaoDeSair) app.quit();
+  });
 }
 
 function showMainWindow() {

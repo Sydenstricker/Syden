@@ -32,6 +32,34 @@ writeFileSync(
   `
 const { app, BrowserWindow } = require('electron');
 const path = require('node:path');
+const os = require('node:os');
+const { spawn } = require('node:child_process');
+const {
+  anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens,
+} = require(path.join(process.cwd(), 'desktop', 'src', 'duas-instalacoes.js'));
+
+/**
+ * PASTA DE DADOS PRÓPRIA, e não a do Syden instalado.
+ *
+ * A trava de instância única é POR PASTA DE DADOS. Sem isto, este teste disputaria a trava com o Syden
+ * que a pessoa tem aberto na bandeja: ele passaria a receber os avisos de segunda instância deste teste,
+ * e o teste falharia por não receber o que foi entregue a outro processo.
+ */
+app.setPath('userData', path.join(os.tmpdir(), 'syden-e2e-entrada'));
+
+const ESTA = { versao: app.getVersion(), caminho: process.execPath };
+
+/**
+ * O PAPEL DE SEGUNDA INSTÂNCIA, que é o outro lado do teste.
+ *
+ * Este mesmo roteiro é aberto de novo com --segundo e um endereço syden://, para reproduzir exatamente o
+ * que o Windows faz quando alguém clica no link com o app já aberto: ele ABRE O APP DE NOVO, passando a
+ * URL nos argumentos. Quem já está aberto recebe isso pelo evento 'second-instance'.
+ */
+if (process.argv.includes('--segundo')) {
+  app.requestSingleInstanceLock(ESTA);
+  app.quit();
+} else {
 
 const resultados = [];
 const conta = (nome, ok, detalhe) => resultados.push({ nome, ok, detalhe: detalhe ?? '' });
@@ -81,9 +109,85 @@ app.whenReady().then(async () => {
   const vezes = await janela.webContents.executeJavaScript('window.__conta');
   conta('dá para parar de escutar', parou === 'ok' && vezes === 0, 'chamou ' + vezes + ' vez(es) depois de parar');
 
+  /*
+   * ---------- A SEGUNDA INSTÂNCIA, que é o caminho real do Windows ----------
+   *
+   * Até aqui a volta foi entregue à mão, de dentro do processo. O que nunca tinha sido medido é o trecho
+   * anterior: a URL chega ao app porque o WINDOWS ABRE O APP DE NOVO com ela nos argumentos, e a trava de
+   * instância única a redireciona para quem já estava aberto.
+   *
+   * Três coisas sobre as quais o aviso de "dois Sydens" foi construído dependem de comportamento do
+   * Electron e do sistema, não do nosso código — e se qualquer uma for diferente do que eu suponho, o
+   * aviso simplesmente nunca aparece, calado:
+   *
+   *   - o endereço syden:// aparece nos argumentos de quem abriu depois;
+   *   - argv[0] é o EXECUTÁVEL de quem tentou abrir (é por ele que se descobre a outra instalação
+   *     quando ela é antiga demais para se apresentar);
+   *   - a identidade passada na trava (additionalData) chega ao outro lado.
+   */
+  const pegouATrava = app.requestSingleInstanceLock(ESTA);
+  conta('este processo fica com a trava de instância única', pegouATrava);
+
+  const arquivo = path.join(app.getPath('userData'), 'instancia-aberta.json');
+  anotarQuemAbriu(arquivo, ESTA);
+  conta('a anotação de quem abriu volta do disco igual', mesmaInstalacao(ESTA, lerQuemAbriu(arquivo)));
+
+  const ENDERECO2 = 'syden://entrada?entrada=ok&comprovante=segunda';
+  const chegou = new Promise((pronto) => {
+    app.on('second-instance', (_e, argv, _pasta, outro) => pronto({ argv, outro }));
+    setTimeout(() => pronto(null), 15000);
+  });
+  spawn(process.execPath, [process.argv[1], '--segundo', ENDERECO2], { env: process.env, stdio: 'ignore' });
+  const segunda = await chegou;
+
+  conta('abrir o app de novo avisa quem já estava aberto', Boolean(segunda));
+  conta(
+    'o endereço syden:// vem nos argumentos de quem abriu depois',
+    Boolean(segunda && segunda.argv.includes(ENDERECO2)),
+    segunda ? JSON.stringify(segunda.argv.slice(1)) : 'não chegou',
+  );
+  conta(
+    'argv[0] é o executável de quem tentou abrir',
+    Boolean(segunda && String(segunda.argv[0] || '').toLowerCase() === process.execPath.toLowerCase()),
+    segunda ? String(segunda.argv[0]) : 'não chegou',
+  );
+  conta(
+    'a identidade passada na trava chega ao outro lado',
+    Boolean(segunda && segunda.outro && segunda.outro.versao === ESTA.versao && segunda.outro.caminho === ESTA.caminho),
+    segunda ? JSON.stringify(segunda.outro) : 'não chegou',
+  );
+  // O caso de todo dia — clicar no atalho com o Syden na bandeja — NÃO pode virar aviso. Um aviso que
+  // aparece sempre é um aviso que ninguém lê.
+  conta('o mesmo Syden reaberto não conta como dois', mesmaInstalacao(ESTA, segunda && segunda.outro));
+
+  // ---------- A decisão de avisar, nos casos que não dá para encenar aqui ----------
+  const outraVersao = { versao: '0.0.1', caminho: ESTA.caminho };
+  const outroLugar = { versao: ESTA.versao, caminho: 'C:/Outro/Syden.exe' };
+  conta('versão diferente no mesmo caminho conta como outro Syden', !mesmaInstalacao(ESTA, outraVersao));
+  conta('mesma versão em outro caminho conta como outro Syden', !mesmaInstalacao(ESTA, outroLugar));
+  conta('caminho só muda em maiúsculas e barras: é o mesmo', mesmaInstalacao(ESTA, {
+    versao: ESTA.versao,
+    caminho: ESTA.caminho.replace(/\\\\/g, '/').toUpperCase(),
+  }));
+  // Não saber quem é o outro é o caso do Syden anterior a esta conferência, que não anota nada. Precisa
+  // contar como diferente: era exatamente ele que ficava com a janela sem ninguém saber.
+  conta('não saber quem é o outro conta como diferente', !mesmaInstalacao(ESTA, null));
+
+  const recado = recadoDeDoisSydens({ papel: 'naoAbriu', daqui: ESTA, outro: outraVersao, comEntrada: true, idiomas: ['pt-BR'] });
+  conta('o recado diz as duas versões', recado.opcoes.detail.includes('0.0.1') && recado.opcoes.detail.includes(ESTA.versao), recado.opcoes.detail.split('\\n')[0]);
+  conta('o recado avisa sobre a entrada quando havia uma', recado.opcoes.detail.toLowerCase().includes('google'));
+  conta('quem não abriu tem um botão só, e nenhum é o de sair', recado.opcoes.buttons.length === 1 && recado.botaoDeSair === -1);
+
+  const doLado = recadoDeDoisSydens({ papel: 'jaEstavaAberto', daqui: ESTA, outro: { versao: null, caminho: 'C:/Outro/Syden.exe' }, idiomas: ['en'] });
+  conta('quem está com a janela oferece sair', doLado.opcoes.buttons.length === 2 && doLado.botaoDeSair === 1);
+  conta('sem saber a versão do outro, mostra o caminho e não inventa', doLado.opcoes.detail.includes('C:/Outro/Syden.exe'));
+  conta('o recado fala o idioma do sistema', doLado.opcoes.title === 'Two Sydens installed', doLado.opcoes.title);
+
   console.log('RESULTADOS' + JSON.stringify(resultados));
   app.exit(0);
 });
+
+}
 `,
 );
 
