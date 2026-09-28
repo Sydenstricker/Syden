@@ -8,10 +8,23 @@
 //   node desktop/scripts/icones-da-loja.mjs      gera
 //   node desktop/scripts/conferir-icones.mjs     confere
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { chromium } from 'playwright-core';
 
-const PASTA = 'desktop/build/appx';
-const FONTE = 'desktop/build/icon.png';
+/**
+ * OS CAMINHOS SAEM DAQUI, e não de onde o comando foi digitado.
+ *
+ * A primeira versão usava 'desktop/build/...', que só funciona da raiz do projeto. Rodando de dentro
+ * de desktop/ — que é onde se está quando se acabou de gerar o pacote — vira 'desktop/desktop/...' e o
+ * Node reclama de módulo não encontrado, que não tem nada a ver com o problema. Ferramenta que só
+ * funciona de um lugar falha justamente na hora em que se está em outro.
+ */
+const RAIZ = new URL('../..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const caminho = (relativo) => join(RAIZ, relativo);
+
+
+const PASTA = caminho('desktop/build/appx');
+const FONTE = caminho('desktop/build/icon.png');
 
 /** Os quatro primeiros são obrigatórios: sem eles o electron-builder cai nos de exemplo. */
 const ESPERADOS = {
@@ -80,7 +93,7 @@ console.log(`  fonte: ${fonte.w}x${fonte.h}, desenho ${fonte.lw}x${fonte.lh} (pr
 const problemas = [];
 
 for (const [nome, [largura, altura]] of Object.entries(ESPERADOS)) {
-  const caminho = `${PASTA}/${nome}`;
+  const caminho = join(PASTA, nome);
   if (!existsSync(caminho)) {
     console.log(`  XX  ${nome.padEnd(24)} NÃO EXISTE`);
     problemas.push(`${nome} não existe`);
