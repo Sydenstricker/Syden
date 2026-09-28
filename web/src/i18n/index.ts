@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { FONTE_DA_ESCRITA, IDIOMAS, PADRAO, TRADUCOES, idiomaPorCodigo } from './idiomas';
+import { desktopBridge } from '../desktop';
 
 // O idioma do Syden, escolhido DENTRO do app (Configurações → Idioma) e não no instalador.
 //
@@ -20,6 +21,28 @@ function avisar() {
   for (const ouvinte of ouvintes) ouvinte();
 }
 
+/**
+ * Os idiomas que esta pessoa prefere, em ordem.
+ *
+ * NO APP DE DESKTOP A LISTA VEM DE OUTRO LUGAR, e foi preciso medir para descobrir. No navegador,
+ * `navigator.languages` traz a preferência inteira e ordenada: ["ja","en-US","en","pt"]. Dentro do
+ * Electron ela vem com UM item só — medido, ["pt-BR"] — e a cadeia de reserva desaparece. Alguém com o
+ * sistema em japonês e inglês como segunda escolha acharia inglês no navegador e cairia no português
+ * dentro do app, sem ninguém entender por quê. Com 74 idiomas na lista, isso aparece.
+ *
+ * A ponte do app expõe a lista de verdade do sistema (ver desktop/src/preload.js). O navegador não tem
+ * ponte nenhuma, e aí `navigator.languages` já é a resposta certa.
+ */
+function preferenciasDeIdioma(): readonly string[] {
+  try {
+    const doApp = desktopBridge?.idiomasDoSistema?.();
+    if (Array.isArray(doApp) && doApp.length > 0) return doApp;
+  } catch {
+    // ponte de versão antiga do app: cai no navegador, como sempre foi
+  }
+  return navigator.languages ?? [];
+}
+
 /** O idioma escolhido, ou o do sistema se ele estiver na lista, ou português. */
 function escolhaInicial(): string {
   try {
@@ -28,7 +51,7 @@ function escolhaInicial(): string {
   } catch {
     // sem armazenamento: segue com o do sistema
   }
-  for (const preferido of navigator.languages ?? []) {
+  for (const preferido of preferenciasDeIdioma()) {
     // "en-GB" serve para quem tem "en"; "pt-PT" continua caindo no português do Brasil.
     const raiz = preferido.split('-')[0];
     const achado = IDIOMAS.find((i) => i.codigo === preferido || i.codigo === raiz);

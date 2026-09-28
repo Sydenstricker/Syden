@@ -3,6 +3,8 @@
 interface DesktopBridge {
   focus(): void;
   onShortcut(callback: (action: 'mute' | 'deafen') => void): () => void;
+  /** Os idiomas preferidos do sistema, em ordem. No navegador isto não existe: lá vale navigator.languages. */
+  idiomasDoSistema?(): string[];
   /** O título da janela escolhida no seletor do app ("League of Legends"), ou null. */
   telaEscolhida?(): string | null;
   /** Pinta a barra de título do app (desenhada pelo Windows) com as cores do tema. */

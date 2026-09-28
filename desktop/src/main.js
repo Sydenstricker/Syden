@@ -184,6 +184,20 @@ ipcMain.on('app:focus', (event) => {
 });
 
 /**
+ * Os idiomas preferidos do sistema, em ordem.
+ *
+ * É SÍNCRONO de propósito, e é a única coisa aqui que é. O site precisa disto antes de desenhar a
+ * primeira tela: se viesse por promessa, a tela apareceria em português e trocaria de idioma um instante
+ * depois, na frente da pessoa. A chamada é uma leitura de configuração do sistema, sem disco nem rede.
+ *
+ * getPreferredSystemLanguages() existe desde o Electron 24; o `?.` cobre versão mais antiga, e aí o site
+ * cai em navigator.languages como sempre fez.
+ */
+ipcMain.on('app:idiomas', (event) => {
+  event.returnValue = app.getPreferredSystemLanguages?.() ?? [];
+});
+
+/**
  * O número vermelho sobre o ícone da barra de tarefas, como no Discord.
  *
  * No Windows isso é um "overlay icon": uma imagenzinha que o sistema desenha no canto do ícone. Quem

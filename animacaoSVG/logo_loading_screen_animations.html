@@ -230,6 +230,10 @@
             <span class="text-lg">🌀</span>
             <span>11. Buraco Negro</span>
           </button>
+          <button onclick="setPreset(12)" id="presetBtn12" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">💫</span>
+            <span>12. Buraco + Rastro</span>
+          </button>
         </div>
       </div>
 
@@ -382,7 +386,8 @@
       8: "Erro: Não Encontrado (404)",
       9: "Modo 9: Comendo Cenoura",
       10: "Modo 10: Boas-vindas",
-      11: "Modo 11: Buraco Negro"
+      11: "Modo 11: Buraco Negro",
+      12: "Modo 12: Buraco Negro com Rastro"
     };
 
     // Textos padrão sugeridos ao trocar de Preset
@@ -397,7 +402,8 @@
       8: "Página não encontrada (Erro 404).",
       9: "Só uma mordidinha e já volto...",
       10: "Que bom te ver por aqui!",
-      11: "A estrela está engolindo tudo..."
+      11: "A estrela está engolindo tudo...",
+      12: "A estrela está engolindo tudo..."
     };
 
     // Inicialização ao carregar a página
@@ -753,10 +759,17 @@
           <ellipse class="sombra" cx="200" cy="316" rx="52" ry="9" fill="#000000" />
 
           <g class="pula">
-            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
-            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
-            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
-            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+            <!-- AS ORELHAS DESCEM 22px COM A CABEÇA, e é por isso que este translate existe.
+                 Neste preset a cabeça está em cy=240 r=68 (começa em y=172), enquanto nos outros está em
+                 cy=225 r=72 (começa em y=153). As orelhas terminam em y=180 — nos outros presets elas
+                 entram 27px dentro do crânio, aqui entravam 8px, e 8px de encaixe o olho lê como duas
+                 peças encostadas em vez de um corpo. Descer as orelhas devolve o encaixe. -->
+            <g transform="translate(0, 22)">
+              <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+              <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+              <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+              <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+            </g>
 
             <circle cx="200" cy="240" r="68" fill="${colors.bunny}" />
 
@@ -843,6 +856,12 @@
               20%  { opacity: 0.9; }
               100% { opacity: 0; transform: translate(-6px, 34px); }
             }
+            /* A boca abre no mesmo compasso da mastigada. Ela nunca fecha de todo (o 0.3): boca que
+               desaparece por completo faz o rosto piscar, e piscar não é mastigar. */
+            @keyframes abrirBoca {
+              0%, 100% { transform: scaleY(0.3); }
+              45%      { transform: scaleY(1); }
+            }
 
             .bg-circle { fill: ${colors.bg}; }
             .star-fundo { fill: ${colors.star}; opacity: 0.4; }
@@ -852,6 +871,9 @@
             .orelha-esq { transform-origin: 170px 180px; animation: orelhaFeliz ${durCiclo} infinite; }
             .orelha-dir { transform-origin: 230px 180px; animation: orelhaFeliz ${durCiclo} infinite; animation-delay: 0.1s; }
             .eye { transform-box: fill-box; transform-origin: center; animation: blink 4.2s infinite; }
+            /* A origem no topo: a boca abre para BAIXO, como um maxilar. Pela origem no centro ela
+               cresceria para os dois lados e o queixo subiria dentro da cara. */
+            .boca { transform-box: fill-box; transform-origin: top; animation: abrirBoca ${durMastiga} ease-in-out infinite; }
 
             /* A origem fica na ponta das folhas: encolher a partir dali afasta a ponta mordida da boca.
                As coordenadas são as do próprio desenho, antes da inclinação — o rotate do grupo de fora
@@ -887,11 +909,21 @@
           </g>
 
           <path d="M 194 226 Q 200 222 206 226 Q 200 234 194 226 Z" fill="#b91c1c" />
-          <!-- A boca: só a linha, desenhada em arco para o lado onde a cenoura chega.
-               A mancha escura que havia aqui saiu. Ela era uma elipse preta a 55% para fazer "boca
-               aberta", e num rosto branco isso não leu como boca: leu como sujeira. Boca fechada
-               mastigando é mais legível do que boca aberta mal desenhada. -->
-          <path d="M 202 238 Q 216 247 232 235" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" />
+
+          <!-- A BOCA ABRE E FECHA, e agora tem dentes.
+               A primeira tentativa foi uma linha em arco: parecia boca fechada, e boca fechada não come.
+               A segunda foi uma elipse preta translúcida: num rosto branco leu como sujeira. O que
+               resolve é desenhar a boca como boca — vermelho escuro por dentro, contorno da mesma cor do
+               nariz, e OS DOIS DENTES DA FRENTE. Dente de coelho é o traço que diz "coelho roendo" sem
+               precisar de mais nada, e fica por cima porque dente não estica quando a boca abre. -->
+          <g class="boca">
+            <path d="M 200 234 Q 218 230 228 238 Q 216 254 200 248 Z" fill="#8c1414" />
+            <path d="M 200 234 Q 218 230 228 238" fill="none" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M 203 250 Q 214 254 226 241" fill="none" stroke="#b91c1c" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+          </g>
+          <!-- Os dentes, fora do grupo que abre: eles ficam presos na gengiva de cima. -->
+          <path d="M 205 234 L 212 234 L 212 243 Q 208.5 246 205 243 Z" fill="#ffffff" />
+          <path d="M 213 234 L 220 235 L 220 243 Q 216.5 246 213 243 Z" fill="#f4f4f4" />
         </g>
 
         <!-- A CENOURA VEM DEPOIS DA CABEÇA, e é por isso que ela aparece.
@@ -1099,6 +1131,129 @@
         </g>
       </svg>
     `;
+  } else if (currentPreset === 12) {
+    // PRESET 12: Buraco Negro com Rastro — a variação.
+    //
+    // O QUE FALTAVA NO PRESET 11, e agora dá para nomear: o coelho caía sozinho num céu vazio, e um
+    // buraco negro que suga uma coisa só não parece faminto, parece um acidente. Três acréscimos, cada
+    // um resolvendo uma falta diferente:
+    //
+    //   1. O RASTRO. Um risco de luz esticado atrás dele, que afina junto. É o que transforma "está se
+    //      mexendo" em "está sendo puxado" — o olho lê velocidade no borrão, não na posição.
+    //   2. COMPANHIA. Cenouras e estrelinhas caindo nas mesmas espirais, em tempos diferentes. Com
+    //      várias coisas em queda, o vazio entre elas deixa de ser vazio e passa a ser o funil.
+    //   3. O ARROTO DA ESTRELA. Ela pisca no instante em que algo desaparece. Sem isso, as coisas
+    //      somem atrás dela sem consequência, e o que não tem consequência o olho trata como enfeite.
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            @keyframes espiral { from { transform: rotate(0deg); } to { transform: rotate(630deg); } }
+            @keyframes cair { from { transform: translateX(158px); } to { transform: translateX(4px); } }
+            @keyframes sumir {
+              0%   { transform: scale(1, 1); opacity: 0; }
+              10%  { opacity: 1; }
+              70%  { transform: scale(0.46, 0.6); opacity: 1; }
+              92%  { transform: scale(0.05, 0.3); opacity: 0.5; }
+              100% { transform: scale(0, 0.18); opacity: 0; }
+            }
+            /* O rastro cresce enquanto ele acelera, e apaga quando ele desaparece. */
+            @keyframes rastro {
+              0%   { opacity: 0; transform: scaleX(0.2); }
+              45%  { opacity: 0.5; transform: scaleX(1); }
+              88%  { opacity: 0.75; transform: scaleX(2.1); }
+              100% { opacity: 0; transform: scaleX(2.6); }
+            }
+            @keyframes girarDisco { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes girarAoContrario { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+            /* O piscar da estrela: forte e curto, no fim do ciclo, quando o coelho acaba de sumir. */
+            @keyframes engolir {
+              0%, 78%, 100% { transform: scale(1); filter: none; }
+              88%           { transform: scale(1.14); filter: drop-shadow(0 0 30px ${colors.star}); }
+            }
+
+            .bg-circle { fill: #07080d; }
+            .bunny-ears-inner { fill: ${colors.ears}; }
+
+            .nucleo { transform-origin: 200px 200px; animation: engolir ${durEntrada} ease-out infinite; }
+
+            .disco { fill: none; stroke-linecap: round; transform-origin: 200px 200px; }
+            .disco-1 { stroke: ${colors.star}; stroke-width: 7; stroke-dasharray: 210 1000; opacity: 0.95; animation: girarDisco ${durOrbit} linear infinite; }
+            .disco-2 { stroke: #ffd7a8; stroke-width: 3; stroke-dasharray: 110 1000; opacity: 0.45; animation: girarAoContrario ${durPulse} linear infinite; }
+            .disco-3 { stroke: #fff1dc; stroke-width: 2; stroke-dasharray: 44 1000; opacity: 0.6; animation: girarDisco ${durMastiga} linear infinite; }
+
+            /* Cada coisa que cai usa os mesmos três grupos encaixados; só o atraso muda. */
+            .gira { transform-origin: 200px 200px; animation: espiral ${durEntrada} linear infinite; }
+            .aproxima { animation: cair ${durEntrada} ease-in infinite; }
+            .encolhe { transform-box: fill-box; transform-origin: center; animation: sumir ${durEntrada} ease-in infinite; }
+            .risco { transform-box: fill-box; transform-origin: right center; animation: rastro ${durEntrada} ease-in infinite; }
+
+            .atraso-a .gira, .atraso-a .aproxima, .atraso-a .encolhe { animation-delay: 0.9s; }
+            .atraso-b .gira, .atraso-b .aproxima, .atraso-b .encolhe { animation-delay: 1.8s; }
+            .atraso-c .gira, .atraso-c .aproxima, .atraso-c .encolhe { animation-delay: 2.4s; }
+          </style>
+        </defs>
+
+        <rect width="400" height="400" rx="60" class="bg-circle" />
+
+        <circle class="disco disco-1" cx="200" cy="200" r="170" />
+        <circle class="disco disco-2" cx="200" cy="200" r="142" />
+        <circle class="disco disco-3" cx="200" cy="200" r="114" />
+        <circle cx="200" cy="200" r="88" fill="none" stroke="${colors.star}" stroke-width="2" opacity="0.3" />
+
+        <!-- A COMPANHIA: cenouras e estrelinhas nas mesmas espirais, em tempos diferentes. -->
+        <g class="atraso-a">
+          <g class="gira"><g class="aproxima"><g class="encolhe">
+            <g transform="rotate(-30 200 300)">
+              <path d="M 214 296 L 214 306 L 176 302 Q 172 301 176 299 Z" fill="#e8730c" />
+              <path d="M 214 301 C 222 290, 230 289, 229 297 C 228 303, 219 304, 214 301 Z" fill="#4caf50" />
+            </g>
+          </g></g></g>
+        </g>
+        <g class="atraso-b">
+          <g class="gira"><g class="aproxima"><g class="encolhe">
+            <polygon points="200,286 205,298 218,299 208,307 211,320 200,313 189,320 192,307 182,299 195,298" fill="#ffd7a8" opacity="0.9" />
+          </g></g></g>
+        </g>
+        <g class="atraso-c">
+          <g class="gira"><g class="aproxima"><g class="encolhe">
+            <circle cx="200" cy="300" r="7" fill="#ffffff" opacity="0.8" />
+          </g></g></g>
+        </g>
+
+        <!-- O COELHO, com o rastro atrás. O rastro vem antes no desenho para ficar sob ele. -->
+        <g class="gira">
+          <g class="aproxima">
+            <g class="risco">
+              <rect x="222" y="212" width="112" height="12" rx="6" fill="${colors.star}" opacity="0.55" />
+              <rect x="222" y="216" width="150" height="4" rx="2" fill="#fff1dc" opacity="0.5" />
+            </g>
+            <g class="encolhe">
+              <path d="M 178 194 C 160 140, 182 116, 192 134 C 198 146, 192 176, 186 194 Z" fill="${colors.bunny}" />
+              <path d="M 181 188 C 167 146, 182 128, 188 140 C 193 150, 188 172, 184 188 Z" class="bunny-ears-inner" />
+              <path d="M 222 194 C 240 140, 218 116, 208 134 C 202 146, 208 176, 214 194 Z" fill="${colors.bunny}" />
+              <path d="M 219 188 C 233 146, 218 128, 212 140 C 207 150, 212 172, 216 188 Z" class="bunny-ears-inner" />
+
+              <circle cx="200" cy="218" r="40" fill="${colors.bunny}" />
+
+              <circle cx="187" cy="212" r="7" fill="#1e1e1e" />
+              <circle cx="185" cy="209" r="2.4" fill="#ffffff" />
+              <circle cx="213" cy="212" r="7" fill="#1e1e1e" />
+              <circle cx="211" cy="209" r="2.4" fill="#ffffff" />
+
+              <ellipse cx="200" cy="231" rx="6" ry="8" fill="#1e1e1e" opacity="0.85" />
+            </g>
+          </g>
+        </g>
+
+        <g class="nucleo">
+          <polygon points="200,35 247,145 365,152 272,230 300,348 200,285 100,348 128,230 35,152 153,145"
+                   fill="#10121a" stroke="${colors.star}" stroke-width="3.5" />
+          <polygon points="200,90 230,160 305,164 245,214 263,290 200,250 137,290 155,214 95,164 170,160"
+                   fill="#000000" opacity="0.9" />
+        </g>
+      </svg>
+    `;
   } else if (currentPreset === 6) {
     // PRESET 6: Erro Sem Internet (Offline)
     innerContent = `
@@ -1158,11 +1313,15 @@
           <path d="M -10 110 L 110 30" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
         </g>
 
-        <!-- O código, no mesmo lugar e no mesmo estilo dos outros dois erros. Sem conexão não tem número
-             de HTTP — quem não chegou ao servidor não recebeu código nenhum — então o código é a palavra. -->
+        <!-- CÓDIGO E DESCRIÇÃO, no mesmo lugar e no mesmo formato dos outros dois erros.
+             O código sozinho não ajuda ninguém: "404" diz algo para quem programa e nada para quem só
+             quer conversar com os amigos. E a descrição sozinha não ajuda a resolver: é o código que a
+             pessoa consegue repetir ao pedir socorro. Os dois juntos servem às duas pessoas.
+             Sem conexão não tem número de HTTP — quem não chegou ao servidor não recebeu código nenhum —
+             então o código é a palavra que o próprio navegador usa. -->
         <g class="codigo">
-          <rect x="136" y="352" width="128" height="30" rx="15" fill="#000000" opacity="0.35" />
-          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="15" font-weight="700" fill="#94a3b8" letter-spacing="2">OFFLINE</text>
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#94a3b8">OFFLINE — Sem conexão</text>
         </g>
       </svg>
     `;
@@ -1219,10 +1378,10 @@
              leram como fogo nem como erro: leram como manchas. O tremor da cabeça e a estrela piscando
              já dizem que algo deu errado. -->
 
-        <!-- O código do erro, no mesmo lugar e no mesmo estilo dos outros dois. -->
+        <!-- Código e descrição, no mesmo lugar e no mesmo formato dos outros dois erros. -->
         <g class="codigo">
-          <rect x="152" y="352" width="96" height="30" rx="15" fill="#000000" opacity="0.35" />
-          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="17" font-weight="700" fill="#fca5a5" letter-spacing="2">500</text>
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#fca5a5">ERRO 500 — Problema no servidor</text>
         </g>
       </svg>
     `;
@@ -1287,8 +1446,8 @@
              parecer "flutuante", que na tela só pareceram desalinhadas. Um código de erro é informação:
              ele tem de estar num lugar previsível, sempre o mesmo, para o olho achar sem procurar. -->
         <g class="codigo">
-          <rect x="152" y="352" width="96" height="30" rx="15" fill="#000000" opacity="0.35" />
-          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="17" font-weight="700" fill="#ffffff" opacity="0.75" letter-spacing="2">404</text>
+          <rect x="44" y="352" width="312" height="30" rx="15" fill="#000000" opacity="0.4" />
+          <text x="200" y="372" text-anchor="middle" font-family="ui-monospace, monospace" font-size="14" font-weight="700" fill="#ffffff" opacity="0.8">ERRO 404 — Página não encontrada</text>
         </g>
       </svg>
     `;

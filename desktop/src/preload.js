@@ -18,6 +18,18 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
    * passa pelo nosso seletor, então o título é sabido — e é só aqui que ele pode vir.
    */
   telaEscolhida: () => ultimaTelaEscolhida,
+  /**
+   * Os idiomas preferidos do sistema, em ordem — a mesma coisa que `navigator.languages` no navegador.
+   *
+   * POR QUE ISTO PRECISOU EXISTIR. No navegador, `navigator.languages` é uma lista ordenada com a
+   * preferência inteira da pessoa: ["ja","en-US","en","pt"]. Dentro do Electron ela vem com UM item só
+   * — medido: ["pt-BR"]. Então a cadeia de reserva desaparece: alguém com o Windows em japonês que
+   * tivesse inglês como segunda escolha acharia inglês no navegador e cairia no português dentro do app,
+   * porque o Syden não teria como saber da segunda escolha. Com 74 idiomas na lista, isso ia aparecer.
+   *
+   * `app.getPreferredSystemLanguages()` é o que devolve a lista de verdade do sistema operacional.
+   */
+  idiomasDoSistema: () => ipcRenderer.sendSync('app:idiomas'),
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
   focus: () => ipcRenderer.send('app:focus'),
   /** Põe o número de avisos sobre o ícone na barra de tarefas. selo = PNG pronto (data URL), ou null. */
