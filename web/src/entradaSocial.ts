@@ -10,6 +10,7 @@
 // Google, e morre com a aba. Um segredo que sobrevive a reinício de navegador é um segredo esquecido.
 
 import { api } from './api';
+import { desktopBridge } from './desktop';
 import type { User } from './types';
 
 export type Provedor = 'google' | 'discord' | 'github' | 'steam';
@@ -73,15 +74,30 @@ export async function ligarCom(provedor: Provedor): Promise<void> {
 
 async function comecar(provedor: Provedor, rota: string, token: null | undefined): Promise<void> {
   const segredo = sortear();
+  /**
+   * NO APP, O CAMINHO É OUTRO — e é a correção de uma coisa que simplesmente não funcionava.
+   *
+   * No navegador a página sai para o Google e volta sozinha. No app instalado, navegar para fora é
+   * bloqueado de propósito, então o endereço do Google era aberto no navegador do sistema — e a volta
+   * caía lá, num navegador que NÃO TEM o segredo guardado aqui. O app ficava esperando para sempre.
+   *
+   * Agora o app avisa o servidor de onde o fluxo começou (`doApp`), e o servidor devolve a pessoa por
+   * `syden://`, que o Windows entrega de volta a esta janela. O Google continua abrindo num navegador
+   * de verdade, que é o que ele exige — embutir a página dele numa janela nossa é contra a política.
+   */
+  const noApp = Boolean(desktopBridge?.abrirFora && desktopBridge?.aoVoltarDaEntrada);
+
   // token: null = sem autenticação (entrar); undefined = usa o token guardado (ligar).
   const { url } = await api<{ url: string }>(rota, {
     method: 'POST',
     ...(token === null ? { token: null } : {}),
-    body: { provedor, desafio: await resumir(segredo) },
+    body: { provedor, desafio: await resumir(segredo), doApp: noApp },
   });
   // Guarda DEPOIS de o servidor aceitar: se o pedido falhar, não fica lixo esperando na aba.
   sessionStorage.setItem(CHAVE, segredo);
-  window.location.assign(url);
+
+  if (noApp) desktopBridge!.abrirFora!(url);
+  else window.location.assign(url);
 }
 
 export interface VoltaSocial {
@@ -97,14 +113,17 @@ export interface VoltaSocial {
  * Limpar é importante: sem isso, recarregar a página tentaria usar de novo um comprovante que já foi
  * gasto, e a pessoa veria um erro que não existe mais.
  */
-export function lerVolta(): VoltaSocial | null {
-  const url = new URL(window.location.href);
+export function lerVolta(endereco?: string): VoltaSocial | null {
+  // Com endereço, veio pela ponte do app (syden://entrada?...) e não há barra de endereço para limpar.
+  const url = new URL(endereco ?? window.location.href);
   const entrada = url.searchParams.get('entrada');
   if (!entrada) return null;
   const comprovante = url.searchParams.get('comprovante');
-  url.searchParams.delete('entrada');
-  url.searchParams.delete('comprovante');
-  window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+  if (!endereco) {
+    url.searchParams.delete('entrada');
+    url.searchParams.delete('comprovante');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+  }
 
   const conhecidas: VoltaSocial['situacao'][] = ['ok', 'ligar', 'cancelado', 'expirado', 'provedor', 'incompleto', 'jaligada'];
   const situacao = (conhecidas as string[]).includes(entrada) ? (entrada as VoltaSocial['situacao']) : 'incompleto';
@@ -138,4 +157,18 @@ export async function concluir(comprovante: string): Promise<{ token?: string; u
     token: null,
     body: { comprovante, segredo },
   });
+}
+
+/**
+ * Escuta a volta que chega pela ponte do app, em vez de pela barra de endereço.
+ *
+ * No navegador não faz nada e devolve uma função vazia: a ponte só existe dentro do app de desktop, e
+ * quem chama não precisa saber em qual dos dois está.
+ */
+export function aoVoltarPeloApp(callback: (volta: VoltaSocial) => void): () => void {
+  const parar = desktopBridge?.aoVoltarDaEntrada?.((url) => {
+    const volta = lerVolta(url);
+    if (volta) callback(volta);
+  });
+  return parar ?? (() => {});
 }

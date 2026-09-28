@@ -3,6 +3,10 @@
 interface DesktopBridge {
   focus(): void;
   onShortcut(callback: (action: 'mute' | 'deafen') => void): () => void;
+  /** Abre um endereço no navegador do sistema, fora do app. */
+  abrirFora?(url: string): void;
+  /** Avisa quando a pessoa volta do Google pelo endereço syden://. Devolve como parar de escutar. */
+  aoVoltarDaEntrada?(callback: (url: string) => void): () => void;
   /** Os idiomas preferidos do sistema, em ordem. No navegador isto não existe: lá vale navigator.languages. */
   idiomasDoSistema?(): string[];
   /** O título da janela escolhida no seletor do app ("League of Legends"), ou null. */

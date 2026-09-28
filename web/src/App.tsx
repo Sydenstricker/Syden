@@ -3,7 +3,7 @@ import { ApiError, api, loadToken, saveToken } from './api';
 import { sincronizarAoEntrar } from './preferencias';
 import { AuthScreen } from './AuthScreen';
 import { AvisoGeral } from './AvisoGeral';
-import { concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
+import { aoVoltarPeloApp, concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
 import { SplashLogo } from './SplashLogo';
@@ -43,10 +43,25 @@ export function App() {
   const [codigoDeConfirmacao] = useState(lerConfirmacaoDaUrl);
   // A volta do Google/Discord. Lida UMA VEZ, no primeiro desenho, e já apagada da barra de endereço:
   // recarregar a página não pode tentar usar de novo um comprovante que já foi gasto.
-  const [volta] = useState(lerVolta);
+  const [volta, setVolta] = useState(lerVolta);
+
+  /**
+   * No app, a volta do Google chega pela ponte, e não pela barra de endereço.
+   *
+   * Ela pode chegar A QUALQUER MOMENTO — inclusive minutos depois, porque a pessoa foi criar a conta
+   * do Google no navegador enquanto o app ficou aberto esperando. Por isso é um estado que muda, e
+   * não um valor lido uma vez no primeiro desenho como no navegador.
+   */
+  useEffect(() => aoVoltarPeloApp(setVolta), []);
   // A volta pode ser de três tipos: entrar, ligar um provedor numa conta que já existe, ou deu errado.
   const recadoDaVolta = volta && volta.situacao !== 'ok' && volta.situacao !== 'ligar' ? RECADOS[volta.situacao] : null;
   const [erroSocial, setErroSocial] = useState<string | null>(recadoDaVolta);
+  // No navegador a volta é lida uma vez e o recado nasce com ela. No app ela chega depois, pela ponte,
+  // e sem isto a pessoa que cancelasse no Google não veria explicação nenhuma — só a tela de entrada
+  // de novo, como se o clique não tivesse acontecido.
+  useEffect(() => {
+    if (recadoDaVolta) setErroSocial(recadoDaVolta);
+  }, [recadoDaVolta]);
   /** "Conta do GitHub ligada." — a janela de configurações já fechou quando a volta chega. */
   const [ligacaoFeita, setLigacaoFeita] = useState<string | null>(null);
 

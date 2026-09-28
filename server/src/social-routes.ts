@@ -40,14 +40,33 @@ function venceu(createdAt: string, agora = Date.now()): boolean {
   return agora - new Date(createdAt).getTime() > VALIDADE_MS;
 }
 
-/** Manda o navegador de volta ao site com um recado, quando alguma coisa deu errado no meio. */
-function voltarComErro(motivo: string): string {
-  return `${config.siteUrl}/?entrada=${encodeURIComponent(motivo)}`;
+/**
+ * PARA ONDE A PESSOA VOLTA no fim do caminho — e por que isso não é sempre o site.
+ *
+ * O segredo do fluxo (o que transforma o comprovante em token) fica guardado na janela que COMEÇOU a
+ * entrada. Quando ela começa no app de desktop, devolver a pessoa ao site abre o navegador, que não
+ * tem esse segredo: o Syden do app fica esperando para sempre, e o navegador mostra um erro que não
+ * explica nada. Foi exatamente o que acontecia — entrar com Google simplesmente não funcionava no app.
+ *
+ * O `syden://` é um endereço que o Windows sabe entregar ao aplicativo instalado (ver
+ * desktop/src/main.js). É o caminho que a norma para aplicativos nativos manda usar: o provedor abre
+ * no navegador de verdade — que é o que o Google exige, e por isso não dá para embutir a página dele
+ * numa janela nossa — e o resultado volta para o app por aqui.
+ */
+function paraOndeVoltar(doApp: boolean): string {
+  return doApp ? 'syden://entrada' : `${config.siteUrl}/`;
+}
+
+/** Manda de volta com um recado, quando alguma coisa deu errado no meio. */
+function voltarComErro(motivo: string, doApp = false): string {
+  return `${paraOndeVoltar(doApp)}?entrada=${encodeURIComponent(motivo)}`;
 }
 
 export function registerSocialRoutes(app: FastifyInstance) {
   /** Começa. O navegador manda o RESUMO do segredo dele; o segredo em si nunca sai de lá até o fim. */
-  app.post<{ Body: { provedor?: string; desafio?: string } }>('/api/auth/social/inicio', async (request, reply) => {
+  app.post<{ Body: { provedor?: string; desafio?: string; doApp?: boolean } }>(
+    '/api/auth/social/inicio',
+    async (request, reply) => {
     const provedor = request.body?.provedor;
     if (!ehProvedor(provedor) || !ligado(provedor)) {
       return reply.code(404).send({ error: 'Esse jeito de entrar não está disponível aqui.' });
@@ -60,11 +79,14 @@ export function registerSocialRoutes(app: FastifyInstance) {
     }
 
     const estado = sortear();
-    db.criarEstadoSocial(estado, provedor, desafio);
+    // Guardado AGORA, no começo, e não lido do pedido de volta: quem volta é o provedor, e nada do que
+    // ele manda pode decidir para onde a pessoa vai parar.
+    db.criarEstadoSocial(estado, provedor, desafio, undefined, request.body?.doApp === true);
     // Aproveita a passagem para varrer o que ficou pelo caminho, em vez de manter um relógio só para isso.
     db.limparEstadosSociais(new Date(Date.now() - VALIDADE_MS).toISOString());
     return { url: enderecoDeEntrada(provedor, estado) };
-  });
+    },
+  );
 
   /**
    * O provedor devolve o navegador aqui. Esta rota NÃO responde JSON: ela redireciona, porque quem está
@@ -83,31 +105,43 @@ export function registerSocialRoutes(app: FastifyInstance) {
       const provedor = request.params.provedor;
       if (!ehProvedor(provedor) || !ligado(provedor)) return reply.code(404).send({ error: 'Não existe.' });
 
-      // A pessoa clicou em "cancelar" na tela do Google: não é erro, é desistência.
-      if (request.query.error) return reply.redirect(voltarComErro('cancelado'));
-
       const { code, state } = request.query;
+
+      /**
+       * Descobre a origem cedo, para que até a desistência volte para o lugar certo.
+       *
+       * Sem isto, quem clicasse em "cancelar" na tela do Google dentro do app seria devolvido ao
+       * navegador — e ficaria com duas janelas abertas sem entender qual delas é o Syden. O estado
+       * ainda não foi validado aqui, e não precisa: só se está lendo de onde o fluxo começou, um dado
+       * que o próprio servidor escreveu no início e que o provedor não tem como influenciar.
+       */
+      const origem = state ? db.acharEstadoSocial(state) : undefined;
+      const veioDoApp = origem?.doApp === 1;
+
+      // A pessoa clicou em "cancelar" na tela do Google: não é erro, é desistência.
+      if (request.query.error) return reply.redirect(voltarComErro('cancelado', veioDoApp));
       // No caminho OAuth faltar o "code" já é o fim. Na Steam não existe "code" nenhum: o que precisa
       // estar lá são os campos assinados, e quem confere isso é a própria Steam, logo abaixo.
-      if (!state || (ehOAuth(provedor) && !code)) return reply.redirect(voltarComErro('incompleto'));
+      if (!state || (ehOAuth(provedor) && !code)) return reply.redirect(voltarComErro('incompleto', veioDoApp));
 
-      const guardado = db.acharEstadoSocial(state);
+      const guardado = origem;
       if (!guardado || guardado.provedor !== provedor || guardado.entrega || venceu(guardado.createdAt)) {
         // Estado que não existe, de outro provedor, já usado ou vencido. Tudo isso é a mesma resposta:
         // dizer QUAL dos casos é só ajudaria quem está tentando descobrir.
-        return reply.redirect(voltarComErro('expirado'));
+        return reply.redirect(voltarComErro('expirado', veioDoApp));
       }
 
       // O motivo de ter dado errado vai para o registro do servidor. Do lado de quem tentou entrar a
       // mensagem é sempre a mesma e sempre vaga, de propósito; do lado de dentro, precisa ser específica,
       // senão não há como descobrir em qual dos passos parou.
       const anotar = (motivo: string) => request.log.warn({ provedor }, `entrada social falhou: ${motivo}`);
+      const doApp = veioDoApp;
       const perfil = ehOAuth(provedor)
         ? await buscarPerfil(provedor, code!, anotar)
         : await perfilDaSteamConferida(request.query, anotar);
       if (!perfil) {
         db.consumirEstadoSocial(state);
-        return reply.redirect(voltarComErro('provedor'));
+        return reply.redirect(voltarComErro('provedor', doApp));
       }
 
       const entrega = sortear();
@@ -118,17 +152,17 @@ export function registerSocialRoutes(app: FastifyInstance) {
         const jaEDe = db.donoDaContaSocial(provedor, perfil.sub);
         if (jaEDe && jaEDe.id !== guardado.ligarUserId) {
           db.consumirEstadoSocial(state);
-          return reply.redirect(voltarComErro('jaligada'));
+          return reply.redirect(voltarComErro('jaligada', doApp));
         }
         // A ligação em si só acontece lá no "concluir", depois de o segredo bater. Aqui só se anota o
         // que foi descoberto: sem essa espera, quem plantasse o link de volta penduraria a conta DELE
         // na conta de outra pessoa — e passaria a entrar nela para sempre.
         db.guardarEntregaSocial(state, entrega, null, perfil.sub);
-        return reply.redirect(`${config.siteUrl}/?entrada=ligar&comprovante=${encodeURIComponent(entrega)}`);
+        return reply.redirect(`${paraOndeVoltar(doApp)}?entrada=ligar&comprovante=${encodeURIComponent(entrega)}`);
       }
 
       db.guardarEntregaSocial(state, entrega, acharOuCriarConta(provedor, perfil));
-      return reply.redirect(`${config.siteUrl}/?entrada=ok&comprovante=${encodeURIComponent(entrega)}`);
+      return reply.redirect(`${paraOndeVoltar(doApp)}?entrada=ok&comprovante=${encodeURIComponent(entrega)}`);
     },
   );
 

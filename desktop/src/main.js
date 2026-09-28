@@ -52,10 +52,75 @@ app.setPath('userData', path.join(app.getPath('appData'), DEV ? 'Janja-dev' : 'J
 // em 2026-09-27, quando só uma pessoa tinha o app instalado. Não se troca de novo.
 const APP_USER_MODEL_ID = DEV ? 'chat.syden.app.dev' : 'chat.syden.app';
 
+/**
+ * O ENDEREÇO syden:// — é por ele que a entrada por Google, Discord, GitHub e Steam volta para o app.
+ *
+ * POR QUE PRECISA EXISTIR. O site manda a pessoa ao Google; o Google devolve para um endereço nosso.
+ * Se esse endereço for https://syden.chat, quem abre é o NAVEGADOR — e o segredo que transforma o
+ * comprovante em token ficou guardado na janela do app, não lá. O app espera para sempre e o navegador
+ * mostra um erro sem explicação. Era exatamente o que acontecia: entrar com Google não funcionava no
+ * app instalado.
+ *
+ * POR QUE NÃO ABRIR O GOOGLE DENTRO DE UMA JANELA NOSSA, que seria mais simples: o Google recusa OAuth
+ * em navegador embutido, por política. O contorno conhecido é mentir o User-Agent, o que é violar a
+ * política deles. A norma para aplicativos nativos (RFC 8252) manda justamente isto: navegador de
+ * verdade para a parte do provedor, e um endereço próprio para o resultado voltar.
+ */
+const ESQUEMA = 'syden';
+
+/**
+ * Registra o esquema no Windows.
+ *
+ * Em desenvolvimento precisa do caminho do executável do Electron e do script, senão o Windows
+ * registraria "electron.exe" solto e o app nunca receberia nada. Num pacote MSIX o Windows já registra
+ * pelo manifesto, e esta chamada é inofensiva.
+ */
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(ESQUEMA, process.execPath, [path.resolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient(ESQUEMA);
+}
+
+/**
+ * Entrega ao site o que veio no endereço syden://.
+ *
+ * Guarda quando a janela ainda não existe: no Windows, clicar no link com o app fechado ABRE o app, e
+ * a URL chega antes de haver qualquer página para recebê-la. Sem guardar, a entrada se perderia
+ * justamente no caso mais comum — quem foi entrar é porque ainda não estava dentro.
+ */
+let voltaPendente = null;
+
+function entregarVolta(url) {
+  if (!url || !url.startsWith(ESQUEMA + '://')) return;
+  const conteudo = mainWindow?.webContents;
+  if (conteudo && !conteudo.isLoading()) conteudo.send('entrada:voltou', url);
+  else voltaPendente = url;
+  showMainWindow();
+}
+
+/** Acha o syden:// no meio dos argumentos da linha de comando (é assim que o Windows entrega). */
+function acharNosArgumentos(argv) {
+  return argv.find((a) => typeof a === 'string' && a.startsWith(ESQUEMA + '://'));
+}
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on('second-instance', showMainWindow);
+  // SEGUNDA INSTÂNCIA É COMO O WINDOWS ENTREGA O LINK com o app já aberto: ele tenta abrir o app de
+  // novo, passando a URL nos argumentos, e a trava de instância única redireciona para cá.
+  app.on('second-instance', (_evento, argv) => {
+    const url = acharNosArgumentos(argv);
+    if (url) entregarVolta(url);
+    else showMainWindow();
+  });
+
+  // macOS entrega por evento, e não por argumento.
+  app.on('open-url', (evento, url) => {
+    evento.preventDefault();
+    entregarVolta(url);
+  });
   app.on('before-quit', () => {
     quitting = true;
     stopScreenAudio();
@@ -127,6 +192,14 @@ function createMainWindow() {
   });
 
   mainWindow.once('ready-to-show', () => mainWindow?.show());
+
+  // A volta que chegou antes de a página existir. 'did-finish-load' e não 'ready-to-show': a janela
+  // aparece antes de o JavaScript do site estar de pé, e quem escuta o recado é o site.
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (!voltaPendente) return;
+    mainWindow?.webContents.send('entrada:voltou', voltaPendente);
+    voltaPendente = null;
+  });
   mainWindow.loadURL(APP_URL);
 
   const contents = mainWindow.webContents;
@@ -178,6 +251,20 @@ function registerShortcuts() {
     globalShortcut.register(accelerator, () => mainWindow?.webContents.send('app:shortcut', action));
   }
 }
+
+/**
+ * Abre um endereço no navegador do sistema, a pedido do site.
+ *
+ * Existe para a entrada social: o site precisa mandar a pessoa ao Google POR FORA do app, e não pode
+ * fazer isso sozinho — dentro do app, navegar para fora é bloqueado (ver will-navigate).
+ *
+ * Só abre https, e nada mais. Sem essa conferência, uma página conseguiria abrir qualquer coisa que o
+ * Windows saiba abrir — inclusive um programa.
+ */
+ipcMain.on('app:abrir-fora', (event, url) => {
+  if (mainWindow && event.sender !== mainWindow.webContents) return;
+  if (typeof url === 'string' && url.startsWith('https://')) void shell.openExternal(url);
+});
 
 ipcMain.on('app:focus', (event) => {
   if (mainWindow && event.sender === mainWindow.webContents) showMainWindow();

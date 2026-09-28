@@ -30,6 +30,28 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
    * `app.getPreferredSystemLanguages()` é o que devolve a lista de verdade do sistema operacional.
    */
   idiomasDoSistema: () => ipcRenderer.sendSync('app:idiomas'),
+  /**
+   * Abre um endereço no navegador do sistema. Usado pela entrada social: o Google recusa OAuth dentro
+   * de navegador embutido, então essa parte tem de acontecer num navegador de verdade.
+   */
+  abrirFora: (url) => ipcRenderer.send('app:abrir-fora', url),
+  /**
+   * Avisa quando a pessoa volta do Google pelo endereço syden://.
+   *
+   * Devolve a função de parar de escutar. Sem ela, cada vez que a tela de entrada fosse montada de
+   * novo sobraria um ouvinte, e uma volta seria processada várias vezes — gastando um comprovante que
+   * só serve uma vez.
+   */
+  aoVoltarDaEntrada: (callback) => {
+    const ouvinte = (_evento, url) => callback(url);
+    ipcRenderer.on('entrada:voltou', ouvinte);
+    // AS CHAVES SÃO OBRIGATÓRIAS. Sem elas a seta devolveria o que removeListener devolve — o próprio
+    // ipcRenderer —, e tudo o que atravessa a ponte precisa ser copiável. O erro não aparece aqui:
+    // aparece do outro lado, como "An object could not be cloned", longe da causa.
+    return () => {
+      ipcRenderer.removeListener('entrada:voltou', ouvinte);
+    };
+  },
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
   focus: () => ipcRenderer.send('app:focus'),
   /** Põe o número de avisos sobre o ícone na barra de tarefas. selo = PNG pronto (data URL), ou null. */

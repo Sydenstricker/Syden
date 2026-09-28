@@ -789,6 +789,12 @@ addColumnIfMissing('users', 'selo_comunidade', 'INTEGER');
 // ligar_user_id, escrito quando o passeio começa — por um pedido autenticado, que é o que prova quem é.
 addColumnIfMissing('social_states', 'ligar_user_id', 'INTEGER');
 addColumnIfMissing('social_states', 'sub', 'TEXT');
+// De onde a entrada social começou: 1 = do app de desktop, 0 = do navegador.
+//
+// Decide para ONDE o provedor devolve a pessoa no fim. O app não pode terminar no navegador: o
+// segredo do fluxo fica na janela do Electron, e um navegador que recebesse a volta não teria como
+// completar. Ver o alto de social-routes.ts.
+addColumnIfMissing('social_states', 'do_app', 'INTEGER NOT NULL DEFAULT 0');
 
 /**
  * Esta conta precisa confirmar o e-mail antes de entrar?
@@ -2980,19 +2986,22 @@ export function desligarContaSocial(provedor: string, userId: number) {
 }
 
 /** `ligarUserId` só vem quando a ida ao provedor é para LIGAR numa conta que já existe. */
-export function criarEstadoSocial(state: string, provedor: string, resumo: string, ligarUserId?: number) {
-  db.prepare('INSERT INTO social_states (state, provedor, resumo, ligar_user_id) VALUES (?, ?, ?, ?)').run(
-    state,
-    provedor,
-    resumo,
-    ligarUserId ?? null,
-  );
+export function criarEstadoSocial(
+  state: string,
+  provedor: string,
+  resumo: string,
+  ligarUserId?: number,
+  doApp = false,
+) {
+  db.prepare(
+    'INSERT INTO social_states (state, provedor, resumo, ligar_user_id, do_app) VALUES (?, ?, ?, ?, ?)',
+  ).run(state, provedor, resumo, ligarUserId ?? null, doApp ? 1 : 0);
 }
 
 export function acharEstadoSocial(state: string) {
   return db
     .prepare(
-      'SELECT state, provedor, resumo, entrega, user_id AS userId, ligar_user_id AS ligarUserId, sub, created_at AS createdAt FROM social_states WHERE state = ?',
+      'SELECT state, provedor, resumo, entrega, user_id AS userId, ligar_user_id AS ligarUserId, sub, do_app AS doApp, created_at AS createdAt FROM social_states WHERE state = ?',
     )
     .get(state) as
     | {
@@ -3003,6 +3012,7 @@ export function acharEstadoSocial(state: string) {
         userId: number | null;
         ligarUserId: number | null;
         sub: string | null;
+        doApp: number;
         createdAt: string;
       }
     | undefined;
