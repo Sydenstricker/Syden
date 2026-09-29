@@ -1,4 +1,4 @@
-import { api } from './api';
+import { ApiError, api } from './api';
 
 export interface Gif {
   id: string;
@@ -59,14 +59,35 @@ export async function procurarGifs(termo: string, de: number, idioma: string): P
 }
 
 /**
+ * O botão de GIF deve existir?
+ *
+ * SEPARADA E PURA porque ela errou uma vez, e o erro só apareceu em produção. A primeira versão
+ * perguntava ao servidor e aceitava qualquer resposta que não fosse "desligado" — e o site é
+ * publicado ANTES do servidor, sempre, porque são dois caminhos diferentes. Nessa janela de alguns
+ * minutos a rota /api/gifs ainda não existe, o pedido volta 404, e o botão aparecia mesmo assim:
+ * quem clicasse recebia "não deu para falar com o GIPHY", que é uma explicação para uma coisa que
+ * nunca devia ter sido oferecida.
+ *
+ * ROTA QUE NÃO EXISTE É DIFERENTE DE ROTA QUE FALHOU. O 404 diz que este servidor não sabe o que é
+ * GIF — não tem volta, e o botão não entra. Qualquer outra falha (rede oscilando, GIPHY fora do ar,
+ * freio) é passageira: aí o botão fica, e o painel explica em uma frase o que houve.
+ */
+export function mostraBotaoDeGif(resultado: RespostaDeGifs | { rotaNaoExiste: true }): boolean {
+  if ('rotaNaoExiste' in resultado) return false;
+  return resultado.estado !== 'desligado';
+}
+
+/**
  * Tem GIF neste Syden?
  *
- * Perguntado UMA VEZ por sessão e guardado, porque a resposta não muda enquanto o servidor não
- * reinicia — e porque a pergunta serve para decidir se o botão existe. Botão que não pode funcionar é
- * pior do que botão nenhum: ele promete uma coisa e depois explica por que não.
+ * Perguntado UMA VEZ por sessão e guardado: a resposta não muda enquanto o servidor não reinicia, e
+ * a pergunta serve para decidir se o botão existe. Botão que não pode funcionar é pior do que botão
+ * nenhum — ele promete uma coisa e depois explica por que não.
  */
 let perguntado: Promise<boolean> | null = null;
 export function gifsDisponiveis(): Promise<boolean> {
-  perguntado ??= procurarGifs('', 0, 'pt').then((r) => r.estado !== 'desligado');
+  perguntado ??= api<RespostaDeGifs>('/api/gifs?de=0&idioma=pt')
+    .then(mostraBotaoDeGif)
+    .catch((e) => mostraBotaoDeGif(e instanceof ApiError && e.status === 404 ? { rotaNaoExiste: true } : { estado: 'indisponivel' }));
   return perguntado;
 }

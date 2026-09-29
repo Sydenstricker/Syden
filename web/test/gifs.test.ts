@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { gifDaMensagem } from '../src/gifs';
+import { gifDaMensagem, mostraBotaoDeGif } from '../src/gifs';
 
 // Esta regra decide o que o Syden vai BUSCAR sozinho do navegador de cada pessoa que abrir a conversa.
 // Errar para o lado frouxo não deixa a tela feia: entrega o endereço de rede de quem só estava lendo
@@ -71,5 +71,29 @@ describe('as duas listas de endereços do GIPHY', () => {
         `${inventado} viraria figura e a política não o libera: quadrado vazio na conversa`,
       );
     }
+  });
+});
+
+describe('quando o botão de GIF deve existir', () => {
+  it('rota inexistente (404): NÃO existe', () => {
+    // O site é publicado antes do servidor, sempre — são dois caminhos diferentes. Nessa janela a
+    // rota ainda não subiu, e um botão que só sabe explicar por que não funciona é pior que nenhum.
+    assert.equal(mostraBotaoDeGif({ rotaNaoExiste: true }), false);
+  });
+
+  it('sem chave configurada: NÃO existe', () => {
+    assert.equal(mostraBotaoDeGif({ estado: 'desligado' }), false);
+  });
+
+  it('funcionando: existe', () => {
+    assert.equal(mostraBotaoDeGif({ estado: 'ok', itens: [], proxima: null }), true);
+  });
+
+  it('falha passageira: existe, e o painel explica', () => {
+    // Rede oscilando ou GIPHY fora do ar passam. Esconder o botão por causa disso o faria sumir pelo
+    // resto da sessão, porque a pergunta só é feita uma vez.
+    assert.equal(mostraBotaoDeGif({ estado: 'indisponivel' }), true);
+    assert.equal(mostraBotaoDeGif({ estado: 'sem-cota' }), true);
+    assert.equal(mostraBotaoDeGif({ estado: 'devagar', segundos: 3 }), true);
   });
 });
