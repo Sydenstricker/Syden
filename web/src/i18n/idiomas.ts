@@ -163,6 +163,7 @@ export const PADRAO = 'pt-BR';
 export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, string> }>> = {
   en: () => import('./en'),
   es: () => import('./es'),
+  fr: () => import('./fr'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);
