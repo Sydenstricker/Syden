@@ -25,6 +25,7 @@ import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOu
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
+import { escolherCodecDaTela } from './escolherCodec';
 import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
 import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
@@ -801,6 +802,17 @@ export function useVoice(socket: Socket | null) {
       const quality = getSettings().screenQuality;
       const preset = SCREEN_PRESETS[quality];
       const hints = SCREEN_HINTS[quality];
+      const escolhido = getSettings().screenCodec;
+      const codec =
+        escolhido === 'auto'
+          ? (
+              await escolherCodecDaTela(
+                preset.width,
+                preset.height,
+                preset.encoding.maxFramerate ?? 30,
+              )
+            ).codec
+          : escolhido;
       try {
         setTelaCompartilhada(surface);
         if (lp.isScreenShareEnabled) await lp.setScreenShareEnabled(false);
@@ -824,9 +836,11 @@ export function useVoice(socket: Socket | null) {
           {
             screenShareEncoding: preset.encoding,
             degradationPreference: hints.degradation,
-            // Escolhido nas configurações: dá para comparar VP8 e H.264 numa chamada de verdade, que é
-            // o único lugar onde a diferença aparece (num teste isolado os números não se repetem).
-            videoCodec: getSettings().screenCodec,
+            // Escolhido nas configurações, ou MEDIDO quando está em automático: a pergunta é se o
+            // H.264 sai pela placa de vídeo nesta máquina e neste tamanho (ver escolherCodec.ts).
+            // Continua dando para fixar um dos dois à mão e comparar numa chamada de verdade, que é o
+            // único lugar onde a diferença aparece — num teste isolado os números não se repetem.
+            videoCodec: codec,
             screenShareSimulcastLayers: SCREEN_LAYERS[quality],
           },
         );

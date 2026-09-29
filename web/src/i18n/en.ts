@@ -414,9 +414,7 @@ export default {
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Your stream has no sound. The browser only sends sound if you tick “share audio” in the window where you pick the screen.",
   "Automático": "Automatic",
-  "Baixa — economiza dados": "Low — saves data",
   "Baixar até": "Download up to",
-  "Média — metade da altura": "Medium — half the height",
   "Medindo…": "Measuring…",
   "Administra a comunidade": "Runs the community",
   "Administradores": "Admins",
@@ -431,4 +429,20 @@ export default {
   "Calar esta transmissão": "Mute this stream",
   "Ouvir esta transmissão de novo": "Unmute this stream",
   "é o que você está enviando": "is what you're sending",
+  "Média": "Medium",
+  "Baixa": "Low",
+  "costuma usar a placa":
+    "usually uses the graphics card",
+  "Fixa o H.264 mesmo que ele caia no processador.":
+    "Forces H.264 even when it falls back to the processor.",
+  "Funciona em tudo. Roda no processador.":
+    "Works everywhere. Runs on the processor.",
+  "No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.":
+    "On automatic, Syden asks your computer before each stream whether H.264 comes out of the graphics card at the size you picked — and only uses it when it does. Leave it here unless you want to compare the two. Takes effect from the next share on.",
+  "o de sempre":
+    "the usual one",
+  "recomendado":
+    "recommended",
+  "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
+    "Uses the graphics card when it can handle it, and the processor when it cannot.",
 } satisfies Record<string, string>;

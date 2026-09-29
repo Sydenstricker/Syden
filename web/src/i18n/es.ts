@@ -414,9 +414,7 @@ export default {
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Tu transmisión no tiene sonido. El navegador solo manda el sonido si marcas “compartir audio” en la ventana donde eliges la pantalla.",
   "Automático": "Automático",
-  "Baixa — economiza dados": "Baja — ahorra datos",
   "Baixar até": "Descargar hasta",
-  "Média — metade da altura": "Media — la mitad de la altura",
   "Medindo…": "Midiendo…",
   "Administra a comunidade": "Administra la comunidad",
   "Administradores": "Administradores",
@@ -431,4 +429,20 @@ export default {
   "Calar esta transmissão": "Silenciar esta transmisión",
   "Ouvir esta transmissão de novo": "Volver a oír esta transmisión",
   "é o que você está enviando": "es lo que estás enviando",
+  "Média": "Media",
+  "Baixa": "Baja",
+  "costuma usar a placa":
+    "suele usar la tarjeta gráfica",
+  "Fixa o H.264 mesmo que ele caia no processador.":
+    "Fija H.264 aunque acabe en el procesador.",
+  "Funciona em tudo. Roda no processador.":
+    "Funciona en todo. Corre en el procesador.",
+  "No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.":
+    "En automático, Syden le pregunta a tu computadora antes de cada transmisión si H.264 sale por la tarjeta gráfica en el tamaño elegido — y solo lo usa cuando sale. Déjalo así, salvo que quieras comparar los dos. Vale a partir del próximo compartir.",
+  "o de sempre":
+    "el de siempre",
+  "recomendado":
+    "recomendado",
+  "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
+    "Usa la tarjeta gráfica cuando da abasto, y el procesador cuando no.",
 } satisfies Record<string, string>;

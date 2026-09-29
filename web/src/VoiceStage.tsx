@@ -38,8 +38,7 @@ import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect,
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
-import { useCartaoQueAbre } from './cartaoQueAbre';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
@@ -422,10 +421,11 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
  * O "i" no canto da transmissão: em que formato ela está chegando de verdade (não o que foi escolhido
  * nas configurações, mas o que o navegador conseguiu entregar) e até quanto você quer baixar.
  *
- * ABRE NO CLIQUE, e não ao passar o mouse. Passando o mouse era impossível USAR o que está dentro: o
- * cartão abre alguns pixels abaixo do botão, o ponteiro atravessa esse vazio no caminho e o cartão
- * some antes de a pessoa chegar nele. E a listinha de qualidade, que abre como janela do sistema,
- * fechava o cartão junto ao ser clicada. Ver cartaoQueAbre.ts.
+ * ABRE AO PASSAR O MOUSE, igual ao do volume — e o que permitiu isso foi trocar a listinha de opções
+ * por botões. Uma listinha (<select>) abre como janela do SISTEMA: enquanto ela está aberta o ponteiro
+ * está tecnicamente fora do cartão, que se fecha levando a escolha junto. Botões ficam dentro do
+ * cartão, onde o ponteiro alcança — a mesma razão pela qual a régua de volume sempre pôde ser assim.
+ * (O vão entre o botão e o cartão, que era o outro motivo de ele fugir, está consertado no CSS.)
  *
  * O QUE ELE NÃO MOSTRA MAIS: o nome do codificador por dentro ("SimulcastEncoderAdapter (libvpx,
  * libvpx, libvpx)"). Isso é informação de quem programa, não de quem assiste. Ficou o que a pessoa
@@ -443,21 +443,13 @@ function StreamInfoBadge({
   voice?: Voice;
 }) {
   const t = useT();
-  const { aberto, area, alternar } = useCartaoQueAbre();
+  const [aberto, setAberto] = useState(false);
   const stats = useStreamStats(publication, { local });
   const formato = describeStats(stats);
 
   return (
-    <div className="stream-info" ref={area}>
-      <button
-        className="stream-info-button"
-        aria-label={t('Informações da transmissão')}
-        aria-expanded={aberto}
-        onClick={(e) => {
-          e.stopPropagation();
-          alternar();
-        }}
-      >
+    <div className="stream-info" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
+      <button className="stream-info-button" aria-label={t('Informações da transmissão')} aria-expanded={aberto}>
         <Info size={16} />
       </button>
       {aberto && (
@@ -498,26 +490,39 @@ function StreamInfoBadge({
  * A escolha é sua e vale para TODAS as transmissões, agora e nas próximas: é uma preferência do
  * aparelho, não desta sala. Ver qualidadeQueRecebo.ts.
  */
+const OPCOES_DE_QUALIDADE: [QualidadeQueRecebo, string][] = [
+  ['auto', chave('Automático')],
+  ['media', chave('Média')],
+  ['baixa', chave('Baixa')],
+];
+
 function TetoDeQualidade({ room }: { room: Room }) {
   const t = useT();
   const settings = useSettings();
 
   return (
-    <label className="stream-qualidade">
-      {t('Baixar até')}
-      <select
-        value={settings.qualidadeQueRecebo}
-        onChange={(e) => {
-          const escolha = e.target.value as QualidadeQueRecebo;
-          updateSettings({ qualidadeQueRecebo: escolha });
-          aplicarTetoEmTodas(room, escolha);
-        }}
-      >
-        <option value="auto">{t('Automático')}</option>
-        <option value="media">{t('Média — metade da altura')}</option>
-        <option value="baixa">{t('Baixa — economiza dados')}</option>
-      </select>
-    </label>
+    <div className="stream-qualidade">
+      <span>{t('Baixar até')}</span>
+      {/* BOTÕES, E NÃO UMA LISTINHA. Ver o comentário no alto do StreamInfoBadge: listinha abre como
+          janela do sistema e fecharia o cartão ao ser clicada. E de quebra as três opções ficam à
+          vista, em vez de escondidas atrás de um clique. */}
+      <div className="stream-qualidade-opcoes" role="group" aria-label={t('Baixar até')}>
+        {OPCOES_DE_QUALIDADE.map(([valor, rotulo]) => (
+          <button
+            key={valor}
+            type="button"
+            className={settings.qualidadeQueRecebo === valor ? 'escolhida' : ''}
+            aria-pressed={settings.qualidadeQueRecebo === valor}
+            onClick={() => {
+              updateSettings({ qualidadeQueRecebo: valor });
+              aplicarTetoEmTodas(room, valor);
+            }}
+          >
+            {t(rotulo)}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

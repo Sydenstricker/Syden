@@ -9415,12 +9415,30 @@ body.arrastando-barra {
   color: var(--text-muted);
 }
 
-.stream-qualidade select {
-  background: var(--bg-input, var(--bg-sidebar));
-  color: var(--text);
+.stream-qualidade-opcoes {
+  display: flex;
+  gap: 4px;
+}
+
+.stream-qualidade-opcoes button {
+  flex: 1;
+  padding: 5px 4px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 4px 6px;
+  background: var(--bg-sidebar);
+  color: var(--text-muted);
   font-size: 12px;
+}
+
+.stream-qualidade-opcoes button:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+/* A escolhida fica com a cor de destaque: numa fileira de três, é o único jeito de saber onde se está. */
+.stream-qualidade-opcoes button.escolhida {
+  background: var(--accent, #5865f2);
+  border-color: var(--accent, #5865f2);
+  color: #fff;
 }
 

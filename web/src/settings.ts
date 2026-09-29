@@ -41,8 +41,14 @@ export interface Settings {
    * e só é baixada quando você clica em "Assistir" — o que poupa internet e processador de todo mundo.
    */
   abrirTransmissaoSozinha: boolean;
-  /** Codec da transmissão de tela. O H.264 costuma usar o codificador da placa de vídeo; o VP8, não. */
-  screenCodec: 'vp8' | 'h264';
+  /**
+   * Codec da transmissão de tela.
+   *
+   * 'auto' pergunta ao computador, na hora de transmitir, se o H.264 sai pela PLACA DE VÍDEO naquele
+   * tamanho de imagem — e só então o usa. É o padrão porque a resposta certa depende da máquina, e
+   * ninguém deveria precisar saber o que é um codec para transmitir sem travar. Ver escolherCodec.ts.
+   */
+  screenCodec: 'auto' | 'vp8' | 'h264';
   /** Sons de entrada, saída, mudo etc. */
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
@@ -66,7 +72,7 @@ const DEFAULTS: Settings = {
   startDeafened: false,
   showMembers: true,
   abrirTransmissaoSozinha: false,
-  screenCodec: 'vp8',
+  screenCodec: 'auto',
   sounds: true,
   soundboardVolume: 0.6,
   efeitosVisuais: true,

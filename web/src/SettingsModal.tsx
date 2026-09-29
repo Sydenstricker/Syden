@@ -1731,22 +1731,28 @@ function VoiceSection({ voice }: { voice: Voice }) {
 
       <h3>{t('Como a imagem é comprimida')}</h3>
       <p className="settings-hint">
-        Em muitos computadores o H.264 usa o codificador dedicado da placa de vídeo e sobra processador para o jogo; em
-        outros não muda nada. Não dá para adivinhar: troque, transmita, e passe o mouse no "i" da transmissão — ele diz
-        qual codificador entrou e se foi pela placa. Vale a partir do próximo compartilhamento.
+        {t(
+          'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.',
+        )}
       </p>
       <div className="quality-options" role="radiogroup">
         {(
           [
-            ['vp8', 'VP8', 'o de sempre', 'Funciona em tudo. É o que o Syden usava até agora.'],
-            ['h264', 'H.264', 'costuma usar a placa', 'Pode aliviar o processador em jogo. Teste e compare.'],
-          ] as ['vp8' | 'h264', string, string, string][]
+            [
+              'auto',
+              chave('Automático'),
+              chave('recomendado'),
+              chave('Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.'),
+            ],
+            ['vp8', 'VP8', chave('o de sempre'), chave('Funciona em tudo. Roda no processador.')],
+            ['h264', 'H.264', chave('costuma usar a placa'), chave('Fixa o H.264 mesmo que ele caia no processador.')],
+          ] as ['auto' | 'vp8' | 'h264', string, string, string][]
         ).map(([id, title, spec, hint]) => (
           <label key={id} className={`quality-option${settings.screenCodec === id ? ' selected' : ''}`}>
             <input type="radio" name="screen-codec" checked={settings.screenCodec === id} onChange={() => updateSettings({ screenCodec: id })} />
-            <span className="quality-title">{title}</span>
-            <span className="quality-spec">{spec}</span>
-            <span className="quality-hint">{hint}</span>
+            <span className="quality-title">{t(title)}</span>
+            <span className="quality-spec">{t(spec)}</span>
+            <span className="quality-hint">{t(hint)}</span>
           </label>
         ))}
       </div>
