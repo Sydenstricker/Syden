@@ -26,6 +26,7 @@ import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
+import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
 import { chave, useT } from './i18n';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
@@ -43,7 +44,7 @@ import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
-import type { Voice } from './useVoice';
+import { SCREEN_PRESETS, type Voice } from './useVoice';
 import { EmojiPackCatalog } from './EmojiPackCatalog';
 import { PackCatalog } from './PackCatalog';
 import { classeDoFundo, CORES_DE_NOME, corDoNome, FUNDOS } from './profileStyles';
@@ -1730,6 +1731,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
       </div>
 
       <h3>{t('Como a imagem é comprimida')}</h3>
+      <TesteDeCodec qualidade={settings.screenQuality} />
       <p className="settings-hint">
         {t(
           'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.',
@@ -1758,6 +1760,44 @@ function VoiceSection({ voice }: { voice: Voice }) {
       </div>
     </>
   );
+}
+
+/**
+ * O RESULTADO DO TESTE, ESCRITO NA TELA.
+ *
+ * O "Automático" já escolhia certo, mas escolhia calado: para quem abre as configurações, "automático"
+ * não diz o que vai acontecer nem se a máquina dá conta. Aqui a mesma pergunta que o Syden faz antes
+ * de transmitir é feita agora, com o tamanho de imagem que está escolhido, e a resposta aparece em
+ * português.
+ *
+ * É a MESMA função de escolherCodec.ts, de propósito: um teste que responde diferente do que o app faz
+ * na hora seria pior do que não ter teste. E ela é instantânea — uma pergunta ao navegador, sem
+ * transmitir nada e sem pedir a tela.
+ */
+function TesteDeCodec({ qualidade }: { qualidade: ScreenQuality }) {
+  const t = useT();
+  const [resultado, setResultado] = useState<EscolhaDeCodec | null>(null);
+
+  useEffect(() => {
+    let valeu = true;
+    const preset = SCREEN_PRESETS[qualidade];
+    void escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30).then((escolha) => {
+      if (valeu) setResultado(escolha);
+    });
+    return () => {
+      valeu = false;
+    };
+  }, [qualidade]);
+
+  if (!resultado) return null;
+  const recado =
+    resultado.motivo === 'placa'
+      ? t('Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.')
+      : resultado.motivo === 'processador'
+        ? t('Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.')
+        : t('Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.');
+
+  return <p className="settings-hint settings-teste">{recado}</p>;
 }
 
 /** Mostra o nível do microfone em tempo real, sem transmitir nada. */

@@ -451,4 +451,10 @@ export default {
     "Hasta 360p · 15 cuadros por segundo. Gasta menos datos.",
   "Até 720p · 30 quadros por segundo.":
     "Hasta 720p · 30 cuadros por segundo.",
+  "Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.":
+    "Este navegador no responde cuál codificador es mejor. En automático se queda con VP8, que funciona en todo.",
+  "Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.":
+    "En esta computadora, el automático elige H.264 por la tarjeta gráfica: es lo que deja más procesador para el juego.",
+  "Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.":
+    "En esta computadora, el automático elige VP8 por el procesador. La tarjeta gráfica no codifica H.264 en este tamaño de imagen.",
 } satisfies Record<string, string>;

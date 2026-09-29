@@ -451,4 +451,10 @@ export default {
     "Up to 360p · 15 frames per second. Uses less data.",
   "Até 720p · 30 quadros por segundo.":
     "Up to 720p · 30 frames per second.",
+  "Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.":
+    "This browser won't say which encoder is better. On automatic it stays on VP8, which works everywhere.",
+  "Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.":
+    "On this computer, automatic picks H.264 through the graphics card — the option that leaves the most processor for your game.",
+  "Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.":
+    "On this computer, automatic picks VP8 through the processor. The graphics card does not encode H.264 at this image size.",
 } satisfies Record<string, string>;

@@ -43,7 +43,7 @@ function readLocalMedia(lp: LocalParticipant): LocalMedia {
 }
 
 // Qualidade do compartilhamento de tela escolhida nas configurações.
-const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
+export const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
   light: ScreenSharePresets.h720fps30, // até 2 Mbps
   standard: ScreenSharePresets.h1080fps30, // até 5 Mbps
   smooth: new VideoPreset(1920, 1080, 8_000_000, 60), // jogos; até 8 Mbps

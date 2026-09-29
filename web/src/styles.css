@@ -9442,3 +9442,12 @@ body.arrastando-barra {
   color: #fff;
 }
 
+
+/* O resultado do teste de codec: é resposta a uma pergunta, não instrução — fica destacado do texto
+   explicativo em volta para quem abriu procurando justamente isso achar de primeira. */
+.settings-teste {
+  padding: 8px 10px;
+  border-left: 3px solid var(--accent, #5865f2);
+  background: var(--bg-sidebar);
+  border-radius: 0 6px 6px 0;
+}
