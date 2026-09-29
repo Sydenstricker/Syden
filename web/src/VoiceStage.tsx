@@ -18,6 +18,7 @@ import {
   LayoutGrid,
   Maximize,
   Minimize,
+  MonitorPlay,
   Mic,
   MicOff,
   Music,
@@ -791,13 +792,42 @@ function BotaoTelaCheia({ alvo }: { alvo: RefObject<HTMLDivElement | null> }) {
  * Um quadro grande da tela (o que está em foco, ou cada uma quando a tela está dividida): o vídeo,
  * os controles da transmissão e o botão de tela cheia deste quadro.
  */
-function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPlaceholder; voice: Voice; children: ReactNode }) {
+function FocusPane({
+  trackRef,
+  voice,
+  membro,
+  children,
+}: {
+  trackRef: TrackReferenceOrPlaceholder;
+  voice: Voice;
+  /** Quem está transmitindo, para saber O QUE está sendo transmitido ("Sea of Thieves"). */
+  membro?: VoiceMember;
+  children: ReactNode;
+}) {
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
 
   return (
     <div className="stage-main" ref={ref}>
       {children}
+      {/*
+        O QUE ESTÁ SENDO TRANSMITIDO, escrito em cima da transmissão.
+        
+        O nome já existia e só aparecia na lista de pessoas, do outro lado da tela — quem chega no meio
+        e olha para a imagem não descobre o que está vendo sem procurar. Aqui ele fica onde a pessoa
+        está olhando.
+
+        O ÍCONE É NOSSO, e não o do programa transmitido. O do programa existe (o seletor de tela do app
+        já o recebe do Windows), mas mandá-lo para a sala inteira seria abrir um caminho de imagem que
+        não passa pela conferência de conteúdo — a única imagem no Syden que chegaria à tela de todo
+        mundo sem ser checada. Um desenho genérico custa nada e não abre porta nenhuma.
+      */}
+      {trackRef.source === Track.Source.ScreenShare && membro?.screenName && (
+        <div className="stream-etiqueta">
+          <MonitorPlay size={14} />
+          <span>{membro.screenName}</span>
+        </div>
+      )}
       {trackRef.source === Track.Source.ScreenShare && (
         <div className="stream-controls">
           <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} voice={voice} />
@@ -928,7 +958,12 @@ function Stage({
         <div className="stage-focus">
           <div className="stage-split">
             {abertas.map((ref) => (
-              <FocusPane key={trackKey(ref)} trackRef={ref} voice={voice}>
+              <FocusPane
+                key={trackKey(ref)}
+                trackRef={ref}
+                voice={voice}
+                membro={members.find((m) => String(m.userId) === ref.participant.identity)}
+              >
                 {tile(ref, 80)}
               </FocusPane>
             ))}
@@ -937,7 +972,11 @@ function Stage({
         </div>
       ) : focused ? (
         <div className="stage-focus">
-          <FocusPane trackRef={focused} voice={voice}>
+          <FocusPane
+            trackRef={focused}
+            voice={voice}
+            membro={members.find((m) => String(m.userId) === focused.participant.identity)}
+          >
             {tile(focused, 80)}
           </FocusPane>
           {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48))}</div>}

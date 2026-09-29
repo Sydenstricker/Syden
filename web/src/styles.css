@@ -9451,3 +9451,37 @@ body.arrastando-barra {
   background: var(--bg-sidebar);
   border-radius: 0 6px 6px 0;
 }
+
+/*
+ * A etiqueta do que está sendo transmitido, no alto do quadro.
+ *
+ * Fica em CIMA e à esquerda porque os controles (o "i", o som, o fechar) moram embaixo à direita: são
+ * duas coisas de naturezas diferentes — uma informa, a outra obedece — e misturá-las faria a pessoa
+ * procurar botão onde só há rótulo.
+ *
+ * O fundo escuro semitransparente é obrigatório: por baixo passa a imagem do jogo, que pode ser
+ * qualquer cor, e texto branco sobre céu claro desaparece.
+ */
+.stream-etiqueta {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: min(60%, 320px);
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--overlay);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.stream-etiqueta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
