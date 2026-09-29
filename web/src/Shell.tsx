@@ -719,6 +719,25 @@ export function Shell({
               />
             }
           />
+        ) : communities.length > 0 ? (
+          /**
+           * O LUGAR DA BARRA LATERAL, GUARDADO ENQUANTO ELA NÃO CHEGA.
+           *
+           * Sem isto, a tela entra sem barra nenhuma e ela aparece um segundo depois, empurrando a
+           * vila inteira para o lado. O olho lê esse salto como travamento — foi o relato: "parece
+           * que travou o aplicativo". E o pior é que não travou nada: estava tudo funcionando, só
+           * chegando em duas etapas.
+           *
+           * Um retângulo da largura certa resolve o salto inteiro, porque o salto é de GEOMETRIA. As
+           * barrinhas por dentro existem para ele não parecer um painel vazio e quebrado — dizem
+           * "vem coisa aqui", que é a verdade.
+           */
+          <div className="sidebar sidebar-esperando" aria-hidden="true">
+            <span className="esqueleto esqueleto-titulo" />
+            <span className="esqueleto" />
+            <span className="esqueleto esqueleto-curto" />
+            <span className="esqueleto" />
+          </div>
         ) : (
           /**
            * "VOCÊ NÃO ESTÁ EM NENHUMA COMUNIDADE" SÓ QUANDO É VERDADE, e isso precisou de mais do que

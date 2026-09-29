@@ -436,6 +436,57 @@ textarea {
   flex-direction: column;
 }
 
+/*
+ * A BARRA LATERAL ANTES DE ELA EXISTIR.
+ *
+ * Entrar no Syden acontece em duas etapas: a lista de comunidades chega primeiro, e o conteúdo da
+ * comunidade aberta (canais, membros, primeiras mensagens) vem numa segunda ida ao servidor. Sem
+ * alguém guardando o lugar, a tela nasce sem barra lateral e ela entra depois empurrando tudo — um
+ * salto que o olho lê como travamento, e não como carregamento.
+ *
+ * A largura é a mesma da barra de verdade (a variável, para acompanhar o ajuste de acessibilidade),
+ * então quando a troca acontece nada se move: só aparece conteúdo onde havia espera.
+ */
+.sidebar-esperando {
+  gap: 14px;
+  padding: 18px 14px;
+  box-sizing: border-box;
+}
+
+.esqueleto {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--bg-main);
+  opacity: 0.5;
+  animation: esqueleto-respira 1.4s ease-in-out infinite;
+}
+
+.esqueleto-titulo {
+  height: 18px;
+  margin-bottom: 10px;
+}
+
+.esqueleto-curto {
+  width: 60%;
+}
+
+@keyframes esqueleto-respira {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Parado ele continua dizendo a mesma coisa: há espaço reservado, e algo vem aqui. */
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto {
+    animation: none;
+  }
+}
+
 /* Quem não participa de nenhuma comunidade vê isto no lugar da barra lateral. */
 .no-community {
   flex: 1;
