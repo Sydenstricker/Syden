@@ -86,3 +86,29 @@ sistema, e que o navegador já manda para todo site que ela abre. Descobrir paí
 seria outra coisa: mais invasivo e mais errado (VPN, quem mora fora, quem viaja).
 
 A detecção é **padrão inicial, nunca trava**: a escolha explícita fica guardada e não é sobreposta.
+
+## A tela não interrompe, não insiste e não mente
+
+Quatro regras que vieram da pessoa que usa o Syden, na noite de 28/09/2026, olhando a entrada pelo
+Google funcionar. Todas do mesmo tipo: a interface fazendo algo que ninguém pediu.
+
+**Depois do "sim", não pergunte de novo.** Quem autorizou no provedor terminou o que tinha para
+fazer. A entrada pelo app existia com uma segunda confirmação em cima — a do Windows, para o site
+poder abrir o programa — e a resposta certa não foi explicá-la melhor: foi remover a necessidade dela
+(o app pergunta ao servidor se terminou, ver `/api/auth/social/esperar`). Antes de melhorar o texto de
+uma pergunta, pergunte se ela precisa existir.
+
+**Não tome o primeiro plano.** A janela vindo para frente sozinha ao fim do login foi descrita como
+"parece que ele toma controle do meu PC". E só apareceu no GitHub, que não mostra tela de permissão
+nenhuma, então tudo acontecia no mesmo segundo do clique. Roubar o foco é o que programa ruim faz. O
+sinal de que deu certo vai onde a pessoa já está olhando; trazer a janela só acontece quando ela pede
+(clicar numa notificação, por exemplo). Piscar na barra de tarefas é o meio-termo aceitável.
+
+**Quem vai pode voltar.** Toda tela para onde se manda alguém precisa do caminho de volta. A tela de
+entrada não tinha nenhum: quem chegasse sem conta só saía apagando o `/app/` do endereço à mão.
+
+**A tela não afirma o que não é, nem por meio segundo.** "Você não está em nenhuma comunidade" enquanto
+a lista ainda vinha; o coelho girando de "espere" quando já tinha acabado; a barra lateral entrando
+atrasada e empurrando tudo, o que o olho lê como travamento. Carregamento em etapas é normal e não
+precisa ser escondido — o que não pode é a etapa intermediária **declarar** um estado que não é o
+real. Na dúvida, guarde o lugar e não diga nada (ver `web/src/lugarDaBarra.ts`).
