@@ -97,7 +97,7 @@ export function PainelDeAudiencia() {
   return (
     <section className="usage-card">
       <h3>
-        <Gauge size={16} aria-hidden="true" /> Quem abre o site
+        <Gauge size={16} aria-hidden="true" /> {t('Quem abre o site')}
       </h3>
       <p className="settings-hint">
         Últimos 7 dias, medidos pelo Web Analytics da Cloudflare. Conta quem abre a página, tenha conta ou não — e o

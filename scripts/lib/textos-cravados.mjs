@@ -16,8 +16,18 @@ import { join } from 'node:path';
  * alguém olhar a tela em inglês. Já uma enxurrada de acusações falsas faria esta ferramenta ser
  * ignorada, que é o pior desfecho possível para uma guarda.
  */
+/*
+ * A LISTA CRESCEU DEPOIS DE ELA DEIXAR PASSAR 21 TEXTOS. A catraca marcava zero e a tradução dizia
+ * 100%, e mesmo assim "Reconectando ao servidor…", "Carregando…", "Uso do servidor" e outros dezoito
+ * estavam em português na tela de quem escolheu inglês. Nenhum deles tem acento, e nenhum usa as
+ * palavras que estavam aqui — escaparam pela fresta que este comentário previa: "um texto em português
+ * sem acento que escape da lista aparece depois, quando alguém olhar a tela em inglês".
+ *
+ * As palavras acrescentadas são de tela, não de código, e nenhuma existe em inglês: quem escreve
+ * "servidor", "carregando" ou "enviar" no meio de uma tag está escrevendo para a pessoa ler.
+ */
 export const PARECE_PORTUGUES =
-  /[áàâãéêíóôõúüç]|\b(você|voce|não|nao|para|com|uma|que|sua|seu|está|sao|são|nome|senha|mensagem|canal|sala|conta|nada|ainda|sem|dos|das|pelo|pela)\b/i;
+  /[áàâãéêíóôõúüç]|\b(você|voce|não|nao|para|com|uma|que|sua|seu|está|sao|são|nome|senha|mensagem|canal|sala|conta|nada|ainda|sem|dos|das|pelo|pela|servidor|entrar|enviar|agora|aqui|quem|todos|tudo|nova|novo|clique|espere|carregando|reconectando)\b/i;
 
 /** Atributos que viram texto na tela: dica do mouse, rótulo de leitor de tela, exemplo no campo. */
 const ATRIBUTOS = /(?:title|aria-label|placeholder|alt)="([^"]{3,})"/g;

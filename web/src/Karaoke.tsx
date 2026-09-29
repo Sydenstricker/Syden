@@ -142,7 +142,7 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
         <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={80} placeholder={t('ex.: Evidências')} />
       </label>
       <label className="settings-field">
-        Quem canta
+        {t('Quem canta')}
         <input value={artist} onChange={(e) => setArtist(e.target.value)} maxLength={80} placeholder="opcional" />
       </label>
       <label className="file-picker btn-secondary">

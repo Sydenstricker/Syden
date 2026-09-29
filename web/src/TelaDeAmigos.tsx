@@ -228,7 +228,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 autoComplete="off"
               />
               <button type="submit" disabled={ocupado || !nome.trim()}>
-                <UserPlus size={15} aria-hidden="true" /> Enviar pedido
+                <UserPlus size={15} aria-hidden="true" /> {t('Enviar pedido')}
               </button>
             </div>
             {/* Dito de frente, porque a alternativa é a pessoa achar que o Syden está quebrado: a

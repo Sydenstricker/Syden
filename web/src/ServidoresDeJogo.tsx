@@ -143,7 +143,7 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
     }
   }
 
-  if (servidores === null) return <p className="settings-hint">Carregando…</p>;
+  if (servidores === null) return <p className="settings-hint">{t('Carregando…')}</p>;
 
   // Agrupado por jogo: uma turma que joga três coisas tem três blocos, e não uma lista embaralhada.
   const porJogo = new Map<string, ServidorDeJogo[]>();
@@ -229,7 +229,7 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
 
       {apagando && (
         <ConfirmDialog
-          title="Apagar este servidor?"
+          title={t('Apagar este servidor?')}
           confirmLabel="Apagar"
           onConfirm={() => void apagar(apagando)}
           onCancel={() => setApagando(null)}

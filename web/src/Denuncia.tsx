@@ -47,7 +47,7 @@ export function DialogoDeDenuncia({
             <h2>
               <Flag size={18} aria-hidden="true" /> {t('Denúncia enviada')}
             </h2>
-            <p>Quem cuida do Syden vai olhar. Obrigado por avisar.</p>
+            <p>{t('Quem cuida do Syden vai olhar. Obrigado por avisar.')}</p>
             <button type="button" className="btn-primary" onClick={aoFechar} autoFocus>
               {t('Fechar')}
             </button>

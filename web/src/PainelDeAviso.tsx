@@ -99,7 +99,7 @@ export function PainelDeAviso() {
     }
   }
 
-  if (estado === 'lendo') return <p className="settings-hint">Carregando…</p>;
+  if (estado === 'lendo') return <p className="settings-hint">{t('Carregando…')}</p>;
 
   return (
     <section className="painel-aviso">

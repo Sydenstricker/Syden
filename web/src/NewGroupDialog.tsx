@@ -52,7 +52,7 @@ export function NewGroupDialog({
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="dialog" role="dialog" aria-modal="true" aria-labelledby="group-dialog-title">
-        <h2 id="group-dialog-title">Nova conversa</h2>
+        <h2 id="group-dialog-title">{t('Nova conversa')}</h2>
         <div className="dialog-body">
           <p className="dialog-note">{t('Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.')}</p>
 

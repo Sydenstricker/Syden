@@ -246,6 +246,7 @@ function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
 }
 
 export function PackCatalog({ user }: { user: User }) {
+  const t = useT();
   const [packs, setPacks] = useState<Pack[] | null>(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -280,7 +281,7 @@ export function PackCatalog({ user }: { user: User }) {
       )}
 
       {error && <p className="form-error">{error}</p>}
-      {!packs && !error && <p className="settings-hint">Carregando…</p>}
+      {!packs && !error && <p className="settings-hint">{t('Carregando…')}</p>}
 
       <div className="pack-list">
         {packs?.map((pack) => (

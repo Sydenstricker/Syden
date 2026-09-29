@@ -35,7 +35,7 @@ export function HealthPanel() {
   }, []);
 
   if (error && !health) return <p className="form-error">{error}</p>;
-  if (!health) return <p className="usage-muted">Carregando…</p>;
+  if (!health) return <p className="usage-muted">{t('Carregando…')}</p>;
 
   const diskUsed = health.diskFree !== null && health.diskTotal ? 1 - health.diskFree / health.diskTotal : null;
   const quedas = health.events.filter((e) => e.kind === 'livekit_down').length;

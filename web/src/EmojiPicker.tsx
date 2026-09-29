@@ -112,7 +112,7 @@ export function EmojiPicker({ onPick, onClose }: { onPick: (text: string) => voi
       <div className="emoji-picker-scroll" ref={scrollRef}>
         {serverMatches.length > 0 && (
           <>
-            <div className="emoji-picker-section">Deste servidor</div>
+            <div className="emoji-picker-section">{t('Deste servidor')}</div>
             <div className="emoji-picker-grid">
               {serverMatches.map((emoji) => (
                 <button

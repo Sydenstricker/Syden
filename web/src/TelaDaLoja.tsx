@@ -162,7 +162,7 @@ export function TelaDaLoja({
   }
 
   if (erro && !dados) return <p className="form-error">{erro}</p>;
-  if (!dados) return <p className="settings-hint">Carregando a loja…</p>;
+  if (!dados) return <p className="settings-hint">{t('Carregando a loja…')}</p>;
 
   const doTipo = dados.itens.filter((item) => item.tipo === aba);
   const vestidoAgora = (item: ItemDaLoja) =>

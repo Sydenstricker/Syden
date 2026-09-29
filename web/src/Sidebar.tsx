@@ -155,7 +155,7 @@ export function Sidebar({
         {/* Consumo do servidor interessa a quem cuida dele: só os administradores veem. */}
         {user.isAdmin && (
           <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
-            <BarChart3 size={18} /> Uso do servidor
+            <BarChart3 size={18} /> {t('Uso do servidor')}
           </button>
         )}
 

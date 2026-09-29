@@ -750,7 +750,7 @@ export function Shell({
           )
         )}
         <main className="main">
-          {!online && <div className="banner">Reconectando ao servidor…</div>}
+          {!online && <div className="banner">{t('Reconectando ao servidor…')}</div>}
           {notice && (
             <div className="banner" onClick={() => setNotice(null)}>
               {notice} <span className="banner-close">✕</span>

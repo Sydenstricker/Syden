@@ -77,7 +77,7 @@ export function UsageDashboard({
     <div className="usage">
       <header className="main-header">
         <MobileBackButton onBack={onMobileBack} />
-        <BarChart3 size={22} className="muted-icon" /> Uso do servidor
+        <BarChart3 size={22} className="muted-icon" /> {t('Uso do servidor')}
         <div className="tab-row" role="tablist" aria-label={t('Painéis do servidor')}>
           <button role="tab" aria-selected={tab === 'consumo'} className={`tab${tab === 'consumo' ? ' active' : ''}`} onClick={() => setTab('consumo')}>
             {t('Consumo')}

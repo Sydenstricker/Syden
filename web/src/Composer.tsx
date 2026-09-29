@@ -205,8 +205,8 @@ export const Composer = forwardRef<ComposerHandle, {
         <div className="composer-plus">
           <button
             className={`icon-plain composer-plus-button${menuOpen ? ' active' : ''}`}
-            title="Enviar arquivo ou fazer enquete"
-            aria-label="Enviar arquivo ou fazer enquete"
+            title={t('Enviar arquivo ou fazer enquete')}
+            aria-label={t('Enviar arquivo ou fazer enquete')}
             onPointerDown={(e) => e.stopPropagation()}
             onClick={() => setMenuOpen(!menuOpen)}
           >
@@ -221,7 +221,7 @@ export const Composer = forwardRef<ComposerHandle, {
                   fileRef.current?.click();
                 }}
               >
-                <ImageUp size={18} /> Enviar arquivo ou imagem
+                <ImageUp size={18} /> {t('Enviar arquivo ou imagem')}
               </button>
               <button
                 role="menuitem"

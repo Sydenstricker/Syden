@@ -125,7 +125,7 @@ export function PainelDeComunidades() {
             <th scope="col">{t('Comunidade')}</th>
             <th scope="col">{t('Membros')}</th>
             <th scope="col">{t('Mensagens')}</th>
-            <th scope="col">Quem falou</th>
+            <th scope="col">{t('Quem falou')}</th>
             <th scope="col">{t('Voz')}</th>
             <th scope="col">{t('Tela')}</th>
             <th scope="col">{t('Última')}</th>

@@ -480,7 +480,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
           </span>
           {voice.telaCompartilhada && (
             <button className="btn-secondary stream-audio-retry" onClick={() => void voice.shareScreen(voice.telaCompartilhada!)}>
-              Escolher de novo, marcando o som
+              {t('Escolher de novo, marcando o som')}
             </button>
           )}
         </div>
