@@ -1706,14 +1706,19 @@ function VoiceSection({ voice }: { voice: Voice }) {
         onChange={(value) => updateSettings({ abrirTransmissaoSozinha: value })}
       />
 
-      <h3>Qualidade do compartilhamento de tela</h3>
+      <h3>{t('Qualidade do compartilhamento de tela')}</h3>
       <p className="settings-hint">{t('Vale a partir do próximo compartilhamento.')}</p>
       <div className="quality-options" role="radiogroup">
         {(
           [
-            ['light', 'Leve', '720p · 30 fps', 'Para internet mais fraca.'],
-            ['standard', 'Padrão', '1080p · 30 fps', 'Recomendado para a maioria.'],
-            ['smooth', 'Fluido', '1080p · 60 fps', 'Para jogos. Usa mais internet.'],
+            ['light', chave('Leve'), '720p · 30 fps', chave('Para internet mais fraca.')],
+            ['standard', chave('Padrão'), '1080p · 30 fps', chave('Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.')],
+            [
+              'smooth',
+              chave('Fluido'),
+              '1080p · 60 fps',
+              chave('Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.'),
+            ],
           ] as [ScreenQuality, string, string, string][]
         ).map(([id, title, spec, hint]) => (
           <label key={id} className={`quality-option${settings.screenQuality === id ? ' selected' : ''}`}>
@@ -1723,9 +1728,9 @@ function VoiceSection({ voice }: { voice: Voice }) {
               checked={settings.screenQuality === id}
               onChange={() => updateSettings({ screenQuality: id })}
             />
-            <span className="quality-title">{title}</span>
+            <span className="quality-title">{t(title)}</span>
             <span className="quality-spec">{spec}</span>
-            <span className="quality-hint">{hint}</span>
+            <span className="quality-hint">{t(hint)}</span>
           </label>
         ))}
       </div>

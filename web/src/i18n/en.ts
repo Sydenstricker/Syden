@@ -465,4 +465,18 @@ export default {
     "through the processor",
   "Testando… os números aparecem em instantes.": "Testing… the numbers show up in a moment.",
   "Testar a transmissão": "Test the stream",
+  "Fluido":
+    "Smooth",
+  "Leve":
+    "Light",
+  "Padrão":
+    "Standard",
+  "Para internet mais fraca.":
+    "For a weaker connection.",
+  "Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.":
+    "For games. Sends a single image, the best one: it leaves more machine for the game, and viewers get it as it is.",
+  "Qualidade do compartilhamento de tela":
+    "Screen sharing quality",
+  "Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.":
+    "Recommended for most people. Viewers can lower the quality if they need to.",
 } satisfies Record<string, string>;

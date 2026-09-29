@@ -465,4 +465,18 @@ export default {
     "por el procesador",
   "Testando… os números aparecem em instantes.": "Probando… los números aparecen en un momento.",
   "Testar a transmissão": "Probar la transmisión",
+  "Fluido":
+    "Fluido",
+  "Leve":
+    "Ligera",
+  "Padrão":
+    "Estándar",
+  "Para internet mais fraca.":
+    "Para conexiones más débiles.",
+  "Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.":
+    "Para juegos. Manda una sola imagen, la mejor: sobra máquina para el juego, y quien mira recibe lo que es.",
+  "Qualidade do compartilhamento de tela":
+    "Calidad al compartir pantalla",
+  "Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.":
+    "Recomendado para la mayoría. Quien mira puede bajar la calidad si lo necesita.",
 } satisfies Record<string, string>;

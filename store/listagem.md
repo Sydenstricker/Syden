@@ -16,12 +16,12 @@ Cole cada bloco no campo correspondente do Partner Center. Tudo em português do
 
 ## Descrição curta
 
-Voz, vídeo, tela compartilhada e chat para o seu grupo de amigos, num servidor privado e só por convite.
+Voz, vídeo, tela compartilhada e chat para o seu grupo de amigos. Crie a sua comunidade em um minuto.
 
 ## Descrição
 
 Syden é o ponto de encontro do seu grupo de amigos: salas de voz, câmera, compartilhamento de tela e chat de
-texto, num servidor privado em que só entra quem recebeu o convite.
+texto. Qualquer pessoa cria uma conta e monta a sua comunidade; nas comunidades, entra quem recebe o convite.
 
 - Salas de voz com supressão de ruído e cancelamento de eco.
 - Compartilhamento de tela em até 1080p a 60 quadros por segundo, com seletor de telas e janelas e áudio do
@@ -30,7 +30,10 @@ texto, num servidor privado em que só entra quem recebeu o convite.
 - Soundboard: sons que tocam para todos na sala.
 - Notificações do Windows e teclas de atalho globais para silenciar e ensurdecer, mesmo com o app minimizado.
 - Fica na bandeja do sistema, pronto para a próxima conversa.
-- Moderação: o administrador pode apagar mensagens e remover membros; cada pessoa pode excluir a própria conta.
+- Entrar com Google, Discord, GitHub ou Steam, além de nome e senha.
+- Karaokê, jogos e enfeites: emojis, sons e molduras conquistadas no uso.
+- Em português, inglês e espanhol.
+- Moderação: quem administra a comunidade apaga mensagens e remove membros; cada pessoa pode excluir a própria conta.
 
 Sem anúncios e sem assinatura. Voz, vídeo e telas compartilhadas não são gravados.
 
@@ -41,7 +44,7 @@ Sem anúncios e sem assinatura. Voz, vídeo e telas compartilhadas não são gra
 - Chat com emojis personalizados
 - Soundboard do servidor
 - Notificações e atalhos globais
-- Acesso só por convite
+- Comunidades privadas, com entrada por convite
 
 ## Palavras-chave
 

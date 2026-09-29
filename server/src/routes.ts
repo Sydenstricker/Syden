@@ -1184,6 +1184,24 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.delete<{ Params: { id: string } }>('/api/channels/:id', async (request, reply) => {
       const channel = channelAccess(request, reply, true);
       if (!channel) return reply;
+
+      /**
+       * APAGAR NÃO É EDITAR, e por isso não basta ter criado o canal.
+       *
+       * Qualquer pessoa da comunidade pode criar um canal, e o channelAccess deixava quem criou também
+       * APAGAR. Renomear é reversível; apagar não: as mensagens caem junto, por cascata no banco. Ou
+       * seja, alguém criava o #combinados, a turma conversava ali por um mês, e essa pessoa levava o
+       * mês inteiro embora sozinha — sem ser administradora de nada.
+       *
+       * O conteúdo de um canal é de quem escreveu nele, não de quem digitou o nome. Apagar passa a ser
+       * de quem administra a comunidade, que é quem responde por ela.
+       */
+      if (!manages(roleIn(request.user, channel.communityId))) {
+        return reply
+          .code(403)
+          .send({ error: 'Só quem administra a comunidade pode apagar um canal: com ele vão as mensagens de todo mundo.' });
+      }
+
       if (channel.type === 'text' && db.countChannels(channel.communityId, 'text') === 1) {
         return reply.code(400).send({ error: 'Precisa existir pelo menos um canal de texto.' });
       }

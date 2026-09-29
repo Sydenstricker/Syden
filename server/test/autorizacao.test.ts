@@ -83,3 +83,29 @@ describe('painéis de dono', () => {
     assert.equal((await estranho('GET', '/api/me')).json().isAdmin, false, 'continua sem ser administrador');
   });
 });
+
+describe('apagar um canal leva as mensagens de todo mundo junto', () => {
+  /**
+   * Por isso apagar é de quem administra, e não de quem criou.
+   *
+   * Qualquer pessoa da comunidade pode criar um canal — e isso é bom, é assim que a turma se organiza
+   * sozinha. Mas quem cria o #combinados não vira dono do que os outros escreveram nele: as mensagens
+   * caem por cascata no banco, e não voltam. Renomear, que é reversível, continua com quem criou.
+   */
+  it('quem criou o canal renomeia, mas não apaga', async () => {
+    const caio = await criarConta(app, 'caio');
+    const membro = comToken(app, caio.token);
+    await membro('POST', '/api/communities/join', { code: convite });
+
+    const meuCanal = (await membro('POST', `/api/communities/${comunidadeId}/channels`, { name: 'combinados', type: 'text' })).json();
+    assert.ok(meuCanal.id, 'membro comum pode criar canal');
+
+    const renomear = await membro('PATCH', `/api/channels/${meuCanal.id}`, { name: 'combinados-2' });
+    assert.equal(renomear.statusCode, 200, 'quem criou ainda renomeia o que criou');
+
+    const apagar = await membro('DELETE', `/api/channels/${meuCanal.id}`);
+    assert.equal(apagar.statusCode, 403, 'mas não apaga: o conteúdo é de quem escreveu, não de quem nomeou');
+
+    assert.equal((await dona('DELETE', `/api/channels/${meuCanal.id}`)).statusCode, 200, 'quem administra apaga');
+  });
+});

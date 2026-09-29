@@ -75,10 +75,27 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * baixa e decodifica 1080p para ver um quadradinho de 200 pixels. As camadas que ninguém pede não são nem
  * codificadas, então elas não custam processador de graça para quem transmite.
  */
+/**
+ * As camadas extras que cada qualidade publica, além da principal.
+ *
+ * CADA CAMADA É UMA CODIFICAÇÃO A MAIS NA MÁQUINA DE QUEM TRANSMITE, e é aí que está o preço. O
+ * servidor não recodifica nada (é o que o mantém barato): se quem assiste vai poder escolher entre
+ * três tamanhos, quem transmite tem de mandar os três. Em software, três codificações de 1080p60 é
+ * mais do que muita máquina aguenta — e o sintoma aparece do lado errado, na tela de quem assiste,
+ * enquanto o jogo continua liso para quem joga.
+ *
+ * NO MODO FLUIDO NÃO HÁ CAMADA NENHUMA, e essa é a mudança: quem escolhe "para jogos, 60 quadros"
+ * está dizendo que a máquina é o gargalo. Cobrar dela mais duas codificações para dar opção aos
+ * outros é cobrar do lado errado. Ali vai uma imagem só, a melhor, e quem assiste recebe o que ela é.
+ *
+ * Nos outros dois modos as camadas ficam: no Padrão elas são o que permite a alguém no celular pagar
+ * menos internet sem estragar a transmissão de quem está no computador, e a conta cabe. No Leve, a
+ * única camada extra é pequena de propósito — é o modo de quem já tem pouca máquina.
+ */
 const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
   light: [new VideoPreset(640, 360, 400_000, 15)],
   standard: [new VideoPreset(640, 360, 400_000, 15), new VideoPreset(1280, 720, 2_000_000, 30)],
-  smooth: [new VideoPreset(640, 360, 500_000, 15), new VideoPreset(1280, 720, 3_000_000, 30)],
+  smooth: [],
 };
 
 // De quanto em quanto tempo a otimização dinâmica confere como a transmissão está indo.
