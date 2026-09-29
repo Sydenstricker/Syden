@@ -479,4 +479,8 @@ export default {
     "Screen sharing quality",
   "Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.":
     "Recommended for most people. Viewers can lower the quality if they need to.",
+  "Até {minutos} minutos. O recado some da conversa em 7 dias.":
+    "Up to {minutos} minutes. The message disappears from the chat after 7 days.",
+  "some em 7 dias":
+    "gone in 7 days",
 } satisfies Record<string, string>;

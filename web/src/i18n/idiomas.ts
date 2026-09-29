@@ -164,6 +164,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   en: () => import('./en'),
   es: () => import('./es'),
   fr: () => import('./fr'),
+  ar: () => import('./ar'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

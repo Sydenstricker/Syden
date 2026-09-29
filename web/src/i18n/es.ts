@@ -479,4 +479,8 @@ export default {
     "Calidad al compartir pantalla",
   "Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.":
     "Recomendado para la mayoría. Quien mira puede bajar la calidad si lo necesita.",
+  "Até {minutos} minutos. O recado some da conversa em 7 dias.":
+    "Hasta {minutos} minutos. El mensaje desaparece de la conversación en 7 días.",
+  "some em 7 dias":
+    "desaparece en 7 días",
 } satisfies Record<string, string>;

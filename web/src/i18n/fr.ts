@@ -499,4 +499,8 @@ export default {
   '{n} na chamada agora': '{n} en appel maintenant',
   'Carregando…': 'Chargement…',
   'Enviar mensagem': 'Envoyer un message',
+  "Até {minutos} minutos. O recado some da conversa em 7 dias.":
+    "Jusqu’à {minutos} minutes. Le message disparaît de la conversation au bout de 7 jours.",
+  "some em 7 dias":
+    "disparaît dans 7 jours",
 } satisfies Record<string, string>;

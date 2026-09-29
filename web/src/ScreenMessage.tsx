@@ -179,7 +179,7 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
         >
           {comVoz ? <Mic size={16} /> : <MicOff size={16} />}
         </button>
-        <span className="settings-hint">Até {MINUTOS_DO_RECADO} minutos. O recado some da conversa em 7 dias.</span>
+        <span className="settings-hint">{t('Até {minutos} minutos. O recado some da conversa em 7 dias.', { minutos: MINUTOS_DO_RECADO })}</span>
         {erro && <span className="form-error small">{erro}</span>}
       </div>
     );
@@ -204,7 +204,7 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
       <video className="recado-video" src={gravado?.url} controls onLoadedMetadata={(e) => corrigirDuracao(e.currentTarget)} />
       <div className="recado-linha">
         <span className="settings-hint">
-          {relogio(gravado?.segundos ?? 0)} · {formatBytes(gravado?.blob.size ?? 0)} · some em 7 dias
+          {relogio(gravado?.segundos ?? 0)} · {formatBytes(gravado?.blob.size ?? 0)} · {t('some em 7 dias')}
         </span>
         <button className="link-button danger" onClick={descartar}>
           <Trash2 size={15} /> {t('Descartar')}
