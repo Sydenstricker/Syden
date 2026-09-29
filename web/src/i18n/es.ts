@@ -430,6 +430,5 @@ export default {
   "Teve uma ideia que entrou no app": "Tuvo una idea que entró en la app",
   "Calar esta transmissão": "Silenciar esta transmisión",
   "Ouvir esta transmissão de novo": "Volver a oír esta transmisión",
-  "pela placa de vídeo": "por la tarjeta gráfica",
-  "pelo processador": "por el procesador",
+  "é o que você está enviando": "es lo que estás enviando",
 } satisfies Record<string, string>;

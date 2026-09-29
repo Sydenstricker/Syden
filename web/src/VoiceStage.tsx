@@ -466,10 +466,11 @@ function StreamInfoBadge({
           {formato ? (
             <>
               <strong>{formato}</strong>
-              <span>{local ? 'é o que você está enviando' : 'é o que está chegando até você'}</span>
-              {stats?.naPlaca !== undefined && (
-                <span>{stats.naPlaca ? t('pela placa de vídeo') : t('pelo processador')}</span>
-              )}
+              {/* QUEM ASSISTE VÊ SÓ O NÚMERO. A linha "é o que está chegando até você" e a de placa
+                  de vídeo saíram a pedido de quem usa: para quem assiste, nenhuma das duas muda uma
+                  decisão. Quem TRANSMITE mantém a sua, porque ali ela desfaz uma ambiguidade real —
+                  o número é o que sai daqui, e não o que os outros recebem depois da adaptação. */}
+              {local && <span>{t('é o que você está enviando')}</span>}
               {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">{t('Seu computador está segurando a qualidade.')}</span>}
               {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">{t('Sua internet está segurando a qualidade.')}</span>}
             </>
