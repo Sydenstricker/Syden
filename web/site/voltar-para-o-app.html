@@ -26,8 +26,8 @@
       entra e traz a própria janela para frente.
 
       Então esta página virou o que deveria ter sido desde o começo: a confirmação de que deu certo, e
-      um lugar de onde voltar. O botão continua aqui, escondido, e aparece depois de alguns segundos —
-      para o caso de a conversa do app com o servidor não estar acontecendo.
+      nada mais. Nem botão: o texto é terminal — acabou, pode fechar — e um botão embaixo de uma frase
+      terminal faz a pessoa achar que ainda falta algo.
 
       O TEXTO TEM DICIONÁRIO PRÓPRIO (ver voltar-para-o-app.js), pelo mesmo motivo da tela de sem
       conexão: esta página não é o Syden, é um pedaço de site estático, e o i18n do app não chega aqui.
@@ -58,9 +58,11 @@
         max-width: 420px;
       }
 
+      /* Maior que o coelho girando que estava aqui: aquilo era um indicador de espera, num canto da
+         atenção; isto é a notícia da tela, e notícia pequena não é notícia. */
       svg {
-        width: 120px;
-        height: 120px;
+        width: 150px;
+        height: 150px;
       }
 
       h1 {
@@ -76,24 +78,8 @@
         margin: 0 0 20px;
       }
 
-      #rede {
-        margin-top: 28px;
-      }
 
-      .abrir {
-        display: inline-block;
-        background: #bc1d1d;
-        color: #fff;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 600;
-        padding: 12px 28px;
-        border-radius: 8px;
-      }
 
-      .abrir:hover {
-        background: #a71919;
-      }
 
       .miudo {
         font-size: 12px;
@@ -101,26 +87,34 @@
         margin: 18px 0 0;
       }
 
-      /* O giro é enfeite; parado, a página continua dizendo a mesma coisa. */
-      @keyframes gira {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .arco {
-        fill: none;
-        stroke: #bc1d1d;
-        stroke-width: 6;
-        stroke-linecap: round;
-        stroke-dasharray: 90 400;
-        transform-origin: 200px 200px;
-        animation: gira 2.5s linear infinite;
-      }
-
+      /**
+       * QUEM PEDIU MENOS MOVIMENTO VÊ O FIM, e não o começo.
+       *
+       * Aqui `animation: none` sozinho seria um erro caro: o anel e o certo são desenhados por
+       * `stroke-dashoffset`, e o estado PARADO deles é o traço inteiro escondido. Sem animação, a
+       * pessoa veria um coelho sem anel e um selo verde vazio — ou seja, justamente quem pediu para o
+       * movimento parar receberia a tela quebrada. Então cada coisa é posta no estado final à mão.
+       */
       @media (prefers-reduced-motion: reduce) {
-        .arco {
+        .anel,
+        .figura,
+        .orelhas,
+        .selo,
+        .certo {
           animation: none;
+        }
+        .anel,
+        .certo {
+          stroke-dashoffset: 0;
+        }
+        .figura,
+        .selo {
+          opacity: 1;
+          transform: none;
+        }
+        /* A onda é o único elemento que só existe enquanto se move: parada, é um anel a mais. */
+        .onda {
+          display: none;
         }
       }
     </style>
@@ -128,26 +122,127 @@
   <body>
     <main>
       <div class="caixa">
-        <!-- O mesmo coelho da abertura do Syden: quem chega aqui tem de reconhecer de cara onde está. -->
+        <!-- A animação de sucesso, do estúdio (animacaoSVG/autorizado.svg). A diferença para lá é que
+             aqui ela roda UMA VEZ e descansa: um "deu certo" que se redesenha a cada três segundos
+             volta a parecer um carregador, que é justamente o que esta tela deixou de ser. -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" aria-hidden="true">
-          <circle class="arco" cx="200" cy="200" r="150" />
-          <path fill="#ffffff" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
-          <path fill="#f48fb1" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
-          <path fill="#ffffff" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
-          <path fill="#f48fb1" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
-          <circle fill="#ffffff" cx="200" cy="230" r="66" />
+          <defs>
+            <style>
+              /* O anel fecha desenhando: 942 é o perímetro de um raio 150 (2·π·150), e é o número que
+                 faz o traço caber exatamente numa volta. Errar isso deixa o anel fechando cedo demais. */
+              @keyframes fecharAnel {
+                from { stroke-dashoffset: 942; }
+                to   { stroke-dashoffset: 0; }
+              }
+              @keyframes chegar {
+                0%   { transform: scale(0.6); opacity: 0; }
+                45%  { transform: scale(1.05); opacity: 1; }
+                70%  { transform: scale(0.98); }
+                100% { transform: scale(1); opacity: 1; }
+              }
+              /* O selo cai DEPOIS do anel fechar. É a ordem que conta a história: conferi, e agora
+                 carimbo. Os dois ao mesmo tempo viram uma coisa só, e não se lê nenhuma. */
+              @keyframes selo {
+                0%, 45% { transform: scale(0); opacity: 0; }
+                62%     { transform: scale(1.18); opacity: 1; }
+                75%     { transform: scale(0.96); }
+                100%    { transform: scale(1); opacity: 1; }
+              }
+              @keyframes riscar {
+                0%, 58% { stroke-dashoffset: 78; }
+                78%     { stroke-dashoffset: 0; }
+                100%    { stroke-dashoffset: 0; }
+              }
+              /* Uma onda só, saindo do selo. É o "pronto" — e some, porque o que fica é o certo. */
+              @keyframes onda {
+                0%, 58% { opacity: 0; transform: scale(0.5); }
+                70%     { opacity: 0.5; }
+                100%    { opacity: 0; transform: scale(1.9); }
+              }
+              /* As orelhas levantam uma vez, no instante do selo. É o que faz o desenho parecer contente
+                 em vez de só correto. */
+              @keyframes orelhasAcima {
+                0%, 50% { transform: rotate(0deg); }
+                66%     { transform: rotate(-7deg) translateY(-6px); }
+                100%    { transform: rotate(0deg); }
+              }
+
+              .bunny-ears-inner { fill: #f48fb1; }
+
+              .anel {
+                fill: none;
+                stroke: #3ba55d;
+                stroke-width: 10;
+                stroke-linecap: round;
+                stroke-dasharray: 942;
+                /* Começa no topo: sem isto o traço nasce na direita, que é onde o SVG começa a desenhar
+                   um círculo — e o olho lê como um pedaço faltando, não como algo se fechando. */
+                transform: rotate(-90deg);
+                transform-origin: 200px 215px;
+                animation: fecharAnel 2.80s cubic-bezier(0.3, 0, 0.2, 1) forwards;
+              }
+
+              .figura { transform-origin: 200px 240px; animation: chegar 2.80s cubic-bezier(0.34, 1.4, 0.5, 1) forwards; }
+              .orelhas { transform-origin: 200px 180px; animation: orelhasAcima 2.80s ease-in-out forwards; }
+              .selo { transform-origin: 288px 300px; animation: selo 2.80s cubic-bezier(0.34, 1.5, 0.5, 1) forwards; }
+              .onda { transform-origin: 288px 300px; animation: onda 2.80s ease-out forwards; }
+              .certo {
+                fill: none;
+                stroke: #ffffff;
+                stroke-width: 9;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-dasharray: 78;
+                animation: riscar 2.80s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+              }
+            </style>
+          </defs>
+
+          <circle class="anel" cx="200" cy="215" r="150" />
+
+          <g class="figura">
+            <g class="orelhas">
+              <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="#ffffff" />
+              <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+              <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="#ffffff" />
+              <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+            </g>
+
+            <circle cx="200" cy="225" r="72" fill="#ffffff" />
+
+            <!-- Olhos fechados em arco, como na tela de boas-vindas: contentamento, não vigilância. -->
+            <path d="M 160 212 Q 172 202 184 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+            <path d="M 216 212 Q 228 202 240 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+
+            <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+            <path d="M 186 240 Q 200 254 214 240" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" />
+
+            <ellipse cx="158" cy="234" rx="12" ry="7" fill="#f48fb1" opacity="0.5" />
+            <ellipse cx="242" cy="234" rx="12" ry="7" fill="#f48fb1" opacity="0.5" />
+          </g>
+
+          <!-- O selo do "conferido", no canto de baixo, por cima de tudo. -->
+          <circle class="onda" cx="288" cy="300" r="42" fill="none" stroke="#3ba55d" stroke-width="8" />
+          <g class="selo">
+            <circle cx="288" cy="300" r="42" fill="#3ba55d" />
+            <path class="certo" d="M 268 300 L 282 314 L 310 286" />
+          </g>
         </svg>
 
         <h1 id="titulo">Pronto, autorizado</h1>
         <p id="explicacao">O Syden já está entrando com a sua conta. Pode voltar para ele — e fechar esta aba.</p>
 
-        <!-- A REDE, e não o caminho. Fica escondida até o app ter tido tempo de perceber sozinho;
-             aparecendo, é um link de verdade, porque clicar num link é um gesto que o navegador
-             reconhece como seu — e é o que o deixa abrir um programa sem reclamar. -->
-        <div id="rede" hidden>
-          <p class="miudo" id="miudo">O Syden não entrou sozinho? Abra por aqui.</p>
-          <a class="abrir" id="abrir" href="syden://entrada">Abrir o Syden</a>
-        </div>
+        <!--
+          NÃO PONHA UM BOTÃO AQUI. Havia um, "Abrir o Syden", como reserva para o caso de o app não
+          perceber sozinho — e ele contradizia a própria página: o texto diz que acabou e que a aba
+          pode ser fechada, e logo abaixo um botão vermelho pedia mais uma ação. Quem lê uma frase
+          terminal e vê um botão embaixo não fecha a aba; fica achando que ainda falta algo. E o que o
+          botão fazia era abrir OUTRA aba para abrir o Syden, com a pergunta do Windows junto — ou
+          seja, trazia de volta exatamente o que esta página existe para eliminar.
+
+          A reserva que sobrou é a certa: se o app não entrou, a pessoa volta para ele e clica de novo.
+          Isso ela já sabe fazer, e não precisa de instrução nenhuma.
+        -->
       </div>
     </main>
 

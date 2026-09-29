@@ -720,7 +720,24 @@ export function Shell({
             }
           />
         ) : (
-          !loadingCommunities && (
+          /**
+           * "VOCÊ NÃO ESTÁ EM NENHUMA COMUNIDADE" SÓ QUANDO É VERDADE, e isso precisou de mais do que
+           * o `!loadingCommunities`.
+           *
+           * A lista chegar não é a mesma coisa que a comunidade estar NA TELA: `visivelId` só vira a
+           * comunidade nova depois que os canais e as primeiras mensagens dela chegam — de propósito,
+           * para a troca acontecer de uma vez em vez de aos pedaços. Entre uma coisa e outra existe
+           * uma ida ao servidor inteira, e nela `community` é indefinido embora a pessoa tenha
+           * comunidades. Era quando esta tela aparecia: um segundo dizendo o contrário do que é.
+           *
+           * Aconteceu de verdade em 28/09/2026, ao entrar pelo GitHub — e só foi visto porque deu
+           * tempo de ler. Num computador mais rápido passaria despercebido para sempre.
+           *
+           * Agora quem responde é a LISTA: vazia, a tela é verdadeira; com alguma coisa dentro, o que
+           * falta é só terminar de desenhar, e aí não se diz nada (a barrinha de troca já avisa).
+           */
+          !loadingCommunities &&
+          communities.length === 0 && (
             <EmptyCommunities
               onDone={(created) => void afterCommunityChange(created)}
               aoAbrirConfiguracoes={() => setSettingsOpen('account')}

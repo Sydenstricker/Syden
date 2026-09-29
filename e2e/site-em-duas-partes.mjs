@@ -74,8 +74,8 @@ const browser = await chromium.launch(CHROME ? { executablePath: CHROME } : {});
 const problemas = [];
 
 /** Abre uma página contando tudo o que a política barrou e todo erro de JavaScript. */
-async function abrir({ comoApp = false } = {}) {
-  const contexto = await browser.newContext();
+async function abrir({ comoApp = false, idioma } = {}) {
+  const contexto = await browser.newContext(idioma ? { locale: idioma } : {});
   const page = await contexto.newPage();
   const barrados = [];
   page.on('console', (m) => {
@@ -240,35 +240,31 @@ console.log('');
    * aqui não é uma página quebrada qualquer: é ninguém conseguindo entrar no app de desktop por Google,
    * Discord, GitHub ou Steam.
    *
-   * O href do link é o melhor detector que existe para esta página: no HTML ele é `syden://entrada`
-   * pelado, e quem lhe acrescenta a busca é o script. Se a política de segurança bloquear o script — o
-   * jeito silencioso de esta página falhar —, o endereço fica sem o comprovante, e é isso que se mede.
+   * ELA NÃO PODE PEDIR NADA, e é isso que se mede aqui. Nem abrir o aplicativo sozinha (o Windows
+   * perguntava se o site podia abrir um programa, logo depois de a pessoa já ter autorizado no Google),
+   * nem oferecer um botão que faça isso — um botão embaixo de "pode fechar esta aba" faz quem leu a
+   * frase terminal achar que ainda falta algo. Quem conclui a entrada é o app, perguntando ao servidor.
    *
-   * E ELA NÃO PODE ABRIR O APLICATIVO SOZINHA. Isso fazia o Windows perguntar se o site podia abrir um
-   * programa, logo depois de a pessoa já ter autorizado no Google — a segunda pergunta que esta página
-   * inteira existe para eliminar. Quem conclui a entrada agora é o app, perguntando ao servidor.
+   * O título é o detector de script bloqueado: no HTML ele já vem escrito em português, e quem o troca
+   * pelo idioma de quem está lendo é o script. Se a política de segurança o barrar — o jeito silencioso
+   * de esta página falhar —, o título de quem abriu em inglês continua em português.
    */
-  const { page, contexto, barrados } = await abrir();
+  const { page, contexto, barrados } = await abrir({ idioma: 'en-US' });
   const BUSCA = '?entrada=ok&comprovante=abc123';
   for (const caminho of ['/voltar-para-o-app.html', '/app/voltar-para-o-app.html']) {
     const resposta = await page.goto(BASE + caminho + BUSCA, { waitUntil: 'load' });
-    const href = await page.locator('#abrir').getAttribute('href');
-    const texto = (await page.locator('#titulo').textContent())?.trim() ?? '';
-    const redeEscondida = await page.locator('#rede').isHidden();
+    const titulo = (await page.locator('#titulo').textContent())?.trim() ?? '';
+    const pedeAlgo = await page.evaluate(() => document.querySelectorAll('a[href^="syden:"], button').length);
+    const desenhos = await page.locator('svg path, svg circle').count();
 
-    const ok = resposta?.status() === 200 && href === 'syden://entrada' + BUSCA && texto.length > 0 && redeEscondida;
-    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} confirma a entrada sem abrir nada sozinha`);
-    console.log(`        link de reserva: ${href}`);
-    if (resposta?.status() !== 200) problemas.push(`${caminho} não existe (${resposta?.status()}): o app de desktop ficaria sem volta`);
-    else if (href !== 'syden://entrada' + BUSCA) problemas.push(`${caminho}: o link ficou "${href}" — o script não montou o endereço`);
-    else if (!redeEscondida) problemas.push(`${caminho}: o botão de abrir o app aparece de cara, e ele é só a reserva`);
+    const ok = resposta?.status() === 200 && titulo === 'All set' && pedeAlgo === 0 && desenhos > 5;
+    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} confirma a entrada e não pede mais nada`);
+    console.log(`        título: ${titulo} · ${desenhos} formas · ${pedeAlgo} coisas para clicar`);
+    if (resposta?.status() !== 200) problemas.push(`${caminho} não existe (${resposta?.status()}): a entrada pelo app ficaria sem confirmação`);
+    else if (titulo !== 'All set') problemas.push(`${caminho}: o título ficou "${titulo}" — o script não rodou, e a página não fala o idioma de quem lê`);
+    else if (pedeAlgo > 0) problemas.push(`${caminho}: a página voltou a pedir uma ação (${pedeAlgo}), e o texto dela diz que acabou`);
+    else if (desenhos <= 5) problemas.push(`${caminho}: a animação de sucesso não está lá (${desenhos} formas)`);
   }
-
-  // A reserva precisa CHEGAR, senão quem ficou sem a conversa com o servidor não tem saída nenhuma.
-  await page.waitForSelector('#rede:not([hidden])', { timeout: 15_000 }).catch(() => {});
-  const redeApareceu = await page.locator('#rede').isVisible();
-  console.log(`  ${redeApareceu ? 'OK ' : 'XX '} e oferece o caminho manual depois de alguns segundos`);
-  if (!redeApareceu) problemas.push('o botão de reserva nunca aparece: sem a conversa com o servidor, não há saída');
   if (barrados.length) problemas.push(`a política barrou algo na página de volta: ${barrados[0]}`);
   await contexto.close();
 }
