@@ -12,7 +12,6 @@ import {
 import { type Participant, type Room, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
-  ChevronDown,
   HeadphoneOff,
   Headphones,
   Info,
@@ -528,7 +527,16 @@ function TetoDeQualidade({ room }: { room: Room }) {
  */
 function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participant }) {
   const t = useT();
-  const { aberto, area, alternar } = useCartaoQueAbre();
+  /**
+   * AQUI É POR PASSAR O MOUSE, e não por clique — ao contrário do cartão do "i".
+   *
+   * A diferença é o que tem dentro: aqui é uma régua, que o ponteiro alcança sem nada abrir por fora;
+   * lá é uma listinha de opções, que abre como janela do sistema e fechava o cartão ao ser clicada.
+   * Um botão a mais só para abrir a régua foi tentado e ficou pior: sobrava um meio-círculo solto
+   * embaixo da fileira de botões, e o que a pessoa quer ali é mexer no volume, não administrar
+   * janelinhas. O que fazia a régua fugir era o VÃO entre o botão e o cartão (ver styles.css).
+   */
+  const [aberto, setAberto] = useState(false);
   const userId = Number(publisher.identity);
   const [volume, setVolume] = useState(() => getScreenVolume(userId));
   // Reavalia quando o participante publica ou tira faixas (o som pode chegar depois da imagem).
@@ -582,7 +590,7 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
   }
 
   return (
-    <div className="stream-audio" ref={area}>
+    <div className="stream-audio" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
       {/*
         DUAS AÇÕES, DOIS BOTÕES — e o principal é calar.
 
@@ -601,17 +609,6 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
         }}
       >
         {comSom && volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
-      </button>
-      <button
-        className="stream-info-button stream-audio-mais"
-        aria-label={t('Volume da transmissão')}
-        aria-expanded={aberto}
-        onClick={(e) => {
-          e.stopPropagation();
-          alternar();
-        }}
-      >
-        <ChevronDown size={14} />
       </button>
       {aberto && (
         <div className="stream-info-card">

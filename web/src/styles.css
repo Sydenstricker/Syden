@@ -2909,9 +2909,21 @@ textarea {
   color: #fff;
 }
 
+/*
+ * O CARTÃO ENCOSTA NO BOTÃO, e o respiro entre os dois é uma BORDA TRANSPARENTE.
+ *
+ * Era o defeito de "o botão fica sumindo": o cartão abria 6px abaixo do botão, e nesse vão o ponteiro
+ * não estava em nenhum dos dois. O navegador então avisava que o mouse tinha saído, e o cartão fechava
+ * antes de a pessoa chegar na régua de volume. Encostar resolveria e deixaria feio; uma borda
+ * transparente resolve os dois: ela conta como parte do cartão para o mouse, e não aparece.
+ *
+ * O background-clip é obrigatório: sem ele o fundo é pintado por baixo da borda e o respiro some.
+ */
 .stream-info-card {
   position: absolute;
-  top: 34px;
+  top: 28px;
+  border-top: 6px solid transparent;
+  background-clip: padding-box;
   left: 0;
   width: 220px;
   display: flex;
@@ -9412,11 +9424,3 @@ body.arrastando-barra {
   font-size: 12px;
 }
 
-/* A setinha que abre a régua de volume, colada no alto-falante: duas ações lado a lado, e a principal
-   (calar) é a que tem o ícone grande. */
-.stream-audio-mais {
-  width: 20px;
-  height: 28px;
-  border-radius: 0 14px 14px 0;
-  margin-left: -6px;
-}
