@@ -112,3 +112,28 @@ a lista ainda vinha; o coelho girando de "espere" quando já tinha acabado; a ba
 atrasada e empurrando tudo, o que o olho lê como travamento. Carregamento em etapas é normal e não
 precisa ser escondido — o que não pode é a etapa intermediária **declarar** um estado que não é o
 real. Na dúvida, guarde o lugar e não diga nada (ver `web/src/lugarDaBarra.ts`).
+
+## Sem anúncios é promessa, não estilo
+
+A listagem na Microsoft Store diz **"sem anúncios e sem assinatura"**, em letras grandes. Isso decide
+escolhas técnicas, e já decidiu uma: em 29/09/2026, com a API do Tenor desligada pelo Google, a
+alternativa mais usada do mercado (Klipy) era gratuita **porque insere anúncios entre os GIFs**.
+Ficou de fora por isso, e a escolha foi o GIPHY, que cobra.
+
+A regra que fica: **serviço de terceiro que se paga com anúncio dentro do Syden não entra**, mesmo
+quando é o mais fácil e o mais barato. Se um dia a promessa mudar, ela muda na listagem primeiro —
+não no meio de uma implementação.
+
+## Os idiomas tratam por "você"
+
+O Syden conversa, não atende. Em cada idioma isso é uma escolha concreta que se faz uma vez e vale
+para sempre: **du** e não *Sie* no alemão, **ты** e não *вы* no russo, **tu** e não *vous* no
+francês quando for direto à pessoa.
+
+Não é informalidade por descuido: um app de amigos que trata por senhor soa como banco. E a decisão
+precisa estar escrita porque ela se apresenta de novo a cada idioma novo, e cada tradutor — inclusive
+eu — resolveria de um jeito.
+
+**Conferir idioma que ninguém da dupla lê é medir, não confiar.** Suba o site construído, force o
+idioma e meça: direção do documento, letras do alfabeto certo na tela, nenhum resto em português e
+zero de estouro horizontal. O árabe passou por isso antes de ser publicado.
