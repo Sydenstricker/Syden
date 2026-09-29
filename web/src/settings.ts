@@ -81,9 +81,32 @@ const DEFAULTS: Settings = {
 
 const STORAGE_KEY = 'janja.settings';
 
+/**
+ * Ajustes de quem JÁ USAVA o Syden, para uma escolha nova valer também para eles.
+ *
+ * PADRÃO NOVO NÃO ALCANÇA QUEM JÁ TEM PREFERÊNCIA GUARDADA — e isso quase fez o "automático" do codec
+ * nascer valendo só para contas novas. Todo mundo que já tinha aberto o Syden tinha 'vp8' salvo, não
+ * porque escolheu, mas porque era o padrão da época; o novo padrão passaria por cima dele e não
+ * mudaria nada na prática.
+ *
+ * Só se converte o que era o PADRÃO ANTIGO, e uma vez só (a marca abaixo). Quem tiver escolhido H.264
+ * à mão continua com H.264, e quem escolher VP8 depois desta conversão continua com VP8.
+ */
+const MARCA_DA_CONVERSAO = 'janja.codec-automatico-aplicado';
+
+function converterEscolhasAntigas(guardado: Record<string, unknown>): Record<string, unknown> {
+  if (localStorage.getItem(MARCA_DA_CONVERSAO)) return guardado;
+  localStorage.setItem(MARCA_DA_CONVERSAO, '1');
+  if (guardado.screenCodec !== 'vp8') return guardado;
+  const convertido = { ...guardado, screenCodec: 'auto' };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(convertido));
+  return convertido;
+}
+
 function load(): Settings {
   try {
-    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') };
+    const guardado = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+    return { ...DEFAULTS, ...converterEscolhasAntigas(guardado) } as Settings;
   } catch {
     return DEFAULTS;
   }

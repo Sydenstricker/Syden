@@ -490,10 +490,21 @@ function StreamInfoBadge({
  * A escolha é sua e vale para TODAS as transmissões, agora e nas próximas: é uma preferência do
  * aparelho, não desta sala. Ver qualidadeQueRecebo.ts.
  */
-const OPCOES_DE_QUALIDADE: [QualidadeQueRecebo, string][] = [
-  ['auto', chave('Automático')],
-  ['media', chave('Média')],
-  ['baixa', chave('Baixa')],
+/**
+ * As três opções, com o número de cada uma na explicação.
+ *
+ * "Alta, média e baixa" não diz nada a quem quer decidir: a pergunta real é "quantos megabytes isso
+ * me custa" ou "cabe na minha internet?", e a resposta disso é resolução e quadros. Os números saem
+ * das camadas que o Syden publica (SCREEN_LAYERS em useVoice.ts) — se elas mudarem lá, mudam aqui.
+ *
+ * O "até" é literal e importa: quem transmite pode ter publicado menos do que isso (na qualidade
+ * Leve só existe a camada de 360p), e aí pedir mais devolve o que existe. Este controle põe um TETO,
+ * não um piso.
+ */
+const OPCOES_DE_QUALIDADE: [QualidadeQueRecebo, string, string][] = [
+  ['auto', chave('Automático'), chave('A melhor que couber no tamanho da janela e na sua internet.')],
+  ['media', chave('Média'), chave('Até 720p · 30 quadros por segundo.')],
+  ['baixa', chave('Baixa'), chave('Até 360p · 15 quadros por segundo. Gasta menos internet.')],
 ];
 
 function TetoDeQualidade({ room }: { room: Room }) {
@@ -507,12 +518,13 @@ function TetoDeQualidade({ room }: { room: Room }) {
           janela do sistema e fecharia o cartão ao ser clicada. E de quebra as três opções ficam à
           vista, em vez de escondidas atrás de um clique. */}
       <div className="stream-qualidade-opcoes" role="group" aria-label={t('Baixar até')}>
-        {OPCOES_DE_QUALIDADE.map(([valor, rotulo]) => (
+        {OPCOES_DE_QUALIDADE.map(([valor, rotulo, explicacao]) => (
           <button
             key={valor}
             type="button"
             className={settings.qualidadeQueRecebo === valor ? 'escolhida' : ''}
             aria-pressed={settings.qualidadeQueRecebo === valor}
+            title={t(explicacao)}
             onClick={() => {
               updateSettings({ qualidadeQueRecebo: valor });
               aplicarTetoEmTodas(room, valor);

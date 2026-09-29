@@ -445,4 +445,10 @@ export default {
     "recomendado",
   "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
     "Usa la tarjeta gráfica cuando da abasto, y el procesador cuando no.",
+  "A melhor que couber no tamanho da janela e na sua internet.":
+    "La mejor que quepa en el tamaño de la ventana y en tu conexión.",
+  "Até 360p · 15 quadros por segundo. Gasta menos internet.":
+    "Hasta 360p · 15 cuadros por segundo. Gasta menos datos.",
+  "Até 720p · 30 quadros por segundo.":
+    "Hasta 720p · 30 cuadros por segundo.",
 } satisfies Record<string, string>;
