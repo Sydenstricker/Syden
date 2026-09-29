@@ -84,15 +84,35 @@ export async function dispensarPresentes(page) {
   }
 }
 
-/** Cadastra alguém novo e espera a tela inicial aparecer. Devolve o nome de usuário criado. */
+/**
+ * Cadastra alguém novo e espera a tela inicial aparecer. Devolve o nome de usuário criado.
+ *
+ * ESTE AJUDANTE ESTAVA VELHO e ninguém tinha notado, porque cada teste escrevia o cadastro na mão. Ele
+ * preenchia um "Código de convite" que saiu da tela de cadastro (o código passou a chegar pelo LINK,
+ * ou a ser digitado dentro do app em "Adicionar comunidade") e não preenchia o e-mail, que virou
+ * obrigatório. Chamá-lo falhava com um tempo esgotado esperando um campo que não existe mais.
+ *
+ * O `exact` no rótulo da senha também é necessário: a dica embaixo do e-mail fala em recuperar a
+ * SENHA, então "Senha" sem exact casa com os dois campos.
+ *
+ * Conta nova não entra em comunidade nenhuma: quem se cadastra cai na vila, sozinho. Para pôr duas
+ * pessoas na mesma comunidade, uma cria e passa o código para a outra (ver e2e/lixeira.mjs).
+ */
 export async function criarConta(page, prefixo) {
-  const username = prefixo + Date.now().toString().slice(-5);
-  await page.goto(SITE);
-  await page.getByText('Cadastre-se').click();
+  const username = prefixo + Date.now().toString().slice(-6);
+  // O CÓDIGO VAI NO LINK, e não num campo. O servidor recusa cadastro sem convite (403), e a tela já
+  // não tem onde digitá-lo: quem convida manda um link com ?convite=… e o campo desapareceu de
+  // propósito, para o cadastro ter três campos em vez de quatro. Um teste que abre o site pelado bate
+  // no 403 e fica esperando uma tela que nunca vem.
+  await page.goto(SITE + (SITE.includes('?') ? '&' : '?') + 'convite=' + encodeURIComponent(CONVITE));
   await page.getByLabel('Nome de usuário').fill(username);
-  await page.getByLabel('Senha').fill('segredo123');
-  await page.getByLabel('Código de convite').fill(CONVITE);
+  await page.getByLabel('E-mail').fill(username + '@exemplo.test');
+  await page.getByLabel('Senha', { exact: true }).fill('segredo123');
   await page.getByRole('button', { name: 'Cadastrar' }).click();
-  await page.locator('.vila').waitFor({ timeout: 30_000 });
+  // DUAS CHEGADAS POSSÍVEIS, e esperar só uma trava o teste por meio minuto sem dizer por quê. Quem
+  // entra sem convite para comunidade nenhuma cai na vila. Mas o PRIMEIRO cadastro do banco inteiro
+  // ganha a comunidade inicial do Syden e cai dentro dela — e num banco de teste recém-criado o
+  // primeiro cadastro é sempre o do teste.
+  await page.locator('.vila, .channel-name').first().waitFor({ timeout: 30_000 });
   return username;
 }

@@ -24,7 +24,7 @@ Os testes criam contas de verdade, então **use um banco separado** para não en
 npm run dev:livekit
 
 # terminal 2 — API com banco próprio de teste
-DATABASE_PATH=./teste.db PORT=3099 INVITE_CODE=teste CORS_ORIGIN=http://localhost:5174 npm run dev:server
+DATABASE_PATH=./teste.db PORT=3099 INVITE_CODE=teste CORS_ORIGIN=http://localhost:5174   EXIGIR_CONFIRMACAO_EMAIL=nao RESEND_API_KEY= npm run dev:server
 
 # terminal 3 — site apontando para essa API (de dentro de web/, senão o npm come o --port)
 cd web && VITE_API_URL=http://localhost:3099 npx vite --port 5174 --strictPort
@@ -32,12 +32,23 @@ cd web && VITE_API_URL=http://localhost:3099 npx vite --port 5174 --strictPort
 
 No PowerShell, as variáveis vão antes, em linhas separadas (`$env:DATABASE_PATH = './teste.db'`).
 
-Três detalhes que custam meia hora quando se descobre na marra:
+Quatro detalhes que custam meia hora quando se descobre na marra:
+
+- **`EXIGIR_CONFIRMACAO_EMAIL=nao` e `RESEND_API_KEY=` vazia não são enfeite.** O `server/.env` tem chave
+  do Resend, e o `npm run dev` o carrega — então o cadastro passa a exigir confirmar o e-mail, a conta
+  nasce trancada, e todo teste fica parado numa tela de "falta só confirmar" até estourar o tempo. Pior:
+  o Syden TENTA MANDAR o e-mail, para um endereço inventado pelo teste. Zerar a chave fecha as duas
+  coisas de uma vez.
 
 - **`CORS_ORIGIN` precisa bater com o endereço do site.** Sem isso o navegador recusa toda chamada à API e
   os testes travam na tela de cadastro, sem explicação.
 - **`DATABASE_PATH` é relativo à pasta `server/`**, porque é de lá que a API roda. `./teste.db` cria
   `server/teste.db`, e é esse o arquivo a apagar — não um `teste.db` na raiz.
+- **O cadastro pede o código pelo LINK, não por um campo.** O campo saiu da tela; quem convida manda
+  `?convite=…` no endereço. Sem isso o servidor responde 403 e a tela não diz nada de útil. O ajudante
+  `criarConta` já faz isso — e o PRIMEIRO cadastro de um banco novo cai dentro da comunidade inicial do
+  Syden em vez da vila, porque ele ganha essa comunidade.
+
 - **`npm run dev:web -- --port 5174` não funciona:** o npm descarta o `--port` e o vite entende "5174"
   como nome de pasta. Daí o `npx vite` direto.
 

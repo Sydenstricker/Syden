@@ -39,6 +39,7 @@ import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { useDirectory } from './directory';
 import { CommunityIcon } from './CommunityIcon';
 import { PainelDoSelo } from './PainelDoSelo';
+import { LixeiraDeCanais } from './LixeiraDeCanais';
 import { ImageCropper } from './ImageCropper';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
@@ -164,6 +165,10 @@ export function SettingsModal({
               {/* Depois do nome e do ícone: o selo é a identidade que a comunidade CONQUISTOU, e
                   faz sentido lê-la logo abaixo da que ela simplesmente escolheu. */}
               <PainelDoSelo communityId={community.id} />
+              {/* A lixeira vem por último de propósito: ninguém abre esta aba para ver o que apagou, e
+                  sim para mexer no nome, no ícone ou no selo. Ela fica onde quem PROCURA por ela
+                  encontra — e o diálogo de excluir canal diz o caminho até aqui. */}
+              <LixeiraDeCanais communityId={community.id} />
             </>
           )}
           {community && section === 'members' && <MembersSection user={user} community={community} />}

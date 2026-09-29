@@ -483,4 +483,21 @@ export default {
     "Hasta {minutos} minutos. El mensaje desaparece de la conversación en 7 días.",
   "some em 7 dias":
     "desaparece en 7 días",
+  // La papelera: un canal borrado se recupera durante 30 días
+  '{dias} dias para trazer de volta': '{dias} días para recuperarlo',
+  '{n} mensagens': '{n} mensajes',
+  '1 mensagem': '1 mensaje',
+  'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.': 'Un canal borrado se queda aquí {dias} días y vuelve con los mensajes dentro, porque nunca salieron de la base. Pasado el plazo, se va para siempre.',
+  'Excluir': 'Borrar',
+  'Excluir canal': 'Borrar el canal',
+  'Excluir sala de voz': 'Borrar la sala de voz',
+  'Lixeira': 'Papelera',
+  'Nada na lixeira.': 'No hay nada en la papelera.',
+  'Não deu para trazer o canal de volta.': 'No se pudo recuperar el canal.',
+  'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'El canal desaparece para todos, con los mensajes dentro. Puedes recuperarlo durante {dias} días, en Configuración → Comunidad → Papelera.',
+  'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Quien esté en la sala será desconectado. Puedes recuperar la sala durante {dias} días, en Configuración → Comunidad → Papelera.',
+  'Renomear': 'Renombrar',
+  'Trazendo…': 'Recuperando…',
+  'Trazer de volta': 'Recuperar',
+  'último dia para trazer de volta': 'último día para recuperarlo',
 } satisfies Record<string, string>;

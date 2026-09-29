@@ -36,7 +36,7 @@ export function ConfirmDialog({
             {t('Cancelar')}
           </button>
           <button className="btn-danger" onClick={onConfirm} disabled={busy} autoFocus>
-            {busy ? 'Aguarde…' : confirmLabel}
+            {busy ? t('Aguarde…') : confirmLabel}
           </button>
         </div>
       </div>

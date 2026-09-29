@@ -503,4 +503,21 @@ export default {
     "Jusqu’à {minutos} minutes. Le message disparaît de la conversation au bout de 7 jours.",
   "some em 7 dias":
     "disparaît dans 7 jours",
+  // La corbeille : un salon supprimé revient pendant 30 jours
+  '{dias} dias para trazer de volta': '{dias} jours pour le récupérer',
+  '{n} mensagens': '{n} messages',
+  '1 mensagem': '1 message',
+  'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.': 'Un salon supprimé reste ici {dias} jours et revient avec ses messages, parce qu’ils n’ont jamais quitté la base. Passé ce délai, il disparaît pour de bon.',
+  'Excluir': 'Supprimer',
+  'Excluir canal': 'Supprimer le salon',
+  'Excluir sala de voz': 'Supprimer le salon vocal',
+  'Lixeira': 'Corbeille',
+  'Nada na lixeira.': 'Rien dans la corbeille.',
+  'Não deu para trazer o canal de volta.': 'Le salon n’a pas pu être récupéré.',
+  'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Le salon disparaît pour tout le monde, avec ses messages. Tu peux le récupérer pendant {dias} jours, dans Paramètres → Communauté → Corbeille.',
+  'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Les personnes présentes seront déconnectées. Tu peux récupérer le salon pendant {dias} jours, dans Paramètres → Communauté → Corbeille.',
+  'Renomear': 'Renommer',
+  'Trazendo…': 'Récupération…',
+  'Trazer de volta': 'Récupérer',
+  'último dia para trazer de volta': 'dernier jour pour le récupérer',
 } satisfies Record<string, string>;

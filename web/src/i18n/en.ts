@@ -483,4 +483,21 @@ export default {
     "Up to {minutos} minutes. The message disappears from the chat after 7 days.",
   "some em 7 dias":
     "gone in 7 days",
+  // The trash: a deleted channel comes back for 30 days
+  '{dias} dias para trazer de volta': '{dias} days left to restore it',
+  '{n} mensagens': '{n} messages',
+  '1 mensagem': '1 message',
+  'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.': 'A deleted channel stays here for {dias} days and comes back with its messages inside, because they never left the database. After that, it is gone for good.',
+  'Excluir': 'Delete',
+  'Excluir canal': 'Delete channel',
+  'Excluir sala de voz': 'Delete voice room',
+  'Lixeira': 'Trash',
+  'Nada na lixeira.': 'Nothing in the trash.',
+  'Não deu para trazer o canal de volta.': 'The channel could not be restored.',
+  'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'The channel disappears for everyone, messages included. You can bring it back for {dias} days, in Settings → Community → Trash.',
+  'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Anyone in the room will be disconnected. You can bring the room back for {dias} days, in Settings → Community → Trash.',
+  'Renomear': 'Rename',
+  'Trazendo…': 'Restoring…',
+  'Trazer de volta': 'Restore',
+  'último dia para trazer de volta': 'last day to restore it',
 } satisfies Record<string, string>;

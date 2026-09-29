@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
+import { DIAS_NA_LIXEIRA } from './lixeira';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { ConfirmDialog } from './ConfirmDialog';
 import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
@@ -304,6 +305,7 @@ function ChannelRow({
   onSelect: () => void;
   onDelete: () => void;
 }) {
+  const t = useT();
   const [renaming, setRenaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -349,10 +351,10 @@ function ChannelRow({
       </button>
       {manageable && (
         <div className="channel-actions">
-          <button className="icon-plain" title="Renomear" aria-label={`Renomear ${channel.name}`} onClick={() => setRenaming(true)}>
+          <button className="icon-plain" title={t('Renomear')} aria-label={`Renomear ${channel.name}`} onClick={() => setRenaming(true)}>
             <Pencil size={14} />
           </button>
-          <button className="icon-plain" title="Excluir" aria-label={`Excluir ${channel.name}`} onClick={onDelete}>
+          <button className="icon-plain" title={t('Excluir')} aria-label={`Excluir ${channel.name}`} onClick={onDelete}>
             <Trash2 size={14} />
           </button>
         </div>
@@ -380,17 +382,25 @@ function DeleteChannelDialog({ channel, onClose }: { channel: Channel; onClose: 
   const label = channel.type === 'text' ? `#${channel.name}` : channel.name;
   return (
     <ConfirmDialog
-      title={channel.type === 'text' ? 'Excluir canal' : 'Excluir sala de voz'}
-      confirmLabel="Excluir"
+      title={channel.type === 'text' ? t('Excluir canal') : t('Excluir sala de voz')}
+      confirmLabel={t('Excluir')}
       busy={busy}
       error={error}
       onConfirm={confirm}
       onCancel={onClose}
     >
       {t('Tem certeza que quer excluir')} <strong>{label}</strong>?{' '}
+      {/* O TEXTO DAQUI DIZIA "Não dá para desfazer", e virou mentira no dia em que a lixeira entrou.
+          Aviso que exagera o estrago é tão ruim quanto aviso que o esconde: quem lê "não dá para
+          desfazer" e apaga o canal errado passa a tarde achando que perdeu um mês de conversa. O
+          prazo vem de web/src/lixeira.ts, que o teste mantém igual ao do servidor. */}
       {channel.type === 'text'
-        ? 'Todas as mensagens do canal serão apagadas para todos. Não dá para desfazer.'
-        : 'Quem estiver na sala será desconectado.'}
+        ? t('O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.', {
+            dias: DIAS_NA_LIXEIRA,
+          })
+        : t('Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.', {
+            dias: DIAS_NA_LIXEIRA,
+          })}
     </ConfirmDialog>
   );
 }
