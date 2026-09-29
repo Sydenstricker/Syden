@@ -10,6 +10,7 @@ import { desktopBridge } from './desktop';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
+import { lugarDaBarra } from './lugarDaBarra';
 import { InicioDaComunidade, type DadosDeBoasVindas } from './InicioDaComunidade';
 import { ServidoresDeJogo } from './ServidoresDeJogo';
 import { TelaDaLoja } from './TelaDaLoja';
@@ -219,6 +220,16 @@ export function Shell({
   }, [view]);
 
   const community = communities.find((c) => c.id === visivelId);
+
+  /**
+   * O que vai no lugar da barra lateral agora. A regra mora fora daqui, com a tabela de casos e o
+   * histórico dos dois jeitos pelos quais ela já errou: ver web/src/lugarDaBarra.ts.
+   */
+  const naBarra = lugarDaBarra({
+    comunidadeNaTela: Boolean(community),
+    listaChegou: !loadingCommunities,
+    quantas: communities.length,
+  });
 
   /**
    * O espaço de boas-vindas da comunidade aberta.
@@ -679,7 +690,7 @@ export function Shell({
             )
           }
         />
-        {community ? (
+        {naBarra === 'barra' && community ? (
           <Sidebar
             user={user}
             community={community}
@@ -719,19 +730,9 @@ export function Shell({
               />
             }
           />
-        ) : communities.length > 0 ? (
-          /**
-           * O LUGAR DA BARRA LATERAL, GUARDADO ENQUANTO ELA NÃO CHEGA.
-           *
-           * Sem isto, a tela entra sem barra nenhuma e ela aparece um segundo depois, empurrando a
-           * vila inteira para o lado. O olho lê esse salto como travamento — foi o relato: "parece
-           * que travou o aplicativo". E o pior é que não travou nada: estava tudo funcionando, só
-           * chegando em duas etapas.
-           *
-           * Um retângulo da largura certa resolve o salto inteiro, porque o salto é de GEOMETRIA. As
-           * barrinhas por dentro existem para ele não parecer um painel vazio e quebrado — dizem
-           * "vem coisa aqui", que é a verdade.
-           */
+        ) : naBarra === 'esperando' ? (
+          /* O espaço guardado, da mesma largura, enquanto a barra não chega — senão a vila salta
+             para o lado quando ela entra, e o salto parece travamento. Ver lugarDaBarra.ts. */
           <div className="sidebar sidebar-esperando" aria-hidden="true">
             <span className="esqueleto esqueleto-titulo" />
             <span className="esqueleto" />
@@ -739,24 +740,8 @@ export function Shell({
             <span className="esqueleto" />
           </div>
         ) : (
-          /**
-           * "VOCÊ NÃO ESTÁ EM NENHUMA COMUNIDADE" SÓ QUANDO É VERDADE, e isso precisou de mais do que
-           * o `!loadingCommunities`.
-           *
-           * A lista chegar não é a mesma coisa que a comunidade estar NA TELA: `visivelId` só vira a
-           * comunidade nova depois que os canais e as primeiras mensagens dela chegam — de propósito,
-           * para a troca acontecer de uma vez em vez de aos pedaços. Entre uma coisa e outra existe
-           * uma ida ao servidor inteira, e nela `community` é indefinido embora a pessoa tenha
-           * comunidades. Era quando esta tela aparecia: um segundo dizendo o contrário do que é.
-           *
-           * Aconteceu de verdade em 28/09/2026, ao entrar pelo GitHub — e só foi visto porque deu
-           * tempo de ler. Num computador mais rápido passaria despercebido para sempre.
-           *
-           * Agora quem responde é a LISTA: vazia, a tela é verdadeira; com alguma coisa dentro, o que
-           * falta é só terminar de desenhar, e aí não se diz nada (a barrinha de troca já avisa).
-           */
-          !loadingCommunities &&
-          communities.length === 0 && (
+          /* Só se chega aqui com a lista na mão e vazia: a frase é sempre verdadeira. */
+          (
             <EmptyCommunities
               onDone={(created) => void afterCommunityChange(created)}
               aoAbrirConfiguracoes={() => setSettingsOpen('account')}
