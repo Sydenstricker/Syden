@@ -185,9 +185,22 @@ async function esperarOFim(estado: string, segredo: string, minhaVez: number): P
 
     sessionStorage.removeItem(CHAVE);
     if (resposta.situacao === 'ok' || resposta.situacao === 'ligar') {
-      // A JANELA VEM PARA FRENTE SOZINHA. Sem isto, a pessoa autoriza no navegador e continua olhando
-      // para o navegador, sem sinal nenhum de que o Syden já entrou atrás dele.
-      desktopBridge?.focus?.();
+      /**
+       * A JANELA NÃO VEM PARA FRENTE SOZINHA — e isto já foi o contrário, por um dia.
+       *
+       * A ideia era boa e o efeito foi ruim: quem autoriza pelo GitHub não vê tela de permissão
+       * nenhuma (já autorizou uma vez, e o GitHub não pergunta de novo), então tudo acontece no mesmo
+       * segundo do clique. Uma janela pulando para a frente nesse instante não parece resposta a um
+       * pedido: parece que o computador foi tomado. Foi exatamente esse o relato — "parece que ele
+       * toma controle do meu PC" —, e só com o GitHub, porque nos outros a pessoa passa segundos
+       * escolhendo a conta e a janela chegando na frente vira consequência do que ela fez.
+       *
+       * Roubar o primeiro plano é, além disso, o que programa ruim faz. O sinal de que deu certo está
+       * na aba do navegador, que diz que acabou e que pode ser fechada; atrás dela o Syden já entrou,
+       * e quem volta encontra tudo pronto. Um dia isto pode virar um piscar na barra de tarefas
+       * (flashFrame), que é como o Windows deixa um programa chamar atenção sem tomar a frente — mas
+       * isso mora no processo principal e custa uma versão nova do aplicativo.
+       */
       return resposta;
     }
     throw new Error(RECADOS[resposta.situacao]);
