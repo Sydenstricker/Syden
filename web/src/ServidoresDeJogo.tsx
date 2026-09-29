@@ -157,7 +157,7 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
     <div className="jogos">
       <header className="main-header">
         <MobileBackButton onBack={onMobileBack} />
-        <Gamepad2 size={22} className="muted-icon" /> Servidores de jogos
+        <Gamepad2 size={22} className="muted-icon" /> {t('Servidores de jogos')}
         {administra && editando === null && (
           <button className="btn-secondary jogos-novo" onClick={() => setEditando('novo')}>
             <Plus size={16} /> {t('Adicionar')}

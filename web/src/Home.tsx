@@ -77,13 +77,14 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
         {t('Tem uma ideia para o Syden?')}
       </h2>
       <p className="ideias-lead">
-        Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para{' '}
-        {dono ? <strong>{dono.username}</strong> : 'quem cuida do Syden'}, e a resposta volta pela mesma conversa.
+        {t('Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para')}{' '}
+        {dono ? <strong>{dono.username}</strong> : t('quem cuida do Syden')}
+        {t(', e a resposta volta pela mesma conversa.')}
       </p>
       {estado === 'enviado' ? (
         <div className="ideias-obrigado">
-          <p>Chegou. Obrigado!</p>
-          <button onClick={() => setEstado('parado')}>Mandar outra</button>
+          <p>{t('Chegou. Obrigado!')}</p>
+          <button onClick={() => setEstado('parado')}>{t('Mandar outra')}</button>
         </div>
       ) : (
         <form onSubmit={enviar}>
@@ -92,14 +93,14 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
             onChange={(e) => setTexto(e.target.value)}
             maxLength={1500}
             rows={3}
-            placeholder="Seria bom se…"
+            placeholder={t('Seria bom se…')}
             aria-label={t('Sua ideia')}
           />
           <div className="ideias-rodape">
             <span className="ideias-conta">{texto.length > 0 && `${texto.length}/1500`}</span>
             <button type="submit" disabled={estado === 'enviando'}>
               <Send size={16} aria-hidden="true" />
-              {estado === 'enviando' ? 'Enviando…' : 'Enviar'}
+              {estado === 'enviando' ? t('Enviando…') : t('Enviar')}
             </button>
           </div>
           {erro && <p className="form-error">{erro}</p>}
@@ -158,48 +159,48 @@ export function Home({
   const pinos: PinoVila[] = [
     {
       id: 'salas',
-      titulo: 'Salas',
-      sub: comunidade ? `Converse e jogue em ${comunidade}` : 'Converse e jogue',
+      titulo: t('Salas'),
+      sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'),
       icone: <Users size={18} />,
       ...balaoDaCasa(CASAS.salas),
       onClick: () => setSalasAbertas((aberto) => !aberto),
     },
     {
       id: 'amigos',
-      titulo: 'Amigos',
-      sub: 'Quem anda com você',
+      titulo: t('Amigos'),
+      sub: t('Quem anda com você'),
       icone: <UserPlus size={18} />,
       ...balaoDaCasa(PRACA_DOS_AMIGOS, 0),
       onClick: aoAbrirAmigos,
     },
     {
       id: 'loja',
-      titulo: 'Loja',
-      sub: 'Enfeites, sons e emojis',
+      titulo: t('Loja'),
+      sub: t('Enfeites, sons e emojis'),
       icone: <ShoppingBag size={18} />,
       ...balaoDaCasa(CASAS.loja),
       onClick: aoAbrirLoja,
     },
     {
       id: 'aprender',
-      titulo: 'Novidades',
-      sub: 'O que mudou no Syden',
+      titulo: t('Novidades'),
+      sub: t('O que mudou no Syden'),
       icone: <BookOpen size={18} />,
       ...balaoDaCasa(CASAS.aprender),
       onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
     },
     {
       id: 'coelhos',
-      titulo: 'Coelhos',
-      sub: 'Escolha o seu',
+      titulo: t('Coelhos'),
+      sub: t('Escolha o seu'),
       icone: <Rabbit size={18} />,
       ...balaoDaCasa(ESTATUA, 0),
       onClick: () => setCoelhosAbertos((aberto) => !aberto),
     },
     {
       id: 'explorar',
-      titulo: 'Explorar',
-      sub: 'Entrar em outra comunidade',
+      titulo: t('Explorar'),
+      sub: t('Entrar em outra comunidade'),
       icone: <Compass size={18} />,
       ...balaoDaCasa(CASAS.explorar),
       onClick: aoExplorar,
@@ -219,10 +220,10 @@ export function Home({
         />
         {coelhosAbertos && <PainelCoelhos aoFechar={() => setCoelhosAbertos(false)} />}
         {salasAbertas && (
-          <div className="vila-painel" role="dialog" aria-label="Salas de voz">
+          <div className="vila-painel" role="dialog" aria-label={t('Salas de voz')}>
             <header>
-              <h3>{comunidade ? `Salas de ${comunidade}` : 'Salas'}</h3>
-              <button className="vila-painel-fechar" aria-label="Fechar" onClick={() => setSalasAbertas(false)}>
+              <h3>{comunidade ? t('Salas de {nome}', { nome: comunidade }) : t('Salas')}</h3>
+              <button className="vila-painel-fechar" aria-label={t('Fechar')} onClick={() => setSalasAbertas(false)}>
                 ✕
               </button>
             </header>

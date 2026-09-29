@@ -150,7 +150,7 @@ export function Sidebar({
 
         {/* A agenda de servidores de jogo é da comunidade inteira: todo mundo vê, quem administra mexe. */}
         <button className={`channel jogos-link${jogosActive ? ' active' : ''}`} onClick={onOpenJogos}>
-          <Gamepad2 size={18} /> Servidores de jogos
+          <Gamepad2 size={18} /> {t('Servidores de jogos')}
         </button>
 
         {/* Consumo do servidor interessa a quem cuida dele: só os administradores veem. */}

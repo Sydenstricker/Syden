@@ -316,13 +316,14 @@ function Fonte({ c, r }: { c: number; r: number }) {
  * guardada neste computador, como as cenouras.
  */
 function Estatua({ c, r, big, onTrocar }: { c: number; r: number; big: boolean; onTrocar: () => void }) {
+  const t = useT();
   const base = iso(c, r);
   const a = iso(c - 0.72, r - 0.72);
   const b = iso(c + 0.72, r - 0.72);
   const d = iso(c + 0.72, r + 0.72);
   const e = iso(c - 0.72, r + 0.72);
   const h = 42;
-  const dica = 'Escolher o coelho do Syden';
+  const dica = t('Escolher o coelho do Syden');
 
   return (
     <g
@@ -893,8 +894,8 @@ export function Vila({
       ))}
 
       <p className="vila-dica">
-        Cutuque os coelhos, clique na grama para plantar uma cenoura.
-        {cutucados > 0 && ` · ${cutucados} ${cutucados === 1 ? 'cutucada' : 'cutucadas'} hoje`}
+        {t('Cutuque os coelhos, clique na grama para plantar uma cenoura.')}
+        {cutucados > 0 && ` · ${cutucados === 1 ? t('1 cutucada hoje') : t('{n} cutucadas hoje', { n: cutucados })}`}
         {cenouras > 0 && ` · 🥕 ${cenouras}`}
         {gordos && (
           <>
