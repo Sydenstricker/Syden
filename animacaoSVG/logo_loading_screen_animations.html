@@ -234,6 +234,10 @@
             <span class="text-lg">💫</span>
             <span>12. Buraco + Rastro</span>
           </button>
+          <button onclick="setPreset(13)" id="presetBtn13" class="preset-btn px-3 py-3 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 font-medium text-xs flex flex-col items-center gap-2 hover:bg-slate-800 transition">
+            <span class="text-lg">✅</span>
+            <span>13. Autorizado</span>
+          </button>
         </div>
       </div>
 
@@ -387,7 +391,8 @@
       9: "Modo 9: Comendo Cenoura",
       10: "Modo 10: Boas-vindas",
       11: "Modo 11: Buraco Negro",
-      12: "Modo 12: Buraco Negro com Rastro"
+      12: "Modo 12: Buraco Negro com Rastro",
+      13: "Modo 13: Autorizado (sucesso)"
     };
 
     // Textos padrão sugeridos ao trocar de Preset
@@ -403,7 +408,8 @@
       9: "Só uma mordidinha e já volto...",
       10: "Que bom te ver por aqui!",
       11: "A estrela está engolindo tudo...",
-      12: "A estrela está engolindo tudo..."
+      12: "A estrela está engolindo tudo...",
+      13: "Pronto, autorizado."
     };
 
     // Inicialização ao carregar a página
@@ -1451,6 +1457,131 @@
         </g>
       </svg>
     `;
+  } else if (currentPreset === 13) {
+    // PRESET 13: Autorizado — o fim de uma entrada pelo Google, Discord, GitHub ou Steam.
+    //
+    // POR QUE ELA PRECISOU EXISTIR. A página que recebe a volta do provedor mostrava o coelho girando,
+    // que é o desenho de ESPERE. Só que ali nada mais está sendo esperado: a pessoa acabou de
+    // autorizar, e o Syden já está entrando do outro lado. Um carregador nessa hora diz a coisa errada
+    // — e quem lê "pode fechar a aba" com um círculo girando na frente não fecha aba nenhuma, porque
+    // parece que ainda falta algo.
+    //
+    // A DIFERENÇA DE UM CARREGADOR É QUE ISTO TERMINA. Um carregador gira igual para sempre, de
+    // propósito, para não cansar. Aqui tudo converge: o anel fecha uma vez, o selo cai no lugar, o
+    // certo é desenhado e fica. No estúdio o ciclo se repete para dar para ver de novo; na página de
+    // verdade ele roda UMA vez e descansa (sem `infinite`, com `forwards`).
+    //
+    // NÃO TEM FUNDO PRÓPRIO, como o minimalista: ela vive sobre o fundo da página, e um quadrado
+    // colorido atrás apareceria como uma moldura.
+    //
+    // O VERDE É A ÚNICA COR DE FORA DA PALETA, e é proposital. A marca é vermelha, e vermelho aqui
+    // seria lido como erro por qualquer pessoa — a convenção é mais forte que a identidade quando o
+    // assunto é "deu certo".
+    innerContent = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="w-64 h-64">
+        <defs>
+          <style>
+            /* O anel fecha desenhando: 942 é o perímetro de um raio 150 (2·π·150), e é o número que
+               faz o traço caber exatamente numa volta. Errar isso deixa o anel fechando cedo demais. */
+            @keyframes fecharAnel {
+              from { stroke-dashoffset: 942; }
+              to   { stroke-dashoffset: 0; }
+            }
+            @keyframes chegar {
+              0%   { transform: scale(0.6); opacity: 0; }
+              45%  { transform: scale(1.05); opacity: 1; }
+              70%  { transform: scale(0.98); }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            /* O selo cai DEPOIS do anel fechar. É a ordem que conta a história: conferi, e agora
+               carimbo. Os dois ao mesmo tempo viram uma coisa só, e não se lê nenhuma. */
+            @keyframes selo {
+              0%, 45% { transform: scale(0); opacity: 0; }
+              62%     { transform: scale(1.18); opacity: 1; }
+              75%     { transform: scale(0.96); }
+              100%    { transform: scale(1); opacity: 1; }
+            }
+            @keyframes riscar {
+              0%, 58% { stroke-dashoffset: 78; }
+              78%     { stroke-dashoffset: 0; }
+              100%    { stroke-dashoffset: 0; }
+            }
+            /* Uma onda só, saindo do selo. É o "pronto" — e some, porque o que fica é o certo. */
+            @keyframes onda {
+              0%, 58% { opacity: 0; transform: scale(0.5); }
+              70%     { opacity: 0.5; }
+              100%    { opacity: 0; transform: scale(1.9); }
+            }
+            /* As orelhas levantam uma vez, no instante do selo. É o que faz o desenho parecer contente
+               em vez de só correto. */
+            @keyframes orelhasAcima {
+              0%, 50% { transform: rotate(0deg); }
+              66%     { transform: rotate(-7deg) translateY(-6px); }
+              100%    { transform: rotate(0deg); }
+            }
+
+            .bunny-ears-inner { fill: ${colors.ears}; }
+
+            .anel {
+              fill: none;
+              stroke: #3ba55d;
+              stroke-width: 10;
+              stroke-linecap: round;
+              stroke-dasharray: 942;
+              /* Começa no topo: sem isto o traço nasce na direita, que é onde o SVG começa a desenhar
+                 um círculo — e o olho lê como um pedaço faltando, não como algo se fechando. */
+              transform: rotate(-90deg);
+              transform-origin: 200px 215px;
+              animation: fecharAnel ${durEntrada} cubic-bezier(0.3, 0, 0.2, 1) infinite;
+            }
+
+            .figura { transform-origin: 200px 240px; animation: chegar ${durEntrada} cubic-bezier(0.34, 1.4, 0.5, 1) infinite; }
+            .orelhas { transform-origin: 200px 180px; animation: orelhasAcima ${durEntrada} ease-in-out infinite; }
+            .selo { transform-origin: 288px 300px; animation: selo ${durEntrada} cubic-bezier(0.34, 1.5, 0.5, 1) infinite; }
+            .onda { transform-origin: 288px 300px; animation: onda ${durEntrada} ease-out infinite; }
+            .certo {
+              fill: none;
+              stroke: #ffffff;
+              stroke-width: 9;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-dasharray: 78;
+              animation: riscar ${durEntrada} cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            }
+          </style>
+        </defs>
+
+        <circle class="anel" cx="200" cy="215" r="150" />
+
+        <g class="figura">
+          <g class="orelhas">
+            <path d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" fill="${colors.bunny}" />
+            <path d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" class="bunny-ears-inner" />
+            <path d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" fill="${colors.bunny}" />
+            <path d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" class="bunny-ears-inner" />
+          </g>
+
+          <circle cx="200" cy="225" r="72" fill="${colors.bunny}" />
+
+          <!-- Olhos fechados em arco, como na tela de boas-vindas: contentamento, não vigilância. -->
+          <path d="M 160 212 Q 172 202 184 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+          <path d="M 216 212 Q 228 202 240 212" fill="none" stroke="#1e1e1e" stroke-width="4.5" stroke-linecap="round" />
+
+          <path d="M 194 228 Q 200 224 206 228 Q 200 236 194 228 Z" fill="#b91c1c" />
+          <path d="M 186 240 Q 200 254 214 240" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" />
+
+          <ellipse cx="158" cy="234" rx="12" ry="7" fill="${colors.ears}" opacity="0.5" />
+          <ellipse cx="242" cy="234" rx="12" ry="7" fill="${colors.ears}" opacity="0.5" />
+        </g>
+
+        <!-- O selo do "conferido", no canto de baixo, por cima de tudo. -->
+        <circle class="onda" cx="288" cy="300" r="42" fill="none" stroke="#3ba55d" stroke-width="8" />
+        <g class="selo">
+          <circle cx="288" cy="300" r="42" fill="#3ba55d" />
+          <path class="certo" d="M 268 300 L 282 314 L 310 286" />
+        </g>
+      </svg>
+    `;
   }
 
   // SE UM PRESET CAIR FORA DE TODOS OS "IF", ISTO APARECE.
@@ -1484,7 +1615,10 @@ function renderCurrentPreset() {
   const ERROS = [6, 7, 8];
   const isErrorState = ERROS.includes(currentPreset);
   // A tela de boas-vindas também não leva pontinhos: ela não está esperando nada, está cumprimentando.
-  const estaCarregando = !isErrorState && currentPreset !== 10;
+  // A de sucesso, muito menos: três pontos piscando depois de "pronto, autorizado" diriam que ainda
+  // falta alguma coisa — que é exatamente a impressão errada que essa tela precisa desfazer.
+  const SEM_PONTINHOS = [10, 13];
+  const estaCarregando = !isErrorState && !SEM_PONTINHOS.includes(currentPreset);
   const dotsHTML = !estaCarregando ? '' : `
     <div class="flex gap-1 ml-1">
       <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-flashing"></span>

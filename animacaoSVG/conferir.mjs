@@ -30,6 +30,7 @@ const NOMES = {
   10: 'Boas-vindas',
   11: 'Buraco Negro',
   12: 'Buraco + Rastro',
+  13: 'Autorizado',
   6: 'Sem Internet',
   7: 'Erro 500',
   8: 'Erro 404',
@@ -51,7 +52,7 @@ await page.goto(ARQUIVO, { waitUntil: 'load' });
 // O Tailwind vem de CDN e reescreve as classes; sem esta espera as medidas de tamanho saem zeradas.
 await page.waitForTimeout(2000);
 
-for (const n of [1, 2, 3, 4, 5, 9, 10, 11, 12, 6, 7, 8]) {
+for (const n of [1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 6, 7, 8]) {
   await page.click(`#presetBtn${n}`);
   await page.waitForTimeout(400);
 
@@ -118,7 +119,9 @@ if (alturas.length && new Set(alturas).size !== 1) {
 // `currentPreset >= 6`, e ao acrescentar os presets 9, 10 e 11 os três cairiam nessa conta. Um número
 // mágico com "maior que" vira mentira na primeira vez que a lista cresce. A tela de boas-vindas também
 // não leva pontinhos — ela não espera nada, está cumprimentando.
-const PONTINHOS = { 1: true, 2: true, 3: true, 4: true, 5: true, 9: true, 11: true, 12: true, 10: false, 6: false, 7: false, 8: false };
+// A de sucesso entra na mesma regra da de boas-vindas: "pronto, autorizado" com três pontos piscando
+// diria que ainda falta alguma coisa — o contrário do que ela existe para dizer.
+const PONTINHOS = { 1: true, 2: true, 3: true, 4: true, 5: true, 9: true, 11: true, 12: true, 10: false, 13: false, 6: false, 7: false, 8: false };
 for (const [n, deveria] of Object.entries(PONTINHOS)) {
   await page.click(`#presetBtn${n}`);
   await page.waitForTimeout(150);
@@ -128,7 +131,9 @@ for (const [n, deveria] of Object.entries(PONTINHOS)) {
   }
 }
 console.log('');
-console.log('  pontinhos "..." só nos presets que estão esperando algo: conferido nos doze');
+// O número sai da lista, e não escrito à mão: "conferido nos doze" vira mentira no dia em que entra o
+// décimo terceiro — e mentira em relatório de teste é pior do que número nenhum.
+console.log(`  pontinhos "..." só nos presets que estão esperando algo: conferido nos ${Object.keys(PONTINHOS).length}`);
 
 // O controle de velocidade também é parte do ajuste fino: se ele não muda a duração, não serve de
 // nada, e o sintoma seria "mexi no controle e não mudou" — fácil de confundir com impressão.
@@ -162,4 +167,4 @@ if (problemas.length) {
   for (const p of problemas) console.log('  - ' + p);
   process.exit(1);
 }
-console.log('Os doze presets desenham e animam, e o controle de velocidade responde.');
+console.log(`Os ${Object.keys(NOMES).length} presets desenham e animam, e o controle de velocidade responde.`);
