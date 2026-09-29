@@ -522,4 +522,16 @@ export default {
   'Trazendo…': 'Wird zurückgeholt…',
   'Trazer de volta': 'Zurückholen',
   'último dia para trazer de volta': 'letzter Tag, um ihn zurückzuholen',
+  // GIFs, von GIPHY
+  'Calma aí: espere alguns segundos antes de procurar de novo.': 'Immer mit der Ruhe: warte ein paar Sekunden, bevor du erneut suchst.',
+  'Escolher GIF': 'GIF auswählen',
+  'GIF': 'GIF',
+  'GIFs': 'GIFs',
+  'GIFs pelo GIPHY': 'GIFs von GIPHY',
+  'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Gerade suchen viele Leute nach GIFs. Versuch es gleich noch mal.',
+  'Não deu para falar com o GIPHY agora.': 'GIPHY ist gerade nicht erreichbar.',
+  'Nenhum GIF para essa busca.': 'Keine GIFs für diese Suche.',
+  'Procurando…': 'Wird gesucht…',
+  'Procurar GIF': 'Nach einem GIF suchen',
+  'Ver mais': 'Mehr zeigen',
 } satisfies Record<string, string>;

@@ -83,6 +83,15 @@ export const config = {
       ? ligado(process.env.EXIGIR_CONFIRMACAO_EMAIL)
       : Boolean(process.env.RESEND_API_KEY),
   },
+  // GIFs (ver gifs.ts). Chave criada em developers.giphy.com, de graça. Sem ela o seletor de GIF nem
+  // aparece na tela — e ela fica AQUI, e não no navegador, porque a chave é a cota: publicada, qualquer
+  // pessoa gasta as 100 buscas por hora do Syden inteiro.
+  //
+  // LIDA NA HORA DO USO, como as do Shield: preencher a variável e reiniciar é uma coisa, preencher e
+  // esperar que funcione é outra — congelar no import faria a segunda calar sem explicação.
+  get giphyKey() {
+    return (process.env.GIPHY_API_KEY ?? '').trim();
+  },
   /** Endereço do site, para montar os links que vão dentro do e-mail. */
   siteUrl: (process.env.SITE_URL || process.env.CORS_ORIGIN?.split(',')[0] || 'http://localhost:5173').trim().replace(/\/$/, ''),
   // Historico de disponibilidade visto de fora (UptimeRobot). Chave só de leitura, criada em

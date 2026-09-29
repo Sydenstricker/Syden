@@ -12,6 +12,7 @@ import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
 import type { Attachment, Message, Poll, Reaction, ThreadSummary } from './types';
 import { useT } from './i18n';
+import { gifDaMensagem } from './gifs';
 
 /** Caixa máxima de uma imagem no chat; o resto encolhe proporcionalmente. */
 const IMAGE_BOX = { width: 400, height: 300 };
@@ -306,6 +307,24 @@ const JUMBO_LIMIT = 27; // como no Discord: até 27 emojis sem texto aparecem gr
 
 export function MessageText({ content }: { content: string }) {
   const { emojisByName } = useDirectory();
+  const t = useT();
+
+  /*
+   * UM GIF SOZINHO VIRA FIGURA, e o resto continua link.
+   *
+   * O endereço vem do seletor de GIFs (o Syden não guarda cópia: os termos do GIPHY pedem que as
+   * figuras venham de lá, e guardar encheria o disco do servidor com o que já está hospedado). A
+   * lista de endereços que valem é FECHADA — ver o porquê em web/src/gifs.ts, que é sobre não fazer
+   * o navegador de quem só estava lendo buscar coisa de um servidor qualquer.
+   */
+  const gif = gifDaMensagem(content);
+  if (gif) {
+    return (
+      <p className="message-text">
+        <img className="message-gif" src={gif} alt={t('GIF')} loading="lazy" />
+      </p>
+    );
+  }
 
   // Troca :nome: pela imagem quando o emoji existe; nomes desconhecidos ficam como texto.
   const withEmojis = (text: string, keyPrefix: string) =>

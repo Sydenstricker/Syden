@@ -15,6 +15,13 @@
  *                 E por WebSocket. Faltando o wss:, a voz não conecta e o chat não atualiza sozinho.
  *   img-src       os avatares e emojis vêm da API; `data:` é para o que o app desenha em canvas (o selo
  *                 do ícone, o confete); `blob:` é para a foto do clipe e as miniaturas de transmissão.
+ *   media*.giphy.com
+ *                 os GIFs. Eles vêm do GIPHY e não de nós de propósito: os termos deles pedem isso, e
+ *                 guardar cópia encheria o disco do servidor com o que já está hospedado de graça. Os
+ *                 domínios estão ESCRITOS UM A UM, e não como `*.giphy.com`: a estrela liberaria
+ *                 qualquer subdomínio que eles criarem ou perderem um dia, e esta lista é exatamente a
+ *                 mesma que web/src/gifs.ts aceita transformar em figura. Duas listas, um só conteúdo —
+ *                 se uma crescer sem a outra, o GIF aparece quebrado (ou é bloqueado sem dizer nada).
  *   media-src     sons do soundboard e karaokê vêm da API; `blob:` é o áudio e o vídeo da chamada.
  *   style-src     'unsafe-inline' é inevitável: o React escreve `style=` direto nos elementos, e o
  *                 LiveKit injeta folhas de estilo próprias. Sem isso a tela abre sem formatação nenhuma.
@@ -37,7 +44,7 @@ export const CSP = [
   "default-src 'self'",
   "script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://api.syden.chat",
+  "img-src 'self' data: blob: https://api.syden.chat https://media.giphy.com https://media0.giphy.com https://media1.giphy.com https://media2.giphy.com https://media3.giphy.com https://media4.giphy.com https://i.giphy.com",
   "media-src 'self' blob: https://api.syden.chat",
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://api.syden.chat wss://api.syden.chat https://live.syden.chat wss://live.syden.chat",

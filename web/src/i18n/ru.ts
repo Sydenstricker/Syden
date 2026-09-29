@@ -516,4 +516,16 @@ export default {
   'Trazendo…': 'Восстанавливаю…',
   'Trazer de volta': 'Вернуть',
   'último dia para trazer de volta': 'последний день, чтобы вернуть',
+  // GIF-ки от GIPHY
+  'Calma aí: espere alguns segundos antes de procurar de novo.': 'Спокойно: подожди пару секунд, прежде чем искать снова.',
+  'Escolher GIF': 'Выбрать GIF',
+  'GIF': 'GIF',
+  'GIFs': 'GIF-ки',
+  'GIFs pelo GIPHY': 'GIF-ки от GIPHY',
+  'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Сейчас GIF-ки ищет слишком много народу. Попробуй чуть позже.',
+  'Não deu para falar com o GIPHY agora.': 'Не получилось связаться с GIPHY.',
+  'Nenhum GIF para essa busca.': 'По этому запросу ничего нет.',
+  'Procurando…': 'Ищу…',
+  'Procurar GIF': 'Найти GIF',
+  'Ver mais': 'Показать ещё',
 } satisfies Record<string, string>;

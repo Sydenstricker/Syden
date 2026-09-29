@@ -151,6 +151,40 @@ o link.
 que pedir recuperação de senha não recebe nada — e não vê erro nenhum, porque a tela nunca conta se o
 endereço existe. Por isso: não anuncie a recuperação de senha antes de o domínio estar verificado.
 
+### 4. GIFs (opcional)
+
+Sem isto o Syden funciona igual: **o botão de GIF simplesmente não aparece** na barra de mensagem, e
+ninguém vê um botão que não pode funcionar.
+
+1. Crie uma conta em [developers.giphy.com](https://developers.giphy.com) → **Create an App** → escolha
+   **API** (não SDK). A chave sai na hora, de graça.
+2. Ponha no `deploy/.env`:
+
+   ```
+   GIPHY_API_KEY=a-chave-que-eles-deram
+   ```
+
+3. Reinicie o servidor. O botão aparece para todo mundo no mesmo instante — não precisa de versão nova
+   do aplicativo.
+
+Três coisas que valem saber:
+
+- **A chave é a COTA**, e por isso ela fica no servidor e nunca no navegador: são 100 buscas por hora e
+  1000 por dia, para o Syden inteiro. Publicada, qualquer pessoa a copia e gasta a cota de todos. O
+  Syden guarda cada busca por dez minutos e freia quem procura rápido demais, que é o que faz a conta
+  fechar (ver `server/src/gifs.ts`).
+- **O GIPHY começa gratuito e pede aprovação para produção.** Eles chamam de *production key*: mesma
+  conta, um formulário. Até lá a chave de desenvolvimento funciona, com a cota acima.
+- **As figuras vêm dos servidores deles**, e não dos nossos. É o que os termos pedem, e é o que evita
+  encher o disco do servidor com o que já está hospedado de graça. O preço: quem abre a conversa faz um
+  pedido ao GIPHY, e o GIPHY vê o endereço de rede dessa pessoa. Isso está declarado na política de
+  privacidade (`web/site/privacidade.html`, seção "GIPHY"), e essa declaração é a CONDIÇÃO para o
+  domínio deles estar liberado na política de segurança — a mesma regra que vale para a medição da
+  Cloudflare.
+
+Para ver a tela antes de ter chave, há uma costura de desenvolvimento: `GIFS_ENDERECO` aponta a busca
+para outro servidor (ver `e2e/gifs.mjs`). Em produção, não escreva essa variável.
+
 ### Saber quando algo quebra
 
 O servidor avisa sozinho por e-mail quem administra (endereço confirmado) quando a voz cai, quando há

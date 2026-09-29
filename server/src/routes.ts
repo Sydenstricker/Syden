@@ -28,6 +28,7 @@ import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
 import { audiencia } from './audiencia.js';
 import * as prefs from './preferencias.js';
+import * as gifs from './gifs.js';
 import { conferirSelo, CORES, ICONES, MARCOS, marcosAlcancados, podeUsarSelo } from './selos.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
@@ -176,6 +177,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
   const freioPorEndereco = new Freio(config.freio.tentativasPorEndereco, 60_000);
   const freioPorConta = new Freio(config.freio.errosPorConta, 15 * 60_000);
   const freioDeCadastro = new Freio(config.freio.cadastrosPorDia, 24 * 60 * 60_000);
+  // O freio dos GIFs protege uma COTA, e não o servidor: são 100 buscas por hora no plano grátis, para
+  // o Syden inteiro. Sem ele, uma pessoa digitando letra por letra na caixa de busca gastaria a cota de
+  // todo mundo em dois minutos, sem má intenção nenhuma. Quinze por minuto sobra para quem procura de
+  // verdade e corta a digitação frenética — e busca repetida nem chega aqui, morre no cache.
+  const freioDeGifs = new Freio(15, 60_000);
 
   /** Já responde 429 e devolve true quando este endereço está batendo demais. */
   function enderecoFreado(request: FastifyRequest, reply: FastifyReply): boolean {
@@ -1221,6 +1227,27 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       removeVoiceChannelMembers(io, channel.id);
       io.to(communityRoom(channel.communityId)).emit('channel:deleted', { id: channel.id, communityId: channel.communityId });
       return { ok: true, diasParaDesfazer: DIAS_NA_LIXEIRA };
+    });
+
+    /**
+     * GIFs, pelo GIPHY (ver gifs.ts).
+     *
+     * Passa por aqui, e não direto do navegador, porque a chave é a cota do Syden inteiro: publicada,
+     * qualquer pessoa a copia e gasta as 100 buscas por hora de todo mundo.
+     *
+     * Responde 200 mesmo quando não dá para buscar, com o motivo dentro. Um 503 aqui viraria uma tela
+     * de erro vermelha por causa de um GIF, e o estado "sem cota por vinte minutos" não é erro: é uma
+     * coisa que passa, e que a pessoa precisa entender em uma frase para tentar de novo mais tarde.
+     */
+    authed.get<{ Querystring: { q?: string; de?: string; idioma?: string } }>('/api/gifs', async (request, reply) => {
+      if (!gifs.ligado()) return { estado: 'desligado' };
+      const espera = freioDeGifs.tentar('gif:' + request.user.id);
+      if (espera) return reply.code(429).send({ estado: 'devagar', segundos: espera });
+      return gifs.buscar({
+        termo: request.query.q ?? '',
+        de: Number(request.query.de ?? 0) || 0,
+        idioma: request.query.idioma ?? 'pt',
+      });
     });
 
     /**

@@ -1,4 +1,4 @@
-import { BarChart3, FileText, ImageUp, MonitorPlay, Plus, Smile, X } from 'lucide-react';
+import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Smile, X } from 'lucide-react';
 import {
   type ClipboardEvent,
   type KeyboardEvent,
@@ -13,6 +13,8 @@ import { aoPedirMencao } from './mencao';
 import { api } from './api';
 import { podeGravarTela, ScreenMessage } from './ScreenMessage';
 import { EmojiPicker } from './EmojiPicker';
+import { GifPicker } from './GifPicker';
+import { type Gif, gifsDisponiveis } from './gifs';
 import { PollDialog } from './PollDialog';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
 import type { Message } from './types';
@@ -45,6 +47,9 @@ export const Composer = forwardRef<ComposerHandle, {
   const [staged, setStaged] = useState<Staged[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [gifOpen, setGifOpen] = useState(false);
+  // Perguntado uma vez por sessão: sem chave do GIPHY configurada, o botão não existe. Ver web/src/gifs.ts.
+  const [temGif, setTemGif] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   // Recado em vídeo de tela: aparece acima da caixa enquanto está sendo gravado.
   const [gravandoTela, setGravandoTela] = useState(false);
@@ -90,6 +95,25 @@ export const Composer = forwardRef<ComposerHandle, {
       }),
     [],
   );
+
+  useEffect(() => {
+    void gifsDisponiveis().then(setTemGif);
+  }, []);
+
+  /**
+   * Mandar um GIF é mandar o ENDEREÇO dele, e não o arquivo.
+   *
+   * Guardar uma cópia encheria o disco do servidor com o que o GIPHY já hospeda de graça — e os termos
+   * deles pedem justamente que as figuras venham de lá. Na conversa, o endereço sozinho aparece como
+   * figura (ver gifDaMensagem, em web/src/gifs.ts).
+   */
+  function mandarGif(gif: Gif) {
+    setGifOpen(false);
+    socket.emit('message:send', { channelId, content: gif.url, threadId }, (result: { ok: boolean; error?: string }) => {
+      setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
+    });
+    onSent?.();
+  }
 
   async function send() {
     const content = draft.trim();
@@ -269,6 +293,21 @@ export const Composer = forwardRef<ComposerHandle, {
           onKeyDown={onKeyDown}
           onPaste={onPaste}
         />
+
+        {temGif && (
+          <div className="composer-emoji">
+            <button
+              className={`icon-plain composer-emoji-button${gifOpen ? ' active' : ''}`}
+              title={t('GIFs')}
+              aria-label={t('GIFs')}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => setGifOpen(!gifOpen)}
+            >
+              <Film size={22} />
+            </button>
+            {gifOpen && <GifPicker onPick={mandarGif} onClose={() => setGifOpen(false)} />}
+          </div>
+        )}
 
         <div className="composer-emoji">
           <button

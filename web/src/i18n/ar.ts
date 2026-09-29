@@ -515,4 +515,16 @@ export default {
   'Trazendo…': 'جارٍ الاستعادة…',
   'Trazer de volta': 'استعادة',
   'último dia para trazer de volta': 'آخر يوم لاستعادتها',
+  // الصور المتحركة من GIPHY
+  'Calma aí: espere alguns segundos antes de procurar de novo.': 'على مهلك: انتظر بضع ثوانٍ قبل البحث مرة أخرى.',
+  'Escolher GIF': 'اختر صورة متحركة',
+  'GIF': 'صورة متحركة',
+  'GIFs': 'صور متحركة',
+  'GIFs pelo GIPHY': 'الصور المتحركة من GIPHY',
+  'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'كثيرون يبحثون عن صور متحركة الآن. جرّب بعد قليل.',
+  'Não deu para falar com o GIPHY agora.': 'تعذّر الاتصال بـ GIPHY الآن.',
+  'Nenhum GIF para essa busca.': 'لا توجد صور متحركة لهذا البحث.',
+  'Procurando…': 'جارٍ البحث…',
+  'Procurar GIF': 'ابحث عن صورة متحركة',
+  'Ver mais': 'عرض المزيد',
 } satisfies Record<string, string>;
