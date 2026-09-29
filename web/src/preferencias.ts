@@ -1,4 +1,5 @@
 import { api } from './api';
+import { converterPreferenciasAntigas } from './settings';
 
 /**
  * As preferências que seguem a pessoa, e as que ficam no aparelho.
@@ -113,7 +114,9 @@ export function aplicar(
     if (vindo === undefined) continue;
     if (chave === 'janja.settings' && vindo && typeof vindo === 'object') {
       const aqui = (ler(chave) ?? {}) as Record<string, unknown>;
-      const junto = { ...(vindo as Record<string, unknown>) };
+      // A cópia do servidor é tão antiga quanto a daqui: ela também precisa da conversão, senão ela
+      // desfaz o que a leitura local já tinha corrigido. Ver settings.ts.
+      const junto = { ...converterPreferenciasAntigas(vindo as Record<string, unknown>) };
       for (const campo of DO_APARELHO) if (aqui[campo] !== undefined) junto[campo] = aqui[campo];
       escrever(chave, junto);
       continue;
@@ -138,6 +141,10 @@ export async function sincronizarAoEntrar(): Promise<boolean> {
     const { preferencias, em } = await api<{ preferencias: Pacote; em: string | null }>('/api/me/preferencias');
     if (em && Object.keys(preferencias).length > 0) {
       aplicar(preferencias);
+      // O que desceu só valia no carregamento seguinte: o módulo de preferências lê o disco uma vez,
+      // ao ser importado, e isso acontece bem antes de alguém entrar.
+      const { recarregarDoDisco } = await import('./settings');
+      recarregarDoDisco();
       return true;
     }
     await api('/api/me/preferencias', { method: 'PUT', body: montar() });

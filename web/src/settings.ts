@@ -49,6 +49,16 @@ export interface Settings {
    * ninguém deveria precisar saber o que é um codec para transmitir sem travar. Ver escolherCodec.ts.
    */
   screenCodec: 'auto' | 'vp8' | 'h264';
+  /**
+   * A pessoa escolheu o codec À MÃO? Enquanto não escolheu, um 'vp8' guardado é só o padrão antigo.
+   *
+   * ISTO PRECISA VIAJAR JUNTO COM AS PREFERÊNCIAS, e é por isso que mora aqui dentro e não numa marca
+   * à parte. A primeira versão usava uma marca local, e ela foi derrotada pelo caminho de volta: a
+   * conversão acontecia, o servidor devolvia a cópia antiga na hora de entrar, e a marca local dizia
+   * "já converti" — então da segunda vez em diante voltava a VP8 para sempre. Com a marca dentro do
+   * pacote, a cópia que vem do servidor também chega com ela, e a conversão sabe o que fazer.
+   */
+  codecEscolhidoAMao?: boolean;
   /** Sons de entrada, saída, mudo etc. */
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
@@ -73,6 +83,7 @@ const DEFAULTS: Settings = {
   showMembers: true,
   abrirTransmissaoSozinha: false,
   screenCodec: 'auto',
+  codecEscolhidoAMao: false,
   sounds: true,
   soundboardVolume: 0.6,
   efeitosVisuais: true,
@@ -92,24 +103,40 @@ const STORAGE_KEY = 'janja.settings';
  * Só se converte o que era o PADRÃO ANTIGO, e uma vez só (a marca abaixo). Quem tiver escolhido H.264
  * à mão continua com H.264, e quem escolher VP8 depois desta conversão continua com VP8.
  */
-const MARCA_DA_CONVERSAO = 'janja.codec-automatico-aplicado';
-
-function converterEscolhasAntigas(guardado: Record<string, unknown>): Record<string, unknown> {
-  if (localStorage.getItem(MARCA_DA_CONVERSAO)) return guardado;
-  localStorage.setItem(MARCA_DA_CONVERSAO, '1');
-  if (guardado.screenCodec !== 'vp8') return guardado;
-  const convertido = { ...guardado, screenCodec: 'auto' };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(convertido));
-  return convertido;
+/**
+ * Ajustes de quem JÁ USAVA o Syden, para uma escolha nova valer também para eles.
+ *
+ * PADRÃO NOVO NÃO ALCANÇA QUEM JÁ TEM PREFERÊNCIA GUARDADA — e isso quase fez o "automático" do codec
+ * nascer valendo só para contas novas. Todo mundo que já tinha aberto o Syden tinha 'vp8' salvo, não
+ * porque escolheu, mas porque era o padrão da época.
+ *
+ * Só se converte o que era o PADRÃO ANTIGO e nunca foi escolhido à mão. Quem escolher VP8 depois
+ * disto continua com VP8 — inclusive porque a escolha grava a marca.
+ *
+ * Roda em TODA leitura, e não uma vez só: as preferências também descem do servidor ao entrar (ver
+ * preferencias.ts), e a cópia de lá é tão antiga quanto a daqui.
+ */
+export function converterPreferenciasAntigas(guardado: Record<string, unknown>): Record<string, unknown> {
+  if (guardado.screenCodec !== 'vp8' || guardado.codecEscolhidoAMao === true) return guardado;
+  return { ...guardado, screenCodec: 'auto' };
 }
 
 function load(): Settings {
   try {
     const guardado = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
-    return { ...DEFAULTS, ...converterEscolhasAntigas(guardado) } as Settings;
+    return { ...DEFAULTS, ...converterPreferenciasAntigas(guardado) } as Settings;
   } catch {
     return DEFAULTS;
   }
+}
+
+/**
+ * Relê o que está no disco. Chamado depois de as preferências descerem do servidor — sem isto, elas
+ * ficavam gravadas mas só valiam no próximo carregamento da página.
+ */
+export function recarregarDoDisco() {
+  current = load();
+  for (const listener of listeners) listener();
 }
 
 let current = load();

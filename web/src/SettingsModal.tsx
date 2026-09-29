@@ -1756,7 +1756,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
           ] as ['auto' | 'vp8' | 'h264', string, string, string][]
         ).map(([id, title, spec, hint]) => (
           <label key={id} className={`quality-option${settings.screenCodec === id ? ' selected' : ''}`}>
-            <input type="radio" name="screen-codec" checked={settings.screenCodec === id} onChange={() => updateSettings({ screenCodec: id })} />
+            <input type="radio" name="screen-codec" checked={settings.screenCodec === id} onChange={() => updateSettings({ screenCodec: id, codecEscolhidoAMao: true })} />
             <span className="quality-title">{t(title)}</span>
             <span className="quality-spec">{t(spec)}</span>
             <span className="quality-hint">{t(hint)}</span>

@@ -2921,7 +2921,10 @@ textarea {
  */
 .stream-info-card {
   position: absolute;
-  top: 28px;
+  /* 100% e não 28px: o botão tem 28px no quadro grande e 24px no quadradinho (.tile-info), e o número
+     cravado deixava um vão de 4px justamente lá — o ponteiro caía no buraco e o cartão fechava antes
+     de ser usado. A altura do container é a do botão, qualquer que ela seja. */
+  top: 100%;
   border-top: 6px solid transparent;
   background-clip: padding-box;
   left: 0;
