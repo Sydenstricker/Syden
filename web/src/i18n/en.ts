@@ -428,4 +428,8 @@ export default {
   "Offline": "Offline",
   "Teve {quantas} ideias que entraram no app": "Had {quantas} ideas that made it into the app",
   "Teve uma ideia que entrou no app": "Had an idea that made it into the app",
+  "Calar esta transmissão": "Mute this stream",
+  "Ouvir esta transmissão de novo": "Unmute this stream",
+  "pela placa de vídeo": "through the graphics card",
+  "pelo processador": "through the processor",
 } satisfies Record<string, string>;

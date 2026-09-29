@@ -133,6 +133,28 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
   }
 }
 
+/**
+ * O volume que a pessoa tinha antes de silenciar aquela transmissão, para o clique de volta devolver
+ * o mesmo e não um 100% no ouvido de quem estava em 40%.
+ *
+ * Fica na memória desta sessão, e não no disco: mudo é uma decisão do momento ("já volto"), e alguém
+ * que fecha o Syden mudo e volta no dia seguinte espera ouvir. É o contrário do volume, que é uma
+ * característica da pessoa do outro lado e por isso é guardada.
+ */
+const antesDoMudo = new Map<number, number>();
+
+/** O clique no alto-falante: cala, e o clique seguinte devolve o volume que estava. */
+export function alternarMudoDaTela(room: Room, userId: number) {
+  const atual = getScreenVolume(userId);
+  if (atual > 0) {
+    antesDoMudo.set(userId, atual);
+    setScreenVolume(room, userId, 0);
+  } else {
+    setScreenVolume(room, userId, antesDoMudo.get(userId) ?? 1);
+  }
+  return getScreenVolume(userId);
+}
+
 export function setScreenVolume(room: Room, userId: number, volume: number) {
   screenVolumes = { ...screenVolumes, [String(userId)]: Math.min(TETO_DA_TRANSMISSAO, Math.max(0, volume)) };
   write(SCREEN_KEY, screenVolumes);

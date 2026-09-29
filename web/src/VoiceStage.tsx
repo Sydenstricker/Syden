@@ -12,6 +12,7 @@ import {
 import { type Participant, type Room, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
+  ChevronDown,
   HeadphoneOff,
   Headphones,
   Info,
@@ -38,6 +39,7 @@ import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect,
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
+import { useCartaoQueAbre } from './cartaoQueAbre';
 import { useT } from './i18n';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
@@ -57,7 +59,7 @@ import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
 import { stopAllSounds } from './soundboard';
 import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
-import { getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
+import { alternarMudoDaTela, getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -418,8 +420,18 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
 }
 
 /**
- * O "i" no canto da transmissão: passando o mouse, mostra em que formato ela está chegando de verdade
- * (não o que foi escolhido nas configurações, mas o que o navegador conseguiu entregar).
+ * O "i" no canto da transmissão: em que formato ela está chegando de verdade (não o que foi escolhido
+ * nas configurações, mas o que o navegador conseguiu entregar) e até quanto você quer baixar.
+ *
+ * ABRE NO CLIQUE, e não ao passar o mouse. Passando o mouse era impossível USAR o que está dentro: o
+ * cartão abre alguns pixels abaixo do botão, o ponteiro atravessa esse vazio no caminho e o cartão
+ * some antes de a pessoa chegar nele. E a listinha de qualidade, que abre como janela do sistema,
+ * fechava o cartão junto ao ser clicada. Ver cartaoQueAbre.ts.
+ *
+ * O QUE ELE NÃO MOSTRA MAIS: o nome do codificador por dentro ("SimulcastEncoderAdapter (libvpx,
+ * libvpx, libvpx)"). Isso é informação de quem programa, não de quem assiste. Ficou o que a pessoa
+ * reconhece e sobre o que ela pode fazer algo — o formato que chega, se o vídeo passa pela placa ou
+ * pelo processador (que é uma escolha nas configurações), e quem está segurando a qualidade.
  */
 function StreamInfoBadge({
   publication,
@@ -432,27 +444,31 @@ function StreamInfoBadge({
   voice?: Voice;
 }) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const { aberto, area, alternar } = useCartaoQueAbre();
   const stats = useStreamStats(publication, { local });
   const formato = describeStats(stats);
 
   return (
-    <div className="stream-info" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className="stream-info-button" aria-label={t('Informações da transmissão')} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+    <div className="stream-info" ref={area}>
+      <button
+        className="stream-info-button"
+        aria-label={t('Informações da transmissão')}
+        aria-expanded={aberto}
+        onClick={(e) => {
+          e.stopPropagation();
+          alternar();
+        }}
+      >
         <Info size={16} />
       </button>
-      {open && (
+      {aberto && (
         <div className="stream-info-card" role="tooltip">
           {formato ? (
             <>
               <strong>{formato}</strong>
               <span>{local ? 'é o que você está enviando' : 'é o que está chegando até você'}</span>
-              {stats?.codec && (
-                <span>
-                  {stats.codec}
-                  {stats.encoder ? ' · ' + stats.encoder : ''}
-                  {stats.naPlaca === true ? ' · pela placa de vídeo' : stats.naPlaca === false ? ' · pelo processador' : ''}
-                </span>
+              {stats?.naPlaca !== undefined && (
+                <span>{stats.naPlaca ? t('pela placa de vídeo') : t('pelo processador')}</span>
               )}
               {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">{t('Seu computador está segurando a qualidade.')}</span>}
               {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">{t('Sua internet está segurando a qualidade.')}</span>}
@@ -511,7 +527,7 @@ function TetoDeQualidade({ room }: { room: Room }) {
  */
 function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participant }) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const { aberto, area, alternar } = useCartaoQueAbre();
   const userId = Number(publisher.identity);
   const [volume, setVolume] = useState(() => getScreenVolume(userId));
   // Reavalia quando o participante publica ou tira faixas (o som pode chegar depois da imagem).
@@ -565,11 +581,38 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
   }
 
   return (
-    <div className="stream-audio" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button className="stream-info-button" aria-label={t('Som da transmissão')} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+    <div className="stream-audio" ref={area}>
+      {/*
+        DUAS AÇÕES, DOIS BOTÕES — e o principal é calar.
+
+        Clicar no alto-falante e não acontecer nada é contra o que todo mundo já sabe: num tocador, no
+        navegador, no sistema, clicar no alto-falante muda. Aqui ele calava nada: só abria um cartão,
+        que ainda por cima fugia do ponteiro. Agora clicar CALA (e o clique seguinte devolve o volume
+        que estava, não um 100% no ouvido de quem estava em 40%), e a setinha do lado abre a régua.
+      */}
+      <button
+        className="stream-info-button"
+        aria-label={volume > 0 ? t('Calar esta transmissão') : t('Ouvir esta transmissão de novo')}
+        aria-pressed={volume === 0}
+        onClick={(e) => {
+          e.stopPropagation();
+          setVolume(alternarMudoDaTela(voice.room, userId));
+        }}
+      >
         {comSom && volume > 0 ? <Volume2 size={16} /> : <VolumeX size={16} />}
       </button>
-      {open && (
+      <button
+        className="stream-info-button stream-audio-mais"
+        aria-label={t('Volume da transmissão')}
+        aria-expanded={aberto}
+        onClick={(e) => {
+          e.stopPropagation();
+          alternar();
+        }}
+      >
+        <ChevronDown size={14} />
+      </button>
+      {aberto && (
         <div className="stream-info-card">
           {comSom ? (
             <label className="stream-audio-volume">

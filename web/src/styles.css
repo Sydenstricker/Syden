@@ -9411,3 +9411,12 @@ body.arrastando-barra {
   padding: 4px 6px;
   font-size: 12px;
 }
+
+/* A setinha que abre a régua de volume, colada no alto-falante: duas ações lado a lado, e a principal
+   (calar) é a que tem o ícone grande. */
+.stream-audio-mais {
+  width: 20px;
+  height: 28px;
+  border-radius: 0 14px 14px 0;
+  margin-left: -6px;
+}
