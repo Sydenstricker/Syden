@@ -463,4 +463,6 @@ export default {
     "por la tarjeta gráfica",
   "pelo processador":
     "por el procesador",
+  "Testando… os números aparecem em instantes.": "Probando… los números aparecen en un momento.",
+  "Testar a transmissão": "Probar la transmisión",
 } satisfies Record<string, string>;

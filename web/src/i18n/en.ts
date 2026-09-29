@@ -463,4 +463,6 @@ export default {
     "through the graphics card",
   "pelo processador":
     "through the processor",
+  "Testando… os números aparecem em instantes.": "Testing… the numbers show up in a moment.",
+  "Testar a transmissão": "Test the stream",
 } satisfies Record<string, string>;

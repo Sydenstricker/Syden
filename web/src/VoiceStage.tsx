@@ -9,7 +9,7 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
-import { type Participant, type Room, Track, type TrackPublication } from 'livekit-client';
+import { type LocalTrackPublication, type Participant, type Room, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
   HeadphoneOff,
@@ -39,6 +39,7 @@ import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
 import { chave, useT } from './i18n';
+import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
@@ -477,11 +478,13 @@ function StreamInfoBadge({
               {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">{t('Sua internet está segurando a qualidade.')}</span>}
             </>
           ) : stats?.semPublico ? (
-            /* NÃO ESTÁ QUEBRADO, ESTÁ ECONOMIZANDO. O Syden pausa as camadas que ninguém abriu, e
-               camada pausada não produz quadro — logo não há número para medir. Sem esta frase o
-               cartão ficava em "Medindo…" para sempre, e quem transmitia sozinho achava que era
-               defeito. */
-            <span>{t('Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.')}</span>
+            /* NÃO ESTÁ QUEBRADO, ESTÁ ECONOMIZANDO — mas quem transmite sozinho precisa conseguir
+               testar mesmo assim. O botão liga a codificação por quinze segundos: gasto deliberado,
+               com hora para acabar, em troca de uma resposta que não existia. */
+            <>
+              <span>{t('Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.')}</span>
+              {local && <BotaoDeTeste publication={publication} />}
+            </>
           ) : (
             <span>{t('Medindo…')}</span>
           )}
@@ -489,6 +492,41 @@ function StreamInfoBadge({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * O botão que liga a codificação por um tempo, para quem transmite sozinho conseguir medir.
+ *
+ * Ele não pergunta nada e não some sozinho no meio: liga, conta os segundos, desliga. Enquanto está
+ * ligado, os números aparecem no cartão como se houvesse alguém assistindo — porque, do ponto de
+ * vista do computador, há: ele está codificando de verdade. Ver testarCodificacao.ts.
+ */
+function BotaoDeTeste({ publication }: { publication: TrackPublication | undefined }) {
+  const t = useT();
+  const [testando, setTestando] = useState(false);
+  const desfazer = useRef<(() => void) | null>(null);
+
+  // Sair da tela no meio do teste não pode deixar a codificação ligada: seria um gasto sem dono.
+  useEffect(() => () => desfazer.current?.(), []);
+
+  if (testando) return <span>{t('Testando… os números aparecem em instantes.')}</span>;
+
+  return (
+    <button
+      className="btn-secondary stream-audio-retry"
+      onClick={() => {
+        setTestando(true);
+        desfazer.current = ligarCodificacaoParaTestar(publication as LocalTrackPublication | undefined);
+        setTimeout(() => {
+          desfazer.current?.();
+          desfazer.current = null;
+          setTestando(false);
+        }, DURACAO_DO_TESTE_MS);
+      }}
+    >
+      {t('Testar a transmissão')}
+    </button>
   );
 }
 
