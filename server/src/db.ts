@@ -803,6 +803,17 @@ addColumnIfMissing('social_states', 'do_app', 'INTEGER NOT NULL DEFAULT 0');
 // clicou em "cancelar" no Google não veria explicação nenhuma. Com o motivo guardado, a espera termina
 // com a mesma frase que o navegador mostraria.
 addColumnIfMissing('social_states', 'falha', 'TEXT');
+/**
+ * CANAL APAGADO NÃO SOME NA HORA: some da tela, e do banco trinta dias depois.
+ *
+ * Apagar um canal leva junto as mensagens de todo mundo (ON DELETE CASCADE), e isso não tem volta. O
+ * único socorro era o retrato diário da hospedagem — restaurar perderia o dia inteiro de TODA a
+ * comunidade para desfazer um clique. Com a data de apagado, desfazer é um UPDATE, e o dano de um
+ * engano deixa de ser permanente.
+ *
+ * Trinta dias é o prazo de quem só percebe a falta quando volta a precisar do canal.
+ */
+addColumnIfMissing('channels', 'deleted_at', 'TEXT');
 
 /**
  * Esta conta precisa confirmar o e-mail antes de entrar?
@@ -2301,12 +2312,19 @@ const channelColumns = 'id, community_id AS communityId, name, type, position, c
 
 export function listChannels(communityId: number) {
   return db
-    .prepare(`SELECT ${channelColumns} FROM channels WHERE community_id = ? ORDER BY position, id`)
+    .prepare(`SELECT ${channelColumns} FROM channels WHERE community_id = ? AND deleted_at IS NULL ORDER BY position, id`)
     .all(communityId) as unknown as Channel[];
 }
 
+/**
+ * O canal, se ele existe E não está na lixeira.
+ *
+ * É por aqui que passa todo acesso a canal no servidor, e é o que faz um canal apagado se comportar
+ * como canal inexistente: 404 para ler, para escrever e para entrar na voz. Sem isto, "apagado" seria
+ * só uma etiqueta e as mensagens continuariam ao alcance de quem soubesse o número.
+ */
 export function findChannel(id: number) {
-  return db.prepare(`SELECT ${channelColumns} FROM channels WHERE id = ?`).get(id) as Channel | undefined;
+  return db.prepare(`SELECT ${channelColumns} FROM channels WHERE id = ? AND deleted_at IS NULL`).get(id) as Channel | undefined;
 }
 
 export function createChannel(communityId: number, name: string, type: ChannelType, createdBy: number): Channel {
@@ -2324,14 +2342,46 @@ export function renameChannel(id: number, name: string): Channel {
   return findChannel(id)!;
 }
 
-/** Apaga o canal; as mensagens vão junto (ON DELETE CASCADE). */
+/** Manda o canal para a lixeira: some da tela na hora, e do banco em trinta dias. */
 export function deleteChannel(id: number) {
-  db.prepare('DELETE FROM channels WHERE id = ?').run(id);
+  db.prepare("UPDATE channels SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = ?").run(id);
+}
+
+/** Desfaz. Devolve false quando o canal não está na lixeira (ou já foi varrido de vez). */
+export function restaurarCanal(id: number, communityId: number): boolean {
+  const info = db
+    .prepare('UPDATE channels SET deleted_at = NULL WHERE id = ? AND community_id = ? AND deleted_at IS NOT NULL')
+    .run(id, communityId);
+  return info.changes > 0;
+}
+
+/** O que está na lixeira desta comunidade, do apagado mais recente para o mais antigo. */
+export function canaisNaLixeira(communityId: number) {
+  return db
+    .prepare(
+      `SELECT ${channelColumns}, deleted_at AS deletedAt,
+              (SELECT COUNT(*) FROM messages m WHERE m.channel_id = channels.id) AS mensagens
+       FROM channels WHERE community_id = ? AND deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+    )
+    .all(communityId) as unknown as (Channel & { deletedAt: string; mensagens: number })[];
+}
+
+/**
+ * A varredura: o que passou do prazo sai de vez, com as mensagens junto.
+ *
+ * Roda de carona num pedido qualquer, como a limpeza dos estados sociais — um relógio só para isto
+ * seria mais uma coisa para lembrar de ligar depois de cada reinício.
+ */
+export function varrerCanaisApagados(antesDe: string) {
+  return db.prepare('DELETE FROM channels WHERE deleted_at IS NOT NULL AND deleted_at < ?').run(antesDe).changes;
 }
 
 export function countChannels(communityId: number, type: ChannelType) {
-  return (db.prepare('SELECT COUNT(*) AS n FROM channels WHERE community_id = ? AND type = ?').get(communityId, type) as { n: number })
-    .n;
+  return (
+    db
+      .prepare('SELECT COUNT(*) AS n FROM channels WHERE community_id = ? AND type = ? AND deleted_at IS NULL')
+      .get(communityId, type) as { n: number }
+  ).n;
 }
 
 // ---------- Conversas privadas (direta e em grupo) ----------

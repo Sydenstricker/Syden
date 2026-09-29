@@ -109,3 +109,47 @@ describe('apagar um canal leva as mensagens de todo mundo junto', () => {
     assert.equal((await dona('DELETE', `/api/channels/${meuCanal.id}`)).statusCode, 200, 'quem administra apaga');
   });
 });
+
+describe('a lixeira dos canais', () => {
+  /**
+   * Apagar um canal leva trinta dias para ser definitivo. O que se prova aqui é que "apagado" se
+   * comporta como inexistente enquanto isso — senão a lixeira viraria uma porta dos fundos, com as
+   * mensagens ainda ao alcance de quem soubesse o número do canal.
+   */
+  it('canal apagado some de todo mundo, mas volta para quem administra', async () => {
+    const canal = (await dona('POST', `/api/communities/${comunidadeId}/channels`, { name: 'churrasco', type: 'text' })).json();
+    const db = await import('../src/db.js');
+    db.createMessage(canal.id, db.findUserByName('ana')!.id, 'traz gelo');
+
+    assert.equal((await dona('DELETE', `/api/channels/${canal.id}`)).statusCode, 200);
+
+    // Some da lista e do alcance direto, inclusive para quem apagou.
+    const lista = (await dona('GET', `/api/communities/${comunidadeId}/channels`)).json();
+    assert.equal(
+      lista.some((c: { id: number }) => c.id === canal.id),
+      false,
+      'sai da lista de canais',
+    );
+    assert.equal((await dona('GET', `/api/channels/${canal.id}/messages`)).statusCode, 404, 'e as mensagens não se leem mais');
+
+    // Mas está na lixeira, com a conta do que seria perdido.
+    const lixeira = (await dona('GET', `/api/communities/${comunidadeId}/lixeira`)).json();
+    const achado = lixeira.canais.find((c: { id: number }) => c.id === canal.id);
+    assert.ok(achado, 'está na lixeira');
+    assert.equal(achado.mensagens, 1, 'a mensagem continua lá, esperando');
+    assert.equal(lixeira.dias, 30);
+
+    // E volta inteiro.
+    assert.equal((await dona('POST', `/api/communities/${comunidadeId}/lixeira/${canal.id}`)).statusCode, 200);
+    const voltou = (await dona('GET', `/api/channels/${canal.id}/messages`)).json();
+    assert.equal(voltou.length, 1, 'a mensagem voltou junto: ela nunca chegou a sair');
+  });
+
+  it('quem não administra não vê nem restaura', async () => {
+    const dino = await criarConta(app, 'dino');
+    const membro = comToken(app, dino.token);
+    await membro('POST', '/api/communities/join', { code: convite });
+    assert.equal((await membro('GET', `/api/communities/${comunidadeId}/lixeira`)).statusCode, 403);
+    assert.equal((await membro('POST', `/api/communities/${comunidadeId}/lixeira/1`)).statusCode, 403);
+  });
+});

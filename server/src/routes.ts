@@ -78,6 +78,15 @@ export function poderDeOperador(user: db.User, action: string, sobre: { target?:
 
 export const manages = (role: db.Role | undefined) => role === 'owner' || role === 'admin';
 
+/**
+ * Quanto tempo um canal apagado fica recuperável.
+ *
+ * Trinta dias é o prazo de quem só percebe a falta quando volta a precisar do canal — "cadê o
+ * #combinados do churrasco?" não acontece no mesmo dia. Antes disto o único socorro era o retrato
+ * diário da hospedagem, que para desfazer um clique perderia o dia inteiro de todo mundo.
+ */
+export const DIAS_NA_LIXEIRA = 30;
+
 /** Canal que pertence a uma comunidade (ou seja, não é conversa privada). */
 export type CommunityChannel = db.Channel & { communityId: number };
 
@@ -1206,10 +1215,43 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(400).send({ error: 'Precisa existir pelo menos um canal de texto.' });
       }
       db.deleteChannel(channel.id);
+      // A varredura pega carona aqui: quem apaga um canal é exatamente quem pode estar enchendo a
+      // lixeira, e é o momento mais barato de conferir o que já passou dos trinta dias.
+      db.varrerCanaisApagados(new Date(Date.now() - DIAS_NA_LIXEIRA * 24 * 60 * 60_000).toISOString());
       removeVoiceChannelMembers(io, channel.id);
       io.to(communityRoom(channel.communityId)).emit('channel:deleted', { id: channel.id, communityId: channel.communityId });
-      return { ok: true };
+      return { ok: true, diasParaDesfazer: DIAS_NA_LIXEIRA };
     });
+
+    /**
+     * A LIXEIRA DA COMUNIDADE: o que foi apagado e ainda dá para trazer de volta.
+     *
+     * Só para quem administra, pelo mesmo motivo de apagar ser só de quem administra — e porque a
+     * lista conta quantas mensagens cada canal apagado tinha, que é informação de dentro dele.
+     */
+    authed.get<{ Params: { id: string } }>('/api/communities/:id/lixeira', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade vê a lixeira.' });
+      db.varrerCanaisApagados(new Date(Date.now() - DIAS_NA_LIXEIRA * 24 * 60 * 60_000).toISOString());
+      return { canais: db.canaisNaLixeira(access.community.id), dias: DIAS_NA_LIXEIRA };
+    });
+
+    /** Desfazer. O canal volta com as mensagens, porque elas nunca chegaram a sair. */
+    authed.post<{ Params: { id: string; canalId: string } }>(
+      '/api/communities/:id/lixeira/:canalId',
+      async (request, reply) => {
+        const access = requireRole(request, reply);
+        if (!access) return reply;
+        if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade restaura um canal.' });
+        if (!db.restaurarCanal(Number(request.params.canalId), access.community.id)) {
+          return reply.code(404).send({ error: 'Esse canal não está na lixeira. Pode ter passado dos trinta dias.' });
+        }
+        const canal = db.findChannel(Number(request.params.canalId));
+        io.to(communityRoom(access.community.id)).emit('channel:created', canal);
+        return { ok: true, canal };
+      },
+    );
 
     authed.get<{ Params: { id: string }; Querystring: { before?: string } }>(
       '/api/channels/:id/messages',
