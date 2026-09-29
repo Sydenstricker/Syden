@@ -457,14 +457,31 @@ function StreamInfoBadge({
           {formato ? (
             <>
               <strong>{formato}</strong>
-              {/* QUEM ASSISTE VÊ SÓ O NÚMERO. A linha "é o que está chegando até você" e a de placa
-                  de vídeo saíram a pedido de quem usa: para quem assiste, nenhuma das duas muda uma
-                  decisão. Quem TRANSMITE mantém a sua, porque ali ela desfaz uma ambiguidade real —
-                  o número é o que sai daqui, e não o que os outros recebem depois da adaptação. */}
+              {/* QUEM ASSISTE VÊ SÓ O NÚMERO: nada ali muda uma decisão de quem está só vendo.
+                  QUEM TRANSMITE VÊ O DIAGNÓSTICO, porque para ele cada linha é acionável — a
+                  primeira desfaz uma ambiguidade real (o número é o que sai daqui, não o que os
+                  outros recebem depois da adaptação), e a segunda responde a pergunta que fez o
+                  automático de codec existir: está pegando a placa de vídeo ou não? */}
               {local && <span>{t('é o que você está enviando')}</span>}
+              {local && stats?.codec && (
+                <span>
+                  {stats.codec}
+                  {stats.naPlaca === true
+                    ? ' · ' + t('pela placa de vídeo')
+                    : stats.naPlaca === false
+                      ? ' · ' + t('pelo processador')
+                      : ''}
+                </span>
+              )}
               {local && stats?.limitedBy === 'cpu' && <span className="stream-info-warn">{t('Seu computador está segurando a qualidade.')}</span>}
               {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">{t('Sua internet está segurando a qualidade.')}</span>}
             </>
+          ) : stats?.semPublico ? (
+            /* NÃO ESTÁ QUEBRADO, ESTÁ ECONOMIZANDO. O Syden pausa as camadas que ninguém abriu, e
+               camada pausada não produz quadro — logo não há número para medir. Sem esta frase o
+               cartão ficava em "Medindo…" para sempre, e quem transmitia sozinho achava que era
+               defeito. */
+            <span>{t('Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.')}</span>
           ) : (
             <span>{t('Medindo…')}</span>
           )}

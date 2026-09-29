@@ -457,4 +457,10 @@ export default {
     "En esta computadora, el automático elige H.264 por la tarjeta gráfica: es lo que deja más procesador para el juego.",
   "Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.":
     "En esta computadora, el automático elige VP8 por el procesador. La tarjeta gráfica no codifica H.264 en este tamaño de imagen.",
+  "Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.":
+    "Nadie abrió tu transmisión todavía. Syden solo codifica la imagen cuando alguien la mira — por eso no hay números aquí.",
+  "pela placa de vídeo":
+    "por la tarjeta gráfica",
+  "pelo processador":
+    "por el procesador",
 } satisfies Record<string, string>;

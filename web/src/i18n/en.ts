@@ -457,4 +457,10 @@ export default {
     "On this computer, automatic picks H.264 through the graphics card — the option that leaves the most processor for your game.",
   "Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.":
     "On this computer, automatic picks VP8 through the processor. The graphics card does not encode H.264 at this image size.",
+  "Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.":
+    "Nobody has opened your stream yet. Syden only encodes the image when someone is watching — that is why there are no numbers here.",
+  "pela placa de vídeo":
+    "through the graphics card",
+  "pelo processador":
+    "through the processor",
 } satisfies Record<string, string>;

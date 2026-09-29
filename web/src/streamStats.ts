@@ -19,6 +19,15 @@ export interface StreamStats {
   encoder: string | null;
   /** O navegador diz que este codificador é o econômico (normalmente, o da placa de vídeo). */
   naPlaca: boolean | null;
+  /**
+   * A transmissão está publicada mas NADA está sendo codificado, porque ninguém abriu.
+   *
+   * O Syden pausa as camadas que ninguém está assistindo (dynacast), e uma camada pausada não produz
+   * quadro nenhum — logo, não há tamanho, nem taxa, nem codec para medir. Sem este aviso o cartão
+   * ficava em "Medindo…" para sempre, e quem transmitia sozinho concluía que estava quebrado. Está
+   * tudo certo: é o Syden não gastando processador à toa.
+   */
+  semPublico: boolean;
 }
 
 type Publication = TrackPublication | LocalTrackPublication | RemoteTrackPublication;
@@ -38,6 +47,8 @@ async function read(publication: Publication | undefined, local: boolean): Promi
     const report = await track.getRTCStatsReport();
     if (!report) return null;
     let stats: StreamStats | null = null;
+    let vistas = 0;
+    let pausadas = 0;
     // O nome do codec vive numa entrada à parte do relatório, apontada por codecId.
     const codecs = new Map<string, string>();
     report.forEach((entry: Record<string, unknown>) => {
@@ -53,6 +64,9 @@ async function read(publication: Publication | undefined, local: boolean): Promi
       // Com camadas (simulcast), a maior é a que interessa: é a que aparece em tela cheia.
       if (stats && height <= stats.height) return;
       const reason = String(entry.qualityLimitationReason ?? 'none');
+      // 'active' é o próprio navegador dizendo que aquela camada está pausada.
+      if (entry.active === false) pausadas += 1;
+      vistas += 1;
       stats = {
         width,
         height,
@@ -62,9 +76,16 @@ async function read(publication: Publication | undefined, local: boolean): Promi
         codec: codecs.get(String(entry.codecId ?? '')) ?? null,
         encoder: typeof entry.encoderImplementation === 'string' ? entry.encoderImplementation : null,
         naPlaca: typeof entry.powerEfficientEncoder === 'boolean' ? entry.powerEfficientEncoder : null,
+        semPublico: false,
       };
     });
-    return stats;
+    // Só vale a pena dizer "ninguém assistindo" quando existem camadas E nenhuma delas está correndo:
+    // no primeiro segundo depois de começar, ainda não há relatório, e aí o certo é "medindo".
+    // O `as` é por causa do estreitamento do TypeScript dentro do forEach: ele conclui que `stats`
+    // continua nulo, porque não sabe que o callback já rodou. O valor é o que foi escrito ali dentro.
+    const medido = stats as StreamStats | null;
+    if (medido && vistas > 0 && pausadas === vistas) medido.semPublico = true;
+    return medido;
   } catch {
     return null;
   }
