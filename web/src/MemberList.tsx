@@ -7,14 +7,15 @@ import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
 import { corDoNome } from './profileStyles';
 import { fraseDaTransmissao } from './streamName';
+import { chave, useT } from './i18n';
 import type { Channel, CommunityMember, PresenceEntry, Role, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
 /** Como no Discord: dono destacado, depois administradores, depois o resto — cada um com sua cor. */
 const GROUPS: { role: Role; label: string; className: string }[] = [
-  { role: 'owner', label: 'Dono', className: 'role-owner' },
-  { role: 'admin', label: 'Administradores', className: 'role-admin' },
-  { role: 'member', label: 'Disponível', className: '' },
+  { role: 'owner', label: chave('Dono'), className: 'role-owner' },
+  { role: 'admin', label: chave('Administradores'), className: 'role-admin' },
+  { role: 'member', label: chave('Disponível'), className: '' },
 ];
 
 /**
@@ -47,6 +48,7 @@ export function MemberList({
   /** Abre a conversa privada com alguém, pelo menu do botão direito. */
   onSendMessage: (userId: number) => void;
 }) {
+  const t = useT();
   const { members } = useDirectory();
   const menu = usePersonMenu();
   // Clicar em alguém abre o cartão de perfil, com o fundo e a cor de nome que a pessoa escolheu.
@@ -113,7 +115,7 @@ export function MemberList({
         return (
           <div key={groupRole}>
             <h3>
-              {label} — {group.length}
+              {t(label)} — {group.length}
             </h3>
             {group.map((member) => row(member, className))}
           </div>

@@ -26,7 +26,7 @@ import { corDoNome } from './profileStyles';
 import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume } from './voiceVolumes';
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 
 /**
  * Menu do botão direito em cima de alguém, como no Discord: abrir o perfil, mencionar, mandar mensagem,
@@ -44,7 +44,11 @@ export function usePersonMenu() {
   return { target, open, close: () => setTarget(null) };
 }
 
-const CARGO: Record<Role, string> = { owner: 'Dono da comunidade', admin: 'Administra a comunidade', member: 'Membro' };
+const CARGO: Record<Role, string> = {
+  owner: chave('Dono da comunidade'),
+  admin: chave('Administra a comunidade'),
+  member: chave('Membro'),
+};
 
 /** Uma linha do menu. Separada para o teclado poder andar por todas elas do mesmo jeito. */
 function Item({
@@ -217,7 +221,7 @@ export function PersonMenu({
         <Avatar name={target.username} userId={target.userId} size={36} />
         <div className="person-menu-quem">
           <strong data-cor={corDoNome(membro?.nameColor ?? null)}>{target.username}</strong>
-          <small>{CARGO[targetRole]}</small>
+          <small>{t(CARGO[targetRole])}</small>
         </div>
       </div>
       {(membro?.vitrine?.length ?? 0) > 0 && (

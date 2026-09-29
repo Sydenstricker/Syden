@@ -6,14 +6,18 @@ import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
 import { classeDoFundo, corDoNome } from './profileStyles';
 import type { CommunityMember, PresenceStatus } from './types';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 
-const CARGO: Record<string, string> = { owner: 'Dono da comunidade', admin: 'Administra a comunidade', member: 'Membro' };
+const CARGO: Record<string, string> = {
+  owner: chave('Dono da comunidade'),
+  admin: chave('Administra a comunidade'),
+  member: chave('Membro'),
+};
 const PRESENCA: Record<PresenceStatus, string> = {
-  online: 'Disponível',
-  ausente: 'Ausente',
-  ocupado: 'Não perturbe',
-  invisivel: 'Offline',
+  online: chave('Disponível'),
+  ausente: chave('Ausente'),
+  ocupado: chave('Não perturbe'),
+  invisivel: chave('Offline'),
 };
 
 /**
@@ -76,8 +80,8 @@ export function ProfileCard({
           <h3 className="perfil-nome" data-cor={corDoNome(membro.nameColor)}>
             {membro.username}
           </h3>
-          <p className="perfil-linha">{CARGO[membro.role] ?? 'Membro'}</p>
-          <p className="perfil-linha">{status ? PRESENCA[status] : 'Offline'}</p>
+          <p className="perfil-linha">{t(CARGO[membro.role] ?? chave('Membro'))}</p>
+          <p className="perfil-linha">{t(status ? PRESENCA[status] : chave('Offline'))}</p>
           {membro.vitrine?.length > 0 && (
             <span className="medalha-linha">
               {/* 46 e não 72: a conta está no .medalha-linha, e é o que faz cinco insígnias caberem
@@ -85,9 +89,15 @@ export function ProfileCard({
               <Vitrine membro={membro} tamanho={46} />
               <span className="medalha-legenda">
                 <strong>{legendaDaVitrine(membro)}</strong>
+                {/* SEM "DELA": a frase fala de uma pessoa que pode ser qualquer pessoa, e o cartão é o
+                    lugar mais errado possível para errar isso. "Teve uma ideia" resolve sem rodeio.
+                    E passa pelo t(): estava cravada em português porque texto dentro de chaves não é
+                    alcançado pela busca de texto cravado — ali dentro é código. */}
                 {membro.acceptedIdeas > 0 && (
                   <small>
-                    {membro.acceptedIdeas === 1 ? 'Uma ideia dela entrou no app' : membro.acceptedIdeas + ' ideias dela entraram no app'}
+                    {membro.acceptedIdeas === 1
+                      ? t('Teve uma ideia que entrou no app')
+                      : t('Teve {quantas} ideias que entraram no app', { quantas: membro.acceptedIdeas })}
                   </small>
                 )}
               </span>
