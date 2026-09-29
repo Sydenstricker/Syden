@@ -13,6 +13,7 @@ import { signSession } from './auth.js';
 import { config } from './config.js';
 import { requireUser } from './routes.js';
 import * as db from './db.js';
+import type { User } from './db.js';
 import {
   buscarPerfil,
   conferirComASteam,
@@ -98,7 +99,10 @@ export function registerSocialRoutes(app: FastifyInstance) {
     db.criarEstadoSocial(estado, provedor, desafio, undefined, request.body?.doApp === true);
     // Aproveita a passagem para varrer o que ficou pelo caminho, em vez de manter um relógio só para isso.
     db.limparEstadosSociais(new Date(Date.now() - VALIDADE_MS).toISOString());
-    return { url: enderecoDeEntrada(provedor, estado) };
+    // O `estado` volta junto porque o app de desktop precisa dele para PERGUNTAR se já terminou (ver
+    // /esperar). Não é segredo: ele viaja no endereço do provedor, que este mesmo cliente acabou de
+    // receber. O que é segredo continua sendo o segredo, e esse nunca sai de lá.
+    return { url: enderecoDeEntrada(provedor, estado), estado };
     },
   );
 
@@ -132,14 +136,31 @@ export function registerSocialRoutes(app: FastifyInstance) {
       const origem = state ? db.acharEstadoSocial(state) : undefined;
       const veioDoApp = origem?.doApp === 1;
 
+      /**
+       * O MOTIVO FICA GUARDADO, e não só escrito no endereço de volta.
+       *
+       * Quem começou pelo app não lê esse endereço: quem lê é o navegador, e o app está do outro lado
+       * perguntando ao servidor se já acabou. Sem anotar, a desistência no Google seria, para o app,
+       * indistinguível de uma espera que ainda não terminou — e ele esperaria os trinta minutos
+       * inteiros por uma resposta que não vem mais.
+       */
+      const anotarFalha = (motivo: string) => {
+        if (origem && state) db.marcarFalhaSocial(state, motivo);
+      };
+
       // A pessoa clicou em "cancelar" na tela do Google: não é erro, é desistência.
-      if (request.query.error) return reply.redirect(voltarComErro('cancelado', veioDoApp));
+      if (request.query.error) {
+        anotarFalha('cancelado');
+        return reply.redirect(voltarComErro('cancelado', veioDoApp));
+      }
       // No caminho OAuth faltar o "code" já é o fim. Na Steam não existe "code" nenhum: o que precisa
       // estar lá são os campos assinados, e quem confere isso é a própria Steam, logo abaixo.
       if (!state || (ehOAuth(provedor) && !code)) return reply.redirect(voltarComErro('incompleto', veioDoApp));
 
       const guardado = origem;
-      if (!guardado || guardado.provedor !== provedor || guardado.entrega || venceu(guardado.createdAt)) {
+      // `falha` entra na lista pelo mesmo motivo de `entrega`: estado que já terminou, de um jeito ou
+      // de outro, não serve de novo. Sem isso, uma segunda volta com o mesmo estado passaria direto.
+      if (!guardado || guardado.provedor !== provedor || guardado.entrega || guardado.falha || venceu(guardado.createdAt)) {
         // Estado que não existe, de outro provedor, já usado ou vencido. Tudo isso é a mesma resposta:
         // dizer QUAL dos casos é só ajudaria quem está tentando descobrir.
         return reply.redirect(voltarComErro('expirado', veioDoApp));
@@ -154,7 +175,7 @@ export function registerSocialRoutes(app: FastifyInstance) {
         ? await buscarPerfil(provedor, code!, anotar)
         : await perfilDaSteamConferida(request.query, anotar);
       if (!perfil) {
-        db.consumirEstadoSocial(state);
+        anotarFalha('provedor');
         return reply.redirect(voltarComErro('provedor', doApp));
       }
 
@@ -165,7 +186,7 @@ export function registerSocialRoutes(app: FastifyInstance) {
         // do Syden: duas contas com a mesma entrada seria uma porta que ninguém sabe para onde leva.
         const jaEDe = db.donoDaContaSocial(provedor, perfil.sub);
         if (jaEDe && jaEDe.id !== guardado.ligarUserId) {
-          db.consumirEstadoSocial(state);
+          anotarFalha('jaligada');
           return reply.redirect(voltarComErro('jaligada', doApp));
         }
         // A ligação em si só acontece lá no "concluir", depois de o segredo bater. Aqui só se anota o
@@ -188,36 +209,54 @@ export function registerSocialRoutes(app: FastifyInstance) {
     }
 
     const guardado = db.acharEntregaSocial(comprovante);
-    const resolvido = guardado && (guardado.userId !== null || (guardado.ligarUserId !== null && guardado.sub !== null));
-    if (!guardado || !resolvido || venceu(guardado.createdAt)) {
+    if (!guardado || !resolvida(guardado) || venceu(guardado.createdAt)) {
       return reply.code(400).send({ error: 'Essa entrada não vale mais. Tente entrar de novo.' });
     }
 
-    // O CORAÇÃO DA COISA: o segredo tem que bater com o resumo deixado no começo. Quem plantou o link
-    // de volta não tem o segredo — ele ficou no navegador de quem começou de verdade.
-    if (resumo(segredo) !== guardado.resumo) {
-      db.consumirEstadoSocial(guardado.state);
-      return reply.code(403).send({ error: 'Essa entrada não é deste navegador.' });
+    const feito = await trocarPelaSessao(guardado, segredo, 'navegador');
+    if (feito.tipo === 'erro') return reply.code(feito.codigo).send({ error: feito.mensagem });
+    return feito.corpo;
+  });
+
+  /**
+   * A ESPERA: o app pergunta se a entrada já terminou, em vez de esperar que o navegador o abra.
+   *
+   * POR QUE ISTO EXISTE. O caminho anterior devolvia a pessoa por `syden://`, e o Windows perguntava se
+   * o site podia abrir o programa. Essa pergunta é do sistema, não nossa, e não tem como ser removida —
+   * mas ela só existe porque alguém de FORA precisa abrir o app. Aqui ninguém abre nada: o app, que já
+   * está aberto e já tem o segredo, pergunta de tempos em tempos se terminou. Quando terminou, ele
+   * entra sozinho e traz a própria janela para frente. Depois do "ok" no Google não sobra pergunta
+   * nenhuma, que é como deveria ter sido desde o começo.
+   *
+   * A SEGURANÇA É EXATAMENTE A DO /concluir, e é por isso que a troca é a mesma função: o que prova ser
+   * o mesmo aparelho continua sendo o segredo, que nunca saiu de lá. Quem soubesse o `estado` — ele
+   * viaja no endereço do provedor — não conseguiria nada sem ele.
+   *
+   * E ela não conta o que não precisa: enquanto não terminou, a resposta é sempre "esperando", sem
+   * dizer se aquele estado existe, de quem é, ou em que passo está.
+   */
+  app.post<{ Body: { estado?: string; segredo?: string } }>('/api/auth/social/esperar', async (request, reply) => {
+    const { estado, segredo } = request.body ?? {};
+    if (typeof estado !== 'string' || typeof segredo !== 'string' || estado.length > 128 || segredo.length > 128) {
+      return reply.code(400).send({ error: 'Pedido inválido.' });
     }
 
-    db.consumirEstadoSocial(guardado.state);
+    const guardado = db.acharEstadoSocial(estado);
+    // Estado que não existe e estado vencido dão a MESMA resposta: um dos dois casos é alguém chutando
+    // estados, e dizer qual é seria confirmar o chute.
+    if (!guardado || venceu(guardado.createdAt)) return { situacao: 'expirado' };
 
-    // Ligação: a pessoa já está dentro, e o que sai daqui não é token nenhum.
-    if (guardado.ligarUserId !== null && guardado.sub !== null) {
-      const dono = db.findUserById(guardado.ligarUserId);
-      if (!dono) return reply.code(400).send({ error: 'Essa conta não existe mais.' });
-      const jaEDe = db.donoDaContaSocial(guardado.provedor, guardado.sub);
-      if (jaEDe && jaEDe.id !== dono.id) {
-        return reply.code(409).send({ error: `Essa conta já está ligada ao usuário ${jaEDe.username} aqui no Syden.` });
-      }
-      db.ligarContaSocial(guardado.provedor, guardado.sub, dono.id);
-      return { ligado: guardado.provedor };
+    // Deu errado no provedor, ou a pessoa desistiu: o motivo ficou guardado esperando esta pergunta.
+    if (guardado.falha) {
+      db.consumirEstadoSocial(estado);
+      return { situacao: guardado.falha };
     }
 
-    const user = db.findUserById(guardado.userId!);
-    if (!user) return reply.code(400).send({ error: 'Essa conta não existe mais.' });
+    if (!guardado.entrega || !resolvida(guardado)) return { situacao: 'esperando' };
 
-    return { token: await signSession(user, db.sessionVersion(user.id)), user };
+    const feito = await trocarPelaSessao(guardado, segredo, 'aparelho');
+    if (feito.tipo === 'erro') return reply.code(feito.codigo).send({ error: feito.mensagem });
+    return { situacao: feito.corpo.ligado ? 'ligar' : 'ok', ...feito.corpo };
   });
 
   // ---------- Ligar e desligar, estando dentro ----------
@@ -277,6 +316,64 @@ export function registerSocialRoutes(app: FastifyInstance) {
       return { ligados: db.contasSociaisDe(request.user.id) };
     });
   });
+}
+
+/** O que o provedor já resolveu: uma conta para entrar, ou uma conta de lá para ligar nesta daqui. */
+interface Entrega {
+  state: string;
+  provedor: string;
+  resumo: string;
+  userId: number | null;
+  ligarUserId: number | null;
+  sub: string | null;
+  createdAt: string;
+}
+
+/** O provedor já respondeu e já se sabe de quem é? Antes disso não há o que trocar. */
+function resolvida(entrega: Entrega): boolean {
+  return entrega.userId !== null || (entrega.ligarUserId !== null && entrega.sub !== null);
+}
+
+/**
+ * Troca o que o provedor resolveu por uma sessão — apresentando o segredo.
+ *
+ * É UMA FUNÇÃO SÓ, usada pelo /concluir (navegador) e pelo /esperar (app), e isso é de propósito: são
+ * dois jeitos de fazer a mesma pergunta, e a conferência não pode ser parecida nos dois, tem de ser a
+ * mesma. Uma cópia com uma linha a menos seria uma porta a mais, e ninguém notaria.
+ *
+ * `onde` só muda a palavra da mensagem de recusa ("deste navegador" / "deste aparelho"), porque é o que
+ * a pessoa reconhece do lado de lá.
+ */
+async function trocarPelaSessao(
+  guardado: Entrega,
+  segredo: string,
+  onde: 'navegador' | 'aparelho',
+): Promise<{ tipo: 'erro'; codigo: number; mensagem: string } | { tipo: 'feito'; corpo: { token?: string; user?: User; ligado?: string } }> {
+  // O CORAÇÃO DA COISA: o segredo tem que bater com o resumo deixado no começo. Quem plantou o link de
+  // volta não tem o segredo — ele ficou em quem começou de verdade.
+  if (resumo(segredo) !== guardado.resumo) {
+    db.consumirEstadoSocial(guardado.state);
+    return { tipo: 'erro', codigo: 403, mensagem: `Essa entrada não é ${onde === 'navegador' ? 'deste navegador' : 'deste aparelho'}.` };
+  }
+
+  db.consumirEstadoSocial(guardado.state);
+
+  // Ligação: a pessoa já está dentro, e o que sai daqui não é token nenhum.
+  if (guardado.ligarUserId !== null && guardado.sub !== null) {
+    const dono = db.findUserById(guardado.ligarUserId);
+    if (!dono) return { tipo: 'erro', codigo: 400, mensagem: 'Essa conta não existe mais.' };
+    const jaEDe = db.donoDaContaSocial(guardado.provedor, guardado.sub);
+    if (jaEDe && jaEDe.id !== dono.id) {
+      return { tipo: 'erro', codigo: 409, mensagem: `Essa conta já está ligada ao usuário ${jaEDe.username} aqui no Syden.` };
+    }
+    db.ligarContaSocial(guardado.provedor, guardado.sub, dono.id);
+    return { tipo: 'feito', corpo: { ligado: guardado.provedor } };
+  }
+
+  const user = db.findUserById(guardado.userId!);
+  if (!user) return { tipo: 'erro', codigo: 400, mensagem: 'Essa conta não existe mais.' };
+
+  return { tipo: 'feito', corpo: { token: await signSession(user, db.sessionVersion(user.id)), user } };
 }
 
 /**

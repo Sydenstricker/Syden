@@ -34,11 +34,19 @@ export function EntradasLigadas() {
   async function ligar(provedor: Provedor) {
     setOcupado(provedor);
     setErro(null);
-    // Dando certo, a página sai do ar antes de o then rodar; o catch é para quando o servidor recusa.
-    await ligarCom(provedor).catch((e) => {
+    try {
+      // NO NAVEGADOR a página sai do ar antes de esta linha terminar. NO APP a ligação conclui aqui
+      // mesmo, porque é o app que pergunta ao servidor quando ela terminou (ver entradaSocial.ts) —
+      // e aí a lista precisa se atualizar sozinha, senão o provedor recém-ligado não aparece.
+      const feito = await ligarCom(provedor);
+      if (feito?.ligado) {
+        setEstado((atual) => (atual && !atual.ligados.includes(feito.ligado!) ? { ...atual, ligados: [...atual.ligados, feito.ligado!] } : atual));
+        setOcupado(null);
+      }
+    } catch (e) {
       setErro((e as Error).message);
       setOcupado(null);
-    });
+    }
   }
 
   async function desligar(provedor: Provedor) {

@@ -795,6 +795,14 @@ addColumnIfMissing('social_states', 'sub', 'TEXT');
 // segredo do fluxo fica na janela do Electron, e um navegador que recebesse a volta não teria como
 // completar. Ver o alto de social-routes.ts.
 addColumnIfMissing('social_states', 'do_app', 'INTEGER NOT NULL DEFAULT 0');
+// POR QUE A FALHA FICA GUARDADA, em vez de o estado ser simplesmente apagado.
+//
+// Quem começou a entrada pelo app não recebe mais a resposta pelo navegador: ele PERGUNTA ao servidor
+// se já terminou (ver /api/auth/social/esperar). Apagando o estado na desistência, essa pergunta não
+// teria o que responder — o app ficaria esperando para sempre por algo que não vem, e a pessoa que
+// clicou em "cancelar" no Google não veria explicação nenhuma. Com o motivo guardado, a espera termina
+// com a mesma frase que o navegador mostraria.
+addColumnIfMissing('social_states', 'falha', 'TEXT');
 
 /**
  * Esta conta precisa confirmar o e-mail antes de entrar?
@@ -3001,7 +3009,7 @@ export function criarEstadoSocial(
 export function acharEstadoSocial(state: string) {
   return db
     .prepare(
-      'SELECT state, provedor, resumo, entrega, user_id AS userId, ligar_user_id AS ligarUserId, sub, do_app AS doApp, created_at AS createdAt FROM social_states WHERE state = ?',
+      'SELECT state, provedor, resumo, entrega, user_id AS userId, ligar_user_id AS ligarUserId, sub, do_app AS doApp, falha, created_at AS createdAt FROM social_states WHERE state = ?',
     )
     .get(state) as
     | {
@@ -3013,9 +3021,20 @@ export function acharEstadoSocial(state: string) {
         ligarUserId: number | null;
         sub: string | null;
         doApp: number;
+        falha: string | null;
         createdAt: string;
       }
     | undefined;
+}
+
+/**
+ * Anota por que esta entrada não deu certo, em vez de apagar o estado.
+ *
+ * É o que permite ao app de desktop saber a diferença entre "cancelei no Google" e "ainda estou
+ * esperando". O estado some depois, quando a espera lê o motivo — ou na varredura dos vencidos.
+ */
+export function marcarFalhaSocial(state: string, motivo: string) {
+  db.prepare('UPDATE social_states SET falha = ? WHERE state = ?').run(motivo, state);
 }
 
 /**

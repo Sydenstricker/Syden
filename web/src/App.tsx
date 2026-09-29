@@ -93,6 +93,19 @@ export function App() {
     // Voltou do Google com um comprovante: troca por um token de verdade, apresentando o segredo que
     // ficou nesta aba. É esse par que impede que um link plantado por outra pessoa entre em alguma
     // conta (ver entradaSocial.ts). Falhando, cai na tela de entrada com o motivo escrito.
+    /**
+     * A VOLTA PELO ENDEREÇO É A REDE, e não mais o caminho principal no app.
+     *
+     * Dentro do app, quem conclui a entrada é o próprio app perguntando ao servidor (ver
+     * entradaSocial.ts) — assim ninguém precisa abrir o aplicativo de fora, e o Windows não tem o que
+     * perguntar. A volta por `syden://` continua valendo para quem usar o botão da página de volta.
+     *
+     * Chegando as duas, a segunda encontra a entrada já usada e mostraria "essa entrada não vale mais"
+     * para alguém que acabou de entrar com sucesso. Com a sessão aberta, uma volta de ENTRAR não tem
+     * mais o que fazer e é descartada. A de LIGAR não: ligar acontece justamente com a sessão aberta.
+     */
+    if (session.status === 'ready' && volta?.situacao === 'ok') return;
+
     const voltandoDoProvedor = (volta?.situacao === 'ok' || volta?.situacao === 'ligar') && volta.comprovante;
     if (voltandoDoProvedor) {
       void concluir(volta!.comprovante!)

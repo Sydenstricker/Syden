@@ -9,7 +9,7 @@
 // O segredo mora no sessionStorage, e não no localStorage, de propósito: ele serve para UMA ida ao
 // Google, e morre com a aba. Um segredo que sobrevive a reinício de navegador é um segredo esquecido.
 
-import { api } from './api';
+import { api, ApiError } from './api';
 import { desktopBridge } from './desktop';
 import type { User } from './types';
 
@@ -52,12 +52,22 @@ function sortear(): string {
     .replace(/=+$/, '');
 }
 
+/** O fim da linha: ou uma sessão nova, ou um provedor pendurado na conta que já existia. */
+export interface Entrada {
+  token?: string;
+  user?: User;
+  ligado?: Provedor;
+}
+
 /**
- * Começa a entrada: sorteia o segredo, pede o endereço ao servidor e leva o navegador para lá.
+ * Começa a entrada: sorteia o segredo, pede o endereço ao servidor e leva a pessoa até o provedor.
  *
- * Só volta se der errado — quando dá certo, a página já saiu do ar.
+ * NO NAVEGADOR não volta nunca dando certo: a página sai do ar ao ir para o Google, e quem termina o
+ * serviço é a página que recebe a volta.
+ *
+ * NO APP resolve com a entrada pronta, porque lá o caminho é outro (ver `comecar`).
  */
-export async function entrarCom(provedor: Provedor): Promise<void> {
+export async function entrarCom(provedor: Provedor): Promise<Entrada | null> {
   return comecar(provedor, '/api/auth/social/inicio', null);
 }
 
@@ -68,7 +78,7 @@ export async function entrarCom(provedor: Provedor): Promise<void> {
  * qual conta a ligação vai cair. Nada que venha do provedor depois muda isso — se a conta viesse da
  * volta, quem plantasse o link escolheria a conta.
  */
-export async function ligarCom(provedor: Provedor): Promise<void> {
+export async function ligarCom(provedor: Provedor): Promise<Entrada | null> {
   return comecar(provedor, '/api/me/social/inicio', undefined);
 }
 
@@ -91,12 +101,12 @@ export async function ligarCom(provedor: Provedor): Promise<void> {
  */
 export const voltaPeloApp = Boolean(desktopBridge?.abrirFora && desktopBridge?.aoVoltarDaEntrada);
 
-async function comecar(provedor: Provedor, rota: string, token: null | undefined): Promise<void> {
+async function comecar(provedor: Provedor, rota: string, token: null | undefined): Promise<Entrada | null> {
   const segredo = sortear();
   const noApp = voltaPeloApp;
 
   // token: null = sem autenticação (entrar); undefined = usa o token guardado (ligar).
-  const { url } = await api<{ url: string }>(rota, {
+  const { url, estado } = await api<{ url: string; estado: string }>(rota, {
     method: 'POST',
     ...(token === null ? { token: null } : {}),
     body: { provedor, desafio: await resumir(segredo), doApp: noApp },
@@ -104,8 +114,87 @@ async function comecar(provedor: Provedor, rota: string, token: null | undefined
   // Guarda DEPOIS de o servidor aceitar: se o pedido falhar, não fica lixo esperando na aba.
   sessionStorage.setItem(CHAVE, segredo);
 
-  if (noApp) desktopBridge!.abrirFora!(url);
-  else window.location.assign(url);
+  if (!noApp) {
+    window.location.assign(url);
+    return null;
+  }
+
+  const minhaVez = ++esperaAtual;
+  desktopBridge!.abrirFora!(url);
+  return esperarOFim(estado, segredo, minhaVez);
+}
+
+/**
+ * De quantas em quantas vezes o app pergunta se já terminou, e por quanto tempo.
+ *
+ * Dois segundos é rápido o bastante para a janela do Syden aparecer "no mesmo instante" em que a pessoa
+ * autoriza, e devagar o bastante para não ser nada: são poucos pedidos, cada um uma consulta por chave
+ * primária. Meia hora é o mesmo prazo que o servidor dá à entrada — perguntar depois disso é perguntar
+ * por algo que já não existe.
+ */
+const DE_QUANTO_EM_QUANTO_MS = 2000;
+const DESISTE_DEPOIS_DE_MS = 30 * 60_000;
+/** Falhas de rede seguidas antes de desistir. Uma internet que oscila não pode derrubar a entrada. */
+const ERROS_SEGUIDOS_ATE_DESISTIR = 10;
+
+/**
+ * Quem está esperando agora. Clicar em "Google" e depois em "Discord" deixaria duas esperas correndo,
+ * e a primeira ainda poderia entrar numa conta que a pessoa já desistiu de usar.
+ */
+let esperaAtual = 0;
+
+const pausa = (ms: number) => new Promise((pronto) => setTimeout(pronto, ms));
+
+interface Espera extends Entrada {
+  situacao: VoltaSocial['situacao'] | 'esperando';
+}
+
+/**
+ * NO APP, QUEM PERGUNTA É O APP — e é isso que faz a entrada terminar sem mais nenhuma pergunta.
+ *
+ * O caminho antigo dependia de o NAVEGADOR abrir o aplicativo (`syden://`), e por isso o Windows
+ * perguntava se podia. A pergunta é do sistema e não tem como ser removida; o que dá para remover é a
+ * necessidade dela. Aqui o app já está aberto, já tem o segredo, e só quer saber se terminou. Nada
+ * precisa abrir nada.
+ *
+ * O caminho por `syden://` continua existindo como rede: a página de volta tem um botão para ele, para
+ * o caso de a conversa com o servidor não acontecer. Se os dois chegarem, o segundo encontra a entrada
+ * já usada — e o App ignora uma volta que chega com a sessão já aberta.
+ */
+async function esperarOFim(estado: string, segredo: string, minhaVez: number): Promise<Entrada | null> {
+  const ate = Date.now() + DESISTE_DEPOIS_DE_MS;
+  let errosSeguidos = 0;
+
+  while (Date.now() < ate) {
+    await pausa(DE_QUANTO_EM_QUANTO_MS);
+    // Outra entrada começou no meio do caminho: esta perdeu a vez e some sem dizer nada.
+    if (minhaVez !== esperaAtual) return null;
+
+    let resposta: Espera;
+    try {
+      resposta = await api<Espera>('/api/auth/social/esperar', { method: 'POST', token: null, body: { estado, segredo } });
+      errosSeguidos = 0;
+    } catch (erro) {
+      // Segredo recusado não melhora tentando de novo: é a única recusa que encerra na hora.
+      if (erro instanceof ApiError && erro.status === 403) throw erro;
+      if (++errosSeguidos >= ERROS_SEGUIDOS_ATE_DESISTIR) throw erro;
+      continue;
+    }
+
+    if (resposta.situacao === 'esperando') continue;
+
+    sessionStorage.removeItem(CHAVE);
+    if (resposta.situacao === 'ok' || resposta.situacao === 'ligar') {
+      // A JANELA VEM PARA FRENTE SOZINHA. Sem isto, a pessoa autoriza no navegador e continua olhando
+      // para o navegador, sem sinal nenhum de que o Syden já entrou atrás dele.
+      desktopBridge?.focus?.();
+      return resposta;
+    }
+    throw new Error(RECADOS[resposta.situacao]);
+  }
+
+  sessionStorage.removeItem(CHAVE);
+  throw new Error(RECADOS.expirado);
 }
 
 export interface VoltaSocial {

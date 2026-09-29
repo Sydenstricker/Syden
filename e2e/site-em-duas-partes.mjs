@@ -243,24 +243,32 @@ console.log('');
    * O href do link é o melhor detector que existe para esta página: no HTML ele é `syden://entrada`
    * pelado, e quem lhe acrescenta a busca é o script. Se a política de segurança bloquear o script — o
    * jeito silencioso de esta página falhar —, o endereço fica sem o comprovante, e é isso que se mede.
+   *
+   * E ELA NÃO PODE ABRIR O APLICATIVO SOZINHA. Isso fazia o Windows perguntar se o site podia abrir um
+   * programa, logo depois de a pessoa já ter autorizado no Google — a segunda pergunta que esta página
+   * inteira existe para eliminar. Quem conclui a entrada agora é o app, perguntando ao servidor.
    */
   const { page, contexto, barrados } = await abrir();
   const BUSCA = '?entrada=ok&comprovante=abc123';
   for (const caminho of ['/voltar-para-o-app.html', '/app/voltar-para-o-app.html']) {
-    // 'domcontentloaded', e não 'load': a página tenta abrir o aplicativo sozinha logo depois de
-    // carregar, e num navegador sem o Syden instalado (como este) essa tentativa fica pendurada. Esperar
-    // o 'load' aqui seria esperar por um navegador que nunca vai responder.
-    const resposta = await page.goto(BASE + caminho + BUSCA, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(700);
+    const resposta = await page.goto(BASE + caminho + BUSCA, { waitUntil: 'load' });
     const href = await page.locator('#abrir').getAttribute('href');
     const texto = (await page.locator('#titulo').textContent())?.trim() ?? '';
+    const redeEscondida = await page.locator('#rede').isHidden();
 
-    const ok = resposta?.status() === 200 && href === 'syden://entrada' + BUSCA && texto.length > 0;
-    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} devolve ao app com o comprovante`);
-    console.log(`        link: ${href}`);
+    const ok = resposta?.status() === 200 && href === 'syden://entrada' + BUSCA && texto.length > 0 && redeEscondida;
+    console.log(`  ${ok ? 'OK ' : 'XX '} ${caminho} confirma a entrada sem abrir nada sozinha`);
+    console.log(`        link de reserva: ${href}`);
     if (resposta?.status() !== 200) problemas.push(`${caminho} não existe (${resposta?.status()}): o app de desktop ficaria sem volta`);
     else if (href !== 'syden://entrada' + BUSCA) problemas.push(`${caminho}: o link ficou "${href}" — o script não montou o endereço`);
+    else if (!redeEscondida) problemas.push(`${caminho}: o botão de abrir o app aparece de cara, e ele é só a reserva`);
   }
+
+  // A reserva precisa CHEGAR, senão quem ficou sem a conversa com o servidor não tem saída nenhuma.
+  await page.waitForSelector('#rede:not([hidden])', { timeout: 15_000 }).catch(() => {});
+  const redeApareceu = await page.locator('#rede').isVisible();
+  console.log(`  ${redeApareceu ? 'OK ' : 'XX '} e oferece o caminho manual depois de alguns segundos`);
+  if (!redeApareceu) problemas.push('o botão de reserva nunca aparece: sem a conversa com o servidor, não há saída');
   if (barrados.length) problemas.push(`a política barrou algo na página de volta: ${barrados[0]}`);
   await contexto.close();
 }

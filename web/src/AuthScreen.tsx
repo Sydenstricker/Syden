@@ -160,12 +160,18 @@ export function AuthScreen({
                       onClick={() => {
                         setIndoPara(provedor);
                         setError(null);
-                        // Dando certo, a página sai do ar antes de o then rodar. O catch é para o
-                        // caso de o servidor recusar: aí a pessoa continua aqui e precisa saber.
-                        void entrarCom(provedor).catch((e) => {
-                          setError((e as Error).message);
-                          setIndoPara(null);
-                        });
+                        // NO NAVEGADOR a página sai do ar antes de o then rodar, e o catch é para o
+                        // caso de o servidor recusar. NO APP é diferente: a entrada termina aqui
+                        // mesmo, porque é o app que pergunta ao servidor quando ela concluiu — e aí
+                        // não há volta pelo endereço nem pergunta do Windows (ver entradaSocial.ts).
+                        void entrarCom(provedor)
+                          .then((entrada) => {
+                            if (entrada?.token && entrada.user) onAuthenticated(entrada.token, entrada.user);
+                          })
+                          .catch((e) => {
+                            setError((e as Error).message);
+                            setIndoPara(null);
+                          });
                       }}
                     >
                       <span className="auth-social-conteudo">
