@@ -206,7 +206,6 @@ export default {
   'Assistir transmissão': 'Ver la transmisión',
   'Parar de assistir esta transmissão': 'Dejar de ver esta transmisión',
   'Informações da transmissão': 'Información de la transmisión',
-  'Sua transmissão está': 'Tu transmisión está',
   'Volume da transmissão': 'Volumen de la transmisión',
   'Som da transmissão': 'Sonido de la transmisión',
   'Nada é baixado enquanto você não abrir': 'No se descarga nada mientras no abras',
@@ -408,4 +407,10 @@ export default {
   "Quem falou": "Quién habló",
   "Reconectando ao servidor…": "Reconectando al servidor…",
   "Uso do servidor": "Uso del servidor",
+  "Esta transmissão está sem som. Quem transmite precisa marcar “compartilhar áudio” ao escolher a tela.": "Esta transmisión no tiene sonido. Quien transmite debe marcar \"compartir audio\" al elegir la pantalla.",
+  "O som chega quando você abre esta transmissão.": "El sonido llega cuando abres esta transmisión.",
+  "Sair da tela cheia": "Salir de pantalla completa",
+  "Tela cheia": "Pantalla completa",
+  "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
+    "Tu transmisión no tiene sonido. El navegador solo manda el sonido si marcas “compartir audio” en la ventana donde eliges la pantalla.",
 } satisfies Record<string, string>;

@@ -17,6 +17,7 @@ import {
   Info,
   LayoutGrid,
   Maximize,
+  Minimize,
   Mic,
   MicOff,
   Music,
@@ -33,7 +34,7 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-react';
-import { useMemo, type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
@@ -55,7 +56,7 @@ import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
 import { stopAllSounds } from './soundboard';
-import { getScreenVolume, setScreenVolume } from './voiceVolumes';
+import { getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -465,8 +466,19 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
   const userId = Number(publisher.identity);
   const [volume, setVolume] = useState(() => getScreenVolume(userId));
   // Reavalia quando o participante publica ou tira faixas (o som pode chegar depois da imagem).
-  const tracks = useParticipantTracks([Track.Source.ScreenShareAudio], publisher.identity);
-  const comSom = tracks.length > 0;
+  useParticipantTracks([Track.Source.ScreenShareAudio], publisher.identity);
+
+  /**
+   * "TEM SOM" É A PUBLICAÇÃO EXISTIR, e não a faixa já ter chegado. A diferença apareceu com duas
+   * transmissões ao mesmo tempo: o som de quem não está sendo assistido não é baixado (ver
+   * quemOuvir.ts), então a faixa não existe deste lado — e a tela dizia "esta transmissão está sem
+   * som", que é falso, e escondia o controle de volume, que era o que a pessoa queria.
+   *
+   * Quem publica som é quem sabe se tem som. O resto é o caminho até aqui.
+   */
+  const publicacaoDeSom = publisher.getTrackPublication(Track.Source.ScreenShareAudio);
+  const comSom = Boolean(publicacaoDeSom);
+  const somAindaVindo = comSom && !publicacaoDeSom?.track;
 
   if (publisher.isLocal) {
     if (!comSom) {
@@ -475,8 +487,11 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
       return (
         <div className="stream-audio">
           <span className="stream-audio-warn">
-            <VolumeX size={16} /> {t('Sua transmissão está')} <strong>sem som</strong>. O navegador só manda o som se você marcar
-            "compartilhar áudio" na janelinha de escolher a tela.
+            {/* A FRASE INTEIRA NUMA CHAVE SÓ. Ela estava partida: metade em t() e metade cravada em
+                português, porque texto que se mistura com <strong> escapa da busca por texto cravado.
+                O negrito no meio custava a outra metade da tradução, e o ícone já dá a ênfase. */}
+            <VolumeX size={16} />{' '}
+            {t('Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.')}
           </span>
           {voice.telaCompartilhada && (
             <button className="btn-secondary stream-audio-retry" onClick={() => void voice.shareScreen(voice.telaCompartilhada!)}>
@@ -509,11 +524,15 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
         <div className="stream-info-card">
           {comSom ? (
             <label className="stream-audio-volume">
-              Som da transmissão: {Math.round(volume * 100)}%
+              {t('Som da transmissão')}: {Math.round(volume * 100)}%
               <input
                 type="range"
                 min={0}
-                max={1}
+                /* Até 200%, como em qualquer programa de conversa: som de jogo capturado costuma
+                   chegar baixo, e 100% é o som cru, sem reforço nenhum. O caminho que faz isso
+                   acontecer de verdade — com um teto antes, para não virar estouro no ouvido — está
+                   em voiceVolumes.ts. */
+                max={TETO_DA_TRANSMISSAO}
                 step={0.05}
                 value={volume}
                 aria-label={t('Volume da transmissão')}
@@ -523,9 +542,12 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
                   setScreenVolume(voice.room, userId, value);
                 }}
               />
+              {/* O som só é baixado de quem está sendo assistido. Dizer isso é melhor do que um
+                  controle que parece não responder. */}
+              {somAindaVindo && <small>{t('O som chega quando você abre esta transmissão.')}</small>}
             </label>
           ) : (
-            <span>Esta transmissão está sem som. Quem transmite precisa marcar "compartilhar áudio" ao escolher a tela.</span>
+            <span>{t('Esta transmissão está sem som. Quem transmite precisa marcar “compartilhar áudio” ao escolher a tela.')}</span>
           )}
         </div>
       )}
@@ -568,6 +590,42 @@ function ConviteDeTransmissao({
 }
 
 /**
+ * O botão de tela cheia — que também SAI da tela cheia.
+ *
+ * Antes ele só sabia entrar: já em tela cheia, clicar nele chamava `requestFullscreen` de novo, que
+ * não faz nada. Quem não conhecia o Esc ficava preso numa tela sem saída visível, com o único botão
+ * da tela parecendo quebrado. Um botão que liga precisa desligar.
+ *
+ * O estado vem do EVENTO do navegador, e não do nosso clique: sair pelo Esc, pelo F11 ou pelo gesto
+ * do sistema também tem de trocar o ícone, e nenhum deles passa por aqui.
+ */
+function BotaoTelaCheia({ alvo }: { alvo: RefObject<HTMLDivElement | null> }) {
+  const t = useT();
+  const [cheia, setCheia] = useState(false);
+
+  useEffect(() => {
+    const conferir = () => setCheia(document.fullscreenElement === alvo.current);
+    document.addEventListener('fullscreenchange', conferir);
+    conferir();
+    return () => document.removeEventListener('fullscreenchange', conferir);
+  }, [alvo]);
+
+  return (
+    <button
+      className="fullscreen-button"
+      title={cheia ? t('Sair da tela cheia') : t('Tela cheia')}
+      aria-label={cheia ? t('Sair da tela cheia') : t('Tela cheia')}
+      onClick={() => {
+        if (document.fullscreenElement) void document.exitFullscreen();
+        else void alvo.current?.requestFullscreen();
+      }}
+    >
+      {cheia ? <Minimize size={18} /> : <Maximize size={18} />}
+    </button>
+  );
+}
+
+/**
  * Um quadro grande da tela (o que está em foco, ou cada uma quando a tela está dividida): o vídeo,
  * os controles da transmissão e o botão de tela cheia deste quadro.
  */
@@ -598,9 +656,7 @@ function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPl
           )}
         </div>
       )}
-      <button className="fullscreen-button" title="Tela cheia" onClick={() => void ref.current?.requestFullscreen()}>
-        <Maximize size={18} />
-      </button>
+      <BotaoTelaCheia alvo={ref} />
     </div>
   );
 }

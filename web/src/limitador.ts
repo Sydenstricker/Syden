@@ -22,6 +22,26 @@ const TETO_DB = -6;
  * Devolve `null` quando o navegador não tem o nó (nenhum atual deixa de ter, mas som é um extra: não
  * vale derrubar a reprodução por causa disso).
  */
+/**
+ * O limitador sozinho, sem ligar em nada. Para quem precisa pô-lo no meio de um caminho que já existe
+ * — é o caso do reforço do som da transmissão, onde o ganho vem DEPOIS e quem monta a ligação é o
+ * LiveKit (ver voiceVolumes.ts). Lá a ordem importa: com o teto antes do ganho, o dobro de volume
+ * chega no máximo a 0 dB, que é o limite do que não estoura.
+ */
+export function criarTeto(ctx: BaseAudioContext): DynamicsCompressorNode | null {
+  try {
+    const limitador = ctx.createDynamicsCompressor();
+    limitador.threshold.value = TETO_DB;
+    limitador.knee.value = 0;
+    limitador.ratio.value = 20;
+    limitador.attack.value = 0.003;
+    limitador.release.value = 0.25;
+    return limitador;
+  } catch {
+    return null;
+  }
+}
+
 export function comTeto(ctx: BaseAudioContext, destino: AudioNode = (ctx as AudioContext).destination): AudioNode | null {
   try {
     const limitador = ctx.createDynamicsCompressor();

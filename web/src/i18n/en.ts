@@ -206,7 +206,6 @@ export default {
   'Assistir transmissão': 'Watch stream',
   'Parar de assistir esta transmissão': 'Stop watching this stream',
   'Informações da transmissão': 'Stream details',
-  'Sua transmissão está': 'Your stream is',
   'Volume da transmissão': 'Stream volume',
   'Som da transmissão': 'Stream audio',
   'Nada é baixado enquanto você não abrir': 'Nothing is downloaded until you open',
@@ -408,4 +407,10 @@ export default {
   "Quem falou": "Who talked",
   "Reconectando ao servidor…": "Reconnecting to the server…",
   "Uso do servidor": "Server usage",
+  "Esta transmissão está sem som. Quem transmite precisa marcar “compartilhar áudio” ao escolher a tela.": "This stream has no sound. Whoever is streaming has to tick \"share audio\" when picking the screen.",
+  "O som chega quando você abre esta transmissão.": "Sound arrives once you open this stream.",
+  "Sair da tela cheia": "Leave full screen",
+  "Tela cheia": "Full screen",
+  "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
+    "Your stream has no sound. The browser only sends sound if you tick “share audio” in the window where you pick the screen.",
 } satisfies Record<string, string>;
