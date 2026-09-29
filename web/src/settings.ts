@@ -8,6 +8,17 @@ import { guardarEmBreve } from './preferencias';
 
 export type ScreenQuality = 'light' | 'standard' | 'smooth';
 
+/**
+ * O teto do que ESTE computador baixa das transmissões dos outros.
+ *
+ * Não muda nada para quem transmite: a pessoa continua mandando a mesma coisa, e o servidor manda
+ * para cá só a camada que cabe. Serve para internet medida, para computador que esquenta e,
+ * principalmente, para quem assiste pelo celular — onde a imagem é pequena e os dados são caros.
+ *
+ * 'auto' é o de sempre: a qualidade acompanha o tamanho do quadro na tela e o que a internet aguenta.
+ */
+export type QualidadeQueRecebo = 'auto' | 'media' | 'baixa';
+
 export interface Settings {
   /** Ids de dispositivo; '' = o padrão do sistema. */
   audioInput: string;
@@ -16,6 +27,8 @@ export interface Settings {
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
+  /** O teto do que este computador BAIXA das transmissões dos outros. */
+  qualidadeQueRecebo: QualidadeQueRecebo;
   /** Cores do app: escuro (padrão) ou claro. */
   theme: Theme;
   /** Microfone e áudio desligados de propósito, valendo já fora da chamada e ao entrar na próxima. */
@@ -47,6 +60,7 @@ const DEFAULTS: Settings = {
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
+  qualidadeQueRecebo: 'auto',
   theme: 'dark',
   startMuted: false,
   startDeafened: false,

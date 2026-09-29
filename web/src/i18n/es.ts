@@ -413,4 +413,9 @@ export default {
   "Tela cheia": "Pantalla completa",
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Tu transmisión no tiene sonido. El navegador solo manda el sonido si marcas “compartir audio” en la ventana donde eliges la pantalla.",
+  "Automático": "Automático",
+  "Baixa — economiza dados": "Baja — ahorra datos",
+  "Baixar até": "Descargar hasta",
+  "Média — metade da altura": "Media — la mitad de la altura",
+  "Medindo…": "Midiendo…",
 } satisfies Record<string, string>;

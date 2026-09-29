@@ -19,6 +19,7 @@ import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import { nomeDaTransmissao } from './streamName';
+import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { applyAllVolumes, idsComVolumeAjustado } from './voiceVolumes';
 import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOuvir';
 import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
@@ -233,9 +234,13 @@ export function useVoice(socket: Socket | null) {
     };
   }, [room]);
 
-  // Volume que você escolheu para cada pessoa vale de novo sempre que ela chega ou volta a falar.
+  // Volume que você escolheu para cada pessoa, e o teto de qualidade que você escolheu receber, valem
+  // de novo sempre que alguém chega, volta a falar ou começa a transmitir.
   useEffect(() => {
-    const restore = () => applyAllVolumes(room);
+    const restore = () => {
+      applyAllVolumes(room);
+      aplicarTetoEmTodas(room);
+    };
     room
       .on(RoomEvent.ParticipantConnected, restore)
       .on(RoomEvent.TrackSubscribed, restore)

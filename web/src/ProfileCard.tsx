@@ -80,7 +80,9 @@ export function ProfileCard({
           <p className="perfil-linha">{status ? PRESENCA[status] : 'Offline'}</p>
           {membro.vitrine?.length > 0 && (
             <span className="medalha-linha">
-              <Vitrine membro={membro} tamanho={72} />
+              {/* 46 e não 72: a conta está no .medalha-linha, e é o que faz cinco insígnias caberem
+                  numa fileira só em vez de virarem uma coluna. */}
+              <Vitrine membro={membro} tamanho={46} />
               <span className="medalha-legenda">
                 <strong>{legendaDaVitrine(membro)}</strong>
                 {membro.acceptedIdeas > 0 && (

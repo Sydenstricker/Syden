@@ -9,7 +9,7 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
-import { type Participant, Track, type TrackPublication } from 'livekit-client';
+import { type Participant, type Room, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
   HeadphoneOff,
@@ -52,10 +52,11 @@ import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
-import { updateSettings, useSettings } from './settings';
+import { type QualidadeQueRecebo, updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
 import { stopAllSounds } from './soundboard';
+import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -420,7 +421,16 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
  * O "i" no canto da transmissão: passando o mouse, mostra em que formato ela está chegando de verdade
  * (não o que foi escolhido nas configurações, mas o que o navegador conseguiu entregar).
  */
-function StreamInfoBadge({ publication, local }: { publication: TrackPublication | undefined; local: boolean }) {
+function StreamInfoBadge({
+  publication,
+  local,
+  voice,
+}: {
+  publication: TrackPublication | undefined;
+  local: boolean;
+  /** Só o quadro grande de uma transmissão passa a sala — é onde escolher o teto de qualidade cabe. */
+  voice?: Voice;
+}) {
   const t = useT();
   const [open, setOpen] = useState(false);
   const stats = useStreamStats(publication, { local });
@@ -448,11 +458,50 @@ function StreamInfoBadge({ publication, local }: { publication: TrackPublication
               {local && stats?.limitedBy === 'bandwidth' && <span className="stream-info-warn">{t('Sua internet está segurando a qualidade.')}</span>}
             </>
           ) : (
-            <span>Medindo…</span>
+            <span>{t('Medindo…')}</span>
           )}
+          {!local && voice && <TetoDeQualidade room={voice.room} />}
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * O TETO DO QUE VOCÊ BAIXA — a escolha de quem ASSISTE, que não existia.
+ *
+ * Quem transmite escolhia o que mandar; quem assiste, nada. Numa sala com alguém transmitindo em
+ * 1080p, todo mundo baixa 1080p — inclusive quem está no celular, olhando um quadro pequeno e pagando
+ * por megabyte. A qualidade automática acompanha o TAMANHO do quadro na tela, e isso não é a mesma
+ * coisa que acompanhar a conta do mês.
+ *
+ * Fica junto do "i" de propósito: ali ao lado está escrito o que está chegando de verdade
+ * ("804p · 29 fps"), então a pessoa escolhe e vê o resultado no mesmo lugar. Um seletor de qualidade
+ * sem o número do lado é um chute.
+ *
+ * A escolha é sua e vale para TODAS as transmissões, agora e nas próximas: é uma preferência do
+ * aparelho, não desta sala. Ver qualidadeQueRecebo.ts.
+ */
+function TetoDeQualidade({ room }: { room: Room }) {
+  const t = useT();
+  const settings = useSettings();
+
+  return (
+    <label className="stream-qualidade">
+      {t('Baixar até')}
+      <select
+        value={settings.qualidadeQueRecebo}
+        onChange={(e) => {
+          const escolha = e.target.value as QualidadeQueRecebo;
+          updateSettings({ qualidadeQueRecebo: escolha });
+          aplicarTetoEmTodas(room, escolha);
+        }}
+      >
+        <option value="auto">{t('Automático')}</option>
+        <option value="media">{t('Média — metade da altura')}</option>
+        <option value="baixa">{t('Baixa — economiza dados')}</option>
+      </select>
+    </label>
   );
 }
 
@@ -638,7 +687,7 @@ function FocusPane({ trackRef, voice, children }: { trackRef: TrackReferenceOrPl
       {children}
       {trackRef.source === Track.Source.ScreenShare && (
         <div className="stream-controls">
-          <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
+          <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} voice={voice} />
           <StreamAudio voice={voice} publisher={trackRef.participant} />
           {/* Fechar corta o download na hora: dá para continuar na conversa sem gastar internet com a tela. */}
           {!trackRef.participant.isLocal && (

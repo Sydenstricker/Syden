@@ -413,4 +413,9 @@ export default {
   "Tela cheia": "Full screen",
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Your stream has no sound. The browser only sends sound if you tick “share audio” in the window where you pick the screen.",
+  "Automático": "Automatic",
+  "Baixa — economiza dados": "Low — saves data",
+  "Baixar até": "Download up to",
+  "Média — metade da altura": "Medium — half the height",
+  "Medindo…": "Measuring…",
 } satisfies Record<string, string>;

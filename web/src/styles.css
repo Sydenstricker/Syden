@@ -4687,10 +4687,22 @@ textarea {
 }
 
 /* No cartão de perfil e no menu, o quadro vem com a legenda do lado. */
+/*
+ * AS INSÍGNIAS EM CIMA, A LEGENDA EMBAIXO — e não lado a lado.
+ *
+ * Lado a lado, a fileira de insígnias disputava os 300px do cartão com o texto, e perdia: com duas
+ * insígnias elas já empilhavam uma sobre a outra, e o cartão crescia para baixo. Com cinco seria uma
+ * coluna de quadros e uma legenda espremida ao lado.
+ *
+ * Em coluna, a fileira tem a largura inteira do cartão: cinco insígnias de 46px cabem numa linha só
+ * (5×46 + 4×6 de respiro = 254, contra 264 de espaço útil), e a legenda lê como legenda — embaixo do
+ * que ela explica.
+ */
 .medalha-linha {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   margin-top: 10px;
 }
 
@@ -9376,4 +9388,26 @@ body.arrastando-barra {
   margin-left: auto;
   color: var(--text-muted);
   font-size: 12.5px;
+}
+
+/* O seletor de teto de qualidade, dentro do cartão do "i" da transmissão. Ele mora ali porque ao
+   lado está escrito o que está chegando de verdade: escolher e ver o número no mesmo lugar. */
+.stream-qualidade {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.stream-qualidade select {
+  background: var(--bg-input, var(--bg-sidebar));
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 12px;
 }

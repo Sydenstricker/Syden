@@ -210,7 +210,23 @@ export function AuthScreen({
 
             <label>
               {t('Nome de usuário')}
-              <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus required />
+              {/*
+                O FOCO AUTOMÁTICO NÃO VALE DENTRO DO APP, e a razão é visível: o Chromium abre a
+                listinha de senhas assim que um campo de login recebe o foco. Como este campo fica na
+                parte de baixo do cartão, ela abre PARA CIMA e cobre os botões de entrar com Google,
+                Discord, GitHub e Steam — que é a primeira coisa que a pessoa vê ao abrir o Syden.
+                Uma caixa escrita "Gerenciar senhas" por cima dos botões, sem ninguém ter pedido.
+
+                No navegador o foco continua: lá a listinha não abre sozinha sem um clique, e chegar
+                com o cursor já no campo é uma conveniência de verdade para quem entra por senha.
+              */}
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                autoFocus={!desktopBridge}
+                required
+              />
             </label>
             {mode === 'register' && (
               <label>
