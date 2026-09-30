@@ -532,4 +532,11 @@ export default {
   'Volume da transmissão': 'Volume della trasmissione',
   Voz: 'Voce',
   'Voz e vídeo': 'Voce e video',
+  '{quantos} dos 193 países da ONU': '{quantos} dei 193 paesi dell’ONU',
+  // As cinco regiões da ONU, na grade de países
+  'África': 'Africa',
+  'Américas': 'Americhe',
+  'Ásia': 'Asia',
+  'Europa': 'Europa',
+  'Oceania': 'Oceania',
 } satisfies Record<string, string>;

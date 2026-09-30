@@ -1,6 +1,7 @@
 import { Check, Languages } from 'lucide-react';
 import { useState } from 'react';
 import { IDIOMAS, PADRAO, TRADUCOES, idiomaAtual, paisesCobertos, trocarIdioma, useT } from './i18n';
+import { GradeDePaises } from './GradeDePaises';
 
 // Configurações → Idioma. A escolha é DENTRO do app, e não no instalador: quem baixou o Syden de alguém
 // não precisa reinstalar nada para ler na língua dele, e a troca vale na hora, sem reiniciar.
@@ -40,6 +41,11 @@ export function IdiomaSection() {
           </button>
         ))}
       </div>
+
+      {/* A grade é do idioma ESCOLHIDO, e não de um que se passe o mouse: ela responde "onde falam o
+          que eu estou lendo agora", que é a pergunta que a pessoa tem ao abrir esta tela. Trocar de
+          idioma troca a grade na hora, junto com o resto. */}
+      <GradeDePaises idioma={atual} />
 
       <h3>{t('Os outros idiomas')}</h3>
       <p className="settings-hint">

@@ -532,4 +532,11 @@ export default {
   'Salas de voz': 'Vyumba vya sauti',
   'Seria bom se…': 'Ingekuwa vizuri kama…',
   'Servidores de jogos': 'Seva za michezo',
+  '{quantos} dos 193 países da ONU': 'nchi {quantos} kati ya 193 wanachama wa Umoja wa Mataifa',
+  // As cinco regiões da ONU, na grade de países
+  'África': 'Afrika',
+  'Américas': 'Amerika',
+  'Ásia': 'Asia',
+  'Europa': 'Ulaya',
+  'Oceania': 'Oceania',
 } satisfies Record<string, string>;

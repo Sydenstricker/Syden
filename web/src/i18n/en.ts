@@ -538,4 +538,11 @@ export default {
   'Salas de voz': 'Voice rooms',
   'Seria bom se…': 'It would be nice if…',
   'Servidores de jogos': 'Game servers',
+  '{quantos} dos 193 países da ONU': '{quantos} of the 193 UN member states',
+  // As cinco regiões da ONU, na grade de países
+  'África': 'Africa',
+  'Américas': 'Americas',
+  'Ásia': 'Asia',
+  'Europa': 'Europe',
+  'Oceania': 'Oceania',
 } satisfies Record<string, string>;

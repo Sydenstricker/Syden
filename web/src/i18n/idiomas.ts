@@ -8,6 +8,7 @@
 //
 // Nem todos estão traduzidos, e tudo bem: o que não tem tradução aparece em português (ver i18n/index).
 // Acrescentar um idioma é escrever um arquivo de dicionário e apontar aqui em TRADUCOES — nada mais.
+import { cobertosPor } from './paises';
 
 /** A escrita decide a fonte de reserva (as letras de cada uma vêm de uma família Noto diferente). */
 export type Escrita =
@@ -81,9 +82,14 @@ export interface Idioma {
  */
 export const IDIOMAS: Idioma[] = [
   { codigo: 'pt-BR', nativo: 'Português (Brasil)', nome: 'Português (Brasil)', escrita: 'latina', paises: 9 },
-  { codigo: 'en', nativo: 'English', nome: 'Inglês', escrita: 'latina', paises: 57 },
+  // 58, e não 57: o número era estimativa escrita à mão, e a lista de países em paises.ts o corrigiu.
+  // A diferença mora na Oceania, onde os catorze membros da ONU têm o inglês como oficial ou como
+  // língua de fato do governo — Nauru e Tonga escapavam da conta antiga.
+  { codigo: 'en', nativo: 'English', nome: 'Inglês', escrita: 'latina', paises: 58 },
   { codigo: 'fr', nativo: 'Français', nome: 'Francês', escrita: 'latina', paises: 29 },
-  { codigo: 'ar', nativo: 'العربية', nome: 'Árabe', escrita: 'arabe', rtl: true, paises: 24 },
+  // 23, e não 24: Israel tirou o árabe da condição de idioma oficial em 2018 (virou "status especial"),
+  // e a Palestina não é membro da ONU — que é o conjunto que a grade conta.
+  { codigo: 'ar', nativo: 'العربية', nome: 'Árabe', escrita: 'arabe', rtl: true, paises: 23 },
   { codigo: 'es', nativo: 'Español', nome: 'Espanhol', escrita: 'latina', paises: 20 },
   { codigo: 'de', nativo: 'Deutsch', nome: 'Alemão', escrita: 'latina', paises: 6 },
   { codigo: 'ru', nativo: 'Русский', nome: 'Russo', escrita: 'cirilica', paises: 4 },
@@ -170,12 +176,22 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   sw: () => import('./sw'),
   it: () => import('./it'),
   nl: () => import('./nl'),
+  ms: () => import('./ms'),
+  'zh-CN': () => import('./zh-CN'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);
 
-/** Quantos países da ONU já estão cobertos pelos idiomas traduzidos (conta para a tela de configurações). */
+/**
+ * Quantos países da ONU o Syden já alcança com os idiomas traduzidos.
+ *
+ * ERA UMA SOMA, E ESTAVA ERRADO. Somar os números de cada idioma conta o mesmo país várias vezes: a
+ * Suíça fala alemão, francês e italiano; Ruanda fala inglês, francês e suaíli; a Bélgica, francês,
+ * alemão e neerlandês. Com nove idiomas a soma dava 159 e a verdade é menor — e esse número aparece
+ * na tela, para qualquer pessoa, como afirmação do alcance do Syden.
+ *
+ * Agora é a UNIÃO das listas de países (ver paises.ts), que é a conta certa e não tem como inflar.
+ */
 export function paisesCobertos(): number {
-  const prontos = [PADRAO, ...Object.keys(TRADUCOES)];
-  return IDIOMAS.filter((i) => prontos.includes(i.codigo)).reduce((soma, i) => soma + i.paises, 0);
+  return cobertosPor([PADRAO, ...Object.keys(TRADUCOES)]);
 }

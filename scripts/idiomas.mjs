@@ -60,7 +60,11 @@ function idiomasLigados() {
   const texto = readFileSync(`${PASTA}/idiomas.ts`, 'utf8');
   const bloco = texto.match(/export const TRADUCOES[\s\S]*?=\s*\{([\s\S]*?)\n\};/);
   if (!bloco) return [];
-  return [...bloco[1].matchAll(/^\s*([\w-]+):/gm)].map((m) => m[1]);
+  // AS ASPAS SÃO OPCIONAIS, e isso custou um susto. Um código com hífen precisa delas em JavaScript
+  // ('zh-CN': …), e a busca sem aspas não via essa linha: o chinês estava ligado, o TypeScript
+  // compilava, o app carregava o dicionário — e o relatório jurava que o idioma não existia.
+  // Ferramenta que some com o que está funcionando é pior que ferramenta nenhuma.
+  return [...bloco[1].matchAll(/^\s*['"]?([\w-]+)['"]?\s*:/gm)].map((m) => m[1]);
 }
 
 const ligados = idiomasLigados();

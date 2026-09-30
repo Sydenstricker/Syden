@@ -9584,3 +9584,50 @@ body.arrastando-barra {
   border-radius: 8px;
   display: block;
 }
+
+/* ---------- A grade de países (ver web/src/GradeDePaises.tsx) ----------
+   Sem `left`/`right` em lugar nenhum: a grade espelha sozinha em árabe porque é flex e grid puros. */
+.grade-paises {
+  margin-top: 18px;
+}
+
+.grade-paises-conta {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.grade-paises-regioes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+.grade-paises-regiao small {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Nove colunas: a África (54) fica em seis fileiras, e as cinco regiões cabem lado a lado numa tela
+   de configurações sem quebrar. Em tela estreita o flex-wrap de cima desce as regiões. */
+.grade-paises-grade {
+  display: grid;
+  grid-template-columns: repeat(9, 11px);
+  gap: 3px;
+}
+
+.grade-paises-grade i {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border-radius: 2.5px;
+  background: var(--bg-raised);
+}
+
+.grade-paises-grade i.aceso {
+  background: var(--accent);
+}
