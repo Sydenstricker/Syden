@@ -822,12 +822,6 @@ function FocusPane({
         não passa pela conferência de conteúdo — a única imagem no Syden que chegaria à tela de todo
         mundo sem ser checada. Um desenho genérico custa nada e não abre porta nenhuma.
       */}
-      {trackRef.source === Track.Source.ScreenShare && membro?.screenName && (
-        <div className="stream-etiqueta">
-          <MonitorPlay size={14} />
-          <span>{membro.screenName}</span>
-        </div>
-      )}
       {trackRef.source === Track.Source.ScreenShare && (
         <div className="stream-controls">
           <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} voice={voice} />
@@ -845,6 +839,23 @@ function FocusPane({
             >
               <MonitorOff size={16} />
             </button>
+          )}
+          {/*
+            A ETIQUETA MORA DENTRO DA FILEIRA DOS BOTÕES, e não num canto por conta própria.
+
+            Ela tinha `top: 10px; left: 10px` e os botões, `top: 12px; left: 12px` — dois elementos
+            mirando o mesmo canto. O resultado foi o nome do jogo aparecendo ATRÁS dos ícones, ilegível,
+            e só apareceu quando alguém transmitiu de verdade.
+
+            Sendo item do mesmo flex, a conta de onde ela começa é do navegador, e ela continua certa
+            com dois botões (quem transmite) ou três (quem assiste) — que é justamente a diferença que
+            um número cravado não sabe acompanhar.
+          */}
+          {membro?.screenName && (
+            <div className="stream-etiqueta">
+              <MonitorPlay size={14} />
+              <span>{membro.screenName}</span>
+            </div>
           )}
         </div>
       )}
