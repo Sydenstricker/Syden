@@ -540,4 +540,12 @@ export default {
   'Europa': 'Ulaya',
   'Oceania': 'Oceania',
   'cerca de {n} de falantes': 'takriban wasemaji {n}',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'Juu kulia',
+  'Em cima, à esquerda': 'Juu kushoto',
+  'Embaixo, à direita': 'Chini kulia',
+  'Embaixo, à esquerda': 'Chini kushoto',
+  'Mostrar quem está na chamada por cima do jogo': 'Onyesha walio kwenye simu juu ya mchezo',
+  'Quando você está jogando': 'Unapokuwa unacheza',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Dirisha dogo pembeni linaloonyesha nani yuko nawe na nani anaongea. Mbofyo hupenya: risasi huenda kwenye mchezo. Hufanya kazi mchezo ukiwa kwenye dirisha au dirisha lisilo na fremu; kwenye skrini nzima ya pekee, halionekani.',
 } satisfies Record<string, string>;

@@ -538,4 +538,12 @@ export default {
   Europa: 'ইউরোপ',
   Oceania: 'ওশেনিয়া',
   'cerca de {n} de falantes': 'প্রায় {n} জন বলেন',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'উপরে ডানে',
+  'Em cima, à esquerda': 'উপরে বাঁয়ে',
+  'Embaixo, à direita': 'নিচে ডানে',
+  'Embaixo, à esquerda': 'নিচে বাঁয়ে',
+  'Mostrar quem está na chamada por cima do jogo': 'খেলার উপরে দেখাও কে কলে আছে',
+  'Quando você está jogando': 'তুমি যখন খেলছ',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'পর্দার কোণে ছোট একটা জানালা: কে তোমার সঙ্গে আছে আর কে কথা বলছে। ক্লিক এর ভেতর দিয়ে চলে যায় — গুলি খেলাতেই লাগে। খেলা জানালায় বা কিনারাহীন জানালায় থাকলে কাজ করে; বিশেষ পুরো-পর্দা মোডে দেখা যায় না।',
 } satisfies Record<string, string>;

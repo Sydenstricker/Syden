@@ -3,6 +3,7 @@ const { app, BrowserWindow, Menu, Tray, desktopCapturer, dialog, globalShortcut,
 const path = require('node:path');
 const config = require('../app.config.json');
 const { setupScreenAudio, screenAudioAvailable, stopScreenAudio } = require('./screen-audio');
+const { ligar: ligarSobreposicao, fechar: fecharSobreposicao } = require('./sobreposicao');
 const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
@@ -170,6 +171,9 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
   app.on('before-quit', () => {
     quitting = true;
     stopScreenAudio();
+    // Sem isto, a janelinha sem borda sobreviveria ao fechamento e ficaria flutuando na tela sem
+    // dono — sem barra de tarefas, ela não teria nem como ser fechada.
+    fecharSobreposicao();
   });
   app.whenReady().then(() => {
     /*
@@ -190,6 +194,9 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
     setupPermissions();
     setupScreenShare();
     setupScreenAudio();
+    // A janelinha de quem está na chamada, por cima do jogo (ver sobreposicao.js). Ela só nasce
+    // quando o site pedir — quem não entra em voz nunca vai ter uma janela a mais no sistema.
+    ligarSobreposicao();
     // O site avisa quando a pessoa troca de tema, para a faixa do Windows acompanhar.
     ipcMain.on('app:title-bar', (_event, cores) => {
       if (!mainWindow || typeof cores?.color !== 'string' || typeof cores?.symbolColor !== 'string') return;

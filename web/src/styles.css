@@ -9631,3 +9631,18 @@ body.arrastando-barra {
 .grade-paises-grade i.aceso {
   background: var(--accent);
 }
+
+/* Os quatro cantos onde a janelinha do jogo pode ficar (ver SettingsModal). Grade de dois por dois,
+   que é o próprio desenho da tela — escolher "em cima à esquerda" é clicar em cima e à esquerda. */
+.canto-da-sobreposicao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  max-width: 420px;
+  margin-top: 10px;
+}
+
+.canto-da-sobreposicao .escolhido {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}

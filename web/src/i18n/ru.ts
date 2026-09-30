@@ -562,4 +562,12 @@ export default {
   'Europa': 'Европа',
   'Oceania': 'Океания',
   'cerca de {n} de falantes': 'около {n} говорящих',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'Сверху справа',
+  'Em cima, à esquerda': 'Сверху слева',
+  'Embaixo, à direita': 'Снизу справа',
+  'Embaixo, à esquerda': 'Снизу слева',
+  'Mostrar quem está na chamada por cima do jogo': 'Показывать, кто в звонке, поверх игры',
+  'Quando você está jogando': 'Пока ты играешь',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Маленькое окно в углу: кто с тобой и кто говорит. Клик проходит насквозь — выстрел попадает в игру. Работает, когда игра в окне или в окне без рамки; в эксклюзивном полноэкранном режиме не появляется.',
 } satisfies Record<string, string>;

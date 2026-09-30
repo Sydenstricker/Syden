@@ -17,7 +17,7 @@ import {
   Volume2,
   Home,
 } from 'lucide-react';
-import { type KeyboardEvent, type ReactNode, useState } from 'react';
+import { type KeyboardEvent, type ReactNode, useEffect, useState } from 'react';
 import { api } from './api';
 import { DIAS_NA_LIXEIRA } from './lixeira';
 import { SeloDaComunidade } from './SeloDaComunidade';
@@ -35,6 +35,9 @@ import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
 import { ScreenShareButton } from './ScreenShareButton';
 import { StatusMenu, useStatusMenu } from './StatusMenu';
+import { desktopBridge } from './desktop';
+import { useSettings } from './settings';
+import { quemMostrar } from './sobreposicao';
 import type { Channel, Community, CommunityMember, PresenceStatus, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -96,6 +99,29 @@ export function Sidebar({
   const { members } = useDirectory();
   // Cartão de perfil aberto pelo menu do botão direito aqui da barra lateral.
   const [perfil, setPerfil] = useState<{ membro: CommunityMember; x: number; y: number } | null>(null);
+
+  /*
+   * A JANELINHA POR CIMA DO JOGO nasce aqui, e não num lugar mais nobre, por um motivo prático: é
+   * esta tela que já sabe as duas coisas ao mesmo tempo — quem está em cada sala (voiceMembers) e
+   * quem está falando agora (o LiveKit só conta isso de dentro da sala conectada).
+   *
+   * Quem decide o conteúdo é quemMostrar(), que tem teste; aqui só se entrega. E entregar lista
+   * vazia é o que esconde a janelinha, então sair da chamada a faz sumir sem ninguém precisar
+   * lembrar de apagá-la.
+   */
+  const ajustes = useSettings();
+  useEffect(() => {
+    if (!desktopBridge?.sobreposicao) return;
+    const lista = ajustes.sobreposicaoNoJogo
+      ? quemMostrar({
+          membros: voiceMembers,
+          canalAtual: voice.channelId,
+          eu: user.id,
+          falando: new Set([...speaking].map(Number).filter(Number.isFinite)),
+        })
+      : [];
+    desktopBridge.sobreposicao(lista, ajustes.cantoDaSobreposicao);
+  });
 
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';

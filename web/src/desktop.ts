@@ -18,6 +18,13 @@ interface DesktopBridge {
    * quem sabe desenhar é o navegador; o processo principal só o coloca sobre o ícone. `null` limpa.
    */
   setBadge?(quantas: number, selo: string | null): void;
+  /**
+   * Desenha quem está na chamada por cima do jogo. Lista vazia esconde a janelinha.
+   *
+   * Só existe no app: no navegador não há como pôr nada por cima de outro programa, e é por isso que
+   * o ajuste na tela some quando o Syden roda numa aba.
+   */
+  sobreposicao?(lista: { nome: string; falando: boolean; mudo: boolean }[], canto: string): void;
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;

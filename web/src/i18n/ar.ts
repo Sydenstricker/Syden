@@ -561,4 +561,12 @@ export default {
   'Europa': 'أوروبا',
   'Oceania': 'أوقيانوسيا',
   'cerca de {n} de falantes': 'نحو {n} متحدث',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'أعلى اليمين',
+  'Em cima, à esquerda': 'أعلى اليسار',
+  'Embaixo, à direita': 'أسفل اليمين',
+  'Embaixo, à esquerda': 'أسفل اليسار',
+  'Mostrar quem está na chamada por cima do jogo': 'إظهار من في المكالمة فوق اللعبة',
+  'Quando você está jogando': 'أثناء اللعب',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'نافذة صغيرة في الزاوية تبيّن من معك ومن يتكلّم. النقر يمرّ من خلالها: الطلقة تذهب إلى اللعبة. تعمل واللعبة في نافذة أو نافذة بلا إطار؛ أمّا في ملء الشاشة الحصري فلا تظهر.',
 } satisfies Record<string, string>;

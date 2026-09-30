@@ -540,4 +540,12 @@ export default {
   'Europa': 'Europa',
   'Oceania': 'Oceanië',
   'cerca de {n} de falantes': 'ongeveer {n} sprekers',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'Rechtsboven',
+  'Em cima, à esquerda': 'Linksboven',
+  'Embaixo, à direita': 'Rechtsonder',
+  'Embaixo, à esquerda': 'Linksonder',
+  'Mostrar quem está na chamada por cima do jogo': 'Laten zien wie er in gesprek is, over het spel heen',
+  'Quando você está jogando': 'Terwijl je speelt',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Een klein venster in de hoek met wie er bij je is en wie er praat. Klikken gaat er dwars doorheen: het schot belandt in het spel. Het werkt met het spel in een venster of randloos venster; in exclusief volledig scherm verschijnt het niet.',
 } satisfies Record<string, string>;

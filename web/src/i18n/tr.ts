@@ -535,4 +535,12 @@ export default {
   Europa: 'Avrupa',
   Oceania: 'Okyanusya',
   'cerca de {n} de falantes': 'yaklaşık {n} konuşan',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'Sağ üst',
+  'Em cima, à esquerda': 'Sol üst',
+  'Embaixo, à direita': 'Sağ alt',
+  'Embaixo, à esquerda': 'Sol alt',
+  'Mostrar quem está na chamada por cima do jogo': 'Oyunun üstünde kimin görüşmede olduğunu göster',
+  'Quando você está jogando': 'Sen oynarken',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Ekranın köşesinde küçük bir pencere: kim seninle ve kim konuşuyor. Tıklama içinden geçer, atış oyuna gider. Oyun pencerede ya da kenarlıksız pencerede çalışır; özel tam ekranda görünmez.',
 } satisfies Record<string, string>;

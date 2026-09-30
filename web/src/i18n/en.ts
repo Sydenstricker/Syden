@@ -546,4 +546,12 @@ export default {
   'Europa': 'Europe',
   'Oceania': 'Oceania',
   'cerca de {n} de falantes': 'about {n} speakers',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'Top right',
+  'Em cima, à esquerda': 'Top left',
+  'Embaixo, à direita': 'Bottom right',
+  'Embaixo, à esquerda': 'Bottom left',
+  'Mostrar quem está na chamada por cima do jogo': 'Show who is in the call on top of the game',
+  'Quando você está jogando': 'While you are playing',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'A small panel in the corner with who is with you, and who is talking. Clicks go through it: the shot lands in the game. It works with the game in a window or borderless window; in exclusive fullscreen it does not show up.',
 } satisfies Record<string, string>;

@@ -527,4 +527,12 @@ export default {
   'Europa': '欧洲',
   'Oceania': '大洋洲',
   'cerca de {n} de falantes': '约 {n} 使用者',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': '右上角',
+  'Em cima, à esquerda': '左上角',
+  'Embaixo, à direita': '右下角',
+  'Embaixo, à esquerda': '左下角',
+  'Mostrar quem está na chamada por cima do jogo': '在游戏上方显示谁在通话',
+  'Quando você está jogando': '你在玩游戏时',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': '屏幕角落的一个小窗，显示谁和你在一起、谁在说话。点击会穿过它：这一枪打在游戏里。游戏在窗口或无边框窗口时有效；独占全屏下不会出现。',
 } satisfies Record<string, string>;

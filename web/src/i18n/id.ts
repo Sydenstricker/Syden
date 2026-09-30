@@ -538,4 +538,12 @@ export default {
   Europa: 'Eropa',
   Oceania: 'Oseania',
   'cerca de {n} de falantes': 'sekitar {n} penutur',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'Kanan atas',
+  'Em cima, à esquerda': 'Kiri atas',
+  'Embaixo, à direita': 'Kanan bawah',
+  'Embaixo, à esquerda': 'Kiri bawah',
+  'Mostrar quem está na chamada por cima do jogo': 'Tampilkan siapa yang di panggilan di atas game',
+  'Quando você está jogando': 'Saat kamu main',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Jendela kecil di pojok layar berisi siapa yang bersamamu dan siapa yang bicara. Klik menembusnya: tembakannya masuk ke game. Jalan kalau game-nya di jendela atau jendela tanpa bingkai; di layar penuh eksklusif, tidak muncul.',
 } satisfies Record<string, string>;

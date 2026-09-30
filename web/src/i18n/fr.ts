@@ -566,4 +566,12 @@ export default {
   'Europa': 'Europe',
   'Oceania': 'Océanie',
   'cerca de {n} de falantes': 'environ {n} de locuteurs',
+  // A janelinha por cima do jogo
+  'Em cima, à direita': 'En haut à droite',
+  'Em cima, à esquerda': 'En haut à gauche',
+  'Embaixo, à direita': 'En bas à droite',
+  'Embaixo, à esquerda': 'En bas à gauche',
+  'Mostrar quem está na chamada por cima do jogo': 'Afficher qui est en appel par-dessus le jeu',
+  'Quando você está jogando': 'Pendant que tu joues',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Une petite fenêtre dans un coin avec qui est avec toi, et qui parle. Le clic la traverse : le tir part dans le jeu. Ça marche avec le jeu en fenêtre ou en fenêtre sans bordure ; en plein écran exclusif, elle n’apparaît pas.',
 } satisfies Record<string, string>;
