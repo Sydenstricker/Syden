@@ -76,7 +76,9 @@
       "languages": [
         "pt-BR"
       ],
-      "addAutoLaunchExtension": false
+      "addAutoLaunchExtension": false,
+      "backgroundColor": "#1e1f22",
+      "customExtensionsPath": "build/extensoes-appx.xml"
     },
     "protocols": [
       {

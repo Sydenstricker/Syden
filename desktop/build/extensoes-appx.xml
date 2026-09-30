@@ -1,0 +1,34 @@
+<!--
+  A REGRA DE FIREWALL, declarada no pacote em vez de perguntada à pessoa.
+
+  Sem isto, o Windows abre uma janela de segurança na primeira vez que o Syden usa a rede para voz —
+  "permitir que o Syden se comunique nestas redes" — e ela assusta. Ele viu isso ao receber o 0.1.4 e
+  achou que era defeito nosso. Não é: é o que o Windows faz com todo programa novo que abre porta, e o
+  Discord faz a mesma pergunta (pior: numa pasta por versão, ele pergunta de novo a cada atualização).
+
+  Um pacote MSIX pode declarar a regra, e aí o Windows a aplica na INSTALAÇÃO, calado. É o que isto
+  faz, e é o que permite o Syden perguntar menos que o Discord em vez de mais.
+
+  O namespace vai declarado aqui dentro, na própria tag, porque o modelo do electron-builder só declara
+  `desktop` (v1) e este recurso mora no `desktop2`. XML permite declarar namespace em qualquer
+  elemento, então não é preciso remendar o modelo de dentro do node_modules.
+
+  Entra no pacote pelo `appx.customExtensionsPath` (ver desktop/package.json).
+-->
+<desktop2:Extension
+  xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
+  Category="windows.firewallRules">
+  <desktop2:FirewallRules Executable="Syden.exe">
+    <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all" />
+    <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all" />
+    <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all" />
+    <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all" />
+  </desktop2:FirewallRules>
+</desktop2:Extension>
+
+<!--
+  E POR QUE ESTE ARQUIVO NÃO MORA EM build/appx/, que seria o lugar óbvio: o electron-builder copia
+  TODO arquivo daquela pasta para dentro do pacote, como se fosse imagem de ladrilho (ele lê a pasta
+  inteira e leva o que tiver ponto no nome). O XML entraria no pacote como assets\extensoes.xml —
+  inofensivo, mas errado, e é o tipo de sobra que a certificação da Microsoft repara.
+-->
