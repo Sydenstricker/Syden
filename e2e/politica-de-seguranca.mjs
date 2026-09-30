@@ -4,6 +4,22 @@
 // navegador e mede o site de verdade. Quando um segundo teste quis a mesma política e a importou de
 // lá, importar passou a executar a verificação inteira — inclusive contra o site em produção, sem
 // ninguém ter pedido. Política é DADO; conferir política é programa. Separados, importar não faz nada.
+//
+// =====================================================================================================
+// ISTO NÃO É A POLÍTICA QUE ESTÁ NO AR. É a que a gente PROPÕE, e é a que os testes medem.
+//
+// A do ar é uma Transform Rule escrita À MÃO no painel da Cloudflare (Rules → Transform Rules →
+// Modify Response Header), porque o site é servido pelo GitHub Pages, que não deixa pôr cabeçalho
+// nenhum. Mexer neste arquivo NÃO muda nada para quem usa o Syden.
+//
+// Custou um defeito em produção para isto ficar escrito: em 30/09/2026 os GIFs entraram, os endereços
+// do GIPHY foram acrescentados AQUI, e no ar toda figura continuou bloqueada em silêncio — o seletor
+// achava os GIFs e mostrava só o texto alternativo de cada um, que é como CSP falha: sem aviso.
+//
+// DEPOIS DE MEXER AQUI, RODE:  node scripts/conferir-csp.mjs
+// Ele compara esta política com a que o syden.chat manda de verdade e imprime o que falta colar. Sem
+// ele, a única forma de achar a diferença é alguém esbarrar nela.
+// =====================================================================================================
 
 
 /**
