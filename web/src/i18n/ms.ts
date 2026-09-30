@@ -540,4 +540,5 @@ export default {
   'Ásia': 'Asia',
   'Europa': 'Eropah',
   'Oceania': 'Oceania',
+  'cerca de {n} de falantes': 'kira-kira {n} penutur',
 } satisfies Record<string, string>;

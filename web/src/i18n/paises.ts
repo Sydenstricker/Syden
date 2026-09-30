@@ -130,7 +130,52 @@ export const OFICIAL: Record<string, string[]> = {
   nl: ['BE', 'NL', 'SR'],
   ms: ['MY', 'BN', 'SG'],
   'zh-CN': ['CN', 'SG'],
+  tr: ['TR', 'CY'],
 };
+
+/**
+ * Quantas pessoas falam cada idioma, em MILHÕES — somando quem o tem como língua materna e quem o
+ * aprendeu depois.
+ *
+ * ---------------------------------------------------------------------------------------------------
+ * ESTES NÚMEROS SÃO APROXIMADOS, E A TELA PRECISA DIZER ISSO.
+ *
+ * Não existe contagem exata de falantes de língua nenhuma. Ninguém entrevista o planeta: o que há são
+ * estimativas de censos nacionais (que perguntam de jeitos diferentes), do Ethnologue e da Britannica,
+ * e elas DISCORDAM entre si em dezenas de milhões. O inglês aparece como 1,1 bilhão ou 1,5 bilhão
+ * conforme quem conta e conforme o que se aceita como "falar inglês".
+ *
+ * A maior parte da diferença está em quem aprendeu depois: falante nativo se conta por censo, falante
+ * de segunda língua se estima por escolaridade. O inglês tem quatro vezes mais gente na segunda
+ * coluna do que na primeira — ou seja, o número dele é quase todo estimativa.
+ *
+ * POR ISSO OS VALORES SÃO REDONDOS. 1500, e não 1456: fingir precisão em cima de estimativa é mentir
+ * com casa decimal, e a tela do Syden não afirma o que não sabe. A curiosidade continua boa; o que
+ * não pode é ela se passar por medição.
+ *
+ * Ordem de grandeza conferida contra as fontes públicas usuais, em 2026.
+ * ---------------------------------------------------------------------------------------------------
+ */
+export const FALANTES_EM_MILHOES: Record<string, number> = {
+  en: 1500,
+  'zh-CN': 1200,
+  es: 560,
+  ar: 420,
+  'pt-BR': 260,
+  ru: 250,
+  fr: 310,
+  de: 130,
+  sw: 200,
+  it: 65,
+  nl: 25,
+  ms: 300,
+  tr: 90,
+};
+
+/** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */
+export function falantesDoIdioma(codigo: string): number {
+  return FALANTES_EM_MILHOES[codigo] ?? 0;
+}
 
 /** Todos os 193, numa lista só. */
 export const TODOS_OS_PAISES: string[] = REGIOES.flatMap((r) => r.paises);

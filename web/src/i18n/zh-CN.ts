@@ -526,4 +526,5 @@ export default {
   'Ásia': '亚洲',
   'Europa': '欧洲',
   'Oceania': '大洋洲',
+  'cerca de {n} de falantes': '约 {n} 使用者',
 } satisfies Record<string, string>;

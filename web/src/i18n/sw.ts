@@ -539,4 +539,5 @@ export default {
   'Ásia': 'Asia',
   'Europa': 'Ulaya',
   'Oceania': 'Oceania',
+  'cerca de {n} de falantes': 'takriban wasemaji {n}',
 } satisfies Record<string, string>;

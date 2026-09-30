@@ -539,4 +539,5 @@ export default {
   'Ásia': 'Azië',
   'Europa': 'Europa',
   'Oceania': 'Oceanië',
+  'cerca de {n} de falantes': 'ongeveer {n} sprekers',
 } satisfies Record<string, string>;

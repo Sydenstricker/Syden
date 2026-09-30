@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { chave, idiomaAtual, useT } from './i18n';
-import { type Regiao, nomeDoPais, paisesDoIdioma, porRegiao } from './i18n/paises';
+import { type Regiao, falantesDoIdioma, nomeDoPais, paisesDoIdioma, porRegiao } from './i18n/paises';
 
 /**
  * Os nomes das cinco regiões, AQUI e não em paises.ts.
@@ -50,11 +50,21 @@ const NOME_DA_REGIAO: Record<Regiao, string> = {
  * numéricos da ONU ele devolve o próprio número, e a tela ficou escrita "002 · 23/54" — ver o
  * comentário em paises.ts. São cinco textos traduzidos à mão, e pronto.
  */
+/** O número de falantes escrito como a língua de quem lê escreve número grande. */
+function emGente(milhoes: number, idioma: string): string {
+  try {
+    return new Intl.NumberFormat(idioma, { notation: 'compact', maximumFractionDigits: 1 }).format(milhoes * 1_000_000);
+  } catch {
+    return String(milhoes) + ' mi';
+  }
+}
+
 export function GradeDePaises({ idioma }: { idioma: string }) {
   const t = useT();
   const lendoEm = idiomaAtual();
   const regioes = useMemo(() => porRegiao(idioma), [idioma]);
   const quantos = paisesDoIdioma(idioma).length;
+  const falantes = falantesDoIdioma(idioma);
 
   if (quantos === 0) return null;
 
@@ -68,6 +78,15 @@ export function GradeDePaises({ idioma }: { idioma: string }) {
     <div className="grade-paises">
       <p className="grade-paises-conta">
         {t('{quantos} dos 193 países da ONU', { quantos })}
+        {/* O "cerca de" não é modéstia: contagem exata de falantes não existe em língua nenhuma, e as
+            fontes públicas discordam em dezenas de milhões. Ver o comentário em paises.ts.
+
+            O NÚMERO É FORMATADO PELO NAVEGADOR, e isso evitou um erro de dez vezes. Eu ia traduzir
+            "bilhão" e "milhões" à mão em cada idioma — e em chinês a unidade natural é 亿, que vale
+            cem milhões: "约 1.5 亿" teria dito 150 milhões em vez de 1,5 bilhão, e ninguém da dupla lê
+            chinês para perceber. O Intl entrega "15亿" em chinês, "1,5 bi" em português e "1.5 مليار"
+            em árabe, tudo certo, com uma chave só. */}
+        {falantes > 0 && <>{' · ' + t('cerca de {n} de falantes', { n: emGente(falantes, lendoEm) })}</>}
       </p>
 
       <div className="grade-paises-regioes" role="img" aria-label={marcados.join(', ')}>
