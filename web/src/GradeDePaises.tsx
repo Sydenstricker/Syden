@@ -50,6 +50,22 @@ const NOME_DA_REGIAO: Record<Regiao, string> = {
  * numéricos da ONU ele devolve o próprio número, e a tela ficou escrita "002 · 23/54" — ver o
  * comentário em paises.ts. São cinco textos traduzidos à mão, e pronto.
  */
+/**
+ * Um número escrito com os ALGARISMOS da língua de quem lê.
+ *
+ * Quase toda língua usa 0-9, mas não todas: o bengali escreve ০১২৩৪৫৬৭৮৯. A tela ficou com
+ * "১৯৩টি ... 1টি" na mesma frase — o 193 que veio da tradução em bengali, e o 1 que veio do código
+ * em ocidental. Passar todo número pelo Intl faz os dois combinarem, e não muda nada nas outras
+ * catorze línguas.
+ */
+function algarismos(n: number, idioma: string): string {
+  try {
+    return new Intl.NumberFormat(idioma).format(n);
+  } catch {
+    return String(n);
+  }
+}
+
 /** O número de falantes escrito como a língua de quem lê escreve número grande. */
 function emGente(milhoes: number, idioma: string): string {
   try {
@@ -77,7 +93,7 @@ export function GradeDePaises({ idioma }: { idioma: string }) {
   return (
     <div className="grade-paises">
       <p className="grade-paises-conta">
-        {t('{quantos} dos 193 países da ONU', { quantos })}
+        {t('{quantos} dos 193 países da ONU', { quantos: algarismos(quantos, lendoEm) })}
         {/* O "cerca de" não é modéstia: contagem exata de falantes não existe em língua nenhuma, e as
             fontes públicas discordam em dezenas de milhões. Ver o comentário em paises.ts.
 
@@ -93,7 +109,7 @@ export function GradeDePaises({ idioma }: { idioma: string }) {
         {regioes.map((r) => (
           <div key={r.id} className="grade-paises-regiao">
             <small>
-              {t(NOME_DA_REGIAO[r.id])} · {r.marcados.size}/{r.paises.length}
+              {t(NOME_DA_REGIAO[r.id])} · {algarismos(r.marcados.size, lendoEm)}/{algarismos(r.paises.length, lendoEm)}
             </small>
             <div className="grade-paises-grade">
               {r.paises.map((pais) => (
