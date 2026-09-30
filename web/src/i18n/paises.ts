@@ -134,6 +134,7 @@ export const OFICIAL: Record<string, string[]> = {
   id: ['ID'],
   hi: ['IN'],
   bn: ['BD'],
+  ko: ['KR', 'KP'],
 };
 
 /**
@@ -176,6 +177,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   id: 200,
   hi: 600,
   bn: 280,
+  ko: 82,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */
