@@ -132,6 +132,7 @@ export const OFICIAL: Record<string, string[]> = {
   'zh-CN': ['CN', 'SG'],
   tr: ['TR', 'CY'],
   id: ['ID'],
+  hi: ['IN'],
 };
 
 /**
@@ -172,6 +173,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   ms: 300,
   tr: 90,
   id: 200,
+  hi: 600,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */
