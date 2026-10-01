@@ -136,6 +136,7 @@ export const OFICIAL: Record<string, string[]> = {
   bn: ['BD'],
   ko: ['KR', 'KP'],
   vi: ['VN'],
+  ur: ['PK'],
 };
 
 /**
@@ -180,6 +181,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   bn: 280,
   ko: 82,
   vi: 85,
+  ur: 230,
 
   // ---------------------------------------------------------------------------------------------------
   // DAQUI PARA BAIXO SÃO OS QUE AINDA NÃO TÊM DICIONÁRIO, e eles estão aqui por um motivo só: é este
@@ -196,7 +198,6 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   // Valores redondos, pelas mesmas razões escritas acima: estimativa com casa decimal é mentira com
   // aparência de medição.
   // ---------------------------------------------------------------------------------------------------
-  ur: 230,
   fa: 130,
   ja: 125,
   te: 95,
