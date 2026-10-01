@@ -54,8 +54,42 @@ const naoDeu = [];
  * Aqui o texto está numa linha, o `>` que o abre está na anterior e o `<` que o fecha na seguinte.
  * Procurando dentro de uma linha só, nada casa. O `[\s\S]*?` atravessa a quebra de linha e resolve.
  */
+
+/**
+ * O tipo "expressão" trabalha POR LINHA, e não no arquivo inteiro como os outros dois.
+ *
+ * A diferença não é capricho. Um texto solto entre tags é único: `>Nome<` aparece onde aparece, e
+ * trocar todas as ocorrências é o que se quer. Já um literal entre aspas é a coisa mais comum de um
+ * arquivo .tsx — 'Salvando…' pode ser rótulo de botão numa linha e valor de comparação em outra, e a
+ * varredura decidiu caso a caso, olhando o que vinha antes. Trocar no arquivo inteiro jogaria fora
+ * justamente essa decisão, e um `t()` dentro de um `===` não dá erro de compilação: dá uma comparação
+ * que nunca é verdadeira, e a tela some sem explicação.
+ *
+ * Então cada achado volta exatamente à linha em que foi achado.
+ */
+const linhas = texto.split('\n');
+const porExpressao = meus.filter((c) => c.tipo === 'expressão');
+for (const c of porExpressao) {
+  const i = c.linha - 1;
+  const antes = linhas[i];
+  if (antes === undefined) {
+    naoDeu.push(c);
+    continue;
+  }
+  const chave = paraChave(c.conteudo);
+  const alvoRegex = new RegExp(`(['"])${paraRegex(c.conteudo)}\\1`, 'g');
+  const depois = antes.replace(alvoRegex, `t('${chave}')`);
+  if (depois === antes) naoDeu.push(c);
+  else {
+    linhas[i] = depois;
+    trocadas++;
+  }
+}
+if (porExpressao.length) texto = linhas.join('\n');
+
 const jaFeitos = new Set();
 for (const c of meus) {
+  if (c.tipo === 'expressão') continue;
   if (jaFeitos.has(c.tipo + '\u0000' + c.conteudo)) continue;
   jaFeitos.add(c.tipo + '\u0000' + c.conteudo);
 
@@ -77,7 +111,7 @@ for (const c of meus) {
   else trocadas++;
 }
 
-console.log(`${normal}: ${trocadas} de ${jaFeitos.size} textos distintos marcados.`);
+console.log(`${normal}: ${trocadas} marcados (${porExpressao.length} em expressão, ${jaFeitos.size} soltos ou em atributo).`);
 if (naoDeu.length) {
   console.log('\nEstes precisam de mão (dentro de expressão, ou partidos por outra tag no meio):');
   for (const c of naoDeu) console.log(`  ${String(c.linha).padStart(4)} [${c.tipo}] ${c.conteudo}`);

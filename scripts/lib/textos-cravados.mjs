@@ -32,8 +32,76 @@ export const PARECE_PORTUGUES =
 /** Atributos que viram texto na tela: dica do mouse, rótulo de leitor de tela, exemplo no campo. */
 const ATRIBUTOS = /(?:title|aria-label|placeholder|alt)="([^"]{3,})"/g;
 
-/** Texto solto entre tags: <span>Alguma coisa</span>. */
+/**
+ * Texto solto entre tags: <span>Alguma coisa</span>.
+ *
+ * ELE TAMBÉM NÃO EXIGE MAIS PARECER PORTUGUÊS, pelo mesmo motivo da busca de palavra solta logo
+ * abaixo — e o caso que obrigou a mudança foi `<h3>Selo da comunidade</h3>`. Não tem acento, e
+ * nenhuma das suas palavras estava na lista de palavras comuns (havia "das" e "dos", não "da").
+ * Ficou em português nas dezesseis línguas, bem no meio da tela da comunidade, enquanto a contagem
+ * marcava zero.
+ *
+ * Exigir que o texto "pareça" português nunca podia dar certo aqui: português é uma língua inteira,
+ * e a lista é de vinte e tantas palavras. Entre duas tags, o normal é texto para ler; o código é a
+ * exceção, e a exceção se prova pela lista NAO_TRADUZ.
+ */
 const SOLTOS = />\s*([A-ZÀ-Ú][^<>{}\n]{3,80}?)\s*</g;
+
+/**
+ * LITERAL DENTRO DE EXPRESSÃO: {isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}.
+ *
+ * ESTE É O MAIOR PONTO CEGO QUE ESTA FERRAMENTA JÁ TEVE, e ele estava escrito na própria busca de
+ * texto solto: `[^<>{}\n]` exclui a chave. Qualquer texto dentro de `{…}` era invisível — e `{…}` é
+ * onde mora metade da tela, porque é onde moram o ternário, o rótulo que muda com o estado e a
+ * propriedade de componente. A contagem dizia ZERO textos cravados, a tradução dizia 100%, e
+ * "Apagar comunidade", "Selo da comunidade", "Supressão de ruído", as nove explicações do seletor de
+ * tela e mais trezentas frases continuavam em português em todas as dezesseis línguas.
+ *
+ * O sintoma era o pior possível, e é o mesmo de sempre: parecia tradução malfeita, e não tradução
+ * faltando. Quem escolhe coreano e vê "Apagar comunidade" no meio da tela conclui que o app está
+ * quebrado, não que aquele pedaço nunca foi marcado.
+ *
+ * A SUSPEITA SE INVERTE AQUI, como já se invertia na busca de palavra solta: um literal que pareça
+ * FRASE é para traduzir até prova em contrário. A prova vem das listas abaixo — e elas existem porque
+ * `.tsx` é cheio de texto entre aspas que ninguém lê: nome de classe, verbo de HTTP, pedaço de
+ * endereço, chave de objeto.
+ */
+const EM_EXPRESSAO = /(['"])((?:(?!\1)[^\\\n]|\\.){0,160})\1/g;
+
+/** Parece frase, e não identificador: tem espaço, ou acento, ou começa com maiúscula. */
+const PARECE_FRASE = /\s|[áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇ]|^[A-ZÀ-Ú]/;
+
+/**
+ * O que vem ANTES do literal e prova que ele é código.
+ *
+ * `className=`, `id=`, `href=` e companhia vão para a folha de estilo ou para a rede, não para o olho.
+ * Depois de `===` é comparação. Depois de `.`, `[`, `(` ou `,` costuma ser argumento ou chave.
+ */
+const CONTEXTO_DE_CODIGO =
+  /(?:className|class|id|htmlFor|key|name|type|role|href|src|rel|target|autoComplete|inputMode|accept|method|action|data-[\w-]+|aria-(?:controls|labelledby|describedby|live|hidden))\s*=\s*\{?\s*$|(?:===|!==|==|!=|\bcase\b|\?\?|\|\||&&)\s*$|[.[(,]\s*$|\bvar\(\s*$/;
+
+/**
+ * A forma do literal denuncia: nome-de-classe, chave.com.ponto, endereço, pedaço de template.
+ *
+ * As duas últimas são DESENHO. O Syden tem muito SVG escrito à mão — o coelho, a vila, a medalha — e
+ * `d="M0,0 H38 L30,9 Z"` é uma frase para o navegador, não para ninguém. Elas entram aqui e não na
+ * lista de contexto porque a geometria às vezes mora numa constante, longe do atributo que a usa.
+ */
+const FORMA_DE_CODIGO = [
+  /^[a-z0-9]+(?:[-_.:/][a-z0-9]+)+$/i,
+  /^(?:[a-z0-9]+-[a-z0-9-]*)(?:\s+[a-z0-9-]+)*$/,
+  /^[a-z]+:/i,
+  /[{}$<>]/,
+  /^[\s\d.,+-]*[MLHVCSQTAZmlhvcsqtaz][\s\dMLHVCSQTAZmlhvcsqtaz.,+-]*$/, // traçado de SVG
+  /^[\s\d.,+-]+$/, // viewBox e pontos de polígono: só números
+  /^(?:translate|rotate|scale|matrix|skew[XY]?)\(/, // transformação de SVG
+];
+
+/** Verbo de HTTP e cabeçalho: maiúsculos, mas ninguém os lê na tela. */
+const NAO_E_TELA = new Set(['PUT', 'POST', 'DELETE', 'PATCH', 'GET', 'HEAD', 'OPTIONS', 'Content-Type', 'Authorization']);
+
+/** Pedaço de nome de classe montado em template: ` active`, ` exibindo`, `disabled `. */
+const PEDACO_DE_CLASSE = /^\s+[a-z-]+\s*$|^\s*[a-z-]+\s+$/;
 
 /**
  * UMA PALAVRA SÓ entre tags: <h2>Comunidade</h2>.
@@ -99,12 +167,25 @@ export function varrerTextos(raiz = 'web/src') {
         [ATRIBUTOS, 'atributo'],
         [SOLTOS, 'solto'],
         [PALAVRA_SOLTA, 'palavra'],
+        [EM_EXPRESSAO, 'expressão'],
       ]) {
         for (const m of texto.matchAll(regex)) {
-          const conteudo = m[1].trim();
-          // A busca de palavra solta não exige parecer português: ver o comentário dela.
-          if (tipo !== 'palavra' && !PARECE_PORTUGUES.test(conteudo)) continue;
-          if (tipo === 'palavra' && NAO_TRADUZ.has(conteudo)) continue;
+          const conteudo = (tipo === 'expressão' ? m[2] : m[1]).trim();
+          if (tipo === 'expressão') {
+            if (conteudo.length < 3) continue;
+            if (NAO_E_TELA.has(conteudo)) continue;
+            if (PEDACO_DE_CLASSE.test(m[2])) continue;
+            if (!PARECE_FRASE.test(conteudo)) continue;
+            if (FORMA_DE_CODIGO.some((r) => r.test(conteudo))) continue;
+            // O que já passa por t() ou chave() é chave de dicionário, não dívida.
+            if (chaves.has(conteudo)) continue;
+            const ateAqui = texto.slice(0, m.index);
+            if (CONTEXTO_DE_CODIGO.test(ateAqui.slice(ateAqui.lastIndexOf('\n') + 1))) continue;
+          }
+          // Só o atributo ainda exige PARECER português. Entre tags a suspeita se inverte — ver o
+          // comentário de SOLTOS — e dentro de expressão as listas acima já fizeram a filtragem.
+          if (tipo === 'atributo' && !PARECE_PORTUGUES.test(conteudo)) continue;
+          if ((tipo === 'palavra' || tipo === 'solto') && NAO_TRADUZ.has(conteudo)) continue;
           const linha = linhaDe(m.index);
           const bruta = linhas[linha - 1] ?? '';
           // Comentário não vai para a tela.

@@ -25,8 +25,19 @@ const { cravados, chaves } = varrerTextos(raiz);
  *
  * **Para baixar este número:** marque textos com t() e rode `node scripts/textos-sem-traducao.mjs` para
  * ver o novo total. Para subi-lo não há motivo legítimo — texto novo já nasce marcado.
+ *
+ * ELE VOLTOU DE 0 PARA 427 NUM DIA, E A DÍVIDA NÃO CRESCEU: a medição é que passou a enxergar.
+ * A catraca marcava zero porque a busca tinha dois buracos, e os dois estavam escritos nela mesma.
+ * O primeiro: `[^<>{}\n]` exclui a chave, então tudo que morasse dentro de `{…}` era invisível — e é
+ * ali que vive o ternário, que é como metade dos rótulos de tela se escreve. O segundo: entre tags,
+ * exigia-se que o texto "parecesse" português, por uma lista de vinte e tantas palavras; "Selo da
+ * comunidade" não tem acento e não usa nenhuma delas.
+ *
+ * O resultado foi uma catraca em zero e uma tradução declarada em 100% com quatrocentas e vinte e
+ * sete frases em português na tela de quem escolheu coreano. Guarda que mede a coisa errada é pior
+ * do que guarda nenhuma, porque ela tranquiliza.
  */
-const CATRACA = 0;
+const CATRACA = 427;
 
 describe('a dívida da tradução não cresce', () => {
   it(`há no máximo ${CATRACA} textos cravados`, () => {
