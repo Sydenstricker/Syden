@@ -718,4 +718,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Suara logam robot film lama.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'Merekam suaramu dan memutarnya balik dengan efeknya, cuma buat kamu.',
   'você': 'kamu',
+  'Abrir os pacotes': 'Buka paketnya',
+  'Insígnias': 'Lencana',
+  'Moldura do avatar': 'Bingkai avatar',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Klipnya belum bisa ditutup sekarang. Coba lagi beberapa detik lagi.',
+  'Pacotes de sons e de emojis': 'Paket suara dan emoji',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Juga gratis, dan juga bisa diganti kapan saja. Letaknya di pengaturan komunitas, karena berlaku untuk seluruh komunitas dan bukan cuma buat kamu.',
 } satisfies Record<string, string>;

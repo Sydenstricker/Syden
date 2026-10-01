@@ -720,4 +720,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Blikkerige robotstem uit een oude film.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'Neemt je stem op en speelt hem terug met het effect, alleen voor jou.',
   'você': 'jij',
+  'Abrir os pacotes': 'De pakketten openen',
+  'Insígnias': 'Badges',
+  'Moldura do avatar': 'Avatarrand',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Het clipje kon nu niet afgerond worden. Probeer het over een paar seconden opnieuw.',
+  'Pacotes de sons e de emojis': 'Geluids- en emojipakketten',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Ook gratis, en ook te wisselen wanneer je wilt. Ze staan bij de community-instellingen, omdat ze voor de hele community gelden en niet alleen voor jou.',
 } satisfies Record<string, string>;

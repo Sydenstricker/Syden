@@ -30,6 +30,7 @@ import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
 import { algarismos } from './algarismos';
 import { isolar } from './bidi';
 import { chave, t, useT } from './i18n';
+import { MOLDURAS } from './loja';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
 import { Insignia } from './Medalha';
@@ -908,16 +909,29 @@ function PerfilEditor({ user }: { user: User }) {
   const eu = members.get(user.id);
   const [cor, setCor] = useState(eu?.nameColor ?? 'padrao');
   const [fundo, setFundo] = useState(eu?.banner ?? 'nenhum');
+  // A MOLDURA MORAVA SÓ NA LOJA, e esta tela trazia duas das três peças do perfil. Quem procurasse
+  // "o anel colorido que fulano tem" nas Configurações não achava nada, porque ele era o único
+  // cosmético que não estava aqui — e nada na tela dizia que faltava um.
+  const [moldura, setMoldura] = useState(eu?.moldura ?? 'nenhuma');
   const [erro, setErro] = useState<string | null>(null);
 
-  async function guardar(proximaCor: string, proximoFundo: string) {
+  /** Manda só o que mudou; o resto vai como está, porque a rota grava os três de uma vez. */
+  async function guardar(mudanca: { cor?: string; fundo?: string; moldura?: string }) {
+    const proximaCor = mudanca.cor ?? cor;
+    const proximoFundo = mudanca.fundo ?? fundo;
+    const proximaMoldura = mudanca.moldura ?? moldura;
     setCor(proximaCor);
     setFundo(proximoFundo);
+    setMoldura(proximaMoldura);
     setErro(null);
     try {
       await api('/api/me/profile', {
         method: 'PUT',
-        body: { nameColor: proximaCor === 'padrao' ? null : proximaCor, banner: proximoFundo === 'nenhum' ? null : proximoFundo },
+        body: {
+          nameColor: proximaCor === 'padrao' ? null : proximaCor,
+          banner: proximoFundo === 'nenhum' ? null : proximoFundo,
+          moldura: proximaMoldura === 'nenhuma' ? null : proximaMoldura,
+        },
       });
     } catch (e) {
       setErro((e as Error).message);
@@ -944,7 +958,7 @@ function PerfilEditor({ user }: { user: User }) {
             aria-label={t(opcao.label)}
             aria-pressed={cor === opcao.id}
             data-cor={corDoNome(opcao.id)}
-            onClick={() => void guardar(opcao.id, fundo)}
+            onClick={() => void guardar({ cor: opcao.id })}
           >
             <span aria-hidden="true">A</span>
           </button>
@@ -958,10 +972,28 @@ function PerfilEditor({ user }: { user: User }) {
             key={opcao.id}
             className={`perfil-fundo ${classeDoFundo(opcao.id)}${fundo === opcao.id ? ' ativo' : ''}`}
             aria-pressed={fundo === opcao.id}
-            onClick={() => void guardar(cor, opcao.id)}
+            onClick={() => void guardar({ fundo: opcao.id })}
           >
             <span>{t(opcao.label)}</span>
             {opcao.animado && <small>{t('com movimento')}</small>}
+          </button>
+        ))}
+      </div>
+
+      <h4 className="perfil-titulo">{t('Moldura do avatar')}</h4>
+      <div className="perfil-molduras">
+        {Object.entries(MOLDURAS).map(([codigo, visual]) => (
+          <button
+            key={codigo}
+            className={`perfil-moldura${moldura === codigo ? ' ativa' : ''}`}
+            title={t(visual.nome)}
+            aria-label={t(visual.nome)}
+            aria-pressed={moldura === codigo}
+            onClick={() => void guardar({ moldura: codigo })}
+          >
+            {/* A mesma marcação do avatar de verdade: o anel mora em .avatar[data-moldura]::after e
+                em lugar nenhum mais, então qualquer amostra que não seja um .avatar não mostra nada. */}
+            <span className="avatar perfil-moldura-bola" data-moldura={codigo === 'nenhuma' ? undefined : codigo} />
           </button>
         ))}
       </div>

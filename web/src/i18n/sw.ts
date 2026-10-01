@@ -720,4 +720,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Sauti ya chuma ya roboti ya filamu ya zamani.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'Inarekodi sauti yako na kuicheza tena ikiwa na athari, kwa ajili yako tu.',
   'você': 'wewe',
+  'Abrir os pacotes': 'Fungua vifurushi',
+  'Insígnias': 'Nembo',
+  'Moldura do avatar': 'Fremu ya avatar',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Haikuwezekana kufunga klipu sasa hivi. Jaribu tena baada ya sekunde chache.',
+  'Pacotes de sons e de emojis': 'Vifurushi vya sauti na emoji',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Pia ni bure, na pia vinabadilishwa wakati wowote. Vinakaa katika mipangilio ya jumuiya, kwa sababu vinahusu jumuiya nzima na si wewe peke yako.',
 } satisfies Record<string, string>;

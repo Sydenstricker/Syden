@@ -741,4 +741,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'صوت معدني لروبوت من فيلم قديم.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'يسجّل صوتك ويعيده إليك بالتأثير، لك وحدك.',
   'você': 'أنت',
+  'Abrir os pacotes': 'افتح الحزم',
+  'Insígnias': 'الشارات',
+  'Moldura do avatar': 'إطار الصورة الرمزية',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'تعذّر إنهاء المقطع الآن. حاول بعد ثوانٍ قليلة.',
+  'Pacotes de sons e de emojis': 'حزم الأصوات والإيموجيات',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'مجانية أيضًا، وقابلة للتبديل متى شئت أيضًا. مكانها في إعدادات المجتمع، لأنها تسري على المجتمع كله لا عليك وحدك.',
 } satisfies Record<string, string>;

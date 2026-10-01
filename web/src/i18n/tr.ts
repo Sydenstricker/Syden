@@ -715,4 +715,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Eski filmdeki robotun madeni sesi.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'Sesini kaydeder ve efektle sana geri çalar, yalnız sana.',
   'você': 'sen',
+  'Abrir os pacotes': 'Paketleri aç',
+  'Insígnias': 'Rozetler',
+  'Moldura do avatar': 'Avatar çerçevesi',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Klip şu anda kapatılamadı. Birkaç saniye sonra tekrar dene.',
+  'Pacotes de sons e de emojis': 'Ses ve emoji paketleri',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Bunlar da bedava, ve bunlar da istediğin zaman değişir. Topluluk ayarlarında duruyorlar, çünkü yalnız sana değil bütün topluluğa geçerliler.',
 } satisfies Record<string, string>;

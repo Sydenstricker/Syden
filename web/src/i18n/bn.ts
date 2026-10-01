@@ -718,4 +718,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'পুরোনো সিনেমার রোবটের ধাতব গলা।',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'তোমার গলা রেকর্ড করে প্রভাবসহ ফিরিয়ে শোনায়, শুধু তোমাকে।',
   'você': 'তুমি',
+  'Abrir os pacotes': 'প্যাকেজগুলো খোলো',
+  'Insígnias': 'ব্যাজ',
+  'Moldura do avatar': 'অবতারের ফ্রেম',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'এখন ক্লিপটা শেষ করা গেল না। কয়েক সেকেন্ড পরে আবার চেষ্টা করো।',
+  'Pacotes de sons e de emojis': 'শব্দ আর ইমোজির প্যাকেজ',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'এগুলোও বিনামূল্যে, আর এগুলোও যখন খুশি বদলানো যায়। এগুলো কমিউনিটির সেটিংসে থাকে, কারণ এগুলো পুরো কমিউনিটির জন্য, শুধু তোমার জন্য নয়।',
 } satisfies Record<string, string>;

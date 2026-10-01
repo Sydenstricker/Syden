@@ -707,4 +707,10 @@ export default {
   'Voz metálica de robô de filme antigo.': '老电影里机器人的金属嗓音。',
   'Grava a sua voz e toca de volta com o efeito, só para você.': '录下你的声音，带着效果放回给你听，只有你听得到。',
   'você': '你',
+  'Abrir os pacotes': '打开这些包',
+  'Insígnias': '徽章',
+  'Moldura do avatar': '头像边框',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': '现在没能收尾这个片段。过几秒再试一下。',
+  'Pacotes de sons e de emojis': '音效包和表情包',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': '也都免费，也随时能换。它们在社区设置里，因为它们对整个社区生效，不只是对你。',
 } satisfies Record<string, string>;

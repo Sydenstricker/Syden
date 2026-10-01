@@ -131,20 +131,30 @@ function Previa({
  * ao ser apertado, mostra o que guardou.
  */
 export function ClipButton({ stream, de, canais }: { stream: MediaStream | null; de: string; canais: Channel[] }) {
+  const t = useT();
   const gravacao = useRef<GravacaoEmRolagem | null>(null);
+  // O "existe gravação" PRECISA SER ESTADO, e não só o ref. Esta foi a razão de a tesoura demorar a
+  // aparecer: escrever num ref não redesenha nada, então o botão continuava escondido pelo
+  // `return null` até que alguma OUTRA mudança redesenhasse o componente — e a primeira que havia
+  // era o `setPronto` do relógio, três segundos depois. O botão existia e ninguém o via.
+  const [gravando, setGravando] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [clipe, setClipe] = useState<Clipe | null>(null);
   const [pegando, setPegando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
     gravacao.current?.parar();
     gravacao.current = null;
     setPronto(false);
+    setGravando(false);
+    setErro(null);
     if (!stream) return;
 
     const rolando = gravarEmRolagem(stream);
     gravacao.current = rolando;
     if (!rolando) return;
+    setGravando(true);
 
     // O botão só acende quando já há alguma coisa guardada: apertar antes disso não daria nada.
     const timer = setInterval(() => setPronto(rolando.segundosProntos() >= 3), 1000);
@@ -155,7 +165,7 @@ export function ClipButton({ stream, de, canais }: { stream: MediaStream | null;
     };
   }, [stream]);
 
-  if (!stream || !gravacao.current) return null;
+  if (!stream || !gravando) return null;
 
   return (
     <>
@@ -164,14 +174,24 @@ export function ClipButton({ stream, de, canais }: { stream: MediaStream | null;
         disabled={!pronto || pegando}
         onClick={() => {
           setPegando(true);
+          setErro(null);
           void gravacao.current
             ?.pegar()
-            .then(setClipe)
+            .then((feito) => {
+              // CLIPE VAZIO TEM DE DIZER ALGUMA COISA. Antes, um `pegar()` que devolvesse null
+              // simplesmente não abria nada, e o botão parecia quebrado — que é como ele foi
+              // descrito: "cliquei na tesoura e não funcionou". A causa principal era a corrida
+              // dentro de clips.ts, já consertada; o aviso fica para o que ainda possa falhar.
+              if (feito) setClipe(feito);
+              else setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.'));
+            })
+            .catch(() => setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.')))
             .finally(() => setPegando(false));
         }}
       >
         <Scissors />
       </IconButton>
+      {erro && <p className="form-error clipe-erro">{erro}</p>}
       {clipe && <Previa blob={clipe.blob} segundos={clipe.segundos} de={de} canais={canais} onFechar={() => setClipe(null)} />}
     </>
   );

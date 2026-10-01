@@ -7230,6 +7230,18 @@ textarea {
 }
 
 /* Ícones animados (Lottie): enquanto o desenho não chega, o espaço já fica reservado. */
+/* A casa do ícone: o traço e a animação ocupam o MESMO lugar, empilhados. Sem isto, a troca de um
+   pelo outro empurraria o texto do menu de lado por um instante. */
+.animated-icon-caixa {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.animated-icon-caixa > * {
+  grid-area: 1 / 1;
+}
+
 .animated-icon {
   display: inline-flex;
   align-items: center;
@@ -8441,6 +8453,8 @@ textarea {
   background-size: cover;
 }
 
+/* A bolinha da amostra de moldura. Leva a classe .avatar junto, porque e la que mora o anel
+   (.avatar[data-moldura]::after) — ver TelaDaLoja.tsx. Aqui so o tamanho e a cor do miolo. */
 .loja-amostra-avatar {
   width: 34px;
   height: 34px;
@@ -9645,4 +9659,44 @@ body.arrastando-barra {
 .canto-da-sobreposicao .escolhido {
   border-color: var(--accent);
   color: var(--text-strong);
+}
+
+/* ---------- Moldura do avatar, nas Configurações ---------- */
+/* A escolha fica junto da cor do nome e do fundo do perfil, que é onde as pessoas procuram. Antes a
+   moldura só existia na Loja, e esta tela mostrava duas das três peças do perfil sem dizer que
+   faltava uma. */
+.perfil-molduras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.perfil-moldura {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--bg-raised);
+  cursor: pointer;
+}
+
+.perfil-moldura:hover {
+  background: var(--bg-raised-hover);
+}
+
+.perfil-moldura.ativa {
+  border-color: var(--accent);
+}
+
+/* A bolinha leva a classe .avatar junto: o anel mora em .avatar[data-moldura]::after e em lugar
+   nenhum mais. Uma amostra que não seja um .avatar não desenha moldura nenhuma — foi assim que as
+   dez molduras da Loja apareciam todas como a mesma bola escura. */
+.perfil-moldura-bola {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-input);
 }

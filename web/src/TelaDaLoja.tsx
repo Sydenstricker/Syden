@@ -7,7 +7,7 @@ import { acharVisual, COMO_SE_GANHA } from './loja';
 
 import { MobileBackButton } from './MobileBackButton';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 
 // A loja de cosméticos do Syden. **Tudo o que está nela é de graça.**
 //
@@ -20,11 +20,17 @@ import { useT } from './i18n';
 // o Syden — os trancados aparecem marcados, em vez de escondidos: mostrar o que existe é honesto,
 // fingir que não existe e um dia aparecer do nada, não.
 
-const ABAS: { tipo: TipoDeItem; nome: string }[] = [
-  { tipo: 'cor', nome: 'Cor do nome' },
-  { tipo: 'fundo', nome: 'Fundo do perfil' },
-  { tipo: 'moldura', nome: 'Moldura do avatar' },
-  { tipo: 'insignia', nome: 'Insígnias' },
+// 'pacotes' NÃO É UM TIPO DE ITEM, é uma aba que leva para outro lugar — por isso ela entra aqui
+// como um à parte, e não na lista de tipos. O bloco dos pacotes ficava fora do `if` da aba e
+// aparecia embaixo das quatro, repetido, como se fosse rodapé.
+type Aba = TipoDeItem | 'pacotes';
+
+const ABAS: { tipo: Aba; nome: string }[] = [
+  { tipo: 'cor', nome: chave('Cor do nome') },
+  { tipo: 'fundo', nome: chave('Fundo do perfil') },
+  { tipo: 'moldura', nome: chave('Moldura do avatar') },
+  { tipo: 'insignia', nome: chave('Insígnias') },
+  { tipo: 'pacotes', nome: chave('Pacotes') },
 ];
 
 /** O quadradinho que mostra como o item fica, sem precisar vestir para descobrir. */
@@ -38,9 +44,14 @@ function Amostra({ item }: { item: ItemDaLoja }) {
   }
   if (item.tipo === 'fundo') return <span className={`loja-amostra fundo fundo-${item.codigo}`} />;
   if (item.tipo === 'moldura') {
+    // A AMOSTRA USA A MESMA MARCAÇÃO DO AVATAR DE VERDADE, e isso conserta um defeito: ela usava
+    // `.loja-amostra.moldura-ouro`, um seletor que NÃO EXISTE na folha de estilo. Os dez anéis moram
+    // em `.avatar[data-moldura='…']::after` e em lugar nenhum mais. Resultado: as dez molduras
+    // apareciam como a mesma bola escura, e só dava para saber o que cada uma era vestindo-a. Uma
+    // amostra que não mostra o item é pior do que amostra nenhuma.
     return (
-      <span className={`loja-amostra moldura moldura-${item.codigo}`}>
-        <span className="loja-amostra-avatar" />
+      <span className="loja-amostra">
+        <span className="avatar loja-amostra-avatar" data-moldura={item.codigo === 'nenhuma' ? undefined : item.codigo} />
       </span>
     );
   }
@@ -119,7 +130,7 @@ export function TelaDaLoja({
 }) {
   const t = useT();
   const [dados, setDados] = useState<LojaDados | null>(null);
-  const [aba, setAba] = useState<TipoDeItem>('cor');
+  const [aba, setAba] = useState<Aba>('cor');
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
@@ -189,7 +200,7 @@ export function TelaDaLoja({
             className={`tab${aba === opcao.tipo ? ' active' : ''}`}
             onClick={() => setAba(opcao.tipo)}
           >
-            {opcao.nome}
+            {t(opcao.nome)}
           </button>
         ))}
       </div>
@@ -203,24 +214,29 @@ export function TelaDaLoja({
         </p>
       )}
 
-      <div className="loja-grade">
-        {doTipo.map((item) => (
-          <Cartao key={item.codigo} item={item} vestido={vestidoAgora(item)} onVestir={(i) => void vestir(i)} />
-        ))}
-      </div>
+      {aba !== 'pacotes' && (
+        <div className="loja-grade">
+          {doTipo.map((item) => (
+            <Cartao key={item.codigo} item={item} vestido={vestidoAgora(item)} onVestir={(i) => void vestir(i)} />
+          ))}
+        </div>
+      )}
 
-      <section className="loja-pacotes">
-        <h3>
-          <Music size={18} aria-hidden="true" /> Pacotes de sons e de emojis
-        </h3>
-        <p className="settings-hint">
-          Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem
-          para a comunidade inteira e não só para você.
-        </p>
-        <button type="button" className="btn-secondary" onClick={aoAbrirPacotes}>
-          Abrir os pacotes
-        </button>
-      </section>
+      {aba === 'pacotes' && (
+        <section className="loja-pacotes">
+          <h3>
+            <Music size={18} aria-hidden="true" /> {t('Pacotes de sons e de emojis')}
+          </h3>
+          <p className="settings-hint">
+            {t(
+              'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.',
+            )}
+          </p>
+          <button type="button" className="btn-secondary" onClick={aoAbrirPacotes}>
+            {t('Abrir os pacotes')}
+          </button>
+        </section>
+      )}
 
       <p className="settings-hint loja-rodape">
         Enfeitando o perfil de <strong>{user.username}</strong>.

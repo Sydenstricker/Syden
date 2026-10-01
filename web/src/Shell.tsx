@@ -637,6 +637,10 @@ export function Shell({
     setView('community'); // vindo da tela inicial ou de uma conversa privada, volta para a comunidade
     setShowUsage(false);
     setShowJogos(false);
+    // ESCOLHER UM CANAL FECHA A TELA DE BOAS-VINDAS. Quem clica numa sala pediu a sala; deixar o
+    // painel de boas-vindas por cima transforma o clique em nada, e o único jeito de sair passa a
+    // ser achar o X. Foi assim que ele descobriu: clicou na sala, não saiu.
+    setMostrandoBoasVindas(false);
     setSelectedId(channel.id);
     setMobileChannels(false);
     if (channel.type === 'voice') void voice.join(channel.id);
@@ -854,7 +858,11 @@ export function Shell({
               onMobileBack={() => setMobileChannels(true)}
             />
           )}
-          {view === 'community' && selected?.type === 'voice' && (
+          {/* O `!mostrandoBoasVindas` é o que falta na frase do comentário lá em cima: o canal de
+              TEXTO já sabia se esconder, o palco da voz não. Os dois ficavam na mesma coluna, um
+              embaixo do outro, e a sala aparecia espremida numa faixa no pé da tela. A chamada não
+              cai — ela continua rodando; o que some é o palco, e ele volta inteiro ao fechar. */}
+          {view === 'community' && !mostrandoBoasVindas && selected?.type === 'voice' && (
             <div className={`palco-e-conversa${sessao ? ' sessao' : ''}`}>
               <VoiceStage
                 channel={selected}

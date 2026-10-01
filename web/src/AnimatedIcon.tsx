@@ -1,3 +1,4 @@
+import { AlarmClock, CircleUser, Mic, Monitor, Music, PersonStanding, Smile, Video } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSettings } from './settings';
 
@@ -13,6 +14,35 @@ import { useSettings } from './settings';
 //   vira o destaque do app.
 
 export type AnimatedIconName = 'tela' | 'emoji' | 'musica' | 'microfone' | 'avatar' | 'alarme' | 'pessoa' | 'chamada';
+
+/**
+ * O MESMO ÍCONE, DESENHADO EM TRAÇO, PARA QUANDO A ANIMAÇÃO NÃO VIER.
+ *
+ * ISTO EXISTE POR CAUSA DE UMA TELA EM BRANCO QUE NINGUÉM CONSEGUIU EXPLICAR. No menu de
+ * Configurações, cinco itens apareceram sem ícone nenhum — e eram exatamente os cinco animados; os de
+ * traço estavam lá. A causa nunca foi reproduzida: o arquivo é o mesmo em produção (conferido por
+ * md5), a política de segurança libera a busca, e o menu desenha certo tanto no servidor de
+ * desenvolvimento quanto na build de produção, medido nos dois.
+ *
+ * O que dava para explicar era o SINTOMA. Qualquer falha aqui dentro caía num \`catch\` vazio, e o CSS
+ * deixa \`opacity: 0\` até a animação ficar pronta — então qualquer tropeço, em qualquer navegador,
+ * vira um buraco de vinte pixels. Um desenho que depende de buscar um arquivo, carregar uma
+ * biblioteca de 70 KB e interpretar um formato tem muito por onde falhar, e nenhuma dessas falhas
+ * justifica um menu sem ícone.
+ *
+ * Então o traço é desenhado PRIMEIRO, sempre, e some quando a animação assume. Se ela não assumir, em
+ * que computador for e pelo motivo que for, o menu continua inteiro.
+ */
+const DE_TRACO: Record<AnimatedIconName, typeof Mic> = {
+  tela: Monitor,
+  emoji: Smile,
+  musica: Music,
+  microfone: Mic,
+  avatar: CircleUser,
+  alarme: AlarmClock,
+  pessoa: PersonStanding,
+  chamada: Video,
+};
 
 type Lottie = typeof import('lottie-web').default;
 
@@ -187,8 +217,13 @@ export function AnimatedIcon({ name, size = 22, color, accent, speed = 1, classN
           if (temDesenho(box.current)) break;
         }
         setReady(true);
-      } catch {
-        // Sem a biblioteca ou sem o arquivo: fica o espaço vazio e o botão continua funcionando.
+      } catch (erro) {
+        // Sem a biblioteca ou sem o arquivo: fica o ícone de traço, e o botão continua funcionando.
+        //
+        // O AVISO NO CONSOLE NÃO É ENFEITE. Antes daqui havia um `catch` vazio, e por isso a falha
+        // que tirou os ícones do menu de Configurações de um dos computadores não deixou rastro
+        // nenhum — nem para quem viu, nem para quem foi procurar. Falha silenciosa não se conserta.
+        console.warn(`[syden] o ícone animado "${name}" não carregou; ficou o de traço.`, erro);
       }
     })();
 
@@ -222,12 +257,14 @@ export function AnimatedIcon({ name, size = 22, color, accent, speed = 1, classN
     };
   }, [ready]);
 
+  const Traco = DE_TRACO[name];
+
   return (
-    <span
-      ref={box}
-      className={`animated-icon${ready ? ' ready' : ''}${className ? ` ${className}` : ''}`}
-      style={{ width: size, height: size }}
-      aria-hidden="true"
-    />
+    <span className={`animated-icon-caixa${className ? ` ${className}` : ''}`} style={{ width: size, height: size }} aria-hidden="true">
+      {/* O traço fica por baixo e some quando a animação assume. Os dois ocupam a mesma casa, para a
+          troca não mexer uma linha do menu de lugar. */}
+      {!ready && <Traco size={size} />}
+      <span ref={box} className={`animated-icon${ready ? ' ready' : ''}`} style={{ width: size, height: size }} />
+    </span>
   );
 }

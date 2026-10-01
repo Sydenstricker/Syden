@@ -742,4 +742,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Металлический голос робота из старого фильма.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'Записывает твой голос и проигрывает его с эффектом — только для тебя.',
   'você': 'ты',
+  'Abrir os pacotes': 'Открыть наборы',
+  'Insígnias': 'Значки',
+  'Moldura do avatar': 'Рамка аватара',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Сейчас не получилось закрыть клип. Попробуй через несколько секунд.',
+  'Pacotes de sons e de emojis': 'Наборы звуков и эмодзи',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Тоже бесплатные и тоже меняются когда угодно. Они в настройках сообщества, потому что действуют на всё сообщество, а не только на тебя.',
 } satisfies Record<string, string>;

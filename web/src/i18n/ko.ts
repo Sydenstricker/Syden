@@ -709,4 +709,10 @@ export default {
   'Voz metálica de robô de filme antigo.': '옛날 영화 로봇 같은 금속성 목소리.',
   'Grava a sua voz e toca de volta com o efeito, só para você.': '목소리를 녹음해서 효과를 입혀 들려줘요. 당신에게만요.',
   'você': '나',
+  'Abrir os pacotes': '꾸러미 열기',
+  'Insígnias': '배지',
+  'Moldura do avatar': '아바타 테두리',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': '지금은 클립을 마무리하지 못했어요. 몇 초 뒤에 다시 해보세요.',
+  'Pacotes de sons e de emojis': '사운드와 이모지 꾸러미',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': '이것도 공짜고, 이것도 언제든 바꿀 수 있어요. 커뮤니티 설정에 있어요. 당신한테만이 아니라 커뮤니티 전체에 적용되니까요.',
 } satisfies Record<string, string>;

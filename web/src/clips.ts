@@ -73,12 +73,26 @@ export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
     return true;
   }
 
-  /** Fecha a gravação em curso e devolve o arquivo completo. */
+  /**
+   * Fecha a gravação em curso e devolve o arquivo completo.
+   *
+   * O `fechando` É O CONSERTO DE UMA CORRIDA QUE DEIXAVA A TESOURA MUDA. Dois caminhos chamam esta
+   * função: o relógio de trinta em trinta segundos e a pessoa apertando o botão. Quando os dois se
+   * cruzavam — e eles se cruzam uma vez a cada trinta segundos —, o segundo achava o gravador já em
+   * `inactive`, desistia na primeira linha e devolvia null. Nos primeiros trinta segundos não há
+   * gravação anterior para servir de reserva, então o clique não produzia NADA: nem arquivo, nem
+   * aviso. Era exatamente o "cliquei na tesoura e não funcionou".
+   *
+   * Com a promessa guardada, quem chega no meio espera a que já está em curso em vez de tropeçar nela.
+   */
+  let fechando: Promise<Clipe | null> | null = null;
+
   function fechar(): Promise<Clipe | null> {
+    if (fechando) return fechando;
     const atual = gravador;
     if (!atual || atual.state === 'inactive') return Promise.resolve(null);
     const segundos = decorridos();
-    return new Promise((pronto) => {
+    fechando = new Promise<Clipe | null>((pronto) => {
       atual.onstop = () => {
         const blob = pedacos.length > 0 ? new Blob(pedacos, { type: 'video/webm' }) : null;
         // O tipo vai sem os codecs no nome: com eles, o endereço do arquivo ganha ponto e vírgula e o
@@ -86,7 +100,10 @@ export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
         pronto(blob ? { blob, segundos } : null);
       };
       atual.stop();
-    });
+    }).finally(() => {
+      fechando = null;
+    }) as Promise<Clipe | null>;
+    return fechando;
   }
 
   if (!comecar()) return null;
@@ -97,7 +114,9 @@ export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
     void fechar().then((fechado) => {
       if (parado) return;
       if (fechado) anterior = fechado;
-      comecar();
+      // Só recomeça se ninguém recomeçou antes: o pegar() também fecha e recomeça, e dois
+      // MediaRecorder na mesma faixa é um a mais do que o computador precisa.
+      if (!gravador || gravador.state === 'inactive') comecar();
     });
   }, SEGUNDOS_DO_CLIPE * 1000);
 
@@ -109,7 +128,7 @@ export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
       if (emCurso < CURTO_DEMAIS && anterior) return anterior;
       const fechado = await fechar();
       if (fechado) anterior = fechado;
-      if (!parado) comecar();
+      if (!parado && (!gravador || gravador.state === 'inactive')) comecar();
       return fechado ?? anterior;
     },
     segundosProntos() {

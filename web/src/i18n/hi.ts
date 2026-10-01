@@ -720,4 +720,10 @@ export default {
   'Voz metálica de robô de filme antigo.': 'पुरानी फ़िल्म के रोबोट जैसी धातु की आवाज़।',
   'Grava a sua voz e toca de volta com o efeito, só para você.': 'तुम्हारी आवाज़ रिकॉर्ड करके असर के साथ वापस सुनाता है, सिर्फ़ तुम्हें।',
   'você': 'तुम',
+  'Abrir os pacotes': 'पैकेज खोलो',
+  'Insígnias': 'बैज',
+  'Moldura do avatar': 'अवतार का फ़्रेम',
+  'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'अभी क्लिप बंद नहीं हो पाई। कुछ सेकंड बाद फिर कोशिश करो।',
+  'Pacotes de sons e de emojis': 'आवाज़ों और इमोजी के पैकेज',
+  'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'ये भी मुफ़्त हैं, और इन्हें भी जब चाहो बदल सकते हो। ये कम्युनिटी की सेटिंग में रहते हैं, क्योंकि ये पूरी कम्युनिटी पर लागू होते हैं, सिर्फ़ तुम पर नहीं।',
 } satisfies Record<string, string>;
