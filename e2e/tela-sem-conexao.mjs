@@ -62,6 +62,8 @@ app.whenReady().then(async () => {
     "raizDoSistema: (navigator.language || '').toLowerCase().split('-')[0],",
     "emIngles: typeof TEXTOS === 'object' ? TEXTOS.en.titulo : null,",
     "emEspanhol: typeof TEXTOS === 'object' ? TEXTOS.es.titulo : null,",
+    "frases: typeof TEXTOS === 'object' ? TEXTOS : {},",
+    "direcao: document.documentElement.dir,",
     '})',
   ].join(''));
   const d = JSON.parse(lido);
@@ -73,6 +75,30 @@ app.whenReady().then(async () => {
   conta('o código vem junto da explicação', d.codigo.includes('OFFLINE') && d.codigo.length > 12, d.codigo);
   conta('o endereço de volta chegou', d.destino === 'https://syden.chat/app/', d.destino);
   conta('há dicionário para português, inglês e espanhol', ['pt', 'en', 'es'].every((i) => d.idiomas.includes(i)), d.idiomas.join(','));
+
+  // A GUARDA QUE IMPORTA, e a razão de a lista do site vir de fora: esta tela ficou com três idiomas
+  // enquanto o Syden chegava a dezessete. Quem fala coreano via o app inteiro em coreano e, no único
+  // momento em que algo dava errado, uma tela em português. Idioma novo no site sem idioma novo aqui
+  // volta a abrir essa distância, e ninguém percebe — porque esta tela só aparece sem internet.
+  const DO_SITE = IDIOMAS_DO_SITE;
+  const faltando = DO_SITE.filter((i) => !d.idiomas.includes(i));
+  conta('a tela alcança todos os idiomas do Syden', faltando.length === 0, 'falta: ' + faltando.join(', '));
+
+  // Cinco frases por idioma, nenhuma vazia: um esqueleto com valores em branco deixaria a tela muda,
+  // que é pior do que deixá-la em português.
+  const incompletos = Object.entries(d.frases)
+    .filter(([, f]) => ['titulo', 'explicacao', 'botao', 'tentando', 'codigo'].some((c) => !f[c] || !String(f[c]).trim()))
+    .map(([i]) => i);
+  conta('nenhum idioma tem frase em branco', incompletos.length === 0, incompletos.join(', '));
+
+  // Todo código começa por OFFLINE, em qualquer língua: é o que a pessoa repete ao pedir ajuda, e
+  // traduzi-lo tornaria o pedido de ajuda intraduzível de volta.
+  const semCodigo = Object.entries(d.frases)
+    .filter(([, f]) => !String(f.codigo).startsWith('OFFLINE'))
+    .map(([i]) => i);
+  conta('o código OFFLINE não é traduzido em nenhuma língua', semCodigo.length === 0, semCodigo.join(', '));
+
+  conta('a direção da escrita segue o idioma', d.direcao === (d.lang === 'ar' ? 'rtl' : 'ltr'), d.lang + ' -> ' + d.direcao);
   conta('o inglês está escrito', String(d.emIngles).includes("Couldn't"), d.emIngles);
   conta('o espanhol está escrito', String(d.emEspanhol).includes('No fue posible'), d.emEspanhol);
   // Idioma sem dicionário tem de cair no português, e não numa tela vazia.
@@ -84,7 +110,27 @@ app.whenReady().then(async () => {
 });
 `.replace('RESULTADO_AQUI', RESULTADO);
 
-writeFileSync(ROTEIRO, ROTEIRO_DENTRO);
+/**
+ * Os idiomas que o SITE oferece, lidos de web/src/i18n/idiomas.ts.
+ *
+ * Eles entram no roteiro como texto porque o roteiro roda noutro processo, dentro do Electron, sem
+ * acesso ao repositório. E vêm do arquivo de verdade, e não de uma lista copiada aqui: lista copiada
+ * é a própria coisa que este teste existe para impedir.
+ *
+ * A raiz basta — "zh-CN" entra como "zh" — porque é pela raiz que a tela escolhe o dicionário.
+ */
+function idiomasDoSite() {
+  const fonte = readFileSync('web/src/i18n/idiomas.ts', 'utf8');
+  const bloco = fonte.slice(fonte.indexOf('export const TRADUCOES'));
+  const codigos = [...bloco.matchAll(/^\s*['"]?([\w-]+)['"]?\s*:\s*\(\)\s*=>/gm)].map((m) => m[1]);
+  // O português não está em TRADUCOES: ele é a chave, não a tradução.
+  return [...new Set(['pt', ...codigos.map((c) => c.split('-')[0])])];
+}
+
+writeFileSync(
+  ROTEIRO,
+  ROTEIRO_DENTRO.replace('IDIOMAS_DO_SITE', JSON.stringify(idiomasDoSite())),
+);
 
 const processo = spawn(ELECTRON, [ROTEIRO], { env: semRodarComoNode(process.env), stdio: ['ignore', 'pipe', 'pipe'] });
 let saida = '';

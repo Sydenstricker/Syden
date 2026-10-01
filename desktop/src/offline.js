@@ -4,8 +4,15 @@
 // é a única tela do app que aparece justamente quando o site não pode ser buscado. Se houvesse internet
 // para carregar a tradução, não haveria tela de sem conexão.
 //
-// São quatro frases e dois idiomas além do português. Não é a tradução inteira do Syden e não precisa
-// ser: quem está sem internet precisa entender o que houve e achar o botão, e nada mais.
+// SÃO CINCO FRASES, NOS MESMOS IDIOMAS DO SYDEN. Por muito tempo foram três idiomas, enquanto o app
+// tinha dezessete — e o resultado era o pior possível para quem fala coreano: o Syden inteiro em
+// coreano, e a única tela que aparece quando algo dá errado, em português. Quem está sem internet é
+// justamente quem menos pode procurar tradução em outro lugar.
+//
+// O QUE ESTA TELA NÃO FAZ: pedir fonte. O desenho de cada escrita vem do Windows (Segoe UI para o
+// árabe, Nirmala UI para o híndi e o bengali, Malgun Gothic para o coreano, Microsoft YaHei para o
+// chinês), porque buscar a Noto do Google exigiria a internet que não existe. É também o que a
+// política de segurança da página permite: `default-src 'none'`.
 
 const TEXTOS = {
   pt: {
@@ -29,21 +36,132 @@ const TEXTOS = {
     tentando: 'Intentando…',
     codigo: 'OFFLINE — Sin conexión',
   },
+  fr: {
+    titulo: 'Connexion impossible',
+    explicacao: 'Vérifie ta connexion. Le serveur peut aussi être hors service.',
+    botao: 'Réessayer',
+    tentando: 'Tentative…',
+    codigo: 'OFFLINE — Pas de connexion',
+  },
+  de: {
+    titulo: 'Verbindung nicht möglich',
+    explicacao: 'Prüf deine Internetverbindung. Der Server kann auch gerade aus sein.',
+    botao: 'Nochmal versuchen',
+    tentando: 'Versuche…',
+    codigo: 'OFFLINE — Keine Verbindung',
+  },
+  it: {
+    titulo: 'Impossibile connettersi',
+    explicacao: 'Controlla la tua connessione. Anche il server potrebbe essere giù.',
+    botao: 'Riprova',
+    tentando: 'Sto provando…',
+    codigo: 'OFFLINE — Nessuna connessione',
+  },
+  nl: {
+    titulo: 'Verbinden lukt niet',
+    explicacao: 'Check je internet. De server kan ook plat liggen.',
+    botao: 'Opnieuw proberen',
+    tentando: 'Bezig…',
+    codigo: 'OFFLINE — Geen verbinding',
+  },
+  ru: {
+    titulo: 'Не удалось подключиться',
+    explicacao: 'Проверь интернет. Сервер тоже может быть недоступен.',
+    botao: 'Попробовать снова',
+    tentando: 'Пробуем…',
+    codigo: 'OFFLINE — Нет соединения',
+  },
+  tr: {
+    titulo: 'Bağlanılamadı',
+    explicacao: 'İnternetini kontrol et. Sunucu da kapalı olabilir.',
+    botao: 'Tekrar dene',
+    tentando: 'Deneniyor…',
+    codigo: 'OFFLINE — Bağlantı yok',
+  },
+  sw: {
+    titulo: 'Haikuwezekana kuunganisha',
+    explicacao: 'Angalia intaneti yako. Seva pia inaweza kuwa imezimika.',
+    botao: 'Jaribu tena',
+    tentando: 'Inajaribu…',
+    codigo: 'OFFLINE — Hakuna muunganisho',
+  },
+  // Malaio e indonésio são línguas próximas com normas OPOSTAS de tratamento: em malaio "anda" é o
+  // neutro e "kamu" soa grosseiro entre desconhecidos; em indonésio é o contrário.
+  ms: {
+    titulo: 'Tidak dapat menyambung',
+    explicacao: 'Periksa internet anda. Pelayan juga mungkin tidak berfungsi.',
+    botao: 'Cuba lagi',
+    tentando: 'Mencuba…',
+    codigo: 'OFFLINE — Tiada sambungan',
+  },
+  id: {
+    titulo: 'Tidak bisa terhubung',
+    explicacao: 'Cek internet kamu. Server juga bisa saja sedang mati.',
+    botao: 'Coba lagi',
+    tentando: 'Mencoba…',
+    codigo: 'OFFLINE — Tidak ada koneksi',
+  },
+  zh: {
+    titulo: '无法连接',
+    explicacao: '检查一下你的网络。服务器也可能暂时不可用。',
+    botao: '重试',
+    tentando: '正在重试…',
+    codigo: 'OFFLINE — 没有连接',
+  },
+  ko: {
+    titulo: '연결할 수 없어요',
+    explicacao: '인터넷을 확인해 보세요. 서버가 꺼져 있을 수도 있어요.',
+    botao: '다시 시도',
+    tentando: '시도 중…',
+    codigo: 'OFFLINE — 연결 없음',
+  },
+  hi: {
+    titulo: 'कनेक्ट नहीं हो पाया',
+    explicacao: 'अपना इंटरनेट देखो। सर्वर भी बंद हो सकता है।',
+    botao: 'फिर से कोशिश करो',
+    tentando: 'कोशिश हो रही है…',
+    codigo: 'OFFLINE — कोई कनेक्शन नहीं',
+  },
+  bn: {
+    titulo: 'সংযোগ করা গেল না',
+    explicacao: 'তোমার ইন্টারনেট দেখো। সার্ভারও বন্ধ থাকতে পারে।',
+    botao: 'আবার চেষ্টা করো',
+    tentando: 'চেষ্টা করছি…',
+    codigo: 'OFFLINE — সংযোগ নেই',
+  },
+  ar: {
+    titulo: 'تعذّر الاتصال',
+    explicacao: 'تحقّق من الإنترنت لديك. قد يكون الخادم متوقفًا أيضًا.',
+    botao: 'حاول مرة أخرى',
+    tentando: 'جارٍ المحاولة…',
+    codigo: 'OFFLINE — لا يوجد اتصال',
+  },
 };
+
+/** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
+const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar']);
 
 /**
  * O idioma, pela raiz do que o sistema informa.
  *
- * Só a raiz ("pt" de "pt-BR") porque não há variantes aqui: um português é um português. E o que não
- * estiver na lista cai em português, como no resto do Syden.
+ * Só a raiz ("pt" de "pt-BR") porque não há variantes aqui: um português é um português, e o chinês do
+ * Syden é "zh-CN" mas entra nesta lista como "zh". E o que não estiver na lista cai em português, como
+ * no resto do Syden.
+ *
+ * ESTA TELA NÃO LÊ A ESCOLHA FEITA DENTRO DO SYDEN, e não é descuido: a escolha mora no
+ * localStorage do SITE, e esta página é um arquivo local, de outra origem. O navegador não deixa um
+ * ler o armazenamento do outro — é a mesma regra que impede qualquer página de ler a de um banco. Então
+ * o que sobra é o idioma do sistema, que é também o que o Syden usa antes de alguém escolher.
  */
 function idioma() {
   const bruto = (navigator.language || 'pt').toLowerCase().split('-')[0];
   return TEXTOS[bruto] ? bruto : 'pt';
 }
 
-const t = TEXTOS[idioma()];
-document.documentElement.lang = idioma();
+const codigo = idioma();
+const t = TEXTOS[codigo];
+document.documentElement.lang = codigo;
+document.documentElement.dir = DA_DIREITA_PARA_A_ESQUERDA.has(codigo) ? 'rtl' : 'ltr';
 document.getElementById('titulo').textContent = t.titulo;
 document.getElementById('explicacao').textContent = t.explicacao;
 document.getElementById('codigo').textContent = t.codigo;
