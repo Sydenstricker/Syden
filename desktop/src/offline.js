@@ -136,6 +136,13 @@ const TEXTOS = {
     tentando: 'Đang thử…',
     codigo: 'OFFLINE — không có kết nối',
   },
+  ta: {
+    titulo: 'இணைக்க முடியவில்லை',
+    explicacao: 'உங்கள் இணையத்தைப் பாருங்கள். சேவையகமும் நின்றிருக்கலாம்.',
+    botao: 'மீண்டும் முயல்',
+    tentando: 'முயல்கிறது…',
+    codigo: 'OFFLINE — இணைப்பு இல்லை',
+  },
   te: {
     titulo: 'కనెక్ట్ కాలేదు',
     explicacao: 'మీ ఇంటర్నెట్ చూడండి. సర్వర్ కూడా ఆగి ఉండవచ్చు.',

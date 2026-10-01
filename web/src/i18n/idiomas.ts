@@ -140,7 +140,7 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'mn', nativo: 'Монгол', nome: 'Mongol', escrita: 'cirilica', paises: 1 },
   { codigo: 'ne', nativo: 'नेपाली', nome: 'Nepalês', escrita: 'devanagari', paises: 1 },
   { codigo: 'si', nativo: 'සිංහල', nome: 'Cingalês', escrita: 'sinhala', paises: 1 },
-  { codigo: 'ta', nativo: 'தமிழ்', nome: 'Tâmil', escrita: 'tamil', paises: 2 },
+  { codigo: 'ta', nativo: 'தமிழ்', nome: 'Tâmil', escrita: 'tamil', paises: 3 },
   { codigo: 'te', nativo: 'తెలుగు', nome: 'Télugo', escrita: 'telugu', paises: 1 },
   { codigo: 'km', nativo: 'ភាសាខ្មែរ', nome: 'Khmer', escrita: 'khmer', paises: 1 },
   { codigo: 'lo', nativo: 'ລາວ', nome: 'Laosiano', escrita: 'lao', paises: 1 },
@@ -188,6 +188,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   fa: () => import('./fa'),
   ja: () => import('./ja'),
   te: () => import('./te'),
+  ta: () => import('./ta'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

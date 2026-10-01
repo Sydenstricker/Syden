@@ -127,6 +127,20 @@ body {
   font-family: 'gg sans', 'Segoe UI', var(--fonte-idioma), 'Noto Sans', system-ui, -apple-system, sans-serif;
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
+
+  /* PALAVRA COMPRIDA DEMAIS QUEBRA, EM VEZ DE VAZAR PARA FORA DA CAIXA.
+
+     Isto aparece quando o idioma muda, e aqui apareceu no TÂMIL: ele é aglutinante, e "a tela toda
+     girando devagar" vira uma palavra só. Cinco caixas vazaram na tela de Configurações — o nome da
+     conta e o cartão de cosmético —, e as duas JÁ TINHAM `min-width: 0`, que é o conserto habitual
+     de filho de flex. Não era isso: era o navegador se recusando a partir uma palavra no meio, que é
+     o certo em português e o errado numa língua sem espaço entre as partes.
+
+     Fica no `body` e não nos dois lugares que vazaram, de propósito: o finlandês e o húngaro estão na
+     fila com palavra composta ainda mais longa, e consertar caixa por caixa é esperar o defeito
+     aparecer dez vezes. `break-word` é a intervenção mínima — ele só parte a palavra quando ela
+     NÃO CABERIA de jeito nenhum; enquanto couber, nada muda. */
+  overflow-wrap: break-word;
 }
 
 button {

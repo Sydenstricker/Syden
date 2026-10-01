@@ -143,6 +143,9 @@ export const OFICIAL: Record<string, string[]> = {
   fa: ['IR', 'AF'],
   ja: ['JP'],
   te: ['IN'],
+  // Sri Lanka e Singapura, onde é língua oficial do Estado, mais a Índia — pelo mesmo
+  // critério do híndi e do télugo, que é contar o país onde a língua é oficial em algum nível.
+  ta: ['LK', 'SG', 'IN'],
 };
 
 /**
@@ -191,6 +194,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   fa: 130,
   ja: 125,
   te: 95,
+  ta: 85,
 
   // ---------------------------------------------------------------------------------------------------
   // DAQUI PARA BAIXO SÃO OS QUE AINDA NÃO TÊM DICIONÁRIO, e eles estão aqui por um motivo só: é este
@@ -207,7 +211,6 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   // Valores redondos, pelas mesmas razões escritas acima: estimativa com casa decimal é mentira com
   // aparência de medição.
   // ---------------------------------------------------------------------------------------------------
-  ta: 85,
   ha: 80,
   th: 70,
   am: 57,

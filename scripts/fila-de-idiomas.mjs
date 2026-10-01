@@ -13,6 +13,12 @@
 // unidade de cem milhões; o turco não tem o i maiúsculo que o resto do mundo tem; o vietnamita usa os
 // MESMOS acentos do português e cegou o detector de língua. Nenhuma dessas aparece lendo o código.
 //
+// E O QUE É MEDIDO MANDA NO QUE É ESCRITO À MÃO. Estas notas já estiveram ERRADAS duas vezes, as duas
+// sobre algarismo: diziam que o tâmil e o híndi usam os próprios da escrita deles, e o `--proximo`
+// imprimiu 12,34,567 em latinos para os dois. **A lição não é "errei"** — é que um fato que o
+// computador sabe medir não deve ser copiado para um bilhete, porque o bilhete não é conferido por
+// ninguém. As notas pararam de falar de algarismo; quem fala é a medição que o --proximo imprime.
+//
 //   node scripts/fila-de-idiomas.mjs           a fila inteira
 //   node scripts/fila-de-idiomas.mjs --proximo só o da vez, com o passo a passo
 //   node scripts/fila-de-idiomas.mjs --tudo    inclusive os que já estão prontos
@@ -82,15 +88,15 @@ const ESCRITAS = {
   arabe: 'ÁRABE, DA DIREITA PARA A ESQUERDA: a página inteira vira. Ver web/src/bidi.ts e a seta ← em vez de →.',
   hebraica: 'HEBRAICO, DA DIREITA PARA A ESQUERDA: mesma família de armadilhas do árabe.',
   thaana: 'THAANA, DA DIREITA PARA A ESQUERDA: escrita rara, conferir a fonte de reserva na tela.',
-  devanagari: 'Devanágari: algarismos próprios (०१२३). Todo número na tela tem de passar por Intl.NumberFormat.',
-  bengali: 'Bengali: algarismos próprios (০১২৩) ✔ já mordeu uma vez.',
-  tamil: 'Tâmil: algarismos próprios e palavras longas; conferir estouro de caixa.',
+  devanagari: 'Devanágari: letras altas com sinais acima e abaixo — conferir a altura de linha. ATENÇÃO: o híndi e o nepalês dividem a escrita e NÃO dividem os algarismos (ver a medição acima).',
+  bengali: 'Bengali ✔ já mordeu uma vez, pelos algarismos — e a medição acima mostra quais são.',
+  tamil: 'Tâmil: palavra longa e aglutinada — é o risco de estourar a caixa. Os algarismos NÃO são os próprios da escrita: ver a medição acima.',
   telugu: 'Télugo: fonte de reserva própria; conferir que não vira quadradinho.',
   sinhala: 'Cingalês: fonte de reserva própria; letras altas, conferir altura de linha.',
   tailandesa: 'TAILANDÊS: NÃO SEPARA PALAVRA COM ESPAÇO. A quebra de linha se comporta diferente de tudo o que já foi feito, e caixa estreita é onde isso aparece.',
   khmer: 'Khmer: também sem espaço entre palavras, e com sinais empilhados — conferir altura de linha.',
   lao: 'Lao: sem espaço entre palavras, como o tailandês.',
-  birmanesa: 'Birmanês: sem espaço entre palavras; fonte de reserva própria.',
+  birmanesa: 'Birmanês: sem espaço entre palavras; fonte de reserva própria; e algarismos próprios (ver a medição acima).',
   chinesa: 'CHINÊS: número grande se escreve em 亿 (cem milhões) ✔. Sem espaço entre palavras.',
   japonesa: 'JAPONÊS: sem espaço entre palavras; três sistemas de escrita na mesma frase; o registro (です/ます) é escolha a fazer uma vez.',
   coreana: 'COREANO: sem espaço entre todas as palavras; a cortesia mora no VERBO ✔ (해요체, decidido).',
