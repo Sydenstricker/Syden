@@ -9700,3 +9700,48 @@ body.arrastando-barra {
   border-radius: 50%;
   background: var(--bg-input);
 }
+
+/* ---------- A faixa da comunidade, no alto da lista de canais ---------- */
+/* A arte que o dono escolhe para a tela de boas-vindas passa a viver AQUI também. Antes ela aparecia
+   uma vez, na primeira entrada, e sumia — e a barra lateral de toda comunidade era igual à de todas
+   as outras. É o que o Discord faz com a imagem de capa: o olho acha a cor antes de achar o nome. */
+.sidebar-header[data-tom] {
+  /* A ALTURA É O QUE FAZ A FAIXA SER FAIXA. Com os 48px do cabeçalho comum ela virava uma listra, e
+     o efeito que se quer — reconhecer a comunidade de relance, antes de ler o nome — precisa de uma
+     área que o olho pegue. Noventa e seis pixels é mais ou menos o que o Discord usa na capa, e
+     ainda cabe a lista de canais inteira sem rolagem numa tela comum.
+     O nome desce para o pé da faixa, como num cartaz. */
+  height: 96px;
+  align-items: flex-end;
+  padding-bottom: 10px;
+  /* O degradê vem do style do elemento, e a sombra embaixo some: a faixa já se separa pela cor. */
+  box-shadow: none;
+  border-bottom: 1px solid var(--border);
+}
+
+/* O botão de baixar sobe para o alto da faixa, para não disputar a linha com o nome. */
+.sidebar-header[data-tom] .icon-button {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+/* Arte escura pede texto claro; arte clara pede texto escuro. Errar isto é o único jeito de a faixa
+   ficar ilegível, e por isso o tom vem junto da arte (ver boasVindas.ts). */
+.sidebar-header[data-tom='escuro'],
+.sidebar-header[data-tom='escuro'] .icon-button {
+  color: #f2f3f5;
+}
+
+.sidebar-header[data-tom='claro'],
+.sidebar-header[data-tom='claro'] .icon-button {
+  color: #1e1f22;
+}
+
+/* O nome ganha um contorno de sombra para sobreviver a qualquer ponto do degradê. */
+.sidebar-header[data-tom] .sidebar-brand {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.sidebar-header[data-tom='claro'] .sidebar-brand {
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.45);
+}
