@@ -63,11 +63,11 @@ function Cartao({ item, vestido, onVestir }: { item: ItemDaLoja; vestido: boolea
     <div className={`loja-cartao${vestido ? ' vestido' : ''}${trancado ? ' trancado' : ''}`}>
       <Amostra item={item} />
       <div className="loja-cartao-texto">
-        <strong>{visual.nome}</strong>
-        <small>{visual.descricao}</small>
+        <strong>{t(visual.nome)}</strong>
+        <small>{t(visual.descricao)}</small>
         {item.comoSeGanha === 'conquista' && (
           <span className="loja-etiqueta conquista">
-            <Gift size={12} aria-hidden="true" /> {COMO_SE_GANHA.conquista}
+            <Gift size={12} aria-hidden="true" /> {t(COMO_SE_GANHA.conquista)}
           </span>
         )}
       </div>

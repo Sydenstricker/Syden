@@ -7,6 +7,7 @@
 // Um código que o servidor manda e este arquivo não conhece é IGNORADO, e não desenhado como quadrado
 // vazio: é o que acontece quando o servidor é mais novo que o site que a pessoa tem aberto.
 
+import { chave } from './i18n';
 import type { ComoSeGanha, TipoDeItem } from './types';
 
 export interface ItemVisual {
@@ -16,48 +17,48 @@ export interface ItemVisual {
 
 /** As molduras do avatar. São anéis de CSS (ver styles.css), e não imagens: não pesam nada. */
 export const MOLDURAS: Record<string, ItemVisual> = {
-  nenhuma: { nome: 'Sem moldura', descricao: 'O avatar limpo, como sempre foi.' },
-  prata: { nome: 'Prata', descricao: 'Um anel claro e discreto.' },
-  bronze: { nome: 'Bronze', descricao: 'Um anel quente, cor de cobre velho.' },
-  folha: { nome: 'Folha', descricao: 'Verde de mato, como a vila.' },
-  mar: { nome: 'Mar', descricao: 'Azul que escurece de um lado para o outro.' },
-  'brasa-moldura': { nome: 'Brasa', descricao: 'Do laranja ao vermelho, como carvão aceso.' },
-  'ouro-moldura': { nome: 'Ouro', descricao: 'Dourado com brilho que passa devagar.' },
-  'esmeralda-moldura': { nome: 'Esmeralda', descricao: 'Verde fundo com reflexo.' },
-  rubi: { nome: 'Rubi', descricao: 'Vermelho profundo, com pulso.' },
-  'prisma-moldura': { nome: 'Prisma', descricao: 'Todas as cores girando devagar. A mais chamativa de todas.' },
+  nenhuma: { nome: chave('Sem moldura'), descricao: chave('O avatar limpo, como sempre foi.') },
+  prata: { nome: chave('Prata'), descricao: chave('Um anel claro e discreto.') },
+  bronze: { nome: chave('Bronze'), descricao: chave('Um anel quente, cor de cobre velho.') },
+  folha: { nome: chave('Folha'), descricao: chave('Verde de mato, como a vila.') },
+  mar: { nome: chave('Mar'), descricao: chave('Azul que escurece de um lado para o outro.') },
+  'brasa-moldura': { nome: chave('Brasa'), descricao: chave('Do laranja ao vermelho, como carvão aceso.') },
+  'ouro-moldura': { nome: chave('Ouro'), descricao: chave('Dourado com brilho que passa devagar.') },
+  'esmeralda-moldura': { nome: chave('Esmeralda'), descricao: chave('Verde fundo com reflexo.') },
+  rubi: { nome: chave('Rubi'), descricao: chave('Vermelho profundo, com pulso.') },
+  'prisma-moldura': { nome: chave('Prisma'), descricao: chave('Todas as cores girando devagar. A mais chamativa de todas.') },
 };
 
 /** Descrições das cores de nome, para a loja. O desenho continua vindo do CSS, por `data-cor`. */
 export const CORES: Record<string, ItemVisual> = {
-  padrao: { nome: 'Padrão', descricao: 'A cor do seu cargo na comunidade.' },
-  carmim: { nome: 'Carmim', descricao: 'Vermelho fechado.' },
-  laranja: { nome: 'Laranja', descricao: 'Quente, mas sem gritar.' },
-  ouro: { nome: 'Ouro', descricao: 'Amarelo escurecido, legível nos dois temas.' },
-  limao: { nome: 'Limão', descricao: 'Verde claro.' },
-  menta: { nome: 'Menta', descricao: 'Verde-água.' },
-  ceu: { nome: 'Céu', descricao: 'Azul claro.' },
-  anil: { nome: 'Anil', descricao: 'Azul fechado, quase roxo.' },
-  lavanda: { nome: 'Lavanda', descricao: 'Roxo claro.' },
-  rosa: { nome: 'Rosa', descricao: 'Rosa forte.' },
-  cobre: { nome: 'Cobre', descricao: 'Metálico morno.' },
-  jade: { nome: 'Jade', descricao: 'Verde de pedra.' },
-  ametista: { nome: 'Ametista', descricao: 'Roxo de pedra.' },
-  prisma: { nome: 'Prisma', descricao: 'O nome muda de cor devagar.' },
+  padrao: { nome: chave('Padrão'), descricao: chave('A cor do seu cargo na comunidade.') },
+  carmim: { nome: chave('Carmim'), descricao: chave('Vermelho fechado.') },
+  laranja: { nome: chave('Laranja'), descricao: chave('Quente, mas sem gritar.') },
+  ouro: { nome: chave('Ouro'), descricao: chave('Amarelo escurecido, legível nos dois temas.') },
+  limao: { nome: chave('Limão'), descricao: chave('Verde claro.') },
+  menta: { nome: chave('Menta'), descricao: chave('Verde-água.') },
+  ceu: { nome: chave('Céu'), descricao: chave('Azul claro.') },
+  anil: { nome: chave('Anil'), descricao: chave('Azul fechado, quase roxo.') },
+  lavanda: { nome: chave('Lavanda'), descricao: chave('Roxo claro.') },
+  rosa: { nome: chave('Rosa'), descricao: chave('Rosa forte.') },
+  cobre: { nome: chave('Cobre'), descricao: chave('Metálico morno.') },
+  jade: { nome: chave('Jade'), descricao: chave('Verde de pedra.') },
+  ametista: { nome: chave('Ametista'), descricao: chave('Roxo de pedra.') },
+  prisma: { nome: chave('Prisma'), descricao: chave('O nome muda de cor devagar.') },
 };
 
 export const FUNDOS_LOJA: Record<string, ItemVisual> = {
-  nenhum: { nome: 'Sem fundo', descricao: 'O cartão liso.' },
-  vila: { nome: 'Vila', descricao: 'A vila do Syden ao fundo.' },
-  poente: { nome: 'Poente', descricao: 'Céu de fim de tarde.' },
-  floresta: { nome: 'Floresta', descricao: 'Verde escuro.' },
-  aurora: { nome: 'Aurora', descricao: 'Luzes que se movem devagar.' },
-  brasa: { nome: 'Brasa', descricao: 'Laranja que pulsa.' },
-  oceano: { nome: 'Oceano', descricao: 'Azul em movimento.' },
-  estrelas: { nome: 'Noite estrelada', descricao: 'Pontinhos piscando.' },
-  nebulosa: { nome: 'Nebulosa', descricao: 'Poeira de estrelas, roxa e azul.' },
-  vitral: { nome: 'Vitral', descricao: 'Vidro colorido com a luz passando.' },
-  cosmos: { nome: 'Cosmos', descricao: 'O céu inteiro girando bem devagar.' },
+  nenhum: { nome: chave('Sem fundo'), descricao: chave('O cartão liso.') },
+  vila: { nome: chave('Vila'), descricao: chave('A vila do Syden ao fundo.') },
+  poente: { nome: chave('Poente'), descricao: chave('Céu de fim de tarde.') },
+  floresta: { nome: chave('Floresta'), descricao: chave('Verde escuro.') },
+  aurora: { nome: chave('Aurora'), descricao: chave('Luzes que se movem devagar.') },
+  brasa: { nome: chave('Brasa'), descricao: chave('Laranja que pulsa.') },
+  oceano: { nome: chave('Oceano'), descricao: chave('Azul em movimento.') },
+  estrelas: { nome: chave('Noite estrelada'), descricao: chave('Pontinhos piscando.') },
+  nebulosa: { nome: chave('Nebulosa'), descricao: chave('Poeira de estrelas, roxa e azul.') },
+  vitral: { nome: chave('Vitral'), descricao: chave('Vidro colorido com a luz passando.') },
+  cosmos: { nome: chave('Cosmos'), descricao: chave('O céu inteiro girando bem devagar.') },
 };
 
 /** Onde procurar a arte de cada tipo. As insígnias têm catálogo próprio, com moldura e frase. */
@@ -75,6 +76,6 @@ export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | unde
 // em dois arquivos, e um dia mudar só um dos dois.
 
 export const COMO_SE_GANHA: Record<ComoSeGanha, string> = {
-  livre: 'De graça, para qualquer pessoa',
-  conquista: 'Ganha fazendo alguma coisa no Syden',
+  livre: chave('De graça, para qualquer pessoa'),
+  conquista: chave('Ganha fazendo alguma coisa no Syden'),
 };

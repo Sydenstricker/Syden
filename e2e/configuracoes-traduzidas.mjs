@@ -1,19 +1,22 @@
-// Abre a tela de Configurações em quatro idiomas e MEDE: sobrou português, estourou a largura,
+// Abre a tela de Configurações em cinco idiomas e MEDE: sobrou português, estourou a largura,
 // ficou campo {assim} cru na tela.
 //
 // POR QUE ELE EXISTE. O CLAUDE.md é explícito: "conferir idioma que ninguém da dupla lê é medir, não
 // confiar". Nós lemos português, inglês e espanhol. As outras treze línguas só se conferem assim.
 //
-// AS QUATRO ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
+// AS CINCO ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
 //   alemão   — palavra composta longa, o maior risco de estourar a caixa;
 //   russo    — frase longa em outro alfabeto;
 //   árabe    — a página inteira vira de lado;
-//   coreano  — escrita sem espaço entre palavras, onde a quebra de linha se comporta diferente.
+//   coreano  — escrita sem espaço entre palavras, onde a quebra de linha se comporta diferente;
+//   vietnamita — alfabeto latino com os MESMOS acentos do português, onde o detector de língua
+//                tem de ser outro (ver abaixo) e a marca de diacríticos empilhados testa a fonte.
 //
 // O QUE ELE NÃO MEDE, de propósito: se a tradução está BOA. Isso nenhum teste mede. Ele mede o que é
 // mecânico e passa despercebido — e é justamente o que escapa quando se traduzem cem frases de uma vez.
 //
 //   node e2e/configuracoes-traduzidas.mjs
+import { readFileSync } from 'node:fs';
 import { abrirNavegador, criarConta, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 /**
@@ -35,11 +38,50 @@ import { abrirNavegador, criarConta, dispensarPresentes, falhou, ok, resumo, vig
 const CHEIRO_DE_PORTUGUES =
   /[ãõçáéíóúâêô]|\b(para|com|que|uma|seu|sua|seus|suas|pelo|pela|aqui|todos|todas|quem|mais|sem|ainda|cada|pode|podem|fica|ficam|sala|sons|senha|conta|mensagem|mensagens)\b/i;
 
+/**
+ * O VIETNAMITA QUEBRA O DETECTOR DE CIMA, e é o primeiro idioma a quebrá-lo.
+ *
+ * A busca por letras acentuadas funciona porque alemão, russo, árabe e coreano não escrevem ã, á, ê
+ * nem ô. O vietnamita escreve TODOS: "bạn", "cộng đồng", "đổi mật khẩu", "giọng nói". Procurar
+ * `[ãõáéíóúâêô]` numa tela em vietnamita acusa a tela inteira — a tradução certa seria reprovada por
+ * estar certa.
+ *
+ * A saída é não adivinhar. As frases em português são CONHECIDAS: são as chaves do dicionário.
+ * Então, para o vietnamita, a pergunta deixa de ser "isto parece português?" e passa a ser "isto é
+ * uma das frases que deveriam ter sido traduzidas?" — comparação exata, sem heurística e sem falso
+ * positivo. O `ç` entra como reforço porque é a única letra portuguesa que o vietnamita não tem, e
+ * pega texto cravado que não passou por chave nenhuma.
+ *
+ * UMA RESSALVA, e ela apareceu na primeira medição: tem chave cuja tradução É o próprio texto, de
+ * direito. "1080p · 60 fps" se escreve igual em vietnamita, e acusá-la seria reprovar a tradução
+ * certa. Por isso a comparação é com o VALOR: só conta como português quem apareceu na tela com o
+ * texto da chave E tem tradução diferente dela.
+ */
+function dicionarioVietnamita() {
+  const texto = readFileSync(new URL('../web/src/i18n/vi.ts', import.meta.url), 'utf8');
+  const mapa = new Map();
+  for (const m of texto.matchAll(/^\s{2}(['"])((?:(?!\1).)+)\1\s*:\s*(['"])((?:(?!\3).)*)\3,?\s*$/gm)) {
+    mapa.set(m[2], m[4]);
+  }
+  return mapa;
+}
+
+const VIETNAMITA = dicionarioVietnamita();
+
+/** O detector da vez. Cada idioma mede o que ele próprio consegue distinguir. */
+function sobrouPortugues(codigo, texto) {
+  if (codigo !== 'vi') return CHEIRO_DE_PORTUGUES.test(texto);
+  if (texto.includes('ç')) return true;
+  const vi = VIETNAMITA.get(texto);
+  return vi !== undefined && vi !== texto;
+}
+
 const IDIOMAS = [
   { codigo: 'de', nome: 'Deutsch', rtl: false },
   { codigo: 'ru', nome: 'Русский', rtl: false },
   { codigo: 'ar', nome: 'العربية', rtl: true },
   { codigo: 'ko', nome: '한국어', rtl: false },
+  { codigo: 'vi', nome: 'Tiếng Việt', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por
@@ -113,8 +155,18 @@ for (const idioma of IDIOMAS) {
         textos.push(v);
       }
       // Estouro horizontal: o conteúdo é mais largo do que a caixa que o guarda.
+      //
+      // ENFEITE QUE JÁ ESTÁ RECORTADO NÃO CONTA, e isto apareceu no árabe. A capa da comunidade é um
+      // div VAZIO com `overflow: hidden`, e por cima dela passa uma faixa de luz que entra pela
+      // esquerda e sai pela direita — de propósito, é o movimento que ele pediu. Em escrita da
+      // esquerda para a direita o que passa da borda esquerda não entra na conta do `scrollWidth`;
+      // em árabe entra, e a mesma capa certa era acusada só por a página ter virado de lado.
+      //
+      // O corte é preciso: só escapa quem RECORTA o próprio conteúdo e não tem texto nenhum dentro.
+      // Texto cortado continua sendo pego, que é o estouro que importa — ninguém lê meia frase.
       const largos = [...painel.querySelectorAll('*')]
         .filter((e) => e.scrollWidth > e.clientWidth + 2 && e.clientWidth > 0)
+        .filter((e) => (e.textContent ?? '').trim() !== '' || getComputedStyle(e).overflowX !== 'hidden')
         .map((e) => `${e.tagName.toLowerCase()}.${e.className}`.slice(0, 60));
       return { textos, largos: [...new Set(largos)] };
     });
@@ -122,7 +174,7 @@ for (const idioma of IDIOMAS) {
     for (const texto of medido.textos) {
       // O nome da comunidade e o nome de usuário são de gente, e não se traduzem.
       if (/^[A-Za-z0-9_@.+-]+$/.test(texto)) continue;
-      if (CHEIRO_DE_PORTUGUES.test(texto)) sobrou.push(`${aba}: ${texto.slice(0, 70)}`);
+      if (sobrouPortugues(idioma.codigo, texto)) sobrou.push(`${aba}: ${texto.slice(0, 70)}`);
       if (/\{\w+\}/.test(texto)) campos.push(`${aba}: ${texto.slice(0, 70)}`);
     }
     estourou.push(...medido.largos.map((l) => `${aba}: ${l}`));
@@ -156,4 +208,4 @@ for (const idioma of IDIOMAS) {
 }
 
 await browser.close();
-resumo('Configurações nas quatro línguas');
+resumo('Configurações nas cinco línguas');

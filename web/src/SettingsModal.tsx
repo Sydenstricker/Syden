@@ -1456,7 +1456,10 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
 
   return (
     <>
-      <h2>Soundboard</h2>
+      {/* O título ia cravado enquanto a aba ao lado, com a MESMA chave, já aparecia traduzida: faltou
+          só o t(). Palavra sem acento e escrita só com letras do ABC passa por qualquer detector de
+          língua — esta só apareceu olhando a foto que o teste de idiomas tira. */}
+      <h2>{t('Soundboard')}</h2>
       <p className="settings-lead">
         {/* O ícone fica FORA da frase, antes dela. Enfiá-lo no meio partiria a frase em duas, e a
             segunda metade chegaria a quem traduz sem o começo — foi o que aconteceu aqui. */}
