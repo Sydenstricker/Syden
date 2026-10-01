@@ -27,7 +27,9 @@ import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
-import { chave, useT } from './i18n';
+import { algarismos } from './algarismos';
+import { isolar } from './bidi';
+import { chave, t, useT } from './i18n';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
 import { Insignia } from './Medalha';
@@ -222,8 +224,8 @@ function EmailDaConta() {
       setRecado({
         ok: true,
         texto: r.rascunho
-          ? 'Endereço guardado. O envio de e-mail ainda não está ligado neste servidor, então o link de confirmação ficou no registro do servidor.'
-          : 'Endereço guardado. Confira a sua caixa de entrada para confirmar.',
+          ? t('Endereço guardado. O envio de e-mail ainda não está ligado neste servidor, então o link de confirmação ficou no registro do servidor.')
+          : t('Endereço guardado. Confira a sua caixa de entrada para confirmar.'),
       });
     } catch (e) {
       setRecado({ ok: false, texto: (e as Error).message });
@@ -235,10 +237,9 @@ function EmailDaConta() {
 
   return (
     <>
-      <h3>E-mail</h3>
+      <h3>{t('E-mail')}</h3>
       <p className="settings-hint">
-        Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida
-        não tem volta.
+        {t('Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.')}
       </p>
       {atual.email && (
         <p className={atual.verifiedAt ? 'form-success' : 'settings-hint'}>
@@ -256,7 +257,7 @@ function EmailDaConta() {
         </label>
         {recado && <p className={recado.ok ? 'form-success' : 'form-error'}>{recado.texto}</p>}
         <button className="btn-primary" disabled={ocupado}>
-          {ocupado ? 'Salvando…' : atual.email ? 'Trocar o e-mail' : 'Salvar o e-mail'}
+          {ocupado ? t('Salvando…') : atual.email ? t('Trocar o e-mail') : t('Salvar o e-mail')}
         </button>
       </form>
     </>
@@ -299,8 +300,7 @@ function MinhasInsignias() {
       <h3>{t('Minhas insígnias')}</h3>
       {itens.length === 0 ? (
         <p className="settings-hint">
-          Você ainda não tem nenhuma. Elas chegam como presente ou como recompensa — por exemplo, quando uma ideia sua
-          entra no Syden.
+          {t('Você ainda não tem nenhuma. Elas chegam como presente ou como recompensa — por exemplo, quando uma ideia sua entra no Syden.')}
         </p>
       ) : (
         <>
@@ -321,7 +321,7 @@ function MinhasInsignias() {
                   <Insignia arte={insignia.arte} titulo={insignia.nome} moldura={insignia.moldura} tamanho={40} />
                   <span>
                     <strong>{insignia.nome}</strong>
-                    <small>{exibindo ? 'Aparecendo no perfil' : insignia.descricao}</small>
+                    <small>{exibindo ? t('Aparecendo no perfil') : insignia.descricao}</small>
                   </span>
                 </button>
               );
@@ -360,15 +360,15 @@ function OutrosAparelhos() {
 
   return (
     <>
-      <h3>Outros aparelhos</h3>
+      <h3>{t('Outros aparelhos')}</h3>
       <p className="settings-hint">
-        Desconecta o Syden em todos os outros computadores e celulares. Você continua conectado aqui.
+        {t('Desconecta o Syden em todos os outros computadores e celulares. Você continua conectado aqui.')}
       </p>
       {feito ? (
         <p className="form-success">{t('Pronto: só este aparelho continua conectado.')}</p>
       ) : (
         <button type="button" className="btn-secondary" onClick={sair} disabled={ocupado}>
-          {ocupado ? 'Desconectando…' : 'Sair dos outros aparelhos'}
+          {ocupado ? t('Desconectando…') : t('Sair dos outros aparelhos')}
         </button>
       )}
       {erro && <p className="form-error">{erro}</p>}
@@ -413,7 +413,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
       setTemSenha(true);
       setMessage({
         ok: true,
-        text: temSenha === false ? 'Senha definida. Agora dá para entrar com nome e senha também.' : 'Senha alterada. Os outros aparelhos foram desconectados.',
+        text: temSenha === false ? t('Senha definida. Agora dá para entrar com nome e senha também.') : t('Senha alterada. Os outros aparelhos foram desconectados.'),
       });
       setCurrent('');
       setNext('');
@@ -430,12 +430,11 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
       <AvatarEditor user={user} />
       <PerfilEditor user={user} />
 
-      <h3>{temSenha === false ? 'Definir uma senha' : 'Trocar senha'}</h3>
+      <h3>{temSenha === false ? t('Definir uma senha') : t('Trocar senha')}</h3>
       <form className="settings-form" onSubmit={submit}>
         {temSenha === false ? (
           <p className="settings-hint">
-            Você entrou por um serviço de fora e ainda não tem senha nesta conta. Defina uma aqui: passa a valer como
-            segundo jeito de entrar, e é o que permite desligar aquele serviço depois.
+            {t('Você entrou por um serviço de fora e ainda não tem senha nesta conta. Defina uma aqui: passa a valer como segundo jeito de entrar, e é o que permite desligar aquele serviço depois.')}
           </p>
         ) : (
           <label>
@@ -453,7 +452,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
         </label>
         {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
         <button className="btn-primary" disabled={busy}>
-          {busy ? 'Salvando…' : temSenha === false ? 'Definir a minha senha' : 'Salvar nova senha'}
+          {busy ? t('Salvando…') : temSenha === false ? t('Definir a minha senha') : t('Salvar nova senha')}
         </button>
       </form>
 
@@ -475,7 +474,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
         </a>
         {' · '}
         <a href="/termos.html" target="_blank" rel="noreferrer">
-          Termos de uso
+          {t('Termos de uso')}
         </a>
       </p>
     </>
@@ -543,7 +542,7 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
                 {t('Cancelar')}
               </button>
               <button className="btn-danger" disabled={busy || (temSenha ? !password : confirmacao.trim().toLowerCase() !== username.toLowerCase())}>
-                {busy ? 'Excluindo…' : 'Excluir minha conta para sempre'}
+                {busy ? t('Excluindo…') : t('Excluir minha conta para sempre')}
               </button>
             </div>
           </form>
@@ -583,7 +582,7 @@ function CommunitySection({
     setBusy(true);
     try {
       await api(`/api/communities/${community.id}`, { method: 'PATCH', body: { name } });
-      setMessage({ ok: true, text: 'Nome alterado.' });
+      setMessage({ ok: true, text: t('Nome alterado.') });
       onChanged();
     } catch (e) {
       setMessage({ ok: false, text: (e as Error).message });
@@ -596,7 +595,7 @@ function CommunitySection({
     try {
       const { inviteCode } = await api<{ inviteCode: string }>(`/api/communities/${community.id}/invite`, { method: 'POST' });
       setInvite(inviteCode);
-      setMessage({ ok: true, text: 'Código novo criado. O anterior parou de funcionar.' });
+      setMessage({ ok: true, text: t('Código novo criado. O anterior parou de funcionar.') });
       onChanged();
     } catch (e) {
       setMessage({ ok: false, text: (e as Error).message });
@@ -621,7 +620,12 @@ function CommunitySection({
     <>
       <h2>{t('Comunidade')}</h2>
       <p className="settings-lead">
-        {community.memberCount} {community.memberCount === 1 ? 'pessoa participa' : 'pessoas participam'} de {community.name}.
+        {community.memberCount === 1
+          ? t('1 pessoa participa de {comunidade}.', { comunidade: isolar(community.name) })
+          : t('{quantas} pessoas participam de {comunidade}.', {
+              quantas: algarismos(community.memberCount),
+              comunidade: isolar(community.name),
+            })}
       </p>
 
       {canManage && (
@@ -632,8 +636,7 @@ function CommunitySection({
           <h3>{t('Convite')}</h3>
           <div className="settings-card">
             <p className="settings-hint">
-              Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de
-              entrar, se já usa o Syden.
+              {t('Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.')}
             </p>
             <div className="invite-row">
               <code className="invite-code">{invite}</code>
@@ -641,13 +644,13 @@ function CommunitySection({
                 className="btn-secondary"
                 onClick={() => {
                   void navigator.clipboard?.writeText(invite ?? '');
-                  setMessage({ ok: true, text: 'Código copiado.' });
+                  setMessage({ ok: true, text: t('Código copiado.') });
                 }}
               >
                 {t('Copiar')}
               </button>
               <button className="link-button" onClick={newInvite} disabled={busy}>
-                Gerar outro
+                {t('Gerar outro')}
               </button>
             </div>
           </div>
@@ -666,24 +669,24 @@ function CommunitySection({
       )}
       {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
 
-      <h3>{isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}</h3>
+      <h3>{isOwner ? t('Apagar comunidade') : t('Sair da comunidade')}</h3>
       <div className="settings-card danger-zone">
         <p>
           {isOwner
-            ? 'Apaga a comunidade para todo mundo, com os canais, as mensagens, os emojis e os sons dela. Não dá para desfazer.'
-            : 'Você perde o acesso aos canais desta comunidade. Para voltar, vai precisar de um convite novo.'}
+            ? t('Apaga a comunidade para todo mundo, com os canais, as mensagens, os emojis e os sons dela. Não dá para desfazer.')
+            : t('Você perde o acesso aos canais desta comunidade. Para voltar, vai precisar de um convite novo.')}
         </p>
         <div className="danger-actions">
           <button className="btn-danger" onClick={() => setConfirming(isOwner ? 'delete' : 'leave')}>
-            {isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}
+            {isOwner ? t('Apagar comunidade') : t('Sair da comunidade')}
           </button>
         </div>
       </div>
 
       {confirming && (
         <ConfirmDialog
-          title={confirming === 'delete' ? 'Apagar comunidade' : 'Sair da comunidade'}
-          confirmLabel={confirming === 'delete' ? 'Apagar' : 'Sair'}
+          title={confirming === 'delete' ? t('Apagar comunidade') : t('Sair da comunidade')}
+          confirmLabel={confirming === 'delete' ? t('Apagar') : t('Sair')}
           busy={busy}
           error={error}
           onConfirm={confirm}
@@ -694,12 +697,14 @@ function CommunitySection({
         >
           {confirming === 'delete' ? (
             <>
-              {t('Apagar')} <strong>{community.name}</strong> para todos os {community.memberCount} membros? Os canais, as
-              mensagens, os emojis e os sons somem junto.
+              {t('Apagar {comunidade} para todos os {quantos} membros? Os canais, as mensagens, os emojis e os sons somem junto.', {
+                comunidade: isolar(community.name),
+                quantos: algarismos(community.memberCount),
+              })}
             </>
           ) : (
             <>
-              Sair de <strong>{community.name}</strong>? As suas mensagens continuam lá para quem ficou.
+              {t('Sair de {comunidade}? As suas mensagens continuam lá para quem ficou.', { comunidade: isolar(community.name) })}
             </>
           )}
         </ConfirmDialog>
@@ -747,7 +752,7 @@ function CommunityIconEditor({ community, onChanged }: { community: Community; o
         </div>
         <div className="account-actions">
           <FilePicker accept="image/png,image/jpeg,image/webp" disabled={busy} onFile={setCropping}>
-            {busy ? 'Enviando…' : community.iconVersion === null ? 'Enviar imagem' : 'Trocar imagem'}
+            {busy ? 'Enviando…' : community.iconVersion === null ? t('Enviar imagem') : t('Trocar imagem')}
           </FilePicker>
           <PasteImage onImage={setCropping} onError={setError} />
           {community.iconVersion !== null && (
@@ -829,14 +834,20 @@ function MembersSection({ user, community }: { user: User; community: Community 
     <>
       <h2>{t('Membros')}</h2>
       <p className="settings-lead">
-        {members.length} {members.length === 1 ? 'pessoa' : 'pessoas'} em {community.name}.
+        {/* A FRASE É INTEIRA EM CADA CASO, e não montada de pedaços. Montar "N" + "pessoas" + "em" +
+            nome funciona em português e quebra assim que a ordem das palavras muda: em turco o lugar
+            vem antes, em coreano a partícula gruda no nome. Quem traduz precisa receber a frase
+            toda. O número passa por algarismos() porque o bengali escreve ০১২৩৪৫৬৭৮৯, e o nome da
+            comunidade por isolar() porque ele vem de fora e vai parar no meio de um texto árabe. */}
+        {members.length === 1
+          ? t('1 pessoa em {comunidade}.', { comunidade: isolar(community.name) })
+          : t('{quantas} pessoas em {comunidade}.', { quantas: algarismos(members.length), comunidade: isolar(community.name) })}{' '}
         {isOwner
-          ? ' Como dono, você escolhe quem administra e pode remover qualquer pessoa.'
-          : canManage && ' Como administrador, você pode remover membros que não são administradores.'}
+          ? t('Como dono, você escolhe quem administra e pode remover qualquer pessoa.')
+          : canManage && t('Como administrador, você pode remover membros que não são administradores.')}
       </p>
       <p className="settings-hint">
-        Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons desta
-        comunidade e remover membros. Só o dono dá e tira esse cargo.
+        {t('Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons desta comunidade e remover membros. Só o dono dá e tira esse cargo.')}
       </p>
       {roleError && <p className="form-error">{roleError}</p>}
       <div className="expression-list">
@@ -866,7 +877,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
       </div>
       {removing && (
         <ConfirmDialog
-          title="Remover membro"
+          title={t('Remover membro')}
           confirmLabel="Remover"
           busy={busy}
           error={error}
@@ -913,7 +924,7 @@ function PerfilEditor({ user }: { user: User }) {
 
   return (
     <>
-      <h3>Meu perfil</h3>
+      <h3>{t('Meu perfil')}</h3>
       <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
 
       <div className={`perfil-previa ${classeDoFundo(fundo)}`}>
@@ -938,7 +949,7 @@ function PerfilEditor({ user }: { user: User }) {
         ))}
       </div>
 
-      <h4 className="perfil-titulo">Fundo do perfil</h4>
+      <h4 className="perfil-titulo">{t('Fundo do perfil')}</h4>
       <div className="perfil-fundos">
         {FUNDOS.map((opcao) => (
           <button
@@ -993,7 +1004,7 @@ function AvatarEditor({ user }: { user: User }) {
         </div>
         <div className="account-actions">
           <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={setCropping}>
-            {busy ? 'Enviando…' : hasAvatar ? 'Trocar avatar' : 'Enviar avatar'}
+            {busy ? 'Enviando…' : hasAvatar ? t('Trocar avatar') : t('Enviar avatar')}
           </FilePicker>
           <PasteImage onImage={setCropping} onError={setError} />
           {hasAvatar && (
@@ -1005,7 +1016,7 @@ function AvatarEditor({ user }: { user: User }) {
       </div>
       {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.')}</p>}
       {cropping && (
-        <ImageCropper file={cropping} title="Ajustar o avatar" shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
+        <ImageCropper file={cropping} title={t('Ajustar o avatar')} shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
       )}
     </>
   );
@@ -1016,6 +1027,7 @@ function AvatarEditor({ user }: { user: User }) {
  * copiou uma imagem da internet ou recortou algo na tela, sem precisar salvar arquivo antes.
  */
 function PasteImage({ onImage, onError }: { onImage: (file: File) => void; onError: (message: string) => void }) {
+  const t = useT();
   useEffect(() => {
     const onPaste = (event: ClipboardEvent) => {
       const file = imageFromClipboardEvent(event);
@@ -1034,7 +1046,7 @@ function PasteImage({ onImage, onError }: { onImage: (file: File) => void; onErr
       className="link-button"
       onClick={() => imageFromClipboard().then(onImage, (e: Error) => onError(e.message))}
     >
-      <ClipboardPaste size={14} /> Colar imagem
+      <ClipboardPaste size={14} /> {t('Colar imagem')}
     </button>
   );
 }
@@ -1131,16 +1143,19 @@ function EmojisSection({ user, community }: { user: User; community: Community }
 
   return (
     <>
-      <h2>Emojis da comunidade</h2>
+      <h2>{t('Emojis da comunidade')}</h2>
       <p className="settings-lead">
-        Todo mundo desta comunidade pode usar estes emojis escrevendo <code>:nome:</code> ou pelo botão de emoji do chat. Sem
-        assinatura: está tudo liberado.
+        {/* O `:nome:` fica como {campo} e não como <code> no meio da frase: o que importa é a frase
+            chegar inteira a quem traduz. */}
+        {t('Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.', {
+          exemplo: ':nome:',
+        })}
       </p>
 
       <div className="section-head">
         <h3>{emojis.length} emojis</h3>
         <button className="btn-secondary" onClick={() => setAdding(!adding)}>
-          <Plus size={16} /> Adicionar emoji
+          <Plus size={16} /> {t('Adicionar emoji')}
         </button>
       </div>
 
@@ -1150,14 +1165,14 @@ function EmojisSection({ user, community }: { user: User; community: Community }
             <div className="upload-preview">{preview ? <img src={preview} alt="" /> : <Smile size={28} />}</div>
             <div className="upload-fields">
               <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={choose}>
-                {file ? 'Trocar imagem' : 'Escolher imagem'}
+                {file ? t('Trocar imagem') : t('Escolher imagem')}
               </FilePicker>
               <label className="settings-field">
                 {t('Nome')}
-                <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: gato_feliz" maxLength={32} />
+                <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('ex.: gato_feliz')} maxLength={32} />
               </label>
               <button className="btn-primary" disabled={!preview || !name || busy}>
-                {busy ? 'Enviando…' : 'Enviar emoji'}
+                {busy ? 'Enviando…' : t('Enviar emoji')}
               </button>
             </div>
           </form>
@@ -1253,7 +1268,7 @@ function RestorePack({ community }: { community: Community }) {
         added.emojis > 0 && `${added.emojis} ${added.emojis === 1 ? 'emoji' : 'emojis'}`,
         added.sounds > 0 && `${added.sounds} ${added.sounds === 1 ? 'som' : 'sons'}`,
       ].filter(Boolean);
-      setMessage(parts.length > 0 ? `De volta: ${parts.join(' e ')}.` : 'Nada faltando: o pacote está completo.');
+      setMessage(parts.length > 0 ? `De volta: ${parts.join(' e ')}.` : t('Nada faltando: o pacote está completo.'));
     } catch (e) {
       setMessage((e as Error).message);
     }
@@ -1265,13 +1280,12 @@ function RestorePack({ community }: { community: Community }) {
       <div>
         <strong>{t('Apagou algo sem querer?')}</strong>
         <p className="settings-hint">
-          Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira
-          cópia repetida.
+          {t('Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.')}
         </p>
         {message && <p className="form-success">{message}</p>}
       </div>
       <button className="btn-secondary" onClick={restore} disabled={busy}>
-        <RotateCcw size={16} /> {busy ? 'Restaurando…' : 'Restaurar o pacote'}
+        <RotateCcw size={16} /> {busy ? t('Restaurando…') : t('Restaurar o pacote')}
       </button>
     </div>
   );
@@ -1346,7 +1360,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
 
       <div className="settings-tabs" role="tablist">
         <button role="tab" aria-selected={tab === 'sons'} className={tab === 'sons' ? 'active' : ''} onClick={() => setTab('sons')}>
-          Sons da comunidade
+          {t('Sons da comunidade')}
         </button>
         <button role="tab" aria-selected={tab === 'pacotes'} className={tab === 'pacotes' ? 'active' : ''} onClick={() => setTab('pacotes')}>
           {t('Pacotes')}
@@ -1373,7 +1387,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       <div className="section-head">
         <h3>{ownSounds.length} sons enviados por vocês</h3>
         <button className="btn-secondary" onClick={() => setAdding(!adding)}>
-          <Plus size={16} /> Adicionar som
+          <Plus size={16} /> {t('Adicionar som')}
         </button>
       </div>
 
@@ -1383,7 +1397,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
             <div className="upload-preview upload-icon">{icon || '🔊'}</div>
             <div className="upload-fields">
               <FilePicker accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,.mp3,.ogg,.wav" disabled={busy} onFile={choose}>
-                {fileName ? 'Trocar áudio' : 'Escolher áudio'}
+                {fileName ? t('Trocar áudio') : t('Escolher áudio')}
               </FilePicker>
               {fileName && <span className="settings-hint">{fileName}</span>}
               <div className="upload-row">
@@ -1393,11 +1407,11 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
                 </label>
                 <label className="settings-field">
                   {t('Nome')}
-                  <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Risada" maxLength={32} />
+                  <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('ex.: Risada')} maxLength={32} />
                 </label>
               </div>
               <button className="btn-primary" disabled={!audio || !name.trim() || busy}>
-                {busy ? 'Enviando…' : 'Enviar som'}
+                {busy ? 'Enviando…' : t('Enviar som')}
               </button>
             </div>
           </form>
@@ -1419,7 +1433,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
                 <span className="expression-icon">{sound.icon}</span>
                 <span className="expression-name">{sound.name}</span>
                 <span className="expression-author">{authorLabel(sound.createdBy, members)}</span>
-                <button className="icon-plain expression-play" title="Ouvir" aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
+                <button className="icon-plain expression-play" title={t('Ouvir')} aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
                   <Play size={16} />
                 </button>
                 {canEdit(sound) && (
@@ -1458,6 +1472,7 @@ function SoundRename({
   onCancel: () => void;
   onSave: (values: { name: string; icon: string }) => void;
 }) {
+  const t = useT();
   const [icon, setIcon] = useState(sound.icon);
   const [name, setName] = useState(sound.name);
   const save = () => onSave({ name: name.trim() || sound.name, icon: icon.trim() || sound.icon });
@@ -1485,7 +1500,7 @@ function SoundRename({
           if (e.key === 'Enter') save();
         }}
       />
-      <button className="icon-plain expression-play" title="Salvar" aria-label={`Salvar ${sound.name}`} onClick={save}>
+      <button className="icon-plain expression-play" title={t('Salvar')} aria-label={`Salvar ${sound.name}`} onClick={save}>
         <Check size={16} />
       </button>
     </>
@@ -1497,6 +1512,7 @@ function SoundRename({
  * "🤡 Errou.mp3" → som "Errou" com ícone 🤡.
  */
 function BulkSoundUpload({ community }: { community: Community }) {
+  const t = useT();
   const [results, setResults] = useState<{ file: string; ok: boolean; text: string }[]>([]);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
 
@@ -1526,7 +1542,7 @@ function BulkSoundUpload({ community }: { community: Community }) {
         exemplo, <code>🤡 Errou.mp3</code>.
       </p>
       <FilePicker accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,.mp3,.ogg,.wav" disabled={busy} onFiles={uploadAll}>
-        {busy ? `Enviando ${progress.done + 1} de ${progress.total}…` : 'Escolher arquivos'}
+        {busy ? `Enviando ${progress.done + 1} de ${progress.total}…` : t('Escolher arquivos')}
       </FilePicker>
       {progress && !busy && (
         <p className={failed.length ? 'form-error' : 'form-success'}>
@@ -1561,8 +1577,11 @@ function soundNameFromFile(fileName: string) {
 }
 
 function authorLabel(createdBy: number | null, members: Map<number, { username: string }>) {
-  if (createdBy === null) return 'Pacote do Syden';
-  return `por ${members.get(createdBy)?.username ?? 'alguém'}`;
+  // FUNÇÃO AUXILIAR, E NÃO COMPONENTE: aqui o t() vem do import, nunca do useT(). Hook fora de
+  // componente não dá erro de compilação — dá erro em tempo de execução, na cara da pessoa, e só
+  // naquela tela.
+  if (createdBy === null) return t('Pacote do Syden');
+  return t('por {quem}', { quem: isolar(members.get(createdBy)?.username ?? t('alguém')) });
 }
 
 function DeleteButton({ label, path }: { label: string; path: string }) {
@@ -1652,14 +1671,14 @@ function VoiceSection({ voice }: { voice: Voice }) {
 
       <div className="settings-grid">
         <DeviceSelect
-          label="Microfone"
+          label={t('Microfone')}
           kind="audioinput"
           value={settings.audioInput}
           onChange={(id) => void voice.switchDevice('audioinput', id)}
         />
         {canChooseOutput && (
           <DeviceSelect
-            label="Alto-falante ou fone"
+            label={t('Alto-falante ou fone')}
             kind="audiooutput"
             value={settings.audioOutput}
             onChange={(id) => void voice.switchDevice('audiooutput', id)}
@@ -1673,7 +1692,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
 
       {desktopBridge && (
         <>
-          <h3>Teclas de atalho</h3>
+          <h3>{t('Teclas de atalho')}</h3>
           <p className="settings-hint shortcuts">
             {t('Funcionam mesmo com o Syden minimizado, durante uma chamada:')} <kbd>{SHORTCUT_LABELS.mute}</kbd> silencia ou
             ativa o microfone, e <kbd>{SHORTCUT_LABELS.deafen}</kbd> ensurdece ou volta a ouvir.
@@ -1681,23 +1700,23 @@ function VoiceSection({ voice }: { voice: Voice }) {
         </>
       )}
 
-      <h3>Processamento de voz</h3>
+      <h3>{t('Processamento de voz')}</h3>
       <Toggle
-        label="Supressão de ruído"
-        description="Reduz barulhos de fundo, como teclado, ventilador e trânsito."
+        label={t('Supressão de ruído')}
+        description={t('Reduz barulhos de fundo, como teclado, ventilador e trânsito.')}
         checked={settings.noiseSuppression}
         onChange={(value) => void voice.setAudioProcessing({ noiseSuppression: value })}
       />
       <Toggle
-        label="Cancelamento de eco"
-        description="Evita que os outros ouçam a própria voz de volta quando você usa caixa de som."
+        label={t('Cancelamento de eco')}
+        description={t('Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.')}
         checked={settings.echoCancellation}
         onChange={(value) => void voice.setAudioProcessing({ echoCancellation: value })}
       />
 
       <h3>{t('Vídeo')}</h3>
       <DeviceSelect
-        label="Câmera"
+        label={t('Câmera')}
         kind="videoinput"
         value={settings.videoInput}
         onChange={(id) => void voice.switchDevice('videoinput', id)}
@@ -1705,7 +1724,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
 
       <h3>{t('Transmissões dos outros')}</h3>
       <Toggle
-        label="Abrir a transmissão sozinha"
+        label={t('Abrir a transmissão sozinha')}
         description="Desligado, a transmissão de quem está na sala aparece como convite e só começa a ser baixada quando você clica em Assistir. Isso poupa internet e processador — principalmente em sala cheia."
         checked={settings.abrirTransmissaoSozinha}
         onChange={(value) => updateSettings({ abrirTransmissaoSozinha: value })}
@@ -1758,7 +1777,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
             [
               'smooth',
               chave('Fluido'),
-              '1080p · 60 fps',
+              t('1080p · 60 fps'),
               chave('Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.'),
             ],
           ] as [ScreenQuality, string, string, string][]
@@ -1849,6 +1868,7 @@ function TesteDeCodec({ qualidade }: { qualidade: ScreenQuality }) {
 
 /** Mostra o nível do microfone em tempo real, sem transmitir nada. */
 function MicTest({ deviceId }: { deviceId: string }) {
+  const t = useT();
   const [testing, setTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const barRef = useRef<HTMLSpanElement>(null);
@@ -1912,14 +1932,14 @@ function MicTest({ deviceId }: { deviceId: string }) {
             setTesting(!testing);
           }}
         >
-          {testing ? 'Parar teste' : 'Testar microfone'}
+          {testing ? t('Parar teste') : t('Testar microfone')}
         </button>
         <div className="mic-meter" aria-hidden="true">
           <span ref={barRef} />
         </div>
       </div>
       <p className="settings-hint">
-        {error ?? (testing ? 'Fale algo: a barra deve se mexer com a sua voz.' : 'Veja se o microfone está captando a sua voz.')}
+        {error ?? (testing ? t('Fale algo: a barra deve se mexer com a sua voz.') : t('Veja se o microfone está captando a sua voz.'))}
       </p>
     </div>
   );
@@ -1934,6 +1954,7 @@ const PREVIEW_MS = 3000;
  * A escolha vem da CHAMADA, não das configurações guardadas: o efeito acaba junto com a conversa.
  */
 function VoiceEffectPicker({ voice }: { voice: Voice }) {
+  const t = useT();
   const settings = useSettings();
   const escolhido = voice.voiceEffect;
   const [stage, setStage] = useState<'idle' | 'recording' | 'playing'>('idle');
@@ -1979,12 +2000,11 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
 
   return (
     <>
-      <h3>Modificador de voz</h3>
+      <h3>{t('Modificador de voz')}</h3>
       <p className="settings-hint">
-        Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai
-        da sala: na próxima você entra com a sua voz.
+        {t('Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.')}
       </p>
-      <div className="effect-options" role="radiogroup" aria-label="Modificador de voz">
+      <div className="effect-options" role="radiogroup" aria-label={t('Modificador de voz')}>
         {VOICE_EFFECTS.map((effect) => (
           <label key={effect.id} className={`effect-option${escolhido === effect.id ? ' selected' : ''}`}>
             <input
@@ -2003,7 +2023,7 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
       </div>
       <div className="mic-test-row">
         <button type="button" className="btn-secondary" disabled={stage !== 'idle'} onClick={() => void preview()}>
-          {stage === 'recording' ? 'Gravando… fale algo' : stage === 'playing' ? 'Tocando…' : 'Gravar 3 segundos e ouvir'}
+          {stage === 'recording' ? t('Gravando… fale algo') : stage === 'playing' ? t('Tocando…') : t('Gravar 3 segundos e ouvir')}
         </button>
         <p className="settings-hint inline">{error ?? 'Grava a sua voz e toca de volta com o efeito, só para você.'}</p>
       </div>
@@ -2029,25 +2049,25 @@ function SoundsSection() {
     <>
       <h2>{t('Notificações')}</h2>
       <Toggle
-        label="Notificações na área de trabalho"
-        description="Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal."
+        label={t('Notificações na área de trabalho')}
+        description={t('Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.')}
         checked={settings.notifications && permission !== 'denied'}
         onChange={(value) => void toggleNotifications(value)}
       />
       {permission === 'denied' && (
         <p className="settings-hint">
-          O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.
+          {t('O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.')}
         </p>
       )}
       <Toggle
-        label="Efeitos visuais na chamada"
-        description="Confete, fogos e corações que qualquer pessoa da sala pode mandar. Desligue se o seu computador engasgar durante a chamada — desligado, você não vê nem manda."
+        label={t('Efeitos visuais na chamada')}
+        description={t('Confete, fogos e corações que qualquer pessoa da sala pode mandar. Desligue se o seu computador engasgar durante a chamada — desligado, você não vê nem manda.')}
         checked={settings.efeitosVisuais}
         onChange={(value) => updateSettings({ efeitosVisuais: value })}
       />
       <Toggle
-        label="Sons de aviso"
-        description="Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece."
+        label={t('Sons de aviso')}
+        description={t('Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.')}
         checked={settings.sounds}
         onChange={(value) => {
           updateSettings({ sounds: value });

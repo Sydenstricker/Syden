@@ -48,6 +48,25 @@ const ATRIBUTOS = /(?:title|aria-label|placeholder|alt)="([^"]{3,})"/g;
 const SOLTOS = />\s*([A-ZÀ-Ú][^<>{}\n]{3,80}?)\s*</g;
 
 /**
+ * Texto solto que ATRAVESSA A QUEBRA DE LINHA.
+ *
+ * Terceiro ponto cego, e o mais discreto: `[^<>{}\n]` também exclui o `\n`. Um parágrafo que não
+ * coube numa linha — e num arquivo formatado a 130 colunas isso é todo parágrafo um pouco longo —
+ * nunca foi visto por ninguém:
+ *
+ *   <p className="settings-hint">
+ *     Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons desta
+ *     comunidade e remover membros. Só o dono dá e tira esse cargo.
+ *   </p>
+ *
+ * Esta busca aceita a quebra e normaliza o espaço, porque é assim que o navegador desenha: as duas
+ * linhas viram uma frase só na tela, e é essa frase que vai para o dicionário. Guardar a quebra na
+ * chave faria o dicionário depender de onde o formatador decidiu cortar — e ele muda de ideia a cada
+ * palavra acrescentada.
+ */
+const SOLTOS_EM_VARIAS_LINHAS = />\s*\n\s*([A-ZÀ-Ú][^<>{}]{3,300}?)\s*\n\s*</g;
+
+/**
  * LITERAL DENTRO DE EXPRESSÃO: {isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}.
  *
  * ESTE É O MAIOR PONTO CEGO QUE ESTA FERRAMENTA JÁ TEVE, e ele estava escrito na própria busca de
@@ -117,7 +136,7 @@ const PEDACO_DE_CLASSE = /^\s+[a-z-]+\s*$|^\s*[a-z-]+\s+$/;
 const PALAVRA_SOLTA = />\s*([A-ZÀ-Ú][A-Za-zÀ-ú]{2,30})\s*</g;
 
 /** O que NÃO se traduz: o nome do produto, e palavras que são as mesmas em toda língua. */
-const NAO_TRADUZ = new Set(['Syden', 'Discord', 'Windows', 'GIF', 'PNG', 'JPG', 'WEBP', 'Emojis', 'Soundboard']);
+const NAO_TRADUZ = new Set(['Syden', 'Discord', 'Windows', 'Minecraft', 'GIF', 'PNG', 'JPG', 'WEBP', 'Emojis', 'Soundboard']);
 
 /** Linha de TypeScript, e não de tela: `Promise<T>` casa com a busca de palavra solta, e não é texto. */
 const PARECE_TIPO = /\b(Promise|Array|Record|Map|Set|Partial|Pick|Omit)\s*</;
@@ -166,11 +185,14 @@ export function varrerTextos(raiz = 'web/src') {
       for (const [regex, tipo] of [
         [ATRIBUTOS, 'atributo'],
         [SOLTOS, 'solto'],
+        [SOLTOS_EM_VARIAS_LINHAS, 'parágrafo'],
         [PALAVRA_SOLTA, 'palavra'],
         [EM_EXPRESSAO, 'expressão'],
       ]) {
         for (const m of texto.matchAll(regex)) {
-          const conteudo = (tipo === 'expressão' ? m[2] : m[1]).trim();
+          const bruto = (tipo === 'expressão' ? m[2] : m[1]).trim();
+          // O navegador junta as linhas numa frase só; a chave do dicionário tem de ser essa frase.
+          const conteudo = tipo === 'parágrafo' ? bruto.replace(/\s+/g, ' ') : bruto;
           if (tipo === 'expressão') {
             if (conteudo.length < 3) continue;
             if (NAO_E_TELA.has(conteudo)) continue;
@@ -182,10 +204,13 @@ export function varrerTextos(raiz = 'web/src') {
             const ateAqui = texto.slice(0, m.index);
             if (CONTEXTO_DE_CODIGO.test(ateAqui.slice(ateAqui.lastIndexOf('\n') + 1))) continue;
           }
-          // Só o atributo ainda exige PARECER português. Entre tags a suspeita se inverte — ver o
-          // comentário de SOLTOS — e dentro de expressão as listas acima já fizeram a filtragem.
-          if (tipo === 'atributo' && !PARECE_PORTUGUES.test(conteudo)) continue;
-          if ((tipo === 'palavra' || tipo === 'solto') && NAO_TRADUZ.has(conteudo)) continue;
+          // NENHUMA DAS BUSCAS EXIGE MAIS "PARECER PORTUGUÊS", e a de atributo foi a última a largar.
+          // `title="Remover membro"` não tem acento nem nenhuma das palavras da lista, então era
+          // descartado aqui — e depois recolhido pela busca de expressão, com o TIPO ERRADO. O tipo é
+          // o que decide como scripts/marcar-textos.mjs reescreve: atributo vira `title={t('…')}`, e
+          // expressão vira `t('…')` cru. O resultado foi `title=t('Remover membro')`, que não é JSX
+          // válido. Uma lista de palavras errando o tipo quebrou o arquivo em sete lugares.
+          if (NAO_TRADUZ.has(conteudo)) continue;
           const linha = linhaDe(m.index);
           const bruta = linhas[linha - 1] ?? '';
           // Comentário não vai para a tela.

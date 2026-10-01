@@ -77,8 +77,13 @@ for (const c of porExpressao) {
     continue;
   }
   const chave = paraChave(c.conteudo);
-  const alvoRegex = new RegExp(`(['"])${paraRegex(c.conteudo)}\\1`, 'g');
-  const depois = antes.replace(alvoRegex, `t('${chave}')`);
+  const alvoRegex = new RegExp(`(\\w+=)?(['"])${paraRegex(c.conteudo)}\\2`, 'g');
+  // A REDE DE SEGURANÇA DO `=`. Um literal colado num `nome=` é valor de atributo JSX, e ali o t()
+  // precisa de chaves: `title={t('…')}`, nunca `title=t('…')`. Isto já aconteceu — a busca classificou
+  // sete atributos como expressão e o arquivo parou de compilar em sete lugares. A causa foi
+  // consertada na varredura, e esta linha fica porque errar o tipo tem de produzir código válido, e
+  // não um arquivo quebrado.
+  const depois = antes.replace(alvoRegex, (_inteiro, atributo) => (atributo ? `${atributo}{t('${chave}')}` : `t('${chave}')`));
   if (depois === antes) naoDeu.push(c);
   else {
     linhas[i] = depois;
@@ -96,7 +101,12 @@ for (const c of meus) {
   const chave = paraChave(c.conteudo);
   const antes = texto;
 
-  if (c.tipo === 'atributo') {
+  if (c.tipo === 'parágrafo') {
+    // O texto está quebrado em várias linhas no arquivo e é UMA frase na tela. A chave guarda a
+    // frase; a busca tem de aceitar a quebra onde ela está. Daí o `\s+` entre as palavras.
+    const comQuebras = c.conteudo.split(' ').map(paraRegex).join('\\s+');
+    texto = texto.replace(new RegExp(`(>\\s*\\n\\s*)${comQuebras}(\\s*\\n\\s*<)`, 'g'), `$1{t('${chave}')}$2`);
+  } else if (c.tipo === 'atributo') {
     // title="Texto"  ->  title={t('Texto')}
     texto = texto.replace(
       new RegExp(`((?:title|aria-label|placeholder|alt)=)"${paraRegex(c.conteudo)}"`, 'g'),

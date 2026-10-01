@@ -37,7 +37,7 @@ const { cravados, chaves } = varrerTextos(raiz);
  * sete frases em português na tela de quem escolheu coreano. Guarda que mede a coisa errada é pior
  * do que guarda nenhuma, porque ela tranquiliza.
  */
-const CATRACA = 427;
+const CATRACA = 345;
 
 describe('a dívida da tradução não cresce', () => {
   it(`há no máximo ${CATRACA} textos cravados`, () => {
@@ -124,4 +124,42 @@ describe('tradução vazia cai no português', () => {
       'o t() precisa usar `dicionario[texto] || texto`. Com `??`, tradução vazia vira tela em branco.',
     );
   });
+});
+
+describe('os campos {assim} sobrevivem à tradução', () => {
+  /**
+   * UM CAMPO ESCRITO ERRADO NUMA TRADUÇÃO APARECE CRU NA TELA, e não quebra nada.
+   *
+   * O t() substitui `{nome}` pelo valor e deixa intacto o que não reconhece — de propósito, para uma
+   * frase mal escrita não virar tela em branco. O preço é que `{comunidad}` em vez de `{comunidade}`
+   * passa por toda a cadeia sem um aviso: compila, roda, e escreve a chaveta na cara de quem lê.
+   *
+   * Em dezesseis idiomas, dos quais a dupla lê três, isso não se acha olhando. Acha-se contando.
+   *
+   * O conjunto tem de ser IGUAL, não contido: um campo a menos some com a informação (o nome da
+   * comunidade não aparece), e um a mais escreve `{quantos}` literal.
+   */
+  const campos = (texto: string) => new Set([...texto.matchAll(/\{(\w+)\}/g)].map((m) => m[1]));
+
+  for (const codigo of idiomasLigados()) {
+    it(`${codigo}: os mesmos campos da frase em português`, () => {
+      const texto = readFileSync(`${pastaI18n}${codigo}.ts`, 'utf8');
+      const erradas: string[] = [];
+      // Só as linhas de uma chave com valor na mesma linha. As que quebram em duas ficam de fora, e
+      // é um falso negativo aceito: elas são poucas, e a alternativa seria interpretar TypeScript.
+      for (const m of texto.matchAll(/^\s{2}(['"])((?:(?!\1).)+)\1\s*:\s*(['"])((?:(?!\3).)*)\3,?\s*$/gm)) {
+        const [, , chaveLida, , valor] = m;
+        if (!valor.trim()) continue;
+        const naChave = campos(chaveLida);
+        const noValor = campos(valor);
+        if (naChave.size === 0 && noValor.size === 0) continue;
+        const faltando = [...naChave].filter((c) => !noValor.has(c));
+        const sobrando = [...noValor].filter((c) => !naChave.has(c));
+        if (faltando.length || sobrando.length) {
+          erradas.push(`  ${JSON.stringify(chaveLida)}\n    faltando: ${faltando.join(', ') || '—'}  sobrando: ${sobrando.join(', ') || '—'}`);
+        }
+      }
+      assert.deepEqual(erradas, [], `${codigo}: campo trocado em ${erradas.length} frase(s):\n${erradas.join('\n')}`);
+    });
+  }
 });

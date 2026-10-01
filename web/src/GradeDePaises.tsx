@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { algarismos, emGente } from './algarismos';
 import { chave, idiomaAtual, useT } from './i18n';
 import { type Regiao, falantesDoIdioma, nomeDoPais, paisesDoIdioma, porRegiao } from './i18n/paises';
 
@@ -50,31 +51,6 @@ const NOME_DA_REGIAO: Record<Regiao, string> = {
  * numéricos da ONU ele devolve o próprio número, e a tela ficou escrita "002 · 23/54" — ver o
  * comentário em paises.ts. São cinco textos traduzidos à mão, e pronto.
  */
-/**
- * Um número escrito com os ALGARISMOS da língua de quem lê.
- *
- * Quase toda língua usa 0-9, mas não todas: o bengali escreve ০১২৩৪৫৬৭৮৯. A tela ficou com
- * "১৯৩টি ... 1টি" na mesma frase — o 193 que veio da tradução em bengali, e o 1 que veio do código
- * em ocidental. Passar todo número pelo Intl faz os dois combinarem, e não muda nada nas outras
- * catorze línguas.
- */
-function algarismos(n: number, idioma: string): string {
-  try {
-    return new Intl.NumberFormat(idioma).format(n);
-  } catch {
-    return String(n);
-  }
-}
-
-/** O número de falantes escrito como a língua de quem lê escreve número grande. */
-function emGente(milhoes: number, idioma: string): string {
-  try {
-    return new Intl.NumberFormat(idioma, { notation: 'compact', maximumFractionDigits: 1 }).format(milhoes * 1_000_000);
-  } catch {
-    return String(milhoes) + ' mi';
-  }
-}
-
 export function GradeDePaises({ idioma }: { idioma: string }) {
   const t = useT();
   const lendoEm = idiomaAtual();

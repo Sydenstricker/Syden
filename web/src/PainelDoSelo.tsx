@@ -66,7 +66,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
       });
       setDados({ ...dados, selo });
     } catch (e) {
-      setErro(e instanceof ApiError ? e.message : 'Não deu para salvar o selo.');
+      setErro(e instanceof ApiError ? e.message : t('Não deu para salvar o selo.'));
     } finally {
       setSalvando(false);
     }
@@ -78,7 +78,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
       await api(`/api/communities/${communityId}/selo`, { method: 'DELETE' });
       setDados({ ...dados, selo: null });
     } catch (e) {
-      setErro(e instanceof ApiError ? e.message : 'Não deu para tirar o selo.');
+      setErro(e instanceof ApiError ? e.message : t('Não deu para tirar o selo.'));
     } finally {
       setSalvando(false);
     }
@@ -86,7 +86,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
 
   return (
     <section className="usage-card">
-      <h3>Selo da comunidade</h3>
+      <h3>{t('Selo da comunidade')}</h3>
       <p className="settings-hint">
         Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.{' '}
         <strong>{t('Não se compra: conquista-se.')}</strong> Os marcos abaixo foram escolhidos para não haver
@@ -123,14 +123,13 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
 
       {!dados.destravado && (
         <p className="settings-hint">
-          O selo aparece aqui quando o primeiro marco cair. Até lá ele fica guardado — e chegar nele é
-          justamente o que ele vai significar.
+          {t('O selo aparece aqui quando o primeiro marco cair. Até lá ele fica guardado — e chegar nele é justamente o que ele vai significar.')}
         </p>
       )}
 
       {dados.destravado && dados.podeEditar && rascunho && (
         <div className="selo-editor">
-          <h4 className="disponibilidade-titulo">Escolha o selo</h4>
+          <h4 className="disponibilidade-titulo">{t('Escolha o selo')}</h4>
 
           <label htmlFor="selo-texto">{t('Texto (até 4 caracteres)')}</label>
           <input
@@ -138,7 +137,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
             value={rascunho.texto}
             maxLength={4}
             onChange={(e) => setRascunho({ ...rascunho, texto: e.target.value })}
-            placeholder="ZECA"
+            placeholder={t('ZECA')}
           />
 
           <span className="selo-rotulo">{t('Ícone')}</span>
@@ -171,7 +170,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
           </div>
 
           <div className="selo-previa">
-            <span>Fica assim:</span>
+            <span>{t('Fica assim:')}</span>
             <SeloDaComunidade selo={rascunho} />
             <em>nome de quem é daqui</em>
           </div>
@@ -180,11 +179,11 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
 
           <div className="selo-acoes">
             <button className="btn-primary" disabled={salvando || !rascunho.texto.trim()} onClick={() => void salvar()}>
-              Salvar selo
+              {t('Salvar selo')}
             </button>
             {dados.selo && (
               <button className="btn-sutil" disabled={salvando} onClick={() => void tirar()}>
-                Tirar o selo
+                {t('Tirar o selo')}
               </button>
             )}
           </div>
@@ -198,7 +197,7 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
               {t('O selo desta comunidade é')} <SeloDaComunidade selo={dados.selo} />. Quem administra escolhe qual é.
             </>
           ) : (
-            'A comunidade já conquistou o selo, e quem administra ainda não escolheu qual será.'
+            t('A comunidade já conquistou o selo, e quem administra ainda não escolheu qual será.')
           )}
         </p>
       )}
