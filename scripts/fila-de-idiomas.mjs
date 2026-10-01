@@ -162,10 +162,19 @@ if (process.argv.includes('--proximo')) {
   console.log('       (idioma pronto sem lista mostra a grade vazia, dizendo que ele não é oficial em');
   console.log('       lugar nenhum) e outro que confere se o número em idiomas.ts bate com a lista.');
   console.log(`       Os falantes já estão lá: ${proximo.falantes} milhões.`);
-  console.log('    5. npm test -w web   (campos {assim}, chaves órfãs, países)');
-  console.log(`    6. MEDIR NA TELA, que é a regra do CLAUDE.md: pôr ${proximo.codigo} na lista de`);
+  console.log('    5. A TELA DE SEM CONEXÃO TEM DICIONÁRIO PRÓPRIO, e é o passo que se esquece: ela');
+  console.log('       mora dentro do pacote do app (desktop/src/offline.js) e não alcança o i18n — se');
+  console.log('       houvesse internet para buscar a tradução, ela não estaria aparecendo. São cinco');
+  console.log(`       frases. O vietnamita foi esquecido aí, e quem achou foi e2e/tela-sem-conexao.mjs.`);
+  if (proximo.rtl) {
+    console.log(`       E o ${proximo.codigo} escreve da direita para a esquerda: entra também no`);
+    console.log('       DA_DIREITA_PARA_A_ESQUERDA, no mesmo arquivo.');
+  }
+  console.log('    6. npm test -w web   (campos {assim}, chaves órfãs, países)');
+  console.log(`    7. MEDIR NA TELA, que é a regra do CLAUDE.md: pôr ${proximo.codigo} na lista de`);
   console.log('       e2e/configuracoes-traduzidas.mjs e rodar. Sentido da página, nada em português,');
   console.log('       nenhum campo cru, nada estourando — e OLHAR A FOTO que ele tira no fim.');
+  console.log('    8. node e2e/tela-sem-conexao.mjs — ele confere que o passo 5 não ficou para trás.');
   if (proximo.escrita === 'latina') {
     console.log('\n  ATENÇÃO: escrita latina com acento. O detector por letra do teste de idiomas NÃO');
     console.log('  serve — use o das chaves do dicionário, como o vietnamita (sobrouPortugues).');

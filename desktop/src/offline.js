@@ -129,6 +129,13 @@ const TEXTOS = {
     tentando: 'চেষ্টা করছি…',
     codigo: 'OFFLINE — সংযোগ নেই',
   },
+  vi: {
+    titulo: 'Không kết nối được',
+    explicacao: 'Hãy xem lại mạng của bạn. Cũng có thể máy chủ đang tắt.',
+    botao: 'Thử lại',
+    tentando: 'Đang thử…',
+    codigo: 'OFFLINE — không có kết nối',
+  },
   ar: {
     titulo: 'تعذّر الاتصال',
     explicacao: 'تحقّق من الإنترنت لديك. قد يكون الخادم متوقفًا أيضًا.',

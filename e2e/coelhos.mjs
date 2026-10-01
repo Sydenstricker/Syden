@@ -68,15 +68,28 @@ await dispensarPresentes(page);
 await page.waitForTimeout(600);
 (await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('a escolha continua depois de recarregar') : falhou('voltou ao OurBunny sozinho');
 
-// ---------- 5. e a estátua continua trocando com um clique ----------
+// ---------- 5. a estátua é o OUTRO CAMINHO para a mesma escolha ----------
+//
+// ESTE TRECHO MEDIA O COMPORTAMENTO ANTIGO. A estátua alternava entre os dois a cada clique; hoje ela
+// abre esta mesma aba, de propósito — a escolha muda o ícone do aplicativo e a tela de entrada, e um
+// clique que altera a cara do app inteiro precisa mostrar as opções (ver trocarEstatua em Vila.tsx).
+//
+// O teste não percebeu a mudança porque estava quebrado na linha do cadastro e nunca chegava aqui. E,
+// ao voltar a rodar, ele acusava "a estátua não trocou" — que lê como defeito do app e não é.
 await page.locator('.v-estatua').click({ force: true });
-await page.waitForTimeout(400);
-(await page.locator('.v-estatua .v-gordo').count()) === 0 ? ok('clicar na estátua volta ao OurBunny') : falhou('a estátua não trocou');
-await page.getByRole('button', { name: /Coelhos/ }).click();
 await page.locator('.vila-painel.coelhos').waitFor({ timeout: 6000 });
-(await page.locator('.coelho-cartao.our.escolhido').count()) === 1
-  ? ok('e a aba mostra a mesma escolha: é uma só, em todo canto')
+ok('clicar na estátua abre a mesma aba de escolha');
+
+(await page.locator('.coelho-cartao.big.escolhido').count()) === 1
+  ? ok('e ela chega mostrando quem está em uso: é uma escolha só, em todo canto')
   : falhou('a aba discorda da estátua');
+
+// E daqui dá para voltar, que é o caminho de volta que a estátua sozinha não oferecia mais.
+await page.locator('.coelho-cartao.our').click();
+await page.waitForTimeout(400);
+(await page.locator('.v-estatua .v-gordo').count()) === 0
+  ? ok('escolhendo o OurBunny por aqui, a estátua volta na hora')
+  : falhou('a estátua não acompanhou a volta');
 
 await browser.close();
 resumo('coelhos');

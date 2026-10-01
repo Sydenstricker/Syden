@@ -44,7 +44,15 @@ fora.problemas.length === 0
   ? ok('cada coisa é desenhada depois de quem está atrás dela')
   : falhou('fora de ordem: ' + JSON.stringify(fora.problemas.slice(0, 3), null, 1));
 
-// ---------- 2. a estátua troca de coelho ----------
+// ---------- 2. a estátua ABRE A ESCOLHA, e a escolha chega até ela ----------
+//
+// ESTE TRECHO MEDIA O COMPORTAMENTO ANTIGO, e isso passou despercebido porque o arquivo inteiro estava
+// quebrado na linha do cadastro — ele nunca chegava até aqui. A estátua ALTERNAVA entre os dois
+// coelhos a cada clique; hoje ela abre o painel de escolha, de propósito: a escolha não muda só a
+// estátua, muda o ícone do aplicativo e a tela de entrada, e um clique que altera a cara do app
+// inteiro precisa mostrar as opções em vez de surpreender (ver trocarEstatua em web/src/Vila.tsx).
+//
+// Teste velho não acusa comportamento novo: acusa o PRÓPRIO TESTE, e com cara de defeito do app.
 const estatua = page.locator('.v-estatua');
 await estatua.waitFor({ timeout: 5000 });
 (await page.locator('.v-estatua .v-gordo').count()) === 0 ? ok('a estátua começa com o OurBunny') : falhou('começou gorda');
@@ -53,17 +61,30 @@ await estatua.hover({ force: true });
 await page.waitForTimeout(400);
 const dica = await page.locator('.v-estatua-dica').evaluate((el) => ({ opacidade: getComputedStyle(el).opacity, texto: el.textContent }));
 console.log('  a dica diz:', JSON.stringify(dica));
-Number(dica.opacidade) > 0.9 && dica.texto.includes('BigChunkus')
-  ? ok('passando o mouse, ela convida a trocar pelo BigChunkus')
+Number(dica.opacidade) > 0.9 && /escolher/i.test(dica.texto)
+  ? ok('passando o mouse, ela convida a escolher o coelho')
   : falhou('a dica não apareceu: ' + JSON.stringify(dica));
 
 await estatua.click({ force: true });
+const painelDaVila = page.locator('.vila-painel.coelhos');
+(await painelDaVila.waitFor({ timeout: 6000 }).then(() => true, () => false))
+  ? ok('clicando, ela ABRE a escolha — em vez de trocar de surpresa')
+  : falhou('a estátua não abriu o painel de escolha');
+
+await page.locator('.coelho-cartao.big').click();
 await page.waitForTimeout(400);
-(await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('clicando, o BigChunkus assume o pedestal') : falhou('não trocou');
+(await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('escolhendo o BigChunkus, ele assume o pedestal') : falhou('a estátua não acompanhou a escolha');
 await page.screenshot({ path: 'e2e/fotos/vila-bigchunkus.png' });
 
 const guardado = await page.evaluate(() => localStorage.getItem('syden.coelho'));
 guardado === 'big' ? ok('a escolha fica guardada neste computador') : falhou('guardou: ' + guardado);
+
+// O PAINEL PRECISA FECHAR ANTES DE SEGUIR, e isto é o que fazia o resto do arquivo reprovar em
+// cascata: com ele aberto, é ELE que está por cima da grama, e os cliques de plantar iam todos nele.
+// O relatório dizia "algo do cenário está roubando o clique" — e não era o cenário, era o painel que
+// o próprio teste tinha aberto duas seções antes.
+await page.locator('.vila-painel.coelhos .vila-painel-fechar').click();
+await page.waitForTimeout(300);
 
 await page.reload();
 await page.locator('.vila').waitFor({ timeout: 25000 });
@@ -72,8 +93,12 @@ await page.waitForTimeout(800);
 (await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('e continua lá depois de recarregar') : falhou('voltou ao OurBunny sozinho');
 
 await page.locator('.v-estatua').click({ force: true });
-await page.waitForTimeout(300);
+await painelDaVila.waitFor({ timeout: 6000 });
+await page.locator('.coelho-cartao.our').click();
+await page.waitForTimeout(400);
 (await page.locator('.v-estatua .v-gordo').count()) === 0 ? ok('e dá para voltar ao OurBunny') : falhou('não voltou');
+await page.locator('.vila-painel.coelhos .vila-painel-fechar').click();
+await page.waitForTimeout(300);
 
 // ---------- 3. plantar continua funcionando com o cenário desenhado por cima do gramado ----------
 // O cenário não recebe clique (pointer-events: none), então clicar perto de uma árvore ainda planta.
