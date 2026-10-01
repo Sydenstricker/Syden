@@ -116,3 +116,14 @@ export async function criarConta(page, prefixo) {
   await page.locator('.vila, .channel-name').first().waitFor({ timeout: 30_000 });
   return username;
 }
+
+/**
+ * O título "Bem-vindo a #geral!", do jeito que ele existe na tela de verdade.
+ *
+ * NÃO DÁ PARA PROCURAR A FRASE INTEIRA COMO TEXTO SOLTO, e isto não é capricho do teste: o nome do
+ * canal vem embrulhado em dois caracteres de isolamento bidirecional (U+2068 e U+2069), que é o que
+ * impede `#combinados` de virar `combinados#` em árabe (ver web/src/bidi.ts). Eles são invisíveis e
+ * sem largura, mas estão no texto — então `getByText('Bem-vindo a #geral!')` não acha nada e o teste
+ * espera meio minuto por uma tela que está ali na frente.
+ */
+export const tituloDoCanal = (nome) => new RegExp('Bem-vindo a .{0,2}#' + nome);

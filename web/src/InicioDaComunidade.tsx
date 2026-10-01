@@ -2,6 +2,7 @@ import { Check, Hash, Link2, Mic, Sparkles, Store, Users, X } from 'lucide-react
 import { useState } from 'react';
 import { api } from './api';
 import { acharArte } from './boasVindas';
+import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { useT } from './i18n';
 import { SeloDaComunidade } from './SeloDaComunidade';
@@ -108,7 +109,7 @@ export function InicioDaComunidade({
           <button className="bv-bloco" onClick={() => aoAbrirCanal(primeiroTexto)}>
             <Hash size={26} />
             <strong>{t('Entrar na conversa')}</strong>
-            <small>#{primeiroTexto.name}</small>
+            <small>{nomeDeCanal(primeiroTexto.name, true)}</small>
           </button>
         )}
 

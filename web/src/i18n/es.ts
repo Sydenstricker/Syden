@@ -29,8 +29,8 @@ export default {
   'Canais de voz': 'Canales de voz',
   Configurações: 'Configuración',
   'Conversar com {nome}': 'Hablar con {nome}',
-  'Conversar em #{nome}': 'Escribir en #{nome}',
-  'Bem-vindo a #{nome}!': '¡Bienvenido a #{nome}!',
+  'Conversar em {nome}': 'Escribir en {nome}',
+  'Bem-vindo a {nome}!': '¡Bienvenido a {nome}!',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Este es el comienzo de la conversación. Solo quienes están en ella ven lo que se escribe aquí.',
   'Este é o começo do canal.': 'Este es el comienzo del canal.',
@@ -554,4 +554,8 @@ export default {
   'Mostrar quem está na chamada por cima do jogo': 'Mostrar quién está en la llamada encima del juego',
   'Quando você está jogando': 'Mientras juegas',
   'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Una ventanita en la esquina con quién está contigo y quién habla. El clic la atraviesa: el disparo va al juego. Funciona con el juego en ventana o en ventana sin bordes; en pantalla completa exclusiva no aparece.',
+  '{quem} em {canal}': '{quem} en {canal}',
+  'Enquete: {pergunta}': 'Encuesta: {pergunta}',
+  'Mandou um arquivo': 'Envió un archivo',
+  'um canal': 'un canal',
 } satisfies Record<string, string>;

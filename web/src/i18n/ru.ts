@@ -110,7 +110,7 @@ export default {
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
     'Оставь заголовок и текст пустыми, чтобы разобрать экран: сообщество снова будет открываться прямо на каналах.',
   'Conte o que é esta comunidade e o que fazer primeiro.': 'Расскажи, что это за сообщество и с чего начать.',
-  'Bem-vindo a #{nome}!': 'Добро пожаловать в #{nome}!',
+  'Bem-vindo a {nome}!': 'Добро пожаловать в {nome}!',
   'Bem-vindo!': 'Добро пожаловать!',
   Título: 'Заголовок',
   Recado: 'Сообщение',
@@ -132,7 +132,7 @@ export default {
   Conversas: 'Переписки',
   Conversar: 'Написать',
   'Conversar com {nome}': 'Написать {nome}',
-  'Conversar em #{nome}': 'Написать в #{nome}',
+  'Conversar em {nome}': 'Написать в {nome}',
   'Nova conversa': 'Новая переписка',
   'Nova conversa em grupo': 'Новая групповая переписка',
   'Nome do grupo (opcional)': 'Название группы (необязательно)',
@@ -570,4 +570,8 @@ export default {
   'Mostrar quem está na chamada por cima do jogo': 'Показывать, кто в звонке, поверх игры',
   'Quando você está jogando': 'Пока ты играешь',
   'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Маленькое окно в углу: кто с тобой и кто говорит. Клик проходит насквозь — выстрел попадает в игру. Работает, когда игра в окне или в окне без рамки; в эксклюзивном полноэкранном режиме не появляется.',
+  '{quem} em {canal}': '{quem} в {canal}',
+  'Enquete: {pergunta}': 'Опрос: {pergunta}',
+  'Mandou um arquivo': 'Отправил файл',
+  'um canal': 'канале',
 } satisfies Record<string, string>;

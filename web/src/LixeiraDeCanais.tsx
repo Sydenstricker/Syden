@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Hash, Trash2, Volume2 } from 'lucide-react';
+import { nomeDeCanal } from './bidi';
 import { ApiError, api } from './api';
 import { useT } from './i18n';
 import { diasQueRestam } from './lixeira';
@@ -81,7 +82,7 @@ export function LixeiraDeCanais({ communityId }: { communityId: number }) {
             <li key={canal.id}>
               <span aria-hidden="true">{canal.type === 'text' ? <Hash size={16} /> : <Volume2 size={16} />}</span>
               <span className="amigos-nome">
-                {canal.type === 'text' ? `#${canal.name}` : canal.name}
+                {nomeDeCanal(canal.name, canal.type === 'text')}
                 <small>{oQueSePerde(canal, dados.dias, t)}</small>
               </span>
               <button

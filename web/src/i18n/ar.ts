@@ -116,7 +116,7 @@ export default {
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
     'اترك العنوان والرسالة فارغين لتفكيك الشاشة: يعود المجتمع ليفتح على القنوات مباشرة.',
   'Conte o que é esta comunidade e o que fazer primeiro.': 'اشرح ما هذا المجتمع وبماذا يبدأ القادم.',
-  'Bem-vindo a #{nome}!': 'أهلًا بك في #{nome}!',
+  'Bem-vindo a {nome}!': 'أهلًا بك في {nome}!',
   'Bem-vindo!': 'أهلًا بك!',
   Título: 'العنوان',
   Recado: 'الرسالة',
@@ -136,7 +136,7 @@ export default {
   Conversas: 'المحادثات',
   Conversar: 'محادثة',
   'Conversar com {nome}': 'محادثة {nome}',
-  'Conversar em #{nome}': 'الكتابة في #{nome}',
+  'Conversar em {nome}': 'الكتابة في {nome}',
   'Nova conversa': 'محادثة جديدة',
   'Nova conversa em grupo': 'محادثة جماعية جديدة',
   'Nome do grupo (opcional)': 'اسم المجموعة (اختياري)',
@@ -569,4 +569,8 @@ export default {
   'Mostrar quem está na chamada por cima do jogo': 'إظهار من في المكالمة فوق اللعبة',
   'Quando você está jogando': 'أثناء اللعب',
   'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'نافذة صغيرة في الزاوية تبيّن من معك ومن يتكلّم. النقر يمرّ من خلالها: الطلقة تذهب إلى اللعبة. تعمل واللعبة في نافذة أو نافذة بلا إطار؛ أمّا في ملء الشاشة الحصري فلا تظهر.',
+  '{quem} em {canal}': '{quem} في {canal}',
+  'Enquete: {pergunta}': 'استطلاع: {pergunta}',
+  'Mandou um arquivo': 'أرسل ملفًا',
+  'um canal': 'قناة',
 } satisfies Record<string, string>;

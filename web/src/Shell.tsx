@@ -6,6 +6,7 @@ import { carregarBloqueios, guardarBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
 import { Comemoracao } from './Comemoracao';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
+import { isolar, nomeDeCanal } from './bidi';
 import { desktopBridge } from './desktop';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
 import { EmptyCommunities } from './EmptyCommunities';
@@ -513,8 +514,19 @@ export function Shell({
       // Mensagem sem texto (só arquivo ou enquete) precisa de uma descrição na notificação.
       const text =
         message.content ||
-        (message.poll ? `Enquete: ${message.poll.question}` : message.attachments.length > 0 ? 'Mandou um arquivo' : '');
-      const notification = new Notification(`${message.author.username} em #${channel?.name ?? 'canal'}`, {
+        (message.poll
+          ? t('Enquete: {pergunta}', { pergunta: message.poll.question })
+          : message.attachments.length > 0
+            ? t('Mandou um arquivo')
+            : '');
+      // O NOME DO CANAL PASSA POR nomeDeCanal(), e isso vale até aqui. A notificação do Windows é
+      // desenhada pelo sistema, com o idioma do Syden dentro dela: em árabe, `#` solto antes de um
+      // nome latino ia para o outro lado e o título dizia `combinados#`. Ver web/src/bidi.ts.
+      const titulo = t('{quem} em {canal}', {
+        quem: isolar(message.author.username),
+        canal: channel ? nomeDeCanal(channel.name, channel.type === 'text') : t('um canal'),
+      });
+      const notification = new Notification(titulo, {
         body: text.length > 140 ? `${text.slice(0, 140)}…` : text,
         tag: `channel-${message.channelId}`, // várias mensagens seguidas do mesmo canal viram uma notificação só
       });

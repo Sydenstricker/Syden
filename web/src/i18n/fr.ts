@@ -109,7 +109,7 @@ export default {
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
     'Laissez le titre et le message vides pour démonter l’écran : la communauté s’ouvrira à nouveau directement sur les salons.',
   'Conte o que é esta comunidade e o que fazer primeiro.': 'Racontez ce qu’est cette communauté et par quoi commencer.',
-  'Bem-vindo a #{nome}!': 'Bienvenue sur #{nome} !',
+  'Bem-vindo a {nome}!': 'Bienvenue sur {nome} !',
   'Bem-vindo!': 'Bienvenue !',
   Título: 'Titre',
   Recado: 'Message',
@@ -131,7 +131,7 @@ export default {
   Conversas: 'Conversations',
   Conversar: 'Discuter',
   'Conversar com {nome}': 'Discuter avec {nome}',
-  'Conversar em #{nome}': 'Discuter dans #{nome}',
+  'Conversar em {nome}': 'Discuter dans {nome}',
   'Nova conversa': 'Nouvelle conversation',
   'Nova conversa em grupo': 'Nouvelle conversation de groupe',
   'Nome do grupo (opcional)': 'Nom du groupe (facultatif)',
@@ -574,4 +574,8 @@ export default {
   'Mostrar quem está na chamada por cima do jogo': 'Afficher qui est en appel par-dessus le jeu',
   'Quando você está jogando': 'Pendant que tu joues',
   'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Une petite fenêtre dans un coin avec qui est avec toi, et qui parle. Le clic la traverse : le tir part dans le jeu. Ça marche avec le jeu en fenêtre ou en fenêtre sans bordure ; en plein écran exclusif, elle n’apparaît pas.',
+  '{quem} em {canal}': '{quem} dans {canal}',
+  'Enquete: {pergunta}': 'Sondage : {pergunta}',
+  'Mandou um arquivo': 'A envoyé un fichier',
+  'um canal': 'un salon',
 } satisfies Record<string, string>;

@@ -1,7 +1,7 @@
 // Item 7: o menu do botão direito numa pessoa, refeito. Perfil, menção, anotação só sua, volume e —
 // para quem administra — a moderação separada embaixo.
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, novaPessoa, ok, resumo } from './ajuda.mjs';
+import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, novaPessoa, ok, resumo, tituloDoCanal } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
@@ -19,7 +19,7 @@ async function entrar(nome) {
   await dispensarPresentes(page);
   await page.locator('.rail-list .rail-item').first().click();
   await page.locator('.channel-name', { hasText: /geral/ }).first().click();
-  await page.getByText('Bem-vindo a #geral!').waitFor({ timeout: 20000 });
+  await page.getByText(tituloDoCanal('geral')).waitFor({ timeout: 20000 });
   return page;
 }
 

@@ -111,7 +111,7 @@ export default {
     'Lass Titel und Nachricht leer, um den Bildschirm abzubauen: Die Community öffnet dann wieder direkt die Kanäle.',
   'Conte o que é esta comunidade e o que fazer primeiro.':
     'Erzähl, was diese Community ist und womit man anfangen sollte.',
-  'Bem-vindo a #{nome}!': 'Willkommen in #{nome}!',
+  'Bem-vindo a {nome}!': 'Willkommen in {nome}!',
   'Bem-vindo!': 'Willkommen!',
   Título: 'Titel',
   Recado: 'Nachricht',
@@ -133,7 +133,7 @@ export default {
   Conversas: 'Unterhaltungen',
   Conversar: 'Schreiben',
   'Conversar com {nome}': 'Mit {nome} schreiben',
-  'Conversar em #{nome}': 'In #{nome} schreiben',
+  'Conversar em {nome}': 'In {nome} schreiben',
   'Nova conversa': 'Neue Unterhaltung',
   'Nova conversa em grupo': 'Neue Gruppenunterhaltung',
   'Nome do grupo (opcional)': 'Gruppenname (optional)',
@@ -576,4 +576,8 @@ export default {
   'Mostrar quem está na chamada por cima do jogo': 'Zeigen, wer im Gespräch ist — über dem Spiel',
   'Quando você está jogando': 'Während du spielst',
   'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Ein kleines Fenster in der Ecke mit wer bei dir ist und wer spricht. Klicks gehen hindurch: der Schuss landet im Spiel. Es klappt im Fenster- und im randlosen Fenstermodus; im exklusiven Vollbild erscheint es nicht.',
+  '{quem} em {canal}': '{quem} in {canal}',
+  'Enquete: {pergunta}': 'Umfrage: {pergunta}',
+  'Mandou um arquivo': 'Hat eine Datei gesendet',
+  'um canal': 'einem Kanal',
 } satisfies Record<string, string>;

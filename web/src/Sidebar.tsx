@@ -36,6 +36,7 @@ import { ProfileCard } from './ProfileCard';
 import { ScreenShareButton } from './ScreenShareButton';
 import { StatusMenu, useStatusMenu } from './StatusMenu';
 import { desktopBridge } from './desktop';
+import { nomeDeCanal } from './bidi';
 import { useSettings } from './settings';
 import { quemMostrar } from './sobreposicao';
 import type { Channel, Community, CommunityMember, PresenceStatus, User, VoiceMember } from './types';
@@ -405,7 +406,7 @@ function DeleteChannelDialog({ channel, onClose }: { channel: Channel; onClose: 
     }
   }
 
-  const label = channel.type === 'text' ? `#${channel.name}` : channel.name;
+  const label = nomeDeCanal(channel.name, channel.type === 'text');
   return (
     <ConfirmDialog
       title={channel.type === 'text' ? t('Excluir canal') : t('Excluir sala de voz')}

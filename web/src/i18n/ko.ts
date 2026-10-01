@@ -76,7 +76,7 @@ export default {
   'Baixar na Microsoft Store': 'Microsoft Store에서 받기',
   'Baixar o app para Windows': 'Windows 앱 받기',
   'Baixar para Windows': 'Windows용 내려받기',
-  'Bem-vindo a #{nome}!': '#{nome}에 오신 걸 환영해요!',
+  'Bem-vindo a {nome}!': '{nome}에 오신 걸 환영해요!',
   'Bem-vindo de volta!': '다시 오셨네요!',
   'Bem-vindo!': '환영해요!',
   'Botão direito para mudar o status': '오른쪽 클릭으로 상태를 바꿔요',
@@ -119,7 +119,7 @@ export default {
   'Conte o que é esta comunidade e o que fazer primeiro.': '이 커뮤니티가 무엇이고 먼저 뭘 하면 되는지 알려 주세요.',
   Conversar: '대화',
   'Conversar com {nome}': '{nome}님과 대화',
-  'Conversar em #{nome}': '#{nome}에 쓰기',
+  'Conversar em {nome}': '{nome}에 쓰기',
   Conversas: '대화',
   'Converse e jogue': '수다 떨고 게임하기',
   'Converse e jogue em {nome}': '{nome}에서 수다 떨고 게임하기',
@@ -537,4 +537,8 @@ export default {
   'Quando você está jogando': '게임할 때',
   'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.':
     '화면 구석의 작은 창에 누가 같이 있고 누가 말하는지 보여줘요. 클릭은 그대로 통과해서 총알은 게임에 맞습니다. 게임이 창 모드나 테두리 없는 창일 때 작동하고, 전용 전체 화면에서는 나오지 않아요.',
+  '{quem} em {canal}': '{canal}에서 {quem}',
+  'Enquete: {pergunta}': '투표: {pergunta}',
+  'Mandou um arquivo': '파일을 보냈어요',
+  'um canal': '어떤 채널',
 } satisfies Record<string, string>;

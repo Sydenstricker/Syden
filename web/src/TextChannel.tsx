@@ -7,6 +7,7 @@ import { useT } from './i18n';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
+import { isolar, nomeDeCanal } from './bidi';
 import { MobileBackButton } from './MobileBackButton';
 import {
   applyReactionUpdate,
@@ -190,7 +191,7 @@ export function TextChannel({
           ) : (
             <div className="channel-intro">
               <div className="channel-intro-icon">{privada ? <AtSign size={36} /> : <Hash size={36} />}</div>
-              <h2>{privada ? channel.name : t('Bem-vindo a #{nome}!', { nome: channel.name })}</h2>
+              <h2>{privada ? channel.name : t('Bem-vindo a {nome}!', { nome: nomeDeCanal(channel.name, true) })}</h2>
               <p>{privada ? t('Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.') : t('Este é o começo do canal.')}</p>
             </div>
           )}
@@ -234,7 +235,7 @@ export function TextChannel({
           ref={composerRef}
           channelId={channel.id}
           socket={socket}
-          placeholder={privada ? t('Conversar com {nome}', { nome: channel.name }) : t('Conversar em #{nome}', { nome: channel.name })}
+          placeholder={privada ? t('Conversar com {nome}', { nome: isolar(channel.name) }) : t('Conversar em {nome}', { nome: nomeDeCanal(channel.name, true) })}
           onSent={() => (stickToBottom.current = true)}
         />
 

@@ -2,6 +2,7 @@ import { Download, Scissors, Send, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { type Clipe, corrigirDuracao, type GravacaoEmRolagem, gravarEmRolagem, nomeDoClipe, SEGUNDOS_DO_CLIPE } from './clips';
+import { nomeDeCanal } from './bidi';
 import { IconButton } from './IconButton';
 import type { Channel } from './types';
 import { formatBytes, readAsDataUrl } from './upload';
@@ -99,7 +100,7 @@ function Previa({
             <select value={canalId} onChange={(e) => setCanalId(Number(e.target.value))}>
               {canais.map((canal) => (
                 <option key={canal.id} value={canal.id}>
-                  #{canal.name}
+                  {nomeDeCanal(canal.name, true)}
                 </option>
               ))}
             </select>

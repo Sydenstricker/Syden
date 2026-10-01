@@ -1,7 +1,7 @@
 // Itens 2 e 13: o idioma se escolhe DENTRO do app, a troca vale na hora, e as letras de qualquer
 // alfabeto aparecem certas (fonte de reserva por escrita).
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
+import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, ok, resumo, vigiar, tituloDoCanal } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
@@ -36,7 +36,7 @@ await page.locator('.vila').waitFor({ timeout: 30000 });
 await dispensarPresentes(page);
 await page.locator('.rail-list .rail-item').first().click();
 await page.locator('.channel-name', { hasText: /geral/ }).first().click();
-await page.getByText('Bem-vindo a #geral!').waitFor({ timeout: 20000 });
+await page.getByText(tituloDoCanal('geral')).waitFor({ timeout: 20000 });
 ok('entrou no app, em português');
 
 await page.locator('.user-panel button[aria-label="Configurações"], button[aria-label="Configurações"]').first().click();
