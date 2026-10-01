@@ -736,4 +736,6 @@ export default {
   'Nebulosa': 'Nebula',
   'Prisma': 'Prisma',
   'Vitral': 'Kaca berwarna',
+  'Clipar os últimos {segundos} segundos': 'Klip {segundos} saat terakhir',
+  'Gravando… daqui a pouco dá para clipar': 'Sedang merakam… sekejap lagi boleh klip',
 } satisfies Record<string, string>;

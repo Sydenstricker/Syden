@@ -735,4 +735,6 @@ export default {
   'Nebulosa': 'Wingu la nyota',
   'Prisma': 'Prizma',
   'Vitral': 'Kioo cha rangi',
+  'Clipar os últimos {segundos} segundos': 'Kata sekunde {segundos} za mwisho',
+  'Gravando… daqui a pouco dá para clipar': 'Inarekodi… baada ya muda mfupi utaweza kukata',
 } satisfies Record<string, string>;

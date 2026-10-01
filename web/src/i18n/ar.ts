@@ -756,4 +756,6 @@ export default {
   'Nebulosa': 'سديم',
   'Prisma': 'منشور',
   'Vitral': 'زجاج ملوّن',
+  'Clipar os últimos {segundos} segundos': 'قصّ آخر {segundos} ثانية',
+  'Gravando… daqui a pouco dá para clipar': 'يسجّل… بعد قليل يمكنك القص',
 } satisfies Record<string, string>;

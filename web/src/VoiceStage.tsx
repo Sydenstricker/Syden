@@ -44,7 +44,7 @@ import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodific
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { QualityAdvisor } from './QualityAdvisor';
-import { ClipButton } from './ClipButton';
+import { ClipButton, PreviaDoClipe, useClipe } from './ClipButton';
 import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
 import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
@@ -922,6 +922,10 @@ function Stage({
   const paraClipar = (focused?.source === Track.Source.ScreenShare ? focused : undefined) ?? abertas[0];
   const transmissaoNaTela = useTransmissaoNaTela(paraClipar);
   const quemTransmite = paraClipar ? paraClipar.participant.name || paraClipar.participant.identity : '';
+  // A GRAVAÇÃO DO CLIPE MORA AQUI, e não no botão. O botão vive dentro do menu "...", que abre e
+  // fecha; a gravação precisa durar enquanto a transmissão existir — é a premissa da função, que é
+  // poder clipar uma jogada que JÁ aconteceu. Ver web/src/ClipButton.tsx.
+  const clipe = useClipe(transmissaoNaTela);
 
   /** Clicar num quadro fixa ou solta o foco; no modo dividido, volta para o foco naquela tela. */
   const togglePin = (ref: TrackReferenceOrPlaceholder) => {
@@ -1044,7 +1048,7 @@ function Stage({
         <MaisNaChamada quantosAtivos={voice.voiceEffect !== 'none' ? 1 : 0}>
           <VoiceEffectButton voice={voice} />
           <EfeitoVisualButton voice={voice} />
-          <ClipButton stream={transmissaoNaTela} de={quemTransmite} canais={canaisDeTexto} />
+          <ClipButton clipe={clipe} />
           <div className="soundboard-anchor">
             <IconButton
               label="Karaokê"
@@ -1063,13 +1067,17 @@ function Stage({
 
         {/*
           Os painéis do karaokê e do soundboard ficam FORA do menu "Mais", mesmo sendo abertos por
-          botões que estão dentro dele. Se ficassem dentro, sumiriam junto com o menu no primeiro
-          clique — e o menu se fecha ao clicar em qualquer coisa, que é o comportamento certo para ele.
+          botões que estão dentro dele: assim nada do que eles mostram depende de o menu continuar
+          aberto. A prévia do clipe faltava nesta lista, e era a razão de a tesoura não fazer nada —
+          ela abria dentro do menu, que naquela época se fechava a qualquer clique e a levava junto.
+          Hoje o menu não se fecha mais sozinho (ver MaisNaChamada.tsx), e mesmo assim o lugar certo
+          destes três é aqui: o que abre uma tela não deve viver dentro de uma gaveta.
         */}
         {(karaokeOpen || voice.karaoke !== null) && (
           <Karaoke voice={voice} communityId={communityId} onClose={() => setKaraokeOpen(false)} />
         )}
         {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
+        <PreviaDoClipe clipe={clipe} de={quemTransmite} canais={canaisDeTexto} />
 
         <button className="leave-button" title={t('Desconectar')} onClick={voice.leave}>
           <PhoneOff />

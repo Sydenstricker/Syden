@@ -730,4 +730,6 @@ export default {
   'Nebulosa': 'Bulutsu',
   'Prisma': 'Prizma',
   'Vitral': 'Vitray',
+  'Clipar os últimos {segundos} segundos': 'Son {segundos} saniyeyi kliple',
+  'Gravando… daqui a pouco dá para clipar': 'Kaydediyor… birazdan klipleyebilirsin',
 } satisfies Record<string, string>;

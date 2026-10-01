@@ -757,4 +757,6 @@ export default {
   'Nebulosa': 'Туманность',
   'Prisma': 'Призма',
   'Vitral': 'Витраж',
+  'Clipar os últimos {segundos} segundos': 'Клип последних {segundos} секунд',
+  'Gravando… daqui a pouco dá para clipar': 'Записываю… скоро можно будет вырезать',
 } satisfies Record<string, string>;

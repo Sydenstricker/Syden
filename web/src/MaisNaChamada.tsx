@@ -42,8 +42,26 @@ export function MaisNaChamada({ children, quantosAtivos = 0 }: { children: React
         como um esquilo achando que é problema do microfone.
       */}
       {quantosAtivos > 0 && !aberto && <span className="mais-aceso" aria-hidden="true" />}
+      {/*
+        O MENU NÃO SE FECHA MAIS AO CLIQUE DE QUALQUER COISA DENTRO DELE, e aqui estava um defeito que
+        derrubava três funções de uma vez.
+
+        Havia um `onClick={() => setAberto(false)}` nesta div. Como clique borbulha, apertar QUALQUER
+        botão aqui dentro desmontava o menu inteiro no mesmo instante — e quase tudo o que mora aqui
+        ABRE alguma coisa em vez de terminar numa ação:
+
+          - a tesoura começava a fechar o clipe e era desmontada antes de ele existir. Pior: o
+            desmonte parava a gravação em rolagem, então cada abertura do menu recomeçava do zero e
+            a tesoura voltava a ficar três segundos apagada. "Cliquei na tesoura, não aconteceu
+            nada" — e não acontecia mesmo;
+          - o modificador de voz e o efeito visual abriam o submenu deles no mesmo clique em que o
+            menu de cima sumia, levando o submenu junto.
+
+        Fechar continua acontecendo pelos dois caminhos que sempre funcionaram e não dependem de
+        adivinhar o que o filho faz: clicar fora (pointerdown) e Escape.
+      */}
       {aberto && (
-        <div className="mais-menu" role="menu" onClick={() => setAberto(false)}>
+        <div className="mais-menu" role="menu">
           {children}
         </div>
       )}

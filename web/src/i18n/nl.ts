@@ -735,4 +735,6 @@ export default {
   'Nebulosa': 'Nevel',
   'Prisma': 'Prisma',
   'Vitral': 'Glas-in-lood',
+  'Clipar os últimos {segundos} segundos': 'De laatste {segundos} seconden clippen',
+  'Gravando… daqui a pouco dá para clipar': 'Neemt op… zo kun je clippen',
 } satisfies Record<string, string>;

@@ -741,4 +741,6 @@ export default {
   'Nebulosa': 'Nebula',
   'Prisma': 'Prism',
   'Vitral': 'Stained glass',
+  'Clipar os últimos {segundos} segundos': 'Clip the last {segundos} seconds',
+  'Gravando… daqui a pouco dá para clipar': 'Recording… you can clip in a moment',
 } satisfies Record<string, string>;

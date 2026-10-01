@@ -763,4 +763,6 @@ export default {
   'Nebulosa': 'Nebel',
   'Prisma': 'Prisma',
   'Vitral': 'Kirchenfenster',
+  'Clipar os últimos {segundos} segundos': 'Die letzten {segundos} Sekunden clippen',
+  'Gravando… daqui a pouco dá para clipar': 'Nimmt auf… gleich kannst du clippen',
 } satisfies Record<string, string>;

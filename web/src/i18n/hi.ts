@@ -735,4 +735,6 @@ export default {
   'Nebulosa': 'नीहारिका',
   'Prisma': 'प्रिज़्म',
   'Vitral': 'रंगीन काँच',
+  'Clipar os últimos {segundos} segundos': 'पिछले {segundos} सेकंड क्लिप करो',
+  'Gravando… daqui a pouco dá para clipar': 'रिकॉर्ड हो रहा है… थोड़ी देर में क्लिप कर पाओगे',
 } satisfies Record<string, string>;

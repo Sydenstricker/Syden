@@ -1,5 +1,6 @@
 import { Download, Scissors, Send, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from './api';
 import { type Clipe, corrigirDuracao, type GravacaoEmRolagem, gravarEmRolagem, nomeDoClipe, SEGUNDOS_DO_CLIPE } from './clips';
 import { nomeDeCanal } from './bidi';
@@ -127,16 +128,21 @@ function Previa({
 }
 
 /**
- * O botão de clipe. Enquanto houver uma transmissão na tela, ele grava em silêncio os últimos segundos;
- * ao ser apertado, mostra o que guardou.
+ * A GRAVAÇÃO EM ROLAGEM, COMO GANCHO — e ela NÃO PODE morar dentro do menu "...".
+ *
+ * Esta separação é o conserto do defeito que deixava a tesoura inútil. O componente do botão vive
+ * dentro de um menu que abre e fecha; a gravação precisa viver enquanto a TRANSMISSÃO existir, que é
+ * a premissa inteira da função: ela grava calada no fundo para você poder clipar uma jogada que JÁ
+ * aconteceu. Presa ao botão, ela morria a cada fechada de menu e recomeçava do zero — e os "últimos
+ * trinta segundos" nunca passavam dos segundos em que o menu esteve aberto.
+ *
+ * Por isso quem chama este gancho é o palco (VoiceStage), que fica de pé a chamada inteira.
  */
-export function ClipButton({ stream, de, canais }: { stream: MediaStream | null; de: string; canais: Channel[] }) {
+export function useClipe(stream: MediaStream | null) {
   const t = useT();
   const gravacao = useRef<GravacaoEmRolagem | null>(null);
-  // O "existe gravação" PRECISA SER ESTADO, e não só o ref. Esta foi a razão de a tesoura demorar a
-  // aparecer: escrever num ref não redesenha nada, então o botão continuava escondido pelo
-  // `return null` até que alguma OUTRA mudança redesenhasse o componente — e a primeira que havia
-  // era o `setPronto` do relógio, três segundos depois. O botão existia e ninguém o via.
+  // O "existe gravação" PRECISA SER ESTADO, e não só o ref: escrever num ref não redesenha nada, e
+  // por isso o botão só aparecia três segundos depois, quando o relógio mexia em outro estado.
   const [gravando, setGravando] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [clipe, setClipe] = useState<Clipe | null>(null);
@@ -165,34 +171,69 @@ export function ClipButton({ stream, de, canais }: { stream: MediaStream | null;
     };
   }, [stream]);
 
-  if (!stream || !gravando) return null;
+  const pegar = useCallback(() => {
+    setPegando(true);
+    setErro(null);
+    void gravacao.current
+      ?.pegar()
+      .then((feito) => {
+        // CLIPE VAZIO TEM DE DIZER ALGUMA COISA, em vez de parecer um botão quebrado.
+        if (feito) setClipe(feito);
+        else setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.'));
+      })
+      .catch(() => setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.')))
+      .finally(() => setPegando(false));
+  }, [t]);
+
+  return {
+    /** Há transmissão e o navegador sabe gravá-la. */
+    disponivel: Boolean(stream) && gravando,
+    pronto,
+    pegando,
+    erro,
+    clipe,
+    pegar,
+    fechar: useCallback(() => setClipe(null), []),
+  };
+}
+
+export type EstadoDoClipe = ReturnType<typeof useClipe>;
+
+/** Só o botão. Mora dentro do menu "...", e pode ser desmontado sem levar a gravação junto. */
+export function ClipButton({ clipe }: { clipe: EstadoDoClipe }) {
+  const t = useT();
+  if (!clipe.disponivel) return null;
 
   return (
-    <>
-      <IconButton
-        label={pronto ? `Clipar os últimos ${SEGUNDOS_DO_CLIPE} segundos` : 'Gravando… daqui a pouco dá para clipar'}
-        disabled={!pronto || pegando}
-        onClick={() => {
-          setPegando(true);
-          setErro(null);
-          void gravacao.current
-            ?.pegar()
-            .then((feito) => {
-              // CLIPE VAZIO TEM DE DIZER ALGUMA COISA. Antes, um `pegar()` que devolvesse null
-              // simplesmente não abria nada, e o botão parecia quebrado — que é como ele foi
-              // descrito: "cliquei na tesoura e não funcionou". A causa principal era a corrida
-              // dentro de clips.ts, já consertada; o aviso fica para o que ainda possa falhar.
-              if (feito) setClipe(feito);
-              else setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.'));
-            })
-            .catch(() => setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.')))
-            .finally(() => setPegando(false));
-        }}
-      >
-        <Scissors />
-      </IconButton>
-      {erro && <p className="form-error clipe-erro">{erro}</p>}
-      {clipe && <Previa blob={clipe.blob} segundos={clipe.segundos} de={de} canais={canais} onFechar={() => setClipe(null)} />}
-    </>
+    <IconButton
+      label={
+        clipe.pronto
+          ? t('Clipar os últimos {segundos} segundos', { segundos: SEGUNDOS_DO_CLIPE })
+          : t('Gravando… daqui a pouco dá para clipar')
+      }
+      disabled={!clipe.pronto || clipe.pegando}
+      onClick={clipe.pegar}
+    >
+      <Scissors />
+    </IconButton>
+  );
+}
+
+/**
+ * A prévia e o aviso de erro, desenhados FORA do menu.
+ *
+ * Eles iam no mesmo lugar do botão, lá dentro do menu "...". Um diálogo `position: fixed` dentro de
+ * um menu depende de nenhum ancestral ter transform, filter ou contain — e o dia em que um tiver, o
+ * diálogo passa a se posicionar em relação a ele e vai parar fora da tela, sem erro nenhum. O portal
+ * tira a dúvida: o diálogo é filho do `body`, como os outros do Syden.
+ */
+export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de: string; canais: Channel[] }) {
+  if (clipe.erro) {
+    return createPortal(<p className="form-error clipe-erro">{clipe.erro}</p>, document.body);
+  }
+  if (!clipe.clipe) return null;
+  return createPortal(
+    <Previa blob={clipe.clipe.blob} segundos={clipe.clipe.segundos} de={de} canais={canais} onFechar={clipe.fechar} />,
+    document.body,
   );
 }

@@ -724,4 +724,6 @@ export default {
   'Nebulosa': '성운',
   'Prisma': '프리즘',
   'Vitral': '스테인드글라스',
+  'Clipar os últimos {segundos} segundos': '마지막 {segundos}초 클립하기',
+  'Gravando… daqui a pouco dá para clipar': '녹화 중… 곧 클립할 수 있어요',
 } satisfies Record<string, string>;

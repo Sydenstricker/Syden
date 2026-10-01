@@ -722,4 +722,6 @@ export default {
   'Nebulosa': '星云',
   'Prisma': '棱镜',
   'Vitral': '彩色玻璃',
+  'Clipar os últimos {segundos} segundos': '剪下最后 {segundos} 秒',
+  'Gravando… daqui a pouco dá para clipar': '正在录制…再过一会儿就能剪',
 } satisfies Record<string, string>;
