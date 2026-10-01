@@ -152,6 +152,21 @@ if (process.argv.includes('--proximo')) {
   console.log(`\nO PRÓXIMO É O ${proximo.nome.toUpperCase()} — ${proximo.nativo} (${proximo.codigo})\n`);
   console.log(`  oficial em ${proximo.paises} país(es) da ONU · escrita ${proximo.escrita}${proximo.rtl ? ' · DA DIREITA PARA A ESQUERDA' : ''}\n`);
   console.log(`  O QUE ELE TRAZ:\n    ${armadilha(proximo)}\n`);
+
+  // OS ALGARISMOS, MEDIDOS E NÃO SUPOSTOS. Duas línguas na mesma escrita podem ter numerações
+  // opostas — o urdu escreve 123 e o persa escreve ۱۲۳ —, e quem traduz não tem como adivinhar.
+  // Todo número da tela passa pelo Intl, então o que estiver escrito à mão no dicionário tem de
+  // combinar com o que aparece aqui. Errar não dá erro: dá duas numerações na mesma frase.
+  const mil = new Intl.NumberFormat(proximo.codigo).format(1234567);
+  const grande = new Intl.NumberFormat(proximo.codigo, { notation: 'compact' }).format(proximo.falantes * 1_000_000);
+  console.log(`  OS ALGARISMOS QUE A TELA VAI DESENHAR (é o Intl quem decide, não você):`);
+  console.log(`    1234567 → ${mil}        número grande → ${grande}`);
+  console.log(
+    /[0-9]/.test(mil)
+      ? '    São os latinos. Escreva os números do dicionário com 0-9, como no português.\n'
+      : '    NÃO são os latinos. Todo número CONTADO numa frase tem de ser escrito com estes;\n' +
+          '    identificador técnico (1080p, 512 KB, 128×128) fica em 0-9, porque é código.\n',
+  );
   console.log('  O CAMINHO, na ordem:');
   console.log(`    1. node scripts/idiomas.mjs --novo ${proximo.codigo}`);
   console.log('    2. traduzir, e escrever NO CABEÇALHO do arquivo a decisão de TRATAMENTO e o');

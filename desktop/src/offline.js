@@ -136,6 +136,13 @@ const TEXTOS = {
     tentando: 'Đang thử…',
     codigo: 'OFFLINE — không có kết nối',
   },
+  fa: {
+    titulo: 'ارتباط برقرار نشد',
+    explicacao: 'اینترنتتان را ببینید. ممکن است سرور هم خاموش باشد.',
+    botao: 'تلاش دوباره',
+    tentando: 'در حال تلاش…',
+    codigo: 'OFFLINE — بدون ارتباط',
+  },
   ur: {
     titulo: 'رابطہ نہیں ہو سکا',
     explicacao: 'اپنا انٹرنیٹ دیکھ لیں۔ ہو سکتا ہے سرور بھی بند ہو۔',
@@ -153,7 +160,7 @@ const TEXTOS = {
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
-const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar', 'ur']);
+const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar', 'ur', 'fa']);
 
 /**
  * O idioma, pela raiz do que o sistema informa.
