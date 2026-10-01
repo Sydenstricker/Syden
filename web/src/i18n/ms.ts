@@ -743,4 +743,6 @@ export default {
   'Tirar a capa': 'Tanggalkan kulit',
   'Trocar a capa': 'Tukar kulit',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Imej lebar, sekitar 1200 kali 300. GIF beranimasi boleh, dan ia beranimasi betul-betul. Tanpa kulit, kekal seni yang anda pilih untuk alu-aluan.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Masih mengumpul saat-saat pertama. Cuba sebentar lagi.',
+  'Não há transmissão para clipar agora.': 'Tiada siaran untuk diklip sekarang.',
 } satisfies Record<string, string>;

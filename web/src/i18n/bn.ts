@@ -740,4 +740,6 @@ export default {
   'Tirar a capa': 'প্রচ্ছদ সরাও',
   'Trocar a capa': 'প্রচ্ছদ বদলাও',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'একটা চওড়া ছবি, মোটামুটি ১২০০ বাই ৩০০। অ্যানিমেটেড GIF চলে, আর সত্যিই নড়ে। প্রচ্ছদ না থাকলে স্বাগত পাতার জন্য বেছে নেওয়া ছবিটাই থাকে।',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'এখনো প্রথম কয়েক সেকেন্ড জমছে। একটু পরে চেষ্টা করো।',
+  'Não há transmissão para clipar agora.': 'এখন ক্লিপ করার মতো কোনো সম্প্রচার নেই।',
 } satisfies Record<string, string>;

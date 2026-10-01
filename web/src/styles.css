@@ -9976,3 +9976,46 @@ body.arrastando-barra {
     opacity: 0;
   }
 }
+
+/* ---------- O aviso do clipe ---------- */
+/* ELE ERA UM <p> SOLTO NO FIM DO BODY, sem posicionamento nenhum: desenhado depois da aplicação
+   inteira, fora da tela, invisível. Um aviso que não se vê é a mesma coisa que não avisar — e o
+   sintoma dele era idêntico ao do botão quebrado que ele existia para explicar.
+   Agora é uma tarja no pé da tela, acima da barra da chamada, que some sozinha com a próxima ação. */
+.clipe-aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  z-index: 60;
+  /* O AVISO NÃO PEGA CLIQUE. Ele fica por cima da barra da chamada, e sem isto ele engolia o clique
+     seguinte — inclusive o da própria tesoura, que é o botão que a pessoa vai tentar de novo. */
+  pointer-events: none;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--bg-float);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px var(--shadow);
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+  animation: clipe-aviso-entra 0.18s ease;
+}
+
+@keyframes clipe-aviso-entra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clipe-aviso {
+    animation: none;
+  }
+}

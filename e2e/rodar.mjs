@@ -13,7 +13,7 @@ const AQUI = dirname(fileURLToPath(import.meta.url));
 const SITE = process.env.SITE ?? 'http://localhost:5174';
 
 /** Os que precisam do LiveKit no ar (voz, vídeo, tela), e não só da API e do site. */
-const PRECISAM_DE_LIVEKIT = new Set(['sob-demanda', 'menu-mais-da-chamada']);
+const PRECISAM_DE_LIVEKIT = new Set(['sob-demanda', 'menu-mais-da-chamada', 'clipe']);
 
 /**
  * Estes contam com ser a PRIMEIRA conta de um Syden recém-criado, porque a primeira conta vira dona e é

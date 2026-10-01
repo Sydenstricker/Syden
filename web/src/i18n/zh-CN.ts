@@ -729,4 +729,6 @@ export default {
   'Tirar a capa': '移除封面',
   'Trocar a capa': '更换封面',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '一张宽图，1200×300 左右。动图可以，而且是真的会动。没有封面时，显示你为欢迎页选的那张图。',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': '还在攒最开始的几秒。过一会儿再试。',
+  'Não há transmissão para clipar agora.': '现在没有可以剪的直播。',
 } satisfies Record<string, string>;

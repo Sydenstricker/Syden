@@ -742,4 +742,6 @@ export default {
   'Tirar a capa': 'De omslag weghalen',
   'Trocar a capa': 'De omslag wisselen',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Een brede afbeelding, rond 1200 bij 300. Bewegende GIF kan, en beweegt echt. Zonder omslag blijft de kunst die je voor het welkom koos.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Nog bezig met de eerste seconden. Probeer het zo.',
+  'Não há transmissão para clipar agora.': 'Er is nu geen stream om te clippen.',
 } satisfies Record<string, string>;

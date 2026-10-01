@@ -768,4 +768,6 @@ export default {
   'Tirar a capa': 'Retirer la bannière',
   'Trocar a capa': 'Changer la bannière',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Une image large, autour de 1200 par 300. Le GIF animé fonctionne, et il s’anime vraiment. Sans bannière, c’est l’art que tu as choisi pour l’accueil qui reste.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Je rassemble encore les premières secondes. Réessaie dans un instant.',
+  'Não há transmissão para clipar agora.': 'Il n’y a pas de direct à clipper pour le moment.',
 } satisfies Record<string, string>;

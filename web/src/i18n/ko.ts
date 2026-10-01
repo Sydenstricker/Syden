@@ -731,4 +731,6 @@ export default {
   'Tirar a capa': '커버 떼기',
   'Trocar a capa': '커버 바꾸기',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '가로로 긴 이미지, 1200×300쯤이요. 움직이는 GIF도 되고, 진짜로 움직여요. 커버가 없으면 환영 화면에 고른 그림이 나와요.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': '아직 처음 몇 초를 모으는 중이에요. 잠시 뒤에 해보세요.',
+  'Não há transmissão para clipar agora.': '지금은 클립할 방송이 없어요.',
 } satisfies Record<string, string>;

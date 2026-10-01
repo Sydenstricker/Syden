@@ -740,4 +740,6 @@ export default {
   'Tirar a capa': 'Lepas sampul',
   'Trocar a capa': 'Ganti sampul',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Gambar lebar, sekitar 1200 kali 300. GIF animasi bisa, dan benar-benar bergerak. Tanpa sampul, yang tampil adalah gambar yang kamu pilih buat sambutan.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Masih mengumpulkan detik-detik pertama. Coba sebentar lagi.',
+  'Não há transmissão para clipar agora.': 'Tidak ada siaran untuk diklip sekarang.',
 } satisfies Record<string, string>;

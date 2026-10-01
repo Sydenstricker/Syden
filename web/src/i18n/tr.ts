@@ -737,4 +737,6 @@ export default {
   'Tirar a capa': 'Kapağı kaldır',
   'Trocar a capa': 'Kapağı değiştir',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Geniş bir görsel, 1200 çarpı 300 civarı. Hareketli GIF olur, ve gerçekten oynar. Kapak yoksa, karşılama için seçtiğin görsel kalır.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Hâlâ ilk saniyeleri topluyor. Birazdan tekrar dene.',
+  'Não há transmissão para clipar agora.': 'Şu anda kliplenecek bir yayın yok.',
 } satisfies Record<string, string>;

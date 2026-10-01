@@ -742,4 +742,6 @@ export default {
   'Tirar a capa': 'कवर हटाओ',
   'Trocar a capa': 'कवर बदलो',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'एक चौड़ी तस्वीर, करीब 1200 गुणा 300। एनिमेटेड GIF चलता है, और सच में हिलता है। कवर न हो तो वही कला दिखती है जो तुमने स्वागत के लिए चुनी थी।',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'अभी पहले कुछ सेकंड जुट रहे हैं। थोड़ी देर में कोशिश करो।',
+  'Não há transmissão para clipar agora.': 'अभी क्लिप करने के लिए कोई स्ट्रीम नहीं है।',
 } satisfies Record<string, string>;

@@ -171,19 +171,54 @@ export function useClipe(stream: MediaStream | null) {
     };
   }, [stream]);
 
+  /**
+   * O BOTÃO NUNCA FICA CALADO, e esta é a terceira tentativa de consertar a tesoura.
+   *
+   * As duas primeiras acharam defeitos reais — uma corrida dentro de clips.ts, e o menu "..." que se
+   * desmontava ao clique — e mesmo assim o relato continuou sendo "cliquei e não aconteceu nada".
+   * A lição não é sobre clipes: é que um botão que pode falhar em silêncio vai falhar em silêncio,
+   * e aí nem quem usa nem quem conserta fica sabendo de qual das cinco coisas se trata.
+   *
+   * Agora todo caminho termina numa frase na tela, inclusive o de "ainda não dá". O botão deixou de
+   * ser desabilitado por isso: botão apagado é a forma mais educada de não responder.
+   */
   const pegar = useCallback(() => {
+    if (!gravacao.current) {
+      setErro(t('Não há transmissão para clipar agora.'));
+      return;
+    }
+    if (!pronto) {
+      setErro(t('Ainda juntando os primeiros segundos. Tente daqui a pouco.'));
+      return;
+    }
     setPegando(true);
     setErro(null);
     void gravacao.current
-      ?.pegar()
+      .pegar()
       .then((feito) => {
-        // CLIPE VAZIO TEM DE DIZER ALGUMA COISA, em vez de parecer um botão quebrado.
         if (feito) setClipe(feito);
         else setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.'));
       })
-      .catch(() => setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.')))
+      .catch((falha) => {
+        // O console recebe o erro de verdade. Sem isto, a próxima vez que alguém disser "não
+        // aconteceu nada" vamos estar exatamente onde estamos agora: adivinhando.
+        console.warn('[syden] o clipe falhou', falha);
+        setErro(t('Não deu para fechar o clipe agora. Tente de novo em alguns segundos.'));
+      })
       .finally(() => setPegando(false));
-  }, [t]);
+  }, [pronto, t]);
+
+  /**
+   * O AVISO SOME SOZINHO depois de cinco segundos.
+   *
+   * Sem isto ele fica na tela até a pessoa conseguir clipar — ou seja, some exatamente quando já não
+   * importa. Cinco segundos é o tempo de ler uma frase e tentar de novo, que é o que o aviso pede.
+   */
+  useEffect(() => {
+    if (!erro) return;
+    const relogio = setTimeout(() => setErro(null), 5000);
+    return () => clearTimeout(relogio);
+  }, [erro]);
 
   return {
     /** Há transmissão e o navegador sabe gravá-la. */
@@ -211,7 +246,9 @@ export function ClipButton({ clipe }: { clipe: EstadoDoClipe }) {
           ? t('Clipar os últimos {segundos} segundos', { segundos: SEGUNDOS_DO_CLIPE })
           : t('Gravando… daqui a pouco dá para clipar')
       }
-      disabled={!clipe.pronto || clipe.pegando}
+      // SÓ "pegando" DESABILITA. Enquanto a gravação junta os primeiros segundos o botão continua
+      // clicável, e clicar diz o que está acontecendo — ver o comentário em useClipe.
+      disabled={clipe.pegando}
       onClick={clipe.pegar}
     >
       <Scissors />
@@ -228,8 +265,17 @@ export function ClipButton({ clipe }: { clipe: EstadoDoClipe }) {
  * tira a dúvida: o diálogo é filho do `body`, como os outros do Syden.
  */
 export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de: string; canais: Channel[] }) {
+  // O AVISO ERA UM <p> SOLTO NO FIM DO BODY, e isso é um defeito que eu mesmo pus aqui: sem
+  // posicionamento nenhum, ele era desenhado depois de toda a aplicação, fora da tela, invisível.
+  // Um aviso que não se vê é a mesma coisa que não avisar — e o sintoma é idêntico ao do botão
+  // quebrado que ele estava tentando explicar.
   if (clipe.erro) {
-    return createPortal(<p className="form-error clipe-erro">{clipe.erro}</p>, document.body);
+    return createPortal(
+      <div className="clipe-aviso" role="status">
+        {clipe.erro}
+      </div>,
+      document.body,
+    );
   }
   if (!clipe.clipe) return null;
   return createPortal(

@@ -748,4 +748,6 @@ export default {
   'Tirar a capa': 'Quitar la portada',
   'Trocar a capa': 'Cambiar la portada',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Una imagen ancha, de 1200 por 300 o parecida. El GIF animado vale, y anima de verdad. Sin portada, queda el arte que elegiste en la bienvenida.',
+  'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Todavía juntando los primeros segundos. Prueba en un momento.',
+  'Não há transmissão para clipar agora.': 'No hay transmisión para clipar ahora.',
 } satisfies Record<string, string>;
