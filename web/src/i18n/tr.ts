@@ -732,4 +732,9 @@ export default {
   'Vitral': 'Vitray',
   'Clipar os últimos {segundos} segundos': 'Son {segundos} saniyeyi kliple',
   'Gravando… daqui a pouco dá para clipar': 'Kaydediyor… birazdan klipleyebilirsin',
+  'Capa da comunidade': 'Topluluk kapağı',
+  'Enviar uma capa': 'Bir kapak yükle',
+  'Tirar a capa': 'Kapağı kaldır',
+  'Trocar a capa': 'Kapağı değiştir',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Geniş bir görsel, 1200 çarpı 300 civarı. Hareketli GIF olur, ve gerçekten oynar. Kapak yoksa, karşılama için seçtiğin görsel kalır.',
 } satisfies Record<string, string>;

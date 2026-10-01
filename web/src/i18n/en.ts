@@ -743,4 +743,9 @@ export default {
   'Vitral': 'Stained glass',
   'Clipar os últimos {segundos} segundos': 'Clip the last {segundos} seconds',
   'Gravando… daqui a pouco dá para clipar': 'Recording… you can clip in a moment',
+  'Capa da comunidade': 'Community cover',
+  'Enviar uma capa': 'Upload a cover',
+  'Tirar a capa': 'Remove the cover',
+  'Trocar a capa': 'Change the cover',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'A wide image, around 1200 by 300. Animated GIFs work, and they really animate. With no cover, the art you picked for the welcome screen shows instead.',
 } satisfies Record<string, string>;

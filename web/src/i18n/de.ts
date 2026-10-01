@@ -765,4 +765,9 @@ export default {
   'Vitral': 'Kirchenfenster',
   'Clipar os últimos {segundos} segundos': 'Die letzten {segundos} Sekunden clippen',
   'Gravando… daqui a pouco dá para clipar': 'Nimmt auf… gleich kannst du clippen',
+  'Capa da comunidade': 'Community-Titelbild',
+  'Enviar uma capa': 'Ein Titelbild hochladen',
+  'Tirar a capa': 'Das Titelbild entfernen',
+  'Trocar a capa': 'Das Titelbild wechseln',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Ein breites Bild, etwa 1200 mal 300. Animiertes GIF geht, und es bewegt sich wirklich. Ohne Titelbild bleibt die Grafik, die du für die Begrüßung ausgesucht hast.',
 } satisfies Record<string, string>;

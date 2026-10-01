@@ -737,4 +737,9 @@ export default {
   'Vitral': 'रंगीन काँच',
   'Clipar os últimos {segundos} segundos': 'पिछले {segundos} सेकंड क्लिप करो',
   'Gravando… daqui a pouco dá para clipar': 'रिकॉर्ड हो रहा है… थोड़ी देर में क्लिप कर पाओगे',
+  'Capa da comunidade': 'कम्युनिटी का कवर',
+  'Enviar uma capa': 'एक कवर भेजो',
+  'Tirar a capa': 'कवर हटाओ',
+  'Trocar a capa': 'कवर बदलो',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'एक चौड़ी तस्वीर, करीब 1200 गुणा 300। एनिमेटेड GIF चलता है, और सच में हिलता है। कवर न हो तो वही कला दिखती है जो तुमने स्वागत के लिए चुनी थी।',
 } satisfies Record<string, string>;

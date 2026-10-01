@@ -724,4 +724,9 @@ export default {
   'Vitral': '彩色玻璃',
   'Clipar os últimos {segundos} segundos': '剪下最后 {segundos} 秒',
   'Gravando… daqui a pouco dá para clipar': '正在录制…再过一会儿就能剪',
+  'Capa da comunidade': '社区封面',
+  'Enviar uma capa': '上传一张封面',
+  'Tirar a capa': '移除封面',
+  'Trocar a capa': '更换封面',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '一张宽图，1200×300 左右。动图可以，而且是真的会动。没有封面时，显示你为欢迎页选的那张图。',
 } satisfies Record<string, string>;

@@ -9805,51 +9805,6 @@ body.arrastando-barra {
   background: var(--bg-input);
 }
 
-/* ---------- A faixa da comunidade, no alto da lista de canais ---------- */
-/* A arte que o dono escolhe para a tela de boas-vindas passa a viver AQUI também. Antes ela aparecia
-   uma vez, na primeira entrada, e sumia — e a barra lateral de toda comunidade era igual à de todas
-   as outras. É o que o Discord faz com a imagem de capa: o olho acha a cor antes de achar o nome. */
-.sidebar-header[data-tom] {
-  /* A ALTURA É O QUE FAZ A FAIXA SER FAIXA. Com os 48px do cabeçalho comum ela virava uma listra, e
-     o efeito que se quer — reconhecer a comunidade de relance, antes de ler o nome — precisa de uma
-     área que o olho pegue. Noventa e seis pixels é mais ou menos o que o Discord usa na capa, e
-     ainda cabe a lista de canais inteira sem rolagem numa tela comum.
-     O nome desce para o pé da faixa, como num cartaz. */
-  height: 96px;
-  align-items: flex-end;
-  padding-bottom: 10px;
-  /* O degradê vem do style do elemento, e a sombra embaixo some: a faixa já se separa pela cor. */
-  box-shadow: none;
-  border-bottom: 1px solid var(--border);
-}
-
-/* O botão de baixar sobe para o alto da faixa, para não disputar a linha com o nome. */
-.sidebar-header[data-tom] .icon-button {
-  align-self: flex-start;
-  margin-top: 8px;
-}
-
-/* Arte escura pede texto claro; arte clara pede texto escuro. Errar isto é o único jeito de a faixa
-   ficar ilegível, e por isso o tom vem junto da arte (ver boasVindas.ts). */
-.sidebar-header[data-tom='escuro'],
-.sidebar-header[data-tom='escuro'] .icon-button {
-  color: #f2f3f5;
-}
-
-.sidebar-header[data-tom='claro'],
-.sidebar-header[data-tom='claro'] .icon-button {
-  color: #1e1f22;
-}
-
-/* O nome ganha um contorno de sombra para sobreviver a qualquer ponto do degradê. */
-.sidebar-header[data-tom] .sidebar-brand {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-}
-
-.sidebar-header[data-tom='claro'] .sidebar-brand {
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.45);
-}
-
 /* ---------- A loja reage ao mouse ---------- */
 /* "Muitos elementos estáticos. Quando o usuário passar o mouse encima, o elemento deveria tomar
    vida." É o que separa uma vitrine de uma planilha: o cartão se levanta um pouco, a amostra cresce,
@@ -9928,5 +9883,96 @@ body.arrastando-barra {
   .loja-cartao:hover .loja-amostra.cor,
   .loja-cartao:hover .avatar[data-moldura]::after {
     animation: none;
+  }
+}
+
+/* ---------- A capa da comunidade ---------- */
+/* A faixa larga no alto da lista de canais: uma foto, ou o degradê das boas-vindas. Ver
+   web/src/CapaDaComunidade.tsx para o porquê das duas camadas. */
+
+.sidebar-header.com-capa {
+  /* A ALTURA É O QUE FAZ A FAIXA SER FAIXA. Com os 48px do cabeçalho comum ela vira uma listra, e o
+     efeito que se quer — reconhecer a comunidade de relance, antes de ler o nome — precisa de uma
+     área que o olho pegue. Noventa e seis pixels é mais ou menos o que o Discord usa na capa, e
+     ainda cabe a lista de canais inteira sem rolagem numa tela comum. */
+  position: relative;
+  height: 96px;
+  align-items: flex-end;
+  padding-bottom: 10px;
+  box-shadow: none;
+  border-bottom: 1px solid var(--border);
+}
+
+/* O botão de baixar sobe para o alto da faixa, para não disputar a linha com o nome. */
+.sidebar-header.com-capa .icon-button {
+  align-self: flex-start;
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-header.com-capa .sidebar-brand {
+  position: relative;
+  z-index: 1;
+  /* O contorno de sombra é o que faz o nome sobreviver a QUALQUER foto. Sem ele, uma capa clara
+     apaga o nome, e não dá para saber se uma foto é clara sem lê-la pixel a pixel. */
+  color: #f2f3f5;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.75),
+    0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.capa {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Sobre foto, um escurecido no pé: é o que garante o nome legível sem escurecer a imagem inteira. */
+.capa.com-foto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.65) 100%);
+}
+
+/* O BRILHO QUE ATRAVESSA. É o elemento com movimento pedido — "como no Call of Duty" —, e é uma
+   faixa de luz inclinada que cruza a capa a cada oito segundos. CSS puro: não pesa, não busca
+   arquivo nenhum e não precisa de moderação. */
+.capa::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  bottom: -50%;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0.28) 50%, transparent);
+  transform: skewX(-18deg);
+  animation: capa-brilho 8s ease-in-out infinite;
+}
+
+@keyframes capa-brilho {
+  /* O brilho passa e some; os dois terços parados no fim são o que separa "enfeite" de "pisca-pisca". */
+  0% { left: -60%; opacity: 0; }
+  12% { opacity: 1; }
+  42% { left: 115%; opacity: 0; }
+  100% { left: 115%; opacity: 0; }
+}
+
+/* A prévia nas Configurações: a mesma capa, num quadro de verdade em vez de encostada no cabeçalho. */
+.capa-previa {
+  position: relative;
+  height: 110px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+/* QUEM PEDIU MENOS MOVIMENTO FICA SÓ COM A IMAGEM. O brilho é enfeite puro e some inteiro; a foto e
+   o degradê continuam, porque eles são a informação. */
+@media (prefers-reduced-motion: reduce) {
+  .capa::after {
+    animation: none;
+    opacity: 0;
   }
 }

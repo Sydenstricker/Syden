@@ -737,4 +737,9 @@ export default {
   'Vitral': 'Kioo cha rangi',
   'Clipar os últimos {segundos} segundos': 'Kata sekunde {segundos} za mwisho',
   'Gravando… daqui a pouco dá para clipar': 'Inarekodi… baada ya muda mfupi utaweza kukata',
+  'Capa da comunidade': 'Jalada la jumuiya',
+  'Enviar uma capa': 'Pakia jalada',
+  'Tirar a capa': 'Ondoa jalada',
+  'Trocar a capa': 'Badilisha jalada',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Picha pana, karibu 1200 kwa 300. GIF inayosogea inafanya kazi, na inasogea kweli. Bila jalada, inabaki sanaa uliyochagua kwenye ukaribisho.',
 } satisfies Record<string, string>;

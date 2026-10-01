@@ -48,6 +48,8 @@ export interface Community {
   createdBy: number | null;
   /** Muda a cada troca de imagem; entra na URL para o navegador buscar a nova. null = sem imagem. */
   iconVersion: number | null;
+  /** O mesmo, para a CAPA — a faixa larga no alto da lista de canais. null = sem foto, e aí vale a arte. */
+  bannerVersion?: number | null;
   /** O selo que a comunidade conquistou. As três partes vêm juntas ou nenhuma vem. */
   seloTexto?: string | null;
   seloIcone?: string | null;

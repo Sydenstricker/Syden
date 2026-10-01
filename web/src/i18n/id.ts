@@ -735,4 +735,9 @@ export default {
   'Vitral': 'Kaca patri',
   'Clipar os últimos {segundos} segundos': 'Klip {segundos} detik terakhir',
   'Gravando… daqui a pouco dá para clipar': 'Sedang merekam… sebentar lagi bisa diklip',
+  'Capa da comunidade': 'Sampul komunitas',
+  'Enviar uma capa': 'Unggah sampul',
+  'Tirar a capa': 'Lepas sampul',
+  'Trocar a capa': 'Ganti sampul',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Gambar lebar, sekitar 1200 kali 300. GIF animasi bisa, dan benar-benar bergerak. Tanpa sampul, yang tampil adalah gambar yang kamu pilih buat sambutan.',
 } satisfies Record<string, string>;

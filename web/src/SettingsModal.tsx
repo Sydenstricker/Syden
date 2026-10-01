@@ -42,6 +42,7 @@ import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { useDirectory } from './directory';
+import { CapaDaComunidade } from './CapaDaComunidade';
 import { CommunityIcon } from './CommunityIcon';
 import { PainelDoSelo } from './PainelDoSelo';
 import { LixeiraDeCanais } from './LixeiraDeCanais';
@@ -49,7 +50,7 @@ import { ImageCropper } from './ImageCropper';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
-import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareImage, prepareSound } from './upload';
+import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareBanner, prepareImage, prepareSound } from './upload';
 import { SCREEN_PRESETS, type Voice } from './useVoice';
 import { EmojiPackCatalog } from './EmojiPackCatalog';
 import { PackCatalog } from './PackCatalog';
@@ -642,6 +643,7 @@ function CommunitySection({
           <EditorDeBoasVindas community={community} />
           <h3>{t('Imagem')}</h3>
           <CommunityIconEditor community={community} onChanged={onChanged} />
+          <CommunityBannerEditor community={community} onChanged={onChanged} />
           <h3>{t('Convite')}</h3>
           <div className="settings-card">
             <p className="settings-hint">
@@ -784,6 +786,68 @@ function CommunityIconEditor({ community, onChanged }: { community: Community; o
           onCancel={() => setCropping(null)}
           onDone={upload}
         />
+      )}
+    </>
+  );
+}
+
+/**
+ * A CAPA: a faixa larga no alto da lista de canais.
+ *
+ * Sem foto, a faixa mostra a ARTE que o dono escolheu para as boas-vindas (um degradê, ver
+ * boasVindas.ts) — então nunca há faixa vazia, e pôr uma foto é melhorar o que já existe em vez de
+ * preencher um buraco.
+ */
+function CommunityBannerEditor({ community, onChanged }: { community: Community; onChanged: () => void }) {
+  const t = useT();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function enviar(file: File) {
+    setBusy(true);
+    setError(null);
+    try {
+      const image = await prepareBanner(file, 4096 * KB);
+      await api(`/api/communities/${community.id}/capa`, { method: 'PUT', body: { image } });
+      onChanged();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  async function tirar() {
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/api/communities/${community.id}/capa`, { method: 'DELETE' });
+      onChanged();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <>
+      <h3>{t('Capa da comunidade')}</h3>
+      <CapaDaComunidade community={community} className="capa-previa" />
+      <div className="account-actions">
+        <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={(f) => void enviar(f)}>
+          {busy ? t('Enviando…') : community.bannerVersion ? t('Trocar a capa') : t('Enviar uma capa')}
+        </FilePicker>
+        {community.bannerVersion ? (
+          <button className="link-button" onClick={() => void tirar()} disabled={busy}>
+            {t('Tirar a capa')}
+          </button>
+        ) : null}
+      </div>
+      {error ? (
+        <p className="form-error">{error}</p>
+      ) : (
+        <p className="settings-hint">
+          {t('Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.')}
+        </p>
       )}
     </>
   );

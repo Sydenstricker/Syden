@@ -758,4 +758,9 @@ export default {
   'Vitral': 'زجاج ملوّن',
   'Clipar os últimos {segundos} segundos': 'قصّ آخر {segundos} ثانية',
   'Gravando… daqui a pouco dá para clipar': 'يسجّل… بعد قليل يمكنك القص',
+  'Capa da comunidade': 'غلاف المجتمع',
+  'Enviar uma capa': 'ارفع غلافًا',
+  'Tirar a capa': 'انزع الغلاف',
+  'Trocar a capa': 'بدّل الغلاف',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'صورة عريضة، نحو 1200 في 300. صورة GIF المتحركة تصلح، وتتحرّك فعلًا. بلا غلاف، يبقى الرسم الذي اخترته للترحيب.',
 } satisfies Record<string, string>;

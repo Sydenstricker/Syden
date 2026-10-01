@@ -24,7 +24,7 @@ import { SeloDaComunidade } from './SeloDaComunidade';
 import { ConfirmDialog } from './ConfirmDialog';
 import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
-import { acharArte } from './boasVindas';
+import { CapaDaComunidade } from './CapaDaComunidade';
 import { Avatar } from './Avatar';
 import { useT } from './i18n';
 import { Puxador } from './Puxador';
@@ -142,19 +142,15 @@ export function Sidebar({
     />
   );
 
-  const arte = acharArte(arteDaComunidade);
-
   return (
     <nav className="sidebar">
       <Puxador barra="sidebar" lado="direita" />
-      {/* A FAIXA DA COMUNIDADE, no alto da lista de canais.
-          Vem da arte que o dono já escolheu para a tela de boas-vindas — ela existia e aparecia uma
-          vez só, na primeira entrada, e depois sumia para sempre. Aqui ela fica, e é o que faz uma
-          comunidade ser reconhecida de relance em vez de lida: o olho acha a cor antes de achar o
-          nome. É degradê, e não imagem, pelo mesmo acordo de boasVindas.ts — zero armazenamento,
-          zero banda, nada para moderar.
-          Nas conversas privadas não há comunidade, então não há faixa. */}
-      <header className="sidebar-header" data-tom={directMode ? undefined : arte.tom} style={directMode ? undefined : { background: arte.fundo }}>
+      {/* A FAIXA DA COMUNIDADE, no alto da lista de canais: uma foto, se o dono mandou uma, ou o
+          degradê que ele escolheu para as boas-vindas. Ver web/src/CapaDaComunidade.tsx.
+          Nas conversas privadas não há comunidade, então não há faixa — e o cabeçalho volta a ser o
+          cabeçalho comum. */}
+      <header className={`sidebar-header${directMode ? '' : ' com-capa'}`}>
+        {!directMode && <CapaDaComunidade community={community} arte={arteDaComunidade} />}
         <span className="sidebar-brand" title={directMode ? t('Conversas') : community.name}>
           {directMode ? t('Conversas') : community.name}
           {/* O selo fica ao lado do nome da comunidade: é onde a conquista dela faz sentido ser

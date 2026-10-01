@@ -738,4 +738,9 @@ export default {
   'Vitral': 'Kaca berwarna',
   'Clipar os últimos {segundos} segundos': 'Klip {segundos} saat terakhir',
   'Gravando… daqui a pouco dá para clipar': 'Sedang merakam… sekejap lagi boleh klip',
+  'Capa da comunidade': 'Kulit komuniti',
+  'Enviar uma capa': 'Muat naik kulit',
+  'Tirar a capa': 'Tanggalkan kulit',
+  'Trocar a capa': 'Tukar kulit',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Imej lebar, sekitar 1200 kali 300. GIF beranimasi boleh, dan ia beranimasi betul-betul. Tanpa kulit, kekal seni yang anda pilih untuk alu-aluan.',
 } satisfies Record<string, string>;

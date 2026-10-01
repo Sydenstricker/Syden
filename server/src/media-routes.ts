@@ -7,8 +7,11 @@ import { communityRoom } from './realtime.js';
 import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
 const KB = 1024;
-const LIMITS = { avatar: 2048 * KB, emoji: 512 * KB, sound: 1024 * KB }; // avatar maior por causa de GIF animado
-const UPLOAD_BODY_LIMIT = 3 * 1024 * KB; // base64 ocupa ~33% a mais que o arquivo
+// A CAPA É A MAIOR DE TODAS, e com motivo: ela é uma faixa larga que a pessoa olha de perto, e
+// comprimir uma foto de 960 pixels de largura até caber em 2 MB deixa artefato visível. Quatro
+// megabytes é o teto do que o navegador manda depois de redimensionar (ver web/src/upload.ts).
+const LIMITS = { avatar: 2048 * KB, capa: 4096 * KB, emoji: 512 * KB, sound: 1024 * KB }; // avatar maior por causa de GIF animado
+const UPLOAD_BODY_LIMIT = 6 * 1024 * KB; // base64 ocupa ~33% a mais que o arquivo, e a capa vai a 4 MB
 
 function sendFile(reply: FastifyReply, file: { mime: string; data: Uint8Array } | undefined) {
   if (!file) return reply.code(404).send({ error: 'Arquivo não encontrado.' });
@@ -39,6 +42,9 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
   );
   app.get<{ Params: { id: string } }>('/api/communities/:id/icon', async (request, reply) =>
     sendFile(reply, db.findCommunityIcon(Number(request.params.id))),
+  );
+  app.get<{ Params: { id: string } }>('/api/communities/:id/capa', async (request, reply) =>
+    sendFile(reply, db.findCommunityBanner(Number(request.params.id))),
   );
   app.get<{ Params: { id: string } }>('/api/emojis/:id/image', async (request, reply) =>
     sendFile(reply, db.findEmojiFile(Number(request.params.id))),
@@ -98,6 +104,36 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         return community;
       },
     );
+
+    // ---------- Capa da comunidade ----------
+    //
+    // A MESMA PORTA DO ÍCONE, de propósito: parseMediaConferida é o funil por onde toda imagem
+    // enviada passa, e é ele que confere a foto contra a base de abuso infantil antes de ela ficar
+    // disponível (ver server/src/media.ts). Uma rota de imagem que não passe por aqui é uma porta
+    // dos fundos, e o dia em que alguém criar uma vai ser por esquecimento.
+    authed.put<{ Params: { id: string }; Body: { image?: string } }>(
+      '/api/communities/:id/capa',
+      { bodyLimit: UPLOAD_BODY_LIMIT },
+      async (request, reply) => {
+        const access = requireRole(request, reply);
+        if (!access) return reply;
+        if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a capa.' });
+        const media = await parseMediaConferida(request.body?.image, 'image', LIMITS.capa, 'capa-comunidade', access.communityId);
+        if (typeof media === 'string') return reply.code(400).send({ error: media });
+        const community = db.setCommunityBanner(access.communityId, media);
+        io.to(communityRoom(community.id)).emit('community:updated', community);
+        return community;
+      },
+    );
+
+    authed.delete<{ Params: { id: string } }>('/api/communities/:id/capa', async (request, reply) => {
+      const access = requireRole(request, reply);
+      if (!access) return reply;
+      if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode tirar a capa.' });
+      const community = db.setCommunityBanner(access.communityId, null);
+      io.to(communityRoom(community.id)).emit('community:updated', community);
+      return community;
+    });
 
     authed.delete<{ Params: { id: string } }>('/api/communities/:id/icon', async (request, reply) => {
       const access = requireRole(request, reply);

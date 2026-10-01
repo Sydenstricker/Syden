@@ -763,4 +763,9 @@ export default {
   'Vitral': 'Vitrail',
   'Clipar os últimos {segundos} segundos': 'Clipper les {segundos} dernières secondes',
   'Gravando… daqui a pouco dá para clipar': 'Enregistrement… tu pourras clipper dans un instant',
+  'Capa da comunidade': 'Bannière de la communauté',
+  'Enviar uma capa': 'Envoyer une bannière',
+  'Tirar a capa': 'Retirer la bannière',
+  'Trocar a capa': 'Changer la bannière',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Une image large, autour de 1200 par 300. Le GIF animé fonctionne, et il s’anime vraiment. Sans bannière, c’est l’art que tu as choisi pour l’accueil qui reste.',
 } satisfies Record<string, string>;

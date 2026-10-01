@@ -737,4 +737,9 @@ export default {
   'Vitral': 'Glas-in-lood',
   'Clipar os últimos {segundos} segundos': 'De laatste {segundos} seconden clippen',
   'Gravando… daqui a pouco dá para clipar': 'Neemt op… zo kun je clippen',
+  'Capa da comunidade': 'Omslag van de community',
+  'Enviar uma capa': 'Een omslag uploaden',
+  'Tirar a capa': 'De omslag weghalen',
+  'Trocar a capa': 'De omslag wisselen',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Een brede afbeelding, rond 1200 bij 300. Bewegende GIF kan, en beweegt echt. Zonder omslag blijft de kunst die je voor het welkom koos.',
 } satisfies Record<string, string>;

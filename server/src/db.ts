@@ -15,6 +15,8 @@ export interface Community {
   createdBy: number | null;
   /** Muda a cada troca de imagem e entra na URL, para o navegador buscar a nova. null = sem imagem. */
   iconVersion: number | null;
+  /** O mesmo, para a CAPA — a faixa larga no alto da lista de canais. null = sem foto. */
+  bannerVersion?: number | null;
   /**
    * O selo conquistado, ou nulo enquanto não houver. Ver selos.ts.
    *
@@ -204,6 +206,17 @@ db.exec(`
 
   -- Imagem da comunidade (o "ícone do servidor"), no mesmo formato dos avatares.
   CREATE TABLE IF NOT EXISTS community_icons (
+    community_id INTEGER PRIMARY KEY REFERENCES communities(id) ON DELETE CASCADE,
+    mime         TEXT NOT NULL,
+    data         BLOB NOT NULL
+  );
+
+  -- A CAPA DA COMUNIDADE: a faixa larga no alto da lista de canais.
+  --
+  -- É tabela à parte da do ícone, e não uma coluna a mais nela, porque são duas imagens com vidas
+  -- diferentes: o ícone é um quadradinho de 128px que aparece em toda tela, a capa é uma faixa larga
+  -- que aparece numa só. Juntá-las obrigaria a ler a capa inteira toda vez que alguém pede o ícone.
+  CREATE TABLE IF NOT EXISTS community_banners (
     community_id INTEGER PRIMARY KEY REFERENCES communities(id) ON DELETE CASCADE,
     mime         TEXT NOT NULL,
     data         BLOB NOT NULL
@@ -863,6 +876,7 @@ addColumnIfMissing('emojis', 'pack_id', 'INTEGER');
 addColumnIfMissing('attachments', 'expires_at', 'TEXT');
 // Imagem da comunidade: chegou depois das comunidades.
 addColumnIfMissing('communities', 'icon_version', 'INTEGER');
+addColumnIfMissing('communities', 'banner_version', 'INTEGER');
 // Velocidade de rede: chegou depois do painel de saúde.
 addColumnIfMissing('health_samples', 'net_in', 'INTEGER');
 addColumnIfMissing('health_samples', 'net_out', 'INTEGER');
@@ -1039,12 +1053,13 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
     .prepare(
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
+              c.banner_version AS bannerVersion,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
@@ -1107,6 +1122,26 @@ export function setCommunityIcon(communityId: number, icon: { mime: string; data
     db.prepare('UPDATE communities SET icon_version = NULL WHERE id = ?').run(communityId);
   }
   return findCommunity(communityId)!;
+}
+
+/** Guarda (ou apaga, com null) a CAPA da comunidade e marca a versão nova. */
+export function setCommunityBanner(communityId: number, capa: { mime: string; data: Buffer } | null): Community {
+  if (capa) {
+    db.prepare(
+      'INSERT INTO community_banners (community_id, mime, data) VALUES (?, ?, ?) ON CONFLICT(community_id) DO UPDATE SET mime = excluded.mime, data = excluded.data',
+    ).run(communityId, capa.mime, capa.data);
+    db.prepare('UPDATE communities SET banner_version = ? WHERE id = ?').run(Date.now(), communityId);
+  } else {
+    db.prepare('DELETE FROM community_banners WHERE community_id = ?').run(communityId);
+    db.prepare('UPDATE communities SET banner_version = NULL WHERE id = ?').run(communityId);
+  }
+  return findCommunity(communityId)!;
+}
+
+export function findCommunityBanner(communityId: number) {
+  return lendoArquivo(() => db.prepare('SELECT mime, data FROM community_banners WHERE community_id = ?').get(communityId)) as
+    | { mime: string; data: Uint8Array }
+    | undefined;
 }
 
 export function findCommunityIcon(communityId: number) {

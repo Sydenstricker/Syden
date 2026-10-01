@@ -46,6 +46,49 @@ export async function prepareImage(file: File, options: { size: number; fit: 'co
   return readAsDataUrl(blob);
 }
 
+/** A capa da comunidade: larga e baixa, quatro por um. */
+export const CAPA = { largura: 1200, altura: 300 };
+
+/**
+ * Prepara a CAPA da comunidade — e é a única imagem do Syden que não é quadrada.
+ *
+ * NÃO HÁ RECORTE AQUI, de propósito. O recortador (ImageCropper) trabalha num quadrado e devolve um
+ * quadrado; generalizá-lo para 4:1 seria refazê-lo, e o ganho é pequeno: numa faixa larga o que
+ * importa é o meio, e é exatamente isso que o "cover" centralizado entrega. Quem quiser mandar a
+ * parte de cima da foto manda a foto já cortada — e é o que acontece na prática, porque quem escolhe
+ * uma capa escolhe uma imagem larga.
+ *
+ * WEBP a 0,86 porque é uma foto, e não um ícone: a 0,9 o arquivo passa de 1 MB sem diferença visível
+ * no tamanho em que ela é desenhada.
+ */
+export async function prepareBanner(file: File, maxBytes: number) {
+  if (!file.type.startsWith('image/')) throw new Error('Escolha um arquivo de imagem.');
+  // GIF ANIMADO PASSA INTEIRO, sem redesenhar: desenhá-lo num canvas guardaria só o primeiro quadro,
+  // e uma capa animada é justamente o que se quer poder pôr aqui.
+  if (file.type === 'image/gif') {
+    if (file.size > maxBytes) throw new Error(`GIFs animados podem ter até ${Math.round(maxBytes / KB)} KB.`);
+    return readAsDataUrl(file);
+  }
+
+  const bitmap = await createImageBitmap(file).catch(() => {
+    throw new Error('Não foi possível abrir essa imagem.');
+  });
+  const canvas = document.createElement('canvas');
+  canvas.width = CAPA.largura;
+  canvas.height = CAPA.altura;
+  const ctx = canvas.getContext('2d')!;
+  const escala = Math.max(CAPA.largura / bitmap.width, CAPA.altura / bitmap.height);
+  const w = bitmap.width * escala;
+  const h = bitmap.height * escala;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, (CAPA.largura - w) / 2, (CAPA.altura - h) / 2, w, h);
+  bitmap.close();
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.86));
+  if (!blob) throw new Error('Não foi possível processar essa imagem.');
+  return readAsDataUrl(blob);
+}
+
 /**
  * Imagem que veio de um Ctrl+C: tanto de um evento de colar quanto do botão "Colar imagem", que lê a área
  * de transferência direto (o navegador pede permissão na primeira vez).

@@ -759,4 +759,9 @@ export default {
   'Vitral': 'Витраж',
   'Clipar os últimos {segundos} segundos': 'Клип последних {segundos} секунд',
   'Gravando… daqui a pouco dá para clipar': 'Записываю… скоро можно будет вырезать',
+  'Capa da comunidade': 'Обложка сообщества',
+  'Enviar uma capa': 'Загрузить обложку',
+  'Tirar a capa': 'Убрать обложку',
+  'Trocar a capa': 'Сменить обложку',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Широкая картинка, примерно 1200 на 300. Анимированный GIF работает, и правда двигается. Без обложки остаётся та графика, что ты выбрал для приветствия.',
 } satisfies Record<string, string>;

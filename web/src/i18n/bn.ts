@@ -735,4 +735,9 @@ export default {
   'Vitral': 'রঙিন কাচ',
   'Clipar os últimos {segundos} segundos': 'শেষ {segundos} সেকেন্ড ক্লিপ করো',
   'Gravando… daqui a pouco dá para clipar': 'রেকর্ড হচ্ছে… একটু পরে ক্লিপ করা যাবে',
+  'Capa da comunidade': 'কমিউনিটির প্রচ্ছদ',
+  'Enviar uma capa': 'একটা প্রচ্ছদ পাঠাও',
+  'Tirar a capa': 'প্রচ্ছদ সরাও',
+  'Trocar a capa': 'প্রচ্ছদ বদলাও',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'একটা চওড়া ছবি, মোটামুটি ১২০০ বাই ৩০০। অ্যানিমেটেড GIF চলে, আর সত্যিই নড়ে। প্রচ্ছদ না থাকলে স্বাগত পাতার জন্য বেছে নেওয়া ছবিটাই থাকে।',
 } satisfies Record<string, string>;

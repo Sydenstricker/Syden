@@ -726,4 +726,9 @@ export default {
   'Vitral': '스테인드글라스',
   'Clipar os últimos {segundos} segundos': '마지막 {segundos}초 클립하기',
   'Gravando… daqui a pouco dá para clipar': '녹화 중… 곧 클립할 수 있어요',
+  'Capa da comunidade': '커뮤니티 커버',
+  'Enviar uma capa': '커버 올리기',
+  'Tirar a capa': '커버 떼기',
+  'Trocar a capa': '커버 바꾸기',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '가로로 긴 이미지, 1200×300쯤이요. 움직이는 GIF도 되고, 진짜로 움직여요. 커버가 없으면 환영 화면에 고른 그림이 나와요.',
 } satisfies Record<string, string>;

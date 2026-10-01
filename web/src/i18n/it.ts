@@ -737,4 +737,9 @@ export default {
   'Vitral': 'Vetrata',
   'Clipar os últimos {segundos} segundos': 'Clippa gli ultimi {segundos} secondi',
   'Gravando… daqui a pouco dá para clipar': 'Sto registrando… tra poco si può clippare',
+  'Capa da comunidade': 'Copertina della community',
+  'Enviar uma capa': 'Carica una copertina',
+  'Tirar a capa': 'Togli la copertina',
+  'Trocar a capa': 'Cambia la copertina',
+  'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Un’immagine larga, circa 1200 per 300. La GIF animata vale, e si anima davvero. Senza copertina resta la grafica che hai scelto per il benvenuto.',
 } satisfies Record<string, string>;
