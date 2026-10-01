@@ -180,6 +180,76 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   bn: 280,
   ko: 82,
   vi: 85,
+
+  // ---------------------------------------------------------------------------------------------------
+  // DAQUI PARA BAIXO SÃO OS QUE AINDA NÃO TÊM DICIONÁRIO, e eles estão aqui por um motivo só: é este
+  // número que ordena a FILA de tradução (scripts/fila-de-idiomas.mjs). Ordenar por número de países
+  // punha o albanês (7 milhões de falantes, 2 países) na frente do urdu (230 milhões, 1 país), e a
+  // pergunta que a fila responde não é "onde é oficial" — é "quanta gente passa a poder usar o Syden
+  // na língua dela".
+  //
+  // NÃO APARECEM NA TELA. A grade de países só é desenhada para idioma que tem lista em OFICIAL, e
+  // estes não têm. Moram aqui, e não no script, porque este é o lugar onde o projeto guarda "quantas
+  // pessoas falam cada idioma" — guardar metade num arquivo e metade noutro é como as duas listas
+  // começam a discordar.
+  //
+  // Valores redondos, pelas mesmas razões escritas acima: estimativa com casa decimal é mentira com
+  // aparência de medição.
+  // ---------------------------------------------------------------------------------------------------
+  ur: 230,
+  fa: 130,
+  ja: 125,
+  te: 95,
+  ta: 85,
+  ha: 80,
+  th: 70,
+  am: 57,
+  pl: 45,
+  my: 43,
+  uk: 40,
+  az: 35,
+  uz: 35,
+  ne: 32,
+  lo: 30,
+  zu: 28,
+  mg: 25,
+  ro: 25,
+  so: 25,
+  si: 17,
+  af: 17,
+  km: 17,
+  kk: 16,
+  rw: 15,
+  el: 13,
+  hu: 13,
+  sv: 13,
+  ht: 12,
+  sr: 12,
+  cs: 11,
+  he: 9,
+  bg: 8,
+  hr: 7,
+  sq: 7,
+  da: 6,
+  hy: 6,
+  mn: 6,
+  fi: 5,
+  no: 5,
+  sk: 5,
+  ka: 4,
+  lt: 3,
+  mk: 3,
+  sl: 3,
+  ga: 2,
+  lv: 2,
+  dv: 1,
+  et: 1,
+  fj: 1,
+  is: 1,
+  mt: 1,
+  sm: 1,
+  tet: 1,
+  to: 1,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */
