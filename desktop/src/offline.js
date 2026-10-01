@@ -136,6 +136,13 @@ const TEXTOS = {
     tentando: 'Đang thử…',
     codigo: 'OFFLINE — không có kết nối',
   },
+  ja: {
+    titulo: '接続できません',
+    explicacao: 'インターネットを確認してください。サーバーが止まっていることもあります。',
+    botao: 'もう一度試す',
+    tentando: '試しています…',
+    codigo: 'OFFLINE — 接続なし',
+  },
   fa: {
     titulo: 'ارتباط برقرار نشد',
     explicacao: 'اینترنتتان را ببینید. ممکن است سرور هم خاموش باشد.',

@@ -141,6 +141,7 @@ export const OFICIAL: Record<string, string[]> = {
   // O Tajiquistão NÃO entra: lá a língua oficial é o tadjique, escrito em cirílico e com código
   // próprio (tg) — mesma família, outro padrão e outro alfabeto.
   fa: ['IR', 'AF'],
+  ja: ['JP'],
 };
 
 /**
@@ -187,6 +188,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   vi: 85,
   ur: 230,
   fa: 130,
+  ja: 125,
 
   // ---------------------------------------------------------------------------------------------------
   // DAQUI PARA BAIXO SÃO OS QUE AINDA NÃO TÊM DICIONÁRIO, e eles estão aqui por um motivo só: é este
@@ -203,7 +205,6 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   // Valores redondos, pelas mesmas razões escritas acima: estimativa com casa decimal é mentira com
   // aparência de medição.
   // ---------------------------------------------------------------------------------------------------
-  ja: 125,
   te: 95,
   ta: 85,
   ha: 80,

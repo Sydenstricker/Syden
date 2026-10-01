@@ -163,3 +163,84 @@ describe('os campos {assim} sobrevivem à tradução', () => {
     });
   }
 });
+
+describe('cada dicionário usa só a escrita da língua dele', () => {
+  /**
+   * LETRA DE OUTRO ALFABETO NO MEIO DA FRASE, e ela já escapou TRÊS VEZES neste projeto.
+   *
+   * Uma palavra em cirílico dentro de uma frase em coreano. Uma palavra em coreano dentro de uma
+   * frase em japonês. Uma em cirílico, de novo, dentro do japonês. Todas de digitação, todas minhas,
+   * e nenhuma dá erro: o TypeScript compila, o teste de campos passa, a cobertura marca 100%. O que
+   * sai é uma frase com um pedaço ilegível para quem lê — e justamente nas línguas que ninguém da
+   * dupla lê, que são as que não têm revisão humana.
+   *
+   * O QUE SE PROCURA É O ALFABETO ALHEIO, e não "o alfabeto certo": o latino é sempre permitido
+   * (Syden, Windows, GIPHY, H.264, 1080p), e cada língua permite o seu. Uma letra de uma TERCEIRA
+   * escrita não tem como ser proposital.
+   */
+  const ESCRITAS: Record<string, RegExp> = {
+    cirilica: /[Ѐ-ӿ]/,
+    grega: /[Ͱ-Ͽ]/,
+    arabe: /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/,
+    hebraica: /[֐-׿]/,
+    // O BLOCO DO DEVANÁGARI GUARDA PONTUAÇÃO QUE NÃO É DELE. O dandá (।, U+0964) e o dandá duplo
+    // (॥) terminam frase em híndi, em bengali, em nepalês e em mais meia dúzia de escritas índicas —
+    // eles moram no bloco do devanágari por acidente histórico do Unicode, não por pertencerem a ele.
+    // Sem este recorte, o teste acusa 209 linhas do bengali: todas as que terminam em ponto final.
+    devanagari: /[ऀ-ॣ०-ॿ]/,
+    bengali: /[ঀ-৿]/,
+    tamil: /[஀-௿]/,
+    telugu: /[ఀ-౿]/,
+    sinhala: /[඀-෿]/,
+    tailandesa: /[฀-๿]/,
+    khmer: /[ក-៿]/,
+    lao: /[຀-໿]/,
+    birmanesa: /[က-႟]/,
+    etiope: /[ሀ-፿]/,
+    georgiana: /[Ⴀ-ჿ]/,
+    armenia: /[԰-֏]/,
+    thaana: /[ހ-޿]/,
+    // O japonês escreve com kana E com os ideogramas que o chinês usa, então as duas se permitem
+    // mutuamente: procurar hanzi dentro do japonês acusaria 日本語 na primeira linha.
+    chinesa: /[぀-ヿㇰ-ㇿ]/,
+    coreana: /[가-힯ᄀ-ᇿ㄰-㆏]/,
+  };
+
+  /** A escrita declarada de cada idioma, lida de idiomas.ts — que é onde ela mora. */
+  function escritaDe(codigo: string): string | undefined {
+    const texto = readFileSync(`${pastaI18n}idiomas.ts`, 'utf8');
+    // O `\\w` precisa das DUAS barras: dentro de um template literal, `\w` sozinho vira só "w", e a
+    // busca passa a procurar `escrita: '(w+)'` — que não casa com nada e faz o teste reprovar os
+    // dezenove idiomas de uma vez, dizendo que nenhum está na lista.
+    const linha = new RegExp(`codigo: '${codigo}'.*?escrita: '(\\w+)'`).exec(texto);
+    return linha?.[1];
+  }
+
+  for (const codigo of idiomasLigados()) {
+    it(`${codigo}: nenhuma letra de um alfabeto que não é o dele`, () => {
+      const escrita = escritaDe(codigo);
+      assert.ok(escrita, `${codigo} não está na lista IDIOMAS`);
+      const texto = readFileSync(`${pastaI18n}${codigo}.ts`, 'utf8');
+
+      const intrusos: string[] = [];
+      for (const [nome, busca] of Object.entries(ESCRITAS)) {
+        if (nome === escrita) continue;
+        // Chinês e japonês dividem os ideogramas, e um escreve o nome do outro: não se acusam.
+        if ((escrita === 'japonesa' && nome === 'chinesa') || (escrita === 'chinesa' && nome === 'japonesa')) continue;
+        for (const linha of texto.split('\n')) {
+          // O cabeçalho é comentário em português e cita outras línguas de propósito.
+          if (linha.trimStart().startsWith('//')) continue;
+          const achou = busca.exec(linha);
+          if (achou) intrusos.push(`  ${nome}: ${JSON.stringify(linha.trim().slice(0, 90))}`);
+        }
+      }
+      assert.deepEqual(
+        intrusos,
+        [],
+        `${codigo} (escrita ${escrita}) tem letra de outro alfabeto em ${intrusos.length} linha(s).\n` +
+          'Quase sempre é erro de digitação, e ele não dá erro em lugar nenhum:\n' +
+          intrusos.slice(0, 5).join('\n'),
+      );
+    });
+  }
+});
