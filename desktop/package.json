@@ -13,6 +13,7 @@
   },
   "scripts": {
     "dev": "electron .",
+    "test": "node --test test/*.test.mjs",
     "dist": "electron-builder --win",
     "build:native": "node scripts/build-native.js",
     "dist:loja": "electron-builder --win appx"
@@ -78,7 +79,7 @@
       ],
       "addAutoLaunchExtension": false,
       "backgroundColor": "#1e1f22",
-      "customExtensionsPath": "build/extensoes-appx.xml"
+      "customManifestPath": "appxmanifest.xml"
     },
     "protocols": [
       {

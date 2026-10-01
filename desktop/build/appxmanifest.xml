@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  O MANIFESTO DO PACOTE DA MICROSOFT STORE, nosso em vez do modelo do electron-builder.
+
+  ===================================================================================================
+  POR QUE ELE EXISTE, e por que a solução anterior não podia funcionar.
+
+  A regra de firewall (ver o bloco lá embaixo) entrava pelo `appx.customExtensionsPath`, que é a opção
+  do electron-builder para acrescentar extensões. Só que ela injeta DENTRO de <Application>, e
+  `windows.firewallRules` é uma extensão DE PACOTE: ela tem de ser filha de <Package>, ao lado de
+  <Applications>. No lugar errado, o manifesto fica inválido, e o empacotador da Microsoft recusa com
+
+      MakeAppx : error: 0x80080204 - The specified package format is not valid:
+                 The package manifest is not valid.
+
+  **E AÍ NENHUM .appx É GERADO.** Isso é pior do que parece, porque o LEIA.md avisava que "um erro no
+  fim da geração é esperado" — aquele erro é outro, dos links simbólicos, e é inofensivo. Os dois
+  terminam com a tela vermelha, então o aviso certo escondia a falha de verdade. A 0.1.5 ficou sem
+  poder ser gerada, e isso só apareceu quando alguém rodou o comando e FOI OLHAR SE O ARQUIVO SAIU.
+
+  ERAM DOIS ERROS, e os dois precisavam de conserto — medido um a um, tirando de volta uma mudança de
+  cada vez até o empacotador recusar outra vez:
+
+    1. a extensão estava dentro de <Application>, e é de <Package>;
+    2. `Executable` dizia "Syden.exe", e tem de ser o caminho DENTRO do pacote: "app\Syden.exe".
+
+  O que NÃO era necessário, e foi conferido para não entrar remendo à toa: declarar o namespace no
+  <Package> (declarar na própria tag também funciona) e subir a MinVersion.
+  ===================================================================================================
+
+  É UMA CÓPIA DO MODELO do electron-builder (node_modules/app-builder-lib/templates/appx/), com um
+  bloco a mais. Os `${…}` são preenchidos por ele a partir do desktop/package.json — inclusive o
+  `${executable}`, que é usado aqui em DOIS lugares de propósito: o <Application> e a regra de
+  firewall apontam para o mesmo arquivo, e assim não há como um ficar para trás do outro.
+
+  Quando atualizar o electron-builder, vale comparar este arquivo com o modelo novo dele.
+-->
+<Package
+   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+   xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
+   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+   IgnorableNamespaces="desktop2">
+  <!-- use single quotes to avoid double quotes escaping in the publisher value  -->
+  <Identity Name="${identityName}"
+    ProcessorArchitecture="${arch}"
+    Publisher='${publisher}'
+    Version="${version}" />
+  <Properties>
+    <DisplayName>${displayName}</DisplayName>
+    <PublisherDisplayName>${publisherDisplayName}</PublisherDisplayName>
+    <Description>${description}</Description>
+    <Logo>${logo}</Logo>
+  </Properties>
+  <Resources>
+    ${resourceLanguages}
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="${minVersion}" MaxVersionTested="${maxVersionTested}" />
+  </Dependencies>
+  ${capabilities}
+  <Applications>
+    <Application Id="${applicationId}" Executable="${executable}" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+       BackgroundColor="${backgroundColor}"
+       DisplayName="${displayName}"
+       Square150x150Logo="${square150x150Logo}"
+       Square44x44Logo="${square44x44Logo}"
+       Description="${description}">
+        ${lockScreen}
+        ${defaultTile}
+        ${splashScreen}
+      </uap:VisualElements>
+      ${extensions}
+    </Application>
+  </Applications>
+
+  <!--
+    A REGRA DE FIREWALL, declarada no pacote em vez de perguntada à pessoa.
+
+    Sem isto, o Windows abre uma janela de segurança na primeira vez que o Syden usa a rede para voz —
+    "permitir que o Syden se comunique nestas redes" — e ela assusta. Ele viu isso ao receber a 0.1.4
+    e achou que era defeito nosso. Não é: é o que o Windows faz com todo programa novo que abre porta,
+    e o Discord faz a mesma pergunta (pior: numa pasta por versão, ele pergunta de novo a cada
+    atualização).
+
+    Um pacote MSIX pode declarar a regra, e aí o Windows a aplica na INSTALAÇÃO, calado. É o que isto
+    faz, e é o que permite o Syden perguntar menos que o Discord em vez de mais.
+
+    O `IgnorableNamespaces="desktop2"` lá em cima não é enfeite: a MinVersion do pacote é a 10.0.14316,
+    e o `desktop2` só existe a partir da 10.0.17763. Sem ele, um Windows entre as duas não sabe o que
+    é este bloco e pode recusar o pacote inteiro; com ele, ignora o bloco e instala — a pessoa só volta
+    a ver a pergunta do firewall, que é exatamente como era antes.
+  -->
+  <Extensions>
+    <desktop2:Extension Category="windows.firewallRules">
+      <desktop2:FirewallRules Executable="${executable}">
+        <desktop2:Rule Direction="in" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="UDP" Profile="all" />
+        <desktop2:Rule Direction="in" IPProtocol="TCP" Profile="all" />
+        <desktop2:Rule Direction="out" IPProtocol="TCP" Profile="all" />
+      </desktop2:FirewallRules>
+    </desktop2:Extension>
+  </Extensions>
+</Package>
