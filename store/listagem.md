@@ -12,13 +12,19 @@ Cole cada bloco no campo correspondente do Partner Center. Tudo em português do
 | Visibilidade | Oculto na loja; disponível só por link direto (grupo privado de amigos) |
 | Política de privacidade | https://syden.chat/privacidade.html |
 | Site do aplicativo | https://syden.chat/ |
-| Contato de suporte | https://github.com/Sydenstricker/Syden/issues |
+| Contato de suporte | contato@syden.chat |
 
 > **Os dois primeiros endereços apontavam para `sydenstricker.github.io` até 01/10/2026**, de quando o
 > site morava no GitHub Pages. Hoje aquilo é redirecionamento, e a certificação da Store ABRE a URL da
 > política de privacidade — redirecionamento costuma passar, mas é risco sem motivo. No Partner Center
 > os três campos não ficam na descrição: ficam em **Propriedades → Informações de suporte**, e valem a
 > partir da submissão em que forem trocados.
+>
+> **O contato era um link de issues do GitHub**, e isso é pedir que alguém crie conta no GitHub para
+> dizer que o microfone não funciona. Virou `contato@syden.chat` — que é o MESMO endereço que os termos
+> de uso já prometem (web/site/termos.html), e não um terceiro para manter. O domínio recebe pelo
+> Cloudflare Email Routing, mas **cada apelido é criado um a um lá**: o MX existir não prova que este
+> encaminha. Antes de confiar, mande um e-mail para ele e veja se chega.
 
 ## Descrição curta
 
