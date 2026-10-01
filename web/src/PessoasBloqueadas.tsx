@@ -58,11 +58,11 @@ export function PessoasBloqueadas() {
   return (
     <section className="settings-block">
       <h3>
-        <Ban size={16} aria-hidden="true" /> Pessoas bloqueadas
+        <Ban size={16} aria-hidden="true" /> {t('Pessoas bloqueadas')}
       </h3>
       <p className="settings-hint">
-        Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não
-        pode te mandar pedido de amizade. <strong>{t('Ninguém é avisado de que foi bloqueado.')}</strong>
+        {t('Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.')}{' '}
+        <strong>{t('Ninguém é avisado de que foi bloqueado.')}</strong>
       </p>
 
       {lista.length === 0 ? (

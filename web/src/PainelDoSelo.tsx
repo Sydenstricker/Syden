@@ -2,13 +2,35 @@ import { useEffect, useState } from 'react';
 import { Check, Lock } from 'lucide-react';
 import { ApiError, api } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 
 interface Selo {
   texto: string;
   icone: string;
   cor: string;
 }
+
+/**
+ * O NOME E A EXPLICAÇÃO DE CADA MARCO VÊM DAQUI, e não do servidor.
+ *
+ * O servidor manda os quatro marcos com nome e explicação em português (server/src/selos.ts), porque
+ * é lá que a regra mora e é lá que ela se lê. Mas texto que sai do servidor não passa pelo dicionário
+ * do site: ele chega pronto e vai direto para a tela. O resultado era a tela do selo em alemão com
+ * "15 membros na comunidade" e "Não para nunca" no meio.
+ *
+ * O que o servidor manda e serve para sempre é o CÓDIGO — 'turma', 'casa-cheia' —, que é estável e
+ * não é texto. A tela traduz a partir dele. Se um dia aparecer um marco novo que esta lista não
+ * conhece, cai no que o servidor mandou: português, que é melhor do que vazio.
+ */
+const MARCOS_NA_TELA: Record<string, { nome: string; comoSeGanha: string }> = {
+  turma: {
+    nome: chave('Turma formada'),
+    comoSeGanha: chave('5 membros, e pelo menos 3 pessoas diferentes já conversaram'),
+  },
+  'casa-cheia': { nome: chave('Casa cheia'), comoSeGanha: chave('15 membros na comunidade') },
+  constancia: { nome: chave('Não para nunca'), comoSeGanha: chave('conversa em 10 dias diferentes') },
+  vozes: { nome: chave('Vozes juntas'), comoSeGanha: chave('5 horas somadas de sala de voz') },
+};
 
 interface MarcoNaTela {
   codigo: string;
@@ -88,20 +110,23 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
     <section className="usage-card">
       <h3>{t('Selo da comunidade')}</h3>
       <p className="settings-hint">
-        Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.{' '}
-        <strong>{t('Não se compra: conquista-se.')}</strong> Os marcos abaixo foram escolhidos para não haver
-        como alcançá-los sozinho — todos precisam de mais de uma pessoa, ao longo do tempo.
+        {t('Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.')}{' '}
+        <strong>{t('Não se compra: conquista-se.')}</strong>{' '}
+        {t('Os marcos abaixo foram escolhidos para não haver como alcançá-los sozinho — todos precisam de mais de uma pessoa, ao longo do tempo.')}
       </p>
 
       <ul className="marcos">
-        {dados.marcos.map((m) => (
+        {dados.marcos.map((m) => {
+          const escrito = MARCOS_NA_TELA[m.codigo];
+          const nome = escrito ? t(escrito.nome) : m.nome;
+          return (
           <li key={m.codigo} className={m.alcancado ? 'feito' : undefined}>
             <span className="marcos-icone" aria-hidden="true">
               {m.alcancado ? <Check size={15} /> : <Lock size={14} />}
             </span>
             <span className="marcos-texto">
-              <strong>{m.nome}</strong>
-              <small>{m.comoSeGanha}</small>
+              <strong>{nome}</strong>
+              <small>{escrito ? t(escrito.comoSeGanha) : m.comoSeGanha}</small>
               {/* A barra só aparece no que falta: barra cheia num marco já feito é ruído, e o
                   símbolo ao lado já diz que ele caiu. */}
               {!m.alcancado && (
@@ -111,14 +136,15 @@ export function PainelDoSelo({ communityId }: { communityId: number }) {
                   aria-valuenow={Math.round(m.progresso * 100)}
                   aria-valuemin={0}
                   aria-valuemax={100}
-                  aria-label={`Progresso de ${m.nome}`}
+                  aria-label={t('Progresso de {marco}', { marco: nome })}
                 >
                   <span style={{ width: `${Math.round(m.progresso * 100)}%` }} />
                 </span>
               )}
             </span>
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       {!dados.destravado && (

@@ -3,6 +3,7 @@
 // O servidor guarda só o NOME da escolha ('carmim', 'aurora'…). As cores de verdade ficam aqui e no CSS,
 // em duas versões — uma para o tema escuro e outra para o claro —, senão um amarelo bonito no escuro
 // vira invisível no claro. Por isso a cor não vai em `style`: vai num `data-cor`, e o CSS escolhe.
+import { chave } from './i18n';
 
 export interface CorDeNome {
   id: string;
@@ -12,16 +13,16 @@ export interface CorDeNome {
 }
 
 export const CORES_DE_NOME: CorDeNome[] = [
-  { id: 'padrao', label: 'Padrão', amostra: 'currentColor' },
-  { id: 'carmim', label: 'Carmim', amostra: '#e2574c' },
-  { id: 'laranja', label: 'Laranja', amostra: '#e0822f' },
-  { id: 'ouro', label: 'Ouro', amostra: '#c79a1e' },
-  { id: 'limao', label: 'Limão', amostra: '#77a93a' },
-  { id: 'menta', label: 'Menta', amostra: '#2fa88c' },
-  { id: 'ceu', label: 'Céu', amostra: '#3d97cc' },
-  { id: 'anil', label: 'Anil', amostra: '#5b6fd6' },
-  { id: 'lavanda', label: 'Lavanda', amostra: '#8f6fd6' },
-  { id: 'rosa', label: 'Rosa', amostra: '#d45f95' },
+  { id: 'padrao', label: chave('Padrão'), amostra: 'currentColor' },
+  { id: 'carmim', label: chave('Carmim'), amostra: '#e2574c' },
+  { id: 'laranja', label: chave('Laranja'), amostra: '#e0822f' },
+  { id: 'ouro', label: chave('Ouro'), amostra: '#c79a1e' },
+  { id: 'limao', label: chave('Limão'), amostra: '#77a93a' },
+  { id: 'menta', label: chave('Menta'), amostra: '#2fa88c' },
+  { id: 'ceu', label: chave('Céu'), amostra: '#3d97cc' },
+  { id: 'anil', label: chave('Anil'), amostra: '#5b6fd6' },
+  { id: 'lavanda', label: chave('Lavanda'), amostra: '#8f6fd6' },
+  { id: 'rosa', label: chave('Rosa'), amostra: '#d45f95' },
 ];
 
 export interface Fundo {
@@ -30,15 +31,16 @@ export interface Fundo {
   animado: boolean;
 }
 
+// Mesma razão do voiceEffects: lista de módulo, marcada com chave(), traduzida na hora de desenhar.
 export const FUNDOS: Fundo[] = [
-  { id: 'nenhum', label: 'Sem fundo', animado: false },
-  { id: 'vila', label: 'Vila', animado: false },
-  { id: 'poente', label: 'Poente', animado: false },
-  { id: 'floresta', label: 'Floresta', animado: false },
-  { id: 'aurora', label: 'Aurora', animado: true },
-  { id: 'brasa', label: 'Brasa', animado: true },
-  { id: 'oceano', label: 'Oceano', animado: true },
-  { id: 'estrelas', label: 'Noite estrelada', animado: true },
+  { id: 'nenhum', label: chave('Sem fundo'), animado: false },
+  { id: 'vila', label: chave('Vila'), animado: false },
+  { id: 'poente', label: chave('Poente'), animado: false },
+  { id: 'floresta', label: chave('Floresta'), animado: false },
+  { id: 'aurora', label: chave('Aurora'), animado: true },
+  { id: 'brasa', label: chave('Brasa'), animado: true },
+  { id: 'oceano', label: chave('Oceano'), animado: true },
+  { id: 'estrelas', label: chave('Noite estrelada'), animado: true },
 ];
 
 const CORES = new Set(CORES_DE_NOME.map((c) => c.id));

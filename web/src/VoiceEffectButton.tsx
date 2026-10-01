@@ -54,8 +54,8 @@ export function VoiceEffectButton({ voice }: { voice: Voice }) {
             >
               {EFFECT_ICONS[effect.id]}
               <span className="screenshare-option-text">
-                <span>{effect.name}</span>
-                <small>{effect.hint}</small>
+                <span>{t(effect.name)}</span>
+                <small>{t(effect.hint)}</small>
               </span>
               {effect.id === voice.voiceEffect && <Check size={16} className="voice-effect-check" />}
             </button>

@@ -243,7 +243,9 @@ function EmailDaConta() {
       </p>
       {atual.email && (
         <p className={atual.verifiedAt ? 'form-success' : 'settings-hint'}>
-          {atual.verifiedAt ? `${atual.email} — confirmado` : `${atual.email} — ainda não confirmado`}
+          {atual.verifiedAt
+            ? t('{email} — confirmado', { email: isolar(atual.email) })
+            : t('{email} — ainda não confirmado', { email: isolar(atual.email) })}
         </p>
       )}
       <form className="settings-form" onSubmit={salvar}>
@@ -304,7 +306,7 @@ function MinhasInsignias() {
         </p>
       ) : (
         <>
-          <p className="settings-hint">Clique para escolher quais aparecem no seu perfil (até {limite}).</p>
+          <p className="settings-hint">{t('Clique para escolher quais aparecem no seu perfil (até {limite}).', { limite })}</p>
           <div className="insignias-grade">
             {itens.map((codigo) => {
               const insignia = acharInsignia(codigo);
@@ -513,8 +515,8 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
       <h3>{t('Excluir conta')}</h3>
       <div className="settings-card danger-zone">
         <p>
-          Apaga a sua conta, as suas mensagens e o seu avatar. Os canais, emojis e sons que você criou continuam no
-          servidor para os outros. <strong>{t('Não dá para desfazer.')}</strong>
+          {t('Apaga a sua conta, as suas mensagens e o seu avatar. Os canais, emojis e sons que você criou continuam no servidor para os outros.')}{' '}
+          <strong>{t('Não dá para desfazer.')}</strong>
         </p>
         {open ? (
           <form className="settings-form" onSubmit={submit}>
@@ -856,7 +858,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
             <Avatar name={member.username} userId={member.id} size={32} />
             <span className="expression-name">{member.username}</span>
             <RoleBadge role={member.role} />
-            {member.id === user.id && <span className="expression-author">você</span>}
+            {member.id === user.id && <span className="expression-author">{t('você')}</span>}
             {isOwner && member.role !== 'owner' && (
               <button
                 className="icon-plain expression-play"
@@ -938,8 +940,8 @@ function PerfilEditor({ user }: { user: User }) {
           <button
             key={opcao.id}
             className={`perfil-cor${cor === opcao.id ? ' ativa' : ''}`}
-            title={opcao.label}
-            aria-label={opcao.label}
+            title={t(opcao.label)}
+            aria-label={t(opcao.label)}
             aria-pressed={cor === opcao.id}
             data-cor={corDoNome(opcao.id)}
             onClick={() => void guardar(opcao.id, fundo)}
@@ -958,8 +960,8 @@ function PerfilEditor({ user }: { user: User }) {
             aria-pressed={fundo === opcao.id}
             onClick={() => void guardar(cor, opcao.id)}
           >
-            <span>{opcao.label}</span>
-            {opcao.animado && <small>com movimento</small>}
+            <span>{t(opcao.label)}</span>
+            {opcao.animado && <small>{t('com movimento')}</small>}
           </button>
         ))}
       </div>
@@ -1354,8 +1356,10 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
     <>
       <h2>Soundboard</h2>
       <p className="settings-lead">
-        {t('Durante uma chamada, o botão')} <AudioLines size={14} /> toca estes sons para todos na sala. Instale pacotes prontos
-        ou envie os seus; o que é seu favorito fica na frente do painel.
+        {/* O ícone fica FORA da frase, antes dela. Enfiá-lo no meio partiria a frase em duas, e a
+            segunda metade chegaria a quem traduz sem o começo — foi o que aconteceu aqui. */}
+        <AudioLines size={14} />{' '}
+        {t('Durante uma chamada, esse botão toca estes sons para todos na sala. Instale pacotes prontos ou envie os seus; o que é seu favorito fica na frente do painel.')}
       </p>
 
       <div className="settings-tabs" role="tablist">
@@ -1373,7 +1377,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
         <>
 
       <label className="settings-field volume-field">
-        Volume do soundboard (só para você): {Math.round(settings.soundboardVolume * 100)}%
+        {t('Volume do soundboard (só para você): {quanto}%', { quanto: algarismos(Math.round(settings.soundboardVolume * 100)) })}
         <input
           type="range"
           min={0}
@@ -1385,7 +1389,11 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       </label>
 
       <div className="section-head">
-        <h3>{ownSounds.length} sons enviados por vocês</h3>
+        <h3>
+          {ownSounds.length === 1
+            ? t('1 som enviado por vocês')
+            : t('{quantos} sons enviados por vocês', { quantos: algarismos(ownSounds.length) })}
+        </h3>
         <button className="btn-secondary" onClick={() => setAdding(!adding)}>
           <Plus size={16} /> {t('Adicionar som')}
         </button>
@@ -1725,7 +1733,9 @@ function VoiceSection({ voice }: { voice: Voice }) {
       <h3>{t('Transmissões dos outros')}</h3>
       <Toggle
         label={t('Abrir a transmissão sozinha')}
-        description="Desligado, a transmissão de quem está na sala aparece como convite e só começa a ser baixada quando você clica em Assistir. Isso poupa internet e processador — principalmente em sala cheia."
+        description={t(
+          'Desligado, a transmissão de quem está na sala aparece como convite e só começa a ser baixada quando você clica em Assistir. Isso poupa internet e processador — principalmente em sala cheia.',
+        )}
         checked={settings.abrirTransmissaoSozinha}
         onChange={(value) => updateSettings({ abrirTransmissaoSozinha: value })}
       />
@@ -2015,8 +2025,8 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
             />
             <span className="effect-option-icon">{EFFECT_ICONS[effect.id]}</span>
             <span className="effect-option-text">
-              <strong>{effect.name}</strong>
-              <small>{effect.hint}</small>
+              <strong>{t(effect.name)}</strong>
+              <small>{t(effect.hint)}</small>
             </span>
           </label>
         ))}
@@ -2025,7 +2035,7 @@ function VoiceEffectPicker({ voice }: { voice: Voice }) {
         <button type="button" className="btn-secondary" disabled={stage !== 'idle'} onClick={() => void preview()}>
           {stage === 'recording' ? t('Gravando… fale algo') : stage === 'playing' ? t('Tocando…') : t('Gravar 3 segundos e ouvir')}
         </button>
-        <p className="settings-hint inline">{error ?? 'Grava a sua voz e toca de volta com o efeito, só para você.'}</p>
+        <p className="settings-hint inline">{error ?? t('Grava a sua voz e toca de volta com o efeito, só para você.')}</p>
       </div>
     </>
   );

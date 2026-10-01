@@ -67,6 +67,52 @@ const SOLTOS = />\s*([A-ZÀ-Ú][^<>{}\n]{3,80}?)\s*</g;
 const SOLTOS_EM_VARIAS_LINHAS = />\s*\n\s*([A-ZÀ-Ú][^<>{}]{3,300}?)\s*\n\s*</g;
 
 /**
+ * Texto de tela com um VALOR NO MEIO.
+ *
+ *   <p>Clique para escolher quais aparecem no seu perfil (até {limite}).</p>
+ *   `${atual.email} — ainda não confirmado`
+ *
+ * Quarto e quinto pontos cegos, e são o mesmo problema visto de dois lados: as outras buscas
+ * desistem assim que encontram `{`, `$` ou crase, porque ali começa código. Só que a frase continua
+ * depois do valor, e é a frase que precisa ser traduzida. As duas acima estavam em português em
+ * dezesseis línguas, nas Configurações, com o arquivo marcado como limpo.
+ *
+ * O jeito de ver as duas é apagar o valor antes de julgar: `{limite}` e `${atual.email}` viram `{}`,
+ * e o que sobra é texto comum, que as regras de sempre sabem avaliar.
+ *
+ * ELAS NÃO SÃO MARCADAS SOZINHAS, de propósito. O que vai na chave é `{limite}`, mas a chamada
+ * precisa virar `t('… (até {limite}).', { limite })` — e adivinhar o nome do campo a partir de uma
+ * expressão qualquer (`members.length`, `atual.email`) escreveria o campo errado em silêncio.
+ * scripts/marcar-textos.mjs lista estas para a mão.
+ */
+const COM_VALOR_NO_MEIO = [
+  />([^<>]*\{[^<>]*\}[^<>]*)</g, // entre tags, com {algo} no meio
+  /`((?:[^`\\]|\\.)*\$\{(?:[^`\\]|\\.)*)`/g, // template literal com ${algo}
+];
+
+/**
+ * O que denuncia CÓDIGO no que ficou entre `>` e `<`.
+ *
+ * Em TypeScript, `>` e `<` também são sinal de genérico e de comparação, não só de tag:
+ * `useState<Algo>(null)` tem um `>` e, umas linhas depois, um `<`. Entre os dois cabe um arquivo
+ * inteiro, e a busca por valor no meio recolhia tudo isso como se fosse uma frase. O `[^<>]` não
+ * salva, porque o trecho entre os dois de fato não tem outro sinal desses.
+ *
+ * O que separa os dois casos é a pontuação de programa: ponto e vírgula, igual, seta, aspas. Texto
+ * de tela não tem nenhum deles; código quase sempre tem algum.
+ */
+const PONTUACAO_DE_PROGRAMA = /[;='"`]|=>|\?\.|\.\.\./;
+
+/** Caminho de rede, e não frase: `${API_URL}/api/channels/…`. */
+const PARECE_ENDERECO = /^\{\}?\/|\/api\/|https?:/;
+
+/** Troca cada valor interpolado por {} — o que sobra é a frase. */
+const semOsValores = (texto) => texto.replace(/\$\{[^}]*\}/g, '{}').replace(/\{[^}]*\}/g, '{}');
+
+/** Depois de apagar os valores, ainda há frase aqui? Uma palavra de quatro letras já basta. */
+const SOBROU_FRASE = /[A-Za-zÀ-ú]{4}/;
+
+/**
  * LITERAL DENTRO DE EXPRESSÃO: {isOwner ? 'Apagar comunidade' : 'Sair da comunidade'}.
  *
  * ESTE É O MAIOR PONTO CEGO QUE ESTA FERRAMENTA JÁ TEVE, e ele estava escrito na própria busca de
@@ -188,11 +234,25 @@ export function varrerTextos(raiz = 'web/src') {
         [SOLTOS_EM_VARIAS_LINHAS, 'parágrafo'],
         [PALAVRA_SOLTA, 'palavra'],
         [EM_EXPRESSAO, 'expressão'],
+        [COM_VALOR_NO_MEIO[0], 'com valor'],
+        [COM_VALOR_NO_MEIO[1], 'com valor'],
       ]) {
         for (const m of texto.matchAll(regex)) {
           const bruto = (tipo === 'expressão' ? m[2] : m[1]).trim();
           // O navegador junta as linhas numa frase só; a chave do dicionário tem de ser essa frase.
-          const conteudo = tipo === 'parágrafo' ? bruto.replace(/\s+/g, ' ') : bruto;
+          const conteudo = tipo === 'parágrafo' || tipo === 'com valor' ? bruto.replace(/\s+/g, ' ') : bruto;
+          if (tipo === 'com valor') {
+            if (PONTUACAO_DE_PROGRAMA.test(conteudo.replace(/\$\{[^}]*\}/g, ''))) continue;
+            const semValores = semOsValores(conteudo).trim();
+            if (!SOBROU_FRASE.test(semValores)) continue;
+            if (PARECE_ENDERECO.test(semValores)) continue;
+            // `vila-sala-gente${cheia}` e `disponibilidade-agora ${…}`: nome de classe montado em
+            // template. Minúsculo com hífen no começo é a forma, e ela não é de frase nenhuma.
+            if (/^[a-z0-9]+-[a-z0-9-]*/.test(semValores)) continue;
+            if (!PARECE_PORTUGUES.test(semValores)) continue;
+            // Já marcado: `{t('…', { limite })}` casa com esta busca, e não é dívida.
+            if (/\bt\(/.test(conteudo)) continue;
+          }
           if (tipo === 'expressão') {
             if (conteudo.length < 3) continue;
             if (NAO_E_TELA.has(conteudo)) continue;

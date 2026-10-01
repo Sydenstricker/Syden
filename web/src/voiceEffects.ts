@@ -1,20 +1,24 @@
 import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-client';
+import { chave } from './i18n';
 
 // Modificador de voz: o som do microfone passa por uma cadeia de efeitos do próprio navegador antes de
 // sair para a chamada. Não custa nada (roda no computador de quem fala) e não depende de servidor.
 
 export type VoiceEffectId = 'none' | 'female' | 'male' | 'radio' | 'helicopter' | 'robot' | 'deep' | 'chipmunk' | 'cave';
 
+// Os nomes vão marcados com chave(), e não traduzidos aqui: esta lista é um dado de módulo, criado
+// uma vez quando o arquivo carrega, e o idioma pode mudar depois sem recarregar nada. Traduzir aqui
+// congelaria os rótulos no idioma de quando o app abriu. Quem desenha chama t(efeito.name).
 export const VOICE_EFFECTS: { id: VoiceEffectId; name: string; hint: string }[] = [
-  { id: 'none', name: 'Sua voz', hint: 'Sem efeito nenhum.' },
-  { id: 'female', name: 'Voz feminina', hint: 'Tom mais alto e mais claro.' },
-  { id: 'male', name: 'Voz masculina', hint: 'Tom mais baixo e mais encorpado.' },
-  { id: 'radio', name: 'Rádio de avião', hint: 'Voz espremida e chiada, como a do piloto no rádio.' },
-  { id: 'helicopter', name: 'Helicóptero', hint: 'Corta a voz em batidas, como as pás girando.' },
-  { id: 'robot', name: 'Robô', hint: 'Voz metálica de robô de filme antigo.' },
-  { id: 'deep', name: 'Monstro', hint: 'Voz bem mais grave e pesada.' },
-  { id: 'chipmunk', name: 'Esquilo', hint: 'Voz fininha, de desenho animado.' },
-  { id: 'cave', name: 'Caverna', hint: 'Eco de lugar grande e vazio.' },
+  { id: 'none', name: chave('Sua voz'), hint: chave('Sem efeito nenhum.') },
+  { id: 'female', name: chave('Voz feminina'), hint: chave('Tom mais alto e mais claro.') },
+  { id: 'male', name: chave('Voz masculina'), hint: chave('Tom mais baixo e mais encorpado.') },
+  { id: 'radio', name: chave('Rádio de avião'), hint: chave('Voz espremida e chiada, como a do piloto no rádio.') },
+  { id: 'helicopter', name: chave('Helicóptero'), hint: chave('Corta a voz em batidas, como as pás girando.') },
+  { id: 'robot', name: chave('Robô'), hint: chave('Voz metálica de robô de filme antigo.') },
+  { id: 'deep', name: chave('Monstro'), hint: chave('Voz bem mais grave e pesada.') },
+  { id: 'chipmunk', name: chave('Esquilo'), hint: chave('Voz fininha, de desenho animado.') },
+  { id: 'cave', name: chave('Caverna'), hint: chave('Eco de lugar grande e vazio.') },
 ];
 
 export function voiceEffectName(id: VoiceEffectId): string {

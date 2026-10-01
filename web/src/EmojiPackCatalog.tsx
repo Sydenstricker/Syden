@@ -404,8 +404,8 @@ export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User
         </div>
       </div>
       <p className="settings-hint">
-        {t('Um pacote instalado entra para')} <strong>toda a comunidade</strong>: os emojis dele passam a valer nas mensagens de todo
-        mundo. {podeInstalar ? '' : 'Só quem administra pode instalar ou tirar.'}
+        {t('Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.')}{' '}
+        {podeInstalar ? '' : t('Só quem administra pode instalar ou tirar.')}
       </p>
 
       {criando && <NovoPacote onDone={(pack) => {
@@ -420,7 +420,7 @@ export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User
       {error && <p className="form-error">{error}</p>}
       {packs?.length === 0 && !criando && !publicando && (
         <p className="settings-hint">
-          Nenhum pacote ainda. Monte o primeiro com imagens suas, ou publique os emojis que esta comunidade já tem.
+          {t('Nenhum pacote ainda. Monte o primeiro com imagens suas, ou publique os emojis que esta comunidade já tem.')}
         </p>
       )}
       {packs?.map((pack) => (
