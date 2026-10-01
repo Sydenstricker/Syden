@@ -1,10 +1,10 @@
-// Abre a tela de Configurações em oito idiomas e MEDE: sobrou português, estourou a largura,
+// Abre a tela de Configurações em nove idiomas e MEDE: sobrou português, estourou a largura,
 // ficou campo {assim} cru na tela.
 //
 // POR QUE ELE EXISTE. O CLAUDE.md é explícito: "conferir idioma que ninguém da dupla lê é medir, não
 // confiar". Nós lemos português, inglês e espanhol. As outras treze línguas só se conferem assim.
 //
-// AS OITO ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
+// AS NOVE ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
 //   alemão   — palavra composta longa, o maior risco de estourar a caixa;
 //   russo    — frase longa em outro alfabeto;
 //   árabe    — a página inteira vira de lado;
@@ -15,7 +15,9 @@
 //                virada de página, outro vocabulário e outra forma de tratamento;
 //   persa     — a MESMA escrita do urdu e numeração OPOSTA: aqui o Intl desenha ۰۱۲۳, e lá 0123;
 //   japonês   — três sistemas de escrita na mesma frase e NENHUM espaço entre palavras, que é onde
-//               a quebra de linha se comporta diferente de tudo o que veio antes.
+//               a quebra de linha se comporta diferente de tudo o que veio antes;
+//   télugo    — escrita própria, com fonte baixada sob demanda: é o caso em que a tela vira
+//               quadradinho se a reserva não chegar.
 //
 // O QUE ELE NÃO MEDE, de propósito: se a tradução está BOA. Isso nenhum teste mede. Ele mede o que é
 // mecânico e passa despercebido — e é justamente o que escapa quando se traduzem cem frases de uma vez.
@@ -90,6 +92,7 @@ const IDIOMAS = [
   { codigo: 'ur', nome: 'اردو', rtl: true },
   { codigo: 'fa', nome: 'فارسی', rtl: true },
   { codigo: 'ja', nome: '日本語', rtl: false },
+  { codigo: 'te', nome: 'తెలుగు', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por
@@ -216,4 +219,4 @@ for (const idioma of IDIOMAS) {
 }
 
 await browser.close();
-resumo('Configurações nas oito línguas');
+resumo('Configurações nas nove línguas');
