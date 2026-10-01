@@ -10,9 +10,15 @@ Cole cada bloco no campo correspondente do Partner Center. Tudo em português do
 | Categoria | Social (subcategoria: Mensagens) |
 | Preço | Grátis |
 | Visibilidade | Oculto na loja; disponível só por link direto (grupo privado de amigos) |
-| Política de privacidade | https://sydenstricker.github.io/Syden/privacidade.html |
-| Site do aplicativo | https://sydenstricker.github.io/Syden/ |
+| Política de privacidade | https://syden.chat/privacidade.html |
+| Site do aplicativo | https://syden.chat/ |
 | Contato de suporte | https://github.com/Sydenstricker/Syden/issues |
+
+> **Os dois primeiros endereços apontavam para `sydenstricker.github.io` até 01/10/2026**, de quando o
+> site morava no GitHub Pages. Hoje aquilo é redirecionamento, e a certificação da Store ABRE a URL da
+> política de privacidade — redirecionamento costuma passar, mas é risco sem motivo. No Partner Center
+> os três campos não ficam na descrição: ficam em **Propriedades → Informações de suporte**, e valem a
+> partir da submissão em que forem trocados.
 
 ## Descrição curta
 
@@ -82,7 +88,7 @@ How to test:
 
 Voice, video and screen sharing are relayed in real time and never recorded.
 The app is in Brazilian Portuguese.
-Privacy policy: https://sydenstricker.github.io/Syden/privacidade.html
+Privacy policy: https://syden.chat/privacidade.html
 ```
 
 ## Capturas de tela (mínimo 1, recomendado 4)
