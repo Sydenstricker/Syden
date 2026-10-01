@@ -1,6 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
+import { guardarArquivo } from './arquivos.js';
 import { config } from './config.js';
+import type { ArquivoGuardado } from './entregar.js';
 import type { NovoServidor, ServidorDeJogo } from './jogos.js';
 
 /** 'dm' são as conversas privadas (direta entre duas pessoas ou grupo), fora de qualquer comunidade. */
@@ -738,6 +740,64 @@ function hasColumn(table: string, column: string) {
   return (db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column);
 }
 
+// ---------------------------------------------------------------------------------------------------
+// OS ARQUIVOS SAEM DO BANCO E VÃO PARA O DISCO. O porquê está escrito em arquivos.ts; aqui está o como.
+//
+// Cada tabela que guardava bytes ganha duas colunas: `sha` (onde o arquivo mora, que é o hash do
+// próprio conteúdo) e `bytes` (o tamanho, que antes se lia com `length(data)` e agora precisa estar
+// escrito, porque o BLOB ficou vazio).
+//
+// A COLUNA `data` CONTINUA EXISTINDO, e isso é o que torna a migração segura. Ela é `NOT NULL` nas oito
+// tabelas, e tirar o NOT NULL no SQLite significa reconstruir a tabela inteira — oito vezes, num banco
+// em produção, para ganhar nada. Então linha migrada guarda um BLOB VAZIO ali, e a regra de leitura é
+// uma só e vale para as duas épocas: **tem `sha`? está no disco. Não tem? está no `data`, como sempre
+// esteve.** Nenhuma linha precisa ser migrada para o Syden continuar funcionando, e a migração pode
+// parar no meio sem deixar nada quebrado.
+// ---------------------------------------------------------------------------------------------------
+const TABELAS_COM_ARQUIVO = [
+  'avatars',
+  'community_icons',
+  'community_banners',
+  'emojis',
+  'emoji_pack_items',
+  'sounds',
+  'karaoke_songs',
+  'attachments',
+];
+for (const tabela of TABELAS_COM_ARQUIVO) {
+  addColumnIfMissing(tabela, 'sha', 'TEXT');
+  addColumnIfMissing(tabela, 'bytes', 'INTEGER');
+}
+
+/** O BLOB que fica na linha quando o arquivo já está no disco. Zero bytes, e some do `length()`. */
+const SEM_BYTES = Buffer.alloc(0);
+
+/**
+ * Ou os bytes em si, ou o endereço de um arquivo que já está no disco.
+ *
+ * O SEGUNDO CASO É CÓPIA ENTRE TABELAS, e sem ele a migração teria um buraco. Instalar um pacote de
+ * emojis copia cada item para a tabela de emojis da comunidade; publicar os emojis de uma comunidade
+ * como pacote faz o caminho inverso. Com o arquivo no disco, "copiar" é copiar o hash — o arquivo não
+ * é lido, não é escrito de novo, e as duas linhas apontam para o mesmo lugar.
+ */
+export type Guardavel = Uint8Array | { sha: string; bytes: number };
+
+/** Põe os bytes no disco (ou aceita o que já está lá) e devolve o que vai para a linha. */
+function aoDisco(dados: Guardavel): { sha: string; bytes: number } {
+  return dados instanceof Uint8Array ? guardarArquivo(dados) : dados;
+}
+
+/**
+ * Lê uma linha das duas épocas e devolve algo que se pode gravar de novo.
+ *
+ * Linha já migrada devolve o endereço; linha ainda no banco devolve os bytes, e eles vão para o disco
+ * na gravação seguinte. É assim que a cópia entre tabelas migra de carona, sem saber que migrou.
+ */
+function daLinha(linha: { sha?: string | null; bytes?: number | null; data?: Uint8Array | null }): Guardavel {
+  if (linha.sha) return { sha: linha.sha, bytes: linha.bytes ?? 0 };
+  return linha.data ?? SEM_BYTES;
+}
+
 // Em qual comunidade a chamada aconteceu. Fica NULO nas sessões antigas, e é isso que permite dizer
 // na tela "contado a partir de tal dia" em vez de mostrar um número que parece o histórico inteiro e
 // não é. Sem ON DELETE: a comunidade pode sumir e o registro de uso continua valendo para o total.
@@ -1113,9 +1173,11 @@ export function deleteCommunity(id: number) {
 /** Guarda (ou apaga, com null) a imagem da comunidade e marca a versão nova. */
 export function setCommunityIcon(communityId: number, icon: { mime: string; data: Buffer } | null): Community {
   if (icon) {
+    const no = aoDisco(icon.data);
     db.prepare(
-      'INSERT INTO community_icons (community_id, mime, data) VALUES (?, ?, ?) ON CONFLICT(community_id) DO UPDATE SET mime = excluded.mime, data = excluded.data',
-    ).run(communityId, icon.mime, icon.data);
+      `INSERT INTO community_icons (community_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(community_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
+    ).run(communityId, icon.mime, SEM_BYTES, no.sha, no.bytes);
     db.prepare('UPDATE communities SET icon_version = ? WHERE id = ?').run(Date.now(), communityId);
   } else {
     db.prepare('DELETE FROM community_icons WHERE community_id = ?').run(communityId);
@@ -1127,9 +1189,11 @@ export function setCommunityIcon(communityId: number, icon: { mime: string; data
 /** Guarda (ou apaga, com null) a CAPA da comunidade e marca a versão nova. */
 export function setCommunityBanner(communityId: number, capa: { mime: string; data: Buffer } | null): Community {
   if (capa) {
+    const no = aoDisco(capa.data);
     db.prepare(
-      'INSERT INTO community_banners (community_id, mime, data) VALUES (?, ?, ?) ON CONFLICT(community_id) DO UPDATE SET mime = excluded.mime, data = excluded.data',
-    ).run(communityId, capa.mime, capa.data);
+      `INSERT INTO community_banners (community_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(community_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
+    ).run(communityId, capa.mime, SEM_BYTES, no.sha, no.bytes);
     db.prepare('UPDATE communities SET banner_version = ? WHERE id = ?').run(Date.now(), communityId);
   } else {
     db.prepare('DELETE FROM community_banners WHERE community_id = ?').run(communityId);
@@ -1139,15 +1203,15 @@ export function setCommunityBanner(communityId: number, capa: { mime: string; da
 }
 
 export function findCommunityBanner(communityId: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM community_banners WHERE community_id = ?').get(communityId)) as
-    | { mime: string; data: Uint8Array }
-    | undefined;
+  return lendoArquivo(() =>
+    db.prepare('SELECT mime, sha, bytes, data FROM community_banners WHERE community_id = ?').get(communityId),
+  ) as ArquivoGuardado | undefined;
 }
 
 export function findCommunityIcon(communityId: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM community_icons WHERE community_id = ?').get(communityId)) as
-    | { mime: string; data: Uint8Array }
-    | undefined;
+  return lendoArquivo(() =>
+    db.prepare('SELECT mime, sha, bytes, data FROM community_icons WHERE community_id = ?').get(communityId),
+  ) as ArquivoGuardado | undefined;
 }
 
 export function countCommunitiesCreatedBy(userId: number) {
@@ -1344,22 +1408,25 @@ function lendoArquivo<T>(consulta: () => T): T {
 }
 
 /**
- * Quanto espaço os arquivos de uma pessoa ocupam no banco, em bytes.
+ * Quanto espaço os arquivos de uma pessoa ocupam, em bytes.
  *
- * Existe porque, com o cadastro aberto, qualquer conta pode subir avatar, emoji, som e anexo — e os
- * arquivos moram dentro do banco, que mora no disco da máquina. Sem um teto por pessoa, algumas milhares
- * de contas automáticas enchem o disco, e disco cheio é o Syden parando de aceitar mensagem de todo mundo.
+ * Existe porque, com o cadastro aberto, qualquer conta pode subir avatar, emoji, som e anexo — e eles
+ * moram no disco da máquina. Sem um teto por pessoa, algumas milhares de contas automáticas enchem o
+ * disco, e disco cheio é o Syden parando de aceitar mensagem de todo mundo.
  *
- * A soma passa por todas as tabelas que guardam bytes de alguém. Sai de graça: `length()` num BLOB do
- * SQLite lê o cabeçalho, não o conteúdo.
+ * **`COALESCE(bytes, length(data))` É O CORAÇÃO DISTO, e sem ele a migração dos arquivos teria
+ * desligado a cota em silêncio.** O `length(data)` só sabe medir o que está no banco; linha movida
+ * para o disco tem BLOB vazio, e a soma daria ZERO — teto nenhum, sem erro, sem aviso, até alguém
+ * encher o disco. A coluna `bytes` existe para isto, e a linha antiga continua medida como sempre.
  */
 export function espacoUsado(userId: number): number {
   const somas = [
-    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM avatars WHERE user_id = ?',
-    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM emojis WHERE created_by = ?',
-    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM sounds WHERE created_by = ?',
-    'SELECT COALESCE(SUM(length(data)), 0) AS n FROM karaoke_songs WHERE created_by = ?',
-    'SELECT COALESCE(SUM(length(a.data)), 0) AS n FROM attachments a JOIN messages m ON m.id = a.message_id WHERE m.user_id = ?',
+    'SELECT COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS n FROM avatars WHERE user_id = ?',
+    'SELECT COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS n FROM emojis WHERE created_by = ?',
+    'SELECT COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS n FROM sounds WHERE created_by = ?',
+    'SELECT COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS n FROM karaoke_songs WHERE created_by = ?',
+    `SELECT COALESCE(SUM(COALESCE(a.bytes, length(a.data))), 0) AS n
+     FROM attachments a JOIN messages m ON m.id = a.message_id WHERE m.user_id = ?`,
   ];
   return somas.reduce((total, sql) => total + (db.prepare(sql).get(userId) as { n: number }).n, 0);
 }
@@ -1656,9 +1723,11 @@ export function setAdmin(userId: number, isAdmin: boolean): User | undefined {
 
 export function setAvatar(userId: number, avatar: { mime: string; data: Buffer } | null): User {
   if (avatar) {
+    const no = aoDisco(avatar.data);
     db.prepare(
-      'INSERT INTO avatars (user_id, mime, data) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET mime = excluded.mime, data = excluded.data',
-    ).run(userId, avatar.mime, avatar.data);
+      `INSERT INTO avatars (user_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(user_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
+    ).run(userId, avatar.mime, SEM_BYTES, no.sha, no.bytes);
     db.prepare('UPDATE users SET avatar_version = ? WHERE id = ?').run(Date.now(), userId);
   } else {
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
@@ -1689,8 +1758,8 @@ export function codigosDoInventario(userId: number): string[] {
 }
 
 export function findAvatar(userId: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM avatars WHERE user_id = ?').get(userId)) as
-    | { mime: string; data: Uint8Array }
+  return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM avatars WHERE user_id = ?').get(userId)) as
+    | ArquivoGuardado
     | undefined;
 }
 
@@ -1721,8 +1790,8 @@ export function findKaraokeSong(id: number): KaraokeSong | undefined {
 }
 
 export function findKaraokeFile(id: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM karaoke_songs WHERE id = ?').get(id)) as
-    | { mime: string; data: Uint8Array }
+  return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM karaoke_songs WHERE id = ?').get(id)) as
+    | ArquivoGuardado
     | undefined;
 }
 
@@ -1740,11 +1809,13 @@ export function createKaraokeSong(song: {
   lyrics: string;
   createdBy: number;
 }): KaraokeSong {
+  const no = aoDisco(song.data);
   const result = db
     .prepare(
-      'INSERT INTO karaoke_songs (community_id, title, artist, mime, data, seconds, lyrics, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      `INSERT INTO karaoke_songs (community_id, title, artist, mime, data, sha, bytes, seconds, lyrics, created_by)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-    .run(song.communityId, song.title, song.artist, song.mime, song.data, song.seconds, song.lyrics, song.createdBy);
+    .run(song.communityId, song.title, song.artist, song.mime, SEM_BYTES, no.sha, no.bytes, song.seconds, song.lyrics, song.createdBy);
   return findKaraokeSong(Number(result.lastInsertRowid))!;
 }
 
@@ -1837,10 +1908,11 @@ export function deleteEmojiPack(id: number) {
   db.prepare('DELETE FROM emoji_packs WHERE id = ?').run(id);
 }
 
-export function addEmojiToPack(packId: number, name: string, mime: string, data: Buffer): number {
+export function addEmojiToPack(packId: number, name: string, mime: string, data: Guardavel): number {
+  const no = aoDisco(data);
   const result = db
-    .prepare('INSERT INTO emoji_pack_items (pack_id, name, mime, data) VALUES (?, ?, ?, ?)')
-    .run(packId, name, mime, data);
+    .prepare('INSERT INTO emoji_pack_items (pack_id, name, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(packId, name, mime, SEM_BYTES, no.sha, no.bytes);
   return Number(result.lastInsertRowid);
 }
 
@@ -1851,8 +1923,8 @@ export function listEmojiPackItems(packId: number): EmojiPackItem[] {
 }
 
 export function findEmojiPackItemFile(id: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM emoji_pack_items WHERE id = ?').get(id)) as
-    | { mime: string; data: Uint8Array }
+  return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM emoji_pack_items WHERE id = ?').get(id)) as
+    | ArquivoGuardado
     | undefined;
 }
 
@@ -1862,11 +1934,11 @@ export function findEmojiPackItemFile(id: number) {
  * Devolve o que entrou e o que foi pulado.
  */
 export function installEmojiPack(packId: number, communityId: number, installedBy: number): { added: Emoji[]; skipped: string[] } {
-  const itens = db.prepare('SELECT name, mime, data FROM emoji_pack_items WHERE pack_id = ? ORDER BY name').all(packId) as {
-    name: string;
-    mime: string;
-    data: Uint8Array;
-  }[];
+  // O desenho é COPIADO POR ENDEREÇO quando já está no disco: as duas linhas apontam para o mesmo
+  // arquivo, e instalar o mesmo pacote em dez comunidades não escreve dez vezes a mesma imagem.
+  const itens = db
+    .prepare('SELECT name, mime, sha, bytes, data FROM emoji_pack_items WHERE pack_id = ? ORDER BY name')
+    .all(packId) as { name: string; mime: string; sha: string | null; bytes: number | null; data: Uint8Array }[];
   const added: Emoji[] = [];
   const skipped: string[] = [];
   db.exec('BEGIN');
@@ -1881,9 +1953,10 @@ export function installEmojiPack(packId: number, communityId: number, installedB
         skipped.push(item.name);
         continue;
       }
+      const no = aoDisco(daLinha(item));
       const result = db
-        .prepare('INSERT INTO emojis (community_id, name, mime, data, created_by, pack_id) VALUES (?, ?, ?, ?, ?, ?)')
-        .run(communityId, item.name, item.mime, Buffer.from(item.data), installedBy, packId);
+        .prepare('INSERT INTO emojis (community_id, name, mime, data, sha, bytes, created_by, pack_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .run(communityId, item.name, item.mime, SEM_BYTES, no.sha, no.bytes, installedBy, packId);
       added.push(findEmoji(Number(result.lastInsertRowid))!);
     }
     db.exec('COMMIT');
@@ -1923,20 +1996,23 @@ export function rateEmojiPack(packId: number, userId: number, stars: number) {
  * cópia dos emojis, o desenho precisa ser levado até elas — senão quem instalou ontem nunca veria o que
  * o autor acrescentou hoje. Nome que já existe na comunidade fica de fora, como na instalação.
  */
-export function spreadPackEmoji(packId: number, name: string, mime: string, data: Buffer): { communityId: number; emoji: Emoji }[] {
+export function spreadPackEmoji(packId: number, name: string, mime: string, data: Guardavel): { communityId: number; emoji: Emoji }[] {
   // Leva junto quem instalou o pacote em cada comunidade: o emoji novo fica com o mesmo autor dos
   // outros do pacote, em vez de parecer que veio de fábrica.
   const comunidades = db
     .prepare('SELECT community_id AS communityId, installed_by AS installedBy FROM emoji_pack_installs WHERE pack_id = ?')
     .all(packId) as { communityId: number; installedBy: number | null }[];
   const criados: { communityId: number; emoji: Emoji }[] = [];
+  // Uma vez só, fora do laço: são N cópias do MESMO desenho, e com o endereço sendo o conteúdo elas
+  // viram N linhas apontando para um arquivo só.
+  const no = aoDisco(data);
   db.exec('BEGIN');
   try {
     for (const { communityId, installedBy } of comunidades) {
       if (emojiNameTaken(communityId, name)) continue;
       const result = db
-        .prepare('INSERT INTO emojis (community_id, name, mime, data, created_by, pack_id) VALUES (?, ?, ?, ?, ?, ?)')
-        .run(communityId, name, mime, data, installedBy, packId);
+        .prepare('INSERT INTO emojis (community_id, name, mime, data, sha, bytes, created_by, pack_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .run(communityId, name, mime, SEM_BYTES, no.sha, no.bytes, installedBy, packId);
       criados.push({ communityId, emoji: findEmoji(Number(result.lastInsertRowid))! });
     }
     db.exec('COMMIT');
@@ -1972,11 +2048,15 @@ export function countEmojiPackItems(packId: number): number {
 
 /** Os desenhos de uma comunidade, para virarem um pacote novo (o "publicar os meus emojis"). */
 export function emojiFilesOfCommunity(communityId: number) {
-  return db.prepare('SELECT name, mime, data FROM emojis WHERE community_id = ? ORDER BY name').all(communityId) as {
-    name: string;
-    mime: string;
-    data: Uint8Array;
-  }[];
+  return (
+    db.prepare('SELECT name, mime, sha, bytes, data FROM emojis WHERE community_id = ? ORDER BY name').all(communityId) as {
+      name: string;
+      mime: string;
+      sha: string | null;
+      bytes: number | null;
+      data: Uint8Array;
+    }[]
+  ).map((linha) => ({ name: linha.name, mime: linha.mime, arquivo: daLinha(linha) }));
 }
 
 // ---------- Sons ----------
@@ -1997,10 +2077,11 @@ export function emojiNameTaken(communityId: number, name: string) {
   return !!db.prepare('SELECT 1 FROM emojis WHERE community_id = ? AND name = ?').get(communityId, name);
 }
 
-export function createEmoji(communityId: number, name: string, mime: string, data: Buffer, createdBy: number | null): Emoji {
+export function createEmoji(communityId: number, name: string, mime: string, data: Guardavel, createdBy: number | null): Emoji {
+  const no = aoDisco(data);
   const result = db
-    .prepare('INSERT INTO emojis (community_id, name, mime, data, created_by) VALUES (?, ?, ?, ?, ?)')
-    .run(communityId, name, mime, data, createdBy);
+    .prepare('INSERT INTO emojis (community_id, name, mime, data, sha, bytes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .run(communityId, name, mime, SEM_BYTES, no.sha, no.bytes, createdBy);
   return findEmoji(Number(result.lastInsertRowid))!;
 }
 
@@ -2014,7 +2095,7 @@ export function deleteEmoji(id: number) {
 }
 
 export function findEmojiFile(id: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM emojis WHERE id = ?').get(id)) as { mime: string; data: Uint8Array } | undefined;
+  return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM emojis WHERE id = ?').get(id)) as ArquivoGuardado | undefined;
 }
 
 const soundColumns = 'id, community_id AS communityId, pack_id AS packId, name, icon, created_by AS createdBy';
@@ -2032,12 +2113,13 @@ export function createSound(
   name: string,
   icon: string,
   mime: string,
-  data: Buffer,
+  data: Guardavel,
   createdBy: number | null,
 ): Sound {
+  const no = aoDisco(data);
   const result = db
-    .prepare('INSERT INTO sounds (community_id, name, icon, mime, data, created_by) VALUES (?, ?, ?, ?, ?, ?)')
-    .run(communityId, name, icon, mime, data, createdBy);
+    .prepare('INSERT INTO sounds (community_id, name, icon, mime, data, sha, bytes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+    .run(communityId, name, icon, mime, SEM_BYTES, no.sha, no.bytes, createdBy);
   return findSound(Number(result.lastInsertRowid))!;
 }
 
@@ -2056,7 +2138,7 @@ export function deleteLegacyPackSounds() {
 }
 
 export function findSoundFile(id: number) {
-  return lendoArquivo(() => db.prepare('SELECT mime, data FROM sounds WHERE id = ?').get(id)) as { mime: string; data: Uint8Array } | undefined;
+  return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM sounds WHERE id = ?').get(id)) as ArquivoGuardado | undefined;
 }
 
 // ---------- Pacotes de sons ----------
@@ -2154,10 +2236,11 @@ export function packSounds(packId: number): Sound[] {
   return db.prepare(`SELECT ${soundColumns} FROM sounds WHERE pack_id = ? ORDER BY id`).all(packId) as unknown as Sound[];
 }
 
-export function createPackSound(packId: number, name: string, icon: string, mime: string, data: Buffer): Sound {
+export function createPackSound(packId: number, name: string, icon: string, mime: string, data: Guardavel): Sound {
+  const no = aoDisco(data);
   const result = db
-    .prepare('INSERT INTO sounds (pack_id, name, icon, mime, data, created_by) VALUES (?, ?, ?, ?, ?, NULL)')
-    .run(packId, name, icon, mime, data);
+    .prepare('INSERT INTO sounds (pack_id, name, icon, mime, data, sha, bytes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)')
+    .run(packId, name, icon, mime, SEM_BYTES, no.sha, no.bytes);
   return findSound(Number(result.lastInsertRowid))!;
 }
 
@@ -2663,17 +2746,19 @@ export interface NewAttachment {
 
 export function addAttachment(messageId: number, file: NewAttachment): Attachment {
   const key = randomBytes(12).toString('hex');
+  const no = aoDisco(file.data);
   const result = db
     .prepare(
-      'INSERT INTO attachments (message_id, key, name, mime, size, width, height, data, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      `INSERT INTO attachments (message_id, key, name, mime, size, width, height, data, sha, bytes, expires_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-    .run(messageId, key, file.name, file.mime, file.data.length, file.width, file.height, file.data, file.expiresAt ?? null);
+    .run(messageId, key, file.name, file.mime, no.bytes, file.width, file.height, SEM_BYTES, no.sha, no.bytes, file.expiresAt ?? null);
   return {
     id: Number(result.lastInsertRowid),
     key,
     name: file.name,
     mime: file.mime,
-    size: file.data.length,
+    size: no.bytes,
     width: file.width,
     height: file.height,
     expiresAt: file.expiresAt ?? null,
@@ -2684,9 +2769,9 @@ export function addAttachment(messageId: number, file: NewAttachment): Attachmen
 export function findAttachmentFile(id: number, key: string) {
   // Os anexos são os maiores: um recado em vídeo chega a dezenas de megabytes, e é esta leitura que mais
   // tempo deixa o servidor parado. É a que mais interessa medir.
-  return lendoArquivo(() => db.prepare('SELECT name, mime, data FROM attachments WHERE id = ? AND key = ?').get(id, key)) as
-    | { name: string; mime: string; data: Uint8Array }
-    | undefined;
+  return lendoArquivo(() =>
+    db.prepare('SELECT name, mime, sha, bytes, data FROM attachments WHERE id = ? AND key = ?').get(id, key),
+  ) as ArquivoGuardado | undefined;
 }
 
 // ---------- Enquetes ----------

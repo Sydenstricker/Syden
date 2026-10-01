@@ -1,19 +1,23 @@
 // A insígnia dos 25 primeiros e a tela de destaque: o presente espera, é resgatado com um clique, e só
 // então aparece no perfil. Referência que o usuário mandou: a tela de item novo da loja do Warzone.
-import { CONVITE, SITE, abrirNavegador, falhou, novaPessoa, ok, resumo } from './ajuda.mjs';
+import { abrirNavegador, criarConta, falhou, novaPessoa, ok, resumo } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
 
+/**
+ * Este ajudante era uma CÓPIA VELHA do criarConta de ajuda.mjs, e tinha apodrecido em dois pontos de
+ * uma vez: o código de convite virou link e o campo sumiu da tela, e `getByLabel('Senha')` passou a
+ * casar com dois campos desde que a tela ganhou a explicação do e-mail. O teste quebrava antes da
+ * primeira conta existir — ou seja, a tela de insígnias estava sem medição nenhuma e ninguém sabia.
+ *
+ * Cópia de ajudante é dívida: agora chama o de verdade, e o que mudar na tela de cadastro muda num
+ * lugar só. O que este teste NÃO faz, de propósito, é dispensar os presentes: a tela de destaque é
+ * justamente o que ele veio medir.
+ */
 async function entrar(nome) {
   const page = await novaPessoa(browser);
-  await page.goto(SITE);
-  await page.getByText('Cadastre-se').click();
-  await page.getByLabel('Nome de usuário').fill(nome);
-  await page.getByLabel('Senha').fill('segredo123');
-  await page.getByLabel('Código de convite').fill(CONVITE);
-  await page.getByRole('button', { name: 'Cadastrar' }).click();
-  await page.locator('.vila').waitFor({ timeout: 30000 });
+  await criarConta(page, nome);
   return page;
 }
 

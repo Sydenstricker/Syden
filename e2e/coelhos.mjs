@@ -1,19 +1,13 @@
 // Item 6: a aba dos coelhos na tela inicial. Os dois lado a lado, cada um se mexendo do seu jeito ao
 // passar o mouse, e a escolha valendo no app inteiro (ícone da barra e estátua da praça).
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, novaAba, ok, resumo } from './ajuda.mjs';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, novaAba, ok, resumo } from './ajuda.mjs';
 
 const { browser, contexto } = await abrirNavegador();
 const page = await novaAba(contexto);
 
 const s = Date.now().toString().slice(-5);
-await page.goto(SITE);
-await page.getByText('Cadastre-se').click();
-await page.getByLabel('Nome de usuário').fill('coe' + s);
-await page.getByLabel('Senha').fill('segredo123');
-await page.getByLabel('Código de convite').fill(CONVITE);
-await page.getByRole('button', { name: 'Cadastrar' }).click();
-await page.locator('.vila').waitFor({ timeout: 30000 });
+await cadastrar(page, 'coe' + s);
 await dispensarPresentes(page);
 ok('entrou na tela inicial');
 

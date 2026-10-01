@@ -3,7 +3,7 @@
 //
 // O banco precisa estar limpo: o DONO é o primeiro cadastro. Rodar com e2e/limpo.sh ideias.mjs.
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, SITE, vigiar } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
@@ -12,13 +12,7 @@ async function entrar(nome) {
   const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 } });
   const page = await ctx.newPage();
   vigiar(page);
-    await page.goto(SITE);
-  await page.getByText('Cadastre-se').click();
-  await page.getByLabel('Nome de usuário').fill(nome);
-  await page.getByLabel('Senha').fill('segredo123');
-  await page.getByLabel('Código de convite').fill(CONVITE);
-  await page.getByRole('button', { name: 'Cadastrar' }).click();
-  await page.locator('.vila').waitFor({ timeout: 30000 });
+    await cadastrar(page, nome);
   await dispensarPresentes(page);
   return { page, ctx };
 }

@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffMime } from './media.js';
 import { communityRoom } from './realtime.js';
 import { cotaEsgotada, requireUser } from './routes.js';
@@ -24,10 +25,9 @@ export function registerKaraokeRoutes(app: FastifyInstance, io: IOServer) {
   app.get<{ Params: { id: string } }>('/api/karaoke/:id/audio', async (request, reply) => {
     const file = db.findKaraokeFile(Number(request.params.id));
     if (!file) return reply.code(404).send({ error: 'Música não encontrada.' });
-    return reply
-      .header('cache-control', 'public, max-age=31536000, immutable')
-      .type(file.mime)
-      .send(Buffer.from(file.data));
+    // ARRASTAR A BARRA DA MÚSICA É O CASO DESTA ROTA. O entregador responde a pedido de pedaço
+    // (Range) quando o arquivo já está no disco — sem isso, cada arraste rebaixa a música inteira.
+    return entregarArquivo(request, reply, file);
   });
 
   app.register(async (authed) => {

@@ -4,7 +4,7 @@
 // da caixa dela) tem que vir depois de quem está mais atrás. E os coelhos, que andam, entram na mesma
 // fila — o que mexe no DOM a cada passo, então o teste também confere se eles continuam DESLIZANDO.
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const ctx = await browser.newContext({ viewport: { width: 1500, height: 950 } });
@@ -12,13 +12,7 @@ const page = await ctx.newPage();
 vigiar(page);
 
 const s = Date.now().toString().slice(-5);
-await page.goto(SITE);
-await page.getByText('Cadastre-se').click();
-await page.getByLabel('Nome de usuário').fill('vila' + s);
-await page.getByLabel('Senha').fill('segredo123');
-await page.getByLabel('Código de convite').fill(CONVITE);
-await page.getByRole('button', { name: 'Cadastrar' }).click();
-await page.locator('.vila').waitFor({ timeout: 25000 });
+await cadastrar(page, 'vila' + s);
 await dispensarPresentes(page);
 await page.waitForTimeout(1200);
 

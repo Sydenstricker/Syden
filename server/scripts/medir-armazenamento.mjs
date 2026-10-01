@@ -41,11 +41,15 @@ const linhas = [];
 for (const [tabela, oQueE] of TABELAS) {
   let r;
   try {
+    // `COALESCE(bytes, length(data))` conta as duas épocas: a linha já movida para o disco tem o
+    // tamanho escrito em `bytes` e um BLOB vazio; a que ainda não foi movida continua sendo medida
+    // como sempre. Sem isso, cada arquivo migrado sumiria da medição e o número despencaria sozinho.
     r = db
       .prepare(
         `SELECT COUNT(*) AS quantos,
-                COALESCE(SUM(length(data)), 0) AS bytes,
-                COALESCE(MAX(length(data)), 0) AS maior
+                COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS bytes,
+                COALESCE(MAX(COALESCE(bytes, length(data))), 0) AS maior,
+                COALESCE(SUM(CASE WHEN sha IS NULL THEN length(data) ELSE 0 END), 0) AS noBanco
          FROM ${tabela}`,
       )
       .get();
@@ -83,11 +87,21 @@ for (const l of linhas) {
 console.log('  ' + '─'.repeat(100));
 console.log('  ' + 'TOTAL'.padEnd(22) + String(linhas.reduce((s, l) => s + l.quantos, 0)).padStart(9) + emMB(total));
 
+// QUANTO AINDA ESTÁ DENTRO DO BANCO. É a pergunta que a migração criou, e a única que diz se ela
+// terminou. O total acima soma as duas épocas de propósito — ele responde "quanto de arquivo existe",
+// que é outra pergunta.
+const aindaNoBanco = linhas.reduce((s, l) => s + (l.noBanco ?? 0), 0);
+console.log(
+  aindaNoBanco === 0
+    ? '\n  Tudo no disco. Dentro do banco não sobrou byte de arquivo nenhum.'
+    : `\n  Ainda DENTRO do banco:${emMB(aindaNoBanco)} — mover com: node scripts/mover-arquivos.mjs`,
+);
+
 // O recado em vídeo vence sozinho em 7 dias e devolve o espaço. Contá-lo junto com o que fica para
 // sempre daria um número que some, e decisão tomada em cima de número que some é decisão errada.
 try {
   const vencendo = db
-    .prepare("SELECT COUNT(*) AS quantos, COALESCE(SUM(length(data)), 0) AS bytes FROM attachments WHERE expires_at IS NOT NULL")
+    .prepare("SELECT COUNT(*) AS quantos, COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS bytes FROM attachments WHERE expires_at IS NOT NULL")
     .get();
   if (vencendo.quantos > 0) {
     console.log(`\n  Desse total, ${vencendo.quantos} arquivo(s) e${emMB(vencendo.bytes)} são recados em vídeo, que somem sozinhos.`);

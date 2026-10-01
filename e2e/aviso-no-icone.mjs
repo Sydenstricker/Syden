@@ -1,20 +1,14 @@
 // O número vermelho no ícone do Syden: acende com menção e com conversa direta, e apaga quando a pessoa
 // olha. No navegador o sinal visível é o título da aba e o favicon redesenhado; no instalador do Windows
 // o mesmo número vai para o ícone da barra de tarefas.
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, novaPessoa, ok, resumo, tituloDoCanal } from './ajuda.mjs';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, novaPessoa, ok, resumo, tituloDoCanal } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
 
 async function entrar(nome) {
   const page = await novaPessoa(browser);
-  await page.goto(SITE);
-  await page.getByText('Cadastre-se').click();
-  await page.getByLabel('Nome de usuário').fill(nome);
-  await page.getByLabel('Senha').fill('segredo123');
-  await page.getByLabel('Código de convite').fill(CONVITE);
-  await page.getByRole('button', { name: 'Cadastrar' }).click();
-  await page.locator('.vila').waitFor({ timeout: 30000 });
+  await cadastrar(page, nome);
   await dispensarPresentes(page);
   await page.locator('.rail-list .rail-item').first().click();
   await page.locator('.channel-name', { hasText: /geral/ }).first().click();

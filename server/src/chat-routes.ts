@@ -2,6 +2,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
 import { channelRoom, communityRoom } from './realtime.js';
 import { canUseChannel, cotaEsgotada, manages, poderDeOperador, requireUser, roleIn } from './routes.js';
@@ -46,13 +47,12 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
   app.get<{ Params: { id: string; key: string } }>('/api/attachments/:id/:key', async (request, reply) => {
     const file = db.findAttachmentFile(Number(request.params.id), request.params.key);
     if (!file) return reply.code(404).send({ error: 'Arquivo não encontrado.' });
+    // O recado em vídeo é o maior arquivo do Syden, e é aqui que o pedido de pedaço mais importa:
+    // arrastar a barra de um vídeo de 40 MB passou a pedir o pedaço, em vez de baixar tudo de novo.
     const disposition = INLINE.test(file.mime) ? 'inline' : 'attachment';
-    return reply
-      .header('content-type', file.mime)
-      .header('content-disposition', `${disposition}; filename*=UTF-8''${encodeURIComponent(file.name)}`)
-      .header('cache-control', 'public, max-age=31536000, immutable')
-      .header('x-content-type-options', 'nosniff')
-      .send(Buffer.from(file.data));
+    return entregarArquivo(request, reply, file, {
+      'content-disposition': `${disposition}; filename*=UTF-8''${encodeURIComponent(file.name ?? 'arquivo')}`,
+    });
   });
 
   app.register(async (authed) => {

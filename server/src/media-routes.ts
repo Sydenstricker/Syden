@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { entregarArquivo } from './entregar.js';
 import { restorePack } from './expressions.js';
 import { parseMedia, parseMediaConferida } from './media.js';
 import { communityRoom } from './realtime.js';
@@ -12,16 +13,6 @@ const KB = 1024;
 // megabytes é o teto do que o navegador manda depois de redimensionar (ver web/src/upload.ts).
 const LIMITS = { avatar: 2048 * KB, capa: 4096 * KB, emoji: 512 * KB, sound: 1024 * KB }; // avatar maior por causa de GIF animado
 const UPLOAD_BODY_LIMIT = 6 * 1024 * KB; // base64 ocupa ~33% a mais que o arquivo, e a capa vai a 4 MB
-
-function sendFile(reply: FastifyReply, file: { mime: string; data: Uint8Array } | undefined) {
-  if (!file) return reply.code(404).send({ error: 'Arquivo não encontrado.' });
-  // A URL muda quando o arquivo muda (versão/id), então o navegador pode guardar para sempre.
-  return reply
-    .header('content-type', file.mime)
-    .header('cache-control', 'public, max-age=31536000, immutable')
-    .header('x-content-type-options', 'nosniff')
-    .send(Buffer.from(file.data));
-}
 
 /** "Coração Feliz" → "coracao_feliz", o formato usado em :nome: nas mensagens. */
 function emojiName(raw: unknown): string | null {
@@ -38,19 +29,19 @@ function emojiName(raw: unknown): string | null {
 export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
   // Imagens e áudios são públicos: <img> e <audio> não conseguem mandar o token de login.
   app.get<{ Params: { id: string } }>('/api/users/:id/avatar', async (request, reply) =>
-    sendFile(reply, db.findAvatar(Number(request.params.id))),
+    entregarArquivo(request, reply, db.findAvatar(Number(request.params.id))),
   );
   app.get<{ Params: { id: string } }>('/api/communities/:id/icon', async (request, reply) =>
-    sendFile(reply, db.findCommunityIcon(Number(request.params.id))),
+    entregarArquivo(request, reply, db.findCommunityIcon(Number(request.params.id))),
   );
   app.get<{ Params: { id: string } }>('/api/communities/:id/capa', async (request, reply) =>
-    sendFile(reply, db.findCommunityBanner(Number(request.params.id))),
+    entregarArquivo(request, reply, db.findCommunityBanner(Number(request.params.id))),
   );
   app.get<{ Params: { id: string } }>('/api/emojis/:id/image', async (request, reply) =>
-    sendFile(reply, db.findEmojiFile(Number(request.params.id))),
+    entregarArquivo(request, reply, db.findEmojiFile(Number(request.params.id))),
   );
   app.get<{ Params: { id: string } }>('/api/sounds/:id/audio', async (request, reply) =>
-    sendFile(reply, db.findSoundFile(Number(request.params.id))),
+    entregarArquivo(request, reply, db.findSoundFile(Number(request.params.id))),
   );
 
   app.register(async (authed) => {

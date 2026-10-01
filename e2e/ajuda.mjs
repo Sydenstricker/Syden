@@ -99,7 +99,23 @@ export async function dispensarPresentes(page) {
  * pessoas na mesma comunidade, uma cria e passa o código para a outra (ver e2e/lixeira.mjs).
  */
 export async function criarConta(page, prefixo) {
-  const username = prefixo + Date.now().toString().slice(-6);
+  return cadastrar(page, prefixo + Date.now().toString().slice(-6));
+}
+
+/**
+ * O mesmo cadastro, com o nome de usuário EXATO que o teste pedir.
+ *
+ * ---------------------------------------------------------------------------------------------------
+ * POR QUE ELE PASSOU A EXISTIR: **sete testes tinham a própria cópia destas sete linhas**, e todas
+ * tinham apodrecido junto, do mesmo jeito. Eles não chamavam o criarConta porque precisam escolher o
+ * nome — e o criarConta inventa o dele —, então cada um copiou o bloco e o bloco envelheceu sete vezes.
+ *
+ * O estrago era pior do que "teste falhando": eles falhavam na PRIMEIRA linha, antes de medir coisa
+ * alguma, e com um erro de seletor que parece problema do teste. A tela de insígnias, a ordem da vila,
+ * a troca de idioma e o aviso no ícone estavam sem medição nenhuma, e nada avisava.
+ * ---------------------------------------------------------------------------------------------------
+ */
+export async function cadastrar(page, username) {
   // O CÓDIGO VAI NO LINK, e não num campo. O servidor recusa cadastro sem convite (403), e a tela já
   // não tem onde digitá-lo: quem convida manda um link com ?convite=… e o campo desapareceu de
   // propósito, para o cadastro ter três campos em vez de quatro. Um teste que abre o site pelado bate
@@ -107,6 +123,8 @@ export async function criarConta(page, prefixo) {
   await page.goto(SITE + (SITE.includes('?') ? '&' : '?') + 'convite=' + encodeURIComponent(CONVITE));
   await page.getByLabel('Nome de usuário').fill(username);
   await page.getByLabel('E-mail').fill(username + '@exemplo.test');
+  // O `exact` é obrigatório: a dica embaixo do e-mail fala em recuperar a SENHA, então "Senha" sem ele
+  // casa com dois campos e o Playwright recusa a jogada inteira.
   await page.getByLabel('Senha', { exact: true }).fill('segredo123');
   await page.getByRole('button', { name: 'Cadastrar' }).click();
   // DUAS CHEGADAS POSSÍVEIS, e esperar só uma trava o teste por meio minuto sem dizer por quê. Quem

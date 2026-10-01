@@ -7,7 +7,7 @@
 //   3. ao fechar, para de entrar.
 // E confere as camadas (simulcast) do lado da ana: sem camadas, quem vê numa miniatura baixa 1080p.
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
@@ -65,13 +65,7 @@ async function entrar(nome, { abrirSozinha = false } = {}) {
       localStorage.setItem('janja.settings', JSON.stringify({ abrirTransmissaoSozinha: true }));
     });
   }
-  await page.goto(SITE);
-  await page.getByText('Cadastre-se').click();
-  await page.getByLabel('Nome de usuário').fill(nome);
-  await page.getByLabel('Senha').fill('segredo123');
-  await page.getByLabel('Código de convite').fill(CONVITE);
-  await page.getByRole('button', { name: 'Cadastrar' }).click();
-  await page.locator('.vila').waitFor({ timeout: 30000 });
+  await cadastrar(page, nome);
   await dispensarPresentes(page);
   await page.locator('.rail-list .rail-item').first().click();
   await page.locator('.channel-name', { hasText: /^Sala 1$/ }).first().click();

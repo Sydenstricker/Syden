@@ -18,6 +18,13 @@ export const CONVITE = 'convite-de-teste';
 export async function servidorDeTeste() {
   const arquivo = join(tmpdir(), `syden-teste-${randomUUID()}.db`);
   process.env.DATABASE_PATH = arquivo;
+  // UMA PASTA DE ARQUIVOS POR TESTE, e isto custou uma depuração. O padrão é `arquivos/` ao lado do
+  // banco — e como todos os bancos de teste moram na pasta temporária do sistema, TODOS OS PROCESSOS
+  // DE TESTE dividiriam a mesma pasta. O `node --test` roda os arquivos em paralelo, então a limpeza
+  // de um apagava os avatares de outro no meio da corrida: um teste que passa sozinho e falha junto,
+  // e o erro saindo num lugar que não tem nada a ver com arquivo.
+  const pastaDosArquivos = arquivo.replace(/\.db$/, '-arquivos');
+  process.env.MEDIA_PATH = pastaDosArquivos;
   process.env.INVITE_CODE = CONVITE;
   process.env.LOG_LEVEL = 'silent';
   process.env.CORS_ORIGIN = 'http://localhost:5173';
@@ -62,6 +69,13 @@ export async function servidorDeTeste() {
         } catch {
           // No Windows o arquivo pode continuar preso ao processo; é só lixo em pasta temporária.
         }
+      }
+      // Os arquivos das pessoas não moram mais dentro do banco: apagar só o .db deixaria para trás uma
+      // pasta de avatares e sons a cada teste, na pasta temporária, para sempre.
+      try {
+        rmSync(pastaDosArquivos, { recursive: true, force: true });
+      } catch {
+        // mesma razão de cima
       }
     },
   };

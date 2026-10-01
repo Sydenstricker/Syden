@@ -261,7 +261,11 @@ de assinatura de código, que é pago.
 
   Para conferir depois, sem entrar no servidor: `curl -s https://api.syden.chat/api/inicio` traz
   `construidoEm`, que é quando a imagem no ar foi construída.
-- Backup: o banco é um arquivo SQLite no volume `janja_data`.
+- Backup: **são duas coisas, e desde que os arquivos saíram do banco elas mudam em ritmos diferentes.**
+  No volume `janja_data` ficam `janja.db` (as fichas — pequeno, muda a toda hora) e `arquivos/` (o que as
+  pessoas subiram — grande, quase nunca muda). Copiar só o banco perde os avatares; copiar só os
+  arquivos perde tudo o mais. Um arquivo em `arquivos/` nunca é reescrito — o nome dele é o hash do
+  conteúdo —, então cópia incremental funciona bem.
 
 ## Painel de uso
 
@@ -288,9 +292,10 @@ Uma VPS pequena aguenta isso com folga.
 
 ### Onde está o teto, medido
 
-O gargalo do Syden **não é a voz**: é que avatares, emojis, anexos e recados em vídeo ficam guardados
-dentro do próprio banco, e o `node:sqlite` é síncrono. Enquanto o servidor lê um arquivo, o processo
-inteiro para — nada de voz, nada de chat, para ninguém. `npm run medir:blobs` mede isso:
+**ISTO ERA O GARGALO, E FOI RESOLVIDO EM 2026-10-01** — os arquivos saíram do banco e foram para o
+disco (`server/src/arquivos.ts`). A tabela abaixo é o que acontecia ANTES, e fica aqui porque é a
+medição que justificou a mudança. O `node:sqlite` é síncrono: enquanto o servidor lia um BLOB, o
+processo inteiro parava — nada de voz, nada de chat, para ninguém. `npm run medir:blobs` media isso:
 
 | Arquivo | Servidor travado em 1 leitura | Em 10 leituras seguidas |
 |---|---|---|
@@ -304,9 +309,25 @@ Lendo assim: um recado em vídeo de 20 MB deixa o servidor surdo por ~28 ms. A v
 quando isso passa de uns 50 a 100 ms, então **três ou quatro vídeos pedidos ao mesmo tempo já dão para
 ouvir**. Com dez amigos nunca acontece; com cem pessoas ativas, acontece todo dia.
 
-Quando chegar essa hora, a correção é tirar os arquivos do banco e pôr num armazenamento de objetos
-(Cloudflare R2 ou S3), com o navegador baixando direto de lá. Enquanto o número da tabela acima não
-incomodar ninguém, mexer nisso é trabalho sem retorno — e é por isso que ainda não foi feito.
+**O que foi feito:** os bytes moram em `arquivos/`, ao lado do banco, com o nome de cada arquivo
+sendo o sha256 do próprio conteúdo. O servidor não lê mais o arquivo para a memória — ele entrega do
+disco —, e passou a responder a **pedido de pedaço (Range)**, que é o que faz arrastar a barra de uma
+música do karaokê pedir só o trecho em vez de rebaixar a música inteira.
+
+A migração foi feita **com 96 arquivos e 6 MB**, de propósito: mover noventa e seis arquivos é uma
+tarde, mover cinquenta mil é um plano de manutenção.
+
+```bash
+# dentro de deploy/, com o servidor já atualizado
+sudo docker compose exec api node scripts/mover-arquivos.mjs --ver       # quanto falta
+sudo docker compose exec api node scripts/mover-arquivos.mjs            # move (pode rodar com o Syden no ar)
+sudo docker compose exec api node scripts/mover-arquivos.mjs --conferir # cada linha tem mesmo o arquivo?
+sudo docker compose exec api node scripts/limpar-orfaos.mjs             # arquivo sem dono (lista; --apagar apaga)
+```
+
+O passo seguinte, quando um disco só não bastar, é um armazenamento de objetos (Cloudflare R2 ou S3)
+com o navegador baixando direto de lá. Com o arquivo já fora do banco e endereçado por hash, isso vira
+trocar onde `arquivos.ts` lê e escreve.
 
 Caminho para crescer, na ordem:
 

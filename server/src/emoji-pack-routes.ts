@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { entregarArquivo } from './entregar.js';
 import { parseMedia } from './media.js';
 import { communityRoom } from './realtime.js';
 import { requireUser } from './routes.js';
@@ -65,7 +66,7 @@ export function registerEmojiPackRoutes(app: FastifyInstance, io: IOServer) {
   app.get<{ Params: { id: string } }>('/api/emoji-pack-items/:id/image', async (request, reply) => {
     const file = db.findEmojiPackItemFile(Number(request.params.id));
     if (!file) return reply.code(404).send({ error: 'Emoji não encontrado.' });
-    return reply.header('Cache-Control', 'public, max-age=31536000, immutable').type(file.mime).send(Buffer.from(file.data));
+    return entregarArquivo(request, reply, file);
   });
 
   app.register(async (authed) => {
@@ -148,7 +149,9 @@ export function registerEmojiPackRoutes(app: FastifyInstance, io: IOServer) {
           icon(request.body?.icon, '😀'),
           request.user.id,
         );
-        for (const emoji of emojis) db.addEmojiToPack(packId, emoji.name, emoji.mime, Buffer.from(emoji.data));
+        // Publicar os emojis da comunidade como pacote COPIA O ENDEREÇO, e não os bytes: o pacote e a
+        // comunidade passam a apontar para o mesmo arquivo no disco.
+        for (const emoji of emojis) db.addEmojiToPack(packId, emoji.name, emoji.mime, emoji.arquivo);
         return db.findEmojiPack(packId, request.user.id, access.communityId);
       },
     );

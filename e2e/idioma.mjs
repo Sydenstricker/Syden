@@ -1,7 +1,7 @@
 // Itens 2 e 13: o idioma se escolhe DENTRO do app, a troca vale na hora, e as letras de qualquer
 // alfabeto aparecem certas (fonte de reserva por escrita).
 
-import { CONVITE, SITE, abrirNavegador, dispensarPresentes, falhou, ok, resumo, vigiar, tituloDoCanal } from './ajuda.mjs';
+import { SITE, abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar, tituloDoCanal } from './ajuda.mjs';
 
 const { browser } = await abrirNavegador();
 const s = Date.now().toString().slice(-5);
@@ -27,12 +27,7 @@ await pagina2.screenshot({ path: 'e2e/fotos/idioma-entrada-en.png' });
 await emIngles.close();
 
 // ---------- 2. dentro do app: trocar de idioma na hora ----------
-await page.getByText('Cadastre-se').click();
-await page.getByLabel('Nome de usuário').fill('idi' + s);
-await page.getByLabel('Senha').fill('segredo123');
-await page.getByLabel('Código de convite').fill(CONVITE);
-await page.getByRole('button', { name: 'Cadastrar' }).click();
-await page.locator('.vila').waitFor({ timeout: 30000 });
+await cadastrar(page, 'idi' + s);
 await dispensarPresentes(page);
 await page.locator('.rail-list .rail-item').first().click();
 await page.locator('.channel-name', { hasText: /geral/ }).first().click();
@@ -78,7 +73,10 @@ await page.locator('.rail-list').waitFor({ timeout: 25000 });
 const fonte = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--fonte-idioma').trim());
 console.log('  fonte de reserva no inglês:', fonte);
 const arabe = await page.evaluate(async () => {
-  const mod = await import('/src/i18n/index.ts');
+  // O CAMINHO TEM O `/app/`, e sem ele isto é um 404 disfarçado de erro de módulo. O Syden é servido
+  // com `base: '/app/'` (ver web/vite.config.ts), então o endereço do fonte no servidor de
+  // desenvolvimento é /app/src/…, e não /src/…. O teste trazia o caminho de antes do `base` existir.
+  const mod = await import('/app/src/i18n/index.ts');
   // O árabe ainda não tem dicionário, mas o motor precisa saber escrever nele quando tiver.
   const idioma = mod.idiomaPorCodigo('ar');
   return { existe: Boolean(idioma), rtl: idioma?.rtl === true, escrita: idioma?.escrita };
