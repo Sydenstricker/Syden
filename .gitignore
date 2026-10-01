@@ -2,6 +2,14 @@ node_modules/
 dist/
 *.db
 *.db-*
+
+# OS ARQUIVOS QUE AS PESSOAS SOBEM. Desde que eles saíram de dentro do SQLite (ver
+# server/src/arquivos.ts), o banco de desenvolvimento tem um companheiro: uma pasta de avatares,
+# emojis e sons ao lado dele. O `*.db` cobria o banco e não cobria isso — e 53 arquivos de mídia de
+# teste entraram no repositório num commit antes de alguém reparar. A pasta é derivada: ela se refaz
+# sozinha no próximo `npm run dev`.
+server/arquivos/
+arquivos/
 .env
 .env.local
 desktop/release/
