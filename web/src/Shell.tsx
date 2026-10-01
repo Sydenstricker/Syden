@@ -14,7 +14,6 @@ import { Home } from './Home';
 import { lugarDaBarra } from './lugarDaBarra';
 import { InicioDaComunidade, type DadosDeBoasVindas } from './InicioDaComunidade';
 import { ServidoresDeJogo } from './ServidoresDeJogo';
-import { TelaDaLoja } from './TelaDaLoja';
 import { TelaDeAmigos } from './TelaDeAmigos';
 import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
@@ -39,7 +38,7 @@ const LAST_COMMUNITY_KEY = 'syden.community';
 /** Última tela aberta (início, comunidade ou conversas), pelo mesmo motivo. */
 const LAST_VIEW_KEY = 'syden.view';
 
-type View = 'home' | 'community' | 'direct' | 'loja' | 'amigos';
+type View = 'home' | 'community' | 'direct' | 'amigos';
 
 function rememberView(view: View) {
   try {
@@ -784,20 +783,15 @@ export function Shell({
               salas={channels.filter((c) => c.type === 'voice')}
               naVoz={voiceMembers}
               aoEntrar={watchStream}
-              aoAbrirLoja={() => setView('loja')}
+              // A LOJA VIROU UMA ABA DAS CONFIGURAÇÕES. Ela era uma tela de topo alcançada pela
+              // vila e pela tela de boas-vindas DA COMUNIDADE — e por isso parecia ser da
+              // comunidade, embora nunca tenha sido. Agora ela está onde mora o resto do que é seu.
+              aoAbrirLoja={() => setSettingsOpen('aparencia')}
               aoAbrirAmigos={() => setView('amigos')}
               aoExplorar={() => setExplorarAberto(true)}
               souODono={user.isOwner}
             />
           )}
-          {view === 'loja' && (
-            <TelaDaLoja
-              user={user}
-              aoAbrirPacotes={() => setSettingsOpen('soundboard')}
-              aoVoltar={() => setView('home')}
-            />
-          )}
-
           {view === 'amigos' && (
             <div className="tela-com-volta">
               <button className="btn-sutil" onClick={() => setView('home')}>
@@ -839,7 +833,7 @@ export function Shell({
               }}
               aoAbrirLoja={() => {
                 setMostrandoBoasVindas(false);
-                setView('loja');
+                setSettingsOpen('aparencia');
               }}
               aoEditar={() => {
                 setMostrandoBoasVindas(false);

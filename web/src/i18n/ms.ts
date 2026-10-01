@@ -93,7 +93,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'Saluran yang dipadam kekal di sini selama {dias} hari dan kembali bersama mesejnya, kerana mesej itu tidak pernah keluar daripada pangkalan data. Selepas tempohnya, ia hilang terus.',
   Cancelar: 'Batal',
-  'Carregando a loja…': 'Memuatkan kedai…',
   'Carregando…': 'Memuatkan…',
   'Chamar alguém': 'Panggil seseorang',
   'Chame a galera e bora.': 'Ajak kawan-kawan dan jom.',
@@ -727,4 +726,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Klip tidak dapat ditutup sekarang. Cuba lagi dalam beberapa saat.',
   'Pacotes de sons e de emojis': 'Pakej bunyi dan emoji',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Juga percuma, dan juga boleh ditukar bila-bila masa. Ia berada dalam tetapan komuniti, kerana ia terpakai untuk seluruh komuniti dan bukan untuk anda sahaja.',
+  'Ametista': 'Ametis',
+  'Aparência': 'Rupa',
+  'Cobre': 'Tembaga',
+  'Cosmos': 'Kosmos',
+  'Em uso': 'Sedang digunakan',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Lencana tidak dibeli: ia datang daripada sesuatu yang anda lakukan. Yang mana muncul pada profil anda, dan dalam susunan apa, anda pilih di bawah, dalam Akaun saya.',
+  'Jade': 'Jed',
+  'Nebulosa': 'Nebula',
+  'Prisma': 'Prisma',
+  'Vitral': 'Kaca berwarna',
 } satisfies Record<string, string>;

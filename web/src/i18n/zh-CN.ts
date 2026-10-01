@@ -92,7 +92,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     '删掉的频道会在这里留 {dias} 天，恢复时消息也一起回来，因为它们从没离开过数据库。过了期限就彻底消失。',
   Cancelar: '取消',
-  'Carregando a loja…': '正在加载商店…',
   'Carregando…': '加载中…',
   'Chamar alguém': '呼叫某人',
   'Chame a galera e bora.': '叫上朋友，开始吧。',
@@ -713,4 +712,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': '现在没能收尾这个片段。过几秒再试一下。',
   'Pacotes de sons e de emojis': '音效包和表情包',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': '也都免费，也随时能换。它们在社区设置里，因为它们对整个社区生效，不只是对你。',
+  'Ametista': '紫水晶',
+  'Aparência': '外观',
+  'Cobre': '铜',
+  'Cosmos': '星空',
+  'Em uso': '使用中',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': '徽章不是买来的，是做了什么才来的。哪些显示在你的资料里、按什么顺序，在下面的「我的账号」里选。',
+  'Jade': '翡翠',
+  'Nebulosa': '星云',
+  'Prisma': '棱镜',
+  'Vitral': '彩色玻璃',
 } satisfies Record<string, string>;

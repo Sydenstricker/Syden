@@ -94,7 +94,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'मिटाया गया चैनल यहाँ {dias} दिन रहता है और अपने संदेशों के साथ वापस आता है, क्योंकि वे कभी डेटाबेस से निकले ही नहीं। समय बीतने पर वह हमेशा के लिए चला जाता है।',
   Cancelar: 'रहने दो',
-  'Carregando a loja…': 'दुकान लोड हो रही है…',
   'Carregando…': 'लोड हो रहा है…',
   'Chamar alguém': 'किसी को कॉल करो',
   'Chame a galera e bora.': 'दोस्तों को बुलाओ और चलो।',
@@ -726,4 +725,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'अभी क्लिप बंद नहीं हो पाई। कुछ सेकंड बाद फिर कोशिश करो।',
   'Pacotes de sons e de emojis': 'आवाज़ों और इमोजी के पैकेज',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'ये भी मुफ़्त हैं, और इन्हें भी जब चाहो बदल सकते हो। ये कम्युनिटी की सेटिंग में रहते हैं, क्योंकि ये पूरी कम्युनिटी पर लागू होते हैं, सिर्फ़ तुम पर नहीं।',
+  'Ametista': 'नीलम',
+  'Aparência': 'दिखावट',
+  'Cobre': 'ताँबा',
+  'Cosmos': 'ब्रह्मांड',
+  'Em uso': 'इस्तेमाल में',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'बैज खरीदे नहीं जाते: वे कुछ करने से आते हैं। तुम्हारी प्रोफ़ाइल पर कौन-से दिखें और किस क्रम में, यह नीचे "मेरा खाता" में चुनते हो।',
+  'Jade': 'जेड',
+  'Nebulosa': 'नीहारिका',
+  'Prisma': 'प्रिज़्म',
+  'Vitral': 'रंगीन काँच',
 } satisfies Record<string, string>;

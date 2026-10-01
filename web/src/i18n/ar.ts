@@ -372,7 +372,6 @@ export default {
   'Tudo de graça, sempre': 'كل شيء مجاني، دائمًا',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'كل ما هنا مجاني. اختر ما تشاء، وبدّل متى تشاء.',
-  'Carregando a loja…': 'جارٍ تحميل المتجر…',
   'Carregando…': 'جارٍ التحميل…',
   'Tipos de cosmético': 'أنواع الزينة',
   Usar: 'استخدام',
@@ -747,4 +746,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'تعذّر إنهاء المقطع الآن. حاول بعد ثوانٍ قليلة.',
   'Pacotes de sons e de emojis': 'حزم الأصوات والإيموجيات',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'مجانية أيضًا، وقابلة للتبديل متى شئت أيضًا. مكانها في إعدادات المجتمع، لأنها تسري على المجتمع كله لا عليك وحدك.',
+  'Ametista': 'جمشت',
+  'Aparência': 'المظهر',
+  'Cobre': 'نحاس',
+  'Cosmos': 'الكون',
+  'Em uso': 'قيد الاستعمال',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'الشارات لا تُشترى: تأتي من أنك فعلت شيئًا. أيها يظهر في ملفك وبأي ترتيب تختاره في الأسفل، في «حسابي».',
+  'Jade': 'يشم',
+  'Nebulosa': 'سديم',
+  'Prisma': 'منشور',
+  'Vitral': 'زجاج ملوّن',
 } satisfies Record<string, string>;

@@ -373,7 +373,6 @@ export default {
   'Tudo de graça, sempre': 'Всё бесплатно, всегда',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Здесь всё бесплатно. Бери что хочешь и меняй когда хочешь.',
-  'Carregando a loja…': 'Загружаем магазин…',
   'Carregando…': 'Загрузка…',
   'Tipos de cosmético': 'Виды украшений',
   Usar: 'Надеть',
@@ -748,4 +747,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Сейчас не получилось закрыть клип. Попробуй через несколько секунд.',
   'Pacotes de sons e de emojis': 'Наборы звуков и эмодзи',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Тоже бесплатные и тоже меняются когда угодно. Они в настройках сообщества, потому что действуют на всё сообщество, а не только на тебя.',
+  'Ametista': 'Аметист',
+  'Aparência': 'Внешний вид',
+  'Cobre': 'Медь',
+  'Cosmos': 'Космос',
+  'Em uso': 'Сейчас на тебе',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Значки не покупают: они приходят от того, что ты сделал. Какие из них видны в профиле и в каком порядке — выбираешь ниже, в «Моём аккаунте».',
+  'Jade': 'Нефрит',
+  'Nebulosa': 'Туманность',
+  'Prisma': 'Призма',
+  'Vitral': 'Витраж',
 } satisfies Record<string, string>;

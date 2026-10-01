@@ -91,7 +91,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'Un canale eliminato resta qui {dias} giorni e torna con i suoi messaggi dentro, perché non hanno mai lasciato il database. Scaduto il termine, sparisce per sempre.',
   Cancelar: 'Annulla',
-  'Carregando a loja…': 'Caricamento del negozio…',
   'Carregando…': 'Caricamento…',
   'Chamar alguém': 'Chiama qualcuno',
   'Chame a galera e bora.': 'Chiama i tuoi e via.',
@@ -726,4 +725,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Non è stato possibile chiudere il clip adesso. Riprova tra qualche secondo.',
   'Pacotes de sons e de emojis': 'Pacchetti di suoni e di emoji',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Anche questi gratis, e anche cambiabili quando vuoi. Stanno nelle impostazioni della community, perché valgono per tutta la community e non solo per te.',
+  'Ametista': 'Ametista',
+  'Aparência': 'Aspetto',
+  'Cobre': 'Rame',
+  'Cosmos': 'Cosmo',
+  'Em uso': 'In uso',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'I distintivi non si comprano: vengono da aver fatto qualcosa. Quali compaiono sul tuo profilo, e in che ordine, lo scegli più sotto, in Il mio account.',
+  'Jade': 'Giada',
+  'Nebulosa': 'Nebulosa',
+  'Prisma': 'Prisma',
+  'Vitral': 'Vetrata',
 } satisfies Record<string, string>;

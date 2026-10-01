@@ -15,6 +15,7 @@ import { Accessibility, Languages,
   ShieldOff,
   ShieldPlus,
   Smile,
+  Sparkles,
   Trash2,
   UserX,
   Users,
@@ -22,6 +23,7 @@ import { Accessibility, Languages,
 } from 'lucide-react';
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
+import { Aparencia } from './Aparencia';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
@@ -58,12 +60,16 @@ import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'emojis' | 'soundboard';
+type Section = 'account' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'account', label: chave('Minha conta'), icon: <AnimatedIcon name="avatar" size={20} /> },
+  // APARÊNCIA FICA LOGO DEPOIS DA CONTA, e é o que sobrou da junção da Loja com os enfeites de
+  // perfil: cor do nome, fundo, moldura e insígnias se escolhiam em dois lugares diferentes, e a
+  // moldura só num deles. Ver web/src/Aparencia.tsx.
+  { id: 'aparencia', label: chave('Aparência'), icon: <Sparkles size={20} /> },
   { id: 'voice', label: chave('Voz e vídeo'), icon: <AnimatedIcon name="microfone" size={20} /> },
   // O despertador sacode forte demais no ritmo original; num menu, meia velocidade basta para dar vida.
   { id: 'sounds', label: chave('Notificações'), icon: <AnimatedIcon name="alarme" size={20} speed={0.5} /> },
@@ -151,6 +157,7 @@ export function SettingsModal({
               <PessoasBloqueadas />
             </>
           )}
+          {section === 'aparencia' && <Aparencia user={user} aoAbrirPacotes={() => setSection('soundboard')} />}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
           {section === 'acessibilidade' && <AcessibilidadeSection />}
@@ -431,7 +438,6 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
     <>
       <h2>{t('Minha conta')}</h2>
       <AvatarEditor user={user} />
-      <PerfilEditor user={user} />
 
       <h3>{temSenha === false ? t('Definir uma senha') : t('Trocar senha')}</h3>
       <form className="settings-form" onSubmit={submit}>

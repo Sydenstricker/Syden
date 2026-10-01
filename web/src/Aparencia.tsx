@@ -1,37 +1,28 @@
 import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
+import { Avatar } from './Avatar';
+import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA } from './loja';
-
-import { MobileBackButton } from './MobileBackButton';
+import { classeDoFundo, corDoNome } from './profileStyles';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
-import { chave, useT } from './i18n';
 
-// A loja de cosméticos do Syden. **Tudo o que está nela é de graça.**
+// APARÊNCIA: um lugar só para tudo o que muda a sua cara no Syden.
 //
-// Não é um detalhe de implementação, é o modelo do produto: a filosofia é a do WinRAR — o programa
-// funciona inteiro, sem cobrar, sem travar, sem "versão pro". Nada aqui compra vantagem: é cor de nome,
-// fundo de perfil e anel em volta do avatar.
+// POR QUE ESTA TELA SUBSTITUIU A LOJA, e a pergunta que a derrubou: "se a loja ajusta o cosmético do
+// usuário e as configurações também, elas são redundantes". Estava certo. Cor do nome e fundo do
+// perfil se escolhiam nos DOIS lugares; a moldura só num deles; as insígnias num terceiro. Três
+// telas para a mesma decisão, e nenhuma delas completa.
 //
-// E NÃO SE PEDE DINHEIRO NESTA TELA. Quem quiser ajudar a pagar o servidor encontra isso numa aba do
-// site, fora do app. Aqui os itens só se dividem entre os que já são seus e os que se conquistam usando
-// o Syden — os trancados aparecem marcados, em vez de escondidos: mostrar o que existe é honesto,
-// fingir que não existe e um dia aparecer do nada, não.
-
-// 'pacotes' NÃO É UM TIPO DE ITEM, é uma aba que leva para outro lugar — por isso ela entra aqui
-// como um à parte, e não na lista de tipos. O bloco dos pacotes ficava fora do `if` da aba e
-// aparecia embaixo das quatro, repetido, como se fosse rodapé.
-type Aba = TipoDeItem | 'pacotes';
-
-const ABAS: { tipo: Aba; nome: string }[] = [
-  { tipo: 'cor', nome: chave('Cor do nome') },
-  { tipo: 'fundo', nome: chave('Fundo do perfil') },
-  { tipo: 'moldura', nome: chave('Moldura do avatar') },
-  { tipo: 'insignia', nome: chave('Insígnias') },
-  { tipo: 'pacotes', nome: chave('Pacotes') },
-];
+// E "loja" era a palavra errada desde o começo. No Discord a separação faz sentido porque lá se
+// VENDE: a loja é o caixa e as configurações são o guarda-roupa. No Syden tudo já é seu na hora em
+// que você entra — não existe caixa, então não existe loja. Existe aparência.
+//
+// O QUE SOBREVIVEU DA LOJA: o formato de catálogo, com nome, descrição, amostra e o estado "em uso".
+// Ele é melhor do que a fileira de quadradinhos que estava nas Configurações, porque diz o que cada
+// coisa É antes de você vestir para descobrir.
 
 /** O quadradinho que mostra como o item fica, sem precisar vestir para descobrir. */
 function Amostra({ item }: { item: ItemDaLoja }) {
@@ -42,13 +33,11 @@ function Amostra({ item }: { item: ItemDaLoja }) {
       </span>
     );
   }
-  if (item.tipo === 'fundo') return <span className={`loja-amostra fundo fundo-${item.codigo}`} />;
+  if (item.tipo === 'fundo') return <span className={`loja-amostra fundo ${classeDoFundo(item.codigo)}`} />;
   if (item.tipo === 'moldura') {
-    // A AMOSTRA USA A MESMA MARCAÇÃO DO AVATAR DE VERDADE, e isso conserta um defeito: ela usava
-    // `.loja-amostra.moldura-ouro`, um seletor que NÃO EXISTE na folha de estilo. Os dez anéis moram
-    // em `.avatar[data-moldura='…']::after` e em lugar nenhum mais. Resultado: as dez molduras
-    // apareciam como a mesma bola escura, e só dava para saber o que cada uma era vestindo-a. Uma
-    // amostra que não mostra o item é pior do que amostra nenhuma.
+    // A MESMA MARCAÇÃO DO AVATAR DE VERDADE: os anéis moram em `.avatar[data-moldura]::after` e em
+    // lugar nenhum mais. Uma amostra que não seja um `.avatar` não desenha moldura alguma — foi
+    // assim que as dez apareceram como a mesma bola escura.
     return (
       <span className="loja-amostra">
         <span className="avatar loja-amostra-avatar" data-moldura={item.codigo === 'nenhuma' ? undefined : item.codigo} />
@@ -63,15 +52,7 @@ function Amostra({ item }: { item: ItemDaLoja }) {
   );
 }
 
-function Cartao({
-  item,
-  vestido,
-  onVestir,
-}: {
-  item: ItemDaLoja;
-  vestido: boolean;
-  onVestir: (item: ItemDaLoja) => void;
-}) {
+function Cartao({ item, vestido, onVestir }: { item: ItemDaLoja; vestido: boolean; onVestir: (item: ItemDaLoja) => void }) {
   const t = useT();
   const visual = item.tipo === 'insignia' ? acharInsignia(item.codigo) : acharVisual(item.tipo, item.codigo);
   // Código que o servidor conhece e este site ainda não: some, em vez de virar um quadro vazio.
@@ -91,8 +72,8 @@ function Cartao({
         )}
       </div>
       {vestido ? (
-        <span className="loja-vestido" aria-label="Em uso">
-          <Check size={16} /> Em uso
+        <span className="loja-vestido" aria-label={t('Em uso')}>
+          <Check size={16} /> {t('Em uso')}
         </span>
       ) : trancado ? (
         <span className="loja-trancado" aria-label={t('Você ainda não tem este item')}>
@@ -107,27 +88,18 @@ function Cartao({
   );
 }
 
-// A LOJA NÃO PEDE DINHEIRO, EM LUGAR NENHUM.
-//
-// Aqui havia um bloco de contribuição que aparecia no navegador e se escondia no aplicativo instalado.
-// Saiu inteiro: a contribuição agora mora numa aba do site (web/site/contribuir.html), e só lá.
-//
-// Duas razões. A primeira é de produto: dinheiro no meio de uma loja onde tudo é de graça faz a pessoa
-// procurar o que está trancado — e não há nada trancado, então a pergunta não devia nascer. A segunda é
-// de regra de loja de aplicativo: Apple, Google e Microsoft cobram porcentagem sobre o que é vendido
-// dentro do app, e algumas exigem que o pagamento passe por elas. Sem nenhum pedido de dinheiro aqui,
-// não há o que discutir — e discutir custaria uma reprovação.
+// 'pacotes' não é um tipo de item: é uma aba que leva para outro lugar.
+type Aba = TipoDeItem | 'pacotes';
 
-export function TelaDaLoja({
-  user,
-  aoAbrirPacotes,
-  aoVoltar,
-}: {
-  user: User;
-  /** Os pacotes de som e de emoji moram nas configurações; daqui só se aponta para lá. */
-  aoAbrirPacotes: () => void;
-  aoVoltar: () => void;
-}) {
+const ABAS: { tipo: Aba; nome: string }[] = [
+  { tipo: 'cor', nome: chave('Cor do nome') },
+  { tipo: 'fundo', nome: chave('Fundo do perfil') },
+  { tipo: 'moldura', nome: chave('Moldura do avatar') },
+  { tipo: 'insignia', nome: chave('Insígnias') },
+  { tipo: 'pacotes', nome: chave('Pacotes') },
+];
+
+export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
   const t = useT();
   const [dados, setDados] = useState<LojaDados | null>(null);
   const [aba, setAba] = useState<Aba>('cor');
@@ -156,8 +128,6 @@ export function TelaDaLoja({
           [campo]: jaEstava ? null : item.codigo,
         },
       });
-      // Quem avisa o resto do app é o servidor, pelo "user:updated" que o diretório escuta — por isso
-      // o nome muda de cor na lista de membros sem esta tela precisar contar nada a ninguém.
       setDados({
         ...dados,
         vestindo: {
@@ -173,7 +143,7 @@ export function TelaDaLoja({
   }
 
   if (erro && !dados) return <p className="form-error">{erro}</p>;
-  if (!dados) return <p className="settings-hint">{t('Carregando a loja…')}</p>;
+  if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
 
   const doTipo = dados.itens.filter((item) => item.tipo === aba);
   const vestidoAgora = (item: ItemDaLoja) =>
@@ -182,14 +152,20 @@ export function TelaDaLoja({
       : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura'] === item.codigo;
 
   return (
-    <div className="loja">
-      <header className="loja-cabecalho">
-        <MobileBackButton onBack={aoVoltar} />
-        <h2>
-          <Sparkles size={22} aria-hidden="true" /> {t('Loja')}
-        </h2>
-        <p>{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
-      </header>
+    <>
+      <h2>
+        <Sparkles size={20} aria-hidden="true" /> {t('Aparência')}
+      </h2>
+      <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
+
+      {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de
+          referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é
+          exatamente assim que os outros vão te ver. */}
+      <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
+        <Avatar name={user.username} userId={user.id} size={56} />
+        <strong data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}>{user.username}</strong>
+      </div>
+      <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
 
       <div className="tab-row" role="tablist" aria-label={t('Tipos de cosmético')}>
         {ABAS.map((opcao) => (
@@ -209,8 +185,7 @@ export function TelaDaLoja({
 
       {aba === 'insignia' && (
         <p className="settings-hint">
-          Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem,
-          você escolhe em Configurações.
+          {t('Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.')}
         </p>
       )}
 
@@ -238,9 +213,11 @@ export function TelaDaLoja({
         </section>
       )}
 
-      <p className="settings-hint loja-rodape">
-        Enfeitando o perfil de <strong>{user.username}</strong>.
-      </p>
-    </div>
+      {/* NÃO SE PEDE DINHEIRO AQUI, em lugar nenhum. Quem quiser ajudar a pagar o servidor encontra
+          isso numa aba do site, fora do app. Duas razões: dinheiro no meio de uma tela onde tudo é
+          de graça faz a pessoa procurar o que está trancado — e não há nada trancado; e Apple,
+          Google e Microsoft cobram porcentagem sobre o que é vendido dentro do app. Sem pedido
+          nenhum, não há o que discutir. */}
+    </>
   );
 }

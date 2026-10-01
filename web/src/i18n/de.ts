@@ -376,7 +376,6 @@ export default {
   'Tudo de graça, sempre': 'Alles kostenlos, immer',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Hier ist alles kostenlos. Nimm, was du willst, und wechsle, wann du willst.',
-  'Carregando a loja…': 'Shop wird geladen…',
   'Carregando…': 'Wird geladen…',
   'Tipos de cosmético': 'Arten von Schmuck',
   Usar: 'Anlegen',
@@ -754,4 +753,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Der Clip ließ sich gerade nicht abschließen. Versuch es in ein paar Sekunden nochmal.',
   'Pacotes de sons e de emojis': 'Sound- und Emoji-Pakete',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Auch kostenlos, und auch jederzeit austauschbar. Sie liegen in den Community-Einstellungen, weil sie für die ganze Community gelten und nicht nur für dich.',
+  'Ametista': 'Amethyst',
+  'Aparência': 'Aussehen',
+  'Cobre': 'Kupfer',
+  'Cosmos': 'Kosmos',
+  'Em uso': 'In Gebrauch',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Abzeichen kauft man nicht: sie kommen davon, etwas getan zu haben. Welche in deinem Profil erscheinen, und in welcher Reihenfolge, suchst du weiter unten aus, unter Mein Konto.',
+  'Jade': 'Jade',
+  'Nebulosa': 'Nebel',
+  'Prisma': 'Prisma',
+  'Vitral': 'Kirchenfenster',
 } satisfies Record<string, string>;

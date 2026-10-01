@@ -89,7 +89,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'Silinen kanal burada {dias} gün durur ve mesajlarıyla birlikte geri gelir, çünkü mesajlar veritabanından hiç çıkmadı. Süre dolunca tamamen gider.',
   Cancelar: 'Vazgeç',
-  'Carregando a loja…': 'Mağaza yükleniyor…',
   'Carregando…': 'Yükleniyor…',
   'Chamar alguém': 'Birini ara',
   'Chame a galera e bora.': 'Arkadaşlarını çağır ve başlayalım.',
@@ -721,4 +720,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Klip şu anda kapatılamadı. Birkaç saniye sonra tekrar dene.',
   'Pacotes de sons e de emojis': 'Ses ve emoji paketleri',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Bunlar da bedava, ve bunlar da istediğin zaman değişir. Topluluk ayarlarında duruyorlar, çünkü yalnız sana değil bütün topluluğa geçerliler.',
+  'Ametista': 'Ametist',
+  'Aparência': 'Görünüm',
+  'Cobre': 'Bakır',
+  'Cosmos': 'Evren',
+  'Em uso': 'Kullanımda',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Rozetler satın alınmaz: bir şey yapmış olmaktan gelirler. Hangileri profilinde görünecek ve hangi sırayla, aşağıda, Hesabım bölümünde seçersin.',
+  'Jade': 'Yeşim',
+  'Nebulosa': 'Bulutsu',
+  'Prisma': 'Prizma',
+  'Vitral': 'Vitray',
 } satisfies Record<string, string>;

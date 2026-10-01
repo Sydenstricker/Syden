@@ -92,7 +92,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'মুছে ফেলা চ্যানেল এখানে {dias} দিন থাকে এবং বার্তাসহ ফিরে আসে, কারণ বার্তাগুলো ডেটাবেস থেকে কখনও বেরোয়নি। সময় পেরিয়ে গেলে সেটা চিরতরে চলে যায়।',
   Cancelar: 'থাক',
-  'Carregando a loja…': 'দোকান আসছে…',
   'Carregando…': 'আসছে…',
   'Chamar alguém': 'কাউকে ডাকো',
   'Chame a galera e bora.': 'বন্ধুদের ডাকো, শুরু করা যাক।',
@@ -724,4 +723,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'এখন ক্লিপটা শেষ করা গেল না। কয়েক সেকেন্ড পরে আবার চেষ্টা করো।',
   'Pacotes de sons e de emojis': 'শব্দ আর ইমোজির প্যাকেজ',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'এগুলোও বিনামূল্যে, আর এগুলোও যখন খুশি বদলানো যায়। এগুলো কমিউনিটির সেটিংসে থাকে, কারণ এগুলো পুরো কমিউনিটির জন্য, শুধু তোমার জন্য নয়।',
+  'Ametista': 'নীলকান্ত',
+  'Aparência': 'চেহারা',
+  'Cobre': 'তামা',
+  'Cosmos': 'মহাকাশ',
+  'Em uso': 'ব্যবহারে',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'ব্যাজ কেনা যায় না: কিছু করলে তবেই আসে। তোমার প্রোফাইলে কোনগুলো দেখা যাবে আর কোন ক্রমে, সেটা নিচে "আমার অ্যাকাউন্ট"-এ বেছে নাও।',
+  'Jade': 'জেড',
+  'Nebulosa': 'নীহারিকা',
+  'Prisma': 'প্রিজম',
+  'Vitral': 'রঙিন কাচ',
 } satisfies Record<string, string>;

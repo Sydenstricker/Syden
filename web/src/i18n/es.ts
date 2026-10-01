@@ -390,7 +390,6 @@ export default {
   'Baixar na Microsoft Store': 'Descargar en la Microsoft Store',
 // Textos que estaban fijos hasta que el buscador aprendió a ver portugués sin acentos
   "Apagar este servidor?": "¿Borrar este servidor?",
-  "Carregando a loja…": "Cargando la tienda…",
   "Carregando…": "Cargando…",
   "Deste servidor": "De esta comunidad",
   "Enviar arquivo ou fazer enquete": "Enviar un archivo o crear una encuesta",
@@ -732,4 +731,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'No se pudo cerrar el clip ahora. Intenta de nuevo en unos segundos.',
   'Pacotes de sons e de emojis': 'Paquetes de sonidos y de emojis',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'También gratis, y también cambiables cuando quieras. Están en la configuración de la comunidad, porque valen para toda la comunidad y no solo para ti.',
+  'Ametista': 'Amatista',
+  'Aparência': 'Apariencia',
+  'Cobre': 'Cobre',
+  'Cosmos': 'Cosmos',
+  'Em uso': 'En uso',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Las insignias no se compran: vienen de haber hecho algo. Cuáles aparecen en tu perfil, y en qué orden, lo eliges más abajo, en Mi cuenta.',
+  'Jade': 'Jade',
+  'Nebulosa': 'Nebulosa',
+  'Prisma': 'Prisma',
+  'Vitral': 'Vitral',
 } satisfies Record<string, string>;

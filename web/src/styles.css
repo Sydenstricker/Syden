@@ -7322,6 +7322,12 @@ textarea {
 [data-cor='anil'] { color: #8b9cf0; }
 [data-cor='lavanda'] { color: #b494f0; }
 [data-cor='rosa'] { color: #f090bd; }
+/* AS QUATRO ABAIXO ESTAVAM NO CATÁLOGO E NÃO EXISTIAM AQUI. O servidor as oferecia, a loja as
+   listava, e quem clicasse em "Usar" não via diferença nenhuma — a tela não tinha o que desenhar.
+   É o preço de a arte morar no site e a lista no servidor: os dois podem sair de passo. */
+[data-cor='cobre'] { color: #d98f5a; }
+[data-cor='jade'] { color: #4fc99a; }
+[data-cor='ametista'] { color: #b57ae0; }
 
 :root[data-theme='light'] [data-cor='carmim'] { color: #c0392b; }
 :root[data-theme='light'] [data-cor='laranja'] { color: #b3651a; }
@@ -7332,6 +7338,26 @@ textarea {
 :root[data-theme='light'] [data-cor='anil'] { color: #40509e; }
 :root[data-theme='light'] [data-cor='lavanda'] { color: #6b45a8; }
 :root[data-theme='light'] [data-cor='rosa'] { color: #a83d70; }
+:root[data-theme='light'] [data-cor='cobre'] { color: #9c5a24; }
+:root[data-theme='light'] [data-cor='jade'] { color: #1d7d57; }
+:root[data-theme='light'] [data-cor='ametista'] { color: #7a3fae; }
+
+/* O PRISMA É O ÚNICO QUE NÃO É UMA COR: é a sequência delas. Ele não cabe numa regra de `color`
+   porque precisa de gradiente recortado pelo texto, e por isso vem num bloco próprio em vez de
+   uma linha. O mesmo truque da moldura prisma, aplicado às letras. */
+[data-cor='prisma'] {
+  background: linear-gradient(90deg, #ef7b72, #f0a15e, #e2c14e, #a4d364, #4fd4b2, #63bdec, #b494f0, #ef7b72);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: cor-prisma 8s linear infinite;
+}
+
+@keyframes cor-prisma {
+  from { background-position: 0% 50%; }
+  to { background-position: 300% 50%; }
+}
 
 /* Os fundos. Três são parados e quatro têm movimento — de leve, que é para enfeitar, não para distrair. */
 .fundo-nenhum { background: var(--bg-raised, #2b2d31); }
@@ -7377,6 +7403,79 @@ textarea {
     radial-gradient(2px 2px at 22% 78%, #fff, transparent),
     linear-gradient(160deg, #0d1330 0%, #232c63 100%);
   animation: fundo-pisca 5s ease-in-out infinite;
+}
+
+/* OS TRÊS ABAIXO TAMBÉM ESTAVAM NO CATÁLOGO SEM ARTE NENHUMA, e apareciam como retângulo vazio na
+   loja. São os mais chamativos do conjunto, que é justamente o que a descrição deles promete. */
+
+/* Poeira de estrelas: duas nuvens de cor que atravessam o cartão em ritmos diferentes, e por isso
+   nunca repetem o mesmo quadro. */
+.fundo-nebulosa {
+  background:
+    radial-gradient(60% 80% at 25% 30%, rgba(142, 68, 220, 0.75), transparent 70%),
+    radial-gradient(55% 70% at 75% 65%, rgba(40, 120, 220, 0.7), transparent 70%),
+    radial-gradient(40% 50% at 55% 20%, rgba(230, 90, 170, 0.45), transparent 70%),
+    linear-gradient(150deg, #0a0618 0%, #17103a 100%);
+  background-size: 180% 180%, 200% 200%, 160% 160%, 100% 100%;
+  animation: fundo-nebulosa 26s ease-in-out infinite alternate;
+}
+
+/* Vitral: pedaços de vidro colorido. O `conic-gradient` dá os gomos de uma vez, e a luz que passa
+   por cima é um brilho que atravessa devagar. */
+.fundo-vitral {
+  background:
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.22) 48%, transparent 58%),
+    conic-gradient(
+      from 20deg at 40% 40%,
+      #c8102e 0deg 48deg,
+      #e0822f 48deg 96deg,
+      #c79a1e 96deg 150deg,
+      #2fa88c 150deg 205deg,
+      #2b6fd6 205deg 262deg,
+      #7b3fb8 262deg 315deg,
+      #c8102e 315deg 360deg
+    );
+  background-size: 250% 250%, 100% 100%;
+  animation: fundo-vitral 9s linear infinite;
+}
+
+/* Cosmos: o céu inteiro girando. As estrelas são um campo de pontos que gira sobre o fundo escuro;
+   bem devagar, porque rápido vira enjoo e não céu. */
+.fundo-cosmos {
+  position: relative;
+  background: radial-gradient(120% 120% at 50% 50%, #1b2559 0%, #080b22 70%);
+  overflow: hidden;
+}
+
+.fundo-cosmos::after {
+  content: '';
+  position: absolute;
+  /* Maior que o cartão e centralizado: girando, os cantos nunca mostram o vazio de fora. */
+  inset: -50%;
+  background:
+    radial-gradient(1.6px 1.6px at 18% 24%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 42% 58%, #cfe0ff, transparent),
+    radial-gradient(2px 2px at 66% 18%, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 80% 48%, #ffe9c4, transparent),
+    radial-gradient(1.2px 1.2px at 28% 76%, #fff, transparent),
+    radial-gradient(1.8px 1.8px at 58% 84%, #cfe0ff, transparent),
+    radial-gradient(1.2px 1.2px at 88% 72%, #fff, transparent);
+  animation: fundo-cosmos 70s linear infinite;
+}
+
+@keyframes fundo-nebulosa {
+  from { background-position: 0% 0%, 100% 100%, 50% 0%, 0% 0%; }
+  to { background-position: 100% 100%, 0% 0%, 50% 100%, 0% 0%; }
+}
+
+@keyframes fundo-vitral {
+  from { background-position: -150% 0%, 50% 50%; }
+  to { background-position: 250% 0%, 50% 50%; }
+}
+
+@keyframes fundo-cosmos {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes fundo-desliza {
@@ -7575,7 +7674,12 @@ textarea {
   .fundo-aurora,
   .fundo-brasa,
   .fundo-oceano,
-  .fundo-estrelas {
+  .fundo-estrelas,
+  .fundo-nebulosa,
+  .fundo-vitral,
+  .fundo-cosmos,
+  .fundo-cosmos::after,
+  [data-cor='prisma'] {
     animation: none;
   }
 }
@@ -9744,4 +9848,85 @@ body.arrastando-barra {
 
 .sidebar-header[data-tom='claro'] .sidebar-brand {
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.45);
+}
+
+/* ---------- A loja reage ao mouse ---------- */
+/* "Muitos elementos estáticos. Quando o usuário passar o mouse encima, o elemento deveria tomar
+   vida." É o que separa uma vitrine de uma planilha: o cartão se levanta um pouco, a amostra cresce,
+   e o que tem movimento acelera. Nada disso acontece sozinho — só debaixo do mouse, que é onde a
+   atenção já está. */
+.loja-cartao {
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
+}
+
+.loja-cartao:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  background: var(--bg-raised);
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+/* A amostra cresce dentro da casa dela — a casa não muda de tamanho, então nada na grade se mexe. */
+.loja-amostra {
+  transition: transform 0.2s ease;
+}
+
+.loja-cartao:hover .loja-amostra {
+  transform: scale(1.1);
+}
+
+/* O que já se move passa a se mover mais depressa debaixo do mouse: é o mesmo desenho, mostrado de
+   perto. A conta é a mesma dos originais (ver os @keyframes lá em cima), dividida por três. */
+.loja-cartao:hover .fundo-aurora { animation-duration: 6s; }
+.loja-cartao:hover .fundo-brasa { animation-duration: 4.5s; }
+.loja-cartao:hover .fundo-oceano { animation-duration: 5s; }
+.loja-cartao:hover .fundo-estrelas { animation-duration: 1.6s; }
+.loja-cartao:hover .fundo-nebulosa { animation-duration: 8s; }
+.loja-cartao:hover .fundo-vitral { animation-duration: 3s; }
+.loja-cartao:hover .fundo-cosmos::after { animation-duration: 18s; }
+
+/* As molduras paradas (prata, bronze, folha, mar, brasa) ganham um giro de luz só no hover: elas não
+   têm animação própria, e sem isto seriam as únicas da loja que não reagem a nada. */
+.loja-cartao:hover .avatar[data-moldura]::after {
+  animation: moldura-brilho 2.5s linear infinite;
+  background-size: 300% 300%;
+}
+
+/* E as que JÁ giram giram mais rápido, para a diferença continuar existindo. */
+.loja-cartao:hover .avatar[data-moldura='ouro-moldura']::after,
+.loja-cartao:hover .avatar[data-moldura='esmeralda-moldura']::after {
+  animation-duration: 2s;
+}
+
+/* A cor do nome é texto parado; no hover ela pulsa de leve, que é o único movimento que uma cor
+   aceita sem virar outra cor. */
+.loja-cartao:hover .loja-amostra.cor {
+  animation: loja-pulso 1.2s ease-in-out infinite;
+}
+
+@keyframes loja-pulso {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.45); }
+}
+
+/* QUEM PEDIU MENOS MOVIMENTO NÃO GANHA NADA DISSO. A regra do sistema vale para o enfeite inteiro:
+   o cartão ainda muda de borda e de fundo no hover, que é o que diz "dá para clicar", e para de se
+   mexer. */
+@media (prefers-reduced-motion: reduce) {
+  .loja-cartao:hover {
+    transform: none;
+  }
+
+  .loja-cartao:hover .loja-amostra {
+    transform: none;
+  }
+
+  .loja-cartao:hover .loja-amostra.cor,
+  .loja-cartao:hover .avatar[data-moldura]::after {
+    animation: none;
+  }
 }

@@ -90,7 +90,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     '삭제한 채널은 여기에 {dias}일 동안 남고, 메시지까지 그대로 돌아와요. 메시지는 데이터베이스를 떠난 적이 없거든요. 기간이 지나면 완전히 사라집니다.',
   Cancelar: '취소',
-  'Carregando a loja…': '상점을 불러오는 중…',
   'Carregando…': '불러오는 중…',
   'Chamar alguém': '누군가에게 전화',
   'Chame a galera e bora.': '친구들 불러서 시작해요.',
@@ -715,4 +714,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': '지금은 클립을 마무리하지 못했어요. 몇 초 뒤에 다시 해보세요.',
   'Pacotes de sons e de emojis': '사운드와 이모지 꾸러미',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': '이것도 공짜고, 이것도 언제든 바꿀 수 있어요. 커뮤니티 설정에 있어요. 당신한테만이 아니라 커뮤니티 전체에 적용되니까요.',
+  'Ametista': '자수정',
+  'Aparência': '겉모습',
+  'Cobre': '구리',
+  'Cosmos': '우주',
+  'Em uso': '쓰는 중',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': '배지는 사는 게 아니라 뭔가 해서 받는 거예요. 어떤 걸 프로필에 보여줄지, 어떤 순서로 할지는 아래 "내 계정"에서 골라요.',
+  'Jade': '옥',
+  'Nebulosa': '성운',
+  'Prisma': '프리즘',
+  'Vitral': '스테인드글라스',
 } satisfies Record<string, string>;

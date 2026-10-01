@@ -87,7 +87,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'Kituo kilichofutwa hukaa hapa siku {dias} na hurudi na jumbe zake ndani, kwa sababu hazikuwahi kutoka kwenye hifadhidata. Muda ukiisha, hutoweka kabisa.',
   Cancelar: 'Ghairi',
-  'Carregando a loja…': 'Inapakia duka…',
   'Carregando…': 'Inapakia…',
   'Chamar alguém': 'Mpigie mtu',
   'Chame a galera e bora.': 'Waite wenzako na twende.',
@@ -726,4 +725,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Haikuwezekana kufunga klipu sasa hivi. Jaribu tena baada ya sekunde chache.',
   'Pacotes de sons e de emojis': 'Vifurushi vya sauti na emoji',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Pia ni bure, na pia vinabadilishwa wakati wowote. Vinakaa katika mipangilio ya jumuiya, kwa sababu vinahusu jumuiya nzima na si wewe peke yako.',
+  'Ametista': 'Amethisti',
+  'Aparência': 'Mwonekano',
+  'Cobre': 'Shaba',
+  'Cosmos': 'Anga',
+  'Em uso': 'Inatumika',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Nembo hazinunuliwi: zinatoka kwa kile ulichofanya. Zipi zinaonekana kwenye wasifu wako, na kwa mpangilio upi, unachagua chini zaidi, katika Akaunti yangu.',
+  'Jade': 'Yade',
+  'Nebulosa': 'Wingu la nyota',
+  'Prisma': 'Prizma',
+  'Vitral': 'Kioo cha rangi',
 } satisfies Record<string, string>;

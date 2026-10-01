@@ -91,7 +91,6 @@ export default {
   'Canal apagado fica aqui por {dias} dias e volta com as mensagens dentro, porque elas nunca saíram do banco. Passado o prazo, ele sai de vez.':
     'Een verwijderd kanaal blijft hier {dias} dagen en komt terug met de berichten erin, want die zijn nooit uit de database verdwenen. Daarna is het definitief weg.',
   Cancelar: 'Annuleren',
-  'Carregando a loja…': 'Winkel laden…',
   'Carregando…': 'Laden…',
   'Chamar alguém': 'Iemand bellen',
   'Chame a galera e bora.': 'Roep je vrienden erbij en gaan.',
@@ -726,4 +725,14 @@ export default {
   'Não deu para fechar o clipe agora. Tente de novo em alguns segundos.': 'Het clipje kon nu niet afgerond worden. Probeer het over een paar seconden opnieuw.',
   'Pacotes de sons e de emojis': 'Geluids- en emojipakketten',
   'Também de graça, e também trocáveis quando quiser. Ficam nas configurações da comunidade, porque valem para a comunidade inteira e não só para você.': 'Ook gratis, en ook te wisselen wanneer je wilt. Ze staan bij de community-instellingen, omdat ze voor de hele community gelden en niet alleen voor jou.',
+  'Ametista': 'Amethist',
+  'Aparência': 'Uiterlijk',
+  'Cobre': 'Koper',
+  'Cosmos': 'Kosmos',
+  'Em uso': 'In gebruik',
+  'Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.': 'Badges koop je niet: ze komen van iets dat je gedaan hebt. Welke op je profiel komen, en in welke volgorde, kies je verderop, bij Mijn account.',
+  'Jade': 'Jade',
+  'Nebulosa': 'Nevel',
+  'Prisma': 'Prisma',
+  'Vitral': 'Glas-in-lood',
 } satisfies Record<string, string>;

@@ -23,6 +23,13 @@ export const CORES_DE_NOME: CorDeNome[] = [
   { id: 'anil', label: chave('Anil'), amostra: '#5b6fd6' },
   { id: 'lavanda', label: chave('Lavanda'), amostra: '#8f6fd6' },
   { id: 'rosa', label: chave('Rosa'), amostra: '#d45f95' },
+  // As quatro de baixo vinham do catálogo da loja e não existiam nesta lista: dava para vesti-las na
+  // loja e não dava para escolhê-las aqui, e a tela não tinha o que desenhar de nenhuma das duas
+  // formas. Catálogo e arte agora batem.
+  { id: 'cobre', label: chave('Cobre'), amostra: '#d98f5a' },
+  { id: 'jade', label: chave('Jade'), amostra: '#4fc99a' },
+  { id: 'ametista', label: chave('Ametista'), amostra: '#b57ae0' },
+  { id: 'prisma', label: chave('Prisma'), amostra: 'currentColor' },
 ];
 
 export interface Fundo {
@@ -41,6 +48,9 @@ export const FUNDOS: Fundo[] = [
   { id: 'brasa', label: chave('Brasa'), animado: true },
   { id: 'oceano', label: chave('Oceano'), animado: true },
   { id: 'estrelas', label: chave('Noite estrelada'), animado: true },
+  { id: 'nebulosa', label: chave('Nebulosa'), animado: true },
+  { id: 'vitral', label: chave('Vitral'), animado: true },
+  { id: 'cosmos', label: chave('Cosmos'), animado: true },
 ];
 
 const CORES = new Set(CORES_DE_NOME.map((c) => c.id));
