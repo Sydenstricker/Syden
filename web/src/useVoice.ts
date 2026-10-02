@@ -541,11 +541,25 @@ export function useVoice(socket: Socket | null) {
       setConnecting(true);
       // Chamado dentro do clique, para o navegador liberar a reprodução de áudio.
       void room.startAudio();
+      /*
+       * ENTRAR NUMA SALA SÃO DOIS PEDIDOS A DOIS SERVIDORES DIFERENTES, e por muito tempo os dois
+       * falharam com a mesma frase.
+       *
+       * Primeiro o Syden é quem dá a senha de entrada (`/voice-token`); só depois o LiveKit é quem
+       * aceita a conexão. Quando qualquer um dos dois falhava, a tela dizia "desative o bloqueador de
+       * anúncios" — um palpite que só faz sentido para o SEGUNDO. Se o Syden está reiniciando por
+       * causa de um deploy, ou a sessão venceu, a frase manda a pessoa mexer no antivírus por nada, e
+       * o diário do administrador registrava o mesmo palpite em vez do motivo.
+       *
+       * Esta marca diz onde parou. É um booleano e não um estado: ninguém redesenha por causa dela.
+       */
+      let pedindoSenha = true;
       try {
         if (room.state !== ConnectionState.Disconnected) await room.disconnect();
         const { url, token } = await api<{ url: string; token: string }>(`/api/channels/${id}/voice-token`, {
           method: 'POST',
         });
+        pedindoSenha = false;
         // autoSubscribe: false — quem decide o que baixar é o Syden, logo abaixo (aplicarInscricoes).
         // Antes o servidor empurrava TODAS as faixas de todos ao entrar, transmissões de tela incluídas:
         // numa sala com quatro telas ligadas o computador decodificava quatro vídeos que ninguém pediu.
@@ -556,10 +570,20 @@ export function useVoice(socket: Socket | null) {
         sounds.selfJoin();
       } catch (e) {
         console.error(e);
-        // Causa mais comum: bloqueador de anúncios ou antivírus derrubando a conexão com o servidor de voz,
-        // que fica num endereço gratuito (duckdns.org) presente em várias listas de bloqueio.
-        setError('Não foi possível conectar à sala de voz. Se você usa bloqueador de anúncios (uBlock, AdGuard), antivírus com proteção web ou VPN, desative para este site e tente de novo.');
-        reportProblem('conexão', 'Não conseguiu conectar à sala de voz (provável bloqueio de rede).');
+        const motivo = e instanceof Error ? e.message : String(e);
+        if (pedindoSenha) {
+          // O SYDEN NÃO RESPONDEU, e ele já sabe dizer por quê: sessão vencida, sem acesso ao canal,
+          // servidor fora do ar, prazo estourado. A mensagem do ApiError já vem traduzida (ver
+          // api.ts), então repeti-la é mais honesto — e mais útil — do que qualquer palpite nosso.
+          setError(motivo);
+        } else {
+          // Aqui sim o palpite vale: o endereço do servidor de voz está em listas de bloqueio, e é a
+          // causa mais comum de a conexão morrer DEPOIS de o Syden já ter dado a senha.
+          setError('Não foi possível conectar à sala de voz. Se você usa bloqueador de anúncios (uBlock, AdGuard), antivírus com proteção web ou VPN, desative para este site e tente de novo.');
+        }
+        // E O DIÁRIO DO ADMINISTRADOR PASSA A RECEBER O MOTIVO, não o palpite. Antes ele gravava
+        // sempre a mesma frase, então a aba de saúde não distinguia um deploy de um bloqueador.
+        reportProblem('conexão', `${pedindoSenha ? 'senha de voz' : 'LiveKit'}: ${motivo}`);
         setConnecting(false);
         return;
       }
