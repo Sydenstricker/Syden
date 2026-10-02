@@ -776,4 +776,5 @@ export default {
   'Cortando…': 'வெட்டப்படுகிறது…',
   'Este clipe não tem som.': 'இந்தக் கிளிப்பில் ஒலி இல்லை.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'கிளிப் அரட்டைக்கு மிகப் பெரிதாக வந்துவிட்டது. சிறிய பகுதியைத் தேர்ந்தெடுக்கவும்.',
+  'Juntar as vozes da sala': 'அறையில் உள்ளவர்களின் குரல்களையும் சேர்',
 } satisfies Record<string, string>;

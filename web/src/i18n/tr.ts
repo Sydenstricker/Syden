@@ -790,4 +790,5 @@ export default {
   'Cortando…': 'Kesiliyor…',
   'Este clipe não tem som.': 'Bu klipte ses yok.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip sohbet için fazla büyük çıktı. Daha kısa bir parça seç.',
+  'Juntar as vozes da sala': 'Odadakilerin seslerini de kat',
 } satisfies Record<string, string>;

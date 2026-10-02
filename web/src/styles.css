@@ -8168,6 +8168,29 @@ textarea {
   color: var(--text-strong);
 }
 
+/* A caixinha de juntar as vozes. Linha própria, acima do aviso de "sem som". */
+.clipe-dialog .clipe-vozes {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.clipe-dialog .clipe-vozes input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .clipe-cortando {
   display: flex;
   align-items: center;

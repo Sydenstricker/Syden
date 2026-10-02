@@ -795,4 +795,5 @@ export default {
   'Cortando…': 'काटा जा रहा है…',
   'Este clipe não tem som.': 'इस क्लिप में आवाज़ नहीं है।',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'क्लिप चैट के लिए बहुत बड़ी हो गई। छोटा हिस्सा चुनो।',
+  'Juntar as vozes da sala': 'कमरे की आवाज़ें भी जोड़ो',
 } satisfies Record<string, string>;

@@ -795,4 +795,5 @@ export default {
   'Cortando…': 'Taglio in corso…',
   'Este clipe não tem som.': 'Questa clip non ha audio.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'La clip è venuta troppo grande per la chat. Scegli un pezzo più corto.',
+  'Juntar as vozes da sala': 'Includi le voci della stanza',
 } satisfies Record<string, string>;

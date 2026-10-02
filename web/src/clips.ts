@@ -23,6 +23,23 @@ const CURTO_DEMAIS = 10;
  */
 const TAXA = 1_600_000;
 
+/**
+ * A taxa da trilha de vozes, que é gravada à parte (ver `Clipe.vozes`).
+ *
+ * 48 kbps em Opus é voz limpa, e é 3% do que o vídeo gasta. É esse número que faz a segunda gravação
+ * caber sem violar a regra do alto deste arquivo — "nada de dobrar o trabalho do computador de quem
+ * está só assistindo".
+ */
+const TAXA_DE_VOZ = 48_000;
+
+/** O formato de áudio puro que este navegador sabe gravar. Vazio quando não sabe nenhum. */
+function tipoDeAudioSuportado(): string {
+  for (const tipo of ['audio/webm;codecs=opus', 'audio/webm']) {
+    if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(tipo)) return tipo;
+  }
+  return '';
+}
+
 function tipoSuportado(): string {
   for (const tipo of ['video/webm;codecs=vp8,opus', 'video/webm;codecs=vp8', 'video/webm']) {
     if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(tipo)) return tipo;
@@ -33,6 +50,19 @@ function tipoSuportado(): string {
 export interface Clipe {
   blob: Blob;
   segundos: number;
+  /**
+   * As vozes da sala, gravadas À PARTE e na mesma janela de tempo. null quando não havia vozes para
+   * gravar (ninguém com microfone ligado, ou navegador sem o que é preciso).
+   *
+   * POR QUE DUAS GRAVAÇÕES E NÃO UMA MISTURADA. A escolha "com ou sem som da sala" é feita DEPOIS, no
+   * editor — e a gravação já aconteceu. Misturando na hora de gravar, a caixinha não teria como
+   * separar o que já está junto; gravando só o jogo, ela não teria como trazer o que nunca entrou.
+   * Duas trilhas é o que torna a escolha possível de verdade.
+   *
+   * E NÃO DOBRA O TRABALHO DO COMPUTADOR, que é a regra escrita no alto deste arquivo: a segunda
+   * gravação é SÓ ÁUDIO. Opus sai por volta de 32 kbps contra os 1,6 Mbps do vídeo — uns 2% a mais.
+   */
+  vozes: Blob | null;
 }
 
 export interface GravacaoEmRolagem {
@@ -47,14 +77,17 @@ export interface GravacaoEmRolagem {
  * Começa a guardar os últimos segundos de um vídeo. Devolve null quando o navegador não sabe gravar —
  * aí quem chamou simplesmente não mostra o botão de clipe.
  */
-export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
+export function gravarEmRolagem(stream: MediaStream, vozes?: MediaStream | null): GravacaoEmRolagem | null {
   const tipo = tipoSuportado();
   if (!tipo || stream.getVideoTracks().length === 0) return null;
+  const tipoDeVoz = tipoDeAudioSuportado();
 
   let anterior: Clipe | null = null;
   let pedacos: Blob[] = [];
+  let pedacosDeVoz: Blob[] = [];
   let comecou = 0;
   let gravador: MediaRecorder | null = null;
+  let gravadorDeVoz: MediaRecorder | null = null;
   let parado = false;
   let relogio: ReturnType<typeof setInterval> | null = null;
 
@@ -70,6 +103,25 @@ export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
     comecou = Date.now();
     gravador.ondataavailable = (evento) => evento.data.size > 0 && pedacos.push(evento.data);
     gravador.start();
+
+    // A SEGUNDA GRAVAÇÃO COMEÇA NO MESMO INSTANTE, e é isso que as mantém alinhadas: as duas abrem
+    // aqui e fecham juntas em `fechar()`, então o segundo 7 de uma é o segundo 7 da outra.
+    //
+    // E ELA NUNCA DERRUBA O CLIPE. Se o navegador não souber gravar só áudio, ou se não houver voz
+    // nenhuma para pegar, o `catch` deixa `gravadorDeVoz` em null e o clipe sai com o som do jogo,
+    // como sempre saiu. Vozes são um ganho; vídeo é a função.
+    pedacosDeVoz = [];
+    gravadorDeVoz = null;
+    if (vozes && tipoDeVoz && vozes.getAudioTracks().length > 0) {
+      try {
+        const segundo = new MediaRecorder(vozes, { mimeType: tipoDeVoz, audioBitsPerSecond: TAXA_DE_VOZ });
+        segundo.ondataavailable = (evento) => evento.data.size > 0 && pedacosDeVoz.push(evento.data);
+        segundo.start();
+        gravadorDeVoz = segundo;
+      } catch {
+        gravadorDeVoz = null;
+      }
+    }
     return true;
   }
 
@@ -92,12 +144,27 @@ export function gravarEmRolagem(stream: MediaStream): GravacaoEmRolagem | null {
     const atual = gravador;
     if (!atual || atual.state === 'inactive') return Promise.resolve(null);
     const segundos = decorridos();
+    const deVoz = gravadorDeVoz;
+    gravadorDeVoz = null;
+
+    // As duas param juntas. A de voz é esperada à parte porque ela PODE NÃO EXISTIR, e o clipe não
+    // pode ficar pendurado esperando uma gravação que nunca começou.
+    const vozFechada = new Promise<Blob | null>((pronto) => {
+      if (!deVoz || deVoz.state === 'inactive') return pronto(null);
+      deVoz.onstop = () => pronto(pedacosDeVoz.length > 0 ? new Blob(pedacosDeVoz, { type: 'audio/webm' }) : null);
+      try {
+        deVoz.stop();
+      } catch {
+        pronto(null);
+      }
+    });
+
     fechando = new Promise<Clipe | null>((pronto) => {
-      atual.onstop = () => {
+      atual.onstop = async () => {
         const blob = pedacos.length > 0 ? new Blob(pedacos, { type: 'video/webm' }) : null;
         // O tipo vai sem os codecs no nome: com eles, o endereço do arquivo ganha ponto e vírgula e o
         // servidor recusa o envio.
-        pronto(blob ? { blob, segundos } : null);
+        pronto(blob ? { blob, segundos, vozes: await vozFechada } : null);
       };
       atual.stop();
     }).finally(() => {
@@ -190,10 +257,13 @@ export interface Corte {
   inicio: number;
   fim: number;
   volume: number;
+  /** A trilha de vozes da sala, quando a pessoa marcou a caixinha. null = clipe só com o som do jogo. */
+  vozes?: Blob | null;
 }
 
-/** Nada a fazer: o pedaço é o arquivo inteiro e o volume não mudou. */
+/** Nada a fazer: o pedaço é o arquivo inteiro, o volume não mudou e não há voz para juntar. */
 export function corteVazio(corte: Corte, duracao: number): boolean {
+  if (corte.vozes) return false;
   return corte.inicio <= 0.05 && corte.fim >= duracao - 0.05 && Math.abs(corte.volume - 1) < 0.01;
 }
 
@@ -222,7 +292,7 @@ export function duracaoDoClipe(video: HTMLVideoElement): Promise<number> {
   });
 }
 
-function irPara(video: HTMLVideoElement, segundo: number): Promise<void> {
+function irPara(video: HTMLMediaElement, segundo: number): Promise<void> {
   return new Promise((pronto) => {
     if (Math.abs(video.currentTime - segundo) < 0.02) return pronto();
     const chegou = () => {
@@ -253,7 +323,7 @@ function irPara(video: HTMLVideoElement, segundo: number): Promise<void> {
  */
 export async function recortarClipe(
   blob: Blob,
-  { inicio, fim, volume }: Corte,
+  { inicio, fim, volume, vozes }: Corte,
   aoAndar?: (fracao: number) => void,
 ): Promise<Blob> {
   const tipo = tipoSuportado();
@@ -267,6 +337,16 @@ export async function recortarClipe(
   // de ir para o alto-falante é a cadeia não chegar em ctx.destination, logo abaixo.
   video.muted = false;
 
+  // A trilha das vozes, quando a pessoa pediu. Ela é um arquivo só de áudio gravado na MESMA janela
+  // de tempo do vídeo, então o segundo N de um é o segundo N do outro — é essa igualdade que permite
+  // juntar os dois sem nenhum cálculo de sincronia.
+  const audio = vozes ? document.createElement('audio') : null;
+  const enderecoDaVoz = vozes ? URL.createObjectURL(vozes) : '';
+  if (audio) {
+    audio.src = enderecoDaVoz;
+    audio.muted = false;
+  }
+
   const ctx = new AudioContext();
   let gravador: MediaRecorder | null = null;
 
@@ -277,11 +357,31 @@ export async function recortarClipe(
     });
     await duracaoDoClipe(video);
 
+    // A VOZ NÃO PODE DERRUBAR O CORTE. Se este arquivo não abrir, o clipe sai com o som do jogo em
+    // vez de não sair — perder as vozes é um incômodo, perder o clipe é perder a jogada.
+    let vozPronta = false;
+    if (audio) {
+      vozPronta = await new Promise<boolean>((pronto) => {
+        audio.onloadedmetadata = () => pronto(true);
+        audio.onerror = () => pronto(false);
+      });
+    }
+
     const fonte = ctx.createMediaElementSource(video);
     const ganho = ctx.createGain();
     ganho.gain.value = volume;
     const destino = ctx.createMediaStreamDestination();
     fonte.connect(ganho).connect(destino);
+
+    // As vozes entram no MESMO destino, por um ganho próprio: o controle de volume do editor mexe no
+    // som do jogo, e as vozes ficam como foram capturadas. Abaixar o jogo para ouvir a galera é
+    // exatamente o que se quer poder fazer.
+    if (audio && vozPronta) {
+      const fonteDaVoz = ctx.createMediaElementSource(audio);
+      const ganhoDaVoz = ctx.createGain();
+      ganhoDaVoz.gain.value = 1;
+      fonteDaVoz.connect(ganhoDaVoz).connect(destino);
+    }
 
     const doVideo = (video as HTMLVideoElement & { captureStream(): MediaStream }).captureStream();
     const saida = new MediaStream([...doVideo.getVideoTracks(), ...destino.stream.getAudioTracks()]);
@@ -291,11 +391,14 @@ export async function recortarClipe(
     gravador.ondataavailable = (evento) => evento.data.size > 0 && pedacos.push(evento.data);
 
     await irPara(video, inicio);
+    if (audio && vozPronta) await irPara(audio, Math.min(inicio, Math.max(0, audio.duration || inicio)));
     await ctx.resume().catch(() => {});
     const terminou = new Promise<void>((pronto) => {
       gravador!.onstop = () => pronto();
     });
     gravador.start();
+    // Os dois começam a tocar no mesmo instante; como foram gravados na mesma janela, ficam juntos.
+    if (audio && vozPronta) await audio.play().catch(() => {});
     await video.play();
 
     await new Promise<void>((pronto) => {
@@ -311,6 +414,7 @@ export async function recortarClipe(
     });
 
     video.pause();
+    audio?.pause();
     if (gravador.state !== 'inactive') gravador.stop();
     await terminou;
     aoAndar?.(1);
@@ -325,6 +429,11 @@ export async function recortarClipe(
     video.pause();
     video.src = '';
     URL.revokeObjectURL(endereco);
+    if (audio) {
+      audio.pause();
+      audio.src = '';
+      URL.revokeObjectURL(enderecoDaVoz);
+    }
     void ctx.close().catch(() => {});
   }
 }

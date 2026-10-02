@@ -791,4 +791,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'የአሮጌ ፊልም ሮቦት የብረት ድምፅ።',
   'Vozes juntas': 'ድምፆች አብረው',
   'ZECA': 'ZECA',
+  'Juntar as vozes da sala': 'የክፍሉን ሰዎች ድምፅም አካትት',
 } satisfies Record<string, string>;

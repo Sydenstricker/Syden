@@ -795,4 +795,5 @@ export default {
   'Cortando…': 'Bezig met knippen…',
   'Este clipe não tem som.': 'Deze clip heeft geen geluid.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'De clip is te groot geworden voor de chat. Kies een korter stuk.',
+  'Juntar as vozes da sala': 'De stemmen uit de kamer meenemen',
 } satisfies Record<string, string>;

@@ -761,4 +761,5 @@ export default {
   'Cortando…': 'Đang cắt…',
   'Este clipe não tem som.': 'Clip này không có âm thanh.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Clip ra quá lớn so với khung chat. Hãy chọn đoạn ngắn hơn.',
+  'Juntar as vozes da sala': 'Thêm giọng của mọi người trong phòng',
 } satisfies Record<string, string>;

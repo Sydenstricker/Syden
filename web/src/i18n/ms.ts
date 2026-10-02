@@ -796,4 +796,5 @@ export default {
   'Cortando…': 'Sedang memotong…',
   'Este clipe não tem som.': 'Klip ini tiada bunyi.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip ini terlalu besar untuk sembang. Pilih bahagian yang lebih pendek.',
+  'Juntar as vozes da sala': 'Sertakan suara orang dalam bilik',
 } satisfies Record<string, string>;

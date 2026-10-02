@@ -793,4 +793,5 @@ export default {
   'Cortando…': 'Ana yankewa…',
   'Este clipe não tem som.': 'Wannan gutsuren ba shi da sauti.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Gutsuren ya yi girma fiye da yadda hira za ta ɗauka. Ku zaɓi ɗan ƙaramin ɓangare.',
+  'Juntar as vozes da sala': 'Haɗa muryoyin mutanen ɗakin',
 } satisfies Record<string, string>;

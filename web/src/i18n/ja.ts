@@ -772,4 +772,5 @@ export default {
   'Cortando…': '切り出し中…',
   'Este clipe não tem som.': 'このクリップには音がありません。',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'クリップがチャットには大きすぎます。もっと短い部分を選んでください。',
+  'Juntar as vozes da sala': '部屋のみんなの声も入れる',
 } satisfies Record<string, string>;

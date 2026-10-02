@@ -823,4 +823,5 @@ export default {
   'Cortando…': 'Wird geschnitten…',
   'Este clipe não tem som.': 'Dieser Clip hat keinen Ton.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Der Clip ist zu groß für den Chat geworden. Wähl einen kürzeren Ausschnitt.',
+  'Juntar as vozes da sala': 'Die Stimmen aus dem Raum dazunehmen',
 } satisfies Record<string, string>;

@@ -793,4 +793,5 @@ export default {
   'Cortando…': 'কাটা হচ্ছে…',
   'Este clipe não tem som.': 'এই ক্লিপে কোনো শব্দ নেই।',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ক্লিপটা চ্যাটের জন্য খুব বড় হয়ে গেছে। ছোট একটা অংশ বেছে নাও।',
+  'Juntar as vozes da sala': 'ঘরের সবার কণ্ঠও যোগ করো',
 } satisfies Record<string, string>;

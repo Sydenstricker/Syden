@@ -29,12 +29,14 @@ const LIMITE_DO_CHAT = 8 * 1024 * 1024;
 function Previa({
   blob,
   segundos,
+  vozesDaSala,
   de,
   canais,
   onFechar,
 }: {
   blob: Blob;
   segundos: number;
+  vozesDaSala: Blob | null;
   de: string;
   canais: Channel[];
   onFechar: () => void;
@@ -56,6 +58,9 @@ function Previa({
   const [cortando, setCortando] = useState<number | null>(null);
   // null = ainda não dá para dizer. Só se sabe depois de o arquivo tocar um pouco.
   const [temSom, setTemSom] = useState<boolean | null>(null);
+  // Marcada quando HÁ vozes gravadas: o clipe com a reação da galera é o que a pessoa quase sempre
+  // quer, e quem preferir só o jogo desmarca. Sem trilha de voz, a caixinha nem aparece.
+  const [comVozes, setComVozes] = useState(true);
 
   useEffect(() => {
     const atual = url.current;
@@ -113,7 +118,7 @@ function Previa({
    * exatos que saíram da gravação.
    */
   async function arquivoFinal(): Promise<Blob> {
-    const corte = { inicio, fim, volume };
+    const corte = { inicio, fim, volume, vozes: comVozes ? vozesDaSala : null };
     if (duracao === 0 || corteVazio(corte, duracao)) return blob;
     setCortando(0);
     try {
@@ -226,7 +231,14 @@ function Previa({
           </div>
         )}
 
-        {temSom === false && <p className="clipe-sem-som">{t('Este clipe não tem som.')}</p>}
+        {vozesDaSala && (
+          <label className="clipe-vozes">
+            <input type="checkbox" checked={comVozes} onChange={(e) => setComVozes(e.target.checked)} />
+            {t('Juntar as vozes da sala')}
+          </label>
+        )}
+
+        {temSom === false && !comVozes && <p className="clipe-sem-som">{t('Este clipe não tem som.')}</p>}
 
         <p className="settings-hint">
           {formatBytes(blob.size)} · de {de}
@@ -294,9 +306,22 @@ function Previa({
  *
  * Por isso quem chama este gancho é o palco (VoiceStage), que fica de pé a chamada inteira.
  */
-export function useClipe(stream: MediaStream | null) {
+export function useClipe(stream: MediaStream | null, vozes?: MediaStream | null) {
   const t = useT();
   const gravacao = useRef<GravacaoEmRolagem | null>(null);
+  /**
+   * AS VOZES VÃO POR REF, E NÃO POR DEPENDÊNCIA, de propósito.
+   *
+   * A lista de quem está com o microfone ligado muda o tempo todo numa chamada. Se ela entrasse nas
+   * dependências do efeito, a gravação em rolagem reiniciaria a cada entrada e saída — e os "últimos
+   * trinta segundos" voltariam a zero toda vez que alguém mutasse. Era o mesmo defeito que já tinha
+   * deixado a tesoura inútil quando ela morava dentro do menu.
+   *
+   * O fluxo de vozes em si é estável (um destino do Web Audio que vive enquanto a chamada vive); o
+   * que muda é quem está ligado NELE, e isso não precisa chegar aqui.
+   */
+  const vozesRef = useRef(vozes ?? null);
+  vozesRef.current = vozes ?? null;
   // O "existe gravação" PRECISA SER ESTADO, e não só o ref: escrever num ref não redesenha nada, e
   // por isso o botão só aparecia três segundos depois, quando o relógio mexia em outro estado.
   const [gravando, setGravando] = useState(false);
@@ -313,7 +338,7 @@ export function useClipe(stream: MediaStream | null) {
     setErro(null);
     if (!stream) return;
 
-    const rolando = gravarEmRolagem(stream);
+    const rolando = gravarEmRolagem(stream, vozesRef.current);
     gravacao.current = rolando;
     if (!rolando) return;
     setGravando(true);
@@ -435,7 +460,14 @@ export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de:
   }
   if (!clipe.clipe) return null;
   return createPortal(
-    <Previa blob={clipe.clipe.blob} segundos={clipe.clipe.segundos} de={de} canais={canais} onFechar={clipe.fechar} />,
+    <Previa
+      blob={clipe.clipe.blob}
+      segundos={clipe.clipe.segundos}
+      vozesDaSala={clipe.clipe.vozes}
+      de={de}
+      canais={canais}
+      onFechar={clipe.fechar}
+    />,
     document.body,
   );
 }

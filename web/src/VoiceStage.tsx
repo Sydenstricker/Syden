@@ -9,7 +9,7 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
-import { type LocalTrackPublication, type Participant, type Room, Track, type TrackPublication } from 'livekit-client';
+import { type LocalTrackPublication, type Participant, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
   HeadphoneOff,
@@ -865,6 +865,91 @@ function FocusPane({
 }
 
 /**
+ * AS VOZES DA SALA, MISTURADAS NUMA FAIXA SÓ — para o clipe poder levar a galera junto.
+ *
+ * POR QUE ELAS NÃO VÊM DE GRAÇA NA TRANSMISSÃO. Quem compartilha a tela captura o som do sistema com
+ * `restrictOwnAudio: true`, que tira da captura justamente o que o Syden está tocando — ou seja, as
+ * vozes. Isso existe para a sala não se ouvir em eco, e está certo. O efeito colateral é que o clipe
+ * só tinha o som do jogo, e metade da graça de um clipe é a reação de quem estava junto.
+ *
+ * Aqui elas são recolhidas de novo, SÓ PARA A GRAVAÇÃO: nada disto é tocado de volta na chamada, a
+ * cadeia termina num destino de gravação e não em `ctx.destination`. Sem alto-falante no caminho, não
+ * há eco possível.
+ *
+ * O MICROFONE DE QUEM CLIPA ENTRA TAMBÉM. Ele não sai pelos alto-falantes de ninguém (o LiveKit não
+ * devolve a própria voz), então sem isto o clipe teria todo mundo menos quem gravou — que é o avesso
+ * do que se quer.
+ */
+function useVozesDaSala(room: Room, ligado: boolean): MediaStream | null {
+  const [vozes, setVozes] = useState<MediaStream | null>(null);
+  const ctxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    if (!ligado) {
+      setVozes(null);
+      return;
+    }
+    const ctx = (ctxRef.current ??= new AudioContext());
+    const destino = ctx.createMediaStreamDestination();
+    // Guarda quem já está ligado, para não ligar a mesma faixa duas vezes quando um evento repetir.
+    const ligadas = new Map<string, MediaStreamAudioSourceNode>();
+
+    const recolher = () => {
+      const agora = new Map<string, MediaStreamTrack>();
+      for (const pessoa of [room.localParticipant, ...room.remoteParticipants.values()]) {
+        const faixa = pessoa.getTrackPublication(Track.Source.Microphone)?.audioTrack?.mediaStreamTrack;
+        if (faixa && faixa.readyState === 'live') agora.set(`${pessoa.identity}:${faixa.id}`, faixa);
+      }
+      for (const [chave, no] of ligadas) {
+        if (agora.has(chave)) continue;
+        no.disconnect();
+        ligadas.delete(chave);
+      }
+      for (const [chave, faixa] of agora) {
+        if (ligadas.has(chave)) continue;
+        try {
+          const no = ctx.createMediaStreamSource(new MediaStream([faixa]));
+          no.connect(destino);
+          ligadas.set(chave, no);
+        } catch {
+          // faixa que o contexto recusou: segue sem ela, o clipe não pode cair por causa disso
+        }
+      }
+    };
+
+    recolher();
+    setVozes(destino.stream);
+    // Gente entrando, saindo, ligando e desligando o microfone: a lista é refeita a cada mudança.
+    const eventos = [
+      RoomEvent.TrackSubscribed,
+      RoomEvent.TrackUnsubscribed,
+      RoomEvent.LocalTrackPublished,
+      RoomEvent.LocalTrackUnpublished,
+      RoomEvent.ParticipantConnected,
+      RoomEvent.ParticipantDisconnected,
+      RoomEvent.TrackMuted,
+      RoomEvent.TrackUnmuted,
+    ] as const;
+    for (const evento of eventos) room.on(evento, recolher);
+    return () => {
+      for (const evento of eventos) room.off(evento, recolher);
+      for (const no of ligadas.values()) no.disconnect();
+      ligadas.clear();
+    };
+  }, [room, ligado]);
+
+  useEffect(
+    () => () => {
+      void ctxRef.current?.close().catch(() => {});
+      ctxRef.current = null;
+    },
+    [],
+  );
+
+  return vozes;
+}
+
+/**
  * A transmissão que está na tela, imagem e som no mesmo pacote — é o que o clipe grava. Sem transmissão,
  * devolve null e o botão de clipe nem aparece.
  */
@@ -925,7 +1010,9 @@ function Stage({
   // A GRAVAÇÃO DO CLIPE MORA AQUI, e não no botão. O botão vive dentro do menu "...", que abre e
   // fecha; a gravação precisa durar enquanto a transmissão existir — é a premissa da função, que é
   // poder clipar uma jogada que JÁ aconteceu. Ver web/src/ClipButton.tsx.
-  const clipe = useClipe(transmissaoNaTela);
+  // As vozes só são recolhidas quando há transmissão para clipar: sem clipe, não há o que gravar.
+  const vozesDaSala = useVozesDaSala(voice.room, transmissaoNaTela !== null);
+  const clipe = useClipe(transmissaoNaTela, vozesDaSala);
 
   /** Clicar num quadro fixa ou solta o foco; no modo dividido, volta para o foco naquela tela. */
   const togglePin = (ref: TrackReferenceOrPlaceholder) => {

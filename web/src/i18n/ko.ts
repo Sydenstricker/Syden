@@ -784,4 +784,5 @@ export default {
   'Cortando…': '자르는 중…',
   'Este clipe não tem som.': '이 클립에는 소리가 없습니다.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': '클립이 채팅에 보내기엔 너무 큽니다. 더 짧은 부분을 고르세요.',
+  'Juntar as vozes da sala': '방에 있는 사람들의 목소리도 넣기',
 } satisfies Record<string, string>;

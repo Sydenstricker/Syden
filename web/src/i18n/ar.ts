@@ -816,4 +816,5 @@ export default {
   'Cortando…': 'جارٍ القص…',
   'Este clipe não tem som.': 'هذا المقطع بلا صوت.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'المقطع خرج أكبر من أن تقبله المحادثة. اختر جزءًا أقصر.',
+  'Juntar as vozes da sala': 'تضمين أصوات الغرفة',
 } satisfies Record<string, string>;

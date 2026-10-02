@@ -795,4 +795,5 @@ export default {
   'Cortando…': 'Inakata…',
   'Este clipe não tem som.': 'Klipu hii haina sauti.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klipu imetoka kubwa mno kwa gumzo. Chagua kipande kifupi zaidi.',
+  'Juntar as vozes da sala': 'Jumuisha sauti za chumbani',
 } satisfies Record<string, string>;

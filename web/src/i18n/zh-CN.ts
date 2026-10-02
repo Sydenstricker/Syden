@@ -782,4 +782,5 @@ export default {
   'Cortando…': '正在剪辑…',
   'Este clipe não tem som.': '这个片段没有声音。',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': '剪出来的片段对聊天来说太大了。请选一段更短的。',
+  'Juntar as vozes da sala': '加入房间里大家的声音',
 } satisfies Record<string, string>;

@@ -779,4 +779,5 @@ export default {
   'Cortando…': 'در حال برش…',
   'Este clipe não tem som.': 'این کلیپ صدا ندارد.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'کلیپ برای گفتگو خیلی بزرگ شد. بخش کوتاه‌تری انتخاب کنید.',
+  'Juntar as vozes da sala': 'صدای افراد اتاق هم اضافه شود',
 } satisfies Record<string, string>;
