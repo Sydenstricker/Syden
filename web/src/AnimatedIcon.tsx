@@ -212,11 +212,32 @@ export function AnimatedIcon({ name, size = 22, color, accent, speed = 1, classN
         player.current = anim as unknown as typeof player.current;
         anim.setSpeed(speed);
         // Fica no primeiro quadro em que o desenho realmente aparece.
+        let desenhou = false;
         for (const quadro of candidatos) {
           anim.goToAndStop(quadro, true);
-          if (temDesenho(box.current)) break;
+          if (temDesenho(box.current)) {
+            desenhou = true;
+            break;
+          }
         }
-        setReady(true);
+
+        // ESTE `if` ERA UM `setReady(true)` SOLTO, E ESSE ERA O BURACO QUE SOBROU.
+        //
+        // A ideia do traço por baixo é: ele só some quando a animação ASSUME. Mas o `setReady` vinha
+        // depois do laço sem olhar o resultado dele — então, quando nenhum dos quatro quadros
+        // candidatos tinha desenho, o traço era removido e no lugar não entrava nada. É exatamente o
+        // buraco de vinte pixels do relato, e explica por que ele voltou mesmo com a reserva no lugar:
+        // a reserva existia e era desligada pela própria falha que deveria cobrir.
+        //
+        // Agora, sem desenho, a animação é jogada fora e o traço FICA. Pior do que um menu sem
+        // animação é um menu sem ícone.
+        if (desenhou) setReady(true);
+        else {
+          console.warn(`[syden] o ícone animado "${name}" carregou mas não desenhou em nenhum quadro; ficou o de traço.`);
+          anim.destroy();
+          instance = null;
+          player.current = null;
+        }
       } catch (erro) {
         // Sem a biblioteca ou sem o arquivo: fica o ícone de traço, e o botão continua funcionando.
         //

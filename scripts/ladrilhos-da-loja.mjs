@@ -48,6 +48,26 @@ const LADRILHOS = [
   { nome: 'Square150x150Logo', largura: 150, altura: 150, ocupa: 0.66 },
   { nome: 'Wide310x150Logo', largura: 310, altura: 150, ocupa: 0.66 },
   { nome: 'Square310x310Logo', largura: 310, altura: 310, ocupa: 0.66 },
+
+  // ---------------------------------------------------------------------------------------------
+  // OS SEM PLACA (`altform-unplated`) — e eles são a resposta para o quadrado preto na barra de
+  // tarefas.
+  //
+  // `backgroundColor: "transparent"` no package.json resolve o LADRILHO do menu Iniciar e não
+  // resolve a barra de tarefas, e por um motivo que não se descobre lendo configuração: ali o
+  // Windows não usa o Square44x44Logo comum. Ele procura uma variante com o sufixo
+  // `_altform-unplated` e, quando ela não existe, desenha o ícone comum sobre uma PLACA opaca —
+  // que é o quadrado que aparece ao lado de apps cujos ícones flutuam.
+  //
+  // Os quatro tamanhos são os que o Windows pede: 16 na lista, 24 na barra pequena, 32 na barra
+  // normal, 48 no Alt+Tab. Sem o tamanho pedido, ele escala o mais próximo e o ícone sai borrado.
+  //
+  // Eles ocupam 100%: ícone pequeno aparece sozinho, e margem aqui só o faz sumir entre os vizinhos.
+  // ---------------------------------------------------------------------------------------------
+  { nome: 'Square44x44Logo.targetsize-16_altform-unplated', largura: 16, altura: 16, ocupa: 1 },
+  { nome: 'Square44x44Logo.targetsize-24_altform-unplated', largura: 24, altura: 24, ocupa: 1 },
+  { nome: 'Square44x44Logo.targetsize-32_altform-unplated', largura: 32, altura: 32, ocupa: 1 },
+  { nome: 'Square44x44Logo.targetsize-48_altform-unplated', largura: 48, altura: 48, ocupa: 1 },
 ];
 
 const soConferir = process.argv.includes('--conferir');

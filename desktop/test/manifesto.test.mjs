@@ -123,4 +123,19 @@ describe('o manifesto do pacote da Microsoft Store', () => {
       assert.equal(png[25], 6, `${nome}.png não tem canal alfa (tipo de cor ${png[25]}), então o fundo transparente não vale`);
     }
   });
+
+  it('os ícones SEM PLACA existem, nos quatro tamanhos que o Windows pede', () => {
+    // `backgroundColor: "transparent"` resolve o LADRILHO e NÃO resolve a barra de tarefas. Ali o
+    // Windows procura uma variante com o sufixo `_altform-unplated`; não achando, desenha o ícone
+    // comum sobre uma placa opaca — o quadrado preto ao lado de apps cujos ícones flutuam.
+    //
+    // Estes arquivos são gerados por `node scripts/ladrilhos-da-loja.mjs`. Um apagado por engano não
+    // quebra build nenhuma: volta a placa, e só se descobre com o pacote já publicado.
+    for (const tamanho of [16, 24, 32, 48]) {
+      const caminho = new URL(`../build/appx/Square44x44Logo.targetsize-${tamanho}_altform-unplated.png`, import.meta.url);
+      const png = readFileSync(caminho);
+      assert.equal(png.readUInt32BE(16), tamanho, `o ícone sem placa de ${tamanho} px está com outra largura`);
+      assert.equal(png[25], 6, `o ícone sem placa de ${tamanho} px não tem canal alfa — ele existe justamente para ser transparente`);
+    }
+  });
 });
