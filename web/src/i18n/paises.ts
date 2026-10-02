@@ -162,6 +162,10 @@ export const OFICIAL: Record<string, string[]> = {
   // do inglês. É status nacional escrito em lei. Fora da Nigéria ele é muito falado no Benim e no
   // Togo, mas ali sem status oficial, e este arquivo pede status.
   yo: ['NG'],
+
+  // Grécia e Chipre. No Chipre o grego divide o posto oficial com o turco, pela Constituição de
+  // 1960 — a divisão da ilha não mudou o texto dela.
+  el: ['GR', 'CY'],
 };
 
 /**

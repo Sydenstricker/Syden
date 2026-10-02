@@ -137,6 +137,7 @@ const IDIOMAS = [
   { codigo: 'th', nome: 'ไทย', rtl: false },
   { codigo: 'am', nome: 'አማርኛ', rtl: false },
   { codigo: 'yo', nome: 'Yorùbá', rtl: false },
+  { codigo: 'el', nome: 'Ελληνικά', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por
