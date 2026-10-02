@@ -147,6 +147,20 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'my', nativo: 'မြန်မာ', nome: 'Birmanês', escrita: 'birmanesa', paises: 1 },
   { codigo: 'dv', nativo: 'ދިވެހި', nome: 'Divehi', escrita: 'thaana', rtl: true, paises: 1 },
   { codigo: 'am', nativo: 'አማርኛ', nome: 'Amárico', escrita: 'etiope', paises: 1 },
+  // ---------------------------------------------------------------------------------------------
+  // AS TRÊS QUE FALTAVAM, e a falta era INCOERÊNCIA NOSSA, não critério.
+  //
+  // O hauçá entrou nesta lista porque a Constituição da Nigéria de 1999 o nomeia no artigo 55. Só
+  // que esse artigo nomeia TRÊS línguas na mesma frase — hauçá, ibo e iorubá — e só uma delas estava
+  // aqui. O oromo é o caso irmão: a Etiópia o tornou língua de trabalho do governo federal em 2020,
+  // ao lado do amárico, que já estava na lista.
+  //
+  // Nenhuma das três é a língua oficial do Estado em lugar nenhum. Nem o hauçá é, e isso não o
+  // impediu de entrar: o critério deste arquivo é alcance, e são 110 milhões de pessoas somadas.
+  // ---------------------------------------------------------------------------------------------
+  { codigo: 'yo', nativo: 'Yorùbá', nome: 'Iorubá', escrita: 'latina', paises: 1 },
+  { codigo: 'om', nativo: 'Afaan Oromoo', nome: 'Oromo', escrita: 'latina', paises: 1 },
+  { codigo: 'ig', nativo: 'Igbo', nome: 'Ibo', escrita: 'latina', paises: 1 },
   { codigo: 'so', nativo: 'Soomaali', nome: 'Somali', escrita: 'latina', paises: 1 },
   { codigo: 'ha', nativo: 'Hausa', nome: 'Hauçá', escrita: 'latina', paises: 2 },
   { codigo: 'rw', nativo: 'Kinyarwanda', nome: 'Quiniaruanda', escrita: 'latina', paises: 1 },
