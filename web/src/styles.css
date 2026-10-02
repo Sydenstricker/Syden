@@ -1430,7 +1430,20 @@ textarea {
   z-index: 10;
 }
 
+/*
+ * O `position: relative` NÃO É ENFEITE: é o que faz os painéis que abrem daqui subirem a partir
+ * DESTA barra, e não do palco inteiro.
+ *
+ * O soundboard e o karaokê são filhos desta div e usam `bottom: calc(100% + 12px)`. Sem um pai
+ * posicionado, esse "100%" se media contra o `.stage`, que é relative e ocupa a tela toda — então o
+ * painel ia parar 12 px acima do TOPO do palco, fora da área visível. O que sobrava na tela era uma
+ * tira, e o relato foi "o menu sobe e a interface fica muito pequena".
+ *
+ * Valia para os dois painéis; só o do soundboard foi notado, porque o do karaokê só aparece quando
+ * há música no servidor e ainda não havia nenhuma.
+ */
 .stage-controls {
+  position: relative;
   display: flex;
   justify-content: center;
   gap: 12px;
