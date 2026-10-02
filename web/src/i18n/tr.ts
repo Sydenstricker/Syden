@@ -833,4 +833,5 @@ export default {
   'Toda letra com a mesma largura.': 'Her harf aynı genişlikte.',
   'Versalete': 'Küçük büyük harf',
   'Maiúsculas pequenas, bem espaçadas.': 'Küçük büyük harfler, ferah aralıklı.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Yazdıklarının bir kopyası, bir makam isterse diye uygulama dışında 90 gün saklanır. Kimse onu Syden üzerinden okumaz.',
 } satisfies Record<string, string>;

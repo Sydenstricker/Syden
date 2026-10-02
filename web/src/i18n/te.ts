@@ -816,4 +816,5 @@ export default {
   'Toda letra com a mesma largura.': 'ప్రతి అక్షరం ఒకే వెడల్పు.',
   'Versalete': 'చిన్న పెద్ద అక్షరాలు',
   'Maiúsculas pequenas, bem espaçadas.': 'చిన్న పెద్ద అక్షరాలు, విశాలమైన ఖాళీతో.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'మీరు రాసిన దాని ప్రతి యాప్ వెలుపల 90 రోజులు ఉంటుంది, అధికారుల అభ్యర్థన కోసం. Syden ద్వారా ఎవరూ దాన్ని చదవరు.',
 } satisfies Record<string, string>;

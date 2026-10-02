@@ -526,6 +526,18 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
           {t('Apaga a sua conta, as suas mensagens e o seu avatar. Os canais, emojis e sons que você criou continuam no servidor para os outros.')}{' '}
           <strong>{t('Não dá para desfazer.')}</strong>
         </p>
+        {/* A RETENÇÃO DE 90 DIAS É DITA AQUI, e não só na política de privacidade.
+            
+            Quem aperta este botão acredita que apagou tudo — é o que a frase acima promete. Guardar
+            uma cópia por noventa dias sem avisar NESTA TELA seria esconder no rodapé do site uma
+            informação que muda a decisão. Quem quiser o detalhe clica; quem só quer saber que existe
+            já soube. */}
+        <p className="settings-hint">
+          {t('Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.')}{' '}
+          <a href="https://syden.chat/privacidade.html" target="_blank" rel="noreferrer noopener">
+            {t('Política de privacidade')}
+          </a>
+        </p>
         {open ? (
           <form className="settings-form" onSubmit={submit}>
             {temSenha ? (

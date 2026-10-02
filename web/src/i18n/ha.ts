@@ -836,4 +836,5 @@ export default {
   'Toda letra com a mesma largura.': 'Kowanne harafi da faɗi ɗaya.',
   'Versalete': 'Manyan haruffa ƙanana',
   'Maiúsculas pequenas, bem espaçadas.': 'Manyan haruffa ƙanana, da faɗin sarari.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Kwafin abin da kuka rubuta yana nan kwana 90 a wajen manhajar, idan hukuma ta nemi shi. Babu wanda ke karanta shi ta Syden.',
 } satisfies Record<string, string>;

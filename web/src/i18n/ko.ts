@@ -827,4 +827,5 @@ export default {
   'Toda letra com a mesma largura.': '모든 글자의 폭이 같아요.',
   'Versalete': '작은 대문자',
   'Maiúsculas pequenas, bem espaçadas.': '작은 대문자에 자간을 넉넉히.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '작성한 내용의 사본이 앱 밖에 90일 보관됩니다. 당국의 요청에 대비한 것이며, Syden에서는 아무도 볼 수 없습니다.',
 } satisfies Record<string, string>;

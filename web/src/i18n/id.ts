@@ -836,4 +836,5 @@ export default {
   'Toda letra com a mesma largura.': 'Setiap huruf sama lebarnya.',
   'Versalete': 'Kapital kecil',
   'Maiúsculas pequenas, bem espaçadas.': 'Huruf kapital kecil, berjarak lega.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan dari apa yang kamu tulis disimpan 90 hari di luar aplikasi, kalau-kalau pihak berwenang memintanya. Tidak ada yang membacanya lewat Syden.',
 } satisfies Record<string, string>;

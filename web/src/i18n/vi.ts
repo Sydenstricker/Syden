@@ -804,4 +804,5 @@ export default {
   'Toda letra com a mesma largura.': 'Mọi chữ cái cùng bề rộng.',
   'Versalete': 'Chữ hoa nhỏ',
   'Maiúsculas pequenas, bem espaçadas.': 'Chữ hoa nhỏ, giãn cách thoáng.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Một bản sao những gì bạn đã viết được giữ 90 ngày ngoài ứng dụng, phòng khi cơ quan chức năng yêu cầu. Không ai đọc được nó qua Syden.',
 } satisfies Record<string, string>;

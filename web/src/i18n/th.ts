@@ -847,4 +847,5 @@ export default {
   'Toda letra com a mesma largura.': 'ทุกตัวอักษรกว้างเท่ากัน',
   'Versalete': 'ตัวพิมพ์ใหญ่ขนาดเล็ก',
   'Maiúsculas pequenas, bem espaçadas.': 'ตัวพิมพ์ใหญ่ขนาดเล็ก เว้นระยะโปร่ง',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'สำเนาสิ่งที่คุณเขียนจะถูกเก็บไว้ 90 วันนอกแอป เผื่อทางการขอ ไม่มีใครอ่านมันผ่าน Syden ได้',
 } satisfies Record<string, string>;

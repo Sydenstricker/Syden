@@ -821,4 +821,5 @@ export default {
   'Toda letra com a mesma largura.': 'ہر حرف کی چوڑائی ایک جیسی۔',
   'Versalete': 'چھوٹے بڑے حروف',
   'Maiúsculas pequenas, bem espaçadas.': 'چھوٹے بڑے حروف، کھلی وقفوں کے ساتھ۔',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'آپ نے جو لکھا اس کی ایک نقل ایپ سے باہر 90 دن رکھی جاتی ہے، اگر کوئی ادارہ طلب کرے۔ اسے Syden سے کوئی نہیں پڑھتا۔',
 } satisfies Record<string, string>;

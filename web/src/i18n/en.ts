@@ -844,4 +844,5 @@ export default {
   'Toda letra com a mesma largura.': 'Every letter the same width.',
   'Versalete': 'Small caps',
   'Maiúsculas pequenas, bem espaçadas.': 'Small capitals, nicely spaced out.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'A copy of what you wrote is kept for 90 days outside the app, in case an authority asks for it. Nobody reads it through Syden.',
 } satisfies Record<string, string>;

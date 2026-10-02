@@ -825,4 +825,5 @@ export default {
   'Toda letra com a mesma largura.': '每个字母宽度相同。',
   'Versalete': '小型大写',
   'Maiúsculas pequenas, bem espaçadas.': '小号大写字母，字距宽松。',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '你写过的内容会在应用之外保留 90 天，以备官方调取。没有人能通过 Syden 看到它。',
 } satisfies Record<string, string>;

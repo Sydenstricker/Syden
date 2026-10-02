@@ -838,4 +838,5 @@ export default {
   'Toda letra com a mesma largura.': 'Kila herufi ina upana sawa.',
   'Versalete': 'Herufi kubwa ndogo',
   'Maiúsculas pequenas, bem espaçadas.': 'Herufi kubwa ndogo, zenye nafasi.',
+  'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Nakala ya ulichoandika hubaki siku 90 nje ya programu, iwapo mamlaka itaiomba. Hakuna anayeisoma kupitia Syden.',
 } satisfies Record<string, string>;
