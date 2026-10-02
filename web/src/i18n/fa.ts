@@ -721,7 +721,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'جایی تازه، با کانال‌های خودش. با کد دعوت انتخاب می‌کنید چه کسی وارد شود.',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'بسته‌ای که نصب شود مال کل انجمن است: ایموجی‌هایش در پیام‌های همه کار می‌کنند.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'تصویری پهن، حدود 1200×300 یا نزدیک به آن. GIF متحرک هم می‌شود، و واقعاً حرکت می‌کند. بدون سرصفحه، همان نقشی می‌ماند که در صفحهٔ خوش‌آمد انتخاب کرده‌اید.',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'پنجره‌ای کوچک در گوشهٔ صفحه که نشان می‌دهد چه کسی با شماست و چه کسی حرف می‌زند. کلیک از آن رد می‌شود: شلیک به بازی می‌خورد. وقتی بازی در حالت پنجره یا پنجرهٔ بدون کادر باشد کار می‌کند؛ در تمام‌صفحهٔ انحصاری دیده نمی‌شود.',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'وقتی کارت گرافیک از پسش برمی‌آید از آن استفاده می‌کند، و وقتی برنمی‌آید از پردازنده.',
   'Usar': 'استفاده',
   'Uso do servidor': 'مصرف سرور',
@@ -823,4 +822,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'حروف بزرگِ کوچک، با فاصلهٔ باز.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'نسخه‌ای از آنچه نوشته‌اید ۹۰ روز بیرون از برنامه می‌ماند، برای زمانی که مرجعی آن را بخواهد. هیچ‌کس آن را از طریق Syden نمی‌خواند.',
   'Guarda-roupa': 'کمد لباس',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'پنجره‌ای کوچک در گوشهٔ صفحه که نشان می‌دهد چه کسی با شماست و چه کسی حرف می‌زند. فقط وقتی پیدا می‌شود که برنامه‌ای تمام صفحه را گرفته باشد — روی میز کار نه. کلیک از آن رد می‌شود: شلیک به بازی می‌خورد.',
 } satisfies Record<string, string>;

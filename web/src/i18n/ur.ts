@@ -720,7 +720,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'ایک نئی جگہ، اپنے چینلوں کے ساتھ۔ دعوتی کوڈ کے ذریعے آپ چنتے ہیں کہ کون آئے۔',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'ایک بار پیکیج لگ جائے تو وہ پوری کمیونٹی کا ہو جاتا ہے: اس کے ایموجی سب کے پیغامات میں چلنے لگتے ہیں۔',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'ایک چوڑی تصویر، 1200×300 یا اس جیسی۔ متحرک GIF بھی چلے گا، اور واقعی حرکت کرے گا۔ سرورق نہ ہو تو وہی نقش رہتا ہے جو آپ نے خوش آمدید کے صفحے پر چنا تھا۔',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'اسکرین کے کونے میں ایک چھوٹی کھڑکی، جس میں دکھتا ہے کہ آپ کے ساتھ کون ہے اور کون بول رہا ہے۔ کلک اس کے آر پار جاتا ہے: گولی کھیل ہی میں لگتی ہے۔ کھیل ونڈو میں یا بغیر کنارے والی ونڈو میں ہو تو چلتی ہے؛ مکمل فل اسکرین میں نہیں دکھتی۔',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'جب گرافکس کارڈ سنبھال سکے تو اسے استعمال کرتا ہے، ورنہ پروسیسر کو۔',
   'Usar': 'استعمال کریں',
   'Uso do servidor': 'سرور کا استعمال',
@@ -822,4 +821,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'چھوٹے بڑے حروف، کھلی وقفوں کے ساتھ۔',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'آپ نے جو لکھا اس کی ایک نقل ایپ سے باہر 90 دن رکھی جاتی ہے، اگر کوئی ادارہ طلب کرے۔ اسے Syden سے کوئی نہیں پڑھتا۔',
   'Guarda-roupa': 'الماری',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'اسکرین کے کونے میں ایک چھوٹی کھڑکی، جس میں دکھتا ہے کہ آپ کے ساتھ کون ہے اور کون بول رہا ہے۔ یہ صرف تب دکھتی ہے جب کوئی پروگرام پوری اسکرین گھیرے ہو؛ ڈیسک ٹاپ پر نہیں۔ کلک اس کے آر پار جاتا ہے: گولی کھیل ہی میں لگتی ہے۔',
 } satisfies Record<string, string>;

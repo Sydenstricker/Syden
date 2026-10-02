@@ -587,7 +587,6 @@ export default {
   'Embaixo, à esquerda': 'Chini kushoto',
   'Mostrar quem está na chamada por cima do jogo': 'Onyesha walio kwenye simu juu ya mchezo',
   'Quando você está jogando': 'Unapokuwa unacheza',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Dirisha dogo pembeni linaloonyesha nani yuko nawe na nani anaongea. Mbofyo hupenya: risasi huenda kwenye mchezo. Hufanya kazi mchezo ukiwa kwenye dirisha au dirisha lisilo na fremu; kwenye skrini nzima ya pekee, halionekani.',
   '{quem} em {canal}': '{quem} katika {canal}',
   'Enquete: {pergunta}': 'Kura: {pergunta}',
   'Mandou um arquivo': 'Alituma faili',
@@ -839,4 +838,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Herufi kubwa ndogo, zenye nafasi.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Nakala ya ulichoandika hubaki siku 90 nje ya programu, iwapo mamlaka itaiomba. Hakuna anayeisoma kupitia Syden.',
   'Guarda-roupa': 'Kabati la nguo',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Dirisha dogo pembeni linaloonyesha nani yuko nawe na nani anaongea. Huonekana tu wakati programu fulani imejaza skrini nzima; kwenye eneo-kazi, hapana. Mbofyo hupenya: risasi huenda kwenye mchezo.',
 } satisfies Record<string, string>;

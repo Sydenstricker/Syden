@@ -613,7 +613,6 @@ export default {
   'Embaixo, à esquerda': 'En bas à gauche',
   'Mostrar quem está na chamada por cima do jogo': 'Afficher qui est en appel par-dessus le jeu',
   'Quando você está jogando': 'Pendant que tu joues',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Une petite fenêtre dans un coin avec qui est avec toi, et qui parle. Le clic la traverse : le tir part dans le jeu. Ça marche avec le jeu en fenêtre ou en fenêtre sans bordure ; en plein écran exclusif, elle n’apparaît pas.',
   '{quem} em {canal}': '{quem} dans {canal}',
   'Enquete: {pergunta}': 'Sondage : {pergunta}',
   'Mandou um arquivo': 'A envoyé un fichier',
@@ -865,4 +864,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Des capitales petites, bien espacées.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Une copie de ce que tu as écrit reste 90 jours hors de l’appli, au cas où une autorité la demanderait. Personne ne la lit depuis Syden.',
   'Guarda-roupa': 'Garde-robe',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Une petite fenêtre dans un coin avec qui est avec toi, et qui parle. Elle n’apparaît que quand un programme occupe tout l’écran — pas sur le bureau. Le clic la traverse : le tir part dans le jeu.',
 } satisfies Record<string, string>;

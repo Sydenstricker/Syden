@@ -715,7 +715,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'సొంత ఛానెల్‌లతో ఒక కొత్త చోటు. ఆహ్వాన కోడ్‌తో ఎవరు రావాలో మీరు ఎంచుకుంటారు.',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'పెట్టుకున్న ప్యాక్ కమ్యూనిటీ మొత్తానికీ చెందుతుంది: దాని ఎమోజీలు అందరి సందేశాల్లో పనిచేస్తాయి.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'వెడల్పైన చిత్రం — 1200×300 లేదా దానికి దగ్గరగా. కదిలే GIF కూడా పనిచేస్తుంది, నిజంగా కదులుతుంది. కవర్ చిత్రం లేకపోతే, స్వాగత తెరలో మీరు ఎంచుకున్న చిత్రమే ఉంటుంది.',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'తెర మూలలో ఒక చిన్న కిటికీ — మీతో ఎవరున్నారో, ఎవరు మాట్లాడుతున్నారో చూపిస్తుంది. క్లిక్ దాన్ని దాటి వెళ్తుంది: కాల్పులు ఆటలోనే తగులుతాయి. ఆట విండో మోడ్‌లో లేదా అంచు లేని విండోలో ఉంటే పనిచేస్తుంది; ప్రత్యేక పూర్తి తెరలో కనిపించదు.',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'గ్రాఫిక్స్ కార్డు తట్టుకోగలిగినప్పుడు దాన్ని, లేనప్పుడు ప్రాసెసర్‌ను వాడుతుంది.',
   'Usar': 'వాడు',
   'Uso do servidor': 'సర్వర్ వినియోగం',
@@ -817,4 +816,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'చిన్న పెద్ద అక్షరాలు, విశాలమైన ఖాళీతో.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'మీరు రాసిన దాని ప్రతి యాప్ వెలుపల 90 రోజులు ఉంటుంది, అధికారుల అభ్యర్థన కోసం. Syden ద్వారా ఎవరూ దాన్ని చదవరు.',
   'Guarda-roupa': 'బట్టల అలమర',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'తెర మూలలో ఒక చిన్న కిటికీ — మీతో ఎవరున్నారో, ఎవరు మాట్లాడుతున్నారో చూపిస్తుంది. ఏదైనా ప్రోగ్రామ్ తెర మొత్తాన్ని ఆక్రమించినప్పుడు మాత్రమే కనిపిస్తుంది; డెస్క్‌టాప్‌లో కాదు. క్లిక్ దాన్ని దాటి వెళ్తుంది: కాల్పులు ఆటలోనే తగులుతాయి.',
 } satisfies Record<string, string>;

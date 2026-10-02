@@ -582,7 +582,6 @@ export default {
   'Embaixo, à esquerda': 'Sol alt',
   'Mostrar quem está na chamada por cima do jogo': 'Oyunun üstünde kimin görüşmede olduğunu göster',
   'Quando você está jogando': 'Sen oynarken',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Ekranın köşesinde küçük bir pencere: kim seninle ve kim konuşuyor. Tıklama içinden geçer, atış oyuna gider. Oyun pencerede ya da kenarlıksız pencerede çalışır; özel tam ekranda görünmez.',
   '{quem} em {canal}': '{canal} kanalında {quem}',
   'Enquete: {pergunta}': 'Anket: {pergunta}',
   'Mandou um arquivo': 'Bir dosya gönderdi',
@@ -834,4 +833,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Küçük büyük harfler, ferah aralıklı.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Yazdıklarının bir kopyası, bir makam isterse diye uygulama dışında 90 gün saklanır. Kimse onu Syden üzerinden okumaz.',
   'Guarda-roupa': 'Gardırop',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Ekranın köşesinde küçük bir pencere: kim seninle ve kim konuşuyor. Yalnızca bir program ekranın tamamını kaplarken görünür; masaüstünde görünmez. Tıklama içinden geçer, atış oyuna gider.',
 } satisfies Record<string, string>;

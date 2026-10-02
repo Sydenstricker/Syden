@@ -703,7 +703,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'Một chỗ mới, có kênh riêng. Bạn chọn ai được vào bằng mã mời.',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'Một gói đã cài là của cả cộng đồng: emoji trong đó dùng được trong tin nhắn của mọi người.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Một ảnh ngang, cỡ 1200×300 hoặc tương tự. GIF động cũng được, và nó động thật. Không có ảnh bìa thì hiện hình bạn đã chọn ở màn hình chào mừng.',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Một ô nhỏ ở góc màn hình cho biết ai đang ở cùng bạn và ai đang nói. Nhấp chuột xuyên qua được: phát súng vẫn vào trò chơi. Chạy được khi trò chơi ở chế độ cửa sổ hoặc cửa sổ không viền; ở toàn màn hình độc quyền thì không hiện.',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'Dùng card đồ hoạ khi nó làm được, và dùng CPU khi không.',
   'Usar': 'Dùng',
   'Uso do servidor': 'Mức dùng máy chủ',
@@ -805,4 +804,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Chữ hoa nhỏ, giãn cách thoáng.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Một bản sao những gì bạn đã viết được giữ 90 ngày ngoài ứng dụng, phòng khi cơ quan chức năng yêu cầu. Không ai đọc được nó qua Syden.',
   'Guarda-roupa': 'Tủ đồ',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Một ô nhỏ ở góc màn hình cho biết ai đang ở cùng bạn và ai đang nói. Nó chỉ hiện khi có chương trình nào đó chiếm trọn màn hình — ở màn hình nền thì không. Nhấp chuột xuyên qua được: phát súng vẫn vào trò chơi.',
 } satisfies Record<string, string>;

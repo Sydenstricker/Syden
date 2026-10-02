@@ -718,7 +718,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'சொந்தச் சேனல்களுடன் ஒரு புதிய இடம். அழைப்புக் குறியீட்டின் மூலம் யார் வர வேண்டும் என்று தேர்ந்தெடுக்கிறீர்கள்.',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'நிறுவப்பட்ட தொகுப்பு சமூகம் முழுவதற்கும் சொந்தமாகும்: அதன் ஈமோஜிகள் எல்லாருடைய செய்திகளிலும் வேலை செய்யும்.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'அகலமான படம் — 1200×300 அல்லது அதற்கு அருகில். அசையும் GIFஉம் சரி, அது உண்மையிலேயே அசையும். அட்டைப் படம் இல்லாவிட்டால், வரவேற்புத் திரையில் நீங்கள் தேர்ந்தெடுத்த வடிவமே இருக்கும்.',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'திரையின் மூலையில் ஒரு சிறு சாளரம் — உங்களுடன் யார் இருக்கிறார்கள், யார் பேசுகிறார்கள் என்று காட்டும். சொடுக்கு அதைக் கடந்து செல்லும்: சுடுதல் விளையாட்டிலேயே படும். விளையாட்டு சாளர முறையிலோ விளிம்பில்லாச் சாளரத்திலோ இருந்தால் வேலை செய்யும்; தனிப்பட்ட முழுத்திரையில் தெரியாது.',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'வரைகலை அட்டை சமாளிக்கும்போது அதையும், சமாளிக்காதபோது செயலியையும் பயன்படுத்தும்.',
   'Usar': 'பயன்படுத்து',
   'Uso do servidor': 'சேவையகப் பயன்பாடு',
@@ -820,4 +819,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'சிறிய பெரிய எழுத்துகள், விரிவான இடைவெளியுடன்.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'நீங்கள் எழுதியதன் நகல் செயலிக்கு வெளியே 90 நாட்கள் வைக்கப்படும், அதிகாரிகள் கேட்டால். Syden வழியாக யாரும் அதைப் படிக்க முடியாது.',
   'Guarda-roupa': 'உடை அலமாரி',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'திரையின் மூலையில் ஒரு சிறு சாளரம் — உங்களுடன் யார் இருக்கிறார்கள், யார் பேசுகிறார்கள் என்று காட்டும். ஏதேனும் ஒரு நிரல் திரை முழுவதையும் ஆக்கிரமித்திருக்கும்போது மட்டுமே தெரியும்; பணிமேசையில் தெரியாது. சொடுக்கு அதைக் கடந்து செல்லும்: சுடுதல் விளையாட்டிலேயே படும்.',
 } satisfies Record<string, string>;

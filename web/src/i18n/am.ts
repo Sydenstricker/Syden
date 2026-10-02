@@ -739,7 +739,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'አዲስ ቦታ፣ የራሱ ቻናሎች ያሉት። ማን እንደሚገባ በግብዣ ኮድ ይመርጣሉ።',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'የተጫነ ጥቅል ለመላው ማህበረሰብ ይሰራል፦ ኢሞጂዎቹ በሁሉም ሰው መልእክቶች ውስጥ መስራት ይጀምራሉ።',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'ሰፊ ምስል፣ 1200 በ300 ወይም ተመሳሳይ። እንቅስቃሴ ያለው GIF ይሰራል፣ በእውነትም ይንቀሳቀሳል። ሽፋን ከሌለ፣ በእንኳን ደህና መጡ ገጽ የመረጡት ሥዕል ይቀራል።',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'በማያው ጥግ ላይ ትንሽ መስኮት፣ ከእርስዎ ጋር ያሉትንና የሚናገረውን የሚያሳይ። ጠቅታው ያልፋል፦ ተኩሱ ወደ ጨዋታው ይሄዳል። ጨዋታው በመስኮት ወይም ጠርዝ በሌለው መስኮት ሲሆን ይሰራል፤ በተለየ ሙሉ ማያ ላይ አይታይም።',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'የቪዲዮ ካርዱ ሲችል እሱን፣ ሳይችል አቀናባሪውን ይጠቀማል።',
   'Usar': 'ተጠቀም',
   'Uso do servidor': 'የሰርቨሩ አጠቃቀም',
@@ -835,4 +834,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'ትናንሽ አቢይ ፊደላት፣ በሰፊ ክፍተት።',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'የጻፉት ቅጂ ከመተግበሪያው ውጭ ለ90 ቀናት ይቆያል፣ ባለሥልጣን ቢጠይቅ። በSyden በኩል ማንም አያነበውም።',
   'Guarda-roupa': 'የልብስ ቁም ሣጥን',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'በማያው ጥግ ላይ ትንሽ መስኮት፣ ከእርስዎ ጋር ያሉትንና የሚናገረውን የሚያሳይ። የሚታየው አንድ ፕሮግራም ማያውን ሙሉ በሙሉ ሲይዝ ብቻ ነው፤ በዴስክቶፕ ላይ አይታይም። ጠቅታው ያልፋል፦ ተኩሱ ወደ ጨዋታው ይሄዳል።',
 } satisfies Record<string, string>;

@@ -735,7 +735,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'Sabon wuri, da tashoshi nasa. Ku ke zaɓar wanda zai shiga ta lambar gayyata.',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'Fakitin da aka shigar yana shiga ga dukkan ƙungiyar: emojinsa suna fara aiki a saƙonnin kowa.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Hoto mai faɗi, na 1200 da 300 ko makamancin haka. GIF mai motsi yana aiki, kuma yana motsi da gaske. Ba tare da murfi ba, zanen da kuka zaɓa a marabta ya ci gaba da kasancewa.',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Ƙaramar taga a gefen allon da waɗanda ke tare da ku, da wanda ke magana. Danna yana ratsawa: harbin yana zuwa cikin wasan. Yana aiki da wasan a taga ko a taga babu gefe; a cikakken allo keɓaɓɓe, ba ya bayyana.',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'Yana amfani da katin bidiyo idan ya iya, da na\'ura mai sarrafawa idan bai iya ba.',
   'Usar': 'Yi amfani',
   'Uso do servidor': 'Amfanin sabar',
@@ -837,4 +836,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Manyan haruffa ƙanana, da faɗin sarari.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Kwafin abin da kuka rubuta yana nan kwana 90 a wajen manhajar, idan hukuma ta nemi shi. Babu wanda ke karanta shi ta Syden.',
   'Guarda-roupa': 'Kabad',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Ƙaramar taga a gefen allon da waɗanda ke tare da ku, da wanda ke magana. Takan bayyana sai lokacin da wani shiri ya mamaye dukan allon; a kan tebur ɗin kwamfuta, ba ya bayyana. Danna yana ratsawa: harbin yana zuwa cikin wasan.',
 } satisfies Record<string, string>;

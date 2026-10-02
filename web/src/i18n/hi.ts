@@ -587,7 +587,6 @@ export default {
   'Embaixo, à esquerda': 'नीचे बाईं ओर',
   'Mostrar quem está na chamada por cima do jogo': 'खेल के ऊपर दिखाओ कौन कॉल में है',
   'Quando você está jogando': 'जब तुम खेल रहे हो',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'पर्दे के कोने में एक छोटी खिड़की: कौन तुम्हारे साथ है और कौन बोल रहा है। क्लिक उसके आर-पार चला जाता है — निशाना खेल पर ही लगता है। खेल खिड़की में या बिना किनारे वाली खिड़की में हो तो चलता है; पूरी स्क्रीन वाले विशेष मोड में नहीं दिखता।',
   '{quem} em {canal}': '{canal} में {quem}',
   'Enquete: {pergunta}': 'पोल: {pergunta}',
   'Mandou um arquivo': 'एक फ़ाइल भेजी',
@@ -839,4 +838,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'छोटे बड़े अक्षर, खुली दूरी के साथ।',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'तुमने जो लिखा उसकी एक प्रति ऐप के बाहर 90 दिन रहती है, अगर कोई प्राधिकरण माँगे। इसे Syden से कोई नहीं पढ़ता।',
   'Guarda-roupa': 'अलमारी',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'पर्दे के कोने में एक छोटी खिड़की: कौन तुम्हारे साथ है और कौन बोल रहा है। यह तभी दिखती है जब कोई प्रोग्राम पूरी स्क्रीन घेरे हो — डेस्कटॉप पर नहीं। क्लिक उसके आर-पार चला जाता है: निशाना खेल पर ही लगता है।',
 } satisfies Record<string, string>;

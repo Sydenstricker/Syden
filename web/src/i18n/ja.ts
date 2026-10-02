@@ -714,7 +714,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': '自分のチャンネルを持つ新しい場所。招待コードで誰を入れるか選べます。',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': '入れたパックはコミュニティ全体のものになります。その絵文字が全員のメッセージで使えるようになります。',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '横長の画像、1200×300くらい。アニメーションGIFも使えて、ちゃんと動きます。カバー画像がない場合は、ようこそ画面で選んだデザインが表示されます。',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': '画面のすみに出る小窓に、いっしょにいる人と話している人が表示されます。クリックは通り抜けるので、弾はゲームに当たります。ウィンドウモードとボーダーレスウィンドウで動きます。専用全画面では表示されません。',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'グラフィックボードで間に合うときはそれを使い、無理なときはCPUを使います。',
   'Usar': '使う',
   'Uso do servidor': 'サーバーの使用状況',
@@ -816,4 +815,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '小さな大文字を、ゆったりした字間で。',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '書いた内容のコピーは、当局の求めに備えてアプリの外に90日間保管されます。Syden から読める人はいません。',
   'Guarda-roupa': 'ワードローブ',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': '画面のすみに出る小窓に、いっしょにいる人と話している人が表示されます。どれかのプログラムが画面いっぱいに広がっているときだけ出て、デスクトップでは出ません。クリックは通り抜けるので、弾はゲームに当たります。',
 } satisfies Record<string, string>;

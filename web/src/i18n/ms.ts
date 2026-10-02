@@ -588,7 +588,6 @@ export default {
   'Embaixo, à esquerda': 'Bawah kiri',
   'Mostrar quem está na chamada por cima do jogo': 'Tunjukkan siapa dalam panggilan di atas permainan',
   'Quando você está jogando': 'Semasa anda bermain',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'Tetingkap kecil di penjuru skrin dengan siapa yang bersama anda dan siapa yang bercakap. Klik menembusinya: tembakan masuk ke permainan. Ia berfungsi dengan permainan dalam tetingkap atau tetingkap tanpa bingkai; pada skrin penuh eksklusif, ia tidak muncul.',
   '{quem} em {canal}': '{quem} dalam {canal}',
   'Enquete: {pergunta}': 'Undian: {pergunta}',
   'Mandou um arquivo': 'Menghantar fail',
@@ -840,4 +839,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Huruf besar kecil, berjarak lega.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan apa yang awak tulis disimpan 90 hari di luar apl, sekiranya pihak berkuasa memintanya. Tiada sesiapa membacanya melalui Syden.',
   'Guarda-roupa': 'Almari pakaian',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Tetingkap kecil di penjuru skrin dengan siapa yang bersama anda dan siapa yang bercakap. Ia hanya muncul semasa ada program memenuhi seluruh skrin; di desktop, tidak. Klik menembusinya: tembakan masuk ke permainan.',
 } satisfies Record<string, string>;

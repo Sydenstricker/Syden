@@ -593,7 +593,6 @@ export default {
   'Embaixo, à esquerda': 'Bottom left',
   'Mostrar quem está na chamada por cima do jogo': 'Show who is in the call on top of the game',
   'Quando você está jogando': 'While you are playing',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'A small panel in the corner with who is with you, and who is talking. Clicks go through it: the shot lands in the game. It works with the game in a window or borderless window; in exclusive fullscreen it does not show up.',
   '{quem} em {canal}': '{quem} in {canal}',
   'Enquete: {pergunta}': 'Poll: {pergunta}',
   'Mandou um arquivo': 'Sent a file',
@@ -845,4 +844,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Small capitals, nicely spaced out.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'A copy of what you wrote is kept for 90 days outside the app, in case an authority asks for it. Nobody reads it through Syden.',
   'Guarda-roupa': 'Wardrobe',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'A small panel in the corner with who is with you, and who is talking. It only shows up while some program is filling the whole screen — not on the desktop. Clicks go through it: the shot lands in the game.',
 } satisfies Record<string, string>;

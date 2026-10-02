@@ -746,7 +746,6 @@ export default {
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.': 'ที่ใหม่ มีช่องของตัวเอง คุณเลือกว่าใครจะเข้าผ่านรหัสเชิญ',
   'Um pacote instalado entra para toda a comunidade: os emojis dele passam a valer nas mensagens de todo mundo.': 'แพ็กที่ติดตั้งแล้วมีผลกับทั้งชุมชน อิโมจิในแพ็กจะใช้ได้ในข้อความของทุกคน',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'ภาพแนวนอน ขนาด 1200 คูณ 300 หรือใกล้เคียง GIF เคลื่อนไหวใช้ได้ และขยับจริง ถ้าไม่มีภาพปก จะใช้ภาพที่คุณเลือกไว้ในหน้าต้อนรับ',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. O clique atravessa: o tiro vai no jogo. Funciona com o jogo em janela ou em janela sem borda; em tela cheia exclusiva, não aparece.': 'หน้าต่างเล็ก ๆ ที่มุมจอ แสดงคนที่อยู่กับคุณและคนที่กำลังพูด คลิกทะลุผ่านได้ กระสุนจะเข้าเกม ใช้ได้เมื่อเกมอยู่ในโหมดหน้าต่างหรือหน้าต่างไร้ขอบ ถ้าเป็นเต็มจอแบบผูกขาด จะไม่แสดง',
   'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'ใช้การ์ดจอเมื่อไหว และใช้ซีพียูเมื่อไม่ไหว',
   'Usar': 'ใช้',
   'Uso do servidor': 'การใช้งานเซิร์ฟเวอร์',
@@ -848,4 +847,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'ตัวพิมพ์ใหญ่ขนาดเล็ก เว้นระยะโปร่ง',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'สำเนาสิ่งที่คุณเขียนจะถูกเก็บไว้ 90 วันนอกแอป เผื่อทางการขอ ไม่มีใครอ่านมันผ่าน Syden ได้',
   'Guarda-roupa': 'ตู้เสื้อผ้า',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'หน้าต่างเล็ก ๆ ที่มุมจอ แสดงคนที่อยู่กับคุณและคนที่กำลังพูด จะแสดงเฉพาะตอนที่มีโปรแกรมใดกินพื้นที่เต็มจอเท่านั้น ถ้าอยู่ที่หน้าเดสก์ท็อปจะไม่แสดง คลิกทะลุผ่านได้ กระสุนจะเข้าเกม',
 } satisfies Record<string, string>;

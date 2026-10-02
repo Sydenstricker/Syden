@@ -1,6 +1,7 @@
 // @ts-check
 const { BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('node:path');
+const jogo = require('./jogo');
 
 /**
  * QUEM ESTÁ NA CHAMADA, POR CIMA DO JOGO.
@@ -10,9 +11,13 @@ const path = require('node:path');
  * faz antivírus e anticheat reclamarem dele. O Syden não faz isso, e não vai fazer.
  *
  * O que ele faz é uma janela comum: sem borda, sempre no topo, com fundo transparente e ATRAVESSÁVEL
- * PELO CLIQUE — o mouse passa direto e o tiro vai no jogo. Funciona com o jogo em janela ou em janela
- * sem borda, que é como a maioria roda hoje. Em tela cheia exclusiva não aparece, e é honesto dizer
- * isso em vez de prometer o que depende do gancho.
+ * PELO CLIQUE — o mouse passa direto e o tiro vai no jogo. Em tela cheia exclusiva não aparece, e é
+ * honesto dizer isso em vez de prometer o que depende do gancho.
+ *
+ * ELA SÓ APARECE COM UM PROGRAMA OCUPANDO A TELA INTEIRA (ver jogo.js). Antes aparecia sempre que
+ * houvesse gente na sala, e a reclamação foi direta: "poluindo a tela fora do Syden" — Syden
+ * minimizado, pessoa na área de trabalho, retângulo por cima. Jogo em janela deixou de mostrá-la, e
+ * é a troca certa: ali a chamada está a um clique, do lado.
  *
  * ---------------------------------------------------------------------------------------------------
  * TRÊS COISAS QUE PARECEM DETALHE E NÃO SÃO:
@@ -100,17 +105,36 @@ function desenhar() {
   janela.setBounds({ x, y, width: LARGURA, height: altura });
 }
 
-/** Mostra (criando se precisar) com a lista dada. Lista vazia esconde. */
-function mostrar(lista, cantoEscolhido) {
-  ultimaLista = Array.isArray(lista) ? lista : [];
-  if (cantoEscolhido) canto = cantoEscolhido;
-
-  if (ultimaLista.length === 0) return esconder();
+/**
+ * DUAS CONDIÇÕES, NÃO UMA: ter gente na sala E haver um jogo ocupando a tela.
+ *
+ * Antes bastava a primeira, e por isso a janelinha ficava por cima da área de trabalho com o Syden
+ * minimizado. Ela existe para quem está de costas para o Syden; com o Syden à vista, é um retângulo
+ * em cima do que a pessoa estiver fazendo. Quem responde a segunda pergunta é jogo.js.
+ */
+function aplicar() {
+  if (ultimaLista.length === 0 || !jogo.estaEmJogo()) return esconder();
   if (!janela || janela.isDestroyed()) criar();
   desenhar();
   // showInactive, e não show: trazer a janelinha para frente COM FOCO tiraria o jogo do primeiro
   // plano, que em tela cheia é o mesmo que minimizar o jogo da pessoa no meio da partida.
   if (janela && !janela.isVisible()) janela.showInactive();
+}
+
+/** Mostra (criando se precisar) com a lista dada. Lista vazia esconde. */
+function mostrar(lista, cantoEscolhido) {
+  ultimaLista = Array.isArray(lista) ? lista : [];
+  if (cantoEscolhido) canto = cantoEscolhido;
+
+  // SEM NINGUÉM NA SALA, A SONDA TAMBÉM PARA. Não há o que vigiar, e deixá-la viva faria o Syden
+  // carregar um processo a mais o tempo todo por causa de uma janelinha que não ia aparecer.
+  if (ultimaLista.length === 0) {
+    jogo.parar();
+    return esconder();
+  }
+
+  jogo.observar(aplicar);
+  aplicar();
 }
 
 function esconder() {
@@ -120,11 +144,18 @@ function esconder() {
 function fechar() {
   if (janela && !janela.isDestroyed()) janela.destroy();
   janela = null;
+  // A sonda é um processo FILHO, e processo filho não morre junto por educação: fechando o Syden sem
+  // isto, sobraria um powershell vivo na máquina de quem usa.
+  jogo.parar();
 }
 
 function ligar() {
   ipcMain.on('sobreposicao:mostrar', (_evento, { lista, canto: c }) => mostrar(lista, c));
-  ipcMain.on('sobreposicao:esconder', () => esconder());
+  ipcMain.on('sobreposicao:esconder', () => {
+    ultimaLista = [];
+    jogo.parar();
+    esconder();
+  });
 }
 
 module.exports = { ligar, fechar };
