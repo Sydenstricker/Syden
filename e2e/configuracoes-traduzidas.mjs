@@ -1,10 +1,10 @@
-// Abre a tela de Configurações em dez idiomas e MEDE: sobrou português, estourou a largura,
+// Abre a tela de Configurações em onze idiomas e MEDE: sobrou português, estourou a largura,
 // ficou campo {assim} cru na tela.
 //
 // POR QUE ELE EXISTE. O CLAUDE.md é explícito: "conferir idioma que ninguém da dupla lê é medir, não
 // confiar". Nós lemos português, inglês e espanhol. As outras treze línguas só se conferem assim.
 //
-// AS DEZ ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
+// AS ONZE ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
 //   alemão   — palavra composta longa, o maior risco de estourar a caixa;
 //   russo    — frase longa em outro alfabeto;
 //   árabe    — a página inteira vira de lado;
@@ -19,7 +19,10 @@
 //   télugo    — escrita própria, com fonte baixada sob demanda: é o caso em que a tela vira
 //               quadradinho se a reserva não chegar;
 //   tâmil     — língua aglutinante: a frase mais longa da lista inteira, e o maior risco de a
-//               palavra não caber no botão.
+//               palavra não caber no botão;
+//   hauçá     — alfabeto latino SEM os acentos do português, onde a armadilha é o contrário da do
+//               vietnamita: o detector por letra quase funciona, e erra só em nome próprio e em
+//               endereço de exemplo — erro raro é pior que erro óbvio, porque ninguém desconfia.
 //
 // O QUE ELE NÃO MEDE, de propósito: se a tradução está BOA. Isso nenhum teste mede. Ele mede o que é
 // mecânico e passa despercebido — e é justamente o que escapa quando se traduzem cem frases de uma vez.
@@ -48,41 +51,70 @@ const CHEIRO_DE_PORTUGUES =
   /[ãõçáéíóúâêô]|\b(para|com|que|uma|seu|sua|seus|suas|pelo|pela|aqui|todos|todas|quem|mais|sem|ainda|cada|pode|podem|fica|ficam|sala|sons|senha|conta|mensagem|mensagens)\b/i;
 
 /**
- * O VIETNAMITA QUEBRA O DETECTOR DE CIMA, e é o primeiro idioma a quebrá-lo.
+ * ESCRITA LATINA QUEBRA O DETECTOR DE CIMA, e o vietnamita foi o primeiro a quebrá-lo.
  *
  * A busca por letras acentuadas funciona porque alemão, russo, árabe e coreano não escrevem ã, á, ê
  * nem ô. O vietnamita escreve TODOS: "bạn", "cộng đồng", "đổi mật khẩu", "giọng nói". Procurar
- * `[ãõáéíóúâêô]` numa tela em vietnamita acusa a tela inteira — a tradução certa seria reprovada por
- * estar certa.
+ * `[ãõáéíóúâêô]` numa tela em vietnamita acusa a tela inteira — a tradução certa seria reprovada
+ * por estar certa.
+ *
+ * O HAUÇÁ MOSTROU A OUTRA METADE DO PROBLEMA, e ela é mais perigosa. Ele não escreve acento nenhum,
+ * então o detector por letra quase funciona: medindo o dicionário inteiro, ele acusa 4 linhas em
+ * 702. E as quatro são certas por construção — `{quem}` é nome de campo e fica em português de
+ * propósito, `mc.misali.com` casa com a palavra "com", e "Léo" é nome de pessoa. Detector que
+ * erra pouco é pior que detector que erra muito: ninguém desconfia dele, e os quatro ruídos ficam
+ * para sempre na saída, treinando a gente a ignorar o que ele diz.
  *
  * A saída é não adivinhar. As frases em português são CONHECIDAS: são as chaves do dicionário.
- * Então, para o vietnamita, a pergunta deixa de ser "isto parece português?" e passa a ser "isto é
+ * Então, para estas línguas, a pergunta deixa de ser "isto parece português?" e passa a ser "isto é
  * uma das frases que deveriam ter sido traduzidas?" — comparação exata, sem heurística e sem falso
- * positivo. O `ç` entra como reforço porque é a única letra portuguesa que o vietnamita não tem, e
- * pega texto cravado que não passou por chave nenhuma.
+ * positivo.
  *
- * UMA RESSALVA, e ela apareceu na primeira medição: tem chave cuja tradução É o próprio texto, de
- * direito. "1080p · 60 fps" se escreve igual em vietnamita, e acusá-la seria reprovar a tradução
- * certa. Por isso a comparação é com o VALOR: só conta como português quem apareceu na tela com o
- * texto da chave E tem tradução diferente dela.
+ * UMA RESSALVA, e ela apareceu na primeira medição do vietnamita: tem chave cuja tradução É o
+ * próprio texto, de direito. "1080p · 60 fps" se escreve igual em vietnamita e em hauçá, e acusá-la
+ * seria reprovar a tradução certa. Por isso a comparação é com o VALOR: só conta como português quem
+ * apareceu na tela com o texto da chave E tem tradução diferente dela. No hauçá são seis assim —
+ * 1080p · 60 fps, Aurora, ESC, GIF, Jade e ZECA.
+ *
+ * O REFORÇO POR LETRA NÃO É MAIS ESCRITO À MÃO, ELE É MEDIDO. Para o vietnamita, a letra escolhida
+ * à mão havia sido o `ç`, a única do português que ele não tem; a conta abaixo — acento do
+ * português que não aparece em NENHUM valor do dicionário daquela língua — redescobre exatamente o
+ * `ç`, e para o hauçá descobre sozinha que o `é` não serve, porque o próprio dicionário o usa em
+ * "Survival na Léo". O reforço pega texto cravado que não passou por chave nenhuma.
  */
-function dicionarioVietnamita() {
-  const texto = readFileSync(new URL('../web/src/i18n/vi.ts', import.meta.url), 'utf8');
+function dicionarioDe(codigo) {
+  const texto = readFileSync(new URL(`../web/src/i18n/${codigo}.ts`, import.meta.url), 'utf8');
   const mapa = new Map();
-  for (const m of texto.matchAll(/^\s{2}(['"])((?:(?!\1).)+)\1\s*:\s*(['"])((?:(?!\3).)*)\3,?\s*$/gm)) {
+  // O `\\.` DOS DOIS GRUPOS É O QUE FAZ O HAUÇÁ ENTRAR INTEIRO. Sem ele, `(?!\1)` recusa a aspa
+  // escapada `\'` e a leitura para no meio do valor: a linha não casa e o par sai do mapa CALADO.
+  // O hauçá escreve o hiato com apóstrofo (na'ura, ma'ana, ko'ina) e entrava com 702 das 733.
+  // Medindo os outros 22 dicionários com a mesma régua: o francês perdia 8 pares, o inglês 7, o
+  // italiano 3, e suaíli, neerlandês, espanhol e turco 1 cada. O buraco já estava lá.
+  for (const m of texto.matchAll(/^\s{2}(['"])((?:\\.|(?!\1).)+)\1\s*:\s*(['"])((?:\\.|(?!\3).)*)\3,?\s*$/gm)) {
     mapa.set(m[2], m[4]);
   }
   return mapa;
 }
 
-const VIETNAMITA = dicionarioVietnamita();
+const ACENTOS_DO_PORTUGUES = [...'ãõçáéíóúâêô'];
+
+function detectorPorChaves(codigo) {
+  const mapa = dicionarioDe(codigo);
+  const escritas = new Set([...mapa.values()].join('').toLowerCase());
+  const reforco = ACENTOS_DO_PORTUGUES.filter((letra) => !escritas.has(letra));
+  return { mapa, reforco: reforco.length ? new RegExp(`[${reforco.join('')}]`) : null };
+}
+
+/** As línguas de escrita latina deste teste, cada uma com o seu dicionário e o seu reforço medido. */
+const POR_CHAVES = new Map(['vi', 'ha'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
 
 /** O detector da vez. Cada idioma mede o que ele próprio consegue distinguir. */
 function sobrouPortugues(codigo, texto) {
-  if (codigo !== 'vi') return CHEIRO_DE_PORTUGUES.test(texto);
-  if (texto.includes('ç')) return true;
-  const vi = VIETNAMITA.get(texto);
-  return vi !== undefined && vi !== texto;
+  const porChaves = POR_CHAVES.get(codigo);
+  if (!porChaves) return CHEIRO_DE_PORTUGUES.test(texto);
+  if (porChaves.reforco && porChaves.reforco.test(texto)) return true;
+  const traduzido = porChaves.mapa.get(texto);
+  return traduzido !== undefined && traduzido !== texto;
 }
 
 const IDIOMAS = [
@@ -96,6 +128,7 @@ const IDIOMAS = [
   { codigo: 'ja', nome: '日本語', rtl: false },
   { codigo: 'te', nome: 'తెలుగు', rtl: false },
   { codigo: 'ta', nome: 'தமிழ்', rtl: false },
+  { codigo: 'ha', nome: 'Hausa', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por
@@ -222,4 +255,4 @@ for (const idioma of IDIOMAS) {
 }
 
 await browser.close();
-resumo('Configurações nas dez línguas');
+resumo(`Configurações nas ${IDIOMAS.length} línguas`);

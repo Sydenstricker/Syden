@@ -178,6 +178,13 @@ const TEXTOS = {
     tentando: 'جارٍ المحاولة…',
     codigo: 'OFFLINE — لا يوجد اتصال',
   },
+  ha: {
+    titulo: 'Ba a iya haɗawa ba',
+    explicacao: 'Ku duba intanet ɗinku. Mai yiwuwa sabar ma ta tsaya.',
+    botao: 'Sake gwadawa',
+    tentando: 'Ana gwadawa…',
+    codigo: 'OFFLINE — babu haɗi',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -148,7 +148,7 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'dv', nativo: 'ދިވެހި', nome: 'Divehi', escrita: 'thaana', rtl: true, paises: 1 },
   { codigo: 'am', nativo: 'አማርኛ', nome: 'Amárico', escrita: 'etiope', paises: 1 },
   { codigo: 'so', nativo: 'Soomaali', nome: 'Somali', escrita: 'latina', paises: 1 },
-  { codigo: 'ha', nativo: 'Hausa', nome: 'Hauçá', escrita: 'latina', paises: 1 },
+  { codigo: 'ha', nativo: 'Hausa', nome: 'Hauçá', escrita: 'latina', paises: 2 },
   { codigo: 'rw', nativo: 'Kinyarwanda', nome: 'Quiniaruanda', escrita: 'latina', paises: 1 },
   { codigo: 'mg', nativo: 'Malagasy', nome: 'Malgaxe', escrita: 'latina', paises: 1 },
   { codigo: 'af', nativo: 'Afrikaans', nome: 'Africâner', escrita: 'latina', paises: 1 },
@@ -189,6 +189,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   ja: () => import('./ja'),
   te: () => import('./te'),
   ta: () => import('./ta'),
+  ha: () => import('./ha'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

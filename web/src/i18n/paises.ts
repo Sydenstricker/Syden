@@ -146,6 +146,14 @@ export const OFICIAL: Record<string, string[]> = {
   // Sri Lanka e Singapura, onde é língua oficial do Estado, mais a Índia — pelo mesmo
   // critério do híndi e do télugo, que é contar o país onde a língua é oficial em algum nível.
   ta: ['LK', 'SG', 'IN'],
+  // PRIMEIRO CASO EM QUE O IDIOMA NÃO É A LÍNGUA OFICIAL DO ESTADO EM NENHUM DOS DOIS PAÍSES, e
+  // mesmo assim entra. Na Nigéria a Constituição de 1999 nomeia o hauçá no artigo 55, entre as
+  // línguas em que a Assembleia Nacional trabalha; no Níger a lei o lista entre as línguas
+  // nacionais, ao lado do francês, que é a oficial. Nos dois é status NACIONAL escrito em lei, não
+  // regional — e é isso que o critério deste arquivo pede.
+  //
+  // A estimativa à mão em idiomas.ts dizia 1 país. Eram 2, e quem manda é esta lista.
+  ha: ['NG', 'NE'],
 };
 
 /**

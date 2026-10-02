@@ -147,7 +147,13 @@ describe('os campos {assim} sobrevivem à tradução', () => {
       const erradas: string[] = [];
       // Só as linhas de uma chave com valor na mesma linha. As que quebram em duas ficam de fora, e
       // é um falso negativo aceito: elas são poucas, e a alternativa seria interpretar TypeScript.
-      for (const m of texto.matchAll(/^\s{2}(['"])((?:(?!\1).)+)\1\s*:\s*(['"])((?:(?!\3).)*)\3,?\s*$/gm)) {
+      //
+      // O `\\.` DOS DOIS GRUPOS NÃO É ENFEITE. Sem ele, `(?!\1)` recusa a aspa escapada `\'` e a
+      // leitura para no meio do valor: a linha deixa de casar e sai da conferência CALADA. O hauçá
+      // escreve o hiato com apóstrofo (na'ura, ma'ana, ko'ina) e perdia 31 das 733 frases; medindo
+      // os outros dicionários depois, o francês perdia 8 e o inglês 7 — o buraco já existia, e foi
+      // só o hauçá que o fez grande o bastante para alguém notar.
+      for (const m of texto.matchAll(/^\s{2}(['"])((?:\\.|(?!\1).)+)\1\s*:\s*(['"])((?:\\.|(?!\3).)*)\3,?\s*$/gm)) {
         const [, , chaveLida, , valor] = m;
         if (!valor.trim()) continue;
         const naChave = campos(chaveLida);
