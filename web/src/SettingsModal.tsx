@@ -28,6 +28,8 @@ import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
+import { EmojiPicker } from './EmojiPicker';
+import { limiteDoCampo, tamanhoVisivel } from './nomeComEmoji';
 import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
 import { algarismos } from './algarismos';
 import { isolar } from './bidi';
@@ -580,6 +582,15 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
 
 // ---------- A comunidade em si ----------
 
+/**
+ * Quantos caracteres cabem no nome da comunidade — CONTADOS COMO QUEM LÊ OS VÊ.
+ *
+ * O servidor confere o mesmo número do mesmo jeito (ver `communityName`, em routes.ts). São as duas
+ * pontas de uma regra só, e é por isso que o número está escrito aqui com nome em vez de solto
+ * dentro do JSX.
+ */
+const LETRAS_DO_NOME = 40;
+
 function CommunitySection({
   community,
   onChanged,
@@ -596,8 +607,45 @@ function CommunitySection({
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState<'leave' | 'delete' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [emojiAberto, setEmojiAberto] = useState(false);
+  const campoDoNome = useRef<HTMLInputElement>(null);
   const isOwner = community.role === 'owner';
   const canManage = isOwner || community.role === 'admin';
+
+  /**
+   * O emoji entra ONDE O CURSOR ESTÁ, e não grudado no fim.
+   *
+   * Quase todo mundo quer o emoji no começo — é ele que vira o ícone da comunidade na coluna da
+   * esquerda. Jogar sempre no fim obrigaria a recortar e colar para conseguir isso. O seletor fica
+   * aberto de propósito: pôr dois emojis é comum, e fechar a cada clique faria reabrir toda vez.
+   */
+  /**
+   * ABRIR O SELETOR ROLA O CAMPO ATÉ O PÉ DA TELA ANTES, e isso não é capricho.
+   *
+   * O seletor abre PARA CIMA (são 400 pixels de emoji; para baixo ele sairia por fora do modal), e
+   * as Configurações rolam. Quem está no fim da página tem o campo do nome lá no alto, com uns 250
+   * pixels acima dele — menos do que o seletor ocupa, e o que falta é cortado sem aviso.
+   *
+   * `block: 'end'` encosta o campo no pé da área que rola, que é a posição em que sobra espaço
+   * acima dele: a altura inteira do painel.
+   */
+  useEffect(() => {
+    if (emojiAberto) campoDoNome.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }, [emojiAberto]);
+
+  function porEmojiNoNome(emoji: string) {
+    const campo = campoDoNome.current;
+    const inicio = campo?.selectionStart ?? name.length;
+    const fim = campo?.selectionEnd ?? name.length;
+    const novo = name.slice(0, inicio) + emoji + name.slice(fim);
+    if (tamanhoVisivel(novo) > LETRAS_DO_NOME) return;
+    setName(novo);
+    requestAnimationFrame(() => {
+      campo?.focus();
+      const cursor = inicio + emoji.length;
+      campo?.setSelectionRange(cursor, cursor);
+    });
+  }
 
   async function rename(event: FormEvent) {
     event.preventDefault();
@@ -682,9 +730,33 @@ function CommunitySection({
           <form className="settings-form" onSubmit={rename}>
             <label>
               {t('Nome da comunidade')}
-              <input value={name} onChange={(e) => setName(e.target.value)} minLength={2} maxLength={40} required />
+              <div className="nome-com-emoji">
+                <input
+                  ref={campoDoNome}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  minLength={2}
+                  maxLength={limiteDoCampo(name, LETRAS_DO_NOME)}
+                  required
+                />
+                {/* `type="button"` não é detalhe: sem ele, o botão dentro de um <form> é de ENVIAR, e
+                    abrir o seletor salvaria o nome. */}
+                <button
+                  type="button"
+                  className={`icon-plain nome-com-emoji-botao${emojiAberto ? ' active' : ''}`}
+                  title={t('Emojis')}
+                  aria-label={t('Emojis')}
+                  aria-expanded={emojiAberto}
+                  onClick={() => setEmojiAberto((aberto) => !aberto)}
+                >
+                  <Smile size={20} />
+                </button>
+                {emojiAberto && (
+                  <EmojiPicker apenasDoTeclado onPick={porEmojiNoNome} onClose={() => setEmojiAberto(false)} />
+                )}
+              </div>
             </label>
-            <button className="btn-primary" disabled={busy || name === community.name}>
+            <button className="btn-primary" disabled={busy || name === community.name || tamanhoVisivel(name.trim()) < 2}>
               {t('Salvar nome')}
             </button>
           </form>

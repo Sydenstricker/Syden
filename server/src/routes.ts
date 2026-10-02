@@ -49,9 +49,21 @@ function channelName(raw: string | undefined, type: db.ChannelType): string | nu
   return type === 'text' ? name.toLowerCase().replace(/\s+/g, '-') : name;
 }
 
+/**
+ * O NOME SE MEDE EM GRAFEMAS, que é o que a pessoa chama de "caractere".
+ *
+ * Desde que dá para pôr emoji no nome, contar `name.length` passou a mentir: "🇧🇷" ocupa quatro
+ * unidades e a família 👨‍👩‍👧 ocupa onze, então um nome que a tela mostra com quinze caracteres
+ * seria recusado por passar de quarenta. O `Intl.Segmenter` conta o que se vê, e é a mesma conta
+ * que o campo do site faz (ver LETRAS_DO_NOME, em SettingsModal.tsx) — as duas pontas precisam
+ * concordar, senão o botão deixa salvar e o servidor devolve erro.
+ */
+const GRAFEMAS = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+
 function communityName(raw: unknown): string | null {
   const name = String(raw ?? '').trim();
-  return name.length >= 2 && name.length <= 40 ? name : null;
+  const letras = [...GRAFEMAS.segment(name)].length;
+  return letras >= 2 && letras <= 40 ? name : null;
 }
 
 /**

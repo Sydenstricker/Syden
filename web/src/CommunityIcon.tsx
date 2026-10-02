@@ -1,12 +1,27 @@
 import { mediaUrl } from './api';
+import { grafemas, primeiroEmoji } from './nomeComEmoji';
 import type { Community } from './types';
 
 const LINKING_WORDS = new Set(['do', 'da', 'de', 'dos', 'das', 'e']);
 
-/** Iniciais do nome, como o Discord faz quando a comunidade não tem imagem: "Time do Valorant" → "TV". */
+/**
+ * Iniciais do nome, como o Discord faz quando a comunidade não tem imagem: "Time do Valorant" → "TV".
+ *
+ * COM EMOJI NO NOME, O EMOJI É O ÍCONE. Quem põe 🎮 no nome da comunidade está escolhendo por que ela
+ * vai ser reconhecida de longe, e espremer o desenho ao lado de uma letra deixaria os dois pequenos
+ * demais para enxergar num quadrado de 46 pixels. Vale o primeiro emoji, esteja ele no começo ou no
+ * meio: "Café ☕ dos Devs" vira ☕.
+ *
+ * E AS LETRAS PASSAM A SE CONTAR EM GRAFEMAS. Antes era `nome[0]`, que em "🎮 Jogos da firma"
+ * devolvia "\ud83cJ" — metade do emoji, que o navegador desenha como o losango de interrogação.
+ */
 export function initials(name: string) {
-  const words = name.trim().split(/\s+/).filter((word) => !LINKING_WORDS.has(word.toLowerCase()));
-  const letters = words.length > 1 ? words[0][0] + words[1][0] : name.trim().slice(0, 2);
+  const limpo = name.trim();
+  const emoji = primeiroEmoji(limpo);
+  if (emoji) return emoji;
+
+  const words = limpo.split(/\s+/).filter((word) => !LINKING_WORDS.has(word.toLowerCase()));
+  const letters = words.length > 1 ? grafemas(words[0])[0] + grafemas(words[1])[0] : grafemas(limpo).slice(0, 2).join('');
   return letters.toUpperCase();
 }
 

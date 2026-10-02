@@ -10349,3 +10349,36 @@ body.arrastando-barra {
     animation: none;
   }
 }
+
+/* ---------- Emoji no nome da comunidade ---------- */
+/* O `position: relative` NÃO É ENFEITE. O seletor de emoji é `position: absolute` com
+   `bottom: calc(100% + 8px)`, e sem um ancestral posicionado ele mede a partir do modal inteiro —
+   foi exatamente assim que os painéis do soundboard e do karaokê foram parar fora da tela. */
+.nome-com-emoji {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nome-com-emoji input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* O seletor abre ALINHADO À DIREITA do campo e PARA CIMA, porque este bloco fica no pé de uma tela
+   que rola: para baixo, a lista de 1800 emojis sairia por fora do modal. */
+.nome-com-emoji .emoji-picker {
+  right: 0;
+  bottom: calc(100% + 8px);
+}
+
+.nome-com-emoji-botao {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.nome-com-emoji-botao:hover,
+.nome-com-emoji-botao.active {
+  color: var(--text);
+}

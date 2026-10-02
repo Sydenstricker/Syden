@@ -28,7 +28,23 @@ function rememberRecent(char: string) {
  * Painel de emojis acima do campo de mensagem: os do servidor entram como :nome: e os comuns como o
  * próprio caractere. A busca é em português ("bolo", "coração", "risada").
  */
-export function EmojiPicker({ onPick, onClose }: { onPick: (text: string) => void; onClose: () => void }) {
+/**
+ * `apenasDoTeclado` esconde os emojis da comunidade, e isso é desenho, não limitação.
+ *
+ * O emoji da comunidade é uma IMAGEM; o que o seletor devolve dele é o apelido `:gato:`, que só vira
+ * figura onde há um componente para trocá-lo. No nome da comunidade não há: ele é texto puro, e o
+ * apelido apareceria literalmente, com os dois-pontos. O jeito honesto de impedir isso não é avisar
+ * depois do clique — é não oferecer o que não cabe.
+ */
+export function EmojiPicker({
+  onPick,
+  onClose,
+  apenasDoTeclado = false,
+}: {
+  onPick: (text: string) => void;
+  onClose: () => void;
+  apenasDoTeclado?: boolean;
+}) {
   const t = useT();
   const { emojis } = useDirectory();
   const [hovered, setHovered] = useState<string | null>(null);
@@ -53,8 +69,13 @@ export function EmojiPicker({ onPick, onClose }: { onPick: (text: string) => voi
   const search = query.trim();
   const found = useMemo(() => searchEmojis(search), [search]);
   const serverMatches = useMemo(
-    () => (search ? emojis.filter((emoji) => emoji.name.includes(search.toLowerCase().replace(/[^a-z0-9_]/g, ''))) : emojis),
-    [emojis, search],
+    () =>
+      apenasDoTeclado
+        ? []
+        : search
+          ? emojis.filter((emoji) => emoji.name.includes(search.toLowerCase().replace(/[^a-z0-9_]/g, '')))
+          : emojis,
+    [apenasDoTeclado, emojis, search],
   );
 
   function pick(text: string, unicode: string | null) {
