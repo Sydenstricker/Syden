@@ -8193,6 +8193,67 @@ textarea {
 
 /* O aviso de que a conta do outro lado foi excluída. Vai no topo da conversa, antes das mensagens:
    é informação que muda o que a pessoa faz a seguir, e serve de nada embaixo de tudo. */
+/* A escolha da cor do Syden, no alto da Aparência. */
+.cor-do-syden {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+}
+
+.cor-do-syden-escolha {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.cor-do-syden-escolha input[type='color'] {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.cor-do-syden-escolha span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cor-do-syden-escolha strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  text-transform: none;
+}
+
+.cor-do-syden-escolha small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: none;
+}
+
+/* A bolinha mostra a cor QUE VAI APARECER, já escurecida para o branco caber — e não a do seletor. */
+.cor-do-syden-previa {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-main);
+  flex-shrink: 0;
+}
+
 .conta-excluida {
   display: flex;
   align-items: center;

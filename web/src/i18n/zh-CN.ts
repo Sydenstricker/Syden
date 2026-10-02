@@ -786,4 +786,6 @@ export default {
   'Conta excluída': '已删除的账号',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': '这个人已经删除了账号。发到这里的消息不会有人收到。',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 自动消息：你的想法已经收到，谢谢！我会认真看。如果有疑问，我就在这里问你——要是它进了 Syden，你会第一时间知道。',
+  'A cor do Syden': 'Syden 的颜色',
+  'Vale no app inteiro, só para você.': '对整个应用生效，只对你。',
 } satisfies Record<string, string>;

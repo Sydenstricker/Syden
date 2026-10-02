@@ -799,4 +799,6 @@ export default {
   'Conta excluída': 'Akaunti iliyofutwa',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Mtu huyu amefuta akaunti yake. Jumbe za hapa hazimfikii mtu.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Ujumbe wa kiotomatiki: wazo lako limefika, asante! Nitalisoma kwa makini. Nikiwa na swali, nitakuuliza hapa hapa — na likiingia kwenye Syden, utajua mara moja.',
+  'A cor do Syden': 'Rangi ya Syden',
+  'Vale no app inteiro, só para você.': 'Inatumika kwenye programu nzima, kwa ajili yako tu.',
 } satisfies Record<string, string>;

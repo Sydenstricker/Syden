@@ -765,4 +765,6 @@ export default {
   'Conta excluída': 'Tài khoản đã xoá',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Người này đã xoá tài khoản. Tin nhắn gửi ở đây không đến được ai.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Tin nhắn tự động: ý tưởng của bạn đã đến, cảm ơn bạn! Mình sẽ đọc kỹ. Nếu có thắc mắc, mình hỏi ngay ở đây — và nếu nó vào Syden, bạn sẽ biết liền.',
+  'A cor do Syden': 'Màu của Syden',
+  'Vale no app inteiro, só para você.': 'Áp dụng cho cả ứng dụng, chỉ riêng bạn.',
 } satisfies Record<string, string>;

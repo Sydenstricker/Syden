@@ -799,4 +799,6 @@ export default {
   'Conta excluída': 'Verwijderd account',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Deze persoon heeft het account verwijderd. Berichten hiervandaan komen bij niemand aan.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Automatisch bericht: je idee is aangekomen, bedankt! Ik lees het rustig door. Heb ik een vraag, dan stel ik die hier — en komt het in Syden, dan weet je het meteen.',
+  'A cor do Syden': 'De kleur van Syden',
+  'Vale no app inteiro, só para você.': 'Geldt voor de hele app, alleen voor jou.',
 } satisfies Record<string, string>;

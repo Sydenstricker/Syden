@@ -6,10 +6,14 @@ import { App } from './App';
 import { iniciarIdioma } from './i18n';
 import { aplicarLarguras, lerLarguras } from './larguras';
 import { applyTheme, getTheme } from './theme';
+import { aplicarCorDeDestaque } from './corDeDestaque';
+import { getSettings } from './settings';
 
 // O tema e o idioma vêm antes de qualquer tela: assim ninguém vê o app piscar do escuro para o claro,
 // nem em português para depois virar inglês.
 applyTheme(getTheme());
+// A cor escolhida entra ANTES do primeiro desenho: aplicada depois, a tela piscaria no azul padrão.
+aplicarCorDeDestaque(getSettings().corDeDestaque);
 iniciarIdioma();
 // Antes de desenhar: se as larguras fossem aplicadas depois, a tela apareceria no tamanho padrão
 // e pularia para o escolhido na frente da pessoa.

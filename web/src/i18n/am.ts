@@ -795,4 +795,6 @@ export default {
   'Conta excluída': 'የተሰረዘ መለያ',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'ይህ ሰው መለያውን ሰርዟል። ከዚህ የሚላኩ መልእክቶች ወደ ማንም አይደርሱም።',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 ራስ-ሰር መልእክት፦ ሐሳብዎ ደርሷል፣ አመሰግናለሁ! በጥሞና አነበዋለሁ። ጥያቄ ካለኝ እዚሁ እጠይቃለሁ — ወደ Syden ከገባም ወዲያውኑ ያውቃሉ።',
+  'A cor do Syden': 'የSyden ቀለም',
+  'Vale no app inteiro, só para você.': 'በመተግበሪያው ሁሉ ይሰራል፣ ለእርስዎ ብቻ።',
 } satisfies Record<string, string>;

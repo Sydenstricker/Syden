@@ -794,4 +794,6 @@ export default {
   'Conta excluída': 'Silinmiş hesap',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Bu kişi hesabını sildi. Buradan gönderilen mesajlar kimseye ulaşmıyor.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Otomatik mesaj: fikrin ulaştı, teşekkürler! Sakin sakin okuyacağım. Bir sorum olursa buradan sorarım — ve Syden’e girerse hemen haberin olur.',
+  'A cor do Syden': 'Syden’in rengi',
+  'Vale no app inteiro, só para você.': 'Uygulamanın tamamında geçerli, sadece senin için.',
 } satisfies Record<string, string>;

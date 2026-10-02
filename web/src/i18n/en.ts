@@ -805,4 +805,6 @@ export default {
   'Conta excluída': 'Deleted account',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'This person deleted their account. Messages sent here reach no one.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Automatic note: your idea arrived, thank you! I’ll read it carefully. If I have a question, I’ll ask right here — and if it makes it into Syden, you’ll know right away.',
+  'A cor do Syden': 'Syden’s colour',
+  'Vale no app inteiro, só para você.': 'Applies to the whole app, just for you.',
 } satisfies Record<string, string>;

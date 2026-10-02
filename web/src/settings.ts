@@ -78,6 +78,14 @@ export interface Settings {
   efeitosVisuais: boolean;
   /** Notificação do Windows para mensagens novas quando o Syden não está em primeiro plano. */
   notifications: boolean;
+  /**
+   * A cor de destaque escolhida pela pessoa, em #rrggbb. null = o azul do Syden.
+   *
+   * Guardada COMO ESCOLHIDA, e não como vai para a tela: quem aplica escurece o quanto for preciso
+   * para o texto branco caber (ver corDeDestaque.ts). Guardando a já escurecida, a pessoa reabriria
+   * o seletor e veria uma cor que não foi a que ela escolheu.
+   */
+  corDeDestaque: string | null;
 }
 
 const DEFAULTS: Settings = {
@@ -101,6 +109,7 @@ const DEFAULTS: Settings = {
   soundboardVolume: 0.6,
   efeitosVisuais: true,
   notifications: true,
+  corDeDestaque: null,
 };
 
 const STORAGE_KEY = 'janja.settings';

@@ -783,4 +783,6 @@ export default {
   'Conta excluída': 'حساب حذف‌شده',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'این فرد حسابش را حذف کرده است. پیام‌های اینجا به کسی نمی‌رسد.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 پیام خودکار: ایده‌ات رسید، ممنون! با حوصله می‌خوانمش. اگر سؤالی داشتم، همین‌جا می‌پرسم — و اگر وارد Syden شود، بلافاصله خبردار می‌شوی.',
+  'A cor do Syden': 'رنگ Syden',
+  'Vale no app inteiro, só para você.': 'در کل برنامه اعمال می‌شود، فقط برای شما.',
 } satisfies Record<string, string>;

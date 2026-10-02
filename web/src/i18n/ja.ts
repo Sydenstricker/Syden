@@ -776,4 +776,6 @@ export default {
   'Conta excluída': '削除されたアカウント',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'この人はアカウントを削除しました。ここに送ったメッセージは誰にも届きません。',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 自動メッセージ：アイデア、届きました。ありがとうございます！じっくり読みます。疑問があればここで聞きますし、Syden に入ることになったらすぐにお知らせします。',
+  'A cor do Syden': 'Syden の色',
+  'Vale no app inteiro, só para você.': 'アプリ全体に効きます。あなただけに。',
 } satisfies Record<string, string>;

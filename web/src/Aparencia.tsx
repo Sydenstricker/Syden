@@ -6,7 +6,9 @@ import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA } from './loja';
+import { aplicarCorDeDestaque, COR_PADRAO, corLegivel } from './corDeDestaque';
 import { classeDoFundo, corDoNome } from './profileStyles';
+import { updateSettings, useSettings } from './settings';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
 
 // APARÊNCIA: um lugar só para tudo o que muda a sua cara no Syden.
@@ -99,6 +101,47 @@ const ABAS: { tipo: Aba; nome: string }[] = [
   { tipo: 'pacotes', nome: chave('Pacotes') },
 ];
 
+/**
+ * A COR DO SYDEN INTEIRO, escolhida por quem usa.
+ *
+ * Fica no alto da Aparência, antes dos cosméticos, porque é a única escolha daqui que muda o app
+ * TODO e não só o perfil — e porque o efeito é imediato: não há botão de salvar, a tela já está
+ * mudando enquanto a pessoa arrasta.
+ *
+ * O seletor guarda a cor COMO ESCOLHIDA; quem a põe na tela escurece o quanto for preciso para o
+ * texto branco continuar legível (ver corDeDestaque.ts). Por isso a bolinha de prévia mostra a cor
+ * que vai MESMO aparecer, e não a do seletor: entre prometer e cumprir, a tela mostra o que cumpre.
+ */
+function CorDoSyden() {
+  const t = useT();
+  const settings = useSettings();
+  const escolhida = settings.corDeDestaque ?? COR_PADRAO;
+  const naTela = corLegivel(escolhida);
+
+  function escolher(cor: string | null) {
+    updateSettings({ corDeDestaque: cor });
+    aplicarCorDeDestaque(cor);
+  }
+
+  return (
+    <div className="cor-do-syden">
+      <label className="cor-do-syden-escolha">
+        <input type="color" value={escolhida} onChange={(e) => escolher(e.target.value)} aria-label={t('A cor do Syden')} />
+        <span>
+          <strong>{t('A cor do Syden')}</strong>
+          <small>{t('Vale no app inteiro, só para você.')}</small>
+        </span>
+      </label>
+      <span className="cor-do-syden-previa" style={{ background: naTela }} aria-hidden="true" />
+      {settings.corDeDestaque && (
+        <button type="button" className="link-button" onClick={() => escolher(null)}>
+          {t('Voltar ao padrão')}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
   const t = useT();
   const [dados, setDados] = useState<LojaDados | null>(null);
@@ -157,6 +200,8 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
         <Sparkles size={20} aria-hidden="true" /> {t('Aparência')}
       </h2>
       <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
+
+      <CorDoSyden />
 
       {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de
           referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é

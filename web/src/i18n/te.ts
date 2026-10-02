@@ -777,4 +777,6 @@ export default {
   'Conta excluída': 'తొలగించిన ఖాతా',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'ఈ వ్యక్తి తన ఖాతాను తొలగించారు. ఇక్కడి సందేశాలు ఎవరికీ చేరవు.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 స్వయంచాలక సందేశం: మీ ఆలోచన చేరింది, ధన్యవాదాలు! తీరిగ్గా చదువుతాను. సందేహం ఉంటే ఇక్కడే అడుగుతాను — అది Syden లోకి వస్తే వెంటనే తెలుస్తుంది.',
+  'A cor do Syden': 'Syden రంగు',
+  'Vale no app inteiro, só para você.': 'యాప్ మొత్తానికి వర్తిస్తుంది, మీకు మాత్రమే.',
 } satisfies Record<string, string>;

@@ -821,4 +821,6 @@ export default {
   'Conta excluída': 'Удалённый аккаунт',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Этот человек удалил аккаунт. Сообщения отсюда никому не приходят.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Автоматическое сообщение: твоя идея дошла, спасибо! Прочитаю внимательно. Если возникнет вопрос, спрошу прямо здесь — а если она попадёт в Syden, ты узнаешь сразу.',
+  'A cor do Syden': 'Цвет Syden',
+  'Vale no app inteiro, só para você.': 'Действует во всём приложении, только для тебя.',
 } satisfies Record<string, string>;

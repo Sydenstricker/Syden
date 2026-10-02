@@ -797,4 +797,6 @@ export default {
   'Conta excluída': 'Asusun da aka share',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Wannan mutumin ya share asusunsa. Saƙonnin da ake aikawa a nan ba sa isa ga kowa.',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Saƙo na atomatik: ra’ayinku ya iso, na gode! Zan karanta shi a hankali. Idan ina da tambaya, zan tambaya nan nan — kuma idan ya shiga Syden, za ku sani nan take.',
+  'A cor do Syden': 'Launin Syden',
+  'Vale no app inteiro, só para você.': 'Yana aiki a manhajar gaba ɗaya, gare ku kaɗai.',
 } satisfies Record<string, string>;

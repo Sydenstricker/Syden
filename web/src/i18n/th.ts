@@ -808,4 +808,6 @@ export default {
   'Conta excluída': 'บัญชีที่ถูกลบ',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'คนนี้ลบบัญชีไปแล้ว ข้อความที่ส่งตรงนี้จะไม่ถึงใคร',
   '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 ข้อความอัตโนมัติ: ไอเดียของคุณมาถึงแล้ว ขอบคุณนะ! เดี๋ยวจะค่อย ๆ อ่าน ถ้ามีข้อสงสัยจะถามตรงนี้เลย — และถ้ามันได้เข้า Syden คุณจะรู้ทันที',
+  'A cor do Syden': 'สีของ Syden',
+  'Vale no app inteiro, só para você.': 'มีผลทั้งแอป เฉพาะคุณเท่านั้น',
 } satisfies Record<string, string>;
