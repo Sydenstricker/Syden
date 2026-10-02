@@ -607,12 +607,6 @@ export default {
   'Oceania': 'Océanie',
   'cerca de {n} de falantes': 'environ {n} de locuteurs',
   // A janelinha por cima do jogo
-  'Em cima, à direita': 'En haut à droite',
-  'Em cima, à esquerda': 'En haut à gauche',
-  'Embaixo, à direita': 'En bas à droite',
-  'Embaixo, à esquerda': 'En bas à gauche',
-  'Mostrar quem está na chamada por cima do jogo': 'Afficher qui est en appel par-dessus le jeu',
-  'Quando você está jogando': 'Pendant que tu joues',
   '{quem} em {canal}': '{quem} dans {canal}',
   'Enquete: {pergunta}': 'Sondage : {pergunta}',
   'Mandou um arquivo': 'A envoyé un fichier',
@@ -864,5 +858,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Des capitales petites, bien espacées.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Une copie de ce que tu as écrit reste 90 jours hors de l’appli, au cas où une autorité la demanderait. Personne ne la lit depuis Syden.',
   'Guarda-roupa': 'Garde-robe',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Une petite fenêtre dans un coin avec qui est avec toi, et qui parle. Elle n’apparaît que quand tu es dans un jeu, et c’est la liste de Windows lui-même qui reconnaît le jeu. Le clic la traverse : le tir part dans le jeu.',
 } satisfies Record<string, string>;

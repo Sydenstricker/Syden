@@ -1929,43 +1929,6 @@ function VoiceSection({ voice }: { voice: Voice }) {
         onChange={(value) => updateSettings({ abrirTransmissaoSozinha: value })}
       />
 
-      {/* SÓ NO APP. No navegador não existe pôr nada por cima de outro programa, e um ajuste que
-          promete o que não pode cumprir é pior do que ajuste nenhum. */}
-      {desktopBridge?.sobreposicao && (
-        <>
-          <h3>{t('Quando você está jogando')}</h3>
-          <Toggle
-            label={t('Mostrar quem está na chamada por cima do jogo')}
-            description={t(
-              'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.',
-            )}
-            checked={settings.sobreposicaoNoJogo}
-            onChange={(value) => updateSettings({ sobreposicaoNoJogo: value })}
-          />
-          {settings.sobreposicaoNoJogo && (
-            <div className="canto-da-sobreposicao">
-              {(
-                [
-                  ['superior-esquerdo', chave('Em cima, à esquerda')],
-                  ['superior-direito', chave('Em cima, à direita')],
-                  ['inferior-esquerdo', chave('Embaixo, à esquerda')],
-                  ['inferior-direito', chave('Embaixo, à direita')],
-                ] as const
-              ).map(([id, rotulo]) => (
-                <button
-                  key={id}
-                  className={`btn-sutil${settings.cantoDaSobreposicao === id ? ' escolhido' : ''}`}
-                  aria-pressed={settings.cantoDaSobreposicao === id}
-                  onClick={() => updateSettings({ cantoDaSobreposicao: id })}
-                >
-                  {t(rotulo)}
-                </button>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
       <h3>{t('Qualidade do compartilhamento de tela')}</h3>
       <p className="settings-hint">{t('Vale a partir do próximo compartilhamento.')}</p>
       <div className="quality-options" role="radiogroup">

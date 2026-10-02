@@ -569,12 +569,6 @@ export default {
   Europa: '유럽',
   Oceania: '오세아니아',
   'cerca de {n} de falantes': '약 {n}명이 사용',
-  'Em cima, à direita': '오른쪽 위',
-  'Em cima, à esquerda': '왼쪽 위',
-  'Embaixo, à direita': '오른쪽 아래',
-  'Embaixo, à esquerda': '왼쪽 아래',
-  'Mostrar quem está na chamada por cima do jogo': '게임 위에 통화 중인 사람 보여주기',
-  'Quando você está jogando': '게임할 때',
   '{quem} em {canal}': '{canal}에서 {quem}',
   'Enquete: {pergunta}': '투표: {pergunta}',
   'Mandou um arquivo': '파일을 보냈어요',
@@ -826,5 +820,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '작은 대문자에 자간을 넉넉히.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '작성한 내용의 사본이 앱 밖에 90일 보관됩니다. 당국의 요청에 대비한 것이며, Syden에서는 아무도 볼 수 없습니다.',
   'Guarda-roupa': '옷장',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': '화면 구석의 작은 창에 누가 같이 있고 누가 말하는지 보여줘요. 게임 중일 때만 나오고, 게임을 알아보는 것은 윈도우 자체의 목록입니다. 클릭은 그대로 통과해서 총알은 게임에 맞습니다.',
 } satisfies Record<string, string>;

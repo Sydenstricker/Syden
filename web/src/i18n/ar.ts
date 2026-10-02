@@ -602,12 +602,6 @@ export default {
   'Oceania': 'أوقيانوسيا',
   'cerca de {n} de falantes': 'نحو {n} متحدث',
   // A janelinha por cima do jogo
-  'Em cima, à direita': 'أعلى اليمين',
-  'Em cima, à esquerda': 'أعلى اليسار',
-  'Embaixo, à direita': 'أسفل اليمين',
-  'Embaixo, à esquerda': 'أسفل اليسار',
-  'Mostrar quem está na chamada por cima do jogo': 'إظهار من في المكالمة فوق اللعبة',
-  'Quando você está jogando': 'أثناء اللعب',
   '{quem} em {canal}': '{quem} في {canal}',
   'Enquete: {pergunta}': 'استطلاع: {pergunta}',
   'Mandou um arquivo': 'أرسل ملفًا',
@@ -859,5 +853,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'حروف كبيرة صغيرة الحجم، متباعدة.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'تبقى نسخة مما كتبته 90 يومًا خارج التطبيق، تحسّبًا لطلب من جهة رسمية. لا أحد يقرؤها عبر Syden.',
   'Guarda-roupa': 'خزانة الملابس',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'نافذة صغيرة في الزاوية تبيّن من معك ومن يتكلّم. لا تظهر إلّا وأنت داخل لعبة، والذي يتعرّف على اللعبة هو قائمة ويندوز نفسها. النقر يمرّ من خلالها: الطلقة تذهب إلى اللعبة.',
 } satisfies Record<string, string>;

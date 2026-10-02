@@ -579,12 +579,6 @@ export default {
   Oceania: 'Oseania',
   'cerca de {n} de falantes': 'sekitar {n} penutur',
   // A janelinha por cima do jogo
-  'Em cima, à direita': 'Kanan atas',
-  'Em cima, à esquerda': 'Kiri atas',
-  'Embaixo, à direita': 'Kanan bawah',
-  'Embaixo, à esquerda': 'Kiri bawah',
-  'Mostrar quem está na chamada por cima do jogo': 'Tampilkan siapa yang di panggilan di atas game',
-  'Quando você está jogando': 'Saat kamu main',
   '{quem} em {canal}': '{quem} di {canal}',
   'Enquete: {pergunta}': 'Jajak pendapat: {pergunta}',
   'Mandou um arquivo': 'Mengirim berkas',
@@ -836,5 +830,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Huruf kapital kecil, berjarak lega.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan dari apa yang kamu tulis disimpan 90 hari di luar aplikasi, kalau-kalau pihak berwenang memintanya. Tidak ada yang membacanya lewat Syden.',
   'Guarda-roupa': 'Lemari pakaian',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Jendela kecil di pojok layar berisi siapa yang bersamamu dan siapa yang bicara. Hanya muncul selama kamu di dalam game, dan yang mengenali game-nya adalah daftar milik Windows sendiri. Klik menembusnya: tembakannya masuk ke game.',
 } satisfies Record<string, string>;

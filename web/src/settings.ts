@@ -50,17 +50,6 @@ export interface Settings {
    */
   screenCodec: 'auto' | 'vp8' | 'h264';
   /**
-   * Mostrar quem está na chamada por cima do jogo (só no app de desktop).
-   *
-   * LIGADO POR PADRÃO, e isso é uma decisão. Uma janelinha que aparece sozinha por cima de tudo é
-   * exatamente o tipo de coisa que o CLAUDE.md manda não fazer — só que ela não interrompe nada: não
-   * rouba o foco, não recebe clique, e só existe enquanto a pessoa está numa chamada com outra. Quem
-   * não gosta desliga aqui, e a escolha viaja com o resto das preferências.
-   */
-  sobreposicaoNoJogo: boolean;
-  /** Em que canto da tela ela fica. */
-  cantoDaSobreposicao: 'superior-esquerdo' | 'superior-direito' | 'inferior-esquerdo' | 'inferior-direito';
-  /**
    * A pessoa escolheu o codec À MÃO? Enquanto não escolheu, um 'vp8' guardado é só o padrão antigo.
    *
    * ISTO PRECISA VIAJAR JUNTO COM AS PREFERÊNCIAS, e é por isso que mora aqui dentro e não numa marca
@@ -95,8 +84,6 @@ const DEFAULTS: Settings = {
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
-  sobreposicaoNoJogo: true,
-  cantoDaSobreposicao: 'superior-esquerdo',
   qualidadeQueRecebo: 'auto',
   theme: 'dark',
   startMuted: false,

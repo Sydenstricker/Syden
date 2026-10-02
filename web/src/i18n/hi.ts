@@ -581,12 +581,6 @@ export default {
   Oceania: 'ओशिनिया',
   'cerca de {n} de falantes': 'करीब {n} बोलने वाले',
   // A janelinha por cima do jogo
-  'Em cima, à direita': 'ऊपर दाईं ओर',
-  'Em cima, à esquerda': 'ऊपर बाईं ओर',
-  'Embaixo, à direita': 'नीचे दाईं ओर',
-  'Embaixo, à esquerda': 'नीचे बाईं ओर',
-  'Mostrar quem está na chamada por cima do jogo': 'खेल के ऊपर दिखाओ कौन कॉल में है',
-  'Quando você está jogando': 'जब तुम खेल रहे हो',
   '{quem} em {canal}': '{canal} में {quem}',
   'Enquete: {pergunta}': 'पोल: {pergunta}',
   'Mandou um arquivo': 'एक फ़ाइल भेजी',
@@ -838,5 +832,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'छोटे बड़े अक्षर, खुली दूरी के साथ।',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'तुमने जो लिखा उसकी एक प्रति ऐप के बाहर 90 दिन रहती है, अगर कोई प्राधिकरण माँगे। इसे Syden से कोई नहीं पढ़ता।',
   'Guarda-roupa': 'अलमारी',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'पर्दे के कोने में एक छोटी खिड़की: कौन तुम्हारे साथ है और कौन बोल रहा है। यह तभी दिखती है जब तुम किसी खेल में हो, और खेल को पहचानती है खुद विंडोज़ की सूची। क्लिक उसके आर-पार चला जाता है: निशाना खेल पर ही लगता है।',
 } satisfies Record<string, string>;

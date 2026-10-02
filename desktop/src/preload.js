@@ -72,17 +72,6 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
       return () => ipcRenderer.off('screen-audio:chunk', handler);
     },
   },
-  /**
-   * QUEM ESTÁ NA CHAMADA, por cima do jogo (ver sobreposicao.js).
-   *
-   * O site manda a lista pronta — nome, se está falando, se está mudo — e o app desenha. A decisão de
-   * QUEM entra na lista é do site, que é quem sabe em qual sala a pessoa está; o app não tem opinião
-   * sobre isso e não guarda nada.
-   *
-   * Lista vazia esconde a janelinha, e é assim que sair da chamada a faz sumir: não existe um
-   * "esconder" separado que alguém possa esquecer de chamar.
-   */
-  sobreposicao: (lista, canto) => ipcRenderer.send('sobreposicao:mostrar', { lista, canto }),
   /** Recebe 'mute' ou 'deafen' quando a tecla de atalho global é pressionada; devolve a função que desliga. */
   onShortcut: (callback) => {
     const handler = (_event, action) => callback(action);

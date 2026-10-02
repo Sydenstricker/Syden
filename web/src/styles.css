@@ -10080,21 +10080,6 @@ body.arrastando-barra {
   background: var(--accent);
 }
 
-/* Os quatro cantos onde a janelinha do jogo pode ficar (ver SettingsModal). Grade de dois por dois,
-   que é o próprio desenho da tela — escolher "em cima à esquerda" é clicar em cima e à esquerda. */
-.canto-da-sobreposicao {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  max-width: 420px;
-  margin-top: 10px;
-}
-
-.canto-da-sobreposicao .escolhido {
-  border-color: var(--accent);
-  color: var(--text-strong);
-}
-
 /* ---------- Moldura do avatar, nas Configurações ---------- */
 /* A escolha fica junto da cor do nome e do fundo do perfil, que é onde as pessoas procuram. Antes a
    moldura só existia na Loja, e esta tela mostrava duas das três peças do perfil sem dizer que

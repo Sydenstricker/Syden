@@ -568,12 +568,6 @@ export default {
   'Oceania': '大洋洲',
   'cerca de {n} de falantes': '约 {n} 使用者',
   // A janelinha por cima do jogo
-  'Em cima, à direita': '右上角',
-  'Em cima, à esquerda': '左上角',
-  'Embaixo, à direita': '右下角',
-  'Embaixo, à esquerda': '左下角',
-  'Mostrar quem está na chamada por cima do jogo': '在游戏上方显示谁在通话',
-  'Quando você está jogando': '你在玩游戏时',
   '{quem} em {canal}': '{quem} 在 {canal}',
   'Enquete: {pergunta}': '投票：{pergunta}',
   'Mandou um arquivo': '发了一个文件',
@@ -825,5 +819,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '小号大写字母，字距宽松。',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '你写过的内容会在应用之外保留 90 天，以备官方调取。没有人能通过 Syden 看到它。',
   'Guarda-roupa': '衣橱',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': '屏幕角落的一个小窗，显示谁和你在一起、谁在说话。只有当你在玩游戏时才会出现，识别游戏的是 Windows 自己的清单。点击会穿过它：这一枪打在游戏里。',
 } satisfies Record<string, string>;

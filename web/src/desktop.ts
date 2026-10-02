@@ -24,7 +24,6 @@ interface DesktopBridge {
    * Só existe no app: no navegador não há como pôr nada por cima de outro programa, e é por isso que
    * o ajuste na tela some quando o Syden roda numa aba.
    */
-  sobreposicao?(lista: { nome: string; falando: boolean; mudo: boolean }[], canto: string): void;
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;

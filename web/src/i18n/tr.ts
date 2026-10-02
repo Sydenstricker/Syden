@@ -576,12 +576,6 @@ export default {
   Oceania: 'Okyanusya',
   'cerca de {n} de falantes': 'yaklaşık {n} konuşan',
   // A janelinha por cima do jogo
-  'Em cima, à direita': 'Sağ üst',
-  'Em cima, à esquerda': 'Sol üst',
-  'Embaixo, à direita': 'Sağ alt',
-  'Embaixo, à esquerda': 'Sol alt',
-  'Mostrar quem está na chamada por cima do jogo': 'Oyunun üstünde kimin görüşmede olduğunu göster',
-  'Quando você está jogando': 'Sen oynarken',
   '{quem} em {canal}': '{canal} kanalında {quem}',
   'Enquete: {pergunta}': 'Anket: {pergunta}',
   'Mandou um arquivo': 'Bir dosya gönderdi',
@@ -833,5 +827,4 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Küçük büyük harfler, ferah aralıklı.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Yazdıklarının bir kopyası, bir makam isterse diye uygulama dışında 90 gün saklanır. Kimse onu Syden üzerinden okumaz.',
   'Guarda-roupa': 'Gardırop',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Ekranın köşesinde küçük bir pencere: kim seninle ve kim konuşuyor. Yalnızca bir oyundayken görünür, oyunu tanıyan da Windows’un kendi listesi. Tıklama içinden geçer, atış oyuna gider.',
 } satisfies Record<string, string>;
