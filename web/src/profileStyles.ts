@@ -61,6 +61,34 @@ export function corDoNome(escolha: string | null | undefined): string | undefine
   return escolha && escolha !== 'padrao' && CORES.has(escolha) ? escolha : undefined;
 }
 
+/**
+ * O EFEITO DO NOME — o 'mesmo nome, novo visual'.
+ *
+ * Mesma regra da cor: o servidor guarda só o código, e quem desenha é o CSS, por `data-efeito`. Assim
+ * um efeito novo é publicar o site, e cada um pode ter versão diferente no tema claro e no escuro.
+ *
+ * NENHUM DELES BAIXA FONTE, de propósito. 'serifa' e 'mono' usam pilhas que todo sistema já tem, e
+ * 'versalete' mexe no que já está desenhado. Uma fonte decorativa custaria um download por pessoa,
+ * e o nome apareceria errado até ela chegar — numa lista de membros, isso é a tela inteira pulando.
+ */
+export const EFEITOS_DE_NOME: { id: string; label: string }[] = [
+  { id: 'sem-efeito', label: chave('Sem efeito') },
+  { id: 'brilho', label: chave('Brilho') },
+  { id: 'pulso', label: chave('Pulso') },
+  { id: 'arco-iris', label: chave('Arco-íris') },
+  { id: 'sombra', label: chave('Sombra') },
+  { id: 'serifa', label: chave('Com serifa') },
+  { id: 'mono', label: chave('Máquina de escrever') },
+  { id: 'versalete', label: chave('Versalete') },
+];
+
+const IDS_EFEITO = new Set(EFEITOS_DE_NOME.map((e) => e.id));
+
+/** O efeito a pôr no `data-efeito` do nome; undefined quando não há nenhum. */
+export function efeitoDoNome(escolha: string | null | undefined): string | undefined {
+  return escolha && escolha !== 'sem-efeito' && IDS_EFEITO.has(escolha) ? escolha : undefined;
+}
+
 /** A classe do fundo do cartão de perfil. */
 export function classeDoFundo(escolha: string | null | undefined): string {
   return escolha && escolha !== 'nenhum' && IDS_FUNDO.has(escolha) ? `fundo-${escolha}` : 'fundo-nenhum';

@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { Avatar } from './Avatar';
 import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
-import { classeDoFundo, corDoNome } from './profileStyles';
+import { classeDoFundo, corDoNome, efeitoDoNome } from './profileStyles';
 import type { CommunityMember, PresenceStatus } from './types';
 import { chave, useT } from './i18n';
 
@@ -77,7 +77,7 @@ export function ProfileCard({
           <Avatar name={membro.username} userId={membro.id} size={72} />
         </div>
         <div className="perfil-corpo">
-          <h3 className="perfil-nome" data-cor={corDoNome(membro.nameColor)}>
+          <h3 className="perfil-nome" data-cor={corDoNome(membro.nameColor)} data-efeito={efeitoDoNome(membro.nameEffect)}>
             {membro.username}
           </h3>
           <p className="perfil-linha">{t(CARGO[membro.role] ?? chave('Membro'))}</p>

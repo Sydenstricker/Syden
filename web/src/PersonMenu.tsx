@@ -22,7 +22,7 @@ import { DialogoDeDenuncia } from './Denuncia';
 import { Vitrine } from './Vitrine';
 import { pedirMencao } from './mencao';
 import { guardarNota, LIMITE_DA_NOTA, useNota } from './notas';
-import { corDoNome } from './profileStyles';
+import { corDoNome, efeitoDoNome } from './profileStyles';
 import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume } from './voiceVolumes';
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
@@ -220,7 +220,7 @@ export function PersonMenu({
       <div className="person-menu-topo">
         <Avatar name={target.username} userId={target.userId} size={36} />
         <div className="person-menu-quem">
-          <strong data-cor={corDoNome(membro?.nameColor ?? null)}>{target.username}</strong>
+          <strong data-cor={corDoNome(membro?.nameColor ?? null)} data-efeito={efeitoDoNome(membro?.nameEffect)}>{target.username}</strong>
           <small>{t(CARGO[targetRole])}</small>
         </div>
       </div>

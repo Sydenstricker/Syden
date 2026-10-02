@@ -7,7 +7,7 @@ import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA } from './loja';
 import { aplicarCorDeDestaque, COR_PADRAO, corLegivel } from './corDeDestaque';
-import { classeDoFundo, corDoNome } from './profileStyles';
+import { classeDoFundo, corDoNome, efeitoDoNome } from './profileStyles';
 import { updateSettings, useSettings } from './settings';
 import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
 
@@ -97,6 +97,7 @@ const ABAS: { tipo: Aba; nome: string }[] = [
   { tipo: 'cor', nome: chave('Cor do nome') },
   { tipo: 'fundo', nome: chave('Fundo do perfil') },
   { tipo: 'moldura', nome: chave('Moldura do avatar') },
+  { tipo: 'efeito', nome: chave('Efeito do nome') },
   { tipo: 'insignia', nome: chave('Insígnias') },
   { tipo: 'pacotes', nome: chave('Pacotes') },
 ];
@@ -158,8 +159,10 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
     if (!dados) return;
     setErro(null);
     // Insígnia não se veste por aqui: ela vai para a vitrine, onde a pessoa escolhe quais e em que ordem.
-    const campo = { cor: 'nameColor', fundo: 'banner', moldura: 'moldura' }[item.tipo as 'cor' | 'fundo' | 'moldura'];
-    const jaEstava = dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura'] === item.codigo;
+    const campo = { cor: 'nameColor', fundo: 'banner', moldura: 'moldura', efeito: 'nameEffect' }[
+      item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'
+    ];
+    const jaEstava = dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'] === item.codigo;
     try {
       const atualizado = await api<User>('/api/me/profile', {
         method: 'PUT',
@@ -167,6 +170,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           nameColor: dados.vestindo.cor,
           banner: dados.vestindo.fundo,
           moldura: dados.vestindo.moldura,
+          nameEffect: dados.vestindo.efeito,
           // Clicar no que já está em uso tira: é o jeito de voltar ao padrão sem procurar o "sem nada".
           [campo]: jaEstava ? null : item.codigo,
         },
@@ -178,6 +182,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           cor: atualizado.nameColor,
           fundo: atualizado.banner,
           moldura: atualizado.moldura,
+          efeito: atualizado.nameEffect,
         },
       });
     } catch (e) {
@@ -192,7 +197,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
   const vestidoAgora = (item: ItemDaLoja) =>
     item.tipo === 'insignia'
       ? dados.vestindo.insignias.includes(item.codigo)
-      : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura'] === item.codigo;
+      : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'] === item.codigo;
 
   return (
     <>
@@ -208,7 +213,9 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           exatamente assim que os outros vão te ver. */}
       <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
         <Avatar name={user.username} userId={user.id} size={56} />
-        <strong data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}>{user.username}</strong>
+        <strong data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')} data-efeito={efeitoDoNome(dados.vestindo.efeito)}>
+          {user.username}
+        </strong>
       </div>
       <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
 

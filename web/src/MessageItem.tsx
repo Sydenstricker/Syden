@@ -7,7 +7,7 @@ import { Avatar } from './Avatar';
 import { corrigirDuracao } from './clips';
 import { useDirectory } from './directory';
 import { RECIBO_DA_IDEIA } from './recibo';
-import { corDoNome } from './profileStyles';
+import { corDoNome, efeitoDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
@@ -92,7 +92,7 @@ function AutorNome({ id, nome }: { id: number; nome: string }) {
   const membro = members.get(id);
   return (
     <>
-      <span className="message-author" data-cor={corDoNome(membro?.nameColor)}>
+      <span className="message-author" data-cor={corDoNome(membro?.nameColor)} data-efeito={efeitoDoNome(membro?.nameEffect)}>
         {nome}
       </span>
       {/* O selo vem do DIRETÓRIO, como a moldura do avatar: assim ele aparece em toda parte onde já

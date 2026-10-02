@@ -18,7 +18,7 @@
  * só o que ele é o único capaz de garantir — quem tem direito a quê.
  */
 
-export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia';
+export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito';
 
 /**
  * Como se põe a mão num item. São só dois jeitos, e nenhum deles é pagando.
@@ -52,6 +52,19 @@ export const CATALOGO: ItemDaLoja[] = [
   ...livres('cor', ['cobre', 'jade', 'ametista', 'prisma']),
   ...livres('fundo', ['nebulosa', 'vitral', 'cosmos']),
   ...livres('moldura', ['ouro-moldura', 'esmeralda-moldura', 'rubi', 'prisma-moldura']),
+
+  // O EFEITO DO NOME, que é o 'mesmo nome, novo visual'. Como todo o resto: livre.
+  //
+  // O servidor não sabe o que nenhum destes códigos faz, e é assim de propósito — o desenho mora em
+  // web/src/loja.ts e no CSS, então acrescentar um efeito novo é publicar o site, sem migrar banco.
+  //
+  // E NENHUM DELES BAIXA FONTE. Os tipográficos usam pilhas que todo sistema já tem (serifa,
+  // monoespaçada) ou mexem no que já está desenhado (caixa alta, espaçamento). Uma fonte decorativa
+  // custaria um download por pessoa, e um nome bonito não vale meio segundo de tela vazia.
+  // O CÓDIGO É ÚNICO NO CATÁLOGO INTEIRO, e não por tipo — `PORCODIGO` é um mapa só. Por isso o
+  // 'sem-efeito' não é 'nenhum': esse já é o fundo liso, e repetir faria o mapa resolver para o tipo
+  // errado. É a mesma razão de 'brasa-moldura' existir ao lado de 'brasa'.
+  ...livres('efeito', ['sem-efeito', 'brilho', 'pulso', 'arco-iris', 'sombra', 'serifa', 'mono', 'versalete']),
 
   { codigo: 'primeiros-25', tipo: 'insignia', comoSeGanha: 'conquista' },
   { codigo: 'ideia-acolhida', tipo: 'insignia', comoSeGanha: 'conquista' },

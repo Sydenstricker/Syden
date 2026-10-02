@@ -11,6 +11,8 @@ export interface User {
   banner: string | null;
   /** Nome da moldura do avatar escolhida na loja, ou null para nenhuma. */
   moldura: string | null;
+  /** Nome do efeito escolhido para o nome ('brilho', 'serifa'…), ou null para nenhum. */
+  nameEffect: string | null;
   /** Os códigos das insígnias que ela escolheu exibir no perfil, na ordem (ver insignias.ts). */
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden: é a medalha de contribuição do perfil. */
@@ -33,7 +35,18 @@ export interface PresenceEntry {
 
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'nameColor' | 'banner' | 'moldura' | 'vitrine' | 'acceptedIdeas' | 'selo'
+  | 'id'
+  | 'username'
+  | 'avatarVersion'
+  | 'isAdmin'
+  | 'isOwner'
+  | 'nameColor'
+  | 'banner'
+  | 'moldura'
+  | 'nameEffect'
+  | 'vitrine'
+  | 'acceptedIdeas'
+  | 'selo'
 >;
 
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */
@@ -329,7 +342,7 @@ export interface ServidorDeJogo {
 }
 
 /** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */
-export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia';
+export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito';
 
 /** Como se põe a mão num item. Nenhum dos dois jeitos é pagando — ver server/src/loja.ts. */
 export type ComoSeGanha = 'livre' | 'conquista';
@@ -344,5 +357,5 @@ export interface ItemDaLoja {
 
 export interface Loja {
   itens: ItemDaLoja[];
-  vestindo: { cor: string | null; fundo: string | null; moldura: string | null; insignias: string[] };
+  vestindo: { cor: string | null; fundo: string | null; moldura: string | null; efeito: string | null; insignias: string[] };
 }

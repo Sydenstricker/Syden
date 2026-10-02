@@ -400,13 +400,14 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     // Enfeites do perfil. O servidor não conhece as cores: guarda o nome da opção e confia no app para
     // desenhar — assim dá para acrescentar cor nova sem tocar no banco. Só limita o tamanho do texto.
-    authed.put<{ Body: { nameColor?: string | null; banner?: string | null; moldura?: string | null } }>(
+    authed.put<{ Body: { nameColor?: string | null; banner?: string | null; moldura?: string | null; nameEffect?: string | null } }>(
       '/api/me/profile',
       async (request, reply) => {
         const limpa = (valor: unknown) => (typeof valor === 'string' && valor.length > 0 && valor.length <= 24 ? valor : null);
         const nameColor = limpa(request.body?.nameColor);
         const banner = limpa(request.body?.banner);
         const moldura = limpa(request.body?.moldura);
+        const nameEffect = limpa(request.body?.nameEffect);
 
         // Antes a rota aceitava qualquer texto curto e confiava no app para só mandar o que existe.
         // Agora que há item que se GANHA, confiar no app deixou de servir: um pedido feito à mão
@@ -415,10 +416,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         const errado =
           (!podeVestir(nameColor, 'cor', tem) && 'cor') ||
           (!podeVestir(banner, 'fundo', tem) && 'fundo') ||
-          (!podeVestir(moldura, 'moldura', tem) && 'moldura');
+          (!podeVestir(moldura, 'moldura', tem) && 'moldura') ||
+          (!podeVestir(nameEffect, 'efeito', tem) && 'efeito');
         if (errado) return reply.code(403).send({ error: 'Esse item de ' + errado + ' não é seu.' });
 
-        const user = db.setProfile(request.user.id, { nameColor, banner, moldura });
+        const user = db.setProfile(request.user.id, { nameColor, banner, moldura, nameEffect });
         io.emit('user:updated', user);
         return user;
       },
@@ -524,6 +526,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           cor: request.user.nameColor,
           fundo: request.user.banner,
           moldura: request.user.moldura,
+          efeito: request.user.nameEffect,
           insignias: request.user.vitrine,
         },
       };

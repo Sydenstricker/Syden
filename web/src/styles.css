@@ -8194,6 +8194,70 @@ textarea {
 /* O aviso de que a conta do outro lado foi excluída. Vai no topo da conversa, antes das mensagens:
    é informação que muda o que a pessoa faz a seguir, e serve de nada embaixo de tudo. */
 /* A escolha da cor do Syden, no alto da Aparência. */
+/* ---------------------------------------------------------------------------------------------------
+   O EFEITO DO NOME. Tudo por `data-efeito`, como as cores — o servidor guarda o código e o desenho
+   fica aqui, então um efeito novo é publicar o site.
+
+   NENHUM DELES TROCA O TAMANHO DA LETRA, e isso não é detalhe: o nome aparece na lista de membros,
+   em cada mensagem e na barra lateral. Um efeito que engordasse a fonte empurraria linha em três
+   telas de uma vez, e o vizinho de lista pagaria pela escolha de quem se enfeitou.
+   --------------------------------------------------------------------------------------------------- */
+[data-efeito='brilho'] {
+  text-shadow: 0 0 6px currentColor;
+}
+
+[data-efeito='pulso'] {
+  animation: nome-pulso 2s ease-in-out infinite;
+}
+
+@keyframes nome-pulso {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+[data-efeito='arco-iris'] {
+  background: linear-gradient(90deg, #e2574c, #e0822f, #c79a1e, #77a93a, #3aa6a0, #5865f2, #a05ad6, #e2574c);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: nome-arco-iris 6s linear infinite;
+}
+
+@keyframes nome-arco-iris {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+[data-efeito='sombra'] {
+  text-shadow: 1px 1px 0 var(--bg-darkest), 2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Os tipográficos: pilhas que todo sistema já tem, nenhum arquivo baixado. */
+[data-efeito='serifa'] {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+[data-efeito='mono'] {
+  font-family: 'Courier New', Consolas, monospace;
+}
+
+[data-efeito='versalete'] {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+}
+
+/* Quem pediu menos movimento ao sistema recebe o desenho parado. O efeito continua: o que some é a
+   animação, que é o que incomoda quem tem enxaqueca ou vertigem. */
+@media (prefers-reduced-motion: reduce) {
+  [data-efeito='pulso'],
+  [data-efeito='arco-iris'] {
+    animation: none;
+  }
+}
+
 .cor-do-syden {
   display: flex;
   align-items: center;

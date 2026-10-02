@@ -62,10 +62,26 @@ export const FUNDOS_LOJA: Record<string, ItemVisual> = {
 };
 
 /** Onde procurar a arte de cada tipo. As insígnias têm catálogo próprio, com moldura e frase. */
+/**
+ * Os efeitos do nome. São CSS puro (ver styles.css), e nenhum deles baixa fonte: os tipográficos
+ * usam pilhas que todo sistema já tem.
+ */
+const EFEITOS: Record<string, ItemVisual> = {
+  'sem-efeito': { nome: chave('Sem efeito'), descricao: chave('O nome como sempre foi.') },
+  brilho: { nome: chave('Brilho'), descricao: chave('Um halo discreto na cor do próprio nome.') },
+  pulso: { nome: chave('Pulso'), descricao: chave('Some e volta devagar, como respirando.') },
+  'arco-iris': { nome: chave('Arco-íris'), descricao: chave('As cores passam por dentro das letras.') },
+  sombra: { nome: chave('Sombra'), descricao: chave('O nome levanta um pouco do fundo.') },
+  serifa: { nome: chave('Com serifa'), descricao: chave('Letra de livro, mais séria.') },
+  mono: { nome: chave('Máquina de escrever'), descricao: chave('Toda letra com a mesma largura.') },
+  versalete: { nome: chave('Versalete'), descricao: chave('Maiúsculas pequenas, bem espaçadas.') },
+};
+
 export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | undefined {
   if (tipo === 'cor') return CORES[codigo];
   if (tipo === 'fundo') return FUNDOS_LOJA[codigo];
   if (tipo === 'moldura') return MOLDURAS[codigo];
+  if (tipo === 'efeito') return EFEITOS[codigo];
   return undefined;
 }
 
