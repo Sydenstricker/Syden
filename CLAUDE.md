@@ -208,3 +208,107 @@ As regras, que são o que separa uma caixa-preta de um arquivo:
 
 **E os termos de uso precisam dizer isso.** Prometer exclusão e reter noventa dias, calado, seria
 mentir para quem apaga a conta. Enquanto a linha não estiver lá, a função está incompleta.
+
+## Saber que alguém está jogando: tudo o que foi medido, e por que nada foi construído
+
+**Decidido em 02/10/2026, pelo Sydenstricker: a sobreposição saiu, e nada a substituiu.** Esta seção
+existe para que retomar o assunto não comece do zero — foram três rodadas de medição, e duas delas
+derrubaram o caminho que parecia óbvio.
+
+### A sobreposição por cima do jogo foi construída e REMOVIDA
+
+Uma janelinha sem borda, sempre no topo, atravessável pelo clique, com quem estava na sala. Durou dois
+dias. O veredito foi **"o incômodo é maior que a conveniência"**, e ela saiu inteira no commit
+`6e611a2` — o git tem tudo, inclusive a sonda, que é a parte difícil.
+
+Duas lições que sobrevivem à remoção:
+
+1. **Eu a deixei LIGADA por padrão, e isso foi erro meu.** O argumento na época era que ela não
+   interrompe nada (não rouba foco, não recebe clique). Mas uma janela que aparece sozinha por cima de
+   tudo é exatamente o que a seção "A tela não interrompe" manda não fazer, e ligada por padrão ela
+   não pede licença. **Função que aparece sobre o trabalho dos outros nasce desligada.**
+2. **Aproximação cobra o preço previsto.** A primeira regra era "está em tela cheia, logo é jogo". O
+   VS Code em tela cheia virou jogo, e a janelinha foi parar por cima do editor.
+
+### A lista de jogos: três caminhos medidos, um só funciona
+
+**A lista pública da Steam ACABOU.** `ISteamApps/GetAppList` devolve 404 sem chave, e o método não
+aparece mais entre os que a Steam serve sem chave (conferido em `GetSupportedAPIList`). Hoje exigiria
+uma chave de API, ou seja, mais uma credencial.
+
+**Casar NOME de janela com nome de jogo não funciona, e o contra-exemplo é fatal:** uma aba do
+navegador chamada "ELDEN RING - gameplay" viraria "está jogando Elden Ring". Títulos reais, medidos:
+`Welcome - Janja - Visual Studio Code`, `Geral | ANDRU FEDA MT - Discord`. Nome puro é a exceção.
+
+**QUEM SABE É O WINDOWS, em `HKCU\System\GameConfigStore\Children`.** É onde a Barra de Jogos guarda o
+que ela reconheceu — a mesma lista que decide se o Win+G aparece. Medido na máquina do Sydenstricker:
+
+```
+144 entradas, 75 com MatchedExeFullPath
+  0 falsos positivos (nenhum navegador, editor, Discord, Word, OBS, Spotify)
+ 50 Steam · 6 Epic · 19 de lugar nenhum (Riot, Blizzard, EA, Origin, avulsos)
+ 68 das 75 com TitleId da Microsoft != 0
+montar a lista: 27 ms · 10.000 consultas: 85 ms
+```
+
+Os **19 fora de Steam e Epic** são o argumento contra qualquer regra de "mora em pasta da loja X". E o
+**TitleId** diz que não é heurística: o Windows casou o executável com um catálogo do lado da
+Microsoft, o que explica os zero falsos positivos.
+
+**O QUE ELA NÃO É**, e isto é o que mais importa guardar: **não é lista pública e não dá para baixar.**
+É o cache local das respostas da Microsoft para os jogos que AQUELA pessoa já rodou, no ramo do
+usuário (não existe equivalente em `HKLM` — conferido em três caminhos). Jogo nunca aberto não está
+lá; por isso a primeiríssima sessão de um jogo novo não seria reconhecida. E é um detalhe interno não
+documentado: a Microsoft não prometeu que essa chave existe.
+
+### O "vincule sua conta" do Discord: metade é impossível
+
+A tela que oferece vantagens ao abrir o Battlefield **não é o Discord agindo sozinho** — é a EA tendo
+integrado o SDK do Discord dentro do jogo. Nenhum estúdio vai integrar um SDK do Syden, então
+**detalhe de partida e "entrar no esquadrão do amigo" estão fora de alcance para sempre.**
+
+**E o "está jogando X" do Discord NÃO vem da conta vinculada**: vem do cliente dele olhando os
+processos da máquina. A vinculação serve para a camada de cima.
+
+### O caminho da Steam: possível, e descartado por cobertura
+
+O Syden **já guarda o SteamID64** de quem liga a Steam (`social_accounts`) e **já tem chave da Steam
+Web API**. O `GetPlayerSummaries`, que ele já chama no login, devolve `gameextrainfo` e `gameid` quando
+a pessoa está em jogo. Isso daria presença **pelo servidor**, funcionando no navegador e no celular —
+arquitetura melhor que a sonda local, que só vive no app de Windows.
+
+**Descartado por um número: só UMA pessoa do grupo entra pela Steam.** E sobre esse um ainda pesariam
+duas condições: perfil público (com *detalhes do jogo* público, que é um ajuste separado) e jogo aberto
+PELA Steam — o que já falha se o Battlefield vier do EA App. Não vale o trabalho, nem a consulta
+periódica a um terceiro, nem a linha nova na política de privacidade que ela exigiria.
+
+### Se um dia retomar, a pergunta que decide é esta
+
+**Quantas pessoas do grupo usam o APLICATIVO, e não o navegador?** A detecção local cobre qualquer
+jogo de qualquer loja, mas só existe no app de Windows. Se a maioria usa o site, ela tem a mesma
+doença da Steam e a resposta é não construir.
+
+**E existe um caminho mais barato que cobre todo mundo:** o Syden já tem a agenda de servidores de jogo
+por comunidade (`ServidoresDeJogo.tsx`). O que falta ali não é detecção automática — é alguém poder
+dizer "estou neste agora" e os outros verem. Funciona no navegador, no celular e no app, não depende
+de loja, não fala com terceiro e não conta nada que a pessoa não tenha escolhido contar. **O risco
+dele é o oposto do da sobreposição: status que ninguém atualiza vira enfeite morto.**
+
+## O som da transmissão pega o Discord junto, e isso não é defeito do Syden
+
+**Diagnosticado em 02/10/2026, não consertado.** A turma usa Discord para voz e Syden para tela; quem
+ouve a transmissão no Syden escuta as vozes duas vezes.
+
+A captura de som pede ao Windows *"tudo o que está tocando, EXCETO o Syden"*
+(`PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE`, em `desktop/native/src/capture.cpp`). Essa
+exceção foi escrita assumindo que o Syden seria o aplicativo de voz. Com a voz noutro programa, as
+vozes dele entram na captura e voltam pela transmissão, com atraso.
+
+**O conserto de verdade é inverter o modo:** o Windows também aceita
+`PROCESS_LOOPBACK_MODE_INCLUDE_TARGET_PROCESS_TREE`, ou seja *"só o som DESTE programa"*. Aí a pessoa
+escolheria o jogo, e nem Discord nem Syden entrariam. É mudança pequena no C++ — o PID já vem do
+JavaScript —, mas **só compila no GitHub Actions**, porque o módulo nativo exige as Ferramentas de
+Build do Visual Studio.
+
+Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
+**Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa.
