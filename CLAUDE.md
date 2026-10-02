@@ -180,3 +180,31 @@ porque duas das conclusões abaixo custaram investigação:
    de quem ensina o outro).
 5. **O bloqueio real não é técnico, é moderação.** Intercâmbio de idioma é desconhecido encontrando
    desconhecido, que é o problema mais difícil que existe — e o Syden tem uma pessoa moderando.
+
+## A caixa-preta: exclusão apaga, mas 90 dias ficam para a justiça
+
+**Decidido em 02/10/2026, pelo Sydenstricker.** O Syden apagava tudo de quem excluía a conta — o que
+é certo para quem só quis ir embora, e deixava sem resposta o pedido judicial que chega depois.
+Alguém comete uma atrocidade, apaga a conta, e a prova vai junto.
+
+**Eu propus guardar só o que tivesse sido denunciado. Ele apontou o furo e o furo é real:** quem
+ninguém denunciou a tempo sairia impune. Então guarda-se tudo o que serve de prova.
+
+As regras, que são o que separa uma caixa-preta de um arquivo:
+
+1. **Não existe rota.** Nenhuma, nem para o dono. O conteúdo só sai rodando
+   `node scripts/caixa-preta.mjs` DENTRO do servidor — o que exige a chave SSH da máquina e deixa
+   rastro nela. Uma tela de administração transformaria isso num diretório de tudo o que todo mundo
+   já apagou, a um `isAdmin` errado de distância. **Há um teste que varre `server/src` inteiro e
+   falha se qualquer arquivo que não seja `db.ts` citar a tabela.**
+2. **90 dias, e a limpeza é automática** (na subida do servidor e uma vez por dia). Retenção que
+   depende de alguém lembrar de limpar não é retenção de 90 dias: é retenção para sempre com uma boa
+   intenção escrita ao lado.
+3. **A senha não entra.** O hash não prova nada em juízo e guardá-lo é risco puro. "Tudo" quer dizer
+   tudo o que serve de prova: quem era a pessoa, o que escreveu, quando, e os arquivos que anexou.
+4. **Os arquivos não são copiados, só referenciados pelo sha** — eles já estão em disco endereçados
+   pelo conteúdo. Por isso a vassoura de órfãos (`scripts/limpar-orfaos.mjs`) PRECISA ler a
+   caixa-preta: sem isso ela apagaria a prova no dia seguinte, noventa dias antes do prazo.
+
+**E os termos de uso precisam dizer isso.** Prometer exclusão e reter noventa dias, calado, seria
+mentir para quem apaga a conta. Enquanto a linha não estiver lá, a função está incompleta.

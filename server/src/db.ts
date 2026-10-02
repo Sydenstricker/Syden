@@ -909,6 +909,40 @@ addColumnIfMissing('channels', 'deleted_at', 'TEXT');
 addColumnIfMissing('channel_members', 'last_read_id', 'INTEGER');
 
 /**
+ * ===================================================================================================
+ * A CAIXA-PRETA: o que fica de uma conta excluída, por 90 dias, e só para a justiça.
+ *
+ * O PROBLEMA QUE ELA RESOLVE, descrito pelo Sydenstricker: alguém comete uma atrocidade, apaga a
+ * conta, e a prova vai junto. O Syden apaga os dados pessoais na exclusão — o que é certo para quem
+ * só quis ir embora — e isso deixava sem resposta o pedido judicial que chega depois.
+ *
+ * DECISÃO DELE, EM 02/10/2026: guardar TUDO, e não só o que foi denunciado. A minha proposta era o
+ * recorte; ele apontou o furo, e o furo é real — quem ninguém denunciou a tempo sairia impune.
+ *
+ * TRÊS REGRAS QUE FAZEM ISTO SER UMA CAIXA-PRETA E NÃO UM ARQUIVO:
+ *
+ *   1. NÃO EXISTE ROTA. Nenhuma. Nem para o dono do Syden. O conteúdo só sai rodando
+ *      `node scripts/caixa-preta.mjs` DENTRO do servidor, o que exige acesso SSH à máquina — e isso
+ *      deixa rastro, que uma tela não deixaria.
+ *   2. SOME SOZINHA EM 90 DIAS. A limpeza roda na subida do servidor e uma vez por dia; não depende
+ *      de ninguém lembrar.
+ *   3. A SENHA NÃO ENTRA. O hash não é prova de nada — ninguém vai a juízo com ele — e guardá-lo é
+ *      só risco. Tudo aqui quer dizer tudo o que serve de prova.
+ *
+ * E OS TERMOS DE USO PRECISAM DIZER ISSO. Prometer exclusão e reter noventa dias, calado, seria
+ * mentir para quem apaga a conta.
+ * ===================================================================================================
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS contas_retidas (
+    user_id     INTEGER PRIMARY KEY,
+    excluida_em TEXT NOT NULL,
+    dados       TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_contas_retidas_quando ON contas_retidas(excluida_em);
+`);
+
+/**
  * Esta conta precisa confirmar o e-mail antes de entrar?
  *
  * É uma COLUNA, e não uma conta de datas, porque quem já tinha conta antes da regra existir não pode
@@ -2409,9 +2443,73 @@ export function ensureCommunityOwners() {
  * pessoa criou continuam onde estão, sem dono. Cargos que ela tinha passam para outra pessoa (ensureOwner e
  * ensureCommunityOwners).
  */
+/**
+ * Tira o retrato da conta ANTES de ela sumir, e guarda na caixa-preta.
+ *
+ * O QUE ENTRA: quem era a pessoa (nome, e-mail, quando entrou, de onde), tudo o que ela escreveu
+ * (com o canal, a hora e os arquivos que anexou) e as ideias que mandou. É o que uma autoridade
+ * pediria.
+ *
+ * O QUE NÃO ENTRA: a senha. O hash não prova nada em lugar nenhum e guardá-lo é só risco.
+ *
+ * OS ARQUIVOS NÃO SÃO COPIADOS, só referenciados pelo sha. Eles já estão em disco, endereçados pelo
+ * conteúdo — copiar duplicaria bytes à toa. Em compensação, a VASSOURA DE ÓRFÃOS precisa saber que
+ * esta tabela aponta para eles, senão apagaria a prova um dia depois (ver scripts/limpar-orfaos.mjs).
+ */
+function guardarNaCaixaPreta(userId: number) {
+  const pessoa = db
+    .prepare('SELECT id, username, email, created_at AS criadaEm, is_admin AS admin, is_owner AS dono FROM users WHERE id = ?')
+    .get(userId) as Record<string, unknown> | undefined;
+  if (!pessoa) return;
+
+  const mensagens = db
+    .prepare(
+      `SELECT m.id, m.channel_id AS canal, m.content AS texto, m.created_at AS quando,
+              c.name AS nomeDoCanal, c.community_id AS comunidade
+         FROM messages m LEFT JOIN channels c ON c.id = m.channel_id
+        WHERE m.user_id = ? ORDER BY m.id`,
+    )
+    .all(userId) as { id: number }[];
+
+  const anexos = mensagens.length
+    ? (db
+        .prepare(
+          `SELECT message_id AS mensagem, name AS nome, mime, size AS bytes, sha
+             FROM attachments WHERE message_id IN (${idList(mensagens.map((m) => m.id))})`,
+        )
+        .all() as Record<string, unknown>[])
+    : [];
+
+  const ideias = db
+    .prepare('SELECT id, content AS texto, accepted_at AS acolhidaEm FROM suggestions WHERE user_id = ?')
+    .all(userId) as Record<string, unknown>[];
+
+  const dados = JSON.stringify({ pessoa, mensagens, anexos, ideias }, null, 1);
+  db.prepare(
+    "INSERT OR REPLACE INTO contas_retidas (user_id, excluida_em, dados) VALUES (?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), ?)",
+  ).run(userId, dados);
+}
+
+/** Quantos dias a caixa-preta segura uma conta excluída. Decisão do Sydenstricker, 02/10/2026. */
+export const DIAS_NA_CAIXA_PRETA = 90;
+
+/**
+ * Esvazia o que passou dos 90 dias.
+ *
+ * RODA SOZINHA, na subida do servidor e uma vez por dia. Retenção que depende de alguém lembrar de
+ * limpar não é retenção de 90 dias: é retenção para sempre com uma boa intenção escrita ao lado.
+ */
+export function limparCaixaPreta(): number {
+  const { changes } = db
+    .prepare("DELETE FROM contas_retidas WHERE excluida_em < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?)")
+    .run(`-${DIAS_NA_CAIXA_PRETA} days`);
+  return Number(changes);
+}
+
 export function deleteAccount(userId: number) {
   db.exec('BEGIN');
   try {
+    guardarNaCaixaPreta(userId);
     db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);

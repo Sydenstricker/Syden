@@ -2,6 +2,7 @@ import cors from '@fastify/cors';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Server as IOServer } from 'socket.io';
 import { config } from './config.js';
+import * as db from './db.js';
 import { setupRealtime } from './realtime.js';
 import { seedFirstCommunity } from './expressions.js';
 import { registerChatRoutes } from './chat-routes.js';
@@ -63,6 +64,18 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
     comecarLimpezaDeRecados(io, app.log);
     startTrafficSampling();
     startHealthSampling();
+
+    // A CAIXA-PRETA SE ESVAZIA SOZINHA. Retenção de 90 dias que depende de alguém lembrar de limpar
+    // não é retenção de 90 dias: é retenção para sempre com uma boa intenção escrita ao lado.
+    //
+    // Roda na subida e uma vez por dia. Na subida porque o servidor pode ter ficado fora do ar além
+    // do prazo, e aí o primeiro dia já passou; de 24 em 24 porque é o grão do prazo.
+    const limpar = () => {
+      const quantas = db.limparCaixaPreta();
+      if (quantas > 0) app.log.info({ quantas }, 'caixa-preta: contas que passaram dos 90 dias foram apagadas');
+    };
+    limpar();
+    setInterval(limpar, 24 * 60 * 60 * 1000).unref();
   }
 
   return { app, io };

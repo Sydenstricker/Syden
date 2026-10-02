@@ -32,6 +32,21 @@ const db = new DatabaseSync(CAMINHO_DO_BANCO, { readOnly: true });
 
 /** Todo sha que alguma linha ainda aponta. É o conjunto do que NÃO pode ser apagado. */
 const vivos = new Set();
+
+// A CAIXA-PRETA APONTA ARQUIVOS SEM TER COLUNA sha, e esquecer isto apagaria a prova.
+//
+// Ela guarda o retrato de uma conta excluída em JSON (ver db.ts), e dentro desse JSON estão os shas
+// dos anexos — justamente porque copiar os bytes seria duplicá-los à toa. Só que uma conta excluída
+// não tem mais linha em attachments: para esta varredura, os arquivos dela ficariam órfãos e seriam
+// apagados no dia seguinte. A prova sumiria sozinha, noventa dias antes do prazo, e ninguém saberia.
+try {
+  for (const linha of db.prepare('SELECT dados FROM contas_retidas').all()) {
+    for (const anexo of JSON.parse(linha.dados).anexos ?? []) if (anexo.sha) vivos.add(anexo.sha);
+  }
+} catch {
+  // Banco anterior à caixa-preta: nada a somar.
+}
+
 for (const tabela of TABELAS) {
   try {
     for (const linha of db.prepare(`SELECT DISTINCT sha FROM ${tabela} WHERE sha IS NOT NULL`).all()) vivos.add(linha.sha);
