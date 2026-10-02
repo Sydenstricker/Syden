@@ -777,4 +777,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '가로로 긴 이미지, 1200×300쯤이요. 움직이는 GIF도 되고, 진짜로 움직여요. 커버가 없으면 환영 화면에 고른 그림이 나와요.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': '아직 처음 몇 초를 모으는 중이에요. 잠시 뒤에 해보세요.',
   'Não há transmissão para clipar agora.': '지금은 클립할 방송이 없어요.',
+  'Arraste as pontas para escolher o trecho.': '끝을 끌어서 원하는 부분을 고르세요.',
+  'Começo': '시작',
+  'Fim': '끝',
+  'Volume': '음량',
+  'Cortando…': '자르는 중…',
+  'Este clipe não tem som.': '이 클립에는 소리가 없습니다.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': '클립이 채팅에 보내기엔 너무 큽니다. 더 짧은 부분을 고르세요.',
 } satisfies Record<string, string>;

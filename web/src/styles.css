@@ -8028,6 +8028,169 @@ textarea {
   gap: 8px;
 }
 
+/* ---------------------------------------------------------------------------------------------------
+   O AJUSTE FINO DO CLIPE: cortar as pontas e mexer no volume.
+
+   O controle de dois punhos não existe em HTML, e nenhum navegador desenha um. O que existe aqui são
+   DUAS RÉGUAS COMUNS empilhadas no mesmo lugar: cada uma com a sua trilha invisível, e por cima delas
+   uma barra pintada mostrando o pedaço escolhido. Cada punho continua sendo um <input type=range> de
+   verdade — logo, chega pelo teclado e tem nome para o leitor de tela, que um punho desenhado à mão
+   com <div> não teria.
+   --------------------------------------------------------------------------------------------------- */
+.clipe-ajuste {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clipe-regua {
+  position: relative;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--bg-input);
+}
+
+.clipe-selecao {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+  pointer-events: none;
+}
+
+/*
+ * As duas réguas ocupam a MESMA faixa. A trilha some; só o punho fica visível e clicável.
+ *
+ * O SELETOR PRECISA DE DOIS NOMES (`.clipe-regua .clipe-ponta`) PORQUE `.dialog input` EXISTE, e ele
+ * pinta fundo sólido, borda e preenchimento em todo campo de diálogo — feito para caixa de texto. A
+ * primeira versão escreveu só `.clipe-ponta`, perdeu por especificidade, e o resultado foi medido na
+ * tela: as duas réguas com fundo rgb(56,58,64) por cima da faixa pintada e do punho de baixo. Dava
+ * um controle com um punho só e sem seleção nenhuma — e nada no console reclamava.
+ */
+.clipe-regua .clipe-ponta {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Sem isto, a régua de cima cobriria a de baixo inteira e o punho do começo nunca pegaria o clique. */
+  pointer-events: none;
+}
+
+/*
+ * A TRILHA PADRÃO PRECISA SUMIR, e isto não é detalhe estético: ela é desenhada pelo navegador por
+ * cima de tudo o que está embaixo. Com ela, a régua de cima cobria a faixa pintada da seleção E o
+ * punho do começo — a foto mostrava um controle com um punho só e sem seleção nenhuma.
+ */
+.clipe-regua .clipe-ponta::-webkit-slider-runnable-track {
+  height: 26px;
+  border: none;
+  background: transparent;
+}
+
+.clipe-regua .clipe-ponta::-moz-range-track {
+  height: 26px;
+  border: none;
+  background: transparent;
+}
+
+.clipe-regua .clipe-ponta::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 26px;
+  border: 2px solid var(--bg-main);
+  border-radius: 6px;
+  background: var(--text-strong);
+  cursor: ew-resize;
+  pointer-events: auto;
+}
+
+.clipe-regua .clipe-ponta::-moz-range-thumb {
+  width: 14px;
+  height: 26px;
+  border: 2px solid var(--bg-main);
+  border-radius: 6px;
+  background: var(--text-strong);
+  cursor: ew-resize;
+  pointer-events: auto;
+}
+
+.clipe-regua .clipe-ponta:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* O `.dialog label` do Syden é uma coluna de caixa alta, feita para campo de formulário. Esta linha é
+   outra coisa — rótulo, valor e régua lado a lado —, então ela desfaz as três heranças de propósito. */
+.clipe-tempos,
+.clipe-dialog .clipe-volume {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.clipe-tempos strong,
+.clipe-volume strong {
+  color: var(--text-strong);
+}
+
+.clipe-tempos span {
+  flex: 1;
+  min-width: 0;
+}
+
+.clipe-volume input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* O aviso de que o arquivo saiu mudo. Âmbar, como os outros avisos do Syden: é informação, não erro —
+   quem clipou não fez nada de errado, mas precisa saber antes de mandar na conversa. */
+.clipe-sem-som {
+  margin: 0;
+  padding: 6px 10px;
+  border-left: 2px solid #faa61a;
+  border-radius: 4px;
+  background: color-mix(in srgb, #faa61a 10%, transparent);
+  font-size: 12px;
+  color: var(--text-strong);
+}
+
+.clipe-cortando {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.clipe-andamento {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-input);
+  overflow: hidden;
+}
+
+.clipe-andamento div {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.1s linear;
+}
+
 /* ---------- Recado em vídeo de tela ---------- */
 
 .composer-recado {

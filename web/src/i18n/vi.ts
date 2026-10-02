@@ -754,4 +754,11 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Giọng kim loại của người máy trong phim cũ.',
   'Vozes juntas': 'Nhiều giọng cùng lúc',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': 'Kéo hai đầu để chọn đoạn bạn muốn.',
+  'Começo': 'Bắt đầu',
+  'Fim': 'Kết thúc',
+  'Volume': 'Âm lượng',
+  'Cortando…': 'Đang cắt…',
+  'Este clipe não tem som.': 'Clip này không có âm thanh.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Clip ra quá lớn so với khung chat. Hãy chọn đoạn ngắn hơn.',
 } satisfies Record<string, string>;

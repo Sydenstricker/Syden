@@ -786,4 +786,11 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Muryar ƙarfe ta robot na tsohon fim.',
   'Vozes juntas': 'Muryoyi tare',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': 'Ku ja gefukan don zaɓar ɓangaren da kuke so.',
+  'Começo': 'Farko',
+  'Fim': 'Ƙarshe',
+  'Volume': 'Ƙarfin sauti',
+  'Cortando…': 'Ana yankewa…',
+  'Este clipe não tem som.': 'Wannan gutsuren ba shi da sauti.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Gutsuren ya yi girma fiye da yadda hira za ta ɗauka. Ku zaɓi ɗan ƙaramin ɓangare.',
 } satisfies Record<string, string>;

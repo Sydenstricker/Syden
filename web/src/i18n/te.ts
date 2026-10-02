@@ -766,4 +766,11 @@ export default {
   'Voz metálica de robô de filme antigo.': 'పాత సినిమా రోబో లాంటి లోహపు గొంతు.',
   'Vozes juntas': 'గొంతులు కలిసి',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': 'భాగాన్ని ఎంచుకోవడానికి చివరలను లాగండి.',
+  'Começo': 'ప్రారంభం',
+  'Fim': 'ముగింపు',
+  'Volume': 'ధ్వని',
+  'Cortando…': 'కత్తిరిస్తోంది…',
+  'Este clipe não tem som.': 'ఈ క్లిప్‌లో శబ్దం లేదు.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'క్లిప్ చాట్‌కు చాలా పెద్దదైంది. చిన్న భాగాన్ని ఎంచుకోండి.',
 } satisfies Record<string, string>;

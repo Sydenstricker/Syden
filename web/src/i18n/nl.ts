@@ -788,4 +788,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Een brede afbeelding, rond 1200 bij 300. Bewegende GIF kan, en beweegt echt. Zonder omslag blijft de kunst die je voor het welkom koos.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Nog bezig met de eerste seconden. Probeer het zo.',
   'Não há transmissão para clipar agora.': 'Er is nu geen stream om te clippen.',
+  'Arraste as pontas para escolher o trecho.': 'Sleep de uiteinden om het stuk te kiezen.',
+  'Começo': 'Begin',
+  'Fim': 'Einde',
+  'Volume': 'Volume',
+  'Cortando…': 'Bezig met knippen…',
+  'Este clipe não tem som.': 'Deze clip heeft geen geluid.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'De clip is te groot geworden voor de chat. Kies een korter stuk.',
 } satisfies Record<string, string>;

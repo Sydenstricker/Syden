@@ -788,4 +788,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Picha pana, karibu 1200 kwa 300. GIF inayosogea inafanya kazi, na inasogea kweli. Bila jalada, inabaki sanaa uliyochagua kwenye ukaribisho.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Bado inakusanya sekunde za kwanza. Jaribu baada ya muda mfupi.',
   'Não há transmissão para clipar agora.': 'Hakuna matangazo ya kukata sasa hivi.',
+  'Arraste as pontas para escolher o trecho.': 'Buruta ncha ili kuchagua kipande.',
+  'Começo': 'Mwanzo',
+  'Fim': 'Mwisho',
+  'Volume': 'Sauti',
+  'Cortando…': 'Inakata…',
+  'Este clipe não tem som.': 'Klipu hii haina sauti.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klipu imetoka kubwa mno kwa gumzo. Chagua kipande kifupi zaidi.',
 } satisfies Record<string, string>;

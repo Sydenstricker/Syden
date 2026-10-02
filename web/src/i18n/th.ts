@@ -797,4 +797,11 @@ export default {
   'Voz metálica de robô de filme antigo.': 'เสียงโลหะแบบหุ่นยนต์ในหนังเก่า',
   'Vozes juntas': 'เสียงซ้อนกัน',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': 'ลากปลายทั้งสองข้างเพื่อเลือกช่วงที่ต้องการ',
+  'Começo': 'จุดเริ่ม',
+  'Fim': 'จุดจบ',
+  'Volume': 'ระดับเสียง',
+  'Cortando…': 'กำลังตัด…',
+  'Este clipe não tem som.': 'คลิปนี้ไม่มีเสียง',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'คลิปที่ตัดออกมาใหญ่เกินไปสำหรับแชต เลือกช่วงที่สั้นกว่านี้',
 } satisfies Record<string, string>;

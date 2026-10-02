@@ -783,4 +783,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Geniş bir görsel, 1200 çarpı 300 civarı. Hareketli GIF olur, ve gerçekten oynar. Kapak yoksa, karşılama için seçtiğin görsel kalır.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Hâlâ ilk saniyeleri topluyor. Birazdan tekrar dene.',
   'Não há transmissão para clipar agora.': 'Şu anda kliplenecek bir yayın yok.',
+  'Arraste as pontas para escolher o trecho.': 'Parçayı seçmek için uçları sürükle.',
+  'Começo': 'Başlangıç',
+  'Fim': 'Bitiş',
+  'Volume': 'Ses düzeyi',
+  'Cortando…': 'Kesiliyor…',
+  'Este clipe não tem som.': 'Bu klipte ses yok.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip sohbet için fazla büyük çıktı. Daha kısa bir parça seç.',
 } satisfies Record<string, string>;

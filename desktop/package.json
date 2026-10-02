@@ -78,7 +78,7 @@
         "pt-BR"
       ],
       "addAutoLaunchExtension": false,
-      "backgroundColor": "#1e1f22",
+      "backgroundColor": "transparent",
       "customManifestPath": "appxmanifest.xml"
     },
     "protocols": [

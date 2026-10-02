@@ -765,4 +765,11 @@ export default {
   'Voz metálica de robô de filme antigo.': '古い映画のロボットのような金属質の声。',
   'Vozes juntas': '声が重なる',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': '端をドラッグして残す部分を選びます。',
+  'Começo': '開始',
+  'Fim': '終了',
+  'Volume': '音量',
+  'Cortando…': '切り出し中…',
+  'Este clipe não tem som.': 'このクリップには音がありません。',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'クリップがチャットには大きすぎます。もっと短い部分を選んでください。',
 } satisfies Record<string, string>;

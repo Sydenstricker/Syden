@@ -810,4 +810,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'Широкая картинка, примерно 1200 на 300. Анимированный GIF работает, и правда двигается. Без обложки остаётся та графика, что ты выбрал для приветствия.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Ещё собираю первые секунды. Попробуй через мгновение.',
   'Não há transmissão para clipar agora.': 'Сейчас нет трансляции, которую можно вырезать.',
+  'Arraste as pontas para escolher o trecho.': 'Потяни за края, чтобы выбрать кусок.',
+  'Começo': 'Начало',
+  'Fim': 'Конец',
+  'Volume': 'Громкость',
+  'Cortando…': 'Обрезаем…',
+  'Este clipe não tem som.': 'У этого клипа нет звука.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клип получился слишком большим для чата. Выбери кусок покороче.',
 } satisfies Record<string, string>;

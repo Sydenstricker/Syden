@@ -788,4 +788,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'एक चौड़ी तस्वीर, करीब 1200 गुणा 300। एनिमेटेड GIF चलता है, और सच में हिलता है। कवर न हो तो वही कला दिखती है जो तुमने स्वागत के लिए चुनी थी।',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'अभी पहले कुछ सेकंड जुट रहे हैं। थोड़ी देर में कोशिश करो।',
   'Não há transmissão para clipar agora.': 'अभी क्लिप करने के लिए कोई स्ट्रीम नहीं है।',
+  'Arraste as pontas para escolher o trecho.': 'हिस्सा चुनने के लिए सिरों को खींचो।',
+  'Começo': 'शुरुआत',
+  'Fim': 'अंत',
+  'Volume': 'आवाज़',
+  'Cortando…': 'काटा जा रहा है…',
+  'Este clipe não tem som.': 'इस क्लिप में आवाज़ नहीं है।',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'क्लिप चैट के लिए बहुत बड़ी हो गई। छोटा हिस्सा चुनो।',
 } satisfies Record<string, string>;

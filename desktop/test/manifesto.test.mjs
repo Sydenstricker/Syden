@@ -104,4 +104,23 @@ describe('o manifesto do pacote da Microsoft Store', () => {
       assert.ok(manifesto.includes('${' + campo + '}'), `o campo \${${campo}} sumiu do manifesto`);
     }
   });
+
+  it('o fundo do ladrilho é transparente, e os ícones têm canal alfa para isso valer', () => {
+    // O QUE ELE VIU: o coelho num quadrado preto, na barra de tarefas e no ladrilho. Não era defeito
+    // de desenho — era `backgroundColor: "#1e1f22"`, que o Windows pinta ATRÁS do ícone. Os PNGs já
+    // têm fundo transparente (tipo 6 = RGBA no cabeçalho), então quem estava pondo o preto era esta
+    // linha, e só ela.
+    assert.equal(
+      pacote.build.appx.backgroundColor,
+      'transparent',
+      'o fundo do ladrilho voltou a ser uma cor sólida; ela aparece como quadrado atrás do coelho',
+    );
+
+    // Transparência pedida com ícone sem canal alfa não dá erro: dá o fundo da imagem, que é branco.
+    for (const nome of ['Square44x44Logo', 'Square150x150Logo', 'Square310x310Logo', 'Square71x71Logo', 'StoreLogo', 'Wide310x150Logo']) {
+      const png = readFileSync(new URL(`../build/appx/${nome}.png`, import.meta.url));
+      assert.equal(png.readUInt32BE(0), 0x89504e47, `${nome}.png não é PNG`);
+      assert.equal(png[25], 6, `${nome}.png não tem canal alfa (tipo de cor ${png[25]}), então o fundo transparente não vale`);
+    }
+  });
 });

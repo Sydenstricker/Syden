@@ -786,4 +786,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'একটা চওড়া ছবি, মোটামুটি ১২০০ বাই ৩০০। অ্যানিমেটেড GIF চলে, আর সত্যিই নড়ে। প্রচ্ছদ না থাকলে স্বাগত পাতার জন্য বেছে নেওয়া ছবিটাই থাকে।',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'এখনো প্রথম কয়েক সেকেন্ড জমছে। একটু পরে চেষ্টা করো।',
   'Não há transmissão para clipar agora.': 'এখন ক্লিপ করার মতো কোনো সম্প্রচার নেই।',
+  'Arraste as pontas para escolher o trecho.': 'অংশটা বেছে নিতে দুই প্রান্ত টেনে নাও।',
+  'Começo': 'শুরু',
+  'Fim': 'শেষ',
+  'Volume': 'ভলিউম',
+  'Cortando…': 'কাটা হচ্ছে…',
+  'Este clipe não tem som.': 'এই ক্লিপে কোনো শব্দ নেই।',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ক্লিপটা চ্যাটের জন্য খুব বড় হয়ে গেছে। ছোট একটা অংশ বেছে নাও।',
 } satisfies Record<string, string>;

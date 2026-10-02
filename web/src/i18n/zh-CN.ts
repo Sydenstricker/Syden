@@ -775,4 +775,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': '一张宽图，1200×300 左右。动图可以，而且是真的会动。没有封面时，显示你为欢迎页选的那张图。',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': '还在攒最开始的几秒。过一会儿再试。',
   'Não há transmissão para clipar agora.': '现在没有可以剪的直播。',
+  'Arraste as pontas para escolher o trecho.': '拖动两端选择要保留的片段。',
+  'Começo': '起点',
+  'Fim': '终点',
+  'Volume': '音量',
+  'Cortando…': '正在剪辑…',
+  'Este clipe não tem som.': '这个片段没有声音。',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': '剪出来的片段对聊天来说太大了。请选一段更短的。',
 } satisfies Record<string, string>;

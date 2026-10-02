@@ -772,4 +772,11 @@ export default {
   'Voz metálica de robô de filme antigo.': 'صدای فلزیِ روبات فیلم‌های قدیمی.',
   'Vozes juntas': 'چند صدا با هم',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': 'برای انتخاب بخش مورد نظر، دو سر را بکشید.',
+  'Começo': 'آغاز',
+  'Fim': 'پایان',
+  'Volume': 'بلندی صدا',
+  'Cortando…': 'در حال برش…',
+  'Este clipe não tem som.': 'این کلیپ صدا ندارد.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'کلیپ برای گفتگو خیلی بزرگ شد. بخش کوتاه‌تری انتخاب کنید.',
 } satisfies Record<string, string>;

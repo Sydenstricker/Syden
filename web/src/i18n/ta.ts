@@ -769,4 +769,11 @@ export default {
   'Voz metálica de robô de filme antigo.': 'பழைய திரைப்பட ரோபோவின் உலோகக் குரல்.',
   'Vozes juntas': 'குரல்கள் சேர்ந்து',
   'ZECA': 'ZECA',
+  'Arraste as pontas para escolher o trecho.': 'பகுதியைத் தேர்ந்தெடுக்க நுனிகளை இழுக்கவும்.',
+  'Começo': 'தொடக்கம்',
+  'Fim': 'முடிவு',
+  'Volume': 'ஒலியளவு',
+  'Cortando…': 'வெட்டப்படுகிறது…',
+  'Este clipe não tem som.': 'இந்தக் கிளிப்பில் ஒலி இல்லை.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'கிளிப் அரட்டைக்கு மிகப் பெரிதாக வந்துவிட்டது. சிறிய பகுதியைத் தேர்ந்தெடுக்கவும்.',
 } satisfies Record<string, string>;

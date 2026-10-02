@@ -794,4 +794,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'A wide image, around 1200 by 300. Animated GIFs work, and they really animate. With no cover, the art you picked for the welcome screen shows instead.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'Still gathering the first few seconds. Try again in a moment.',
   'Não há transmissão para clipar agora.': 'There is no stream to clip right now.',
+  'Arraste as pontas para escolher o trecho.': 'Drag the ends to choose the part you want.',
+  'Começo': 'Start',
+  'Fim': 'End',
+  'Volume': 'Volume',
+  'Cortando…': 'Trimming…',
+  'Este clipe não tem som.': 'This clip has no sound.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'The clip came out too big for the chat. Pick a shorter part.',
 } satisfies Record<string, string>;

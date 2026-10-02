@@ -809,4 +809,11 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.': 'صورة عريضة، نحو 1200 في 300. صورة GIF المتحركة تصلح، وتتحرّك فعلًا. بلا غلاف، يبقى الرسم الذي اخترته للترحيب.',
   'Ainda juntando os primeiros segundos. Tente daqui a pouco.': 'ما زال يجمع الثواني الأولى. حاول بعد قليل.',
   'Não há transmissão para clipar agora.': 'لا يوجد بث لقصّه الآن.',
+  'Arraste as pontas para escolher o trecho.': 'اسحب الطرفين لاختيار المقطع.',
+  'Começo': 'البداية',
+  'Fim': 'النهاية',
+  'Volume': 'مستوى الصوت',
+  'Cortando…': 'جارٍ القص…',
+  'Este clipe não tem som.': 'هذا المقطع بلا صوت.',
+  'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'المقطع خرج أكبر من أن تقبله المحادثة. اختر جزءًا أقصر.',
 } satisfies Record<string, string>;
