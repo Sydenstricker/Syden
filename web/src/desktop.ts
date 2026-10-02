@@ -34,6 +34,16 @@ interface DesktopBridge {
   };
 }
 
-export const desktopBridge: DesktopBridge | undefined = (window as unknown as { sydenDesktop?: DesktopBridge }).sydenDesktop;
+/**
+ * A ponte com o app de desktop. `undefined` no navegador — e também no Node.
+ *
+ * O `typeof window === 'undefined'` NÃO É ZELO EXCESSIVO. Esta linha roda no CARREGAMENTO do módulo,
+ * então qualquer arquivo que importe este (direta ou indiretamente) deixa de poder ser importado num
+ * teste de Node — ele estoura em `window is not defined` antes da primeira asserção. Foi o que
+ * aconteceu ao traduzir os erros do servidor: `api.ts` passou a importar o i18n, que importa este
+ * arquivo, e QUATRO suítes que nunca souberam da existência do desktop pararam de rodar.
+ */
+export const desktopBridge: DesktopBridge | undefined =
+  typeof window === 'undefined' ? undefined : (window as unknown as { sydenDesktop?: DesktopBridge }).sydenDesktop;
 
 export const SHORTCUT_LABELS = { mute: 'Ctrl + Alt + M', deafen: 'Ctrl + Alt + D' };

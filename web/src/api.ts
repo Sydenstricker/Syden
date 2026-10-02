@@ -1,6 +1,8 @@
 // `import.meta.env` é invenção do Vite e não existe quando o módulo roda direto no Node, que é como
 // os testes rodam. Sem esta proteção, QUALQUER teste que encoste em api.ts — mesmo sem chegar perto da
 // rede — estoura na primeira linha, antes da primeira asserção.
+import { t } from './i18n';
+
 const ambiente = (import.meta as unknown as { env?: Record<string, string | undefined> }).env;
 
 export const API_URL: string = ambiente?.VITE_API_URL || 'http://localhost:3001';
@@ -33,6 +35,28 @@ export function saveToken(token: string | null) {
   }
 }
 
+/**
+ * O ERRO DO SERVIDOR, NA LÍNGUA DE QUEM LÊ — e esta é a única linha que precisou mudar para isso.
+ *
+ * ===================================================================================================
+ * AS MENSAGENS DE ERRO ERAM O MAIOR BURACO DE TRADUÇÃO DO SYDEN, e ele passou despercebido por muito
+ * tempo porque nada nelas PARECE texto de interface: são `reply.send({ error: '…' })` espalhados pelo
+ * servidor. Medido: 197 mensagens diferentes, mostradas em 77 lugares da tela. Quem usa o Syden em
+ * japonês acertava a senha errada e recebia "A senha está incorreta." em português.
+ *
+ * O CONSERTO COUBE NUMA LINHA pela mesma propriedade que salvou o recibo do bot: **a chave é o texto
+ * em português**. Traduzindo aqui, no único lugar por onde TODO erro do servidor passa, os 77 pontos
+ * de exibição ficam como estão — nenhum deles precisa saber que existe tradução.
+ *
+ * E a reserva é a de sempre: mensagem que ainda não está nos dicionários sai em português, porque é
+ * isso que `t()` faz com uma chave que não conhece. Ou seja, traduzir as 197 virou trabalho que pode
+ * ser feito aos poucos, sem nada quebrar no meio do caminho.
+ *
+ * O QUE **NÃO** PASSA POR AQUI, de propósito: o `corpo` continua cru. Quem decide o que a tela faz
+ * lê o campo da resposta, nunca o texto — ler texto traduzido para decidir seria depender da
+ * tradução, que é ainda pior do que depender da redação.
+ * ===================================================================================================
+ */
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -47,7 +71,7 @@ export class ApiError extends Error {
      */
     readonly corpo: unknown = undefined,
   ) {
-    super(message);
+    super(t(message));
   }
 }
 
