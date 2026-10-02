@@ -309,19 +309,27 @@ function Previa({
 export function useClipe(stream: MediaStream | null, vozes?: MediaStream | null) {
   const t = useT();
   const gravacao = useRef<GravacaoEmRolagem | null>(null);
-  /**
-   * AS VOZES VÃO POR REF, E NÃO POR DEPENDÊNCIA, de propósito.
+  /*
+   * AS VOZES JÁ FORAM POR REF, E ISSO FAZIA A CAIXINHA NUNCA APARECER.
    *
-   * A lista de quem está com o microfone ligado muda o tempo todo numa chamada. Se ela entrasse nas
-   * dependências do efeito, a gravação em rolagem reiniciaria a cada entrada e saída — e os "últimos
-   * trinta segundos" voltariam a zero toda vez que alguém mutasse. Era o mesmo defeito que já tinha
-   * deixado a tesoura inútil quando ela morava dentro do menu.
+   * O medo era legítimo: a lista de quem está com o microfone ligado muda o tempo todo numa chamada,
+   * e se ela entrasse nas dependências do efeito a gravação em rolagem reiniciaria a cada entrada e
+   * saída — os "últimos trinta segundos" voltariam a zero toda vez que alguém mutasse.
    *
-   * O fluxo de vozes em si é estável (um destino do Web Audio que vive enquanto a chamada vive); o
-   * que muda é quem está ligado NELE, e isso não precisa chegar aqui.
+   * SÓ QUE O REF CHEGAVA TARDE. Quando a transmissão aparece, `stream` deixa de ser nulo e o efeito
+   * de baixo roda. No MESMO instante, o gancho das vozes (useVozesDaSala, no palco) ainda está
+   * criando o destino do Web Audio: ele é declarado antes, o efeito dele roda antes — e termina
+   * chamando `setVozes`, que só se torna visível no RENDER SEGUINTE. Um ref se atualiza durante o
+   * render, não durante o efeito. Resultado: `gravarEmRolagem` começava com `null` no lugar das
+   * vozes, nunca gravava a segunda trilha, o clipe saía com `vozes: null` e a caixinha "Juntar as
+   * vozes da sala" — que só existe quando há vozes gravadas — não aparecia NUNCA.
+   *
+   * O CONSERTO É PÔR O FLUXO NAS DEPENDÊNCIAS, e o próprio comentário antigo explicava por que isso
+   * é seguro: o fluxo de vozes É ESTÁVEL. Ele nasce uma vez por transmissão (useVozesDaSala depende
+   * de `[room, ligado]`, e `ligado` é "há transmissão na tela"); o que muda a cada microfone é quem
+   * está LIGADO nele, e isso não troca o objeto. Então a gravação reinicia uma vez só, no começo,
+   * quando ainda não há nada guardado para perder.
    */
-  const vozesRef = useRef(vozes ?? null);
-  vozesRef.current = vozes ?? null;
   // O "existe gravação" PRECISA SER ESTADO, e não só o ref: escrever num ref não redesenha nada, e
   // por isso o botão só aparecia três segundos depois, quando o relógio mexia em outro estado.
   const [gravando, setGravando] = useState(false);
@@ -338,7 +346,7 @@ export function useClipe(stream: MediaStream | null, vozes?: MediaStream | null)
     setErro(null);
     if (!stream) return;
 
-    const rolando = gravarEmRolagem(stream, vozesRef.current);
+    const rolando = gravarEmRolagem(stream, vozes ?? null);
     gravacao.current = rolando;
     if (!rolando) return;
     setGravando(true);
@@ -350,7 +358,7 @@ export function useClipe(stream: MediaStream | null, vozes?: MediaStream | null)
       rolando.parar();
       gravacao.current = null;
     };
-  }, [stream]);
+  }, [stream, vozes]);
 
   /**
    * O BOTÃO NUNCA FICA CALADO, e esta é a terceira tentativa de consertar a tesoura.

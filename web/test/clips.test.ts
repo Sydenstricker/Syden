@@ -124,3 +124,52 @@ describe('a gravação em rolagem', () => {
     assert.equal(gravarEmRolagem(semVideo), null);
   });
 });
+
+// ===================================================================================================
+// AS VOZES DA SALA DENTRO DO CLIPE.
+//
+// O relato foi "não encontrei a opção de usar ou não o som da sala no clipe. Onde está?". A caixinha
+// existe no editor, mas ela só aparece QUANDO HÁ VOZES GRAVADAS — e elas nunca estavam sendo
+// gravadas, por um descompasso de um render dentro do useClipe (o motivo está escrito lá). O efeito
+// visível era uma opção que nunca nascia, sem erro nenhum no caminho.
+//
+// Estes dois casos guardam o degrau de baixo: dado o fluxo de vozes, a segunda trilha É gravada; sem
+// ele, o clipe sai como sempre saiu. O degrau de cima — o gancho entregar o fluxo a tempo — é
+// guardado pelo teste de dependências em web/test/clipeComVozes.test.ts.
+// ===================================================================================================
+
+const vozes = { getAudioTracks: () => [{}] } as unknown as MediaStream;
+
+describe('as vozes da sala no clipe', () => {
+  it('com o fluxo de vozes, o clipe sai com a segunda trilha', async () => {
+    const { gravarEmRolagem } = await carregar();
+    const rolando = gravarEmRolagem(stream, vozes);
+    assert.ok(rolando, 'devia ter começado a gravar');
+    const clipe = await rolando.pegar();
+    assert.ok(clipe?.vozes, 'o clipe veio sem as vozes — é o que fazia a caixinha não aparecer');
+    rolando.parar();
+  });
+
+  it('sem o fluxo de vozes, o clipe sai como sempre saiu', async () => {
+    const { gravarEmRolagem } = await carregar();
+    const rolando = gravarEmRolagem(stream, null);
+    assert.ok(rolando);
+    const clipe = await rolando.pegar();
+    assert.ok(clipe, 'o clipe tem de sair mesmo sem vozes: vídeo é a função, voz é o ganho');
+    assert.equal(clipe.vozes, null);
+    rolando.parar();
+  });
+
+  // Um fluxo de vozes SEM faixa de áudio (a chamada acabou, o destino ficou vazio) não pode derrubar
+  // o clipe nem inventar uma trilha vazia.
+  it('fluxo de vozes sem faixa nenhuma não vira trilha', async () => {
+    const { gravarEmRolagem } = await carregar();
+    const vazio = { getAudioTracks: () => [] } as unknown as MediaStream;
+    const rolando = gravarEmRolagem(stream, vazio);
+    assert.ok(rolando);
+    const clipe = await rolando.pegar();
+    assert.ok(clipe);
+    assert.equal(clipe.vozes, null);
+    rolando.parar();
+  });
+});
