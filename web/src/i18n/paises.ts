@@ -154,6 +154,7 @@ export const OFICIAL: Record<string, string[]> = {
   //
   // A estimativa à mão em idiomas.ts dizia 1 país. Eram 2, e quem manda é esta lista.
   ha: ['NG', 'NE'],
+  th: ['TH'],
 };
 
 /**

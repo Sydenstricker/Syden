@@ -178,6 +178,13 @@ const TEXTOS = {
     tentando: 'جارٍ المحاولة…',
     codigo: 'OFFLINE — لا يوجد اتصال',
   },
+  th: {
+    titulo: 'เชื่อมต่อไม่ได้',
+    explicacao: 'ลองดูอินเทอร์เน็ตของคุณ เซิร์ฟเวอร์อาจหยุดอยู่ก็ได้',
+    botao: 'ลองอีกครั้ง',
+    tentando: 'กำลังลอง…',
+    codigo: 'OFFLINE — ไม่มีการเชื่อมต่อ',
+  },
   ha: {
     titulo: 'Ba a iya haɗawa ba',
     explicacao: 'Ku duba intanet ɗinku. Mai yiwuwa sabar ma ta tsaya.',

@@ -1,10 +1,10 @@
-// Abre a tela de Configurações em onze idiomas e MEDE: sobrou português, estourou a largura,
+// Abre a tela de Configurações em doze idiomas e MEDE: sobrou português, estourou a largura,
 // ficou campo {assim} cru na tela.
 //
 // POR QUE ELE EXISTE. O CLAUDE.md é explícito: "conferir idioma que ninguém da dupla lê é medir, não
 // confiar". Nós lemos português, inglês e espanhol. As outras treze línguas só se conferem assim.
 //
-// AS ONZE ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
+// AS DOZE ESCOLHIDAS NÃO SÃO AO ACASO, e cada uma mede um risco diferente:
 //   alemão   — palavra composta longa, o maior risco de estourar a caixa;
 //   russo    — frase longa em outro alfabeto;
 //   árabe    — a página inteira vira de lado;
@@ -22,7 +22,10 @@
 //               palavra não caber no botão;
 //   hauçá     — alfabeto latino SEM os acentos do português, onde a armadilha é o contrário da do
 //               vietnamita: o detector por letra quase funciona, e erra só em nome próprio e em
-//               endereço de exemplo — erro raro é pior que erro óbvio, porque ninguém desconfia.
+///               endereço de exemplo — erro raro é pior que erro óbvio, porque ninguém desconfia;
+//   tailandês — O ESPAÇO NÃO SEPARA PALAVRA. Quem decide onde quebrar a linha é o dicionário de
+//               tailandês do navegador, não o texto: é a primeira vez que o estouro de caixa
+//               depende de o <html lang> estar certo.
 //
 // O QUE ELE NÃO MEDE, de propósito: se a tradução está BOA. Isso nenhum teste mede. Ele mede o que é
 // mecânico e passa despercebido — e é justamente o que escapa quando se traduzem cem frases de uma vez.
@@ -129,6 +132,7 @@ const IDIOMAS = [
   { codigo: 'te', nome: 'తెలుగు', rtl: false },
   { codigo: 'ta', nome: 'தமிழ்', rtl: false },
   { codigo: 'ha', nome: 'Hausa', rtl: false },
+  { codigo: 'th', nome: 'ไทย', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por
