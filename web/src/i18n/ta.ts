@@ -395,7 +395,6 @@ export default {
   'Limão': 'எலுமிச்சை',
   'Link copiado!': 'சுட்டி நகலெடுக்கப்பட்டது!',
   'Lixeira': 'குப்பைத் தொட்டி',
-  'Loja': 'கடை',
   'Luzes que se movem devagar.': 'மெதுவாக அசையும் ஒளிகள்.',
   'Mandamos um link para': 'இந்த முகவரிக்குச் சுட்டி அனுப்பினோம்:',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'உறுதிப்படுத்த ஒரு சுட்டி அனுப்பினோம். எப்போதாவது கடவுச்சொல்லை மறந்தால், இதன் வழியாகவே திரும்பப் பெறுவீர்கள்.',
@@ -820,4 +819,5 @@ export default {
   'Versalete': 'சிறிய பெரிய எழுத்துகள்',
   'Maiúsculas pequenas, bem espaçadas.': 'சிறிய பெரிய எழுத்துகள், விரிவான இடைவெளியுடன்.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'நீங்கள் எழுதியதன் நகல் செயலிக்கு வெளியே 90 நாட்கள் வைக்கப்படும், அதிகாரிகள் கேட்டால். Syden வழியாக யாரும் அதைப் படிக்க முடியாது.',
+  'Guarda-roupa': 'உடை அலமாரி',
 } satisfies Record<string, string>;

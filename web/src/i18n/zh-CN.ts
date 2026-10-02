@@ -277,7 +277,6 @@ export default {
   'Ligar câmera': '打开摄像头',
   'Link copiado!': '链接已复制！',
   Lixeira: '回收站',
-  Loja: '商店',
   'Luzes que se movem devagar.': '缓缓移动的光。',
   'Mandamos um link para': '我们发了一个链接到',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -826,4 +825,5 @@ export default {
   'Versalete': '小型大写',
   'Maiúsculas pequenas, bem espaçadas.': '小号大写字母，字距宽松。',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '你写过的内容会在应用之外保留 90 天，以备官方调取。没有人能通过 Syden 看到它。',
+  'Guarda-roupa': '衣橱',
 } satisfies Record<string, string>;

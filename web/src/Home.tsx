@@ -175,7 +175,7 @@ export function Home({
     },
     {
       id: 'loja',
-      titulo: t('Loja'),
+      titulo: t('Guarda-roupa'),
       sub: t('Enfeites, sons e emojis'),
       icone: <ShoppingBag size={18} />,
       ...balaoDaCasa(CASAS.loja),

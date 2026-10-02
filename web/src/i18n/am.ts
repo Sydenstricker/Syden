@@ -415,7 +415,6 @@ export default {
   'Limão': 'ሎሚ አረንጓዴ',
   'Link copiado!': 'አገናኙ ተቀድቷል!',
   'Lixeira': 'መጣያ',
-  'Loja': 'ሱቅ',
   'Luzes que se movem devagar.': 'ቀስ ብለው የሚንቀሳቀሱ መብራቶች።',
   'Mandamos um link para': 'አገናኝ ልከናል ወደ',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'ለማረጋገጥ አገናኝ ልከናል። አንድ ቀን ከረሱ የይለፍ ቃልዎን የሚያስመልሱት በእሱ ነው።',
@@ -835,4 +834,5 @@ export default {
   'Versalete': 'ትናንሽ አቢይ ፊደላት',
   'Maiúsculas pequenas, bem espaçadas.': 'ትናንሽ አቢይ ፊደላት፣ በሰፊ ክፍተት።',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'የጻፉት ቅጂ ከመተግበሪያው ውጭ ለ90 ቀናት ይቆያል፣ ባለሥልጣን ቢጠይቅ። በSyden በኩል ማንም አያነበውም።',
+  'Guarda-roupa': 'የልብስ ቁም ሣጥን',
 } satisfies Record<string, string>;

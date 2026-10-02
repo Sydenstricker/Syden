@@ -280,7 +280,6 @@ export default {
   'Ligar câmera': 'Kamerayı aç',
   'Link copiado!': 'Bağlantı kopyalandı!',
   Lixeira: 'Çöp kutusu',
-  Loja: 'Mağaza',
   'Luzes que se movem devagar.': 'Yavaşça kıpırdayan ışıklar.',
   'Mandamos um link para': 'Şu adrese bir bağlantı gönderdik:',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -834,4 +833,5 @@ export default {
   'Versalete': 'Küçük büyük harf',
   'Maiúsculas pequenas, bem espaçadas.': 'Küçük büyük harfler, ferah aralıklı.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Yazdıklarının bir kopyası, bir makam isterse diye uygulama dışında 90 gün saklanır. Kimse onu Syden üzerinden okumaz.',
+  'Guarda-roupa': 'Gardırop',
 } satisfies Record<string, string>;

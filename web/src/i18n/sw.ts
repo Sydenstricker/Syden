@@ -266,7 +266,6 @@ export default {
   'Ligar câmera': 'Washa kamera',
   'Link copiado!': 'Kiungo kimenakiliwa!',
   Lixeira: 'Pipa la taka',
-  Loja: 'Duka',
   'Luzes que se movem devagar.': 'Mianga inayotembea polepole.',
   'Mandamos um link para': 'Tumetuma kiungo kwenda',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -839,4 +838,5 @@ export default {
   'Versalete': 'Herufi kubwa ndogo',
   'Maiúsculas pequenas, bem espaçadas.': 'Herufi kubwa ndogo, zenye nafasi.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Nakala ya ulichoandika hubaki siku 90 nje ya programu, iwapo mamlaka itaiomba. Hakuna anayeisoma kupitia Syden.',
+  'Guarda-roupa': 'Kabati la nguo',
 } satisfies Record<string, string>;

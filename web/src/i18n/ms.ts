@@ -285,7 +285,6 @@ export default {
   'Ligar câmera': 'Hidupkan kamera',
   'Link copiado!': 'Pautan disalin!',
   Lixeira: 'Tong sampah',
-  Loja: 'Kedai',
   'Luzes que se movem devagar.': 'Cahaya yang bergerak perlahan.',
   'Mandamos um link para': 'Kami hantar pautan ke',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -840,4 +839,5 @@ export default {
   'Versalete': 'Huruf besar kecil',
   'Maiúsculas pequenas, bem espaçadas.': 'Huruf besar kecil, berjarak lega.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan apa yang awak tulis disimpan 90 hari di luar apl, sekiranya pihak berkuasa memintanya. Tiada sesiapa membacanya melalui Syden.',
+  'Guarda-roupa': 'Almari pakaian',
 } satisfies Record<string, string>;

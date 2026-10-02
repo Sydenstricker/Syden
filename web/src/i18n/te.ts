@@ -392,7 +392,6 @@ export default {
   'Limão': 'నిమ్మ',
   'Link copiado!': 'లింక్ కాపీ అయింది!',
   'Lixeira': 'చెత్తబుట్ట',
-  'Loja': 'దుకాణం',
   'Luzes que se movem devagar.': 'నెమ్మదిగా కదిలే వెలుగులు.',
   'Mandamos um link para': 'ఈ చిరునామాకు లింక్ పంపాం:',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'ధృవీకరణ కోసం లింక్ పంపాం. ఎప్పుడైనా పాస్‌వర్డ్ మరచిపోతే దీని ద్వారానే తిరిగి పొందుతారు.',
@@ -817,4 +816,5 @@ export default {
   'Versalete': 'చిన్న పెద్ద అక్షరాలు',
   'Maiúsculas pequenas, bem espaçadas.': 'చిన్న పెద్ద అక్షరాలు, విశాలమైన ఖాళీతో.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'మీరు రాసిన దాని ప్రతి యాప్ వెలుపల 90 రోజులు ఉంటుంది, అధికారుల అభ్యర్థన కోసం. Syden ద్వారా ఎవరూ దాన్ని చదవరు.',
+  'Guarda-roupa': 'బట్టల అలమర',
 } satisfies Record<string, string>;

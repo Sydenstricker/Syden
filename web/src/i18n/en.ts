@@ -378,7 +378,6 @@ export default {
   'Instalar': 'Install',
   'Ir para os canais': 'Go to the channels',
   'Jogo': 'Game',
-  'Loja': 'Shop',
   'Mensagens': 'Messages',
   'Montar esta tela': 'Set this screen up',
   'Mudar esta tela': 'Change this screen',
@@ -845,4 +844,5 @@ export default {
   'Versalete': 'Small caps',
   'Maiúsculas pequenas, bem espaçadas.': 'Small capitals, nicely spaced out.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'A copy of what you wrote is kept for 90 days outside the app, in case an authority asks for it. Nobody reads it through Syden.',
+  'Guarda-roupa': 'Wardrobe',
 } satisfies Record<string, string>;

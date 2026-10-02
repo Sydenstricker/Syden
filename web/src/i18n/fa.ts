@@ -398,7 +398,6 @@ export default {
   'Limão': 'لیمویی',
   'Link copiado!': 'پیوند رونوشت شد!',
   'Lixeira': 'سطل زباله',
-  'Loja': 'فروشگاه',
   'Luzes que se movem devagar.': 'نورهایی که آهسته حرکت می‌کنند.',
   'Mandamos um link para': 'پیوندی فرستادیم به',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'پیوندی برای تأیید فرستادیم. اگر روزی رمز را فراموش کنید، از همین راه پسش می‌گیرید.',
@@ -823,4 +822,5 @@ export default {
   'Versalete': 'حروف کوچکِ بزرگ',
   'Maiúsculas pequenas, bem espaçadas.': 'حروف بزرگِ کوچک، با فاصلهٔ باز.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'نسخه‌ای از آنچه نوشته‌اید ۹۰ روز بیرون از برنامه می‌ماند، برای زمانی که مرجعی آن را بخواهد. هیچ‌کس آن را از طریق Syden نمی‌خواند.',
+  'Guarda-roupa': 'کمد لباس',
 } satisfies Record<string, string>;

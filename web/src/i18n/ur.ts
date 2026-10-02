@@ -397,7 +397,6 @@ export default {
   'Limão': 'لیموں',
   'Link copiado!': 'لنک کاپی ہو گیا!',
   'Lixeira': 'ردی کی ٹوکری',
-  'Loja': 'دکان',
   'Luzes que se movem devagar.': 'آہستہ آہستہ حرکت کرتی روشنیاں۔',
   'Mandamos um link para': 'ہم نے ایک لنک بھیجا ہے',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'ہم نے تصدیق کے لیے ایک لنک بھیجا ہے۔ اسی کے ذریعے آپ پاس ورڈ واپس پا سکیں گے، اگر کبھی بھول جائیں۔',
@@ -822,4 +821,5 @@ export default {
   'Versalete': 'چھوٹے بڑے حروف',
   'Maiúsculas pequenas, bem espaçadas.': 'چھوٹے بڑے حروف، کھلی وقفوں کے ساتھ۔',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'آپ نے جو لکھا اس کی ایک نقل ایپ سے باہر 90 دن رکھی جاتی ہے، اگر کوئی ادارہ طلب کرے۔ اسے Syden سے کوئی نہیں پڑھتا۔',
+  'Guarda-roupa': 'الماری',
 } satisfies Record<string, string>;

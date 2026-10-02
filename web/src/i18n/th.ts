@@ -423,7 +423,6 @@ export default {
   'Limão': 'เขียวมะนาว',
   'Link copiado!': 'คัดลอกลิงก์แล้ว!',
   'Lixeira': 'ถังขยะ',
-  'Loja': 'ร้านค้า',
   'Luzes que se movem devagar.': 'แสงไฟที่เคลื่อนช้า ๆ',
   'Mandamos um link para': 'เราส่งลิงก์ไปที่',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'เราส่งลิงก์ไปให้ยืนยันแล้ว ลิงก์นี้คือทางที่คุณจะกู้รหัสผ่านคืน ถ้าวันหนึ่งลืม',
@@ -848,4 +847,5 @@ export default {
   'Versalete': 'ตัวพิมพ์ใหญ่ขนาดเล็ก',
   'Maiúsculas pequenas, bem espaçadas.': 'ตัวพิมพ์ใหญ่ขนาดเล็ก เว้นระยะโปร่ง',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'สำเนาสิ่งที่คุณเขียนจะถูกเก็บไว้ 90 วันนอกแอป เผื่อทางการขอ ไม่มีใครอ่านมันผ่าน Syden ได้',
+  'Guarda-roupa': 'ตู้เสื้อผ้า',
 } satisfies Record<string, string>;

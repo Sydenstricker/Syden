@@ -416,7 +416,6 @@ export default {
   ESC: 'Esc',
 
   // Shop und Abzeichen
-  Loja: 'Shop',
   'Tudo de graça, sempre': 'Alles kostenlos, immer',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Hier ist alles kostenlos. Nimm, was du willst, und wechsle, wann du willst.',
@@ -867,4 +866,5 @@ export default {
   'Versalete': 'Kapitälchen',
   'Maiúsculas pequenas, bem espaçadas.': 'Kleine Großbuchstaben, schön luftig.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Eine Kopie von dem, was du geschrieben hast, bleibt 90 Tage außerhalb der App — falls eine Behörde danach fragt. Niemand liest sie über Syden.',
+  'Guarda-roupa': 'Kleiderschrank',
 } satisfies Record<string, string>;

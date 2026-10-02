@@ -285,7 +285,6 @@ export default {
   'Ligar câmera': 'कैमरा चालू करो',
   'Link copiado!': 'लिंक कॉपी हो गया!',
   Lixeira: 'कूड़ेदान',
-  Loja: 'दुकान',
   'Luzes que se movem devagar.': 'धीरे-धीरे हिलती रोशनियाँ।',
   'Mandamos um link para': 'हमने लिंक भेजा है:',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -839,4 +838,5 @@ export default {
   'Versalete': 'छोटे बड़े अक्षर',
   'Maiúsculas pequenas, bem espaçadas.': 'छोटे बड़े अक्षर, खुली दूरी के साथ।',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'तुमने जो लिखा उसकी एक प्रति ऐप के बाहर 90 दिन रहती है, अगर कोई प्राधिकरण माँगे। इसे Syden से कोई नहीं पढ़ता।',
+  'Guarda-roupa': 'अलमारी',
 } satisfies Record<string, string>;

@@ -283,7 +283,6 @@ export default {
   'Ligar câmera': 'Camera aanzetten',
   'Link copiado!': 'Link gekopieerd!',
   Lixeira: 'Prullenbak',
-  Loja: 'Winkel',
   'Luzes que se movem devagar.': 'Lichten die langzaam bewegen.',
   'Mandamos um link para': 'We hebben een link gestuurd naar',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -839,4 +838,5 @@ export default {
   'Versalete': 'Kleinkapitaal',
   'Maiúsculas pequenas, bem espaçadas.': 'Kleine hoofdletters, ruim gespatieerd.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Een kopie van wat je schreef blijft 90 dagen buiten de app, voor het geval een autoriteit erom vraagt. Niemand leest die via Syden.',
+  'Guarda-roupa': 'Kledingkast',
 } satisfies Record<string, string>;

@@ -412,7 +412,6 @@ export default {
   'Limão': 'Lemun tsami',
   'Link copiado!': 'An kwafi hanyar!',
   'Lixeira': 'Kwandon shara',
-  'Loja': 'Shago',
   'Luzes que se movem devagar.': 'Fitilun da ke motsi a hankali.',
   'Mandamos um link para': 'Mun aika hanya zuwa',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': 'Mun aika hanya don tabbatarwa. Ta hanyarta ne kuke dawo da kalmar sirri, idan kun manta wata rana.',
@@ -837,4 +836,5 @@ export default {
   'Versalete': 'Manyan haruffa ƙanana',
   'Maiúsculas pequenas, bem espaçadas.': 'Manyan haruffa ƙanana, da faɗin sarari.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Kwafin abin da kuka rubuta yana nan kwana 90 a wajen manhajar, idan hukuma ta nemi shi. Babu wanda ke karanta shi ta Syden.',
+  'Guarda-roupa': 'Kabad',
 } satisfies Record<string, string>;

@@ -412,7 +412,6 @@ export default {
   ESC: 'Esc',
 
   // المتجر والشارات
-  Loja: 'المتجر',
   'Tudo de graça, sempre': 'كل شيء مجاني، دائمًا',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'كل ما هنا مجاني. اختر ما تشاء، وبدّل متى تشاء.',
@@ -860,4 +859,5 @@ export default {
   'Versalete': 'حروف كبيرة صغيرة',
   'Maiúsculas pequenas, bem espaçadas.': 'حروف كبيرة صغيرة الحجم، متباعدة.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'تبقى نسخة مما كتبته 90 يومًا خارج التطبيق، تحسّبًا لطلب من جهة رسمية. لا أحد يقرؤها عبر Syden.',
+  'Guarda-roupa': 'خزانة الملابس',
 } satisfies Record<string, string>;

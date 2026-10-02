@@ -277,7 +277,6 @@ export default {
   'Ligar câmera': '카메라 켜기',
   'Link copiado!': '링크를 복사했어요!',
   Lixeira: '휴지통',
-  Loja: '상점',
   'Luzes que se movem devagar.': '천천히 움직이는 빛.',
   'Mandamos um link para': '링크를 보냈어요:',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -828,4 +827,5 @@ export default {
   'Versalete': '작은 대문자',
   'Maiúsculas pequenas, bem espaçadas.': '작은 대문자에 자간을 넉넉히.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '작성한 내용의 사본이 앱 밖에 90일 보관됩니다. 당국의 요청에 대비한 것이며, Syden에서는 아무도 볼 수 없습니다.',
+  'Guarda-roupa': '옷장',
 } satisfies Record<string, string>;

@@ -391,7 +391,6 @@ export default {
   'Limão': 'ライム',
   'Link copiado!': 'リンクをコピーしました！',
   'Lixeira': 'ゴミ箱',
-  'Loja': 'ショップ',
   'Luzes que se movem devagar.': 'ゆっくり動く光。',
   'Mandamos um link para': '次の宛先にリンクを送りました：',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.': '確認のリンクを送りました。いつかパスワードを忘れたとき、これで取り戻せます。',
@@ -816,4 +815,5 @@ export default {
   'Versalete': 'スモールキャップス',
   'Maiúsculas pequenas, bem espaçadas.': '小さな大文字を、ゆったりした字間で。',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '書いた内容のコピーは、当局の求めに備えてアプリの外に90日間保管されます。Syden から読める人はいません。',
+  'Guarda-roupa': 'ワードローブ',
 } satisfies Record<string, string>;

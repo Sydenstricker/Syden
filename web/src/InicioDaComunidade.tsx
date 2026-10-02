@@ -149,7 +149,7 @@ export function InicioDaComunidade({
 
         <button className="bv-bloco" onClick={aoAbrirLoja}>
           <Store size={26} />
-          <strong>{t('Loja')}</strong>
+          <strong>{t('Guarda-roupa')}</strong>
           <small>{t('Tudo de graça, sempre')}</small>
         </button>
 

@@ -409,7 +409,6 @@ export default {
   ESC: 'Échap',
 
   // Boutique, badges et cosmétiques
-  Loja: 'Boutique',
   'Tudo de graça, sempre': 'Tout est gratuit, toujours',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Tout ici est gratuit. Choisissez ce que vous voulez, changez quand vous voulez.',
@@ -865,4 +864,5 @@ export default {
   'Versalete': 'Petites capitales',
   'Maiúsculas pequenas, bem espaçadas.': 'Des capitales petites, bien espacées.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Une copie de ce que tu as écrit reste 90 jours hors de l’appli, au cas où une autorité la demanderait. Personne ne la lit depuis Syden.',
+  'Guarda-roupa': 'Garde-robe',
 } satisfies Record<string, string>;

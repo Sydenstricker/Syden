@@ -283,7 +283,6 @@ export default {
   'Ligar câmera': 'Accendi la videocamera',
   'Link copiado!': 'Link copiato!',
   Lixeira: 'Cestino',
-  Loja: 'Negozio',
   'Luzes que se movem devagar.': 'Luci che si muovono lentamente.',
   'Mandamos um link para': 'Abbiamo mandato un link a',
   'Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.':
@@ -839,4 +838,5 @@ export default {
   'Versalete': 'Maiuscoletto',
   'Maiúsculas pequenas, bem espaçadas.': 'Maiuscole piccole, ben distanziate.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Una copia di quello che hai scritto resta 90 giorni fuori dall’app, nel caso un’autorità la chieda. Nessuno la legge da Syden.',
+  'Guarda-roupa': 'Guardaroba',
 } satisfies Record<string, string>;
