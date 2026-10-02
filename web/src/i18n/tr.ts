@@ -391,7 +391,7 @@ export default {
     'Oyunlar için. Tek bir görüntü gönderir, en iyisini: oyuna daha çok güç kalır, izleyen de olduğu gibi alır.',
   Parar: 'Durdur',
   'Parar de assistir esta transmissão': 'Bu yayını izlemeyi bırak',
-  'Parar o que está tocando aqui': 'Burada çalanı durdur',
+  'Parar o som para todos na sala': 'Odadaki herkes için sesi durdur',
   'Pedidos que você enviou': 'Gönderdiğin istekler',
   'pela placa de vídeo': 'ekran kartıyla',
   'pelo processador': 'işlemciyle',

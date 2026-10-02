@@ -375,7 +375,7 @@ export default {
     'Kwa michezo. Hutuma picha moja tu, iliyo bora: kompyuta inabaki na nguvu kwa mchezo, na anayetazama hupata ilivyo.',
   Parar: 'Simamisha',
   'Parar de assistir esta transmissão': 'Acha kutazama matangazo haya',
-  'Parar o que está tocando aqui': 'Simamisha kinachochezwa hapa',
+  'Parar o som para todos na sala': 'Simamisha sauti kwa kila mtu chumbani',
   'Pedidos que você enviou': 'Maombi uliyotuma',
   'pela placa de vídeo': 'kupitia kadi ya video',
   'pelo processador': 'kupitia kichakataji',

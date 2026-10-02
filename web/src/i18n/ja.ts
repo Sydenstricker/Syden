@@ -520,7 +520,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'ゲーム向け。いちばん良い映像を1本だけ送ります。ゲームに処理を残せて、見る人はそのままの画質を受け取ります。',
   'Parar': '停止',
   'Parar de assistir esta transmissão': 'この画面共有を見るのをやめる',
-  'Parar o que está tocando aqui': 'ここで再生中のものを止める',
+  'Parar o som para todos na sala': '部屋の全員の音を止める',
   'Parar teste': 'テストを止める',
   'Pedidos que você enviou': '送ったリクエスト',
   'pela placa de vídeo': 'グラフィックボードで',

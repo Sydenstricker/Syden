@@ -453,7 +453,7 @@ export default {
   'Nome do som': 'Название звука',
   'Nenhum som com esse nome.': 'Звука с таким именем нет.',
   'Escolher áudios': 'Выбрать аудиофайлы',
-  'Parar o que está tocando aqui': 'Остановить то, что здесь играет',
+  'Parar o som para todos na sala': 'Остановить звук для всех в комнате',
   Parar: 'Стоп',
 
   // Караоке и игры

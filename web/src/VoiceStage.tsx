@@ -57,7 +57,7 @@ import { VoiceEffectButton } from './VoiceEffectButton';
 import { type QualidadeQueRecebo, updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
-import { stopAllSounds } from './soundboard';
+
 import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { alternarMudoDaTela, getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
@@ -288,7 +288,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
     <div className="soundboard" ref={ref} role="dialog" aria-label="Soundboard">
       <div className="soundboard-head">
         <div className="soundboard-title">Soundboard</div>
-        <button className="soundboard-stop" onClick={stopAllSounds} title={t('Parar o que está tocando aqui')}>
+        <button className="soundboard-stop" onClick={() => void voice.stopSounds()} title={t('Parar o som para todos na sala')}>
           <Square size={12} /> {t('Parar')}
         </button>
       </div>

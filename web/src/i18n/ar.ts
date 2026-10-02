@@ -452,7 +452,7 @@ export default {
   'Nome do som': 'اسم الصوت',
   'Nenhum som com esse nome.': 'لا يوجد صوت بهذا الاسم.',
   'Escolher áudios': 'اختيار ملفات صوتية',
-  'Parar o que está tocando aqui': 'إيقاف ما يُشغَّل هنا',
+  'Parar o som para todos na sala': 'إيقاف الصوت للجميع في الغرفة',
   Parar: 'إيقاف',
 
   // الكاريوكي والألعاب

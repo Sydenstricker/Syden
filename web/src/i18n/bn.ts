@@ -394,7 +394,7 @@ export default {
     'খেলার জন্য। একটাই ছবি পাঠায়, সবচেয়ে ভালোটা: খেলার জন্য বেশি শক্তি বাঁচে, আর যে দেখে সে ওটাই পায়।',
   Parar: 'থামাও',
   'Parar de assistir esta transmissão': 'এই স্ট্রিম দেখা বন্ধ করো',
-  'Parar o que está tocando aqui': 'এখানে যা বাজছে থামাও',
+  'Parar o som para todos na sala': 'ঘরের সবার জন্য শব্দ থামাও',
   'Pedidos que você enviou': 'তুমি যেসব অনুরোধ পাঠিয়েছ',
   'pela placa de vídeo': 'গ্রাফিক্স কার্ড দিয়ে',
   'pelo processador': 'প্রসেসর দিয়ে',

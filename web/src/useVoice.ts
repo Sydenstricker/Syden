@@ -345,12 +345,20 @@ export function useVoice(socket: Socket | null) {
         return;
       }
       if (topic !== SOUNDBOARD_TOPIC || !participant) return;
-      let soundId: unknown;
+      let aviso: { soundId?: unknown; acao?: unknown };
       try {
-        soundId = JSON.parse(new TextDecoder().decode(payload)).soundId;
+        aviso = JSON.parse(new TextDecoder().decode(payload));
       } catch {
         return;
       }
+      // PARAR VEM ANTES DO FREIO, DE PROPÓSITO. O freio de um segundo por pessoa existe para clique
+      // repetido não virar coro — mas quem aperta "parar" logo depois de tocar está justamente
+      // dentro dessa janela, e o pedido mais urgente que existe seria o único a ser engolido.
+      if (aviso?.acao === 'parar') {
+        stopAllSounds();
+        return;
+      }
+      const soundId: unknown = aviso?.soundId;
       const sound = getDirectory().sounds.find((s) => s.id === soundId);
       if (!sound) return;
       // Ignora repetição rápida da mesma pessoa (clique duplo, cliente modificado).
@@ -381,6 +389,29 @@ export function useVoice(socket: Socket | null) {
     },
     [room, showSound],
   );
+
+  /**
+   * Cala o soundboard NA SALA INTEIRA, e não só neste computador.
+   *
+   * ANTES ISTO NÃO EXISTIA, e é o defeito que o relato "não tem como parar o som" descreve. Havia um
+   * botão "Parar", mas ele só silenciava quem o apertasse: quem disparasse um som de trinta segundos
+   * não tinha como voltar atrás, e cada uma das outras pessoas precisava abrir o painel do soundboard
+   * e parar por conta própria. Um erro de clique custava meio minuto de todo mundo.
+   *
+   * Qualquer pessoa da sala pode parar, que é a mesma regra já tomada para o karaokê: a sala é de
+   * todos, e quem está incomodado com o barulho é justamente quem precisa do botão.
+   *
+   * NÃO PASSA PELO FREIO DE ENVIO. O freio de um segundo e meio serve para clique repetido não virar
+   * coro; aplicá-lo aqui faria o "parar" logo depois do "tocar" ser descartado — exatamente o caso
+   * em que ele mais importa.
+   */
+  const stopSounds = useCallback(async () => {
+    stopAllSounds();
+    if (channelRef.current === null) return;
+    await room.localParticipant
+      .publishData(new TextEncoder().encode(JSON.stringify({ acao: 'parar' })), { reliable: true, topic: SOUNDBOARD_TOPIC })
+      .catch(console.error);
+  }, [room]);
 
   /**
    * Manda um efeito visual para a sala. Quem mandou também vê, na hora, sem esperar a volta da rede.
@@ -1106,6 +1137,7 @@ export function useVoice(socket: Socket | null) {
     assistir,
     recentSounds,
     playSound,
+    stopSounds,
     karaoke,
     comandarKaraoke,
     voiceEffect,

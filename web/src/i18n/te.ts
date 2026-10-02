@@ -521,7 +521,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'ఆటల కోసం. ఒకే ఒక చిత్రం పంపుతుంది — అత్యుత్తమమైనది: ఆటకు యంత్రం మిగులుతుంది, చూసేవారికి అదే అందుతుంది.',
   'Parar': 'ఆపు',
   'Parar de assistir esta transmissão': 'ఈ స్క్రీన్ షేర్ చూడటం ఆపు',
-  'Parar o que está tocando aqui': 'ఇక్కడ వినిపిస్తున్నదాన్ని ఆపు',
+  'Parar o som para todos na sala': 'గదిలోని అందరికీ శబ్దం ఆపు',
   'Parar teste': 'పరీక్షను ఆపు',
   'Pedidos que você enviou': 'మీరు పంపిన అభ్యర్థనలు',
   'pela placa de vídeo': 'గ్రాఫిక్స్ కార్డుతో',

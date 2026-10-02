@@ -394,7 +394,7 @@ export default {
     'Untuk game. Mengirim satu gambar saja, yang terbaik: sisa tenaga komputer buat game, dan yang menonton menerima apa adanya.',
   Parar: 'Hentikan',
   'Parar de assistir esta transmissão': 'Berhenti menonton siaran ini',
-  'Parar o que está tocando aqui': 'Hentikan yang sedang diputar di sini',
+  'Parar o som para todos na sala': 'Hentikan suara untuk semua orang di ruangan',
   'Pedidos que você enviou': 'Permintaan yang kamu kirim',
   'pela placa de vídeo': 'lewat kartu grafis',
   'pelo processador': 'lewat prosesor',

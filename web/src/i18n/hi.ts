@@ -396,7 +396,7 @@ export default {
     'खेलों के लिए। सिर्फ़ एक तस्वीर भेजता है, सबसे अच्छी वाली: खेल के लिए ज़्यादा ताकत बचती है, और देखने वाले को वही मिलती है।',
   Parar: 'रोको',
   'Parar de assistir esta transmissão': 'यह स्ट्रीम देखना बंद करो',
-  'Parar o que está tocando aqui': 'यहाँ जो बज रहा है उसे रोको',
+  'Parar o som para todos na sala': 'कमरे में सबके लिए आवाज़ रोको',
   'Pedidos que você enviou': 'तुम्हारे भेजे अनुरोध',
   'pela placa de vídeo': 'ग्राफ़िक्स कार्ड से',
   'pelo processador': 'प्रोसेसर से',

@@ -385,7 +385,7 @@ export default {
     '适合游戏。只发一路画面，质量最好的那一路：留更多性能给游戏，观看的人拿到的就是原样。',
   Parar: '停止',
   'Parar de assistir esta transmissão': '不再观看这个直播',
-  'Parar o que está tocando aqui': '停止这里正在播放的内容',
+  'Parar o som para todos na sala': '停止房间里所有人的声音',
   'Pedidos que você enviou': '你发出的申请',
   'pela placa de vídeo': '走显卡',
   'pelo processador': '走处理器',

@@ -394,7 +394,7 @@ export default {
     'Per i giochi. Manda una sola immagine, la migliore: resta più macchina per il gioco, e chi guarda riceve quella.',
   Parar: 'Ferma',
   'Parar de assistir esta transmissão': 'Smetti di guardare questa trasmissione',
-  'Parar o que está tocando aqui': 'Ferma quello che sta suonando qui',
+  'Parar o som para todos na sala': 'Ferma il suono per tutti nella stanza',
   'Pedidos que você enviou': 'Richieste che hai inviato',
   'pela placa de vídeo': 'con la scheda video',
   'pelo processador': 'con il processore',

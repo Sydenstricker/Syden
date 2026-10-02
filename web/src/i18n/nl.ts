@@ -394,7 +394,7 @@ export default {
     'Voor games. Stuurt één beeld, het beste: er blijft meer computer over voor het spel, en wie kijkt krijgt wat het is.',
   Parar: 'Stoppen',
   'Parar de assistir esta transmissão': 'Stoppen met deze uitzending kijken',
-  'Parar o que está tocando aqui': 'Stoppen wat hier speelt',
+  'Parar o som para todos na sala': 'Stop het geluid voor iedereen in de kamer',
   'Pedidos que você enviou': 'Verzoeken die je verstuurd hebt',
   'pela placa de vídeo': 'via de videokaart',
   'pelo processador': 'via de processor',

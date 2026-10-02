@@ -527,7 +527,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'برای بازی. فقط یک تصویر می‌فرستد، بهترینش: توان دستگاه برای بازی می‌ماند، و بیننده همان را می‌گیرد.',
   'Parar': 'توقف',
   'Parar de assistir esta transmissão': 'پایان تماشای این اشتراک صفحه',
-  'Parar o que está tocando aqui': 'توقف آنچه اینجا پخش می‌شود',
+  'Parar o som para todos na sala': 'توقف صدا برای همه در اتاق',
   'Parar teste': 'توقف آزمایش',
   'Pedidos que você enviou': 'درخواست‌هایی که فرستاده‌اید',
   'pela placa de vídeo': 'با کارت گرافیک',

@@ -526,7 +526,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'کھیلوں کے لیے۔ صرف ایک ہی تصویر بھیجتا ہے، سب سے بہتر والی: کھیل کے لیے مشین بچتی ہے، اور دیکھنے والے کو وہی ملتا ہے جو وہ ہے۔',
   'Parar': 'روکیں',
   'Parar de assistir esta transmissão': 'یہ اسکرین شیئر دیکھنا بند کریں',
-  'Parar o que está tocando aqui': 'جو یہاں چل رہا ہے اسے روکیں',
+  'Parar o som para todos na sala': 'کمرے میں سب کے لیے آواز روکیں',
   'Parar teste': 'جانچ روکیں',
   'Pedidos que você enviou': 'آپ کی بھیجی ہوئی درخواستیں',
   'pela placa de vídeo': 'گرافکس کارڈ سے',

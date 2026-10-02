@@ -552,7 +552,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'สำหรับเกม ส่งภาพเดียว ภาพที่ดีที่สุด เหลือเครื่องไว้ให้เกม และคนดูได้ภาพตามจริง',
   'Parar': 'หยุด',
   'Parar de assistir esta transmissão': 'เลิกดูการถ่ายทอดนี้',
-  'Parar o que está tocando aqui': 'หยุดสิ่งที่กำลังเล่นอยู่ตรงนี้',
+  'Parar o som para todos na sala': 'หยุดเสียงสำหรับทุกคนในห้อง',
   'Parar teste': 'หยุดทดสอบ',
   'Pedidos que você enviou': 'คำขอที่คุณส่งไป',
   'pela placa de vídeo': 'ผ่านการ์ดจอ',

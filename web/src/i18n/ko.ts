@@ -387,7 +387,7 @@ export default {
     '게임용. 가장 좋은 화면 하나만 보내요. 게임에 성능이 더 남고, 보는 사람은 그대로 받습니다.',
   Parar: '멈추기',
   'Parar de assistir esta transmissão': '이 방송 그만 보기',
-  'Parar o que está tocando aqui': '여기서 나오는 소리 멈추기',
+  'Parar o som para todos na sala': '방에 있는 모두의 소리 멈추기',
   'Pedidos que você enviou': '내가 보낸 요청',
   'pela placa de vídeo': '그래픽 카드로',
   'pelo processador': 'CPU로',

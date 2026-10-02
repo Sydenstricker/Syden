@@ -270,7 +270,7 @@ export default {
   'Escolher áudios': 'Choose audio files',
   'Nome do som': 'Sound name',
   'Nenhum som com esse nome.': 'No sound by that name.',
-  'Parar o que está tocando aqui': 'Stop what is playing here',
+  'Parar o som para todos na sala': 'Stop the sound for everyone in the room',
   'Nome do pacote': 'Pack name',
   'O que tem dentro': 'What is inside',
   'O que tem dentro do pacote': 'What is inside the pack',

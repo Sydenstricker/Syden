@@ -524,7 +524,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'விளையாட்டுக்காக. ஒரே ஒரு படத்தை மட்டும் அனுப்பும் — சிறந்ததை: விளையாட்டுக்கு இயந்திரம் மிஞ்சும், பார்ப்பவருக்கு அதுவே கிடைக்கும்.',
   'Parar': 'நிறுத்து',
   'Parar de assistir esta transmissão': 'இந்தத் திரைப் பகிர்வைப் பார்ப்பதை நிறுத்து',
-  'Parar o que está tocando aqui': 'இங்கே ஒலிப்பதை நிறுத்து',
+  'Parar o som para todos na sala': 'அறையில் உள்ள அனைவருக்கும் ஒலியை நிறுத்து',
   'Parar teste': 'சோதனையை நிறுத்து',
   'Pedidos que você enviou': 'நீங்கள் அனுப்பிய கோரிக்கைகள்',
   'pela placa de vídeo': 'வரைகலை அட்டையுடன்',

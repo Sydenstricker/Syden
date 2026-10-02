@@ -270,7 +270,7 @@ export default {
   'Escolher áudios': 'Elegir audios',
   'Nome do som': 'Nombre del sonido',
   'Nenhum som com esse nome.': 'Ningún sonido con ese nombre.',
-  'Parar o que está tocando aqui': 'Parar lo que está sonando aquí',
+  'Parar o som para todos na sala': 'Parar el sonido para todos en la sala',
   'Nome do pacote': 'Nombre del paquete',
   'O que tem dentro': 'Qué hay dentro',
   'O que tem dentro do pacote': 'Qué hay dentro del paquete',

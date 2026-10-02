@@ -509,7 +509,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'Dành cho trò chơi. Chỉ gửi một luồng hình, luồng tốt nhất: máy còn sức cho trò chơi, và người xem nhận đúng hình đó.',
   'Parar': 'Dừng',
   'Parar de assistir esta transmissão': 'Ngừng xem phần chia sẻ này',
-  'Parar o que está tocando aqui': 'Dừng thứ đang phát ở đây',
+  'Parar o som para todos na sala': 'Dừng âm thanh cho mọi người trong phòng',
   'Parar teste': 'Dừng thử',
   'Pedidos que você enviou': 'Lời mời bạn đã gửi',
   'pela placa de vídeo': 'bằng card đồ hoạ',

@@ -457,7 +457,7 @@ export default {
   'Nome do som': 'Name des Sounds',
   'Nenhum som com esse nome.': 'Kein Sound mit diesem Namen.',
   'Escolher áudios': 'Audiodateien wählen',
-  'Parar o que está tocando aqui': 'Stoppen, was hier gerade läuft',
+  'Parar o som para todos na sala': 'Den Ton für alle im Raum stoppen',
   Parar: 'Stopp',
 
   // Karaoke und Spiele

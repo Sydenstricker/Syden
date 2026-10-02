@@ -449,7 +449,7 @@ export default {
   'Nome do som': 'Nom du son',
   'Nenhum som com esse nome.': 'Aucun son de ce nom.',
   'Escolher áudios': 'Choisir des audios',
-  'Parar o que está tocando aqui': 'Arrêter ce qui joue ici',
+  'Parar o som para todos na sala': 'Arrêter le son pour tout le monde dans le salon',
   Parar: 'Arrêter',
 
   // Karaoké et jeux

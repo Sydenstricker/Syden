@@ -396,7 +396,7 @@ export default {
     'Untuk permainan. Menghantar satu imej sahaja, yang terbaik: lebih banyak kuasa tinggal untuk permainan, dan penonton menerimanya seadanya.',
   Parar: 'Berhenti',
   'Parar de assistir esta transmissão': 'Berhenti menonton siaran ini',
-  'Parar o que está tocando aqui': 'Hentikan apa yang sedang dimainkan di sini',
+  'Parar o som para todos na sala': 'Hentikan bunyi untuk semua orang dalam bilik',
   'Pedidos que você enviou': 'Permintaan yang anda hantar',
   'pela placa de vídeo': 'melalui kad video',
   'pelo processador': 'melalui pemproses',

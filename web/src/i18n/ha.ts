@@ -541,7 +541,7 @@ export default {
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.': 'Don wasanni. Yana aika hoto ɗaya kawai, mafi kyau: ana bar na\'urar ga wasan, kuma mai kallo yana samun yadda yake.',
   'Parar': 'Tsaya',
   'Parar de assistir esta transmissão': 'Daina kallon wannan watsawar',
-  'Parar o que está tocando aqui': 'Tsayar da abin da ke kunne a nan',
+  'Parar o som para todos na sala': 'Tsayar da sauti ga kowa a ɗakin',
   'Parar teste': 'Tsayar da gwaji',
   'Pedidos que você enviou': 'Buƙatun da kuka aika',
   'pela placa de vídeo': 'ta katin bidiyo',
