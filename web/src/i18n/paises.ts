@@ -156,6 +156,12 @@ export const OFICIAL: Record<string, string[]> = {
   ha: ['NG', 'NE'],
   th: ['TH'],
   am: ['ET'],
+
+  // O iorubá entra pelo MESMO artigo 55 da Constituição nigeriana que trouxe o hauçá: a frase nomeia
+  // três línguas — hauçá, ibo e iorubá — como aquelas em que a Assembleia Nacional trabalha, ao lado
+  // do inglês. É status nacional escrito em lei. Fora da Nigéria ele é muito falado no Benim e no
+  // Togo, mas ali sem status oficial, e este arquivo pede status.
+  yo: ['NG'],
 };
 
 /**
