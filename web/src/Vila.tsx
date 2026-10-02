@@ -679,7 +679,7 @@ export function Vila({
     { p: frente(-0.4, -3.3), no: <Bandeira key="ban-a" c={-0.4} r={-3.3} /> },
     { p: frente(4.2, -3.2), no: <Bandeira key="ban-b" c={4.2} r={-3.2} altura={72} /> },
 
-    { p: frente(CASAS.loja.c, CASAS.loja.r, CASAS.loja.w, CASAS.loja.d), no: <Casa key="casa-loja" {...CASAS.loja} aceso={noite} destaque={destaque === 'loja'} /> },
+    { p: frente(CASAS.guardaRoupa.c, CASAS.guardaRoupa.r, CASAS.guardaRoupa.w, CASAS.guardaRoupa.d), no: <Casa key="casa-guarda-roupa" {...CASAS.guardaRoupa} aceso={noite} destaque={destaque === 'guarda-roupa'} /> },
     { p: frente(CASAS.salas.c, CASAS.salas.r, CASAS.salas.w, CASAS.salas.d), no: <Casa key="casa-salas" {...CASAS.salas} aceso={noite} destaque={destaque === 'salas'} /> },
     { p: frente(CASAS.aprender.c, CASAS.aprender.r, CASAS.aprender.w, CASAS.aprender.d), no: <Casa key="casa-aprender" {...CASAS.aprender} aceso={noite} destaque={destaque === 'aprender'} /> },
     { p: frente(CASAS.explorar.c, CASAS.explorar.r, CASAS.explorar.w, CASAS.explorar.d), no: <Casa key="casa-explorar" {...CASAS.explorar} aceso={noite} destaque={destaque === 'explorar'} /> },
@@ -851,7 +851,7 @@ export function Vila({
         {/* O chão: ilha, praça e caminhos ficam debaixo de tudo. */}
         <Ilha />
         <Praca />
-        <Caminho c={CASAS.loja.c} r={CASAS.loja.r + 1.1} passos={1.4} />
+        <Caminho c={CASAS.guardaRoupa.c} r={CASAS.guardaRoupa.r + 1.1} passos={1.4} />
         <Caminho c={CASAS.salas.c + 1.0} r={CASAS.salas.r + 1.3} passos={1.4} />
 
         {/* O gramado que aceita cenoura vem ANTES do cenário: assim a casa, a árvore e a estátua ficam

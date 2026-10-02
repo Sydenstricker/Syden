@@ -1,4 +1,4 @@
-import { BookOpen, Compass, Lightbulb, Rabbit, Send, ShoppingBag, UserPlus, Users, Volume2 } from 'lucide-react';
+import { BookOpen, Compass, Lightbulb, Rabbit, Send, Shirt, UserPlus, Users, Volume2 } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
@@ -123,7 +123,7 @@ export function Home({
   salas,
   naVoz,
   aoEntrar,
-  aoAbrirLoja,
+  aoAbrirGuardaRoupa,
   aoAbrirAmigos,
   aoExplorar,
   souODono,
@@ -135,7 +135,7 @@ export function Home({
   /** Quem está em cada sala, para a lista mostrar companhia. */
   naVoz: VoiceMember[];
   aoEntrar: (channelId: number) => void;
-  aoAbrirLoja: () => void;
+  aoAbrirGuardaRoupa: () => void;
   aoAbrirAmigos: () => void;
   aoExplorar: () => void;
   /** Quem cuida do Syden recebe as ideias em vez de mandar: para ele a caixa não aparece. */
@@ -174,12 +174,12 @@ export function Home({
       onClick: aoAbrirAmigos,
     },
     {
-      id: 'loja',
+      id: 'guarda-roupa',
       titulo: t('Guarda-roupa'),
       sub: t('Enfeites, sons e emojis'),
-      icone: <ShoppingBag size={18} />,
-      ...balaoDaCasa(CASAS.loja),
-      onClick: aoAbrirLoja,
+      icone: <Shirt size={18} />,
+      ...balaoDaCasa(CASAS.guardaRoupa),
+      onClick: aoAbrirGuardaRoupa,
     },
     {
       id: 'aprender',

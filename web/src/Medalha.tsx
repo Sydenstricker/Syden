@@ -88,7 +88,7 @@ function Moldura({ tipo }: { tipo: TipoDeMoldura }) {
  */
 /**
  * Uma insígnia qualquer: a arte dentro do quadro, com a moldura da cor que o item pedir. É esta peça que
- * a loja e os presentes reaproveitam — trocam a arte e a cor, e não desenham nada de novo.
+ * o guarda-roupa e os presentes reaproveitam — trocam a arte e a cor, e não desenham nada de novo.
  */
 export function Insignia({
   arte,

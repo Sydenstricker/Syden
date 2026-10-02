@@ -32,7 +32,7 @@ export function InicioDaComunidade({
   quantosMembros,
   quantosNaVoz,
   aoAbrirCanal,
-  aoAbrirLoja,
+  aoAbrirGuardaRoupa,
   aoEditar,
   aoFechar,
 }: {
@@ -42,7 +42,7 @@ export function InicioDaComunidade({
   quantosMembros: number;
   quantosNaVoz: number;
   aoAbrirCanal: (canal: Channel) => void;
-  aoAbrirLoja: () => void;
+  aoAbrirGuardaRoupa: () => void;
   aoEditar: () => void;
   aoFechar: () => void;
 }) {
@@ -147,7 +147,7 @@ export function InicioDaComunidade({
         </button>
         )}
 
-        <button className="bv-bloco" onClick={aoAbrirLoja}>
+        <button className="bv-bloco" onClick={aoAbrirGuardaRoupa}>
           <Store size={26} />
           <strong>{t('Guarda-roupa')}</strong>
           <small>{t('Tudo de graça, sempre')}</small>

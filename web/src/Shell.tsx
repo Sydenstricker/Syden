@@ -787,7 +787,7 @@ export function Shell({
               // A LOJA VIROU UMA ABA DAS CONFIGURAÇÕES. Ela era uma tela de topo alcançada pela
               // vila e pela tela de boas-vindas DA COMUNIDADE — e por isso parecia ser da
               // comunidade, embora nunca tenha sido. Agora ela está onde mora o resto do que é seu.
-              aoAbrirLoja={() => setSettingsOpen('aparencia')}
+              aoAbrirGuardaRoupa={() => setSettingsOpen('aparencia')}
               aoAbrirAmigos={() => setView('amigos')}
               aoExplorar={() => setExplorarAberto(true)}
               souODono={user.isOwner}
@@ -842,7 +842,7 @@ export function Shell({
                 setMostrandoBoasVindas(false);
                 setSelectedId(canal.id);
               }}
-              aoAbrirLoja={() => {
+              aoAbrirGuardaRoupa={() => {
                 setMostrandoBoasVindas(false);
                 setSettingsOpen('aparencia');
               }}

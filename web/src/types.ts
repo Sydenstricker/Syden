@@ -344,10 +344,10 @@ export interface ServidorDeJogo {
 /** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */
 export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito';
 
-/** Como se põe a mão num item. Nenhum dos dois jeitos é pagando — ver server/src/loja.ts. */
+/** Como se põe a mão num item. Nenhum dos dois jeitos é pagando — ver server/src/guardaRoupa.ts. */
 export type ComoSeGanha = 'livre' | 'conquista';
 
-export interface ItemDaLoja {
+export interface ItemDoGuardaRoupa {
   codigo: string;
   tipo: TipoDeItem;
   comoSeGanha: ComoSeGanha;
@@ -355,7 +355,7 @@ export interface ItemDaLoja {
   tenho: boolean;
 }
 
-export interface Loja {
-  itens: ItemDaLoja[];
+export interface GuardaRoupa {
+  itens: ItemDoGuardaRoupa[];
   vestindo: { cor: string | null; fundo: string | null; moldura: string | null; efeito: string | null; insignias: string[] };
 }

@@ -7349,7 +7349,7 @@ textarea {
 [data-cor='anil'] { color: #8b9cf0; }
 [data-cor='lavanda'] { color: #b494f0; }
 [data-cor='rosa'] { color: #f090bd; }
-/* AS QUATRO ABAIXO ESTAVAM NO CATÁLOGO E NÃO EXISTIAM AQUI. O servidor as oferecia, a loja as
+/* AS QUATRO ABAIXO ESTAVAM NO CATÁLOGO E NÃO EXISTIAM AQUI. O servidor as oferecia, o guarda-roupa as
    listava, e quem clicasse em "Usar" não via diferença nenhuma — a tela não tinha o que desenhar.
    É o preço de a arte morar no site e a lista no servidor: os dois podem sair de passo. */
 [data-cor='cobre'] { color: #d98f5a; }
@@ -7433,7 +7433,7 @@ textarea {
 }
 
 /* OS TRÊS ABAIXO TAMBÉM ESTAVAM NO CATÁLOGO SEM ARTE NENHUMA, e apareciam como retângulo vazio na
-   loja. São os mais chamativos do conjunto, que é justamente o que a descrição deles promete. */
+   guarda-roupa. São os mais chamativos do conjunto, que é justamente o que a descrição deles promete. */
 
 /* Poeira de estrelas: duas nuvens de cor que atravessam o cartão em ritmos diferentes, e por isso
    nunca repetem o mesmo quadro. */
@@ -8812,34 +8812,16 @@ textarea {
   }
 }
 
-/* ---------- A loja ---------- */
+/* ---------- O guarda-roupa ---------- */
 
-.loja {
-  overflow-y: auto;
-  flex: 1;
-  padding: 24px;
-}
-
-.loja-cabecalho h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-}
-
-.loja-cabecalho p {
-  margin: 4px 0 16px;
-  color: var(--text-muted);
-}
-
-.loja-grade {
+.guarda-roupa-grade {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 12px;
   margin: 16px 0 28px;
 }
 
-.loja-cartao {
+.guarda-roupa-cartao {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -8849,16 +8831,16 @@ textarea {
   background: var(--bg-secondary);
 }
 
-.loja-cartao.vestido {
+.guarda-roupa-cartao.vestido {
   border-color: var(--green);
 }
 
-/* Trancado continua visível e legível: a graça de uma loja é ver o que existe. */
-.loja-cartao.trancado {
+/* Trancado continua visível e legível: a graça de um guarda-roupa é ver o que existe. */
+.guarda-roupa-cartao.trancado {
   opacity: 0.75;
 }
 
-.loja-cartao-texto {
+.guarda-roupa-cartao-texto {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -8866,13 +8848,13 @@ textarea {
   min-width: 0;
 }
 
-.loja-cartao-texto small {
+.guarda-roupa-cartao-texto small {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.35;
 }
 
-.loja-etiqueta {
+.guarda-roupa-etiqueta {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -8884,12 +8866,12 @@ textarea {
   font-weight: 600;
 }
 
-.loja-etiqueta.conquista {
+.guarda-roupa-etiqueta.conquista {
   color: #faa61a;
   background: rgba(250, 166, 26, 0.12);
 }
 
-.loja-amostra {
+.guarda-roupa-amostra {
   display: grid;
   place-items: center;
   flex: none;
@@ -8899,26 +8881,26 @@ textarea {
   overflow: hidden;
 }
 
-.loja-amostra.cor {
+.guarda-roupa-amostra.cor {
   font-size: 20px;
   font-weight: 700;
   background: var(--overlay);
 }
 
-.loja-amostra.fundo {
+.guarda-roupa-amostra.fundo {
   background-size: cover;
 }
 
 /* A bolinha da amostra de moldura. Leva a classe .avatar junto, porque e la que mora o anel
    (.avatar[data-moldura]::after) — ver TelaDaLoja.tsx. Aqui so o tamanho e a cor do miolo. */
-.loja-amostra-avatar {
+.guarda-roupa-amostra-avatar {
   width: 34px;
   height: 34px;
   border-radius: 50%;
   background: var(--overlay);
 }
 
-.loja-vestido {
+.guarda-roupa-vestido {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -8927,12 +8909,12 @@ textarea {
   color: var(--green);
 }
 
-.loja-trancado {
+.guarda-roupa-trancado {
   flex: none;
   color: var(--text-muted);
 }
 
-.loja-pacotes {
+.guarda-roupa-pacotes {
   max-width: 720px;
   margin-top: 28px;
   padding: 16px;
@@ -8941,7 +8923,7 @@ textarea {
   background: var(--bg-secondary);
 }
 
-.loja-pacotes h3 {
+.guarda-roupa-pacotes h3 {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -8950,10 +8932,6 @@ textarea {
 
 /* Os estilos dos valores de contribuição saíram daqui junto com o bloco que os usava: a contribuição
    agora mora só no site (web/site/contribuir.html), com o estilo dele. */
-
-.loja-rodape {
-  margin-top: 24px;
-}
 
 /* ---------- Servidores de jogo ---------- */
 
@@ -9367,7 +9345,7 @@ textarea {
 /* O aviso de direito autoral na tela de karaokê. Amarelo discreto: tem de ser notado sem parecer erro —
    quem vai subir uma música não fez nada de errado ainda. */
 .karaoke-aviso {
-  /* O mesmo âmbar que o resto do Syden usa para chamar atenção sem alarmar (ver .loja-etiqueta.conquista). */
+  /* O mesmo âmbar que o resto do Syden usa para chamar atenção sem alarmar (ver .guarda-roupa-etiqueta.conquista). */
   border-left: 2px solid #faa61a;
   padding-left: 10px;
   margin-top: 8px;
@@ -10157,12 +10135,12 @@ body.arrastando-barra {
   background: var(--bg-input);
 }
 
-/* ---------- A loja reage ao mouse ---------- */
+/* ---------- O guarda-roupa reage ao mouse ---------- */
 /* "Muitos elementos estáticos. Quando o usuário passar o mouse encima, o elemento deveria tomar
    vida." É o que separa uma vitrine de uma planilha: o cartão se levanta um pouco, a amostra cresce,
    e o que tem movimento acelera. Nada disso acontece sozinho — só debaixo do mouse, que é onde a
    atenção já está. */
-.loja-cartao {
+.guarda-roupa-cartao {
   transition:
     transform 0.16s ease,
     border-color 0.16s ease,
@@ -10170,7 +10148,7 @@ body.arrastando-barra {
     background 0.16s ease;
 }
 
-.loja-cartao:hover {
+.guarda-roupa-cartao:hover {
   transform: translateY(-3px);
   border-color: var(--accent);
   background: var(--bg-raised);
@@ -10178,44 +10156,44 @@ body.arrastando-barra {
 }
 
 /* A amostra cresce dentro da casa dela — a casa não muda de tamanho, então nada na grade se mexe. */
-.loja-amostra {
+.guarda-roupa-amostra {
   transition: transform 0.2s ease;
 }
 
-.loja-cartao:hover .loja-amostra {
+.guarda-roupa-cartao:hover .guarda-roupa-amostra {
   transform: scale(1.1);
 }
 
 /* O que já se move passa a se mover mais depressa debaixo do mouse: é o mesmo desenho, mostrado de
    perto. A conta é a mesma dos originais (ver os @keyframes lá em cima), dividida por três. */
-.loja-cartao:hover .fundo-aurora { animation-duration: 6s; }
-.loja-cartao:hover .fundo-brasa { animation-duration: 4.5s; }
-.loja-cartao:hover .fundo-oceano { animation-duration: 5s; }
-.loja-cartao:hover .fundo-estrelas { animation-duration: 1.6s; }
-.loja-cartao:hover .fundo-nebulosa { animation-duration: 8s; }
-.loja-cartao:hover .fundo-vitral { animation-duration: 3s; }
-.loja-cartao:hover .fundo-cosmos::after { animation-duration: 18s; }
+.guarda-roupa-cartao:hover .fundo-aurora { animation-duration: 6s; }
+.guarda-roupa-cartao:hover .fundo-brasa { animation-duration: 4.5s; }
+.guarda-roupa-cartao:hover .fundo-oceano { animation-duration: 5s; }
+.guarda-roupa-cartao:hover .fundo-estrelas { animation-duration: 1.6s; }
+.guarda-roupa-cartao:hover .fundo-nebulosa { animation-duration: 8s; }
+.guarda-roupa-cartao:hover .fundo-vitral { animation-duration: 3s; }
+.guarda-roupa-cartao:hover .fundo-cosmos::after { animation-duration: 18s; }
 
 /* As molduras paradas (prata, bronze, folha, mar, brasa) ganham um giro de luz só no hover: elas não
-   têm animação própria, e sem isto seriam as únicas da loja que não reagem a nada. */
-.loja-cartao:hover .avatar[data-moldura]::after {
+   têm animação própria, e sem isto seriam as únicas do guarda-roupa que não reagem a nada. */
+.guarda-roupa-cartao:hover .avatar[data-moldura]::after {
   animation: moldura-brilho 2.5s linear infinite;
   background-size: 300% 300%;
 }
 
 /* E as que JÁ giram giram mais rápido, para a diferença continuar existindo. */
-.loja-cartao:hover .avatar[data-moldura='ouro-moldura']::after,
-.loja-cartao:hover .avatar[data-moldura='esmeralda-moldura']::after {
+.guarda-roupa-cartao:hover .avatar[data-moldura='ouro-moldura']::after,
+.guarda-roupa-cartao:hover .avatar[data-moldura='esmeralda-moldura']::after {
   animation-duration: 2s;
 }
 
 /* A cor do nome é texto parado; no hover ela pulsa de leve, que é o único movimento que uma cor
    aceita sem virar outra cor. */
-.loja-cartao:hover .loja-amostra.cor {
-  animation: loja-pulso 1.2s ease-in-out infinite;
+.guarda-roupa-cartao:hover .guarda-roupa-amostra.cor {
+  animation: guarda-roupa-pulso 1.2s ease-in-out infinite;
 }
 
-@keyframes loja-pulso {
+@keyframes guarda-roupa-pulso {
   0%, 100% { filter: brightness(1); }
   50% { filter: brightness(1.45); }
 }
@@ -10224,16 +10202,16 @@ body.arrastando-barra {
    o cartão ainda muda de borda e de fundo no hover, que é o que diz "dá para clicar", e para de se
    mexer. */
 @media (prefers-reduced-motion: reduce) {
-  .loja-cartao:hover {
+  .guarda-roupa-cartao:hover {
     transform: none;
   }
 
-  .loja-cartao:hover .loja-amostra {
+  .guarda-roupa-cartao:hover .guarda-roupa-amostra {
     transform: none;
   }
 
-  .loja-cartao:hover .loja-amostra.cor,
-  .loja-cartao:hover .avatar[data-moldura]::after {
+  .guarda-roupa-cartao:hover .guarda-roupa-amostra.cor,
+  .guarda-roupa-cartao:hover .avatar[data-moldura]::after {
     animation: none;
   }
 }

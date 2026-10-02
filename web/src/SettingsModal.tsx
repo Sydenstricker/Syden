@@ -32,7 +32,7 @@ import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
 import { algarismos } from './algarismos';
 import { isolar } from './bidi';
 import { chave, t, useT } from './i18n';
-import { MOLDURAS } from './loja';
+import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
 import { Insignia } from './Medalha';

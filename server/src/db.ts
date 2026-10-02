@@ -535,7 +535,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_reactions_message ON message_reactions(message_id, id);
 
   -- O que cada pessoa tem. Serve para presente do sistema (a insígnia dos 25 primeiros), para recompensa
-  -- (a medalha de ideia acolhida) e, mais para frente, para o que for comprado na loja. O DESENHO de cada
+  -- (a medalha de ideia acolhida) e, mais para frente, para o que vier do guarda-roupa. O DESENHO de cada
   -- item mora no app, não aqui: o banco guarda só o código, para trocar arte sem mexer em banco.
   -- Os servidores de jogo de uma comunidade: uma agenda de endereços, nada mais. O Syden não fala
   -- com esses servidores (ver server/src/jogos.ts).
@@ -818,7 +818,7 @@ addColumnIfMissing('communities', 'selo_cor', 'TEXT');
 // e ver só o corredor. Aqui o dono escreve o que quiser dizer, escolhe uma arte, e aponta o que a
 // pessoa deve fazer primeiro.
 //
-// A ARTE É UM CÓDIGO, e não uma imagem. Pela mesma razão das molduras da loja: trocar um degradê ou
+// A ARTE É UM CÓDIGO, e não uma imagem. Pela mesma razão das molduras do guarda-roupa: trocar um degradê ou
 // acrescentar uma arte nova vira uma mudança no site, publicada sozinha, sem tocar no servidor nem
 // migrar banco. O desenho mora em web/src/boasVindas.ts.
 // MODO APRESENTAÇÃO da sala de voz: uma pessoa fala e as outras assistem.
@@ -855,9 +855,9 @@ addColumnIfMissing('users', 'session_version', 'INTEGER NOT NULL DEFAULT 1');
 // Quais insígnias a pessoa escolheu exibir, e em que ordem: os códigos separados por vírgula. Fica aqui,
 // e não numa consulta à user_items, porque a lista de membros mostra isto de todo mundo o tempo todo.
 addColumnIfMissing('users', 'vitrine', 'TEXT');
-// A moldura do avatar, cosmético da loja. Guarda só o NOME da escolha ('prata'); o desenho mora no app.
+// A moldura do avatar, cosmético do guarda-roupa. Guarda só o NOME da escolha ('prata'); o desenho mora no app.
 addColumnIfMissing('users', 'moldura', 'TEXT');
-// O EFEITO DO NOME ('brilho', 'serifa'…), cosmético da loja. Mesma regra dos outros: o banco guarda
+// O EFEITO DO NOME ('brilho', 'serifa'…), cosmético do guarda-roupa. Mesma regra dos outros: o banco guarda
 // o CÓDIGO e o desenho mora no app, então um efeito novo é publicar o site, sem migrar nada.
 addColumnIfMissing('users', 'name_effect', 'TEXT');
 // Qual SELO a pessoa escolheu vestir. Guarda o numero da comunidade, e nao uma copia do selo: assim,
@@ -1807,7 +1807,7 @@ export function setProfile(
   return findUserById(userId)!;
 }
 
-/** Só os códigos que a pessoa tem no inventário. É o que a loja precisa para saber o que liberar. */
+/** Só os códigos que a pessoa tem no inventário. É o que o guarda-roupa precisa para saber o que liberar. */
 export function codigosDoInventario(userId: number): string[] {
   return (db.prepare('SELECT code FROM user_items WHERE user_id = ?').all(userId) as unknown as { code: string }[]).map(
     (linha) => linha.code,

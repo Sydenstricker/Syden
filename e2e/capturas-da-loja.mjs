@@ -268,7 +268,7 @@ for (const idioma of IDIOMAS) {
   //
   // O botão de início da barra se chama .rail-logo. Antes estava escrito .rail-home, que não existe
   // — e como o seletor tinha ".rail-item" como alternativa, o clique caía na primeira COMUNIDADE da
-  // lista. O app nunca chegava à vila, a primeira foto saía errada e a Loja "não era encontrada",
+  // lista. O app nunca chegava à vila, a primeira foto saía errada e o guarda-roupa "não era encontrado",
   // porque o balão dela só existe na tela inicial. Um seletor errado que casa com outra coisa é
   // pior do que um que não casa com nada: este não deu erro, só fez a coisa errada em silêncio.
   await page.locator('.rail-logo').click();
@@ -312,15 +312,15 @@ for (const idioma of IDIOMAS) {
     console.log('    (não achei um canal de texto — tire esta à mão)');
   }
 
-  // 3. A LOJA. Mostra o que o Syden tem de diferente no modelo: tudo de graça, nada travado.
-  console.log('  3. A loja de enfeites');
+  // 3. O GUARDA-ROUPA. Mostra o que o Syden tem de diferente no modelo: tudo de graça, nada travado.
+  console.log('  3. O guarda-roupa de enfeites');
   await page.locator('.rail-logo').click();
   await page.locator('.vila').waitFor({ timeout: 20_000 }).catch(() => {});
-  if (await abrirBalao(/Loja|Shop|Tienda/)) {
-    await foto('3-loja', 1800);
+  if (await abrirBalao(/Guarda-roupa|Wardrobe|Guardarropa/)) {
+    await foto('3-guarda-roupa', 1800);
     await voltarParaAVila();
   } else {
-    console.log('    (não achei o balão da Loja na vila — tire esta à mão)');
+    console.log('    (não achei o balão do Guarda-roupa na vila — tire esta à mão)');
   }
 
   // 4. OS AMIGOS.

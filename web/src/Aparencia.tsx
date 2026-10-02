@@ -1,15 +1,15 @@
 import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { api } from './api';
+import { api, ApiError } from './api';
 import { Avatar } from './Avatar';
 import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
-import { acharVisual, COMO_SE_GANHA } from './loja';
+import { acharVisual, COMO_SE_GANHA } from './guardaRoupa';
 import { aplicarCorDeDestaque, COR_PADRAO, corLegivel } from './corDeDestaque';
 import { classeDoFundo, corDoNome, efeitoDoNome } from './profileStyles';
 import { updateSettings, useSettings } from './settings';
-import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
+import type { GuardaRoupa, ItemDoGuardaRoupa, TipoDeItem, User } from './types';
 
 // APARÊNCIA: um lugar só para tudo o que muda a sua cara no Syden.
 //
@@ -27,34 +27,34 @@ import type { ItemDaLoja, Loja as LojaDados, TipoDeItem, User } from './types';
 // coisa É antes de você vestir para descobrir.
 
 /** O quadradinho que mostra como o item fica, sem precisar vestir para descobrir. */
-function Amostra({ item }: { item: ItemDaLoja }) {
+function Amostra({ item }: { item: ItemDoGuardaRoupa }) {
   if (item.tipo === 'cor') {
     return (
-      <span className="loja-amostra cor" data-cor={item.codigo === 'padrao' ? undefined : item.codigo}>
+      <span className="guarda-roupa-amostra cor" data-cor={item.codigo === 'padrao' ? undefined : item.codigo}>
         Aa
       </span>
     );
   }
-  if (item.tipo === 'fundo') return <span className={`loja-amostra fundo ${classeDoFundo(item.codigo)}`} />;
+  if (item.tipo === 'fundo') return <span className={`guarda-roupa-amostra fundo ${classeDoFundo(item.codigo)}`} />;
   if (item.tipo === 'moldura') {
     // A MESMA MARCAÇÃO DO AVATAR DE VERDADE: os anéis moram em `.avatar[data-moldura]::after` e em
     // lugar nenhum mais. Uma amostra que não seja um `.avatar` não desenha moldura alguma — foi
     // assim que as dez apareceram como a mesma bola escura.
     return (
-      <span className="loja-amostra">
-        <span className="avatar loja-amostra-avatar" data-moldura={item.codigo === 'nenhuma' ? undefined : item.codigo} />
+      <span className="guarda-roupa-amostra">
+        <span className="avatar guarda-roupa-amostra-avatar" data-moldura={item.codigo === 'nenhuma' ? undefined : item.codigo} />
       </span>
     );
   }
   const insignia = acharInsignia(item.codigo);
   return (
-    <span className="loja-amostra insignia">
+    <span className="guarda-roupa-amostra insignia">
       {insignia && <Insignia arte={insignia.arte} titulo={insignia.nome} moldura={insignia.moldura} tamanho={40} />}
     </span>
   );
 }
 
-function Cartao({ item, vestido, onVestir }: { item: ItemDaLoja; vestido: boolean; onVestir: (item: ItemDaLoja) => void }) {
+function Cartao({ item, vestido, onVestir }: { item: ItemDoGuardaRoupa; vestido: boolean; onVestir: (item: ItemDoGuardaRoupa) => void }) {
   const t = useT();
   const visual = item.tipo === 'insignia' ? acharInsignia(item.codigo) : acharVisual(item.tipo, item.codigo);
   // Código que o servidor conhece e este site ainda não: some, em vez de virar um quadro vazio.
@@ -62,23 +62,23 @@ function Cartao({ item, vestido, onVestir }: { item: ItemDaLoja; vestido: boolea
 
   const trancado = !item.tenho;
   return (
-    <div className={`loja-cartao${vestido ? ' vestido' : ''}${trancado ? ' trancado' : ''}`}>
+    <div className={`guarda-roupa-cartao${vestido ? ' vestido' : ''}${trancado ? ' trancado' : ''}`}>
       <Amostra item={item} />
-      <div className="loja-cartao-texto">
+      <div className="guarda-roupa-cartao-texto">
         <strong>{t(visual.nome)}</strong>
         <small>{t(visual.descricao)}</small>
         {item.comoSeGanha === 'conquista' && (
-          <span className="loja-etiqueta conquista">
+          <span className="guarda-roupa-etiqueta conquista">
             <Gift size={12} aria-hidden="true" /> {t(COMO_SE_GANHA.conquista)}
           </span>
         )}
       </div>
       {vestido ? (
-        <span className="loja-vestido" aria-label={t('Em uso')}>
+        <span className="guarda-roupa-vestido" aria-label={t('Em uso')}>
           <Check size={16} /> {t('Em uso')}
         </span>
       ) : trancado ? (
-        <span className="loja-trancado" aria-label={t('Você ainda não tem este item')}>
+        <span className="guarda-roupa-trancado" aria-label={t('Você ainda não tem este item')}>
           <Lock size={16} />
         </span>
       ) : (
@@ -143,19 +143,41 @@ function CorDoSyden() {
   );
 }
 
+/**
+ * A ROTA MUDOU DE NOME, E O SITE SOBE ANTES DO SERVIDOR.
+ *
+ * São dois caminhos de publicação independentes: o site sai sozinho no push, o servidor só quando
+ * alguém roda o deploy na máquina. Entre um e outro existe uma janela — e nela um site novo pedindo
+ * /api/guarda-roupa a um servidor antigo tomaria 404, e esta aba abriria com "Erro 404" em vez do
+ * catálogo. Não é hipótese: hoje mesmo o servidor está atrás do site.
+ *
+ * Então pede o nome novo e, SÓ NO 404, tenta o velho. Qualquer outro erro sobe como erro, porque
+ * sessão vencida e servidor fora do ar não se resolvem trocando o endereço.
+ *
+ * Isto sai quando o servidor estiver atualizado, junto com o apelido `/api/loja` do lado de lá.
+ */
+async function buscarOGuardaRoupa(): Promise<GuardaRoupa> {
+  try {
+    return await api<GuardaRoupa>('/api/guarda-roupa');
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 404) return api<GuardaRoupa>('/api/loja');
+    throw e;
+  }
+}
+
 export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
   const t = useT();
-  const [dados, setDados] = useState<LojaDados | null>(null);
+  const [dados, setDados] = useState<GuardaRoupa | null>(null);
   const [aba, setAba] = useState<Aba>('cor');
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    void api<LojaDados>('/api/loja')
+    void buscarOGuardaRoupa()
       .then(setDados)
       .catch((e) => setErro((e as Error).message));
   }, []);
 
-  async function vestir(item: ItemDaLoja) {
+  async function vestir(item: ItemDoGuardaRoupa) {
     if (!dados) return;
     setErro(null);
     // Insígnia não se veste por aqui: ela vai para a vitrine, onde a pessoa escolhe quais e em que ordem.
@@ -194,7 +216,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
   if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
 
   const doTipo = dados.itens.filter((item) => item.tipo === aba);
-  const vestidoAgora = (item: ItemDaLoja) =>
+  const vestidoAgora = (item: ItemDoGuardaRoupa) =>
     item.tipo === 'insignia'
       ? dados.vestindo.insignias.includes(item.codigo)
       : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'] === item.codigo;
@@ -242,7 +264,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
       )}
 
       {aba !== 'pacotes' && (
-        <div className="loja-grade">
+        <div className="guarda-roupa-grade">
           {doTipo.map((item) => (
             <Cartao key={item.codigo} item={item} vestido={vestidoAgora(item)} onVestir={(i) => void vestir(i)} />
           ))}
@@ -250,7 +272,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
       )}
 
       {aba === 'pacotes' && (
-        <section className="loja-pacotes">
+        <section className="guarda-roupa-pacotes">
           <h3>
             <Music size={18} aria-hidden="true" /> {t('Pacotes de sons e de emojis')}
           </h3>

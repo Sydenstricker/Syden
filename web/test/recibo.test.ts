@@ -12,7 +12,7 @@ import { describe, it } from 'node:test';
 // para quem fala outra língua. Ou seja: o sintoma aparece justamente para quem não vai reclamar em
 // português.
 //
-// OS DOIS LADOS SÃO LIDOS COMO TEXTO, e não importados, pelo mesmo motivo de web/test/loja.test.ts:
+// OS DOIS LADOS SÃO LIDOS COMO TEXTO, e não importados, pelo mesmo motivo de web/test/guardaRoupa.test.ts:
 // qualquer coisa do site que encoste no i18n arrasta `window` para dentro do Node e o teste morre
 // antes de começar.
 // ===================================================================================================

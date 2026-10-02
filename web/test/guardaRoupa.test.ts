@@ -5,22 +5,22 @@ import { describe, it } from 'node:test';
 // O CATÁLOGO DO SERVIDOR E A ARTE DO SITE TÊM DE BATER.
 //
 // O defeito que trouxe este arquivo: sete itens — as cores cobre, jade, ametista e prisma, e os
-// fundos nebulosa, vitral e cosmos — estavam no catálogo do servidor, apareciam listados na loja, e
+// fundos nebulosa, vitral e cosmos — estavam no catálogo do servidor, apareciam listados no guarda-roupa, e
 // NÃO EXISTIAM em lugar nenhum da folha de estilo. Quem clicasse em "Usar" não via diferença
 // nenhuma, porque a tela não tinha o que desenhar.
 //
 // É o preço de uma decisão boa: a arte mora no site e a lista mora no servidor, para acrescentar um
-// degradê ser publicar o site em vez de migrar banco (ver web/src/loja.ts). O que faltava era a
+// degradê ser publicar o site em vez de migrar banco (ver web/src/guardaRoupa.ts). O que faltava era a
 // conferência de que os dois lados continuam falando da mesma coisa.
 //
-// A busca é por TEXTO, nos arquivos, e não por import: server/src/loja.ts é do outro workspace e
+// A busca é por TEXTO, nos arquivos, e não por import: server/src/guardaRoupa.ts é do outro workspace e
 // traz consigo meia dúzia de módulos de servidor que não sobem num teste de site.
 
 const raiz = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const ler = (caminho: string) => readFileSync(`${raiz}${caminho}`, 'utf8');
 
-const catalogoDoServidor = ler('../server/src/loja.ts');
-const lojaDoSite = ler('src/loja.ts');
+const catalogoDoServidor = ler('../server/src/guardaRoupa.ts');
+const guardaRoupaDoSite = ler('src/guardaRoupa.ts');
 const estilos = ler('src/styles.css');
 const perfil = ler('src/profileStyles.ts');
 
@@ -34,14 +34,14 @@ function doServidor(tipo: string): string[] {
   return codigos;
 }
 
-describe('a loja oferece só o que a tela sabe desenhar', () => {
+describe('o guarda-roupa oferece só o que a tela sabe desenhar', () => {
   for (const [tipo, registro] of [
     ['cor', 'CORES'],
-    ['fundo', 'FUNDOS_LOJA'],
+    ['fundo', 'FUNDOS_DO_PERFIL'],
     ['moldura', 'MOLDURAS'],
   ] as const) {
     it(`${tipo}: todo código do servidor tem nome e descrição no site`, () => {
-      const bloco = lojaDoSite.slice(lojaDoSite.indexOf(`export const ${registro}`));
+      const bloco = guardaRoupaDoSite.slice(guardaRoupaDoSite.indexOf(`export const ${registro}`));
       const faltando = doServidor(tipo).filter((codigo) => !new RegExp(`['"]?${codigo}['"]?\\s*:`).test(bloco.slice(0, bloco.indexOf('\n};'))));
       assert.deepEqual(faltando, [], `sem entrada em ${registro}: ${faltando.join(', ')}`);
     });
@@ -68,8 +68,8 @@ describe('a loja oferece só o que a tela sabe desenhar', () => {
     assert.deepEqual(faltando, [], `molduras sem anel: ${faltando.join(', ')}`);
   });
 
-  // A LOJA NÃO É O ÚNICO LUGAR ONDE SE VESTE. As Configurações têm as mesmas listas, e elas vinham
-  // de outro arquivo — dava para escolher na loja o que não existia nas Configurações, e vice-versa.
+  // O GUARDA-ROUPA NÃO É O ÚNICO LUGAR ONDE SE VESTE. As Configurações têm as mesmas listas, e elas vinham
+  // de outro arquivo — dava para escolher no guarda-roupa o que não existia nas Configurações, e vice-versa.
   it('cor: a lista das Configurações cobre o catálogo', () => {
     const faltando = doServidor('cor').filter((c) => !new RegExp(`id: '${c}'`).test(perfil));
     assert.deepEqual(faltando, [], `fora de CORES_DE_NOME: ${faltando.join(', ')}`);

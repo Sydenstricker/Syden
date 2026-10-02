@@ -23,7 +23,7 @@ const MINIMO = 8;
 
 const ANCORAS: Record<string, { c: number; r: number; alt: number }> = {
   salas: CASAS.salas,
-  loja: CASAS.loja,
+  'guarda-roupa': CASAS.guardaRoupa,
   aprender: CASAS.aprender,
   explorar: CASAS.explorar,
   amigos: PRACA_DOS_AMIGOS,

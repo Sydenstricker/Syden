@@ -41,7 +41,7 @@ export function deIso(x: number, y: number) {
 
 export const CASAS = {
   salas: { c: -3.6, r: -1.4, w: 3.0, d: 2.4, alt: 58 },
-  loja: { c: 1.0, r: -2.4, w: 2.6, d: 2.0, alt: 52 },
+  guardaRoupa: { c: 1.0, r: -2.4, w: 2.6, d: 2.0, alt: 52 },
   aprender: { c: 4.0, r: -0.6, w: 2.6, d: 2.2, alt: 56 },
   explorar: { c: -4.2, r: 2.4, w: 2.2, d: 1.8, alt: 46 },
 };
@@ -49,7 +49,7 @@ export const CASAS = {
 /**
  * Onde o balão de Amigos se ancora: um ponto livre da praça, ao sul das casas.
  *
- * Não é uma casa — é só uma âncora. Antes ele dividia o ponto com a Loja, e dois balões no mesmo
+ * Não é uma casa — é só uma âncora. Antes ele dividia o ponto com o guarda-roupa, e dois balões no mesmo
  * lugar se atravessam, que é exatamente a reclamação que já apareceu nesta tela uma vez. A distância
  * entre todos os balões é conferida por teste, e não pelo olho.
  */

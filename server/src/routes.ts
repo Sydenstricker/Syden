@@ -23,7 +23,7 @@ import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
 import { lerServidor, TETO_POR_COMUNIDADE } from './jogos.js';
-import { CATALOGO, podeVestir } from './loja.js';
+import { CATALOGO, podeVestir } from './guardaRoupa.js';
 import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
 import { audiencia } from './audiencia.js';
@@ -454,11 +454,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     // ---------- Inventário: o que a pessoa tem, e o que ela ainda não viu ----------
 
     /**
-     * A loja: o catálogo inteiro mais o que ESTA pessoa já tem e o que está vestindo.
+     * O guarda-roupa: o catálogo inteiro mais o que ESTA pessoa já tem e o que está vestindo.
      *
-     * Vem tudo numa chamada só porque a loja mostra as três coisas juntas — separar em três daria três
+     * Vem tudo numa chamada só porque o guarda-roupa mostra as três coisas juntas — separar em três daria três
      * idas ao servidor para desenhar uma tela. E vem o catálogo inteiro, inclusive o que ela não tem:
-     * a graça de uma loja é ver o que existe. O que o app NÃO pode fazer é decidir o que ela pode
+     * a graça de um guarda-roupa é ver o que existe. O que o app NÃO pode fazer é decidir o que ela pode
      * vestir a partir disso; quem decide é a rota do perfil, que confere de novo.
      */
     // ---------- Servidores de jogo ----------
@@ -518,7 +518,19 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true };
     });
 
-    authed.get('/api/loja', async (request) => {
+    /*
+     * A ROTA TEM DOIS NOMES DE PROPÓSITO, E O VELHO VAI EMBORA DEPOIS.
+     *
+     * O site e o servidor sobem por caminhos separados, então sempre existe uma janela em que um está
+     * novo e o outro não. Trocar o nome da rota nos dois no mesmo commit não fecha essa janela: ela é
+     * do DEPLOY, não do código. Enquanto o servidor no ar for o antigo, um site novo pedindo
+     * /api/guarda-roupa levaria 404 e a aba de Aparência abriria vazia para todo mundo.
+     *
+     * Por isso são dois: o site pede o nome novo e cai para o velho se tomar 404 (ver Aparencia.tsx);
+     * o servidor responde aos dois. Quando o servidor estiver atualizado e ninguém mais tiver uma aba
+     * antiga aberta, a linha de baixo e a queda do lado do site saem juntas.
+     */
+    const guardaRoupa = async (request: { user: db.User }) => {
       const tem = new Set(db.codigosDoInventario(request.user.id));
       return {
         itens: CATALOGO.map((item) => ({ ...item, tenho: item.comoSeGanha === 'livre' || tem.has(item.codigo) })),
@@ -530,7 +542,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           insignias: request.user.vitrine,
         },
       };
-    });
+    };
+
+    authed.get('/api/guarda-roupa', guardaRoupa);
+    /** O nome antigo, só para a janela do deploy. Sai junto com a queda do lado do site. */
+    authed.get('/api/loja', guardaRoupa);
 
     /**
      * As preferências da pessoa, para seguirem com ela entre navegadores e entre o site e o aplicativo.
@@ -871,7 +887,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
         // A arte NÃO é validada contra uma lista aqui, e isso é deliberado: o catálogo mora no site
         // (web/src/boasVindas.ts), e um código que a tela não conhece simplesmente cai no padrão em vez
-        // de virar erro. É o mesmo acordo da loja — arte nova se publica sem mexer no servidor.
+        // de virar erro. É o mesmo acordo do guarda-roupa — arte nova se publica sem mexer no servidor.
         const boasVindas = { titulo, texto, arte: arte || 'aurora' };
         db.guardarBoasVindas(access.community.id, boasVindas);
         io.to(communityRoom(access.community.id)).emit('boas-vindas:mudou', { communityId: access.community.id });

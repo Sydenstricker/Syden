@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CATALOGO, acharItem, podeVestir } from '../src/loja.js';
+import { CATALOGO, acharItem, podeVestir } from '../src/guardaRoupa.js';
 
 // Este arquivo não abre banco nenhum: o catálogo é uma lista, e as regras dele são só regras.
 
@@ -12,10 +12,10 @@ test('não existe código repetido no catálogo', () => {
   }
 });
 
-// A LOJA NÃO TEM ITEM DE PAGANTE, e isto é o que garante que ninguém acrescente um por distração.
+// O GUARDA-ROUPA NÃO TEM ITEM DE PAGANTE, e isto é o que garante que ninguém acrescente um por distração.
 // Quem contribui já tinha acesso a tudo antes de contribuir: a contribuição é doação, não compra.
 // Só insígnia pode ser exclusiva, porque ela significa uma história, e não um pagamento.
-test('a loja inteira é grátis; só insígnia depende de ter acontecido alguma coisa', () => {
+test('o guarda-roupa inteiro é grátis; só insígnia depende de ter acontecido alguma coisa', () => {
   for (const item of CATALOGO) {
     assert.ok(
       item.comoSeGanha === 'livre' || item.tipo === 'insignia',
@@ -54,12 +54,12 @@ test('item do tipo errado é recusado: cor não é moldura', () => {
   assert.equal(podeVestir('prata', 'cor', []), false);
 });
 
-// Se a loja oferecesse uma cor que o app não sabe pintar, a pessoa escolheria e nada aconteceria.
-test('os grátis cobrem tudo o que já existia antes da loja', () => {
+// Se o guarda-roupa oferecesse uma cor que o app não sabe pintar, a pessoa escolheria e nada aconteceria.
+test('os grátis cobrem tudo o que já existia antes do guarda-roupa', () => {
   for (const codigo of ['padrao', 'carmim', 'laranja', 'ouro', 'limao', 'menta', 'ceu', 'anil', 'lavanda', 'rosa']) {
-    assert.ok(podeVestir(codigo, 'cor', []), codigo + ' era grátis antes da loja e tem que continuar sendo');
+    assert.ok(podeVestir(codigo, 'cor', []), codigo + ' era grátis antes do guarda-roupa e tem que continuar sendo');
   }
   for (const codigo of ['nenhum', 'vila', 'poente', 'floresta', 'aurora', 'brasa', 'oceano', 'estrelas']) {
-    assert.ok(podeVestir(codigo, 'fundo', []), codigo + ' era grátis antes da loja e tem que continuar sendo');
+    assert.ok(podeVestir(codigo, 'fundo', []), codigo + ' era grátis antes do guarda-roupa e tem que continuar sendo');
   }
 });

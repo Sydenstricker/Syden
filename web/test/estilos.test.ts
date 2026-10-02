@@ -5,7 +5,7 @@ import { test } from 'node:test';
 // Variável de CSS que nunca foi definida NÃO DÁ ERRO: o navegador descarta a regra inteira, em silêncio.
 // A tela continua abrindo, só que sem borda, sem fundo — ou transparente, com o texto por cima do que
 // estiver atrás. Foi assim que o painel do karaokê virou letra flutuando sobre o rosto das pessoas, e
-// assim que os cartões da loja ficaram sem fundo sem ninguém notar por dias.
+// assim que os cartões do guarda-roupa ficaram sem fundo sem ninguém notar por dias.
 //
 // Nenhuma ferramenta reclama disso, então o teste reclama.
 

@@ -1,7 +1,7 @@
 // A arte do espaço de boas-vindas de cada comunidade.
 //
 // O servidor guarda só um CÓDIGO ('aurora', 'brasa'); o desenho mora aqui, pelo mesmo acordo das
-// molduras da loja: acrescentar uma arte nova é publicar o site, sem tocar no servidor nem migrar
+// molduras do guarda-roupa: acrescentar uma arte nova é publicar o site, sem tocar no servidor nem migrar
 // banco. Um código que o servidor manda e este arquivo não conhece cai no padrão, em vez de virar um
 // retângulo vazio — é o que acontece quando o servidor é mais novo que o site aberto na tela.
 //

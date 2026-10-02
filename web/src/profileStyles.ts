@@ -23,8 +23,8 @@ export const CORES_DE_NOME: CorDeNome[] = [
   { id: 'anil', label: chave('Anil'), amostra: '#5b6fd6' },
   { id: 'lavanda', label: chave('Lavanda'), amostra: '#8f6fd6' },
   { id: 'rosa', label: chave('Rosa'), amostra: '#d45f95' },
-  // As quatro de baixo vinham do catálogo da loja e não existiam nesta lista: dava para vesti-las na
-  // loja e não dava para escolhê-las aqui, e a tela não tinha o que desenhar de nenhuma das duas
+  // As quatro de baixo vinham do catálogo do guarda-roupa e não existiam nesta lista: dava para vesti-las no
+  // guarda-roupa e não dava para escolhê-las aqui, e a tela não tinha o que desenhar de nenhuma das duas
   // formas. Catálogo e arte agora batem.
   { id: 'cobre', label: chave('Cobre'), amostra: '#d98f5a' },
   { id: 'jade', label: chave('Jade'), amostra: '#4fc99a' },

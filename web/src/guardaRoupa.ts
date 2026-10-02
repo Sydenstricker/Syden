@@ -1,6 +1,6 @@
-// O lado bonito da loja: o nome, a descrição e o desenho de cada cosmético.
+// O lado bonito do guarda-roupa: o nome, a descrição e o desenho de cada cosmético.
 //
-// O servidor conhece só os CÓDIGOS e quem tem direito a cada um (server/src/loja.ts). A arte mora aqui,
+// O servidor conhece só os CÓDIGOS e quem tem direito a cada um (server/src/guardaRoupa.ts). A arte mora aqui,
 // pela mesma razão das insígnias: dá para trocar um degradê, renomear um fundo ou mexer num texto
 // publicando o site, sem tocar no servidor nem migrar banco.
 //
@@ -29,7 +29,7 @@ export const MOLDURAS: Record<string, ItemVisual> = {
   'prisma-moldura': { nome: chave('Prisma'), descricao: chave('Todas as cores girando devagar. A mais chamativa de todas.') },
 };
 
-/** Descrições das cores de nome, para a loja. O desenho continua vindo do CSS, por `data-cor`. */
+/** Descrições das cores de nome, para o guarda-roupa. O desenho continua vindo do CSS, por `data-cor`. */
 export const CORES: Record<string, ItemVisual> = {
   padrao: { nome: chave('Padrão'), descricao: chave('A cor do seu cargo na comunidade.') },
   carmim: { nome: chave('Carmim'), descricao: chave('Vermelho fechado.') },
@@ -47,7 +47,7 @@ export const CORES: Record<string, ItemVisual> = {
   prisma: { nome: chave('Prisma'), descricao: chave('O nome muda de cor devagar.') },
 };
 
-export const FUNDOS_LOJA: Record<string, ItemVisual> = {
+export const FUNDOS_DO_PERFIL: Record<string, ItemVisual> = {
   nenhum: { nome: chave('Sem fundo'), descricao: chave('O cartão liso.') },
   vila: { nome: chave('Vila'), descricao: chave('A vila do Syden ao fundo.') },
   poente: { nome: chave('Poente'), descricao: chave('Céu de fim de tarde.') },
@@ -79,7 +79,7 @@ const EFEITOS: Record<string, ItemVisual> = {
 
 export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | undefined {
   if (tipo === 'cor') return CORES[codigo];
-  if (tipo === 'fundo') return FUNDOS_LOJA[codigo];
+  if (tipo === 'fundo') return FUNDOS_DO_PERFIL[codigo];
   if (tipo === 'moldura') return MOLDURAS[codigo];
   if (tipo === 'efeito') return EFEITOS[codigo];
   return undefined;
@@ -87,7 +87,7 @@ export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | unde
 
 // OS VALORES DE CONTRIBUIÇÃO NÃO MORAM MAIS AQUI.
 //
-// Eles saíram junto com o bloco de contribuição da loja: agora existem numa aba do site
+// Eles saíram junto com o bloco de contribuição do guarda-roupa: agora existem numa aba do site
 // (web/site/contribuir.html) e em nenhum outro lugar. Deixar a lista aqui seria guardar o mesmo número
 // em dois arquivos, e um dia mudar só um dos dois.
 
