@@ -63,3 +63,19 @@ strong {
   border-top: 1px solid #3f4147;
   font-size: 14px;
 }
+
+/* A LISTA DO QUE MUDOU, no fim das duas páginas.
+ *
+ * Ela existe porque a data sozinha não diz nada: "atualizado em 2 de outubro" faz quem já leu
+ * reler a página inteira procurando a diferença. E porque a data escrita à mão JÁ ATRASOU DUAS
+ * VEZES — os termos ficaram em 27/09 depois de mudarem no dia 2, e a privacidade ficou em 28/09
+ * depois do GIPHY no dia 29. Uma lista com um item por mudança é mais difícil de esquecer do que
+ * um número solto no alto. */
+.historico {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.historico strong {
+  color: var(--text);
+}
