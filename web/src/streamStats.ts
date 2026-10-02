@@ -32,12 +32,46 @@ export interface StreamStats {
 
 type Publication = TrackPublication | LocalTrackPublication | RemoteTrackPublication;
 
+/**
+ * As taxas que o Syden de fato publica (ver SCREEN_LAYERS, em useVoice.ts). Não existe camada de 29
+ * nem de 14: todo número que aparece é uma dessas três, medida com ruído.
+ */
+const TAXAS = [15, 30, 60];
+
+/**
+ * QUANTO ABAIXO DO ALVO AINDA É O ALVO.
+ *
+ * Um codificador de vídeo nunca entrega o número redondo. Ele perde um quadro aqui e outro ali, e a
+ * medição ainda cai numa janela de três segundos que raramente começa junto com um quadro. O
+ * resultado normal de uma transmissão SAUDÁVEL de 30 é 29; de 15 é 14.
+ */
+const TOLERANCIA = 0.9;
+
+/**
+ * O número que o olho lê, e não o que o contador mediu.
+ *
+ * O RELATO QUE MOTIVOU ISTO: "esses números quebrados, diferentes de 30/60, são lidos como 'tem
+ * algum erro na transmissão'". E ele está certo — as duas telas que ele mandou, "360p · 14 fps" e
+ * "1080p · 29 fps", eram as DUAS transmissões perfeitas: 14 é a camada de 15 e 29 é a de 30. A tela
+ * estava transformando funcionamento normal em suspeita de defeito.
+ *
+ * Então a taxa volta para o alvo quando está dentro da tolerância, e só mostra o número cru quando
+ * ele está mesmo longe — que é quando o número é informação, e não ruído. Nessa hora o conselheiro
+ * de qualidade (QualityAdvisor) já está falando, e aí os dois dizem a mesma coisa.
+ *
+ * Isto NÃO é esconder problema: 22 fps continua aparecendo como 22.
+ */
+export function taxaRedonda(fps: number): number {
+  const alvo = TAXAS.find((taxa) => fps >= taxa * TOLERANCIA && fps <= taxa);
+  return alvo ?? Math.round(fps);
+}
+
 /** "1080p · 60 fps" a partir da altura da imagem, como as pessoas falam de qualidade. */
 export function describeStats(stats: StreamStats | null) {
   if (!stats || !stats.height) return null;
   const linhas = stats.height >= 2000 ? '4K' : `${stats.height}p`;
   // Os quadros por segundo só aparecem depois da segunda medição; antes disso, mostra só o tamanho.
-  return stats.fps >= 1 ? `${linhas} · ${Math.round(stats.fps)} fps` : linhas;
+  return stats.fps >= 1 ? `${linhas} · ${taxaRedonda(stats.fps)} fps` : linhas;
 }
 
 async function read(publication: Publication | undefined, local: boolean): Promise<StreamStats | null> {

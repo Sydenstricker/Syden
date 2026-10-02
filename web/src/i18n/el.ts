@@ -840,5 +840,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Μικρά κεφαλαία, με αρκετό διάστημα.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Ένα αντίγραφο αυτών που έγραψες μένει 90 μέρες έξω από την εφαρμογή, για την περίπτωση αιτήματος αρχής. Κανείς δεν το διαβάζει μέσα από το Syden.',
   'Guarda-roupa': 'Ντουλάπα',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Ένα παραθυράκι στη γωνία της οθόνης με το ποιος είναι μαζί σου και ποιος μιλάει. Εμφανίζεται μόνο όταν κάποιο πρόγραμμα πιάνει όλη την οθόνη — στην επιφάνεια εργασίας, όχι. Το κλικ περνάει από μέσα: η βολή πάει στο παιχνίδι.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Ένα παραθυράκι στη γωνία της οθόνης με το ποιος είναι μαζί σου και ποιος μιλάει. Εμφανίζεται μόνο όσο είσαι μέσα σε παιχνίδι, και αυτό που αναγνωρίζει το παιχνίδι είναι η ίδια η λίστα των Windows. Το κλικ περνάει από μέσα: η βολή πάει στο παιχνίδι.',
 } satisfies Record<string, string>;

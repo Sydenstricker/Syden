@@ -10,11 +10,16 @@ const path = require('node:path');
  * desenhada para quem está de costas para o Syden, dentro de um jogo — fora disso, é um retângulo
  * por cima do que a pessoa estiver fazendo.
  *
- * O QUE DÁ PARA SABER DE VERDADE, E O QUE NÃO DÁ. Não existe API do Windows que diga "isto é um
- * jogo"; o Discord resolve com um cadastro de dezenas de milhares de executáveis, que é um produto
- * inteiro à parte. O que dá para saber com certeza é se ALGUM PROGRAMA ESTÁ OCUPANDO A TELA INTEIRA
- * — que é precisamente o caso em que o Syden está invisível e a janelinha tem função. Jogo em
- * janela fica de fora, e é honesto: ali a chamada está a um clique, do lado.
+ * QUEM RESPONDE "ISTO É UM JOGO" É O PRÓPRIO WINDOWS. A primeira versão disto usava tela cheia como
+ * aproximação, e a aproximação cobrava: o VS Code em tela cheia virava "jogo", e a janelinha
+ * aparecia por cima do trabalho. A Barra de Jogos do Windows já mantém a lista do que ELA reconhece
+ * como jogo (é a mesma que decide se o Win+G aparece), e medida aqui ela tinha 75 executáveis e
+ * ZERO falsos positivos — nenhum navegador, editor, Discord, Word ou OBS. Cobre Steam, Epic, Riot,
+ * Blizzard, EA e jogo solto numa pasta qualquer.
+ *
+ * A FALHA CONHECIDA, e ela é pequena: um jogo que o Windows ainda não catalogou — a primeiríssima
+ * vez que você o abre — não está na lista, e a janelinha não aparece nessa sessão. Da segunda em
+ * diante, aparece. Preferi isso a aparecer por cima do editor de código.
  *
  * A MEDIÇÃO VEM DE FORA (jogo.ps1, que só lê o Windows e escreve uma linha) E A DECISÃO MORA AQUI,
  * em `emJogo()`, que é uma função pura e tem teste. É a mesma divisão de web/src/sobreposicao.ts, e
@@ -40,42 +45,38 @@ const IGNORADOS = new Set([
   'textinputhost',
 ]);
 
-/**
- * @typedef {{ nome: string, dono: number, esq: number, topo: number, dir: number, base: number,
- *             telaX: number, telaY: number, telaL: number, telaA: number }} Janela
- */
+/** @typedef {{ nome: string, dono: number, conhecido: boolean, caminho: string }} Janela */
 
 /** Lê uma linha do jogo.ps1. Linha vazia (nenhuma janela na frente) ou torta devolve `null`. */
 function lerLinha(/** @type {string} */ linha) {
   const campos = linha.split('\t');
-  if (campos.length !== 10) return null;
-  const [nome, ...numeros] = campos;
-  const [dono, esq, topo, dir, base, telaX, telaY, telaL, telaA] = numeros.map(Number);
-  if (numeros.some((valor) => !Number.isFinite(Number(valor)))) return null;
-  return { nome, dono, esq, topo, dir, base, telaX, telaY, telaL, telaA };
+  if (campos.length !== 4) return null;
+  const [nome, dono, conhecido, caminho] = campos;
+  if (!/^\d+$/.test(dono) || (conhecido !== '0' && conhecido !== '1')) return null;
+  return { nome, dono: Number(dono), conhecido: conhecido === '1', caminho };
 }
 
 /**
- * A REGRA. Está em jogo quem tem, na frente, uma janela que cobre o monitor inteiro e não é da casa.
+ * A REGRA. Está em jogo quem tem, na frente, um programa que o WINDOWS reconhece como jogo.
  *
- * COBRIR A TELA INTEIRA É O QUE SEPARA TELA CHEIA DE MAXIMIZADO, e a diferença não é teórica: uma
- * janela maximizada do Firefox mede -6,-6 até 1543,823 num monitor de 1536x864 — mais LARGA que a
- * tela, por causa das bordas invisíveis de redimensionar, e mais BAIXA, porque para na barra de
- * tarefas. Por isso os quatro lados são conferidos, e não a área.
+ * A primeira versão media tela cheia, e a aproximação cobrava: o VS Code em tela cheia virava jogo e
+ * a janelinha aparecia por cima do trabalho. Agora quem responde é a lista da Barra de Jogos, lida
+ * pelo jogo.ps1 — e as duas linhas abaixo continuam valendo por cima dela, porque uma lista pode
+ * conter o que não deveria:
+ *
+ *   - O PRÓPRIO SYDEN nunca conta. Se ele estiver na frente, a chamada já está na tela, e a
+ *     janelinha repetiria a mesma lista duas vezes.
+ *   - A CASA DO WINDOWS nunca conta (ver IGNORADOS), por garantia: a área de trabalho é uma janela
+ *     como qualquer outra, e já passou por jogo uma vez neste arquivo.
  *
  * @param {Janela | null} janela
- * @param {number} meuPid o processo do próprio Syden: Syden em tela cheia não é jogo, a chamada já está na tela
+ * @param {number} meuPid o processo do próprio Syden
  */
 function emJogo(janela, meuPid) {
   if (!janela) return false;
   if (janela.dono === meuPid) return false;
   if (IGNORADOS.has(janela.nome.toLowerCase())) return false;
-  return (
-    janela.esq <= janela.telaX &&
-    janela.topo <= janela.telaY &&
-    janela.dir >= janela.telaX + janela.telaL &&
-    janela.base >= janela.telaY + janela.telaA
-  );
+  return janela.conhecido;
 }
 
 /** O interpretador do Windows, por caminho absoluto: `powershell` solto depende do PATH de quem abriu o app. */

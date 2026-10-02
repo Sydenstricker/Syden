@@ -847,5 +847,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'ตัวพิมพ์ใหญ่ขนาดเล็ก เว้นระยะโปร่ง',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'สำเนาสิ่งที่คุณเขียนจะถูกเก็บไว้ 90 วันนอกแอป เผื่อทางการขอ ไม่มีใครอ่านมันผ่าน Syden ได้',
   'Guarda-roupa': 'ตู้เสื้อผ้า',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'หน้าต่างเล็ก ๆ ที่มุมจอ แสดงคนที่อยู่กับคุณและคนที่กำลังพูด จะแสดงเฉพาะตอนที่มีโปรแกรมใดกินพื้นที่เต็มจอเท่านั้น ถ้าอยู่ที่หน้าเดสก์ท็อปจะไม่แสดง คลิกทะลุผ่านได้ กระสุนจะเข้าเกม',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'หน้าต่างเล็ก ๆ ที่มุมจอ แสดงคนที่อยู่กับคุณและคนที่กำลังพูด จะแสดงเฉพาะตอนที่คุณอยู่ในเกมเท่านั้น และสิ่งที่รู้จักเกมคือรายการของวินโดวส์เอง คลิกทะลุผ่านได้ กระสุนจะเข้าเกม',
 } satisfies Record<string, string>;

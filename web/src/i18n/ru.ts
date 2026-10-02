@@ -860,5 +860,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Маленькие заглавные, с просветом.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Копия того, что ты писал, хранится 90 дней вне приложения — на случай запроса властей. Через Syden её никто не читает.',
   'Guarda-roupa': 'Гардероб',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Маленькое окно в углу: кто с тобой и кто говорит. Оно появляется, только пока какая-то программа занимает весь экран, — на рабочем столе нет. Клик проходит насквозь: выстрел попадает в игру.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Маленькое окно в углу: кто с тобой и кто говорит. Оно появляется, только пока ты в игре, а игру распознаёт собственный список Windows. Клик проходит насквозь: выстрел попадает в игру.',
 } satisfies Record<string, string>;

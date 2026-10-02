@@ -825,5 +825,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '小号大写字母，字距宽松。',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '你写过的内容会在应用之外保留 90 天，以备官方调取。没有人能通过 Syden 看到它。',
   'Guarda-roupa': '衣橱',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': '屏幕角落的一个小窗，显示谁和你在一起、谁在说话。只有当某个程序占满整个屏幕时才会出现，在桌面上不会。点击会穿过它：这一枪打在游戏里。',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': '屏幕角落的一个小窗，显示谁和你在一起、谁在说话。只有当你在玩游戏时才会出现，识别游戏的是 Windows 自己的清单。点击会穿过它：这一枪打在游戏里。',
 } satisfies Record<string, string>;

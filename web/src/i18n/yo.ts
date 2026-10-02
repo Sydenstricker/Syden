@@ -849,5 +849,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Lẹ́tà ńlá kékeré, tí a tò yàtọ̀ síra dáadáa.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Ẹ̀dà ohun tí ẹ kọ yóò wà ní ọjọ́ 90 lóde áàpù náà, fún ọ̀ràn ìbéèrè aláṣẹ. Kò sí ẹni tó ń kà á nípasẹ̀ Syden.',
   'Guarda-roupa': 'Àpótí aṣọ',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Fèrèsé kékeré ní igun ojú ìwé pẹ̀lú ẹni tó wà pẹ̀lú yín, àti ẹni tó ń sọ̀rọ̀. Ó ń farahàn nígbà tí àtòjọpọ̀ kan bá ń gba gbogbo ojú ìwé nìkan — lórí ojú ìwé iṣẹ́, rárá. Ìtẹ̀ ń gba inú rẹ̀ kọjá: ìbọn ń lọ sínú eré náà.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Fèrèsé kékeré ní igun ojú ìwé pẹ̀lú ẹni tó wà pẹ̀lú yín, àti ẹni tó ń sọ̀rọ̀. Ó ń farahàn nígbà tí ẹ bá wà nínú eré nìkan, àtòjọ Windows fúnra rẹ̀ sì ni ó ń dá eré náà mọ̀. Ìtẹ̀ ń gba inú rẹ̀ kọjá: ìbọn ń lọ sínú eré náà.',
 } satisfies Record<string, string>;

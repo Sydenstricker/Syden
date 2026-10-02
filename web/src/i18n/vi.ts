@@ -804,5 +804,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Chữ hoa nhỏ, giãn cách thoáng.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Một bản sao những gì bạn đã viết được giữ 90 ngày ngoài ứng dụng, phòng khi cơ quan chức năng yêu cầu. Không ai đọc được nó qua Syden.',
   'Guarda-roupa': 'Tủ đồ',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Một ô nhỏ ở góc màn hình cho biết ai đang ở cùng bạn và ai đang nói. Nó chỉ hiện khi có chương trình nào đó chiếm trọn màn hình — ở màn hình nền thì không. Nhấp chuột xuyên qua được: phát súng vẫn vào trò chơi.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Một ô nhỏ ở góc màn hình cho biết ai đang ở cùng bạn và ai đang nói. Nó chỉ hiện khi bạn đang trong một trò chơi, và thứ nhận ra trò chơi là danh sách của chính Windows. Nhấp chuột xuyên qua được: phát súng vẫn vào trò chơi.',
 } satisfies Record<string, string>;

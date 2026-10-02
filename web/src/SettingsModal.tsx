@@ -1937,7 +1937,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
           <Toggle
             label={t('Mostrar quem está na chamada por cima do jogo')}
             description={t(
-              'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.',
+              'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.',
             )}
             checked={settings.sobreposicaoNoJogo}
             onChange={(value) => updateSettings({ sobreposicaoNoJogo: value })}

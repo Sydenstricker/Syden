@@ -839,5 +839,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Huruf besar kecil, berjarak lega.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan apa yang awak tulis disimpan 90 hari di luar apl, sekiranya pihak berkuasa memintanya. Tiada sesiapa membacanya melalui Syden.',
   'Guarda-roupa': 'Almari pakaian',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Tetingkap kecil di penjuru skrin dengan siapa yang bersama anda dan siapa yang bercakap. Ia hanya muncul semasa ada program memenuhi seluruh skrin; di desktop, tidak. Klik menembusinya: tembakan masuk ke permainan.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Tetingkap kecil di penjuru skrin dengan siapa yang bersama anda dan siapa yang bercakap. Ia hanya muncul semasa anda dalam permainan, dan yang mengecam permainan itu ialah senarai Windows sendiri. Klik menembusinya: tembakan masuk ke permainan.',
 } satisfies Record<string, string>;

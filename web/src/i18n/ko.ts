@@ -826,5 +826,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '작은 대문자에 자간을 넉넉히.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '작성한 내용의 사본이 앱 밖에 90일 보관됩니다. 당국의 요청에 대비한 것이며, Syden에서는 아무도 볼 수 없습니다.',
   'Guarda-roupa': '옷장',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': '화면 구석의 작은 창에 누가 같이 있고 누가 말하는지 보여줘요. 어떤 프로그램이 화면 전체를 채우고 있을 때만 나오고, 바탕 화면에서는 나오지 않아요. 클릭은 그대로 통과해서 총알은 게임에 맞습니다.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': '화면 구석의 작은 창에 누가 같이 있고 누가 말하는지 보여줘요. 게임 중일 때만 나오고, 게임을 알아보는 것은 윈도우 자체의 목록입니다. 클릭은 그대로 통과해서 총알은 게임에 맞습니다.',
 } satisfies Record<string, string>;

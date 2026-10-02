@@ -821,5 +821,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'چھوٹے بڑے حروف، کھلی وقفوں کے ساتھ۔',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'آپ نے جو لکھا اس کی ایک نقل ایپ سے باہر 90 دن رکھی جاتی ہے، اگر کوئی ادارہ طلب کرے۔ اسے Syden سے کوئی نہیں پڑھتا۔',
   'Guarda-roupa': 'الماری',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'اسکرین کے کونے میں ایک چھوٹی کھڑکی، جس میں دکھتا ہے کہ آپ کے ساتھ کون ہے اور کون بول رہا ہے۔ یہ صرف تب دکھتی ہے جب کوئی پروگرام پوری اسکرین گھیرے ہو؛ ڈیسک ٹاپ پر نہیں۔ کلک اس کے آر پار جاتا ہے: گولی کھیل ہی میں لگتی ہے۔',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'اسکرین کے کونے میں ایک چھوٹی کھڑکی، جس میں دکھتا ہے کہ آپ کے ساتھ کون ہے اور کون بول رہا ہے۔ یہ صرف تب دکھتی ہے جب آپ کسی کھیل میں ہوں، اور کھیل کو پہچانتی ہے ونڈوز کی اپنی فہرست۔ کلک اس کے آر پار جاتا ہے: گولی کھیل ہی میں لگتی ہے۔',
 } satisfies Record<string, string>;

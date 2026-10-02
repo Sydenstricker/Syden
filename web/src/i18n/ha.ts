@@ -836,5 +836,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Manyan haruffa ƙanana, da faɗin sarari.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Kwafin abin da kuka rubuta yana nan kwana 90 a wajen manhajar, idan hukuma ta nemi shi. Babu wanda ke karanta shi ta Syden.',
   'Guarda-roupa': 'Kabad',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Ƙaramar taga a gefen allon da waɗanda ke tare da ku, da wanda ke magana. Takan bayyana sai lokacin da wani shiri ya mamaye dukan allon; a kan tebur ɗin kwamfuta, ba ya bayyana. Danna yana ratsawa: harbin yana zuwa cikin wasan.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Ƙaramar taga a gefen allon da waɗanda ke tare da ku, da wanda ke magana. Takan bayyana sai lokacin da kuke cikin wasa, kuma jerin Windows ɗin kansa ne ke gane wasan. Danna yana ratsawa: harbin yana zuwa cikin wasan.',
 } satisfies Record<string, string>;

@@ -844,5 +844,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Small capitals, nicely spaced out.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'A copy of what you wrote is kept for 90 days outside the app, in case an authority asks for it. Nobody reads it through Syden.',
   'Guarda-roupa': 'Wardrobe',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'A small panel in the corner with who is with you, and who is talking. It only shows up while some program is filling the whole screen — not on the desktop. Clicks go through it: the shot lands in the game.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'A small panel in the corner with who is with you, and who is talking. It only shows up while you are in a game, and what recognises the game is Windows’ own list. Clicks go through it: the shot lands in the game.',
 } satisfies Record<string, string>;

@@ -838,5 +838,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Herufi kubwa ndogo, zenye nafasi.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Nakala ya ulichoandika hubaki siku 90 nje ya programu, iwapo mamlaka itaiomba. Hakuna anayeisoma kupitia Syden.',
   'Guarda-roupa': 'Kabati la nguo',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'Dirisha dogo pembeni linaloonyesha nani yuko nawe na nani anaongea. Huonekana tu wakati programu fulani imejaza skrini nzima; kwenye eneo-kazi, hapana. Mbofyo hupenya: risasi huenda kwenye mchezo.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'Dirisha dogo pembeni linaloonyesha nani yuko nawe na nani anaongea. Huonekana tu ukiwa kwenye mchezo, na anayetambua mchezo ni orodha ya Windows yenyewe. Mbofyo hupenya: risasi huenda kwenye mchezo.',
 } satisfies Record<string, string>;

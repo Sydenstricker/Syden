@@ -815,5 +815,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '小さな大文字を、ゆったりした字間で。',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '書いた内容のコピーは、当局の求めに備えてアプリの外に90日間保管されます。Syden から読める人はいません。',
   'Guarda-roupa': 'ワードローブ',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': '画面のすみに出る小窓に、いっしょにいる人と話している人が表示されます。どれかのプログラムが画面いっぱいに広がっているときだけ出て、デスクトップでは出ません。クリックは通り抜けるので、弾はゲームに当たります。',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': '画面のすみに出る小窓に、いっしょにいる人と話している人が表示されます。ゲーム中のときだけ出て、ゲームかどうかを見分けるのは Windows 自身の一覧です。クリックは通り抜けるので、弾はゲームに当たります。',
 } satisfies Record<string, string>;

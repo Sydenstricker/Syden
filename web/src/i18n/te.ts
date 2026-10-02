@@ -816,5 +816,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'చిన్న పెద్ద అక్షరాలు, విశాలమైన ఖాళీతో.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'మీరు రాసిన దాని ప్రతి యాప్ వెలుపల 90 రోజులు ఉంటుంది, అధికారుల అభ్యర్థన కోసం. Syden ద్వారా ఎవరూ దాన్ని చదవరు.',
   'Guarda-roupa': 'బట్టల అలమర',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'తెర మూలలో ఒక చిన్న కిటికీ — మీతో ఎవరున్నారో, ఎవరు మాట్లాడుతున్నారో చూపిస్తుంది. ఏదైనా ప్రోగ్రామ్ తెర మొత్తాన్ని ఆక్రమించినప్పుడు మాత్రమే కనిపిస్తుంది; డెస్క్‌టాప్‌లో కాదు. క్లిక్ దాన్ని దాటి వెళ్తుంది: కాల్పులు ఆటలోనే తగులుతాయి.',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'తెర మూలలో ఒక చిన్న కిటికీ — మీతో ఎవరున్నారో, ఎవరు మాట్లాడుతున్నారో చూపిస్తుంది. మీరు ఆటలో ఉన్నప్పుడు మాత్రమే కనిపిస్తుంది, ఆటను గుర్తించేది విండోస్ సొంత జాబితా. క్లిక్ దాన్ని దాటి వెళ్తుంది: కాల్పులు ఆటలోనే తగులుతాయి.',
 } satisfies Record<string, string>;

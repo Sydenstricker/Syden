@@ -834,5 +834,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'ትናንሽ አቢይ ፊደላት፣ በሰፊ ክፍተት።',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'የጻፉት ቅጂ ከመተግበሪያው ውጭ ለ90 ቀናት ይቆያል፣ ባለሥልጣን ቢጠይቅ። በSyden በኩል ማንም አያነበውም።',
   'Guarda-roupa': 'የልብስ ቁም ሣጥን',
-  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando algum programa está ocupando a tela inteira — na área de trabalho, não. O clique atravessa: o tiro vai no jogo.': 'በማያው ጥግ ላይ ትንሽ መስኮት፣ ከእርስዎ ጋር ያሉትንና የሚናገረውን የሚያሳይ። የሚታየው አንድ ፕሮግራም ማያውን ሙሉ በሙሉ ሲይዝ ብቻ ነው፤ በዴስክቶፕ ላይ አይታይም። ጠቅታው ያልፋል፦ ተኩሱ ወደ ጨዋታው ይሄዳል።',
+  'Uma janelinha no canto da tela com quem está com você, e quem está falando. Ela só aparece quando você está num jogo, e quem reconhece o jogo é a lista do próprio Windows. O clique atravessa: o tiro vai no jogo.': 'በማያው ጥግ ላይ ትንሽ መስኮት፣ ከእርስዎ ጋር ያሉትንና የሚናገረውን የሚያሳይ። የሚታየው በጨዋታ ውስጥ ሲሆኑ ብቻ ነው፤ ጨዋታውን የሚለየው የዊንዶውስ ራሱ ዝርዝር ነው። ጠቅታው ያልፋል፦ ተኩሱ ወደ ጨዋታው ይሄዳል።',
 } satisfies Record<string, string>;
