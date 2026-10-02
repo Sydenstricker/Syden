@@ -796,4 +796,5 @@ export default {
   'Juntar as vozes da sala': 'Sertakan suara orang di ruangan',
   'Conta excluída': 'Akun dihapus',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Orang ini sudah menghapus akunnya. Pesan dari sini tidak sampai ke siapa pun.',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Pesan otomatis: idemu sudah sampai, terima kasih! Akan kubaca pelan-pelan. Kalau ada yang kutanyakan, aku tanya di sini juga — dan kalau masuk ke Syden, kamu langsung tahu.',
 } satisfies Record<string, string>;

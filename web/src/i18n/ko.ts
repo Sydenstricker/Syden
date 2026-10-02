@@ -787,4 +787,5 @@ export default {
   'Juntar as vozes da sala': '방에 있는 사람들의 목소리도 넣기',
   'Conta excluída': '삭제된 계정',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': '이 사람은 계정을 삭제했습니다. 여기서 보낸 메시지는 아무에게도 가지 않습니다.',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 자동 메시지: 아이디어 잘 도착했어요, 고마워요! 찬찬히 읽어볼게요. 궁금한 게 있으면 여기서 바로 물어볼게요 — Syden에 들어가면 바로 알려드릴게요.',
 } satisfies Record<string, string>;

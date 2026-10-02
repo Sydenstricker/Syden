@@ -176,6 +176,22 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       return db.listDirectChannels(request.user.id).find((c) => c.id === channel.id);
     });
 
+    /**
+     * "Já li até aqui."
+     *
+     * NÃO DEVOLVE NADA E NÃO AVISA NINGUÉM, de propósito: quem leu já apagou a bolinha na própria
+     * tela antes de chamar, e as outras pessoas da conversa não têm o que fazer com esta informação.
+     * O Syden não tem confirmação de leitura, e esta rota não é o começo de uma.
+     */
+    authed.put<{ Params: { id: string }; Body: { lastMessageId?: number } }>('/api/direct/:id/lido', async (request, reply) => {
+      const conversa = myConversation(Number(request.params.id), request.user.id);
+      if (!conversa) return reply.code(404).send({ error: 'Conversa não encontrada.' });
+      const ate = Number(request.body?.lastMessageId);
+      if (!Number.isInteger(ate) || ate <= 0) return reply.code(400).send({ error: 'Mensagem inválida.' });
+      db.marcarLido(request.user.id, conversa.id, ate);
+      return { ok: true };
+    });
+
     /** Trocar o nome de um grupo (conversa de duas pessoas não tem nome). */
     authed.patch<{ Params: { id: string }; Body: { name?: string } }>('/api/direct/:id', async (request, reply) => {
       const channel = myConversation(Number(request.params.id), request.user.id);

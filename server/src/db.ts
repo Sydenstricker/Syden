@@ -113,6 +113,8 @@ export interface DirectChannel {
   lastMessage: string | null;
   /** Número da última mensagem: é com ele que o cliente sabe o que ainda não foi lido. */
   lastMessageId: number | null;
+  /** Até que mensagem ESTA pessoa já leu aqui. É o que faz a bolinha valer em todos os aparelhos. */
+  lastReadId: number | null;
 }
 
 /** Arquivo enviado junto com uma mensagem. Os bytes ficam no banco; aqui vai só a ficha dele. */
@@ -887,6 +889,19 @@ addColumnIfMissing('social_states', 'falha', 'TEXT');
  * Trinta dias é o prazo de quem só percebe a falta quando volta a precisar do canal.
  */
 addColumnIfMissing('channels', 'deleted_at', 'TEXT');
+
+/**
+ * ATÉ QUE MENSAGEM CADA PESSOA JÁ LEU, EM CADA CONVERSA.
+ *
+ * Isto morava no localStorage do navegador, e o comentário de lá dizia o porquê: "fica no computador
+ * de cada um, e não custa nada ao servidor". Vale para quem usa um lugar só — e o relato veio de quem
+ * usa dois: lê no navegador, abre o app de desktop, e tudo aparece como novo. Não era dessincronia;
+ * NUNCA HOUVE NADA PARA SINCRONIZAR, porque os dois armazenamentos são separados por construção.
+ *
+ * A coluna entra em channel_members e não numa tabela nova: a chave (canal, pessoa) já é exatamente
+ * esta, e com ela o apagamento em cascata do canal e da conta já vem de graça.
+ */
+addColumnIfMissing('channel_members', 'last_read_id', 'INTEGER');
 
 /**
  * Esta conta precisa confirmar o e-mail antes de entrar?
@@ -2548,13 +2563,25 @@ export function findDirectBetween(a: number, b: number): Channel | undefined {
 }
 
 /** As conversas privadas de alguém, da mais recente para a mais antiga. */
+/**
+ * Marca até onde esta pessoa leu nesta conversa. Só anda para a FRENTE: um aparelho que ficou para
+ * trás e reapareceu não pode desmarcar como lido o que outro já leu.
+ */
+export function marcarLido(userId: number, channelId: number, messageId: number) {
+  db.prepare(
+    `UPDATE channel_members SET last_read_id = ?
+     WHERE channel_id = ? AND user_id = ? AND (last_read_id IS NULL OR last_read_id < ?)`,
+  ).run(messageId, channelId, userId, messageId);
+}
+
 export function listDirectChannels(userId: number): DirectChannel[] {
   const rows = db
     .prepare(
       `SELECT c.id, c.name, c.created_by AS createdBy,
               (SELECT MAX(m.created_at) FROM messages m WHERE m.channel_id = c.id) AS lastMessageAt,
               (SELECT m.content FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessage,
-              (SELECT m.id FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessageId
+              (SELECT m.id FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessageId,
+              mine.last_read_id AS lastReadId
        FROM channels c
        JOIN channel_members mine ON mine.channel_id = c.id AND mine.user_id = ?
        WHERE c.type = 'dm'

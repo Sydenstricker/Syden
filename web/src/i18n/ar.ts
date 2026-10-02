@@ -819,4 +819,5 @@ export default {
   'Juntar as vozes da sala': 'تضمين أصوات الغرفة',
   'Conta excluída': 'حساب محذوف',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'حذف هذا الشخص حسابه. الرسائل المُرسلة هنا لا تصل إلى أحد.',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 رسالة تلقائية: وصلت فكرتك، شكرًا لك! سأقرأها بتمعّن. إن كان لديّ سؤال، سأسألك هنا — وإن دخلت إلى Syden، ستعرف فورًا.',
 } satisfies Record<string, string>;

@@ -6,6 +6,7 @@ import { SeloDaComunidade } from './SeloDaComunidade';
 import { Avatar } from './Avatar';
 import { corrigirDuracao } from './clips';
 import { useDirectory } from './directory';
+import { RECIBO_DA_IDEIA } from './recibo';
 import { corDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
@@ -308,6 +309,8 @@ const JUMBO_LIMIT = 27; // como no Discord: até 27 emojis sem texto aparecem gr
 export function MessageText({ content }: { content: string }) {
   const { emojisByName } = useDirectory();
   const t = useT();
+
+  if (content === RECIBO_DA_IDEIA) return <p className="message-text">{t(RECIBO_DA_IDEIA)}</p>;
 
   /*
    * UM GIF SOZINHO VIRA FIGURA, e o resto continua link.

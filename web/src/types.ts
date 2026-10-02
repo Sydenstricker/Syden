@@ -121,6 +121,8 @@ export interface DirectChannel {
   lastMessage: string | null;
   /** Número da última mensagem, para saber o que ainda não foi lido. */
   lastMessageId: number | null;
+  /** Até onde ESTA pessoa já leu, segundo o servidor — o que faz a bolinha valer em todo aparelho. */
+  lastReadId: number | null;
 }
 
 /** Arquivo mandado junto com uma mensagem (imagem, vídeo, áudio ou qualquer outro). */

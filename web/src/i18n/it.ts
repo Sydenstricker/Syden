@@ -798,4 +798,5 @@ export default {
   'Juntar as vozes da sala': 'Includi le voci della stanza',
   'Conta excluída': 'Account eliminato',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Questa persona ha eliminato il suo account. I messaggi inviati qui non arrivano a nessuno.',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 Messaggio automatico: la tua idea è arrivata, grazie! La leggerò con calma. Se avrò un dubbio, te lo chiedo proprio qui — e se entra in Syden, lo saprai subito.',
 } satisfies Record<string, string>;

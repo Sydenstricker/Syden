@@ -794,4 +794,5 @@ export default {
   'Juntar as vozes da sala': 'የክፍሉን ሰዎች ድምፅም አካትት',
   'Conta excluída': 'የተሰረዘ መለያ',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'ይህ ሰው መለያውን ሰርዟል። ከዚህ የሚላኩ መልእክቶች ወደ ማንም አይደርሱም።',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 ራስ-ሰር መልእክት፦ ሐሳብዎ ደርሷል፣ አመሰግናለሁ! በጥሞና አነበዋለሁ። ጥያቄ ካለኝ እዚሁ እጠይቃለሁ — ወደ Syden ከገባም ወዲያውኑ ያውቃሉ።',
 } satisfies Record<string, string>;

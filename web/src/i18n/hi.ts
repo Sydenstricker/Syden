@@ -798,4 +798,5 @@ export default {
   'Juntar as vozes da sala': 'कमरे की आवाज़ें भी जोड़ो',
   'Conta excluída': 'मिटाया गया खाता',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'इस व्यक्ति ने अपना खाता मिटा दिया। यहाँ भेजे संदेश किसी तक नहीं पहुँचते।',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 अपने आप भेजा संदेश: तुम्हारा विचार पहुँच गया, धन्यवाद! मैं इसे आराम से पढ़ूँगा। कोई सवाल हुआ तो यहीं पूछ लूँगा — और अगर यह Syden में आया, तो तुम्हें तुरंत पता चलेगा।',
 } satisfies Record<string, string>;

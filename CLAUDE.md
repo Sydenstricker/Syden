@@ -137,3 +137,46 @@ eu — resolveria de um jeito.
 **Conferir idioma que ninguém da dupla lê é medir, não confiar.** Suba o site construído, force o
 idioma e meça: direção do documento, letras do alfabeto certo na tela, nenhum resto em português e
 zero de estouro horizontal. O árabe passou por isso antes de ser publicado.
+
+## Onde a língua esconde o gênero
+
+Três idiomas seguidos mostraram que a pergunta ao abrir um idioma novo não é *"ele tem tratamento
+formal?"*, é **"onde esta língua esconde o gênero?"** — porque o Syden não sabe o sexo de quem está
+lendo, e um erro aqui atinge metade das pessoas em todas as frases.
+
+- **Hauçá:** o gênero está em QUEM LÊ. `ka` para homem, `ki` para mulher — duas palavras, não um
+  acento. Saída: imperativo pelado nos botões (não marca sexo) e `ku`, a segunda pessoa do plural,
+  nas frases.
+- **Tailandês:** está em QUEM FALA. As partículas de fim de frase ครับ (homem) e ค่ะ (mulher)
+  declarariam um sexo para o próprio aplicativo. Saída: não usar nenhuma, que é o que as interfaces
+  em tailandês fazem.
+- **Amárico:** em quem lê de novo. አንተ / አንቺ, com os verbos acompanhando até o fim da frase. Saída:
+  a forma de cortesia እርስዎ, que é neutra.
+
+**O árabe tem a mesma divisão e passou batido**, porque o sufixo ـك se escreve igual para os dois sem
+os sinais de vogal. As formas verbais dele seguem no masculino: é dívida conhecida, não descuido.
+
+## Aprender idiomas dentro do Syden: arquivado, não descartado
+
+**Decidido em 02/10/2026, pelo Sydenstricker: arquivado enquanto ele pesquisa um caminho melhor.** Ele
+quer a funcionalidade no projeto; o que não existe ainda é o desenho certo.
+
+Está escrito aqui porque o assunto **voltou três vezes** em conversas diferentes, sempre do zero, e
+porque duas das conclusões abaixo custaram investigação:
+
+1. **NÃO HÁ NADA DISSO NO REPOSITÓRIO** — nem código, nem documento, nem uma única chamada a modelo
+   de linguagem no Syden inteiro. A lembrança de "já tínhamos planos" provavelmente vem do FICA ou do
+   Biblioteca IA, que são do mesmo dono e usam LLM.
+2. **Jornais dentro do app esbarram no mesmo muro do karaokê.** Manchete com link para fora é um
+   formato seguro; mostrar o texto da matéria é republicar obra de terceiro. E ler é atividade
+   solitária colada num app cujo valor é gente falando junto.
+3. **A tela de idioma é o lugar errado**, e isso é o que mais importa guardar: ela é de
+   CONFIGURAÇÃO, visitada uma vez. Pior, **o idioma da interface é um fato diferente do idioma que a
+   pessoa estuda** — um brasileiro aprendendo japonês mantém o app em português. Se um dia isso
+   existir, é na home.
+4. **O caminho mais barato para descobrir se alguém quer**, antes de construir qualquer coisa: um
+   campo no perfil — "idiomas que falo" e "idiomas que estou aprendendo". Usa o que já existe, não
+   licencia nada, e cria o encontro de mão dupla que é a parte boa da ideia (quem ensina um precisa
+   de quem ensina o outro).
+5. **O bloqueio real não é técnico, é moderação.** Intercâmbio de idioma é desconhecido encontrando
+   desconhecido, que é o problema mais difícil que existe — e o Syden tem uma pessoa moderando.

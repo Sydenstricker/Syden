@@ -782,4 +782,5 @@ export default {
   'Juntar as vozes da sala': 'صدای افراد اتاق هم اضافه شود',
   'Conta excluída': 'حساب حذف‌شده',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'این فرد حسابش را حذف کرده است. پیام‌های اینجا به کسی نمی‌رسد.',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 پیام خودکار: ایده‌ات رسید، ممنون! با حوصله می‌خوانمش. اگر سؤالی داشتم، همین‌جا می‌پرسم — و اگر وارد Syden شود، بلافاصله خبردار می‌شوی.',
 } satisfies Record<string, string>;

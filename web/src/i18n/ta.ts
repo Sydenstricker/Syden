@@ -779,4 +779,5 @@ export default {
   'Juntar as vozes da sala': 'அறையில் உள்ளவர்களின் குரல்களையும் சேர்',
   'Conta excluída': 'நீக்கப்பட்ட கணக்கு',
   'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'இவர் தனது கணக்கை நீக்கிவிட்டார். இங்கு அனுப்பும் செய்திகள் யாரையும் சென்றடையாது.',
+  '🤖 Recado automático: sua ideia chegou, obrigado! Vou ler com calma. Se eu tiver dúvida, pergunto por aqui mesmo — e se ela entrar no Syden, você vai saber na hora.': '🤖 தானியங்கி செய்தி: உங்கள் யோசனை வந்துவிட்டது, நன்றி! நிதானமாகப் படிக்கிறேன். சந்தேகம் இருந்தால் இங்கேயே கேட்கிறேன் — அது Syden-இல் சேர்ந்தால் உடனே தெரியும்.',
 } satisfies Record<string, string>;
