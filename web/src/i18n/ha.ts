@@ -794,4 +794,6 @@ export default {
   'Este clipe não tem som.': 'Wannan gutsuren ba shi da sauti.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Gutsuren ya yi girma fiye da yadda hira za ta ɗauka. Ku zaɓi ɗan ƙaramin ɓangare.',
   'Juntar as vozes da sala': 'Haɗa muryoyin mutanen ɗakin',
+  'Conta excluída': 'Asusun da aka share',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Wannan mutumin ya share asusunsa. Saƙonnin da ake aikawa a nan ba sa isa ga kowa.',
 } satisfies Record<string, string>;

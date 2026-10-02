@@ -779,4 +779,6 @@ export default {
   'Este clipe não tem som.': 'اس کلپ میں آواز نہیں ہے۔',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'کلپ چیٹ کے لیے بہت بڑی ہو گئی۔ چھوٹا حصہ منتخب کریں۔',
   'Juntar as vozes da sala': 'کمرے کی آوازیں بھی شامل کریں',
+  'Conta excluída': 'حذف شدہ اکاؤنٹ',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'اس شخص نے اپنا اکاؤنٹ حذف کر دیا ہے۔ یہاں بھیجے گئے پیغام کسی تک نہیں پہنچتے۔',
 } satisfies Record<string, string>;

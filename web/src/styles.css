@@ -8191,6 +8191,20 @@ textarea {
   cursor: pointer;
 }
 
+/* O aviso de que a conta do outro lado foi excluída. Vai no topo da conversa, antes das mensagens:
+   é informação que muda o que a pessoa faz a seguir, e serve de nada embaixo de tudo. */
+.conta-excluida {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, #faa61a 8%, transparent);
+  font-size: 13px;
+  color: var(--text);
+}
+
 .clipe-cortando {
   display: flex;
   align-items: center;

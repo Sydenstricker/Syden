@@ -227,6 +227,8 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   yo: 47,
   om: 37,
   ig: 31,
+  ff: 35,
+  bm: 15,
   pl: 45,
   my: 43,
   uk: 40,

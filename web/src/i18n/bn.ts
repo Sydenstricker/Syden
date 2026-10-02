@@ -794,4 +794,6 @@ export default {
   'Este clipe não tem som.': 'এই ক্লিপে কোনো শব্দ নেই।',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ক্লিপটা চ্যাটের জন্য খুব বড় হয়ে গেছে। ছোট একটা অংশ বেছে নাও।',
   'Juntar as vozes da sala': 'ঘরের সবার কণ্ঠও যোগ করো',
+  'Conta excluída': 'মুছে ফেলা অ্যাকাউন্ট',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'এই ব্যক্তি তার অ্যাকাউন্ট মুছে ফেলেছে। এখান থেকে পাঠানো বার্তা কারও কাছে পৌঁছায় না।',
 } satisfies Record<string, string>;

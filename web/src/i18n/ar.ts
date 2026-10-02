@@ -817,4 +817,6 @@ export default {
   'Este clipe não tem som.': 'هذا المقطع بلا صوت.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'المقطع خرج أكبر من أن تقبله المحادثة. اختر جزءًا أقصر.',
   'Juntar as vozes da sala': 'تضمين أصوات الغرفة',
+  'Conta excluída': 'حساب محذوف',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'حذف هذا الشخص حسابه. الرسائل المُرسلة هنا لا تصل إلى أحد.',
 } satisfies Record<string, string>;

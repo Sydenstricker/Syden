@@ -802,4 +802,6 @@ export default {
   'Este clipe não tem som.': 'This clip has no sound.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'The clip came out too big for the chat. Pick a shorter part.',
   'Juntar as vozes da sala': 'Include the room’s voices',
+  'Conta excluída': 'Deleted account',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'This person deleted their account. Messages sent here reach no one.',
 } satisfies Record<string, string>;

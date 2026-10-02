@@ -4,11 +4,25 @@ import { isUnread } from './unread';
 import type { DirectChannel, UserRef } from './types';
 import { useT } from './i18n';
 
+/**
+ * A conversa ficou sem a outra pessoa — ou seja, a conta dela foi excluída.
+ *
+ * NÃO É "SÓ VOCÊ", e a diferença não é de palavra. Conversa consigo mesmo NÃO EXISTE no Syden: o
+ * servidor recusa criar uma (ver `POST /api/direct`, que exige pelo menos uma outra pessoa). Então
+ * quando sobra só você numa conversa, a única explicação é que a conta do outro lado sumiu.
+ *
+ * O rótulo antigo dizia "Só você" e deixava quem mandou mensagem esperando resposta de alguém que
+ * não existe mais.
+ */
+export function contaExcluida(conversa: DirectChannel, selfId: number): boolean {
+  return !conversa.name && conversa.members.filter((m) => m.id !== selfId).length === 0;
+}
+
 /** Nome que aparece na lista: o do grupo, ou o da outra pessoa numa conversa de dois. */
-export function directName(conversa: DirectChannel, selfId: number): string {
+export function directName(conversa: DirectChannel, selfId: number, t: (s: string) => string): string {
   if (conversa.name) return conversa.name;
   const outros = conversa.members.filter((m) => m.id !== selfId);
-  if (outros.length === 0) return 'Só você';
+  if (outros.length === 0) return t('Conta excluída');
   return outros.map((m) => m.username).join(', ');
 }
 
@@ -69,7 +83,7 @@ export function DirectList({
                 <Avatar name={face?.username ?? '?'} userId={face?.id} size={32} />
               )}
               <span className="direct-info">
-                <span className="direct-name">{directName(conversa, selfId)}</span>
+                <span className="direct-name">{directName(conversa, selfId, t)}</span>
                 <span className="direct-preview">
                   {conversa.lastMessage || (grupo ? `${conversa.members.length} pessoas` : 'Sem mensagens ainda')}
                 </span>

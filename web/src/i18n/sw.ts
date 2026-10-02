@@ -796,4 +796,6 @@ export default {
   'Este clipe não tem som.': 'Klipu hii haina sauti.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klipu imetoka kubwa mno kwa gumzo. Chagua kipande kifupi zaidi.',
   'Juntar as vozes da sala': 'Jumuisha sauti za chumbani',
+  'Conta excluída': 'Akaunti iliyofutwa',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Mtu huyu amefuta akaunti yake. Jumbe za hapa hazimfikii mtu.',
 } satisfies Record<string, string>;

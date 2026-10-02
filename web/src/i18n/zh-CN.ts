@@ -783,4 +783,6 @@ export default {
   'Este clipe não tem som.': '这个片段没有声音。',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': '剪出来的片段对聊天来说太大了。请选一段更短的。',
   'Juntar as vozes da sala': '加入房间里大家的声音',
+  'Conta excluída': '已删除的账号',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': '这个人已经删除了账号。发到这里的消息不会有人收到。',
 } satisfies Record<string, string>;

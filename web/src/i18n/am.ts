@@ -792,4 +792,6 @@ export default {
   'Vozes juntas': 'ድምፆች አብረው',
   'ZECA': 'ZECA',
   'Juntar as vozes da sala': 'የክፍሉን ሰዎች ድምፅም አካትት',
+  'Conta excluída': 'የተሰረዘ መለያ',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'ይህ ሰው መለያውን ሰርዟል። ከዚህ የሚላኩ መልእክቶች ወደ ማንም አይደርሱም።',
 } satisfies Record<string, string>;

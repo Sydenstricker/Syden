@@ -777,4 +777,6 @@ export default {
   'Este clipe não tem som.': 'இந்தக் கிளிப்பில் ஒலி இல்லை.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'கிளிப் அரட்டைக்கு மிகப் பெரிதாக வந்துவிட்டது. சிறிய பகுதியைத் தேர்ந்தெடுக்கவும்.',
   'Juntar as vozes da sala': 'அறையில் உள்ளவர்களின் குரல்களையும் சேர்',
+  'Conta excluída': 'நீக்கப்பட்ட கணக்கு',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'இவர் தனது கணக்கை நீக்கிவிட்டார். இங்கு அனுப்பும் செய்திகள் யாரையும் சென்றடையாது.',
 } satisfies Record<string, string>;

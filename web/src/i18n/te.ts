@@ -774,4 +774,6 @@ export default {
   'Este clipe não tem som.': 'ఈ క్లిప్‌లో శబ్దం లేదు.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'క్లిప్ చాట్‌కు చాలా పెద్దదైంది. చిన్న భాగాన్ని ఎంచుకోండి.',
   'Juntar as vozes da sala': 'గదిలోని వారి గొంతులను కూడా చేర్చు',
+  'Conta excluída': 'తొలగించిన ఖాతా',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'ఈ వ్యక్తి తన ఖాతాను తొలగించారు. ఇక్కడి సందేశాలు ఎవరికీ చేరవు.',
 } satisfies Record<string, string>;

@@ -773,4 +773,6 @@ export default {
   'Este clipe não tem som.': 'このクリップには音がありません。',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'クリップがチャットには大きすぎます。もっと短い部分を選んでください。',
   'Juntar as vozes da sala': '部屋のみんなの声も入れる',
+  'Conta excluída': '削除されたアカウント',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'この人はアカウントを削除しました。ここに送ったメッセージは誰にも届きません。',
 } satisfies Record<string, string>;

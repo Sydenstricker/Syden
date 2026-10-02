@@ -818,4 +818,6 @@ export default {
   'Este clipe não tem som.': 'У этого клипа нет звука.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клип получился слишком большим для чата. Выбери кусок покороче.',
   'Juntar as vozes da sala': 'Добавить голоса из комнаты',
+  'Conta excluída': 'Удалённый аккаунт',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Этот человек удалил аккаунт. Сообщения отсюда никому не приходят.',
 } satisfies Record<string, string>;

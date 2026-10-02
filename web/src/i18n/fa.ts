@@ -780,4 +780,6 @@ export default {
   'Este clipe não tem som.': 'این کلیپ صدا ندارد.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'کلیپ برای گفتگو خیلی بزرگ شد. بخش کوتاه‌تری انتخاب کنید.',
   'Juntar as vozes da sala': 'صدای افراد اتاق هم اضافه شود',
+  'Conta excluída': 'حساب حذف‌شده',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'این فرد حسابش را حذف کرده است. پیام‌های اینجا به کسی نمی‌رسد.',
 } satisfies Record<string, string>;

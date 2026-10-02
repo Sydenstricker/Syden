@@ -824,4 +824,6 @@ export default {
   'Este clipe não tem som.': 'Dieser Clip hat keinen Ton.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Der Clip ist zu groß für den Chat geworden. Wähl einen kürzeren Ausschnitt.',
   'Juntar as vozes da sala': 'Die Stimmen aus dem Raum dazunehmen',
+  'Conta excluída': 'Gelöschtes Konto',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Diese Person hat ihr Konto gelöscht. Nachrichten von hier erreichen niemanden.',
 } satisfies Record<string, string>;

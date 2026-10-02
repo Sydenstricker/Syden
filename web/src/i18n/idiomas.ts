@@ -161,6 +161,14 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'yo', nativo: 'Yorùbá', nome: 'Iorubá', escrita: 'latina', paises: 1 },
   { codigo: 'om', nativo: 'Afaan Oromoo', nome: 'Oromo', escrita: 'latina', paises: 1 },
   { codigo: 'ig', nativo: 'Igbo', nome: 'Ibo', escrita: 'latina', paises: 1 },
+  // O FULA É UMA LÍNGUA SÓ COM MUITOS NOMES — pulaar no Senegal, pular na Guiné, fulfulde no Mali e
+  // na Nigéria. São variedades da mesma, e o código ISO é um só: ff. Escreve-se em latino com os
+  // MESMOS ganchos do hauçá (ɓ ɗ ŋ ƴ), então a fonte e o teste de escrita já estão prontos.
+  { codigo: 'ff', nativo: 'Pulaar', nome: 'Fula', escrita: 'latina', paises: 4 },
+  // "MANDINGA" NÃO É UMA LÍNGUA, É UM GRUPO (bambara, malinquê, dioula, mandinga), e por isso não
+  // tem código próprio. Quem entra é o BAMBARA, que é o de mais falantes e o que o Mali reconhece em
+  // lei — traduzir "mandinga" seria escolher uma das quatro sem dizer qual.
+  { codigo: 'bm', nativo: 'Bamanankan', nome: 'Bambara', escrita: 'latina', paises: 1 },
   { codigo: 'so', nativo: 'Soomaali', nome: 'Somali', escrita: 'latina', paises: 1 },
   { codigo: 'ha', nativo: 'Hausa', nome: 'Hauçá', escrita: 'latina', paises: 2 },
   { codigo: 'rw', nativo: 'Kinyarwanda', nome: 'Quiniaruanda', escrita: 'latina', paises: 1 },

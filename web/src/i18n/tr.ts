@@ -791,4 +791,6 @@ export default {
   'Este clipe não tem som.': 'Bu klipte ses yok.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip sohbet için fazla büyük çıktı. Daha kısa bir parça seç.',
   'Juntar as vozes da sala': 'Odadakilerin seslerini de kat',
+  'Conta excluída': 'Silinmiş hesap',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Bu kişi hesabını sildi. Buradan gönderilen mesajlar kimseye ulaşmıyor.',
 } satisfies Record<string, string>;

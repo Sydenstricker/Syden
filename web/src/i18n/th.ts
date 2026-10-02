@@ -805,4 +805,6 @@ export default {
   'Este clipe não tem som.': 'คลิปนี้ไม่มีเสียง',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'คลิปที่ตัดออกมาใหญ่เกินไปสำหรับแชต เลือกช่วงที่สั้นกว่านี้',
   'Juntar as vozes da sala': 'ใส่เสียงของคนในห้องด้วย',
+  'Conta excluída': 'บัญชีที่ถูกลบ',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'คนนี้ลบบัญชีไปแล้ว ข้อความที่ส่งตรงนี้จะไม่ถึงใคร',
 } satisfies Record<string, string>;

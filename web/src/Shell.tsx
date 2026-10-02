@@ -1,4 +1,5 @@
 import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
+import { UserX } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
 import { API_URL, ApiError, api, loadToken } from './api';
@@ -18,7 +19,7 @@ import { TelaDeAmigos } from './TelaDeAmigos';
 import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
 import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread';
-import { DirectList, DirectRailButton, directName } from './DirectList';
+import { contaExcluida, DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
 import { loadMyStatus, saveMyStatus } from './presenceStatus';
@@ -269,7 +270,7 @@ export function Shell({
   const directAsChannel: Channel | undefined = openDirect && {
     id: openDirect.id,
     communityId: null,
-    name: directName(openDirect, user.id),
+    name: directName(openDirect, user.id, t),
     type: 'dm',
     position: 0,
     createdBy: openDirect.createdBy,
@@ -805,14 +806,24 @@ export function Shell({
 
           {/* Conversa privada: mesma tela dos canais de texto, só que sem comunidade por trás. */}
           {view === 'direct' && directAsChannel && socket && (
-            <TextChannel
-              key={`dm-${directAsChannel.id}`}
-              channel={directAsChannel}
-              socket={socket}
-              user={user}
-              role="member"
-              onMobileBack={() => setMobileChannels(true)}
-            />
+            <>
+              {/* QUEM ESTAVA DO OUTRO LADO APAGOU A CONTA, e sem esta linha a conversa fica idêntica
+                  a uma em que a pessoa só não respondeu ainda. Quem mandou mensagem ficaria esperando
+                  resposta de alguém que não existe mais — foi exatamente o que aconteceu. */}
+              {openDirect && contaExcluida(openDirect, user.id) && (
+                <p className="conta-excluida" role="status">
+                  <UserX size={15} /> {t('Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.')}
+                </p>
+              )}
+              <TextChannel
+                key={`dm-${directAsChannel.id}`}
+                channel={directAsChannel}
+                socket={socket}
+                user={user}
+                role="member"
+                onMobileBack={() => setMobileChannels(true)}
+              />
+            </>
           )}
           {view === 'direct' && !directAsChannel && (
             <div className="empty">{t('Escolha uma conversa à esquerda, ou comece uma nova.')}</div>

@@ -797,4 +797,6 @@ export default {
   'Este clipe não tem som.': 'Klip ini tiada bunyi.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip ini terlalu besar untuk sembang. Pilih bahagian yang lebih pendek.',
   'Juntar as vozes da sala': 'Sertakan suara orang dalam bilik',
+  'Conta excluída': 'Akaun dipadam',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Orang ini telah memadam akaunnya. Mesej dari sini tidak sampai kepada sesiapa.',
 } satisfies Record<string, string>;

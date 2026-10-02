@@ -785,4 +785,6 @@ export default {
   'Este clipe não tem som.': '이 클립에는 소리가 없습니다.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': '클립이 채팅에 보내기엔 너무 큽니다. 더 짧은 부분을 고르세요.',
   'Juntar as vozes da sala': '방에 있는 사람들의 목소리도 넣기',
+  'Conta excluída': '삭제된 계정',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': '이 사람은 계정을 삭제했습니다. 여기서 보낸 메시지는 아무에게도 가지 않습니다.',
 } satisfies Record<string, string>;

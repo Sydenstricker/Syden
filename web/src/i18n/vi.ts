@@ -762,4 +762,6 @@ export default {
   'Este clipe não tem som.': 'Clip này không có âm thanh.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Clip ra quá lớn so với khung chat. Hãy chọn đoạn ngắn hơn.',
   'Juntar as vozes da sala': 'Thêm giọng của mọi người trong phòng',
+  'Conta excluída': 'Tài khoản đã xoá',
+  'Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.': 'Người này đã xoá tài khoản. Tin nhắn gửi ở đây không đến được ai.',
 } satisfies Record<string, string>;
