@@ -166,6 +166,11 @@ export const OFICIAL: Record<string, string[]> = {
   // Grécia e Chipre. No Chipre o grego divide o posto oficial com o turco, pela Constituição de
   // 1960 — a divisão da ilha não mudou o texto dela.
   el: ['GR', 'CY'],
+
+  // Romênia e Moldávia. Na Moldávia a língua oficial é a MESMA, e o nome dela foi briga
+  // constitucional: a Constituição dizia 'moldavo' até a corte constitucional decidir, em 2013, que
+  // vale a Declaração de Independência, que diz 'romeno'. Em 2023 o texto foi corrigido por lei.
+  ro: ['RO', 'MD'],
 };
 
 /**
