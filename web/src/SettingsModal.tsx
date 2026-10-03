@@ -37,6 +37,7 @@ import { Aparencia } from './Aparencia';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
+import { ESCALA_MAXIMA, ESCALA_MINIMA, escalaValida } from './escalaDoTexto';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { EmojiPicker } from './EmojiPicker';
 import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
@@ -2559,12 +2560,41 @@ function Toggle({
  * Uma aba própria, e não um pedaço perdido em "Minha conta", porque quem depende destes controles não
  * deveria ter que caçá-los.
  */
+/** Vem ANTES das barras: é o ajuste que mais gente procura, e quem procura não deveria rolar até ele. */
+function TamanhoDoTexto() {
+  const t = useT();
+  const { escalaDoTexto } = useSettings();
+  const escala = escalaValida(escalaDoTexto);
+  return (
+    <section className="ajuste-barras">
+      <h3>{t('Tamanho do texto')}</h3>
+      <p className="settings-hint">{t('Só as letras mudam: o resto da tela fica no lugar.')}</p>
+      <label className="ajuste-linha">
+        <span>{t('Tamanho do texto')}</span>
+        <input
+          type="range"
+          min={ESCALA_MINIMA}
+          max={ESCALA_MAXIMA}
+          step={0.05}
+          value={escala}
+          onChange={(e) => updateSettings({ escalaDoTexto: Number(e.target.value) })}
+        />
+        <output>{Math.round(escala * 100)}%</output>
+      </label>
+      <button type="button" className="btn-secondary" disabled={escala === 1} onClick={() => updateSettings({ escalaDoTexto: 1 })}>
+        {t('Voltar ao padrão')}
+      </button>
+    </section>
+  );
+}
+
 function AcessibilidadeSection() {
   const t = useT();
   return (
     <>
       <h2>{t('Acessibilidade')}</h2>
       <p className="settings-lead">{t('Ajustes de tamanho e de leitura, para o Syden caber do seu jeito.')}</p>
+      <TamanhoDoTexto />
       <AjusteDasBarras />
     </>
   );

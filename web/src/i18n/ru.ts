@@ -866,4 +866,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Чёткая для того размера, в котором показана.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Меньше, чем место, где показана. В окне поменьше будет чёткой.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Шрифт и эффект применяются к названию сообщества, над списком каналов.',
+  'Tamanho do texto': 'Размер текста',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Меняются только буквы: всё остальное на экране остаётся на месте.',
 } satisfies Record<string, string>;

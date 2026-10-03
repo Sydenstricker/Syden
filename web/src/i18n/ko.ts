@@ -832,4 +832,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': '지금 표시되는 크기에서는 선명합니다.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '표시되는 공간보다 작습니다. 창을 줄이면 선명해집니다.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '글꼴과 효과는 채널 목록 위의 커뮤니티 이름에 적용됩니다.',
+  'Tamanho do texto': '글자 크기',
+  'Só as letras mudam: o resto da tela fica no lugar.': '글자만 바뀌어요. 화면의 나머지는 그대로예요.',
 } satisfies Record<string, string>;

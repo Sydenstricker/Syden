@@ -911,4 +911,6 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Metaliczny głos robota ze starego filmu.',
   'Vozes juntas': 'Głosy razem',
   'ZECA': 'KUBA',
+  'Tamanho do texto': 'Rozmiar tekstu',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Zmieniają się tylko litery: reszta ekranu zostaje na miejscu.',
 } satisfies Record<string, string>;

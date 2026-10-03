@@ -844,4 +844,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Scherp voor het formaat waarop die wordt getoond.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Kleiner dan de ruimte waarin die wordt getoond. In een kleiner venster is die scherp.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Het lettertype en het effect gelden voor de naam van de community, boven de kanalenlijst.',
+  'Tamanho do texto': 'Tekstgrootte',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Alleen de letters veranderen: de rest van het scherm blijft op zijn plek.',
 } satisfies Record<string, string>;

@@ -75,6 +75,8 @@ export interface Settings {
    * o seletor e veria uma cor que não foi a que ela escolheu.
    */
   corDeDestaque: string | null;
+  /** Acessibilidade → Tamanho do texto. Multiplica todo tamanho de letra do app; 1 é o de sempre. */
+  escalaDoTexto: number;
 }
 
 const DEFAULTS: Settings = {
@@ -97,6 +99,7 @@ const DEFAULTS: Settings = {
   efeitosVisuais: true,
   notifications: true,
   corDeDestaque: null,
+  escalaDoTexto: 1,
 };
 
 const STORAGE_KEY = 'janja.settings';
@@ -170,6 +173,9 @@ function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
+
+/** Para quem precisa reagir a uma mudança fora do React (aplicar algo no documento, por exemplo). */
+export const aoMudarAjustes = subscribe;
 
 export function useSettings(): Settings {
   return useSyncExternalStore(subscribe, getSettings);

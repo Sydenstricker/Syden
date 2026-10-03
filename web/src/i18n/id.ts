@@ -842,4 +842,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Tajam untuk ukuran tampilannya.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Lebih kecil dari ruang tempat ditampilkan. Di jendela yang lebih kecil, jadi tajam.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Huruf dan efeknya berlaku untuk nama komunitas, di atas daftar kanal.',
+  'Tamanho do texto': 'Ukuran teks',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Hanya hurufnya yang berubah: bagian layar lainnya tetap di tempat.',
 } satisfies Record<string, string>;

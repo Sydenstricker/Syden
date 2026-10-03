@@ -821,4 +821,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': '表示されている大きさでは鮮明です。',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '表示されている領域より小さいです。ウィンドウを小さくすると鮮明になります。',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '書体と効果は、チャンネル一覧の上にあるコミュニティ名に適用されます。',
+  'Tamanho do texto': '文字の大きさ',
+  'Só as letras mudam: o resto da tela fica no lugar.': '変わるのは文字だけです。画面のほかの部分はそのままです。',
 } satisfies Record<string, string>;

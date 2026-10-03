@@ -853,4 +853,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'คมชัดสำหรับขนาดที่กำลังแสดง',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'เล็กกว่าพื้นที่ที่กำลังแสดง ถ้าหน้าต่างเล็กลงจะคมชัด',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'แบบอักษรและเอฟเฟกต์ใช้กับชื่อชุมชน เหนือรายการช่อง',
+  'Tamanho do texto': 'ขนาดตัวอักษร',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'เปลี่ยนแค่ตัวอักษร ส่วนอื่นของหน้าจออยู่ที่เดิม',
 } satisfies Record<string, string>;

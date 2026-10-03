@@ -845,4 +845,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Jelas untuk saiz paparan ini.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Lebih kecil daripada ruang paparannya. Dalam tetingkap lebih kecil, ia jelas.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Fon dan kesan digunakan pada nama komuniti, di atas senarai saluran.',
+  'Tamanho do texto': 'Saiz teks',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Hanya huruf yang berubah: bahagian lain skrin kekal di tempatnya.',
 } satisfies Record<string, string>;

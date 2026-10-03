@@ -831,4 +831,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': '按当前显示尺寸来看是清晰的。',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '比显示区域还小。窗口小一点就会清晰。',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '字体和效果作用于频道列表上方的社区名称。',
+  'Tamanho do texto': '文字大小',
+  'Só as letras mudam: o resto da tela fica no lugar.': '只有文字会变：屏幕上的其他部分保持原样。',
 } satisfies Record<string, string>;

@@ -840,4 +840,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Clară pentru dimensiunea la care e afișată.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Mai mică decât spațiul în care e afișată. Într-o fereastră mai mică, e clară.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Litera și efectul se aplică numelui comunității, deasupra listei de canale.',
+  'Tamanho do texto': 'Dimensiunea textului',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Se schimbă doar literele: restul ecranului rămâne pe loc.',
 } satisfies Record<string, string>;

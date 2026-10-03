@@ -810,4 +810,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Nét so với kích thước đang hiển thị.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Nhỏ hơn khung đang hiển thị. Thu nhỏ cửa sổ lại thì sẽ nét.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Kiểu chữ và hiệu ứng áp dụng cho tên cộng đồng, phía trên danh sách kênh.',
+  'Tamanho do texto': 'Cỡ chữ',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Chỉ chữ thay đổi: phần còn lại của màn hình vẫn giữ nguyên.',
 } satisfies Record<string, string>;

@@ -825,4 +825,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'காட்டப்படும் அளவுக்குத் தெளிவாக உள்ளது.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'காட்டப்படும் இடத்தைவிடச் சிறியது. சிறிய சாளரத்தில் தெளிவாகத் தெரியும்.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'எழுத்துருவும் விளைவும் சேனல் பட்டியலுக்கு மேலே உள்ள சமூகப் பெயருக்குப் பொருந்தும்.',
+  'Tamanho do texto': 'எழுத்தின் அளவு',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'எழுத்துகள் மட்டுமே மாறும்: திரையின் மற்ற பகுதி அப்படியே இருக்கும்.',
 } satisfies Record<string, string>;

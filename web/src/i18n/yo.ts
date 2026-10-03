@@ -855,4 +855,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Ó ṣe kedere fún ìwọ̀n tí à ń fi í hàn.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ó kéré ju ààyè tí à ń fi í hàn lọ. Nínú fèrèsé kékeré, yóò ṣe kedere.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Lẹ́tà àti ìpa náà wúlò fún orúkọ àwùjọ, lókè àtòjọ ikànnì.',
+  'Tamanho do texto': 'Ìwọ̀n ọ̀rọ̀',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Àwọn lẹ́tà nìkan ló ń yí padà: ìyókù ojú-ìbòjú wà ní ipò rẹ̀.',
 } satisfies Record<string, string>;

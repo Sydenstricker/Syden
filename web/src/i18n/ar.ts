@@ -865,4 +865,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'واضحة بالنسبة للحجم المعروضة به.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'أصغر من المساحة المعروضة فيها. في نافذة أصغر تظهر واضحة.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'ينطبق الخط والتأثير على اسم المجتمع، فوق قائمة القنوات.',
+  'Tamanho do texto': 'حجم النص',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'تتغير الحروف فقط: يبقى باقي الشاشة في مكانه.',
 } satisfies Record<string, string>;

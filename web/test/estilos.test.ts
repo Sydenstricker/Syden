@@ -47,6 +47,8 @@ test('toda cor do tema escuro tem o par dela no tema claro', () => {
     '--shadow',
     '--largura-sidebar',
     '--largura-membros',
+    // A letra maior também: quem aumentou o texto para enxergar aumentou para sempre.
+    '--escala-do-texto',
   ]);
 
   const soNoEscuro = [...noEscuro].filter((v) => !noClaro.has(v) && !IGUAIS_NOS_DOIS.has(v));

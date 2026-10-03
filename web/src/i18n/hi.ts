@@ -844,4 +844,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'जिस आकार में दिख रही है, उसके लिए साफ़ है।',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'जिस जगह दिख रही है उससे छोटी है। छोटी खिड़की में साफ़ दिखेगी।',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'लिपि और प्रभाव समुदाय के नाम पर लगते हैं, चैनल सूची के ऊपर।',
+  'Tamanho do texto': 'टेक्स्ट का आकार',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'सिर्फ़ अक्षर बदलते हैं: स्क्रीन का बाकी हिस्सा अपनी जगह रहता है।',
 } satisfies Record<string, string>;

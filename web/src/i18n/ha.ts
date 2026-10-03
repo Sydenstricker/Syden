@@ -842,4 +842,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'A bayyane take ga girman da ake nunata.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ƙarami fiye da wurin da ake nunata. A ƙaramar taga, takan bayyana sosai.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Rubutun da tasirin suna aiki ga sunan al’umma, bisa jerin tashoshi.',
+  'Tamanho do texto': 'Girman rubutu',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Haruffa kawai ke canzawa: sauran allon yana nan a wurinsa.',
 } satisfies Record<string, string>;

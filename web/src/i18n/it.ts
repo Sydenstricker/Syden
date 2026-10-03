@@ -844,4 +844,6 @@ export default {
   'Nítida para o tamanho em que está sendo mostrada.': 'Nitida per la dimensione in cui viene mostrata.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Più piccola dello spazio in cui viene mostrata. In una finestra più piccola è nitida.',
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Il carattere e l’effetto valgono per il nome della comunità, sopra l’elenco dei canali.',
+  'Tamanho do texto': 'Dimensione del testo',
+  'Só as letras mudam: o resto da tela fica no lugar.': 'Cambiano solo le lettere: il resto dello schermo resta al suo posto.',
 } satisfies Record<string, string>;
