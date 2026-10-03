@@ -30,6 +30,8 @@ import { AjusteDasBarras } from './AjusteDasBarras';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { EmojiPicker } from './EmojiPicker';
 import { FONTES_DA_COMUNIDADE } from './fontesDaComunidade';
+import { GifPicker } from './GifPicker';
+import { gifsDisponiveis } from './gifs';
 import { limiteDoCampo, tamanhoVisivel } from './nomeComEmoji';
 import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
 import { algarismos } from './algarismos';
@@ -941,6 +943,13 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [endereco, setEndereco] = useState('');
+  const [gifAberto, setGifAberto] = useState(false);
+  // Sem chave do GIPHY no servidor o botão não existe: botão que não pode funcionar é pior do que
+  // botão nenhum. É a mesma conta do seletor de GIF da caixa de mensagem.
+  const [temGif, setTemGif] = useState(false);
+  useEffect(() => {
+    void gifsDisponiveis().then(setTemGif);
+  }, []);
 
   /**
    * A CAPA VINDA DE UM ENDEREÇO — do GIPHY, do gifer, de onde for.
@@ -970,11 +979,15 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
 
   async function usarEndereco(event: FormEvent) {
     event.preventDefault();
+    await mandarEndereco(endereco);
+    setEndereco('');
+  }
+
+  async function mandarEndereco(url: string) {
     setBusy(true);
     setError(null);
     try {
-      await api(`/api/communities/${community.id}/capa/endereco`, { method: 'PUT', body: { url: endereco } });
-      setEndereco('');
+      await api(`/api/communities/${community.id}/capa/endereco`, { method: 'PUT', body: { url } });
       onChanged();
     } catch (e) {
       setError((e as Error).message);
@@ -1021,6 +1034,27 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
           </button>
         ) : null}
       </div>
+      {/* PROCURAR O GIF AQUI DENTRO, em vez de um link para fora.
+          Nem todo mundo sabe qual é o site de GIFs — e a resposta não precisa ser ensinar o
+          endereço de um site: o Syden já tem a busca do GIPHY, usada na caixa de mensagem. Escolher
+          aqui evita sair do app, abrir outra aba, achar o endereço certo e colar. O campo de colar
+          continua logo abaixo, para quem achou o GIF em outro lugar. */}
+      {temGif && (
+        <div className="capa-gif">
+          <button type="button" className="btn-secondary" disabled={busy} onClick={() => setGifAberto((a) => !a)}>
+            <Sparkles size={16} aria-hidden="true" /> {t('Escolher GIF')}
+          </button>
+          {gifAberto && (
+            <GifPicker
+              onPick={(gif) => {
+                setGifAberto(false);
+                void mandarEndereco(gif.url);
+              }}
+              onClose={() => setGifAberto(false)}
+            />
+          )}
+        </div>
+      )}
       <form className="capa-endereco" onSubmit={usarEndereco}>
         <input
           type="url"

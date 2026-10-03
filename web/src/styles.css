@@ -10470,3 +10470,29 @@ body.arrastando-barra {
   color: var(--text-muted);
   font-size: 12px;
 }
+
+/* O botão de escolher GIF para a capa. `position: relative` porque o seletor é absoluto e mede a
+   partir do ancestral posicionado — sem isto ele mediria a partir do modal e sairia da tela, que foi
+   o que aconteceu com os painéis do soundboard e do karaokê. */
+.capa-gif {
+  position: relative;
+  display: inline-flex;
+  margin-top: 10px;
+}
+
+.capa-gif .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Para cima e alinhado à esquerda: este bloco fica no meio de uma tela que rola, e para baixo a
+   lista sairia por fora do modal. */
+.capa-gif .gif-picker {
+  bottom: calc(100% + 8px);
+  /* PROPRIEDADE LÓGICA, e não `left`: o seletor se ancora por `inset-inline-end`, e o Syden tem
+     quatro idiomas escritos da direita para a esquerda. Com `left` as duas regras brigariam, e o
+     painel abriria do lado errado em árabe, urdu e persa. */
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}

@@ -64,6 +64,14 @@ export async function parseMediaConferida(
   if (typeof media === 'string') return media;
   if (kind !== 'image') return media;
 
+  // O LIMITE DE TAMANHO É DE BYTES, E NÃO DE PIXELS — e são coisas diferentes. Uma imagem de uma cor
+  // só comprime a quase nada: 20.000 por 20.000 cabe em poucos kilobytes e passa pelo limite de
+  // cima, mas pede 1,6 GB de memória para ser desenhada no computador de CADA pessoa que a abrir.
+  // Ver server/src/dimensoes.ts.
+  const { imagemGrandeDemais } = await import('./dimensoes.js');
+  const grande = imagemGrandeDemais(media.mime, media.data);
+  if (grande) return grande;
+
   const { conferir } = await import('./shield.js');
   const resultado = await conferir(media.data, media.mime);
 
