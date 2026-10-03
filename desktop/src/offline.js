@@ -253,6 +253,14 @@ const TEXTOS = {
     tentando: 'מנסה…',
     codigo: 'OFFLINE — אין חיבור',
   },
+  // A hudhaa (’) é letra do oromo, não aspa: walqunnamuu, deebi’ii. Ver web/src/i18n/om.ts.
+  om: {
+    titulo: 'Walqunnamuun hin danda’amne',
+    explicacao: 'Interneetii kee ilaali. Sarvarichis hojii ala ta’uu danda’a.',
+    botao: 'Irra deebi’ii yaali',
+    tentando: 'Yaalaa jira…',
+    codigo: 'OFFLINE — Walqunnamtiin hin jiru',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

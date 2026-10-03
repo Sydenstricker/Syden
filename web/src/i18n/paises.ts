@@ -185,6 +185,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Israel. Desde a Lei Básica de 2018 o hebraico é a única língua do Estado; o árabe passou a ter
   // "status especial", que não é oficial — e por isso Israel não está na lista do árabe.
   he: ['IL'],
+
+  // Etiópia. O oromo é língua de trabalho federal desde 2020, ao lado do amárico, do tigrínia, do
+  // somali e do afar. A Etiópia já está na lista do amárico; um país pode ter mais de uma língua.
+  om: ['ET'],
 };
 
 /**
