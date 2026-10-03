@@ -820,4 +820,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': '작은 대문자에 자간을 넉넉히.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '작성한 내용의 사본이 앱 밖에 90일 보관됩니다. 당국의 요청에 대비한 것이며, Syden에서는 아무도 볼 수 없습니다.',
   'Guarda-roupa': '옷장',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'GIF이나 이미지의 주소를 붙여넣어도 돼요. Syden이 사본을 내려받아 보관합니다: 나중에 그 주소가 사라져도 커버는 그대로 남아요.',
 } satisfies Record<string, string>;

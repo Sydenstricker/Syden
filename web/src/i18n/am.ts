@@ -828,4 +828,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'ትናንሽ አቢይ ፊደላት፣ በሰፊ ክፍተት።',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'የጻፉት ቅጂ ከመተግበሪያው ውጭ ለ90 ቀናት ይቆያል፣ ባለሥልጣን ቢጠይቅ። በSyden በኩል ማንም አያነበውም።',
   'Guarda-roupa': 'የልብስ ቁም ሣጥን',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'የGIF ወይም የምስል አድራሻ መለጠፍም ይችላሉ። Syden ቅጂ አውርዶ ያስቀምጣል፤ አድራሻው ቆይቶ ቢጠፋ እንኳ ሽፋኑ ይቀራል።',
 } satisfies Record<string, string>;

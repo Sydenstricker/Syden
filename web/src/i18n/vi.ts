@@ -798,4 +798,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Chữ hoa nhỏ, giãn cách thoáng.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Một bản sao những gì bạn đã viết được giữ 90 ngày ngoài ứng dụng, phòng khi cơ quan chức năng yêu cầu. Không ai đọc được nó qua Syden.',
   'Guarda-roupa': 'Tủ đồ',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Bạn cũng có thể dán địa chỉ của một GIF hoặc một ảnh. Syden tải một bản sao về và giữ lại: sau này địa chỉ có sập thì ảnh bìa vẫn còn.',
 } satisfies Record<string, string>;

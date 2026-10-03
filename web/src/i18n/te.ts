@@ -810,4 +810,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'చిన్న పెద్ద అక్షరాలు, విశాలమైన ఖాళీతో.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'మీరు రాసిన దాని ప్రతి యాప్ వెలుపల 90 రోజులు ఉంటుంది, అధికారుల అభ్యర్థన కోసం. Syden ద్వారా ఎవరూ దాన్ని చదవరు.',
   'Guarda-roupa': 'బట్టల అలమర',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'GIF లేదా చిత్రం చిరునామాను కూడా అతికించవచ్చు. Syden ఒక ప్రతిని దింపి ఉంచుకుంటుంది: తర్వాత ఆ చిరునామా పోయినా ముఖచిత్రం ఉండిపోతుంది.',
 } satisfies Record<string, string>;

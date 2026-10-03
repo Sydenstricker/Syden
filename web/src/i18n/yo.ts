@@ -843,4 +843,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Lẹ́tà ńlá kékeré, tí a tò yàtọ̀ síra dáadáa.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Ẹ̀dà ohun tí ẹ kọ yóò wà ní ọjọ́ 90 lóde áàpù náà, fún ọ̀ràn ìbéèrè aláṣẹ. Kò sí ẹni tó ń kà á nípasẹ̀ Syden.',
   'Guarda-roupa': 'Àpótí aṣọ',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Ẹ tún lè lẹ adírẹ́sì GIF tàbí àwòrán mọ́. Syden yóò gba ẹ̀dà kan sílẹ̀ kó sì fi pamọ́: tí adírẹ́sì náà bá wó lẹ́yìn náà, ìbòrí yóò ṣì wà.',
 } satisfies Record<string, string>;

@@ -833,4 +833,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Huruf besar kecil, berjarak lega.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan apa yang awak tulis disimpan 90 hari di luar apl, sekiranya pihak berkuasa memintanya. Tiada sesiapa membacanya melalui Syden.',
   'Guarda-roupa': 'Almari pakaian',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Awak juga boleh tampal alamat GIF atau gambar. Syden memuat turun salinan dan menyimpannya: kalau alamat itu tumbang kemudian, kulit kekal.',
 } satisfies Record<string, string>;

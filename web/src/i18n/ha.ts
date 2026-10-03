@@ -830,4 +830,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Manyan haruffa ƙanana, da faɗin sarari.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Kwafin abin da kuka rubuta yana nan kwana 90 a wajen manhajar, idan hukuma ta nemi shi. Babu wanda ke karanta shi ta Syden.',
   'Guarda-roupa': 'Kabad',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Hakanan kuna iya liƙa adireshin GIF ko na hoto. Syden yana sauke kwafi ya ajiye: idan adireshin ya faɗi daga baya, murfin yana nan.',
 } satisfies Record<string, string>;

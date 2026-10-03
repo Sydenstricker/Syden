@@ -858,4 +858,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Des capitales petites, bien espacées.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Une copie de ce que tu as écrit reste 90 jours hors de l’appli, au cas où une autorité la demanderait. Personne ne la lit depuis Syden.',
   'Guarda-roupa': 'Garde-robe',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Tu peux aussi coller l’adresse d’un GIF ou d’une image. Syden en télécharge une copie et la garde : si l’adresse disparaît plus tard, la couverture reste.',
 } satisfies Record<string, string>;

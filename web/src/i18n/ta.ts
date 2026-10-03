@@ -813,4 +813,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'சிறிய பெரிய எழுத்துகள், விரிவான இடைவெளியுடன்.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'நீங்கள் எழுதியதன் நகல் செயலிக்கு வெளியே 90 நாட்கள் வைக்கப்படும், அதிகாரிகள் கேட்டால். Syden வழியாக யாரும் அதைப் படிக்க முடியாது.',
   'Guarda-roupa': 'உடை அலமாரி',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'ஒரு GIF அல்லது படத்தின் முகவரியையும் ஒட்டலாம். Syden ஒரு நகலைப் பதிவிறக்கி வைத்துக்கொள்ளும்: பிறகு அந்த முகவரி செயலிழந்தாலும் அட்டை இருக்கும்.',
 } satisfies Record<string, string>;

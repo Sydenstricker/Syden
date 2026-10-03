@@ -886,6 +886,29 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
   const t = useT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [endereco, setEndereco] = useState('');
+
+  /**
+   * A CAPA VINDA DE UM ENDEREÇO — do GIPHY, do gifer, de onde for.
+   *
+   * QUEM BAIXA É O SERVIDOR, e a capa vira um arquivo nosso. A tela nunca aponta para o site de
+   * fora: se apontasse, o navegador de CADA membro iria buscar a imagem lá, e o dono do endereço
+   * ficaria com a lista de quem abriu a comunidade. É a mesma regra que fecha os GIFs das mensagens
+   * numa lista de domínios (ver web/src/gifs.ts). O resto dos motivos está em server/src/buscarImagem.ts.
+   */
+  async function usarEndereco(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await api(`/api/communities/${community.id}/capa/endereco`, { method: 'PUT', body: { url: endereco } });
+      setEndereco('');
+      onChanged();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
 
   async function enviar(file: File) {
     setBusy(true);
@@ -926,6 +949,23 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
           </button>
         ) : null}
       </div>
+      <form className="capa-endereco" onSubmit={usarEndereco}>
+        <input
+          type="url"
+          value={endereco}
+          onChange={(e) => setEndereco(e.target.value)}
+          aria-label={t('Endereço')}
+          disabled={busy}
+        />
+        <button className="btn-secondary" disabled={busy || !endereco.trim()}>
+          {t('Usar')}
+        </button>
+      </form>
+      <p className="settings-hint">
+        {t(
+          'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.',
+        )}
+      </p>
       {error ? (
         <p className="form-error">{error}</p>
       ) : (

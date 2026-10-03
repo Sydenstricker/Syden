@@ -827,4 +827,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Küçük büyük harfler, ferah aralıklı.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Yazdıklarının bir kopyası, bir makam isterse diye uygulama dışında 90 gün saklanır. Kimse onu Syden üzerinden okumaz.',
   'Guarda-roupa': 'Gardırop',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Bir GIF’in ya da resmin adresini de yapıştırabilirsin. Syden bir kopyasını indirip saklar: adres sonradan kapanırsa kapak yerinde kalır.',
 } satisfies Record<string, string>;

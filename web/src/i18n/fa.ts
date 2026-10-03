@@ -816,4 +816,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'حروف بزرگِ کوچک، با فاصلهٔ باز.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'نسخه‌ای از آنچه نوشته‌اید ۹۰ روز بیرون از برنامه می‌ماند، برای زمانی که مرجعی آن را بخواهد. هیچ‌کس آن را از طریق Syden نمی‌خواند.',
   'Guarda-roupa': 'کمد لباس',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'می‌توانید نشانی یک گیف یا تصویر را هم بچسبانید. Syden یک نسخه دانلود می‌کند و نگه می‌دارد: اگر بعداً آن نشانی از دسترس خارج شود، جلد سر جایش می‌ماند.',
 } satisfies Record<string, string>;

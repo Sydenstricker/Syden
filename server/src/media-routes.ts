@@ -117,6 +117,37 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       },
     );
 
+    /**
+     * A MESMA CAPA, VINDA DE UM ENDEREÇO — o GIPHY, o gifer, qualquer lugar.
+     *
+     * A ÚNICA DIFERENÇA ENTRE ESTA ROTA E A DE CIMA SÃO DUAS LINHAS: aqui os bytes são buscados em
+     * vez de recebidos. Do `parseMediaConferida` em diante é o mesmo caminho — mesmo limite, mesmo
+     * escudo contra material conhecido, mesma entrega por api.syden.chat. É de propósito: uma rota
+     * de imagem que não passe por aquele funil é uma porta dos fundos.
+     *
+     * O SERVIDOR BAIXA E GUARDA, em vez de a tela apontar para fora. O porquê, com os quatro
+     * motivos, está no alto de buscarImagem.ts — e o primeiro deles é que apontar entregaria o
+     * endereço de rede de cada membro ao dono do site.
+     */
+    authed.put<{ Params: { id: string }; Body: { url?: string } }>(
+      '/api/communities/:id/capa/endereco',
+      async (request, reply) => {
+        const access = requireRole(request, reply);
+        if (!access) return reply;
+        if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a capa.' });
+
+        const { baixarImagem } = await import('./buscarImagem.js');
+        const baixada = await baixarImagem(request.body?.url, LIMITS.capa);
+        if (!baixada.startsWith('data:')) return reply.code(400).send({ error: baixada });
+
+        const media = await parseMediaConferida(baixada, 'image', LIMITS.capa, 'capa-comunidade', access.communityId);
+        if (typeof media === 'string') return reply.code(400).send({ error: media });
+        const community = db.setCommunityBanner(access.communityId, media);
+        io.to(communityRoom(community.id)).emit('community:updated', community);
+        return community;
+      },
+    );
+
     authed.delete<{ Params: { id: string } }>('/api/communities/:id/capa', async (request, reply) => {
       const access = requireRole(request, reply);
       if (!access) return reply;

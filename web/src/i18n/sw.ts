@@ -832,4 +832,5 @@ export default {
   'Maiúsculas pequenas, bem espaçadas.': 'Herufi kubwa ndogo, zenye nafasi.',
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Nakala ya ulichoandika hubaki siku 90 nje ya programu, iwapo mamlaka itaiomba. Hakuna anayeisoma kupitia Syden.',
   'Guarda-roupa': 'Kabati la nguo',
+  'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Unaweza pia kubandika anwani ya GIF au ya picha. Syden hupakua nakala na kuihifadhi: anwani ikizimika baadaye, jalada linabaki.',
 } satisfies Record<string, string>;
