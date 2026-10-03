@@ -869,4 +869,6 @@ export default {
   'Manuscrita': 'Handschrift',
   'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Zieh das Titelbild, um den sichtbaren Ausschnitt zu wählen.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Scharf für die Größe, in der sie angezeigt wird.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Kleiner als der Bereich, in dem sie angezeigt wird. In einem kleineren Fenster ist sie scharf.',
 } satisfies Record<string, string>;

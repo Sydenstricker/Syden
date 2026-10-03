@@ -839,4 +839,6 @@ export default {
   'Manuscrita': 'হাতের লেখা',
   'Pixel': 'পিক্সেল',
   'Arraste a capa para escolher a parte que aparece.': 'কোন অংশ দেখা যাবে তা বেছে নিতে কভারটা টেনে নাও।',
+  'Nítida para o tamanho em que está sendo mostrada.': 'যে মাপে দেখানো হচ্ছে, তার জন্য পরিষ্কার।',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'যে জায়গায় দেখানো হচ্ছে তার চেয়ে ছোট। ছোট জানালায় পরিষ্কার দেখাবে।',
 } satisfies Record<string, string>;

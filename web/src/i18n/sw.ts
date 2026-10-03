@@ -841,4 +841,6 @@ export default {
   'Manuscrita': 'Ya mkono',
   'Pixel': 'Pikseli',
   'Arraste a capa para escolher a parte que aparece.': 'Buruta jalada ili kuchagua sehemu inayoonekana.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Wazi kwa ukubwa unaoonyeshwa.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ndogo kuliko nafasi inayoonyeshwa. Kwenye dirisha dogo zaidi, inakuwa wazi.',
 } satisfies Record<string, string>;

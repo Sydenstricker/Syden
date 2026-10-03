@@ -843,4 +843,6 @@ export default {
   'Manuscrita': 'Χειρόγραφη',
   'Pixel': 'Πίξελ',
   'Arraste a capa para escolher a parte que aparece.': 'Σύρε το εξώφυλλο για να διαλέξεις ποιο μέρος φαίνεται.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Καθαρή για το μέγεθος στο οποίο προβάλλεται.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Μικρότερη από τον χώρο όπου προβάλλεται. Σε μικρότερο παράθυρο φαίνεται καθαρή.',
 } satisfies Record<string, string>;

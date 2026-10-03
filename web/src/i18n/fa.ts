@@ -825,4 +825,6 @@ export default {
   'Manuscrita': 'دست‌نویس',
   'Pixel': 'پیکسلی',
   'Arraste a capa para escolher a parte que aparece.': 'برای انتخاب بخش نمایان، جلد را بکشید.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'برای اندازه‌ای که نمایش داده می‌شود، واضح است.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'کوچک‌تر از فضایی است که در آن نمایش داده می‌شود. در پنجره‌ای کوچک‌تر واضح می‌شود.',
 } satisfies Record<string, string>;

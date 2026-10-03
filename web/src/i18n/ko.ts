@@ -829,4 +829,6 @@ export default {
   'Manuscrita': '손글씨',
   'Pixel': '픽셀',
   'Arraste a capa para escolher a parte que aparece.': '어느 부분이 보일지 커버를 끌어서 정하세요.',
+  'Nítida para o tamanho em que está sendo mostrada.': '지금 표시되는 크기에서는 선명합니다.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '표시되는 공간보다 작습니다. 창을 줄이면 선명해집니다.',
 } satisfies Record<string, string>;

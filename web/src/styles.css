@@ -10553,3 +10553,9 @@ body.arrastando-barra {
   font-weight: 400;
   font-display: swap;
 }
+
+/* A linha que diz que a imagem está nítida para o tamanho em que aparece. Verde porque é a resposta
+   tranquilizadora: o número acima dela é que assustava. */
+.stream-info-card .stream-nitida {
+  color: var(--green);
+}

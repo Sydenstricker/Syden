@@ -841,4 +841,6 @@ export default {
   'Manuscrita': 'Handgeschreven',
   'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Sleep de omslag om te kiezen welk deel te zien is.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Scherp voor het formaat waarop die wordt getoond.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Kleiner dan de ruimte waarin die wordt getoond. In een kleiner venster is die scherp.',
 } satisfies Record<string, string>;

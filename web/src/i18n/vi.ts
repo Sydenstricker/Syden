@@ -807,4 +807,6 @@ export default {
   'Manuscrita': 'Viết tay',
   'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Kéo ảnh bìa để chọn phần hiển thị.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Nét so với kích thước đang hiển thị.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Nhỏ hơn khung đang hiển thị. Thu nhỏ cửa sổ lại thì sẽ nét.',
 } satisfies Record<string, string>;

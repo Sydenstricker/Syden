@@ -836,4 +836,6 @@ export default {
   'Manuscrita': 'El yazısı',
   'Pixel': 'Piksel',
   'Arraste a capa para escolher a parte que aparece.': 'Hangi kısmın görüneceğini seçmek için kapağı sürükle.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Gösterildiği boyut için net.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Gösterildiği alandan küçük. Daha küçük bir pencerede net görünür.',
 } satisfies Record<string, string>;

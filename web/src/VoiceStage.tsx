@@ -55,7 +55,7 @@ import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { type QualidadeQueRecebo, updateSettings, useSettings } from './settings';
-import { describeStats, useStreamStats } from './streamStats';
+import { describeStats, nitidezNaTela, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
 
 import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
@@ -448,6 +448,18 @@ function StreamInfoBadge({
   const [aberto, setAberto] = useState(false);
   const stats = useStreamStats(publication, { local });
   const formato = describeStats(stats);
+  /*
+   * O NÚMERO SOZINHO NÃO RESPONDE A PERGUNTA QUE A PESSOA ESTÁ FAZENDO.
+   *
+   * "Diz que estou a 576p mas a qualidade está agradável — o número dá uma sensação de falta de
+   * qualidade." O número está certo; o problema é ele aparecer sem o tamanho em que a imagem está
+   * sendo desenhada. Com adaptiveStream, o Syden PEDE de propósito a camada que cabe no quadro:
+   * janela menor, número menor, e isso é o sistema funcionando.
+   *
+   * `attachedElements` é por onde o LiveKit diz em que elemento a faixa está tocando — é o mesmo
+   * elemento que ele próprio mede para escolher a camada, então a conta aqui usa a mesma régua.
+   */
+  const nitidez = nitidezNaTela(stats, publication?.track?.attachedElements?.[0]);
 
   return (
     <div className="stream-info" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
@@ -459,6 +471,15 @@ function StreamInfoBadge({
           {formato ? (
             <>
               <strong>{formato}</strong>
+              {/* A LINHA QUE TIRA O SUSTO DO NÚMERO, e só para quem assiste: para quem transmite o
+                  número já é acionável, e abaixo dele vem o diagnóstico completo. */}
+              {!local && nitidez && (
+                <span className={nitidez.nitida ? 'stream-nitida' : undefined}>
+                  {nitidez.nitida
+                    ? t('Nítida para o tamanho em que está sendo mostrada.')
+                    : t('Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.')}
+                </span>
+              )}
               {/* QUEM ASSISTE VÊ SÓ O NÚMERO: nada ali muda uma decisão de quem está só vendo.
                   QUEM TRANSMITE VÊ O DIAGNÓSTICO, porque para ele cada linha é acionável — a
                   primeira desfaz uma ambiguidade real (o número é o que sai daqui, não o que os

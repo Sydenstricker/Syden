@@ -818,4 +818,6 @@ export default {
   'Manuscrita': '手書き風',
   'Pixel': 'ドット絵風',
   'Arraste a capa para escolher a parte que aparece.': '表示する部分は、表紙をドラッグして選びます。',
+  'Nítida para o tamanho em que está sendo mostrada.': '表示されている大きさでは鮮明です。',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '表示されている領域より小さいです。ウィンドウを小さくすると鮮明になります。',
 } satisfies Record<string, string>;

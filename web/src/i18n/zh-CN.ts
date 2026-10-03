@@ -828,4 +828,6 @@ export default {
   'Manuscrita': '手写体',
   'Pixel': '像素体',
   'Arraste a capa para escolher a parte que aparece.': '拖动封面，选择要显示的部分。',
+  'Nítida para o tamanho em que está sendo mostrada.': '按当前显示尺寸来看是清晰的。',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '比显示区域还小。窗口小一点就会清晰。',
 } satisfies Record<string, string>;

@@ -837,4 +837,6 @@ export default {
   'Manuscrita': 'De mână',
   'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Trage de copertă ca să alegi partea care se vede.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Clară pentru dimensiunea la care e afișată.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Mai mică decât spațiul în care e afișată. Într-o fereastră mai mică, e clară.',
 } satisfies Record<string, string>;

@@ -822,4 +822,6 @@ export default {
   'Manuscrita': 'கையெழுத்து',
   'Pixel': 'பிக்சல்',
   'Arraste a capa para escolher a parte que aparece.': 'எந்தப் பகுதி தெரிய வேண்டும் என்பதைத் தேர்வுசெய்ய அட்டையை இழுக்கவும்.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'காட்டப்படும் அளவுக்குத் தெளிவாக உள்ளது.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'காட்டப்படும் இடத்தைவிடச் சிறியது. சிறிய சாளரத்தில் தெளிவாகத் தெரியும்.',
 } satisfies Record<string, string>;

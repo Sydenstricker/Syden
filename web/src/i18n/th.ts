@@ -850,4 +850,6 @@ export default {
   'Manuscrita': 'ลายมือ',
   'Pixel': 'พิกเซล',
   'Arraste a capa para escolher a parte que aparece.': 'ลากภาพหน้าปกเพื่อเลือกส่วนที่จะแสดง',
+  'Nítida para o tamanho em que está sendo mostrada.': 'คมชัดสำหรับขนาดที่กำลังแสดง',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'เล็กกว่าพื้นที่ที่กำลังแสดง ถ้าหน้าต่างเล็กลงจะคมชัด',
 } satisfies Record<string, string>;

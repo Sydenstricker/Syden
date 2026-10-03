@@ -847,4 +847,6 @@ export default {
   'Manuscrita': 'Manuscrita',
   'Pixel': 'Píxel',
   'Arraste a capa para escolher a parte que aparece.': 'Arrastra la portada para elegir qué parte se ve.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Nítida para el tamaño en que se muestra.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Más pequeña que el espacio donde se muestra. En una ventana menor, se ve nítida.',
 } satisfies Record<string, string>;

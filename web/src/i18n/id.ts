@@ -839,4 +839,6 @@ export default {
   'Manuscrita': 'Tulisan tangan',
   'Pixel': 'Piksel',
   'Arraste a capa para escolher a parte que aparece.': 'Seret sampul untuk memilih bagian yang terlihat.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Tajam untuk ukuran tampilannya.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Lebih kecil dari ruang tempat ditampilkan. Di jendela yang lebih kecil, jadi tajam.',
 } satisfies Record<string, string>;

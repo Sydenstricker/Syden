@@ -847,4 +847,6 @@ export default {
   'Manuscrita': 'Handwritten',
   'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Drag the cover to choose which part shows.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Sharp for the size it is being shown at.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Smaller than the space it is shown in. In a smaller window it looks sharp.',
 } satisfies Record<string, string>;

@@ -862,4 +862,6 @@ export default {
   'Manuscrita': 'بخط اليد',
   'Pixel': 'بكسل',
   'Arraste a capa para escolher a parte que aparece.': 'اسحب الغلاف لاختيار الجزء الظاهر.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'واضحة بالنسبة للحجم المعروضة به.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'أصغر من المساحة المعروضة فيها. في نافذة أصغر تظهر واضحة.',
 } satisfies Record<string, string>;

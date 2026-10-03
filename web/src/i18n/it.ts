@@ -841,4 +841,6 @@ export default {
   'Manuscrita': 'Corsiva',
   'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Trascina la copertina per scegliere la parte visibile.',
+  'Nítida para o tamanho em que está sendo mostrada.': 'Nitida per la dimensione in cui viene mostrata.',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Più piccola dello spazio in cui viene mostrata. In una finestra più piccola è nitida.',
 } satisfies Record<string, string>;

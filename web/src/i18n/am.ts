@@ -837,4 +837,6 @@ export default {
   'Manuscrita': 'የእጅ ጽሕፈት',
   'Pixel': 'ፒክሰል',
   'Arraste a capa para escolher a parte que aparece.': 'የሚታየውን ክፍል ለመምረጥ ሽፋኑን ይጎትቱ።',
+  'Nítida para o tamanho em que está sendo mostrada.': 'በሚታይበት መጠን ልክ ግልጽ ነው።',
+  'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'ከሚታይበት ቦታ ያነሰ ነው። በትንሽ መስኮት ውስጥ ግልጽ ይሆናል።',
 } satisfies Record<string, string>;
