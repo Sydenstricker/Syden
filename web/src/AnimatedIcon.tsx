@@ -44,13 +44,27 @@ const DE_TRACO: Record<AnimatedIconName, typeof Mic> = {
   chamada: Video,
 };
 
-type Lottie = typeof import('lottie-web').default;
+/*
+ * A VERSÃO LEVE, SEM EXPRESSÕES — E ELA É O CONSERTO DOS ÍCONES INVISÍVEIS, QUE VOLTARAM TRÊS VEZES.
+ *
+ * Estes arquivos pintam as formas com EXPRESSÕES (o "primary"/"secondary" da camada de controle), e o
+ * lottie-web completo executa expressão com `eval`. A política de segurança do site, que mora na
+ * Cloudflare, diz `script-src 'self'` sem `unsafe-eval` — e deve dizer. Resultado: em produção as
+ * expressões morriam caladas, cada ícone desenhava só uma ou duas das suas formas, e o menu ficava
+ * com cinco buracos. No servidor de desenvolvimento não há essa política, e por isso nunca se
+ * reproduzia aqui: medido com a política aplicada na build, os cinco somem; sem ela, aparecem.
+ *
+ * A versão leve ignora as expressões e usa o valor parado de cada propriedade, que é justamente o que
+ * `recolor` reescreve. Ela também é menor. A saída errada seria liberar `unsafe-eval` no site inteiro
+ * para enfeitar cinco ícones de menu.
+ */
+type Lottie = typeof import('lottie-web/build/player/lottie_light').default;
 
 let lottiePromise: Promise<Lottie> | null = null;
 const cache = new Map<AnimatedIconName, unknown>();
 
 function loadLottie(): Promise<Lottie> {
-  lottiePromise ??= import('lottie-web').then((mod) => mod.default);
+  lottiePromise ??= import('lottie-web/build/player/lottie_light').then((mod) => mod.default);
   return lottiePromise;
 }
 
