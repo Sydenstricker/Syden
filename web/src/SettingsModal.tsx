@@ -896,6 +896,24 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
    * ficaria com a lista de quem abriu a comunidade. É a mesma regra que fecha os GIFs das mensagens
    * numa lista de domínios (ver web/src/gifs.ts). O resto dos motivos está em server/src/buscarImagem.ts.
    */
+  /**
+   * O ENCAIXE MUDA NA HORA, sem botão de salvar — e sem reenviar a imagem.
+   *
+   * Isto se mexe várias vezes seguidas até ficar bom, com a prévia logo acima respondendo a cada
+   * toque. Pedir "salvar" entre uma tentativa e outra transformaria um ajuste de meio minuto numa
+   * tarefa; e é por isso que a rota é separada da que envia, senão cada arrastada da régua
+   * reenviaria quatro megabytes de GIF.
+   */
+  async function ajustar(encaixe: string, posicao: number) {
+    setError(null);
+    try {
+      await api(`/api/communities/${community.id}/capa/ajuste`, { method: 'PUT', body: { encaixe, posicao } });
+      onChanged();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   async function usarEndereco(event: FormEvent) {
     event.preventDefault();
     setBusy(true);
@@ -966,6 +984,45 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
           'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.',
         )}
       </p>
+      {/* SÓ APARECE COM FOTO. Sem capa não há o que encaixar, e um controle que não faz nada é pior
+          do que controle nenhum. */}
+      {community.bannerVersion ? (
+        <div className="capa-encaixe">
+          <div className="capa-encaixe-modos" role="group" aria-label={t('Como vai ficar')}>
+            {(
+              [
+                ['preencher', chave('Preencher')],
+                ['inteira', chave('Imagem inteira')],
+              ] as const
+            ).map(([modo, rotulo]) => (
+              <button
+                key={modo}
+                type="button"
+                className={`btn-sutil${(community.capaEncaixe ?? 'preencher') === modo ? ' escolhido' : ''}`}
+                aria-pressed={(community.capaEncaixe ?? 'preencher') === modo}
+                onClick={() => void ajustar(modo, community.capaPosicao ?? 50)}
+              >
+                {t(rotulo)}
+              </button>
+            ))}
+          </div>
+          {/* A régua só vale preenchendo: mostrando a imagem inteira não há parte escondida para
+              escolher, e deixá-la ali sugeriria um efeito que não existe. */}
+          {(community.capaEncaixe ?? 'preencher') !== 'inteira' && (
+            <label className="capa-encaixe-altura">
+              {t('Altura')}
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={5}
+                value={community.capaPosicao ?? 50}
+                onChange={(e) => void ajustar('preencher', Number(e.target.value))}
+              />
+            </label>
+          )}
+        </div>
+      ) : null}
       {error ? (
         <p className="form-error">{error}</p>
       ) : (

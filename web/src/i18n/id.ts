@@ -831,4 +831,7 @@ export default {
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Salinan dari apa yang kamu tulis disimpan 90 hari di luar aplikasi, kalau-kalau pihak berwenang memintanya. Tidak ada yang membacanya lewat Syden.',
   'Guarda-roupa': 'Lemari pakaian',
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Kamu juga bisa menempelkan alamat GIF atau gambar. Syden mengunduh salinannya dan menyimpannya: kalau alamatnya mati nanti, sampulnya tetap ada.',
+  'Preencher': 'Penuhi',
+  'Imagem inteira': 'Gambar utuh',
+  'Altura': 'Tinggi',
 } satisfies Record<string, string>;

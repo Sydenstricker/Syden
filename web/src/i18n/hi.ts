@@ -833,4 +833,7 @@ export default {
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'तुमने जो लिखा उसकी एक प्रति ऐप के बाहर 90 दिन रहती है, अगर कोई प्राधिकरण माँगे। इसे Syden से कोई नहीं पढ़ता।',
   'Guarda-roupa': 'अलमारी',
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'तुम किसी GIF या तस्वीर का पता भी चिपका सकते हो। Syden उसकी एक प्रति उतारकर रख लेता है: बाद में पता बंद हो जाए, तब भी कवर बना रहता है।',
+  'Preencher': 'भरें',
+  'Imagem inteira': 'पूरी तस्वीर',
+  'Altura': 'ऊँचाई',
 } satisfies Record<string, string>;

@@ -829,4 +829,7 @@ export default {
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'O copie a ceea ce ai scris rămâne 90 de zile în afara aplicației, în caz de cerere din partea autorităților. Nimeni nu o citește prin Syden.',
   'Guarda-roupa': 'Garderobă',
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Poți și să lipești adresa unui GIF sau a unei imagini. Syden descarcă o copie și o păstrează: dacă adresa cade mai târziu, coperta rămâne.',
+  'Preencher': 'Umple',
+  'Imagem inteira': 'Imaginea întreagă',
+  'Altura': 'Înălțime',
 } satisfies Record<string, string>;

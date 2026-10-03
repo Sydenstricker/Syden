@@ -835,4 +835,7 @@ export default {
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': 'Ένα αντίγραφο αυτών που έγραψες μένει 90 μέρες έξω από την εφαρμογή, για την περίπτωση αιτήματος αρχής. Κανείς δεν το διαβάζει μέσα από το Syden.',
   'Guarda-roupa': 'Ντουλάπα',
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Μπορείς να επικολλήσεις και τη διεύθυνση ενός GIF ή μιας εικόνας. Το Syden κατεβάζει ένα αντίγραφο και το κρατάει: αν η διεύθυνση πέσει αργότερα, το εξώφυλλο μένει.',
+  'Preencher': 'Γέμισμα',
+  'Imagem inteira': 'Ολόκληρη εικόνα',
+  'Altura': 'Ύψος',
 } satisfies Record<string, string>;

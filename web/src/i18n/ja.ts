@@ -810,4 +810,7 @@ export default {
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '書いた内容のコピーは、当局の求めに備えてアプリの外に90日間保管されます。Syden から読める人はいません。',
   'Guarda-roupa': 'ワードローブ',
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'GIF や画像のアドレスを貼り付けることもできます。Syden が複製をダウンロードして保管するので、あとでそのアドレスが消えても表紙は残ります。',
+  'Preencher': '全面に広げる',
+  'Imagem inteira': '画像全体',
+  'Altura': '高さ',
 } satisfies Record<string, string>;

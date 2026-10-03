@@ -63,6 +63,10 @@ export interface Community {
   iconVersion: number | null;
   /** O mesmo, para a CAPA — a faixa larga no alto da lista de canais. null = sem foto, e aí vale a arte. */
   bannerVersion?: number | null;
+  /** Como a capa se encaixa: 'preencher' (padrão) ou 'inteira'. Ver o comentário em db.ts. */
+  capaEncaixe?: string | null;
+  /** Quando preenche, que altura da imagem fica à vista: 0 é o topo, 100 é o pé. */
+  capaPosicao?: number | null;
   /** O selo que a comunidade conquistou. As três partes vêm juntas ou nenhuma vem. */
   seloTexto?: string | null;
   seloIcone?: string | null;

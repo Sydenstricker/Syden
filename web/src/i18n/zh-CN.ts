@@ -820,4 +820,7 @@ export default {
   'Uma cópia do que você escreveu fica 90 dias fora do app, para o caso de pedido de autoridade. Ninguém a lê pelo Syden.': '你写过的内容会在应用之外保留 90 天，以备官方调取。没有人能通过 Syden 看到它。',
   'Guarda-roupa': '衣橱',
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': '也可以粘贴一张 GIF 或图片的地址。Syden 会下载一份副本并保存：以后那个地址失效了，封面还在。',
+  'Preencher': '填满',
+  'Imagem inteira': '完整图片',
+  'Altura': '高度',
 } satisfies Record<string, string>;

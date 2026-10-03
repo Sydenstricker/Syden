@@ -10237,12 +10237,15 @@ body.arrastando-barra {
     0 0 10px rgba(0, 0, 0, 0.5);
 }
 
+/* O !important saiu daqui junto com o atalho `background` lá no componente: era ele que reescrevia
+   tamanho e posição toda vez, e a folha só vencia gritando. Com `background-image`, estes dois
+   valem como padrão e o ajuste escolhido pela comunidade os sobrepõe por estilo em linha. */
 .capa {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background-size: cover !important;
-  background-position: center !important;
+  background-size: cover;
+  background-position: center;
 }
 
 /* Sobre foto, um escurecido no pé: é o que garante o nome legível sem escurecer a imagem inteira. */
@@ -10390,4 +10393,37 @@ body.arrastando-barra {
 
 .capa-endereco .btn-secondary {
   flex: none;
+}
+
+/* Os dois modos de encaixe da capa, e a régua de altura. */
+.capa-encaixe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.capa-encaixe-modos {
+  display: flex;
+  gap: 8px;
+}
+
+.capa-encaixe-modos .escolhido {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}
+
+.capa-encaixe-altura {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.capa-encaixe-altura input {
+  width: 160px;
 }

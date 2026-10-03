@@ -148,6 +148,28 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       },
     );
 
+    /**
+     * COMO A CAPA SE ENCAIXA. Não troca a imagem, só o jeito de mostrá-la.
+     *
+     * Rota à parte da que envia, de propósito: isto se mexe várias vezes seguidas até ficar bom, e
+     * reenviar quatro megabytes de GIF a cada arrastada da régua seria absurdo.
+     */
+    authed.put<{ Params: { id: string }; Body: { encaixe?: string; posicao?: number } }>(
+      '/api/communities/:id/capa/ajuste',
+      async (request, reply) => {
+        const access = requireRole(request, reply);
+        if (!access) return reply;
+        if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a capa.' });
+        const community = db.setCommunityCapaAjuste(
+          access.communityId,
+          String(request.body?.encaixe ?? ''),
+          Number(request.body?.posicao ?? 50),
+        );
+        io.to(communityRoom(community.id)).emit('community:updated', community);
+        return community;
+      },
+    );
+
     authed.delete<{ Params: { id: string } }>('/api/communities/:id/capa', async (request, reply) => {
       const access = requireRole(request, reply);
       if (!access) return reply;

@@ -39,6 +39,19 @@ export function CapaDaComunidade({
   // ícone. Sem isso, trocar a capa não mudaria nada na tela de quem já estava com o Syden aberto.
   const fundo = temFoto ? `url(${API_URL}/api/communities/${community.id}/capa?v=${community.bannerVersion})` : arte.fundo;
 
+  /*
+   * O ENCAIXE É DE EXIBIÇÃO, e precisa ser.
+   *
+   * Imagem estática é recortada no envio, no tamanho exato da faixa. GIF animado não pode ser —
+   * redesenhá-lo num canvas guardaria só o primeiro quadro —, então ele entra na proporção que
+   * tiver. Quando essa proporção é muito diferente da faixa, "preencher" corta demais.
+   *
+   * "inteira" é `contain`: aparece o GIF todo, com a cor do fundo nas sobras. "preencher" é o de
+   * sempre, e aí a régua escolhe que altura fica à vista.
+   */
+  const inteira = community.capaEncaixe === 'inteira';
+  const altura = community.capaPosicao ?? 50;
+
   return (
     <div
       className={`capa${temFoto ? ' com-foto' : ''}${className ? ` ${className}` : ''}`}
@@ -46,7 +59,21 @@ export function CapaDaComunidade({
       // escura sem lê-la pixel a pixel, e errar deixa o nome ilegível. Sobre degradê o tom vem junto
       // da arte, que é escolhida de uma lista conhecida.
       data-tom={temFoto ? 'escuro' : arte.tom}
-      style={{ background: fundo }}
+      /*
+       * `backgroundImage`, E NÃO O ATALHO `background` — e é isto que explica os dois `!important`
+       * que estavam no CSS. O atalho REESCREVE todas as propriedades de fundo, inclusive as que
+       * ninguém mencionou: posto aqui, ele devolvia `background-size` e `background-position` ao
+       * valor inicial, e a folha de estilo só vencia gritando. Com a propriedade longa, o CSS vale
+       * normalmente e estas duas linhas conseguem ajustá-lo.
+       */
+      style={{
+        backgroundImage: fundo,
+        ...(temFoto && {
+          backgroundSize: inteira ? 'contain' : 'cover',
+          backgroundPosition: inteira ? 'center' : `center ${altura}%`,
+          backgroundRepeat: 'no-repeat',
+        }),
+      }}
     />
   );
 }
