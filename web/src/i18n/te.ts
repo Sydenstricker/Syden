@@ -825,4 +825,10 @@ export default {
   'Tamanho do texto': 'అక్షరాల పరిమాణం',
   'Só as letras mudam: o resto da tela fica no lugar.': 'అక్షరాలు మాత్రమే మారతాయి: తెరపై మిగతావన్నీ అలాగే ఉంటాయి.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ఒక్కో వరుసకు ఒక నియమం లేదా సూచన: కొత్తగా వచ్చినవారి కుందేలు వాటిని ఒక్కొక్కటిగా చదువుతుంది.',
+  'Agora nas suas comunidades': 'ఇప్పుడు మీ సముదాయాల్లో',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'ప్రస్తుతానికి అంతా ప్రశాంతం. ఎవరైనా కాల్‌లో చేరితే ఇక్కడ కనిపిస్తుంది.',
+  '{quem} na chamada': 'కాల్‌లో: {quem}',
+  '{quem} transmitindo {oque}': '{quem}: {oque} ప్రసారం',
+  '{quem} transmitindo a tela': '{quem}: తెర పంచుకోవడం',
+  'na chamada de {comunidade}': '{comunidade} కాల్‌లో',
 } satisfies Record<string, string>;

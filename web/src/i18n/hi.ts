@@ -847,4 +847,10 @@ export default {
   'Tamanho do texto': 'टेक्स्ट का आकार',
   'Só as letras mudam: o resto da tela fica no lugar.': 'सिर्फ़ अक्षर बदलते हैं: स्क्रीन का बाकी हिस्सा अपनी जगह रहता है।',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'हर लाइन में एक नियम या सूचना: नए आने वाले का खरगोश उन्हें एक-एक करके पढ़ता है।',
+  'Agora nas suas comunidades': 'अभी आपकी कम्युनिटी में',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'अभी सब शांत है। कोई कॉल में आएगा तो यहाँ दिखेगा।',
+  '{quem} na chamada': 'कॉल में: {quem}',
+  '{quem} transmitindo {oque}': '{quem}: {oque} का प्रसारण',
+  '{quem} transmitindo a tela': '{quem}: स्क्रीन शेयर',
+  'na chamada de {comunidade}': '{comunidade} की कॉल में',
 } satisfies Record<string, string>;

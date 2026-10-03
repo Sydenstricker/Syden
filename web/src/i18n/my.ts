@@ -887,4 +887,10 @@ export default {
   'Vozes juntas': 'အသံများ အတူ',
   'ZECA': 'ဇော်',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'တစ်ကြောင်းလျှင် စည်းမျဉ်း သို့မဟုတ် အသိပေးချက် တစ်ခု- ရောက်လာသူရဲ့ ယုန်က တစ်ခုချင်း ဖတ်ပြပါမယ်။',
+  'Agora nas suas comunidades': 'ယခု သင့်အသိုင်းအဝိုင်းများမှာ',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'လောလောဆယ် အေးဆေးပါတယ်။ တစ်ယောက်ယောက် ခေါ်ဆိုမှုထဲ ဝင်ရင် ဒီမှာ ပေါ်ပါမယ်။',
+  '{quem} na chamada': 'ခေါ်ဆိုမှုထဲမှာ- {quem}',
+  '{quem} transmitindo {oque}': '{quem} — {oque} ထုတ်လွှင့်နေသည်',
+  '{quem} transmitindo a tela': '{quem} — မျက်နှာပြင် မျှဝေနေသည်',
+  'na chamada de {comunidade}': '{comunidade} ခေါ်ဆိုမှုထဲမှာ',
 } satisfies Record<string, string>;

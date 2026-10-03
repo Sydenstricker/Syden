@@ -843,4 +843,10 @@ export default {
   'Tamanho do texto': 'Dimensiunea textului',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Se schimbă doar literele: restul ecranului rămâne pe loc.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'O regulă sau un anunț pe rând: iepurele celui care sosește le citește pe rând.',
+  'Agora nas suas comunidades': 'Acum în comunitățile tale',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Deocamdată e liniște. Când cineva intră într-un apel, apare aici.',
+  '{quem} na chamada': 'În apel: {quem}',
+  '{quem} transmitindo {oque}': '{quem} transmite {oque}',
+  '{quem} transmitindo a tela': '{quem} partajează ecranul',
+  'na chamada de {comunidade}': 'în apel în {comunidade}',
 } satisfies Record<string, string>;

@@ -834,4 +834,10 @@ export default {
   'Tamanho do texto': '文字大小',
   'Só as letras mudam: o resto da tela fica no lugar.': '只有文字会变：屏幕上的其他部分保持原样。',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': '每行一条规则或提示：新来的人的兔子会逐条念给他听。',
+  'Agora nas suas comunidades': '你的社区现在',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': '暂时很安静。有人加入通话时，会显示在这里。',
+  '{quem} na chamada': '通话中：{quem}',
+  '{quem} transmitindo {oque}': '{quem} 正在直播 {oque}',
+  '{quem} transmitindo a tela': '{quem} 正在共享屏幕',
+  'na chamada de {comunidade}': '在 {comunidade} 的通话中',
 } satisfies Record<string, string>;

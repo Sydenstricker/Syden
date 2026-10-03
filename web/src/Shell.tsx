@@ -798,6 +798,13 @@ export function Shell({
               aoAbrirAmigos={() => setView('amigos')}
               aoExplorar={() => setExplorarAberto(true)}
               souODono={user.isOwner}
+              comunidades={communities}
+              vozDeTodas={voiceByCommunity}
+              eu={user.id}
+              aoIrParaComunidade={(id) => {
+                setView('community');
+                setCommunityId(id);
+              }}
             />
           )}
           {view === 'amigos' && (

@@ -914,4 +914,10 @@ export default {
   'Tamanho do texto': 'Rozmiar tekstu',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Zmieniają się tylko litery: reszta ekranu zostaje na miejscu.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Jedna zasada lub informacja w wierszu: królik nowej osoby przeczyta je po kolei.',
+  'Agora nas suas comunidades': 'Teraz w twoich społecznościach',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Na razie spokojnie. Gdy ktoś dołączy do połączenia, pojawi się tutaj.',
+  '{quem} na chamada': 'W połączeniu: {quem}',
+  '{quem} transmitindo {oque}': '{quem} transmituje: {oque}',
+  '{quem} transmitindo a tela': '{quem} udostępnia ekran',
+  'na chamada de {comunidade}': 'w połączeniu: {comunidade}',
 } satisfies Record<string, string>;

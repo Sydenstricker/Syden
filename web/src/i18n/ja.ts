@@ -824,4 +824,10 @@ export default {
   'Tamanho do texto': '文字の大きさ',
   'Só as letras mudam: o resto da tela fica no lugar.': '変わるのは文字だけです。画面のほかの部分はそのままです。',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': '1行に1つずつ、ルールやお知らせを。来た人のうさぎが1つずつ読み上げます。',
+  'Agora nas suas comunidades': 'いまのあなたのコミュニティ',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': '今は静かです。だれかが通話に入ると、ここに表示されます。',
+  '{quem} na chamada': '通話中：{quem}',
+  '{quem} transmitindo {oque}': '{quem} が {oque} を配信中',
+  '{quem} transmitindo a tela': '{quem} が画面を共有中',
+  'na chamada de {comunidade}': '{comunidade} の通話中',
 } satisfies Record<string, string>;

@@ -847,4 +847,10 @@ export default {
   'Tamanho do texto': 'Ukubwa wa maandishi',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Herufi pekee ndizo hubadilika: sehemu nyingine ya skrini inabaki pale pale.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Kanuni au tangazo moja kwa kila mstari: sungura wa anayefika anazisoma moja moja.',
+  'Agora nas suas comunidades': 'Sasa katika jumuiya zako',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Kimya kwa sasa. Mtu akijiunga na simu, itaonekana hapa.',
+  '{quem} na chamada': '{quem} kwenye simu',
+  '{quem} transmitindo {oque}': '{quem} anatangaza {oque}',
+  '{quem} transmitindo a tela': '{quem} anaonyesha skrini',
+  'na chamada de {comunidade}': 'kwenye simu ya {comunidade}',
 } satisfies Record<string, string>;

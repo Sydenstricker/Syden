@@ -856,4 +856,10 @@ export default {
   'Tamanho do texto': 'ขนาดตัวอักษร',
   'Só as letras mudam: o resto da tela fica no lugar.': 'เปลี่ยนแค่ตัวอักษร ส่วนอื่นของหน้าจออยู่ที่เดิม',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'บรรทัดละหนึ่งกฎหรือประกาศ กระต่ายของคนที่เพิ่งมาจะอ่านให้ฟังทีละข้อ',
+  'Agora nas suas comunidades': 'ตอนนี้ในชุมชนของคุณ',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'ตอนนี้ยังเงียบอยู่ เมื่อมีคนเข้าสาย จะแสดงที่นี่',
+  '{quem} na chamada': 'อยู่ในสาย: {quem}',
+  '{quem} transmitindo {oque}': '{quem} กำลังสตรีม {oque}',
+  '{quem} transmitindo a tela': '{quem} กำลังแชร์หน้าจอ',
+  'na chamada de {comunidade}': 'อยู่ในสายของ {comunidade}',
 } satisfies Record<string, string>;

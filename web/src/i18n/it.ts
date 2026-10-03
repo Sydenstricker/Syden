@@ -847,4 +847,10 @@ export default {
   'Tamanho do texto': 'Dimensione del testo',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Cambiano solo le lettere: il resto dello schermo resta al suo posto.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Una regola o un avviso per riga: il coniglio di chi arriva li legge uno per uno.',
+  'Agora nas suas comunidades': 'Adesso nelle tue community',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Tutto tranquillo per ora. Quando qualcuno entra in una chiamata, compare qui.',
+  '{quem} na chamada': '{quem} in chiamata',
+  '{quem} transmitindo {oque}': '{quem} trasmette {oque}',
+  '{quem} transmitindo a tela': '{quem} condivide lo schermo',
+  'na chamada de {comunidade}': 'in chiamata su {comunidade}',
 } satisfies Record<string, string>;

@@ -6867,6 +6867,34 @@ textarea {
   font-weight: 600;
 }
 
+/* As pessoas de verdade na praça (ver PessoaNaPraca em Vila.tsx). */
+.v-pessoa {
+  cursor: pointer;
+  outline: none;
+}
+
+/* A placa é só leitura: o clique atravessa para o coelho embaixo dela. */
+.v-placa {
+  pointer-events: none;
+}
+
+.v-pessoa-aro {
+  fill: rgba(255, 214, 102, 0.28);
+  stroke: #ffd666;
+  stroke-width: 1.4;
+}
+
+.v-pessoa-placa {
+  fill: rgba(17, 18, 20, 0.82);
+}
+
+.v-pessoa-nome {
+  fill: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+
 .v-coelho {
   cursor: pointer;
   transition-property: transform;
@@ -7765,6 +7793,84 @@ textarea {
 }
 
 /* ---------- Caixa de ideias da tela inicial ---------- */
+
+/* ---------- O farol: o que está acontecendo agora nas comunidades (ver Farol.tsx) ---------- */
+
+.farol {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+
+.farol h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: calc(18px * var(--escala-do-texto));
+  color: var(--text-strong);
+}
+
+.farol h2 svg {
+  color: var(--accent);
+}
+
+.farol-calmo {
+  margin: 0;
+  font-size: calc(14px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.farol ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.farol li button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-raised, var(--bg-sidebar));
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+}
+
+.farol li button:hover,
+.farol li button:focus-visible {
+  border-color: var(--accent);
+}
+
+.farol-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: calc(13px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.farol-texto strong {
+  font-size: calc(15px * var(--escala-do-texto));
+  color: var(--text-strong);
+}
+
+.farol-texto span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.farol-tela {
+  color: var(--green, #23a55a);
+}
 
 .ideias {
   max-width: 780px;

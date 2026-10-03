@@ -842,4 +842,10 @@ export default {
   'Tamanho do texto': 'Metin boyutu',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Yalnızca harfler değişir: ekranın geri kalanı yerinde kalır.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Her satıra bir kural ya da duyuru: yeni gelenin tavşanı bunları tek tek okur.',
+  'Agora nas suas comunidades': 'Şu an topluluklarında',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Şimdilik her şey sakin. Biri bir aramaya katıldığında burada görünür.',
+  '{quem} na chamada': 'Aramada: {quem}',
+  '{quem} transmitindo {oque}': '{quem} yayında: {oque}',
+  '{quem} transmitindo a tela': '{quem} ekranını paylaşıyor',
+  'na chamada de {comunidade}': '{comunidade} aramasında',
 } satisfies Record<string, string>;

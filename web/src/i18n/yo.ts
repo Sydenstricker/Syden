@@ -858,4 +858,10 @@ export default {
   'Tamanho do texto': 'Ìwọ̀n ọ̀rọ̀',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Àwọn lẹ́tà nìkan ló ń yí padà: ìyókù ojú-ìbòjú wà ní ipò rẹ̀.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Òfin tàbí ìkéde kan ní ìlà kọ̀ọ̀kan: ehoro ẹni tó ṣẹ̀ṣẹ̀ dé á kà wọ́n lọ́kọ̀ọ̀kan.',
+  'Agora nas suas comunidades': 'Báyìí nínú àwùjọ yín',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Gbogbo nǹkan dákẹ́ báyìí. Tí ẹnìkan bá wọ ìpè, á hàn níbí.',
+  '{quem} na chamada': 'Nínú ìpè: {quem}',
+  '{quem} transmitindo {oque}': '{quem} ń gbé {oque} sáfẹ́fẹ́',
+  '{quem} transmitindo a tela': '{quem} ń pín ojú-ìbòjú',
+  'na chamada de {comunidade}': 'nínú ìpè {comunidade}',
 } satisfies Record<string, string>;

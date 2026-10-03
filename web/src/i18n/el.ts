@@ -849,4 +849,10 @@ export default {
   'Tamanho do texto': 'Μέγεθος κειμένου',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Αλλάζουν μόνο τα γράμματα: η υπόλοιπη οθόνη μένει στη θέση της.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Ένας κανόνας ή μια ανακοίνωση ανά γραμμή: το κουνέλι όποιου φτάνει τα διαβάζει ένα ένα.',
+  'Agora nas suas comunidades': 'Τώρα στις κοινότητές σου',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Όλα ήσυχα προς το παρόν. Όταν κάποιος μπει σε κλήση, θα φαίνεται εδώ.',
+  '{quem} na chamada': 'Σε κλήση: {quem}',
+  '{quem} transmitindo {oque}': '{quem} μεταδίδει {oque}',
+  '{quem} transmitindo a tela': '{quem} μοιράζεται την οθόνη',
+  'na chamada de {comunidade}': 'σε κλήση στο {comunidade}',
 } satisfies Record<string, string>;

@@ -869,4 +869,10 @@ export default {
   'Tamanho do texto': 'Размер текста',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Меняются только буквы: всё остальное на экране остаётся на месте.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Одно правило или объявление на строку: кролик новичка прочитает их по очереди.',
+  'Agora nas suas comunidades': 'Сейчас в твоих сообществах',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Пока всё тихо. Когда кто-то зайдёт в разговор, это появится здесь.',
+  '{quem} na chamada': 'В разговоре: {quem}',
+  '{quem} transmitindo {oque}': '{quem} транслирует {oque}',
+  '{quem} transmitindo a tela': '{quem} показывает экран',
+  'na chamada de {comunidade}': 'в разговоре в {comunidade}',
 } satisfies Record<string, string>;

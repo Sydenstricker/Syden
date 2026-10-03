@@ -556,6 +556,37 @@ export interface PinoVila {
   onClick: () => void;
 }
 
+/** Uma pessoa DE VERDADE na praça: alguém que está numa chamada agora, numa das suas comunidades. */
+export interface PessoaNaPraca {
+  userId: number;
+  nome: string;
+  /** Onde ela está, para a dica: "na chamada de Fulanos". */
+  legenda: string;
+  onClick: () => void;
+}
+
+/**
+ * Quantas pessoas cabem na praça: uma por morador. As pessoas de verdade ASSUMEM o lugar dos coelhos
+ * que passeiam — que já andam só por onde dá para andar, contornando a fonte. A primeira versão as
+ * punha em lugares fixos escolhidos à mão, e na tela as placas se amontoavam, uma pessoa sumia atrás
+ * de uma casa e outra ficava embaixo de um balão. Andando, ninguém fica escondido o tempo todo.
+ */
+export const MAXIMO_NA_PRACA = 6;
+
+/** O nome em cima da cabeça. Fora da escala do coelho, para não espelhar quando ele olha para o lado. */
+function PlacaDoNome({ nome }: { nome: string }) {
+  const curto = nome.length > 14 ? nome.slice(0, 13) + '…' : nome;
+  const largura = Math.max(36, curto.length * 6.4 + 14);
+  return (
+    <g transform="translate(0 -54)">
+      <rect x={-largura / 2} y={-9} width={largura} height={17} rx={8.5} className="v-pessoa-placa" />
+      <text x={0} y={3.5} textAnchor="middle" className="v-pessoa-nome">
+        {curto}
+      </text>
+    </g>
+  );
+}
+
 export function Vila({
   periodo,
   onLuz,
@@ -563,6 +594,7 @@ export function Vila({
   destaque,
   onDestaque,
   aoEscolherCoelho,
+  pessoas = [],
 }: {
   periodo: Periodo;
   onLuz: () => void;
@@ -572,6 +604,8 @@ export function Vila({
   onDestaque: (id: string | null) => void;
   /** Clicar na estátua ABRE A ESCOLHA. Ver o comentário em trocarEstatua. */
   aoEscolherCoelho: () => void;
+  /** Quem está em chamada agora nas comunidades de quem olha. Ver PessoaNaPraca. */
+  pessoas?: PessoaNaPraca[];
 }) {
   const t = useT();
   const noite = periodo === 'noite';
@@ -738,32 +772,55 @@ export function Vila({
     });
   }
 
-  for (const coelho of coelhos) {
+  // AS PESSOAS DE VERDADE se distinguem dos moradores pelo nome escrito em cima e por um aro de luz
+  // no chão: um coelho sem nome é enfeite; com nome, é alguém. Clicar nelas leva aonde elas estão,
+  // em vez de cutucar.
+  // As placas com os nomes vão numa camada POR CIMA do cenário, andando junto (mesmo transform, mesma
+  // duração): dentro da fila de profundidade, quem passava atrás da estátua ou de uma casa sumia com
+  // nome e tudo. O coelho pode se esconder atrás da casa; o nome dele, não.
+  const placas: ReactNode[] = [];
+  for (const [indice, coelho] of coelhos.entries()) {
+    const pessoa = indice < MAXIMO_NA_PRACA ? pessoas[indice] : undefined;
     const ponto = iso(coelho.c, coelho.r);
+    if (pessoa) {
+      placas.push(
+        <g
+          key={`placa-${coelho.id}`}
+          className="v-coelho v-placa"
+          style={{ transform: `translate(${ponto.x}px, ${ponto.y}px)`, transitionDuration: `${coelho.dur}s` }}
+          aria-hidden="true"
+        >
+          <PlacaDoNome nome={pessoa.nome} />
+        </g>,
+      );
+    }
     const escala = 0.95 + ((coelho.r - PASSEIO.r0) / (PASSEIO.r1 - PASSEIO.r0)) * 0.3;
     cenario.push({
       p: frente(coelho.c, coelho.r),
       no: (
         <g
           key={`coelho-${coelho.id}`}
-          className={`v-coelho${coelho.pulando ? ' cutucado' : ''}`}
+          className={`v-coelho${coelho.pulando ? ' cutucado' : ''}${pessoa ? ' v-pessoa' : ''}`}
           style={{ transform: `translate(${ponto.x}px, ${ponto.y}px)`, transitionDuration: `${coelho.dur}s` }}
           role="button"
           tabIndex={0}
-          aria-label="Cutucar o coelho"
+          aria-label={pessoa ? `${pessoa.nome} — ${pessoa.legenda}` : 'Cutucar o coelho'}
           onClick={(e) => {
             e.stopPropagation();
-            cutucar(coelho.id);
+            if (pessoa) pessoa.onClick();
+            else cutucar(coelho.id);
           }}
-          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && cutucar(coelho.id)}
+          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (pessoa ? pessoa.onClick() : cutucar(coelho.id))}
         >
-          <title>Cutucar o coelho</title>
+          <title>{pessoa ? `${pessoa.nome} — ${pessoa.legenda}` : 'Cutucar o coelho'}</title>
+          {pessoa && <ellipse cx={0} cy={0} rx={15} ry={6.5} className="v-pessoa-aro" />}
           {/* o tamanho vai no atributo, não no CSS: assim a animação de andar mexe só na posição */}
           <g transform={`scale(${(coelho.olhandoEsquerda ? -escala : escala).toFixed(2)} ${escala.toFixed(2)})`}>
             <g className="v-coelho-corpo">
-              <CoelhoArte id={coelho.id} gordo={gordos} />
+              <CoelhoArte id={pessoa ? pessoa.userId : coelho.id} gordo={gordos} />
             </g>
           </g>
+
           {coelho.fala && (
             <g className="v-fala">
               <circle cx={0} cy={-58} r={17} />
@@ -864,6 +921,7 @@ export function Vila({
             casa e a árvore não podem engolir a cenoura de quem clicou na grama atrás delas. Só o coelho e
             a estátua respondem, e isso está no CSS (.v-cenario). */}
         <g className="v-cenario">{cenario.map((coisa) => coisa.no)}</g>
+        <g className="v-placas">{placas}</g>
 
         <Pier />
       </svg>

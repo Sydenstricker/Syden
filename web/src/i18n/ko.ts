@@ -835,4 +835,10 @@ export default {
   'Tamanho do texto': '글자 크기',
   'Só as letras mudam: o resto da tela fica no lugar.': '글자만 바뀌어요. 화면의 나머지는 그대로예요.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': '한 줄에 규칙이나 안내 하나씩: 새로 온 사람의 토끼가 하나씩 읽어 줘요.',
+  'Agora nas suas comunidades': '지금 내 커뮤니티에서',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': '지금은 조용해요. 누군가 통화에 들어오면 여기에 보여요.',
+  '{quem} na chamada': '통화 중: {quem}',
+  '{quem} transmitindo {oque}': '{quem} 님이 {oque} 방송 중',
+  '{quem} transmitindo a tela': '{quem} 님이 화면 공유 중',
+  'na chamada de {comunidade}': '{comunidade} 통화 중',
 } satisfies Record<string, string>;

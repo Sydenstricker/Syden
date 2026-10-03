@@ -813,4 +813,10 @@ export default {
   'Tamanho do texto': 'Cỡ chữ',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Chỉ chữ thay đổi: phần còn lại của màn hình vẫn giữ nguyên.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Mỗi dòng một quy tắc hoặc thông báo: chú thỏ của người mới đến sẽ đọc từng dòng.',
+  'Agora nas suas comunidades': 'Lúc này trong các cộng đồng của bạn',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Hiện đang yên ắng. Khi có ai vào cuộc gọi, sẽ hiện ở đây.',
+  '{quem} na chamada': '{quem} đang trong cuộc gọi',
+  '{quem} transmitindo {oque}': '{quem} đang phát {oque}',
+  '{quem} transmitindo a tela': '{quem} đang chia sẻ màn hình',
+  'na chamada de {comunidade}': 'trong cuộc gọi của {comunidade}',
 } satisfies Record<string, string>;

@@ -868,4 +868,10 @@ export default {
   'Tamanho do texto': 'حجم النص',
   'Só as letras mudam: o resto da tela fica no lugar.': 'تتغير الحروف فقط: يبقى باقي الشاشة في مكانه.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'قاعدة أو تنبيه في كل سطر: أرنب القادم الجديد يقرؤها واحدة تلو الأخرى.',
+  'Agora nas suas comunidades': 'الآن في مجتمعاتك',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'الهدوء يعمّ حاليًا. عندما ينضم أحد إلى مكالمة، يظهر هنا.',
+  '{quem} na chamada': 'في المكالمة: {quem}',
+  '{quem} transmitindo {oque}': '{quem}: بث {oque}',
+  '{quem} transmitindo a tela': '{quem}: مشاركة الشاشة',
+  'na chamada de {comunidade}': 'في مكالمة {comunidade}',
 } satisfies Record<string, string>;

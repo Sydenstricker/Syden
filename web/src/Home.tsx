@@ -4,9 +4,10 @@ import { api } from './api';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
 import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
-import type { Channel, VoiceMember } from './types';
+import type { Channel, Community, VoiceMember } from './types';
+import { Farol, atividadeAgora } from './Farol';
 import { PainelCoelhos } from './PainelCoelhos';
-import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type Periodo, type PinoVila, Vila } from './Vila';
+import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type PessoaNaPraca, type Periodo, type PinoVila, Vila } from './Vila';
 import { useT } from './i18n';
 
 // Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
@@ -127,6 +128,10 @@ export function Home({
   aoAbrirAmigos,
   aoExplorar,
   souODono,
+  comunidades,
+  vozDeTodas,
+  eu,
+  aoIrParaComunidade,
 }: {
   /** Nome da comunidade aberta agora, se houver. */
   comunidade?: string;
@@ -140,6 +145,11 @@ export function Home({
   aoExplorar: () => void;
   /** Quem cuida do Syden recebe as ideias em vez de mandar: para ele a caixa não aparece. */
   souODono: boolean;
+  /** Todas as comunidades da pessoa, e quem está em chamada em cada uma: é o que acende o farol. */
+  comunidades: Community[];
+  vozDeTodas: Record<number, VoiceMember[]>;
+  eu: number;
+  aoIrParaComunidade: (communityId: number) => void;
 }) {
   const t = useT();
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
@@ -207,6 +217,23 @@ export function Home({
     },
   ];
 
+  const atividade = atividadeAgora(comunidades, vozDeTodas, eu);
+  // Uma pessoa aparece uma vez só na praça, mesmo que esteja em duas comunidades com quem olha.
+  const vistos = new Set<number>();
+  const pessoas: PessoaNaPraca[] = [];
+  for (const { community, pessoas: naChamada } of atividade) {
+    for (const p of naChamada) {
+      if (vistos.has(p.userId)) continue;
+      vistos.add(p.userId);
+      pessoas.push({
+        userId: p.userId,
+        nome: p.username,
+        legenda: t('na chamada de {comunidade}', { comunidade: community.name }),
+        onClick: () => aoIrParaComunidade(community.id),
+      });
+    }
+  }
+
   return (
     <div className="home">
       <div className="home-cena">
@@ -217,6 +244,7 @@ export function Home({
           destaque={destaque}
           onDestaque={setDestaque}
           aoEscolherCoelho={() => setCoelhosAbertos(true)}
+          pessoas={pessoas}
         />
         {coelhosAbertos && <PainelCoelhos aoFechar={() => setCoelhosAbertos(false)} />}
         {salasAbertas && (
@@ -257,6 +285,8 @@ export function Home({
           </div>
         )}
       </div>
+
+      <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
 
       <CaixaDeIdeias souODono={souODono} />
 

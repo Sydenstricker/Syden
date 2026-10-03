@@ -831,4 +831,10 @@ export default {
   'Tamanho do texto': 'اندازهٔ متن',
   'Só as letras mudam: o resto da tela fica no lugar.': 'فقط حروف تغییر می‌کنند: بقیهٔ صفحه سر جایش می‌ماند.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'در هر خط یک قانون یا اطلاعیه: خرگوشِ تازه‌وارد آن‌ها را یکی‌یکی می‌خواند.',
+  'Agora nas suas comunidades': 'الان در انجمن‌هایت',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'فعلاً همه‌چیز آرام است. وقتی کسی وارد تماس شود، این‌جا دیده می‌شود.',
+  '{quem} na chamada': 'در تماس: {quem}',
+  '{quem} transmitindo {oque}': '{quem} در حال پخش {oque}',
+  '{quem} transmitindo a tela': '{quem} در حال اشتراک صفحه',
+  'na chamada de {comunidade}': 'در تماسِ {comunidade}',
 } satisfies Record<string, string>;

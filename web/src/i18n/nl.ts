@@ -847,4 +847,10 @@ export default {
   'Tamanho do texto': 'Tekstgrootte',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Alleen de letters veranderen: de rest van het scherm blijft op zijn plek.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Eén regel of mededeling per regel: het konijn van wie binnenkomt leest ze één voor één voor.',
+  'Agora nas suas comunidades': 'Nu in je community’s',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Het is nu rustig. Zodra iemand in een gesprek stapt, zie je het hier.',
+  '{quem} na chamada': '{quem} in gesprek',
+  '{quem} transmitindo {oque}': '{quem} streamt {oque}',
+  '{quem} transmitindo a tela': '{quem} deelt het scherm',
+  'na chamada de {comunidade}': 'in gesprek bij {comunidade}',
 } satisfies Record<string, string>;

@@ -828,4 +828,10 @@ export default {
   'Tamanho do texto': 'எழுத்தின் அளவு',
   'Só as letras mudam: o resto da tela fica no lugar.': 'எழுத்துகள் மட்டுமே மாறும்: திரையின் மற்ற பகுதி அப்படியே இருக்கும்.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ஒரு வரிக்கு ஒரு விதி அல்லது அறிவிப்பு: புதிதாக வருபவரின் முயல் அவற்றை ஒவ்வொன்றாகப் படிக்கும்.',
+  'Agora nas suas comunidades': 'இப்போது உங்கள் சமூகங்களில்',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'இப்போதைக்கு அமைதி. யாராவது அழைப்பில் சேர்ந்தால் இங்கே தெரியும்.',
+  '{quem} na chamada': 'அழைப்பில்: {quem}',
+  '{quem} transmitindo {oque}': '{quem}: {oque} ஒளிபரப்பு',
+  '{quem} transmitindo a tela': '{quem}: திரைப் பகிர்வு',
+  'na chamada de {comunidade}': '{comunidade} அழைப்பில்',
 } satisfies Record<string, string>;

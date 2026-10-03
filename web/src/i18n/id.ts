@@ -845,4 +845,10 @@ export default {
   'Tamanho do texto': 'Ukuran teks',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Hanya hurufnya yang berubah: bagian layar lainnya tetap di tempat.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Satu aturan atau pengumuman per baris: kelinci orang yang baru datang membacakannya satu per satu.',
+  'Agora nas suas comunidades': 'Sekarang di komunitasmu',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Masih sepi untuk saat ini. Kalau ada yang masuk panggilan, akan muncul di sini.',
+  '{quem} na chamada': '{quem} dalam panggilan',
+  '{quem} transmitindo {oque}': '{quem} sedang menyiarkan {oque}',
+  '{quem} transmitindo a tela': '{quem} sedang berbagi layar',
+  'na chamada de {comunidade}': 'dalam panggilan di {comunidade}',
 } satisfies Record<string, string>;

@@ -830,4 +830,10 @@ export default {
   'Tamanho do texto': 'متن کا سائز',
   'Só as letras mudam: o resto da tela fica no lugar.': 'صرف حروف بدلتے ہیں: اسکرین کا باقی حصہ اپنی جگہ رہتا ہے۔',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ہر سطر میں ایک اصول یا اعلان: آنے والے کا خرگوش انہیں ایک ایک کر کے پڑھتا ہے۔',
+  'Agora nas suas comunidades': 'ابھی آپ کی کمیونٹیز میں',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'فی الحال سب پرسکون ہے۔ کوئی کال میں آئے گا تو یہاں نظر آئے گا۔',
+  '{quem} na chamada': 'کال میں: {quem}',
+  '{quem} transmitindo {oque}': '{quem}: {oque} کی نشریات',
+  '{quem} transmitindo a tela': '{quem}: اسکرین شیئر',
+  'na chamada de {comunidade}': '{comunidade} کی کال میں',
 } satisfies Record<string, string>;

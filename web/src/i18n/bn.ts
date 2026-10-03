@@ -845,4 +845,10 @@ export default {
   'Tamanho do texto': 'লেখার আকার',
   'Só as letras mudam: o resto da tela fica no lugar.': 'শুধু অক্ষর বদলায়: স্ক্রিনের বাকি অংশ যেমন আছে তেমনই থাকে।',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'প্রতি লাইনে একটা নিয়ম বা ঘোষণা: নতুন যে আসে, তার খরগোশ একে একে পড়ে শোনায়।',
+  'Agora nas suas comunidades': 'এখন তোমার কমিউনিটিগুলোতে',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'আপাতত সব শান্ত। কেউ কলে ঢুকলে এখানে দেখা যাবে।',
+  '{quem} na chamada': 'কলে আছে: {quem}',
+  '{quem} transmitindo {oque}': '{quem} {oque} সম্প্রচার করছে',
+  '{quem} transmitindo a tela': '{quem} স্ক্রিন শেয়ার করছে',
+  'na chamada de {comunidade}': '{comunidade}-এর কলে',
 } satisfies Record<string, string>;

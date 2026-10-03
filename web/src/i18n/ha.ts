@@ -845,4 +845,10 @@ export default {
   'Tamanho do texto': 'Girman rubutu',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Haruffa kawai ke canzawa: sauran allon yana nan a wurinsa.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Doka ko sanarwa ɗaya a kowane layi: zomon wanda ya iso zai karanta su ɗaya bayan ɗaya.',
+  'Agora nas suas comunidades': 'Yanzu a cikin al’ummominku',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'Komai a natse yanzu. Idan wani ya shiga kira, zai bayyana a nan.',
+  '{quem} na chamada': 'A cikin kira: {quem}',
+  '{quem} transmitindo {oque}': '{quem} na watsa {oque}',
+  '{quem} transmitindo a tela': '{quem} na raba allo',
+  'na chamada de {comunidade}': 'a cikin kiran {comunidade}',
 } satisfies Record<string, string>;

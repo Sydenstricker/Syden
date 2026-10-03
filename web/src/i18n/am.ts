@@ -843,4 +843,10 @@ export default {
   'Tamanho do texto': 'የጽሑፍ መጠን',
   'Só as letras mudam: o resto da tela fica no lugar.': 'የሚቀየሩት ፊደላቱ ብቻ ናቸው፤ የቀረው ማያ ገጽ ባለበት ይቆያል።',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'በአንድ መስመር አንድ ሕግ ወይም ማስታወቂያ፤ የአዲሱ መጪ ጥንቸል አንድ በአንድ ያነባቸዋል።',
+  'Agora nas suas comunidades': 'አሁን በማህበረሰቦችዎ',
+  'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.': 'ለጊዜው ጸጥ ብሏል። አንድ ሰው ጥሪ ሲቀላቀል እዚህ ይታያል።',
+  '{quem} na chamada': 'በጥሪ ላይ፦ {quem}',
+  '{quem} transmitindo {oque}': '{quem}፦ የ{oque} ስርጭት',
+  '{quem} transmitindo a tela': '{quem}፦ የማያ ገጽ ማጋራት',
+  'na chamada de {comunidade}': 'በ{comunidade} ጥሪ ላይ',
 } satisfies Record<string, string>;
