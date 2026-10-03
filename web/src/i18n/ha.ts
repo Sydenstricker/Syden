@@ -841,4 +841,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Ja murfin don zaɓar sashen da zai bayyana.',
   'Nítida para o tamanho em que está sendo mostrada.': 'A bayyane take ga girman da ake nunata.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ƙarami fiye da wurin da ake nunata. A ƙaramar taga, takan bayyana sosai.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Rubutun da tasirin suna aiki ga sunan al’umma, bisa jerin tashoshi.',
 } satisfies Record<string, string>;

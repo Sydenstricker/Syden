@@ -84,6 +84,32 @@ export const FONTES_DA_COMUNIDADE: FonteDaComunidade[] = [
   },
 ];
 
+/**
+ * O EFEITO DO NOME DA COMUNIDADE — brilho, pulso, arco-íris.
+ *
+ * SÃO OS MESMOS CÓDIGOS DOS EFEITOS DE NOME DE PESSOA (ver profileStyles.ts), e isso é de propósito:
+ * o desenho já existe em `[data-efeito='…']`, no CSS, e as cinco etiquetas já estão traduzidas nos
+ * 28 idiomas. Uma lista paralela com nomes próprios seria desenho repetido e tradução repetida.
+ *
+ * O QUE NÃO ENTRA SÃO OS TIPOGRÁFICOS. 'serifa', 'mono' e 'versalete' existem para o nome de pessoa
+ * porque lá não há escolha de fonte; aqui há, logo acima. Oferecer os dois seria dar duas maneiras
+ * de fazer a mesma coisa, que acabam brigando entre si.
+ */
+export const EFEITOS_DA_COMUNIDADE: { id: string; nome: string }[] = [
+  { id: 'sem-efeito', nome: chave('Sem efeito') },
+  { id: 'brilho', nome: chave('Brilho') },
+  { id: 'pulso', nome: chave('Pulso') },
+  { id: 'arco-iris', nome: chave('Arco-íris') },
+  { id: 'sombra', nome: chave('Sombra') },
+];
+
+const IDS_EFEITO = new Set(EFEITOS_DA_COMUNIDADE.map((e) => e.id));
+
+/** O que vai no `data-efeito`; `undefined` quando não há efeito ou o código é desconhecido. */
+export function efeitoDaComunidade(escolha: string | null | undefined): string | undefined {
+  return escolha && escolha !== 'sem-efeito' && IDS_EFEITO.has(escolha) ? escolha : undefined;
+}
+
 const PORID = new Map(FONTES_DA_COMUNIDADE.map((f) => [f.id, f]));
 
 /**

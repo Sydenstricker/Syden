@@ -809,4 +809,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Kéo ảnh bìa để chọn phần hiển thị.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Nét so với kích thước đang hiển thị.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Nhỏ hơn khung đang hiển thị. Thu nhỏ cửa sổ lại thì sẽ nét.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Kiểu chữ và hiệu ứng áp dụng cho tên cộng đồng, phía trên danh sách kênh.',
 } satisfies Record<string, string>;

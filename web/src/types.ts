@@ -69,6 +69,8 @@ export interface Community {
   capaPosicao?: number | null;
   /** O código da letra do nome. Ver fontesDaComunidade.ts. */
   fonte?: string | null;
+  /** O código do efeito do nome. Ver fontesDaComunidade.ts. */
+  efeito?: string | null;
   /** O selo que a comunidade conquistou. As três partes vêm juntas ou nenhuma vem. */
   seloTexto?: string | null;
   seloIcone?: string | null;

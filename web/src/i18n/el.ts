@@ -845,4 +845,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Σύρε το εξώφυλλο για να διαλέξεις ποιο μέρος φαίνεται.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Καθαρή για το μέγεθος στο οποίο προβάλλεται.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Μικρότερη από τον χώρο όπου προβάλλεται. Σε μικρότερο παράθυρο φαίνεται καθαρή.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Η γραμματοσειρά και το εφέ ισχύουν για το όνομα της κοινότητας, πάνω από τη λίστα καναλιών.',
 } satisfies Record<string, string>;

@@ -826,4 +826,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'کون سا حصہ دکھے، یہ چننے کے لیے سرورق کو کھینچیں۔',
   'Nítida para o tamanho em que está sendo mostrada.': 'جس سائز میں دکھ رہی ہے، اس کے لیے صاف ہے۔',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'جس جگہ دکھ رہی ہے اس سے چھوٹی ہے۔ چھوٹی ونڈو میں صاف دکھے گی۔',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'فونٹ اور اثر کمیونٹی کے نام پر لاگو ہوتے ہیں، چینلوں کی فہرست کے اوپر۔',
 } satisfies Record<string, string>;

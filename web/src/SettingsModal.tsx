@@ -39,7 +39,7 @@ import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { EmojiPicker } from './EmojiPicker';
-import { FONTES_DA_COMUNIDADE } from './fontesDaComunidade';
+import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { GifPicker } from './GifPicker';
 import { gifsDisponiveis } from './gifs';
 import { limiteDoCampo, tamanhoVisivel } from './nomeComEmoji';
@@ -608,10 +608,12 @@ function LetraDaComunidade({ community, onChanged }: { community: Community; onC
   const [erro, setErro] = useState<string | null>(null);
   const atual = community.fonte || 'padrao';
 
-  async function escolher(fonte: string) {
+  const efeitoAtual = community.efeito || 'sem-efeito';
+
+  async function escolher(fonte: string, efeito: string) {
     setErro(null);
     try {
-      await api(`/api/communities/${community.id}/fonte`, { method: 'PUT', body: { fonte } });
+      await api(`/api/communities/${community.id}/fonte`, { method: 'PUT', body: { fonte, efeito } });
       onChanged();
     } catch (e) {
       setErro((e as Error).message);
@@ -627,14 +629,40 @@ function LetraDaComunidade({ community, onChanged }: { community: Community; onC
             type="button"
             className={`letra-opcao${atual === fonte.id ? ' escolhida' : ''}`}
             aria-pressed={atual === fonte.id}
-            onClick={() => void escolher(fonte.id)}
+            onClick={() => void escolher(fonte.id, efeitoAtual)}
           >
             {/* O NOME DA COMUNIDADE, e não um texto de exemplo: é ele que vai ficar nessa letra, com
-                os acentos e o tamanho que ele tem de verdade. */}
-            <span className="letra-amostra" style={{ fontFamily: fonte.pilha || undefined }}>
+                os acentos e o tamanho que ele tem de verdade. E JÁ COM O EFEITO ESCOLHIDO, para a
+                amostra mostrar a combinação que vai valer, e não uma das metades. */}
+            <span
+              className="letra-amostra"
+              style={{ fontFamily: fonte.pilha || undefined }}
+              data-efeito={efeitoDaComunidade(community.efeito)}
+            >
               {community.name}
             </span>
             <small>{t(fonte.nome)}</small>
+          </button>
+        ))}
+      </div>
+
+      <div className="letras-da-comunidade efeitos" role="group" aria-label={t('Efeito do nome')}>
+        {EFEITOS_DA_COMUNIDADE.map((efeito) => (
+          <button
+            key={efeito.id}
+            type="button"
+            className={`letra-opcao${efeitoAtual === efeito.id ? ' escolhida' : ''}`}
+            aria-pressed={efeitoAtual === efeito.id}
+            onClick={() => void escolher(atual, efeito.id)}
+          >
+            <span
+              className="letra-amostra"
+              style={{ fontFamily: pilhaDaFonte(community.fonte) || undefined }}
+              data-efeito={efeitoDaComunidade(efeito.id)}
+            >
+              {community.name}
+            </span>
+            <small>{t(efeito.nome)}</small>
           </button>
         ))}
       </div>
@@ -790,6 +818,7 @@ function CommunitySection({
           </div>
 
           <h3>{t('Letra do nome')}</h3>
+          <p className="settings-hint">{t('A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.')}</p>
           <LetraDaComunidade community={community} onChanged={onChanged} />
 
           <h3>{t('Nome')}</h3>

@@ -843,4 +843,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Trascina la copertina per scegliere la parte visibile.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Nitida per la dimensione in cui viene mostrata.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Più piccola dello spazio in cui viene mostrata. In una finestra più piccola è nitida.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Il carattere e l’effetto valgono per il nome della comunità, sopra l’elenco dei canali.',
 } satisfies Record<string, string>;

@@ -178,13 +178,17 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
      * pilha passa a ser publicar o site, sem migrar banco. Código que o site não conhece some na
      * tela em vez de virar um font-family inventado.
      */
-    authed.put<{ Params: { id: string }; Body: { fonte?: string } }>(
+    authed.put<{ Params: { id: string }; Body: { fonte?: string; efeito?: string } }>(
       '/api/communities/:id/fonte',
       async (request, reply) => {
         const access = requireRole(request, reply);
         if (!access) return reply;
         if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a letra do nome.' });
-        const community = db.setCommunityFonte(access.communityId, String(request.body?.fonte ?? ''));
+        const community = db.setCommunityFonte(
+          access.communityId,
+          String(request.body?.fonte ?? ''),
+          String(request.body?.efeito ?? ''),
+        );
         io.to(communityRoom(community.id)).emit('community:updated', community);
         return community;
       },

@@ -838,4 +838,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Hangi kısmın görüneceğini seçmek için kapağı sürükle.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Gösterildiği boyut için net.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Gösterildiği alandan küçük. Daha küçük bir pencerede net görünür.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Yazı tipi ve efekt, kanal listesinin üstündeki topluluk adı için geçerli.',
 } satisfies Record<string, string>;

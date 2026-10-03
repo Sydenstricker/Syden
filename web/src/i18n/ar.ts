@@ -864,4 +864,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'اسحب الغلاف لاختيار الجزء الظاهر.',
   'Nítida para o tamanho em que está sendo mostrada.': 'واضحة بالنسبة للحجم المعروضة به.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'أصغر من المساحة المعروضة فيها. في نافذة أصغر تظهر واضحة.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'ينطبق الخط والتأثير على اسم المجتمع، فوق قائمة القنوات.',
 } satisfies Record<string, string>;

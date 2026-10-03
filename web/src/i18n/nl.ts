@@ -843,4 +843,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Sleep de omslag om te kiezen welk deel te zien is.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Scherp voor het formaat waarop die wordt getoond.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Kleiner dan de ruimte waarin die wordt getoond. In een kleiner venster is die scherp.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Het lettertype en het effect gelden voor de naam van de community, boven de kanalenlijst.',
 } satisfies Record<string, string>;

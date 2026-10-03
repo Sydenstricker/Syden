@@ -25,6 +25,8 @@ export interface Community {
   capaPosicao?: number | null;
   /** O código da letra do nome ('serifa', 'mono'…). O desenho mora no site. */
   fonte?: string | null;
+  /** O código do efeito do nome ('brilho', 'arco-iris'…). O desenho mora no site. */
+  efeito?: string | null;
   /**
    * O selo conquistado, ou nulo enquanto não houver. Ver selos.ts.
    *
@@ -1018,6 +1020,8 @@ addColumnIfMissing('communities', 'capa_posicao', 'INTEGER');
  * nome, e pela mesma razão: trocar uma pilha é publicar o site, sem migrar banco.
  */
 addColumnIfMissing('communities', 'fonte', 'TEXT');
+/** O efeito do nome ('brilho', 'arco-iris'…). Mesma regra: o banco guarda o código, o site desenha. */
+addColumnIfMissing('communities', 'efeito', 'TEXT');
 // Velocidade de rede: chegou depois do painel de saúde.
 addColumnIfMissing('health_samples', 'net_in', 'INTEGER');
 addColumnIfMissing('health_samples', 'net_out', 'INTEGER');
@@ -1194,13 +1198,13 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
     .prepare(
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
-              c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte,
+              c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte, c.efeito,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
@@ -1280,8 +1284,12 @@ export function setCommunityCapaAjuste(communityId: number, encaixe: string, pos
 }
 
 /** A letra do nome. O site é quem conhece as pilhas; aqui só se guarda o código escolhido. */
-export function setCommunityFonte(communityId: number, fonte: string): Community {
-  db.prepare('UPDATE communities SET fonte = ? WHERE id = ?').run(fonte.slice(0, 24), communityId);
+export function setCommunityFonte(communityId: number, fonte: string, efeito: string): Community {
+  db.prepare('UPDATE communities SET fonte = ?, efeito = ? WHERE id = ?').run(
+    fonte.slice(0, 24),
+    efeito.slice(0, 24),
+    communityId,
+  );
   return findCommunity(communityId)!;
 }
 

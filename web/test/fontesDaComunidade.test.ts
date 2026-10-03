@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { FONTES_DA_COMUNIDADE, pilhaDaFonte } from '../src/fontesDaComunidade.js';
+import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, pilhaDaFonte } from '../src/fontesDaComunidade.js';
 
 // ===================================================================================================
 // A LETRA DO NOME DA COMUNIDADE.
@@ -87,5 +87,50 @@ describe('as letras da comunidade', () => {
   it('nenhum id repetido', () => {
     const ids = FONTES_DA_COMUNIDADE.map((f) => f.id);
     assert.equal(new Set(ids).size, ids.length);
+  });
+});
+
+// ===================================================================================================
+// O EFEITO DO NOME DA COMUNIDADE.
+//
+// Ele reusa os códigos dos efeitos de nome de pessoa — e esse reuso é a coisa que pode quebrar em
+// silêncio. O desenho mora em `[data-efeito='…']`, no CSS; se um código daqui não existir lá, a
+// pessoa escolhe o efeito, o banco guarda, e NADA acontece na tela. Sem erro em lugar nenhum.
+// ===================================================================================================
+
+describe('os efeitos da comunidade', () => {
+  it('todo efeito oferecido tem desenho no CSS', () => {
+    const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+    for (const { id } of EFEITOS_DA_COMUNIDADE) {
+      if (id === 'sem-efeito') continue; // a ausência de efeito não desenha nada, e está certo
+      assert.ok(css.includes(`[data-efeito='${id}']`), `'${id}' não tem regra [data-efeito] no CSS`);
+    }
+  });
+
+  // OS QUE MEXEM EM COR OU SOMBRA PRECISAM DE REGRA PRÓPRIA SOBRE A CAPA. Ali
+  // `.sidebar-header.com-capa .sidebar-brand` força cor e sombra com três classes, e vence um
+  // seletor de atributo de longe — sem a regra específica, o efeito escolhido não apareceria.
+  it('os que mexem em cor ou sombra têm regra para a capa', () => {
+    const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+    for (const id of ['arco-iris', 'brilho', 'sombra']) {
+      assert.ok(
+        css.includes(`.sidebar-header.com-capa .sidebar-brand[data-efeito='${id}']`),
+        `'${id}' muda cor ou sombra e sumiria em cima de uma capa com foto`,
+      );
+    }
+  });
+
+  it('não oferece os tipográficos, que brigariam com a escolha de letra', () => {
+    const ids = EFEITOS_DA_COMUNIDADE.map((e) => e.id);
+    for (const tipografico of ['serifa', 'mono', 'versalete']) {
+      assert.ok(!ids.includes(tipografico), `'${tipografico}' faz o mesmo que a escolha de fonte`);
+    }
+  });
+
+  it('a ausência de efeito não vira atributo', () => {
+    assert.equal(efeitoDaComunidade('sem-efeito'), undefined);
+    assert.equal(efeitoDaComunidade(null), undefined);
+    assert.equal(efeitoDaComunidade('inventado'), undefined);
+    assert.equal(efeitoDaComunidade('arco-iris'), 'arco-iris');
   });
 });

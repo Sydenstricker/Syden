@@ -820,4 +820,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': '表示する部分は、表紙をドラッグして選びます。',
   'Nítida para o tamanho em que está sendo mostrada.': '表示されている大きさでは鮮明です。',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '表示されている領域より小さいです。ウィンドウを小さくすると鮮明になります。',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '書体と効果は、チャンネル一覧の上にあるコミュニティ名に適用されます。',
 } satisfies Record<string, string>;

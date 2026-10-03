@@ -827,4 +827,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'برای انتخاب بخش نمایان، جلد را بکشید.',
   'Nítida para o tamanho em que está sendo mostrada.': 'برای اندازه‌ای که نمایش داده می‌شود، واضح است.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'کوچک‌تر از فضایی است که در آن نمایش داده می‌شود. در پنجره‌ای کوچک‌تر واضح می‌شود.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'قلم و جلوه روی نام اجتماع، بالای فهرست کانال‌ها، اعمال می‌شود.',
 } satisfies Record<string, string>;

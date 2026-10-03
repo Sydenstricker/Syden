@@ -821,4 +821,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'ఏ భాగం కనిపించాలో ఎంచుకోవడానికి ముఖచిత్రాన్ని లాగండి.',
   'Nítida para o tamanho em que está sendo mostrada.': 'చూపిస్తున్న పరిమాణానికి స్పష్టంగా ఉంది.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'చూపిస్తున్న స్థలం కంటే చిన్నది. చిన్న విండోలో స్పష్టంగా ఉంటుంది.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'అక్షరశైలి, ప్రభావం ఛానెల్ జాబితా పైన ఉన్న సముదాయ పేరుకు వర్తిస్తాయి.',
 } satisfies Record<string, string>;

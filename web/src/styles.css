@@ -10559,3 +10559,44 @@ body.arrastando-barra {
 .stream-info-card .stream-nitida {
   color: var(--green);
 }
+
+/* ===================================================================================================
+   O EFEITO DO NOME DA COMUNIDADE SOBRE A CAPA — e a razão deste bloco existir é especificidade.
+
+   `.sidebar-header.com-capa .sidebar-brand` força `color: #f2f3f5` e uma sombra dupla, e isso tem de
+   continuar: é o que faz o nome sobreviver a QUALQUER foto, clara ou escura. Só que são três classes
+   contra um seletor de atributo — a regra da capa vence `[data-efeito='…']` de longe, e o efeito
+   simplesmente não apareceria. Sem erro, sem aviso: a pessoa escolhe arco-íris e vê o nome branco.
+
+   É a mesma armadilha que já comeu a régua de corte do clipe, quando `.dialog input` pintava por
+   cima dela. Por isso aqui os dois casos que MEXEM EM COR ou em SOMBRA são reescritos com a
+   especificidade da capa, somando o efeito à legibilidade em vez de escolher entre os dois.
+
+   'pulso' não entra: ele só mexe na opacidade, e nada na regra da capa briga com isso.
+   =================================================================================================== */
+.sidebar-header.com-capa .sidebar-brand[data-efeito='arco-iris'] {
+  /* A sombra fica POR BAIXO do degradê recortado no texto: com `color: transparent`, ela desenha o
+     contorno das letras e é ela que segura o nome em cima de uma foto clara. */
+  color: transparent;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+.sidebar-header.com-capa .sidebar-brand[data-efeito='brilho'] {
+  /* O halo do brilho SOMADO à sombra da capa, e não no lugar dela. */
+  text-shadow:
+    0 0 6px currentColor,
+    0 1px 3px rgba(0, 0, 0, 0.75),
+    0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header.com-capa .sidebar-brand[data-efeito='sombra'] {
+  text-shadow:
+    1px 1px 0 var(--bg-darkest),
+    0 1px 3px rgba(0, 0, 0, 0.75),
+    2px 2px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* A segunda fileira, dos efeitos, respira um pouco da primeira. */
+.letras-da-comunidade.efeitos {
+  margin-top: 4px;
+}

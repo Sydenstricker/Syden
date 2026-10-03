@@ -843,4 +843,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'कौन-सा हिस्सा दिखे, यह चुनने के लिए कवर को खींचो।',
   'Nítida para o tamanho em que está sendo mostrada.': 'जिस आकार में दिख रही है, उसके लिए साफ़ है।',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'जिस जगह दिख रही है उससे छोटी है। छोटी खिड़की में साफ़ दिखेगी।',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'लिपि और प्रभाव समुदाय के नाम पर लगते हैं, चैनल सूची के ऊपर।',
 } satisfies Record<string, string>;

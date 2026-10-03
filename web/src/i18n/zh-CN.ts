@@ -830,4 +830,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': '拖动封面，选择要显示的部分。',
   'Nítida para o tamanho em que está sendo mostrada.': '按当前显示尺寸来看是清晰的。',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '比显示区域还小。窗口小一点就会清晰。',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '字体和效果作用于频道列表上方的社区名称。',
 } satisfies Record<string, string>;

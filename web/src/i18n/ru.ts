@@ -865,4 +865,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Потяни обложку, чтобы выбрать видимую часть.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Чёткая для того размера, в котором показана.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Меньше, чем место, где показана. В окне поменьше будет чёткой.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Шрифт и эффект применяются к названию сообщества, над списком каналов.',
 } satisfies Record<string, string>;

@@ -869,4 +869,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Fais glisser la couverture pour choisir la partie visible.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Nette pour la taille à laquelle elle est affichée.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Plus petite que l’espace où elle est affichée. Dans une fenêtre plus petite, elle est nette.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'La police et l’effet s’appliquent au nom de la communauté, au-dessus de la liste des salons.',
 } satisfies Record<string, string>;

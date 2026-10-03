@@ -849,4 +849,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Drag the cover to choose which part shows.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Sharp for the size it is being shown at.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Smaller than the space it is shown in. In a smaller window it looks sharp.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'The typeface and the effect apply to the community name, above the channel list.',
 } satisfies Record<string, string>;

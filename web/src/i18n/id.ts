@@ -841,4 +841,5 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Seret sampul untuk memilih bagian yang terlihat.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Tajam untuk ukuran tampilannya.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Lebih kecil dari ruang tempat ditampilkan. Di jendela yang lebih kecil, jadi tajam.',
+  'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Huruf dan efeknya berlaku untuk nama komunitas, di atas daftar kanal.',
 } satisfies Record<string, string>;
