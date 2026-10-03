@@ -832,6 +832,43 @@ function BotaoTelaCheia({ alvo }: { alvo: RefObject<HTMLDivElement | null> }) {
 }
 
 /**
+ * O QUADRO DE UMA TRANSMISSÃO DE TELA.
+ *
+ * ===================================================================================================
+ * ELE EXISTE POR CAUSA DE UM `?? ` DENTRO DA BIBLIOTECA, e o sintoma foi: "no canto inferior direito
+ * tem esse ícone, ele serve pra quê?" — três barrinhas que ninguém no Syden tinha decidido mostrar.
+ *
+ * O `ParticipantTile` do LiveKit desenha `{children ?? (layout padrão dele)}`. A câmera sempre
+ * passou filhos (PersonTile), então o padrão nunca apareceu. A transmissão de tela era
+ * `<ParticipantTile trackRef={ref} />`, SEM FILHOS — e aí entrava o layout da biblioteca inteiro:
+ *
+ *   - o ConnectionQualityIndicator, que são as três barrinhas do canto;
+ *   - e `<ParticipantName>'s screen</ParticipantName>`, com o "'s screen" CRAVADO EM INGLÊS dentro
+ *     do pacote. Uma tela em português, árabe ou japonês mostrava "crono's screen".
+ *
+ * Esse segundo é o pior dos dois, e a auditoria de tradução nunca o acharia: ela varre o código do
+ * Syden, e esse texto não está nele.
+ * ===================================================================================================
+ */
+function ScreenTile({ trackRef, membro }: { trackRef: TrackReferenceOrPlaceholder; membro?: VoiceMember }) {
+  return (
+    <ParticipantTile trackRef={trackRef}>
+      {/* A guarda estreita o tipo: um quadro pode ser um lugar reservado, ainda sem faixa. */}
+      {isTrackReference(trackRef) && <VideoTrack trackRef={trackRef} />}
+      <div className="tile-info">
+        <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
+      </div>
+      {/* O nome vem do Syden e é o que ESTÁ SENDO TRANSMITIDO ("Bloodstained"), não um rótulo fixo —
+          e, quando ele ainda não chegou, fica o nome de quem transmite. */}
+      <div className="tile-name">
+        <MonitorPlay size={14} />
+        <span>{membro?.screenName || trackRef.participant.name || trackRef.participant.identity}</span>
+      </div>
+    </ParticipantTile>
+  );
+}
+
+/**
  * Um quadro grande da tela (o que está em foco, ou cada uma quando a tela está dividida): o vídeo,
  * os controles da transmissão e o botão de tela cheia deste quadro.
  */
@@ -1090,7 +1127,7 @@ function Stage({
           sound={voice.recentSounds.get(ref.participant.identity)}
         />
       ) : (
-        <ParticipantTile trackRef={ref} />
+        <ScreenTile trackRef={ref} membro={members.find((m) => String(m.userId) === ref.participant.identity)} />
       )}
     </div>
     );

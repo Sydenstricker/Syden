@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { test } from 'node:test';
+import { describe, it, test } from 'node:test';
 
 // Variável de CSS que nunca foi definida NÃO DÁ ERRO: o navegador descarta a regra inteira, em silêncio.
 // A tela continua abrindo, só que sem borda, sem fundo — ou transparente, com o texto por cima do que
@@ -51,4 +51,32 @@ test('toda cor do tema escuro tem o par dela no tema claro', () => {
 
   const soNoEscuro = [...noEscuro].filter((v) => !noClaro.has(v) && !IGUAIS_NOS_DOIS.has(v));
   assert.deepEqual(soNoEscuro, [], 'sem par no tema claro: ' + soNoEscuro.join(', '));
+});
+
+// ===================================================================================================
+// O LAYOUT PADRÃO DO LIVEKIT NÃO PODE VOLTAR A APARECER.
+//
+// O `ParticipantTile` desenha `{children ?? (layout dele)}`. Um quadro sem filhos entrega a tela ao
+// pacote — e junto vêm duas coisas que ninguém no Syden escolheu: o indicador de qualidade de
+// conexão (as três barrinhas que motivaram a pergunta "esse ícone serve pra quê?") e, pior, o texto
+// `'s screen` CRAVADO EM INGLÊS dentro da biblioteca.
+//
+// A auditoria de tradução nunca acharia o segundo: ela varre o código do Syden, e esse texto não
+// está nele. Por isso o guarda é aqui, e é simples — todo ParticipantTile tem de receber filhos.
+// ===================================================================================================
+describe('os quadros da chamada não usam o layout padrão do LiveKit', () => {
+  it('nenhum <ParticipantTile> fica sem filhos', () => {
+    const fonte = readFileSync(new URL('../src/VoiceStage.tsx', import.meta.url), 'utf8');
+    // SEM OS COMENTÁRIOS. A primeira versão disto reprovou por causa da PRÓPRIA EXPLICAÇÃO escrita
+    // no componente, que cita a linha defeituosa para contar o que aconteceu. Teste tem de olhar
+    // código; prosa que descreve o defeito não é o defeito.
+    const codigo = fonte.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    const sozinhos = [...codigo.matchAll(/<ParticipantTile[^>]*\/>/g)].map((m) => m[0]);
+    assert.deepEqual(
+      sozinhos,
+      [],
+      'ParticipantTile sem filhos entrega o quadro ao layout do pacote, que traz o indicador de ' +
+        'conexão e o texto "\'s screen" em inglês.',
+    );
+  });
 });
