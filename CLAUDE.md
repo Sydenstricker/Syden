@@ -156,6 +156,49 @@ lendo, e um erro aqui atinge metade das pessoas em todas as frases.
 **O árabe tem a mesma divisão e passou batido**, porque o sufixo ـك se escreve igual para os dois sem
 os sinais de vogal. As formas verbais dele seguem no masculino: é dívida conhecida, não descuido.
 
+## Culturas na home (idiomas, leitura, culinária, dança, música): o desenho, ainda não construído
+
+**Decidido em 03/10/2026, pelo Sydenstricker, retomando o assunto arquivado logo abaixo.** O tema
+cresceu: não é só aprender idioma, é **se conectar com outras culturas**, e o formato tem de aceitar
+culinária, dança, música e o que vier. O que ficou decidido:
+
+1. **Quem escolhe o conteúdo são as APIs das fontes**, não uma pessoa. Por isso a escolha das fontes é
+   a decisão que importa — e o critério é o do karaokê e das fontes de letra: só entra o que tem
+   licença que permite mostrar dentro do Syden, item por item.
+2. **O conteúdo aparece na LÍNGUA DE ORIGEM.** O objetivo é a pessoa interagir com o japonês, não ler
+   uma receita japonesa em português. Tradução é ajuda opcional para quem tem pouca intimidade com a
+   língua — e o custo de traduzir entre 34 línguas ainda está em aberto (ver abaixo).
+3. **"Conversar sobre isso" virando subcomunidades por tópico ficou FORA, por escopo.** Quem se
+   interessar cria a comunidade; o Syden não monta uma por assunto.
+
+**As fontes, conferidas em 03/10/2026:**
+
+- **Gutendex** (gutendex.com) — os livros do Project Gutenberg, domínio público, filtráveis por
+  língua (`languages=ja`) e assunto. Sem chave. Pede para quem usa muito hospedar a própria cópia,
+  que é código aberto — para o Syden, que guardaria o resultado, cabe.
+- **Openverse** (api.openverse.org) — música e imagem com a LICENÇA de cada item, o texto de
+  atribuição pronto, filtro `license_type=commercial` e marca de conteúdo adulto (`mature`). Sem
+  chave. É a melhor candidata para música e dança.
+- **Wikimedia** (Wikibooks, Wikisource, Commons) — receitas do livro de culinária da Wikibooks
+  (CC BY-SA), textos em dezenas de línguas, vídeos e imagens com licença na própria API.
+- Não servem: TheMealDB e parecidos (receita sem licença declarada); qualquer catálogo de anime.
+
+**A tradução, se um dia entrar:** um serviço de terceiro (DeepL, Google) mandaria o texto para fora
+e entraria na política de privacidade; o **LibreTranslate** roda no próprio servidor do Syden, sem
+terceiro, ao custo de memória na Hetzner e qualidade menor. Traduzir só quando a pessoa PEDE, item a
+item, mantém o custo proporcional ao uso, e não aos 34 idiomas.
+
+**O que continua valendo da decisão anterior** está logo abaixo.
+
+## Gerar arte com IA: interesse registrado, não agora
+
+**Decidido em 03/10/2026, pelo Sydenstricker: amadurecer como foi feito com os idiomas, mas não
+continuar agora.** O que se sabe até aqui: as ferramentas com API (PixelLab e Retro Diffusion para
+pixel art, Recraft para vetor/SVG, Scenario para treinar um estilo próprio) dispensariam dominar a
+ferramenta — o Syden as chamaria por script e ele julgaria o resultado. O problema a resolver não é
+qualidade, é CONSISTÊNCIA entre dezenas de peças. O primeiro passo combinado, quando retomar: uma
+peça só (o coelho em três poses) gerada em duas ou três delas, lado a lado.
+
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 
 **Decidido em 02/10/2026, pelo Sydenstricker: arquivado enquanto ele pesquisa um caminho melhor.** Ele
