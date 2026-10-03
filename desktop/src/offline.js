@@ -229,6 +229,14 @@ const TEXTOS = {
     tentando: 'Łączenie…',
     codigo: 'OFFLINE — Brak połączenia',
   },
+  // Sem ခင်ဗျာ nem ရှင်: no birmanês a partícula de cortesia diz o sexo de quem fala. Ver my.ts.
+  my: {
+    titulo: 'ချိတ်ဆက်လို့ မရပါ',
+    explicacao: 'အင်တာနက်ကို စစ်ကြည့်ပါ။ ဆာဗာ ပိတ်နေတာလည်း ဖြစ်နိုင်ပါတယ်။',
+    botao: 'ထပ်ကြိုးစားရန်',
+    tentando: 'ကြိုးစားနေသည်…',
+    codigo: 'OFFLINE — ချိတ်ဆက်မှု မရှိ',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

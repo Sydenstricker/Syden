@@ -175,6 +175,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Só a Polônia. A língua tem status de minoria em partes da Lituânia, da Bielorrússia e da
   // Ucrânia, mas não de oficial do Estado, e este arquivo pede status.
   pl: ['PL'],
+
+  // Mianmar. A Constituição de 2008 (art. 450) diz que a língua oficial é o birmanês.
+  my: ['MM'],
 };
 
 /**
