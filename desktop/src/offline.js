@@ -237,6 +237,14 @@ const TEXTOS = {
     tentando: 'ကြိုးစားနေသည်…',
     codigo: 'OFFLINE — ချိတ်ဆက်မှု မရှိ',
   },
+  // Impessoal em -ся/-но e presente: o passado ucraniano tem sexo. Ver web/src/i18n/uk.ts.
+  uk: {
+    titulo: 'Не вдалося підключитися',
+    explicacao: 'Перевір інтернет. Можливо, сервер також не працює.',
+    botao: 'Спробувати ще раз',
+    tentando: 'Підключення…',
+    codigo: 'OFFLINE — Немає з’єднання',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -178,6 +178,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Mianmar. A Constituição de 2008 (art. 450) diz que a língua oficial é o birmanês.
   my: ['MM'],
+
+  // Só a Ucrânia. A Constituição (art. 10) diz que a língua do Estado é o ucraniano.
+  uk: ['UA'],
 };
 
 /**
