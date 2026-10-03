@@ -730,7 +730,7 @@ export default {
   'Tráfego de saída este mês': 'Ìjáde tí a lò ní oṣù yìí',
   'Tráfego usado da franquia': 'Ìjáde tí a lò nínú ààyè tí a fúnni',
   'Transmissões dos outros': 'Àwọn ìfihàn àwọn yòókù',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Ó ń mú àwọn émọ́jì àti ìró tó wá pẹ̀lú Syden padà. Ohun tí ẹ fi ránṣẹ́ yóò ṣì wà bí ó ti rí, kò sì sí ohun tí yóò di ẹ̀dà tí a tún ṣe.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Ó ń mú àwọn émọ́jì tó wá pẹ̀lú Syden padà. Ohun tí ẹ fi ránṣẹ́ yóò ṣì wà bí ó ti rí, kò sì sí ohun tí yóò di ẹ̀dà tí a tún ṣe.',
   'Trazendo…': 'Ó ń mú un padà…',
   'Trazer de volta': 'Mú padà',
   'Trazer de volta para esta janela': 'Mú padà sí fèrèsé yìí',

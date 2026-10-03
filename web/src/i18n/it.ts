@@ -687,7 +687,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'Suona quando qualcuno entra o esce dalla tua stanza, quando qualcuno inizia a condividere lo schermo e quando ti silenzi o ti assordi.',
   'Tocando…': 'In riproduzione…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'Tutti in questa community possono usare queste emoji scrivendo {exemplo} o con il pulsante emoji della chat. Senza abbonamento: è tutto sbloccato.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Riporta le emoji e i suoni che arrivano con Syden. Quello che avete caricato resta com’è, e niente diventa un doppione.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Riporta le emoji che arrivano con Syden. Quello che avete caricato resta com’è, e niente diventa un doppione.',
   'Trocar áudio': 'Cambia audio',
   'Trocar avatar': 'Cambia avatar',
   'Trocar imagem': 'Cambia immagine',

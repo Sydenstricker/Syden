@@ -682,7 +682,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'Biri odana girdiğinde ya da çıktığında, biri ekran paylaşmaya başladığında ve sen sesini ya da kulaklığını kapattığında bir ses çalar.',
   'Tocando…': 'Çalıyor…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'Bu topluluktaki herkes {exemplo} yazarak ya da sohbetteki emoji düğmesinden bu emojileri kullanabilir. Abonelik yok: hepsi açık.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden’la gelen emojileri ve sesleri geri getirir. Sizin yüklediğiniz olduğu gibi kalır, hiçbir şey tekrar kopya olmaz.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden’la gelen emojileri geri getirir. Sizin yüklediğiniz olduğu gibi kalır, hiçbir şey tekrar kopya olmaz.',
   'Trocar áudio': 'Sesi değiştir',
   'Trocar avatar': 'Avatarı değiştir',
   'Trocar imagem': 'Görseli değiştir',

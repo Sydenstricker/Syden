@@ -687,7 +687,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'Inapiga sauti mtu anapoingia au kutoka chumbani kwako, mtu anapoanza kushiriki skrini, na unapojizima sauti au masikio.',
   'Tocando…': 'Inacheza…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'Kila mtu katika jumuiya hii anaweza kutumia emoji hizi kwa kuandika {exemplo} au kwa kitufe cha emoji kwenye gumzo. Bila usajili: kila kitu kiko wazi.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Inarudisha emoji na sauti zinazokuja na Syden. Mlichopakia kinabaki kama kilivyo, na hakuna kinachokuwa nakala.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Inarudisha emoji zinazokuja na Syden. Mlichopakia kinabaki kama kilivyo, na hakuna kinachokuwa nakala.',
   'Trocar áudio': 'Badilisha sauti',
   'Trocar avatar': 'Badilisha avatar',
   'Trocar imagem': 'Badilisha picha',

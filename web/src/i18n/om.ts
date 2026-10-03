@@ -801,8 +801,7 @@ export default {
   'Tráfego de saída este mês': 'Daandii ba’uu ji’a kanaa',
   'Tráfego usado da franquia': 'Daangaa tiraafikaa fayyadamame',
   'Transmissões dos outros': 'Tamsaasa namoota biroo',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.':
-    'Emojii fi sagalee Syden wajjin dhufan deebisa. Wanti isin olkaaytan akkuma jirutti tura, homtuus hin dachaa’u.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Emojii Syden wajjin dhufan deebisa. Wanti isin olkaaytan akkuma jirutti tura, homtuus hin dachaa’u.',
   'Trazendo…': 'Deebisaa jira…',
   'Trazer de volta': 'Deebisi',
   'Trazer de volta para esta janela': 'Gara foddaa kanaatti deebisi',

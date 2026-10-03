@@ -722,7 +722,7 @@ export default {
   'Tráfego de saída este mês': 'ปริมาณข้อมูลขาออกเดือนนี้',
   'Tráfego usado da franquia': 'ปริมาณข้อมูลที่ใช้ไปจากโควตา',
   'Transmissões dos outros': 'การถ่ายทอดของคนอื่น',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'กู้อิโมจิและเสียงที่มาพร้อม Syden กลับมา ของที่พวกคุณส่งไว้ยังอยู่เหมือนเดิม และจะไม่เกิดสำเนาซ้ำ',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'กู้อิโมจิที่มาพร้อม Syden กลับมา ของที่พวกคุณส่งไว้ยังอยู่เหมือนเดิม และจะไม่เกิดสำเนาซ้ำ',
   'Trazendo…': 'กำลังนำกลับ…',
   'Trazer de volta': 'นำกลับมา',
   'Trazer de volta para esta janela': 'นำกลับมาที่หน้าต่างนี้',

@@ -715,7 +715,7 @@ export default {
   'Tráfego de saída este mês': 'በዚህ ወር የወጣ ትራፊክ',
   'Tráfego usado da franquia': 'ከድርሻው የተጠቀመው ትራፊክ',
   'Transmissões dos outros': 'የሌሎች ስርጭቶች',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'ከSyden ጋር የሚመጡትን ኢሞጂዎችና ድምፆች ያስመልሳል። እናንተ የላካችሁት እንዳለ ይቀራል፣ ምንም ነገርም ድጋሚ ቅጂ አይሆንም።',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'ከSyden ጋር የሚመጡትን ኢሞጂዎች ያስመልሳል። እናንተ የላካችሁት እንዳለ ይቀራል፣ ምንም ነገርም ድጋሚ ቅጂ አይሆንም።',
   'Trazendo…': 'በማምጣት ላይ…',
   'Trazer de volta': 'መልስ',
   'Trazer de volta para esta janela': 'ወደዚህ መስኮት መልስ',

@@ -679,7 +679,7 @@ export default {
   'Tráfego de saída este mês': 'Lưu lượng đi ra tháng này',
   'Tráfego usado da franquia': 'Phần lưu lượng đã dùng trong hạn mức',
   'Transmissões dos outros': 'Màn hình chia sẻ của người khác',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Lấy lại những emoji và âm thanh có sẵn cùng Syden. Những gì mọi người đã tải lên vẫn nguyên, và không có gì bị nhân thành bản trùng.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Lấy lại những emoji có sẵn cùng Syden. Những gì mọi người đã tải lên vẫn nguyên, và không có gì bị nhân thành bản trùng.',
   'Trazendo…': 'Đang lấy lại…',
   'Trazer de volta': 'Khôi phục',
   'Trazer de volta para esta janela': 'Đưa về lại cửa sổ này',

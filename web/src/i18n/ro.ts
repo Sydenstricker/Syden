@@ -715,7 +715,7 @@ export default {
   'Tráfego de saída este mês': 'Trafic de ieșire luna asta',
   'Tráfego usado da franquia': 'Trafic folosit din pachet',
   'Transmissões dos outros': 'Transmisiunile celorlalți',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Aduce înapoi emoji-urile și sunetele care vin cu Syden. Ce ați încărcat voi rămâne cum e, și nimic nu devine copie repetată.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Aduce înapoi emoji-urile care vin cu Syden. Ce ați încărcat voi rămâne cum e, și nimic nu devine copie repetată.',
   'Trazendo…': 'Se recuperează…',
   'Trazer de volta': 'Recuperează',
   'Trazer de volta para esta janela': 'Adu înapoi în această fereastră',

@@ -811,8 +811,7 @@ export default {
   'Tráfego de saída este mês': 'Вихідний трафік цього місяця',
   'Tráfego usado da franquia': 'Використаний ліміт трафіку',
   'Transmissões dos outros': 'Трансляції інших',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.':
-    'Повертає емодзі та звуки, що постачаються із Syden. Завантажене вами лишається як є, і нічого не дублюється.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Повертає емодзі, що постачаються із Syden. Завантажене вами лишається як є, і нічого не дублюється.',
   'Trazendo…': 'Відновлення…',
   'Trazer de volta': 'Відновити',
   'Trazer de volta para esta janela': 'Повернути в це вікно',

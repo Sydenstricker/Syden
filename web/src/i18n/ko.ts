@@ -675,7 +675,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': '누가 방에 들어오거나 나갈 때, 누가 화면 공유를 시작할 때, 그리고 내가 음소거하거나 소리를 끌 때 소리가 나요.',
   'Tocando…': '재생 중…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': '이 커뮤니티의 모두가 {exemplo} 라고 쓰거나 채팅의 이모지 버튼으로 이 이모지들을 쓸 수 있어요. 구독 없이 전부 열려 있어요.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden에 기본으로 들어 있는 이모지와 사운드를 되돌려요. 여러분이 올린 건 그대로 남고, 중복으로 복사되지도 않아요.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden에 기본으로 들어 있는 이모지를 되돌려요. 여러분이 올린 건 그대로 남고, 중복으로 복사되지도 않아요.',
   'Trocar áudio': '오디오 바꾸기',
   'Trocar avatar': '아바타 바꾸기',
   'Trocar imagem': '이미지 바꾸기',

@@ -2249,11 +2249,6 @@ export function deleteSound(id: number) {
   db.prepare('DELETE FROM sounds WHERE id = ?').run(id);
 }
 
-/** Tira das comunidades os sons do antigo pacote de demonstração, que agora vive como pacote do catálogo. */
-export function deleteLegacyPackSounds() {
-  db.prepare('DELETE FROM sounds WHERE community_id IS NOT NULL AND created_by IS NULL').run();
-}
-
 export function findSoundFile(id: number) {
   return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM sounds WHERE id = ?').get(id)) as ArquivoGuardado | undefined;
 }
@@ -2335,6 +2330,14 @@ export function createPack(name: string, description: string, icon: string, crea
     .prepare('INSERT INTO packs (name, description, icon, created_by, builtin) VALUES (?, ?, ?, ?, ?)')
     .run(name, description, icon, createdBy, builtin ? 1 : 0);
   return Number(result.lastInsertRowid);
+}
+
+/**
+ * Os pacotes que vinham de fábrica viram pacotes de uma pessoa: deixam de ser `builtin` e ganham autor. Só
+ * pega os que ainda não têm autor, então rodar de novo não faz nada.
+ */
+export function entregarPacotesDeFabrica(donoId: number) {
+  return db.prepare('UPDATE packs SET builtin = 0, created_by = ? WHERE builtin = 1 AND created_by IS NULL').run(donoId).changes;
 }
 
 export function updatePack(id: number, name: string, description: string, icon: string) {

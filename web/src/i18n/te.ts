@@ -691,7 +691,7 @@ export default {
   'Tráfego de saída este mês': 'ఈ నెల బయటికి వెళ్ళిన డేటా',
   'Tráfego usado da franquia': 'పరిమితిలో వాడిన భాగం',
   'Transmissões dos outros': 'ఇతరుల స్క్రీన్ షేర్‌లు',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Sydenతో వచ్చే ఎమోజీలు, శబ్దాలను తిరిగి తెస్తుంది. మీరంతా పంపినవి అలాగే ఉంటాయి, ఏదీ రెట్టింపు కాదు.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Sydenతో వచ్చే ఎమోజీలను తిరిగి తెస్తుంది. మీరంతా పంపినవి అలాగే ఉంటాయి, ఏదీ రెట్టింపు కాదు.',
   'Trazendo…': 'తెస్తోంది…',
   'Trazer de volta': 'తిరిగి తే',
   'Trazer de volta para esta janela': 'ఈ విండోలోకి తిరిగి తే',

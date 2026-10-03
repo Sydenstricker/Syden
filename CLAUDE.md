@@ -34,6 +34,17 @@ O gerador continua no projeto como **ferramenta de teste**, para ter um arquivo 
 sincronizada ao mexer no karaokê. Não é produto: a saída dele não mora em `web/public/`, e por isso
 nunca vai para o site.
 
+## Som de meme é da pessoa que sobe, nunca do Syden
+
+**Decidido em 03/10/2026, pelo Sydenstricker.** Os sete pacotes de som que vinham de fábrica (meme,
+futebol, Lula e Bolsonaro, streamer…) eram todos áudio de terceiros, e saíram do repositório. No
+servidor eles viraram pacotes da conta de quem cuida do Syden (`entregarPacotesDeFabrica`): quem
+tinha instalado continua com eles, e conta nova não ganha pacote nenhum de presente.
+
+A razão é a mesma da música: **quem sobe responde pelo que sobe, quem distribui responde como
+publicador.** É o modelo do MyInstants e do soundboard do Discord — o próprio Discord não traz meme
+de terceiro nos sons que vêm com ele. Pacote de fábrica, se voltar a existir, é só de material livre.
+
 ## O servidor na Alemanha NÃO põe o Syden na Europa
 
 Eu afirmei que o servidor na Hetzner colocava o Syden dentro do DSA. **Estava errado**, e a correção

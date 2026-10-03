@@ -811,8 +811,7 @@ export default {
   'Tráfego de saída este mês': 'תעבורה יוצאת החודש',
   'Tráfego usado da franquia': 'תעבורה שנוצלה מהמכסה',
   'Transmissões dos outros': 'שידורים של אחרים',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.':
-    'מחזיר את האימוג׳י והצלילים שמגיעים עם Syden. מה שהועלה נשאר כמו שהוא, ושום דבר לא משוכפל.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'מחזיר את האימוג׳י שמגיעים עם Syden. מה שהועלה נשאר כמו שהוא, ושום דבר לא משוכפל.',
   'Trazendo…': 'משחזר…',
   'Trazer de volta': 'לשחזר',
   'Trazer de volta para esta janela': 'להחזיר לחלון הזה',

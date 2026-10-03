@@ -1,68 +1,23 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import * as db from './db.js';
-import { sniffMime } from './media.js';
 
-// Emojis de demonstração (instalados em cada comunidade nova) e os pacotes de sons que vêm de fábrica
-// com o Syden. Os pacotes são do servidor inteiro: os arquivos ficam guardados uma vez só e cada pessoa
-// escolhe quais quer no seu soundboard.
+// Emojis de demonstração, instalados em cada comunidade nova. São desenhos do próprio Syden.
+//
+// SOM DE FÁBRICA NÃO EXISTE MAIS, DE PROPÓSITO. Os sete pacotes que vinham com o Syden (meme, futebol,
+// Lula e Bolsonaro…) eram todos áudio de terceiros, e quem distribui é quem responde: com eles, o Syden
+// deixava de ser intermediário do que as pessoas sobem e passava a ser quem publica. Em 03/10/2026
+// eles viraram pacotes da conta de quem cuida do Syden — o mesmo caminho de qualquer pacote que alguém
+// monta. Pacote de fábrica, se voltar a existir, é só de material livre.
 const ASSETS = new URL('../assets/', import.meta.url);
-const SOUND_DIR = new URL('sounds/', ASSETS);
 const seededKey = (communityId: number) => `expressions.seeded.${communityId}`;
-const PACKS_KEY = 'sounds.packs.version';
-// Ao subir este número, os pacotes de fábrica são conferidos de novo (o que falta é reposto) e voltam
-// para o soundboard de todo mundo.
-const PACKS_VERSION = 2;
-
-interface PackManifest {
-  folder: string;
-  name: string;
-  icon: string;
-  description: string;
-  sounds: { file: string; name: string; icon: string }[];
-}
-
-function readManifest(): PackManifest[] {
-  return JSON.parse(readFileSync(new URL('packs.json', SOUND_DIR), 'utf8')) as PackManifest[];
-}
-
-/** Repõe os sons que faltam num pacote de fábrica, sem duplicar o que já está lá. */
-function fillPack(packId: number, manifest: PackManifest): number {
-  const existing = new Set(db.packSounds(packId).map((s) => s.name.toLowerCase()));
-  let added = 0;
-  for (const sound of manifest.sounds) {
-    if (existing.has(sound.name.toLowerCase())) continue;
-    const data = readFileSync(new URL(`${manifest.folder}/${sound.file}`, SOUND_DIR));
-    db.createPackSound(packId, sound.name, sound.icon, sniffMime(data) ?? 'audio/mpeg', data);
-    added++;
-  }
-  return added;
-}
 
 /**
- * Cria os pacotes que acompanham o Syden. Roda na subida do servidor; se alguém apagar um som de um
- * pacote de fábrica, ele volta na próxima subida em que a versão do manifesto mudar.
+ * Os pacotes que vinham de fábrica passam para a conta dona do Syden. Roda em toda subida e não faz
+ * nada depois da primeira: quem já tinha instalado continua com eles, nenhum arquivo é tocado.
  */
-export function seedSoundPacks() {
-  if (Number(db.getKv(PACKS_KEY) ?? 0) >= PACKS_VERSION) return;
-  // O pacote antigo morava dentro de cada comunidade; os sons dele saem para dar lugar aos pacotes.
-  db.deleteLegacyPackSounds();
-
-  for (const manifest of readManifest()) {
-    const found = db.findPackByName(manifest.name);
-    const packId = found?.id ?? db.createPack(manifest.name, manifest.description, manifest.icon, null, true);
-    fillPack(packId, manifest);
-    // Todo mundo começa com os pacotes do Syden no soundboard; tirar o que não gostar é um clique.
-    for (const userId of db.allUserIds()) db.installPack(packId, userId);
-  }
-  db.setKv(PACKS_KEY, String(PACKS_VERSION));
-}
-
-/** Quem cria conta já começa com todos os pacotes que acompanham o Syden. */
-export function installDefaultPack(userId: number) {
-  for (const manifest of readManifest()) {
-    const pack = db.findPackByName(manifest.name);
-    if (pack) db.installPack(pack.id, userId);
-  }
+export function entregarPacotesDeFabrica() {
+  const dono = db.findOwner();
+  if (dono) db.entregarPacotesDeFabrica(dono.id);
 }
 
 export function seedExpressions(communityId: number) {
@@ -78,7 +33,8 @@ export function seedExpressions(communityId: number) {
 }
 
 /**
- * Repõe o que foi apagado do que vem de fábrica: os emojis da comunidade e os sons dos pacotes do Syden.
+ * Repõe o que foi apagado do que vem de fábrica: os emojis da comunidade. (`sounds` fica sempre 0: o
+ * Syden não traz mais som nenhum, ver o alto do arquivo.)
  * É o "desfazer" de quem apagou tudo por engano.
  */
 export function restorePack(communityId: number): { emojis: number; sounds: number } {
@@ -92,20 +48,13 @@ export function restorePack(communityId: number): { emojis: number; sounds: numb
     }
   }
 
-  let sounds = 0;
-  for (const manifest of readManifest()) {
-    const found = db.findPackByName(manifest.name);
-    const packId = found?.id ?? db.createPack(manifest.name, manifest.description, manifest.icon, null, true);
-    sounds += fillPack(packId, manifest);
-  }
-
   db.setKv(seededKey(communityId), db.getKv(seededKey(communityId)) ?? new Date().toISOString());
-  return { emojis, sounds };
+  return { emojis, sounds: 0 };
 }
 
 /**
  * Na subida do servidor: os emojis da comunidade mais antiga (que existia antes das chaves por comunidade)
- * e os pacotes de sons de fábrica.
+ * e a entrega dos antigos pacotes de som de fábrica.
  */
 export function seedFirstCommunity() {
   const community = db.defaultCommunity();
@@ -114,5 +63,5 @@ export function seedFirstCommunity() {
     if (old && !db.getKv(seededKey(community.id))) db.setKv(seededKey(community.id), old);
     seedExpressions(community.id);
   }
-  seedSoundPacks();
+  entregarPacotesDeFabrica();
 }

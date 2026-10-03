@@ -687,7 +687,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'जब कोई तुम्हारे कमरे में आता या जाता है, जब कोई स्क्रीन साझा करना शुरू करता है, और जब तुम ख़ुद को म्यूट या बहरा करते हो, तब एक आवाज़ बजती है।',
   'Tocando…': 'बज रहा है…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'इस कम्युनिटी में हर कोई {exemplo} लिखकर या चैट के इमोजी बटन से ये इमोजी इस्तेमाल कर सकता है। कोई सदस्यता नहीं: सब खुला है।',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden के साथ आने वाले इमोजी और आवाज़ें वापस ले आता है। तुम लोगों ने जो भेजा वह वैसा ही रहता है, और कुछ भी दोहरी नकल नहीं बनता।',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden के साथ आने वाले इमोजी वापस ले आता है। तुम लोगों ने जो भेजा वह वैसा ही रहता है, और कुछ भी दोहरी नकल नहीं बनता।',
   'Trocar áudio': 'ऑडियो बदलो',
   'Trocar avatar': 'अवतार बदलो',
   'Trocar imagem': 'तस्वीर बदलो',

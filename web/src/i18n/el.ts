@@ -721,7 +721,7 @@ export default {
   'Tráfego de saída este mês': 'Εξερχόμενη κίνηση αυτόν τον μήνα',
   'Tráfego usado da franquia': 'Κίνηση που χρησιμοποιήθηκε από το όριο',
   'Transmissões dos outros': 'Μεταδόσεις των άλλων',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Επαναφέρει τα emoji και τους ήχους που έρχονται με το Syden. Ό,τι ανεβάσατε μένει όπως είναι, και τίποτα δεν γίνεται διπλό αντίγραφο.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Επαναφέρει τα emoji που έρχονται με το Syden. Ό,τι ανεβάσατε μένει όπως είναι, και τίποτα δεν γίνεται διπλό αντίγραφο.',
   'Trazendo…': 'Επαναφέρεται…',
   'Trazer de volta': 'Επαναφορά',
   'Trazer de volta para esta janela': 'Επαναφορά σε αυτό το παράθυρο',

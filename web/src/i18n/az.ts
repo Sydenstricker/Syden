@@ -793,8 +793,7 @@ export default {
   'Tráfego de saída este mês': 'Bu ay çıxan trafik',
   'Tráfego usado da franquia': 'Limitdən istifadə olunan trafik',
   'Transmissões dos outros': 'Başqalarının yayımları',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.':
-    'Syden ilə gələn emojiləri və səsləri geri qaytarır. Sizin yüklədikləriniz olduğu kimi qalır və heç nə təkrarlanmır.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden ilə gələn emojiləri geri qaytarır. Sizin yüklədikləriniz olduğu kimi qalır və heç nə təkrarlanmır.',
   'Trazendo…': 'Qaytarılır…',
   'Trazer de volta': 'Geri qaytar',
   'Trazer de volta para esta janela': 'Bu pəncərəyə qaytar',

@@ -685,7 +685,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'কেউ তোমার ঘরে ঢুকলে বা বেরোলে, কেউ পর্দা ভাগ করা শুরু করলে, আর তুমি নিজেকে চুপ বা বধির করলে একটা শব্দ বাজে।',
   'Tocando…': 'বাজছে…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'এই কমিউনিটির সবাই {exemplo} লিখে বা আড্ডার ইমোজি বোতাম দিয়ে এই ইমোজিগুলো ব্যবহার করতে পারে। কোনো চাঁদা নেই: সব খোলা।',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden-এর সঙ্গে আসা ইমোজি আর শব্দগুলো ফিরিয়ে আনে। তোমরা যা পাঠিয়েছ তা যেমন আছে তেমনই থাকে, আর কিছুই দ্বিতীয়বার নকল হয় না।',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden-এর সঙ্গে আসা ইমোজিগুলো ফিরিয়ে আনে। তোমরা যা পাঠিয়েছ তা যেমন আছে তেমনই থাকে, আর কিছুই দ্বিতীয়বার নকল হয় না।',
   'Trocar áudio': 'অডিও বদলাও',
   'Trocar avatar': 'অবতার বদলাও',
   'Trocar imagem': 'ছবি বদলাও',

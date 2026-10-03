@@ -674,7 +674,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': '有人进出你的房间时、有人开始共享屏幕时、你静音或闭音时，都会响一声。',
   'Tocando…': '正在播放…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': '这个社区里的每个人都能用这些表情，打 {exemplo} 或者用聊天框的表情按钮。不用订阅：全都开放。',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': '把 Syden 自带的表情和音效找回来。你们上传的保持原样，也不会变成重复的副本。',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': '把 Syden 自带的表情找回来。你们上传的保持原样，也不会变成重复的副本。',
   'Trocar áudio': '更换音频',
   'Trocar avatar': '更换头像',
   'Trocar imagem': '更换图片',

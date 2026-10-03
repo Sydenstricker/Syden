@@ -708,7 +708,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'يُشغّل صوتًا حين يدخل أحد غرفتك أو يخرج منها، وحين يبدأ أحد بمشاركة شاشته، وحين تكتم نفسك أو تُصمّ سمعك.',
   'Tocando…': 'جارٍ التشغيل…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'يستطيع كل من في هذا المجتمع استعمال هذه الإيموجيات بكتابة {exemplo} أو من زر الإيموجي في الدردشة. بلا اشتراك: كل شيء متاح.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'يعيد الإيموجيات والأصوات التي تأتي مع Syden. ما رفعتموه يبقى كما هو، ولا يتحوّل شيء إلى نسخة مكرّرة.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'يعيد الإيموجيات التي تأتي مع Syden. ما رفعتموه يبقى كما هو، ولا يتحوّل شيء إلى نسخة مكرّرة.',
   'Trocar áudio': 'تغيير الصوت',
   'Trocar avatar': 'تغيير الصورة الرمزية',
   'Trocar imagem': 'تغيير الصورة',

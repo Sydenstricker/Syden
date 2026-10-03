@@ -685,7 +685,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'Membunyikan suara saat ada yang masuk atau keluar dari ruanganmu, saat ada yang mulai berbagi layar, dan saat kamu membisukan diri atau mematikan suara.',
   'Tocando…': 'Sedang diputar…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'Semua orang di komunitas ini bisa pakai emoji ini dengan mengetik {exemplo} atau lewat tombol emoji di obrolan. Tanpa langganan: semuanya terbuka.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Mengembalikan emoji dan suara bawaan Syden. Yang kalian unggah tetap seperti adanya, dan tidak ada yang jadi salinan ganda.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Mengembalikan emoji bawaan Syden. Yang kalian unggah tetap seperti adanya, dan tidak ada yang jadi salinan ganda.',
   'Trocar áudio': 'Ganti audio',
   'Trocar avatar': 'Ganti avatar',
   'Trocar imagem': 'Ganti gambar',

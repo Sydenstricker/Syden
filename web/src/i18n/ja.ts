@@ -690,7 +690,7 @@ export default {
   'Tráfego de saída este mês': '今月の送信データ量',
   'Tráfego usado da franquia': '上限のうち使った分',
   'Transmissões dos outros': 'ほかの人の画面共有',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Sydenに最初から入っている絵文字とサウンドを戻します。みんながアップロードしたものはそのまま残り、重複も作られません。',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Sydenに最初から入っている絵文字を戻します。みんながアップロードしたものはそのまま残り、重複も作られません。',
   'Trazendo…': '復元しています…',
   'Trazer de volta': '元に戻す',
   'Trazer de volta para esta janela': 'このウィンドウに戻す',

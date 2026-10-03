@@ -696,7 +696,7 @@ export default {
   'Tráfego de saída este mês': 'اس مہینے باہر جانے والا ڈیٹا',
   'Tráfego usado da franquia': 'مقررہ حد میں سے استعمال شدہ ڈیٹا',
   'Transmissões dos outros': 'دوسروں کے اسکرین شیئر',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden کے ساتھ آنے والے ایموجی اور آوازیں واپس لے آتا ہے۔ آپ لوگوں کا بھیجا ہوا جوں کا توں رہتا ہے، اور کوئی چیز دہری نہیں ہوتی۔',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden کے ساتھ آنے والے ایموجی واپس لے آتا ہے۔ آپ لوگوں کا بھیجا ہوا جوں کا توں رہتا ہے، اور کوئی چیز دہری نہیں ہوتی۔',
   'Trazendo…': 'واپس لایا جا رہا ہے…',
   'Trazer de volta': 'واپس لائیں',
   'Trazer de volta para esta janela': 'اسی ونڈو میں واپس لائیں',

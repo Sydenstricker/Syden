@@ -697,7 +697,7 @@ export default {
   'Tráfego de saída este mês': 'ترافیک خروجی این ماه',
   'Tráfego usado da franquia': 'بخش مصرف‌شده از سهمیه',
   'Transmissões dos outros': 'اشتراک صفحهٔ دیگران',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'ایموجی‌ها و صداهایی را که همراه Syden می‌آیند برمی‌گرداند. آنچه خودتان فرستاده‌اید دست‌نخورده می‌ماند و چیزی تکراری نمی‌شود.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'ایموجی‌هایی را که همراه Syden می‌آیند برمی‌گرداند. آنچه خودتان فرستاده‌اید دست‌نخورده می‌ماند و چیزی تکراری نمی‌شود.',
   'Trazendo…': 'در حال برگرداندن…',
   'Trazer de volta': 'برگرداندن',
   'Trazer de volta para esta janela': 'برگرداندن به همین پنجره',

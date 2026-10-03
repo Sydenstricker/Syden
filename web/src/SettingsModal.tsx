@@ -1736,7 +1736,8 @@ function InlineRename({
 }
 
 /**
- * Traz de volta os emojis e sons que vêm com o Syden, caso alguém tenha apagado. O que a comunidade enviou
+ * Traz de volta os emojis que vêm com o Syden, caso alguém tenha apagado. (Som de fábrica não existe mais:
+ * ver server/src/expressions.ts.) O que a comunidade enviou
  * não é tocado, e nada é duplicado.
  */
 function RestorePack({ community }: { community: Community }) {
@@ -1748,10 +1749,9 @@ function RestorePack({ community }: { community: Community }) {
   async function restore() {
     setBusy(true);
     try {
-      const added = await api<{ emojis: number; sounds: number }>(`/api/communities/${community.id}/restore-pack`, { method: 'POST' });
+      const added = await api<{ emojis: number }>(`/api/communities/${community.id}/restore-pack`, { method: 'POST' });
       const parts = [
         added.emojis > 0 && `${added.emojis} ${added.emojis === 1 ? 'emoji' : 'emojis'}`,
-        added.sounds > 0 && `${added.sounds} ${added.sounds === 1 ? 'som' : 'sons'}`,
       ].filter(Boolean);
       setMessage(parts.length > 0 ? `De volta: ${parts.join(' e ')}.` : t('Nada faltando: o pacote está completo.'));
     } catch (e) {
@@ -1765,7 +1765,7 @@ function RestorePack({ community }: { community: Community }) {
       <div>
         <strong>{t('Apagou algo sem querer?')}</strong>
         <p className="settings-hint">
-          {t('Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.')}
+          {t('Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.')}
         </p>
         {message && <p className="form-success">{message}</p>}
       </div>

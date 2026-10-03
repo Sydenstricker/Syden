@@ -711,7 +711,7 @@ export default {
   'Tráfego de saída este mês': 'Zirga-zirgar fita wannan watan',
   'Tráfego usado da franquia': 'Zirga-zirgar da aka yi amfani da ita daga kason',
   'Transmissões dos outros': 'Watsawar sauran mutane',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Yana mayar da emoji da sautunan da ke zuwa tare da Syden. Abin da kuka aika yana nan kamar yadda yake, kuma babu abin da zai zama kwafi mai maimaituwa.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Yana mayar da emoji da ke zuwa tare da Syden. Abin da kuka aika yana nan kamar yadda yake, kuma babu abin da zai zama kwafi mai maimaituwa.',
   'Trazendo…': 'Ana mayarwa…',
   'Trazer de volta': 'Mayar da',
   'Trazer de volta para esta janela': 'Mayar da zuwa wannan tagar',

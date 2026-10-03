@@ -802,8 +802,7 @@ export default {
   'Tráfego de saída este mês': 'ဒီလ ထွက်သွားတဲ့ ဒေတာ',
   'Tráfego usado da franquia': 'ခွင့်ပြုချက်ထဲက သုံးပြီး ဒေတာ',
   'Transmissões dos outros': 'တခြားသူများရဲ့ ထုတ်လွှင့်မှုများ',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.':
-    'Syden နဲ့အတူ ပါလာတဲ့ အီမိုဂျီနဲ့ အသံများကို ပြန်ယူသည်။ သင်တို့ တင်ထားတာက ဒီအတိုင်း ရှိနေပြီး ဘာမှ ထပ်နေမည် မဟုတ်ပါ။',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden နဲ့အတူ ပါလာတဲ့ အီမိုဂျီများကို ပြန်ယူသည်။ သင်တို့ တင်ထားတာက ဒီအတိုင်း ရှိနေပြီး ဘာမှ ထပ်နေမည် မဟုတ်ပါ။',
   'Trazendo…': 'ပြန်ယူနေသည်…',
   'Trazer de volta': 'ပြန်ယူရန်',
   'Trazer de volta para esta janela': 'ဒီဝင်းဒိုးသို့ ပြန်ယူရန်',

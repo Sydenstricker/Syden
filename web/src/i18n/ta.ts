@@ -694,7 +694,7 @@ export default {
   'Tráfego de saída este mês': 'இந்த மாதம் வெளியே சென்ற தரவு',
   'Tráfego usado da franquia': 'வரம்பில் பயன்படுத்திய பகுதி',
   'Transmissões dos outros': 'மற்றவர்களின் திரைப் பகிர்வுகள்',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Sydenஉடன் வரும் ஈமோஜிகளையும் ஒலிகளையும் திரும்பக் கொண்டுவரும். நீங்கள் அனுப்பியவை அப்படியே இருக்கும், எதுவும் இரட்டிப்பாகாது.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Sydenஉடன் வரும் ஈமோஜிகளைத் திரும்பக் கொண்டுவரும். நீங்கள் அனுப்பியவை அப்படியே இருக்கும், எதுவும் இரட்டிப்பாகாது.',
   'Trazendo…': 'கொண்டுவருகிறது…',
   'Trazer de volta': 'திரும்பக் கொண்டுவா',
   'Trazer de volta para esta janela': 'இந்தச் சாளரத்துக்குத் திரும்பக் கொண்டுவா',

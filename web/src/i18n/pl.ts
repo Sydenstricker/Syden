@@ -827,8 +827,7 @@ export default {
   'Tráfego de saída este mês': 'Ruch wychodzący w tym miesiącu',
   'Tráfego usado da franquia': 'Wykorzystany limit transferu',
   'Transmissões dos outros': 'Transmisje innych',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.':
-    'Przywraca emoji i dźwięki, które są w Syden od początku. To, co przesłaliście, zostaje bez zmian, i nic się nie zduplikuje.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Przywraca emoji, które są w Syden od początku. To, co przesłaliście, zostaje bez zmian, i nic się nie zduplikuje.',
   'Trazendo…': 'Przywracanie…',
   'Trazer de volta': 'Przywróć',
   'Trazer de volta para esta janela': 'Przywróć do tego okna',

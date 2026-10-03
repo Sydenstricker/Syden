@@ -709,7 +709,7 @@ export default {
   'Toca um som quando alguém entra ou sai da sua sala, quando alguém começa a compartilhar a tela e quando você silencia ou ensurdece.': 'Играет звук, когда кто-то заходит в твою комнату или выходит из неё, когда кто-то начинает показывать экран и когда ты выключаешь микрофон или звук.',
   'Tocando…': 'Играет…',
   'Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.': 'Все в этом сообществе могут пользоваться этими эмодзи, написав {exemplo} или через кнопку эмодзи в чате. Без подписки: всё открыто.',
-  'Traz de volta os emojis e sons que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Возвращает эмодзи и звуки, которые идут вместе с Syden. То, что вы загрузили, остаётся как есть, и ничего не превращается в дубль.',
+  'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Возвращает эмодзи, которые идут вместе с Syden. То, что вы загрузили, остаётся как есть, и ничего не превращается в дубль.',
   'Trocar áudio': 'Сменить звук',
   'Trocar avatar': 'Сменить аватар',
   'Trocar imagem': 'Сменить картинку',

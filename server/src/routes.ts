@@ -5,7 +5,7 @@ import { hashPassword, signSession, verifyPassword, verifySession } from './auth
 import { config } from './config.js';
 import * as db from './db.js';
 import { Freio } from './freio.js';
-import { installDefaultPack, seedExpressions } from './expressions.js';
+import { seedExpressions } from './expressions.js';
 import { salaDaPessoa,
   anunciarPerfil,
   channelRoom,
@@ -279,7 +279,6 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       // a conta e jogaria fora a chave — ver o comentário em config.email.exigirConfirmacao.
       const exigir = config.email.exigirConfirmacao;
       const user = db.createUser(username, await hashPassword(password), email, exigir);
-      installDefaultPack(user.id); // soundboard já começa com o pacote básico do Syden
 
       if (!db.defaultCommunity()) {
         // Primeiro cadastro do Syden inteiro: ganha a comunidade inicial.
