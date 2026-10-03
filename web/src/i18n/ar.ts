@@ -856,8 +856,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'يمكنك أيضًا لصق عنوان صورة متحركة أو صورة. ينزّل Syden نسخة ويحتفظ بها: إن سقط العنوان لاحقًا، يبقى الغلاف.',
   'Preencher': 'ملء',
   'Imagem inteira': 'الصورة كاملة',
-  'Altura': 'الارتفاع',
   'Letra do nome': 'خط الاسم',
   'Estreita': 'ضيّق',
   'Arredondada': 'مستدير',
+  'Manuscrita': 'بخط اليد',
+  'Pixel': 'بكسل',
+  'Arraste a capa para escolher a parte que aparece.': 'اسحب الغلاف لاختيار الجزء الظاهر.',
 } satisfies Record<string, string>;

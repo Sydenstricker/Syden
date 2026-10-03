@@ -833,8 +833,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Hakanan kuna iya liƙa adireshin GIF ko na hoto. Syden yana sauke kwafi ya ajiye: idan adireshin ya faɗi daga baya, murfin yana nan.',
   'Preencher': 'Cika',
   'Imagem inteira': 'Dukan hoton',
-  'Altura': 'Tsayi',
   'Letra do nome': 'Rubutun suna',
   'Estreita': 'Kunkuntar',
   'Arredondada': 'Zagaye',
+  'Manuscrita': 'Rubutun hannu',
+  'Pixel': 'Fiksel',
+  'Arraste a capa para escolher a parte que aparece.': 'Ja murfin don zaɓar sashen da zai bayyana.',
 } satisfies Record<string, string>;

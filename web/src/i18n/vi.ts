@@ -801,8 +801,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Bạn cũng có thể dán địa chỉ của một GIF hoặc một ảnh. Syden tải một bản sao về và giữ lại: sau này địa chỉ có sập thì ảnh bìa vẫn còn.',
   'Preencher': 'Lấp đầy',
   'Imagem inteira': 'Toàn bộ ảnh',
-  'Altura': 'Chiều cao',
   'Letra do nome': 'Kiểu chữ của tên',
   'Estreita': 'Hẹp',
   'Arredondada': 'Bo tròn',
+  'Manuscrita': 'Viết tay',
+  'Pixel': 'Pixel',
+  'Arraste a capa para escolher a parte que aparece.': 'Kéo ảnh bìa để chọn phần hiển thị.',
 } satisfies Record<string, string>;

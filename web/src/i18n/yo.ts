@@ -846,8 +846,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Ẹ tún lè lẹ adírẹ́sì GIF tàbí àwòrán mọ́. Syden yóò gba ẹ̀dà kan sílẹ̀ kó sì fi pamọ́: tí adírẹ́sì náà bá wó lẹ́yìn náà, ìbòrí yóò ṣì wà.',
   'Preencher': 'Kún un',
   'Imagem inteira': 'Gbogbo àwòrán',
-  'Altura': 'Gíga',
   'Letra do nome': 'Lẹ́tà orúkọ',
   'Estreita': 'Híhá',
   'Arredondada': 'Róbótó',
+  'Manuscrita': 'Àfọwọ́kọ',
+  'Pixel': 'Píksẹ̀lì',
+  'Arraste a capa para escolher a parte que aparece.': 'Ẹ fa ìbòrí náà láti yan apá tí yóò hàn.',
 } satisfies Record<string, string>;

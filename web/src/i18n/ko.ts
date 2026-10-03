@@ -823,8 +823,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'GIF이나 이미지의 주소를 붙여넣어도 돼요. Syden이 사본을 내려받아 보관합니다: 나중에 그 주소가 사라져도 커버는 그대로 남아요.',
   'Preencher': '채우기',
   'Imagem inteira': '이미지 전체',
-  'Altura': '높이',
   'Letra do nome': '이름 글꼴',
   'Estreita': '좁게',
   'Arredondada': '둥글게',
+  'Manuscrita': '손글씨',
+  'Pixel': '픽셀',
+  'Arraste a capa para escolher a parte que aparece.': '어느 부분이 보일지 커버를 끌어서 정하세요.',
 } satisfies Record<string, string>;

@@ -835,8 +835,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Puoi anche incollare l’indirizzo di una GIF o di un’immagine. Syden ne scarica una copia e la tiene: se l’indirizzo sparisce più avanti, la copertina resta.',
   'Preencher': 'Riempire',
   'Imagem inteira': 'Immagine intera',
-  'Altura': 'Altezza',
   'Letra do nome': 'Carattere del nome',
   'Estreita': 'Stretta',
   'Arredondada': 'Arrotondata',
+  'Manuscrita': 'Corsiva',
+  'Pixel': 'Pixel',
+  'Arraste a capa para escolher a parte que aparece.': 'Trascina la copertina per scegliere la parte visibile.',
 } satisfies Record<string, string>;

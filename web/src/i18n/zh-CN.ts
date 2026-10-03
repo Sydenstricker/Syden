@@ -822,8 +822,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': '也可以粘贴一张 GIF 或图片的地址。Syden 会下载一份副本并保存：以后那个地址失效了，封面还在。',
   'Preencher': '填满',
   'Imagem inteira': '完整图片',
-  'Altura': '高度',
   'Letra do nome': '名称字体',
   'Estreita': '窄体',
   'Arredondada': '圆体',
+  'Manuscrita': '手写体',
+  'Pixel': '像素体',
+  'Arraste a capa para escolher a parte que aparece.': '拖动封面，选择要显示的部分。',
 } satisfies Record<string, string>;

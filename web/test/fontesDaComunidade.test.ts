@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync, readdirSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { FONTES_DA_COMUNIDADE, pilhaDaFonte } from '../src/fontesDaComunidade.js';
 
@@ -18,9 +19,37 @@ import { FONTES_DA_COMUNIDADE, pilhaDaFonte } from '../src/fontesDaComunidade.js
 // ===================================================================================================
 
 describe('as letras da comunidade', () => {
-  it('nenhuma baixa fonte: sem url(), sem @import, sem endereço', () => {
+  // A REGRA MUDOU DE FORMA, NÃO DE INTENÇÃO. Antes nenhuma fonte era baixada; agora quatro são, do
+  // NOSSO domínio, porque as pilhas de sistema davam resultados diferentes em cada sistema. O que
+  // continua proibido é o navegador de alguém ter de falar com um terceiro por causa disto.
+  it('nenhuma pilha aponta para fora', () => {
     for (const { id, pilha } of FONTES_DA_COMUNIDADE) {
       assert.ok(!/url\(|@import|https?:/i.test(pilha), `${id} parece buscar uma fonte de fora`);
+    }
+  });
+
+  it('todo @font-face vem de um caminho nosso, nunca de um endereço', () => {
+    const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+    const blocos = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1]);
+    assert.ok(blocos.length > 0, 'nenhum @font-face encontrado — o teste perdeu o alvo');
+    for (const bloco of blocos) {
+      for (const [, origem] of bloco.matchAll(/url\(\s*['"]?([^'")]+)/g)) {
+        assert.ok(origem.startsWith('/') || origem.startsWith('.'), `um @font-face busca de "${origem}"`);
+      }
+    }
+  });
+
+  // A OFL EXIGE QUE A LICENÇA ACOMPANHE A FONTE. Um .woff2 solto numa pasta não é licença nenhuma, e
+  // esquecer o arquivo ao acrescentar a quinta fonte não daria erro em lugar nenhum.
+  it('toda fonte embutida tem a licença ao lado', () => {
+    const pasta = new URL('../public/fontes/', import.meta.url);
+    const arquivos = readdirSync(pasta);
+    const fontes = arquivos.filter((n) => n.endsWith('.woff2'));
+    assert.ok(fontes.length > 0, 'nenhuma fonte embutida — o teste perdeu o alvo');
+    for (const fonte of fontes) {
+      const licenca = fonte.replace(/\.woff2$/, '.OFL.txt');
+      assert.ok(arquivos.includes(licenca), `${fonte} está sem ${licenca} ao lado`);
+      assert.match(readFileSync(new URL(licenca, pasta), 'utf8'), /SIL Open Font License/i);
     }
   });
 

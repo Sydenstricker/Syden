@@ -833,8 +833,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'তুমি কোনো GIF বা ছবির ঠিকানাও পেস্ট করতে পারো। Syden একটা কপি নামিয়ে রেখে দেয়: পরে ঠিকানা বন্ধ হয়ে গেলেও কভারটা থেকে যায়।',
   'Preencher': 'ভরাট',
   'Imagem inteira': 'পুরো ছবি',
-  'Altura': 'উচ্চতা',
   'Letra do nome': 'নামের হরফ',
   'Estreita': 'সরু',
   'Arredondada': 'গোলাকার',
+  'Manuscrita': 'হাতের লেখা',
+  'Pixel': 'পিক্সেল',
+  'Arraste a capa para escolher a parte que aparece.': 'কোন অংশ দেখা যাবে তা বেছে নিতে কভারটা টেনে নাও।',
 } satisfies Record<string, string>;

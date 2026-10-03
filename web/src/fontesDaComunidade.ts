@@ -46,18 +46,41 @@ export const FONTES_DA_COMUNIDADE: FonteDaComunidade[] = [
     nome: chave('Máquina de escrever'),
     pilha: "'Cascadia Mono', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace",
   },
+  // ---------------------------------------------------------------------------------------------
+  // AS QUATRO DE BAIXO VÊM COM O SYDEN, e a razão é CONSISTÊNCIA, não segurança.
+  //
+  // As duas primeiras versões de "estreita" e "arredondada" eram pilhas de sistema, e MEDIDO numa
+  // máquina com Windows 11 elas resolviam. Só que 'Arial Narrow' e 'Segoe UI Variable Display' não
+  // existem no Linux, e 'SF Pro Rounded' é só do macOS: lá as duas caíam na sans-serif comum, ou
+  // seja, ficavam IDÊNTICAS à padrão. Quem administra escolheria uma identidade para a comunidade e
+  // metade das pessoas veria outra coisa.
+  //
+  // Fonte embutida resolve isso e NÃO custa requisição a terceiro: os arquivos saem do nosso
+  // domínio (ver os @font-face em styles.css). E o navegador só baixa a que alguma tela de fato usa.
+  //
+  // TODAS SÃO SIL OPEN FONT LICENSE 1.1, com o arquivo da licença ao lado em web/public/fontes/.
+  // A OFL permite embutir e redistribuir, que é exatamente o direito de que precisamos — e é o que
+  // a maioria das fontes "grátis" de agregador NÃO dá.
+  // ---------------------------------------------------------------------------------------------
   {
     id: 'estreita',
     nome: chave('Estreita'),
-    // 'Arial Narrow' existe no Windows e no macOS; no Linux a Liberation faz o papel. Sem nenhuma
-    // delas, cai no sans-serif comum — mais larga, e nunca quebrada.
-    pilha: "'Arial Narrow', 'Liberation Sans Narrow', 'Segoe UI Semibold', sans-serif",
+    pilha: "'Syden Estreita', 'Arial Narrow', sans-serif",
   },
   {
     id: 'redonda',
     nome: chave('Arredondada'),
-    // A Rounded vem no Windows 11 e a Varela no macOS; o resto do mundo cai na sans-serif do sistema.
-    pilha: "'Segoe UI Variable Display', 'SF Pro Rounded', 'Varela Round', 'Trebuchet MS', sans-serif",
+    pilha: "'Syden Redonda', 'Trebuchet MS', sans-serif",
+  },
+  {
+    id: 'manuscrita',
+    nome: chave('Manuscrita'),
+    pilha: "'Syden Manuscrita', 'Brush Script MT', cursive",
+  },
+  {
+    id: 'pixel',
+    nome: chave('Pixel'),
+    pilha: "'Syden Pixel', 'Courier New', monospace",
   },
 ];
 

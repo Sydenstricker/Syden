@@ -813,8 +813,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'GIF లేదా చిత్రం చిరునామాను కూడా అతికించవచ్చు. Syden ఒక ప్రతిని దింపి ఉంచుకుంటుంది: తర్వాత ఆ చిరునామా పోయినా ముఖచిత్రం ఉండిపోతుంది.',
   'Preencher': 'నింపు',
   'Imagem inteira': 'పూర్తి చిత్రం',
-  'Altura': 'ఎత్తు',
   'Letra do nome': 'పేరు అక్షరశైలి',
   'Estreita': 'ఇరుకైన',
   'Arredondada': 'గుండ్రని',
+  'Manuscrita': 'చేతిరాత',
+  'Pixel': 'పిక్సెల్',
+  'Arraste a capa para escolher a parte que aparece.': 'ఏ భాగం కనిపించాలో ఎంచుకోవడానికి ముఖచిత్రాన్ని లాగండి.',
 } satisfies Record<string, string>;

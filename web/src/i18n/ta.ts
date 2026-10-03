@@ -816,8 +816,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'ஒரு GIF அல்லது படத்தின் முகவரியையும் ஒட்டலாம். Syden ஒரு நகலைப் பதிவிறக்கி வைத்துக்கொள்ளும்: பிறகு அந்த முகவரி செயலிழந்தாலும் அட்டை இருக்கும்.',
   'Preencher': 'நிரப்பு',
   'Imagem inteira': 'முழுப் படம்',
-  'Altura': 'உயரம்',
   'Letra do nome': 'பெயரின் எழுத்துரு',
   'Estreita': 'குறுகலான',
   'Arredondada': 'வட்டமான',
+  'Manuscrita': 'கையெழுத்து',
+  'Pixel': 'பிக்சல்',
+  'Arraste a capa para escolher a parte que aparece.': 'எந்தப் பகுதி தெரிய வேண்டும் என்பதைத் தேர்வுசெய்ய அட்டையை இழுக்கவும்.',
 } satisfies Record<string, string>;

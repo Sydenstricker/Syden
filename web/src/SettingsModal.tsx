@@ -21,7 +21,17 @@ import { Accessibility, Languages,
   Users,
   X,
 } from 'lucide-react';
-import { type FormEvent, type ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  type FormEvent,
+  // Apelidados: sem isto o KeyboardEvent do React sombreia o do DOM, e o ouvinte de Escape lá
+  // embaixo para de compilar — o erro aponta para a linha dele, não para o import.
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
 import { Aparencia } from './Aparencia';
 import { EscolherSelo } from './EscolherSelo';
@@ -967,6 +977,46 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
    * tarefa; e é por isso que a rota é separada da que envia, senão cada arrastada da régua
    * reenviaria quatro megabytes de GIF.
    */
+  /** A posição enquanto o dedo está em cima; `null` quando ninguém está arrastando. */
+  const [arrastando, setArrastando] = useState<number | null>(null);
+  const inicioDoArrasto = useRef<{ y: number; altura: number; de: number } | null>(null);
+  const podeArrastar = Boolean(community.bannerVersion) && (community.capaEncaixe ?? 'preencher') !== 'inteira';
+
+  function comecarArrasto(evento: ReactPointerEvent<HTMLDivElement>) {
+    if (!podeArrastar) return;
+    const caixa = evento.currentTarget.getBoundingClientRect();
+    inicioDoArrasto.current = { y: evento.clientY, altura: caixa.height, de: community.capaPosicao ?? 50 };
+    setArrastando(community.capaPosicao ?? 50);
+    // Captura o ponteiro: sem isto, arrastar para fora da caixa larga o controle no meio do caminho
+    // e a capa congela onde estava, que para quem está arrastando parece travamento.
+    evento.currentTarget.setPointerCapture(evento.pointerId);
+  }
+
+  function moverArrasto(evento: ReactPointerEvent<HTMLDivElement>) {
+    const inicio = inicioDoArrasto.current;
+    if (!inicio) return;
+    // ARRASTAR PARA BAIXO MOSTRA O TOPO. A imagem segue o dedo, então descer o dedo desce a imagem —
+    // e o que entra na área visível é a parte de cima, que é uma posição MENOR.
+    const andou = ((evento.clientY - inicio.y) / inicio.altura) * 100;
+    setArrastando(Math.min(100, Math.max(0, Math.round(inicio.de - andou))));
+  }
+
+  function soltarArrasto() {
+    const alvo = arrastando;
+    inicioDoArrasto.current = null;
+    setArrastando(null);
+    if (alvo !== null && alvo !== (community.capaPosicao ?? 50)) void ajustar('preencher', alvo);
+  }
+
+  function pelaSeta(evento: ReactKeyboardEvent<HTMLDivElement>) {
+    if (!podeArrastar) return;
+    const passo = evento.key === 'ArrowUp' ? -5 : evento.key === 'ArrowDown' ? 5 : 0;
+    if (!passo) return;
+    evento.preventDefault();
+    const alvo = Math.min(100, Math.max(0, (community.capaPosicao ?? 50) + passo));
+    void ajustar('preencher', alvo);
+  }
+
   async function ajustar(encaixe: string, posicao: number) {
     setError(null);
     try {
@@ -1023,7 +1073,40 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
   return (
     <>
       <h3>{t('Capa da comunidade')}</h3>
-      <CapaDaComunidade community={community} className="capa-previa" />
+      {/*
+       * ARRASTAR A CAPA, E NÃO MEXER NUMA RÉGUA.
+       *
+       * A régua pedia que a pessoa traduzisse um número para o que ia ver. Arrastando, o resultado É
+       * o controle: a imagem acompanha o dedo e o que está na tela durante o arrasto é exatamente o
+       * que fica no fim.
+       *
+       * SÓ SALVA AO SOLTAR. Durante o arrasto a posição mora num estado local, e a capa é desenhada
+       * com ele; mandar ao servidor a cada movimento seriam dezenas de pedidos por segundo para um
+       * valor que ainda vai mudar.
+       *
+       * UM ARRASTO DA ALTURA DA PRÉVIA percorre a faixa inteira. É uma escolha, e a alternativa seria
+       * usar a sobra real da imagem — que exige saber o tamanho dela. Assim o movimento é previsível
+       * e igual para qualquer imagem.
+       *
+       * E O TECLADO CONTINUA ALCANÇANDO: um controle que só existe no arrasto some para quem navega
+       * por teclado. As setas movem de cinco em cinco e salvam na hora.
+       */}
+      <div
+        className={`capa-previa-caixa${arrastando !== null ? ' arrastando' : ''}${podeArrastar ? ' arrastavel' : ''}`}
+        role={podeArrastar ? 'slider' : undefined}
+        tabIndex={podeArrastar ? 0 : undefined}
+        aria-label={podeArrastar ? t('Arraste a capa para escolher a parte que aparece.') : undefined}
+        aria-valuenow={podeArrastar ? (community.capaPosicao ?? 50) : undefined}
+        aria-valuemin={podeArrastar ? 0 : undefined}
+        aria-valuemax={podeArrastar ? 100 : undefined}
+        onPointerDown={comecarArrasto}
+        onPointerMove={moverArrasto}
+        onPointerUp={soltarArrasto}
+        onPointerCancel={soltarArrasto}
+        onKeyDown={pelaSeta}
+      >
+        <CapaDaComunidade community={community} className="capa-previa" posicao={arrastando ?? undefined} />
+      </div>
       <div className="account-actions">
         <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={(f) => void enviar(f)}>
           {busy ? t('Enviando…') : community.bannerVersion ? t('Trocar a capa') : t('Enviar uma capa')}
@@ -1094,20 +1177,12 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
               </button>
             ))}
           </div>
-          {/* A régua só vale preenchendo: mostrando a imagem inteira não há parte escondida para
-              escolher, e deixá-la ali sugeriria um efeito que não existe. */}
+          {/* A ALTURA SE ARRASTA NA PRÓPRIA CAPA, e não numa régua ao lado.
+              Régua é um número abstrato que a pessoa traduz de cabeça para o que vai ver; arrastar
+              a imagem É o resultado. Só vale preenchendo: mostrando a imagem inteira não há parte
+              escondida para escolher. O teclado continua funcionando, nas setas. */}
           {(community.capaEncaixe ?? 'preencher') !== 'inteira' && (
-            <label className="capa-encaixe-altura">
-              {t('Altura')}
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={5}
-                value={community.capaPosicao ?? 50}
-                onChange={(e) => void ajustar('preencher', Number(e.target.value))}
-              />
-            </label>
+            <span className="capa-encaixe-dica">{t('Arraste a capa para escolher a parte que aparece.')}</span>
           )}
         </div>
       ) : null}

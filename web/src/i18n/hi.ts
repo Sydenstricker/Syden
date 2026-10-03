@@ -835,8 +835,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'तुम किसी GIF या तस्वीर का पता भी चिपका सकते हो। Syden उसकी एक प्रति उतारकर रख लेता है: बाद में पता बंद हो जाए, तब भी कवर बना रहता है।',
   'Preencher': 'भरें',
   'Imagem inteira': 'पूरी तस्वीर',
-  'Altura': 'ऊँचाई',
   'Letra do nome': 'नाम की लिपि',
   'Estreita': 'सँकरी',
   'Arredondada': 'गोलाकार',
+  'Manuscrita': 'हस्तलेख',
+  'Pixel': 'पिक्सेल',
+  'Arraste a capa para escolher a parte que aparece.': 'कौन-सा हिस्सा दिखे, यह चुनने के लिए कवर को खींचो।',
 } satisfies Record<string, string>;

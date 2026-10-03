@@ -818,8 +818,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'آپ کسی GIF یا تصویر کا پتہ بھی چسپاں کر سکتے ہیں۔ Syden ایک نقل اتار کر رکھ لیتا ہے: بعد میں وہ پتہ بند ہو جائے تو بھی سرورق باقی رہتا ہے۔',
   'Preencher': 'بھریں',
   'Imagem inteira': 'پوری تصویر',
-  'Altura': 'اونچائی',
   'Letra do nome': 'نام کا فونٹ',
   'Estreita': 'تنگ',
   'Arredondada': 'گول',
+  'Manuscrita': 'ہاتھ سے لکھی',
+  'Pixel': 'پکسل',
+  'Arraste a capa para escolher a parte que aparece.': 'کون سا حصہ دکھے، یہ چننے کے لیے سرورق کو کھینچیں۔',
 } satisfies Record<string, string>;

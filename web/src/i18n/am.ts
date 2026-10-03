@@ -831,8 +831,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'የGIF ወይም የምስል አድራሻ መለጠፍም ይችላሉ። Syden ቅጂ አውርዶ ያስቀምጣል፤ አድራሻው ቆይቶ ቢጠፋ እንኳ ሽፋኑ ይቀራል።',
   'Preencher': 'ሙላ',
   'Imagem inteira': 'ሙሉ ምስል',
-  'Altura': 'ቁመት',
   'Letra do nome': 'የስም ፊደል',
   'Estreita': 'ጠባብ',
   'Arredondada': 'ክብ',
+  'Manuscrita': 'የእጅ ጽሕፈት',
+  'Pixel': 'ፒክሰል',
+  'Arraste a capa para escolher a parte que aparece.': 'የሚታየውን ክፍል ለመምረጥ ሽፋኑን ይጎትቱ።',
 } satisfies Record<string, string>;

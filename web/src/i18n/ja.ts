@@ -812,8 +812,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'GIF や画像のアドレスを貼り付けることもできます。Syden が複製をダウンロードして保管するので、あとでそのアドレスが消えても表紙は残ります。',
   'Preencher': '全面に広げる',
   'Imagem inteira': '画像全体',
-  'Altura': '高さ',
   'Letra do nome': '名前の書体',
   'Estreita': '細長い',
   'Arredondada': '丸みのある',
+  'Manuscrita': '手書き風',
+  'Pixel': 'ドット絵風',
+  'Arraste a capa para escolher a parte que aparece.': '表示する部分は、表紙をドラッグして選びます。',
 } satisfies Record<string, string>;

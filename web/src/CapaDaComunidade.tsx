@@ -27,11 +27,14 @@ export function CapaDaComunidade({
   community,
   arte: codigoDaArte,
   className,
+  posicao,
 }: {
   community: Community;
   /** O código da arte das boas-vindas, usado quando não há foto. */
   arte?: string | null;
   className?: string;
+  /** Altura à vista, só enquanto alguém arrasta a prévia nas Configurações. */
+  posicao?: number;
 }) {
   const arte = acharArte(codigoDaArte);
   const temFoto = Boolean(community.bannerVersion);
@@ -50,7 +53,10 @@ export function CapaDaComunidade({
    * sempre, e aí a régua escolhe que altura fica à vista.
    */
   const inteira = community.capaEncaixe === 'inteira';
-  const altura = community.capaPosicao ?? 50;
+  // `posicao` só vem das Configurações, ENQUANTO O DEDO ESTÁ ARRASTANDO: ali a capa precisa seguir o
+  // ponteiro antes de haver qualquer coisa guardada. Em todo o resto do app ninguém a passa, e vale
+  // o que está no banco.
+  const altura = posicao ?? community.capaPosicao ?? 50;
 
   return (
     <div

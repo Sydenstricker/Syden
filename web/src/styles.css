@@ -10414,18 +10414,26 @@ body.arrastando-barra {
   color: var(--text-strong);
 }
 
-.capa-encaixe-altura {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.capa-encaixe-dica {
   font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
   color: var(--text-muted);
 }
 
-.capa-encaixe-altura input {
-  width: 160px;
+/* A prévia vira o controle: arrastar nela escolhe a parte que aparece.
+   touch-action: none é o que impede o dedo de ROLAR A PÁGINA em vez de arrastar a capa — sem isso,
+   no celular o gesto é capturado pela rolagem e o ajuste simplesmente não acontece. */
+.capa-previa-caixa.arrastavel {
+  cursor: grab;
+  touch-action: none;
+}
+
+.capa-previa-caixa.arrastando {
+  cursor: grabbing;
+}
+
+.capa-previa-caixa:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* A escolha da letra do nome da comunidade: cada opção escrita na própria letra que oferece. */
@@ -10495,4 +10503,53 @@ body.arrastando-barra {
      painel abriria do lado errado em árabe, urdu e persa. */
   inset-inline-start: 0;
   inset-inline-end: auto;
+}
+
+
+/* ===================================================================================================
+   AS FONTES QUE O SYDEN LEVA CONSIGO.
+   
+   Todas são SIL Open Font License 1.1, e o arquivo da licença está ao lado de cada uma em
+   web/public/fontes/ — a OFL exige que ela acompanhe a fonte, e um arquivo .woff2 solto numa pasta
+   não é licença nenhuma.
+   
+   POR QUE DAQUI E NÃO DO GOOGLE FONTS: servidas do nosso domínio, o navegador de ninguém precisa
+   falar com terceiro. Hoje o Syden só busca no Google a fonte Noto, e só quando a PESSOA escolhe um
+   idioma de escrita não latina — escolha dela, sobre o aparelho dela. Uma fonte escolhida por quem
+   administra a comunidade faria o navegador de TODO MUNDO ir buscar, por decisão de outra pessoa.
+   
+   NINGUÉM BAIXA O QUE NÃO USA. Um @font-face declarado só é buscado quando algum texto na tela
+   pede aquela família — é o navegador que decide, sem JavaScript nosso. Quem nunca abre uma
+   comunidade com letra própria nunca baixa nada disto.
+   
+   É O SUBCONJUNTO LATINO de cada uma. Nome em grego, tailandês ou árabe cai na família genérica do
+   fim da pilha, glifo a glifo, que é como o navegador já resolve — e é por isso que toda pilha
+   precisa terminar em serif/sans-serif/monospace, o que tem teste.
+   =================================================================================================== */
+@font-face {
+  font-family: 'Syden Estreita';
+  src: url('/fontes/bebas-neue.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syden Redonda';
+  src: url('/fontes/comfortaa.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syden Manuscrita';
+  src: url('/fontes/lobster.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Syden Pixel';
+  src: url('/fontes/press-start-2p.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
 }

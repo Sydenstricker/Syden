@@ -844,8 +844,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'คุณวางที่อยู่ของ GIF หรือรูปภาพก็ได้ Syden จะดาวน์โหลดสำเนามาเก็บไว้ ถ้าที่อยู่นั้นล่มในภายหลัง ภาพหน้าปกก็ยังอยู่',
   'Preencher': 'เต็มพื้นที่',
   'Imagem inteira': 'ทั้งภาพ',
-  'Altura': 'ความสูง',
   'Letra do nome': 'แบบอักษรของชื่อ',
   'Estreita': 'แคบ',
   'Arredondada': 'มน',
+  'Manuscrita': 'ลายมือ',
+  'Pixel': 'พิกเซล',
+  'Arraste a capa para escolher a parte que aparece.': 'ลากภาพหน้าปกเพื่อเลือกส่วนที่จะแสดง',
 } satisfies Record<string, string>;

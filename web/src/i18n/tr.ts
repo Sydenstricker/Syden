@@ -830,8 +830,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Bir GIF’in ya da resmin adresini de yapıştırabilirsin. Syden bir kopyasını indirip saklar: adres sonradan kapanırsa kapak yerinde kalır.',
   'Preencher': 'Doldur',
   'Imagem inteira': 'Tüm görsel',
-  'Altura': 'Yükseklik',
   'Letra do nome': 'Adın yazı tipi',
   'Estreita': 'Dar',
   'Arredondada': 'Yuvarlak',
+  'Manuscrita': 'El yazısı',
+  'Pixel': 'Piksel',
+  'Arraste a capa para escolher a parte que aparece.': 'Hangi kısmın görüneceğini seçmek için kapağı sürükle.',
 } satisfies Record<string, string>;

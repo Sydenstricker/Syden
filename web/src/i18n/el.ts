@@ -837,8 +837,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Μπορείς να επικολλήσεις και τη διεύθυνση ενός GIF ή μιας εικόνας. Το Syden κατεβάζει ένα αντίγραφο και το κρατάει: αν η διεύθυνση πέσει αργότερα, το εξώφυλλο μένει.',
   'Preencher': 'Γέμισμα',
   'Imagem inteira': 'Ολόκληρη εικόνα',
-  'Altura': 'Ύψος',
   'Letra do nome': 'Γραμματοσειρά του ονόματος',
   'Estreita': 'Στενή',
   'Arredondada': 'Στρογγυλεμένη',
+  'Manuscrita': 'Χειρόγραφη',
+  'Pixel': 'Πίξελ',
+  'Arraste a capa para escolher a parte que aparece.': 'Σύρε το εξώφυλλο για να διαλέξεις ποιο μέρος φαίνεται.',
 } satisfies Record<string, string>;

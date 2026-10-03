@@ -835,8 +835,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Je kunt ook het adres van een GIF of een afbeelding plakken. Syden downloadt een kopie en bewaart die: als het adres later offline gaat, blijft de omslag.',
   'Preencher': 'Vullen',
   'Imagem inteira': 'Hele afbeelding',
-  'Altura': 'Hoogte',
   'Letra do nome': 'Lettertype van de naam',
   'Estreita': 'Smal',
   'Arredondada': 'Afgerond',
+  'Manuscrita': 'Handgeschreven',
+  'Pixel': 'Pixel',
+  'Arraste a capa para escolher a parte que aparece.': 'Sleep de omslag om te kiezen welk deel te zien is.',
 } satisfies Record<string, string>;

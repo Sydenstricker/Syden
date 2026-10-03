@@ -835,8 +835,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Unaweza pia kubandika anwani ya GIF au ya picha. Syden hupakua nakala na kuihifadhi: anwani ikizimika baadaye, jalada linabaki.',
   'Preencher': 'Jaza',
   'Imagem inteira': 'Picha nzima',
-  'Altura': 'Kimo',
   'Letra do nome': 'Herufi za jina',
   'Estreita': 'Nyembamba',
   'Arredondada': 'Mviringo',
+  'Manuscrita': 'Ya mkono',
+  'Pixel': 'Pikseli',
+  'Arraste a capa para escolher a parte que aparece.': 'Buruta jalada ili kuchagua sehemu inayoonekana.',
 } satisfies Record<string, string>;

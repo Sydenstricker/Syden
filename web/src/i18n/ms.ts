@@ -836,8 +836,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Awak juga boleh tampal alamat GIF atau gambar. Syden memuat turun salinan dan menyimpannya: kalau alamat itu tumbang kemudian, kulit kekal.',
   'Preencher': 'Penuhkan',
   'Imagem inteira': 'Gambar penuh',
-  'Altura': 'Ketinggian',
   'Letra do nome': 'Fon nama',
   'Estreita': 'Sempit',
   'Arredondada': 'Bulat',
+  'Manuscrita': 'Tulisan tangan',
+  'Pixel': 'Piksel',
+  'Arraste a capa para escolher a parte que aparece.': 'Seret kulit untuk memilih bahagian yang kelihatan.',
 } satisfies Record<string, string>;

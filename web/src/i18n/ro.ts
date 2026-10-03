@@ -831,8 +831,10 @@ export default {
   'Também dá para colar o endereço de um GIF ou de uma imagem. O Syden baixa uma cópia e guarda: se o endereço sair do ar depois, a capa continua.': 'Poți și să lipești adresa unui GIF sau a unei imagini. Syden descarcă o copie și o păstrează: dacă adresa cade mai târziu, coperta rămâne.',
   'Preencher': 'Umple',
   'Imagem inteira': 'Imaginea întreagă',
-  'Altura': 'Înălțime',
   'Letra do nome': 'Litera numelui',
   'Estreita': 'Îngustă',
   'Arredondada': 'Rotunjită',
+  'Manuscrita': 'De mână',
+  'Pixel': 'Pixel',
+  'Arraste a capa para escolher a parte que aparece.': 'Trage de copertă ca să alegi partea care se vede.',
 } satisfies Record<string, string>;
