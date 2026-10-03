@@ -470,18 +470,40 @@ function StreamInfoBadge({
         <div className="stream-info-card" role="tooltip">
           {formato ? (
             <>
-              <strong>{formato}</strong>
-              {/* A LINHA QUE TIRA O SUSTO DO NÚMERO, e só para quem assiste: para quem transmite o
-                  número já é acionável, e abaixo dele vem o diagnóstico completo. */}
-              {!local && nitidez && (
-                <span className={nitidez.nitida ? 'stream-nitida' : undefined}>
+              {/*
+               * O NÚMERO SAIU DAQUI PARA QUEM ASSISTE, e esta é a terceira volta no mesmo assunto.
+               *
+               * Primeiro os quadros quebrados ("29 fps" numa transmissão perfeita de 30). Depois a
+               * altura solta ("576p, mas está agradável"). Agora: "760p dá impressão de qualidade
+               * ruim, pois é resolução de celular — e em tela cheia não virou 1080p. Os usuários
+               * acham que está bugado quando vem um número baixo de p."
+               *
+               * Três relatos, a mesma causa: o número é VERDADEIRO e MUDO. Ele mostra o preço de uma
+               * escolha sem nunca mostrar o que ela comprou. O Syden pede ao navegador
+               * `maintain-framerate` de propósito (ver SCREEN_HINTS, em useVoice.ts): quando falta
+               * banda ou processador, SACRIFICA-SE RESOLUÇÃO PARA SEGURAR OS 30 QUADROS, porque
+               * 804p a 7 fps é a pior forma de assistir alguém jogar. "576p · 30 fps" é esse acordo
+               * sendo cumprido — e a tela o anunciava como se fosse defeito.
+               *
+               * Para quem ASSISTE o número não muda decisão nenhuma: o que ele pode fazer é mudar o
+               * teto ali embaixo, e para isso o que importa é se a imagem está nítida NO TAMANHO em
+               * que ele a vê. É essa a frase que ficou. (O comentário antigo dizia que um seletor
+               * sem o número do lado era um chute; estava certo quanto a precisar de referência, e
+               * errado quanto a qual — a referência útil é a comparação, não a altura crua.)
+               *
+               * Para quem TRANSMITE o número continua, porque ali ele é acionável e vem com o
+               * diagnóstico do lado.
+               */}
+              {local || !nitidez ? (
+                <strong>{formato}</strong>
+              ) : (
+                <strong className={nitidez.nitida ? 'stream-nitida' : undefined}>
                   {nitidez.nitida
                     ? t('Nítida para o tamanho em que está sendo mostrada.')
                     : t('Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.')}
-                </span>
+                </strong>
               )}
-              {/* QUEM ASSISTE VÊ SÓ O NÚMERO: nada ali muda uma decisão de quem está só vendo.
-                  QUEM TRANSMITE VÊ O DIAGNÓSTICO, porque para ele cada linha é acionável — a
+              {/* QUEM TRANSMITE VÊ O DIAGNÓSTICO, porque para ele cada linha é acionável — a
                   primeira desfaz uma ambiguidade real (o número é o que sai daqui, não o que os
                   outros recebem depois da adaptação), e a segunda responde a pergunta que fez o
                   automático de codec existir: está pegando a placa de vídeo ou não? */}
