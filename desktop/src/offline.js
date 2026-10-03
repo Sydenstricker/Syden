@@ -261,6 +261,14 @@ const TEXTOS = {
     tentando: 'Yaalaa jira…',
     codigo: 'OFFLINE — Walqunnamtiin hin jiru',
   },
+  // "Sən", como o turco: o azerbaijano não tem gênero gramatical. Ver web/src/i18n/az.ts.
+  az: {
+    titulo: 'Qoşulmaq alınmadı',
+    explicacao: 'İnternetini yoxla. Server də işləməyə bilər.',
+    botao: 'Yenə yoxla',
+    tentando: 'Yoxlanılır…',
+    codigo: 'OFFLINE — Bağlantı yoxdur',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -189,6 +189,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Etiópia. O oromo é língua de trabalho federal desde 2020, ao lado do amárico, do tigrínia, do
   // somali e do afar. A Etiópia já está na lista do amárico; um país pode ter mais de uma língua.
   om: ['ET'],
+
+  // Azerbaijão. A Constituição (art. 21) diz que a língua do Estado é o azerbaijano.
+  az: ['AZ'],
 };
 
 /**
