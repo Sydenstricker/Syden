@@ -13,6 +13,8 @@ export interface User {
   moldura: string | null;
   /** Nome do efeito escolhido para o nome ('brilho', 'serifa'…), ou null para nenhum. */
   nameEffect: string | null;
+  /** A letra do nome ('letra-anton'…). Opcional: um servidor mais velho que o site não a manda. */
+  nameFont?: string | null;
   /** Os códigos das insígnias que ela escolheu exibir no perfil, na ordem (ver insignias.ts). */
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden: é a medalha de contribuição do perfil. */
@@ -44,6 +46,7 @@ export type PublicUser = Pick<
   | 'banner'
   | 'moldura'
   | 'nameEffect'
+  | 'nameFont'
   | 'vitrine'
   | 'acceptedIdeas'
   | 'selo'
@@ -350,7 +353,7 @@ export interface ServidorDeJogo {
 }
 
 /** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */
-export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito';
+export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito' | 'letra';
 
 /** Como se põe a mão num item. Nenhum dos dois jeitos é pagando — ver server/src/guardaRoupa.ts. */
 export type ComoSeGanha = 'livre' | 'conquista';
@@ -365,5 +368,6 @@ export interface ItemDoGuardaRoupa {
 
 export interface GuardaRoupa {
   itens: ItemDoGuardaRoupa[];
-  vestindo: { cor: string | null; fundo: string | null; moldura: string | null; efeito: string | null; insignias: string[] };
+  /** `letra` é opcional: um servidor mais velho que o site não a manda. */
+  vestindo: { cor: string | null; fundo: string | null; moldura: string | null; efeito: string | null; letra?: string | null; insignias: string[] };
 }

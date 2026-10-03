@@ -4,6 +4,7 @@
 // em duas versões — uma para o tema escuro e outra para o claro —, senão um amarelo bonito no escuro
 // vira invisível no claro. Por isso a cor não vai em `style`: vai num `data-cor`, e o CSS escolhe.
 import { chave } from './i18n';
+import { pilhaDaFonte } from './fontesDaComunidade';
 
 export interface CorDeNome {
   id: string;
@@ -85,6 +86,17 @@ export const EFEITOS_DE_NOME: { id: string; label: string }[] = [
 const IDS_EFEITO = new Set(EFEITOS_DE_NOME.map((e) => e.id));
 
 /** O efeito a pôr no `data-efeito` do nome; undefined quando não há nenhum. */
+/**
+ * A LETRA DO NOME: o `font-family` de um código 'letra-…', ou undefined para a de sempre.
+ *
+ * São as MESMAS vinte fontes do nome da comunidade (fontesDaComunidade.ts), com o prefixo que o
+ * catálogo do servidor exige — lá o código é único no catálogo inteiro, e 'serifa' já é um efeito.
+ */
+export function letraDoNome(escolha: string | null | undefined): string | undefined {
+  if (!escolha?.startsWith('letra-')) return undefined;
+  return pilhaDaFonte(escolha.slice('letra-'.length)) || undefined;
+}
+
 export function efeitoDoNome(escolha: string | null | undefined): string | undefined {
   return escolha && escolha !== 'sem-efeito' && IDS_EFEITO.has(escolha) ? escolha : undefined;
 }

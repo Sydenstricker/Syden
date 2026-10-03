@@ -62,6 +62,8 @@ export interface User {
   moldura: string | null;
   /** Nome do efeito escolhido para o nome ('brilho', 'serifa'…), ou null para nenhum. */
   nameEffect: string | null;
+  /** A letra do nome ('letra-anton'…), ou null para a de sempre. O desenho mora no site. */
+  nameFont: string | null;
   /** O selo que a pessoa escolheu vestir, ja resolvido. Nulo quando ela nao veste nenhum. */
   selo?: { texto: string; icone: string; cor: string } | null;
   /** As insígnias que a pessoa escolheu exibir no perfil, na ordem em que ela pôs. */
@@ -76,7 +78,7 @@ export type UserRef = Pick<User, 'id' | 'username'>;
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'vitrine' | 'acceptedIdeas' | 'selo'
+  'id' | 'username' | 'avatarVersion' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
 >;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
@@ -868,6 +870,9 @@ addColumnIfMissing('users', 'moldura', 'TEXT');
 // O EFEITO DO NOME ('brilho', 'serifa'…), cosmético do guarda-roupa. Mesma regra dos outros: o banco guarda
 // o CÓDIGO e o desenho mora no app, então um efeito novo é publicar o site, sem migrar nada.
 addColumnIfMissing('users', 'name_effect', 'TEXT');
+// A letra do nome: o código da fonte ('letra-anton'). Como as cores e os efeitos, o servidor guarda o
+// código e quem sabe desenhar é o site.
+addColumnIfMissing('users', 'name_font', 'TEXT');
 // Qual SELO a pessoa escolheu vestir. Guarda o numero da comunidade, e nao uma copia do selo: assim,
 // quando a comunidade troca o dela, o de quem veste troca junto, sem ninguem precisar reescolher.
 // ON DELETE nao se aplica (e uma coluna solta): quem le confere se a comunidade ainda existe.
@@ -1355,7 +1360,7 @@ export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
       `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion,
-              u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role
+              u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
     )
@@ -1371,7 +1376,7 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, vitrine, accepted_ideas AS acceptedIdeas, ' +
+  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, ' +
   // O selo vestido, resolvido aqui mesmo. Guarda-se o NÚMERO da comunidade e não uma cópia do selo:
   // quando ela troca o dela, o de quem veste troca junto, sem ninguém precisar reescolher.
   '(SELECT selo_texto FROM communities c WHERE c.id = users.selo_comunidade) AS seloTexto, ' +
@@ -1388,6 +1393,7 @@ type UserRow = {
   banner: string | null;
   moldura: string | null;
   nameEffect: string | null;
+  nameFont: string | null;
   vitrine: string | null;
   acceptedIdeas: number;
   seloTexto: string | null;
@@ -1407,6 +1413,7 @@ function toUser(row: UserRow | undefined): User | undefined {
       banner: row.banner,
       moldura: row.moldura,
       nameEffect: row.nameEffect,
+      nameFont: row.nameFont ?? null,
       vitrine: lerVitrine(row.vitrine),
       acceptedIdeas: row.acceptedIdeas ?? 0,
       // As três partes vêm juntas ou nenhuma vem: um selo pela metade não se desenha.
@@ -1847,13 +1854,14 @@ export function setAvatar(userId: number, avatar: { mime: string; data: Buffer }
 /** Cor do nome e fundo do perfil. Passar null em qualquer um dos dois volta ao padrão. */
 export function setProfile(
   userId: number,
-  perfil: { nameColor: string | null; banner: string | null; moldura: string | null; nameEffect: string | null },
+  perfil: { nameColor: string | null; banner: string | null; moldura: string | null; nameEffect: string | null; nameFont: string | null },
 ): User {
-  db.prepare('UPDATE users SET name_color = ?, banner = ?, moldura = ?, name_effect = ? WHERE id = ?').run(
+  db.prepare('UPDATE users SET name_color = ?, banner = ?, moldura = ?, name_effect = ?, name_font = ? WHERE id = ?').run(
     perfil.nameColor,
     perfil.banner,
     perfil.moldura,
     perfil.nameEffect,
+    perfil.nameFont,
     userId,
   );
   return findUserById(userId)!;

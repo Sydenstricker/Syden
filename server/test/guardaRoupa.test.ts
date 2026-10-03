@@ -63,3 +63,27 @@ test('os grátis cobrem tudo o que já existia antes do guarda-roupa', () => {
     assert.ok(podeVestir(codigo, 'fundo', []), codigo + ' era grátis antes do guarda-roupa e tem que continuar sendo');
   }
 });
+
+// A LETRA DO NOME divide o catálogo com os efeitos, e 'serifa' e 'mono' existem nos dois mundos: lá
+// como efeito, aqui com o prefixo. Um pedido feito à mão não pode vestir um efeito como letra.
+test('a letra do nome só aceita código de letra', () => {
+  assert.ok(podeVestir('letra-anton', 'letra', []));
+  assert.ok(podeVestir(null, 'letra', []), 'voltar à letra de sempre é sempre permitido');
+  assert.equal(podeVestir('serifa', 'letra', []), false);
+  assert.equal(podeVestir('letra-anton', 'efeito', []), false);
+  assert.equal(podeVestir('letra-comic-sans', 'letra', []), false);
+});
+
+// O SITE E O SERVIDOR TÊM A MESMA LISTA DE FONTES, e só um deles é gerado. Fonte que o script baixa e o
+// servidor não aceita não se veste; fonte que o servidor aceita e o site não tem vira um código sem
+// desenho. As duas pontas se conferem aqui.
+test('toda fonte embutida no site é letra no catálogo, e vice-versa', async () => {
+  const { readFileSync } = await import('node:fs');
+  const gerado = readFileSync(new URL('../../web/src/fontes.gerado.ts', import.meta.url), 'utf8');
+  const doSite = [...gerado.matchAll(/"id": "([\w-]+)"/g)].map((m) => 'letra-' + m[1]).sort();
+  const doServidor = CATALOGO.filter((i) => i.tipo === 'letra' && i.codigo !== 'letra-padrao')
+    .map((i) => i.codigo)
+    .sort();
+  assert.ok(doSite.length >= 20, 'li só ' + doSite.length + ' fontes do site');
+  assert.deepEqual(doServidor, doSite);
+});

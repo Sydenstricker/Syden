@@ -7,7 +7,9 @@ import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA } from './guardaRoupa';
 import { aplicarCorDeDestaque, COR_PADRAO, corLegivel } from './corDeDestaque';
-import { classeDoFundo, corDoNome, efeitoDoNome } from './profileStyles';
+import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
+import { FONTES_DA_COMUNIDADE, fonteCobre } from './fontesDaComunidade';
+import { algarismos } from './algarismos';
 import { updateSettings, useSettings } from './settings';
 import type { GuardaRoupa, ItemDoGuardaRoupa, TipoDeItem, User } from './types';
 
@@ -36,6 +38,16 @@ function Amostra({ item, corVestida }: { item: ItemDoGuardaRoupa; corVestida?: s
     return (
       <span className="guarda-roupa-amostra cor">
         <span data-cor={corDoNome(item.codigo)}>Aa</span>
+      </span>
+    );
+  }
+  // A letra, no "Aa" de sempre: o cartão diz o nome da fonte, e a amostra mostra o desenho dela.
+  if (item.tipo === 'letra') {
+    return (
+      <span className="guarda-roupa-amostra cor">
+        <span data-cor={corVestida} style={{ fontFamily: letraDoNome(item.codigo) }}>
+          Aa
+        </span>
       </span>
     );
   }
@@ -90,7 +102,7 @@ function Cartao({
       <Amostra item={item} corVestida={corVestida} />
       <div className="guarda-roupa-cartao-texto">
         <strong>{t(visual.nome)}</strong>
-        <small>{t(visual.descricao)}</small>
+        {visual.descricao && <small>{t(visual.descricao)}</small>}
         {item.comoSeGanha === 'conquista' && (
           <span className="guarda-roupa-etiqueta conquista">
             <Gift size={12} aria-hidden="true" /> {t(COMO_SE_GANHA.conquista)}
@@ -122,6 +134,7 @@ const ABAS: { tipo: Aba; nome: string }[] = [
   { tipo: 'fundo', nome: chave('Fundo do perfil') },
   { tipo: 'moldura', nome: chave('Moldura do avatar') },
   { tipo: 'efeito', nome: chave('Efeito do nome') },
+  { tipo: 'letra', nome: chave('Letra do nome') },
   { tipo: 'insignia', nome: chave('Insígnias') },
   { tipo: 'pacotes', nome: chave('Pacotes') },
 ];
@@ -205,10 +218,10 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
     if (!dados) return;
     setErro(null);
     // Insígnia não se veste por aqui: ela vai para a vitrine, onde a pessoa escolhe quais e em que ordem.
-    const campo = { cor: 'nameColor', fundo: 'banner', moldura: 'moldura', efeito: 'nameEffect' }[
-      item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'
+    const campo = { cor: 'nameColor', fundo: 'banner', moldura: 'moldura', efeito: 'nameEffect', letra: 'nameFont' }[
+      item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra'
     ];
-    const jaEstava = dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'] === item.codigo;
+    const jaEstava = dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra'] === item.codigo;
     try {
       const atualizado = await api<User>('/api/me/profile', {
         method: 'PUT',
@@ -217,6 +230,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           banner: dados.vestindo.fundo,
           moldura: dados.vestindo.moldura,
           nameEffect: dados.vestindo.efeito,
+          nameFont: dados.vestindo.letra ?? null,
           // Clicar no que já está em uso tira: é o jeito de voltar ao padrão sem procurar o "sem nada".
           [campo]: jaEstava ? null : item.codigo,
         },
@@ -229,6 +243,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           fundo: atualizado.banner,
           moldura: atualizado.moldura,
           efeito: atualizado.nameEffect,
+          letra: atualizado.nameFont ?? null,
         },
       });
     } catch (e) {
@@ -239,11 +254,19 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
   if (erro && !dados) return <p className="form-error">{erro}</p>;
   if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
 
-  const doTipo = dados.itens.filter((item) => item.tipo === aba);
+  // A LETRA SÓ APARECE SE TEM AS LETRAS DO NOME — a mesma regra do nome da comunidade (ver
+  // fontesDaComunidade.ts). A vestida aparece sempre: sumir com ela deixaria a pessoa sem como trocar.
+  const cobreMeuNome = (item: ItemDoGuardaRoupa) => {
+    if (item.tipo !== 'letra' || item.codigo === dados.vestindo.letra) return true;
+    const fonte = FONTES_DA_COMUNIDADE.find((f) => 'letra-' + f.id === item.codigo);
+    return !fonte || fonteCobre(fonte, user.username);
+  };
+  const doTipo = dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item));
+  const escondidas = dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length;
   const vestidoAgora = (item: ItemDoGuardaRoupa) =>
     item.tipo === 'insignia'
       ? dados.vestindo.insignias.includes(item.codigo)
-      : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito'] === item.codigo;
+      : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra'] === item.codigo;
 
   return (
     <>
@@ -259,7 +282,11 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           exatamente assim que os outros vão te ver. */}
       <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
         <Avatar name={user.username} userId={user.id} size={56} />
-        <strong data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')} data-efeito={efeitoDoNome(dados.vestindo.efeito)}>
+        <strong
+          data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}
+          data-efeito={efeitoDoNome(dados.vestindo.efeito)}
+          style={{ fontFamily: letraDoNome(dados.vestindo.letra) }}
+        >
           {user.username}
         </strong>
       </div>
@@ -285,6 +312,10 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
         <p className="settings-hint">
           {t('Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.')}
         </p>
+      )}
+
+      {escondidas > 0 && (
+        <p className="settings-hint">{t('Escondidas por não terem todas as letras deste nome: {n}', { n: algarismos(escondidas) })}</p>
       )}
 
       {aba !== 'pacotes' && (

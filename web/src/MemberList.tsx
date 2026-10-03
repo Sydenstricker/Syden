@@ -5,7 +5,7 @@ import { SeloDaComunidade } from './SeloDaComunidade';
 import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
-import { corDoNome, efeitoDoNome } from './profileStyles';
+import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { fraseDaTransmissao } from './streamName';
 import { chave, useT } from './i18n';
 import type { Channel, CommunityMember, PresenceEntry, Role, VoiceMember } from './types';
@@ -91,7 +91,7 @@ export function MemberList({
       >
         <Avatar name={member.username} userId={member.id} online status={presenceById.get(member.id)?.status} />
         <span className="member-info">
-          <span className={`member-name ${className}`} data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)}>
+          <span className={`member-name ${className}`} data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)} style={{ fontFamily: letraDoNome(member.nameFont) }}>
             {member.username}
           </span>
           {member.selo && <SeloDaComunidade selo={member.selo} />}
@@ -136,7 +136,7 @@ export function MemberList({
             >
               <Avatar name={member.username} userId={member.id} />
               <span className="member-info">
-                <span className="member-name" data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)}>
+                <span className="member-name" data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)} style={{ fontFamily: letraDoNome(member.nameFont) }}>
                   {member.username}
                 </span>
               </span>

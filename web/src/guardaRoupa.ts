@@ -8,6 +8,7 @@
 // vazio: é o que acontece quando o servidor é mais novo que o site que a pessoa tem aberto.
 
 import { chave } from './i18n';
+import { FONTES_EMBUTIDAS } from './fontes.gerado';
 import type { ComoSeGanha, TipoDeItem } from './types';
 
 export interface ItemVisual {
@@ -82,6 +83,12 @@ export function acharVisual(tipo: TipoDeItem, codigo: string): ItemVisual | unde
   if (tipo === 'fundo') return FUNDOS_DO_PERFIL[codigo];
   if (tipo === 'moldura') return MOLDURAS[codigo];
   if (tipo === 'efeito') return EFEITOS[codigo];
+  if (tipo === 'letra') {
+    if (codigo === 'letra-padrao') return { nome: chave('Padrão'), descricao: chave('O nome como sempre foi.') };
+    // Nome próprio de fonte não se traduz, e a amostra já mostra o desenho: sem descrição.
+    const fonte = FONTES_EMBUTIDAS.find((f) => 'letra-' + f.id === codigo);
+    return fonte && { nome: fonte.nome, descricao: '' };
+  }
   return undefined;
 }
 

@@ -18,7 +18,7 @@
  * só o que ele é o único capaz de garantir — quem tem direito a quê.
  */
 
-export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito';
+export type TipoDeItem = 'cor' | 'fundo' | 'moldura' | 'insignia' | 'efeito' | 'letra';
 
 /**
  * Como se põe a mão num item. São só dois jeitos, e nenhum deles é pagando.
@@ -65,6 +65,19 @@ export const CATALOGO: ItemDoGuardaRoupa[] = [
   // 'sem-efeito' não é 'nenhum': esse já é o fundo liso, e repetir faria o mapa resolver para o tipo
   // errado. É a mesma razão de 'brasa-moldura' existir ao lado de 'brasa'.
   ...livres('efeito', ['sem-efeito', 'brilho', 'pulso', 'arco-iris', 'sombra', 'serifa', 'mono', 'versalete']),
+
+  // A LETRA DO NOME: as vinte fontes que o site embute (web/src/fontes.gerado.ts), com o prefixo
+  // 'letra-' porque o código é único no catálogo inteiro e 'serifa' e 'mono' já são efeitos. Quem
+  // decide quais aparecem para cada pessoa é o site: só as que têm as letras do nome dela.
+  ...livres('letra', [
+    'letra-padrao',
+    'letra-estreita', 'letra-anton', 'letra-bungee', 'letra-russo',
+    'letra-manuscrita', 'letra-pacifico', 'letra-fredoka', 'letra-bangers', 'letra-luckiest',
+    'letra-playfair', 'letra-cinzel', 'letra-abril',
+    'letra-caveat', 'letra-marcador', 'letra-satisfy',
+    'letra-pixel', 'letra-vt323', 'letra-exo', 'letra-audiowide',
+    'letra-redonda',
+  ]),
 
   { codigo: 'primeiros-25', tipo: 'insignia', comoSeGanha: 'conquista' },
   { codigo: 'ideia-acolhida', tipo: 'insignia', comoSeGanha: 'conquista' },
