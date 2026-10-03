@@ -27,11 +27,25 @@ import type { GuardaRoupa, ItemDoGuardaRoupa, TipoDeItem, User } from './types';
 // coisa É antes de você vestir para descobrir.
 
 /** O quadradinho que mostra como o item fica, sem precisar vestir para descobrir. */
-function Amostra({ item }: { item: ItemDoGuardaRoupa }) {
+function Amostra({ item, corVestida }: { item: ItemDoGuardaRoupa; corVestida?: string }) {
+  // AS LETRAS NUM SPAN PRÓPRIO, E NÃO NO QUADRADO. O prisma e o arco-íris pintam com um gradiente
+  // recortado pelo texto (`background-clip: text`), e o quadrado tem o fundo escuro dele numa regra
+  // mais específica: no mesmo elemento, o fundo escuro vencia o gradiente e era ELE que ficava
+  // recortado nas letras — escuro sobre escuro, um quadro vazio.
   if (item.tipo === 'cor') {
     return (
-      <span className="guarda-roupa-amostra cor" data-cor={item.codigo === 'padrao' ? undefined : item.codigo}>
-        Aa
+      <span className="guarda-roupa-amostra cor">
+        <span data-cor={corDoNome(item.codigo)}>Aa</span>
+      </span>
+    );
+  }
+  // O efeito é mostrado na cor que a pessoa já veste: é assim que ele vai ficar NELA.
+  if (item.tipo === 'efeito') {
+    return (
+      <span className="guarda-roupa-amostra cor">
+        <span data-cor={corVestida} data-efeito={efeitoDoNome(item.codigo)}>
+          Aa
+        </span>
       </span>
     );
   }
@@ -54,7 +68,17 @@ function Amostra({ item }: { item: ItemDoGuardaRoupa }) {
   );
 }
 
-function Cartao({ item, vestido, onVestir }: { item: ItemDoGuardaRoupa; vestido: boolean; onVestir: (item: ItemDoGuardaRoupa) => void }) {
+function Cartao({
+  item,
+  vestido,
+  corVestida,
+  onVestir,
+}: {
+  item: ItemDoGuardaRoupa;
+  vestido: boolean;
+  corVestida?: string;
+  onVestir: (item: ItemDoGuardaRoupa) => void;
+}) {
   const t = useT();
   const visual = item.tipo === 'insignia' ? acharInsignia(item.codigo) : acharVisual(item.tipo, item.codigo);
   // Código que o servidor conhece e este site ainda não: some, em vez de virar um quadro vazio.
@@ -63,7 +87,7 @@ function Cartao({ item, vestido, onVestir }: { item: ItemDoGuardaRoupa; vestido:
   const trancado = !item.tenho;
   return (
     <div className={`guarda-roupa-cartao${vestido ? ' vestido' : ''}${trancado ? ' trancado' : ''}`}>
-      <Amostra item={item} />
+      <Amostra item={item} corVestida={corVestida} />
       <div className="guarda-roupa-cartao-texto">
         <strong>{t(visual.nome)}</strong>
         <small>{t(visual.descricao)}</small>
@@ -266,7 +290,13 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
       {aba !== 'pacotes' && (
         <div className="guarda-roupa-grade">
           {doTipo.map((item) => (
-            <Cartao key={item.codigo} item={item} vestido={vestidoAgora(item)} onVestir={(i) => void vestir(i)} />
+            <Cartao
+              key={item.codigo}
+              item={item}
+              vestido={vestidoAgora(item)}
+              corVestida={corDoNome(dados.vestindo.cor ?? 'padrao')}
+              onVestir={(i) => void vestir(i)}
+            />
           ))}
         </div>
       )}
