@@ -48,10 +48,10 @@
  *                 privacidade, na seção "Medição do site" — essa é a condição, e se um dia a medição
  *                 for desligada no painel, esta linha sai junto. O envio dela vai para /cdn-cgi/rum,
  *                 no NOSSO domínio, então connect-src 'self' já cobre: não há um segundo endereço.
- *   fonts.*       a letra do Syden vem do Google Fonts (ver web/index.html). Vale saber o preço disso:
- *                 cada pessoa que abre o Syden faz um pedido aos servidores do Google, e o Google vê o
- *                 endereço de rede dela. Hospedar a fonte junto com o site resolveria e tiraria duas
- *                 linhas desta política.
+ *   fonts.*       a Noto, para os idiomas de escrita não latina, não cirílica e não grega (ver
+ *                 prepararFonte, em web/src/i18n/index.ts). Só quem usa um desses idiomas faz o pedido,
+ *                 e o Google vê o endereço de rede dela — está declarado na política de privacidade.
+ *                 Hospedar a Noto junto com o site tiraria duas linhas desta política.
  *   worker-src    o tocador de som cru e o processamento do LiveKit rodam em workers.
  *   frame-ancestors 'none'  ninguém põe o Syden dentro de um quadro. É o que impede clickjacking — e é o
  *                 único item desta lista que NÃO funciona por meta tag, só por cabeçalho.

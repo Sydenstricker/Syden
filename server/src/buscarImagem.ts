@@ -144,15 +144,28 @@ async function lerAteOLimite(resposta: Response, maxBytes: number): Promise<Buff
   return Buffer.concat(pedacos);
 }
 
+
+/** O que muda entre baixar uma imagem e um áudio: só o que se pede e como se fala dele no erro. */
+interface Tipo {
+  accept: string;
+  /** "essa imagem", "esse áudio" — entra nas frases de erro. */
+  esse: string;
+  /** "A imagem", "O áudio". */
+  oNome: string;
+}
+
+const IMAGEM: Tipo = { accept: 'image/*', esse: 'essa imagem', oNome: 'A imagem' };
+const AUDIO: Tipo = { accept: 'audio/*', esse: 'esse áudio', oNome: 'O áudio' };
+
 /**
- * Baixa a imagem de `cru` e devolve um data URL pronto para o mesmo caminho dos envios comuns — ou
- * uma frase de erro em português, na convenção do parseMedia.
+ * Baixa o arquivo de `cru`, conferindo cada salto. Devolve os bytes, ou uma frase de erro em
+ * português, na convenção do parseMedia.
  *
  * O TIPO DO ARQUIVO NÃO É DECIDIDO AQUI. Quem decide é o parseMedia, pelos primeiros bytes; o
  * `content-type` que o outro servidor declarou não é consultado em lugar nenhum, porque ele é
  * palavra de terceiro sobre o que ele mesmo mandou.
  */
-export async function baixarImagem(cru: unknown, maxBytes: number): Promise<string> {
+async function baixar(cru: unknown, maxBytes: number, tipo: Tipo): Promise<Buffer | string> {
   let endereco: URL;
   try {
     endereco = new URL(String(cru ?? '').trim());
@@ -173,16 +186,16 @@ export async function baixarImagem(cru: unknown, maxBytes: number): Promise<stri
         // MANUAL, e não automático: seguir sozinho pularia a conferência do salto seguinte, e um
         // redirecionamento para 127.0.0.1 é a forma clássica de contornar tudo o que está acima.
         redirect: 'manual',
-        headers: { accept: 'image/*' },
+        headers: { accept: tipo.accept },
         signal: AbortSignal.timeout(PRAZO_MS),
       });
     } catch {
-      return 'Não deu para buscar essa imagem.';
+      return `Não deu para buscar ${tipo.esse}.`;
     }
 
     if (resposta.status >= 300 && resposta.status < 400) {
       const destino = resposta.headers.get('location');
-      if (!destino) return 'Não deu para buscar essa imagem.';
+      if (!destino) return `Não deu para buscar ${tipo.esse}.`;
       try {
         endereco = new URL(destino, endereco);
       } catch {
@@ -191,12 +204,73 @@ export async function baixarImagem(cru: unknown, maxBytes: number): Promise<stri
       continue;
     }
 
-    if (!resposta.ok) return 'Não deu para buscar essa imagem.';
+    if (!resposta.ok) return `Não deu para buscar ${tipo.esse}.`;
 
     const dados = await lerAteOLimite(resposta, maxBytes).catch(() => null);
-    if (!dados) return `A imagem passa do limite de ${Math.round(maxBytes / 1024)} KB.`;
-    return `data:image/png;base64,${dados.toString('base64')}`;
+    if (!dados) return `${tipo.oNome} passa do limite de ${Math.round(maxBytes / 1024)} KB.`;
+    return dados;
   }
 
   return 'Esse endereço redireciona demais.';
+}
+
+/** A imagem de `cru` como data URL, pronta para o mesmo caminho dos envios comuns — ou o erro. */
+export async function baixarImagem(cru: unknown, maxBytes: number): Promise<string> {
+  const dados = await baixar(cru, maxBytes, IMAGEM);
+  return typeof dados === 'string' ? dados : `data:image/png;base64,${dados.toString('base64')}`;
+}
+
+/**
+ * A PÁGINA DE UM SOM NO MYINSTANTS NÃO SE DEIXA LER POR SERVIDOR: ela fica atrás da checagem
+ * anti-robô da Cloudflare ("Just a moment..."), medido em 03/10/2026. O ARQUIVO, em /media/sounds/,
+ * não fica. E o nome do arquivo costuma ser o da página sem o número do fim:
+ * /pt/instant/acabou-49530/ → /media/sounds/acabou.mp3. Quando não é, o arquivo dá 404 e quem colou
+ * recebe a instrução de copiar o link do botão de baixar, que é o arquivo.
+ *
+ * O PALPITE PODE ACERTAR O SOM ERRADO: em nome repetido, o site põe um sufixo no arquivo do segundo
+ * ("acabou_dx3f4Be.mp3"), e a página dele aponta para lá enquanto o palpite pega o primeiro. Por
+ * isso a tela toca uma prévia antes de enviar (ver web/src/SomPorEndereco.tsx).
+ */
+export function arquivoDoMyInstants(cru: string): string | null {
+  let endereco: URL;
+  try {
+    endereco = new URL(cru.trim());
+  } catch {
+    return null;
+  }
+  if (!/(^|\.)myinstants\.com$/i.test(endereco.hostname)) return null;
+  const pagina = /\/instant\/([a-z0-9_-]+?)(?:-\d+)?\/?$/i.exec(endereco.pathname);
+  return pagina ? `https://www.myinstants.com/media/sounds/${pagina[1]}.mp3` : null;
+}
+
+/** Um nome de som a partir do endereço: "vamo-sim-po-claro.mp3" → "vamo sim po claro". */
+export function nomeDoSom(cru: string): string {
+  try {
+    const ultimo = decodeURIComponent(new URL(cru).pathname.split('/').filter(Boolean).pop() ?? '');
+    return ultimo
+      .replace(/\.[a-z0-9]{2,4}$/i, '')
+      .replace(/(?:-\d+|_[A-Za-z0-9]{7})$/, '') // o número da página, ou o sufixo que o site põe em nome repetido
+      .replace(/[-_]+/g, ' ')
+      .trim()
+      .slice(0, 32);
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Baixa um som colado como endereço. Devolve os bytes ou o erro em português.
+ *
+ * O Syden não guarda nada aqui: os bytes voltam para a tela da pessoa e passam pela mesma
+ * conferência de um arquivo escolhido no computador (duração, tamanho, tipo pelos primeiros bytes)
+ * antes de virar um envio DELA. É isso que mantém o som como algo que a pessoa subiu, e não algo que
+ * o Syden trouxe.
+ */
+export async function baixarSom(cru: unknown, maxBytes: number): Promise<Buffer | string> {
+  const texto = String(cru ?? '').trim();
+  const doMyInstants = arquivoDoMyInstants(texto);
+  if (!doMyInstants) return baixar(texto, maxBytes, AUDIO);
+  const dados = await baixar(doMyInstants, maxBytes, AUDIO);
+  if (typeof dados !== 'string') return dados;
+  return 'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.';
 }

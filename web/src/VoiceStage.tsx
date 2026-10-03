@@ -62,6 +62,7 @@ import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { alternarMudoDaTela, getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
+import { SomPorEndereco } from './SomPorEndereco';
 
 function trackKey(ref: TrackReferenceOrPlaceholder) {
   return `${ref.participant.identity}:${ref.source}`;
@@ -395,6 +396,7 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
           onChange={(e) => e.target.files?.[0] && void choose(e.target.files[0])}
         />
       </label>
+      <SomPorEndereco aoBaixar={(arquivo) => void choose(arquivo)} desligado={busy} />
       <div className="soundboard-add-row">
         <input className="soundboard-add-icon" value={icon} onChange={(e) => setIcon(e.target.value)} maxLength={8} aria-label={t('Ícone')} />
         <input

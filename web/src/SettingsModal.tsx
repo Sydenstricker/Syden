@@ -74,6 +74,7 @@ import { classeDoFundo, CORES_DE_NOME, corDoNome, FUNDOS } from './profileStyles
 import { EntradasLigadas } from './EntradasLigadas';
 import { EFFECT_ICONS } from './VoiceEffectButton';
 import { VOICE_EFFECTS, connectVoiceEffect } from './voiceEffects';
+import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
@@ -1894,6 +1895,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
                 {fileName ? t('Trocar áudio') : t('Escolher áudio')}
               </FilePicker>
               {fileName && <span className="settings-hint">{fileName}</span>}
+              <SomPorEndereco aoBaixar={(arquivo) => void choose(arquivo)} desligado={busy} />
               <div className="upload-row">
                 <label className="settings-field icon-field">
                   {t('Ícone')}

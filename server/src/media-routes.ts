@@ -3,7 +3,7 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { entregarArquivo } from './entregar.js';
 import { restorePack } from './expressions.js';
-import { parseMedia, parseMediaConferida } from './media.js';
+import { parseMedia, parseMediaConferida, sniffMime } from './media.js';
 import { communityRoom } from './realtime.js';
 import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
@@ -278,6 +278,22 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
     });
 
     // ---------- Soundboard da comunidade ----------
+
+    /**
+     * BUSCA UM SOM PELO ENDEREÇO COLADO (um link do MyInstants, por exemplo) e o DEVOLVE, sem guardar.
+     *
+     * Não guarda de propósito: o som volta para a tela da pessoa e entra pelo mesmo envio de quem
+     * escolheu um arquivo no computador. Assim ele continua sendo algo que ELA subiu, com o nome dela
+     * como autora — o Syden só fez o download que ela faria à mão.
+     */
+    authed.post<{ Body: { url?: string } }>('/api/sons/do-endereco', async (request, reply) => {
+      const { baixarSom, nomeDoSom } = await import('./buscarImagem.js');
+      const dados = await baixarSom(request.body?.url, LIMITS.sound);
+      if (typeof dados === 'string') return reply.code(400).send({ error: dados });
+      const mime = sniffMime(dados);
+      if (!mime?.startsWith('audio/')) return reply.code(400).send({ error: 'Esse endereço não é de um arquivo de áudio.' });
+      return { audio: `data:${mime};base64,${dados.toString('base64')}`, nome: nomeDoSom(String(request.body?.url)) };
+    });
 
     authed.get<{ Params: { id: string } }>('/api/communities/:id/sounds', async (request, reply) => {
       const access = requireRole(request, reply);

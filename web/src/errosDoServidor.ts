@@ -39,6 +39,8 @@ export const ERROS_TRADUZIDOS = [
   chave('Você não participa desta comunidade.'),
   chave('Arquivo não encontrado.'),
   chave('Esta comunidade já está cheia.'),
+  chave('Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.'),
+  chave('Esse endereço não é de um arquivo de áudio.'),
 ] as const;
 
 /**
