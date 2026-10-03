@@ -161,7 +161,6 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'Przeciągnij okładkę, żeby wybrać widoczną część.',
   'Arraste as pontas para escolher o trecho.': 'Przeciągnij końce, żeby wybrać fragment.',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Przeciągnij, żeby zmienić szerokość. Dwuklik przywraca domyślną.',
-  'Arredondada': 'Zaokrąglona',
   'Arte de fundo': 'Obraz w tle',
   'As cores passam por dentro das letras.': 'Kolory przepływają przez litery.',
   'As duas juntas': 'Oba naraz',
@@ -395,7 +394,6 @@ export default {
   'Este é o começo do canal.': 'To początek kanału.',
   'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
     'Ta przeglądarka nie mówi, który koder jest lepszy. W trybie automatycznym zostaje VP8, który działa wszędzie.',
-  'Estreita': 'Wąska',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Sprawia, że inni nie słyszą z powrotem własnego głosu, gdy używasz głośnika.',
@@ -490,7 +488,6 @@ export default {
   'Mandar o link': 'Wyślij link',
   'Mandar outra': 'Wyślij kolejną',
   'Mandou um arquivo': 'Wysłano plik',
-  'Manuscrita': 'Odręczna',
   'Máquina de escrever': 'Maszynowa',
   'Mar': 'Morze',
   'mc.exemplo.com:25565': 'mc.przyklad.pl:25565',
@@ -646,7 +643,6 @@ export default {
   'Pessoas': 'Osoby',
   'Pessoas bloqueadas': 'Zablokowane osoby',
   'Pessoas das suas comunidades': 'Osoby z twoich społeczności',
-  'Pixel': 'Pikselowa',
   'Plantar uma cenoura': 'Posadź marchewkę',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG lub WEBP, dowolnego rozmiaru: kadr wybierasz ty.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP lub animowany GIF, do 512 KB. Obraz jest dopasowywany do 128×128.',
@@ -920,4 +916,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} transmituje: {oque}',
   '{quem} transmitindo a tela': '{quem} udostępnia ekran',
   'na chamada de {comunidade}': 'w połączeniu: {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Ukryte, bo nie mają wszystkich liter tej nazwy: {n}',
 } satisfies Record<string, string>;

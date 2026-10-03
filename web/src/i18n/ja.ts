@@ -813,10 +813,6 @@ export default {
   'Preencher': '全面に広げる',
   'Imagem inteira': '画像全体',
   'Letra do nome': '名前の書体',
-  'Estreita': '細長い',
-  'Arredondada': '丸みのある',
-  'Manuscrita': '手書き風',
-  'Pixel': 'ドット絵風',
   'Arraste a capa para escolher a parte que aparece.': '表示する部分は、表紙をドラッグして選びます。',
   'Nítida para o tamanho em que está sendo mostrada.': '表示されている大きさでは鮮明です。',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '表示されている領域より小さいです。ウィンドウを小さくすると鮮明になります。',
@@ -830,4 +826,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} が {oque} を配信中',
   '{quem} transmitindo a tela': '{quem} が画面を共有中',
   'na chamada de {comunidade}': '{comunidade} の通話中',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'この名前の文字がそろっていないため非表示：{n}',
 } satisfies Record<string, string>;

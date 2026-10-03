@@ -814,10 +814,6 @@ export default {
   'Preencher': 'నింపు',
   'Imagem inteira': 'పూర్తి చిత్రం',
   'Letra do nome': 'పేరు అక్షరశైలి',
-  'Estreita': 'ఇరుకైన',
-  'Arredondada': 'గుండ్రని',
-  'Manuscrita': 'చేతిరాత',
-  'Pixel': 'పిక్సెల్',
   'Arraste a capa para escolher a parte que aparece.': 'ఏ భాగం కనిపించాలో ఎంచుకోవడానికి ముఖచిత్రాన్ని లాగండి.',
   'Nítida para o tamanho em que está sendo mostrada.': 'చూపిస్తున్న పరిమాణానికి స్పష్టంగా ఉంది.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'చూపిస్తున్న స్థలం కంటే చిన్నది. చిన్న విండోలో స్పష్టంగా ఉంటుంది.',
@@ -831,4 +827,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem}: {oque} ప్రసారం',
   '{quem} transmitindo a tela': '{quem}: తెర పంచుకోవడం',
   'na chamada de {comunidade}': '{comunidade} కాల్‌లో',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'ఈ పేరులోని అన్ని అక్షరాలు లేనందున దాచినవి: {n}',
 } satisfies Record<string, string>;

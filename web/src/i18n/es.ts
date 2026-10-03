@@ -842,10 +842,6 @@ export default {
   'Preencher': 'Rellenar',
   'Imagem inteira': 'Imagen entera',
   'Letra do nome': 'Letra del nombre',
-  'Estreita': 'Estrecha',
-  'Arredondada': 'Redondeada',
-  'Manuscrita': 'Manuscrita',
-  'Pixel': 'Píxel',
   'Arraste a capa para escolher a parte que aparece.': 'Arrastra la portada para elegir qué parte se ve.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Nítida para el tamaño en que se muestra.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Más pequeña que el espacio donde se muestra. En una ventana menor, se ve nítida.',
@@ -859,4 +855,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} transmitiendo {oque}',
   '{quem} transmitindo a tela': '{quem} compartiendo pantalla',
   'na chamada de {comunidade}': 'en la llamada de {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Ocultas por no tener todas las letras de este nombre: {n}',
 } satisfies Record<string, string>;

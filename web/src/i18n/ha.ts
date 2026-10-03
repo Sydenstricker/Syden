@@ -834,10 +834,6 @@ export default {
   'Preencher': 'Cika',
   'Imagem inteira': 'Dukan hoton',
   'Letra do nome': 'Rubutun suna',
-  'Estreita': 'Kunkuntar',
-  'Arredondada': 'Zagaye',
-  'Manuscrita': 'Rubutun hannu',
-  'Pixel': 'Fiksel',
   'Arraste a capa para escolher a parte que aparece.': 'Ja murfin don zaɓar sashen da zai bayyana.',
   'Nítida para o tamanho em que está sendo mostrada.': 'A bayyane take ga girman da ake nunata.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ƙarami fiye da wurin da ake nunata. A ƙaramar taga, takan bayyana sosai.',
@@ -851,4 +847,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} na watsa {oque}',
   '{quem} transmitindo a tela': '{quem} na raba allo',
   'na chamada de {comunidade}': 'a cikin kiran {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'An ɓoye saboda ba su da duk haruffan wannan suna: {n}',
 } satisfies Record<string, string>;

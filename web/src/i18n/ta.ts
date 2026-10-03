@@ -817,10 +817,6 @@ export default {
   'Preencher': 'நிரப்பு',
   'Imagem inteira': 'முழுப் படம்',
   'Letra do nome': 'பெயரின் எழுத்துரு',
-  'Estreita': 'குறுகலான',
-  'Arredondada': 'வட்டமான',
-  'Manuscrita': 'கையெழுத்து',
-  'Pixel': 'பிக்சல்',
   'Arraste a capa para escolher a parte que aparece.': 'எந்தப் பகுதி தெரிய வேண்டும் என்பதைத் தேர்வுசெய்ய அட்டையை இழுக்கவும்.',
   'Nítida para o tamanho em que está sendo mostrada.': 'காட்டப்படும் அளவுக்குத் தெளிவாக உள்ளது.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'காட்டப்படும் இடத்தைவிடச் சிறியது. சிறிய சாளரத்தில் தெளிவாகத் தெரியும்.',
@@ -834,4 +830,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem}: {oque} ஒளிபரப்பு',
   '{quem} transmitindo a tela': '{quem}: திரைப் பகிர்வு',
   'na chamada de {comunidade}': '{comunidade} அழைப்பில்',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'இந்தப் பெயரின் எல்லா எழுத்துகளும் இல்லாததால் மறைக்கப்பட்டவை: {n}',
 } satisfies Record<string, string>;

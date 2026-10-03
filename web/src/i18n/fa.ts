@@ -820,10 +820,6 @@ export default {
   'Preencher': 'پر کردن',
   'Imagem inteira': 'تصویر کامل',
   'Letra do nome': 'قلم نام',
-  'Estreita': 'باریک',
-  'Arredondada': 'گرد',
-  'Manuscrita': 'دست‌نویس',
-  'Pixel': 'پیکسلی',
   'Arraste a capa para escolher a parte que aparece.': 'برای انتخاب بخش نمایان، جلد را بکشید.',
   'Nítida para o tamanho em que está sendo mostrada.': 'برای اندازه‌ای که نمایش داده می‌شود، واضح است.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'کوچک‌تر از فضایی است که در آن نمایش داده می‌شود. در پنجره‌ای کوچک‌تر واضح می‌شود.',
@@ -837,4 +833,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} در حال پخش {oque}',
   '{quem} transmitindo a tela': '{quem} در حال اشتراک صفحه',
   'na chamada de {comunidade}': 'در تماسِ {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'پنهان، چون همهٔ حروف این نام را ندارند: {n}',
 } satisfies Record<string, string>;

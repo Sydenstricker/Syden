@@ -837,10 +837,6 @@ export default {
   'Preencher': 'Penuhkan',
   'Imagem inteira': 'Gambar penuh',
   'Letra do nome': 'Fon nama',
-  'Estreita': 'Sempit',
-  'Arredondada': 'Bulat',
-  'Manuscrita': 'Tulisan tangan',
-  'Pixel': 'Piksel',
   'Arraste a capa para escolher a parte que aparece.': 'Seret kulit untuk memilih bahagian yang kelihatan.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Jelas untuk saiz paparan ini.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Lebih kecil daripada ruang paparannya. Dalam tetingkap lebih kecil, ia jelas.',
@@ -854,4 +850,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} sedang menstrim {oque}',
   '{quem} transmitindo a tela': '{quem} sedang berkongsi skrin',
   'na chamada de {comunidade}': 'dalam panggilan {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Disembunyikan kerana tiada semua huruf nama ini: {n}',
 } satisfies Record<string, string>;

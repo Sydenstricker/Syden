@@ -832,10 +832,6 @@ export default {
   'Preencher': 'Umple',
   'Imagem inteira': 'Imaginea întreagă',
   'Letra do nome': 'Litera numelui',
-  'Estreita': 'Îngustă',
-  'Arredondada': 'Rotunjită',
-  'Manuscrita': 'De mână',
-  'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Trage de copertă ca să alegi partea care se vede.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Clară pentru dimensiunea la care e afișată.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Mai mică decât spațiul în care e afișată. Într-o fereastră mai mică, e clară.',
@@ -849,4 +845,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} transmite {oque}',
   '{quem} transmitindo a tela': '{quem} partajează ecranul',
   'na chamada de {comunidade}': 'în apel în {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Ascunse pentru că le lipsesc litere din acest nume: {n}',
 } satisfies Record<string, string>;

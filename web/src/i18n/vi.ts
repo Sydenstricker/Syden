@@ -802,10 +802,6 @@ export default {
   'Preencher': 'Lấp đầy',
   'Imagem inteira': 'Toàn bộ ảnh',
   'Letra do nome': 'Kiểu chữ của tên',
-  'Estreita': 'Hẹp',
-  'Arredondada': 'Bo tròn',
-  'Manuscrita': 'Viết tay',
-  'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Kéo ảnh bìa để chọn phần hiển thị.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Nét so với kích thước đang hiển thị.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Nhỏ hơn khung đang hiển thị. Thu nhỏ cửa sổ lại thì sẽ nét.',
@@ -819,4 +815,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} đang phát {oque}',
   '{quem} transmitindo a tela': '{quem} đang chia sẻ màn hình',
   'na chamada de {comunidade}': 'trong cuộc gọi của {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Bị ẩn vì thiếu một số chữ của tên này: {n}',
 } satisfies Record<string, string>;

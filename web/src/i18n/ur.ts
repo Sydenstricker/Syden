@@ -819,10 +819,6 @@ export default {
   'Preencher': 'بھریں',
   'Imagem inteira': 'پوری تصویر',
   'Letra do nome': 'نام کا فونٹ',
-  'Estreita': 'تنگ',
-  'Arredondada': 'گول',
-  'Manuscrita': 'ہاتھ سے لکھی',
-  'Pixel': 'پکسل',
   'Arraste a capa para escolher a parte que aparece.': 'کون سا حصہ دکھے، یہ چننے کے لیے سرورق کو کھینچیں۔',
   'Nítida para o tamanho em que está sendo mostrada.': 'جس سائز میں دکھ رہی ہے، اس کے لیے صاف ہے۔',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'جس جگہ دکھ رہی ہے اس سے چھوٹی ہے۔ چھوٹی ونڈو میں صاف دکھے گی۔',
@@ -836,4 +832,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem}: {oque} کی نشریات',
   '{quem} transmitindo a tela': '{quem}: اسکرین شیئر',
   'na chamada de {comunidade}': '{comunidade} کی کال میں',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'اس نام کے سب حروف نہ ہونے کی وجہ سے چھپائے گئے: {n}',
 } satisfies Record<string, string>;

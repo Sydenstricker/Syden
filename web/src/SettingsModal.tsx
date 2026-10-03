@@ -40,7 +40,7 @@ import { AjusteDasBarras } from './AjusteDasBarras';
 import { ESCALA_MAXIMA, ESCALA_MINIMA, escalaValida } from './escalaDoTexto';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { EmojiPicker } from './EmojiPicker';
-import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
+import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, fonteCobre, pilhaDaFonte } from './fontesDaComunidade';
 import { GifPicker } from './GifPicker';
 import { gifsDisponiveis } from './gifs';
 import { limiteDoCampo, tamanhoVisivel } from './nomeComEmoji';
@@ -608,6 +608,7 @@ function LetraDaComunidade({ community, onChanged }: { community: Community; onC
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
   const atual = community.fonte || 'padrao';
+  const escondidas = FONTES_DA_COMUNIDADE.filter((fonte) => fonte.id !== atual && !fonteCobre(fonte, community.name)).length;
 
   const efeitoAtual = community.efeito || 'sem-efeito';
 
@@ -624,7 +625,9 @@ function LetraDaComunidade({ community, onChanged }: { community: Community; onC
   return (
     <>
       <div className="letras-da-comunidade" role="group" aria-label={t('Letra do nome')}>
-        {FONTES_DA_COMUNIDADE.map((fonte) => (
+        {/* Só as que têm todas as letras do nome — e a escolhida, sempre: sumir com ela da lista
+            deixaria a comunidade usando uma letra que não aparece em lugar nenhum para trocar. */}
+        {FONTES_DA_COMUNIDADE.filter((fonte) => fonte.id === atual || fonteCobre(fonte, community.name)).map((fonte) => (
           <button
             key={fonte.id}
             type="button"
@@ -646,6 +649,10 @@ function LetraDaComunidade({ community, onChanged }: { community: Community; onC
           </button>
         ))}
       </div>
+
+      {escondidas > 0 && (
+        <p className="settings-hint">{t('Escondidas por não terem todas as letras deste nome: {n}', { n: algarismos(escondidas) })}</p>
+      )}
 
       <div className="letras-da-comunidade efeitos" role="group" aria-label={t('Efeito do nome')}>
         {EFEITOS_DA_COMUNIDADE.map((efeito) => (

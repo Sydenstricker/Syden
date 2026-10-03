@@ -845,10 +845,6 @@ export default {
   'Preencher': 'เต็มพื้นที่',
   'Imagem inteira': 'ทั้งภาพ',
   'Letra do nome': 'แบบอักษรของชื่อ',
-  'Estreita': 'แคบ',
-  'Arredondada': 'มน',
-  'Manuscrita': 'ลายมือ',
-  'Pixel': 'พิกเซล',
   'Arraste a capa para escolher a parte que aparece.': 'ลากภาพหน้าปกเพื่อเลือกส่วนที่จะแสดง',
   'Nítida para o tamanho em que está sendo mostrada.': 'คมชัดสำหรับขนาดที่กำลังแสดง',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'เล็กกว่าพื้นที่ที่กำลังแสดง ถ้าหน้าต่างเล็กลงจะคมชัด',
@@ -862,4 +858,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} กำลังสตรีม {oque}',
   '{quem} transmitindo a tela': '{quem} กำลังแชร์หน้าจอ',
   'na chamada de {comunidade}': 'อยู่ในสายของ {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'ซ่อนไว้เพราะไม่มีตัวอักษรครบตามชื่อนี้: {n}',
 } satisfies Record<string, string>;

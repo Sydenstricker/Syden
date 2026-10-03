@@ -1,3 +1,4 @@
+import { FONTES_EMBUTIDAS } from './fontes.gerado';
 import { chave } from './i18n';
 
 /**
@@ -32,6 +33,61 @@ export interface FonteDaComunidade {
   nome: string;
   /** O que entra no `font-family`. Termina sempre numa família genérica, nunca num nome só. */
   pilha: string;
+  /**
+   * Os caracteres que a fonte tem, quando ela é embutida. As pilhas de sistema não têm: o sistema
+   * completa o que faltar, letra a letra, e o nome nunca vira quadradinho.
+   */
+  faixas?: string;
+}
+
+/*
+ * AS VINTE EMBUTIDAS, e a regra que as acompanha: SÓ SE OFERECE A FONTE QUE TEM AS LETRAS DO NOME.
+ *
+ * Quem decide não é o idioma da tela, é o TEXTO: um brasileiro pode se chamar さくら, e um japonês
+ * pode ter nome em letras latinas. Fonte decorativa costuma ter só o latino; oferecer a Lobster para
+ * um nome em grego seria oferecer quadradinhos — ou, pior, uma mistura de duas letras na mesma
+ * palavra, porque o navegador completa o que falta com outra família.
+ *
+ * Os arquivos são baixados pelo script e saem do nosso domínio (ver CLAUDE.md, "Fonte de terceiro").
+ * Cada fonte vem em um arquivo por escrita, com `unicode-range`: quem só escreve em português nunca
+ * baixa o cirílico, e quem nunca vê uma comunidade com letra própria não baixa nada.
+ */
+const GENERICA: Record<string, string> = {
+  serif: 'serif',
+  'sans-serif': 'sans-serif',
+  monospace: 'monospace',
+  handwriting: 'cursive',
+  display: 'sans-serif',
+};
+
+/** "U+0000-00FF,U+0131" → [[0, 255], [305, 305]] */
+function lerFaixas(faixas: string): [number, number][] {
+  return faixas.split(',').map((parte) => {
+    const [de, ate] = parte.trim().replace(/^U\+/i, '').split('-');
+    const inicio = parseInt(de, 16);
+    return [inicio, ate ? parseInt(ate, 16) : inicio];
+  });
+}
+
+const FAIXAS_LIDAS = new Map<string, [number, number][]>();
+
+/**
+ * A fonte tem todas as letras deste texto? Espaço, emoji e símbolo não contam: eles vêm de outra
+ * família em qualquer caso, e um emoji no nome não deveria esconder as vinte fontes.
+ */
+export function fonteCobre(fonte: FonteDaComunidade, texto: string): boolean {
+  if (!fonte.faixas) return true;
+  let faixas = FAIXAS_LIDAS.get(fonte.id);
+  if (!faixas) {
+    faixas = lerFaixas(fonte.faixas);
+    FAIXAS_LIDAS.set(fonte.id, faixas);
+  }
+  for (const letra of texto) {
+    if (!/[\p{L}\p{M}\p{N}]/u.test(letra)) continue;
+    const ponto = letra.codePointAt(0)!;
+    if (!faixas.some(([de, ate]) => ponto >= de && ponto <= ate)) return false;
+  }
+  return true;
 }
 
 export const FONTES_DA_COMUNIDADE: FonteDaComunidade[] = [
@@ -46,42 +102,14 @@ export const FONTES_DA_COMUNIDADE: FonteDaComunidade[] = [
     nome: chave('Máquina de escrever'),
     pilha: "'Cascadia Mono', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace",
   },
-  // ---------------------------------------------------------------------------------------------
-  // AS QUATRO DE BAIXO VÊM COM O SYDEN, e a razão é CONSISTÊNCIA, não segurança.
-  //
-  // As duas primeiras versões de "estreita" e "arredondada" eram pilhas de sistema, e MEDIDO numa
-  // máquina com Windows 11 elas resolviam. Só que 'Arial Narrow' e 'Segoe UI Variable Display' não
-  // existem no Linux, e 'SF Pro Rounded' é só do macOS: lá as duas caíam na sans-serif comum, ou
-  // seja, ficavam IDÊNTICAS à padrão. Quem administra escolheria uma identidade para a comunidade e
-  // metade das pessoas veria outra coisa.
-  //
-  // Fonte embutida resolve isso e NÃO custa requisição a terceiro: os arquivos saem do nosso
-  // domínio (ver os @font-face em styles.css). E o navegador só baixa a que alguma tela de fato usa.
-  //
-  // TODAS SÃO SIL OPEN FONT LICENSE 1.1, com o arquivo da licença ao lado em web/public/fontes/.
-  // A OFL permite embutir e redistribuir, que é exatamente o direito de que precisamos — e é o que
-  // a maioria das fontes "grátis" de agregador NÃO dá.
-  // ---------------------------------------------------------------------------------------------
-  {
-    id: 'estreita',
-    nome: chave('Estreita'),
-    pilha: "'Syden Estreita', 'Arial Narrow', sans-serif",
-  },
-  {
-    id: 'redonda',
-    nome: chave('Arredondada'),
-    pilha: "'Syden Redonda', 'Trebuchet MS', sans-serif",
-  },
-  {
-    id: 'manuscrita',
-    nome: chave('Manuscrita'),
-    pilha: "'Syden Manuscrita', 'Brush Script MT', cursive",
-  },
-  {
-    id: 'pixel',
-    nome: chave('Pixel'),
-    pilha: "'Syden Pixel', 'Courier New', monospace",
-  },
+  // AS EMBUTIDAS VÊM DEPOIS, e a lista delas é GERADA (scripts/baixar-fontes.mjs → fontes.gerado.ts).
+  ...FONTES_EMBUTIDAS.map((fonte) => ({
+    id: fonte.id,
+    // Nome próprio de fonte não se traduz: "Lobster" é Lobster em qualquer língua.
+    nome: fonte.nome,
+    pilha: `'${fonte.familia}', ${GENERICA[fonte.categoria] ?? 'sans-serif'}`,
+    faixas: fonte.faixas,
+  })),
 ];
 
 /**

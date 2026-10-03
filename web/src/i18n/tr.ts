@@ -831,10 +831,6 @@ export default {
   'Preencher': 'Doldur',
   'Imagem inteira': 'Tüm görsel',
   'Letra do nome': 'Adın yazı tipi',
-  'Estreita': 'Dar',
-  'Arredondada': 'Yuvarlak',
-  'Manuscrita': 'El yazısı',
-  'Pixel': 'Piksel',
   'Arraste a capa para escolher a parte que aparece.': 'Hangi kısmın görüneceğini seçmek için kapağı sürükle.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Gösterildiği boyut için net.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Gösterildiği alandan küçük. Daha küçük bir pencerede net görünür.',
@@ -848,4 +844,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} yayında: {oque}',
   '{quem} transmitindo a tela': '{quem} ekranını paylaşıyor',
   'na chamada de {comunidade}': '{comunidade} aramasında',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Bu adın tüm harflerini içermediği için gizlenen: {n}',
 } satisfies Record<string, string>;

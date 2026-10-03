@@ -823,10 +823,6 @@ export default {
   'Preencher': '填满',
   'Imagem inteira': '完整图片',
   'Letra do nome': '名称字体',
-  'Estreita': '窄体',
-  'Arredondada': '圆体',
-  'Manuscrita': '手写体',
-  'Pixel': '像素体',
   'Arraste a capa para escolher a parte que aparece.': '拖动封面，选择要显示的部分。',
   'Nítida para o tamanho em que está sendo mostrada.': '按当前显示尺寸来看是清晰的。',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '比显示区域还小。窗口小一点就会清晰。',
@@ -840,4 +836,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} 正在直播 {oque}',
   '{quem} transmitindo a tela': '{quem} 正在共享屏幕',
   'na chamada de {comunidade}': '在 {comunidade} 的通话中',
+  'Escondidas por não terem todas as letras deste nome: {n}': '因缺少此名称中的某些字符而隐藏：{n}',
 } satisfies Record<string, string>;

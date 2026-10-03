@@ -847,10 +847,6 @@ export default {
   'Preencher': 'Kún un',
   'Imagem inteira': 'Gbogbo àwòrán',
   'Letra do nome': 'Lẹ́tà orúkọ',
-  'Estreita': 'Híhá',
-  'Arredondada': 'Róbótó',
-  'Manuscrita': 'Àfọwọ́kọ',
-  'Pixel': 'Píksẹ̀lì',
   'Arraste a capa para escolher a parte que aparece.': 'Ẹ fa ìbòrí náà láti yan apá tí yóò hàn.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Ó ṣe kedere fún ìwọ̀n tí à ń fi í hàn.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ó kéré ju ààyè tí à ń fi í hàn lọ. Nínú fèrèsé kékeré, yóò ṣe kedere.',
@@ -864,4 +860,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} ń gbé {oque} sáfẹ́fẹ́',
   '{quem} transmitindo a tela': '{quem} ń pín ojú-ìbòjú',
   'na chamada de {comunidade}': 'nínú ìpè {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'A fi pamọ́ nítorí wọn kò ní gbogbo lẹ́tà orúkọ yìí: {n}',
 } satisfies Record<string, string>;

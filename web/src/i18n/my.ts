@@ -138,7 +138,6 @@ export default {
   'Arraste a capa para escolher a parte que aparece.': 'ပေါ်မယ့်အပိုင်းကို ရွေးဖို့ မျက်နှာဖုံးကို ဆွဲပါ။',
   'Arraste as pontas para escolher o trecho.': 'အပိုင်းကို ရွေးဖို့ အစွန်းတွေကို ဆွဲပါ။',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'အကျယ်ပြောင်းဖို့ ဆွဲပါ။ နှစ်ချက်နှိပ်ရင် မူလအတိုင်း ပြန်ဖြစ်ပါမယ်။',
-  'Arredondada': 'ဝိုင်းဝိုင်း',
   'Arte de fundo': 'နောက်ခံပုံ',
   'As cores passam por dentro das letras.': 'အရောင်တွေက စာလုံးထဲ ဖြတ်စီးသည်။',
   'As duas juntas': 'နှစ်ခုလုံး',
@@ -369,7 +368,6 @@ export default {
   'Este é o começo do canal.': 'ဒါက ချန်နယ်ရဲ့ အစပါ။',
   'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
     'ဒီဘရောက်ဇာက ဘယ်ကုဒ်ဒါ ပိုကောင်းလဲ မဖြေပါ။ အလိုအလျောက်မှာ နေရာတိုင်း အလုပ်လုပ်တဲ့ VP8 ကို သုံးပါမယ်။',
-  'Estreita': 'ကျဉ်း',
   'Europa': 'ဥရောပ',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.': 'စပီကာ သုံးတဲ့အခါ တခြားသူများ ကိုယ့်အသံကို ပြန်မကြားရအောင် ကာကွယ်သည်။',
   'Ex.: Chegou!': 'ဥပမာ- ရောက်ပြီ!',
@@ -463,7 +461,6 @@ export default {
   'Mandar o link': 'လင့်ခ် ပို့ရန်',
   'Mandar outra': 'နောက်တစ်ခု ပို့ရန်',
   'Mandou um arquivo': 'ဖိုင်တစ်ခု ပို့ခဲ့သည်',
-  'Manuscrita': 'လက်ရေး',
   'Máquina de escrever': 'လက်နှိပ်စက်',
   'Mar': 'ပင်လယ်',
   'mc.exemplo.com:25565': 'mc.example.com:25565',
@@ -619,7 +616,6 @@ export default {
   'Pessoas': 'လူများ',
   'Pessoas bloqueadas': 'ပိတ်ဆို့ထားသူများ',
   'Pessoas das suas comunidades': 'သင့်အသိုင်းအဝိုင်းများမှ လူများ',
-  'Pixel': 'ပစ်ဆယ်',
   'Plantar uma cenoura': 'မုန်လာဥနီ စိုက်ရန်',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG၊ JPG သို့မဟုတ် WEBP၊ မည်သည့်အရွယ်မဆို- ဖြတ်ယူမည့်အပိုင်းကို သင်ရွေးပါ။',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG၊ JPG၊ WEBP သို့မဟုတ် လှုပ်ရှား GIF၊ 512 KB အထိ။ ပုံကို 128×128 သို့ ချိန်ညှိပါမယ်။',
@@ -893,4 +889,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} — {oque} ထုတ်လွှင့်နေသည်',
   '{quem} transmitindo a tela': '{quem} — မျက်နှာပြင် မျှဝေနေသည်',
   'na chamada de {comunidade}': '{comunidade} ခေါ်ဆိုမှုထဲမှာ',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'ဒီအမည်ရဲ့ စာလုံးအားလုံး မပါလို့ ဖျောက်ထားသည်- {n}',
 } satisfies Record<string, string>;

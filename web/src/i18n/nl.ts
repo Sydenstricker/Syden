@@ -836,10 +836,6 @@ export default {
   'Preencher': 'Vullen',
   'Imagem inteira': 'Hele afbeelding',
   'Letra do nome': 'Lettertype van de naam',
-  'Estreita': 'Smal',
-  'Arredondada': 'Afgerond',
-  'Manuscrita': 'Handgeschreven',
-  'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Sleep de omslag om te kiezen welk deel te zien is.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Scherp voor het formaat waarop die wordt getoond.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Kleiner dan de ruimte waarin die wordt getoond. In een kleiner venster is die scherp.',
@@ -853,4 +849,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} streamt {oque}',
   '{quem} transmitindo a tela': '{quem} deelt het scherm',
   'na chamada de {comunidade}': 'in gesprek bij {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Verborgen omdat ze niet alle letters van deze naam hebben: {n}',
 } satisfies Record<string, string>;

@@ -838,10 +838,6 @@ export default {
   'Preencher': 'Γέμισμα',
   'Imagem inteira': 'Ολόκληρη εικόνα',
   'Letra do nome': 'Γραμματοσειρά του ονόματος',
-  'Estreita': 'Στενή',
-  'Arredondada': 'Στρογγυλεμένη',
-  'Manuscrita': 'Χειρόγραφη',
-  'Pixel': 'Πίξελ',
   'Arraste a capa para escolher a parte que aparece.': 'Σύρε το εξώφυλλο για να διαλέξεις ποιο μέρος φαίνεται.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Καθαρή για το μέγεθος στο οποίο προβάλλεται.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Μικρότερη από τον χώρο όπου προβάλλεται. Σε μικρότερο παράθυρο φαίνεται καθαρή.',
@@ -855,4 +851,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} μεταδίδει {oque}',
   '{quem} transmitindo a tela': '{quem} μοιράζεται την οθόνη',
   'na chamada de {comunidade}': 'σε κλήση στο {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Κρυμμένες γιατί τους λείπουν γράμματα αυτού του ονόματος: {n}',
 } satisfies Record<string, string>;

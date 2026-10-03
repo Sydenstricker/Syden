@@ -864,10 +864,6 @@ export default {
   'Preencher': 'Ausfüllen',
   'Imagem inteira': 'Ganzes Bild',
   'Letra do nome': 'Schrift des Namens',
-  'Estreita': 'Schmal',
-  'Arredondada': 'Abgerundet',
-  'Manuscrita': 'Handschrift',
-  'Pixel': 'Pixel',
   'Arraste a capa para escolher a parte que aparece.': 'Zieh das Titelbild, um den sichtbaren Ausschnitt zu wählen.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Scharf für die Größe, in der sie angezeigt wird.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Kleiner als der Bereich, in dem sie angezeigt wird. In einem kleineren Fenster ist sie scharf.',
@@ -881,4 +877,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} streamt {oque}',
   '{quem} transmitindo a tela': '{quem} teilt den Bildschirm',
   'na chamada de {comunidade}': 'im Anruf bei {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Ausgeblendet, weil ihnen Buchstaben dieses Namens fehlen: {n}',
 } satisfies Record<string, string>;

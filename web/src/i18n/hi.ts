@@ -836,10 +836,6 @@ export default {
   'Preencher': 'भरें',
   'Imagem inteira': 'पूरी तस्वीर',
   'Letra do nome': 'नाम की लिपि',
-  'Estreita': 'सँकरी',
-  'Arredondada': 'गोलाकार',
-  'Manuscrita': 'हस्तलेख',
-  'Pixel': 'पिक्सेल',
   'Arraste a capa para escolher a parte que aparece.': 'कौन-सा हिस्सा दिखे, यह चुनने के लिए कवर को खींचो।',
   'Nítida para o tamanho em que está sendo mostrada.': 'जिस आकार में दिख रही है, उसके लिए साफ़ है।',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'जिस जगह दिख रही है उससे छोटी है। छोटी खिड़की में साफ़ दिखेगी।',
@@ -853,4 +849,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem}: {oque} का प्रसारण',
   '{quem} transmitindo a tela': '{quem}: स्क्रीन शेयर',
   'na chamada de {comunidade}': '{comunidade} की कॉल में',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'इस नाम के सभी अक्षर न होने से छिपाए गए: {n}',
 } satisfies Record<string, string>;

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, pilhaDaFonte } from '../src/fontesDaComunidade.js';
+import { EFEITOS_DA_COMUNIDADE, FONTES_DA_COMUNIDADE, efeitoDaComunidade, fonteCobre, pilhaDaFonte } from '../src/fontesDaComunidade.js';
 
 // ===================================================================================================
 // A LETRA DO NOME DA COMUNIDADE.
@@ -29,7 +29,9 @@ describe('as letras da comunidade', () => {
   });
 
   it('todo @font-face vem de um caminho nosso, nunca de um endereço', () => {
-    const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+    const css =
+      readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8') +
+      readFileSync(new URL('../src/fontes.gerado.css', import.meta.url), 'utf8');
     const blocos = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1]);
     assert.ok(blocos.length > 0, 'nenhum @font-face encontrado — o teste perdeu o alvo');
     for (const bloco of blocos) {
@@ -39,18 +41,34 @@ describe('as letras da comunidade', () => {
     }
   });
 
-  // A OFL EXIGE QUE A LICENÇA ACOMPANHE A FONTE. Um .woff2 solto numa pasta não é licença nenhuma, e
-  // esquecer o arquivo ao acrescentar a quinta fonte não daria erro em lugar nenhum.
-  it('toda fonte embutida tem a licença ao lado', () => {
+  // A OFL (e a Apache, de três delas) EXIGE QUE A LICENÇA ACOMPANHE A FONTE. Um .woff2 solto numa
+  // pasta não é licença nenhuma, e esquecer o arquivo não daria erro em lugar nenhum.
+  it('toda fonte embutida tem a licença ao lado, e ela permite embutir', () => {
     const pasta = new URL('../public/fontes/', import.meta.url);
-    const arquivos = readdirSync(pasta);
-    const fontes = arquivos.filter((n) => n.endsWith('.woff2'));
-    assert.ok(fontes.length > 0, 'nenhuma fonte embutida — o teste perdeu o alvo');
-    for (const fonte of fontes) {
-      const licenca = fonte.replace(/\.woff2$/, '.OFL.txt');
-      assert.ok(arquivos.includes(licenca), `${fonte} está sem ${licenca} ao lado`);
-      assert.match(readFileSync(new URL(licenca, pasta), 'utf8'), /SIL Open Font License/i);
+    const familias = readdirSync(pasta, { withFileTypes: true }).filter((d) => d.isDirectory());
+    assert.ok(familias.length > 0, 'nenhuma fonte embutida — o teste perdeu o alvo');
+    for (const familia of familias) {
+      const arquivos = readdirSync(new URL(familia.name + '/', pasta));
+      assert.ok(arquivos.some((n) => n.endsWith('.woff2')), `${familia.name} não tem fonte nenhuma`);
+      assert.ok(arquivos.includes('LICENCA.txt'), `${familia.name} está sem LICENCA.txt`);
+      const licenca = readFileSync(new URL(`${familia.name}/LICENCA.txt`, pasta), 'utf8');
+      assert.match(licenca, /SIL Open Font License|Apache License/i, `${familia.name}: licença que não é OFL nem Apache`);
     }
+    // E nenhum arquivo solto na raiz, fora das pastas: é o formato antigo, sem licença por família.
+    assert.deepEqual(readdirSync(pasta).filter((n) => n.endsWith('.woff2')), []);
+  });
+
+  // QUEM DECIDE É O TEXTO, NÃO O IDIOMA DA TELA: a fonte só é oferecida se tem as letras do nome.
+  it('fonte só latina não é oferecida para nome em grego, e a de sistema sempre é', () => {
+    const satisfy = FONTES_DA_COMUNIDADE.find((f) => f.id === 'satisfy')!;
+    const comfortaa = FONTES_DA_COMUNIDADE.find((f) => f.id === 'redonda')!;
+    const serifa = FONTES_DA_COMUNIDADE.find((f) => f.id === 'serifa')!;
+    assert.equal(fonteCobre(satisfy, 'Ação São João'), true);
+    assert.equal(fonteCobre(satisfy, 'Αθήνα'), false);
+    assert.equal(fonteCobre(comfortaa, 'Αθήνα'), true);
+    assert.equal(fonteCobre(serifa, 'さくら'), true);
+    // Emoji e espaço não contam: vêm de outra família de qualquer jeito.
+    assert.equal(fonteCobre(satisfy, 'Turma 🎮 do Léo'), true);
   });
 
   // Pilha que termina num nome próprio deixa o navegador sem saída quando nenhuma das famílias

@@ -836,10 +836,6 @@ export default {
   'Preencher': 'Jaza',
   'Imagem inteira': 'Picha nzima',
   'Letra do nome': 'Herufi za jina',
-  'Estreita': 'Nyembamba',
-  'Arredondada': 'Mviringo',
-  'Manuscrita': 'Ya mkono',
-  'Pixel': 'Pikseli',
   'Arraste a capa para escolher a parte que aparece.': 'Buruta jalada ili kuchagua sehemu inayoonekana.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Wazi kwa ukubwa unaoonyeshwa.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Ndogo kuliko nafasi inayoonyeshwa. Kwenye dirisha dogo zaidi, inakuwa wazi.',
@@ -853,4 +849,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} anatangaza {oque}',
   '{quem} transmitindo a tela': '{quem} anaonyesha skrini',
   'na chamada de {comunidade}': 'kwenye simu ya {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Zimefichwa kwa kukosa baadhi ya herufi za jina hili: {n}',
 } satisfies Record<string, string>;

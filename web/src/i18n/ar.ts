@@ -857,10 +857,6 @@ export default {
   'Preencher': 'ملء',
   'Imagem inteira': 'الصورة كاملة',
   'Letra do nome': 'خط الاسم',
-  'Estreita': 'ضيّق',
-  'Arredondada': 'مستدير',
-  'Manuscrita': 'بخط اليد',
-  'Pixel': 'بكسل',
   'Arraste a capa para escolher a parte que aparece.': 'اسحب الغلاف لاختيار الجزء الظاهر.',
   'Nítida para o tamanho em que está sendo mostrada.': 'واضحة بالنسبة للحجم المعروضة به.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'أصغر من المساحة المعروضة فيها. في نافذة أصغر تظهر واضحة.',
@@ -874,4 +870,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem}: بث {oque}',
   '{quem} transmitindo a tela': '{quem}: مشاركة الشاشة',
   'na chamada de {comunidade}': 'في مكالمة {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'مخفية لأنها لا تحوي كل حروف هذا الاسم: {n}',
 } satisfies Record<string, string>;

@@ -858,10 +858,6 @@ export default {
   'Preencher': 'Заполнить',
   'Imagem inteira': 'Целиком',
   'Letra do nome': 'Шрифт названия',
-  'Estreita': 'Узкая',
-  'Arredondada': 'Скруглённая',
-  'Manuscrita': 'Рукописная',
-  'Pixel': 'Пиксельная',
   'Arraste a capa para escolher a parte que aparece.': 'Потяни обложку, чтобы выбрать видимую часть.',
   'Nítida para o tamanho em que está sendo mostrada.': 'Чёткая для того размера, в котором показана.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'Меньше, чем место, где показана. В окне поменьше будет чёткой.',
@@ -875,4 +871,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} транслирует {oque}',
   '{quem} transmitindo a tela': '{quem} показывает экран',
   'na chamada de {comunidade}': 'в разговоре в {comunidade}',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'Скрыто, потому что в них нет всех букв этого названия: {n}',
 } satisfies Record<string, string>;

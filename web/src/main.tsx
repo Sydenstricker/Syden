@@ -1,5 +1,6 @@
 import '@livekit/components-styles';
 import './styles.css';
+import './fontes.gerado.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';

@@ -824,10 +824,6 @@ export default {
   'Preencher': '채우기',
   'Imagem inteira': '이미지 전체',
   'Letra do nome': '이름 글꼴',
-  'Estreita': '좁게',
-  'Arredondada': '둥글게',
-  'Manuscrita': '손글씨',
-  'Pixel': '픽셀',
   'Arraste a capa para escolher a parte que aparece.': '어느 부분이 보일지 커버를 끌어서 정하세요.',
   'Nítida para o tamanho em que está sendo mostrada.': '지금 표시되는 크기에서는 선명합니다.',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': '표시되는 공간보다 작습니다. 창을 줄이면 선명해집니다.',
@@ -841,4 +837,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} 님이 {oque} 방송 중',
   '{quem} transmitindo a tela': '{quem} 님이 화면 공유 중',
   'na chamada de {comunidade}': '{comunidade} 통화 중',
+  'Escondidas por não terem todas as letras deste nome: {n}': '이 이름의 글자를 모두 갖추지 않아 숨긴 글꼴: {n}',
 } satisfies Record<string, string>;

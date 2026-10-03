@@ -832,10 +832,6 @@ export default {
   'Preencher': 'ሙላ',
   'Imagem inteira': 'ሙሉ ምስል',
   'Letra do nome': 'የስም ፊደል',
-  'Estreita': 'ጠባብ',
-  'Arredondada': 'ክብ',
-  'Manuscrita': 'የእጅ ጽሕፈት',
-  'Pixel': 'ፒክሰል',
   'Arraste a capa para escolher a parte que aparece.': 'የሚታየውን ክፍል ለመምረጥ ሽፋኑን ይጎትቱ።',
   'Nítida para o tamanho em que está sendo mostrada.': 'በሚታይበት መጠን ልክ ግልጽ ነው።',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'ከሚታይበት ቦታ ያነሰ ነው። በትንሽ መስኮት ውስጥ ግልጽ ይሆናል።',
@@ -849,4 +845,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem}፦ የ{oque} ስርጭት',
   '{quem} transmitindo a tela': '{quem}፦ የማያ ገጽ ማጋራት',
   'na chamada de {comunidade}': 'በ{comunidade} ጥሪ ላይ',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'የዚህን ስም ሁሉንም ፊደላት ስለሌላቸው የተደበቁ፦ {n}',
 } satisfies Record<string, string>;

@@ -834,10 +834,6 @@ export default {
   'Preencher': 'ভরাট',
   'Imagem inteira': 'পুরো ছবি',
   'Letra do nome': 'নামের হরফ',
-  'Estreita': 'সরু',
-  'Arredondada': 'গোলাকার',
-  'Manuscrita': 'হাতের লেখা',
-  'Pixel': 'পিক্সেল',
   'Arraste a capa para escolher a parte que aparece.': 'কোন অংশ দেখা যাবে তা বেছে নিতে কভারটা টেনে নাও।',
   'Nítida para o tamanho em que está sendo mostrada.': 'যে মাপে দেখানো হচ্ছে, তার জন্য পরিষ্কার।',
   'Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.': 'যে জায়গায় দেখানো হচ্ছে তার চেয়ে ছোট। ছোট জানালায় পরিষ্কার দেখাবে।',
@@ -851,4 +847,5 @@ export default {
   '{quem} transmitindo {oque}': '{quem} {oque} সম্প্রচার করছে',
   '{quem} transmitindo a tela': '{quem} স্ক্রিন শেয়ার করছে',
   'na chamada de {comunidade}': '{comunidade}-এর কলে',
+  'Escondidas por não terem todas as letras deste nome: {n}': 'এই নামের সব অক্ষর না থাকায় লুকানো: {n}',
 } satisfies Record<string, string>;
