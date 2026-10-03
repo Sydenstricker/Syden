@@ -834,4 +834,7 @@ export default {
   'Preencher': 'ভরাট',
   'Imagem inteira': 'পুরো ছবি',
   'Altura': 'উচ্চতা',
+  'Letra do nome': 'নামের হরফ',
+  'Estreita': 'সরু',
+  'Arredondada': 'গোলাকার',
 } satisfies Record<string, string>;

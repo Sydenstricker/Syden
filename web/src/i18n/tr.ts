@@ -831,4 +831,7 @@ export default {
   'Preencher': 'Doldur',
   'Imagem inteira': 'Tüm görsel',
   'Altura': 'Yükseklik',
+  'Letra do nome': 'Adın yazı tipi',
+  'Estreita': 'Dar',
+  'Arredondada': 'Yuvarlak',
 } satisfies Record<string, string>;

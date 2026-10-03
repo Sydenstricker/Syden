@@ -67,6 +67,8 @@ export interface Community {
   capaEncaixe?: string | null;
   /** Quando preenche, que altura da imagem fica à vista: 0 é o topo, 100 é o pé. */
   capaPosicao?: number | null;
+  /** O código da letra do nome. Ver fontesDaComunidade.ts. */
+  fonte?: string | null;
   /** O selo que a comunidade conquistou. As três partes vêm juntas ou nenhuma vem. */
   seloTexto?: string | null;
   seloIcone?: string | null;

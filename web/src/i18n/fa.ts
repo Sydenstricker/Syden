@@ -820,4 +820,7 @@ export default {
   'Preencher': 'پر کردن',
   'Imagem inteira': 'تصویر کامل',
   'Altura': 'ارتفاع',
+  'Letra do nome': 'قلم نام',
+  'Estreita': 'باریک',
+  'Arredondada': 'گرد',
 } satisfies Record<string, string>;

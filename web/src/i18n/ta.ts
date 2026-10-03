@@ -817,4 +817,7 @@ export default {
   'Preencher': 'நிரப்பு',
   'Imagem inteira': 'முழுப் படம்',
   'Altura': 'உயரம்',
+  'Letra do nome': 'பெயரின் எழுத்துரு',
+  'Estreita': 'குறுகலான',
+  'Arredondada': 'வட்டமான',
 } satisfies Record<string, string>;

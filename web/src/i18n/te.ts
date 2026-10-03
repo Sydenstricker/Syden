@@ -814,4 +814,7 @@ export default {
   'Preencher': 'నింపు',
   'Imagem inteira': 'పూర్తి చిత్రం',
   'Altura': 'ఎత్తు',
+  'Letra do nome': 'పేరు అక్షరశైలి',
+  'Estreita': 'ఇరుకైన',
+  'Arredondada': 'గుండ్రని',
 } satisfies Record<string, string>;

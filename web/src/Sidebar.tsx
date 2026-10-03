@@ -25,6 +25,7 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
 import { CapaDaComunidade } from './CapaDaComunidade';
+import { pilhaDaFonte } from './fontesDaComunidade';
 import { Avatar } from './Avatar';
 import { useT } from './i18n';
 import { Puxador } from './Puxador';
@@ -125,7 +126,14 @@ export function Sidebar({
           cabeçalho comum. */}
       <header className={`sidebar-header${directMode ? '' : ' com-capa'}`}>
         {!directMode && <CapaDaComunidade community={community} arte={arteDaComunidade} />}
-        <span className="sidebar-brand" title={directMode ? t('Conversas') : community.name}>
+        {/* A LETRA DA COMUNIDADE vale só no NOME dela, e não na tela inteira: trocar a fonte das
+            mensagens de todo mundo por gosto de quem administra é mexer no que os outros leem. Em
+            Conversas não há comunidade, então não há letra. */}
+        <span
+          className="sidebar-brand"
+          title={directMode ? t('Conversas') : community.name}
+          style={directMode ? undefined : { fontFamily: pilhaDaFonte(community.fonte) || undefined }}
+        >
           {directMode ? t('Conversas') : community.name}
           {/* O selo fica ao lado do nome da comunidade: é onde a conquista dela faz sentido ser
               lida, e é a primeira coisa que quem entra vê. */}

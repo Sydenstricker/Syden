@@ -802,4 +802,7 @@ export default {
   'Preencher': 'Lấp đầy',
   'Imagem inteira': 'Toàn bộ ảnh',
   'Altura': 'Chiều cao',
+  'Letra do nome': 'Kiểu chữ của tên',
+  'Estreita': 'Hẹp',
+  'Arredondada': 'Bo tròn',
 } satisfies Record<string, string>;

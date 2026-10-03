@@ -23,6 +23,8 @@ export interface Community {
   capaEncaixe?: string | null;
   /** Quando preenche, que altura da imagem fica à vista: 0 é o topo, 100 é o pé. */
   capaPosicao?: number | null;
+  /** O código da letra do nome ('serifa', 'mono'…). O desenho mora no site. */
+  fonte?: string | null;
   /**
    * O selo conquistado, ou nulo enquanto não houver. Ver selos.ts.
    *
@@ -1009,6 +1011,13 @@ addColumnIfMissing('communities', 'banner_version', 'INTEGER');
  */
 addColumnIfMissing('communities', 'capa_encaixe', 'TEXT');
 addColumnIfMissing('communities', 'capa_posicao', 'INTEGER');
+
+/**
+ * A letra do nome da comunidade. Guarda só o CÓDIGO da escolha ('serifa', 'mono'…); a pilha de
+ * fontes mora no site, em web/src/fontesDaComunidade.ts — mesma regra das molduras e dos efeitos de
+ * nome, e pela mesma razão: trocar uma pilha é publicar o site, sem migrar banco.
+ */
+addColumnIfMissing('communities', 'fonte', 'TEXT');
 // Velocidade de rede: chegou depois do painel de saúde.
 addColumnIfMissing('health_samples', 'net_in', 'INTEGER');
 addColumnIfMissing('health_samples', 'net_out', 'INTEGER');
@@ -1185,13 +1194,13 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
     .prepare(
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
-              c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao,
+              c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
@@ -1267,6 +1276,12 @@ export function setCommunityCapaAjuste(communityId: number, encaixe: string, pos
   const limpo = encaixe === 'inteira' ? 'inteira' : 'preencher';
   const altura = Math.min(100, Math.max(0, Math.round(posicao)));
   db.prepare('UPDATE communities SET capa_encaixe = ?, capa_posicao = ? WHERE id = ?').run(limpo, altura, communityId);
+  return findCommunity(communityId)!;
+}
+
+/** A letra do nome. O site é quem conhece as pilhas; aqui só se guarda o código escolhido. */
+export function setCommunityFonte(communityId: number, fonte: string): Community {
+  db.prepare('UPDATE communities SET fonte = ? WHERE id = ?').run(fonte.slice(0, 24), communityId);
   return findCommunity(communityId)!;
 }
 

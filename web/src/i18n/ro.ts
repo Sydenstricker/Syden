@@ -832,4 +832,7 @@ export default {
   'Preencher': 'Umple',
   'Imagem inteira': 'Imaginea întreagă',
   'Altura': 'Înălțime',
+  'Letra do nome': 'Litera numelui',
+  'Estreita': 'Îngustă',
+  'Arredondada': 'Rotunjită',
 } satisfies Record<string, string>;

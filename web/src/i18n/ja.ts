@@ -813,4 +813,7 @@ export default {
   'Preencher': '全面に広げる',
   'Imagem inteira': '画像全体',
   'Altura': '高さ',
+  'Letra do nome': '名前の書体',
+  'Estreita': '細長い',
+  'Arredondada': '丸みのある',
 } satisfies Record<string, string>;

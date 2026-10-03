@@ -836,4 +836,7 @@ export default {
   'Preencher': 'Jaza',
   'Imagem inteira': 'Picha nzima',
   'Altura': 'Kimo',
+  'Letra do nome': 'Herufi za jina',
+  'Estreita': 'Nyembamba',
+  'Arredondada': 'Mviringo',
 } satisfies Record<string, string>;

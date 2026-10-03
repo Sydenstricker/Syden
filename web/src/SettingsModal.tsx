@@ -29,6 +29,7 @@ import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
 import { EditorDeBoasVindas } from './EditorDeBoasVindas';
 import { EmojiPicker } from './EmojiPicker';
+import { FONTES_DA_COMUNIDADE } from './fontesDaComunidade';
 import { limiteDoCampo, tamanhoVisivel } from './nomeComEmoji';
 import { type EscolhaDeCodec, escolherCodecDaTela } from './escolherCodec';
 import { algarismos } from './algarismos';
@@ -580,6 +581,56 @@ function DeleteAccount({ onDeleted, temSenha, username }: { onDeleted: () => voi
   );
 }
 
+/**
+ * A LETRA DO NOME DA COMUNIDADE.
+ *
+ * CADA OPÇÃO É DESENHADA NA PRÓPRIA LETRA que ela oferece, e não num rótulo neutro. "Com serifa" e
+ * "Estreita" não dizem nada a quem não mexe com tipografia — mas a palavra escrita naquela letra diz
+ * tudo, e de uma olhada. É a mesma razão pela qual o guarda-roupa mostra amostra em vez de só o nome.
+ *
+ * Nenhuma delas baixa fonte: são pilhas que todo sistema já tem. O porquê está em
+ * web/src/fontesDaComunidade.ts, e é o mesmo motivo que fez a capa ser baixada pelo servidor.
+ */
+function LetraDaComunidade({ community, onChanged }: { community: Community; onChanged: () => void }) {
+  const t = useT();
+  const [erro, setErro] = useState<string | null>(null);
+  const atual = community.fonte || 'padrao';
+
+  async function escolher(fonte: string) {
+    setErro(null);
+    try {
+      await api(`/api/communities/${community.id}/fonte`, { method: 'PUT', body: { fonte } });
+      onChanged();
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
+
+  return (
+    <>
+      <div className="letras-da-comunidade" role="group" aria-label={t('Letra do nome')}>
+        {FONTES_DA_COMUNIDADE.map((fonte) => (
+          <button
+            key={fonte.id}
+            type="button"
+            className={`letra-opcao${atual === fonte.id ? ' escolhida' : ''}`}
+            aria-pressed={atual === fonte.id}
+            onClick={() => void escolher(fonte.id)}
+          >
+            {/* O NOME DA COMUNIDADE, e não um texto de exemplo: é ele que vai ficar nessa letra, com
+                os acentos e o tamanho que ele tem de verdade. */}
+            <span className="letra-amostra" style={{ fontFamily: fonte.pilha || undefined }}>
+              {community.name}
+            </span>
+            <small>{t(fonte.nome)}</small>
+          </button>
+        ))}
+      </div>
+      {erro ? <p className="form-error">{erro}</p> : null}
+    </>
+  );
+}
+
 // ---------- A comunidade em si ----------
 
 /**
@@ -725,6 +776,9 @@ function CommunitySection({
               </button>
             </div>
           </div>
+
+          <h3>{t('Letra do nome')}</h3>
+          <LetraDaComunidade community={community} onChanged={onChanged} />
 
           <h3>{t('Nome')}</h3>
           <form className="settings-form" onSubmit={rename}>

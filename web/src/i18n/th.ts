@@ -845,4 +845,7 @@ export default {
   'Preencher': 'เต็มพื้นที่',
   'Imagem inteira': 'ทั้งภาพ',
   'Altura': 'ความสูง',
+  'Letra do nome': 'แบบอักษรของชื่อ',
+  'Estreita': 'แคบ',
+  'Arredondada': 'มน',
 } satisfies Record<string, string>;

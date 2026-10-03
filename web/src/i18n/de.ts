@@ -864,4 +864,7 @@ export default {
   'Preencher': 'Ausfüllen',
   'Imagem inteira': 'Ganzes Bild',
   'Altura': 'Höhe',
+  'Letra do nome': 'Schrift des Namens',
+  'Estreita': 'Schmal',
+  'Arredondada': 'Abgerundet',
 } satisfies Record<string, string>;

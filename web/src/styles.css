@@ -10427,3 +10427,46 @@ body.arrastando-barra {
 .capa-encaixe-altura input {
   width: 160px;
 }
+
+/* A escolha da letra do nome da comunidade: cada opção escrita na própria letra que oferece. */
+.letras-da-comunidade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  max-width: 520px;
+  margin-bottom: 8px;
+}
+
+.letra-opcao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-raised, #2b2d31);
+  color: var(--text);
+  text-align: left;
+  min-width: 0;
+}
+
+.letra-opcao.escolhida {
+  border-color: var(--accent);
+}
+
+/* O nome pode ser longo; a amostra corta em vez de esticar o cartão. */
+.letra-amostra {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-strong);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.letra-opcao small {
+  color: var(--text-muted);
+  font-size: 12px;
+}

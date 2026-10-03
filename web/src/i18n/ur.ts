@@ -819,4 +819,7 @@ export default {
   'Preencher': 'بھریں',
   'Imagem inteira': 'پوری تصویر',
   'Altura': 'اونچائی',
+  'Letra do nome': 'نام کا فونٹ',
+  'Estreita': 'تنگ',
+  'Arredondada': 'گول',
 } satisfies Record<string, string>;

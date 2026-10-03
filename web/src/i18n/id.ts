@@ -834,4 +834,7 @@ export default {
   'Preencher': 'Penuhi',
   'Imagem inteira': 'Gambar utuh',
   'Altura': 'Tinggi',
+  'Letra do nome': 'Huruf nama',
+  'Estreita': 'Sempit',
+  'Arredondada': 'Membulat',
 } satisfies Record<string, string>;

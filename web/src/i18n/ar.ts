@@ -857,4 +857,7 @@ export default {
   'Preencher': 'ملء',
   'Imagem inteira': 'الصورة كاملة',
   'Altura': 'الارتفاع',
+  'Letra do nome': 'خط الاسم',
+  'Estreita': 'ضيّق',
+  'Arredondada': 'مستدير',
 } satisfies Record<string, string>;

@@ -823,4 +823,7 @@ export default {
   'Preencher': '填满',
   'Imagem inteira': '完整图片',
   'Altura': '高度',
+  'Letra do nome': '名称字体',
+  'Estreita': '窄体',
+  'Arredondada': '圆体',
 } satisfies Record<string, string>;

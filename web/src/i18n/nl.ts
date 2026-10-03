@@ -836,4 +836,7 @@ export default {
   'Preencher': 'Vullen',
   'Imagem inteira': 'Hele afbeelding',
   'Altura': 'Hoogte',
+  'Letra do nome': 'Lettertype van de naam',
+  'Estreita': 'Smal',
+  'Arredondada': 'Afgerond',
 } satisfies Record<string, string>;

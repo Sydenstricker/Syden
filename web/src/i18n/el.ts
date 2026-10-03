@@ -838,4 +838,7 @@ export default {
   'Preencher': 'Γέμισμα',
   'Imagem inteira': 'Ολόκληρη εικόνα',
   'Altura': 'Ύψος',
+  'Letra do nome': 'Γραμματοσειρά του ονόματος',
+  'Estreita': 'Στενή',
+  'Arredondada': 'Στρογγυλεμένη',
 } satisfies Record<string, string>;

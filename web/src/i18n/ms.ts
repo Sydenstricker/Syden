@@ -837,4 +837,7 @@ export default {
   'Preencher': 'Penuhkan',
   'Imagem inteira': 'Gambar penuh',
   'Altura': 'Ketinggian',
+  'Letra do nome': 'Fon nama',
+  'Estreita': 'Sempit',
+  'Arredondada': 'Bulat',
 } satisfies Record<string, string>;

@@ -836,4 +836,7 @@ export default {
   'Preencher': 'Riempire',
   'Imagem inteira': 'Immagine intera',
   'Altura': 'Altezza',
+  'Letra do nome': 'Carattere del nome',
+  'Estreita': 'Stretta',
+  'Arredondada': 'Arrotondata',
 } satisfies Record<string, string>;

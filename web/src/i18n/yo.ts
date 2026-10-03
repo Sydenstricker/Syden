@@ -847,4 +847,7 @@ export default {
   'Preencher': 'Kún un',
   'Imagem inteira': 'Gbogbo àwòrán',
   'Altura': 'Gíga',
+  'Letra do nome': 'Lẹ́tà orúkọ',
+  'Estreita': 'Híhá',
+  'Arredondada': 'Róbótó',
 } satisfies Record<string, string>;

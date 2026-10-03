@@ -836,4 +836,7 @@ export default {
   'Preencher': 'भरें',
   'Imagem inteira': 'पूरी तस्वीर',
   'Altura': 'ऊँचाई',
+  'Letra do nome': 'नाम की लिपि',
+  'Estreita': 'सँकरी',
+  'Arredondada': 'गोलाकार',
 } satisfies Record<string, string>;

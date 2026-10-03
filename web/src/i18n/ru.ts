@@ -858,4 +858,7 @@ export default {
   'Preencher': 'Заполнить',
   'Imagem inteira': 'Целиком',
   'Altura': 'Высота',
+  'Letra do nome': 'Шрифт названия',
+  'Estreita': 'Узкая',
+  'Arredondada': 'Скруглённая',
 } satisfies Record<string, string>;

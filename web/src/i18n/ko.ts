@@ -824,4 +824,7 @@ export default {
   'Preencher': '채우기',
   'Imagem inteira': '이미지 전체',
   'Altura': '높이',
+  'Letra do nome': '이름 글꼴',
+  'Estreita': '좁게',
+  'Arredondada': '둥글게',
 } satisfies Record<string, string>;

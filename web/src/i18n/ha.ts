@@ -834,4 +834,7 @@ export default {
   'Preencher': 'Cika',
   'Imagem inteira': 'Dukan hoton',
   'Altura': 'Tsayi',
+  'Letra do nome': 'Rubutun suna',
+  'Estreita': 'Kunkuntar',
+  'Arredondada': 'Zagaye',
 } satisfies Record<string, string>;

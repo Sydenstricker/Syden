@@ -832,4 +832,7 @@ export default {
   'Preencher': 'ሙላ',
   'Imagem inteira': 'ሙሉ ምስል',
   'Altura': 'ቁመት',
+  'Letra do nome': 'የስም ፊደል',
+  'Estreita': 'ጠባብ',
+  'Arredondada': 'ክብ',
 } satisfies Record<string, string>;
