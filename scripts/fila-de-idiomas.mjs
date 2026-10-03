@@ -173,6 +173,18 @@ if (process.argv.includes('--proximo')) {
       : '    NÃO são os latinos. Todo número CONTADO numa frase tem de ser escrito com estes;\n' +
           '    identificador técnico (1080p, 512 KB, 128×128) fica em 0-9, porque é código.\n',
   );
+  // ESTA MEDIÇÃO É DO NODE, QUE TEM OS DADOS DE TODAS AS LÍNGUAS — O CHROME NÃO TEM. Para 29 das
+  // 77, o Chrome cai no idioma do computador, e era assim que o birmanês aparecia com algarismo
+  // latino e "43 mi". web/src/algarismos.ts cobre isso, mas só sabe os algarismos próprios das
+  // línguas listadas lá: uma língua nova que não use 0-9 precisa entrar em ALGARISMOS_PROPRIOS.
+  if (!/[0-9]/.test(mil)) {
+    const algarismosTs = readFileSync(new URL('../web/src/algarismos.ts', import.meta.url), 'utf8');
+    if (!new RegExp(`^\\s*'?${proximo.codigo}'?: '`, 'm').test(algarismosTs)) {
+      const sistema = new Intl.NumberFormat(proximo.codigo).resolvedOptions().numberingSystem;
+      console.log(`    E SE O CHROME NÃO CONHECER A LÍNGUA, ele escreve 0-9. Ponha \`${proximo.codigo}: '${sistema}'\` em`);
+      console.log('    ALGARISMOS_PROPRIOS, em web/src/algarismos.ts — não custa nada se o Chrome conhecer.\n');
+    }
+  }
   console.log('  O CAMINHO, na ordem:');
   console.log(`    1. node scripts/idiomas.mjs --novo ${proximo.codigo}`);
   console.log('    2. traduzir, e escrever NO CABEÇALHO do arquivo a decisão de TRATAMENTO e o');
