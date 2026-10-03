@@ -848,4 +848,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} na raba allo',
   'na chamada de {comunidade}': 'a cikin kiran {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'An ɓoye saboda ba su da duk haruffan wannan suna: {n}',
+  'Um dos 25 primeiros': 'Ɗaya daga cikin 25 na farko',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'A nan tun lokacin da Syden ke tsakanin abokai kawai',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Kuna nan tun farkon komai. Mun gode da kasancewarku tun lokacin da wannan ra’ayi ne kawai tsakanin abokai.',
+  'Presente': 'Kyauta',
+  'Ideia acolhida': 'Ra’ayin da aka karɓa',
+  'Uma ideia sua entrou no Syden': 'Wani ra’ayinku ya shiga Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ra’ayinku yanzu ya zama ɓangare na Syden. Mun gode da taimakon gina shi.',
+  'Recompensa': 'Lada',
+  'Item novo: {nome}': 'Sabon abu: {nome}',
 } satisfies Record<string, string>;

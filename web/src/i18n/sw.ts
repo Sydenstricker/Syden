@@ -850,4 +850,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} anaonyesha skrini',
   'na chamada de {comunidade}': 'kwenye simu ya {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Zimefichwa kwa kukosa baadhi ya herufi za jina hili: {n}',
+  'Um dos 25 primeiros': 'Mmoja wa 25 wa kwanza',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Yupo tangu Syden ilipokuwa ya marafiki tu',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Upo hapa tangu mwanzo kabisa. Asante kwa kuwa hapa tangu hili lilipokuwa wazo tu kati ya marafiki.',
+  'Presente': 'Zawadi',
+  'Ideia acolhida': 'Wazo limekubaliwa',
+  'Uma ideia sua entrou no Syden': 'Wazo lako limeingia kwenye Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Wazo lako sasa ni sehemu ya Syden. Asante kwa kusaidia kujenga hiki.',
+  'Recompensa': 'Tuzo',
+  'Item novo: {nome}': 'Kitu kipya: {nome}',
 } satisfies Record<string, string>;

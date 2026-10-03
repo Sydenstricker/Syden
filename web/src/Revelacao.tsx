@@ -55,7 +55,7 @@ export function Revelacao({ codigo, aoResgatar }: { codigo: string; aoResgatar: 
   }
 
   return (
-    <div className={`revelacao fase-${fase}`} role="dialog" aria-modal="true" aria-label={`Item novo: ${insignia.nome}`}>
+    <div className={`revelacao fase-${fase}`} role="dialog" aria-modal="true" aria-label={t('Item novo: {nome}', { nome: insignia.nome })}>
       {fase === 'presente' && (
         <div className="revelacao-cartao">
           <span className="revelacao-etiqueta">

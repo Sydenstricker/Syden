@@ -827,4 +827,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} が画面を共有中',
   'na chamada de {comunidade}': '{comunidade} の通話中',
   'Escondidas por não terem todas as letras deste nome: {n}': 'この名前の文字がそろっていないため非表示：{n}',
+  'Um dos 25 primeiros': '最初の 25 人のひとり',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Syden が仲間内だけのものだった頃から',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'すべての始まりからいてくれました。これが仲間内のアイデアだった頃からいてくれて、ありがとうございます。',
+  'Presente': 'プレゼント',
+  'Ideia acolhida': '採用されたアイデア',
+  'Uma ideia sua entrou no Syden': 'あなたのアイデアが Syden に入りました',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'あなたのアイデアは Syden の一部になりました。一緒に作ってくれて、ありがとうございます。',
+  'Recompensa': 'ごほうび',
+  'Item novo: {nome}': '新しいアイテム：{nome}',
 } satisfies Record<string, string>;

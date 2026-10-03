@@ -891,4 +891,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: qooddii iskiriinii',
   'na chamada de {comunidade}': 'waamicha {comunidade} irra',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Qubee maqaa kanaa hunda waan hin qabneef dhokataniiru: {n}',
+  'Um dos 25 primeiros': 'Warra 25 jalqabaa keessaa tokko',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Erga Syden hiriyoota qofa gidduu ture kaasee asitti',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Jalqaba irraa kaastee as jirta. Erga kun yaada hiriyoota gidduu qofa ture kaastee as jiraachuu keetiif galatoomi.',
+  'Presente': 'Kennaa',
+  'Ideia acolhida': 'Yaada fudhatame',
+  'Uma ideia sua entrou no Syden': 'Yaadni kee tokko Syden keessa gale',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Yaadni kee amma kutaa Syden ta’eera. Ijaaruuf waan gargaarteef galatoomi.',
+  'Recompensa': 'Badhaasa',
+  'Item novo: {nome}': 'Meeshaa haaraa: {nome}',
 } satisfies Record<string, string>;

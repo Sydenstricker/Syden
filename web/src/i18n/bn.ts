@@ -848,4 +848,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} স্ক্রিন শেয়ার করছে',
   'na chamada de {comunidade}': '{comunidade}-এর কলে',
   'Escondidas por não terem todas as letras deste nome: {n}': 'এই নামের সব অক্ষর না থাকায় লুকানো: {n}',
+  'Um dos 25 primeiros': 'প্রথম ২৫ জনের একজন',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'যখন Syden শুধু বন্ধুদের মধ্যে ছিল, তখন থেকে এখানে',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'তুমি একদম শুরু থেকে এখানে আছ। যখন এটা শুধু বন্ধুদের মধ্যে একটা ভাবনা ছিল, তখন থেকে পাশে থাকার জন্য ধন্যবাদ।',
+  'Presente': 'উপহার',
+  'Ideia acolhida': 'ভাবনা গৃহীত',
+  'Uma ideia sua entrou no Syden': 'তোমার একটা ভাবনা Syden-এ ঢুকেছে',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'তোমার ভাবনা এখন Syden-এর অংশ। এটা গড়তে সাহায্য করার জন্য ধন্যবাদ।',
+  'Recompensa': 'পুরস্কার',
+  'Item novo: {nome}': 'নতুন আইটেম: {nome}',
 } satisfies Record<string, string>;

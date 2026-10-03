@@ -848,4 +848,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} sedang berbagi layar',
   'na chamada de {comunidade}': 'dalam panggilan di {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Disembunyikan karena tidak punya semua huruf nama ini: {n}',
+  'Um dos 25 primeiros': 'Salah satu dari 25 pertama',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Di sini sejak Syden masih hanya antarteman',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Kamu di sini sejak awal. Terima kasih sudah ada sejak ini cuma ide di antara teman.',
+  'Presente': 'Hadiah',
+  'Ideia acolhida': 'Ide diterima',
+  'Uma ideia sua entrou no Syden': 'Satu idemu masuk ke Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Idemu kini bagian dari Syden. Terima kasih sudah ikut membangunnya.',
+  'Recompensa': 'Imbalan',
+  'Item novo: {nome}': 'Item baru: {nome}',
 } satisfies Record<string, string>;

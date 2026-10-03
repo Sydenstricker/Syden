@@ -828,4 +828,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: తెర పంచుకోవడం',
   'na chamada de {comunidade}': '{comunidade} కాల్‌లో',
   'Escondidas por não terem todas as letras deste nome: {n}': 'ఈ పేరులోని అన్ని అక్షరాలు లేనందున దాచినవి: {n}',
+  'Um dos 25 primeiros': 'మొదటి 25 మందిలో ఒకరు',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Syden స్నేహితుల మధ్యే ఉన్నప్పటి నుంచి ఇక్కడ',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'మీరు మొదటి నుంచే ఇక్కడ ఉన్నారు. ఇది స్నేహితుల మధ్య ఒక ఆలోచనగా ఉన్నప్పటి నుంచి ఉన్నందుకు ధన్యవాదాలు.',
+  'Presente': 'కానుక',
+  'Ideia acolhida': 'స్వీకరించిన ఆలోచన',
+  'Uma ideia sua entrou no Syden': 'మీ ఆలోచన ఒకటి Syden లో చేరింది',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'మీ ఆలోచన ఇప్పుడు Syden లో భాగం. దీన్ని నిర్మించడంలో సాయం చేసినందుకు ధన్యవాదాలు.',
+  'Recompensa': 'బహుమతి',
+  'Item novo: {nome}': 'కొత్త వస్తువు: {nome}',
 } satisfies Record<string, string>;

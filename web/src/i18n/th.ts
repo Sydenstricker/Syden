@@ -859,4 +859,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} กำลังแชร์หน้าจอ',
   'na chamada de {comunidade}': 'อยู่ในสายของ {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'ซ่อนไว้เพราะไม่มีตัวอักษรครบตามชื่อนี้: {n}',
+  'Um dos 25 primeiros': 'หนึ่งใน 25 คนแรก',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'อยู่ที่นี่ตั้งแต่ Syden ยังเป็นแค่เรื่องของเพื่อนกัน',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'คุณอยู่ที่นี่ตั้งแต่จุดเริ่มต้น ขอบคุณที่อยู่ด้วยกันตั้งแต่ที่นี่ยังเป็นแค่ไอเดียในหมู่เพื่อน',
+  'Presente': 'ของขวัญ',
+  'Ideia acolhida': 'ไอเดียที่ได้รับเลือก',
+  'Uma ideia sua entrou no Syden': 'ไอเดียหนึ่งของคุณเข้าไปอยู่ใน Syden แล้ว',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'ไอเดียของคุณกลายเป็นส่วนหนึ่งของ Syden แล้ว ขอบคุณที่ช่วยกันสร้าง',
+  'Recompensa': 'รางวัล',
+  'Item novo: {nome}': 'ไอเท็มใหม่: {nome}',
 } satisfies Record<string, string>;

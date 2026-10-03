@@ -890,4 +890,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} — မျက်နှာပြင် မျှဝေနေသည်',
   'na chamada de {comunidade}': '{comunidade} ခေါ်ဆိုမှုထဲမှာ',
   'Escondidas por não terem todas as letras deste nome: {n}': 'ဒီအမည်ရဲ့ စာလုံးအားလုံး မပါလို့ ဖျောက်ထားသည်- {n}',
+  'Um dos 25 primeiros': 'ပထမဆုံး ၂၅ ယောက်ထဲက တစ်ယောက်',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Syden သူငယ်ချင်းတွေကြားမှာပဲ ရှိတုန်းကတည်းက ဒီမှာ',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'အစကတည်းက ဒီမှာ ရှိနေပါတယ်။ ဒါ သူငယ်ချင်းတွေကြားက အကြံဉာဏ်တစ်ခုပဲ ရှိတုန်းကတည်းက ရှိနေပေးလို့ ကျေးဇူးတင်ပါတယ်။',
+  'Presente': 'လက်ဆောင်',
+  'Ideia acolhida': 'လက်ခံထားသော အကြံဉာဏ်',
+  'Uma ideia sua entrou no Syden': 'သင့်အကြံဉာဏ်တစ်ခု Syden ထဲ ရောက်သွားပါပြီ',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'သင့်အကြံဉာဏ်က အခု Syden ရဲ့ အစိတ်အပိုင်း ဖြစ်သွားပါပြီ။ တည်ဆောက်ရာမှာ ကူညီပေးလို့ ကျေးဇူးတင်ပါတယ်။',
+  'Recompensa': 'ဆု',
+  'Item novo: {nome}': 'ပစ္စည်းအသစ်- {nome}',
 } satisfies Record<string, string>;

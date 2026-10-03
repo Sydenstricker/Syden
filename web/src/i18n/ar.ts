@@ -871,4 +871,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: مشاركة الشاشة',
   'na chamada de {comunidade}': 'في مكالمة {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'مخفية لأنها لا تحوي كل حروف هذا الاسم: {n}',
+  'Um dos 25 primeiros': 'من أول 25',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'هنا منذ كان Syden بين الأصدقاء فقط',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'هنا منذ البداية. شكرًا لوجودك منذ أن كان هذا مجرد فكرة بين أصدقاء.',
+  'Presente': 'هدية',
+  'Ideia acolhida': 'فكرة مقبولة',
+  'Uma ideia sua entrou no Syden': 'دخلت إحدى أفكارك إلى Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'صارت فكرتك جزءًا من Syden. شكرًا للمساعدة في بنائه.',
+  'Recompensa': 'مكافأة',
+  'Item novo: {nome}': 'عنصر جديد: {nome}',
 } satisfies Record<string, string>;

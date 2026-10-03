@@ -872,4 +872,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} показывает экран',
   'na chamada de {comunidade}': 'в разговоре в {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Скрыто, потому что в них нет всех букв этого названия: {n}',
+  'Um dos 25 primeiros': 'Среди первых 25',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Здесь с тех пор, как Syden был только для своих',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Ты с нами с самого начала. Спасибо, что ты здесь с тех пор, как это было лишь идеей среди друзей.',
+  'Presente': 'Подарок',
+  'Ideia acolhida': 'Идея принята',
+  'Uma ideia sua entrou no Syden': 'Твоя идея попала в Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Твоя идея стала частью Syden. Спасибо, что помогаешь его строить.',
+  'Recompensa': 'Награда',
+  'Item novo: {nome}': 'Новый предмет: {nome}',
 } satisfies Record<string, string>;

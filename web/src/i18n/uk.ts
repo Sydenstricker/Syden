@@ -901,4 +901,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} показує екран',
   'na chamada de {comunidade}': 'у дзвінку спільноти {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Приховано, бо бракує літер цієї назви: {n}',
+  'Um dos 25 primeiros': 'Серед перших 25',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Тут відтоді, як Syden був лише для друзів',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Ти тут від самого початку. Дякуємо, що ти тут відтоді, як це була лише ідея серед друзів.',
+  'Presente': 'Подарунок',
+  'Ideia acolhida': 'Прийнята ідея',
+  'Uma ideia sua entrou no Syden': 'Твоя ідея потрапила в Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Твоя ідея тепер частина Syden. Дякуємо, що допомагаєш його будувати.',
+  'Recompensa': 'Нагорода',
+  'Item novo: {nome}': 'Новий предмет: {nome}',
 } satisfies Record<string, string>;

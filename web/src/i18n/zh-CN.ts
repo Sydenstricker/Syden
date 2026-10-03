@@ -837,4 +837,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} 正在共享屏幕',
   'na chamada de {comunidade}': '在 {comunidade} 的通话中',
   'Escondidas por não terem todas as letras deste nome: {n}': '因缺少此名称中的某些字符而隐藏：{n}',
+  'Um dos 25 primeiros': '最早的 25 人之一',
+  'Estava aqui quando o Syden ainda era só entre amigos': '从 Syden 还只属于朋友之间时就在这里',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': '你从一切的开始就在这里。谢谢你从这还只是朋友间的一个想法时就一直在。',
+  'Presente': '礼物',
+  'Ideia acolhida': '想法被采纳',
+  'Uma ideia sua entrou no Syden': '你的一个想法进入了 Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': '你的想法已经成为 Syden 的一部分。谢谢你帮忙一起建设。',
+  'Recompensa': '奖励',
+  'Item novo: {nome}': '新物品：{nome}',
 } satisfies Record<string, string>;

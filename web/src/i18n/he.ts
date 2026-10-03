@@ -901,4 +901,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: שיתוף מסך',
   'na chamada de {comunidade}': 'בשיחה של {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'הוסתרו כי חסרות בהן אותיות של השם הזה: {n}',
+  'Um dos 25 primeiros': 'מבין 25 הראשונים',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'כאן מאז ש-Syden היה רק בין חברים',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'כאן מההתחלה. תודה שהיית כאן עוד מאז שזה היה רק רעיון בין חברים.',
+  'Presente': 'מתנה',
+  'Ideia acolhida': 'רעיון שהתקבל',
+  'Uma ideia sua entrou no Syden': 'רעיון שלך נכנס ל-Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'הרעיון שלך הוא עכשיו חלק מ-Syden. תודה על העזרה בבנייה.',
+  'Recompensa': 'פרס',
+  'Item novo: {nome}': 'פריט חדש: {nome}',
 } satisfies Record<string, string>;

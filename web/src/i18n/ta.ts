@@ -831,4 +831,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: திரைப் பகிர்வு',
   'na chamada de {comunidade}': '{comunidade} அழைப்பில்',
   'Escondidas por não terem todas as letras deste nome: {n}': 'இந்தப் பெயரின் எல்லா எழுத்துகளும் இல்லாததால் மறைக்கப்பட்டவை: {n}',
+  'Um dos 25 primeiros': 'முதல் 25 பேரில் ஒருவர்',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Syden நண்பர்களுக்குள் மட்டுமே இருந்தபோதிலிருந்து இங்கே',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'நீங்கள் தொடக்கத்திலிருந்தே இங்கே இருக்கிறீர்கள். இது நண்பர்களுக்குள் ஒரு யோசனையாக இருந்தபோதிலிருந்து இருப்பதற்கு நன்றி.',
+  'Presente': 'பரிசு',
+  'Ideia acolhida': 'ஏற்கப்பட்ட யோசனை',
+  'Uma ideia sua entrou no Syden': 'உங்கள் யோசனை ஒன்று Syden-இல் சேர்ந்தது',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'உங்கள் யோசனை இப்போது Syden-இன் ஒரு பகுதி. இதைக் கட்ட உதவியதற்கு நன்றி.',
+  'Recompensa': 'வெகுமதி',
+  'Item novo: {nome}': 'புதிய பொருள்: {nome}',
 } satisfies Record<string, string>;

@@ -834,4 +834,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} در حال اشتراک صفحه',
   'na chamada de {comunidade}': 'در تماسِ {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'پنهان، چون همهٔ حروف این نام را ندارند: {n}',
+  'Um dos 25 primeiros': 'یکی از ۲۵ نفر اول',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'از وقتی Syden فقط بین دوستان بود، این‌جاست',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'شما از همان ابتدای کار این‌جا هستید. ممنون که از وقتی این فقط ایده‌ای میان دوستان بود، این‌جا هستید.',
+  'Presente': 'هدیه',
+  'Ideia acolhida': 'ایدهٔ پذیرفته‌شده',
+  'Uma ideia sua entrou no Syden': 'یکی از ایده‌های شما وارد Syden شد',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'ایدهٔ شما حالا بخشی از Syden است. ممنون که در ساختنش کمک می‌کنید.',
+  'Recompensa': 'پاداش',
+  'Item novo: {nome}': 'آیتم تازه: {nome}',
 } satisfies Record<string, string>;

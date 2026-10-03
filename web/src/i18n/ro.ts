@@ -846,4 +846,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} partajează ecranul',
   'na chamada de {comunidade}': 'în apel în {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Ascunse pentru că le lipsesc litere din acest nume: {n}',
+  'Um dos 25 primeiros': 'Printre primii 25',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Aici de când Syden era doar între prieteni',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Ești aici de la început. Mulțumim că ești aici de când asta era doar o idee între prieteni.',
+  'Presente': 'Cadou',
+  'Ideia acolhida': 'Idee primită',
+  'Uma ideia sua entrou no Syden': 'O idee de-a ta a intrat în Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ideea ta face acum parte din Syden. Mulțumim că ajuți la construirea lui.',
+  'Recompensa': 'Recompensă',
+  'Item novo: {nome}': 'Obiect nou: {nome}',
 } satisfies Record<string, string>;

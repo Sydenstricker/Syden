@@ -816,4 +816,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} đang chia sẻ màn hình',
   'na chamada de {comunidade}': 'trong cuộc gọi của {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Bị ẩn vì thiếu một số chữ của tên này: {n}',
+  'Um dos 25 primeiros': 'Một trong 25 người đầu tiên',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Có mặt từ khi Syden chỉ là chuyện giữa bạn bè',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Bạn ở đây từ lúc mọi thứ mới bắt đầu. Cảm ơn bạn đã ở đây từ khi đây chỉ là một ý tưởng giữa bạn bè.',
+  'Presente': 'Quà tặng',
+  'Ideia acolhida': 'Ý tưởng được đón nhận',
+  'Uma ideia sua entrou no Syden': 'Một ý tưởng của bạn đã vào Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ý tưởng của bạn giờ là một phần của Syden. Cảm ơn bạn đã cùng xây dựng nơi này.',
+  'Recompensa': 'Phần thưởng',
+  'Item novo: {nome}': 'Vật phẩm mới: {nome}',
 } satisfies Record<string, string>;

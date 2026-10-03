@@ -876,4 +876,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} partage son écran',
   'na chamada de {comunidade}': 'en appel sur {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Masquées car il leur manque des lettres de ce nom : {n}',
+  'Um dos 25 primeiros': 'Parmi les 25 premiers',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Là depuis que Syden n’était qu’entre amis',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Tu es là depuis le tout début. Merci d’être là depuis que ce n’était qu’une idée entre amis.',
+  'Presente': 'Cadeau',
+  'Ideia acolhida': 'Idée retenue',
+  'Uma ideia sua entrou no Syden': 'Une de tes idées est entrée dans Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ton idée fait désormais partie de Syden. Merci d’aider à construire tout ça.',
+  'Recompensa': 'Récompense',
+  'Item novo: {nome}': 'Nouvel objet : {nome}',
 } satisfies Record<string, string>;

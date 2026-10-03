@@ -852,4 +852,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} μοιράζεται την οθόνη',
   'na chamada de {comunidade}': 'σε κλήση στο {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Κρυμμένες γιατί τους λείπουν γράμματα αυτού του ονόματος: {n}',
+  'Um dos 25 primeiros': 'Ένας από τους πρώτους 25',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Εδώ από τότε που το Syden ήταν μόνο ανάμεσα σε φίλους',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Είσαι εδώ από την αρχή. Ευχαριστούμε που είσαι εδώ από τότε που αυτό ήταν μόνο μια ιδέα ανάμεσα σε φίλους.',
+  'Presente': 'Δώρο',
+  'Ideia acolhida': 'Ιδέα που υιοθετήθηκε',
+  'Uma ideia sua entrou no Syden': 'Μια ιδέα σου μπήκε στο Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Η ιδέα σου είναι πλέον μέρος του Syden. Ευχαριστούμε που βοηθάς να χτιστεί.',
+  'Recompensa': 'Ανταμοιβή',
+  'Item novo: {nome}': 'Νέο αντικείμενο: {nome}',
 } satisfies Record<string, string>;

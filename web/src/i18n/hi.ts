@@ -850,4 +850,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: स्क्रीन शेयर',
   'na chamada de {comunidade}': '{comunidade} की कॉल में',
   'Escondidas por não terem todas as letras deste nome: {n}': 'इस नाम के सभी अक्षर न होने से छिपाए गए: {n}',
+  'Um dos 25 primeiros': 'पहले 25 में से एक',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'तब से यहाँ, जब Syden बस दोस्तों के बीच था',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'तुम बिल्कुल शुरुआत से यहाँ हो। तब से यहाँ होने के लिए शुक्रिया, जब यह बस दोस्तों के बीच एक विचार था।',
+  'Presente': 'तोहफ़ा',
+  'Ideia acolhida': 'विचार अपनाया गया',
+  'Uma ideia sua entrou no Syden': 'तुम्हारा एक विचार Syden में शामिल हुआ',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'तुम्हारा विचार अब Syden का हिस्सा है। इसे बनाने में मदद के लिए शुक्रिया।',
+  'Recompensa': 'इनाम',
+  'Item novo: {nome}': 'नया आइटम: {nome}',
 } satisfies Record<string, string>;

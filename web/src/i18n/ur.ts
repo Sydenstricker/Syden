@@ -833,4 +833,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}: اسکرین شیئر',
   'na chamada de {comunidade}': '{comunidade} کی کال میں',
   'Escondidas por não terem todas as letras deste nome: {n}': 'اس نام کے سب حروف نہ ہونے کی وجہ سے چھپائے گئے: {n}',
+  'Um dos 25 primeiros': 'پہلے 25 میں سے ایک',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'تب سے یہاں، جب Syden صرف دوستوں کے بیچ تھا',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'آپ بالکل شروع سے یہاں ہیں۔ تب سے یہاں ہونے کا شکریہ، جب یہ صرف دوستوں کے بیچ ایک خیال تھا۔',
+  'Presente': 'تحفہ',
+  'Ideia acolhida': 'قبول شدہ خیال',
+  'Uma ideia sua entrou no Syden': 'آپ کا ایک خیال Syden میں شامل ہوا',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'آپ کا خیال اب Syden کا حصہ ہے۔ اسے بنانے میں مدد کا شکریہ۔',
+  'Recompensa': 'انعام',
+  'Item novo: {nome}': 'نئی چیز: {nome}',
 } satisfies Record<string, string>;

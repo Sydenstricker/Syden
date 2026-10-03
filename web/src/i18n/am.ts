@@ -846,4 +846,13 @@ export default {
   '{quem} transmitindo a tela': '{quem}፦ የማያ ገጽ ማጋራት',
   'na chamada de {comunidade}': 'በ{comunidade} ጥሪ ላይ',
   'Escondidas por não terem todas as letras deste nome: {n}': 'የዚህን ስም ሁሉንም ፊደላት ስለሌላቸው የተደበቁ፦ {n}',
+  'Um dos 25 primeiros': 'ከመጀመሪያዎቹ 25 አንዱ',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Syden በጓደኞች መካከል ብቻ ከነበረበት ጊዜ ጀምሮ እዚህ',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'ከመጀመሪያው ጀምሮ እዚህ ነዎት። ይህ በጓደኞች መካከል ሐሳብ ብቻ ከነበረበት ጊዜ ጀምሮ ስለነበሩ እናመሰግናለን።',
+  'Presente': 'ስጦታ',
+  'Ideia acolhida': 'ተቀባይነት ያገኘ ሐሳብ',
+  'Uma ideia sua entrou no Syden': 'አንድ ሐሳብዎ ወደ Syden ገብቷል',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'ሐሳብዎ አሁን የSyden አካል ነው። ይህን ለመገንባት ስለረዱ እናመሰግናለን።',
+  'Recompensa': 'ሽልማት',
+  'Item novo: {nome}': 'አዲስ ዕቃ፦ {nome}',
 } satisfies Record<string, string>;

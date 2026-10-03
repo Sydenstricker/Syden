@@ -856,4 +856,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} sharing their screen',
   'na chamada de {comunidade}': 'in the call at {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Hidden because they lack some letters of this name: {n}',
+  'Um dos 25 primeiros': 'One of the first 25',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Here since Syden was just among friends',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'You got here at the very beginning. Thank you for being here since this was just an idea among friends.',
+  'Presente': 'Gift',
+  'Ideia acolhida': 'Idea welcomed',
+  'Uma ideia sua entrou no Syden': 'An idea of yours made it into Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Your idea is now part of Syden. Thank you for helping build this.',
+  'Recompensa': 'Reward',
+  'Item novo: {nome}': 'New item: {nome}',
 } satisfies Record<string, string>;

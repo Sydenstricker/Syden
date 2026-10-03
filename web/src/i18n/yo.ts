@@ -861,4 +861,13 @@ export default {
   '{quem} transmitindo a tela': '{quem} ń pín ojú-ìbòjú',
   'na chamada de {comunidade}': 'nínú ìpè {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'A fi pamọ́ nítorí wọn kò ní gbogbo lẹ́tà orúkọ yìí: {n}',
+  'Um dos 25 primeiros': 'Ọ̀kan lára 25 àkọ́kọ́',
+  'Estava aqui quando o Syden ainda era só entre amigos': 'Wà níbí láti ìgbà tí Syden jẹ́ ti àwọn ọ̀rẹ́ nìkan',
+  'Você chegou no começo de tudo. Obrigado por estar aqui desde quando isto era só uma ideia entre amigos.': 'Ẹ ti wà níbí láti ìbẹ̀rẹ̀ pátápátá. A dúpẹ́ pé ẹ wà níbí láti ìgbà tí èyí jẹ́ èrò kan láàrin àwọn ọ̀rẹ́.',
+  'Presente': 'Ẹ̀bùn',
+  'Ideia acolhida': 'Èrò tí a gbà',
+  'Uma ideia sua entrou no Syden': 'Ọ̀kan nínú èrò yín wọ inú Syden',
+  'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Èrò yín ti di apá kan Syden. A dúpẹ́ fún ìrànlọ́wọ́ láti kọ́ ọ.',
+  'Recompensa': 'Èrè',
+  'Item novo: {nome}': 'Nǹkan tuntun: {nome}',
 } satisfies Record<string, string>;
