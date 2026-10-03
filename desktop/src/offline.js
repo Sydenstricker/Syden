@@ -199,6 +199,36 @@ const TEXTOS = {
     tentando: 'Ana gwadawa…',
     codigo: 'OFFLINE — babu haɗi',
   },
+  yo: {
+    titulo: 'A kò lè bá sáfà náà sọ̀rọ̀',
+    explicacao: 'Ẹ ṣàyẹ̀wò ayélujára yín. Ó tún lè jẹ́ pé sáfà náà kò ṣiṣẹ́.',
+    botao: 'Tún gbìyànjú',
+    tentando: 'Ó ń gbìyànjú…',
+    codigo: 'OFFLINE — Kò sí lórí ayélujára',
+  },
+  el: {
+    titulo: 'Δεν ήταν δυνατή η σύνδεση',
+    explicacao: 'Έλεγξε το ίντερνετ σου. Μπορεί και ο διακομιστής να είναι εκτός λειτουργίας.',
+    botao: 'Δοκίμασε ξανά',
+    tentando: 'Δοκιμή…',
+    codigo: 'OFFLINE — Εκτός σύνδεσης',
+  },
+  ro: {
+    titulo: 'Nu s-a putut conecta',
+    explicacao: 'Verifică-ți internetul. Se poate și ca serverul să fie oprit.',
+    botao: 'Încearcă din nou',
+    tentando: 'Se încearcă…',
+    codigo: 'OFFLINE — Deconectat',
+  },
+  // "Spróbuj ponownie" e não "Spróbowałeś": no polonês o PASSADO tem sexo, e esta tela não sabe o
+  // de ninguém. Ver o cabeçalho de web/src/i18n/pl.ts.
+  pl: {
+    titulo: 'Nie udało się połączyć',
+    explicacao: 'Sprawdź internet. Serwer też może nie działać.',
+    botao: 'Spróbuj ponownie',
+    tentando: 'Łączenie…',
+    codigo: 'OFFLINE — Brak połączenia',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

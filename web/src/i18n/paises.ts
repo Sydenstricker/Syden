@@ -171,6 +171,10 @@ export const OFICIAL: Record<string, string[]> = {
   // constitucional: a Constituição dizia 'moldavo' até a corte constitucional decidir, em 2013, que
   // vale a Declaração de Independência, que diz 'romeno'. Em 2023 o texto foi corrigido por lei.
   ro: ['RO', 'MD'],
+
+  // Só a Polônia. A língua tem status de minoria em partes da Lituânia, da Bielorrússia e da
+  // Ucrânia, mas não de oficial do Estado, e este arquivo pede status.
+  pl: ['PL'],
 };
 
 /**

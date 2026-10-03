@@ -111,7 +111,7 @@ function detectorPorChaves(codigo) {
 }
 
 /** As línguas de escrita latina deste teste, cada uma com o seu dicionário e o seu reforço medido. */
-const POR_CHAVES = new Map(['vi', 'ha', 'yo', 'ro'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
+const POR_CHAVES = new Map(['vi', 'ha', 'yo', 'ro', 'pl'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
 
 /** O detector da vez. Cada idioma mede o que ele próprio consegue distinguir. */
 function sobrouPortugues(codigo, texto) {
@@ -139,6 +139,7 @@ const IDIOMAS = [
   { codigo: 'yo', nome: 'Yorùbá', rtl: false },
   { codigo: 'el', nome: 'Ελληνικά', rtl: false },
   { codigo: 'ro', nome: 'Română', rtl: false },
+  { codigo: 'pl', nome: 'Polski', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

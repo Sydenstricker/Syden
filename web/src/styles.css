@@ -5195,8 +5195,11 @@ textarea {
 
 /* ---------- Saúde do servidor ---------- */
 
+/* Quebra de linha porque a fileira cresce com o idioma, não com o número de abas: a sexta aba do
+   Guarda-roupa ("Efeito do nome") coube em português e estourou em tâmil. */
 .tab-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   margin-left: auto;
 }
