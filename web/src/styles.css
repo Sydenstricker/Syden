@@ -9567,11 +9567,13 @@ textarea {
   line-height: 1.55;
 }
 
-/* O bico, apontando para a boca do coelho. */
+/* O bico, apontando para a boca do coelho. Em INÍCIO DE LINHA (inset-inline-start) e não em
+   "left": em árabe, hebraico, persa e urdu o coelho fica à direita do balão, e um bico preso à
+   esquerda apontava para o vazio — e vazava da caixa, que é como o teste de idiomas o achou. */
 .bv-balao::before {
   content: '';
   position: absolute;
-  left: -9px;
+  inset-inline-start: -9px;
   bottom: 22px;
   width: 16px;
   height: 16px;
@@ -9581,6 +9583,11 @@ textarea {
   transform: rotate(45deg);
   /* Sem isto o fundo semitransparente do bico soma com o do balão onde os dois se cruzam. */
   clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+/* Em RTL o bico vira para a direita: a mesma quina, girada para o outro lado. */
+[dir='rtl'] .bv-balao::before {
+  transform: rotate(-135deg);
 }
 
 .bv[data-tom='claro'] .bv-balao {
@@ -9620,8 +9627,9 @@ textarea {
     margin-bottom: 0;
   }
 
-  .bv-balao::before {
-    left: 26px;
+  .bv-balao::before,
+  [dir='rtl'] .bv-balao::before {
+    inset-inline-start: 26px;
     top: -9px;
     bottom: auto;
     transform: rotate(135deg);
