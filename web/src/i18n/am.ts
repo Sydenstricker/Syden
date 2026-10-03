@@ -842,4 +842,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'ፊደሉና ውጤቱ ከሰርጦች ዝርዝር በላይ ባለው የማህበረሰብ ስም ላይ ይሠራሉ።',
   'Tamanho do texto': 'የጽሑፍ መጠን',
   'Só as letras mudam: o resto da tela fica no lugar.': 'የሚቀየሩት ፊደላቱ ብቻ ናቸው፤ የቀረው ማያ ገጽ ባለበት ይቆያል።',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'በአንድ መስመር አንድ ሕግ ወይም ማስታወቂያ፤ የአዲሱ መጪ ጥንቸል አንድ በአንድ ያነባቸዋል።',
 } satisfies Record<string, string>;

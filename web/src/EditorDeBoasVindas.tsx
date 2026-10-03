@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
 import { ARTES, ARTE_PADRAO, acharArte } from './boasVindas';
 import { useT } from './i18n';
+import { CoelhoGuia } from './InicioDaComunidade';
 import type { Community } from './types';
 
 // Onde o dono monta o espaço de boas-vindas da comunidade (ver InicioDaComunidade.tsx).
@@ -83,6 +84,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
           rows={4}
           placeholder={t('Conte o que é esta comunidade e o que fazer primeiro.')}
         />
+        <small>{t('Uma regra ou aviso por linha: o coelho de quem chega lê um por um.')}</small>
       </label>
 
       <span className="settings-label">{t('Arte de fundo')}</span>
@@ -104,9 +106,10 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
       {/* A prévia usa o MESMO degradê e o MESMO tom de texto da tela de verdade. Se um dia as duas
           divergirem, o dono escolhe uma coisa e a comunidade vê outra. */}
       <span className="settings-label">{t('Como vai ficar')}</span>
-      <div className="bv-previa" data-tom={escolhida.tom} style={{ background: escolhida.fundo }}>
-        <strong>{titulo || t('Bem-vindo!')}</strong>
-        {texto && <p>{texto}</p>}
+      <div className="bv bv-previa" data-tom={escolhida.tom} style={{ '--bv-destaque': escolhida.destaque } as React.CSSProperties}>
+        <div className="bv-arte" style={{ background: escolhida.fundo }}>
+          <CoelhoGuia titulo={titulo || t('Bem-vindo!')} texto={texto} />
+        </div>
       </div>
 
       <div className="settings-actions">

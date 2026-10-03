@@ -827,4 +827,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'எழுத்துருவும் விளைவும் சேனல் பட்டியலுக்கு மேலே உள்ள சமூகப் பெயருக்குப் பொருந்தும்.',
   'Tamanho do texto': 'எழுத்தின் அளவு',
   'Só as letras mudam: o resto da tela fica no lugar.': 'எழுத்துகள் மட்டுமே மாறும்: திரையின் மற்ற பகுதி அப்படியே இருக்கும்.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ஒரு வரிக்கு ஒரு விதி அல்லது அறிவிப்பு: புதிதாக வருபவரின் முயல் அவற்றை ஒவ்வொன்றாகப் படிக்கும்.',
 } satisfies Record<string, string>;

@@ -857,4 +857,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Lẹ́tà àti ìpa náà wúlò fún orúkọ àwùjọ, lókè àtòjọ ikànnì.',
   'Tamanho do texto': 'Ìwọ̀n ọ̀rọ̀',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Àwọn lẹ́tà nìkan ló ń yí padà: ìyókù ojú-ìbòjú wà ní ipò rẹ̀.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Òfin tàbí ìkéde kan ní ìlà kọ̀ọ̀kan: ehoro ẹni tó ṣẹ̀ṣẹ̀ dé á kà wọ́n lọ́kọ̀ọ̀kan.',
 } satisfies Record<string, string>;

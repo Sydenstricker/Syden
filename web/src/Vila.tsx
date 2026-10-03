@@ -492,7 +492,7 @@ function sorteioNoPasseio() {
  * O coelho. Bem alimentado (cinco cenouras plantadas), ele engorda: a barriga alarga, as bochechas
  * crescem e as orelhas encolhem um pouco — é o "BigChunkus" que o usuário desenhou, em movimento.
  */
-function CoelhoArte({ id, gordo = false }: { id: number; gordo?: boolean }) {
+export function CoelhoArte({ id, gordo = false }: { id: number; gordo?: boolean }) {
   const u = UNIFORMES[id % UNIFORMES.length];
   // Uma medida só comanda a silhueta inteira, para o gordo continuar sendo o mesmo bicho.
   const barriga = gordo ? 12.6 : 8.6;

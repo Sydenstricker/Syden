@@ -846,4 +846,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Het lettertype en het effect gelden voor de naam van de community, boven de kanalenlijst.',
   'Tamanho do texto': 'Tekstgrootte',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Alleen de letters veranderen: de rest van het scherm blijft op zijn plek.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Eén regel of mededeling per regel: het konijn van wie binnenkomt leest ze één voor één voor.',
 } satisfies Record<string, string>;

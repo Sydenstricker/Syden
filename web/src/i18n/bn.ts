@@ -844,4 +844,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'হরফ আর প্রভাব কমিউনিটির নামে লাগে, চ্যানেল তালিকার উপরে।',
   'Tamanho do texto': 'লেখার আকার',
   'Só as letras mudam: o resto da tela fica no lugar.': 'শুধু অক্ষর বদলায়: স্ক্রিনের বাকি অংশ যেমন আছে তেমনই থাকে।',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'প্রতি লাইনে একটা নিয়ম বা ঘোষণা: নতুন যে আসে, তার খরগোশ একে একে পড়ে শোনায়।',
 } satisfies Record<string, string>;

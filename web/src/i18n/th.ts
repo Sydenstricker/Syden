@@ -855,4 +855,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'แบบอักษรและเอฟเฟกต์ใช้กับชื่อชุมชน เหนือรายการช่อง',
   'Tamanho do texto': 'ขนาดตัวอักษร',
   'Só as letras mudam: o resto da tela fica no lugar.': 'เปลี่ยนแค่ตัวอักษร ส่วนอื่นของหน้าจออยู่ที่เดิม',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'บรรทัดละหนึ่งกฎหรือประกาศ กระต่ายของคนที่เพิ่งมาจะอ่านให้ฟังทีละข้อ',
 } satisfies Record<string, string>;

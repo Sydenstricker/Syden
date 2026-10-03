@@ -886,4 +886,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'ရုပ်ရှင်ဟောင်းထဲက စက်ရုပ်ရဲ့ သတ္တုအသံ။',
   'Vozes juntas': 'အသံများ အတူ',
   'ZECA': 'ဇော်',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'တစ်ကြောင်းလျှင် စည်းမျဉ်း သို့မဟုတ် အသိပေးချက် တစ်ခု- ရောက်လာသူရဲ့ ယုန်က တစ်ခုချင်း ဖတ်ပြပါမယ်။',
 } satisfies Record<string, string>;

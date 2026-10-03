@@ -120,7 +120,7 @@ if ((await abaComunidade.count()) === 0) {
 
   // O ENVIO DE VERDADE. O seseletor de arquivo do Syden esconde um <input type="file">; é nele que
   // o Playwright põe o arquivo, que é o mesmo que a pessoa faz ao escolher no disco.
-  const entrada = page.locator('.capa-previa ~ .account-actions input[type="file"]').first();
+  const entrada = page.locator('.capa-previa-caixa ~ .account-actions input[type="file"]').first();
   await entrada.setInputFiles({ name: 'capa.png', mimeType: 'image/png', buffer: pngDeTeste(600, 150, [122, 31, 162]) });
   await page.waitForTimeout(3000);
 

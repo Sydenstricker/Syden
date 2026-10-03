@@ -2,11 +2,14 @@ import { Check, Hash, Link2, Mic, Sparkles, Store, Users, X } from 'lucide-react
 import { useState } from 'react';
 import { api } from './api';
 import { acharArte } from './boasVindas';
+import { useCoelho } from './coelho';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
+import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { useT } from './i18n';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import type { Channel, Community } from './types';
+import { CoelhoArte } from './Vila';
 
 // A PRIMEIRA COISA QUE ALGUÉM VÊ AO ENTRAR NUMA COMUNIDADE.
 //
@@ -18,6 +21,46 @@ import type { Channel, Community } from './types';
 // Warzone, e o que faz aquilo funcionar não é o brilho: é que cada coisa é um alvo grande, com uma
 // palavra curta e uma imagem que diz o que é. Lista de texto obriga a LER para escolher; painel grande
 // deixa ESCOLHER e só depois ler. Para quem acabou de entrar e não conhece nada, a diferença é enorme.
+
+/**
+ * O RECADO DO DONO, LIDO PELO COELHO DE QUEM CHEGA.
+ *
+ * Antes, o "Início" de uma comunidade mostrava a vila do Syden, com a estátua do coelho no meio — a
+ * mesma em toda comunidade, por cima da capa e da letra que o dono escolheu. Destoava, e não dizia
+ * nada sobre o lugar. Aqui o coelho é o DE QUEM LÊ (o que a pessoa escolheu em Coelhos), e o que ele
+ * diz é o que quem administra escreveu: o mesmo bicho em todas as comunidades, contando as regras de
+ * cada uma. É isso que dispensa os canais de "regras" e "faq" que enchem a lista no Discord.
+ *
+ * Cada linha do recado vira um item. Uma linha só fica como frase; o balão não inventa lista.
+ * SEM RECADO, O COELHO SÓ DÁ AS BOAS-VINDAS: ele não tem regra nenhuma para contar, e inventar uma
+ * seria a tela afirmando o que não é.
+ */
+export function CoelhoGuia({ titulo, texto }: { titulo: string; texto: string }) {
+  const gordo = useCoelho() === 'big';
+  const linhas = texto
+    .split('\n')
+    .map((linha) => linha.trim())
+    .filter(Boolean);
+  return (
+    <div className="bv-guia">
+      <svg className="bv-guia-coelho" viewBox="-19 -43 38 49" aria-hidden="true">
+        <CoelhoArte id={0} gordo={gordo} />
+      </svg>
+      <div className="bv-balao" role="note">
+        <strong className="bv-balao-titulo">{titulo}</strong>
+        {linhas.length > 1 ? (
+          <ol>
+            {linhas.map((linha, i) => (
+              <li key={i}>{linha}</li>
+            ))}
+          </ol>
+        ) : (
+          linhas[0] && <p>{linhas[0]}</p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export interface DadosDeBoasVindas {
   boasVindas: { titulo: string; texto: string; arte: string } | null;
@@ -89,19 +132,21 @@ export function InicioDaComunidade({
         </button>
 
         <div className="bv-cabeca">
-          <CommunityIcon community={community} size={72} />
-          <div>
-            <h1>{dados.boasVindas?.titulo || t('Bem-vindo!')}</h1>
-            <p className="bv-nome">
-              {community.name}
-              {community.seloTexto && community.seloIcone && community.seloCor && (
-                <SeloDaComunidade selo={{ texto: community.seloTexto, icone: community.seloIcone, cor: community.seloCor }} />
-              )}
-            </p>
-          </div>
+          <CommunityIcon community={community} size={56} standalone />
+          {/* A letra e o efeito que o dono escolheu, os mesmos da barra lateral: aqui é onde mais aparecem. */}
+          <h1
+            className="bv-nome"
+            style={{ fontFamily: pilhaDaFonte(community.fonte) || undefined }}
+            data-efeito={efeitoDaComunidade(community.efeito)}
+          >
+            {community.name}
+            {community.seloTexto && community.seloIcone && community.seloCor && (
+              <SeloDaComunidade selo={{ texto: community.seloTexto, icone: community.seloIcone, cor: community.seloCor }} />
+            )}
+          </h1>
         </div>
 
-        {dados.boasVindas?.texto && <p className="bv-recado">{dados.boasVindas.texto}</p>}
+        <CoelhoGuia titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} />
       </div>
 
       <div className="bv-blocos">

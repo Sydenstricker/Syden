@@ -913,4 +913,5 @@ export default {
   'ZECA': 'KUBA',
   'Tamanho do texto': 'Rozmiar tekstu',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Zmieniają się tylko litery: reszta ekranu zostaje na miejscu.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Jedna zasada lub informacja w wierszu: królik nowej osoby przeczyta je po kolei.',
 } satisfies Record<string, string>;

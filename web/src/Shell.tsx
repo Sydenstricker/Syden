@@ -716,7 +716,14 @@ export function Shell({
             jogosActive={jogosOpen}
             arteDaComunidade={boasVindas?.boasVindas?.arte}
             inicioActive={mostrandoBoasVindas}
-            onOpenInicio={() => setMostrandoBoasVindas(true)}
+            // O "Início" da comunidade leva para ELA, venha de onde vier. Antes ele só ligava uma marca:
+            // na vila do Syden não mudava nada na tela, e o botão parecia quebrado.
+            onOpenInicio={() => {
+              setView('community');
+              setShowUsage(false);
+              setShowJogos(false);
+              setMostrandoBoasVindas(true);
+            }}
             onOpenJogos={() => {
               setShowJogos(true);
               setShowUsage(false);

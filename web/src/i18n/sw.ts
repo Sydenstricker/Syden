@@ -846,4 +846,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Herufi na athari hutumika kwa jina la jumuiya, juu ya orodha ya chaneli.',
   'Tamanho do texto': 'Ukubwa wa maandishi',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Herufi pekee ndizo hubadilika: sehemu nyingine ya skrini inabaki pale pale.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Kanuni au tangazo moja kwa kila mstari: sungura wa anayefika anazisoma moja moja.',
 } satisfies Record<string, string>;

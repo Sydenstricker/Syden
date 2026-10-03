@@ -847,4 +847,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Fon dan kesan digunakan pada nama komuniti, di atas senarai saluran.',
   'Tamanho do texto': 'Saiz teks',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Hanya huruf yang berubah: bahagian lain skrin kekal di tempatnya.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Satu peraturan atau notis setiap baris: arnab orang yang baru tiba membacanya satu per satu.',
 } satisfies Record<string, string>;

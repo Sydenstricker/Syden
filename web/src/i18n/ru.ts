@@ -868,4 +868,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Шрифт и эффект применяются к названию сообщества, над списком каналов.',
   'Tamanho do texto': 'Размер текста',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Меняются только буквы: всё остальное на экране остаётся на месте.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Одно правило или объявление на строку: кролик новичка прочитает их по очереди.',
 } satisfies Record<string, string>;

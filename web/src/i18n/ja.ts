@@ -823,4 +823,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '書体と効果は、チャンネル一覧の上にあるコミュニティ名に適用されます。',
   'Tamanho do texto': '文字の大きさ',
   'Só as letras mudam: o resto da tela fica no lugar.': '変わるのは文字だけです。画面のほかの部分はそのままです。',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': '1行に1つずつ、ルールやお知らせを。来た人のうさぎが1つずつ読み上げます。',
 } satisfies Record<string, string>;

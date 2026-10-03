@@ -833,4 +833,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '字体和效果作用于频道列表上方的社区名称。',
   'Tamanho do texto': '文字大小',
   'Só as letras mudam: o resto da tela fica no lugar.': '只有文字会变：屏幕上的其他部分保持原样。',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': '每行一条规则或提示：新来的人的兔子会逐条念给他听。',
 } satisfies Record<string, string>;

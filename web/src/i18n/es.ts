@@ -852,4 +852,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'La letra y el efecto se aplican al nombre de la comunidad, arriba de la lista de canales.',
   'Tamanho do texto': 'Tamaño del texto',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Solo cambian las letras: el resto de la pantalla se queda en su sitio.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Una regla o aviso por línea: el conejo de quien llega los lee uno por uno.',
 } satisfies Record<string, string>;

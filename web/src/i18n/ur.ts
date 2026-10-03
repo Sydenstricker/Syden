@@ -829,4 +829,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'فونٹ اور اثر کمیونٹی کے نام پر لاگو ہوتے ہیں، چینلوں کی فہرست کے اوپر۔',
   'Tamanho do texto': 'متن کا سائز',
   'Só as letras mudam: o resto da tela fica no lugar.': 'صرف حروف بدلتے ہیں: اسکرین کا باقی حصہ اپنی جگہ رہتا ہے۔',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ہر سطر میں ایک اصول یا اعلان: آنے والے کا خرگوش انہیں ایک ایک کر کے پڑھتا ہے۔',
 } satisfies Record<string, string>;

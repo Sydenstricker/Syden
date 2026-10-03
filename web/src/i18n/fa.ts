@@ -830,4 +830,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'قلم و جلوه روی نام اجتماع، بالای فهرست کانال‌ها، اعمال می‌شود.',
   'Tamanho do texto': 'اندازهٔ متن',
   'Só as letras mudam: o resto da tela fica no lugar.': 'فقط حروف تغییر می‌کنند: بقیهٔ صفحه سر جایش می‌ماند.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'در هر خط یک قانون یا اطلاعیه: خرگوشِ تازه‌وارد آن‌ها را یکی‌یکی می‌خواند.',
 } satisfies Record<string, string>;

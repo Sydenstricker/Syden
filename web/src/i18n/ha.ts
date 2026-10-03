@@ -844,4 +844,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Rubutun da tasirin suna aiki ga sunan al’umma, bisa jerin tashoshi.',
   'Tamanho do texto': 'Girman rubutu',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Haruffa kawai ke canzawa: sauran allon yana nan a wurinsa.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Doka ko sanarwa ɗaya a kowane layi: zomon wanda ya iso zai karanta su ɗaya bayan ɗaya.',
 } satisfies Record<string, string>;

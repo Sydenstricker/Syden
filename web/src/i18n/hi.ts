@@ -846,4 +846,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'लिपि और प्रभाव समुदाय के नाम पर लगते हैं, चैनल सूची के ऊपर।',
   'Tamanho do texto': 'टेक्स्ट का आकार',
   'Só as letras mudam: o resto da tela fica no lugar.': 'सिर्फ़ अक्षर बदलते हैं: स्क्रीन का बाकी हिस्सा अपनी जगह रहता है।',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'हर लाइन में एक नियम या सूचना: नए आने वाले का खरगोश उन्हें एक-एक करके पढ़ता है।',
 } satisfies Record<string, string>;

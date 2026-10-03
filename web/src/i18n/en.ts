@@ -852,4 +852,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'The typeface and the effect apply to the community name, above the channel list.',
   'Tamanho do texto': 'Text size',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Only the letters change: the rest of the screen stays put.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'One rule or note per line: the newcomer’s bunny reads them one by one.',
 } satisfies Record<string, string>;

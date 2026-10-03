@@ -841,4 +841,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Yazı tipi ve efekt, kanal listesinin üstündeki topluluk adı için geçerli.',
   'Tamanho do texto': 'Metin boyutu',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Yalnızca harfler değişir: ekranın geri kalanı yerinde kalır.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Her satıra bir kural ya da duyuru: yeni gelenin tavşanı bunları tek tek okur.',
 } satisfies Record<string, string>;

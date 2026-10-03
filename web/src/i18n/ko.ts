@@ -834,4 +834,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': '글꼴과 효과는 채널 목록 위의 커뮤니티 이름에 적용됩니다.',
   'Tamanho do texto': '글자 크기',
   'Só as letras mudam: o resto da tela fica no lugar.': '글자만 바뀌어요. 화면의 나머지는 그대로예요.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': '한 줄에 규칙이나 안내 하나씩: 새로 온 사람의 토끼가 하나씩 읽어 줘요.',
 } satisfies Record<string, string>;

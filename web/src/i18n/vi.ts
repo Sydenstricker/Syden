@@ -812,4 +812,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Kiểu chữ và hiệu ứng áp dụng cho tên cộng đồng, phía trên danh sách kênh.',
   'Tamanho do texto': 'Cỡ chữ',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Chỉ chữ thay đổi: phần còn lại của màn hình vẫn giữ nguyên.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Mỗi dòng một quy tắc hoặc thông báo: chú thỏ của người mới đến sẽ đọc từng dòng.',
 } satisfies Record<string, string>;

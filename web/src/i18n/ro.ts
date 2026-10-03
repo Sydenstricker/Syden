@@ -842,4 +842,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Litera și efectul se aplică numelui comunității, deasupra listei de canale.',
   'Tamanho do texto': 'Dimensiunea textului',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Se schimbă doar literele: restul ecranului rămâne pe loc.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'O regulă sau un anunț pe rând: iepurele celui care sosește le citește pe rând.',
 } satisfies Record<string, string>;

@@ -848,4 +848,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'Η γραμματοσειρά και το εφέ ισχύουν για το όνομα της κοινότητας, πάνω από τη λίστα καναλιών.',
   'Tamanho do texto': 'Μέγεθος κειμένου',
   'Só as letras mudam: o resto da tela fica no lugar.': 'Αλλάζουν μόνο τα γράμματα: η υπόλοιπη οθόνη μένει στη θέση της.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Ένας κανόνας ή μια ανακοίνωση ανά γραμμή: το κουνέλι όποιου φτάνει τα διαβάζει ένα ένα.',
 } satisfies Record<string, string>;

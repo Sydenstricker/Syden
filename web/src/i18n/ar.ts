@@ -867,4 +867,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'ينطبق الخط والتأثير على اسم المجتمع، فوق قائمة القنوات.',
   'Tamanho do texto': 'حجم النص',
   'Só as letras mudam: o resto da tela fica no lugar.': 'تتغير الحروف فقط: يبقى باقي الشاشة في مكانه.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'قاعدة أو تنبيه في كل سطر: أرنب القادم الجديد يقرؤها واحدة تلو الأخرى.',
 } satisfies Record<string, string>;

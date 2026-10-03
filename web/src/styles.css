@@ -9421,24 +9421,105 @@ textarea {
 .bv-nome {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 6px 0 0;
-  font-size: calc(14px * var(--escala-do-texto));
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  opacity: 0.75;
+  gap: 10px;
+  margin: 0;
+  font-size: calc(30px * var(--escala-do-texto));
+  font-weight: 800;
+  line-height: 1.1;
 }
 
-.bv-recado {
+/* ---------- o coelho-guia ---------- */
+
+/* O coelho à esquerda e o balão à direita, alinhados pela base: é o coelho que fala, e o bico do
+   balão aponta para ele. Em tela estreita o coelho fica em cima, menor — o balão é o que importa. */
+.bv-guia {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.bv-guia-coelho {
+  flex: none;
+  width: 120px;
+  height: auto;
+  /* O bicho é desenhado para a praça, visto de cima e de longe; aqui ele está perto, e uma sombra
+     leve o descola do degradê. */
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+.bv-balao {
   position: relative;
   max-width: 62ch;
-  margin: 20px 0 0;
+  margin-bottom: 40px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid var(--bv-destaque);
   font-size: calc(16px * var(--escala-do-texto));
-  line-height: 1.6;
-  /* A quebra de linha do que o dono escreveu é respeitada: ele escreveu em parágrafos, e juntar tudo
-     numa linha só transformaria um recado em um muro de texto. */
-  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+/* O bico, apontando para a boca do coelho. */
+.bv-balao::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  bottom: 22px;
+  width: 16px;
+  height: 16px;
+  background: inherit;
+  border-left: 1px solid var(--bv-destaque);
+  border-bottom: 1px solid var(--bv-destaque);
+  transform: rotate(45deg);
+  /* Sem isto o fundo semitransparente do bico soma com o do balão onde os dois se cruzam. */
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+.bv[data-tom='claro'] .bv-balao {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.bv-balao-titulo {
+  display: block;
+  font-size: calc(20px * var(--escala-do-texto));
+  color: var(--bv-destaque);
+}
+
+.bv-balao p,
+.bv-balao ol {
+  margin: 8px 0 0;
+}
+
+.bv-balao ol {
+  padding-left: 1.4em;
+}
+
+.bv-balao li + li {
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .bv-guia {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bv-guia-coelho {
+    width: 72px;
+  }
+
+  .bv-balao {
+    margin-bottom: 0;
+  }
+
+  .bv-balao::before {
+    left: 26px;
+    top: -9px;
+    bottom: auto;
+    transform: rotate(135deg);
+  }
 }
 
 .bv-fechar {
@@ -9567,6 +9648,41 @@ textarea {
   margin-bottom: 28px;
 }
 
+/* Os campos com o mesmo desenho dos diálogos do Syden (ver .dialog label). Sem isto o rótulo ficava
+   na mesma linha do campo, e a caixa do recado tinha a largura de três palavras. */
+.bv-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: calc(12px * var(--escala-do-texto));
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.bv-editor input,
+.bv-editor textarea {
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--bg-darkest);
+  background: var(--bg-input, var(--bg-darkest));
+  color: var(--text-strong);
+  font: inherit;
+  font-size: calc(15px * var(--escala-do-texto));
+  font-weight: 400;
+  text-transform: none;
+}
+
+.bv-editor textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.bv-editor label small {
+  font-weight: 400;
+  text-transform: none;
+}
+
 .bv-artes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
@@ -9587,28 +9703,21 @@ textarea {
   box-shadow: 0 0 0 2px var(--bg-darkest);
 }
 
+/* A prévia é a MESMA tela em miniatura (as mesmas classes .bv e .bv-arte), não um desenho à parte:
+   se as duas divergissem, quem administra escolheria uma coisa e a comunidade veria outra. */
 .bv-previa {
-  padding: 18px;
+  flex: none;
+  overflow: hidden;
+  padding: 0;
   border-radius: var(--radius);
-  color: #fff;
 }
 
-.bv-previa[data-tom='claro'] {
-  color: #10212e;
+.bv-previa .bv-arte {
+  padding: 4px 20px 20px;
 }
 
-.bv-previa strong {
-  display: block;
-  font-size: calc(20px * var(--escala-do-texto));
-  line-height: 1.2;
-}
-
-.bv-previa p {
-  margin: 8px 0 0;
-  font-size: calc(14px * var(--escala-do-texto));
-  line-height: 1.5;
-  white-space: pre-wrap;
-  opacity: 0.9;
+.bv-previa .bv-guia-coelho {
+  width: 80px;
 }
 
 /* O puxador que muda a largura das barras (ver Puxador.tsx).

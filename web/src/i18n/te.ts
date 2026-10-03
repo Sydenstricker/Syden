@@ -824,4 +824,5 @@ export default {
   'A letra e o efeito valem para o nome da comunidade, no alto da lista de canais.': 'అక్షరశైలి, ప్రభావం ఛానెల్ జాబితా పైన ఉన్న సముదాయ పేరుకు వర్తిస్తాయి.',
   'Tamanho do texto': 'అక్షరాల పరిమాణం',
   'Só as letras mudam: o resto da tela fica no lugar.': 'అక్షరాలు మాత్రమే మారతాయి: తెరపై మిగతావన్నీ అలాగే ఉంటాయి.',
+  'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ఒక్కో వరుసకు ఒక నియమం లేదా సూచన: కొత్తగా వచ్చినవారి కుందేలు వాటిని ఒక్కొక్కటిగా చదువుతుంది.',
 } satisfies Record<string, string>;
