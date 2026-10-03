@@ -2,6 +2,9 @@ import { useSyncExternalStore } from 'react';
 import { FONTE_DA_ESCRITA, IDIOMAS, PADRAO, TRADUCOES, idiomaPorCodigo } from './idiomas';
 import { desktopBridge } from '../desktop';
 
+/** Escritas que qualquer computador ou celular já desenha: para elas não se busca fonte de fora. */
+const ESCRITAS_DO_SISTEMA = new Set(['latina', 'cirilica', 'grega']);
+
 // O idioma do Syden, escolhido DENTRO do app (Configurações → Idioma) e não no instalador.
 //
 // A chave de cada texto é o próprio texto em português. Parece estranho, mas resolve três problemas de
@@ -68,8 +71,13 @@ function escolhaInicial(): string {
  */
 function prepararFonte(codigo: string) {
   const idioma = idiomaPorCodigo(codigo);
-  const familia = FONTE_DA_ESCRITA[idioma?.escrita ?? 'latina'];
+  const escrita = idioma?.escrita ?? 'latina';
+  const familia = FONTE_DA_ESCRITA[escrita];
   document.documentElement.style.setProperty('--fonte-idioma', `'${familia}'`);
+  // Latino, cirílico e grego vêm desenhados em todo sistema: buscar a Noto para eles era contactar o
+  // Google em TODA abertura do app, inclusive em português, para trocar uma letra que já estava lá.
+  // A política de privacidade promete "só quando a escrita precisa", e é isto que a cumpre.
+  if (ESCRITAS_DO_SISTEMA.has(escrita)) return;
 
   const id = `fonte-${familia.replace(/\s+/g, '-').toLowerCase()}`;
   if (document.getElementById(id)) return;

@@ -413,6 +413,8 @@ fonte escolhida por quem administra faria o navegador de TODO MUNDO ir buscar, p
 pessoa. É a mesma forma do problema que fechou os GIFs numa lista de domínios e que fez a capa por
 endereço ser BAIXADA pelo servidor em vez de apontada.
 
-**Dívida conhecida:** o Google Fonts é contactado (pela Noto) e **não está declarado na política de
-privacidade**, o que contraria a regra do próprio projeto — terceiro liberado na política de
-segurança é terceiro declarado na de privacidade. Falta essa linha.
+**Paga em 03/10/2026:** o Google Fonts está declarado na política de privacidade (`#fontes`). E a
+declaração revelou que a frase acima era falsa no código: a Noto era baixada para TODO idioma,
+português incluído, e o `preconnect` do `index.html` abria conexão com o Google em toda visita.
+Hoje latino, cirílico e grego usam a letra do sistema (`ESCRITAS_DO_SISTEMA`, em `i18n/index.ts`).
+Quem mexer nisso: a política promete "só nas outras escritas", e é esse conjunto que a cumpre.
