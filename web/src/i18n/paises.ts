@@ -181,6 +181,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Só a Ucrânia. A Constituição (art. 10) diz que a língua do Estado é o ucraniano.
   uk: ['UA'],
+
+  // Israel. Desde a Lei Básica de 2018 o hebraico é a única língua do Estado; o árabe passou a ter
+  // "status especial", que não é oficial — e por isso Israel não está na lista do árabe.
+  he: ['IL'],
 };
 
 /**

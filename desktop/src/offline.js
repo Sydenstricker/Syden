@@ -245,10 +245,18 @@ const TEXTOS = {
     tentando: 'Підключення…',
     codigo: 'OFFLINE — Немає з’єднання',
   },
+  // Infinitivo e impessoal: em hebraico o imperativo tem sexo (נסה/נסי). Ver web/src/i18n/he.ts.
+  he: {
+    titulo: 'לא הצלחנו להתחבר',
+    explicacao: 'כדאי לבדוק את האינטרנט. ייתכן שגם השרת לא זמין.',
+    botao: 'לנסות שוב',
+    tentando: 'מנסה…',
+    codigo: 'OFFLINE — אין חיבור',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
-const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar', 'ur', 'fa']);
+const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar', 'ur', 'fa', 'he']);
 
 /**
  * O idioma, pela raiz do que o sistema informa.
