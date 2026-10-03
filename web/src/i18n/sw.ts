@@ -571,6 +571,12 @@ export default {
   'Salas de {nome}': 'Vyumba vya {nome}',
   'Salas de voz': 'Vyumba vya sauti',
   'Seria bom se…': 'Ingekuwa vizuri kama…',
+  'Caixa de ideias (como os outros veem)': 'Sanduku la mawazo (jinsi wengine wanavyoliona)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Hiki ndicho marafiki zako wanachokiona hapa chini ya kijiji. Wanachoandika kinakufikia kama mazungumzo ya faragha, na 💡 mbele — na Syden hujibu kwa shukrani papo hapo. Wazo likiingia kwenye programu, weka dole gumba kwenye ujumbe: upande wao confetti hudondoka na medali huonekana kwenye wasifu.',
+  'Entre numa comunidade para ver as salas.': 'Jiunge na jumuiya ili kuona vyumba vyake.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Andika kidogo zaidi kuhusu wazo lako.',
+  'Esta comunidade ainda não tem sala de voz.': 'Jumuiya hii bado haina chumba cha sauti.',
+  'vazia': 'tupu',
   'Servidores de jogos': 'Seva za michezo',
   '{quantos} dos 193 países da ONU': 'nchi {quantos} kati ya 193 wanachama wa Umoja wa Mataifa',
   // As cinco regiões da ONU, na grade de países

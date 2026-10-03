@@ -742,6 +742,12 @@ export default {
   'Senha trocada': 'Hasło zmienione',
   'Senha:': 'Hasło:',
   'Seria bom se…': 'Fajnie by było, gdyby…',
+  'Caixa de ideias (como os outros veem)': 'Skrzynka pomysłów (tak widzą ją inni)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Tak to widzą twoi znajomi tutaj, pod wioską. To, co napiszą, trafia do ciebie jako prywatna rozmowa, z 💡 na początku — a Syden od razu odpowiada podziękowaniem. Kiedy pomysł trafi do aplikacji, daj łapkę w górę pod wiadomością: u nich spada konfetti, a medal pojawia się w profilu.',
+  'Entre numa comunidade para ver as salas.': 'Dołącz do społeczności, żeby zobaczyć jej pokoje.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Napisz trochę więcej o swoim pomyśle.',
+  'Esta comunidade ainda não tem sala de voz.': 'Ta społeczność nie ma jeszcze pokoju głosowego.',
+  'vazia': 'pusty',
   'Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.':
     'Służy do odzyskiwania hasła i do powiadomień, jeśli coś się stanie z Syden. Bez e-maila zapomnianego hasła nie da się odzyskać.',
   'Servidores de jogos': 'Serwery gier',

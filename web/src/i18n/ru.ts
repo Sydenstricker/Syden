@@ -593,6 +593,12 @@ export default {
   'Salas de {nome}': 'Комнаты в {nome}',
   'Salas de voz': 'Голосовые комнаты',
   'Seria bom se…': 'Было бы здорово, если…',
+  'Caixa de ideias (como os outros veem)': 'Ящик идей (как его видят другие)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Вот что видят твои друзья здесь, под деревней. То, что они напишут, приходит тебе личной перепиской, с 💡 в начале — и Syden сразу отвечает благодарностью. Когда идея попадёт в приложение, поставь на сообщение палец вверх: у них посыплется конфетти, а медаль появится в профиле.',
+  'Entre numa comunidade para ver as salas.': 'Вступи в сообщество, чтобы увидеть его комнаты.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Напиши чуть подробнее о своей идее.',
+  'Esta comunidade ainda não tem sala de voz.': 'В этом сообществе пока нет голосовой комнаты.',
+  'vazia': 'пусто',
   'Servidores de jogos': 'Игровые серверы',
   '{quantos} dos 193 países da ONU': 'стран — членов ООН: {quantos} из 193',
   // As cinco regiões da ONU, na grade de países

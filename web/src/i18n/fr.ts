@@ -597,6 +597,12 @@ export default {
   'Salas de {nome}': 'Salons de {nome}',
   'Salas de voz': 'Salons vocaux',
   'Seria bom se…': 'Ce serait bien si…',
+  'Caixa de ideias (como os outros veem)': 'Boîte à idées (telle que les autres la voient)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'C’est ce que tes amis voient ici, en bas du village. Ce qu’ils écrivent t’arrive en conversation privée, avec 💡 devant — et Syden répond tout de suite pour remercier. Quand l’idée entre dans l’app, mets un pouce levé sur le message : chez eux, des confettis tombent et la médaille apparaît sur le profil.',
+  'Entre numa comunidade para ver as salas.': 'Rejoins une communauté pour voir ses salons.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Écris un peu plus sur ton idée.',
+  'Esta comunidade ainda não tem sala de voz.': 'Cette communauté n’a pas encore de salon vocal.',
+  'vazia': 'vide',
   'Servidores de jogos': 'Serveurs de jeu',
   '{quantos} dos 193 países da ONU': '{quantos} des 193 pays de l’ONU',
   // As cinco regiões da ONU, na grade de países

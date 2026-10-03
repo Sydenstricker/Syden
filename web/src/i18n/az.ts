@@ -708,6 +708,12 @@ export default {
   'Senha trocada': 'Şifrə dəyişdirildi',
   'Senha:': 'Şifrə:',
   'Seria bom se…': 'Yaxşı olardı ki…',
+  'Caixa de ideias (como os outros veem)': 'İdeya qutusu (başqalarının gördüyü kimi)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Dostlarının kəndin aşağısında gördüyü budur. Onların yazdıqları sənə şəxsi söhbət kimi gəlir, önündə 💡 ilə — və Syden dərhal təşəkkür edərək cavab verir. İdeya tətbiqə daxil olanda mesaja baş barmaq qoy: onların tərəfində konfeti yağır və medal profildə görünür.',
+  'Entre numa comunidade para ver as salas.': 'Otaqlarını görmək üçün bir icmaya qoşul.',
+  'Escreva um pouco mais sobre a sua ideia.': 'İdeyan haqqında bir az daha yaz.',
+  'Esta comunidade ainda não tem sala de voz.': 'Bu icmanın hələ səs otağı yoxdur.',
+  'vazia': 'boş',
   'Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.':
     'Şifrəni bərpa etmək və Syden-ə bir şey olsa sənə xəbər vermək üçündür. E-poçt olmasa, unudulmuş şifrə geri qayıtmır.',
   'Servidores de jogos': 'Oyun serverləri',

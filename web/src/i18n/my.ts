@@ -715,6 +715,12 @@ export default {
   'Senha trocada': 'စကားဝှက် ပြောင်းပြီး',
   'Senha:': 'စကားဝှက်-',
   'Seria bom se…': 'ဒီလိုဆို ကောင်းမှာ…',
+  'Caixa de ideias (como os outros veem)': 'အကြံဉာဏ်ပုံး (တခြားသူတွေ မြင်ရသလို)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'ဒါက ရွာအောက်နားမှာ သင့်သူငယ်ချင်းတွေ မြင်ရတာပါ။ သူတို့ ရေးတာတွေက ရှေ့မှာ 💡 ပါပြီး သင့်ဆီကို သီးသန့်စကားဝိုင်းအဖြစ် ရောက်လာမယ် — Syden က ချက်ချင်း ကျေးဇူးတင်စကားနဲ့ ပြန်ဖြေပေးတယ်။ အကြံဉာဏ်က အက်ပ်ထဲ ရောက်သွားတဲ့အခါ အဲဒီမက်ဆေ့ချ်ကို လက်မထောင်ပေးပါ။ သူတို့ဘက်မှာ ရောင်စုံစက္ကူတွေ ကျလာပြီး ပရိုဖိုင်မှာ ဆုတံဆိပ် ပေါ်လာမယ်။',
+  'Entre numa comunidade para ver as salas.': 'အခန်းတွေ မြင်ရဖို့ အသိုင်းအဝိုင်းတစ်ခုမှာ ဝင်ပါ။',
+  'Escreva um pouco mais sobre a sua ideia.': 'သင့်အကြံဉာဏ်အကြောင်း နည်းနည်းပိုရေးပါ။',
+  'Esta comunidade ainda não tem sala de voz.': 'ဒီအသိုင်းအဝိုင်းမှာ အသံအခန်း မရှိသေးပါ။',
+  'vazia': 'လွတ်နေ',
   'Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.':
     'စကားဝှက် ပြန်ယူဖို့နဲ့ Syden မှာ တစ်ခုခုဖြစ်ရင် အသိပေးဖို့ပါ။ အီးမေးလ်မရှိရင် မေ့သွားတဲ့ စကားဝှက်ကို ပြန်မရနိုင်ပါ။',
   'Servidores de jogos': 'ဂိမ်းဆာဗာများ',

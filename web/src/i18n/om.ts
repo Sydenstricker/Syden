@@ -716,6 +716,12 @@ export default {
   'Senha trocada': 'Jechi icciitii jijjiirameera',
   'Senha:': 'Jecha icciitii:',
   'Seria bom se…': 'Gaarii ture yoo…',
+  'Caixa de ideias (como os outros veem)': 'Saanduqa yaadaa (akka warri kaan arganitti)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Kun waan hiriyyoonni kee asitti, gandicha gaditti arganidha. Wanti isaan barreessan, 💡 fuuldura qabatee, akka haasaa dhuunfaatti siif dhufa — Syden immoo battalumatti galata galchuun deebisa. Yeroo yaadni sun appii keessa galu, ergaa irratti quba ol kaa’i: gama isaaniitiin konfeetiin roobaa, meedaaliyaanis profaayilii irratti mul’ata.',
+  'Entre numa comunidade para ver as salas.': 'Kutaalee isaa arguuf hawaasa tokkotti makami.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Waa’ee yaada keetii xiqqoo dabaliitii barreessi.',
+  'Esta comunidade ainda não tem sala de voz.': 'Hawaasni kun ammallee kutaa sagalee hin qabu.',
+  'vazia': 'duwwaa',
   'Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.':
     'Jecha icciitii deebifachuu fi yoo Syden irratti wanti tokko uumame siif beeksisuuf tajaajila. Imeelii malee, jechi icciitii irraanfatame hin deebi’u.',
   'Servidores de jogos': 'Sarvarii taphaa',

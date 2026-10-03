@@ -726,6 +726,12 @@ export default {
   'Senha trocada': 'Пароль змінено',
   'Senha:': 'Пароль:',
   'Seria bom se…': 'Було б добре, якби…',
+  'Caixa de ideias (como os outros veem)': 'Скринька ідей (як її бачать інші)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Ось що бачать твої друзі тут, під селом. Те, що вони напишуть, приходить тобі як приватна розмова, з 💡 на початку — і Syden одразу відповідає подякою. Коли ідея потрапить у застосунок, постав на повідомлення палець угору: у них посиплеться конфетті, а медаль з’явиться в профілі.',
+  'Entre numa comunidade para ver as salas.': 'Приєднайся до спільноти, щоб побачити її кімнати.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Напиши трохи більше про свою ідею.',
+  'Esta comunidade ainda não tem sala de voz.': 'У цій спільноті ще немає голосової кімнати.',
+  'vazia': 'порожньо',
   'Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.':
     'Потрібна, щоб відновити пароль і повідомити, якщо із Syden щось станеться. Без пошти забутий пароль не повернути.',
   'Servidores de jogos': 'Ігрові сервери',

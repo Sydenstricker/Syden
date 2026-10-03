@@ -577,6 +577,12 @@ export default {
   'Salas de {nome}': 'Rooms in {nome}',
   'Salas de voz': 'Voice rooms',
   'Seria bom se…': 'It would be nice if…',
+  'Caixa de ideias (como os outros veem)': 'Idea box (how others see it)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'This is what your friends see here below the village. What they write reaches you as a private conversation, with 💡 in front — and Syden replies with a thank-you right away. When the idea makes it into the app, give the message a thumbs-up: confetti falls on their side and the medal shows up on their profile.',
+  'Entre numa comunidade para ver as salas.': 'Join a community to see its rooms.',
+  'Escreva um pouco mais sobre a sua ideia.': 'Write a little more about your idea.',
+  'Esta comunidade ainda não tem sala de voz.': 'This community doesn’t have a voice room yet.',
+  'vazia': 'empty',
   'Servidores de jogos': 'Game servers',
   '{quantos} dos 193 países da ONU': '{quantos} of the 193 UN member states',
   // As cinco regiões da ONU, na grade de países

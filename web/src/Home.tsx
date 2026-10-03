@@ -30,7 +30,7 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
 
   async function enviar(event: FormEvent) {
     event.preventDefault();
-    if (texto.trim().length < 4) return setErro('Escreva um pouco mais sobre a sua ideia.');
+    if (texto.trim().length < 4) return setErro(t('Escreva um pouco mais sobre a sua ideia.'));
     setEstado('enviando');
     setErro(null);
     try {
@@ -47,18 +47,18 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
   // saber o que os amigos veem aqui e por onde as ideias chegam.
   if (souODono) {
     return (
-      <section className="ideias exemplo" aria-label="Caixa de ideias (como os outros veem)">
+      <section className="ideias exemplo" aria-label={t('Caixa de ideias (como os outros veem)')}>
         <h2>
           <Lightbulb size={20} aria-hidden="true" />
           {t('Tem uma ideia para o Syden?')}
         </h2>
         <p className="ideias-lead">
-          É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa
-          privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o
-          joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.
+          {t(
+            'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.',
+          )}
         </p>
         <form onSubmit={(e) => e.preventDefault()} aria-hidden="true">
-          <textarea rows={3} placeholder="Seria bom se…" disabled />
+          <textarea rows={3} placeholder={t('Seria bom se…')} disabled />
           <div className="ideias-rodape">
             <span className="ideias-conta" />
             <button type="button" disabled>
@@ -257,7 +257,7 @@ export function Home({
             </header>
             {salas.length === 0 ? (
               <p className="vila-painel-vazio">
-                {comunidade ? 'Esta comunidade ainda não tem sala de voz.' : 'Entre numa comunidade para ver as salas.'}
+                {comunidade ? t('Esta comunidade ainda não tem sala de voz.') : t('Entre numa comunidade para ver as salas.')}
               </p>
             ) : (
               <ul>
@@ -274,7 +274,7 @@ export function Home({
                         <Volume2 size={16} aria-hidden="true" />
                         <span className="vila-sala-nome">{sala.name}</span>
                         <span className={`vila-sala-gente${gente.length > 0 ? ' cheia' : ''}`}>
-                          {gente.length === 0 ? 'vazia' : gente.map((g) => g.username).join(', ')}
+                          {gente.length === 0 ? t('vazia') : gente.map((g) => g.username).join(', ')}
                         </span>
                       </button>
                     </li>

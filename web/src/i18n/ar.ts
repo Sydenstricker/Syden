@@ -592,6 +592,12 @@ export default {
   'Salas de {nome}': 'غرف {nome}',
   'Salas de voz': 'الغرف الصوتية',
   'Seria bom se…': 'سيكون جميلًا لو…',
+  'Caixa de ideias (como os outros veem)': 'صندوق الأفكار (كما يراه الآخرون)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'هذا ما يراه أصدقاؤك هنا أسفل القرية. ما يكتبونه يصلك كمحادثة خاصة، تسبقها 💡 — ويرد Syden بالشكر فورًا. عندما تدخل الفكرة التطبيق، ضع إعجابًا على الرسالة: يتساقط عندهم الورق الملون وتظهر الميدالية في الملف الشخصي.',
+  'Entre numa comunidade para ver as salas.': 'انضم إلى مجتمع لرؤية غرفه.',
+  'Escreva um pouco mais sobre a sua ideia.': 'اكتب أكثر قليلًا عن فكرتك.',
+  'Esta comunidade ainda não tem sala de voz.': 'لا توجد في هذا المجتمع غرفة صوتية بعد.',
+  'vazia': 'فارغة',
   'Servidores de jogos': 'خوادم الألعاب',
   '{quantos} dos 193 países da ONU': '{quantos} من 193 دولة عضوًا في الأمم المتحدة',
   // As cinco regiões da ONU, na grade de países

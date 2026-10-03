@@ -726,6 +726,12 @@ export default {
   'Senha trocada': 'הסיסמה הוחלפה',
   'Senha:': 'סיסמה:',
   'Seria bom se…': 'יהיה נחמד אם…',
+  'Caixa de ideias (como os outros veem)': 'תיבת רעיונות (כפי שאחרים רואים אותה)',
+  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'זה מה שהחברים שלך רואים כאן מתחת לכפר. מה שהם כותבים מגיע כשיחה פרטית, עם 💡 בהתחלה — ו-Syden עונה מיד בתודה. כשהרעיון נכנס לאפליקציה, אפשר לסמן אגודל למעלה על ההודעה: אצלם נופלים קונפטי והמדליה מופיעה בפרופיל.',
+  'Entre numa comunidade para ver as salas.': 'כדי לראות את החדרים צריך להצטרף לקהילה.',
+  'Escreva um pouco mais sobre a sua ideia.': 'כדאי לכתוב עוד קצת על הרעיון.',
+  'Esta comunidade ainda não tem sala de voz.': 'לקהילה הזו עדיין אין חדר קולי.',
+  'vazia': 'ריק',
   'Serve para recuperar a senha e para avisar você se algo acontecer com o Syden. Sem e-mail, uma senha esquecida não tem volta.':
     'משמש לשחזור סיסמה ולהודעה אם משהו יקרה ל-Syden. בלי מייל, סיסמה שנשכחה לא חוזרת.',
   'Servidores de jogos': 'שרתי משחק',
