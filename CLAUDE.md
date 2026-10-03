@@ -312,3 +312,64 @@ Build do Visual Studio.
 
 Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
 **Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa.
+
+## O número verdadeiro que mente: a tela não pode cobrar o preço sem mostrar a compra
+
+**Três relatos em dois dias, a mesma causa, e por isso está escrito aqui.** Todos sobre números
+CORRETOS que faziam o Syden parecer quebrado:
+
+1. *"Esses números diferentes de 30/60 são lidos como 'tem algum erro na transmissão'."* — eram
+   `14 fps` numa camada de 15 e `29 fps` numa de 30. As duas transmissões estavam perfeitas.
+2. *"Diz que estou a 576p mas a qualidade está agradável."*
+3. *"760p dá impressão de qualidade ruim, pois é resolução de celular. Os usuários acham que está
+   bugado quando vem um número baixo de p."*
+
+**A causa é a mesma nas três: o número mostrava o PREÇO de uma escolha sem nunca mostrar O QUE ELA
+COMPROU.** O Syden pede `maintain-framerate` de propósito (ver `SCREEN_HINTS`, em `useVoice.ts`):
+quando falta banda ou processador, **sacrifica-se resolução para segurar os 30 quadros**, porque
+804p a 7 fps é a pior forma possível de assistir alguém jogar. "576p · 30 fps" é esse acordo sendo
+cumprido — e a tela o anunciava como defeito.
+
+**A regra que fica, e ela vale para qualquer medida futura na tela:**
+
+- **Medida sem referência não informa, alarma.** `576p` não responde "está ruim?"; o mesmo 576p
+  sobra num quadro de 540 e falta em tela cheia num monitor 4K. O que responde é a COMPARAÇÃO — por
+  isso o cartão hoje diz "nítida para o tamanho em que está sendo mostrada", e não a altura crua.
+- **Ruído de medição não é defeito.** 29 num alvo de 30 é o normal de um codificador. A taxa volta
+  ao alvo dentro de 10% e só mostra o número cru quando ele está mesmo longe.
+- **Número cru fica para quem PODE AGIR sobre ele.** Quem transmite vê tudo, com o diagnóstico ao
+  lado; quem assiste vê a resposta, porque para ele o número não muda decisão nenhuma.
+
+## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
+
+**Decidido em 02/10/2026, depois de medir — e a medição derrubou a fonte que ele queria usar.**
+
+A ideia era pegar fontes do DaFont. Medido na página dos mais baixados, 28 fontes: **19 são "Grátis
+para uso pessoal"**, 5 dizem só "Grátis" sem nomear licença nenhuma, e só 4 nomeiam uma de verdade.
+Dois terços do catálogo popular estão proibidos num produto, e o "Grátis" dos outros é uma etiqueta
+que o próprio autor marcou, sem arquivo de licença, e que ele pode mudar.
+
+**E o direito de que o Syden precisa é mais forte do que parece: embutir uma fonte num app web é
+REDISTRIBUIR o arquivo para o navegador de cada pessoa.** Não é "usar numa arte". Muita fonte grátis
+permite a segunda coisa e não a primeira. É a mesma forma da lição da música: ter o arquivo não dá o
+direito de distribuí-lo.
+
+**A saída é o catálogo OFL, auto-hospedado** (`web/public/fontes/`), com o `OFL.txt` ao lado de cada
+arquivo — a licença exige acompanhar a fonte, e um `.woff2` solto numa pasta não é licença nenhuma.
+Há teste para isso.
+
+**E o motivo de EMBUTIR não é segurança, é consistência.** Pilha de fontes do sistema não faz
+requisição nenhuma, então nesse quesito ela é imbatível — mas medido: 'Arial Narrow' e
+'Segoe UI Variable Display' não existem no Linux, e 'SF Pro Rounded' é só do macOS. Lá as opções
+caíam na sans-serif comum, idênticas à padrão: quem administra escolheria uma identidade e metade
+das pessoas veria outra coisa.
+
+**O que continua proibido é terceiro em tempo de execução.** O Syden busca a Noto no Google só
+quando a PESSOA escolhe um idioma de escrita não latina — escolha dela, sobre o aparelho dela. Uma
+fonte escolhida por quem administra faria o navegador de TODO MUNDO ir buscar, por decisão de outra
+pessoa. É a mesma forma do problema que fechou os GIFs numa lista de domínios e que fez a capa por
+endereço ser BAIXADA pelo servidor em vez de apontada.
+
+**Dívida conhecida:** o Google Fonts é contactado (pela Noto) e **não está declarado na política de
+privacidade**, o que contraria a regra do próprio projeto — terceiro liberado na política de
+segurança é terceiro declarado na de privacidade. Falta essa linha.
