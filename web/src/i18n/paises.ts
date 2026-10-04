@@ -216,6 +216,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Somália. A Constituição provisória de 2012 (art. 5) faz do somali a língua oficial, ao lado do árabe.
   // Na Etiópia, no Djibuti e no Quênia ele é língua regional, que não faz o país inteiro falar.
   so: ['SO'],
+
+  // África do Sul (art. 6 da Constituição, entre as onze oficiais). Na Namíbia o africâner é língua
+  // nacional reconhecida, mas a única oficial é o inglês (art. 3).
+  af: ['ZA'],
 };
 
 /**

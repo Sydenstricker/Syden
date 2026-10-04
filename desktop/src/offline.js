@@ -320,6 +320,14 @@ const TEXTOS = {
     tentando: 'Waa la isku dayayaa…',
     codigo: 'OFFLINE — Xiriir ma jiro',
   },
+  // "Jy", e não "u": a escolha do neerlandês, de onde o africâner veio. Ver web/src/i18n/af.ts.
+  af: {
+    titulo: 'Kon nie koppel nie',
+    explicacao: 'Kyk na jou internet. Die bediener kan ook af wees.',
+    botao: 'Probeer weer',
+    tentando: 'Probeer…',
+    codigo: 'OFFLINE — Geen verbinding',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
