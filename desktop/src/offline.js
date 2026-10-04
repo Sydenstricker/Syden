@@ -563,6 +563,14 @@ const TEXTOS = {
     tentando: 'މަސައްކަތްކުރަނީ…',
     codigo: 'OFFLINE — ކަނެކްޝަނެއް ނެތް',
   },
+  // "Ou", o único você do crioulo. Ortografia oficial (IPN). Confiança média para boa. Ver web/src/i18n/ht.ts.
+  ht: {
+    titulo: 'Nou pa ka konekte',
+    explicacao: 'Verifye koneksyon entènèt ou. Petèt sèvè a pa mache tou.',
+    botao: 'Eseye ankò',
+    tentando: 'N ap eseye…',
+    codigo: 'OFFLINE — Pa gen koneksyon',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

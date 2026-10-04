@@ -318,6 +318,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Maldivas. A Constituição (art. 11) faz do divehi a língua oficial.
   dv: ['MV'],
+
+  // Haiti. A Constituição de 1987 (art. 5) faz do crioulo e do francês as línguas oficiais; o crioulo é o
+  // que praticamente todo haitiano fala.
+  ht: ['HT'],
 };
 
 /**
