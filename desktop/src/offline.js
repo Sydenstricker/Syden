@@ -328,6 +328,14 @@ const TEXTOS = {
     tentando: 'Probeer…',
     codigo: 'OFFLINE — Geen verbinding',
   },
+  // "ඔබ", e o imperativo -න්න, que não tem sexo. Ver web/src/i18n/si.ts.
+  si: {
+    titulo: 'සම්බන්ධ විය නොහැකි විය',
+    explicacao: 'ඔබේ අන්තර්ජාලය පරීක්ෂා කරන්න. සේවාදායකයද ක්‍රියා විරහිත විය හැකිය.',
+    botao: 'නැවත උත්සාහ කරන්න',
+    tentando: 'උත්සාහ කරමින්…',
+    codigo: 'OFFLINE — සම්බන්ධතාවයක් නැත',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

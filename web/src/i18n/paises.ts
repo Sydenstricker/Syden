@@ -220,6 +220,9 @@ export const OFICIAL: Record<string, string[]> = {
   // África do Sul (art. 6 da Constituição, entre as onze oficiais). Na Namíbia o africâner é língua
   // nacional reconhecida, mas a única oficial é o inglês (art. 3).
   af: ['ZA'],
+
+  // Sri Lanka. A Constituição (art. 18) faz do cingalês e do tâmil as línguas oficiais.
+  si: ['LK'],
 };
 
 /**
