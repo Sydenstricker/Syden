@@ -176,6 +176,7 @@ const IDIOMAS = [
   { codigo: 'cnr', nome: 'Crnogorski', rtl: false },
   { codigo: 'tg', nome: 'Тоҷикӣ', rtl: false },
   { codigo: 'tk', nome: 'Türkmen dili', rtl: false },
+  { codigo: 'dz', nome: 'རྫོང་ཁ', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

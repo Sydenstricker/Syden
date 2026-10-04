@@ -32,7 +32,8 @@ export type Escrita =
   | 'etiope'
   | 'georgiana'
   | 'armenia'
-  | 'thaana';
+  | 'thaana'
+  | 'tibetana';
 
 /**
  * A família do Google que desenha cada escrita. A fonte do Syden desenha o alfabeto latino; para o resto
@@ -60,6 +61,8 @@ export const FONTE_DA_ESCRITA: Record<Escrita, string> = {
   georgiana: 'Noto Sans Georgian',
   armenia: 'Noto Sans Armenian',
   thaana: 'Noto Sans Thaana',
+  // A tibetana só existe como SERIF no Google Fonts: não há Noto Sans Tibetan. É a do dzongkha.
+  tibetana: 'Noto Serif Tibetan',
 };
 
 export interface Idioma {
@@ -190,6 +193,7 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'cnr', nativo: 'Crnogorski', nome: 'Montenegrino', escrita: 'latina', paises: 1 },
   { codigo: 'tg', nativo: 'Тоҷикӣ', nome: 'Tajique', escrita: 'cirilica', paises: 1 },
   { codigo: 'tk', nativo: 'Türkmen dili', nome: 'Turcomeno', escrita: 'latina', paises: 1 },
+  { codigo: 'dz', nativo: 'རྫོང་ཁ', nome: 'Dzongkha', escrita: 'tibetana', paises: 1 },
 ];
 
 export const PADRAO = 'pt-BR';
@@ -264,6 +268,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   cnr: () => import('./cnr'),
   tg: () => import('./tg'),
   tk: () => import('./tk'),
+  dz: () => import('./dz'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

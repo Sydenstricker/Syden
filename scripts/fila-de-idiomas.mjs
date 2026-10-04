@@ -88,6 +88,7 @@ const ESCRITAS = {
   arabe: 'ÁRABE, DA DIREITA PARA A ESQUERDA: a página inteira vira. Ver web/src/bidi.ts e a seta ← em vez de →.',
   hebraica: 'HEBRAICO, DA DIREITA PARA A ESQUERDA: mesma família de armadilhas do árabe.',
   thaana: 'THAANA, DA DIREITA PARA A ESQUERDA: escrita rara, conferir a fonte de reserva na tela.',
+  tibetana: 'TIBETANA (dzongkha): sem espaço entre palavras — a sílaba se separa pelo tsheg (་) e a frase acaba no shad (།). Fonte só existe como Noto SERIF Tibetan. Algarismos próprios, que o Chrome não conhece (ver web/src/algarismos.ts).',
   devanagari: 'Devanágari: letras altas com sinais acima e abaixo — conferir a altura de linha. ATENÇÃO: o híndi e o nepalês dividem a escrita e NÃO dividem os algarismos (ver a medição acima).',
   bengali: 'Bengali ✔ já mordeu uma vez, pelos algarismos — e a medição acima mostra quais são.',
   tamil: 'Tâmil: palavra longa e aglutinada — é o risco de estourar a caixa. Os algarismos NÃO são os próprios da escrita: ver a medição acima.',

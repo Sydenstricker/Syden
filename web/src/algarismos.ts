@@ -32,6 +32,10 @@ import { idiomaAtual } from './i18n';
 const ALGARISMOS_PROPRIOS: Record<string, string> = {
   my: 'mymr',
   ne: 'deva',
+  // O dzongkha entrou depois da medição acima, e é o terceiro: o Chrome não tem dados dele, e a
+  // numeração da escrita (CLDR) é a tibetana, ༡༢༣. Medido no Chrome: sem esta linha, 1234567 saía
+  // "1.234.567", no formato do computador.
+  dz: 'tibt',
 };
 
 /** O navegador tem dados de número desta língua? */

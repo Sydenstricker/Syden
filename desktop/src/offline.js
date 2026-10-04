@@ -522,6 +522,14 @@ const TEXTOS = {
     tentando: 'Synanyşylýar…',
     codigo: 'OFFLINE — Baglanyşyk ýok',
   },
+  // Escrita tibetana. Confiança baixa para média, com pesquisa no MediaWiki e no GNOME. Ver web/src/i18n/dz.ts.
+  dz: {
+    titulo: 'མཐུད་མ་ཚུགས།',
+    explicacao: 'ཁྱོད་ཀྱི་ཨིན་ཊར་ནེཊ་བལྟ། སར་བར་ཡང་ལཱ་མི་འབད་འོང་།',
+    botao: 'ལོག་འབད།',
+    tentando: 'འབད་དོ…',
+    codigo: 'OFFLINE — མཐུད་ལམ་མེད།',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -303,6 +303,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Turcomenistão. A Constituição (art. 21) faz do turcomeno a língua do Estado.
   tk: ['TM'],
+
+  // Butão. A Constituição de 2008 (art. 1, seção 8) faz do dzongkha a língua nacional.
+  dz: ['BT'],
 };
 
 /**
@@ -428,6 +431,8 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   cnr: 1,
   tg: 9,
   tk: 7,
+  // Uns 170 mil nativos e mais de meio milhão contando quem aprende na escola — arredonda para 1.
+  dz: 1,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */

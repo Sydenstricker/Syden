@@ -206,6 +206,7 @@ describe('cada dicionário usa só a escrita da língua dele', () => {
     georgiana: /[Ⴀ-ჿ]/,
     armenia: /[԰-֏]/,
     thaana: /[ހ-޿]/,
+    tibetana: /[ༀ-࿿]/,
     // O japonês escreve com kana E com os ideogramas que o chinês usa, então as duas se permitem
     // mutuamente: procurar hanzi dentro do japonês acusaria 日本語 na primeira linha.
     chinesa: /[぀-ヿㇰ-ㇿ]/,
