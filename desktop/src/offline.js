@@ -514,6 +514,14 @@ const TEXTOS = {
     tentando: 'Кӯшиш карда мешавад…',
     codigo: 'OFFLINE — Пайваст нест',
   },
+  // "Sen", como o turco. Confiança média para boa, com pesquisa no MediaWiki turcomeno. Ver web/src/i18n/tk.ts.
+  tk: {
+    titulo: 'Birigip bolmady',
+    explicacao: 'Internet baglanyşygyňy barla. Belki serwer hem işlänok.',
+    botao: 'Täzeden synanyş',
+    tentando: 'Synanyşylýar…',
+    codigo: 'OFFLINE — Baglanyşyk ýok',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -300,6 +300,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Tajiquistão. A Constituição (art. 2) faz do tajique a língua do Estado; o russo é a língua de
   // comunicação entre etnias, não a oficial.
   tg: ['TJ'],
+
+  // Turcomenistão. A Constituição (art. 21) faz do turcomeno a língua do Estado.
+  tk: ['TM'],
 };
 
 /**
@@ -424,6 +427,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   // para a mesma fala. Fica 1, o mínimo da tabela, porque o número é declaração, não medição.
   cnr: 1,
   tg: 9,
+  tk: 7,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */
