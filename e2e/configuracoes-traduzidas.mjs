@@ -146,6 +146,7 @@ const IDIOMAS = [
   { codigo: 'om', nome: 'Afaan Oromoo', rtl: false },
   { codigo: 'az', nome: 'Azərbaycan', rtl: false },
   { codigo: 'uz', nome: 'Oʻzbek', rtl: false },
+  { codigo: 'ne', nome: 'नेपाली', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

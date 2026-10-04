@@ -278,6 +278,15 @@ const TEXTOS = {
     tentando: 'Urinilmoqda…',
     codigo: 'OFFLINE — Aloqa yoʻq',
   },
+  // "तपाईं", e não o "तिमी": o honorífico é o neutro entre adultos, e o verbo dele não tem sexo.
+  // Ver web/src/i18n/ne.ts.
+  ne: {
+    titulo: 'जोडिन सकिएन',
+    explicacao: 'आफ्नो इन्टरनेट जाँच गर्नुहोस्। सर्भर पनि बन्द हुन सक्छ।',
+    botao: 'फेरि प्रयास गर्नुहोस्',
+    tentando: 'प्रयास गर्दै…',
+    codigo: 'OFFLINE — जडान छैन',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

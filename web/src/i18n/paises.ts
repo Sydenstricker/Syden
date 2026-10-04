@@ -196,6 +196,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Uzbequistão. A Constituição (art. 4) diz que a língua do Estado é o uzbeque. No Afeganistão ele é
   // língua regional (Constituição de 2004, art. 16), e regional não faz o país inteiro falar.
   uz: ['UZ'],
+
+  // Nepal. A Constituição de 2015 (art. 6 e 7) faz do nepalês em devanágari a língua oficial. Na Índia
+  // ele está na 8ª Lista e é oficial em Sikkim — língua de estado, que não faz o país inteiro falar.
+  ne: ['NP'],
 };
 
 /**
