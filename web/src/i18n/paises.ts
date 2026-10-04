@@ -241,6 +241,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Sérvia (Constituição, art. 10: a língua sérvia e a escrita cirílica) e Bósnia e Herzegovina, onde o
   // sérvio é oficial ao lado do bósnio e do croata. No Montenegro ele é "de uso oficial", não oficial.
   sr: ['RS', 'BA'],
+
+  // Tchéquia. A língua oficial é o tcheco (Lei de Procedimento Administrativo, §16; a Constituição não
+  // a nomeia, mas toda a legislação a pressupõe).
+  cs: ['CZ'],
 };
 
 /**

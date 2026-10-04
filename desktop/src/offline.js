@@ -378,6 +378,14 @@ const TEXTOS = {
     tentando: 'Покушава се…',
     codigo: 'OFFLINE — Нема везе',
   },
+  // "Ty", e sem passado na frase, que diria o sexo de quem lê. Ver web/src/i18n/cs.ts.
+  cs: {
+    titulo: 'Nepodařilo se připojit',
+    explicacao: 'Zkontroluj připojení k internetu. Možná nejde ani server.',
+    botao: 'Zkusit znovu',
+    tentando: 'Zkouší se…',
+    codigo: 'OFFLINE — Bez připojení',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
