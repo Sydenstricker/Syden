@@ -11,6 +11,8 @@
 // Precisa do LiveKit no ar:  npm run dev:livekit
 //
 //   node e2e/clipe.mjs
+import { spawnSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { abrirNavegador, criarConta, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 /** No lugar da tela real: um canvas que muda a cada quadro, para haver vídeo de verdade para gravar. */
@@ -34,6 +36,31 @@ const TELA_FALSA = () => {
   };
 };
 
+/**
+ * Guarda cada arquivo que um MediaRecorder da página produz, para o teste medir o SOM de cada etapa
+ * (a gravação das vozes e o clipe final) em vez de só conferir que um arquivo existe. Foi assim que o
+ * "marquei juntar as vozes e o clipe saiu sem elas" escapou: o teste via o vídeo e nunca ouvia.
+ */
+const GUARDAR_GRAVACOES = () => {
+  window.__gravacoes = [];
+  const Original = window.MediaRecorder;
+  window.MediaRecorder = class extends Original {
+    constructor(...args) {
+      super(...args);
+      const partes = [];
+      this.addEventListener('dataavailable', (e) => e.data.size > 0 && partes.push(e.data));
+      this.addEventListener('stop', () => window.__gravacoes.push({ tipo: this.mimeType, blob: new Blob(partes) }));
+    }
+  };
+};
+
+/** Volume médio do som de um arquivo, em dB, pelo ffmpeg. -91 é silêncio digital. */
+function volumeMedio(arquivo) {
+  // O ffmpeg escreve a medição na saída de ERRO, mesmo quando dá certo.
+  const { stderr } = spawnSync('ffmpeg', ['-hide_banner', '-i', arquivo, '-af', 'volumedetect', '-vn', '-f', 'null', '-'], { encoding: 'utf8' });
+  return Number(/mean_volume: (-?[\d.]+) dB/.exec(stderr ?? '')?.[1] ?? NaN);
+}
+
 const { browser } = await abrirNavegador();
 
 async function entrar(prefixo) {
@@ -41,7 +68,9 @@ async function entrar(prefixo) {
   const page = await ctx.newPage();
   vigiar(page);
   page.on('pageerror', (e) => console.log(`  [${prefixo} erro]`, String(e).slice(0, 200)));
+  page.on('console', (m) => m.text().startsWith('[corte]') && console.log(`  [${prefixo}]`, m.text()));
   await page.addInitScript(TELA_FALSA);
+  await page.addInitScript(GUARDAR_GRAVACOES);
   const usuario = await criarConta(page, prefixo);
   await dispensarPresentes(page);
   return { page, usuario };
@@ -93,6 +122,13 @@ if ((await convite_.count()) > 0) {
 await bia.page.locator('.stage-main video, .stage video').first().waitFor({ timeout: 25000 });
 ok('a bia abriu a transmissão e está vendo');
 
+// A BIA FICA EM SILÊNCIO, para o som das vozes no clipe só poder vir da ANA, pela rede. Com as duas
+// falando, o bipe da própria Bia bastaria para o teste passar — e a voz que vem de longe é justamente a
+// que o Chrome é conhecido por entregar muda a um contexto de áudio.
+await bia.page.locator('.stage-controls button[aria-label="Silenciar"]').click();
+await bia.page.locator('.stage-controls button[aria-label="Ativar microfone"]').waitFor({ timeout: 5000 });
+ok('a bia se silenciou: o que soar nas vozes é a ana');
+
 // ---------- clicar CEDO DEMAIS tem de dizer alguma coisa ----------
 //
 // Este é o caminho que mais se parece com "cliquei e não aconteceu nada": antes, a tesoura ficava
@@ -118,7 +154,7 @@ if ((await cedo.count()) > 0 && !(await cedo.isDisabled())) {
 await bia.page.keyboard.press('Escape');
 
 // A gravação em rolagem precisa de alguns segundos guardados antes de o botão acender.
-await bia.page.waitForTimeout(8000);
+await bia.page.waitForTimeout(Number(process.env.ESPERA_DO_CLIPE ?? 8000));
 
 // ---------- a bia clipa ----------
 await bia.page.locator('.mais-anchor > button').first().click();
@@ -153,6 +189,93 @@ if ((await tesoura.count()) === 0) {
       const video = await bia.page.locator('.clipe-video').count();
       video === 1 ? ok('e tem vídeo dentro dela') : falhou('a prévia abriu sem vídeo');
       await bia.page.screenshot({ path: 'e2e/fotos/clipe-previa.png' });
+
+      // ---------- AS VOZES: medidas no SOM, e não na existência de um arquivo ----------
+      const caixinha = bia.page.locator('.clipe-vozes input');
+      if ((await caixinha.count()) === 0) {
+        falhou('a caixinha "Juntar as vozes da sala" não apareceu');
+      } else {
+        (await caixinha.isChecked()) ? ok('a caixinha das vozes aparece, já marcada') : await caixinha.check();
+
+        // A PRÉVIA TEM DE TER AS VOZES TAMBÉM: era ela que dizia "a caixinha não funciona" a quem
+        // apertava play e ouvia só o jogo.
+        //
+        // O QUE ESTE TESTE NÃO CONSEGUE MEDIR: a sincronia. No Chrome sem tela dos testes, o vídeo da
+        // prévia fica parado no zero mesmo "tocando" — com ou sem vozes, medido em 03/10/2026 —, então
+        // comparar os dois relógios aqui mediria a limitação do Chrome, não o Syden. O que se confere é
+        // que as vozes ESTÃO na prévia e abrem como áudio de verdade.
+        const naPrevia = await bia.page.evaluate(async () => {
+          const a = document.querySelector('.clipe-dialog audio');
+          if (!a) return { achou: false };
+          if (a.readyState < 1) await new Promise((r) => { a.onloadedmetadata = r; setTimeout(r, 5000); });
+          return { achou: true, pronto: a.readyState };
+        });
+        naPrevia.achou && naPrevia.pronto >= 1
+          ? ok('a prévia carrega as vozes junto com o vídeo')
+          : falhou('a prévia não tem as vozes: ' + JSON.stringify(naPrevia));
+        // E A SINCRONIA, quando o vídeo da prévia anda: os dois relógios juntos.
+        const relogios = await bia.page.evaluate(async () => {
+          const v = document.querySelector('.clipe-video');
+          const a = document.querySelector('.clipe-dialog audio');
+          await v.play().catch(() => {});
+          for (let i = 0; i < 80 && v.currentTime < 2; i++) await new Promise((r) => setTimeout(r, 100));
+          const r = { video: v.currentTime, vozes: a.currentTime, vozesTocando: !a.paused };
+          v.pause();
+          await new Promise((r) => setTimeout(r, 300));
+          return { ...r, vozesParamJunto: a.paused };
+        });
+        if (relogios.video < 1) {
+          console.log('  (o vídeo da prévia não andou neste Chrome; a sincronia não foi medida)', JSON.stringify(relogios));
+        } else {
+          relogios.vozesTocando && Math.abs(relogios.video - relogios.vozes) < 0.5
+            ? ok(`na prévia, as vozes tocam junto (vídeo ${relogios.video.toFixed(1)} s, vozes ${relogios.vozes.toFixed(1)} s)`)
+            : falhou('na prévia, as vozes não acompanham o vídeo: ' + JSON.stringify(relogios));
+          relogios.vozesParamJunto ? ok('e param quando o vídeo pausa') : falhou('o vídeo pausou e as vozes continuaram');
+        }
+        // Desmarcada, elas saem da prévia — o que se ouve é o que vai sair.
+        await caixinha.uncheck();
+        (await bia.page.locator('.clipe-dialog audio').count()) === 0
+          ? ok('desmarcando a caixinha, as vozes saem da prévia')
+          : falhou('desmarcada a caixinha, as vozes continuam na prévia');
+        await caixinha.check();
+        // Com as vozes marcadas o corte nunca é "vazio" (ver corteVazio), então isto passa pelo caminho
+        // que REGRAVA — que é onde as vozes são juntadas.
+        const baixou = bia.page.waitForEvent('download', { timeout: 90000 }).catch(() => null);
+        await bia.page.getByRole('button', { name: /Guardar no computador/ }).click();
+        const vigia = setInterval(async () => {
+          const estado = await bia.page.evaluate(() => ({
+            barra: document.querySelector('.clipe-andamento div')?.style.width ?? null,
+            erro: document.querySelector('.clipe-dialog .form-error')?.textContent ?? null,
+          })).catch(() => null);
+          console.log('  corte:', JSON.stringify(estado));
+        }, 10000);
+        const download = await baixou;
+        clearInterval(vigia);
+        const gravacoes = await bia.page.evaluate(async () =>
+          Promise.all(
+            window.__gravacoes.map(async (g) => ({
+              tipo: g.tipo,
+              base64: await new Promise((r) => { const l = new FileReader(); l.onload = () => r(String(l.result).split(",")[1] ?? ""); l.readAsDataURL(g.blob); }),
+            })),
+          ),
+        );
+        const deVoz = gravacoes.filter((g) => g.tipo.startsWith('audio/'));
+        console.log('  gravações na página:', gravacoes.map((g) => g.tipo.split(';')[0]).join(', '));
+        if (deVoz.length === 0) {
+          falhou('nenhuma gravação só de áudio: a trilha das vozes nem foi gravada');
+        } else {
+          writeFileSync('e2e/fotos/clipe-vozes.webm', Buffer.from(deVoz.at(-1).base64, 'base64'));
+          const db = volumeMedio('e2e/fotos/clipe-vozes.webm');
+          db > -60 ? ok(`a gravação das vozes tem som (${db} dB)`) : falhou(`a gravação das vozes está muda (${db} dB)`);
+        }
+        if (!download) {
+          falhou('o "Guardar no computador" não entregou arquivo nenhum');
+        } else {
+          await download.saveAs('e2e/fotos/clipe-final.webm');
+          const db = volumeMedio('e2e/fotos/clipe-final.webm');
+          db > -60 ? ok(`o clipe final tem som (${db} dB)`) : falhou(`o clipe final saiu mudo (${db} dB), mesmo com as vozes marcadas`);
+        }
+      }
     }
   }
 }

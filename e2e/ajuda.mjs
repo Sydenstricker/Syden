@@ -39,7 +39,18 @@ export async function abrirNavegador({ viewport = { width: 1500, height: 950 }, 
   if (!executablePath) {
     throw new Error('Não achei o Chrome. Aponte com a variável CHROME_PATH.');
   }
-  const browser = await chromium.launch({ executablePath, headless: true, args: ['--autoplay-policy=no-user-gesture-required'] });
+  const browser = await chromium.launch({
+    executablePath,
+    headless: true,
+    args: [
+      '--autoplay-policy=no-user-gesture-required',
+      // O MICROFONE FALSO, que toca um bipe conhecido. Sem isto o Chrome dos testes abria o microfone
+      // DE VERDADE da máquina (medido: "High Definition Audio Device") — gravava a sala de quem roda o
+      // teste, e media o silêncio dela em vez de um som que se sabe que existe. Foi assim que "as
+      // vozes do clipe saem mudas" parecia ser culpa do Syden sem dar para saber.
+      '--use-fake-device-for-media-stream',
+    ],
+  });
   const contexto = await browser.newContext({ viewport, permissions: permissoes });
   return { browser, contexto };
 }

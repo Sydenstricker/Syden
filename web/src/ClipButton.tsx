@@ -46,7 +46,7 @@ function Previa({
   const [enviando, setEnviando] = useState(false);
   const [pronto, setPronto] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const url = useRef(URL.createObjectURL(blob));
+  const url = useEnderecoDoArquivo(blob);
 
   // O AJUSTE FINO. `duracao` só é conhecida depois de o navegador varrer o arquivo (webm gravado
   // aqui não traz a duração escrita dentro), e até lá não há régua para arrastar.
@@ -61,11 +61,6 @@ function Previa({
   // Marcada quando HÁ vozes gravadas: o clipe com a reação da galera é o que a pessoa quase sempre
   // quer, e quem preferir só o jogo desmarca. Sem trilha de voz, a caixinha nem aparece.
   const [comVozes, setComVozes] = useState(true);
-
-  useEffect(() => {
-    const atual = url.current;
-    return () => URL.revokeObjectURL(atual);
-  }, []);
 
   /**
    * A PRÉVIA NÃO É MAIS `muted`, e isso é metade do conserto do "clipe sem som".
@@ -118,8 +113,12 @@ function Previa({
    * exatos que saíram da gravação.
    */
   async function arquivoFinal(): Promise<Blob> {
-    const corte = { inicio, fim, volume, vozes: comVozes ? vozesDaSala : null };
-    if (duracao === 0 || corteVazio(corte, duracao)) return blob;
+    // A DURAÇÃO PODE NÃO TER CHEGADO quando a pessoa clica (ela é medida varrendo o arquivo). Antes,
+    // duração zero entregava o arquivo cru — e com ele iam embora as vozes que a caixinha prometia,
+    // sem aviso. Agora, com vozes pedidas, o corte acontece de qualquer jeito, até o fim do arquivo.
+    const vozes = comVozes ? vozesDaSala : null;
+    const corte = { inicio, fim: duracao > 0 ? fim : Infinity, volume, vozes };
+    if (!vozes && (duracao === 0 || corteVazio(corte, duracao))) return blob;
     setCortando(0);
     try {
       return await recortarClipe(blob, corte, setCortando);
@@ -170,7 +169,8 @@ function Previa({
         <h2>
           <Scissors size={18} /> Últimos {segundos} segundos
         </h2>
-        <video ref={video} className="clipe-video" src={url.current} controls loop playsInline onTimeUpdate={aoAndar} />
+        <video ref={video} className="clipe-video" src={url ?? undefined} controls loop playsInline onTimeUpdate={aoAndar} />
+        {vozesDaSala && comVozes && <VozesNaPrevia video={video} vozes={vozesDaSala} />}
 
         {duracao > 0 && (
           <div className="clipe-ajuste">
@@ -293,6 +293,67 @@ function Previa({
       </div>
     </div>
   );
+}
+
+/**
+ * O endereço de um arquivo na memória, criado e revogado PELO MESMO EFEITO.
+ *
+ * Criar uma vez (num useRef ou no estado) e revogar na desmontagem parece certo e não é: no modo
+ * estrito o React monta, desmonta e monta de novo, e a segunda montagem herdava um endereço já
+ * revogado. Medido: a prévia do clipe ficava com o vídeo parado no zero e as vozes sem carregar.
+ */
+function useEnderecoDoArquivo(arquivo: Blob): string | null {
+  const [endereco, setEndereco] = useState<string | null>(null);
+  useEffect(() => {
+    const novo = URL.createObjectURL(arquivo);
+    setEndereco(novo);
+    return () => URL.revokeObjectURL(novo);
+  }, [arquivo]);
+  return endereco;
+}
+
+/**
+ * AS VOZES TOCAM NA PRÉVIA, junto com o vídeo. Antes elas só entravam no arquivo final, e a prévia
+ * tocava o jogo sozinho: quem marcava "Juntar as vozes da sala" e apertava play não ouvia reação
+ * nenhuma e concluía que a caixinha não funcionava. A prévia não pode mentir sobre o que vai sair.
+ *
+ * As duas gravações começaram no mesmo instante (ver gravarEmRolagem), então seguir o tempo do vídeo
+ * basta: play, pausa e cada salto da régua levam as vozes junto.
+ */
+function VozesNaPrevia({ video, vozes }: { video: React.RefObject<HTMLVideoElement | null>; vozes: Blob }) {
+  const audio = useRef<HTMLAudioElement>(null);
+  const endereco = useEnderecoDoArquivo(vozes);
+
+  useEffect(() => {
+    const v = video.current;
+    const a = audio.current;
+    if (!v || !a) return;
+    const alinhar = () => {
+      if (Math.abs(a.currentTime - v.currentTime) > 0.25) a.currentTime = v.currentTime;
+    };
+    // `playing`, e não `play`: `play` chega quando alguém PEDIU para tocar, e o vídeo ainda pode estar
+    // carregando. Medido: as vozes andavam 1,4 s com o vídeo parado no zero. `playing` é o vídeo rodando.
+    const tocar = () => {
+      alinhar();
+      void a.play().catch(() => {});
+    };
+    const pausar = () => a.pause();
+    const eventos: [string, () => void][] = [
+      ['playing', tocar],
+      ['pause', pausar],
+      ['waiting', pausar], // o vídeo engasgou: as vozes esperam com ele
+      ['seeked', alinhar],
+      ['timeupdate', alinhar], // e a cada passo o desvio é corrigido, inclusive na volta do loop
+    ];
+    for (const [nome, f] of eventos) v.addEventListener(nome, f);
+    if (!v.paused && v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) tocar();
+    return () => {
+      for (const [nome, f] of eventos) v.removeEventListener(nome, f);
+      a.pause();
+    };
+  }, [video, endereco]);
+
+  return <audio ref={audio} src={endereco ?? undefined} preload="auto" hidden />;
 }
 
 /**

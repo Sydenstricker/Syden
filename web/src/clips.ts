@@ -275,8 +275,14 @@ export function corteVazio(corte: Corte, duracao: number): boolean {
  * Aqui ele precisa ser uma PROMESSA, e não um efeito solto: quem desenha a barra precisa esperar o
  * número chegar, senão desenha uma régua de tamanho infinito.
  */
-export function duracaoDoClipe(video: HTMLVideoElement): Promise<number> {
-  if (Number.isFinite(video.duration) && video.duration > 0) return Promise.resolve(video.duration);
+export async function duracaoDoClipe(video: HTMLVideoElement): Promise<number> {
+  // O SALTO SÓ VALE DEPOIS DOS METADADOS. Pedido antes, o navegador o ignora calado, a duração nunca
+  // aparece e quem esperava por ela espera para sempre — no diálogo do clipe, isso deixava a duração
+  // em zero, e com zero o arquivo saía cru, SEM AS VOZES que a caixinha prometia.
+  if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+    await new Promise<void>((pronto) => video.addEventListener('loadedmetadata', () => pronto(), { once: true }));
+  }
+  if (Number.isFinite(video.duration) && video.duration > 0) return video.duration;
   return new Promise((pronto) => {
     const aoSaber = () => {
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
@@ -346,6 +352,20 @@ export async function recortarClipe(
     audio.src = enderecoDaVoz;
     audio.muted = false;
   }
+  // ESCUTAR NO MESMO INSTANTE EM QUE O ARQUIVO COMEÇA A CARREGAR, e foi aqui que o corte travava.
+  // A escuta ficava lá embaixo, DEPOIS de medir a duração do vídeo. Em clipe curto a medição é
+  // rápida e dava tempo; em clipe de 25 segundos ela demora, o aviso de "carreguei" das vozes já
+  // tinha passado quando alguém foi ouvi-lo, e o corte esperava para sempre — barra em 0%, nenhum
+  // erro, "Guardar no computador" sem fazer nada. Medido em e2e/clipe.mjs.
+  //
+  // O PRAZO é a mesma regra de cima: voz que não abre em cinco segundos não segura o clipe.
+  const vozCarregada = new Promise<boolean>((pronto) => {
+    if (!audio) return pronto(false);
+    if (audio.readyState >= HTMLMediaElement.HAVE_METADATA) return pronto(true);
+    audio.addEventListener('loadedmetadata', () => pronto(true), { once: true });
+    audio.addEventListener('error', () => pronto(false), { once: true });
+    setTimeout(() => pronto(false), 5000);
+  });
 
   const ctx = new AudioContext();
   let gravador: MediaRecorder | null = null;
@@ -355,17 +375,13 @@ export async function recortarClipe(
       video.onloadedmetadata = () => pronto();
       video.onerror = () => falhou(new Error('Não deu para abrir o clipe para cortar.'));
     });
-    await duracaoDoClipe(video);
+    // Quem chamou pode não saber a duração ainda (o diálogo manda Infinity): aqui ela é medida de novo.
+    const total = await duracaoDoClipe(video);
+    const ate = Number.isFinite(fim) && fim > 0 ? Math.min(fim, total) : total;
 
     // A VOZ NÃO PODE DERRUBAR O CORTE. Se este arquivo não abrir, o clipe sai com o som do jogo em
     // vez de não sair — perder as vozes é um incômodo, perder o clipe é perder a jogada.
-    let vozPronta = false;
-    if (audio) {
-      vozPronta = await new Promise<boolean>((pronto) => {
-        audio.onloadedmetadata = () => pronto(true);
-        audio.onerror = () => pronto(false);
-      });
-    }
+    const vozPronta = await vozCarregada;
 
     const fonte = ctx.createMediaElementSource(video);
     const ganho = ctx.createGain();
@@ -403,9 +419,9 @@ export async function recortarClipe(
 
     await new Promise<void>((pronto) => {
       const olhar = () => {
-        const andou = (video.currentTime - inicio) / Math.max(0.001, fim - inicio);
+        const andou = (video.currentTime - inicio) / Math.max(0.001, ate - inicio);
         aoAndar?.(Math.min(1, Math.max(0, andou)));
-        if (video.currentTime >= fim || video.ended) {
+        if (video.currentTime >= ate || video.ended) {
           clearInterval(relogio);
           pronto();
         }
