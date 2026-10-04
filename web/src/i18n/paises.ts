@@ -273,6 +273,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Eslovênia. A Constituição (art. 11) faz do esloveno a língua oficial.
   sl: ['SI'],
+
+  // Lituânia. A Constituição (art. 14) faz do lituano a língua do Estado.
+  lt: ['LT'],
 };
 
 /**

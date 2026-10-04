@@ -450,6 +450,14 @@ const TEXTOS = {
     tentando: 'Poskušanje…',
     codigo: 'OFFLINE — Ni povezave',
   },
+  // "Tu" nas frases, infinitivo nos botões, e particípio só em coisas. Ver web/src/i18n/lt.ts.
+  lt: {
+    titulo: 'Nepavyko prisijungti',
+    explicacao: 'Patikrink interneto ryšį. Gal neveikia ir serveris.',
+    botao: 'Bandyti dar kartą',
+    tentando: 'Bandoma…',
+    codigo: 'OFFLINE — Nėra ryšio',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
