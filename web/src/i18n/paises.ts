@@ -263,6 +263,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Eslováquia. A Constituição (art. 6) e a lei da língua do Estado (270/1995) fazem do eslovaco o oficial.
   sk: ['SK'],
+
+  // Finlândia. A Constituição (seção 17) faz do finlandês e do sueco as línguas nacionais; o sueco já
+  // conta a Finlândia no sv.
+  fi: ['FI'],
 };
 
 /**

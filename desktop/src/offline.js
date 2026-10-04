@@ -426,6 +426,14 @@ const TEXTOS = {
     tentando: 'Skúša sa…',
     codigo: 'OFFLINE — Bez pripojenia',
   },
+  // "Sinä", e sem gênero nenhum. Ver web/src/i18n/fi.ts.
+  fi: {
+    titulo: 'Yhteyttä ei saatu',
+    explicacao: 'Tarkista internetyhteytesi. Ehkä palvelinkaan ei toimi.',
+    botao: 'Yritä uudelleen',
+    tentando: 'Yritetään…',
+    codigo: 'OFFLINE — Ei yhteyttä',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
