@@ -506,6 +506,14 @@ const TEXTOS = {
     tentando: 'Pokušava se…',
     codigo: 'OFFLINE — Nema veze',
   },
+  // "Шумо", como o persa do fa.ts, mas em cirílico. Ver web/src/i18n/tg.ts.
+  tg: {
+    titulo: 'Пайваст шудан муяссар нашуд',
+    explicacao: 'Пайвасти интернетро санҷед. Шояд сервер ҳам кор намекунад.',
+    botao: 'Боз кӯшиш кардан',
+    tentando: 'Кӯшиш карда мешавад…',
+    codigo: 'OFFLINE — Пайваст нест',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -188,6 +188,7 @@ export const IDIOMAS: Idioma[] = [
   // ---------------------------------------------------------------------------------------------
   { codigo: 'ca', nativo: 'Català', nome: 'Catalão', escrita: 'latina', paises: 1 },
   { codigo: 'cnr', nativo: 'Crnogorski', nome: 'Montenegrino', escrita: 'latina', paises: 1 },
+  { codigo: 'tg', nativo: 'Тоҷикӣ', nome: 'Tajique', escrita: 'cirilica', paises: 1 },
 ];
 
 export const PADRAO = 'pt-BR';
@@ -260,6 +261,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   is: () => import('./is'),
   ca: () => import('./ca'),
   cnr: () => import('./cnr'),
+  tg: () => import('./tg'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

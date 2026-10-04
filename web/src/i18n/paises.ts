@@ -296,6 +296,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Montenegro. A Constituição de 2007 (art. 13) faz do montenegrino a língua oficial; sérvio, bósnio,
   // albanês e croata têm uso oficial também, mas a língua do Estado é esta.
   cnr: ['ME'],
+
+  // Tajiquistão. A Constituição (art. 2) faz do tajique a língua do Estado; o russo é a língua de
+  // comunicação entre etnias, não a oficial.
+  tg: ['TJ'],
 };
 
 /**
@@ -419,6 +423,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   // Uns 200 mil se declaram falantes de montenegrino no censo; boa parte do resto do país diz "sérvio"
   // para a mesma fala. Fica 1, o mínimo da tabela, porque o número é declaração, não medição.
   cnr: 1,
+  tg: 9,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */
