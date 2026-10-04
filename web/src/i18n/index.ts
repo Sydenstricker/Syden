@@ -47,6 +47,13 @@ function preferenciasDeIdioma(): readonly string[] {
   return navigator.languages ?? [];
 }
 
+/**
+ * Códigos que o navegador manda e que não são os da lista. O norueguês é o caso: o Syden o chama de
+ * "no", e o navegador de quem tem o sistema em norueguês manda "nb" (bokmål) ou "nn" (nynorsk) — nunca
+ * "no". Sem esta linha, o dicionário existiria e nunca abriria sozinho para ninguém.
+ */
+const APELIDOS: Record<string, string> = { nb: 'no', nn: 'no' };
+
 /** O idioma escolhido, ou o do sistema se ele estiver na lista, ou português. */
 function escolhaInicial(): string {
   try {
@@ -57,7 +64,7 @@ function escolhaInicial(): string {
   }
   for (const preferido of preferenciasDeIdioma()) {
     // "en-GB" serve para quem tem "en"; "pt-PT" continua caindo no português do Brasil.
-    const raiz = preferido.split('-')[0];
+    const raiz = APELIDOS[preferido.split('-')[0]] ?? preferido.split('-')[0];
     const achado = IDIOMAS.find((i) => i.codigo === preferido || i.codigo === raiz);
     if (achado && (achado.codigo === PADRAO || TRADUCOES[achado.codigo])) return achado.codigo;
     if (raiz === 'pt') return PADRAO;

@@ -267,6 +267,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Finlândia. A Constituição (seção 17) faz do finlandês e do sueco as línguas nacionais; o sueco já
   // conta a Finlândia no sv.
   fi: ['FI'],
+
+  // Noruega. A lei da língua (språkloven, 2021) faz do norueguês — bokmål e nynorsk — a língua principal do país.
+  no: ['NO'],
 };
 
 /**

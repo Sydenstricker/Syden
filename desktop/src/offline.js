@@ -434,6 +434,14 @@ const TEXTOS = {
     tentando: 'Yritetään…',
     codigo: 'OFFLINE — Ei yhteyttä',
   },
+  // "Du", em bokmål. Chega como "nb" ou "nn" pelo apelido em idioma(). Ver web/src/i18n/no.ts.
+  no: {
+    titulo: 'Kunne ikke koble til',
+    explicacao: 'Sjekk internettilkoblingen din. Kanskje serveren også er nede.',
+    botao: 'Prøv igjen',
+    tentando: 'Prøver…',
+    codigo: 'OFFLINE — Ingen tilkobling',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
@@ -451,8 +459,13 @@ const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar', 'ur', 'fa', 'he']);
  * ler o armazenamento do outro — é a mesma regra que impede qualquer página de ler a de um banco. Então
  * o que sobra é o idioma do sistema, que é também o que o Syden usa antes de alguém escolher.
  */
+// O norueguês do sistema chega como "nb" (bokmål) ou "nn" (nynorsk), e aqui ele se chama "no" — o mesmo
+// apelido de web/src/i18n/index.ts.
+const APELIDOS = { nb: 'no', nn: 'no' };
+
 function idioma() {
-  const bruto = (navigator.language || 'pt').toLowerCase().split('-')[0];
+  const raiz = (navigator.language || 'pt').toLowerCase().split('-')[0];
+  const bruto = APELIDOS[raiz] || raiz;
   return TEXTOS[bruto] ? bruto : 'pt';
 }
 
