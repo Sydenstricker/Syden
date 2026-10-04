@@ -361,6 +361,14 @@ const TEXTOS = {
     tentando: 'Försöker…',
     codigo: 'OFFLINE — Ingen anslutning',
   },
+  // "Te", e não "Ön": o Ön é de banco e de repartição. Ver web/src/i18n/hu.ts.
+  hu: {
+    titulo: 'Nem sikerült csatlakozni',
+    explicacao: 'Ellenőrizd az internetkapcsolatodat. Lehet, hogy a szerver is leállt.',
+    botao: 'Újra',
+    tentando: 'Próbálkozás…',
+    codigo: 'OFFLINE — Nincs kapcsolat',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

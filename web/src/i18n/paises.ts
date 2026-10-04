@@ -234,6 +234,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Suécia (Lei da Língua de 2009, §4: o sueco é a língua principal) e Finlândia, onde a Constituição
   // (§17) faz do finlandês e do sueco as duas línguas nacionais.
   sv: ['SE', 'FI'],
+
+  // Hungria. A Lei Fundamental de 2011 (art. H) faz do húngaro a língua oficial.
+  hu: ['HU'],
 };
 
 /**
