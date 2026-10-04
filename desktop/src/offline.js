@@ -530,6 +530,14 @@ const TEXTOS = {
     tentando: 'འབད་དོ…',
     codigo: 'OFFLINE — མཐུད་ལམ་མེད།',
   },
+  // "Դու", e o ponto final armênio é ։ (U+0589). Confiança média, com pesquisa no MediaWiki e no GNOME. Ver web/src/i18n/hy.ts.
+  hy: {
+    titulo: 'Չհաջողվեց միանալ',
+    explicacao: 'Ստուգիր ինտերնետ կապը։ Միգուցե սերվերն էլ չի աշխատում։',
+    botao: 'Կրկին փորձել',
+    tentando: 'Փորձում ենք…',
+    codigo: 'OFFLINE — Կապ չկա',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

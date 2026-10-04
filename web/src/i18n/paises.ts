@@ -306,6 +306,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Butão. A Constituição de 2008 (art. 1, seção 8) faz do dzongkha a língua nacional.
   dz: ['BT'],
+
+  // Armênia. A Constituição (art. 20) faz do armênio a língua do Estado.
+  hy: ['AM'],
 };
 
 /**
