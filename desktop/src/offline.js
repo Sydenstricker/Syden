@@ -304,6 +304,14 @@ const TEXTOS = {
     tentando: 'Iyazama…',
     codigo: 'OFFLINE — Akukho kuxhumana',
   },
+  // "Ianao", o você de todo dia. O ’ de n’ny é o tipográfico, não aspa. Ver web/src/i18n/mg.ts.
+  mg: {
+    titulo: 'Tsy afaka nifandray',
+    explicacao: 'Jereo ny aterinetonao. Mety tsy mandeha koa ny mpizara.',
+    botao: 'Andramo indray',
+    tentando: 'Manandrana…',
+    codigo: 'OFFLINE — Tsy misy fifandraisana',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

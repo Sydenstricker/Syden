@@ -208,6 +208,10 @@ export const OFICIAL: Record<string, string[]> = {
   // África do Sul. A Constituição (art. 6) lista onze línguas oficiais, o zulu entre elas — e é a
   // língua materna mais falada do país.
   zu: ['ZA'],
+
+  // Madagascar. A Constituição de 2010 (art. 4) faz do malgaxe a língua nacional, e oficial ao lado do
+  // francês.
+  mg: ['MG'],
 };
 
 /**
