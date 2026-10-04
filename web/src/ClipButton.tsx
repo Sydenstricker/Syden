@@ -10,6 +10,7 @@ import {
   type GravacaoEmRolagem,
   gravarEmRolagem,
   nomeDoClipe,
+  montarClipe,
   recortarClipe,
   SEGUNDOS_DO_CLIPE,
 } from './clips';
@@ -121,7 +122,14 @@ function Previa({
     if (!vozes && (duracao === 0 || corteVazio(corte, duracao))) return blob;
     setCortando(0);
     try {
-      return await recortarClipe(blob, corte, setCortando);
+      try {
+        return await montarClipe(blob, corte, setCortando);
+      } catch (e) {
+        // O caminho novo falhou neste navegador (sem codificador, arquivo estranho): o antigo, que
+        // regrava em tempo real, é mais lento mas não depende de nada disso.
+        console.warn('montarClipe falhou, regravando:', e);
+        return await recortarClipe(blob, corte, setCortando);
+      }
     } finally {
       setCortando(null);
     }

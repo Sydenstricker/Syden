@@ -95,7 +95,15 @@ export function gravarEmRolagem(stream: MediaStream, vozes?: MediaStream | null)
 
   function comecar(): boolean {
     try {
-      gravador = new MediaRecorder(stream, { mimeType: tipo, videoBitsPerSecond: TAXA });
+      gravador = new MediaRecorder(stream, {
+        mimeType: tipo,
+        videoBitsPerSecond: TAXA,
+        // UM QUADRO-CHAVE A CADA DOIS SEGUNDOS. Sem isto o Chrome quase não os produz, e cortar o começo
+        // do clipe obrigava a RECODIFICAR o vídeo inteiro (copiar só funciona a partir de um quadro-chave).
+        // Com eles, o corte começa no quadro-chave mais próximo e o vídeo é só copiado (ver montarClipe).
+        // Navegador que não conhece a opção a ignora, e o corte volta a recodificar — mais lento, não errado.
+        videoKeyFrameIntervalDuration: 2000,
+      } as MediaRecorderOptions);
     } catch {
       return false; // faixa que o navegador não sabe gravar
     }
@@ -311,7 +319,100 @@ function irPara(video: HTMLMediaElement, segundo: number): Promise<void> {
 }
 
 /**
- * Corta o clipe e devolve um arquivo novo.
+ * MONTA O CLIPE SEM REGRAVAR EM TEMPO REAL — é o caminho de sempre desde 03/10/2026.
+ *
+ * O caminho antigo (recortarClipe, logo abaixo) TOCAVA o clipe e gravava o que tocava: 30 segundos de
+ * clipe, 30 de espera, mais o envio. Medido em produção: uns 50 segundos para mandar um clipe. E por
+ * tocar de verdade, ele dependia de o navegador desenhar os quadros enquanto isso — numa janela
+ * escondida atrás de outra, o Chrome para de desenhar vídeo para economizar, e o clipe pode sair só
+ * com o som.
+ *
+ * Aqui nada toca:
+ *   - O SOM é misturado num OfflineAudioContext, que calcula tão rápido quanto o processador deixa:
+ *     o do jogo (com o volume escolhido) e as vozes da sala, no mesmo relógio.
+ *   - O VÍDEO é copiado do arquivo original pela Mediabunny, quadro por quadro, sem recodificar —
+ *     só quando o começo é cortado ele precisa ser recodificado, e aí pelo codificador do aparelho.
+ *
+ * O som do arquivo de saída é sempre o misturado aqui, inclusive quando o jogo não tinha som: a
+ * trilha existe desde o primeiro quadro, como no caminho antigo.
+ *
+ * A Mediabunny (MPL-2.0) só é baixada quando alguém monta um clipe — ela não pesa na abertura do app.
+ */
+export async function montarClipe(blob: Blob, { inicio: pedido, fim, volume, vozes }: Corte, aoAndar?: (fracao: number) => void): Promise<Blob> {
+  const mb = await import('mediabunny');
+  let inicio = pedido;
+  const input = new mb.Input({ source: new mb.BlobSource(blob), formats: mb.ALL_FORMATS });
+  const total = await input.computeDuration();
+  const ate = Number.isFinite(fim) && fim > 0 ? Math.min(fim, total) : total;
+
+  // O COMEÇO ENCAIXA NO QUADRO-CHAVE anterior ao ponto escolhido, e o som segue o MESMO começo: assim
+  // o vídeo é copiado em vez de recodificado, e vídeo e som continuam no mesmo relógio. O corte pode
+  // começar até dois segundos antes do pedido (o intervalo pedido ao gravador) — perde-se nada.
+  const trilhaDeVideo = await input.getPrimaryVideoTrack();
+  if (inicio > 0 && trilhaDeVideo) {
+    const chave = await new mb.EncodedPacketSink(trilhaDeVideo).getKeyPacket(inicio).catch(() => null);
+    if (chave && inicio - chave.timestamp <= 2.5) inicio = chave.timestamp;
+  }
+  const comprimento = Math.max(0.1, ate - inicio);
+
+  // ---------- o som: jogo + vozes, misturados fora do tempo real ----------
+  const TAXA = 48_000;
+  const mesa = new OfflineAudioContext(2, Math.ceil(comprimento * TAXA), TAXA);
+  const trilha = await input.getPrimaryAudioTrack();
+  if (trilha && (await trilha.canDecode())) {
+    const ganho = mesa.createGain();
+    ganho.gain.value = volume;
+    ganho.connect(mesa.destination);
+    for await (const { buffer, timestamp } of new mb.AudioBufferSink(trilha).buffers(inicio, ate)) {
+      const pedaco = mesa.createBufferSource();
+      pedaco.buffer = buffer;
+      pedaco.connect(ganho);
+      const quando = timestamp - inicio;
+      if (quando >= 0) pedaco.start(quando);
+      else pedaco.start(0, -quando);
+    }
+  }
+  if (vozes) {
+    // As vozes foram gravadas na MESMA janela de tempo do vídeo (ver gravarEmRolagem): o segundo N de
+    // uma é o segundo N do outro, então basta pular o mesmo começo.
+    try {
+      const daSala = await mesa.decodeAudioData(await vozes.arrayBuffer());
+      const fonte = mesa.createBufferSource();
+      fonte.buffer = daSala;
+      fonte.connect(mesa.destination);
+      fonte.start(0, inicio);
+    } catch {
+      // A VOZ NÃO DERRUBA O CLIPE: arquivo de vozes que não abre, clipe sai com o som do jogo.
+    }
+  }
+  aoAndar?.(0.15);
+  const misturado = await mesa.startRendering();
+  aoAndar?.(0.3);
+
+  // ---------- o vídeo: copiado, e o som trocado pelo misturado ----------
+  const target = new mb.BufferTarget();
+  const output = new mb.Output({ format: new mb.WebMOutputFormat(), target });
+  const conversao = await mb.Conversion.init({
+    input,
+    output,
+    trim: { start: inicio, end: ate },
+    audio: { discard: true },
+    composable: true,
+  });
+  if (!conversao.isValid) throw new Error('Este navegador não sabe montar o clipe.');
+  const som = new mb.AudioBufferSource({ codec: 'opus', quality: new mb.Quality('high') });
+  output.addAudioTrack(som);
+  conversao.onProgress = (fracao) => aoAndar?.(0.3 + 0.7 * fracao);
+  await output.start();
+  await Promise.all([conversao.execute(), som.add(misturado).then(() => som.close())]);
+  await output.finalize();
+  aoAndar?.(1);
+  if (!target.buffer) throw new Error('O clipe saiu vazio.');
+  return new Blob([target.buffer], { type: 'video/webm' });
+}
+
+/**
+ * Corta o clipe e devolve um arquivo novo — O CAMINHO ANTIGO, hoje só a reserva de montarClipe.
  *
  * O NAVEGADOR NÃO SABE CORTAR UM WEBM SEM REGRAVÁ-LO. Não há, na plataforma, como remover os
  * primeiros segundos de um arquivo já codificado — quem faz isso é ffmpeg, e trazê-lo para dentro do

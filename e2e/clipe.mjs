@@ -54,6 +54,19 @@ const GUARDAR_GRAVACOES = () => {
   };
 };
 
+/**
+ * Quantos quadros de vídeo o arquivo tem, contados pelo ffprobe. Zero é o "saiu no chat mas não tem
+ * vídeo nenhum": arquivo que existe, tem som, e nenhuma imagem.
+ */
+function quadrosDeVideo(arquivo) {
+  const { stdout } = spawnSync(
+    'ffprobe',
+    ['-v', 'error', '-select_streams', 'v:0', '-count_frames', '-show_entries', 'stream=nb_read_frames', '-of', 'csv=p=0', arquivo],
+    { encoding: 'utf8' },
+  );
+  return Number(stdout.trim()) || 0;
+}
+
 /** Volume médio do som de um arquivo, em dB, pelo ffmpeg. -91 é silêncio digital. */
 function volumeMedio(arquivo) {
   // O ffmpeg escreve a medição na saída de ERRO, mesmo quando dá certo.
@@ -68,7 +81,7 @@ async function entrar(prefixo) {
   const page = await ctx.newPage();
   vigiar(page);
   page.on('pageerror', (e) => console.log(`  [${prefixo} erro]`, String(e).slice(0, 200)));
-  page.on('console', (m) => m.text().startsWith('[corte]') && console.log(`  [${prefixo}]`, m.text()));
+  page.on('console', (m) => (m.text().startsWith('[corte]') || m.text().includes('montarClipe')) && console.log(`  [${prefixo}]`, m.text().slice(0, 300)));
   await page.addInitScript(TELA_FALSA);
   await page.addInitScript(GUARDAR_GRAVACOES);
   const usuario = await criarConta(page, prefixo);
@@ -240,8 +253,24 @@ if ((await tesoura.count()) === 0) {
         await caixinha.check();
         // Com as vozes marcadas o corte nunca é "vazio" (ver corteVazio), então isto passa pelo caminho
         // que REGRAVA — que é onde as vozes são juntadas.
+        // CORTAR_COMECO=5: tira os primeiros segundos, que é o caminho que obriga a RECODIFICAR o vídeo
+        // (copiar quadro por quadro só funciona começando num quadro-chave).
+        const cortarComeco = Number(process.env.CORTAR_COMECO ?? 0);
+        if (cortarComeco > 0) {
+          await bia.page.getByLabel('Começo').fill(String(cortarComeco));
+          await bia.page.waitForTimeout(300);
+        }
         const baixou = bia.page.waitForEvent('download', { timeout: 90000 }).catch(() => null);
         await bia.page.getByRole('button', { name: /Guardar no computador/ }).click();
+        // ESCONDER_NO_CORTE=1: a pessoa troca de janela enquanto espera, que é o normal com uma espera
+        // de trinta segundos. Uma aba nova na frente esconde a da Bia, como outra janela por cima.
+        const inicioDoCorte = Date.now();
+        let outraAba = null;
+        if (process.env.ESCONDER_NO_CORTE) {
+          outraAba = await bia.page.context().newPage();
+          await outraAba.bringToFront();
+          console.log('  (a página da Bia ficou escondida durante o corte:', await bia.page.evaluate(() => document.visibilityState), ')');
+        }
         const vigia = setInterval(async () => {
           const estado = await bia.page.evaluate(() => ({
             barra: document.querySelector('.clipe-andamento div')?.style.width ?? null,
@@ -274,6 +303,11 @@ if ((await tesoura.count()) === 0) {
           await download.saveAs('e2e/fotos/clipe-final.webm');
           const db = volumeMedio('e2e/fotos/clipe-final.webm');
           db > -60 ? ok(`o clipe final tem som (${db} dB)`) : falhou(`o clipe final saiu mudo (${db} dB), mesmo com as vozes marcadas`);
+          const quadros = quadrosDeVideo('e2e/fotos/clipe-final.webm');
+          quadros > 30 ? ok(`e tem vídeo: ${quadros} quadros`) : falhou(`o clipe final saiu SEM VÍDEO (${quadros} quadros)`);
+          console.log(`  o corte levou ${((Date.now() - inicioDoCorte) / 1000).toFixed(1)} s`);
+          const { stdout: dur } = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', 'e2e/fotos/clipe-final.webm'], { encoding: 'utf8' });
+          console.log(`  duração do clipe final: ${Number(dur).toFixed(1)} s`);
         }
       }
     }
