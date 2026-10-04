@@ -44,3 +44,6 @@ video/
 # público. Mesmo com uma comunidade de demonstração, elas se refazem em um comando
 # (e2e/capturas-da-loja.mjs) e não há por que carregá-las para sempre no histórico.
 e2e/fotos/loja/
+
+# O som que o e2e/clipe.mjs grava para medir (vozes e clipe final): saída de teste, como as fotos.
+e2e/fotos/*.webm
