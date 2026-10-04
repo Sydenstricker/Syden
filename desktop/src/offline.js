@@ -336,6 +336,15 @@ const TEXTOS = {
     tentando: 'උත්සාහ කරමින්…',
     codigo: 'OFFLINE — සම්බන්ධතාවයක් නැත',
   },
+  // "អ្នក", o você neutro; sem as partículas បាទ/ចាស, que dizem o sexo de quem fala. Ver
+  // web/src/i18n/km.ts.
+  km: {
+    titulo: 'មិនអាចភ្ជាប់បានទេ',
+    explicacao: 'សូមពិនិត្យអ៊ីនធឺណិតរបស់អ្នក។ ម៉ាស៊ីនមេក៏អាចបិទដែរ។',
+    botao: 'ព្យាយាមម្តងទៀត',
+    tentando: 'កំពុងព្យាយាម…',
+    codigo: 'OFFLINE — គ្មានការតភ្ជាប់',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

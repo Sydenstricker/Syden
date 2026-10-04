@@ -153,6 +153,7 @@ const IDIOMAS = [
   { codigo: 'so', nome: 'Soomaali', rtl: false },
   { codigo: 'af', nome: 'Afrikaans', rtl: false },
   { codigo: 'si', nome: 'සිංහල', rtl: false },
+  { codigo: 'km', nome: 'ខ្មែរ', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

@@ -223,6 +223,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Sri Lanka. A Constituição (art. 18) faz do cingalês e do tâmil as línguas oficiais.
   si: ['LK'],
+
+  // Camboja. A Constituição (art. 5) faz do khmer a língua e a escrita oficiais.
+  km: ['KH'],
 };
 
 /**
