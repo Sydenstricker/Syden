@@ -482,6 +482,14 @@ const TEXTOS = {
     tentando: 'Proovin…',
     codigo: 'OFFLINE — Ühendus puudub',
   },
+  // "Þú", e nenhum adjetivo sobre quem lê. Ver web/src/i18n/is.ts.
+  is: {
+    titulo: 'Ekki tókst að tengjast',
+    explicacao: 'Athugaðu nettenginguna. Kannski liggur þjónninn líka niðri.',
+    botao: 'Reyna aftur',
+    tentando: 'Reyni…',
+    codigo: 'OFFLINE — Engin tenging',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

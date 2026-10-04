@@ -285,6 +285,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Estônia. A Constituição (art. 6) faz do estoniano a língua oficial.
   et: ['EE'],
+
+  // Islândia. A lei 61/2011 faz do islandês a língua nacional e oficial.
+  is: ['IS'],
 };
 
 /**
