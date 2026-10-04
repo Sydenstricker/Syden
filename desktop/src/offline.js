@@ -296,6 +296,14 @@ const TEXTOS = {
     tentando: 'ກຳລັງລອງ…',
     codigo: 'OFFLINE — ບໍ່ມີການເຊື່ອມຕໍ່',
   },
+  // "Wena", o singular: o plural de respeito é para os mais velhos. Ver web/src/i18n/zu.ts.
+  zu: {
+    titulo: 'Akukwazekanga ukuxhuma',
+    explicacao: 'Hlola i-inthanethi yakho. Iseva nayo kungenzeka ivaliwe.',
+    botao: 'Zama futhi',
+    tentando: 'Iyazama…',
+    codigo: 'OFFLINE — Akukho kuxhumana',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

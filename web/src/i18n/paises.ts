@@ -204,6 +204,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Laos. A Constituição (art. 89) faz da língua e da escrita lao as oficiais. Na Tailândia o isan é
   // parente próximo e se escreve em letra tailandesa: não é o laosiano.
   lo: ['LA'],
+
+  // África do Sul. A Constituição (art. 6) lista onze línguas oficiais, o zulu entre elas — e é a
+  // língua materna mais falada do país.
+  zu: ['ZA'],
 };
 
 /**
