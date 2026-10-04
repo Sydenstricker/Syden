@@ -237,6 +237,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Hungria. A Lei Fundamental de 2011 (art. H) faz do húngaro a língua oficial.
   hu: ['HU'],
+
+  // Sérvia (Constituição, art. 10: a língua sérvia e a escrita cirílica) e Bósnia e Herzegovina, onde o
+  // sérvio é oficial ao lado do bósnio e do croata. No Montenegro ele é "de uso oficial", não oficial.
+  sr: ['RS', 'BA'],
 };
 
 /**

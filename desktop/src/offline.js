@@ -369,6 +369,15 @@ const TEXTOS = {
     tentando: 'Próbálkozás…',
     codigo: 'OFFLINE — Nincs kapcsolat',
   },
+  // "Ти", em cirílico e ekaviano. Sem passado na frase, que diria o sexo de quem lê. Ver
+  // web/src/i18n/sr.ts.
+  sr: {
+    titulo: 'Повезивање није успело',
+    explicacao: 'Провери интернет везу. Можда ни сервер не ради.',
+    botao: 'Покушај поново',
+    tentando: 'Покушава се…',
+    codigo: 'OFFLINE — Нема везе',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
