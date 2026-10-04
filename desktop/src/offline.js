@@ -546,6 +546,14 @@ const TEXTOS = {
     tentando: 'ვცდილობთ…',
     codigo: 'OFFLINE — კავშირი არ არის',
   },
+  // "Чи", em cirílico. Confiança média, com pesquisa no MediaWiki. Ver web/src/i18n/mn.ts.
+  mn: {
+    titulo: 'Холбогдож чадсангүй',
+    explicacao: 'Интернэт холболтоо шалга. Магадгүй сервер ч ажиллахгүй байна.',
+    botao: 'Дахин оролдох',
+    tentando: 'Оролдож байна…',
+    codigo: 'OFFLINE — Холболт алга',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

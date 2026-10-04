@@ -312,6 +312,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Geórgia. A Constituição (art. 2) faz do georgiano a língua do Estado (e do abecásio, na Abecásia).
   ka: ['GE'],
+
+  // Mongólia. A Constituição (art. 8) faz do mongol a língua do Estado; nas telas, em cirílico.
+  mn: ['MN'],
 };
 
 /**

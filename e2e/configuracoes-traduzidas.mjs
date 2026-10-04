@@ -179,6 +179,7 @@ const IDIOMAS = [
   { codigo: 'dz', nome: 'རྫོང་ཁ', rtl: false },
   { codigo: 'hy', nome: 'Հայերեն', rtl: false },
   { codigo: 'ka', nome: 'ქართული', rtl: false },
+  { codigo: 'mn', nome: 'Монгол', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por
