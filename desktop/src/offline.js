@@ -287,6 +287,15 @@ const TEXTOS = {
     tentando: 'प्रयास गर्दै…',
     codigo: 'OFFLINE — जडान छैन',
   },
+  // "ເຈົ້າ", o "você" de igual para igual. Sem espaço entre palavras e sem ponto final, como o
+  // tailandês. Ver web/src/i18n/lo.ts.
+  lo: {
+    titulo: 'ເຊື່ອມຕໍ່ບໍ່ໄດ້',
+    explicacao: 'ກວດເບິ່ງອິນເຕີເນັດຂອງເຈົ້າ ເຊີບເວີອາດຈະປິດຢູ່ກໍໄດ້',
+    botao: 'ລອງໃໝ່',
+    tentando: 'ກຳລັງລອງ…',
+    codigo: 'OFFLINE — ບໍ່ມີການເຊື່ອມຕໍ່',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

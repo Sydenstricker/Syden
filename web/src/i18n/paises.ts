@@ -200,6 +200,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Nepal. A Constituição de 2015 (art. 6 e 7) faz do nepalês em devanágari a língua oficial. Na Índia
   // ele está na 8ª Lista e é oficial em Sikkim — língua de estado, que não faz o país inteiro falar.
   ne: ['NP'],
+
+  // Laos. A Constituição (art. 89) faz da língua e da escrita lao as oficiais. Na Tailândia o isan é
+  // parente próximo e se escreve em letra tailandesa: não é o laosiano.
+  lo: ['LA'],
 };
 
 /**
