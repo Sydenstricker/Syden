@@ -474,6 +474,14 @@ const TEXTOS = {
     tentando: 'Mēģina…',
     codigo: 'OFFLINE — Nav savienojuma',
   },
+  // "Sina", e sem gênero nenhum. Ver web/src/i18n/et.ts.
+  et: {
+    titulo: 'Ühendust ei õnnestunud luua',
+    explicacao: 'Kontrolli oma internetiühendust. Võib-olla ei tööta ka server.',
+    botao: 'Proovi uuesti',
+    tentando: 'Proovin…',
+    codigo: 'OFFLINE — Ühendus puudub',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

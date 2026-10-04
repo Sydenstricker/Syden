@@ -282,6 +282,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Letônia. A Constituição (art. 4) faz do letão a língua oficial.
   lv: ['LV'],
+
+  // Estônia. A Constituição (art. 6) faz do estoniano a língua oficial.
+  et: ['EE'],
 };
 
 /**
