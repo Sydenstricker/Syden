@@ -256,6 +256,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Croácia. A Constituição (art. 13) faz do croata e da escrita latina os oficiais. Na Bósnia e
   // Herzegovina ele também é oficial, mas a lista de idiomas.ts conta um país só para o croata.
   hr: ['HR'],
+
+  // Dinamarca. Nenhuma lei declara o dinamarquês oficial — ele é a língua do Estado de fato. Também vale nas
+  // Ilhas Faroé e na Groenlândia, ao lado da língua local, mas elas não são países da ONU.
+  da: ['DK'],
 };
 
 /**

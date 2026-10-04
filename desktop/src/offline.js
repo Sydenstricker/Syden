@@ -410,6 +410,14 @@ const TEXTOS = {
     tentando: 'Pokušava se…',
     codigo: 'OFFLINE — Nema veze',
   },
+  // "Du", como em todo o app. Ver web/src/i18n/da.ts.
+  da: {
+    titulo: 'Kunne ikke oprette forbindelse',
+    explicacao: 'Tjek din internetforbindelse. Måske er serveren også nede.',
+    botao: 'Prøv igen',
+    tentando: 'Prøver…',
+    codigo: 'OFFLINE — Ingen forbindelse',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
