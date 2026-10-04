@@ -136,7 +136,7 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'hy', nativo: 'Հայերեն', nome: 'Armênio', escrita: 'armenia', paises: 1 },
   { codigo: 'az', nativo: 'Azərbaycan', nome: 'Azerbaijano', escrita: 'latina', paises: 1 },
   { codigo: 'kk', nativo: 'Қазақша', nome: 'Cazaque', escrita: 'cirilica', paises: 1 },
-  { codigo: 'uz', nativo: "O'zbek", nome: 'Uzbeque', escrita: 'latina', paises: 1 },
+  { codigo: 'uz', nativo: 'Oʻzbek', nome: 'Uzbeque', escrita: 'latina', paises: 1 },
   { codigo: 'mn', nativo: 'Монгол', nome: 'Mongol', escrita: 'cirilica', paises: 1 },
   { codigo: 'ne', nativo: 'नेपाली', nome: 'Nepalês', escrita: 'devanagari', paises: 1 },
   { codigo: 'si', nativo: 'සිංහල', nome: 'Cingalês', escrita: 'sinhala', paises: 1 },
@@ -223,6 +223,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   he: () => import('./he'),
   om: () => import('./om'),
   az: () => import('./az'),
+  uz: () => import('./uz'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

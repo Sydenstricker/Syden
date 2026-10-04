@@ -269,6 +269,15 @@ const TEXTOS = {
     tentando: 'Yoxlanılır…',
     codigo: 'OFFLINE — Bağlantı yoxdur',
   },
+  // "Siz", e não "sen": no uzbeque o íntimo soa atrevido com quem acabou de chegar. O ʻ é letra
+  // (U+02BB), não aspa. Ver web/src/i18n/uz.ts.
+  uz: {
+    titulo: 'Ulanib boʻlmadi',
+    explicacao: 'Internetingizni tekshiring. Server ham ishlamayotgan boʻlishi mumkin.',
+    botao: 'Qayta urinish',
+    tentando: 'Urinilmoqda…',
+    codigo: 'OFFLINE — Aloqa yoʻq',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

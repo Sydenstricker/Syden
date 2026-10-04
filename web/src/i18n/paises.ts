@@ -192,6 +192,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Azerbaijão. A Constituição (art. 21) diz que a língua do Estado é o azerbaijano.
   az: ['AZ'],
+
+  // Uzbequistão. A Constituição (art. 4) diz que a língua do Estado é o uzbeque. No Afeganistão ele é
+  // língua regional (Constituição de 2004, art. 16), e regional não faz o país inteiro falar.
+  uz: ['UZ'],
 };
 
 /**
