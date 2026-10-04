@@ -314,6 +314,62 @@ if ((await tesoura.count()) === 0) {
   }
 }
 
+// ---------- O CAMINHO QUE A PESSOA USA: "Mandar na conversa", e o clipe tocando no chat ----------
+//
+// "Saiu no chat mas não tem vídeo nenhum." Baixar o arquivo e medir não basta: o que se vê é o
+// player do chat, do lado de QUEM RECEBE. Então a Ana abre o canal e o teste confere o que ela vê.
+if ((await bia.page.locator('.clipe-dialog').count()) === 1) {
+  const mandar = bia.page.getByRole('button', { name: /Mandar na conversa/ });
+  if ((await mandar.count()) === 0) {
+    falhou('não há "Mandar na conversa" no diálogo do clipe');
+  } else {
+    const inicioDoEnvio = Date.now();
+    await mandar.click();
+    await bia.page.getByRole('button', { name: /Mandado!/ }).waitFor({ timeout: 90000 }).catch(() => {});
+    const segundos = (Date.now() - inicioDoEnvio) / 1000;
+    const erroNoEnvio = await bia.page.locator('.clipe-dialog .form-error').textContent().catch(() => null);
+    erroNoEnvio
+      ? falhou(`o envio deu erro: ${erroNoEnvio}`)
+      : segundos < 15
+        ? ok(`"Mandar na conversa" terminou em ${segundos.toFixed(1)} s`)
+        : falhou(`"Mandar na conversa" levou ${segundos.toFixed(1)} s`);
+
+    await ana.page.locator('.channel-name', { hasText: /^geral$/ }).first().click();
+    const noChat = ana.page.locator('.attachment-video').last();
+    await noChat.waitFor({ timeout: 20000 }).catch(() => {});
+    if ((await noChat.count()) === 0) {
+      falhou('o clipe não apareceu como vídeo no chat de quem recebe');
+    } else {
+      const player = await noChat.evaluate(async (v) => {
+        if (v.readyState < 1) await new Promise((r) => { v.addEventListener('loadedmetadata', r, { once: true }); setTimeout(r, 10000); });
+        await new Promise((r) => setTimeout(r, 1500)); // a correção de duração mexe no tempo ao carregar
+        const antes = { largura: v.videoWidth, altura: v.videoHeight, duracao: v.duration };
+        v.muted = true;
+        await v.play().catch(() => {});
+        for (let i = 0; i < 50 && v.currentTime < 1; i++) await new Promise((r) => setTimeout(r, 100));
+        const andou = v.currentTime;
+        v.pause();
+        return { ...antes, andou, src: v.currentSrc };
+      });
+      console.log('  player no chat da Ana:', JSON.stringify({ ...player, src: undefined }));
+      player.largura > 0 ? ok(`no chat, o vídeo tem imagem (${player.largura}×${player.altura})`) : falhou('no chat, o player não tem imagem (0×0)');
+      Number.isFinite(player.duracao) && player.duracao > 1
+        ? ok(`e duração conhecida (${player.duracao.toFixed(1)} s)`)
+        : falhou(`a duração no chat é ${player.duracao}`);
+      player.andou >= 0.5 ? ok('e toca') : falhou(`o vídeo no chat não anda (${player.andou} s)`);
+
+      const resposta = await fetch(player.src);
+      writeFileSync('e2e/fotos/clipe-no-chat.webm', Buffer.from(await resposta.arrayBuffer()));
+      const quadros = quadrosDeVideo('e2e/fotos/clipe-no-chat.webm');
+      const db = volumeMedio('e2e/fotos/clipe-no-chat.webm');
+      quadros > 30 ? ok(`o arquivo que chegou tem ${quadros} quadros`) : falhou(`o arquivo que chegou não tem vídeo (${quadros} quadros)`);
+      db > -60 ? ok(`e som (${db} dB)`) : falhou(`e está mudo (${db} dB)`);
+      await noChat.scrollIntoViewIfNeeded();
+      await ana.page.screenshot({ path: 'e2e/fotos/clipe-no-chat.png' });
+    }
+  }
+}
+
 await bia.page.screenshot({ path: 'e2e/fotos/clipe-menu.png' });
 await browser.close();
 resumo('a tesoura, com transmissão de verdade');
