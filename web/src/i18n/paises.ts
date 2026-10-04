@@ -260,6 +260,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Dinamarca. Nenhuma lei declara o dinamarquês oficial — ele é a língua do Estado de fato. Também vale nas
   // Ilhas Faroé e na Groenlândia, ao lado da língua local, mas elas não são países da ONU.
   da: ['DK'],
+
+  // Eslováquia. A Constituição (art. 6) e a lei da língua do Estado (270/1995) fazem do eslovaco o oficial.
+  sk: ['SK'],
 };
 
 /**

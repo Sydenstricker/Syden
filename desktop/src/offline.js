@@ -418,6 +418,14 @@ const TEXTOS = {
     tentando: 'Prøver…',
     codigo: 'OFFLINE — Ingen forbindelse',
   },
+  // "Ty", e o gênero fora do passado, como no tcheco. Ver web/src/i18n/sk.ts.
+  sk: {
+    titulo: 'Nepodarilo sa pripojiť',
+    explicacao: 'Skontroluj pripojenie na internet. Možno nefunguje ani server.',
+    botao: 'Skúsiť znova',
+    tentando: 'Skúša sa…',
+    codigo: 'OFFLINE — Bez pripojenia',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

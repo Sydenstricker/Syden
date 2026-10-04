@@ -241,6 +241,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   sq: () => import('./sq'),
   hr: () => import('./hr'),
   da: () => import('./da'),
+  sk: () => import('./sk'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);
