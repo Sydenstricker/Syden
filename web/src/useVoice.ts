@@ -145,6 +145,17 @@ function deviceErrorMessage(error: unknown, device: 'microfone' | 'câmera') {
   }
 }
 
+/**
+ * O microfone foi BLOQUEADO — e por quem. São duas portas diferentes, com duas saídas diferentes:
+ * o navegador (o site não tem permissão) ou o Windows (o navegador inteiro não tem). O Chrome diz qual
+ * na mensagem do erro: "Permission denied by system" é o Windows. null quando o erro é outro.
+ */
+export function motivoDoBloqueio(error: unknown): 'navegador' | 'sistema' | null {
+  const name = error instanceof DOMException ? error.name : '';
+  if (name !== 'NotAllowedError' && name !== 'SecurityError') return null;
+  return /system/i.test(error instanceof Error ? error.message : '') ? 'sistema' : 'navegador';
+}
+
 export type Voice = ReturnType<typeof useVoice>;
 
 /**
@@ -197,6 +208,27 @@ export function useVoice(socket: Socket | null) {
   const [wantDeafened, setWantDeafened] = useState(() => getSettings().startDeafened);
   // "Você está silenciado!": true por alguns segundos quando a pessoa fala com o microfone mudo.
   const [mutedWarning, setMutedWarning] = useState(false);
+  /**
+   * MICROFONE BLOQUEADO, e foi isto que deixou um amigo falando para o nada uma noite inteira (03/10/2026,
+   * diário de saúde: "Sem acesso ao microfone: o navegador bloqueou"). Três coisas faltavam: os outros o
+   * viam com o microfone LIGADO, o aviso para ele era uma faixa que sumia com qualquer clique, e mesmo
+   * liberando a permissão nada acontecia sem recarregar. Este estado alimenta o aviso fixo do palco.
+   */
+  const [microfoneBloqueado, setMicrofoneBloqueado] = useState<'navegador' | 'sistema' | null>(null);
+
+  /**
+   * O microfone não abriu. Bloqueio vira o aviso fixo do palco; outro erro, a faixa de sempre. Nos dois
+   * casos OS OUTROS PASSAM A VER o microfone desligado — antes, quem falhava continuava aparecendo
+   * ligado, e a sala inteira achava que o problema era de som, não dele.
+   */
+  const microfoneFalhou = (erro: unknown, mensagem: string) => {
+    const bloqueio = motivoDoBloqueio(erro);
+    if (bloqueio) setMicrofoneBloqueado(bloqueio);
+    else setError(mensagem);
+    const estado = readLocalMedia(room.localParticipant);
+    setMedia(estado);
+    socketRef.current?.emit('voice:update', { ...estado, deafened: deafenedRef.current });
+  };
 
   // Refs para os handlers de eventos lerem o valor atual sem precisar se reinscrever.
   const channelRef = useRef<number | null>(null);
@@ -600,11 +632,12 @@ export function useVoice(socket: Socket | null) {
         // Entrando, é a voz da pessoa. Se ela estava com um efeito na sala anterior, ele fica para trás:
         // o caminho do microfone é montado do zero aqui, então basta não reaplicar nada e zerar a tela.
         setVoiceEffectState('none');
+        setMicrofoneBloqueado(null);
       } catch (e) {
         console.error(e);
         const message = deviceErrorMessage(e, 'microfone');
-        setError(message);
         reportProblem('microfone', message);
+        microfoneFalhou(e, message);
       }
     },
     [room, connecting, applyVoiceEffect, setDeafenedState],
@@ -791,8 +824,8 @@ export function useVoice(socket: Socket | null) {
     } catch (e) {
       console.error(e);
       const message = deviceErrorMessage(e, 'microfone');
-      setError(message);
       reportProblem('microfone', message);
+      microfoneFalhou(e, message);
     }
   }, [room, setDeafenedState]);
 
@@ -1200,6 +1233,50 @@ export function useVoice(socket: Socket | null) {
     return () => clearInterval(relogio);
   }, [channelId, media.muted, room]);
 
+  /** Liga o microfone de novo depois de um bloqueio — pelo botão ou sozinho, quando a permissão muda. */
+  const tentarMicrofoneDeNovo = useCallback(async () => {
+    if (channelRef.current === null) return;
+    try {
+      await room.localParticipant.setMicrophoneEnabled(true);
+      setMicrofoneBloqueado(null);
+      updateSettings({ startMuted: false });
+      setWantMuted(false);
+      sounds.unmute();
+    } catch (e) {
+      setMicrofoneBloqueado(motivoDoBloqueio(e) ?? 'navegador');
+    }
+    const estado = readLocalMedia(room.localParticipant);
+    setMedia(estado);
+    socketRef.current?.emit('voice:update', { ...estado, deafened: deafenedRef.current });
+  }, [room]);
+
+  /**
+   * LIBEROU, VOLTOU. Com o microfone bloqueado, o navegador avisa quando a permissão muda — e aí o
+   * Syden tenta de novo sozinho. Sem isto, a pessoa liberava no ícone do endereço e continuava sem
+   * voz, porque ninguém pedia o microfone outra vez: era preciso adivinhar que tinha de sair e entrar.
+   */
+  useEffect(() => {
+    if (channelId === null) {
+      setMicrofoneBloqueado(null);
+      return;
+    }
+    if (microfoneBloqueado !== 'navegador' || !navigator.permissions?.query) return;
+    let status: PermissionStatus | null = null;
+    let vivo = true;
+    navigator.permissions
+      .query({ name: 'microphone' as PermissionName })
+      .then((s) => {
+        if (!vivo) return;
+        status = s;
+        s.onchange = () => s.state === 'granted' && void tentarMicrofoneDeNovo();
+      })
+      .catch(() => {});
+    return () => {
+      vivo = false;
+      if (status) status.onchange = null;
+    };
+  }, [channelId, microfoneBloqueado, tentarMicrofoneDeNovo]);
+
   return {
     room,
     channelId,
@@ -1210,6 +1287,8 @@ export function useVoice(socket: Socket | null) {
     error,
     mutedWarning,
     microfoneSemSom,
+    microfoneBloqueado,
+    tentarMicrofoneDeNovo,
     clearError: () => setError(null),
     join,
     leave,

@@ -17,7 +17,7 @@ await criarConta(page, 'somlink');
 await dispensarPresentes(page);
 
 // A comunidade própria, pela mesma razão da capa: o teste não pode depender de quem é dono do banco.
-await page.getByRole('button', { name: 'Adicionar comunidade' }).click();
+await page.locator('button.rail-action[aria-label="Adicionar comunidade"]').click();
 await page.getByText('Criar a minha').click();
 await page.getByLabel('Nome da comunidade').fill('Som ' + Date.now().toString().slice(-5));
 await page.locator('.dialog .btn-primary').click();

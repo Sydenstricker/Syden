@@ -41,7 +41,7 @@ async function entrar(prefixo, mudo) {
 }
 
 const ana = await entrar('micmudo', true);
-await ana.getByRole('button', { name: 'Adicionar comunidade' }).click();
+await ana.locator('button.rail-action[aria-label="Adicionar comunidade"]').click();
 await ana.getByText('Criar a minha').click();
 await ana.getByLabel('Nome da comunidade').fill('Mic ' + Date.now().toString().slice(-5));
 await ana.locator('.dialog .btn-primary').click();
@@ -53,7 +53,7 @@ const convite = (await ana.locator('.invite-row input').first().inputValue().cat
 await ana.keyboard.press('Escape');
 
 const bia = await entrar('micbom', false);
-await bia.getByRole('button', { name: 'Adicionar comunidade' }).click();
+await bia.locator('button.rail-action[aria-label="Adicionar comunidade"]').click();
 await bia.getByText('Entrar com um convite').click();
 await bia.getByLabel('Código de convite').fill(convite.trim());
 await bia.locator('.dialog .btn-primary').click();

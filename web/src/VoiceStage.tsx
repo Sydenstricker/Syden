@@ -1189,7 +1189,26 @@ function Stage({
 
       {/* O microfone aberto que manda silêncio (ver microfoneSemSom, em useVoice). Clicar leva direto
           para onde se troca o microfone — o aviso sem caminho só aumentaria a aflição. */}
-      {voice.microfoneSemSom && !voice.mutedWarning && (
+      {/* O MICROFONE BLOQUEADO NÃO SOME COM UM CLIQUE, ao contrário da faixa de erro comum: enquanto
+          ele existir, a pessoa está falando para o nada. Sai sozinho quando o microfone volta. */}
+      {voice.microfoneBloqueado && (
+        <div className="microfone-bloqueado" role="alert">
+          <MicOff size={20} aria-hidden="true" />
+          <div className="microfone-bloqueado-texto">
+            <strong>{t('Seu microfone está bloqueado: ninguém está te ouvindo.')}</strong>
+            <span>
+              {voice.microfoneBloqueado === 'sistema'
+                ? t('Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.')
+                : t('Clique no ícone à esquerda do endereço do site, ative o Microfone, e o Syden liga sozinho.')}
+            </span>
+          </div>
+          <button type="button" className="btn-secondary" onClick={() => void voice.tentarMicrofoneDeNovo()}>
+            {t('Tentar de novo')}
+          </button>
+        </div>
+      )}
+
+      {voice.microfoneSemSom && !voice.mutedWarning && !voice.microfoneBloqueado && (
         <button type="button" className="muted-warning microfone-sem-som" role="status" onClick={aoAbrirVozEVideo}>
           <MicOff size={16} /> {t('Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.')}
         </button>

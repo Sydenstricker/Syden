@@ -1415,6 +1415,42 @@ textarea {
   animation: muted-warning-in 0.15s ease-out;
 }
 
+/* O microfone bloqueado: fixo no palco até o microfone voltar, com a saída escrita e um botão. */
+.microfone-bloqueado {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+  width: min(92%, 560px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 4px 16px var(--shadow);
+  animation: muted-warning-in 0.15s ease-out;
+}
+
+.microfone-bloqueado-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.microfone-bloqueado-texto strong {
+  font-size: calc(14px * var(--escala-do-texto));
+}
+
+.microfone-bloqueado .btn-secondary {
+  flex-shrink: 0;
+}
+
 /* O microfone aberto que manda silêncio: o mesmo aviso, mas é botão (leva à troca de microfone) e a
    frase é mais longa, então quebra linha em vez de vazar. */
 .microfone-sem-som {

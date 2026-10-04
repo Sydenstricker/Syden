@@ -91,7 +91,7 @@ async function entrar(prefixo) {
 
 const ana = await entrar('ana');
 // A ana cria a comunidade para as duas estarem na MESMA, sem depender do estado do banco.
-await ana.page.getByRole('button', { name: 'Adicionar comunidade' }).click();
+await ana.page.locator('button.rail-action[aria-label="Adicionar comunidade"]').click();
 await ana.page.getByText('Criar a minha').click();
 await ana.page.getByLabel('Nome da comunidade').fill('Clipe ' + Date.now().toString().slice(-5));
 await ana.page.locator('.dialog .btn-primary').click();
@@ -107,7 +107,7 @@ ok(`a ana criou a comunidade (convite ${convite})`);
 const bia = await entrar('bia');
 // A bia entra na comunidade da ana pelo código — é o caminho de verdade, e deixa as duas na mesma
 // sala sem o teste depender do que já existe no banco.
-await bia.page.getByRole('button', { name: 'Adicionar comunidade' }).click();
+await bia.page.locator('button.rail-action[aria-label="Adicionar comunidade"]').click();
 await bia.page.getByText('Entrar com um convite').click();
 await bia.page.getByLabel('Código de convite').fill(convite.trim());
 await bia.page.locator('.dialog .btn-primary').click();
