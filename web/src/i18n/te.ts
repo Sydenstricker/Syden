@@ -619,6 +619,7 @@ export default {
   'Senha trocada': 'పాస్‌వర్డ్ మారింది',
   'Senha:': 'పాస్‌వర్డ్:',
   'Seria bom se…': 'ఇలా ఉంటే బాగుండు…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'మీ మైక్రోఫోన్ శబ్దం పంపడం లేదు: మీ మాట ఎవరికీ వినిపించడం లేదు. వేరేది ఎంచుకోవడానికి క్లిక్ చేయండి.',
   'Cultura': 'సంస్కృతి',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: వికీమీడియా కామన్స్ సముదాయం ఎంచుకున్న ఫోటోలు, ఉచితంగా చదవడానికి పుస్తకాలు. ప్రతిరోజూ మారుతుంది.',
   'Por {autor}': '{autor} రూపొందించినది',

@@ -463,6 +463,7 @@ export default {
   'Senha trocada': '비밀번호를 바꿨어요',
   'Senha:': '비밀번호:',
   'Seria bom se…': '이런 게 있으면 좋겠어요…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': '마이크에서 소리가 전송되지 않아요. 아무도 들을 수 없어요. 클릭해서 다른 마이크를 고르세요.',
   'Cultura': '문화',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: 위키미디어 공용 커뮤니티가 고른 사진과 무료로 읽을 수 있는 책. 매일 바뀌어요.',
   'Por {autor}': '{autor} 작품',

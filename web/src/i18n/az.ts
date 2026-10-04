@@ -708,6 +708,7 @@ export default {
   'Senha trocada': 'Şifrə dəyişdirildi',
   'Senha:': 'Şifrə:',
   'Seria bom se…': 'Yaxşı olardı ki…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Mikrofonun səs göndərmir: heç kim səni eşitmir. Başqasını seçmək üçün klik et.',
   'Cultura': 'Mədəniyyət',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: Wikimedia Commons icmasının seçdiyi fotolar və pulsuz oxumaq üçün kitablar. Hər gün dəyişir.',
   'Por {autor}': 'Müəllif: {autor}',

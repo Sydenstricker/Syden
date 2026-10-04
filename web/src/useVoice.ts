@@ -1132,6 +1132,74 @@ export function useVoice(socket: Socket | null) {
     };
   }, [channelId, media.muted]);
 
+  /**
+   * "NINGUÉM ME OUVE" SEM NENHUM AVISO: o microfone abre, a voz é publicada, e o que sai é silêncio.
+   *
+   * Relato de 03/10/2026, no Chrome: a pessoa falava, os amigos não ouviam, e sair e entrar de novo não
+   * resolvia. As causas desse tipo são do aparelho, e por isso sobrevivem a reentrar: o Chrome
+   * escolhendo a entrada errada (uma virtual, a "Mixagem estéreo", um fone desligado), o microfone mudo
+   * no Windows, a chave de mudo do próprio fone. Para quem fala está tudo certo na tela — o ícone verde,
+   * nenhum erro — e é isso que este detector desfaz.
+   *
+   * O NÚMERO VEM DO NAVEGADOR, das estatísticas da conexão (`media-source`): a energia do som que ENTRA
+   * pelo microfone, antes de codificar. Microfone de verdade nunca dá zero, nem numa sala quieta —
+   * sempre há o chiado do próprio aparelho. Zero absoluto por 20 segundos seguidos é aparelho que não
+   * está mandando som nenhum. Por isso o limiar é o zero, e não "baixo": baixo é só alguém calado.
+   *
+   * E o caso vai para o diário de saúde, com o nome do dispositivo, para da próxima vez se saber a
+   * causa em vez de adivinhar.
+   */
+  const [microfoneSemSom, setMicrofoneSemSom] = useState(false);
+  useEffect(() => {
+    if (channelId === null || media.muted) {
+      setMicrofoneSemSom(false);
+      return;
+    }
+    const SEGUNDOS_ATE_AVISAR = 20;
+    let energiaAnterior: number | null = null;
+    let silencioDesde: number | null = null;
+    let avisado = false;
+    let contado = false;
+    const olhar = async () => {
+      const faixa = room.localParticipant.getTrackPublication(Track.Source.Microphone)?.track;
+      const transmissor = faixa?.sender;
+      if (!faixa || !transmissor || faixa.isMuted) return;
+      let energia: number | null = null;
+      let nivel = 0;
+      try {
+        (await transmissor.getStats()).forEach((r) => {
+          if (r.type === 'media-source' && r.kind === 'audio') {
+            energia = typeof r.totalAudioEnergy === 'number' ? r.totalAudioEnergy : null;
+            nivel = typeof r.audioLevel === 'number' ? r.audioLevel : 0;
+          }
+        });
+      } catch {
+        return;
+      }
+      if (energia === null) return; // navegador que não informa: sem dado, sem aviso
+      const mudo = energiaAnterior !== null && energia === energiaAnterior && nivel === 0;
+      energiaAnterior = energia;
+      if (!mudo) {
+        silencioDesde = null;
+        if (avisado) setMicrofoneSemSom(false);
+        avisado = false;
+        return;
+      }
+      silencioDesde ??= Date.now();
+      if (!avisado && Date.now() - silencioDesde >= SEGUNDOS_ATE_AVISAR * 1000) {
+        avisado = true;
+        setMicrofoneSemSom(true);
+        if (!contado) {
+          contado = true;
+          const nome = faixa.mediaStreamTrack?.label || 'sem nome';
+          reportProblem('microfone', `aberto mas mandando silêncio absoluto há ${SEGUNDOS_ATE_AVISAR} s — dispositivo: ${nome}`);
+        }
+      }
+    };
+    const relogio = setInterval(() => void olhar(), 2000);
+    return () => clearInterval(relogio);
+  }, [channelId, media.muted, room]);
+
   return {
     room,
     channelId,
@@ -1141,6 +1209,7 @@ export function useVoice(socket: Socket | null) {
     deafened: channelId === null ? wantDeafened : deafened,
     error,
     mutedWarning,
+    microfoneSemSom,
     clearError: () => setError(null),
     join,
     leave,

@@ -607,6 +607,7 @@ export default {
   'Senha trocada': 'Đã đổi mật khẩu',
   'Senha:': 'Mật khẩu:',
   'Seria bom se…': 'Sẽ hay nếu…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Micro của bạn không gửi âm thanh: không ai nghe thấy bạn. Bấm để chọn micro khác.',
   'Cultura': 'Văn hóa',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: ảnh do cộng đồng Wikimedia Commons chọn và sách để đọc miễn phí. Thay đổi mỗi ngày.',
   'Por {autor}': 'Tác giả: {autor}',

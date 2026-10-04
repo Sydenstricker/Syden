@@ -624,6 +624,7 @@ export default {
   'Senha trocada': 'پاس ورڈ بدل گیا',
   'Senha:': 'پاس ورڈ:',
   'Seria bom se…': 'اچھا ہوتا اگر…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'آپ کا مائیکروفون آواز نہیں بھیج رہا: کوئی آپ کو نہیں سن رہا۔ دوسرا چننے کے لیے کلک کریں۔',
   'Cultura': 'ثقافت',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: ویکی میڈیا کامنز کی کمیونٹی کی چنی ہوئی تصاویر اور مفت پڑھنے کے لیے کتابیں۔ ہر روز بدلتا ہے۔',
   'Por {autor}': 'تخلیق: {autor}',

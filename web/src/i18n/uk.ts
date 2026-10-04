@@ -726,6 +726,7 @@ export default {
   'Senha trocada': 'Пароль змінено',
   'Senha:': 'Пароль:',
   'Seria bom se…': 'Було б добре, якби…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Твій мікрофон не передає звук: тебе ніхто не чує. Натисни, щоб вибрати інший.',
   'Cultura': 'Культура',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: світлини, відібрані спільнотою Wikimedia Commons, і книжки, які можна читати безкоштовно. Щодня нові.',
   'Por {autor}': 'Автор: {autor}',

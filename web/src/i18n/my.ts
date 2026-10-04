@@ -715,6 +715,7 @@ export default {
   'Senha trocada': 'စကားဝှက် ပြောင်းပြီး',
   'Senha:': 'စကားဝှက်-',
   'Seria bom se…': 'ဒီလိုဆို ကောင်းမှာ…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'သင့်မိုက်ခရိုဖုန်းက အသံ မပို့နေပါ- ဘယ်သူမှ သင့်ကို မကြားရပါ။ တခြားတစ်ခု ရွေးရန် နှိပ်ပါ။',
   'Cultura': 'ယဉ်ကျေးမှု',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}- Wikimedia Commons အသိုင်းအဝိုင်းက ရွေးထားတဲ့ ဓာတ်ပုံများနဲ့ အခမဲ့ဖတ်နိုင်တဲ့ စာအုပ်များ။ နေ့တိုင်း ပြောင်းသည်။',
   'Por {autor}': '{autor} ၏',

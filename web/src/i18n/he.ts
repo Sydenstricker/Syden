@@ -726,6 +726,7 @@ export default {
   'Senha trocada': 'הסיסמה הוחלפה',
   'Senha:': 'סיסמה:',
   'Seria bom se…': 'יהיה נחמד אם…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'המיקרופון לא שולח קול: אף אחד לא שומע. אפשר ללחוץ כאן כדי לבחור מיקרופון אחר.',
   'Cultura': 'תרבות',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: תמונות שבחרה קהילת ויקישיתוף וספרים לקריאה בחינם. מתחלף כל יום.',
   'Por {autor}': 'מאת {autor}',

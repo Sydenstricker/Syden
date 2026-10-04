@@ -87,6 +87,7 @@ export function VoiceStage({
   sessao,
   aoAlternarSessao,
   socket,
+  aoAbrirVozEVideo,
 }: {
   channel: Channel;
   voice: Voice;
@@ -101,6 +102,8 @@ export function VoiceStage({
   /** Modo sessão: assistir junto, com o vídeo grande e a conversa ao lado. */
   sessao: boolean;
   aoAlternarSessao: () => void;
+  /** Abre as Configurações em "Voz e vídeo": é lá que se troca o microfone. */
+  aoAbrirVozEVideo?: () => void;
   /** Por onde chegam os avisos de quem ganhou ou perdeu a palavra na apresentação. */
   socket: Socket | null;
 }) {
@@ -144,7 +147,13 @@ export function VoiceStage({
       {palco?.apresentacao && <FaixaDoPalco channelId={channel.id} estado={palco} />}
       {/* Sala de voz sempre pertence a uma comunidade (conversa privada não tem voz por enquanto). */}
       {inThisRoom ? (
-        <Stage voice={voice} members={members} communityId={channel.communityId ?? 0} canaisDeTexto={canaisDeTexto} />
+        <Stage
+          voice={voice}
+          members={members}
+          communityId={channel.communityId ?? 0}
+          canaisDeTexto={canaisDeTexto}
+          aoAbrirVozEVideo={aoAbrirVozEVideo}
+        />
       ) : (
         <div className="voice-lobby">
           <div className="voice-lobby-avatars">
@@ -1052,11 +1061,13 @@ function Stage({
   members,
   communityId,
   canaisDeTexto,
+  aoAbrirVozEVideo,
 }: {
   voice: Voice;
   members: VoiceMember[];
   communityId: number;
   canaisDeTexto: Channel[];
+  aoAbrirVozEVideo?: () => void;
 }) {
   const t = useT();
   const tracks = useTracks(
@@ -1175,6 +1186,14 @@ function Stage({
       <CamadaDeEfeitos disparo={voice.disparoVisual} />
 
       <QualityAdvisor voice={voice} />
+
+      {/* O microfone aberto que manda silêncio (ver microfoneSemSom, em useVoice). Clicar leva direto
+          para onde se troca o microfone — o aviso sem caminho só aumentaria a aflição. */}
+      {voice.microfoneSemSom && !voice.mutedWarning && (
+        <button type="button" className="muted-warning microfone-sem-som" role="status" onClick={aoAbrirVozEVideo}>
+          <MicOff size={16} /> {t('Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.')}
+        </button>
+      )}
 
       {voice.mutedWarning && (
         <div className="muted-warning" role="status">

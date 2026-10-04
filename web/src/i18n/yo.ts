@@ -658,6 +658,7 @@ export default {
   'Senha trocada': 'A ti yí ọ̀rọ̀ aṣínà padà',
   'Senha:': 'Ọ̀rọ̀ aṣínà:',
   'Seria bom se…': 'Yóò dára tí…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Máíkírófóònù yín kò fi ohùn ránṣẹ́: kò sí ẹni tó ń gbọ́ yín. Ẹ tẹ̀ ẹ́ láti yan òmíràn.',
   'Cultura': 'Àṣà',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: àwọn fọ́tò tí àwùjọ Wikimedia Commons yàn àti àwọn ìwé láti kà lọ́fẹ̀ẹ́. Ó ń yípadà lójoojúmọ́.',
   'Por {autor}': 'Láti ọwọ́ {autor}',

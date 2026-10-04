@@ -577,6 +577,7 @@ export default {
   'Salas de {nome}': 'Salas de {nome}',
   'Salas de voz': 'Salas de voz',
   'Seria bom se…': 'Estaría bueno que…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Tu micrófono no está enviando sonido: nadie te está escuchando. Haz clic para elegir otro.',
   'Cultura': 'Cultura',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: fotos elegidas por la comunidad de Wikimedia Commons y libros para leer gratis. Cambia cada día.',
   'Por {autor}': 'Por {autor}',

@@ -716,6 +716,7 @@ export default {
   'Senha trocada': 'Jechi icciitii jijjiirameera',
   'Senha:': 'Jecha icciitii:',
   'Seria bom se…': 'Gaarii ture yoo…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Maaykiroofoonni kee sagalee hin ergu: namni si dhagahu hin jiru. Kan biraa filachuuf cuqaasi.',
   'Cultura': 'Aadaa',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: suuraawwan hawaasni Wikimedia Commons filate fi kitaabota bilisaan dubbifaman. Guyyaa guyyaan jijjiirama.',
   'Por {autor}': 'Kan {autor}',

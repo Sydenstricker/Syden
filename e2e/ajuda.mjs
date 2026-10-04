@@ -48,7 +48,9 @@ export async function abrirNavegador({ viewport = { width: 1500, height: 950 }, 
       // DE VERDADE da máquina (medido: "High Definition Audio Device") — gravava a sala de quem roda o
       // teste, e media o silêncio dela em vez de um som que se sabe que existe. Foi assim que "as
       // vozes do clipe saem mudas" parecia ser culpa do Syden sem dar para saber.
-      '--use-fake-device-for-media-stream',
+      // MICROFONE_REAL=1 desliga o falso, para o raro teste que precisa do aparelho de verdade (medir
+      // alarme falso com um microfone real numa sala quieta, por exemplo). Nunca por padrão.
+      ...(process.env.MICROFONE_REAL ? [] : ['--use-fake-device-for-media-stream']),
     ],
   });
   const contexto = await browser.newContext({ viewport, permissions: permissoes });

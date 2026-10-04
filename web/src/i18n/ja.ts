@@ -618,6 +618,7 @@ export default {
   'Senha trocada': 'パスワードを変更しました',
   'Senha:': 'パスワード：',
   'Seria bom se…': 'こうだったらいいな…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'マイクから音が送られていません。誰にも聞こえていません。クリックして別のマイクを選んでください。',
   'Cultura': '文化',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}：ウィキメディア・コモンズのコミュニティが選んだ写真と、無料で読める本。毎日入れ替わります。',
   'Por {autor}': '撮影・制作：{autor}',

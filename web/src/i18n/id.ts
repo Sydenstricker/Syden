@@ -471,6 +471,7 @@ export default {
   'Senha trocada': 'Kata sandi diganti',
   'Senha:': 'Kata sandi:',
   'Seria bom se…': 'Enak kalau…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Mikrofonmu tidak mengirim suara: tidak ada yang mendengarmu. Klik untuk memilih yang lain.',
   'Cultura': 'Budaya',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: foto pilihan komunitas Wikimedia Commons dan buku untuk dibaca gratis. Berganti setiap hari.',
   'Por {autor}': 'Oleh {autor}',

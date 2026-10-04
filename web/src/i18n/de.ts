@@ -599,6 +599,7 @@ export default {
   'Salas de {nome}': 'Räume von {nome}',
   'Salas de voz': 'Sprachräume',
   'Seria bom se…': 'Schön wäre, wenn…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Dein Mikrofon sendet keinen Ton: Niemand hört dich. Klick, um ein anderes zu wählen.',
   'Cultura': 'Kultur',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: Fotos, ausgewählt von der Wikimedia-Commons-Community, und Bücher zum kostenlosen Lesen. Wechselt jeden Tag.',
   'Por {autor}': 'Von {autor}',

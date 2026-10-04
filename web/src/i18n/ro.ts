@@ -643,6 +643,7 @@ export default {
   'Senha trocada': 'Parola a fost schimbată',
   'Senha:': 'Parolă:',
   'Seria bom se…': 'Ar fi bine dacă…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Microfonul tău nu trimite sunet: nimeni nu te aude. Dă clic ca să alegi altul.',
   'Cultura': 'Cultură',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: fotografii alese de comunitatea Wikimedia Commons și cărți de citit gratuit. Se schimbă în fiecare zi.',
   'Por {autor}': 'De {autor}',

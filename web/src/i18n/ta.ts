@@ -622,6 +622,7 @@ export default {
   'Senha trocada': 'கடவுச்சொல் மாற்றப்பட்டது',
   'Senha:': 'கடவுச்சொல்:',
   'Seria bom se…': 'இப்படி இருந்தால் நன்றாக இருக்கும்…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'உங்கள் மைக்ரோஃபோன் ஒலியை அனுப்பவில்லை: யாருக்கும் நீங்கள் கேட்கவில்லை. வேறொன்றைத் தேர்ந்தெடுக்கக் கிளிக் செய்யுங்கள்.',
   'Cultura': 'பண்பாடு',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: விக்கிமீடியா காமன்ஸ் சமூகம் தேர்ந்தெடுத்த படங்களும் இலவசமாகப் படிக்கப் புத்தகங்களும். தினமும் மாறும்.',
   'Por {autor}': '{autor} உருவாக்கியது',

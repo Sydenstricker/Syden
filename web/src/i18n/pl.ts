@@ -742,6 +742,7 @@ export default {
   'Senha trocada': 'Hasło zmienione',
   'Senha:': 'Hasło:',
   'Seria bom se…': 'Fajnie by było, gdyby…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Twój mikrofon nie wysyła dźwięku: nikt cię nie słyszy. Kliknij, aby wybrać inny.',
   'Cultura': 'Kultura',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: zdjęcia wybrane przez społeczność Wikimedia Commons i książki do czytania za darmo. Zmienia się codziennie.',
   'Por {autor}': 'Autor: {autor}',

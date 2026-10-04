@@ -650,6 +650,7 @@ export default {
   'Senha trocada': 'เปลี่ยนรหัสผ่านแล้ว',
   'Senha:': 'รหัสผ่าน:',
   'Seria bom se…': 'น่าจะดีถ้า…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'ไมโครโฟนของคุณไม่ได้ส่งเสียง ไม่มีใครได้ยินคุณ คลิกเพื่อเลือกตัวอื่น',
   'Cultura': 'วัฒนธรรม',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: ภาพที่ชุมชนวิกิมีเดียคอมมอนส์คัดเลือก และหนังสือให้อ่านฟรี เปลี่ยนทุกวัน',
   'Por {autor}': 'โดย {autor}',

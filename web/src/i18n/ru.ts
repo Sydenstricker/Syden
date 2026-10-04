@@ -593,6 +593,7 @@ export default {
   'Salas de {nome}': 'Комнаты в {nome}',
   'Salas de voz': 'Голосовые комнаты',
   'Seria bom se…': 'Было бы здорово, если…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Твой микрофон не передаёт звук: тебя никто не слышит. Нажми, чтобы выбрать другой.',
   'Cultura': 'Культура',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: фотографии, отобранные сообществом Wikimedia Commons, и книги, которые можно читать бесплатно. Меняется каждый день.',
   'Por {autor}': 'Автор: {autor}',

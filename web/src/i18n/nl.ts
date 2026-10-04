@@ -471,6 +471,7 @@ export default {
   'Senha trocada': 'Wachtwoord gewijzigd',
   'Senha:': 'Wachtwoord:',
   'Seria bom se…': 'Het zou fijn zijn als…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Je microfoon stuurt geen geluid: niemand hoort je. Klik om een andere te kiezen.',
   'Cultura': 'Cultuur',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: foto’s gekozen door de Wikimedia Commons-gemeenschap en boeken om gratis te lezen. Elke dag anders.',
   'Por {autor}': 'Door {autor}',

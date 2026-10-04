@@ -461,6 +461,7 @@ export default {
   'Senha trocada': '密码已更改',
   'Senha:': '密码：',
   'Seria bom se…': '要是能…就好了',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': '你的麦克风没有传出声音：没人听得到你。点击选择别的麦克风。',
   'Cultura': '文化',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}：维基共享资源社区精选的照片，以及可以免费阅读的书。每天更换。',
   'Por {autor}': '作者：{autor}',

@@ -471,6 +471,7 @@ export default {
   'Senha trocada': 'পাসওয়ার্ড বদলে গেছে',
   'Senha:': 'পাসওয়ার্ড:',
   'Seria bom se…': 'ভালো হতো যদি…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'তোমার মাইক্রোফোন কোনো শব্দ পাঠাচ্ছে না: কেউ তোমাকে শুনতে পাচ্ছে না। অন্যটা বেছে নিতে ক্লিক করো।',
   'Cultura': 'সংস্কৃতি',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: উইকিমিডিয়া কমন্স সম্প্রদায়ের বেছে নেওয়া ছবি আর বিনামূল্যে পড়ার বই। প্রতিদিন বদলায়।',
   'Por {autor}': '{autor}-এর তোলা',

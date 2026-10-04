@@ -1415,6 +1415,22 @@ textarea {
   animation: muted-warning-in 0.15s ease-out;
 }
 
+/* O microfone aberto que manda silêncio: o mesmo aviso, mas é botão (leva à troca de microfone) e a
+   frase é mais longa, então quebra linha em vez de vazar. */
+.microfone-sem-som {
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  width: max-content;
+  max-width: min(92%, 520px);
+  border-radius: 18px;
+  text-align: start;
+}
+
+.microfone-sem-som:hover {
+  filter: brightness(1.1);
+}
+
 @keyframes muted-warning-in {
   from {
     opacity: 0;

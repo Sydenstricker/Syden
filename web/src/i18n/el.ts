@@ -649,6 +649,7 @@ export default {
   'Senha trocada': 'Ο κωδικός άλλαξε',
   'Senha:': 'Κωδικός:',
   'Seria bom se…': 'Θα ήταν ωραίο αν…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Το μικρόφωνό σου δεν στέλνει ήχο: κανείς δεν σε ακούει. Πάτησε για να διαλέξεις άλλο.',
   'Cultura': 'Πολιτισμός',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: φωτογραφίες που επέλεξε η κοινότητα του Wikimedia Commons και βιβλία για δωρεάν διάβασμα. Αλλάζει κάθε μέρα.',
   'Por {autor}': 'Από {autor}',

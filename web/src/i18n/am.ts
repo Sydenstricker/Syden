@@ -643,6 +643,7 @@ export default {
   'Senha trocada': 'የይለፍ ቃሉ ተቀይሯል',
   'Senha:': 'የይለፍ ቃል፦',
   'Seria bom se…': 'ቢሆን ጥሩ ነበር…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'ማይክሮፎንዎ ድምፅ እየላከ አይደለም፦ ማንም አይሰማዎትም። ሌላ ለመምረጥ ጠቅ ያድርጉ።',
   'Cultura': 'ባህል',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}፦ የዊኪሚዲያ ኮመንስ ማህበረሰብ የመረጣቸው ፎቶዎችና በነጻ የሚነበቡ መጻሕፍት። በየቀኑ ይቀየራል።',
   'Por {autor}': 'በ{autor}',

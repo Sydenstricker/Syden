@@ -592,6 +592,7 @@ export default {
   'Salas de {nome}': 'غرف {nome}',
   'Salas de voz': 'الغرف الصوتية',
   'Seria bom se…': 'سيكون جميلًا لو…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'الميكروفون لا يرسل أي صوت: لا أحد يسمعك. انقر لاختيار ميكروفون آخر.',
   'Cultura': 'ثقافة',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: صور اختارها مجتمع ويكيميديا كومنز وكتب للقراءة مجانًا. تتغير كل يوم.',
   'Por {autor}': 'بواسطة {autor}',

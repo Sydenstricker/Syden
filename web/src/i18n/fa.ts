@@ -625,6 +625,7 @@ export default {
   'Senha trocada': 'رمز عبور عوض شد',
   'Senha:': 'رمز عبور:',
   'Seria bom se…': 'خوب می‌شد اگر…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'میکروفون شما صدایی نمی‌فرستد: کسی صدایتان را نمی‌شنود. برای انتخاب یکی دیگر کلیک کنید.',
   'Cultura': 'فرهنگ',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: عکس‌هایی که جامعهٔ ویکی‌انبار برگزیده و کتاب‌هایی برای خواندن رایگان. هر روز عوض می‌شود.',
   'Por {autor}': 'اثر {autor}',

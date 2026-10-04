@@ -639,6 +639,7 @@ export default {
   'Senha trocada': 'An canza kalmar sirri',
   'Senha:': 'Kalmar sirri:',
   'Seria bom se…': 'Zai yi kyau idan…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Makirofonku ba ya aika da sauti: babu wanda ke jin ku. Ku danna don zaɓar wani.',
   'Cultura': 'Al’adu',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: hotunan da al’ummar Wikimedia Commons ta zaɓa da littattafan karatu kyauta. Yana canzawa kowace rana.',
   'Por {autor}': 'Daga {autor}',

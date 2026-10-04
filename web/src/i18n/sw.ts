@@ -571,6 +571,7 @@ export default {
   'Salas de {nome}': 'Vyumba vya {nome}',
   'Salas de voz': 'Vyumba vya sauti',
   'Seria bom se…': 'Ingekuwa vizuri kama…',
+  'Seu microfone não está mandando som: ninguém está te ouvindo. Clique para escolher outro.': 'Maikrofoni yako haitumi sauti: hakuna anayekusikia. Bofya kuchagua nyingine.',
   'Cultura': 'Utamaduni',
   '{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.': '{pais}: picha zilizochaguliwa na jumuiya ya Wikimedia Commons na vitabu vya kusoma bure. Hubadilika kila siku.',
   'Por {autor}': 'Na {autor}',
