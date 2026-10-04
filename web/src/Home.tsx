@@ -5,6 +5,7 @@ import { CHANGELOG, marcarNovidadesVistas } from './changelog';
 import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
+import { FaixaDaCultura } from './Cultura';
 import { Farol, atividadeAgora } from './Farol';
 import { PainelCoelhos } from './PainelCoelhos';
 import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type PessoaNaPraca, type Periodo, type PinoVila, Vila } from './Vila';
@@ -287,6 +288,8 @@ export function Home({
       </div>
 
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
+
+      <FaixaDaCultura />
 
       <CaixaDeIdeias souODono={souODono} />
 

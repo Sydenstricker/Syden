@@ -15,6 +15,7 @@ import { registerKaraokeRoutes } from './karaoke-routes.js';
 import { registerMediaRoutes } from './media-routes.js';
 import { registerModeracaoRoutes } from './moderacao-routes.js';
 import { registerPackRoutes } from './pack-routes.js';
+import { registerCulturaRoutes } from './cultura-routes.js';
 import { registerRoutes } from './routes.js';
 import { registerSocialRoutes } from './social-routes.js';
 import { registerAmigosRoutes } from './amigos-routes.js';
@@ -47,6 +48,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerRoutes(app, io);
   registerMediaRoutes(app, io);
   registerPackRoutes(app);
+  registerCulturaRoutes(app);
   registerEmojiPackRoutes(app, io);
   registerKaraokeRoutes(app, io);
   registerChatRoutes(app, io);

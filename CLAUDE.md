@@ -167,7 +167,21 @@ lendo, e um erro aqui atinge metade das pessoas em todas as frases.
 **O árabe tem a mesma divisão e passou batido**, porque o sufixo ـك se escreve igual para os dois sem
 os sinais de vogal. As formas verbais dele seguem no masculino: é dívida conhecida, não descuido.
 
-## Culturas na home (idiomas, leitura, culinária, dança, música): o desenho, ainda não construído
+## Culturas na home (idiomas, leitura, culinária, dança, música)
+
+**A primeira faixa foi construída em 03/10/2026** (`server/src/cultura.ts`, `web/src/Cultura.tsx`):
+fotos do país da pessoa ("Quality images of <país>", no Commons) e livros na língua dela (Gutendex).
+O que decidiu a forma, medido no dia:
+
+- **O tom ("otimista, como a TV Cultura") vem de quais seções se ligam, não de uma fonte.** O feed
+  diário da Wikipédia ficou de fora: o "Você sabia?" trazia o dono de um site pornográfico e o "neste
+  dia" abria com política. Mesmo nas imagens de qualidade há um filtro pelas categorias do arquivo.
+- **O país sai da preferência de idioma do sistema** ("pt-BR" → Brasil), nunca do IP.
+- **O servidor busca e entrega tudo**; o navegador não fala com Wikimedia nem Gutenberg (o e2e
+  `cultura.mjs` confere).
+- Livros só aparecem com três ou mais: em árabe, o Gutenberg só tinha uma homenagem ao fundador.
+
+Música, dança e culinária continuam só no desenho abaixo.
 
 **Decidido em 03/10/2026, pelo Sydenstricker, retomando o assunto arquivado logo abaixo.** O tema
 cresceu: não é só aprender idioma, é **se conectar com outras culturas**, e o formato tem de aceitar

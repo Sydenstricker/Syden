@@ -7938,6 +7938,141 @@ textarea {
   color: var(--text-muted);
 }
 
+/* ---------- A faixa de cultura (Cultura.tsx) ---------- */
+.cultura {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+
+.cultura h2,
+.cultura h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: var(--text-strong);
+}
+
+.cultura h2 {
+  font-size: calc(18px * var(--escala-do-texto));
+}
+
+.cultura h3 {
+  margin-top: 18px;
+  font-size: calc(15px * var(--escala-do-texto));
+}
+
+.cultura h2 svg,
+.cultura h3 svg {
+  color: var(--accent);
+}
+
+.cultura-lead {
+  margin: 0 0 12px;
+  font-size: calc(14px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.cultura-imagens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.cultura-imagem {
+  margin: 0;
+  min-width: 0;
+}
+
+.cultura-imagem a {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+/* O lugar guardado enquanto a lista vem: o quadro, sem nada dentro. */
+.cultura-imagem.esperando {
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.cultura-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.cultura-imagem a:hover img {
+  transform: scale(1.04);
+}
+
+.cultura-imagem figcaption {
+  margin-top: 4px;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cultura-livros {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 14px;
+}
+
+.cultura-livros a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cultura-capa {
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-raised);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.cultura-capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cultura-livro-titulo {
+  font-size: calc(13px * var(--escala-do-texto));
+  font-weight: 600;
+  color: var(--text-strong);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cultura-livro-autor {
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.cultura-livros a:hover .cultura-livro-titulo {
+  text-decoration: underline;
+}
+
 .ideias form {
   display: flex;
   flex-direction: column;

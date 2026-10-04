@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { FONTE_DA_ESCRITA, IDIOMAS, PADRAO, TRADUCOES, idiomaPorCodigo } from './idiomas';
+import { paisesDoIdioma } from './paises';
 import { desktopBridge } from '../desktop';
 
 /** Escritas que qualquer computador ou celular já desenha: para elas não se busca fonte de fora. */
@@ -175,3 +176,22 @@ export function iniciarIdioma() {
 
 export { IDIOMAS, PADRAO, TRADUCOES, idiomaPorCodigo } from './idiomas';
 export { paisesCobertos } from './idiomas';
+
+/**
+ * O país e a língua da pessoa, para a faixa de cultura da home.
+ *
+ * VEM DA MESMA PREFERÊNCIA QUE ESCOLHE O IDIOMA, nunca do endereço de rede (ver CLAUDE.md, "Idioma:
+ * detectar pelo navegador"): a primeira preferência que traz região — "pt-BR" dá Brasil e livros em
+ * português. Sem região nenhuma, vale o idioma da tela quando ele é oficial num país só (japonês →
+ * Japão); o português do Syden é o do Brasil. Sem nada disso, null, e a faixa não aparece.
+ */
+export function paisDaPessoa(): { pais: string; lingua: string } | null {
+  for (const preferido of preferenciasDeIdioma()) {
+    const achado = /^([a-z]{2,3})-([A-Z]{2})$/i.exec(preferido);
+    if (achado) return { pais: achado[2].toUpperCase(), lingua: achado[1].toLowerCase() };
+  }
+  const lingua = atual.split('-')[0];
+  if (atual === PADRAO) return { pais: 'BR', lingua };
+  const paises = paisesDoIdioma(atual);
+  return paises.length === 1 ? { pais: paises[0], lingua } : null;
+}
