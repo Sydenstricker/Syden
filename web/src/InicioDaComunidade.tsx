@@ -180,10 +180,9 @@ export function InicioDaComunidade({
             chamada, e um bloco que não leva a lugar nenhum é pior do que bloco nenhum. Convidar é a
             ação que mais faz sentido numa tela de boas-vindas — quem acabou de entrar costuma querer
             trazer alguém junto. */}
-        {/* O CÓDIGO DE CONVITE SÓ CHEGA A QUEM ADMINISTRA (ver db.listCommunitiesForUser), e é a regra
-            certa — está nos termos: "só quem administra pode convidar gente nova". Sem esta condição o
-            bloco apareceria para todo mundo e copiaria um link sem código, que não leva a lugar nenhum
-            e não dá erro. */}
+        {/* DESDE 03/10/2026 TODO MEMBRO RECEBE O CÓDIGO e pode chamar gente (ver
+            db.listCommunitiesForUser); trocar o código continua com quem administra. A condição fica
+            porque, sem código, o bloco copiaria um link que não leva a lugar nenhum e não dá erro. */}
         {community.inviteCode && (
         <button className="bv-bloco" onClick={copiarConvite}>
           {copiado ? <Check size={26} /> : <Link2 size={26} />}

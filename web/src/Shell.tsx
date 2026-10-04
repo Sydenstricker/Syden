@@ -416,6 +416,10 @@ export function Shell({
         list.map((c) => (c.id === updated.id ? { ...c, name: updated.name, iconVersion: updated.iconVersion } : c)),
       ),
     );
+    // Quem administra trocou o código: o link de convite de todo mundo passa a ser o novo.
+    s.on('community:invite', ({ id, inviteCode }: { id: number; inviteCode: string }) =>
+      setCommunities((list) => list.map((c) => (c.id === id ? { ...c, inviteCode } : c))),
+    );
     s.on('community:deleted', ({ id }: { id: number }) => setCommunities((list) => list.filter((c) => c.id !== id)));
     // Um administrador te puxou para outra sala de voz: o app entra nela sozinho, como no Discord.
     s.on('voice:move', ({ channelId: to }: { channelId: number }) => {

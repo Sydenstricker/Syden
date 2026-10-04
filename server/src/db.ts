@@ -1212,7 +1212,7 @@ export function listCommunitiesForUser(userId: number): CommunityForUser[] {
               c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte, c.efeito,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
-              CASE WHEN m.role IN ('owner', 'admin') THEN c.invite_code END AS inviteCode
+              c.invite_code AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
        WHERE m.user_id = ? ORDER BY m.joined_at, c.id`,
     )

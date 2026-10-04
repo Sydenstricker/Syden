@@ -918,13 +918,22 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true };
     });
 
-    /** Troca o código de convite: o antigo para de funcionar na hora. */
+    /**
+     * Troca o código de convite: o antigo para de funcionar na hora.
+     *
+     * CONVIDAR É DE TODO MEMBRO; TROCAR O CÓDIGO NÃO. Desde 03/10/2026 qualquer membro recebe o código
+     * para chamar gente (ver listCommunitiesForUser). Trocar continua com quem administra, porque derruba
+     * de uma vez todos os links que já foram espalhados — é a ferramenta de quando o convite vazou.
+     * E todo mundo da comunidade recebe o código novo na hora, senão quem estava com o app aberto
+     * continuaria compartilhando um link morto.
+     */
     authed.post<{ Params: { id: string } }>('/api/communities/:id/invite', async (request, reply) => {
       const access = requireRole(request, reply);
       if (!access) return reply;
       if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar o convite.' });
       const code = db.newInviteCode();
       db.setCommunityInviteCode(access.community.id, code);
+      io.to(communityRoom(access.community.id)).emit('community:invite', { id: access.community.id, inviteCode: code });
       return { inviteCode: code };
     });
 
