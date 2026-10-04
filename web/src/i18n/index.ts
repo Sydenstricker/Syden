@@ -54,6 +54,14 @@ function preferenciasDeIdioma(): readonly string[] {
  */
 const APELIDOS: Record<string, string> = { nb: 'no', nn: 'no' };
 
+/**
+ * O MONTENEGRINO PRECISA DA MARCA INTEIRA, e não só da raiz. O Windows e o Chrome de Montenegro mandam
+ * "sr-Latn-ME" ou "sr-ME" — sérvio, em Montenegro —, e pela raiz isso cai no sérvio em CIRÍLICO, que não
+ * é a língua oficial de lá nem a escrita que a maioria usa. "sr-Cyrl-ME" fica no sérvio: quem pediu
+ * cirílico de propósito recebe cirílico.
+ */
+const APELIDOS_POR_MARCA: Record<string, string> = { 'sr-me': 'cnr', 'sr-latn-me': 'cnr' };
+
 /** O idioma escolhido, ou o do sistema se ele estiver na lista, ou português. */
 function escolhaInicial(): string {
   try {
@@ -64,7 +72,8 @@ function escolhaInicial(): string {
   }
   for (const preferido of preferenciasDeIdioma()) {
     // "en-GB" serve para quem tem "en"; "pt-PT" continua caindo no português do Brasil.
-    const raiz = APELIDOS[preferido.split('-')[0]] ?? preferido.split('-')[0];
+    const raiz =
+      APELIDOS_POR_MARCA[preferido.toLowerCase()] ?? APELIDOS[preferido.split('-')[0]] ?? preferido.split('-')[0];
     const achado = IDIOMAS.find((i) => i.codigo === preferido || i.codigo === raiz);
     if (achado && (achado.codigo === PADRAO || TRADUCOES[achado.codigo])) return achado.codigo;
     if (raiz === 'pt') return PADRAO;

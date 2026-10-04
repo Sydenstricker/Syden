@@ -187,6 +187,7 @@ export const IDIOMAS: Idioma[] = [
   // Entraram em 04/10/2026, a pedido do Sydenstricker: "é melhor o feito do que o perfeito".
   // ---------------------------------------------------------------------------------------------
   { codigo: 'ca', nativo: 'Català', nome: 'Catalão', escrita: 'latina', paises: 1 },
+  { codigo: 'cnr', nativo: 'Crnogorski', nome: 'Montenegrino', escrita: 'latina', paises: 1 },
 ];
 
 export const PADRAO = 'pt-BR';
@@ -258,6 +259,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   et: () => import('./et'),
   is: () => import('./is'),
   ca: () => import('./ca'),
+  cnr: () => import('./cnr'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

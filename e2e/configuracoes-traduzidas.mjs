@@ -111,7 +111,7 @@ function detectorPorChaves(codigo) {
 }
 
 /** As línguas de escrita latina deste teste, cada uma com o seu dicionário e o seu reforço medido. */
-const POR_CHAVES = new Map(['vi', 'ha', 'yo', 'ro', 'pl', 'om', 'az', 'uz', 'zu', 'mg', 'so', 'af', 'sv', 'hu', 'cs', 'sq', 'hr', 'da', 'sk', 'fi', 'no', 'sl', 'lt', 'lv', 'et', 'is', 'ca'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
+const POR_CHAVES = new Map(['vi', 'ha', 'yo', 'ro', 'pl', 'om', 'az', 'uz', 'zu', 'mg', 'so', 'af', 'sv', 'hu', 'cs', 'sq', 'hr', 'da', 'sk', 'fi', 'no', 'sl', 'lt', 'lv', 'et', 'is', 'ca', 'cnr'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
 
 /** O detector da vez. Cada idioma mede o que ele próprio consegue distinguir. */
 function sobrouPortugues(codigo, texto) {
@@ -173,6 +173,7 @@ const IDIOMAS = [
   { codigo: 'et', nome: 'Eesti', rtl: false },
   { codigo: 'is', nome: 'Íslenska', rtl: false },
   { codigo: 'ca', nome: 'Català', rtl: false },
+  { codigo: 'cnr', nome: 'Crnogorski', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

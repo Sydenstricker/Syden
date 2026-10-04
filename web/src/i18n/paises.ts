@@ -292,6 +292,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Andorra. A Constituição (art. 2) faz do catalão a língua oficial. Na Espanha ele é cooficial só
   // em comunidades autônomas, e a grade conta a língua do Estado — então é um país só.
   ca: ['AD'],
+
+  // Montenegro. A Constituição de 2007 (art. 13) faz do montenegrino a língua oficial; sérvio, bósnio,
+  // albanês e croata têm uso oficial também, mas a língua do Estado é esta.
+  cnr: ['ME'],
 };
 
 /**
@@ -412,6 +416,9 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   tet: 1,
   to: 1,
   ca: 10,
+  // Uns 200 mil se declaram falantes de montenegrino no censo; boa parte do resto do país diz "sérvio"
+  // para a mesma fala. Fica 1, o mínimo da tabela, porque o número é declaração, não medição.
+  cnr: 1,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */

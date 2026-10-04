@@ -498,6 +498,14 @@ const TEXTOS = {
     tentando: 'S’està provant…',
     codigo: 'OFFLINE — Sense connexió',
   },
+  // "Ti", latino e ijekaviano. Chega como "sr-Latn-ME"/"sr-ME" pelo apelido em idioma(). Ver web/src/i18n/cnr.ts.
+  cnr: {
+    titulo: 'Povezivanje nije uspjelo',
+    explicacao: 'Provjeri internet vezu. Možda ni server ne radi.',
+    botao: 'Pokušaj ponovo',
+    tentando: 'Pokušava se…',
+    codigo: 'OFFLINE — Nema veze',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
@@ -518,10 +526,13 @@ const DA_DIREITA_PARA_A_ESQUERDA = new Set(['ar', 'ur', 'fa', 'he']);
 // O norueguês do sistema chega como "nb" (bokmål) ou "nn" (nynorsk), e aqui ele se chama "no" — o mesmo
 // apelido de web/src/i18n/index.ts.
 const APELIDOS = { nb: 'no', nn: 'no' };
+// E o montenegrino chega como "sr-Latn-ME" ou "sr-ME": precisa da marca inteira, senão vira sérvio.
+const APELIDOS_POR_MARCA = { 'sr-me': 'cnr', 'sr-latn-me': 'cnr' };
 
 function idioma() {
-  const raiz = (navigator.language || 'pt').toLowerCase().split('-')[0];
-  const bruto = APELIDOS[raiz] || raiz;
+  const marca = (navigator.language || 'pt').toLowerCase();
+  const raiz = marca.split('-')[0];
+  const bruto = APELIDOS_POR_MARCA[marca] || APELIDOS[raiz] || raiz;
   return TEXTOS[bruto] ? bruto : 'pt';
 }
 
