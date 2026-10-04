@@ -386,6 +386,14 @@ const TEXTOS = {
     tentando: 'Zkouší se…',
     codigo: 'OFFLINE — Bez připojení',
   },
+  // "Ти"; o aoristo búlgaro não marca o sexo, só o perfeito marca. Ver web/src/i18n/bg.ts.
+  bg: {
+    titulo: 'Няма връзка',
+    explicacao: 'Провери интернета си. Възможно е и сървърът да не работи.',
+    botao: 'Опитай пак',
+    tentando: 'Опитва се…',
+    codigo: 'OFFLINE — Няма връзка',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

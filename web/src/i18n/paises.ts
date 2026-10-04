@@ -245,6 +245,9 @@ export const OFICIAL: Record<string, string[]> = {
   // Tchéquia. A língua oficial é o tcheco (Lei de Procedimento Administrativo, §16; a Constituição não
   // a nomeia, mas toda a legislação a pressupõe).
   cs: ['CZ'],
+
+  // Bulgária. A Constituição (art. 3) faz do búlgaro a língua oficial.
+  bg: ['BG'],
 };
 
 /**
