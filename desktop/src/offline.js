@@ -554,6 +554,15 @@ const TEXTOS = {
     tentando: 'Оролдож байна…',
     codigo: 'OFFLINE — Холболт алга',
   },
+  // "ތިބާ", o você neutro da escrita pública. Confiança baixa para média, com pesquisa no MediaWiki e no
+  // WordPress em divehi. Ver web/src/i18n/dv.ts.
+  dv: {
+    titulo: 'ގުޅޭކަށް ނުވި',
+    explicacao: 'އިންޓަނެޓް ކަނެކްޝަން ބަލާ. ސާވަރުވެސް ހުއްޓިފައި ހުރެދާނެ.',
+    botao: 'އަލުން މަސައްކަތްކުރޭ',
+    tentando: 'މަސައްކަތްކުރަނީ…',
+    codigo: 'OFFLINE — ކަނެކްޝަނެއް ނެތް',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

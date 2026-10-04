@@ -187,7 +187,10 @@ describe('cada dicionário usa só a escrita da língua dele', () => {
   const ESCRITAS: Record<string, RegExp> = {
     cirilica: /[Ѐ-ӿ]/,
     grega: /[Ͱ-Ͽ]/,
-    arabe: /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/,
+    // A MESMA COISA NO BLOCO ÁRABE, com o divehi: a vírgula (،), o ponto e vírgula (؛) e a
+    // interrogação (؟) árabes são a pontuação do thaana também — o MediaWiki e o WordPress em divehi
+    // usam as três. Sem o recorte, o teste acusou 117 linhas do dv.ts, e nenhuma letra árabe.
+    arabe: /[؀-؋؍-ؚ؜-؞ؠ-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/,
     hebraica: /[֐-׿]/,
     // O BLOCO DO DEVANÁGARI GUARDA PONTUAÇÃO QUE NÃO É DELE. O dandá (।, U+0964) e o dandá duplo
     // (॥) terminam frase em híndi, em bengali, em nepalês e em mais meia dúzia de escritas índicas —

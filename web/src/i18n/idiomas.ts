@@ -188,6 +188,8 @@ export const IDIOMAS: Idioma[] = [
   // ONU sem língua oficial no Syden — e cinco deles nem tinham a língua nesta lista: Andorra (catalão),
   // Montenegro (montenegrino), Tajiquistão (tajique), Turcomenistão (turcomeno) e Butão (dzongkha).
   // Entraram em 04/10/2026, a pedido do Sydenstricker: "é melhor o feito do que o perfeito".
+  // Os outros quatro (Armênia, Geórgia, Maldivas, Mongólia) já tinham a língua acima e só esperavam a
+  // tradução; com hy, ka, dv e mn, no mesmo dia, o Syden chegou aos 193 de 193.
   // ---------------------------------------------------------------------------------------------
   { codigo: 'ca', nativo: 'Català', nome: 'Catalão', escrita: 'latina', paises: 1 },
   { codigo: 'cnr', nativo: 'Crnogorski', nome: 'Montenegrino', escrita: 'latina', paises: 1 },
@@ -272,6 +274,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   hy: () => import('./hy'),
   ka: () => import('./ka'),
   mn: () => import('./mn'),
+  dv: () => import('./dv'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);

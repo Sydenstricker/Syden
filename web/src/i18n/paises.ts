@@ -315,6 +315,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Mongólia. A Constituição (art. 8) faz do mongol a língua do Estado; nas telas, em cirílico.
   mn: ['MN'],
+
+  // Maldivas. A Constituição (art. 11) faz do divehi a língua oficial.
+  dv: ['MV'],
 };
 
 /**
