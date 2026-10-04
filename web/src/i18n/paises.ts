@@ -212,6 +212,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Madagascar. A Constituição de 2010 (art. 4) faz do malgaxe a língua nacional, e oficial ao lado do
   // francês.
   mg: ['MG'],
+
+  // Somália. A Constituição provisória de 2012 (art. 5) faz do somali a língua oficial, ao lado do árabe.
+  // Na Etiópia, no Djibuti e no Quênia ele é língua regional, que não faz o país inteiro falar.
+  so: ['SO'],
 };
 
 /**

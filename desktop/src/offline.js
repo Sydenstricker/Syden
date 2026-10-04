@@ -312,6 +312,14 @@ const TEXTOS = {
     tentando: 'Manandrana…',
     codigo: 'OFFLINE — Tsy misy fifandraisana',
   },
+  // "Adiga": o somali não tem você formal. Ver web/src/i18n/so.ts.
+  so: {
+    titulo: 'Lama xiriiri karo',
+    explicacao: 'Hubi internetkaaga. Seerfarkuna wuu dansanaan karaa.',
+    botao: 'Isku day mar kale',
+    tentando: 'Waa la isku dayayaa…',
+    codigo: 'OFFLINE — Xiriir ma jiro',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
