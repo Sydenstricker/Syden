@@ -230,6 +230,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Cazaquistão. A Constituição (art. 7) faz do cazaque a língua do Estado; o russo é usado
   // oficialmente ao lado dele, e já está na lista do russo.
   kk: ['KZ'],
+
+  // Suécia (Lei da Língua de 2009, §4: o sueco é a língua principal) e Finlândia, onde a Constituição
+  // (§17) faz do finlandês e do sueco as duas línguas nacionais.
+  sv: ['SE', 'FI'],
 };
 
 /**

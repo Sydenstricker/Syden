@@ -353,6 +353,14 @@ const TEXTOS = {
     tentando: 'Қайталануда…',
     codigo: 'OFFLINE — Байланыс жоқ',
   },
+  // "Du", como todo mundo trata todo mundo na Suécia desde os anos 1960. Ver web/src/i18n/sv.ts.
+  sv: {
+    titulo: 'Det gick inte att ansluta',
+    explicacao: 'Kolla din internetuppkoppling. Servern kan också vara nere.',
+    botao: 'Försök igen',
+    tentando: 'Försöker…',
+    codigo: 'OFFLINE — Ingen anslutning',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
