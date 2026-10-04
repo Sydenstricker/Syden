@@ -28,7 +28,8 @@ import { desktopBridge } from './desktop';
 import { escolherCodecDaTela } from './escolherCodec';
 import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
-import { VoiceEffectProcessor, type VoiceEffectId } from './voiceEffects';
+import { type VoiceEffectId } from './voiceEffects';
+import { ProcessadorDoMicrofone, supressaoDisponivel } from './microfone';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { definirSurdez, sounds } from './sounds';
 
@@ -119,7 +120,7 @@ function isCancelledPicker(error: unknown) {
  * pela rede). Vira uma linha no diário da aba de saúde, e é assim que o administrador descobre o que houve
  * sem precisar perguntar. Falhar aqui não pode atrapalhar nada, então o erro é engolido.
  */
-function reportProblem(kind: 'microfone' | 'câmera' | 'conexão' | 'efeito de voz', message: string) {
+function reportProblem(kind: 'microfone' | 'câmera' | 'conexão' | 'efeito de voz' | 'supressão de ruído', message: string) {
   void api('/api/client-errors', { method: 'POST', body: { kind, message } }).catch(() => {});
 }
 
@@ -513,16 +514,43 @@ export function useVoice(socket: Socket | null) {
   }, [room]);
 
   /**
-   * Encaixa o modificador de voz no microfone que já está na chamada. O som continua saindo do mesmo
-   * microfone: o efeito só entra no meio do caminho, antes de virar o que os outros ouvem.
+   * Monta o caminho do microfone que já está na chamada: supressão de ruído do Syden (quando ligada em
+   * Configurações) e depois o modificador de voz. O som continua saindo do mesmo microfone; os dois só
+   * entram no meio do caminho, antes de virar o que os outros ouvem. Ver microfone.ts.
+   *
+   * SE A SUPRESSÃO FALHAR, A VOZ NÃO PODE PARAR. O caminho é remontado só com o efeito — a supressão do
+   * próprio navegador continua ligada por baixo — e o motivo vai para o diário da aba de saúde.
    */
+  const efeitoAtualRef = useRef<VoiceEffectId>('none');
   const applyVoiceEffect = useCallback(
     async (effect: VoiceEffectId) => {
+      efeitoAtualRef.current = effect;
       const track = room.localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
       if (!track) return;
       await room.startAudio().catch(() => {}); // sem o áudio ligado, o navegador não deixa processar
-      if (effect === 'none') await track.stopProcessor();
-      else await track.setProcessor(new VoiceEffectProcessor(effect));
+      const supressao = getSettings().noiseSuppression && supressaoDisponivel();
+      if (!supressao && effect === 'none') {
+        await track.stopProcessor();
+        return;
+      }
+      try {
+        await track.setProcessor(
+          new ProcessadorDoMicrofone({
+            efeito: effect,
+            supressao,
+            // Quanto a supressão custa NESTE computador, medido dentro da thread de áudio. Fica à vista
+            // para o teste de ponta a ponta e para quem for investigar um "minha voz está picotando".
+            aoMedirCusto: (ms) => {
+              (window as unknown as { sydenSupressao?: object }).sydenSupressao = { msPorQuadro: ms, quadroMs: 16 };
+            },
+          }),
+        );
+      } catch (e) {
+        if (!supressao) throw e;
+        reportProblem('supressão de ruído', `Não montou: ${e instanceof Error ? e.message : String(e)}`);
+        if (effect === 'none') await track.stopProcessor();
+        else await track.setProcessor(new ProcessadorDoMicrofone({ efeito: effect, supressao: false }));
+      }
     },
     [room],
   );
@@ -559,6 +587,26 @@ export function useVoice(socket: Socket | null) {
     [applyVoiceEffect, enfileirarEfeito],
   );
 
+  // Toda vez que o microfone vai para a sala (ao entrar, ao ligar depois de entrar mudo, ao voltar de
+  // uma queda), o caminho dele é montado de novo: a faixa publicada é nova, e o processador vive nela.
+  useEffect(() => {
+    const aoPublicar = (publication: TrackPublication) => {
+      if (publication.source !== Track.Source.Microphone) return;
+      void enfileirarEfeito(async () => {
+        try {
+          await applyVoiceEffect(efeitoAtualRef.current);
+        } catch (e) {
+          console.error(e);
+          reportProblem('supressão de ruído', `Ao publicar: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      });
+    };
+    room.on(RoomEvent.LocalTrackPublished, aoPublicar);
+    return () => {
+      room.off(RoomEvent.LocalTrackPublished, aoPublicar);
+    };
+  }, [room, applyVoiceEffect, enfileirarEfeito]);
+
   const setDeafenedState = useCallback((value: boolean) => {
     deafenedRef.current = value;
     definirSurdez(value);
@@ -586,6 +634,7 @@ export function useVoice(socket: Socket | null) {
        * Esta marca diz onde parou. É um booleano e não um estado: ninguém redesenha por causa dela.
        */
       let pedindoSenha = true;
+      efeitoAtualRef.current = 'none';
       try {
         if (room.state !== ConnectionState.Disconnected) await room.disconnect();
         const { url, token } = await api<{ url: string; token: string }>(`/api/channels/${id}/voice-token`, {
@@ -801,6 +850,7 @@ export function useVoice(socket: Socket | null) {
   const leave = useCallback(() => {
     if (channelRef.current !== null) sounds.selfLeave();
     setVoiceEffectState('none');
+    efeitoAtualRef.current = 'none';
     void room.disconnect();
   }, [room]);
 
@@ -1035,12 +1085,14 @@ export function useVoice(socket: Socket | null) {
       try {
         await track.restartTrack(room.options.audioCaptureDefaults);
         if (wasMuted) await track.mute();
+        // A supressão do Syden liga e desliga junto com a do navegador: remonta o caminho do microfone.
+        if (patch.noiseSuppression !== undefined) await enfileirarEfeito(() => applyVoiceEffect(efeitoAtualRef.current));
       } catch (e) {
         console.error(e);
         setError('Não foi possível aplicar a configuração do microfone.');
       }
     },
-    [room],
+    [room, applyVoiceEffect, enfileirarEfeito],
   );
 
   /**

@@ -34,7 +34,7 @@ export const resumo = (nome) => {
   console.log(falhas === 0 ? `\n✔ ${nome}: tudo certo` : `\n✘ ${nome}: ${falhas} problema(s)`);
 };
 
-export async function abrirNavegador({ viewport = { width: 1500, height: 950 }, permissoes = [] } = {}) {
+export async function abrirNavegador({ viewport = { width: 1500, height: 950 }, permissoes = [], audioFalso = null, argsExtras = [] } = {}) {
   const executablePath = CAMINHOS_DO_CHROME.find((caminho) => existsSync(caminho));
   if (!executablePath) {
     throw new Error('Não achei o Chrome. Aponte com a variável CHROME_PATH.');
@@ -51,6 +51,9 @@ export async function abrirNavegador({ viewport = { width: 1500, height: 950 }, 
       // MICROFONE_REAL=1 desliga o falso, para o raro teste que precisa do aparelho de verdade (medir
       // alarme falso com um microfone real numa sala quieta, por exemplo). Nunca por padrão.
       ...(process.env.MICROFONE_REAL ? [] : ['--use-fake-device-for-media-stream']),
+      // No lugar do bipe, um arquivo WAV de verdade (voz com ruído, para medir a supressão).
+      ...(audioFalso ? [`--use-file-for-fake-audio-capture=${audioFalso}`] : []),
+      ...argsExtras,
     ],
   });
   const contexto = await browser.newContext({ viewport, permissions: permissoes });

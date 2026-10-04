@@ -1,0 +1,12 @@
+Supressão de ruído do Syden — de onde vêm os arquivos desta pasta
+
+gtcrn.json + gtcrn.bin
+  O modelo GTCRN (Rong Xiaobin et al., "GTCRN: A Speech Enhancement Model Requiring Ultralow
+  Computational Resources", ICASSP 2024), na versão de streaming publicada pelos próprios autores:
+  https://github.com/Xiaobin-Rong/gtcrn — stream/onnx_models/gtcrn_simple.onnx
+  (sha256 b4718df6228e7bdf1a8a435cf98f838636eb2fd331acabf86ba87c5192ebcb87)
+  Licença MIT, em GTCRN-LICENSE.txt. Convertido para JSON + pesos por scripts/ruido/exportar-gtcrn.py,
+  sem mudar nenhum peso.
+
+motor.js, gtcrn.worklet.js
+  Código do Syden: um interpretador de ONNX em JavaScript puro e o processador de áudio que o usa.
