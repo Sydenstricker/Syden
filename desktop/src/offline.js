@@ -538,6 +538,14 @@ const TEXTOS = {
     tentando: 'Փորձում ենք…',
     codigo: 'OFFLINE — Կապ չկա',
   },
+  // "შენ". Confiança média, com pesquisa no MediaWiki e no GNOME. Ver web/src/i18n/ka.ts.
+  ka: {
+    titulo: 'დაკავშირება ვერ მოხერხდა',
+    explicacao: 'შეამოწმე ინტერნეტთან კავშირი. შესაძლოა, სერვერიც არ მუშაობს.',
+    botao: 'ხელახლა ცდა',
+    tentando: 'ვცდილობთ…',
+    codigo: 'OFFLINE — კავშირი არ არის',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -309,6 +309,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Armênia. A Constituição (art. 20) faz do armênio a língua do Estado.
   hy: ['AM'],
+
+  // Geórgia. A Constituição (art. 2) faz do georgiano a língua do Estado (e do abecásio, na Abecásia).
+  ka: ['GE'],
 };
 
 /**
