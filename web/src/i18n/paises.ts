@@ -248,6 +248,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Bulgária. A Constituição (art. 3) faz do búlgaro a língua oficial.
   bg: ['BG'],
+
+  // Albânia (Constituição, art. 14) e Macedônia do Norte, onde a Lei das Línguas de 2019 faz do albanês
+  // língua oficial em todo o país, ao lado do macedônio. Kosovo não é membro da ONU.
+  sq: ['AL', 'MK'],
 };
 
 /**

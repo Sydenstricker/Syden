@@ -394,6 +394,14 @@ const TEXTOS = {
     tentando: 'Опитва се…',
     codigo: 'OFFLINE — Няма връзка',
   },
+  // "Ti", como as redes sociais em albanês. Ver web/src/i18n/sq.ts.
+  sq: {
+    titulo: 'Lidhja nuk u arrit',
+    explicacao: 'Kontrollo internetin. Mund të jetë edhe serveri jashtë funksionit.',
+    botao: 'Provo sërish',
+    tentando: 'Po provohet…',
+    codigo: 'OFFLINE — Pa lidhje',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
