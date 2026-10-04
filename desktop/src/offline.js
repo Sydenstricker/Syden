@@ -466,6 +466,14 @@ const TEXTOS = {
     tentando: 'Се обидува…',
     codigo: 'OFFLINE — Нема врска',
   },
+  // "Tu" nas frases, infinitivo nos botões, e particípio só em coisas. Ver web/src/i18n/lv.ts.
+  lv: {
+    titulo: 'Neizdevās savienoties',
+    explicacao: 'Pārbaudi interneta savienojumu. Varbūt nedarbojas arī serveris.',
+    botao: 'Mēģināt vēlreiz',
+    tentando: 'Mēģina…',
+    codigo: 'OFFLINE — Nav savienojuma',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

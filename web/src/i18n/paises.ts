@@ -279,6 +279,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Macedônia do Norte. A Constituição (art. 7) faz do macedônio, em alfabeto cirílico, a língua oficial.
   mk: ['MK'],
+
+  // Letônia. A Constituição (art. 4) faz do letão a língua oficial.
+  lv: ['LV'],
 };
 
 /**
