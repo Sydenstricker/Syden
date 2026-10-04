@@ -442,6 +442,14 @@ const TEXTOS = {
     tentando: 'Prøver…',
     codigo: 'OFFLINE — Ingen tilkobling',
   },
+  // "Ti", e o gênero fora do passado e do futuro. Ver web/src/i18n/sl.ts.
+  sl: {
+    titulo: 'Povezava ni uspela',
+    explicacao: 'Preveri internetno povezavo. Morda tudi strežnik ne deluje.',
+    botao: 'Poskusi znova',
+    tentando: 'Poskušanje…',
+    codigo: 'OFFLINE — Ni povezave',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

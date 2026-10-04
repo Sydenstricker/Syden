@@ -270,6 +270,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Noruega. A lei da língua (språkloven, 2021) faz do norueguês — bokmål e nynorsk — a língua principal do país.
   no: ['NO'],
+
+  // Eslovênia. A Constituição (art. 11) faz do esloveno a língua oficial.
+  sl: ['SI'],
 };
 
 /**
