@@ -490,6 +490,14 @@ const TEXTOS = {
     tentando: 'Reyni…',
     codigo: 'OFFLINE — Engin tenging',
   },
+  // "Tu", e apóstrofo tipográfico. Ver web/src/i18n/ca.ts.
+  ca: {
+    titulo: 'No s’ha pogut connectar',
+    explicacao: 'Comprova la connexió a internet. Potser el servidor tampoc no funciona.',
+    botao: 'Tornar-ho a provar',
+    tentando: 'S’està provant…',
+    codigo: 'OFFLINE — Sense connexió',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

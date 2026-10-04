@@ -288,6 +288,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Islândia. A lei 61/2011 faz do islandês a língua nacional e oficial.
   is: ['IS'],
+
+  // Andorra. A Constituição (art. 2) faz do catalão a língua oficial. Na Espanha ele é cooficial só
+  // em comunidades autônomas, e a grade conta a língua do Estado — então é um país só.
+  ca: ['AD'],
 };
 
 /**
@@ -407,6 +411,7 @@ export const FALANTES_EM_MILHOES: Record<string, number> = {
   sm: 1,
   tet: 1,
   to: 1,
+  ca: 10,
 };
 
 /** Quantos falantes tem este idioma, em milhões. Zero quando ainda não estimamos. */

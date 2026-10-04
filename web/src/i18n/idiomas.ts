@@ -180,6 +180,13 @@ export const IDIOMAS: Idioma[] = [
   { codigo: 'fj', nativo: 'Na Vosa Vakaviti', nome: 'Fijiano', escrita: 'latina', paises: 1 },
   { codigo: 'to', nativo: 'Lea faka-Tonga', nome: 'Tonganês', escrita: 'latina', paises: 1 },
   { codigo: 'tet', nativo: 'Tetun', nome: 'Tétum', escrita: 'latina', paises: 1 },
+  // ---------------------------------------------------------------------------------------------
+  // OS CINCO QUE NENHUMA LÍNGUA DA LISTA ALCANÇAVA. Com 62 idiomas traduzidos, sobravam nove membros da
+  // ONU sem língua oficial no Syden — e cinco deles nem tinham a língua nesta lista: Andorra (catalão),
+  // Montenegro (montenegrino), Tajiquistão (tajique), Turcomenistão (turcomeno) e Butão (dzongkha).
+  // Entraram em 04/10/2026, a pedido do Sydenstricker: "é melhor o feito do que o perfeito".
+  // ---------------------------------------------------------------------------------------------
+  { codigo: 'ca', nativo: 'Català', nome: 'Catalão', escrita: 'latina', paises: 1 },
 ];
 
 export const PADRAO = 'pt-BR';
@@ -250,6 +257,7 @@ export const TRADUCOES: Record<string, () => Promise<{ default: Record<string, s
   lv: () => import('./lv'),
   et: () => import('./et'),
   is: () => import('./is'),
+  ca: () => import('./ca'),
 };
 
 export const idiomaPorCodigo = (codigo: string) => IDIOMAS.find((i) => i.codigo === codigo);
