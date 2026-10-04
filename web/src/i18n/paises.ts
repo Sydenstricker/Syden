@@ -226,6 +226,10 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Camboja. A Constituição (art. 5) faz do khmer a língua e a escrita oficiais.
   km: ['KH'],
+
+  // Cazaquistão. A Constituição (art. 7) faz do cazaque a língua do Estado; o russo é usado
+  // oficialmente ao lado dele, e já está na lista do russo.
+  kk: ['KZ'],
 };
 
 /**

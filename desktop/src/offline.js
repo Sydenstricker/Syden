@@ -345,6 +345,14 @@ const TEXTOS = {
     tentando: 'កំពុងព្យាយាម…',
     codigo: 'OFFLINE — គ្មានការតភ្ជាប់',
   },
+  // "Сіз", como o uzbeque: o "сен" é íntimo demais para quem acabou de chegar. Ver web/src/i18n/kk.ts.
+  kk: {
+    titulo: 'Қосылу мүмкін болмады',
+    explicacao: 'Интернетіңізді тексеріңіз. Сервер де жұмыс істемей тұруы мүмкін.',
+    botao: 'Қайталау',
+    tentando: 'Қайталануда…',
+    codigo: 'OFFLINE — Байланыс жоқ',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
