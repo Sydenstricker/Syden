@@ -252,6 +252,10 @@ export const OFICIAL: Record<string, string[]> = {
   // Albânia (Constituição, art. 14) e Macedônia do Norte, onde a Lei das Línguas de 2019 faz do albanês
   // língua oficial em todo o país, ao lado do macedônio. Kosovo não é membro da ONU.
   sq: ['AL', 'MK'],
+
+  // Croácia. A Constituição (art. 13) faz do croata e da escrita latina os oficiais. Na Bósnia e
+  // Herzegovina ele também é oficial, mas a lista de idiomas.ts conta um país só para o croata.
+  hr: ['HR'],
 };
 
 /**

@@ -402,6 +402,14 @@ const TEXTOS = {
     tentando: 'Po provohet…',
     codigo: 'OFFLINE — Pa lidhje',
   },
+  // "Ti", ijekaviano e só em latino. Ver web/src/i18n/hr.ts.
+  hr: {
+    titulo: 'Povezivanje nije uspjelo',
+    explicacao: 'Provjeri internetsku vezu. Možda ni poslužitelj ne radi.',
+    botao: 'Pokušaj ponovno',
+    tentando: 'Pokušava se…',
+    codigo: 'OFFLINE — Nema veze',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */
