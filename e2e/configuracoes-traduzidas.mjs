@@ -168,6 +168,7 @@ const IDIOMAS = [
   { codigo: 'no', nome: 'Norsk', rtl: false },
   { codigo: 'sl', nome: 'Slovenščina', rtl: false },
   { codigo: 'lt', nome: 'Lietuvių', rtl: false },
+  { codigo: 'mk', nome: 'Македонски', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

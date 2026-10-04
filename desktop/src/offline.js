@@ -458,6 +458,14 @@ const TEXTOS = {
     tentando: 'Bandoma…',
     codigo: 'OFFLINE — Nėra ryšio',
   },
+  // "Ти", em cirílico macedônio — sem я, ю, щ, ъ, ь ou й. Ver web/src/i18n/mk.ts.
+  mk: {
+    titulo: 'Поврзувањето не успеа',
+    explicacao: 'Провери ја интернет-врската. Можеби не работи ни серверот.',
+    botao: 'Обиди се повторно',
+    tentando: 'Се обидува…',
+    codigo: 'OFFLINE — Нема врска',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

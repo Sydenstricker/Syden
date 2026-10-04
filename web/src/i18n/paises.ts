@@ -276,6 +276,9 @@ export const OFICIAL: Record<string, string[]> = {
 
   // Lituânia. A Constituição (art. 14) faz do lituano a língua do Estado.
   lt: ['LT'],
+
+  // Macedônia do Norte. A Constituição (art. 7) faz do macedônio, em alfabeto cirílico, a língua oficial.
+  mk: ['MK'],
 };
 
 /**
