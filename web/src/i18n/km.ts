@@ -362,6 +362,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
+  'ERRO — Algo deu errado do nosso lado': 'កំហុស — មានបញ្ហាអ្វីមួយពីខាងយើង',
+  'O Syden travou': 'Syden គាំង',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'វាមិនមែនដោយសារអ្វីដែលអ្នកបានធ្វើទេ។ ការផ្ទុកឡើងវិញជាធម្មតាអាចដោះស្រាយបាន។',
+  'Recarregar': 'ផ្ទុកឡើងវិញ',
   'Escolha um canal à esquerda.': 'ជ្រើសរើសឆានែលនៅខាងឆ្វេង។',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ជ្រើសរើសការសន្ទនានៅខាងឆ្វេង ឬចាប់ផ្តើមថ្មី។',
   'Escolha uma senha nova': 'ជ្រើសរើសពាក្យសម្ងាត់ថ្មី',

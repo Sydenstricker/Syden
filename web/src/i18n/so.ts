@@ -363,6 +363,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  'ERRO — Algo deu errado do nosso lado': 'KHALAD — Wax baa khaldamay dhinacayaga',
+  'O Syden travou': 'Syden wuu istaagay',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Ma aha wax aad samaysay. Dib u furiddu badanaa way xallisaa.',
+  'Recarregar': 'Dib u fur',
   'Escolha um canal à esquerda.': 'Bidixda ka dooro kanaal.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Bidixda ka dooro wadahadal, ama bilow mid cusub.',
   'Escolha uma senha nova': 'Dooro eray sir ah oo cusub',

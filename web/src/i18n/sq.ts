@@ -355,6 +355,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'ERRO — Algo deu errado do nosso lado': 'GABIM — Diçka shkoi keq nga ana jonë',
+  'O Syden travou': 'Syden ngeci',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Nuk ishte diçka që bëre ti. Ringarkimi zakonisht e zgjidh.',
+  'Recarregar': 'Ringarko',
   'Escolha um canal à esquerda.': 'Zgjidh një kanal majtas.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Zgjidh një bisedë majtas, ose fillo një të re.',
   'Escolha uma senha nova': 'Zgjidh një fjalëkalim të ri',

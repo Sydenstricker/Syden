@@ -336,6 +336,10 @@ export default {
   'Versão 1.21, sem PvP': 'Versión 1.21, sin PvP',
   'ex.: Evidências': 'ej.: Pruebas',
   'Escolha o coelho da estátua da praça.': 'Elige el conejo de la estatua de la plaza.',
+  'ERRO — Algo deu errado do nosso lado': 'ERROR — Algo salió mal de nuestro lado',
+  'O Syden travou': 'Syden se colgó',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'No fue nada que hicieras. Recargar suele solucionarlo.',
+  'Recarregar': 'Recargar',
   // Pantalla de bienvenida y etiquetas cortas
   '{n} na chamada agora': '{n} en la llamada ahora',
   '{n} pessoas nesta comunidade': '{n} personas en esta comunidad',

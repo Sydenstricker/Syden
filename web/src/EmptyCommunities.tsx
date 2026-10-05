@@ -1,7 +1,7 @@
 import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { CommunityDialog } from './CommunityRail';
-import { Logo } from './Logo';
+import { Mascote } from './Mascote';
 import type { Community } from './types';
 import { useT } from './i18n';
 
@@ -26,7 +26,8 @@ export function EmptyCommunities({
 
   return (
     <div className="no-community">
-      <Logo size={56} />
+      {/* O mascote no ocioso: ninguém aqui ainda, e ele espera junto, piscando e olhando em volta. */}
+      <Mascote nome="ocioso" tamanho={150} />
       <h2>{t('Você ainda não está em nenhuma comunidade')}</h2>
       <p>
         Uma comunidade é um lugar com canais de texto e salas de voz, como um servidor do Discord. Entre na de um amigo

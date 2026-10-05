@@ -6,6 +6,7 @@ import { getSettings } from './settings';
 import type { KaraokeSong } from './types';
 import { readAsDataUrl } from './upload';
 import type { Voice } from './useVoice';
+import { Mascote } from './Mascote';
 import { useT } from './i18n';
 
 // Karaokê da sala. A música NÃO passa pela chamada: quem aperta "cantar" manda um aviso, e o
@@ -28,7 +29,12 @@ function ListaDeMusicas({
 }) {
   const t = useT();
   if (musicas.length === 0) {
-    return <p className="settings-hint">{t('Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.')}</p>;
+    return (
+      <div className="karaoke-vazio">
+        <Mascote nome="karaoke" tamanho={150} />
+        <p className="settings-hint">{t('Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.')}</p>
+      </div>
+    );
   }
   return (
     <ul className="karaoke-lista">

@@ -169,6 +169,10 @@ export default {
   'Selo que você veste': 'Le badge que vous portez',
   'Só o seu nome, sem selo': 'Seulement votre nom, sans badge',
   'Escolha o coelho da estátua da praça.': 'Choisis le lapin de la statue de la place.',
+  'ERRO — Algo deu errado do nosso lado': 'ERREUR — Quelque chose a mal tourné de notre côté',
+  'O Syden travou': 'Syden a planté',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Ce n’est pas ta faute. Recharger règle généralement le problème.',
+  'Recarregar': 'Recharger',
 
   // Conversations et messages
   Conversas: 'Conversations',

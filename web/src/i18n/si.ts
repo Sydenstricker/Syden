@@ -363,6 +363,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
+  'ERRO — Algo deu errado do nosso lado': 'දෝෂය — අපේ පැත්තෙන් යමක් වැරදුණා',
+  'O Syden travou': 'Syden හිරවුණා',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'මෙය ඔබ කළ දෙයක් නිසා නොවේ. නැවත පූරණය කිරීමෙන් සාමාන්‍යයෙන් හරියනවා.',
+  'Recarregar': 'නැවත පූරණය කරන්න',
   'Escolha um canal à esquerda.': 'වම් පසින් නාලිකාවක් තෝරන්න.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'වම් පසින් සංවාදයක් තෝරන්න, නැතහොත් නව එකක් ආරම්භ කරන්න.',
   'Escolha uma senha nova': 'නව මුරපදයක් තෝරන්න',

@@ -362,6 +362,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
+  'ERRO — Algo deu errado do nosso lado': 'GREŠKA — Nešto je pošlo naopako kod nas',
+  'O Syden travou': 'Syden se zaglavio',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Nije tvoja greška. Ponovno učitavanje obično pomogne.',
+  'Recarregar': 'Učitaj ponovo',
   'Escolha um canal à esquerda.': 'Izaberi kanal s lijeve strane.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Izaberi razgovor s lijeve strane ili započni novi.',
   'Escolha uma senha nova': 'Izaberi novu lozinku',

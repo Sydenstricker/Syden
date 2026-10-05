@@ -364,6 +364,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  'ERRO — Algo deu errado do nosso lado': 'ຂໍ້ຜິດພາດ — ມີບາງຢ່າງຜິດພາດຈາກຝັ່ງພວກເຮົາ',
+  'O Syden travou': 'Syden ຄ້າງ',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'ບໍ່ແມ່ນຍ້ອນສິ່ງທີ່ເຈົ້າເຮັດ. ການໂຫຼດຄືນໃໝ່ມັກຈະແກ້ໄຂໄດ້.',
+  'Recarregar': 'ໂຫຼດຄືນໃໝ່',
   'Escolha um canal à esquerda.': 'ເລືອກຊ່ອງທາງຊ້າຍ',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ເລືອກການສົນທະນາທາງຊ້າຍ ຫຼື ເລີ່ມອັນໃໝ່',
   'Escolha uma senha nova': 'ເລືອກລະຫັດຜ່ານໃໝ່',

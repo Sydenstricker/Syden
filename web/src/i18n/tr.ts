@@ -201,6 +201,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
   'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
+  'ERRO — Algo deu errado do nosso lado': 'HATA — Bizim tarafta bir şeyler ters gitti',
+  'O Syden travou': 'Syden takıldı',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Senin yaptığın bir şey yüzünden değil. Yeniden yüklemek genelde düzeltir.',
+  'Recarregar': 'Yeniden yükle',
   'Escolha um canal à esquerda.': 'Soldan bir kanal seç.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Soldan bir sohbet seç ya da yenisini başlat.',
   'Escolha uma senha nova': 'Yeni bir şifre seç',

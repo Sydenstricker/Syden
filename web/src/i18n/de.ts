@@ -171,6 +171,10 @@ export default {
   'Selo que você veste': 'Dein Abzeichen',
   'Só o seu nome, sem selo': 'Nur dein Name, ohne Abzeichen',
   'Escolha o coelho da estátua da praça.': 'Wähle den Hasen für die Statue auf dem Platz.',
+  'ERRO — Algo deu errado do nosso lado': 'FEHLER — Bei uns ist etwas schiefgelaufen',
+  'O Syden travou': 'Syden hängt',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Es lag nicht an dir. Neu laden hilft meistens.',
+  'Recarregar': 'Neu laden',
 
   // Unterhaltungen und Nachrichten
   Conversas: 'Unterhaltungen',

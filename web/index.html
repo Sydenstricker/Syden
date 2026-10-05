@@ -24,8 +24,8 @@
       para baixar, nada para esperar. Aparecem no primeiro quadro.
 
       E NÃO TEM TEXTO, de propósito (ver CLAUDE.md). Nesta altura o mecanismo de idiomas ainda não
-      existe — traduzi-lo exigiria um segundo sistema de tradução só para esta tela. Um coelho girando
-      dispensa legenda e resolve os 74 idiomas de uma vez.
+      existe — traduzi-lo exigiria um segundo sistema de tradução só para esta tela. Um coelho que acorda
+      dispensa legenda e resolve os idiomas todos de uma vez.
     -->
     <style>
       /* O fundo primeiro: é o que impede o clarão branco antes de a folha de estilo do app chegar. */
@@ -58,8 +58,8 @@
       }
 
       /* A ABERTURA É SEMPRE ESCURA, inclusive para quem usa o tema claro. Não é descuido: o coelho é
-         uma silhueta BRANCA, e sobre fundo claro sobraria só o arco vermelho girando sozinho. Dois
-         segundos de tela escura no começo é o que todo app faz — e é curto demais para incomodar. */
+         creme, e sobre fundo claro ele quase sumiria. Dois segundos de tela escura no começo é o que
+         todo app faz — e é curto demais para incomodar. */
 
       #abertura svg {
         width: min(220px, 45vw, 40vh);
@@ -81,66 +81,105 @@
         transition: opacity 0.32s ease-out;
       }
 
-      @keyframes abertura-gira {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes abertura-respira {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.06);
-        }
-      }
-
-      .abertura-arco {
-        fill: none;
-        stroke: #bc1d1d;
-        stroke-width: 6;
-        stroke-linecap: round;
-        stroke-dasharray: 90 400;
-        transform-origin: 200px 200px;
-        animation: abertura-gira 2.5s linear infinite;
-      }
-
-      .abertura-respira {
-        transform-origin: 200px 240px;
-        animation: abertura-respira 1.8s ease-in-out infinite;
-      }
-
-      /* Quem pediu menos movimento ao sistema vê o desenho parado. O coelho continua ali dizendo
-         "carregando"; o que some é o giro, que é o que incomoda quem tem enxaqueca ou vertigem. */
-      @media (prefers-reduced-motion: reduce) {
-        .abertura-arco,
-        .abertura-respira {
-          animation: none;
-        }
-      }
+      /* O desenho e as animações dele vêm prontos do estúdio (o SVG logo abaixo, com tudo prefixado
+         por "ab-" para não vazar para o app). Quem pediu menos movimento ao sistema vê o coelho parado:
+         a regra está dentro do próprio SVG. */
     </style>
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- O desenho vem de animacaoSVG/loadingMinimalista.svg, escolhido entre os do estúdio porque é o
-         único que sobrevive pequeno e não tem fundo próprio — aqui ele fica sobre o fundo do Syden. -->
+    <!-- A INTRODUÇÃO DO MASCOTE (rebrand de 05/10/2026): a cabeça aparece, as orelhas sobem, os olhos
+         abrem, o momento feliz — e ele segue no ocioso enquanto o app termina de chegar. É o coelho
+         antigo, sem a estrela. O desenho vem do estúdio (animacaoSVG/animacoes_d4.html, preset
+         "Introdução") pelo animacaoSVG/exportar-mascote.mjs, que reescreve o trecho entre os marcadores. -->
     <div id="abertura" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-        <circle class="abertura-arco" cx="200" cy="200" r="150" />
-        <g class="abertura-respira">
-          <path fill="#ffffff" d="M 162 180 C 130 90, 170 50, 185 80 C 195 100, 185 150, 175 180 Z" />
-          <path fill="#f48fb1" d="M 166 170 C 142 100, 170 70, 180 90 C 188 105, 180 145, 173 170 Z" />
-          <path fill="#ffffff" d="M 238 180 C 270 90, 230 50, 215 80 C 205 100, 215 150, 225 180 Z" />
-          <path fill="#f48fb1" d="M 234 170 C 258 100, 230 70, 220 90 C 212 105, 220 145, 227 170 Z" />
-          <circle fill="#ffffff" cx="200" cy="230" r="66" />
-        </g>
+      <!-- mascote:introducao -->
+      <!-- GERADO por animacaoSVG/exportar-mascote.mjs a partir do estúdio animacoes_d4.html — não edite à mão. -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 400 300" role="img" aria-label="Syden">
+        <style>
+          .ab-o-fora, .ab-cabeca { fill: var(--creme, #f3ebd8); }
+          .ab-o-dentro { fill: var(--faixa, #F48FB1); }
+          .ab-cabeca { stroke: var(--creme, #f3ebd8); stroke-width: 0; stroke-linejoin: round; }
+          .p, .creme { fill: var(--creme, #f3ebd8); }
+          .ab-m-pupila { fill: #1E2533; }
+          .ab-m-brilho { fill: #FFFFFF; }
+          .ab-m-traco { fill: none; stroke: #1E2533; stroke-width: 1.8; stroke-linecap: round; }
+          .ab-m-nariz { fill: #C2415A; }
+          .ab-m-boca { fill: none; stroke: #C2415A; stroke-width: 1.5; stroke-linecap: round; }
+          .m-boca-o { fill: #1E2533; }
+          .ab-m-bochechas { fill: #F48FB1; opacity: .5; }
+          .ab-m-feliz { stroke-width: 2.3; }
+          .ab-m-sorrisao { stroke-width: 1.8; }
+          .ab-orelha { transform-box: fill-box; transform-origin: 50% 100%; }
+          .p, .barra, .ab-m-olho, .ab-m-olhos { transform-box: fill-box; transform-origin: center; }
+          .ab-figura { transform-box: view-box; transform-origin: 200px 297px; }
+          .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
+          @keyframes ab-piscar { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
+          /* O OLHAR ANDA AOS SALTOS, como olho de verdade: pula em ~0,15 s, para, às vezes corrige um
+             pouquinho, e nenhum ponto é o espelho do outro. O vai e vem suave anterior parecia máquina. */
+          @keyframes ab-olhar {
+            0%, 12% { transform: none; }
+            14%, 27% { transform: translate(-2.6px, .4px); }
+            29%, 33% { transform: translate(-2px, .7px); }
+            35%, 52% { transform: translate(2.1px, -.3px); }
+            54%, 61% { transform: translate(2.7px, .5px); }
+            63%, 71% { transform: translate(.6px, -.5px); }
+            73%, 100% { transform: none; }
+          }
+          @keyframes ab-ociosaE { 0%, 50%, 100% { transform: none; } 25%, 75% { transform: rotate(-2deg) scaleY(1.02); } }
+          @keyframes ab-ociosaD { 0%, 50%, 100% { transform: none; } 25% { transform: rotate(2deg) scaleY(1.02); } 82% { transform: rotate(14deg); } 87% { transform: rotate(-4deg); } 92% { transform: none; } }
+          @keyframes ab-boiar { 0%, 100% { transform: none; } 50% { transform: translateY(3px); } }
+          .ab-entrada { transform-box: view-box; transform-origin: 200px 230px; animation: ab-abrir 0.80s cubic-bezier(.34,1.56,.64,1) both; }
+          .ab-orelha-e { animation: ab-subir 0.60s cubic-bezier(.34,1.56,.64,1) 0.45s both, ab-alegria 4.20s ease-in-out, ab-ociosaE 6.40s ease-in-out 3.60s infinite; }
+          .ab-orelha-d { animation: ab-subir 0.60s cubic-bezier(.34,1.56,.64,1) 0.55s both, ab-alegria 4.20s ease-in-out, ab-ociosaD 6.40s ease-in-out 3.60s infinite; }
+          .ab-m-olho { animation: ab-abrirOlho 0.35s ease-out 1.00s both, ab-piscar 4.20s ease-in-out 3.60s infinite; }
+          .ab-m-nariz, .ab-m-boca { animation: ab-aparecer 0.30s ease-out 1.30s both; }
+          .ab-m-bochechas { opacity: .5; animation: ab-corar 0.50s ease-out 1.45s both; }
+          .ab-rosto-feliz { opacity: 0; animation: ab-momentoFeliz 4.20s ease-in-out both; }
+          .ab-rosto-normal { animation: ab-momentoNormal 4.20s ease-in-out both; }
+          .ab-m-olhos { animation: ab-olhar 8.00s ease-in-out 3.60s infinite; }
+          .ab-figura { animation: ab-pulinho 4.20s ease-in-out, ab-boiar 3.60s ease-in-out 3.60s infinite; }
+          @keyframes ab-abrir { 0% { transform: scale(0); opacity: 0; } 100% { transform: none; opacity: 1; } }
+          @keyframes ab-subir { 0% { transform: scaleY(0); } 100% { transform: none; } }
+          @keyframes ab-abrirOlho { 0% { transform: scaleY(0); } 100% { transform: none; } }
+          @keyframes ab-aparecer { 0% { opacity: 0; } 100% { opacity: 1; } }
+          @keyframes ab-corar { 0% { opacity: 0; } 100% { opacity: .5; } }
+          /* O momento feliz: de ~1,9 s a ~3,1 s. As bochechas ficam nas duas caras, então não piscam na troca. */
+          @keyframes ab-momentoFeliz { 0%, 44% { opacity: 0; } 48%, 72% { opacity: 1; } 77%, 100% { opacity: 0; } }
+          @keyframes ab-momentoNormal { 0%, 44% { opacity: 1; } 48%, 72% { opacity: 0; } 77%, 100% { opacity: 1; } }
+          @keyframes ab-alegria { 0%, 46% { transform: none; } 53% { transform: scaleY(1.1); } 60%, 100% { transform: none; } }
+          @keyframes ab-pulinho { 0%, 46% { transform: none; } 52% { transform: translateY(-8px); } 58% { transform: translateY(1px) scale(1.02, .98); } 63%, 100% { transform: none; } }
+          @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+        </style>
+        <g class="ab-figura"><g class="ab-entrada">
+          <g transform="translate(100 70) scale(2)">
+            <g class="ab-orelha ab-orelha-e">
+              <path class="ab-o-fora" d="M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z"/>
+              <path class="ab-o-dentro" d="M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z"/>
+            </g>
+            <g class="ab-orelha ab-orelha-d">
+              <path class="ab-o-fora" d="M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z"/>
+              <path class="ab-o-dentro" d="M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z"/>
+            </g>
+            <path class="ab-cabeca" d="M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z"/>
+            <g class="ab-rosto-normal"><g class="ab-rosto-m">
+              <g class="ab-m-bochechas"><ellipse cx="25.5" cy="82" rx="5.5" ry="3.2"/><ellipse cx="74.5" cy="82" rx="5.5" ry="3.2"/></g>
+              <g class="ab-m-olhos"><g class="ab-m-olho ab-m-olho-e"><circle class="ab-m-pupila" cx="34" cy="72.5" r="4"/><circle class="ab-m-brilho" cx="33" cy="71" r="1.25"/></g>
+              <g class="ab-m-olho ab-m-olho-d"><circle class="ab-m-pupila" cx="66" cy="72.5" r="4"/><circle class="ab-m-brilho" cx="65" cy="71" r="1.25"/></g></g>
+              <path class="ab-m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+              <path class="ab-m-boca" d="M45 84.5 Q50 89.5 55 84.5"/>
+            </g></g>
+            <g class="ab-rosto-feliz"><g class="ab-rosto-m">
+              <g class="ab-m-bochechas"><ellipse cx="25.5" cy="82" rx="5.5" ry="3.2"/><ellipse cx="74.5" cy="82" rx="5.5" ry="3.2"/></g>
+              <g class="ab-m-olhos"><path class="ab-m-traco ab-m-feliz" d="M29 72.5 Q34 67.5 39 72.5 M61 72.5 Q66 67.5 71 72.5"/></g>
+              <path class="ab-m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+              <path class="ab-m-boca ab-m-sorrisao" d="M43.5 84 Q50 91.5 56.5 84"/>
+            </g></g>
+          </g>
+        </g></g>
       </svg>
+      <!-- /mascote:introducao -->
     </div>
 
     <script type="module" src="/src/main.tsx"></script>

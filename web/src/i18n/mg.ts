@@ -363,6 +363,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  'ERRO — Algo deu errado do nosso lado': 'HADISOANA — Nisy zavatra tsy nety tany aminay',
+  'O Syden travou': 'Nijanona tampoka ny Syden',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Tsy noho ny zavatra nataonao izany. Matetika ny famerenana ampidirina no mamaha azy.',
+  'Recarregar': 'Ampidiro indray',
   'Escolha um canal à esquerda.': 'Misafidiana fantsona eo ankavia.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Misafidiana resaka eo ankavia, na manomboha vaovao.',
   'Escolha uma senha nova': 'Misafidiana teny miafina vaovao',

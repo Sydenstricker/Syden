@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',
+  'ERRO — Algo deu errado do nosso lado': 'ҚАТЕ — Біз жақта бірдеңе дұрыс болмады',
+  'O Syden travou': 'Syden қатып қалды',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Бұл сенің кінәң емес. Қайта жүктеу әдетте көмектеседі.',
+  'Recarregar': 'Қайта жүктеу',
   'Escolha um canal à esquerda.': 'Сол жақтан арна таңдаңыз.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Сол жақтан әңгіме таңдаңыз немесе жаңасын бастаңыз.',
   'Escolha uma senha nova': 'Жаңа құпиясөз таңдаңыз',

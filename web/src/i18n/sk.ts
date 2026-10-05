@@ -363,6 +363,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kto bude v konverzácii. S viacerými ľuďmi z toho bude skupinová konverzácia.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajaca na sochu na námestí.',
+  'ERRO — Algo deu errado do nosso lado': 'CHYBA — Niečo sa pokazilo na našej strane',
+  'O Syden travou': 'Syden sa zasekol',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Nie je to tvoja chyba. Obnovenie zvyčajne pomôže.',
+  'Recarregar': 'Načítať znova',
   'Escolha um canal à esquerda.': 'Vyber kanál vľavo.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Vyber konverzáciu vľavo, alebo začni novú.',
   'Escolha uma senha nova': 'Vyber nové heslo',

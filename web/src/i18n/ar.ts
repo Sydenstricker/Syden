@@ -175,6 +175,10 @@ export default {
   'Selo que você veste': 'الشارة التي ترتديها',
   'Só o seu nome, sem selo': 'اسمك فقط، بدون شارة',
   'Escolha o coelho da estátua da praça.': 'اختر الأرنب الذي يقف تمثالًا في الساحة.',
+  'ERRO — Algo deu errado do nosso lado': 'خطأ — حدث خلل من جهتنا',
+  'O Syden travou': 'تعطّل Syden',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'ليس بسبب شيء فعلته. إعادة التحميل تحل المشكلة عادةً.',
+  'Recarregar': 'إعادة التحميل',
 
   // المحادثات والرسائل
   Conversas: 'المحادثات',

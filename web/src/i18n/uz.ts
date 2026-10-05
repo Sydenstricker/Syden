@@ -371,6 +371,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  'ERRO — Algo deu errado do nosso lado': 'XATO — Biz tomonda nimadir noto‘g‘ri ketdi',
+  'O Syden travou': 'Syden qotib qoldi',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Bu sen qilgan biror narsa sababli emas. Qayta yuklash odatda yordam beradi.',
+  'Recarregar': 'Qayta yuklash',
   'Escolha um canal à esquerda.': 'Chapdan kanal tanlang.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chapdan suhbat tanlang yoki yangisini boshlang.',
   'Escolha uma senha nova': 'Yangi parol tanlang',

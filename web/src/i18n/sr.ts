@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Изабери ко улази. Са више од једне особе постаје групни разговор.',
   'Escolha o coelho da estátua da praça.': 'Изабери зеца за статуу на тргу.',
+  'ERRO — Algo deu errado do nosso lado': 'ГРЕШКА — Нешто је пошло наопако код нас',
+  'O Syden travou': 'Syden се заглавио',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Није твоја грешка. Поновно учитавање обично помогне.',
+  'Recarregar': 'Учитај поново',
   'Escolha um canal à esquerda.': 'Изабери канал са леве стране.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Изабери разговор са леве стране или започни нови.',
   'Escolha uma senha nova': 'Изабери нову лозинку',

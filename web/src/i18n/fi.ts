@@ -363,6 +363,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
+  'ERRO — Algo deu errado do nosso lado': 'VIRHE — Jokin meni pieleen meidän päässämme',
+  'O Syden travou': 'Syden jumittui',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Et tehnyt mitään väärin. Uudelleenlataus yleensä auttaa.',
+  'Recarregar': 'Lataa uudelleen',
   'Escolha um canal à esquerda.': 'Valitse kanava vasemmalta.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Valitse keskustelu vasemmalta tai aloita uusi.',
   'Escolha uma senha nova': 'Valitse uusi salasana',

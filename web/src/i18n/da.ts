@@ -357,6 +357,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vælg, hvem der er med. Med mere end én person bliver det en gruppesamtale.',
   'Escolha o coelho da estátua da praça.': 'Vælg kaninen til statuen på torvet.',
+  'ERRO — Algo deu errado do nosso lado': 'FEJL — Noget gik galt hos os',
+  'O Syden travou': 'Syden gik i stå',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Det var ikke noget, du gjorde. Genindlæsning plejer at løse det.',
+  'Recarregar': 'Genindlæs',
   'Escolha um canal à esquerda.': 'Vælg en kanal til venstre.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Vælg en samtale til venstre, eller start en ny.',
   'Escolha uma senha nova': 'Vælg en ny adgangskode',

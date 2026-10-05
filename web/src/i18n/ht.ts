@@ -374,6 +374,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  'ERRO — Algo deu errado do nosso lado': 'ERÈ — Gen yon bagay ki pa mache bò kote pa nou',
+  'O Syden travou': 'Syden bloke',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Se pa anyen ou fè. Rechaje paj la konn regle sa.',
+  'Recarregar': 'Rechaje',
   'Escolha um canal à esquerda.': 'Chwazi yon chanèl agoch.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chwazi yon konvèsasyon agoch, oswa kòmanse yon lòt.',
   'Escolha uma senha nova': 'Chwazi yon nouvo mopas',

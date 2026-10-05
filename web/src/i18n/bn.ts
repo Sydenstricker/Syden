@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'ERRO — Algo deu errado do nosso lado': 'ত্রুটি — আমাদের দিকে কিছু একটা গোলমাল হয়েছে',
+  'O Syden travou': 'Syden আটকে গেছে',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'এটা তোমার কোনো কাজের জন্য নয়। আবার লোড করলে সাধারণত ঠিক হয়ে যায়।',
+  'Recarregar': 'আবার লোড করো',
   'Escolha um canal à esquerda.': 'বাঁ দিক থেকে একটা চ্যানেল বেছে নাও।',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'বাঁ দিক থেকে একটা কথোপকথন বেছে নাও, বা নতুন শুরু করো।',
   'Escolha uma senha nova': 'নতুন পাসওয়ার্ড বেছে নাও',

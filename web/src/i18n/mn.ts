@@ -378,6 +378,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
+  'ERRO — Algo deu errado do nosso lado': 'АЛДАА — Манай талд ямар нэг зүйл буруудлаа',
+  'O Syden travou': 'Syden гацлаа',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Энэ чиний хийсэн зүйлээс болоогүй. Дахин ачаалахад ихэвчлэн засагддаг.',
+  'Recarregar': 'Дахин ачаалах',
   'Escolha um canal à esquerda.': 'Зүүн талаас суваг сонго.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Зүүн талаас яриа сонго, эсвэл шинээр эхлүүл.',
   'Escolha uma senha nova': 'Шинэ нууц үг сонго',

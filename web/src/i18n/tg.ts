@@ -364,6 +364,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'ERRO — Algo deu errado do nosso lado': 'ХАТОГӢ — Аз ҷониби мо чизе нодуруст шуд',
+  'O Syden travou': 'Syden ҳалқ шуд',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Ин аз коре, ки ту кардӣ, нест. Аз нав боргузорӣ одатан ёрӣ медиҳад.',
+  'Recarregar': 'Аз нав боргузорӣ',
   'Escolha um canal à esquerda.': 'Аз тарафи чап каналеро интихоб кунед.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Аз тарафи чап сӯҳбатеро интихоб кунед, ё сӯҳбати навро оғоз кунед.',
   'Escolha uma senha nova': 'Рамзи навро интихоб кунед',

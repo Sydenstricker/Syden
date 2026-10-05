@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useT } from './i18n';
+import { Mascote } from './Mascote';
 
 // MODO APRESENTAÇÃO: uma pessoa fala, as outras assistem.
 //
@@ -127,7 +128,9 @@ export function FaixaDoPalco({
   return (
     <div className="palco-faixa">
       <span className="palco-titulo">
-        <Presentation size={16} /> {t('Apresentação')}
+        {/* O mascote apresentando, no lugar do ícone: o quadro, a varinha, falando. */}
+        <Mascote nome="apresentacao" tamanho={64} className="palco-mascote" />
+        {t('Apresentação')}
       </span>
 
       <span className="palco-quem">

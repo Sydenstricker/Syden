@@ -191,6 +191,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'ERRO — Algo deu errado do nosso lado': 'HITILAFU — Kuna kitu kimeharibika upande wetu',
+  'O Syden travou': 'Syden imekwama',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Si kitu ulichofanya. Kupakia upya kwa kawaida hutatua.',
+  'Recarregar': 'Pakia upya',
   'Escolha um canal à esquerda.': 'Chagua kituo upande wa kushoto.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chagua mazungumzo upande wa kushoto, au anzisha mapya.',
   'Escolha uma senha nova': 'Chagua nenosiri jipya',

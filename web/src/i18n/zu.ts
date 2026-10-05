@@ -364,6 +364,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Khetha ukuthi ubani ongenayo. Uma bengaphezu komuntu oyedwa, iba yingxoxo yeqembu.',
   'Escolha o coelho da estátua da praça.': 'Khetha unogwaja wesithombe esisesigcawini.',
+  'ERRO — Algo deu errado do nosso lado': 'IPHUTHA — Kukhona okungahambanga kahle ngasohlangothini lwethu',
+  'O Syden travou': 'I-Syden ibambekile',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Akusikho okwenzile wena. Ukulayisha kabusha kuvamise ukukulungisa.',
+  'Recarregar': 'Layisha kabusha',
   'Escolha um canal à esquerda.': 'Khetha isiteshi ngakwesobunxele.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Khetha ingxoxo ngakwesobunxele, noma uqale entsha.',
   'Escolha uma senha nova': 'Khetha iphasiwedi entsha',

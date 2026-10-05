@@ -170,6 +170,10 @@ export default {
   'Selo que você veste': 'Знак, который ты носишь',
   'Só o seu nome, sem selo': 'Только имя, без знака',
   'Escolha o coelho da estátua da praça.': 'Выбери кролика для статуи на площади.',
+  'ERRO — Algo deu errado do nosso lado': 'ОШИБКА — Что-то пошло не так на нашей стороне',
+  'O Syden travou': 'Syden завис',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Это не из-за твоих действий. Обычно помогает перезагрузка.',
+  'Recarregar': 'Перезагрузить',
 
   // Переписка и сообщения
   Conversas: 'Переписки',

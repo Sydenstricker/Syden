@@ -10278,6 +10278,65 @@ body.arrastando-barra {
   font-size: calc(11px * var(--escala-do-texto));
 }
 
+/* O mascote apresentando ocupa o lugar do ícone. O desenho tem folga dos lados (o coelho e o quadro
+   ocupam de 32% a 95% da largura), e a margem negativa da esquerda corta essa folga. A faixa cresce
+   um pouco, e é o preço de o coelho e o quadro serem reconhecíveis: em 44 px eram um borrão. */
+.palco-mascote {
+  margin: -4px 2px -6px -20px;
+  flex: none;
+}
+
+/* ---------- O mascote nas telas (ver Mascote.tsx) ---------- */
+
+.mascote {
+  display: block;
+  user-select: none;
+}
+
+.karaoke-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+/* A tela de quando o próprio Syden quebra (ErroGeral.tsx). Fica de pé sozinha: não conta com nenhuma
+   outra parte do app, porque ela aparece justamente quando o resto falhou. */
+.erro-geral {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--bg-main);
+  color: var(--text);
+}
+
+.erro-geral h1 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: calc(22px * var(--escala-do-texto));
+}
+
+.erro-geral p {
+  margin: 0 0 8px;
+  max-width: 34em;
+  color: var(--text-muted);
+}
+
+.erro-geral .erro-geral-codigo {
+  margin: 0;
+  font-family: ui-monospace, Consolas, monospace;
+  font-weight: 700;
+  font-size: calc(13px * var(--escala-do-texto));
+  letter-spacing: 0.02em;
+}
+
 .palco-quem {
   color: var(--text-strong);
   font-weight: 600;

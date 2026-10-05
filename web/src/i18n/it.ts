@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  'ERRO — Algo deu errado do nosso lado': 'ERRORE — Qualcosa è andato storto da parte nostra',
+  'O Syden travou': 'Syden si è bloccato',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Non è colpa tua. Ricaricare di solito risolve.',
+  'Recarregar': 'Ricarica',
   'Escolha um canal à esquerda.': 'Scegli un canale a sinistra.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Scegli una conversazione a sinistra, o iniziane una nuova.',
   'Escolha uma senha nova': 'Scegli una nuova password',

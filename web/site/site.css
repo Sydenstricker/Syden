@@ -280,3 +280,36 @@ h3,
   font-family: 'Syden Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
+
+/* ---------- página de endereço que não existe (404.html) ---------- */
+
+.nao-encontrada {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.nao-encontrada h1 {
+  margin: 0;
+  color: var(--strong);
+}
+
+.nao-encontrada p {
+  margin: 0 0 12px;
+  max-width: 34em;
+  color: var(--muted);
+}
+
+.nao-encontrada .nao-encontrada-codigo {
+  margin: 0;
+  font-family: ui-monospace, Consolas, monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}

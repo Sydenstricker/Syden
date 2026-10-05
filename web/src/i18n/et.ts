@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'ERRO — Algo deu errado do nosso lado': 'VIGA — Meie poolel läks midagi valesti',
+  'O Syden travou': 'Syden jäi kinni',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'See ei olnud sinu süü. Uuesti laadimine tavaliselt aitab.',
+  'Recarregar': 'Laadi uuesti',
   'Escolha um canal à esquerda.': 'Vali vasakult kanal.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Vali vasakult vestlus või alusta uut.',
   'Escolha uma senha nova': 'Vali uus parool',

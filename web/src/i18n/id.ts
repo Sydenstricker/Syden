@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
   'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',
+  'ERRO — Algo deu errado do nosso lado': 'GALAT — Ada yang salah di pihak kami',
+  'O Syden travou': 'Syden macet',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Bukan karena sesuatu yang kamu lakukan. Memuat ulang biasanya membereskannya.',
+  'Recarregar': 'Muat ulang',
   'Escolha um canal à esquerda.': 'Pilih saluran di sebelah kiri.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Pilih percakapan di sebelah kiri, atau mulai yang baru.',
   'Escolha uma senha nova': 'Pilih kata sandi baru',

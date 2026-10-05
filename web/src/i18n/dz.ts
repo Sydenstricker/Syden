@@ -376,6 +376,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
   'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
+  'ERRO — Algo deu errado do nosso lado': 'འཛོལ་བ — ང་བཅས་ཀྱི་ཕྱོགས་ལས་ ག་ཅི་ཅིག་ནོར་ཡི',
+  'O Syden travou': 'Syden བཀག་སོ་ཡོདཔ',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'ཁྱོད་ཀྱིས་འབད་མི་ཅིག་མེན། ལོག་མངོན་གསལ་འབད་བ་ཅིན་ ཡང་ཅིག་ ལེགས་ཤོམ་འགྱོཝ་ཨིན།',
+  'Recarregar': 'ལོག་མངོན་གསལ་འབད',
   'Escolha um canal à esquerda.': 'གཡོན་ཁ་ལས་ བརྒྱུད་ལམ་ཅིག་གདམ།',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'གཡོན་ཁ་ལས་ གཏམ་གླེང་ཅིག་གདམ། ཡང་ན་ གསརཔ་ཅིག་འགོ་བཙུགས།',
   'Escolha uma senha nova': 'ཆོག་ཡིག་གསརཔ་གདམ།',

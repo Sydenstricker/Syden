@@ -365,6 +365,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  'ERRO — Algo deu errado do nosso lado': 'KLAIDA — Mūsų pusėje kažkas nutiko',
+  'O Syden travou': 'Syden užstrigo',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Tai ne dėl to, ką padarei. Įkėlus iš naujo paprastai padeda.',
+  'Recarregar': 'Įkelti iš naujo',
   'Escolha um canal à esquerda.': 'Pasirink kanalą kairėje.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Pasirink pokalbį kairėje arba pradėk naują.',
   'Escolha uma senha nova': 'Pasirink naują slaptažodį',

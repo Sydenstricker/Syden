@@ -365,6 +365,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
   'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',
+  'ERRO — Algo deu errado do nosso lado': 'ÝALŇYŞLYK — Biziň tarapymyzda bir zat ýalňyş gitdi',
+  'O Syden travou': 'Syden doňdy',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Bu seniň eden zadyň sebäpli däl. Täzeden ýüklemek adatça kömek edýär.',
+  'Recarregar': 'Täzeden ýükle',
   'Escolha um canal à esquerda.': 'Çepden bir kanal saýla.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Çepden bir söhbet saýla ýa-da täzesini başla.',
   'Escolha uma senha nova': 'Täze parol saýla',

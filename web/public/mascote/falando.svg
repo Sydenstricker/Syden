@@ -1,0 +1,67 @@
+<!-- GERADO por animacaoSVG/exportar-mascote.mjs a partir do estúdio animacoes_d4.html — não edite à mão. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 400 300" role="img" aria-label="Falando">
+  <style>
+    .o-fora, .cabeca { fill: var(--creme, #f3ebd8); }
+    .o-dentro { fill: var(--faixa, #F48FB1); }
+    .cabeca { stroke: var(--creme, #f3ebd8); stroke-width: 0; stroke-linejoin: round; }
+    .p, .creme { fill: var(--creme, #f3ebd8); }
+    .m-pupila { fill: #1E2533; }
+    .m-brilho { fill: #FFFFFF; }
+    .m-traco { fill: none; stroke: #1E2533; stroke-width: 1.8; stroke-linecap: round; }
+    .m-nariz { fill: #C2415A; }
+    .m-boca { fill: none; stroke: #C2415A; stroke-width: 1.5; stroke-linecap: round; }
+    .m-boca-o { fill: #1E2533; }
+    .m-bochechas { fill: #F48FB1; opacity: .5; }
+    .m-feliz { stroke-width: 2.3; }
+    .m-sorrisao { stroke-width: 1.8; }
+    .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
+    .p, .barra, .m-olho, .m-olhos { transform-box: fill-box; transform-origin: center; }
+    .figura { transform-box: view-box; transform-origin: 200px 297px; }
+    .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
+    .iris { fill: #1e2533; stroke: #f3ebd8; stroke-width: 6; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 45%; transform: scale(0); animation: iris 7.00s ease-in-out infinite; }
+    .cabeca { animation: virarBalao 7.00s ease-in-out infinite; }
+    .rosto-m { animation: rostoSome 7.00s ease-in-out infinite; }
+    .miolo { opacity: 0; animation: mioloAparece 7.00s ease-in-out infinite; }
+    .vira-eFora { animation: vira-eFora 7.00s ease-in-out infinite; }
+    @keyframes vira-eFora { 0%, 21% { d: path('M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z'); } 29%, 71% { d: path('M41.74 47.61 C28.70 50.38, 21.22 15.17, 34.26 12.39 C47.30 9.62, 54.78 44.83, 41.74 47.61 Z'); } 79%, 100% { d: path('M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z'); } }
+    .vira-eDentro { animation: vira-eDentro 7.00s ease-in-out infinite; }
+    @keyframes vira-eDentro { 0%, 21% { d: path('M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z'); } 29%, 71% { d: path('M40.29 41.76 C35.59 42.76, 31.02 21.24, 35.71 20.24 C40.41 19.24, 44.98 40.76, 40.29 41.76 Z'); } 79%, 100% { d: path('M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z'); } }
+    .vira-dFora { animation: vira-dFora 7.00s ease-in-out infinite; }
+    @keyframes vira-dFora { 0%, 21% { d: path('M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z'); } 29%, 71% { d: path('M58.26 47.61 C71.30 50.38, 78.78 15.17, 65.74 12.39 C52.70 9.62, 45.22 44.83, 58.26 47.61 Z'); } 79%, 100% { d: path('M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z'); } }
+    .vira-dDentro { animation: vira-dDentro 7.00s ease-in-out infinite; }
+    @keyframes vira-dDentro { 0%, 21% { d: path('M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z'); } 29%, 71% { d: path('M59.71 41.76 C64.41 42.76, 68.98 21.24, 64.29 20.24 C59.59 19.24, 55.02 40.76, 59.71 41.76 Z'); } 79%, 100% { d: path('M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z'); } }
+    .orelha-e { animation: atencao 7.00s ease-in-out infinite; }
+    .orelha-d { animation: atencao 7.00s ease-in-out infinite; }
+    .m-olho { animation: piscar 3.50s ease-in-out 0.00s infinite; }
+    @keyframes virarBalao {
+      0%, 22% { d: path('M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z'); }
+      30%, 70% { d: path('M32 38 H68 A16 16 0 0 1 84 54 V62 A16 16 0 0 1 68 78 H42 L22 88 L28 78 H32 A16 16 0 0 1 16 62 V54 A16 16 0 0 1 32 38 Z'); }
+      78%, 100% { d: path('M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z'); }
+    }
+    @keyframes iris { 0%, 25% { transform: scale(0); } 33%, 63% { transform: none; } 71%, 100% { transform: scale(0); } }
+    @keyframes rostoSome { 0%, 20% { opacity: 1; } 24%, 76% { opacity: 0; } 80%, 100% { opacity: 1; } }
+    @keyframes mioloAparece { 0%, 33% { opacity: 0; } 37%, 61% { opacity: 1; } 65%, 100% { opacity: 0; } }
+    @keyframes atencao { 0%, 22%, 78%, 100% { transform: none; } 28% { transform: scaleY(1.1); } 34%, 68% { transform: none; } }
+    .barra { animation: falar 0.90s ease-in-out infinite; }
+    .b2 { animation-delay: 0.15s; }
+    .b3 { animation-delay: 0.30s; }
+    @keyframes falar { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <g class="figura">
+    <g transform="translate(100 70) scale(2)">
+      <g class="orelha orelha-e"><path class="o-fora vira-eFora" d="M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z"/><path class="o-dentro vira-eDentro" d="M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z"/></g>
+      <g class="orelha orelha-d"><path class="o-fora vira-dFora" d="M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z"/><path class="o-dentro vira-dDentro" d="M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z"/></g>
+      <path class="cabeca" d="M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z"/>
+      <g class="rosto-m">
+        <g class="m-olhos"><g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="72.5" r="4"/><circle class="m-brilho" cx="33" cy="71" r="1.25"/></g>
+        <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="72.5" r="4"/><circle class="m-brilho" cx="65" cy="71" r="1.25"/></g></g>
+        <path class="m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+        <path class="m-boca" d="M45 84.5 Q50 89.5 55 84.5"/>
+      </g>
+      <path class="iris" d="M32 38 H68 A16 16 0 0 1 84 54 V62 A16 16 0 0 1 68 78 H42 L22 88 L28 78 H32 A16 16 0 0 1 16 62 V54 A16 16 0 0 1 32 38 Z"/><g class="miolo"><rect class="creme barra b1" x="33.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b2" x="47.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b3" x="61.5" y="49" width="5" height="18" rx="2.5"/></g>
+    </g>
+  </g>
+</svg>

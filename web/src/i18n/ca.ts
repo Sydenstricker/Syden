@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
+  'ERRO — Algo deu errado do nosso lado': 'ERROR — Alguna cosa ha fallat per part nostra',
+  'O Syden travou': 'Syden s’ha penjat',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'No ha estat res que hagis fet. Recarregar sol solucionar-ho.',
+  'Recarregar': 'Recarrega',
   'Escolha um canal à esquerda.': 'Tria un canal a l’esquerra.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Tria una conversa a l’esquerra, o comença’n una de nova.',
   'Escolha uma senha nova': 'Tria una contrasenya nova',

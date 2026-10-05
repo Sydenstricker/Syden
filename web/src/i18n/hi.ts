@@ -206,6 +206,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
+  'ERRO — Algo deu errado do nosso lado': 'त्रुटि — हमारी तरफ़ से कुछ गड़बड़ हो गई',
+  'O Syden travou': 'Syden अटक गया',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'यह तुम्हारी किसी गलती से नहीं हुआ। दोबारा लोड करने से अक्सर ठीक हो जाता है।',
+  'Recarregar': 'दोबारा लोड करो',
   'Escolha um canal à esquerda.': 'बाईं ओर से एक चैनल चुनो।',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'बाईं ओर से बातचीत चुनो, या नई शुरू करो।',
   'Escolha uma senha nova': 'नया पासवर्ड चुनो',

@@ -364,6 +364,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  'ERRO — Algo deu errado do nosso lado': 'HIBA — Valami elromlott nálunk',
+  'O Syden travou': 'A Syden lefagyott',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Nem te csináltál semmit rosszul. Az újratöltés általában segít.',
+  'Recarregar': 'Újratöltés',
   'Escolha um canal à esquerda.': 'Válassz egy csatornát a bal oldalon.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Válassz egy beszélgetést a bal oldalon, vagy kezdj újat.',
   'Escolha uma senha nova': 'Válassz új jelszót',

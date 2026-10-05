@@ -365,6 +365,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
+  'ERRO — Algo deu errado do nosso lado': 'KĻŪDA — Mūsu pusē kaut kas nogāja greizi',
+  'O Syden travou': 'Syden uzkārās',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Tā nebija tava vaina. Pārlādēšana parasti palīdz.',
+  'Recarregar': 'Pārlādēt',
   'Escolha um canal à esquerda.': 'Izvēlies kanālu pa kreisi.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Izvēlies sarunu pa kreisi vai sāc jaunu.',
   'Escolha uma senha nova': 'Izvēlies jaunu paroli',

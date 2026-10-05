@@ -355,6 +355,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Välj vem som är med. Med fler än en person blir det en gruppkonversation.',
   'Escolha o coelho da estátua da praça.': 'Välj kaninen till statyn på torget.',
+  'ERRO — Algo deu errado do nosso lado': 'FEL — Något gick fel hos oss',
+  'O Syden travou': 'Syden hängde sig',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Det var inget du gjorde. Att ladda om brukar lösa det.',
+  'Recarregar': 'Ladda om',
   'Escolha um canal à esquerda.': 'Välj en kanal till vänster.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Välj en konversation till vänster, eller starta en ny.',
   'Escolha uma senha nova': 'Välj ett nytt lösenord',

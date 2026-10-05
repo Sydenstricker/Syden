@@ -363,6 +363,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кој ќе биде во разговорот. Со повеќе луѓе станува групен разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери го зајакот за статуата на плоштадот.',
+  'ERRO — Algo deu errado do nosso lado': 'ГРЕШКА — Нешто тргна наопаку кај нас',
+  'O Syden travou': 'Syden заглави',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'Не е нешто што ти го направи. Повторното вчитување обично помага.',
+  'Recarregar': 'Вчитај повторно',
   'Escolha um canal à esquerda.': 'Избери канал лево.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Избери разговор лево или започни нов.',
   'Escolha uma senha nova': 'Избери нова лозинка',

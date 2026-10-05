@@ -365,6 +365,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'ERRO — Algo deu errado do nosso lado': 'त्रुटि — हाम्रो तर्फबाट केही गडबड भयो',
+  'O Syden travou': 'Syden अड्कियो',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'यो तिमीले गरेको कुनै कुराले भएको होइन। फेरि लोड गर्दा प्रायः ठीक हुन्छ।',
+  'Recarregar': 'फेरि लोड गर',
   'Escolha um canal à esquerda.': 'बायाँबाट एउटा च्यानल छान्नुहोस्।',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'बायाँबाट कुराकानी छान्नुहोस्, वा नयाँ सुरु गर्नुहोस्।',
   'Escolha uma senha nova': 'नयाँ पासवर्ड छान्नुहोस्',

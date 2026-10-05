@@ -336,6 +336,10 @@ export default {
   'Versão 1.21, sem PvP': 'Version 1.21, no PvP',
   'ex.: Evidências': 'e.g. Evidence',
   'Escolha o coelho da estátua da praça.': 'Choose the bunny for the statue in the square.',
+  'ERRO — Algo deu errado do nosso lado': 'ERROR — Something went wrong on our end',
+  'O Syden travou': 'Syden crashed',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'It wasn’t anything you did. Reloading usually fixes it.',
+  'Recarregar': 'Reload',
   // Welcome screen and short labels
   '{n} na chamada agora': '{n} on the call right now',
   '{n} pessoas nesta comunidade': '{n} people in this community',

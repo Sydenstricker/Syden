@@ -5,6 +5,7 @@ import './fontesDaMarca.gerado.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { ErroGeral } from './ErroGeral';
 import { iniciarIdioma } from './i18n';
 import { aplicarLarguras, lerLarguras } from './larguras';
 import { applyTheme, getTheme } from './theme';
@@ -28,7 +29,9 @@ aplicarLarguras(lerLarguras());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <ErroGeral>
+      <App />
+    </ErroGeral>
   </StrictMode>,
 );
 

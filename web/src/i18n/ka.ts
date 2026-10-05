@@ -382,6 +382,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  'ERRO — Algo deu errado do nosso lado': 'შეცდომა — ჩვენს მხარეს რაღაც არასწორად წავიდა',
+  'O Syden travou': 'Syden გაიჭედა',
+  'Não foi nada que você fez. Recarregar costuma resolver.': 'ეს შენი ბრალი არ არის. თავიდან ჩატვირთვა ჩვეულებრივ შველის.',
+  'Recarregar': 'თავიდან ჩატვირთვა',
   'Escolha um canal à esquerda.': 'აირჩიე არხი მარცხნივ.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'აირჩიე საუბარი მარცხნივ ან დაიწყე ახალი.',
   'Escolha uma senha nova': 'აირჩიე ახალი პაროლი',

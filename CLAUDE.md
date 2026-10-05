@@ -84,6 +84,14 @@ A regra vale para as telas desenhadas em SVG (ver `animacaoSVG/`):
   quem está diante de um erro precisa saber o que houve e ter um código para repetir ao pedir ajuda. O
   formato é sempre `CÓDIGO — descrição`, no mesmo lugar nas três telas.
 
+**O mascote é o personagem; o D4 é a marca.** Decidido em 05/10/2026, depois de tentar pôr um rosto
+dentro do balão do ícone ("estamos forçando demais"). O coelho antigo, sem a estrela, é quem espera,
+cumprimenta, canta, apresenta e fica sem internet — tem cara, e cara é o que o torna amigável. O D4
+(orelhas, balão, três pontos) é o ícone, o avatar e a conversa acontecendo. Quando os dois aparecem
+juntos, a cabeça do coelho VIRA o balão, ancorada nas orelhas. Os desenhos nascem no estúdio
+(`animacaoSVG/animacoes_d4.html`) e vão para o app por `animacaoSVG/exportar-mascote.mjs` — o arquivo
+exportado não se edita à mão. O texto dos erros nunca vai dentro do SVG: vai em HTML, para ser traduzido.
+
 A exceção da exceção: a tela offline do app de desktop (`desktop/src/offline.html`) mora dentro do pacote
 e não tem acesso ao i18n. Ela precisa do próprio dicionário pequeno, lendo `navigator.language` — porque
 se houvesse internet para buscar a tradução, ela não estaria aparecendo.
