@@ -226,6 +226,7 @@ export default {
   'Com gente e sem conversa': 'Kunabantu kodwa akukhulunywa',
   'com movimento': 'okunyakazayo',
   'Com serifa': 'Ene-serif',
+  'Com tecnologia {modelo}': 'Ubuchwepheshe: {modelo}',
   'Começa a aparecer': 'Iqala ukuvela',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Qala owakho, noma ungene kowomunye ngekhodi akunikeze yona.',

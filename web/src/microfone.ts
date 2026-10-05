@@ -32,6 +32,38 @@ const BASE = import.meta.env.BASE_URL + 'ruido/';
 
 export type MotorDeRuido = 'dpdfnet' | 'gtcrn';
 
+/** O nome que aparece para a pessoa, em Configurações ("Com tecnologia DPDFNet"). */
+export const NOME_DO_MOTOR: Record<MotorDeRuido, string> = { dpdfnet: 'DPDFNet', gtcrn: 'GTCRN' };
+
+/*
+ * QUAL MOTOR ESTÁ RODANDO AGORA, para Configurações dizer — como o Discord diz que a supressão é do Krisp.
+ * Pedido do Sydenstricker (05/10/2026), depois de um amigo reclamar da voz: saber o que está sendo usado
+ * ajuda a pessoa a entender a diferença entre o app e o site, e mostra na hora quando o nativo caiu e o
+ * GTCRN assumiu. null quando não há chamada.
+ */
+let motorEmUso: MotorDeRuido | null = null;
+const ouvintes = new Set<() => void>();
+function definirMotorEmUso(motor: MotorDeRuido | null) {
+  if (motorEmUso === motor) return;
+  motorEmUso = motor;
+  for (const avisar of ouvintes) avisar();
+}
+export function lerMotorEmUso() {
+  return motorEmUso;
+}
+export function aoMudarMotor(avisar: () => void) {
+  ouvintes.add(avisar);
+  return () => {
+    ouvintes.delete(avisar);
+  };
+}
+
+/** Sem chamada, o motor que ESTE aparelho usaria: o nativo no app que o tem, o GTCRN no resto. */
+export async function motorPrevisto(): Promise<MotorDeRuido> {
+  const disponivel = await desktopBridge?.ruido?.disponivel().catch(() => false);
+  return disponivel ? 'dpdfnet' : 'gtcrn';
+}
+
 let modelo: Promise<{ grafo: unknown; pesos: ArrayBuffer }> | null = null;
 
 /** Baixa o GTCRN uma vez por visita (345 KB, guardados pelo cache do navegador depois). */
@@ -127,6 +159,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
   async destroy() {
     this.geracao++;
     this.desmontar();
+    definirMotorEmUso(null);
     this.processedTrack = undefined;
   }
 
@@ -137,6 +170,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
     this.desmontar();
 
     if (!this.opcoes.supressao) {
+      definirMotorEmUso(null);
       const ctx = options.audioContext;
       this.source = ctx.createMediaStreamSource(new MediaStream([options.track]));
       this.destination = ctx.createMediaStreamDestination();
@@ -197,6 +231,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
     };
     ponte.port.postMessage({ porta }, [porta]);
     this.trocarSupressor(ponte);
+    definirMotorEmUso('dpdfnet');
   }
 
   private async ligarGtcrn(ctx: AudioContext, geracao: number) {
@@ -216,6 +251,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
       if (typeof custo === 'number') this.opcoes.aoMedirCusto?.({ motor: 'gtcrn', msPorQuadro: custo, quadroMs: 16 });
     };
     this.trocarSupressor(gtcrn);
+    definirMotorEmUso('gtcrn');
   }
 
   /** Põe um motor entre o microfone e o efeito de voz, tirando o que estava lá. */

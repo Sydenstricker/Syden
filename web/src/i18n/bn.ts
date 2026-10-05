@@ -847,6 +847,7 @@ export default {
   'Sombra': 'ছায়া',
   'O nome levanta um pouco do fundo.': 'নামটা পটভূমি থেকে একটু উঠে আসে।',
   'Com serifa': 'সেরিফযুক্ত',
+  'Com tecnologia {modelo}': 'প্রযুক্তি: {modelo}',
   'Letra de livro, mais séria.': 'বইয়ের হরফ, একটু গম্ভীর।',
   'Máquina de escrever': 'টাইপরাইটার',
   'Toda letra com a mesma largura.': 'প্রতিটি অক্ষর একই চওড়া।',

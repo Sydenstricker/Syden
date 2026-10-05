@@ -225,6 +225,7 @@ export default {
   'Com gente e sem conversa': 'Dad baa jooga, sheeko ma jirto',
   'com movimento': 'dhaqaaqaya',
   'Com serifa': 'Leh serif',
+  'Com tecnologia {modelo}': 'Tiknoolajiyada: {modelo}',
   'Começa a aparecer': 'Wuxuu bilaabaa inuu muuqdo',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Bilow taada, ama gal mid qof kale adigoo isticmaalaya koodhka laguu siiyay.',

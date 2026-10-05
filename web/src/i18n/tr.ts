@@ -844,6 +844,7 @@ export default {
   'Sombra': 'Gölge',
   'O nome levanta um pouco do fundo.': 'Ad arka plandan biraz yükseliyor.',
   'Com serifa': 'Tırnaklı',
+  'Com tecnologia {modelo}': 'Teknoloji: {modelo}',
   'Letra de livro, mais séria.': 'Kitap harfi, biraz daha ciddi.',
   'Máquina de escrever': 'Daktilo',
   'Toda letra com a mesma largura.': 'Her harf aynı genişlikte.',

@@ -849,6 +849,7 @@ export default {
   'Sombra': 'Kivuli',
   'O nome levanta um pouco do fundo.': 'Jina hujitokeza kidogo kutoka usuli.',
   'Com serifa': 'Yenye serifu',
+  'Com tecnologia {modelo}': 'Teknolojia: {modelo}',
   'Letra de livro, mais séria.': 'Hati ya kitabu, nzito kidogo.',
   'Máquina de escrever': 'Taipureta',
   'Toda letra com a mesma largura.': 'Kila herufi ina upana sawa.',

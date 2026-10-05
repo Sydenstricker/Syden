@@ -225,6 +225,7 @@ export default {
   'Com gente e sem conversa': 'Väkeä, mutta ei juttua',
   'com movimento': 'liikkuva',
   'Com serifa': 'Pääteviivallinen',
+  'Com tecnologia {modelo}': 'Tekniikka: {modelo}',
   'Começa a aparecer': 'Alkaa näkyä',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Perusta oma, tai liity jonkun toisen yhteisöön koodilla, jonka hän antoi sinulle.',

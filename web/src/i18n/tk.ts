@@ -227,6 +227,7 @@ export default {
   'Com gente e sem conversa': 'Adam bar, ýöne gürrüň ýok',
   'com movimento': 'hereketli',
   'Com serifa': 'Serifli',
+  'Com tecnologia {modelo}': 'Tehnologiýa: {modelo}',
   'Começa a aparecer': 'Görünip başlaýar',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Öz jemgyýetiňi döret ýa-da saňa berlen kod bilen başga biriniňkä gir.',

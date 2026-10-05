@@ -238,6 +238,7 @@ export default {
   'Com gente e sem conversa': 'མི་ཡོད་རུང་ གཏམ་གླེང་མེད།',
   'com movimento': 'འགུལ་བཅས།',
   'Com serifa': 'སེ་རིཕ་དང་བཅས།',
+  'Com tecnologia {modelo}': 'ལག་རྩལ: {modelo}',
   'Começa a aparecer': 'སྟོན་ནི་འགོ་བཙུགས་འོང་།',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ཁྱོད་རའི་མི་སྡེ་འགོ་བཙུགས། ཡང་ན་ མི་ལ་ལོ་གིས་བྱིན་མི་ཨང་རྟགས་ཀྱིས་ ཁོང་གི་མི་སྡེ་ནང་འཛུལ།',

@@ -855,6 +855,7 @@ export default {
   'Sombra': 'Sombra',
   'O nome levanta um pouco do fundo.': 'El nombre se levanta un poco del fondo.',
   'Com serifa': 'Con serifa',
+  'Com tecnologia {modelo}': 'Con tecnología de {modelo}',
   'Letra de livro, mais séria.': 'Letra de libro, más seria.',
   'Máquina de escrever': 'Máquina de escribir',
   'Toda letra com a mesma largura.': 'Todas las letras del mismo ancho.',

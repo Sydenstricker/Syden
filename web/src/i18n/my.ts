@@ -210,6 +210,7 @@ export default {
   'Com gente e sem conversa': 'လူရှိပေမဲ့ စကားမပြော',
   'com movimento': 'လှုပ်ရှားမှုနဲ့',
   'Com serifa': 'ဆီရစ်ပါ',
+  'Com tecnologia {modelo}': 'နည်းပညာ - {modelo}',
   'Começa a aparecer': 'ပေါ်လာမည့်အချိန်',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ကိုယ်ပိုင်တစ်ခု စတင်ပါ၊ သို့မဟုတ် တစ်ယောက်ယောက် ပေးထားတဲ့ ကုဒ်နဲ့ သူတို့ဆီ ဝင်ပါ။',

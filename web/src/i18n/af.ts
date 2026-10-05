@@ -219,6 +219,7 @@ export default {
   'Com gente e sem conversa': 'Mense, maar geen gesprek',
   'com movimento': 'met beweging',
   'Com serifa': 'Met serif',
+  'Com tecnologia {modelo}': 'Aangedryf deur {modelo}',
   'Começa a aparecer': 'Begin verskyn',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Begin jou eie, of sluit by iemand anders s’n aan met die kode wat hulle vir jou gegee het.',

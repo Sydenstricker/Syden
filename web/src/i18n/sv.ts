@@ -217,6 +217,7 @@ export default {
   'Com gente e sem conversa': 'Folk men inget snack',
   'com movimento': 'med rörelse',
   'Com serifa': 'Med serifer',
+  'Com tecnologia {modelo}': 'Drivs av {modelo}',
   'Começa a aparecer': 'Börjar visas',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Starta din egen, eller gå med i någon annans med koden som du har fått.',

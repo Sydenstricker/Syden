@@ -204,6 +204,7 @@ export default {
   'Com gente e sem conversa': 'Adam var, söhbət yoxdur',
   'com movimento': 'hərəkətli',
   'Com serifa': 'Serifli',
+  'Com tecnologia {modelo}': 'Texnologiya: {modelo}',
   'Começa a aparecer': 'Görünməyə başlayır',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.': 'Özününkünü yarat, ya da kiminsə sənə verdiyi kodla onun icmasına qoşul.',
   'Começo': 'Başlanğıc',

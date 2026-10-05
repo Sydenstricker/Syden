@@ -227,6 +227,7 @@ export default {
   'Com gente e sem conversa': 'मान्छे छन्, कुरा छैन',
   'com movimento': 'चलायमान',
   'Com serifa': 'सेरिफसहित',
+  'Com tecnologia {modelo}': 'प्रविधि: {modelo}',
   'Começa a aparecer': 'देखिन सुरु हुन्छ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'आफ्नै सुरु गर्नुहोस्, वा कसैले दिएको कोडले उहाँको समुदायमा सामेल हुनुहोस्।',

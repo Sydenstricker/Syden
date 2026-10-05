@@ -832,6 +832,7 @@ export default {
   'Sombra': 'سایہ',
   'O nome levanta um pouco do fundo.': 'نام پس منظر سے تھوڑا اوپر اٹھتا ہے۔',
   'Com serifa': 'سیرف کے ساتھ',
+  'Com tecnologia {modelo}': 'ٹیکنالوجی: {modelo}',
   'Letra de livro, mais séria.': 'کتابی حروف، کچھ زیادہ سنجیدہ۔',
   'Máquina de escrever': 'ٹائپ رائٹر',
   'Toda letra com a mesma largura.': 'ہر حرف کی چوڑائی ایک جیسی۔',

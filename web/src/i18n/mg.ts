@@ -225,6 +225,7 @@ export default {
   'Com gente e sem conversa': 'Misy olona fa tsy misy resaka',
   'com movimento': 'mihetsika',
   'Com serifa': 'Misy serif',
+  'Com tecnologia {modelo}': 'Teknolojia: {modelo}',
   'Começa a aparecer': 'Manomboka miseho',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Atombohy ny anao, na midira amin’ny an’olona amin’ny kaody nomeny anao.',

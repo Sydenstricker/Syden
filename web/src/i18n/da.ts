@@ -219,6 +219,7 @@ export default {
   'Com gente e sem conversa': 'Folk, men ingen snak',
   'com movimento': 'med bevægelse',
   'Com serifa': 'Med seriffer',
+  'Com tecnologia {modelo}': 'Drevet af {modelo}',
   'Começa a aparecer': 'Begynder at blive vist',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Start dit eget, eller gå med i en andens med den kode, du har fået.',

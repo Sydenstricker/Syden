@@ -57,6 +57,7 @@ import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
+import { NOME_DO_MOTOR, aoMudarMotor, lerMotorEmUso, motorPrevisto, supressaoDisponivel, type MotorDeRuido } from './microfone';
 import { useDirectory } from './directory';
 import { CapaDaComunidade } from './CapaDaComunidade';
 import { CommunityIcon } from './CommunityIcon';
@@ -2160,6 +2161,7 @@ function DeviceSelect({
 function VoiceSection({ voice }: { voice: Voice }) {
   const t = useT();
   const settings = useSettings();
+  const motorDeRuido = useMotorDeRuido();
 
   return (
     <>
@@ -2200,6 +2202,7 @@ function VoiceSection({ voice }: { voice: Voice }) {
       <Toggle
         label={t('Supressão de ruído')}
         description={t('Reduz barulhos de fundo, como teclado, ventilador e trânsito.')}
+        nota={settings.noiseSuppression && motorDeRuido ? t('Com tecnologia {modelo}', { modelo: NOME_DO_MOTOR[motorDeRuido] }) : undefined}
         checked={settings.noiseSuppression}
         onChange={(value) => void voice.setAudioProcessing({ noiseSuppression: value })}
       />
@@ -2542,11 +2545,14 @@ function SoundsSection() {
 function Toggle({
   label,
   description,
+  nota,
   checked,
   onChange,
 }: {
   label: string;
   description: string;
+  /** Uma linha a mais, menor, embaixo da descrição (ex.: o modelo que faz a supressão de ruído). */
+  nota?: string;
   checked: boolean;
   onChange: (value: boolean) => void;
 }) {
@@ -2555,11 +2561,34 @@ function Toggle({
       <span>
         <span className="toggle-label">{label}</span>
         <span className="toggle-description">{description}</span>
+        {nota && <span className="toggle-description toggle-nota">{nota}</span>}
       </span>
       <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span className="switch" aria-hidden="true" />
     </label>
   );
+}
+
+/**
+ * Qual modelo faz a supressão de ruído, para dizer em Configurações ("Com tecnologia DPDFNet").
+ *
+ * Numa chamada, é o que está RODANDO — inclusive o GTCRN que assume quando o nativo do app cai, que é
+ * justamente quando a pessoa mais precisa saber. Fora de chamada, o que este aparelho usaria. null onde
+ * o navegador não roda nenhum dos dois (sem AudioWorklet): aí a supressão é só a do navegador, e o
+ * Syden não põe nome nenhum.
+ */
+function useMotorDeRuido(): MotorDeRuido | null {
+  const [emUso, setEmUso] = useState(lerMotorEmUso);
+  const [previsto, setPrevisto] = useState<MotorDeRuido | null>(null);
+  useEffect(() => aoMudarMotor(() => setEmUso(lerMotorEmUso())), []);
+  useEffect(() => {
+    let vivo = true;
+    if (supressaoDisponivel()) void motorPrevisto().then((m) => vivo && setPrevisto(m));
+    return () => {
+      vivo = false;
+    };
+  }, []);
+  return emUso ?? previsto;
 }
 
 /**

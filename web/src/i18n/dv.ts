@@ -234,6 +234,7 @@ export default {
   'Com gente e sem conversa': 'މީހުން އުޅޭ، ވާހަކައެއް ނުދައްކާ',
   'com movimento': 'ހަރަކާތާއެކު',
   'Com serifa': 'ސެރިފްއާއެކު',
+  'Com tecnologia {modelo}': 'ޓެކްނޮލޮޖީ: {modelo}',
   'Começa a aparecer': 'ފެންނަން ފަށާނީ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ތިބާގެ އަމިއްލަ ކޮމިއުނިޓީއެއް ފަށާ، ނުވަތަ މީހަކު ދިން ކޯޑުން އެމީހާގެ ކޮމިއުނިޓީއަށް ވަދޭ.',

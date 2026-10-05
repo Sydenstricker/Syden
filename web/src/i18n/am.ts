@@ -845,6 +845,7 @@ export default {
   'Sombra': 'ጥላ',
   'O nome levanta um pouco do fundo.': 'ስሙ ከጀርባው ትንሽ ከፍ ይላል።',
   'Com serifa': 'ሰሪፍ ያለው',
+  'Com tecnologia {modelo}': 'ቴክኖሎጂ፦ {modelo}',
   'Letra de livro, mais séria.': 'የመጽሐፍ ፊደል፣ ትንሽ ቁምነገረኛ።',
   'Máquina de escrever': 'የመተየቢያ ማሽን',
   'Toda letra com a mesma largura.': 'እያንዳንዱ ፊደል እኩል ስፋት።',

@@ -211,6 +211,7 @@ export default {
   'Com gente e sem conversa': 'Namni jira, haasaan hin jiru',
   'com movimento': 'sochii wajjin',
   'Com serifa': 'Seerifii wajjin',
+  'Com tecnologia {modelo}': 'Teeknooloojii: {modelo}',
   'Começa a aparecer': 'Mul’achuu jalqaba',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Kan kee jalqabi, ykn koodii namni sun siif kenneen kan nama biraa seeni.',

@@ -226,6 +226,7 @@ export default {
   'Com gente e sem conversa': 'Vannak, de nem beszélgetnek',
   'com movimento': 'mozgással',
   'Com serifa': 'Talpas',
+  'Com tecnologia {modelo}': 'Technológia: {modelo}',
   'Começa a aparecer': 'Megjelenik ekkor',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Indítsd el a sajátodat, vagy lépj be valaki máséba a tőle kapott kóddal.',

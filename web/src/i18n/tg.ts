@@ -226,6 +226,7 @@ export default {
   'Com gente e sem conversa': 'Одамон ҳастанд, вале сӯҳбат нест',
   'com movimento': 'бо ҳаракат',
   'Com serifa': 'Бо сериф',
+  'Com tecnologia {modelo}': 'Технология: {modelo}',
   'Começa a aparecer': 'Намоён шуданро сар мекунад',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Анҷумани худро оғоз кунед, ё бо рамзе, ки касе ба шумо дод, ба анҷумани ӯ ворид шавед.',

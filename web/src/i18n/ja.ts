@@ -826,6 +826,7 @@ export default {
   'Sombra': 'シャドウ',
   'O nome levanta um pouco do fundo.': '名前が背景から少し浮き上がります。',
   'Com serifa': 'セリフ体',
+  'Com tecnologia {modelo}': '{modelo} を使用',
   'Letra de livro, mais séria.': '本の書体。少しまじめに。',
   'Máquina de escrever': 'タイプライター',
   'Toda letra com a mesma largura.': 'すべての文字が同じ幅。',

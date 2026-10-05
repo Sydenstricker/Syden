@@ -227,6 +227,7 @@ export default {
   'Com gente e sem conversa': 'Cilvēki ir, bet neviens nerunā',
   'com movimento': 'ar kustību',
   'Com serifa': 'Ar serifiem',
+  'Com tecnologia {modelo}': 'Tehnoloģija: {modelo}',
   'Começa a aparecer': 'Sāk rādīties',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Izveido savu vai pievienojies kāda cita kopienai ar kodu, ko tev iedeva šis cilvēks.',

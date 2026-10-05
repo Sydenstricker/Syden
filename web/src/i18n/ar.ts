@@ -870,6 +870,7 @@ export default {
   'Sombra': 'ظل',
   'O nome levanta um pouco do fundo.': 'الاسم يرتفع قليلًا عن الخلفية.',
   'Com serifa': 'بخط مذيّل',
+  'Com tecnologia {modelo}': 'بتقنية {modelo}',
   'Letra de livro, mais séria.': 'خط كتب، أكثر جدّية.',
   'Máquina de escrever': 'آلة كاتبة',
   'Toda letra com a mesma largura.': 'كل الحروف بعرض واحد.',

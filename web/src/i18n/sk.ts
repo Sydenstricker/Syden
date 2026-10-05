@@ -225,6 +225,7 @@ export default {
   'Com gente e sem conversa': 'Ľudia tu sú, ale nehovoria',
   'com movimento': 's pohybom',
   'Com serifa': 'Pätkové',
+  'Com tecnologia {modelo}': 'Technológia: {modelo}',
   'Começa a aparecer': 'Začne sa zobrazovať',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Založ si vlastnú, alebo sa pripoj k cudzej s kódom, ktorý ti ten človek dal.',

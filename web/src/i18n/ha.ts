@@ -847,6 +847,7 @@ export default {
   'Sombra': 'Inuwa',
   'O nome levanta um pouco do fundo.': 'Sunan yana ɗan tashi daga bayan fage.',
   'Com serifa': 'Mai ƙafa',
+  'Com tecnologia {modelo}': 'Fasaha: {modelo}',
   'Letra de livro, mais séria.': 'Rubutun littafi, ɗan ƙara nauyi.',
   'Máquina de escrever': 'Na’urar bugawa',
   'Toda letra com a mesma largura.': 'Kowanne harafi da faɗi ɗaya.',

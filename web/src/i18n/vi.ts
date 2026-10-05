@@ -815,6 +815,7 @@ export default {
   'Sombra': 'Bóng đổ',
   'O nome levanta um pouco do fundo.': 'Tên nổi lên một chút khỏi nền.',
   'Com serifa': 'Có chân',
+  'Com tecnologia {modelo}': 'Công nghệ: {modelo}',
   'Letra de livro, mais séria.': 'Kiểu chữ sách, nghiêm túc hơn.',
   'Máquina de escrever': 'Máy đánh chữ',
   'Toda letra com a mesma largura.': 'Mọi chữ cái cùng bề rộng.',

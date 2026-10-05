@@ -242,6 +242,7 @@ export default {
   'Com gente e sem conversa': 'ხალხი არის, საუბარი — არა',
   'com movimento': 'მოძრაობით',
   'Com serifa': 'სერიფებით',
+  'Com tecnologia {modelo}': 'ტექნოლოგია: {modelo}',
   'Começa a aparecer': 'გამოჩნდება',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'შექმენი შენი ან შეუერთდი სხვისას იმ კოდით, რომელიც მან მოგცა.',

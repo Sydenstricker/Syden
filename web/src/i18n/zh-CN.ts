@@ -836,6 +836,7 @@ export default {
   'Sombra': '阴影',
   'O nome levanta um pouco do fundo.': '名字从背景上微微浮起。',
   'Com serifa': '衬线体',
+  'Com tecnologia {modelo}': '技术支持：{modelo}',
   'Letra de livro, mais séria.': '书本字体，稳重一点。',
   'Máquina de escrever': '打字机',
   'Toda letra com a mesma largura.': '每个字母宽度相同。',

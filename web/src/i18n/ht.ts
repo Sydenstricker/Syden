@@ -234,6 +234,7 @@ export default {
   'Com gente e sem conversa': 'Gen moun, men pa gen pale',
   'com movimento': 'ak mouvman',
   'Com serifa': 'Ak serif',
+  'Com tecnologia {modelo}': 'Teknoloji: {modelo}',
   'Começa a aparecer': 'Kòmanse parèt',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Kòmanse pa w, oswa antre nan pa yon moun ak kòd moun sa a ba ou a.',

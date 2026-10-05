@@ -226,6 +226,7 @@ export default {
   'Com gente e sem conversa': 'Fólk er hér, en enginn talar',
   'com movimento': 'með hreyfingu',
   'Com serifa': 'Með þverstrikum',
+  'Com tecnologia {modelo}': 'Tækni: {modelo}',
   'Começa a aparecer': 'Byrjar að birtast',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Stofnaðu þitt eigið, eða gakktu í samfélag annarra með kóðanum sem viðkomandi lét þig fá.',

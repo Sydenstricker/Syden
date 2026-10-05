@@ -858,6 +858,7 @@ export default {
   'Sombra': 'เงา',
   'O nome levanta um pouco do fundo.': 'ชื่อลอยขึ้นจากพื้นหลังเล็กน้อย',
   'Com serifa': 'มีเชิง',
+  'Com tecnologia {modelo}': 'ขับเคลื่อนโดย {modelo}',
   'Letra de livro, mais séria.': 'ตัวอักษรแบบหนังสือ ดูจริงจังขึ้น',
   'Máquina de escrever': 'พิมพ์ดีด',
   'Toda letra com a mesma largura.': 'ทุกตัวอักษรกว้างเท่ากัน',

@@ -226,6 +226,7 @@ export default {
   'Com gente e sem conversa': 'ມີຄົນ ແຕ່ບໍ່ມີການສົນທະນາ',
   'com movimento': 'ເຄື່ອນໄຫວ',
   'Com serifa': 'ມີເຊຣິຟ',
+  'Com tecnologia {modelo}': 'ເຕັກໂນໂລຢີ: {modelo}',
   'Começa a aparecer': 'ເລີ່ມສະແດງ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ເລີ່ມອັນຂອງເຈົ້າເອງ ຫຼື ເຂົ້າຮ່ວມຂອງຄົນອື່ນດ້ວຍລະຫັດທີ່ລາວໃຫ້ເຈົ້າ',

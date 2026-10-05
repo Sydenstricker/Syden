@@ -847,6 +847,7 @@ export default {
   'Sombra': 'Bayangan',
   'O nome levanta um pouco do fundo.': 'Namanya sedikit terangkat dari latar.',
   'Com serifa': 'Berserif',
+  'Com tecnologia {modelo}': 'Didukung oleh {modelo}',
   'Letra de livro, mais séria.': 'Huruf buku, lebih serius.',
   'Máquina de escrever': 'Mesin tik',
   'Toda letra com a mesma largura.': 'Setiap huruf sama lebarnya.',

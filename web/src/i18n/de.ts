@@ -877,6 +877,7 @@ export default {
   'Sombra': 'Schatten',
   'O nome levanta um pouco do fundo.': 'Der Name hebt sich leicht vom Hintergrund ab.',
   'Com serifa': 'Mit Serifen',
+  'Com tecnologia {modelo}': 'Technologie: {modelo}',
   'Letra de livro, mais séria.': 'Buchschrift, etwas ernster.',
   'Máquina de escrever': 'Schreibmaschine',
   'Toda letra com a mesma largura.': 'Alle Buchstaben gleich breit.',

@@ -221,6 +221,7 @@ export default {
   'Com gente e sem conversa': 'Amb gent i sense conversa',
   'com movimento': 'amb moviment',
   'Com serifa': 'Amb serifa',
+  'Com tecnologia {modelo}': 'Amb tecnologia de {modelo}',
   'Começa a aparecer': 'Comença a aparèixer',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Crea la teva, o entra a la d’algú amb el codi que t’ha passat.',

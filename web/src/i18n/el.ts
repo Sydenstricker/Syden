@@ -851,6 +851,7 @@ export default {
   'Sombra': 'Σκιά',
   'O nome levanta um pouco do fundo.': 'Το όνομα σηκώνεται λίγο από το φόντο.',
   'Com serifa': 'Με πατούρα',
+  'Com tecnologia {modelo}': 'Τεχνολογία: {modelo}',
   'Letra de livro, mais séria.': 'Γράμματα βιβλίου, πιο σοβαρά.',
   'Máquina de escrever': 'Γραφομηχανή',
   'Toda letra com a mesma largura.': 'Κάθε γράμμα με το ίδιο πλάτος.',

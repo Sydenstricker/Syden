@@ -227,6 +227,7 @@ export default {
   'Com gente e sem conversa': 'Žmonių yra, bet niekas nekalba',
   'com movimento': 'su judesiu',
   'Com serifa': 'Su užraitais',
+  'Com tecnologia {modelo}': 'Technologija: {modelo}',
   'Começa a aparecer': 'Pradedama rodyti',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Sukurk savo arba prisijunk prie kito su kodu, kurį tau davė tas žmogus.',

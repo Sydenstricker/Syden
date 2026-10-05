@@ -222,6 +222,7 @@ export default {
   'Com gente e sem conversa': 'Има људи, нема разговора',
   'com movimento': 'са покретом',
   'Com serifa': 'Са серифима',
+  'Com tecnologia {modelo}': 'Технологија: {modelo}',
   'Começa a aparecer': 'Почиње да се приказује',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Покрени своју или уђи у нечију помоћу кода који ти је та особа дала.',

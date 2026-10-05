@@ -849,6 +849,7 @@ export default {
   'Sombra': 'Schaduw',
   'O nome levanta um pouco do fundo.': 'De naam komt iets los van de achtergrond.',
   'Com serifa': 'Met schreef',
+  'Com tecnologia {modelo}': 'Mogelijk gemaakt door {modelo}',
   'Letra de livro, mais séria.': 'Boekletter, wat serieuzer.',
   'Máquina de escrever': 'Schrijfmachine',
   'Toda letra com a mesma largura.': 'Alle letters even breed.',

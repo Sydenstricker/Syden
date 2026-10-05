@@ -1912,6 +1912,14 @@ textarea {
   color: var(--text-muted);
 }
 
+/* "Com tecnologia DPDFNet": um selo discreto, como o "powered by Krisp" do Discord — menor que a
+   descrição, para não competir com ela. */
+.toggle-nota {
+  margin-top: 6px;
+  font-size: calc(12px * var(--escala-do-texto));
+  letter-spacing: 0.01em;
+}
+
 .toggle-row input {
   position: absolute;
   opacity: 0;

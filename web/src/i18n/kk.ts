@@ -221,6 +221,7 @@ export default {
   'Com gente e sem conversa': 'Адам бар, әңгіме жоқ',
   'com movimento': 'қозғалыспен',
   'Com serifa': 'Серифті',
+  'Com tecnologia {modelo}': 'Технология: {modelo}',
   'Começa a aparecer': 'Көріне бастайды',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Өзіңіздікін бастаңыз немесе біреу берген кодпен соның қауымдастығына кіріңіз.',

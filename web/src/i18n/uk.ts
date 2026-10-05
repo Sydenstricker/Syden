@@ -219,6 +219,7 @@ export default {
   'Com gente e sem conversa': 'Люди є, розмови немає',
   'com movimento': 'з рухом',
   'Com serifa': 'Із засічками',
+  'Com tecnologia {modelo}': 'Технологія: {modelo}',
   'Começa a aparecer': 'Починає показуватися',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Створи власну або приєднайся до чиєїсь за кодом, який тобі дала ця людина.',

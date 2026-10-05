@@ -855,6 +855,7 @@ export default {
   'Sombra': 'Shadow',
   'O nome levanta um pouco do fundo.': 'The name lifts a little off the background.',
   'Com serifa': 'Serif',
+  'Com tecnologia {modelo}': 'Powered by {modelo}',
   'Letra de livro, mais séria.': 'Book type, a bit more serious.',
   'Máquina de escrever': 'Typewriter',
   'Toda letra com a mesma largura.': 'Every letter the same width.',

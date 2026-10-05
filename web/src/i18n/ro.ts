@@ -845,6 +845,7 @@ export default {
   'Sombra': 'Umbră',
   'O nome levanta um pouco do fundo.': 'Numele se ridică puțin de pe fundal.',
   'Com serifa': 'Cu serife',
+  'Com tecnologia {modelo}': 'Cu tehnologia {modelo}',
   'Letra de livro, mais séria.': 'Literă de carte, mai serioasă.',
   'Máquina de escrever': 'Mașină de scris',
   'Toda letra com a mesma largura.': 'Fiecare literă cu aceeași lățime.',

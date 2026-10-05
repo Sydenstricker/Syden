@@ -871,6 +871,7 @@ export default {
   'Sombra': 'Тень',
   'O nome levanta um pouco do fundo.': 'Имя чуть приподнимается над фоном.',
   'Com serifa': 'С засечками',
+  'Com tecnologia {modelo}': 'Технология: {modelo}',
   'Letra de livro, mais séria.': 'Книжный шрифт, посерьёзнее.',
   'Máquina de escrever': 'Печатная машинка',
   'Toda letra com a mesma largura.': 'Все буквы одной ширины.',

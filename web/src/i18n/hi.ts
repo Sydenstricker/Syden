@@ -849,6 +849,7 @@ export default {
   'Sombra': 'छाया',
   'O nome levanta um pouco do fundo.': 'नाम पृष्ठभूमि से थोड़ा ऊपर उठता है।',
   'Com serifa': 'सेरिफ़ वाला',
+  'Com tecnologia {modelo}': 'तकनीक: {modelo}',
   'Letra de livro, mais séria.': 'किताब वाली लिपि, थोड़ी गंभीर।',
   'Máquina de escrever': 'टाइपराइटर',
   'Toda letra com a mesma largura.': 'हर अक्षर की चौड़ाई एक जैसी।',

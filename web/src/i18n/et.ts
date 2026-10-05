@@ -222,6 +222,7 @@ export default {
   'Com gente e sem conversa': 'Rahvast on, aga keegi ei räägi',
   'com movimento': 'liikuv',
   'Com serifa': 'Seriifidega',
+  'Com tecnologia {modelo}': 'Tehnoloogia: {modelo}',
   'Começa a aparecer': 'Hakkab paistma',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Loo oma või liitu kellegi teise omaga koodiga, mille see inimene sulle andis.',

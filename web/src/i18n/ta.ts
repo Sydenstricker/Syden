@@ -830,6 +830,7 @@ export default {
   'Sombra': 'நிழல்',
   'O nome levanta um pouco do fundo.': 'பெயர் பின்னணியிலிருந்து சற்று உயர்கிறது.',
   'Com serifa': 'செரிஃப் உடன்',
+  'Com tecnologia {modelo}': 'தொழில்நுட்பம்: {modelo}',
   'Letra de livro, mais séria.': 'புத்தக எழுத்து, சற்று தீவிரம்.',
   'Máquina de escrever': 'தட்டச்சுப் பொறி',
   'Toda letra com a mesma largura.': 'ஒவ்வொரு எழுத்தும் ஒரே அகலம்.',

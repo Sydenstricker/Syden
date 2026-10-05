@@ -217,6 +217,7 @@ export default {
   'Com gente e sem conversa': 'Ka njerëz, por s’ka bisedë',
   'com movimento': 'me lëvizje',
   'Com serifa': 'Me serif',
+  'Com tecnologia {modelo}': 'Teknologjia: {modelo}',
   'Começa a aparecer': 'Fillon të shfaqet',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Fillo tëndin, ose hyr në atë të dikujt me kodin që të dha ai person.',

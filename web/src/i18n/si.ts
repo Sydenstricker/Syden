@@ -225,6 +225,7 @@ export default {
   'Com gente e sem conversa': 'අය සිටී, කතා නැත',
   'com movimento': 'චලනයක් සහිත',
   'Com serifa': 'සෙරිෆ් සහිත',
+  'Com tecnologia {modelo}': 'තාක්ෂණය: {modelo}',
   'Começa a aparecer': 'දිස්වීම ආරම්භ වේ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ඔබේම එකක් ආරම්භ කරන්න, නැතහොත් ඔබට ලැබුණු කේතයෙන් වෙනත් අයෙකුගේ එකට එක්වන්න.',

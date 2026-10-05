@@ -219,6 +219,7 @@ export default {
   'Com gente e sem conversa': 'יש אנשים, אין שיחה',
   'com movimento': 'עם תנועה',
   'Com serifa': 'עם סריפים',
+  'Com tecnologia {modelo}': 'מבוסס על {modelo}',
   'Começa a aparecer': 'מתחיל להופיע',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'אפשר לפתוח קהילה משלך, או להצטרף לקהילה של מישהו עם הקוד שקיבלת ממנו.',
