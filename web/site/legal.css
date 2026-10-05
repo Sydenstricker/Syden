@@ -1,17 +1,20 @@
 /* Estilo das páginas de política de privacidade e termos de uso. */
+@import url('fontes.css');
+
+/* A paleta D4, a mesma do app e da página de apresentação. */
 :root {
-  --bg: #313338;
-  --text: #dbdee1;
-  --strong: #f2f3f5;
-  --muted: #949ba4;
-  --link: #00a8fc;
+  --bg: #1c212b;
+  --text: #e8eaf0;
+  --strong: #f5f6fa;
+  --muted: #9aa1b1;
+  --link: #f5b83d;
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.6;
 }
@@ -60,7 +63,7 @@ strong {
 .back {
   margin-top: 40px;
   padding-top: 16px;
-  border-top: 1px solid #3f4147;
+  border-top: 1px solid #2f3644;
   font-size: 14px;
 }
 
@@ -78,4 +81,11 @@ strong {
 
 .historico strong {
   color: var(--text);
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Syden Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }

@@ -3,17 +3,24 @@
      mais: o texto cresce, o desenho em volta não. Mudar a fonte do `html` não serviria, porque os
      tamanhos aqui são em px e não em rem. Quem muda é escalaDoTexto.ts. */
   --escala-do-texto: 1;
-  --bg-darkest: #1e1f22;
-  --bg-sidebar: #2b2d31;
-  --bg-main: #313338;
-  --bg-input: #383a40;
-  --bg-hover: rgba(78, 80, 88, 0.3);
-  --bg-active: rgba(78, 80, 88, 0.6);
-  --text: #dbdee1;
-  --text-strong: #f2f3f5;
-  --text-muted: #949ba4;
-  --accent: #5865f2;
-  --accent-hover: #4752c4;
+  /* A PALETA D4, do rebrand de 05/10/2026: azul-noite no fundo, creme no texto, âmbar no destaque.
+     Escolhida pelo Sydenstricker olhando o app de verdade nas duas paletas (e2e/paleta-comparar.mjs). */
+  --bg-darkest: #11141a;
+  --bg-sidebar: #171b23;
+  --bg-main: #1c212b;
+  --bg-input: #262c38;
+  --bg-hover: rgba(243, 235, 216, 0.05);
+  --bg-active: rgba(243, 235, 216, 0.1);
+  --text: #e8eaf0;
+  --text-strong: #f5f6fa;
+  --text-muted: #9aa1b1;
+  --accent: #f5b83d;
+  --accent-hover: #ffd27a;
+  /* O TEXTO EM CIMA DO DESTAQUE. No âmbar, branco não se lê: escreve-se em azul-noite. Toda regra que
+     pinta o fundo com --accent usa esta cor no texto, e não "white". */
+  --accent-texto: #14161b;
+  /* Link e contorno de foco: o âmbar também, como nos protótipos. */
+  --link: #f5b83d;
 
   /* A LARGURA DAS BARRAS mora aqui, e não só no JavaScript (ver larguras.ts).
      Definida no CSS, a tela já nasce no tamanho certo — sem isto ela apareceria sem largura nenhuma
@@ -21,26 +28,26 @@
      duas no <html>. */
   --largura-sidebar: 240px;
   --largura-membros: 240px;
-  --green: #23a55a;
-  --red: #da373c;
-  --red-hover: #a12828;
+  --green: #2fbf71;
+  --red: #e5534b;
+  --red-hover: #b8403a;
   /* Atenção: o que ainda funciona mas vai parar. Nem verde nem vermelho. */
-  --amber: #f0b232;
+  --amber: #e8a93a;
   /* O âmbar da marca (as faixas das orelhas no ícone D4). Só o que é do LOGO usa: o anel do botão
      de início. A paleta do resto do app é outra decisão, ainda em aberto. */
   --marca: #f5b83d;
   /* Superfícies que sobem um degrau do fundo (menus, campos, bolhas). */
-  --bg-raised: #3f4147;
-  --bg-raised-hover: #4e5058;
+  --bg-raised: #262c38;
+  --bg-raised-hover: #2f3644;
   /* Painéis que FLUTUAM por cima de tudo (karaokê, listas da vila): precisam ser opacos, senão o que
      está atrás atravessa o texto. Mais escuro que o fundo, para o painel se destacar da tela. */
-  --bg-float: #1e1f22;
+  --bg-float: #11141a;
   /* Linha de contorno de cartões e painéis. */
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(243, 235, 216, 0.08);
   /* Superfície de cartão dentro de uma tela: um degrau abaixo do fundo principal. */
-  --bg-secondary: #2b2d31;
+  --bg-secondary: #171b23;
   /* A coluna das comunidades, à esquerda de tudo. */
-  --bg-rail: #1e1f22;
+  --bg-rail: #11141a;
   /* O escurecido por cima de vídeo, na versão mais forte (usado em botão apertado). */
   --overlay-strong: rgba(0, 0, 0, 0.75);
   --shadow: rgba(0, 0, 0, 0.45);
@@ -76,6 +83,8 @@
   --text-muted: #5c5e66;
   --accent: #5865f2;
   --accent-hover: #4752c4;
+  --accent-texto: #ffffff;
+  --link: #006ce7;
   --green: #248046;
   --red: #d83c3e;
   --red-hover: #a12828;
@@ -98,6 +107,17 @@ body,
 #root {
   display: flex;
   flex-direction: column;
+}
+
+/* Os títulos na letra da marca (Bricolage Grotesque); o texto corrido vai na Instrument Sans, no body.
+   As duas só têm alfabeto latino: nas outras escritas a pilha cai na letra do idioma, como antes. */
+h1,
+h2,
+h3,
+.channel-name,
+.sidebar-header {
+  font-family: 'Syden Bricolage Grotesque', 'Segoe UI', var(--fonte-idioma), 'Noto Sans', system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }
 
 /* Faixa arrastável no lugar da barra de título clara do Windows; só existe dentro do app de desktop. */
@@ -133,7 +153,7 @@ body,
 body {
   background: var(--bg-main);
   color: var(--text);
-  font-family: 'gg sans', 'Segoe UI', var(--fonte-idioma), 'Noto Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Syden Instrument Sans', 'Segoe UI', var(--fonte-idioma), 'Noto Sans', system-ui, -apple-system, sans-serif;
   font-size: calc(15px * var(--escala-do-texto));
   -webkit-font-smoothing: antialiased;
 
@@ -284,7 +304,7 @@ textarea {
   background: none;
   border: none;
   padding: 0;
-  color: #00a8fc;
+  color: var(--link);
 }
 
 .link:hover {
@@ -297,7 +317,7 @@ textarea {
   border-radius: 4px;
   padding: 11px 16px;
   font-weight: 600;
-  color: white;
+  color: var(--accent-texto);
   transition: background 0.15s;
 }
 
@@ -433,8 +453,8 @@ textarea {
 .rail-item:hover,
 .rail-item.active {
   border-radius: 14px;
-  background: var(--accent, #5865f2);
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-texto);
 }
 
 .rail-action {
@@ -669,7 +689,7 @@ textarea {
 
 .cropper-zoom input {
   flex: 1;
-  accent-color: var(--accent, #5865f2);
+  accent-color: var(--accent);
 }
 
 .auth-hint {
@@ -1127,7 +1147,7 @@ textarea {
 }
 
 .message-text a {
-  color: #00a8fc;
+  color: var(--link);
 }
 
 .composer {
@@ -1614,7 +1634,7 @@ textarea {
   margin-top: 4px;
   padding: 2px 8px;
   border-radius: 10px;
-  background: rgba(88, 101, 242, 0.25);
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
   color: #c9cdfb;
   font-size: calc(12px * var(--escala-do-texto));
   font-weight: 600;
@@ -1968,7 +1988,7 @@ textarea {
 }
 
 .toggle-row input:focus-visible + .switch {
-  outline: 2px solid #00a8fc;
+  outline: 2px solid var(--link);
   outline-offset: 2px;
 }
 
@@ -2005,7 +2025,7 @@ textarea {
 }
 
 .quality-option:has(input:focus-visible) {
-  outline: 2px solid #00a8fc;
+  outline: 2px solid var(--link);
 }
 
 .quality-title {
@@ -3079,7 +3099,7 @@ textarea {
 }
 
 .stream-audio-volume input {
-  accent-color: var(--accent, #5865f2);
+  accent-color: var(--accent);
 }
 
 .stream-audio-warn {
@@ -3821,7 +3841,7 @@ textarea {
 .comunidades-janela .chip.ativo {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-texto);
 }
 
 .comunidades-ressalva {
@@ -4477,7 +4497,7 @@ textarea {
 }
 
 .insignia-escolha.exibindo {
-  border-color: var(--accent, #5865f2);
+  border-color: var(--accent);
   background: var(--bg-active);
 }
 
@@ -4544,7 +4564,7 @@ textarea {
 }
 
 .coelho-cartao.escolhido {
-  border-color: var(--accent, #5865f2);
+  border-color: var(--accent);
   background: var(--bg-active);
 }
 
@@ -4564,7 +4584,7 @@ textarea {
   margin-top: 6px;
   font-size: calc(11px * var(--escala-do-texto));
   font-weight: 600;
-  color: var(--accent, #5865f2);
+  color: var(--accent);
 }
 
 /* O palco de cada coelho: é aqui que ele se mexe. */
@@ -4754,7 +4774,7 @@ textarea {
 }
 
 .idioma.selecionado {
-  border-color: var(--accent, #5865f2);
+  border-color: var(--accent);
   background: var(--bg-active);
 }
 
@@ -4773,7 +4793,7 @@ textarea {
   position: absolute;
   top: 12px;
   inset-inline-end: 12px;
-  color: var(--accent, #5865f2);
+  color: var(--accent);
 }
 
 /* Os que ainda não têm tradução: aparecem escritos na própria língua, para ele ver que as letras saem certas. */
@@ -5127,7 +5147,7 @@ textarea {
 }
 
 .person-menu-volume input {
-  accent-color: var(--accent, #5865f2);
+  accent-color: var(--accent);
 }
 
 .person-menu-item {
@@ -5356,7 +5376,7 @@ textarea {
 }
 
 .tab.active {
-  color: #fff;
+  color: var(--accent-texto);
   background: var(--accent);
 }
 
@@ -5679,7 +5699,7 @@ textarea {
 
 .composer-menu button:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-texto);
 }
 
 .composer-hint {
@@ -5697,7 +5717,7 @@ textarea {
   place-items: center;
   border: 2px dashed var(--accent);
   border-radius: var(--radius);
-  background: rgba(88, 101, 242, 0.15);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
   color: var(--text-strong);
   font-size: calc(20px * var(--escala-do-texto));
   font-weight: 600;
@@ -5764,7 +5784,7 @@ textarea {
 }
 
 .attachment-name {
-  color: #00a8fc;
+  color: var(--link);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -5835,7 +5855,7 @@ textarea {
 .poll-bar {
   position: absolute;
   inset: 0 auto 0 0;
-  background: rgba(88, 101, 242, 0.35);
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
   transition: width 0.2s;
 }
 
@@ -5956,8 +5976,8 @@ textarea {
 }
 
 .reaction-pill.mine {
-  border-color: var(--accent, #5865f2);
-  background: rgba(88, 101, 242, 0.16);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .reaction-emoji {
@@ -6010,7 +6030,7 @@ textarea {
 .thread-chip-open {
   flex-shrink: 0;
   margin-left: auto;
-  color: #00a8fc;
+  color: var(--link);
 }
 
 .thread-panel {
@@ -6118,6 +6138,7 @@ textarea {
 .direct-rail.active {
   background: var(--accent);
   border-radius: 16px;
+  color: var(--accent-texto);
 }
 
 .direct-unread {
@@ -6249,7 +6270,7 @@ textarea {
 }
 
 .group-person.chosen {
-  background: rgba(88, 101, 242, 0.2);
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
   color: var(--text-strong);
 }
 
@@ -6307,7 +6328,7 @@ textarea {
 }
 
 .effect-option:has(input:focus-visible) {
-  outline: 2px solid #00a8fc;
+  outline: 2px solid var(--link);
 }
 
 .effect-option-icon {
@@ -7356,7 +7377,7 @@ textarea {
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-texto);
   font-size: calc(11px * var(--escala-do-texto));
   font-weight: 700;
   text-transform: uppercase;
@@ -7743,8 +7764,8 @@ textarea {
   padding: 9px;
   border: none;
   border-radius: 8px;
-  background: var(--accent, #5865f2);
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-texto);
   font-size: calc(14px * var(--escala-do-texto));
   cursor: pointer;
 }
@@ -7838,7 +7859,7 @@ textarea {
 }
 
 .perfil-fundo.ativo {
-  border-color: var(--accent, #5865f2);
+  border-color: var(--accent);
 }
 
 .perfil-fundo.fundo-nenhum {
@@ -7878,7 +7899,7 @@ textarea {
   height: 2px;
   z-index: 40;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--accent, #5865f2), transparent);
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
   background-size: 40% 100%;
   background-repeat: no-repeat;
   opacity: 0;
@@ -7905,7 +7926,7 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .troca-barra {
     animation: troca-aparece 0.2s ease-out 0.5s forwards;
-    background: var(--accent, #5865f2);
+    background: var(--accent);
     background-size: 100% 100%;
     opacity: 0.4;
   }
@@ -8199,7 +8220,7 @@ textarea {
   border: none;
   border-radius: 8px;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-texto);
   font-size: calc(14px * var(--escala-do-texto));
   font-weight: 600;
   cursor: pointer;
@@ -10118,7 +10139,7 @@ textarea {
 
 .puxador:hover::after,
 .puxador:focus-visible::after {
-  background: var(--accent, #5865f2);
+  background: var(--accent);
 }
 
 .puxador:focus-visible {
@@ -10202,6 +10223,7 @@ body.arrastando-barra {
 
 .tile-destacar.ativo {
   background: var(--accent);
+  color: var(--accent-texto);
 }
 
 /* Dentro da janela destacada: o vídeo ocupa tudo, com o nome de quem transmite num canto. */
@@ -10282,7 +10304,7 @@ body.arrastando-barra {
 .palco-mao.levantada {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--accent-texto);
 }
 
 .palco-fila {
@@ -10366,9 +10388,9 @@ body.arrastando-barra {
 
 /* A escolhida fica com a cor de destaque: numa fileira de três, é o único jeito de saber onde se está. */
 .stream-qualidade-opcoes button.escolhida {
-  background: var(--accent, #5865f2);
-  border-color: var(--accent, #5865f2);
-  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-texto);
 }
 
 
@@ -10376,7 +10398,7 @@ body.arrastando-barra {
    explicativo em volta para quem abriu procurando justamente isso achar de primeira. */
 .settings-teste {
   padding: 8px 10px;
-  border-left: 3px solid var(--accent, #5865f2);
+  border-left: 3px solid var(--accent);
   background: var(--bg-sidebar);
   border-radius: 0 6px 6px 0;
 }

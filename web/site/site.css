@@ -3,21 +3,26 @@
  * As cores são as MESMAS do app (ver web/src/styles.css) de propósito: quem vem daqui para dentro do
  * Syden não deve sentir que trocou de produto.
  *
- * Não há framework nem fonte de fora. A política de segurança do site permite `style-src 'self'` com
+ * Não há framework nem fonte de fora: as fontes da marca vêm do próprio Syden (fontes.css). A política de segurança do site permite `style-src 'self'` com
  * inline, mas não script de terceiro — e uma página de apresentação que depende de CDN é uma página que
  * abre quebrada quando o CDN cai. */
 
+@import url('fontes.css');
+
+/* A paleta D4 (rebrand de 05/10/2026), a mesma do app. */
 :root {
-  --bg: #313338;
-  --bg-fundo: #1e1f22;
-  --bg-cartao: #383a40;
-  --text: #dbdee1;
-  --strong: #f2f3f5;
-  --muted: #949ba4;
-  --link: #00a8fc;
-  --marca: #5865f2;
-  --marca-escura: #4752c4;
-  --borda: #3f4147;
+  --bg: #1c212b;
+  --bg-fundo: #11141a;
+  --bg-cartao: #262c38;
+  --text: #e8eaf0;
+  --strong: #f5f6fa;
+  --muted: #9aa1b1;
+  --link: #f5b83d;
+  --marca: #f5b83d;
+  --marca-escura: #ffd27a;
+  /* No âmbar, texto branco não se lê: o botão da marca escreve em azul-noite. */
+  --marca-texto: #14161b;
+  --borda: #2f3644;
 }
 
 * {
@@ -28,7 +33,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.6;
 }
@@ -43,7 +48,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(30, 31, 34, 0.92);
+  background: rgba(17, 20, 26, 0.92);
   border-bottom: 1px solid var(--borda);
   backdrop-filter: blur(8px);
 }
@@ -108,7 +113,7 @@ a {
 
 .botao-marca {
   background: var(--marca);
-  color: #fff;
+  color: var(--marca-texto);
 }
 
 .botao-marca:hover {
@@ -118,11 +123,11 @@ a {
 .botao-vazio {
   background: transparent;
   color: var(--strong);
-  border-color: #5c5e66;
+  border-color: #3a4560;
 }
 
 .botao-vazio:hover {
-  background: #404349;
+  background: #262c38;
 }
 
 /* ---------- abertura ---------- */
@@ -265,4 +270,13 @@ footer nav {
   display: flex;
   gap: 18px;
   flex-wrap: wrap;
+}
+
+/* Os títulos na letra da marca. */
+h1,
+h2,
+h3,
+.marca {
+  font-family: 'Syden Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: -0.01em;
 }

@@ -248,13 +248,13 @@ function createMainWindow() {
     minHeight: 560,
     title: 'Syden',
     icon: ICON,
-    backgroundColor: '#313338',
+    backgroundColor: '#1c212b',
     show: false,
     // Barra de título escura, como o resto do app (o padrão do Windows desenha uma clara). Os botões de
     // minimizar/maximizar/fechar continuam nativos, só a cor muda; quem desenha o texto é o próprio site
     // (ver .desktop-titlebar), numa faixa arrastável do tamanho de "height" aqui embaixo.
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#1e1f22', symbolColor: '#dbdee1', height: 36 },
+    titleBarOverlay: { color: '#11141a', symbolColor: '#e8eaf0', height: 36 },
     webPreferences: {
       contextIsolation: true,
       sandbox: true,
@@ -452,7 +452,7 @@ async function pickSource(audioRequested) {
     maximizable: false,
     title: 'Compartilhar tela',
     icon: ICON,
-    backgroundColor: '#313338',
+    backgroundColor: '#1c212b',
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'picker-preload.js'),
