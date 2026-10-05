@@ -538,11 +538,12 @@ export function useVoice(socket: Socket | null) {
           new ProcessadorDoMicrofone({
             efeito: effect,
             supressao,
-            // Quanto a supressão custa NESTE computador, medido dentro da thread de áudio. Fica à vista
-            // para o teste de ponta a ponta e para quem for investigar um "minha voz está picotando".
-            aoMedirCusto: (ms) => {
-              (window as unknown as { sydenSupressao?: object }).sydenSupressao = { msPorQuadro: ms, quadroMs: 16 };
+            // Qual motor está rodando e quanto ele custa NESTE computador. Fica à vista para o teste de
+            // ponta a ponta e para quem for investigar um "minha voz está picotando".
+            aoMedirCusto: (medida) => {
+              (window as unknown as { sydenSupressao?: object }).sydenSupressao = medida;
             },
+            aoTrocarDeMotor: (motivo) => reportProblem('supressão de ruído', `Trocou para o GTCRN: ${motivo}`),
           }),
         );
       } catch (e) {

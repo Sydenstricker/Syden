@@ -30,7 +30,11 @@
       "app.config.json",
       "build/icon.png",
       "package.json",
-      "native/build/Release/*.node"
+      "native/build/Release/*.node",
+      "ruido/**",
+      "!**/node_modules/onnxruntime-node/bin/napi-v*/{darwin,linux}/**",
+      "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/arm64/**",
+      "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/x64/{DirectML.dll,dxcompiler.dll,dxil.dll}"
     ],
     "win": {
       "target": "nsis",
@@ -66,7 +70,9 @@
       "icon": "build/icon.png"
     },
     "asarUnpack": [
-      "native/build/Release/*.node"
+      "native/build/Release/*.node",
+      "ruido/**",
+      "**/node_modules/onnxruntime-node/bin/**"
     ],
     "appx": {
       "identityName": "SydenstrickerLabs.Syden",
@@ -90,5 +96,8 @@
       }
     ]
   },
-  "author": "Syden"
+  "author": "Syden",
+  "dependencies": {
+    "onnxruntime-node": "1.30.0"
+  }
 }

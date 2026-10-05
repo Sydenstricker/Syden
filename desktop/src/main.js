@@ -3,6 +3,7 @@ const { app, BrowserWindow, Menu, Tray, desktopCapturer, dialog, globalShortcut,
 const path = require('node:path');
 const config = require('../app.config.json');
 const { setupScreenAudio, screenAudioAvailable, stopScreenAudio } = require('./screen-audio');
+const { setupRuido, pararRuido } = require('./ruido');
 const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
@@ -44,7 +45,11 @@ const DEV = !app.isPackaged;
 // quem tinha o app instalado é deslogado e perde as escolhas de microfone, volume e tema. Ninguém vê
 // este nome — o app, os atalhos e a barra de tarefas dizem "Syden" —, então a troca custaria incômodo
 // real a quem usa em troca de nada. Dá para renomear com migração; enquanto não houver, fica.
-app.setPath('userData', path.join(app.getPath('appData'), DEV ? 'Janja-dev' : 'Janja'));
+// SYDEN_PASTA_DE_DADOS: os testes de ponta a ponta abrem o app com uma pasta nova a cada vez — também o
+// app EMPACOTADO, que é o que vai para as pessoas. Sem isso, o app voltava logado como a pessoa do teste
+// anterior (o cadastro novo batia num 409), e o empacotado abriria com os dados de quem roda o teste.
+// Só vale quando alguém define a variável ao abrir o programa; ninguém a define por acidente.
+app.setPath('userData', process.env.SYDEN_PASTA_DE_DADOS || path.join(app.getPath('appData'), DEV ? 'Janja-dev' : 'Janja'));
 // A identidade do app para o Windows, em domínio ao contrário (syden.chat -> chat.syden). É por ela
 // que o sistema agrupa as janelas na barra de tarefas e sabe de quem é cada notificação.
 //
@@ -170,6 +175,7 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
   app.on('before-quit', () => {
     quitting = true;
     stopScreenAudio();
+    pararRuido();
   });
   app.whenReady().then(() => {
     /*
@@ -190,6 +196,7 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
     setupPermissions();
     setupScreenShare();
     setupScreenAudio();
+    setupRuido();
     // O site avisa quando a pessoa troca de tema, para a faixa do Windows acompanhar.
     ipcMain.on('app:title-bar', (_event, cores) => {
       if (!mainWindow || typeof cores?.color !== 'string' || typeof cores?.symbolColor !== 'string') return;

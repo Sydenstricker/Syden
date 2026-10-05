@@ -24,6 +24,14 @@ interface DesktopBridge {
    * Só existe no app: no navegador não há como pôr nada por cima de outro programa, e é por isso que
    * o ajuste na tela some quando o Syden roda numa aba.
    */
+  /**
+   * Supressão de ruído nativa (DPDFNet), só no app. abrir() faz uma MessagePort chegar à página por
+   * window.postMessage('syden-ruido-porta') — ver desktop/src/preload.js e microfone.ts.
+   */
+  ruido?: {
+    disponivel(): Promise<boolean>;
+    abrir(): void;
+  };
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;

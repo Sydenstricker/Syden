@@ -72,10 +72,27 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
       return () => ipcRenderer.off('screen-audio:chunk', handler);
     },
   },
+  /**
+   * Supressão de ruído nativa (DPDFNet), num processo à parte — ver desktop/src/ruido/index.js.
+   *
+   * abrir() não devolve a porta: uma MessagePort não atravessa a contextBridge. Ela chega à página por
+   * window.postMessage, com a mensagem 'syden-ruido-porta' — o caminho que o Electron indica para
+   * entregar uma porta do preload ao site. A porta só aceita som; não abre nada além disso.
+   */
+  ruido: {
+    disponivel: () => ipcRenderer.invoke('ruido:disponivel'),
+    abrir: () => ipcRenderer.send('ruido:abrir'),
+  },
   /** Recebe 'mute' ou 'deafen' quando a tecla de atalho global é pressionada; devolve a função que desliga. */
   onShortcut: (callback) => {
     const handler = (_event, action) => callback(action);
     ipcRenderer.on('app:shortcut', handler);
     return () => ipcRenderer.off('app:shortcut', handler);
   },
+});
+
+// A porta da supressão de ruído chega aqui e segue para a página (ver `ruido` acima). Só para a própria
+// janela, na mesma origem: nenhum quadro de fora a recebe.
+ipcRenderer.on('ruido:porta', (event) => {
+  window.postMessage('syden-ruido-porta', window.location.origin, event.ports);
 });

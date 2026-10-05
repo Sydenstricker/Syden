@@ -1,0 +1,13 @@
+Supressão de ruído do app de desktop — de onde vêm os arquivos desta pasta
+
+dpdfnet-baseline.onnx
+  O modelo DPDFNet "baseline" (Ceva, "DPDFNet: Boosting DeepFilterNet2 via Dual-Path RNN",
+  arXiv 2512.16420), publicado pelos autores em https://huggingface.co/Ceva-IP/DPDFNet — onnx/baseline.onnx
+  (sha256 371d26182aff0e1e0d31…, o mesmo arquivo que o pacote oficial `dpdfnet` baixa).
+  Licença Apache 2.0, em DPDFNET-LICENSE.txt. O projeto não publica arquivo NOTICE.
+
+dpdfnet-baseline.json
+  O estado inicial da rede (as normas de ERB e de espectro), tirado dos metadados do próprio ONNX — o
+  onnxruntime-node não lê metadados — e a configuração da janela (320 amostras, passo de 160, 16 kHz).
+
+Por que este modelo: ver desktop/src/ruido/index.js.

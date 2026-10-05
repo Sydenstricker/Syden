@@ -1,4 +1,5 @@
 import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-client';
+import { desktopBridge } from './desktop';
 import { connectVoiceEffect, type VoiceEffectId } from './voiceEffects';
 
 /*
@@ -7,27 +8,34 @@ import { connectVoiceEffect, type VoiceEffectId } from './voiceEffects';
  * O LiveKit aceita UM processador por faixa, então os dois moram no mesmo — senão ligar o efeito de
  * voz desligaria a supressão, e vice-versa.
  *
- * A SUPRESSÃO É O GTCRN (ver web/public/ruido/ORIGEM.txt), escolhido em 04/10/2026 depois de medir quatro
- * modelos na gravação real de um ventilador. Notas DNSMOS (geral, 1 a 5): o Chrome sozinho 2,52; o
- * GTCRN por cima do Chrome 3,08. Ele roda por cima da supressão do próprio navegador, que continua
- * ligada: medido, os dois juntos limparam um pouco mais do que o GTCRN sozinho (3,08 contra 3,01), e
- * se o modelo falhar, a do navegador já está lá — a pessoa não fica sem nada.
+ * A SUPRESSÃO TEM DOIS MOTORES, escolhidos em 04/10/2026 depois de medir seis modelos na gravação real
+ * de um ventilador (DNSMOS, nota geral de 1 a 5; o Chrome sozinho, que era o de antes, deu 2,52):
  *
- * EM JAVASCRIPT PURO, SEM WEBASSEMBLY, e isso é decisão de segurança, não de gosto: WebAssembly exigiria
- * 'wasm-unsafe-eval' na política do site, e o Sydenstricker decidiu não dar essa permissão. O modelo
- * custa uns 2 ms a cada 16 ms de áudio (13% de um núcleo de um Ryzen 7 3700X, medido).
+ *   - NO APP DE DESKTOP: o DPDFNet (Ceva, Apache 2.0), nativo, num processo à parte — 3,26. Ver
+ *     desktop/src/ruido. O som vai e volta por uma MessagePort ligada direto à thread de áudio
+ *     (web/public/ruido/ponte.worklet.js).
+ *   - NO SITE (e no app, se o nativo falhar): o GTCRN (MIT), em JavaScript puro — 3,08. Ver
+ *     web/public/ruido/ORIGEM.txt.
  *
- * O GTCRN trabalha a 16 kHz: o caminho inteiro roda num AudioContext próprio de 16 kHz, e o navegador
- * converte na entrada e na saída. Voz em 16 kHz é a de chamada de boa qualidade — o Opus da sala manda
- * isso mesmo para voz.
+ * NADA DE WEBASSEMBLY, e isso é decisão de segurança, não de gosto: WebAssembly exigiria
+ * 'wasm-unsafe-eval' na política do site, e o Sydenstricker decidiu não dar essa permissão. Provado com
+ * e2e/supressao-de-ruido.mjs (COM_CSP=1): a política de hoje não barra nada deste caminho.
+ *
+ * OS DOIS RODAM POR CIMA DA SUPRESSÃO DO PRÓPRIO NAVEGADOR, que continua ligada: medido, juntos limpam
+ * o mesmo ou um pouco mais, e se o modelo falhar a do navegador já está lá.
+ *
+ * Os dois trabalham a 16 kHz: o caminho inteiro roda num AudioContext próprio de 16 kHz, e o navegador
+ * converte na entrada e na saída. Voz em 16 kHz é a de chamada de boa qualidade.
  */
 
 const BASE = import.meta.env.BASE_URL + 'ruido/';
 
+export type MotorDeRuido = 'dpdfnet' | 'gtcrn';
+
 let modelo: Promise<{ grafo: unknown; pesos: ArrayBuffer }> | null = null;
 
-/** Baixa o modelo uma vez por visita (345 KB, guardados pelo cache do navegador depois). */
-function carregarModelo() {
+/** Baixa o GTCRN uma vez por visita (345 KB, guardados pelo cache do navegador depois). */
+function carregarGtcrn() {
   modelo ??= Promise.all([
     fetch(BASE + 'gtcrn.json').then((r) => {
       if (!r.ok) throw new Error(`gtcrn.json: ${r.status}`);
@@ -46,6 +54,32 @@ function carregarModelo() {
   return modelo;
 }
 
+/**
+ * Pede ao app uma porta para a supressão nativa. null no navegador, quando o app diz que não tem
+ * (outro sistema, modelo ausente, processo caindo demais) ou quando a porta não chega a tempo.
+ */
+async function abrirPortaNativa(): Promise<MessagePort | null> {
+  const ruido = desktopBridge?.ruido;
+  if (!ruido || !(await ruido.disponivel().catch(() => false))) return null;
+  return new Promise((pronto) => {
+    const aoReceber = (evento: MessageEvent) => {
+      if (evento.source !== window || evento.data !== 'syden-ruido-porta' || !evento.ports[0]) return;
+      encerrar();
+      pronto(evento.ports[0]);
+    };
+    const prazo = setTimeout(() => {
+      encerrar();
+      pronto(null);
+    }, 3000);
+    const encerrar = () => {
+      clearTimeout(prazo);
+      window.removeEventListener('message', aoReceber);
+    };
+    window.addEventListener('message', aoReceber);
+    ruido.abrir();
+  });
+}
+
 /** O navegador consegue rodar a supressão do Syden? (AudioWorklet existe em todo navegador atual.) */
 export function supressaoDisponivel(): boolean {
   return typeof AudioWorkletNode !== 'undefined';
@@ -62,8 +96,10 @@ function comCuidado(fn: () => void) {
 export interface OpcoesDoMicrofone {
   efeito: VoiceEffectId;
   supressao: boolean;
-  /** Recebe, de tempos em tempos, quanto cada quadro de 16 ms custou na thread de áudio. */
-  aoMedirCusto?: (msPorQuadro: number) => void;
+  /** De tempos em tempos: qual motor está rodando e quanto cada quadro custou. */
+  aoMedirCusto?: (medida: { motor: MotorDeRuido; msPorQuadro: number; quadroMs: number; faltas?: number }) => void;
+  /** O motor nativo falhou no meio da chamada e o GTCRN assumiu: o motivo, para o diário de saúde. */
+  aoTrocarDeMotor?: (motivo: string) => void;
 }
 
 export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
@@ -72,6 +108,8 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
   private contexto?: AudioContext;
   private source?: MediaStreamAudioSourceNode;
   private supressor?: AudioWorkletNode;
+  /** Onde a supressão entrega e o efeito de voz começa. Trocar de motor é trocar o que liga aqui. */
+  private meio?: GainNode;
   private destination?: MediaStreamAudioDestinationNode;
   private pararEfeito: () => void = () => {};
   private geracao = 0;
@@ -98,56 +136,122 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
     const minha = ++this.geracao;
     this.desmontar();
 
-    let ctx: AudioContext = options.audioContext;
-    let entrada: AudioNode;
-    if (this.opcoes.supressao) {
-      const { grafo, pesos } = await carregarModelo();
-      if (minha !== this.geracao) return; // desmontado enquanto baixava
-      ctx = new AudioContext({ sampleRate: 16000, latencyHint: 'interactive' });
-      this.contexto = ctx;
-      await ctx.audioWorklet.addModule(BASE + 'gtcrn.worklet.js');
-      await ctx.resume().catch(() => {});
-      if (minha !== this.geracao) return;
+    if (!this.opcoes.supressao) {
+      const ctx = options.audioContext;
       this.source = ctx.createMediaStreamSource(new MediaStream([options.track]));
-      this.supressor = new AudioWorkletNode(ctx, 'syden-gtcrn', {
-        numberOfInputs: 1,
-        numberOfOutputs: 1,
-        outputChannelCount: [1],
-        channelCount: 1,
-        channelCountMode: 'explicit',
-        processorOptions: { grafo, pesos },
-      });
-      this.supressor.port.onmessage = (e) => {
-        const custo = (e.data as { custoMsPorQuadro?: number })?.custoMsPorQuadro;
-        if (typeof custo === 'number') this.opcoes.aoMedirCusto?.(custo);
-      };
-      this.source.connect(this.supressor);
-      entrada = this.supressor;
-    } else {
-      this.source = ctx.createMediaStreamSource(new MediaStream([options.track]));
-      entrada = this.source;
+      this.destination = ctx.createMediaStreamDestination();
+      this.pararEfeito = connectVoiceEffect(ctx, this.opcoes.efeito, this.source, this.destination);
+      this.processedTrack = this.destination.stream.getAudioTracks()[0];
+      return;
     }
 
+    // O motor nativo primeiro (só existe no app); sem ele, o GTCRN.
+    const porta = await abrirPortaNativa();
+    if (minha !== this.geracao) {
+      porta?.close();
+      return;
+    }
+    const ctx = new AudioContext({ sampleRate: 16000, latencyHint: 'interactive' });
+    this.contexto = ctx;
+    await ctx.resume().catch(() => {});
+
+    this.source = ctx.createMediaStreamSource(new MediaStream([options.track]));
+    this.meio = ctx.createGain();
     this.destination = ctx.createMediaStreamDestination();
-    this.pararEfeito = connectVoiceEffect(ctx, this.opcoes.efeito, entrada, this.destination);
+    this.pararEfeito = connectVoiceEffect(ctx, this.opcoes.efeito, this.meio, this.destination);
     this.processedTrack = this.destination.stream.getAudioTracks()[0];
+
+    if (porta) {
+      try {
+        await this.ligarNativo(ctx, porta);
+        return;
+      } catch (e) {
+        porta.close();
+        this.opcoes.aoTrocarDeMotor?.(`O nativo não montou: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+    await this.ligarGtcrn(ctx, minha);
+  }
+
+  private async ligarNativo(ctx: AudioContext, porta: MessagePort) {
+    await ctx.audioWorklet.addModule(BASE + 'ponte.worklet.js');
+    const ponte = new AudioWorkletNode(ctx, 'syden-ponte-ruido', {
+      numberOfInputs: 1,
+      numberOfOutputs: 1,
+      outputChannelCount: [1],
+      channelCount: 1,
+      channelCountMode: 'explicit',
+    });
+    ponte.port.onmessage = (e) => {
+      const d = e.data as { custoMsPorQuadro?: number; quadroMs?: number; faltas?: number; falhou?: string };
+      if (typeof d?.custoMsPorQuadro === 'number') {
+        this.opcoes.aoMedirCusto?.({ motor: 'dpdfnet', msPorQuadro: d.custoMsPorQuadro, quadroMs: d.quadroMs ?? 10, faltas: d.faltas });
+      }
+      if (d?.falhou) {
+        // O processo nativo caiu ou parou de responder: o GTCRN assume no mesmo lugar, e a faixa que
+        // o LiveKit está publicando continua a mesma — quem ouve só percebe a troca de timbre.
+        this.opcoes.aoTrocarDeMotor?.(d.falhou);
+        const geracao = this.geracao;
+        void this.ligarGtcrn(ctx, geracao).catch((erro) => this.opcoes.aoTrocarDeMotor?.(`GTCRN também falhou: ${String(erro)}`));
+      }
+    };
+    ponte.port.postMessage({ porta }, [porta]);
+    this.trocarSupressor(ponte);
+  }
+
+  private async ligarGtcrn(ctx: AudioContext, geracao: number) {
+    const { grafo, pesos } = await carregarGtcrn();
+    await ctx.audioWorklet.addModule(BASE + 'gtcrn.worklet.js');
+    if (geracao !== this.geracao || ctx.state === 'closed') return;
+    const gtcrn = new AudioWorkletNode(ctx, 'syden-gtcrn', {
+      numberOfInputs: 1,
+      numberOfOutputs: 1,
+      outputChannelCount: [1],
+      channelCount: 1,
+      channelCountMode: 'explicit',
+      processorOptions: { grafo, pesos },
+    });
+    gtcrn.port.onmessage = (e) => {
+      const custo = (e.data as { custoMsPorQuadro?: number })?.custoMsPorQuadro;
+      if (typeof custo === 'number') this.opcoes.aoMedirCusto?.({ motor: 'gtcrn', msPorQuadro: custo, quadroMs: 16 });
+    };
+    this.trocarSupressor(gtcrn);
+  }
+
+  /** Põe um motor entre o microfone e o efeito de voz, tirando o que estava lá. */
+  private trocarSupressor(novo: AudioWorkletNode) {
+    if (!this.source || !this.meio) return;
+    const antigo = this.supressor;
+    this.supressor = novo;
+    this.source.connect(novo);
+    novo.connect(this.meio);
+    if (antigo) {
+      comCuidado(() => antigo.port.postMessage({ fechar: true }));
+      comCuidado(() => this.source?.disconnect(antigo));
+      comCuidado(() => antigo.disconnect());
+      comCuidado(() => antigo.port.close());
+    }
   }
 
   private desmontar() {
     comCuidado(() => this.pararEfeito());
     this.pararEfeito = () => {};
     comCuidado(() => this.source?.disconnect());
+    comCuidado(() => this.supressor?.port.postMessage({ fechar: true }));
     comCuidado(() => this.supressor?.disconnect());
     comCuidado(() => this.supressor?.port.close());
+    comCuidado(() => this.meio?.disconnect());
     comCuidado(() => this.destination?.disconnect());
     // O som processado sai por uma faixa própria, criada aqui. Sem encerrá-la, cada troca deixa mais
     // uma faixa viva presa ao contexto de áudio.
     for (const faixa of this.destination?.stream.getTracks() ?? []) comCuidado(() => faixa.stop());
-    // O contexto de 16 kHz é nosso (o do LiveKit não se fecha aqui): fechá-lo para a thread de áudio.
+    // O contexto de 16 kHz é nosso (o do LiveKit não se fecha aqui): fechá-lo solta a thread de áudio
+    // e, com ela, a porta da supressão nativa.
     if (this.contexto) void this.contexto.close().catch(() => {});
     this.contexto = undefined;
     this.source = undefined;
     this.supressor = undefined;
+    this.meio = undefined;
     this.destination = undefined;
   }
 }
