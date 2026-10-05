@@ -43,6 +43,9 @@ const NOMES = {
   16: 'Falar (transição)',
   17: 'Status (mascote)',
   18: 'Ouvindo música',
+  19: 'Karaokê',
+  20: 'Assistir junto',
+  21: 'Apresentação',
 };
 const CODIGOS = { 10: 'OFFLINE — Sem conexão', 11: 'ERRO 500 — Problema no servidor', 12: 'ERRO 404 — Página não encontrada' };
 
@@ -75,6 +78,23 @@ for (const n of Object.keys(NOMES).map(Number)) {
   const ok = m.formas >= 5 && m.animadas >= 1 && m.largura > 50;
   console.log(`  ${ok ? 'OK ' : 'XX '} ${String(n).padStart(2)}. ${NOMES[n].padEnd(16)} ${String(m.formas).padStart(2)} formas, ${String(m.animadas).padStart(2)} animadas`);
   if (!ok) problemas.push(`preset ${n} (${NOMES[n]}) não desenhou ou não animou`);
+
+  // A ARMADILHA QUE APARECEU TRÊS VEZES: uma propriedade declarada só no ÚLTIMO quadro-chave é
+  // interpolada desde o primeiro, a partir do valor de base. "opacity: 0" só no 100% fez orelhas,
+  // a barra do karaokê e as barras do quadro irem sumindo desde o começo do ciclo.
+  const armadilhas = await page.evaluate(() => {
+    const css = document.querySelector('#loaderStage svg style')?.textContent ?? '';
+    const ruins = [];
+    for (const [, nome, corpo] of css.matchAll(/@keyframes ([\w-]+) \{([\s\S]*?\})\s*\}/g)) {
+      const pontos = [...corpo.matchAll(/([\d%,\s]+)\{([^}]*)\}/g)];
+      if (pontos.length < 2) continue;
+      const temNoPrimeiro = /opacity/.test(pontos[0][2]);
+      const temEmAlgum = pontos.some((p) => /opacity/.test(p[2]));
+      if (temEmAlgum && !temNoPrimeiro && !/step/.test(css.split(nome)[1]?.slice(0, 60) ?? '')) ruins.push(nome);
+    }
+    return ruins;
+  });
+  if (armadilhas.length) problemas.push(`preset ${n}: opacidade declarada fora do primeiro quadro-chave em ${armadilhas.join(', ')}`);
 
   if (CODIGOS[n]) {
     if (m.textos.length !== 1 || m.textos[0].texto !== CODIGOS[n]) problemas.push(`preset ${n}: código ${JSON.stringify(m.textos)}, esperado "${CODIGOS[n]}"`);

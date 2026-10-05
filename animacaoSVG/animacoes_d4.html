@@ -208,6 +208,15 @@
         </div>
 
         <div class="grupo">
+          <h3>Os modos da sala, com o mascote — sem texto</h3>
+          <div class="botoes">
+            <button class="preset-btn" id="presetBtn19" onclick="setPreset(19)">Karaokê<small>microfone, cantando, a letra enchendo</small></button>
+            <button class="preset-btn" id="presetBtn20" onclick="setPreset(20)">Assistir junto<small>pipoca, a luz da tela, um "oh!"</small></button>
+            <button class="preset-btn" id="presetBtn21" onclick="setPreset(21)">Apresentação<small>o quadro, a varinha, falando</small></button>
+          </div>
+        </div>
+
+        <div class="grupo">
           <h3>Só o D4: carregamento — sem texto</h3>
           <div class="botoes">
             <button class="preset-btn" id="presetBtn1" onclick="setPreset(1)">Digitando<small>os três pontos em sequência</small></button>
@@ -303,6 +312,9 @@
       16: { nome: 'Começou a falar', arquivo: 'mascote-falando' },
       17: { nome: 'Ciclo de status (mascote)', arquivo: 'mascote-ciclo-de-status' },
       18: { nome: 'Ouvindo música', arquivo: 'mascote-ouvindo-musica' },
+      19: { nome: 'Karaokê', arquivo: 'mascote-karaoke' },
+      20: { nome: 'Assistir junto', arquivo: 'mascote-assistir-junto' },
+      21: { nome: 'Apresentação', arquivo: 'mascote-apresentacao' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -394,6 +406,18 @@
         <path class="o-dentro" d="M69 53 C79 53, 87 63, 88 78 C89 90, 86 96, 83.5 95 C81 94, 81.5 86, 81.5 76 C81.5 64, 77 58, 69 56 Z"/>
       </g>`;
 
+    /** Uma colcheia (♪) desenhada, para a música e o karaokê. */
+    const NOTA = (x, y, classe) =>
+      `<g class="nota ${classe}"><ellipse cx="${x}" cy="${y}" rx="2.6" ry="2" transform="rotate(-20 ${x} ${y})"/><path d="M${x + 2.3} ${y - 0.5} V${y - 12} Q${x + 6} ${y - 10.5} ${x + 6} ${y - 7}"/></g>`;
+    /** As notas escapam de vez em quando: cada uma aparece só no primeiro terço do ciclo, com atrasos que não se alinham. */
+    const CSS_NOTAS = () => `
+    .nota ellipse { fill: ${cores().faixa}; }
+    .nota path { fill: none; stroke: ${cores().faixa}; stroke-width: 1.4; stroke-linecap: round; }
+    .nota { transform-box: fill-box; transform-origin: center; opacity: 0; animation: nota ${d(4.8)} ease-out infinite; }
+    .n2 { animation-delay: ${d(1.7)}; }
+    .n3 { animation-delay: ${d(3.1)}; }
+    @keyframes nota { 0% { opacity: 0; transform: translate(0, 4px) rotate(-8deg); } 8% { opacity: 1; } 30% { opacity: 0; transform: translate(4px, -14px) rotate(10deg); } 100% { opacity: 0; } }`;
+
     /** O rosto do coelho antigo: olhos com brilho, o narizinho de coração e o sorriso. */
     const rostoDoMascote = ({ olhos = 'abertos', boca = 'sorriso', bochechas = false } = {}) => {
       const OLHOS = {
@@ -403,6 +427,9 @@
         x: `<path class="m-traco" d="M30.5 69 L37.5 76 M37.5 69 L30.5 76 M62.5 69 L69.5 76 M69.5 69 L62.5 76"/>`,
         // Feliz, de olhos fechados em arco — o que deixa o autorizado.svg antigo tão amigável.
         felizes: `<path class="m-traco m-feliz" d="M29 72.5 Q34 67.5 39 72.5 M61 72.5 Q66 67.5 71 72.5"/>`,
+        // Olhando para cima, para a tela (assistir junto).
+        cima: `<g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="70.5" r="4"/><circle class="m-brilho" cx="33" cy="69" r="1.25"/></g>
+        <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="70.5" r="4"/><circle class="m-brilho" cx="65" cy="69" r="1.25"/></g>`,
         // Lendo: as pupilas descem para a tela, sem pálpebra pesada — calmo, e não bravo.
         lendo: `<g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="74.5" r="4"/><circle class="m-brilho" cx="33" cy="73.3" r="1.2"/></g>
         <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="74.5" r="4"/><circle class="m-brilho" cx="65" cy="73.3" r="1.2"/></g>`,
@@ -416,6 +443,9 @@
         o: `<circle class="m-boca-o" cx="50" cy="87.5" r="2.5"/>`,
         torta: `<path class="m-boca" d="M44 87 Q47 84.5 50 87 Q53 89.5 56 87"/>`,
         reta: `<path class="m-boca" d="M45.5 86.5 H54.5"/>`,
+        neutra: `<path class="m-boca" d="M47 86.5 Q50 87.5 53 86.5"/>`,
+        cantando: `<ellipse class="m-boca-o m-cantando" cx="50" cy="88" rx="3.4" ry="4"/>`,
+        falando: `<ellipse class="m-boca-o m-falando" cx="50" cy="87.5" rx="2.8" ry="2.6"/>`,
         sorrisao: `<path class="m-boca m-sorrisao" d="M43.5 84 Q50 91.5 56.5 84"/>`,
       };
       return `<g class="rosto-m">
@@ -844,7 +874,8 @@ ${css}
                  //   ocupado: IMERSO NO QUE FAZ, sem cara de bravo — o notebook na frente, o olhar descendo
                  //     para a tela e lendo, um sorrisinho tranquilo. (O fone virou o preset "Ouvindo música":
                  //     cara de concentrado com fone parecia irritado, e combina mais com música.)
-                 //   offline: as orelhas caem pelos lados, como no 500, e tudo fica cinza e triste.
+                 //   offline: as orelhas caem pelos lados, como no 500, tudo fica cinza, e ele descansa —
+                 //     olhos fechados e boca neutra: estar fora não é estar triste.
           return montarMascote({
             rotulo: 'Status do coelho',
             // No offline as orelhas TROCAM de forma: as de sempre somem e entram as compridas caídas. Girar
@@ -861,7 +892,7 @@ ${css}
           <rect class="nb-base" x="25" y="111.5" width="50" height="4" rx="2"/>
         </g>
       </g>
-      <g class="f-off">${rostoDoMascote({ olhos: 'fechados', boca: 'triste' })}</g>`,
+      <g class="f-off">${rostoDoMascote({ olhos: 'fechados', boca: 'neutra' })}</g>`,
             css: `
     /* A troca das orelhas no offline é SECA (step-end) e numa animação à parte: posta junto da postura,
        a opacidade era interpolada desde o começo do ciclo e as orelhas iam sumindo já no online. */
@@ -911,27 +942,107 @@ ${css}
         <rect class="fone-concha" x="11" y="62" width="11" height="20" rx="5"/>
         <rect class="fone-concha" x="78" y="62" width="11" height="20" rx="5"/>
       </g>
-      <g class="notas">
-        <g class="nota n1"><ellipse cx="86" cy="50" rx="2.6" ry="2" transform="rotate(-20 86 50)"/><path d="M88.3 49.5 V38 Q92 39.5 92 43"/></g>
-        <g class="nota n2"><ellipse cx="12" cy="52" rx="2.6" ry="2" transform="rotate(-20 12 52)"/><path d="M14.3 51.5 V40 Q18 41.5 18 45"/></g>
-        <g class="nota n3"><ellipse cx="90" cy="64" rx="2.6" ry="2" transform="rotate(-20 90 64)"/><path d="M92.3 63.5 V52 Q96 53.5 96 57"/></g>
-      </g>`,
-            css: `
+      <g class="notas">${NOTA(86, 50, 'n1')}${NOTA(12, 52, 'n2')}${NOTA(90, 64, 'n3')}</g>`,
+            css: CSS_NOTAS() + `
     .fone-arco { fill: none; stroke: #2A3142; stroke-width: 4; stroke-linecap: round; }
     .fone-concha { fill: #2A3142; }
     .figura { animation: ritmo ${d(1.2)} ease-in-out infinite; }
     .orelha-e { animation: ritmoE ${d(1.2)} ease-in-out infinite; }
     .orelha-d { animation: ritmoD ${d(1.2)} ease-in-out infinite; }
-    .nota ellipse { fill: var(--faixa, ${cores().faixa}); }
-    .nota path { fill: none; stroke: var(--faixa, ${cores().faixa}); stroke-width: 1.4; stroke-linecap: round; }
-    .nota { transform-box: fill-box; transform-origin: center; opacity: 0; animation: nota ${d(4.8)} ease-out infinite; }
-    .n2 { animation-delay: ${d(1.7)}; }
-    .n3 { animation-delay: ${d(3.1)}; }
-    /* ESPORÁDICAS: cada nota aparece só no primeiro terço do seu ciclo, e os atrasos não se alinham. */
-    @keyframes nota { 0% { opacity: 0; transform: translate(0, 4px) rotate(-8deg); } 8% { opacity: 1; } 30% { opacity: 0; transform: translate(4px, -14px) rotate(10deg); } 100% { opacity: 0; } }
     @keyframes ritmo { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg) translateY(-2px); } }
     @keyframes ritmoE { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(3deg); } }
     @keyframes ritmoD { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }`,
+          });
+
+        // ---------- os modos da sala: cada um com o seu jeito ----------
+        case 19: // Karaokê: microfone na mão, boca cantando, notas subindo e a barra da letra enchendo no tempo
+                 // — a mesma ideia do karaokê do Syden, em que a letra acende no ritmo da música.
+          return montarMascote({
+            rotulo: 'Karaokê',
+            rosto: `${rostoDoMascote({ olhos: 'felizes', boca: 'cantando', bochechas: true })}
+      <g class="microfone">
+        <path class="mic-cabo" d="M70 100 L83 120"/>
+        <circle class="mic-cabeca" cx="67" cy="96" r="6.5"/>
+        <path class="mic-grade" d="M63 94 H71 M62.5 97.5 H71.5"/>
+      </g>
+      <g class="notas">${NOTA(88, 56, 'n1')}${NOTA(10, 60, 'n2')}${NOTA(94, 74, 'n3')}</g>
+      <g class="letra"><rect class="letra-fundo" x="18" y="124" width="64" height="5" rx="2.5"/><rect class="letra-cheia" x="18" y="124" width="64" height="5" rx="2.5"/></g>`,
+            css: CSS_NOTAS() + `
+    .mic-cabo { stroke: #2A3142; stroke-width: 4.5; stroke-linecap: round; }
+    .mic-cabeca { fill: #3A4255; }
+    .mic-grade { stroke: #8D95A6; stroke-width: 1.2; stroke-linecap: round; }
+    .m-cantando { transform-box: fill-box; transform-origin: center top; animation: cantar ${d(0.6)} ease-in-out infinite; }
+    .figura { animation: ritmo ${d(1.2)} ease-in-out infinite; }
+    .orelha-e { animation: ritmoE ${d(1.2)} ease-in-out infinite; }
+    .orelha-d { animation: ritmoD ${d(1.2)} ease-in-out infinite; }
+    .letra-fundo { fill: #2A3142; }
+    .letra-cheia { fill: var(--faixa, ${cores().faixa}); transform-box: fill-box; transform-origin: left center; animation: letra ${d(3.6)} linear infinite; }
+    @keyframes cantar { 0%, 100% { transform: scaleY(.55); } 50% { transform: none; } }
+    /* A opacidade vai declarada em todos os pontos: só no último, o navegador apagava a barra desde o começo. */
+    @keyframes letra { 0% { transform: scaleX(0); opacity: 1; } 85% { transform: none; opacity: 1; } 100% { transform: none; opacity: 0; } }
+    @keyframes ritmo { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg) translateY(-2px); } }
+    @keyframes ritmoE { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(3deg); } }
+    @keyframes ritmoD { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }`,
+          });
+
+        case 20: // Assistir junto: o balde de pipoca na frente, o olhar para cima (a tela), a luz da tela piscando
+                 // no rosto, uma pipoca que estoura de vez em quando e uma reação de "oh!" no meio do filme.
+          return montarMascote({
+            rotulo: 'Assistir junto',
+            rosto: `<g class="r-assistindo">${rostoDoMascote({ olhos: 'cima', boca: 'sorriso' })}</g>
+      <g class="r-oh">${rostoDoMascote({ olhos: 'cima', boca: 'o' })}</g>
+      <ellipse class="luz-da-tela" cx="50" cy="70" rx="30" ry="24"/>
+      <g class="pipoca">
+        <path class="balde" d="M33 99 L37 124 H63 L67 99 Z"/>
+        <path class="balde-listra" d="M41.5 99 L43.5 124 M50 99 V124 M58.5 99 L56.5 124"/>
+        <circle class="grao" cx="38" cy="98" r="3.6"/><circle class="grao" cx="44.5" cy="95.5" r="4"/><circle class="grao" cx="51" cy="97" r="3.8"/>
+        <circle class="grao" cx="57" cy="95" r="3.9"/><circle class="grao" cx="62.5" cy="98" r="3.5"/>
+        <circle class="grao grao-pula" cx="50" cy="94" r="3.2"/>
+      </g>`,
+            css: `
+    .balde { fill: ${cores().creme}; stroke: #2A3142; stroke-width: 1.2; }
+    .balde-listra { stroke: var(--faixa, ${cores().faixa}); stroke-width: 3.2; }
+    .grao { fill: #FFF6DE; stroke: #E8D9B0; stroke-width: .8; }
+    .grao-pula { transform-box: fill-box; transform-origin: center; opacity: 0; animation: estourar ${d(3.4)} ease-out infinite; }
+    .luz-da-tela { fill: #BFD7F5; mix-blend-mode: soft-light; opacity: .0; animation: tela ${d(2.2)} steps(1) infinite; }
+    .r-oh { opacity: 0; animation: oh ${d(6)} step-end infinite; }
+    .r-assistindo { animation: assistindo ${d(6)} step-end infinite; }
+    .orelha-e, .orelha-d { animation: susto ${d(6)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    @keyframes estourar { 0%, 55% { opacity: 0; transform: none; } 60% { opacity: 1; } 80% { opacity: 1; transform: translate(4px, -16px) rotate(90deg); } 100% { opacity: 0; transform: translate(7px, -4px) rotate(180deg); } }
+    @keyframes tela { 0% { opacity: .0; } 20% { opacity: .35; } 45% { opacity: .1; } 70% { opacity: .45; } 85% { opacity: .2; } }
+    @keyframes oh { 0% { opacity: 0; } 62% { opacity: 1; } 76% { opacity: 0; } }
+    @keyframes assistindo { 0% { opacity: 1; } 62% { opacity: 0; } 76% { opacity: 1; } }
+    @keyframes susto { 0%, 60%, 80%, 100% { transform: none; } 64% { transform: scaleY(1.12); } }`,
+          });
+
+        case 21: // Apresentação (a sala em que um fala e muitos escutam): o quadro ao lado com as barras subindo,
+                 // a varinha apontando, a boca falando e as orelhas atentas.
+          return montarMascote({
+            rotulo: 'Apresentação',
+            rosto: `${rostoDoMascote({ olhos: 'abertos', boca: 'falando' })}
+      <g class="quadro">
+        <rect class="quadro-moldura" x="96" y="38" width="46" height="36" rx="3"/>
+        <rect class="barra-q q1" x="103" y="56" width="7" height="12" rx="1.5"/>
+        <rect class="barra-q q2" x="115" y="50" width="7" height="18" rx="1.5"/>
+        <rect class="barra-q q3" x="127" y="44" width="7" height="24" rx="1.5"/>
+        <path class="quadro-pe" d="M119 74 V92 M110 92 H128"/>
+      </g>
+      <path class="varinha" d="M84 92 L104 64"/>`,
+            css: `
+    .quadro-moldura { fill: #262C38; stroke: ${cores().creme}; stroke-width: 2.5; }
+    .quadro-pe { fill: none; stroke: ${cores().creme}; stroke-width: 2.5; stroke-linecap: round; }
+    .barra-q { fill: var(--faixa, ${cores().faixa}); transform-box: fill-box; transform-origin: center bottom; animation: crescer ${d(3)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .q2 { animation-delay: ${d(0.25)}; }
+    .q3 { animation-delay: ${d(0.5)}; }
+    .varinha { fill: none; stroke: #C9A26B; stroke-width: 2.2; stroke-linecap: round; transform-box: fill-box; transform-origin: 0% 100%; animation: apontar ${d(3)} ease-in-out infinite; }
+    .m-falando { transform-box: fill-box; transform-origin: center top; animation: falarBoca ${d(0.45)} ease-in-out infinite; }
+    .m-olho { animation: piscar ${d(3.8)} ease-in-out infinite; }
+    .orelha-e, .orelha-d { animation: atento ${d(3)} ease-in-out infinite; }
+    @keyframes crescer { 0%, 8% { transform: scaleY(0); opacity: 1; } 30%, 85% { transform: none; opacity: 1; } 100% { transform: none; opacity: 0; } }
+    @keyframes apontar { 0%, 20%, 100% { transform: none; } 35% { transform: rotate(-12deg); } 55% { transform: rotate(8deg); } 75% { transform: rotate(-4deg); } }
+    @keyframes falarBoca { 0%, 100% { transform: scaleY(.4); } 50% { transform: none; } }
+    @keyframes piscar { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
+    @keyframes atento { 0%, 100% { transform: none; } 50% { transform: scaleY(1.05); } }`,
           });
 
         // ---------- o mascote ----------
