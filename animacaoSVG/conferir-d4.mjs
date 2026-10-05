@@ -37,6 +37,8 @@ const NOMES = {
   10: 'Sem internet',
   11: 'Erro 500',
   12: 'Erro 404',
+  13: 'Ocioso',
+  14: 'Introdução',
 };
 const CODIGOS = { 10: 'OFFLINE — Sem conexão', 11: 'ERRO 500 — Problema no servidor', 12: 'ERRO 404 — Página não encontrada' };
 
