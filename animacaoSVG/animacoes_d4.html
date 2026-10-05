@@ -223,7 +223,8 @@
           <div class="botoes">
             <button class="preset-btn" id="presetBtn7" onclick="setPreset(7)">Boas-vindas<small>abre o balão e acena</small></button>
             <button class="preset-btn" id="presetBtn8" onclick="setPreset(8)">Autorizado<small>os pontos viram um certo</small></button>
-            <button class="preset-btn" id="presetBtn9" onclick="setPreset(9)">Ciclo de status<small>online, ausente, não perturbe, offline</small></button>
+            <button class="preset-btn" id="presetBtn9" onclick="setPreset(9)">Ciclo de status (D4)<small>online, ausente, não perturbe, offline</small></button>
+            <button class="preset-btn" id="presetBtn17" onclick="setPreset(17)">Ciclo de status (mascote)<small>o mesmo ciclo com o coelho, para comparar</small></button>
           </div>
         </div>
 
@@ -246,9 +247,6 @@
         <label class="linha"><span>Creme (traço e orelhas)</span><input type="color" id="corCreme" value="#f3ebd8" oninput="atualizar()"></label>
         <label class="linha"><span>Faixa da marca</span><input type="color" id="corFaixa" value="#f5b83d" oninput="atualizar()"></label>
         <label class="linha"><span>Desenhar o quadrado</span><input type="checkbox" id="comQuadrado" checked onchange="atualizar()"></label>
-        <div class="linha" role="radiogroup" aria-label="Orelha do mascote"><span>Orelha do mascote</span>
-          <span><label><input type="radio" name="formaOrelha" value="antiga" checked onchange="atualizar()"> antiga (curva)</label>
-          <label><input type="radio" name="formaOrelha" value="d4" onchange="atualizar()"> D4 (oval)</label></span></div>
         <div class="linha" role="radiogroup" aria-label="Faixa da orelha do mascote"><span>Faixa da orelha do mascote</span>
           <span><label><input type="radio" name="corOrelha" value="rosa" checked onchange="atualizar()"> rosa</label>
           <label><input type="radio" name="corOrelha" value="ambar" onchange="atualizar()"> âmbar</label></span></div>
@@ -303,6 +301,7 @@
       14: { nome: 'Mascote: introdução', arquivo: 'mascote-introducao' },
       15: { nome: 'Começou a digitar', arquivo: 'mascote-digitando' },
       16: { nome: 'Começou a falar', arquivo: 'mascote-falando' },
+      17: { nome: 'Ciclo de status (mascote)', arquivo: 'mascote-ciclo-de-status' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -362,7 +361,6 @@
 
     function opcoesDoMascote() {
       return {
-        orelha: document.querySelector('input[name="formaOrelha"]:checked').value, // 'antiga' | 'd4'
         faixa: FAIXAS_DO_MASCOTE[document.querySelector('input[name="corOrelha"]:checked').value],
       };
     }
@@ -377,8 +375,9 @@
         <path class="o-dentro" d="M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z"/>
       </g>`;
 
-    /** As orelhas do mascote na forma escolhida. As do D4 são exatamente as do ícone. */
-    const orelhasDoMascote = () => (opcoesDoMascote().orelha === 'd4' ? orelha('e') + orelha('d') : orelhasAntigas());
+    /** As orelhas do mascote: as curvas do coelho antigo, escolhidas pelo Sydenstricker (05/10/2026)
+     *  depois de comparar com as ovais do D4. */
+    const orelhasDoMascote = () => orelhasAntigas();
 
     /** O rosto do coelho antigo: olhos com brilho, o narizinho de coração e o sorriso. */
     const rostoDoMascote = ({ olhos = 'abertos', boca = 'sorriso' } = {}) => {
@@ -393,6 +392,7 @@
         triste: `<path class="m-boca" d="M45 88 Q50 84 55 88"/>`,
         o: `<circle class="m-boca-o" cx="50" cy="87.5" r="2.5"/>`,
         torta: `<path class="m-boca" d="M44 87 Q47 84.5 50 87 Q53 89.5 56 87"/>`,
+        reta: `<path class="m-boca" d="M45.5 86.5 H54.5"/>`,
       };
       return `<g class="rosto-m">
         <g class="m-olhos">${OLHOS[olhos]}</g>
@@ -455,48 +455,44 @@ ${css}
      * A transição mascote → D4 → mascote, em ciclo para ver no estúdio. No app serão três estados
      * (parado, digitando, falando) e a troca acontece quando o estado muda; aqui ela se repete sozinha.
      *
-     * Fases (porcentagem do ciclo de 7 s): ocioso até 22%, vira balão até 32%, fica no D4 até 68%,
-     * volta até 78%, ocioso até o fim. `miolo` é o que aparece dentro do balão (pontos ou barras).
+     * COMO ELA FUNCIONA, e por que é assim (ajustada a pedido do Sydenstricker, 05/10/2026):
+     *   - a cabeça muda SÓ DE FORMA e continua creme (22% → 30%);
+     *   - por cima dela, o balão do D4 de verdade CRESCE DE DENTRO PARA FORA, como uma íris abrindo
+     *     (25% → 33%). Quando chega ao tamanho cheio, cobre a cabeça e o que se vê é o D4 exato.
+     * A primeira versão trocava a cor da cabeça depois da forma, e no meio aparecia um retângulo creme
+     * maciço e em seguida um cinza — "um quadrado de repente". Com a íris, nenhum dos dois existe.
+     *
+     * As orelhas do mascote (curvas) dão lugar às do D4 (ovais) cruzando rápido, sobrepostas, para
+     * nunca ficar sem orelha e sem demorar no meio-termo fantasma.
      */
     function transicao({ rotulo, miolo, cssMiolo }) {
       const c = cores();
-      const antigas = opcoesDoMascote().orelha === 'antiga';
-      // Com as orelhas antigas, o balão ganha as do D4: as antigas somem enquanto as ovais aparecem.
-      // Com as do D4, nada troca — elas são a âncora que não se mexe.
-      const orelhas = antigas
-        ? `<g class="orelhas-antigas">${orelhasAntigas()}</g><g class="orelhas-d4">${orelha('e')}${orelha('d')}</g>`
-        : orelha('e') + orelha('d');
       const T = 7;
       return montarMascote({
         rotulo,
-        orelhas,
-        depois: `<g class="miolo">${miolo}</g>`,
+        orelhas: `<g class="orelhas-antigas">${orelhasAntigas()}</g><g class="orelhas-d4">${orelha('e')}${orelha('d')}</g>`,
+        depois: `<path class="iris" d="${BALAO}"/><g class="miolo">${miolo}</g>`,
         css: `
+    .iris { fill: ${c.quadrado}; stroke: ${c.creme}; stroke-width: 6; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 45%; transform: scale(0); animation: iris ${d(T)} ease-in-out infinite; }
     .cabeca { animation: virarBalao ${d(T)} ease-in-out infinite; }
     .rosto-m { animation: rostoSome ${d(T)} ease-in-out infinite; }
     .miolo { opacity: 0; animation: mioloAparece ${d(T)} ease-in-out infinite; }
-    .orelha-e { animation: atencaoE ${d(T)} ease-in-out infinite; }
-    .orelha-d { animation: atencaoD ${d(T)} ease-in-out infinite; }
-    ${antigas ? `.orelhas-antigas { animation: orelhasSaem ${d(T)} ease-in-out infinite; }
-    .orelhas-d4 { opacity: 0; animation: orelhasEntram ${d(T)} ease-in-out infinite; }` : ''}
+    .orelhas-antigas { animation: orelhasSaem ${d(T)} ease-in-out infinite; }
+    .orelhas-d4 { opacity: 0; animation: orelhasEntram ${d(T)} ease-in-out infinite; }
+    .orelha-e { animation: atencao ${d(T)} ease-in-out infinite; }
+    .orelha-d { animation: atencao ${d(T)} ease-in-out infinite; }
     .m-olho { animation: ${anim('piscar', 3.5, 0)}; }
-    /* A COR SÓ TROCA DEPOIS DA FORMA. Mudando as duas juntas, o meio do caminho era um borrão cinza:
-       creme misturado com azul-noite. Assim a cabeça creme vira um balão creme, e só então o miolo
-       esvazia, junto com a chegada dos pontos — e o caminho de volta é o mesmo, ao contrário. */
     @keyframes virarBalao {
-      0%, 22% { d: path('${CABECA}'); fill: ${c.creme}; stroke-width: 0; }
-      29% { d: path('${BALAO}'); fill: ${c.creme}; stroke-width: 6; }
-      33%, 66% { d: path('${BALAO}'); fill: ${c.quadrado}; stroke-width: 6; }
-      70% { d: path('${BALAO}'); fill: ${c.creme}; stroke-width: 6; }
-      77%, 100% { d: path('${CABECA}'); fill: ${c.creme}; stroke-width: 0; }
+      0%, 22% { d: path('${CABECA}'); }
+      30%, 70% { d: path('${BALAO}'); }
+      78%, 100% { d: path('${CABECA}'); }
     }
+    @keyframes iris { 0%, 25% { transform: scale(0); } 33%, 63% { transform: none; } 71%, 100% { transform: scale(0); } }
     @keyframes rostoSome { 0%, 20% { opacity: 1; } 24%, 76% { opacity: 0; } 80%, 100% { opacity: 1; } }
-    @keyframes mioloAparece { 0%, 32% { opacity: 0; } 36%, 64% { opacity: 1; } 68%, 100% { opacity: 0; } }
-    /* As orelhas trocam SOBREPOSTAS: a oval chega antes de a curva sair, para nunca ficar sem orelha. */
-    @keyframes orelhasSaem { 0%, 22% { opacity: 1; } 28%, 72% { opacity: 0; } 78%, 100% { opacity: 1; } }
-    @keyframes orelhasEntram { 0%, 19% { opacity: 0; } 25%, 75% { opacity: 1; } 81%, 100% { opacity: 0; } }
-    @keyframes atencaoE { 0%, 22%, 78%, 100% { transform: none; } 28% { transform: scaleY(1.1); } 34%, 68% { transform: none; } }
-    @keyframes atencaoD { 0%, 22%, 78%, 100% { transform: none; } 28% { transform: scaleY(1.1); } 34%, 68% { transform: none; } }
+    @keyframes mioloAparece { 0%, 33% { opacity: 0; } 37%, 61% { opacity: 1; } 65%, 100% { opacity: 0; } }
+    @keyframes orelhasSaem { 0%, 21% { opacity: 1; } 25%, 75% { opacity: 0; } 79%, 100% { opacity: 1; } }
+    @keyframes orelhasEntram { 0%, 20% { opacity: 0; } 24%, 76% { opacity: 1; } 80%, 100% { opacity: 0; } }
+    @keyframes atencao { 0%, 22%, 78%, 100% { transform: none; } 28% { transform: scaleY(1.1); } 34%, 68% { transform: none; } }
 ${cssMiolo}`,
       });
     }
@@ -721,18 +717,22 @@ ${css}
                  // olhos em X e a boca torta; de vez em quando uma tremida que balança as orelhas.
           return montarMascote({
             rotulo: 'Erro no servidor',
+            // AS ORELHAS NASCEM NO ALTO DA CABEÇA. A primeira versão eram elipses soltas ao lado da cabeça,
+            // e pareciam coladas por fora ("descolado da cabeça"). Agora cada uma sai de dentro do crânio
+            // (a base fica escondida atrás da cabeça), faz a curva por cima da borda e desce pelo lado.
             orelhas: `<g class="caida caida-e">
-        <ellipse class="o-fora" cx="12" cy="80" rx="10" ry="28" transform="rotate(14 12 80)"/>
-        <ellipse class="o-dentro" cx="12.5" cy="81" rx="3.6" ry="18" transform="rotate(14 12 80)"/>
+        <path class="o-fora" d="M36 47 C24 40, 8 50, 6 76 C5 92, 10 102, 16 101 C22 100, 22 88, 22 76 C22 62, 28 54, 38 52 Z"/>
+        <path class="o-dentro" d="M31 53 C21 53, 13 63, 12 78 C11 90, 14 96, 16.5 95 C19 94, 18.5 86, 18.5 76 C18.5 64, 23 58, 31 56 Z"/>
       </g>
       <g class="caida caida-d">
-        <ellipse class="o-fora" cx="88" cy="80" rx="10" ry="28" transform="rotate(-14 88 80)"/>
-        <ellipse class="o-dentro" cx="87.5" cy="81" rx="3.6" ry="18" transform="rotate(-14 88 80)"/>
+        <path class="o-fora" d="M64 47 C76 40, 92 50, 94 76 C95 92, 90 102, 84 101 C78 100, 78 88, 78 76 C78 62, 72 54, 62 52 Z"/>
+        <path class="o-dentro" d="M69 53 C79 53, 87 63, 88 78 C89 90, 86 96, 83.5 95 C81 94, 81.5 86, 81.5 76 C81.5 64, 77 58, 69 56 Z"/>
       </g>`,
             rosto: rostoDoMascote({ olhos: 'x', boca: 'torta' }),
             css: `
-    .caida { transform-box: fill-box; transform-origin: 50% 8%; animation: balancar ${d(2.6)} ease-in-out infinite; }
-    .caida-d { animation-name: balancarD; }
+    .caida { transform-box: fill-box; animation: balancar ${d(2.6)} ease-in-out infinite; }
+    .caida-e { transform-origin: 90% 5%; }
+    .caida-d { transform-origin: 10% 5%; animation-name: balancarD; }
     .figura { animation: tremer ${d(2.6)} ease-in-out infinite; }
     @keyframes tremer { 0%, 78%, 100% { transform: none; } 82% { transform: translateX(-5px) rotate(-1.5deg); } 86% { transform: translateX(5px) rotate(1.5deg); } 90% { transform: translateX(-3px); } 94% { transform: translateX(2px); } }
     @keyframes balancar { 0%, 80%, 100% { transform: none; } 85% { transform: rotate(7deg); } 90% { transform: rotate(-4deg); } 95% { transform: rotate(2deg); } }
@@ -758,6 +758,40 @@ ${css}
     @keyframes piscar { 0%, 46%, 54%, 100% { transform: none; } 50% { transform: scaleY(.1); } }
     @keyframes ouvir { 0%, 40%, 100% { transform: none; } 46% { transform: rotate(-12deg); } 52% { transform: rotate(4deg); } 58% { transform: none; } }
     @keyframes flutuar { 0%, 100% { transform: none; } 50% { transform: translate(-4px, -8px) rotate(5deg); } }`,
+          });
+
+        case 17: // Ciclo de status com o mascote, para comparar com o do D4 (preset 9). Mesma ideia do SPEC:
+                 // a POSTURA das orelhas diz o status e a cor da faixa reforça — e aqui o rosto ajuda também.
+                 //   online: orelhas em pé, olhos abertos, sorriso;
+                 //   ausente: uma orelha caída, olhos fechados (cochilando);
+                 //   não perturbe: as duas orelhas abaixadas, olhos fechados, boca reta;
+                 //   offline: orelhas recolhidas, tudo cinza, olhos fechados e boca triste.
+          return montarMascote({
+            rotulo: 'Status do coelho',
+            rosto: `<g class="f-on">${rostoDoMascote()}</g>
+      <g class="f-aus">${rostoDoMascote({ olhos: 'fechados', boca: 'sorriso' })}</g>
+      <g class="f-dnd">${rostoDoMascote({ olhos: 'fechados', boca: 'reta' })}</g>
+      <g class="f-off">${rostoDoMascote({ olhos: 'fechados', boca: 'triste' })}</g>`,
+            css: `
+    .orelha-e { animation: cicloE ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .orelha-d { animation: cicloD ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .o-dentro { animation: faixa ${d(8)} step-end infinite; }
+    .o-fora, .cabeca { animation: pele ${d(8)} step-end infinite; }
+    .f-aus, .f-dnd, .f-off { opacity: 0; }
+    .f-on { animation: rostoOn ${d(8)} step-end infinite; }
+    .f-aus { animation: rostoAus ${d(8)} step-end infinite; }
+    .f-dnd { animation: rostoDnd ${d(8)} step-end infinite; }
+    .f-off { animation: rostoOff ${d(8)} step-end infinite; }
+    .f-on .m-olho { animation: piscar ${d(2.7)} ease-in-out infinite; }
+    @keyframes cicloE { 0%, 47% { transform: none; } 50%, 72% { transform: rotate(-50deg) scaleY(.9); } 75%, 100% { transform: rotate(-12deg) scaleY(.55); } }
+    @keyframes cicloD { 0%, 22% { transform: none; } 25%, 47% { transform: rotate(60deg) scaleY(.92); } 50%, 72% { transform: rotate(50deg) scaleY(.9); } 75%, 100% { transform: rotate(12deg) scaleY(.55); } }
+    @keyframes faixa { 0% { fill: ${STATUS.verde}; } 25% { fill: ${STATUS.ausente}; } 50% { fill: ${STATUS.vermelho}; } 75% { fill: ${STATUS.cinzaFaixa}; } }
+    @keyframes pele { 0% { fill: ${cores().creme}; } 75% { fill: #A9AFBB; } }
+    @keyframes rostoOn { 0% { opacity: 1; } 25% { opacity: 0; } }
+    @keyframes rostoAus { 0% { opacity: 0; } 25% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes rostoDnd { 0% { opacity: 0; } 50% { opacity: 1; } 75% { opacity: 0; } }
+    @keyframes rostoOff { 0% { opacity: 0; } 75% { opacity: 1; } }
+    @keyframes piscar { 0%, 90%, 100% { transform: none; } 95% { transform: scaleY(.1); } }`,
           });
 
         // ---------- o mascote ----------
