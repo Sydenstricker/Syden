@@ -856,6 +856,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'The name lifts a little off the background.',
   'Com serifa': 'Serif',
   'Com tecnologia {modelo}': 'Powered by {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} stopped. Your voice is going out without noise suppression.',
   'Letra de livro, mais séria.': 'Book type, a bit more serious.',
   'Máquina de escrever': 'Typewriter',
   'Toda letra com a mesma largura.': 'Every letter the same width.',

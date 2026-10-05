@@ -850,6 +850,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Il nome si stacca un po’ dallo sfondo.',
   'Com serifa': 'Con grazie',
   'Com tecnologia {modelo}': 'Con tecnologia {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} si è fermato. La tua voce sta uscendo senza soppressione del rumore.',
   'Letra de livro, mais séria.': 'Carattere da libro, più serio.',
   'Máquina de escrever': 'Macchina da scrivere',
   'Toda letra com a mesma largura.': 'Tutte le lettere della stessa larghezza.',

@@ -227,6 +227,8 @@ export default {
   'com movimento': 'okunyakazayo',
   'Com serifa': 'Ene-serif',
   'Com tecnologia {modelo}': 'Ubuchwepheshe: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} imile. Izwi lakho liphuma ngaphandle kokucindezela umsindo.',
   'Começa a aparecer': 'Iqala ukuvela',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Qala owakho, noma ungene kowomunye ngekhodi akunikeze yona.',

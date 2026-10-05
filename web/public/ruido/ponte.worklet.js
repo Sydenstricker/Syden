@@ -8,9 +8,9 @@
 // de 20 ms absorve a diferença; sem ela, cada atraso pequeno do outro lado viraria um estalo aqui.
 //
 // O VIGIA: se o processo nativo cair, a porta fica muda — o Electron não avisa a página. Sem resposta
-// por 1 s com o microfone mandando som, esta ponte declara falha, e a página troca para o GTCRN em
-// JavaScript (ver web/src/microfone.ts). Até a troca, o som passa direto, sem supressão nenhuma: pior
-// que limpo, melhor que mudo.
+// por 1 s com o microfone mandando som, esta ponte declara falha: a página tira a ponte do caminho, a
+// voz segue SEM supressão (não há modelo de reserva, por decisão) e Configurações diz que o DPDFNet
+// parou. Ver web/src/microfone.ts. Até lá, o som passa direto: pior que limpo, melhor que mudo.
 
 const QUANTUM = 128;
 const FOLGA = 320; // 20 ms a 16 kHz

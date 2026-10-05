@@ -218,6 +218,8 @@ export default {
   'com movimento': 'me lëvizje',
   'Com serifa': 'Me serif',
   'Com tecnologia {modelo}': 'Teknologjia: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} nuk po punon. Zëri yt po del pa shtypjen e zhurmës.',
   'Começa a aparecer': 'Fillon të shfaqet',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Fillo tëndin, ose hyr në atë të dikujt me kodin që të dha ai person.',

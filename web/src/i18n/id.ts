@@ -848,6 +848,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Namanya sedikit terangkat dari latar.',
   'Com serifa': 'Berserif',
   'Com tecnologia {modelo}': 'Didukung oleh {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} berhenti. Suaramu terkirim tanpa peredam bising.',
   'Letra de livro, mais séria.': 'Huruf buku, lebih serius.',
   'Máquina de escrever': 'Mesin tik',
   'Toda letra com a mesma largura.': 'Setiap huruf sama lebarnya.',

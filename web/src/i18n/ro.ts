@@ -846,6 +846,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Numele se ridică puțin de pe fundal.',
   'Com serifa': 'Cu serife',
   'Com tecnologia {modelo}': 'Cu tehnologia {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} s-a oprit. Vocea ta iese fără suprimarea zgomotului.',
   'Letra de livro, mais séria.': 'Literă de carte, mai serioasă.',
   'Máquina de escrever': 'Mașină de scris',
   'Toda letra com a mesma largura.': 'Fiecare literă cu aceeași lățime.',

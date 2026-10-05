@@ -861,6 +861,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Orúkọ náà ń gbé díẹ̀ sókè kúrò nínú ẹ̀yìn.',
   'Com serifa': 'Pẹ̀lú sérífù',
   'Com tecnologia {modelo}': 'Ìmọ̀ ẹ̀rọ: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} ti dúró. Ohùn rẹ ń jáde láìsí ìdínkù ariwo.',
   'Letra de livro, mais séria.': 'Lẹ́tà ìwé, tó le koko sí i.',
   'Máquina de escrever': 'Ẹ̀rọ ìtẹ̀wé',
   'Toda letra com a mesma largura.': 'Gbogbo lẹ́tà pẹ̀lú ìbú kan náà.',

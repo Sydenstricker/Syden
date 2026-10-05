@@ -57,7 +57,7 @@ import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
-import { NOME_DO_MOTOR, aoMudarMotor, lerMotorEmUso, motorPrevisto, supressaoDisponivel, type MotorDeRuido } from './microfone';
+import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
 import { useDirectory } from './directory';
 import { CapaDaComunidade } from './CapaDaComunidade';
 import { CommunityIcon } from './CommunityIcon';
@@ -2161,7 +2161,7 @@ function DeviceSelect({
 function VoiceSection({ voice }: { voice: Voice }) {
   const t = useT();
   const settings = useSettings();
-  const motorDeRuido = useMotorDeRuido();
+  const supressao = useEstadoDaSupressao();
 
   return (
     <>
@@ -2202,7 +2202,14 @@ function VoiceSection({ voice }: { voice: Voice }) {
       <Toggle
         label={t('Supressão de ruído')}
         description={t('Reduz barulhos de fundo, como teclado, ventilador e trânsito.')}
-        nota={settings.noiseSuppression && motorDeRuido ? t('Com tecnologia {modelo}', { modelo: NOME_DO_MOTOR[motorDeRuido] }) : undefined}
+        nota={
+          settings.noiseSuppression && supressao
+            ? supressao.rodando
+              ? t('Com tecnologia {modelo}', { modelo: NOME_DO_MOTOR[supressao.motor] })
+              : t('{modelo} parou. Sua voz está saindo sem supressão de ruído.', { modelo: NOME_DO_MOTOR[supressao.motor] })
+            : undefined
+        }
+        notaDeAlerta={settings.noiseSuppression && supressao?.rodando === false}
         checked={settings.noiseSuppression}
         onChange={(value) => void voice.setAudioProcessing({ noiseSuppression: value })}
       />
@@ -2547,6 +2554,7 @@ function Toggle({
   label,
   description,
   nota,
+  notaDeAlerta = false,
   checked,
   onChange,
 }: {
@@ -2554,6 +2562,8 @@ function Toggle({
   description: string;
   /** Uma linha a mais, menor, embaixo da descrição (ex.: o modelo que faz a supressão de ruído). */
   nota?: string;
+  /** A nota é um aviso (o modelo parou), e não uma informação: vem na cor de alerta. */
+  notaDeAlerta?: boolean;
   checked: boolean;
   onChange: (value: boolean) => void;
 }) {
@@ -2562,7 +2572,7 @@ function Toggle({
       <span>
         <span className="toggle-label">{label}</span>
         <span className="toggle-description">{description}</span>
-        {nota && <span className="toggle-description toggle-nota">{nota}</span>}
+        {nota && <span className={`toggle-description toggle-nota${notaDeAlerta ? ' toggle-nota-alerta' : ''}`}>{nota}</span>}
       </span>
       <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span className="switch" aria-hidden="true" />
@@ -2571,25 +2581,24 @@ function Toggle({
 }
 
 /**
- * Qual modelo faz a supressão de ruído, para dizer em Configurações ("Com tecnologia DPDFNet").
+ * O que limpa a voz, para Configurações dizer: "Com tecnologia DPDFNet" — ou, se o modelo caiu, que ele
+ * parou e a voz está saindo sem supressão. Não há modelo de reserva, e a tela não finge que há.
  *
- * Numa chamada, é o que está RODANDO — inclusive o GTCRN que assume quando o nativo do app cai, que é
- * justamente quando a pessoa mais precisa saber. Fora de chamada, o que este aparelho usaria. null onde
- * o navegador não roda nenhum dos dois (sem AudioWorklet): aí a supressão é só a do navegador, e o
- * Syden não põe nome nenhum.
+ * Numa chamada, o que está acontecendo AGORA. Fora de chamada, o que este aparelho faria. null onde o
+ * navegador não roda modelo nenhum (sem AudioWorklet).
  */
-function useMotorDeRuido(): MotorDeRuido | null {
-  const [emUso, setEmUso] = useState(lerMotorEmUso);
-  const [previsto, setPrevisto] = useState<MotorDeRuido | null>(null);
-  useEffect(() => aoMudarMotor(() => setEmUso(lerMotorEmUso())), []);
+function useEstadoDaSupressao(): EstadoDaSupressao | null {
+  const [agora, setAgora] = useState(lerEstadoDaSupressao);
+  const [previsto, setPrevisto] = useState<EstadoDaSupressao | null>(null);
+  useEffect(() => aoMudarMotor(() => setAgora(lerEstadoDaSupressao())), []);
   useEffect(() => {
     let vivo = true;
-    if (supressaoDisponivel()) void motorPrevisto().then((m) => vivo && setPrevisto(m));
+    void supressaoPrevista().then((e) => vivo && setPrevisto(e));
     return () => {
       vivo = false;
     };
   }, []);
-  return emUso ?? previsto;
+  return agora ?? previsto;
 }
 
 /**

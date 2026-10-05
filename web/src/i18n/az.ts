@@ -205,6 +205,8 @@ export default {
   'com movimento': 'hərəkətli',
   'Com serifa': 'Serifli',
   'Com tecnologia {modelo}': 'Texnologiya: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} dayandı. Səsin səs-küyün yatırılması olmadan gedir.',
   'Começa a aparecer': 'Görünməyə başlayır',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.': 'Özününkünü yarat, ya da kiminsə sənə verdiyi kodla onun icmasına qoşul.',
   'Começo': 'Başlanğıc',

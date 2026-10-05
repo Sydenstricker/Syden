@@ -234,6 +234,8 @@ export default {
   'com movimento': 'z ruchem',
   'Com serifa': 'Szeryfowa',
   'Com tecnologia {modelo}': 'Technologia: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} nie działa. Twój głos idzie bez tłumienia szumów.',
   'Começa a aparecer': 'Zaczyna się pojawiać',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Załóż własną albo dołącz do czyjejś z kodem, który ta osoba ci dała.',

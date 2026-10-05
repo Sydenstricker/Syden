@@ -828,6 +828,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'పేరు నేపథ్యం నుండి కాస్త పైకి లేస్తుంది.',
   'Com serifa': 'సెరిఫ్‌తో',
   'Com tecnologia {modelo}': 'సాంకేతికత: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} ఆగిపోయింది. గొంతు శబ్ద నివారణ లేకుండా వెళ్తోంది.',
   'Letra de livro, mais séria.': 'పుస్తక అక్షరం, కాస్త గంభీరం.',
   'Máquina de escrever': 'టైప్‌రైటర్',
   'Toda letra com a mesma largura.': 'ప్రతి అక్షరం ఒకే వెడల్పు.',

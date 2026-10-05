@@ -816,6 +816,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Tên nổi lên một chút khỏi nền.',
   'Com serifa': 'Có chân',
   'Com tecnologia {modelo}': 'Công nghệ: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} đã dừng. Giọng của bạn đang được gửi đi mà không lọc tiếng ồn.',
   'Letra de livro, mais séria.': 'Kiểu chữ sách, nghiêm túc hơn.',
   'Máquina de escrever': 'Máy đánh chữ',
   'Toda letra com a mesma largura.': 'Mọi chữ cái cùng bề rộng.',

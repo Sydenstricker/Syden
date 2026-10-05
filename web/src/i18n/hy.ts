@@ -244,6 +244,8 @@ export default {
   'com movimento': 'շարժումով',
   'Com serifa': 'Սերիֆով',
   'Com tecnologia {modelo}': 'Տեխնոլոգիա՝ {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    'Կանգ է առել՝ {modelo}։ Քո ձայնը գնում է առանց աղմուկի ճնշման։',
   'Começa a aparecer': 'Սկսում է երևալ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Ստեղծիր քոնը կամ միացիր ուրիշինին՝ այն կոդով, որ քեզ տվել են։',

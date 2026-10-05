@@ -226,6 +226,8 @@ export default {
   'com movimento': 'liikkuva',
   'Com serifa': 'Pääteviivallinen',
   'Com tecnologia {modelo}': 'Tekniikka: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo}: pysähtyi. Äänesi lähtee ilman kohinanvaimennusta.',
   'Começa a aparecer': 'Alkaa näkyä',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Perusta oma, tai liity jonkun toisen yhteisöön koodilla, jonka hän antoi sinulle.',

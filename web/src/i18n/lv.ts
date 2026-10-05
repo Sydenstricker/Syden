@@ -228,6 +228,8 @@ export default {
   'com movimento': 'ar kustību',
   'Com serifa': 'Ar serifiem',
   'Com tecnologia {modelo}': 'Tehnoloģija: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} nedarbojas. Tava balss iet bez trokšņu slāpēšanas.',
   'Começa a aparecer': 'Sāk rādīties',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Izveido savu vai pievienojies kāda cita kopienai ar kodu, ko tev iedeva šis cilvēks.',

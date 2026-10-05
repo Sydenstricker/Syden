@@ -223,6 +223,8 @@ export default {
   'com movimento': 'liikuv',
   'Com serifa': 'Seriifidega',
   'Com tecnologia {modelo}': 'Tehnoloogia: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo}: peatus. Sinu hääl läheb välja ilma mürasummutuseta.',
   'Começa a aparecer': 'Hakkab paistma',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Loo oma või liitu kellegi teise omaga koodiga, mille see inimene sulle andis.',

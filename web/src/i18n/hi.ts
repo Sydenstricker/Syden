@@ -850,6 +850,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'नाम पृष्ठभूमि से थोड़ा ऊपर उठता है।',
   'Com serifa': 'सेरिफ़ वाला',
   'Com tecnologia {modelo}': 'तकनीक: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} रुक गया है। आवाज़ अब बिना शोर दबाए जा रही है।',
   'Letra de livro, mais séria.': 'किताब वाली लिपि, थोड़ी गंभीर।',
   'Máquina de escrever': 'टाइपराइटर',
   'Toda letra com a mesma largura.': 'हर अक्षर की चौड़ाई एक जैसी।',

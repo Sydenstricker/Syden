@@ -212,6 +212,8 @@ export default {
   'com movimento': 'sochii wajjin',
   'Com serifa': 'Seerifii wajjin',
   'Com tecnologia {modelo}': 'Teeknooloojii: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} dhaabbateera. Sagaleen kee osoo sagaleen jeeqaa hin ittifamin darbaa jira.',
   'Começa a aparecer': 'Mul’achuu jalqaba',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Kan kee jalqabi, ykn koodii namni sun siif kenneen kan nama biraa seeni.',

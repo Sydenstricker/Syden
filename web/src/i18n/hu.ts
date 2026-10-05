@@ -227,6 +227,8 @@ export default {
   'com movimento': 'mozgással',
   'Com serifa': 'Talpas',
   'Com tecnologia {modelo}': 'Technológia: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo}: leállt. A hangod zajszűrés nélkül megy ki.',
   'Começa a aparecer': 'Megjelenik ekkor',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Indítsd el a sajátodat, vagy lépj be valaki máséba a tőle kapott kóddal.',

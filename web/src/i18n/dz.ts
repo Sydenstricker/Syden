@@ -239,6 +239,8 @@ export default {
   'com movimento': 'འགུལ་བཅས།',
   'Com serifa': 'སེ་རིཕ་དང་བཅས།',
   'Com tecnologia {modelo}': 'ལག་རྩལ: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} བཀག་ཡོདཔ། ཁ་སྐད་འདི་ སྒྲ་ཅ་བཀག་ཐབས་མེད་པར་ འགྱོ་དོ།',
   'Começa a aparecer': 'སྟོན་ནི་འགོ་བཙུགས་འོང་།',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ཁྱོད་རའི་མི་སྡེ་འགོ་བཙུགས། ཡང་ན་ མི་ལ་ལོ་གིས་བྱིན་མི་ཨང་རྟགས་ཀྱིས་ ཁོང་གི་མི་སྡེ་ནང་འཛུལ།',

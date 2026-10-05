@@ -228,6 +228,8 @@ export default {
   'com movimento': 'z gibanjem',
   'Com serifa': 'S serifi',
   'Com tecnologia {modelo}': 'Tehnologija: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} ne deluje. Tvoj glas gre ven brez dušenja šuma.',
   'Começa a aparecer': 'Začne se prikazovati',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Ustanovi svojo ali se pridruži tuji s kodo, ki ti jo je dala ta oseba.',

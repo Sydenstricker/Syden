@@ -226,6 +226,8 @@ export default {
   'com movimento': 'චලනයක් සහිත',
   'Com serifa': 'සෙරිෆ් සහිත',
   'Com tecnologia {modelo}': 'තාක්ෂණය: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} නැවතුණා. කටහඬ ඝෝෂාව මර්දනය නොකර යමින් තිබේ.',
   'Começa a aparecer': 'දිස්වීම ආරම්භ වේ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ඔබේම එකක් ආරම්භ කරන්න, නැතහොත් ඔබට ලැබුණු කේතයෙන් වෙනත් අයෙකුගේ එකට එක්වන්න.',

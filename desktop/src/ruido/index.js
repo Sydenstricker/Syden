@@ -45,7 +45,8 @@ function garantirProcesso() {
   filho.on('exit', (codigo) => {
     if (processo === filho) processo = null;
     // Saída com código 0 é o app fechando; o resto é queda. As portas que estavam abertas morrem
-    // junto, e a página percebe pelo silêncio (ver o vigia em ponte.worklet.js) e volta para o GTCRN.
+    // junto, e a página percebe pelo silêncio (ver o vigia em ponte.worklet.js): a voz segue sem
+    // supressão e Configurações diz que o DPDFNet parou. Não há modelo de reserva, por decisão.
     if (codigo !== 0) {
       quedas++;
       console.error(`Supressão de ruído: o processo caiu (código ${codigo}), queda nº ${quedas}.`);

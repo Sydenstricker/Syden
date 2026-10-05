@@ -228,6 +228,8 @@ export default {
   'com movimento': 'su judesiu',
   'Com serifa': 'Su užraitais',
   'Com tecnologia {modelo}': 'Technologija: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} neveikia. Tavo balsas sklinda be triukšmo slopinimo.',
   'Começa a aparecer': 'Pradedama rodyti',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Sukurk savo arba prisijunk prie kito su kodu, kurį tau davė tas žmogus.',

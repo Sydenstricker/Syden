@@ -226,6 +226,8 @@ export default {
   'com movimento': 'med bevegelse',
   'Com serifa': 'Med seriffer',
   'Com tecnologia {modelo}': 'Drevet av {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} har stoppet. Stemmen din sendes uten støydemping.',
   'Começa a aparecer': 'Begynner å vises',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Start ditt eget, eller bli med i noen andres med koden du har fått.',

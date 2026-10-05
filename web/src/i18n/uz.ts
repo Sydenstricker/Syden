@@ -234,6 +234,8 @@ export default {
   'com movimento': 'harakatli',
   'Com serifa': 'Serifli',
   'Com tecnologia {modelo}': 'Texnologiya: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} toʻxtadi. Ovozing shovqin bostirilmasdan chiqyapti.',
   'Começa a aparecer': 'Koʻrina boshlaydi',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Oʻzingiznikini boshlang yoki kimdir bergan kod bilan uning hamjamiyatiga qoʻshiling.',

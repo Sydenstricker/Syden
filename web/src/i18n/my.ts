@@ -211,6 +211,8 @@ export default {
   'com movimento': 'လှုပ်ရှားမှုနဲ့',
   'Com serifa': 'ဆီရစ်ပါ',
   'Com tecnologia {modelo}': 'နည်းပညာ - {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} ရပ်သွားပြီ။ အသံကို ဆူညံသံ မနှိမ်နင်းဘဲ ပို့နေသည်။',
   'Começa a aparecer': 'ပေါ်လာမည့်အချိန်',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ကိုယ်ပိုင်တစ်ခု စတင်ပါ၊ သို့မဟုတ် တစ်ယောက်ယောက် ပေးထားတဲ့ ကုဒ်နဲ့ သူတို့ဆီ ဝင်ပါ။',

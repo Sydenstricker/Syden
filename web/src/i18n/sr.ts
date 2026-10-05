@@ -223,6 +223,8 @@ export default {
   'com movimento': 'са покретом',
   'Com serifa': 'Са серифима',
   'Com tecnologia {modelo}': 'Технологија: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} не ради. Твој глас излази без сузбијања буке.',
   'Começa a aparecer': 'Почиње да се приказује',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Покрени своју или уђи у нечију помоћу кода који ти је та особа дала.',

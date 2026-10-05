@@ -222,6 +222,8 @@ export default {
   'com movimento': 'amb moviment',
   'Com serifa': 'Amb serifa',
   'Com tecnologia {modelo}': 'Amb tecnologia de {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} s’ha aturat. La teva veu surt sense supressió de soroll.',
   'Começa a aparecer': 'Comença a aparèixer',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Crea la teva, o entra a la d’algú amb el codi que t’ha passat.',

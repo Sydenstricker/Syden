@@ -220,6 +220,8 @@ export default {
   'com movimento': 'met beweging',
   'Com serifa': 'Met serif',
   'Com tecnologia {modelo}': 'Aangedryf deur {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} het gestop. Jou stem gaan uit sonder geraasonderdrukking.',
   'Começa a aparecer': 'Begin verskyn',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Begin jou eie, of sluit by iemand anders s’n aan met die kode wat hulle vir jou gegee het.',

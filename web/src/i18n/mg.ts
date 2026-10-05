@@ -226,6 +226,8 @@ export default {
   'com movimento': 'mihetsika',
   'Com serifa': 'Misy serif',
   'Com tecnologia {modelo}': 'Teknolojia: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    'Nijanona ny {modelo}. Mivoaka tsy misy fanafoanana tabataba ny feonao.',
   'Começa a aparecer': 'Manomboka miseho',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Atombohy ny anao, na midira amin’ny an’olona amin’ny kaody nomeny anao.',

@@ -225,6 +225,8 @@ export default {
   'com movimento': 's pohybem',
   'Com serifa': 'Patkové',
   'Com tecnologia {modelo}': 'Technologie: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} nefunguje. Tvůj hlas jde ven bez potlačení šumu.',
   'Começa a aparecer': 'Začne se zobrazovat',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Založ si vlastní, nebo se připoj k cizí s kódem, který ti dotyčný dal.',

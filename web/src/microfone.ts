@@ -14,8 +14,10 @@ import { connectVoiceEffect, type VoiceEffectId } from './voiceEffects';
  *   - NO APP DE DESKTOP: o DPDFNet (Ceva, Apache 2.0), nativo, num processo à parte — 3,26. Ver
  *     desktop/src/ruido. O som vai e volta por uma MessagePort ligada direto à thread de áudio
  *     (web/public/ruido/ponte.worklet.js).
- *   - NO SITE (e no app, se o nativo falhar): o GTCRN (MIT), em JavaScript puro — 3,08. Ver
- *     web/public/ruido/ORIGEM.txt.
+ *   - NO SITE: o GTCRN (MIT), em JavaScript puro — 3,08. Ver web/public/ruido/ORIGEM.txt.
+ *
+ * UM NÃO É RESERVA DO OUTRO, e a supressão do navegador também não: se o modelo cair, a voz segue sem
+ * supressão e a tela diz isso (ver EstadoDaSupressao).
  *
  * NADA DE WEBASSEMBLY, e isso é decisão de segurança, não de gosto: WebAssembly exigiria
  * 'wasm-unsafe-eval' na política do site, e o Sydenstricker decidiu não dar essa permissão. Provado com
@@ -37,20 +39,27 @@ export type MotorDeRuido = 'dpdfnet' | 'gtcrn';
 export const NOME_DO_MOTOR: Record<MotorDeRuido, string> = { dpdfnet: 'DPDFNet', gtcrn: 'GTCRN' };
 
 /*
- * QUAL MOTOR ESTÁ RODANDO AGORA, para Configurações dizer — como o Discord diz que a supressão é do Krisp.
- * Pedido do Sydenstricker (05/10/2026), depois de um amigo reclamar da voz: saber o que está sendo usado
- * ajuda a pessoa a entender a diferença entre o app e o site, e mostra na hora quando o nativo caiu e o
- * GTCRN assumiu. null quando não há chamada.
+ * O QUE ESTÁ LIMPANDO A VOZ AGORA, para Configurações dizer — como o Discord diz que a supressão é do
+ * Krisp. Pedido do Sydenstricker (05/10/2026), depois de um amigo reclamar da voz.
+ *
+ * E SE O MODELO CAIU, A TELA DIZ QUE CAIU. Não há modelo de reserva ("não quero iludir o usuário: se
+ * cair, caiu, e ajustamos o modelo" — 05/10/2026): no app, se o DPDFNet cai, a voz segue SEM supressão,
+ * e Configurações passa a dizer isso em vez de continuar anunciando um modelo que não está rodando.
+ * null quando não há chamada.
  */
-let motorEmUso: MotorDeRuido | null = null;
+export interface EstadoDaSupressao {
+  motor: MotorDeRuido;
+  rodando: boolean;
+}
+let estado: EstadoDaSupressao | null = null;
 const ouvintes = new Set<() => void>();
-function definirMotorEmUso(motor: MotorDeRuido | null) {
-  if (motorEmUso === motor) return;
-  motorEmUso = motor;
+function definirEstado(novo: EstadoDaSupressao | null) {
+  if (estado?.motor === novo?.motor && estado?.rodando === novo?.rodando) return;
+  estado = novo;
   for (const avisar of ouvintes) avisar();
 }
-export function lerMotorEmUso() {
-  return motorEmUso;
+export function lerEstadoDaSupressao() {
+  return estado;
 }
 export function aoMudarMotor(avisar: () => void) {
   ouvintes.add(avisar);
@@ -59,10 +68,14 @@ export function aoMudarMotor(avisar: () => void) {
   };
 }
 
-/** Sem chamada, o motor que ESTE aparelho usaria: o nativo no app que o tem, o GTCRN no resto. */
-export async function motorPrevisto(): Promise<MotorDeRuido> {
-  const disponivel = await desktopBridge?.ruido?.disponivel().catch(() => false);
-  return disponivel ? 'dpdfnet' : 'gtcrn';
+/**
+ * Sem chamada, o que ESTE aparelho usaria. No app: o DPDFNet — e, se o app já desistiu dele (o processo
+ * caiu três vezes), "parado", porque é isso que vai acontecer na próxima chamada. No navegador: o GTCRN.
+ */
+export async function supressaoPrevista(): Promise<EstadoDaSupressao | null> {
+  const ruido = desktopBridge?.ruido;
+  if (ruido) return { motor: 'dpdfnet', rodando: await ruido.disponivel().catch(() => false) };
+  return supressaoDisponivel() ? { motor: 'gtcrn', rodando: true } : null;
 }
 
 let modelo: Promise<{ grafo: unknown; pesos: ArrayBuffer }> | null = null;
@@ -88,8 +101,8 @@ function carregarGtcrn() {
 }
 
 /**
- * Pede ao app uma porta para a supressão nativa. null no navegador, quando o app diz que não tem
- * (outro sistema, modelo ausente, processo caindo demais) ou quando a porta não chega a tempo.
+ * Pede ao app uma porta para a supressão nativa. null quando o app diz que não tem (outro sistema,
+ * modelo ausente, processo caindo demais) ou quando a porta não chega a tempo.
  */
 async function abrirPortaNativa(): Promise<MessagePort | null> {
   const ruido = desktopBridge?.ruido;
@@ -131,8 +144,8 @@ export interface OpcoesDoMicrofone {
   supressao: boolean;
   /** De tempos em tempos: qual motor está rodando e quanto cada quadro custou. */
   aoMedirCusto?: (medida: { motor: MotorDeRuido; msPorQuadro: number; quadroMs: number; faltas?: number }) => void;
-  /** O motor nativo falhou no meio da chamada e o GTCRN assumiu: o motivo, para o diário de saúde. */
-  aoTrocarDeMotor?: (motivo: string) => void;
+  /** O modelo não montou ou caiu, e a voz seguiu sem supressão: o motivo, para o diário de saúde. */
+  aoFalhar?: (motivo: string) => void;
 }
 
 export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
@@ -160,7 +173,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
   async destroy() {
     this.geracao++;
     this.desmontar();
-    definirMotorEmUso(null);
+    definirEstado(null);
     this.processedTrack = undefined;
   }
 
@@ -171,7 +184,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
     this.desmontar();
 
     if (!this.opcoes.supressao) {
-      definirMotorEmUso(null);
+      definirEstado(null);
       const ctx = options.audioContext;
       this.source = ctx.createMediaStreamSource(new MediaStream([options.track]));
       this.destination = ctx.createMediaStreamDestination();
@@ -180,8 +193,9 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
       return;
     }
 
-    // O motor nativo primeiro (só existe no app); sem ele, o GTCRN.
-    const porta = await abrirPortaNativa();
+    // No app, o DPDFNet; no navegador, o GTCRN. Cada um sozinho: sem modelo de reserva.
+    const noApp = Boolean(desktopBridge?.ruido);
+    const porta = noApp ? await abrirPortaNativa() : null;
     if (minha !== this.geracao) {
       porta?.close();
       return;
@@ -196,16 +210,39 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
     this.pararEfeito = connectVoiceEffect(ctx, this.opcoes.efeito, this.meio, this.destination);
     this.processedTrack = this.destination.stream.getAudioTracks()[0];
 
-    if (porta) {
+    if (noApp) {
+      if (!porta) {
+        this.semSupressao('dpdfnet', 'o app não abriu a supressão nativa');
+        return;
+      }
       try {
         await this.ligarNativo(ctx, porta);
-        return;
       } catch (e) {
         porta.close();
-        this.opcoes.aoTrocarDeMotor?.(`O nativo não montou: ${e instanceof Error ? e.message : String(e)}`);
+        this.semSupressao('dpdfnet', `não montou: ${e instanceof Error ? e.message : String(e)}`);
       }
+      return;
     }
-    await this.ligarGtcrn(ctx, minha);
+    try {
+      await this.ligarGtcrn(ctx, minha);
+    } catch (e) {
+      this.semSupressao('gtcrn', `não montou: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+
+  /** O modelo não montou ou caiu: o microfone vai direto para o efeito de voz, e a tela fica sabendo. */
+  private semSupressao(motor: MotorDeRuido, motivo: string) {
+    const antigo = this.supressor;
+    this.supressor = undefined;
+    if (antigo) {
+      comCuidado(() => antigo.port.postMessage({ fechar: true }));
+      comCuidado(() => this.source?.disconnect(antigo));
+      comCuidado(() => antigo.disconnect());
+      comCuidado(() => antigo.port.close());
+    }
+    if (this.source && this.meio) this.source.connect(this.meio);
+    definirEstado({ motor, rodando: false });
+    this.opcoes.aoFalhar?.(`${NOME_DO_MOTOR[motor]}: ${motivo}`);
   }
 
   private async ligarNativo(ctx: AudioContext, porta: MessagePort) {
@@ -222,17 +259,15 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
       if (typeof d?.custoMsPorQuadro === 'number') {
         this.opcoes.aoMedirCusto?.({ motor: 'dpdfnet', msPorQuadro: d.custoMsPorQuadro, quadroMs: d.quadroMs ?? 10, faltas: d.faltas });
       }
-      if (d?.falhou) {
-        // O processo nativo caiu ou parou de responder: o GTCRN assume no mesmo lugar, e a faixa que
-        // o LiveKit está publicando continua a mesma — quem ouve só percebe a troca de timbre.
-        this.opcoes.aoTrocarDeMotor?.(d.falhou);
-        const geracao = this.geracao;
-        void this.ligarGtcrn(ctx, geracao).catch((erro) => this.opcoes.aoTrocarDeMotor?.(`GTCRN também falhou: ${String(erro)}`));
+      if (d?.falhou && this.supressor === ponte) {
+        // O processo nativo caiu ou parou de responder: a voz segue sem supressão, na mesma faixa que o
+        // LiveKit está publicando — e Configurações passa a dizer que o DPDFNet parou.
+        this.semSupressao('dpdfnet', d.falhou);
       }
     };
     ponte.port.postMessage({ porta }, [porta]);
     this.trocarSupressor(ponte);
-    definirMotorEmUso('dpdfnet');
+    definirEstado({ motor: 'dpdfnet', rodando: true });
   }
 
   private async ligarGtcrn(ctx: AudioContext, geracao: number) {
@@ -252,7 +287,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
       if (typeof custo === 'number') this.opcoes.aoMedirCusto?.({ motor: 'gtcrn', msPorQuadro: custo, quadroMs: 16 });
     };
     this.trocarSupressor(gtcrn);
-    definirMotorEmUso('gtcrn');
+    definirEstado({ motor: 'gtcrn', rodando: true });
   }
 
   /** Põe um motor entre o microfone e o efeito de voz, tirando o que estava lá. */

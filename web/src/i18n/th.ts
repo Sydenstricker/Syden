@@ -859,6 +859,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'ชื่อลอยขึ้นจากพื้นหลังเล็กน้อย',
   'Com serifa': 'มีเชิง',
   'Com tecnologia {modelo}': 'ขับเคลื่อนโดย {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} หยุดทำงานแล้ว เสียงของคุณกำลังส่งออกไปโดยไม่มีการตัดเสียงรบกวน',
   'Letra de livro, mais séria.': 'ตัวอักษรแบบหนังสือ ดูจริงจังขึ้น',
   'Máquina de escrever': 'พิมพ์ดีด',
   'Toda letra com a mesma largura.': 'ทุกตัวอักษรกว้างเท่ากัน',

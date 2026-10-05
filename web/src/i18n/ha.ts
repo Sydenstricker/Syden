@@ -848,6 +848,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Sunan yana ɗan tashi daga bayan fage.',
   'Com serifa': 'Mai ƙafa',
   'Com tecnologia {modelo}': 'Fasaha: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} ya tsaya. Muryarku tana fita ba tare da kawar da hayaniya ba.',
   'Letra de livro, mais séria.': 'Rubutun littafi, ɗan ƙara nauyi.',
   'Máquina de escrever': 'Na’urar bugawa',
   'Toda letra com a mesma largura.': 'Kowanne harafi da faɗi ɗaya.',

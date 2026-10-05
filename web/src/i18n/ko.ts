@@ -838,6 +838,8 @@ export default {
   'O nome levanta um pouco do fundo.': '이름이 배경에서 살짝 떠올라요.',
   'Com serifa': '세리프',
   'Com tecnologia {modelo}': '{modelo} 기반',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} 작동 중지. 지금 목소리가 잡음 억제 없이 나가고 있어요.',
   'Letra de livro, mais séria.': '책 글씨체, 조금 더 진지하게.',
   'Máquina de escrever': '타자기',
   'Toda letra com a mesma largura.': '모든 글자의 폭이 같아요.',

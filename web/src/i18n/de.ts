@@ -878,6 +878,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Der Name hebt sich leicht vom Hintergrund ab.',
   'Com serifa': 'Mit Serifen',
   'Com tecnologia {modelo}': 'Technologie: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} läuft nicht mehr. Deine Stimme geht ohne Rauschunterdrückung raus.',
   'Letra de livro, mais séria.': 'Buchschrift, etwas ernster.',
   'Máquina de escrever': 'Schreibmaschine',
   'Toda letra com a mesma largura.': 'Alle Buchstaben gleich breit.',

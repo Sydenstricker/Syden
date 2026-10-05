@@ -548,7 +548,7 @@ export function useVoice(socket: Socket | null) {
             aoMedirCusto: (medida) => {
               (window as unknown as { sydenSupressao?: object }).sydenSupressao = medida;
             },
-            aoTrocarDeMotor: (motivo) => reportProblem('supressão de ruído', `Trocou para o GTCRN: ${motivo}`),
+            aoFalhar: (motivo) => reportProblem('supressão de ruído', `Parou, voz sem supressão — ${motivo}`),
           }),
         );
       } catch (e) {

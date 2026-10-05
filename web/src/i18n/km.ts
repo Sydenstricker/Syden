@@ -225,6 +225,8 @@ export default {
   'com movimento': 'មានចលនា',
   'Com serifa': 'មានស៊ែរីហ្វ',
   'Com tecnologia {modelo}': 'បច្ចេកវិទ្យា៖ {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} បានឈប់ដំណើរការ។ សំឡេងរបស់អ្នកកំពុងចេញដោយគ្មានការបង្ក្រាបសំឡេងរំខាន។',
   'Começa a aparecer': 'ចាប់ផ្តើមបង្ហាញ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ចាប់ផ្តើមសហគមន៍របស់អ្នក ឬចូលរួមសហគមន៍របស់គេដោយប្រើកូដដែលគេផ្តល់ឱ្យ។',

@@ -852,6 +852,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Το όνομα σηκώνεται λίγο από το φόντο.',
   'Com serifa': 'Με πατούρα',
   'Com tecnologia {modelo}': 'Τεχνολογία: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    'Το {modelo} σταμάτησε. Η φωνή σου βγαίνει χωρίς καταστολή θορύβου.',
   'Letra de livro, mais séria.': 'Γράμματα βιβλίου, πιο σοβαρά.',
   'Máquina de escrever': 'Γραφομηχανή',
   'Toda letra com a mesma largura.': 'Κάθε γράμμα με το ίδιο πλάτος.',

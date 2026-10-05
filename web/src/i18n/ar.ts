@@ -871,6 +871,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'الاسم يرتفع قليلًا عن الخلفية.',
   'Com serifa': 'بخط مذيّل',
   'Com tecnologia {modelo}': 'بتقنية {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    'توقف {modelo}. الصوت يخرج الآن دون كتم الضجيج.',
   'Letra de livro, mais séria.': 'خط كتب، أكثر جدّية.',
   'Máquina de escrever': 'آلة كاتبة',
   'Toda letra com a mesma largura.': 'كل الحروف بعرض واحد.',

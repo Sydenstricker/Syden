@@ -3,8 +3,8 @@
  * O processo da supressão de ruído do app (um `utilityProcess` do Electron).
  *
  * POR QUE UM PROCESSO À PARTE, e não no principal: a rede neural roda em código nativo (onnxruntime), e
- * código nativo que quebra derruba o processo inteiro. Aqui, se quebrar, cai só a supressão — o
- * principal percebe, a página volta para o GTCRN do site e a chamada continua. E o processo principal,
+ * código nativo que quebra derruba o processo inteiro. Aqui, se quebrar, cai só a supressão — a voz
+ * segue sem ela, a tela diz que o DPDFNet parou, e a chamada continua. E o processo principal,
  * que desenha a janela e cuida dos atalhos, não divide tempo com a voz.
  *
  * Cada microfone que liga a supressão recebe uma porta (MessagePort) própria, ligada direto à thread de

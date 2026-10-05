@@ -831,6 +831,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'பெயர் பின்னணியிலிருந்து சற்று உயர்கிறது.',
   'Com serifa': 'செரிஃப் உடன்',
   'Com tecnologia {modelo}': 'தொழில்நுட்பம்: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} நின்றுவிட்டது. குரல் இரைச்சல் அடக்கம் இல்லாமல் செல்கிறது.',
   'Letra de livro, mais séria.': 'புத்தக எழுத்து, சற்று தீவிரம்.',
   'Máquina de escrever': 'தட்டச்சுப் பொறி',
   'Toda letra com a mesma largura.': 'ஒவ்வொரு எழுத்தும் ஒரே அகலம்.',

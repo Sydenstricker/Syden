@@ -4,8 +4,9 @@
 // grava o que ouve. Confere-se: o motor que rodou foi o nativo, e não o GTCRN do site; o processo
 // nativo deu conta (custo por quadro e nenhuma falta de som); o som chegou à Bia.
 //
-// E, de propósito, DERRUBA o processo da supressão no meio da chamada: a voz não pode parar — a página
-// tem de perceber pelo silêncio e trocar para o GTCRN sozinha.
+// E, de propósito, DERRUBA o processo da supressão no meio da chamada: a voz não pode parar, e NENHUM
+// outro modelo pode assumir no lugar (decisão do Sydenstricker, 05/10/2026: "não quero iludir o
+// usuário"). A voz segue sem supressão, e Configurações tem de dizer que o DPDFNet parou.
 //
 // Precisa do LiveKit no ar (npm run dev:livekit) e do site servido em http://localhost:5174/app/.
 //
@@ -134,12 +135,18 @@ try {
 } catch (e) {
   falhou('não consegui derrubar o processo: ' + String(e).slice(0, 120));
 }
-// Vigia de 1 s + GTCRN montar + a primeira medida dele, que só sai depois de 5 s rodando.
-const depois = await ana
-  .waitForFunction(() => window.sydenSupressao?.motor === 'gtcrn' && window.sydenSupressao, null, { timeout: 15000 })
-  .then((h) => h.jsonValue())
-  .catch(() => ana.evaluate(() => window.sydenSupressao ?? null));
-depois?.motor === 'gtcrn' ? ok('com o processo nativo morto, o GTCRN assumiu sozinho') : falhou(`depois da queda, o motor é ${depois?.motor ?? 'nenhum'}`);
+await ana.waitForTimeout(3000); // o vigia da ponte espera 1 s de silêncio
+await ana.locator('button[aria-label="Configurações"]').first().click();
+await ana.locator('.settings-tab', { hasText: /Voz e vídeo/ }).first().click();
+const aviso = (await ana.locator('.toggle-nota').innerText().catch(() => '')).trim();
+aviso === 'DPDFNet parou. Sua voz está saindo sem supressão de ruído.'
+  ? ok(`Configurações conta a verdade: "${aviso}"`)
+  : falhou(`depois da queda, Configurações diz ${JSON.stringify(aviso)}`);
+await ana.locator('.toggle-nota').scrollIntoViewIfNeeded().catch(() => {});
+await ana.screenshot({ path: 'e2e/fotos/supressao-no-app-parou.png' });
+await ana.keyboard.press('Escape');
+const motorDepois = await ana.evaluate(() => window.sydenSupressao?.motor ?? null);
+motorDepois === 'gtcrn' ? falhou('o GTCRN assumiu no lugar — não deveria haver modelo de reserva') : ok('nenhum outro modelo assumiu no lugar');
 const y = await gravar(6);
 y && nivel(y).fala > -60 ? ok(`e a voz continuou chegando à Bia (fala ${nivel(y).fala.toFixed(1)} dB)`) : falhou('depois da queda, a voz parou de chegar');
 

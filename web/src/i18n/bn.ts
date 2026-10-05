@@ -848,6 +848,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'নামটা পটভূমি থেকে একটু উঠে আসে।',
   'Com serifa': 'সেরিফযুক্ত',
   'Com tecnologia {modelo}': 'প্রযুক্তি: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} বন্ধ হয়ে গেছে। কণ্ঠ এখন আওয়াজ দমন ছাড়াই যাচ্ছে।',
   'Letra de livro, mais séria.': 'বইয়ের হরফ, একটু গম্ভীর।',
   'Máquina de escrever': 'টাইপরাইটার',
   'Toda letra com a mesma largura.': 'প্রতিটি অক্ষর একই চওড়া।',

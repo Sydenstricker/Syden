@@ -872,6 +872,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Имя чуть приподнимается над фоном.',
   'Com serifa': 'С засечками',
   'Com tecnologia {modelo}': 'Технология: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} не работает. Твой голос идёт без шумоподавления.',
   'Letra de livro, mais séria.': 'Книжный шрифт, посерьёзнее.',
   'Máquina de escrever': 'Печатная машинка',
   'Toda letra com a mesma largura.': 'Все буквы одной ширины.',

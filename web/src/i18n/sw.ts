@@ -850,6 +850,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'Jina hujitokeza kidogo kutoka usuli.',
   'Com serifa': 'Yenye serifu',
   'Com tecnologia {modelo}': 'Teknolojia: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} imesimama. Sauti yako inatoka bila kupunguza kelele.',
   'Letra de livro, mais séria.': 'Hati ya kitabu, nzito kidogo.',
   'Máquina de escrever': 'Taipureta',
   'Toda letra com a mesma largura.': 'Kila herufi ina upana sawa.',

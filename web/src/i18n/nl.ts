@@ -850,6 +850,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'De naam komt iets los van de achtergrond.',
   'Com serifa': 'Met schreef',
   'Com tecnologia {modelo}': 'Mogelijk gemaakt door {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} is gestopt. Je stem gaat eruit zonder ruisonderdrukking.',
   'Letra de livro, mais séria.': 'Boekletter, wat serieuzer.',
   'Máquina de escrever': 'Schrijfmachine',
   'Toda letra com a mesma largura.': 'Alle letters even breed.',

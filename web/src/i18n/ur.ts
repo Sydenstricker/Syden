@@ -833,6 +833,8 @@ export default {
   'O nome levanta um pouco do fundo.': 'نام پس منظر سے تھوڑا اوپر اٹھتا ہے۔',
   'Com serifa': 'سیرف کے ساتھ',
   'Com tecnologia {modelo}': 'ٹیکنالوجی: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} رک گیا ہے۔ آواز اب شور کی روک تھام کے بغیر جا رہی ہے۔',
   'Letra de livro, mais séria.': 'کتابی حروف، کچھ زیادہ سنجیدہ۔',
   'Máquina de escrever': 'ٹائپ رائٹر',
   'Toda letra com a mesma largura.': 'ہر حرف کی چوڑائی ایک جیسی۔',

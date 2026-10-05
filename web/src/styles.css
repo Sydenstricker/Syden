@@ -1920,6 +1920,12 @@ textarea {
   letter-spacing: 0.01em;
 }
 
+/* "DPDFNet parou": aviso de verdade, não rodapé — a voz está saindo sem supressão. */
+.toggle-nota-alerta {
+  color: var(--red);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
 .toggle-row input {
   position: absolute;
   opacity: 0;

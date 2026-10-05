@@ -239,6 +239,8 @@ export default {
   'com movimento': 'хөдөлгөөнтэй',
   'Com serifa': 'Хөлтэй',
   'Com tecnologia {modelo}': 'Технологи: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} зогссон. Чиний хоолой чимээ даралгүйгээр гарч байна.',
   'Começa a aparecer': 'Харагдаж эхэлнэ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Өөрийнхөө нийгэмлэгийг эхлүүл, эсвэл хэн нэгний өгсөн кодоор түүний нийгэмлэгт нэгд.',

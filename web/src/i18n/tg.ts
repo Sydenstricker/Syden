@@ -227,6 +227,8 @@ export default {
   'com movimento': 'бо ҳаракат',
   'Com serifa': 'Бо сериф',
   'Com tecnologia {modelo}': 'Технология: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} кор намекунад. Овози ту бе пахш кардани садои зиёдатӣ мебарояд.',
   'Começa a aparecer': 'Намоён шуданро сар мекунад',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Анҷумани худро оғоз кунед, ё бо рамзе, ки касе ба шумо дод, ба анҷумани ӯ ворид шавед.',

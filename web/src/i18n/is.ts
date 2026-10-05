@@ -227,6 +227,8 @@ export default {
   'com movimento': 'með hreyfingu',
   'Com serifa': 'Með þverstrikum',
   'Com tecnologia {modelo}': 'Tækni: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} virkar ekki. Röddin þín fer út án suðdeyfingar.',
   'Começa a aparecer': 'Byrjar að birtast',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Stofnaðu þitt eigið, eða gakktu í samfélag annarra með kóðanum sem viðkomandi lét þig fá.',

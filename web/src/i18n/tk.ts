@@ -228,6 +228,8 @@ export default {
   'com movimento': 'hereketli',
   'Com serifa': 'Serifli',
   'Com tecnologia {modelo}': 'Tehnologiýa: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} durdy. Sesiň galmagal basylmazdan gidýär.',
   'Começa a aparecer': 'Görünip başlaýar',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Öz jemgyýetiňi döret ýa-da saňa berlen kod bilen başga biriniňkä gir.',

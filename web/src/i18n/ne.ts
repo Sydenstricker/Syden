@@ -228,6 +228,8 @@ export default {
   'com movimento': 'चलायमान',
   'Com serifa': 'सेरिफसहित',
   'Com tecnologia {modelo}': 'प्रविधि: {modelo}',
+  '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
+    '{modelo} बन्द भयो। आवाज अहिले हल्ला नदबाई गइरहेको छ।',
   'Começa a aparecer': 'देखिन सुरु हुन्छ',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'आफ्नै सुरु गर्नुहोस्, वा कसैले दिएको कोडले उहाँको समुदायमा सामेल हुनुहोस्।',
