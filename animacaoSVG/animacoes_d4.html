@@ -125,6 +125,9 @@
 
     label.linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--borda); }
     label.linha:last-of-type { border-bottom: 0; }
+    div.linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--borda); }
+    div.linha > span:first-child { color: var(--apagado); }
+    div.linha label { margin-left: 10px; white-space: nowrap; cursor: pointer; }
     label.linha span { color: var(--apagado); }
     input[type='color'] { width: 40px; height: 32px; border: 0; background: none; cursor: pointer; }
     input[type='range'] { width: 100%; accent-color: var(--ambar); }
@@ -194,9 +197,18 @@
         </div>
 
         <div class="grupo">
-          <h3>Carregamento e espera — sem texto</h3>
+          <h3>Mascote — sem texto</h3>
           <div class="botoes">
-            <button class="preset-btn" id="presetBtn13" onclick="setPreset(13)">Ocioso<small>pisca, olha em volta, mexe a orelha</small></button>
+            <button class="preset-btn" id="presetBtn13" onclick="setPreset(13)">Ocioso<small>pisca, olha em volta, respira</small></button>
+            <button class="preset-btn" id="presetBtn14" onclick="setPreset(14)">Introdução<small>aparece, abre os olhos e fica no ocioso (clique de novo para repetir)</small></button>
+            <button class="preset-btn" id="presetBtn15" onclick="setPreset(15)">Começou a digitar<small>vira o balão com os três pontos, e volta</small></button>
+            <button class="preset-btn" id="presetBtn16" onclick="setPreset(16)">Começou a falar<small>vira o balão com as barras de voz, e volta</small></button>
+          </div>
+        </div>
+
+        <div class="grupo">
+          <h3>Só o D4: carregamento — sem texto</h3>
+          <div class="botoes">
             <button class="preset-btn" id="presetBtn1" onclick="setPreset(1)">Digitando<small>os três pontos em sequência</small></button>
             <button class="preset-btn" id="presetBtn2" onclick="setPreset(2)">Orelhas atentas<small>uma mexe, depois a outra</small></button>
             <button class="preset-btn" id="presetBtn3" onclick="setPreset(3)">Traço<small>o balão se desenha</small></button>
@@ -209,7 +221,6 @@
         <div class="grupo">
           <h3>Momentos — sem texto</h3>
           <div class="botoes">
-            <button class="preset-btn" id="presetBtn14" onclick="setPreset(14)">Introdução<small>abre os olhos, pisca e fica no ocioso (clique de novo para repetir)</small></button>
             <button class="preset-btn" id="presetBtn7" onclick="setPreset(7)">Boas-vindas<small>abre o balão e acena</small></button>
             <button class="preset-btn" id="presetBtn8" onclick="setPreset(8)">Autorizado<small>os pontos viram um certo</small></button>
             <button class="preset-btn" id="presetBtn9" onclick="setPreset(9)">Ciclo de status<small>online, ausente, não perturbe, offline</small></button>
@@ -217,11 +228,11 @@
         </div>
 
         <div class="grupo">
-          <h3>Erros — com o código</h3>
+          <h3>Erros, com o mascote — com o código</h3>
           <div class="botoes">
-            <button class="preset-btn" id="presetBtn10" onclick="setPreset(10)">Sem internet<small>olhos fechados, Wi-Fi cortado</small></button>
-            <button class="preset-btn" id="presetBtn11" onclick="setPreset(11)">Erro 500<small>orelhas compridas caídas, tremida</small></button>
-            <button class="preset-btn" id="presetBtn12" onclick="setPreset(12)">Erro 404<small>os olhos procuram, com a lupa</small></button>
+            <button class="preset-btn" id="presetBtn10" onclick="setPreset(10)">Sem internet<small>triste, orelhas murchas, Wi-Fi cortado</small></button>
+            <button class="preset-btn" id="presetBtn11" onclick="setPreset(11)">Erro 500<small>orelhas compridas caídas, olhos em X</small></button>
+            <button class="preset-btn" id="presetBtn12" onclick="setPreset(12)">Erro 404<small>olhos procurando e a lupa</small></button>
           </div>
         </div>
       </div>
@@ -235,7 +246,12 @@
         <label class="linha"><span>Creme (traço e orelhas)</span><input type="color" id="corCreme" value="#f3ebd8" oninput="atualizar()"></label>
         <label class="linha"><span>Faixa da marca</span><input type="color" id="corFaixa" value="#f5b83d" oninput="atualizar()"></label>
         <label class="linha"><span>Desenhar o quadrado</span><input type="checkbox" id="comQuadrado" checked onchange="atualizar()"></label>
-        <label class="linha"><span>Bigode (nos presets com rosto)</span><input type="checkbox" id="comBigode" onchange="atualizar()"></label>
+        <div class="linha" role="radiogroup" aria-label="Orelha do mascote"><span>Orelha do mascote</span>
+          <span><label><input type="radio" name="formaOrelha" value="antiga" checked onchange="atualizar()"> antiga (curva)</label>
+          <label><input type="radio" name="formaOrelha" value="d4" onchange="atualizar()"> D4 (oval)</label></span></div>
+        <div class="linha" role="radiogroup" aria-label="Faixa da orelha do mascote"><span>Faixa da orelha do mascote</span>
+          <span><label><input type="radio" name="corOrelha" value="rosa" checked onchange="atualizar()"> rosa</label>
+          <label><input type="radio" name="corOrelha" value="ambar" onchange="atualizar()"> âmbar</label></span></div>
         <label class="linha" style="display:block">
           <span style="display:flex;justify-content:space-between"><span>Velocidade</span><span class="valor" id="speedVal">1.0x</span></span>
           <input type="range" id="speedSlider" min="0.5" max="2.5" step="0.1" value="1.0" oninput="atualizar()">
@@ -280,11 +296,13 @@
       7: { nome: 'Boas-vindas', arquivo: 'd4-boas-vindas' },
       8: { nome: 'Autorizado', arquivo: 'd4-autorizado' },
       9: { nome: 'Ciclo de status', arquivo: 'd4-ciclo-de-status' },
-      10: { nome: 'Sem internet', arquivo: 'd4-sem-internet', codigo: 'OFFLINE — Sem conexão' },
-      11: { nome: 'Erro 500', arquivo: 'd4-erro-500', codigo: 'ERRO 500 — Problema no servidor' },
-      12: { nome: 'Erro 404', arquivo: 'd4-erro-404', codigo: 'ERRO 404 — Página não encontrada' },
-      13: { nome: 'Ocioso', arquivo: 'd4-ocioso' },
-      14: { nome: 'Introdução', arquivo: 'd4-introducao' },
+      10: { nome: 'Sem internet', arquivo: 'mascote-sem-internet', codigo: 'OFFLINE — Sem conexão' },
+      11: { nome: 'Erro 500', arquivo: 'mascote-erro-500', codigo: 'ERRO 500 — Problema no servidor' },
+      12: { nome: 'Erro 404', arquivo: 'mascote-erro-404', codigo: 'ERRO 404 — Página não encontrada' },
+      13: { nome: 'Mascote: ocioso', arquivo: 'mascote-ocioso' },
+      14: { nome: 'Mascote: introdução', arquivo: 'mascote-introducao' },
+      15: { nome: 'Começou a digitar', arquivo: 'mascote-digitando' },
+      16: { nome: 'Começou a falar', arquivo: 'mascote-falando' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -301,7 +319,6 @@
         creme: document.getElementById('corCreme').value,
         faixa: document.getElementById('corFaixa').value,
         comQuadrado: document.getElementById('comQuadrado').checked,
-        comBigode: document.getElementById('comBigode').checked,
       };
     }
 
@@ -319,39 +336,72 @@
     const pontos = (extra = '') =>
       `<g class="pontos${extra}"><circle class="p p1" cx="36" cy="58" r="4.5"/><circle class="p p2" cx="50" cy="58" r="4.5"/><circle class="p p3" cx="64" cy="58" r="4.5"/></g>`;
 
+    // =============================================================================================
+    // O MASCOTE — decisão do Sydenstricker em 05/10/2026, depois de tentar o rosto dentro do balão:
+    // "estamos forçando demais". Cada um faz o que sabe:
+    //   - o COELHO ANTIGO (sem a estrela) é o mascote: espera, fica feliz, triste, procura. Tem cara.
+    //   - o D4 é a FUNÇÃO: aparece quando alguém digita (três pontos) ou fala (barras).
+    // A transição se ancora nas ORELHAS, que os dois desenhos têm.
+    //
+    // O coelho antigo foi desenhado num quadro de 400 px; aqui ele está convertido para o sistema de
+    // 100 unidades do D4 — x' = (x - 100) / 2, y' = (y - 70) / 2 — para morar no mesmo grupo e a cabeça
+    // poder VIRAR o balão, ponto a ponto.
+    // =============================================================================================
+
     /**
-     * O ROSTO DENTRO DO BALÃO — o meio-termo entre os dois coelhos (pedido do Sydenstricker em
-     * 05/10/2026). O coelho antigo era mais amigável porque tinha cara; o D4 diz "conversa" porque é um
-     * balão. Com os olhos e o narizinho dentro do balão, ele é as duas coisas. Os três pontos continuam
-     * existindo, mas só quando há alguém digitando de verdade — parado, ele é um rosto.
+     * A CABEÇA É UM CÍRCULO ESCRITO COM OS MESMOS COMANDOS DO BALÃO (M H A V A H L L H A V A Z).
+     * Os trechos retos têm comprimento zero e o rabicho está encolhido num ponto embaixo; é isso que
+     * deixa o navegador interpolar um no outro com `d: path(...)`. Centro (50, 77.5), raio 36: o mesmo
+     * da cabeça antiga, cx=200 cy=225 r=72.
      */
-    // O NARIZ É REDONDO: o triangular lembrava bico (05/10/2026). O bigode é opcional, em teste —
-    // três fios de cada lado, finos e meio apagados, para ver se dá cara de coelho ou se polui.
-    const NARIZ = '<ellipse class="nariz" cx="50" cy="65.6" rx="3" ry="2.3"/>';
-    const bigode = () =>
-      cores().comBigode
-        ? '<g class="bigode"><path d="M45 64.6 L32 62.4 M45 66.2 L31.5 66.6 M45 67.8 L32.5 70.6"/><path d="M55 64.6 L68 62.4 M55 66.2 L68.5 66.6 M55 67.8 L67.5 70.6"/></g>'
-        : '';
-    const olhos = (fechados = false) =>
-      fechados
-        ? `<g class="olhos"><path class="linha" d="M34.5 57 Q39.5 61.5 44.5 57 M55.5 57 Q60.5 61.5 65.5 57"/>${bigode()}${NARIZ}</g>`
-        : `<g class="olhos">
-        <g class="olho olho-e"><ellipse class="creme" cx="39.5" cy="55.5" rx="5" ry="6.5"/><circle class="brilho" cx="38" cy="53.2" r="1.8"/></g>
-        <g class="olho olho-d"><ellipse class="creme" cx="60.5" cy="55.5" rx="5" ry="6.5"/><circle class="brilho" cx="59" cy="53.2" r="1.8"/></g>
-        ${bigode()}${NARIZ}
+    const CABECA = 'M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z';
+
+    /** As cores das duas variações da faixa da orelha. */
+    const FAIXAS_DO_MASCOTE = { rosa: '#F48FB1', ambar: '#F5B83D' };
+    const VERMELHO_DO_NARIZ = '#C2415A';
+
+    function opcoesDoMascote() {
+      return {
+        orelha: document.querySelector('input[name="formaOrelha"]:checked').value, // 'antiga' | 'd4'
+        faixa: FAIXAS_DO_MASCOTE[document.querySelector('input[name="corOrelha"]:checked').value],
+      };
+    }
+
+    /** As orelhas curvas do coelho antigo, convertidas. A base delas entra no crânio, como no original. */
+    const orelhasAntigas = () => `<g class="orelha orelha-e">
+        <path class="o-fora" d="M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z"/>
+        <path class="o-dentro" d="M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z"/>
+      </g>
+      <g class="orelha orelha-d">
+        <path class="o-fora" d="M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z"/>
+        <path class="o-dentro" d="M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z"/>
       </g>`;
 
-    /** A orelha comprida caída pelo lado do balão (no lugar da deitada a 60°, que parecia chifre). */
-    const orelhaCaida = (lado) => {
-      const cx = lado === 'e' ? 13 : 87;
-      const giro = lado === 'e' ? 12 : -12;
-      return `<g class="caida caida-${lado}">
-        <ellipse class="o-fora" cx="${cx}" cy="60" rx="10" ry="26" transform="rotate(${giro} ${cx} 60)"/>
-        <ellipse class="o-dentro" cx="${cx + (lado === 'e' ? 0.5 : -0.5)}" cy="61" rx="3.6" ry="17" transform="rotate(${giro} ${cx} 60)"/>
+    /** As orelhas do mascote na forma escolhida. As do D4 são exatamente as do ícone. */
+    const orelhasDoMascote = () => (opcoesDoMascote().orelha === 'd4' ? orelha('e') + orelha('d') : orelhasAntigas());
+
+    /** O rosto do coelho antigo: olhos com brilho, o narizinho de coração e o sorriso. */
+    const rostoDoMascote = ({ olhos = 'abertos', boca = 'sorriso' } = {}) => {
+      const OLHOS = {
+        abertos: `<g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="72.5" r="4"/><circle class="m-brilho" cx="33" cy="71" r="1.25"/></g>
+        <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="72.5" r="4"/><circle class="m-brilho" cx="65" cy="71" r="1.25"/></g>`,
+        fechados: `<path class="m-traco" d="M29 75 Q34 72.5 39 75 M61 75 Q66 72.5 71 75"/>`,
+        x: `<path class="m-traco" d="M30.5 69 L37.5 76 M37.5 69 L30.5 76 M62.5 69 L69.5 76 M69.5 69 L62.5 76"/>`,
+      };
+      const BOCAS = {
+        sorriso: `<path class="m-boca" d="M45 84.5 Q50 89.5 55 84.5"/>`,
+        triste: `<path class="m-boca" d="M45 88 Q50 84 55 88"/>`,
+        o: `<circle class="m-boca-o" cx="50" cy="87.5" r="2.5"/>`,
+        torta: `<path class="m-boca" d="M44 87 Q47 84.5 50 87 Q53 89.5 56 87"/>`,
+      };
+      return `<g class="rosto-m">
+        <g class="m-olhos">${OLHOS[olhos]}</g>
+        <path class="m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+        ${BOCAS[boca]}
       </g>`;
     };
 
-    /** O ocioso, reaproveitado pela introdução: piscar, olhar em volta, respirar, e uma orelha que mexe. */
+    /** O ocioso do mascote, reaproveitado pela introdução e pelas transições. */
     const CSS_OCIOSO = () => `
     @keyframes piscar { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
     @keyframes olhar { 0%, 30%, 100% { transform: none; } 36%, 50% { transform: translateX(-2.5px); } 56%, 70% { transform: translateX(2.5px); } 76% { transform: none; } }
@@ -361,9 +411,100 @@
     const anim = (nome, dur, atraso, ...resto) => `${nome} ${d(dur)} ${resto.join(' ') || 'ease-in-out'} ${d(atraso)} infinite`;
 
     /**
+     * Monta o SVG do mascote. Mesmo palco e mesmo lugar do código de erro que o D4, para as telas
+     * trocarem de um para o outro sem pular. `depois` vai por cima da cabeça (os pontos, as barras);
+     * `orelhas` substitui as orelhas escolhidas (as caídas do 500, por exemplo).
+     */
+    function montarMascote({ css, rotulo, rosto = rostoDoMascote(), orelhas = orelhasDoMascote(), depois = '', frente = '', entrada = false }) {
+      const c = cores();
+      const m = opcoesDoMascote();
+      const codigo = PRESETS[atual].codigo;
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="${rotulo}">
+  <style>
+    .o-fora, .cabeca { fill: var(--creme, ${c.creme}); }
+    .o-dentro { fill: var(--faixa, ${m.faixa}); }
+    .cabeca { stroke: var(--creme, ${c.creme}); stroke-width: 0; stroke-linejoin: round; }
+    .p, .creme { fill: var(--creme, ${c.creme}); }
+    .m-pupila { fill: #1E2533; }
+    .m-brilho { fill: #FFFFFF; }
+    .m-traco { fill: none; stroke: #1E2533; stroke-width: 1.8; stroke-linecap: round; }
+    .m-nariz { fill: ${VERMELHO_DO_NARIZ}; }
+    .m-boca { fill: none; stroke: ${VERMELHO_DO_NARIZ}; stroke-width: 1.5; stroke-linecap: round; }
+    .m-boca-o { fill: #1E2533; }
+    .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
+    .p, .barra, .m-olho, .m-olhos { transform-box: fill-box; transform-origin: center; }
+    .figura { transform-box: view-box; transform-origin: 200px 297px; }
+    .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
+${css}
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <g class="figura">${entrada ? '<g class="entrada">' : ''}
+    <g transform="translate(100 70) scale(2)">
+      ${orelhas}
+      <path class="cabeca" d="${CABECA}"/>
+      ${rosto}
+      ${depois}
+    </g>
+  ${entrada ? '</g>' : ''}</g>
+  ${frente}
+  ${codigo ? `<g class="codigo"><text x="200" y="${Y_DO_CODIGO}" text-anchor="middle">${codigo}</text></g>` : ''}
+</svg>`;
+    }
+
+    /**
+     * A transição mascote → D4 → mascote, em ciclo para ver no estúdio. No app serão três estados
+     * (parado, digitando, falando) e a troca acontece quando o estado muda; aqui ela se repete sozinha.
+     *
+     * Fases (porcentagem do ciclo de 7 s): ocioso até 22%, vira balão até 32%, fica no D4 até 68%,
+     * volta até 78%, ocioso até o fim. `miolo` é o que aparece dentro do balão (pontos ou barras).
+     */
+    function transicao({ rotulo, miolo, cssMiolo }) {
+      const c = cores();
+      const antigas = opcoesDoMascote().orelha === 'antiga';
+      // Com as orelhas antigas, o balão ganha as do D4: as antigas somem enquanto as ovais aparecem.
+      // Com as do D4, nada troca — elas são a âncora que não se mexe.
+      const orelhas = antigas
+        ? `<g class="orelhas-antigas">${orelhasAntigas()}</g><g class="orelhas-d4">${orelha('e')}${orelha('d')}</g>`
+        : orelha('e') + orelha('d');
+      const T = 7;
+      return montarMascote({
+        rotulo,
+        orelhas,
+        depois: `<g class="miolo">${miolo}</g>`,
+        css: `
+    .cabeca { animation: virarBalao ${d(T)} ease-in-out infinite; }
+    .rosto-m { animation: rostoSome ${d(T)} ease-in-out infinite; }
+    .miolo { opacity: 0; animation: mioloAparece ${d(T)} ease-in-out infinite; }
+    .orelha-e { animation: atencaoE ${d(T)} ease-in-out infinite; }
+    .orelha-d { animation: atencaoD ${d(T)} ease-in-out infinite; }
+    ${antigas ? `.orelhas-antigas { animation: orelhasSaem ${d(T)} ease-in-out infinite; }
+    .orelhas-d4 { opacity: 0; animation: orelhasEntram ${d(T)} ease-in-out infinite; }` : ''}
+    .m-olho { animation: ${anim('piscar', 3.5, 0)}; }
+    /* A COR SÓ TROCA DEPOIS DA FORMA. Mudando as duas juntas, o meio do caminho era um borrão cinza:
+       creme misturado com azul-noite. Assim a cabeça creme vira um balão creme, e só então o miolo
+       esvazia, junto com a chegada dos pontos — e o caminho de volta é o mesmo, ao contrário. */
+    @keyframes virarBalao {
+      0%, 22% { d: path('${CABECA}'); fill: ${c.creme}; stroke-width: 0; }
+      29% { d: path('${BALAO}'); fill: ${c.creme}; stroke-width: 6; }
+      33%, 66% { d: path('${BALAO}'); fill: ${c.quadrado}; stroke-width: 6; }
+      70% { d: path('${BALAO}'); fill: ${c.creme}; stroke-width: 6; }
+      77%, 100% { d: path('${CABECA}'); fill: ${c.creme}; stroke-width: 0; }
+    }
+    @keyframes rostoSome { 0%, 20% { opacity: 1; } 24%, 76% { opacity: 0; } 80%, 100% { opacity: 1; } }
+    @keyframes mioloAparece { 0%, 32% { opacity: 0; } 36%, 64% { opacity: 1; } 68%, 100% { opacity: 0; } }
+    /* As orelhas trocam SOBREPOSTAS: a oval chega antes de a curva sair, para nunca ficar sem orelha. */
+    @keyframes orelhasSaem { 0%, 22% { opacity: 1; } 28%, 72% { opacity: 0; } 78%, 100% { opacity: 1; } }
+    @keyframes orelhasEntram { 0%, 19% { opacity: 0; } 25%, 75% { opacity: 1; } 81%, 100% { opacity: 0; } }
+    @keyframes atencaoE { 0%, 22%, 78%, 100% { transform: none; } 28% { transform: scaleY(1.1); } 34%, 68% { transform: none; } }
+    @keyframes atencaoD { 0%, 22%, 78%, 100% { transform: none; } 28% { transform: scaleY(1.1); } 34%, 68% { transform: none; } }
+${cssMiolo}`,
+      });
+    }
+
+    /**
      * Monta o SVG inteiro: o estilo comum, o estilo do preset e o desenho.
-     * `rosto` substitui os três pontos (olhos, barras, certo…); `fora` vai ATRÁS do ícone (sombra do
-     * pulo) e `frente` vai NA FRENTE dele (a lupa, o selo do Wi-Fi).
+     * `rosto` substitui os três pontos (barras, certo…); `fora` vai ATRÁS do ícone (sombra do pulo) e
+     * `frente` vai NA FRENTE dele.
      */
     function montar({ css, rosto = pontos(), orelhas = orelha('e') + orelha('d'), fora = '', frente = '', rotulo, entrada = false }) {
       const c = cores();
@@ -379,10 +520,6 @@
     .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
     .p, .barra { transform-box: fill-box; transform-origin: center; }
     .figura { transform-box: view-box; transform-origin: 200px 270px; }
-    .olho, .olhos { transform-box: fill-box; transform-origin: center; }
-    .brilho { fill: ${c.quadrado}; }
-    .nariz { fill: var(--faixa, ${c.faixa}); }
-    .bigode { fill: none; stroke: var(--creme, ${c.creme}); stroke-width: 1.4; stroke-linecap: round; stroke-opacity: .55; }
     .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
 ${css}
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
@@ -552,109 +689,131 @@ ${css}
           });
 
         // ---------- erros ----------
-        case 10: // Sem internet: o coelho offline, de olhos fechados, e o Wi-Fi cortado num selo no canto
-                 // (a ideia veio do estúdio antigo). As orelhas tentam levantar e não conseguem.
-          return montar({
+        // ---------- erros: o mascote, que é quem tem emoção ----------
+        case 10: // Sem internet: olhos fechados, boca triste, orelhas caídas de lado (como no estúdio antigo),
+                 // tudo um pouco apagado — e o Wi-Fi cortado num selo no canto.
+          return montarMascote({
             rotulo: 'Sem conexão',
-            rosto: olhos(true),
+            rosto: rostoDoMascote({ olhos: 'fechados', boca: 'triste' }),
             frente: `<g class="selo">
-      <circle cx="296" cy="86" r="38" fill="#262C38" stroke="${cores().palco}" stroke-width="7"/>
-      <path class="wifi w1" d="M285 96 Q296 87 307 96"/>
-      <path class="wifi w2" d="M275 86 Q296 68 317 86"/>
-      <circle class="wifi-ponto" cx="296" cy="105" r="4.5"/>
-      <path class="corte" d="M279 109 L313 65"/>
+      <circle cx="304" cy="104" r="36" fill="#262C38" stroke="${cores().palco}" stroke-width="7"/>
+      <path class="wifi w1" d="M293 114 Q304 105 315 114"/>
+      <path class="wifi w2" d="M283 104 Q304 86 325 104"/>
+      <circle class="wifi-ponto" cx="304" cy="123" r="4.5"/>
+      <path class="corte" d="M287 127 L321 83"/>
     </g>`,
             css: `
-    .o-fora, .linha, .bigode { --creme: ${STATUS.cinzaTraco}; }
-    .balao { --creme: ${STATUS.cinzaTraco}; }
-    .o-dentro, .nariz { --faixa: ${STATUS.cinzaFaixa}; }
-    .orelha { transform: scaleY(.55); animation: tentar ${d(3.2)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .figura { opacity: .9; animation: suspiro ${d(3.2)} ease-in-out infinite; }
+    .o-dentro { --faixa: #B7C3D1; }
+    .orelha-e { transform: rotate(-35deg); animation: murchaE ${d(3.2)} ease-in-out infinite; }
+    .orelha-d { transform: rotate(35deg); animation: murchaD ${d(3.2)} ease-in-out infinite; }
     .wifi { fill: none; stroke: #9AA1B1; stroke-width: 6; stroke-linecap: round; animation: sinal ${d(2)} ease-in-out infinite; }
     .w2 { animation-delay: ${d(0.25)}; }
     .wifi-ponto { fill: #9AA1B1; }
     .corte { fill: none; stroke: ${STATUS.vermelho}; stroke-width: 6; stroke-linecap: round; }
-    .figura { animation: suspiro ${d(3.2)} ease-in-out infinite; }
-    @keyframes tentar { 0%, 30% { transform: scaleY(.55); } 42% { transform: scaleY(.92); } 52%, 100% { transform: scaleY(.55); } }
-    @keyframes sinal { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
-    @keyframes suspiro { 0%, 100% { transform: none; } 50% { transform: translateY(4px); } }`,
+    @keyframes suspiro { 0%, 100% { transform: none; } 50% { transform: translateY(5px); } }
+    @keyframes murchaE { 0%, 100% { transform: rotate(-35deg); } 50% { transform: rotate(-42deg); } }
+    @keyframes murchaD { 0%, 100% { transform: rotate(35deg); } 50% { transform: rotate(42deg); } }
+    @keyframes sinal { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }`,
           });
 
-        case 11: // Erro 500: as orelhas compridas caem pelos lados do balão (rascunho do Sydenstricker:
-                 // deitá-las a 60° fazia chifres). Barra no rosto, faixas vermelhas, e de vez em quando
-                 // uma tremida que faz as orelhas balançarem.
-          return montar({
+        case 11: // Erro 500: as orelhas compridas caídas pelos lados da cabeça (o rascunho do Sydenstricker),
+                 // olhos em X e a boca torta; de vez em quando uma tremida que balança as orelhas.
+          return montarMascote({
             rotulo: 'Erro no servidor',
-            orelhas: orelhaCaida('e') + orelhaCaida('d'),
-            rosto: `<rect class="creme" x="35" y="55" width="30" height="6" rx="3"/>`,
+            orelhas: `<g class="caida caida-e">
+        <ellipse class="o-fora" cx="12" cy="80" rx="10" ry="28" transform="rotate(14 12 80)"/>
+        <ellipse class="o-dentro" cx="12.5" cy="81" rx="3.6" ry="18" transform="rotate(14 12 80)"/>
+      </g>
+      <g class="caida caida-d">
+        <ellipse class="o-fora" cx="88" cy="80" rx="10" ry="28" transform="rotate(-14 88 80)"/>
+        <ellipse class="o-dentro" cx="87.5" cy="81" rx="3.6" ry="18" transform="rotate(-14 88 80)"/>
+      </g>`,
+            rosto: rostoDoMascote({ olhos: 'x', boca: 'torta' }),
             css: `
-    .o-dentro { --faixa: ${STATUS.vermelho}; }
     .caida { transform-box: fill-box; transform-origin: 50% 8%; animation: balancar ${d(2.6)} ease-in-out infinite; }
     .caida-d { animation-name: balancarD; }
     .figura { animation: tremer ${d(2.6)} ease-in-out infinite; }
-    .o-dentro { animation: alerta ${d(2.6)} ease-in-out infinite; }
     @keyframes tremer { 0%, 78%, 100% { transform: none; } 82% { transform: translateX(-5px) rotate(-1.5deg); } 86% { transform: translateX(5px) rotate(1.5deg); } 90% { transform: translateX(-3px); } 94% { transform: translateX(2px); } }
     @keyframes balancar { 0%, 80%, 100% { transform: none; } 85% { transform: rotate(7deg); } 90% { transform: rotate(-4deg); } 95% { transform: rotate(2deg); } }
-    @keyframes balancarD { 0%, 80%, 100% { transform: none; } 85% { transform: rotate(-7deg); } 90% { transform: rotate(4deg); } 95% { transform: rotate(-2deg); } }
-    @keyframes alerta { 0%, 76%, 100% { opacity: 1; } 84% { opacity: .45; } 92% { opacity: 1; } }`,
+    @keyframes balancarD { 0%, 80%, 100% { transform: none; } 85% { transform: rotate(-7deg); } 90% { transform: rotate(4deg); } 95% { transform: rotate(-2deg); } }`,
           });
 
-        case 12: // Erro 404: os olhos procuram de um lado para o outro e a lupa flutua na frente (a lupa veio
-                 // do estúdio antigo). A orelha esquerda caída (o "ausente": não é falha, é algo que não está lá),
-                 // do lado oposto ao da lupa, para uma não esconder a outra.
-          return montar({
+        case 12: // Erro 404: o do estúdio antigo — olhos procurando, boca em "o", uma orelha tombada e a lupa.
+          return montarMascote({
             rotulo: 'Página não encontrada',
-            orelhas: orelhaCaida('e') + orelha('d'),
-            rosto: olhos(),
+            rosto: rostoDoMascote({ boca: 'o' }),
             frente: `<g class="lupa">
-      <circle cx="292" cy="238" r="31" fill="#BFD7F5" fill-opacity=".22" stroke="${cores().creme}" stroke-width="7"/>
-      <path d="M314 260 L340 286" stroke="${cores().creme}" stroke-width="12" stroke-linecap="round"/>
-      <path d="M276 226 Q281 217 290 215" fill="none" stroke="${cores().creme}" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="298" cy="262" r="30" fill="#BFD7F5" fill-opacity=".22" stroke="${cores().creme}" stroke-width="7"/>
+      <path d="M320 284 L346 310" stroke="${cores().creme}" stroke-width="12" stroke-linecap="round"/>
+      <path d="M283 250 Q288 241 297 239" fill="none" stroke="${cores().creme}" stroke-opacity=".6" stroke-width="4" stroke-linecap="round"/>
     </g>`,
             css: `
-    .o-dentro { --faixa: ${STATUS.ausente}; }
-    .caida { transform-box: fill-box; transform-origin: 50% 8%; }
-    .olhos { animation: procurar ${d(3.6)} ease-in-out infinite; }
-    .olho { animation: piscar ${d(3.6)} ease-in-out infinite; }
-    .orelha-d { animation: ouvir ${d(3.6)} ease-in-out infinite; }
-    .lupa { transform-box: view-box; transform-origin: 300px 250px; animation: flutuar ${d(3.6)} ease-in-out infinite; }
-    @keyframes procurar { 0%, 100% { transform: none; } 20%, 38% { transform: translateX(-4px); } 55%, 80% { transform: translate(4px, 1.5px); } }
-    @keyframes piscar { 0%, 44%, 52%, 100% { transform: none; } 48% { transform: scaleY(.1); } }
+    .orelha-d { transform: rotate(40deg); }
+    .m-olhos { animation: procurar ${d(4)} ease-in-out infinite; }
+    .m-olho { animation: piscar ${d(4)} ease-in-out infinite; }
+    .orelha-e { animation: ouvir ${d(4)} ease-in-out infinite; }
+    .lupa { transform-box: view-box; transform-origin: 300px 270px; animation: flutuar ${d(3)} ease-in-out infinite; }
+    @keyframes procurar { 0%, 100% { transform: none; } 20%, 40% { transform: translateX(-3px); } 55%, 80% { transform: translate(3px, 1px); } }
+    @keyframes piscar { 0%, 46%, 54%, 100% { transform: none; } 50% { transform: scaleY(.1); } }
     @keyframes ouvir { 0%, 40%, 100% { transform: none; } 46% { transform: rotate(-12deg); } 52% { transform: rotate(4deg); } 58% { transform: none; } }
-    @keyframes flutuar { 0%, 100% { transform: none; } 50% { transform: translate(-6px, -8px) rotate(6deg); } }`,
+    @keyframes flutuar { 0%, 100% { transform: none; } 50% { transform: translate(-4px, -8px) rotate(5deg); } }`,
           });
 
-        // ---------- o rosto: o meio-termo ----------
-        case 13: // Ocioso: ninguém está digitando. Ele só existe — pisca, olha em volta, respira, mexe uma orelha.
-          return montar({
+        // ---------- o mascote ----------
+        case 13: // Ocioso: ninguém está digitando nem falando. Ele só existe — pisca, olha em volta, respira.
+          return montarMascote({
             rotulo: 'Syden',
-            rosto: olhos(),
             css: CSS_OCIOSO() + `
-    .olho { animation: piscar ${d(4.2)} ease-in-out infinite; }
-    .olhos { animation: olhar ${d(8)} ease-in-out infinite; }
-    .orelha-e { animation: ociosaE ${d(6.4)} ease-in-out infinite; }
-    .orelha-d { animation: ociosaD ${d(6.4)} ease-in-out infinite; }
-    .figura { animation: boiar ${d(3.6)} ease-in-out infinite; }`,
+    .m-olho { animation: ${anim('piscar', 4.2, 0)}; }
+    .m-olhos { animation: ${anim('olhar', 8, 0)}; }
+    .orelha-e { animation: ${anim('ociosaE', 6.4, 0)}; }
+    .orelha-d { animation: ${anim('ociosaD', 6.4, 0)}; }
+    .figura { animation: ${anim('boiar', 3.6, 0)}; }`,
           });
 
-        case 14: // Introdução: o balão abre, as orelhas sobem, os olhos abrem, ele pisca — e segue no ocioso.
-                 // Toca uma vez: cada parte entra com atraso e, terminada a entrada, assume o ritmo do ocioso.
-          return montar({
+        case 14: // Introdução: a cabeça aparece, as orelhas sobem, os olhos abrem, ele pisca, sorri — e segue
+                 // no ocioso, sem corte. Toca uma vez: clique de novo no botão para repetir.
+          return montarMascote({
             rotulo: 'Syden',
-            rosto: olhos(),
             entrada: true,
             css: CSS_OCIOSO() + `
-    .entrada { transform-box: view-box; transform-origin: 200px 220px; animation: abrir ${d(0.8)} cubic-bezier(.34,1.56,.64,1) both; }
+    .entrada { transform-box: view-box; transform-origin: 200px 230px; animation: abrir ${d(0.8)} cubic-bezier(.34,1.56,.64,1) both; }
     .orelha-e { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.45)} both, ${anim('ociosaE', 6.4, 2.6)}; }
     .orelha-d { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.55)} both, ${anim('ociosaD', 6.4, 2.6)}; }
-    .olho { animation: abrirOlho ${d(0.35)} ease-out ${d(1)} both, piscaUma ${d(0.32)} ease-in-out ${d(1.8)}, ${anim('piscar', 4.2, 2.6)}; }
-    .nariz, .bigode { animation: aparecer ${d(0.3)} ease-out ${d(1.15)} both; }
-    .olhos { animation: ${anim('olhar', 8, 2.6)}; }
+    .m-olho { animation: abrirOlho ${d(0.35)} ease-out ${d(1)} both, piscaUma ${d(0.32)} ease-in-out ${d(1.8)}, ${anim('piscar', 4.2, 2.6)}; }
+    .m-nariz, .m-boca { animation: aparecer ${d(0.3)} ease-out ${d(1.3)} both; }
+    .m-olhos { animation: ${anim('olhar', 8, 2.6)}; }
     .figura { animation: ${anim('boiar', 3.6, 2.6)}; }
     @keyframes abrir { 0% { transform: scale(0); opacity: 0; } 100% { transform: none; opacity: 1; } }
     @keyframes subir { 0% { transform: scaleY(0); } 100% { transform: none; } }
     @keyframes abrirOlho { 0% { transform: scaleY(0); } 100% { transform: none; } }
     @keyframes piscaUma { 0%, 100% { transform: none; } 50% { transform: scaleY(.1); } }
     @keyframes aparecer { 0% { opacity: 0; } 100% { opacity: 1; } }`,
+          });
+
+        case 15: // Começou a digitar: o mascote vira o balão do D4 com os três pontos, e volta quando para.
+          return transicao({
+            rotulo: 'Digitando',
+            miolo: pontos(),
+            cssMiolo: `
+    .p { animation: pontos ${d(1.2)} ease-in-out infinite; }
+    .p2 { animation-delay: ${d(0.18)}; }
+    .p3 { animation-delay: ${d(0.36)}; }
+    @keyframes pontos { 0%, 60%, 100% { transform: translateY(0); opacity: .35; } 30% { transform: translateY(-4px); opacity: 1; } }`,
+          });
+
+        case 16: // Começou a falar: o mesmo caminho, mas dentro do balão vão as barras de voz.
+          return transicao({
+            rotulo: 'Falando',
+            miolo: `<rect class="creme barra b1" x="33.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b2" x="47.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b3" x="61.5" y="49" width="5" height="18" rx="2.5"/>`,
+            cssMiolo: `
+    .barra { animation: falar ${d(0.9)} ease-in-out infinite; }
+    .b2 { animation-delay: ${d(0.15)}; }
+    .b3 { animation-delay: ${d(0.3)}; }
+    @keyframes falar { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }`,
           });
       }
       // Não devia acontecer; se acontecer, a tela diz em vez de ficar em branco (lição do primeiro estúdio).
