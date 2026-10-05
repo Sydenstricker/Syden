@@ -42,6 +42,7 @@ const NOMES = {
   15: 'Digitar (transição)',
   16: 'Falar (transição)',
   17: 'Status (mascote)',
+  18: 'Ouvindo música',
 };
 const CODIGOS = { 10: 'OFFLINE — Sem conexão', 11: 'ERRO 500 — Problema no servidor', 12: 'ERRO 404 — Página não encontrada' };
 

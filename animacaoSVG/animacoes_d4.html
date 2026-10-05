@@ -202,6 +202,7 @@
             <button class="preset-btn" id="presetBtn13" onclick="setPreset(13)">Ocioso<small>pisca, olha em volta, respira</small></button>
             <button class="preset-btn" id="presetBtn14" onclick="setPreset(14)">Introdução<small>aparece, abre os olhos e fica no ocioso (clique de novo para repetir)</small></button>
             <button class="preset-btn" id="presetBtn15" onclick="setPreset(15)">Começou a digitar<small>vira o balão com os três pontos, e volta</small></button>
+            <button class="preset-btn" id="presetBtn18" onclick="setPreset(18)">Ouvindo música<small>fone, olhos felizes e notas de vez em quando (ideia)</small></button>
             <button class="preset-btn" id="presetBtn16" onclick="setPreset(16)">Começou a falar<small>vira o balão com as barras de voz, e volta</small></button>
           </div>
         </div>
@@ -301,6 +302,7 @@
       15: { nome: 'Começou a digitar', arquivo: 'mascote-digitando' },
       16: { nome: 'Começou a falar', arquivo: 'mascote-falando' },
       17: { nome: 'Ciclo de status (mascote)', arquivo: 'mascote-ciclo-de-status' },
+      18: { nome: 'Ouvindo música', arquivo: 'mascote-ouvindo-musica' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -378,6 +380,20 @@
      *  depois de comparar com as ovais do D4. */
     const orelhasDoMascote = () => orelhasAntigas();
 
+    /**
+     * As orelhas compridas caídas pelos lados da cabeça (o rascunho do Sydenstricker para o 500, e
+     * também o offline do ciclo de status). Nascem dentro do crânio, fazem a curva por cima da borda e
+     * descem pelos lados — por isso parecem presas, e não coladas por fora.
+     */
+    const ORELHAS_CAIDAS = `<g class="caida caida-e">
+        <path class="o-fora" d="M36 47 C24 40, 8 50, 6 76 C5 92, 10 102, 16 101 C22 100, 22 88, 22 76 C22 62, 28 54, 38 52 Z"/>
+        <path class="o-dentro" d="M31 53 C21 53, 13 63, 12 78 C11 90, 14 96, 16.5 95 C19 94, 18.5 86, 18.5 76 C18.5 64, 23 58, 31 56 Z"/>
+      </g>
+      <g class="caida caida-d">
+        <path class="o-fora" d="M64 47 C76 40, 92 50, 94 76 C95 92, 90 102, 84 101 C78 100, 78 88, 78 76 C78 62, 72 54, 62 52 Z"/>
+        <path class="o-dentro" d="M69 53 C79 53, 87 63, 88 78 C89 90, 86 96, 83.5 95 C81 94, 81.5 86, 81.5 76 C81.5 64, 77 58, 69 56 Z"/>
+      </g>`;
+
     /** O rosto do coelho antigo: olhos com brilho, o narizinho de coração e o sorriso. */
     const rostoDoMascote = ({ olhos = 'abertos', boca = 'sorriso', bochechas = false } = {}) => {
       const OLHOS = {
@@ -385,6 +401,11 @@
         <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="72.5" r="4"/><circle class="m-brilho" cx="65" cy="71" r="1.25"/></g>`,
         fechados: `<path class="m-traco" d="M29 75 Q34 72.5 39 75 M61 75 Q66 72.5 71 75"/>`,
         x: `<path class="m-traco" d="M30.5 69 L37.5 76 M37.5 69 L30.5 76 M62.5 69 L69.5 76 M69.5 69 L62.5 76"/>`,
+        // Feliz, de olhos fechados em arco — o que deixa o autorizado.svg antigo tão amigável.
+        felizes: `<path class="m-traco m-feliz" d="M29 72.5 Q34 67.5 39 72.5 M61 72.5 Q66 67.5 71 72.5"/>`,
+        // Lendo: as pupilas descem para a tela, sem pálpebra pesada — calmo, e não bravo.
+        lendo: `<g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="74.5" r="4"/><circle class="m-brilho" cx="33" cy="73.3" r="1.2"/></g>
+        <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="74.5" r="4"/><circle class="m-brilho" cx="65" cy="73.3" r="1.2"/></g>`,
         // Concentrado: as pálpebras descem até a metade e o olhar vai para baixo — está olhando o que faz.
         focado: `<g class="m-olho m-olho-e"><path class="m-pupila" d="M30 73 A4 4 0 0 0 38 73 Z"/><path class="m-traco" d="M29 72.4 H39"/></g>
         <g class="m-olho m-olho-d"><path class="m-pupila" d="M62 73 A4 4 0 0 0 70 73 Z"/><path class="m-traco" d="M61 72.4 H71"/></g>`,
@@ -395,6 +416,7 @@
         o: `<circle class="m-boca-o" cx="50" cy="87.5" r="2.5"/>`,
         torta: `<path class="m-boca" d="M44 87 Q47 84.5 50 87 Q53 89.5 56 87"/>`,
         reta: `<path class="m-boca" d="M45.5 86.5 H54.5"/>`,
+        sorrisao: `<path class="m-boca m-sorrisao" d="M43.5 84 Q50 91.5 56.5 84"/>`,
       };
       return `<g class="rosto-m">
         ${bochechas ? '<g class="m-bochechas"><ellipse cx="25.5" cy="82" rx="5.5" ry="3.2"/><ellipse cx="74.5" cy="82" rx="5.5" ry="3.2"/></g>' : ''}
@@ -445,6 +467,8 @@
     .m-boca { fill: none; stroke: ${VERMELHO_DO_NARIZ}; stroke-width: 1.5; stroke-linecap: round; }
     .m-boca-o { fill: #1E2533; }
     .m-bochechas { fill: #F48FB1; opacity: .5; }
+    .m-feliz { stroke-width: 2.3; }
+    .m-sorrisao { stroke-width: 1.8; }
     .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
     .p, .barra, .m-olho, .m-olhos { transform-box: fill-box; transform-origin: center; }
     .figura { transform-box: view-box; transform-origin: 200px 297px; }
@@ -766,14 +790,7 @@ ${css}
             // AS ORELHAS NASCEM NO ALTO DA CABEÇA. A primeira versão eram elipses soltas ao lado da cabeça,
             // e pareciam coladas por fora ("descolado da cabeça"). Agora cada uma sai de dentro do crânio
             // (a base fica escondida atrás da cabeça), faz a curva por cima da borda e desce pelo lado.
-            orelhas: `<g class="caida caida-e">
-        <path class="o-fora" d="M36 47 C24 40, 8 50, 6 76 C5 92, 10 102, 16 101 C22 100, 22 88, 22 76 C22 62, 28 54, 38 52 Z"/>
-        <path class="o-dentro" d="M31 53 C21 53, 13 63, 12 78 C11 90, 14 96, 16.5 95 C19 94, 18.5 86, 18.5 76 C18.5 64, 23 58, 31 56 Z"/>
-      </g>
-      <g class="caida caida-d">
-        <path class="o-fora" d="M64 47 C76 40, 92 50, 94 76 C95 92, 90 102, 84 101 C78 100, 78 88, 78 76 C78 62, 72 54, 62 52 Z"/>
-        <path class="o-dentro" d="M69 53 C79 53, 87 63, 88 78 C89 90, 86 96, 83.5 95 C81 94, 81.5 86, 81.5 76 C81.5 64, 77 58, 69 56 Z"/>
-      </g>`,
+            orelhas: ORELHAS_CAIDAS,
             rosto: rostoDoMascote({ olhos: 'x', boca: 'torta' }),
             // O SERVIDOR EM CIMA DIZ DE QUEM É O ERRO: nosso, não de quem está usando. Mesmo selo e mesmo
             // lugar do Wi-Fi do "sem internet", com a luz de baixo piscando em vermelho.
@@ -823,47 +840,57 @@ ${css}
         case 17: // Ciclo de status com o mascote, para comparar com o do D4 (preset 9). Mesma ideia do SPEC:
                  // a POSTURA das orelhas diz o status e a cor da faixa reforça — e aqui o rosto ajuda também.
                  //   online: orelhas em pé, olhos abertos, sorriso;
-                 //   ausente: uma orelha caída, olhos fechados (cochilando);
-                 //   ocupado: de fone, olhar concentrado para baixo, orelhas abaixadas, no ritmo do que faz;
-                 //   offline: orelhas caídas de lado, tudo cinza, olhos fechados e boca triste.
+                 //   ausente: DORMINDO — uma orelha caída, olhos fechados, boquinha aberta e "zzz" subindo;
+                 //   ocupado: IMERSO NO QUE FAZ, sem cara de bravo — o notebook na frente, o olhar descendo
+                 //     para a tela e lendo, um sorrisinho tranquilo. (O fone virou o preset "Ouvindo música":
+                 //     cara de concentrado com fone parecia irritado, e combina mais com música.)
+                 //   offline: as orelhas caem pelos lados, como no 500, e tudo fica cinza e triste.
           return montarMascote({
             rotulo: 'Status do coelho',
+            // No offline as orelhas TROCAM de forma: as de sempre somem e entram as compridas caídas. Girar
+            // as de sempre deixava a base delas para fora da cabeça, e elas pareciam flutuar.
+            orelhas: `${orelhasAntigas()}<g class="orelhas-off">${ORELHAS_CAIDAS}</g>`,
             rosto: `<g class="f-on">${rostoDoMascote()}</g>
-      <g class="f-aus">${rostoDoMascote({ olhos: 'fechados', boca: 'sorriso' })}</g>
-      <g class="f-dnd">${rostoDoMascote({ olhos: 'focado', boca: 'reta' })}
-        <g class="fone">
-          <path class="fone-arco" d="M17 80 C17 46, 83 46, 83 80"/>
-          <rect class="fone-concha" x="9" y="72" width="12" height="20" rx="5"/>
-          <rect class="fone-concha" x="79" y="72" width="12" height="20" rx="5"/>
-          <rect class="fone-luz" x="12.5" y="79" width="5" height="6" rx="2.5"/>
-          <rect class="fone-luz" x="82.5" y="79" width="5" height="6" rx="2.5"/>
+      <g class="f-aus">${rostoDoMascote({ olhos: 'fechados', boca: 'o' })}
+        <g class="zzz"><path class="z z1" d="M73 45 H78 L73 51 H78"/><path class="z z2" d="M73 45 H78 L73 51 H78"/><path class="z z3" d="M73 45 H78 L73 51 H78"/></g>
+      </g>
+      <g class="f-dnd">${rostoDoMascote({ olhos: 'lendo', boca: 'sorriso' })}
+        <g class="notebook">
+          <rect class="nb-tampa" x="31" y="91" width="38" height="22" rx="3"/>
+          <circle class="nb-logo" cx="50" cy="102" r="2.2"/>
+          <rect class="nb-base" x="25" y="111.5" width="50" height="4" rx="2"/>
         </g>
       </g>
       <g class="f-off">${rostoDoMascote({ olhos: 'fechados', boca: 'triste' })}</g>`,
             css: `
-    .orelha-e { animation: cicloE ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite; }
-    .orelha-d { animation: cicloD ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    /* A troca das orelhas no offline é SECA (step-end) e numa animação à parte: posta junto da postura,
+       a opacidade era interpolada desde o começo do ciclo e as orelhas iam sumindo já no online. */
+    .orelha-e { animation: cicloE ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite, orelhasSomem ${d(8)} step-end infinite; }
+    .orelha-d { animation: cicloD ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite, orelhasSomem ${d(8)} step-end infinite; }
+    @keyframes orelhasSomem { 0% { opacity: 1; } 75% { opacity: 0; } }
+    .orelhas-off { opacity: 0; animation: orelhasOff ${d(8)} step-end infinite; }
     .o-dentro { animation: faixa ${d(8)} step-end infinite; }
     .o-fora, .cabeca { animation: pele ${d(8)} step-end infinite; }
     .f-aus, .f-dnd, .f-off { opacity: 0; }
     .f-on { animation: rostoOn ${d(8)} step-end infinite; }
     .f-aus { animation: rostoAus ${d(8)} step-end infinite; }
     .f-dnd { animation: rostoDnd ${d(8)} step-end infinite; }
-    .fone-arco { fill: none; stroke: #2A3142; stroke-width: 4.5; stroke-linecap: round; }
-    .fone-concha { fill: #2A3142; }
-    .fone-luz { fill: ${STATUS.vermelho}; }
-    .cabeca, .rosto-m, .fone { transform-box: view-box; transform-origin: 200px 297px; }
-    .figura { animation: concentrado ${d(8)} linear infinite; }
-    @keyframes concentrado {
-      0%, 50% { transform: none; }
-      53% { transform: rotate(-1.5deg); } 56% { transform: rotate(1.5deg); } 59% { transform: rotate(-1.5deg); }
-      62% { transform: rotate(1.5deg); } 65% { transform: rotate(-1.5deg); } 68% { transform: rotate(1.5deg); }
-      71%, 100% { transform: none; }
-    }
     .f-off { animation: rostoOff ${d(8)} step-end infinite; }
     .f-on .m-olho { animation: piscar ${d(2.7)} ease-in-out infinite; }
-    @keyframes cicloE { 0%, 47% { transform: none; } 50%, 72% { transform: rotate(-24deg) scaleY(.88); } 75%, 100% { transform: rotate(-35deg); } }
-    @keyframes cicloD { 0%, 22% { transform: none; } 25%, 47% { transform: rotate(60deg) scaleY(.92); } 50%, 72% { transform: rotate(24deg) scaleY(.88); } 75%, 100% { transform: rotate(35deg); } }
+    /* Dormindo: os "z" nascem perto da cabeça e sobem crescendo e sumindo, um atrás do outro. */
+    .z { fill: none; stroke: ${cores().creme}; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform-box: fill-box; transform-origin: center; opacity: 0; animation: zzz ${d(2.4)} ease-out infinite; }
+    .z2 { animation-delay: ${d(0.8)}; }
+    .z3 { animation-delay: ${d(1.6)}; }
+    @keyframes zzz { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(14px, -24px) scale(1.5); } }
+    /* Imerso: os olhos leem a tela da esquerda para a direita e voltam ao começo da linha. */
+    .f-dnd .m-olhos { animation: ler ${d(2.4)} ease-in-out infinite; }
+    @keyframes ler { 0% { transform: translateX(-1.6px); } 70% { transform: translateX(1.6px); } 78%, 100% { transform: translateX(-1.6px); } }
+    .nb-tampa { fill: #2A3142; }
+    .nb-logo { fill: var(--faixa, ${cores().faixa}); opacity: .9; }
+    .nb-base { fill: #3A4255; }
+    @keyframes cicloE { 0%, 22% { transform: none; } 25%, 47% { transform: rotate(-58deg) scaleY(.92); } 50%, 72% { transform: rotate(-10deg); } 75%, 100% { transform: none; } }
+    @keyframes cicloD { 0%, 47% { transform: none; } 50%, 72% { transform: rotate(10deg); } 75%, 100% { transform: none; } }
+    @keyframes orelhasOff { 0% { opacity: 0; } 75% { opacity: 1; } }
     @keyframes faixa { 0% { fill: ${STATUS.verde}; } 25% { fill: ${STATUS.ausente}; } 50% { fill: ${STATUS.vermelho}; } 75% { fill: ${STATUS.cinzaFaixa}; } }
     @keyframes pele { 0% { fill: ${cores().creme}; } 75% { fill: #A9AFBB; } }
     @keyframes rostoOn { 0% { opacity: 1; } 25% { opacity: 0; } }
@@ -871,6 +898,40 @@ ${css}
     @keyframes rostoDnd { 0% { opacity: 0; } 50% { opacity: 1; } 75% { opacity: 0; } }
     @keyframes rostoOff { 0% { opacity: 0; } 75% { opacity: 1; } }
     @keyframes piscar { 0%, 90%, 100% { transform: none; } 95% { transform: scaleY(.1); } }`,
+          });
+
+        case 18: // Ouvindo música (ideia separada do "ocupado"): fone que abraça a cabeça, com o arco passando
+                 // na frente da base das orelhas e as conchas encostadas nos lados; olhos felizes, a cabeça
+                 // no ritmo, e notas que escapam de vez em quando.
+          return montarMascote({
+            rotulo: 'Ouvindo música',
+            rosto: `${rostoDoMascote({ olhos: 'felizes', boca: 'sorriso', bochechas: true })}
+      <g class="fone">
+        <path class="fone-arco" d="M17 70 C17 36, 83 36, 83 70"/>
+        <rect class="fone-concha" x="11" y="62" width="11" height="20" rx="5"/>
+        <rect class="fone-concha" x="78" y="62" width="11" height="20" rx="5"/>
+      </g>
+      <g class="notas">
+        <g class="nota n1"><ellipse cx="86" cy="50" rx="2.6" ry="2" transform="rotate(-20 86 50)"/><path d="M88.3 49.5 V38 Q92 39.5 92 43"/></g>
+        <g class="nota n2"><ellipse cx="12" cy="52" rx="2.6" ry="2" transform="rotate(-20 12 52)"/><path d="M14.3 51.5 V40 Q18 41.5 18 45"/></g>
+        <g class="nota n3"><ellipse cx="90" cy="64" rx="2.6" ry="2" transform="rotate(-20 90 64)"/><path d="M92.3 63.5 V52 Q96 53.5 96 57"/></g>
+      </g>`,
+            css: `
+    .fone-arco { fill: none; stroke: #2A3142; stroke-width: 4; stroke-linecap: round; }
+    .fone-concha { fill: #2A3142; }
+    .figura { animation: ritmo ${d(1.2)} ease-in-out infinite; }
+    .orelha-e { animation: ritmoE ${d(1.2)} ease-in-out infinite; }
+    .orelha-d { animation: ritmoD ${d(1.2)} ease-in-out infinite; }
+    .nota ellipse { fill: var(--faixa, ${cores().faixa}); }
+    .nota path { fill: none; stroke: var(--faixa, ${cores().faixa}); stroke-width: 1.4; stroke-linecap: round; }
+    .nota { transform-box: fill-box; transform-origin: center; opacity: 0; animation: nota ${d(4.8)} ease-out infinite; }
+    .n2 { animation-delay: ${d(1.7)}; }
+    .n3 { animation-delay: ${d(3.1)}; }
+    /* ESPORÁDICAS: cada nota aparece só no primeiro terço do seu ciclo, e os atrasos não se alinham. */
+    @keyframes nota { 0% { opacity: 0; transform: translate(0, 4px) rotate(-8deg); } 8% { opacity: 1; } 30% { opacity: 0; transform: translate(4px, -14px) rotate(10deg); } 100% { opacity: 0; } }
+    @keyframes ritmo { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg) translateY(-2px); } }
+    @keyframes ritmoE { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(3deg); } }
+    @keyframes ritmoD { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }`,
           });
 
         // ---------- o mascote ----------
@@ -885,27 +946,36 @@ ${css}
     .figura { animation: ${anim('boiar', 3.6, 0)}; }`,
           });
 
-        case 14: // Introdução: a cabeça aparece, as orelhas sobem, os olhos abrem, ele pisca, sorri — e segue
+        case 14: // Introdução: a cabeça aparece, as orelhas sobem, os olhos abrem — e então o MOMENTO FELIZ:
+                 // olhos fechados em arco, sorrisão e bochechas, como no autorizado.svg antigo (o que o deixa
+                 // tão amigável é justamente o olho fechado de contentamento). Depois ele abre os olhos e segue
                  // no ocioso, sem corte. Toca uma vez: clique de novo no botão para repetir.
           return montarMascote({
             rotulo: 'Syden',
-            rosto: rostoDoMascote({ bochechas: true }),
+            rosto: `<g class="rosto-normal">${rostoDoMascote({ bochechas: true })}</g>
+      <g class="rosto-feliz">${rostoDoMascote({ olhos: 'felizes', boca: 'sorrisao', bochechas: true })}</g>`,
             entrada: true,
             css: CSS_OCIOSO() + `
     .entrada { transform-box: view-box; transform-origin: 200px 230px; animation: abrir ${d(0.8)} cubic-bezier(.34,1.56,.64,1) both; }
-    .orelha-e { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.45)} both, ${anim('ociosaE', 6.4, 2.6)}; }
-    .orelha-d { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.55)} both, ${anim('ociosaD', 6.4, 2.6)}; }
-    .m-olho { animation: abrirOlho ${d(0.35)} ease-out ${d(1)} both, piscaUma ${d(0.32)} ease-in-out ${d(1.8)}, ${anim('piscar', 4.2, 2.6)}; }
+    .orelha-e { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.45)} both, alegria ${d(4.2)} ease-in-out, ${anim('ociosaE', 6.4, 3.6)}; }
+    .orelha-d { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.55)} both, alegria ${d(4.2)} ease-in-out, ${anim('ociosaD', 6.4, 3.6)}; }
+    .m-olho { animation: abrirOlho ${d(0.35)} ease-out ${d(1)} both, ${anim('piscar', 4.2, 3.6)}; }
     .m-nariz, .m-boca { animation: aparecer ${d(0.3)} ease-out ${d(1.3)} both; }
-    .m-bochechas { animation: corar ${d(0.5)} ease-out ${d(1.45)} both; }
-    @keyframes corar { 0% { opacity: 0; } 100% { opacity: .5; } }
-    .m-olhos { animation: ${anim('olhar', 8, 2.6)}; }
-    .figura { animation: ${anim('boiar', 3.6, 2.6)}; }
+    .m-bochechas { opacity: .5; animation: corar ${d(0.5)} ease-out ${d(1.45)} both; }
+    .rosto-feliz { opacity: 0; animation: momentoFeliz ${d(4.2)} ease-in-out both; }
+    .rosto-normal { animation: momentoNormal ${d(4.2)} ease-in-out both; }
+    .m-olhos { animation: ${anim('olhar', 8, 3.6)}; }
+    .figura { animation: pulinho ${d(4.2)} ease-in-out, ${anim('boiar', 3.6, 3.6)}; }
     @keyframes abrir { 0% { transform: scale(0); opacity: 0; } 100% { transform: none; opacity: 1; } }
     @keyframes subir { 0% { transform: scaleY(0); } 100% { transform: none; } }
     @keyframes abrirOlho { 0% { transform: scaleY(0); } 100% { transform: none; } }
-    @keyframes piscaUma { 0%, 100% { transform: none; } 50% { transform: scaleY(.1); } }
-    @keyframes aparecer { 0% { opacity: 0; } 100% { opacity: 1; } }`,
+    @keyframes aparecer { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes corar { 0% { opacity: 0; } 100% { opacity: .5; } }
+    /* O momento feliz: de ~1,9 s a ~3,1 s. As bochechas ficam nas duas caras, então não piscam na troca. */
+    @keyframes momentoFeliz { 0%, 44% { opacity: 0; } 48%, 72% { opacity: 1; } 77%, 100% { opacity: 0; } }
+    @keyframes momentoNormal { 0%, 44% { opacity: 1; } 48%, 72% { opacity: 0; } 77%, 100% { opacity: 1; } }
+    @keyframes alegria { 0%, 46% { transform: none; } 53% { transform: scaleY(1.1); } 60%, 100% { transform: none; } }
+    @keyframes pulinho { 0%, 46% { transform: none; } 52% { transform: translateY(-8px); } 58% { transform: translateY(1px) scale(1.02, .98); } 63%, 100% { transform: none; } }`,
           });
 
         case 15: // Começou a digitar: o mascote vira o balão do D4 com os três pontos, e volta quando para.
