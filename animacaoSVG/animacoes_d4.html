@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estúdio de animações D4</title>
+  <!--
+    O SEGUNDO ESTÚDIO, para o coelho D4 do rebrand de 05/10/2026 (orelhas, balão e três pontos).
+    O primeiro, logo_loading_screen_animations.html, é o do coelho na estrela e fica como está.
+
+    Diferenças de propósito em relação ao primeiro:
+      - nada de fora: sem Tailwind de CDN e sem Google Fonts. A página abre igual sem internet, que é
+        exatamente a situação de uma das telas que ela desenha;
+      - a regra das animações do CLAUDE.md vale aqui dentro: quem ESPERA não tem texto, quem FALHOU tem
+        o código, no formato "CÓDIGO — descrição", sempre na mesma altura;
+      - o desenho segue o SPEC do rebrand: forma fixa, orelhas simétricas no estado normal, e a POSTURA
+        das orelhas é a pista principal (a cor da faixa só reforça).
+
+    Conferido por animacaoSVG/conferir-d4.mjs, que clica em todos os presets e mede o que aparece.
+  -->
+  <style>
+    /* As fontes da marca, se a página for aberta servida (num file:// o navegador recusa e cai na pilha). */
+    @font-face { font-family: 'Syden Bricolage Grotesque'; src: url('../web/public/fontes/bricolage/latin.woff2') format('woff2'); font-weight: 200 800; }
+    @font-face { font-family: 'Syden Instrument Sans'; src: url('../web/public/fontes/instrument/latin.woff2') format('woff2'); font-weight: 400 700; }
+
+    :root {
+      --fundo: #11141a;
+      --painel: #171b23;
+      --cartao: #1c212b;
+      --borda: #2f3644;
+      --texto: #e8eaf0;
+      --apagado: #9aa1b1;
+      --ambar: #f5b83d;
+      --noite: #14161b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+    }
+    h1, h2, h3 { font-family: 'Syden Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif; letter-spacing: -0.01em; }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--borda);
+      background: var(--painel);
+    }
+    header h1 { margin: 0; font-size: 20px; }
+    header p { margin: 2px 0 0; color: var(--apagado); font-size: 13px; }
+    header .logo { width: 40px; height: 40px; flex: none; }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 24px;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
+
+    .cartao {
+      background: var(--painel);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .cartao h2 { margin: 0 0 12px; font-size: 16px; }
+
+    /* O palco: o desenho grande, e as miniaturas que mostram como ele fica pequeno. */
+    #palco {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 440px;
+      border-radius: 16px;
+      background: var(--fundo-palco, #11141a);
+      transition: background 0.3s;
+    }
+    #loaderStage { width: min(400px, 100%); aspect-ratio: 1; }
+    #loaderStage svg, .mini svg { width: 100%; height: 100%; display: block; }
+    #nomeDoPreset {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--borda);
+      background: rgba(17, 20, 26, 0.85);
+      color: var(--apagado);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .minis { display: flex; align-items: end; gap: 18px; margin-top: 14px; color: var(--apagado); font-size: 12px; }
+    .minis figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+    .mini { border-radius: 10px; background: var(--fundo-palco, #11141a); }
+
+    .grupo { margin-top: 18px; }
+    .grupo h3 { margin: 0 0 10px; font-size: 12px; color: var(--apagado); text-transform: uppercase; letter-spacing: 0.08em; }
+    .botoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+    .preset-btn {
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--borda);
+      border-radius: 12px;
+      background: var(--cartao);
+      color: var(--texto);
+      font: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .preset-btn small { display: block; margin-top: 2px; font-weight: 400; color: var(--apagado); font-size: 12px; }
+    .preset-btn:hover { border-color: var(--apagado); }
+    .preset-btn[aria-pressed='true'] { border-color: var(--ambar); background: #262c38; }
+
+    label.linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--borda); }
+    label.linha:last-of-type { border-bottom: 0; }
+    label.linha span { color: var(--apagado); }
+    input[type='color'] { width: 40px; height: 32px; border: 0; background: none; cursor: pointer; }
+    input[type='range'] { width: 100%; accent-color: var(--ambar); }
+    .valor { font-family: Consolas, monospace; font-size: 12px; color: var(--texto); }
+
+    .acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .acoes button {
+      flex: 1 1 140px;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--borda);
+      background: var(--cartao);
+      color: var(--texto);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .acoes button.principal { background: var(--ambar); border-color: var(--ambar); color: var(--noite); }
+    .regra { margin: 12px 0 0; color: var(--apagado); font-size: 13px; line-height: 1.5; }
+    .regra strong { color: var(--texto); }
+
+    #toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: var(--ambar);
+      color: var(--noite);
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+    #toast.visivel { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" rx="22" fill="#1E2533"/>
+      <ellipse cx="38" cy="30" rx="10" ry="18" transform="rotate(-12 38 30)" fill="#F3EBD8"/>
+      <ellipse cx="38" cy="31" rx="3.6" ry="11" transform="rotate(-12 38 30)" fill="#F5B83D"/>
+      <ellipse cx="62" cy="30" rx="10" ry="18" transform="rotate(12 62 30)" fill="#F3EBD8"/>
+      <ellipse cx="62" cy="31" rx="3.6" ry="11" transform="rotate(12 62 30)" fill="#F5B83D"/>
+      <path d="M32 38 H68 A16 16 0 0 1 84 54 V62 A16 16 0 0 1 68 78 H42 L22 88 L28 78 H32 A16 16 0 0 1 16 62 V54 A16 16 0 0 1 32 38 Z" fill="#1E2533" stroke="#F3EBD8" stroke-width="6" stroke-linejoin="round"/>
+      <circle cx="36" cy="58" r="4.5" fill="#F3EBD8"/><circle cx="50" cy="58" r="4.5" fill="#F3EBD8"/><circle cx="64" cy="58" r="4.5" fill="#F3EBD8"/>
+    </svg>
+    <div>
+      <h1>Estúdio de animações D4</h1>
+      <p>Carregamento, entrada e erros com o coelho novo. O estúdio do coelho na estrela continua em logo_loading_screen_animations.html.</p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="cartao">
+        <div id="palco">
+          <div id="loaderStage"></div>
+          <span id="nomeDoPreset"></span>
+        </div>
+        <div class="minis" aria-label="O mesmo desenho em tamanhos pequenos">
+          <figure><div class="mini" id="mini96" style="width:96px;height:96px"></div><figcaption>96 px</figcaption></figure>
+          <figure><div class="mini" id="mini48" style="width:48px;height:48px"></div><figcaption>48 px</figcaption></figure>
+          <figure><div class="mini" id="mini32" style="width:32px;height:32px"></div><figcaption>32 px</figcaption></figure>
+        </div>
+
+        <div class="grupo">
+          <h3>Carregamento e espera — sem texto</h3>
+          <div class="botoes">
+            <button class="preset-btn" id="presetBtn1" onclick="setPreset(1)">Digitando<small>os três pontos em sequência</small></button>
+            <button class="preset-btn" id="presetBtn2" onclick="setPreset(2)">Orelhas atentas<small>uma mexe, depois a outra</small></button>
+            <button class="preset-btn" id="presetBtn3" onclick="setPreset(3)">Traço<small>o balão se desenha</small></button>
+            <button class="preset-btn" id="presetBtn4" onclick="setPreset(4)">Pulo<small>pula e amassa ao cair</small></button>
+            <button class="preset-btn" id="presetBtn5" onclick="setPreset(5)">Minimalista<small>só os pontos respiram</small></button>
+            <button class="preset-btn" id="presetBtn6" onclick="setPreset(6)">Entrando na voz<small>os pontos viram barras</small></button>
+          </div>
+        </div>
+
+        <div class="grupo">
+          <h3>Momentos — sem texto</h3>
+          <div class="botoes">
+            <button class="preset-btn" id="presetBtn7" onclick="setPreset(7)">Boas-vindas<small>abre o balão e acena</small></button>
+            <button class="preset-btn" id="presetBtn8" onclick="setPreset(8)">Autorizado<small>os pontos viram um certo</small></button>
+            <button class="preset-btn" id="presetBtn9" onclick="setPreset(9)">Ciclo de status<small>online, ausente, não perturbe, offline</small></button>
+          </div>
+        </div>
+
+        <div class="grupo">
+          <h3>Erros — com o código</h3>
+          <div class="botoes">
+            <button class="preset-btn" id="presetBtn10" onclick="setPreset(10)">Sem internet<small>orelhas recolhidas, tenta e cai</small></button>
+            <button class="preset-btn" id="presetBtn11" onclick="setPreset(11)">Erro 500<small>orelhas deitadas, tremida</small></button>
+            <button class="preset-btn" id="presetBtn12" onclick="setPreset(12)">Erro 404<small>uma orelha caída, procurando</small></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside style="display:flex;flex-direction:column;gap:24px">
+      <div class="cartao">
+        <h2>Cores e ritmo</h2>
+        <label class="linha"><span>Fundo do palco</span><input type="color" id="corPalco" value="#11141a" oninput="atualizar()"></label>
+        <label class="linha"><span>Quadrado do ícone</span><input type="color" id="corQuadrado" value="#1e2533" oninput="atualizar()"></label>
+        <label class="linha"><span>Creme (traço e orelhas)</span><input type="color" id="corCreme" value="#f3ebd8" oninput="atualizar()"></label>
+        <label class="linha"><span>Faixa da marca</span><input type="color" id="corFaixa" value="#f5b83d" oninput="atualizar()"></label>
+        <label class="linha"><span>Desenhar o quadrado</span><input type="checkbox" id="comQuadrado" checked onchange="atualizar()"></label>
+        <label class="linha" style="display:block">
+          <span style="display:flex;justify-content:space-between"><span>Velocidade</span><span class="valor" id="speedVal">1.0x</span></span>
+          <input type="range" id="speedSlider" min="0.5" max="2.5" step="0.1" value="1.0" oninput="atualizar()">
+        </label>
+        <label class="linha"><span>Ver como quem pediu menos movimento</span><input type="checkbox" id="semMovimento" onchange="atualizar()"></label>
+      </div>
+
+      <div class="cartao">
+        <h2>Levar para o Syden</h2>
+        <div class="acoes">
+          <button class="principal" onclick="baixarSVG()">Baixar o .svg</button>
+          <button onclick="copiarSVG()">Copiar o SVG</button>
+        </div>
+        <p class="regra">
+          <strong>Espera não tem texto, erro tem.</strong> O coelho mexendo os pontos não precisa de legenda em 72
+          idiomas, e a tela de abertura aparece antes do JavaScript, sem tradução. Nas telas de erro o texto é
+          informação: <strong>CÓDIGO — descrição</strong>, sempre no mesmo lugar. O texto daqui sai em português; no
+          app ele é traduzido.
+        </p>
+        <p class="regra">
+          Todo SVG exportado já respeita <strong>prefers-reduced-motion</strong>: quem pediu menos movimento vê o desenho
+          parado, no estado final, e não pela metade.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // =============================================================================================
+    // O DESENHO. Tudo no sistema de 100×100 do SPEC, desenhado em 200×200 no meio de um palco de
+    // 400×400 (escala 2). O código do erro fica embaixo, em y=352, igual nas três telas de erro.
+    // =============================================================================================
+    const PRESETS = {
+      1: { nome: 'Digitando', arquivo: 'd4-digitando' },
+      2: { nome: 'Orelhas atentas', arquivo: 'd4-orelhas-atentas' },
+      3: { nome: 'Traço', arquivo: 'd4-traco' },
+      4: { nome: 'Pulo', arquivo: 'd4-pulo' },
+      5: { nome: 'Minimalista', arquivo: 'd4-minimalista' },
+      6: { nome: 'Entrando na voz', arquivo: 'd4-entrando-na-voz' },
+      7: { nome: 'Boas-vindas', arquivo: 'd4-boas-vindas' },
+      8: { nome: 'Autorizado', arquivo: 'd4-autorizado' },
+      9: { nome: 'Ciclo de status', arquivo: 'd4-ciclo-de-status' },
+      10: { nome: 'Sem internet', arquivo: 'd4-sem-internet', codigo: 'OFFLINE — Sem conexão' },
+      11: { nome: 'Erro 500', arquivo: 'd4-erro-500', codigo: 'ERRO 500 — Problema no servidor' },
+      12: { nome: 'Erro 404', arquivo: 'd4-erro-404', codigo: 'ERRO 404 — Página não encontrada' },
+    };
+
+    const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
+    const BALAO = 'M32 38 H68 A16 16 0 0 1 84 54 V62 A16 16 0 0 1 68 78 H42 L22 88 L28 78 H32 A16 16 0 0 1 16 62 V54 A16 16 0 0 1 32 38 Z';
+    const Y_DO_CODIGO = 352;
+
+    let atual = 1;
+    let velocidade = 1;
+
+    function cores() {
+      return {
+        palco: document.getElementById('corPalco').value,
+        quadrado: document.getElementById('corQuadrado').value,
+        creme: document.getElementById('corCreme').value,
+        faixa: document.getElementById('corFaixa').value,
+        comQuadrado: document.getElementById('comQuadrado').checked,
+      };
+    }
+
+    /** Duração escalada pela velocidade: d(1.2) com 2x vira "0.60s". */
+    const d = (s) => (s / velocidade).toFixed(2) + 's';
+
+    const orelha = (lado, extra = '') => {
+      const cx = lado === 'e' ? 38 : 62;
+      const giro = lado === 'e' ? -12 : 12;
+      return `<g class="orelha orelha-${lado}${extra}">
+      <ellipse class="o-fora" cx="${cx}" cy="30" rx="10" ry="18" transform="rotate(${giro} ${cx} 30)"/>
+      <ellipse class="o-dentro" cx="${cx}" cy="31" rx="3.6" ry="11" transform="rotate(${giro} ${cx} 30)"/>
+    </g>`;
+    };
+    const pontos = (extra = '') =>
+      `<g class="pontos${extra}"><circle class="p p1" cx="36" cy="58" r="4.5"/><circle class="p p2" cx="50" cy="58" r="4.5"/><circle class="p p3" cx="64" cy="58" r="4.5"/></g>`;
+
+    /**
+     * Monta o SVG inteiro: o estilo comum, o estilo do preset e o desenho.
+     * `rosto` substitui os três pontos (barras, certo, interrogação…); `fora` vai fora da escala do
+     * ícone (sombra do pulo, código do erro).
+     */
+    function montar({ css, rosto = pontos(), orelhas = orelha('e') + orelha('d'), fora = '', rotulo, entrada = false }) {
+      const c = cores();
+      const codigo = PRESETS[atual].codigo;
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="${rotulo}">
+  <style>
+    .quadrado { fill: ${c.quadrado}; }
+    .o-fora { fill: var(--creme, ${c.creme}); }
+    .o-dentro { fill: var(--faixa, ${c.faixa}); }
+    .balao { fill: ${c.quadrado}; stroke: var(--creme, ${c.creme}); stroke-width: 6; stroke-linejoin: round; }
+    .p, .creme { fill: var(--creme, ${c.creme}); }
+    .linha { fill: none; stroke: var(--creme, ${c.creme}); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+    .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
+    .p, .barra { transform-box: fill-box; transform-origin: center; }
+    .figura { transform-box: view-box; transform-origin: 200px 270px; }
+    .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
+${css}
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  ${fora}
+  <g class="figura">${entrada ? '<g class="entrada">' : ''}
+    <g transform="translate(100 70) scale(2)">
+      ${c.comQuadrado ? '<rect class="quadrado" width="100" height="100" rx="22"/>' : ''}
+      ${orelhas}
+      <path class="balao" d="${BALAO}"/>
+      ${rosto}
+    </g>
+  ${entrada ? '</g>' : ''}</g>
+  ${codigo ? `<g class="codigo"><text x="200" y="${Y_DO_CODIGO}" text-anchor="middle">${codigo}</text></g>` : ''}
+</svg>`;
+    }
+
+    // =============================================================================================
+    // OS PRESETS. Em todos, o estado BASE (sem animação) é o desenho completo e certo: é o que vê quem
+    // pediu menos movimento, e é o que fica se a animação não rodar.
+    // =============================================================================================
+    function gerarSVG() {
+      switch (atual) {
+        // ---------- carregamento ----------
+        case 1: // Digitando: o "fulano está digitando" do próprio ícone.
+          return montar({
+            rotulo: 'Carregando',
+            css: `
+    .p { animation: pontos ${d(1.2)} ease-in-out infinite; }
+    .p2 { animation-delay: ${d(0.18)}; }
+    .p3 { animation-delay: ${d(0.36)}; }
+    .orelha-e { animation: respirarE ${d(2.4)} ease-in-out infinite; }
+    .orelha-d { animation: respirarD ${d(2.4)} ease-in-out infinite; }
+    @keyframes pontos { 0%, 60%, 100% { transform: translateY(0); opacity: .35; } 30% { transform: translateY(-4px); opacity: 1; } }
+    @keyframes respirarE { 0%, 100% { transform: none; } 50% { transform: rotate(-3deg) scaleY(1.03); } }
+    @keyframes respirarD { 0%, 100% { transform: none; } 50% { transform: rotate(3deg) scaleY(1.03); } }`,
+          });
+
+        case 2: // Orelhas atentas: ouviu alguma coisa.
+          return montar({
+            rotulo: 'Carregando',
+            css: `
+    .orelha-e { animation: mexerE ${d(2.8)} ease-in-out infinite; }
+    .orelha-d { animation: mexerD ${d(2.8)} ease-in-out infinite; animation-delay: ${d(0.7)}; }
+    .p { animation: piscar ${d(1.4)} ease-in-out infinite; }
+    .p2 { animation-delay: ${d(0.2)}; }
+    .p3 { animation-delay: ${d(0.4)}; }
+    @keyframes mexerE { 0%, 66%, 100% { transform: none; } 72% { transform: rotate(-14deg); } 79% { transform: rotate(6deg); } 86% { transform: rotate(-3deg); } }
+    @keyframes mexerD { 0%, 66%, 100% { transform: none; } 72% { transform: rotate(14deg); } 79% { transform: rotate(-6deg); } 86% { transform: rotate(3deg); } }
+    @keyframes piscar { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }`,
+          });
+
+        case 3: // Traço: o balão se desenha, as orelhas brotam, os pontos chegam — e recomeça.
+          return montar({
+            rotulo: 'Carregando',
+            css: `
+    .balao { stroke-dasharray: 1; animation: desenhar ${d(2.8)} ease-in-out infinite; }
+    .orelha { animation: brotar ${d(2.8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .p { animation: chegar ${d(2.8)} ease-out infinite; }
+    .p2 { animation-name: chegar2; }
+    .p3 { animation-name: chegar3; }
+    @keyframes desenhar { 0% { stroke-dashoffset: 1; opacity: 1; } 40%, 88% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+    @keyframes brotar { 0%, 36% { transform: scaleY(0); opacity: 1; } 52%, 88% { transform: none; opacity: 1; } 100% { transform: none; opacity: 0; } }
+    @keyframes chegar { 0%, 50% { opacity: 0; } 56%, 88% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes chegar2 { 0%, 56% { opacity: 0; } 62%, 88% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes chegar3 { 0%, 62% { opacity: 0; } 68%, 88% { opacity: 1; } 100% { opacity: 0; } }`,
+            // pathLength=1 deixa o dasharray independente do tamanho do caminho.
+            rosto: pontos(),
+          }).replace('<path class="balao"', '<path class="balao" pathLength="1"');
+
+        case 4: // Pulo: sobe esticado, cai amassado; a sombra encolhe enquanto ele está no ar.
+          return montar({
+            rotulo: 'Carregando',
+            css: `
+    .figura { animation: pulo ${d(1.2)} cubic-bezier(.28,.84,.42,1) infinite; }
+    .sombra { transform-box: fill-box; transform-origin: center; animation: sombra ${d(1.2)} cubic-bezier(.28,.84,.42,1) infinite; }
+    .orelha { animation: orelhasPulo ${d(1.2)} ease-in-out infinite; }
+    @keyframes pulo { 0%, 100% { transform: none; } 30% { transform: translateY(-34px) scale(.97, 1.04); } 50% { transform: scale(1.06, .93); } 65% { transform: translateY(-8px); } 78% { transform: scale(1.02, .98); } }
+    @keyframes sombra { 0%, 100% { transform: none; opacity: .5; } 30% { transform: scaleX(.7); opacity: .25; } 50% { transform: scaleX(1.08); opacity: .55; } }
+    @keyframes orelhasPulo { 0%, 100% { transform: none; } 30% { transform: scaleY(1.08); } 52% { transform: scaleY(.86); } }`,
+            fora: `<ellipse class="sombra" cx="200" cy="288" rx="78" ry="9" fill="#000" opacity=".5"/>`,
+          });
+
+        case 5: // Minimalista: nada se mexe além dos pontos, devagar.
+          return montar({
+            rotulo: 'Carregando',
+            css: `
+    .p { animation: respirar ${d(2.2)} ease-in-out infinite; }
+    .p2 { animation-delay: ${d(0.35)}; }
+    .p3 { animation-delay: ${d(0.7)}; }
+    @keyframes respirar { 0%, 100% { opacity: .3; } 45% { opacity: 1; } }`,
+          });
+
+        case 6: // Entrando na voz: os pontos viram barras de áudio (proposta do SPEC para "em chamada").
+          return montar({
+            rotulo: 'Entrando na chamada',
+            rosto: `<g class="barras">
+        <rect class="creme barra b1" x="33.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b2" x="47.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b3" x="61.5" y="49" width="5" height="18" rx="2.5"/>
+      </g>`,
+            css: `
+    .barra { animation: falar ${d(0.9)} ease-in-out infinite; }
+    .b2 { animation-delay: ${d(0.15)}; }
+    .b3 { animation-delay: ${d(0.3)}; }
+    .orelha-e { animation: respirarE ${d(2.4)} ease-in-out infinite; }
+    .orelha-d { animation: respirarD ${d(2.4)} ease-in-out infinite; }
+    @keyframes falar { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+    @keyframes respirarE { 0%, 100% { transform: none; } 50% { transform: rotate(-3deg) scaleY(1.03); } }
+    @keyframes respirarD { 0%, 100% { transform: none; } 50% { transform: rotate(3deg) scaleY(1.03); } }`,
+          });
+
+        // ---------- momentos ----------
+        case 7: // Boas-vindas: o balão abre, as orelhas sobem, os pontos chegam e a orelha direita acena.
+          return montar({
+            rotulo: 'Boas-vindas',
+            css: `
+    .entrada { transform-box: view-box; transform-origin: 200px 220px; animation: abrir ${d(3.4)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .orelha-e { animation: subir ${d(3.4)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .orelha-d { animation: acenar ${d(3.4)} ease-in-out infinite; }
+    .p { animation: chegar ${d(3.4)} ease-out infinite; }
+    @keyframes abrir { 0% { transform: scale(0); opacity: 0; } 14% { transform: scale(1.06); opacity: 1; } 20%, 92% { transform: none; opacity: 1; } 100% { transform: none; opacity: 0; } }
+    @keyframes subir { 0%, 16% { transform: scaleY(0); } 30%, 100% { transform: none; } }
+    @keyframes acenar { 0%, 16% { transform: scaleY(0); } 30%, 46% { transform: none; } 52% { transform: rotate(22deg); } 58% { transform: rotate(-4deg); } 64% { transform: rotate(18deg); } 70%, 100% { transform: none; } }
+    @keyframes chegar { 0%, 30% { opacity: 0; } 38%, 100% { opacity: 1; } }`,
+            entrada: true,
+          });
+
+        case 8: // Autorizado: os pontos somem, um certo se risca no lugar, as faixas ficam verdes e as orelhas pulam.
+          return montar({
+            rotulo: 'Autorizado',
+            rosto: `${pontos()}<path class="linha certo" pathLength="1" d="M38 58 L47 66 L63 50"/>`,
+            css: `
+    .o-dentro { --faixa: ${STATUS.verde}; }
+    .p { opacity: 0; animation: sumir ${d(2.8)} ease-in infinite; }
+    .certo { stroke-width: 6; stroke-dasharray: 1; animation: riscar ${d(2.8)} cubic-bezier(.4,0,.2,1) infinite; }
+    .orelha { animation: alegria ${d(2.8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    @keyframes sumir { 0%, 18% { opacity: 1; transform: none; } 30%, 100% { opacity: 0; transform: scale(.4); } }
+    @keyframes riscar { 0%, 30% { stroke-dashoffset: 1; } 50%, 100% { stroke-dashoffset: 0; } }
+    @keyframes alegria { 0%, 50% { transform: none; } 58% { transform: scaleY(1.14); } 66%, 100% { transform: none; } }`,
+          });
+
+        case 9: // Ciclo de status: o avatar passando pelos quatro estados, um quarto do tempo cada.
+          return montar({
+            rotulo: 'Status do coelho',
+            rosto: `${pontos()}
+      <path class="linha sono" d="M33 59 Q38 63 43 59 M57 59 Q62 63 67 59"/>
+      <rect class="creme barra-dnd" x="35" y="55" width="30" height="6" rx="3"/>`,
+            css: `
+    .orelha-e { animation: cicloE ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .orelha-d { animation: cicloD ${d(8)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .o-dentro { animation: faixa ${d(8)} step-end infinite; }
+    .o-fora, .p, .barra-dnd { animation: creme ${d(8)} step-end infinite; }
+    .balao { animation: tracoCinza ${d(8)} step-end infinite; }
+    .pontos { animation: rostoOnline ${d(8)} step-end infinite; }
+    .sono { opacity: 0; animation: rostoAusente ${d(8)} step-end infinite; }
+    .barra-dnd { opacity: 0; animation: rostoDnd ${d(8)} step-end infinite, creme ${d(8)} step-end infinite; }
+    @keyframes cicloE { 0%, 47% { transform: none; } 50%, 72% { transform: rotate(-60deg) scaleY(.95); } 75%, 100% { transform: scaleY(.55); } }
+    @keyframes cicloD { 0%, 22% { transform: none; } 25%, 72% { transform: rotate(60deg) scaleY(.95); } 75%, 100% { transform: scaleY(.55); } }
+    @keyframes faixa { 0% { fill: ${STATUS.verde}; } 25% { fill: ${STATUS.ausente}; } 50% { fill: ${STATUS.vermelho}; } 75% { fill: ${STATUS.cinzaFaixa}; } }
+    @keyframes creme { 0% { fill: ${cores().creme}; } 75% { fill: ${STATUS.cinzaTraco}; } }
+    @keyframes tracoCinza { 0% { stroke: ${cores().creme}; } 75% { stroke: ${STATUS.cinzaTraco}; } }
+    @keyframes rostoOnline { 0% { opacity: 1; } 25% { opacity: 0; } }
+    @keyframes rostoAusente { 0% { opacity: 0; } 25% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes rostoDnd { 0% { opacity: 0; } 50% { opacity: 1; } 75% { opacity: 0; } }`,
+          });
+
+        // ---------- erros ----------
+        case 10: // Sem internet: o coelho offline (cinza, orelhas recolhidas) tenta levantar as orelhas e não consegue.
+          return montar({
+            rotulo: 'Sem conexão',
+            css: `
+    .o-fora, .p { --creme: ${STATUS.cinzaTraco}; }
+    .balao { --creme: ${STATUS.cinzaTraco}; }
+    .o-dentro { --faixa: ${STATUS.cinzaFaixa}; }
+    .orelha { transform: scaleY(.55); animation: tentar ${d(3.2)} cubic-bezier(.34,1.56,.64,1) infinite; }
+    .p { opacity: 0; animation: tentarDigitar ${d(3.2)} ease-in-out infinite; }
+    .p2 { animation-delay: ${d(0.2)}; }
+    .p3 { animation-delay: ${d(0.4)}; }
+    @keyframes tentar { 0%, 30% { transform: scaleY(.55); } 42% { transform: scaleY(.92); } 52%, 100% { transform: scaleY(.55); } }
+    @keyframes tentarDigitar { 0%, 40% { opacity: 0; } 50% { opacity: .5; } 70%, 100% { opacity: 0; } }`,
+          });
+
+        case 11: // Erro 500: orelhas deitadas (o "não perturbe"), barra no rosto, e de vez em quando uma tremida.
+          return montar({
+            rotulo: 'Erro no servidor',
+            rosto: `<rect class="creme" x="35" y="55" width="30" height="6" rx="3"/>`,
+            css: `
+    .o-dentro { --faixa: ${STATUS.vermelho}; }
+    .orelha-e { transform: rotate(-60deg) scaleY(.95); }
+    .orelha-d { transform: rotate(60deg) scaleY(.95); }
+    .figura { animation: tremer ${d(2.6)} ease-in-out infinite; }
+    .o-dentro { animation: alerta ${d(2.6)} ease-in-out infinite; }
+    @keyframes tremer { 0%, 78%, 100% { transform: none; } 82% { transform: translateX(-5px) rotate(-1.5deg); } 86% { transform: translateX(5px) rotate(1.5deg); } 90% { transform: translateX(-3px); } 94% { transform: translateX(2px); } }
+    @keyframes alerta { 0%, 76%, 100% { opacity: 1; } 84% { opacity: .45; } 92% { opacity: 1; } }`,
+          });
+
+        case 12: // Erro 404: uma orelha caída e um ponto de interrogação; o coelho olha para os lados procurando.
+          return montar({
+            rotulo: 'Página não encontrada',
+            rosto: `<path class="linha" d="M44 51 Q44 44 50 44 Q56.5 44 56.5 50 Q56.5 54 50 56 L50 60"/><circle class="creme" cx="50" cy="67" r="2.8"/>`,
+            css: `
+    .o-dentro { --faixa: ${STATUS.ausente}; }
+    .orelha-d { transform: rotate(60deg) scaleY(.95); }
+    .figura { animation: procurar ${d(3.4)} ease-in-out infinite; }
+    .orelha-e { animation: ouvir ${d(3.4)} ease-in-out infinite; }
+    @keyframes procurar { 0%, 12%, 100% { transform: none; } 25%, 38% { transform: rotate(-7deg); } 55%, 68% { transform: rotate(7deg); } 82% { transform: none; } }
+    @keyframes ouvir { 0%, 40%, 100% { transform: none; } 46% { transform: rotate(-12deg); } 52% { transform: rotate(4deg); } 58% { transform: none; } }`,
+          });
+      }
+      // Não devia acontecer; se acontecer, a tela diz em vez de ficar em branco (lição do primeiro estúdio).
+      return '<p style="color:#E5534B">Este preset não tem desenho.</p>';
+    }
+
+    // =============================================================================================
+    // A PÁGINA
+    // =============================================================================================
+    function setPreset(n) {
+      atual = n;
+      for (const b of document.querySelectorAll('.preset-btn')) b.setAttribute('aria-pressed', String(b.id === 'presetBtn' + n));
+      atualizar();
+    }
+
+    function atualizar() {
+      velocidade = Number(document.getElementById('speedSlider').value);
+      document.getElementById('speedVal').textContent = velocidade.toFixed(1) + 'x';
+      const c = cores();
+      document.getElementById('palco').style.setProperty('--fundo-palco', c.palco);
+      for (const m of document.querySelectorAll('.mini')) m.style.setProperty('--fundo-palco', c.palco);
+
+      let svg = gerarSVG();
+      // A prévia de "menos movimento" desliga a animação do mesmo jeito que o sistema desligaria.
+      if (document.getElementById('semMovimento').checked) svg = svg.replace('</style>', '* { animation: none !important; }\n  </style>');
+      document.getElementById('loaderStage').innerHTML = svg;
+      // As miniaturas não levam o código do erro: em 32 px ele não se lê, e o que se quer ver ali é o desenho.
+      const semCodigo = svg.replace(/<g class="codigo">[\s\S]*?<\/g>/, '');
+      for (const id of ['mini96', 'mini48', 'mini32']) document.getElementById(id).innerHTML = semCodigo;
+      document.getElementById('nomeDoPreset').textContent = PRESETS[atual].nome;
+    }
+
+    function avisar(texto) {
+      const t = document.getElementById('toast');
+      t.textContent = texto;
+      t.classList.add('visivel');
+      clearTimeout(avisar.relogio);
+      avisar.relogio = setTimeout(() => t.classList.remove('visivel'), 1800);
+    }
+
+    async function copiarSVG() {
+      try {
+        await navigator.clipboard.writeText(gerarSVG());
+        avisar('SVG copiado');
+      } catch {
+        avisar('O navegador não deixou copiar — use "Baixar o .svg"');
+      }
+    }
+
+    function baixarSVG() {
+      const blob = new Blob([gerarSVG()], { type: 'image/svg+xml' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = PRESETS[atual].arquivo + '.svg';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      avisar(a.download + ' baixado');
+    }
+
+    setPreset(1);
+  </script>
+</body>
+</html>
