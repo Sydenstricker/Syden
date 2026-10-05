@@ -235,6 +235,7 @@
         <label class="linha"><span>Creme (traço e orelhas)</span><input type="color" id="corCreme" value="#f3ebd8" oninput="atualizar()"></label>
         <label class="linha"><span>Faixa da marca</span><input type="color" id="corFaixa" value="#f5b83d" oninput="atualizar()"></label>
         <label class="linha"><span>Desenhar o quadrado</span><input type="checkbox" id="comQuadrado" checked onchange="atualizar()"></label>
+        <label class="linha"><span>Bigode (nos presets com rosto)</span><input type="checkbox" id="comBigode" onchange="atualizar()"></label>
         <label class="linha" style="display:block">
           <span style="display:flex;justify-content:space-between"><span>Velocidade</span><span class="valor" id="speedVal">1.0x</span></span>
           <input type="range" id="speedSlider" min="0.5" max="2.5" step="0.1" value="1.0" oninput="atualizar()">
@@ -300,6 +301,7 @@
         creme: document.getElementById('corCreme').value,
         faixa: document.getElementById('corFaixa').value,
         comQuadrado: document.getElementById('comQuadrado').checked,
+        comBigode: document.getElementById('comBigode').checked,
       };
     }
 
@@ -323,13 +325,20 @@
      * balão. Com os olhos e o narizinho dentro do balão, ele é as duas coisas. Os três pontos continuam
      * existindo, mas só quando há alguém digitando de verdade — parado, ele é um rosto.
      */
+    // O NARIZ É REDONDO: o triangular lembrava bico (05/10/2026). O bigode é opcional, em teste —
+    // três fios de cada lado, finos e meio apagados, para ver se dá cara de coelho ou se polui.
+    const NARIZ = '<ellipse class="nariz" cx="50" cy="65.6" rx="3" ry="2.3"/>';
+    const bigode = () =>
+      cores().comBigode
+        ? '<g class="bigode"><path d="M45 64.6 L32 62.4 M45 66.2 L31.5 66.6 M45 67.8 L32.5 70.6"/><path d="M55 64.6 L68 62.4 M55 66.2 L68.5 66.6 M55 67.8 L67.5 70.6"/></g>'
+        : '';
     const olhos = (fechados = false) =>
       fechados
-        ? `<g class="olhos"><path class="linha" d="M34.5 57 Q39.5 61.5 44.5 57 M55.5 57 Q60.5 61.5 65.5 57"/><path class="nariz" d="M47.2 64.6 H52.8 L50 67.8 Z"/></g>`
+        ? `<g class="olhos"><path class="linha" d="M34.5 57 Q39.5 61.5 44.5 57 M55.5 57 Q60.5 61.5 65.5 57"/>${bigode()}${NARIZ}</g>`
         : `<g class="olhos">
         <g class="olho olho-e"><ellipse class="creme" cx="39.5" cy="55.5" rx="5" ry="6.5"/><circle class="brilho" cx="38" cy="53.2" r="1.8"/></g>
         <g class="olho olho-d"><ellipse class="creme" cx="60.5" cy="55.5" rx="5" ry="6.5"/><circle class="brilho" cx="59" cy="53.2" r="1.8"/></g>
-        <path class="nariz" d="M47.2 64.6 H52.8 L50 67.8 Z"/>
+        ${bigode()}${NARIZ}
       </g>`;
 
     /** A orelha comprida caída pelo lado do balão (no lugar da deitada a 60°, que parecia chifre). */
@@ -372,7 +381,8 @@
     .figura { transform-box: view-box; transform-origin: 200px 270px; }
     .olho, .olhos { transform-box: fill-box; transform-origin: center; }
     .brilho { fill: ${c.quadrado}; }
-    .nariz { fill: var(--faixa, ${c.faixa}); stroke: var(--faixa, ${c.faixa}); stroke-width: 1.2; stroke-linejoin: round; }
+    .nariz { fill: var(--faixa, ${c.faixa}); }
+    .bigode { fill: none; stroke: var(--creme, ${c.creme}); stroke-width: 1.4; stroke-linecap: round; stroke-opacity: .55; }
     .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
 ${css}
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
@@ -555,7 +565,7 @@ ${css}
       <path class="corte" d="M279 109 L313 65"/>
     </g>`,
             css: `
-    .o-fora, .linha { --creme: ${STATUS.cinzaTraco}; }
+    .o-fora, .linha, .bigode { --creme: ${STATUS.cinzaTraco}; }
     .balao { --creme: ${STATUS.cinzaTraco}; }
     .o-dentro, .nariz { --faixa: ${STATUS.cinzaFaixa}; }
     .orelha { transform: scaleY(.55); animation: tentar ${d(3.2)} cubic-bezier(.34,1.56,.64,1) infinite; }
@@ -637,7 +647,7 @@ ${css}
     .orelha-e { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.45)} both, ${anim('ociosaE', 6.4, 2.6)}; }
     .orelha-d { animation: subir ${d(0.6)} cubic-bezier(.34,1.56,.64,1) ${d(0.55)} both, ${anim('ociosaD', 6.4, 2.6)}; }
     .olho { animation: abrirOlho ${d(0.35)} ease-out ${d(1)} both, piscaUma ${d(0.32)} ease-in-out ${d(1.8)}, ${anim('piscar', 4.2, 2.6)}; }
-    .nariz { animation: aparecer ${d(0.3)} ease-out ${d(1.15)} both; }
+    .nariz, .bigode { animation: aparecer ${d(0.3)} ease-out ${d(1.15)} both; }
     .olhos { animation: ${anim('olhar', 8, 2.6)}; }
     .figura { animation: ${anim('boiar', 3.6, 2.6)}; }
     @keyframes abrir { 0% { transform: scale(0); opacity: 0; } 100% { transform: none; opacity: 1; } }
