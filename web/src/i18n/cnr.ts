@@ -361,7 +361,7 @@ export default {
   'Escolha o seu': 'Izaberi svoj',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Izaberi ko predstavlja tvoj Syden. Mijenja se na tri mjesta:',
+  'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
   'Escolha um canal à esquerda.': 'Izaberi kanal s lijeve strane.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Izaberi razgovor s lijeve strane ili započni novi.',
   'Escolha uma senha nova': 'Izaberi novu lozinku',

@@ -373,7 +373,7 @@ export default {
   'Escolha o seu': 'ތިބާގެ އެއް ހޮވާ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'ތިބާގެ Syden ތަމްސީލުކުރާނެ ފަރާތް ހޮވާ. ބަދަލުވާނީ ތިން ތަނެއްގައި:',
+  'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',
   'Escolha um canal à esquerda.': 'ވާތްފަރާތުން ޗެނަލެއް ހޮވާ.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ވާތްފަރާތުން ޗެޓެއް ހޮވާ، ނުވަތަ އާ އެއް ފަށާ.',
   'Escolha uma senha nova': 'އާ ޕާސްވޯޑެއް ހޮވާ',

@@ -362,7 +362,7 @@ export default {
   'Escolha o seu': 'Dooro taada',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Dooro cidda matalaysa Syden-kaaga. Waxay is beddeshaa saddex meelood:',
+  'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
   'Escolha um canal à esquerda.': 'Bidixda ka dooro kanaal.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Bidixda ka dooro wadahadal, ama bilow mid cusub.',
   'Escolha uma senha nova': 'Dooro eray sir ah oo cusub',

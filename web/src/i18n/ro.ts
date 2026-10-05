@@ -311,7 +311,7 @@ export default {
   'Escolha o selo': 'Alege insigna',
   'Escolha o seu': 'Alege-l pe al tău',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Alege cine intră. Cu mai mult de o persoană, devine o conversație de grup.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Alege cine reprezintă Syden-ul tău. Se schimbă în trei locuri:',
+  'Escolha o coelho da estátua da praça.': 'Alege iepurele pentru statuia din piață.',
   'Escolha um canal à esquerda.': 'Alege un canal din stânga.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Alege o conversație din stânga, sau începe una nouă.',
   'Escolha uma senha nova': 'Alege o parolă nouă',

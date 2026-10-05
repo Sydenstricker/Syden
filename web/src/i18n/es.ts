@@ -335,7 +335,7 @@ export default {
   'O survival do Léo': 'El survival de Leo',
   'Versão 1.21, sem PvP': 'Versión 1.21, sin PvP',
   'ex.: Evidências': 'ej.: Pruebas',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Elige quién representa tu Syden. Cambia en tres sitios: el',
+  'Escolha o coelho da estátua da praça.': 'Elige el conejo de la estatua de la plaza.',
   // Pantalla de bienvenida y etiquetas cortas
   '{n} na chamada agora': '{n} en la llamada ahora',
   '{n} pessoas nesta comunidade': '{n} personas en esta comunidad',

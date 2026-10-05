@@ -364,7 +364,7 @@ export default {
   'Escolha o seu': 'आफ्नो छान्नुहोस्',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'तपाईंको Syden कसले प्रतिनिधित्व गर्ने छान्नुहोस्। यो तीन ठाउँमा फेरिन्छ:',
+  'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
   'Escolha um canal à esquerda.': 'बायाँबाट एउटा च्यानल छान्नुहोस्।',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'बायाँबाट कुराकानी छान्नुहोस्, वा नयाँ सुरु गर्नुहोस्।',
   'Escolha uma senha nova': 'नयाँ पासवर्ड छान्नुहोस्',

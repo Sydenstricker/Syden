@@ -350,7 +350,7 @@ export default {
   'Escolha o selo': 'Вибери печатку',
   'Escolha o seu': 'Вибери свого',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Вибери, хто долучиться. Якщо людей більше однієї, це буде групова розмова.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Вибери, хто представляє твій Syden. Змінюється в трьох місцях:',
+  'Escolha o coelho da estátua da praça.': 'Обери кролика для статуї на площі.',
   'Escolha um canal à esquerda.': 'Вибери канал ліворуч.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Вибери розмову ліворуч або почни нову.',
   'Escolha uma senha nova': 'Вибери новий пароль',

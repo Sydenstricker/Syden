@@ -203,7 +203,7 @@ export default {
   'Escolha o seu': 'Scegli il tuo',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Scegli chi rappresenta il tuo Syden. Cambia in tre posti: l’',
+  'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
   'Escolha um canal à esquerda.': 'Scegli un canale a sinistra.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Scegli una conversazione a sinistra, o iniziane una nuova.',
   'Escolha uma senha nova': 'Scegli una nuova password',

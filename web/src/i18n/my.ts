@@ -339,7 +339,7 @@ export default {
   'Escolha o selo': 'တံဆိပ်တုံး ရွေးပါ',
   'Escolha o seu': 'ကိုယ့်ဟာ ရွေးပါ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ဘယ်သူ ပါမလဲ ရွေးပါ။ တစ်ယောက်ထက် ပိုရင် အဖွဲ့စကားဝိုင်း ဖြစ်ပါမယ်။',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'သင့် Syden ကို ဘယ်သူ ကိုယ်စားပြုမလဲ ရွေးပါ။ နေရာ သုံးခုမှာ ပြောင်းပါမယ်-',
+  'Escolha o coelho da estátua da praça.': 'ရင်ပြင်ရှိ ရုပ်တုအတွက် ယုန်ကို ရွေးပါ။',
   'Escolha um canal à esquerda.': 'ဘယ်ဘက်မှ ချန်နယ်တစ်ခု ရွေးပါ။',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ဘယ်ဘက်မှ စကားဝိုင်း ရွေးပါ သို့မဟုတ် အသစ် စပါ။',
   'Escolha uma senha nova': 'စကားဝှက်အသစ် ရွေးပါ',

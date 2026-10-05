@@ -362,7 +362,7 @@ export default {
   'Escolha o seu': 'Vyber si svoj',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kto bude v konverzácii. S viacerými ľuďmi z toho bude skupinová konverzácia.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Vyber, kto bude tvárou tvojho Sydenu. Zmení sa na troch miestach:',
+  'Escolha o coelho da estátua da praça.': 'Vyber zajaca na sochu na námestí.',
   'Escolha um canal à esquerda.': 'Vyber kanál vľavo.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Vyber konverzáciu vľavo, alebo začni novú.',
   'Escolha uma senha nova': 'Vyber nové heslo',

@@ -359,7 +359,7 @@ export default {
   'Escolha o seu': 'Vali oma',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Vali, kes esindab sinu Sydenit. See muutub kolmes kohas:',
+  'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
   'Escolha um canal à esquerda.': 'Vali vasakult kanal.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Vali vasakult vestlus või alusta uut.',
   'Escolha uma senha nova': 'Vali uus parool',

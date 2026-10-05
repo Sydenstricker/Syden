@@ -363,7 +363,7 @@ export default {
   'Escolha o seu': 'Válaszd ki a sajátodat',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Válaszd ki, ki képviselje a Sydenedet. Három helyen változik:',
+  'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
   'Escolha um canal à esquerda.': 'Válassz egy csatornát a bal oldalon.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Válassz egy beszélgetést a bal oldalon, vagy kezdj újat.',
   'Escolha uma senha nova': 'Válassz új jelszót',

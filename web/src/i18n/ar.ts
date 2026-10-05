@@ -174,7 +174,7 @@ export default {
   'O selo desta comunidade é': 'شارة هذا المجتمع هي',
   'Selo que você veste': 'الشارة التي ترتديها',
   'Só o seu nome, sem selo': 'اسمك فقط، بدون شارة',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'اختر من يمثّل Syden لديك. يتغير في ثلاثة مواضع:',
+  'Escolha o coelho da estátua da praça.': 'اختر الأرنب الذي يقف تمثالًا في الساحة.',
 
   // المحادثات والرسائل
   Conversas: 'المحادثات',

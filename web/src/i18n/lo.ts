@@ -363,7 +363,7 @@ export default {
   'Escolha o seu': 'ເລືອກຂອງເຈົ້າ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'ເລືອກວ່າໃຜຈະເປັນຕົວແທນ Syden ຂອງເຈົ້າ ປ່ຽນໃນສາມບ່ອນ:',
+  'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
   'Escolha um canal à esquerda.': 'ເລືອກຊ່ອງທາງຊ້າຍ',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ເລືອກການສົນທະນາທາງຊ້າຍ ຫຼື ເລີ່ມອັນໃໝ່',
   'Escolha uma senha nova': 'ເລືອກລະຫັດຜ່ານໃໝ່',

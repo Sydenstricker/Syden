@@ -364,7 +364,7 @@ export default {
   'Escolha o seu': 'Pasirink savo',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Pasirink, kas bus tavo Syden veidas. Pasikeis trijose vietose:',
+  'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
   'Escolha um canal à esquerda.': 'Pasirink kanalą kairėje.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Pasirink pokalbį kairėje arba pradėk naują.',
   'Escolha uma senha nova': 'Pasirink naują slaptažodį',

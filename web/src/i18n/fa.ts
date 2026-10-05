@@ -296,7 +296,7 @@ export default {
   'Escolha o selo': 'برچسب را انتخاب کنید',
   'Escolha o seu': 'مال خودتان را انتخاب کنید',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'انتخاب کنید چه کسی وارد شود. با بیش از یک نفر، گفتگوی گروهی می‌شود.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'انتخاب کنید چه کسی نمایندهٔ Syden شما باشد. در سه جا عوض می‌شود:',
+  'Escolha o coelho da estátua da praça.': 'خرگوش مجسمهٔ میدان را انتخاب کن.',
   'Escolha um canal à esquerda.': 'از سمت چپ یک کانال انتخاب کنید.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'از سمت چپ یک گفتگو انتخاب کنید، یا گفتگوی تازه‌ای شروع کنید.',
   'Escolha uma senha nova': 'یک رمز عبور تازه انتخاب کنید',

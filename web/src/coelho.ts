@@ -1,20 +1,18 @@
 import { useSyncExternalStore } from 'react';
-import ourUrl from './assets/logo.png';
-import bigUrl from './assets/logo-big.png';
 import { guardarEmBreve } from './preferencias';
 
-// Qual coelho é o SEU Syden.
+// Qual coelho fica na estátua da praça.
 //
-// São dois: o OurBunny, esguio, que é o padrão, e o BigChunkus, o gordinho. A escolha vale para o ícone
-// na barra lateral, para a tela de entrada e para a estátua da praça na tela inicial — é sempre o mesmo
-// bicho, para o app não ficar com duas caras ao mesmo tempo. A escolha sobe para o servidor, então
-// segue com a pessoa ao trocar de navegador ou ir do site para o aplicativo.
+// São dois: o OurBunny, esguio, que é o padrão, e o BigChunkus, o gordinho. Até o rebrand de 05/10/2026
+// a escolha trocava também o ícone e a tela de entrada; hoje troca SÓ o coelho. Ícone e logo são o D4,
+// fixo (ver Logo.tsx). A escolha sobe para o servidor, então segue com a pessoa ao trocar de navegador
+// ou ir do site para o aplicativo.
 
 export type Coelho = 'our' | 'big';
 
-export const COELHOS: { id: Coelho; nome: string; sobre: string; url: string }[] = [
-  { id: 'our', nome: 'OurBunny', sobre: 'O coelho de sempre do Syden', url: ourUrl },
-  { id: 'big', nome: 'BigChunkus', sobre: 'O gordinho, para quem gosta de bochecha', url: bigUrl },
+export const COELHOS: { id: Coelho; nome: string; sobre: string }[] = [
+  { id: 'our', nome: 'OurBunny', sobre: 'O coelho de sempre do Syden' },
+  { id: 'big', nome: 'BigChunkus', sobre: 'O gordinho, para quem gosta de bochecha' },
 ];
 
 const CHAVE = 'syden.coelho';
@@ -39,10 +37,6 @@ export function coelhoAtual(): Coelho {
   return atual;
 }
 
-export function urlDoCoelho(id: Coelho = atual): string {
-  return COELHOS.find((c) => c.id === id)?.url ?? ourUrl;
-}
-
 export function escolherCoelho(id: Coelho) {
   if (id === atual) return;
   atual = id;
@@ -60,7 +54,7 @@ function assinar(ouvinte: () => void) {
   return () => ouvintes.delete(ouvinte);
 }
 
-/** O coelho escolhido, acompanhando as mudanças (o ícone troca na hora, sem recarregar). */
+/** O coelho escolhido, acompanhando as mudanças (a estátua troca na hora, sem recarregar). */
 export function useCoelho(): Coelho {
   return useSyncExternalStore(assinar, coelhoAtual);
 }

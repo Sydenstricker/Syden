@@ -354,7 +354,7 @@ export default {
   'Escolha o seu': 'Välj ditt',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Välj vem som är med. Med fler än en person blir det en gruppkonversation.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Välj vem som representerar ditt Syden. Det ändras på tre ställen:',
+  'Escolha o coelho da estátua da praça.': 'Välj kaninen till statyn på torget.',
   'Escolha um canal à esquerda.': 'Välj en kanal till vänster.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Välj en konversation till vänster, eller starta en ny.',
   'Escolha uma senha nova': 'Välj ett nytt lösenord',

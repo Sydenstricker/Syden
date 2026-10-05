@@ -361,7 +361,7 @@ export default {
   'Escolha o seu': 'ជ្រើសរើសរបស់អ្នក',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'ជ្រើសរើសអ្នកតំណាង Syden របស់អ្នក។ វាផ្លាស់ប្តូរនៅបីកន្លែង៖',
+  'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
   'Escolha um canal à esquerda.': 'ជ្រើសរើសឆានែលនៅខាងឆ្វេង។',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ជ្រើសរើសការសន្ទនានៅខាងឆ្វេង ឬចាប់ផ្តើមថ្មី។',
   'Escolha uma senha nova': 'ជ្រើសរើសពាក្យសម្ងាត់ថ្មី',

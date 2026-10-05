@@ -332,7 +332,7 @@ export default {
   'Escolha o selo': 'Möhürü seç',
   'Escolha o seu': 'Özününkünü seç',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Kimin qoşulacağını seç. Birdən çox adam olsa, qrup söhbəti olur.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Syden-ini kimin təmsil edəcəyini seç. Üç yerdə dəyişir:',
+  'Escolha o coelho da estátua da praça.': 'Meydandakı heykəl üçün dovşanı seç.',
   'Escolha um canal à esquerda.': 'Soldan bir kanal seç.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Soldan bir söhbət seç və ya yenisini başlat.',
   'Escolha uma senha nova': 'Yeni şifrə seç',

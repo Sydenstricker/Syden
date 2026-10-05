@@ -356,7 +356,7 @@ export default {
   'Escolha o seu': 'Vælg dit',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vælg, hvem der er med. Med mere end én person bliver det en gruppesamtale.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Vælg, hvem der repræsenterer dit Syden. Det ændres tre steder:',
+  'Escolha o coelho da estátua da praça.': 'Vælg kaninen til statuen på torvet.',
   'Escolha um canal à esquerda.': 'Vælg en kanal til venstre.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Vælg en samtale til venstre, eller start en ny.',
   'Escolha uma senha nova': 'Vælg en ny adgangskode',

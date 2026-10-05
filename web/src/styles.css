@@ -26,6 +26,9 @@
   --red-hover: #a12828;
   /* Atenção: o que ainda funciona mas vai parar. Nem verde nem vermelho. */
   --amber: #f0b232;
+  /* O âmbar da marca (as faixas das orelhas no ícone D4). Só o que é do LOGO usa: o anel do botão
+     de início. A paleta do resto do app é outra decisão, ainda em aberto. */
+  --marca: #f5b83d;
   /* Superfícies que sobem um degrau do fundo (menus, campos, bolhas). */
   --bg-raised: #3f4147;
   --bg-raised-hover: #4e5058;
@@ -52,6 +55,8 @@
  * nenhum, porque tudo passa por estas variáveis.
  */
 :root[data-theme='light'] {
+  /* O âmbar da marca, um tom mais fechado: o claro some sobre o fundo branco. */
+  --marca: #d6981c;
   --bg-darkest: #e3e5e8;
   --bg-sidebar: #f2f3f5;
   --bg-main: #ffffff;
@@ -393,12 +398,12 @@ textarea {
 }
 
 .rail-logo:hover {
-  border-color: var(--red);
+  border-color: var(--marca);
   transform: scale(1.06);
 }
 
 .rail-logo.active {
-  border-color: var(--red);
+  border-color: var(--marca);
   border-radius: 16px;
   background: var(--bg-raised);
 }
@@ -2140,6 +2145,59 @@ textarea {
 .settings-legal a:hover,
 .auth-legal a:hover {
   color: var(--text);
+}
+
+/* ---------- Avatar padrão: o coelho D4, com as orelhas no status ----------
+   Vem do syden-avatar.css do rebrand (05/10/2026). As orelhas giram a partir da base e a troca de
+   status é animada com uma leve mola; a cor das faixas só reforça o que a postura já disse. */
+
+.avatar-coelho {
+  --ac-fundo: #1e2533;
+  --ac-traco: #f3ebd8;
+  --ac-status: #f5b83d;
+  --ac-mola: cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-coelho .ac-fundo { fill: var(--ac-fundo); }
+.avatar-coelho .ac-orelha-fora { fill: var(--ac-traco); transition: fill 400ms ease; }
+.avatar-coelho .ac-orelha-dentro { fill: var(--ac-status); transition: fill 400ms ease; }
+.avatar-coelho .ac-balao { fill: var(--ac-fundo); stroke: var(--ac-traco); transition: stroke 400ms ease; }
+.avatar-coelho .ac-rosto { fill: var(--ac-traco); opacity: 0; transition: opacity 220ms ease; }
+.avatar-coelho .ac-sono { fill: none; stroke: var(--ac-traco); }
+
+.avatar-coelho .ac-orelha {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 480ms var(--ac-mola);
+}
+
+.avatar-coelho[data-status='marca'] .ac-pontos,
+.avatar-coelho[data-status='online'] .ac-pontos { opacity: 1; }
+.avatar-coelho[data-status='online'] { --ac-status: #2fbf71; }
+
+.avatar-coelho[data-status='away'] { --ac-status: #e8a93a; }
+.avatar-coelho[data-status='away'] .ac-orelha-d { transform: rotate(60deg) scaleY(0.95); }
+.avatar-coelho[data-status='away'] .ac-sono { opacity: 1; }
+
+.avatar-coelho[data-status='dnd'] { --ac-status: #e5534b; }
+.avatar-coelho[data-status='dnd'] .ac-orelha-e { transform: rotate(-60deg) scaleY(0.95); }
+.avatar-coelho[data-status='dnd'] .ac-orelha-d { transform: rotate(60deg) scaleY(0.95); }
+.avatar-coelho[data-status='dnd'] .ac-barra { opacity: 1; }
+
+.avatar-coelho[data-status='offline'] { --ac-traco: #7a8294; --ac-status: #5c6475; }
+.avatar-coelho[data-status='offline'] .ac-orelha { transform: scaleY(0.55); }
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-coelho .ac-orelha,
+  .avatar-coelho .ac-rosto,
+  .avatar-coelho .ac-orelha-fora,
+  .avatar-coelho .ac-orelha-dentro,
+  .avatar-coelho .ac-balao {
+    transition: none;
+  }
 }
 
 /* ---------- Avatar com foto ---------- */
@@ -4468,38 +4526,6 @@ textarea {
   gap: 10px;
 }
 
-/* A confirmação da troca. Guarda o próprio espaço mesmo vazia, para o painel não pular de altura
-   quando ela aparece — um salto na tela chama mais atenção que o próprio aviso, pela razão errada. */
-.coelhos-confirmacao {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  min-height: 34px;
-  margin: 10px 0 0;
-  padding: 0 10px;
-  border-radius: var(--radius);
-  background: transparent;
-  font-size: calc(12.5px * var(--escala-do-texto));
-  line-height: 1.4;
-  color: var(--text-muted);
-  opacity: 0;
-  transition: opacity 0.25s ease, background-color 0.25s ease;
-}
-
-.coelhos-confirmacao.visivel {
-  background: var(--bg-raised);
-  opacity: 1;
-}
-
-.coelhos-confirmacao svg {
-  flex: none;
-  color: var(--green);
-}
-
-.coelhos-confirmacao strong {
-  color: var(--text-strong);
-}
-
 .coelho-cartao {
   display: flex;
   flex-direction: column;
@@ -4552,16 +4578,16 @@ textarea {
   margin-bottom: 4px;
 }
 
-.coelho-palco img {
+.coelho-palco .coelho-figura {
   width: 92px;
   height: 92px;
-  object-fit: contain;
+  overflow: visible;
   transform-origin: 50% 100%;
 }
 
 /* O OurBunny é leve: passa o mouse e ele pula. */
-.coelho-cartao.our:hover .coelho-palco img,
-.coelho-cartao.our:focus-visible .coelho-palco img {
+.coelho-cartao.our:hover .coelho-palco .coelho-figura,
+.coelho-cartao.our:focus-visible .coelho-palco .coelho-figura {
   animation: coelho-pulo 0.9s ease-in-out infinite;
 }
 
@@ -4633,8 +4659,8 @@ textarea {
 }
 
 /* O BigChunkus é pesado: ele afunda, o corpo espalha e o chão levanta poeira. */
-.coelho-cartao.big:hover .coelho-palco img,
-.coelho-cartao.big:focus-visible .coelho-palco img {
+.coelho-cartao.big:hover .coelho-palco .coelho-figura,
+.coelho-cartao.big:focus-visible .coelho-palco .coelho-figura {
   animation: coelho-peso 1.4s ease-in-out infinite;
 }
 
@@ -4693,8 +4719,8 @@ textarea {
 
 /* Quem pediu menos animação no sistema vê os coelhos quietos. */
 @media (prefers-reduced-motion: reduce) {
-  .coelho-cartao.our:hover .coelho-palco img,
-  .coelho-cartao.big:hover .coelho-palco img,
+  .coelho-cartao.our:hover .coelho-palco .coelho-figura,
+  .coelho-cartao.big:hover .coelho-palco .coelho-figura,
   .coelho-cartao.our:hover .faisca,
   .coelho-cartao.big:hover .poeira {
     animation: none;
@@ -6680,7 +6706,6 @@ textarea {
   --v-folha-clara: #77a85c;
   --v-tronco: #7b5a39;
   --v-ferro: #4a4540;
-  --v-estrela: #f3c73f;
   --v-vermelho: #c8102e;
   --v-sombra: rgba(40, 28, 16, 0.2);
   --v-janela: #b9a78d;
@@ -6798,8 +6823,7 @@ textarea {
 .v-folha-escura { fill: var(--v-folha-escura); }
 .v-folha-clara { fill: var(--v-folha-clara); }
 .v-ferro { fill: var(--v-ferro); }
-.v-estrela { fill: var(--v-estrela); }
-.v-bandeira { fill: var(--v-vermelho); }
+.v-vela { fill: var(--v-parede, #f3ebd8); }
 .v-sombra { fill: var(--v-sombra); }
 .v-pedestal { fill: var(--v-pedestal); }
 .v-pedestal-sombra { fill: var(--v-pedestal-escuro); }
@@ -6893,12 +6917,6 @@ textarea {
   stroke-width: 3;
   stroke-linecap: round;
   animation: v-ondular 7s ease-in-out infinite;
-}
-
-.v-pano {
-  transform-box: fill-box;
-  transform-origin: left center;
-  animation: v-tremular 4.5s ease-in-out infinite;
 }
 
 .v-esguicho {
@@ -7258,11 +7276,6 @@ textarea {
   50% { transform: translateX(26px); opacity: 0.85; }
 }
 
-@keyframes v-tremular {
-  0%, 100% { transform: skewY(0deg); }
-  50% { transform: skewY(-3.5deg); }
-}
-
 @keyframes v-borbulhar {
   0%, 100% { opacity: 0.75; }
   50% { opacity: 1; }
@@ -7374,7 +7387,6 @@ textarea {
   .v-nuvem,
   .v-estrelinha,
   .v-onda,
-  .v-pano,
   .v-barco,
   .v-halo,
   .v-coelho-corpo {
@@ -8263,12 +8275,6 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
   .v-gordo { animation: none; }
-}
-
-/* No tema claro o coelho é branco sobre fundo claro e quase some, sobrando só a estrela. Um contorno
-   fininho devolve a silhueta sem sujar o desenho (no tema escuro ele já se destaca sozinho). */
-:root[data-theme='light'] .rail-logo img {
-  filter: drop-shadow(0 0 0.6px rgba(60, 40, 40, 0.55)) drop-shadow(0 0 1.4px rgba(60, 40, 40, 0.3));
 }
 
 /* ---------- Pacotes de emoji ---------- */

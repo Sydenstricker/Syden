@@ -134,7 +134,7 @@ export function MemberList({
               onClick={(e) => setPerfil({ membro: member, x: e.clientX - 150, y: e.clientY - 40 })}
               onContextMenu={(e) => menu.open(e, member.id, member.username)}
             >
-              <Avatar name={member.username} userId={member.id} />
+              <Avatar name={member.username} userId={member.id} offline />
               <span className="member-info">
                 <span className="member-name" data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)} style={{ fontFamily: letraDoNome(member.nameFont) }}>
                   {member.username}

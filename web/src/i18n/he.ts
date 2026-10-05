@@ -350,7 +350,7 @@ export default {
   'Escolha o selo': 'בחירת חותם',
   'Escolha o seu': 'לבחור את שלך',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'בחירת המשתתפים. עם יותר מאדם אחד, זו שיחה קבוצתית.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'מי מייצג את ה-Syden שלך? זה משתנה בשלושה מקומות:',
+  'Escolha o coelho da estátua da praça.': 'בחירת הארנב לפסל שבכיכר.',
   'Escolha um canal à esquerda.': 'אפשר לבחור ערוץ ברשימה.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'אפשר לבחור שיחה ברשימה, או להתחיל חדשה.',
   'Escolha uma senha nova': 'בחירת סיסמה חדשה',

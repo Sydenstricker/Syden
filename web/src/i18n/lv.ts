@@ -364,7 +364,7 @@ export default {
   'Escolha o seu': 'Izvēlies savu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Izvēlies, kas būs tava Syden seja. Tas mainās trīs vietās:',
+  'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
   'Escolha um canal à esquerda.': 'Izvēlies kanālu pa kreisi.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Izvēlies sarunu pa kreisi vai sāc jaunu.',
   'Escolha uma senha nova': 'Izvēlies jaunu paroli',

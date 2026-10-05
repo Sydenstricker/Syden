@@ -200,7 +200,7 @@ export default {
     '在这里选择 Syden 的语言。马上生效，只对你有效，并保存在这台电脑上。',
   'Escolha o seu': '挑一个',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '选择谁加入。超过一个人就变成群聊。',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': '选择谁来代表你的 Syden。会在三个地方改变：',
+  'Escolha o coelho da estátua da praça.': '选择广场雕像上的兔子。',
   'Escolha um canal à esquerda.': '在左边选一个频道。',
   'Escolha uma conversa à esquerda, ou comece uma nova.': '在左边选一个对话，或者开始新的。',
   'Escolha uma senha nova': '设置一个新密码',

@@ -289,7 +289,7 @@ export default {
   'Escolha o selo': 'タグを選ぶ',
   'Escolha o seu': '自分のを選ぶ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '誰を入れるか選んでください。2人以上ならグループ会話になります。',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'あなたのSydenを代表するキャラクターを選びましょう。変わるのは3か所：',
+  'Escolha o coelho da estátua da praça.': '広場の像になるウサギを選んでください。',
   'Escolha um canal à esquerda.': '左からチャンネルを選んでください。',
   'Escolha uma conversa à esquerda, ou comece uma nova.': '左から会話を選ぶか、新しく始めてください。',
   'Escolha uma senha nova': '新しいパスワードを決めてください',

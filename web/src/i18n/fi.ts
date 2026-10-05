@@ -362,7 +362,7 @@ export default {
   'Escolha o seu': 'Valitse omasi',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Valitse, kuka edustaa Sydeniäsi. Se vaihtuu kolmessa paikassa:',
+  'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
   'Escolha um canal à esquerda.': 'Valitse kanava vasemmalta.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Valitse keskustelu vasemmalta tai aloita uusi.',
   'Escolha uma senha nova': 'Valitse uusi salasana',

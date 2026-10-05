@@ -364,7 +364,7 @@ export default {
   'Escolha o seu': 'Özüňkini saýla',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Syden-iňi kimiň görkezjekdigini saýla. Üç ýerde üýtgeýär:',
+  'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',
   'Escolha um canal à esquerda.': 'Çepden bir kanal saýla.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Çepden bir söhbet saýla ýa-da täzesini başla.',
   'Escolha uma senha nova': 'Täze parol saýla',

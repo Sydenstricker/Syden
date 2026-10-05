@@ -205,7 +205,7 @@ export default {
   'Escolha o seu': 'Pilih yang anda suka',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Dengan lebih daripada seorang, ia menjadi perbualan kumpulan.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Pilih siapa mewakili Syden anda. Ia bertukar di tiga tempat:',
+  'Escolha o coelho da estátua da praça.': 'Pilih arnab untuk patung di dataran.',
   'Escolha um canal à esquerda.': 'Pilih saluran di sebelah kiri.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Pilih perbualan di sebelah kiri, atau mulakan yang baharu.',
   'Escolha uma senha nova': 'Pilih kata laluan baharu',

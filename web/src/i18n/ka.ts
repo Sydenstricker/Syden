@@ -381,7 +381,7 @@ export default {
   'Escolha o seu': 'აირჩიე შენი',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'აირჩიე, ვინ წარმოადგენს შენს Syden-ს. სამ ადგილას იცვლება:',
+  'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
   'Escolha um canal à esquerda.': 'აირჩიე არხი მარცხნივ.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'აირჩიე საუბარი მარცხნივ ან დაიწყე ახალი.',
   'Escolha uma senha nova': 'აირჩიე ახალი პაროლი',

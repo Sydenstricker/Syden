@@ -340,7 +340,7 @@ export default {
   'Escolha o selo': 'Chaappaa filadhu',
   'Escolha o seu': 'Kan kee filadhu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Eenyu akka seenu filadhu. Nama tokkoo ol yoo ta’e, haasaa gareetti jijjiirama.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Eenyu akka Syden kee bakka bu’u filadhu. Bakka sadii keessatti jijjiirama:',
+  'Escolha o coelho da estátua da praça.': 'Siidaa dirree irra dhaabbatuuf illeettii filadhu.',
   'Escolha um canal à esquerda.': 'Gara bitaatti chaanaalii filadhu.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Gara bitaatti haasaa filadhu, ykn kan haaraa jalqabi.',
   'Escolha uma senha nova': 'Jecha icciitii haaraa filadhu',

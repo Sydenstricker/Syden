@@ -199,7 +199,7 @@ export default {
     '여기서 Syden의 언어를 고르세요. 바로 적용되고, 나에게만 해당되며, 이 컴퓨터에 저장돼요.',
   'Escolha o seu': '마음에 드는 걸로',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '누가 들어올지 고르세요. 두 명 이상이면 단체 대화가 돼요.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': '내 Syden을 대표할 얼굴을 고르세요. 세 군데에서 바뀝니다:',
+  'Escolha o coelho da estátua da praça.': '광장 동상이 될 토끼를 고르세요.',
   'Escolha um canal à esquerda.': '왼쪽에서 채널을 고르세요.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': '왼쪽에서 대화를 고르거나, 새로 시작하세요.',
   'Escolha uma senha nova': '새 비밀번호를 정하세요',

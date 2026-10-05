@@ -203,7 +203,7 @@ export default {
   'Escolha o seu': 'তোমারটা বেছে নাও',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'বেছে নাও তোমার Syden-এর মুখ কে হবে। তিন জায়গায় বদলায়:',
+  'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
   'Escolha um canal à esquerda.': 'বাঁ দিক থেকে একটা চ্যানেল বেছে নাও।',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'বাঁ দিক থেকে একটা কথোপকথন বেছে নাও, বা নতুন শুরু করো।',
   'Escolha uma senha nova': 'নতুন পাসওয়ার্ড বেছে নাও',

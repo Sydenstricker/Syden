@@ -293,7 +293,7 @@ export default {
   'Escolha o selo': 'குறிச்சொல்லைத் தேர்ந்தெடுங்கள்',
   'Escolha o seu': 'உங்களுடையதைத் தேர்ந்தெடுங்கள்',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'யார் சேர வேண்டும் என்று தேர்ந்தெடுங்கள். ஒருவருக்கு மேல் இருந்தால் அது குழு உரையாடலாகும்.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'உங்கள் Sydenஐ யார் பிரதிநிதித்துவப்படுத்த வேண்டும் என்று தேர்ந்தெடுங்கள். மூன்று இடங்களில் மாறும்:',
+  'Escolha o coelho da estátua da praça.': 'சதுக்கச் சிலைக்கான முயலைத் தேர்ந்தெடு.',
   'Escolha um canal à esquerda.': 'இடப்புறத்திலிருந்து ஒரு சேனலைத் தேர்ந்தெடுங்கள்.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'இடப்புறத்திலிருந்து ஓர் உரையாடலைத் தேர்ந்தெடுங்கள், அல்லது புதிதாகத் தொடங்குங்கள்.',
   'Escolha uma senha nova': 'புதிய கடவுச்சொல்லைத் தேர்ந்தெடுங்கள்',

@@ -375,7 +375,7 @@ export default {
   'Escolha o seu': 'ཁྱོད་རའི་གདམ།',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'ཁྱོད་ཀྱི་ Syden ལུ་ ག་གིས་ངོ་ཚབ་འབད་ནི་ཨིན་ན་ གདམ། ས་གནས་ ༣ ནང་སོར་འོང་:',
+  'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
   'Escolha um canal à esquerda.': 'གཡོན་ཁ་ལས་ བརྒྱུད་ལམ་ཅིག་གདམ།',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'གཡོན་ཁ་ལས་ གཏམ་གླེང་ཅིག་གདམ། ཡང་ན་ གསརཔ་ཅིག་འགོ་བཙུགས།',
   'Escolha uma senha nova': 'ཆོག་ཡིག་གསརཔ་གདམ།',

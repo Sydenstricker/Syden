@@ -359,7 +359,7 @@ export default {
   'Escolha o seu': 'Изабери свој',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Изабери ко улази. Са више од једне особе постаје групни разговор.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Изабери ко представља твој Syden. Мења се на три места:',
+  'Escolha o coelho da estátua da praça.': 'Изабери зеца за статуу на тргу.',
   'Escolha um canal à esquerda.': 'Изабери канал са леве стране.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Изабери разговор са леве стране или започни нови.',
   'Escolha uma senha nova': 'Изабери нову лозинку',

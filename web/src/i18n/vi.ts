@@ -278,7 +278,7 @@ export default {
   'Escolha o selo': 'Chọn nhãn',
   'Escolha o seu': 'Chọn cái của bạn',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Chọn ai được vào. Từ hai người trở lên, nó thành cuộc trò chuyện nhóm.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Chọn ai đại diện cho Syden của bạn. Đổi ở ba chỗ:',
+  'Escolha o coelho da estátua da praça.': 'Chọn chú thỏ cho bức tượng ở quảng trường.',
   'Escolha um canal à esquerda.': 'Chọn một kênh ở bên trái.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chọn một cuộc trò chuyện ở bên trái, hoặc bắt đầu cuộc mới.',
   'Escolha uma senha nova': 'Chọn một mật khẩu mới',

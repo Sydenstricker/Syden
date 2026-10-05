@@ -362,7 +362,7 @@ export default {
   'Escolha o seu': 'ඔබේ එක තෝරන්න',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'ඔබේ Syden නියෝජනය කරන්නේ කවුදැයි තෝරන්න. එය ස්ථාන තුනක වෙනස් වේ:',
+  'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
   'Escolha um canal à esquerda.': 'වම් පසින් නාලිකාවක් තෝරන්න.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'වම් පසින් සංවාදයක් තෝරන්න, නැතහොත් නව එකක් ආරම්භ කරන්න.',
   'Escolha uma senha nova': 'නව මුරපදයක් තෝරන්න',

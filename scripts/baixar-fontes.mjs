@@ -65,9 +65,12 @@ function pesoEscolhido(pesos) {
   return [700, 600, 400].find((p) => pesos.includes(p)) ?? pesos[0];
 }
 
+/** As fontes da MARCA moram na mesma pasta e não são deste script (ver baixar-fontes-da-marca.mjs). */
+const DA_MARCA = ['bricolage', 'instrument'];
+
 // Fonte que saiu da lista sai também do disco: sobrar a pasta seria publicar uma fonte que ninguém escolhe.
 for (const pasta of readdirSync(DESTINO, { withFileTypes: true })) {
-  if (pasta.isDirectory() && !FONTES.some((f) => f.id === pasta.name)) {
+  if (pasta.isDirectory() && !FONTES.some((f) => f.id === pasta.name) && !DA_MARCA.includes(pasta.name)) {
     rmSync(join(DESTINO, pasta.name), { recursive: true });
     console.log('  removida: ' + pasta.name);
   }

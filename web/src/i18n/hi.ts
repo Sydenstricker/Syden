@@ -205,7 +205,7 @@ export default {
   'Escolha o seu': 'अपना चुनो',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'चुनो तुम्हारे Syden का चेहरा कौन होगा। तीन जगह बदलता है:',
+  'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
   'Escolha um canal à esquerda.': 'बाईं ओर से एक चैनल चुनो।',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'बाईं ओर से बातचीत चुनो, या नई शुरू करो।',
   'Escolha uma senha nova': 'नया पासवर्ड चुनो',

@@ -362,7 +362,7 @@ export default {
   'Escolha o seu': 'Safidio ny anao',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Safidio izay misolo tena ny Syden-nao. Miova amin’ny toerana telo izy:',
+  'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
   'Escolha um canal à esquerda.': 'Misafidiana fantsona eo ankavia.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Misafidiana resaka eo ankavia, na manomboha vaovao.',
   'Escolha uma senha nova': 'Misafidiana teny miafina vaovao',

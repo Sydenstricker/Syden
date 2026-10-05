@@ -335,7 +335,7 @@ export default {
   'O survival do Léo': 'Leo\'s survival server',
   'Versão 1.21, sem PvP': 'Version 1.21, no PvP',
   'ex.: Evidências': 'e.g. Evidence',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Choose who represents your Syden. It changes in three places: the',
+  'Escolha o coelho da estátua da praça.': 'Choose the bunny for the statue in the square.',
   // Welcome screen and short labels
   '{n} na chamada agora': '{n} on the call right now',
   '{n} pessoas nesta comunidade': '{n} people in this community',

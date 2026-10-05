@@ -290,7 +290,7 @@ export default {
   'Escolha o selo': 'ట్యాగ్‌ను ఎంచుకోండి',
   'Escolha o seu': 'మీది ఎంచుకోండి',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ఎవరు రావాలో ఎంచుకోండి. ఒకరి కంటే ఎక్కువ మంది ఉంటే అది గ్రూప్ సంభాషణ అవుతుంది.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'మీ Sydenకు ఎవరు ప్రతినిధో ఎంచుకోండి. మూడు చోట్ల మారుతుంది:',
+  'Escolha o coelho da estátua da praça.': 'కూడలి విగ్రహం కోసం కుందేలును ఎంచుకో.',
   'Escolha um canal à esquerda.': 'ఎడమవైపు నుంచి ఒక ఛానెల్ ఎంచుకోండి.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'ఎడమవైపు నుంచి ఒక సంభాషణ ఎంచుకోండి, లేదా కొత్తది మొదలుపెట్టండి.',
   'Escolha uma senha nova': 'కొత్త పాస్‌వర్డ్ ఎంచుకోండి',

@@ -41,17 +41,6 @@ function painel(a: P, b: P, t0: number, t1: number, y0: number, y1: number) {
   return pts(sobe(p0, y0), sobe(p1, y0), sobe(p1, y1), sobe(p0, y1));
 }
 
-/** Estrela de cinco pontas, a mesma do logo. */
-function estrela(cx: number, cy: number, raio: number) {
-  const saida = [];
-  for (let i = 0; i < 10; i++) {
-    const r = i % 2 === 0 ? raio : raio * 0.42;
-    const ang = (Math.PI / 5) * i - Math.PI / 2;
-    saida.push(`${(cx + r * Math.cos(ang)).toFixed(2)},${(cy + r * Math.sin(ang)).toFixed(2)}`);
-  }
-  return saida.join(' ');
-}
-
 // ---------------------------------------------------------------------------------------------------
 // A ilha
 // ---------------------------------------------------------------------------------------------------
@@ -190,8 +179,8 @@ function Casa({
       <polygon points={pts(B, C, m2)} className="v-telhado-lado-claro" />
       <polygon points={pts(D, C, m2, m1)} className="v-telhado" />
       <line x1={m1.x} y1={m1.y} x2={m2.x} y2={m2.y} className="v-cumeeira" />
-      {/* a estrela do Syden na frente do telhado */}
-      <polygon points={estrela(meioFrente.x, meioFrente.y, 9)} className="v-estrela" />
+      {/* o óculo, a janelinha redonda do sótão: acende de noite junto com as outras */}
+      <ellipse cx={meioFrente.x} cy={meioFrente.y} rx={7} ry={7} className={`v-janela${aceso ? ' acesa' : ''}`} />
     </g>
   );
 }
@@ -251,20 +240,6 @@ function Lanterna({ c, r, aceso }: { c: number; r: number; aceso: boolean }) {
   );
 }
 
-function Bandeira({ c, r, altura = 86 }: { c: number; r: number; altura?: number }) {
-  const p = iso(c, r);
-  return (
-    <g transform={`translate(${p.x} ${p.y})`}>
-      <ellipse cx={0} cy={0} rx={6} ry={3} className="v-sombra" />
-      <rect x={-1.6} y={-altura} width={3.2} height={altura} rx={1.6} className="v-ferro" />
-      <g className="v-pano">
-        <path d={`M1.6,${-altura + 4} L34,${-altura + 12} L34,${-altura + 40} L1.6,${-altura + 34} Z`} className="v-bandeira" />
-        <polygon points={estrela(16, -altura + 24, 7)} className="v-estrela" />
-      </g>
-    </g>
-  );
-}
-
 function Cerca({ de, para }: { de: [number, number]; para: [number, number] }) {
   const a = iso(de[0], de[1]);
   const b = iso(para[0], para[1]);
@@ -311,9 +286,8 @@ function Fonte({ c, r }: { c: number; r: number }) {
 }
 
 /**
- * A estátua do coelho no meio da praça: o mesmo do logo, de pedra, com a bandeira na mão. Clicando, ela
- * troca de modelo — o OurBunny, que é o coelho do Syden, e o BigChunkus, o gordinho. A escolha fica
- * guardada neste computador, como as cenouras.
+ * A estátua do coelho no meio da praça. Clicando, ela troca de modelo — o OurBunny, esguio, e o
+ * BigChunkus, o gordinho. É a única coisa que essa escolha troca: o ícone do Syden é fixo.
  */
 function Estatua({ c, r, big, onTrocar }: { c: number; r: number; big: boolean; onTrocar: () => void }) {
   const t = useT();
@@ -342,12 +316,9 @@ function Estatua({ c, r, big, onTrocar }: { c: number; r: number; big: boolean; 
       <polygon points={pts(e, d, sobe(d, h), sobe(e, h))} className="v-pedestal" />
       <polygon points={pts(d, b, sobe(b, h), sobe(d, h))} className="v-pedestal-sombra" />
       <polygon points={pts(sobe(a, h), sobe(b, h), sobe(d, h), sobe(e, h))} className="v-pedestal-topo" />
-      <polygon points={estrela(lerp(e, d, 0.5).x, lerp(e, d, 0.5).y - h / 2, 11)} className="v-estrela" />
-      {/* É o mesmo coelho que anda pela praça, só que maior e com a bandeira na mão: assim quem olha
-          reconhece o personagem na hora, em vez de ver um vulto de pedra. */}
+      {/* É o mesmo coelho que anda pela praça, só que maior: assim quem olha reconhece o personagem na
+          hora, em vez de ver um vulto de pedra. */}
       <g transform={`translate(${base.x} ${base.y - h - 2}) scale(2.2)`}>
-        <rect x={9} y={-46} width={2} height={46} rx={1} className="v-estatua-escura" />
-        <path d="M11,-46 L29,-41 L29,-27 L11,-32 Z" className="v-bandeira" />
         <g className="v-estatua-coelho">
           <CoelhoArte id={0} gordo={big} />
         </g>
@@ -382,7 +353,7 @@ function Ponte({ c, r }: { c: number; r: number }) {
   );
 }
 
-/** O píer e o barquinho de vela vermelha: os dois na água, depois da borda da ilha. */
+/** O píer e o barquinho a vela: os dois na água, depois da borda da ilha. */
 function Pier() {
   // Coordenadas na mão: o píer nasce no pé da rocha, que fica abaixo da ponta de baixo da ilha.
   const a = { x: 740, y: 620 };
@@ -402,8 +373,7 @@ function Pier() {
         <ellipse cx={barco.x} cy={barco.y + 16} rx={60} ry={9} className="v-reflexo" />
         <path d={`M${barco.x - 44},${barco.y} q44,28 88,0 q-44,15 -88,0 Z`} className="v-casco" />
         <rect x={barco.x + 2} y={barco.y - 64} width={4} height={64} rx={2} className="v-madeira-escura" />
-        <path d={`M${barco.x + 6},${barco.y - 62} L${barco.x + 48},${barco.y - 14} L${barco.x + 6},${barco.y - 6} Z`} className="v-bandeira" />
-        <polygon points={estrela(barco.x + 20, barco.y - 32, 7)} className="v-estrela" />
+        <path d={`M${barco.x + 6},${barco.y - 62} L${barco.x + 48},${barco.y - 14} L${barco.x + 6},${barco.y - 6} Z`} className="v-vela" />
       </g>
     </g>
   );
@@ -517,7 +487,6 @@ export function CoelhoArte({ id, gordo = false }: { id: number; gordo?: boolean 
       <ellipse cx={0} cy={centro} rx={barriga} ry={altura} fill={u.pano} />
       <ellipse cx={-(barriga - 1.2)} cy={centro} rx={2.6} ry={5} fill={u.sombra} />
       <ellipse cx={barriga - 1.2} cy={centro} rx={2.6} ry={5} fill={u.sombra} />
-      <polygon points={estrela(0, centro, gordo ? 4.4 : 3.6)} className="v-estrela" />
       {/* cabeça */}
       <circle cx={0} cy={topo} r={cabeca} fill="#f7f1e6" />
       {gordo && (
@@ -531,10 +500,9 @@ export function CoelhoArte({ id, gordo = false }: { id: number; gordo?: boolean 
       <circle cx={-2.6} cy={topo - 0.9} r={0.45} fill="#fff" />
       <circle cx={3.4} cy={topo - 0.9} r={0.45} fill="#fff" />
       <path d={`M0,${topo + 2} l-1.3,1.2 h2.6 z`} fill="#e0879a" />
-      {/* boné com estrela */}
+      {/* boné */}
       <path d={`M-8.4,${topo - 4.4} Q0,${topo - 10.6} 8.4,${topo - 4.4} L8.4,${topo - 2.6} Q0,${topo - 7.4} -8.4,${topo - 2.6} Z`} fill={u.pano} />
       <path d={`M-9.8,${topo - 3} Q0,${topo - 6.6} 5.4,${topo - 2.4} L-9.6,${topo - 1.4} Z`} fill={u.sombra} />
-      <polygon points={estrela(0, topo - 6.4, 2.4)} className="v-estrela" />
     </g>
   );
 }
@@ -710,8 +678,8 @@ export function Vila({
     { p: frente(-4.6, 0.6), no: <Arvore key="arv-e" c={-4.6} r={0.6} escala={0.75} /> },
     { p: frente(4.9, 2.9), no: <Arvore key="arv-g" c={4.9} r={2.9} escala={0.7} /> },
 
-    { p: frente(-0.4, -3.3), no: <Bandeira key="ban-a" c={-0.4} r={-3.3} /> },
-    { p: frente(4.2, -3.2), no: <Bandeira key="ban-b" c={4.2} r={-3.2} altura={72} /> },
+    { p: frente(-0.4, -3.3), no: <Lanterna key="lan-e" c={-0.4} r={-3.3} aceso={noite} /> },
+    { p: frente(4.2, -3.2), no: <Lanterna key="lan-f" c={4.2} r={-3.2} aceso={noite} /> },
 
     { p: frente(CASAS.guardaRoupa.c, CASAS.guardaRoupa.r, CASAS.guardaRoupa.w, CASAS.guardaRoupa.d), no: <Casa key="casa-guarda-roupa" {...CASAS.guardaRoupa} aceso={noite} destaque={destaque === 'guarda-roupa'} /> },
     { p: frente(CASAS.salas.c, CASAS.salas.r, CASAS.salas.w, CASAS.salas.d), no: <Casa key="casa-salas" {...CASAS.salas} aceso={noite} destaque={destaque === 'salas'} /> },

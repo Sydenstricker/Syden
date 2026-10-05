@@ -373,7 +373,7 @@ export default {
   'Escolha o seu': 'Chwazi pa w',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Chwazi kiyès ki reprezante Syden ou. Li chanje nan twa kote:',
+  'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
   'Escolha um canal à esquerda.': 'Chwazi yon chanèl agoch.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chwazi yon konvèsasyon agoch, oswa kòmanse yon lòt.',
   'Escolha uma senha nova': 'Chwazi yon nouvo mopas',

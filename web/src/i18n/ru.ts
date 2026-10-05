@@ -169,8 +169,7 @@ export default {
   'O selo desta comunidade é': 'Знак этого сообщества —',
   'Selo que você veste': 'Знак, который ты носишь',
   'Só o seu nome, sem selo': 'Только имя, без знака',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o':
-    'Выбери, кто представляет твой Syden. Меняется в трёх местах:',
+  'Escolha o coelho da estátua da praça.': 'Выбери кролика для статуи на площади.',
 
   // Переписка и сообщения
   Conversas: 'Переписки',

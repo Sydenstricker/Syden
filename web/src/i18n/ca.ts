@@ -358,7 +358,7 @@ export default {
   'Escolha o seu': 'Tria el teu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Tria qui representa el teu Syden. Canvia en tres llocs:',
+  'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
   'Escolha um canal à esquerda.': 'Tria un canal a l’esquerra.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Tria una conversa a l’esquerra, o comença’n una de nova.',
   'Escolha uma senha nova': 'Tria una contrasenya nova',

@@ -1,5 +1,6 @@
 // Item 6: a aba dos coelhos na tela inicial. Os dois lado a lado, cada um se mexendo do seu jeito ao
-// passar o mouse, e a escolha valendo no app inteiro (ícone da barra e estátua da praça).
+// passar o mouse, e a escolha trocando a estátua da praça. Desde o rebrand de 05/10/2026 ela troca SÓ
+// o coelho: o ícone da barra é o D4, fixo, e o teste confere que ele NÃO muda.
 
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, novaAba, ok, resumo } from './ajuda.mjs';
 
@@ -29,7 +30,7 @@ await page.screenshot({ path: 'e2e/fotos/coelhos-aba.png' });
 const animacao = async (seletor) => {
   await page.locator(seletor).hover();
   await page.waitForTimeout(400);
-  return page.locator(seletor + ' .coelho-palco img').evaluate((el) => {
+  return page.locator(seletor + ' .coelho-palco .coelho-figura').evaluate((el) => {
     const nome = getComputedStyle(el).animationName;
     const a = el.getBoundingClientRect();
     return { nome, altura: a.height };
@@ -48,17 +49,17 @@ poeira === 'poeirinha' ? ok('e levanta poeira ao cair') : falhou('poeira: ' + po
 // Parado, ninguém fica se mexendo à toa.
 await page.mouse.move(10, 10);
 await page.waitForTimeout(300);
-const quieto = await page.locator('.coelho-cartao.our .coelho-palco img').evaluate((el) => getComputedStyle(el).animationName);
+const quieto = await page.locator('.coelho-cartao.our .coelho-palco .coelho-figura').evaluate((el) => getComputedStyle(el).animationName);
 quieto === 'none' ? ok('sem o mouse em cima, eles ficam quietos') : falhou('continua animando: ' + quieto);
 
-// ---------- 3. escolher troca o coelho do Syden inteiro ----------
-const logoAntes = await page.locator('.rail-logo img').getAttribute('src');
+// ---------- 3. escolher troca a estátua, e só ela ----------
+const logoAntes = await page.locator('.rail-logo').innerHTML();
 await page.locator('.coelho-cartao.big').click();
 await page.waitForTimeout(400);
 (await page.locator('.coelho-cartao.big.escolhido').count()) === 1 ? ok('o BigChunkus entrou em uso') : falhou('não marcou a escolha');
-const logoDepois = await page.locator('.rail-logo img').getAttribute('src');
-logoDepois !== logoAntes ? ok('o ícone da barra lateral trocou junto') : falhou('o ícone não mudou');
-(await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('e a estátua da praça também') : falhou('a estátua não acompanhou');
+const logoDepois = await page.locator('.rail-logo').innerHTML();
+logoDepois === logoAntes ? ok('o ícone da barra lateral continua o mesmo') : falhou('o ícone mudou junto com o coelho');
+(await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('e a estátua da praça trocou') : falhou('a estátua não acompanhou');
 await page.screenshot({ path: 'e2e/fotos/coelhos-escolhido.png' });
 
 // ---------- 4. a escolha sobrevive a recarregar ----------
@@ -71,8 +72,7 @@ await page.waitForTimeout(600);
 // ---------- 5. a estátua é o OUTRO CAMINHO para a mesma escolha ----------
 //
 // ESTE TRECHO MEDIA O COMPORTAMENTO ANTIGO. A estátua alternava entre os dois a cada clique; hoje ela
-// abre esta mesma aba, de propósito — a escolha muda o ícone do aplicativo e a tela de entrada, e um
-// clique que altera a cara do app inteiro precisa mostrar as opções (ver trocarEstatua em Vila.tsx).
+// abre esta mesma aba, para mostrar as opções em vez de trocar às cegas (ver trocarEstatua em Vila.tsx).
 //
 // O teste não percebeu a mudança porque estava quebrado na linha do cadastro e nunca chegava aqui. E,
 // ao voltar a rodar, ele acusava "a estátua não trocou" — que lê como defeito do app e não é.

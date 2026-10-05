@@ -200,7 +200,7 @@ export default {
   'Escolha o seu': 'Kendininkini seç',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Syden’ını kimin temsil edeceğini seç. Üç yerde değişir:',
+  'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
   'Escolha um canal à esquerda.': 'Soldan bir kanal seç.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Soldan bir sohbet seç ya da yenisini başlat.',
   'Escolha uma senha nova': 'Yeni bir şifre seç',

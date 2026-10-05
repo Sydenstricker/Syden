@@ -31,7 +31,8 @@ describe('as letras da comunidade', () => {
   it('todo @font-face vem de um caminho nosso, nunca de um endereço', () => {
     const css =
       readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8') +
-      readFileSync(new URL('../src/fontes.gerado.css', import.meta.url), 'utf8');
+      readFileSync(new URL('../src/fontes.gerado.css', import.meta.url), 'utf8') +
+      readFileSync(new URL('../src/fontesDaMarca.gerado.css', import.meta.url), 'utf8');
     const blocos = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1]);
     assert.ok(blocos.length > 0, 'nenhum @font-face encontrado — o teste perdeu o alvo');
     for (const bloco of blocos) {

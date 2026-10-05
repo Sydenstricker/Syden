@@ -310,7 +310,7 @@ export default {
   'Escolha o selo': 'Ku zaɓi hatimi',
   'Escolha o seu': 'Ku zaɓi naku',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Ku zaɓi wanda zai shiga. Da fiye da mutum ɗaya, yana zama tattaunawar rukuni.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Ku zaɓi wanda zai wakilci Syden ɗinku. Yana canzawa a wurare uku:',
+  'Escolha o coelho da estátua da praça.': 'Zaɓi zomo don mutum-mutumin dandali.',
   'Escolha um canal à esquerda.': 'Ku zaɓi tasha a hagu.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Ku zaɓi tattaunawa a hagu, ko ku fara sabuwa.',
   'Escolha uma senha nova': 'Ku zaɓi sabuwar kalmar sirri',

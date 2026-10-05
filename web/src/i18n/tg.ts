@@ -363,7 +363,7 @@ export default {
   'Escolha o seu': 'Аз они худро интихоб кунед',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Интихоб кунед, ки кӣ Syden-и шуморо муаррифӣ мекунад. Дар се ҷо иваз мешавад:',
+  'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
   'Escolha um canal à esquerda.': 'Аз тарафи чап каналеро интихоб кунед.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Аз тарафи чап сӯҳбатеро интихоб кунед, ё сӯҳбати навро оғоз кунед.',
   'Escolha uma senha nova': 'Рамзи навро интихоб кунед',

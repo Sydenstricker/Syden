@@ -370,7 +370,7 @@ export default {
   'Escolha o seu': 'Oʻzingiznikini tanlang',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Syden-ingizni kim ifodalashini tanlang. U uch joyda oʻzgaradi:',
+  'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
   'Escolha um canal à esquerda.': 'Chapdan kanal tanlang.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chapdan suhbat tanlang yoki yangisini boshlang.',
   'Escolha uma senha nova': 'Yangi parol tanlang',

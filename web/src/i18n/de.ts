@@ -170,8 +170,7 @@ export default {
   'O selo desta comunidade é': 'Das Abzeichen dieser Community ist',
   'Selo que você veste': 'Dein Abzeichen',
   'Só o seu nome, sem selo': 'Nur dein Name, ohne Abzeichen',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o':
-    'Wähle, wer dein Syden repräsentiert. Das ändert sich an drei Stellen: das',
+  'Escolha o coelho da estátua da praça.': 'Wähle den Hasen für die Statue auf dem Platz.',
 
   // Unterhaltungen und Nachrichten
   Conversas: 'Unterhaltungen',

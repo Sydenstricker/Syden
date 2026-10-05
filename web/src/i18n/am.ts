@@ -311,7 +311,7 @@ export default {
   'Escolha o selo': 'ማህተሙን ይምረጡ',
   'Escolha o seu': 'የራስዎን ይምረጡ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ማን እንደሚገባ ይምረጡ። ከአንድ ሰው በላይ ሲሆን፣ የቡድን ውይይት ይሆናል።',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'የSyden እርስዎን የሚወክለውን ይምረጡ። በሦስት ቦታ ይቀየራል፦',
+  'Escolha o coelho da estátua da praça.': 'ለአደባባዩ ሐውልት ጥንቸሉን ይምረጡ።',
   'Escolha um canal à esquerda.': 'በግራ በኩል ቻናል ይምረጡ።',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'በግራ በኩል ውይይት ይምረጡ፣ ወይም አዲስ ይጀምሩ።',
   'Escolha uma senha nova': 'አዲስ የይለፍ ቃል ይምረጡ',

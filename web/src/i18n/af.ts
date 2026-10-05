@@ -356,7 +356,7 @@ export default {
   'Escolha o seu': 'Kies joune',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Kies wie jou Syden verteenwoordig. Dit verander op drie plekke: die',
+  'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',
   'Escolha um canal à esquerda.': 'Kies ’n kanaal aan die linkerkant.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Kies ’n gesprek aan die linkerkant, of begin ’n nuwe een.',
   'Escolha uma senha nova': 'Kies ’n nuwe wagwoord',

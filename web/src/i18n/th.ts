@@ -321,7 +321,7 @@ export default {
   'Escolha o selo': 'เลือกตรา',
   'Escolha o seu': 'เลือกของคุณ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'เลือกว่าใครจะเข้า ถ้ามากกว่าหนึ่งคน จะกลายเป็นการสนทนากลุ่ม',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'เลือกตัวแทนของ Syden คุณ เปลี่ยนในสามที่:',
+  'Escolha o coelho da estátua da praça.': 'เลือกกระต่ายสำหรับรูปปั้นกลางลาน',
   'Escolha um canal à esquerda.': 'เลือกช่องทางด้านซ้าย',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'เลือกการสนทนาทางด้านซ้าย หรือเริ่มใหม่',
   'Escolha uma senha nova': 'เลือกรหัสผ่านใหม่',

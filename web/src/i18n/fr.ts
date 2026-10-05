@@ -168,8 +168,7 @@ export default {
   'O selo desta comunidade é': 'Le badge de cette communauté est',
   'Selo que você veste': 'Le badge que vous portez',
   'Só o seu nome, sem selo': 'Seulement votre nom, sans badge',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o':
-    'Choisissez qui représente votre Syden. Cela change à trois endroits : le',
+  'Escolha o coelho da estátua da praça.': 'Choisis le lapin de la statue de la place.',
 
   // Conversations et messages
   Conversas: 'Conversations',

@@ -364,8 +364,7 @@ export default {
   'Escolha o selo': 'Wybierz pieczęć',
   'Escolha o seu': 'Wybierz swojego',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Wybierz, kto dołącza. Z więcej niż jedną osobą to będzie rozmowa grupowa.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o':
-    'Wybierz, kto reprezentuje twój Syden. Zmienia się w trzech miejscach:',
+  'Escolha o coelho da estátua da praça.': 'Wybierz królika na pomnik na placu.',
   'Escolha um canal à esquerda.': 'Wybierz kanał po lewej.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Wybierz rozmowę po lewej albo zacznij nową.',
   'Escolha uma senha nova': 'Wybierz nowe hasło',

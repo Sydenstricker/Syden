@@ -190,7 +190,7 @@ export default {
     'Chagua hapa lugha ya Syden. Hubadilika papo hapo, kwa ajili yako tu, na huhifadhiwa kwenye kompyuta hii.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Chagua nani anawakilisha Syden yako. Hubadilika sehemu tatu:',
+  'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
   'Escolha um canal à esquerda.': 'Chagua kituo upande wa kushoto.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Chagua mazungumzo upande wa kushoto, au anzisha mapya.',
   'Escolha uma senha nova': 'Chagua nenosiri jipya',

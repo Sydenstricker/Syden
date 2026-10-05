@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Syden">
+  <rect width="100" height="100" rx="22" fill="#1E2533"/>
+  <g transform="rotate(0 41.7 47.6)">
+    <ellipse cx="38" cy="30" rx="10" ry="18" transform="rotate(-12 38 30)" fill="#F3EBD8"/>
+    <ellipse cx="38" cy="31" rx="3.6" ry="11" transform="rotate(-12 38 30)" fill="#F5B83D"/>
+  </g>
+  <g transform="rotate(0 58.3 47.6)">
+    <ellipse cx="62" cy="30" rx="10" ry="18" transform="rotate(12 62 30)" fill="#F3EBD8"/>
+    <ellipse cx="62" cy="31" rx="3.6" ry="11" transform="rotate(12 62 30)" fill="#F5B83D"/>
+  </g>
+  <path d="M32 38 H68 A16 16 0 0 1 84 54 V62 A16 16 0 0 1 68 78 H42 L22 88 L28 78 H32 A16 16 0 0 1 16 62 V54 A16 16 0 0 1 32 38 Z" fill="#1E2533" stroke="#F3EBD8" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="36" cy="58" r="4.5" fill="#F3EBD8"/>
+  <circle cx="50" cy="58" r="4.5" fill="#F3EBD8"/>
+  <circle cx="64" cy="58" r="4.5" fill="#F3EBD8"/>
+</svg>

@@ -295,7 +295,7 @@ export default {
   'Escolha o selo': 'نشان چنیں',
   'Escolha o seu': 'اپنا چنیں',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'چنیں کہ کون شامل ہو۔ ایک سے زیادہ لوگ ہوں تو یہ گروپ گفتگو بن جاتی ہے۔',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'چنیں کہ آپ کے Syden کی نمائندگی کون کرے۔ تین جگہ بدلتا ہے:',
+  'Escolha o coelho da estátua da praça.': 'چوک کے مجسمے کے لیے خرگوش چنو۔',
   'Escolha um canal à esquerda.': 'بائیں طرف سے ایک چینل چنیں۔',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'بائیں طرف سے ایک گفتگو چنیں، یا نئی شروع کریں۔',
   'Escolha uma senha nova': 'نیا پاس ورڈ چنیں',

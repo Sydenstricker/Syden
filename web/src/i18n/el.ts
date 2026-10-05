@@ -317,7 +317,7 @@ export default {
   'Escolha o selo': 'Διάλεξε το σήμα',
   'Escolha o seu': 'Διάλεξε το δικό σου',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Διάλεξε ποιος μπαίνει. Με πάνω από ένα άτομο, γίνεται ομαδική συνομιλία.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Διάλεξε ποιος εκπροσωπεί το Syden σου. Αλλάζει σε τρία σημεία: το',
+  'Escolha o coelho da estátua da praça.': 'Διάλεξε το κουνέλι για το άγαλμα της πλατείας.',
   'Escolha um canal à esquerda.': 'Διάλεξε ένα κανάλι στα αριστερά.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Διάλεξε μια συνομιλία στα αριστερά, ή ξεκίνα καινούργια.',
   'Escolha uma senha nova': 'Διάλεξε νέο κωδικό',

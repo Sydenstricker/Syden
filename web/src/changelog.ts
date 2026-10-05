@@ -10,6 +10,17 @@ export interface Update {
 
 export const CHANGELOG: Update[] = [
   {
+    date: '2026-10-05',
+    title: 'Um coelho novo, que conversa',
+    icon: '💬',
+    items: [
+      'O Syden mudou de cara: o ícone agora é um coelho que é um balão de conversa, com os três pontinhos de quem está digitando.',
+      'Quem não tem foto de perfil aparece como esse coelho, e as orelhas contam como você está: em pé quando está por aqui, uma caída quando está ausente, as duas deitadas em não perturbe, recolhidas quando sai.',
+      'Quem prefere foto continua com a foto: é só enviar uma em Configurações.',
+      'A vila ficou sem bandeiras e sem estrelas. O OurBunny e o BigChunkus continuam lá, e a escolha entre eles agora troca só a estátua da praça.',
+    ],
+  },
+  {
     date: '2026-09-26',
     title: 'A aba dos coelhos, e a medalha em quadro',
     icon: '🐰',

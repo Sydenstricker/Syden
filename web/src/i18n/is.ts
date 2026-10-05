@@ -363,7 +363,7 @@ export default {
   'Escolha o seu': 'Veldu þitt',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Veldu hver er andlit Syden hjá þér. Það breytist á þremur stöðum:',
+  'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
   'Escolha um canal à esquerda.': 'Veldu rás til vinstri.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Veldu samtal til vinstri, eða byrjaðu nýtt.',
   'Escolha uma senha nova': 'Veldu nýtt lykilorð',

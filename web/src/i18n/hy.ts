@@ -382,7 +382,7 @@ export default {
   'Escolha o seu': 'Ընտրիր քոնը',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Ընտրիր, թե ով է ներկայացնում քո Syden-ը։ Փոխվում է երեք տեղում՝',
+  'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',
   'Escolha um canal à esquerda.': 'Ընտրիր ալիք ձախ կողմում։',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Ընտրիր զրույց ձախ կողմում կամ սկսիր նորը։',
   'Escolha uma senha nova': 'Ընտրիր նոր գաղտնաբառ',

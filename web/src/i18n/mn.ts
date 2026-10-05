@@ -377,7 +377,7 @@ export default {
   'Escolha o seu': 'Өөрийнхөө сонго',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Syden-ийг чинь хэн төлөөлөхийг сонго. Гурван газар өөрчлөгдөнө:',
+  'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
   'Escolha um canal à esquerda.': 'Зүүн талаас суваг сонго.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Зүүн талаас яриа сонго, эсвэл шинээр эхлүүл.',
   'Escolha uma senha nova': 'Шинэ нууц үг сонго',

@@ -326,7 +326,7 @@ export default {
   'Escolha o selo': 'Ẹ yan èdìdì náà',
   'Escolha o seu': 'Ẹ yan tiyín',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Ẹ yan ẹni tó ń wọlé. Pẹ̀lú ju ènìyàn kan lọ, ó di ìbánisọ̀rọ̀ ẹgbẹ́.',
-  'Escolha quem representa o seu Syden. Muda em três lugares: o': 'Ẹ yan ẹni tó ń ṣojú Syden yín. Ó ń yípadà ní ibi mẹ́ta: ',
+  'Escolha o coelho da estátua da praça.': 'Yan ehoro fún ère tó wà ní gbàgede.',
   'Escolha um canal à esquerda.': 'Ẹ yan ikànnì kan ní òsì.',
   'Escolha uma conversa à esquerda, ou comece uma nova.': 'Ẹ yan ìbánisọ̀rọ̀ kan ní òsì, tàbí kí ẹ bẹ̀rẹ̀ tuntun.',
   'Escolha uma senha nova': 'Ẹ yan ọ̀rọ̀ aṣínà tuntun',
