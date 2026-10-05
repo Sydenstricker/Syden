@@ -2,10 +2,10 @@
 // em JavaScript puro (web/public/ruido) e chega pela sala a outra pessoa.
 //
 // A Ana fala; a Bia entra muda e grava o que ouve. Roda duas vezes:
-//   - "syden":     o caminho de hoje — supressão do navegador + GTCRN por cima;
-//   - "navegador": o de antes — só a do navegador. O teste BLOQUEIA o download do modelo, e o Syden tem
-//                  de cair sozinho nesse caminho: é exatamente o que acontece quando o modelo falha, e a
-//                  voz não pode parar por isso. (Tirar o AudioWorklet da página não serve para simular:
+//   - "syden":     o caminho de hoje — só o GTCRN (a supressão do navegador fica sempre desligada,
+//                  decisão de 05/10/2026);
+//   - "navegador": sem modelo nenhum. O teste BLOQUEIA o download do modelo, e o Syden tem de seguir sem
+//                  supressão: é o que acontece quando o modelo falha, e a voz não pode parar por isso. (Tirar o AudioWorklet da página não serve para simular:
 //                  o próprio LiveKit usa, e a publicação do microfone trava.)
 //
 // O que se confere: o modelo foi baixado, o som chegou à Bia, a thread de áudio deu conta (o quadro
@@ -163,7 +163,7 @@ for (const modo of (process.env.MODOS ?? 'syden,navegador').split(',')) {
     if (custo === null) falhou('a thread de áudio não mediu o custo (a supressão não está rodando)');
     else custo < 16 ? ok(`cada quadro de 16 ms custa ${custo.toFixed(2)} ms na thread de áudio`) : falhou(`o quadro custa ${custo.toFixed(2)} ms — mais do que os 16 ms que ele dura`);
   } else {
-    baixouModelo ? falhou('o download do modelo deveria ter sido bloqueado') : ok('sem o modelo, a voz continua saindo pelo caminho antigo');
+    baixouModelo ? falhou('o download do modelo deveria ter sido bloqueado') : ok('sem o modelo, a voz continua saindo (sem supressão nenhuma)');
   }
   if (ARQUIVO) {
     const destino = path.join(os.tmpdir(), `syden-ruido-${modo}.wav`);
@@ -174,7 +174,7 @@ for (const modo of (process.env.MODOS ?? 'syden,navegador').split(',')) {
 
 if (ARQUIVO && resultados.syden && resultados.navegador) {
   const d = resultados.navegador.pausa - resultados.syden.pausa;
-  d > 3 ? ok(`nas pausas, o ruído caiu ${d.toFixed(1)} dB em relação ao caminho antigo`) : falhou(`nas pausas, o ruído só caiu ${d.toFixed(1)} dB`);
+  d > 3 ? ok(`nas pausas, o ruído caiu ${d.toFixed(1)} dB em relação a não ter supressão`) : falhou(`nas pausas, o ruído só caiu ${d.toFixed(1)} dB`);
 }
 
 resumo('Supressão de ruído');

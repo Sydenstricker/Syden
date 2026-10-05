@@ -21,8 +21,9 @@ import { connectVoiceEffect, type VoiceEffectId } from './voiceEffects';
  * 'wasm-unsafe-eval' na política do site, e o Sydenstricker decidiu não dar essa permissão. Provado com
  * e2e/supressao-de-ruido.mjs (COM_CSP=1): a política de hoje não barra nada deste caminho.
  *
- * OS DOIS RODAM POR CIMA DA SUPRESSÃO DO PRÓPRIO NAVEGADOR, que continua ligada: medido, juntos limpam
- * o mesmo ou um pouco mais, e se o modelo falhar a do navegador já está lá.
+ * SÓ O MODELO LIMPA: a supressão do próprio navegador fica desligada, nem por baixo nem de reserva
+ * (decisão do Sydenstricker, 05/10/2026). Medido, ela por baixo ajudava pouco (GTCRN: 3,08 com ela,
+ * 3,01 sem; DPDFNet: igual). Se o modelo falhar, a voz sai sem supressão, e o diário de saúde registra.
  *
  * Os dois trabalham a 16 kHz: o caminho inteiro roda num AudioContext próprio de 16 kHz, e o navegador
  * converte na entrada e na saída. Voz em 16 kHz é a de chamada de boa qualidade.

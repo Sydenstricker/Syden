@@ -2349,7 +2349,8 @@ function MicTest({ deviceId }: { deviceId: string }) {
       .getUserMedia({
         audio: {
           deviceId: deviceId || undefined,
-          noiseSuppression: settings.noiseSuppression,
+          // Sem a supressão do navegador, como na chamada (ver audioCaptureDefaults em useVoice.ts).
+          noiseSuppression: false,
           echoCancellation: settings.echoCancellation,
         },
       })
@@ -2383,7 +2384,7 @@ function MicTest({ deviceId }: { deviceId: string }) {
       stream?.getTracks().forEach((t) => t.stop());
       void context?.close();
     };
-  }, [testing, deviceId, settings.noiseSuppression, settings.echoCancellation]);
+  }, [testing, deviceId, settings.echoCancellation]);
 
   return (
     <div className="mic-test">

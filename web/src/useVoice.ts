@@ -171,7 +171,11 @@ export function useVoice(socket: Socket | null) {
       dynacast: true, // pausa camadas de vídeo que ninguém está assistindo
       audioCaptureDefaults: {
         echoCancellation: settings.echoCancellation,
-        noiseSuppression: settings.noiseSuppression,
+        // A SUPRESSÃO DO NAVEGADOR FICA SEMPRE DESLIGADA. Quem limpa o ruído é o modelo do Syden
+        // (microfone.ts), e só ele — nem por baixo, nem de reserva. Decisão do Sydenstricker,
+        // 05/10/2026: "apenas o novo, sem fallback". O "Supressão de ruído" de Configurações liga e
+        // desliga o modelo, não isto.
+        noiseSuppression: false,
         autoGainControl: true,
         deviceId: settings.audioInput || undefined,
       },
@@ -518,8 +522,9 @@ export function useVoice(socket: Socket | null) {
    * Configurações) e depois o modificador de voz. O som continua saindo do mesmo microfone; os dois só
    * entram no meio do caminho, antes de virar o que os outros ouvem. Ver microfone.ts.
    *
-   * SE A SUPRESSÃO FALHAR, A VOZ NÃO PODE PARAR. O caminho é remontado só com o efeito — a supressão do
-   * próprio navegador continua ligada por baixo — e o motivo vai para o diário da aba de saúde.
+   * SE A SUPRESSÃO FALHAR, A VOZ NÃO PODE PARAR. O caminho é remontado só com o efeito — sem supressão
+   * nenhuma: a do navegador não volta de reserva, por decisão (ver audioCaptureDefaults) — e o motivo
+   * vai para o diário da aba de saúde.
    */
   const efeitoAtualRef = useRef<VoiceEffectId>('none');
   const applyVoiceEffect = useCallback(
@@ -1079,14 +1084,19 @@ export function useVoice(socket: Socket | null) {
   const setAudioProcessing = useCallback(
     async (patch: { noiseSuppression?: boolean; echoCancellation?: boolean }) => {
       updateSettings(patch);
-      room.options.audioCaptureDefaults = { ...room.options.audioCaptureDefaults, ...patch };
+      // Só o cancelamento de eco vai para o navegador; a supressão é do modelo (ver audioCaptureDefaults).
+      if (patch.echoCancellation !== undefined) {
+        room.options.audioCaptureDefaults = { ...room.options.audioCaptureDefaults, echoCancellation: patch.echoCancellation };
+      }
       const track = room.localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
       if (!track) return;
       const wasMuted = track.isMuted;
       try {
-        await track.restartTrack(room.options.audioCaptureDefaults);
-        if (wasMuted) await track.mute();
-        // A supressão do Syden liga e desliga junto com a do navegador: remonta o caminho do microfone.
+        if (patch.echoCancellation !== undefined) {
+          await track.restartTrack(room.options.audioCaptureDefaults);
+          if (wasMuted) await track.mute();
+        }
+        // Ligar ou desligar a supressão é montar ou desmontar o modelo no caminho do microfone.
         if (patch.noiseSuppression !== undefined) await enfileirarEfeito(() => applyVoiceEffect(efeitoAtualRef.current));
       } catch (e) {
         console.error(e);
