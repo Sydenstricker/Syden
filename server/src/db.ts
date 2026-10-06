@@ -4842,3 +4842,144 @@ export function aniversariantesParaAnunciar(mesDia: string, ano: number): { comm
 export function marcarAniversarioAnunciado(communityId: number, userId: number, ano: number) {
   db.prepare('INSERT OR IGNORE INTO aniversarios_anunciados (community_id, user_id, ano) VALUES (?, ?, ?)').run(communityId, userId, ano);
 }
+
+// ---------------------------------------------------------------------------------------------------
+// OS SORTEIOS: quem administra anuncia um prêmio, quem quer participar reage com 🎉 no anúncio, e na hora
+// marcada o agendador sorteia entre quem reagiu (ver sorteios-routes.ts e sortearVencidos em agendador.ts).
+// A lista de participantes NÃO é guardada à parte: são as reações da mensagem — tirar a reação é sair.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sorteios (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id  INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    channel_id    INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    -- Apagar o anúncio cancela o sorteio: sem ele não há onde reagir.
+    message_id    INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    premio        TEXT NOT NULL,
+    vencedores    INTEGER NOT NULL,
+    termina_em    TEXT NOT NULL,
+    -- Os textos do resultado, na língua de quem criou: com {vencedores} e {premio}.
+    texto_resultado TEXT NOT NULL,
+    texto_vazio   TEXT NOT NULL,
+    encerrado     INTEGER NOT NULL DEFAULT 0,
+    -- Os ids sorteados, em JSON: "sortear de novo" não repete quem já ganhou.
+    ganhadores    TEXT NOT NULL DEFAULT '[]',
+    criado_por    INTEGER REFERENCES users(id) ON DELETE SET NULL
+  );
+  CREATE INDEX IF NOT EXISTS sorteios_por_hora ON sorteios(encerrado, termina_em);
+`);
+
+export const EMOJI_DO_SORTEIO = '🎉';
+
+export interface Sorteio {
+  id: number;
+  communityId: number;
+  channelId: number;
+  messageId: number;
+  premio: string;
+  vencedores: number;
+  terminaEm: string;
+  textoResultado: string;
+  textoVazio: string;
+  encerrado: boolean;
+  ganhadores: string[];
+  participantes: number;
+}
+
+interface LinhaDeSorteio {
+  id: number;
+  communityId: number;
+  channelId: number;
+  messageId: number;
+  premio: string;
+  vencedores: number;
+  terminaEm: string;
+  textoResultado: string;
+  textoVazio: string;
+  encerrado: number;
+  ganhadores: string;
+}
+
+const COLUNAS_DO_SORTEIO = `id, community_id AS communityId, channel_id AS channelId, message_id AS messageId, premio, vencedores,
+  termina_em AS terminaEm, texto_resultado AS textoResultado, texto_vazio AS textoVazio, encerrado, ganhadores`;
+
+function sorteioDaLinha(linha: LinhaDeSorteio): Sorteio {
+  const ids = JSON.parse(linha.ganhadores) as number[];
+  const nomes = ids.map((id) => findUserById(id)?.username).filter((nome): nome is string => !!nome);
+  return { ...linha, encerrado: linha.encerrado === 1, ganhadores: nomes, participantes: participantesDoSorteio(linha.communityId, linha.messageId).length };
+}
+
+/** Quem reagiu com 🎉 e ainda é membro — a conta do Syden fica de fora, ela só deixou a reação pronta. */
+export function participantesDoSorteio(communityId: number, messageId: number): { id: number; username: string }[] {
+  return db
+    .prepare(
+      `SELECT u.id, u.username FROM message_reactions r
+       JOIN users u ON u.id = r.user_id
+       JOIN community_members m ON m.user_id = u.id AND m.community_id = ?
+       WHERE r.message_id = ? AND r.emoji = ? AND u.sistema = 0
+       ORDER BY r.id`,
+    )
+    .all(communityId, messageId, EMOJI_DO_SORTEIO) as { id: number; username: string }[];
+}
+
+export function criarSorteio(dados: {
+  communityId: number;
+  channelId: number;
+  messageId: number;
+  premio: string;
+  vencedores: number;
+  terminaEm: string;
+  textoResultado: string;
+  textoVazio: string;
+  criadoPor: number;
+}): Sorteio {
+  const { lastInsertRowid } = db
+    .prepare(
+      `INSERT INTO sorteios (community_id, channel_id, message_id, premio, vencedores, termina_em, texto_resultado, texto_vazio, criado_por)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+    .run(dados.communityId, dados.channelId, dados.messageId, dados.premio, dados.vencedores, dados.terminaEm, dados.textoResultado, dados.textoVazio, dados.criadoPor);
+  return acharSorteio(dados.communityId, Number(lastInsertRowid))!;
+}
+
+export function acharSorteio(communityId: number, id: number): Sorteio | undefined {
+  const linha = db.prepare(`SELECT ${COLUNAS_DO_SORTEIO} FROM sorteios WHERE id = ? AND community_id = ?`).get(id, communityId) as LinhaDeSorteio | undefined;
+  return linha && sorteioDaLinha(linha);
+}
+
+/** Os abertos primeiro (pela hora de terminar), depois os últimos encerrados. */
+export function listarSorteios(communityId: number): Sorteio[] {
+  const linhas = db
+    .prepare(`SELECT ${COLUNAS_DO_SORTEIO} FROM sorteios WHERE community_id = ? ORDER BY encerrado, CASE WHEN encerrado = 0 THEN termina_em END, id DESC LIMIT 30`)
+    .all(communityId) as unknown as LinhaDeSorteio[];
+  return linhas.map(sorteioDaLinha);
+}
+
+export function contarSorteiosAbertos(communityId: number): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM sorteios WHERE community_id = ? AND encerrado = 0').get(communityId) as { n: number }).n;
+}
+
+export function sorteiosVencidos(agoraIso: string): Sorteio[] {
+  const linhas = db.prepare(`SELECT ${COLUNAS_DO_SORTEIO} FROM sorteios WHERE encerrado = 0 AND termina_em <= ?`).all(agoraIso) as unknown as LinhaDeSorteio[];
+  return linhas.map(sorteioDaLinha);
+}
+
+export function idsGanhadores(id: number): number[] {
+  const linha = db.prepare('SELECT ganhadores FROM sorteios WHERE id = ?').get(id) as { ganhadores: string } | undefined;
+  return linha ? (JSON.parse(linha.ganhadores) as number[]) : [];
+}
+
+export function encerrarSorteio(id: number, ganhadores: number[], agoraIso: string) {
+  db.prepare('UPDATE sorteios SET encerrado = 1, ganhadores = ?, termina_em = MIN(termina_em, ?) WHERE id = ?').run(JSON.stringify(ganhadores), agoraIso, id);
+}
+
+/** Os prêmios que a pessoa ganhou numa comunidade — para a exportação da LGPD. */
+export function sorteiosGanhos(communityId: number, userId: number): { premio: string; terminouEm: string }[] {
+  return db
+    .prepare(
+      `SELECT s.premio, s.termina_em AS terminouEm FROM sorteios s, json_each(s.ganhadores) g
+       WHERE s.community_id = ? AND g.value = ? ORDER BY s.termina_em`,
+    )
+    .all(communityId, userId) as { premio: string; terminouEm: string }[];
+}

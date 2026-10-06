@@ -26,6 +26,7 @@ import { registerAdvertenciasRoutes } from './advertencias-routes.js';
 import { registerComandosRoutes } from './comandos-routes.js';
 import { registerAgendadasRoutes } from './agendadas-routes.js';
 import { registerAniversariosRoutes } from './aniversarios-routes.js';
+import { registerSorteiosRoutes } from './sorteios-routes.js';
 import { iniciarAgendador } from './agendador.js';
 import { startTrafficSampling } from './traffic.js';
 import { countServerError, startHealthSampling } from './health.js';
@@ -72,6 +73,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerComandosRoutes(app);
   registerAgendadasRoutes(app);
   registerAniversariosRoutes(app);
+  registerSorteiosRoutes(app, io);
   // No modo rascunho, o e-mail inteiro (com o link) vai para o registro do servidor.
   ondeAnotar((linha) => app.log.info(linha));
 

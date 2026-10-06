@@ -115,6 +115,7 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
             seuCargo: db.memberRole(c.id, eu.id),
             cargosPersonalizados: db.listarCargos(c.id).filter((cargo) => cargos.includes(cargo.id)).map((cargo) => cargo.nome),
             pontosDeNivel: db.pontosDe(c.id, eu.id),
+            sorteiosGanhos: db.sorteiosGanhos(c.id, eu.id),
           };
         }),
         insignias: db.itensDaPessoa(eu.id),
