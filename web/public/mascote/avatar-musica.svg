@@ -1,5 +1,5 @@
 <!-- GERADO por animacaoSVG/exportar-mascote.mjs a partir do estúdio animacoes_d4.html — não edite à mão. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 400 300" role="img" aria-label="Ouvindo música">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 40 280 280" role="img" aria-label="Ouvindo música">
   <style>
     .o-fora, .cabeca { fill: var(--creme, #f3ebd8); }
     .o-dentro { fill: var(--faixa, #F48FB1); }

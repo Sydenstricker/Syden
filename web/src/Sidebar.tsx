@@ -202,7 +202,15 @@ export function Sidebar({
                       // Botão direito abre o menu da pessoa (volume, silenciar), como no Discord.
                       onContextMenu={(e) => menu.open(e, m.userId, m.username)}
                     >
-                      <Avatar name={m.username} userId={m.userId} size={22} speaking={speaking.has(String(m.userId))} />
+                      {/* A música do karaokê só é conhecida dentro da chamada em que ela toca: por isso o
+                          fone aparece só na sala em que VOCÊ está. */}
+                      <Avatar
+                        name={m.username}
+                        userId={m.userId}
+                        size={22}
+                        speaking={speaking.has(String(m.userId))}
+                        musica={voice.karaoke !== null && m.channelId === voice.channelId}
+                      />
                       <span className="voice-member-name">{m.username}</span>
                       {m.screen && (
                         <LivePreview

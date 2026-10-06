@@ -85,6 +85,7 @@ export function Avatar({
   status,
   speaking,
   digitando,
+  musica,
   size = 32,
 }: {
   /** Não aparece mais no desenho (era a inicial, antes do coelho); fica para quem chama dizer de quem é. */
@@ -98,6 +99,8 @@ export function Avatar({
   speaking?: boolean;
   /** Está escrevendo uma mensagem: o coelho vira o balão com os três pontos. */
   digitando?: boolean;
+  /** Tem música tocando na chamada dele (o karaokê): o coelho aparece de fone, com notas. */
+  musica?: boolean;
   size?: number;
 }) {
   const { members } = useDirectory();
@@ -119,7 +122,9 @@ export function Avatar({
           ? 'digitando'
           : escrita === 'voltando'
             ? 'parou-de-digitar'
-            : offline
+            : musica
+              ? 'musica'
+              : offline
               ? 'offline'
               : online
                 ? POSE[status ?? 'online']

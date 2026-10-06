@@ -1017,8 +1017,10 @@ ${css}
       </g>
       <g class="notas">${NOTA(86, 50, 'n1')}${NOTA(12, 52, 'n2')}${NOTA(90, 64, 'n3')}</g>`,
             css: CSS_NOTAS() + `
-    .fone-arco { fill: none; stroke: #2A3142; stroke-width: 4; stroke-linecap: round; }
-    .fone-concha { fill: #2A3142; }
+    /* O fone era azul-escuro e sumia no fundo azul-noite do avatar: o arco vai cinza-claro e as
+       conchas na cor da faixa da orelha. */
+    .fone-arco { fill: none; stroke: #8D95A6; stroke-width: 4; stroke-linecap: round; }
+    .fone-concha { fill: ${cores().faixa}; stroke: #8D95A6; stroke-width: 1.5; }
     .figura { animation: ritmo ${d(1.2)} ease-in-out infinite; }
     .orelha-e { animation: ritmoE ${d(1.2)} ease-in-out infinite; }
     .orelha-d { animation: ritmoD ${d(1.2)} ease-in-out infinite; }

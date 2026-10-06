@@ -74,6 +74,39 @@ await page.getByRole('button', { name: 'Karaokê' }).click();
 await conferirMascote('.karaoke .karaoke-vazio img.mascote', 'karaoke', 'karaokê sem música');
 await page.locator('.karaoke').screenshot({ path: 'e2e/fotos/mascote-karaoke.png' });
 
+// OUVINDO MÚSICA: com uma música do karaokê tocando na chamada, quem está nela aparece de fone. A música
+// é um WAV de 2 s de silêncio gerado aqui mesmo — nada de áudio de ninguém. Sobe pela API do próprio
+// app (o módulo api.ts, servido pelo Vite), que já sabe se autenticar.
+const wav = (() => {
+  const amostras = 16000 * 2;
+  const b = Buffer.alloc(44 + amostras * 2);
+  b.write('RIFF', 0); b.writeUInt32LE(36 + amostras * 2, 4); b.write('WAVE', 8); b.write('fmt ', 12);
+  b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(16000, 24);
+  b.writeUInt32LE(32000, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34); b.write('data', 36); b.writeUInt32LE(amostras * 2, 40);
+  return 'data:audio/wav;base64,' + b.toString('base64');
+})();
+const subiu = await page.evaluate(async ({ nome, audio }) => {
+  const { api } = await import('/app/src/api.ts');
+  const lista = await api('/api/communities');
+  const id = lista.find((c) => c.name === nome).id;
+  await api(`/api/communities/${id}/karaoke`, { method: 'POST', body: { title: 'Teste do fone', audio, seconds: 2 } });
+  return true;
+}, { nome: comunidade, audio: wav }).catch((e) => String(e));
+if (subiu !== true) falhou('não deu para subir a música de teste: ' + subiu);
+await page.locator('button[aria-label="Fechar o karaokê"]').click();
+await page.locator('.stage-controls button[aria-label="Mais"]').click();
+await page.getByRole('button', { name: 'Karaokê' }).click();
+await page.locator('.karaoke-tocar').first().click();
+await page
+  .locator('.tile .avatar-coelho[data-status="musica"]')
+  .first()
+  .waitFor({ timeout: 10000 })
+  .then(
+    () => ok('ouvindo música: com o karaokê tocando, o coelho da chamada aparece de fone'),
+    () => falhou('ouvindo música: o karaokê tocou e o coelho não pôs o fone'),
+  );
+await page.screenshot({ path: 'e2e/fotos/mascote-musica.png' });
+
 // Nenhuma regra dos SVGs do mascote vazou para a página: se vazasse, as classes deles estariam na folha.
 const vazou = await page.evaluate(() =>
   [...document.styleSheets].some((folha) => {

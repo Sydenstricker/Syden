@@ -74,8 +74,14 @@ await page.evaluate(() => {
   document.querySelector('input[name="corOrelha"][value="rosa"]').checked = true;
 });
 
+/**
+ * Presets que também saem no recorte do avatar, com outro nome. O "ouvindo música" é o do karaokê
+ * tocando na chamada: todo mundo nela aparece de fone (ver Avatar.tsx).
+ */
+const TAMBEM_COMO_AVATAR = { 18: 'avatar-musica' };
+
 const svgs = {};
-for (const [n, nome] of Object.entries(PRESETS)) {
+for (const [n, nome] of [...Object.entries(PRESETS), ...Object.entries(TAMBEM_COMO_AVATAR)]) {
   const svg = await page.evaluate((n) => {
     setPreset(Number(n));
     return gerarSVG();

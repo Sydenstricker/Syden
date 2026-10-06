@@ -181,10 +181,13 @@ function PersonTile({
   member,
   avatarSize,
   sound,
+  musica,
 }: {
   trackRef: TrackReferenceOrPlaceholder;
   member?: VoiceMember;
   avatarSize: number;
+  /** Tem música do karaokê tocando nesta chamada: o coelho aparece de fone. */
+  musica?: boolean;
   /** Som do soundboard que a pessoa acabou de tocar. */
   sound?: { icon: string; key: number };
 }) {
@@ -200,7 +203,7 @@ function PersonTile({
         <VideoTrack trackRef={trackRef} />
       ) : (
         <div className="tile-avatar">
-          <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} />
+          <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} musica={musica} />
         </div>
       )}
       {/* Mesma informação de formato da transmissão, só que discreta: aparece ao passar o mouse. */}
@@ -1138,6 +1141,7 @@ function Stage({
           member={members.find((m) => String(m.userId) === ref.participant.identity)}
           avatarSize={avatarSize}
           sound={voice.recentSounds.get(ref.participant.identity)}
+          musica={voice.karaoke !== null}
         />
       ) : (
         <ScreenTile trackRef={ref} membro={members.find((m) => String(m.userId) === ref.participant.identity)} />
