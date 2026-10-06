@@ -19,6 +19,7 @@ import { registerCulturaRoutes } from './cultura-routes.js';
 import { registerRoutes } from './routes.js';
 import { registerSocialRoutes } from './social-routes.js';
 import { registerAmigosRoutes } from './amigos-routes.js';
+import { registerAulaRoutes } from './aula-routes.js';
 import { startTrafficSampling } from './traffic.js';
 import { countServerError, startHealthSampling } from './health.js';
 
@@ -57,6 +58,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerModeracaoRoutes(app, io);
   registerSocialRoutes(app);
   registerAmigosRoutes(app, io);
+  registerAulaRoutes(app, io);
   // No modo rascunho, o e-mail inteiro (com o link) vai para o registro do servidor.
   ondeAnotar((linha) => app.log.info(linha));
 
@@ -78,6 +80,15 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
     };
     limpar();
     setInterval(limpar, 24 * 60 * 60 * 1000).unref();
+
+    // AS CONTAS DE AULA VENCIDAS saem de hora em hora: o link vale no máximo um dia, e a conta não
+    // pode ficar além do prazo prometido a quem entrou. Saem pelo caminho normal de exclusão.
+    const limparAulas = () => {
+      const quantas = db.limparTemporariosVencidos();
+      if (quantas > 0) app.log.info({ quantas }, 'aula: contas temporárias vencidas foram apagadas');
+    };
+    limparAulas();
+    setInterval(limparAulas, 60 * 60 * 1000).unref();
   }
 
   return { app, io };

@@ -92,6 +92,18 @@ export function poderDeOperador(user: db.User, action: string, sobre: { target?:
 export const manages = (role: db.Role | undefined) => role === 'owner' || role === 'admin';
 
 /**
+ * Quem entrou só para uma aula (conta temporária, ver aula-routes.ts) faz o que a aula precisa: falar,
+ * ouvir e escrever na comunidade dela. Criar comunidade, entrar em outra, abrir conversa privada e
+ * pedir amizade ficam de fora — a conta some quando o link vence, e nada disso faria sentido nela.
+ * Devolve true quando barrou (e já respondeu).
+ */
+export function barrarTemporario(request: FastifyRequest, reply: FastifyReply): boolean {
+  if (!db.ehTemporario(request.user.id)) return false;
+  reply.code(403).send({ error: 'Quem entrou só para a aula não pode fazer isso. Crie uma conta para usar o Syden inteiro.' });
+  return true;
+}
+
+/**
  * Quanto tempo um canal apagado fica recuperável.
  *
  * Trinta dias é o prazo de quem só percebe a falta quando volta a precisar do canal — "cadê o
@@ -719,6 +731,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get('/api/communities', async (request) => db.listCommunitiesForUser(request.user.id));
 
     authed.post<{ Body: { name?: string } }>('/api/communities', async (request, reply) => {
+      if (barrarTemporario(request, reply)) return reply;
       const name = communityName(request.body?.name);
       if (!name) return reply.code(400).send({ error: 'O nome da comunidade deve ter de 2 a 40 caracteres.' });
       if (db.countCommunitiesCreatedBy(request.user.id) >= config.maxCommunitiesPerUser) {
@@ -733,6 +746,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     });
 
     authed.post<{ Body: { code?: string } }>('/api/communities/join', async (request, reply) => {
+      if (barrarTemporario(request, reply)) return reply;
       const code = request.body?.code?.trim() ?? '';
       const community = code ? db.findCommunityByInvite(code) : undefined;
       if (!community) return reply.code(404).send({ error: 'Código de convite inválido.' });

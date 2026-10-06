@@ -19,7 +19,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Server } from 'socket.io';
 import * as db from './db.js';
 import { Freio } from './freio.js';
-import { requireUser } from './routes.js';
+import { barrarTemporario, requireUser } from './routes.js';
 import { salaDaPessoa } from './realtime.js';
 
 /**
@@ -46,6 +46,7 @@ export function registerAmigosRoutes(app: FastifyInstance, io: Server) {
     }));
 
     authed.post<{ Body: { username?: string } }>('/api/amigos', async (request, reply) => {
+      if (barrarTemporario(request, reply)) return reply;
       const nome = (request.body?.username ?? '').trim();
       if (!nome) return reply.code(400).send({ error: 'Escreva o nome de quem você quer adicionar.' });
 

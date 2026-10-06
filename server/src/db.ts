@@ -36,6 +36,9 @@ export interface Community {
   seloTexto?: string | null;
   seloIcone?: string | null;
   seloCor?: string | null;
+  /** A cultura que a comunidade estuda (país ISO e língua), para a faixa de cultura dela. Nulo = nenhuma. */
+  culturaPais?: string | null;
+  culturaLingua?: string | null;
 }
 
 /** Uma comunidade vista por quem participa dela. */
@@ -70,6 +73,8 @@ export interface User {
   vitrine: string[];
   /** Quantas ideias desta pessoa já entraram no Syden. É o que vira a medalha no perfil. */
   acceptedIdeas: number;
+  /** Conta de quem entrou só para uma aula (ver "A AULA", no fim deste arquivo): até quando ela existe. */
+  temporarioAte?: string | null;
 }
 
 /** Identificação pública de alguém (autor de mensagem, lista de online). */
@@ -1203,7 +1208,7 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor, cultura_pais AS culturaPais, cultura_lingua AS culturaLingua';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
@@ -1211,6 +1216,7 @@ export function listCommunitiesForUser(userId: number): CommunityForUser[] {
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
               c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte, c.efeito,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
+              c.cultura_pais AS culturaPais, c.cultura_lingua AS culturaLingua,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               c.invite_code AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
@@ -1376,7 +1382,7 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, ' +
+  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
   // O selo vestido, resolvido aqui mesmo. Guarda-se o NÚMERO da comunidade e não uma cópia do selo:
   // quando ela troca o dela, o de quem veste troca junto, sem ninguém precisar reescolher.
   '(SELECT selo_texto FROM communities c WHERE c.id = users.selo_comunidade) AS seloTexto, ' +
@@ -1399,6 +1405,7 @@ type UserRow = {
   seloTexto: string | null;
   seloIcone: string | null;
   seloCor: string | null;
+  temporarioAte: string | null;
 };
 
 function toUser(row: UserRow | undefined): User | undefined {
@@ -1416,6 +1423,7 @@ function toUser(row: UserRow | undefined): User | undefined {
       nameFont: row.nameFont ?? null,
       vitrine: lerVitrine(row.vitrine),
       acceptedIdeas: row.acceptedIdeas ?? 0,
+      temporarioAte: row.temporarioAte ?? null,
       // As três partes vêm juntas ou nenhuma vem: um selo pela metade não se desenha.
       selo:
         row.seloTexto && row.seloIcone && row.seloCor
@@ -4112,4 +4120,126 @@ export function maisUmaTentativaNoShield(sha256: string, onde: string, alvoId: n
   db.prepare(
     'UPDATE shield_fila SET tentativas = tentativas + 1 WHERE sha256 = ? AND onde = ? AND alvo_id = ?',
   ).run(sha256, onde, alvoId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A AULA: o link direto para uma sala de voz, e quem entra por ele só para aquela aula.
+//
+// Pedido de um professor que dá aula de idiomas pelo Zoom (05/10/2026): os alunos não são de
+// tecnologia, e cadastro, convite, achar a comunidade e achar a sala são quatro portas a mais. O link
+// leva direto para a sala; quem não tem conta entra só com o nome, numa CONTA TEMPORÁRIA que vale até
+// o link vencer e então é apagada — pelo mesmo caminho de qualquer exclusão, a caixa-preta incluída
+// (ver CLAUDE.md): temporária para quem usa, não para a prova.
+//
+// NÃO É O INTERCÂMBIO ARQUIVADO. Aquele era desconhecido encontrando desconhecido; aqui é uma turma
+// fechada, com alguém responsável, que convida os próprios alunos e pode desligar o link.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS aulas (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    token        TEXT NOT NULL UNIQUE,
+    channel_id   INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    criada_por   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    criada_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    expira_em    TEXT NOT NULL,
+    revogada     INTEGER NOT NULL DEFAULT 0
+  );
+`);
+
+// Até quando a conta existe. Nulo = conta comum, para sempre. Preenchido = entrou por um link de aula.
+addColumnIfMissing('users', 'temporario_ate', 'TEXT');
+// A cultura que a comunidade estuda, para a faixa de cultura dela (país ISO e língua). Nulo = nenhuma.
+addColumnIfMissing('communities', 'cultura_pais', 'TEXT');
+addColumnIfMissing('communities', 'cultura_lingua', 'TEXT');
+
+export interface Aula {
+  id: number;
+  token: string;
+  channelId: number;
+  communityId: number;
+  expiraEm: string;
+  criadaEm: string;
+}
+
+const colunasDaAula =
+  'a.id, a.token, a.channel_id AS channelId, a.community_id AS communityId, a.expira_em AS expiraEm, a.criada_em AS criadaEm';
+const aulaValida = "a.revogada = 0 AND a.expira_em > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')";
+
+export function criarAula(channelId: number, communityId: number, criadaPor: number, horas: number): Aula {
+  const token = randomBytes(18).toString('base64url');
+  const expira = new Date(Date.now() + horas * 60 * 60 * 1000).toISOString();
+  db.prepare('INSERT INTO aulas (token, channel_id, community_id, criada_por, expira_em) VALUES (?, ?, ?, ?, ?)').run(
+    token,
+    channelId,
+    communityId,
+    criadaPor,
+    expira,
+  );
+  return aulaPeloToken(token)!;
+}
+
+/** O link ainda valendo, com os nomes da sala e da comunidade; vencido ou desligado vem undefined. */
+export function aulaPeloToken(token: string) {
+  return db
+    .prepare(
+      `SELECT ${colunasDaAula}, ch.name AS sala, co.name AS comunidade
+       FROM aulas a JOIN channels ch ON ch.id = a.channel_id JOIN communities co ON co.id = a.community_id
+       WHERE a.token = ? AND ${aulaValida}`,
+    )
+    .get(token) as (Aula & { sala: string; comunidade: string }) | undefined;
+}
+
+export function aulasDaSala(channelId: number): Aula[] {
+  return db.prepare(`SELECT ${colunasDaAula} FROM aulas a WHERE a.channel_id = ? AND ${aulaValida} ORDER BY a.id DESC`).all(channelId) as unknown as Aula[];
+}
+
+/** Desliga o link. Quem já entrou por ele continua até a conta vencer; ninguém novo entra. */
+export function revogarAula(id: number, communityId: number) {
+  return db.prepare('UPDATE aulas SET revogada = 1 WHERE id = ? AND community_id = ?').run(id, communityId).changes > 0;
+}
+
+/**
+ * Cria a conta de quem entra só com o nome. O nome de usuário do Syden não aceita espaço nem acento
+ * fora de letras, e precisa ser único: "Maria Clara" vira "Maria.Clara-482".
+ */
+export function criarUsuarioTemporario(nome: string, ate: string): User {
+  const base =
+    nome
+      .normalize('NFC')
+      .trim()
+      .replace(/\s+/g, '.')
+      .replace(/[^\p{L}\p{N}_.-]/gu, '')
+      .slice(0, 24) || 'aluno';
+  let username = '';
+  for (let tentativa = 0; tentativa < 20; tentativa++) {
+    const candidato = `${base}-${100 + Math.floor(Math.random() * 900)}`;
+    if (!findUserByName(candidato)) {
+      username = candidato;
+      break;
+    }
+  }
+  if (!username) username = `${base}-${randomBytes(3).toString('hex')}`;
+  const user = createUserSemSenha(username, null);
+  db.prepare('UPDATE users SET temporario_ate = ? WHERE id = ?').run(ate, user.id);
+  return user;
+}
+
+export function ehTemporario(userId: number): boolean {
+  return !!db.prepare('SELECT 1 FROM users WHERE id = ? AND temporario_ate IS NOT NULL').get(userId);
+}
+
+/** Apaga as contas temporárias vencidas, pelo caminho normal de exclusão (caixa-preta incluída). */
+export function limparTemporariosVencidos(): number {
+  const vencidos = db
+    .prepare("SELECT id FROM users WHERE temporario_ate IS NOT NULL AND temporario_ate < strftime('%Y-%m-%dT%H:%M:%fZ', 'now')")
+    .all() as { id: number }[];
+  for (const { id } of vencidos) deleteAccount(id);
+  return vencidos.length;
+}
+
+/** A cultura da comunidade (para a faixa dela). Os dois vêm juntos, ou nenhum. */
+export function definirCulturaDaComunidade(communityId: number, pais: string | null, lingua: string | null) {
+  db.prepare('UPDATE communities SET cultura_pais = ?, cultura_lingua = ? WHERE id = ?').run(pais, lingua, communityId);
 }

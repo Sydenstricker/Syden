@@ -5,7 +5,7 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { INSIGNIAS, entregar } from './presentes.js';
 import { anunciarPerfil, directRoom, emitToUser, joinDirectRoom, leaveDirectRoom } from './realtime.js';
-import { requireUser } from './routes.js';
+import { barrarTemporario, requireUser } from './routes.js';
 
 const MAX_GROUP_MEMBERS = 20;
 
@@ -147,6 +147,7 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
 
     /** Abre (ou reabre) uma conversa: sem nome e com uma pessoa só = conversa direta; com nome = grupo. */
     authed.post<{ Body: { userIds?: number[]; name?: string } }>('/api/direct', async (request, reply) => {
+      if (barrarTemporario(request, reply)) return reply;
       const wanted = [...new Set((Array.isArray(request.body?.userIds) ? request.body.userIds : []).map(Number))].filter(
         (id) => Number.isInteger(id) && id !== request.user.id,
       );
