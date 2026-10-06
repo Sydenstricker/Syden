@@ -50,13 +50,13 @@ export function LivePreview({
         className="live-badge"
         tabIndex={0}
         role="button"
-        aria-label={transmitindo ? `Ver ${username} transmitindo ${transmitindo}` : `Ver o que ${username} está compartilhando`}
+        aria-label={transmitindo ? t('Ver {pessoa} transmitindo {nome}', { pessoa: username, nome: transmitindo }) : t('Ver o que {pessoa} está compartilhando', { pessoa: username })}
         onMouseEnter={(e) => show(e.currentTarget)}
         onMouseLeave={() => setAt(null)}
         onFocus={(e) => show(e.currentTarget)}
         onBlur={() => setAt(null)}
       >
-        AO VIVO
+        {t('Ao vivo')}
       </span>
       {at &&
         // Desenhada fora da barra lateral: dentro dela, a rolagem cortaria a janelinha.

@@ -993,7 +993,21 @@ textarea {
   padding: 0 5px;
   font-size: calc(10px * var(--escala-do-texto));
   font-weight: 700;
+  text-transform: uppercase;
   cursor: pointer;
+}
+
+/* Quem está assistindo: a legenda do coelho de pipoca, irmã do "AO VIVO", na cor de destaque. */
+.assistindo-badge {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: var(--accent-texto, #1a1a1a);
+  border-radius: 8px;
+  padding: 0 5px;
+  font-size: calc(10px * var(--escala-do-texto));
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 /* Prévia da tela compartilhada, ao passar o mouse no "AO VIVO". Fica por cima de tudo, fora da barra lateral. */

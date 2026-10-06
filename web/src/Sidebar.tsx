@@ -257,6 +257,9 @@ export function Sidebar({
                         assistindo={plateia.has(m.userId)}
                       />
                       <span className="voice-member-name">{m.username}</span>
+                      {/* A PIPOCA COM LEGENDA: o coelho de pipoca a 22 px ninguém distinguia do coelho comum
+                          (relato de 06/10/2026: funcionou, mas ninguém reparou). Igual ao "AO VIVO": texto e cor. */}
+                      {plateia.has(m.userId) && <span className="assistindo-badge">🍿 {t('Assistindo')}</span>}
                       {m.screen && (
                         <LivePreview
                           userId={m.userId}

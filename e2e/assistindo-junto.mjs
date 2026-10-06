@@ -56,9 +56,18 @@ await pipocaNaSala(bia)
 // transmite não: segue com a pose dele e o "AO VIVO".
 const pipocaDe = (page, nome, onde) =>
   page.locator(onde, { hasText: nome }).first().locator('img.avatar-coelho[data-status="assistindo"]').count();
+// Estar na sala não basta: de pipoca fica quem ABRIU a transmissão.
+await bia.waitForTimeout(1500);
+(await pipocaDe(bia, 'bia' + s, '.voice-member')) === 0 ? ok('na sala sem abrir a transmissão, a Bia ainda não está de pipoca') : falhou('pipoca sem ter aberto a transmissão');
+await bia.locator('.stream-invite', { hasText: 'ana' + s }).getByRole('button', { name: 'Assistir' }).click();
 await bia.waitForTimeout(1500);
 (await pipocaDe(bia, 'bia' + s, '.voice-member')) === 1 ? ok('a Bia, na plateia, aparece de pipoca na sala') : falhou('a Bia não ficou de pipoca na sala');
 (await pipocaDe(bia, 'bia' + s, '.member')) === 1 ? ok('e de pipoca na lista de membros') : falhou('a Bia não ficou de pipoca na lista de membros');
+// A pipoca com legenda: a etiqueta ao lado do nome, e a frase na lista de membros.
+const etiqueta = await bia.locator('.voice-member', { hasText: 'bia' + s }).locator('.assistindo-badge').count();
+etiqueta === 1 ? ok('ao lado do nome da Bia, a etiqueta "🍿 Assistindo"') : falhou('a etiqueta de quem assiste não apareceu');
+const frase = await bia.locator('.member', { hasText: 'bia' + s }).locator('.member-status').first().innerText().catch(() => '');
+frase === 'Assistindo ana' + s ? ok('na lista de membros: "' + frase + '"') : falhou('frase da lista de membros: ' + frase);
 (await pipocaDe(bia, 'ana' + s, '.voice-member')) === 0 ? ok('a Ana, que transmite, não fica de pipoca') : falhou('quem transmite ficou de pipoca');
 const rotulo = await bia.locator('.canal-assistindo .so-para-leitor').first().textContent();
 rotulo === 'Assistindo junto' ? ok('e quem usa leitor de tela ouve "Assistindo junto"') : falhou('rótulo para leitor de tela: ' + rotulo);
@@ -66,7 +75,6 @@ await bia.locator('.sidebar').screenshot({ path: 'e2e/fotos/assistindo-junto.png
 
 // No quadro grande, um "i" só: o da fileira de controles. O do próprio quadro (o das miniaturas)
 // aparecia junto ao passar o mouse, e eram dois lado a lado.
-await bia.locator('.stream-invite', { hasText: 'ana' + s }).getByRole('button', { name: 'Assistir' }).click();
 const quadro = bia.locator('.stage-main', { has: bia.locator('.stream-controls') }).first();
 await quadro.waitFor({ timeout: 20000 });
 await quadro.hover();

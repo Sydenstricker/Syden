@@ -25,7 +25,12 @@ export function salaAssistindoJunto(voiceMembers: VoiceMember[], channelId: numb
 export function quemAssiste(voiceMembers: VoiceMember[]): Set<number> {
   const plateia = new Set<number>();
   for (const m of voiceMembers) {
-    if (!m.screen && salaAssistindoJunto(voiceMembers, m.channelId)) plateia.add(m.userId);
+    // Servidor novo diz o que cada um ABRIU (ver "assistindo" em useVoice.ts): conta só quem abriu a
+    // transmissão de alguém que está transmitindo agora. Servidor antigo não diz, e vale a regra da sala.
+    const assistindo = m.assistindo
+      ? m.assistindo.some((id) => voiceMembers.some((outro) => outro.userId === id && outro.screen && outro.channelId === m.channelId))
+      : !m.screen && salaAssistindoJunto(voiceMembers, m.channelId);
+    if (assistindo) plateia.add(m.userId);
   }
   return plateia;
 }

@@ -63,7 +63,7 @@ export function MemberList({
   const voiceById = new Map(voiceMembers.map((m) => [m.userId, m]));
   // Quem está na plateia de uma transmissão aparece de pipoca (ver assistindo.ts).
   const plateia = quemAssiste(voiceMembers);
-  const channelName = (id: number) => channels.find((c) => c.id === id)?.name ?? 'uma sala';
+  const channelName = (id: number) => channels.find((c) => c.id === id)?.name ?? t('uma sala');
 
   const all = [...members.values()].sort((a, b) => a.username.localeCompare(b.username));
   const aqui = all.filter((m) => onlineIds.has(m.id));
@@ -73,8 +73,11 @@ export function MemberList({
     const voice = voiceById.get(id);
     if (!voice) return null;
     if (voice.screen) return { text: fraseDaTransmissao(voice.screenName, channelName(voice.channelId)), live: true };
-    if (voice.video) return { text: `Com câmera em ${channelName(voice.channelId)}`, live: false };
-    return { text: `Em ${channelName(voice.channelId)}`, live: false };
+    // Quem está de pipoca diz QUEM assiste: é a legenda do coelho de pipoca, que sozinho ninguém lia.
+    const alvo = plateia.has(id) ? voiceMembers.find((m) => m.screen && voice.assistindo?.includes(m.userId)) : undefined;
+    if (alvo) return { text: t('Assistindo {pessoa}', { pessoa: alvo.username }), live: false };
+    if (voice.video) return { text: t('Com câmera em {sala}', { sala: channelName(voice.channelId) }), live: false };
+    return { text: t('Em {sala}', { sala: channelName(voice.channelId) }), live: false };
   };
 
   const row = (member: CommunityMember, className: string) => {

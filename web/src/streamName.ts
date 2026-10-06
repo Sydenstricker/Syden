@@ -1,3 +1,4 @@
+import { t } from './i18n';
 // O que a pessoa está transmitindo, em palavras que os outros entendam.
 //
 // O navegador entrega um "rótulo" para a captura de tela, e o que vem ali depende de onde o Syden está
@@ -40,5 +41,5 @@ export function nomeDaTransmissao(rotulo: string | undefined | null, superficie?
 
 /** A frase que aparece na lista: "Transmitindo League of Legends em Sala 1". */
 export function fraseDaTransmissao(nome: string | null | undefined, sala: string): string {
-  return nome ? `Transmitindo ${nome} em ${sala}` : `Transmitindo em ${sala}`;
+  return nome ? t('Transmitindo {nome} em {sala}', { nome, sala }) : t('Transmitindo em {sala}', { sala });
 }
