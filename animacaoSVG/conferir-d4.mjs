@@ -51,6 +51,10 @@ const NOMES = {
   24: 'Avatar: ausente',
   25: 'Avatar: ocupado',
   26: 'Avatar: offline',
+  27: 'Avatar: falando',
+  28: 'Avatar: parou fala',
+  29: 'Avatar: digitando',
+  30: 'Avatar: parou dig.',
 };
 const CODIGOS = { 10: 'OFFLINE — Sem conexão', 11: 'ERRO 500 — Problema no servidor', 12: 'ERRO 404 — Página não encontrada' };
 

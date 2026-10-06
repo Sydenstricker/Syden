@@ -44,6 +44,10 @@ const PRESETS = {
   24: 'avatar-ausente',
   25: 'avatar-ocupado',
   26: 'avatar-offline',
+  27: 'avatar-falando',
+  28: 'avatar-parou-de-falar',
+  29: 'avatar-digitando',
+  30: 'avatar-parou-de-digitar',
 };
 
 /**

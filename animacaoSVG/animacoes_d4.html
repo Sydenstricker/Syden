@@ -215,6 +215,10 @@
             <button class="preset-btn" id="presetBtn24" onclick="setPreset(24)">Ausente<small>dormindo, com os "z"</small></button>
             <button class="preset-btn" id="presetBtn25" onclick="setPreset(25)">Ocupado<small>no notebook, lendo</small></button>
             <button class="preset-btn" id="presetBtn26" onclick="setPreset(26)">Offline<small>orelhas caídas, cinza</small></button>
+            <button class="preset-btn" id="presetBtn27" onclick="setPreset(27)">Começou a falar<small>vira o balão com as barras, uma vez (clique para repetir)</small></button>
+            <button class="preset-btn" id="presetBtn28" onclick="setPreset(28)">Parou de falar<small>o balão volta a ser coelho, uma vez</small></button>
+            <button class="preset-btn" id="presetBtn29" onclick="setPreset(29)">Começou a digitar<small>vira o balão com os pontos, uma vez</small></button>
+            <button class="preset-btn" id="presetBtn30" onclick="setPreset(30)">Parou de digitar<small>o balão volta a ser coelho, uma vez</small></button>
           </div>
         </div>
 
@@ -331,6 +335,10 @@
       24: { nome: 'Avatar: ausente', arquivo: 'avatar-ausente' },
       25: { nome: 'Avatar: ocupado', arquivo: 'avatar-ocupado' },
       26: { nome: 'Avatar: offline', arquivo: 'avatar-offline' },
+      27: { nome: 'Avatar: começou a falar', arquivo: 'avatar-falando' },
+      28: { nome: 'Avatar: parou de falar', arquivo: 'avatar-parou-de-falar' },
+      29: { nome: 'Avatar: começou a digitar', arquivo: 'avatar-digitando' },
+      30: { nome: 'Avatar: parou de digitar', arquivo: 'avatar-parou-de-digitar' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -566,6 +574,55 @@ ${css}
       eDentro: ovalComoCurva(38, 31, 3.6, 11, -12),
       dFora: ovalComoCurva(62, 30, 10, 18, 12, true),
       dDentro: ovalComoCurva(62, 31, 3.6, 11, 12, true),
+    };
+
+    /**
+     * A transição do AVATAR, que toca UMA VEZ — ao contrário da do estúdio, que se repete em ciclo.
+     * No app são dois momentos separados: começou a falar (ida: coelho → balão, e as barras seguem
+     * sozinhas) e parou (volta: balão → coelho). A volta é a mesma animação tocada ao contrário.
+     *
+     * É o mesmo mecanismo da transição do estúdio: a cabeça muda de forma, o balão cresce de dentro
+     * para fora como uma íris, e as orelhas curvas viram as ovais do D4.
+     */
+    function transicaoDoAvatar({ rotulo, miolo, cssMiolo, volta = false }) {
+      const T = 0.7;
+      const sentido = volta ? 'reverse' : 'normal';
+      return montarMascote({
+        rotulo,
+        orelhas: `<g class="orelha orelha-e"><path class="o-fora vira-eFora" d="${ORELHAS_CURVAS.eFora}"/><path class="o-dentro vira-eDentro" d="${ORELHAS_CURVAS.eDentro}"/></g>
+      <g class="orelha orelha-d"><path class="o-fora vira-dFora" d="${ORELHAS_CURVAS.dFora}"/><path class="o-dentro vira-dDentro" d="${ORELHAS_CURVAS.dDentro}"/></g>`,
+        depois: `<path class="iris" d="${BALAO}"/><g class="miolo">${miolo}</g>`,
+        css: `
+    .iris { fill: ${cores().quadrado}; stroke: ${cores().creme}; stroke-width: 6; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 45%; transform: scale(0); animation: iris ${d(T)} ease-in-out ${sentido} both; }
+    .cabeca { animation: virarBalao ${d(T)} ease-in-out ${sentido} both; }
+    .rosto-m { animation: rostoSome ${d(T)} ease-in-out ${sentido} both; }
+    .miolo { opacity: 0; animation: mioloAparece ${d(T)} ease-in-out ${sentido} both; }
+${Object.keys(ORELHAS_CURVAS).map((k) => `    .vira-${k} { animation: vira-${k} ${d(T)} ease-in-out ${sentido} both; }
+    @keyframes vira-${k} { 0% { d: path('${ORELHAS_CURVAS[k]}'); } 60%, 100% { d: path('${ORELHAS_OVAIS[k]}'); } }`).join('\n')}
+    @keyframes virarBalao { 0% { d: path('${CABECA}'); } 60%, 100% { d: path('${BALAO}'); } }
+    @keyframes iris { 0%, 20% { transform: scale(0); } 100% { transform: none; } }
+    @keyframes rostoSome { 0% { opacity: 1; } 30%, 100% { opacity: 0; } }
+    @keyframes mioloAparece { 0%, 80% { opacity: 0; } 100% { opacity: 1; } }
+${cssMiolo}`,
+      });
+    }
+    const MIOLO_BARRAS = {
+      miolo: `<rect class="creme barra b1" x="33.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b2" x="47.5" y="49" width="5" height="18" rx="2.5"/>
+        <rect class="creme barra b3" x="61.5" y="49" width="5" height="18" rx="2.5"/>`,
+      cssMiolo: () => `
+    .barra { animation: falar ${d(0.9)} ease-in-out infinite; }
+    .b2 { animation-delay: ${d(0.15)}; }
+    .b3 { animation-delay: ${d(0.3)}; }
+    @keyframes falar { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }`,
+    };
+    const MIOLO_PONTOS = {
+      miolo: pontos(),
+      cssMiolo: () => `
+    .p { animation: pontos ${d(1.2)} ease-in-out infinite; }
+    .p2 { animation-delay: ${d(0.18)}; }
+    .p3 { animation-delay: ${d(0.36)}; }
+    @keyframes pontos { 0%, 60%, 100% { transform: translateY(0); opacity: .35; } 30% { transform: translateY(-4px); opacity: 1; } }`,
     };
 
     /**
@@ -1110,6 +1167,16 @@ ${css}
     .nb-base { fill: #3A4255; }`,
           });
         }
+
+        // ---------- o avatar quando a conversa acontece: toca uma vez, para o app trocar de estado ----------
+        case 27:
+          return transicaoDoAvatar({ rotulo: 'Falando', miolo: MIOLO_BARRAS.miolo, cssMiolo: MIOLO_BARRAS.cssMiolo() });
+        case 28:
+          return transicaoDoAvatar({ rotulo: 'Syden', miolo: MIOLO_BARRAS.miolo, cssMiolo: MIOLO_BARRAS.cssMiolo(), volta: true });
+        case 29:
+          return transicaoDoAvatar({ rotulo: 'Digitando', miolo: MIOLO_PONTOS.miolo, cssMiolo: MIOLO_PONTOS.cssMiolo() });
+        case 30:
+          return transicaoDoAvatar({ rotulo: 'Syden', miolo: MIOLO_PONTOS.miolo, cssMiolo: MIOLO_PONTOS.cssMiolo(), volta: true });
 
         // ---------- o mascote ----------
         case 13: // Ocioso: ninguém está digitando nem falando. Ele só existe — pisca, olha em volta, respira.

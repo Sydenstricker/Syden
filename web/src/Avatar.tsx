@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import type { PresenceStatus } from './types';
@@ -40,8 +41,41 @@ function AvatarCoelho({ pose }: { pose: string }) {
   );
 }
 
+/** Silêncio que precisa passar para o balão voltar a ser coelho; e quanto dura a volta. */
+const FOLGA_MS = 1200;
+const VOLTA_MS = 750;
+
 /**
- * Foto de perfil quando a pessoa enviou uma; senão, o coelho do Syden com as orelhas no status dela.
+ * Em que momento da conversa o coelho está: parado (a pose do status), no balão (falando ou digitando)
+ * ou voltando do balão para coelho.
+ *
+ * A FOLGA É O QUE IMPEDE O PISCA-PISCA. A detecção de fala liga e desliga a cada pausa entre palavras;
+ * seguindo ela ao pé da letra, o coelho viraria balão e voltaria várias vezes numa frase. Entrar no
+ * balão é imediato (é o que diz "ele começou"); sair só depois de um silêncio de verdade.
+ */
+function useMomentoDaConversa(ativo: boolean): 'parado' | 'balao' | 'voltando' {
+  const [momento, setMomento] = useState<'parado' | 'balao' | 'voltando'>(ativo ? 'balao' : 'parado');
+  useEffect(() => {
+    if (ativo) {
+      setMomento('balao');
+      return;
+    }
+    if (momento !== 'balao') return;
+    const folga = setTimeout(() => setMomento('voltando'), FOLGA_MS);
+    return () => clearTimeout(folga);
+  }, [ativo, momento]);
+  useEffect(() => {
+    if (momento !== 'voltando') return;
+    const volta = setTimeout(() => setMomento('parado'), VOLTA_MS);
+    return () => clearTimeout(volta);
+  }, [momento]);
+  return momento;
+}
+
+/**
+ * Foto de perfil quando a pessoa enviou uma; senão, o coelho do Syden na pose do status dela. Quando
+ * ela fala ou digita, o coelho vira o balão do D4 (barras ou três pontos) e volta depois — o mascote é
+ * o personagem, e o D4 aparece quando a conversa acontece.
  * A foto substitui o coelho por escolha de quem a envia (Configurações → Minha conta).
  */
 export function Avatar({
@@ -50,6 +84,7 @@ export function Avatar({
   offline,
   status,
   speaking,
+  digitando,
   size = 32,
 }: {
   /** Não aparece mais no desenho (era a inicial, antes do coelho); fica para quem chama dizer de quem é. */
@@ -61,6 +96,8 @@ export function Avatar({
   /** Sabidamente desconectada (o grupo "Offline" da lista de membros): o coelho recolhe as orelhas. */
   offline?: boolean;
   speaking?: boolean;
+  /** Está escrevendo uma mensagem: o coelho vira o balão com os três pontos. */
+  digitando?: boolean;
   size?: number;
 }) {
   const { members } = useDirectory();
@@ -70,6 +107,23 @@ export function Avatar({
   // desenha um avatar (lista de membros, chamada, mensagem) sem passar a escolha de mão em mão. E
   // muda sozinha quando a pessoa troca, pelo mesmo "user:updated" que já atualiza o nome.
   const moldura = membro?.moldura ?? undefined;
+  // Falar tem precedência sobre digitar: é o que os outros estão ouvindo agora.
+  const fala = useMomentoDaConversa(!!speaking);
+  const escrita = useMomentoDaConversa(!!digitando && !speaking);
+  const pose =
+    fala === 'balao'
+      ? 'falando'
+      : fala === 'voltando'
+        ? 'parou-de-falar'
+        : escrita === 'balao'
+          ? 'digitando'
+          : escrita === 'voltando'
+            ? 'parou-de-digitar'
+            : offline
+              ? 'offline'
+              : online
+                ? POSE[status ?? 'online']
+                : 'neutro';
 
   return (
     <span
@@ -81,7 +135,7 @@ export function Avatar({
       }}
     >
       {version === null ? (
-        <AvatarCoelho pose={offline ? 'offline' : online ? POSE[status ?? 'online'] : 'neutro'} />
+        <AvatarCoelho pose={pose} />
       ) : (
         <img src={mediaUrl.avatar(userId!, version)} alt="" draggable={false} />
       )}
