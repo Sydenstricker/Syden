@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'Copiar link': 'Нусха бардоштани пайванд',
   'Paleta de cores': 'Палитраи рангҳо',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Кабуди шабона, кремӣ ва каҳрабоӣ. Палитраи худи Syden.',

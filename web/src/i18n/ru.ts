@@ -170,6 +170,7 @@ export default {
   'Selo que você veste': 'Знак, который ты носишь',
   'Só o seu nome, sem selo': 'Только имя, без знака',
   'Escolha o coelho da estátua da praça.': 'Выбери кролика для статуи на площади.',
+  'Copiar link': 'Копировать ссылку',
   'Paleta de cores': 'Цветовая палитра',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Ночной синий, кремовый и янтарный. Палитра Syden.',

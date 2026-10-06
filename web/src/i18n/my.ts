@@ -340,6 +340,7 @@ export default {
   'Escolha o seu': 'ကိုယ့်ဟာ ရွေးပါ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ဘယ်သူ ပါမလဲ ရွေးပါ။ တစ်ယောက်ထက် ပိုရင် အဖွဲ့စကားဝိုင်း ဖြစ်ပါမယ်။',
   'Escolha o coelho da estátua da praça.': 'ရင်ပြင်ရှိ ရုပ်တုအတွက် ယုန်ကို ရွေးပါ။',
+  'Copiar link': 'လင့်ခ်ကို ကူးယူရန်',
   'Paleta de cores': 'အရောင်စုံ',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'ညပြာ၊ ခရင်မ်နှင့် ပယင်းရောင်။ Syden ကိုယ်ပိုင်။',

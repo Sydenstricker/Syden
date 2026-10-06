@@ -191,6 +191,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'Copiar link': 'Nakili kiungo',
   'Paleta de cores': 'Mpangilio wa rangi',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Bluu ya usiku, krimu na kaharabu. Ya Syden.',

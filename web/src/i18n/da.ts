@@ -353,6 +353,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vælg, hvem der er med. Med mere end én person bliver det en gruppesamtale.',
   'Escolha o coelho da estátua da praça.': 'Vælg kaninen til statuen på torvet.',
+  'Copiar link': 'Kopiér link',
   'Paleta de cores': 'Farvepalet',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Natblå, creme og rav. Sydens egen.',

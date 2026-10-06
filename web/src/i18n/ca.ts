@@ -355,6 +355,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
+  'Copiar link': 'Copia l’enllaç',
   'Paleta de cores': 'Paleta de colors',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Blau nit, crema i ambre. La de Syden.',

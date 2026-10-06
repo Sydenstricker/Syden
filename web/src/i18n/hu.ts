@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  'Copiar link': 'Link másolása',
   'Paleta de cores': 'Színpaletta',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Éjkék, krém és borostyán. A Sydené.',

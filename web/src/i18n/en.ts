@@ -336,6 +336,7 @@ export default {
   'Versão 1.21, sem PvP': 'Version 1.21, no PvP',
   'ex.: Evidências': 'e.g. Evidence',
   'Escolha o coelho da estátua da praça.': 'Choose the bunny for the statue in the square.',
+  'Copiar link': 'Copy link',
   'Paleta de cores': 'Color palette',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Night blue, cream and amber. Syden’s own.',

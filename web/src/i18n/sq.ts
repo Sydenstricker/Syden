@@ -351,6 +351,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'Copiar link': 'Kopjo lidhjen',
   'Paleta de cores': 'Paleta e ngjyrave',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Blu nate, krem dhe qelibar. Ajo e Syden.',

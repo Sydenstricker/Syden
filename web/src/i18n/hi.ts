@@ -206,6 +206,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
+  'Copiar link': 'लिंक कॉपी करें',
   'Paleta de cores': 'रंग पैलेट',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'रात जैसा नीला, क्रीम और एम्बर। Syden का अपना।',

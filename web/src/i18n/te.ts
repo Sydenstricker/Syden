@@ -291,6 +291,7 @@ export default {
   'Escolha o seu': 'మీది ఎంచుకోండి',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ఎవరు రావాలో ఎంచుకోండి. ఒకరి కంటే ఎక్కువ మంది ఉంటే అది గ్రూప్ సంభాషణ అవుతుంది.',
   'Escolha o coelho da estátua da praça.': 'కూడలి విగ్రహం కోసం కుందేలును ఎంచుకో.',
+  'Copiar link': 'లింక్ కాపీ చేయండి',
   'Paleta de cores': 'రంగుల పాలెట్',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'రాత్రి నీలం, క్రీమ్, అంబర్. Syden సొంతది.',

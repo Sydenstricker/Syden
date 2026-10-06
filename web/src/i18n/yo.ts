@@ -327,6 +327,7 @@ export default {
   'Escolha o seu': 'Ẹ yan tiyín',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Ẹ yan ẹni tó ń wọlé. Pẹ̀lú ju ènìyàn kan lọ, ó di ìbánisọ̀rọ̀ ẹgbẹ́.',
   'Escolha o coelho da estátua da praça.': 'Yan ehoro fún ère tó wà ní gbàgede.',
+  'Copiar link': 'Da ìjápọ̀ kọ',
   'Paleta de cores': 'Àkójọ àwọ̀',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Búlúù òru, kíríìmù àti àmbà. Ti Syden.',

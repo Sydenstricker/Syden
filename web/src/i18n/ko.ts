@@ -200,6 +200,7 @@ export default {
   'Escolha o seu': '마음에 드는 걸로',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '누가 들어올지 고르세요. 두 명 이상이면 단체 대화가 돼요.',
   'Escolha o coelho da estátua da praça.': '광장 동상이 될 토끼를 고르세요.',
+  'Copiar link': '링크 복사',
   'Paleta de cores': '색상 팔레트',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': '밤하늘 파랑, 크림, 호박색. Syden의 팔레트.',

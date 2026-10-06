@@ -361,6 +361,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'Copiar link': 'लिङ्क प्रतिलिपि गर्नुहोस्',
   'Paleta de cores': 'रङ प्यालेट',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'रातको नीलो, क्रिम र एम्बर। Syden को आफ्नै।',

@@ -361,6 +361,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
+  'Copiar link': 'Kopēt saiti',
   'Paleta de cores': 'Krāsu palete',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Nakts zils, krēmkrāsa un dzintars. Syden paša.',

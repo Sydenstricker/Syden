@@ -290,6 +290,7 @@ export default {
   'Escolha o seu': '自分のを選ぶ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '誰を入れるか選んでください。2人以上ならグループ会話になります。',
   'Escolha o coelho da estátua da praça.': '広場の像になるウサギを選んでください。',
+  'Copiar link': 'リンクをコピー',
   'Paleta de cores': 'カラーパレット',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': '夜の青、クリーム、琥珀。Syden のパレット。',

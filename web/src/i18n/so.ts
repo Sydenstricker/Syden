@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  'Copiar link': 'Koobiyee xiriirka',
   'Paleta de cores': 'Midabada',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Buluug habeen, kareem iyo cambar. Ta Syden.',

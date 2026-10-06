@@ -201,6 +201,7 @@ export default {
   'Escolha o seu': '挑一个',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '选择谁加入。超过一个人就变成群聊。',
   'Escolha o coelho da estátua da praça.': '选择广场雕像上的兔子。',
+  'Copiar link': '复制链接',
   'Paleta de cores': '配色方案',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': '夜蓝、奶油色和琥珀色。Syden 自己的配色。',

@@ -358,6 +358,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
+  'Copiar link': 'Kopiraj link',
   'Paleta de cores': 'Paleta boja',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Noćno plava, krem i ćilibar. Syden-ova.',

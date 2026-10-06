@@ -365,6 +365,7 @@ export default {
   'Escolha o seu': 'Wybierz swojego',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Wybierz, kto dołącza. Z więcej niż jedną osobą to będzie rozmowa grupowa.',
   'Escolha o coelho da estátua da praça.': 'Wybierz królika na pomnik na placu.',
+  'Copiar link': 'Kopiuj link',
   'Paleta de cores': 'Paleta kolorów',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Nocny granat, krem i bursztyn. Ta od Sydena.',

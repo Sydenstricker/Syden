@@ -311,6 +311,7 @@ export default {
   'Escolha o seu': 'Ku zaɓi naku',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Ku zaɓi wanda zai shiga. Da fiye da mutum ɗaya, yana zama tattaunawar rukuni.',
   'Escolha o coelho da estátua da praça.': 'Zaɓi zomo don mutum-mutumin dandali.',
+  'Copiar link': 'Kwafi mahaɗi',
   'Paleta de cores': 'Jerin launuka',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Shuɗin dare, kirim da ruwan zuma. Na Syden.',

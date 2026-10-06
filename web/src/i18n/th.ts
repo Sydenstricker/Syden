@@ -322,6 +322,7 @@ export default {
   'Escolha o seu': 'เลือกของคุณ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'เลือกว่าใครจะเข้า ถ้ามากกว่าหนึ่งคน จะกลายเป็นการสนทนากลุ่ม',
   'Escolha o coelho da estátua da praça.': 'เลือกกระต่ายสำหรับรูปปั้นกลางลาน',
+  'Copiar link': 'คัดลอกลิงก์',
   'Paleta de cores': 'ชุดสี',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'น้ำเงินกลางคืน ครีม และอำพัน ของ Syden เอง',

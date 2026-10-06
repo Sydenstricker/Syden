@@ -13,14 +13,19 @@ import { EntradaNaAula } from './EntradaNaAula';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
 
-/** Código de convite que veio num link (?convite=xxxx), lido uma única vez e tirado da URL. */
-function readInviteFromUrl(): string | null {
+/**
+ * Código de convite que veio num link (?convite=xxxx), lido uma única vez e tirado da URL — e, no link
+ * de uma sala, o canal junto (&canal=ID): quem abre entra na comunidade e cai direto nele.
+ */
+function readInviteFromUrl(): { code: string; canal: number | null } | null {
   const url = new URL(window.location.href);
   const code = url.searchParams.get('convite');
   if (!code) return null;
+  const canal = Number(url.searchParams.get('canal'));
   url.searchParams.delete('convite');
+  url.searchParams.delete('canal');
   window.history.replaceState(null, '', url.pathname + url.search + url.hash);
-  return code;
+  return { code, canal: Number.isInteger(canal) && canal > 0 ? canal : null };
 }
 
 // O TEMPO MÍNIMO SAIU DAQUI e foi para web/src/abertura.ts, junto com a tela que ele segura.
@@ -229,7 +234,7 @@ export function App() {
         )}
         {session.status === 'anonymous' && (!linkDaAula || querUsarConta) && (
           <AuthScreen
-            initialInviteCode={inviteCode}
+            initialInviteCode={inviteCode?.code ?? null}
             onAuthenticated={async (token, user) => {
               saveToken(token);
               // As preferências descem ANTES de a tela montar. Existem três portas de entrada no
@@ -245,7 +250,8 @@ export function App() {
           <Shell
             token={session.token}
             user={session.user}
-            pendingInviteCode={inviteCode}
+            pendingInviteCode={inviteCode?.code ?? null}
+            pendingInviteChannel={inviteCode?.canal ?? null}
             linkDaAula={linkDaAula}
             aoUsarLinkDaAula={() => {
               esquecerLinkDaAula();

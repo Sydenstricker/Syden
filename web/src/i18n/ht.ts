@@ -370,6 +370,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  'Copiar link': 'Kopye lyen',
   'Paleta de cores': 'Palèt koulè',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Ble lannwit, krèm ak anb. Pa Syden.',

@@ -341,6 +341,7 @@ export default {
   'Escolha o seu': 'Kan kee filadhu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Eenyu akka seenu filadhu. Nama tokkoo ol yoo ta’e, haasaa gareetti jijjiirama.',
   'Escolha o coelho da estátua da praça.': 'Siidaa dirree irra dhaabbatuuf illeettii filadhu.',
+  'Copiar link': 'Liinkii garagalchi',
   'Paleta de cores': 'Gurmuu halluu',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Cuquliisa halkanii, kireemii fi ambarii. Kan Syden.',

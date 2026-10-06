@@ -201,6 +201,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
   'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
+  'Copiar link': 'Bağlantıyı kopyala',
   'Paleta de cores': 'Renk paleti',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Gece mavisi, krem ve kehribar. Syden’ın kendi paleti.',

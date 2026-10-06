@@ -356,6 +356,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'Copiar link': 'Kopeeri link',
   'Paleta de cores': 'Värvipalett',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Öösinine, kreem ja merevaik. Sydeni oma.',

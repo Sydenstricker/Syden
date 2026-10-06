@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
+  'Copiar link': 'සබැඳිය පිටපත් කරන්න',
   'Paleta de cores': 'වර්ණ තලය',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'රාත්‍රී නිල්, ක්‍රීම් සහ ඇම්බර්. Syden ගේම.',

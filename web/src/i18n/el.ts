@@ -318,6 +318,7 @@ export default {
   'Escolha o seu': 'Διάλεξε το δικό σου',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Διάλεξε ποιος μπαίνει. Με πάνω από ένα άτομο, γίνεται ομαδική συνομιλία.',
   'Escolha o coelho da estátua da praça.': 'Διάλεξε το κουνέλι για το άγαλμα της πλατείας.',
+  'Copiar link': 'Αντιγραφή συνδέσμου',
   'Paleta de cores': 'Παλέτα χρωμάτων',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Νυχτερινό μπλε, κρεμ και κεχριμπάρι. Του Syden.',

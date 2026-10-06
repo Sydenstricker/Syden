@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  'Copiar link': 'Afrita tengil',
   'Paleta de cores': 'Litaspjald',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Næturblátt, rjómalitt og raf. Sydens eigið.',

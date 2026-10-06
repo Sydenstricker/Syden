@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
   'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',
+  'Copiar link': 'Salin tautan',
   'Paleta de cores': 'Palet warna',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Biru malam, krem, dan amber. Milik Syden.',

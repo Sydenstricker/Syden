@@ -374,6 +374,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
+  'Copiar link': 'Холбоос хуулах',
   'Paleta de cores': 'Өнгөний палитр',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Шөнийн цэнхэр, цөцгий, хув. Syden-ийн өөрийнх.',

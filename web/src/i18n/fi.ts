@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
+  'Copiar link': 'Kopioi linkki',
   'Paleta de cores': 'Väripaletti',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Yönsininen, kerma ja meripihka. Sydenin oma.',

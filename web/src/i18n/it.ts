@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  'Copiar link': 'Copia link',
   'Paleta de cores': 'Tavolozza dei colori',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Blu notte, crema e ambra. Quella di Syden.',

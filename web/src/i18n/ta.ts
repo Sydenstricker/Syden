@@ -294,6 +294,7 @@ export default {
   'Escolha o seu': 'உங்களுடையதைத் தேர்ந்தெடுங்கள்',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'யார் சேர வேண்டும் என்று தேர்ந்தெடுங்கள். ஒருவருக்கு மேல் இருந்தால் அது குழு உரையாடலாகும்.',
   'Escolha o coelho da estátua da praça.': 'சதுக்கச் சிலைக்கான முயலைத் தேர்ந்தெடு.',
+  'Copiar link': 'இணைப்பை நகலெடு',
   'Paleta de cores': 'வண்ணத் தட்டு',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'இரவு நீலம், கிரீம், அம்பர். Syden-இன் சொந்தம்.',

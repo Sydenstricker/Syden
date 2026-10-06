@@ -296,6 +296,7 @@ export default {
   'Escolha o seu': 'اپنا چنیں',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'چنیں کہ کون شامل ہو۔ ایک سے زیادہ لوگ ہوں تو یہ گروپ گفتگو بن جاتی ہے۔',
   'Escolha o coelho da estátua da praça.': 'چوک کے مجسمے کے لیے خرگوش چنو۔',
+  'Copiar link': 'لنک کاپی کریں',
   'Paleta de cores': 'رنگوں کا پیلیٹ',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'رات جیسا نیلا، کریم اور کہربائی۔ Syden کا اپنا۔',

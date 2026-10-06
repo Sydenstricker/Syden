@@ -279,6 +279,7 @@ export default {
   'Escolha o seu': 'Chọn cái của bạn',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Chọn ai được vào. Từ hai người trở lên, nó thành cuộc trò chuyện nhóm.',
   'Escolha o coelho da estátua da praça.': 'Chọn chú thỏ cho bức tượng ở quảng trường.',
+  'Copiar link': 'Sao chép liên kết',
   'Paleta de cores': 'Bảng màu',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Xanh đêm, kem và hổ phách. Bảng màu của Syden.',

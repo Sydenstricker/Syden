@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'Copiar link': 'লিংক কপি করুন',
   'Paleta de cores': 'রঙের প্যালেট',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'রাতের নীল, ক্রিম আর অ্যাম্বার। Syden-এর নিজের।',

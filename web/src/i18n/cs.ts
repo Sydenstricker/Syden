@@ -358,6 +358,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kdo bude v konverzaci. S více lidmi z toho bude skupinová konverzace.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajíce pro sochu na náměstí.',
+  'Copiar link': 'Kopírovat odkaz',
   'Paleta de cores': 'Barevná paleta',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Noční modř, krémová a jantar. Ta od Sydenu.',

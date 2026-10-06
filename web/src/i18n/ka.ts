@@ -378,6 +378,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  'Copiar link': 'ბმულის კოპირება',
   'Paleta de cores': 'ფერთა პალიტრა',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'ღამის ლურჯი, კრემისფერი და ქარვა. Syden-ის საკუთარი.',

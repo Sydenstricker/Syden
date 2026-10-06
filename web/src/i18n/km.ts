@@ -358,6 +358,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
+  'Copiar link': 'ចម្លងតំណ',
   'Paleta de cores': 'ផ្ទាំងពណ៌',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'ខៀវយប់ ក្រែម និងលឿងទុំ។ របស់ Syden ផ្ទាល់។',

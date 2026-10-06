@@ -361,6 +361,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  'Copiar link': 'Kopijuoti nuorodą',
   'Paleta de cores': 'Spalvų paletė',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Nakties mėlyna, kreminė ir gintarinė. Syden nuosava.',

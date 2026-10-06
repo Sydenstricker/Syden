@@ -312,6 +312,7 @@ export default {
   'Escolha o seu': 'የራስዎን ይምረጡ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ማን እንደሚገባ ይምረጡ። ከአንድ ሰው በላይ ሲሆን፣ የቡድን ውይይት ይሆናል።',
   'Escolha o coelho da estátua da praça.': 'ለአደባባዩ ሐውልት ጥንቸሉን ይምረጡ።',
+  'Copiar link': 'ሊንኩን ቅዳ',
   'Paleta de cores': 'የቀለም ስብስብ',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'የሌሊት ሰማያዊ፣ ክሬም እና ወርቃማ። የSyden ራሱ።',

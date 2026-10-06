@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кој ќе биде во разговорот. Со повеќе луѓе станува групен разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери го зајакот за статуата на плоштадот.',
+  'Copiar link': 'Копирај врска',
   'Paleta de cores': 'Палета на бои',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Ноќно сина, крем и килибар. Онаа на Syden.',

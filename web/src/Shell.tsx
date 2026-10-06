@@ -89,6 +89,7 @@ export function Shell({
   token,
   user: loggedUser,
   pendingInviteCode,
+  pendingInviteChannel,
   linkDaAula,
   aoUsarLinkDaAula,
   onLogout,
@@ -97,6 +98,8 @@ export function Shell({
   user: User;
   /** Veio de um link de convite (?convite=xxxx): entra nessa comunidade assim que a sessão abre. */
   pendingInviteCode?: string | null;
+  /** O link era de uma sala (&canal=ID): depois de entrar na comunidade, abre esse canal. */
+  pendingInviteChannel?: number | null;
   /** Veio de um link de aula (?aula=…) já com conta: entra na turma e cai na sala (ver aula.ts). */
   linkDaAula?: string | null;
   aoUsarLinkDaAula?: () => void;
@@ -337,10 +340,20 @@ export function Shell({
     api<Community>('/api/communities/join', { method: 'POST', body: { code: pendingInviteCode } }).then(
       (community) => {
         setNotice(`Você entrou em ${community.name}.`);
-        void afterCommunityChange(community);
+        void afterCommunityChange(community).then(() => {
+          if (pendingInviteChannel) setIrParaCanal({ communityId: community.id, channelId: pendingInviteChannel });
+        });
       },
-      (error) => {
-        if (error instanceof ApiError && error.status === 409) return; // já participava: nada a avisar
+      async (error) => {
+        if (error instanceof ApiError && error.status === 409) {
+          // Já participava: nada a avisar. Se o link era de uma sala, vai até ela — a comunidade é a
+          // que tem esse código de convite.
+          if (!pendingInviteChannel) return;
+          const lista = await reloadCommunities().catch(() => null);
+          const dela = lista?.find((c) => c.inviteCode === pendingInviteCode);
+          if (dela) setIrParaCanal({ communityId: dela.id, channelId: pendingInviteChannel });
+          return;
+        }
         setNotice((error as Error).message);
       },
     );
@@ -690,6 +703,34 @@ export function Shell({
     if (voice.channelId !== aulaEmCurso.channelId) void voiceRef.current.join(aulaEmCurso.channelId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aulaEmCurso, communityId, visivelId, channels]);
+
+  /**
+   * O LINK DE UMA SALA: abre a comunidade, espera os canais dela chegarem e seleciona o canal. Numa sala
+   * de voz, ABRE a sala e NÃO entra na chamada: entrar ligaria o microfone de quem só clicou num link,
+   * e quem decide falar é a pessoa, no botão de entrar.
+   */
+  const [irParaCanal, setIrParaCanal] = useState<{ communityId: number; channelId: number } | null>(null);
+  useEffect(() => {
+    if (!irParaCanal) return;
+    if (communityId !== irParaCanal.communityId || view !== 'community') {
+      setView('community');
+      setCommunityId(irParaCanal.communityId);
+      return;
+    }
+    if (visivelId !== irParaCanal.communityId) return;
+    if (!channels.some((c) => c.id === irParaCanal.channelId)) {
+      // A LISTA PODE NÃO TER CHEGADO AINDA: numa aba nova, a comunidade lembrada já conta como visível
+      // antes de os canais dela virem. Só depois de carregada a ausência quer dizer canal apagado (ou
+      // de outra comunidade) — e aí fica na comunidade, sem inventar outro destino.
+      if (trocando || channels.length === 0) return;
+      setIrParaCanal(null);
+      return;
+    }
+    setSelectedId(irParaCanal.channelId);
+    setMobileChannels(false);
+    setIrParaCanal(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [irParaCanal, communityId, visivelId, channels, view, trocando]);
 
   // A conta temporária sem aula marcada nesta aba (abriu outra aba, por exemplo): a sala dela é a
   // primeira sala de voz da única comunidade que ela tem.

@@ -351,6 +351,7 @@ export default {
   'Escolha o seu': 'Вибери свого',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Вибери, хто долучиться. Якщо людей більше однієї, це буде групова розмова.',
   'Escolha o coelho da estátua da praça.': 'Обери кролика для статуї на площі.',
+  'Copiar link': 'Копіювати посилання',
   'Paleta de cores': 'Палітра кольорів',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Нічний синій, кремовий і бурштиновий. Палітра Syden.',

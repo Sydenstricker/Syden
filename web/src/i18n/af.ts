@@ -353,6 +353,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',
+  'Copiar link': 'Kopieer skakel',
   'Paleta de cores': 'Kleurpalet',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Nagblou, room en amber. Syden s’n.',

@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  'Copiar link': 'Adikao ny rohy',
   'Paleta de cores': 'Lokon’ny loko',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Manga alina, krema ary volon’ambora. An’i Syden.',

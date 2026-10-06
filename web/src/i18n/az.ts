@@ -333,6 +333,7 @@ export default {
   'Escolha o seu': 'Özününkünü seç',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Kimin qoşulacağını seç. Birdən çox adam olsa, qrup söhbəti olur.',
   'Escolha o coelho da estátua da praça.': 'Meydandakı heykəl üçün dovşanı seç.',
+  'Copiar link': 'Linki kopyala',
   'Paleta de cores': 'Rəng palitrası',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Gecə mavisi, krem və kəhrəba. Syden-in öz palitrası.',

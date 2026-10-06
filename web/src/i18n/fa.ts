@@ -297,6 +297,7 @@ export default {
   'Escolha o seu': 'مال خودتان را انتخاب کنید',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'انتخاب کنید چه کسی وارد شود. با بیش از یک نفر، گفتگوی گروهی می‌شود.',
   'Escolha o coelho da estátua da praça.': 'خرگوش مجسمهٔ میدان را انتخاب کن.',
+  'Copiar link': 'کپی پیوند',
   'Paleta de cores': 'پالت رنگ',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'آبی شب، کرم و کهربایی. پالت خود Syden.',

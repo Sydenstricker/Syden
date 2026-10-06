@@ -370,6 +370,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
   'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',
+  'Copiar link': 'ލިންކު ކޮޕީ ކުރޭ',
   'Paleta de cores': 'ކުލަތަކުގެ ޕެލެޓް',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'ރޭގަނޑުގެ ނޫ، ކްރީމް އަދި އެމްބަރ. Syden ގެ އަމިއްލަ.',

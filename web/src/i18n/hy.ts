@@ -379,6 +379,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
   'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',
+  'Copiar link': 'Պատճենել հղումը',
   'Paleta de cores': 'Գունապնակ',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Գիշերային կապույտ, կրեմ և սաթ։ Syden-ի սեփականը։',

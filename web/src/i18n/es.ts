@@ -336,6 +336,7 @@ export default {
   'Versão 1.21, sem PvP': 'Versión 1.21, sin PvP',
   'ex.: Evidências': 'ej.: Pruebas',
   'Escolha o coelho da estátua da praça.': 'Elige el conejo de la estatua de la plaza.',
+  'Copiar link': 'Copiar enlace',
   'Paleta de cores': 'Paleta de colores',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Azul noche, crema y ámbar. La de Syden.',

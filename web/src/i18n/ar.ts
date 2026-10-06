@@ -175,6 +175,7 @@ export default {
   'Selo que você veste': 'الشارة التي ترتديها',
   'Só o seu nome, sem selo': 'اسمك فقط، بدون شارة',
   'Escolha o coelho da estátua da praça.': 'اختر الأرنب الذي يقف تمثالًا في الساحة.',
+  'Copiar link': 'نسخ الرابط',
   'Paleta de cores': 'لوحة الألوان',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'أزرق ليلي وكريمي وكهرماني. لوحة Syden.',

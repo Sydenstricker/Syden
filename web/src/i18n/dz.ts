@@ -372,6 +372,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
   'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
+  'Copiar link': 'འབྲེལ་ལམ་འདྲ་བཤུས་རྐྱབ',
   'Paleta de cores': 'ཚོས་གཞི་གི་པེ་ལེཊ',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'མཚན་མོའི་སྔོན་པོ་ ཀི་རིམ་ དང་ ཨེམ་བར། Syden གི་རང་སོའི།',

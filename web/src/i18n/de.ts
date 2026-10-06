@@ -171,6 +171,7 @@ export default {
   'Selo que você veste': 'Dein Abzeichen',
   'Só o seu nome, sem selo': 'Nur dein Name, ohne Abzeichen',
   'Escolha o coelho da estátua da praça.': 'Wähle den Hasen für die Statue auf dem Platz.',
+  'Copiar link': 'Link kopieren',
   'Paleta de cores': 'Farbpalette',
   'D4': 'D4',
   'Azul-noite, creme e âmbar. A do Syden.': 'Nachtblau, Creme und Bernstein. Die von Syden.',

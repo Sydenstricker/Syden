@@ -16,6 +16,8 @@ import {
   Video,
   Volume2,
   Home,
+  Check,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
@@ -118,6 +120,7 @@ export function Sidebar({
       icon={icon}
       active={channel.id === selectedId}
       manageable={canManage(channel)}
+      inviteCode={community.inviteCode ?? null}
       onSelect={() => onSelect(channel)}
       onDelete={() => setDeleting(channel)}
     />
@@ -339,6 +342,7 @@ function ChannelRow({
   icon,
   active,
   manageable,
+  inviteCode,
   onSelect,
   onDelete,
 }: {
@@ -346,12 +350,28 @@ function ChannelRow({
   icon: ReactNode;
   active: boolean;
   manageable: boolean;
+  /** O convite da comunidade: o link da sala é ele mais o canal (ver readInviteFromUrl, em App.tsx). */
+  inviteCode: string | null;
   onSelect: () => void;
   onDelete: () => void;
 }) {
   const t = useT();
   const [renaming, setRenaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiado, setCopiado] = useState(false);
+
+  /**
+   * O LINK DA SALA: o convite da comunidade com o canal junto. Quem não participa entra na comunidade
+   * e cai nele; quem já participa só cai nele. Qualquer membro copia, como o convite (decisão de
+   * 03/10/2026: qualquer membro convida).
+   */
+  function copiarLink() {
+    if (!inviteCode) return;
+    const endereco = `${window.location.origin}${import.meta.env.BASE_URL}?convite=${encodeURIComponent(inviteCode)}&canal=${channel.id}`;
+    void navigator.clipboard?.writeText(endereco);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 1500);
+  }
 
   async function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Escape') {
@@ -393,14 +413,28 @@ function ChannelRow({
       <button className={`channel${active ? ' active' : ''}`} onClick={onSelect}>
         {icon} <span className="channel-name">{channel.name}</span>
       </button>
-      {manageable && (
+      {(manageable || inviteCode) && (
         <div className="channel-actions">
-          <button className="icon-plain" title={t('Renomear')} aria-label={`Renomear ${channel.name}`} onClick={() => setRenaming(true)}>
-            <Pencil size={14} />
-          </button>
-          <button className="icon-plain" title={t('Excluir')} aria-label={`Excluir ${channel.name}`} onClick={onDelete}>
-            <Trash2 size={14} />
-          </button>
+          {inviteCode && (
+            <button
+              className="icon-plain"
+              title={copiado ? t('Link copiado!') : t('Copiar link')}
+              aria-label={copiado ? t('Link copiado!') : `${t('Copiar link')}: ${channel.name}`}
+              onClick={copiarLink}
+            >
+              {copiado ? <Check size={14} /> : <LinkIcon size={14} />}
+            </button>
+          )}
+          {manageable && (
+            <>
+              <button className="icon-plain" title={t('Renomear')} aria-label={`Renomear ${channel.name}`} onClick={() => setRenaming(true)}>
+                <Pencil size={14} />
+              </button>
+              <button className="icon-plain" title={t('Excluir')} aria-label={`Excluir ${channel.name}`} onClick={onDelete}>
+                <Trash2 size={14} />
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
