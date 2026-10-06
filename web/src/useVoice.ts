@@ -92,10 +92,16 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * Nos outros dois modos as camadas ficam: no Padrão elas são o que permite a alguém no celular pagar
  * menos internet sem estragar a transmissão de quem está no computador, e a conta cabe. No Leve, a
  * única camada extra é pequena de propósito — é o modo de quem já tem pouca máquina.
+ *
+ * A CAMADA DE 360p DO PADRÃO TEM 800 kbps, E NÃO 400. Ela não é só miniatura: num notebook 1366×768 é
+ * ela que chega no quadro grande. Medido (05/10/2026) com imagem em movimento: a 400 kbps — e também a
+ * 600 —, o "manter os quadros" do Padrão encolhia a camada até 142×80 e 213×120, com o Chrome dando
+ * todo o teto e apontando falta de banda; a 800 ela segura os 640×360 sem limitação nenhuma. No Leve
+ * os 400 bastam: ali a regra é manter a resolução, e quem cede são os quadros.
  */
 const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
   light: [new VideoPreset(640, 360, 400_000, 15)],
-  standard: [new VideoPreset(640, 360, 400_000, 15), new VideoPreset(1280, 720, 2_000_000, 30)],
+  standard: [new VideoPreset(640, 360, 800_000, 15), new VideoPreset(1280, 720, 2_000_000, 30)],
   smooth: [],
 };
 
@@ -230,7 +236,15 @@ export function useVoice(socket: Socket | null) {
   const [room] = useState(() => {
     const settings = getSettings();
     return new Room({
-      adaptiveStream: true, // só baixa a resolução que o elemento de vídeo realmente mostra
+      // Só baixa a resolução que o elemento de vídeo realmente mostra — CONTANDO OS PIXELS REAIS.
+      //
+      // Sem `pixelDensity`, o LiveKit conta um pixel de CSS como um pixel de verdade sempre que a escala
+      // é 2 ou menos. Num Windows a 150%, o padrão de muito notebook, isso pedia metade do que a tela
+      // mostra. Medido (05/10/2026): quadro de 1050×528 pixels reais recebendo a camada de 360p a 15
+      // quadros, esticada — "a transmissão só fica boa em tela cheia", que era o relato. O teto em 2
+      // segura celular de tela densa (3×) de baixar 1080p para uma miniatura; o cartão "i" da
+      // transmissão já fazia a conta com a escala (nitidezNaTela), e agora o pedido usa a mesma régua.
+      adaptiveStream: { pixelDensity: Math.min(Math.max(globalThis.devicePixelRatio || 1, 1), 2) },
       dynacast: true, // pausa camadas de vídeo que ninguém está assistindo
       audioCaptureDefaults: {
         echoCancellation: settings.echoCancellation,
