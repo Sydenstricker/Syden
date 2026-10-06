@@ -56,6 +56,7 @@ import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
+import { ConfiguracaoDeNiveis } from './Ranking';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
@@ -1310,6 +1311,8 @@ function MembersSection({ user, community }: { user: User; community: Community 
         <>
           <h3>{t('Cargos')}</h3>
           <EditorDeCargos community={community} />
+          <h3>{t('Níveis')}</h3>
+          <ConfiguracaoDeNiveis community={community} />
           <h3>{t('Quem participa')}</h3>
         </>
       )}

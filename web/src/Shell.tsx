@@ -16,6 +16,7 @@ import { Home } from './Home';
 import { lugarDaBarra } from './lugarDaBarra';
 import { InicioDaComunidade, type DadosDeBoasVindas } from './InicioDaComunidade';
 import { ServidoresDeJogo } from './ServidoresDeJogo';
+import { Ranking } from './Ranking';
 import { TelaDeAmigos } from './TelaDeAmigos';
 import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
@@ -138,7 +139,8 @@ export function Shell({
   const [showUsage, setShowUsage] = useState(false);
   // A agenda de servidores de jogo toma o lugar do canal aberto, igual ao painel de uso. Os dois nunca
   // ficam abertos ao mesmo tempo: abrir um fecha o outro.
-  const [showJogos, setShowJogos] = useState(false);
+  // O painel aberto no lugar da conversa: a agenda de servidores de jogo ou o ranking dos níveis.
+  const [painel, setPainel] = useState<'jogos' | 'ranking' | null>(null);
   // Ideias suas que o dono acolheu e você ainda não viu comemorar. Cai confete uma de cada vez.
   const [comemorar, setComemorar] = useState<{ id: number; content: string }[]>([]);
   // Itens que você ganhou e ainda não abriu. A tela de destaque mostra um de cada vez, em fila.
@@ -319,7 +321,7 @@ export function Shell({
     setView('direct');
     setDirectId(conversa.id);
     setShowUsage(false);
-    setShowJogos(false);
+    setPainel(null);
     setMobileChannels(false);
   }
 
@@ -432,10 +434,24 @@ export function Shell({
       if (voiceRef.current.channelId === id) voiceRef.current.leave();
     });
     // Nome ou imagem da comunidade mudou (por você ou por outro administrador).
-    s.on('community:updated', (updated: Pick<Community, 'id' | 'name' | 'iconVersion'>) =>
+    s.on('community:updated', (updated: Pick<Community, 'id' | 'name' | 'iconVersion' | 'niveisLigados'>) =>
       setCommunities((list) =>
-        list.map((c) => (c.id === updated.id ? { ...c, name: updated.name, iconVersion: updated.iconVersion } : c)),
+        list.map((c) =>
+          c.id === updated.id
+            ? {
+                ...c,
+                name: updated.name,
+                iconVersion: updated.iconVersion,
+                // Ligar os níveis faz a entrada do Ranking aparecer para todo mundo, sem recarregar.
+                ...(updated.niveisLigados !== undefined ? { niveisLigados: updated.niveisLigados } : {}),
+              }
+            : c,
+        ),
       ),
+    );
+    // Subiu de nível: o aviso é só seu, na faixa de avisos, e não na conversa dos outros (ver niveis.ts).
+    s.on('nivel:subiu', ({ nivel }: { communityId: number; nivel: number }) =>
+      setNotice(t('Você chegou ao nível {nivel}!', { nivel })),
     );
     // Quem administra trocou o código: o link de convite de todo mundo passa a ser o novo.
     s.on('community:invite', ({ id, inviteCode }: { id: number; inviteCode: string }) =>
@@ -446,7 +462,7 @@ export function Shell({
     s.on('voice:move', ({ channelId: to }: { channelId: number }) => {
       setSelectedId(to);
       setShowUsage(false);
-      setShowJogos(false);
+      setPainel(null);
       setMobileChannels(false);
       void voiceRef.current.join(to);
     });
@@ -479,7 +495,7 @@ export function Shell({
       return;
     }
     setShowUsage(false);
-    setShowJogos(false);
+    setPainel(null);
     setMobileChannels(true); // troca de comunidade: mostra a lista de canais dela, não a conversa da anterior
 
     // Trocar de comunidade é uma troca só: em vez de cada pedaço entrar na tela quando fica pronto
@@ -561,7 +577,7 @@ export function Shell({
         desktopBridge?.focus();
         window.focus();
         setShowUsage(false);
-        setShowJogos(false);
+        setPainel(null);
         setMobileChannels(false);
         setCommunityId(message.communityId);
         setSelectedId(message.channelId);
@@ -754,13 +770,14 @@ export function Shell({
   }
 
   const usageOpen = showUsage && user.isAdmin && view === 'community';
-  const jogosOpen = showJogos && !usageOpen && view === 'community';
-  const selected = usageOpen || jogosOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
+  const jogosOpen = painel === 'jogos' && !usageOpen && view === 'community';
+  const rankingOpen = painel === 'ranking' && !usageOpen && view === 'community';
+  const selected = usageOpen || jogosOpen || rankingOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
 
   function selectChannel(channel: Channel) {
     setView('community'); // vindo da tela inicial ou de uma conversa privada, volta para a comunidade
     setShowUsage(false);
-    setShowJogos(false);
+    setPainel(null);
     // ESCOLHER UM CANAL FECHA A TELA DE BOAS-VINDAS. Quem clica numa sala pediu a sala; deixar o
     // painel de boas-vindas por cima transforma o clique em nada, e o único jeito de sair passa a
     // ser achar o X. Foi assim que ele descobriu: clicou na sala, não saiu.
@@ -810,7 +827,7 @@ export function Shell({
           onHome={() => {
             setView('home');
             setShowUsage(false);
-            setShowJogos(false);
+            setPainel(null);
             setMobileChannels(false);
           }}
           homeActive={view === 'home'}
@@ -823,7 +840,7 @@ export function Shell({
                 onClick={() => {
                   setView('direct');
                   setShowUsage(false);
-                  setShowJogos(false);
+                  setPainel(null);
                   setMobileChannels(true);
                 }}
               />
@@ -835,9 +852,10 @@ export function Shell({
             user={user}
             community={community}
             channels={channels}
-            selectedId={usageOpen || jogosOpen ? null : selectedId}
+            selectedId={usageOpen || jogosOpen || rankingOpen ? null : selectedId}
             usageActive={usageOpen}
             jogosActive={jogosOpen}
+            rankingActive={rankingOpen}
             arteDaComunidade={boasVindas?.boasVindas?.arte}
             inicioActive={mostrandoBoasVindas}
             // O "Início" da comunidade leva para ELA, venha de onde vier. Antes ele só ligava uma marca:
@@ -845,11 +863,16 @@ export function Shell({
             onOpenInicio={() => {
               setView('community');
               setShowUsage(false);
-              setShowJogos(false);
+              setPainel(null);
               setMostrandoBoasVindas(true);
             }}
             onOpenJogos={() => {
-              setShowJogos(true);
+              setPainel('jogos');
+              setShowUsage(false);
+              setMobileChannels(false);
+            }}
+            onOpenRanking={() => {
+              setPainel('ranking');
               setShowUsage(false);
               setMobileChannels(false);
             }}
@@ -863,7 +886,7 @@ export function Shell({
             onOpenUsage={() => {
               setView('community');
               setShowUsage(true);
-              setShowJogos(false);
+              setPainel(null);
               setMobileChannels(false);
             }}
             onOpenSettings={() => setSettingsOpen('account')}
@@ -1057,7 +1080,10 @@ export function Shell({
           {view === 'community' && jogosOpen && community && (
             <ServidoresDeJogo community={community} onMobileBack={() => setMobileChannels(true)} />
           )}
-          {view === 'community' && community && !selected && !usageOpen && !jogosOpen && (
+          {view === 'community' && rankingOpen && community && (
+            <Ranking community={community} onMobileBack={() => setMobileChannels(true)} />
+          )}
+          {view === 'community' && community && !selected && !usageOpen && !jogosOpen && !rankingOpen && (
             <div className="empty">{t('Escolha um canal à esquerda.')}</div>
           )}
         </main>

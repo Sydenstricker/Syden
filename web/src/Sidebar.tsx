@@ -18,6 +18,7 @@ import {
   Home,
   Check,
   Link as LinkIcon,
+  Trophy,
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { api } from './api';
@@ -54,6 +55,8 @@ interface Props {
   voice: Voice;
   usageActive: boolean;
   jogosActive: boolean;
+  /** O ranking dos níveis está aberto (só existe com os níveis ligados). */
+  rankingActive: boolean;
   /** O código da arte da comunidade (o mesmo da tela de boas-vindas), para a faixa do alto. */
   arteDaComunidade?: string | null;
   inicioActive: boolean;
@@ -69,6 +72,7 @@ interface Props {
   onSelect: (channel: Channel) => void;
   onOpenUsage: () => void;
   onOpenJogos: () => void;
+  onOpenRanking: () => void;
   onOpenInicio: () => void;
   onOpenSettings: () => void;
 }
@@ -80,6 +84,7 @@ export function Sidebar({
   selectedId,
   usageActive,
   jogosActive,
+  rankingActive,
   arteDaComunidade,
   inicioActive,
   voiceMembers,
@@ -93,6 +98,7 @@ export function Sidebar({
   onSelect,
   onOpenUsage,
   onOpenJogos,
+  onOpenRanking,
   onOpenInicio,
   onOpenSettings,
 }: Props) {
@@ -180,6 +186,12 @@ export function Sidebar({
         <button className={`channel jogos-link${jogosActive ? ' active' : ''}`} onClick={onOpenJogos}>
           <Gamepad2 size={18} /> {t('Servidores de jogos')}
         </button>
+        {/* O ranking só aparece com os níveis ligados: desligados, a entrada seria uma porta para uma sala vazia. */}
+        {community.niveisLigados ? (
+          <button className={`channel jogos-link${rankingActive ? ' active' : ''}`} onClick={onOpenRanking}>
+            <Trophy size={18} /> {t('Ranking')}
+          </button>
+        ) : null}
 
         {/* Consumo do servidor interessa a quem cuida dele: só os administradores veem. */}
         {user.isAdmin && (

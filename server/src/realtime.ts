@@ -1,6 +1,7 @@
 import type { Server as IOServer, Socket } from 'socket.io';
 import { verifySession } from './auth.js';
 import * as db from './db.js';
+import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 
 /** Sala do socket com todo mundo que participa de uma comunidade. */
 export const communityRoom = (communityId: number) => `community:${communityId}`;
@@ -243,6 +244,8 @@ export function setupRealtime(io: IOServer) {
 
   setInterval(() => {
     db.touchUsageSessions([...voiceMembers.values()].flatMap(activeUsageSessionIds));
+    // O minuto de voz dos níveis: quem não está sozinho na sala ganha pontos (ver niveis.ts).
+    pontuarMinutoDeVoz(io, [...voiceMembers.values()]);
   }, USAGE_HEARTBEAT_MS).unref();
 
   io.on('connection', (socket: Socket) => {
@@ -304,6 +307,8 @@ export function setupRealtime(io: IOServer) {
         const thread = db.findThread(threadId);
         if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
       }
+      // Os níveis (desligados, não faz nada): uma mensagem por minuto rende pontos. Ver niveis.ts.
+      if (channel.communityId !== null) pontuarMensagem(io, channel.communityId, user.id);
       ack?.({ ok: true });
     });
 

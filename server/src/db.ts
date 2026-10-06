@@ -36,6 +36,8 @@ export interface Community {
   seloTexto?: string | null;
   seloIcone?: string | null;
   seloCor?: string | null;
+  /** Níveis e ranking ligados nesta comunidade (1) ou não (0). Ver o bloco OS NÍVEIS. */
+  niveisLigados?: number;
 }
 
 /** Uma comunidade vista por quem participa dela. */
@@ -1209,7 +1211,7 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor, niveis_ligados AS niveisLigados';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
@@ -1217,6 +1219,7 @@ export function listCommunitiesForUser(userId: number): CommunityForUser[] {
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
               c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte, c.efeito,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
+              c.niveis_ligados AS niveisLigados,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               c.invite_code AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
@@ -4358,4 +4361,108 @@ export function cargosDosMembros(communityId: number): Map<number, number[]> {
   const porPessoa = new Map<number, number[]>();
   for (const { userId, cargoId } of linhas) porPessoa.set(userId, [...(porPessoa.get(userId) ?? []), cargoId]);
   return porPessoa;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// OS NÍVEIS: pontos de participação (XP) por comunidade, o ranking e o cargo que se ganha num nível.
+// A regra de quanto vale cada coisa mora em niveis.ts; aqui fica só o que se guarda.
+//
+// DESLIGADO POR PADRÃO, e quem administra liga. Ranking é competição, e competição não é o clima de
+// toda comunidade — uma turma de aula não quer saber quem "fala mais". Função que aparece sobre a
+// conversa dos outros nasce desligada (ver CLAUDE.md, a lição da sobreposição).
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('communities', 'niveis_ligados', 'INTEGER NOT NULL DEFAULT 0');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS xp (
+    community_id        INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    user_id             INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    pontos              INTEGER NOT NULL DEFAULT 0,
+    -- Quando a última mensagem rendeu pontos (ms). Uma por minuto: rajada não vale mais que conversa.
+    ultima_mensagem_em  INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (community_id, user_id)
+  );
+  CREATE INDEX IF NOT EXISTS xp_ranking ON xp(community_id, pontos DESC);
+
+  CREATE TABLE IF NOT EXISTS recompensas_de_nivel (
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    nivel        INTEGER NOT NULL,
+    cargo_id     INTEGER NOT NULL REFERENCES cargos(id) ON DELETE CASCADE,
+    PRIMARY KEY (community_id, nivel, cargo_id)
+  );
+`);
+
+export function niveisLigados(communityId: number): boolean {
+  return (db.prepare('SELECT niveis_ligados AS ligado FROM communities WHERE id = ?').get(communityId) as { ligado: number } | undefined)?.ligado === 1;
+}
+
+export function ligarNiveis(communityId: number, ligado: boolean) {
+  db.prepare('UPDATE communities SET niveis_ligados = ? WHERE id = ?').run(ligado ? 1 : 0, communityId);
+}
+
+export function pontosDe(communityId: number, userId: number): number {
+  return (db.prepare('SELECT pontos FROM xp WHERE community_id = ? AND user_id = ?').get(communityId, userId) as { pontos: number } | undefined)?.pontos ?? 0;
+}
+
+/**
+ * Soma pontos e devolve o antes e o depois. Com `porMensagem`, só soma se a última mensagem que rendeu
+ * pontos foi há mais de `intervaloMs` — e devolve null quando não somou.
+ */
+export function somarPontos(
+  communityId: number,
+  userId: number,
+  pontos: number,
+  agora: number,
+  porMensagem?: { intervaloMs: number },
+): { antes: number; depois: number } | null {
+  const linha = db.prepare('SELECT pontos, ultima_mensagem_em AS ultima FROM xp WHERE community_id = ? AND user_id = ?').get(communityId, userId) as
+    | { pontos: number; ultima: number }
+    | undefined;
+  const antes = linha?.pontos ?? 0;
+  if (porMensagem && linha && agora - linha.ultima < porMensagem.intervaloMs) return null;
+  db.prepare(
+    `INSERT INTO xp (community_id, user_id, pontos, ultima_mensagem_em) VALUES (?, ?, ?, ?)
+     ON CONFLICT (community_id, user_id) DO UPDATE SET pontos = pontos + excluded.pontos,
+       ultima_mensagem_em = CASE WHEN ? THEN excluded.ultima_mensagem_em ELSE ultima_mensagem_em END`,
+  ).run(communityId, userId, pontos, porMensagem ? agora : 0, porMensagem ? 1 : 0);
+  return { antes, depois: antes + pontos };
+}
+
+/** O ranking: só quem ainda participa da comunidade, do maior para o menor. */
+export function rankingDePontos(communityId: number, limite: number): { userId: number; pontos: number }[] {
+  return db
+    .prepare(
+      `SELECT x.user_id AS userId, x.pontos FROM xp x
+       JOIN community_members m ON m.community_id = x.community_id AND m.user_id = x.user_id
+       WHERE x.community_id = ? AND x.pontos > 0 ORDER BY x.pontos DESC, x.user_id LIMIT ?`,
+    )
+    .all(communityId, limite) as { userId: number; pontos: number }[];
+}
+
+/** Em que posição do ranking a pessoa está (1 = primeira). null quando ainda não tem pontos. */
+export function posicaoNoRanking(communityId: number, userId: number): number | null {
+  const meus = pontosDe(communityId, userId);
+  if (meus === 0) return null;
+  const { acima } = db
+    .prepare(
+      `SELECT COUNT(*) AS acima FROM xp x JOIN community_members m ON m.community_id = x.community_id AND m.user_id = x.user_id
+       WHERE x.community_id = ? AND (x.pontos > ? OR (x.pontos = ? AND x.user_id < ?))`,
+    )
+    .get(communityId, meus, meus, userId) as { acima: number };
+  return acima + 1;
+}
+
+export function recompensasDeNivel(communityId: number): { nivel: number; cargoId: number }[] {
+  return db
+    .prepare('SELECT nivel, cargo_id AS cargoId FROM recompensas_de_nivel WHERE community_id = ? ORDER BY nivel, cargo_id')
+    .all(communityId) as { nivel: number; cargoId: number }[];
+}
+
+export function definirRecompensa(communityId: number, nivel: number, cargoId: number) {
+  db.prepare('INSERT OR IGNORE INTO recompensas_de_nivel (community_id, nivel, cargo_id) VALUES (?, ?, ?)').run(communityId, nivel, cargoId);
+}
+
+export function tirarRecompensa(communityId: number, nivel: number, cargoId: number): boolean {
+  return db.prepare('DELETE FROM recompensas_de_nivel WHERE community_id = ? AND nivel = ? AND cargo_id = ?').run(communityId, nivel, cargoId).changes > 0;
 }

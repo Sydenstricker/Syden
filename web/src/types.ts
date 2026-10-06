@@ -99,6 +99,8 @@ export interface Community {
   memberCount: number;
   /** Só quem administra recebe o código; para os outros vem null. */
   inviteCode: string | null;
+  /** Níveis e ranking ligados (1) ou não (0/ausente). Ver server/src/niveis.ts. */
+  niveisLigados?: number;
 }
 
 export interface Emoji {

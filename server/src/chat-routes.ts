@@ -2,6 +2,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { pontuarMensagem } from './niveis.js';
 import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
 import { channelRoom, communityRoom } from './realtime.js';
@@ -176,6 +177,8 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
       const message = db.createMessage(where.channel.id, request.user.id, content, where.threadId);
       for (const file of prepared) message.attachments.push(db.addAttachment(message.id, file));
+      // Os níveis (desligados, não faz nada): uma mensagem por minuto rende pontos. Ver niveis.ts.
+      if (where.channel.communityId !== null) pontuarMensagem(io, where.channel.communityId, request.user.id);
       return publish(where.channel, message);
     });
 
