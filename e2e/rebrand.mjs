@@ -3,8 +3,8 @@
 // Confere, no app de verdade:
 //   1. o botão de início da barra lateral é o D4 desenhado, e não mais uma imagem trocável;
 //   2. a vila não tem mais estrela nem bandeira;
-//   3. quem não tem foto aparece como o coelho, e as orelhas acompanham o status: a pessoa muda para
-//      "ausente" e quem olha a lista de membros vê a orelha dela cair.
+//   3. quem não tem foto aparece como o coelho (o mascote), na pose do status: a pessoa muda para
+//      "ausente" e quem olha a lista de membros a vê dormindo.
 //
 //   node e2e/rebrand.mjs        (site em http://localhost:5174, API de teste na 3099)
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, novaAba, ok, resumo } from './ajuda.mjs';
@@ -38,6 +38,12 @@ const minha = bia.locator('.user-panel .avatar-coelho');
 (await minha.getAttribute('data-status')) === 'online'
   ? ok('sem foto, o avatar é o coelho, de orelhas em pé (online)')
   : falhou('o avatar próprio não é o coelho online: ' + (await minha.getAttribute('data-status')));
+(await minha.evaluate(async (img) => {
+  if (!img.complete) await new Promise((ok) => img.addEventListener('load', ok, { once: true }));
+  return img.naturalWidth > 0;
+}))
+  ? ok('e a imagem do coelho carregou de verdade')
+  : falhou('a imagem do avatar não carregou');
 (await bia.locator('.user-panel .avatar-status').count()) === 0
   ? ok('e sem a bolinha de status: as orelhas já dizem')
   : falhou('a bolinha de status continua por cima do coelho');
@@ -45,21 +51,21 @@ const minha = bia.locator('.user-panel .avatar-coelho');
 await bia.locator('.user-panel .avatar').click({ button: 'right' });
 await bia.getByRole('menuitemradio', { name: /Ausente/ }).click();
 await bia.waitForTimeout(800);
-(await minha.getAttribute('data-status')) === 'away' ? ok('mudando para ausente, a orelha cai') : falhou('o próprio avatar não mudou');
+(await minha.getAttribute('data-status')) === 'ausente' ? ok('mudando para ausente, ele dorme (orelha caída e os "z")') : falhou('o próprio avatar não mudou');
 
 // Quem olha de fora vê o mesmo: a lista de membros da comunidade em comum.
 await ana.locator('.rail-list button').first().click();
 const linhaDaBia = ana.locator('.member', { hasText: 'bia' + s });
 await linhaDaBia.waitFor({ timeout: 15000 });
 await ana.waitForFunction(
-  (nome) => [...document.querySelectorAll('.member')].find((m) => m.textContent.includes(nome))?.querySelector('.avatar-coelho')?.dataset.status === 'away',
+  (nome) => [...document.querySelectorAll('.member')].find((m) => m.textContent.includes(nome))?.querySelector('.avatar-coelho')?.dataset.status === 'ausente',
   'bia' + s,
   { timeout: 10000 },
 ).then(
   () => ok('e quem olha a lista de membros vê a orelha da Bia caída'),
   () => falhou('na lista de membros o status da Bia não chegou às orelhas'),
 );
-// A Bia fecha o Syden: na lista da Ana ela desce para "Offline", e o coelho recolhe as orelhas.
+// A Bia fecha o Syden: na lista da Ana ela desce para "Offline", e o coelho dela descansa.
 await bia.close();
 await ana
   .waitForFunction(
@@ -68,7 +74,7 @@ await ana
     { timeout: 20000 },
   )
   .then(
-    () => ok('quando a Bia sai, o coelho dela recolhe as orelhas e fica cinza'),
+    () => ok('quando a Bia sai, o coelho dela descansa: orelhas caídas e cinza'),
     () => falhou('no grupo Offline o coelho da Bia não recolheu as orelhas'),
   );
 await ana.locator('.members').screenshot({ path: 'e2e/fotos/rebrand-membros.png' });

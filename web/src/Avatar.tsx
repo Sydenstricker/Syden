@@ -11,50 +11,32 @@ const STATUS_COLORS: Record<PresenceStatus, string> = {
 };
 
 /**
- * Como as orelhas do coelho ficam em cada status. A POSTURA é a pista principal e a cor só reforça —
- * dá para ler o status sem distinguir verde de vermelho. 'marca' é quando não se sabe o status (numa
- * mensagem, numa chamada): faixas âmbar, como no ícone.
+ * O coelho em cada status — o mascote, e não o D4 (decisão de 05/10/2026). Cada status é um SVG
+ * exportado do estúdio (animacaoSVG/animacoes_d4.html, grupo "O avatar"), recortado perto da cabeça:
+ * online de orelhas em pé, ausente dormindo com os "z", ocupado no notebook, offline descansando com
+ * as orelhas caídas. A cor da faixa da orelha reforça, mas a POSTURA é que diz o status — dá para ler
+ * sem distinguir verde de vermelho.
+ *
+ * 'neutro' é quando não se sabe o status (numa mensagem, numa chamada): olhos abertos e a faixa rosa,
+ * sem afirmar "online" para quem pode não estar.
  */
-const ORELHAS: Record<PresenceStatus, string> = {
+const POSE: Record<PresenceStatus, string> = {
   online: 'online',
-  ausente: 'away',
-  ocupado: 'dnd',
+  ausente: 'ausente',
+  ocupado: 'ocupado',
   invisivel: 'offline',
 };
 
-/**
- * O coelho do Syden (D4) como avatar padrão, para quem não enviou foto. As orelhas contam o status:
- * em pé online, uma caída ausente, as duas deitadas em não perturbe, recolhidas e cinza offline. A
- * mudança é animada pelo CSS (.avatar-coelho, em styles.css) a partir do data-status.
- *
- * O fundo é um círculo, e não o quadrado arredondado do ícone, porque todo avatar do Syden é redondo.
- */
-function AvatarCoelho({ estado }: { estado: string }) {
+function AvatarCoelho({ pose }: { pose: string }) {
   return (
-    <svg className="avatar-coelho" data-status={estado} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      <circle className="ac-fundo" cx="50" cy="50" r="50" />
-      <g className="ac-orelha ac-orelha-e">
-        <ellipse className="ac-orelha-fora" cx="38" cy="30" rx="10" ry="18" transform="rotate(-12 38 30)" />
-        <ellipse className="ac-orelha-dentro" cx="38" cy="31" rx="3.6" ry="11" transform="rotate(-12 38 30)" />
-      </g>
-      <g className="ac-orelha ac-orelha-d">
-        <ellipse className="ac-orelha-fora" cx="62" cy="30" rx="10" ry="18" transform="rotate(12 62 30)" />
-        <ellipse className="ac-orelha-dentro" cx="62" cy="31" rx="3.6" ry="11" transform="rotate(12 62 30)" />
-      </g>
-      <path
-        className="ac-balao"
-        d="M32 38 H68 A16 16 0 0 1 84 54 V62 A16 16 0 0 1 68 78 H42 L22 88 L28 78 H32 A16 16 0 0 1 16 62 V54 A16 16 0 0 1 32 38 Z"
-        strokeWidth="6"
-        strokeLinejoin="round"
-      />
-      <g className="ac-rosto ac-pontos">
-        <circle cx="36" cy="58" r="4.5" />
-        <circle cx="50" cy="58" r="4.5" />
-        <circle cx="64" cy="58" r="4.5" />
-      </g>
-      <path className="ac-rosto ac-sono" d="M33 59 Q38 63 43 59 M57 59 Q62 63 67 59" strokeWidth="4.5" strokeLinecap="round" />
-      <rect className="ac-rosto ac-barra" x="35" y="55" width="30" height="6" rx="3" />
-    </svg>
+    <img
+      className="avatar-coelho"
+      data-status={pose}
+      src={`${import.meta.env.BASE_URL}mascote/avatar-${pose}.svg`}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+    />
   );
 }
 
@@ -99,11 +81,11 @@ export function Avatar({
       }}
     >
       {version === null ? (
-        <AvatarCoelho estado={offline ? 'offline' : online ? ORELHAS[status ?? 'online'] : 'marca'} />
+        <AvatarCoelho pose={offline ? 'offline' : online ? POSE[status ?? 'online'] : 'neutro'} />
       ) : (
         <img src={mediaUrl.avatar(userId!, version)} alt="" draggable={false} />
       )}
-      {/* Com foto, o status vai na bolinha; no coelho, as próprias orelhas já dizem. */}
+      {/* Com foto, o status vai na bolinha; no coelho, a pose dele já diz. */}
       {online && version !== null && <span className="avatar-status" style={{ background: STATUS_COLORS[status ?? 'online'] }} />}
     </span>
   );

@@ -46,6 +46,11 @@ const NOMES = {
   19: 'Karaokê',
   20: 'Assistir junto',
   21: 'Apresentação',
+  22: 'Avatar: neutro',
+  23: 'Avatar: online',
+  24: 'Avatar: ausente',
+  25: 'Avatar: ocupado',
+  26: 'Avatar: offline',
 };
 const CODIGOS = { 10: 'OFFLINE — Sem conexão', 11: 'ERRO 500 — Problema no servidor', 12: 'ERRO 404 — Página não encontrada' };
 

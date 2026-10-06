@@ -39,7 +39,19 @@ const PRESETS = {
   10: 'sem-internet',
   11: 'erro-500',
   12: 'erro-404',
+  22: 'avatar-neutro',
+  23: 'avatar-online',
+  24: 'avatar-ausente',
+  25: 'avatar-ocupado',
+  26: 'avatar-offline',
 };
+
+/**
+ * O AVATAR É RECORTADO PERTO DA CABEÇA. Ele aparece com 32 px numa lista de membros; com o quadro
+ * inteiro, a cabeça teria 12 px. Este quadro (quadrado, de 60 a 340 por 40 a 320) cabe as orelhas em
+ * pé, a orelha caída do ausente, os "z", o notebook do ocupado e as orelhas caídas do offline.
+ */
+const RECORTE_DO_AVATAR = 'viewBox="60 40 280 280"';
 
 const CHROME = [
   process.env.CHROME_PATH,
@@ -64,7 +76,7 @@ for (const [n, nome] of Object.entries(PRESETS)) {
     setPreset(Number(n));
     return gerarSVG();
   }, n);
-  svgs[nome] = limpar(svg);
+  svgs[nome] = nome.startsWith('avatar-') ? limpar(svg).replace('viewBox="0 30 400 300"', RECORTE_DO_AVATAR) : limpar(svg);
 }
 await browser.close();
 

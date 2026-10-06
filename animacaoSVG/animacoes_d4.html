@@ -208,6 +208,17 @@
         </div>
 
         <div class="grupo">
+          <h3>O avatar: o coelho em cada status — sem texto</h3>
+          <div class="botoes">
+            <button class="preset-btn" id="presetBtn22" onclick="setPreset(22)">Neutro<small>quando o status não é conhecido</small></button>
+            <button class="preset-btn" id="presetBtn23" onclick="setPreset(23)">Online<small>orelhas em pé, piscando</small></button>
+            <button class="preset-btn" id="presetBtn24" onclick="setPreset(24)">Ausente<small>dormindo, com os "z"</small></button>
+            <button class="preset-btn" id="presetBtn25" onclick="setPreset(25)">Ocupado<small>no notebook, lendo</small></button>
+            <button class="preset-btn" id="presetBtn26" onclick="setPreset(26)">Offline<small>orelhas caídas, cinza</small></button>
+          </div>
+        </div>
+
+        <div class="grupo">
           <h3>Os modos da sala, com o mascote — sem texto</h3>
           <div class="botoes">
             <button class="preset-btn" id="presetBtn19" onclick="setPreset(19)">Karaokê<small>microfone, cantando, a letra enchendo</small></button>
@@ -315,6 +326,11 @@
       19: { nome: 'Karaokê', arquivo: 'mascote-karaoke' },
       20: { nome: 'Assistir junto', arquivo: 'mascote-assistir-junto' },
       21: { nome: 'Apresentação', arquivo: 'mascote-apresentacao' },
+      22: { nome: 'Avatar: neutro', arquivo: 'avatar-neutro' },
+      23: { nome: 'Avatar: online', arquivo: 'avatar-online' },
+      24: { nome: 'Avatar: ausente', arquivo: 'avatar-ausente' },
+      25: { nome: 'Avatar: ocupado', arquivo: 'avatar-ocupado' },
+      26: { nome: 'Avatar: offline', arquivo: 'avatar-offline' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -1044,6 +1060,56 @@ ${css}
     @keyframes piscar { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
     @keyframes atento { 0%, 100% { transform: none; } 50% { transform: scaleY(1.05); } }`,
           });
+
+        // ---------- o avatar: o coelho em cada status, parado no estado (não em ciclo) ----------
+        // Decisão do Sydenstricker (05/10/2026): o status do avatar usa o coelho, e não o D4. São as poses
+        // do ciclo, separadas, com uma animação pequena que não cansa numa lista de membros: piscar, os
+        // "z" subindo, os olhos lendo. A orelha caída do ausente vai a 40° (e não 58°): o avatar é
+        // recortado perto da cabeça, e a 58° a ponta da orelha saía do quadro.
+        case 22:
+        case 23:
+        case 24:
+        case 25:
+        case 26: {
+          const estado = { 22: 'neutro', 23: 'online', 24: 'ausente', 25: 'ocupado', 26: 'offline' }[atual];
+          const cor = { neutro: cores().faixa, online: STATUS.verde, ausente: STATUS.ausente, ocupado: STATUS.vermelho, offline: STATUS.cinzaFaixa }[estado];
+          const rosto = {
+            neutro: rostoDoMascote(),
+            online: rostoDoMascote(),
+            ausente: `${rostoDoMascote({ olhos: 'fechados', boca: 'o' })}
+      <g class="zzz"><path class="z z1" d="M73 45 H78 L73 51 H78"/><path class="z z2" d="M73 45 H78 L73 51 H78"/><path class="z z3" d="M73 45 H78 L73 51 H78"/></g>`,
+            ocupado: `${rostoDoMascote({ olhos: 'lendo', boca: 'sorriso' })}
+      <g class="notebook">
+        <rect class="nb-tampa" x="31" y="91" width="38" height="22" rx="3"/>
+        <circle class="nb-logo" cx="50" cy="102" r="2.2"/>
+        <rect class="nb-base" x="25" y="111.5" width="50" height="4" rx="2"/>
+      </g>`,
+            offline: rostoDoMascote({ olhos: 'fechados', boca: 'neutra' }),
+          }[estado];
+          return montarMascote({
+            rotulo: { neutro: 'Syden', online: 'Online', ausente: 'Ausente', ocupado: 'Ocupado', offline: 'Offline' }[estado],
+            orelhas: estado === 'offline' ? ORELHAS_CAIDAS : orelhasAntigas(),
+            rosto,
+            css: `
+    .o-dentro { --faixa: ${cor}; }
+    ${estado === 'offline' ? `.o-fora, .cabeca { --creme: #A9AFBB; }
+    /* Fora não é triste: ele descansa, respirando devagar. */
+    .figura { animation: descansar ${d(4.5)} ease-in-out infinite; }
+    @keyframes descansar { 0%, 100% { transform: none; } 50% { transform: translateY(2px) scale(1.012, .99); } }` : ''}
+    ${estado === 'ausente' ? `.orelha-e { transform: rotate(-40deg) scaleY(.92); }` : ''}
+    ${estado === 'neutro' || estado === 'online' ? `.m-olho { animation: piscar ${d(4.2)} ease-in-out infinite; }` : ''}
+    @keyframes piscar { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
+    .z { fill: none; stroke: ${cores().creme}; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform-box: fill-box; transform-origin: center; opacity: 0; animation: zzz ${d(2.4)} ease-out infinite; }
+    .z2 { animation-delay: ${d(0.8)}; }
+    .z3 { animation-delay: ${d(1.6)}; }
+    @keyframes zzz { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -18px) scale(1.4); } }
+    .m-olhos { ${estado === 'ocupado' ? `animation: ler ${d(2.4)} ease-in-out infinite;` : ''} }
+    @keyframes ler { 0% { transform: translateX(-1.6px); } 70% { transform: translateX(1.6px); } 78%, 100% { transform: translateX(-1.6px); } }
+    .nb-tampa { fill: #2A3142; }
+    .nb-logo { fill: ${cor}; }
+    .nb-base { fill: #3A4255; }`,
+          });
+        }
 
         // ---------- o mascote ----------
         case 13: // Ocioso: ninguém está digitando nem falando. Ele só existe — pisca, olha em volta, respira.

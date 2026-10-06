@@ -1,0 +1,54 @@
+<!-- GERADO por animacaoSVG/exportar-mascote.mjs a partir do estúdio animacoes_d4.html — não edite à mão. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 40 280 280" role="img" aria-label="Ausente">
+  <style>
+    .o-fora, .cabeca { fill: var(--creme, #f3ebd8); }
+    .o-dentro { fill: var(--faixa, #F48FB1); }
+    .cabeca { stroke: var(--creme, #f3ebd8); stroke-width: 0; stroke-linejoin: round; }
+    .p, .creme { fill: var(--creme, #f3ebd8); }
+    .m-pupila { fill: #1E2533; }
+    .m-brilho { fill: #FFFFFF; }
+    .m-traco { fill: none; stroke: #1E2533; stroke-width: 1.8; stroke-linecap: round; }
+    .m-nariz { fill: #C2415A; }
+    .m-boca { fill: none; stroke: #C2415A; stroke-width: 1.5; stroke-linecap: round; }
+    .m-boca-o { fill: #1E2533; }
+    .m-bochechas { fill: #F48FB1; opacity: .5; }
+    .m-feliz { stroke-width: 2.3; }
+    .m-sorrisao { stroke-width: 1.8; }
+    .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
+    .p, .barra, .m-olho, .m-olhos { transform-box: fill-box; transform-origin: center; }
+    .figura { transform-box: view-box; transform-origin: 200px 297px; }
+    .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
+    .o-dentro { --faixa: #E8A93A; }
+    .orelha-e { transform: rotate(-40deg) scaleY(.92); }
+    @keyframes piscar { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
+    .z { fill: none; stroke: #f3ebd8; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transform-box: fill-box; transform-origin: center; opacity: 0; animation: zzz 2.40s ease-out infinite; }
+    .z2 { animation-delay: 0.80s; }
+    .z3 { animation-delay: 1.60s; }
+    @keyframes zzz { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -18px) scale(1.4); } }
+    .m-olhos {  }
+    @keyframes ler { 0% { transform: translateX(-1.6px); } 70% { transform: translateX(1.6px); } 78%, 100% { transform: translateX(-1.6px); } }
+    .nb-tampa { fill: #2A3142; }
+    .nb-logo { fill: #E8A93A; }
+    .nb-base { fill: #3A4255; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <g class="figura">
+    <g transform="translate(100 70) scale(2)">
+      <g class="orelha orelha-e">
+        <path class="o-fora" d="M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z"/>
+        <path class="o-dentro" d="M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z"/>
+      </g>
+      <g class="orelha orelha-d">
+        <path class="o-fora" d="M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z"/>
+        <path class="o-dentro" d="M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z"/>
+      </g>
+      <path class="cabeca" d="M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z"/>
+      <g class="rosto-m">
+        <g class="m-olhos"><path class="m-traco" d="M29 75 Q34 72.5 39 75 M61 75 Q66 72.5 71 75"/></g>
+        <path class="m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+        <circle class="m-boca-o" cx="50" cy="87.5" r="2.5"/>
+      </g>
+      <g class="zzz"><path class="z z1" d="M73 45 H78 L73 51 H78"/><path class="z z2" d="M73 45 H78 L73 51 H78"/><path class="z z3" d="M73 45 H78 L73 51 H78"/></g>
+    </g>
+  </g>
+</svg>
