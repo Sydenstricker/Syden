@@ -4,6 +4,7 @@ import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useBloqueados } from './bloqueios';
 import { useT } from './i18n';
+import { useDirectory } from './directory';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
@@ -54,6 +55,7 @@ export function TextChannel({
   const [dragging, setDragging] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<ComposerHandle>(null);
+  const { members } = useDirectory();
   const stickToBottom = useRef(true);
   // Conversa privada: o cabeçalho e a abertura mudam de texto (não é um canal de comunidade).
   const privada = channel.type === 'dm';
@@ -241,6 +243,7 @@ export function TextChannel({
           onSent={() => (stickToBottom.current = true)}
           // Quem administra não passa pelo modo lento, então não há o que avisar a quem administra.
           modoLento={role === 'member' ? (channel.modoLento ?? 0) : 0}
+          silenciadoAte={members.get(user.id)?.silenciadoAte ?? null}
         />
 
         {dragging && <div className="drop-overlay">{t('Solte para enviar o arquivo')}</div>}

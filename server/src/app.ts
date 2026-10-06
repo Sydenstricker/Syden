@@ -22,6 +22,7 @@ import { registerAulaRoutes } from './aula-routes.js';
 import { registerCargosRoutes } from './cargos-routes.js';
 import { registerNiveisRoutes } from './niveis-routes.js';
 import { registerAutomodRoutes } from './automod-routes.js';
+import { registerAdvertenciasRoutes } from './advertencias-routes.js';
 import { startTrafficSampling } from './traffic.js';
 import { countServerError, startHealthSampling } from './health.js';
 
@@ -63,6 +64,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerCargosRoutes(app, io);
   registerNiveisRoutes(app, io);
   registerAutomodRoutes(app, io);
+  registerAdvertenciasRoutes(app, io);
   // No modo rascunho, o e-mail inteiro (com o link) vai para o registro do servidor.
   ondeAnotar((linha) => app.log.info(linha));
 

@@ -1,3 +1,4 @@
+import { Clock } from 'lucide-react';
 import { useState } from 'react';
 import { Puxador } from './Puxador';
 import { Avatar } from './Avatar';
@@ -8,6 +9,7 @@ import { ProfileCard } from './ProfileCard';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { fraseDaTransmissao } from './streamName';
 import { quemAssiste } from './assistindo';
+import { silencioVale } from './ModeracaoDaPessoa';
 import { chave, useT } from './i18n';
 import type { Channel, CommunityMember, PresenceEntry, Role, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -104,6 +106,11 @@ export function MemberList({
             {member.username}
           </span>
           {member.selo && <SeloDaComunidade selo={member.selo} />}
+          {silencioVale(member.silenciadoAte) && (
+            <span className="member-silencio" title={t('Em silêncio')} aria-label={t('Em silêncio')}>
+              <Clock size={13} />
+            </span>
+          )}
           {agora && (
             <span className={`member-status${agora.live ? ' live' : ''}`}>
               {agora.live && <span className="live-dot" aria-hidden="true" />}

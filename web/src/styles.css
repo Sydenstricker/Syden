@@ -11620,3 +11620,38 @@ body.arrastando-barra {
   color: var(--text-muted);
   font-size: calc(12px * var(--escala-do-texto));
 }
+
+/* ---------- Advertir e silenciar (ModeracaoDaPessoa.tsx) ---------- */
+.member-silencio {
+  display: inline-flex;
+  margin-inline-start: 4px;
+  color: var(--amber);
+  vertical-align: middle;
+}
+
+.moderacao-da-pessoa {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.moderacao-da-pessoa-rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.advertencias-anteriores {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.advertencias-anteriores li {
+  padding: 3px 0;
+  border-top: 1px solid var(--border);
+}

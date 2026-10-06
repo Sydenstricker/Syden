@@ -36,7 +36,7 @@ import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
 import { type AulaEmCurso, guardarAulaEmCurso, lerAulaEmCurso } from './aula';
 import { Mascote } from './Mascote';
-import { useT } from './i18n';
+import { useT, idiomaAtual } from './i18n';
 
 /** Última comunidade aberta, para o app voltar onde a pessoa estava. */
 const LAST_COMMUNITY_KEY = 'syden.community';
@@ -449,6 +449,20 @@ export function Shell({
         ),
       ),
     );
+    // Advertência e silêncio aplicados a você por quem administra: o aviso é só seu (ver ModeracaoDaPessoa.tsx).
+    s.on('advertencia', ({ comunidade, motivo }: { communityId: number; comunidade: string; motivo: string }) =>
+      setNotice(t('Você recebeu uma advertência em {comunidade}: {motivo}', { comunidade, motivo })),
+    );
+    s.on('silencio', ({ comunidade, ate }: { communityId: number; comunidade: string; ate: string | null }) =>
+      setNotice(
+        ate
+          ? t('Você está em silêncio em {comunidade} até {hora}.', {
+              comunidade,
+              hora: new Date(ate).toLocaleString(idiomaAtual(), { dateStyle: 'short', timeStyle: 'short' }),
+            })
+          : t('Seu silêncio em {comunidade} acabou.', { comunidade }),
+      ),
+    );
     // Subiu de nível: o aviso é só seu, na faixa de avisos, e não na conversa dos outros (ver niveis.ts).
     s.on('nivel:subiu', ({ nivel }: { communityId: number; nivel: number }) =>
       setNotice(t('Você chegou ao nível {nivel}!', { nivel })),
@@ -807,7 +821,13 @@ export function Shell({
 
   async function afterCommunityChange(changed: Community | null) {
     const list = await reloadCommunities().catch(() => null);
-    if (changed && list?.some((c) => c.id === changed.id)) setCommunityId(changed.id);
+    if (changed && list?.some((c) => c.id === changed.id)) {
+      // Leva PARA a comunidade, e não só a marca: criada pela vila, a barra lateral mostrava a comunidade
+      // nova com o #geral marcado enquanto o meio da tela seguia na vila — duas partes da tela afirmando
+      // lugares diferentes.
+      setView('community');
+      setCommunityId(changed.id);
+    }
   }
 
   return (

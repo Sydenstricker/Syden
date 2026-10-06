@@ -20,6 +20,7 @@ import { Avatar } from './Avatar';
 import { useDirectory } from './directory';
 import { DialogoDeDenuncia } from './Denuncia';
 import { Vitrine } from './Vitrine';
+import { ModeracaoDaPessoa, podeAgirSobre } from './ModeracaoDaPessoa';
 import { pedirMencao } from './mencao';
 import { guardarNota, LIMITE_DA_NOTA, useNota } from './notas';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
@@ -425,6 +426,10 @@ export function PersonMenu({
             </Item>
           )}
         </>
+      )}
+      {/* Advertir e silenciar: para quem pode agir sobre a pessoa (ver ModeracaoDaPessoa.tsx). */}
+      {membro && podeAgirSobre(role, targetRole, isSelf) && (
+        <ModeracaoDaPessoa communityId={communityId} membro={membro} onFeito={onClose} />
       )}
       {error && <p className="form-error small">{error}</p>}
     </div>,

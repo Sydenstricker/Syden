@@ -55,6 +55,12 @@ export function barrarMensagem(
   agora = Date.now(),
 ): string | null {
   if (channel.communityId === null) return null;
+  // O SILÊNCIO vem antes de tudo (ver advertencias-routes.ts): quem está calado não escreve, ponto.
+  const silencio = db.silenciadoAte(channel.communityId, userId, agora);
+  if (silencio) {
+    const minutos = Math.ceil((Date.parse(silencio) - agora) / 60_000);
+    return `Você está em silêncio nesta comunidade por mais ${minutos} min.`;
+  }
   const papel = db.memberRole(channel.communityId, userId);
   if (papel === 'owner' || papel === 'admin') return null;
 

@@ -38,6 +38,11 @@ const rooms = new RoomServiceClient(config.livekit.url.replace(/^ws/, 'http'), c
 
 const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
 
+/** Tira alguém de uma chamada pelo LiveKit (o silêncio temporário usa; ver advertencias-routes.ts). */
+export async function tirarDaChamada(channelId: number, userId: number) {
+  await rooms.removeParticipant(voiceRoomName(channelId), String(userId)).catch(() => {});
+}
+
 export function voiceRoomName(channelId: number) {
   return `channel-${channelId}`;
 }
@@ -1540,6 +1545,10 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const channel = channelAccess(request, reply, false);
       if (!channel) return reply;
       if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
+      // Em silêncio nesta comunidade, não entra em sala de voz dela (ver advertencias-routes.ts).
+      if (channel.communityId !== null && db.silenciadoAte(channel.communityId, request.user.id)) {
+        return reply.code(403).send({ error: 'Você está em silêncio nesta comunidade e não pode entrar nas salas por enquanto.' });
+      }
 
       /**
        * EM MODO APRESENTAÇÃO, QUEM NÃO ESTÁ NO PALCO ENTRA SEM PODER PUBLICAR.

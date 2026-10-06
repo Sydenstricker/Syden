@@ -61,6 +61,8 @@ export type CommunityMember = PublicUser & {
   role: Role;
   /** Os cargos personalizados (ids, na ordem da lista). Vem vazio de um servidor que ainda não os tem. */
   cargos?: number[];
+  /** Em silêncio nesta comunidade até quando (ISO); null/ausente quando não está. */
+  silenciadoAte?: string | null;
 };
 
 /** Um cargo personalizado da comunidade: identidade (nome e cor), não poder. Ver Cargos.tsx. */

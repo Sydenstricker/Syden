@@ -1,5 +1,6 @@
 import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Smile, X, Timer } from 'lucide-react';
 import { duracaoCurta } from './Moderacao';
+import { silencioVale } from './ModeracaoDaPessoa';
 import {
   type ClipboardEvent,
   type KeyboardEvent,
@@ -45,7 +46,9 @@ export const Composer = forwardRef<ComposerHandle, {
   onSent?: () => void;
   /** Modo lento do canal, em segundos, para quem passa pela regra (0 = nada a avisar). Ver automod.ts. */
   modoLento?: number;
-}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0 }, ref) {
+  /** Você está em silêncio nesta comunidade até quando (ISO). Ver ModeracaoDaPessoa.tsx. */
+  silenciadoAte?: string | null;
+}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0, silenciadoAte = null }, ref) {
   const t = useT();
   const [draft, setDraft] = useState('');
   const [staged, setStaged] = useState<Staged[]>([]);
@@ -191,6 +194,14 @@ export const Composer = forwardRef<ComposerHandle, {
 
   return (
     <div className="composer">
+      {silencioVale(silenciadoAte) && (
+        <p className="composer-modo-lento">
+          <Timer size={14} aria-hidden="true" />{' '}
+          {t('Você está em silêncio nesta comunidade até {hora}.', {
+            hora: new Date(silenciadoAte).toLocaleString(idiomaAtual(), { dateStyle: 'short', timeStyle: 'short' }),
+          })}
+        </p>
+      )}
       {modoLento > 0 && (
         <p className="composer-modo-lento">
           <Timer size={14} aria-hidden="true" /> {t('Modo lento: uma mensagem a cada {tempo}.', { tempo: duracaoCurta(modoLento, idiomaAtual()) })}

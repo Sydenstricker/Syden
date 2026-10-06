@@ -163,6 +163,12 @@ function endVoiceSession(userId: number) {
   voiceMembers.delete(userId);
 }
 
+/** Em que sala de voz a pessoa está agora, se estiver. */
+export function salaDeVozDe(userId: number): { channelId: number; communityId: number } | undefined {
+  const sessao = voiceMembers.get(userId);
+  return sessao && { channelId: sessao.channelId, communityId: sessao.communityId };
+}
+
 /** Sala de voz excluída: encerra as sessões de quem estava nela (os apps saem da chamada ao receber channel:deleted). */
 export function removeVoiceChannelMembers(io: IOServer, channelId: number) {
   const inChannel = [...voiceMembers.values()].filter((m) => m.channelId === channelId);

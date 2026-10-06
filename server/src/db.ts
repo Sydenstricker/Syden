@@ -90,6 +90,8 @@ export type CommunityMember = PublicUser & {
   role: Role;
   /** Os cargos personalizados da pessoa nesta comunidade (ids, na ordem da lista). Ver o bloco OS CARGOS. */
   cargos: number[];
+  /** Em silêncio nesta comunidade até quando (ISO); null quando não está. Ver ADVERTÊNCIAS E SILÊNCIO. */
+  silenciadoAte: string | null;
 };
 
 export interface Emoji {
@@ -1373,13 +1375,20 @@ export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
       `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion,
-              u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role
+              u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role, m.silenciado_ate AS silenciadoAte
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
     )
-    .all(communityId) as unknown as (UserRow & { role: Role })[];
+    .all(communityId) as unknown as (UserRow & { role: Role; silenciadoAte: string | null })[];
   const cargos = cargosDosMembros(communityId);
-  return rows.map((row) => ({ ...toUser(row)!, role: row.role, cargos: cargos.get(row.id) ?? [] }));
+  const agora = Date.now();
+  return rows.map((row) => ({
+    ...toUser(row)!,
+    role: row.role,
+    cargos: cargos.get(row.id) ?? [],
+    // Só o silêncio que ainda vale: o vencido some sozinho, sem ninguém precisar tirar.
+    silenciadoAte: row.silenciadoAte && Date.parse(row.silenciadoAte) > agora ? row.silenciadoAte : null,
+  }));
 }
 
 /** Comunidades de que a pessoa participa, só os ids (para as salas do socket). */
@@ -4516,4 +4525,64 @@ export function definirRegrasDeModeracao(communityId: number, regras: RegrasDeMo
 export function definirModoLento(channelId: number, segundos: number): Channel | undefined {
   db.prepare('UPDATE channels SET modo_lento = ? WHERE id = ?').run(segundos, channelId);
   return findChannel(channelId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// ADVERTÊNCIAS E SILÊNCIO TEMPORÁRIO: o que quem administra a comunidade aplica a uma pessoa. As regras
+// de quem pode o quê estão em advertencias-routes.ts.
+//
+// O SILÊNCIO ACABA SOZINHO: guarda-se até quando ele vale, e não um "está silenciado". Assim não existe
+// silêncio esquecido ligado para sempre porque alguém esqueceu de tirar.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('community_members', 'silenciado_ate', 'TEXT');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS advertencias (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- Quem advertiu. Some com a conta dessa pessoa, mas a advertência fica.
+    autor_id     INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    motivo       TEXT NOT NULL,
+    criada_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS advertencias_de_quem ON advertencias(community_id, user_id);
+`);
+
+export interface Advertencia {
+  id: number;
+  motivo: string;
+  autor: string | null;
+  criadaEm: string;
+}
+
+export function criarAdvertencia(communityId: number, userId: number, autorId: number, motivo: string): Advertencia {
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO advertencias (community_id, user_id, autor_id, motivo) VALUES (?, ?, ?, ?)')
+    .run(communityId, userId, autorId, motivo);
+  return listarAdvertencias(communityId, userId).find((a) => a.id === Number(lastInsertRowid))!;
+}
+
+export function listarAdvertencias(communityId: number, userId: number): Advertencia[] {
+  return db
+    .prepare(
+      `SELECT a.id, a.motivo, u.username AS autor, a.criada_em AS criadaEm FROM advertencias a
+       LEFT JOIN users u ON u.id = a.autor_id
+       WHERE a.community_id = ? AND a.user_id = ? ORDER BY a.id DESC`,
+    )
+    .all(communityId, userId) as unknown as Advertencia[];
+}
+
+/** Silencia até `ate` (ISO), ou tira o silêncio com null. */
+export function silenciar(communityId: number, userId: number, ate: string | null) {
+  db.prepare('UPDATE community_members SET silenciado_ate = ? WHERE community_id = ? AND user_id = ?').run(ate, communityId, userId);
+}
+
+/** Até quando a pessoa está em silêncio nesta comunidade — null quando não está (ou já passou). */
+export function silenciadoAte(communityId: number, userId: number, agora = Date.now()): string | null {
+  const linha = db.prepare('SELECT silenciado_ate AS ate FROM community_members WHERE community_id = ? AND user_id = ?').get(communityId, userId) as
+    | { ate: string | null }
+    | undefined;
+  return linha?.ate && Date.parse(linha.ate) > agora ? linha.ate : null;
 }
