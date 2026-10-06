@@ -59,6 +59,7 @@ import { ConfiguracaoDeNiveis } from './Ranking';
 import { ModeracaoSection } from './Moderacao';
 import { ComandosSection } from './Comandos';
 import { AgendadasSection } from './Agendadas';
+import { MeuAniversario } from './Aniversario';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
@@ -181,6 +182,7 @@ export function SettingsModal({
           {section === 'account' && (
             <>
               <AccountSection user={user} onDeleted={onLogout} />
+              <MeuAniversario />
               {/* O selo e os bloqueios são escolhas da PESSOA, não da comunidade: por isso moram na
                   aba da conta, junto com o resto do que só diz respeito a ela. */}
               <EscolherSelo />

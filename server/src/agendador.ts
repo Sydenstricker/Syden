@@ -1,7 +1,7 @@
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { emitToUser, estaOnline } from './realtime.js';
-import { publicarComoSyden } from './syden-app.js';
+import { preencher, publicarComoSyden } from './syden-app.js';
 
 /**
  * O AGENDADOR: a cada 30 segundos, publica as mensagens agendadas que venceram e entrega os lembretes.
@@ -44,6 +44,24 @@ export function rodarAgendador(io: IOServer, agora = Date.now()) {
   }
   // Lembrete de quem está fora fica esperando: chega quando a pessoa voltar (ver entregarPendentes).
   for (const lembrete of db.lembretesVencidos(agoraIso)) if (estaOnline(lembrete.userId)) entregar(io, lembrete);
+  anunciarAniversarios(io, agora);
+}
+
+/**
+ * OS PARABÉNS, a partir do meio-dia UTC: é quando o mesmo dia do calendário vale na maior parte do mundo
+ * (do Havaí ao Japão). Cada pessoa é anunciada uma vez por ano em cada comunidade — o registro do ano
+ * impede repetir a cada volta de 30 s, e o servidor reiniciado no meio da tarde não anuncia de novo.
+ */
+export function anunciarAniversarios(io: IOServer, agora = Date.now()) {
+  const hoje = new Date(agora);
+  if (hoje.getUTCHours() < 12) return;
+  const mesDia = `${String(hoje.getUTCMonth() + 1).padStart(2, '0')}-${String(hoje.getUTCDate()).padStart(2, '0')}`;
+  const ano = hoje.getUTCFullYear();
+  for (const a of db.aniversariantesParaAnunciar(mesDia, ano)) {
+    const canal = db.findChannel(a.canalId);
+    if (canal) publicarComoSyden(io, canal, preencher(a.texto, { pessoa: a.username }));
+    db.marcarAniversarioAnunciado(a.communityId, a.userId, ano);
+  }
 }
 
 /** Quem acabou de conectar recebe os lembretes que venceram enquanto estava fora. */

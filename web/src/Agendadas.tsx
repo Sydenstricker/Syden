@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
+import { ParabensDaComunidade } from './Aniversario';
 import { nomeDeCanal } from './bidi';
 import { chave, idiomaAtual, useT } from './i18n';
 import type { Channel, Community } from './types';
@@ -153,6 +154,8 @@ export function AgendadasSection({ community }: { community: Community }) {
         </button>
       </form>
       {erro && <p className="form-error">{erro}</p>}
+
+      <ParabensDaComunidade community={community} />
     </>
   );
 }

@@ -4777,3 +4777,68 @@ export function lembretesVencidos(agora: string, userId?: number): LembreteVenci
 export function apagarLembrete(id: number) {
   db.prepare('DELETE FROM lembretes WHERE id = ?').run(id);
 }
+
+// ---------------------------------------------------------------------------------------------------
+// OS ANIVERSÁRIOS: a pessoa informa dia e mês (nunca o ano — idade não é da conta de ninguém), e cada
+// comunidade que escolheu um canal de parabéns ganha uma mensagem do Syden no dia. Opcional dos dois
+// lados: quem não informa não aparece, e a comunidade sem canal não anuncia nada.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('users', 'aniversario', 'TEXT');
+addColumnIfMissing('communities', 'aniversario_canal', 'INTEGER');
+addColumnIfMissing('communities', 'aniversario_texto', 'TEXT');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS aniversarios_anunciados (
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    ano          INTEGER NOT NULL,
+    PRIMARY KEY (community_id, user_id, ano)
+  );
+`);
+
+/** "MM-DD", ou null quando a pessoa não informou. */
+export function aniversarioDe(userId: number): string | null {
+  return (db.prepare('SELECT aniversario FROM users WHERE id = ?').get(userId) as { aniversario: string | null } | undefined)?.aniversario ?? null;
+}
+
+export function definirAniversario(userId: number, mesDia: string | null) {
+  db.prepare('UPDATE users SET aniversario = ? WHERE id = ?').run(mesDia, userId);
+}
+
+export interface ParabensDaComunidade {
+  canalId: number | null;
+  texto: string | null;
+}
+
+export function parabensDaComunidade(communityId: number): ParabensDaComunidade {
+  const linha = db.prepare('SELECT aniversario_canal AS canalId, aniversario_texto AS texto FROM communities WHERE id = ?').get(communityId) as
+    | ParabensDaComunidade
+    | undefined;
+  return linha ?? { canalId: null, texto: null };
+}
+
+export function definirParabens(communityId: number, canalId: number | null, texto: string | null) {
+  db.prepare('UPDATE communities SET aniversario_canal = ?, aniversario_texto = ? WHERE id = ?').run(canalId, texto, communityId);
+}
+
+/**
+ * Quem faz aniversário hoje e ainda não foi anunciado neste ano, em cada comunidade com canal de
+ * parabéns — já com o canal e o texto dela.
+ */
+export function aniversariantesParaAnunciar(mesDia: string, ano: number): { communityId: number; userId: number; username: string; canalId: number; texto: string }[] {
+  return db
+    .prepare(
+      `SELECT c.id AS communityId, u.id AS userId, u.username, c.aniversario_canal AS canalId, c.aniversario_texto AS texto
+       FROM communities c
+       JOIN community_members m ON m.community_id = c.id
+       JOIN users u ON u.id = m.user_id
+       WHERE c.aniversario_canal IS NOT NULL AND c.aniversario_texto IS NOT NULL AND u.aniversario = ?
+         AND NOT EXISTS (SELECT 1 FROM aniversarios_anunciados a WHERE a.community_id = c.id AND a.user_id = u.id AND a.ano = ?)`,
+    )
+    .all(mesDia, ano) as { communityId: number; userId: number; username: string; canalId: number; texto: string }[];
+}
+
+export function marcarAniversarioAnunciado(communityId: number, userId: number, ano: number) {
+  db.prepare('INSERT OR IGNORE INTO aniversarios_anunciados (community_id, user_id, ano) VALUES (?, ?, ?)').run(communityId, userId, ano);
+}
