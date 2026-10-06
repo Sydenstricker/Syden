@@ -409,12 +409,16 @@ cumprido — e a tela o anunciava como defeito.
 **A regra que fica, e ela vale para qualquer medida futura na tela:**
 
 - **Medida sem referência não informa, alarma.** `576p` não responde "está ruim?"; o mesmo 576p
-  sobra num quadro de 540 e falta em tela cheia num monitor 4K. O que responde é a COMPARAÇÃO — por
-  isso o cartão hoje diz "nítida para o tamanho em que está sendo mostrada", e não a altura crua.
+  sobra num quadro de 540 e falta em tela cheia num monitor 4K. O que responde é a COMPARAÇÃO, e
+  não a altura crua.
 - **Ruído de medição não é defeito.** 29 num alvo de 30 é o normal de um codificador. A taxa volta
   ao alvo dentro de 10% e só mostra o número cru quando ele está mesmo longe.
 - **Número cru fica para quem PODE AGIR sobre ele.** Quem transmite vê tudo, com o diagnóstico ao
-  lado; quem assiste vê a resposta, porque para ele o número não muda decisão nenhuma.
+  lado. **Quem assiste não recebe comentário nenhum sobre a imagem** — nem o número, nem veredito.
+  A comparação chegou a virar frase no cartão ("Menor que o espaço onde está sendo mostrada. Numa
+  janela menor, fica nítida.") e saiu em 05/10/2026: *"essa mensagem é inconveniente — não podemos
+  apenas transmitir?"*. Para quem assiste, o cartão mostra só o que ele pode mudar: o teto do que
+  baixar.
 
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 

@@ -46,4 +46,27 @@ describe('as rotas da cultura', () => {
     const resposta = await app.inject({ method: 'GET', url: '/api/cultura/arquivo/qualquer-coisa' });
     assert.equal(resposta.statusCode, 404);
   });
+
+  it('o áudio também: só toca o que uma seção de música já selecionou', async () => {
+    for (const id of ['qualquer-coisa', 'a-inventado', encodeURIComponent('https://upload.wikimedia.org/x.ogg')]) {
+      const resposta = await app.inject({ method: 'GET', url: `/api/cultura/audio/${id}` });
+      assert.equal(resposta.statusCode, 404, id);
+    }
+  });
+
+  it('as seções pedem conta, só existem as quatro, e recusam país ou língua fora do formato', async () => {
+    assert.equal((await app.inject({ method: 'GET', url: '/api/cultura/secao/comida?pais=BR&lingua=pt' })).statusCode, 401);
+    const pedir = comToken(app, (await criarConta(app, 'secoes')).token);
+    assert.equal((await pedir('GET', '/api/cultura/secao/politica?pais=BR&lingua=pt')).statusCode, 404);
+    assert.equal((await pedir('GET', '/api/cultura/secao/teatro?pais=BRA&lingua=pt')).statusCode, 400);
+    assert.equal((await pedir('GET', '/api/cultura/secao/danca?pais=BR&lingua=../')).statusCode, 400);
+  });
+});
+
+describe('as categorias de cada seção', () => {
+  it('comida, dança e instrumentos usam o mesmo nome de país, com e sem artigo', () => {
+    assert.deepEqual(categoriasDoPais('NG', 'Cuisine of'), ['Category:Cuisine of Nigeria', 'Category:Cuisine of the Nigeria']);
+    assert.equal(categoriasDoPais('JP', 'Dance of')[0], 'Category:Dance of Japan');
+    assert.ok(categoriasDoPais('NL', 'Musical instruments of').includes('Category:Musical instruments of the Netherlands'));
+  });
 });

@@ -236,15 +236,16 @@ export function useVoice(socket: Socket | null) {
   const [room] = useState(() => {
     const settings = getSettings();
     return new Room({
-      // Só baixa a resolução que o elemento de vídeo realmente mostra — CONTANDO OS PIXELS REAIS.
+      // Só baixa a resolução que o elemento de vídeo realmente mostra, contando pixel de CSS (o padrão do
+      // LiveKit até a escala 2).
       //
-      // Sem `pixelDensity`, o LiveKit conta um pixel de CSS como um pixel de verdade sempre que a escala
-      // é 2 ou menos. Num Windows a 150%, o padrão de muito notebook, isso pedia metade do que a tela
-      // mostra. Medido (05/10/2026): quadro de 1050×528 pixels reais recebendo a camada de 360p a 15
-      // quadros, esticada — "a transmissão só fica boa em tela cheia", que era o relato. O teto em 2
-      // segura celular de tela densa (3×) de baixar 1080p para uma miniatura; o cartão "i" da
-      // transmissão já fazia a conta com a escala (nitidezNaTela), e agora o pedido usa a mesma régua.
-      adaptiveStream: { pixelDensity: Math.min(Math.max(globalThis.devicePixelRatio || 1, 1), 2) },
+      // CONTAR OS PIXELS REAIS FOI TENTADO E DESFEITO (05/10/2026). Num Windows a 150%, o quadro na
+      // janela passava a receber 720p em vez de 360p — mas a TELA CHEIA passou a pedir a camada de
+      // 1080p, que antes ficava parada, e o relato no mesmo dia foi "a tela cheia piorou". O motivo
+      // provável: quem transmite, sem máquina ou internet para a camada a mais, aciona a otimização
+      // dinâmica (abaixo), que encolhe TODAS as camadas juntas. O quadro pequeno ficou coberto pela
+      // camada de 360p a 800 kbps (SCREEN_LAYERS), que não encolhe mais.
+      adaptiveStream: true,
       dynacast: true, // pausa camadas de vídeo que ninguém está assistindo
       audioCaptureDefaults: {
         echoCancellation: settings.echoCancellation,

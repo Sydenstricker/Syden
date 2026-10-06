@@ -52,6 +52,14 @@ await pipocaNaSala(bia)
     () => ok('a Ana transmite e a Bia está junto: a sala vira "assistindo junto", com a pipoca'),
     () => falhou('a sala não marcou que estão assistindo junto'),
   );
+// Cada pessoa da plateia também fica de pipoca — na sala da barra lateral e na lista de membros. Quem
+// transmite não: segue com a pose dele e o "AO VIVO".
+const pipocaDe = (page, nome, onde) =>
+  page.locator(onde, { hasText: nome }).first().locator('img.avatar-coelho[data-status="assistindo"]').count();
+await bia.waitForTimeout(1500);
+(await pipocaDe(bia, 'bia' + s, '.voice-member')) === 1 ? ok('a Bia, na plateia, aparece de pipoca na sala') : falhou('a Bia não ficou de pipoca na sala');
+(await pipocaDe(bia, 'bia' + s, '.member')) === 1 ? ok('e de pipoca na lista de membros') : falhou('a Bia não ficou de pipoca na lista de membros');
+(await pipocaDe(bia, 'ana' + s, '.voice-member')) === 0 ? ok('a Ana, que transmite, não fica de pipoca') : falhou('quem transmite ficou de pipoca');
 const rotulo = await bia.locator('.canal-assistindo .so-para-leitor').first().textContent();
 rotulo === 'Assistindo junto' ? ok('e quem usa leitor de tela ouve "Assistindo junto"') : falhou('rótulo para leitor de tela: ' + rotulo);
 await bia.locator('.sidebar').screenshot({ path: 'e2e/fotos/assistindo-junto.png' });
@@ -65,6 +73,9 @@ await bia
     () => ok('a transmissão acabou e a sala voltou ao alto-falante'),
     () => falhou('a pipoca ficou depois de a transmissão acabar'),
   );
+(await bia.locator('img.avatar-coelho[data-status="assistindo"]').count()) === 0
+  ? ok('e ninguém mais está de pipoca')
+  : falhou('sobrou avatar de pipoca depois da transmissão');
 
 await browser.close();
 resumo('Assistindo junto');

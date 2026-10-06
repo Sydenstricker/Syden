@@ -56,6 +56,14 @@ function levarOsEstilos(destino: Document) {
   // tema escuro mesmo para quem usa o claro.
   const tema = document.documentElement.getAttribute('data-theme');
   if (tema) destino.documentElement.setAttribute('data-theme', tema);
+  // A paleta e a cor escolhida, pelo mesmo motivo: sem elas a janela abriria na D4 e no âmbar.
+  const paleta = document.documentElement.getAttribute('data-paleta');
+  if (paleta) destino.documentElement.setAttribute('data-paleta', paleta);
+  const proprio = document.documentElement.style;
+  for (const nome of ['--accent', '--accent-hover', '--accent-texto']) {
+    const valor = proprio.getPropertyValue(nome);
+    if (valor) destino.documentElement.style.setProperty(nome, valor);
+  }
 }
 
 export interface JanelaAberta {

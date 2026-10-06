@@ -76,9 +76,10 @@ await page.evaluate(() => {
 
 /**
  * Presets que também saem no recorte do avatar, com outro nome. O "ouvindo música" é o do karaokê
- * tocando na chamada: todo mundo nela aparece de fone (ver Avatar.tsx).
+ * tocando na chamada: todo mundo nela aparece de fone (ver Avatar.tsx). O "assistir junto" é o da
+ * sala com transmissão e plateia: quem está assistindo aparece com a pipoca.
  */
-const TAMBEM_COMO_AVATAR = { 18: 'avatar-musica' };
+const TAMBEM_COMO_AVATAR = { 18: 'avatar-musica', 20: 'avatar-assistindo' };
 
 const svgs = {};
 for (const [n, nome] of [...Object.entries(PRESETS), ...Object.entries(TAMBEM_COMO_AVATAR)]) {

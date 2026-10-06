@@ -1,0 +1,69 @@
+<!-- GERADO por animacaoSVG/exportar-mascote.mjs a partir do estúdio animacoes_d4.html — não edite à mão. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 40 280 280" role="img" aria-label="Assistir junto">
+  <style>
+    .o-fora, .cabeca { fill: var(--creme, #f3ebd8); }
+    .o-dentro { fill: var(--faixa, #F48FB1); }
+    .cabeca { stroke: var(--creme, #f3ebd8); stroke-width: 0; stroke-linejoin: round; }
+    .p, .creme { fill: var(--creme, #f3ebd8); }
+    .m-pupila { fill: #1E2533; }
+    .m-brilho { fill: #FFFFFF; }
+    .m-traco { fill: none; stroke: #1E2533; stroke-width: 1.8; stroke-linecap: round; }
+    .m-nariz { fill: #C2415A; }
+    .m-boca { fill: none; stroke: #C2415A; stroke-width: 1.5; stroke-linecap: round; }
+    .m-boca-o { fill: #1E2533; }
+    .m-bochechas { fill: #F48FB1; opacity: .5; }
+    .m-feliz { stroke-width: 2.3; }
+    .m-sorrisao { stroke-width: 1.8; }
+    .orelha { transform-box: fill-box; transform-origin: 50% 100%; }
+    .p, .barra, .m-olho, .m-olhos { transform-box: fill-box; transform-origin: center; }
+    .figura { transform-box: view-box; transform-origin: 200px 297px; }
+    .codigo text { font-family: 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif; font-size: 19px; font-weight: 600; fill: #E8EAF0; letter-spacing: 0.01em; }
+    .balde { fill: #f3ebd8; stroke: #2A3142; stroke-width: 1.2; }
+    .balde-listra { stroke: var(--faixa, #F48FB1); stroke-width: 3.2; }
+    .grao { fill: #FFF6DE; stroke: #E8D9B0; stroke-width: .8; }
+    .grao-pula { transform-box: fill-box; transform-origin: center; opacity: 0; animation: estourar 3.40s ease-out infinite; }
+    .luz-da-tela { fill: #BFD7F5; mix-blend-mode: soft-light; opacity: .0; animation: tela 2.20s steps(1) infinite; }
+    .r-oh { opacity: 0; animation: oh 6.00s step-end infinite; }
+    .r-assistindo { animation: assistindo 6.00s step-end infinite; }
+    .orelha-e, .orelha-d { animation: susto 6.00s cubic-bezier(.34,1.56,.64,1) infinite; }
+    @keyframes estourar { 0%, 55% { opacity: 0; transform: none; } 60% { opacity: 1; } 80% { opacity: 1; transform: translate(4px, -16px) rotate(90deg); } 100% { opacity: 0; transform: translate(7px, -4px) rotate(180deg); } }
+    @keyframes tela { 0% { opacity: .0; } 20% { opacity: .35; } 45% { opacity: .1; } 70% { opacity: .45; } 85% { opacity: .2; } }
+    @keyframes oh { 0% { opacity: 0; } 62% { opacity: 1; } 76% { opacity: 0; } }
+    @keyframes assistindo { 0% { opacity: 1; } 62% { opacity: 0; } 76% { opacity: 1; } }
+    @keyframes susto { 0%, 60%, 80%, 100% { transform: none; } 64% { transform: scaleY(1.12); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <g class="figura">
+    <g transform="translate(100 70) scale(2)">
+      <g class="orelha orelha-e">
+        <path class="o-fora" d="M31 55 C15 10, 35 -10, 42.5 5 C47.5 15, 42.5 40, 37.5 55 Z"/>
+        <path class="o-dentro" d="M33 50 C21 15, 35 0, 40 10 C44 17.5, 40 37.5, 36.5 50 Z"/>
+      </g>
+      <g class="orelha orelha-d">
+        <path class="o-fora" d="M69 55 C85 10, 65 -10, 57.5 5 C52.5 15, 57.5 40, 62.5 55 Z"/>
+        <path class="o-dentro" d="M67 50 C79 15, 65 0, 60 10 C56 17.5, 60 37.5, 63.5 50 Z"/>
+      </g>
+      <path class="cabeca" d="M50 41.5 H50 A36 36 0 0 1 86 77.5 V77.5 A36 36 0 0 1 50 113.5 H50 L50 113.5 L50 113.5 H50 A36 36 0 0 1 14 77.5 V77.5 A36 36 0 0 1 50 41.5 Z"/>
+      <g class="r-assistindo"><g class="rosto-m">
+        <g class="m-olhos"><g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="70.5" r="4"/><circle class="m-brilho" cx="33" cy="69" r="1.25"/></g>
+        <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="70.5" r="4"/><circle class="m-brilho" cx="65" cy="69" r="1.25"/></g></g>
+        <path class="m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+        <path class="m-boca" d="M45 84.5 Q50 89.5 55 84.5"/>
+      </g></g>
+      <g class="r-oh"><g class="rosto-m">
+        <g class="m-olhos"><g class="m-olho m-olho-e"><circle class="m-pupila" cx="34" cy="70.5" r="4"/><circle class="m-brilho" cx="33" cy="69" r="1.25"/></g>
+        <g class="m-olho m-olho-d"><circle class="m-pupila" cx="66" cy="70.5" r="4"/><circle class="m-brilho" cx="65" cy="69" r="1.25"/></g></g>
+        <path class="m-nariz" d="M47 79 Q50 77 53 79 Q50 83 47 79 Z"/>
+        <circle class="m-boca-o" cx="50" cy="87.5" r="2.5"/>
+      </g></g>
+      <ellipse class="luz-da-tela" cx="50" cy="70" rx="30" ry="24"/>
+      <g class="pipoca">
+        <path class="balde" d="M33 99 L37 124 H63 L67 99 Z"/>
+        <path class="balde-listra" d="M41.5 99 L43.5 124 M50 99 V124 M58.5 99 L56.5 124"/>
+        <circle class="grao" cx="38" cy="98" r="3.6"/><circle class="grao" cx="44.5" cy="95.5" r="4"/><circle class="grao" cx="51" cy="97" r="3.8"/>
+        <circle class="grao" cx="57" cy="95" r="3.9"/><circle class="grao" cx="62.5" cy="98" r="3.5"/>
+        <circle class="grao grao-pula" cx="50" cy="94" r="3.2"/>
+      </g>
+    </g>
+  </g>
+</svg>

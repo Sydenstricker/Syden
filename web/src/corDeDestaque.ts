@@ -20,7 +20,7 @@
 // o número abaixo do qual gente com visão comum já começa a errar a leitura em tela de celular.
 // ===================================================================================================
 
-/** O azul do Syden. É o que vale quando ninguém escolheu nada. */
+/** Reserva, quando não dá para ler o destaque da paleta (ver destaqueDaPaleta). */
 export const COR_PADRAO = '#5865f2';
 
 /**
@@ -93,9 +93,27 @@ export function aplicarCorDeDestaque(hex: string | null) {
   if (!hex || !corValida(hex)) {
     raiz.style.removeProperty('--accent');
     raiz.style.removeProperty('--accent-hover');
+    raiz.style.removeProperty('--accent-texto');
     return;
   }
   const cor = corLegivel(hex);
   raiz.style.setProperty('--accent', cor);
   raiz.style.setProperty('--accent-hover', corDeHover(cor));
+  // A COR FOI ESCURECIDA PARA O BRANCO CABER, então o texto em cima dela é branco. Desde a paleta D4 o
+  // texto sobre o destaque é uma variável (azul-noite no âmbar); sem trocá-la aqui, uma cor escolhida
+  // pela pessoa saía com letra escura sobre fundo escuro, em todos os botões do app.
+  raiz.style.setProperty('--accent-texto', '#ffffff');
+}
+
+/**
+ * O destaque da PALETA em uso, para o seletor abrir nele quando a pessoa ainda não escolheu cor
+ * nenhuma. Lido da folha de estilo, e não de uma tabela: é a cor que de fato está na tela.
+ */
+export function destaqueDaPaleta(): string {
+  const raiz = document.documentElement;
+  const propria = raiz.style.getPropertyValue('--accent');
+  raiz.style.removeProperty('--accent');
+  const daFolha = getComputedStyle(raiz).getPropertyValue('--accent').trim();
+  if (propria) raiz.style.setProperty('--accent', propria);
+  return corValida(daFolha) ? daFolha : COR_PADRAO;
 }

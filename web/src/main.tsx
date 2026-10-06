@@ -8,7 +8,7 @@ import { App } from './App';
 import { ErroGeral } from './ErroGeral';
 import { iniciarIdioma } from './i18n';
 import { aplicarLarguras, lerLarguras } from './larguras';
-import { applyTheme, getTheme } from './theme';
+import { aplicarPaleta, applyTheme, getTheme } from './theme';
 import { aplicarCorDeDestaque } from './corDeDestaque';
 import { aplicarEscalaDoTexto } from './escalaDoTexto';
 import { aoMudarAjustes, getSettings } from './settings';
@@ -16,6 +16,9 @@ import { aoMudarAjustes, getSettings } from './settings';
 // O tema e o idioma vêm antes de qualquer tela: assim ninguém vê o app piscar do escuro para o claro,
 // nem em português para depois virar inglês.
 applyTheme(getTheme());
+// A paleta junto com o tema, pelo mesmo motivo; e de novo quando as preferências descem do servidor.
+aplicarPaleta(getSettings().paleta);
+aoMudarAjustes(() => aplicarPaleta(getSettings().paleta));
 // A cor escolhida entra ANTES do primeiro desenho: aplicada depois, a tela piscaria no azul padrão.
 aplicarCorDeDestaque(getSettings().corDeDestaque);
 // O tamanho do texto também antes, e de novo a cada mudança — inclusive quando as preferências descem

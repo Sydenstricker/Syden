@@ -7,6 +7,7 @@ import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { fraseDaTransmissao } from './streamName';
+import { quemAssiste } from './assistindo';
 import { chave, useT } from './i18n';
 import type { Channel, CommunityMember, PresenceEntry, Role, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -58,6 +59,8 @@ export function MemberList({
   const presenceById = new Map(online.map((p) => [p.id, p]));
   const onlineIds = new Set(online.filter((p) => p.id === selfId || p.status !== 'invisivel').map((p) => p.id));
   const voiceById = new Map(voiceMembers.map((m) => [m.userId, m]));
+  // Quem está na plateia de uma transmissão aparece de pipoca (ver assistindo.ts).
+  const plateia = quemAssiste(voiceMembers);
   const channelName = (id: number) => channels.find((c) => c.id === id)?.name ?? 'uma sala';
 
   const all = [...members.values()].sort((a, b) => a.username.localeCompare(b.username));
@@ -89,7 +92,13 @@ export function MemberList({
         }}
         onContextMenu={(e) => menu.open(e, member.id, member.username)}
       >
-        <Avatar name={member.username} userId={member.id} online status={presenceById.get(member.id)?.status} />
+        <Avatar
+          name={member.username}
+          userId={member.id}
+          online
+          status={presenceById.get(member.id)?.status}
+          assistindo={plateia.has(member.id)}
+        />
         <span className="member-info">
           <span className={`member-name ${className}`} data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)} style={{ fontFamily: letraDoNome(member.nameFont) }}>
             {member.username}

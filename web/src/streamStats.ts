@@ -66,51 +66,6 @@ export function taxaRedonda(fps: number): number {
   return alvo ?? Math.round(fps);
 }
 
-/**
- * A IMAGEM QUE CHEGA É NÍTIDA PARA O TAMANHO EM QUE ELA ESTÁ SENDO MOSTRADA?
- *
- * ===================================================================================================
- * O RELATO: "diz que estou a 576p mas a qualidade está agradável. O número dá uma sensação de falta
- * de qualidade." E antes disso, um 268p que também estava bom.
- *
- * O NÚMERO NÃO ESTÁ ERRADO — ele é o que o navegador decodificou. O que está errado é ele aparecer
- * SOZINHO, porque sozinho ele não responde à pergunta que a pessoa está fazendo, que é "está ruim?".
- *
- * Com `adaptiveStream` ligado (ver useVoice.ts), o Syden pede de propósito a camada que CABE no
- * quadro em que o vídeo está sendo desenhado. Janela menor, número menor — e isso é o sistema
- * funcionando, não degradando. Um 576p num quadro de 540 pixels de altura está sobrando resolução;
- * o mesmo 576p em tela cheia num monitor 4K está faltando. O número é o mesmo e a resposta é oposta.
- *
- * Por isso a conta é de RAZÃO, e não de altura: quantos pixels chegam para cada pixel de tela.
- * ===================================================================================================
- */
-export interface Nitidez {
-  /** Altura, em pixels de verdade, do espaço onde o vídeo está sendo desenhado. */
-  precisa: number;
-  /** Chega pelo menos o que a tela mostra? */
-  nitida: boolean;
-}
-
-/**
- * NOVENTA POR CENTO, e não cem.
- *
- * A altura do quadro quase nunca bate exatamente com a da camada, e exigir igualdade faria quase
- * tudo cair em "abaixo" por causa de uma dúzia de pixels. Dez por cento de folga é menos do que o
- * olho percebe numa imagem em movimento.
- */
-const FOLGA = 0.9;
-
-export function nitidezNaTela(stats: StreamStats | null, elemento: HTMLElement | null | undefined): Nitidez | null {
-  if (!stats?.height || !elemento) return null;
-  const naTela = elemento.clientHeight;
-  if (naTela <= 0) return null;
-  // DEVICE PIXEL RATIO IMPORTA. Num monitor comum, um pixel de CSS é um pixel de verdade; numa tela
-  // de retina ou num Windows a 150%, cada pixel de CSS são 1,5 ou 2 pixels. Sem multiplicar, uma
-  // tela densa seria sempre declarada nítida quando não está.
-  const precisa = Math.round(naTela * (globalThis.devicePixelRatio || 1));
-  return { precisa, nitida: stats.height >= precisa * FOLGA };
-}
-
 /** "1080p · 60 fps" a partir da altura da imagem, como as pessoas falam de qualidade. */
 export function describeStats(stats: StreamStats | null) {
   if (!stats || !stats.height) return null;

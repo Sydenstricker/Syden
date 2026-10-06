@@ -39,6 +39,7 @@ import { ProfileCard } from './ProfileCard';
 import { ScreenShareButton } from './ScreenShareButton';
 import { StatusMenu, useStatusMenu } from './StatusMenu';
 import { nomeDeCanal } from './bidi';
+import { quemAssiste, salaAssistindoJunto } from './assistindo';
 import type { Channel, Community, CommunityMember, PresenceStatus, User, VoiceMember } from './types';
 import type { Voice } from './useVoice';
 
@@ -107,16 +108,9 @@ export function Sidebar({
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';
   const canManage = (channel: Channel) => managesCommunity || channel.createdBy === user.id;
-  /**
-   * ASSISTINDO JUNTO NÃO É UM MODO QUE ALGUÉM LIGA: é o que acontece quando uma pessoa transmite e outra
-   * fica para ver (decisão de 05/10/2026 — um "modo assistir junto" à parte não tinha valor). O Syden
-   * percebe sozinho e troca o ícone da sala pelo mascote com a pipoca. Não mexe na tela de ninguém: o
-   * arranjo com o vídeo grande e a conversa ao lado continua sendo escolha de quem está assistindo.
-   */
-  const assistindoJunto = (channelId: number) => {
-    const naSala = voiceMembers.filter((m) => m.channelId === channelId);
-    return naSala.length >= 2 && naSala.some((m) => m.screen);
-  };
+  // Assistindo junto: a sala ganha a pipoca, e quem está na plateia também (ver assistindo.ts).
+  const assistindoJunto = (channelId: number) => salaAssistindoJunto(voiceMembers, channelId);
+  const plateia = quemAssiste(voiceMembers);
 
   const row = (channel: Channel, icon: ReactNode) => (
     <ChannelRow
@@ -232,6 +226,7 @@ export function Sidebar({
                         size={22}
                         speaking={speaking.has(String(m.userId))}
                         musica={voice.karaoke !== null && m.channelId === voice.channelId}
+                        assistindo={plateia.has(m.userId)}
                       />
                       <span className="voice-member-name">{m.username}</span>
                       {m.screen && (

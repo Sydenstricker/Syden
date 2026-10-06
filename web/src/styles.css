@@ -58,6 +58,97 @@
 }
 
 /**
+ * AS OUTRAS PALETAS DO TEMA ESCURO, escolhidas em Aparência (ver theme.ts). Cada uma redefine as mesmas
+ * variáveis do :root, e nada mais — o resto do app não sabe que existe paleta.
+ *
+ * Ficam ANTES do tema claro de propósito: as regras têm o mesmo peso, então quem vem depois ganha, e
+ * com o sol ligado vale o claro qualquer que seja a paleta. O --marca não muda em nenhuma: é o âmbar do
+ * logo, e o logo é o mesmo em todas (decisão do rebrand: a cor do app é escolha, a marca não).
+ */
+
+/* CLÁSSICA: a paleta de antes do rebrand de 05/10/2026, com os valores exatos que o Syden usava. */
+:root[data-paleta='classica'] {
+  --bg-darkest: #1e1f22;
+  --bg-sidebar: #2b2d31;
+  --bg-main: #313338;
+  --bg-input: #383a40;
+  --bg-hover: rgba(78, 80, 88, 0.3);
+  --bg-active: rgba(78, 80, 88, 0.6);
+  --text: #dbdee1;
+  --text-strong: #f2f3f5;
+  --text-muted: #949ba4;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --accent-texto: #ffffff;
+  --link: #00a8fc;
+  --green: #23a55a;
+  --red: #da373c;
+  --red-hover: #a12828;
+  --amber: #f0b232;
+  --bg-raised: #3f4147;
+  --bg-raised-hover: #4e5058;
+  --bg-float: #1e1f22;
+  --border: rgba(255, 255, 255, 0.08);
+  --bg-secondary: #2b2d31;
+  --bg-rail: #1e1f22;
+}
+
+/* GRAFITE: cinza neutro, quase preto, sem tom azulado; destaque verde-água. */
+:root[data-paleta='grafite'] {
+  --bg-darkest: #0c0d0f;
+  --bg-sidebar: #131417;
+  --bg-main: #18191c;
+  --bg-input: #23252a;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-active: rgba(255, 255, 255, 0.1);
+  --text: #e4e5e7;
+  --text-strong: #f6f6f7;
+  --text-muted: #9a9ca2;
+  --accent: #3ccfb8;
+  --accent-hover: #6fe0ce;
+  --accent-texto: #0c0d0f;
+  --link: #5fdcc8;
+  --green: #3cc47c;
+  --red: #e85a54;
+  --red-hover: #b9443f;
+  --amber: #e6a83c;
+  --bg-raised: #23252a;
+  --bg-raised-hover: #2d3036;
+  --bg-float: #0c0d0f;
+  --border: rgba(255, 255, 255, 0.08);
+  --bg-secondary: #131417;
+  --bg-rail: #0c0d0f;
+}
+
+/* ALTO CONTRASTE: preto, branco e amarelo. Para quem enxerga pouco ou usa o Syden no sol: contornos
+   visíveis e texto secundário claro o bastante para ler sem esforço. */
+:root[data-paleta='contraste'] {
+  --bg-darkest: #000000;
+  --bg-sidebar: #000000;
+  --bg-main: #0a0a0a;
+  --bg-input: #1c1c1c;
+  --bg-hover: rgba(255, 255, 255, 0.12);
+  --bg-active: rgba(255, 255, 255, 0.22);
+  --text: #ffffff;
+  --text-strong: #ffffff;
+  --text-muted: #d0d0d0;
+  --accent: #ffd400;
+  --accent-hover: #ffe566;
+  --accent-texto: #000000;
+  --link: #ffd400;
+  --green: #3ee08a;
+  --red: #ff6b6b;
+  --red-hover: #ff3b3b;
+  --amber: #ffb020;
+  --bg-raised: #1c1c1c;
+  --bg-raised-hover: #2a2a2a;
+  --bg-float: #000000;
+  --border: rgba(255, 255, 255, 0.45);
+  --bg-secondary: #000000;
+  --bg-rail: #000000;
+}
+
+/**
  * Tema claro, ligado no sol da tela inicial. Só as cores mudam: o resto do app não sabe que existe tema
  * nenhum, porque tudo passa por estas variáveis.
  */
@@ -11316,12 +11407,6 @@ body.arrastando-barra {
 
 /* As fontes embutidas moram em fontes.gerado.css (ver scripts/baixar-fontes.mjs). */
 
-/* A linha que diz que a imagem está nítida para o tamanho em que aparece. Verde porque é a resposta
-   tranquilizadora: o número acima dela é que assustava. */
-.stream-info-card .stream-nitida {
-  color: var(--green);
-}
-
 /* ===================================================================================================
    O EFEITO DO NOME DA COMUNIDADE SOBRE A CAPA — e a razão deste bloco existir é especificidade.
 
@@ -11360,5 +11445,171 @@ body.arrastando-barra {
 
 /* A segunda fileira, dos efeitos, respira um pouco da primeira. */
 .letras-da-comunidade.efeitos {
+  margin-top: 4px;
+}
+
+/* A paleta do Syden, em Aparência: quatro cartões com um pedacinho do app em cada cor. */
+.paleta-do-syden {
+  margin: 4px 0 12px;
+}
+
+.paleta-do-syden-opcoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.paleta-do-syden-opcao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+}
+
+.paleta-do-syden-opcao:hover {
+  border-color: var(--text-muted);
+}
+
+.paleta-do-syden-opcao.escolhida {
+  border-color: var(--accent);
+}
+
+.paleta-do-syden-opcao strong {
+  font-size: calc(14px * var(--escala-do-texto));
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.paleta-do-syden-opcao small {
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.paleta-do-syden-marca {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  color: var(--accent);
+}
+
+.paleta-amostra {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(128, 128, 128, 0.35);
+}
+
+.paleta-amostra-lateral {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 28%;
+}
+
+.paleta-amostra-texto {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 36%;
+  width: 40%;
+  height: 5px;
+  border-radius: 3px;
+}
+
+.paleta-amostra-botao {
+  position: absolute;
+  bottom: 9px;
+  inset-inline-start: 36%;
+  width: 30%;
+  height: 10px;
+  border-radius: 4px;
+}
+
+/* As abas da cultura (Lugares, Comida, Dança, Música, Teatro). Uma linha só, que rola de lado no
+   celular em vez de quebrar: uma aba chegando atrasada nunca empurra a tela para baixo. */
+.cultura-abas {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cultura-abas button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+  cursor: pointer;
+}
+
+.cultura-abas button:hover {
+  color: var(--text);
+}
+
+.cultura-abas button.escolhida {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-texto);
+}
+
+.cultura-faixas {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.cultura-faixas li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  min-width: 0;
+}
+
+.cultura-faixa-titulo {
+  display: block;
+  color: var(--text-strong);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cultura-faixa-credito {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cultura-faixas audio {
+  width: 100%;
+  height: 36px;
   margin-top: 4px;
 }

@@ -21,6 +21,8 @@ import { sniffMime } from './media.js';
 
 const UA = 'Syden/1.0 (https://syden.chat; contato@syden.chat)';
 const PRAZO_MS = 12_000;
+/** A busca do Gutendex por assunto é lenta (medido em 05/10/2026: de 17 a 50 s). */
+const PRAZO_LENTO_MS = 90_000;
 /** Seis de cada: uma faixa, não um catálogo. */
 const QUANTOS = 6;
 /** A seleção muda uma vez por dia; dentro do dia, todo mundo do mesmo país vê a mesma. */
@@ -30,7 +32,7 @@ const UM_DIA = 24 * 60 * 60 * 1000;
  * Assuntos que não entram, lidos nas CATEGORIAS do arquivo no Commons. É uma rede grossa de propósito:
  * deixar de mostrar uma boa foto de museu custa nada, mostrar um cadáver na home custa a confiança.
  */
-const FORA_DO_TOM = /nud|naked|topless|erotic|sexual|corpse|dead bod|death|war\b|wars\b|battle|weapon|firearm|military|massacre|violence|protest|riot|police|prison|blood|hunting|slaughter|politic|election/i;
+const FORA_DO_TOM = /nud|naked|topless|erotic|sexual|corpse|dead bod|death|war\b|wars\b|battle|weapon|firearm|military|massacre|violence|protest|riot|police|prison|blood|hunting|slaughter|politic|election|anthem/i;
 
 export interface ImagemDaCultura {
   id: string;
@@ -48,6 +50,29 @@ export interface LivroDaCultura {
   /** A página do livro no Projeto Gutenberg, onde se lê de graça. */
   pagina: string;
   temCapa: boolean;
+}
+
+/** Uma faixa de música do Commons, tocada a partir do Syden. */
+export interface FaixaDaCultura {
+  id: string;
+  titulo: string;
+  autor: string;
+  licenca: string;
+  pagina: string;
+}
+
+/**
+ * As seções além das fotos e dos livros (pedido de 05/10/2026: teatro, culinária, música, dança). Cada
+ * uma vem num pedido próprio, porque o tempo das fontes é muito diferente — o teatro no Gutendex
+ * leva até 50 s para responder, e não pode segurar a faixa inteira esperando.
+ */
+export type SecaoDaCultura = 'comida' | 'danca' | 'musica' | 'teatro';
+export const SECOES: readonly SecaoDaCultura[] = ['comida', 'danca', 'musica', 'teatro'];
+
+export interface ConteudoDaSecao {
+  imagens: ImagemDaCultura[];
+  livros: LivroDaCultura[];
+  faixas: FaixaDaCultura[];
 }
 
 export interface Cultura {
@@ -99,8 +124,8 @@ const semTags = (html: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-async function json(url: string): Promise<unknown> {
-  const resposta = await fetch(url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(PRAZO_MS) });
+async function json(url: string, prazo = PRAZO_MS): Promise<unknown> {
+  const resposta = await fetch(url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(prazo) });
   if (!resposta.ok) throw new Error(`${resposta.status} em ${new URL(url).host}`);
   return resposta.json();
 }
@@ -112,11 +137,11 @@ async function json(url: string): Promise<unknown> {
  * States", "the Netherlands") e não em outros, e o nome que o Node dá às vezes traz um parêntese
  * ("Myanmar (Burma)"). Medido em 20 países; os quatro que faltavam caíram nestas duas variações.
  */
-export function categoriasDoPais(pais: string): string[] {
+export function categoriasDoPais(pais: string, prefixo = 'Quality images of'): string[] {
   const nome = new Intl.DisplayNames(['en'], { type: 'region' }).of(pais) ?? pais;
   const limpo = nome.replace(/\s*\(.*\)$/, '');
   const nomes = [limpo, `the ${limpo}`];
-  return [...new Set(nomes)].map((n) => `Category:Quality images of ${n}`);
+  return [...new Set(nomes)].map((n) => `Category:${prefixo} ${n}`);
 }
 
 interface PaginaDoCommons {
@@ -128,9 +153,16 @@ interface PaginaDoCommons {
   }[];
 }
 
-async function imagensDoPais(pais: string, semente: string): Promise<ImagemDaCultura[]> {
-  const api = 'https://commons.wikimedia.org/w/api.php?format=json&formatversion=2&action=query';
-  for (const categoria of categoriasDoPais(pais)) {
+const COMMONS = 'https://commons.wikimedia.org/w/api.php?format=json&formatversion=2&action=query';
+
+/**
+ * Imagens de uma categoria do Commons por país, para qualquer seção: as fotos de qualidade, os pratos
+ * ("Cuisine of"), a dança ("Dance of"), os instrumentos. O mesmo filtro de tom e o mesmo crédito em
+ * todas — a categoria muda, a regra não.
+ */
+async function imagensDoPais(pais: string, semente: string, prefixo?: string): Promise<ImagemDaCultura[]> {
+  const api = COMMONS;
+  for (const categoria of categoriasDoPais(pais, prefixo)) {
     // Primeiro só os nomes (até 500), para sortear do conjunto inteiro e não sempre dos primeiros.
     const lista = (await json(
       `${api}&list=categorymembers&cmtype=file&cmlimit=500&cmtitle=${encodeURIComponent(categoria)}`,
@@ -189,8 +221,11 @@ function autorPorExtenso(nome: string): string {
   return resto ? `${resto} ${sobrenome}` : nome;
 }
 
-async function livrosDaLingua(lingua: string, semente: string): Promise<LivroDaCultura[]> {
-  const dados = (await json(`https://gutendex.com/books/?languages=${lingua}&sort=popular`)) as {
+async function livrosDaLingua(lingua: string, semente: string, assunto = ''): Promise<LivroDaCultura[]> {
+  const dados = (await json(
+    `https://gutendex.com/books/?languages=${lingua}&sort=popular${assunto ? `&topic=${assunto}` : ''}`,
+    assunto ? PRAZO_LENTO_MS : PRAZO_MS,
+  )) as {
     results?: LivroDoGutendex[];
   };
   // Os 32 mais lidos naquela língua, sorteados por dia. Fora: o que tem direito autoral (o Gutendex
@@ -213,6 +248,123 @@ async function livrosDaLingua(lingua: string, semente: string): Promise<LivroDaC
         temCapa,
       };
     });
+}
+
+// ---------- música: áudios do Commons ----------
+
+/** Os áudios ficam à parte das imagens: são tocados aos poucos, e não guardados inteiros na memória. */
+const audios = new Map<string, string>();
+const TETO_DE_AUDIOS = 200;
+/** Uma música inteira em Ogg passa fácil de 10 MB; acima disto não é uma música, é um álbum. */
+export const TAMANHO_MAXIMO_DE_AUDIO = 40 * 1024 * 1024;
+export const AGENTE_DA_CULTURA = UA;
+
+interface PaginaDeAudio {
+  title: string;
+  imageinfo?: {
+    url?: string;
+    descriptionurl?: string;
+    mediatype?: string;
+    size?: number;
+    extmetadata?: Record<string, { value?: string } | undefined>;
+  }[];
+}
+
+/**
+ * Música do país: os arquivos de "Audio files of music of <país>", no Commons — gravações com licença
+ * livre, cada uma com autor e página. Medido em 05/10/2026: a Rússia tem 67, o Japão 19, o Brasil só 3
+ * e a Índia nenhuma. Por isso a seção de música também traz os instrumentos, que existem em quase todo
+ * país, e cada parte só aparece com três ou mais.
+ */
+async function audiosDoPais(pais: string, semente: string): Promise<FaixaDaCultura[]> {
+  for (const categoria of categoriasDoPais(pais, 'Audio files of music of')) {
+    const lista = (await json(
+      `${COMMONS}&list=categorymembers&cmtype=file&cmlimit=500&cmtitle=${encodeURIComponent(categoria)}`,
+    )) as { query?: { categorymembers?: { title: string }[] } };
+    const titulos = (lista.query?.categorymembers ?? []).map((m) => m.title);
+    if (titulos.length === 0) continue;
+    const candidatos = embaralhar(titulos, semente).slice(0, QUANTOS * 3);
+    const detalhes = (await json(
+      `${COMMONS}&prop=imageinfo&iiprop=url|mediatype|size|extmetadata` +
+        `&iiextmetadatafilter=LicenseShortName|Artist|ObjectName|Categories&titles=${encodeURIComponent(candidatos.join('|'))}`,
+    )) as { query?: { pages?: PaginaDeAudio[] } };
+
+    const faixas: FaixaDaCultura[] = [];
+    for (const pagina of detalhes.query?.pages ?? []) {
+      const info = pagina.imageinfo?.[0];
+      const meta = info?.extmetadata ?? {};
+      if (!info?.url || !info.descriptionurl || info.mediatype !== 'AUDIO') continue;
+      if ((info.size ?? Infinity) > TAMANHO_MAXIMO_DE_AUDIO) continue;
+      if (FORA_DO_TOM.test(meta.Categories?.value ?? '') || FORA_DO_TOM.test(pagina.title)) continue;
+      // Endereço vindo de fora se confere antes de o servidor ir buscá-lo.
+      if (new URL(info.url).hostname !== 'upload.wikimedia.org') continue;
+      const id = `a-${createHash('sha256').update(pagina.title).digest('base64url').slice(0, 22)}`;
+      audios.delete(id);
+      audios.set(id, info.url);
+      while (audios.size > TETO_DE_AUDIOS) audios.delete(audios.keys().next().value!);
+      faixas.push({
+        id,
+        titulo: semTags(meta.ObjectName?.value ?? '') || pagina.title.replace(/^File:/, '').replace(/\.[a-z0-9]+$/i, ''),
+        autor: semTags(meta.Artist?.value ?? '') || '—',
+        licenca: semTags(meta.LicenseShortName?.value ?? ''),
+        pagina: info.descriptionurl,
+      });
+      if (faixas.length === QUANTOS) break;
+    }
+    return faixas;
+  }
+  return [];
+}
+
+/** O endereço de um áudio já selecionado, para a rota tocar. undefined quando não é da lista do dia. */
+export function origemDoAudio(id: string): string | undefined {
+  return audios.get(id);
+}
+
+// ---------- as seções ----------
+
+const secoesGuardadas = new Map<string, { quando: number; conteudo: Promise<ConteudoDaSecao> }>();
+const vazio = (): ConteudoDaSecao => ({ imagens: [], livros: [], faixas: [] });
+
+async function buscarSecao(secao: SecaoDaCultura, pais: string, lingua: string, semente: string): Promise<ConteudoDaSecao> {
+  switch (secao) {
+    // Os pratos do país. "Cuisine of <país>" tem centenas de fotos (Nigéria 984, Índia 1.032); as
+    // receitas da Wikibooks ficaram de fora porque só existem em inglês, e a regra é a língua de origem.
+    case 'comida':
+      return { ...vazio(), imagens: await imagensDoPais(pais, semente, 'Cuisine of') };
+    case 'danca':
+      return { ...vazio(), imagens: await imagensDoPais(pais, semente, 'Dance of') };
+    case 'musica': {
+      // Uma parte falhar não leva a outra junto.
+      const [faixas, imagens] = await Promise.all([
+        audiosDoPais(pais, semente).catch(() => []),
+        imagensDoPais(pais, semente, 'Musical instruments of').catch(() => []),
+      ]);
+      return { ...vazio(), faixas, imagens };
+    }
+    // Peças de teatro em domínio público, na língua: o assunto "drama" do Projeto Gutenberg.
+    case 'teatro':
+      return { ...vazio(), livros: await livrosDaLingua(lingua, semente, 'drama') };
+  }
+}
+
+/**
+ * Uma seção, guardada por um dia como a faixa principal. A diferença: resposta vazia de VERDADE fica
+ * guardada (o Gutendex não tem teatro em russo, e perguntar de novo custaria 17 s a cada visita); só a
+ * que veio vazia por FALHA da fonte é jogada fora, para a próxima visita tentar de novo.
+ */
+export function secaoDe(secao: SecaoDaCultura, pais: string, lingua: string): Promise<ConteudoDaSecao> {
+  const chave = `${secao}:${pais}:${lingua}`;
+  const agora = Date.now();
+  const guardada = secoesGuardadas.get(chave);
+  if (guardada && agora - guardada.quando < UM_DIA) return guardada.conteudo;
+  const semente = `${pais}:${lingua}:${new Date().toISOString().slice(0, 10)}`;
+  const conteudo = buscarSecao(secao, pais, lingua, semente).catch(() => {
+    secoesGuardadas.delete(chave);
+    return vazio();
+  });
+  secoesGuardadas.set(chave, { quando: agora, conteudo });
+  return conteudo;
 }
 
 // ---------- o que as rotas chamam ----------

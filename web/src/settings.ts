@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { Theme } from './theme';
+import type { Paleta, Theme } from './theme';
 import { guardarEmBreve } from './preferencias';
 
 // Preferências de cada pessoa. Ficam neste computador E sobem para o servidor, para seguirem com
@@ -31,6 +31,8 @@ export interface Settings {
   qualidadeQueRecebo: QualidadeQueRecebo;
   /** Cores do app: escuro (padrão) ou claro. */
   theme: Theme;
+  /** A paleta do tema escuro, escolhida em Aparência (ver theme.ts). */
+  paleta: Paleta;
   /** Microfone e áudio desligados de propósito, valendo já fora da chamada e ao entrar na próxima. */
   startMuted: boolean;
   startDeafened: boolean;
@@ -88,6 +90,7 @@ const DEFAULTS: Settings = {
   screenQuality: 'standard',
   qualidadeQueRecebo: 'auto',
   theme: 'dark',
+  paleta: 'd4',
   startMuted: false,
   startDeafened: false,
   showMembers: true,

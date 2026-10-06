@@ -6,7 +6,8 @@ import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA } from './guardaRoupa';
-import { aplicarCorDeDestaque, COR_PADRAO, corLegivel } from './corDeDestaque';
+import { aplicarCorDeDestaque, corLegivel, destaqueDaPaleta } from './corDeDestaque';
+import { escolherPaleta, PALETAS } from './theme';
 import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { FONTES_DA_COMUNIDADE, fonteCobre } from './fontesDaComunidade';
 import { algarismos } from './algarismos';
@@ -140,6 +141,48 @@ const ABAS: { tipo: Aba; nome: string }[] = [
 ];
 
 /**
+ * A PALETA DO SYDEN: o conjunto de cores do tema escuro (fundos, texto e destaque), entre as que estão
+ * em theme.ts. Uma delas é a de antes do rebrand — pedido de quem usa, para ninguém perder a cara do
+ * Syden de que gostava.
+ *
+ * Fica ACIMA da cor de destaque porque é a escolha maior: a cor de destaque, se houver, vai por cima
+ * de qualquer paleta. Como a cor, vale na hora e não tem botão de salvar.
+ */
+function PaletaDoSyden() {
+  const t = useT();
+  const settings = useSettings();
+  return (
+    <div className="paleta-do-syden">
+      <div className="paleta-do-syden-opcoes" role="radiogroup" aria-label={t('Paleta de cores')}>
+        {PALETAS.map((p) => (
+          <button
+            key={p.valor}
+            type="button"
+            role="radio"
+            aria-checked={settings.paleta === p.valor}
+            className={`paleta-do-syden-opcao${settings.paleta === p.valor ? ' escolhida' : ''}`}
+            onClick={() => escolherPaleta(p.valor)}
+          >
+            {/* A amostra é um pedacinho do app: lateral, fundo, uma linha de texto e um botão. */}
+            <span className="paleta-amostra" aria-hidden="true" style={{ background: p.amostra[0] }}>
+              <span className="paleta-amostra-lateral" style={{ background: p.amostra[1] }} />
+              <span className="paleta-amostra-texto" style={{ background: p.amostra[2] }} />
+              <span className="paleta-amostra-botao" style={{ background: p.amostra[3] }} />
+            </span>
+            <strong>{t(p.nome)}</strong>
+            <small>{t(p.descricao)}</small>
+            {settings.paleta === p.valor && <Check size={16} className="paleta-do-syden-marca" aria-hidden="true" />}
+          </button>
+        ))}
+      </div>
+      {settings.theme === 'light' && (
+        <p className="settings-hint">{t('A paleta vale no tema escuro. Com o sol ligado, o Syden usa o tema claro.')}</p>
+      )}
+    </div>
+  );
+}
+
+/**
  * A COR DO SYDEN INTEIRO, escolhida por quem usa.
  *
  * Fica no alto da Aparência, antes dos cosméticos, porque é a única escolha daqui que muda o app
@@ -153,8 +196,10 @@ const ABAS: { tipo: Aba; nome: string }[] = [
 function CorDoSyden() {
   const t = useT();
   const settings = useSettings();
-  const escolhida = settings.corDeDestaque ?? COR_PADRAO;
-  const naTela = corLegivel(escolhida);
+  // Sem cor própria, o seletor abre no destaque da paleta em uso (o âmbar na D4, o azul na Clássica).
+  const escolhida = settings.corDeDestaque ?? destaqueDaPaleta();
+  // Sem cor própria, a prévia é a da paleta como ela está; só a cor escolhida é escurecida para o branco.
+  const naTela = settings.corDeDestaque ? corLegivel(escolhida) : escolhida;
 
   function escolher(cor: string | null) {
     updateSettings({ corDeDestaque: cor });
@@ -275,6 +320,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
       </h2>
       <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
 
+      <PaletaDoSyden />
       <CorDoSyden />
 
       {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de

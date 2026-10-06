@@ -49,6 +49,7 @@ import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
 import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
 import { LinkDaAula } from './LinkDaAula';
+import { quemAssiste } from './assistindo';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
@@ -56,7 +57,7 @@ import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { type QualidadeQueRecebo, updateSettings, useSettings } from './settings';
-import { describeStats, nitidezNaTela, useStreamStats } from './streamStats';
+import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
 
 import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
@@ -193,12 +194,15 @@ function PersonTile({
   avatarSize,
   sound,
   musica,
+  assistindo,
 }: {
   trackRef: TrackReferenceOrPlaceholder;
   member?: VoiceMember;
   avatarSize: number;
   /** Tem música do karaokê tocando nesta chamada: o coelho aparece de fone. */
   musica?: boolean;
+  /** Está na plateia de uma transmissão desta sala: o coelho aparece com a pipoca. */
+  assistindo?: boolean;
   /** Som do soundboard que a pessoa acabou de tocar. */
   sound?: { icon: string; key: number };
 }) {
@@ -214,7 +218,7 @@ function PersonTile({
         <VideoTrack trackRef={trackRef} />
       ) : (
         <div className="tile-avatar">
-          <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} musica={musica} />
+          <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} musica={musica} assistindo={assistindo} />
         </div>
       )}
       {/* Mesma informação de formato da transmissão, só que discreta: aparece ao passar o mouse. */}
@@ -474,17 +478,15 @@ function StreamInfoBadge({
   const stats = useStreamStats(publication, { local });
   const formato = describeStats(stats);
   /*
-   * O NÚMERO SOZINHO NÃO RESPONDE A PERGUNTA QUE A PESSOA ESTÁ FAZENDO.
+   * QUEM ASSISTE NÃO RECEBE COMENTÁRIO SOBRE A IMAGEM: nem o número, nem o veredito.
    *
-   * "Diz que estou a 576p mas a qualidade está agradável — o número dá uma sensação de falta de
-   * qualidade." O número está certo; o problema é ele aparecer sem o tamanho em que a imagem está
-   * sendo desenhada. Com adaptiveStream, o Syden PEDE de propósito a camada que cabe no quadro:
-   * janela menor, número menor, e isso é o sistema funcionando.
-   *
-   * `attachedElements` é por onde o LiveKit diz em que elemento a faixa está tocando — é o mesmo
-   * elemento que ele próprio mede para escolher a camada, então a conta aqui usa a mesma régua.
+   * O número saiu primeiro ("576p dá sensação de falta de qualidade"). O veredito que entrou no lugar
+   * ("Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.") saiu em 05/10/2026:
+   * "essa mensagem é inconveniente — não podemos apenas transmitir?". As duas tentativas erraram do
+   * mesmo jeito: comentar a imagem para quem não pode fazer nada sobre ela. Para quem assiste o cartão
+   * fica só com o que ele PODE mudar, o teto do que baixar. Os números e o diagnóstico seguem para
+   * quem transmite, que pode agir sobre eles.
    */
-  const nitidez = nitidezNaTela(stats, publication?.track?.attachedElements?.[0]);
 
   return (
     <div className="stream-info" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
@@ -519,15 +521,7 @@ function StreamInfoBadge({
                * Para quem TRANSMITE o número continua, porque ali ele é acionável e vem com o
                * diagnóstico do lado.
                */}
-              {local || !nitidez ? (
-                <strong>{formato}</strong>
-              ) : (
-                <strong className={nitidez.nitida ? 'stream-nitida' : undefined}>
-                  {nitidez.nitida
-                    ? t('Nítida para o tamanho em que está sendo mostrada.')
-                    : t('Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.')}
-                </strong>
-              )}
+              {local && <strong>{formato}</strong>}
               {/* QUEM TRANSMITE VÊ O DIAGNÓSTICO, porque para ele cada linha é acionável — a
                   primeira desfaz uma ambiguidade real (o número é o que sai daqui, não o que os
                   outros recebem depois da adaptação), e a segunda responde a pergunta que fez o
@@ -554,9 +548,9 @@ function StreamInfoBadge({
               <span>{t('Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.')}</span>
               {local && <BotaoDeTeste publication={publication} />}
             </>
-          ) : (
+          ) : local ? (
             <span>{t('Medindo…')}</span>
-          )}
+          ) : null}
           {!local && voice && <TetoDeQualidade room={voice.room} />}
         </div>
       )}
@@ -1087,6 +1081,7 @@ function Stage({
   simples?: boolean;
 }) {
   const t = useT();
+  const plateia = quemAssiste(members);
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -1156,6 +1151,7 @@ function Stage({
           avatarSize={avatarSize}
           sound={voice.recentSounds.get(ref.participant.identity)}
           musica={voice.karaoke !== null}
+          assistindo={plateia.has(Number(ref.participant.identity))}
         />
       ) : (
         <ScreenTile trackRef={ref} membro={members.find((m) => String(m.userId) === ref.participant.identity)} />

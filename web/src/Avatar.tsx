@@ -86,6 +86,7 @@ export function Avatar({
   speaking,
   digitando,
   musica,
+  assistindo,
   size = 32,
 }: {
   /** Não aparece mais no desenho (era a inicial, antes do coelho); fica para quem chama dizer de quem é. */
@@ -101,6 +102,8 @@ export function Avatar({
   digitando?: boolean;
   /** Tem música tocando na chamada dele (o karaokê): o coelho aparece de fone, com notas. */
   musica?: boolean;
+  /** Está na plateia de uma transmissão (ver assistindo.ts): o coelho aparece com a pipoca. */
+  assistindo?: boolean;
   size?: number;
 }) {
   const { members } = useDirectory();
@@ -124,6 +127,8 @@ export function Avatar({
             ? 'parou-de-digitar'
             : musica
               ? 'musica'
+              : assistindo && !offline
+              ? 'assistindo'
               : offline
               ? 'offline'
               : online
