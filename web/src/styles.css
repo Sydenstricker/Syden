@@ -11337,3 +11337,135 @@ body.arrastando-barra {
   border-radius: 4px;
 }
 
+
+/* ---------- Os cargos personalizados (Cargos.tsx) ---------- */
+.cargos-etiquetas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cargo-etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 180px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: calc(12px * var(--escala-do-texto));
+  line-height: 1.5;
+}
+
+.cargo-etiqueta bdi {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cargo-bolinha {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cargo-tirar {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.cargo-tirar:hover {
+  color: var(--red);
+}
+
+/* No cartão de perfil, as etiquetas ficam numa linha logo abaixo do papel. */
+.perfil-corpo .cargos-etiquetas {
+  margin: 2px 0 6px;
+}
+
+.cargos-do-membro {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+}
+
+.cargo-dar {
+  padding: 2px 6px;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  cursor: pointer;
+}
+
+.cargo-lista {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cargo-linha,
+.cargo-novo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cargo-linha input[type='color'],
+.cargo-novo input[type='color'] {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cargo-linha .cargo-nome,
+.cargo-novo input:not([type]) {
+  flex: 1;
+  min-width: 140px;
+}
+
+.cargo-separado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+  text-transform: none;
+  cursor: pointer;
+}
+
+/* Os campos de texto dos cargos, no mesmo desenho dos campos das configurações (.settings-form input). */
+.cargo-linha .cargo-nome,
+.cargo-novo input:not([type]) {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font-size: calc(14px * var(--escala-do-texto));
+}
+
+.editor-de-cargos > .settings-hint {
+  margin: 0 0 12px;
+}

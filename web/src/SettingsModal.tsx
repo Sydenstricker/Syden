@@ -55,6 +55,7 @@ import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
+import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
@@ -1305,6 +1306,13 @@ function MembersSection({ user, community }: { user: User; community: Community 
       <p className="settings-hint">
         {t('Administradores podem apagar mensagens de qualquer pessoa, gerenciar todos os canais, emojis e sons desta comunidade e remover membros. Só o dono dá e tira esse cargo.')}
       </p>
+      {canManage && (
+        <>
+          <h3>{t('Cargos')}</h3>
+          <EditorDeCargos community={community} />
+          <h3>{t('Quem participa')}</h3>
+        </>
+      )}
       {roleError && <p className="form-error">{roleError}</p>}
       <div className="expression-list">
         {members.map((member) => (
@@ -1313,6 +1321,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
             <span className="expression-name">{member.username}</span>
             <RoleBadge role={member.role} />
             {member.id === user.id && <span className="expression-author">{t('você')}</span>}
+            {canManage ? <CargosDoMembro community={community} member={member} /> : <EtiquetasDeCargo ids={member.cargos} />}
             {isOwner && member.role !== 'owner' && (
               <button
                 className="icon-plain expression-play"

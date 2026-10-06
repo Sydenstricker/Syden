@@ -2,6 +2,7 @@ import { MessageSquare } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Avatar } from './Avatar';
+import { EtiquetasDeCargo } from './Cargos';
 import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
 import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
@@ -81,6 +82,7 @@ export function ProfileCard({
             {membro.username}
           </h3>
           <p className="perfil-linha">{t(CARGO[membro.role] ?? chave('Membro'))}</p>
+          <EtiquetasDeCargo ids={membro.cargos} />
           <p className="perfil-linha">{t(status ? PRESENCA[status] : chave('Offline'))}</p>
           {membro.vitrine?.length > 0 && (
             <span className="medalha-linha">

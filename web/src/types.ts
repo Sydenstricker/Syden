@@ -57,7 +57,22 @@ export type PublicUser = Pick<
 /** Cargo dentro de uma comunidade. Quem criou é "owner"; "admin" modera; "member" participa. */
 export type Role = 'owner' | 'admin' | 'member';
 
-export type CommunityMember = PublicUser & { role: Role };
+export type CommunityMember = PublicUser & {
+  role: Role;
+  /** Os cargos personalizados (ids, na ordem da lista). Vem vazio de um servidor que ainda não os tem. */
+  cargos?: number[];
+};
+
+/** Um cargo personalizado da comunidade: identidade (nome e cor), não poder. Ver Cargos.tsx. */
+export interface Cargo {
+  id: number;
+  communityId: number;
+  nome: string;
+  cor: string;
+  /** Vira um grupo à parte na lista de membros. */
+  separado: boolean;
+  posicao: number;
+}
 
 /** Uma comunidade (o "servidor" do Discord) do jeito que quem participa dela enxerga. */
 export interface Community {

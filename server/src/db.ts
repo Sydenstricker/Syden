@@ -84,7 +84,11 @@ export type PublicUser = Pick<
 >;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
-export type CommunityMember = PublicUser & { role: Role };
+export type CommunityMember = PublicUser & {
+  role: Role;
+  /** Os cargos personalizados da pessoa nesta comunidade (ids, na ordem da lista). Ver o bloco OS CARGOS. */
+  cargos: number[];
+};
 
 export interface Emoji {
   id: number;
@@ -1351,6 +1355,8 @@ export function setMemberRole(communityId: number, userId: number, role: Role) {
 
 export function removeMember(communityId: number, userId: number) {
   db.prepare('DELETE FROM community_members WHERE community_id = ? AND user_id = ?').run(communityId, userId);
+  // Os cargos ficam com a comunidade: quem volta depois começa sem nenhum, como quem chega pela primeira vez.
+  db.prepare('DELETE FROM cargos_dos_membros WHERE community_id = ? AND user_id = ?').run(communityId, userId);
   // Quem sai do time devolve a camiseta. Fica AQUI, e não em cada rota que remove alguém, porque
   // sair de uma comunidade acontece por vários caminhos — pedido próprio, expulsão, conta excluída —
   // e um deles esqueceria. O sintoma seria mudo: a pessoa continuaria exibindo o selo de uma
@@ -1367,7 +1373,8 @@ export function listCommunityMembers(communityId: number): CommunityMember[] {
        WHERE m.community_id = ? ORDER BY u.id`,
     )
     .all(communityId) as unknown as (UserRow & { role: Role })[];
-  return rows.map((row) => ({ ...toUser(row)!, role: row.role }));
+  const cargos = cargosDosMembros(communityId);
+  return rows.map((row) => ({ ...toUser(row)!, role: row.role, cargos: cargos.get(row.id) ?? [] }));
 }
 
 /** Comunidades de que a pessoa participa, só os ids (para as salas do socket). */
@@ -4232,4 +4239,123 @@ export function limparTemporariosVencidos(): number {
     .all() as { id: number }[];
   for (const { id } of vencidos) deleteAccount(id);
   return vencidos.length;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// OS CARGOS PERSONALIZADOS: "Veterano", "Moderação de jogos", "Turma de 2026" — nome e cor que a
+// comunidade cria e dá a quem quiser.
+//
+// Pedido de 06/10/2026, depois de olhar o MEE6: metade das funções dele (cargo por nível, cargo por
+// reação, cargo de quem entra) é dar e tirar cargo. Sem cargos, nada disso tem onde se apoiar.
+//
+// CARGO É IDENTIDADE, NÃO PODER. Quem pode o quê continua nos três papéis de sempre (dono,
+// administrador, membro). Um cargo que desse poder de moderação abriria um flanco que hoje não existe —
+// errar a configuração de um "Ajudante" daria a alguém o botão de apagar mensagens de todo mundo. Se um
+// dia for preciso, entra de propósito, com teste, e não como efeito colateral de um enfeite.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS cargos (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    nome         TEXT NOT NULL,
+    cor          TEXT NOT NULL,
+    -- Aparece como um grupo à parte na lista de membros, como no Discord.
+    separado     INTEGER NOT NULL DEFAULT 0,
+    -- Ordem na lista: o de menor posição vem primeiro, e é ele que decide o grupo de quem tem vários.
+    posicao      INTEGER NOT NULL DEFAULT 0,
+    criado_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS cargos_da_comunidade ON cargos(community_id);
+
+  CREATE TABLE IF NOT EXISTS cargos_dos_membros (
+    cargo_id     INTEGER NOT NULL REFERENCES cargos(id) ON DELETE CASCADE,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (cargo_id, user_id)
+  );
+  CREATE INDEX IF NOT EXISTS cargos_de_quem ON cargos_dos_membros(community_id, user_id);
+`);
+
+export interface Cargo {
+  id: number;
+  communityId: number;
+  nome: string;
+  cor: string;
+  separado: boolean;
+  posicao: number;
+}
+
+/** Um teto, como o de emojis e sons: cargo demais vira lista que ninguém lê. */
+export const MAXIMO_DE_CARGOS = 50;
+
+const colunasDoCargo = 'id, community_id AS communityId, nome, cor, separado, posicao';
+const paraCargo = (linha: Omit<Cargo, 'separado'> & { separado: number }): Cargo => ({ ...linha, separado: linha.separado === 1 });
+
+export function listarCargos(communityId: number): Cargo[] {
+  return (
+    db.prepare(`SELECT ${colunasDoCargo} FROM cargos WHERE community_id = ? ORDER BY posicao, id`).all(communityId) as unknown as (Omit<
+      Cargo,
+      'separado'
+    > & { separado: number })[]
+  ).map(paraCargo);
+}
+
+export function acharCargo(communityId: number, cargoId: number): Cargo | undefined {
+  const linha = db.prepare(`SELECT ${colunasDoCargo} FROM cargos WHERE id = ? AND community_id = ?`).get(cargoId, communityId) as
+    | (Omit<Cargo, 'separado'> & { separado: number })
+    | undefined;
+  return linha && paraCargo(linha);
+}
+
+/** O cargo novo vai para o fim da lista. */
+export function criarCargo(communityId: number, nome: string, cor: string, separado: boolean): Cargo {
+  const { proxima } = db.prepare('SELECT COALESCE(MAX(posicao), -1) + 1 AS proxima FROM cargos WHERE community_id = ?').get(communityId) as {
+    proxima: number;
+  };
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO cargos (community_id, nome, cor, separado, posicao) VALUES (?, ?, ?, ?, ?)')
+    .run(communityId, nome, cor, separado ? 1 : 0, proxima);
+  return acharCargo(communityId, Number(lastInsertRowid))!;
+}
+
+export function editarCargo(communityId: number, cargoId: number, mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number }) {
+  const atual = acharCargo(communityId, cargoId);
+  if (!atual) return undefined;
+  const novo = { ...atual, ...mudanca };
+  db.prepare('UPDATE cargos SET nome = ?, cor = ?, separado = ?, posicao = ? WHERE id = ? AND community_id = ?').run(
+    novo.nome,
+    novo.cor,
+    novo.separado ? 1 : 0,
+    novo.posicao,
+    cargoId,
+    communityId,
+  );
+  return acharCargo(communityId, cargoId);
+}
+
+/** Apagar o cargo tira ele de todo mundo junto (a tabela de quem tem cai em cascata). */
+export function apagarCargo(communityId: number, cargoId: number): boolean {
+  return db.prepare('DELETE FROM cargos WHERE id = ? AND community_id = ?').run(cargoId, communityId).changes > 0;
+}
+
+export function darCargo(communityId: number, userId: number, cargoId: number) {
+  db.prepare('INSERT OR IGNORE INTO cargos_dos_membros (cargo_id, community_id, user_id) VALUES (?, ?, ?)').run(cargoId, communityId, userId);
+}
+
+export function tirarCargo(communityId: number, userId: number, cargoId: number) {
+  db.prepare('DELETE FROM cargos_dos_membros WHERE cargo_id = ? AND community_id = ? AND user_id = ?').run(cargoId, communityId, userId);
+}
+
+/** Os cargos de cada pessoa da comunidade, por id de pessoa. Uma consulta só, para a lista inteira. */
+export function cargosDosMembros(communityId: number): Map<number, number[]> {
+  const linhas = db
+    .prepare(
+      `SELECT cm.user_id AS userId, cm.cargo_id AS cargoId FROM cargos_dos_membros cm JOIN cargos c ON c.id = cm.cargo_id
+       WHERE cm.community_id = ? ORDER BY c.posicao, c.id`,
+    )
+    .all(communityId) as { userId: number; cargoId: number }[];
+  const porPessoa = new Map<number, number[]>();
+  for (const { userId, cargoId } of linhas) porPessoa.set(userId, [...(porPessoa.get(userId) ?? []), cargoId]);
+  return porPessoa;
 }

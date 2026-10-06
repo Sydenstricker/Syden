@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
-import type { CommunityMember, Emoji, PublicUser, Sound } from './types';
+import type { Cargo, CommunityMember, Emoji, PublicUser, Sound } from './types';
 
 // Dados da comunidade aberta agora: quem participa (para nomes e avatares), emojis e sons dela.
 // Carrega ao abrir a comunidade e se mantém atualizado pelos eventos do socket.
@@ -13,9 +13,11 @@ interface Directory {
   /** Emojis por nome, para trocar :nome: pela imagem nas mensagens. */
   emojisByName: Map<string, Emoji>;
   sounds: Sound[];
+  /** Os cargos personalizados da comunidade, na ordem da lista. */
+  cargos: Cargo[];
 }
 
-const empty: Directory = { communityId: null, members: new Map(), emojis: [], emojisByName: new Map(), sounds: [] };
+const empty: Directory = { communityId: null, members: new Map(), emojis: [], emojisByName: new Map(), sounds: [], cargos: [] };
 let state: Directory = empty;
 const listeners = new Set<() => void>();
 
@@ -31,6 +33,7 @@ export interface DadosDaComunidade {
   members: Map<number, CommunityMember>;
   emojis: Emoji[];
   sounds: Sound[];
+  cargos: Cargo[];
 }
 
 /**
@@ -38,12 +41,15 @@ export interface DadosDaComunidade {
  * troca de comunidade acontece de uma vez só, em vez de cada pedaço aparecer quando fica pronto.
  */
 export async function buscarComunidade(communityId: number): Promise<DadosDaComunidade> {
-  const [members, emojis, sounds] = await Promise.all([
+  const [members, emojis, sounds, cargos] = await Promise.all([
     api<CommunityMember[]>(`/api/communities/${communityId}/members`),
     api<Emoji[]>(`/api/communities/${communityId}/emojis`),
     api<Sound[]>(`/api/communities/${communityId}/sounds`),
+    // O SITE SOBE ANTES DO SERVIDOR: num servidor que ainda não tem cargos, a rota dá 404, e isso não
+    // pode derrubar a comunidade inteira — sem cargos, a lista só não tem grupos a mais.
+    api<Cargo[]>(`/api/communities/${communityId}/cargos`).catch(() => [] as Cargo[]),
   ]);
-  return { communityId, members: new Map(members.map((m) => [m.id, m])), emojis, sounds };
+  return { communityId, members: new Map(members.map((m) => [m.id, m])), emojis, sounds, cargos };
 }
 
 /** Põe na tela o que `buscarComunidade` trouxe. */
@@ -85,6 +91,9 @@ export function syncDirectory(socket: Socket) {
     if (member) set({ members: new Map(state.members).set(user.id, { ...member, ...user }) });
   };
   const onUserDeleted = ({ id }: { id: number }) => onMemberRemoved({ communityId: state.communityId ?? -1, userId: id });
+  const onCargos = ({ communityId, cargos }: { communityId: number; cargos: Cargo[] }) => {
+    if (mine(communityId)) set({ cargos });
+  };
 
   const onEmojiCreated = (emoji: Emoji) => {
     if (mine(emoji.communityId)) {
@@ -112,6 +121,7 @@ export function syncDirectory(socket: Socket) {
   socket.on('connect', onConnect);
   socket.on('member:updated', onMember);
   socket.on('member:removed', onMemberRemoved);
+  socket.on('cargos:updated', onCargos);
   socket.on('user:updated', onUser);
   socket.on('user:deleted', onUserDeleted);
   socket.on('emoji:created', onEmojiCreated);
@@ -122,6 +132,7 @@ export function syncDirectory(socket: Socket) {
     socket.off('connect', onConnect);
     socket.off('member:updated', onMember);
     socket.off('member:removed', onMemberRemoved);
+    socket.off('cargos:updated', onCargos);
     socket.off('user:updated', onUser);
     socket.off('user:deleted', onUserDeleted);
     socket.off('emoji:created', onEmojiCreated);

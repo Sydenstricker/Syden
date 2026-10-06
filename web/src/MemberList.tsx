@@ -50,7 +50,7 @@ export function MemberList({
   onSendMessage: (userId: number) => void;
 }) {
   const t = useT();
-  const { members } = useDirectory();
+  const { members, cargos } = useDirectory();
   const menu = usePersonMenu();
   // Clicar em alguém abre o cartão de perfil, com o fundo e a cor de nome que a pessoa escolheu.
   const [perfil, setPerfil] = useState<{ membro: CommunityMember; x: number; y: number } | null>(null);
@@ -115,21 +115,37 @@ export function MemberList({
     );
   };
 
+  /**
+   * OS GRUPOS, como no Discord: dono, administradores, depois um grupo para cada cargo marcado como
+   * "separado na lista" (na ordem dos cargos), e o resto em "Disponível". Cada pessoa aparece uma vez
+   * só, no primeiro grupo que lhe cabe — quem tem dois cargos separados fica no de cima.
+   */
+  const separados = cargos.filter((c) => c.separado);
+  const grupoDe = (m: CommunityMember): string => {
+    if (m.role !== 'member') return m.role;
+    const cargo = separados.find((c) => m.cargos?.includes(c.id));
+    return cargo ? `cargo-${cargo.id}` : 'member';
+  };
+  const naOrdem = [
+    ...GROUPS.filter((g) => g.role !== 'member').map((g) => ({ chave: g.role, titulo: t(g.label), className: g.className })),
+    ...separados.map((c) => ({ chave: `cargo-${c.id}`, titulo: c.nome, className: '' })),
+    ...GROUPS.filter((g) => g.role === 'member').map((g) => ({ chave: g.role, titulo: t(g.label), className: g.className })),
+  ];
+  const grupos = naOrdem.map((g) => ({ ...g, gente: aqui.filter((m) => grupoDe(m) === g.chave) }));
+
   return (
     <aside className="members">
       <Puxador barra="membros" lado="esquerda" />
-      {GROUPS.map(({ role: groupRole, label, className }) => {
-        const group = aqui.filter((m) => m.role === groupRole);
-        if (group.length === 0) return null;
-        return (
-          <div key={groupRole}>
+      {grupos.map(({ chave: chaveDoGrupo, titulo, className, gente }) =>
+        gente.length === 0 ? null : (
+          <div key={chaveDoGrupo}>
             <h3>
-              {t(label)} — {group.length}
+              <bdi>{titulo}</bdi> — {gente.length}
             </h3>
-            {group.map((member) => row(member, className))}
+            {gente.map((member) => row(member, className))}
           </div>
-        );
-      })}
+        ),
+      )}
 
       {fora.length > 0 && (
         <>
