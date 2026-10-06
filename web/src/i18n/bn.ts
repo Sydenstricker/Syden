@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'Criar uma sala para cada pessoa que entrar': 'যে ঢুকবে তার জন্য একটি রুম তৈরি করুন',
+  'Entre para criar a sua sala': 'নিজের রুম বানাতে ঢুকুন',
+  'Limite de pessoas': 'লোকের সীমা',
+  'Quantas pessoas cabem (0 = sem limite)': 'কতজন ধরবে (0 = সীমা নেই)',
   'Canal de destaques': 'বাছাই করা বার্তার চ্যানেল',
   'Destaques': 'বাছাই করা',
   'Estrelas necessárias': 'দরকারি তারা',

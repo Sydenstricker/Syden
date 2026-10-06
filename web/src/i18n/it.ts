@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  'Criar uma sala para cada pessoa que entrar': 'Crea una stanza per chi entra',
+  'Entre para criar a sua sala': 'Entra per creare la tua stanza',
+  'Limite de pessoas': 'Limite di persone',
+  'Quantas pessoas cabem (0 = sem limite)': 'Quante persone ci stanno (0 = nessun limite)',
   'Canal de destaques': 'Canale dei momenti migliori',
   'Destaques': 'Momenti migliori',
   'Estrelas necessárias': 'Stelle necessarie',

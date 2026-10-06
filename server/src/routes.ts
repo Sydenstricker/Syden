@@ -15,7 +15,9 @@ import { salaDaPessoa,
   emitToUser,
   joinCommunityRoom,
   leaveCommunityRoom,
+  pessoasNaSala,
   removeVoiceChannelMembers,
+  salaDeVozDe,
 } from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
 import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
@@ -29,6 +31,7 @@ import { provedoresLigados } from './social.js';
 import { audiencia } from './audiencia.js';
 import * as prefs from './preferencias.js';
 import * as gifs from './gifs.js';
+import { salaParaEntrar } from './salas-temporarias.js';
 import { conferirSelo, CORES, ICONES, MARCOS, marcosAlcancados, podeUsarSelo } from './selos.js';
 import { disponibilidade } from './uptime.js';
 import { usageSummary } from './usage.js';
@@ -1546,12 +1549,23 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     // Emite o token que autoriza o navegador a entrar na sala do LiveKit correspondente ao canal de voz.
     authed.post<{ Params: { id: string } }>('/api/channels/:id/voice-token', async (request, reply) => {
-      const channel = channelAccess(request, reply, false);
-      if (!channel) return reply;
-      if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
+      const pedida = channelAccess(request, reply, false);
+      if (!pedida) return reply;
+      if (pedida.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
       // Em silêncio nesta comunidade, não entra em sala de voz dela (ver advertencias-routes.ts).
-      if (channel.communityId !== null && db.silenciadoAte(channel.communityId, request.user.id)) {
+      if (pedida.communityId !== null && db.silenciadoAte(pedida.communityId, request.user.id)) {
         return reply.code(403).send({ error: 'Você está em silêncio nesta comunidade e não pode entrar nas salas por enquanto.' });
+      }
+      // A sala que cria salas entrega a senha da sala temporária da pessoa (ver salas-temporarias.ts).
+      const channel = salaParaEntrar(io, pedida, request.user) as CommunityChannel;
+      // Sala cheia: quem já está nela (outra aba) e quem administra passam.
+      if (
+        channel.limite &&
+        pessoasNaSala(channel.id) >= channel.limite &&
+        salaDeVozDe(request.user.id)?.channelId !== channel.id &&
+        !manages(roleIn(request.user, channel.communityId))
+      ) {
+        return reply.code(403).send({ error: 'Esta sala está cheia.' });
       }
 
       /**
@@ -1582,7 +1596,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         // isto mudaria coisas que não têm nada a ver com falar.
         canPublishData: true,
       });
-      return { url: config.livekit.url, token: await token.toJwt() };
+      return { url: config.livekit.url, token: await token.toJwt(), channelId: channel.id };
     });
   });
 }

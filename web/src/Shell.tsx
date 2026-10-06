@@ -418,13 +418,14 @@ export function Shell({
     s.on('voice:state', ({ communityId: id, members: list }: { communityId: number; members: VoiceMember[] }) =>
       setVoiceByCommunity((current) => ({ ...current, [id]: list })),
     );
-    s.on('channel:created', (channel: Channel) =>
-      setChannels((list) =>
+    s.on('channel:created', ({ depoisDe, ...channel }: Channel & { depoisDe?: number }) =>
+      setChannels((list) => {
         // Conversa privada não entra na lista de canais da comunidade (ela tem lista própria).
-        list.some((c) => c.id === channel.id) || channel.communityId === null || !isOpenCommunity(channel.communityId)
-          ? list
-          : [...list, channel],
-      ),
+        if (list.some((c) => c.id === channel.id) || channel.communityId === null || !isOpenCommunity(channel.communityId)) return list;
+        // A sala temporária entra logo abaixo da sala que a criou (ver server/src/salas-temporarias.ts).
+        const origem = depoisDe === undefined ? -1 : list.findIndex((c) => c.id === depoisDe);
+        return origem < 0 ? [...list, channel] : [...list.slice(0, origem + 1), channel, ...list.slice(origem + 1)];
+      }),
     );
     s.on('channel:updated', (channel: Channel) =>
       setChannels((list) => list.map((c) => (c.id === channel.id ? channel : c))),
@@ -816,7 +817,8 @@ export function Shell({
     setMostrandoBoasVindas(false);
     setSelectedId(channel.id);
     setMobileChannels(false);
-    if (channel.type === 'voice') void voice.join(channel.id);
+    // A sala que cria salas leva para a sala temporária da pessoa: a tela vai junto.
+    if (channel.type === 'voice') void voice.join(channel.id).then((sala) => sala !== null && sala !== channel.id && setSelectedId(sala));
   }
 
   /**

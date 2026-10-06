@@ -370,6 +370,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
   'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',
+  'Criar uma sala para cada pessoa que entrar': 'ވަންނަ ކޮންމެ މީހަކަށް ރޫމެއް ހަދާ',
+  'Entre para criar a sua sala': 'ތިބާގެ ރޫމު ހެދުމަށް ވަދެވަޑައިގަންނަވާ',
+  'Limite de pessoas': 'މީހުންގެ ލިމިޓް',
+  'Quantas pessoas cabem (0 = sem limite)': 'ކިތައް މީހުން ތިބެވޭނެ (0 = ލިމިޓެއް ނެތް)',
   'Canal de destaques': 'ޚާއްޞަ މެސެޖުތަކުގެ ޗެނަލް',
   'Destaques': 'ޚާއްޞަ',
   'Estrelas necessárias': 'ބޭނުންވާ ތަރި',

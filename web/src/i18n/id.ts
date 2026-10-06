@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
   'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',
+  'Criar uma sala para cada pessoa que entrar': 'Buat ruang untuk setiap orang yang masuk',
+  'Entre para criar a sua sala': 'Masuk untuk membuat ruangmu sendiri',
+  'Limite de pessoas': 'Batas orang',
+  'Quantas pessoas cabem (0 = sem limite)': 'Berapa orang yang muat (0 = tanpa batas)',
   'Canal de destaques': 'Kanal sorotan',
   'Destaques': 'Sorotan',
   'Estrelas necessárias': 'Bintang yang diperlukan',

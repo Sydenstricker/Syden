@@ -356,6 +356,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'Criar uma sala para cada pessoa que entrar': 'Loo igaühele, kes siseneb, oma tuba',
+  'Entre para criar a sua sala': 'Sisene, et luua oma tuba',
+  'Limite de pessoas': 'Inimeste piirang',
+  'Quantas pessoas cabem (0 = sem limite)': 'Mitu inimest mahub (0 = piiranguta)',
   'Canal de destaques': 'Esiletõstete kanal',
   'Destaques': 'Esiletõsted',
   'Estrelas necessárias': 'Vajalikud tähed',

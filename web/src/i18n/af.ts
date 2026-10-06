@@ -353,6 +353,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',
+  'Criar uma sala para cada pessoa que entrar': 'Skep ’n kamer vir elkeen wat inkom',
+  'Entre para criar a sua sala': 'Kom in om jou eie kamer te skep',
+  'Limite de pessoas': 'Perk op mense',
+  'Quantas pessoas cabem (0 = sem limite)': 'Hoeveel mense pas in (0 = geen perk)',
   'Canal de destaques': 'Kanaal vir hoogtepunte',
   'Destaques': 'Hoogtepunte',
   'Estrelas necessárias': 'Sterre nodig',

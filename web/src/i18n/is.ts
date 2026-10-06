@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  'Criar uma sala para cada pessoa que entrar': 'Búa til herbergi fyrir hvern sem kemur inn',
+  'Entre para criar a sua sala': 'Komdu inn til að búa til þitt eigið herbergi',
+  'Limite de pessoas': 'Hámark fólks',
+  'Quantas pessoas cabem (0 = sem limite)': 'Hversu margir komast fyrir (0 = ekkert hámark)',
   'Canal de destaques': 'Rás fyrir hápunkta',
   'Destaques': 'Hápunktar',
   'Estrelas necessárias': 'Stjörnur sem þarf',

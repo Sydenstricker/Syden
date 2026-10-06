@@ -4,6 +4,7 @@ import { barrarMensagem } from './automod.js';
 import { entregarPendentes } from './agendador.js';
 import { responderComando } from './comandos-routes.js';
 import * as db from './db.js';
+import { apagarSeVazia } from './salas-temporarias.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 
 /** Sala do socket com todo mundo que participa de uma comunidade. */
@@ -168,7 +169,20 @@ function endVoiceSession(userId: number) {
   if (!session) return;
   db.touchUsageSessions(activeUsageSessionIds(session));
   voiceMembers.delete(userId);
+  // Era a última pessoa numa sala temporária: ela some. Depois desta volta, para quem chamou terminar de
+  // avisar a saída antes de a sala desaparecer da lista.
+  const io = ioDoServidor;
+  if (io) setImmediate(() => apagarSeVazia(io, session.channelId));
 }
+
+/** Quantas pessoas estão numa sala de voz agora. */
+export function pessoasNaSala(channelId: number): number {
+  let n = 0;
+  for (const m of voiceMembers.values()) if (m.channelId === channelId) n++;
+  return n;
+}
+
+let ioDoServidor: IOServer | null = null;
 
 /** Em que sala de voz a pessoa está agora, se estiver. */
 export function salaDeVozDe(userId: number): { channelId: number; communityId: number } | undefined {
@@ -247,6 +261,7 @@ function broadcastPresence(io: IOServer) {
 }
 
 export function setupRealtime(io: IOServer) {
+  ioDoServidor = io;
   io.use(async (socket, next) => {
     const sessao = await verifySession(socket.handshake.auth?.token);
     const achado = sessao === null ? undefined : db.findUserForSession(sessao.userId);

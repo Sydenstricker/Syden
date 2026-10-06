@@ -356,6 +356,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кой да влезе. С повече от един човек става групов разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери заека за статуята на площада.',
+  'Criar uma sala para cada pessoa que entrar': 'Създай стая за всеки, който влезе',
+  'Entre para criar a sua sala': 'Влез, за да създадеш своя стая',
+  'Limite de pessoas': 'Ограничение на хората',
+  'Quantas pessoas cabem (0 = sem limite)': 'Колко души се събират (0 = без ограничение)',
   'Canal de destaques': 'Канал за отличени',
   'Destaques': 'Отличени',
   'Estrelas necessárias': 'Нужни звезди',

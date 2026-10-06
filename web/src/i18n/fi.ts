@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
+  'Criar uma sala para cada pessoa que entrar': 'Luo huone jokaiselle, joka tulee sisään',
+  'Entre para criar a sua sala': 'Tule sisään luodaksesi oman huoneen',
+  'Limite de pessoas': 'Henkilöraja',
+  'Quantas pessoas cabem (0 = sem limite)': 'Montako mahtuu (0 = ei rajaa)',
   'Canal de destaques': 'Nostojen kanava',
   'Destaques': 'Nostot',
   'Estrelas necessárias': 'Tähtiä tarvitaan',

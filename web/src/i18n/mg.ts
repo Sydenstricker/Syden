@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  'Criar uma sala para cada pessoa que entrar': 'Mamorona efitra ho an’izay rehetra miditra',
+  'Entre para criar a sua sala': 'Midira mba hamorona ny efitranao',
+  'Limite de pessoas': 'Fetran’ny olona',
+  'Quantas pessoas cabem (0 = sem limite)': 'Firy ny olona omby (0 = tsy misy fetra)',
   'Canal de destaques': 'Fantsona voafantina',
   'Destaques': 'Voafantina',
   'Estrelas necessárias': 'Kintana ilaina',

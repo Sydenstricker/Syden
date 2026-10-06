@@ -378,6 +378,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  'Criar uma sala para cada pessoa que entrar': 'ოთახის შექმნა ყველასთვის, ვინც შემოვა',
+  'Entre para criar a sua sala': 'შემოდი შენი ოთახის შესაქმნელად',
+  'Limite de pessoas': 'ადამიანების ლიმიტი',
+  'Quantas pessoas cabem (0 = sem limite)': 'რამდენი ადამიანი ეტევა (0 = ლიმიტის გარეშე)',
   'Canal de destaques': 'რჩეულების არხი',
   'Destaques': 'რჩეულები',
   'Estrelas necessárias': 'საჭირო ვარსკვლავები',

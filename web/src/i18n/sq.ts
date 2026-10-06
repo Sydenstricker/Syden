@@ -351,6 +351,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'Criar uma sala para cada pessoa que entrar': 'Krijo një dhomë për këdo që hyn',
+  'Entre para criar a sua sala': 'Hyr për të krijuar dhomën tënde',
+  'Limite de pessoas': 'Kufiri i njerëzve',
+  'Quantas pessoas cabem (0 = sem limite)': 'Sa njerëz nxë (0 = pa kufi)',
   'Canal de destaques': 'Kanali i të veçantave',
   'Destaques': 'Të veçanta',
   'Estrelas necessárias': 'Yje të nevojshëm',

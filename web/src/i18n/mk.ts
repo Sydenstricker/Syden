@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кој ќе биде во разговорот. Со повеќе луѓе станува групен разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери го зајакот за статуата на плоштадот.',
+  'Criar uma sala para cada pessoa que entrar': 'Направи соба за секој што ќе влезе',
+  'Entre para criar a sua sala': 'Влези за да направиш своја соба',
+  'Limite de pessoas': 'Ограничување на луѓе',
+  'Quantas pessoas cabem (0 = sem limite)': 'Колку луѓе собира (0 = без ограничување)',
   'Canal de destaques': 'Канал за истакнато',
   'Destaques': 'Истакнато',
   'Estrelas necessárias': 'Потребни ѕвезди',

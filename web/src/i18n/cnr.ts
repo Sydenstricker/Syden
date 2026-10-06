@@ -358,6 +358,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
+  'Criar uma sala para cada pessoa que entrar': 'Napravi sobu za svakoga ko uđe',
+  'Entre para criar a sua sala': 'Uđi da napraviš svoju sobu',
+  'Limite de pessoas': 'Ograničenje ljudi',
+  'Quantas pessoas cabem (0 = sem limite)': 'Koliko ljudi staje (0 = bez ograničenja)',
   'Canal de destaques': 'Kanal istaknutih',
   'Destaques': 'Istaknuto',
   'Estrelas necessárias': 'Potrebne zvjezdice',

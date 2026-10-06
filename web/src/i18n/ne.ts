@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'Criar uma sala para cada pessoa que entrar': 'भित्र आउने हरेकका लागि कोठा बनाउनुहोस्',
+  'Entre para criar a sua sala': 'आफ्नै कोठा बनाउन भित्र आउनुहोस्',
+  'Limite de pessoas': 'मान्छेको सीमा',
+  'Quantas pessoas cabem (0 = sem limite)': 'कति जना अट्छन् (0 = सीमा छैन)',
   'Canal de destaques': 'विशेष सन्देशको च्यानल',
   'Destaques': 'विशेष',
   'Estrelas necessárias': 'चाहिने ताराहरू',

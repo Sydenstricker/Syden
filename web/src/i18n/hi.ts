@@ -206,6 +206,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
+  'Criar uma sala para cada pessoa que entrar': 'हर आने वाले के लिए एक कमरा बनाएँ',
+  'Entre para criar a sua sala': 'अपना कमरा बनाने के लिए अंदर आएँ',
+  'Limite de pessoas': 'लोगों की सीमा',
+  'Quantas pessoas cabem (0 = sem limite)': 'कितने लोग आ सकते हैं (0 = कोई सीमा नहीं)',
   'Canal de destaques': 'चुनिंदा संदेशों का चैनल',
   'Destaques': 'चुनिंदा',
   'Estrelas necessárias': 'ज़रूरी सितारे',

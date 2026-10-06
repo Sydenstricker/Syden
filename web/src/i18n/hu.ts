@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  'Criar uma sala para cada pessoa que entrar': 'Szoba létrehozása mindenkinek, aki belép',
+  'Entre para criar a sua sala': 'Lépj be, és létrejön a saját szobád',
+  'Limite de pessoas': 'Létszámkorlát',
+  'Quantas pessoas cabem (0 = sem limite)': 'Hány ember fér be (0 = nincs korlát)',
   'Canal de destaques': 'Kiemelések csatornája',
   'Destaques': 'Kiemelések',
   'Estrelas necessárias': 'Szükséges csillagok',

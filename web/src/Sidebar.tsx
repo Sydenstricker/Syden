@@ -15,6 +15,8 @@ import {
   Trash2,
   Video,
   Volume2,
+  CopyPlus,
+  UsersRound,
   Home,
   Check,
   Link as LinkIcon,
@@ -127,6 +129,9 @@ export function Sidebar({
       active={channel.id === selectedId}
       manageable={canManage(channel)}
       inviteCode={community.inviteCode ?? null}
+      podeCriarSalas={managesCommunity && channel.type === 'voice' && !channel.temporaria}
+      podeLimitar={channel.type === 'voice' && !channel.criaSalas && (managesCommunity || (!!channel.temporaria && channel.createdBy === user.id))}
+      lotacao={channel.limite ? `${voiceMembers.filter((m) => m.channelId === channel.id).length}/${channel.limite}` : null}
       onSelect={() => onSelect(channel)}
       onDelete={() => setDeleting(channel)}
     />
@@ -220,6 +225,8 @@ export function Sidebar({
                       <Mascote nome="assistir-junto" tamanho={30} />
                       <span className="so-para-leitor">{t('Assistindo junto')}</span>
                     </span>
+                  ) : c.criaSalas ? (
+                    <CopyPlus size={18} aria-label={t('Entre para criar a sua sala')} />
                   ) : (
                     <Volume2 size={18} />
                   ),
@@ -355,6 +362,9 @@ function ChannelRow({
   active,
   manageable,
   inviteCode,
+  podeCriarSalas,
+  podeLimitar,
+  lotacao,
   onSelect,
   onDelete,
 }: {
@@ -364,11 +374,18 @@ function ChannelRow({
   manageable: boolean;
   /** O convite da comunidade: o link da sala é ele mais o canal (ver readInviteFromUrl, em App.tsx). */
   inviteCode: string | null;
+  /** Quem administra liga "cria salas" numa sala de voz (ver server/src/salas-temporarias.ts). */
+  podeCriarSalas: boolean;
+  /** Quem administra, ou quem é dona da sala temporária, põe limite de gente. */
+  podeLimitar: boolean;
+  /** "2/4" quando a sala tem limite. */
+  lotacao: string | null;
   onSelect: () => void;
   onDelete: () => void;
 }) {
   const t = useT();
   const [renaming, setRenaming] = useState(false);
+  const [limitando, setLimitando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
 
@@ -403,6 +420,43 @@ function ChannelRow({
     }
   }
 
+  async function salvarLimite(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Escape') {
+      setLimitando(false);
+      setError(null);
+      return;
+    }
+    if (event.key !== 'Enter') return;
+    try {
+      await api<Channel>(`/api/channels/${channel.id}/limite`, { method: 'PUT', body: { limite: Number(event.currentTarget.value) || 0 } });
+      setLimitando(false);
+      setError(null);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  if (limitando) {
+    return (
+      <>
+        <input
+          className="channel-input"
+          type="number"
+          min={0}
+          max={99}
+          defaultValue={channel.limite ?? 0}
+          aria-label={t('Quantas pessoas cabem (0 = sem limite)')}
+          title={t('Quantas pessoas cabem (0 = sem limite)')}
+          autoFocus
+          onFocus={(e) => e.currentTarget.select()}
+          onKeyDown={salvarLimite}
+          onBlur={() => !error && setLimitando(false)}
+        />
+        {error && <p className="form-error small">{error}</p>}
+      </>
+    );
+  }
+
   if (renaming) {
     return (
       <>
@@ -424,8 +478,9 @@ function ChannelRow({
     <div className={`channel-row${active ? ' active' : ''}`}>
       <button className={`channel${active ? ' active' : ''}`} onClick={onSelect}>
         {icon} <span className="channel-name">{channel.name}</span>
+        {lotacao && <span className="channel-lotacao">{lotacao}</span>}
       </button>
-      {(manageable || inviteCode) && (
+      {(manageable || inviteCode || podeCriarSalas || podeLimitar) && (
         <div className="channel-actions">
           {inviteCode && (
             <button
@@ -435,6 +490,22 @@ function ChannelRow({
               onClick={copiarLink}
             >
               {copiado ? <Check size={14} /> : <LinkIcon size={14} />}
+            </button>
+          )}
+          {podeCriarSalas && (
+            <button
+              className={`icon-plain${channel.criaSalas ? ' ligado' : ''}`}
+              title={t('Criar uma sala para cada pessoa que entrar')}
+              aria-label={`${t('Criar uma sala para cada pessoa que entrar')}: ${channel.name}`}
+              aria-pressed={!!channel.criaSalas}
+              onClick={() => void api(`/api/channels/${channel.id}/cria-salas`, { method: 'PUT', body: { ligado: !channel.criaSalas } })}
+            >
+              <CopyPlus size={14} />
+            </button>
+          )}
+          {podeLimitar && (
+            <button className="icon-plain" title={t('Limite de pessoas')} aria-label={`${t('Limite de pessoas')}: ${channel.name}`} onClick={() => setLimitando(true)}>
+              <UsersRound size={14} />
             </button>
           )}
           {manageable && (

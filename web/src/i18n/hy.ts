@@ -379,6 +379,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
   'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',
+  'Criar uma sala para cada pessoa que entrar': 'Ստեղծել սենյակ յուրաքանչյուր մտնողի համար',
+  'Entre para criar a sua sala': 'Մտիր՝ քո սենյակը ստեղծելու համար',
+  'Limite de pessoas': 'Մարդկանց սահմանաչափ',
+  'Quantas pessoas cabem (0 = sem limite)': 'Քանի մարդ է տեղավորվում (0 = առանց սահմանի)',
   'Canal de destaques': 'Ընտրվածների ալիք',
   'Destaques': 'Ընտրվածներ',
   'Estrelas necessárias': 'Անհրաժեշտ աստղեր',

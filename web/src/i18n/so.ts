@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  'Criar uma sala para cada pessoa que entrar': 'U samee qol qof kasta oo soo gala',
+  'Entre para criar a sua sala': 'Gal si aad u sameysato qolkaaga',
+  'Limite de pessoas': 'Xadka dadka',
+  'Quantas pessoas cabem (0 = sem limite)': 'Immisa qof ayaa ku filan (0 = xad la’aan)',
   'Canal de destaques': 'Kanaalka la xushay',
   'Destaques': 'La xushay',
   'Estrelas necessárias': 'Xiddigaha loo baahan yahay',

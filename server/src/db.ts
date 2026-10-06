@@ -127,6 +127,12 @@ export interface Channel {
   createdBy: number | null;
   /** Modo lento: segundos entre mensagens da mesma pessoa. 0 = desligado. Ver automod.ts. */
   modoLento?: number;
+  /** Sala de voz que, ao entrar, cria uma sala temporária para quem entrou (ver salas-temporarias.ts). 0/1. */
+  criaSalas?: number;
+  /** Sala temporária: some quando a última pessoa sai. 0/1. */
+  temporaria?: number;
+  /** Quantas pessoas cabem na sala de voz. 0 = sem limite. */
+  limite?: number;
 }
 
 /** Uma conversa privada do jeito que ela aparece na lista: com quem é e qual foi a última mensagem. */
@@ -2638,7 +2644,8 @@ export function updatePassword(userId: number, passwordHash: string) {
   db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
 }
 
-const channelColumns = 'id, community_id AS communityId, name, type, position, created_by AS createdBy, modo_lento AS modoLento';
+const channelColumns =
+  'id, community_id AS communityId, name, type, position, created_by AS createdBy, modo_lento AS modoLento, cria_salas AS criaSalas, temporaria, limite';
 
 export function listChannels(communityId: number) {
   return db
@@ -2691,7 +2698,7 @@ export function canaisNaLixeira(communityId: number) {
     .prepare(
       `SELECT ${channelColumns}, deleted_at AS deletedAt,
               (SELECT COUNT(*) FROM messages m WHERE m.channel_id = channels.id) AS mensagens
-       FROM channels WHERE community_id = ? AND deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+       FROM channels WHERE community_id = ? AND deleted_at IS NOT NULL AND temporaria = 0 ORDER BY deleted_at DESC`,
     )
     .all(communityId) as unknown as (Channel & { deletedAt: string; mensagens: number })[];
 }
@@ -5068,4 +5075,58 @@ export function copiarImagens(deMensagem: number, paraMensagem: number) {
   for (const a of linhas) {
     inserir.run(paraMensagem, randomBytes(12).toString('hex'), a.name, a.mime, a.size, a.width, a.height, SEM_BYTES, a.sha, a.bytes, a.expiresAt);
   }
+}
+
+// ---------------------------------------------------------------------------------------------------
+// AS SALAS TEMPORÁRIAS: quem administra marca uma sala de voz como "cria salas"; quem entra nela ganha
+// uma sala só dela, logo abaixo, que some quando a última pessoa sai (ver salas-temporarias.ts).
+// A sala temporária vai para a lixeira como qualquer canal (o que foi escrito nela segue a regra de
+// retenção de sempre), mas não aparece na lista da lixeira: ninguém quer restaurar "ana" de terça.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('channels', 'cria_salas', 'INTEGER NOT NULL DEFAULT 0');
+addColumnIfMissing('channels', 'temporaria', 'INTEGER NOT NULL DEFAULT 0');
+addColumnIfMissing('channels', 'limite', 'INTEGER NOT NULL DEFAULT 0');
+addColumnIfMissing('channels', 'temporaria_desde', 'TEXT');
+
+/**
+ * A sala nova fica LOGO ABAIXO da que cria salas. As salas de fábrica nascem todas na posição 0 (a ordem
+ * delas sai do número), então primeiro a comunidade ganha posições 0, 1, 2… na ordem em que aparece, e
+ * depois se abre o lugar logo abaixo da origem.
+ */
+export function criarSalaTemporaria(origem: Channel, donoId: number, nome: string): Channel {
+  const ordem = db.prepare('SELECT id FROM channels WHERE community_id = ? ORDER BY position, id').all(origem.communityId) as { id: number }[];
+  const posicionar = db.prepare('UPDATE channels SET position = ? WHERE id = ?');
+  ordem.forEach((c, i) => posicionar.run(i < ordem.findIndex((o) => o.id === origem.id) + 1 ? i : i + 1, c.id));
+  const lugar = ordem.findIndex((o) => o.id === origem.id) + 1;
+  const { lastInsertRowid } = db
+    .prepare(
+      `INSERT INTO channels (community_id, name, type, position, created_by, temporaria, temporaria_desde)
+       VALUES (?, ?, 'voice', ?, ?, 1, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
+    )
+    .run(origem.communityId, nome, lugar, donoId);
+  return findChannel(Number(lastInsertRowid))!;
+}
+
+/** A sala temporária que a pessoa já tem nesta comunidade, para não ganhar uma segunda. */
+export function salaTemporariaDe(communityId: number, donoId: number): Channel | undefined {
+  return db
+    .prepare(`SELECT ${channelColumns} FROM channels WHERE community_id = ? AND created_by = ? AND temporaria = 1 AND deleted_at IS NULL`)
+    .get(communityId, donoId) as Channel | undefined;
+}
+
+export function salasTemporarias(): { id: number; communityId: number; desde: string }[] {
+  return db
+    .prepare('SELECT id, community_id AS communityId, temporaria_desde AS desde FROM channels WHERE temporaria = 1 AND deleted_at IS NULL')
+    .all() as { id: number; communityId: number; desde: string }[];
+}
+
+export function definirCriaSalas(channelId: number, ligado: boolean): Channel {
+  db.prepare('UPDATE channels SET cria_salas = ? WHERE id = ?').run(ligado ? 1 : 0, channelId);
+  return findChannel(channelId)!;
+}
+
+export function definirLimite(channelId: number, limite: number): Channel {
+  db.prepare('UPDATE channels SET limite = ? WHERE id = ?').run(limite, channelId);
+  return findChannel(channelId)!;
 }

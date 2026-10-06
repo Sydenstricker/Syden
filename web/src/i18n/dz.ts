@@ -372,6 +372,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
   'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
+  'Criar uma sala para cada pessoa que entrar': 'ནང་འཛུལ་མི་རེ་རེ་ལུ་ ཁང་མིག་གསར་བསྐྲུན་འབད',
+  'Entre para criar a sua sala': 'རང་གི་ཁང་མིག་བསྐྲུན་ནིའི་དོན་ལུ་ ནང་འཛུལ',
+  'Limite de pessoas': 'མི་གྱངས་ཀྱི་ཚད',
+  'Quantas pessoas cabem (0 = sem limite)': 'མི་ག་དེམ་ཅིག་ཤོང་ (0 = ཚད་མེད)',
   'Canal de destaques': 'གདམ་ཁ་བརྐྱབ་མིའི་རྒྱུ་ལམ',
   'Destaques': 'གདམ་ཁ་བརྐྱབ་མི',
   'Estrelas necessárias': 'དགོས་པའི་སྐར་མ',

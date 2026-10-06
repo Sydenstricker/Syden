@@ -353,6 +353,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vælg, hvem der er med. Med mere end én person bliver det en gruppesamtale.',
   'Escolha o coelho da estátua da praça.': 'Vælg kaninen til statuen på torvet.',
+  'Criar uma sala para cada pessoa que entrar': 'Opret et rum til hver, der kommer ind',
+  'Entre para criar a sua sala': 'Gå ind for at oprette dit eget rum',
+  'Limite de pessoas': 'Grænse for antal',
+  'Quantas pessoas cabem (0 = sem limite)': 'Hvor mange der er plads til (0 = ingen grænse)',
   'Canal de destaques': 'Kanal til højdepunkter',
   'Destaques': 'Højdepunkter',
   'Estrelas necessárias': 'Nødvendige stjerner',

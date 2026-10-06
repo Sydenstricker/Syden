@@ -191,6 +191,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'Criar uma sala para cada pessoa que entrar': 'Unda chumba kwa kila anayeingia',
+  'Entre para criar a sua sala': 'Ingia ili uunde chumba chako',
+  'Limite de pessoas': 'Kikomo cha watu',
+  'Quantas pessoas cabem (0 = sem limite)': 'Watu wangapi wanatosha (0 = hakuna kikomo)',
   'Canal de destaques': 'Chaneli ya vivutio',
   'Destaques': 'Vivutio',
   'Estrelas necessárias': 'Nyota zinazohitajika',

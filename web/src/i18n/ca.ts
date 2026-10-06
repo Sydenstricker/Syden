@@ -355,6 +355,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
+  'Criar uma sala para cada pessoa que entrar': 'Crear una sala per a cada persona que hi entri',
+  'Entre para criar a sua sala': 'Entra per crear la teva sala',
+  'Limite de pessoas': 'Límit de persones',
+  'Quantas pessoas cabem (0 = sem limite)': 'Quantes persones hi caben (0 = sense límit)',
   'Canal de destaques': 'Canal de destacats',
   'Destaques': 'Destacats',
   'Estrelas necessárias': 'Estrelles necessàries',

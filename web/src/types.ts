@@ -158,6 +158,12 @@ export interface Channel {
   createdBy: number | null;
   /** Modo lento: segundos entre mensagens da mesma pessoa. 0 = desligado. Ver server/src/automod.ts. */
   modoLento?: number;
+  /** Sala de voz que, ao entrar, cria uma sala temporária para quem entrou. 0/1. */
+  criaSalas?: number;
+  /** Sala temporária: some quando a última pessoa sai. 0/1. */
+  temporaria?: number;
+  /** Quantas pessoas cabem na sala de voz. 0 = sem limite. */
+  limite?: number;
 }
 
 /** Uma conversa privada (direta ou em grupo) do jeito que ela aparece na lista. */

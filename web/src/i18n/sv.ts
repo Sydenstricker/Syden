@@ -351,6 +351,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Välj vem som är med. Med fler än en person blir det en gruppkonversation.',
   'Escolha o coelho da estátua da praça.': 'Välj kaninen till statyn på torget.',
+  'Criar uma sala para cada pessoa que entrar': 'Skapa ett rum för var och en som går in',
+  'Entre para criar a sua sala': 'Gå in för att skapa ditt eget rum',
+  'Limite de pessoas': 'Gräns för antal',
+  'Quantas pessoas cabem (0 = sem limite)': 'Hur många som får plats (0 = ingen gräns)',
   'Canal de destaques': 'Kanal för höjdpunkter',
   'Destaques': 'Höjdpunkter',
   'Estrelas necessárias': 'Stjärnor som behövs',

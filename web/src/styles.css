@@ -1690,8 +1690,32 @@ textarea {
   padding-right: 52px;
 }
 
+/* As salas de voz de quem administra ganham mais dois botões (criar salas, limite): o nome cede o lugar. */
+.channel-row:hover:has(.channel-actions > :nth-child(4)) .channel,
+.channel-row:focus-within:has(.channel-actions > :nth-child(4)) .channel {
+  padding-right: 74px;
+}
+
+.channel-row:hover:has(.channel-actions > :nth-child(5)) .channel,
+.channel-row:focus-within:has(.channel-actions > :nth-child(5)) .channel {
+  padding-right: 96px;
+}
+
 .channel-actions .icon-plain:hover {
   color: var(--text-strong);
+}
+
+/* "Cria salas" ligado: o botão fica na cor de destaque, que é o jeito de ver o estado sem abrir nada. */
+.channel-actions .icon-plain.ligado {
+  color: var(--accent);
+}
+
+/* "2/4" na sala com limite de pessoas. */
+.channel-lotacao {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Botões e mensagens extras ---------- */

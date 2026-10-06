@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
   'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',
+  'Criar uma sala para cada pessoa que entrar': 'Girýän her kim üçin otag döret',
+  'Entre para criar a sua sala': 'Öz otagyňy döretmek üçin gir',
+  'Limite de pessoas': 'Adam çägi',
+  'Quantas pessoas cabem (0 = sem limite)': 'Näçe adam sygýar (0 = çäksiz)',
   'Canal de destaques': 'Saýlananlar kanaly',
   'Destaques': 'Saýlananlar',
   'Estrelas necessárias': 'Gerek ýyldyzlar',

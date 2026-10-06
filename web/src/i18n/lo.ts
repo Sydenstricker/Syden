@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  'Criar uma sala para cada pessoa que entrar': 'ສ້າງຫ້ອງໃຫ້ທຸກຄົນທີ່ເຂົ້າມາ',
+  'Entre para criar a sua sala': 'ເຂົ້າມາເພື່ອສ້າງຫ້ອງຂອງເຈົ້າ',
+  'Limite de pessoas': 'ຈຳກັດຄົນ',
+  'Quantas pessoas cabem (0 = sem limite)': 'ເຂົ້າໄດ້ຈັກຄົນ (0 = ບໍ່ຈຳກັດ)',
   'Canal de destaques': 'ຊ່ອງຂໍ້ຄວາມເດັ່ນ',
   'Destaques': 'ຂໍ້ຄວາມເດັ່ນ',
   'Estrelas necessárias': 'ດາວທີ່ຕ້ອງການ',

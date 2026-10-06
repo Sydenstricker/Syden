@@ -699,8 +699,8 @@ export function useVoice(socket: Socket | null) {
   }, []);
 
   const join = useCallback(
-    async (id: number) => {
-      if (channelRef.current === id || connecting || !socketRef.current) return;
+    async (id: number): Promise<number | null> => {
+      if (channelRef.current === id || connecting || !socketRef.current) return channelRef.current;
       setError(null);
       setConnecting(true);
       // Chamado dentro do clique, para o navegador liberar a reprodução de áudio.
@@ -721,17 +721,20 @@ export function useVoice(socket: Socket | null) {
       efeitoAtualRef.current = 'none';
       try {
         if (room.state !== ConnectionState.Disconnected) await room.disconnect();
-        const { url, token } = await api<{ url: string; token: string }>(`/api/channels/${id}/voice-token`, {
+        // A SALA PODE SER OUTRA: a que cria salas devolve a senha da sala temporária da pessoa, e é nela
+        // que se entra (ver server/src/salas-temporarias.ts).
+        const { url, token, channelId: destino } = await api<{ url: string; token: string; channelId?: number }>(`/api/channels/${id}/voice-token`, {
           method: 'POST',
         });
+        const sala = destino ?? id;
         pedindoSenha = false;
         // autoSubscribe: false — quem decide o que baixar é o Syden, logo abaixo (aplicarInscricoes).
         // Antes o servidor empurrava TODAS as faixas de todos ao entrar, transmissões de tela incluídas:
         // numa sala com quatro telas ligadas o computador decodificava quatro vídeos que ninguém pediu.
         await room.connect(url, token, { autoSubscribe: false });
-        channelRef.current = id;
-        setChannelId(id);
-        socketRef.current.emit('voice:join', { channelId: id });
+        channelRef.current = sala;
+        setChannelId(sala);
+        socketRef.current.emit('voice:join', { channelId: sala });
         sounds.selfJoin();
       } catch (e) {
         console.error(e);
@@ -750,7 +753,7 @@ export function useVoice(socket: Socket | null) {
         // sempre a mesma frase, então a aba de saúde não distinguia um deploy de um bloqueador.
         reportProblem('conexão', `${pedindoSenha ? 'senha de voz' : 'LiveKit'}: ${motivo}`);
         setConnecting(false);
-        return;
+        return null;
       }
       setConnecting(false);
       try {
@@ -772,6 +775,7 @@ export function useVoice(socket: Socket | null) {
         reportProblem('microfone', message);
         microfoneFalhou(e, message);
       }
+      return channelRef.current;
     },
     [room, connecting, applyVoiceEffect, setDeafenedState],
   );

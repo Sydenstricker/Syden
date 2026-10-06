@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kto bude v konverzácii. S viacerými ľuďmi z toho bude skupinová konverzácia.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajaca na sochu na námestí.',
+  'Criar uma sala para cada pessoa que entrar': 'Vytvoriť miestnosť pre každého, kto vstúpi',
+  'Entre para criar a sua sala': 'Vstúp a vytvor si vlastnú miestnosť',
+  'Limite de pessoas': 'Limit ľudí',
+  'Quantas pessoas cabem (0 = sem limite)': 'Koľko ľudí sa zmestí (0 = bez limitu)',
   'Canal de destaques': 'Kanál výberu',
   'Destaques': 'Výber',
   'Estrelas necessárias': 'Potrebné hviezdičky',

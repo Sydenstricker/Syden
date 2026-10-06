@@ -370,6 +370,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  'Criar uma sala para cada pessoa que entrar': 'Kreye yon sal pou chak moun ki antre',
+  'Entre para criar a sua sala': 'Antre pou kreye pwòp sal ou',
+  'Limite de pessoas': 'Limit moun',
+  'Quantas pessoas cabem (0 = sem limite)': 'Konbyen moun ki ka antre (0 = san limit)',
   'Canal de destaques': 'Kanal pi bon yo',
   'Destaques': 'Pi bon yo',
   'Estrelas necessárias': 'Zetwal ki nesesè',

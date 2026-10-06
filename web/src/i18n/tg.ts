@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'Criar uma sala para cada pessoa que entrar': 'Барои ҳар касе, ки ворид мешавад, ҳуҷра сохтан',
+  'Entre para criar a sua sala': 'Барои сохтани ҳуҷраи худ ворид шав',
+  'Limite de pessoas': 'Маҳдудияти одамон',
+  'Quantas pessoas cabem (0 = sem limite)': 'Чанд нафар ҷой мегиранд (0 = бе маҳдудият)',
   'Canal de destaques': 'Канали баргузидаҳо',
   'Destaques': 'Баргузидаҳо',
   'Estrelas necessárias': 'Ситораҳои лозимӣ',

@@ -355,6 +355,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',
+  'Criar uma sala para cada pessoa que entrar': 'Кірген әр адамға бөлме ашу',
+  'Entre para criar a sua sala': 'Өз бөлмеңді ашу үшін кір',
+  'Limite de pessoas': 'Адам шегі',
+  'Quantas pessoas cabem (0 = sem limite)': 'Неше адам сыяды (0 = шексіз)',
   'Canal de destaques': 'Таңдаулылар арнасы',
   'Destaques': 'Таңдаулылар',
   'Estrelas necessárias': 'Қажет жұлдыздар',

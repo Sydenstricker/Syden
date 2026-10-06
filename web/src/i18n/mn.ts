@@ -374,6 +374,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
+  'Criar uma sala para cada pessoa que entrar': 'Орж ирсэн хүн бүрт өрөө үүсгэх',
+  'Entre para criar a sua sala': 'Өөрийн өрөөг үүсгэхийн тулд ор',
+  'Limite de pessoas': 'Хүний хязгаар',
+  'Quantas pessoas cabem (0 = sem limite)': 'Хэдэн хүн багтах вэ (0 = хязгааргүй)',
   'Canal de destaques': 'Онцлох суваг',
   'Destaques': 'Онцлох',
   'Estrelas necessárias': 'Шаардлагатай од',

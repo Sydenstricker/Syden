@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  'Criar uma sala para cada pessoa que entrar': 'Sukurti kambarį kiekvienam, kas įeina',
+  'Entre para criar a sua sala': 'Įeik ir susikurk savo kambarį',
+  'Limite de pessoas': 'Žmonių riba',
+  'Quantas pessoas cabem (0 = sem limite)': 'Kiek žmonių telpa (0 = be ribos)',
   'Canal de destaques': 'Išskirtinių kanalas',
   'Destaques': 'Išskirtiniai',
   'Estrelas necessárias': 'Reikia žvaigždučių',

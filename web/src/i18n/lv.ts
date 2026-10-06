@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
+  'Criar uma sala para cada pessoa que entrar': 'Izveidot istabu katram, kas ienāk',
+  'Entre para criar a sua sala': 'Ienāc, lai izveidotu savu istabu',
+  'Limite de pessoas': 'Cilvēku limits',
+  'Quantas pessoas cabem (0 = sem limite)': 'Cik cilvēku ietilpst (0 = bez limita)',
   'Canal de destaques': 'Izcēlumu kanāls',
   'Destaques': 'Izcēlumi',
   'Estrelas necessárias': 'Vajadzīgās zvaigznes',

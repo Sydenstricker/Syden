@@ -367,6 +367,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  'Criar uma sala para cada pessoa que entrar': 'Kirgan har bir kishi uchun xona yaratish',
+  'Entre para criar a sua sala': 'Oʻz xonangizni yaratish uchun kiring',
+  'Limite de pessoas': 'Odamlar chegarasi',
+  'Quantas pessoas cabem (0 = sem limite)': 'Necha kishi sigʻadi (0 = cheklovsiz)',
   'Canal de destaques': 'Saralanganlar kanali',
   'Destaques': 'Saralanganlar',
   'Estrelas necessárias': 'Kerakli yulduzlar',

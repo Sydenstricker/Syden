@@ -358,6 +358,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
+  'Criar uma sala para cada pessoa que entrar': 'បង្កើតបន្ទប់សម្រាប់អ្នកចូលម្នាក់ៗ',
+  'Entre para criar a sua sala': 'ចូលដើម្បីបង្កើតបន្ទប់ផ្ទាល់ខ្លួន',
+  'Limite de pessoas': 'ដែនកំណត់មនុស្ស',
+  'Quantas pessoas cabem (0 = sem limite)': 'ចំនួនមនុស្សអាចចូលបាន (0 = គ្មានដែនកំណត់)',
   'Canal de destaques': 'ឆានែលសារពិសេស',
   'Destaques': 'សារពិសេស',
   'Estrelas necessárias': 'ផ្កាយដែលត្រូវការ',

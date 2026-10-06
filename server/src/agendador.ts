@@ -2,6 +2,7 @@ import { randomInt } from 'node:crypto';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { emitToUser, estaOnline } from './realtime.js';
+import { varrerSalasTemporarias } from './salas-temporarias.js';
 import { preencher, publicarComoSyden } from './syden-app.js';
 
 /**
@@ -47,6 +48,7 @@ export function rodarAgendador(io: IOServer, agora = Date.now()) {
   for (const lembrete of db.lembretesVencidos(agoraIso)) if (estaOnline(lembrete.userId)) entregar(io, lembrete);
   anunciarAniversarios(io, agora);
   sortearVencidos(io, agora);
+  varrerSalasTemporarias(io, agora);
 }
 
 /**
