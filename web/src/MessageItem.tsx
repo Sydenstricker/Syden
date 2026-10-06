@@ -1,4 +1,5 @@
 import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { BotaoDeLembrete } from './Lembrete';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
@@ -273,6 +274,7 @@ export function MessageItem({
   const actions = (
     <div className="message-actions">
       <AddReactionButton onPick={(emoji) => void reactWith(emoji)} />
+      <BotaoDeLembrete messageId={message.id} />
       {onAcolher && message.suggestion && !message.suggestion.accepted && (
         <button
           className="message-action acolher"

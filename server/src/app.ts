@@ -24,6 +24,8 @@ import { registerNiveisRoutes } from './niveis-routes.js';
 import { registerAutomodRoutes } from './automod-routes.js';
 import { registerAdvertenciasRoutes } from './advertencias-routes.js';
 import { registerComandosRoutes } from './comandos-routes.js';
+import { registerAgendadasRoutes } from './agendadas-routes.js';
+import { iniciarAgendador } from './agendador.js';
 import { startTrafficSampling } from './traffic.js';
 import { countServerError, startHealthSampling } from './health.js';
 
@@ -67,6 +69,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerAutomodRoutes(app, io);
   registerAdvertenciasRoutes(app, io);
   registerComandosRoutes(app);
+  registerAgendadasRoutes(app);
   // No modo rascunho, o e-mail inteiro (com o link) vai para o registro do servidor.
   ondeAnotar((linha) => app.log.info(linha));
 
@@ -97,6 +100,9 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
     };
     limparAulas();
     setInterval(limparAulas, 60 * 60 * 1000).unref();
+
+    // Mensagens agendadas e lembretes: o relógio de 30 s (ver agendador.ts).
+    iniciarAgendador(io);
   }
 
   return { app, io };

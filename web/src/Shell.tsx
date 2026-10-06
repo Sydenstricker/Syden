@@ -463,6 +463,24 @@ export function Shell({
           : t('Seu silêncio em {comunidade} acabou.', { comunidade }),
       ),
     );
+    // O lembrete que você pediu numa mensagem (ver Lembrete.tsx): aviso na faixa e, se o Syden não estiver
+    // na frente e as notificações estiverem ligadas, também do sistema — é para isso que se pede lembrete.
+    s.on('lembrete', ({ autor, trecho, channelId, communityId }: { autor: string; trecho: string; channelId: number; communityId: number | null }) => {
+      const texto = t('Lembrete — {autor}: {trecho}', { autor, trecho });
+      setNotice(texto);
+      if (document.hasFocus() || !getSettings().notifications || !('Notification' in window) || Notification.permission !== 'granted') return;
+      const aviso = new Notification(t('Lembrete'), { body: `${autor}: ${trecho}`, tag: `lembrete-${channelId}` });
+      aviso.onclick = () => {
+        desktopBridge?.focus();
+        window.focus();
+        if (communityId !== null) {
+          setView('community');
+          setCommunityId(communityId);
+        }
+        setSelectedId(channelId);
+        aviso.close();
+      };
+    });
     // Subiu de nível: o aviso é só seu, na faixa de avisos, e não na conversa dos outros (ver niveis.ts).
     s.on('nivel:subiu', ({ nivel }: { communityId: number; nivel: number }) =>
       setNotice(t('Você chegou ao nível {nivel}!', { nivel })),

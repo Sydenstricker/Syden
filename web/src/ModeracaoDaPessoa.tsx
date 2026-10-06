@@ -20,7 +20,7 @@ interface Advertencia {
 const TEMPOS = [5, 60, 600, 1440, 10080];
 
 /** "1 h", "1 dia", "1 semana" — o Intl escreve na língua de cada um. */
-function duracao(minutos: number, idioma: string): string {
+export function duracao(minutos: number, idioma: string): string {
   if (minutos % 10080 === 0) return new Intl.NumberFormat(idioma, { style: 'unit', unit: 'week', unitDisplay: 'long' }).format(minutos / 10080);
   if (minutos % 1440 === 0) return new Intl.NumberFormat(idioma, { style: 'unit', unit: 'day', unitDisplay: 'long' }).format(minutos / 1440);
   if (minutos % 60 === 0) return new Intl.NumberFormat(idioma, { style: 'unit', unit: 'hour', unitDisplay: 'short' }).format(minutos / 60);

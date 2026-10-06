@@ -11749,3 +11749,30 @@ body.arrastando-barra {
   background: var(--bg-darkest);
   color: var(--text-strong);
 }
+
+/* ---------- Mensagens agendadas (Agendadas.tsx) e o lembrete (Lembrete.tsx) ---------- */
+.agendada-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agendada-quando {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.lembrete-menu {
+  min-width: 180px;
+}
+
+.lembrete-aviso {
+  z-index: 3000;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--bg-float);
+  color: var(--text);
+  font-size: calc(12px * var(--escala-do-texto));
+  white-space: nowrap;
+  box-shadow: 0 2px 8px var(--shadow);
+}

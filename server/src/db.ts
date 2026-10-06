@@ -4674,3 +4674,106 @@ export function salvarComando(communityId: number, nome: string, resposta: strin
 export function apagarComando(communityId: number, comandoId: number): boolean {
   return db.prepare('DELETE FROM comandos WHERE id = ? AND community_id = ?').run(comandoId, communityId).changes > 0;
 }
+
+// ---------------------------------------------------------------------------------------------------
+// MENSAGENS AGENDADAS E LEMBRETES: o que tem hora marcada. Quem confere a hora é o agendador.ts, a cada
+// 30 segundos.
+//   - Agendada: quem administra marca canal, texto e hora (e se repete). O Syden publica.
+//   - Lembrete: qualquer pessoa, sobre uma mensagem. Na hora, só ela recebe o aviso.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS mensagens_agendadas (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    channel_id   INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    texto        TEXT NOT NULL,
+    proxima_em   TEXT NOT NULL,
+    -- 'nunca' | 'diario' | 'semanal'
+    repetir      TEXT NOT NULL DEFAULT 'nunca',
+    criada_por   INTEGER REFERENCES users(id) ON DELETE SET NULL
+  );
+  CREATE INDEX IF NOT EXISTS agendadas_por_hora ON mensagens_agendadas(proxima_em);
+
+  CREATE TABLE IF NOT EXISTS lembretes (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message_id  INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+    quando      TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS lembretes_por_hora ON lembretes(quando);
+`);
+
+export type Repeticao = 'nunca' | 'diario' | 'semanal';
+
+export interface MensagemAgendada {
+  id: number;
+  channelId: number;
+  texto: string;
+  proximaEm: string;
+  repetir: Repeticao;
+}
+
+const colunasDaAgendada = 'id, channel_id AS channelId, texto, proxima_em AS proximaEm, repetir';
+
+export function listarAgendadas(communityId: number): MensagemAgendada[] {
+  return db
+    .prepare(`SELECT ${colunasDaAgendada} FROM mensagens_agendadas WHERE community_id = ? ORDER BY proxima_em`)
+    .all(communityId) as unknown as MensagemAgendada[];
+}
+
+export function criarAgendada(communityId: number, channelId: number, texto: string, proximaEm: string, repetir: Repeticao, autorId: number): MensagemAgendada {
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO mensagens_agendadas (community_id, channel_id, texto, proxima_em, repetir, criada_por) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(communityId, channelId, texto, proximaEm, repetir, autorId);
+  return db.prepare(`SELECT ${colunasDaAgendada} FROM mensagens_agendadas WHERE id = ?`).get(Number(lastInsertRowid)) as unknown as MensagemAgendada;
+}
+
+export function apagarAgendada(communityId: number, id: number): boolean {
+  return db.prepare('DELETE FROM mensagens_agendadas WHERE id = ? AND community_id = ?').run(id, communityId).changes > 0;
+}
+
+/** As que já venceram, na ordem da hora. */
+export function agendadasVencidas(agora: string): (MensagemAgendada & { communityId: number })[] {
+  return db
+    .prepare(`SELECT ${colunasDaAgendada}, community_id AS communityId FROM mensagens_agendadas WHERE proxima_em <= ? ORDER BY proxima_em`)
+    .all(agora) as unknown as (MensagemAgendada & { communityId: number })[];
+}
+
+export function adiarAgendada(id: number, proximaEm: string) {
+  db.prepare('UPDATE mensagens_agendadas SET proxima_em = ? WHERE id = ?').run(proximaEm, id);
+}
+
+export function removerAgendada(id: number) {
+  db.prepare('DELETE FROM mensagens_agendadas WHERE id = ?').run(id);
+}
+
+export function criarLembrete(userId: number, messageId: number, quando: string) {
+  db.prepare('INSERT INTO lembretes (user_id, message_id, quando) VALUES (?, ?, ?)').run(userId, messageId, quando);
+}
+
+export interface LembreteVencido {
+  id: number;
+  userId: number;
+  messageId: number;
+  channelId: number;
+  communityId: number | null;
+  autor: string;
+  trecho: string;
+}
+
+/** Os lembretes vencidos — de todo mundo, ou só de uma pessoa (para entregar quando ela volta). */
+export function lembretesVencidos(agora: string, userId?: number): LembreteVencido[] {
+  return db
+    .prepare(
+      `SELECT l.id, l.user_id AS userId, l.message_id AS messageId, m.channel_id AS channelId, c.community_id AS communityId,
+              CASE WHEN u.sistema = 1 THEN 'Syden' ELSE u.username END AS autor, substr(m.content, 1, 200) AS trecho
+       FROM lembretes l JOIN messages m ON m.id = l.message_id JOIN channels c ON c.id = m.channel_id JOIN users u ON u.id = m.user_id
+       WHERE l.quando <= ? ${userId === undefined ? '' : 'AND l.user_id = ?'} ORDER BY l.quando`,
+    )
+    .all(...(userId === undefined ? [agora] : [agora, userId])) as unknown as LembreteVencido[];
+}
+
+export function apagarLembrete(id: number) {
+  db.prepare('DELETE FROM lembretes WHERE id = ?').run(id);
+}

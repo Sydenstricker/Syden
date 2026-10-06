@@ -1,6 +1,7 @@
 import type { Server as IOServer, Socket } from 'socket.io';
 import { verifySession } from './auth.js';
 import { barrarMensagem } from './automod.js';
+import { entregarPendentes } from './agendador.js';
 import { responderComando } from './comandos-routes.js';
 import * as db from './db.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
@@ -141,6 +142,11 @@ export function leaveDirectRoom(io: IOServer, userId: number, channelId: number)
 }
 
 /** Manda um aviso só para as abas de uma pessoa (ex.: "você foi movido para outra sala"). */
+/** A pessoa tem alguma aba conectada agora? */
+export function estaOnline(userId: number): boolean {
+  return (onlineSockets.get(userId)?.sockets.size ?? 0) > 0;
+}
+
 export function emitToUser(io: IOServer, userId: number, event: string, payload: unknown) {
   for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
     io.sockets.sockets.get(socketId)?.emit(event, payload);
@@ -263,6 +269,8 @@ export function setupRealtime(io: IOServer) {
     const online = onlineSockets.get(user.id) ?? { username: user.username, sockets: new Set<string>(), status: 'online' as PresenceStatus };
     online.sockets.add(socket.id);
     onlineSockets.set(user.id, online);
+    // Lembretes que venceram enquanto a pessoa estava fora chegam agora (ver agendador.ts).
+    entregarPendentes(io, user.id);
     broadcastPresence(io);
 
     // Só chegam a esta aba os avisos das comunidades de que a pessoa participa.
