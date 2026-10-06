@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  'Canal de destaques': 'Išskirtinių kanalas',
+  'Destaques': 'Išskirtiniai',
+  'Estrelas necessárias': 'Reikia žvaigždučių',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Kai žinutė surenka pakankamai ⭐ žvaigždučių, Syden ją paskelbia išskirtinių kanale. Rašiusiojo žvaigždutė neskaičiuojama, o ištrynus žinutę dingsta ir išskirtinė.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Loterijos „{premio}“ rezultatas: {vencedores}. Sveikiname!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Loterija: {premio}! Sureaguok 🎉 ir dalyvauk. Rezultatas bus {quando}.',
   'Começar o sorteio': 'Pradėti loteriją',

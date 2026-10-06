@@ -206,6 +206,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
+  'Canal de destaques': 'चुनिंदा संदेशों का चैनल',
+  'Destaques': 'चुनिंदा',
+  'Estrelas necessárias': 'ज़रूरी सितारे',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'जब किसी संदेश को काफ़ी ⭐ सितारे मिल जाते हैं, Syden उसे चुनिंदा संदेशों के चैनल में पोस्ट करता है। लिखने वाले का अपना सितारा नहीं गिना जाता, और संदेश मिटाने पर चुनिंदा भी मिट जाता है।',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} के ड्रॉ का नतीजा: {vencedores}। बधाई!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 ड्रॉ: {premio}! हिस्सा लेने के लिए 🎉 से रिएक्ट करें। नतीजा {quando} को आएगा।',
   'Começar o sorteio': 'ड्रॉ शुरू करें',

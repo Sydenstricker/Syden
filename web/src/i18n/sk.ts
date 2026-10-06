@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kto bude v konverzácii. S viacerými ľuďmi z toho bude skupinová konverzácia.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajaca na sochu na námestí.',
+  'Canal de destaques': 'Kanál výberu',
+  'Destaques': 'Výber',
+  'Estrelas necessárias': 'Potrebné hviezdičky',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Keď správa nazbiera dosť hviezdičiek ⭐, Syden ju zverejní v kanáli výberu. Hviezdička od autora správy sa nepočíta a zmazaním správy zmizne aj z výberu.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Výsledok žrebovania o {premio}: {vencedores}. Gratulujeme!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Žrebovanie: {premio}! Zareaguj 🎉 a si v hre. Výsledok bude {quando}.',
   'Começar o sorteio': 'Spustiť žrebovanie',

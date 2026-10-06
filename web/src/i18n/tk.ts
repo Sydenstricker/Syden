@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
   'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',
+  'Canal de destaques': 'Saýlananlar kanaly',
+  'Destaques': 'Saýlananlar',
+  'Estrelas necessárias': 'Gerek ýyldyzlar',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Haty ýeterlik ⭐ ýyldyz ýygnanda, Syden ony saýlananlar kanalynda çap edýär. Ýazanyň öz ýyldyzy hasaba alynmaýar, haty pozmak saýlananam pozýar.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} bije çekilişiniň netijesi: {vencedores}. Gutlaýarys!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Bije çekiliş: {premio}! Gatnaşmak üçin 🎉 bilen reaksiýa bildir. Netije {quando} çykar.',
   'Começar o sorteio': 'Bije çekilişi başla',

@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  'Canal de destaques': 'Rás fyrir hápunkta',
+  'Destaques': 'Hápunktar',
+  'Estrelas necessárias': 'Stjörnur sem þarf',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Þegar skilaboð safna nógu mörgum ⭐ stjörnum birtir Syden þau á hápunktarásinni. Stjarna þess sem skrifaði telst ekki með, og ef skilaboðunum er eytt hverfur hápunkturinn líka.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Niðurstaða útdráttar um {premio}: {vencedores}. Til hamingju!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Útdráttur: {premio}! Bregstu við með 🎉 til að taka þátt. Niðurstaðan kemur {quando}.',
   'Começar o sorteio': 'Hefja útdrátt',

@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  'Canal de destaques': 'Fantsona voafantina',
+  'Destaques': 'Voafantina',
+  'Estrelas necessárias': 'Kintana ilaina',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Rehefa mahangona kintana ⭐ ampy ny hafatra iray, avoakan’i Syden ao amin’ny fantsona voafantina izy. Tsy isaina ny kintan’ilay nanoratra, ary rehefa fafana ny hafatra dia voafafa koa ilay voafantina.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Valin’ny filokana {premio}: {vencedores}. Arahaba!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Filokana: {premio}! Mamalia amin’ny 🎉 raha handray anjara. Hivoaka amin’ny {quando} ny vokatra.',
   'Começar o sorteio': 'Atombohy ny filokana',

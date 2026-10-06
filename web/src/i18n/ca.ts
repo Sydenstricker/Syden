@@ -355,6 +355,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
+  'Canal de destaques': 'Canal de destacats',
+  'Destaques': 'Destacats',
+  'Estrelas necessárias': 'Estrelles necessàries',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Quan un missatge aplega prou estrelles ⭐, Syden el publica al canal de destacats. L’estrella de qui l’ha escrit no compta, i esborrar el missatge esborra el destacat.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Resultat del sorteig de {premio}: {vencedores}. Enhorabona!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Sorteig: {premio}! Reacciona amb 🎉 per participar. El resultat surt el {quando}.',
   'Começar o sorteio': 'Començar el sorteig',

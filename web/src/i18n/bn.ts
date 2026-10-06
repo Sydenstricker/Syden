@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'Canal de destaques': 'বাছাই করা বার্তার চ্যানেল',
+  'Destaques': 'বাছাই করা',
+  'Estrelas necessárias': 'দরকারি তারা',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'কোনো বার্তা যথেষ্ট ⭐ তারা পেলে Syden সেটি বাছাই করা বার্তার চ্যানেলে প্রকাশ করে। লেখকের নিজের তারা গোনা হয় না, আর বার্তা মুছলে বাছাইটিও মুছে যায়।',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio}-এর লটারির ফল: {vencedores}। অভিনন্দন!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 লটারি: {premio}! অংশ নিতে 🎉 দিয়ে প্রতিক্রিয়া দিন। ফল প্রকাশ হবে {quando}।',
   'Começar o sorteio': 'লটারি শুরু করুন',

@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  'Canal de destaques': 'Kiemelések csatornája',
+  'Destaques': 'Kiemelések',
+  'Estrelas necessárias': 'Szükséges csillagok',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Ha egy üzenet elég ⭐ csillagot gyűjt, a Syden közzéteszi a kiemelések csatornáján. Az író saját csillaga nem számít, és az üzenet törlése a kiemelést is törli.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 A(z) {premio} sorsolás eredménye: {vencedores}. Gratulálunk!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Sorsolás: {premio}! Reagálj 🎉-vel, és már játszol is. Az eredmény: {quando}.',
   'Começar o sorteio': 'Sorsolás indítása',

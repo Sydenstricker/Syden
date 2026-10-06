@@ -370,6 +370,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
   'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',
+  'Canal de destaques': 'ޚާއްޞަ މެސެޖުތަކުގެ ޗެނަލް',
+  'Destaques': 'ޚާއްޞަ',
+  'Estrelas necessárias': 'ބޭނުންވާ ތަރި',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'މެސެޖަކަށް ފުދޭވަރަށް ⭐ ތަރި ލިބުމުން Syden އެ މެސެޖު ޚާއްޞަ ޗެނަލްގައި ޝާއިޢުކުރާނެ. ލިޔުނު މީހާގެ ތަރި ނުގުނޭ، މެސެޖު ފޮހެލުމުން ޚާއްޞަ ކޮޕީވެސް ފޮހެވޭނެ.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} ގެ ގުރުއަތުގެ ނަތީޖާ: {vencedores}. މަބްރޫކް!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 ގުރުއަތު: {premio}! ބައިވެރިވުމަށް 🎉 އިން ރިއެކްޓް ކުރޭ. ނަތީޖާ ނެރޭނީ {quando}.',
   'Começar o sorteio': 'ގުރުއަތު ފަށާ',

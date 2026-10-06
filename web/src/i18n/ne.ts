@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'Canal de destaques': 'विशेष सन्देशको च्यानल',
+  'Destaques': 'विशेष',
+  'Estrelas necessárias': 'चाहिने ताराहरू',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'कुनै सन्देशले पर्याप्त ⭐ तारा पाएपछि Syden ले त्यसलाई विशेष सन्देशको च्यानलमा पोस्ट गर्छ। लेख्नेको आफ्नै तारा गनिँदैन, र सन्देश मेटाउँदा विशेष पनि मेटिन्छ।',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} को चिट्ठाको नतिजा: {vencedores}। बधाई छ!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 चिट्ठा: {premio}! भाग लिन 🎉 ले प्रतिक्रिया दिनुहोस्। नतिजा {quando} मा आउँछ।',
   'Começar o sorteio': 'चिट्ठा सुरु गर्नुहोस्',

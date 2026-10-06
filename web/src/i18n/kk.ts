@@ -355,6 +355,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',
+  'Canal de destaques': 'Таңдаулылар арнасы',
+  'Destaques': 'Таңдаулылар',
+  'Estrelas necessárias': 'Қажет жұлдыздар',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Хабарлама жеткілікті ⭐ жұлдыз жинағанда, Syden оны таңдаулылар арнасында жариялайды. Жазған адамның өз жұлдызы есептелмейді, хабарламаны өшірсең, таңдаулы да өшеді.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} ұтыс ойынының нәтижесі: {vencedores}. Құттықтаймыз!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Ұтыс ойыны: {premio}! Қатысу үшін 🎉 арқылы реакция бер. Нәтиже {quando} шығады.',
   'Começar o sorteio': 'Ұтыс ойынын бастау',

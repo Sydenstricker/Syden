@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  'Canal de destaques': 'Canale dei momenti migliori',
+  'Destaques': 'Momenti migliori',
+  'Estrelas necessárias': 'Stelle necessarie',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Quando un messaggio raccoglie abbastanza stelle ⭐, Syden lo pubblica nel canale dei momenti migliori. La stella di chi l’ha scritto non conta, e cancellare il messaggio cancella anche la copia in evidenza.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Risultato dell’estrazione di {premio}: {vencedores}. Complimenti!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Estrazione: {premio}! Reagisci con 🎉 per partecipare. Il risultato esce il {quando}.',
   'Começar o sorteio': 'Avvia l’estrazione',

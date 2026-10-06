@@ -4983,3 +4983,89 @@ export function sorteiosGanhos(communityId: number, userId: number): { premio: s
     )
     .all(communityId, userId) as { premio: string; terminouEm: string }[];
 }
+
+// ---------------------------------------------------------------------------------------------------
+// OS DESTAQUES (o "starboard"): a mensagem que junta ⭐ suficientes é republicada pelo Syden no canal de
+// destaques que quem administra escolheu. Uma vez só por mensagem — a tabela é o registro disso.
+//
+// APAGOU A ORIGINAL, SOME O DESTAQUE, por gatilho no banco e não por código em cada rota: mensagem sai
+// por muitos caminhos (o autor, a moderação, a conta excluída, o anexo que expira), e um destaque que
+// sobrevive à original seria o jeito de manter no ar o que a moderação tirou.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('communities', 'destaque_canal', 'INTEGER');
+addColumnIfMissing('communities', 'destaque_minimo', 'INTEGER NOT NULL DEFAULT 3');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS destaques (
+    message_id INTEGER PRIMARY KEY REFERENCES messages(id) ON DELETE CASCADE,
+    post_id    INTEGER REFERENCES messages(id) ON DELETE SET NULL
+  );
+  CREATE TRIGGER IF NOT EXISTS destaque_some_com_a_original
+  BEFORE DELETE ON messages
+  BEGIN
+    DELETE FROM messages WHERE id = (SELECT post_id FROM destaques WHERE message_id = OLD.id);
+  END;
+`);
+
+export const EMOJI_DO_DESTAQUE = '⭐';
+
+export interface ConfigDeDestaques {
+  canalId: number | null;
+  minimo: number;
+}
+
+export function configDeDestaques(communityId: number): ConfigDeDestaques {
+  const linha = db.prepare('SELECT destaque_canal AS canalId, destaque_minimo AS minimo FROM communities WHERE id = ?').get(communityId) as
+    | ConfigDeDestaques
+    | undefined;
+  return linha ?? { canalId: null, minimo: 3 };
+}
+
+export function definirDestaques(communityId: number, canalId: number | null, minimo: number) {
+  db.prepare('UPDATE communities SET destaque_canal = ?, destaque_minimo = ? WHERE id = ?').run(canalId, minimo, communityId);
+}
+
+/** Quantas ⭐ contam: as de gente de verdade, e nunca a do próprio autor — ninguém se destaca sozinho. */
+export function estrelasQueContam(messageId: number, autorId: number): number {
+  return (
+    db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM message_reactions r JOIN users u ON u.id = r.user_id
+         WHERE r.message_id = ? AND r.emoji = ? AND r.user_id != ? AND u.sistema = 0`,
+      )
+      .get(messageId, EMOJI_DO_DESTAQUE, autorId) as { n: number }
+  ).n;
+}
+
+export function jaDestacada(messageId: number): boolean {
+  return !!db.prepare('SELECT 1 FROM destaques WHERE message_id = ?').get(messageId);
+}
+
+export function registrarDestaque(messageId: number, postId: number) {
+  db.prepare('INSERT OR IGNORE INTO destaques (message_id, post_id) VALUES (?, ?)').run(messageId, postId);
+}
+
+/** O destaque publicado de uma mensagem, para avisar as telas quando a original sai. */
+export function postDoDestaque(messageId: number): { id: number; channelId: number } | undefined {
+  return db
+    .prepare('SELECT m.id, m.channel_id AS channelId FROM destaques d JOIN messages m ON m.id = d.post_id WHERE d.message_id = ?')
+    .get(messageId) as { id: number; channelId: number } | undefined;
+}
+
+/**
+ * As imagens da original vão junto no destaque. Nada é copiado: o arquivo mora no disco pelo conteúdo
+ * (sha), e a linha nova só aponta para ele, com chave própria.
+ */
+export function copiarImagens(deMensagem: number, paraMensagem: number) {
+  const linhas = db
+    .prepare("SELECT name, mime, size, width, height, sha, bytes, expires_at AS expiresAt FROM attachments WHERE message_id = ? AND mime LIKE 'image/%' ORDER BY id")
+    .all(deMensagem) as { name: string; mime: string; size: number; width: number | null; height: number | null; sha: string; bytes: number; expiresAt: string | null }[];
+  const inserir = db.prepare(
+    `INSERT INTO attachments (message_id, key, name, mime, size, width, height, data, sha, bytes, expires_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  );
+  for (const a of linhas) {
+    inserir.run(paraMensagem, randomBytes(12).toString('hex'), a.name, a.mime, a.size, a.width, a.height, SEM_BYTES, a.sha, a.bytes, a.expiresAt);
+  }
+}

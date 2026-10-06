@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  'Canal de destaques': 'Kanaalka la xushay',
+  'Destaques': 'La xushay',
+  'Estrelas necessárias': 'Xiddigaha loo baahan yahay',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Marka fariintu hesho xiddigo ⭐ ku filan, Syden wuxuu ku daabacaa kanaalka la xushay. Xiddigta qofka qoray lama tiriyo, tirtiridda fariintuna waxay tirtirtaa tii la xushay.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Natiijada bakhtiyaanasiibka {premio}: {vencedores}. Hambalyo!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Bakhtiyaanasiib: {premio}! Ku jawaab 🎉 si aad uga qayb gasho. Natiijadu waxay soo baxaysaa {quando}.',
   'Começar o sorteio': 'Bilow bakhtiyaanasiibka',

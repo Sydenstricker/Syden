@@ -1375,8 +1375,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (message.userId !== request.user.id && !canManage) {
         return reply.code(403).send({ error: 'Só o autor ou quem administra a comunidade pode apagar a mensagem.' });
       }
+      // O destaque some junto (gatilho no banco); as telas do canal de destaques precisam saber.
+      const destaque = db.postDoDestaque(message.id);
       db.deleteMessage(message.id);
       const room = channelRoom(channel);
+      const canalDoDestaque = destaque && db.findChannel(destaque.channelId);
+      if (destaque && canalDoDestaque) io.to(channelRoom(canalDoDestaque)).emit('message:deleted', { id: destaque.id, channelId: destaque.channelId, threadId: null });
       io.to(room).emit('message:deleted', {
         id: message.id,
         channelId: message.channelId,

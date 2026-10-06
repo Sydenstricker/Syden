@@ -374,6 +374,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
+  'Canal de destaques': 'Онцлох суваг',
+  'Destaques': 'Онцлох',
+  'Estrelas necessárias': 'Шаардлагатай од',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Мессеж хангалттай ⭐ од цуглуулахад Syden түүнийг онцлох сувагт нийтэлнэ. Бичсэн хүний өөрийн од тооцогдохгүй, мессежийг устгавал онцлох нь бас устана.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} сугалааны үр дүн: {vencedores}. Баяр хүргэе!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Сугалаа: {premio}! Оролцохын тулд 🎉-ээр хариу үйлдэл хийгээрэй. Үр дүн {quando} гарна.',
   'Começar o sorteio': 'Сугалаа эхлүүлэх',

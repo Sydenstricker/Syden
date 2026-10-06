@@ -191,6 +191,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'Canal de destaques': 'Chaneli ya vivutio',
+  'Destaques': 'Vivutio',
+  'Estrelas necessárias': 'Nyota zinazohitajika',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Ujumbe ukipata nyota ⭐ za kutosha, Syden huuchapisha kwenye chaneli ya vivutio. Nyota ya aliyeandika haihesabiwi, na kufuta ujumbe hufuta kivutio pia.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Matokeo ya bahati nasibu ya {premio}: {vencedores}. Hongera!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Bahati nasibu: {premio}! Jibu kwa 🎉 ili kushiriki. Matokeo yatatoka {quando}.',
   'Começar o sorteio': 'Anza bahati nasibu',

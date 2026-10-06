@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'Canal de destaques': 'Канали баргузидаҳо',
+  'Destaques': 'Баргузидаҳо',
+  'Estrelas necessárias': 'Ситораҳои лозимӣ',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Вақте паём ситораҳои ⭐ кофӣ ҷамъ мекунад, Syden онро дар канали баргузидаҳо нашр мекунад. Ситораи нависанда ҳисоб намешавад ва нест кардани паём баргузидаро ҳам нест мекунад.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Натиҷаи қуръакашии {premio}: {vencedores}. Табрик!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Қуръакашӣ: {premio}! Барои иштирок бо 🎉 вокуниш нишон диҳед. Натиҷа {quando} эълон мешавад.',
   'Começar o sorteio': 'Оғози қуръакашӣ',

@@ -356,6 +356,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кой да влезе. С повече от един човек става групов разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери заека за статуята на площада.',
+  'Canal de destaques': 'Канал за отличени',
+  'Destaques': 'Отличени',
+  'Estrelas necessárias': 'Нужни звезди',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Когато съобщение събере достатъчно звезди ⭐, Syden го публикува в канала за отличени. Звездата на автора не се брои, а изтриването на съобщението изтрива и отличеното.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Резултат от томболата за {premio}: {vencedores}. Честито!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Томбола: {premio}! Реагирай с 🎉, за да участваш. Резултатът излиза на {quando}.',
   'Começar o sorteio': 'Започни томболата',

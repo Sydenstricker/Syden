@@ -379,6 +379,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
   'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',
+  'Canal de destaques': 'Ընտրվածների ալիք',
+  'Destaques': 'Ընտրվածներ',
+  'Estrelas necessárias': 'Անհրաժեշտ աստղեր',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Երբ հաղորդագրությունը հավաքում է բավարար ⭐ աստղ, Syden-ը այն հրապարակում է ընտրվածների ալիքում։ Գրողի սեփական աստղը չի հաշվվում, իսկ հաղորդագրությունը ջնջելիս ջնջվում է նաև ընտրվածը։',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} վիճակահանության արդյունքը՝ {vencedores}։ Շնորհավո՛ր։',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Վիճակահանություն՝ {premio}։ Մասնակցելու համար արձագանքիր 🎉-ով։ Արդյունքը՝ {quando}։',
   'Começar o sorteio': 'Սկսել վիճակահանությունը',

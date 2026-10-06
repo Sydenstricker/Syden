@@ -356,6 +356,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'Canal de destaques': 'Esiletõstete kanal',
+  'Destaques': 'Esiletõsted',
+  'Estrelas necessárias': 'Vajalikud tähed',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Kui sõnum kogub piisavalt ⭐ tähti, postitab Syden selle esiletõstete kanalisse. Kirjutaja enda täht ei loe ja sõnumi kustutamine kustutab ka esiletõste.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Loosimise {premio} tulemus: {vencedores}. Palju õnne!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Loosimine: {premio}! Osalemiseks reageeri 🎉-ga. Tulemus selgub {quando}.',
   'Começar o sorteio': 'Alusta loosimist',

@@ -206,6 +206,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Dengan lebih daripada seorang, ia menjadi perbualan kumpulan.',
   'Escolha o coelho da estátua da praça.': 'Pilih arnab untuk patung di dataran.',
+  'Canal de destaques': 'Saluran sorotan',
+  'Destaques': 'Sorotan',
+  'Estrelas necessárias': 'Bintang diperlukan',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Apabila mesej mengumpul cukup bintang ⭐, Syden menyiarkannya dalam saluran sorotan. Bintang daripada penulis sendiri tidak dikira, dan memadam mesej turut memadam sorotannya.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Keputusan cabutan {premio}: {vencedores}. Tahniah!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Cabutan: {premio}! Beri reaksi 🎉 untuk menyertai. Keputusan keluar pada {quando}.',
   'Começar o sorteio': 'Mulakan cabutan',

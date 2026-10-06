@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  'Canal de destaques': 'ຊ່ອງຂໍ້ຄວາມເດັ່ນ',
+  'Destaques': 'ຂໍ້ຄວາມເດັ່ນ',
+  'Estrelas necessárias': 'ດາວທີ່ຕ້ອງການ',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'ເມື່ອຂໍ້ຄວາມໄດ້ຮັບດາວ ⭐ ພຽງພໍ Syden ຈະໂພສມັນໃນຊ່ອງຂໍ້ຄວາມເດັ່ນ. ດາວຂອງຜູ້ຂຽນເອງບໍ່ນັບ ແລະ ການລຶບຂໍ້ຄວາມຈະລຶບຂໍ້ຄວາມເດັ່ນນຳ.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 ຜົນການຈັບສະຫຼາກ {premio}: {vencedores}. ຂໍສະແດງຄວາມຍິນດີ!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 ຈັບສະຫຼາກ: {premio}! ກົດ 🎉 ເພື່ອເຂົ້າຮ່ວມ. ຜົນຈະອອກ {quando}.',
   'Começar o sorteio': 'ເລີ່ມຈັບສະຫຼາກ',

@@ -370,6 +370,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  'Canal de destaques': 'Kanal pi bon yo',
+  'Destaques': 'Pi bon yo',
+  'Estrelas necessárias': 'Zetwal ki nesesè',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Lè yon mesaj ranmase ase zetwal ⭐, Syden pibliye l nan kanal pi bon yo. Zetwal moun ki ekri a pa konte, epi si w efase mesaj la, li efase nan pi bon yo tou.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Rezilta tiraj {premio} la: {vencedores}. Konpliman!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Tiraj: {premio}! Reyaji ak 🎉 pou patisipe. Rezilta a ap soti {quando}.',
   'Começar o sorteio': 'Kòmanse tiraj la',

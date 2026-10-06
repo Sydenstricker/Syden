@@ -360,6 +360,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Khetha ukuthi ubani ongenayo. Uma bengaphezu komuntu oyedwa, iba yingxoxo yeqembu.',
   'Escolha o coelho da estátua da praça.': 'Khetha unogwaja wesithombe esisesigcawini.',
+  'Canal de destaques': 'Isiteshi sokugqamile',
+  'Destaques': 'Okugqamile',
+  'Estrelas necessárias': 'Izinkanyezi ezidingekayo',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Uma umlayezo uqoqa izinkanyezi ⭐ ezanele, i-Syden iwuthumela esiteshini sokugqamile. Inkanyezi yalowo owubhalile ayibalwa, futhi ukususa umlayezo kususa nokugqamile.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Umphumela womncintiswano we-{premio}: {vencedores}. Halala!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Umncintiswano: {premio}! Phendula ngo-🎉 ukuze ubambe iqhaza. Umphumela uzophuma ngo-{quando}.',
   'Começar o sorteio': 'Qala umncintiswano',

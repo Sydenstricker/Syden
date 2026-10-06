@@ -361,6 +361,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
+  'Canal de destaques': 'Izcēlumu kanāls',
+  'Destaques': 'Izcēlumi',
+  'Estrelas necessárias': 'Vajadzīgās zvaigznes',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Kad ziņa savāc pietiekami daudz ⭐ zvaigžņu, Syden to publicē izcēlumu kanālā. Rakstītāja paša zvaigzne neskaitās, un, izdzēšot ziņu, pazūd arī izcēlums.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Izlozes {premio} rezultāts: {vencedores}. Apsveicam!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Izloze: {premio}! Reaģē ar 🎉, lai piedalītos. Rezultāts būs {quando}.',
   'Começar o sorteio': 'Sākt izlozi',

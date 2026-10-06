@@ -372,6 +372,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
   'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
+  'Canal de destaques': 'གདམ་ཁ་བརྐྱབ་མིའི་རྒྱུ་ལམ',
+  'Destaques': 'གདམ་ཁ་བརྐྱབ་མི',
+  'Estrelas necessárias': 'དགོས་པའི་སྐར་མ',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'འཕྲིན་དོན་ཅིག་ལུ་ ⭐ སྐར་མ་ལངམ་ཐོབ་པ་ཅིན Syden གིས་ གདམ་ཁ་བརྐྱབ་མིའི་རྒྱུ་ལམ་ནང་བཙུགས། འབྲི་མི་རང་གི་སྐར་མ་མི་རྩིས་ འཕྲིན་དོན་བཏོན་པ་ཅིན་ གདམ་ཁ་ཡང་བཏོན་འགྱོ།',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} གི་ཤོ་ལོ་གི་གྲུབ་འབྲས: {vencedores} བཀྲ་ཤིས་བདེ་ལེགས!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 ཤོ་ལོ: {premio}! བཅའ་མར་གཏོགས་ནིའི་དོན་ལུ་ 🎉 གིས་ལན་འདེབས་འབད། གྲུབ་འབྲས་ {quando} ལུ་ཐོན།',
   'Começar o sorteio': 'ཤོ་ལོ་འགོ་བཙུགས',

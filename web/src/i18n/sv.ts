@@ -351,6 +351,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Välj vem som är med. Med fler än en person blir det en gruppkonversation.',
   'Escolha o coelho da estátua da praça.': 'Välj kaninen till statyn på torget.',
+  'Canal de destaques': 'Kanal för höjdpunkter',
+  'Destaques': 'Höjdpunkter',
+  'Estrelas necessárias': 'Stjärnor som behövs',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'När ett meddelande samlar tillräckligt med ⭐-stjärnor lägger Syden upp det i kanalen för höjdpunkter. Stjärnan från den som skrev räknas inte, och raderas meddelandet försvinner höjdpunkten också.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Resultatet av utlottningen av {premio}: {vencedores}. Grattis!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Utlottning: {premio}! Reagera med 🎉 för att vara med. Resultatet kommer {quando}.',
   'Começar o sorteio': 'Starta utlottningen',

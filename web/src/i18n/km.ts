@@ -358,6 +358,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
+  'Canal de destaques': 'ឆានែលសារពិសេស',
+  'Destaques': 'សារពិសេស',
+  'Estrelas necessárias': 'ផ្កាយដែលត្រូវការ',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'ពេលសារមួយទទួលបានផ្កាយ ⭐ គ្រប់គ្រាន់ Syden នឹងផ្សាយវាក្នុងឆានែលសារពិសេស។ ផ្កាយរបស់អ្នកសរសេរមិនរាប់ទេ ហើយការលុបសារក៏លុបសារពិសេសដែរ។',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 លទ្ធផលចាប់ឆ្នោត {premio}៖ {vencedores}។ សូមអបអរសាទរ!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 ចាប់ឆ្នោត៖ {premio}! ប្រតិកម្មដោយ 🎉 ដើម្បីចូលរួម។ លទ្ធផលនឹងចេញនៅ {quando}។',
   'Começar o sorteio': 'ចាប់ផ្ដើមការចាប់ឆ្នោត',

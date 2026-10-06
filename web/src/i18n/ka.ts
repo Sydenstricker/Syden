@@ -378,6 +378,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  'Canal de destaques': 'რჩეულების არხი',
+  'Destaques': 'რჩეულები',
+  'Estrelas necessárias': 'საჭირო ვარსკვლავები',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'როცა შეტყობინება საკმარის ⭐ ვარსკვლავს აგროვებს, Syden მას რჩეულების არხში აქვეყნებს. ავტორის საკუთარი ვარსკვლავი არ ითვლება, ხოლო შეტყობინების წაშლა რჩეულსაც შლის.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio}-ის გათამაშების შედეგი: {vencedores}. გილოცავთ!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 გათამაშება: {premio}! მონაწილეობისთვის დააჭირე 🎉-ს. შედეგი გამოქვეყნდება {quando}.',
   'Começar o sorteio': 'გათამაშების დაწყება',

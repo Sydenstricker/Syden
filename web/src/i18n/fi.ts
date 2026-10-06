@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
+  'Canal de destaques': 'Nostojen kanava',
+  'Destaques': 'Nostot',
+  'Estrelas necessárias': 'Tähtiä tarvitaan',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Kun viesti kerää tarpeeksi ⭐-tähtiä, Syden julkaisee sen nostojen kanavalla. Kirjoittajan oma tähti ei lasketa, ja viestin poistaminen poistaa myös noston.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Arvonnan {premio} tulos: {vencedores}. Onnea!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Arvonta: {premio}! Osallistu reagoimalla 🎉. Tulos julkaistaan {quando}.',
   'Começar o sorteio': 'Aloita arvonta',

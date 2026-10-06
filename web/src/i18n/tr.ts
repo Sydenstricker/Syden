@@ -201,6 +201,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
   'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
+  'Canal de destaques': 'Öne çıkanlar kanalı',
+  'Destaques': 'Öne çıkanlar',
+  'Estrelas necessárias': 'Gereken yıldız',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Bir mesaj yeterince ⭐ yıldız topladığında Syden onu öne çıkanlar kanalında paylaşır. Yazanın kendi yıldızı sayılmaz, mesajı silmek öne çıkanı da siler.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} çekilişinin sonucu: {vencedores}. Tebrikler!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Çekiliş: {premio}! Katılmak için 🎉 ile tepki ver. Sonuç {quando} açıklanacak.',
   'Começar o sorteio': 'Çekilişi başlat',

@@ -204,6 +204,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie erbij komt. Met meer dan één persoon wordt het een groepsgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies het konijn voor het standbeeld op het plein.',
+  'Canal de destaques': 'Kanaal voor hoogtepunten',
+  'Destaques': 'Hoogtepunten',
+  'Estrelas necessárias': 'Benodigde sterren',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Als een bericht genoeg ⭐-sterren verzamelt, plaatst Syden het in het kanaal voor hoogtepunten. De ster van wie het schreef telt niet mee, en als het bericht wordt gewist, verdwijnt ook het hoogtepunt.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Uitslag van de winactie voor {premio}: {vencedores}. Gefeliciteerd!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Winactie: {premio}! Reageer met 🎉 om mee te doen. De uitslag komt op {quando}.',
   'Começar o sorteio': 'Winactie starten',

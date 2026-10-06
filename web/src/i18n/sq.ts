@@ -351,6 +351,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'Canal de destaques': 'Kanali i të veçantave',
+  'Destaques': 'Të veçanta',
+  'Estrelas necessárias': 'Yje të nevojshëm',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Kur një mesazh mbledh mjaft yje ⭐, Syden e publikon në kanalin e të veçantave. Ylli i atij që e shkroi nuk llogaritet, dhe fshirja e mesazhit fshin edhe të veçantën.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Rezultati i shortit për {premio}: {vencedores}. Urime!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Short: {premio}! Reago me 🎉 për të marrë pjesë. Rezultati del më {quando}.',
   'Começar o sorteio': 'Nis shortin',

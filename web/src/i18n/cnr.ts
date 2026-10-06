@@ -358,6 +358,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
+  'Canal de destaques': 'Kanal istaknutih',
+  'Destaques': 'Istaknuto',
+  'Estrelas necessárias': 'Potrebne zvjezdice',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Kad poruka skupi dovoljno zvjezdica ⭐, Syden je objavi u kanalu istaknutih. Zvjezdica autora poruke se ne broji, a brisanje poruke briše i istaknuto.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Rezultat nagradne igre za {premio}: {vencedores}. Čestitamo!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Nagradna igra: {premio}! Reaguj sa 🎉 da učestvuješ. Rezultat izlazi {quando}.',
   'Começar o sorteio': 'Pokreni nagradnu igru',

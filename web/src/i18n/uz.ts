@@ -367,6 +367,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  'Canal de destaques': 'Saralanganlar kanali',
+  'Destaques': 'Saralanganlar',
+  'Estrelas necessárias': 'Kerakli yulduzlar',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Xabar yetarlicha ⭐ yulduz yigʻganda, Syden uni saralanganlar kanalida eʼlon qiladi. Yozgan kishining oʻz yulduzi hisoblanmaydi, xabarni oʻchirish saralanganni ham oʻchiradi.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} qurʼasining natijasi: {vencedores}. Tabriklaymiz!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Qurʼa: {premio}! Qatnashish uchun 🎉 bilan munosabat bildiring. Natija {quando} eʼlon qilinadi.',
   'Começar o sorteio': 'Qurʼani boshlash',

@@ -353,6 +353,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',
+  'Canal de destaques': 'Kanaal vir hoogtepunte',
+  'Destaques': 'Hoogtepunte',
+  'Estrelas necessárias': 'Sterre nodig',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'Wanneer ’n boodskap genoeg ⭐-sterre kry, plaas Syden dit in die hoogtepuntkanaal. Die skrywer se eie ster tel nie, en as die boodskap uitgevee word, verdwyn die hoogtepunt ook.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 Uitslag van die trekking vir {premio}: {vencedores}. Veels geluk!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 Trekking: {premio}! Reageer met 🎉 om deel te neem. Die uitslag kom op {quando}.',
   'Começar o sorteio': 'Begin die trekking',

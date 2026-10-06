@@ -359,6 +359,10 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
+  'Canal de destaques': 'විශේෂ පණිවිඩ නාලිකාව',
+  'Destaques': 'විශේෂ',
+  'Estrelas necessárias': 'අවශ්‍ය තරු',
+  'Quando uma mensagem junta estrelas ⭐ suficientes, o Syden a publica no canal de destaques. A estrela de quem escreveu não conta, e apagar a mensagem apaga o destaque.': 'පණිවිඩයකට ප්‍රමාණවත් ⭐ තරු ලැබුණු විට Syden එය විශේෂ පණිවිඩ නාලිකාවේ පළ කරයි. ලියූ අයගේම තරුව ගණන් නොගැනේ, පණිවිඩය මැකුවොත් විශේෂයද මැකේ.',
   '🎉 Resultado do sorteio de {premio}: {vencedores}. Parabéns!': '🎉 {premio} දිනුම් ඇදීමේ ප්‍රතිඵලය: {vencedores}. සුබ පැතුම්!',
   '🎉 Sorteio: {premio}! Reaja com 🎉 para participar. O resultado sai em {quando}.': '🎉 දිනුම් ඇදීම: {premio}! සහභාගී වීමට 🎉 සමඟ ප්‍රතිචාර දක්වන්න. ප්‍රතිඵලය {quando} නිකුත් වේ.',
   'Começar o sorteio': 'දිනුම් ඇදීම අරඹන්න',

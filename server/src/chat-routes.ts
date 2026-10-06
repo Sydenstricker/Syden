@@ -3,6 +3,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import { barrarMensagem } from './automod.js';
 import * as db from './db.js';
+import { talvezDestacar } from './destaques-routes.js';
 import { pontuarMensagem } from './niveis.js';
 import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
@@ -341,13 +342,14 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       const emoji = validReaction(request.body?.emoji, channel.communityId);
       if (!emoji) return reply.code(400).send({ error: 'Emoji inválido.' });
 
-      db.toggleReaction(message.id, emoji, request.user.id);
+      const marcou = db.toggleReaction(message.id, emoji, request.user.id);
       io.to(channelRoom(channel)).emit('reaction:updated', {
         messageId: message.id,
         channelId: message.channelId,
         threadId: message.threadId,
         reactions: db.reactionCounts(message.id),
       });
+      if (marcou && emoji === db.EMOJI_DO_DESTAQUE) talvezDestacar(io, message.id);
       // Só para quem agiu: a lista já com "mine" certo, pronta para substituir o estado local.
       return db.reactionsForMessage(message.id, request.user.id);
     });
