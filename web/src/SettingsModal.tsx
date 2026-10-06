@@ -19,7 +19,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare } from 'lucide-react';
 import {
   type FormEvent,
   // Apelidados: sem isto o KeyboardEvent do React sombreia o do DOM, e o ouvinte de Escape lá
@@ -57,6 +57,7 @@ import { Avatar } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
 import { ConfiguracaoDeNiveis } from './Ranking';
 import { ModeracaoSection } from './Moderacao';
+import { ComandosSection } from './Comandos';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
@@ -81,7 +82,7 @@ import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'emojis' | 'soundboard';
+type Section = 'account' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
@@ -105,6 +106,7 @@ const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'members', label: chave('Membros'), icon: <Users size={18} /> },
   // Só aparece para quem administra (ver o filtro no menu): as regras e a lista de palavras são dela.
   { id: 'moderacao', label: chave('Moderação'), icon: <ShieldCheck size={18} /> },
+  { id: 'comandos', label: chave('Comandos'), icon: <TerminalSquare size={18} /> },
   { id: 'emojis', label: chave('Emojis'), icon: <AnimatedIcon name="emoji" size={20} /> },
   { id: 'soundboard', label: chave('Soundboard'), icon: <AnimatedIcon name="musica" size={20} /> },
 ];
@@ -155,7 +157,7 @@ export function SettingsModal({
             <>
               <hr />
               <h4 title={community.name}>{community.name}</h4>
-              {COMMUNITY_SECTIONS.filter((s) => s.id !== 'moderacao' || manages(community)).map((s) => (
+              {COMMUNITY_SECTIONS.filter((s) => (s.id !== 'moderacao' && s.id !== 'comandos') || manages(community)).map((s) => (
                 <button key={s.id} className={`settings-tab${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
                   {s.icon} {t(s.label)}
                 </button>
@@ -206,6 +208,7 @@ export function SettingsModal({
           )}
           {community && section === 'members' && <MembersSection user={user} community={community} />}
           {community && section === 'moderacao' && manages(community) && <ModeracaoSection community={community} />}
+          {community && section === 'comandos' && manages(community) && <ComandosSection community={community} />}
           {community && section === 'emojis' && <EmojisSection user={user} community={community} />}
           {community && section === 'soundboard' && <SoundboardSection user={user} community={community} />}
         </div>

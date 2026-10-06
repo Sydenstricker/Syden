@@ -1,4 +1,4 @@
-import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2 } from 'lucide-react';
+import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
@@ -87,9 +87,39 @@ function Attachments({ files }: { files: Attachment[] }) {
 }
 
 /** O nome de quem escreveu, na cor que a pessoa escolheu no perfil (a escolha vem do diretório). */
-function AutorNome({ id, nome }: { id: number; nome: string }) {
+/**
+ * O AUTOR QUE NÃO É PESSOA: a conta do Syden, que publica o que a comunidade configurou (a resposta de um
+ * comando, a mensagem agendada…). Leva o ícone D4 — a marca, e não o mascote, porque é o próprio app
+ * falando — e o selo APP ao lado do nome, como os bots do Discord. Ver server/src/syden-app.ts.
+ */
+function AvatarDoApp({ size }: { size: number }) {
+  return (
+    <span className="avatar avatar-app" style={{ width: size, height: size }}>
+      <img src={`${import.meta.env.BASE_URL}syden-icon.svg`} alt="" draggable={false} />
+    </span>
+  );
+}
+
+function SeloDeApp() {
+  const t = useT();
+  return (
+    <span className="selo-app" title={t('Mensagem automática do Syden, configurada pela comunidade')}>
+      <Check size={11} strokeWidth={3} aria-hidden="true" /> {t('APP')}
+    </span>
+  );
+}
+
+function AutorNome({ id, nome, app }: { id: number; nome: string; app?: boolean }) {
   const { members } = useDirectory();
   const membro = members.get(id);
+  if (app) {
+    return (
+      <>
+        <span className="message-author">{nome}</span>
+        <SeloDeApp />
+      </>
+    );
+  }
   return (
     <>
       <span className="message-author" data-cor={corDoNome(membro?.nameColor)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>
@@ -287,10 +317,10 @@ export function MessageItem({
 
   return (
     <div className="message">
-      <Avatar name={message.author.username} userId={message.author.id} size={40} />
+      {message.author.app ? <AvatarDoApp size={40} /> : <Avatar name={message.author.username} userId={message.author.id} size={40} />}
       <div className="message-body">
         <div className="message-meta">
-          <AutorNome id={message.author.id} nome={message.author.username} />
+          <AutorNome id={message.author.id} nome={message.author.username} app={message.author.app} />
           <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
         </div>
         {body}

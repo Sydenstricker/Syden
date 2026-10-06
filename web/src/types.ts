@@ -25,7 +25,10 @@ export interface User {
   temporarioAte?: string | null;
 }
 
-export type UserRef = Pick<User, 'id' | 'username'>;
+export type UserRef = Pick<User, 'id' | 'username'> & {
+  /** Autor que não é pessoa: a conta do Syden, que publica o que a comunidade configurou. */
+  app?: boolean;
+};
 
 /** Status de presença, como no Discord. "invisivel" faz a pessoa aparecer offline para os outros. */
 export type PresenceStatus = 'online' | 'ausente' | 'ocupado' | 'invisivel';

@@ -11655,3 +11655,97 @@ body.arrastando-barra {
   padding: 3px 0;
   border-top: 1px solid var(--border);
 }
+
+/* ---------- O autor que não é pessoa: a conta do Syden (MessageItem.tsx) ---------- */
+.avatar-app {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-app img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.selo-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-inline-start: 6px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--accent-texto);
+  font-size: calc(10px * var(--escala-do-texto));
+  font-weight: 700;
+  line-height: 16px;
+  vertical-align: middle;
+}
+
+/* ---------- Os comandos personalizados (Comandos.tsx) ---------- */
+.comandos-lista {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comandos-lista li {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+.comandos-cabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.comandos-cabeca code {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.comandos-resposta {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  text-align: start;
+  white-space: pre-wrap;
+  cursor: pointer;
+}
+
+.comandos-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.comandos-nome {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.comandos-nome input {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+}

@@ -149,7 +149,8 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Body: { userIds?: number[]; name?: string } }>('/api/direct', async (request, reply) => {
       if (barrarTemporario(request, reply)) return reply;
       const wanted = [...new Set((Array.isArray(request.body?.userIds) ? request.body.userIds : []).map(Number))].filter(
-        (id) => Number.isInteger(id) && id !== request.user.id,
+        // A conta do Syden não conversa: ela só publica o que as comunidades configuram.
+        (id) => Number.isInteger(id) && id !== request.user.id && !db.ehContaDoSistema(id),
       );
       if (wanted.length === 0) return reply.code(400).send({ error: 'Escolha com quem você quer conversar.' });
       if (wanted.length + 1 > MAX_GROUP_MEMBERS) {

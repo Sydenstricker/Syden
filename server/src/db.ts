@@ -77,7 +77,10 @@ export interface User {
 }
 
 /** Identificação pública de alguém (autor de mensagem, lista de online). */
-export type UserRef = Pick<User, 'id' | 'username'>;
+export type UserRef = Pick<User, 'id' | 'username'> & {
+  /** Autor que não é pessoa: a conta do Syden (ver A CONTA DO SYDEN). */
+  app?: boolean;
+};
 
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<
@@ -2440,7 +2443,7 @@ export function setFavoriteSound(userId: number, soundId: number, favorite: bool
 
 /** Todo mundo que já tem conta, para instalar um pacote de fábrica em quem entrou antes dele existir. */
 export function allUserIds(): number[] {
-  return (db.prepare('SELECT id FROM users').all() as { id: number }[]).map((row) => row.id);
+  return (db.prepare('SELECT id FROM users WHERE sistema = 0').all() as { id: number }[]).map((row) => row.id);
 }
 
 export function findUserById(id: number) {
@@ -2481,7 +2484,7 @@ export function findPasswordHash(userId: number) {
 /** O primeiro cadastro do servidor vira dono e administrador. */
 /** `email` e `exigeConfirmacao` vêm do cadastro por senha; o caminho social usa createUserSemSenha. */
 export function createUser(username: string, passwordHash: string, email: string | null = null, exigeConfirmacao = false): User {
-  const first = !db.prepare('SELECT 1 FROM users').get();
+  const first = !db.prepare('SELECT 1 FROM users WHERE sistema = 0').get();
   const result = db
     .prepare(
       'INSERT INTO users (username, password_hash, is_admin, is_owner, email, exige_confirmacao) VALUES (?, ?, ?, ?, ?, ?)',
@@ -2805,11 +2808,12 @@ interface MessageRow {
   threadId: number | null;
   userId: number;
   username: string;
+  sistema: number;
 }
 
 const messageSelect = `
   SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt, m.thread_id AS threadId,
-         u.id AS userId, u.username
+         u.id AS userId, u.username, u.sistema
   FROM messages m JOIN users u ON u.id = m.user_id`;
 
 function toMessage(row: MessageRow): Message {
@@ -2819,7 +2823,8 @@ function toMessage(row: MessageRow): Message {
     content: row.content,
     createdAt: row.createdAt,
     threadId: row.threadId,
-    author: { id: row.userId, username: row.username },
+    // A conta do Syden leva a marca de app: o site desenha "Syden" com o selo APP (ver A CONTA DO SYDEN).
+    author: row.sistema === 1 ? { id: row.userId, username: 'Syden', app: true } : { id: row.userId, username: row.username },
     attachments: [],
     poll: null,
     thread: null,
@@ -3337,9 +3342,9 @@ export function resumoDeContas(insigniaDosPrimeiros: number) {
   const desde = (dias: number) => new Date(agora - dias * 86_400_000).toISOString();
 
   return {
-    total: uma('SELECT COUNT(*) AS n FROM users'),
-    hoje: uma('SELECT COUNT(*) AS n FROM users WHERE created_at >= ?', desde(1)),
-    seteDias: uma('SELECT COUNT(*) AS n FROM users WHERE created_at >= ?', desde(7)),
+    total: uma('SELECT COUNT(*) AS n FROM users WHERE sistema = 0'),
+    hoje: uma('SELECT COUNT(*) AS n FROM users WHERE sistema = 0 AND created_at >= ?', desde(1)),
+    seteDias: uma('SELECT COUNT(*) AS n FROM users WHERE sistema = 0 AND created_at >= ?', desde(7)),
     trintaDias: uma('SELECT COUNT(*) AS n FROM users WHERE created_at >= ?', desde(30)),
     /** Sem comunidade nenhuma: chegou, não usou um convite e ainda não criou a sua. */
     semComunidade: uma('SELECT COUNT(*) AS n FROM users u WHERE NOT EXISTS (SELECT 1 FROM community_members m WHERE m.user_id = u.id)'),
@@ -3466,7 +3471,7 @@ export function limparEstadosSociais(antesDe: string) {
 
 /** Cria uma conta SEM SENHA, para quem entrou pelo Google. Ver o comentário em criarUsuarioSocial. */
 export function createUserSemSenha(username: string, email: string | null): User {
-  const first = !db.prepare('SELECT 1 FROM users').get();
+  const first = !db.prepare('SELECT 1 FROM users WHERE sistema = 0').get();
   const resultado = db
     .prepare('INSERT INTO users (username, password_hash, is_admin, is_owner, email, email_verified_at) VALUES (?, ?, ?, ?, ?, ?)')
     .run(
@@ -4585,4 +4590,87 @@ export function silenciadoAte(communityId: number, userId: number, agora = Date.
     | { ate: string | null }
     | undefined;
   return linha?.ate && Date.parse(linha.ate) > agora ? linha.ate : null;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A CONTA DO SYDEN: o autor das mensagens que a comunidade configurou para saírem sozinhas — a resposta
+// de um comando, a mensagem agendada, os parabéns, o resultado do sorteio. Decidido em 06/10/2026, pelo
+// Sydenstricker: aparece como "Syden", com o mascote e o selo APP, como os bots do Discord.
+//
+// ELA NÃO É UMA PESSOA, e as travas são estas:
+//   - nasce só quando a primeira mensagem automática precisa dela, e as contas de "primeiro usuário"
+//     (quem vira dono do Syden) a ignoram — senão, num banco novo, ela roubaria o lugar de quem chega;
+//   - o nome guardado tem espaço ("syden sistema"), que o cadastro recusa: ninguém se cadastra como ela,
+//     e não há colisão com alguém que já se chame "Syden". Quem desenha "Syden" é o site, pela marca;
+//   - sem senha (o "sem-senha" nunca confere), sem conversa privada, sem pedido de amizade.
+// Ela só PUBLICA o que a comunidade configurou. Não lê nada.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('users', 'sistema', 'INTEGER NOT NULL DEFAULT 0');
+
+const NOME_DA_CONTA_DO_SYDEN = 'syden sistema';
+let idDaContaDoSyden: number | null = null;
+
+/** O id da conta do Syden, criando-a na primeira vez. */
+export function contaDoSyden(): number {
+  if (idDaContaDoSyden !== null) return idDaContaDoSyden;
+  const existente = db.prepare('SELECT id FROM users WHERE sistema = 1 LIMIT 1').get() as { id: number } | undefined;
+  if (existente) return (idDaContaDoSyden = existente.id);
+  const { lastInsertRowid } = db
+    .prepare("INSERT INTO users (username, password_hash, is_admin, is_owner, sistema) VALUES (?, 'sem-senha', 0, 0, 1)")
+    .run(NOME_DA_CONTA_DO_SYDEN);
+  return (idDaContaDoSyden = Number(lastInsertRowid));
+}
+
+export function ehContaDoSistema(userId: number): boolean {
+  return !!db.prepare('SELECT 1 FROM users WHERE id = ? AND sistema = 1').get(userId);
+}
+
+/** Grava uma mensagem com o Syden como autor. Quem chama publica (ver syden-app.ts). */
+export function mensagemDoSyden(channelId: number, content: string, threadId: number | null = null): Message {
+  return createMessage(channelId, contaDoSyden(), content, threadId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// OS COMANDOS PERSONALIZADOS: "!regras" responde com o texto que quem administra cadastrou. A resposta
+// sai pela conta do Syden (ver comandos-routes.ts e syden-app.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS comandos (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    nome         TEXT NOT NULL,
+    resposta     TEXT NOT NULL,
+    UNIQUE (community_id, nome)
+  );
+`);
+
+export interface Comando {
+  id: number;
+  nome: string;
+  resposta: string;
+}
+
+export const MAXIMO_DE_COMANDOS = 50;
+
+export function listarComandos(communityId: number): Comando[] {
+  return db.prepare('SELECT id, nome, resposta FROM comandos WHERE community_id = ? ORDER BY nome').all(communityId) as unknown as Comando[];
+}
+
+export function acharComando(communityId: number, nome: string): Comando | undefined {
+  return db.prepare('SELECT id, nome, resposta FROM comandos WHERE community_id = ? AND nome = ?').get(communityId, nome) as Comando | undefined;
+}
+
+/** Cria ou troca a resposta de um comando com esse nome. */
+export function salvarComando(communityId: number, nome: string, resposta: string): Comando {
+  db.prepare(
+    `INSERT INTO comandos (community_id, nome, resposta) VALUES (?, ?, ?)
+     ON CONFLICT (community_id, nome) DO UPDATE SET resposta = excluded.resposta`,
+  ).run(communityId, nome, resposta);
+  return acharComando(communityId, nome)!;
+}
+
+export function apagarComando(communityId: number, comandoId: number): boolean {
+  return db.prepare('DELETE FROM comandos WHERE id = ? AND community_id = ?').run(comandoId, communityId).changes > 0;
 }

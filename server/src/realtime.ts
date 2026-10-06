@@ -1,6 +1,7 @@
 import type { Server as IOServer, Socket } from 'socket.io';
 import { verifySession } from './auth.js';
 import { barrarMensagem } from './automod.js';
+import { responderComando } from './comandos-routes.js';
 import * as db from './db.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 
@@ -319,6 +320,8 @@ export function setupRealtime(io: IOServer) {
       }
       // Os níveis (desligados, não faz nada): uma mensagem por minuto rende pontos. Ver niveis.ts.
       if (channel.communityId !== null) pontuarMensagem(io, channel.communityId, user.id);
+      // "!regras": se a comunidade tem esse comando, o Syden responde (ver comandos-routes.ts).
+      responderComando(io, channel, user, content, threadId);
       ack?.({ ok: true });
     });
 

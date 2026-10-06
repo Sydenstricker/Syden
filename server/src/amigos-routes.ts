@@ -54,7 +54,9 @@ export function registerAmigosRoutes(app: FastifyInstance, io: Server) {
         return reply.code(429).send({ error: 'Muitos pedidos seguidos. Tente de novo daqui a pouco.' });
       }
 
-      const alvo = db.findUserByName(nome);
+      // A conta do Syden não é gente: para quem procura, é como se não existisse.
+      const achado = db.findUserByName(nome);
+      const alvo = achado && !db.ehContaDoSistema(achado.id) ? achado : undefined;
 
       // MESMA RESPOSTA para "não existe" e para "já há um pedido": quem procura não descobre se a
       // conta existe. Sem isso, esta rota vira uma forma de varrer nomes e montar a lista de contas
