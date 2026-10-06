@@ -110,26 +110,5 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       if (!db.revogarAula(Number(request.params.id), communityId)) return reply.code(404).send({ error: 'Link não encontrado.' });
       return { ok: true };
     });
-
-    /**
-     * A cultura que a comunidade estuda, para a faixa de cultura dela. Uma turma de japonês escolhe
-     * Japão e japonês, e todo mundo nela vê livros e fotos do Japão — e não a cultura do idioma do
-     * sistema de cada aluno, que é o que a faixa da tela inicial mostra.
-     */
-    authed.patch<{ Params: { id: string }; Body: { pais?: string | null; lingua?: string | null } }>(
-      '/api/communities/:id/cultura',
-      async (request, reply) => {
-        const communityId = Number(request.params.id);
-        if (!manages(db.memberRole(communityId, request.user.id))) return reply.code(403).send({ error: 'Só quem administra a comunidade escolhe a cultura dela.' });
-        const pais = request.body?.pais ? String(request.body.pais).toUpperCase() : null;
-        const lingua = request.body?.lingua ? String(request.body.lingua).toLowerCase() : null;
-        if ((pais === null) !== (lingua === null)) return reply.code(400).send({ error: 'País e língua vão juntos.' });
-        if (pais !== null && (!/^[A-Z]{2}$/.test(pais) || !/^[a-z]{2,3}$/.test(lingua!))) return reply.code(400).send({ error: 'País ou língua inválidos.' });
-        db.definirCulturaDaComunidade(communityId, pais, lingua);
-        const community = db.findCommunity(communityId)!;
-        io.to(communityRoom(communityId)).emit('community:updated', community);
-        return community;
-      },
-    );
   });
 }

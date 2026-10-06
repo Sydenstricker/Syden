@@ -103,13 +103,3 @@ test('a conta temporária vencida é apagada — e só ela', () => {
   assert.ok(db.findUserByName('professora'), 'conta comum não é tocada');
 });
 
-test('a cultura da turma: quem administra escolhe país e língua juntos', async () => {
-  const r = await professora('PATCH', `/api/communities/${turma.id}/cultura`, { pais: 'jp', lingua: 'JA' });
-  assert.equal(r.statusCode, 200, r.body);
-  assert.equal(r.json().culturaPais, 'JP');
-  assert.equal(r.json().culturaLingua, 'ja');
-  assert.equal((await professora('PATCH', `/api/communities/${turma.id}/cultura`, { pais: 'JP' })).statusCode, 400, 'sem a língua não');
-  assert.equal((await aluna('PATCH', `/api/communities/${turma.id}/cultura`, { pais: 'BR', lingua: 'pt' })).statusCode, 403);
-  const limpa = await professora('PATCH', `/api/communities/${turma.id}/cultura`, { pais: null, lingua: null });
-  assert.equal(limpa.json().culturaPais, null);
-});

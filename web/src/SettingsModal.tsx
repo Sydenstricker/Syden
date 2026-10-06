@@ -60,7 +60,6 @@ import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
 import { useDirectory } from './directory';
 import { CapaDaComunidade } from './CapaDaComunidade';
-import { CulturaDaTurma } from './CulturaDaTurma';
 import { CommunityIcon } from './CommunityIcon';
 import { PainelDoSelo } from './PainelDoSelo';
 import { LixeiraDeCanais } from './LixeiraDeCanais';
@@ -803,8 +802,6 @@ function CommunitySection({
       {canManage && (
         <>
           <EditorDeBoasVindas community={community} />
-          <h3>{t('Cultura da turma')}</h3>
-          <CulturaDaTurma community={community} />
           <h3>{t('Imagem')}</h3>
           <CommunityIconEditor community={community} onChanged={onChanged} />
           <CommunityBannerEditor community={community} onChanged={onChanged} />

@@ -36,9 +36,6 @@ export interface Community {
   seloTexto?: string | null;
   seloIcone?: string | null;
   seloCor?: string | null;
-  /** A cultura que a comunidade estuda (país ISO e língua), para a faixa de cultura dela. Nulo = nenhuma. */
-  culturaPais?: string | null;
-  culturaLingua?: string | null;
 }
 
 /** Uma comunidade vista por quem participa dela. */
@@ -1208,7 +1205,7 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor, cultura_pais AS culturaPais, cultura_lingua AS culturaLingua';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
@@ -1216,7 +1213,6 @@ export function listCommunitiesForUser(userId: number): CommunityForUser[] {
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
               c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte, c.efeito,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
-              c.cultura_pais AS culturaPais, c.cultura_lingua AS culturaLingua,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               c.invite_code AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
@@ -4150,9 +4146,6 @@ db.exec(`
 
 // Até quando a conta existe. Nulo = conta comum, para sempre. Preenchido = entrou por um link de aula.
 addColumnIfMissing('users', 'temporario_ate', 'TEXT');
-// A cultura que a comunidade estuda, para a faixa de cultura dela (país ISO e língua). Nulo = nenhuma.
-addColumnIfMissing('communities', 'cultura_pais', 'TEXT');
-addColumnIfMissing('communities', 'cultura_lingua', 'TEXT');
 
 export interface Aula {
   id: number;
@@ -4239,9 +4232,4 @@ export function limparTemporariosVencidos(): number {
     .all() as { id: number }[];
   for (const { id } of vencidos) deleteAccount(id);
   return vencidos.length;
-}
-
-/** A cultura da comunidade (para a faixa dela). Os dois vêm juntos, ou nenhum. */
-export function definirCulturaDaComunidade(communityId: number, pais: string | null, lingua: string | null) {
-  db.prepare('UPDATE communities SET cultura_pais = ?, cultura_lingua = ? WHERE id = ?').run(pais, lingua, communityId);
 }

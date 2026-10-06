@@ -177,6 +177,19 @@ os sinais de vogal. As formas verbais dele seguem no masculino: é dívida conhe
 
 ## Culturas na home (idiomas, leitura, culinária, dança, música)
 
+**REMOVIDA INTEIRA em 06/10/2026, pelo Sydenstricker, depois de ver no ar:** *"uma qualidade ruim no
+geral. A intenção era estimular o usuário, mas a baixa qualidade vai apenas poluir a interface."* Saiu
+tudo: a faixa da home, as abas (comida, dança, música, teatro), a cultura da turma e a aba dela no
+modo sala. O que está abaixo fica como registro do que foi tentado e medido.
+
+**A lição, e é ela que vale reler antes de voltar ao assunto:** "quem escolhe o conteúdo são as APIs
+das fontes" garante a licença, NÃO a qualidade. Medido no dia: "Cuisine of Brazil" trazia fotos de
+mandioca crua e de churrascaria em outro país; "Dance of" e os áudios do Commons eram desiguais de país
+para país; o teatro do Gutenberg era capa genérica. A home é o lugar mais visto do app, e conteúdo
+mediano ali é pior do que nenhum. Fontes medidas e descartadas para quem retomar: a API do Met deu 410
+(desligada), as receitas da Wikibooks só existem em inglês, e o Openverse buscando o país trazia faixas
+que só levam o nome dele no título.
+
 **A primeira faixa foi construída em 03/10/2026** (`server/src/cultura.ts`, `web/src/Cultura.tsx`):
 fotos do país da pessoa ("Quality images of <país>", no Commons) e livros na língua dela (Gutendex).
 O que decidiu a forma, medido no dia:

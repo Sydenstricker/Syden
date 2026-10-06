@@ -5,7 +5,6 @@ import { CHANGELOG, marcarNovidadesVistas } from './changelog';
 import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
-import { FaixaDaCultura } from './Cultura';
 import { Farol, atividadeAgora } from './Farol';
 import { PainelCoelhos } from './PainelCoelhos';
 import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type PessoaNaPraca, type Periodo, type PinoVila, Vila } from './Vila';
@@ -122,7 +121,6 @@ function periodoClaro(): Periodo {
 
 export function Home({
   comunidade,
-  culturaDaTurma,
   salas,
   naVoz,
   aoEntrar,
@@ -137,8 +135,6 @@ export function Home({
 }: {
   /** Nome da comunidade aberta agora, se houver. */
   comunidade?: string;
-  /** A cultura que a comunidade aberta estuda, quando quem administra escolheu uma (CulturaDaTurma.tsx). */
-  culturaDaTurma?: { pais: string; lingua: string };
   /** As salas de voz dessa comunidade. */
   salas: Channel[];
   /** Quem está em cada sala, para a lista mostrar companhia. */
@@ -292,11 +288,6 @@ export function Home({
 
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
 
-      {/* A cultura da turma vem antes da de cada um: é o que a comunidade aberta escolheu estudar. */}
-      {culturaDaTurma && comunidade && (
-        <FaixaDaCultura onde={culturaDaTurma} titulo={t('Cultura de {comunidade}', { comunidade })} />
-      )}
-      <FaixaDaCultura />
 
       <CaixaDeIdeias souODono={souODono} />
 

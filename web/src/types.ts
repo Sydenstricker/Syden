@@ -80,9 +80,6 @@ export interface Community {
   seloTexto?: string | null;
   seloIcone?: string | null;
   seloCor?: string | null;
-  /** A cultura que a comunidade estuda (país ISO e língua), para a faixa de cultura dela. Nulo = nenhuma. */
-  culturaPais?: string | null;
-  culturaLingua?: string | null;
   role: Role;
   memberCount: number;
   /** Só quem administra recebe o código; para os outros vem null. */
