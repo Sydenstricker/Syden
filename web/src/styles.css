@@ -1505,6 +1505,12 @@ textarea {
   opacity: 1;
 }
 
+/* No quadro grande, a fileira de controles já tem o "i" da transmissão (com o teto de qualidade).
+   O do próprio quadro, que é o mesmo das miniaturas, ficava por cima dele: dois "i" lado a lado. */
+.stage-main:has(.stream-controls) .tile-info {
+  display: none;
+}
+
 .tile-info .stream-info-button {
   width: 24px;
   height: 24px;

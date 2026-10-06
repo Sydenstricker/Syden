@@ -64,6 +64,19 @@ const rotulo = await bia.locator('.canal-assistindo .so-para-leitor').first().te
 rotulo === 'Assistindo junto' ? ok('e quem usa leitor de tela ouve "Assistindo junto"') : falhou('rótulo para leitor de tela: ' + rotulo);
 await bia.locator('.sidebar').screenshot({ path: 'e2e/fotos/assistindo-junto.png' });
 
+// No quadro grande, um "i" só: o da fileira de controles. O do próprio quadro (o das miniaturas)
+// aparecia junto ao passar o mouse, e eram dois lado a lado.
+await bia.locator('.stream-invite', { hasText: 'ana' + s }).getByRole('button', { name: 'Assistir' }).click();
+const quadro = bia.locator('.stage-main', { has: bia.locator('.stream-controls') }).first();
+await quadro.waitFor({ timeout: 20000 });
+await quadro.hover();
+await bia.waitForTimeout(400);
+const is = await quadro.locator('button[aria-label="Informações da transmissão"]').evaluateAll((botoes) =>
+  botoes.filter((b) => b.getClientRects().length > 0 && getComputedStyle(b).visibility !== 'hidden').length,
+);
+is === 1 ? ok('no quadro grande da transmissão há um "i" só') : falhou(`o quadro grande mostra ${is} botões "i"`);
+await quadro.screenshot({ path: 'e2e/fotos/transmissao-um-i.png' });
+
 // Parar fica dentro das opções da transmissão: o botão de compartilhar vira 'Opções da transmissão'.
 await ana.locator('.stage-controls button[aria-label="Opções da transmissão"]').click();
 await ana.getByRole('menuitem', { name: /Parar de compartilhar/ }).click();
