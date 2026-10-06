@@ -112,7 +112,67 @@ const RECEIVE_COOLDOWN_MS = 1000;
 const SOUND_BADGE_MS = 2500;
 
 function isCancelledPicker(error: unknown) {
-  return error instanceof DOMException && (error.name === 'NotAllowedError' || error.name === 'AbortError');
+  return (
+    error instanceof DOMException &&
+    (error.name === 'NotAllowedError' || error.name === 'AbortError') &&
+    !recusaDoSistema(error)
+  );
+}
+
+/**
+ * O Chrome usa o mesmo NotAllowedError para "a pessoa fechou o seletor" e para "o SISTEMA não deixou"
+ * (no Mac, sem a permissão de Gravação de tela). Só a mensagem separa os dois — e o segundo não pode
+ * passar calado como se fosse desistência.
+ */
+function recusaDoSistema(error: unknown) {
+  return error instanceof DOMException && /by system/i.test(error.message);
+}
+
+/** Navegador e sistema em poucas palavras ("Edg/141 · Windows"), para caber no diário. */
+function onde() {
+  const ua = navigator.userAgent;
+  // Em ordem: o Edge e o Opera também dizem "Chrome/", e o Chrome também diz "Safari/".
+  const navegador =
+    ['Edg', 'OPR', 'Firefox', 'Chrome', 'Version']
+      .map((nome) => ua.match(new RegExp(`${nome}/\\d+`))?.[0])
+      .find(Boolean)
+      ?.replace('Version', 'Safari') ?? '?';
+  const sistema = /Android/.test(ua)
+    ? 'Android'
+    : /iPhone|iPad/.test(ua)
+      ? 'iOS'
+      : /Windows/.test(ua)
+        ? 'Windows'
+        : /Mac OS/.test(ua)
+          ? 'Mac'
+          : /Linux/.test(ua)
+            ? 'Linux'
+            : '?';
+  return `${navegador} · ${sistema}`;
+}
+
+/**
+ * Por que a transmissão não começou, dito de um jeito que dá para agir. Antes era sempre "não foi
+ * possível compartilhar a tela neste navegador", e o motivo de verdade ficava só no console.
+ */
+function erroDaTransmissao(error: unknown) {
+  const nome = error instanceof Error ? error.name : '';
+  if (typeof navigator.mediaDevices?.getDisplayMedia !== 'function') {
+    return 'Este navegador não compartilha tela (no celular, nenhum deixa). Transmita pelo computador.';
+  }
+  if (recusaDoSistema(error)) {
+    return 'O sistema bloqueou a captura de tela. No Mac: Ajustes do Sistema → Privacidade e Segurança → Gravação de tela, marque o navegador e abra-o de novo.';
+  }
+  switch (nome) {
+    case 'NotReadableError':
+      return 'O computador não deixou capturar essa tela. Tente escolher uma janela em vez da tela inteira, ou feche outro programa que esteja gravando a tela.';
+    case 'NotSupportedError':
+      return 'Este navegador não compartilha tela. Use o Chrome, o Edge ou o app do Syden.';
+    case 'NotFoundError':
+      return 'Não há tela disponível para compartilhar. Tente de novo e escolha outra tela ou janela.';
+    default:
+      return `Não foi possível compartilhar a tela neste navegador${nome ? ` (${nome})` : ''}. Tente de novo; se continuar, use o Chrome, o Edge ou o app do Syden.`;
+  }
 }
 
 /**
@@ -120,7 +180,10 @@ function isCancelledPicker(error: unknown) {
  * pela rede). Vira uma linha no diário da aba de saúde, e é assim que o administrador descobre o que houve
  * sem precisar perguntar. Falhar aqui não pode atrapalhar nada, então o erro é engolido.
  */
-function reportProblem(kind: 'microfone' | 'câmera' | 'conexão' | 'efeito de voz' | 'supressão de ruído', message: string) {
+function reportProblem(
+  kind: 'microfone' | 'câmera' | 'conexão' | 'efeito de voz' | 'supressão de ruído' | 'transmissão',
+  message: string,
+) {
   void api('/api/client-errors', { method: 'POST', body: { kind, message } }).catch(() => {});
 }
 
@@ -1029,7 +1092,11 @@ export function useVoice(socket: Socket | null) {
         // Fechar o seletor de tela sem escolher nada não é erro.
         if (!isCancelledPicker(e)) {
           console.error(e);
-          setError('Não foi possível compartilhar a tela neste navegador.');
+          setError(erroDaTransmissao(e));
+          // O diário da aba de saúde recebe o motivo cru, com onde aconteceu: é o que permite achar a
+          // causa sem pedir a quem teve o problema que abra o console.
+          const nome = (e instanceof Error ? `${e.name}: ${e.message}` : String(e)).slice(0, 120);
+          reportProblem('transmissão', `${nome} · ${desktopBridge ? 'app' : 'navegador'} · ${onde()}`);
         }
       }
     },
