@@ -175,6 +175,7 @@ export default {
   'Selo que você veste': 'الشارة التي ترتديها',
   'Só o seu nome, sem selo': 'اسمك فقط، بدون شارة',
   'Escolha o coelho da estátua da praça.': 'اختر الأرنب الذي يقف تمثالًا في الساحة.',
+  'Assistindo: {n}': 'يشاهدون: {n}',
   'Contadores': 'العدادات',
   'Em chamada': 'في مكالمة',
   'Em chamada: {n}': 'في مكالمة: {n}',

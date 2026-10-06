@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  'Assistindo: {n}': 'ກຳລັງເບິ່ງ: {n}',
   'Contadores': 'ຕົວນັບ',
   'Em chamada': 'ຢູ່ໃນການໂທ',
   'Em chamada: {n}': 'ຢູ່ໃນການໂທ: {n}',

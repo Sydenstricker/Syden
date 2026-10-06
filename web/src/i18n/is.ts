@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  'Assistindo: {n}': 'Horfa á: {n}',
   'Contadores': 'Teljarar',
   'Em chamada': 'Í símtali',
   'Em chamada: {n}': 'Í símtali: {n}',

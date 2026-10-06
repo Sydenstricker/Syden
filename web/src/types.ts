@@ -260,6 +260,8 @@ export interface VoiceMember {
   screen: boolean;
   /** O que a pessoa está transmitindo, quando dá para saber pelo título da janela. */
   screenName: string | null;
+  /** De quem são as transmissões que esta pessoa abriu (ids). Vazio em servidor antigo. */
+  assistindo?: number[];
 }
 
 export type Traffic =

@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie erbij komt. Met meer dan één persoon wordt het een groepsgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies het konijn voor het standbeeld op het plein.',
+  'Assistindo: {n}': 'Kijken mee: {n}',
   'Contadores': 'Tellers',
   'Em chamada': 'In gesprek',
   'Em chamada: {n}': 'In gesprek: {n}',

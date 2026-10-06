@@ -191,6 +191,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'Assistindo: {n}': 'Wanaotazama: {n}',
   'Contadores': 'Vihesabu',
   'Em chamada': 'Kwenye simu',
   'Em chamada: {n}': 'Kwenye simu: {n}',

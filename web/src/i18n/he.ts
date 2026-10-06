@@ -351,6 +351,7 @@ export default {
   'Escolha o seu': 'לבחור את שלך',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'בחירת המשתתפים. עם יותר מאדם אחד, זו שיחה קבוצתית.',
   'Escolha o coelho da estátua da praça.': 'בחירת הארנב לפסל שבכיכר.',
+  'Assistindo: {n}': 'צופים: {n}',
   'Contadores': 'מונים',
   'Em chamada': 'בשיחה',
   'Em chamada: {n}': 'בשיחה: {n}',

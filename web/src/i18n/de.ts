@@ -171,6 +171,7 @@ export default {
   'Selo que você veste': 'Dein Abzeichen',
   'Só o seu nome, sem selo': 'Nur dein Name, ohne Abzeichen',
   'Escolha o coelho da estátua da praça.': 'Wähle den Hasen für die Statue auf dem Platz.',
+  'Assistindo: {n}': 'Schauen zu: {n}',
   'Contadores': 'Zähler',
   'Em chamada': 'Im Anruf',
   'Em chamada: {n}': 'Im Anruf: {n}',

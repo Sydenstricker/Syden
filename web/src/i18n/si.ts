@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
+  'Assistindo: {n}': 'නරඹමින්: {n}',
   'Contadores': 'ගණක',
   'Em chamada': 'ඇමතුමක',
   'Em chamada: {n}': 'ඇමතුමක: {n}',

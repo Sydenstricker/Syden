@@ -351,6 +351,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'Assistindo: {n}': 'Po shikojnë: {n}',
   'Contadores': 'Numëruesit',
   'Em chamada': 'Në telefonatë',
   'Em chamada: {n}': 'Në telefonatë: {n}',

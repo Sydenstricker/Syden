@@ -77,6 +77,25 @@ const is = await quadro.locator('button[aria-label="Informações da transmissã
 is === 1 ? ok('no quadro grande da transmissão há um "i" só') : falhou(`o quadro grande mostra ${is} botões "i"`);
 await quadro.screenshot({ path: 'e2e/fotos/transmissao-um-i.png' });
 
+// Quantas pessoas assistem: quem abriu a transmissão, e não quem só está na sala. A Bia abriu, então a
+// Ana (que transmite) vê o olho com 1, e o nome da Bia ao passar o mouse.
+const contagem = ana.locator('.contagem-de-plateia').first();
+await contagem.waitFor({ timeout: 15000 }).then(
+  async () => {
+    const texto = (await contagem.innerText()).trim();
+    const dica = (await contagem.getAttribute('title')) ?? '';
+    texto === '1' && dica.includes('bia' + s) ? ok('quem transmite vê 1 pessoa assistindo, com o nome dela') : falhou(`contagem: ${texto} / ${dica}`);
+  },
+  () => falhou('a contagem de quem assiste não apareceu'),
+);
+await ana.locator('.stage-main').first().screenshot({ path: 'e2e/fotos/plateia.png' });
+// A Bia fecha a transmissão: a contagem some.
+await bia.locator('button[aria-label="Parar de assistir esta transmissão"]').click();
+await ana.waitForFunction(() => !document.querySelector('.contagem-de-plateia'), null, { timeout: 15000 }).then(
+  () => ok('a Bia fechou a transmissão e a contagem sumiu'),
+  () => falhou('a contagem ficou depois de a Bia fechar'),
+);
+
 // Parar fica dentro das opções da transmissão: o botão de compartilhar vira 'Opções da transmissão'.
 await ana.locator('.stage-controls button[aria-label="Opções da transmissão"]').click();
 await ana.getByRole('menuitem', { name: /Parar de compartilhar/ }).click();

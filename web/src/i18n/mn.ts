@@ -374,6 +374,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
+  'Assistindo: {n}': 'Үзэж байна: {n}',
   'Contadores': 'Тоолуурууд',
   'Em chamada': 'Дуудлагад',
   'Em chamada: {n}': 'Дуудлагад: {n}',

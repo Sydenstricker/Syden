@@ -291,6 +291,7 @@ export default {
   'Escolha o seu': 'మీది ఎంచుకోండి',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ఎవరు రావాలో ఎంచుకోండి. ఒకరి కంటే ఎక్కువ మంది ఉంటే అది గ్రూప్ సంభాషణ అవుతుంది.',
   'Escolha o coelho da estátua da praça.': 'కూడలి విగ్రహం కోసం కుందేలును ఎంచుకో.',
+  'Assistindo: {n}': 'చూస్తున్నవారు: {n}',
   'Contadores': 'గణకాలు',
   'Em chamada': 'కాల్‌లో',
   'Em chamada: {n}': 'కాల్‌లో: {n}',

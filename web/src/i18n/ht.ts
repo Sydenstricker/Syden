@@ -370,6 +370,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  'Assistindo: {n}': 'K ap gade: {n}',
   'Contadores': 'Kontè',
   'Em chamada': 'Nan yon apèl',
   'Em chamada: {n}': 'Nan yon apèl: {n}',

@@ -356,6 +356,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'Assistindo: {n}': 'Vaatab: {n}',
   'Contadores': 'Loendurid',
   'Em chamada': 'Kõnes',
   'Em chamada: {n}': 'Kõnes: {n}',

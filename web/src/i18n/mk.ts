@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кој ќе биде во разговорот. Со повеќе луѓе станува групен разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери го зајакот за статуата на плоштадот.',
+  'Assistindo: {n}': 'Гледаат: {n}',
   'Contadores': 'Бројачи',
   'Em chamada': 'Во повик',
   'Em chamada: {n}': 'Во повик: {n}',

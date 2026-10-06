@@ -353,6 +353,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',
+  'Assistindo: {n}': 'Kyk: {n}',
   'Contadores': 'Tellers',
   'Em chamada': 'In ’n oproep',
   'Em chamada: {n}': 'In ’n oproep: {n}',

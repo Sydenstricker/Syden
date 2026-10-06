@@ -333,6 +333,7 @@ export default {
   'Escolha o seu': 'Özününkünü seç',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Kimin qoşulacağını seç. Birdən çox adam olsa, qrup söhbəti olur.',
   'Escolha o coelho da estátua da praça.': 'Meydandakı heykəl üçün dovşanı seç.',
+  'Assistindo: {n}': 'İzləyən: {n}',
   'Contadores': 'Sayğaclar',
   'Em chamada': 'Zəngdə',
   'Em chamada: {n}': 'Zəngdə: {n}',

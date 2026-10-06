@@ -312,6 +312,7 @@ export default {
   'Escolha o seu': 'የራስዎን ይምረጡ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ማን እንደሚገባ ይምረጡ። ከአንድ ሰው በላይ ሲሆን፣ የቡድን ውይይት ይሆናል።',
   'Escolha o coelho da estátua da praça.': 'ለአደባባዩ ሐውልት ጥንቸሉን ይምረጡ።',
+  'Assistindo: {n}': 'እየተመለከቱ ያሉ፦ {n}',
   'Contadores': 'ቆጣሪዎች',
   'Em chamada': 'በጥሪ ላይ',
   'Em chamada: {n}': 'በጥሪ ላይ፦ {n}',

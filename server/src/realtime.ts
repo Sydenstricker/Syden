@@ -79,6 +79,11 @@ export interface VoiceMember {
   screen: boolean;
   /** O que está sendo transmitido ("League of Legends"), quando dá para saber. */
   screenName: string | null;
+  /**
+   * De quem são as transmissões que esta pessoa ABRIU (ids). É o que conta "quantas pessoas assistem":
+   * estar na sala não basta, porque abrir a transmissão é escolha de cada um (ver assistir, em useVoice.ts).
+   */
+  assistindo: number[];
 }
 
 type Ack = (result: { ok: true } | { ok: false; error: string }) => void;
@@ -378,6 +383,7 @@ export function setupRealtime(io: IOServer) {
         video: false,
         screen: false,
         screenName: null,
+        assistindo: [],
         socketId: socket.id,
         voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId),
         screenSessionId: null,
@@ -387,7 +393,7 @@ export function setupRealtime(io: IOServer) {
       ack?.({ ok: true });
     });
 
-    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName'>>) => {
+    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'assistindo'>>) => {
       const member = voiceMembers.get(user.id);
       if (!member || member.socketId !== socket.id) return;
       for (const key of ['muted', 'deafened', 'video', 'screen'] as const) {
@@ -397,6 +403,12 @@ export function setupRealtime(io: IOServer) {
       // corta no tamanho e só vale enquanto a transmissão estiver de pé.
       const nome = typeof patch?.screenName === 'string' ? patch.screenName.trim().slice(0, 60) : null;
       member.screenName = member.screen ? nome || null : null;
+      // Só números, e só gente DA MESMA SALA: o que vem da tela não decide nada além disso. (Quem parou de
+      // transmitir continua na lista: se voltar, a transmissão reabre sozinha para quem tinha aberto.)
+      if (Array.isArray(patch?.assistindo)) {
+        const naSala = new Set([...voiceMembers.values()].filter((m) => m.channelId === member.channelId).map((m) => m.userId));
+        member.assistindo = [...new Set(patch.assistindo.map(Number))].filter((id) => naSala.has(id) && id !== user.id).slice(0, 20);
+      }
       if (member.screen && member.screenSessionId === null) {
         member.screenSessionId = db.startUsageSession('screen', user.id, member.communityId);
       } else if (!member.screen && member.screenSessionId !== null) {

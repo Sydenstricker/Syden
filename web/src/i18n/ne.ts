@@ -361,6 +361,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'Assistindo: {n}': 'हेर्दै: {n}',
   'Contadores': 'गन्तीहरू',
   'Em chamada': 'कलमा',
   'Em chamada: {n}': 'कलमा: {n}',

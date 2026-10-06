@@ -353,6 +353,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vælg, hvem der er med. Med mere end én person bliver det en gruppesamtale.',
   'Escolha o coelho da estátua da praça.': 'Vælg kaninen til statuen på torvet.',
+  'Assistindo: {n}': 'Ser med: {n}',
   'Contadores': 'Tællere',
   'Em chamada': 'I opkald',
   'Em chamada: {n}': 'I opkald: {n}',

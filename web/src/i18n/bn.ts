@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'Assistindo: {n}': 'দেখছেন: {n}',
   'Contadores': 'গণনা',
   'Em chamada': 'কলে আছেন',
   'Em chamada: {n}': 'কলে আছেন: {n}',

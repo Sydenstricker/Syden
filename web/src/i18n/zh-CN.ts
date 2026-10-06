@@ -201,6 +201,7 @@ export default {
   'Escolha o seu': '挑一个',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '选择谁加入。超过一个人就变成群聊。',
   'Escolha o coelho da estátua da praça.': '选择广场雕像上的兔子。',
+  'Assistindo: {n}': '观看中:{n}',
   'Contadores': '计数器',
   'Em chamada': '通话中',
   'Em chamada: {n}': '通话中:{n}',

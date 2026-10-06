@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'Assistindo: {n}': 'Тамошо мекунанд: {n}',
   'Contadores': 'Ҳисобкунакҳо',
   'Em chamada': 'Дар занг',
   'Em chamada: {n}': 'Дар занг: {n}',

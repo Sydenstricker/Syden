@@ -336,6 +336,7 @@ export default {
   'Versão 1.21, sem PvP': 'Version 1.21, no PvP',
   'ex.: Evidências': 'e.g. Evidence',
   'Escolha o coelho da estátua da praça.': 'Choose the bunny for the statue in the square.',
+  'Assistindo: {n}': 'Watching: {n}',
   'Contadores': 'Counters',
   'Em chamada': 'In a call',
   'Em chamada: {n}': 'In a call: {n}',

@@ -206,6 +206,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Dengan lebih daripada seorang, ia menjadi perbualan kumpulan.',
   'Escolha o coelho da estátua da praça.': 'Pilih arnab untuk patung di dataran.',
+  'Assistindo: {n}': 'Menonton: {n}',
   'Contadores': 'Pembilang',
   'Em chamada': 'Dalam panggilan',
   'Em chamada: {n}': 'Dalam panggilan: {n}',

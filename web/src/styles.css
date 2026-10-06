@@ -1461,6 +1461,24 @@ textarea {
   color: var(--red);
 }
 
+/* Quantas pessoas assistem, ao lado do nome da transmissão (ver ContagemDePlateia em VoiceStage.tsx).
+   O nome encolhe primeiro: o número nunca some atrás das reticências. */
+.tile-name .contagem-de-plateia {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  margin-left: 2px;
+  padding-left: 8px;
+  border-left: 1px solid rgb(255 255 255 / 0.25);
+  font-variant-numeric: tabular-nums;
+  overflow: visible;
+}
+
+.tile-name .contagem-de-plateia svg {
+  color: white;
+}
+
 /* Tela compartilhada não deve ser cortada. */
 .tile .lk-participant-media-video[data-lk-source='screen_share'] {
   object-fit: contain;

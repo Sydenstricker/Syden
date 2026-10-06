@@ -341,6 +341,7 @@ export default {
   'Escolha o seu': 'Kan kee filadhu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Eenyu akka seenu filadhu. Nama tokkoo ol yoo ta’e, haasaa gareetti jijjiirama.',
   'Escolha o coelho da estátua da praça.': 'Siidaa dirree irra dhaabbatuuf illeettii filadhu.',
+  'Assistindo: {n}': 'Kan ilaalan: {n}',
   'Contadores': 'Lakkoftuu',
   'Em chamada': 'Bilbila irra',
   'Em chamada: {n}': 'Bilbila irra: {n}',

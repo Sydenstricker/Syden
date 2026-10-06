@@ -34,12 +34,13 @@ import {
   VideoOff,
   Volume2,
   VolumeX,
+  Eye,
 } from 'lucide-react';
 import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
-import { chave, useT } from './i18n';
+import { chave, idiomaAtual, useT } from './i18n';
 import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
@@ -869,7 +870,7 @@ function BotaoTelaCheia({ alvo }: { alvo: RefObject<HTMLDivElement | null> }) {
  * Syden, e esse texto não está nele.
  * ===================================================================================================
  */
-function ScreenTile({ trackRef, membro }: { trackRef: TrackReferenceOrPlaceholder; membro?: VoiceMember }) {
+function ScreenTile({ trackRef, membro, plateia }: { trackRef: TrackReferenceOrPlaceholder; membro?: VoiceMember; plateia: VoiceMember[] }) {
   return (
     <ParticipantTile trackRef={trackRef}>
       {/* A guarda estreita o tipo: um quadro pode ser um lugar reservado, ainda sem faixa. */}
@@ -882,8 +883,28 @@ function ScreenTile({ trackRef, membro }: { trackRef: TrackReferenceOrPlaceholde
       <div className="tile-name">
         <MonitorPlay size={14} />
         <span>{membro?.screenName || trackRef.participant.name || trackRef.participant.identity}</span>
+        <ContagemDePlateia plateia={plateia} />
       </div>
     </ParticipantTile>
+  );
+}
+
+/**
+ * QUANTAS PESSOAS ESTÃO ASSISTINDO: um olho e o número, ao lado do nome da transmissão; os nomes, ao
+ * passar o mouse. Conta quem ABRIU a transmissão (ver o efeito de "assistindo" em useVoice.ts), e não
+ * quem só está na sala. Ninguém assistindo, nada aparece: um "0" ao lado da tela de alguém soaria como
+ * recado.
+ */
+function ContagemDePlateia({ plateia }: { plateia: VoiceMember[] }) {
+  const t = useT();
+  if (plateia.length === 0) return null;
+  const rotulo = t('Assistindo: {n}', { n: new Intl.NumberFormat(idiomaAtual()).format(plateia.length) });
+  return (
+    <span className="contagem-de-plateia" title={`${rotulo}
+${plateia.map((m) => m.username).join(', ')}`} aria-label={rotulo}>
+      <Eye size={13} aria-hidden="true" />
+      {plateia.length}
+    </span>
   );
 }
 
@@ -1154,7 +1175,11 @@ function Stage({
           assistindo={plateia.has(Number(ref.participant.identity))}
         />
       ) : (
-        <ScreenTile trackRef={ref} membro={members.find((m) => String(m.userId) === ref.participant.identity)} />
+        <ScreenTile
+          trackRef={ref}
+          membro={members.find((m) => String(m.userId) === ref.participant.identity)}
+          plateia={members.filter((m) => m.assistindo?.includes(Number(ref.participant.identity)))}
+        />
       )}
     </div>
     );

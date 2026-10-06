@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  'Assistindo: {n}': 'Daawanaya: {n}',
   'Contadores': 'Tiriyeyaal',
   'Em chamada': 'Wicitaan ku jira',
   'Em chamada: {n}': 'Wicitaan ku jira: {n}',

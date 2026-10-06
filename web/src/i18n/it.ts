@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  'Assistindo: {n}': 'Spettatori: {n}',
   'Contadores': 'Contatori',
   'Em chamada': 'In chiamata',
   'Em chamada: {n}': 'In chiamata: {n}',

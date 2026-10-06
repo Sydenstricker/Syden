@@ -170,6 +170,7 @@ export default {
   'Selo que você veste': 'Знак, который ты носишь',
   'Só o seu nome, sem selo': 'Только имя, без знака',
   'Escolha o coelho da estátua da praça.': 'Выбери кролика для статуи на площади.',
+  'Assistindo: {n}': 'Смотрят: {n}',
   'Contadores': 'Счётчики',
   'Em chamada': 'В звонке',
   'Em chamada: {n}': 'В звонке: {n}',

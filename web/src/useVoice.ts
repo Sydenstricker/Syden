@@ -576,7 +576,11 @@ export function useVoice(socket: Socket | null) {
     const onConnect = () => {
       if (channelRef.current === null) return;
       socket.emit('voice:join', { channelId: channelRef.current });
-      socket.emit('voice:update', { ...readLocalMedia(room.localParticipant), deafened: deafenedRef.current });
+      socket.emit('voice:update', {
+        ...readLocalMedia(room.localParticipant),
+        deafened: deafenedRef.current,
+        assistindo: [...assistindoRef.current].map(Number),
+      });
     };
     socket.on('connect', onConnect);
     return () => {
@@ -789,6 +793,13 @@ export function useVoice(socket: Socket | null) {
   // Os eventos do LiveKit são presos uma vez só; a ref deixa eles lerem a escolha atual.
   const assistindoRef = useRef<ReadonlySet<string>>(assistindo);
   assistindoRef.current = assistindo;
+
+  // QUANTAS PESSOAS ASSISTEM: o servidor fica sabendo o que cada um abriu, e o quadro de quem transmite
+  // mostra a conta (ver ContagemDePlateia, em VoiceStage.tsx). Estar na sala não é estar assistindo.
+  useEffect(() => {
+    if (channelId === null) return;
+    socketRef.current?.emit('voice:update', { assistindo: [...assistindo].map(Number) });
+  }, [assistindo, channelId]);
 
   /**
    * Quem falou, do mais recente para o mais antigo. É a memória que a regra de sala grande usa.

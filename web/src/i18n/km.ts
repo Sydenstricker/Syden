@@ -358,6 +358,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
+  'Assistindo: {n}': 'កំពុងមើល៖ {n}',
   'Contadores': 'ការរាប់',
   'Em chamada': 'ក្នុងការហៅ',
   'Em chamada: {n}': 'ក្នុងការហៅ៖ {n}',

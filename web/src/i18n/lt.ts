@@ -361,6 +361,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  'Assistindo: {n}': 'Žiūri: {n}',
   'Contadores': 'Skaitikliai',
   'Em chamada': 'Skambutyje',
   'Em chamada: {n}': 'Skambutyje: {n}',

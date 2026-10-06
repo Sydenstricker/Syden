@@ -359,6 +359,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
+  'Assistindo: {n}': 'Katsojia: {n}',
   'Contadores': 'Laskurit',
   'Em chamada': 'Puhelussa',
   'Em chamada: {n}': 'Puhelussa: {n}',

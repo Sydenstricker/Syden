@@ -367,6 +367,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  'Assistindo: {n}': 'Tomosha qilmoqda: {n}',
   'Contadores': 'Hisoblagichlar',
   'Em chamada': 'Qoʻngʻiroqda',
   'Em chamada: {n}': 'Qoʻngʻiroqda: {n}',

@@ -355,6 +355,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
+  'Assistindo: {n}': 'Mirant: {n}',
   'Contadores': 'Comptadors',
   'Em chamada': 'En una trucada',
   'Em chamada: {n}': 'En una trucada: {n}',

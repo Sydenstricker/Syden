@@ -355,6 +355,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',
+  'Assistindo: {n}': 'Көріп отыр: {n}',
   'Contadores': 'Санағыштар',
   'Em chamada': 'Қоңырауда',
   'Em chamada: {n}': 'Қоңырауда: {n}',
