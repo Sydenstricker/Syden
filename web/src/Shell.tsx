@@ -435,7 +435,7 @@ export function Shell({
       if (voiceRef.current.channelId === id) voiceRef.current.leave();
     });
     // Nome ou imagem da comunidade mudou (por você ou por outro administrador).
-    s.on('community:updated', (updated: Pick<Community, 'id' | 'name' | 'iconVersion' | 'niveisLigados'>) =>
+    s.on('community:updated', (updated: Pick<Community, 'id' | 'name' | 'iconVersion' | 'niveisLigados' | 'contadores'>) =>
       setCommunities((list) =>
         list.map((c) =>
           c.id === updated.id
@@ -445,6 +445,8 @@ export function Shell({
                 iconVersion: updated.iconVersion,
                 // Ligar os níveis faz a entrada do Ranking aparecer para todo mundo, sem recarregar.
                 ...(updated.niveisLigados !== undefined ? { niveisLigados: updated.niveisLigados } : {}),
+                // E escolher os contadores muda a faixa do alto da lista de todo mundo (ver Contadores.tsx).
+                ...(updated.contadores !== undefined ? { contadores: updated.contadores } : {}),
               }
             : c,
         ),
@@ -890,6 +892,7 @@ export function Shell({
         {naBarra === 'barra' && community ? (
           <Sidebar
             user={user}
+            online={onlineHere}
             community={community}
             channels={channels}
             selectedId={usageOpen || jogosOpen || rankingOpen ? null : selectedId}

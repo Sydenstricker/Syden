@@ -361,6 +361,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
   'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',
+  'Contadores': 'Sanaýjylar',
+  'Em chamada': 'Jaňda',
+  'Em chamada: {n}': 'Jaňda: {n}',
+  'Membros: {n}': 'Agzalar: {n}',
+  'Online agora': 'Häzir onlaýn',
+  'Online agora: {n}': 'Häzir onlaýn: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Sanlar kanallaryň sanawynyň ýokarsynda hemmä görünýär we özbaşdak täzelenýär.',
   'Criar uma sala para cada pessoa que entrar': 'Girýän her kim üçin otag döret',
   'Entre para criar a sua sala': 'Öz otagyňy döretmek üçin gir',
   'Limite de pessoas': 'Adam çägi',

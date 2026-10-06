@@ -359,6 +359,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  'Contadores': 'Mpanisa',
+  'Em chamada': 'Miantso',
+  'Em chamada: {n}': 'Miantso: {n}',
+  'Membros: {n}': 'Mpikambana: {n}',
+  'Online agora': 'Mifandray izao',
+  'Online agora: {n}': 'Mifandray izao: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Miseho eo ambonin’ny lisitry ny fantsona ho an’ny rehetra ireo isa, ary miova ho azy.',
   'Criar uma sala para cada pessoa que entrar': 'Mamorona efitra ho an’izay rehetra miditra',
   'Entre para criar a sua sala': 'Midira mba hamorona ny efitranao',
   'Limite de pessoas': 'Fetran’ny olona',

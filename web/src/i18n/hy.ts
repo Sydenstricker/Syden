@@ -379,6 +379,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
   'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',
+  'Contadores': 'Հաշվիչներ',
+  'Em chamada': 'Զանգի մեջ',
+  'Em chamada: {n}': 'Զանգի մեջ՝ {n}',
+  'Membros: {n}': 'Անդամներ՝ {n}',
+  'Online agora': 'Հիմա առցանց',
+  'Online agora: {n}': 'Հիմա առցանց՝ {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Թվերը բոլորի համար երևում են ալիքների ցանկի վերևում և թարմանում են ինքնուրույն։',
   'Criar uma sala para cada pessoa que entrar': 'Ստեղծել սենյակ յուրաքանչյուր մտնողի համար',
   'Entre para criar a sua sala': 'Մտիր՝ քո սենյակը ստեղծելու համար',
   'Limite de pessoas': 'Մարդկանց սահմանաչափ',

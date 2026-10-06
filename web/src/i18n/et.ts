@@ -356,6 +356,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'Contadores': 'Loendurid',
+  'Em chamada': 'Kõnes',
+  'Em chamada: {n}': 'Kõnes: {n}',
+  'Membros: {n}': 'Liikmed: {n}',
+  'Online agora': 'Praegu võrgus',
+  'Online agora: {n}': 'Praegu võrgus: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Numbrid on kõigile näha kanalite loendi ülaosas ja muutuvad ise.',
   'Criar uma sala para cada pessoa que entrar': 'Loo igaühele, kes siseneb, oma tuba',
   'Entre para criar a sua sala': 'Sisene, et luua oma tuba',
   'Limite de pessoas': 'Inimeste piirang',

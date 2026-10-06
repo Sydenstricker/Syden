@@ -204,6 +204,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie erbij komt. Met meer dan één persoon wordt het een groepsgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies het konijn voor het standbeeld op het plein.',
+  'Contadores': 'Tellers',
+  'Em chamada': 'In gesprek',
+  'Em chamada: {n}': 'In gesprek: {n}',
+  'Membros: {n}': 'Leden: {n}',
+  'Online agora': 'Nu online',
+  'Online agora: {n}': 'Nu online: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'De getallen staan voor iedereen boven aan de kanaallijst en werken zichzelf bij.',
   'Criar uma sala para cada pessoa que entrar': 'Maak een kamer voor iedereen die binnenkomt',
   'Entre para criar a sua sala': 'Kom binnen om je eigen kamer te maken',
   'Limite de pessoas': 'Maximum aantal mensen',

@@ -38,6 +38,8 @@ export interface Community {
   seloCor?: string | null;
   /** Níveis e ranking ligados nesta comunidade (1) ou não (0). Ver o bloco OS NÍVEIS. */
   niveisLigados?: number;
+  /** Os contadores que a comunidade mostra no alto da lista de canais, separados por vírgula (ver contadores-routes.ts). */
+  contadores?: string;
 }
 
 /** Uma comunidade vista por quem participa dela. */
@@ -1224,7 +1226,7 @@ export function seedChannels(communityId: number) {
 // ---------- Comunidades ----------
 
 const communityColumns =
-  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor, niveis_ligados AS niveisLigados';
+  'id, name, created_by AS createdBy, icon_version AS iconVersion, banner_version AS bannerVersion, capa_encaixe AS capaEncaixe, capa_posicao AS capaPosicao, fonte, efeito, selo_texto AS seloTexto, selo_icone AS seloIcone, selo_cor AS seloCor, niveis_ligados AS niveisLigados, contadores';
 
 export function listCommunitiesForUser(userId: number): CommunityForUser[] {
   return db
@@ -1232,7 +1234,7 @@ export function listCommunitiesForUser(userId: number): CommunityForUser[] {
       `SELECT c.id, c.name, c.created_by AS createdBy, c.icon_version AS iconVersion,
               c.banner_version AS bannerVersion, c.capa_encaixe AS capaEncaixe, c.capa_posicao AS capaPosicao, c.fonte, c.efeito,
               c.selo_texto AS seloTexto, c.selo_icone AS seloIcone, c.selo_cor AS seloCor, m.role,
-              c.niveis_ligados AS niveisLigados,
+              c.niveis_ligados AS niveisLigados, c.contadores,
               (SELECT COUNT(*) FROM community_members WHERE community_id = c.id) AS memberCount,
               c.invite_code AS inviteCode
        FROM communities c JOIN community_members m ON m.community_id = c.id
@@ -5129,4 +5131,15 @@ export function definirCriaSalas(channelId: number, ligado: boolean): Channel {
 export function definirLimite(channelId: number, limite: number): Channel {
   db.prepare('UPDATE channels SET limite = ? WHERE id = ?').run(limite, channelId);
   return findChannel(channelId)!;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// OS CONTADORES: quais números a comunidade mostra no alto da lista de canais ("Membros: 42"). Só a
+// escolha mora aqui; a conta é feita em cada tela, com o que ela já sabe (ver contadores-routes.ts).
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('communities', 'contadores', "TEXT NOT NULL DEFAULT ''");
+
+export function definirContadores(communityId: number, lista: string[]) {
+  db.prepare('UPDATE communities SET contadores = ? WHERE id = ?').run(lista.join(','), communityId);
 }

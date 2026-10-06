@@ -11806,3 +11806,23 @@ body.arrastando-barra {
   white-space: nowrap;
   box-shadow: 0 2px 8px var(--shadow);
 }
+
+/* ---------- Contadores no alto da lista de canais (ver Contadores.tsx) ---------- */
+
+.faixa-de-contadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 8px 16px 2px;
+  list-style: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.faixa-de-contadores li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}

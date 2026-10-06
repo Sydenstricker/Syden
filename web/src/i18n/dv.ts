@@ -370,6 +370,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
   'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',
+  'Contadores': 'ގުނާ ތަކެތި',
+  'Em chamada': 'ކޯލެއްގައި',
+  'Em chamada: {n}': 'ކޯލެއްގައި: {n}',
+  'Membros: {n}': 'މެމްބަރުން: {n}',
+  'Online agora': 'މިހާރު އޮންލައިން',
+  'Online agora: {n}': 'މިހާރު އޮންލައިން: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'އަދަދުތައް ހުރިހާ މީހަކަށް ޗެނަލް ލިސްޓުގެ މަތީގައި ފެންނާނެ، އަމިއްލައަށް ބަދަލުވާނެ.',
   'Criar uma sala para cada pessoa que entrar': 'ވަންނަ ކޮންމެ މީހަކަށް ރޫމެއް ހަދާ',
   'Entre para criar a sua sala': 'ތިބާގެ ރޫމު ހެދުމަށް ވަދެވަޑައިގަންނަވާ',
   'Limite de pessoas': 'މީހުންގެ ލިމިޓް',

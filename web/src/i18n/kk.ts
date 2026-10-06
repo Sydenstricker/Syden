@@ -355,6 +355,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',
+  'Contadores': 'Санағыштар',
+  'Em chamada': 'Қоңырауда',
+  'Em chamada: {n}': 'Қоңырауда: {n}',
+  'Membros: {n}': 'Мүшелер: {n}',
+  'Online agora': 'Қазір желіде',
+  'Online agora: {n}': 'Қазір желіде: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Сандар арналар тізімінің жоғарғы жағында бәріне көрінеді және өздігінен жаңарады.',
   'Criar uma sala para cada pessoa que entrar': 'Кірген әр адамға бөлме ашу',
   'Entre para criar a sua sala': 'Өз бөлмеңді ашу үшін кір',
   'Limite de pessoas': 'Адам шегі',

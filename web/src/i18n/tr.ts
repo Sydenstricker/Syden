@@ -201,6 +201,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
   'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
+  'Contadores': 'Sayaçlar',
+  'Em chamada': 'Aramada',
+  'Em chamada: {n}': 'Aramada: {n}',
+  'Membros: {n}': 'Üyeler: {n}',
+  'Online agora': 'Şu an çevrimiçi',
+  'Online agora: {n}': 'Şu an çevrimiçi: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Sayılar kanal listesinin üstünde herkese görünür ve kendiliğinden güncellenir.',
   'Criar uma sala para cada pessoa que entrar': 'Giren herkes için bir oda oluştur',
   'Entre para criar a sua sala': 'Kendi odanı oluşturmak için gir',
   'Limite de pessoas': 'Kişi sınırı',

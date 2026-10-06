@@ -360,6 +360,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  'Contadores': 'ຕົວນັບ',
+  'Em chamada': 'ຢູ່ໃນການໂທ',
+  'Em chamada: {n}': 'ຢູ່ໃນການໂທ: {n}',
+  'Membros: {n}': 'ສະມາຊິກ: {n}',
+  'Online agora': 'ອອນລາຍຕອນນີ້',
+  'Online agora: {n}': 'ອອນລາຍຕອນນີ້: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'ຕົວເລກຈະສະແດງຢູ່ເທິງລາຍຊື່ຊ່ອງໃຫ້ທຸກຄົນເຫັນ ແລະ ອັບເດດເອງ.',
   'Criar uma sala para cada pessoa que entrar': 'ສ້າງຫ້ອງໃຫ້ທຸກຄົນທີ່ເຂົ້າມາ',
   'Entre para criar a sua sala': 'ເຂົ້າມາເພື່ອສ້າງຫ້ອງຂອງເຈົ້າ',
   'Limite de pessoas': 'ຈຳກັດຄົນ',

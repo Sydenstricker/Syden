@@ -358,6 +358,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',
+  'Contadores': 'ការរាប់',
+  'Em chamada': 'ក្នុងការហៅ',
+  'Em chamada: {n}': 'ក្នុងការហៅ៖ {n}',
+  'Membros: {n}': 'សមាជិក៖ {n}',
+  'Online agora': 'អនឡាញឥឡូវ',
+  'Online agora: {n}': 'អនឡាញឥឡូវ៖ {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'លេខទាំងនេះបង្ហាញនៅខាងលើបញ្ជីឆានែលសម្រាប់គ្រប់គ្នា ហើយផ្លាស់ប្ដូរដោយខ្លួនឯង។',
   'Criar uma sala para cada pessoa que entrar': 'បង្កើតបន្ទប់សម្រាប់អ្នកចូលម្នាក់ៗ',
   'Entre para criar a sua sala': 'ចូលដើម្បីបង្កើតបន្ទប់ផ្ទាល់ខ្លួន',
   'Limite de pessoas': 'ដែនកំណត់មនុស្ស',

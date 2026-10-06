@@ -204,6 +204,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
   'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',
+  'Contadores': 'Penghitung',
+  'Em chamada': 'Dalam panggilan',
+  'Em chamada: {n}': 'Dalam panggilan: {n}',
+  'Membros: {n}': 'Anggota: {n}',
+  'Online agora': 'Online sekarang',
+  'Online agora: {n}': 'Online sekarang: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Angka-angkanya tampil di atas daftar kanal untuk semua orang dan berubah sendiri.',
   'Criar uma sala para cada pessoa que entrar': 'Buat ruang untuk setiap orang yang masuk',
   'Entre para criar a sua sala': 'Masuk untuk membuat ruangmu sendiri',
   'Limite de pessoas': 'Batas orang',

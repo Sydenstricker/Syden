@@ -353,6 +353,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vælg, hvem der er med. Med mere end én person bliver det en gruppesamtale.',
   'Escolha o coelho da estátua da praça.': 'Vælg kaninen til statuen på torvet.',
+  'Contadores': 'Tællere',
+  'Em chamada': 'I opkald',
+  'Em chamada: {n}': 'I opkald: {n}',
+  'Membros: {n}': 'Medlemmer: {n}',
+  'Online agora': 'Online nu',
+  'Online agora: {n}': 'Online nu: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Tallene vises øverst i kanallisten for alle og ændrer sig af sig selv.',
   'Criar uma sala para cada pessoa que entrar': 'Opret et rum til hver, der kommer ind',
   'Entre para criar a sua sala': 'Gå ind for at oprette dit eget rum',
   'Limite de pessoas': 'Grænse for antal',

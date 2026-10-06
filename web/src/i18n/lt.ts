@@ -361,6 +361,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  'Contadores': 'Skaitikliai',
+  'Em chamada': 'Skambutyje',
+  'Em chamada: {n}': 'Skambutyje: {n}',
+  'Membros: {n}': 'Nariai: {n}',
+  'Online agora': 'Dabar prisijungę',
+  'Online agora: {n}': 'Dabar prisijungę: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Skaičiai rodomi kanalų sąrašo viršuje visiems ir atsinaujina patys.',
   'Criar uma sala para cada pessoa que entrar': 'Sukurti kambarį kiekvienam, kas įeina',
   'Entre para criar a sua sala': 'Įeik ir susikurk savo kambarį',
   'Limite de pessoas': 'Žmonių riba',

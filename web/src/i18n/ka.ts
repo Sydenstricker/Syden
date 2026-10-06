@@ -378,6 +378,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  'Contadores': 'მთვლელები',
+  'Em chamada': 'ზარში',
+  'Em chamada: {n}': 'ზარში: {n}',
+  'Membros: {n}': 'წევრები: {n}',
+  'Online agora': 'ახლა ხაზზე',
+  'Online agora: {n}': 'ახლა ხაზზე: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'რიცხვები ყველასთვის ჩანს არხების სიის თავში და თავისით ახლდება.',
   'Criar uma sala para cada pessoa que entrar': 'ოთახის შექმნა ყველასთვის, ვინც შემოვა',
   'Entre para criar a sua sala': 'შემოდი შენი ოთახის შესაქმნელად',
   'Limite de pessoas': 'ადამიანების ლიმიტი',

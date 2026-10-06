@@ -360,6 +360,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Khetha ukuthi ubani ongenayo. Uma bengaphezu komuntu oyedwa, iba yingxoxo yeqembu.',
   'Escolha o coelho da estátua da praça.': 'Khetha unogwaja wesithombe esisesigcawini.',
+  'Contadores': 'Izibali',
+  'Em chamada': 'Ocingweni',
+  'Em chamada: {n}': 'Ocingweni: {n}',
+  'Membros: {n}': 'Amalungu: {n}',
+  'Online agora': 'Ku-inthanethi manje',
+  'Online agora: {n}': 'Ku-inthanethi manje: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Izinombolo zivela phezulu ohlwini lweziteshi kuwo wonke umuntu, futhi ziziguqulela ngokwazo.',
   'Criar uma sala para cada pessoa que entrar': 'Dala igumbi kuwo wonke ongenayo',
   'Entre para criar a sua sala': 'Ngena ukuze udale igumbi lakho',
   'Limite de pessoas': 'Umkhawulo wabantu',

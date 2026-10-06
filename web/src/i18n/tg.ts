@@ -360,6 +360,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'Contadores': 'Ҳисобкунакҳо',
+  'Em chamada': 'Дар занг',
+  'Em chamada: {n}': 'Дар занг: {n}',
+  'Membros: {n}': 'Аъзоён: {n}',
+  'Online agora': 'Ҳозир онлайн',
+  'Online agora: {n}': 'Ҳозир онлайн: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Рақамҳо дар болои рӯйхати каналҳо барои ҳама намоён мешаванд ва худашон нав мешаванд.',
   'Criar uma sala para cada pessoa que entrar': 'Барои ҳар касе, ки ворид мешавад, ҳуҷра сохтан',
   'Entre para criar a sua sala': 'Барои сохтани ҳуҷраи худ ворид шав',
   'Limite de pessoas': 'Маҳдудияти одамон',

@@ -106,6 +106,8 @@ export interface Community {
   inviteCode: string | null;
   /** Níveis e ranking ligados (1) ou não (0/ausente). Ver server/src/niveis.ts. */
   niveisLigados?: number;
+  /** Os contadores que aparecem no alto da lista de canais, separados por vírgula (ver Contadores.tsx). */
+  contadores?: string;
 }
 
 export interface Emoji {

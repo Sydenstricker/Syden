@@ -358,6 +358,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kdo bude v konverzaci. S více lidmi z toho bude skupinová konverzace.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajíce pro sochu na náměstí.',
+  'Contadores': 'Počítadla',
+  'Em chamada': 'V hovoru',
+  'Em chamada: {n}': 'V hovoru: {n}',
+  'Membros: {n}': 'Členové: {n}',
+  'Online agora': 'Teď online',
+  'Online agora: {n}': 'Teď online: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Čísla se zobrazují nahoře v seznamu kanálů pro všechny a mění se sama.',
   'Criar uma sala para cada pessoa que entrar': 'Vytvořit místnost pro každého, kdo vstoupí',
   'Entre para criar a sua sala': 'Vstup a vytvoř si vlastní místnost',
   'Limite de pessoas': 'Limit lidí',

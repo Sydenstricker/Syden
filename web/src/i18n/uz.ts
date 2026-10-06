@@ -367,6 +367,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  'Contadores': 'Hisoblagichlar',
+  'Em chamada': 'Qoʻngʻiroqda',
+  'Em chamada: {n}': 'Qoʻngʻiroqda: {n}',
+  'Membros: {n}': 'Aʼzolar: {n}',
+  'Online agora': 'Hozir onlayn',
+  'Online agora: {n}': 'Hozir onlayn: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Raqamlar kanallar roʻyxatining tepasida hammaga koʻrinadi va oʻzi yangilanadi.',
   'Criar uma sala para cada pessoa que entrar': 'Kirgan har bir kishi uchun xona yaratish',
   'Entre para criar a sua sala': 'Oʻz xonangizni yaratish uchun kiring',
   'Limite de pessoas': 'Odamlar chegarasi',

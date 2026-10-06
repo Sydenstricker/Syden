@@ -359,6 +359,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  'Contadores': 'Tiriyeyaal',
+  'Em chamada': 'Wicitaan ku jira',
+  'Em chamada: {n}': 'Wicitaan ku jira: {n}',
+  'Membros: {n}': 'Xubnaha: {n}',
+  'Online agora': 'Hadda khadka ku jira',
+  'Online agora: {n}': 'Hadda khadka ku jira: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Tirooyinku waxay ka muuqdaan korka liiska kanaallada qof walba, wayna is beddelaan.',
   'Criar uma sala para cada pessoa que entrar': 'U samee qol qof kasta oo soo gala',
   'Entre para criar a sua sala': 'Gal si aad u sameysato qolkaaga',
   'Limite de pessoas': 'Xadka dadka',

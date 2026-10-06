@@ -56,6 +56,7 @@ import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { Avatar } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
 import { ConfiguracaoDeNiveis } from './Ranking';
+import { ConfiguracaoDeContadores } from './Contadores';
 import { ModeracaoSection } from './Moderacao';
 import { ComandosSection } from './Comandos';
 import { AgendadasSection } from './Agendadas';
@@ -1333,6 +1334,8 @@ function MembersSection({ user, community }: { user: User; community: Community 
           <EditorDeCargos community={community} />
           <h3>{t('Níveis')}</h3>
           <ConfiguracaoDeNiveis community={community} />
+          <h3>{t('Contadores')}</h3>
+          <ConfiguracaoDeContadores community={community} />
           <h3>{t('Quem participa')}</h3>
         </>
       )}

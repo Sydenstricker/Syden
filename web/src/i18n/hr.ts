@@ -358,6 +358,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Odaberi tko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Odaberi zeca za kip na trgu.',
+  'Contadores': 'Brojači',
+  'Em chamada': 'U pozivu',
+  'Em chamada: {n}': 'U pozivu: {n}',
+  'Membros: {n}': 'Članovi: {n}',
+  'Online agora': 'Sada na mreži',
+  'Online agora: {n}': 'Sada na mreži: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Brojevi se pojavljuju na vrhu popisa kanala, za sve, i mijenjaju se sami.',
   'Criar uma sala para cada pessoa que entrar': 'Napravi sobu za svakoga tko uđe',
   'Entre para criar a sua sala': 'Uđi da napraviš svoju sobu',
   'Limite de pessoas': 'Ograničenje ljudi',

@@ -351,6 +351,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'Contadores': 'Numëruesit',
+  'Em chamada': 'Në telefonatë',
+  'Em chamada: {n}': 'Në telefonatë: {n}',
+  'Membros: {n}': 'Anëtarë: {n}',
+  'Online agora': 'Tani në linjë',
+  'Online agora: {n}': 'Tani në linjë: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Numrat shfaqen në krye të listës së kanaleve, për të gjithë, dhe ndryshojnë vetë.',
   'Criar uma sala para cada pessoa que entrar': 'Krijo një dhomë për këdo që hyn',
   'Entre para criar a sua sala': 'Hyr për të krijuar dhomën tënde',
   'Limite de pessoas': 'Kufiri i njerëzve',

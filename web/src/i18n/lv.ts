@@ -361,6 +361,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
+  'Contadores': 'Skaitītāji',
+  'Em chamada': 'Zvanā',
+  'Em chamada: {n}': 'Zvanā: {n}',
+  'Membros: {n}': 'Dalībnieki: {n}',
+  'Online agora': 'Tagad tiešsaistē',
+  'Online agora: {n}': 'Tagad tiešsaistē: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Skaitļi visiem redzami kanālu saraksta augšā un mainās paši.',
   'Criar uma sala para cada pessoa que entrar': 'Izveidot istabu katram, kas ienāk',
   'Entre para criar a sua sala': 'Ienāc, lai izveidotu savu istabu',
   'Limite de pessoas': 'Cilvēku limits',

@@ -356,6 +356,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Изабери ко улази. Са више од једне особе постаје групни разговор.',
   'Escolha o coelho da estátua da praça.': 'Изабери зеца за статуу на тргу.',
+  'Contadores': 'Бројачи',
+  'Em chamada': 'У позиву',
+  'Em chamada: {n}': 'У позиву: {n}',
+  'Membros: {n}': 'Чланови: {n}',
+  'Online agora': 'Сада на мрежи',
+  'Online agora: {n}': 'Сада на мрежи: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Бројеви се појављују на врху листе канала, за све, и мењају се сами.',
   'Criar uma sala para cada pessoa que entrar': 'Направи собу за свакога ко уђе',
   'Entre para criar a sua sala': 'Уђи да направиш своју собу',
   'Limite de pessoas': 'Ограничење људи',

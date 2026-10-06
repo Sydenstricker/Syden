@@ -191,6 +191,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'Contadores': 'Vihesabu',
+  'Em chamada': 'Kwenye simu',
+  'Em chamada: {n}': 'Kwenye simu: {n}',
+  'Membros: {n}': 'Wanachama: {n}',
+  'Online agora': 'Mtandaoni sasa',
+  'Online agora: {n}': 'Mtandaoni sasa: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Namba zinaonekana juu ya orodha ya chaneli kwa kila mtu, na hubadilika zenyewe.',
   'Criar uma sala para cada pessoa que entrar': 'Unda chumba kwa kila anayeingia',
   'Entre para criar a sua sala': 'Ingia ili uunde chumba chako',
   'Limite de pessoas': 'Kikomo cha watu',

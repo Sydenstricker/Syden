@@ -204,6 +204,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  'Contadores': 'Contatori',
+  'Em chamada': 'In chiamata',
+  'Em chamada: {n}': 'In chiamata: {n}',
+  'Membros: {n}': 'Membri: {n}',
+  'Online agora': 'Online ora',
+  'Online agora: {n}': 'Online ora: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'I numeri compaiono in cima all’elenco dei canali, per tutti, e si aggiornano da soli.',
   'Criar uma sala para cada pessoa que entrar': 'Crea una stanza per chi entra',
   'Entre para criar a sua sala': 'Entra per creare la tua stanza',
   'Limite de pessoas': 'Limite di persone',

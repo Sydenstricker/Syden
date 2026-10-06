@@ -204,6 +204,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'Contadores': 'গণনা',
+  'Em chamada': 'কলে আছেন',
+  'Em chamada: {n}': 'কলে আছেন: {n}',
+  'Membros: {n}': 'সদস্য: {n}',
+  'Online agora': 'এখন অনলাইনে',
+  'Online agora: {n}': 'এখন অনলাইনে: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'সংখ্যাগুলো চ্যানেল তালিকার ওপরে সবার জন্য দেখায়, আর নিজে নিজেই বদলায়।',
   'Criar uma sala para cada pessoa que entrar': 'যে ঢুকবে তার জন্য একটি রুম তৈরি করুন',
   'Entre para criar a sua sala': 'নিজের রুম বানাতে ঢুকুন',
   'Limite de pessoas': 'লোকের সীমা',

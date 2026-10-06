@@ -359,6 +359,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
+  'Contadores': 'ගණක',
+  'Em chamada': 'ඇමතුමක',
+  'Em chamada: {n}': 'ඇමතුමක: {n}',
+  'Membros: {n}': 'සාමාජිකයන්: {n}',
+  'Online agora': 'දැන් සබැඳිව',
+  'Online agora: {n}': 'දැන් සබැඳිව: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'අංක නාලිකා ලැයිස්තුවේ ඉහළින් සැමට පෙනෙන අතර ඉබේම යාවත්කාලීන වේ.',
   'Criar uma sala para cada pessoa que entrar': 'ඇතුළු වන සෑම කෙනෙකුටම කාමරයක් සාදන්න',
   'Entre para criar a sua sala': 'ඔබේම කාමරයක් සෑදීමට ඇතුළු වන්න',
   'Limite de pessoas': 'පුද්ගල සීමාව',

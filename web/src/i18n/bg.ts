@@ -356,6 +356,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кой да влезе. С повече от един човек става групов разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери заека за статуята на площада.',
+  'Contadores': 'Броячи',
+  'Em chamada': 'В разговор',
+  'Em chamada: {n}': 'В разговор: {n}',
+  'Membros: {n}': 'Членове: {n}',
+  'Online agora': 'На линия сега',
+  'Online agora: {n}': 'На линия сега: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Числата се показват над списъка с канали за всички и се променят сами.',
   'Criar uma sala para cada pessoa que entrar': 'Създай стая за всеки, който влезе',
   'Entre para criar a sua sala': 'Влез, за да създадеш своя стая',
   'Limite de pessoas': 'Ограничение на хората',

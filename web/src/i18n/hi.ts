@@ -206,6 +206,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
+  'Contadores': 'गिनती',
+  'Em chamada': 'कॉल में',
+  'Em chamada: {n}': 'कॉल में: {n}',
+  'Membros: {n}': 'सदस्य: {n}',
+  'Online agora': 'अभी ऑनलाइन',
+  'Online agora: {n}': 'अभी ऑनलाइन: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'ये संख्याएँ चैनल सूची के ऊपर सबको दिखती हैं और अपने-आप बदलती हैं।',
   'Criar uma sala para cada pessoa que entrar': 'हर आने वाले के लिए एक कमरा बनाएँ',
   'Entre para criar a sua sala': 'अपना कमरा बनाने के लिए अंदर आएँ',
   'Limite de pessoas': 'लोगों की सीमा',

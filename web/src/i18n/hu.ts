@@ -360,6 +360,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  'Contadores': 'Számlálók',
+  'Em chamada': 'Hívásban',
+  'Em chamada: {n}': 'Hívásban: {n}',
+  'Membros: {n}': 'Tagok: {n}',
+  'Online agora': 'Most online',
+  'Online agora: {n}': 'Most online: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'A számok mindenkinek a csatornalista tetején látszanak, és maguktól frissülnek.',
   'Criar uma sala para cada pessoa que entrar': 'Szoba létrehozása mindenkinek, aki belép',
   'Entre para criar a sua sala': 'Lépj be, és létrejön a saját szobád',
   'Limite de pessoas': 'Létszámkorlát',

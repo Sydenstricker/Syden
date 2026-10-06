@@ -45,11 +45,14 @@ import { ScreenShareButton } from './ScreenShareButton';
 import { StatusMenu, useStatusMenu } from './StatusMenu';
 import { nomeDeCanal } from './bidi';
 import { quemAssiste, salaAssistindoJunto } from './assistindo';
-import type { Channel, Community, CommunityMember, PresenceStatus, User, VoiceMember } from './types';
+import type { Channel, Community, CommunityMember, PresenceEntry, PresenceStatus, User, VoiceMember } from './types';
+import { FaixaDeContadores } from './Contadores';
 import type { Voice } from './useVoice';
 
 interface Props {
   user: User;
+  /** Quem está online, para os contadores do alto da lista (ver Contadores.tsx). */
+  online: PresenceEntry[];
   community: Community;
   channels: Channel[];
   selectedId: number | null;
@@ -90,6 +93,7 @@ export function Sidebar({
   arteDaComunidade,
   inicioActive,
   voiceMembers,
+  online,
   voice,
   myStatus,
   onSetStatus,
@@ -175,6 +179,8 @@ export function Sidebar({
           </a>
         )}
       </header>
+
+      {!directMode && <FaixaDeContadores community={community} online={online} voiceMembers={voiceMembers} selfId={user.id} />}
 
       {directMode && directList}
 

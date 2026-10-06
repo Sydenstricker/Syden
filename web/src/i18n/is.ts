@@ -360,6 +360,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  'Contadores': 'Teljarar',
+  'Em chamada': 'Í símtali',
+  'Em chamada: {n}': 'Í símtali: {n}',
+  'Membros: {n}': 'Meðlimir: {n}',
+  'Online agora': 'Tengd núna',
+  'Online agora: {n}': 'Tengd núna: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Tölurnar birtast efst á rásalistanum, fyrir öll, og uppfærast sjálfar.',
   'Criar uma sala para cada pessoa que entrar': 'Búa til herbergi fyrir hvern sem kemur inn',
   'Entre para criar a sua sala': 'Komdu inn til að búa til þitt eigið herbergi',
   'Limite de pessoas': 'Hámark fólks',

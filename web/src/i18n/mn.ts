@@ -374,6 +374,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',
+  'Contadores': 'Тоолуурууд',
+  'Em chamada': 'Дуудлагад',
+  'Em chamada: {n}': 'Дуудлагад: {n}',
+  'Membros: {n}': 'Гишүүд: {n}',
+  'Online agora': 'Одоо онлайн',
+  'Online agora: {n}': 'Одоо онлайн: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Тоонууд сувгийн жагсаалтын дээд хэсэгт бүх хүнд харагдаж, өөрөө шинэчлэгдэнэ.',
   'Criar uma sala para cada pessoa que entrar': 'Орж ирсэн хүн бүрт өрөө үүсгэх',
   'Entre para criar a sua sala': 'Өөрийн өрөөг үүсгэхийн тулд ор',
   'Limite de pessoas': 'Хүний хязгаар',

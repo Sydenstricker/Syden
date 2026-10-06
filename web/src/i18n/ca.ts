@@ -355,6 +355,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',
+  'Contadores': 'Comptadors',
+  'Em chamada': 'En una trucada',
+  'Em chamada: {n}': 'En una trucada: {n}',
+  'Membros: {n}': 'Membres: {n}',
+  'Online agora': 'En línia ara',
+  'Online agora: {n}': 'En línia ara: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Els números apareixen a dalt de la llista de canals, per a tothom, i canvien sols.',
   'Criar uma sala para cada pessoa que entrar': 'Crear una sala per a cada persona que hi entri',
   'Entre para criar a sua sala': 'Entra per crear la teva sala',
   'Limite de pessoas': 'Límit de persones',

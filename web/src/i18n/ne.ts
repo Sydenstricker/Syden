@@ -361,6 +361,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'Contadores': 'गन्तीहरू',
+  'Em chamada': 'कलमा',
+  'Em chamada: {n}': 'कलमा: {n}',
+  'Membros: {n}': 'सदस्य: {n}',
+  'Online agora': 'अहिले अनलाइन',
+  'Online agora: {n}': 'अहिले अनलाइन: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'संख्याहरू च्यानल सूचीको माथि सबैलाई देखिन्छन्, र आफैँ बदलिन्छन्।',
   'Criar uma sala para cada pessoa que entrar': 'भित्र आउने हरेकका लागि कोठा बनाउनुहोस्',
   'Entre para criar a sua sala': 'आफ्नै कोठा बनाउन भित्र आउनुहोस्',
   'Limite de pessoas': 'मान्छेको सीमा',

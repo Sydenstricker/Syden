@@ -370,6 +370,13 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  'Contadores': 'Kontè',
+  'Em chamada': 'Nan yon apèl',
+  'Em chamada: {n}': 'Nan yon apèl: {n}',
+  'Membros: {n}': 'Manm: {n}',
+  'Online agora': 'Sou entènèt kounye a',
+  'Online agora: {n}': 'Sou entènèt kounye a: {n}',
+  'Os números aparecem no alto da lista de canais, para todo mundo, e mudam sozinhos.': 'Chif yo parèt anwo lis kanal yo pou tout moun, epi yo chanje poukont yo.',
   'Criar uma sala para cada pessoa que entrar': 'Kreye yon sal pou chak moun ki antre',
   'Entre para criar a sua sala': 'Antre pou kreye pwòp sal ou',
   'Limite de pessoas': 'Limit moun',
