@@ -362,6 +362,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
+  'Assistindo junto': 'Zajedničko gledanje',
   '{nome} está digitando…': '{nome} kuca…',
   '{nome} e {outro} estão digitando…': '{nome} i {outro} kucaju…',
   'Várias pessoas estão digitando…': 'Nekoliko ljudi kuca…',

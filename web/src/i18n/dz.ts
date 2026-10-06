@@ -376,6 +376,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
   'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
+  'Assistindo junto': 'མཉམ་དུ་ བལྟ་དོ',
   '{nome} está digitando…': '{nome} ཡིག་དཔར་རྐྱབ་དོ…',
   '{nome} e {outro} estão digitando…': '{nome} དང་ {outro} ཡིག་དཔར་རྐྱབ་དོ…',
   'Várias pessoas estão digitando…': 'མི་ལེ་ཤ་ཅིག་ ཡིག་དཔར་རྐྱབ་དོ…',

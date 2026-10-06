@@ -365,6 +365,7 @@ export default {
   'Escolha o seu': 'Wybierz swojego',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Wybierz, kto dołącza. Z więcej niż jedną osobą to będzie rozmowa grupowa.',
   'Escolha o coelho da estátua da praça.': 'Wybierz królika na pomnik na placu.',
+  'Assistindo junto': 'Wspólne oglądanie',
   '{nome} está digitando…': '{nome} pisze…',
   '{nome} e {outro} estão digitando…': '{nome} i {outro} piszą…',
   'Várias pessoas estão digitando…': 'Kilka osób pisze…',

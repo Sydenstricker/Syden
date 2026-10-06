@@ -357,6 +357,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',
+  'Assistindo junto': 'Kyk saam',
   '{nome} está digitando…': '{nome} tik…',
   '{nome} e {outro} estão digitando…': '{nome} en {outro} tik…',
   'Várias pessoas estão digitando…': 'Verskeie mense tik…',

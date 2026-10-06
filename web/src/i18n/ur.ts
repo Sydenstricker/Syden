@@ -296,6 +296,7 @@ export default {
   'Escolha o seu': 'اپنا چنیں',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'چنیں کہ کون شامل ہو۔ ایک سے زیادہ لوگ ہوں تو یہ گروپ گفتگو بن جاتی ہے۔',
   'Escolha o coelho da estátua da praça.': 'چوک کے مجسمے کے لیے خرگوش چنو۔',
+  'Assistindo junto': 'مل کر دیکھ رہے ہیں',
   '{nome} está digitando…': '{nome} ٹائپ کر رہے ہیں…',
   '{nome} e {outro} estão digitando…': '{nome} اور {outro} ٹائپ کر رہے ہیں…',
   'Várias pessoas estão digitando…': 'کئی لوگ ٹائپ کر رہے ہیں…',

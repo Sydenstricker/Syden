@@ -322,6 +322,7 @@ export default {
   'Escolha o seu': 'เลือกของคุณ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'เลือกว่าใครจะเข้า ถ้ามากกว่าหนึ่งคน จะกลายเป็นการสนทนากลุ่ม',
   'Escolha o coelho da estátua da praça.': 'เลือกกระต่ายสำหรับรูปปั้นกลางลาน',
+  'Assistindo junto': 'กำลังดูด้วยกัน',
   '{nome} está digitando…': '{nome} กำลังพิมพ์…',
   '{nome} e {outro} estão digitando…': '{nome} และ {outro} กำลังพิมพ์…',
   'Várias pessoas estão digitando…': 'หลายคนกำลังพิมพ์…',

@@ -311,6 +311,7 @@ export default {
   'Escolha o seu': 'Ku zaɓi naku',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Ku zaɓi wanda zai shiga. Da fiye da mutum ɗaya, yana zama tattaunawar rukuni.',
   'Escolha o coelho da estátua da praça.': 'Zaɓi zomo don mutum-mutumin dandali.',
+  'Assistindo junto': 'Kallo tare',
   '{nome} está digitando…': '{nome} suna rubutu…',
   '{nome} e {outro} estão digitando…': '{nome} da {outro} suna rubutu…',
   'Várias pessoas estão digitando…': 'Mutane da yawa suna rubutu…',

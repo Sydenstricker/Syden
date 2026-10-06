@@ -336,6 +336,7 @@ export default {
   'Versão 1.21, sem PvP': 'Versión 1.21, sin PvP',
   'ex.: Evidências': 'ej.: Pruebas',
   'Escolha o coelho da estátua da praça.': 'Elige el conejo de la estatua de la plaza.',
+  'Assistindo junto': 'Viendo en grupo',
   '{nome} está digitando…': '{nome} está escribiendo…',
   '{nome} e {outro} estão digitando…': '{nome} y {outro} están escribiendo…',
   'Várias pessoas estão digitando…': 'Varias personas están escribiendo…',

@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
   'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',
+  'Assistindo junto': 'Menonton bersama',
   '{nome} está digitando…': '{nome} sedang mengetik…',
   '{nome} e {outro} estão digitando…': '{nome} dan {outro} sedang mengetik…',
   'Várias pessoas estão digitando…': 'Beberapa orang sedang mengetik…',

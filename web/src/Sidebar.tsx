@@ -27,6 +27,7 @@ import { AnimatedIcon } from './AnimatedIcon';
 import { CapaDaComunidade } from './CapaDaComunidade';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { Avatar } from './Avatar';
+import { Mascote } from './Mascote';
 import { useT } from './i18n';
 import { Puxador } from './Puxador';
 import { IconButton } from './IconButton';
@@ -106,6 +107,17 @@ export function Sidebar({
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';
   const canManage = (channel: Channel) => managesCommunity || channel.createdBy === user.id;
+  /**
+   * ASSISTINDO JUNTO NÃO É UM MODO QUE ALGUÉM LIGA: é o que acontece quando uma pessoa transmite e outra
+   * fica para ver (decisão de 05/10/2026 — um "modo assistir junto" à parte não tinha valor). O Syden
+   * percebe sozinho e troca o ícone da sala pelo mascote com a pipoca. Não mexe na tela de ninguém: o
+   * arranjo com o vídeo grande e a conversa ao lado continua sendo escolha de quem está assistindo.
+   */
+  const assistindoJunto = (channelId: number) => {
+    const naSala = voiceMembers.filter((m) => m.channelId === channelId);
+    return naSala.length >= 2 && naSala.some((m) => m.screen);
+  };
+
   const row = (channel: Channel, icon: ReactNode) => (
     <ChannelRow
       channel={channel}
@@ -192,7 +204,17 @@ export function Sidebar({
             .filter((c) => c.type === 'voice')
             .map((c) => (
               <div key={c.id}>
-                {row(c, <Volume2 size={18} />)}
+                {row(
+                  c,
+                  assistindoJunto(c.id) ? (
+                    <span className="canal-assistindo" title={t('Assistindo junto')}>
+                      <Mascote nome="assistir-junto" tamanho={30} />
+                      <span className="so-para-leitor">{t('Assistindo junto')}</span>
+                    </span>
+                  ) : (
+                    <Volume2 size={18} />
+                  ),
+                )}
                 {voiceMembers
                   .filter((m) => m.channelId === c.id)
                   .map((m) => (

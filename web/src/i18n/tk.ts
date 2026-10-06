@@ -365,6 +365,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
   'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',
+  'Assistindo junto': 'Bilelikde tomaşa',
   '{nome} está digitando…': '{nome} ýazýar…',
   '{nome} e {outro} estão digitando…': '{nome} we {outro} ýazýar…',
   'Várias pessoas estão digitando…': 'Birnäçe adam ýazýar…',

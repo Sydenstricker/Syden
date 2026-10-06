@@ -191,6 +191,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chagua nani anaingia. Ukiwa na zaidi ya mtu mmoja, inakuwa mazungumzo ya kikundi.',
   'Escolha o coelho da estátua da praça.': 'Chagua sungura wa sanamu ya uwanjani.',
+  'Assistindo junto': 'Kutazama pamoja',
   '{nome} está digitando…': '{nome} anaandika…',
   '{nome} e {outro} estão digitando…': '{nome} na {outro} wanaandika…',
   'Várias pessoas estão digitando…': 'Watu kadhaa wanaandika…',

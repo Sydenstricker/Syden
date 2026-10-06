@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Изабери ко улази. Са више од једне особе постаје групни разговор.',
   'Escolha o coelho da estátua da praça.': 'Изабери зеца за статуу на тргу.',
+  'Assistindo junto': 'Заједничко гледање',
   '{nome} está digitando…': '{nome} куца…',
   '{nome} e {outro} estão digitando…': '{nome} и {outro} куцају…',
   'Várias pessoas estão digitando…': 'Неколико људи куца…',

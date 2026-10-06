@@ -351,6 +351,7 @@ export default {
   'Escolha o seu': 'Вибери свого',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Вибери, хто долучиться. Якщо людей більше однієї, це буде групова розмова.',
   'Escolha o coelho da estátua da praça.': 'Обери кролика для статуї на площі.',
+  'Assistindo junto': 'Спільний перегляд',
   '{nome} está digitando…': '{nome} друкує…',
   '{nome} e {outro} estão digitando…': '{nome} і {outro} друкують…',
   'Várias pessoas estão digitando…': 'Кілька людей друкують…',

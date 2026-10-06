@@ -371,6 +371,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  'Assistindo junto': 'Birga tomosha',
   '{nome} está digitando…': '{nome} yozmoqda…',
   '{nome} e {outro} estão digitando…': '{nome} va {outro} yozmoqda…',
   'Várias pessoas estão digitando…': 'Bir necha kishi yozmoqda…',

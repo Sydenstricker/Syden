@@ -340,6 +340,7 @@ export default {
   'Escolha o seu': 'ကိုယ့်ဟာ ရွေးပါ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ဘယ်သူ ပါမလဲ ရွေးပါ။ တစ်ယောက်ထက် ပိုရင် အဖွဲ့စကားဝိုင်း ဖြစ်ပါမယ်။',
   'Escolha o coelho da estátua da praça.': 'ရင်ပြင်ရှိ ရုပ်တုအတွက် ယုန်ကို ရွေးပါ။',
+  'Assistindo junto': 'အတူတကွ ကြည့်နေသည်',
   '{nome} está digitando…': '{nome} စာရိုက်နေသည်…',
   '{nome} e {outro} estão digitando…': '{nome} နှင့် {outro} စာရိုက်နေသည်…',
   'Várias pessoas estão digitando…': 'လူအများ စာရိုက်နေသည်…',

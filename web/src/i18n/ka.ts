@@ -382,6 +382,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  'Assistindo junto': 'ერთად ყურება',
   '{nome} está digitando…': '{nome} წერს…',
   '{nome} e {outro} estão digitando…': '{nome} და {outro} წერენ…',
   'Várias pessoas estão digitando…': 'რამდენიმე ადამიანი წერს…',

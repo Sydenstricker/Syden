@@ -279,6 +279,7 @@ export default {
   'Escolha o seu': 'Chọn cái của bạn',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Chọn ai được vào. Từ hai người trở lên, nó thành cuộc trò chuyện nhóm.',
   'Escolha o coelho da estátua da praça.': 'Chọn chú thỏ cho bức tượng ở quảng trường.',
+  'Assistindo junto': 'Đang xem cùng nhau',
   '{nome} está digitando…': '{nome} đang nhập…',
   '{nome} e {outro} estão digitando…': '{nome} và {outro} đang nhập…',
   'Várias pessoas estão digitando…': 'Nhiều người đang nhập…',

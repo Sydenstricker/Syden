@@ -204,6 +204,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
+  'Assistindo junto': 'একসাথে দেখা হচ্ছে',
   '{nome} está digitando…': '{nome} টাইপ করছে…',
   '{nome} e {outro} estão digitando…': '{nome} আর {outro} টাইপ করছে…',
   'Várias pessoas estão digitando…': 'কয়েকজন টাইপ করছে…',

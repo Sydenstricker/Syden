@@ -364,6 +364,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  'Assistindo junto': 'ກຳລັງເບິ່ງນຳກັນ',
   '{nome} está digitando…': '{nome} ກຳລັງພິມ…',
   '{nome} e {outro} estão digitando…': '{nome} ແລະ {outro} ກຳລັງພິມ…',
   'Várias pessoas estão digitando…': 'ຫຼາຍຄົນກຳລັງພິມ…',

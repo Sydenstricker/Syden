@@ -364,6 +364,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  'Assistindo junto': 'Тамошои якҷоя',
   '{nome} está digitando…': '{nome} менависад…',
   '{nome} e {outro} estão digitando…': '{nome} ва {outro} менависанд…',
   'Várias pessoas estão digitando…': 'Якчанд нафар менависанд…',

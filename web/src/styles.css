@@ -10268,6 +10268,23 @@ body.arrastando-barra {
   text-overflow: ellipsis;
 }
 
+/* A sala em que estão assistindo junto: o mascote com a pipoca no lugar do alto-falante. O desenho tem
+   folga em volta, e as margens negativas o deixam do tamanho do ícone que ele substitui. */
+.canal-assistindo {
+  display: inline-flex;
+  margin: -6px -6px -6px -6px;
+}
+
+/* Texto só para leitor de tela: o ícone não diz nada a quem não vê. */
+.so-para-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ---------- O mascote nas telas (ver Mascote.tsx) ---------- */
 
 .mascote {

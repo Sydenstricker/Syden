@@ -294,6 +294,7 @@ export default {
   'Escolha o seu': 'உங்களுடையதைத் தேர்ந்தெடுங்கள்',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'யார் சேர வேண்டும் என்று தேர்ந்தெடுங்கள். ஒருவருக்கு மேல் இருந்தால் அது குழு உரையாடலாகும்.',
   'Escolha o coelho da estátua da praça.': 'சதுக்கச் சிலைக்கான முயலைத் தேர்ந்தெடு.',
+  'Assistindo junto': 'சேர்ந்து பார்க்கிறார்கள்',
   '{nome} está digitando…': '{nome} தட்டச்சு செய்கிறார்…',
   '{nome} e {outro} estão digitando…': '{nome} மற்றும் {outro} தட்டச்சு செய்கிறார்கள்…',
   'Várias pessoas estão digitando…': 'பலர் தட்டச்சு செய்கிறார்கள்…',

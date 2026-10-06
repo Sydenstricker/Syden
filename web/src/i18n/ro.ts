@@ -312,6 +312,7 @@ export default {
   'Escolha o seu': 'Alege-l pe al tău',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Alege cine intră. Cu mai mult de o persoană, devine o conversație de grup.',
   'Escolha o coelho da estátua da praça.': 'Alege iepurele pentru statuia din piață.',
+  'Assistindo junto': 'Vizionare împreună',
   '{nome} está digitando…': '{nome} scrie…',
   '{nome} e {outro} estão digitando…': '{nome} și {outro} scriu…',
   'Várias pessoas estão digitando…': 'Mai multe persoane scriu…',

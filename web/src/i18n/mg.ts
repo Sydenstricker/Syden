@@ -363,6 +363,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  'Assistindo junto': 'Mijery miaraka',
   '{nome} está digitando…': 'Manoratra i {nome}…',
   '{nome} e {outro} estão digitando…': 'Manoratra i {nome} sy {outro}…',
   'Várias pessoas estão digitando…': 'Olona maromaro no manoratra…',

@@ -365,6 +365,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',
+  'Assistindo junto': 'सँगै हेर्दै',
   '{nome} está digitando…': '{nome} टाइप गर्दै हुनुहुन्छ…',
   '{nome} e {outro} estão digitando…': '{nome} र {outro} टाइप गर्दै हुनुहुन्छ…',
   'Várias pessoas estão digitando…': 'धेरै जना टाइप गर्दै हुनुहुन्छ…',

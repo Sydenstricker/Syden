@@ -297,6 +297,7 @@ export default {
   'Escolha o seu': 'مال خودتان را انتخاب کنید',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'انتخاب کنید چه کسی وارد شود. با بیش از یک نفر، گفتگوی گروهی می‌شود.',
   'Escolha o coelho da estátua da praça.': 'خرگوش مجسمهٔ میدان را انتخاب کن.',
+  'Assistindo junto': 'تماشای گروهی',
   '{nome} está digitando…': '{nome} در حال نوشتن است…',
   '{nome} e {outro} estão digitando…': '{nome} و {outro} در حال نوشتن هستند…',
   'Várias pessoas estão digitando…': 'چند نفر در حال نوشتن هستند…',

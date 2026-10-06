@@ -364,6 +364,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Khetha ukuthi ubani ongenayo. Uma bengaphezu komuntu oyedwa, iba yingxoxo yeqembu.',
   'Escolha o coelho da estátua da praça.': 'Khetha unogwaja wesithombe esisesigcawini.',
+  'Assistindo junto': 'Ukubuka ndawonye',
   '{nome} está digitando…': 'U-{nome} uyabhala…',
   '{nome} e {outro} estão digitando…': 'U-{nome} no-{outro} bayabhala…',
   'Várias pessoas estão digitando…': 'Abantu abaningana bayabhala…',

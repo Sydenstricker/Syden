@@ -206,6 +206,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
+  'Assistindo junto': 'साथ में देख रहे हैं',
   '{nome} está digitando…': '{nome} टाइप कर रहे हैं…',
   '{nome} e {outro} estão digitando…': '{nome} और {outro} टाइप कर रहे हैं…',
   'Várias pessoas estão digitando…': 'कई लोग टाइप कर रहे हैं…',

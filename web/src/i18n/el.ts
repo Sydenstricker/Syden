@@ -318,6 +318,7 @@ export default {
   'Escolha o seu': 'Διάλεξε το δικό σου',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Διάλεξε ποιος μπαίνει. Με πάνω από ένα άτομο, γίνεται ομαδική συνομιλία.',
   'Escolha o coelho da estátua da praça.': 'Διάλεξε το κουνέλι για το άγαλμα της πλατείας.',
+  'Assistindo junto': 'Κοινή προβολή',
   '{nome} está digitando…': '{nome} πληκτρολογεί…',
   '{nome} e {outro} estão digitando…': '{nome} και {outro} πληκτρολογούν…',
   'Várias pessoas estão digitando…': 'Πληκτρολογούν αρκετά άτομα…',

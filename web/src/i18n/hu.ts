@@ -364,6 +364,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  'Assistindo junto': 'Közös nézés',
   '{nome} está digitando…': '{nome} éppen ír…',
   '{nome} e {outro} estão digitando…': '{nome} és {outro} éppen ír…',
   'Várias pessoas estão digitando…': 'Többen is írnak…',

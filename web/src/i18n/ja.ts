@@ -290,6 +290,7 @@ export default {
   'Escolha o seu': '自分のを選ぶ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '誰を入れるか選んでください。2人以上ならグループ会話になります。',
   'Escolha o coelho da estátua da praça.': '広場の像になるウサギを選んでください。',
+  'Assistindo junto': 'みんなで視聴中',
   '{nome} está digitando…': '{nome} さんが入力中…',
   '{nome} e {outro} estão digitando…': '{nome} さんと {outro} さんが入力中…',
   'Várias pessoas estão digitando…': '何人かが入力中…',

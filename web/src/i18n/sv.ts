@@ -355,6 +355,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Välj vem som är med. Med fler än en person blir det en gruppkonversation.',
   'Escolha o coelho da estátua da praça.': 'Välj kaninen till statyn på torget.',
+  'Assistindo junto': 'Tittar tillsammans',
   '{nome} está digitando…': '{nome} skriver…',
   '{nome} e {outro} estão digitando…': '{nome} och {outro} skriver…',
   'Várias pessoas estão digitando…': 'Flera personer skriver…',

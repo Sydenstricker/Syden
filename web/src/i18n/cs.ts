@@ -362,6 +362,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kdo bude v konverzaci. S více lidmi z toho bude skupinová konverzace.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajíce pro sochu na náměstí.',
+  'Assistindo junto': 'Společné sledování',
   '{nome} está digitando…': '{nome} píše…',
   '{nome} e {outro} estão digitando…': '{nome} a {outro} píšou…',
   'Várias pessoas estão digitando…': 'Píše několik lidí…',

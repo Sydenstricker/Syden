@@ -365,6 +365,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',
+  'Assistindo junto': 'Kopīga skatīšanās',
   '{nome} está digitando…': '{nome} raksta…',
   '{nome} e {outro} estão digitando…': '{nome} un {outro} raksta…',
   'Várias pessoas estão digitando…': 'Raksta vairāki cilvēki…',

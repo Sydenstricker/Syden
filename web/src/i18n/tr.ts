@@ -201,6 +201,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
   'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
+  'Assistindo junto': 'Birlikte izleniyor',
   '{nome} está digitando…': '{nome} yazıyor…',
   '{nome} e {outro} estão digitando…': '{nome} ve {outro} yazıyor…',
   'Várias pessoas estão digitando…': 'Birkaç kişi yazıyor…',

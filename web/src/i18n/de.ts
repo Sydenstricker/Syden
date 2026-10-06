@@ -171,6 +171,7 @@ export default {
   'Selo que você veste': 'Dein Abzeichen',
   'Só o seu nome, sem selo': 'Nur dein Name, ohne Abzeichen',
   'Escolha o coelho da estátua da praça.': 'Wähle den Hasen für die Statue auf dem Platz.',
+  'Assistindo junto': 'Gemeinsam schauen',
   '{nome} está digitando…': '{nome} schreibt…',
   '{nome} e {outro} estão digitando…': '{nome} und {outro} schreiben…',
   'Várias pessoas estão digitando…': 'Mehrere Leute schreiben…',

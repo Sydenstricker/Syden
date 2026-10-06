@@ -360,6 +360,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  'Assistindo junto': 'Koos vaatamine',
   '{nome} está digitando…': '{nome} kirjutab…',
   '{nome} e {outro} estão digitando…': '{nome} ja {outro} kirjutavad…',
   'Várias pessoas estão digitando…': 'Mitu inimest kirjutab…',

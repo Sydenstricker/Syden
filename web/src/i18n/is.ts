@@ -364,6 +364,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  'Assistindo junto': 'Horft saman',
   '{nome} está digitando…': '{nome} er að skrifa…',
   '{nome} e {outro} estão digitando…': '{nome} og {outro} eru að skrifa…',
   'Várias pessoas estão digitando…': 'Nokkur eru að skrifa…',

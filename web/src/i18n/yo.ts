@@ -327,6 +327,7 @@ export default {
   'Escolha o seu': 'Ẹ yan tiyín',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Ẹ yan ẹni tó ń wọlé. Pẹ̀lú ju ènìyàn kan lọ, ó di ìbánisọ̀rọ̀ ẹgbẹ́.',
   'Escolha o coelho da estátua da praça.': 'Yan ehoro fún ère tó wà ní gbàgede.',
+  'Assistindo junto': 'Wíwò papọ̀',
   '{nome} está digitando…': '{nome} ń tẹ̀wé…',
   '{nome} e {outro} estão digitando…': '{nome} àti {outro} ń tẹ̀wé…',
   'Várias pessoas estão digitando…': 'Àwọn ènìyàn púpọ̀ ń tẹ̀wé…',

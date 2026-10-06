@@ -355,6 +355,7 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  'Assistindo junto': 'Shikim së bashku',
   '{nome} está digitando…': '{nome} po shkruan…',
   '{nome} e {outro} estão digitando…': '{nome} dhe {outro} po shkruajnë…',
   'Várias pessoas estão digitando…': 'Disa njerëz po shkruajnë…',
