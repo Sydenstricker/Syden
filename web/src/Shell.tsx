@@ -35,6 +35,7 @@ import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
 import { type AulaEmCurso, guardarAulaEmCurso, lerAulaEmCurso } from './aula';
 import { Mascote } from './Mascote';
+import { FaixaDaCultura } from './Cultura';
 import { useT } from './i18n';
 
 /** Última comunidade aberta, para o app voltar onde a pessoa estava. */
@@ -699,6 +700,12 @@ export function Shell({
     if (sala) setAulaEmCurso({ communityId: visivelId, channelId: sala.id });
   }, [temporario, aulaEmCurso, visivelId, channels]);
 
+  /** A cultura que a turma estuda, quando quem administra escolheu uma. */
+  const culturaDaTurma =
+    community?.culturaPais && community.culturaLingua ? { pais: community.culturaPais, lingua: community.culturaLingua } : undefined;
+  /** No modo sala, o lado da chamada mostra a conversa ou, se a turma tem cultura, a faixa dela. */
+  const [abaDaSala, setAbaDaSala] = useState<'conversa' | 'cultura'>('conversa');
+
   function sairDaAula() {
     guardarAulaEmCurso(null);
     if (temporario) {
@@ -882,6 +889,7 @@ export function Shell({
           {view === 'home' && (
             <Home
               comunidade={community?.name}
+              culturaDaTurma={culturaDaTurma}
               salas={channels.filter((c) => c.type === 'voice')}
               naVoz={voiceMembers}
               aoEntrar={watchStream}
@@ -997,14 +1005,33 @@ export function Shell({
                   sessão não inventa um lugar novo, e o que for dito continua lá quando ela acabar. */}
               {sessao && canalDaSessao && socket && (
                 <aside className="sessao-conversa">
-                  <TextChannel
-                    key={`sessao-${canalDaSessao.id}`}
-                    channel={canalDaSessao}
-                    socket={socket}
-                    user={user}
-                    role={community?.role ?? 'member'}
-                    onMobileBack={() => setSessao(false)}
-                  />
+                  {/* No modo sala, com cultura escolhida, duas abas: a conversa da turma e a cultura que
+                      ela estuda. A conversa continua montada por baixo, para não perder o que se escrevia. */}
+                  {modoSala && culturaDaTurma && (
+                    <div className="abas-da-sala" role="tablist">
+                      <button type="button" role="tab" aria-selected={abaDaSala === 'conversa'} onClick={() => setAbaDaSala('conversa')}>
+                        {t('Conversa')}
+                      </button>
+                      <button type="button" role="tab" aria-selected={abaDaSala === 'cultura'} onClick={() => setAbaDaSala('cultura')}>
+                        {t('Cultura')}
+                      </button>
+                    </div>
+                  )}
+                  <div className="aba-da-sala" hidden={modoSala && !!culturaDaTurma && abaDaSala !== 'conversa'}>
+                    <TextChannel
+                      key={`sessao-${canalDaSessao.id}`}
+                      channel={canalDaSessao}
+                      socket={socket}
+                      user={user}
+                      role={community?.role ?? 'member'}
+                      onMobileBack={() => setSessao(false)}
+                    />
+                  </div>
+                  {modoSala && culturaDaTurma && abaDaSala === 'cultura' && (
+                    <div className="aba-da-sala cultura-na-sala">
+                      <FaixaDaCultura onde={culturaDaTurma} titulo={t('Cultura de {comunidade}', { comunidade: community?.name ?? '' })} />
+                    </div>
+                  )}
                 </aside>
               )}
             </div>

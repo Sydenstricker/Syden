@@ -34,6 +34,19 @@ const link = await campo.inputValue();
 link.includes('?aula=') ? ok('a professora criou o link da aula') : falhou('o link não saiu: ' + link);
 await professora.locator('.link-aula').screenshot({ path: 'e2e/fotos/aula-link.png' });
 
+// ---------- 1b. a cultura da turma: japonês, Japão ----------
+await professora.keyboard.press('Escape');
+await professora.locator('button[aria-label="Configurações"]').first().click();
+await professora.locator('.settings-tab', { hasText: /Comunidade/ }).first().click();
+await professora.getByLabel('Língua').selectOption('ja');
+(await professora.getByLabel('País').inputValue()) === 'JP' ? ok('escolhendo japonês, o país vem sozinho: Japão') : falhou('o país não acompanhou a língua');
+await professora.locator('.cultura-da-turma .btn-primary').click();
+await professora.locator('.cultura-da-turma', { hasText: 'Salvo.' }).waitFor({ timeout: 10000 }).then(
+  () => ok('a professora salvou a cultura da turma'),
+  () => falhou('a cultura da turma não salvou'),
+);
+await professora.keyboard.press('Escape');
+
 // ---------- 2. a aluna sem conta ----------
 const aluna = await novaJanela();
 await aluna.goto(link);
@@ -63,6 +76,18 @@ sobra.length === 0 ? ok('sem coluna de comunidades, lista de canais nem de membr
 await aluna.waitForTimeout(800);
 (await aluna.locator('#abertura').count()) === 0 ? ok('a abertura saiu da frente') : falhou('a abertura continua por cima da aula');
 await aluna.screenshot({ path: 'e2e/fotos/aula-modo-sala.png' });
+
+// A cultura da turma ao lado da conversa, numa aba.
+const abaCultura = aluna.getByRole('tab', { name: 'Cultura' });
+(await abaCultura.count()) === 1 ? ok('ao lado da conversa, a aba "Cultura" da turma') : falhou('a aba de cultura não apareceu no modo sala');
+await abaCultura.click();
+await aluna.locator('.cultura-na-sala').waitFor({ timeout: 10000 }).then(
+  () => ok('e ela abre a cultura que a turma estuda'),
+  () => falhou('a aba de cultura não abriu'),
+);
+await aluna.waitForTimeout(4000);
+await aluna.screenshot({ path: 'e2e/fotos/aula-cultura.png' });
+await aluna.getByRole('tab', { name: 'Conversa' }).click();
 
 // ---------- 3. a professora vê a aluna ----------
 await professora

@@ -36,9 +36,15 @@ interface Cultura {
 
 const arquivo = (id: string) => `${API_URL}/api/cultura/arquivo/${encodeURIComponent(id)}`;
 
-export function FaixaDaCultura() {
+/**
+ * `onde` fixa o país e a língua — a CULTURA DA TURMA, escolhida por quem administra a comunidade (ver
+ * CulturaDaTurma.tsx). Sem ele, vale a preferência de idioma da própria pessoa, como sempre foi.
+ * `titulo` troca o "Cultura" do alto, para as duas faixas não se confundirem na mesma tela.
+ */
+export function FaixaDaCultura({ onde: ondeFixo, titulo }: { onde?: { pais: string; lingua: string }; titulo?: string } = {}) {
   const t = useT();
-  const [onde] = useState(paisDaPessoa);
+  const [ondeDaPessoa] = useState(paisDaPessoa);
+  const onde = ondeFixo ?? ondeDaPessoa;
   // undefined = ainda vindo; null = não veio nada (a faixa some).
   const [cultura, setCultura] = useState<Cultura | null | undefined>(onde ? undefined : null);
 
@@ -51,16 +57,17 @@ export function FaixaDaCultura() {
     return () => {
       vivo = false;
     };
-  }, [onde]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onde?.pais, onde?.lingua]);
 
   if (!onde || cultura === null) return null;
   const pais = nomeDoPais(onde.pais, idiomaAtual());
 
   return (
-    <section className="cultura" aria-label={t('Cultura')} aria-busy={cultura === undefined}>
+    <section className="cultura" aria-label={titulo ?? t('Cultura')} aria-busy={cultura === undefined}>
       <h2>
         <Landmark size={20} aria-hidden="true" />
-        {t('Cultura')}
+        {titulo ?? t('Cultura')}
       </h2>
       <p className="cultura-lead">
         {t('{pais}: fotos escolhidas pela comunidade do Wikimedia Commons e livros para ler de graça. Muda todo dia.', { pais })}
