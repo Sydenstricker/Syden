@@ -4223,7 +4223,9 @@ export function criarUsuarioTemporario(nome: string, ate: string): User {
   if (!username) username = `${base}-${randomBytes(3).toString('hex')}`;
   const user = createUserSemSenha(username, null);
   db.prepare('UPDATE users SET temporario_ate = ? WHERE id = ?').run(ate, user.id);
-  return user;
+  // Lida de novo, e não a de cima: aquela saiu antes da marca de temporária, e o app decide o modo sala
+  // por ela — sem isto, a aluna recebia "Sair do modo sala" em vez de "Sair da aula".
+  return findUserById(user.id)!;
 }
 
 export function ehTemporario(userId: number): boolean {

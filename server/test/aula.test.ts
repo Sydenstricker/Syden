@@ -56,6 +56,7 @@ test('entrar só com o nome: conta temporária, que vence junto com o link, já 
   assert.equal(r.statusCode, 200, r.body);
   const corpo = r.json();
   assert.match(corpo.user.username, /^Maria\.Clara-\d{3}$/);
+  assert.ok(corpo.user.temporarioAte, 'a conta devolvida já vem marcada como temporária: é por ela que o app liga o modo sala');
   assert.equal(corpo.channelId, sala.id);
   assert.equal(corpo.communityId, turma.id);
   alunaId = corpo.user.id;

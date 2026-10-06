@@ -21,6 +21,8 @@ export interface User {
   acceptedIdeas: number;
   /** O selo da comunidade que ela escolheu vestir, já resolvido. Nulo quando não veste nenhum. */
   selo?: { texto: string; icone: string; cor: string } | null;
+  /** Conta de quem entrou só para uma aula, pelo link (ver aula.ts): até quando ela existe. */
+  temporarioAte?: string | null;
 }
 
 export type UserRef = Pick<User, 'id' | 'username'>;
@@ -78,6 +80,9 @@ export interface Community {
   seloTexto?: string | null;
   seloIcone?: string | null;
   seloCor?: string | null;
+  /** A cultura que a comunidade estuda (país ISO e língua), para a faixa de cultura dela. Nulo = nenhuma. */
+  culturaPais?: string | null;
+  culturaLingua?: string | null;
   role: Role;
   memberCount: number;
   /** Só quem administra recebe o código; para os outros vem null. */

@@ -33,6 +33,8 @@ import type { Channel, Community, DirectChannel, Message, PresenceEntry, Presenc
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
+import { type AulaEmCurso, guardarAulaEmCurso, lerAulaEmCurso } from './aula';
+import { Mascote } from './Mascote';
 import { useT } from './i18n';
 
 /** Última comunidade aberta, para o app voltar onde a pessoa estava. */
@@ -87,12 +89,17 @@ export function Shell({
   token,
   user: loggedUser,
   pendingInviteCode,
+  linkDaAula,
+  aoUsarLinkDaAula,
   onLogout,
 }: {
   token: string;
   user: User;
   /** Veio de um link de convite (?convite=xxxx): entra nessa comunidade assim que a sessão abre. */
   pendingInviteCode?: string | null;
+  /** Veio de um link de aula (?aula=…) já com conta: entra na turma e cai na sala (ver aula.ts). */
+  linkDaAula?: string | null;
+  aoUsarLinkDaAula?: () => void;
   onLogout: () => void;
 }) {
   const t = useT();
@@ -636,6 +643,74 @@ export function Shell({
   /** Onde a sessão conversa: o primeiro canal de texto da comunidade, que é o geral em quase todas. */
   const canalDaSessao = channels.find((c) => c.type === 'text');
 
+  /**
+   * A AULA EM ANDAMENTO, e com ela o MODO SALA: só a chamada, a conversa ao lado e a faixa da aula no
+   * alto — sem a coluna de comunidades, a lista de canais e a de membros. É o que o aluno que não é de
+   * tecnologia precisa ver (pedido do professor de idiomas, 05/10/2026). Quem entrou só para a aula
+   * (conta temporária) fica sempre nele; quem tem conta pode sair dele para o Syden inteiro.
+   */
+  const [aulaEmCurso, setAulaEmCurso] = useState<AulaEmCurso | null>(lerAulaEmCurso);
+  const temporario = !!loggedUser.temporarioAte;
+  const modoSala = aulaEmCurso !== null || temporario;
+
+  // Com conta, pelo link: vira membro da turma (se ainda não era) e marca a aula para onde ir.
+  useEffect(() => {
+    if (!linkDaAula) return;
+    api<AulaEmCurso>(`/api/aula/${encodeURIComponent(linkDaAula)}/entrar-com-conta`, { method: 'POST' }).then(
+      async (destino) => {
+        aoUsarLinkDaAula?.();
+        guardarAulaEmCurso(destino);
+        await reloadCommunities().catch(() => null);
+        setAulaEmCurso(destino);
+      },
+      (error) => {
+        aoUsarLinkDaAula?.();
+        setNotice((error as Error).message);
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkDaAula]);
+
+  // A aula marcada: abre a comunidade, depois a sala, e entra na chamada — uma vez por aula.
+  const aulaAplicada = useRef<string | null>(null);
+  useEffect(() => {
+    if (!aulaEmCurso) return;
+    const chave = `${aulaEmCurso.communityId}:${aulaEmCurso.channelId}`;
+    if (aulaAplicada.current === chave) return;
+    if (communityId !== aulaEmCurso.communityId) {
+      setView('community');
+      setCommunityId(aulaEmCurso.communityId);
+      return;
+    }
+    if (visivelId !== aulaEmCurso.communityId || !channels.some((c) => c.id === aulaEmCurso.channelId)) return;
+    aulaAplicada.current = chave;
+    setView('community');
+    setSelectedId(aulaEmCurso.channelId);
+    setSessao(true);
+    if (voice.channelId !== aulaEmCurso.channelId) void voiceRef.current.join(aulaEmCurso.channelId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aulaEmCurso, communityId, visivelId, channels]);
+
+  // A conta temporária sem aula marcada nesta aba (abriu outra aba, por exemplo): a sala dela é a
+  // primeira sala de voz da única comunidade que ela tem.
+  useEffect(() => {
+    if (!temporario || aulaEmCurso || visivelId === null) return;
+    const sala = channels.find((c) => c.type === 'voice');
+    if (sala) setAulaEmCurso({ communityId: visivelId, channelId: sala.id });
+  }, [temporario, aulaEmCurso, visivelId, channels]);
+
+  function sairDaAula() {
+    guardarAulaEmCurso(null);
+    if (temporario) {
+      // A conta temporária não tem o que fazer fora da aula: sai da chamada e da sessão. Ela some
+      // sozinha quando o link vencer (ver server/src/aula-routes.ts).
+      logout();
+      return;
+    }
+    setAulaEmCurso(null);
+    setSessao(false);
+  }
+
   const usageOpen = showUsage && user.isAdmin && view === 'community';
   const jogosOpen = showJogos && !usageOpen && view === 'community';
   const selected = usageOpen || jogosOpen || view !== 'community' ? undefined : channels.find((c) => c.id === selectedId);
@@ -678,7 +753,7 @@ export function Shell({
 
   return (
     <RoomContext.Provider value={voice.room}>
-      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}${trocando ? ' trocando' : ''}`}>
+      <div className={`app ${mobileChannels ? 'mobile-channels' : 'mobile-main'}${trocando ? ' trocando' : ''}${modoSala ? ' modo-sala' : ''}`}>
         {/* Enquanto a comunidade nova não chega inteira, uma barrinha avisa que algo está a caminho.
             Ela só aparece depois de um tempinho: numa troca rápida ninguém chega a ver. */}
         {trocando && <span className="troca-barra" aria-hidden="true" />}
@@ -781,6 +856,18 @@ export function Shell({
           )
         )}
         <main className="main">
+          {modoSala && (
+            <div className="faixa-aula">
+              <Mascote nome="ocioso" tamanho={56} className="faixa-aula-mascote" />
+              <span className="faixa-aula-nome">
+                <strong>{channels.find((c) => c.id === aulaEmCurso?.channelId)?.name ?? ''}</strong>
+                <span>{community?.name ?? ''}</span>
+              </span>
+              <button type="button" className="btn-secondary" onClick={sairDaAula}>
+                {temporario ? t('Sair da aula') : t('Sair do modo sala')}
+              </button>
+            </div>
+          )}
           {!online && <div className="banner">{t('Reconectando ao servidor…')}</div>}
           {notice && (
             <div className="banner" onClick={() => setNotice(null)}>
@@ -901,6 +988,7 @@ export function Shell({
                 onToggleMembers={() => updateSettings({ showMembers: !preferences.showMembers })}
                 sessao={sessao}
                 aoAlternarSessao={() => setSessao((ligada) => !ligada)}
+                simples={modoSala}
                 socket={socket}
                 aoAbrirVozEVideo={() => setSettingsOpen('voice')}
               />

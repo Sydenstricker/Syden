@@ -48,6 +48,7 @@ import { ClipButton, PreviaDoClipe, useClipe } from './ClipButton';
 import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
 import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
+import { LinkDaAula } from './LinkDaAula';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
@@ -88,6 +89,7 @@ export function VoiceStage({
   aoAlternarSessao,
   socket,
   aoAbrirVozEVideo,
+  simples = false,
 }: {
   channel: Channel;
   voice: Voice;
@@ -106,6 +108,8 @@ export function VoiceStage({
   aoAbrirVozEVideo?: () => void;
   /** Por onde chegam os avisos de quem ganhou ou perdeu a palavra na apresentação. */
   socket: Socket | null;
+  /** Modo sala (aula): o cabeçalho e os controles ficam só com o que a aula precisa. */
+  simples?: boolean;
 }) {
   const { estado: palco } = usarPalco(channel.type === 'voice' ? channel.id : null, socket);
   const inThisRoom = voice.channelId === channel.id;
@@ -117,6 +121,7 @@ export function VoiceStage({
         <MobileBackButton onBack={onMobileBack} />
         <Volume2 size={22} className="muted-icon" /> {channel.name}
         {/* Transmissão ocupa a tela toda; por isso dá para esconder a lista de pessoas e trazer de volta. */}
+        {!simples && (
         <button
           className={`header-toggle${membersOpen ? ' active' : ''}`}
           title={membersOpen ? 'Esconder a lista de pessoas' : 'Mostrar a lista de pessoas'}
@@ -126,13 +131,18 @@ export function VoiceStage({
         >
           <Users size={20} />
         </button>
+        )}
         {/*
           O botão da sessão só existe quando ALGUÉM ESTÁ TRANSMITINDO. Sem transmissão não há o que
           assistir junto, e um "Assistir junto" que não faz nada ensina a ignorar o botão.
         */}
         {/* Apresentar só faz sentido para quem administra, e só numa sala de voz. */}
-        {palco?.souApresentador && <BotaoApresentacao channelId={channel.id} estado={palco} />}
-        {inThisRoom && alguemTransmitindo && (
+        {palco?.souApresentador && !simples && <BotaoApresentacao channelId={channel.id} estado={palco} />}
+        {/* Quem administra cria o link que traz a turma direto para esta sala (ver LinkDaAula.tsx). */}
+        {palco?.souApresentador && !simples && channel.communityId !== null && (
+          <LinkDaAula channelId={channel.id} communityId={channel.communityId} />
+        )}
+        {inThisRoom && alguemTransmitindo && !simples && (
           <button
             className={`header-toggle${sessao ? ' active' : ''}`}
             title={sessao ? 'Sair do modo sessão' : 'Assistir junto: vídeo grande e conversa ao lado'}
@@ -153,6 +163,7 @@ export function VoiceStage({
           communityId={channel.communityId ?? 0}
           canaisDeTexto={canaisDeTexto}
           aoAbrirVozEVideo={aoAbrirVozEVideo}
+          simples={simples}
         />
       ) : (
         <div className="voice-lobby">
@@ -1065,12 +1076,15 @@ function Stage({
   communityId,
   canaisDeTexto,
   aoAbrirVozEVideo,
+  simples = false,
 }: {
   voice: Voice;
   members: VoiceMember[];
   communityId: number;
   canaisDeTexto: Channel[];
   aoAbrirVozEVideo?: () => void;
+  /** Modo sala (aula): só microfone, áudio, câmera e sair — o resto do Syden fica de fora. */
+  simples?: boolean;
 }) {
   const t = useT();
   const tracks = useTracks(
@@ -1240,13 +1254,13 @@ function Stage({
         <IconButton label={voice.media.video ? t('Desligar câmera') : t('Ligar câmera')} active={voice.media.video} onClick={voice.toggleCamera}>
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
-        <ScreenShareButton voice={voice} />
+        {!simples && <ScreenShareButton voice={voice} />}
         {/*
           Ver lado a lado fica FORA do menu: só aparece quando há mais de uma transmissão aberta, e
           nesse momento é exatamente o que a pessoa quer fazer. Botão que só existe quando é útil não
           polui nada.
         */}
-        {abertas.length > 1 && (
+        {!simples && abertas.length > 1 && (
           <IconButton
             label={split ? 'Focar em uma transmissão' : `Ver as ${abertas.length} transmissões lado a lado`}
             active={split}
@@ -1256,6 +1270,7 @@ function Stage({
           </IconButton>
         )}
 
+        {!simples && (
         <MaisNaChamada quantosAtivos={voice.voiceEffect !== 'none' ? 1 : 0}>
           <VoiceEffectButton voice={voice} />
           <EfeitoVisualButton voice={voice} />
@@ -1275,6 +1290,7 @@ function Stage({
           </IconButton>
           </div>
         </MaisNaChamada>
+        )}
 
         {/*
           Os painéis do karaokê e do soundboard ficam FORA do menu "Mais", mesmo sendo abertos por

@@ -10285,6 +10285,196 @@ body.arrastando-barra {
   white-space: nowrap;
 }
 
+/* ---------- A aula (aula.ts, EntradaNaAula.tsx, LinkDaAula.tsx) ---------- */
+
+/* MODO SALA: some tudo o que não é a aula. A coluna de comunidades, a lista de canais e a de membros
+   são o Syden inteiro — para o aluno que só veio para a aula, são três lugares onde se perder. */
+.app.modo-sala .rail,
+.app.modo-sala .sidebar,
+.app.modo-sala .members {
+  display: none;
+}
+
+.faixa-aula {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px 6px 6px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border);
+}
+
+.faixa-aula-mascote {
+  margin: -6px -6px -10px -6px;
+}
+
+.faixa-aula-nome {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-right: auto;
+  line-height: 1.25;
+}
+
+.faixa-aula-nome strong {
+  color: var(--text-strong);
+  font-size: calc(15px * var(--escala-do-texto));
+}
+
+.faixa-aula-nome span {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+/* A porta de quem chega pelo link sem conta: uma pergunta só, grande e no meio. */
+.entrada-aula {
+  flex: 1;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.entrada-aula form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: min(360px, 100%);
+}
+
+.entrada-aula h1 {
+  margin: 0;
+  min-height: 1.3em;
+  color: var(--text-strong);
+}
+
+.entrada-aula-turma {
+  margin: -6px 0 6px;
+  min-height: 1.4em;
+  color: var(--text-muted);
+}
+
+.entrada-aula label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: start;
+  font-weight: 600;
+}
+
+.entrada-aula input {
+  padding: 12px;
+  font-size: calc(17px * var(--escala-do-texto));
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+}
+
+.entrada-aula .btn-primary {
+  padding: 13px;
+  font-size: calc(16px * var(--escala-do-texto));
+}
+
+.entrada-aula-miudo {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(12.5px * var(--escala-do-texto));
+}
+
+.entrada-aula-miudo a {
+  color: var(--text-muted);
+}
+
+/* O "Link da aula" no alto da sala: um painel que desce do botão. */
+.link-aula-ancora {
+  position: relative;
+}
+
+.link-aula {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  width: min(420px, 92vw);
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-float);
+  box-shadow: 0 8px 24px var(--shadow);
+  font-weight: 400;
+}
+
+.link-aula h3 {
+  margin: 0 0 6px;
+}
+
+.link-aula p {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.link-aula-criar {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.link-aula-criar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.link-aula ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.link-aula li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.link-aula li input {
+  grid-column: 1 / -1;
+  padding: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.link-aula li small {
+  color: var(--text-muted);
+}
+
+.link-aula li .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.link-aula-vazio {
+  font-style: italic;
+}
+
 /* ---------- O mascote nas telas (ver Mascote.tsx) ---------- */
 
 .mascote {

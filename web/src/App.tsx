@@ -8,6 +8,8 @@ import { aoVoltarPeloApp, concluir, lerVolta, NOMES, RECADOS } from './entradaSo
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
 import type { User } from './types';
+import { esquecerLinkDaAula, guardarAulaEmCurso, lerLinkDaAula } from './aula';
+import { EntradaNaAula } from './EntradaNaAula';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
 
@@ -40,6 +42,9 @@ function lerConfirmacaoDaUrl(): string | null {
 export function App() {
   const [session, setSession] = useState<Session>({ status: 'loading' });
   const [inviteCode] = useState(readInviteFromUrl);
+  // O link da aula (?aula=…): sem conta, a porta é a EntradaNaAula; com conta, o Shell põe na sala.
+  const [linkDaAula, setLinkDaAula] = useState(lerLinkDaAula);
+  const [querUsarConta, setQuerUsarConta] = useState(false);
   // Confirmar o e-mail funciona estando logado ou não: o link pode ser aberto em qualquer navegador.
   const [confirmacao, setConfirmacao] = useState<{ ok: boolean; texto: string } | null>(null);
   const [codigoDeConfirmacao] = useState(lerConfirmacaoDaUrl);
@@ -208,7 +213,21 @@ export function App() {
         {/* Enquanto carrega não se desenha nada: quem está na tela é a abertura (web/index.html), e
             ela só sai quando esta espera acaba. Duas animações em fila para o mesmo ato de abrir o
             app faziam a segunda parecer que algo tinha recomeçado. */}
-        {session.status === 'anonymous' && (
+        {session.status === 'anonymous' && linkDaAula && !querUsarConta && (
+          <EntradaNaAula
+            token={linkDaAula}
+            aoUsarConta={() => setQuerUsarConta(true)}
+            aoEntrar={async ({ token, user, communityId, channelId }) => {
+              saveToken(token);
+              esquecerLinkDaAula();
+              setLinkDaAula(null);
+              guardarAulaEmCurso({ communityId, channelId });
+              await sincronizarAoEntrar();
+              setSession({ status: 'ready', token, user });
+            }}
+          />
+        )}
+        {session.status === 'anonymous' && (!linkDaAula || querUsarConta) && (
           <AuthScreen
             initialInviteCode={inviteCode}
             onAuthenticated={async (token, user) => {
@@ -227,6 +246,11 @@ export function App() {
             token={session.token}
             user={session.user}
             pendingInviteCode={inviteCode}
+            linkDaAula={linkDaAula}
+            aoUsarLinkDaAula={() => {
+              esquecerLinkDaAula();
+              setLinkDaAula(null);
+            }}
             onLogout={() => {
               saveToken(null);
               setSession({ status: 'anonymous' });
