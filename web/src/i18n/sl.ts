@@ -365,6 +365,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izberi, kdo bo v pogovoru. Z več ljudmi postane skupinski pogovor.',
   'Escolha o coelho da estátua da praça.': 'Izberi zajca za kip na trgu.',
+  '{nome} está digitando…': '{nome} tipka…',
+  '{nome} e {outro} estão digitando…': '{nome} in {outro} tipkata…',
+  'Várias pessoas estão digitando…': 'Tipka več ljudi…',
   'ERRO — Algo deu errado do nosso lado': 'NAPAKA — Pri nas je nekaj šlo narobe',
   'O Syden travou': 'Syden se je zataknil',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Ni tvoja krivda. Ponovno nalaganje običajno pomaga.',

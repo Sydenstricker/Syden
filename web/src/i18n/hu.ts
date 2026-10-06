@@ -364,6 +364,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',
+  '{nome} está digitando…': '{nome} éppen ír…',
+  '{nome} e {outro} estão digitando…': '{nome} és {outro} éppen ír…',
+  'Várias pessoas estão digitando…': 'Többen is írnak…',
   'ERRO — Algo deu errado do nosso lado': 'HIBA — Valami elromlott nálunk',
   'O Syden travou': 'A Syden lefagyott',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Nem te csináltál semmit rosszul. Az újratöltés általában segít.',

@@ -204,6 +204,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
+  '{nome} está digitando…': '{nome} sta scrivendo…',
+  '{nome} e {outro} estão digitando…': '{nome} e {outro} stanno scrivendo…',
+  'Várias pessoas estão digitando…': 'Più persone stanno scrivendo…',
   'ERRO — Algo deu errado do nosso lado': 'ERRORE — Qualcosa è andato storto da parte nostra',
   'O Syden travou': 'Syden si è bloccato',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Non è colpa tua. Ricaricare di solito risolve.',

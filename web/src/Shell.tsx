@@ -10,6 +10,7 @@ import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { isolar, nomeDeCanal } from './bidi';
 import { desktopBridge } from './desktop';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
+import { ligarDigitacao } from './digitando';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
 import { lugarDaBarra } from './lugarDaBarra';
@@ -434,9 +435,11 @@ export function Shell({
       if (userId === loggedUser.id) setCommunities((list) => list.filter((c) => c.id !== id));
     });
     const unsync = syncDirectory(s);
+    const desligarDigitacao = ligarDigitacao(s, loggedUser.id);
     setSocket(s);
     return () => {
       unsync();
+      desligarDigitacao();
       s.disconnect();
     };
   }, [token, loggedUser.id]);

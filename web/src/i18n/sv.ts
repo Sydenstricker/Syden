@@ -355,6 +355,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Välj vem som är med. Med fler än en person blir det en gruppkonversation.',
   'Escolha o coelho da estátua da praça.': 'Välj kaninen till statyn på torget.',
+  '{nome} está digitando…': '{nome} skriver…',
+  '{nome} e {outro} estão digitando…': '{nome} och {outro} skriver…',
+  'Várias pessoas estão digitando…': 'Flera personer skriver…',
   'ERRO — Algo deu errado do nosso lado': 'FEL — Något gick fel hos oss',
   'O Syden travou': 'Syden hängde sig',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Det var inget du gjorde. Att ladda om brukar lösa det.',

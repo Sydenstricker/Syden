@@ -364,6 +364,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',
+  '{nome} está digitando…': '{nome} er að skrifa…',
+  '{nome} e {outro} estão digitando…': '{nome} og {outro} eru að skrifa…',
+  'Várias pessoas estão digitando…': 'Nokkur eru að skrifa…',
   'ERRO — Algo deu errado do nosso lado': 'VILLA — Eitthvað fór úrskeiðis hjá okkur',
   'O Syden travou': 'Syden fraus',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Þetta var ekki neitt sem þú gerðir. Endurhleðsla lagar þetta yfirleitt.',

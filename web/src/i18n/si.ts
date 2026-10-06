@@ -363,6 +363,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',
+  '{nome} está digitando…': '{nome} ටයිප් කරමින් සිටී…',
+  '{nome} e {outro} estão digitando…': '{nome} සහ {outro} ටයිප් කරමින් සිටිති…',
+  'Várias pessoas estão digitando…': 'කිහිප දෙනෙක් ටයිප් කරමින් සිටිති…',
   'ERRO — Algo deu errado do nosso lado': 'දෝෂය — අපේ පැත්තෙන් යමක් වැරදුණා',
   'O Syden travou': 'Syden හිරවුණා',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'මෙය ඔබ කළ දෙයක් නිසා නොවේ. නැවත පූරණය කිරීමෙන් සාමාන්‍යයෙන් හරියනවා.',

@@ -363,6 +363,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',
+  '{nome} está digitando…': 'Manoratra i {nome}…',
+  '{nome} e {outro} estão digitando…': 'Manoratra i {nome} sy {outro}…',
+  'Várias pessoas estão digitando…': 'Olona maromaro no manoratra…',
   'ERRO — Algo deu errado do nosso lado': 'HADISOANA — Nisy zavatra tsy nety tany aminay',
   'O Syden travou': 'Nijanona tampoka ny Syden',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Tsy noho ny zavatra nataonao izany. Matetika ny famerenana ampidirina no mamaha azy.',

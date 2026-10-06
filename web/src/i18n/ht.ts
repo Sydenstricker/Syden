@@ -374,6 +374,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',
+  '{nome} está digitando…': '{nome} ap ekri…',
+  '{nome} e {outro} estão digitando…': '{nome} ak {outro} ap ekri…',
+  'Várias pessoas estão digitando…': 'Plizyè moun ap ekri…',
   'ERRO — Algo deu errado do nosso lado': 'ERÈ — Gen yon bagay ki pa mache bò kote pa nou',
   'O Syden travou': 'Syden bloke',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Se pa anyen ou fè. Rechaje paj la konn regle sa.',

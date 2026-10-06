@@ -364,6 +364,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Khetha ukuthi ubani ongenayo. Uma bengaphezu komuntu oyedwa, iba yingxoxo yeqembu.',
   'Escolha o coelho da estátua da praça.': 'Khetha unogwaja wesithombe esisesigcawini.',
+  '{nome} está digitando…': 'U-{nome} uyabhala…',
+  '{nome} e {outro} estão digitando…': 'U-{nome} no-{outro} bayabhala…',
+  'Várias pessoas estão digitando…': 'Abantu abaningana bayabhala…',
   'ERRO — Algo deu errado do nosso lado': 'IPHUTHA — Kukhona okungahambanga kahle ngasohlangothini lwethu',
   'O Syden travou': 'I-Syden ibambekile',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Akusikho okwenzile wena. Ukulayisha kabusha kuvamise ukukulungisa.',

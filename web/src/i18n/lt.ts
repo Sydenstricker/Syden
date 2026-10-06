@@ -365,6 +365,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',
+  '{nome} está digitando…': '{nome} rašo…',
+  '{nome} e {outro} estão digitando…': '{nome} ir {outro} rašo…',
+  'Várias pessoas estão digitando…': 'Rašo keli žmonės…',
   'ERRO — Algo deu errado do nosso lado': 'KLAIDA — Mūsų pusėje kažkas nutiko',
   'O Syden travou': 'Syden užstrigo',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Tai ne dėl to, ką padarei. Įkėlus iš naujo paprastai padeda.',

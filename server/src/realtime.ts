@@ -26,6 +26,42 @@ export type PresenceStatus = 'online' | 'ausente' | 'ocupado' | 'invisivel';
 const PRESENCE_STATUSES: PresenceStatus[] = ['online', 'ausente', 'ocupado', 'invisivel'];
 const isPresenceStatus = (value: unknown): value is PresenceStatus => PRESENCE_STATUSES.includes(value as PresenceStatus);
 
+/**
+ * "FULANO ESTÁ DIGITANDO": se este aviso pode sair, e para onde.
+ *
+ * Fica numa função à parte, e não dentro do evento, para ser testada sem abrir conexão (ver
+ * server/test/digitando.test.ts). As regras:
+ *   - só para quem pode escrever ali: participar da comunidade, ou estar na conversa privada — as
+ *     mesmas de mandar mensagem;
+ *   - NÃO para quem está invisível. O aviso diria "ela está aqui, escrevendo" justamente de quem
+ *     escolheu não aparecer;
+ *   - no máximo um a cada 2,5 s por pessoa e canal: o navegador manda enquanto a pessoa digita, e um
+ *     cliente adulterado não transforma isso numa enxurrada para a comunidade inteira.
+ */
+const INTERVALO_DE_DIGITACAO_MS = 2500;
+const ultimoAvisoDeDigitacao = new Map<string, number>();
+
+export function avisoDeDigitacao(
+  userId: number,
+  channelId: number,
+  status: PresenceStatus | undefined,
+  agora = Date.now(),
+): { room: string; channelId: number; communityId: number | null } | null {
+  if (status === 'invisivel') return null;
+  const channel = db.findChannel(channelId);
+  if (!channel || (channel.type !== 'text' && channel.type !== 'dm')) return null;
+  const pode = channel.communityId === null ? db.isChannelMember(channel.id, userId) : !!db.memberRole(channel.communityId, userId);
+  if (!pode) return null;
+  const chave = `${userId}:${channel.id}`;
+  if (agora - (ultimoAvisoDeDigitacao.get(chave) ?? -Infinity) < INTERVALO_DE_DIGITACAO_MS) return null;
+  // O mapa não cresce para sempre: passou de alguns milhares de pares, os velhos saem.
+  if (ultimoAvisoDeDigitacao.size > 5000) {
+    for (const [k, quando] of ultimoAvisoDeDigitacao) if (agora - quando > INTERVALO_DE_DIGITACAO_MS) ultimoAvisoDeDigitacao.delete(k);
+  }
+  ultimoAvisoDeDigitacao.set(chave, agora);
+  return { room: channelRoom(channel), channelId: channel.id, communityId: channel.communityId };
+}
+
 /** O que aparece na barra lateral sob cada sala de voz. */
 export interface VoiceMember {
   userId: number;
@@ -269,6 +305,18 @@ export function setupRealtime(io: IOServer) {
         if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
       }
       ack?.({ ok: true });
+    });
+
+    // Quem digita avisa os outros; ele mesmo não recebe (socket.to exclui esta aba).
+    socket.on('typing', (payload: { channelId?: number }) => {
+      const aviso = avisoDeDigitacao(user.id, Number(payload?.channelId), onlineSockets.get(user.id)?.status);
+      if (!aviso) return;
+      socket.to(aviso.room).emit('typing', {
+        channelId: aviso.channelId,
+        communityId: aviso.communityId,
+        userId: user.id,
+        username: user.username,
+      });
     });
 
     socket.on('voice:join', (payload: { channelId?: number }, ack?: Ack) => {

@@ -10,6 +10,7 @@ import {
 } from 'react';
 import type { Socket } from 'socket.io-client';
 import { aoPedirMencao } from './mencao';
+import { avisarQueDigito, pareiDeDigitar } from './digitando';
 import { api } from './api';
 import { podeGravarTela, ScreenMessage } from './ScreenMessage';
 import { EmojiPicker } from './EmojiPicker';
@@ -124,6 +125,7 @@ export const Composer = forwardRef<ComposerHandle, {
         setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
       });
       setDraft('');
+      pareiDeDigitar(channelId);
       onSent?.();
       return;
     }
@@ -289,7 +291,12 @@ export const Composer = forwardRef<ComposerHandle, {
           maxLength={2000}
           placeholder={sending ? 'Enviando…' : placeholder}
           disabled={sending}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            // "Fulano está digitando": no máximo um aviso a cada 3 s (ver digitando.ts). Só no canal,
+            // não no tópico — o aviso aparece embaixo da conversa do canal, e lá ele diria uma coisa falsa.
+            if (e.target.value.trim() && threadId === null) avisarQueDigito(socket, channelId);
+          }}
           onKeyDown={onKeyDown}
           onPaste={onPaste}
         />

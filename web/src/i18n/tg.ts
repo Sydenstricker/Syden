@@ -364,6 +364,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',
+  '{nome} está digitando…': '{nome} менависад…',
+  '{nome} e {outro} estão digitando…': '{nome} ва {outro} менависанд…',
+  'Várias pessoas estão digitando…': 'Якчанд нафар менависанд…',
   'ERRO — Algo deu errado do nosso lado': 'ХАТОГӢ — Аз ҷониби мо чизе нодуруст шуд',
   'O Syden travou': 'Syden ҳалқ шуд',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Ин аз коре, ки ту кардӣ, нест. Аз нав боргузорӣ одатан ёрӣ медиҳад.',

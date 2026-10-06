@@ -355,6 +355,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',
+  '{nome} está digitando…': '{nome} po shkruan…',
+  '{nome} e {outro} estão digitando…': '{nome} dhe {outro} po shkruajnë…',
+  'Várias pessoas estão digitando…': 'Disa njerëz po shkruajnë…',
   'ERRO — Algo deu errado do nosso lado': 'GABIM — Diçka shkoi keq nga ana jonë',
   'O Syden travou': 'Syden ngeci',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Nuk ishte diçka që bëre ti. Ringarkimi zakonisht e zgjidh.',

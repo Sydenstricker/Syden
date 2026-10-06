@@ -363,6 +363,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',
+  '{nome} está digitando…': '{nome} kirjoittaa…',
+  '{nome} e {outro} estão digitando…': '{nome} ja {outro} kirjoittavat…',
+  'Várias pessoas estão digitando…': 'Useampi kirjoittaa…',
   'ERRO — Algo deu errado do nosso lado': 'VIRHE — Jokin meni pieleen meidän päässämme',
   'O Syden travou': 'Syden jumittui',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Et tehnyt mitään väärin. Uudelleenlataus yleensä auttaa.',

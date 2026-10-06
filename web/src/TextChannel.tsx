@@ -8,6 +8,7 @@ import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
 import { isolar, nomeDeCanal } from './bidi';
+import { QuemDigita } from './QuemDigita';
 import { MobileBackButton } from './MobileBackButton';
 import {
   applyReactionUpdate,
@@ -231,6 +232,7 @@ export function TextChannel({
           </p>
         )}
 
+        <QuemDigita channelId={channel.id} />
         <Composer
           ref={composerRef}
           channelId={channel.id}

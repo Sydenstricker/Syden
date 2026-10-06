@@ -204,6 +204,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie erbij komt. Met meer dan één persoon wordt het een groepsgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies het konijn voor het standbeeld op het plein.',
+  '{nome} está digitando…': '{nome} is aan het typen…',
+  '{nome} e {outro} estão digitando…': '{nome} en {outro} zijn aan het typen…',
+  'Várias pessoas estão digitando…': 'Meerdere mensen zijn aan het typen…',
   'ERRO — Algo deu errado do nosso lado': 'FOUT — Er ging iets mis aan onze kant',
   'O Syden travou': 'Syden is vastgelopen',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Het lag niet aan jou. Opnieuw laden lost het meestal op.',

@@ -374,6 +374,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
   'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',
+  '{nome} está digitando…': '{nome} ލިޔަނީ…',
+  '{nome} e {outro} estão digitando…': '{nome} އާއި {outro} ލިޔަނީ…',
+  'Várias pessoas estão digitando…': 'ގިނަ ބަޔަކު ލިޔަނީ…',
   'ERRO — Algo deu errado do nosso lado': 'މައްސަލަ — އަހަރެމެންގެ ފަރާތުން ކަމެއް ގޯސްވެއްޖެ',
   'O Syden travou': 'Syden ހުއްޓިއްޖެ',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'މިއީ ތިބާ ކުރި ކަމަކާ ގުޅޭ ކަމެއް ނޫން. އަލުން ލޯޑްކުރުމުން އާދައިގެ ގޮތުން ރަނގަޅުވޭ.',

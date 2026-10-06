@@ -376,6 +376,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ག་ནང་འཛུལ་ནི་ཨིན་ན་ གདམ། མི་གཅིག་ལས་ལྷག་པ་ཅིན་ སྡེ་ཚན་གཏམ་གླེང་ལུ་འགྱུར་འོང་།',
   'Escolha o coelho da estátua da praça.': 'ཐང་ཁའི་སྐུ་འདྲ་གི་དོན་ལུ་ རི་བོང་འདི་ གདམ་ཁ་རྐྱབ།',
+  '{nome} está digitando…': '{nome} ཡིག་དཔར་རྐྱབ་དོ…',
+  '{nome} e {outro} estão digitando…': '{nome} དང་ {outro} ཡིག་དཔར་རྐྱབ་དོ…',
+  'Várias pessoas estão digitando…': 'མི་ལེ་ཤ་ཅིག་ ཡིག་དཔར་རྐྱབ་དོ…',
   'ERRO — Algo deu errado do nosso lado': 'འཛོལ་བ — ང་བཅས་ཀྱི་ཕྱོགས་ལས་ ག་ཅི་ཅིག་ནོར་ཡི',
   'O Syden travou': 'Syden བཀག་སོ་ཡོདཔ',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'ཁྱོད་ཀྱིས་འབད་མི་ཅིག་མེན། ལོག་མངོན་གསལ་འབད་བ་ཅིན་ ཡང་ཅིག་ ལེགས་ཤོམ་འགྱོཝ་ཨིན།',

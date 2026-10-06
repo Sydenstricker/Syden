@@ -359,6 +359,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',
+  '{nome} está digitando…': '{nome} жазып жатыр…',
+  '{nome} e {outro} estão digitando…': '{nome} мен {outro} жазып жатыр…',
+  'Várias pessoas estão digitando…': 'Бірнеше адам жазып жатыр…',
   'ERRO — Algo deu errado do nosso lado': 'ҚАТЕ — Біз жақта бірдеңе дұрыс болмады',
   'O Syden travou': 'Syden қатып қалды',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Бұл сенің кінәң емес. Қайта жүктеу әдетте көмектеседі.',

@@ -363,6 +363,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кој ќе биде во разговорот. Со повеќе луѓе станува групен разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери го зајакот за статуата на плоштадот.',
+  '{nome} está digitando…': '{nome} пишува…',
+  '{nome} e {outro} estão digitando…': '{nome} и {outro} пишуваат…',
+  'Várias pessoas estão digitando…': 'Неколку луѓе пишуваат…',
   'ERRO — Algo deu errado do nosso lado': 'ГРЕШКА — Нешто тргна наопаку кај нас',
   'O Syden travou': 'Syden заглави',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Не е нешто што ти го направи. Повторното вчитување обично помага.',

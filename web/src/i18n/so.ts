@@ -363,6 +363,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',
+  '{nome} está digitando…': '{nome} wuu qorayaa…',
+  '{nome} e {outro} estão digitando…': '{nome} iyo {outro} way qorayaan…',
+  'Várias pessoas estão digitando…': 'Dad badan ayaa qoraya…',
   'ERRO — Algo deu errado do nosso lado': 'KHALAD — Wax baa khaldamay dhinacayaga',
   'O Syden travou': 'Syden wuu istaagay',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Ma aha wax aad samaysay. Dib u furiddu badanaa way xallisaa.',

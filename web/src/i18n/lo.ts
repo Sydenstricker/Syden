@@ -364,6 +364,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',
+  '{nome} está digitando…': '{nome} ກຳລັງພິມ…',
+  '{nome} e {outro} estão digitando…': '{nome} ແລະ {outro} ກຳລັງພິມ…',
+  'Várias pessoas estão digitando…': 'ຫຼາຍຄົນກຳລັງພິມ…',
   'ERRO — Algo deu errado do nosso lado': 'ຂໍ້ຜິດພາດ — ມີບາງຢ່າງຜິດພາດຈາກຝັ່ງພວກເຮົາ',
   'O Syden travou': 'Syden ຄ້າງ',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'ບໍ່ແມ່ນຍ້ອນສິ່ງທີ່ເຈົ້າເຮັດ. ການໂຫຼດຄືນໃໝ່ມັກຈະແກ້ໄຂໄດ້.',

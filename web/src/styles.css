@@ -10245,6 +10245,29 @@ body.arrastando-barra {
   flex: none;
 }
 
+/* ---------- "Fulano está digitando" (QuemDigita.tsx) ----------
+   Altura fixa, mesmo vazia: a conversa não pula quando alguém começa ou para de escrever. */
+.quem-digita {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 16px;
+  overflow: hidden;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.quem-digita .avatar + .avatar {
+  margin-left: -10px;
+}
+
+.quem-digita span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ---------- O mascote nas telas (ver Mascote.tsx) ---------- */
 
 .mascote {

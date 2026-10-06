@@ -360,6 +360,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',
+  '{nome} está digitando…': '{nome} kirjutab…',
+  '{nome} e {outro} estão digitando…': '{nome} ja {outro} kirjutavad…',
+  'Várias pessoas estão digitando…': 'Mitu inimest kirjutab…',
   'ERRO — Algo deu errado do nosso lado': 'VIGA — Meie poolel läks midagi valesti',
   'O Syden travou': 'Syden jäi kinni',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'See ei olnud sinu süü. Uuesti laadimine tavaliselt aitab.',

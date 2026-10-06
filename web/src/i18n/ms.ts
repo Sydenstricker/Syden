@@ -206,6 +206,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Dengan lebih daripada seorang, ia menjadi perbualan kumpulan.',
   'Escolha o coelho da estátua da praça.': 'Pilih arnab untuk patung di dataran.',
+  '{nome} está digitando…': '{nome} sedang menaip…',
+  '{nome} e {outro} estão digitando…': '{nome} dan {outro} sedang menaip…',
+  'Várias pessoas estão digitando…': 'Beberapa orang sedang menaip…',
   'ERRO — Algo deu errado do nosso lado': 'RALAT — Ada sesuatu yang tidak kena di pihak kami',
   'O Syden travou': 'Syden tersekat',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Ia bukan kerana apa yang kamu lakukan. Muat semula biasanya menyelesaikannya.',

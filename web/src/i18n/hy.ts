@@ -383,6 +383,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
   'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',
+  '{nome} está digitando…': '{nome} գրում է…',
+  '{nome} e {outro} estão digitando…': '{nome} և {outro} գրում են…',
+  'Várias pessoas estão digitando…': 'Մի քանի հոգի գրում են…',
   'ERRO — Algo deu errado do nosso lado': 'ՍԽԱԼ — Ինչ-որ բան սխալ գնաց մեր կողմից',
   'O Syden travou': 'Syden-ը կախվեց',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Դա քո արածի պատճառով չէր։ Վերաբեռնելը սովորաբար օգնում է։',

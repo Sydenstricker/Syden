@@ -382,6 +382,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',
+  '{nome} está digitando…': '{nome} წერს…',
+  '{nome} e {outro} estão digitando…': '{nome} და {outro} წერენ…',
+  'Várias pessoas estão digitando…': 'რამდენიმე ადამიანი წერს…',
   'ERRO — Algo deu errado do nosso lado': 'შეცდომა — ჩვენს მხარეს რაღაც არასწორად წავიდა',
   'O Syden travou': 'Syden გაიჭედა',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'ეს შენი ბრალი არ არის. თავიდან ჩატვირთვა ჩვეულებრივ შველის.',

@@ -362,6 +362,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',
+  '{nome} está digitando…': '{nome} kuca…',
+  '{nome} e {outro} estão digitando…': '{nome} i {outro} kucaju…',
+  'Várias pessoas estão digitando…': 'Nekoliko ljudi kuca…',
   'ERRO — Algo deu errado do nosso lado': 'GREŠKA — Nešto je pošlo naopako kod nas',
   'O Syden travou': 'Syden se zaglavio',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Nije tvoja greška. Ponovno učitavanje obično pomogne.',

@@ -360,6 +360,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Изабери ко улази. Са више од једне особе постаје групни разговор.',
   'Escolha o coelho da estátua da praça.': 'Изабери зеца за статуу на тргу.',
+  '{nome} está digitando…': '{nome} куца…',
+  '{nome} e {outro} estão digitando…': '{nome} и {outro} куцају…',
+  'Várias pessoas estão digitando…': 'Неколико људи куца…',
   'ERRO — Algo deu errado do nosso lado': 'ГРЕШКА — Нешто је пошло наопако код нас',
   'O Syden travou': 'Syden се заглавио',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Није твоја грешка. Поновно учитавање обично помогне.',

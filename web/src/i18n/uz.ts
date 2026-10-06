@@ -371,6 +371,9 @@ export default {
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',
+  '{nome} está digitando…': '{nome} yozmoqda…',
+  '{nome} e {outro} estão digitando…': '{nome} va {outro} yozmoqda…',
+  'Várias pessoas estão digitando…': 'Bir necha kishi yozmoqda…',
   'ERRO — Algo deu errado do nosso lado': 'XATO — Biz tomonda nimadir noto‘g‘ri ketdi',
   'O Syden travou': 'Syden qotib qoldi',
   'Não foi nada que você fez. Recarregar costuma resolver.': 'Bu sen qilgan biror narsa sababli emas. Qayta yuklash odatda yordam beradi.',
