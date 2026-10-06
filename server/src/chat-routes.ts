@@ -1,6 +1,7 @@
 // O que uma mensagem pode carregar além do texto: arquivos, enquetes e tópicos.
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
+import { barrarMensagem } from './automod.js';
 import * as db from './db.js';
 import { pontuarMensagem } from './niveis.js';
 import { entregarArquivo } from './entregar.js';
@@ -140,6 +141,9 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       const content = String(request.body?.content ?? '').trim();
       const files = Array.isArray(request.body?.files) ? request.body.files : [];
       if (files.length === 0) return reply.code(400).send({ error: 'Nenhum arquivo para enviar.' });
+      // A moderação automática vale para mensagem com anexo também (ver automod.ts).
+      const barrada = barrarMensagem(where.channel, request.user.id, content);
+      if (barrada) return reply.code(400).send({ error: barrada });
       if (files.length > MAX_FILES_PER_MESSAGE) {
         return reply.code(400).send({ error: `Dá para mandar até ${MAX_FILES_PER_MESSAGE} arquivos por mensagem.` });
       }

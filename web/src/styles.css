@@ -11575,3 +11575,48 @@ body.arrastando-barra {
 .configuracao-de-niveis .nivel-numero {
   width: 70px;
 }
+
+/* ---------- A moderação automática (Moderacao.tsx) ---------- */
+.moderacao-regras {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.moderacao-palavras {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  font-size: calc(14px * var(--escala-do-texto));
+  resize: vertical;
+}
+
+.moderacao-canal {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-strong);
+}
+
+.moderacao-tempo {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+}
+
+/* O aviso de modo lento, logo acima da caixa: discreto, mas antes de a pessoa tentar e ser barrada. */
+.composer-modo-lento {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 16px 4px;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}

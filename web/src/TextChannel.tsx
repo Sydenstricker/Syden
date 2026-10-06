@@ -239,6 +239,8 @@ export function TextChannel({
           socket={socket}
           placeholder={privada ? t('Conversar com {nome}', { nome: isolar(channel.name) }) : t('Conversar em {nome}', { nome: nomeDeCanal(channel.name, true) })}
           onSent={() => (stickToBottom.current = true)}
+          // Quem administra não passa pelo modo lento, então não há o que avisar a quem administra.
+          modoLento={role === 'member' ? (channel.modoLento ?? 0) : 0}
         />
 
         {dragging && <div className="drop-overlay">{t('Solte para enviar o arquivo')}</div>}

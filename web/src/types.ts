@@ -151,6 +151,8 @@ export interface Channel {
   type: 'text' | 'voice' | 'dm';
   position: number;
   createdBy: number | null;
+  /** Modo lento: segundos entre mensagens da mesma pessoa. 0 = desligado. Ver server/src/automod.ts. */
+  modoLento?: number;
 }
 
 /** Uma conversa privada (direta ou em grupo) do jeito que ela aparece na lista. */

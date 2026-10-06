@@ -120,6 +120,8 @@ export interface Channel {
   position: number;
   /** Quem criou o canal; null nos canais que vêm de fábrica. */
   createdBy: number | null;
+  /** Modo lento: segundos entre mensagens da mesma pessoa. 0 = desligado. Ver automod.ts. */
+  modoLento?: number;
 }
 
 /** Uma conversa privada do jeito que ela aparece na lista: com quem é e qual foi a última mensagem. */
@@ -2624,7 +2626,7 @@ export function updatePassword(userId: number, passwordHash: string) {
   db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
 }
 
-const channelColumns = 'id, community_id AS communityId, name, type, position, created_by AS createdBy';
+const channelColumns = 'id, community_id AS communityId, name, type, position, created_by AS createdBy, modo_lento AS modoLento';
 
 export function listChannels(communityId: number) {
   return db
@@ -4465,4 +4467,53 @@ export function definirRecompensa(communityId: number, nivel: number, cargoId: n
 
 export function tirarRecompensa(communityId: number, nivel: number, cargoId: number): boolean {
   return db.prepare('DELETE FROM recompensas_de_nivel WHERE community_id = ? AND nivel = ? AND cargo_id = ?').run(communityId, nivel, cargoId).changes > 0;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A MODERAÇÃO AUTOMÁTICA: palavras proibidas, links e excesso de mensagens, por comunidade; e o modo
+// lento, por canal. A regra mora em automod.ts; aqui fica só o que se guarda.
+//
+// Tudo DESLIGADO por padrão, e quem administra liga. Quem administra não passa pelas regras — é quem
+// as escreve, e quem precisa poder colar o link do regulamento num canal com links proibidos.
+// ---------------------------------------------------------------------------------------------------
+
+addColumnIfMissing('communities', 'automod_palavras', "TEXT NOT NULL DEFAULT '[]'");
+addColumnIfMissing('communities', 'automod_links', 'INTEGER NOT NULL DEFAULT 0');
+addColumnIfMissing('communities', 'automod_flood', 'INTEGER NOT NULL DEFAULT 0');
+// Segundos entre uma mensagem e outra da mesma pessoa no canal. 0 = sem modo lento.
+addColumnIfMissing('channels', 'modo_lento', 'INTEGER NOT NULL DEFAULT 0');
+
+export interface RegrasDeModeracao {
+  palavras: string[];
+  links: boolean;
+  flood: boolean;
+}
+
+export function regrasDeModeracao(communityId: number): RegrasDeModeracao {
+  const linha = db
+    .prepare('SELECT automod_palavras AS palavras, automod_links AS links, automod_flood AS flood FROM communities WHERE id = ?')
+    .get(communityId) as { palavras: string; links: number; flood: number } | undefined;
+  if (!linha) return { palavras: [], links: false, flood: false };
+  let palavras: string[] = [];
+  try {
+    const lidas = JSON.parse(linha.palavras);
+    if (Array.isArray(lidas)) palavras = lidas.filter((p): p is string => typeof p === 'string');
+  } catch {
+    // coluna estragada à mão: vale como lista vazia
+  }
+  return { palavras, links: linha.links === 1, flood: linha.flood === 1 };
+}
+
+export function definirRegrasDeModeracao(communityId: number, regras: RegrasDeModeracao) {
+  db.prepare('UPDATE communities SET automod_palavras = ?, automod_links = ?, automod_flood = ? WHERE id = ?').run(
+    JSON.stringify(regras.palavras),
+    regras.links ? 1 : 0,
+    regras.flood ? 1 : 0,
+    communityId,
+  );
+}
+
+export function definirModoLento(channelId: number, segundos: number): Channel | undefined {
+  db.prepare('UPDATE channels SET modo_lento = ? WHERE id = ?').run(segundos, channelId);
+  return findChannel(channelId);
 }

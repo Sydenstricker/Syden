@@ -1,5 +1,6 @@
 import type { Server as IOServer, Socket } from 'socket.io';
 import { verifySession } from './auth.js';
+import { barrarMensagem } from './automod.js';
 import * as db from './db.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 
@@ -289,6 +290,9 @@ export function setupRealtime(io: IOServer) {
         channel.communityId === null ? db.isChannelMember(channel.id, user.id) : !!db.memberRole(channel.communityId, user.id);
       if (!pode) return ack?.({ ok: false, error: 'Você não participa desta conversa.' });
       if (!content || content.length > 2000) return ack?.({ ok: false, error: 'Mensagem vazia ou longa demais.' });
+      // A moderação automática da comunidade (desligada, não barra nada). Ver automod.ts.
+      const barrada = barrarMensagem(channel, user.id, content);
+      if (barrada) return ack?.({ ok: false, error: barrada });
 
       // Resposta dentro de um tópico: ele tem que ser deste canal.
       let threadId: number | null = null;

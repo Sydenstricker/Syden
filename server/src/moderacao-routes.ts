@@ -105,7 +105,16 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           ...db.emailDe(eu.id),
           criadaEm: db.criadaEm(eu.id),
         },
-        comunidades: db.listCommunitiesForUser(eu.id).map((c) => ({ nome: c.name, seuCargo: db.memberRole(c.id, eu.id) })),
+        // Os cargos personalizados e os pontos de nível também são dados sobre a pessoa, e vão junto.
+        comunidades: db.listCommunitiesForUser(eu.id).map((c) => {
+          const cargos = db.cargosDosMembros(c.id).get(eu.id) ?? [];
+          return {
+            nome: c.name,
+            seuCargo: db.memberRole(c.id, eu.id),
+            cargosPersonalizados: db.listarCargos(c.id).filter((cargo) => cargos.includes(cargo.id)).map((cargo) => cargo.nome),
+            pontosDeNivel: db.pontosDe(c.id, eu.id),
+          };
+        }),
         insignias: db.itensDaPessoa(eu.id),
         mensagens: db.mensagensDaPessoa(eu.id),
         tempoEmChamada: db.usoDaPessoa(eu.id),

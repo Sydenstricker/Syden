@@ -1,4 +1,5 @@
-import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Smile, X } from 'lucide-react';
+import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Smile, X, Timer } from 'lucide-react';
+import { duracaoCurta } from './Moderacao';
 import {
   type ClipboardEvent,
   type KeyboardEvent,
@@ -19,7 +20,7 @@ import { type Gif, gifsDisponiveis } from './gifs';
 import { PollDialog } from './PollDialog';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
 import type { Message } from './types';
-import { useT } from './i18n';
+import { useT, idiomaAtual } from './i18n';
 
 const MAX_FILES = 5;
 
@@ -42,7 +43,9 @@ export const Composer = forwardRef<ComposerHandle, {
   socket: Socket;
   placeholder: string;
   onSent?: () => void;
-}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent }, ref) {
+  /** Modo lento do canal, em segundos, para quem passa pela regra (0 = nada a avisar). Ver automod.ts. */
+  modoLento?: number;
+}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0 }, ref) {
   const t = useT();
   const [draft, setDraft] = useState('');
   const [staged, setStaged] = useState<Staged[]>([]);
@@ -123,6 +126,10 @@ export const Composer = forwardRef<ComposerHandle, {
       if (!content) return;
       socket.emit('message:send', { channelId, content, threadId }, (result: { ok: boolean; error?: string }) => {
         setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
+        // RECUSADA, O TEXTO VOLTA PARA A CAIXA: a moderação da comunidade barrou (palavra, link, modo
+        // lento) e quem escreveu precisa poder editar, e não reescrever do zero. Só se a caixa ainda
+        // estiver vazia — se a pessoa já começou outra, não se passa por cima dela.
+        if (!result.ok) setDraft((agora) => agora || content);
       });
       setDraft('');
       pareiDeDigitar(channelId);
@@ -184,6 +191,11 @@ export const Composer = forwardRef<ComposerHandle, {
 
   return (
     <div className="composer">
+      {modoLento > 0 && (
+        <p className="composer-modo-lento">
+          <Timer size={14} aria-hidden="true" /> {t('Modo lento: uma mensagem a cada {tempo}.', { tempo: duracaoCurta(modoLento, idiomaAtual()) })}
+        </p>
+      )}
       {error && (
         <p className="form-error small" onClick={() => setError(null)}>
           {error}
