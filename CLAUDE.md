@@ -273,6 +273,24 @@ ferramenta — o Syden as chamaria por script e ele julgaria o resultado. O prob
 qualidade, é CONSISTÊNCIA entre dezenas de peças. O primeiro passo combinado, quando retomar: uma
 peça só (o coelho em três poses) gerada em duas ou três delas, lado a lado.
 
+**Retomado em 06/10/2026: o primeiro passo foi feito** (`e2e/pixel-art/`, com a folha de comparação, os
+custos e o que surpreendeu no README). O Sydenstricker gostou do **Retro Diffusion Pro** e do **PixelLab
+Pro**, os dois com o coelho como referência de personagem. O PixelLab normal falhou em consistência.
+
+**A ideia que veio daí: trocar a vila em vetor por um cenário em pixel art** (cidade ou quarto). O que
+ficou combinado:
+- **Peças, nunca uma imagem inteira.** A vila é um tabuleiro interativo (casas clicáveis, coelhos
+  andando, cenoura plantada). Uma cena gerada numa imagem só vira papel de parede. Gera-se chão, objetos
+  e personagens separados, e o código monta no tabuleiro de hoje (`iso()`, em `Vila.tsx`).
+- **Piloto: o quarto, não a cidade.** Umas 15 peças contra dezenas; mede se o estilo se sustenta antes
+  de enfrentar a consistência em escala.
+- **O que o vetor faz e a pixel art não faz sozinha:** seguir as paletas de Aparência e ter a versão
+  da noite (saída: troca de paleta cor por cor, como os jogos antigos), e crescer suave (pixel art só
+  amplia em inteiros: 2×, 3×, 4×).
+- **Próximo passo:** o Sydenstricker põe uns US$ 5 no Retro Diffusion (e, se quiser comparar, assina um
+  mês do PixelLab, cujo teste grátis acabou). Gera-se o kit do quarto (piso, paredes, 4 móveis, o coelho
+  DE CORPO INTEIRO andando) e monta-se numa página de teste fora do Syden.
+
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 
 **Decidido em 02/10/2026, pelo Sydenstricker: arquivado enquanto ele pesquisa um caminho melhor.** Ele
