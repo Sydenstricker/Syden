@@ -22,16 +22,22 @@ pixel art de verdade, e o PixelLab repinta só o que precisa mudar, no estilo do
 | `passo2-cortica.png` | O quadro da parede direita virou quadro de cortiça (Caixa de ideias) | repintura |
 | `noite.png` | A planta da mesinha da frente virou vaso de cenouras | repintura |
 | `dia.png` | O mesmo quarto, de dia | edição do quarto inteiro (`edit-images-v2`) |
-| `montar.mjs` | As áreas de clique, os nomes, o coelho e o gato recortados | `node e2e/pixel-art/quarto/hibrido/montar.mjs` |
+| `objetos.mjs` | O que se clica, a caixa de cada objeto e a dica para a remoção de fundo | — |
+| `mascaras/` | A forma de cada objeto e das peças vivas, tirada do quadro | `/remove-background` (`mascaras.mjs`), 1 geração cada |
+| `montar.mjs` | Os contornos, os nomes, o clique, o coelho e o gato | `node e2e/pixel-art/quarto/hibrido/montar.mjs` |
 
 O quarto inteiro, do conceito ao dia, gastou umas 75 gerações.
 
 ## Como funciona a página
 
-- **Cada móvel clicável é um polígono** sobre a pintura (`OBJETOS`, em `montar.mjs`). Ele acende um contorno e
-  mostra o nome ao passar o mouse ou com Tab.
-- **O coelho e o gato são as únicas peças soltas:** o que mudou entre o conceito e o quarto sem eles. Eles
-  respiram (um pixel, em degrau) e pulam quando cutucados.
+- **Cada objeto clicável tem uma máscara** do próprio desenho, tirada do quadro pela remoção de fundo do PixelLab
+  (modo de fundo complexo, com uma dica do que é o objeto). Ao passar o mouse, ganha um contorno de 1 pixel do
+  quarto em volta da forma, como em jogo, e o nome aparece. O clique testa a máscara: só acerta onde há objeto.
+  Com Tab, um botão invisível em cada caixa acende o mesmo contorno.
+- **O coelho e o gato são as únicas peças soltas,** recortados do conceito pela mesma remoção de fundo e postos
+  sobre a cama vazia. Respiram da cintura para cima (a metade de cima desce um pixel, a de baixo fica) e pulam
+  quando cutucados. O primeiro recorte, por diferença entre o conceito e a cama vazia, pegava pedaços da coberta
+  e fazia o cenário em volta tremer junto: trocado.
 - **Dia e noite são duas pinturas**, trocadas com transição. A luz real do abajur e da janela fica pintada, e
   não vira uma camada por cima.
 
@@ -44,11 +50,13 @@ O quarto inteiro, do conceito ao dia, gastou umas 75 gerações.
   ficava perguntando por um inexistente. Corrigido nos dois scripts. A conversão `image-to-pixelart-pro`
   que "travou" caiu nesse mesmo bug, e não foi refeita.
 - **O vaso de cenouras saiu fraco:** a planta quase não mudou. Vale repintar com uma caixa maior.
+- **A remoção de fundo falha em quadro de parede** se a dica descreve só o que está pintado nele: o pôster
+  voltou só com a cara do coelho. Dizer "o quadro inteiro, com a moldura" e usar o modo simples resolveu
+  (as falhas ficaram em `mascaras/falhas/`).
 
 ## Falta
 
 - **O coelho e o gato de dia:** hoje são recortes da noite, clareados por filtro, e trazem manchas da sombra
   noturna. O certo é pintar a versão de dia deles também.
 - O vaso de cenouras, de novo.
-- Os polígonos foram marcados a olho: alguns pegam um pouco além do objeto.
 - Mais vida: piscar, virar a página, o rabo do gato, o vapor da caneca.
