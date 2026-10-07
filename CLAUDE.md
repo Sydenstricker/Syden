@@ -236,6 +236,34 @@ item, mantém o custo proporcional ao uso, e não aos 34 idiomas.
 
 **O que continua valendo da decisão anterior** está logo abaixo.
 
+## Mini-games: pesquisado, pendente
+
+**Registrado em 06/10/2026, pelo Sydenstricker: fica como pendência, depois da home.** A ideia veio
+do Magnitudle e do TimeGuessr: jogos de adivinhar que rendem conversa com uma pessoa transmitindo e
+a sala chutando junto.
+
+**Embutir site de terceiro está fora:** o Magnitudle carrega a rede de anúncios Mediavine, e embutir
+seria anúncio dentro do Syden (ver "Sem anúncios é promessa"). LINKAR para fora pode: o anúncio e o
+rastreio ficam com quem abre o site, e quem só assiste a transmissão recebe o vídeo. Cuidado com o
+endereço: o certo é **timeguessr.com**, e "timeguesser.com" (com "e") leva para um golpe.
+
+**Varredura de 06/10/2026** (o que o site manda ao abrir; página com menos de 5 KB é só o esqueleto
+do app, e o anúncio pode entrar pelo JavaScript depois):
+- Sem anúncio visto: TimeGuessr (tem /pt), WorldGuessr, City Guesser, Framed, Wikitrivia, Higher
+  Lower, Neal.fun, Termo (pt-BR), JKLM.fun. Conexo e Contexto: incertos.
+- Com anúncio no código: Globle, Worldle, GuessThe.Game, WhenTaken, Skribbl, Letreco, GeoGuessr,
+  Magnitudle. Gartic Phone mostra anúncio, apesar da varredura não pegar.
+
+**O caminho combinado, em três degraus:**
+1. Uma lista de links na home ("Mini-games"), escolhida à mão, com a dica "abra, transmita e adivinhem
+   juntos". Umas 2 horas.
+2. Se pegar: um jogo na sala de voz feito pelo Syden, cada um respondendo na própria tela e a
+   revelação junta (base comum: 2 a 3 dias). Os primeiros jogos são "Quanto é?" (estimativa) e "Em que
+   ano?", ambos com conteúdo do Wikidata (CC0, em todas as línguas), uns 2 dias cada.
+3. Depois: "Onde e quando?" com foto (o TimeGuessr nosso). Mapa próprio do Natural Earth, nunca
+   tiles de terceiro, e fotos do Commons, com um acervo inicial curado à mão. O difícil é a
+   curadoria, não o código (a mesma lição da aba de cultura).
+
 ## Gerar arte com IA: interesse registrado, não agora
 
 **Decidido em 03/10/2026, pelo Sydenstricker: amadurecer como foi feito com os idiomas, mas não
@@ -401,6 +429,36 @@ Build do Visual Studio.
 
 Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
 **Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa.
+
+## Texto borrado na transmissão: o Padrão foi ajustado para jogo
+
+**Diagnosticado em 06/10/2026, não consertado. PENDÊNCIA para o Sydenstricker fazer.** Relato: o
+Magnitudle transmitido chegava com as formas grandes visíveis (avião, botões) e o texto pequeno
+ilegível. É resolução baixa esticada, provavelmente 360p ou menos, e não defeito de rede.
+
+**A causa é nossa, em boa parte.** O modo Padrão usa `maintain-framerate` e `contentHint: 'motion'`
+(`SCREEN_HINTS`, em `useVoice.ts`): sob aperto de processador ou de internet de quem transmite, ele
+corta resolução para segurar os 30 quadros. É o certo para jogo e o errado para site, slide ou
+planilha, que ficam quase parados e precisam de letra legível. O modo Leve (`maintain-resolution`,
+`detail`) já resolve isso, mas depende de quem transmite saber escolher, e ninguém sabe.
+
+**Para confirmar antes de mexer:**
+1. Quem transmite passa o mouse no "i" do quadro. Se aparecer "Seu computador está segurando a
+   qualidade" ou "Sua internet está segurando a qualidade", é o aperto com o Padrão cortando resolução.
+2. Quem transmite recomeça escolhendo Leve. Se o texto ficar nítido, está confirmado.
+3. Quem assiste confere no "i" se não deixou o teto de qualidade baixo, e se o quadro não está pequeno
+   (o `adaptiveStream` baixa a camada do tamanho em que o vídeo é mostrado).
+
+**O conserto combinado (meio dia, com teste):** o Padrão decide sozinho o que sacrificar. A
+otimização dinâmica já confere a transmissão a cada `SCREEN_CHECK_MS`; ela passa a perguntar também
+"a imagem está quase parada?". Tela parada → `maintain-resolution` + `detail`; com movimento →
+`maintain-framerate` + `motion`. A medida sai das estatísticas do próprio codificador
+(`getStats` do `outbound-rtp` de quem transmite: bytes e quadros codificados por intervalo; tela
+parada gera quase nada), sem processar a imagem. Cuidados:
+- Trocar com folga (alguns segundos parado antes de ir para nitidez), senão um jogo com pausa fica
+  alternando o tempo todo.
+- O modo Fluido (jogos, 60 quadros) não entra nisso: ali a escolha da pessoa é explícita.
+- Quem assiste continua sem comentário nenhum sobre a imagem (ver "O número verdadeiro que mente").
 
 ## O número verdadeiro que mente: a tela não pode cobrar o preço sem mostrar a compra
 
