@@ -43,3 +43,12 @@ por código, convence ao lado da pintura? **Abra `grade.html`**, clique em "Arru
 
 31 gerações: cinco repinturas de 6 gerações cada (só a última de dia valeu; as outras falharam) e 1 da remoção
 de fundo do pufe. Sobraram 1.556 das 2.000 do mês.
+
+## Tentado e desfeito: mover o brilho pintado por código
+
+O brilho do pufe está pintado no lado de onde vinha a luz na pintura; ao levar o pufe para perto da janela, ele
+deveria virar para ela. Tentou-se a técnica dos jogos 2D com luz dinâmica: a forma adivinhada pela silhueta (um
+domo), a luz pintada descoberta e tirada, e uma nova acesa vinda da janela ou do abajur. **O pufe virou uma
+bolha escura e lisa, e perdeu o desenho** (`falhas/relevo-pela-silhueta.png`). Código genérico de luz destrói o
+que faz a pixel art boa. Fica: o código só clareia, escurece e esquenta; a DIREÇÃO do brilho, se for preciso,
+vem de versões pintadas (o móvel aceso de um lado e do outro), escolhidas pela posição.
