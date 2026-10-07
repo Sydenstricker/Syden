@@ -335,8 +335,17 @@ ficou combinado:
   PixelLab ganhou a comparação** (4 a 64 variações por chamada, fiéis ao conceito; o RD, uma imagem por
   US$ 0,18, com defeitos). O kit inteiro custou 325 gerações. A paleta imposta à mão PIOROU as peças e
   ficou de fora. O guarda-roupa não coube. O que se aprendeu está no README da pasta.
-- **Próximo passo:** o Sydenstricker olha o quarto e decide (estilo, funções de cada objeto, guarda-roupa).
-  Depois vêm a animação e a entrada na home de verdade.
+- **MUDOU O MÉTODO, no mesmo dia: cenário pintado inteiro + poucas peças vivas** (`e2e/pixel-art/quarto/
+  hibrido/`). As peças soltas ficaram muito abaixo do conceito, e **não por resolução** (medido: o conceito
+  reduzido à mesma resolução continua bonito). O que faltava era luz, sombra entre os objetos, uma mão só e
+  recheio. Isso revê o "peças, nunca uma imagem inteira" acima: **os móveis são áreas de clique sobre a
+  pintura; só o que se mexe (coelho, gato) é peça.** O cenário é o próprio conceito (ele liberou usá-lo como
+  arte final), convertido com o `unzoom` do PixelLab para 313 px de pixel art de verdade, e repintado no
+  estilo dele para o que falta. O dia é uma segunda pintura do mesmo quarto.
+- **A repintura é nossa, ao preparar a arte, nunca do Syden em funcionamento.** O custo de quadro fixo: a
+  pessoa não arruma o próprio quarto. Se isso um dia entrar, a saída são variações já pintadas.
+- **Próximo passo:** o Sydenstricker olha o quarto híbrido. Pendências no README da pasta (o coelho e o gato
+  de dia, o vaso de cenouras).
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 

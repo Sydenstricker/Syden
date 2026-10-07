@@ -18,3 +18,7 @@
 {"ferramenta":"pixellab","quando":"2026-10-07T18:48:45.197Z","peca":"gato","usage":{"type":"generations","generations":20},"imagens":64}
 {"ferramenta":"pixellab","quando":"2026-10-07T18:50:44.724Z","peca":"tapete","usage":{"type":"generations","generations":25},"imagens":4}
 {"ferramenta":"pixellab","quando":"2026-10-07T18:52:37.602Z","peca":"vaso","usage":{"type":"generations","generations":20},"imagens":64}
+{"ferramenta":"pixellab","peca":"hibrido/inpaint-image-pro-flash","usage":{"type":"generations","generations":6},"quando":"2026-10-07T20:34:40.892Z"}
+{"ferramenta":"pixellab","peca":"hibrido/inpaint-image-pro-flash","usage":{"type":"generations","generations":6},"quando":"2026-10-07T20:35:08.616Z"}
+{"ferramenta":"pixellab","peca":"hibrido/inpaint-image-pro-flash","usage":{"type":"generations","generations":6},"quando":"2026-10-07T20:35:27.429Z"}
+{"ferramenta":"pixellab","peca":"hibrido/edit-images-v2","usage":{"type":"generations","generations":25},"quando":"2026-10-07T20:37:26.354Z"}
