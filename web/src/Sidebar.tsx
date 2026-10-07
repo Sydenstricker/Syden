@@ -472,7 +472,7 @@ function ChannelRow({
         <input
           className="channel-input"
           defaultValue={channel.name}
-          aria-label={`Novo nome para ${channel.name}`}
+          aria-label={t('Novo nome para {canal}', { canal: channel.name })}
           autoFocus
           onFocus={(e) => e.currentTarget.select()}
           onKeyDown={onKeyDown}
@@ -519,10 +519,10 @@ function ChannelRow({
           )}
           {manageable && (
             <>
-              <button className="icon-plain" title={t('Renomear')} aria-label={`Renomear ${channel.name}`} onClick={() => setRenaming(true)}>
+              <button className="icon-plain" title={t('Renomear')} aria-label={t('Renomear {canal}', { canal: channel.name })} onClick={() => setRenaming(true)}>
                 <Pencil size={14} />
               </button>
-              <button className="icon-plain" title={t('Excluir')} aria-label={`Excluir ${channel.name}`} onClick={onDelete}>
+              <button className="icon-plain" title={t('Excluir')} aria-label={t('Excluir {canal}', { canal: channel.name })} onClick={onDelete}>
                 <Trash2 size={14} />
               </button>
             </>
@@ -616,7 +616,7 @@ function ChannelGroup({
         <>
           <input
             className="channel-input"
-            placeholder={type === 'text' ? 'nome-do-canal' : 'Nome da sala'}
+            placeholder={type === 'text' ? t('nome-do-canal') : t('Nome da sala')}
             autoFocus
             onKeyDown={onKeyDown}
             onBlur={() => setAdding(false)}

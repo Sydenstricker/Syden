@@ -165,6 +165,7 @@ function ReactionBar({ reactions, onToggle }: { reactions: Reaction[]; onToggle:
 
 /** Botão de "+" que abre o painel de emojis para escolher a reação nova. */
 function AddReactionButton({ onPick }: { onPick: (emoji: string) => void }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -179,7 +180,7 @@ function AddReactionButton({ onPick }: { onPick: (emoji: string) => void }) {
 
   return (
     <>
-      <button ref={buttonRef} className="message-action" title="Reagir" aria-label="Reagir" onClick={toggle}>
+      <button ref={buttonRef} className="message-action" title={t('Reagir')} aria-label={t('Reagir')} onClick={toggle}>
         <SmilePlus size={16} />
       </button>
       {open &&

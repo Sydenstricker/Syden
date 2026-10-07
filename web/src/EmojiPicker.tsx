@@ -109,13 +109,13 @@ export function EmojiPicker({
   }
 
   return (
-    <div className="emoji-picker" ref={ref} role="dialog" aria-label="Escolher emoji">
+    <div className="emoji-picker" ref={ref} role="dialog" aria-label={t('Escolher emoji')}>
       <div className="emoji-picker-search">
         <input
           autoFocus
           value={query}
-          placeholder="Procurar emoji"
-          aria-label="Procurar emoji"
+          placeholder={t('Procurar emoji')}
+          aria-label={t('Procurar emoji')}
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
