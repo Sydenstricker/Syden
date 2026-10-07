@@ -1,0 +1,11 @@
+{"ferramenta":"rd-plus","pose":"parado","quando":"2026-10-07T00:57:47.727Z"}
+{"ferramenta":"pixellab-bitforge","pose":"parado","usd":null,"usage":{"type":"generations","generations":1},"quando":"2026-10-07T00:58:38.494Z"}
+{"ferramenta":"rd-plus","pose":"parado","quando":"2026-10-07T00:59:04.479Z"}
+{"ferramenta":"rd-plus","pose":"parado","usd":0.06,"obs":"segunda tentativa"}
+{"ferramenta":"rd-plus","pose":"parado","usd":0.06,"obs":"primeira tentativa: cobrada, imagem perdida (resposta assíncrona)"}
+{"ferramenta":"pixellab-bitforge","pose":"cenoura","usd":null,"usage":{"type":"generations","generations":1},"quando":"2026-10-07T01:00:52.157Z"}
+{"ferramenta":"rd-plus","pose":"cenoura","usd":0.06,"saldo":0.32,"quando":"2026-10-07T01:01:09.727Z"}
+{"ferramenta":"pixellab-bitforge","pose":"pipoca","usd":null,"usage":{"type":"generations","generations":1},"quando":"2026-10-07T01:01:30.848Z"}
+{"ferramenta":"rd-plus","pose":"pipoca","usd":0.06,"saldo":0.26,"quando":"2026-10-07T01:01:52.634Z"}
+{"ferramenta":"pixellab-pro","pose":"parado","usd":null,"usage":{"type":"generations","generations":20},"quando":"2026-10-07T01:03:44.758Z"}
+{"ferramenta":"rd-pro","pose":"cenoura","usd":0.18,"saldo":0.08,"quando":"2026-10-07T01:04:32.173Z"}
