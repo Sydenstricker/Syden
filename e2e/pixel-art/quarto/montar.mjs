@@ -1,6 +1,6 @@
-// Monta a página de teste do quarto (quarto.html), fora do Syden: a casca, as peças por cima em ordem de
+// Monta a página de teste do quarto (pecas-soltas.html), fora do Syden: a casca, as peças por cima em ordem de
 // profundidade, cada uma clicável e com o nome à vista, e a noite feita por código sobre a mesma arte.
-//   node e2e/pixel-art/quarto/montar.mjs   → quarto.html (abre direto no navegador)
+//   node e2e/pixel-art/quarto/montar.mjs   → pecas-soltas.html (abre direto no navegador)
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -39,7 +39,7 @@ const pecas = LUGARES.filter((l) => !l.fora).map((l, z) => {
 }).join('\n');
 
 const html = `<!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><title>Quarto do coelho — teste</title>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Quarto do coelho — peças soltas (antigo)</title>
 <style>
   :root { --fundo:#2a2228; --texto:#efe3d3; --rotulo:#3a2d33; }
   body { margin:0; background:var(--fundo); color:var(--texto); font:15px system-ui, sans-serif; display:flex; flex-direction:column; align-items:center; gap:14px; padding:20px; }
@@ -69,6 +69,7 @@ const html = `<!doctype html>
   p.nota { max-width:720px; color:#b9afbb; font-size:13px; text-align:center; margin:0; }
 </style></head>
 <body>
+  <p class="nota" style="color:#f2cf93">Primeiro teste, superado: as peças geradas uma a uma. O atual é <b>hibrido/quarto.html</b>.</p>
   <div class="controles">
     <button id="luz">Anoitecer</button>
     <button id="rotulos">Mostrar todos os nomes</button>
@@ -100,5 +101,5 @@ ${pecas}
 </script>
 </body></html>
 `;
-fs.writeFileSync(path.join(AQUI, 'quarto.html'), html);
-console.log('quarto.html', Math.round(html.length / 1024), 'KB');
+fs.writeFileSync(path.join(AQUI, 'pecas-soltas.html'), html);
+console.log('pecas-soltas.html', Math.round(html.length / 1024), 'KB');

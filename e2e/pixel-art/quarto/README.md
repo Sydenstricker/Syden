@@ -3,7 +3,10 @@
 A home em pixel art (CLAUDE.md, "Gerar arte com IA"): o quarto do coelho, com os objetos clicáveis.
 **Nada daqui entra no Syden ainda.** É o teste combinado: gerar o kit, montar fora do app e ver se agrada.
 
-Feito em 07/10/2026. **Abra `quarto.html` no navegador.** Ou veja `foto-dia.png` e `foto-noite.png`.
+Feito em 07/10/2026. **Abra `pecas-soltas.html` no navegador.** Ou veja `foto-dia.png` e `foto-noite.png`.
+
+> **Este foi o PRIMEIRO teste, e foi superado.** O caminho atual é o cenário pintado inteiro, em
+> `hibrido/quarto.html` (ver `hibrido/README.md`).
 
 ## O que tem aqui
 
@@ -17,7 +20,7 @@ Feito em 07/10/2026. **Abra `quarto.html` no navegador.** Ou veja `foto-dia.png`
 | `paleta/` | As mesmas peças postas na paleta feita à mão (só as da comparação; ver abaixo) |
 | `ver-*.png` | Folhas com as variações de cada peça, ampliadas (`ver.mjs`) |
 | `limpar.mjs` | A variação escolhida de cada peça, sem as sobras, em `pecas/` |
-| `montar.mjs` | Monta `quarto.html`: onde fica cada peça e o que cada objeto abre |
+| `montar.mjs` | Monta `pecas-soltas.html`: onde fica cada peça e o que cada objeto abre |
 | `fotografar.mjs` | Tira `foto-dia.png` e `foto-noite.png` |
 | `custos.jsonl` | Quanto cada chamada custou |
 
