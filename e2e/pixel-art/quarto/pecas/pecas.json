@@ -1,0 +1,82 @@
+{
+  "casca": {
+    "w": 241,
+    "h": 246,
+    "de": "casca-1"
+  },
+  "cama": {
+    "w": 102,
+    "h": 93,
+    "de": "cama-1"
+  },
+  "coelho": {
+    "w": 34,
+    "h": 54,
+    "de": "coelho-8"
+  },
+  "estante": {
+    "w": 53,
+    "h": 61,
+    "de": "estante-1"
+  },
+  "mesa": {
+    "w": 82,
+    "h": 89,
+    "de": "mesa-1"
+  },
+  "fone": {
+    "w": 11,
+    "h": 8,
+    "de": "fone-15"
+  },
+  "janela": {
+    "w": 54,
+    "h": 74,
+    "de": "janela-1"
+  },
+  "poster": {
+    "w": 22,
+    "h": 41,
+    "de": "poster-1"
+  },
+  "gato": {
+    "w": 20,
+    "h": 14,
+    "de": "gato-1"
+  },
+  "tapete": {
+    "w": 133,
+    "h": 73,
+    "de": "tapete-2"
+  },
+  "prateleira": {
+    "w": 45,
+    "h": 34,
+    "de": "prateleira-13"
+  },
+  "guarda-roupa": {
+    "w": 95,
+    "h": 95,
+    "de": "guarda-roupa-3"
+  },
+  "porta": {
+    "w": 46,
+    "h": 77,
+    "de": "porta-4"
+  },
+  "mural": {
+    "w": 42,
+    "h": 11,
+    "de": "mural-11"
+  },
+  "cortica": {
+    "w": 35,
+    "h": 46,
+    "de": "cortica-5"
+  },
+  "vaso": {
+    "w": 20,
+    "h": 30,
+    "de": "vaso-16"
+  }
+}

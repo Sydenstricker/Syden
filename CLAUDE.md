@@ -247,22 +247,54 @@ seria anúncio dentro do Syden (ver "Sem anúncios é promessa"). LINKAR para fo
 rastreio ficam com quem abre o site, e quem só assiste a transmissão recebe o vídeo. Cuidado com o
 endereço: o certo é **timeguessr.com**, e "timeguesser.com" (com "e") leva para um golpe.
 
-**Varredura de 06/10/2026** (o que o site manda ao abrir; página com menos de 5 KB é só o esqueleto
-do app, e o anúncio pode entrar pelo JavaScript depois):
-- Sem anúncio visto: TimeGuessr (tem /pt), WorldGuessr, City Guesser, Framed, Wikitrivia, Higher
-  Lower, Neal.fun, Termo (pt-BR), JKLM.fun. Conexo e Contexto: incertos.
-- Com anúncio no código: Globle, Worldle, GuessThe.Game, WhenTaken, Skribbl, Letreco, GeoGuessr,
-  Magnitudle. Gartic Phone mostra anúncio, apesar da varredura não pegar.
+**Varredura de 07/10/2026, num Chrome de verdade** (12 s na página, contando os domínios de anúncio
+que ela chama). **Ela DESMENTIU a de 06/10**, que só leu o HTML: TimeGuessr, WorldGuessr, City
+Guesser, Framed e Higher Lower carregam rede de anúncio pelo JavaScript. Lição: site moderno é um
+esqueleto, e anúncio só se mede com o navegador rodando.
+- Sem anúncio: Lichess, Clues by Sam, Neal.fun, Wikitrivia, JKLM.fun, Scribble.rs, OGS (Go),
+  Termo (pt-BR, só Google Analytics), horsepaste (Codenames, só Google Analytics).
+- Com anúncio: TimeGuessr, WorldGuessr, City Guesser, Framed, Higher Lower, Conexo, Contexto,
+  Magnitudle, sizeitup.games, sudoku.com, Wordle, Nerdle, Quordle, e (de 06/10) Globle, Worldle,
+  GuessThe.Game, WhenTaken, Skribbl, Letreco, GeoGuessr.
+- Gartic Phone e Gartic.io quase não carregaram nada na entrada, mas mostram anúncio jogando: fora.
+- Ressalva: só a página de entrada foi medida. Anúncio pode aparecer no meio da partida.
 
-**O caminho combinado, em três degraus:**
-1. Uma lista de links na home ("Mini-games"), escolhida à mão, com a dica "abra, transmita e adivinhem
-   juntos". Umas 2 horas.
-2. Se pegar: um jogo na sala de voz feito pelo Syden, cada um respondendo na própria tela e a
-   revelação junta (base comum: 2 a 3 dias). Os primeiros jogos são "Quanto é?" (estimativa) e "Em que
-   ano?", ambos com conteúdo do Wikidata (CC0, em todas as línguas), uns 2 dias cada.
-3. Depois: "Onde e quando?" com foto (o TimeGuessr nosso). Mapa próprio do Natural Earth, nunca
-   tiles de terceiro, e fotos do Commons, com um acervo inicial curado à mão. O difícil é a
-   curadoria, não o código (a mesma lição da aba de cultura).
+**Licenças conferidas em 07/10/2026** (o Syden é de código fechado, "todos os direitos reservados", e
+isso decide quais bibliotecas podem entrar):
+- **Problemas de xadrez do Lichess: CC0** (database.lichess.org, 6,1 milhões, com nota de dificuldade e
+  tema). Baixa-se uma vez e serve-se do nosso servidor; o navegador não fala com o Lichess.
+- **chessground (o tabuleiro do Lichess): GPL-3, NÃO pode** — obrigaria abrir o código do Syden. Os
+  que podem: chess.js (BSD-2, as regras) e cm-chessboard (MIT, o tabuleiro).
+- **Scribble.rs: BSD-3 (menos o logo), ativo, mas sem português**: nem na tela, nem na lista de
+  palavras (13 idiomas, nenhum pt). Hospedá-lo pede tradução e lista nossas.
+- **PhyloPic** (silhuetas de bicho): cada imagem tem a sua licença. CC0 e domínio público, sem
+  exigência; CC BY pede crédito; ShareAlike e NC ficam de fora.
+
+**O que ficou decidido em 07/10/2026, depois de comparar na conversa do Sydenstricker:**
+- **O critério é tração + manutenção baixa.** Jogo com público comprovado (os clássicos: a regra é
+  pública, a fama é do jogo e não de um app) e conteúdo que não precisa de gente para continuar.
+- **Os 71 idiomas não excluem jogo de palavra, são a vantagem do Syden** (correção dele, mesmo dia).
+  Jogo sem palavra (sudoku, Gomoku, Mancala, xadrez) sai pronto no mundo inteiro; nos de palavra, o
+  mesmo processo das traduções da interface traduz categorias do Stop, papéis do Lobisomem, nomes
+  dos objetos do Size It Up e a lista de desenho. A exceção é a palavra do dia estilo Termo: ela pede
+  um DICIONÁRIO de palavras válidas de 5 letras por idioma, e tradução não produz isso.
+- **Jogo nosso roda DENTRO do Syden** (na aba de jogos ou na sala de voz, com a turma vendo). Site
+  de terceiro abre FORA, no navegador. O Lichess ao vivo é o meio-termo: dentro, mas só depois do
+  clique da pessoa.
+- **Parceria (Magnitudle, Termo, Gartic) fica para quando houver volume:** sem usuários, a troca é
+  desigual, e a renda deles é anúncio.
+- **O Size It Up será NOSSO, com manutenção a cada 2 semanas** (decisão dele, mesmo sendo gênero de
+  pouca tração). O desenho e a rotina de manutenção ainda serão propostos.
+
+**O caminho combinado, em degraus:**
+1. Uma lista de links na home ("Mini-games"), só com os sites SEM anúncio acima, com a dica "abra,
+   transmita e adivinhem juntos". Umas 2 horas.
+2. A base "jogo na sala de voz" (cada um responde na própria tela, revelação junta), sobre o
+   socket.io que já existe: 2 a 3 dias. Primeiros: o Size It Up nosso, sudoku, Gomoku e Mancala.
+3. Stop e Lobisomem (os melhores para voz) e os problemas de xadrez do Lichess.
+4. Só em pt-BR, se pegar: palavra do dia e desenho-e-adivinhação.
+5. Adiado: trivia, truco, mahjong, "Onde e quando?" com foto (o TimeGuessr nosso: curadoria pesada,
+   a mesma lição da aba de cultura).
 
 ## Gerar arte com IA: interesse registrado, não agora
 
@@ -287,9 +319,24 @@ ficou combinado:
 - **O que o vetor faz e a pixel art não faz sozinha:** seguir as paletas de Aparência e ter a versão
   da noite (saída: troca de paleta cor por cor, como os jogos antigos), e crescer suave (pixel art só
   amplia em inteiros: 2×, 3×, 4×).
-- **Próximo passo:** o Sydenstricker põe uns US$ 5 no Retro Diffusion (e, se quiser comparar, assina um
-  mês do PixelLab, cujo teste grátis acabou). Gera-se o kit do quarto (piso, paredes, 4 móveis, o coelho
-  DE CORPO INTEIRO andando) e monta-se numa página de teste fora do Syden.
+- **Decidido em 07/10/2026: a HOME vira o quarto do coelho, em pixel art isométrica**, com os objetos
+  clicáveis como o quarto do gato no FICA. A referência visual é `imagem/Sugestao/home.png` (quarto à
+  noite: cama com o coelho lendo, gato, estante, janela, mesa com computador, tapete e pufe). Cada
+  função da home de hoje vai para um objeto do quarto, e os mini-games entram por ele. A cidade (sair
+  do quarto) fica para depois. O conceito foi feito no ChatGPT, só como referência.
+- **O tom: aconchegante, pouco estímulo, acolhedor, e funcional como home.** A paleta foi delegada:
+  poucas cores, quentes e pouco saturadas, sem preto nem branco puros. Ela é fixa e imposta nas duas
+  ferramentas; o quarto NÃO segue as paletas de Aparência.
+- **Dia e noite próprios do quarto** (relógio real ou tempo próprio: a decidir). Uma só arte de dia,
+  e a noite feita por código (camada escura + luz do abajur, do monitor e da janela), o que dá também
+  o entardecer sem gerar três versões.
+- **Feito em 07/10/2026: o kit do quarto e a página de teste** (`e2e/pixel-art/quarto/`, abrir
+  `quarto.html`). Ele assinou o PixelLab (US$ 12, 2.000 gerações) e pôs US$ 5 no Retro Diffusion. **O
+  PixelLab ganhou a comparação** (4 a 64 variações por chamada, fiéis ao conceito; o RD, uma imagem por
+  US$ 0,18, com defeitos). O kit inteiro custou 325 gerações. A paleta imposta à mão PIOROU as peças e
+  ficou de fora. O guarda-roupa não coube. O que se aprendeu está no README da pasta.
+- **Próximo passo:** o Sydenstricker olha o quarto e decide (estilo, funções de cada objeto, guarda-roupa).
+  Depois vêm a animação e a entrada na home de verdade.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 

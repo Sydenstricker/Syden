@@ -1,0 +1,4 @@
+cama 4a9efd86-77a5-4127-a166-8fcf0fb84ef8
+estante 13fd16d1-dcec-4e88-a3b0-fa1fa89ff5b1
+coelho 2e4f03fe-8a0c-4f35-af05-0a710112ad6f
+casca 20b642a6-8bb9-4ace-87e9-23cef6d13304
