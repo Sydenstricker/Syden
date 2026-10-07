@@ -10,9 +10,18 @@ por código, convence ao lado da pintura? **Abra `grade.html`**, clique em "Arru
   cantos do piso foram medidos, e a grade é interpolada entre eles (`ver-grade.png`).
 - **Casas livres** são as que não têm móvel pintado. O pufe ocupa 2×2 casas e só para onde as quatro estão
   livres. Arrastando, ele salta de vértice em vértice, e a área de destino fica acesa.
-- **O pufe é recortado da pintura de DIA.** De noite, cada coluna dele é multiplicada pela luz do chão embaixo
-  do pé. A luz vem do **mapa de luz**: a razão noite/dia de cada pixel do quarto, suavizada. Dividir a noite pelo
-  dia cancela a cor do próprio chão (tapete verde ou madeira) e deixa só a luz. Mais uma sombra de contato.
+- **O pufe é recortado da pintura de DIA**, que traz a luz do lugar onde ele estava. Primeiro essa luz é
+  tirada, depois entra a do lugar novo, coluna por coluna, na linha do pé:
+  - **de dia, a luz da janela é desenhada** (`SOL`, em `montar.mjs`): ambiente mais um foco no chão em frente
+    à janela, levemente quente, e o lado do pufe voltado para ela fica mais claro. Não dá para medir na
+    pintura de dia, porque nela a luz e a cor do chão (tapete verde × madeira) estão misturadas. A primeira
+    versão não tinha isso: de dia o pufe ficava igual em qualquer casa, com a luz do lugar original;
+  - **de noite, a luz é medida**: o mesmo sol, vezes a razão noite/dia de cada pixel do chão, suavizada.
+    Dividir a noite pelo dia cancela a cor do chão e deixa só a luz (o abajur, o monitor, o escuro).
+  - Mais uma sombra de contato no chão.
+- **A grade é desenhada em pixel:** um mapa diz a que casa pertence cada pixel do chão, e a borda é onde a casa
+  muda. Fica 1 pixel claro com 1 escuro embaixo, para se ler no tapete e na madeira. A primeira versão, com
+  linhas suavizadas do canvas, ficava fraca e borrada.
 - **"Ver o pufe pintado original"** troca para a pintura de antes, para comparar.
 
 ## Como se tirou o pufe das pinturas (`preparar.mjs`)

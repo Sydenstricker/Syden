@@ -50,6 +50,10 @@ O quarto inteiro, do conceito ao dia, gastou umas 75 gerações.
   ficava perguntando por um inexistente. Corrigido nos dois scripts. A conversão `image-to-pixelart-pro`
   que "travou" caiu nesse mesmo bug, e não foi refeita.
 - **O vaso de cenouras saiu fraco:** a planta quase não mudou. Vale repintar com uma caixa maior.
+- **A pintura de dia "acendeu" dois quadros:** o rosa da cortiça e o laranja do quadro de paisagem estouravam
+  ao trocar de horário (medido por máscara: 13% e 18% dos pixels saltavam de saturação). `harmonizar.mjs` tira
+  saturação SÓ dos pixels que estouram e mantém a cor do dia; o original ficou em `dia-bruto.png`. Trazer a
+  cor da noite inteira deixava o quadro arroxeado.
 - **A remoção de fundo falha em quadro de parede** se a dica descreve só o que está pintado nele: o pôster
   voltou só com a cara do coelho. Dizer "o quadro inteiro, com a moldura" e usar o modo simples resolveu
   (as falhas ficaram em `mascaras/falhas/`).

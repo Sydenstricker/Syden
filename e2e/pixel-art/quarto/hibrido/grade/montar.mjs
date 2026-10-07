@@ -17,9 +17,13 @@ const LIVRES = ['23', '24', '33', '34', '35', '36', '42', '43', '44', '45', '46'
 // Onde o pufe estava na pintura: o vértice da grade no meio das casas 35, 36, 45 e 46, e o canto de cima à
 // esquerda do recorte (grade/preparar.mjs).
 const ORIGEM = { u: 4, v: 6, recorte: [162, 211] };
+// A luz da janela, de dia: o sol entra pela janela da parede direita e cai no chão em frente a ela. É desenhada
+// e não medida, porque na pintura de dia não dá para separar a luz da cor do chão (tapete verde × madeira).
+// forca: quanto ela soma à luz ambiente no centro; raio: o quanto ela se espalha; cor: levemente quente.
+const SOL = { centro: [205, 165], raio: 62, ambiente: 0.8, forca: 0.45, cor: [1.04, 1.0, 0.93], lado: 0.22 };
 
 const dados = {
-  W, H, N, k: ESCALA, CANTOS, LIVRES, ORIGEM,
+  W, H, N, k: ESCALA, CANTOS, LIVRES, ORIGEM, SOL,
   noite: ler64(path.join(AQUI, 'noite-sem-pufe.png')),
   dia: ler64(path.join(AQUI, 'dia-sem-pufe.png')),
   noiteOriginal: ler64(path.join(HIB, 'noite.png')),
@@ -86,23 +90,72 @@ let img, luz, pufeDados, ancora;
   const [ox, oy] = ponto(D.ORIGEM.u, D.ORIGEM.v);
   ancora = [ox - D.ORIGEM.recorte[0], oy - D.ORIGEM.recorte[1]];
   pufeDados = pixels(img.pufe);
+  // Que casa é cada pixel do chão (-1: nenhuma). Cada casa é um quadrilátero; testa-se o pixel no centro.
+  casaDe = new Int16Array(D.W * D.H).fill(-1);
+  for (let i = 0; i < D.N; i++) for (let j = 0; j < D.N; j++) {
+    const q = [ponto(i, j), ponto(i + 1, j), ponto(i + 1, j + 1), ponto(i, j + 1)];
+    const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]);
+    for (let y = Math.floor(Math.min(...ys)); y <= Math.ceil(Math.max(...ys)); y++) for (let x = Math.floor(Math.min(...xs)); x <= Math.ceil(Math.max(...xs)); x++) {
+      if (x < 0 || y < 0 || x >= D.W || y >= D.H) continue;
+      if (dentro(x + 0.5, y + 0.5, q)) casaDe[y * D.W + x] = i * D.N + j;
+    }
+  }
   desenhar();
 })();
 
+let casaDe;
+function dentro(px, py, q) {
+  let s = false;
+  for (let a = 0, b = q.length - 1; a < q.length; b = a++) {
+    const [xa, ya] = q[a], [xb, yb] = q[b];
+    if ((ya > py) !== (yb > py) && px < ((xb - xa) * (py - ya)) / (yb - ya) + xa) s = !s;
+  }
+  return s;
+}
+/** Pinta um conjunto de casas em pixel: o miolo com uma cor, a borda (onde o vizinho é de fora) com outra. */
+function pintarCasas(casas, miolo, borda, sombra) {
+  const im = g.getImageData(0, 0, D.W, D.H), a = im.data;
+  const mistura = (i, [r, gg, b, al]) => { a[i] = a[i] * (1 - al) + r * al; a[i + 1] = a[i + 1] * (1 - al) + gg * al; a[i + 2] = a[i + 2] * (1 - al) + b * al; };
+  for (let y = 1; y < D.H - 1; y++) for (let x = 1; x < D.W - 1; x++) {
+    const c = casaDe[y * D.W + x]; if (c < 0 || !casas.has(c)) continue;
+    const i = (y * D.W + x) * 4;
+    const vizinhos = [casaDe[y * D.W + x + 1], casaDe[y * D.W + x - 1], casaDe[(y + 1) * D.W + x], casaDe[(y - 1) * D.W + x]];
+    const ehBorda = vizinhos.some((v) => v !== c);
+    if (ehBorda) { mistura(i, borda); if (sombra) mistura(i + D.W * 4, sombra); }
+    else if (miolo) mistura(i, miolo);
+  }
+  g.putImageData(im, 0, 0);
+}
 const canto = (u, v) => { const [x, y] = ponto(u, v); return [Math.round(x - ancora[0]), Math.round(y - ancora[1])]; };
 
-/** O pufe iluminado para o lugar (x0, y0): cada coluna recebe a luz do chão na linha do pé, embaixo dela. */
+/** O sol num ponto do chão: 1 é a luz ambiente pura; perto da janela passa de 1. */
+const sol = (x, y) => { const d2 = (x - D.SOL.centro[0]) ** 2 + (y - D.SOL.centro[1]) ** 2; return D.SOL.ambiente + D.SOL.forca * Math.exp(-d2 / (2 * D.SOL.raio ** 2)); };
+/**
+ * O pufe iluminado para o lugar (x0, y0). O recorte veio da pintura de dia, já com a luz do lugar ORIGINAL;
+ * primeiro essa luz é tirada (divide pelo sol de lá), depois a do lugar novo entra:
+ *   dia:   o sol embaixo de cada coluna, mais claro no lado voltado para a janela;
+ *   noite: o mesmo, vezes a razão noite/dia medida no chão (o abajur, o monitor, o escuro).
+ */
 function pufeIluminado(x0, y0) {
   const w = img.pufe.width, h = img.pufe.height;
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const x = c.getContext('2d'); const out = x.createImageData(w, h);
   const pe = Math.min(D.H - 1, Math.round(y0 + h - 4));
+  const [ox, oy] = ponto(D.ORIGEM.u, D.ORIGEM.v);
+  const solDeLa = sol(ox, oy);
+  // De que lado está a janela, visto do pufe: +1 se à direita, -1 se à esquerda.
+  const lado = Math.sign(D.SOL.centro[0] - (x0 + w / 2)) || 1;
   for (let py = 0; py < h; py++) for (let px = 0; px < w; px++) {
     const i = (py * w + px) * 4; if (!pufeDados[i + 3]) continue;
     const gx = Math.max(0, Math.min(D.W - 1, x0 + px));
-    // De noite, a luz é a do chão embaixo do pé. De dia, a pintura já é a luz.
-    const l = estado.noite ? [0, 1, 2].map((k) => luz[(pe * D.W + gx) * 3 + k]) : [1, 1, 1];
-    for (let k = 0; k < 3; k++) out.data[i + k] = Math.min(255, pufeDados[i + k] * l[k]);
+    const s = sol(gx, pe);
+    const voltado = 1 + D.SOL.lado * (s - D.SOL.ambiente) / D.SOL.forca * lado * ((px - w / 2) / (w / 2));
+    for (let k = 0; k < 3; k++) {
+      const corDoSol = 1 + (D.SOL.cor[k] - 1) * (s - D.SOL.ambiente) / D.SOL.forca;
+      let l = (s / solDeLa) * voltado * corDoSol;
+      if (estado.noite) l *= luz[(pe * D.W + gx) * 3 + k];
+      out.data[i + k] = Math.max(0, Math.min(255, pufeDados[i + k] * l));
+    }
     out.data[i + 3] = 255;
   }
   x.putImageData(out, 0, 0);
@@ -116,13 +169,12 @@ function desenhar() {
   g.drawImage(cena, 0, 0);
   if (estado.original) return;
   if (estado.arrumando) {
-    // As casas livres, bem de leve; a casa sob o pufe que está sendo arrastado, mais forte.
-    for (const t of D.LIVRES) {
-      const i = +t[0], j = +t[1];
-      losango([ponto(i, j), ponto(i + 1, j), ponto(i + 1, j + 1), ponto(i, j + 1)], 'rgba(247,230,196,.10)', 'rgba(247,230,196,.28)');
-    }
+    // As casas livres: a borda de cada uma em 1 pixel claro com 1 pixel escuro embaixo, para ler tanto no
+    // tapete quanto na madeira. O lugar do pufe: o miolo aceso e a borda forte.
+    pintarCasas(new Set(D.LIVRES.map((t) => +t[0] * D.N + +t[1])), null, [247, 230, 196, 0.55], [30, 20, 26, 0.35]);
     const alvo = estado.mira ?? estado.pos;
-    losango([ponto(alvo.u - 1, alvo.v - 1), ponto(alvo.u + 1, alvo.v - 1), ponto(alvo.u + 1, alvo.v + 1), ponto(alvo.u - 1, alvo.v + 1)], 'rgba(147,165,126,.35)', 'rgba(247,230,196,.9)');
+    const ocupa = new Set([[alvo.u - 1, alvo.v - 1], [alvo.u - 1, alvo.v], [alvo.u, alvo.v - 1], [alvo.u, alvo.v]].map(([i, j]) => i * D.N + j));
+    pintarCasas(ocupa, [247, 230, 196, 0.18], [247, 230, 196, 0.95], [30, 20, 26, 0.5]);
   }
   const p = estado.mira ?? estado.pos;
   const [x0, y0] = canto(p.u, p.v);
