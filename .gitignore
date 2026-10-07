@@ -28,6 +28,8 @@ SFX/
 !web/public/*.png
 !server/assets/emojis/*.png
 !web/src/assets/*.png
+# O teste de pixel art: as imagens SÃO o resultado (pagas, e não se refazem iguais). Ver e2e/pixel-art/README.md.
+!e2e/pixel-art/**/*.png
 
 # Pasta de trabalho de ícones animados (Lottie) que o usuário está avaliando.
 IconesAnimados/
