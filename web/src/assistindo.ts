@@ -15,21 +15,20 @@ export function salaAssistindoJunto(voiceMembers: VoiceMember[], channelId: numb
 }
 
 /**
- * Quem está na plateia: na mesma sala que uma transmissão, sem ser quem transmite. Quem transmite
- * continua com a pose dele, e com o "AO VIVO" ao lado do nome.
- *
- * É o que o Syden SABE, e não se a pessoa abriu a transmissão: abrir ou não é escolha local de cada
- * um, que não vai para o servidor. Estar na sala em que alguém transmite é o "assistindo junto" que
- * os outros enxergam.
+ * Quem está na plateia: quem ABRIU a transmissão de alguém da mesma sala. Quem transmite continua com
+ * a pose dele, e com o "AO VIVO" ao lado do nome. Estar só na sala não basta: cada um conta ao servidor
+ * quais transmissões abriu (voice:update), e é isso que os outros enxergam.
  */
 export function quemAssiste(voiceMembers: VoiceMember[]): Set<number> {
   const plateia = new Set<number>();
   for (const m of voiceMembers) {
-    // Servidor novo diz o que cada um ABRIU (ver "assistindo" em useVoice.ts): conta só quem abriu a
-    // transmissão de alguém que está transmitindo agora. Servidor antigo não diz, e vale a regra da sala.
-    const assistindo = m.assistindo
-      ? m.assistindo.some((id) => voiceMembers.some((outro) => outro.userId === id && outro.screen && outro.channelId === m.channelId))
-      : !m.screen && salaAssistindoJunto(voiceMembers, m.channelId);
+    // O servidor diz o que cada um ABRIU (ver "assistindo" em useVoice.ts): conta só quem abriu a
+    // transmissão de alguém que está transmitindo agora. Sem essa informação (servidor antigo), ninguém
+    // aparece assistindo: a regra de reserva "está na sala, então assiste" marcou a sala inteira de pipoca
+    // em 08/10/2026, inclusive quem não tinha aberto nada — a tela não afirma o que não sabe.
+    const assistindo = (m.assistindo ?? []).some((id) =>
+      voiceMembers.some((outro) => outro.userId === id && outro.screen && outro.channelId === m.channelId),
+    );
     if (assistindo) plateia.add(m.userId);
   }
   return plateia;
