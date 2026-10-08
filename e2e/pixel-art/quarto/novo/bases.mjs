@@ -4,7 +4,7 @@
 //   node e2e/pixel-art/quarto/novo/bases.mjs [id,...]   → bases/<id>-<n>.png (pula o que já existe)
 import fs from 'node:fs';
 import path from 'node:path';
-import { fechar, ler64, gravar64 } from '../imagem.mjs';
+import { abrir, fechar, ler64, gravar64 } from '../imagem.mjs';
 import { chamar } from '../hibrido/pintura.mjs';
 
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
@@ -24,12 +24,19 @@ export const BASES = [
   { id: 'pl-noite', ferramenta: 'pixellab', lado: 256, texto: `${SALA}, plain plaster walls, night, dark blue night sky and moonlight through the window, dim cozy room` },
   { id: 'rd-pro', ferramenta: 'rd', estilo: 'rd_pro__isometric', lado: 256, n: 2, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
   { id: 'rd-plus', ferramenta: 'rd', estilo: 'rd_plus__isometric', lado: 384, n: 2, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
+  // O Retro Diffusion Pro vai só até 256; o Plus, até 384. Para levar as duas do Pro de que ele gostou (a luz da
+  // 1, a porta de taverna da 2) a 384: o Plus redesenha partindo delas (imagem para imagem), e o PixelLab em 384
+  // (onde a referência não inventou gente) junta as duas — a luz da 1 como referência, a porta na descrição.
+  { id: 'rd-plus-da-pro1', ferramenta: 'rd', estilo: 'rd_plus__isometric', lado: 384, n: 2, de: 'rd-pro-1.png', forca: 0.4, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
+  { id: 'rd-plus-da-pro2', ferramenta: 'rd', estilo: 'rd_plus__isometric', lado: 384, n: 2, de: 'rd-pro-2.png', forca: 0.4, texto: `${SALA.replace('a wooden door', 'a rustic wooden plank tavern door with iron hinges')}, plain plaster walls, ${LUZ_TARDE}` },
+  { id: 'pl-384-taverna', ferramenta: 'pixellab', lado: 384, ref: 'rd-pro-1.png', refLado: 256, texto: `${SALA.replace('a wooden door', 'a rustic wooden plank tavern door with iron hinges')}, plain plaster walls, ${LUZ_TARDE}` },
 ];
 
 const custo = (dados) => fs.appendFileSync(path.join(AQUI, '..', 'custos.jsonl'), JSON.stringify({ quando: new Date().toISOString(), ...dados }) + '\n');
 async function rd(b) {
   const corpo = { prompt: b.texto, prompt_style: b.estilo, width: b.lado, height: b.lado, num_images: b.n };
   if (b.estilo.startsWith('rd_pro')) corpo.reference_images = [CONCEITO];
+  if (b.de) { corpo.input_image = await ampliar(ler64(path.join(SAIDA, b.de)), b.lado); corpo.strength = b.forca; }
   const r = await fetch('https://api.retrodiffusion.ai/v2/inferences', { method: 'POST', headers: { 'X-RD-Token': process.env.RETRO_DIFFUSION_KEY, 'content-type': 'application/json' }, body: JSON.stringify(corpo) });
   let j = await r.json();
   if (!r.ok) throw new Error(JSON.stringify(j).slice(0, 300));
@@ -42,10 +49,20 @@ async function rd(b) {
   custo({ ferramenta: 'rd', peca: 'novo/base-' + b.id, usd: j.balance_cost, saldo: j.remaining_balance });
   return j.base64_images ?? [];
 }
+/** Amplia uma base pelo vizinho mais próximo até o tamanho pedido (o ponto de partida do imagem-para-imagem). */
+async function ampliar(b64, lado) {
+  const p = await abrir();
+  return p.evaluate(async ({ b64, lado }) => {
+    const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode();
+    const c = document.createElement('canvas'); c.width = lado; c.height = lado;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(im, 0, 0, lado, lado);
+    return c.toDataURL('image/png').split(',')[1];
+  }, { b64, lado });
+}
 // ref: undefined usa o conceito; null, nenhuma referência; um nome, uma base já gerada (em bases/).
 function referencia(b) {
   if (b.ref === null) return undefined;
-  if (b.ref) return [{ image: { type: 'base64', base64: ler64(path.join(SAIDA, b.ref)), format: 'png' }, size: { width: 384, height: 384 }, usage_description: 'This is the same empty room: keep its style, palette, line quality, layout, door and window, at a higher resolution with more detail' }];
+  if (b.ref) return [{ image: { type: 'base64', base64: ler64(path.join(SAIDA, b.ref)), format: 'png' }, size: { width: b.refLado ?? 384, height: b.refLado ?? 384 }, usage_description: 'This is the same empty room: keep its style, palette, light, line quality, layout and window, at a higher resolution with more detail' }];
   return [{ image: { type: 'base64', base64: CONCEITO, format: 'png' }, size: { width: 313, height: 314 }, usage_description: 'Match this pixel art style, palette, line quality and room proportions, but leave the room completely empty' }];
 }
 const pixellab = (b) => chamar('/generate-image-v2', {

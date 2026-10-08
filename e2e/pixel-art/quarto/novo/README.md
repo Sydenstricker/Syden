@@ -34,6 +34,12 @@ e ver o efeito de resolução maior.
 | `rd-pro-1`, `rd-pro-2` | Retro Diffusion Pro, 256, sem paleta, US$ 0,36 | Boas e limpas; a 2 tem o chão mais escuro e quente. Sem a paleta imposta, o laranja sumiu. |
 | `rd-plus-1`, `rd-plus-2` | Retro Diffusion Plus, 384, US$ 0,12 | Mais chapadas e com menos cara de pixel art. |
 
+| `rd-plus-da-pro1`, `rd-plus-da-pro2` | Retro Diffusion Plus, 384, partindo das Pro (imagem para imagem), US$ 0,24 | Mantêm a composição, mas perdem detalhe; a porta de taverna sumiu. |
+| `pl-384-taverna` | PixelLab, 384, com a `rd-pro-1` como referência e a porta de taverna na descrição, 40 gerações | **A melhor até aqui:** porta de taverna com dobradiças de ferro, reboco com textura, e a luz da janela desenhando o caixilho no chão. |
+
+O Retro Diffusion não passa de 384 (o Pro vai até 256; o Plus e o Fast, até 384). Para comparar acima de 512 só
+existe o PixelLab, que vai até 512.
+
 **Em 512 px, qualquer referência faz o PixelLab inventar gente** (o cavaleiro, a arqueira): sem referência, ele
 obedece ao "vazio". **A referência do conceito puxa demais quando o pedido se afasta dele:** com tamanho ou clima diferentes, o
 PixelLab copiou o conceito (com gente dentro) em vez de esvaziar o quarto. O dia e a noite de uma mesma base

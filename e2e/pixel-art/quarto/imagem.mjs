@@ -3,16 +3,15 @@
 import fs from 'node:fs';
 import { abrirNavegador } from '../../ajuda.mjs';
 
+// Uma página só, guardada como PROMESSA: duas chamadas ao mesmo tempo (num Promise.all) abriam dois
+// navegadores, e o que não era fechado deixava o processo preso no fim.
 let pagina;
-export async function abrir() {
-  if (pagina) return pagina;
-  const { browser } = await abrirNavegador();
-  pagina = await browser.newPage();
-  pagina._browser = browser;
+export function abrir() {
+  pagina ??= abrirNavegador().then(async ({ browser }) => { const p = await browser.newPage(); p._browser = browser; return p; });
   return pagina;
 }
 export async function fechar() {
-  if (pagina) await pagina._browser.close();
+  if (pagina) await (await pagina)._browser.close();
   pagina = undefined;
 }
 export const ler64 = (arquivo) => fs.readFileSync(arquivo).toString('base64');
