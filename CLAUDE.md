@@ -358,7 +358,7 @@ ficou combinado:
     código ficou abaixo do ideal (`hibrido/vazio/`). Daí o quarto novo, já gerado como pixel art: **pixel art
     que nasce na grade tem bordas limpas** (as do conceito convertido têm degraus desiguais, e o
     `correct-pixelart` não conserta).
-  - **Base escolhida (recomendação, falta o "sim" dele): `novo/bases/pl-384-taverna-1.png`** — PixelLab, 384
+  - **A minha recomendação foi a `novo/bases/pl-384-taverna-1.png` (ele escolheu outra, ver abaixo)** — PixelLab, 384
     px, com a luz da `rd-pro-1` como referência e a porta de taverna na descrição. Ele gostou também da
     `pl-384`, da `rd-pro-1` (a luz) e da `rd-pro-2` (a porta). Em 512, qualquer referência faz o PixelLab
     inventar gente no quarto; sem referência sai bom (`pl-512-sem`).
@@ -366,9 +366,15 @@ ficou combinado:
     ou pufes com os amigos em chamada, varal de fotos (Amigos), espelho (Coelhos), guarda-roupa, jornal ou
     calendário (Novidades), caixinha de correio ou cortiça (Caixa de ideias), a porta (Explorar), TV com
     videogame (Mini-games), abajur (Dia e noite), vaso de cenouras.
-- **Próximo passo:** ele confirma a base; depois, a versão de noite dela POR EDIÇÃO (mesma geometria), a grade
-  do chão e das paredes, e os primeiros móveis. Saldo em 08/10/2026: PixelLab ~1.250 de 2.000 gerações
-  (plano Tier 1, US$ 12/mês; a repintura nova `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
+- **A base ficou a `pl-512-sem-1`** (decisão dele, 08/10/2026): a `pl-384-taverna` tem cara de taverna mesmo, e
+  fica como possível skin temática futura. Ele quer um quarto aconchegante NATURAL.
+- **O teste com ela foi feito** (`novo/teste/`, abrir `teste.html`). Cada móvel é pintado DENTRO da base e recortado
+  pela diferença; a sombra vira uma camada à parte, e a máscara é o pé do móvel na grade. A noite saiu por edição,
+  e o abajur acende por código. A qualidade é a da base, e a luz por código convence. O que falta para chegar ao
+  conceito é DENSIDADE (recheio, móveis maiores), não técnica. As três versões do pufe saíram de tamanhos
+  diferentes: as versões de um móvel precisam partir da primeira.
+- Saldo em 08/10/2026: PixelLab 1.149 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
+  `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 
