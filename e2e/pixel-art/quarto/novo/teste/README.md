@@ -1,46 +1,58 @@
-# O teste: a base com móveis, e a luz por código
+# O teste: a base com móveis, e a luz
 
-A pergunta, de 08/10/2026: se evoluirmos uma base da pasta `novo/`, pondo os móveis e a luz por código, chegamos
-perto do conceito do ChatGPT? A base escolhida para o teste foi a **`pl-512-sem-1`**. A `pl-384-taverna` tem cara
-de taverna, e o Sydenstricker a guardou como possível skin temática futura. **Abra `teste.html`**, ou veja `fotos/`.
+A pergunta, de 08/10/2026: se evoluirmos uma base da pasta `novo/`, pondo os móveis e a luz, chegamos perto do
+conceito do ChatGPT? A base escolhida para o teste foi a **`pl-512-sem-1`**. A `pl-384-taverna` tem cara de taverna,
+e o Sydenstricker a guardou como possível skin temática futura. **Abra `teste.html`**, ou veja `fotos/`. A primeira
+versão, com os defeitos que ele apontou, está em `v1/`.
 
-## Como os móveis foram feitos (`moveis.mjs`)
+**A direção, decidida por ele no mesmo dia:** o conceito convertido tem a melhor qualidade até aqui
+(`../../hibrido/quarto.html`), mas não deixa mudar nada. Para skins, variações e móveis trocados, o caminho de longo
+prazo é este processo, por etapas.
+
+## Como os móveis foram feitos (`moveis.mjs`, `pintar.mjs`)
 
 - **Cada móvel é pintado DENTRO da base,** com o repintar do PixelLab (`inpaint-image-pro-flash`, 6 gerações) e o
-  quarto inteiro como contexto. Assim ele sai com a mesma mão, a luz da janela e a sombra no chão. A ordem é de trás
-  para a frente: criado-mudo com abajur, cama, estante, tapete.
-- **Depois ele é recortado, e o recorte é fácil porque o fundo é conhecido:** o que mudou em relação ao passo
-  anterior é o móvel. A sombra é separada pela cor: o que só escureceu, e por igual, é sombra e vira uma camada à
-  parte (`pecas/<id>-sombra.png`), que escurece o que estiver embaixo de onde o móvel for parar.
-- **A máscara é o pé do móvel na grade, erguido até a altura dele** (`chao.mjs`, `lista.mjs`; o desenho está em
-  `ver-pes.png`). Com uma caixa solta, a ferramenta desenhou os móveis em escala real, pequenos num quarto grande
-  (`falhas/`).
+  quarto inteiro como contexto. Assim ele sai com a mesma mão, a luz da janela e a sombra no chão.
+- **A ordem importa:** quem é pintado depois não pode invadir quem já está lá. Na v1 o criado-mudo veio antes e
+  espremeu a cabeceira da cama. Agora: cama, criado-mudo, estante, tapete (`lista.mjs`).
+- **A máscara é o pé do móvel na grade, erguido até a altura dele** (`chao.mjs`; desenho em `ver-pes.png`). Com uma
+  caixa solta, a ferramenta desenhou móveis pequenos num quarto grande (`falhas/`). A altura decide o tamanho: a
+  estante da v1, limitada para não cobrir o peitoril, saiu minúscula.
+- **O recorte junta duas fontes:** a remoção de fundo do PixelLab (1 geração, guardada em `fundo/` com a caixa usada)
+  e a diferença entre os passos, só onde ela é forte e perto do que a remoção manteve. Sozinha, a diferença perde
+  madeira sobre madeira e pega tábuas retocadas (os fiapos da v1); sozinha, a remoção de fundo cortou a estante.
+- **A sombra vem da diferença:** o que só escureceu, por igual e no chão, vira uma camada à parte
+  (`pecas/<id>-sombra.png`), que escurece o que estiver embaixo de onde o móvel for parar.
 - **O pufe foi pintado em três lugares** (perto da janela, no meio e na frente): são as três versões de luz.
 
 ## O que a página faz (`montar.mjs`)
 
-- De dia, os móveis são os recortes. O pufe se arrasta pela grade, usa a versão pintada mais perto e ganha só a
+- **Dia:** os móveis são os recortes. O pufe ocupa 2×2 casas e se arrasta de cruzamento em cruzamento da grade. As
+  quatro casas de destino acendem, pintadas pixel a pixel. Ele usa a versão pintada mais perto e ganha só a
   intensidade da luz do lugar novo.
-- De noite, o fundo é a noite da base (`noite.mjs`, feita por EDIÇÃO da base: mesma geometria, 25 gerações). Os
-  móveis são a cor do dia vezes a razão noite/dia do quarto vazio, e o abajur acende por código: uma luz quente que
-  cai com a distância.
+- **Noite:** o fundo é a noite da base (`noite.mjs`, feita por EDIÇÃO: mesma geometria, 25 gerações). Os móveis são a
+  cor do dia vezes a razão noite/dia.
+- **A luz do abajur, de dois jeitos** (botão na página):
+  - **pintada** (`noite-abajur.mjs`, o padrão): o abajur é fixo, fonte de luz como a janela, e a região dele foi
+    repintada na noite com ele aceso (6 gerações). A borda da repintura é misturada com a noite em 14 px;
+  - **por código:** a cúpula clareia e uma luz quente em faixas cai com a distância.
+- O fundo cinza em volta do quarto sai por preenchimento a partir da borda, um para cada versão: a noite, feita por
+  edição, tem o contorno 1 ou 2 px diferente.
 
 ## O que se viu
 
-- **A qualidade é a da base:** bordas limpas, uma mão só, e os móveis com a luz e a sombra do quarto. O recorte e a
-  remontagem não perdem nada visível.
-- **A luz do abajur por código convence** à noite.
-- **Ainda longe do conceito em DENSIDADE:** o quarto é grande, e os móveis saem em escala real mesmo com a máscara
-  maior. O conceito é um quarto pequeno, cheio de coisas: plantas, quadros, prateleiras, objetos em cima dos móveis.
-  O que falta é recheio e móveis maiores, não técnica.
-- **As versões do pufe saíram de tamanhos diferentes** (a da janela é menor). Para as três versões de um móvel
-  serem o mesmo móvel, a segunda e a terceira precisam partir da primeira (a primeira como referência, ou
-  recortada e repintada só na luz).
-- O abajur foi pintado aceso, com o brilho na parede, e isso fica também de dia.
-- A separação da sombra pela cor tem casos difíceis: um cobertor cinza sobre a parede clara escurece por igual, como
-  uma sombra. A regra ficou: no chão, a sombra pode ser forte e puxar para o azul; fora dele, só fraca.
+- **A qualidade é a da base:** bordas limpas, uma mão só, e os móveis com a luz e a sombra do quarto.
+- **A luz por código fica abaixo da pintada.** Em degradê, denuncia o código; em faixas, parece um alvo. A pintada
+  tem o desenho de pixel art. Fica o princípio: **luz de fonte FIXA é pintada; o código só leva essa luz aos móveis
+  soltos** (pela razão noite/dia).
+- **Editar o quarto inteiro para acender o abajur manchou as paredes e apagou o luar**
+  (`falhas/noite-abajur-edicao-manchada.png`). A repintura só da região do abajur, não.
+- **Ainda longe do conceito em DENSIDADE:** o quarto é grande e os móveis saem em escala real. O conceito é um quarto
+  pequeno, cheio de coisas. O que falta é recheio e móveis maiores, não técnica.
+- **As versões do pufe saíram de tamanhos diferentes.** Para serem o mesmo móvel, a segunda e a terceira precisam
+  partir da primeira.
 
 ## Custo
 
-97 gerações: a noite (25) e doze repinturas de 6 (três delas falharam e estão em `falhas/`). Em 08/10/2026
-**restam 1.149 das 2.000 do mês** (o `/balance` dá o que RESTA, não o que se gastou).
+A v1 custou 97 gerações. A v2 (os consertos, a estante de novo e a luz pintada) custou mais 90, incluindo a edição que
+falhou (25). Em 08/10/2026 **restam 1.008 das 2.000 do mês** (o `/balance` dá o que RESTA).

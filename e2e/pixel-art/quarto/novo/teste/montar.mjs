@@ -16,6 +16,7 @@ const png = (arquivo) => 'data:image/png;base64,' + ler64(arquivo);
 const IMAGENS = {
   base: png(path.join(AQUI, '..', 'bases', 'pl-512-sem-1.png')),
   noite: png(path.join(AQUI, 'noite.png')),
+  noiteAbajur: png(path.join(AQUI, 'noite-abajur.png')),
   conceitoNoite: png(path.join(AQUI, '..', '..', 'hibrido', 'conceito-unzoom.png')),
   conceitoDia: png(path.join(AQUI, '..', '..', 'hibrido', 'dia.png')),
 };
@@ -53,6 +54,7 @@ lugar novo.</p>
 <div class="barra">
   <button id="dia" aria-pressed="true">Dia</button><button id="noite" aria-pressed="false">Noite</button>
   <button id="grade" aria-pressed="false">Mostrar a grade</button>
+  <button id="luz" aria-pressed="true">Luz do abajur à noite: pintada</button>
 </div>
 <div class="lado">
   <figure><canvas id="tela" width="512" height="512" aria-label="O quarto do teste"></canvas><figcaption id="legenda"></figcaption></figure>
@@ -95,6 +97,18 @@ function dados(im, filtro) {
   // borrado (só o nível de luz do lugar); para a razão noite/dia, pouco, senão o desenho do luar some no tapete.
   const diaBorrado = dados(im.base, 'blur(10px)');
   const diaPouco = dados(im.base, 'blur(2px)'), noitePouco = dados(im.noite, 'blur(2px)');
+  // A noite com a luz do abajur pintada (noite-abajur.mjs): o criado-mudo já está nela, aceso.
+  const noiteAbajur = dados(im.noiteAbajur), noiteAbajurPouco = dados(im.noiteAbajur, 'blur(2px)');
+  // A repintura veio numa caixa, e a borda reta dela aparece na parede: perto da borda, mistura com a noite limpa.
+  const CAIXA_ABAJUR = [192,112,324,304], FAIXA = 14;
+  for (const [img, ref] of [[noiteAbajur, noite], [noiteAbajurPouco, noitePouco]]) for (let k = 0; k < W * W; k++) {
+    const x = k % W, y = (k / W) | 0, [x0, y0, x1, y1] = CAIXA_ABAJUR;
+    const borda = Math.min(x - x0, x1 - 1 - x, y - y0, y1 - 1 - y);
+    if (borda < 0 || borda >= FAIXA) continue;
+    const t = (borda + 1) / (FAIXA + 1);
+    for (let c = 0; c < 3; c++) img[k * 4 + c] = img[k * 4 + c] * t + ref[k * 4 + c] * (1 - t);
+  }
+  let luzPintada = true;
   // O cinza em volta do quarto (o fundo da base) fica transparente.
   // O cinza em volta do quarto fica transparente, preenchido a partir da borda e com folga de cor (só o cinza exato
   // deixava pontinhos claros). Um para cada versão: a noite, feita por edição, tem o contorno 1 ou 2 px diferente.
@@ -125,8 +139,10 @@ function dados(im, filtro) {
   // O pufe: onde está (o centro em u, v) e de que versão ele sai.
   const pufes = MOVEIS.filter((m) => m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
-  let pufe = centro(pecas['pufe-meio'].pe), modo = 'dia', grade = false, arrastando = false, alvo = null;
-  const LADO_PUFE = 1.5;
+  let pufe = centro(pecas['pufe-meio'].pe).map(Math.round), modo = 'dia', grade = false, arrastando = false, alvo = null;
+  // O pufe ocupa 2×2 casas e o centro dele fica num cruzamento da grade: assim a área acesa ao arrastar é
+  // exatamente quatro casas desenhadas. Antes ele tinha 1,5 casa e saltava de meia em meia, fora das linhas.
+  const LADO_PUFE = 2;
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const ocupa = (c) => {
     const [u0, u1, v0, v1] = [c[0] - LADO_PUFE / 2, c[0] + LADO_PUFE / 2, c[1] - LADO_PUFE / 2, c[1] + LADO_PUFE / 2];
@@ -147,7 +163,8 @@ function dados(im, filtro) {
     const D = new Float32Array(W * W * 3); // a cena com as cores do dia
     const eMovel = new Uint8Array(W * W), acesa = new Uint8Array(W * W);
     const fundoNoite = new Float32Array(W * W * 3);
-    for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = noite[k * 4 + c]; }
+    const pintada = modo === 'noite' && luzPintada, fundoN = pintada ? noiteAbajur : noite, razaoN = pintada ? noiteAbajurPouco : noitePouco;
+    for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
     // A ordem: o tapete primeiro; depois de trás para a frente, pela casa mais à frente do pé.
     const [pu, pv] = pufe;
     const variante = pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; });
@@ -160,6 +177,7 @@ function dados(im, filtro) {
         return { p, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, frente: pu + pv + LADO_PUFE };
       })()].sort((a, b) => a.frente - b.frente);
     for (const { p, dx, dy, fator } of lista) {
+      if (pintada && p.id === 'abajur') continue; // já está pintado, aceso, no fundo da noite
       for (let k = 0; k < W * W; k++) {
         const x = k % W + dx, y = ((k / W) | 0) + dy;
         if (x < 0 || y < 0 || x >= W || y >= W) continue;
@@ -183,18 +201,26 @@ function dados(im, filtro) {
       for (let c = 0; c < 3; c++) {
         let v = D[k * 3 + c];
         if (modo === 'noite') {
-          // A luz do abajur: quente, caindo com a distância. Soma luz proporcional à cor do que ilumina.
-          // Em faixas, como a luz é desenhada em pixel art: um degradê liso denuncia o código.
-          const brilho = Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
+          // Com a luz pintada, os móveis só herdam a razão noite/dia (que já traz o abajur). Com a luz por código:
+          // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
+          const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
           const quente = [1, 0.72, 0.42][c] * brilho;
           if (acesa[k]) v = Math.min(255, v * 1.12 + [48, 30, 6][c]);
-          else if (eMovel[k]) v = v * Math.min(0.9, noitePouco[k * 4 + c] / Math.max(1, diaPouco[k * 4 + c])) + v * quente;
+          else if (eMovel[k]) v = v * Math.min(pintada ? 1.2 : 0.9, razaoN[k * 4 + c] / Math.max(1, diaPouco[k * 4 + c])) + v * quente;
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
         }
         saida.data[k * 4 + c] = Math.min(255, v);
       }
       saida.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
-      if (grade && casa[k] >= 0 && !eMovel[k]) {
+      // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
+      if (alvo && casa[k] >= 0) {
+        const i = Math.floor(casa[k] / N), j = casa[k] % N;
+        if (i >= alvo[0] - 1 && i < alvo[0] + 1 && j >= alvo[1] - 1 && j < alvo[1] + 1) {
+          const cor = ocupa(alvo) ? [220, 80, 60] : [255, 240, 200];
+          for (let c = 0; c < 3; c++) saida.data[k * 4 + c] = saida.data[k * 4 + c] * 0.65 + cor[c] * 0.35;
+        }
+      }
+      if ((grade || alvo) && casa[k] >= 0 && !eMovel[k]) {
         const direita = x + 1 < W ? casa[k + 1] : -1, baixo = y + 1 < W ? casa[k + W] : -1;
         const cima = y > 0 ? casa[k - W] : -1;
         if ((direita !== casa[k] && direita >= 0) || (baixo !== casa[k] && baixo >= 0)) for (let c = 0; c < 3; c++) saida.data[k * 4 + c] = Math.min(255, saida.data[k * 4 + c] * 1.35 + 18);
@@ -202,20 +228,16 @@ function dados(im, filtro) {
       }
     }
     g.putImageData(saida, 0, 0);
-    if (alvo) {
-      const [cu, cv] = alvo, h = LADO_PUFE / 2;
-      g.beginPath(); [[-h, -h], [h, -h], [h, h], [-h, h]].forEach(([a, b], i) => { const [px, py] = ponto(cu + a, cv + b); i ? g.lineTo(px, py) : g.moveTo(px, py); });
-      g.closePath(); g.fillStyle = ocupa(alvo) ? 'rgba(220,80,60,.35)' : 'rgba(255,240,200,.3)'; g.fill();
-    }
     document.getElementById('legenda').textContent = 'Teste. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' ? ', luz do lugar ×' + lista.find((i) => i.p.pufe).fator.toFixed(2) : '') + '.';
     document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
-  // Arrastar: o centro do pufe salta de meia em meia casa, e só para onde cabe.
+  // Arrastar: o centro do pufe salta de cruzamento em cruzamento da grade, e só para onde cabe. A grade aparece
+  // enquanto se arrasta.
   const casaDoPonteiro = (e) => {
     const r = tela.getBoundingClientRect();
     const [u, v] = uvDe((e.clientX - r.left) * W / r.width, (e.clientY - r.top) * W / r.height);
-    return [Math.round(u * 2) / 2, Math.round(v * 2) / 2];
+    return [Math.round(u), Math.round(v)];
   };
   tela.addEventListener('pointerdown', (e) => { arrastando = true; tela.setPointerCapture(e.pointerId); alvo = casaDoPonteiro(e); desenhar(); });
   tela.addEventListener('pointermove', (e) => { if (!arrastando) return; const c = casaDoPonteiro(e); if (!alvo || c[0] !== alvo[0] || c[1] !== alvo[1]) { alvo = c; desenhar(); } });
@@ -224,6 +246,8 @@ function dados(im, filtro) {
   for (const [m, b] of Object.entries(botoes)) b.onclick = () => { modo = m; for (const [n, o] of Object.entries(botoes)) o.setAttribute('aria-pressed', String(n === m)); desenhar(); };
   const bg = document.getElementById('grade');
   bg.onclick = () => { grade = !grade; bg.setAttribute('aria-pressed', String(grade)); desenhar(); };
+  const bl = document.getElementById('luz');
+  bl.onclick = () => { luzPintada = !luzPintada; bl.setAttribute('aria-pressed', String(luzPintada)); bl.textContent = 'Luz do abajur à noite: ' + (luzPintada ? 'pintada' : 'por código'); desenhar(); };
   desenhar();
 })();
 </script>

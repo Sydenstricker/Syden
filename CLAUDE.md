@@ -379,7 +379,11 @@ ficou combinado:
 - **Esvaziar o conceito falhou pela terceira vez,** agora por partes (`hibrido/vazio/partes/`): os quadros saem, mas
   no lugar da cama e do tapete o modelo pinta outra cama, porque o resto do quarto cheio ensina a desenhar móvel.
   O caminho é a base gerada vazia.
-- Saldo em 08/10/2026: PixelLab 1.041 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
+- **Luz de fonte FIXA (janela, abajur) é pintada; o código só a leva aos móveis soltos.** A luz do abajur por
+  código ficou abaixo; a repintura só da região do abajur, com ele aceso, ficou boa (`novo/teste/`).
+- **Decisão dele (08/10/2026):** o conceito convertido é o melhor resultado, mas não deixa mudar nada; skins,
+  variações e móveis trocados vêm do processo por etapas sobre a base gerada.
+- Saldo em 08/10/2026: PixelLab 1.008 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado

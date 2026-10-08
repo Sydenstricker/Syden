@@ -14,10 +14,13 @@ await p.waitForTimeout(2500);
 const foto = (nome) => p.screenshot({ path: path.join(FOTOS, nome + '.png'), fullPage: true });
 await foto('dia');
 await p.click('#noite'); await p.waitForTimeout(600); await foto('noite');
-// Leva o pufe para perto da janela (casa u 2, v 6), arrastando no canvas.
+// Leva o pufe para perto da janela (o cruzamento u 3, v 6), arrastando no canvas; uma foto no meio do arraste,
+// com as quatro casas de destino acesas.
 const r = await p.locator('#tela').boundingBox();
-const alvo = await p.evaluate(() => { const a = 2 / 8, b = 6.4 / 8, C = { fundo: [256, 238], esquerda: [34, 352], frente: [256, 472], direita: [478, 350] }; return [0, 1].map((k) => C.fundo[k] * (1 - a) * (1 - b) + C.esquerda[k] * a * (1 - b) + C.direita[k] * (1 - a) * b + C.frente[k] * a * b); });
-await p.mouse.move(r.x + alvo[0] * r.width / 512, r.y + alvo[1] * r.height / 512); await p.mouse.down(); await p.mouse.up();
+const alvo = await p.evaluate(() => { const a = 3 / 8, b = 6 / 8, C = { fundo: [256, 238], esquerda: [34, 352], frente: [256, 472], direita: [478, 350] }; return [0, 1].map((k) => C.fundo[k] * (1 - a) * (1 - b) + C.esquerda[k] * a * (1 - b) + C.direita[k] * (1 - a) * b + C.frente[k] * a * b); });
+await p.mouse.move(r.x + alvo[0] * r.width / 512, r.y + alvo[1] * r.height / 512); await p.mouse.down();
+await p.waitForTimeout(600); await foto('noite-arrastando');
+await p.mouse.up();
 await p.waitForTimeout(600); await foto('noite-pufe-janela');
 await p.click('#dia'); await p.click('#grade'); await p.waitForTimeout(600); await foto('dia-pufe-janela-grade');
 await fechar();

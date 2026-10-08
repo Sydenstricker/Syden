@@ -6,58 +6,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { abrir, fechar, ler64, gravar64 } from '../../imagem.mjs';
-import { chamar } from '../../hibrido/pintura.mjs';
+import { pintar } from './pintar.mjs';
 import { pontoDoChao, N as NC } from './chao.mjs';
 import { FIXOS, PUFES } from './lista.mjs';
 
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
 const PASSOS = path.join(AQUI, 'passos'), PECAS = path.join(AQUI, 'pecas');
 fs.mkdirSync(PASSOS, { recursive: true }); fs.mkdirSync(PECAS, { recursive: true });
-const LADO = 512;
-const b64img = (b64) => ({ type: 'base64', base64: b64, format: 'png' });
-
-/** Pinta o móvel na silhueta dele em `de` (só onde a máscara deixa) e devolve a imagem inteira. */
-async function pintar(de, { caixa, poligonos, texto }, ocupado) {
-  const p = await abrir();
-  // A janela: lado múltiplo de 4, entre 172 (o contexto de 512 pode ter no máximo 3× a janela) e 256.
-  const [x0, y0, x1, y1] = caixa;
-  const w = Math.min(256, Math.max(172, Math.ceil((x1 - x0 + 16) / 4) * 4)), h = Math.min(256, Math.max(172, Math.ceil((y1 - y0 + 16) / 4) * 4));
-  const x = Math.max(0, Math.min(LADO - w, Math.round((x0 + x1 - w) / 2))), y = Math.max(0, Math.min(LADO - h, Math.round((y0 + y1 - h) / 2)));
-  const { recorte, mascara } = await p.evaluate(async ({ de, ocupado, poligonos, x, y, w, h }) => {
-    const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
-    const im = await carregar(de);
-    const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
-    g.drawImage(im, x, y, w, h, 0, 0, w, h);
-    const recorte = c.toDataURL('image/png').split(',')[1];
-    g.fillStyle = '#000'; g.fillRect(0, 0, w, h); g.fillStyle = '#fff';
-    for (const pol of poligonos) { g.beginPath(); pol.forEach(([a, b], i) => (i ? g.lineTo(a - x, b - y) : g.moveTo(a - x, b - y))); g.closePath(); g.fill(); }
-    if (ocupado) { g.globalCompositeOperation = 'destination-out'; g.drawImage(await carregar(ocupado), -x, -y); g.globalCompositeOperation = 'destination-over'; g.fillStyle = '#000'; g.fillRect(0, 0, w, h); }
-    // A ferramenta recusa máscara com cinza: o polígono do canvas vem suavizado nas bordas.
-    const d = g.getImageData(0, 0, w, h);
-    for (let i = 0; i < d.data.length; i += 4) { const v = d.data[i] > 127 ? 255 : 0; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
-    g.putImageData(d, 0, 0);
-    return { recorte, mascara: c.toDataURL('image/png').split(',')[1] };
-  }, { de, ocupado, poligonos, x, y, w, h });
-  const [novo] = await chamar('/inpaint-image-pro-flash', {
-    image: b64img(recorte), mask_image: b64img(mascara), description: texto,
-    context_image: b64img(de), bounding_box: { x, y, width: w, height: h }, output_method: 'Modify current layer',
-  });
-  // Cola de volta SÓ dentro da máscara: fora dela a ferramenta também mexe um pouco, e isso viraria "móvel".
-  return p.evaluate(async ({ de, novo, mascara, x, y, w, h }) => {
-    const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
-    const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d');
-    g.drawImage(await carregar(de), 0, 0);
-    const t = document.createElement('canvas'); t.width = w; t.height = h; const gt = t.getContext('2d');
-    gt.drawImage(await carregar(novo), 0, 0, w, h);
-    const m = document.createElement('canvas'); m.width = w; m.height = h; const gm = m.getContext('2d');
-    gm.drawImage(await carregar(mascara), 0, 0);
-    const dt = gt.getImageData(0, 0, w, h), dm = gm.getImageData(0, 0, w, h).data;
-    for (let i = 0; i < dt.data.length; i += 4) dt.data[i + 3] = dm[i] > 127 ? 255 : 0;
-    gt.putImageData(dt, 0, 0); g.drawImage(t, x, y);
-    return c.toDataURL('image/png').split(',')[1];
-  }, { de, novo, mascara, x, y, w, h });
-}
-
 /** Separa o que mudou de `antes` para `depois`: o móvel (RGBA) e a sombra (só escurecimento, alfa = força). */
 async function recortar(antes, depois) {
   const p = await abrir();
@@ -141,6 +96,15 @@ async function limpar(m, antes, depois, movel, ocupado) {
     for (let k = 0; k < 512 * 512; k++) if (d[k * 4 + 3]) { const x = k % 512, y = (k / 512) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
     return [Math.max(0, x0 - 8), Math.max(0, y0 - 8), Math.min(512, x1 + 9), Math.min(512, y1 + 9)];
   }, movel);
+  // Junto com a caixa da máscara: a diferença perde o que tem a cor do fundo, e a caixa só dela cortou a estante.
+  // A caixa usada fica guardada ao lado da resposta (fundo/<id>.json); sem ela, a resposta é das antigas, feitas só
+  // com a caixa da diferença.
+  const guardada = path.join(FUNDO, m.id + '.json');
+  if (fs.existsSync(path.join(FUNDO, m.id + '.png'))) { if (fs.existsSync(guardada)) caixa.splice(0, 4, ...JSON.parse(fs.readFileSync(guardada, 'utf8'))); }
+  else {
+    caixa[0] = Math.max(0, Math.min(caixa[0], m.caixa[0] - 4)); caixa[1] = Math.max(0, Math.min(caixa[1], m.caixa[1] - 4));
+    caixa[2] = Math.min(512, Math.max(caixa[2], m.caixa[2] + 4)); caixa[3] = Math.min(512, Math.max(caixa[3], m.caixa[3] + 4));
+  }
   const arquivo = path.join(FUNDO, m.id + '.png');
   if (!fs.existsSync(arquivo)) {
     const recorte = await p.evaluate(async ({ b, caixa: [x0, y0, x1, y1] }) => {
@@ -156,16 +120,26 @@ async function limpar(m, antes, depois, movel, ocupado) {
     if (!r.ok) throw new Error('remove-background ' + m.id + ' ' + r.status + ': ' + t.slice(0, 300));
     const j = JSON.parse(t);
     gravar64(arquivo, j.image?.base64 ?? j.images?.[0]?.base64);
+    fs.writeFileSync(guardada, JSON.stringify(caixa));
     fs.appendFileSync(path.join(AQUI, '..', '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: 'novo/teste/fundo-' + m.id, usage: j.usage ?? null, quando: new Date().toISOString() }) + '\n');
   }
-  return p.evaluate(async ({ antes, depois, fundo, ocupado, caixa: [x0, y0, x1, y1] }) => {
+  return p.evaluate(async ({ antes, depois, movel, fundo, ocupado, caixa: [x0, y0, x1, y1] }) => {
     const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
     const ler = async (b, w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(await carregar(b), 0, 0, w, h); return g.getImageData(0, 0, w, h); };
     const D = await ler(depois, 512, 512), F = (await ler(fundo, x1 - x0, y1 - y0)).data, O = ocupado ? (await ler(ocupado, 512, 512)).data : null;
+    // As duas fontes juntas: o que a remoção de fundo manteve, mais o que a diferença viu a até 6 px disso. Só a
+    // remoção de fundo, numa caixa com parede e janela, tirou a lateral da estante; só a diferença, pegava tábuas.
+    // Da diferença, só a mudança FORTE: o retoque de tábua e de parede é sutil, a lateral contra a parede não.
+    const V = (await ler(movel, 512, 512)).data, A0 = (await ler(antes, 512, 512)).data, w = x1 - x0;
+    const forte = (k) => Math.max(...[0, 1, 2].map((c) => Math.abs(D.data[k * 4 + c] - A0[k * 4 + c]))) >= 45;
+    const rb = (x, y) => x >= x0 && y >= y0 && x < x1 && y < y1 && F[((y - y0) * w + (x - x0)) * 4 + 3] > 100;
+    const perto = new Uint8Array(512 * 512);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (rb(x, y))
+      for (let dy = -6; dy <= 6; dy++) for (let dx = -6; dx <= 6; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < 512 && yy < 512) perto[yy * 512 + xx] = 1; }
     const M = new ImageData(512, 512);
-    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
-      const k = y * 512 + x;
-      if (F[((y - y0) * (x1 - x0) + (x - x0)) * 4 + 3] <= 100 || (O && O[k * 4 + 3])) continue;
+    for (let k = 0; k < 512 * 512; k++) {
+      const x = k % 512, y = (k / 512) | 0;
+      if (!(rb(x, y) || (V[k * 4 + 3] && perto[k] && forte(k))) || (O && O[k * 4 + 3])) continue;
       for (let c = 0; c < 4; c++) M.data[k * 4 + c] = D.data[k * 4 + c];
       M.data[k * 4 + 3] = 255;
     }
@@ -183,7 +157,7 @@ async function limpar(m, antes, depois, movel, ocupado) {
     }
     const c = document.createElement('canvas'); c.width = 512; c.height = 512; c.getContext('2d').putImageData(M, 0, 0);
     return c.toDataURL('image/png').split(',')[1];
-  }, { antes, depois, fundo: ler64(arquivo), ocupado, caixa });
+  }, { antes, depois, movel, fundo: ler64(arquivo), ocupado, caixa });
 }
 
 let quarto = ler64(path.join(AQUI, '..', 'bases', 'pl-512-sem-1.png'));
