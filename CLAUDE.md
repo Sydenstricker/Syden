@@ -373,7 +373,13 @@ ficou combinado:
   e o abajur acende por código. A qualidade é a da base, e a luz por código convence. O que falta para chegar ao
   conceito é DENSIDADE (recheio, móveis maiores), não técnica. As três versões do pufe saíram de tamanhos
   diferentes: as versões de um móvel precisam partir da primeira.
-- Saldo em 08/10/2026: PixelLab 1.149 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
+- **Refeito no mesmo dia, com os defeitos que ele apontou consertados:** cama antes do criado-mudo (a cabeceira
+  estava espremida), estante alta, abajur pintado APAGADO e aceso só pelo código, o móvel recortado pela remoção de
+  fundo (a diferença perdia madeira sobre madeira e pegava tábuas retocadas) e o fundo tirado por preenchimento.
+- **Esvaziar o conceito falhou pela terceira vez,** agora por partes (`hibrido/vazio/partes/`): os quadros saem, mas
+  no lugar da cama e do tapete o modelo pinta outra cama, porque o resto do quarto cheio ensina a desenhar móvel.
+  O caminho é a base gerada vazia.
+- Saldo em 08/10/2026: PixelLab 1.041 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
