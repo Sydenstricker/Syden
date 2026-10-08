@@ -383,7 +383,9 @@ ficou combinado:
   código ficou abaixo; a repintura só da região do abajur, com ele aceso, ficou boa (`novo/teste/`).
 - **Decisão dele (08/10/2026):** o conceito convertido é o melhor resultado, mas não deixa mudar nada; skins,
   variações e móveis trocados vêm do processo por etapas sobre a base gerada.
-- Saldo em 08/10/2026: PixelLab 1.008 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
+- **Opção sem porta:** `novo/bases/pl-512-janela-1.png` (pedido dele: a janela como lugar de explorar e enfeitar,
+  como no conceito). Cuidado: `bases.mjs` gera tudo o que falta ao ser importado; rodar sempre com o id.
+- Saldo em 08/10/2026: PixelLab 933 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado

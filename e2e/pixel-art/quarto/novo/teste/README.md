@@ -52,7 +52,18 @@ prazo é este processo, por etapas.
 - **As versões do pufe saíram de tamanhos diferentes.** Para serem o mesmo móvel, a segunda e a terceira precisam
   partir da primeira.
 
+## A rodada 3 (pedido dele, mesmo dia)
+
+- **A cabeceira parecia mexer entre dia e noite:** quem mexia era o criado-mudo, redesenhado uns pixels ao lado
+  na repintura da noite. Agora a noite usa o recorte do dia, escurecido pela luz pintada, e a cúpula acende pelo
+  código (laranja). Da pintura fica só a luz na parede e no chão.
+- **O pufe não assentava nas casas:** ele era posto pelo centro da caixa PEDIDA, mas foi desenhado deslocado nela.
+  Agora a base desenhada (o ponto mais baixo menos meio pufe) vai para o cruzamento da grade.
+- **A estante ainda perdia o vaso do topo:** a folga da diferença em volta da remoção de fundo foi de 6 para 12 px,
+  e pedaços soltos com menos de 20 px saem.
+
 ## Custo
 
 A v1 custou 97 gerações. A v2 (os consertos, a estante de novo e a luz pintada) custou mais 90, incluindo a edição que
-falhou (25). Em 08/10/2026 **restam 1.008 das 2.000 do mês** (o `/balance` dá o que RESTA).
+falhou (25). Em 08/10/2026 **restavam 1.008 das 2.000 do mês**; depois da base sem porta (`../bases/pl-512-janela-1.png`, 40) e de ~35
+perdidas num disparo acidental de `bases.mjs`, **restam 933** (o `/balance` dá o que RESTA).

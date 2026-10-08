@@ -127,7 +127,7 @@ async function limpar(m, antes, depois, movel, ocupado) {
     const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
     const ler = async (b, w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(await carregar(b), 0, 0, w, h); return g.getImageData(0, 0, w, h); };
     const D = await ler(depois, 512, 512), F = (await ler(fundo, x1 - x0, y1 - y0)).data, O = ocupado ? (await ler(ocupado, 512, 512)).data : null;
-    // As duas fontes juntas: o que a remoção de fundo manteve, mais o que a diferença viu a até 6 px disso. Só a
+    // As duas fontes juntas: o que a remoção de fundo manteve, mais o que a diferença viu a até 12 px disso (6 cortava o vaso no alto da estante). Só a
     // remoção de fundo, numa caixa com parede e janela, tirou a lateral da estante; só a diferença, pegava tábuas.
     // Da diferença, só a mudança FORTE: o retoque de tábua e de parede é sutil, a lateral contra a parede não.
     const V = (await ler(movel, 512, 512)).data, A0 = (await ler(antes, 512, 512)).data, w = x1 - x0;
@@ -135,7 +135,7 @@ async function limpar(m, antes, depois, movel, ocupado) {
     const rb = (x, y) => x >= x0 && y >= y0 && x < x1 && y < y1 && F[((y - y0) * w + (x - x0)) * 4 + 3] > 100;
     const perto = new Uint8Array(512 * 512);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (rb(x, y))
-      for (let dy = -6; dy <= 6; dy++) for (let dx = -6; dx <= 6; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < 512 && yy < 512) perto[yy * 512 + xx] = 1; }
+      for (let dy = -12; dy <= 12; dy++) for (let dx = -12; dx <= 12; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < 512 && yy < 512) perto[yy * 512 + xx] = 1; }
     const M = new ImageData(512, 512);
     for (let k = 0; k < 512 * 512; k++) {
       const x = k % 512, y = (k / 512) | 0;
@@ -154,6 +154,17 @@ async function limpar(m, antes, depois, movel, ocupado) {
         if (borda && Math.max(...[0, 1, 2].map((c) => Math.abs(D.data[k * 4 + c] - A[k * 4 + c]))) < 12) tirar.push(k);
       }
       for (const k of tirar) M.data[k * 4 + 3] = 0;
+    }
+    // Pedaço solto com menos de 20 px (um risco ao lado da cabeceira) não é do móvel.
+    const visto = new Uint8Array(512 * 512);
+    for (let k = 0; k < 512 * 512; k++) {
+      if (!M.data[k * 4 + 3] || visto[k]) continue;
+      const fila = [k]; visto[k] = 1;
+      for (let q = 0; q < fila.length; q++) {
+        const b = fila[q], x = b % 512, y = (b / 512) | 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy, n = yy * 512 + xx; if (xx >= 0 && yy >= 0 && xx < 512 && yy < 512 && M.data[n * 4 + 3] && !visto[n]) { visto[n] = 1; fila.push(n); } }
+      }
+      if (fila.length < 20) for (const b of fila) M.data[b * 4 + 3] = 0;
     }
     const c = document.createElement('canvas'); c.width = 512; c.height = 512; c.getContext('2d').putImageData(M, 0, 0);
     return c.toDataURL('image/png').split(',')[1];

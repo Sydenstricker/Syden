@@ -134,7 +134,14 @@ function dados(im, filtro) {
     // O centro do alto da peça (no abajur, a cúpula): a média dos x das 8 primeiras linhas.
     let soma = 0, n = 0;
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
-    pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n) };
+    // A base DESENHADA (para o pufe): o ponto mais baixo da peça é a frente do círculo de baixo; o centro dele fica
+    // meio pufe (0,75 casa em u e em v) para trás. A caixa pedida à ferramenta não serve: ela o desenhou deslocado.
+    let y1 = 0; for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) y1 = Math.max(y1, (k / W) | 0);
+    let sx = 0, nb = 0; for (let x = 0; x < W; x++) for (let y = y1 - 2; y <= y1; y++) if (movel[(y * W + x) * 4 + 3]) { sx += x; nb++; }
+    const [cu0, cv0] = [(m.pe[0] + m.pe[1]) / 2, (m.pe[2] + m.pe[3]) / 2];
+    const [ax, ay] = ponto(cu0, cv0), [bx, by] = ponto(cu0 + 0.75, cv0 + 0.75);
+    const base = [sx / Math.max(1, nb) - (bx - ax), y1 - (by - ay)];
+    pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n), base };
   }
   // O pufe: onde está (o centro em u, v) e de que versão ele sai.
   const pufes = MOVEIS.filter((m) => m.pufe);
@@ -171,13 +178,14 @@ function dados(im, filtro) {
     const lista = [...fixos.map((m) => ({ p: pecas[m.id], dx: 0, dy: 0, fator: 1, frente: m.deitado ? -1 : m.pe[1] + m.pe[3] })),
       (() => {
         const p = pecas[variante.id], [cu, cv] = centro(p.pe);
-        const [ox, oy] = ponto(cu, cv), [nx, ny] = ponto(pu, pv);
+        const [ox, oy] = p.base, [nx, ny] = ponto(pu, pv);
         // Só intensidade: a luz do chão onde ele está, sobre a luz do chão onde ele foi pintado.
         const fator = Math.min(1.3, Math.max(0.75, luz(nx, ny) / luz(ox, oy)));
         return { p, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, frente: pu + pv + LADO_PUFE };
       })()].sort((a, b) => a.frente - b.frente);
     for (const { p, dx, dy, fator } of lista) {
-      if (pintada && p.id === 'abajur') continue; // já está pintado, aceso, no fundo da noite
+      // Com a luz pintada, o criado-mudo da noite pintada NÃO é usado: a repintura o redesenhou uns pixels ao lado, e
+      // ao trocar dia e noite ele parecia empurrar a cabeceira. Vale o mesmo recorte do dia, com a luz da pintura.
       for (let k = 0; k < W * W; k++) {
         const x = k % W + dx, y = ((k / W) | 0) + dy;
         if (x < 0 || y < 0 || x >= W || y >= W) continue;
@@ -205,7 +213,7 @@ function dados(im, filtro) {
           // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
           const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
           const quente = [1, 0.72, 0.42][c] * brilho;
-          if (acesa[k]) v = Math.min(255, v * 1.12 + [48, 30, 6][c]);
+          if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
           else if (eMovel[k]) v = v * Math.min(pintada ? 1.2 : 0.9, razaoN[k * 4 + c] / Math.max(1, diaPouco[k * 4 + c])) + v * quente;
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
         }

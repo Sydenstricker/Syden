@@ -36,6 +36,7 @@ e ver o efeito de resolução maior.
 
 | `rd-plus-da-pro1`, `rd-plus-da-pro2` | Retro Diffusion Plus, 384, partindo das Pro (imagem para imagem), US$ 0,24 | Mantêm a composição, mas perdem detalhe; a porta de taverna sumiu. |
 | `pl-384-taverna` | PixelLab, 384, com a `rd-pro-1` como referência e a porta de taverna na descrição, 40 gerações | **A melhor até aqui:** porta de taverna com dobradiças de ferro, reboco com textura, e a luz da janela desenhando o caixilho no chão. |
+| `pl-512-janela` | PixelLab, 512, sem referência, SEM porta, 40 gerações (pedido dele: a janela como lugar de explorar e enfeitar, como no conceito) | **Boa:** janela grande de muitas vidraças, peitoril fundo, cortinas de linho; a parede da esquerda inteira livre para enfeitar. Paredes creme, luz mais suave. |
 
 O Retro Diffusion não passa de 384 (o Pro vai até 256; o Plus e o Fast, até 384). Para comparar acima de 512 só
 existe o PixelLab, que vai até 512.

@@ -29,6 +29,9 @@ export const BASES = [
   // (onde a referência não inventou gente) junta as duas — a luz da 1 como referência, a porta na descrição.
   { id: 'rd-plus-da-pro1', ferramenta: 'rd', estilo: 'rd_plus__isometric', lado: 384, n: 2, de: 'rd-pro-1.png', forca: 0.4, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
   { id: 'rd-plus-da-pro2', ferramenta: 'rd', estilo: 'rd_plus__isometric', lado: 384, n: 2, de: 'rd-pro-2.png', forca: 0.4, texto: `${SALA.replace('a wooden door', 'a rustic wooden plank tavern door with iron hinges')}, plain plaster walls, ${LUZ_TARDE}` },
+  // Pedido dele em 08/10/2026: no conceito, a janela é o lugar de "explorar" e enfeita o quarto; a porta da pl-512-sem
+  // é mais funcional, mas toma a parede. Uma opção sem porta, com a janela mais bonita e a parede da esquerda livre.
+  { id: 'pl-512-janela', ferramenta: 'pixellab', lado: 512, ref: null, texto: `${SALA.replace(', a wooden window with dark grey curtains and blinds on the right wall, a wooden door on the left wall', ', a large beautiful wooden window with many small panes, a deep wooden windowsill and soft warm linen curtains on the right wall, NO door, the left wall plain and empty')}, plain plaster walls, ${LUZ_TARDE}` },
   { id: 'pl-384-taverna', ferramenta: 'pixellab', lado: 384, ref: 'rd-pro-1.png', refLado: 256, texto: `${SALA.replace('a wooden door', 'a rustic wooden plank tavern door with iron hinges')}, plain plaster walls, ${LUZ_TARDE}` },
 ];
 
