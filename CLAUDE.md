@@ -344,8 +344,31 @@ ficou combinado:
   estilo dele para o que falta. O dia é uma segunda pintura do mesmo quarto.
 - **A repintura é nossa, ao preparar a arte, nunca do Syden em funcionamento.** O custo de quadro fixo: a
   pessoa não arruma o próprio quarto. Se isso um dia entrar, a saída são variações já pintadas.
-- **Próximo passo:** o Sydenstricker olha o quarto híbrido. Pendências no README da pasta (o coelho e o gato
-  de dia, o vaso de cenouras).
+- **MUDOU DE NOVO, em 07–08/10/2026: móveis SOLTOS numa grade, num quarto NOVO gerado em pixel art**
+  (`e2e/pixel-art/quarto/novo/`). O quarto híbrido (`hibrido/quarto.html`) ficou bonito, mas é fixo, e ele
+  quer arrumar o quarto. O que foi decidido e medido no caminho:
+  - **Grade no chão inteiro** (casas de parede a parede, como no desenho dele) e **grade nas paredes** para
+    quadros e prateleiras. Cada móvel ocupa as suas casas; quem está mais à frente é desenhado por cima.
+  - **Luz: o código só ajusta intensidade** (clarear, escurecer, esquentar, pelo mapa de luz); a DIREÇÃO do
+    brilho vem de **três versões pintadas por móvel**, escolhidas pela posição — o meio-termo entre pintar
+    uma imagem por casa (64) e nenhuma. Reacender por código (normais pela silhueta) destruiu o desenho
+    (`hibrido/grade/falhas/`).
+  - **A janela é fixa:** é a fonte da luz, pintada na parede e no chão. Troca-se a aparência, nunca o lugar.
+  - **Esvaziar a pintura do conceito não deu:** a edição do PixelLab redesenhou o quarto, e a reconstrução por
+    código ficou abaixo do ideal (`hibrido/vazio/`). Daí o quarto novo, já gerado como pixel art: **pixel art
+    que nasce na grade tem bordas limpas** (as do conceito convertido têm degraus desiguais, e o
+    `correct-pixelart` não conserta).
+  - **Base escolhida (recomendação, falta o "sim" dele): `novo/bases/pl-384-taverna-1.png`** — PixelLab, 384
+    px, com a luz da `rd-pro-1` como referência e a porta de taverna na descrição. Ele gostou também da
+    `pl-384`, da `rd-pro-1` (a luz) e da `rd-pro-2` (a porta). Em 512, qualquer referência faz o PixelLab
+    inventar gente no quarto; sem referência sai bom (`pl-512-sem`).
+  - **Os móveis pela função, confirmados** (tabela em `novo/README.md`): fone num gancho (Salas de voz), sofá
+    ou pufes com os amigos em chamada, varal de fotos (Amigos), espelho (Coelhos), guarda-roupa, jornal ou
+    calendário (Novidades), caixinha de correio ou cortiça (Caixa de ideias), a porta (Explorar), TV com
+    videogame (Mini-games), abajur (Dia e noite), vaso de cenouras.
+- **Próximo passo:** ele confirma a base; depois, a versão de noite dela POR EDIÇÃO (mesma geometria), a grade
+  do chão e das paredes, e os primeiros móveis. Saldo em 08/10/2026: PixelLab ~1.250 de 2.000 gerações
+  (plano Tier 1, US$ 12/mês; a repintura nova `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 
