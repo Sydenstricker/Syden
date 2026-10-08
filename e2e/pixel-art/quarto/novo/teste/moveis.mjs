@@ -100,15 +100,90 @@ async function recortar(antes, depois) {
       if (viz >= 3) furo.push(k);
     }
     for (const k of furo) tipo[k] = 1;
+    // Sombra solta (menos de 12 px juntos) é retoque de tábua, não sombra.
+    const vistoS = new Uint8Array(N);
+    for (let k = 0; k < N; k++) {
+      if (tipo[k] !== 2 || vistoS[k]) continue;
+      const fila = [k]; vistoS[k] = 1;
+      for (let q = 0; q < fila.length; q++) {
+        const a = fila[q], x = a % 512, y = (a / 512) | 0;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]]) {
+          const b = (y + dy) * 512 + x + dx;
+          if (x + dx >= 0 && x + dx < 512 && y + dy >= 0 && y + dy < 512 && tipo[b] === 2 && !vistoS[b]) { vistoS[b] = 1; fila.push(b); }
+        }
+      }
+      if (fila.length < 12) for (const a of fila) tipo[a] = 0;
+    }
     const movel = new ImageData(512, 512), sombra = new ImageData(512, 512);
     for (let k = 0; k < N; k++) {
       const i = k * 4;
       if (tipo[k] === 1) { for (let c = 0; c < 4; c++) movel.data[i + c] = D.data[i + c]; }
-      if (tipo[k] === 2) { sombra.data[i + 3] = Math.round((1 - fator[k]) * 255); }
+      // A sombra fica só no chão: na parede, o que sobrava eram pontinhos soltos de retoque.
+      if (tipo[k] === 2 && noChao(k % 512, (k / 512) | 0)) { sombra.data[i + 3] = Math.round((1 - fator[k]) * 255); }
     }
     const png = (img) => { const c = document.createElement('canvas'); c.width = 512; c.height = 512; c.getContext('2d').putImageData(img, 0, 0); return c.toDataURL('image/png').split(',')[1]; };
     return { movel: png(movel), sombra: png(sombra) };
   }, { antes, depois, chao: [[0, 0], [NC, 0], [NC, NC], [0, NC]].map(([u, v]) => pontoDoChao(u, v)) });
+}
+
+// O MÓVEL vem da remoção de fundo do PixelLab (1 geração), não da diferença entre os passos: madeira sobre madeira
+// e travesseiro branco sobre parede clara quase não mudam de cor, e a diferença perdia a lateral da cama; ela também
+// pegava tábuas retocadas em volta (os fiapos da v1). A diferença fica para a SOMBRA, e para achar a área do móvel.
+// O que já é de um móvel anterior não entra (a remoção de fundo devolve o vizinho junto). Fica guardado em fundo/.
+const FUNDO = path.join(AQUI, 'fundo');
+fs.mkdirSync(FUNDO, { recursive: true });
+async function limpar(m, antes, depois, movel, ocupado) {
+  const p = await abrir();
+  const caixa = await p.evaluate(async (b) => {
+    const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode();
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, 512, 512).data; let x0 = 512, y0 = 512, x1 = 0, y1 = 0;
+    for (let k = 0; k < 512 * 512; k++) if (d[k * 4 + 3]) { const x = k % 512, y = (k / 512) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    return [Math.max(0, x0 - 8), Math.max(0, y0 - 8), Math.min(512, x1 + 9), Math.min(512, y1 + 9)];
+  }, movel);
+  const arquivo = path.join(FUNDO, m.id + '.png');
+  if (!fs.existsSync(arquivo)) {
+    const recorte = await p.evaluate(async ({ b, caixa: [x0, y0, x1, y1] }) => {
+      const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode();
+      const c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0; c.getContext('2d').drawImage(im, -x0, -y0);
+      return c.toDataURL('image/png').split(',')[1];
+    }, { b: depois, caixa });
+    const r = await fetch('https://api.pixellab.ai/v2/remove-background', {
+      method: 'POST', headers: { authorization: `Bearer ${process.env.PIXELLAB_KEY}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ image: { type: 'base64', base64: recorte, format: 'png' }, image_size: { width: caixa[2] - caixa[0], height: caixa[3] - caixa[1] }, background_removal_task: 'remove_complex_background', text: m.dica }),
+    });
+    const t = await r.text();
+    if (!r.ok) throw new Error('remove-background ' + m.id + ' ' + r.status + ': ' + t.slice(0, 300));
+    const j = JSON.parse(t);
+    gravar64(arquivo, j.image?.base64 ?? j.images?.[0]?.base64);
+    fs.appendFileSync(path.join(AQUI, '..', '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: 'novo/teste/fundo-' + m.id, usage: j.usage ?? null, quando: new Date().toISOString() }) + '\n');
+  }
+  return p.evaluate(async ({ antes, depois, fundo, ocupado, caixa: [x0, y0, x1, y1] }) => {
+    const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
+    const ler = async (b, w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(await carregar(b), 0, 0, w, h); return g.getImageData(0, 0, w, h); };
+    const D = await ler(depois, 512, 512), F = (await ler(fundo, x1 - x0, y1 - y0)).data, O = ocupado ? (await ler(ocupado, 512, 512)).data : null;
+    const M = new ImageData(512, 512);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      const k = y * 512 + x;
+      if (F[((y - y0) * (x1 - x0) + (x - x0)) * 4 + 3] <= 100 || (O && O[k * 4 + 3])) continue;
+      for (let c = 0; c < 4; c++) M.data[k * 4 + c] = D.data[k * 4 + c];
+      M.data[k * 4 + 3] = 255;
+    }
+    // A franja: a remoção de fundo deixa 1 px do fundo em volta. Pixel da borda que não mudou é fundo; duas passadas.
+    const A = (await ler(antes, 512, 512)).data;
+    for (let passada = 0; passada < 2; passada++) {
+      const tirar = [];
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+        const k = y * 512 + x;
+        if (!M.data[k * 4 + 3]) continue;
+        const borda = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => !M.data[((y + dy) * 512 + x + dx) * 4 + 3]);
+        if (borda && Math.max(...[0, 1, 2].map((c) => Math.abs(D.data[k * 4 + c] - A[k * 4 + c]))) < 12) tirar.push(k);
+      }
+      for (const k of tirar) M.data[k * 4 + 3] = 0;
+    }
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; c.getContext('2d').putImageData(M, 0, 0);
+    return c.toDataURL('image/png').split(',')[1];
+  }, { antes, depois, fundo: ler64(arquivo), ocupado, caixa });
 }
 
 let quarto = ler64(path.join(AQUI, '..', 'bases', 'pl-512-sem-1.png'));
@@ -131,7 +206,8 @@ for (const m of FIXOS) {
   let depois;
   if (fs.existsSync(passo)) depois = ler64(passo);
   else { depois = await pintar(quarto, m, ocupado); gravar64(passo, depois); console.log('pintado:', m.id); }
-  const { movel, sombra } = await recortar(quarto, depois);
+  let { movel, sombra } = await recortar(quarto, depois);
+  if (!m.deitado) movel = await limpar(m, quarto, depois, movel, ocupado);
   gravar64(path.join(PECAS, m.id + '.png'), movel); gravar64(path.join(PECAS, m.id + '-sombra.png'), sombra);
   // O que fica deitado no chão (o tapete) não ocupa: os outros móveis vão por cima dele.
   quarto = depois; if (!m.deitado) ocupado = await juntar(ocupado, movel);
@@ -141,7 +217,8 @@ if (n === FIXOS.length) await Promise.all(PUFES.map(async (m) => {
   let depois;
   if (fs.existsSync(passo)) depois = ler64(passo);
   else { depois = await pintar(quarto, m, ocupado); gravar64(passo, depois); console.log('pintado:', m.id); }
-  const { movel, sombra } = await recortar(quarto, depois);
+  let { movel, sombra } = await recortar(quarto, depois);
+  if (!m.deitado) movel = await limpar(m, quarto, depois, movel, ocupado);
   gravar64(path.join(PECAS, m.id + '.png'), movel); gravar64(path.join(PECAS, m.id + '-sombra.png'), sombra);
 }));
 await fechar();

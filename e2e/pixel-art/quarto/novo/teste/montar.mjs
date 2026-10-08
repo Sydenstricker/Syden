@@ -96,14 +96,31 @@ function dados(im, filtro) {
   const diaBorrado = dados(im.base, 'blur(10px)');
   const diaPouco = dados(im.base, 'blur(2px)'), noitePouco = dados(im.noite, 'blur(2px)');
   // O cinza em volta do quarto (o fundo da base) fica transparente.
-  const fora = new Uint8Array(W * W);
-  for (let k = 0; k < W * W; k++) if (['0', '1', '2'].every((c) => Math.abs(base[k * 4 + +c] - base[+c]) < 3)) fora[k] = 1;
+  // O cinza em volta do quarto fica transparente, preenchido a partir da borda e com folga de cor (só o cinza exato
+  // deixava pontinhos claros). Um para cada versão: a noite, feita por edição, tem o contorno 1 ou 2 px diferente.
+  function fundoDe(img) {
+    const fora = new Uint8Array(W * W), fila = [];
+    const parecido = (k) => [0, 1, 2].every((c) => Math.abs(img[k * 4 + c] - img[c]) < 24);
+    for (let i = 0; i < W; i++) for (const k of [i, (W - 1) * W + i, i * W, i * W + W - 1]) if (!fora[k] && parecido(k)) { fora[k] = 1; fila.push(k); }
+    for (let q = 0; q < fila.length; q++) {
+      const k = fila[q], x = k % W, y = (k / W) | 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const xx = x + dx, yy = y + dy, b = yy * W + xx;
+        if (xx >= 0 && yy >= 0 && xx < W && yy < W && !fora[b] && parecido(b)) { fora[b] = 1; fila.push(b); }
+      }
+    }
+    return fora;
+  }
+  const foraDia = fundoDe(base), foraNoite = fundoDe(noite);
   const pecas = {};
   for (const m of MOVEIS) {
     const movel = dados(im[m.id]), sombra = dados(im[m.id + '-sombra']);
     let x0 = W, y0 = W, x1 = 0;
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); }
-    pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2 };
+    // O centro do alto da peça (no abajur, a cúpula): a média dos x das 8 primeiras linhas.
+    let soma = 0, n = 0;
+    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
+    pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n) };
   }
   // O pufe: onde está (o centro em u, v) e de que versão ele sai.
   const pufes = MOVEIS.filter((m) => m.pufe);
@@ -152,27 +169,31 @@ function dados(im, filtro) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
           eMovel[d] = 1;
           // A cúpula do abajur (o alto da peça) é luz, não superfície: de noite ela não escurece.
-          if (p.id === 'abajur' && y < p.topo + 26) acesa[d] = 1;
+          // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
+          // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
+          const m4 = k * 4;
+          if (p.id === 'abajur' && y < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
         }
       }
     }
     const saida = g.createImageData(W, W);
-    const ab = pecas.abajur, lx = ab.centroX, ly = ab.topo + 14;
+    const ab = pecas.abajur, lx = ab.centroTopo, ly = ab.topo + 6;
     for (let k = 0; k < W * W; k++) {
       const x = k % W, y = (k / W) | 0;
       for (let c = 0; c < 3; c++) {
         let v = D[k * 3 + c];
         if (modo === 'noite') {
           // A luz do abajur: quente, caindo com a distância. Soma luz proporcional à cor do que ilumina.
-          const brilho = 0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85));
+          // Em faixas, como a luz é desenhada em pixel art: um degradê liso denuncia o código.
+          const brilho = Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
           const quente = [1, 0.72, 0.42][c] * brilho;
-          if (acesa[k]) v = Math.min(255, v * 1.08);
-          else if (eMovel[k]) v = v * Math.min(1.6, noitePouco[k * 4 + c] / Math.max(1, diaPouco[k * 4 + c])) + v * quente;
+          if (acesa[k]) v = Math.min(255, v * 1.12 + [48, 30, 6][c]);
+          else if (eMovel[k]) v = v * Math.min(0.9, noitePouco[k * 4 + c] / Math.max(1, diaPouco[k * 4 + c])) + v * quente;
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
         }
         saida.data[k * 4 + c] = Math.min(255, v);
       }
-      saida.data[k * 4 + 3] = fora[k] && !eMovel[k] ? 0 : 255;
+      saida.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
       if (grade && casa[k] >= 0 && !eMovel[k]) {
         const direita = x + 1 < W ? casa[k + 1] : -1, baixo = y + 1 < W ? casa[k + W] : -1;
         const cima = y > 0 ? casa[k - W] : -1;
