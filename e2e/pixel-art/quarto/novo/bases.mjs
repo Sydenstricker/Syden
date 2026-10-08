@@ -16,7 +16,10 @@ const SALA = 'empty isometric cutaway bedroom seen from above at a 2:1 isometric
 const LUZ_TARDE = 'cozy and calm, soft afternoon daylight from the window';
 export const BASES = [
   { id: 'pl-384', ferramenta: 'pixellab', lado: 384, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
-  { id: 'pl-512', ferramenta: 'pixellab', lado: 512, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
+  // A primeira de 512, com o conceito como referência, virou uma carta de jogo com o quarto e um cavaleiro
+  // (bases/falhas/). Refeita de dois jeitos: sem referência, e com a pl-384 (um quarto já vazio) no lugar.
+  { id: 'pl-512-sem', ferramenta: 'pixellab', lado: 512, ref: null, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
+  { id: 'pl-512-da-384', ferramenta: 'pixellab', lado: 512, ref: 'pl-384-1.png', texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
   { id: 'pl-papel', ferramenta: 'pixellab', lado: 256, texto: `${SALA}, walls with a subtle small-pattern wallpaper above tall wooden wainscoting, warm golden late-afternoon light, cozy` },
   { id: 'pl-noite', ferramenta: 'pixellab', lado: 256, texto: `${SALA}, plain plaster walls, night, dark blue night sky and moonlight through the window, dim cozy room` },
   { id: 'rd-pro', ferramenta: 'rd', estilo: 'rd_pro__isometric', lado: 256, n: 2, texto: `${SALA}, plain plaster walls, ${LUZ_TARDE}` },
@@ -39,9 +42,15 @@ async function rd(b) {
   custo({ ferramenta: 'rd', peca: 'novo/base-' + b.id, usd: j.balance_cost, saldo: j.remaining_balance });
   return j.base64_images ?? [];
 }
+// ref: undefined usa o conceito; null, nenhuma referência; um nome, uma base já gerada (em bases/).
+function referencia(b) {
+  if (b.ref === null) return undefined;
+  if (b.ref) return [{ image: { type: 'base64', base64: ler64(path.join(SAIDA, b.ref)), format: 'png' }, size: { width: 384, height: 384 }, usage_description: 'This is the same empty room: keep its style, palette, line quality, layout, door and window, at a higher resolution with more detail' }];
+  return [{ image: { type: 'base64', base64: CONCEITO, format: 'png' }, size: { width: 313, height: 314 }, usage_description: 'Match this pixel art style, palette, line quality and room proportions, but leave the room completely empty' }];
+}
 const pixellab = (b) => chamar('/generate-image-v2', {
   description: b.texto, image_size: { width: b.lado, height: b.lado }, no_background: false,
-  reference_images: [{ image: { type: 'base64', base64: CONCEITO, format: 'png' }, size: { width: 313, height: 314 }, usage_description: 'Match this pixel art style, palette, line quality and room proportions, but leave the room completely empty' }],
+  ...(referencia(b) ? { reference_images: referencia(b) } : {}),
 });
 
 const so = process.argv[2]?.split(',');

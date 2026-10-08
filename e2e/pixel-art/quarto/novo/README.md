@@ -26,13 +26,16 @@ e ver o efeito de resolução maior.
 | Base | Ferramenta | O que se viu |
 |---|---|---|
 | `pl-384` | PixelLab, 384 px, 40 gerações | Limpa e clara; mais detalhe nas tábuas que a de 256. |
-| `pl-512` | PixelLab, 512 px, 40 gerações | **Falhou:** seguiu a referência e fez uma carta de jogo com o conceito e um cavaleiro. |
+| `pl-512` | PixelLab, 512 px, 40 gerações | **Falhou:** seguiu a referência e fez uma carta de jogo com o conceito e um cavaleiro (`bases/falhas/`). |
+| `pl-512-sem` | PixelLab, 512 px, SEM referência, 40 gerações | **Boa:** vazia, limpa, com mais detalhe nas tábuas e na janela, e a luz da janela no chão. |
+| `pl-512-da-384` | PixelLab, 512 px, com a `pl-384` como referência | **Falhou:** pôs uma arqueira de capuz, um mapa e uma aljava no quarto (`bases/falhas/`). |
 | `pl-papel` | PixelLab, 256, papel de parede e fim de tarde | **Falhou:** redesenhou o conceito com uma pessoa na cama; ignorou o "vazio". |
 | `pl-noite` | PixelLab, 256, de noite | Boa: quarto vazio noturno, limpo, com céu estrelado. |
 | `rd-pro-1`, `rd-pro-2` | Retro Diffusion Pro, 256, sem paleta, US$ 0,36 | Boas e limpas; a 2 tem o chão mais escuro e quente. Sem a paleta imposta, o laranja sumiu. |
 | `rd-plus-1`, `rd-plus-2` | Retro Diffusion Plus, 384, US$ 0,12 | Mais chapadas e com menos cara de pixel art. |
 
-**A referência do conceito puxa demais quando o pedido se afasta dele:** com tamanho ou clima diferentes, o
+**Em 512 px, qualquer referência faz o PixelLab inventar gente** (o cavaleiro, a arqueira): sem referência, ele
+obedece ao "vazio". **A referência do conceito puxa demais quando o pedido se afasta dele:** com tamanho ou clima diferentes, o
 PixelLab copiou o conceito (com gente dentro) em vez de esvaziar o quarto. O dia e a noite de uma mesma base
 precisam sair por EDIÇÃO da escolhida, para terem a mesma geometria.
 
