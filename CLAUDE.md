@@ -385,7 +385,10 @@ ficou combinado:
   variações e móveis trocados vêm do processo por etapas sobre a base gerada.
 - **Opção sem porta:** `novo/bases/pl-512-janela-1.png` (pedido dele: a janela como lugar de explorar e enfeitar,
   como no conceito). Cuidado: `bases.mjs` gera tudo o que falta ao ser importado; rodar sempre com o id.
-- Saldo em 08/10/2026: PixelLab 933 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
+- **A janela com vista** (`novo/janela/`): a paisagem fica ATRÁS do vidro, numa imagem à parte, e troca com a
+  hora (e um dia por tema). A noite da base sem porta é montada: chão e janela da pintura, paredes por código, porque
+  a edição manchou a parede duas vezes.
+- Saldo em 08/10/2026: PixelLab 858 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
