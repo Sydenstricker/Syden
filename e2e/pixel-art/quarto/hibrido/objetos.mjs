@@ -7,7 +7,7 @@ export const OBJETOS = [
   { id: 'abajur', nome: 'Dia e noite', oque: 'abajur', caixa: [46, 127, 68, 161], dica: 'table lamp' },
   { id: 'poster', nome: 'Coelhos', oque: 'pôster do coelho', caixa: [110, 35, 134, 87], dica: 'the whole rectangular dark frame hanging on the wall, including its border and the picture inside', modo: 'remove_simple_background' },
   { id: 'quadro', nome: 'Amigos', oque: 'quadro de paisagem', caixa: [83, 53, 109, 100], dica: 'framed landscape picture' },
-  { id: 'janela', nome: 'Explorar', oque: 'janela', caixa: [149, 26, 236, 132], dica: 'window with curtains and blinds' },
+  { id: 'janela', nome: 'Explorar', oque: 'janela', caixa: [146, 22, 239, 145], dica: 'the window with its wooden frame, the rolled blinds at the top and BOTH dark grey curtains, the left one and the right one, complete' },
   { id: 'cortica', nome: 'Caixa de ideias', oque: 'quadro de cortiça', caixa: [237, 73, 265, 113], dica: 'the whole rectangular board hanging on the wall, including its frame and the notes pinned on it', modo: 'remove_simple_background' },
   { id: 'computador', nome: 'Mini-games', oque: 'computador', caixa: [211, 115, 268, 173], dica: 'computer monitor and keyboard on a desk' },
   { id: 'fone', nome: 'Salas de voz', oque: 'fone de ouvido', caixa: [271, 129, 291, 153], dica: 'headphones' },
