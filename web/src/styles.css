@@ -11981,12 +11981,24 @@ body.arrastando-barra {
   transition: filter 1.4s;
 }
 
-.quarto-parte.baixo {
-  clip-path: inset(55% 0 0 0);
+/* O corte da respiração cai numa LINHA EXATA de pixel, e a metade de cima sobra 1 linha por cima da de baixo: com o
+   corte em 55% (a linha 35,2 do coelho), sobrava uma emenda fina mesmo parado, e ao respirar o livro e os braços
+   quebravam (relato de 09/10/2026). O coelho respira pela CINTURA (linha 47 de 64: cabeça, braços e livro descem
+   juntos; as pernas ficam); o gato, pelo meio (linha 9 de 17). */
+.quarto-vivo.coelho .quarto-parte.baixo {
+  clip-path: inset(73.4375% 0 0 0);
 }
 
-.quarto-parte.cima {
-  clip-path: inset(0 0 45% 0);
+.quarto-vivo.coelho .quarto-parte.cima {
+  clip-path: inset(0 0 25% 0);
+}
+
+.quarto-vivo.gato .quarto-parte.baixo {
+  clip-path: inset(52.9412% 0 0 0);
+}
+
+.quarto-vivo.gato .quarto-parte.cima {
+  clip-path: inset(0 0 41.1765% 0);
 }
 
 .quarto-vivo.coelho .quarto-parte.cima {
@@ -12056,4 +12068,25 @@ body.arrastando-barra {
   .quarto-vivo.cutucado {
     animation: none;
   }
+}
+
+/* As cores do ícone (Logo.tsx): por padrão, as da marca. */
+.logo-fundo {
+  fill: var(--logo-fundo, #1e2533);
+}
+
+.logo-linha {
+  fill: var(--logo-linha, #f3ebd8);
+}
+
+.logo-balao {
+  fill: var(--logo-fundo, #1e2533);
+  stroke: var(--logo-linha, #f3ebd8);
+}
+
+/* O botão de início no tema claro: o ícone com ladrilho branco e linhas azul-noite. Só aqui: fora do app o ícone é a
+   identidade e fica escuro. */
+:root[data-theme='light'] .rail-logo {
+  --logo-fundo: #ffffff;
+  --logo-linha: #1e2533;
 }
