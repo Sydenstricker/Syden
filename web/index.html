@@ -8,8 +8,11 @@
     <meta name="description" content="Conversas por voz, vídeo e texto com os amigos." />
     <!-- Caminhos relativos: funcionam na raiz (syden.chat) e numa subpasta, que é onde o site ficava antes. -->
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="icon-192.png" />
-    <link rel="icon" href="icon-192.png" />
+    <!-- O ?v=d4 muda o endereço do ícone sem mudar o arquivo: o navegador guarda o ícone da aba (e o do Syden instalado)
+         pelo ENDEREÇO, e com o mesmo nome continuava mostrando o coelho na estrela depois do rebrand (relato de
+         09/10/2026). Trocou o ícone de novo? Troque a versão aqui e no manifest.webmanifest. -->
+    <link rel="apple-touch-icon" href="icon-192.png?v=d4" />
+    <link rel="icon" href="icon-192.png?v=d4" />
     <title>Syden</title>
 
     <!--

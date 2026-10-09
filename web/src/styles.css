@@ -11891,9 +11891,9 @@ body.arrastando-barra {
   /* O tamanho de um pixel do quarto na tela; Quarto.tsx o mede e põe aqui. */
   --quarto-px: 2px;
   position: relative;
-  width: 100%;
-  /* 3 pixels de tela por pixel do quarto, no máximo: mais que isso o quarto engole a home. */
-  max-width: 939px;
+  /* No máximo 2 pixels de tela por pixel do quarto (626 px, nítido) e nunca mais alto que 72% da janela. Com 939 px
+     ele passava da altura da tela num monitor grande e engolia a home (relato de 09/10/2026). */
+  width: min(100%, 626px, 72vh);
   aspect-ratio: 313 / 314;
   margin: 0 auto;
   user-select: none;
