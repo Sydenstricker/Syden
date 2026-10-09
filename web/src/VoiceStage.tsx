@@ -35,6 +35,7 @@ import {
   Volume2,
   VolumeX,
   Eye,
+  X,
 } from 'lucide-react';
 import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
 import { api } from './api';
@@ -1150,7 +1151,7 @@ function Stage({
     setPinned(focused && trackKey(focused) === trackKey(ref) ? null : trackKey(ref));
   };
 
-  const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number) => {
+  const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number, naFaixa = false) => {
     // Transmissão que você ainda não abriu vira convite, e clicar nele abre (não fixa).
     if (ref.source === Track.Source.ScreenShare && !aberta(ref)) {
       return (
@@ -1181,6 +1182,23 @@ function Stage({
           plateia={members.filter((m) => m.assistindo?.includes(Number(ref.participant.identity)))}
         />
       )}
+      {/* NA FAIXA DE BAIXO, A TRANSMISSÃO ABERTA TEM UM X. Pedido de 08/10/2026: quem abria uma segunda tela
+          via a primeira continuar rodando pequena, baixando vídeo, e o único jeito de fechá-la era trazê-la
+          para o quadro grande. O X faz o mesmo que o botão de lá: para de assistir e corta o download. */}
+      {naFaixa && ref.source === Track.Source.ScreenShare && !ref.participant.isLocal && (
+        <button
+          type="button"
+          className="tile-fechar"
+          title={t('Parar de assistir esta transmissão')}
+          aria-label={t('Parar de assistir esta transmissão')}
+          onClick={(e) => {
+            e.stopPropagation();
+            voice.assistir(ref.participant.identity, false);
+          }}
+        >
+          <X size={14} aria-hidden="true" />
+        </button>
+      )}
     </div>
     );
   };
@@ -1202,7 +1220,7 @@ function Stage({
               </FocusPane>
             ))}
           </div>
-          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48))}</div>}
+          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48, true))}</div>}
         </div>
       ) : focused ? (
         <div className="stage-focus">
@@ -1213,7 +1231,7 @@ function Stage({
           >
             {tile(focused, 80)}
           </FocusPane>
-          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48))}</div>}
+          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48, true))}</div>}
         </div>
       ) : (
         // Sem tela compartilhada: cartões de tamanho fixo, centralizados, como no Discord.

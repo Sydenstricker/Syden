@@ -1420,6 +1420,31 @@ textarea {
 .stage-strip .tile {
   width: 200px;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* O X da transmissão aberta na faixa de baixo (ver tile, em VoiceStage.tsx). Sempre visível: escondido até o
+   mouse passar, ninguém o descobriria — e quem quer fechar é justamente quem não sabe que dá. */
+.tile-fechar {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+}
+
+.tile-fechar:hover,
+.tile-fechar:focus-visible {
+  background: rgba(0, 0, 0, 0.85);
 }
 
 .tile {
