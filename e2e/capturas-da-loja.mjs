@@ -25,6 +25,7 @@
 //   Só alguns:  IDIOMAS=en,ja node e2e/capturas-da-loja.mjs
 //
 // Sai em e2e/fotos/loja/<idioma>/1-inicio.png … 4-voz.png
+import { spawn } from 'node:child_process';
 import { mkdirSync, readdirSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 import { dispensarPresentes } from './ajuda.mjs';
@@ -94,6 +95,31 @@ const CHROME = [
   'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
   '/usr/bin/google-chrome',
 ].filter(Boolean)[0];
+
+// OS BOTS VÊM JUNTO quando a senha deles está na variável SYDEN_SENHA_DEMO: o script liga o
+// `e2e/sala-cheia.mjs --chamada` sozinho, espera os quatro entrarem e desliga no fim. Eram duas janelas, uma presa
+// à outra, e um Ctrl+C que não derrubava o processo dos bots (09/10/2026).
+let bots = null;
+if (process.env.SYDEN_SENHA_DEMO) {
+  console.log('Ligando as pessoas da demonstração na chamada (uns 30 s)…');
+  bots = spawn(process.execPath, ['e2e/sala-cheia.mjs', '--chamada'], { env: process.env, stdio: ['ignore', 'pipe', 'pipe'] });
+  const prontos = await new Promise((resolver) => {
+    let texto = '';
+    const ler = (pedaco) => {
+      texto += pedaco;
+      for (const linha of String(pedaco).split('\n')) if (/✓|✗|Faltou|não bate|Não achei/.test(linha)) console.log('  ' + linha.trim());
+      if (texto.includes('DEIXE ESTA JANELA ABERTA')) resolver(true);
+    };
+    bots.stdout.on('data', ler);
+    bots.stderr.on('data', ler);
+    bots.on('exit', () => resolver(false));
+    setTimeout(() => resolver(false), 180_000);
+  });
+  if (!prontos) console.log('  (as pessoas da demonstração não entraram: a foto da chamada vai ser pulada)');
+}
+const desligarBots = () => { if (bots && bots.exitCode === null) bots.kill(); };
+process.on('exit', desligarBots);
+process.on('SIGINT', () => { desligarBots(); process.exit(130); });
 
 const browser = await chromium.launch(CHROME ? { executablePath: CHROME } : {});
 const contexto = await browser.newContext({
@@ -408,6 +434,7 @@ if (idiomaNaTela !== 'pt-BR') {
 }
 
 await browser.close();
+desligarBots();
 
 console.log(`\nPronto. As imagens estão em ${RAIZ}/`);
 console.log('Confira UMA POR UMA antes de enviar: nenhuma pode ter nome ou mensagem de pessoa real.');
