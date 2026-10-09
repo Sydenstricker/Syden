@@ -15,7 +15,11 @@ export const FIXOS = [
   { id: 'abajur', dica: 'wooden nightstand with a table lamp and a mug', pe: [0.15, 1.35, 0.05, 1.25], alto: 78, texto: `${GRANDE}: a wooden nightstand in the back corner of the room, next to the bed headboard, with a table lamp with a cream lampshade that is TURNED OFF (no glow, no light on the wall) and a mug on top, ${ESTILO}` },
   // A estante saiu embutida na parede duas vezes (falhas/, a segunda um nicho arredondado). Ele pediu para consertar ou
   // trocar (08/10/2026): no lugar, o GUARDA-ROUPA, que é da lista de móveis pela função (a aba "Guarda-roupa").
-  { id: 'guarda-roupa', semente: 7, dica: 'tall wooden wardrobe', pe: [4.9, 6.9, 0.05, 1.35], alto: 135, texto: `${GRANDE}: a tall FREESTANDING wooden wardrobe with two doors and small round knobs, a deep piece of furniture standing on the floor in front of the left wall (not built into the wall), ${ESTILO}` },
+  // Pintado aqui, ele saiu com o topo cortado pela máscara (falhas/). Agora é AVULSO (avulso.mjs): gerado inteiro, sem
+  // fundo, posto no lugar (o pé da frente no canto da casa; a profundidade medida na lateral desenhada) e repintado
+  // só na forma dele, para a luz e a sombra daqui.
+  { id: 'guarda-roupa', avulso: 'avulsos/guarda-roupa-1', dica: 'tall wooden wardrobe', pe: [4.9, 6.9, 0.05, 1.35], alto: 135,
+    texto: 'one tall wooden wardrobe, exactly the same shape, size and details, only its light and shading redrawn, soft afternoon daylight from the right, a soft contact shadow on the floor, clean isometric pixel art' },
   // Pintado aqui, o tapete veio DUAS vezes com um quarto em miniatura em cima (falhas/), e só uma vez limpo. O limpo
   // ficou guardado (prontas/tapete.png, da mesma base e do mesmo lugar) e é usado direto, sem pintar de novo.
   { id: 'tapete', deitado: true, pronto: 'prontas/tapete', pe: [2.6, 6.8, 3.0, 7.0], alto: 3 },

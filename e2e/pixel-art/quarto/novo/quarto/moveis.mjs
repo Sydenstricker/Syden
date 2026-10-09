@@ -172,6 +172,35 @@ async function limpar(m, antes, depois, movel, ocupado) {
   }, { antes, depois, movel, fundo: ler64(arquivo), ocupado, caixa });
 }
 
+/** Um móvel avulso (sem fundo) posto contra a parede da esquerda: o pixel mais baixo dele é o pé da frente, que vai
+ *  para o ponto (u1, v0 + profundidade) do chão; a profundidade sai da lateral desenhada (a distância, em x, do pé da
+ *  frente até o ponto mais à esquerda da base), a 27 px por casa no sentido de v. */
+async function colocar(img, m) {
+  const p = await abrir();
+  const medida = await p.evaluate(async (b) => {
+    const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode();
+    const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, im.width, im.height).data; let yb = 0, xb = 0;
+    for (let k = 0; k < im.width * im.height; k++) if (d[k * 4 + 3] > 127 && ((k / im.width) | 0) >= yb) { yb = (k / im.width) | 0; xb = k % im.width; }
+    let xl = im.width;
+    for (let y = Math.round(yb * 0.6); y <= yb; y++) for (let x = 0; x < im.width; x++) if (d[(y * im.width + x) * 4 + 3] > 127) { xl = Math.min(xl, x); break; }
+    return { xb, yb, xl };
+  }, ler64(path.join(AQUI, m.avulso + '.png')));
+  const fundo = (pontoDoChao(m.pe[0], 1) [0] - pontoDoChao(m.pe[0], 0)[0]); // px de x por casa de v
+  const prof = (medida.xb - medida.xl) / Math.max(1, Math.abs(fundo));
+  const [tx, ty] = pontoDoChao(m.pe[1], m.pe[2] + prof);
+  const dx = Math.round(tx - medida.xb), dy = Math.round(ty - medida.yb);
+  console.log(m.id, 'profundidade', prof.toFixed(2), 'casas; posto em', dx, dy);
+  return p.evaluate(async ({ img, sprite, dx, dy }) => {
+    const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
+    const s = await carregar(sprite);
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d');
+    g.drawImage(await carregar(img), 0, 0); g.drawImage(s, dx, dy);
+    const m2 = document.createElement('canvas'); m2.width = 512; m2.height = 512; m2.getContext('2d').drawImage(s, dx, dy);
+    return { img: c.toDataURL('image/png').split(',')[1], movel: m2.toDataURL('image/png').split(',')[1] };
+  }, { img, sprite: ler64(path.join(AQUI, m.avulso + '.png')), dx, dy });
+}
+
 let quarto = ler64(path.join(AQUI, '..', 'bases', 'pl-512-janela-1.png'));
 let ocupado = null; // as peças já recortadas, juntas, para a máscara não pintar por cima delas
 async function juntar(a, b) {
@@ -206,7 +235,11 @@ for (const m of FIXOS) {
     continue;
   }
   if (fs.existsSync(passo)) depois = ler64(passo);
-  else { depois = await pintar(quarto, m, ocupado); gravar64(passo, depois); console.log('pintado:', m.id); }
+  else if (m.avulso) {
+    const posto = await colocar(quarto, m);
+    depois = await pintar(posto.img, { ...m, forma: posto.movel, folga: 2 }, null);
+    gravar64(passo, depois); console.log('avulso posto e repintado:', m.id);
+  } else { depois = await pintar(quarto, m, ocupado); gravar64(passo, depois); console.log('pintado:', m.id); }
   let { movel, sombra } = await recortar(quarto, depois);
   if (!m.deitado) movel = await limpar(m, quarto, depois, movel, ocupado);
   gravar64(path.join(PECAS, m.id + '.png'), movel); gravar64(path.join(PECAS, m.id + '-sombra.png'), sombra);
