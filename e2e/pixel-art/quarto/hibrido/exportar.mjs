@@ -10,9 +10,24 @@ import { OBJETOS, VIVOS } from './objetos.mjs';
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
 const DESTINO = path.join(AQUI, '..', '..', '..', '..', 'web', 'src', 'assets', 'quarto');
 fs.mkdirSync(DESTINO, { recursive: true });
-for (const f of ['dia.png', 'noite.png']) fs.copyFileSync(path.join(AQUI, f), path.join(DESTINO, f));
-
 const p = await abrir();
+// O quadrado escuro em volta do quarto (o fundo do conceito) sai: a página tem o próprio fundo, que muda com o tema, e o
+// quadrado ficava ruim nos dois (relato de 09/10/2026). Preenche-se a partir da borda, só onde a cor é praticamente a do
+// canto, para não comer o contorno escuro do quarto.
+for (const f of ['dia.png', 'noite.png']) gravar64(path.join(DESTINO, f), await p.evaluate(async (b64) => {
+  const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode();
+  const w = im.width, h = im.height, c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, w, h), a = d.data;
+  const [r0, g0, b0] = [a[0], a[1], a[2]];
+  const fundo = (k) => Math.abs(a[k * 4] - r0) + Math.abs(a[k * 4 + 1] - g0) + Math.abs(a[k * 4 + 2] - b0) < 14;
+  const fora = new Uint8Array(w * h), fila = [];
+  for (let x = 0; x < w; x++) for (const y of [0, h - 1]) { const k = y * w + x; if (!fora[k] && fundo(k)) { fora[k] = 1; fila.push(k); } }
+  for (let y = 0; y < h; y++) for (const x of [0, w - 1]) { const k = y * w + x; if (!fora[k] && fundo(k)) { fora[k] = 1; fila.push(k); } }
+  for (let q = 0; q < fila.length; q++) { const k = fila[q], x = k % w, y = (k / w) | 0; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const xx = x + dx, yy = y + dy, n = yy * w + xx; if (xx >= 0 && yy >= 0 && xx < w && yy < h && !fora[n] && fundo(n)) { fora[n] = 1; fila.push(n); } } }
+  for (let k = 0; k < w * h; k++) if (fora[k]) a[k * 4 + 3] = 0;
+  g.putImageData(d, 0, 0); return c.toDataURL('image/png').split(',')[1];
+}, ler64(path.join(AQUI, f))));
+
 const limpar = (b64, comCor) => p.evaluate(async ({ b64, comCor }) => {
   const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode();
   const w = im.width, h = im.height, c = document.createElement('canvas'); c.width = w; c.height = h;
