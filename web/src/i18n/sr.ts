@@ -707,7 +707,6 @@ export default {
   'Mudar a largura de {barra}': 'Промени ширину: {barra}',
   'Mudar esta tela': 'Промени овај екран',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Много људи тренутно тражи GIF-ове. Покушај мало касније.',
-  'na chamada de {comunidade}': 'у позиву заједнице {comunidade}',
   'Nada digno de nota até agora.': 'За сада ништа вредно помена.',
   'Nada é baixado enquanto você não abrir': 'Ништа се не преузима док не отвориш',
   'Nada faltando: o pacote está completo.': 'Ништа не недостаје: пакет је потпун.',
@@ -768,6 +767,7 @@ export default {
   'Nova conversa em grupo': 'Нови групни разговор',
   'Nova senha': 'Нова лозинка',
   'Novidades': 'Новости',
+  'Dia e noite': 'Дан и ноћ',
   'O avatar limpo, como sempre foi.': 'Чист аватар, као и увек.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Канал нестаје свима из вида, заједно са порукама. Може да се врати у року од {dias} дана, у Подешавања → Заједница → Корпа.',

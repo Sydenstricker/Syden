@@ -1,6 +1,8 @@
 // Item 6: a aba dos coelhos na tela inicial. Os dois lado a lado, cada um se mexendo do seu jeito ao
-// passar o mouse, e a escolha trocando a estátua da praça. Desde o rebrand de 05/10/2026 ela troca SÓ
-// o coelho: o ícone da barra é o D4, fixo, e o teste confere que ele NÃO muda.
+// passar o mouse, e a escolha guardada. Desde o rebrand de 05/10/2026 ela troca SÓ o coelho: o ícone da
+// barra é o D4, fixo, e o teste confere que ele NÃO muda.
+// Desde 08/10/2026 a home é o quarto (Quarto.tsx), e a aba abre pelo PÔSTER do coelho. A estátua da praça, que
+// mudava com a escolha, era da vila; no quarto o coelho é o da pintura.
 
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, novaAba, ok, resumo } from './ajuda.mjs';
 
@@ -13,10 +15,12 @@ await dispensarPresentes(page);
 ok('entrou na tela inicial');
 
 // ---------- 1. o balão dos coelhos ----------
+// O botão do pôster é o do teclado (o mouse clica no desenho, pelo quarto): foco e Enter.
 const balao = page.getByRole('button', { name: /Coelhos/ });
-await balao.waitFor({ timeout: 8000 });
-ok('a vila tem o balão dos coelhos, em cima da estátua');
-await balao.click();
+await balao.waitFor({ state: 'attached', timeout: 8000 });
+ok('o quarto tem o pôster dos coelhos');
+await balao.focus();
+await page.keyboard.press('Enter');
 const painel = page.locator('.vila-painel.coelhos');
 await painel.waitFor({ timeout: 6000 });
 
@@ -52,44 +56,34 @@ await page.waitForTimeout(300);
 const quieto = await page.locator('.coelho-cartao.our .coelho-palco .coelho-figura').evaluate((el) => getComputedStyle(el).animationName);
 quieto === 'none' ? ok('sem o mouse em cima, eles ficam quietos') : falhou('continua animando: ' + quieto);
 
-// ---------- 3. escolher troca a estátua, e só ela ----------
+// ---------- 3. escolher guarda a escolha, e não mexe no ícone ----------
+const abrirAba = async () => {
+  if (await painel.isVisible().catch(() => false)) return;
+  await balao.focus();
+  await page.keyboard.press('Enter');
+  await painel.waitFor({ timeout: 6000 });
+};
 const logoAntes = await page.locator('.rail-logo').innerHTML();
 await page.locator('.coelho-cartao.big').click();
 await page.waitForTimeout(400);
-(await page.locator('.coelho-cartao.big.escolhido').count()) === 1 ? ok('o BigChunkus entrou em uso') : falhou('não marcou a escolha');
+await abrirAba();
+(await painel.locator('.coelho-cartao.big.escolhido').count()) === 1 ? ok('o BigChunkus fica em uso') : falhou('a escolha não ficou');
 const logoDepois = await page.locator('.rail-logo').innerHTML();
 logoDepois === logoAntes ? ok('o ícone da barra lateral continua o mesmo') : falhou('o ícone mudou junto com o coelho');
-(await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('e a estátua da praça trocou') : falhou('a estátua não acompanhou');
 await page.screenshot({ path: 'e2e/fotos/coelhos-escolhido.png' });
 
 // ---------- 4. a escolha sobrevive a recarregar ----------
 await page.reload();
-await page.locator('.vila').waitFor({ timeout: 25000 });
+await page.locator('.quarto').waitFor({ timeout: 25000 });
 await dispensarPresentes(page);
-await page.waitForTimeout(600);
-(await page.locator('.v-estatua .v-gordo').count()) === 1 ? ok('a escolha continua depois de recarregar') : falhou('voltou ao OurBunny sozinho');
+await abrirAba();
+(await painel.locator('.coelho-cartao.big.escolhido').count()) === 1 ? ok('a escolha continua depois de recarregar') : falhou('voltou ao OurBunny sozinho');
 
-// ---------- 5. a estátua é o OUTRO CAMINHO para a mesma escolha ----------
-//
-// ESTE TRECHO MEDIA O COMPORTAMENTO ANTIGO. A estátua alternava entre os dois a cada clique; hoje ela
-// abre esta mesma aba, para mostrar as opções em vez de trocar às cegas (ver trocarEstatua em Vila.tsx).
-//
-// O teste não percebeu a mudança porque estava quebrado na linha do cadastro e nunca chegava aqui. E,
-// ao voltar a rodar, ele acusava "a estátua não trocou" — que lê como defeito do app e não é.
-await page.locator('.v-estatua').click({ force: true });
-await page.locator('.vila-painel.coelhos').waitFor({ timeout: 6000 });
-ok('clicar na estátua abre a mesma aba de escolha');
-
-(await page.locator('.coelho-cartao.big.escolhido').count()) === 1
-  ? ok('e ela chega mostrando quem está em uso: é uma escolha só, em todo canto')
-  : falhou('a aba discorda da estátua');
-
-// E daqui dá para voltar, que é o caminho de volta que a estátua sozinha não oferecia mais.
-await page.locator('.coelho-cartao.our').click();
+// ---------- 5. e dá para voltar ----------
+await painel.locator('.coelho-cartao.our').click();
 await page.waitForTimeout(400);
-(await page.locator('.v-estatua .v-gordo').count()) === 0
-  ? ok('escolhendo o OurBunny por aqui, a estátua volta na hora')
-  : falhou('a estátua não acompanhou a volta');
+await abrirAba();
+(await painel.locator('.coelho-cartao.our.escolhido').count()) === 1 ? ok('escolhendo o OurBunny, ele volta a ficar em uso') : falhou('não deu para voltar ao OurBunny');
 
 await browser.close();
 resumo('coelhos');

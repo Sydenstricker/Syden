@@ -725,7 +725,6 @@ export default {
   'Mudar a largura de {barra}': 'Өргөнийг өөрчлөх: {barra}',
   'Mudar esta tela': 'Энэ дэлгэцийг өөрчлөх',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Одоо олон хүн GIF хайж байна. Хэсэг хугацааны дараа дахин оролд.',
-  'na chamada de {comunidade}': 'дуудлагад — {comunidade}',
   'Nada digno de nota até agora.': 'Одоогоор онцлох зүйл алга.',
   'Nada é baixado enquanto você não abrir': 'Чи нээх хүртэл юу ч татагдахгүй',
   'Nada faltando: o pacote está completo.': 'Юу ч дутуугүй: багц бүрэн байна.',
@@ -785,6 +784,7 @@ export default {
   'Nova conversa em grupo': 'Шинэ бүлгийн яриа',
   'Nova senha': 'Шинэ нууц үг',
   'Novidades': 'Шинэ зүйлс',
+  'Dia e noite': 'Өдөр ба шөнө',
   'O avatar limpo, como sempre foi.': 'Цэвэр аватар, үргэлж байсан шигээ.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Суваг зурвасуудтайгаа хамт бүх хүний нүднээс далд орно. {dias} хоногийн дотор буцааж болно: Тохиргоо → Нийгэмлэг → Хогийн сав.',

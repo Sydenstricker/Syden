@@ -124,7 +124,7 @@ await pagina.goto(SITE);
 await pagina.getByLabel('Nome de usuário').fill('cid' + s);
 await pagina.getByLabel('Senha').fill('segredo123');
 await pagina.getByRole('button', { name: 'Entrar' }).click();
-await pagina.locator('.vila').waitFor({ timeout: 30000 });
+await pagina.locator('.quarto').waitFor({ timeout: 30000 });
 await dispensarPresentes(pagina);
 const festaDoCid = await pagina
   .locator('.comemoracao')

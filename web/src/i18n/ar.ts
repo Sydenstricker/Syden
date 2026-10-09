@@ -1071,7 +1071,6 @@ export default {
   '{quem} na chamada': 'في المكالمة: {quem}',
   '{quem} transmitindo {oque}': '{quem}: بث {oque}',
   '{quem} transmitindo a tela': '{quem}: مشاركة الشاشة',
-  'na chamada de {comunidade}': 'في مكالمة {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'مخفية لأنها لا تحوي كل حروف هذا الاسم: {n}',
   'Um dos 25 primeiros': 'من أول 25',
   'Estava aqui quando o Syden ainda era só entre amigos': 'هنا منذ كان Syden بين الأصدقاء فقط',
@@ -1082,4 +1081,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'صارت فكرتك جزءًا من Syden. شكرًا للمساعدة في بنائه.',
   'Recompensa': 'مكافأة',
   'Item novo: {nome}': 'عنصر جديد: {nome}',
+  'Dia e noite': 'النهار والليل',
 } satisfies Record<string, string>;

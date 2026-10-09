@@ -23,11 +23,12 @@ const logo = ana.locator('.rail-logo svg');
   : falhou('o botão de início não é o D4');
 (await logo.locator('circle').count()) === 3 ? ok('com os três pontos do balão') : falhou('o desenho do logo não é o do D4');
 
-// ---------- 2. a vila ----------
-await ana.locator('.vila').waitFor({ timeout: 25000 });
-const sobras = await ana.locator('.vila .v-estrela, .vila .v-bandeira, .vila .v-pano').count();
-sobras === 0 ? ok('a vila não tem estrela nem bandeira') : falhou(`ainda há ${sobras} estrela(s) ou bandeira(s) na vila`);
-await ana.screenshot({ path: 'e2e/fotos/rebrand-vila.png' });
+// ---------- 2. a home ----------
+// A vila tinha estrela e bandeira do logo antigo, e este trecho conferia que tinham saído. Desde 08/10/2026 a home é
+// o quarto do coelho (Quarto.tsx), uma pintura sem logo nenhum: basta ela aparecer.
+await ana.locator('.quarto').waitFor({ timeout: 25000 });
+ok('a home é o quarto, sem o logo antigo');
+await ana.screenshot({ path: 'e2e/fotos/rebrand-home.png' });
 
 // ---------- 3. o avatar com orelhas ----------
 const bia = await novaAba(await browser.newContext({ viewport: { width: 1500, height: 950 } }));

@@ -711,7 +711,6 @@ export default {
   'Mudar a largura de {barra}': 'Shintsha ububanzi be-{barra}',
   'Mudar esta tela': 'Shintsha lesi sikrini',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Baningi abasesha ama-GIF manje. Zama futhi ngemuva kwesikhashana.',
-  'na chamada de {comunidade}': 'ekholini ye-{comunidade}',
   'Nada digno de nota até agora.': 'Akukho okuphawulekayo okwamanje.',
   'Nada é baixado enquanto você não abrir': 'Akukho okulandwayo uze uvule',
   'Nada faltando: o pacote está completo.': 'Akukho okushodayo: iphakethe liphelele.',
@@ -772,6 +771,7 @@ export default {
   'Nova conversa em grupo': 'Ingxoxo entsha yeqembu',
   'Nova senha': 'Iphasiwedi entsha',
   'Novidades': 'Okusha',
+  'Dia e noite': 'Emini nasebusuku',
   'O avatar limpo, como sempre foi.': 'I-avatar ehlanzekile, njengakuqala.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Isiteshi siyanyamalala kubo bonke nemilayezo yaso. Ungasibuyisa phakathi kwezinsuku ezingu-{dias}, ku-Izilungiselelo → Umphakathi → Umgqomo.',

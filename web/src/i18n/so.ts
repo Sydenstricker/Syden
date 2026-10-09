@@ -710,7 +710,6 @@ export default {
   'Mudar a largura de {barra}': 'Beddel ballaca {barra}',
   'Mudar esta tela': 'Beddel shaashaddan',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Dad badan ayaa hadda GIF raadinaya. Mar kale isku day dhawaan.',
-  'na chamada de {comunidade}': 'wicitaanka {comunidade}',
   'Nada digno de nota até agora.': 'Ilaa hadda wax la xuso ma jiraan.',
   'Nada é baixado enquanto você não abrir': 'Waxba lama soo dejinayo ilaa aad furto',
   'Nada faltando: o pacote está completo.': 'Waxba kama maqna: xirmadu way dhammaystiran tahay.',
@@ -771,6 +770,7 @@ export default {
   'Nova conversa em grupo': 'Wadahadal koox oo cusub',
   'Nova senha': 'Eray sir ah oo cusub',
   'Novidades': 'Wararka cusub',
+  'Dia e noite': 'Maalin iyo habeen',
   'O avatar limpo, como sempre foi.': 'Sawirka astaanta oo nadiif ah, sidii hore.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanaalku wuxuu ka qarsoomaa qof walba isagoo fariimihiisu ku jiraan. Dib ayaa loo soo celin karaa {dias} maalmood gudahood, Dejinta → Bulsho → Qashin-qubka.',

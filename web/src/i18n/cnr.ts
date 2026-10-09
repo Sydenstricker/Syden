@@ -709,7 +709,6 @@ export default {
   'Mudar a largura de {barra}': 'Promijeni širinu: {barra}',
   'Mudar esta tela': 'Promijeni ovaj ekran',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Mnogo ljudi trenutno traži GIF-ove. Pokušaj malo kasnije.',
-  'na chamada de {comunidade}': 'u pozivu zajednice {comunidade}',
   'Nada digno de nota até agora.': 'Zasad ništa vrijedno spomena.',
   'Nada é baixado enquanto você não abrir': 'Ništa se ne preuzima dok ne otvoriš',
   'Nada faltando: o pacote está completo.': 'Ništa ne nedostaje: paket je potpun.',
@@ -770,6 +769,7 @@ export default {
   'Nova conversa em grupo': 'Novi grupni razgovor',
   'Nova senha': 'Nova lozinka',
   'Novidades': 'Novosti',
+  'Dia e noite': 'Dan i noć',
   'O avatar limpo, como sempre foi.': 'Čisti avatar, kao i uvijek.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanal nestaje svima iz vida, zajedno s porukama. Može se vratiti unutar {dias} dana u Podešavanja → Zajednica → Koš.',

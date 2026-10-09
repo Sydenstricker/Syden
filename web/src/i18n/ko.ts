@@ -1038,7 +1038,6 @@ export default {
   '{quem} na chamada': '통화 중: {quem}',
   '{quem} transmitindo {oque}': '{quem} 님이 {oque} 방송 중',
   '{quem} transmitindo a tela': '{quem} 님이 화면 공유 중',
-  'na chamada de {comunidade}': '{comunidade} 통화 중',
   'Escondidas por não terem todas as letras deste nome: {n}': '이 이름의 글자를 모두 갖추지 않아 숨긴 글꼴: {n}',
   'Um dos 25 primeiros': '최초의 25명 중 한 명',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Syden이 친구들끼리만 쓰던 때부터 함께했어요',
@@ -1049,4 +1048,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': '아이디어가 Syden의 일부가 됐어요. 함께 만들어 줘서 고마워요.',
   'Recompensa': '보상',
   'Item novo: {nome}': '새 아이템: {nome}',
+  'Dia e noite': '낮과 밤',
 } satisfies Record<string, string>;

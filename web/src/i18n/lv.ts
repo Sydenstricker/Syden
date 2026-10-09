@@ -712,7 +712,6 @@ export default {
   'Mudar a largura de {barra}': 'Mainīt platumu: {barra}',
   'Mudar esta tela': 'Mainīt šo ekrānu',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Tagad daudzi meklē GIF. Pamēģini pēc brīža.',
-  'na chamada de {comunidade}': 'kopienas {comunidade} zvanā',
   'Nada digno de nota até agora.': 'Pagaidām nekā ievērības cienīga.',
   'Nada é baixado enquanto você não abrir': 'Nekas netiek lejupielādēts, kamēr neatver',
   'Nada faltando: o pacote está completo.': 'Nekā netrūkst: pakotne ir pilna.',
@@ -773,6 +772,7 @@ export default {
   'Nova conversa em grupo': 'Jauna grupas saruna',
   'Nova senha': 'Jaunā parole',
   'Novidades': 'Jaunumi',
+  'Dia e noite': 'Diena un nakts',
   'O avatar limpo, como sempre foi.': 'Tīrs avatārs, kā vienmēr.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanāls pazūd visiem no redzesloka kopā ar ziņām. To var atjaunot {dias} dienas sadaļā Iestatījumi → Kopiena → Atkritne.',

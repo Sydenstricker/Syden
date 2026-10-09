@@ -721,7 +721,6 @@ export default {
   'Mudar a largura de {barra}': 'ފުޅާމިން ބަދަލުކުރޭ: {barra}',
   'Mudar esta tela': 'މި ސްކްރީން ބަދަލުކުރޭ',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'މިހާރު ގިނަ މީހުން GIF ހޯދަނީ. ކުޑަ ވަގުތަކުން އަލުން މަސައްކަތްކުރޭ.',
-  'na chamada de {comunidade}': 'ކޯލުގައި — {comunidade}',
   'Nada digno de nota até agora.': 'މިހާތަނަށް ފާހަގަކުރަންޖެހޭ އެއްވެސް ކަމެއް ނެތް.',
   'Nada é baixado enquanto você não abrir': 'ހުޅުވާހާ ހިނދަކު އެއްވެސް އެއްޗެއް ޑައުންލޯޑެއް ނުވާނެ',
   'Nada faltando: o pacote está completo.': 'އެއްވެސް އެއްޗެއް ދަތިއެއް ނޫން: ޕެކް ފުރިހަމަ.',
@@ -781,6 +780,7 @@ export default {
   'Nova conversa em grupo': 'އާ ގްރޫޕް ޗެޓް',
   'Nova senha': 'އާ ޕާސްވޯޑް',
   'Novidades': 'އާ ކަންތައްތައް',
+  'Dia e noite': 'ދުވާލާއި ރޭ',
   'O avatar limpo, como sempre foi.': 'ސާފު އަވަތާރު، އަބަދުވެސް ހުރި ގޮތަށް.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ޗެނަލް މެސެޖުތަކާއެކު ހުރިހާ މީހުންނަށް ފެނުން ހުއްޓޭނެ. {dias} ދުވަހުގެ ތެރޭގައި އަނބުރާ ގެނެވޭނެ: ސެޓިންގްސް → ކޮމިއުނިޓީ → ކުނިފޮށި.',

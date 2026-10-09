@@ -709,7 +709,6 @@ export default {
   'Mudar a largura de {barra}': 'ប្តូរទទឹងរបស់ {barra}',
   'Mudar esta tela': 'ប្តូរអេក្រង់នេះ',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'មានមនុស្សច្រើនកំពុងស្វែងរក GIF ឥឡូវនេះ។ សូមព្យាយាមម្តងទៀតបន្តិចទៀត។',
-  'na chamada de {comunidade}': 'នៅក្នុងការហៅរបស់ {comunidade}',
   'Nada digno de nota até agora.': 'មិនទាន់មានអ្វីគួរកត់សម្គាល់ទេ។',
   'Nada é baixado enquanto você não abrir': 'គ្មានអ្វីត្រូវបានទាញយកទេ រហូតដល់អ្នកបើក',
   'Nada faltando: o pacote está completo.': 'គ្មានអ្វីខ្វះទេ៖ កញ្ចប់គឺពេញលេញ។',
@@ -770,6 +769,7 @@ export default {
   'Nova conversa em grupo': 'ការសន្ទនាជាក្រុមថ្មី',
   'Nova senha': 'ពាក្យសម្ងាត់ថ្មី',
   'Novidades': 'ព័ត៌មានថ្មី',
+  'Dia e noite': 'ថ្ងៃ និងយប់',
   'O avatar limpo, como sempre foi.': 'រូបតំណាងស្អាត ដូចសព្វដង។',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ឆានែលនឹងបាត់ពីការមើលឃើញរបស់អ្នកទាំងអស់គ្នា រួមទាំងសារខាងក្នុង។ អាចយកមកវិញក្នុងរយៈពេល {dias} ថ្ងៃ នៅ ការកំណត់ → សហគមន៍ → ធុងសំរាម។',

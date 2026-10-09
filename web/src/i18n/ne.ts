@@ -712,7 +712,6 @@ export default {
   'Mudar a largura de {barra}': '{barra} को चौडाइ बदल्नुहोस्',
   'Mudar esta tela': 'यो स्क्रिन बदल्नुहोस्',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'अहिले धेरैजना GIF खोज्दै छन्। केही बेरपछि फेरि प्रयास गर्नुहोस्।',
-  'na chamada de {comunidade}': '{comunidade} को कलमा',
   'Nada digno de nota até agora.': 'अहिलेसम्म उल्लेखनीय केही छैन।',
   'Nada é baixado enquanto você não abrir': 'तपाईंले नखोलेसम्म केही डाउनलोड हुँदैन',
   'Nada faltando: o pacote está completo.': 'केही नपुग छैन: प्याक पूरा छ।',
@@ -773,6 +772,7 @@ export default {
   'Nova conversa em grupo': 'नयाँ समूह कुराकानी',
   'Nova senha': 'नयाँ पासवर्ड',
   'Novidades': 'नयाँ कुराहरू',
+  'Dia e noite': 'दिन र रात',
   'O avatar limpo, como sempre foi.': 'सधैँजस्तै सफा अवतार।',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'च्यानल सन्देशसहित सबैको नजरबाट हट्छ। {dias} दिनसम्म सेटिङहरू → समुदाय → रद्दीटोकरीबाट फर्काउन सकिन्छ।',

@@ -712,7 +712,6 @@ export default {
   'Mudar a largura de {barra}': 'Giňligi üýtget: {barra}',
   'Mudar esta tela': 'Bu ekrany üýtget',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Häzir köp adam GIF gözleýär. Biraz soň täzeden synanyş.',
-  'na chamada de {comunidade}': 'jemgyýetiň jaňynda: {comunidade}',
   'Nada digno de nota até agora.': 'Häzirlikçe bellärlik zat ýok.',
   'Nada é baixado enquanto você não abrir': 'Sen açmasaň, hiç zat düşürilmeýär',
   'Nada faltando: o pacote está completo.': 'Hiç zat kem däl: toplum doly.',
@@ -773,6 +772,7 @@ export default {
   'Nova conversa em grupo': 'Täze topar söhbeti',
   'Nova senha': 'Täze parol',
   'Novidades': 'Täzelikler',
+  'Dia e noite': 'Gündiz we gije',
   'O avatar limpo, como sempre foi.': 'Arassa awatar, hemişeki ýaly.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanal habarlary bilen bilelikde hemmeleriň gözünden ýitýär. Ony {dias} günüň dowamynda Sazlamalar → Jemgyýet → Sebet bölüminde dikeldip bolýar.',

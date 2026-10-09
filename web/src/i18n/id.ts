@@ -1048,7 +1048,6 @@ export default {
   '{quem} na chamada': '{quem} dalam panggilan',
   '{quem} transmitindo {oque}': '{quem} sedang menyiarkan {oque}',
   '{quem} transmitindo a tela': '{quem} sedang berbagi layar',
-  'na chamada de {comunidade}': 'dalam panggilan di {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Disembunyikan karena tidak punya semua huruf nama ini: {n}',
   'Um dos 25 primeiros': 'Salah satu dari 25 pertama',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Di sini sejak Syden masih hanya antarteman',
@@ -1059,4 +1058,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Idemu kini bagian dari Syden. Terima kasih sudah ikut membangunnya.',
   'Recompensa': 'Imbalan',
   'Item novo: {nome}': 'Item baru: {nome}',
+  'Dia e noite': 'Siang dan malam',
 } satisfies Record<string, string>;

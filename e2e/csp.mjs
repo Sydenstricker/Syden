@@ -70,7 +70,8 @@ async function visitar(caminho, oQueEsperar) {
 
 // A tela de entrada é a que mais carrega coisa de fora: o Turnstile, os logos, a chamada à API.
 await visitar('/', async () => {
-  await page.locator('.auth, .vila').first().waitFor({ timeout: 30_000 });
+  // A home virou o quarto em 08/10/2026; até publicar, a produção ainda tem a vila. Os dois servem.
+  await page.locator('.auth, .vila, .quarto').first().waitFor({ timeout: 30_000 });
   // Abre o cadastro, que é onde o Turnstile aparece.
   await page.getByText('Cadastre-se').click().catch(() => {});
 });

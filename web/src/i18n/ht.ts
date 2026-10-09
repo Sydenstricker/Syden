@@ -721,7 +721,6 @@ export default {
   'Mudar a largura de {barra}': 'Chanje lajè: {barra}',
   'Mudar esta tela': 'Chanje ekran sa a',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Gen anpil moun k ap chèche GIF kounye a. Eseye ankò talè.',
-  'na chamada de {comunidade}': 'nan apèl kominote: {comunidade}',
   'Nada digno de nota até agora.': 'Anyen enpòtan pou kounye a.',
   'Nada é baixado enquanto você não abrir': 'Anyen pa telechaje toutotan ou pa louvri l',
   'Nada faltando: o pacote está completo.': 'Pa gen anyen ki manke: pakè a konplè.',
@@ -781,6 +780,7 @@ export default {
   'Nova conversa em grupo': 'Nouvo konvèsasyon an gwoup',
   'Nova senha': 'Nouvo mopas',
   'Novidades': 'Nouvote',
+  'Dia e noite': 'Jou ak lannwit',
   'O avatar limpo, como sempre foi.': 'Avatar la pwòp, jan l te toujou ye.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Chanèl la disparèt devan tout moun ak mesaj li yo. Ou ka retabli l pandan {dias} jou, nan Paramèt → Kominote → Poubèl.',

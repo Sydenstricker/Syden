@@ -732,6 +732,7 @@ export default {
   'Nova conversa em grupo': 'Haasaa garee haaraa',
   'Nova senha': 'Jecha icciitii haaraa',
   'Novidades': 'Haaraa',
+  'Dia e noite': 'Guyyaa fi halkan',
   'O avatar limpo, como sempre foi.': 'Suuraa piroofaayilii qulqulluu, akkuma yeroo hundaa.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Chaanaaliin ergaa isaa wajjin ija nama hundaa duraa bada. Guyyaa {dias} keessatti Qindaa’ina → Hawaasa → Kuusaa haqamee keessaa deebisuun ni danda’ama.',
@@ -1090,7 +1091,6 @@ export default {
   '{quem} na chamada': 'Waamicha irra: {quem}',
   '{quem} transmitindo {oque}': '{quem}: tamsaasa {oque}',
   '{quem} transmitindo a tela': '{quem}: qooddii iskiriinii',
-  'na chamada de {comunidade}': 'waamicha {comunidade} irra',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Qubee maqaa kanaa hunda waan hin qabneef dhokataniiru: {n}',
   'Um dos 25 primeiros': 'Warra 25 jalqabaa keessaa tokko',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Erga Syden hiriyoota qofa gidduu ture kaasee asitti',

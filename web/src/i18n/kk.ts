@@ -706,7 +706,6 @@ export default {
   'Mudar a largura de {barra}': '{barra} енін өзгерту',
   'Mudar esta tela': 'Осы экранды өзгерту',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Қазір GIF іздеп жатқандар көп. Сәлден кейін қайталап көріңіз.',
-  'na chamada de {comunidade}': '{comunidade} қоңырауында',
   'Nada digno de nota até agora.': 'Әзірге назар аударарлық ештеңе жоқ.',
   'Nada é baixado enquanto você não abrir': 'Сіз ашпайынша ештеңе жүктелмейді',
   'Nada faltando: o pacote está completo.': 'Ештеңе жетіспейді: жинақ толық.',
@@ -767,6 +766,7 @@ export default {
   'Nova conversa em grupo': 'Жаңа топтық әңгіме',
   'Nova senha': 'Жаңа құпиясөз',
   'Novidades': 'Жаңалықтар',
+  'Dia e noite': 'Күндіз бен түн',
   'O avatar limpo, como sempre foi.': 'Бұрынғыдай таза аватар.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Арна ішіндегі хабарламаларымен бірге барлығының көзінен жоғалады. Оны {dias} күн ішінде Баптаулар → Қауымдастық → Себет арқылы қайтаруға болады.',

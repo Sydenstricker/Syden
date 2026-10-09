@@ -710,7 +710,6 @@ export default {
   'Mudar a largura de {barra}': 'Muuta leveyttä: {barra}',
   'Mudar esta tela': 'Muuta tätä näkymää',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Moni hakee GIFejä juuri nyt. Yritä hetken kuluttua uudelleen.',
-  'na chamada de {comunidade}': 'yhteisön {comunidade} puhelussa',
   'Nada digno de nota até agora.': 'Ei mitään mainittavaa toistaiseksi.',
   'Nada é baixado enquanto você não abrir': 'Mitään ei ladata ennen kuin avaat',
   'Nada faltando: o pacote está completo.': 'Mitään ei puutu: paketti on täydellinen.',
@@ -771,6 +770,7 @@ export default {
   'Nova conversa em grupo': 'Uusi ryhmäkeskustelu',
   'Nova senha': 'Uusi salasana',
   'Novidades': 'Uutta',
+  'Dia e noite': 'Päivä ja yö',
   'O avatar limpo, como sempre foi.': 'Pelkkä avatar, kuten aina ennenkin.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanava katoaa kaikkien näkyvistä viesteineen. Sen voi palauttaa {dias} päivän ajan kohdassa Asetukset → Yhteisö → Roskakori.',

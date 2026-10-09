@@ -712,7 +712,6 @@ export default {
   'Mudar a largura de {barra}': 'Keisti plotį: {barra}',
   'Mudar esta tela': 'Keisti šį ekraną',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Dabar daug kas ieško GIF. Bandyk po akimirkos.',
-  'na chamada de {comunidade}': 'bendruomenės {comunidade} skambutyje',
   'Nada digno de nota até agora.': 'Kol kas nieko verto dėmesio.',
   'Nada é baixado enquanto você não abrir': 'Niekas nesisiunčia, kol neatidarai',
   'Nada faltando: o pacote está completo.': 'Nieko netrūksta: paketas pilnas.',
@@ -773,6 +772,7 @@ export default {
   'Nova conversa em grupo': 'Naujas grupės pokalbis',
   'Nova senha': 'Naujas slaptažodis',
   'Novidades': 'Naujienos',
+  'Dia e noite': 'Diena ir naktis',
   'O avatar limpo, como sempre foi.': 'Švarus avataras, kaip visada.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanalas dingsta visiems iš akių kartu su žinutėmis. Atkurti galima {dias} d. skiltyje Nustatymai → Bendruomenė → Šiukšlinė.',

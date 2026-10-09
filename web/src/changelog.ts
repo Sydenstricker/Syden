@@ -10,6 +10,17 @@ export interface Update {
 
 export const CHANGELOG: Update[] = [
   {
+    date: '2026-10-08',
+    title: 'A casa nova: o quarto do coelho',
+    icon: '🛏️',
+    items: [
+      'A tela inicial virou o quarto do coelho, em pixel art: ele lendo na cama, o gato dormindo do lado, a janela, a escrivaninha.',
+      'Passe o mouse nas coisas do quarto: o que acende leva a algum lugar. O fone abre as salas, o quadro abre os amigos, o armarinho é o guarda-roupa, o pôster escolhe o coelho e a janela leva a outras comunidades.',
+      'O abajur troca o dia e a noite, como o sol fazia na vila.',
+      'Cutuque o coelho e o gato.',
+    ],
+  },
+  {
     date: '2026-10-05',
     title: 'Um coelho novo, que conversa',
     icon: '💬',

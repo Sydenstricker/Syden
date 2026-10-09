@@ -1077,7 +1077,6 @@ export default {
   '{quem} na chamada': '{quem} im Anruf',
   '{quem} transmitindo {oque}': '{quem} streamt {oque}',
   '{quem} transmitindo a tela': '{quem} teilt den Bildschirm',
-  'na chamada de {comunidade}': 'im Anruf bei {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Ausgeblendet, weil ihnen Buchstaben dieses Namens fehlen: {n}',
   'Um dos 25 primeiros': 'Unter den ersten 25',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Dabei, seit Syden nur unter Freunden war',
@@ -1088,4 +1087,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Deine Idee ist jetzt Teil von Syden. Danke, dass du hilfst, das aufzubauen.',
   'Recompensa': 'Belohnung',
   'Item novo: {nome}': 'Neuer Gegenstand: {nome}',
+  'Dia e noite': 'Tag und Nacht',
 } satisfies Record<string, string>;

@@ -730,7 +730,6 @@ export default {
   'Mudar a largura de {barra}': 'Փոխել լայնությունը՝ {barra}',
   'Mudar esta tela': 'Փոխել այս էկրանը',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Հիմա շատերն են GIF որոնում։ Փորձիր մի քիչ հետո։',
-  'na chamada de {comunidade}': 'զանգում՝ {comunidade}',
   'Nada digno de nota até agora.': 'Առայժմ ուշագրավ ոչինչ։',
   'Nada é baixado enquanto você não abrir': 'Ոչինչ չի ներբեռնվում, քանի դեռ չես բացել',
   'Nada faltando: o pacote está completo.': 'Ոչինչ չի պակասում․ փաթեթն ամբողջական է։',
@@ -790,6 +789,7 @@ export default {
   'Nova conversa em grupo': 'Նոր խմբային զրույց',
   'Nova senha': 'Նոր գաղտնաբառ',
   'Novidades': 'Նորություններ',
+  'Dia e noite': 'Ցերեկ և գիշեր',
   'O avatar limpo, como sempre foi.': 'Ավատարը մաքուր, ինչպես միշտ։',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Ալիքն անհետանում է բոլորի աչքից՝ հաղորդագրությունների հետ միասին։ Կարող ես վերադարձնել {dias} օրվա ընթացքում՝ Կարգավորումներ → Համայնք → Աղբարկղ։',

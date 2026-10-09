@@ -1037,7 +1037,6 @@ export default {
   '{quem} na chamada': '通话中：{quem}',
   '{quem} transmitindo {oque}': '{quem} 正在直播 {oque}',
   '{quem} transmitindo a tela': '{quem} 正在共享屏幕',
-  'na chamada de {comunidade}': '在 {comunidade} 的通话中',
   'Escondidas por não terem todas as letras deste nome: {n}': '因缺少此名称中的某些字符而隐藏：{n}',
   'Um dos 25 primeiros': '最早的 25 人之一',
   'Estava aqui quando o Syden ainda era só entre amigos': '从 Syden 还只属于朋友之间时就在这里',
@@ -1048,4 +1047,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': '你的想法已经成为 Syden 的一部分。谢谢你帮忙一起建设。',
   'Recompensa': '奖励',
   'Item novo: {nome}': '新物品：{nome}',
+  'Dia e noite': '白天和黑夜',
 } satisfies Record<string, string>;

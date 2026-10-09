@@ -147,7 +147,7 @@ export async function cadastrar(page, username) {
   // entra sem convite para comunidade nenhuma cai na vila. Mas o PRIMEIRO cadastro do banco inteiro
   // ganha a comunidade inicial do Syden e cai dentro dela — e num banco de teste recém-criado o
   // primeiro cadastro é sempre o do teste.
-  await page.locator('.vila, .channel-name').first().waitFor({ timeout: 30_000 });
+  await page.locator('.quarto, .channel-name').first().waitFor({ timeout: 30_000 });
   return username;
 }
 

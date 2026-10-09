@@ -710,7 +710,6 @@ export default {
   'Mudar a largura de {barra}': 'Ovay ny sakan’ny {barra}',
   'Mudar esta tela': 'Ovay ity efijery ity',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Maro ny olona mitady GIF izao. Andramo indray afaka kelikely.',
-  'na chamada de {comunidade}': 'ao amin’ny antson’ny {comunidade}',
   'Nada digno de nota até agora.': 'Tsy misy zavatra mendrika homarihina hatreto.',
   'Nada é baixado enquanto você não abrir': 'Tsy misy alaina raha tsy sokafanao',
   'Nada faltando: o pacote está completo.': 'Tsy misy tsy ampy: feno ny fonosana.',
@@ -771,6 +770,7 @@ export default {
   'Nova conversa em grupo': 'Resaka an-tarika vaovao',
   'Nova senha': 'Teny miafina vaovao',
   'Novidades': 'Vaovao',
+  'Dia e noite': 'Andro sy alina',
   'O avatar limpo, como sempre foi.': 'Ny avatar madio, toy ny teo aloha.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Miala amin’ny mason’ny rehetra ny fantsona miaraka amin’ny hafatra ao anatiny. Azo averina mandritra ny {dias} andro, ao amin’ny Fikirana → Fiarahamonina → Fitoeram-pako.',

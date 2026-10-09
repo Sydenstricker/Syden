@@ -707,7 +707,6 @@ export default {
   'Mudar a largura de {barra}': 'Muuda laiust: {barra}',
   'Mudar esta tela': 'Muuda seda ekraani',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Praegu otsib palju inimesi GIF-e. Proovi hetke pärast uuesti.',
-  'na chamada de {comunidade}': 'kogukonna {comunidade} kõnes',
   'Nada digno de nota até agora.': 'Seni pole midagi märkimisväärset.',
   'Nada é baixado enquanto você não abrir': 'Midagi ei laadita alla enne, kui avad',
   'Nada faltando: o pacote está completo.': 'Midagi ei puudu: pakett on täielik.',
@@ -768,6 +767,7 @@ export default {
   'Nova conversa em grupo': 'Uus grupivestlus',
   'Nova senha': 'Uus parool',
   'Novidades': 'Uudised',
+  'Dia e noite': 'Päev ja öö',
   'O avatar limpo, como sempre foi.': 'Puhas avatar, nagu alati.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanal kaob kõigi silme eest koos sõnumitega. Seda saab {dias} päeva jooksul taastada jaotises Seaded → Kogukond → Prügikast.',

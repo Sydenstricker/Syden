@@ -57,7 +57,7 @@ ok('fechou e voltou para o Syden');
 
 // ---------- 4. não cai de novo ao recarregar ----------
 await ana.reload();
-await ana.locator('.vila').waitFor({ timeout: 25000 });
+await ana.locator('.quarto').waitFor({ timeout: 25000 });
 await ana.waitForTimeout(1500);
 (await ana.locator('.revelacao').count()) === 0 ? ok('recarregando, o presente não aparece de novo') : falhou('a tela voltou');
 

@@ -26,7 +26,8 @@ const resposta = await page.goto(SITE, { waitUntil: 'networkidle', timeout: 45_0
 resposta?.ok() ? ok(`${SITE} respondeu ${resposta.status()}`) : falhou(`o site respondeu ${resposta?.status()}`);
 
 // ---------- 1. o app montou ----------
-await page.locator('.auth, .vila, .rail-list').first().waitFor({ timeout: 30_000 });
+// A home virou o quarto em 08/10/2026; até publicar, a produção ainda tem a vila. Os dois servem.
+await page.locator('.auth, .vila, .quarto, .rail-list').first().waitFor({ timeout: 30_000 });
 ok('o Syden carregou e desenhou a tela');
 
 const titulo = await page.title();

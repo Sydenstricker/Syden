@@ -724,6 +724,7 @@ export default {
   'Nova conversa em grupo': 'Yeni qrup söhbəti',
   'Nova senha': 'Yeni şifrə',
   'Novidades': 'Yeniliklər',
+  'Dia e noite': 'Gündüz və gecə',
   'O avatar limpo, como sempre foi.': 'Təmiz avatar, həmişəki kimi.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanal mesajları ilə birlikdə hamının gözündən itir. Onu {dias} gün ərzində Ayarlar → İcma → Zibil qutusu bölməsindən geri qaytarmaq olar.',
@@ -1082,7 +1083,6 @@ export default {
   '{quem} na chamada': 'Zəngdə: {quem}',
   '{quem} transmitindo {oque}': '{quem} {oque} yayımlayır',
   '{quem} transmitindo a tela': '{quem} ekranını paylaşır',
-  'na chamada de {comunidade}': '{comunidade} icmasının zəngində',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Bu adın bütün hərfləri olmadığı üçün gizlədilən: {n}',
   'Um dos 25 primeiros': 'İlk 25 nəfərdən biri',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Syden hələ dostlar arasında olanda burada idi',

@@ -1,4 +1,4 @@
-import { BookOpen, Compass, Lightbulb, Rabbit, Send, Shirt, UserPlus, Users, Volume2 } from 'lucide-react';
+import { Lightbulb, Send, Volume2 } from 'lucide-react';
 import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { CHANGELOG, marcarNovidadesVistas } from './changelog';
@@ -7,12 +7,13 @@ import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { PainelCoelhos } from './PainelCoelhos';
-import { balaoDaCasa, CASAS, ESTATUA, PRACA_DOS_AMIGOS, type PessoaNaPraca, type Periodo, type PinoVila, Vila } from './Vila';
+import { type AcoesDoQuarto, Quarto } from './Quarto';
+import type { Periodo } from './Vila';
 import { useT } from './i18n';
 
-// Tela inicial do Syden: a vila. Um lugar para chegar, ver quem está onde, dar uma olhada no que mudou
-// e cutucar uns coelhos antes de entrar numa sala. As quatro casas não são enfeite: cada uma leva a uma
-// parte de verdade do app.
+// Tela inicial do Syden: o quarto do coelho (Quarto.tsx). Um lugar para chegar, dar uma olhada no que mudou e cutucar
+// o coelho antes de entrar numa sala. Os objetos não são enfeite: cada um leva a uma parte de verdade do app. Até
+// 08/10/2026 era a vila (Vila.tsx), que continua no projeto: os desenhos de coelho dela são usados em outras telas.
 
 /**
  * A caixa de ideias da vila. Por baixo não existe caixa nenhuma: o que a pessoa escreve vira uma
@@ -154,10 +155,10 @@ export function Home({
   const t = useT();
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
-  const [destaque, setDestaque] = useState<string | null>(null);
   const [salasAbertas, setSalasAbertas] = useState(false);
   const [coelhosAbertos, setCoelhosAbertos] = useState(false);
   const novidadesRef = useRef<HTMLElement | null>(null);
+  const ideiasRef = useRef<HTMLDivElement | null>(null);
 
   // Abriu a tela inicial: as novidades deixam de ser novidade (a bolinha do logo apaga).
   useEffect(marcarNovidadesVistas, []);
@@ -166,86 +167,25 @@ export function Home({
     setPeriodo(toggleTheme() === 'light' ? periodoClaro() : 'noite');
   }
 
-  const pinos: PinoVila[] = [
-    {
-      id: 'salas',
-      titulo: t('Salas'),
-      sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'),
-      icone: <Users size={18} />,
-      ...balaoDaCasa(CASAS.salas),
-      onClick: () => setSalasAbertas((aberto) => !aberto),
-    },
-    {
-      id: 'amigos',
-      titulo: t('Amigos'),
-      sub: t('Quem anda com você'),
-      icone: <UserPlus size={18} />,
-      ...balaoDaCasa(PRACA_DOS_AMIGOS, 0),
-      onClick: aoAbrirAmigos,
-    },
-    {
-      id: 'guarda-roupa',
-      titulo: t('Guarda-roupa'),
-      sub: t('Enfeites, sons e emojis'),
-      icone: <Shirt size={18} />,
-      ...balaoDaCasa(CASAS.guardaRoupa),
-      onClick: aoAbrirGuardaRoupa,
-    },
-    {
-      id: 'aprender',
-      titulo: t('Novidades'),
-      sub: t('O que mudou no Syden'),
-      icone: <BookOpen size={18} />,
-      ...balaoDaCasa(CASAS.aprender),
-      onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-    },
-    {
-      id: 'coelhos',
-      titulo: t('Coelhos'),
-      sub: t('Escolha o seu'),
-      icone: <Rabbit size={18} />,
-      ...balaoDaCasa(ESTATUA, 0),
-      onClick: () => setCoelhosAbertos((aberto) => !aberto),
-    },
-    {
-      id: 'explorar',
-      titulo: t('Explorar'),
-      sub: t('Entrar em outra comunidade'),
-      icone: <Compass size={18} />,
-      ...balaoDaCasa(CASAS.explorar),
-      onClick: aoExplorar,
-    },
-  ];
+  // Cada função da home mora num objeto do quarto. O computador (Mini-games) e o vaso (Plantar cenoura) ficam só
+  // como desenho até essas funções existirem: objeto que acende e não leva a lugar nenhum afirmaria o que não é.
+  const acoes: AcoesDoQuarto = {
+    fone: { rotulo: t('Salas'), sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'), onClick: () => setSalasAbertas((aberto) => !aberto) },
+    quadro: { rotulo: t('Amigos'), sub: t('Quem anda com você'), onClick: aoAbrirAmigos },
+    armario: { rotulo: t('Guarda-roupa'), sub: t('Enfeites, sons e emojis'), onClick: aoAbrirGuardaRoupa },
+    prateleira: { rotulo: t('Novidades'), sub: t('O que mudou no Syden'), onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
+    poster: { rotulo: t('Coelhos'), sub: t('Escolha o seu'), onClick: () => setCoelhosAbertos((aberto) => !aberto) },
+    janela: { rotulo: t('Explorar'), sub: t('Entrar em outra comunidade'), onClick: aoExplorar },
+    cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
+    abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
+  };
 
   const atividade = atividadeAgora(comunidades, vozDeTodas, eu);
-  // Uma pessoa aparece uma vez só na praça, mesmo que esteja em duas comunidades com quem olha.
-  const vistos = new Set<number>();
-  const pessoas: PessoaNaPraca[] = [];
-  for (const { community, pessoas: naChamada } of atividade) {
-    for (const p of naChamada) {
-      if (vistos.has(p.userId)) continue;
-      vistos.add(p.userId);
-      pessoas.push({
-        userId: p.userId,
-        nome: p.username,
-        legenda: t('na chamada de {comunidade}', { comunidade: community.name }),
-        onClick: () => aoIrParaComunidade(community.id),
-      });
-    }
-  }
 
   return (
     <div className="home">
       <div className="home-cena">
-        <Vila
-          periodo={periodo}
-          onLuz={alternarLuz}
-          pinos={pinos}
-          destaque={destaque}
-          onDestaque={setDestaque}
-          aoEscolherCoelho={() => setCoelhosAbertos(true)}
-          pessoas={pessoas}
-        />
+        <Quarto noite={periodo === 'noite'} acoes={acoes} />
         {coelhosAbertos && <PainelCoelhos aoFechar={() => setCoelhosAbertos(false)} />}
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label={t('Salas de voz')}>
@@ -289,7 +229,9 @@ export function Home({
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
 
 
-      <CaixaDeIdeias souODono={souODono} />
+      <div ref={ideiasRef}>
+        <CaixaDeIdeias souODono={souODono} />
+      </div>
 
       <section className="home-news" aria-label="Novidades do Syden" ref={novidadesRef}>
         <h2>{t('Novidades')}</h2>

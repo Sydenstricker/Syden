@@ -1048,7 +1048,6 @@ export default {
   '{quem} na chamada': 'কলে আছে: {quem}',
   '{quem} transmitindo {oque}': '{quem} {oque} সম্প্রচার করছে',
   '{quem} transmitindo a tela': '{quem} স্ক্রিন শেয়ার করছে',
-  'na chamada de {comunidade}': '{comunidade}-এর কলে',
   'Escondidas por não terem todas as letras deste nome: {n}': 'এই নামের সব অক্ষর না থাকায় লুকানো: {n}',
   'Um dos 25 primeiros': 'প্রথম ২৫ জনের একজন',
   'Estava aqui quando o Syden ainda era só entre amigos': 'যখন Syden শুধু বন্ধুদের মধ্যে ছিল, তখন থেকে এখানে',
@@ -1059,4 +1058,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'তোমার ভাবনা এখন Syden-এর অংশ। এটা গড়তে সাহায্য করার জন্য ধন্যবাদ।',
   'Recompensa': 'পুরস্কার',
   'Item novo: {nome}': 'নতুন আইটেম: {nome}',
+  'Dia e noite': 'দিন ও রাত',
 } satisfies Record<string, string>;

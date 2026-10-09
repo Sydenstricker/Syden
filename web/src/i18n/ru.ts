@@ -1071,7 +1071,6 @@ export default {
   '{quem} na chamada': 'В разговоре: {quem}',
   '{quem} transmitindo {oque}': '{quem} транслирует {oque}',
   '{quem} transmitindo a tela': '{quem} показывает экран',
-  'na chamada de {comunidade}': 'в разговоре в {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Скрыто, потому что в них нет всех букв этого названия: {n}',
   'Um dos 25 primeiros': 'Среди первых 25',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Здесь с тех пор, как Syden был только для своих',
@@ -1082,4 +1081,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Твоя идея стала частью Syden. Спасибо, что помогаешь его строить.',
   'Recompensa': 'Награда',
   'Item novo: {nome}': 'Новый предмет: {nome}',
+  'Dia e noite': 'День и ночь',
 } satisfies Record<string, string>;

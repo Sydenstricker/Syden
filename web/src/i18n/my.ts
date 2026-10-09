@@ -731,6 +731,7 @@ export default {
   'Nova conversa em grupo': 'အဖွဲ့ စကားဝိုင်းအသစ်',
   'Nova senha': 'စကားဝှက်အသစ်',
   'Novidades': 'အသစ်များ',
+  'Dia e noite': 'နေ့နှင့် ည',
   'O avatar limpo, como sempre foi.': 'ပရိုဖိုင်ပုံ ရိုးရိုး၊ အမြဲတမ်းလိုပဲ။',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ချန်နယ်က မက်ဆေ့ချ်များနဲ့အတူ လူတိုင်းမျက်စိက ပျောက်သွားပါမယ်။ ဆက်တင်များ → အသိုင်းအဝိုင်း → အမှိုက်ပုံး မှာ {dias} ရက်အတွင်း ပြန်ယူနိုင်ပါတယ်။',
@@ -1089,7 +1090,6 @@ export default {
   '{quem} na chamada': 'ခေါ်ဆိုမှုထဲမှာ- {quem}',
   '{quem} transmitindo {oque}': '{quem} — {oque} ထုတ်လွှင့်နေသည်',
   '{quem} transmitindo a tela': '{quem} — မျက်နှာပြင် မျှဝေနေသည်',
-  'na chamada de {comunidade}': '{comunidade} ခေါ်ဆိုမှုထဲမှာ',
   'Escondidas por não terem todas as letras deste nome: {n}': 'ဒီအမည်ရဲ့ စာလုံးအားလုံး မပါလို့ ဖျောက်ထားသည်- {n}',
   'Um dos 25 primeiros': 'ပထမဆုံး ၂၅ ယောက်ထဲက တစ်ယောက်',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Syden သူငယ်ချင်းတွေကြားမှာပဲ ရှိတုန်းကတည်းက ဒီမှာ',

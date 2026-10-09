@@ -711,7 +711,6 @@ export default {
   'Mudar a largura de {barra}': 'Тағйири паҳнӣ: {barra}',
   'Mudar esta tela': 'Тағйир додани ин экран',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Ҳоло бисёриҳо GIF ҷустуҷӯ мекунанд. Каме баъд боз кӯшиш кунед.',
-  'na chamada de {comunidade}': 'дар занги анҷумани {comunidade}',
   'Nada digno de nota até agora.': 'То ҳол чизи қобили зикр нест.',
   'Nada é baixado enquanto você não abrir': 'То шумо накушоед, чизе боргирӣ намешавад',
   'Nada faltando: o pacote está completo.': 'Чизе кам нест: баста пурра аст.',
@@ -772,6 +771,7 @@ export default {
   'Nova conversa em grupo': 'Сӯҳбати гурӯҳии нав',
   'Nova senha': 'Рамзи нав',
   'Novidades': 'Навгониҳо',
+  'Dia e noite': 'Рӯз ва шаб',
   'O avatar limpo, como sempre foi.': 'Аватари тоза, мисли ҳамеша.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Канал бо паёмҳояш аз назари ҳама нопадид мешавад. Онро дар давоми {dias} рӯз дар Танзимот → Анҷуман → Сабад барқарор кардан мумкин аст.',

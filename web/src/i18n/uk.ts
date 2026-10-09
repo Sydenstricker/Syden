@@ -742,6 +742,7 @@ export default {
   'Nova conversa em grupo': 'Нова групова розмова',
   'Nova senha': 'Новий пароль',
   'Novidades': 'Новини',
+  'Dia e noite': 'День і ніч',
   'O avatar limpo, como sempre foi.': 'Чистий аватар, як завжди.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Канал зникає з очей усіх разом із повідомленнями. Його можна відновити протягом {dias} днів у Налаштування → Спільнота → Кошик.',
@@ -1100,7 +1101,6 @@ export default {
   '{quem} na chamada': 'У дзвінку: {quem}',
   '{quem} transmitindo {oque}': '{quem} транслює {oque}',
   '{quem} transmitindo a tela': '{quem} показує екран',
-  'na chamada de {comunidade}': 'у дзвінку спільноти {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Приховано, бо бракує літер цієї назви: {n}',
   'Um dos 25 primeiros': 'Серед перших 25',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Тут відтоді, як Syden був лише для друзів',

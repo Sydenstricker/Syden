@@ -1050,7 +1050,6 @@ export default {
   '{quem} na chamada': '{quem} in gesprek',
   '{quem} transmitindo {oque}': '{quem} streamt {oque}',
   '{quem} transmitindo a tela': '{quem} deelt het scherm',
-  'na chamada de {comunidade}': 'in gesprek bij {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Verborgen omdat ze niet alle letters van deze naam hebben: {n}',
   'Um dos 25 primeiros': 'Een van de eerste 25',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Hier sinds Syden nog alleen onder vrienden was',
@@ -1061,4 +1060,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Jouw idee is nu deel van Syden. Bedankt dat je helpt dit te bouwen.',
   'Recompensa': 'Beloning',
   'Item novo: {nome}': 'Nieuw item: {nome}',
+  'Dia e noite': 'Dag en nacht',
 } satisfies Record<string, string>;

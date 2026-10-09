@@ -702,7 +702,6 @@ export default {
   'Mudar a largura de {barra}': 'Ändra bredden på {barra}',
   'Mudar esta tela': 'Ändra den här skärmen',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Många söker GIF:ar just nu. Försök igen om en stund.',
-  'na chamada de {comunidade}': 'i samtalet i {comunidade}',
   'Nada digno de nota até agora.': 'Inget värt att nämna än.',
   'Nada é baixado enquanto você não abrir': 'Inget laddas ner förrän du öppnar',
   'Nada faltando: o pacote está completo.': 'Inget saknas: paketet är komplett.',
@@ -763,6 +762,7 @@ export default {
   'Nova conversa em grupo': 'Ny gruppkonversation',
   'Nova senha': 'Nytt lösenord',
   'Novidades': 'Nyheter',
+  'Dia e noite': 'Dag och natt',
   'O avatar limpo, como sempre foi.': 'Den rena avataren, som den alltid har varit.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanalen försvinner för alla, med meddelandena i. Den går att återställa i {dias} dagar, under Inställningar → Gemenskap → Papperskorg.',

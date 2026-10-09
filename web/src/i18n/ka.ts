@@ -729,7 +729,6 @@ export default {
   'Mudar a largura de {barra}': 'სიგანის შეცვლა: {barra}',
   'Mudar esta tela': 'ამ ეკრანის შეცვლა',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'ახლა ბევრი ეძებს GIF-ს. ცოტა ხანში ისევ სცადე.',
-  'na chamada de {comunidade}': 'ზარში — {comunidade}',
   'Nada digno de nota até agora.': 'ჯერჯერობით აღსანიშნავი არაფერია.',
   'Nada é baixado enquanto você não abrir': 'არაფერი ჩამოიტვირთება, სანამ არ გახსნი',
   'Nada faltando: o pacote está completo.': 'არაფერი აკლია: პაკეტი სრულია.',
@@ -789,6 +788,7 @@ export default {
   'Nova conversa em grupo': 'ახალი ჯგუფური საუბარი',
   'Nova senha': 'ახალი პაროლი',
   'Novidades': 'სიახლეები',
+  'Dia e noite': 'დღე და ღამე',
   'O avatar limpo, como sempre foi.': 'სუფთა ავატარი, როგორც ყოველთვის.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'არხი ყველას თვალთახედვიდან ქრება მესიჯებიანად. მისი დაბრუნება {dias} დღის განმავლობაში შეიძლება: პარამეტრები → საზოგადოება → ნაგვის ყუთი.',

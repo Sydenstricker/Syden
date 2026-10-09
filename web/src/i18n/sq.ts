@@ -702,7 +702,6 @@ export default {
   'Mudar a largura de {barra}': 'Ndrysho gjerësinë e {barra}',
   'Mudar esta tela': 'Ndrysho këtë ekran',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Shumë njerëz po kërkojnë GIF tani. Provo sërish pas pak.',
-  'na chamada de {comunidade}': 'në thirrjen e {comunidade}',
   'Nada digno de nota até agora.': 'Asgjë për t’u përmendur deri tani.',
   'Nada é baixado enquanto você não abrir': 'Asgjë nuk shkarkohet derisa ta hapësh',
   'Nada faltando: o pacote está completo.': 'Nuk mungon asgjë: paketa është e plotë.',
@@ -763,6 +762,7 @@ export default {
   'Nova conversa em grupo': 'Bisedë e re në grup',
   'Nova senha': 'Fjalëkalimi i ri',
   'Novidades': 'Të rejat',
+  'Dia e noite': 'Ditë e natë',
   'O avatar limpo, como sempre foi.': 'Avatari i pastër, si gjithmonë.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanali zhduket nga sytë e të gjithëve bashkë me mesazhet. Mund të rikthehet brenda {dias} ditëve, te Cilësimet → Komuniteti → Koshi.',

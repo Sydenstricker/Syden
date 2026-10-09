@@ -197,7 +197,7 @@ await campoDeNome.fill(USUARIO);
 await page.getByLabel('Senha').fill(SENHA);
 await page.getByRole('button', { name: 'Entrar', exact: true }).click();
 
-if (!(await page.locator('.vila').waitFor({ timeout: 45_000 }).then(() => true, () => false))) {
+if (!(await page.locator('.quarto').waitFor({ timeout: 45_000 }).then(() => true, () => false))) {
   await desistir(`entrei como "${USUARIO}" e a tela inicial não apareceu. Senha errada, provavelmente.`);
 }
 console.log('Entrou como ' + USUARIO);
@@ -272,26 +272,28 @@ for (const idioma of IDIOMAS) {
   // porque o balão dela só existe na tela inicial. Um seletor errado que casa com outra coisa é
   // pior do que um que não casa com nada: este não deu erro, só fez a coisa errada em silêncio.
   await page.locator('.rail-logo').click();
-  await page.locator('.vila').waitFor({ timeout: 20_000 });
+  await page.locator('.quarto').waitFor({ timeout: 20_000 });
 
   // 1. A VILA. Vem primeiro porque é o que o Syden tem que os outros não têm: é a imagem que faz
   //    alguém parar de rolar a lista de aplicativos.
   console.log('  1. A tela inicial');
   await foto('1-inicio', 2500);
 
-  /** Clica num balão da vila pelo título e espera a tela trocar. */
+  /** Abre um objeto do quarto pelo nome e espera a tela trocar. O botão é o do teclado (o mouse clica no desenho):
+   *  foco e Enter. Até 08/10/2026 eram os balões da vila. */
   async function abrirBalao(titulo) {
-    const balao = page.locator('.vila-pino').filter({ hasText: titulo }).first();
-    if (!(await balao.isVisible().catch(() => false))) return false;
-    await balao.click();
+    const objeto = page.getByRole('button', { name: titulo }).first();
+    if (!(await objeto.count())) return false;
+    await objeto.focus();
+    await page.keyboard.press('Enter');
     await page.waitForTimeout(1200);
     return true;
   }
 
-  /** Volta da tela cheia para a vila. */
+  /** Volta da tela cheia para a home (o quarto). */
   async function voltarParaAVila() {
     await page.getByRole('button', { name: /Voltar|Back|Volver|←/ }).first().click().catch(() => {});
-    await page.locator('.vila').waitFor({ timeout: 10_000 }).catch(() => {});
+    await page.locator('.quarto').waitFor({ timeout: 10_000 }).catch(() => {});
   }
 
   // 2. A CONVERSA. É o que mais gente reconhece à primeira vista, e é onde o Syden se parece com o
@@ -315,7 +317,7 @@ for (const idioma of IDIOMAS) {
   // 3. O GUARDA-ROUPA. Mostra o que o Syden tem de diferente no modelo: tudo de graça, nada travado.
   console.log('  3. O guarda-roupa de enfeites');
   await page.locator('.rail-logo').click();
-  await page.locator('.vila').waitFor({ timeout: 20_000 }).catch(() => {});
+  await page.locator('.quarto').waitFor({ timeout: 20_000 }).catch(() => {});
   if (await abrirBalao(/Guarda-roupa|Wardrobe|Guardarropa/)) {
     await foto('3-guarda-roupa', 1800);
     await voltarParaAVila();

@@ -711,7 +711,6 @@ export default {
   'Mudar a largura de {barra}': 'Breyta breidd: {barra}',
   'Mudar esta tela': 'Breyta þessum skjá',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Margir að leita að GIF-myndum núna. Reyndu aftur eftir smá stund.',
-  'na chamada de {comunidade}': 'í símtali samfélagsins {comunidade}',
   'Nada digno de nota até agora.': 'Ekkert markvert enn sem komið er.',
   'Nada é baixado enquanto você não abrir': 'Ekkert er sótt fyrr en þú opnar',
   'Nada faltando: o pacote está completo.': 'Ekkert vantar: pakkinn er heill.',
@@ -772,6 +771,7 @@ export default {
   'Nova conversa em grupo': 'Nýtt hópsamtal',
   'Nova senha': 'Nýtt lykilorð',
   'Novidades': 'Nýjungar',
+  'Dia e noite': 'Dagur og nótt',
   'O avatar limpo, como sempre foi.': 'Hrein notandamynd, eins og alltaf.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Rásin hverfur sjónum allra, með skilaboðunum. Hægt er að endurheimta hana í {dias} daga undir Stillingar → Samfélag → Ruslafata.',

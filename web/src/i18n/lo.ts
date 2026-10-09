@@ -711,7 +711,6 @@ export default {
   'Mudar a largura de {barra}': 'ປ່ຽນຄວາມກວ້າງຂອງ {barra}',
   'Mudar esta tela': 'ປ່ຽນໜ້ານີ້',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'ຕອນນີ້ມີຄົນຄົ້ນຫາ GIF ຫຼາຍ ລອງໃໝ່ອີກຈັກໜ່ອຍ',
-  'na chamada de {comunidade}': 'ໃນການໂທຂອງ {comunidade}',
   'Nada digno de nota até agora.': 'ຍັງບໍ່ມີຫຍັງໜ້າສັງເກດ',
   'Nada é baixado enquanto você não abrir': 'ບໍ່ມີຫຍັງຖືກດາວໂຫຼດຈົນກວ່າເຈົ້າຈະເປີດ',
   'Nada faltando: o pacote está completo.': 'ບໍ່ມີຫຍັງຂາດ: ຊຸດຄົບແລ້ວ',
@@ -772,6 +771,7 @@ export default {
   'Nova conversa em grupo': 'ການສົນທະນາກຸ່ມໃໝ່',
   'Nova senha': 'ລະຫັດຜ່ານໃໝ່',
   'Novidades': 'ຂ່າວໃໝ່',
+  'Dia e noite': 'ກາງເວັນ ແລະ ກາງຄືນ',
   'O avatar limpo, como sempre foi.': 'ຮູບໂປຣໄຟລ໌ແບບລຽບໆ ຄືເກົ່າ',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ຊ່ອງຈະຫາຍຈາກສາຍຕາທຸກຄົນພ້ອມຂໍ້ຄວາມ ກູ້ຄືນໄດ້ພາຍໃນ {dias} ມື້ ທີ່ ການຕັ້ງຄ່າ → ຊຸມຊົນ → ຖັງຂີ້ເຫຍື້ອ',

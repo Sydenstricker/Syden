@@ -1045,7 +1045,6 @@ export default {
   '{quem} na chamada': 'Aramada: {quem}',
   '{quem} transmitindo {oque}': '{quem} yayında: {oque}',
   '{quem} transmitindo a tela': '{quem} ekranını paylaşıyor',
-  'na chamada de {comunidade}': '{comunidade} aramasında',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Bu adın tüm harflerini içermediği için gizlenen: {n}',
   'Um dos 25 primeiros': 'İlk 25 kişiden biri',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Syden daha arkadaşlar arasındayken buradaydı',
@@ -1056,4 +1055,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Fikrin artık Syden’ın bir parçası. Bunu kurmaya yardım ettiğin için teşekkürler.',
   'Recompensa': 'Ödül',
   'Item novo: {nome}': 'Yeni öğe: {nome}',
+  'Dia e noite': 'Gündüz ve gece',
 } satisfies Record<string, string>;

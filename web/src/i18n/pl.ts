@@ -757,6 +757,7 @@ export default {
   'Nova conversa em grupo': 'Nowa rozmowa grupowa',
   'Nova senha': 'Nowe hasło',
   'Novidades': 'Nowości',
+  'Dia e noite': 'Dzień i noc',
   'O avatar limpo, como sempre foi.': 'Czysty awatar, jak zawsze.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanał znika wszystkim z oczu razem z wiadomościami. Można go przywrócić przez {dias} dni w Ustawienia → Społeczność → Kosz.',
@@ -1115,7 +1116,6 @@ export default {
   '{quem} na chamada': 'W połączeniu: {quem}',
   '{quem} transmitindo {oque}': '{quem} transmituje: {oque}',
   '{quem} transmitindo a tela': '{quem} udostępnia ekran',
-  'na chamada de {comunidade}': 'w połączeniu: {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'Ukryte, bo nie mają wszystkich liter tej nazwy: {n}',
   'Um dos 25 primeiros': 'Wśród pierwszych 25',
   'Estava aqui quando o Syden ainda era só entre amigos': 'Od czasów, gdy Syden był tylko wśród znajomych',

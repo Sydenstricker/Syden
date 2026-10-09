@@ -742,6 +742,7 @@ export default {
   'Nova conversa em grupo': 'שיחה קבוצתית חדשה',
   'Nova senha': 'סיסמה חדשה',
   'Novidades': 'חדשות',
+  'Dia e noite': 'יום ולילה',
   'O avatar limpo, como sempre foi.': 'תמונת הפרופיל נקייה, כמו תמיד.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'הערוץ נעלם מהעיניים של כולם יחד עם ההודעות. אפשר לשחזר אותו במשך {dias} ימים, בהגדרות ← קהילה ← סל המחזור.',
@@ -1100,7 +1101,6 @@ export default {
   '{quem} na chamada': 'בשיחה: {quem}',
   '{quem} transmitindo {oque}': '{quem}: שידור של {oque}',
   '{quem} transmitindo a tela': '{quem}: שיתוף מסך',
-  'na chamada de {comunidade}': 'בשיחה של {comunidade}',
   'Escondidas por não terem todas as letras deste nome: {n}': 'הוסתרו כי חסרות בהן אותיות של השם הזה: {n}',
   'Um dos 25 primeiros': 'מבין 25 הראשונים',
   'Estava aqui quando o Syden ainda era só entre amigos': 'כאן מאז ש-Syden היה רק בין חברים',

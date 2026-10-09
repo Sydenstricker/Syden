@@ -711,7 +711,6 @@ export default {
   'Mudar a largura de {barra}': 'Szélesség módosítása: {barra}',
   'Mudar esta tela': 'A képernyő módosítása',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Most sokan keresnek GIF-et. Próbáld újra kicsit később.',
-  'na chamada de {comunidade}': 'a hívásban – {comunidade}',
   'Nada digno de nota até agora.': 'Eddig semmi említésre méltó.',
   'Nada é baixado enquanto você não abrir': 'Semmi nem töltődik le, amíg meg nem nyitod',
   'Nada faltando: o pacote está completo.': 'Semmi sem hiányzik: a csomag teljes.',
@@ -772,6 +771,7 @@ export default {
   'Nova conversa em grupo': 'Új csoportos beszélgetés',
   'Nova senha': 'Új jelszó',
   'Novidades': 'Újdonságok',
+  'Dia e noite': 'Nappal és éjszaka',
   'O avatar limpo, como sempre foi.': 'A tiszta avatar, ahogy mindig is volt.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'A csatorna az üzeneteivel együtt eltűnik mindenki elől. {dias} napig visszaállítható itt: Beállítások → Közösség → Lomtár.',

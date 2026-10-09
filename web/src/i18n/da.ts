@@ -704,7 +704,6 @@ export default {
   'Mudar a largura de {barra}': 'Ændr bredden på {barra}',
   'Mudar esta tela': 'Ændr denne skærm',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Mange søger efter GIF’er lige nu. Prøv igen om lidt.',
-  'na chamada de {comunidade}': 'i opkaldet i {comunidade}',
   'Nada digno de nota até agora.': 'Intet værd at nævne endnu.',
   'Nada é baixado enquanto você não abrir': 'Intet hentes, før du åbner',
   'Nada faltando: o pacote está completo.': 'Intet mangler: pakken er komplet.',
@@ -765,6 +764,7 @@ export default {
   'Nova conversa em grupo': 'Ny gruppesamtale',
   'Nova senha': 'Ny adgangskode',
   'Novidades': 'Nyheder',
+  'Dia e noite': 'Dag og nat',
   'O avatar limpo, como sempre foi.': 'Den rene avatar, som den altid har været.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanalen forsvinder for alle, med beskederne. Den kan gendannes i {dias} dage under Indstillinger → Fællesskab → Papirkurv.',

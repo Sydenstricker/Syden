@@ -710,7 +710,6 @@ export default {
   'Mudar a largura de {barra}': '{barra} හි පළල වෙනස් කරන්න',
   'Mudar esta tela': 'මෙම තිරය වෙනස් කරන්න',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'දැන් බොහෝ දෙනෙක් GIF සොයති. ටිකකින් නැවත උත්සාහ කරන්න.',
-  'na chamada de {comunidade}': '{comunidade} ඇමතුමේ',
   'Nada digno de nota até agora.': 'මේ දක්වා සඳහන් කළ යුතු කිසිවක් නැත.',
   'Nada é baixado enquanto você não abrir': 'ඔබ විවෘත කරන තුරු කිසිවක් බාගත නොවේ',
   'Nada faltando: o pacote está completo.': 'කිසිවක් අඩු නැත: පැකේජය සම්පූර්ණයි.',
@@ -771,6 +770,7 @@ export default {
   'Nova conversa em grupo': 'නව කණ්ඩායම් සංවාදය',
   'Nova senha': 'නව මුරපදය',
   'Novidades': 'නව දේ',
+  'Dia e noite': 'දිවා සහ රාත්‍රී',
   'O avatar limpo, como sempre foi.': 'සෑම විටම තිබූ පරිදි පිරිසිදු අවතාරය.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'නාලිකාව පණිවිඩ සමඟම සැමගේ දර්ශනයෙන් ඉවත් වේ. දින {dias}ක් ඇතුළත සැකසීම් → ප්‍රජාව → කුණු බඳුන තුළින් ආපසු ගෙන ආ හැකිය.',

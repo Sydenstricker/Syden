@@ -704,7 +704,6 @@ export default {
   'Mudar a largura de {barra}': 'Verander die breedte van {barra}',
   'Mudar esta tela': 'Verander hierdie skerm',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Baie mense soek nou GIF’s. Probeer netnou weer.',
-  'na chamada de {comunidade}': 'in die oproep van {comunidade}',
   'Nada digno de nota até agora.': 'Nog niks noemenswaardigs nie.',
   'Nada é baixado enquanto você não abrir': 'Niks word afgelaai voordat jy dit oopmaak nie',
   'Nada faltando: o pacote está completo.': 'Niks ontbreek nie: die pakket is volledig.',
@@ -765,6 +764,7 @@ export default {
   'Nova conversa em grupo': 'Nuwe groepgesprek',
   'Nova senha': 'Nuwe wagwoord',
   'Novidades': 'Nuus',
+  'Dia e noite': 'Dag en nag',
   'O avatar limpo, como sempre foi.': 'Die skoon avatar, soos dit nog altyd was.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Die kanaal verdwyn vir almal, met die boodskappe daarin. Jy kan dit vir {dias} dae terugbring, in Instellings → Gemeenskap → Asblik.',

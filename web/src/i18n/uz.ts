@@ -718,7 +718,6 @@ export default {
   'Mudar a largura de {barra}': '{barra} kengligini oʻzgartirish',
   'Mudar esta tela': 'Bu ekranni oʻzgartirish',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Hozir GIF qidirayotganlar juda koʻp. Birozdan keyin qayta urinib koʻring.',
-  'na chamada de {comunidade}': '{comunidade} qoʻngʻirogʻida',
   'Nada digno de nota até agora.': 'Hozircha eʼtiborga loyiq hech narsa yoʻq.',
   'Nada é baixado enquanto você não abrir': 'Siz ochmaguningizcha hech narsa yuklanmaydi',
   'Nada faltando: o pacote está completo.': 'Hech narsa yetishmaydi: toʻplam toʻliq.',
@@ -779,6 +778,7 @@ export default {
   'Nova conversa em grupo': 'Yangi guruh suhbati',
   'Nova senha': 'Yangi parol',
   'Novidades': 'Yangiliklar',
+  'Dia e noite': 'Kunduz va tun',
   'O avatar limpo, como sempre foi.': 'Avvalgidek toza avatar.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanal xabarlari bilan birga hammaning koʻzidan yoʻqoladi. Uni {dias} kun davomida Sozlamalar → Hamjamiyat → Savat orqali qaytarish mumkin.',

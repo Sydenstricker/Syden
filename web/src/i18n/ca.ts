@@ -706,7 +706,6 @@ export default {
   'Mudar a largura de {barra}': 'Canviar l’amplada de: {barra}',
   'Mudar esta tela': 'Canviar aquesta pantalla',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Hi ha molta gent cercant GIF ara mateix. Torna-ho a provar d’aquí a una estona.',
-  'na chamada de {comunidade}': 'a la trucada de {comunidade}',
   'Nada digno de nota até agora.': 'Res de destacable fins ara.',
   'Nada é baixado enquanto você não abrir': 'No es baixa res fins que no l’obris',
   'Nada faltando: o pacote está completo.': 'No hi falta res: el paquet és complet.',
@@ -767,6 +766,7 @@ export default {
   'Nova conversa em grupo': 'Conversa de grup nova',
   'Nova senha': 'Contrasenya nova',
   'Novidades': 'Novetats',
+  'Dia e noite': 'Dia i nit',
   'O avatar limpo, como sempre foi.': 'L’avatar net, com sempre.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'El canal desapareix de la vista de tothom amb els missatges a dins. Es pot recuperar durant {dias} dies, a Configuració → Comunitat → Paperera.',

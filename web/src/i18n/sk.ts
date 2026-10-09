@@ -710,7 +710,6 @@ export default {
   'Mudar a largura de {barra}': 'Zmeniť šírku: {barra}',
   'Mudar esta tela': 'Zmeniť túto obrazovku',
   'Muita gente procurando GIF agora. Tente de novo daqui a pouco.': 'Teraz hľadá GIFy veľa ľudí. Skús to o chvíľu.',
-  'na chamada de {comunidade}': 'v hovore komunity {comunidade}',
   'Nada digno de nota até agora.': 'Zatiaľ nič, čo by stálo za zmienku.',
   'Nada é baixado enquanto você não abrir': 'Nič sa nesťahuje, kým to neotvoríš',
   'Nada faltando: o pacote está completo.': 'Nič nechýba: balíček je kompletný.',
@@ -771,6 +770,7 @@ export default {
   'Nova conversa em grupo': 'Nová skupinová konverzácia',
   'Nova senha': 'Nové heslo',
   'Novidades': 'Novinky',
+  'Dia e noite': 'Deň a noc',
   'O avatar limpo, como sempre foi.': 'Čistý avatar, ako vždy.',
   'O canal sai da vista de todos com as mensagens dentro. Dá para trazer de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kanál zmizne všetkým z očí aj so správami. Dá sa obnoviť do {dias} dní v Nastaveniach → Komunita → Kôš.',

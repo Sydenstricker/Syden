@@ -1050,7 +1050,6 @@ export default {
   '{quem} na chamada': 'कॉल में: {quem}',
   '{quem} transmitindo {oque}': '{quem}: {oque} का प्रसारण',
   '{quem} transmitindo a tela': '{quem}: स्क्रीन शेयर',
-  'na chamada de {comunidade}': '{comunidade} की कॉल में',
   'Escondidas por não terem todas as letras deste nome: {n}': 'इस नाम के सभी अक्षर न होने से छिपाए गए: {n}',
   'Um dos 25 primeiros': 'पहले 25 में से एक',
   'Estava aqui quando o Syden ainda era só entre amigos': 'तब से यहाँ, जब Syden बस दोस्तों के बीच था',
@@ -1061,4 +1060,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'तुम्हारा विचार अब Syden का हिस्सा है। इसे बनाने में मदद के लिए शुक्रिया।',
   'Recompensa': 'इनाम',
   'Item novo: {nome}': 'नया आइटम: {nome}',
+  'Dia e noite': 'दिन और रात',
 } satisfies Record<string, string>;
