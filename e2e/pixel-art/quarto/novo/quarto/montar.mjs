@@ -17,6 +17,8 @@ const png = (arquivo) => 'data:image/png;base64,' + ler64(arquivo);
 const IMAGENS = {
   base: png(path.join(AQUI, '..', 'bases', 'pl-512-janela-1.png')),
   vidro: png(path.join(AQUI, '..', 'janela', 'vidro.png')),
+  cortinaDia: png(path.join(AQUI, 'cortina-dia.png')), cortinaNoite: png(path.join(AQUI, 'cortina-noite.png')),
+  janelaAberta: png(path.join(AQUI, 'janela-aberta-dia.png')),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
   noite: png(path.join(AQUI, 'noite.png')),
@@ -59,6 +61,8 @@ pelo chão: ele usa a versão pintada mais perto (perto da janela, no meio, na f
   <button id="grade" aria-pressed="false">Mostrar a grade</button>
   <button id="luz" aria-pressed="true">Luz do abajur à noite: pintada</button>
   <button id="vista" aria-pressed="false">Vista: 1</button>
+  <button id="janela" aria-pressed="false">Janela: fechada</button>
+  <button id="cortina" aria-pressed="false">Cortina: aberta</button>
 </div>
 <div class="lado">
   <figure><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><figcaption id="legenda"></figcaption></figure>
@@ -102,6 +106,33 @@ function dados(im, filtro, w = W, h = W) {
   const vistasNoite = [1, 2, 3, 4].map((n) => dados(im['noite' + n], null, 128, 160));
   const vistasDia = [1, 2, 3, 4].map((n) => dados(im['vista' + n], null, 128, 160));
   let vista = 0;
+  // A CORTINA (cortina.mjs): fechada, a região da janela vem da repintura com as cortinas fechadas, a vista some, o luar
+  // sai do chão e, de dia, o quarto escurece um pouco. Clicar na janela abre e fecha.
+  const REGIAO = [[276,64],[466,158],[466,318],[276,268]];
+  const cortinaDia = dados(im.cortinaDia), cortinaNoite = dados(im.cortinaNoite);
+  const naJanela = new Uint8Array(W * W);
+  for (let k = 0; k < W * W; k++) {
+    const x = k % W + 0.5, y = ((k / W) | 0) + 0.5; let s = false;
+    for (let i = 0, j = REGIAO.length - 1; i < REGIAO.length; j = i++) { const [xi, yi] = REGIAO[i], [xj, yj] = REGIAO[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) s = !s; }
+    naJanela[k] = s ? 1 : 0;
+  }
+  // O chão da noite sem o desenho do luar: o dia vezes a luz MÉDIA da noite (borrada), como as paredes de noite.mjs.
+  const diaLargo = dados(im.base, 'blur(28px)'), noiteLarga = dados(im.noite, 'blur(28px)'), abajurLargo = dados(im.noiteAbajur, 'blur(28px)');
+  let fechada = false;
+  // A JANELA ABERTA (janela-aberta.mjs): as folhas abertas, e o vão pintado de magenta puro, que vira a máscara da
+  // vista. A noite dela é a de dia vezes a luz da noite (a pintada tinha outras folhas, e elas pulariam ao trocar).
+  const CAIXILHO = [[330,100],[436,153],[436,252],[330,205]];
+  const abertaDia = dados(im.janelaAberta), noCaixilho = new Uint8Array(W * W), vao = new Uint8Array(W * W), vidroAberto = new Uint8Array(W * W);
+  for (let k = 0; k < W * W; k++) {
+    const x = k % W + 0.5, y = ((k / W) | 0) + 0.5; let s = false;
+    for (let i = 0, j = CAIXILHO.length - 1; i < CAIXILHO.length; j = i++) { const [xi, yi] = CAIXILHO[i], [xj, yj] = CAIXILHO[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) s = !s; }
+    if (!s) continue;
+    noCaixilho[k] = 1;
+    const [R, G, B] = [abertaDia[k * 4], abertaDia[k * 4 + 1], abertaDia[k * 4 + 2]];
+    if (R > 200 && G < 70 && B > 200) vao[k] = 1;
+    else if (R === 250 && G === 243 && B === 224) vidroAberto[k] = 1;
+  }
+  let aberta = false;
   const daVista = (v, x, y, c) => v[((y - 105) * 128 + (127 - (x - 330))) * 4 + c];
   // A luz, sem a cor das coisas: o quarto vazio borrado (a textura das tábuas some). Para o pufe de dia, bem
   // borrado (só o nível de luz do lugar); para a razão noite/dia, pouco, senão o desenho do luar some no tapete.
@@ -210,6 +241,19 @@ function dados(im, filtro, w = W, h = W) {
         fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], x, y, c) * 0.9 + [40, 46, 80][c] * 0.1;
       }
     }
+    if (aberta) for (let k = 0; k < W * W; k++) {
+      if (!noCaixilho[k]) continue;
+      const x = k % W, y = (k / W) | 0;
+      for (let c = 0; c < 3; c++) {
+        if (vao[k]) { D[k * 3 + c] = daVista(vistasDia[vista], x, y, c); fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], x, y, c); }
+        else if (vidroAberto[k]) { D[k * 3 + c] = daVista(vistasDia[vista], x, y, c) * 0.8 + 250 * 0.2; fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], x, y, c) * 0.85 + [40, 46, 80][c] * 0.15; }
+        else { D[k * 3 + c] = abertaDia[k * 4 + c]; fundoNoite[k * 3 + c] = abertaDia[k * 4 + c] * Math.min(1, noitePe[k * 4 + c] / Math.max(1, diaPe[k * 4 + c])); }
+      }
+    }
+    if (fechada) for (let k = 0; k < W * W; k++) {
+      if (naJanela[k]) { for (let c = 0; c < 3; c++) { D[k * 3 + c] = cortinaDia[k * 4 + c]; fundoNoite[k * 3 + c] = cortinaNoite[k * 4 + c]; } }
+      else if (casa[k] >= 0) { const larga = pintada ? abajurLargo : noiteLarga; for (let c = 0; c < 3; c++) fundoNoite[k * 3 + c] = base[k * 4 + c] * Math.min(1, larga[k * 4 + c] / Math.max(1, diaLargo[k * 4 + c])); }
+    }
     // A ordem: o tapete primeiro; depois de trás para a frente, pela casa mais à frente do pé.
     const [pu, pv] = pufe;
     const variante = pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; });
@@ -263,6 +307,7 @@ function dados(im, filtro, w = W, h = W) {
           }
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
         }
+        if (fechada && modo === 'dia' && !naJanela[k]) v *= 0.86; // a luz da janela, coada pelo linho
         saida.data[k * 4 + c] = Math.min(255, v);
       }
       saida.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
@@ -293,7 +338,19 @@ function dados(im, filtro, w = W, h = W) {
     const [u, v] = uvDe((e.clientX - r.left) * W / r.width, (e.clientY - r.top) * W / r.height);
     return [Math.round(u), Math.round(v)];
   };
-  tela.addEventListener('pointerdown', (e) => { arrastando = true; tela.setPointerCapture(e.pointerId); alvo = casaDoPonteiro(e); desenhar(); });
+  const pixelDo = (e) => { const r = tela.getBoundingClientRect(); return Math.floor((e.clientY - r.top) * W / r.height) * W + Math.floor((e.clientX - r.left) * W / r.width); };
+  const bc = document.getElementById('cortina');
+  const trocarCortina = () => { fechada = !fechada; bc.setAttribute('aria-pressed', String(fechada)); bc.textContent = 'Cortina: ' + (fechada ? 'fechada' : 'aberta'); desenhar(); };
+  bc.onclick = trocarCortina;
+  // Na janela, o clique é da cortina, e a mão aparece; no resto, arrasta o pufe.
+  const bj = document.getElementById('janela');
+  const trocarJanela = () => { aberta = !aberta; bj.setAttribute('aria-pressed', String(aberta)); bj.textContent = 'Janela: ' + (aberta ? 'aberta' : 'fechada'); desenhar(); };
+  bj.onclick = trocarJanela;
+  // No vidro, abre e fecha a janela; no resto da janela (as cortinas), abre e fecha as cortinas. Com as cortinas
+  // fechadas, o clique é sempre delas.
+  tela.addEventListener('pointerdown', (e) => { const k = pixelDo(e); if (!naJanela[k]) return; if (noCaixilho[k] && !fechada) trocarJanela(); else trocarCortina(); });
+  tela.addEventListener('pointermove', (e) => { if (!arrastando) tela.style.cursor = naJanela[pixelDo(e)] ? 'pointer' : 'grab'; });
+  tela.addEventListener('pointerdown', (e) => { if (naJanela[pixelDo(e)]) return; arrastando = true; tela.setPointerCapture(e.pointerId); alvo = casaDoPonteiro(e); desenhar(); });
   tela.addEventListener('pointermove', (e) => { if (!arrastando) return; const c = casaDoPonteiro(e); if (!alvo || c[0] !== alvo[0] || c[1] !== alvo[1]) { alvo = c; desenhar(); } });
   tela.addEventListener('pointerup', () => { arrastando = false; if (alvo && !ocupa(alvo)) pufe = alvo; alvo = null; desenhar(); });
   const botoes = { dia: document.getElementById('dia'), noite: document.getElementById('noite') };

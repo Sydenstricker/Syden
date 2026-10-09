@@ -391,7 +391,9 @@ ficou combinado:
 - **A base é a `pl-512-janela-1`** (decisão dele, 08/10/2026), e o quarto montado nela está em `novo/quarto/`
   (abrir `quarto.html`). Nesta base a ferramenta desenha "quartos em miniatura" em áreas pequenas: pedir "ONLY",
   evitar a palavra "room" e trocar a `semente`. Animação na vista: depois do quarto completo.
-- Saldo em 08/10/2026: PixelLab 625 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
+- **Móvel que sai cortado ou embutido: gerar AVULSO** (`novo/quarto/avulso.mjs`) e repintar só a forma no lugar. **Área
+  que precisa virar máscara (o vão da janela aberta): pedir magenta puro** — funcionou de primeira.
+- Saldo em 08/10/2026: PixelLab 557 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
 ## Aprender idiomas dentro do Syden: arquivado, não descartado

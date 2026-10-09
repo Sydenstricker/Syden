@@ -40,8 +40,24 @@ grade, trocam a luz do abajur (pintada ou por código) e a paisagem da janela. O
   claro com dois vizinhos de fundo ganha a cor do contorno.
 - **As quatro vistas têm noite** (`../janela/vista-noite-<n>.png`, por edição de cada uma).
 
+## A janela interativa e os consertos da mesma noite
+
+- **Clicar na janela:** no vidro, abre e fecha a janela; nas cortinas, abre e fecha as cortinas (também pelos botões).
+  - **Cortina fechada** (`cortina.mjs`): a região da janela repintada com as cortinas de linho fechadas, de dia e de
+    noite. Fechada, a vista some, o desenho do luar sai do chão e, de dia, o quarto escurece um pouco.
+  - **Janela aberta** (`janela-aberta.mjs`): as folhas abertas para dentro e o vão pedido em **magenta puro**, que vira
+    a máscara da vista: a paisagem continua trocável com a janela aberta. A noite dela é a de dia vezes a luz da
+    noite; a pintada tinha outras folhas, que pulariam ao trocar dia e noite (`falhas/`).
+- **A luz do abajur estava estranha:** a repintura da noite redesenhou o criado-mudo uns pixels ao lado, e a cúpula
+  acesa desse fantasma virava uma mancha laranja junto da nossa. Repintada com o criado-mudo FORA da máscara.
+- **O guarda-roupa saía cortado no topo** (a máscara cortava). Agora ele é AVULSO (`avulso.mjs`, ideia dele):
+  gerado inteiro, sem fundo, com um pedaço do quarto como referência de estilo; posto no lugar (o pé da frente no
+  canto da casa, a profundidade medida na lateral desenhada) e repintado só na forma, para a luz daqui.
+- O teste do X das transmissões (`e2e/fechar-na-faixa.mjs`) rodou e passou, com o `sob-demanda` junto.
+
 ## Custo
 
 157 gerações, mais da metade em tentativas que falharam (o pufe sozinho levou umas 60, porque as versões derivadas
 eram refeitas a cada nova tentativa do pufe do meio). A rodada da noite (guarda-roupa, tapete que falhou, pufes, as
-três noites das vistas) custou mais 76. Em 08/10/2026 **restam 625 das 2.000** do mês.
+três noites das vistas) custou mais 76. A janela interativa e os consertos (luz do abajur, guarda-roupa avulso, pufes refeitos) custaram
+mais 68. Em 08/10/2026 **restam 557 das 2.000** do mês.
