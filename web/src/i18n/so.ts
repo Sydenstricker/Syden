@@ -1129,4 +1129,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Cod bireed oo robot filim duug ah.',
   'Vozes juntas': 'Codad wada jira',
   'ZECA': 'CALI',
+  'Voz conectada': 'Codka waa ku xiran yahay',
 } satisfies Record<string, string>;

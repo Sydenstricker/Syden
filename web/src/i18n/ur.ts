@@ -1042,4 +1042,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'آپ کا خیال اب Syden کا حصہ ہے۔ اسے بنانے میں مدد کا شکریہ۔',
   'Recompensa': 'انعام',
   'Item novo: {nome}': 'نئی چیز: {nome}',
+  'Voz conectada': 'آواز منسلک ہے',
 } satisfies Record<string, string>;

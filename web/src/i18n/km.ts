@@ -1128,4 +1128,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'សំឡេងលោហៈនៃមនុស្សយន្តក្នុងភាពយន្តចាស់។',
   'Vozes juntas': 'សំឡេងរួមគ្នា',
   'ZECA': 'សុខា',
+  'Voz conectada': 'សំឡេងបានភ្ជាប់',
 } satisfies Record<string, string>;

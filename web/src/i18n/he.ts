@@ -1109,4 +1109,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'הרעיון שלך הוא עכשיו חלק מ-Syden. תודה על העזרה בבנייה.',
   'Recompensa': 'פרס',
   'Item novo: {nome}': 'פריט חדש: {nome}',
+  'Voz conectada': 'הקול מחובר',
 } satisfies Record<string, string>;

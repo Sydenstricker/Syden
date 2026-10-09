@@ -281,7 +281,7 @@ export function Sidebar({
       {connectedChannel && (
         <div className="voice-panel">
           <div>
-            <div className="voice-panel-status">Voz conectada</div>
+            <div className="voice-panel-status">{t('Voz conectada')}</div>
             <div className="voice-panel-channel">{connectedChannel.name}</div>
           </div>
           <div className="icon-row">

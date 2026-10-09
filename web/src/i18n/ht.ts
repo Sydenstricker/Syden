@@ -1139,4 +1139,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Vwa metalik wobo nan ansyen fim.',
   'Vozes juntas': 'Vwa yo ansanm',
   'ZECA': 'TIJO',
+  'Voz conectada': 'Vwa konekte',
 } satisfies Record<string, string>;

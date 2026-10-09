@@ -1068,4 +1068,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'ไอเดียของคุณกลายเป็นส่วนหนึ่งของ Syden แล้ว ขอบคุณที่ช่วยกันสร้าง',
   'Recompensa': 'รางวัล',
   'Item novo: {nome}': 'ไอเท็มใหม่: {nome}',
+  'Voz conectada': 'เชื่อมต่อเสียงแล้ว',
 } satisfies Record<string, string>;

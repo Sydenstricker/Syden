@@ -1147,4 +1147,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'ძველი ფილმის რობოტის მეტალის ხმა.',
   'Vozes juntas': 'ხმები ერთად',
   'ZECA': 'ნიკა',
+  'Voz conectada': 'ხმა დაკავშირებულია',
 } satisfies Record<string, string>;

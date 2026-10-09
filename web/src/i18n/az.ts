@@ -1092,4 +1092,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'İdeyan Syden-in bir hissəsi oldu. Bunu qurmağa kömək etdiyin üçün təşəkkürlər.',
   'Recompensa': 'Mükafat',
   'Item novo: {nome}': 'Yeni əşya: {nome}',
+  'Voz conectada': 'Səs qoşuldu',
 } satisfies Record<string, string>;

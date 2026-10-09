@@ -1126,4 +1126,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Metalne robotihääl vanast filmist.',
   'Vozes juntas': 'Hääled koos',
   'ZECA': 'MARI',
+  'Voz conectada': 'Hääl ühendatud',
 } satisfies Record<string, string>;

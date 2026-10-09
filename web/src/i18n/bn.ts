@@ -1057,4 +1057,5 @@ export default {
   'Recompensa': 'পুরস্কার',
   'Item novo: {nome}': 'নতুন আইটেম: {nome}',
   'Dia e noite': 'দিন ও রাত',
+  'Voz conectada': 'ভয়েস সংযুক্ত',
 } satisfies Record<string, string>;

@@ -1036,4 +1036,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'あなたのアイデアは Syden の一部になりました。一緒に作ってくれて、ありがとうございます。',
   'Recompensa': 'ごほうび',
   'Item novo: {nome}': '新しいアイテム：{nome}',
+  'Voz conectada': 'ボイス接続中',
 } satisfies Record<string, string>;

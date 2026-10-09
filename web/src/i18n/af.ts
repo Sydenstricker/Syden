@@ -1123,4 +1123,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Metaalstem van ’n robot uit ’n ou fliek.',
   'Vozes juntas': 'Stemme saam',
   'ZECA': 'PIET',
+  'Voz conectada': 'Stem gekoppel',
 } satisfies Record<string, string>;

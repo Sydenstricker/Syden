@@ -1046,4 +1046,5 @@ export default {
   'Recompensa': '奖励',
   'Item novo: {nome}': '新物品：{nome}',
   'Dia e noite': '白天和黑夜',
+  'Voz conectada': '语音已连接',
 } satisfies Record<string, string>;

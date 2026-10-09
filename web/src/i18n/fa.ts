@@ -1043,4 +1043,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'ایدهٔ شما حالا بخشی از Syden است. ممنون که در ساختنش کمک می‌کنید.',
   'Recompensa': 'پاداش',
   'Item novo: {nome}': 'آیتم تازه: {nome}',
+  'Voz conectada': 'صدا وصل است',
 } satisfies Record<string, string>;

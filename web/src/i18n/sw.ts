@@ -1059,4 +1059,5 @@ export default {
   'Recompensa': 'Tuzo',
   'Item novo: {nome}': 'Kitu kipya: {nome}',
   'Dia e noite': 'Mchana na usiku',
+  'Voz conectada': 'Sauti imeunganishwa',
 } satisfies Record<string, string>;

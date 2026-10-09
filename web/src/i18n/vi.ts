@@ -1025,4 +1025,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ý tưởng của bạn giờ là một phần của Syden. Cảm ơn bạn đã cùng xây dựng nơi này.',
   'Recompensa': 'Phần thưởng',
   'Item novo: {nome}': 'Vật phẩm mới: {nome}',
+  'Voz conectada': 'Đã kết nối thoại',
 } satisfies Record<string, string>;

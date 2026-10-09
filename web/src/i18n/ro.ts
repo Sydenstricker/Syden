@@ -1055,4 +1055,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ideea ta face acum parte din Syden. Mulțumim că ajuți la construirea lui.',
   'Recompensa': 'Recompensă',
   'Item novo: {nome}': 'Obiect nou: {nome}',
+  'Voz conectada': 'Voce conectată',
 } satisfies Record<string, string>;

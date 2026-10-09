@@ -1059,4 +1059,5 @@ export default {
   'Recompensa': 'Beloning',
   'Item novo: {nome}': 'Nieuw item: {nome}',
   'Dia e noite': 'Dag en nacht',
+  'Voz conectada': 'Spraak verbonden',
 } satisfies Record<string, string>;

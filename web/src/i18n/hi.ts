@@ -1059,4 +1059,5 @@ export default {
   'Recompensa': 'इनाम',
   'Item novo: {nome}': 'नया आइटम: {nome}',
   'Dia e noite': 'दिन और रात',
+  'Voz conectada': 'वॉइस जुड़ गई',
 } satisfies Record<string, string>;

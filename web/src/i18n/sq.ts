@@ -1121,4 +1121,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Zë metalik roboti nga një film i vjetër.',
   'Vozes juntas': 'Zëra bashkë',
   'ZECA': 'ARBI',
+  'Voz conectada': 'Zëri i lidhur',
 } satisfies Record<string, string>;

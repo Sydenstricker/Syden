@@ -72,6 +72,10 @@ no Brasil: remoção e comunicação às autoridades são imediatas e independem
 ou mirar a UE de propósito — inclusive publicar a listagem da Store em mercados europeus, já que
 português é língua da União (Portugal). Se isso acontecer, o DSA passa a valer e é preciso revisar.
 
+**Idioma da listagem não é mercado** (decisão dele, 09/10/2026): os mercados europeus estão DESMARCADOS na Store, e
+por isso a listagem pode ter alemão, francês, italiano etc. sem dirigir o app à União. O que decide é a
+disponibilidade por mercado; quem um dia marcar um país da UE ali reabre a revisão acima.
+
 ## Animações: quem espera não tem texto, quem falhou tem
 
 A regra vale para as telas desenhadas em SVG (ver `animacaoSVG/`):

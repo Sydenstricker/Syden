@@ -1040,4 +1040,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'உங்கள் யோசனை இப்போது Syden-இன் ஒரு பகுதி. இதைக் கட்ட உதவியதற்கு நன்றி.',
   'Recompensa': 'வெகுமதி',
   'Item novo: {nome}': 'புதிய பொருள்: {nome}',
+  'Voz conectada': 'குரல் இணைக்கப்பட்டது',
 } satisfies Record<string, string>;

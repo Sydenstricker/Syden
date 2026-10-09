@@ -1148,4 +1148,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Հին ֆիլմի ռոբոտի մետաղական ձայն։',
   'Vozes juntas': 'Ձայները միասին',
   'ZECA': 'ԱՐԱՄ',
+  'Voz conectada': 'Ձայնը միացված է',
 } satisfies Record<string, string>;

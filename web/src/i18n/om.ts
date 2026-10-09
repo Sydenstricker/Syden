@@ -1099,4 +1099,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Yaadni kee amma kutaa Syden ta’eera. Ijaaruuf waan gargaarteef galatoomi.',
   'Recompensa': 'Badhaasa',
   'Item novo: {nome}': 'Meeshaa haaraa: {nome}',
+  'Voz conectada': 'Sagaleen walqabateera',
 } satisfies Record<string, string>;

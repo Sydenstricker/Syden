@@ -1057,4 +1057,5 @@ export default {
   'Recompensa': 'Imbalan',
   'Item novo: {nome}': 'Item baru: {nome}',
   'Dia e noite': 'Siang dan malam',
+  'Voz conectada': 'Suara terhubung',
 } satisfies Record<string, string>;

@@ -1084,4 +1084,5 @@ export default {
   'Recompensa': 'Récompense',
   'Item novo: {nome}': 'Nouvel objet : {nome}',
   'Dia e noite': 'Jour et nuit',
+  'Voz conectada': 'Voix connectée',
 } satisfies Record<string, string>;

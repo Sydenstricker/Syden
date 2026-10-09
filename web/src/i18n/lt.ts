@@ -1131,4 +1131,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Metalinis roboto balsas iš seno filmo.',
   'Vozes juntas': 'Balsai kartu',
   'ZECA': 'RŪTA',
+  'Voz conectada': 'Balsas prijungtas',
 } satisfies Record<string, string>;

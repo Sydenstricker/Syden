@@ -1131,4 +1131,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Köne filmdäki robotyň metal sesi.',
   'Vozes juntas': 'Sesler bile',
   'ZECA': 'AÝNA',
+  'Voz conectada': 'Ses birikdi',
 } satisfies Record<string, string>;

@@ -1,7 +1,7 @@
-// As capturas de tela da página do Syden na Microsoft Store, nos três idiomas.
+// As capturas de tela da página do Syden na Microsoft Store, em cada idioma que o app fala.
 //
 // POR QUE UM SCRIPT, e não a tecla PrintScreen: a Store pede quatro imagens por idioma, todas do
-// mesmo tamanho exato. São doze no total, e elas precisam ser refeitas toda vez que a aparência do
+// mesmo tamanho exato. São centenas no total, e elas precisam ser refeitas toda vez que a aparência do
 // app mudar. À mão isso é um trabalho chato que sai um pouco diferente a cada vez — janela num
 // tamanho, barra de tarefas aparecendo numa e não na outra. Aqui saem sempre iguais, em 1920x1080.
 //
@@ -22,14 +22,15 @@
 //     $env:SYDEN_SENHA = Read-Host "Senha"
 //     node e2e/capturas-da-loja.mjs
 //
-//   Um idioma só:  IDIOMAS=en node e2e/capturas-da-loja.mjs
+//   Só alguns:  IDIOMAS=en,ja node e2e/capturas-da-loja.mjs
 //
 // Sai em e2e/fotos/loja/<idioma>/1-inicio.png … 4-voz.png
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readdirSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 import { dispensarPresentes } from './ajuda.mjs';
 
-const SITE = process.env.SITE ?? 'https://syden.chat';
+// O app, e não a raiz: desde que syden.chat virou a página de apresentação, o app mora em /app/.
+const SITE = process.env.SITE ?? 'https://syden.chat/app/';
 const USUARIO = process.env.SYDEN_USUARIO;
 const SENHA = process.env.SYDEN_SENHA;
 const RAIZ = 'e2e/fotos/loja';
@@ -50,23 +51,33 @@ const LARGURA = 1920;
 const ALTURA = 1080;
 
 /**
- * Os três idiomas que o Syden REALMENTE fala.
+ * Os idiomas que o Syden REALMENTE fala: os que têm dicionário em web/src/i18n/.
  *
- * O app lista 74 na tela de configurações, mas só estes três têm dicionário; os outros aparecem em
- * português. Fazer captura de um idioma sem tradução seria prometer na Store o que o app não
- * entrega — e a pessoa que baixasse por isso desinstalaria na primeira tela.
+ * Fazer captura de um idioma sem tradução seria prometer na Store o que o app não entrega — e a
+ * pessoa que baixasse por isso desinstalaria na primeira tela. Por isso a lista sai dos próprios
+ * dicionários, e não de uma lista escrita aqui (eram três até 09/10/2026, com 71 já traduzidos).
  *
- * `nome` é como o idioma aparece escrito na lista de Configurações → Idioma, que é por onde o script
- * clica. `lang` é o que a página passa a declarar, e serve de conferência.
+ * Os dicionários servem também para achar os botões: o script clica em "Configurações", "Idioma",
+ * "Guarda-roupa" e "Amigos" escritos na língua que está na tela. O idioma em si é escolhido pela
+ * marca `lang` do botão, que não depende de língua nenhuma.
  */
-const IDIOMAS_POSSIVEIS = [
-  { pasta: 'pt-BR', nome: null, lang: 'pt-BR' }, // o padrão: não precisa trocar nada
-  { pasta: 'en', nome: 'English', lang: 'en' },
-  { pasta: 'es', nome: 'Español', lang: 'es' },
-];
+const PASTA_I18N = new URL('../web/src/i18n/', import.meta.url);
+const DICIONARIOS = { 'pt-BR': {} };
+for (const arquivo of readdirSync(PASTA_I18N).filter((a) => a.endsWith('.ts')).sort()) {
+  // idiomas.ts e index.ts importam sem extensão, o que só o Vite resolve: no Node eles falham, e não são dicionário.
+  const dicionario = await import(new URL(arquivo, PASTA_I18N).href).then((m) => m.default, () => null);
+  // Só os dicionários de interface têm a chave 'Amigos'; paises.ts e afins ficam de fora.
+  if (dicionario && typeof dicionario === 'object' && 'Amigos' in dicionario) DICIONARIOS[arquivo.slice(0, -3)] = dicionario;
+}
+/** O texto como a tela o mostra em `codigo` (o que falta no dicionário aparece em português, como no app). */
+const tr = (codigo, chave) => DICIONARIOS[codigo]?.[chave] ?? chave;
+
+const IDIOMAS_POSSIVEIS = Object.keys(DICIONARIOS).map((codigo) => ({ pasta: codigo, lang: codigo }));
 
 const pedidos = (process.env.IDIOMAS ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 const IDIOMAS = pedidos.length ? IDIOMAS_POSSIVEIS.filter((i) => pedidos.includes(i.pasta)) : IDIOMAS_POSSIVEIS;
+/** O idioma que está na tela agora. A conta começa em português (o script a devolve assim no fim). */
+let idiomaNaTela = 'pt-BR';
 
 if (!USUARIO || !SENHA) {
   console.error('Faltou a conta. A senha vai numa variável, não no comando:\n');
@@ -92,6 +103,30 @@ const contexto = await browser.newContext({
   deviceScaleFactor: 1,
   locale: 'pt-BR',
 });
+// A CONTA DE TESTE TAMBÉM ESTÁ NUMA COMUNIDADE DE VERDADE, e a home a mostrava: a faixa "Agora nas suas comunidades"
+// saiu na foto com o nome dela e de quem estava em chamada (09/10/2026). Escondido aqui, em toda página que abrir:
+// na barra, toda comunidade que não seja a de demonstração; na faixa, todo item que não seja dela (com o
+// e2e/sala-cheia.mjs rodando, sobra a de demonstração com gente em chamada). Sem item nenhum, a faixa some inteira.
+await contexto.addInitScript((comunidade) => {
+  const css = `.rail-item:not(.rail-action):not([title=${JSON.stringify(comunidade)}]) { display: none !important; }`;
+  const filtrar = () => {
+    for (const farol of document.querySelectorAll('.farol')) {
+      let sobrou = 0;
+      for (const li of farol.querySelectorAll('li')) {
+        const dela = li.querySelector('strong')?.textContent?.trim() === comunidade;
+        li.style.setProperty('display', dela ? '' : 'none', 'important');
+        if (dela) sobrou++;
+      }
+      farol.style.setProperty('display', sobrou ? '' : 'none', 'important');
+    }
+  };
+  const por = () => {
+    const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
+    filtrar();
+    new MutationObserver(filtrar).observe(document.body, { childList: true, subtree: true, characterData: true });
+  };
+  if (document.body) por(); else document.addEventListener('DOMContentLoaded', por);
+}, COMUNIDADE);
 const page = await contexto.newPage();
 
 let pasta = RAIZ;
@@ -135,7 +170,7 @@ async function comunidadeAberta() {
 
 /** Abre Configurações. Serve para trocar o idioma e é o mesmo caminho em qualquer língua. */
 async function abrirConfiguracoes() {
-  await page.locator('button[aria-label="Configurações"], button[aria-label="Settings"], button[aria-label="Ajustes"]').first().click();
+  await page.locator(`button[aria-label="${tr(idiomaNaTela, 'Configurações')}"]`).first().click();
   await page.locator('.settings-nav').waitFor({ timeout: 10_000 });
 }
 
@@ -148,14 +183,23 @@ async function abrirConfiguracoes() {
  */
 async function trocarIdioma(idioma) {
   await abrirConfiguracoes();
-  // A aba se chama "Idioma", "Language" ou "Idioma" (espanhol): pega pela que estiver lá.
-  await page.locator('.settings-tab').filter({ hasText: /Idioma|Language/ }).first().click();
+  // Pelo texto EXATO: em alemão, "Sprache" (Idioma) também está dentro de "Sprache und Video" (Voz e vídeo), e o
+  // primeiro que contivesse a palavra era a aba errada (a rodada de 09/10/2026 parou no divehi por isso).
+  const abas = page.locator('.settings-tab');
+  const textos = await abas.evaluateAll((els) => els.map((e) => e.textContent.trim()));
+  const indice = textos.indexOf(tr(idiomaNaTela, 'Idioma'));
+  if (indice < 0) throw new Error(`não achei a aba "${tr(idiomaNaTela, 'Idioma')}" entre: ${textos.join(' | ')}`);
+  await abas.nth(indice).click();
   await page.locator('.idiomas').waitFor({ timeout: 10_000 });
-  await page.locator('.idioma', { hasText: idioma.nome }).first().click();
+  await page.locator(`.idioma[lang="${idioma.lang}"]`).first().click();
+  // Escrita nova (tâmil, amárico, khmer...) baixa a fonte Noto na hora: espera a letra chegar.
+  await page.waitForFunction((lang) => document.documentElement.lang === lang, idioma.lang, { timeout: 10_000 }).catch(() => {});
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(900);
 
   const lang = await page.evaluate(() => document.documentElement.lang);
   if (lang !== idioma.lang) console.log(`    (aviso: a página diz lang="${lang}", esperava "${idioma.lang}")`);
+  else idiomaNaTela = idioma.lang;
 
   await page.keyboard.press('Escape');
   await page.waitForTimeout(600);
@@ -259,9 +303,10 @@ for (const idioma of IDIOMAS) {
   pasta = `${RAIZ}/${idioma.pasta}`;
   mkdirSync(pasta, { recursive: true });
 
-  if (idioma.nome) {
+  if (idioma.lang !== idiomaNaTela) {
     await trocarIdioma(idioma);
-    console.log(`  idioma trocado para ${idioma.nome}`);
+    if (idiomaNaTela !== idioma.lang) { console.log('    (não consegui trocar o idioma — pulei este)'); continue; }
+    console.log(`  idioma trocado para ${idioma.lang}`);
   }
 
   // Volta para a TELA INICIAL antes de cada rodada.
@@ -279,10 +324,11 @@ for (const idioma of IDIOMAS) {
   console.log('  1. A tela inicial');
   await foto('1-inicio', 2500);
 
-  /** Abre um objeto do quarto pelo nome e espera a tela trocar. O botão é o do teclado (o mouse clica no desenho):
-   *  foco e Enter. Até 08/10/2026 eram os balões da vila. */
-  async function abrirBalao(titulo) {
-    const objeto = page.getByRole('button', { name: titulo }).first();
+  /** Abre um objeto do quarto pelo nome (a chave em português, traduzida para a língua da tela) e espera a tela
+   *  trocar. O botão é o do teclado (o mouse clica no desenho): foco e Enter. Até 08/10/2026 eram os balões da vila. */
+  async function abrirBalao(chave) {
+    const rotulo = tr(idiomaNaTela, chave).replaceAll('"', '\\"');
+    const objeto = page.locator(`.quarto-alvo[aria-label="${rotulo}"], .quarto-alvo[aria-label^="${rotulo} — "]`).first();
     if (!(await objeto.count())) return false;
     await objeto.focus();
     await page.keyboard.press('Enter');
@@ -292,7 +338,13 @@ for (const idioma of IDIOMAS) {
 
   /** Volta da tela cheia para a home (o quarto). */
   async function voltarParaAVila() {
-    await page.getByRole('button', { name: /Voltar|Back|Volver|←/ }).first().click().catch(() => {});
+    // O guarda-roupa abre nas Configurações, um diálogo por cima de tudo: sem fechá-lo, o clique seguinte bate nele
+    // e o script trava 30 s esperando (foi o que aconteceu na primeira rodada com os 72 idiomas).
+    if (await page.locator('.settings[role="dialog"]').isVisible().catch(() => false)) {
+      await page.keyboard.press('Escape');
+      await page.locator('.settings[role="dialog"]').waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {});
+    }
+    await page.locator('.rail-logo').click().catch(() => {});
     await page.locator('.quarto').waitFor({ timeout: 10_000 }).catch(() => {});
   }
 
@@ -318,7 +370,7 @@ for (const idioma of IDIOMAS) {
   console.log('  3. O guarda-roupa de enfeites');
   await page.locator('.rail-logo').click();
   await page.locator('.quarto').waitFor({ timeout: 20_000 }).catch(() => {});
-  if (await abrirBalao(/Guarda-roupa|Wardrobe|Guardarropa/)) {
+  if (await abrirBalao('Guarda-roupa')) {
     await foto('3-guarda-roupa', 1800);
     await voltarParaAVila();
   } else {
@@ -344,8 +396,10 @@ for (const idioma of IDIOMAS) {
   const salaDeVoz = page.locator('.channel-name').filter({ hasText: /Sala/ }).first();
   if (await salaDeVoz.isVisible().catch(() => false)) {
     await salaDeVoz.click();
+    // Quem já está na chamada vê o palco (os quadros de cada pessoa); quem não está, a antessala com os avatares.
+    await page.locator('.stage .tile, .voice-lobby-avatars > *').first().waitFor({ timeout: 8_000 }).catch(() => {});
     await page.waitForTimeout(1500);
-    const naSala = await page.locator('.voice-lobby-avatars img, .voice-lobby-avatars .avatar').count().catch(() => 0);
+    const naSala = await page.locator('.stage .tile, .voice-lobby-avatars > *').count().catch(() => 0);
     if (naSala > 0) {
       await foto('5-chamada', 1500);
     } else {
@@ -354,7 +408,9 @@ for (const idioma of IDIOMAS) {
   }
 
   console.log('  4. Os amigos');
-  if (await abrirBalao(/Amigos|Friends|Amigos/)) {
+  // O quadro de Amigos só existe na home, e a foto da chamada deixou a tela dentro da comunidade.
+  await voltarParaAVila();
+  if (await abrirBalao('Amigos')) {
     await foto('4-amigos', 1800);
     await voltarParaAVila();
   } else {
@@ -364,8 +420,8 @@ for (const idioma of IDIOMAS) {
 
 // Devolve o Syden ao português: a conta fica como estava, e o revisor da Microsoft (que entra com
 // ela) vê o idioma padrão em vez do último que este script deixou.
-if (IDIOMAS.some((i) => i.nome)) {
-  await trocarIdioma({ nome: 'Português', lang: 'pt-BR' }).catch(() => {});
+if (idiomaNaTela !== 'pt-BR') {
+  await trocarIdioma({ lang: 'pt-BR' }).catch(() => {});
   console.log('\nIdioma devolvido ao português.');
 }
 

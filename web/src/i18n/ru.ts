@@ -1080,4 +1080,5 @@ export default {
   'Recompensa': 'Награда',
   'Item novo: {nome}': 'Новый предмет: {nome}',
   'Dia e noite': 'День и ночь',
+  'Voz conectada': 'Голос подключён',
 } satisfies Record<string, string>;

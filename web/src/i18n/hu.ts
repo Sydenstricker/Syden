@@ -1130,4 +1130,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Régi filmes robot fémes hangja.',
   'Vozes juntas': 'Hangok együtt',
   'ZECA': 'BENI',
+  'Voz conectada': 'Hang csatlakoztatva',
 } satisfies Record<string, string>;

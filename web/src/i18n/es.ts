@@ -1065,4 +1065,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Tu idea ya es parte de Syden. Gracias por ayudar a construir esto.',
   'Recompensa': 'Recompensa',
   'Item novo: {nome}': 'Nuevo ítem: {nome}',
+  'Voz conectada': 'Voz conectada',
 } satisfies Record<string, string>;

@@ -1130,4 +1130,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Málmkennd vélmennisrödd úr gamalli kvikmynd.',
   'Vozes juntas': 'Raddir saman',
   'ZECA': 'JÓN',
+  'Voz conectada': 'Rödd tengd',
 } satisfies Record<string, string>;

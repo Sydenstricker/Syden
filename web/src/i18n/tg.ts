@@ -1130,4 +1130,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Овози металлии роботи филми кӯҳна.',
   'Vozes juntas': 'Овозҳо якҷоя',
   'ZECA': 'ЛОЛА',
+  'Voz conectada': 'Овоз пайваст аст',
 } satisfies Record<string, string>;

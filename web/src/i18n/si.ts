@@ -1129,4 +1129,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'පැරණි චිත්‍රපටයක රොබෝවෙකුගේ ලෝහමය හඬ.',
   'Vozes juntas': 'හඬවල් එක්ව',
   'ZECA': 'සුනි',
+  'Voz conectada': 'හඬ සම්බන්ධයි',
 } satisfies Record<string, string>;

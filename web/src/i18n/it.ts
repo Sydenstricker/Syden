@@ -1059,4 +1059,5 @@ export default {
   'Recompensa': 'Ricompensa',
   'Item novo: {nome}': 'Nuovo oggetto: {nome}',
   'Dia e noite': 'Giorno e notte',
+  'Voz conectada': 'Vocale connessa',
 } satisfies Record<string, string>;

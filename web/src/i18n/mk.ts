@@ -1129,4 +1129,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Метален глас на робот од стар филм.',
   'Vozes juntas': 'Гласови заедно',
   'ZECA': 'ЈАНЕ',
+  'Voz conectada': 'Гласот е поврзан',
 } satisfies Record<string, string>;

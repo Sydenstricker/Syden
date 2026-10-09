@@ -1109,4 +1109,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Твоя ідея тепер частина Syden. Дякуємо, що допомагаєш його будувати.',
   'Recompensa': 'Нагорода',
   'Item novo: {nome}': 'Новий предмет: {nome}',
+  'Voz conectada': 'Голос підключено',
 } satisfies Record<string, string>;

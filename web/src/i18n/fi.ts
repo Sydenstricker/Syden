@@ -1129,4 +1129,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Metallinen robotin puheääni vanhasta elokuvasta.',
   'Vozes juntas': 'Puheäänet yhdessä',
   'ZECA': 'AINO',
+  'Voz conectada': 'Puhe yhdistetty',
 } satisfies Record<string, string>;

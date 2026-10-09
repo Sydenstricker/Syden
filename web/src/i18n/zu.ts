@@ -1130,4 +1130,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Izwi lensimbi lerobhothi lefilimu endala.',
   'Vozes juntas': 'Amazwi ndawonye',
   'ZECA': 'SIPH',
+  'Voz conectada': 'Izwi lixhunyiwe',
 } satisfies Record<string, string>;

@@ -1098,4 +1098,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'သင့်အကြံဉာဏ်က အခု Syden ရဲ့ အစိတ်အပိုင်း ဖြစ်သွားပါပြီ။ တည်ဆောက်ရာမှာ ကူညီပေးလို့ ကျေးဇူးတင်ပါတယ်။',
   'Recompensa': 'ဆု',
   'Item novo: {nome}': 'ပစ္စည်းအသစ်- {nome}',
+  'Voz conectada': 'အသံ ချိတ်ဆက်ထားသည်',
 } satisfies Record<string, string>;

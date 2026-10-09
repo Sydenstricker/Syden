@@ -1139,4 +1139,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'ބާ ފިލްމެއްގެ ރޮބޯއެއްގެ މެޓަލިކް އަޑު.',
   'Vozes juntas': 'އަޑުތައް އެކުގައި',
   'ZECA': 'އަލީ',
+  'Voz conectada': 'އަޑު ގުޅިފައި',
 } satisfies Record<string, string>;

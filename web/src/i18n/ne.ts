@@ -1131,4 +1131,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'पुरानो फिल्मको रोबोटको धातुजस्तो आवाज।',
   'Vozes juntas': 'आवाजहरू सँगै',
   'ZECA': 'राजु',
+  'Voz conectada': 'आवाज जोडियो',
 } satisfies Record<string, string>;

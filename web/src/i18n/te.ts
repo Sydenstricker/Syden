@@ -1037,4 +1037,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'మీ ఆలోచన ఇప్పుడు Syden లో భాగం. దీన్ని నిర్మించడంలో సాయం చేసినందుకు ధన్యవాదాలు.',
   'Recompensa': 'బహుమతి',
   'Item novo: {nome}': 'కొత్త వస్తువు: {nome}',
+  'Voz conectada': 'వాయిస్ కనెక్ట్ అయింది',
 } satisfies Record<string, string>;

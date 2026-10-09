@@ -1057,4 +1057,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Ra’ayinku yanzu ya zama ɓangare na Syden. Mun gode da taimakon gina shi.',
   'Recompensa': 'Lada',
   'Item novo: {nome}': 'Sabon abu: {nome}',
+  'Voz conectada': 'Murya ta haɗu',
 } satisfies Record<string, string>;

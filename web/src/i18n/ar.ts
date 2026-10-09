@@ -1080,4 +1080,5 @@ export default {
   'Recompensa': 'مكافأة',
   'Item novo: {nome}': 'عنصر جديد: {nome}',
   'Dia e noite': 'النهار والليل',
+  'Voz conectada': 'الصوت متصل',
 } satisfies Record<string, string>;

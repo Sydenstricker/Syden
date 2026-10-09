@@ -1129,4 +1129,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Feo metaly an’ny rôbô amin’ny sarimihetsika taloha.',
   'Vozes juntas': 'Feo miaraka',
   'ZECA': 'RADO',
+  'Voz conectada': 'Mifandray ny feo',
 } satisfies Record<string, string>;

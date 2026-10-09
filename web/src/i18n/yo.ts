@@ -1070,4 +1070,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Èrò yín ti di apá kan Syden. A dúpẹ́ fún ìrànlọ́wọ́ láti kọ́ ọ.',
   'Recompensa': 'Èrè',
   'Item novo: {nome}': 'Nǹkan tuntun: {nome}',
+  'Voz conectada': 'Ohùn ti sopọ̀',
 } satisfies Record<string, string>;

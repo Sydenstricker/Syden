@@ -1130,4 +1130,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'ສຽງໂລຫະຂອງຫຸ່ນຍົນໃນໜັງເກົ່າ',
   'Vozes juntas': 'ສຽງລວມກັນ',
   'ZECA': 'ແສງ',
+  'Voz conectada': 'ສຽງເຊື່ອມຕໍ່ແລ້ວ',
 } satisfies Record<string, string>;

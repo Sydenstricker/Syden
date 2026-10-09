@@ -1061,4 +1061,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'Η ιδέα σου είναι πλέον μέρος του Syden. Ευχαριστούμε που βοηθάς να χτιστεί.',
   'Recompensa': 'Ανταμοιβή',
   'Item novo: {nome}': 'Νέο αντικείμενο: {nome}',
+  'Voz conectada': 'Φωνή συνδεδεμένη',
 } satisfies Record<string, string>;

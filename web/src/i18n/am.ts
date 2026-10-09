@@ -1055,4 +1055,5 @@ export default {
   'A sua ideia virou parte do Syden. Obrigado por ajudar a construir isto.': 'ሐሳብዎ አሁን የSyden አካል ነው። ይህን ለመገንባት ስለረዱ እናመሰግናለን።',
   'Recompensa': 'ሽልማት',
   'Item novo: {nome}': 'አዲስ ዕቃ፦ {nome}',
+  'Voz conectada': 'ድምፅ ተገናኝቷል',
 } satisfies Record<string, string>;

@@ -1125,4 +1125,5 @@ export default {
   'Voz metálica de robô de filme antigo.': 'Veu metàl·lica de robot de pel·lícula antiga.',
   'Vozes juntas': 'Veus juntes',
   'ZECA': 'PERE',
+  'Voz conectada': 'Veu connectada',
 } satisfies Record<string, string>;

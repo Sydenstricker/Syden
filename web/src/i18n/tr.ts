@@ -1054,4 +1054,5 @@ export default {
   'Recompensa': 'Ödül',
   'Item novo: {nome}': 'Yeni öğe: {nome}',
   'Dia e noite': 'Gündüz ve gece',
+  'Voz conectada': 'Ses bağlı',
 } satisfies Record<string, string>;
