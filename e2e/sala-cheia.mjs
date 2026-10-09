@@ -96,6 +96,53 @@ if (!sala) {
 }
 console.log(`Sala encontrada: "${sala.name}" (#${sala.id})\n`);
 
+// ---------- --chamada: cada pessoa entra DE VERDADE, num navegador ----------
+//
+// Pelo socket, elas aparecem na lista da sala mas não entram na chamada (o LiveKit), e o palco da foto ficava com um
+// quadro só, o de quem fotografa, no meio da tela preta (09/10/2026). Aqui cada uma abre o app num Chrome escondido e
+// clica na sala como qualquer pessoa, com o microfone falso do próprio Chrome (um apito) — sem câmera e sem tela:
+// transmitir tela pediria capturar a tela de verdade deste computador, e isso não se faz.
+if (process.argv.includes('--chamada')) {
+  const { chromium } = await import('playwright-core');
+  const { dispensarPresentes } = await import('./ajuda.mjs');
+  const SITE = process.env.SITE ?? 'https://syden.chat/app/';
+  const CHROME = [
+    process.env.CHROME_PATH,
+    'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+    '/usr/bin/google-chrome',
+  ].filter(Boolean)[0];
+  const navegador = await chromium.launch({
+    ...(CHROME ? { executablePath: CHROME } : {}),
+    args: ['--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required'],
+  });
+  for (const nome of GENTE) {
+    const contexto = await navegador.newContext({ locale: 'pt-BR', permissions: ['microphone'] });
+    const page = await contexto.newPage();
+    await page.goto(SITE, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await page.getByLabel('Nome de usuário').fill(nome);
+    await page.getByLabel('Senha').fill(SENHA);
+    await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+    await page.locator('.quarto').waitFor({ timeout: 45_000 });
+    await dispensarPresentes(page);
+    await page.locator(`.rail-item[title="${COMUNIDADE}"]`).click();
+    await page.locator('.channel-name', { hasText: sala.name }).first().click();
+    if (!(await page.locator('.voice-panel-status').waitFor({ timeout: 30_000 }).then(() => true, () => false))) {
+      console.error(`  ✗ ${nome} não conseguiu entrar na chamada`);
+      continue;
+    }
+    // Uma com o microfone fechado: a foto fica mais parecida com uma chamada de verdade do que quatro iguais.
+    if (nome === 'bento') await page.locator('.user-panel').getByRole('button', { name: 'Silenciar', exact: true }).click().catch(() => {});
+    console.log(`  ✓ ${nome} está na chamada`);
+  }
+  console.log(`\nDEIXE ESTA JANELA ABERTA. Noutra, tire a foto:  node e2e/capturas-da-loja.mjs`);
+  console.log('Ctrl+C para esvaziar a sala.');
+  const sair = async () => { console.log('\nSaindo da sala…'); await navegador.close().catch(() => {}); process.exit(0); };
+  process.on('SIGINT', sair);
+  process.on('SIGTERM', sair);
+  await new Promise(() => {});
+}
+
 // ---------- Cada pessoa abre a sua conexão e entra ----------
 const conexoes = [];
 

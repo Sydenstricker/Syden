@@ -377,45 +377,27 @@ for (const idioma of IDIOMAS) {
     console.log('    (não achei o balão do Guarda-roupa na vila — tire esta à mão)');
   }
 
-  // 4. OS AMIGOS.
+  // 4. A CHAMADA.
   //
-  //    Antes esta era a antessala de uma sala de voz, e não acrescentava nada: numa comunidade de
-  //    demonstração não há ninguém em chamada, então a foto era uma sala vazia com um botão. Voz é
-  //    o coração do Syden, mas não dá para simular gente numa chamada — quem está numa sala vive na
-  //    memória do servidor, não no banco, e forjar isso seria construir um teatro inteiro para uma
-  //    foto.
-  //
-  //    A tela de amigos, ao contrário, fica cheia sozinha: as pessoas da comunidade de demonstração
-  //    aparecem como sugestões, com o motivo escrito ao lado de cada uma.
-  // 5. A CHAMADA (só se houver gente na sala).
-  //
-  //    Depende de e2e/sala-cheia.mjs estar rodando noutra janela: sem ele a sala está vazia e a
-  //    foto não diz nada, que era o problema da versão anterior. Quando há gente, a antessala
-  //    mostra os avatares e os nomes de quem está dentro.
-  console.log('  5. A chamada');
+  //    Depende de `node e2e/sala-cheia.mjs --chamada` rodando noutra janela: com ele, as pessoas da demonstração
+  //    entram DE VERDADE na chamada (cada uma num navegador), e o palco mostra um quadro por pessoa. Sem o --chamada
+  //    elas só aparecem na lista, e o palco ficava com um quadro só — o de quem fotografa — no meio da tela preta.
+  console.log('  4. A chamada');
   const salaDeVoz = page.locator('.channel-name').filter({ hasText: /Sala/ }).first();
   if (await salaDeVoz.isVisible().catch(() => false)) {
     await salaDeVoz.click();
-    // Quem já está na chamada vê o palco (os quadros de cada pessoa); quem não está, a antessala com os avatares.
-    await page.locator('.stage .tile, .voice-lobby-avatars > *').first().waitFor({ timeout: 8_000 }).catch(() => {});
+    await page.locator('.stage .tile').nth(2).waitFor({ timeout: 15_000 }).catch(() => {});
     await page.waitForTimeout(1500);
-    const naSala = await page.locator('.stage .tile, .voice-lobby-avatars > *').count().catch(() => 0);
-    if (naSala > 0) {
-      await foto('5-chamada', 1500);
+    const quadros = await page.locator('.stage .tile').count().catch(() => 0);
+    if (quadros >= 3) {
+      await foto('4-chamada', 1500);
     } else {
-      console.log('    (a sala está vazia — rode e2e/sala-cheia.mjs noutra janela e refaça só esta)');
+      console.log(`    (só ${quadros} quadro(s) no palco — rode \`node e2e/sala-cheia.mjs --chamada\` noutra janela e refaça)`);
     }
   }
 
-  console.log('  4. Os amigos');
-  // O quadro de Amigos só existe na home, e a foto da chamada deixou a tela dentro da comunidade.
-  await voltarParaAVila();
-  if (await abrirBalao('Amigos')) {
-    await foto('4-amigos', 1800);
-    await voltarParaAVila();
-  } else {
-    console.log('    (não achei o balão de Amigos na vila — tire esta à mão)');
-  }
+  // A foto de Amigos SAIU em 09/10/2026: a conta de teste não tem amigos, e a tela dizia "Você ainda não tem amigos
+  // no Syden" — numa vitrine, isso vende o contrário do app.
 }
 
 // Devolve o Syden ao português: a conta fica como estava, e o revisor da Microsoft (que entra com
