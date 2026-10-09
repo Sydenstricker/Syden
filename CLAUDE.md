@@ -394,7 +394,16 @@ ficou combinado:
 - **Móvel que sai cortado ou embutido: gerar AVULSO** (`novo/quarto/avulso.mjs`) e repintar só a forma no lugar. **Área
   que precisa virar máscara (o vão da janela aberta): pedir magenta puro** — funcionou de primeira.
 - **A home do app já é o quarto HÍBRIDO** (`web/src/Quarto.tsx`, imagens por `hibrido/exportar.mjs`), decisão dele de
-  08/10/2026: enquanto o quarto de móveis soltos evolui em `novo/quarto/`, o do conceito fica na home.
+  08/10/2026: enquanto o quarto de móveis soltos evolui em `novo/quarto/`, o do conceito fica na home. No app: o
+  guarda-roupa são as GAVETAS da cama (o "armarinho com o coelho" é o gabinete do PC); computador, gabinete, vaso e
+  pôster são só desenho (a escolha de coelhos saiu até haver outros coelhos); o quadrado escuro do conceito foi tirado
+  na exportação; o quarto tem no máximo 626 px e 72% da altura. Mover/girar móveis NÃO está no app (só na página de
+  teste do quarto novo).
+- **Para o quarto novo virar a home:** recheio (plantas, quadros, objetos sobre os móveis), os objetos com função
+  (fone, quadro, gavetas, janela, abajur), a montagem virar componente do app, e a arrumação de cada pessoa guardada
+  no servidor. Depois: animação na vista, variações de tapete (cor por código), mais móveis que giram.
+- **Pendente pequeno:** a caixa de ideias ainda diz "aqui embaixo da vila" (frase traduzida em 71 idiomas: trocar e
+  retraduzir).
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
