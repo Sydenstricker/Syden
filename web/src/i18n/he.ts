@@ -212,7 +212,6 @@ export default {
   'Código de convite': 'קוד הזמנה',
   'Código de convite inválido.': 'קוד ההזמנה לא תקין.',
   'Código novo criado. O anterior parou de funcionar.': 'נוצר קוד חדש. הקודם הפסיק לעבוד.',
-  'Coelhos': 'ארנבים',
   'Colar imagem': 'להדביק תמונה',
   'Cole aqui o código que alguém te passou.': 'כאן מדביקים את הקוד שקיבלת ממישהו.',
   'Com a palavra': 'רשות הדיבור',
@@ -348,7 +347,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'כאן בוחרים את השפה של Syden. היא חלה מיד, רק לך, ונשמרת במחשב הזה.',
   'Escolha o selo': 'בחירת חותם',
-  'Escolha o seu': 'לבחור את שלך',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'בחירת המשתתפים. עם יותר מאדם אחד, זו שיחה קבוצתית.',
   'Escolha o coelho da estátua da praça.': 'בחירת הארנב לפסל שבכיכר.',
   'Escolher emoji': 'בחירת אימוג׳י',

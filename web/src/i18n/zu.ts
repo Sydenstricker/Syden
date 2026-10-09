@@ -216,7 +216,6 @@ export default {
   'Código de convite': 'Ikhodi yesimemo',
   'Código de convite inválido.': 'Ikhodi yesimemo ayivumelekile.',
   'Código novo criado. O anterior parou de funcionar.': 'Ikhodi entsha yenziwe. Endala ayisasebenzi.',
-  'Coelhos': 'Onogwaja',
   'Colar imagem': 'Namathisela isithombe',
   'Cole aqui o código que alguém te passou.': 'Namathisela lapha ikhodi oyinikwe ngothile.',
   'Com a palavra': 'Onethuba lokukhuluma',
@@ -356,7 +355,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Khetha lapha ulimi lwe-Syden. Lusebenza ngokushesha, kuwe kuphela, futhi lugcinwa kule khompyutha.',
   'Escolha o selo': 'Khetha uphawu',
-  'Escolha o seu': 'Khetha okwakho',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Khetha ukuthi ubani ongenayo. Uma bengaphezu komuntu oyedwa, iba yingxoxo yeqembu.',
   'Escolha o coelho da estátua da praça.': 'Khetha unogwaja wesithombe esisesigcawini.',

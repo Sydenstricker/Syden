@@ -203,7 +203,6 @@ export default {
   'Código de convite': 'ဖိတ်ခေါ်ကုဒ်',
   'Código de convite inválido.': 'ဖိတ်ခေါ်ကုဒ် မမှန်ပါ။',
   'Código novo criado. O anterior parou de funcionar.': 'ကုဒ်အသစ် ဖန်တီးပြီး။ အဟောင်းက အလုပ်မလုပ်တော့ပါ။',
-  'Coelhos': 'ယုန်များ',
   'Colar imagem': 'ပုံ ကူးထည့်ရန်',
   'Cole aqui o código que alguém te passou.': 'တစ်ယောက်ယောက် ပေးထားတဲ့ ကုဒ်ကို ဒီမှာ ကူးထည့်ပါ။',
   'Com a palavra': 'စကားပြောခွင့်ရသူ',
@@ -337,7 +336,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden ရဲ့ ဘာသာစကားကို ဒီမှာ ရွေးပါ။ ချက်ချင်း သက်ရောက်ပြီး သင့်အတွက်သာ ဖြစ်ကာ ဒီကွန်ပျူတာမှာ သိမ်းထားပါမယ်။',
   'Escolha o selo': 'တံဆိပ်တုံး ရွေးပါ',
-  'Escolha o seu': 'ကိုယ့်ဟာ ရွေးပါ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'ဘယ်သူ ပါမလဲ ရွေးပါ။ တစ်ယောက်ထက် ပိုရင် အဖွဲ့စကားဝိုင်း ဖြစ်ပါမယ်။',
   'Escolha o coelho da estátua da praça.': 'ရင်ပြင်ရှိ ရုပ်တုအတွက် ယုန်ကို ရွေးပါ။',
   'Escolher emoji': 'အီမိုဂျီ ရွေးရန်',

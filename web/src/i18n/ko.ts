@@ -105,7 +105,6 @@ export default {
   'Chegou. Obrigado!': '잘 받았어요. 고마워요!',
   'Clique na sala para entrar e assistir.': '방을 눌러 들어가서 보세요.',
   'Código de convite': '초대 코드',
-  Coelhos: '토끼',
   'Cole aqui o código que alguém te passou.': '받은 코드를 여기에 붙여넣으세요.',
   'Com a palavra': '발언 중',
   'Com gente e sem conversa': '사람은 있는데 말이 없어요',
@@ -197,7 +196,6 @@ export default {
   'Escolha a sala…': '방을 고르세요…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     '여기서 Syden의 언어를 고르세요. 바로 적용되고, 나에게만 해당되며, 이 컴퓨터에 저장돼요.',
-  'Escolha o seu': '마음에 드는 걸로',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '누가 들어올지 고르세요. 두 명 이상이면 단체 대화가 돼요.',
   'Escolha o coelho da estátua da praça.': '광장 동상이 될 토끼를 고르세요.',
   'Escolher emoji': '이모지 선택',

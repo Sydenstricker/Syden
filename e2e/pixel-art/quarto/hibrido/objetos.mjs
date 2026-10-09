@@ -11,7 +11,10 @@ export const OBJETOS = [
   { id: 'cortica', nome: 'Caixa de ideias', oque: 'quadro de cortiça', caixa: [237, 73, 265, 113], dica: 'the whole rectangular board hanging on the wall, including its frame and the notes pinned on it', modo: 'remove_simple_background' },
   { id: 'computador', nome: 'Mini-games', oque: 'computador', caixa: [211, 115, 268, 173], dica: 'computer monitor and keyboard on a desk' },
   { id: 'fone', nome: 'Salas de voz', oque: 'fone de ouvido', caixa: [271, 129, 291, 153], dica: 'headphones' },
-  { id: 'armario', nome: 'Guarda-roupa', oque: 'armarinho com o coelho', caixa: [266, 193, 298, 240], dica: 'small dark cabinet with a rabbit logo' },
+  // O "armarinho com o coelho" é o GABINETE do computador (correção dele, 09/10/2026): o guarda-roupa são as gavetas.
+  { id: 'armario', nome: 'Mini-games', oque: 'gabinete do computador', caixa: [266, 193, 298, 240], dica: 'small dark cabinet with a rabbit logo' },
+  // As gavetas embaixo da cama: a máscara é um polígono à mão (gavetas.mjs), porque a forma é uma faixa simples.
+  { id: 'gavetas', nome: 'Guarda-roupa', oque: 'gavetas embaixo da cama', caixa: [116, 158, 193, 211], poligono: [[117, 193], [189, 159], [191, 175], [120, 209]] },
   { id: 'vaso', nome: 'Plantar cenoura', oque: 'vaso', caixa: [25, 178, 56, 212], dica: 'potted plant' },
 ];
 

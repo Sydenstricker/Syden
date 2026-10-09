@@ -212,7 +212,6 @@ export default {
   'Código de convite': 'Код запрошення',
   'Código de convite inválido.': 'Недійсний код запрошення.',
   'Código novo criado. O anterior parou de funcionar.': 'Створено новий код. Попередній більше не працює.',
-  'Coelhos': 'Кролики',
   'Colar imagem': 'Вставити зображення',
   'Cole aqui o código que alguém te passou.': 'Встав сюди код, який тобі дали.',
   'Com a palavra': 'Має слово',
@@ -348,7 +347,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Вибери тут мову Syden. Діє одразу, лише для тебе, і зберігається на цьому комп’ютері.',
   'Escolha o selo': 'Вибери печатку',
-  'Escolha o seu': 'Вибери свого',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Вибери, хто долучиться. Якщо людей більше однієї, це буде групова розмова.',
   'Escolha o coelho da estátua da praça.': 'Обери кролика для статуї на площі.',
   'Escolher emoji': 'Вибрати емодзі',

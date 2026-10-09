@@ -107,7 +107,6 @@ export default {
   'Chegou. Obrigado!': 'পৌঁছেছে। ধন্যবাদ!',
   'Clique na sala para entrar e assistir.': 'ঢুকে দেখতে রুমে ক্লিক করো।',
   'Código de convite': 'আমন্ত্রণের কোড',
-  Coelhos: 'খরগোশ',
   'Cole aqui o código que alguém te passou.': 'তোমাকে যে কোডটা দেওয়া হয়েছে, এখানে বসাও।',
   'Com a palavra': 'এখন এর পালা',
   'Com gente e sem conversa': 'লোক আছে, কথা নেই',
@@ -200,7 +199,6 @@ export default {
   'Escolha a sala…': 'রুম বেছে নাও…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'এখানে Syden-এর ভাষা বেছে নাও। সঙ্গে সঙ্গে কাজ করে, শুধু তোমার জন্য, আর এই কম্পিউটারেই থেকে যায়।',
-  'Escolha o seu': 'তোমারটা বেছে নাও',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
   'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',

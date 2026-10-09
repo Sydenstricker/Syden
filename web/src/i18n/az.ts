@@ -197,7 +197,6 @@ export default {
   'Código de convite': 'Dəvət kodu',
   'Código de convite inválido.': 'Dəvət kodu yanlışdır.',
   'Código novo criado. O anterior parou de funcionar.': 'Yeni kod yaradıldı. Əvvəlki artıq işləmir.',
-  'Coelhos': 'Dovşanlar',
   'Colar imagem': 'Şəkli yapışdır',
   'Cole aqui o código que alguém te passou.': 'Kiminsə sənə verdiyi kodu bura yapışdır.',
   'Com a palavra': 'Söz onundadır',
@@ -330,7 +329,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden-in dilini burada seç. Dərhal qüvvəyə minir, yalnız sənin üçün, və bu kompüterdə saxlanılır.',
   'Escolha o selo': 'Möhürü seç',
-  'Escolha o seu': 'Özününkünü seç',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Kimin qoşulacağını seç. Birdən çox adam olsa, qrup söhbəti olur.',
   'Escolha o coelho da estátua da praça.': 'Meydandakı heykəl üçün dovşanı seç.',
   'Escolher emoji': 'Emoji seç',

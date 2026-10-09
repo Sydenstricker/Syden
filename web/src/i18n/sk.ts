@@ -215,7 +215,6 @@ export default {
   'Código de convite': 'Kód pozvánky',
   'Código de convite inválido.': 'Neplatný kód pozvánky.',
   'Código novo criado. O anterior parou de funcionar.': 'Nový kód vytvorený. Predchádzajúci už nefunguje.',
-  'Coelhos': 'Králiky',
   'Colar imagem': 'Vložiť obrázok',
   'Cole aqui o código que alguém te passou.': 'Sem vlož kód, ktorý ti niekto dal.',
   'Com a palavra': 'Má slovo',
@@ -355,7 +354,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Tu si vyber jazyk Sydenu. Platí hneď, iba pre teba, a uloží sa v tomto počítači.',
   'Escolha o selo': 'Vyber pečať',
-  'Escolha o seu': 'Vyber si svoj',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vyber, kto bude v konverzácii. S viacerými ľuďmi z toho bude skupinová konverzácia.',
   'Escolha o coelho da estátua da praça.': 'Vyber zajaca na sochu na námestí.',

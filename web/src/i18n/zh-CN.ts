@@ -107,7 +107,6 @@ export default {
   'Chegou. Obrigado!': '收到了，谢谢！',
   'Clique na sala para entrar e assistir.': '点击房间就能进去看。',
   'Código de convite': '邀请码',
-  Coelhos: '兔子',
   'Cole aqui o código que alguém te passou.': '把别人给你的邀请码粘贴在这里。',
   'Com a palavra': '正在发言',
   'Com gente e sem conversa': '有人，但没人说话',
@@ -198,7 +197,6 @@ export default {
   'Escolha a sala…': '选择房间…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     '在这里选择 Syden 的语言。马上生效，只对你有效，并保存在这台电脑上。',
-  'Escolha o seu': '挑一个',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '选择谁加入。超过一个人就变成群聊。',
   'Escolha o coelho da estátua da praça.': '选择广场雕像上的兔子。',
   'Escolher emoji': '选择表情',

@@ -232,7 +232,6 @@ export default {
   'Código de convite': 'მოწვევის კოდი',
   'Código de convite inválido.': 'მოწვევის კოდი არასწორია.',
   'Código novo criado. O anterior parou de funcionar.': 'ახალი კოდი შეიქმნა. წინამ მუშაობა შეწყვიტა.',
-  'Coelhos': 'კურდღლები',
   'Colar imagem': 'სურათის ჩასმა',
   'Cole aqui o código que alguém te passou.': 'ჩასვი აქ კოდი, რომელიც ვიღაცამ მოგცა.',
   'Com a palavra': 'სიტყვა აქვს',
@@ -374,7 +373,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'აქ აირჩიე Syden-ის ენა. მაშინვე მოქმედებს, მხოლოდ შენთვის, და ამ კომპიუტერში ინახება.',
   'Escolha o selo': 'აირჩიე ბეჭედი',
-  'Escolha o seu': 'აირჩიე შენი',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'აირჩიე, ვინ შემოვა. ერთზე მეტი ადამიანით ჯგუფური საუბარი გამოდის.',
   'Escolha o coelho da estátua da praça.': 'აირჩიე კურდღელი მოედნის ქანდაკებისთვის.',

@@ -226,7 +226,6 @@ export default {
   'Código de convite': 'Kod zaproszenia',
   'Código de convite inválido.': 'Nieprawidłowy kod zaproszenia.',
   'Código novo criado. O anterior parou de funcionar.': 'Utworzono nowy kod. Poprzedni przestał działać.',
-  'Coelhos': 'Króliki',
   'Colar imagem': 'Wklej obraz',
   'Cole aqui o código que alguém te passou.': 'Wklej tutaj kod, który ktoś ci dał.',
   'Com a palavra': 'Ma głos',
@@ -362,7 +361,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Wybierz tutaj język Syden. Działa od razu, tylko dla ciebie, i zostaje zapisany na tym komputerze.',
   'Escolha o selo': 'Wybierz pieczęć',
-  'Escolha o seu': 'Wybierz swojego',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Wybierz, kto dołącza. Z więcej niż jedną osobą to będzie rozmowa grupowa.',
   'Escolha o coelho da estátua da praça.': 'Wybierz królika na pomnik na placu.',
   'Escolher emoji': 'Wybierz emoji',

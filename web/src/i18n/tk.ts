@@ -217,7 +217,6 @@ export default {
   'Código de convite': 'Çakylyk kody',
   'Código de convite inválido.': 'Nädogry çakylyk kody.',
   'Código novo criado. O anterior parou de funcionar.': 'Täze kod döredildi. Öňki kod indi işlänok.',
-  'Coelhos': 'Towşanlar',
   'Colar imagem': 'Surat goý',
   'Cole aqui o código que alguém te passou.': 'Saňa berlen kody şu ýere goý.',
   'Com a palavra': 'Söz onda',
@@ -357,7 +356,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden-iň dilini şu ýerde saýla. Derrew güýje girýär, diňe seniň üçin, we şu kompýuterde saklanýar.',
   'Escolha o selo': 'Möhüri saýla',
-  'Escolha o seu': 'Özüňkini saýla',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimiň girjekdigini saýla. Birden köp adam bilen topar söhbetine öwrülýär.',
   'Escolha o coelho da estátua da praça.': 'Meýdançadaky heýkel üçin towşany saýla.',

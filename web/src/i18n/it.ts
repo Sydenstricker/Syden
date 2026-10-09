@@ -106,7 +106,6 @@ export default {
   'Chegou. Obrigado!': 'Arrivata. Grazie!',
   'Clique na sala para entrar e assistir.': 'Clicca sulla stanza per entrare e guardare.',
   'Código de convite': 'Codice di invito',
-  Coelhos: 'Conigli',
   'Cole aqui o código que alguém te passou.': 'Incolla qui il codice che ti hanno dato.',
   'Com a palavra': 'Ha la parola',
   'Com gente e sem conversa': 'C’è gente ma non si parla',
@@ -200,7 +199,6 @@ export default {
   'Escolha a sala…': 'Scegli la stanza…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Scegli qui la lingua di Syden. Cambia subito, vale solo per te, e resta salvata su questo computer.',
-  'Escolha o seu': 'Scegli il tuo',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
   'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',

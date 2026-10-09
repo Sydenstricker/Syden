@@ -215,7 +215,6 @@ export default {
   'Código de convite': 'Invitasjonskode',
   'Código de convite inválido.': 'Ugyldig invitasjonskode.',
   'Código novo criado. O anterior parou de funcionar.': 'Ny kode laget. Den forrige virker ikke lenger.',
-  'Coelhos': 'Kaniner',
   'Colar imagem': 'Lim inn bilde',
   'Cole aqui o código que alguém te passou.': 'Lim inn koden du har fått av noen, her.',
   'Com a palavra': 'Har ordet',
@@ -355,7 +354,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Velg språket til Syden her. Det gjelder med en gang, bare for deg, og lagres på denne datamaskinen.',
   'Escolha o selo': 'Velg segl',
-  'Escolha o seu': 'Velg ditt',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Velg hvem som er med. Med flere enn én person blir det en gruppesamtale.',
   'Escolha o coelho da estátua da praça.': 'Velg kaninen til statuen på torget.',

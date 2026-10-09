@@ -209,7 +209,6 @@ export default {
   'Código de convite': 'Uitnodigingskode',
   'Código de convite inválido.': 'Ongeldige uitnodigingskode.',
   'Código novo criado. O anterior parou de funcionar.': 'Nuwe kode geskep. Die vorige een werk nie meer nie.',
-  'Coelhos': 'Hase',
   'Colar imagem': 'Plak prent',
   'Cole aqui o código que alguém te passou.': 'Plak hier die kode wat iemand vir jou gegee het.',
   'Com a palavra': 'Het die woord',
@@ -349,7 +348,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Kies hier Syden se taal. Dit geld dadelik, net vir jou, en word op hierdie rekenaar gestoor.',
   'Escolha o selo': 'Kies die seël',
-  'Escolha o seu': 'Kies joune',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie inkom. Met meer as een persoon word dit ’n groepgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies die haas vir die standbeeld op die plein.',

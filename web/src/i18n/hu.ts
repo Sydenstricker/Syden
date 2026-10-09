@@ -216,7 +216,6 @@ export default {
   'Código de convite': 'Meghívókód',
   'Código de convite inválido.': 'Érvénytelen meghívókód.',
   'Código novo criado. O anterior parou de funcionar.': 'Új kód létrehozva. Az előző már nem működik.',
-  'Coelhos': 'Nyuszik',
   'Colar imagem': 'Kép beillesztése',
   'Cole aqui o código que alguém te passou.': 'Illeszd be ide a kódot, amit valakitől kaptál.',
   'Com a palavra': 'Szót kapott',
@@ -356,7 +355,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Itt választhatod ki a Syden nyelvét. Azonnal érvényes, csak neked, és ezen a gépen marad mentve.',
   'Escolha o selo': 'Válassz pecsétet',
-  'Escolha o seu': 'Válaszd ki a sajátodat',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Válaszd ki, ki legyen benne. Több emberrel csoportos beszélgetés lesz belőle.',
   'Escolha o coelho da estátua da praça.': 'Válaszd ki a nyulat a téri szoborhoz.',

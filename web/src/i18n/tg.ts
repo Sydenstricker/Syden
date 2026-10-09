@@ -216,7 +216,6 @@ export default {
   'Código de convite': 'Рамзи даъват',
   'Código de convite inválido.': 'Рамзи даъват нодуруст аст.',
   'Código novo criado. O anterior parou de funcionar.': 'Рамзи нав сохта шуд. Рамзи пешина дигар кор намекунад.',
-  'Coelhos': 'Харгӯшҳо',
   'Colar imagem': 'Гузоштани тасвир',
   'Cole aqui o código que alguém te passou.': 'Рамзеро, ки касе ба шумо дод, ин ҷо гузоред.',
   'Com a palavra': 'Сухан дорад',
@@ -356,7 +355,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Забони Syden-ро ин ҷо интихоб кунед. Фавран, танҳо барои шумо амал мекунад ва дар ҳамин компютер нигоҳ дошта мешавад.',
   'Escolha o selo': 'Мӯҳрро интихоб кунед',
-  'Escolha o seu': 'Аз они худро интихоб кунед',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Интихоб кунед, ки кӣ ворид мешавад. Бо зиёда аз як нафар, сӯҳбати гурӯҳӣ мешавад.',
   'Escolha o coelho da estátua da praça.': 'Барои ҳайкали майдон харгӯшро интихоб кун.',

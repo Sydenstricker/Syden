@@ -216,7 +216,6 @@ export default {
   'Código de convite': 'ລະຫັດເຊີນ',
   'Código de convite inválido.': 'ລະຫັດເຊີນບໍ່ຖືກຕ້ອງ',
   'Código novo criado. O anterior parou de funcionar.': 'ສ້າງລະຫັດໃໝ່ແລ້ວ ລະຫັດເກົ່າໃຊ້ບໍ່ໄດ້ອີກ',
-  'Coelhos': 'ກະຕ່າຍ',
   'Colar imagem': 'ວາງຮູບ',
   'Cole aqui o código que alguém te passou.': 'ວາງລະຫັດທີ່ໃຜຜູ້ໜຶ່ງໃຫ້ເຈົ້າໄວ້ທີ່ນີ້',
   'Com a palavra': 'ໄດ້ຮັບສິດເວົ້າ',
@@ -356,7 +355,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'ເລືອກພາສາຂອງ Syden ທີ່ນີ້ ໃຊ້ໄດ້ທັນທີ ສຳລັບເຈົ້າຄົນດຽວ ແລະເກັບໄວ້ໃນຄອມພິວເຕີນີ້',
   'Escolha o selo': 'ເລືອກຕາປະທັບ',
-  'Escolha o seu': 'ເລືອກຂອງເຈົ້າ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ເລືອກວ່າໃຜຈະເຂົ້າ ຖ້າຫຼາຍກວ່າໜຶ່ງຄົນ ຈະກາຍເປັນການສົນທະນາກຸ່ມ',
   'Escolha o coelho da estátua da praça.': 'ເລືອກກະຕ່າຍສຳລັບຮູບປັ້ນກາງເດີ່ນ.',

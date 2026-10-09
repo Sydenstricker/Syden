@@ -217,7 +217,6 @@ export default {
   'Código de convite': 'Kvietimo kodas',
   'Código de convite inválido.': 'Netinkamas kvietimo kodas.',
   'Código novo criado. O anterior parou de funcionar.': 'Sukurtas naujas kodas. Ankstesnis nebeveikia.',
-  'Coelhos': 'Triušiai',
   'Colar imagem': 'Įklijuoti paveikslėlį',
   'Cole aqui o código que alguém te passou.': 'Įklijuok čia kodą, kurį tau kažkas davė.',
   'Com a palavra': 'Turi žodį',
@@ -357,7 +356,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Čia pasirink Syden kalbą. Galioja iš karto, tik tau, ir išsaugoma šiame kompiuteryje.',
   'Escolha o selo': 'Pasirink antspaudą',
-  'Escolha o seu': 'Pasirink savo',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pasirink, kas dalyvaus. Su keliais žmonėmis tai taps grupės pokalbiu.',
   'Escolha o coelho da estátua da praça.': 'Išsirink kiškį aikštės statulai.',

@@ -212,7 +212,6 @@ export default {
   'Código de convite': 'Код за покана',
   'Código de convite inválido.': 'Невалиден код за покана.',
   'Código novo criado. O anterior parou de funcionar.': 'Създаден е нов код. Предишният вече не работи.',
-  'Coelhos': 'Зайчета',
   'Colar imagem': 'Постави изображение',
   'Cole aqui o código que alguém te passou.': 'Постави тук кода, който някой ти е дал.',
   'Com a palavra': 'Има думата',
@@ -352,7 +351,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Избери тук езика на Syden. Важи веднага, само за теб, и се пази на този компютър.',
   'Escolha o selo': 'Избери печат',
-  'Escolha o seu': 'Избери своя',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Избери кой да влезе. С повече от един човек става групов разговор.',
   'Escolha o coelho da estátua da praça.': 'Избери заека за статуята на площада.',

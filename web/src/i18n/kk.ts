@@ -211,7 +211,6 @@ export default {
   'Código de convite': 'Шақыру коды',
   'Código de convite inválido.': 'Шақыру коды жарамсыз.',
   'Código novo criado. O anterior parou de funcionar.': 'Жаңа код жасалды. Алдыңғысы енді жұмыс істемейді.',
-  'Coelhos': 'Қояндар',
   'Colar imagem': 'Суретті қою',
   'Cole aqui o código que alguém te passou.': 'Біреу берген кодты осында қойыңыз.',
   'Com a palavra': 'Сөз берілген',
@@ -351,7 +350,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden тілін осы жерден таңдаңыз. Бірден, тек сіз үшін күшіне енеді және осы компьютерде сақталады.',
   'Escolha o selo': 'Мөрді таңдаңыз',
-  'Escolha o seu': 'Өзіңіздікін таңдаңыз',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Кім кіретінін таңдаңыз. Бір адамнан көп болса, топтық әңгімеге айналады.',
   'Escolha o coelho da estátua da praça.': 'Алаңдағы мүсінге қоянды таңда.',

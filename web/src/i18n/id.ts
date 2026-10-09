@@ -106,7 +106,6 @@ export default {
   'Chegou. Obrigado!': 'Sudah sampai. Terima kasih!',
   'Clique na sala para entrar e assistir.': 'Klik ruangnya untuk masuk dan menonton.',
   'Código de convite': 'Kode undangan',
-  Coelhos: 'Kelinci',
   'Cole aqui o código que alguém te passou.': 'Tempel di sini kode yang diberikan ke kamu.',
   'Com a palavra': 'Sedang dapat giliran',
   'Com gente e sem conversa': 'Ada orangnya tapi sepi',
@@ -200,7 +199,6 @@ export default {
   'Escolha a sala…': 'Pilih ruangannya…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Pilih bahasa Syden di sini. Langsung berlaku, hanya untukmu, dan tersimpan di komputer ini.',
-  'Escolha o seu': 'Pilih punyamu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
   'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',

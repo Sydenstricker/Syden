@@ -211,7 +211,6 @@ export default {
   'Código de convite': 'Codi d’invitació',
   'Código de convite inválido.': 'Codi d’invitació no vàlid.',
   'Código novo criado. O anterior parou de funcionar.': 'S’ha creat un codi nou. L’anterior ja no funciona.',
-  'Coelhos': 'Conills',
   'Colar imagem': 'Enganxar una imatge',
   'Cole aqui o código que alguém te passou.': 'Enganxa aquí el codi que t’ha passat algú.',
   'Com a palavra': 'Té la paraula',
@@ -351,7 +350,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Tria aquí la llengua del Syden. S’aplica a l’instant, només per a tu, i es desa en aquest ordinador.',
   'Escolha o selo': 'Tria el segell',
-  'Escolha o seu': 'Tria el teu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Tria qui hi entra. Amb més d’una persona, es converteix en una conversa de grup.',
   'Escolha o coelho da estátua da praça.': 'Tria el conill de l’estàtua de la plaça.',

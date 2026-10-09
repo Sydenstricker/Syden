@@ -215,7 +215,6 @@ export default {
   'Código de convite': 'Koodhka martiqaadka',
   'Código de convite inválido.': 'Koodhka martiqaadku ma shaqeeyo.',
   'Código novo criado. O anterior parou de funcionar.': 'Koodh cusub ayaa la sameeyay. Kii hore wuu joogsaday.',
-  'Coelhos': 'Bakaylayaal',
   'Colar imagem': 'Dhaji sawir',
   'Cole aqui o código que alguém te passou.': 'Halkan ku dhaji koodhka qof ku siiyay.',
   'Com a palavra': 'Hadalka haya',
@@ -355,7 +354,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Halkan ka dooro luqadda Syden. Isla markiiba way shaqaysaa, adiga oo keliya, waxaana lagu kaydiyaa kombiyuutarkan.',
   'Escolha o selo': 'Dooro summadda',
-  'Escolha o seu': 'Dooro taada',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Dooro cidda soo galaysa. Haddii ay ka badan yihiin hal qof, waxay noqonaysaa wadahadal koox.',
   'Escolha o coelho da estátua da praça.': 'Dooro bakaylaha taallada fagaaraha.',

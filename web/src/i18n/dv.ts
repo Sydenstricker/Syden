@@ -224,7 +224,6 @@ export default {
   'Código de convite': 'ދަޢުވަތުގެ ކޯޑު',
   'Código de convite inválido.': 'ދަޢުވަތުގެ ކޯޑު ނުބައި.',
   'Código novo criado. O anterior parou de funcionar.': 'އާ ކޯޑެއް ހެދިއްޖެ. ކުރީގެ ކޯޑު ހުއްޓިއްޖެ.',
-  'Coelhos': 'ރެބިޓުން',
   'Colar imagem': 'ފޮޓޯ ޕޭސްޓްކުރޭ',
   'Cole aqui o código que alguém te passou.': 'މީހަކު ދީފައިވާ ކޯޑު މިތާނގައި ޕޭސްޓްކުރޭ.',
   'Com a palavra': 'ވާހަކަ ދައްކަނީ',
@@ -366,7 +365,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden ގެ ބަސް މިތާނގައި ހޮވާ. އެވަގުތު ހިނގާނެ، ހަމައެކަނި ތިބާއަށް، އަދި މި ކޮމްޕިއުޓަރުގައި ރައްކާވާނެ.',
   'Escolha o selo': 'ތައްގަނޑު ހޮވާ',
-  'Escolha o seu': 'ތިބާގެ އެއް ހޮވާ',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ވަންނާނެ މީހުން ހޮވާ. އެއް މީހަކަށް ވުރެ ގިނަ ނަމަ، ގްރޫޕް ޗެޓަކަށް ވާނެ.',
   'Escolha o coelho da estátua da praça.': 'މައިދާނުގައިވާ ސްޓެޗޫއަށް ރެބިޓެއް ހޮވާ.',

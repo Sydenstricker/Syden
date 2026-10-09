@@ -217,7 +217,6 @@ export default {
   'Código de convite': 'निम्तो कोड',
   'Código de convite inválido.': 'निम्तो कोड अमान्य छ।',
   'Código novo criado. O anterior parou de funcionar.': 'नयाँ कोड बन्यो। पुरानोले अब काम गर्दैन।',
-  'Coelhos': 'खरायोहरू',
   'Colar imagem': 'तस्बिर टाँस्नुहोस्',
   'Cole aqui o código que alguém te passou.': 'कसैले दिएको कोड यहाँ टाँस्नुहोस्।',
   'Com a palavra': 'पालो पाएका',
@@ -357,7 +356,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden को भाषा यहाँ छान्नुहोस्। तुरुन्तै, तपाईंका लागि मात्र लागू हुन्छ, र यो कम्प्युटरमा सुरक्षित रहन्छ।',
   'Escolha o selo': 'छाप छान्नुहोस्',
-  'Escolha o seu': 'आफ्नो छान्नुहोस्',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'को-को सामेल हुने छान्नुहोस्। एकभन्दा बढी मान्छे भए समूह कुराकानी बन्छ।',
   'Escolha o coelho da estátua da praça.': 'चोकको मूर्तिका लागि खरायो छान।',

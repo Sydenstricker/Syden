@@ -106,7 +106,6 @@ export default {
   'Chegou. Obrigado!': 'Binnen. Bedankt!',
   'Clique na sala para entrar e assistir.': 'Klik op de kamer om binnen te komen en te kijken.',
   'Código de convite': 'Uitnodigingscode',
-  Coelhos: 'Konijnen',
   'Cole aqui o código que alguém te passou.': 'Plak hier de code die je gekregen hebt.',
   'Com a palavra': 'Heeft het woord',
   'Com gente e sem conversa': 'Er zijn mensen maar niemand praat',
@@ -200,7 +199,6 @@ export default {
   'Escolha a sala…': 'Kies de kamer…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Kies hier de taal van Syden. Het verandert meteen, geldt alleen voor jou, en blijft op deze computer bewaard.',
-  'Escolha o seu': 'Kies die van jou',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie erbij komt. Met meer dan één persoon wordt het een groepsgesprek.',
   'Escolha o coelho da estátua da praça.': 'Kies het konijn voor het standbeeld op het plein.',

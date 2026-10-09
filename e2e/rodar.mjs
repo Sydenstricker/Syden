@@ -1,7 +1,7 @@
 // Roda os testes de ponta a ponta, um de cada vez, e conta o resultado no fim.
 //
 //   npm run test:e2e              todos
-//   npm run test:e2e -- coelhos   só um (ou alguns)
+//   npm run test:e2e -- quarto-home   só um (ou alguns)
 //
 // Cada teste roda no seu próprio processo: um que trave não leva os outros junto.
 import { spawn } from 'node:child_process';

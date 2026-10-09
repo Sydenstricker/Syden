@@ -217,7 +217,6 @@ export default {
   'Código de convite': 'Uzaicinājuma kods',
   'Código de convite inválido.': 'Nederīgs uzaicinājuma kods.',
   'Código novo criado. O anterior parou de funcionar.': 'Izveidots jauns kods. Iepriekšējais vairs nedarbojas.',
-  'Coelhos': 'Truši',
   'Colar imagem': 'Ielīmēt attēlu',
   'Cole aqui o código que alguém te passou.': 'Ielīmē šeit kodu, ko tev kāds iedeva.',
   'Com a palavra': 'Ir vārds',
@@ -357,7 +356,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Izvēlies šeit Syden valodu. Tā darbojas uzreiz, tikai tev, un tiek saglabāta šajā datorā.',
   'Escolha o selo': 'Izvēlies zīmogu',
-  'Escolha o seu': 'Izvēlies savu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izvēlies, kas piedalīsies. Ar vairākiem cilvēkiem tā kļūst par grupas sarunu.',
   'Escolha o coelho da estátua da praça.': 'Izvēlies zaķi laukuma statujai.',

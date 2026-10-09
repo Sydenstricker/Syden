@@ -216,7 +216,6 @@ export default {
   'Código de convite': 'Boðskóði',
   'Código de convite inválido.': 'Ógildur boðskóði.',
   'Código novo criado. O anterior parou de funcionar.': 'Nýr kóði búinn til. Sá fyrri virkar ekki lengur.',
-  'Coelhos': 'Kanínur',
   'Colar imagem': 'Líma mynd',
   'Cole aqui o código que alguém te passou.': 'Límdu hér kóðann sem einhver lét þig fá.',
   'Com a palavra': 'Hefur orðið',
@@ -356,7 +355,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Veldu tungumál Syden hér. Það gildir strax, bara fyrir þig, og vistast á þessari tölvu.',
   'Escolha o selo': 'Veldu innsigli',
-  'Escolha o seu': 'Veldu þitt',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Veldu hver er með. Með fleiri en einni manneskju verður það hópsamtal.',
   'Escolha o coelho da estátua da praça.': 'Veldu kanínuna fyrir styttuna á torginu.',

@@ -109,7 +109,6 @@ export default {
   'Chegou. Obrigado!': 'पहुँच गया। शुक्रिया!',
   'Clique na sala para entrar e assistir.': 'अंदर जाकर देखने के लिए रूम पर क्लिक करो।',
   'Código de convite': 'न्योते का कोड',
-  Coelhos: 'खरगोश',
   'Cole aqui o código que alguém te passou.': 'जो कोड तुम्हें मिला है, उसे यहाँ चिपकाओ।',
   'Com a palavra': 'अभी इनकी बारी',
   'Com gente e sem conversa': 'लोग हैं पर बात नहीं हो रही',
@@ -202,7 +201,6 @@ export default {
   'Escolha a sala…': 'रूम चुनो…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden की भाषा यहाँ चुनो। तुरंत लागू होती है, सिर्फ़ तुम्हारे लिए, और इसी कंप्यूटर पर सहेजी रहती है।',
-  'Escolha o seu': 'अपना चुनो',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
   'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',

@@ -204,7 +204,6 @@ export default {
   'Código de convite': 'Koodii affeerraa',
   'Código de convite inválido.': 'Koodiin affeerraa sirrii miti.',
   'Código novo criado. O anterior parou de funcionar.': 'Koodiin haaraan uumameera. Kan duraa hojii dhaabeera.',
-  'Coelhos': 'Illeenteessota',
   'Colar imagem': 'Suuraa maxxansi',
   'Cole aqui o código que alguém te passou.': 'Koodii namni siif kenne asitti maxxansi.',
   'Com a palavra': 'Carraa dubbachuu qaba',
@@ -338,7 +337,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Afaan Syden asitti filadhu. Battaluma hojjeta, siif qofa, kompiitara kana irrattis kuufama.',
   'Escolha o selo': 'Chaappaa filadhu',
-  'Escolha o seu': 'Kan kee filadhu',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': 'Eenyu akka seenu filadhu. Nama tokkoo ol yoo ta’e, haasaa gareetti jijjiirama.',
   'Escolha o coelho da estátua da praça.': 'Siidaa dirree irra dhaabbatuuf illeettii filadhu.',
   'Escolher emoji': 'Emoojii filadhu',

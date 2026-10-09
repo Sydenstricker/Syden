@@ -215,7 +215,6 @@ export default {
   'Código de convite': 'Kutsukoodi',
   'Código de convite inválido.': 'Virheellinen kutsukoodi.',
   'Código novo criado. O anterior parou de funcionar.': 'Uusi koodi luotu. Edellinen ei enää toimi.',
-  'Coelhos': 'Kanit',
   'Colar imagem': 'Liitä kuva',
   'Cole aqui o código que alguém te passou.': 'Liitä tähän koodi, jonka joku antoi sinulle.',
   'Com a palavra': 'Puheenvuorossa',
@@ -355,7 +354,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Valitse tästä Sydenin kieli. Se tulee voimaan heti, vain sinulle, ja tallentuu tälle tietokoneelle.',
   'Escolha o selo': 'Valitse sinetti',
-  'Escolha o seu': 'Valitse omasi',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Valitse, kuka on mukana. Useamman henkilön kanssa siitä tulee ryhmäkeskustelu.',
   'Escolha o coelho da estátua da praça.': 'Valitse jänis torin patsaaksi.',

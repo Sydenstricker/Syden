@@ -228,7 +228,6 @@ export default {
   'Código de convite': 'Урилгын код',
   'Código de convite inválido.': 'Урилгын код буруу байна.',
   'Código novo criado. O anterior parou de funcionar.': 'Шинэ код үүслээ. Өмнөх нь ажиллахаа болив.',
-  'Coelhos': 'Туулайнууд',
   'Colar imagem': 'Зураг буулгах',
   'Cole aqui o código que alguém te passou.': 'Хэн нэгний өгсөн кодыг энд буулга.',
   'Com a palavra': 'Үг авсан',
@@ -370,7 +369,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden-ий хэлийг энд сонго. Шууд, зөвхөн чамд хамаарах бөгөөд энэ компьютерт хадгалагдана.',
   'Escolha o selo': 'Тамгаа сонго',
-  'Escolha o seu': 'Өөрийнхөө сонго',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Хэн орохыг сонго. Нэгээс олон хүнтэй бол бүлгийн яриа болно.',
   'Escolha o coelho da estátua da praça.': 'Талбайн хөшөөнд тавих туулайгаа сонго.',

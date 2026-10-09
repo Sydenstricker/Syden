@@ -223,7 +223,6 @@ export default {
   'Código de convite': 'Taklif kodi',
   'Código de convite inválido.': 'Taklif kodi yaroqsiz.',
   'Código novo criado. O anterior parou de funcionar.': 'Yangi kod yaratildi. Avvalgisi endi ishlamaydi.',
-  'Coelhos': 'Quyonlar',
   'Colar imagem': 'Rasmni joylash',
   'Cole aqui o código que alguém te passou.': 'Kimdir sizga bergan kodni shu yerga joylang.',
   'Com a palavra': 'Soʻz berilgan',
@@ -363,7 +362,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden tilini shu yerda tanlang. Darhol, faqat siz uchun amal qiladi va shu kompyuterda saqlanadi.',
   'Escolha o selo': 'Muhrni tanlang',
-  'Escolha o seu': 'Oʻzingiznikini tanlang',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kim qoʻshilishini tanlang. Bir kishidan koʻp boʻlsa, guruh suhbatiga aylanadi.',
   'Escolha o coelho da estátua da praça.': 'Maydondagi haykal uchun quyonni tanla.',

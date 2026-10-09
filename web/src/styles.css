@@ -11888,6 +11888,9 @@ body.arrastando-barra {
 
 .quarto {
   --quarto-contorno: #f7e6c4;
+  /* As camadas do quarto (o coelho e o gato em 6, o rótulo em 10) ficam DENTRO dele: sem isto, o coelho passava por
+     cima dos painéis das salas, que são irmãos do quarto (relato de 09/10/2026). */
+  isolation: isolate;
   /* O tamanho de um pixel do quarto na tela; Quarto.tsx o mede e põe aqui. */
   --quarto-px: 2px;
   position: relative;

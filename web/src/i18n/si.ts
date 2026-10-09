@@ -215,7 +215,6 @@ export default {
   'Código de convite': 'ආරාධනා කේතය',
   'Código de convite inválido.': 'ආරාධනා කේතය වලංගු නැත.',
   'Código novo criado. O anterior parou de funcionar.': 'නව කේතයක් සෑදුවා. පෙර කේතය තවදුරටත් ක්‍රියා නොකරයි.',
-  'Coelhos': 'හාවුන්',
   'Colar imagem': 'රූපය අලවන්න',
   'Cole aqui o código que alguém te passou.': 'යමෙක් ඔබට දුන් කේතය මෙහි අලවන්න.',
   'Com a palavra': 'කතා කිරීමට අවසර ලත්',
@@ -355,7 +354,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden හි භාෂාව මෙහි තෝරන්න. එය වහාම, ඔබට පමණක් අදාළ වන අතර මෙම පරිගණකයේ සුරැකේ.',
   'Escolha o selo': 'මුද්‍රාව තෝරන්න',
-  'Escolha o seu': 'ඔබේ එක තෝරන්න',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ඇතුළු වන්නේ කවුදැයි තෝරන්න. එක් අයෙකුට වඩා සිටී නම්, එය කණ්ඩායම් සංවාදයක් වේ.',
   'Escolha o coelho da estátua da praça.': 'චතුරශ්‍රයේ ප්‍රතිමාවට හාවා තෝරන්න.',

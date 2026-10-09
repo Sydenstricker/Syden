@@ -207,7 +207,6 @@ export default {
   'Código de convite': 'Kodi i ftesës',
   'Código de convite inválido.': 'Kod ftese i pavlefshëm.',
   'Código novo criado. O anterior parou de funcionar.': 'U krijua një kod i ri. I mëparshmi nuk punon më.',
-  'Coelhos': 'Lepuj',
   'Colar imagem': 'Ngjit imazhin',
   'Cole aqui o código que alguém te passou.': 'Ngjit këtu kodin që të dha dikush.',
   'Com a palavra': 'Ka fjalën',
@@ -347,7 +346,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Zgjidh këtu gjuhën e Syden. Vlen menjëherë, vetëm për ty, dhe ruhet në këtë kompjuter.',
   'Escolha o selo': 'Zgjidh vulën',
-  'Escolha o seu': 'Zgjidh tëndin',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Zgjidh kush hyn. Me më shumë se një person, bëhet bisedë në grup.',
   'Escolha o coelho da estátua da praça.': 'Zgjidh lepurin për statujën në shesh.',

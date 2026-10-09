@@ -56,7 +56,7 @@ Quatro detalhes que custam meia hora quando se descobre na marra:
 
 ```bash
 npm run test:e2e                 # todos
-npm run test:e2e -- coelhos      # só um
+npm run test:e2e -- quarto-home  # só um
 npm run test:e2e -- ideias idioma
 ```
 
@@ -69,7 +69,7 @@ As fotos de tela vão para `e2e/fotos/` e não entram no Git.
 
 | Teste | O que prova | Precisa de |
 |---|---|---|
-| `coelhos` | a aba dos coelhos, a animação de cada um e a escolha valendo no app inteiro | API + site |
+| `quarto-home` | a home é o quarto: o rótulo acende pelo desenho, o abajur troca dia e noite, os objetos abrem o que devem, o teclado chega | API + site |
 | `ideias` | o ciclo da sugestão: enviar, o agradecimento automático, o dono acolher, o confete e a medalha | API + site, **banco limpo** |
 | `idioma` | trocar de idioma sem recarregar, e o idioma do navegador na tela de entrada | API + site |
 | `menu-elegante` | o menu do botão direito no nome de alguém: as ações, o teclado e as notas | API + site, **banco limpo** |

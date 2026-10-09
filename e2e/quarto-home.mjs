@@ -2,7 +2,8 @@
 //
 // O que se confere, num Chrome de verdade: o quarto aparece; passar o mouse num objeto acende o rótulo dele; o clique
 // acerta o DESENHO (um ponto da caixa da janela fora da janela não faz nada); o abajur troca dia e noite; os objetos
-// levam aonde devem (o pôster abre os coelhos, o fone abre as salas); e o teclado chega aos mesmos objetos.
+// levam aonde devem (o fone abre as salas, as gavetas são o guarda-roupa); o pôster é só desenho desde que a escolha de
+// coelhos saiu (09/10/2026); o coelho não passa por cima dos painéis; e o teclado chega aos mesmos objetos.
 
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
@@ -38,13 +39,13 @@ await page.waitForTimeout(300);
 const depois = await page.locator('.quarto').getAttribute('class');
 antes.includes('de-dia') !== depois.includes('de-dia') ? ok('o abajur troca dia e noite') : falhou('o abajur não trocou');
 
-// O pôster abre os coelhos.
-await page.mouse.click(...naTela(122, 60));
-(await page.locator('.vila-painel.coelhos').waitFor({ timeout: 5000 }).then(() => true, () => false))
-  ? ok('o pôster abre a escolha de coelhos')
-  : falhou('o pôster não abriu os coelhos');
-await page.keyboard.press('Escape');
-await page.locator('.vila-painel.coelhos button[aria-label="Fechar"]').click().catch(() => {});
+// O pôster é só desenho; as gavetas embaixo da cama são o guarda-roupa.
+await page.mouse.move(...naTela(122, 60));
+await page.waitForTimeout(200);
+(await page.locator('.quarto-rotulo').count()) === 0 ? ok('o pôster não acende (a escolha de coelhos saiu)') : falhou('o pôster ainda acende');
+await page.mouse.move(...naTela(150, 185));
+await page.waitForTimeout(200);
+(await rotulo()) === 'Guarda-roupa' ? ok('as gavetas embaixo da cama são o guarda-roupa') : falhou(`nas gavetas, o rótulo foi "${await rotulo()}"`);
 
 // O fone abre as salas.
 // No arco do fone, e não no meio: o meio é o vão do anel, e ali não há desenho.
@@ -52,6 +53,17 @@ await page.mouse.click(...naTela(278, 135));
 (await page.locator('.vila-painel[aria-label="Salas de voz"]').waitFor({ timeout: 5000 }).then(() => true, () => false))
   ? ok('o fone abre as salas')
   : falhou('o fone não abriu as salas');
+// O painel fica por cima do coelho: no meio do coelho, o que está na frente é o painel (ou nada do quarto).
+const [cx, cy] = naTela(112, 125);
+// O elementFromPoint ignora quem tem pointer-events: none (o coelho tem); liga-se só durante a medida.
+const naFrente = await page.evaluate(([x, y]) => {
+  const vivos = [...document.querySelectorAll('.quarto-vivo')];
+  for (const v of vivos) v.style.pointerEvents = 'auto';
+  const quem = document.elementFromPoint(x, y)?.closest('.quarto-vivo') ? 'coelho' : 'outra coisa';
+  for (const v of vivos) v.style.pointerEvents = '';
+  return quem;
+}, [cx, cy]);
+naFrente !== 'coelho' ? ok('o coelho não passa por cima do painel das salas') : falhou('o coelho aparece por cima do painel');
 
 // O teclado chega aos objetos: o foco num deles acende o rótulo.
 await page.locator('.quarto-alvo').first().focus();

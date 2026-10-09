@@ -215,7 +215,6 @@ export default {
   'Código de convite': 'Kaodin’ny fanasana',
   'Código de convite inválido.': 'Tsy manan-kery ny kaodin’ny fanasana.',
   'Código novo criado. O anterior parou de funcionar.': 'Voaforona ny kaody vaovao. Tsy mandeha intsony ny teo aloha.',
-  'Coelhos': 'Bitro',
   'Colar imagem': 'Apetaho ny sary',
   'Cole aqui o código que alguém te passou.': 'Apetaho eto ny kaody nomen’olona anao.',
   'Com a palavra': 'Manana ny fitenenana',
@@ -355,7 +354,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Safidio eto ny fitenin’ny Syden. Manan-kery avy hatrany, ho anao ihany, ary voatahiry amin’ity ordinatera ity.',
   'Escolha o selo': 'Safidio ny tombo-kase',
-  'Escolha o seu': 'Safidio ny anao',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Safidio izay hiditra. Raha mihoatra ny iray ny olona, lasa resaka an-tarika izany.',
   'Escolha o coelho da estátua da praça.': 'Fidio ny bitro ho an’ny sarivongana eo an-kianja.',

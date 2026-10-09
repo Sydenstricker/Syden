@@ -214,7 +214,6 @@ export default {
   'Código de convite': 'កូដអញ្ជើញ',
   'Código de convite inválido.': 'កូដអញ្ជើញមិនត្រឹមត្រូវ។',
   'Código novo criado. O anterior parou de funcionar.': 'បានបង្កើតកូដថ្មី។ កូដមុនលែងដំណើរការហើយ។',
-  'Coelhos': 'ទន្សាយ',
   'Colar imagem': 'បិទភ្ជាប់រូបភាព',
   'Cole aqui o código que alguém te passou.': 'បិទភ្ជាប់កូដដែលនរណាម្នាក់បានផ្តល់ឱ្យអ្នកនៅទីនេះ។',
   'Com a palavra': 'មានវេននិយាយ',
@@ -354,7 +353,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'ជ្រើសរើសភាសារបស់ Syden នៅទីនេះ។ មានប្រសិទ្ធភាពភ្លាមៗ សម្រាប់តែអ្នក ហើយរក្សាទុកនៅលើកុំព្យូទ័រនេះ។',
   'Escolha o selo': 'ជ្រើសរើសត្រា',
-  'Escolha o seu': 'ជ្រើសរើសរបស់អ្នក',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'ជ្រើសរើសអ្នកដែលចូល។ បើច្រើនជាងម្នាក់ វានឹងក្លាយជាការសន្ទនាជាក្រុម។',
   'Escolha o coelho da estátua da praça.': 'ជ្រើសរើសទន្សាយសម្រាប់រូបសំណាកនៅទីលាន។',

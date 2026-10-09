@@ -6,7 +6,6 @@ import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
-import { PainelCoelhos } from './PainelCoelhos';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
 import type { Periodo } from './Vila';
 import { useT } from './i18n';
@@ -156,7 +155,6 @@ export function Home({
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
-  const [coelhosAbertos, setCoelhosAbertos] = useState(false);
   const novidadesRef = useRef<HTMLElement | null>(null);
   const ideiasRef = useRef<HTMLDivElement | null>(null);
 
@@ -167,14 +165,15 @@ export function Home({
     setPeriodo(toggleTheme() === 'light' ? periodoClaro() : 'noite');
   }
 
-  // Cada função da home mora num objeto do quarto. O computador (Mini-games) e o vaso (Plantar cenoura) ficam só
-  // como desenho até essas funções existirem: objeto que acende e não leva a lugar nenhum afirmaria o que não é.
+  // Cada função da home mora num objeto do quarto. O computador e o gabinete (Mini-games) e o vaso (Plantar cenoura)
+  // ficam só como desenho até essas funções existirem: objeto que acende e não leva a lugar nenhum afirmaria o que não
+  // é. O pôster também: ele abria a escolha entre OurBunny e BigChunkus, que não aparecem mais em lugar nenhum da
+  // home (o coelho do quarto é o da pintura), e a escolha saiu até haver outros coelhos (09/10/2026).
   const acoes: AcoesDoQuarto = {
     fone: { rotulo: t('Salas'), sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'), onClick: () => setSalasAbertas((aberto) => !aberto) },
     quadro: { rotulo: t('Amigos'), sub: t('Quem anda com você'), onClick: aoAbrirAmigos },
-    armario: { rotulo: t('Guarda-roupa'), sub: t('Enfeites, sons e emojis'), onClick: aoAbrirGuardaRoupa },
+    gavetas: { rotulo: t('Guarda-roupa'), sub: t('Enfeites, sons e emojis'), onClick: aoAbrirGuardaRoupa },
     prateleira: { rotulo: t('Novidades'), sub: t('O que mudou no Syden'), onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
-    poster: { rotulo: t('Coelhos'), sub: t('Escolha o seu'), onClick: () => setCoelhosAbertos((aberto) => !aberto) },
     janela: { rotulo: t('Explorar'), sub: t('Entrar em outra comunidade'), onClick: aoExplorar },
     cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
@@ -186,7 +185,6 @@ export function Home({
     <div className="home">
       <div className="home-cena">
         <Quarto noite={periodo === 'noite'} acoes={acoes} />
-        {coelhosAbertos && <PainelCoelhos aoFechar={() => setCoelhosAbertos(false)} />}
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label={t('Salas de voz')}>
             <header>

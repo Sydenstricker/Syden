@@ -233,7 +233,6 @@ export default {
   'Código de convite': 'Հրավերի կոդ',
   'Código de convite inválido.': 'Հրավերի կոդն անվավեր է։',
   'Código novo criado. O anterior parou de funcionar.': 'Նոր կոդ ստեղծվեց։ Նախորդն այլևս չի գործում։',
-  'Coelhos': 'Ճագարներ',
   'Colar imagem': 'Զետեղել պատկեր',
   'Cole aqui o código que alguém te passou.': 'Զետեղիր այստեղ այն կոդը, որ քեզ տվել են։',
   'Com a palavra': 'Խոսում է',
@@ -375,7 +374,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Ընտրիր Syden-ի լեզուն այստեղ։ Գործում է անմիջապես, միայն քեզ համար, և պահվում է այս համակարգչում։',
   'Escolha o selo': 'Ընտրիր կնիքը',
-  'Escolha o seu': 'Ընտրիր քոնը',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Ընտրիր, թե ով է մտնում։ Մեկից ավելի մարդու դեպքում այն դառնում է խմբային զրույց։',
   'Escolha o coelho da estátua da praça.': 'Ընտրիր նապաստակը հրապարակի արձանի համար։',

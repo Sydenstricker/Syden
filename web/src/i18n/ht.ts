@@ -224,7 +224,6 @@ export default {
   'Código de convite': 'Kòd envitasyon',
   'Código de convite inválido.': 'Kòd envitasyon an pa valab.',
   'Código novo criado. O anterior parou de funcionar.': 'Yon nouvo kòd kreye. Ansyen an pa mache ankò.',
-  'Coelhos': 'Lapen',
   'Colar imagem': 'Kole yon imaj',
   'Cole aqui o código que alguém te passou.': 'Kole isit la kòd yon moun ba ou a.',
   'Com a palavra': 'Gen lapawòl',
@@ -366,7 +365,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Chwazi lang Syden isit la. Li mache touswit, pou ou sèlman, epi li rete sere sou òdinatè sa a.',
   'Escolha o selo': 'Chwazi so a',
-  'Escolha o seu': 'Chwazi pa w',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Chwazi kiyès ki antre. Ak plis pase yon moun, li tounen yon konvèsasyon an gwoup.',
   'Escolha o coelho da estátua da praça.': 'Chwazi lapen pou estati ki sou plas la.',

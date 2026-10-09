@@ -8,6 +8,7 @@ import mascaraArmario from './assets/quarto/mascara-armario.png';
 import mascaraComputador from './assets/quarto/mascara-computador.png';
 import mascaraCortica from './assets/quarto/mascara-cortica.png';
 import mascaraFone from './assets/quarto/mascara-fone.png';
+import mascaraGavetas from './assets/quarto/mascara-gavetas.png';
 import mascaraJanela from './assets/quarto/mascara-janela.png';
 import mascaraPoster from './assets/quarto/mascara-poster.png';
 import mascaraPrateleira from './assets/quarto/mascara-prateleira.png';
@@ -45,7 +46,9 @@ const OBJETOS: { id: string; caixa: Caixa; mascara: string }[] = [
   { id: 'cortica', caixa: [237, 73, 265, 113], mascara: mascaraCortica },
   { id: 'computador', caixa: [211, 115, 268, 173], mascara: mascaraComputador },
   { id: 'fone', caixa: [271, 129, 291, 153], mascara: mascaraFone },
+  // O "armário" é o gabinete do computador; o guarda-roupa são as gavetas embaixo da cama (correção de 09/10/2026).
   { id: 'armario', caixa: [266, 193, 298, 240], mascara: mascaraArmario },
+  { id: 'gavetas', caixa: [116, 158, 193, 211], mascara: mascaraGavetas },
   { id: 'vaso', caixa: [25, 178, 56, 212], mascara: mascaraVaso },
 ];
 const VIVOS: { id: 'coelho' | 'gato'; caixa: Caixa; src: string }[] = [

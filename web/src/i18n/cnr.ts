@@ -214,7 +214,6 @@ export default {
   'Código de convite': 'Kod pozivnice',
   'Código de convite inválido.': 'Nevažeći kod pozivnice.',
   'Código novo criado. O anterior parou de funcionar.': 'Novi kod je napravljen. Prethodni više ne radi.',
-  'Coelhos': 'Zečevi',
   'Colar imagem': 'Zalijepi sliku',
   'Cole aqui o código que alguém te passou.': 'Zalijepi ovdje kod koji ti je neko dao.',
   'Com a palavra': 'Ima riječ',
@@ -354,7 +353,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Ovdje izaberi jezik Sydena. Vrijedi odmah, samo za tebe, i čuva se na ovom računaru.',
   'Escolha o selo': 'Izaberi pečat',
-  'Escolha o seu': 'Izaberi svoj',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Izaberi ko ulazi. S više od jedne osobe postaje grupni razgovor.',
   'Escolha o coelho da estátua da praça.': 'Izaberi zeca za statuu na trgu.',

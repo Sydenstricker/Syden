@@ -212,7 +212,6 @@ export default {
   'Código de convite': 'Kutsekood',
   'Código de convite inválido.': 'Vigane kutsekood.',
   'Código novo criado. O anterior parou de funcionar.': 'Uus kood loodud. Eelmine enam ei tööta.',
-  'Coelhos': 'Jänesed',
   'Colar imagem': 'Kleebi pilt',
   'Cole aqui o código que alguém te passou.': 'Kleebi siia kood, mille keegi sulle andis.',
   'Com a palavra': 'Sõna käes',
@@ -352,7 +351,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Vali siin Sydeni keel. See kehtib kohe, ainult sinu jaoks, ja jääb selles arvutis meelde.',
   'Escolha o selo': 'Vali pitser',
-  'Escolha o seu': 'Vali oma',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Vali, kes on vestluses. Mitme inimesega saab sellest grupivestlus.',
   'Escolha o coelho da estátua da praça.': 'Vali jänes väljaku kuju jaoks.',

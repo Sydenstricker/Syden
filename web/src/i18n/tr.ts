@@ -104,7 +104,6 @@ export default {
   'Chegou. Obrigado!': 'Ulaştı. Teşekkürler!',
   'Clique na sala para entrar e assistir.': 'Girip izlemek için odaya tıkla.',
   'Código de convite': 'Davet kodu',
-  Coelhos: 'Tavşanlar',
   'Cole aqui o código que alguém te passou.': 'Sana verilen kodu buraya yapıştır.',
   'Com a palavra': 'Söz onda',
   'Com gente e sem conversa': 'İnsan var ama konuşan yok',
@@ -197,7 +196,6 @@ export default {
   'Escolha a sala…': 'Odayı seç…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden’ın dilini buradan seç. Hemen geçerli olur, yalnızca senin için, ve bu bilgisayarda saklanır.',
-  'Escolha o seu': 'Kendininkini seç',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
   'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
