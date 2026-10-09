@@ -55,9 +55,24 @@ grade, trocam a luz do abajur (pintada ou por código) e a paisagem da janela. O
   canto da casa, a profundidade medida na lateral desenhada) e repintado só na forma, para a luz daqui.
 - O teste do X das transmissões (`e2e/fechar-na-faixa.mjs`) rodou e passou, com o `sob-demanda` junto.
 
+## Mais uma rodada (08/10/2026, de madrugada)
+
+- **O topo do guarda-roupa saía sem contorno:** a repintura "só na forma" redesenhou a cornija mais lisa. O avulso
+  agora fica com o DESENHO dele e só a LUZ da repintura (`reluzir` em `moveis.mjs`: cada pixel vezes a razão
+  borrada entre o quarto repintado e o quarto com o avulso só posto).
+- **Retângulo de luz na cortina fechada:** de dia, o quarto escurecia menos a região da janela; agora escurece por
+  igual.
+- **Duas cortinas na ponta da direita:** a cortina aberta original descia além da região repintada. Uma segunda
+  repintura cobre só esse canto (`BARRA` em `cortina.mjs`).
+- **Girar:** a poltrona (`avulso.mjs`, duas orientações PINTADAS da mesma poltrona de orelha, e não espelhadas,
+  porque espelhar inverteria o lado da luz) se arrasta pela grade como o pufe, e o botão Girar (ou a tecla R) troca a
+  orientação. Arrasta-se o que está sob o ponteiro; chão vazio não move ninguém. Num quadro de 72 × 88 ela saiu menor
+  que o pufe (`avulsos/pequenas/`). Uma das duas veio com sombra pintada; a página a tira, e as duas usam uma
+  sombra de contato no chão.
+
 ## Custo
 
 157 gerações, mais da metade em tentativas que falharam (o pufe sozinho levou umas 60, porque as versões derivadas
 eram refeitas a cada nova tentativa do pufe do meio). A rodada da noite (guarda-roupa, tapete que falhou, pufes, as
 três noites das vistas) custou mais 76. A janela interativa e os consertos (luz do abajur, guarda-roupa avulso, pufes refeitos) custaram
-mais 68. Em 08/10/2026 **restam 557 das 2.000** do mês.
+mais 68. A rodada da poltrona, da cortina e das máscaras do híbrido custou mais 64. Em 08/10/2026 **restam 493 das 2.000** do mês.

@@ -201,6 +201,26 @@ async function colocar(img, m) {
   }, { img, sprite: ler64(path.join(AQUI, m.avulso + '.png')), dx, dy });
 }
 
+/** O desenho do avulso com a luz da repintura: cada pixel dele vezes a razão, borrada, entre o quarto repintado e o
+ *  quarto com o avulso só posto. O borrado pega a luz (mais claro do lado da janela, a sombra embaixo) sem copiar as
+ *  linhas que a repintura redesenhou. */
+async function reluzir(posto, depois) {
+  const p = await abrir();
+  return p.evaluate(async ({ img, movel, depois }) => {
+    const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
+    const ler = async (b, filtro) => { const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d'); if (filtro) g.filter = filtro; g.drawImage(await carregar(b), 0, 0); return g.getImageData(0, 0, 512, 512).data; };
+    const M = await ler(movel), A = await ler(img, 'blur(3px)'), B = await ler(depois, 'blur(3px)');
+    const out = new ImageData(512, 512);
+    for (let k = 0; k < 512 * 512; k++) {
+      if (M[k * 4 + 3] < 128) continue;
+      for (let c = 0; c < 3; c++) out.data[k * 4 + c] = M[k * 4 + c] * Math.min(1.25, Math.max(0.75, (B[k * 4 + c] + 1) / (A[k * 4 + c] + 1)));
+      out.data[k * 4 + 3] = 255;
+    }
+    const c = document.createElement('canvas'); c.width = 512; c.height = 512; c.getContext('2d').putImageData(out, 0, 0);
+    return c.toDataURL('image/png').split(',')[1];
+  }, { img: posto.img, movel: posto.movel, depois });
+}
+
 let quarto = ler64(path.join(AQUI, '..', 'bases', 'pl-512-janela-1.png'));
 let ocupado = null; // as peças já recortadas, juntas, para a máscara não pintar por cima delas
 async function juntar(a, b) {
@@ -234,14 +254,16 @@ for (const m of FIXOS) {
     if (!m.deitado) ocupado = await juntar(ocupado, movel);
     continue;
   }
+  const posto = m.avulso ? await colocar(quarto, m) : null;
   if (fs.existsSync(passo)) depois = ler64(passo);
   else if (m.avulso) {
-    const posto = await colocar(quarto, m);
     depois = await pintar(posto.img, { ...m, forma: posto.movel, folga: 2 }, null);
     gravar64(passo, depois); console.log('avulso posto e repintado:', m.id);
   } else { depois = await pintar(quarto, m, ocupado); gravar64(passo, depois); console.log('pintado:', m.id); }
   let { movel, sombra } = await recortar(quarto, depois);
   if (!m.deitado) movel = await limpar(m, quarto, depois, movel, ocupado);
+  // O avulso fica com o DESENHO dele e só a LUZ da repintura: ela apagou o contorno escuro do topo do guarda-roupa.
+  if (posto) movel = await reluzir(posto, depois);
   gravar64(path.join(PECAS, m.id + '.png'), movel); gravar64(path.join(PECAS, m.id + '-sombra.png'), sombra);
   // O que fica deitado no chão (o tapete) não ocupa: os outros móveis vão por cima dele.
   quarto = depois; if (!m.deitado) ocupado = await juntar(ocupado, movel);

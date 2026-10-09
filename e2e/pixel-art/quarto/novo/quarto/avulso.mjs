@@ -11,7 +11,13 @@ const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:
 const SAIDA = path.join(AQUI, 'avulsos');
 fs.mkdirSync(SAIDA, { recursive: true });
 const ANGULO = 'isometric pixel art seen from above at the same 2:1 isometric angle as the reference, clean outline, warm muted palette, soft afternoon light from the right';
+// A poltrona é o primeiro móvel solto que não é redondo: é ela que testa o botão de girar (pedido dele, 08/10/2026).
+// Duas orientações pintadas, e não espelhadas: espelhar inverteria o lado da luz, que vem sempre da janela. Num
+// quadro de 72 × 88 ela saía menor que o pufe (avulsos/pequenas/); em 120 × 136, do tamanho de uma poltrona.
+const POLTRONA = 'a small cozy upholstered armchair with a soft dusty-green fabric seat and wooden legs, the whole piece visible';
 export const AVULSOS = {
+  'poltrona-esquerda': { lado: [120, 136], texto: `${POLTRONA}, the seat and the front of the armchair facing to the LEFT-front (toward the lower left of the image), ${ANGULO}` },
+  'poltrona-direita': { lado: [120, 136], texto: `${POLTRONA}, the seat and the front of the armchair facing to the RIGHT-front (toward the lower right of the image), ${ANGULO}` },
   'guarda-roupa': { lado: [64, 160], texto: `a tall freestanding wooden wardrobe with two doors and small round knobs, the whole piece visible from the top cornice to the feet, its doors facing to the right-front, the back against a wall on its left side, ${ANGULO}` },
 };
 

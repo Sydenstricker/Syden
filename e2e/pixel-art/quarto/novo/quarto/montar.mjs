@@ -19,6 +19,9 @@ const IMAGENS = {
   vidro: png(path.join(AQUI, '..', 'janela', 'vidro.png')),
   cortinaDia: png(path.join(AQUI, 'cortina-dia.png')), cortinaNoite: png(path.join(AQUI, 'cortina-noite.png')),
   janelaAberta: png(path.join(AQUI, 'janela-aberta-dia.png')),
+  // A poltrona solta, em duas orientações PINTADAS (avulso.mjs), a mesma poltrona de orelha: a 0 olha para a
+  // esquerda, a 1 para a direita.
+  poltrona0: png(path.join(AQUI, 'avulsos', 'poltrona-esquerda-4.png')), poltrona1: png(path.join(AQUI, 'avulsos', 'poltrona-direita-3.png')),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
   noite: png(path.join(AQUI, 'noite.png')),
@@ -55,12 +58,14 @@ const html = `<!doctype html>
 <h1>O quarto do coelho</h1>
 <p>À esquerda, o quarto: a base sem porta do PixelLab, com a cama, o criado-mudo com abajur, o guarda-roupa, o tapete e o
 pufe pintados dentro dela e recortados, e a paisagem atrás do vidro. À direita, o conceito do ChatGPT. <b>Arraste o pufe</b>
-pelo chão: ele usa a versão pintada mais perto (perto da janela, no meio, na frente) e a intensidade da luz do lugar.</p>
+pelo chão: ele usa a versão pintada mais perto (perto da janela, no meio, na frente) e a intensidade da luz do lugar.
+A <b>poltrona</b> também se arrasta, e <b>Girar</b> (ou a tecla R) troca o lado para onde ela olha.</p>
 <div class="barra">
   <button id="dia" aria-pressed="true">Dia</button><button id="noite" aria-pressed="false">Noite</button>
   <button id="grade" aria-pressed="false">Mostrar a grade</button>
   <button id="luz" aria-pressed="true">Luz do abajur à noite: pintada</button>
   <button id="vista" aria-pressed="false">Vista: 1</button>
+  <button id="girar">Girar a poltrona</button>
   <button id="janela" aria-pressed="false">Janela: fechada</button>
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
 </div>
@@ -108,13 +113,13 @@ function dados(im, filtro, w = W, h = W) {
   let vista = 0;
   // A CORTINA (cortina.mjs): fechada, a região da janela vem da repintura com as cortinas fechadas, a vista some, o luar
   // sai do chão e, de dia, o quarto escurece um pouco. Clicar na janela abre e fecha.
-  const REGIAO = [[276,64],[466,158],[466,318],[276,268]];
+  // A região repintada e a barra (a ponta de baixo da cortina, que o original deixava aparecer: ver cortina.mjs).
+  const REGIOES = [[[276, 64], [466, 158], [466, 318], [276, 268]], [[416, 298], [470, 312], [470, 344], [416, 340]]];
   const cortinaDia = dados(im.cortinaDia), cortinaNoite = dados(im.cortinaNoite);
   const naJanela = new Uint8Array(W * W);
   for (let k = 0; k < W * W; k++) {
-    const x = k % W + 0.5, y = ((k / W) | 0) + 0.5; let s = false;
-    for (let i = 0, j = REGIAO.length - 1; i < REGIAO.length; j = i++) { const [xi, yi] = REGIAO[i], [xj, yj] = REGIAO[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) s = !s; }
-    naJanela[k] = s ? 1 : 0;
+    const x = k % W + 0.5, y = ((k / W) | 0) + 0.5;
+    naJanela[k] = REGIOES.some((R) => { let s = false; for (let i = 0, j = R.length - 1; i < R.length; j = i++) { const [xi, yi] = R[i], [xj, yj] = R[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) s = !s; } return s; }) ? 1 : 0;
   }
   // O chão da noite sem o desenho do luar: o dia vezes a luz MÉDIA da noite (borrada), como as paredes de noite.mjs.
   const diaLargo = dados(im.base, 'blur(28px)'), noiteLarga = dados(im.noite, 'blur(28px)'), abajurLargo = dados(im.noiteAbajur, 'blur(28px)');
@@ -203,6 +208,26 @@ function dados(im, filtro, w = W, h = W) {
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
     pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n), base, peColuna };
   }
+  // A POLTRONA: um móvel solto que não é redondo, para o botão de girar. Cada orientação é uma peça; a base desenhada
+  // (o ponto mais baixo, menos um quarto da largura) vai para o cruzamento da grade, como no pufe.
+  const poltronas = [im.poltrona0, im.poltrona1].map((img) => {
+    const c = document.createElement('canvas'); c.width = W; c.height = W; const gc = c.getContext('2d'); gc.drawImage(img, 0, 0);
+    const movel = gc.getImageData(0, 0, W, W).data;
+    // Uma das duas veio com sombra pintada embaixo (marrom chapado) e a outra não: tira-se a cor mais comum das
+    // últimas linhas, que é a da sombra. As duas usam a sombra de contato da página.
+    let fundo = 0; for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] > 127) fundo = Math.max(fundo, (k / W) | 0);
+    const conta = {};
+    for (let y = fundo - 5; y <= fundo; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4; if (movel[k + 3] > 127) { const cor = movel[k] + ',' + movel[k + 1] + ',' + movel[k + 2]; conta[cor] = (conta[cor] || 0) + 1; } }
+    const [sombraCor, vezes] = Object.entries(conta).sort((a, b) => b[1] - a[1])[0] ?? ['', 0];
+    if (vezes > 12) { const [sr, sg, sb] = sombraCor.split(',').map(Number); for (let k = 0; k < W * W; k++) if (Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18) movel[k * 4 + 3] = 0; }
+    let x0 = W, x1 = 0, y0 = W, y1 = 0;
+    for (let k = 0; k < W * W; k++) { if (movel[k * 4 + 3] < 128) { movel[k * 4 + 3] = 0; continue; } const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    let sx = 0, nb = 0; for (let x = 0; x < W; x++) for (let y = y1 - 2; y <= y1; y++) if (movel[(y * W + x) * 4 + 3]) { sx += x; nb++; }
+    const peColuna = new Int16Array(W).fill(-1);
+    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
+    return { id: 'poltrona', movel, sombra: new Uint8ClampedArray(W * W * 4), topo: y0, peColuna, base: [sx / Math.max(1, nb), y1 - (x1 - x0) / 4] };
+  });
+  let poltrona = [3, 6], lado = 0, pegado = null;
   // O pufe: onde está (o centro em u, v) e de que versão ele sai.
   const pufes = MOVEIS.filter((m) => m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -211,9 +236,12 @@ function dados(im, filtro, w = W, h = W) {
   // exatamente quatro casas desenhadas. Antes ele tinha 1,5 casa e saltava de meia em meia, fora das linhas.
   const LADO_PUFE = 2;
   const fixos = MOVEIS.filter((m) => !m.pufe);
-  const ocupa = (c) => {
+  const ocupa = (c, quem = pegado) => {
     const [u0, u1, v0, v1] = [c[0] - LADO_PUFE / 2, c[0] + LADO_PUFE / 2, c[1] - LADO_PUFE / 2, c[1] + LADO_PUFE / 2];
     if (u0 < 0 || v0 < 0 || u1 > N || v1 > N) return true;
+    // Os dois soltos (pufe e poltrona), também 2 × 2 casas cada, não se sobrepõem.
+    const outro = quem === 'poltrona' ? pufe : poltrona;
+    if (Math.abs(c[0] - outro[0]) < LADO_PUFE && Math.abs(c[1] - outro[1]) < LADO_PUFE) return true;
     return fixos.some((m) => !m.deitado && u0 < m.pe[1] && u1 > m.pe[0] && v0 < m.pe[3] && v1 > m.pe[2]);
   };
   const luz = (x, y) => { const i = (Math.round(y) * W + Math.round(x)) * 4; return (diaBorrado[i] + diaBorrado[i + 1] + diaBorrado[i + 2]) / 3; };
@@ -264,8 +292,21 @@ function dados(im, filtro, w = W, h = W) {
         // Só intensidade: a luz do chão onde ele está, sobre a luz do chão onde ele foi pintado.
         const fator = Math.min(1.3, Math.max(0.75, luz(nx, ny) / luz(ox, oy)));
         return { p, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, frente: pu + pv + LADO_PUFE };
+      })(),
+      (() => {
+        // A poltrona foi pintada fora do quarto, com luz neutra: ganha a intensidade do lugar, em relação ao meio do chão.
+        const p = poltronas[lado], [nx, ny] = ponto(poltrona[0], poltrona[1]), [mx, my] = ponto(N / 2, N / 2);
+        const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
+        return { p, dx: Math.round(nx - p.base[0]), dy: Math.round(ny - p.base[1]), fator, frente: poltrona[0] + poltrona[1] + LADO_PUFE, contato: [nx, ny] };
       })()].sort((a, b) => a.frente - b.frente);
-    for (const { p, dx, dy, fator } of lista) {
+    for (const { p, dx, dy, fator, contato } of lista) {
+      // A sombra de contato de quem não a trouxe pintada (a poltrona): uma elipse no chão, mais escura no meio.
+      if (contato) for (let y = Math.round(contato[1] - 16); y <= contato[1] + 16; y++) for (let x = Math.round(contato[0] - 32); x <= contato[0] + 32; x++) {
+        const d = ((x - contato[0]) / 30) ** 2 + ((y - contato[1]) / 15) ** 2, k = y * W + x;
+        if (d >= 1 || x < 0 || y < 0 || x >= W || y >= W || casa[k] < 0) continue;
+        const f = 0.72 + 0.28 * d;
+        for (let c = 0; c < 3; c++) { D[k * 3 + c] *= f; fundoNoite[k * 3 + c] *= f; }
+      }
       // Com a luz pintada, o criado-mudo da noite pintada NÃO é usado: a repintura o redesenhou uns pixels ao lado, e
       // ao trocar dia e noite ele parecia empurrar a cabeceira. Vale o mesmo recorte do dia, com a luz da pintura.
       for (let k = 0; k < W * W; k++) {
@@ -307,7 +348,9 @@ function dados(im, filtro, w = W, h = W) {
           }
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
         }
-        if (fechada && modo === 'dia' && !naJanela[k]) v *= 0.86; // a luz da janela, coada pelo linho
+        // A luz da janela, coada pelo linho: o quarto inteiro escurece por igual. Deixar a região da janela de fora fazia
+        // um retângulo claro na parede em volta da cortina (relato de 08/10/2026).
+        if (fechada && modo === 'dia') v *= 0.86;
         saida.data[k * 4 + c] = Math.min(255, v);
       }
       saida.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
@@ -327,7 +370,7 @@ function dados(im, filtro, w = W, h = W) {
       }
     }
     g.putImageData(saida, 0, 0);
-    document.getElementById('legenda').textContent = 'Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' ? ', luz do lugar ×' + lista.find((i) => i.p.pufe).fator.toFixed(2) : '') + '.';
+    document.getElementById('legenda').textContent = 'Poltrona olhando para a ' + (lado ? 'direita' : 'esquerda') + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' ? ', luz do lugar ×' + lista.find((i) => i.p.pufe).fator.toFixed(2) : '') + '.';
     document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
@@ -350,9 +393,29 @@ function dados(im, filtro, w = W, h = W) {
   // fechadas, o clique é sempre delas.
   tela.addEventListener('pointerdown', (e) => { const k = pixelDo(e); if (!naJanela[k]) return; if (noCaixilho[k] && !fechada) trocarJanela(); else trocarCortina(); });
   tela.addEventListener('pointermove', (e) => { if (!arrastando) tela.style.cursor = naJanela[pixelDo(e)] ? 'pointer' : 'grab'; });
-  tela.addEventListener('pointerdown', (e) => { if (naJanela[pixelDo(e)]) return; arrastando = true; tela.setPointerCapture(e.pointerId); alvo = casaDoPonteiro(e); desenhar(); });
+  // Arrasta-se o que está sob o ponteiro: a poltrona, o pufe, ou nada (clicar no chão vazio não move ninguém).
+  const sob = (e) => {
+    const r = tela.getBoundingClientRect(), [u, v] = uvDe((e.clientX - r.left) * W / r.width, (e.clientY - r.top) * W / r.height);
+    const perto = (c) => Math.abs(u - c[0]) <= 1 && Math.abs(v - c[1]) <= 1;
+    return perto(poltrona) ? 'poltrona' : perto(pufe) ? 'pufe' : null;
+  };
+  tela.addEventListener('pointerdown', (e) => {
+    if (naJanela[pixelDo(e)]) return;
+    pegado = sob(e);
+    if (!pegado) return;
+    arrastando = true; tela.setPointerCapture(e.pointerId); alvo = casaDoPonteiro(e); desenhar();
+  });
   tela.addEventListener('pointermove', (e) => { if (!arrastando) return; const c = casaDoPonteiro(e); if (!alvo || c[0] !== alvo[0] || c[1] !== alvo[1]) { alvo = c; desenhar(); } });
-  tela.addEventListener('pointerup', () => { arrastando = false; if (alvo && !ocupa(alvo)) pufe = alvo; alvo = null; desenhar(); });
+  tela.addEventListener('pointerup', () => {
+    if (!arrastando) return;
+    arrastando = false;
+    if (alvo && !ocupa(alvo)) { if (pegado === 'poltrona') poltrona = alvo; else pufe = alvo; }
+    alvo = null; desenhar();
+  });
+  // GIRAR (pedido dele em 08/10/2026): troca a orientação pintada da poltrona. As duas ocupam as mesmas 2 × 2 casas.
+  const girar = () => { lado = 1 - lado; desenhar(); };
+  document.getElementById('girar').onclick = girar;
+  document.addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') girar(); });
   const botoes = { dia: document.getElementById('dia'), noite: document.getElementById('noite') };
   for (const [m, b] of Object.entries(botoes)) b.onclick = () => { modo = m; for (const [n, o] of Object.entries(botoes)) o.setAttribute('aria-pressed', String(n === m)); desenhar(); };
   const bg = document.getElementById('grade');
