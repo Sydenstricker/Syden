@@ -1066,4 +1066,5 @@ export default {
   'Recompensa': 'Reward',
   'Item novo: {nome}': 'New item: {nome}',
   'Voz conectada': 'Voice connected',
+  'Hoje às {hora}': 'Today at {hora}',
 } satisfies Record<string, string>;

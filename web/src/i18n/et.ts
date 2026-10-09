@@ -1127,4 +1127,5 @@ export default {
   'Vozes juntas': 'Hääled koos',
   'ZECA': 'MARI',
   'Voz conectada': 'Hääl ühendatud',
+  'Hoje às {hora}': 'Täna kell {hora}',
 } satisfies Record<string, string>;

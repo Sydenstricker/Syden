@@ -1055,4 +1055,5 @@ export default {
   'Item novo: {nome}': 'Yeni öğe: {nome}',
   'Dia e noite': 'Gündüz ve gece',
   'Voz conectada': 'Ses bağlı',
+  'Hoje às {hora}': 'Bugün {hora}',
 } satisfies Record<string, string>;

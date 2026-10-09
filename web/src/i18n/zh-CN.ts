@@ -1047,4 +1047,5 @@ export default {
   'Item novo: {nome}': '新物品：{nome}',
   'Dia e noite': '白天和黑夜',
   'Voz conectada': '语音已连接',
+  'Hoje às {hora}': '今天 {hora}',
 } satisfies Record<string, string>;

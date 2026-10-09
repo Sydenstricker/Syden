@@ -1056,4 +1056,5 @@ export default {
   'Recompensa': 'ሽልማት',
   'Item novo: {nome}': 'አዲስ ዕቃ፦ {nome}',
   'Voz conectada': 'ድምፅ ተገናኝቷል',
+  'Hoje às {hora}': 'ዛሬ በ{hora}',
 } satisfies Record<string, string>;

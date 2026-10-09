@@ -1132,4 +1132,5 @@ export default {
   'Vozes juntas': 'Balsis kopā',
   'ZECA': 'ILZE',
   'Voz conectada': 'Balss savienota',
+  'Hoje às {hora}': 'Šodien {hora}',
 } satisfies Record<string, string>;

@@ -1041,4 +1041,5 @@ export default {
   'Recompensa': 'வெகுமதி',
   'Item novo: {nome}': 'புதிய பொருள்: {nome}',
   'Voz conectada': 'குரல் இணைக்கப்பட்டது',
+  'Hoje às {hora}': 'இன்று {hora}',
 } satisfies Record<string, string>;

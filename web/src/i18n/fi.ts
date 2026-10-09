@@ -1130,4 +1130,5 @@ export default {
   'Vozes juntas': 'Puheäänet yhdessä',
   'ZECA': 'AINO',
   'Voz conectada': 'Puhe yhdistetty',
+  'Hoje às {hora}': 'Tänään klo {hora}',
 } satisfies Record<string, string>;

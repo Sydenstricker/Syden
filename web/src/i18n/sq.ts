@@ -1122,4 +1122,5 @@ export default {
   'Vozes juntas': 'Zëra bashkë',
   'ZECA': 'ARBI',
   'Voz conectada': 'Zëri i lidhur',
+  'Hoje às {hora}': 'Sot në {hora}',
 } satisfies Record<string, string>;

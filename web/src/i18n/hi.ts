@@ -1060,4 +1060,5 @@ export default {
   'Item novo: {nome}': 'नया आइटम: {nome}',
   'Dia e noite': 'दिन और रात',
   'Voz conectada': 'वॉइस जुड़ गई',
+  'Hoje às {hora}': 'आज {hora} बजे',
 } satisfies Record<string, string>;

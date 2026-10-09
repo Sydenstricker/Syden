@@ -1132,4 +1132,5 @@ export default {
   'Vozes juntas': 'Balsai kartu',
   'ZECA': 'RŪTA',
   'Voz conectada': 'Balsas prijungtas',
+  'Hoje às {hora}': 'Šiandien {hora}',
 } satisfies Record<string, string>;

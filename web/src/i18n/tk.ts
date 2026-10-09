@@ -1132,4 +1132,5 @@ export default {
   'Vozes juntas': 'Sesler bile',
   'ZECA': 'AÝNA',
   'Voz conectada': 'Ses birikdi',
+  'Hoje às {hora}': 'Şu gün {hora}',
 } satisfies Record<string, string>;

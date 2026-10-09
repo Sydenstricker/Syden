@@ -1124,4 +1124,5 @@ export default {
   'Vozes juntas': 'Stemme saam',
   'ZECA': 'PIET',
   'Voz conectada': 'Stem gekoppel',
+  'Hoje às {hora}': 'Vandag om {hora}',
 } satisfies Record<string, string>;

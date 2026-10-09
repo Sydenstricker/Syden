@@ -1058,4 +1058,5 @@ export default {
   'Recompensa': 'Lada',
   'Item novo: {nome}': 'Sabon abu: {nome}',
   'Voz conectada': 'Murya ta haɗu',
+  'Hoje às {hora}': 'Yau da ƙarfe {hora}',
 } satisfies Record<string, string>;

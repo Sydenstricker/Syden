@@ -1110,4 +1110,5 @@ export default {
   'Recompensa': 'Нагорода',
   'Item novo: {nome}': 'Новий предмет: {nome}',
   'Voz conectada': 'Голос підключено',
+  'Hoje às {hora}': 'Сьогодні о {hora}',
 } satisfies Record<string, string>;

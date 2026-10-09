@@ -13,7 +13,7 @@ import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
 import type { Attachment, Message, Poll, Reaction, ThreadSummary } from './types';
-import { useT } from './i18n';
+import { chave, idiomaAtual, t as traduzir, useT } from './i18n';
 import { gifDaMensagem } from './gifs';
 
 /** Caixa máxima de uma imagem no chat; o resto encolhe proporcionalmente. */
@@ -394,10 +394,12 @@ export function MessageText({ content }: { content: string }) {
   );
 }
 
+/** Data e hora no formato do idioma escolhido (era sempre pt-BR, e "Hoje às" saía em português em qualquer língua). */
 export function formatTime(iso: string) {
   const date = new Date(iso);
-  const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const idioma = idiomaAtual();
+  const time = date.toLocaleTimeString(idioma, { hour: '2-digit', minute: '2-digit' });
   const today = new Date();
-  if (date.toDateString() === today.toDateString()) return `Hoje às ${time}`;
-  return `${date.toLocaleDateString('pt-BR')} ${time}`;
+  if (date.toDateString() === today.toDateString()) return traduzir(chave('Hoje às {hora}'), { hora: time });
+  return `${date.toLocaleDateString(idioma)} ${time}`;
 }

@@ -1071,4 +1071,5 @@ export default {
   'Recompensa': 'Èrè',
   'Item novo: {nome}': 'Nǹkan tuntun: {nome}',
   'Voz conectada': 'Ohùn ti sopọ̀',
+  'Hoje às {hora}': 'Lónìí ní {hora}',
 } satisfies Record<string, string>;

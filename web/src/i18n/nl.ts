@@ -1060,4 +1060,5 @@ export default {
   'Item novo: {nome}': 'Nieuw item: {nome}',
   'Dia e noite': 'Dag en nacht',
   'Voz conectada': 'Spraak verbonden',
+  'Hoje às {hora}': 'Vandaag om {hora}',
 } satisfies Record<string, string>;

@@ -1060,4 +1060,5 @@ export default {
   'Item novo: {nome}': 'Kitu kipya: {nome}',
   'Dia e noite': 'Mchana na usiku',
   'Voz conectada': 'Sauti imeunganishwa',
+  'Hoje às {hora}': 'Leo saa {hora}',
 } satisfies Record<string, string>;

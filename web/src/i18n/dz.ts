@@ -1143,4 +1143,5 @@ export default {
   'Vozes juntas': 'སྐད་ཚུ་གཅིག་ཁར།',
   'ZECA': 'པདྨ',
   'Voz conectada': 'སྐད་མཐུད་ཡོད།',
+  'Hoje às {hora}': 'དི་རིང་ {hora} ལུ།',
 } satisfies Record<string, string>;

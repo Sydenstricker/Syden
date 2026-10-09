@@ -1131,4 +1131,5 @@ export default {
   'Vozes juntas': 'Hangok együtt',
   'ZECA': 'BENI',
   'Voz conectada': 'Hang csatlakoztatva',
+  'Hoje às {hora}': 'Ma {hora}-kor',
 } satisfies Record<string, string>;

@@ -1131,4 +1131,5 @@ export default {
   'Vozes juntas': 'Овозҳо якҷоя',
   'ZECA': 'ЛОЛА',
   'Voz conectada': 'Овоз пайваст аст',
+  'Hoje às {hora}': 'Имрӯз соати {hora}',
 } satisfies Record<string, string>;

@@ -1140,4 +1140,5 @@ export default {
   'Vozes juntas': 'Vwa yo ansanm',
   'ZECA': 'TIJO',
   'Voz conectada': 'Vwa konekte',
+  'Hoje às {hora}': 'Jodi a {hora}',
 } satisfies Record<string, string>;

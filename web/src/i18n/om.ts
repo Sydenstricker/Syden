@@ -1100,4 +1100,5 @@ export default {
   'Recompensa': 'Badhaasa',
   'Item novo: {nome}': 'Meeshaa haaraa: {nome}',
   'Voz conectada': 'Sagaleen walqabateera',
+  'Hoje às {hora}': 'Har’a sa’aatii {hora}',
 } satisfies Record<string, string>;

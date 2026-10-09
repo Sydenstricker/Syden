@@ -1069,4 +1069,5 @@ export default {
   'Recompensa': 'รางวัล',
   'Item novo: {nome}': 'ไอเท็มใหม่: {nome}',
   'Voz conectada': 'เชื่อมต่อเสียงแล้ว',
+  'Hoje às {hora}': 'วันนี้ เวลา {hora}',
 } satisfies Record<string, string>;

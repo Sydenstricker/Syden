@@ -1026,4 +1026,5 @@ export default {
   'Recompensa': 'Phần thưởng',
   'Item novo: {nome}': 'Vật phẩm mới: {nome}',
   'Voz conectada': 'Đã kết nối thoại',
+  'Hoje às {hora}': 'Hôm nay lúc {hora}',
 } satisfies Record<string, string>;

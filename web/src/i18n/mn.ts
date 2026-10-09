@@ -1144,4 +1144,5 @@ export default {
   'Vozes juntas': 'Хоолойнууд хамтдаа',
   'ZECA': 'ДОРЖ',
   'Voz conectada': 'Дуу холбогдсон',
+  'Hoje às {hora}': 'Өнөөдөр {hora}',
 } satisfies Record<string, string>;

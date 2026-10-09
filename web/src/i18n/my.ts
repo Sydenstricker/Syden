@@ -1099,4 +1099,5 @@ export default {
   'Recompensa': 'ဆု',
   'Item novo: {nome}': 'ပစ္စည်းအသစ်- {nome}',
   'Voz conectada': 'အသံ ချိတ်ဆက်ထားသည်',
+  'Hoje às {hora}': 'ယနေ့ {hora}',
 } satisfies Record<string, string>;

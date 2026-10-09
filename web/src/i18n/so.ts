@@ -1130,4 +1130,5 @@ export default {
   'Vozes juntas': 'Codad wada jira',
   'ZECA': 'CALI',
   'Voz conectada': 'Codka waa ku xiran yahay',
+  'Hoje às {hora}': 'Maanta {hora}',
 } satisfies Record<string, string>;

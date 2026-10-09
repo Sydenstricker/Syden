@@ -1056,4 +1056,5 @@ export default {
   'Recompensa': 'Recompensă',
   'Item novo: {nome}': 'Obiect nou: {nome}',
   'Voz conectada': 'Voce conectată',
+  'Hoje às {hora}': 'Astăzi la {hora}',
 } satisfies Record<string, string>;

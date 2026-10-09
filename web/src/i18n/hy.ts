@@ -1149,4 +1149,5 @@ export default {
   'Vozes juntas': 'Ձայները միասին',
   'ZECA': 'ԱՐԱՄ',
   'Voz conectada': 'Ձայնը միացված է',
+  'Hoje às {hora}': 'Այսօր՝ {hora}',
 } satisfies Record<string, string>;

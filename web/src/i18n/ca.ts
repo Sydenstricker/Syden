@@ -1126,4 +1126,5 @@ export default {
   'Vozes juntas': 'Veus juntes',
   'ZECA': 'PERE',
   'Voz conectada': 'Veu connectada',
+  'Hoje às {hora}': 'Avui a les {hora}',
 } satisfies Record<string, string>;

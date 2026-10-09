@@ -1058,4 +1058,5 @@ export default {
   'Item novo: {nome}': 'নতুন আইটেম: {nome}',
   'Dia e noite': 'দিন ও রাত',
   'Voz conectada': 'ভয়েস সংযুক্ত',
+  'Hoje às {hora}': 'আজ {hora}-এ',
 } satisfies Record<string, string>;

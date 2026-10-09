@@ -1048,4 +1048,5 @@ export default {
   'Item novo: {nome}': '새 아이템: {nome}',
   'Dia e noite': '낮과 밤',
   'Voz conectada': '음성 연결됨',
+  'Hoje às {hora}': '오늘 {hora}',
 } satisfies Record<string, string>;

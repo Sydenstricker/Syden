@@ -1037,4 +1037,5 @@ export default {
   'Recompensa': 'ごほうび',
   'Item novo: {nome}': '新しいアイテム：{nome}',
   'Voz conectada': 'ボイス接続中',
+  'Hoje às {hora}': '今日 {hora}',
 } satisfies Record<string, string>;

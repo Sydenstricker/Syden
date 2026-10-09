@@ -1148,4 +1148,5 @@ export default {
   'Vozes juntas': 'ხმები ერთად',
   'ZECA': 'ნიკა',
   'Voz conectada': 'ხმა დაკავშირებულია',
+  'Hoje às {hora}': 'დღეს, {hora}',
 } satisfies Record<string, string>;

@@ -1058,4 +1058,5 @@ export default {
   'Item novo: {nome}': 'Item baru: {nome}',
   'Dia e noite': 'Siang dan malam',
   'Voz conectada': 'Suara terhubung',
+  'Hoje às {hora}': 'Hari ini pukul {hora}',
 } satisfies Record<string, string>;

@@ -1038,4 +1038,5 @@ export default {
   'Recompensa': 'బహుమతి',
   'Item novo: {nome}': 'కొత్త వస్తువు: {nome}',
   'Voz conectada': 'వాయిస్ కనెక్ట్ అయింది',
+  'Hoje às {hora}': 'ఈరోజు {hora}కి',
 } satisfies Record<string, string>;

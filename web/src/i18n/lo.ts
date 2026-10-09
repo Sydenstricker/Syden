@@ -1131,4 +1131,5 @@ export default {
   'Vozes juntas': 'ສຽງລວມກັນ',
   'ZECA': 'ແສງ',
   'Voz conectada': 'ສຽງເຊື່ອມຕໍ່ແລ້ວ',
+  'Hoje às {hora}': 'ມື້ນີ້ ເວລາ {hora}',
 } satisfies Record<string, string>;

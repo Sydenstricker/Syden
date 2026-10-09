@@ -1110,4 +1110,5 @@ export default {
   'Recompensa': 'פרס',
   'Item novo: {nome}': 'פריט חדש: {nome}',
   'Voz conectada': 'הקול מחובר',
+  'Hoje às {hora}': 'היום ב-{hora}',
 } satisfies Record<string, string>;

@@ -1132,4 +1132,5 @@ export default {
   'Vozes juntas': 'Glasovi skupaj',
   'ZECA': 'MAJA',
   'Voz conectada': 'Glas povezan',
+  'Hoje às {hora}': 'Danes ob {hora}',
 } satisfies Record<string, string>;

@@ -1085,4 +1085,5 @@ export default {
   'Item novo: {nome}': 'Nouvel objet : {nome}',
   'Dia e noite': 'Jour et nuit',
   'Voz conectada': 'Voix connectée',
+  'Hoje às {hora}': 'Aujourd’hui à {hora}',
 } satisfies Record<string, string>;

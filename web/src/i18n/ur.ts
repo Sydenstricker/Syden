@@ -1043,4 +1043,5 @@ export default {
   'Recompensa': 'انعام',
   'Item novo: {nome}': 'نئی چیز: {nome}',
   'Voz conectada': 'آواز منسلک ہے',
+  'Hoje às {hora}': 'آج {hora} بجے',
 } satisfies Record<string, string>;

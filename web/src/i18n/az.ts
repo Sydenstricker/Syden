@@ -1093,4 +1093,5 @@ export default {
   'Recompensa': 'Mükafat',
   'Item novo: {nome}': 'Yeni əşya: {nome}',
   'Voz conectada': 'Səs qoşuldu',
+  'Hoje às {hora}': 'Bu gün {hora}',
 } satisfies Record<string, string>;

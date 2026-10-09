@@ -1138,4 +1138,5 @@ export default {
   'Vozes juntas': 'Ovozlar birga',
   'ZECA': 'OLIM',
   'Voz conectada': 'Ovoz ulangan',
+  'Hoje às {hora}': 'Bugun {hora}',
 } satisfies Record<string, string>;

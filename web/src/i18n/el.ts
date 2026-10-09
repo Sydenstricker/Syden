@@ -1062,4 +1062,5 @@ export default {
   'Recompensa': 'Ανταμοιβή',
   'Item novo: {nome}': 'Νέο αντικείμενο: {nome}',
   'Voz conectada': 'Φωνή συνδεδεμένη',
+  'Hoje às {hora}': 'Σήμερα στις {hora}',
 } satisfies Record<string, string>;

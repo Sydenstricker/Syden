@@ -1130,4 +1130,5 @@ export default {
   'Vozes juntas': 'Feo miaraka',
   'ZECA': 'RADO',
   'Voz conectada': 'Mifandray ny feo',
+  'Hoje às {hora}': 'Anio amin’ny {hora}',
 } satisfies Record<string, string>;

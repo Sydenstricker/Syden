@@ -1081,4 +1081,5 @@ export default {
   'Item novo: {nome}': 'عنصر جديد: {nome}',
   'Dia e noite': 'النهار والليل',
   'Voz conectada': 'الصوت متصل',
+  'Hoje às {hora}': 'اليوم في {hora}',
 } satisfies Record<string, string>;

@@ -1129,4 +1129,5 @@ export default {
   'Vozes juntas': 'សំឡេងរួមគ្នា',
   'ZECA': 'សុខា',
   'Voz conectada': 'សំឡេងបានភ្ជាប់',
+  'Hoje às {hora}': 'ថ្ងៃនេះ ម៉ោង {hora}',
 } satisfies Record<string, string>;

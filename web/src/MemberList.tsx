@@ -159,7 +159,7 @@ export function MemberList({
 
       {fora.length > 0 && (
         <>
-          <h3>Offline — {fora.length}</h3>
+          <h3>{t('Offline')} — {fora.length}</h3>
           {fora.map((member) => (
             <div
               key={member.id}

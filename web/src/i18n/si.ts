@@ -1130,4 +1130,5 @@ export default {
   'Vozes juntas': 'හඬවල් එක්ව',
   'ZECA': 'සුනි',
   'Voz conectada': 'හඬ සම්බන්ධයි',
+  'Hoje às {hora}': 'අද {hora}',
 } satisfies Record<string, string>;

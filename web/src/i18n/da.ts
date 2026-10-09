@@ -1124,4 +1124,5 @@ export default {
   'Vozes juntas': 'Stemmer sammen',
   'ZECA': 'MADS',
   'Voz conectada': 'Tale forbundet',
+  'Hoje às {hora}': 'I dag kl. {hora}',
 } satisfies Record<string, string>;

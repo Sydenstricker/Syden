@@ -1131,4 +1131,5 @@ export default {
   'Vozes juntas': 'Amazwi ndawonye',
   'ZECA': 'SIPH',
   'Voz conectada': 'Izwi lixhunyiwe',
+  'Hoje às {hora}': 'Namuhla ngo-{hora}',
 } satisfies Record<string, string>;
