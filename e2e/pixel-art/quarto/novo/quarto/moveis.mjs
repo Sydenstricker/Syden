@@ -190,6 +190,21 @@ for (const m of FIXOS) {
   if (n >= ATE) break;
   const passo = path.join(PASSOS, `${++n}-${m.id}.png`);
   let depois;
+  if (m.pronto) {
+    // Uma peça já recortada antes, da mesma base e do mesmo lugar: entra como está (ver lista.mjs).
+    const movel = ler64(path.join(AQUI, m.pronto + '.png')), sombra = ler64(path.join(AQUI, m.pronto + '-sombra.png'));
+    gravar64(path.join(PECAS, m.id + '.png'), movel); gravar64(path.join(PECAS, m.id + '-sombra.png'), sombra);
+    const p = await abrir();
+    quarto = await p.evaluate(async ({ quarto, movel, sombra }) => {
+      const carregar = async (b) => { const im = new Image(); im.src = 'data:image/png;base64,' + b; await im.decode(); return im; };
+      const c = document.createElement('canvas'); c.width = 512; c.height = 512; const g = c.getContext('2d');
+      for (const b of [quarto, sombra, movel]) g.drawImage(await carregar(b), 0, 0);
+      return c.toDataURL('image/png').split(',')[1];
+    }, { quarto, movel, sombra });
+    gravar64(passo, quarto); console.log('pronto:', m.id);
+    if (!m.deitado) ocupado = await juntar(ocupado, movel);
+    continue;
+  }
   if (fs.existsSync(passo)) depois = ler64(passo);
   else { depois = await pintar(quarto, m, ocupado); gravar64(passo, depois); console.log('pintado:', m.id); }
   let { movel, sombra } = await recortar(quarto, depois);

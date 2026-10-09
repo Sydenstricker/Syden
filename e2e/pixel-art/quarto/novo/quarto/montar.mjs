@@ -17,8 +17,8 @@ const png = (arquivo) => 'data:image/png;base64,' + ler64(arquivo);
 const IMAGENS = {
   base: png(path.join(AQUI, '..', 'bases', 'pl-512-janela-1.png')),
   vidro: png(path.join(AQUI, '..', 'janela', 'vidro.png')),
-  vistaNoite: png(path.join(AQUI, '..', 'janela', 'vista-noite.png')),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
+  ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
   noite: png(path.join(AQUI, 'noite.png')),
   noiteAbajur: png(path.join(AQUI, 'noite-abajur.png')),
   conceitoNoite: png(path.join(AQUI, '..', '..', 'hibrido', 'conceito-unzoom.png')),
@@ -51,7 +51,7 @@ const html = `<!doctype html>
 </style></head>
 <body><main>
 <h1>O quarto do coelho</h1>
-<p>À esquerda, o quarto: a base sem porta do PixelLab, com a cama, o criado-mudo com abajur, a estante, o tapete e o
+<p>À esquerda, o quarto: a base sem porta do PixelLab, com a cama, o criado-mudo com abajur, o guarda-roupa, o tapete e o
 pufe pintados dentro dela e recortados, e a paisagem atrás do vidro. À direita, o conceito do ChatGPT. <b>Arraste o pufe</b>
 pelo chão: ele usa a versão pintada mais perto (perto da janela, no meio, na frente) e a intensidade da luz do lugar.</p>
 <div class="barra">
@@ -98,7 +98,8 @@ function dados(im, filtro, w = W, h = W) {
   for (const [k, src] of Object.entries(IMAGENS)) im[k] = await carregar(src);
   const base = dados(im.base), noite = dados(im.noite);
   // A vista: os pixels do vidro, e as paisagens (128 × 160), postas espelhadas em (330, 105), como em ../janela/.
-  const vidro = dados(im.vidro), vistaNoite = dados(im.vistaNoite, null, 128, 160);
+  const vidro = dados(im.vidro);
+  const vistasNoite = [1, 2, 3, 4].map((n) => dados(im['noite' + n], null, 128, 160));
   const vistasDia = [1, 2, 3, 4].map((n) => dados(im['vista' + n], null, 128, 160));
   let vista = 0;
   const daVista = (v, x, y, c) => v[((y - 105) * 128 + (127 - (x - 330))) * 4 + c];
@@ -106,8 +107,11 @@ function dados(im, filtro, w = W, h = W) {
   // borrado (só o nível de luz do lugar); para a razão noite/dia, pouco, senão o desenho do luar some no tapete.
   const diaBorrado = dados(im.base, 'blur(10px)');
   const diaPouco = dados(im.base, 'blur(2px)'), noitePouco = dados(im.noite, 'blur(2px)');
+  // Para a luz no pé dos móveis, mais borrado: o desenho do luar no chão não pode virar listras no móvel.
+  const diaPe = dados(im.base, 'blur(6px)');
   // A noite com a luz do abajur pintada (noite-abajur.mjs): o criado-mudo já está nela, aceso.
   const noiteAbajur = dados(im.noiteAbajur), noiteAbajurPouco = dados(im.noiteAbajur, 'blur(2px)');
+  const noitePe = dados(im.noite, 'blur(6px)'), noiteAbajurPe = dados(im.noiteAbajur, 'blur(6px)');
   // A repintura veio numa caixa, e a borda reta dela aparece na parede: perto da borda, mistura com a noite limpa.
   const CAIXA_ABAJUR = [190, 100, 322, 292], FAIXA = 14; // a de noite-abajur.mjs
   for (const [img, ref] of [[noiteAbajur, noite], [noiteAbajurPouco, noitePouco]]) for (let k = 0; k < W * W; k++) {
@@ -135,6 +139,19 @@ function dados(im, filtro, w = W, h = W) {
     return fora;
   }
   const foraDia = fundoDe(base), foraNoite = fundoDe(noite);
+  // Dois pixels creme soltos na borda de fora do friso (156,68 e 379,80 na base): a ponta clara da madeira encostada
+  // no fundo, que vira um ponto branco sobre a página escura. Pixel claro com 2 ou mais vizinhos de fundo ganha a cor
+  // do vizinho mais escuro, que é o contorno.
+  function contorno(img, fora) {
+    for (let k = 0; k < W * W; k++) {
+      if (fora[k] || img[k * 4] + img[k * 4 + 1] + img[k * 4 + 2] <= 360) continue;
+      const x = k % W, y = (k / W) | 0, viz = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (y + dy) * W + x + dx);
+      if (viz.filter((n) => fora[n]).length < 2) continue;
+      const escuro = viz.filter((n) => !fora[n]).sort((p, q) => img[p * 4] + img[p * 4 + 1] + img[p * 4 + 2] - (img[q * 4] + img[q * 4 + 1] + img[q * 4 + 2]))[0];
+      if (escuro !== undefined) for (let c = 0; c < 3; c++) img[k * 4 + c] = img[escuro * 4 + c];
+    }
+  }
+  contorno(base, foraDia); contorno(noite, foraNoite); contorno(noiteAbajur, foraNoite);
   const pecas = {};
   for (const m of MOVEIS) {
     const movel = dados(im[m.id]), sombra = dados(im[m.id + '-sombra']);
@@ -150,7 +167,10 @@ function dados(im, filtro, w = W, h = W) {
     const [cu0, cv0] = [(m.pe[0] + m.pe[1]) / 2, (m.pe[2] + m.pe[3]) / 2];
     const [ax, ay] = ponto(cu0, cv0), [bx, by] = ponto(cu0 + 0.75, cv0 + 0.75);
     const base = [sx / Math.max(1, nb) - (bx - ax), y1 - (by - ay)];
-    pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n), base };
+    // O pé de cada coluna: o pixel mais baixo da peça naquela coluna. É onde ela encosta no chão.
+    const peColuna = new Int16Array(W).fill(-1);
+    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
+    pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n), base, peColuna };
   }
   // O pufe: onde está (o centro em u, v) e de que versão ele sai.
   const pufes = MOVEIS.filter((m) => m.pufe);
@@ -177,16 +197,17 @@ function dados(im, filtro, w = W, h = W) {
   const tela = document.getElementById('tela'), g = tela.getContext('2d');
   function desenhar() {
     const D = new Float32Array(W * W * 3); // a cena com as cores do dia
-    const eMovel = new Uint8Array(W * W), acesa = new Uint8Array(W * W);
+    const eMovel = new Uint8Array(W * W), acesa = new Uint8Array(W * W), peY = new Int16Array(W * W);
     const fundoNoite = new Float32Array(W * W * 3);
     const pintada = modo === 'noite' && luzPintada, fundoN = pintada ? noiteAbajur : noite, razaoN = pintada ? noiteAbajurPouco : noitePouco;
+    const razaoPe = pintada ? noiteAbajurPe : noitePe;
     for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
     // A paisagem atrás do vidro, com um véu leve da cor do vidro (de dia, creme; de noite, azul).
     for (let k = 0; k < W * W; k++) if (vidro[k * 4 + 3] > 127) {
       const x = k % W, y = (k / W) | 0;
       for (let c = 0; c < 3; c++) {
         D[k * 3 + c] = daVista(vistasDia[vista], x, y, c) * 0.88 + [250, 243, 224][c] * 0.12;
-        fundoNoite[k * 3 + c] = daVista(vistaNoite, x, y, c) * 0.9 + [40, 46, 80][c] * 0.1;
+        fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], x, y, c) * 0.9 + [40, 46, 80][c] * 0.1;
       }
     }
     // A ordem: o tapete primeiro; depois de trás para a frente, pela casa mais à frente do pé.
@@ -210,7 +231,7 @@ function dados(im, filtro, w = W, h = W) {
         if (a) { const f = 1 - a / 255; for (let c = 0; c < 3; c++) { D[d * 3 + c] *= f; fundoNoite[d * 3 + c] *= f; } }
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
-          eMovel[d] = 1;
+          eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy;
           // A cúpula do abajur (o alto da peça) é luz, não superfície: de noite ela não escurece.
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
@@ -231,7 +252,15 @@ function dados(im, filtro, w = W, h = W) {
           const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
           const quente = [1, 0.72, 0.42][c] * brilho;
           if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
-          else if (eMovel[k]) v = v * Math.min(pintada ? 1.2 : 0.9, razaoN[k * 4 + c] / Math.max(1, diaPouco[k * 4 + c])) + v * quente;
+          // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel: o travesseiro,
+          // colado no abajur, pegava o luar azul da parede atrás dele (relato de 08/10/2026).
+          else if (eMovel[k]) {
+            const j = (Math.min(W - 1, peY[k] + 3) * W + x) * 4;
+            // O halo pintado na parede é pequeno; o abajur também esquenta os móveis em volta (o travesseiro ao
+            // lado dele não pode ficar no azul da noite). Suave, sem faixas, só nos móveis.
+            const perto = pintada ? 0.75 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.3) ** 2) / (2 * 60 * 60)) * [1, 0.7, 0.4][c] : 0;
+            v = v * Math.min(pintada ? 1.2 : 0.9, razaoPe[j + c] / Math.max(1, diaPe[j + c])) + v * (quente + perto);
+          }
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
         }
         saida.data[k * 4 + c] = Math.min(255, v);
@@ -272,7 +301,7 @@ function dados(im, filtro, w = W, h = W) {
   const bg = document.getElementById('grade');
   bg.onclick = () => { grade = !grade; bg.setAttribute('aria-pressed', String(grade)); desenhar(); };
   const bv = document.getElementById('vista');
-  bv.onclick = () => { vista = (vista + 1) % 4; bv.textContent = 'Vista: ' + (vista + 1) + (vista ? ' (de noite, a 1)' : ''); desenhar(); };
+  bv.onclick = () => { vista = (vista + 1) % 4; bv.textContent = 'Vista: ' + (vista + 1); desenhar(); };
   const bl = document.getElementById('luz');
   bl.onclick = () => { luzPintada = !luzPintada; bl.setAttribute('aria-pressed', String(luzPintada)); bl.textContent = 'Luz do abajur à noite: ' + (luzPintada ? 'pintada' : 'por código'); desenhar(); };
   desenhar();

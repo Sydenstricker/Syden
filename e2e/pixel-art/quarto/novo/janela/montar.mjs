@@ -10,7 +10,7 @@ const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:
 const png = (f) => 'data:image/png;base64,' + ler64(path.join(AQUI, f));
 const IMAGENS = {
   dia: 'data:image/png;base64,' + ler64(path.join(AQUI, '..', 'bases', 'pl-512-janela-1.png')),
-  noite: png('noite-pintada.png'), vidro: png('vidro.png'), vistaNoite: png('vista-noite.png'),
+  noite: png('noite-pintada.png'), vidro: png('vidro.png'), vistasNoite: [1, 2, 3, 4].map((n) => png(`vista-noite-${n}.png`)),
   vistas: [1, 2, 3, 4].map((n) => png(`vista-dia-${n}.png`)),
 };
 const html = `<!doctype html>
@@ -36,7 +36,7 @@ const html = `<!doctype html>
 <body><main>
 <h1>A janela com vista</h1>
 <p>A base sem porta, com uma paisagem atrás do vidro. A vista é uma imagem à parte: troca com a hora e pode trocar por
-tema. De noite é a mesma paisagem, editada (só a vista 1 tem noite por enquanto).</p>
+tema. De noite é a mesma paisagem, editada.</p>
 <div class="barra">
   <button id="b-dia" aria-pressed="true">Dia</button><button id="b-noite" aria-pressed="false">Noite</button>
   <span style="width:12px"></span>
@@ -92,14 +92,26 @@ function dados(im, w = W, h = W) { const c = document.createElement('canvas'); c
   }
   const vistas = [];
   for (const v of IMAGENS.vistas) vistas.push(dados(await carregar(v), 128, 160));
-  const vistaNoite = dados(await carregar(IMAGENS.vistaNoite), 128, 160);
+  const vistasNoite = [];
+  for (const v of IMAGENS.vistasNoite) vistasNoite.push(dados(await carregar(v), 128, 160));
   const foraDia = foraDia0, foraNoite = fundoDe(pintada);
+  // Pixels claros soltos na borda de fora do friso viram a cor do contorno (ver ../quarto/montar.mjs).
+  function contorno(img, fora) {
+    for (let k = 0; k < W * W; k++) {
+      if (fora[k] || img[k * 4] + img[k * 4 + 1] + img[k * 4 + 2] <= 360) continue;
+      const x = k % W, y = (k / W) | 0, viz = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (y + dy) * W + x + dx);
+      if (viz.filter((n) => fora[n]).length < 2) continue;
+      const escuro = viz.filter((n) => !fora[n]).sort((p, q) => img[p * 4] + img[p * 4 + 1] + img[p * 4 + 2] - (img[q * 4] + img[q * 4 + 1] + img[q * 4 + 2]))[0];
+      if (escuro !== undefined) for (let c = 0; c < 3; c++) img[k * 4 + c] = img[escuro * 4 + c];
+    }
+  }
+  contorno(dia, foraDia); contorno(noite, foraNoite);
   let modo = 'dia', vista = 0;
   const tela = document.getElementById('tela'), g = tela.getContext('2d');
   const perto = document.getElementById('perto'), gp = perto.getContext('2d');
   function desenhar() {
     const img = modo === 'dia' ? dia : noite, fora = modo === 'dia' ? foraDia : foraNoite;
-    const v = modo === 'dia' ? vistas[vista] : vistaNoite;
+    const v = (modo === 'dia' ? vistas : vistasNoite)[vista];
     const veu = modo === 'dia' ? [250, 243, 224] : [40, 46, 80], forca = modo === 'dia' ? 0.12 : 0.1;
     const saida = g.createImageData(W, W);
     // A vista centrada no vão: 128 × 160 sobre 96 × 140.
@@ -119,11 +131,11 @@ function dados(im, w = W, h = W) { const c = document.createElement('canvas'); c
     g.putImageData(saida, 0, 0);
     gp.imageSmoothingEnabled = false;
     gp.clearRect(0, 0, 96, 140); gp.drawImage(tela, CAIXILHO[0], CAIXILHO[1], 96, 140, 0, 0, 96, 140);
-    for (const b of document.querySelectorAll('[data-vista]')) { b.setAttribute('aria-pressed', String(+b.dataset.vista === vista)); b.disabled = modo === 'noite' && b.dataset.vista !== '0'; }
+    for (const b of document.querySelectorAll('[data-vista]')) { b.setAttribute('aria-pressed', String(+b.dataset.vista === vista)); }
   }
   const bd = document.getElementById('b-dia'), bn = document.getElementById('b-noite');
   bd.onclick = () => { modo = 'dia'; bd.setAttribute('aria-pressed', 'true'); bn.setAttribute('aria-pressed', 'false'); desenhar(); };
-  bn.onclick = () => { modo = 'noite'; vista = 0; bn.setAttribute('aria-pressed', 'true'); bd.setAttribute('aria-pressed', 'false'); desenhar(); };
+  bn.onclick = () => { modo = 'noite'; bn.setAttribute('aria-pressed', 'true'); bd.setAttribute('aria-pressed', 'false'); desenhar(); };
   for (const b of document.querySelectorAll('[data-vista]')) b.onclick = () => { vista = +b.dataset.vista; desenhar(); };
   desenhar();
 })();

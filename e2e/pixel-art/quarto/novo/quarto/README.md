@@ -27,7 +27,21 @@ grade, trocam a luz do abajur (pintada ou por código) e a paisagem da janela. O
 - **A estante sai embutida na parede,** mesmo pedindo "freestanding". A segunda é um nicho arredondado com livros:
   bonito, mas não um móvel solto.
 
+## Rodada de 08/10/2026, à noite (pedidos dele)
+
+- **Estante → guarda-roupa.** A estante saiu embutida na parede duas vezes. No lugar, o guarda-roupa, que é da lista de
+  móveis pela função (a aba "Guarda-roupa").
+- **O tapete pronto.** Repintado, ele veio mais uma vez com um quarto em miniatura em cima. O recorte bom da rodada
+  anterior (mesma base, mesmo lugar) ficou em `prontas/` e entra direto (`pronto` em `lista.mjs`).
+- **A luz azul no travesseiro estava errada.** À noite, cada pixel de móvel pegava a luz da parede ATRÁS dele, e atrás
+  do travesseiro estava a parede no luar. Agora o móvel pega a luz do chão no pé de cada coluna, e o abajur esquenta os
+  móveis em volta (uma luz suave que cai com a distância, só nos móveis; o fundo continua com a luz pintada).
+- **Dois pontos brancos no friso:** dois pixels creme na borda de fora (156,68 e 379,80), encostados no fundo. Pixel
+  claro com dois vizinhos de fundo ganha a cor do contorno.
+- **As quatro vistas têm noite** (`../janela/vista-noite-<n>.png`, por edição de cada uma).
+
 ## Custo
 
 157 gerações, mais da metade em tentativas que falharam (o pufe sozinho levou umas 60, porque as versões derivadas
-eram refeitas a cada nova tentativa do pufe do meio). Em 08/10/2026 **restam 701 das 2.000** do mês.
+eram refeitas a cada nova tentativa do pufe do meio). A rodada da noite (guarda-roupa, tapete que falhou, pufes, as
+três noites das vistas) custou mais 76. Em 08/10/2026 **restam 625 das 2.000** do mês.

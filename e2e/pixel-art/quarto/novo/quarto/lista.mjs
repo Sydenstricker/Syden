@@ -1,7 +1,7 @@
 // Os móveis do quarto na base sem porta (pl-512-janela-1): o pé de cada um nas casas da grade (ver chao.mjs), a altura
 // e o que pedir à ferramenta. Usada por moveis.mjs (que pinta) e por montar.mjs (que monta a página).
 // A parede da direita é quase toda janela (o vidro vai de v 3,5 a 6,3, e as cortinas de 2,3 a 7,3); a da esquerda é
-// inteira livre. Por isso a cama e a estante ficam na esquerda, e o criado-mudo no canto do fundo.
+// inteira livre. Por isso a cama e o guarda-roupa ficam na esquerda, e o criado-mudo no canto do fundo.
 import { silhueta } from './chao.mjs';
 
 export const ESTILO = 'isometric pixel art matching the room exactly: same outline, same palette, same soft afternoon light from the window on the right wall, a soft contact shadow on the floor';
@@ -13,11 +13,12 @@ export const FIXOS = [
   // A primeira cama saiu pequena e com um banquinho ao lado (falhas/): outra semente, e só a cama no pedido.
   { id: 'cama', semente: 7, dica: 'wooden bed with blanket and pillows', pe: [1.5, 4.6, 0.05, 2.7], alto: 72, texto: `ONLY ONE large bed and nothing else, the bed filling the whole masked area: a single wooden bed with a full wooden headboard, a dark blue plaid blanket and two cream pillows, its long side against the left wall, the headboard at the end toward the back corner, ${ESTILO}` },
   { id: 'abajur', dica: 'wooden nightstand with a table lamp and a mug', pe: [0.15, 1.35, 0.05, 1.25], alto: 78, texto: `${GRANDE}: a wooden nightstand in the back corner of the room, next to the bed headboard, with a table lamp with a cream lampshade that is TURNED OFF (no glow, no light on the wall) and a mug on top, ${ESTILO}` },
-  // A primeira saiu embutida na parede, rasa (falhas/): outra semente, e o pedido diz que ela é solta e funda.
-  { id: 'estante', semente: 7, dica: 'tall wooden bookshelf with books', pe: [5.0, 6.6, 0.05, 1.05], alto: 125, texto: `${GRANDE}: a tall FREESTANDING wooden bookshelf, a deep piece of furniture standing on the floor in front of the wall (not built into the wall) full of colorful books, a small potted plant on the top shelf, standing against the left wall, ${ESTILO}` },
-  // O primeiro saiu com um quarto em miniatura dentro (cama, criado-mudo e estante, copiados do resto): outra
-  // semente, e o pedido diz que não há nada em cima.
-  { id: 'tapete', semente: 7, dica: 'green rug', deitado: true, pe: [2.6, 6.8, 3.0, 7.0], alto: 3, texto: `ONLY a plain flat rectangular muted green rug with a thin border lying on the wooden floor, completely empty, NOTHING on it, no furniture, no objects, ${ESTILO}` },
+  // A estante saiu embutida na parede duas vezes (falhas/, a segunda um nicho arredondado). Ele pediu para consertar ou
+  // trocar (08/10/2026): no lugar, o GUARDA-ROUPA, que é da lista de móveis pela função (a aba "Guarda-roupa").
+  { id: 'guarda-roupa', semente: 7, dica: 'tall wooden wardrobe', pe: [4.9, 6.9, 0.05, 1.35], alto: 135, texto: `${GRANDE}: a tall FREESTANDING wooden wardrobe with two doors and small round knobs, a deep piece of furniture standing on the floor in front of the left wall (not built into the wall), ${ESTILO}` },
+  // Pintado aqui, o tapete veio DUAS vezes com um quarto em miniatura em cima (falhas/), e só uma vez limpo. O limpo
+  // ficou guardado (prontas/tapete.png, da mesma base e do mesmo lugar) e é usado direto, sem pintar de novo.
+  { id: 'tapete', deitado: true, pronto: 'prontas/tapete', pe: [2.6, 6.8, 3.0, 7.0], alto: 3 },
 ].map((m) => ({ ...m, ...silhueta(m.pe, m.alto) }));
 // O pufe: a versão do meio é pintada primeiro; as outras duas PARTEM dela (o mesmo pufe posto no lugar e repintado só
 // na forma dele, para ganhar a luz de lá). No teste, pintadas soltas, as três saíram de tamanhos diferentes.

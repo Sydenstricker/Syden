@@ -1,6 +1,6 @@
 // A vista da janela: uma paisagem gerada à parte, posta ATRÁS do vidro (vidro.png), e não pintada nele. Assim ela troca
 // com a hora (dia e noite) e, um dia, por tema ou com nuvens andando. A noite é a EDIÇÃO da de dia: o mesmo lugar.
-//   node e2e/pixel-art/quarto/novo/janela/vista.mjs   → vista-dia-<n>.png, depois vista-noite.png (da vista-dia-1)
+//   node e2e/pixel-art/quarto/novo/janela/vista.mjs [n ...]   → vista-dia-<n>.png; com números, vista-noite-<n>.png de cada um
 import fs from 'node:fs';
 import path from 'node:path';
 import { ler64, gravar64 } from '../../imagem.mjs';
@@ -17,14 +17,14 @@ if (!ja('vista-dia-1.png')) {
   imagens.forEach((b, i) => gravar64(path.join(AQUI, `vista-dia-${i + 1}.png`), b));
   console.log('vista de dia →', imagens.length);
 }
-const escolhida = process.argv[2] ?? 'vista-dia-1.png';
-if (!ja('vista-noite.png') && process.argv[2]) {
+for (const n of process.argv.slice(2)) {
+  if (ja(`vista-noite-${n}.png`)) { console.log('já existe: noite', n); continue; }
   const [noite] = await chamar('/edit-images-v2', {
     method: 'edit_with_text',
-    edit_images: [{ image: { type: 'base64', base64: ler64(path.join(AQUI, escolhida)), format: 'png' }, width: L, height: A }],
+    edit_images: [{ image: { type: 'base64', base64: ler64(path.join(AQUI, `vista-dia-${n}.png`)), format: 'png' }, width: L, height: A }],
     image_size: { width: L, height: A },
     description: 'the same landscape at night: dark blue night sky with small stars and a soft moon, the trees and hills as dark blue silhouettes, a few warm lit windows in the far village, calm and cozy, keep every shape exactly the same',
   });
-  gravar64(path.join(AQUI, 'vista-noite.png'), noite);
-  console.log('vista de noite ok, de', escolhida);
+  gravar64(path.join(AQUI, `vista-noite-${n}.png`), noite);
+  console.log('vista de noite ok:', n);
 }
