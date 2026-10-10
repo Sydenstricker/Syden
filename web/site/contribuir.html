@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
-    <title>Ajudar o Syden · Syden</title>
-    <meta name="description" content="O Syden é de graça por inteiro. Quem quiser ajudar com o servidor e o desenvolvimento pode doar por Pix ou pelo Buy Me a Coffee." />
+    <title>Ajudar o Syden</title>
+    <meta name="description" content="O Syden é de graça e sem anúncios. Quem quiser ajudar pode doar por Pix ou pelo Buy Me a Coffee." />
     <link rel="icon" href="icon-192.png?v=d4" />
     <link rel="stylesheet" href="legal.css" />
     <!-- O botão de copiar o Pix. Arquivo separado porque a política de segurança não aceita script dentro do HTML. -->
@@ -26,67 +26,40 @@
     é um script de terceiro rodando aqui dentro: a política de segurança o barraria, e se não barrasse,
     a política de privacidade deixaria de ser verdade. O QR do Pix é um SVG fixo, gerado na máquina por
     scripts/qr-do-pix.mjs — quem visita não fala com ninguém além do syden.chat.
+
+    POUCO TEXTO, DE PROPÓSITO (pedido de 10/10/2026: "ainda tem muito texto"). A página existe em todos os
+    idiomas do site (web/scripts/site-traduzido.mjs), e fora do português o Buy Me a Coffee vem primeiro
+    (legal.css): o Pix só serve a quem tem banco no Brasil.
   -->
   <body>
-    <main>
+    <main class="contribuir">
       <h1>Ajudar o Syden</h1>
-      <p class="updated">Atualizada em 10 de outubro de 2026</p>
-
-      <p>
-        O Syden é de graça e vai continuar sendo. Inteiro: voz, vídeo, transmissão de tela, comunidades,
-        emojis, sons, todos os enfeites do guarda-roupa. Não existe "versão pro", não existe recurso travado
-        esperando pagamento, e não existe anúncio.
-      </p>
-
-      <h2>Então por que esta página existe?</h2>
-      <p>
-        Porque o Syden tem custo. A voz de todo mundo passa por uma máquina alugada, os arquivos que vocês
-        mandam ocupam disco nela, o domínio se renova todo ano, e o app continua sendo construído. Hoje essa
-        conta é paga do bolso de uma pessoa só.
-      </p>
-      <p>
-        <strong>Contribuir não desbloqueia nada.</strong> Isso é o ponto, não um detalhe: tudo o que
-        existe no Syden já é seu, antes e depois de contribuir. Quem contribui não ganha cor de nome
-        exclusiva, moldura exclusiva nem vantagem nenhuma sobre quem não contribui — se ganhasse, deixaria
-        de ser ajuda e viraria venda, e o Syden viraria outra coisa.
+      <p class="contribuir-sub">
+        O Syden é de graça e sem anúncios. Doar ajuda a pagar o servidor e o desenvolvimento — e não desbloqueia nada,
+        porque nada é trancado.
       </p>
 
       <div class="formas">
-        <section class="forma" aria-labelledby="pix">
+        <section class="forma forma-pix" aria-labelledby="pix">
           <h2 id="pix">No Brasil: Pix</h2>
-          <p>Aponte a câmera do app do seu banco para o código, ou copie o Pix e cole no app. O valor é você quem escolhe.</p>
-          <img class="qr" src="pix.svg" width="220" height="220" alt="QR code do Pix para doar ao Syden" />
+          <img class="qr" src="pix.svg" width="200" height="200" alt="QR code do Pix para doar ao Syden" />
           <!-- pix:inicio — escrito por scripts/qr-do-pix.mjs; não edite à mão -->
           <code class="copia-e-cola" id="copia-e-cola">00020126580014BR.GOV.BCB.PIX01366fe6e06c-ad43-4ad4-abc9-2d0c2cfbcf3d5204000053039865802BR5925Fernando Sydenstricker Co6009SAO PAULO62140510SoB5KJAqc363046509</code>
           <!-- pix:fim -->
-          <button type="button" class="copiar" data-copiar="copia-e-cola" hidden>Copiar o Pix</button>
-          <p class="miudo">O app do banco mostra o nome de quem recebe antes de você confirmar.</p>
+          <button type="button" class="copiar" data-copiar="copia-e-cola" data-copiado="Copiado!" data-falhou="Selecione o código acima" hidden>Copiar o Pix</button>
         </section>
 
-        <section class="forma" lang="en" aria-labelledby="bmc">
-          <h2 id="bmc">Outside Brazil: Buy Me a Coffee</h2>
-          <p>
-            Syden is free in full, with no ads and nothing locked. If you'd like to help with the server and the
-            development, you can support it on Buy Me a Coffee, by card.
-          </p>
-          <a class="botao" href="https://buymeacoffee.com/syden" rel="noopener">Support Syden on Buy Me a Coffee</a>
-          <p class="miudo">Contributing doesn't unlock anything: everyone gets the same Syden.</p>
+        <section class="forma forma-bmc" aria-labelledby="bmc">
+          <h2 id="bmc">De qualquer lugar: cartão</h2>
+          <p>Pelo Buy Me a Coffee, uma vez só ou quando quiser.</p>
+          <a class="botao" href="https://buymeacoffee.com/syden" rel="noopener">Doar pelo Buy Me a Coffee</a>
         </section>
       </div>
 
-      <h2>Quanto</h2>
-      <p>
-        O que você quiser, uma vez só ou quando der vontade. Os valores abaixo existem só para não te obrigar a
-        escolher um número do nada:
-      </p>
-      <ul>
-        <li><strong>R$ 1,99</strong> — um cafezinho</li>
-        <li><strong>R$ 4,99</strong> — um lanche</li>
-        <li><strong>R$ 9,99</strong> — uma rodada</li>
-        <li><strong>R$ 19,99</strong> — segurando a conta</li>
-      </ul>
-
-      <p class="back"><a href="/app/">Voltar ao Syden</a> &middot; <a href="./">Site do Syden</a></p>
+      <!-- Um caminho de volta só, e para o site: "Voltar ao Syden" e "Site do Syden" lado a lado se
+           confundiam (relato de 10/10/2026). Quem quer o app tem o botão de entrar na página inicial. -->
+      <!-- div, e não p: um <p> em volta faria o link inteiro virar a frase a traduzir (site-traduzido.mjs). -->
+      <div class="back"><a class="voltar" href="./">Voltar ao site</a></div>
     </main>
   </body>
 </html>

@@ -645,3 +645,87 @@ h3,
   background: var(--bg-cartao);
   text-decoration: none;
 }
+
+/* ---------- a escolha de idioma, no pé (posta pela montagem: site-traduzido.mjs) ---------- */
+
+.idioma-do-site {
+  position: relative;
+  flex-basis: 100%;
+}
+
+.idioma-do-site summary {
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--text);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 6px 12px;
+  list-style: none;
+}
+
+.idioma-do-site summary::-webkit-details-marker {
+  display: none;
+}
+
+.idioma-do-site summary:hover {
+  background: var(--bg-cartao);
+}
+
+.idioma-do-site ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 4px 16px;
+}
+
+.idioma-do-site a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.idioma-do-site a:hover,
+.idioma-do-site a[aria-current='page'] {
+  color: var(--strong);
+}
+
+.idioma-do-site a[aria-current='page'] {
+  font-weight: 700;
+}
+
+/* ---------- dzongkha: a letra tibetana do Windows é miúda ----------
+   A "Microsoft Himalaya" desenha as letras com uns 60% do tamanho das outras escritas no mesmo corpo:
+   ao lado do latim, o título em dzongkha parecia nota de rodapé (medido em 10/10/2026). O app busca a
+   Noto no Google para essa escrita; o site não fala com terceiro (CLAUDE.md, "Fonte de terceiro"). A
+   saída é a mesma fonte do sistema, ampliada, e só para as letras tibetanas (unicode-range): o "Syden" e
+   o "Windows" no meio da frase continuam do tamanho certo. Onde a Himalaya não existe, o local() falha
+   e o navegador usa a tibetana que tiver, sem ampliar. */
+@font-face {
+  font-family: 'Syden Tibetana';
+  src: local('Microsoft Himalaya');
+  size-adjust: 155%;
+  unicode-range: U+0F00-0FFF;
+}
+
+html:lang(dz) body,
+html:lang(dz) h1,
+html:lang(dz) h2,
+html:lang(dz) h3,
+html:lang(dz) .marca {
+  font-family: 'Syden Tibetana', 'Syden Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* A tibetana empilha sinais acima e abaixo da linha: com o espaçamento do latim, as linhas do título se
+   encostavam. */
+html:lang(dz) body {
+  line-height: 1.95;
+}
+
+html:lang(dz) h1,
+html:lang(dz) h2,
+html:lang(dz) h3 {
+  line-height: 1.45;
+}

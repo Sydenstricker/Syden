@@ -167,7 +167,44 @@ h3 {
   font-size: 14px;
 }
 
-/* A seção do Buy Me a Coffee empurra o botão para o pé, alinhado com o do Pix. */
-.forma[lang='en'] .botao {
+/* A página enxuta (10/10/2026): o título, uma frase e os dois caminhos. */
+.contribuir {
+  max-width: 680px;
+}
+
+.contribuir-sub {
+  color: var(--muted);
+  font-size: 17px;
+  margin: 8px 0 0;
+}
+
+.forma-pix {
+  align-items: center;
+  text-align: center;
+}
+
+.forma-bmc .botao {
   margin-top: auto;
+}
+
+/* Fora do português, o cartão vem primeiro: o Pix só serve a quem tem banco no Brasil. */
+html:not(:lang(pt)) .forma-bmc {
+  order: -1;
+}
+
+/* A linha que liga o original à tradução, logo abaixo da data. Na tradução, ela diz também qual das
+   duas vale: a portuguesa (o Syden é do Brasil). */
+.traducao {
+  color: var(--muted);
+  font-size: 14px;
+  margin: -12px 0 24px;
+}
+
+/* A seta do "voltar" aponta para trás na direção da escrita: no árabe e no hebraico, trás é a direita. */
+.voltar::before {
+  content: '← ';
+}
+
+[dir='rtl'] .voltar::before {
+  content: '→ ';
 }

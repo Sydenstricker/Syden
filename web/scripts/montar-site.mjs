@@ -18,7 +18,8 @@
 // mais.** O que não se encaixa é removido, e o script diz o que removeu.
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { montarIdiomas } from './site-traduzido.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const SITE = join(AQUI, 'site');
@@ -31,6 +32,26 @@ if (!existsSync(join(DIST, 'app'))) {
 
 const doSite = readdirSync(SITE);
 cpSync(SITE, DIST, { recursive: true });
+
+/**
+ * A APRESENTAÇÃO EM CADA IDIOMA (ver site-traduzido.mjs): dist/en/index.html, dist/ja/index.html…, e a
+ * própria raiz ganha a escolha de idioma no pé. Frase sem tradução PARA a montagem: no ar, ela seria
+ * português no meio da página de outro idioma, sem erro nenhum.
+ */
+const traduzido = montarIdiomas();
+const idiomasFaltando = Object.entries(traduzido.faltando);
+if (idiomasFaltando.length) {
+  console.error('Faltam frases nos dicionários de web/textos-do-site/:');
+  for (const [idioma, frases] of idiomasFaltando) console.error(`  ${idioma}: ${frases.length} — "${frases[0].slice(0, 70)}"…`);
+  console.error('Veja tudo com: node web/scripts/site-traduzido.mjs --faltando');
+  process.exit(1);
+}
+for (const aviso of traduzido.avisos) console.log(`  aviso: ${aviso}`);
+for (const [caminho, html] of traduzido.paginas) {
+  mkdirSync(dirname(join(DIST, caminho)), { recursive: true });
+  writeFileSync(join(DIST, caminho), html);
+}
+const pastasDeIdioma = [...new Set([...traduzido.paginas.keys()].filter((c) => c.includes('/')).map((c) => c.split('/')[0]))];
 
 /**
  * Os ícones do Syden são copiados de web/public/ para a raiz, em vez de existirem duas vezes.
@@ -88,7 +109,7 @@ for (const arquivo of TAMBEM_DENTRO_DO_APP) {
 }
 
 // Fora o que veio de web/site/, os ícones da marca, o quarto e a pasta do app, nada tem o que fazer na raiz.
-const permitidos = new Set([...doSite, ...ICONES_DA_MARCA, 'quarto', 'app']);
+const permitidos = new Set([...doSite, ...ICONES_DA_MARCA, 'quarto', 'app', ...pastasDeIdioma]);
 const sobras = readdirSync(DIST).filter((nome) => !permitidos.has(nome));
 for (const sobra of sobras) {
   rmSync(join(DIST, sobra), { recursive: true, force: true });
@@ -133,7 +154,8 @@ function versionarReferencias(pasta, paginas) {
 
 const versionadas =
   versionarReferencias(DIST, doSite.filter((nome) => nome.endsWith('.html'))) +
-  versionarReferencias(join(DIST, 'app'), TAMBEM_DENTRO_DO_APP.filter((nome) => nome.endsWith('.html')));
+  versionarReferencias(join(DIST, 'app'), TAMBEM_DENTRO_DO_APP.filter((nome) => nome.endsWith('.html'))) +
+  pastasDeIdioma.reduce((soma, pasta) => soma + versionarReferencias(join(DIST, pasta), readdirSync(join(DIST, pasta)).filter((nome) => nome.endsWith('.html'))), 0);
 
 /** Sem estes três, o site publicado está quebrado de um jeito que o build não acusa. */
 const OBRIGATORIOS = [
@@ -170,4 +192,5 @@ const tamanho = (pasta) =>
 const mb = (n) => (n / (1024 * 1024)).toFixed(2) + ' MB';
 console.log(`Site montado em dist/ — ${mb(tamanho(DIST))} no total`);
 console.log(`  /          apresentação  (${doSite.length} arquivos de web/site/, ${versionadas} com impressão digital)`);
+console.log(`  /<idioma>/ a apresentação em ${pastasDeIdioma.length} idiomas além do português`);
 console.log(`  /app/      o Syden       (${mb(tamanho(join(DIST, 'app')))})`);
