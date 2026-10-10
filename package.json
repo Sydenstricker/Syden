@@ -19,6 +19,7 @@
     "medir:blobs": "node scripts/medir-blobs.mjs"
   },
   "devDependencies": {
-    "playwright-core": "^1.63.0"
+    "playwright-core": "^1.63.0",
+    "qrcode": "^1.5.4"
   }
 }

@@ -4,8 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
-    <title>Ajudar a pagar o servidor · Syden</title>
+    <title>Ajudar o Syden · Syden</title>
+    <meta name="description" content="O Syden é de graça por inteiro. Quem quiser ajudar com o servidor e o desenvolvimento pode doar por Pix ou pelo Buy Me a Coffee." />
+    <link rel="icon" href="icon-192.png?v=d4" />
     <link rel="stylesheet" href="legal.css" />
+    <!-- O botão de copiar o Pix. Arquivo separado porque a política de segurança não aceita script dentro do HTML. -->
+    <script src="contribuir.js" defer></script>
   </head>
   <!--
     Esta página mora NO SITE, fora do aplicativo, e isso é de propósito.
@@ -17,11 +21,16 @@
 
     A regra prática, para não errar isso no futuro: o aplicativo pode DIZER que existe esta página e
     mostrar o endereço; o que ele não deve fazer é abrir cobrança por dentro dele.
+
+    OS DOIS CAMINHOS SÃO SÓ LINK E IMAGEM, nunca o botão pronto dos serviços. O widget do Buy Me a Coffee
+    é um script de terceiro rodando aqui dentro: a política de segurança o barraria, e se não barrasse,
+    a política de privacidade deixaria de ser verdade. O QR do Pix é um SVG fixo, gerado na máquina por
+    scripts/qr-do-pix.mjs — quem visita não fala com ninguém além do syden.chat.
   -->
   <body>
     <main>
-      <h1>Ajudar a pagar o servidor</h1>
-      <p class="updated">Atualizada em 27 de setembro de 2026</p>
+      <h1>Ajudar o Syden</h1>
+      <p class="updated">Atualizada em 10 de outubro de 2026</p>
 
       <p>
         O Syden é de graça e vai continuar sendo. Inteiro: voz, vídeo, transmissão de tela, comunidades,
@@ -31,9 +40,9 @@
 
       <h2>Então por que esta página existe?</h2>
       <p>
-        Porque o servidor tem uma conta no fim do mês. A voz de todo mundo passa por uma máquina alugada,
-        os arquivos que vocês mandam ocupam disco nela, e o domínio se renova todo ano. Hoje essa conta é
-        paga do bolso de uma pessoa só.
+        Porque o Syden tem custo. A voz de todo mundo passa por uma máquina alugada, os arquivos que vocês
+        mandam ocupam disco nela, o domínio se renova todo ano, e o app continua sendo construído. Hoje essa
+        conta é paga do bolso de uma pessoa só.
       </p>
       <p>
         <strong>Contribuir não desbloqueia nada.</strong> Isso é o ponto, não um detalhe: tudo o que
@@ -42,9 +51,32 @@
         de ser ajuda e viraria venda, e o Syden viraria outra coisa.
       </p>
 
+      <div class="formas">
+        <section class="forma" aria-labelledby="pix">
+          <h2 id="pix">No Brasil: Pix</h2>
+          <p>Aponte a câmera do app do seu banco para o código, ou copie o Pix e cole no app. O valor é você quem escolhe.</p>
+          <img class="qr" src="pix.svg" width="220" height="220" alt="QR code do Pix para doar ao Syden" />
+          <!-- pix:inicio — escrito por scripts/qr-do-pix.mjs; não edite à mão -->
+          <code class="copia-e-cola" id="copia-e-cola">00020126580014BR.GOV.BCB.PIX01366fe6e06c-ad43-4ad4-abc9-2d0c2cfbcf3d5204000053039865802BR5925Fernando Sydenstricker Co6009SAO PAULO62140510SoB5KJAqc363046509</code>
+          <!-- pix:fim -->
+          <button type="button" class="copiar" data-copiar="copia-e-cola" hidden>Copiar o Pix</button>
+          <p class="miudo">O app do banco mostra o nome de quem recebe antes de você confirmar.</p>
+        </section>
+
+        <section class="forma" lang="en" aria-labelledby="bmc">
+          <h2 id="bmc">Outside Brazil: Buy Me a Coffee</h2>
+          <p>
+            Syden is free in full, with no ads and nothing locked. If you'd like to help with the server and the
+            development, you can support it on Buy Me a Coffee, by card.
+          </p>
+          <a class="botao" href="https://buymeacoffee.com/syden" rel="noopener">Support Syden on Buy Me a Coffee</a>
+          <p class="miudo">Contributing doesn't unlock anything: everyone gets the same Syden.</p>
+        </section>
+      </div>
+
       <h2>Quanto</h2>
       <p>
-        O que você quiser, por mês ou uma vez só. Os valores abaixo existem só para não te obrigar a
+        O que você quiser, uma vez só ou quando der vontade. Os valores abaixo existem só para não te obrigar a
         escolher um número do nada:
       </p>
       <ul>
@@ -53,14 +85,6 @@
         <li><strong>R$ 9,99</strong> — uma rodada</li>
         <li><strong>R$ 19,99</strong> — segurando a conta</li>
       </ul>
-
-      <h2>Ainda não dá</h2>
-      <p>
-        Falta ligar o Syden a um meio de pagamento, e isso tem burocracia de verdade: nota, imposto e a
-        papelada de quem recebe. Esta página fica aqui enquanto isso, para você saber que a possibilidade
-        existe — e para deixar registrado, desde antes de existir dinheiro envolvido, que nada disso vai
-        mudar o que você pode fazer no Syden.
-      </p>
 
       <p class="back"><a href="/app/">Voltar ao Syden</a> &middot; <a href="./">Site do Syden</a></p>
     </main>

@@ -89,3 +89,85 @@ h3 {
   font-family: 'Syden Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
+
+/* ---------- contribuir.html: os dois caminhos lado a lado ---------- */
+
+.formas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 32px 0 8px;
+}
+
+.forma {
+  background: #262c38;
+  border: 1px solid #2f3644;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.forma h2 {
+  margin: 0;
+}
+
+.forma p {
+  margin: 0;
+}
+
+.qr {
+  width: 220px;
+  height: 220px;
+  border-radius: 10px;
+  align-self: center;
+}
+
+/* O código é comprido e sem espaço: quebra em qualquer letra, senão empurra a página para o lado. */
+.copia-e-cola {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-all;
+  background: #11141a;
+  border: 1px solid #2f3644;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  user-select: all;
+}
+
+.botao,
+.copiar {
+  display: inline-block;
+  background: #f5b83d;
+  color: #14161b;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.botao:hover,
+.copiar:hover {
+  background: #ffd27a;
+}
+
+.miudo {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* A seção do Buy Me a Coffee empurra o botão para o pé, alinhado com o do Pix. */
+.forma[lang='en'] .botao {
+  margin-top: auto;
+}
