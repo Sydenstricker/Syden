@@ -25,13 +25,15 @@ import { describe, it } from 'node:test';
 const PAGINAS = [
   {
     arquivo: 'termos.html',
-    data: '5 de outubro de 2026',
-    resumo: '7ed5276f2a0bd121',
+    data: '10 de outubro de 2026',
+    resumo: '86453df65ac4ce02',
+    traducao: { arquivo: 'en/terms.html', data: 'October 10, 2026', resumo: 'bd8c7d911b6762f3' },
   },
   {
     arquivo: 'privacidade.html',
-    data: '6 de outubro de 2026',
-    resumo: 'b563ac1ec6e4f384',
+    data: '10 de outubro de 2026',
+    resumo: '90aa4e458b274c57',
+    traducao: { arquivo: 'en/privacy.html', data: 'October 10, 2026', resumo: '87e94435fbb7aeb4' },
   },
 ];
 
@@ -53,6 +55,30 @@ describe('páginas legais', () => {
         lista.includes(`<strong>${pagina.data}</strong>`),
         `a data do alto (${pagina.data}) não tem item na lista do fim de ${pagina.arquivo} — ` +
           'mudança sem item na lista é mudança que ninguém consegue conferir.',
+      );
+    });
+
+    // A TRADUÇÃO ATRASA DO MESMO JEITO QUE A DATA ATRASAVA: o português muda, o inglês fica dizendo o
+    // texto antigo, e quem lê em inglês aceita uma coisa que já não vale. Por isso a tradução tem a mesma
+    // data e o mesmo número de itens no "o que mudou" — mudou um, o teste pede o outro.
+    it(`${pagina.traducao.arquivo}: acompanha ${pagina.arquivo}`, () => {
+      const original = ler(pagina.arquivo);
+      const traducao = ler(pagina.traducao.arquivo);
+      const data = /<p class="updated">Last updated ([^<]+)<\/p>/.exec(traducao);
+      assert.ok(data, `não achei a linha da data em ${pagina.traducao.arquivo}`);
+      assert.equal(data[1], pagina.traducao.data);
+      const itens = (html: string) => (html.slice(html.indexOf('class="historico"')).match(/<li>/g) ?? []).length;
+      assert.equal(
+        itens(traducao),
+        itens(original),
+        `${pagina.arquivo} tem ${itens(original)} mudanças na lista e ${pagina.traducao.arquivo} tem ${itens(traducao)}: ` +
+          'a tradução ficou para trás. Traduza a mudança antes de publicar.',
+      );
+      const resumo = createHash('sha256').update(traducao).digest('hex').slice(0, 16);
+      assert.equal(
+        resumo,
+        pagina.traducao.resumo,
+        `\n\n  ${pagina.traducao.arquivo} mudou: confira a data e escreva aqui resumo: '${resumo}'\n`,
       );
     });
 
