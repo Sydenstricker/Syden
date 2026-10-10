@@ -111,3 +111,28 @@ function lerCsv(texto) {
   if (campo || linha.length) { linha.push(campo); linhas.push(linha); }
   return linhas;
 }
+
+// ---- Em lotes (LOTES=4): a importação da pasta inteira (256 fotos) foi barrada no meio pelo Akamai do Partner
+// Center em 09/10/2026, com "Access Denied". Cada lote é uma pasta com o CSV só dos seus idiomas; o português e os
+// logos vão no primeiro, e os seguintes NÃO levam a coluna pt-br — senão a importação deles devolveria o texto antigo
+// que veio no exportado. Importe na ordem: syden-loja-1, depois -2...
+if (process.env.LOTES) {
+  const apps = Object.keys(CODIGOS);
+  const tam = Math.ceil(apps.length / Number(process.env.LOTES));
+  for (let k = 0; k * tam < apps.length; k++) {
+    const grupo = apps.slice(k * tam, (k + 1) * tam);
+    const raiz = `${RAIZ}-${k + 1}`;
+    const dir = `${REPO}/e2e/fotos/${raiz}`;
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.mkdirSync(dir, { recursive: true });
+    for (const app of grupo) fs.cpSync(`${DESTINO}/${app}`, `${dir}/${app}`, { recursive: true });
+    if (k === 0) fs.cpSync(`${DESTINO}/logos`, `${dir}/logos`, { recursive: true });
+    const colunas = [0, 1, 2, colDefault, ...grupo.map((app) => cab.indexOf(CODIGOS[app]))];
+    // A coluna default fica, mas vazia depois do primeiro: os logos já foram, e imagem vazia não apaga nada.
+    // Os logos também: só o primeiro lote leva a pasta deles, e os idiomas novos herdam pela coluna default.
+    const vazio = (l, i, c) => k > 0 && i > 0 && c > 2 && (c === colDefault || LOGOS[l[0]]);
+    const linhas = L.map((l, i) => colunas.map((c) => (vazio(l, i, c) ? '' : l[c].replaceAll(`${RAIZ}/`, `${raiz}/`))));
+    fs.writeFileSync(`${dir}/listagem.csv`, '﻿' + linhas.map((l) => l.map(aspas).join(',')).join('\r\n') + '\r\n');
+    console.log(`  ${raiz}: ${grupo.join(' ')}`);
+  }
+}
