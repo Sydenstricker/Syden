@@ -126,11 +126,12 @@ if (process.env.LOTES) {
     fs.rmSync(dir, { recursive: true, force: true });
     fs.mkdirSync(dir, { recursive: true });
     for (const app of grupo) fs.cpSync(`${DESTINO}/${app}`, `${dir}/${app}`, { recursive: true });
-    if (k === 0) fs.cpSync(`${DESTINO}/logos`, `${dir}/logos`, { recursive: true });
+    // Cada lote leva os logos: com OverrideLogosForWin10, cada idioma exige o seu ícone 300×300, e a coluna default
+    // NÃO é herdada — os lotes 2 a 8 da primeira importação (09/10/2026) ficaram todos "Incomplete" sem eles.
+    fs.cpSync(`${DESTINO}/logos`, `${dir}/logos`, { recursive: true });
     const colunas = [0, 1, 2, colDefault, ...grupo.map((app) => cab.indexOf(CODIGOS[app]))];
-    // A coluna default fica, mas vazia depois do primeiro: os logos já foram, e imagem vazia não apaga nada.
-    // Os logos também: só o primeiro lote leva a pasta deles, e os idiomas novos herdam pela coluna default.
-    const vazio = (l, i, c) => k > 0 && i > 0 && c > 2 && (c === colDefault || LOGOS[l[0]]);
+    // A coluna default fica vazia depois do primeiro lote; as dos idiomas levam tudo, logos inclusive.
+    const vazio = (l, i, c) => k > 0 && i > 0 && c === colDefault;
     const linhas = L.map((l, i) => colunas.map((c) => (vazio(l, i, c) ? '' : l[c].replaceAll(`${RAIZ}/`, `${raiz}/`))));
     fs.writeFileSync(`${dir}/listagem.csv`, '﻿' + linhas.map((l) => l.map(aspas).join(',')).join('\r\n') + '\r\n');
     console.log(`  ${raiz}: ${grupo.join(' ')}`);
