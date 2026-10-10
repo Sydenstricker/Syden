@@ -1,0 +1,19 @@
+{
+  "Description": "Syden on paikka, jossa juttelet kavereidesi kanssa äänellä, videolla ja tekstillä. Aina auki olevat puhehuoneet, näytönjako äänen kanssa, chatti emojeilla ja äänillä – kaikki, mitä porukka tarvitsee pelatakseen yhdessä, katsoakseen yhdessä tai vain hengaillakseen ja jutellakseen.\n\nOikeasti ilmainen\nMaksullista versiota ei ole, tilausta ei ole, eikä mikään odota lukossa maksua. Kaikki profiilin koristeet ovat ilmaisia. Joka haluaa tukea, tukee siksi, että haluaa – ja pääsi kaikkeen käsiksi jo ennen sitä.\n\nEi mainoksia eikä tietojen myyntiä\nSydenissä ei ole mainoksia. Se ei myy tietojasi eikä käytä keskustelujasi mihinkään muuhun kuin niiden toimittamiseen niille, joiden kanssa puhut. Ääntä, videota ja jaettuja näyttöjä ei tallenneta.\n\nTehty kaveriporukoille, ei massoille\nYhteisöihin pääsee kutsulla. Sinä päätät, keitä siellä on, ja jokaisella yhteisöllä on omat kanavansa, emojinsa ja äänensä. Voit estää ne, jotka häiritsevät, ilmoittaa asiattomasta sisällöstä ja lähteä milloin haluat – ja ottaa tietosi mukaan.\n\nMitä sisältä löytyy\n• Puhehuoneet videolla ja näytönjaolla äänen kanssa\n• Kohinanvaimennus, joka vaimentaa tuulettimen ja taustamelun\n• Chatti liitteillä, vastauksilla, ketjuilla ja kyselyillä\n• Emojit ja äänet, jotka yhteisö tekee itse\n• Karaoke, äänitaulu ja äänitehosteet\n• Yksityiskeskustelut ja kaverilista\n• Istuntotila yhdessä katsomiseen, keskustelu vieressä\n• Koti pikselitaiteena: kanin huone päivällä ja yöllä\n• Vaalea ja tumma teema, yli 70 kielellä\n\nSyden toimii selaimessa ja tässä sovelluksessa samalla tilillä.",
+  "ShortDescription": "Ääni, video ja chatti kaveriporukallesi. Aina auki olevat huoneet, näytönjako äänen kanssa ja emojit, jotka yhteisö tekee itse. Oikeasti ilmainen: ei mainoksia, ei tilausta eikä mitään lukittuna maksun taakse.",
+  "ReleaseNotes": "Uusi kohinanvaimennus, joka toimii suoraan tietokoneella ja vaimentaa tuulettimen ja taustamelun. Uusi kuvake, uusi koti pikselitaiteena – kanin huone – ja Syden yli 70 kielellä.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Kaikki oikeudet pidätetään.",
+  "AdditionalLicenseTerms": "Sydenin käyttöön sovelletaan osoitteessa https://syden.chat/termos.html julkaistuja käyttöehtoja ja osoitteessa https://syden.chat/privacidade.html julkaistua tietosuojakäytäntöä.",
+  "Features": [
+    "Puhehuoneet videolla ja näytönjaolla äänen kanssa",
+    "Kohinanvaimennus, joka vaimentaa tuulettimen ja taustamelun",
+    "Chatti liitteillä, vastauksilla, ketjuilla ja kyselyillä",
+    "Emojit ja äänet, jotka yhteisö tekee itse",
+    "Karaoke, äänitaulu ja äänitehosteet",
+    "Yksityiskeskustelut ja kaverilista",
+    "Istuntotila yhdessä katsomiseen, keskustelu vieressä",
+    "Koti pikselitaiteena: kanin huone päivällä ja yöllä",
+    "Vaalea ja tumma teema, yli 70 kielellä"
+  ],
+  "SearchTerms": ["äänichat", "videopuhelu", "tekstichat", "näytön jako", "yhteisö", "pelaa kavereiden kanssa"]
+}

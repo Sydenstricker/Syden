@@ -1,0 +1,19 @@
+{
+  "Description": "O Syden é um lugar para conversar com os seus amigos por voz, vídeo e texto. Salas de voz que ficam sempre abertas, transmissão de tela com som, chat com emojis e sons — tudo o que um grupo precisa para jogar junto, assistir junto ou só ficar de conversa.\n\nGratuito de verdade\nNão existe plano pago, não existe assinatura e não existe item bloqueado esperando pagamento. Os enfeites do perfil são todos gratuitos. Quem quiser contribuir contribui porque quis — e já tinha acesso a tudo antes disso.\n\nSem anúncios e sem venda de dados\nO Syden não tem anúncios, não vende os seus dados e não usa as suas conversas para nada além de entregá-las a quem você está falando. Voz, vídeo e telas compartilhadas não são gravados.\n\nFeito para grupos, não para multidões\nComunidades entram por convite. Você escolhe quem está lá dentro, e cada comunidade tem os seus canais, emojis e sons próprios. Dá para bloquear quem incomodar, denunciar o que estiver errado e sair quando quiser, levando os seus dados.\n\nO que tem dentro\n• Salas de voz com vídeo e transmissão de tela com som\n• Supressão de ruído que abafa ventilador e barulho de fundo\n• Chat com anexos, respostas, tópicos e enquetes\n• Emojis e sons que a própria comunidade cria\n• Karaokê, soundboard e efeitos de voz\n• Conversas privadas e lista de amigos\n• Modo sessão, para assistir junto com a conversa ao lado\n• Uma casa em pixel art: o quarto do coelho, de dia e de noite\n• Tema claro e escuro, em mais de 70 idiomas\n\nO Syden funciona no navegador e neste aplicativo, com a mesma conta.",
+  "ShortDescription": "Voz, vídeo e chat para o seu grupo de amigos. Salas sempre abertas, transmissão de tela com som e emojis que a própria comunidade cria. Gratuito de verdade: sem anúncios, sem assinatura e sem nada travado esperando pagamento.",
+  "ReleaseNotes": "Supressão de ruído nova, que roda no próprio computador e abafa ventilador e barulho de fundo. Ícone novo, a casa nova em pixel art — o quarto do coelho — e o Syden em mais de 70 idiomas.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Todos os direitos reservados.",
+  "AdditionalLicenseTerms": "O uso do Syden está sujeito aos Termos de Uso publicados em https://syden.chat/termos.html e à Política de Privacidade em https://syden.chat/privacidade.html.",
+  "Features": [
+    "Salas de voz com vídeo e transmissão de tela com som",
+    "Supressão de ruído que abafa ventilador e barulho de fundo",
+    "Chat com anexos, respostas, tópicos e enquetes",
+    "Emojis e sons que a própria comunidade cria",
+    "Karaokê, soundboard e efeitos de voz",
+    "Conversas privadas e lista de amigos",
+    "Modo sessão, para assistir junto com a conversa ao lado",
+    "Uma casa em pixel art: o quarto do coelho, de dia e de noite",
+    "Tema claro e escuro, em mais de 70 idiomas"
+  ],
+  "SearchTerms": ["chat de voz", "conversa por vídeo", "chat por texto", "compartilhar tela", "comunidade", "jogar com amigos"]
+}

@@ -1,0 +1,19 @@
+{
+  "Description": "Syden est un endroit pour discuter avec tes amis en vocal, en vidéo et par écrit. Des salons vocaux toujours ouverts, le partage d’écran avec le son, un chat avec des emojis et des sons — tout ce qu’il faut à un groupe pour jouer ensemble, regarder quelque chose ensemble ou simplement papoter.\n\nVraiment gratuit\nPas d’offre payante, pas d’abonnement et rien de bloqué en attente de paiement. Toutes les décorations du profil sont gratuites. Qui veut contribuer le fait par envie — et avait déjà accès à tout avant.\n\nSans pub et sans revente de données\nSyden n’a pas de publicité, ne vend pas tes données et n’utilise tes conversations que pour les transmettre aux personnes avec qui tu parles. La voix, la vidéo et les écrans partagés ne sont pas enregistrés.\n\nPensé pour les groupes, pas pour les foules\nOn entre dans une communauté sur invitation. Tu choisis qui y est, et chaque communauté a ses propres salons, emojis et sons. Tu peux bloquer qui te dérange, signaler ce qui ne va pas et partir quand tu veux, en emportant tes données.\n\nCe qu’il y a dedans\n• Salons vocaux avec vidéo et partage d’écran avec le son\n• Suppression du bruit qui étouffe le ventilateur et les bruits de fond\n• Chat avec pièces jointes, réponses, fils et sondages\n• Emojis et sons créés par la communauté elle-même\n• Karaoké, sons à jouer en un clic et effets de voix\n• Conversations privées et liste d’amis\n• Mode session, pour regarder ensemble avec la conversation à côté\n• Une maison en pixel art : la chambre du lapin, de jour comme de nuit\n• Thème clair et sombre, dans plus de 70 langues\n\nSyden fonctionne dans le navigateur et dans cette application, avec le même compte.",
+  "ShortDescription": "Voix, vidéo et chat pour ta bande d’amis. Des salons toujours ouverts, le partage d’écran avec le son et des emojis créés par la communauté elle-même. Vraiment gratuit : sans pub, sans abonnement et rien de bloqué en attente de paiement.",
+  "ReleaseNotes": "Nouvelle suppression du bruit, qui tourne directement sur ton ordinateur et étouffe le ventilateur et les bruits de fond. Nouvelle icône, la nouvelle maison en pixel art — la chambre du lapin — et Syden dans plus de 70 langues.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Tous droits réservés.",
+  "AdditionalLicenseTerms": "L’utilisation de Syden est soumise aux Conditions d’utilisation publiées sur https://syden.chat/termos.html et à la Politique de confidentialité sur https://syden.chat/privacidade.html.",
+  "Features": [
+    "Salons vocaux avec vidéo et partage d’écran avec le son",
+    "Suppression du bruit qui étouffe le ventilateur et les bruits de fond",
+    "Chat avec pièces jointes, réponses, fils et sondages",
+    "Emojis et sons créés par la communauté elle-même",
+    "Karaoké, sons à jouer en un clic et effets de voix",
+    "Conversations privées et liste d’amis",
+    "Mode session, pour regarder ensemble avec la conversation à côté",
+    "Une maison en pixel art : la chambre du lapin, de jour comme de nuit",
+    "Thème clair et sombre, dans plus de 70 langues"
+  ],
+  "SearchTerms": ["chat vocal", "appel vidéo", "messagerie", "partage d’écran", "communauté", "jouer entre amis"]
+}

@@ -1,0 +1,19 @@
+{
+  "Description": "Syden e un loc unde vorbești cu prietenii tăi prin voce, video și text. Camere de voce mereu deschise, transmisiune de ecran cu sunet, chat cu emoji și sunete — tot ce-i trebuie unui grup ca să se joace împreună, să se uite împreună la ceva sau doar să stea de vorbă.\n\nGratuit cu adevărat\nNu există plan plătit, nu există abonament și nu există nimic blocat care să aștepte o plată. Decorațiunile profilului sunt toate gratuite. Cine vrea să contribuie o face pentru că vrea — și avea deja acces la tot dinainte.\n\nFără reclame și fără vânzare de date\nSyden nu are reclame, nu îți vinde datele și nu îți folosește conversațiile pentru nimic altceva decât ca să le ducă la cei cu care vorbești. Vocea, video-ul și ecranele partajate nu sunt înregistrate.\n\nFăcut pentru grupuri, nu pentru mulțimi\nÎn comunități se intră pe bază de invitație. Tu alegi cine e înăuntru, iar fiecare comunitate are propriile canale, emoji și sunete. Poți bloca pe cine te deranjează, poți raporta ce nu e în regulă și poți pleca oricând vrei, luându-ți datele cu tine.\n\nCe găsești înăuntru\n• Camere de voce cu video și transmisiune de ecran cu sunet\n• Suprimarea zgomotului, care atenuează ventilatorul și zgomotul de fundal\n• Chat cu atașamente, răspunsuri, fire și sondaje\n• Emoji și sunete create chiar de comunitate\n• Karaoke, panou de sunete și efecte de voce\n• Conversații private și listă de prieteni\n• Modul sesiune, ca să vă uitați împreună cu conversația alături\n• O casă în pixel art: camera iepurașului, ziua și noaptea\n• Temă luminoasă și întunecată, în peste 70 de limbi\n\nSyden funcționează în browser și în această aplicație, cu același cont.",
+  "ShortDescription": "Voce, video și chat pentru gașca ta de prieteni. Camere mereu deschise, transmisiune de ecran cu sunet și emoji create chiar de comunitate. Gratuit cu adevărat: fără reclame, fără abonament și nimic blocat care să aștepte o plată.",
+  "ReleaseNotes": "Suprimare nouă a zgomotului, care rulează direct pe calculatorul tău și atenuează ventilatorul și zgomotul de fundal. Iconiță nouă, noua casă în pixel art — camera iepurașului — și Syden în peste 70 de limbi.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Toate drepturile rezervate.",
+  "AdditionalLicenseTerms": "Utilizarea Syden este supusă Termenilor de utilizare publicați la https://syden.chat/termos.html și Politicii de confidențialitate de la https://syden.chat/privacidade.html.",
+  "Features": [
+    "Camere de voce cu video și transmisiune de ecran cu sunet",
+    "Suprimarea zgomotului, care atenuează ventilatorul și zgomotul de fundal",
+    "Chat cu atașamente, răspunsuri, fire și sondaje",
+    "Emoji și sunete create chiar de comunitate",
+    "Karaoke, panou de sunete și efecte de voce",
+    "Conversații private și listă de prieteni",
+    "Modul sesiune, ca să vă uitați împreună cu conversația alături",
+    "O casă în pixel art: camera iepurașului, ziua și noaptea",
+    "Temă luminoasă și întunecată, în peste 70 de limbi"
+  ],
+  "SearchTerms": ["chat vocal", "apel video", "chat text", "partajare ecran", "comunitate", "jocuri cu prieteni"]
+}

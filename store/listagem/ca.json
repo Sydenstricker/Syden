@@ -1,0 +1,19 @@
+{
+  "Description": "El Syden és un lloc per parlar amb els teus amics per veu, vídeo i text. Sales de veu sempre obertes, transmissió de pantalla amb so, xat amb emojis i sons: tot el que necessita un grup per jugar, mirar alguna cosa plegats o simplement fer petar la xerrada.\n\nGratuït de debò\nNo hi ha cap pla de pagament, cap subscripció ni res bloquejat esperant un pagament. Els adorns del perfil són tots gratuïts. Qui vol contribuir ho fa perquè vol, i ja tenia accés a tot abans.\n\nSense anuncis i sense venda de dades\nEl Syden no té anuncis, no ven les teves dades i no fa servir les teves converses per a res més que fer-les arribar a les persones amb qui parles. La veu, el vídeo i les pantalles compartides no s’enregistren.\n\nFet per a grups, no per a multituds\nA les comunitats s’hi entra per invitació. Tu tries qui hi és, i cada comunitat té els seus propis canals, emojis i sons. Pots bloquejar qui et molesti, denunciar el que no estigui bé i marxar quan vulguis, emportant-te les teves dades.\n\nQuè hi ha dins\n• Sales de veu amb vídeo i transmissió de pantalla amb so\n• Supressió de soroll que esmorteeix el ventilador i el soroll de fons\n• Xat amb fitxers adjunts, respostes, fils i enquestes\n• Emojis i sons creats per la mateixa comunitat\n• Karaoke, tauler de sons i efectes de veu\n• Converses privades i llista d’amics\n• Mode sessió, per mirar coses plegats amb la conversa al costat\n• Una casa en pixel art: l’habitació del conill, de dia i de nit\n• Tema clar i fosc, en més de 70 idiomes\n\nEl Syden funciona al navegador i en aquesta aplicació, amb el mateix compte.",
+  "ShortDescription": "Veu, vídeo i xat per a la teva colla d’amics. Sales sempre obertes, transmissió de pantalla amb so i emojis creats per la mateixa comunitat. Gratuït de debò: sense anuncis, sense subscripció i sense res bloquejat esperant un pagament.",
+  "ReleaseNotes": "Nova supressió de soroll, que funciona al teu propi ordinador i esmorteeix el ventilador i el soroll de fons. Icona nova, la nova casa en pixel art (l’habitació del conill) i el Syden en més de 70 idiomes.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Tots els drets reservats.",
+  "AdditionalLicenseTerms": "L’ús del Syden està subjecte a les Condicions d’ús publicades a https://syden.chat/termos.html i a la Política de privadesa a https://syden.chat/privacidade.html.",
+  "Features": [
+    "Sales de veu amb vídeo i transmissió de pantalla amb so",
+    "Supressió de soroll que esmorteeix el ventilador i el soroll de fons",
+    "Xat amb fitxers adjunts, respostes, fils i enquestes",
+    "Emojis i sons creats per la mateixa comunitat",
+    "Karaoke, tauler de sons i efectes de veu",
+    "Converses privades i llista d’amics",
+    "Mode sessió, per mirar coses plegats amb la conversa al costat",
+    "Una casa en pixel art: l’habitació del conill, de dia i de nit",
+    "Tema clar i fosc, en més de 70 idiomes"
+  ],
+  "SearchTerms": ["xat de veu", "videotrucades", "xat de text", "compartir pantalla", "comunitat", "jugar amb amics"]
+}

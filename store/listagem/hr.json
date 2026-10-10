@@ -1,0 +1,19 @@
+{
+  "Description": "Syden je mjesto za razgovor sa svojim prijateljima glasom, videom i tekstom. Glasovne sobe koje su uvijek otvorene, dijeljenje zaslona sa zvukom, chat s emojijima i zvukovima – sve što ekipi treba da zajedno igra, zajedno gleda ili samo ćaska.\n\nStvarno besplatno\nNema plaćenog paketa, nema pretplate i ništa nije zaključano dok se ne plati. Svi ukrasi profila su besplatni. Tko želi pridonijeti, pridonosi zato što to želi – a pristup svemu ima i od prije.\n\nBez oglasa i bez prodaje podataka\nSyden nema oglase, ne prodaje tvoje podatke i ne koristi tvoje razgovore ni za što drugo osim da ih dostavi onima s kojima razgovaraš. Glas, video i dijeljeni zasloni ne snimaju se.\n\nNapravljeno za ekipe, ne za mase\nU zajednice se ulazi samo s pozivnicom. Ti biraš tko je unutra, a svaka zajednica ima svoje kanale, emojije i zvukove. Možeš blokirati one koji smetaju, prijaviti ono što nije u redu i otići kad god želiš – zajedno sa svojim podacima.\n\nŠto je unutra\n• Glasovne sobe s videom i dijeljenjem zaslona sa zvukom\n• Suzbijanje šuma koje prigušuje ventilator i pozadinsku buku\n• Chat s privicima, odgovorima, nitima i anketama\n• Emojiji i zvukovi koje stvara sama zajednica\n• Karaoke, zvučna ploča i glasovni efekti\n• Privatni razgovori i popis prijatelja\n• Način sesije za zajedničko gledanje, uz razgovor sa strane\n• Dom u pixel artu: zečeva soba, danju i noću\n• Svijetla i tamna tema, na više od 70 jezika\n\nSyden radi u pregledniku i u ovoj aplikaciji, s istim računom.",
+  "ShortDescription": "Glas, video i chat za tvoju ekipu prijatelja. Uvijek otvorene sobe, dijeljenje zaslona sa zvukom i emojiji koje stvara sama zajednica. Stvarno besplatno: bez oglasa, bez pretplate i ništa zaključano dok se ne plati.",
+  "ReleaseNotes": "Novo suzbijanje šuma koje radi izravno na računalu i prigušuje ventilator i pozadinsku buku. Nova ikona, novi dom u pixel artu – zečeva soba – i Syden na više od 70 jezika.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Sva prava pridržana.",
+  "AdditionalLicenseTerms": "Korištenje Sydena podliježe Uvjetima korištenja objavljenima na https://syden.chat/termos.html i Pravilima privatnosti objavljenima na https://syden.chat/privacidade.html.",
+  "Features": [
+    "Glasovne sobe s videom i dijeljenjem zaslona sa zvukom",
+    "Suzbijanje šuma koje prigušuje ventilator i pozadinsku buku",
+    "Chat s privicima, odgovorima, nitima i anketama",
+    "Emojiji i zvukovi koje stvara sama zajednica",
+    "Karaoke, zvučna ploča i glasovni efekti",
+    "Privatni razgovori i popis prijatelja",
+    "Način sesije za zajedničko gledanje, uz razgovor sa strane",
+    "Dom u pixel artu: zečeva soba, danju i noću",
+    "Svijetla i tamna tema, na više od 70 jezika"
+  ],
+  "SearchTerms": ["glasovni chat", "video poziv", "tekstualni chat", "dijeljenje zaslona", "zajednica", "igranje s prijateljima"]
+}

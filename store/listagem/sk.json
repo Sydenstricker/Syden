@@ -1,0 +1,19 @@
+{
+  "Description": "Syden je miesto, kde sa môžeš rozprávať s priateľmi hlasom, cez video aj textom. Hlasové miestnosti, ktoré sú stále otvorené, vysielanie obrazovky so zvukom, chat s emoji a zvukmi — všetko, čo partia potrebuje, aby mohla spolu hrať, spolu pozerať alebo sa len tak rozprávať.\n\nNaozaj zadarmo\nŽiadny platený program, žiadne predplatné a nič zamknuté, čo čaká na platbu. Všetky ozdoby profilu sú zadarmo. Kto chce prispieť, prispieva, lebo chce — a prístup ku všetkému má od samého začiatku.\n\nBez reklám a bez predaja údajov\nSyden nemá reklamy, nepredáva tvoje údaje a tvoje konverzácie nepoužíva na nič iné, než aby ich doručil ľuďom, s ktorými sa rozprávaš. Hlas, video ani zdieľané obrazovky sa nenahrávajú.\n\nPre partiu, nie pre davy\nDo komunít sa vstupuje na pozvánku. Ty vyberáš, kto je vnútri, a každá komunita má vlastné kanály, emoji a zvuky. Môžeš zablokovať toho, kto otravuje, nahlásiť, čo nie je v poriadku, a kedykoľvek odísť aj so svojimi údajmi.\n\nČo nájdeš vnútri\n• Hlasové miestnosti s videom a vysielaním obrazovky so zvukom\n• Potlačenie šumu, ktoré stlmí ventilátor aj hluk v pozadí\n• Chat s prílohami, odpoveďami, vláknami a anketami\n• Emoji a zvuky, ktoré si tvorí sama komunita\n• Karaoke, zvukový panel a hlasové efekty\n• Súkromné konverzácie a zoznam priateľov\n• Režim relácie na spoločné pozeranie s konverzáciou vedľa\n• Domov v pixel arte: izba zajaca, cez deň aj v noci\n• Svetlá a tmavá téma, vo viac ako 70 jazykoch\n\nSyden funguje v prehliadači aj v tejto aplikácii, s rovnakým účtom.",
+  "ShortDescription": "Hlas, video a chat pre tvoju partiu priateľov. Miestnosti, ktoré sú stále otvorené, vysielanie obrazovky so zvukom a emoji, ktoré si tvorí sama komunita. Naozaj zadarmo: žiadne reklamy, žiadne predplatné a nič zamknuté, čo čaká na platbu.",
+  "ReleaseNotes": "Nové potlačenie šumu, ktoré beží priamo na tvojom počítači a stlmí ventilátor aj hluk v pozadí. Nová ikona, nový domov v pixel arte — izba zajaca — a Syden vo viac ako 70 jazykoch.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Všetky práva vyhradené.",
+  "AdditionalLicenseTerms": "Používanie aplikácie Syden sa riadi Podmienkami používania zverejnenými na https://syden.chat/termos.html a Zásadami ochrany osobných údajov na https://syden.chat/privacidade.html.",
+  "Features": [
+    "Hlasové miestnosti s videom a vysielaním obrazovky so zvukom",
+    "Potlačenie šumu, ktoré stlmí ventilátor aj hluk v pozadí",
+    "Chat s prílohami, odpoveďami, vláknami a anketami",
+    "Emoji a zvuky, ktoré si tvorí sama komunita",
+    "Karaoke, zvukový panel a hlasové efekty",
+    "Súkromné konverzácie a zoznam priateľov",
+    "Režim relácie na spoločné pozeranie s konverzáciou vedľa",
+    "Domov v pixel arte: izba zajaca, cez deň aj v noci",
+    "Svetlá a tmavá téma, vo viac ako 70 jazykoch"
+  ],
+  "SearchTerms": ["hlasový chat", "videohovory", "textový chat", "zdieľanie obrazovky", "komunita", "hranie s priateľmi"]
+}

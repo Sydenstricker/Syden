@@ -1,0 +1,19 @@
+{
+  "Description": "Syden es un lugar para hablar con tus amigos por voz, vídeo y texto. Salas de voz siempre abiertas, pantalla compartida con sonido, chat con emojis y sonidos: todo lo que un grupo necesita para jugar, ver algo en compañía o simplemente charlar un rato.\n\nGratis de verdad\nNo hay plan de pago, no hay suscripción y no hay nada bloqueado esperando un pago. Las decoraciones del perfil son todas gratuitas. Quien contribuye lo hace porque quiere, y ya tenía acceso a todo desde antes.\n\nSin anuncios y sin venta de datos\nSyden no tiene anuncios, no vende tus datos y no usa tus conversaciones para nada más que entregarlas a las personas con las que hablas. La voz, el vídeo y las pantallas compartidas no se graban.\n\nHecho para grupos, no para multitudes\nA las comunidades se entra por invitación. Tú eliges quién está dentro, y cada comunidad tiene sus propios canales, emojis y sonidos. Puedes bloquear a quien moleste, denunciar lo que esté mal e irte cuando quieras, llevándote tus datos.\n\nQué hay dentro\n• Salas de voz con vídeo y pantalla compartida con sonido\n• Supresión de ruido que atenúa el ventilador y el ruido de fondo\n• Chat con archivos adjuntos, respuestas, hilos y encuestas\n• Emojis y sonidos que crea la propia comunidad\n• Karaoke, soundboard y efectos de voz\n• Conversaciones privadas y lista de amigos\n• Modo sesión, para ver algo en compañía con la conversación al lado\n• Una casa en pixel art: la habitación del conejo, de día y de noche\n• Tema claro y oscuro, en más de 70 idiomas\n\nSyden funciona en el navegador y en esta aplicación, con la misma cuenta.",
+  "ShortDescription": "Voz, vídeo y chat para tu grupo de amigos. Salas siempre abiertas, pantalla compartida con sonido y emojis que crea la propia comunidad. Gratis de verdad: sin anuncios, sin suscripción y sin nada bloqueado esperando un pago.",
+  "ReleaseNotes": "Nueva supresión de ruido, que funciona en tu propio ordenador y atenúa el ventilador y el ruido de fondo. Icono nuevo, la nueva casa en pixel art (la habitación del conejo) y Syden en más de 70 idiomas.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Todos los derechos reservados.",
+  "AdditionalLicenseTerms": "El uso de Syden está sujeto a las Condiciones de uso publicadas en https://syden.chat/termos.html y a la Política de privacidad en https://syden.chat/privacidade.html.",
+  "Features": [
+    "Salas de voz con vídeo y pantalla compartida con sonido",
+    "Supresión de ruido que atenúa el ventilador y el ruido de fondo",
+    "Chat con archivos adjuntos, respuestas, hilos y encuestas",
+    "Emojis y sonidos que crea la propia comunidad",
+    "Karaoke, soundboard y efectos de voz",
+    "Conversaciones privadas y lista de amigos",
+    "Modo sesión, para ver algo en compañía con la conversación al lado",
+    "Una casa en pixel art: la habitación del conejo, de día y de noche",
+    "Tema claro y oscuro, en más de 70 idiomas"
+  ],
+  "SearchTerms": ["chat de voz", "videollamadas", "chat de texto", "compartir pantalla", "comunidad", "jugar con amigos"]
+}

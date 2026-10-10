@@ -1,0 +1,19 @@
+{
+  "Description": "Syden to miejsce do rozmów ze znajomymi przez głos, wideo i tekst. Pokoje głosowe, które są zawsze otwarte, transmisja ekranu z dźwiękiem, czat z emoji i dźwiękami — wszystko, czego grupa potrzebuje, żeby razem grać, razem oglądać albo po prostu pogadać.\n\nNaprawdę za darmo\nNie ma płatnego planu, nie ma subskrypcji i nie ma niczego zablokowanego w oczekiwaniu na płatność. Wszystkie ozdoby profilu są darmowe. Kto chce wesprzeć projekt, robi to z własnej woli — a dostęp do wszystkiego ma od samego początku.\n\nBez reklam i bez sprzedawania danych\nSyden nie ma reklam, nie sprzedaje twoich danych i nie używa twoich rozmów do niczego poza dostarczeniem ich osobom, z którymi rozmawiasz. Głos, wideo i udostępniane ekrany nie są nagrywane.\n\nDla paczki znajomych, nie dla tłumów\nDo społeczności dołącza się przez zaproszenie. To ty wybierasz, kto jest w środku, a każda społeczność ma własne kanały, emoji i dźwięki. Możesz zablokować każdego, kto przeszkadza, zgłosić to, co jest nie tak, i odejść, kiedy chcesz, zabierając swoje dane.\n\nCo jest w środku\n• Pokoje głosowe z wideo i transmisją ekranu z dźwiękiem\n• Tłumienie szumów, które wycisza wentylator i hałas w tle\n• Czat z załącznikami, odpowiedziami, wątkami i ankietami\n• Emoji i dźwięki tworzone przez samą społeczność\n• Karaoke, panel dźwięków i efekty głosowe\n• Prywatne rozmowy i lista znajomych\n• Tryb sesji, żeby oglądać razem z rozmową obok\n• Dom w stylu pixel art: pokój królika, w dzień i w nocy\n• Jasny i ciemny motyw, w ponad 70 językach\n\nSyden działa w przeglądarce i w tej aplikacji, na tym samym koncie.",
+  "ShortDescription": "Głos, wideo i czat dla twojej paczki znajomych. Pokoje zawsze otwarte, transmisja ekranu z dźwiękiem i emoji tworzone przez samą społeczność. Naprawdę za darmo: bez reklam, bez subskrypcji i bez niczego zablokowanego w oczekiwaniu na płatność.",
+  "ReleaseNotes": "Nowe tłumienie szumów, które działa na twoim własnym komputerze i wycisza wentylator i hałas w tle. Nowa ikona, nowy dom w stylu pixel art — pokój królika — i Syden w ponad 70 językach.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Wszelkie prawa zastrzeżone.",
+  "AdditionalLicenseTerms": "Korzystanie z Syden podlega Warunkom korzystania opublikowanym pod adresem https://syden.chat/termos.html oraz Polityce prywatności pod adresem https://syden.chat/privacidade.html.",
+  "Features": [
+    "Pokoje głosowe z wideo i transmisją ekranu z dźwiękiem",
+    "Tłumienie szumów, które wycisza wentylator i hałas w tle",
+    "Czat z załącznikami, odpowiedziami, wątkami i ankietami",
+    "Emoji i dźwięki tworzone przez samą społeczność",
+    "Karaoke, panel dźwięków i efekty głosowe",
+    "Prywatne rozmowy i lista znajomych",
+    "Tryb sesji, żeby oglądać razem z rozmową obok",
+    "Dom w stylu pixel art: pokój królika, w dzień i w nocy",
+    "Jasny i ciemny motyw, w ponad 70 językach"
+  ],
+  "SearchTerms": ["czat głosowy", "rozmowy wideo", "czat tekstowy", "udostępnianie ekranu", "społeczność", "granie ze znajomymi"]
+}

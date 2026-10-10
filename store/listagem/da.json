@@ -1,0 +1,19 @@
+{
+  "Description": "Syden er et sted, hvor du kan snakke med dine venner via stemme, video og tekst. Talerum, der altid står åbne, skærmdeling med lyd, chat med emojis og lyde – alt, hvad en vennegruppe har brug for til at spille sammen, se noget sammen eller bare hænge ud og snakke.\n\nGratis for alvor\nDer er ingen betalingsplan, intet abonnement og intet, der er låst og venter på betaling. Al pynt til profilen er gratis. Den, der vil bidrage, gør det, fordi vedkommende har lyst – og havde allerede adgang til det hele inden da.\n\nIngen reklamer og intet salg af data\nSyden har ingen reklamer, sælger ikke dine data og bruger ikke dine samtaler til andet end at levere dem til dem, du taler med. Stemme, video og delte skærme bliver ikke optaget.\n\nLavet til vennegrupper, ikke til menneskemængder\nFællesskaber kræver en invitation. Du bestemmer, hvem der er med, og hvert fællesskab har sine egne kanaler, emojis og lyde. Du kan blokere dem, der generer, anmelde det, der er galt, og gå, når du vil – og tage dine data med.\n\nDet får du\n• Talerum med video og skærmdeling med lyd\n• Støjreduktion, der dæmper blæseren og baggrundsstøj\n• Chat med vedhæftede filer, svar, tråde og afstemninger\n• Emojis og lyde, som fællesskabet selv laver\n• Karaoke, lydtavle og stemmeeffekter\n• Private samtaler og venneliste\n• Sessionstilstand, så I kan se noget sammen med samtalen ved siden af\n• Et hjem i pixelart: kaninens værelse, både dag og nat\n• Lyst og mørkt tema på over 70 sprog\n\nSyden virker i browseren og i denne app med samme konto.",
+  "ShortDescription": "Stemme, video og chat til din vennegruppe. Rum, der altid er åbne, skærmdeling med lyd og emojis, som fællesskabet selv laver. Gratis for alvor: ingen reklamer, intet abonnement og intet, der er låst og venter på betaling.",
+  "ReleaseNotes": "Ny støjreduktion, der kører direkte på computeren og dæmper blæseren og baggrundsstøj. Nyt ikon, det nye hjem i pixelart – kaninens værelse – og Syden på over 70 sprog.",
+  "CopyrightTrademarkInformation": "© 2026 Sydenstricker Labs. Alle rettigheder forbeholdes.",
+  "AdditionalLicenseTerms": "Brug af Syden er underlagt brugsvilkårene, der er offentliggjort på https://syden.chat/termos.html, og privatlivspolitikken på https://syden.chat/privacidade.html.",
+  "Features": [
+    "Talerum med video og skærmdeling med lyd",
+    "Støjreduktion, der dæmper blæseren og baggrundsstøj",
+    "Chat med vedhæftede filer, svar, tråde og afstemninger",
+    "Emojis og lyde, som fællesskabet selv laver",
+    "Karaoke, lydtavle og stemmeeffekter",
+    "Private samtaler og venneliste",
+    "Sessionstilstand, så I kan se noget sammen med samtalen ved siden af",
+    "Et hjem i pixelart: kaninens værelse, både dag og nat",
+    "Lyst og mørkt tema på over 70 sprog"
+  ],
+  "SearchTerms": ["stemmechat", "videoopkald", "tekstchat", "skærmdeling", "fællesskab", "spil med venner"]
+}
