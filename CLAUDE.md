@@ -412,6 +412,26 @@ ficou combinado:
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
+## Traduzir mensagens de outro idioma: válido, para outro momento
+
+**Registrado em 09/10/2026, pelo Sydenstricker.** A pergunta: quem lê em português entra numa comunidade japonesa —
+dá para traduzir? Ele achou válido e deixou para depois. O que ficou levantado:
+
+- **A forma: um botão "Traduzir" em cada mensagem** que não está no idioma de quem lê, e só quando a pessoa pede
+  (a mesma regra anotada na seção de culturas: o custo acompanha o uso, não os 72 idiomas).
+- **O caminho recomendado: o tradutor do próprio navegador** (Translator API do Chrome/Edge, que roda no
+  computador da pessoa). A mensagem não sai do aparelho, não custa nada e não muda a política de privacidade. Onde
+  ele não existe, o botão não aparece — como o de GIF.
+- **Medir antes de construir:** se o app de desktop (Electron) tem esse tradutor — o modelo vem do Chrome e pode não
+  existir lá — e quais pares de idioma ele cobre (dezenas, não os 72).
+- **Reservas, se faltar cobertura:** LibreTranslate no nosso servidor (sem terceiro, uns 2–4 GB de memória na
+  Hetzner, qualidade menor em japonês/coreano/chinês) ou serviço de terceiro (DeepL, Google: melhor qualidade, pago
+  por caractere, e entra na política de privacidade).
+- Esforço estimado: meio dia com o tradutor do navegador; mais um dia e um serviço novo com o LibreTranslate.
+
+Nomes de canal e de comunidade são conteúdo de quem criou e NÃO passam pelo `t()`; os canais que o Syden cria
+sozinho numa comunidade nova é que nascem no idioma de quem a cria (desde 09/10/2026).
+
 ## Aprender idiomas dentro do Syden: arquivado, não descartado
 
 **Decidido em 02/10/2026, pelo Sydenstricker: arquivado enquanto ele pesquisa um caminho melhor.** Ele
