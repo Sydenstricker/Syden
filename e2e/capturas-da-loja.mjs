@@ -148,6 +148,7 @@ const contexto = await browser.newContext({
 await contexto.addInitScript((comunidade) => {
   const css = `.rail-item:not(.rail-action):not([title=${JSON.stringify(comunidade)}]) { display: none !important; }`;
   const FIM_COM_EMOJI = /[\s\p{Extended_Pictographic}\u{FE0F}\u{200D}]+$/u;
+  const originais = new WeakMap();
   const traduzir = () => {
     const m = window.__demo;
     if (!m) return;
@@ -159,23 +160,29 @@ await contexto.addInitScript((comunidade) => {
       for (const [de, para] of partes) if (para && novo.includes(de)) novo = novo.split(de).join(para);
       return novo;
     };
-    const andar = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    for (let n; (n = andar.nextNode()); ) {
-      if (!n.nodeValue.trim()) continue;
-      const novo = trocar(n.nodeValue);
-      if (novo !== n.nodeValue) n.nodeValue = novo;
-    }
-    for (const el of document.querySelectorAll('[placeholder]')) {
-      const novo = trocar(el.getAttribute('placeholder'));
-      if (novo !== el.getAttribute('placeholder')) el.setAttribute('placeholder', novo);
-    }
     // As iniciais do ícone da comunidade ("SE"), que o app tira do nome.
     const nome = m['Sala de Estar'];
     const palavras = nome.split(/\s+/).filter(Boolean);
-    const iniciais = (palavras.length > 1 ? [...palavras[0]][0] + [...palavras[1]][0] : [...nome].slice(0, 2).join('')).toLocaleUpperCase();
-    for (const el of document.querySelectorAll('.rail-item, .farol li')) {
-      const andar2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-      for (let n; (n = andar2.nextNode()); ) if (n.nodeValue.trim() === 'SE') n.nodeValue = n.nodeValue.replace('SE', iniciais);
+    const iniciais = nome === 'Sala de Estar' ? 'SE' : (palavras.length > 1 ? [...palavras[0]][0] + [...palavras[1]][0] : [...nome].slice(0, 2).join('')).toLocaleUpperCase();
+    // SEMPRE A PARTIR DO ORIGINAL: o script troca de idioma sem recarregar, e o texto que já virou "Sitkamer" (africâner)
+    // não é chave de nada no dicionário seguinte — a rodada de 09/10/2026 parou no amárico por isso. Cada lugar guarda o
+    // texto em português que tinha e o que foi escrito nele; se o app escreveu outra coisa depois, aquilo é o original novo.
+    const trocarGuardando = (alvo, atual, escrever, ehIcone = false) => {
+      let reg = originais.get(alvo);
+      if (!reg || atual !== reg.escrito) reg = { original: atual };
+      const novo = ehIcone && reg.original.trim() === 'SE' ? reg.original.replace('SE', iniciais) : trocar(reg.original);
+      reg.escrito = novo;
+      originais.set(alvo, reg);
+      if (novo !== atual) escrever(novo);
+    };
+    const andar = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n; (n = andar.nextNode()); ) {
+      if (!n.nodeValue.trim()) continue;
+      const icone = !!n.parentElement?.closest('.rail-item, .farol li');
+      trocarGuardando(n, n.nodeValue, (v) => { n.nodeValue = v; }, icone);
+    }
+    for (const el of document.querySelectorAll('[placeholder]')) {
+      trocarGuardando(el, el.getAttribute('placeholder'), (v) => el.setAttribute('placeholder', v));
     }
   };
   window.__traduzirDemo = traduzir;
