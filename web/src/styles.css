@@ -7448,96 +7448,11 @@ textarea {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---------- Novidades ---------- */
-
-.home-news {
-  max-width: 780px;
-  margin: 0 auto;
-  padding: 28px 24px 48px;
-}
-
-.home-news h2 {
-  margin: 0;
-  font-size: calc(22px * var(--escala-do-texto));
-  color: var(--text-strong);
-}
-
-.home-news-lead {
-  margin: 4px 0 20px;
-  font-size: calc(14px * var(--escala-do-texto));
-  color: var(--text-muted);
-}
-
-.update {
-  padding: 16px 18px;
-  margin-bottom: 12px;
-  border-radius: var(--radius);
-  background: var(--bg-sidebar);
-}
-
-.update.latest {
-  box-shadow: inset 3px 0 0 var(--accent);
-}
-
-.update header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.update-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  border-radius: var(--radius);
-  background: var(--bg-darkest);
-  font-size: calc(20px * var(--escala-do-texto));
-}
-
-.update h3 {
-  margin: 0;
-  font-size: calc(16px * var(--escala-do-texto));
-  color: var(--text-strong);
-}
-
-.update time {
-  font-size: calc(12px * var(--escala-do-texto));
-  color: var(--text-muted);
-}
-
-.update-badge {
-  margin-left: auto;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-texto);
-  font-size: calc(11px * var(--escala-do-texto));
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.update ul {
-  margin: 10px 0 0;
-  padding-left: 52px;
-  color: var(--text);
-  font-size: calc(14px * var(--escala-do-texto));
-  line-height: 1.55;
-}
-
-.update li {
-  margin-bottom: 4px;
-}
-
 @media (max-width: 760px) {
   .vila-pino { padding: 6px 10px 6px 6px; }
   .vila-pino-icone { width: 24px; height: 24px; }
   .vila-pino-texto strong { font-size: calc(13px * var(--escala-do-texto)); }
   .vila-pino-texto small { display: none; }
-  .home-news { padding: 20px 16px 40px; }
-  .update ul { padding-left: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -7549,22 +7464,6 @@ textarea {
   .v-coelho-corpo {
     animation: none;
   }
-}
-
-/* Bolinha no logo quando há novidade que a pessoa ainda não viu. */
-.rail-logo {
-  position: relative;
-}
-
-.rail-logo-dot {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--red, #f23f43);
-  box-shadow: 0 0 0 2px var(--bg-darkest);
 }
 
 /* Ícones animados (Lottie): enquanto o desenho não chega, o espaço já fica reservado. */

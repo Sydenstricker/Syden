@@ -286,13 +286,13 @@ export function Sidebar({
           </div>
           <div className="icon-row">
             <ScreenShareButton voice={voice} />
-            <IconButton label="Desconectar" onClick={voice.leave}>
+            <IconButton label={t('Desconectar')} onClick={voice.leave}>
               <PhoneOff size={18} />
             </IconButton>
           </div>
         </div>
       )}
-      {voice.connecting && <div className="voice-panel voice-panel-status">Conectando…</div>}
+      {voice.connecting && <div className="voice-panel voice-panel-status">{t('Conectando…')}</div>}
 
       <div className="user-panel">
         <span onContextMenu={statusMenu.onOpen} title={t('Botão direito para mudar o status')}>
@@ -304,7 +304,7 @@ export function Sidebar({
         <div className="icon-row">
           {/* Funciona fora de qualquer sala: quem se silencia aqui entra mudo na próxima chamada. */}
           <IconButton
-            label={voice.media.muted ? 'Ativar microfone' : 'Silenciar'}
+            label={voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
             danger={voice.media.muted}
             onClick={voice.toggleMute}
           >
@@ -312,7 +312,7 @@ export function Sidebar({
             {voice.media.muted ? <MicOff size={18} /> : <AnimatedIcon name="microfone" size={20} />}
           </IconButton>
           <IconButton
-            label={voice.deafened ? 'Ativar áudio' : 'Desativar áudio'}
+            label={voice.deafened ? t('Ativar áudio') : t('Desativar áudio')}
             danger={voice.deafened}
             onClick={voice.toggleDeafen}
           >

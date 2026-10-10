@@ -1,7 +1,6 @@
 import { Lightbulb, Send, Volume2 } from 'lucide-react';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
-import { CHANGELOG, marcarNovidadesVistas } from './changelog';
 import { useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
@@ -155,11 +154,8 @@ export function Home({
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
-  const novidadesRef = useRef<HTMLElement | null>(null);
   const ideiasRef = useRef<HTMLDivElement | null>(null);
 
-  // Abriu a tela inicial: as novidades deixam de ser novidade (a bolinha do logo apaga).
-  useEffect(marcarNovidadesVistas, []);
 
   function alternarLuz() {
     setPeriodo(toggleTheme() === 'light' ? periodoClaro() : 'noite');
@@ -173,7 +169,6 @@ export function Home({
     fone: { rotulo: t('Salas'), sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'), onClick: () => setSalasAbertas((aberto) => !aberto) },
     quadro: { rotulo: t('Amigos'), sub: t('Quem anda com você'), onClick: aoAbrirAmigos },
     gavetas: { rotulo: t('Guarda-roupa'), sub: t('Enfeites, sons e emojis'), onClick: aoAbrirGuardaRoupa },
-    prateleira: { rotulo: t('Novidades'), sub: t('O que mudou no Syden'), onClick: () => novidadesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     janela: { rotulo: t('Explorar'), sub: t('Entrar em outra comunidade'), onClick: aoExplorar },
     cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
@@ -230,32 +225,6 @@ export function Home({
       <div ref={ideiasRef}>
         <CaixaDeIdeias souODono={souODono} />
       </div>
-
-      <section className="home-news" aria-label="Novidades do Syden" ref={novidadesRef}>
-        <h2>{t('Novidades')}</h2>
-        <p className="home-news-lead">{t('O que mudou por aqui, do mais novo para o mais antigo.')}</p>
-        {CHANGELOG.map((update, index) => (
-          <article key={update.date + update.title} className={`update${index === 0 ? ' latest' : ''}`}>
-            <header>
-              <span className="update-icon" aria-hidden="true">
-                {update.icon}
-              </span>
-              <div>
-                <h3>{update.title}</h3>
-                <time dateTime={update.date}>
-                  {new Date(update.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
-                </time>
-              </div>
-              {index === 0 && <span className="update-badge">novo</span>}
-            </header>
-            <ul>
-              {update.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </section>
     </div>
   );
 }

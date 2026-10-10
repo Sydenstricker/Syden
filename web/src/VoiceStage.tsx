@@ -114,6 +114,7 @@ export function VoiceStage({
   /** Modo sala (aula): o cabeçalho e os controles ficam só com o que a aula precisa. */
   simples?: boolean;
 }) {
+  const t = useT();
   const { estado: palco } = usarPalco(channel.type === 'voice' ? channel.id : null, socket);
   const inThisRoom = voice.channelId === channel.id;
   const alguemTransmitindo = members.some((m) => m.screen);
@@ -127,8 +128,8 @@ export function VoiceStage({
         {!simples && (
         <button
           className={`header-toggle${membersOpen ? ' active' : ''}`}
-          title={membersOpen ? 'Esconder a lista de pessoas' : 'Mostrar a lista de pessoas'}
-          aria-label={membersOpen ? 'Esconder a lista de pessoas' : 'Mostrar a lista de pessoas'}
+          title={membersOpen ? t('Esconder a lista de pessoas') : t('Mostrar a lista de pessoas')}
+          aria-label={membersOpen ? t('Esconder a lista de pessoas') : t('Mostrar a lista de pessoas')}
           aria-pressed={membersOpen}
           onClick={onToggleMembers}
         >
@@ -148,8 +149,8 @@ export function VoiceStage({
         {inThisRoom && alguemTransmitindo && !simples && (
           <button
             className={`header-toggle${sessao ? ' active' : ''}`}
-            title={sessao ? 'Sair do modo sessão' : 'Assistir junto: vídeo grande e conversa ao lado'}
-            aria-label={sessao ? 'Sair do modo sessão' : 'Assistir junto'}
+            title={sessao ? t('Sair do modo sessão') : t('Assistir junto: vídeo grande e conversa ao lado')}
+            aria-label={sessao ? t('Sair do modo sessão') : t('Assistir junto')}
             aria-pressed={sessao}
             onClick={aoAlternarSessao}
           >
@@ -176,9 +177,9 @@ export function VoiceStage({
             ))}
           </div>
           <h2>{channel.name}</h2>
-          <p>{members.length === 0 ? 'Ninguém na sala ainda.' : `${members.map((m) => m.username).join(', ')} na sala.`}</p>
+          <p>{members.length === 0 ? t('Ninguém na sala ainda.') : t('{quem} na sala.', { quem: members.map((m) => m.username).join(', ') })}</p>
           <button className="btn-primary" disabled={voice.connecting} onClick={() => voice.join(channel.id)}>
-            {voice.connecting ? 'Conectando…' : 'Entrar na sala'}
+            {voice.connecting ? t('Conectando…') : t('Entrar na sala')}
           </button>
         </div>
       )}
@@ -303,8 +304,8 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
           </button>
           <button
             className={`soundboard-star${sound.favorite ? ' on' : ''}`}
-            title={sound.favorite ? 'Tirar dos favoritos' : 'Marcar como favorito'}
-            aria-label={sound.favorite ? `Tirar ${sound.name} dos favoritos` : `Marcar ${sound.name} como favorito`}
+            title={sound.favorite ? t('Tirar dos favoritos') : t('Marcar como favorito')}
+            aria-label={sound.favorite ? t('Tirar {nome} dos favoritos', { nome: sound.name }) : t('Marcar {nome} como favorito', { nome: sound.name })}
             onClick={() => void toggleFavorite(sound)}
           >
             <Star size={12} />
@@ -332,7 +333,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
           max={1}
           step={0.05}
           value={settings.soundboardVolume}
-          aria-label="Volume do soundboard"
+          aria-label={t('Volume do soundboard')}
           onChange={(e) => updateSettings({ soundboardVolume: Number(e.target.value) })}
         />
       </label>
@@ -341,15 +342,15 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
         <input
           className="soundboard-search"
           value={search}
-          placeholder="Procurar som"
-          aria-label="Procurar som"
+          placeholder={t('Procurar som')}
+          aria-label={t('Procurar som')}
           onChange={(e) => setSearch(e.target.value)}
         />
       )}
 
       {sounds.length === 0 && !adding && (
         <p className="soundboard-empty">
-          Nenhum som ainda. Adicione um abaixo, ou instale um pacote em Configurações → Soundboard.
+          {t('Nenhum som ainda. Adicione um abaixo, ou instale um pacote em Configurações → Soundboard.')}
         </p>
       )}
       {sounds.length > 0 && found.length === 0 && <p className="soundboard-empty">{t('Nenhum som com esse nome.')}</p>}
@@ -369,11 +370,11 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
       ))}
 
       {!adding && (
-        <button className="soundboard-sound soundboard-add" onClick={() => setAdding(true)} title="Adicionar som">
+        <button className="soundboard-sound soundboard-add" onClick={() => setAdding(true)} title={t('Adicionar som')}>
           <span className="soundboard-icon">
             <Plus size={20} />
           </span>
-          <span className="soundboard-name">Adicionar som</span>
+          <span className="soundboard-name">{t('Adicionar som')}</span>
         </button>
       )}
       {adding && <SoundboardAddForm communityId={communityId} onDone={() => setAdding(false)} />}
@@ -804,7 +805,7 @@ function ConviteDeTransmissao({
     <div className="stream-invite">
       <Avatar name={nome} userId={Number(trackRef.participant.identity)} size={44} />
       <strong className="stream-invite-name">{nome}</strong>
-      <span className="stream-invite-what">{oQue ? `está transmitindo ${oQue}` : 'está transmitindo'}</span>
+      <span className="stream-invite-what">{oQue ? t('está transmitindo {oque}', { oque: oQue }) : t('está transmitindo')}</span>
       <button
         className="btn-primary stream-invite-button"
         title={t('Nada é baixado enquanto você não abrir')}
@@ -1277,7 +1278,7 @@ function Stage({
         </div>
       )}
 
-      <StartAudio label="Clique para ativar o áudio" className="start-audio" />
+      <StartAudio label={t('Clique para ativar o áudio')} className="start-audio" />
 
       <div className="stage-controls">
         <IconButton
@@ -1301,7 +1302,7 @@ function Stage({
         */}
         {!simples && abertas.length > 1 && (
           <IconButton
-            label={split ? 'Focar em uma transmissão' : `Ver as ${abertas.length} transmissões lado a lado`}
+            label={split ? t('Focar em uma transmissão') : t('Ver as {n} transmissões lado a lado', { n: abertas.length })}
             active={split}
             onClick={() => setSplit(!split)}
           >

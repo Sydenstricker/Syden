@@ -18,7 +18,6 @@ import { InicioDaComunidade, type DadosDeBoasVindas } from './InicioDaComunidade
 import { ServidoresDeJogo } from './ServidoresDeJogo';
 import { Ranking } from './Ranking';
 import { TelaDeAmigos } from './TelaDeAmigos';
-import { temNovidade } from './changelog';
 import { assinar, definirDiretasNaoLidas, limparMencoes, marcarMencao, mencionaVoce } from './aviso-no-icone';
 import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread';
 import { contaExcluida, DirectList, DirectRailButton, directName } from './DirectList';
@@ -54,13 +53,12 @@ function rememberView(view: View) {
 }
 
 /**
- * Onde o Syden abre: onde a pessoa parou. Só cai na tela inicial quem nunca entrou, quem estava lá, ou
- * quem tem novidade para ver — assim quem só quer conversar não ganha um clique a mais todo dia.
+ * Onde o Syden abre: onde a pessoa parou. Só cai na tela inicial quem nunca entrou ou quem estava lá —
+ * assim quem só quer conversar não ganha um clique a mais todo dia.
  */
 function firstView(): View {
   try {
     const saved = localStorage.getItem(LAST_VIEW_KEY);
-    if (temNovidade()) return 'home';
     if (saved === 'community' || saved === 'direct' || saved === 'home') return saved;
   } catch {
     // sem armazenamento
@@ -226,12 +224,6 @@ export function Shell({
       socket.off('bloqueios:mudou', aoMudar);
     };
   }, [socket]);
-
-  // A bolinha do logo some assim que a tela inicial é aberta.
-  const [novidade, setNovidade] = useState(temNovidade);
-  useEffect(() => {
-    if (view === 'home') setNovidade(false);
-  }, [view]);
 
   const community = communities.find((c) => c.id === visivelId);
 
@@ -873,7 +865,6 @@ export function Shell({
             setMobileChannels(false);
           }}
           homeActive={view === 'home'}
-          homeBadge={view !== 'home' && novidade}
           top={
             communities.length > 0 && (
               <DirectRailButton

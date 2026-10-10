@@ -399,8 +399,9 @@ ficou combinado:
   que precisa virar máscara (o vão da janela aberta): pedir magenta puro** — funcionou de primeira.
 - **A home do app já é o quarto HÍBRIDO** (`web/src/Quarto.tsx`, imagens por `hibrido/exportar.mjs`), decisão dele de
   08/10/2026: enquanto o quarto de móveis soltos evolui em `novo/quarto/`, o do conceito fica na home. No app: o
-  guarda-roupa são as GAVETAS da cama (o "armarinho com o coelho" é o gabinete do PC); computador, gabinete, vaso e
-  pôster são só desenho (a escolha de coelhos saiu até haver outros coelhos); o quadrado escuro do conceito foi tirado
+  guarda-roupa são as GAVETAS da cama (o "armarinho com o coelho" é o gabinete do PC); computador, gabinete, vaso,
+  pôster e prateleira são só desenho — as NOVIDADES saíram da home em 09/10/2026 ("deixa mais limpo"), com a bolinha
+  do ícone de início e o changelog.ts (a escolha de coelhos saiu até haver outros coelhos); o quadrado escuro do conceito foi tirado
   na exportação; o quarto tem no máximo 626 px e 72% da altura. Mover/girar móveis NÃO está no app (só na página de
   teste do quarto novo).
 - **Para o quarto novo virar a home:** recheio (plantas, quadros, objetos sobre os móveis), os objetos com função

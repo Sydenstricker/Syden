@@ -1,5 +1,6 @@
 import { AppWindow, Globe, Monitor, MonitorOff, MonitorX, Volume2 } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { chave, useT } from './i18n';
 import { IconButton } from './IconButton';
 import { appAudioSupported } from './screenAudio';
 import type { Voice } from './useVoice';
@@ -18,25 +19,25 @@ interface Opcao {
 const OPTIONS: Opcao[] = [
   {
     surface: 'monitor',
-    label: 'Tela inteira',
+    label: chave('Tela inteira'),
     icon: <Monitor size={16} />,
-    noApp: 'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.',
+    noApp: chave('Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.'),
     noNavegador:
-      'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.',
+      chave('Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.'),
   },
   {
     surface: 'window',
-    label: 'Uma janela ou app',
+    label: chave('Uma janela ou app'),
     icon: <AppWindow size={16} />,
-    noApp: 'Só aquele programa, e o som do computador vai junto mesmo assim.',
-    noNavegador: 'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.',
+    noApp: chave('Só aquele programa, e o som do computador vai junto mesmo assim.'),
+    noNavegador: chave('Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.'),
   },
   {
     surface: 'browser',
-    label: 'Uma aba do navegador',
+    label: chave('Uma aba do navegador'),
     icon: <Globe size={16} />,
-    noApp: 'Só aquela aba, com o som dela.',
-    noNavegador: 'Só aquela aba. É a única em que o navegador já vem com o som marcado.',
+    noApp: chave('Só aquela aba, com o som dela.'),
+    noNavegador: chave('Só aquela aba. É a única em que o navegador já vem com o som marcado.'),
   },
 ];
 
@@ -45,6 +46,7 @@ const OPTIONS: Opcao[] = [
  * (tela inteira, uma janela ou uma aba) e, já transmitindo, troca para outra tela ou para.
  */
 export function ScreenShareButton({ voice }: { voice: Voice }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const sharing = voice.media.screen;
@@ -71,20 +73,20 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
 
   return (
     <div className="screenshare-anchor" ref={ref}>
-      <IconButton label={sharing ? 'Opções da transmissão' : 'Compartilhar tela'} active={sharing} onClick={() => setOpen(!open)}>
+      <IconButton label={sharing ? t('Opções da transmissão') : t('Compartilhar tela')} active={sharing} onClick={() => setOpen(!open)}>
         {sharing ? <MonitorOff /> : <Monitor />}
       </IconButton>
       {open && (
         <div className="screenshare-menu" role="menu">
-          <div className="screenshare-menu-title">{sharing ? 'Trocar para…' : 'O que compartilhar?'}</div>
+          <div className="screenshare-menu-title">{sharing ? t('Trocar para…') : t('O que compartilhar?')}</div>
           {somAutomatico ? (
             <p className="screenshare-menu-som">
-              <Volume2 size={14} aria-hidden="true" /> O som do computador vai junto sozinho.
+              <Volume2 size={14} aria-hidden="true" /> {t('O som do computador vai junto sozinho.')}
             </p>
           ) : (
             <p className="screenshare-menu-som atencao">
-              <Volume2 size={14} aria-hidden="true" /> No navegador, o som só vai se você marcar a caixinha de áudio na
-              janelinha que abrir. No app do Syden ele vai sozinho.
+              <Volume2 size={14} aria-hidden="true" />{' '}
+              {t('No navegador, o som só vai se você marcar a caixinha de áudio na janelinha que abrir. No app do Syden ele vai sozinho.')}
             </p>
           )}
           {OPTIONS.map((option) => (
@@ -99,8 +101,8 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
             >
               {option.icon}
               <span className="screenshare-option-text">
-                <span>{option.label}</span>
-                <small>{somAutomatico ? option.noApp : option.noNavegador}</small>
+                <span>{t(option.label)}</span>
+                <small>{t(somAutomatico ? option.noApp : option.noNavegador)}</small>
               </span>
             </button>
           ))}
@@ -113,7 +115,7 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
                 void voice.stopScreen();
               }}
             >
-              <MonitorX size={16} /> Parar de compartilhar
+              <MonitorX size={16} /> {t('Parar de compartilhar')}
             </button>
           )}
         </div>

@@ -26,7 +26,7 @@
 //
 // Sai em e2e/fotos/loja/<idioma>/1-inicio.png … 4-voz.png
 import { spawn } from 'node:child_process';
-import { mkdirSync, readdirSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 import { dispensarPresentes } from './ajuda.mjs';
 
@@ -79,6 +79,13 @@ const pedidos = (process.env.IDIOMAS ?? '').split(',').map((s) => s.trim()).filt
 const IDIOMAS = pedidos.length ? IDIOMAS_POSSIVEIS.filter((i) => pedidos.includes(i.pasta)) : IDIOMAS_POSSIVEIS;
 /** O idioma que está na tela agora. A conta começa em português (o script a devolve assim no fim). */
 let idiomaNaTela = 'pt-BR';
+
+/** O conteúdo da demonstração em cada idioma (nome da comunidade, canais, conversa): ver a troca no addInitScript. */
+const PASTA_DEMO = new URL('./demonstracao/', import.meta.url);
+const DEMO = {};
+for (const arquivo of readdirSync(PASTA_DEMO).filter((a) => a.endsWith('.json'))) DEMO[arquivo.slice(0, -5)] = JSON.parse(readFileSync(new URL(arquivo, PASTA_DEMO), 'utf8'));
+/** O nome com que a comunidade de demonstração aparece na tela agora. */
+const nomeNaTela = (chave) => DEMO[idiomaNaTela]?.[chave] ?? chave;
 
 if (!USUARIO || !SENHA) {
   console.error('Faltou a conta. A senha vai numa variável, não no comando:\n');
@@ -133,13 +140,52 @@ const contexto = await browser.newContext({
 // saiu na foto com o nome dela e de quem estava em chamada (09/10/2026). Escondido aqui, em toda página que abrir:
 // na barra, toda comunidade que não seja a de demonstração; na faixa, todo item que não seja dela (com o
 // e2e/sala-cheia.mjs rodando, sobra a de demonstração com gente em chamada). Sem item nenhum, a faixa some inteira.
+//
+// O CONTEÚDO DA DEMONSTRAÇÃO ACOMPANHA O IDIOMA (pedido dele, 09/10/2026: "Sala de Estar", #geral e a conversa saíam
+// em português nas fotos de todos os idiomas). A comunidade de mentira existe uma vez só, em português, no servidor;
+// aqui, na hora da foto, o nome dela, os canais e as mensagens são trocados pela versão de e2e/demonstracao/<idioma>.json
+// (window.__demo). Só o conteúdo inventado muda: a interface em volta é a tradução de verdade do app.
 await contexto.addInitScript((comunidade) => {
   const css = `.rail-item:not(.rail-action):not([title=${JSON.stringify(comunidade)}]) { display: none !important; }`;
+  const FIM_COM_EMOJI = /[\s\p{Extended_Pictographic}\u{FE0F}\u{200D}]+$/u;
+  const traduzir = () => {
+    const m = window.__demo;
+    if (!m) return;
+    const partes = [['#geral', '#' + m.geral], ['#combinados', '#' + m.combinados], ['Sala de Estar', m['Sala de Estar']], ['Sala 1', m['Sala 1']], ['Sala 2', m['Sala 2']]];
+    const trocar = (v) => {
+      const base = v.trim().replace(FIM_COM_EMOJI, '');
+      if (m[base] !== undefined) return v.replace(base, m[base]);
+      let novo = v;
+      for (const [de, para] of partes) if (para && novo.includes(de)) novo = novo.split(de).join(para);
+      return novo;
+    };
+    const andar = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n; (n = andar.nextNode()); ) {
+      if (!n.nodeValue.trim()) continue;
+      const novo = trocar(n.nodeValue);
+      if (novo !== n.nodeValue) n.nodeValue = novo;
+    }
+    for (const el of document.querySelectorAll('[placeholder]')) {
+      const novo = trocar(el.getAttribute('placeholder'));
+      if (novo !== el.getAttribute('placeholder')) el.setAttribute('placeholder', novo);
+    }
+    // As iniciais do ícone da comunidade ("SE"), que o app tira do nome.
+    const nome = m['Sala de Estar'];
+    const palavras = nome.split(/\s+/).filter(Boolean);
+    const iniciais = (palavras.length > 1 ? [...palavras[0]][0] + [...palavras[1]][0] : [...nome].slice(0, 2).join('')).toLocaleUpperCase();
+    for (const el of document.querySelectorAll('.rail-item, .farol li')) {
+      const andar2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      for (let n; (n = andar2.nextNode()); ) if (n.nodeValue.trim() === 'SE') n.nodeValue = n.nodeValue.replace('SE', iniciais);
+    }
+  };
+  window.__traduzirDemo = traduzir;
   const filtrar = () => {
+    traduzir();
+    const nomes = [comunidade, window.__demo?.['Sala de Estar']];
     for (const farol of document.querySelectorAll('.farol')) {
       let sobrou = 0;
       for (const li of farol.querySelectorAll('li')) {
-        const dela = li.querySelector('strong')?.textContent?.trim() === comunidade;
+        const dela = nomes.includes(li.querySelector('strong')?.textContent?.trim());
         li.style.setProperty('display', dela ? '' : 'none', 'important');
         if (dela) sobrou++;
       }
@@ -161,6 +207,9 @@ let pasta = RAIZ;
 async function foto(nome, espera = 1200) {
   await page.waitForTimeout(espera);
   const caminho = `${pasta}/${nome}.png`;
+  // A troca do conteúdo da demonstração corre a cada mudança na tela; aqui, uma última vez antes do clique.
+  await page.evaluate((m) => { window.__demo = m; window.__traduzirDemo?.(); }, DEMO[idiomaNaTela] ?? null);
+  await page.waitForTimeout(150);
   await page.screenshot({ path: caminho });
   console.log('    ✓ ' + caminho);
 }
@@ -226,6 +275,7 @@ async function trocarIdioma(idioma) {
   const lang = await page.evaluate(() => document.documentElement.lang);
   if (lang !== idioma.lang) console.log(`    (aviso: a página diz lang="${lang}", esperava "${idioma.lang}")`);
   else idiomaNaTela = idioma.lang;
+  await page.evaluate((m) => { window.__demo = m; window.__traduzirDemo?.(); }, DEMO[idiomaNaTela] ?? null);
 
   await page.keyboard.press('Escape');
   await page.waitForTimeout(600);
@@ -379,7 +429,7 @@ for (const idioma of IDIOMAS) {
   console.log('  2. A conversa');
   await abrirAComunidade();
   const ondeEstou = await comunidadeAberta();
-  if (ondeEstou !== COMUNIDADE) {
+  if (ondeEstou !== COMUNIDADE && ondeEstou !== nomeNaTela(COMUNIDADE)) {
     console.error(`\nPAREI antes da foto da conversa: a tela está em "${ondeEstou}", não em "${COMUNIDADE}".\n`);
     await browser.close();
     process.exit(1);
@@ -409,7 +459,7 @@ for (const idioma of IDIOMAS) {
   //    entram DE VERDADE na chamada (cada uma num navegador), e o palco mostra um quadro por pessoa. Sem o --chamada
   //    elas só aparecem na lista, e o palco ficava com um quadro só — o de quem fotografa — no meio da tela preta.
   console.log('  4. A chamada');
-  const salaDeVoz = page.locator('.channel-name').filter({ hasText: /Sala/ }).first();
+  const salaDeVoz = page.locator('.channel-name').filter({ hasText: nomeNaTela('Sala 1') }).first();
   if (await salaDeVoz.isVisible().catch(() => false)) {
     await salaDeVoz.click();
     await page.locator('.stage .tile').nth(2).waitFor({ timeout: 15_000 }).catch(() => {});

@@ -77,7 +77,7 @@ export const Composer = forwardRef<ComposerHandle, {
     if (files.length === 0) return;
     setError(null);
     const room = MAX_FILES - staged.length;
-    if (room <= 0) return setError(`Dá para mandar até ${MAX_FILES} arquivos por mensagem.`);
+    if (room <= 0) return setError(t('Dá para mandar até {n} arquivos por mensagem.', { n: MAX_FILES }));
     for (const file of files.slice(0, room)) {
       try {
         const prepared = await prepareAttachment(file);
@@ -244,7 +244,7 @@ export const Composer = forwardRef<ComposerHandle, {
       {gravandoTela && (
         <div className="composer-recado">
           <ScreenMessage channelId={channelId} onEnviado={() => setGravandoTela(false)} />
-          <button className="icon-plain" title="Fechar o gravador" aria-label="Fechar o gravador" onClick={() => setGravandoTela(false)}>
+          <button className="icon-plain" title={t('Fechar o gravador')} aria-label={t('Fechar o gravador')} onClick={() => setGravandoTela(false)}>
             <X size={16} />
           </button>
         </div>
@@ -279,7 +279,7 @@ export const Composer = forwardRef<ComposerHandle, {
                   setPollOpen(true);
                 }}
               >
-                <BarChart3 size={18} /> Criar enquete
+                <BarChart3 size={18} /> {t('Criar enquete')}
               </button>
               {podeGravarTela() && (
                 <button
@@ -299,7 +299,7 @@ export const Composer = forwardRef<ComposerHandle, {
             type="file"
             multiple
             hidden
-            aria-label="Escolher arquivo"
+            aria-label={t('Escolher arquivo')}
             onChange={(e) => {
               void addFiles([...(e.target.files ?? [])]);
               e.target.value = '';
@@ -312,7 +312,7 @@ export const Composer = forwardRef<ComposerHandle, {
           rows={1}
           value={draft}
           maxLength={2000}
-          placeholder={sending ? 'Enviando…' : placeholder}
+          placeholder={sending ? t('Enviando…') : placeholder}
           disabled={sending}
           onChange={(e) => {
             setDraft(e.target.value);
@@ -354,7 +354,7 @@ export const Composer = forwardRef<ComposerHandle, {
 
       <p className="composer-hint">
         {staged.length > 0
-          ? `${staged.length} de ${MAX_FILES} arquivos · até ${formatBytes(MAX_ATTACHMENT_BYTES)} cada · Enter envia`
+          ? t('{n} de {max} arquivos · até {tamanho} cada · Enter envia', { n: staged.length, max: MAX_FILES, tamanho: formatBytes(MAX_ATTACHMENT_BYTES) })
           : ''}
       </p>
 

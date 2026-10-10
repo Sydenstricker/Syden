@@ -17,11 +17,9 @@ interface Props {
   /** O logo no alto abre a tela inicial. */
   onHome: () => void;
   homeActive: boolean;
-  /** Tem novidade que a pessoa ainda não viu: uma bolinha aparece no logo. */
-  homeBadge: boolean;
 }
 
-export function CommunityRail({ communities, currentId, onSelect, onChanged, top, onHome, homeActive, homeBadge }: Props) {
+export function CommunityRail({ communities, currentId, onSelect, onChanged, top, onHome, homeActive }: Props) {
   const t = useT();
   const [dialog, setDialog] = useState<CommunityDialogMode | null>(null);
   const [menu, setMenu] = useState<{ community: Community; x: number; y: number } | null>(null);
@@ -36,7 +34,6 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
         onClick={onHome}
       >
         <Logo size={34} />
-        {homeBadge && <span className="rail-logo-dot" aria-hidden="true" />}
       </button>
       {top}
       <div className="rail-list">
