@@ -8,15 +8,18 @@
     <title>Syden — conversas por voz, vídeo e texto com os amigos</title>
     <meta
       name="description"
-      content="Voz, vídeo, tela compartilhada e conversa com os amigos. De graça, inteiro, sem versão paga."
+      content="Voz, vídeo, tela compartilhada e conversa com os amigos. De graça por inteiro, sem anúncios, em 72 idiomas."
     />
 
     <!-- Para quando alguém cola o link num grupo. Sem isto o endereço aparece pelado. -->
     <meta property="og:title" content="Syden" />
-    <meta property="og:description" content="Voz, vídeo, tela compartilhada e conversa com os amigos. De graça." />
-    <meta property="og:image" content="https://syden.chat/icon-512.png" />
+    <meta property="og:description" content="Voz, vídeo, tela compartilhada e conversa com os amigos. De graça, sem anúncios." />
+    <meta property="og:image" content="https://syden.chat/capturas/compartilhar.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://syden.chat/" />
     <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" href="icon-192.png?v=d4" /><!-- ?v=d4: ver o comentário do ícone em web/index.html -->
     <link rel="stylesheet" href="site.css" />
@@ -35,134 +38,217 @@
           Syden
         </a>
         <nav>
-          <a href="#o-que-faz">O que faz</a>
-          <a href="#karaoke">Karaokê</a>
+          <a href="#o-que-tem">O que tem</a>
+          <a href="#idiomas">Idiomas</a>
           <a href="contribuir.html">Contribuir</a>
           <!-- "Entrar ou criar conta", e não "Abrir o Syden": quem chega aqui pela primeira vez está
                procurando onde se cadastra, e um rótulo que não diz "entrar" nem "conta" não é achado
                por quem procura exatamente isso. -->
-          <a href="/app/">Entrar ou criar conta</a>
+          <a class="topo-entrar" href="/app/">Entrar ou criar conta</a>
         </nav>
       </div>
     </header>
 
     <main>
+      <!--
+        A ABERTURA MOSTRA O SYDEN. Até 10/10/2026 eram 2.650 px de texto e nenhuma imagem do produto
+        ("pouco atraente para jovens", comparado ao do Discord). O quarto é o da home do app, com as
+        mesmas imagens (copiadas por scripts/montar-site.mjs), e o coelho e o gato respiram como lá.
+      -->
       <div class="abertura">
-        <img src="icon-512.png" alt="O coelho do Syden" width="128" height="128" />
-        <h1>Conversar com os amigos sem pagar nada por isso</h1>
-        <p>
-          Voz, vídeo, tela compartilhada e conversa por texto. O Syden é gratuito por inteiro — sem versão paga, sem
-          recurso trancado, sem propaganda.
-        </p>
-        <div class="acoes">
-          <a class="botao botao-marca" href="/app/">Abrir no navegador</a>
-          <!-- A STORE VEM ANTES DO .EXE, e não é preferência estética: um .exe baixado da internet e não
-               assinado faz o Windows mostrar "O Windows protegeu o seu PC", com o botão de instalar
-               escondido atrás de "Mais informações". É a tela que ensina qualquer pessoa sensata a
-               desistir. Pela Store não há aviso, a atualização chega sozinha e desinstalar não deixa
-               restos.
-               PARA PREENCHER: troque o href pelo endereço da página do Syden na Store. -->
-          <a class="botao botao-vazio" href="https://apps.microsoft.com/detail/9NPVXDKV471H">
-            Baixar na Microsoft Store
-          </a>
+        <div class="abertura-dentro">
+          <div class="abertura-texto">
+            <h1>O cantinho da sua turma na internet</h1>
+            <p class="abertura-sub">
+              Voz, vídeo, tela compartilhada e conversa por texto, num lugar que é de vocês. De graça por inteiro:
+              sem versão paga, sem recurso trancado, sem anúncio.
+            </p>
+            <div class="acoes">
+              <a class="botao botao-marca" href="/app/">Abrir no navegador</a>
+              <!-- A STORE VEM ANTES DO .EXE, e não é preferência estética: um .exe baixado da internet e não
+                   assinado faz o Windows mostrar "O Windows protegeu o seu PC", com o botão de instalar
+                   escondido atrás de "Mais informações". Pela Store não há aviso, a atualização chega
+                   sozinha e desinstalar não deixa restos. -->
+              <a class="botao botao-vazio" href="https://apps.microsoft.com/detail/9NPVXDKV471H">
+                Baixar na Microsoft Store
+              </a>
+            </div>
+            <p class="miudo">
+              Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o
+              som do computador na tela compartilhada.
+            </p>
+          </div>
+
+          <div class="quarto" aria-hidden="true">
+            <img class="quarto-cena" src="quarto/noite.png" alt="" />
+            <div class="quarto-vivo coelho">
+              <span class="quarto-parte baixo"><img src="quarto/coelho.png" alt="" /></span>
+              <span class="quarto-parte cima"><img src="quarto/coelho.png" alt="" /></span>
+            </div>
+            <div class="quarto-vivo gato">
+              <span class="quarto-parte baixo"><img src="quarto/gato.png" alt="" /></span>
+              <span class="quarto-parte cima"><img src="quarto/gato.png" alt="" /></span>
+            </div>
+          </div>
         </div>
-        <p class="miudo">
-          Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som
-          do computador na tela compartilhada.
-        </p>
+
+        <ul class="promessas">
+          <li>De graça, inteiro</li>
+          <li>Sem anúncios</li>
+          <li>Não vende os seus dados</li>
+          <li>Em 72 idiomas</li>
+        </ul>
       </div>
 
-      <section id="o-que-faz">
-        <h2>O que o Syden faz</h2>
-        <p class="subtitulo">
-          As comunidades têm canais de texto e de voz, como você já conhece. O que está abaixo é o que costuma
-          surpreender quem chega.
-        </p>
+      <!--
+        MOSTRAR EM VEZ DE LISTAR. As imagens saem das capturas da Microsoft Store, que usam a comunidade
+        de DEMONSTRAÇÃO (gente e conversa inventadas): e2e/capturas-do-site.mjs recorta e converte.
+      -->
+      <section id="o-que-tem" class="vitrine">
+        <div class="vitrine-linha">
+          <div class="vitrine-texto">
+            <p class="sobretitulo">Salas de voz</p>
+            <h2>A sala fica aberta. É só entrar.</h2>
+            <p>
+              Ninguém precisa ligar para ninguém: você vê quem está na sala e entra quando quiser. A supressão de
+              ruído abafa o ventilador e o barulho da casa, e a qualidade se ajusta à internet de cada um — quem tem
+              conexão ruim não atrapalha a chamada dos outros.
+            </p>
+            <ul class="lista">
+              <li>Tela compartilhada com o som do jogo ou do vídeo, no programa para Windows</li>
+              <li>Modo sessão: o vídeo grande no meio e a conversa do lado, para assistir junto</li>
+              <li>Clipe dos últimos 30 segundos, para guardar a jogada que ninguém vai acreditar</li>
+            </ul>
+          </div>
+          <figure class="captura">
+            <img
+              src="capturas/pt-BR/chamada.webp"
+              width="1260"
+              height="646"
+              loading="lazy"
+              alt="Uma sala de voz do Syden com cinco pessoas e os botões de microfone, câmera e tela"
+            />
+          </figure>
+        </div>
 
+        <div class="vitrine-linha invertida">
+          <div class="vitrine-texto">
+            <p class="sobretitulo">Comunidades</p>
+            <h2>Um lugar com a cara de quem está nele</h2>
+            <p>
+              Cada comunidade tem os seus canais de texto e de voz, e os seus próprios emojis e sons, feitos por quem
+              participa. Dá para responder, abrir tópico, fazer enquete e mandar arquivo.
+            </p>
+            <ul class="lista">
+              <li>Destaques: a mensagem que junta estrelas vai para o canal de destaques</li>
+              <li>Sorteios e aniversários, anunciados pelo próprio Syden</li>
+              <li>Entrada por convite: quem está dentro é quem vocês chamaram</li>
+            </ul>
+          </div>
+          <figure class="captura">
+            <img
+              src="capturas/pt-BR/conversa.webp"
+              width="1100"
+              height="880"
+              loading="lazy"
+              alt="O canal geral de uma comunidade do Syden, com a conversa do grupo combinando de entrar na sala de voz"
+            />
+          </figure>
+        </div>
+
+        <div class="vitrine-linha">
+          <div class="vitrine-texto">
+            <p class="sobretitulo">Guarda-roupa</p>
+            <h2>Enfeites que ninguém compra</h2>
+            <p>
+              Cor, efeito e letra do nome, fundo de perfil, moldura do avatar e insígnias — tudo de graça. Alguns são
+              conquistados usando o Syden; nenhum é vendido, e nenhum dá vantagem sobre ninguém.
+            </p>
+            <p>
+              O app também troca de cara: azul-noite com âmbar, a paleta clássica, grafite ou alto contraste, para
+              ler sem esforço.
+            </p>
+          </div>
+          <figure class="captura captura-estreita">
+            <img
+              src="capturas/pt-BR/guarda-roupa.webp"
+              width="690"
+              height="700"
+              loading="lazy"
+              alt="A aba Aparência das configurações, com as paletas do app e as cores de nome"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section id="mais">
+        <h2>E mais um monte de coisa</h2>
         <div class="grade">
           <div class="cartao">
-            <h3>Voz e vídeo em grupo</h3>
+            <span class="cartao-icone" aria-hidden="true">🎤</span>
+            <h3>Karaokê que não atrasa</h3>
             <p>
-              Entra e sai da conversa sem ligar para ninguém. A qualidade se ajusta sozinha à internet de cada um, então
-              uma pessoa com conexão ruim não atrapalha a chamada dos outros.
+              A música não passa pela chamada: cada computador toca a própria cópia, e a letra acende no tempo certo
+              na tela de todo mundo. As músicas são de quem participa.
             </p>
           </div>
-
           <div class="cartao">
-            <h3>Tela compartilhada com o som</h3>
+            <span class="cartao-icone" aria-hidden="true">🎓</span>
+            <h3>Link da aula</h3>
             <p>
-              No programa para Windows, quem compartilha a tela pode mandar o som do computador junto — o jogo, o vídeo,
-              a música — sem mandar a própria voz duas vezes.
+              Um endereço que leva direto à sala de voz. Quem não tem conta entra só com o nome, e o link vence no
+              prazo que você escolher.
             </p>
           </div>
-
           <div class="cartao">
-            <h3>Assistir junto</h3>
-            <p>
-              O modo sessão põe o vídeo grande no meio e a conversa do lado, para o grupo acompanhar a mesma coisa ao
-              mesmo tempo e comentar sem perder a imagem.
-            </p>
-          </div>
-
-          <div class="cartao">
-            <h3>Karaokê</h3>
-            <p>
-              Cada comunidade tem as próprias músicas, com a letra acendendo no tempo certo na tela de todo mundo. As
-              músicas são de quem participa: o Syden não traz acervo nenhum.
-            </p>
-          </div>
-
-          <div class="cartao">
+            <span class="cartao-icone" aria-hidden="true">💬</span>
             <h3>Amigos e conversa reservada</h3>
             <p>
-              Dá para ter amizade e conversa particular fora das comunidades. E dá para bloquear alguém: quem foi
-              bloqueado não descobre, e some dos dois lados.
+              Amizade e conversa particular fora das comunidades. E dá para bloquear alguém: quem foi bloqueado não
+              descobre, e some dos dois lados.
             </p>
           </div>
-
           <div class="cartao">
-            <h3>Enfeites que não se compram</h3>
-            <p>
-              Cor de nome, fundo de perfil, moldura de avatar e insígnias — tudo de graça. Alguns são conquistados
-              usando o Syden; nenhum é vendido, e nenhum dá vantagem sobre ninguém.
-            </p>
-          </div>
-
-          <div class="cartao">
+            <span class="cartao-icone" aria-hidden="true">🏅</span>
             <h3>Selo da comunidade</h3>
             <p>
-              Comunidades ganham selos por marcos que ninguém alcança sozinho — precisa de gente participando junto. É
-              conquistado, nunca comprado.
+              Comunidades ganham selos por marcos que ninguém alcança sozinho. É conquistado, nunca comprado.
             </p>
           </div>
-
           <div class="cartao">
-            <h3>Sons e emojis</h3>
+            <span class="cartao-icone" aria-hidden="true">🎮</span>
+            <h3>Servidores de jogo</h3>
             <p>
-              Painel de sons para a hora certa, e pacotes de emoji próprios da comunidade. Quem não quer ouvir desliga,
-              e ninguém é obrigado a escutar o que o outro toca.
+              A comunidade guarda os endereços dos servidores em que vocês jogam, para ninguém ter de perguntar de novo.
+            </p>
+          </div>
+          <div class="cartao">
+            <span class="cartao-icone" aria-hidden="true">🔊</span>
+            <h3>Sons na hora certa</h3>
+            <p>
+              Painel de sons para tocar na chamada. Quem não quer ouvir desliga, e ninguém é obrigado a escutar o que o
+              outro toca.
             </p>
           </div>
         </div>
       </section>
 
-      <section id="karaoke">
-        <div class="destaque">
-          <h2>Por que o karaokê aqui funciona</h2>
-          <p>
-            A maneira comum de cantar junto à distância é uma pessoa compartilhar a tela e tocar a música. Isso quase
-            nunca dá certo: o som chega comprimido, a letra atrasa, e quem tem internet pior ouve tudo picado.
-          </p>
-          <p>
-            No Syden a música <strong>não passa pela chamada</strong>. Cada computador toca a própria cópia do arquivo, e
-            a letra anda pelo tempo da música, não pela rede. O resultado é que a qualidade não depende da internet de
-            quem pôs a música, e a letra aparece certa na tela de cada um.
-          </p>
-          <p>
-            As músicas são de quem participa: cada comunidade sobe as suas, com um arquivo <code>.lrc</code> para a letra
-            acender no tempo. O Syden não traz acervo de música de ninguém.
-          </p>
-        </div>
+      <section id="idiomas" class="idiomas">
+        <!-- Cada saudação com o próprio lang: o navegador escolhe a letra certa de cada escrita, e o leitor de
+             tela pronuncia cada uma no idioma dela. dir="auto" acerta a direção do árabe e do hebraico. -->
+        <p class="saudacoes" aria-hidden="true">
+          <span lang="pt">Olá</span> <span lang="en">Hello</span> <span lang="ja">こんにちは</span>
+          <span lang="es">Hola</span> <span lang="ar" dir="auto">مرحبا</span> <span lang="hi">नमस्ते</span>
+          <span lang="ru">Привет</span> <span lang="ko">안녕하세요</span> <span lang="fr">Salut</span>
+          <span lang="zh-CN">你好</span> <span lang="sw">Habari</span> <span lang="el">Γεια σου</span>
+          <span lang="th">สวัสดี</span> <span lang="he" dir="auto">שלום</span> <span lang="de">Hallo</span>
+          <span lang="am">ሰላም</span> <span lang="tr">Merhaba</span> <span lang="vi">Xin chào</span>
+        </p>
+        <h2>O Syden fala a sua língua</h2>
+        <p>
+          São 72 idiomas, e o app já abre no idioma que o seu navegador usa. Você troca quando quiser, e a escolha fica
+          guardada. Este site, por enquanto, está só em português.
+        </p>
       </section>
 
       <section id="honesto">
@@ -170,18 +256,12 @@
         <p class="subtitulo">
           O Syden está em uso de verdade, mas é novo. Preferimos dizer isto aqui do que deixar você descobrir sozinho.
         </p>
-        <div class="grade">
+        <div class="grade grade-duas">
           <div class="cartao">
-            <h3>Só em português, por enquanto</h3>
+            <h3>Comunidades só por convite</h3>
             <p>
-              A tradução para outras línguas está começando. Até ela ficar de verdade, o Syden fala português.
-            </p>
-          </div>
-          <div class="cartao">
-            <h3>Comunidades ainda por convite</h3>
-            <p>
-              Você entra numa comunidade pelo código de quem já está nela. A lista pública de comunidades para
-              descobrir gente nova está a caminho.
+              Você entra numa comunidade pelo código de quem já está nela. Ainda não existe uma lista pública para
+              descobrir gente nova.
             </p>
           </div>
           <div class="cartao">
@@ -196,6 +276,16 @@
           O Syden é gratuito e vai continuar sendo. Quem quiser ajudar a pagar o servidor pode
           <a href="contribuir.html">contribuir</a> — e isso não desbloqueia nada, porque não há nada trancado.
         </p>
+      </section>
+
+      <section class="chamado">
+        <img src="icon-192.png" alt="" width="72" height="72" />
+        <h2>Chama a turma</h2>
+        <p>Crie a comunidade, mande o código para os amigos e entre na sala.</p>
+        <div class="acoes">
+          <a class="botao botao-marca" href="/app/">Abrir no navegador</a>
+          <a class="botao botao-vazio" href="https://apps.microsoft.com/detail/9NPVXDKV471H">Baixar na Microsoft Store</a>
+        </div>
       </section>
     </main>
 

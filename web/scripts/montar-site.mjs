@@ -17,7 +17,7 @@
 // Então a regra aqui é fechada: **a raiz de dist/ é exatamente web/site/ mais a pasta app/, e nada
 // mais.** O que não se encaixa é removido, e o script diz o que removeu.
 import { createHash } from 'node:crypto';
-import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const AQUI = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
@@ -51,6 +51,21 @@ for (const icone of ICONES_DA_MARCA) {
 }
 
 /**
+ * O quarto do topo da apresentação é o MESMO da home do app, e pelo mesmo motivo dos ícones: uma fonte,
+ * dois destinos. Quando a arte do quarto mudar (hibrido/exportar.mjs), o site muda junto.
+ */
+const QUARTO = ['noite.png', 'coelho.png', 'gato.png'];
+mkdirSync(join(DIST, 'quarto'), { recursive: true });
+for (const arquivo of QUARTO) {
+  const de = join(AQUI, 'src', 'assets', 'quarto', arquivo);
+  if (!existsSync(de)) {
+    console.error(`${arquivo} não está em web/src/assets/quarto/: a apresentação ficaria sem o quarto.`);
+    process.exit(1);
+  }
+  cpSync(de, join(DIST, 'quarto', arquivo));
+}
+
+/**
  * A PÁGINA DE VOLTA AO APLICATIVO FICA NOS DOIS LUGARES, e isso é de propósito.
  *
  * Quem aponta para ela é o servidor, montando o endereço a partir do SITE_URL dele. Esse SITE_URL pode
@@ -72,8 +87,8 @@ for (const arquivo of TAMBEM_DENTRO_DO_APP) {
   cpSync(de, join(DIST, 'app', arquivo));
 }
 
-// Fora o que veio de web/site/, os ícones da marca e a pasta do app, nada tem o que fazer na raiz.
-const permitidos = new Set([...doSite, ...ICONES_DA_MARCA, 'app']);
+// Fora o que veio de web/site/, os ícones da marca, o quarto e a pasta do app, nada tem o que fazer na raiz.
+const permitidos = new Set([...doSite, ...ICONES_DA_MARCA, 'quarto', 'app']);
 const sobras = readdirSync(DIST).filter((nome) => !permitidos.has(nome));
 for (const sobra of sobras) {
   rmSync(join(DIST, sobra), { recursive: true, force: true });
@@ -128,6 +143,16 @@ const OBRIGATORIOS = [
   ['voltar-para-o-app.html', 'sem ela, entrar com Google no app de desktop não tem como voltar'],
   ['app/voltar-para-o-app.html', 'a mesma página, para quando o SITE_URL do servidor apontar para /app'],
 ];
+
+/**
+ * A página de contribuir sem o Pix é a falha silenciosa clássica: a imagem quebrada não dá erro em
+ * build nenhum, e o "copia e cola" vazio só some da tela. Quem vê é quem ia doar, e desiste.
+ */
+const contribuir = readFileSync(join(DIST, 'contribuir.html'), 'utf8');
+if (!existsSync(join(DIST, 'pix.svg')) || /id="copia-e-cola"><\/code>/.test(contribuir)) {
+  console.error('contribuir.html está sem o QR ou sem o copia e cola do Pix. Rode: node scripts/qr-do-pix.mjs --chave ...');
+  process.exit(1);
+}
 
 const faltando = OBRIGATORIOS.filter(([arquivo]) => !existsSync(join(DIST, arquivo)));
 if (faltando.length) {
