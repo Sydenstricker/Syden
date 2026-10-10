@@ -1150,4 +1150,8 @@ export default {
   'Criar enquete': 'Створити опитування',
   'Escolher arquivo': 'Вибрати файл',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} з {max} файлів · до {tamanho} кожен · Enter надсилає',
+  'geral': 'загальний',
+  'jogos': 'ігри',
+  'Sala 1': 'Кімната 1',
+  'Sala 2': 'Кімната 2',
 } satisfies Record<string, string>;

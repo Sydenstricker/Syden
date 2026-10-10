@@ -1180,4 +1180,8 @@ export default {
   'Criar enquete': 'ޕޯލެއް ހަދާ',
   'Escolher arquivo': 'ފައިލެއް ހޮވާ',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{max} ން {n} ފައިލް · ކޮންމެ އެއްޗެއް {tamanho} އަށް · Enter އިން ފޮނުވޭ',
+  'geral': 'އާންމު',
+  'jogos': 'ކުޅިވަރު',
+  'Sala 1': 'ރޫމް 1',
+  'Sala 2': 'ރޫމް 2',
 } satisfies Record<string, string>;

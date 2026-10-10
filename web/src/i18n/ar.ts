@@ -1121,4 +1121,8 @@ export default {
   'Criar enquete': 'إنشاء استطلاع',
   'Escolher arquivo': 'اختيار ملف',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'الملفات: {n} من {max} · حتى {tamanho} لكل ملف · Enter للإرسال',
+  'geral': 'عام',
+  'jogos': 'ألعاب',
+  'Sala 1': 'الغرفة 1',
+  'Sala 2': 'الغرفة 2',
 } satisfies Record<string, string>;

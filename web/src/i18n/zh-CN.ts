@@ -1087,4 +1087,8 @@ export default {
   'Criar enquete': '发起投票',
   'Escolher arquivo': '选择文件',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} 个文件 · 每个最大 {tamanho} · Enter 发送',
+  'geral': '闲聊',
+  'jogos': '游戏',
+  'Sala 1': '房间1',
+  'Sala 2': '房间2',
 } satisfies Record<string, string>;

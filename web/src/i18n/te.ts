@@ -1078,4 +1078,8 @@ export default {
   'Criar enquete': 'అభిప్రాయ సేకరణ సృష్టించు',
   'Escolher arquivo': 'ఫైల్ ఎంచుకో',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{max}లో {n} ఫైళ్ళు · ఒక్కొక్కటి {tamanho} వరకు · Enter పంపుతుంది',
+  'geral': 'సాధారణం',
+  'jogos': 'ఆటలు',
+  'Sala 1': 'గది 1',
+  'Sala 2': 'గది 2',
 } satisfies Record<string, string>;

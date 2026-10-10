@@ -1180,4 +1180,8 @@ export default {
   'Criar enquete': 'Kreye yon sondaj',
   'Escolher arquivo': 'Chwazi yon fichye',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} sou {max} fichye · jiska {tamanho} chak · Enter voye',
+  'geral': 'jeneral',
+  'jogos': 'jwèt',
+  'Sala 1': 'Chanm 1',
+  'Sala 2': 'Chanm 2',
 } satisfies Record<string, string>;

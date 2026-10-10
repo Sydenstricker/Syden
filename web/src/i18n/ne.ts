@@ -1172,4 +1172,8 @@ export default {
   'Criar enquete': 'पोल बनाउनुहोस्',
   'Escolher arquivo': 'फाइल छान्नुहोस्',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{max} मध्ये {n} फाइल · प्रत्येक {tamanho} सम्म · Enter ले पठाउँछ',
+  'geral': 'सामान्य',
+  'jogos': 'खेल',
+  'Sala 1': 'कोठा 1',
+  'Sala 2': 'कोठा 2',
 } satisfies Record<string, string>;

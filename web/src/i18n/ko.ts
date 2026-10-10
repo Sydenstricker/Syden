@@ -1088,4 +1088,8 @@ export default {
   'Criar enquete': '투표 만들기',
   'Escolher arquivo': '파일 고르기',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '파일 {n}/{max}개 · 각 {tamanho}까지 · Enter로 보내기',
+  'geral': '잡담',
+  'jogos': '게임',
+  'Sala 1': '방 1',
+  'Sala 2': '방 2',
 } satisfies Record<string, string>;

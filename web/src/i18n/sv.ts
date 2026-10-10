@@ -1162,4 +1162,8 @@ export default {
   'Criar enquete': 'Skapa omröstning',
   'Escolher arquivo': 'Välj fil',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} av {max} filer · upp till {tamanho} var · Enter skickar',
+  'geral': 'allmänt',
+  'jogos': 'spel',
+  'Sala 1': 'Rum 1',
+  'Sala 2': 'Rum 2',
 } satisfies Record<string, string>;

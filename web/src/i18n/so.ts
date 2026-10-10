@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'Samee codbixin',
   'Escolher arquivo': 'Dooro fayl',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} ka mid ah {max} fayl · ilaa {tamanho} midkiiba · Enter wuu diraa',
+  'geral': 'guud',
+  'jogos': 'ciyaaro',
+  'Sala 1': 'Qol 1',
+  'Sala 2': 'Qol 2',
 } satisfies Record<string, string>;

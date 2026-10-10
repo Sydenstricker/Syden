@@ -1102,4 +1102,8 @@ export default {
   'Criar enquete': 'Δημιουργία ψηφοφορίας',
   'Escolher arquivo': 'Επιλογή αρχείου',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} από {max} αρχεία · έως {tamanho} το καθένα · Enter για αποστολή',
+  'geral': 'γενικά',
+  'jogos': 'παιχνίδια',
+  'Sala 1': 'Δωμάτιο 1',
+  'Sala 2': 'Δωμάτιο 2',
 } satisfies Record<string, string>;

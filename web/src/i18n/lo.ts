@@ -1171,4 +1171,8 @@ export default {
   'Criar enquete': 'ສ້າງແບບສຳຫຼວດ',
   'Escolher arquivo': 'ເລືອກໄຟລ໌',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} ຈາກ {max} ໄຟລ໌ · ໄຟລ໌ລະບໍ່ເກີນ {tamanho} · Enter ເພື່ອສົ່ງ',
+  'geral': 'ທົ່ວໄປ',
+  'jogos': 'ເກມ',
+  'Sala 1': 'ຫ້ອງ 1',
+  'Sala 2': 'ຫ້ອງ 2',
 } satisfies Record<string, string>;

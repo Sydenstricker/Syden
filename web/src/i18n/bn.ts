@@ -1098,4 +1098,8 @@ export default {
   'Criar enquete': 'ভোট বানাও',
   'Escolher arquivo': 'ফাইল বেছে নাও',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{max}টির মধ্যে {n}টি ফাইল · প্রতিটি {tamanho} পর্যন্ত · Enter চাপলে যায়',
+  'geral': 'সাধারণ',
+  'jogos': 'গেম',
+  'Sala 1': 'রুম 1',
+  'Sala 2': 'রুম 2',
 } satisfies Record<string, string>;

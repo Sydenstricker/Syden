@@ -1166,4 +1166,8 @@ export default {
   'Criar enquete': 'Сауалнама жасау',
   'Escolher arquivo': 'Файл таңдау',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} / {max} файл · әрқайсысы {tamanho} дейін · Enter жібереді',
+  'geral': 'жалпы',
+  'jogos': 'ойындар',
+  'Sala 1': 'Бөлме 1',
+  'Sala 2': 'Бөлме 2',
 } satisfies Record<string, string>;

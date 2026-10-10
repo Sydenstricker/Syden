@@ -1081,4 +1081,8 @@ export default {
   'Criar enquete': 'கருத்துக்கணிப்பை உருவாக்கு',
   'Escolher arquivo': 'கோப்பைத் தேர்ந்தெடு',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{max} இல் {n} கோப்புகள் · ஒவ்வொன்றும் {tamanho} வரை · Enter அனுப்பும்',
+  'geral': 'பொது',
+  'jogos': 'விளையாட்டு',
+  'Sala 1': 'அறை 1',
+  'Sala 2': 'அறை 2',
 } satisfies Record<string, string>;

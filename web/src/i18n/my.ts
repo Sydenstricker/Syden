@@ -1139,4 +1139,8 @@ export default {
   'Criar enquete': 'စစ်တမ်း လုပ်ရန်',
   'Escolher arquivo': 'ဖိုင် ရွေးရန်',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'ဖိုင် {max} ခုထဲက {n} ခု · တစ်ခုစီ {tamanho} အထိ · Enter နှိပ်ရင် ပို့မည်',
+  'geral': 'အထွေထွေ',
+  'jogos': 'ဂိမ်း',
+  'Sala 1': 'အခန်း 1',
+  'Sala 2': 'အခန်း 2',
 } satisfies Record<string, string>;

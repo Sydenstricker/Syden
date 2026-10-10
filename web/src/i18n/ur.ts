@@ -1083,4 +1083,8 @@ export default {
   'Criar enquete': 'رائے شماری بنائیں',
   'Escolher arquivo': 'فائل چنیں',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{max} میں سے {n} فائلیں · ہر ایک {tamanho} تک · Enter سے بھیجیں',
+  'geral': 'عام',
+  'jogos': 'گیمز',
+  'Sala 1': 'کمرہ 1',
+  'Sala 2': 'کمرہ 2',
 } satisfies Record<string, string>;

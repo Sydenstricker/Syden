@@ -194,7 +194,11 @@ export function CommunityDialog({
     setError(null);
     try {
       const community = creating
-        ? await api<Community>('/api/communities', { method: 'POST', body: { name: value } })
+        ? await api<Community>('/api/communities', {
+            method: 'POST',
+            // Os canais iniciais nascem no idioma de quem cria (eram sempre geral, jogos, Sala 1 e Sala 2).
+            body: { name: value, canais: [t('geral'), t('jogos'), t('Sala 1'), t('Sala 2')] },
+          })
         : await api<Community>('/api/communities/join', { method: 'POST', body: { code: value } });
       onDone(community);
     } catch (e) {

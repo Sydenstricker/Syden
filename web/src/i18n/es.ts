@@ -1106,4 +1106,8 @@ export default {
   'Criar enquete': 'Crear encuesta',
   'Escolher arquivo': 'Elegir archivo',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} de {max} archivos · hasta {tamanho} cada uno · Enter envía',
+  'geral': 'general',
+  'jogos': 'juegos',
+  'Sala 1': 'Sala 1',
+  'Sala 2': 'Sala 2',
 } satisfies Record<string, string>;

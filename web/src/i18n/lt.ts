@@ -1172,4 +1172,8 @@ export default {
   'Criar enquete': 'Sukurti apklausą',
   'Escolher arquivo': 'Pasirinkti failą',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Failai: {n}/{max} · iki {tamanho} kiekvienas · Enter siunčia',
+  'geral': 'bendras',
+  'jogos': 'žaidimai',
+  'Sala 1': 'Kambarys 1',
+  'Sala 2': 'Kambarys 2',
 } satisfies Record<string, string>;

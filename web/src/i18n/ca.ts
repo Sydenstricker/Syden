@@ -1166,4 +1166,8 @@ export default {
   'Criar enquete': 'Crear una enquesta',
   'Escolher arquivo': 'Triar un fitxer',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} de {max} fitxers · fins a {tamanho} cadascun · Enter envia',
+  'geral': 'general',
+  'jogos': 'jocs',
+  'Sala 1': 'Sala 1',
+  'Sala 2': 'Sala 2',
 } satisfies Record<string, string>;

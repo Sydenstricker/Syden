@@ -1172,4 +1172,8 @@ export default {
   'Criar enquete': 'Ustvari anketo',
   'Escolher arquivo': 'Izberi datoteko',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Datoteke: {n}/{max} · do {tamanho} vsaka · Enter pošlje',
+  'geral': 'splošno',
+  'jogos': 'igre',
+  'Sala 1': 'Soba 1',
+  'Sala 2': 'Soba 2',
 } satisfies Record<string, string>;

@@ -1183,4 +1183,8 @@ export default {
   'Criar enquete': 'འདྲི་དཔྱད་བཟོ།',
   'Escolher arquivo': 'ཡིག་སྣོད་གདམ།',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'ཡིག་སྣོད་ {max} ལས་ {n} · རེ་རེ་ལུ་ {tamanho} ཚུན · Enter གིས་གཏང་།',
+  'geral': 'སྤྱིར་བཏང',
+  'jogos': 'རྩེད་མོ',
+  'Sala 1': 'ཁང་མིག 1',
+  'Sala 2': 'ཁང་མིག 2',
 } satisfies Record<string, string>;

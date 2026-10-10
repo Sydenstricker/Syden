@@ -1096,4 +1096,8 @@ export default {
   'Criar enquete': 'Creează un sondaj',
   'Escolher arquivo': 'Alege un fișier',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} din {max} fișiere · până la {tamanho} fiecare · Enter trimite',
+  'geral': 'general',
+  'jogos': 'jocuri',
+  'Sala 1': 'Camera 1',
+  'Sala 2': 'Camera 2',
 } satisfies Record<string, string>;

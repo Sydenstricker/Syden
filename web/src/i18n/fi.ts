@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'Luo kysely',
   'Escolher arquivo': 'Valitse tiedosto',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} tiedostoa · enintään {tamanho} kukin · Enter lähettää',
+  'geral': 'yleinen',
+  'jogos': 'pelit',
+  'Sala 1': 'Huone 1',
+  'Sala 2': 'Huone 2',
 } satisfies Record<string, string>;

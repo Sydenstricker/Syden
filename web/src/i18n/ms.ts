@@ -1101,4 +1101,8 @@ export default {
   'Criar enquete': 'Buat undian',
   'Escolher arquivo': 'Pilih fail',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} daripada {max} fail · sehingga {tamanho} setiap satu · Enter untuk hantar',
+  'geral': 'umum',
+  'jogos': 'permainan',
+  'Sala 1': 'Bilik 1',
+  'Sala 2': 'Bilik 2',
 } satisfies Record<string, string>;

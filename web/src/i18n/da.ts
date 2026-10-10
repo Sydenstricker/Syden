@@ -1164,4 +1164,8 @@ export default {
   'Criar enquete': 'Opret afstemning',
   'Escolher arquivo': 'Vælg fil',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} af {max} filer · op til {tamanho} hver · Enter sender',
+  'geral': 'generelt',
+  'jogos': 'spil',
+  'Sala 1': 'Rum 1',
+  'Sala 2': 'Rum 2',
 } satisfies Record<string, string>;

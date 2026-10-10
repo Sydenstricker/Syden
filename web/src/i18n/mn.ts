@@ -1184,4 +1184,8 @@ export default {
   'Criar enquete': 'Санал асуулга үүсгэх',
   'Escolher arquivo': 'Файл сонгох',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} файл · тус бүр {tamanho} хүртэл · Enter илгээнэ',
+  'geral': 'ерөнхий',
+  'jogos': 'тоглоом',
+  'Sala 1': 'Өрөө 1',
+  'Sala 2': 'Өрөө 2',
 } satisfies Record<string, string>;

@@ -1171,4 +1171,8 @@ export default {
   'Criar enquete': 'Dala inhlolovo',
   'Escolher arquivo': 'Khetha ifayela',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} kwangu-{max} amafayela · kufika ku-{tamanho} ngalinye · i-Enter iyathumela',
+  'geral': 'jikelele',
+  'jogos': 'imidlalo',
+  'Sala 1': 'Igumbi 1',
+  'Sala 2': 'Igumbi 2',
 } satisfies Record<string, string>;

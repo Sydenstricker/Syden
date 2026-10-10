@@ -1169,4 +1169,8 @@ export default {
   'Criar enquete': 'បង្កើតការស្ទង់មតិ',
   'Escolher arquivo': 'ជ្រើសរើសឯកសារ',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} ក្នុងចំណោម {max} ឯកសារ · រហូតដល់ {tamanho} ក្នុងមួយ · Enter ដើម្បីផ្ញើ',
+  'geral': 'ទូទៅ',
+  'jogos': 'ហ្គេម',
+  'Sala 1': 'បន្ទប់ 1',
+  'Sala 2': 'បន្ទប់ 2',
 } satisfies Record<string, string>;

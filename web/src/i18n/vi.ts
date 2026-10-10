@@ -1066,4 +1066,8 @@ export default {
   'Criar enquete': 'Tạo bình chọn',
   'Escolher arquivo': 'Chọn tệp',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} tệp · tối đa {tamanho} mỗi tệp · Enter để gửi',
+  'geral': 'chung',
+  'jogos': 'trò chơi',
+  'Sala 1': 'Phòng 1',
+  'Sala 2': 'Phòng 2',
 } satisfies Record<string, string>;

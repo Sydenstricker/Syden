@@ -1096,4 +1096,8 @@ export default {
   'Criar enquete': 'ምርጫ ፍጠር',
   'Escolher arquivo': 'ፋይል ምረጥ',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} ከ{max} ፋይሎች · እያንዳንዱ እስከ {tamanho} · Enter ይልካል',
+  'geral': 'አጠቃላይ',
+  'jogos': 'ጨዋታዎች',
+  'Sala 1': 'ክፍል 1',
+  'Sala 2': 'ክፍል 2',
 } satisfies Record<string, string>;

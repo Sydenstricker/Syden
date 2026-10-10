@@ -1095,4 +1095,8 @@ export default {
   'Criar enquete': 'Anket oluştur',
   'Escolher arquivo': 'Dosya seç',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} dosya · her biri en fazla {tamanho} · Enter gönderir',
+  'geral': 'genel',
+  'jogos': 'oyunlar',
+  'Sala 1': 'Oda 1',
+  'Sala 2': 'Oda 2',
 } satisfies Record<string, string>;

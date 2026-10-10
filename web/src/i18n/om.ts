@@ -1140,4 +1140,8 @@ export default {
   'Criar enquete': 'Filannoo sagalee uumi',
   'Escolher arquivo': 'Faayilii filadhu',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Faayilii {n} {max} keessaa · tokkoon tokkoon hanga {tamanho} · Enter ni erga',
+  'geral': 'waliigalaa',
+  'jogos': 'taphataa',
+  'Sala 1': 'Kutaa 1',
+  'Sala 2': 'Kutaa 2',
 } satisfies Record<string, string>;

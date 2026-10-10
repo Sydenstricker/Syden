@@ -1077,4 +1077,8 @@ export default {
   'Criar enquete': 'アンケートを作る',
   'Escolher arquivo': 'ファイルを選ぶ',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} ファイル · 1つ {tamanho} まで · Enter で送信',
+  'geral': '雑談',
+  'jogos': 'ゲーム',
+  'Sala 1': 'ルーム1',
+  'Sala 2': 'ルーム2',
 } satisfies Record<string, string>;

@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'ඡන්ද විමසීමක් සාදන්න',
   'Escolher arquivo': 'ගොනුව තෝරන්න',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'ගොනු {max} න් {n} · එකකට {tamanho} දක්වා · Enter යවයි',
+  'geral': 'පොදු',
+  'jogos': 'ක්‍රීඩා',
+  'Sala 1': 'කාමරය 1',
+  'Sala 2': 'කාමරය 2',
 } satisfies Record<string, string>;

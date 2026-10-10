@@ -1109,4 +1109,8 @@ export default {
   'Criar enquete': 'สร้างโพล',
   'Escolher arquivo': 'เลือกไฟล์',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} จาก {max} ไฟล์ · ไฟล์ละไม่เกิน {tamanho} · Enter เพื่อส่ง',
+  'geral': 'ทั่วไป',
+  'jogos': 'เกม',
+  'Sala 1': 'ห้อง 1',
+  'Sala 2': 'ห้อง 2',
 } satisfies Record<string, string>;

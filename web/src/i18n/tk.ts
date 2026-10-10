@@ -1172,4 +1172,8 @@ export default {
   'Criar enquete': 'Soraşyk düz',
   'Escolher arquivo': 'Faýl saýla',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} faýl · her biri {tamanho} çenli · Enter iberýär',
+  'geral': 'umumy',
+  'jogos': 'oýunlar',
+  'Sala 1': 'Otag 1',
+  'Sala 2': 'Otag 2',
 } satisfies Record<string, string>;

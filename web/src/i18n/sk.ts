@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'Vytvoriť anketu',
   'Escolher arquivo': 'Vybrať súbor',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} z {max} súborov · každý najviac {tamanho} · Enter odošle',
+  'geral': 'všeobecné',
+  'jogos': 'hry',
+  'Sala 1': 'Miestnosť 1',
+  'Sala 2': 'Miestnosť 2',
 } satisfies Record<string, string>;

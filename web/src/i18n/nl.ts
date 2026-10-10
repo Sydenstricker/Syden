@@ -1100,4 +1100,8 @@ export default {
   'Criar enquete': 'Poll maken',
   'Escolher arquivo': 'Bestand kiezen',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} van {max} bestanden · tot {tamanho} per stuk · Enter verstuurt',
+  'geral': 'algemeen',
+  'jogos': 'games',
+  'Sala 1': 'Kamer 1',
+  'Sala 2': 'Kamer 2',
 } satisfies Record<string, string>;

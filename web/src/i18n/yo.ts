@@ -1111,4 +1111,8 @@ export default {
   'Criar enquete': 'Ṣẹ̀dá ìbò',
   'Escolher arquivo': 'Yan fáìlì',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} nínú {max} fáìlì · tó {tamanho} ọ̀kọ̀ọ̀kan · Enter ń fi ránṣẹ́',
+  'geral': 'gbogbogbò',
+  'jogos': 'eré',
+  'Sala 1': 'Yàrá 1',
+  'Sala 2': 'Yàrá 2',
 } satisfies Record<string, string>;

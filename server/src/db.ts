@@ -1214,13 +1214,22 @@ migrateSoundsForPacks();
 // Depois da migração a coluna existe em qualquer banco, novo ou antigo.
 db.exec('CREATE INDEX IF NOT EXISTS idx_sounds_pack ON sounds(pack_id)');
 
-/** Canais que toda comunidade nova ganha, para ninguém começar numa tela vazia. */
-export function seedChannels(communityId: number) {
+/** Os canais que toda comunidade nova ganha, para ninguém começar numa tela vazia: dois de texto e duas salas. */
+export const CANAIS_INICIAIS: { name: string; type: ChannelType }[] = [
+  { name: 'geral', type: 'text' },
+  { name: 'jogos', type: 'text' },
+  { name: 'Sala 1', type: 'voice' },
+  { name: 'Sala 2', type: 'voice' },
+];
+
+/**
+ * Cria os canais iniciais. Os NOMES vêm de quem cria, já no idioma dela (a tela manda os quatro traduzidos):
+ * eram sempre "geral", "jogos", "Sala 1" e "Sala 2", e quem criava uma comunidade em inglês ganhava canais em
+ * português (relato de 09/10/2026). Sem nomes, ou com um inválido, fica o português daquela posição.
+ */
+export function seedChannels(communityId: number, nomes: (string | null)[] = []) {
   const insert = db.prepare('INSERT INTO channels (community_id, name, type, position) VALUES (?, ?, ?, ?)');
-  insert.run(communityId, 'geral', 'text', 0);
-  insert.run(communityId, 'jogos', 'text', 1);
-  insert.run(communityId, 'Sala 1', 'voice', 2);
-  insert.run(communityId, 'Sala 2', 'voice', 3);
+  CANAIS_INICIAIS.forEach((canal, i) => insert.run(communityId, nomes[i] ?? canal.name, canal.type, i));
 }
 
 // ---------- Comunidades ----------
@@ -1264,13 +1273,13 @@ export function defaultCommunity() {
   return db.prepare(`SELECT ${communityColumns} FROM communities ORDER BY id LIMIT 1`).get() as Community | undefined;
 }
 
-export function createCommunity(name: string, ownerId: number, inviteCode: string): Community {
+export function createCommunity(name: string, ownerId: number, inviteCode: string, nomesDosCanais: (string | null)[] = []): Community {
   const result = db
     .prepare('INSERT INTO communities (name, invite_code, created_by) VALUES (?, ?, ?)')
     .run(name, inviteCode, ownerId);
   const id = Number(result.lastInsertRowid);
   addMember(id, ownerId, 'owner');
-  seedChannels(id);
+  seedChannels(id, nomesDosCanais);
   return findCommunity(id)!;
 }
 

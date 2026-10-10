@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'Hamorona fitsapan-kevitra',
   'Escolher arquivo': 'Hisafidy rakitra',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Rakitra {n} amin’ny {max} · hatramin’ny {tamanho} avy · Enter mandefa',
+  'geral': 'ankapobeny',
+  'jogos': 'lalao',
+  'Sala 1': 'Efitrano 1',
+  'Sala 2': 'Efitrano 2',
 } satisfies Record<string, string>;

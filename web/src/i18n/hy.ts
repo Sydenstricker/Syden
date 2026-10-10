@@ -1189,4 +1189,8 @@ export default {
   'Criar enquete': 'Ստեղծել հարցում',
   'Escolher arquivo': 'Ընտրել ֆայլ',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} / {max} ֆայլ · մինչև {tamanho} յուրաքանչյուրը · Enter-ը ուղարկում է',
+  'geral': 'ընդհանուր',
+  'jogos': 'խաղեր',
+  'Sala 1': 'Սենյակ 1',
+  'Sala 2': 'Սենյակ 2',
 } satisfies Record<string, string>;

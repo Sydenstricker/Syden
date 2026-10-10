@@ -1162,4 +1162,8 @@ export default {
   'Criar enquete': 'Krijo sondazh',
   'Escolher arquivo': 'Zgjidh skedar',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} nga {max} skedarë · deri në {tamanho} secili · Enter dërgon',
+  'geral': 'përgjithshme',
+  'jogos': 'lojëra',
+  'Sala 1': 'Dhoma 1',
+  'Sala 2': 'Dhoma 2',
 } satisfies Record<string, string>;

@@ -1100,4 +1100,8 @@ export default {
   'Criar enquete': 'Unda kura',
   'Escolher arquivo': 'Chagua faili',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Faili {n} kati ya {max} · hadi {tamanho} kila moja · Enter inatuma',
+  'geral': 'jumla',
+  'jogos': 'michezo',
+  'Sala 1': 'Chumba 1',
+  'Sala 2': 'Chumba 2',
 } satisfies Record<string, string>;

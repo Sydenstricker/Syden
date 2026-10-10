@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'Направи анкета',
   'Escolher arquivo': 'Избери датотека',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} од {max} датотеки · до {tamanho} секоја · Enter испраќа',
+  'geral': 'општо',
+  'jogos': 'игри',
+  'Sala 1': 'Соба 1',
+  'Sala 2': 'Соба 2',
 } satisfies Record<string, string>;

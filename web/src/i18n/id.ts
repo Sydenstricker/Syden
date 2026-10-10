@@ -1098,4 +1098,8 @@ export default {
   'Criar enquete': 'Buat jajak pendapat',
   'Escolher arquivo': 'Pilih berkas',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} dari {max} berkas · maks. {tamanho} per berkas · Enter untuk kirim',
+  'geral': 'umum',
+  'jogos': 'game',
+  'Sala 1': 'Ruang 1',
+  'Sala 2': 'Ruang 2',
 } satisfies Record<string, string>;

@@ -1133,4 +1133,8 @@ export default {
   'Criar enquete': 'Sorğu yarat',
   'Escolher arquivo': 'Fayl seç',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} fayl · hər biri maks. {tamanho} · Enter göndərir',
+  'geral': 'ümumi',
+  'jogos': 'oyunlar',
+  'Sala 1': 'Otaq 1',
+  'Sala 2': 'Otaq 2',
 } satisfies Record<string, string>;

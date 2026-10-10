@@ -1172,4 +1172,8 @@ export default {
   'Criar enquete': 'Izveidot aptauju',
   'Escolher arquivo': 'Izvēlēties failu',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Faili: {n}/{max} · līdz {tamanho} katrs · Enter nosūta',
+  'geral': 'vispārīgi',
+  'jogos': 'spēles',
+  'Sala 1': 'Istaba 1',
+  'Sala 2': 'Istaba 2',
 } satisfies Record<string, string>;

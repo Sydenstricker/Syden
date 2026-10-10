@@ -1150,4 +1150,8 @@ export default {
   'Criar enquete': 'ליצור סקר',
   'Escolher arquivo': 'לבחור קובץ',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'קבצים: {n} מתוך {max} · עד {tamanho} לכל אחד · Enter שולח',
+  'geral': 'כללי',
+  'jogos': 'משחקים',
+  'Sala 1': 'חדר 1',
+  'Sala 2': 'חדר 2',
 } satisfies Record<string, string>;

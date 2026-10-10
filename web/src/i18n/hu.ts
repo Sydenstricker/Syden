@@ -1171,4 +1171,8 @@ export default {
   'Criar enquete': 'Szavazás létrehozása',
   'Escolher arquivo': 'Fájl kiválasztása',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} fájl · legfeljebb {tamanho} fájlonként · Enter: küldés',
+  'geral': 'általános',
+  'jogos': 'játékok',
+  'Sala 1': 'Szoba 1',
+  'Sala 2': 'Szoba 2',
 } satisfies Record<string, string>;

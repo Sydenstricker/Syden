@@ -1170,4 +1170,8 @@ export default {
   'Criar enquete': 'Lag avstemning',
   'Escolher arquivo': 'Velg fil',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} av {max} filer · opptil {tamanho} hver · Enter sender',
+  'geral': 'generelt',
+  'jogos': 'spill',
+  'Sala 1': 'Rom 1',
+  'Sala 2': 'Rom 2',
 } satisfies Record<string, string>;

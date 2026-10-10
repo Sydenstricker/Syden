@@ -1171,4 +1171,8 @@ export default {
   'Criar enquete': 'Сохтани пурсиш',
   'Escolher arquivo': 'Интихоби файл',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} аз {max} файл · ҳар кадом то {tamanho} · Enter мефиристад',
+  'geral': 'умумӣ',
+  'jogos': 'бозиҳо',
+  'Sala 1': 'Ҳуҷраи 1',
+  'Sala 2': 'Ҳуҷраи 2',
 } satisfies Record<string, string>;

@@ -1084,4 +1084,8 @@ export default {
   'Criar enquete': 'ساختن نظرسنجی',
   'Escolher arquivo': 'انتخاب فایل',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} از {max} فایل · هر کدام تا {tamanho} · Enter می‌فرستد',
+  'geral': 'عمومی',
+  'jogos': 'بازی‌ها',
+  'Sala 1': 'اتاق 1',
+  'Sala 2': 'اتاق 2',
 } satisfies Record<string, string>;

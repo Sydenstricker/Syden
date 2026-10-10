@@ -1188,4 +1188,8 @@ export default {
   'Criar enquete': 'გამოკითხვის შექმნა',
   'Escolher arquivo': 'ფაილის არჩევა',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} / {max} ფაილი · თითო მაქსიმუმ {tamanho} · Enter აგზავნის',
+  'geral': 'ზოგადი',
+  'jogos': 'თამაშები',
+  'Sala 1': 'ოთახი 1',
+  'Sala 2': 'ოთახი 2',
 } satisfies Record<string, string>;

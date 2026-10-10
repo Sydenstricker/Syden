@@ -1167,4 +1167,8 @@ export default {
   'Criar enquete': 'Loo küsitlus',
   'Escolher arquivo': 'Vali fail',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} faili · kuni {tamanho} igaüks · Enter saadab',
+  'geral': 'üldine',
+  'jogos': 'mängud',
+  'Sala 1': 'Ruum 1',
+  'Sala 2': 'Ruum 2',
 } satisfies Record<string, string>;

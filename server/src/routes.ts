@@ -738,7 +738,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/communities', async (request) => db.listCommunitiesForUser(request.user.id));
 
-    authed.post<{ Body: { name?: string } }>('/api/communities', async (request, reply) => {
+    authed.post<{ Body: { name?: string; canais?: unknown } }>('/api/communities', async (request, reply) => {
       if (barrarTemporario(request, reply)) return reply;
       const name = communityName(request.body?.name);
       if (!name) return reply.code(400).send({ error: 'O nome da comunidade deve ter de 2 a 40 caracteres.' });
@@ -747,7 +747,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
           .code(409)
           .send({ error: `Cada pessoa pode criar até ${config.maxCommunitiesPerUser} comunidades. Apague uma para criar outra.` });
       }
-      const community = db.createCommunity(name, request.user.id, db.newInviteCode());
+      // Os nomes dos canais iniciais no idioma de quem cria (ver seedChannels), cada um pela regra de nome de canal.
+      const pedidos = Array.isArray(request.body?.canais) ? request.body.canais : [];
+      const nomesDosCanais = db.CANAIS_INICIAIS.map((canal, i) =>
+        typeof pedidos[i] === 'string' ? channelName(pedidos[i] as string, canal.type) : null,
+      );
+      const community = db.createCommunity(name, request.user.id, db.newInviteCode(), nomesDosCanais);
       seedExpressions(community.id);
       joinCommunityRoom(io, request.user.id, community.id);
       return db.listCommunitiesForUser(request.user.id).find((c) => c.id === community.id);

@@ -1164,4 +1164,8 @@ export default {
   'Criar enquete': 'Skep peiling',
   'Escolher arquivo': 'Kies lêer',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} van {max} lêers · tot {tamanho} elk · Enter stuur',
+  'geral': 'algemeen',
+  'jogos': 'speletjies',
+  'Sala 1': 'Kamer 1',
+  'Sala 2': 'Kamer 2',
 } satisfies Record<string, string>;

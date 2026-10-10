@@ -1178,4 +1178,8 @@ export default {
   'Criar enquete': 'Soʻrovnoma yaratish',
   'Escolher arquivo': 'Fayl tanlash',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n}/{max} ta fayl · har biri {tamanho} gacha · Enter yuboradi',
+  'geral': 'umumiy',
+  'jogos': 'oʻyinlar',
+  'Sala 1': 'Xona 1',
+  'Sala 2': 'Xona 2',
 } satisfies Record<string, string>;

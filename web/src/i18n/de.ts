@@ -1127,4 +1127,8 @@ export default {
   'Criar enquete': 'Umfrage erstellen',
   'Escolher arquivo': 'Datei auswählen',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} von {max} Dateien · bis {tamanho} pro Datei · Enter sendet',
+  'geral': 'allgemein',
+  'jogos': 'spiele',
+  'Sala 1': 'Raum 1',
+  'Sala 2': 'Raum 2',
 } satisfies Record<string, string>;

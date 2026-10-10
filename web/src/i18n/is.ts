@@ -1171,4 +1171,8 @@ export default {
   'Criar enquete': 'Búa til könnun',
   'Escolher arquivo': 'Velja skrá',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': 'Skrár: {n}/{max} · allt að {tamanho} hver · Enter sendir',
+  'geral': 'almennt',
+  'jogos': 'leikir',
+  'Sala 1': 'Herbergi 1',
+  'Sala 2': 'Herbergi 2',
 } satisfies Record<string, string>;

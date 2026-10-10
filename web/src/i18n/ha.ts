@@ -1098,4 +1098,8 @@ export default {
   'Criar enquete': 'Ƙirƙiri kuri\'a',
   'Escolher arquivo': 'Zaɓi fayil',
   '{n} de {max} arquivos · até {tamanho} cada · Enter envia': '{n} cikin {max} fayiloli · har {tamanho} kowanne · Enter yana aikawa',
+  'geral': 'gaba-ɗaya',
+  'jogos': 'wasanni',
+  'Sala 1': 'Ɗaki 1',
+  'Sala 2': 'Ɗaki 2',
 } satisfies Record<string, string>;
