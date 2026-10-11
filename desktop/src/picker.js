@@ -95,8 +95,13 @@ window.picker.onSources((data) => {
   const screens = sources.filter((s) => s.kind === 'screen');
   document.querySelector('[data-kind="screen"]').textContent = `Telas (${screens.length})`;
   document.querySelector('[data-kind="window"]').textContent = `Janelas (${sources.length - screens.length})`;
+  // Abre na aba que o menu do Syden pediu ("uma janela" cai em Janelas).
+  if (data.kind === 'window') {
+    kind = 'window';
+    for (const t of document.querySelectorAll('.tab')) t.classList.toggle('active', t.dataset.kind === 'window');
+  }
   // Com uma tela só, já deixa selecionada: basta clicar em Compartilhar.
-  if (screens.length === 1) {
+  if (kind === 'screen' && screens.length === 1) {
     selectedId = screens[0].id;
     shareButton.disabled = false;
   }

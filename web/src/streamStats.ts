@@ -56,8 +56,7 @@ const TOLERANCIA = 0.9;
  * estava transformando funcionamento normal em suspeita de defeito.
  *
  * Então a taxa volta para o alvo quando está dentro da tolerância, e só mostra o número cru quando
- * ele está mesmo longe — que é quando o número é informação, e não ruído. Nessa hora o conselheiro
- * de qualidade (QualityAdvisor) já está falando, e aí os dois dizem a mesma coisa.
+ * ele está mesmo longe — que é quando o número é informação, e não ruído.
  *
  * Isto NÃO é esconder problema: 22 fps continua aparecendo como 22.
  */
@@ -185,4 +184,27 @@ export function nextQuality(current: AutoQuality, sample: { fps: number; limited
     return comfortable >= PATIENCE ? { step: current.step - 1, comfortable: 0 } : { step: current.step, comfortable };
   }
   return { step: current.step, comfortable: 0 };
+}
+
+// ---------- O Fluido que não aguenta os 60 ----------
+
+/** Abaixo disto, com o computador ou a internet apertando, os 60 quadros não estão acontecendo. */
+export const FPS_FLUIDO_MINIMO = 45;
+/** Quantas medições apertadas seguidas antes de cair para 30 (um soluço não derruba). */
+const APERTOS_PARA_CAIR = 3;
+
+export interface Fluido {
+  /** Medições apertadas seguidas até agora. */
+  apertos: number;
+  /** Já caiu para 30 nesta transmissão. Não volta: subir e descer de novo seria pior que ficar. */
+  em30: boolean;
+}
+
+/** Decide se o Fluido desta transmissão cai para 30 quadros, a partir da última medição. */
+export function proximoFluido(atual: Fluido, amostra: { fps: number; limitedBy: StreamStats['limitedBy'] }): Fluido {
+  if (atual.em30 || amostra.fps <= 0) return atual; // já caiu, ou ainda medindo / ninguém assistindo
+  const apertado = amostra.fps < FPS_FLUIDO_MINIMO && (amostra.limitedBy === 'cpu' || amostra.limitedBy === 'bandwidth');
+  if (!apertado) return { apertos: 0, em30: false };
+  const apertos = atual.apertos + 1;
+  return { apertos, em30: apertos >= APERTOS_PARA_CAIR };
 }

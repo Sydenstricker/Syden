@@ -11,6 +11,10 @@ interface DesktopBridge {
   idiomasDoSistema?(): string[];
   /** O título da janela escolhida no seletor do app ("League of Legends"), ou null. */
   telaEscolhida?(): string | null;
+  /** Se a caixinha "compartilhar áudio" ficou marcada no seletor do app. null = app que não conta. */
+  somEscolhido?(): boolean | null;
+  /** A aba em que o seletor do app abre no próximo pedido de captura. */
+  prepararSeletor?(tipo: 'screen' | 'window'): void;
   /** Pinta a barra de título do app (desenhada pelo Windows) com as cores do tema. */
   setTitleBarTheme?(cores: { color: string; symbolColor: string }): void;
   /**

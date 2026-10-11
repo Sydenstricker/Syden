@@ -2323,7 +2323,6 @@ function VoiceSection({ voice }: { voice: Voice }) {
       <div className="quality-options" role="radiogroup">
         {(
           [
-            ['light', chave('Leve'), '720p · 30 fps', chave('Para internet mais fraca.')],
             ['standard', chave('Padrão'), '1080p · 30 fps', chave('Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.')],
             [
               'smooth',

@@ -587,7 +587,9 @@ JavaScript —, mas **só compila no GitHub Actions**, porque o módulo nativo e
 Build do Visual Studio.
 
 Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
-**Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa.
+**Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa. (No app,
+desmarcar só vale da versão seguinte à 0.1.7 em diante: antes o site ligava a captura de som por fora,
+sempre.)
 
 ## Texto borrado na transmissão: o Padrão foi ajustado para jogo
 
@@ -599,14 +601,14 @@ ilegível. É resolução baixa esticada, provavelmente 360p ou menos, e não de
 (`SCREEN_HINTS`, em `useVoice.ts`): sob aperto de processador ou de internet de quem transmite, ele
 corta resolução para segurar os 30 quadros. É o certo para jogo e o errado para site, slide ou
 planilha, que ficam quase parados e precisam de letra legível. O modo Leve (`maintain-resolution`,
-`detail`) já resolve isso, mas depende de quem transmite saber escolher, e ninguém sabe.
+`detail`) resolvia isso, mas dependia de quem transmite saber escolher, e ninguém sabia — e ele saiu
+em 11/10/2026 (ver "Transmissão: o Syden decide"). Agora o conserto abaixo é o único caminho.
 
 **Para confirmar antes de mexer:**
 1. Quem transmite passa o mouse no "i" do quadro. Se aparecer "Seu computador está segurando a
    qualidade" ou "Sua internet está segurando a qualidade", é o aperto com o Padrão cortando resolução.
-2. Quem transmite recomeça escolhendo Leve. Se o texto ficar nítido, está confirmado.
-3. Quem assiste confere no "i" se não deixou o teto de qualidade baixo, e se o quadro não está pequeno
-   (o `adaptiveStream` baixa a camada do tamanho em que o vídeo é mostrado).
+2. Quem assiste confere se o quadro não está pequeno (o `adaptiveStream` baixa a camada do tamanho
+   em que o vídeo é mostrado), e se o celular dele não está em economia de dados.
 
 **O conserto combinado (meio dia, com teste):** o Padrão decide sozinho o que sacrificar. A
 otimização dinâmica já confere a transmissão a cada `SCREEN_CHECK_MS`; ela passa a perguntar também
@@ -647,8 +649,32 @@ cumprido — e a tela o anunciava como defeito.
   lado. **Quem assiste não recebe comentário nenhum sobre a imagem** — nem o número, nem veredito.
   A comparação chegou a virar frase no cartão ("Menor que o espaço onde está sendo mostrada. Numa
   janela menor, fica nítida.") e saiu em 05/10/2026: *"essa mensagem é inconveniente — não podemos
-  apenas transmitir?"*. Para quem assiste, o cartão mostra só o que ele pode mudar: o teto do que
-  baixar.
+  apenas transmitir?"*. Para quem assiste, o cartão ficou só com o teto do que baixar — e quando o
+  teto saiu (11/10/2026), quem assiste ficou sem "i" nenhum.
+
+## Transmissão: o Syden decide, quem usa não administra
+
+**Decidido em 11/10/2026, pelo Sydenstricker, depois de uma auditoria dos modos e das opções:** *"o
+erro deve ser tratado pelo Syden, não ser um ônus do usuário"*, e *"grande medida do esforço de manter
+a melhor transmissão cabe ao aplicativo"*. Um amigo relatou um modo que deu problema e não lembrava
+qual — o sinal de que havia escolha demais. O que saiu, e por quê:
+
+- **O modo Leve.** A tela dizia "para internet mais fraca"; o código segurava a nitidez e sacrificava
+  os quadros. Quem jogava com internet fraca transmitia fotos, e nada avisava. Ficam Padrão e Fluido.
+- **O conselheiro de qualidade (`QualityAdvisor`), inteiro.** O "Mudar para 60 fps" trocava o modo no
+  meio da transmissão, e ali o Fluido não acontece: a captura já fora aberta a 30 quadros e as três
+  camadas do Padrão ficavam, somando ~12,5 Mbps a 30 fps — e a escolha ficava salva. Os avisos de
+  travamento passavam o problema a quem transmite. **O Fluido apertado agora cai para 30 sozinho**
+  (`proximoFluido`, em `streamStats.ts`), só naquela transmissão; o Padrão já encolhia a imagem sozinho.
+- **O "Baixar até" (Automático, Média, Baixa) de quem assiste.** Para internet ruim o automático já
+  desce de camada; "Média" não diz nada; no Fluido não fazia nada. O caso real, dados contados no
+  celular, vem do próprio aparelho: `navigator.connection.saveData` (ver `qualidadeQueRecebo.ts`).
+- **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
+  sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
+
+**A regra que fica:** antes de pôr uma escolha de qualidade na tela, pergunte se o Syden consegue
+medir e decidir sozinho. Quase sempre consegue — e uma escolha que ninguém entende vira o relato
+"um modo deu problema e não sei qual".
 
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 

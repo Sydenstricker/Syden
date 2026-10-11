@@ -6,18 +6,13 @@ import { guardarEmBreve } from './preferencias';
 // ela ao trocar de navegador — menos os ids de microfone, alto-falante e câmera, que identificam um
 // APARELHO e não fariam sentido na outra máquina. A separação está em preferencias.ts.
 
-export type ScreenQuality = 'light' | 'standard' | 'smooth';
-
 /**
- * O teto do que ESTE computador baixa das transmissões dos outros.
- *
- * Não muda nada para quem transmite: a pessoa continua mandando a mesma coisa, e o servidor manda
- * para cá só a camada que cabe. Serve para internet medida, para computador que esquenta e,
- * principalmente, para quem assiste pelo celular — onde a imagem é pequena e os dados são caros.
- *
- * 'auto' é o de sempre: a qualidade acompanha o tamanho do quadro na tela e o que a internet aguenta.
+ * Dois modos, e não três. O "Leve" saiu em 11/10/2026: a tela dizia "para internet mais fraca", mas o
+ * que ele fazia era segurar a nitidez e sacrificar os quadros — quem jogava com internet fraca escolhia
+ * o Leve e transmitia uma sequência de fotos, sem nada avisar. Quem o tinha guardado vira Padrão (ver
+ * converterPreferenciasAntigas).
  */
-export type QualidadeQueRecebo = 'auto' | 'media' | 'baixa';
+export type ScreenQuality = 'standard' | 'smooth';
 
 export interface Settings {
   /** Ids de dispositivo; '' = o padrão do sistema. */
@@ -27,8 +22,6 @@ export interface Settings {
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
-  /** O teto do que este computador BAIXA das transmissões dos outros. */
-  qualidadeQueRecebo: QualidadeQueRecebo;
   /** Cores do app: escuro (padrão) ou claro. */
   theme: Theme;
   /** A paleta do tema escuro, escolhida em Aparência (ver theme.ts). */
@@ -88,7 +81,6 @@ const DEFAULTS: Settings = {
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
-  qualidadeQueRecebo: 'auto',
   theme: 'dark',
   paleta: 'd4',
   startMuted: false,
@@ -132,6 +124,8 @@ const STORAGE_KEY = 'janja.settings';
  * preferencias.ts), e a cópia de lá é tão antiga quanto a daqui.
  */
 export function converterPreferenciasAntigas(guardado: Record<string, unknown>): Record<string, unknown> {
+  // O modo "Leve" não existe mais: quem o tinha guardado passa ao Padrão.
+  if (guardado.screenQuality === 'light') guardado = { ...guardado, screenQuality: 'standard' };
   if (guardado.screenCodec !== 'vp8' || guardado.codecEscolhidoAMao === true) return guardado;
   return { ...guardado, screenCodec: 'auto' };
 }

@@ -19,9 +19,7 @@
 // API não vira cobaia de um palpite.
 //
 // Isto decide o PADRÃO, e não a escolha da pessoa: quem entrou nas configurações e escolheu um codec
-// continua com o que escolheu. Ver o conselheiro em QualityAdvisor.tsx, que age depois, medindo a
-// transmissão de verdade — os dois se complementam: este evita o problema, aquele conserta o que
-// escapou.
+// continua com o que escolheu.
 
 export type CodecDaTela = 'vp8' | 'h264';
 

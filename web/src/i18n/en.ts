@@ -637,7 +637,6 @@ export default {
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Your stream has no sound. The browser only sends sound if you tick “share audio” in the window where you pick the screen.",
   "Automático": "Automatic",
-  "Baixar até": "Download up to",
   "Medindo…": "Measuring…",
   "Administra a comunidade": "Runs the community",
   "Administradores": "Admins",
@@ -652,8 +651,6 @@ export default {
   "Calar esta transmissão": "Mute this stream",
   "Ouvir esta transmissão de novo": "Unmute this stream",
   "é o que você está enviando": "is what you're sending",
-  "Média": "Medium",
-  "Baixa": "Low",
   "costuma usar a placa":
     "usually uses the graphics card",
   "Fixa o H.264 mesmo que ele caia no processador.":
@@ -668,12 +665,6 @@ export default {
     "recommended",
   "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
     "Uses the graphics card when it can handle it, and the processor when it cannot.",
-  "A melhor que couber no tamanho da janela e na sua internet.":
-    "The best that fits the window size and your connection.",
-  "Até 360p · 15 quadros por segundo. Gasta menos internet.":
-    "Up to 360p · 15 frames per second. Uses less data.",
-  "Até 720p · 30 quadros por segundo.":
-    "Up to 720p · 30 frames per second.",
   "Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.":
     "This browser won't say which encoder is better. On automatic it stays on VP8, which works everywhere.",
   "Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.":
@@ -690,12 +681,8 @@ export default {
   "Testar a transmissão": "Test the stream",
   "Fluido":
     "Smooth",
-  "Leve":
-    "Light",
   "Padrão":
     "Standard",
-  "Para internet mais fraca.":
-    "For a weaker connection.",
   "Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.":
     "For games. Sends a single image, the best one: it leaves more machine for the game, and viewers get it as it is.",
   "Qualidade do compartilhamento de tela":
@@ -1096,9 +1083,7 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Everything on the screen. To include sound, tick “Share system audio” in the browser\'s pop-up.',
   'Uma janela ou app': 'A window or app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Just that program, and your computer\'s sound still goes along.',
-  'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.': 'Just that program. The browser does NOT send a window\'s sound: the stream will be silent.',
   'Uma aba do navegador': 'A browser tab',
-  'Só aquela aba, com o som dela.': 'Just that tab, with its sound.',
   'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Just that tab. It\'s the only one where the browser ticks sound by default.',
   'Opções da transmissão': 'Stream options',
   'Compartilhar tela': 'Share screen',

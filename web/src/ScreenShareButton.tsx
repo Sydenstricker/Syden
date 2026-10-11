@@ -2,6 +2,7 @@ import { AppWindow, Globe, Monitor, MonitorOff, MonitorX, Volume2 } from 'lucide
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { chave, useT } from './i18n';
 import { IconButton } from './IconButton';
+import { desktopBridge } from './desktop';
 import { appAudioSupported } from './screenAudio';
 import type { Voice } from './useVoice';
 
@@ -11,11 +12,25 @@ interface Opcao {
   surface: Superficie;
   label: string;
   icon: ReactNode;
-  /** No app de desktop o som do computador vai sozinho; no navegador depende da caixinha do seletor. */
-  noApp: string;
-  noNavegador: string;
+  /**
+   * O texto com o som do computador indo sozinho (o app com o módulo de som) e o texto em que ele
+   * depende da caixinha do seletor. Faltando um dos dois, a opção não aparece naquele lugar.
+   */
+  noApp?: string;
+  noNavegador?: string;
 }
 
+/**
+ * DUAS OPÇÕES EM CADA LUGAR, e não três (11/10/2026). Cada lugar tinha uma que não cumpria o que dizia:
+ *
+ * - No APP, "Uma aba do navegador" prometia "só aquela aba, com o som dela" — e o app não tem aba
+ *   nenhuma: abria o mesmo seletor de telas e janelas.
+ * - No NAVEGADOR, "Uma janela" sai sempre muda (o navegador não captura o som de uma janela), e o aviso
+ *   de "sem som" mandava escolher de novo, o mesmo tipo, em que a caixinha de som nem existe.
+ *
+ * Quem precisar do terceiro tipo ainda o acha: o seletor do navegador mostra telas, janelas e abas
+ * juntas, e o tipo escolhido aqui só decide qual aparece primeiro.
+ */
 const OPTIONS: Opcao[] = [
   {
     surface: 'monitor',
@@ -30,13 +45,11 @@ const OPTIONS: Opcao[] = [
     label: chave('Uma janela ou app'),
     icon: <AppWindow size={16} />,
     noApp: chave('Só aquele programa, e o som do computador vai junto mesmo assim.'),
-    noNavegador: chave('Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.'),
   },
   {
     surface: 'browser',
     label: chave('Uma aba do navegador'),
     icon: <Globe size={16} />,
-    noApp: chave('Só aquela aba, com o som dela.'),
     noNavegador: chave('Só aquela aba. É a única em que o navegador já vem com o som marcado.'),
   },
 ];
@@ -89,7 +102,7 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
               {t('No navegador, o som só vai se você marcar a caixinha de áudio na janelinha que abrir. No app do Syden ele vai sozinho.')}
             </p>
           )}
-          {OPTIONS.map((option) => (
+          {OPTIONS.filter((option) => (desktopBridge ? option.noApp : option.noNavegador)).map((option) => (
             <button
               key={option.surface}
               className="person-menu-item screenshare-option"
@@ -102,7 +115,7 @@ export function ScreenShareButton({ voice }: { voice: Voice }) {
               {option.icon}
               <span className="screenshare-option-text">
                 <span>{t(option.label)}</span>
-                <small>{t(somAutomatico ? option.noApp : option.noNavegador)}</small>
+                <small>{t((somAutomatico && option.noApp) || option.noNavegador || option.noApp || '')}</small>
               </span>
             </button>
           ))}

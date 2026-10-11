@@ -637,7 +637,6 @@ export default {
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Tu transmisión no tiene sonido. El navegador solo manda el sonido si marcas “compartir audio” en la ventana donde eliges la pantalla.",
   "Automático": "Automático",
-  "Baixar até": "Descargar hasta",
   "Medindo…": "Midiendo…",
   "Administra a comunidade": "Administra la comunidad",
   "Administradores": "Administradores",
@@ -652,8 +651,6 @@ export default {
   "Calar esta transmissão": "Silenciar esta transmisión",
   "Ouvir esta transmissão de novo": "Volver a oír esta transmisión",
   "é o que você está enviando": "es lo que estás enviando",
-  "Média": "Media",
-  "Baixa": "Baja",
   "costuma usar a placa":
     "suele usar la tarjeta gráfica",
   "Fixa o H.264 mesmo que ele caia no processador.":
@@ -668,12 +665,6 @@ export default {
     "recomendado",
   "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
     "Usa la tarjeta gráfica cuando da abasto, y el procesador cuando no.",
-  "A melhor que couber no tamanho da janela e na sua internet.":
-    "La mejor que quepa en el tamaño de la ventana y en tu conexión.",
-  "Até 360p · 15 quadros por segundo. Gasta menos internet.":
-    "Hasta 360p · 15 cuadros por segundo. Gasta menos datos.",
-  "Até 720p · 30 quadros por segundo.":
-    "Hasta 720p · 30 cuadros por segundo.",
   "Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.":
     "Este navegador no responde cuál codificador es mejor. En automático se queda con VP8, que funciona en todo.",
   "Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.":
@@ -690,12 +681,8 @@ export default {
   "Testar a transmissão": "Probar la transmisión",
   "Fluido":
     "Fluido",
-  "Leve":
-    "Ligera",
   "Padrão":
     "Estándar",
-  "Para internet mais fraca.":
-    "Para conexiones más débiles.",
   "Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.":
     "Para juegos. Manda una sola imagen, la mejor: sobra máquina para el juego, y quien mira recibe lo que es.",
   "Qualidade do compartilhamento de tela":
@@ -1096,9 +1083,7 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Todo lo que está en la pantalla. Para que vaya con sonido, marca “Compartir audio del sistema” en la ventanita del navegador.',
   'Uma janela ou app': 'Una ventana o app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Solo ese programa, y el sonido de la computadora va igualmente.',
-  'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.': 'Solo ese programa. El navegador NO envía el sonido de una ventana: la transmisión queda muda.',
   'Uma aba do navegador': 'Una pestaña del navegador',
-  'Só aquela aba, com o som dela.': 'Solo esa pestaña, con su sonido.',
   'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Solo esa pestaña. Es la única en la que el navegador ya trae el sonido marcado.',
   'Opções da transmissão': 'Opciones de la transmisión',
   'Compartilhar tela': 'Compartir pantalla',

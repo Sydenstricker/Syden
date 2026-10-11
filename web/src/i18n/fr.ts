@@ -441,15 +441,7 @@ export default {
   'Testando… os números aparecem em instantes.': 'Test en cours… les chiffres arrivent dans un instant.',
   'Seu computador está segurando a qualidade.': 'Votre ordinateur limite la qualité.',
   'Sua internet está segurando a qualidade.': 'Votre connexion limite la qualité.',
-  'Baixar até': 'Télécharger jusqu’à',
   Automático: 'Automatique',
-  Média: 'Moyenne',
-  Baixa: 'Basse',
-  'A melhor que couber no tamanho da janela e na sua internet.':
-    'La meilleure qui tienne dans la taille de la fenêtre et dans votre connexion.',
-  'Até 720p · 30 quadros por segundo.': 'Jusqu’à 720p · 30 images par seconde.',
-  'Até 360p · 15 quadros por segundo. Gasta menos internet.':
-    'Jusqu’à 360p · 15 images par seconde. Consomme moins de données.',
   'Som da transmissão': 'Son de la diffusion',
   'Volume da transmissão': 'Volume de la diffusion',
   'Calar esta transmissão': 'Couper le son de cette diffusion',
@@ -482,10 +474,8 @@ export default {
   // Qualité, encodage et réglages
   'Qualidade do compartilhamento de tela': 'Qualité du partage d’écran',
   'Vale a partir do próximo compartilhamento.': 'Prend effet au prochain partage.',
-  Leve: 'Légère',
   Padrão: 'Standard',
   Fluido: 'Fluide',
-  'Para internet mais fraca.': 'Pour une connexion plus faible.',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Recommandé pour la plupart. Ceux qui regardent peuvent baisser la qualité s’ils en ont besoin.',
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.':
@@ -1115,9 +1105,7 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tout ce qui est à l’écran. Pour avoir le son, coche « Partager l’audio du système » dans la petite fenêtre du navigateur.',
   'Uma janela ou app': 'Une fenêtre ou une app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Seulement ce programme, et le son de l’ordinateur suit quand même.',
-  'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.': 'Seulement ce programme. Le navigateur n’envoie PAS le son d’une fenêtre : la diffusion sera muette.',
   'Uma aba do navegador': 'Un onglet du navigateur',
-  'Só aquela aba, com o som dela.': 'Seulement cet onglet, avec son audio.',
   'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Seulement cet onglet. C’est le seul pour lequel le navigateur coche déjà le son.',
   'Opções da transmissão': 'Options de la diffusion',
   'Compartilhar tela': 'Partager l’écran',

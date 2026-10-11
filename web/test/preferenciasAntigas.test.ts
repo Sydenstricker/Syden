@@ -33,6 +33,16 @@ describe('o padrão antigo de codec vira automático', () => {
     assert.equal(duas.theme, 'dark', 'e não perde o resto pelo caminho');
   });
 
+  it('o modo Leve, que saiu, vira Padrão — sem mexer no resto', () => {
+    // Sem isto, quem tinha o Leve guardado transmitiria com um modo que não existe mais nas tabelas
+    // de useVoice.ts, e a transmissão quebraria ao começar.
+    assert.deepEqual(converterPreferenciasAntigas({ screenQuality: 'light', screenCodec: 'h264' }), {
+      screenQuality: 'standard',
+      screenCodec: 'h264',
+    });
+    assert.deepEqual(converterPreferenciasAntigas({ screenQuality: 'smooth' }), { screenQuality: 'smooth' });
+  });
+
   it('não inventa nada num pacote que nem fala de codec', () => {
     const semCodec = { theme: 'light', sounds: false };
     assert.deepEqual(converterPreferenciasAntigas(semCodec), semCodec);

@@ -45,7 +45,6 @@ import { chave, idiomaAtual, useT } from './i18n';
 import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
-import { QualityAdvisor } from './QualityAdvisor';
 import { ClipButton, PreviaDoClipe, useClipe } from './ClipButton';
 import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
@@ -58,11 +57,10 @@ import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
-import { type QualidadeQueRecebo, updateSettings, useSettings } from './settings';
+import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
 import { prepareSound } from './upload';
 
-import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { alternarMudoDaTela, getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
 import type { Channel, Sound, VoiceMember } from './types';
 import type { Voice } from './useVoice';
@@ -452,8 +450,13 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
 }
 
 /**
- * O "i" no canto da transmissão: em que formato ela está chegando de verdade (não o que foi escolhido
- * nas configurações, mas o que o navegador conseguiu entregar) e até quanto você quer baixar.
+ * O "i" no canto da SUA transmissão: em que formato ela está saindo de verdade (não o que foi escolhido
+ * nas configurações, mas o que o navegador conseguiu entregar), e quem está segurando a qualidade.
+ *
+ * QUEM ASSISTE NÃO TEM MAIS "i" (11/10/2026). Ali só restava o "Baixar até" (Automático, Média, Baixa),
+ * e ele saiu: para internet ruim o automático já desce de camada sozinho, "Média" e "Baixa" não diziam
+ * nada a ninguém, e no Fluido não havia camada para escolher. O único caso real — dados contados no
+ * celular — o Syden resolve pelo modo de economia de dados do aparelho (ver qualidadeQueRecebo.ts).
  *
  * ABRE AO PASSAR O MOUSE, igual ao do volume — e o que permitiu isso foi trocar a listinha de opções
  * por botões. Uma listinha (<select>) abre como janela do SISTEMA: enquanto ela está aberta o ponteiro
@@ -466,19 +469,11 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
  * reconhece e sobre o que ela pode fazer algo — o formato que chega, se o vídeo passa pela placa ou
  * pelo processador (que é uma escolha nas configurações), e quem está segurando a qualidade.
  */
-function StreamInfoBadge({
-  publication,
-  local,
-  voice,
-}: {
-  publication: TrackPublication | undefined;
-  local: boolean;
-  /** Só o quadro grande de uma transmissão passa a sala — é onde escolher o teto de qualidade cabe. */
-  voice?: Voice;
-}) {
+function StreamInfoBadge({ publication, local }: { publication: TrackPublication | undefined; local: boolean }) {
   const t = useT();
   const [aberto, setAberto] = useState(false);
-  const stats = useStreamStats(publication, { local });
+  // Sem "i" para quem assiste, nada é medido do lado dele: o cartão não mostraria nada.
+  const stats = useStreamStats(publication, { local, active: local });
   const formato = describeStats(stats);
   /*
    * QUEM ASSISTE NÃO RECEBE COMENTÁRIO SOBRE A IMAGEM: nem o número, nem o veredito.
@@ -487,9 +482,10 @@ function StreamInfoBadge({
    * ("Menor que o espaço onde está sendo mostrada. Numa janela menor, fica nítida.") saiu em 05/10/2026:
    * "essa mensagem é inconveniente — não podemos apenas transmitir?". As duas tentativas erraram do
    * mesmo jeito: comentar a imagem para quem não pode fazer nada sobre ela. Para quem assiste o cartão
-   * fica só com o que ele PODE mudar, o teto do que baixar. Os números e o diagnóstico seguem para
-   * quem transmite, que pode agir sobre eles.
+   * ficava só com o que ele PODE mudar, o teto do que baixar — e quando o teto saiu, o "i" saiu junto.
+   * Os números e o diagnóstico seguem para quem transmite, que pode agir sobre eles.
    */
+  if (!local) return null;
 
   return (
     <div className="stream-info" onMouseEnter={() => setAberto(true)} onMouseLeave={() => setAberto(false)}>
@@ -554,7 +550,6 @@ function StreamInfoBadge({
           ) : local ? (
             <span>{t('Medindo…')}</span>
           ) : null}
-          {!local && voice && <TetoDeQualidade room={voice.room} />}
         </div>
       )}
     </div>
@@ -593,69 +588,6 @@ function BotaoDeTeste({ publication }: { publication: TrackPublication | undefin
     >
       {t('Testar a transmissão')}
     </button>
-  );
-}
-
-/**
- * O TETO DO QUE VOCÊ BAIXA — a escolha de quem ASSISTE, que não existia.
- *
- * Quem transmite escolhia o que mandar; quem assiste, nada. Numa sala com alguém transmitindo em
- * 1080p, todo mundo baixa 1080p — inclusive quem está no celular, olhando um quadro pequeno e pagando
- * por megabyte. A qualidade automática acompanha o TAMANHO do quadro na tela, e isso não é a mesma
- * coisa que acompanhar a conta do mês.
- *
- * Fica junto do "i" de propósito: ali ao lado está escrito o que está chegando de verdade
- * ("804p · 29 fps"), então a pessoa escolhe e vê o resultado no mesmo lugar. Um seletor de qualidade
- * sem o número do lado é um chute.
- *
- * A escolha é sua e vale para TODAS as transmissões, agora e nas próximas: é uma preferência do
- * aparelho, não desta sala. Ver qualidadeQueRecebo.ts.
- */
-/**
- * As três opções, com o número de cada uma na explicação.
- *
- * "Alta, média e baixa" não diz nada a quem quer decidir: a pergunta real é "quantos megabytes isso
- * me custa" ou "cabe na minha internet?", e a resposta disso é resolução e quadros. Os números saem
- * das camadas que o Syden publica (SCREEN_LAYERS em useVoice.ts) — se elas mudarem lá, mudam aqui.
- *
- * O "até" é literal e importa: quem transmite pode ter publicado menos do que isso (na qualidade
- * Leve só existe a camada de 360p), e aí pedir mais devolve o que existe. Este controle põe um TETO,
- * não um piso.
- */
-const OPCOES_DE_QUALIDADE: [QualidadeQueRecebo, string, string][] = [
-  ['auto', chave('Automático'), chave('A melhor que couber no tamanho da janela e na sua internet.')],
-  ['media', chave('Média'), chave('Até 720p · 30 quadros por segundo.')],
-  ['baixa', chave('Baixa'), chave('Até 360p · 15 quadros por segundo. Gasta menos internet.')],
-];
-
-function TetoDeQualidade({ room }: { room: Room }) {
-  const t = useT();
-  const settings = useSettings();
-
-  return (
-    <div className="stream-qualidade">
-      <span>{t('Baixar até')}</span>
-      {/* BOTÕES, E NÃO UMA LISTINHA. Ver o comentário no alto do StreamInfoBadge: listinha abre como
-          janela do sistema e fecharia o cartão ao ser clicada. E de quebra as três opções ficam à
-          vista, em vez de escondidas atrás de um clique. */}
-      <div className="stream-qualidade-opcoes" role="group" aria-label={t('Baixar até')}>
-        {OPCOES_DE_QUALIDADE.map(([valor, rotulo, explicacao]) => (
-          <button
-            key={valor}
-            type="button"
-            className={settings.qualidadeQueRecebo === valor ? 'escolhida' : ''}
-            aria-pressed={settings.qualidadeQueRecebo === valor}
-            title={t(explicacao)}
-            onClick={() => {
-              updateSettings({ qualidadeQueRecebo: valor });
-              aplicarTetoEmTodas(room, valor);
-            }}
-          >
-            {t(rotulo)}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -946,7 +878,7 @@ function FocusPane({
       */}
       {trackRef.source === Track.Source.ScreenShare && (
         <div className="stream-controls">
-          <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} voice={voice} />
+          <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
           <StreamAudio voice={voice} publisher={trackRef.participant} />
           {/* Fechar corta o download na hora: dá para continuar na conversa sem gastar internet com a tela. */}
           {!trackRef.participant.isLocal && (
@@ -1243,7 +1175,6 @@ function Stage({
 
       <CamadaDeEfeitos disparo={voice.disparoVisual} />
 
-      <QualityAdvisor voice={voice} />
 
       {/* O microfone aberto que manda silêncio (ver microfoneSemSom, em useVoice). Clicar leva direto
           para onde se troca o microfone — o aviso sem caminho só aumentaria a aflição. */}

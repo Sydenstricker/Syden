@@ -446,15 +446,7 @@ export default {
   'Testando… os números aparecem em instantes.': 'Проверяем… цифры появятся через мгновение.',
   'Seu computador está segurando a qualidade.': 'Твой компьютер сдерживает качество.',
   'Sua internet está segurando a qualidade.': 'Твой интернет сдерживает качество.',
-  'Baixar até': 'Загружать не выше',
   Automático: 'Автоматически',
-  Média: 'Среднее',
-  Baixa: 'Низкое',
-  'A melhor que couber no tamanho da janela e na sua internet.':
-    'Лучшее, что поместится в размер окна и в твой интернет.',
-  'Até 720p · 30 quadros por segundo.': 'До 720p · 30 кадров в секунду.',
-  'Até 360p · 15 quadros por segundo. Gasta menos internet.':
-    'До 360p · 15 кадров в секунду. Тратит меньше трафика.',
   'Som da transmissão': 'Звук трансляции',
   'Volume da transmissão': 'Громкость трансляции',
   'Calar esta transmissão': 'Приглушить эту трансляцию',
@@ -487,10 +479,8 @@ export default {
   // Качество и кодирование
   'Qualidade do compartilhamento de tela': 'Качество демонстрации экрана',
   'Vale a partir do próximo compartilhamento.': 'Действует со следующей демонстрации.',
-  Leve: 'Лёгкое',
   Padrão: 'Обычное',
   Fluido: 'Плавное',
-  'Para internet mais fraca.': 'Для слабого интернета.',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Подходит большинству. Тот, кто смотрит, может понизить качество, если нужно.',
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.':
@@ -1111,9 +1101,7 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Всё, что на экране. Чтобы передать звук, отметь «Также предоставить доступ к системным звукам» в окошке браузера.',
   'Uma janela ou app': 'Окно или приложение',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Только эта программа, и звук компьютера всё равно передаётся.',
-  'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.': 'Только эта программа. Браузер НЕ передаёт звук окна: трансляция будет без звука.',
   'Uma aba do navegador': 'Вкладка браузера',
-  'Só aquela aba, com o som dela.': 'Только эта вкладка, со своим звуком.',
   'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Только эта вкладка. Это единственный вариант, где браузер сразу отмечает звук.',
   'Opções da transmissão': 'Настройки трансляции',
   'Compartilhar tela': 'Поделиться экраном',

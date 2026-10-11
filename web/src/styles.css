@@ -3460,28 +3460,6 @@ textarea {
   display: none;
 }
 
-.advisor {
-  position: absolute;
-  bottom: 84px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  max-width: min(680px, 92%);
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  background: var(--bg-main);
-  box-shadow: 0 8px 28px var(--shadow);
-  font-size: calc(14px * var(--escala-do-texto));
-  color: var(--text);
-}
-
-.advisor-text {
-  flex: 1;
-}
-
 /* Quem chegou por um link de convite vê isto no lugar do campo de código. */
 .auth-convidado {
   display: flex;
@@ -10615,46 +10593,6 @@ body.arrastando-barra {
   margin-left: auto;
   color: var(--text-muted);
   font-size: calc(12.5px * var(--escala-do-texto));
-}
-
-/* O seletor de teto de qualidade, dentro do cartão do "i" da transmissão. Ele mora ali porque ao
-   lado está escrito o que está chegando de verdade: escolher e ver o número no mesmo lugar. */
-.stream-qualidade {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
-  font-size: calc(11px * var(--escala-do-texto));
-  color: var(--text-muted);
-}
-
-.stream-qualidade-opcoes {
-  display: flex;
-  gap: 4px;
-}
-
-.stream-qualidade-opcoes button {
-  flex: 1;
-  padding: 5px 4px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-sidebar);
-  color: var(--text-muted);
-  font-size: calc(12px * var(--escala-do-texto));
-}
-
-.stream-qualidade-opcoes button:hover {
-  color: var(--text);
-  border-color: var(--text-muted);
-}
-
-/* A escolhida fica com a cor de destaque: numa fileira de três, é o único jeito de saber onde se está. */
-.stream-qualidade-opcoes button.escolhida {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-texto);
 }
 
 /* O resultado do teste de codec: é resposta a uma pergunta, não instrução — fica destacado do texto

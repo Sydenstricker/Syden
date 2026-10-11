@@ -37,7 +37,7 @@ const { cravados, chaves } = varrerTextos(raiz);
  * sete frases em português na tela de quem escolheu coreano. Guarda que mede a coisa errada é pior
  * do que guarda nenhuma, porque ela tranquiliza.
  */
-const CATRACA = 311;
+const CATRACA = 299;
 
 describe('a dívida da tradução não cresce', () => {
   it(`há no máximo ${CATRACA} textos cravados`, () => {

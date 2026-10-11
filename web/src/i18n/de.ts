@@ -448,15 +448,7 @@ export default {
   'Testando… os números aparecem em instantes.': 'Test läuft… die Zahlen erscheinen gleich.',
   'Seu computador está segurando a qualidade.': 'Dein Rechner bremst die Qualität.',
   'Sua internet está segurando a qualidade.': 'Deine Internetverbindung bremst die Qualität.',
-  'Baixar até': 'Laden bis maximal',
   Automático: 'Automatisch',
-  Média: 'Mittel',
-  Baixa: 'Niedrig',
-  'A melhor que couber no tamanho da janela e na sua internet.':
-    'Die beste, die in die Fenstergröße und deine Verbindung passt.',
-  'Até 720p · 30 quadros por segundo.': 'Bis 720p · 30 Bilder pro Sekunde.',
-  'Até 360p · 15 quadros por segundo. Gasta menos internet.':
-    'Bis 360p · 15 Bilder pro Sekunde. Verbraucht weniger Daten.',
   'Som da transmissão': 'Ton der Übertragung',
   'Volume da transmissão': 'Lautstärke der Übertragung',
   'Calar esta transmissão': 'Diese Übertragung stummschalten',
@@ -489,10 +481,8 @@ export default {
   // Qualität und Kodierung
   'Qualidade do compartilhamento de tela': 'Qualität der Bildschirmübertragung',
   'Vale a partir do próximo compartilhamento.': 'Gilt ab der nächsten Übertragung.',
-  Leve: 'Leicht',
   Padrão: 'Standard',
   Fluido: 'Flüssig',
-  'Para internet mais fraca.': 'Für eine schwächere Verbindung.',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Für die meisten empfohlen. Wer zusieht, kann die Qualität bei Bedarf senken.',
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.':
@@ -1117,9 +1107,7 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alles auf dem Bildschirm. Für Ton setz im kleinen Browserfenster den Haken bei „Systemaudio teilen“.',
   'Uma janela ou app': 'Ein Fenster oder eine App',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Nur dieses Programm, und der Computerton geht trotzdem mit.',
-  'Só aquele programa. O navegador NÃO manda o som de uma janela: a transmissão fica muda.': 'Nur dieses Programm. Der Browser überträgt den Ton eines Fensters NICHT: Die Übertragung bleibt stumm.',
   'Uma aba do navegador': 'Ein Browser-Tab',
-  'Só aquela aba, com o som dela.': 'Nur dieser Tab, mit seinem Ton.',
   'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Nur dieser Tab. Er ist der einzige, bei dem der Browser den Ton schon angehakt hat.',
   'Opções da transmissão': 'Übertragungsoptionen',
   'Compartilhar tela': 'Bildschirm teilen',

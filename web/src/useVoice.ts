@@ -19,10 +19,10 @@ import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import { nomeDaTransmissao } from './streamName';
-import { aplicarTetoEmTodas } from './qualidadeQueRecebo';
+import { aoMudarEconomia, aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { applyAllVolumes, idsComVolumeAjustado } from './voiceVolumes';
 import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOuvir';
-import { SCALE_STEPS, type AutoQuality, type StreamStats, nextQuality } from './streamStats';
+import { SCALE_STEPS, type AutoQuality, type Fluido, type StreamStats, nextQuality, proximoFluido } from './streamStats';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
 import { escolherCodecDaTela } from './escolherCodec';
@@ -45,7 +45,6 @@ function readLocalMedia(lp: LocalParticipant): LocalMedia {
 
 // Qualidade do compartilhamento de tela escolhida nas configurações.
 export const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
-  light: ScreenSharePresets.h720fps30, // até 2 Mbps
   standard: ScreenSharePresets.h1080fps30, // até 5 Mbps
   smooth: new VideoPreset(1920, 1080, 8_000_000, 60), // jogos; até 8 Mbps
 };
@@ -58,11 +57,11 @@ export const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
  * é a pior forma possível de assistir alguém jogar. O mesmo aperto com "maintain-framerate" dá 720p ou
  * 540p a 30 fps, que é fluido e continua perfeitamente legível.
  *
- * Nitidez acima de tudo continua existindo, mas onde ela faz sentido: em "Leve", que é a opção de quem
- * está mostrando planilha, slide ou código, onde ler a letra importa mais do que o movimento.
+ * A nitidez acima de tudo morava no "Leve", que saiu (ver ScreenQuality, em settings.ts): ele era
+ * anunciado para internet fraca e entregava fotos a quem jogava. Planilha e slide nítidos ficam para o
+ * Padrão decidir sozinho pela imagem parada — a pendência "Texto borrado na transmissão" do CLAUDE.md.
  */
 const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; degradation: RTCDegradationPreference }> = {
-  light: { contentHint: 'detail', degradation: 'maintain-resolution' },
   standard: { contentHint: 'motion', degradation: 'maintain-framerate' },
   smooth: { contentHint: 'motion', degradation: 'maintain-framerate' },
 };
@@ -89,18 +88,15 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * está dizendo que a máquina é o gargalo. Cobrar dela mais duas codificações para dar opção aos
  * outros é cobrar do lado errado. Ali vai uma imagem só, a melhor, e quem assiste recebe o que ela é.
  *
- * Nos outros dois modos as camadas ficam: no Padrão elas são o que permite a alguém no celular pagar
- * menos internet sem estragar a transmissão de quem está no computador, e a conta cabe. No Leve, a
- * única camada extra é pequena de propósito — é o modo de quem já tem pouca máquina.
+ * No Padrão as camadas ficam: elas são o que permite a alguém no celular pagar menos internet sem
+ * estragar a transmissão de quem está no computador, e a conta cabe.
  *
  * A CAMADA DE 360p DO PADRÃO TEM 800 kbps, E NÃO 400. Ela não é só miniatura: num notebook 1366×768 é
  * ela que chega no quadro grande. Medido (05/10/2026) com imagem em movimento: a 400 kbps — e também a
  * 600 —, o "manter os quadros" do Padrão encolhia a camada até 142×80 e 213×120, com o Chrome dando
- * todo o teto e apontando falta de banda; a 800 ela segura os 640×360 sem limitação nenhuma. No Leve
- * os 400 bastam: ali a regra é manter a resolução, e quem cede são os quadros.
+ * todo o teto e apontando falta de banda; a 800 ela segura os 640×360 sem limitação nenhuma.
  */
 const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
-  light: [new VideoPreset(640, 360, 400_000, 15)],
   standard: [new VideoPreset(640, 360, 800_000, 15), new VideoPreset(1280, 720, 2_000_000, 30)],
   smooth: [],
 };
@@ -367,8 +363,8 @@ export function useVoice(socket: Socket | null) {
     };
   }, [room]);
 
-  // Volume que você escolheu para cada pessoa, e o teto de qualidade que você escolheu receber, valem
-  // de novo sempre que alguém chega, volta a falar ou começa a transmitir.
+  // Volume que você escolheu para cada pessoa, e o teto de qualidade (a economia de dados do aparelho),
+  // valem de novo sempre que alguém chega, volta a falar ou começa a transmitir.
   useEffect(() => {
     const restore = () => {
       applyAllVolumes(room);
@@ -378,7 +374,9 @@ export function useVoice(socket: Socket | null) {
       .on(RoomEvent.ParticipantConnected, restore)
       .on(RoomEvent.TrackSubscribed, restore)
       .on(RoomEvent.Connected, restore);
+    const pararDeOuvirEconomia = aoMudarEconomia(() => aplicarTetoEmTodas(room));
     return () => {
+      pararDeOuvirEconomia();
       room
         .off(RoomEvent.ParticipantConnected, restore)
         .off(RoomEvent.TrackSubscribed, restore)
@@ -919,33 +917,6 @@ export function useVoice(socket: Socket | null) {
     });
   }, []);
 
-  /**
-   * Troca a qualidade da transmissão em andamento sem pedir para escolher a tela de novo: mexe direto nos
-   * parâmetros de envio (quadros por segundo e taxa) do que já está sendo enviado.
-   */
-  const setScreenQuality = useCallback(
-    async (quality: ScreenQuality) => {
-      updateSettings({ screenQuality: quality });
-      const track = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
-      const sender = track?.sender;
-      if (!track || !sender) return;
-
-      const preset = SCREEN_PRESETS[quality];
-      const hints = SCREEN_HINTS[quality];
-      track.mediaStreamTrack.contentHint = hints.contentHint;
-      const parameters = sender.getParameters();
-      parameters.degradationPreference = hints.degradation;
-      for (const encoding of parameters.encodings) {
-        // Com camadas, as menores mantêm a proporção de taxa que já tinham.
-        const share = encoding.maxBitrate ? encoding.maxBitrate / Math.max(...parameters.encodings.map((e) => e.maxBitrate ?? 1)) : 1;
-        encoding.maxFramerate = preset.encoding.maxFramerate;
-        encoding.maxBitrate = Math.round(preset.encoding.maxBitrate * share);
-      }
-      await sender.setParameters(parameters).catch(console.error);
-    },
-    [room],
-  );
-
   const leave = useCallback(() => {
     if (channelRef.current !== null) sounds.selfLeave();
     setVoiceEffectState('none');
@@ -1013,6 +984,11 @@ export function useVoice(socket: Socket | null) {
    * o LiveKit reserva para o áudio de tela — é assim que quem assiste ouve junto com a imagem.
    */
   const appAudioRef = useRef<AppAudio | null>(null);
+  /**
+   * O modo com que a transmissão NO AR começou. Não é o mesmo que o das configurações: trocar lá vale
+   * só para a próxima, e quem mede a transmissão precisa saber o que está saindo agora.
+   */
+  const modoNoArRef = useRef<ScreenQuality>('standard');
 
   const stopAppAudio = useCallback(() => {
     const current = appAudioRef.current;
@@ -1069,6 +1045,9 @@ export function useVoice(socket: Socket | null) {
           : escolhido;
       try {
         setTelaCompartilhada(surface);
+        modoNoArRef.current = quality;
+        // No app, o seletor é nosso e abre na aba que o menu pediu.
+        desktopBridge?.prepararSeletor?.(surface === 'window' ? 'window' : 'screen');
         if (lp.isScreenShareEnabled) await lp.setScreenShareEnabled(false);
         await lp.setScreenShareEnabled(
           true,
@@ -1117,7 +1096,9 @@ export function useVoice(socket: Socket | null) {
         if (channelRef.current !== null) {
           socketRef.current?.emit('voice:update', { ...readLocalMedia(lp), screenName: nomeDaTelaRef.current });
         }
-        await startAppAudio();
+        // A caixinha de som do seletor do app. Ligava-se a captura SEMPRE, e desmarcar não tirava o
+        // som; só um app antigo, que não conta a escolha (null), segue ligando sempre.
+        if (desktopBridge?.somEscolhido?.() !== false) await startAppAudio();
       } catch (e) {
         // Fechar o seletor de tela sem escolher nada não é erro.
         if (!isCancelledPicker(e)) {
@@ -1131,25 +1112,6 @@ export function useVoice(socket: Socket | null) {
       }
     },
     [room, startAppAudio],
-  );
-
-  /**
-   * Troca o codec da transmissão.
-   *
-   * Precisa RECOMEÇAR a transmissão: o codec é escolhido no momento em que a faixa é publicada, e não
-   * dá para trocar com ela no ar. Quem assiste vê a imagem sumir e voltar em um ou dois segundos.
-   *
-   * Já transmitindo, o seletor de tela abre de novo — não há como recomeçar sem pedir a tela outra vez,
-   * porque a permissão de captura morre junto com a faixa. É por isso que isto não acontece sozinho:
-   * quem decide é a pessoa, clicando no conselho.
-   */
-  const setScreenCodec = useCallback(
-    (codec: 'vp8' | 'h264') => {
-      updateSettings({ screenCodec: codec });
-      const tela = telaCompartilhada;
-      if (room.localParticipant.isScreenShareEnabled && tela) void shareScreen(tela);
-    },
-    [room, shareScreen, telaCompartilhada],
   );
 
   const stopScreen = useCallback(async () => {
@@ -1209,13 +1171,17 @@ export function useVoice(socket: Socket | null) {
    * jogo quer. Este efeito mede a transmissão de quatro em quatro segundos e, pela regra de nextQuality,
    * encolhe a imagem para segurar a fluidez (ou devolve a nitidez quando sobra folga).
    *
-   * Não vale para a qualidade "Leve", onde a pessoa pediu nitidez de propósito.
+   * NO FLUIDO HÁ UM DEGRAU ANTES: sair dos 60 quadros. Isto era um aviso ("seu computador não está dando
+   * conta dos 60 quadros", com um botão de mudar para 30) e virou trabalho do Syden em 11/10/2026: o
+   * problema é de quem assiste, quem transmite não o vê, e não é ônus de ninguém resolvê-lo à mão. Vale
+   * só para esta transmissão; a escolha nas configurações continua a mesma.
    */
   useEffect(() => {
-    if (!media.screen || getSettings().screenQuality === 'light') return;
+    if (!media.screen) return;
     let quality: AutoQuality = { step: 0, comfortable: 0 };
     let base: (number | undefined)[] | null = null;
     let busy = false;
+    let fluido: Fluido = { apertos: 0, em30: false };
 
     const check = async () => {
       if (busy) return;
@@ -1231,6 +1197,19 @@ export function useVoice(socket: Socket | null) {
           const reason = String(entry.qualityLimitationReason ?? 'none');
           if (reason === 'cpu' || reason === 'bandwidth') limitedBy = reason;
         });
+
+        if (modoNoArRef.current === 'smooth' && !fluido.em30) {
+          fluido = proximoFluido(fluido, { fps, limitedBy });
+          if (fluido.em30) {
+            const parameters = sender.getParameters();
+            for (const encoding of parameters.encodings) {
+              encoding.maxFramerate = 30;
+              encoding.maxBitrate = SCREEN_PRESETS.standard.encoding.maxBitrate;
+            }
+            await sender.setParameters(parameters).catch(console.error);
+          }
+          return; // os degraus de tamanho só depois dos 30: a 60 a medida deles não vale
+        }
 
         const next = nextQuality(quality, { fps, limitedBy });
         if (next.step !== quality.step) {
@@ -1457,12 +1436,10 @@ export function useVoice(socket: Socket | null) {
     toggleCamera,
     shareScreen,
     stopScreen,
-    setScreenQuality,
     switchDevice,
     setAudioProcessing,
     ecoNaTransmissao,
     telaCompartilhada,
-    setScreenCodec,
     disparoVisual,
     mandarEfeitoVisual,
     assistindo,

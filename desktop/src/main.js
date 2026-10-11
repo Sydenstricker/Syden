@@ -409,17 +409,33 @@ function setupPermissions() {
   });
 }
 
+/**
+ * A aba em que o seletor abre: o menu do Syden pergunta "tela inteira ou uma janela?" antes, e o
+ * seletor abria sempre em Telas — quem escolheu "uma janela" tinha de achar a aba de novo. Vale para
+ * o próximo pedido de captura só.
+ * @type {'screen' | 'window'}
+ */
+let proximoTipo = 'screen';
+ipcMain.on('tela:tipo', (event, tipo) => {
+  if (isAppOrigin(event.senderFrame?.url ?? '')) proximoTipo = tipo === 'window' ? 'window' : 'screen';
+  event.returnValue = null;
+});
+
 // No Electron, getDisplayMedia() não tem seletor embutido no Windows: mostramos o nosso.
 function setupScreenShare() {
   session.defaultSession.setDisplayMediaRequestHandler(async (request, callback) => {
     if (!isAppOrigin(request.securityOrigin) || !mainWindow) return callback({});
     try {
-      const choice = await pickSource(request.audioRequested);
+      const tipo = proximoTipo;
+      proximoTipo = 'screen';
+      const choice = await pickSource(request.audioRequested, tipo);
       if (!choice) return callback({});
       // O TÍTULO DA JANELA só existe aqui. O site, do outro lado, só recebe a faixa de vídeo — e o
       // rótulo dela é um código interno ("window:12345:0"), não "League of Legends". Por isso o nome
       // é mandado à parte, agora, enquanto ainda se sabe qual foi a escolha.
-      mainWindow.webContents.send('tela:escolhida', choice.source.name || null);
+      // A caixinha de som vai junto: com o módulo de som, quem liga a captura é o site, e ele precisa
+      // saber se a pessoa desmarcou.
+      mainWindow.webContents.send('tela:escolhida', { nome: choice.source.name || null, som: choice.audio });
       // Com o módulo nativo, o som vem por fora (sem as vozes da chamada); sem ele, sobra o jeito antigo,
       // que é a mistura do computador inteiro.
       const legacyAudio = choice.audio && !screenAudioAvailable();
@@ -433,9 +449,10 @@ function setupScreenShare() {
 
 /**
  * @param {boolean} audioRequested
+ * @param {'screen' | 'window'} tipo a aba em que o seletor abre
  * @returns {Promise<{ source: Electron.DesktopCapturerSource, audio: boolean } | null>}
  */
-async function pickSource(audioRequested) {
+async function pickSource(audioRequested, tipo = 'screen') {
   const sources = await desktopCapturer.getSources({
     types: ['screen', 'window'],
     thumbnailSize: { width: 320, height: 180 },
@@ -463,6 +480,7 @@ async function pickSource(audioRequested) {
   picker.setMenu(null);
 
   const payload = {
+    kind: tipo,
     // Capturar o áudio do sistema só é suportado no Windows.
     audioSupported: audioRequested && process.platform === 'win32',
     // Com o módulo nativo, o som vai sem as vozes da chamada; sem ele, vai a mistura inteira.

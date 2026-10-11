@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { describeStats, taxaRedonda } from '../src/streamStats.js';
+import { describeStats, proximoFluido, taxaRedonda } from '../src/streamStats.js';
 
 // ===================================================================================================
 // O NÚMERO DE QUADROS NÃO PODE FAZER UMA TRANSMISSÃO SAUDÁVEL PARECER QUEBRADA.
@@ -55,4 +55,34 @@ describe('a linha do formato', () => {
   // Antes da segunda medição não há taxa nenhuma, e um "0 fps" assustaria mais do que a ausência.
   it('sem taxa ainda, mostra só o tamanho', () => assert.equal(describeStats(stats(720, 0)), '720p'));
   it('sem imagem, não há o que dizer', () => assert.equal(describeStats(stats(0, 30)), null));
+});
+
+// O Fluido que não aguenta os 60 cai para 30 sozinho — antes era um aviso com botão, e o problema
+// (que só quem assiste vê) ficava por conta de quem transmite.
+describe('o Fluido cai para 30 quando não aguenta', () => {
+  const inicio = { apertos: 0, em30: false };
+  const apertado = { fps: 38, limitedBy: 'cpu' as const };
+
+  it('três medições apertadas seguidas derrubam; duas não', () => {
+    const duas = proximoFluido(proximoFluido(inicio, apertado), apertado);
+    assert.equal(duas.em30, false);
+    assert.equal(proximoFluido(duas, apertado).em30, true);
+  });
+
+  it('uma medição boa no meio zera a conta: um soluço não derruba', () => {
+    const duas = proximoFluido(proximoFluido(inicio, apertado), apertado);
+    const folga = proximoFluido(duas, { fps: 58, limitedBy: 'none' });
+    assert.deepEqual(folga, inicio);
+  });
+
+  it('quadros baixos SEM aperto não derrubam: é tela parada, não máquina fraca', () => {
+    let estado = inicio;
+    for (let i = 0; i < 5; i++) estado = proximoFluido(estado, { fps: 12, limitedBy: 'none' });
+    assert.equal(estado.em30, false);
+  });
+
+  it('depois de cair, não volta a subir', () => {
+    const caiu = { apertos: 3, em30: true };
+    assert.equal(proximoFluido(caiu, { fps: 60, limitedBy: 'none' }).em30, true);
+  });
 });

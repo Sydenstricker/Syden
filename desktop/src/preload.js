@@ -5,8 +5,18 @@ const { contextBridge, ipcRenderer } = require('electron');
 // O nome da janela escolhida no seletor. Fica guardado aqui, e não entregue por evento, porque quem
 // precisa dele (o site) só vai perguntar depois que a transmissão começar — e aí o evento já passou.
 let ultimaTelaEscolhida = null;
-ipcRenderer.on('tela:escolhida', (_event, nome) => {
-  ultimaTelaEscolhida = nome;
+// A caixinha "compartilhar áudio" do seletor, na mesma escolha. null = app antigo, que não contava.
+let ultimoSomEscolhido = null;
+ipcRenderer.on('tela:escolhida', (_event, escolha) => {
+  // Versões antigas do processo principal mandavam só o nome; este preload vai junto com ele, mas o
+  // formato velho não custa nada aceitar.
+  if (typeof escolha === 'string' || escolha === null) {
+    ultimaTelaEscolhida = escolha;
+    ultimoSomEscolhido = null;
+    return;
+  }
+  ultimaTelaEscolhida = escolha.nome ?? null;
+  ultimoSomEscolhido = typeof escolha.som === 'boolean' ? escolha.som : null;
 });
 
 contextBridge.exposeInMainWorld('sydenDesktop', {
@@ -18,6 +28,19 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
    * passa pelo nosso seletor, então o título é sabido — e é só aqui que ele pode vir.
    */
   telaEscolhida: () => ultimaTelaEscolhida,
+  /**
+   * Se a caixinha "compartilhar áudio" ficou marcada no seletor.
+   *
+   * Com o módulo de som, o som da transmissão não vem do seletor: o site liga a captura por fora
+   * (screenAudio, abaixo). Sem esta resposta o site ligava SEMPRE, e desmarcar a caixinha não tirava
+   * o som — que era justamente a saída para não levar as vozes do Discord junto.
+   */
+  somEscolhido: () => ultimoSomEscolhido,
+  /**
+   * O que o menu do Syden pediu ("tela inteira" ou "uma janela"), para o seletor abrir nessa aba.
+   * Síncrono de propósito: tem de chegar ao processo principal ANTES do pedido de captura.
+   */
+  prepararSeletor: (tipo) => ipcRenderer.sendSync('tela:tipo', tipo),
   /**
    * Os idiomas preferidos do sistema, em ordem — a mesma coisa que `navigator.languages` no navegador.
    *
