@@ -148,7 +148,6 @@ export default {
   'Ativar microfone': 'မိုက်ခရိုဖုန်း ဖွင့်ရန်',
   'Aurora': 'ဝင်းလက်ရောင်',
   'Ausente': 'မရှိ',
-  'Automático': 'အလိုအလျောက်',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden ကို ချုံ့ထားချိန်၊ နောက်ကွယ်မှာ ရှိချိန် သို့မဟုတ် တခြားချန်နယ်မှာ ရှိချိန် မက်ဆေ့ချ်အသစ်များကို အသိပေးသည်။',
   'Azul claro.': 'အပြာနု။',
@@ -211,7 +210,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ကိုယ်ပိုင်တစ်ခု စတင်ပါ၊ သို့မဟုတ် တစ်ယောက်ယောက် ပေးထားတဲ့ ကုဒ်နဲ့ သူတို့ဆီ ဝင်ပါ။',
   'Começo': 'အစ',
-  'Como a imagem é comprimida': 'ပုံကို ချုံ့ပုံ',
   'Como administrador, você pode remover membros que não são administradores.': 'စီမံသူအနေနဲ့ စီမံသူ မဟုတ်တဲ့ အဖွဲ့ဝင်များကို ဖယ်ရှားနိုင်ပါတယ်။',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.': 'ပိုင်ရှင်အနေနဲ့ ဘယ်သူ စီမံမလဲ ရွေးနိုင်ပြီး မည်သူ့ကိုမဆို ဖယ်ရှားနိုင်ပါတယ်။',
   'Como vai ficar': 'ဘယ်လိုဖြစ်မလဲ',
@@ -247,7 +245,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'လည်နေတဲ့ ပန်ကာရွက်လို အသံကို အပိုင်းပိုင်း ဖြတ်သည်။',
   'Cortando…': 'ဖြတ်နေသည်…',
   'Cosmos': 'စကြဝဠာ',
-  'costuma usar a placa': 'များသောအားဖြင့် ဂရပ်ဖစ်ကတ်ကို သုံးသည်',
   'Criar a minha': 'ကိုယ်ပိုင် ဖန်တီးရန်',
   'Criar canal': 'ချန်နယ် ဖန်တီးရန်',
   'Criar tópico': 'ခေါင်းစဉ် ဖန်တီးရန်',
@@ -546,8 +543,6 @@ export default {
   'Este clipe não tem som.': 'ဒီကလစ်မှာ အသံမပါပါ။',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': 'ဒါက စကားဝိုင်းရဲ့ အစပါ။ ဒီမှာ ရေးတာကို ပါဝင်သူများသာ မြင်ရပါတယ်။',
   'Este é o começo do canal.': 'ဒါက ချန်နယ်ရဲ့ အစပါ။',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'ဒီဘရောက်ဇာက ဘယ်ကုဒ်ဒါ ပိုကောင်းလဲ မဖြေပါ။ အလိုအလျောက်မှာ နေရာတိုင်း အလုပ်လုပ်တဲ့ VP8 ကို သုံးပါမယ်။',
   'Europa': 'ဥရောပ',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.': 'စပီကာ သုံးတဲ့အခါ တခြားသူများ ကိုယ့်အသံကို ပြန်မကြားရအောင် ကာကွယ်သည်။',
   'Ex.: Chegou!': 'ဥပမာ- ရောက်ပြီ!',
@@ -574,11 +569,9 @@ export default {
   'Fechar tópico': 'ခေါင်းစဉ် ပိတ်ရန်',
   'Fica assim:': 'ဒီလို ဖြစ်ပါမယ်-',
   'Fim': 'အဆုံး',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'ပရိုဆက်ဆာပေါ် ရောက်သွားရင်တောင် H.264 ကို သုံးမြဲ သုံးသည်။',
   'Floresta': 'သစ်တော',
   'Fluido': 'ချောမွေ့',
   'Folha': 'သစ်ရွက်',
-  'Funciona em tudo. Roda no processador.': 'နေရာတိုင်း အလုပ်လုပ်သည်။ ပရိုဆက်ဆာပေါ်မှာ အလုပ်လုပ်သည်။',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ခေါ်ဆိုစဉ် Syden ကို ချုံ့ထားရင်တောင် အလုပ်လုပ်ပါတယ်-',
   'Fundo do perfil': 'ပရိုဖိုင် နောက်ခံ',
   'Ganha fazendo alguma coisa no Syden': 'Syden မှာ တစ်ခုခုလုပ်ပြီး ရရှိသည်',
@@ -692,10 +685,6 @@ export default {
   'Nenhum som com esse nome.': 'ဒီအမည်နဲ့ အသံ မရှိပါ။',
   'Nenhuma denúncia até agora.': 'ယခုထိ တိုင်ကြားချက် မရှိပါ။',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.': 'သီချင်း မရှိသေးပါ။ အဖွဲ့သီဆိုဖို့ သင့်မှာရှိတဲ့ ဖိုင်တစ်ခု တင်ပါ။',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'ဒီကွန်ပျူတာမှာ အလိုအလျောက်- ဂရပ်ဖစ်ကတ်ဖြင့် H.264။ ဂိမ်းအတွက် ပရိုဆက်ဆာ အများဆုံး ချန်ထားနိုင်တဲ့ နည်းပါ။',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'ဒီကွန်ပျူတာမှာ အလိုအလျောက်- ပရိုဆက်ဆာဖြင့် VP8။ ဂရပ်ဖစ်ကတ်က ဒီပုံအရွယ်အစားမှာ H.264 ကို မလုပ်နိုင်ပါ။',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'သင့်ထုတ်လွှင့်မှုကို ဘယ်သူမှ မဖွင့်ရသေးပါ။ Syden က တစ်ယောက်ယောက် ကြည့်မှသာ ပုံကို ကုဒ်လုပ်ပါတယ် — ဒါကြောင့် ဒီမှာ ကိန်းဂဏန်း မရှိပါ။',
   'Ninguém com a palavra ainda': 'စကားပြောခွင့် ဘယ်သူမှ မရသေး',
@@ -705,8 +694,6 @@ export default {
   'Ninguém na chamada — seja o primeiro': 'ခေါ်ဆိုမှုထဲ ဘယ်သူမှ မရှိ — ပထမဆုံး ဝင်လိုက်ပါ',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.': 'လောလောဆယ် အကြံပြုစရာ လူမရှိပါ — လူတွေနဲ့ သိကျွမ်းဖို့ အသိုင်းအဝိုင်းတစ်ခုထဲ ဝင်ပါ။',
   'Ninguém respondeu neste tópico ainda.': 'ဒီခေါင်းစဉ်မှာ ဘယ်သူမှ မဖြေရသေးပါ။',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'အလိုအလျောက်မှာ Syden က ထုတ်လွှင့်မှုတိုင်းမတိုင်ခင် ရွေးထားတဲ့အရွယ်အစားမှာ ဂရပ်ဖစ်ကတ်က H.264 လုပ်နိုင်လား ကွန်ပျူတာကို မေးပြီး လုပ်နိုင်မှသာ သုံးပါတယ်။ နှစ်ခုကို နှိုင်းယှဉ်ချင်တာ မဟုတ်ရင် ဒီအတိုင်း ထားပါ။ နောက်မျှဝေမှုကစပြီး သက်ရောက်ပါမယ်။',
   'Noite estrelada': 'ကြယ်စုံည',
   'Nome': 'အမည်',
   'Nome alterado.': 'အမည် ပြောင်းပြီး။',
@@ -728,7 +715,6 @@ export default {
   'O cartão liso.': 'ကတ် ရိုးရိုး။',
   'O céu inteiro girando bem devagar.': 'ကောင်းကင်တစ်ခုလုံး အလွန်ဖြည်းဖြည်း လည်နေသည်။',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ကလစ်က ချက်အတွက် ကြီးလွန်းပါတယ်။ ပိုတိုတဲ့ အပိုင်း ရွေးပါ။',
-  'o de sempre': 'မူလအတိုင်း',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'ဘရောက်ဇာက ဒီဆိုက်ရဲ့ အသိပေးချက်များကို ပိတ်ထားပါတယ်။ လိပ်စာဘေးက သော့ပုံမှာ ခွင့်ပြုပြီး စာမျက်နှာကို ပြန်ဖွင့်ပါ။',
   'O nome como sempre foi.': 'အမည် အမြဲတမ်းလိုပဲ။',
@@ -832,7 +818,6 @@ export default {
   'Querem falar': 'ပြောချင်သူများ',
   'Rádio de avião': 'လေယာဉ် ရေဒီယို',
   'Recado': 'မှတ်စု',
-  'recomendado': 'အကြံပြု',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'လူအများစုအတွက် အကြံပြုပါတယ်။ ကြည့်သူက လိုအပ်ရင် အရည်အသွေး လျှော့နိုင်ပါတယ်။',
   'Reconectando ao servidor…': 'ဆာဗာနဲ့ ပြန်ချိတ်ဆက်နေသည်…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ကီးဘုတ်၊ ပန်ကာ၊ ယာဉ်ကြောလို နောက်ခံဆူညံသံများကို လျှော့ချသည်။',
@@ -1017,7 +1002,6 @@ export default {
     'အာဏာပိုင်တောင်းဆိုမှု ရှိခဲ့ရင်အတွက် သင်ရေးခဲ့တာရဲ့ မိတ္တူကို အက်ပ်ပြင်ပမှာ ရက် ၉၀ ထားပါတယ်။ Syden ကနေ ဘယ်သူမှ မဖတ်ပါ။',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'ကျယ်တဲ့ပုံ၊ 1200 × 300 သို့မဟုတ် အလားတူ။ လှုပ်ရှား GIF လည်း ရပြီး တကယ် လှုပ်ပါတယ်။ မျက်နှာဖုံး မရှိရင် ကြိုဆိုရေးမှာ ရွေးထားတဲ့ ပုံ ရှိပါမယ်။',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'ဂရပ်ဖစ်ကတ် နိုင်ရင် သူ့ကိုသုံးပြီး မနိုင်ရင် ပရိုဆက်ဆာကို သုံးသည်။',
   'Usar': 'ဝတ်ရန်',
   'Uso do servidor': 'ဆာဗာ အသုံးပြုမှု',
   'Vale a partir do próximo compartilhamento.': 'နောက်မျှဝေမှုကစပြီး သက်ရောက်သည်။',

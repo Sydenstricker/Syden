@@ -149,7 +149,6 @@ export default {
   'Ativar microfone': 'Skakel mikrofoon aan',
   'Aurora': 'Aurora',
   'Ausente': 'Weg',
-  'Automático': 'Outomaties',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Laat weet van nuwe boodskappe wanneer Syden geminimeer is, in die agtergrond is of in ’n ander kanaal.',
   'Azul claro.': 'Ligblou.',
@@ -217,7 +216,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Begin jou eie, of sluit by iemand anders s’n aan met die kode wat hulle vir jou gegee het.',
   'Começo': 'Begin',
-  'Como a imagem é comprimida': 'Hoe die beeld saamgepers word',
   'Como administrador, você pode remover membros que não são administradores.':
     'As administrateur kan jy lede verwyder wat nie administrateurs is nie.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -255,7 +253,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Kap die stem in slae op, soos draaiende lemme.',
   'Cortando…': 'Knip…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'gebruik gewoonlik die grafiese kaart',
   'Criar a minha': 'Skep my eie',
   'Criar canal': 'Skep kanaal',
   'Criar tópico': 'Skep draad',
@@ -567,8 +564,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Dit is die begin van die gesprek. Net wie daarin is, sien wat hier geskryf word.',
   'Este é o começo do canal.': 'Dit is die begin van die kanaal.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Hierdie blaaier sê nie watter enkodeerder beter is nie. Op outomaties bly dit VP8, wat oral werk.',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Keer dat die ander hul eie stem terughoor wanneer jy ’n luidspreker gebruik.',
@@ -597,11 +592,9 @@ export default {
   'Fechar tópico': 'Maak draad toe',
   'Fica assim:': 'Dit lyk so:',
   'Fim': 'Einde',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Hou by H.264, selfs as dit op die verwerker beland.',
   'Floresta': 'Woud',
   'Fluido': 'Vloeiend',
   'Folha': 'Blaar',
-  'Funciona em tudo. Roda no processador.': 'Werk oral. Loop op die verwerker.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Werk selfs met Syden geminimeer, tydens ’n oproep:',
   'Fundo do perfil': 'Profielagtergrond',
   'Ganha fazendo alguma coisa no Syden': 'Verdien deur iets in Syden te doen',
@@ -724,10 +717,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Nog geen klagtes nie.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Nog geen liedjies nie. Laai ’n lêer op wat jy het, sodat die span kan sing.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Op hierdie rekenaar, op outomaties: H.264 deur die grafiese kaart. Dit laat die meeste verwerker vir die speletjie oor.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Op hierdie rekenaar, op outomaties: VP8 deur die verwerker. Die grafiese kaart enkodeer nie H.264 in hierdie beeldgrootte nie.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Niemand het jou uitsending nog oopgemaak nie. Syden enkodeer die beeld net wanneer iemand kyk — daarom is daar hier geen syfers nie.',
   'Ninguém com a palavra ainda': 'Niemand het nog die woord nie',
@@ -738,8 +727,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Nog niemand om voor te stel nie — sluit by ’n gemeenskap aan om mense te leer ken.',
   'Ninguém respondeu neste tópico ainda.': 'Niemand het nog in hierdie draad geantwoord nie.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Op outomaties vra Syden die rekenaar voor elke uitsending of H.264 in die gekose grootte deur die grafiese kaart kan gaan — en gebruik dit net as dit kan. Los dit so, tensy jy die twee wil vergelyk. Geld vanaf die volgende deel.',
   'Noite estrelada': 'Sterrenag',
   'Nome': 'Naam',
   'Nome alterado.': 'Naam verander.',
@@ -761,7 +748,6 @@ export default {
   'O cartão liso.': 'Die gladde kaart.',
   'O céu inteiro girando bem devagar.': 'Die hele hemel wat baie stadig draai.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Die snit is te groot vir die klets. Kies ’n korter stuk.',
-  'o de sempre': 'die gewone',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Die blaaier het hierdie webwerf se kennisgewings geblokkeer. Gee toestemming by die slot langs die adres en herlaai die bladsy.',
   'O nome como sempre foi.': 'Die naam soos dit nog altyd was.',
@@ -872,7 +858,6 @@ export default {
   'Querem falar': 'Wil praat',
   'Rádio de avião': 'Vliegtuigradio',
   'Recado': 'Kennisgewing',
-  'recomendado': 'aanbeveel',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Aanbeveel vir die meeste. Wie kyk, kan die kwaliteit verlaag indien nodig.',
   'Recompensa': 'Beloning',
@@ -1059,8 +1044,6 @@ export default {
     '’n Breë prent, 1200 by 300 of daaromtrent. ’n Geanimeerde GIF werk, en beweeg regtig. Sonder voorblad bly die kuns wat jy by die welkomskerm gekies het.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Een reël of kennisgewing per lyn: die nuwelingshaas lees hulle een vir een.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Gebruik die grafiese kaart wanneer dit kan, en die verwerker wanneer nie.',
   'Usar': 'Gebruik',
   'Uso do servidor': 'Bedienergebruik',
   'Vale a partir do próximo compartilhamento.': 'Geld vanaf die volgende deel.',

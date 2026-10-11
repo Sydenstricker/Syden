@@ -149,7 +149,6 @@ export default {
   'Ativar microfone': 'Maayikiroofoonii banadhu',
   'Aurora': 'Ifa kaabaa',
   'Ausente': 'Hin jiru',
-  'Automático': 'Ofumaan',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Yeroo Syden xiqqaatee, duubatti jiru ykn chaanaalii biraa irra jiru ergaa haaraa sitti hima.',
   'Azul claro.': 'Cuquliisa ifaa.',
@@ -212,7 +211,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Kan kee jalqabi, ykn koodii namni sun siif kenneen kan nama biraa seeni.',
   'Começo': 'Jalqaba',
-  'Como a imagem é comprimida': 'Suuraan akkamitti akka cunqurfamu',
   'Como administrador, você pode remover membros que não são administradores.': 'Akka bulchaatti, miseensota bulchitoota hin taane baasuu ni dandeessa.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.': 'Akka qabeessaatti, eenyu akka bulchu filatta, nama kamiyyuus baasuu ni dandeessa.',
   'Como vai ficar': 'Akkam akka ta’u',
@@ -248,7 +246,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Sagalee akka baala naannawuutti kutaa kutaatti cira.',
   'Cortando…': 'Muraa jira…',
   'Cosmos': 'Uumama',
-  'costuma usar a placa': 'yeroo baay’ee kaardii viidiyoo fayyadama',
   'Criar a minha': 'Kan koo uumi',
   'Criar canal': 'Chaanaalii uumi',
   'Criar tópico': 'Mata duree uumi',
@@ -547,8 +544,6 @@ export default {
   'Este clipe não tem som.': 'Kiliippiin kun sagalee hin qabu.',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': 'Kun jalqaba haasaati. Wanta asitti barreeffame kan argan warra keessa jiran qofa.',
   'Este é o começo do canal.': 'Kun jalqaba chaanaaliiti.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Brawuzariin kun koodii kamtu akka caalu hin himu. Ofumaan VP8 isa bakka hundatti hojjetu fayyadama.',
   'Europa': 'Awurooppaa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.': 'Yeroo ati sagaleessaa fayyadamtu namoonni biroo sagalee ofii akka hin dhageenye ittisa.',
   'Ex.: Chegou!': 'Fkn.: Ga’eera!',
@@ -575,11 +570,9 @@ export default {
   'Fechar tópico': 'Mata duree cufi',
   'Fica assim:': 'Akkas ta’a:',
   'Fim': 'Xumura',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Yoo pirosesarii irratti kufellee H.264 jabeessa.',
   'Floresta': 'Bosona',
   'Fluido': 'Lallaafaa',
   'Folha': 'Baala',
-  'Funciona em tudo. Roda no processador.': 'Bakka hundatti hojjeta. Pirosesarii irratti hojjeta.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Yeroo waamichaa Syden xiqqaatellee ni hojjetu:',
   'Fundo do perfil': 'Duuba piroofaayilii',
   'Ganha fazendo alguma coisa no Syden': 'Syden keessatti waan tokko hojjechuun argama',
@@ -693,10 +686,6 @@ export default {
   'Nenhum som com esse nome.': 'Sagaleen maqaa kana qabu hin jiru.',
   'Nenhuma denúncia até agora.': 'Hanga ammaatti gabaasni hin jiru.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.': 'Ammallee weedduun hin jiru. Akka hiriyoonni weeddisaniif faayilii qabdu olkaa’i.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Kompiitara kana irratti, ofumaan: H.264 kaardii viidiyootiin. Taphaaf pirosesarii baay’ee kan hambisu isa.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Kompiitara kana irratti, ofumaan: VP8 pirosesariin. Kaardiin viidiyoo guddina suuraa kanaan H.264 hin hojjetu.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Ammallee namni tamsaasa kee bane hin jiru. Syden suuraa kan koodessu yeroo namni ilaalu qofa — kanaaf asitti lakkoofsi hin jiru.',
   'Ninguém com a palavra ainda': 'Ammallee namni carraa dubbachuu qabu hin jiru',
@@ -706,8 +695,6 @@ export default {
   'Ninguém na chamada — seja o primeiro': 'Waamicha keessa namni hin jiru — seenii jalqabi',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.': 'Amma namni yaadamu hin jiru — namoota beekuuf hawaasa tokko seeni.',
   'Ninguém respondeu neste tópico ainda.': 'Ammallee namni mata duree kana irratti deebise hin jiru.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Ofumaan, Syden tamsaasa hunda dura kaardiin viidiyoo guddina filatameen H.264 hojjechuu danda’uu isaa kompiitara gaafata — yoo danda’e qofa fayyadama. Lamaan wal bira qabuu yoo hin barbaanne, akkasumatti dhiisi. Qooddii itti aanu irraa jalqabee hojjeta.',
   'Noite estrelada': 'Halkan urjii',
   'Nome': 'Maqaa',
   'Nome alterado.': 'Maqaan jijjiirameera.',
@@ -729,7 +716,6 @@ export default {
   'O cartão liso.': 'Kaardii qulqulluu.',
   'O céu inteiro girando bem devagar.': 'Samiin guutuun baay’ee suuta naannawa.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Kiliippiin haasaaf baay’ee guddaa ta’e. Kutaa xiqqaa filadhu.',
-  'o de sempre': 'kan yeroo hundaa',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Brawuzariin beeksisa marsariitii kanaa cufeera. Qulfii teessoo cinaa jiru irratti hayyami, fuula sanas irra deebi’ii fe’i.',
   'O nome como sempre foi.': 'Maqaa akkuma yeroo hundaa.',
@@ -833,7 +819,6 @@ export default {
   'Querem falar': 'Dubbachuu barbaadu',
   'Rádio de avião': 'Raadiyoo xiyyaaraa',
   'Recado': 'Ergaa sagalee',
-  'recomendado': 'kan gorfame',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Namoota baay’eef gorfame. Warri ilaalan yoo barbaachise qulqullina gadi buusuu danda’u.',
   'Reconectando ao servidor…': 'Sarvarii wajjin irra deebi’ee walqabachaa jira…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Sagalee duubaa akka kiiboordii, bubbisaa fi tiraafikaa hir’isa.',
@@ -1016,7 +1001,6 @@ export default {
     'Garagalchi waan ati barreessitee guyyaa 90 appii alatti tura, yoo aanga’oonni gaafatan jedhee. Namni tokkollee Syden keessaan hin dubbisu.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'Suuraa bal’aa, 1200 × 300 ykn kan isa fakkaatu. GIF sochii qabus ni ta’a, dhuguma ni sochoo’a. Haguuggii malee, suuraa iskiriinii baga nagaan dhuftanii irratti filatte tura.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'Yoo danda’e kaardii viidiyoo, yoo hin dandeenye pirosesarii fayyadama.',
   'Usar': 'Uffadhu',
   'Uso do servidor': 'Fayyadama sarvarii',
   'Vale a partir do próximo compartilhamento.': 'Qooddii itti aanu irraa jalqabee hojjeta.',

@@ -70,7 +70,6 @@ export default {
   'Ativar áudio': 'Nyalakan suara',
   'Ativar microfone': 'Nyalakan mikrofon',
   Ausente: 'Tidak di tempat',
-  'Automático': 'Otomatis',
   'Azul claro.': 'Biru terang.',
   'Azul em movimento.': 'Biru yang bergerak.',
   'Azul fechado, quase roxo.': 'Biru pekat, hampir ungu.',
@@ -107,7 +106,6 @@ export default {
   'Começa a aparecer': 'Mulai muncul',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Bikin punyamu sendiri, atau masuk ke punya orang lain pakai kode yang dia kasih.',
-  'Como a imagem é comprimida': 'Bagaimana gambarnya dipadatkan',
   'Como vai ficar': 'Nanti jadinya begini',
   'Como vão te ver': 'Bagaimana orang lain melihatmu',
   'comum mostra a letra parada, para acompanhar.': 'yang biasa menampilkan liriknya diam, biar bisa diikuti.',
@@ -133,7 +131,6 @@ export default {
   'Copiar link de convite': 'Salin tautan undangan',
   Cor: 'Warna',
   'Cor do nome': 'Warna nama',
-  'costuma usar a placa': 'biasanya memakai kartu grafis',
   'Criar a minha': 'Bikin punyaku',
   'Criar canal': 'Buat saluran',
   'Criar tópico': 'Buat topik',
@@ -403,8 +400,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Ini awal percakapannya. Hanya yang ada di dalamnya yang melihat apa yang ditulis di sini.',
   'Este é o começo do canal.': 'Ini awal salurannya.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Peramban ini tidak menjawab pengode mana yang lebih baik. Di mode otomatis dipakai VP8, yang jalan di mana saja.',
   'Ex.: Chegou!': 'Mis.: Sudah sampai!',
   'ex.: Evidências': 'mis.: Bukti',
   'Ex.: k3m9xq2p': 'Mis.: k3m9xq2p',
@@ -421,10 +416,8 @@ export default {
   'Fechar configurações': 'Tutup pengaturan',
   'Fechar o karaokê': 'Tutup karaoke',
   'Fechar tópico': 'Tutup topik',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Mengunci H.264 meski jatuh ke prosesor.',
   Fluido: 'Mulus',
   'Folha': 'Daun',
-  'Funciona em tudo. Roda no processador.': 'Jalan di mana saja. Pakai prosesor.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Tetap jalan walau Syden diperkecil, saat panggilan:',
   'Ganha fazendo alguma coisa no Syden': 'Didapat dengan melakukan sesuatu di Syden',
   GIF: 'GIF',
@@ -499,10 +492,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Sejauh ini belum ada laporan.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Belum ada lagu. Unggah berkas yang kamu punya biar semua bisa ikut nyanyi.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Di komputer ini, mode otomatis: H.264 lewat kartu grafis. Ini yang menyisakan prosesor paling banyak buat game.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Di komputer ini, mode otomatis: VP8 lewat prosesor. Kartu grafisnya tidak mengode H.264 pada ukuran gambar ini.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Belum ada yang membuka siaranmu. Syden baru mengode gambarnya kalau ada yang menonton — makanya di sini belum ada angka.',
   'Ninguém com a palavra ainda': 'Belum ada yang dapat giliran',
@@ -513,8 +502,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Belum ada yang bisa disarankan — gabung ke komunitas biar kenal orang.',
   'Ninguém respondeu neste tópico ainda.': 'Belum ada yang menjawab di topik ini.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Di mode otomatis, sebelum tiap siaran Syden bertanya ke komputer apakah H.264 keluar lewat kartu grafis pada ukuran yang dipilih — dan hanya memakainya kalau iya. Biarkan begitu, kecuali kamu mau membandingkan keduanya. Berlaku mulai siaran berikutnya.',
   Nome: 'Nama',
   'Nome da comunidade': 'Nama komunitas',
   'Nome de usuário': 'Nama pengguna',
@@ -531,7 +518,6 @@ export default {
     'Salurannya hilang dari pandangan semua orang beserta pesan-pesannya. Kamu bisa mengembalikannya dalam {dias} hari, di Pengaturan → Komunitas → Tempat sampah.',
   'O cartão liso.': 'Kartu polos.',
   'O céu inteiro girando bem devagar.': 'Seluruh langit berputar sangat perlahan.',
-  'o de sempre': 'yang biasa',
   'o nome exato da pessoa': 'nama persis orangnya',
   'O nome muda de cor devagar.': 'Nama berubah warna perlahan.',
   'O que aconteceu?': 'Apa yang terjadi?',
@@ -605,7 +591,6 @@ export default {
   'Quente, mas sem gritar.': 'Hangat, tapi tidak berteriak.',
   'Querem falar': 'Ingin bicara',
   Recado: 'Pesan',
-  recomendado: 'disarankan',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Disarankan untuk kebanyakan orang. Yang menonton bisa menurunkan kualitas kalau perlu.',
   'Reconectando ao servidor…': 'Menyambung ulang ke server…',
@@ -726,8 +711,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'Tempat baru, dengan salurannya sendiri, dan kamu yang menentukan siapa masuk.',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'Tempat baru, dengan salurannya sendiri. Kamu memilih siapa yang masuk lewat kode undangan.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Memakai kartu grafis kalau sanggup, dan prosesor kalau tidak.',
   Usar: 'Pakai',
   'Uso do servidor': 'Pemakaian server',
   'Vale a partir do próximo compartilhamento.': 'Berlaku mulai siaran berikutnya.',

@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'Vklopi mikrofon',
   'Aurora': 'Polarni sij',
   'Ausente': 'Nisem tu',
-  'Automático': 'Samodejno',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Opozori na nova sporočila, ko je Syden pomanjšan, v ozadju ali v drugem kanalu.',
   'Azul claro.': 'Svetlo modra.',
@@ -225,7 +224,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Ustanovi svojo ali se pridruži tuji s kodo, ki ti jo je dala ta oseba.',
   'Começo': 'Začetek',
-  'Como a imagem é comprimida': 'Kako se slika stisne',
   'Como administrador, você pode remover membros que não são administradores.':
     'V vlogi skrbnika lahko odstranjuješ člane, ki niso skrbniki.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -263,7 +261,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Seka glas v udarce, kot vrteče se lopatice.',
   'Cortando…': 'Rezanje…',
   'Cosmos': 'Vesolje',
-  'costuma usar a placa': 'običajno uporablja grafično kartico',
   'Criar a minha': 'Ustanovi svojo',
   'Criar canal': 'Ustvari kanal',
   'Criar tópico': 'Ustvari nit',
@@ -575,8 +572,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'To je začetek pogovora. Kar se piše tukaj, vidijo samo tisti, ki so v njem.',
   'Este é o começo do canal.': 'To je začetek kanala.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ta brskalnik ne pove, kateri kodirnik je boljši. Samodejno ostane VP8, ki deluje povsod.',
   'Europa': 'Evropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Prepreči, da bi drugi slišali svoj glas nazaj, ko uporabljaš zvočnik.',
@@ -605,11 +600,9 @@ export default {
   'Fechar tópico': 'Zapri nit',
   'Fica assim:': 'Videti bo takole:',
   'Fim': 'Konec',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Obdrži H.264, tudi če konča na procesorju.',
   'Floresta': 'Gozd',
   'Fluido': 'Tekoče',
   'Folha': 'List',
-  'Funciona em tudo. Roda no processador.': 'Deluje povsod. Teče na procesorju.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Delujejo tudi s pomanjšanim Sydenom, med klicem:',
   'Fundo do perfil': 'Ozadje profila',
   'Ganha fazendo alguma coisa no Syden': 'Pridobi se s tem, da v Sydenu nekaj narediš',
@@ -732,10 +725,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Zaenkrat ni prijav.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Zaenkrat ni pesmi. Naloži datoteko, ki jo imaš, da bo ekipa zapela.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Na tem računalniku samodejno: H.264 prek grafične kartice. Tako za igro ostane največ procesorja.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Na tem računalniku samodejno: VP8 prek procesorja. Grafična kartica v tej velikosti slike ne kodira H.264.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Tvojega prenosa še nihče ni odprl. Syden kodira sliko samo, ko nekdo gleda — zato tukaj ni številk.',
   'Ninguém com a palavra ainda': 'Zaenkrat nihče nima besede',
@@ -746,8 +735,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Zaenkrat ni nikogar za predlagati — pridruži se skupnosti in spoznaj ljudi.',
   'Ninguém respondeu neste tópico ainda.': 'V tej niti še nihče ni odgovoril.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Samodejno Syden pred vsakim prenosom vpraša računalnik, ali gre H.264 prek grafične kartice v izbrani velikosti — in ga uporabi samo, če gre. Pusti tako, razen če želiš primerjati oba. Velja od naslednje delitve naprej.',
   'Noite estrelada': 'Zvezdnata noč',
   'Nome': 'Ime',
   'Nome alterado.': 'Ime spremenjeno.',
@@ -769,7 +756,6 @@ export default {
   'O cartão liso.': 'Gladka kartica.',
   'O céu inteiro girando bem devagar.': 'Celo nebo se zelo počasi vrti.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Posnetek je prevelik za klepet. Izberi krajši odsek.',
-  'o de sempre': 'običajno',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Brskalnik je blokiral obvestila te strani. Dovoli jih pri ključavnici ob naslovu in znova naloži stran.',
   'O nome como sempre foi.': 'Ime kot vedno.',
@@ -880,7 +866,6 @@ export default {
   'Querem falar': 'Želijo govoriti',
   'Rádio de avião': 'Letalski radio',
   'Recado': 'Obvestilo',
-  'recomendado': 'priporočeno',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Priporočeno za večino. Gledalci lahko po potrebi znižajo kakovost.',
   'Recompensa': 'Nagrada',
@@ -1067,8 +1052,6 @@ export default {
     'Široka slika, 1200 × 300 ali podobno. Animiran GIF gre tudi in se res premika. Brez naslovnice ostane slika, izbrana za pozdrav.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Eno pravilo ali obvestilo na vrstico: zajec novinca jih prebere enega za drugim.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Uporablja grafično kartico, ko zmore, in procesor, ko ne.',
   'Usar': 'Uporabi',
   'Uso do servidor': 'Uporaba strežnika',
   'Vale a partir do próximo compartilhamento.': 'Velja od naslednje delitve naprej.',

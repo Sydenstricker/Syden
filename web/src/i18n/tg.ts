@@ -156,7 +156,6 @@ export default {
   'Ativar microfone': 'Фаъол кардани микрофон',
   'Aurora': 'Шафақи қутбӣ',
   'Ausente': 'Дар ҷой нестам',
-  'Automático': 'Худкор',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Вақте ки Syden хурд карда шудааст, дар пасзамина ё дар канали дигар аст, дар бораи паёмҳои нав огоҳ мекунад.',
   'Azul claro.': 'Кабуди равшан.',
@@ -224,7 +223,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Анҷумани худро оғоз кунед, ё бо рамзе, ки касе ба шумо дод, ба анҷумани ӯ ворид шавед.',
   'Começo': 'Оғоз',
-  'Como a imagem é comprimida': 'Тасвир чӣ тавр фишурда мешавад',
   'Como administrador, você pode remover membros que não são administradores.':
     'Ҳамчун маъмур, шумо метавонед аъзоёнеро, ки маъмур нестанд, хориҷ кунед.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -262,7 +260,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Овозро бо зарбаҳо мебурад, мисли парраҳои гардон.',
   'Cortando…': 'Бурида мешавад…',
   'Cosmos': 'Кайҳон',
-  'costuma usar a placa': 'одатан видеокортро истифода мебарад',
   'Criar a minha': 'Сохтани анҷумани худ',
   'Criar canal': 'Сохтани канал',
   'Criar tópico': 'Сохтани ришта',
@@ -574,8 +571,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Ин оғози сӯҳбат аст. Он чиро, ки ин ҷо навишта мешавад, танҳо иштирокчиёни сӯҳбат мебинанд.',
   'Este é o começo do canal.': 'Ин оғози канал аст.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ин браузер намегӯяд, ки кадом рамзгузор беҳтар аст. Дар ҳолати худкор VP8 мемонад, ки дар ҳама ҷо кор мекунад.',
   'Europa': 'Аврупо',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Намегузорад, ки дигарон ҳангоми истифодаи баландгӯяк аз ҷониби шумо овози худро баргашта шунаванд.',
@@ -604,11 +599,9 @@ export default {
   'Fechar tópico': 'Пӯшидани ришта',
   'Fica assim:': 'Чунин мешавад:',
   'Fim': 'Анҷом',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'H.264-ро нигоҳ медорад, ҳатто агар он ба протсессор афтад.',
   'Floresta': 'Ҷангал',
   'Fluido': 'Равон',
   'Folha': 'Барг',
-  'Funciona em tudo. Roda no processador.': 'Дар ҳама ҷо кор мекунад. Дар протсессор иҷро мешавад.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Ҳатто вақте ки Syden хурд карда шудааст, ҳангоми занг кор мекунанд:',
   'Fundo do perfil': 'Пасзаминаи профил',
   'Ganha fazendo alguma coisa no Syden': 'Бо иҷрои коре дар Syden ба даст меояд',
@@ -731,10 +724,6 @@ export default {
   'Nenhuma denúncia até agora.': 'То ҳол шикояте нест.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ҳоло суруд нест. Файлеро, ки доред, бор кунед, то дӯстон суруд хонанд.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Дар ин компютер, худкор: H.264 тавассути видеокорт. Ҳамин тавр барои бозӣ бештар протсессор мемонад.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Дар ин компютер, худкор: VP8 тавассути протсессор. Видеокорт дар ин андозаи тасвир H.264-ро рамзгузорӣ намекунад.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Ҳанӯз ҳеҷ кас пахши шуморо накушодааст. Syden тасвирро танҳо вақте рамзгузорӣ мекунад, ки касе тамошо кунад — барои ҳамин ин ҷо рақам нест.',
   'Ninguém com a palavra ainda': 'Ҳанӯз ба ҳеҷ кас сухан дода нашудааст',
@@ -745,8 +734,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Ҳоло касе барои пешниҳод нест — барои шинос шудан бо одамон ба анҷумане ворид шавед.',
   'Ninguém respondeu neste tópico ainda.': 'Дар ин ришта ҳанӯз ҳеҷ кас ҷавоб надодааст.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Дар ҳолати худкор Syden пеш аз ҳар пахш аз компютер мепурсад, ки оё H.264 дар андозаи интихобшуда тавассути видеокорт мегузарад — ва танҳо дар он ҳолат истифода мебарад. Ҳамин тавр гузоред, магар ин ки хоҳед ҳардуро муқоиса кунед. Аз мубодилаи оянда амал мекунад.',
   'Noite estrelada': 'Шаби ситоранок',
   'Nome': 'Ном',
   'Nome alterado.': 'Ном иваз шуд.',
@@ -768,7 +755,6 @@ export default {
   'O cartão liso.': 'Корти ҳамвор.',
   'O céu inteiro girando bem devagar.': 'Тамоми осмон хеле оҳиста давр мезанад.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клип барои чат аз ҳад калон шуд. Қисми кӯтоҳтарро интихоб кунед.',
-  'o de sempre': 'маъмулӣ',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Браузер огоҳиномаҳои ин сомонаро баст. Онҳоро дар қулфи паҳлӯи суроға иҷозат диҳед ва саҳифаро аз нав бор кунед.',
   'O nome como sempre foi.': 'Ном мисли ҳамеша.',
@@ -879,7 +865,6 @@ export default {
   'Querem falar': 'Мехоҳанд гап зананд',
   'Rádio de avião': 'Радиои ҳавопаймо',
   'Recado': 'Эълон',
-  'recomendado': 'тавсияшуда',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Барои аксарият тавсия дода мешавад. Тамошобин дар ҳолати зарурӣ метавонад сифатро паст кунад.',
   'Recompensa': 'Мукофот',
@@ -1066,8 +1051,6 @@ export default {
     'Тасвири паҳн, 1200 ба 300 ё монанди он. GIF-и ҳаракатнок ҳам мешавад ва воқеан ҳаракат мекунад. Бе муқова, расме, ки барои хушомадгӯӣ интихоб кардаед, мемонад.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Дар ҳар сатр як қоида ё эълон: харгӯши навомада онҳоро як-як мехонад.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Вақте ки видеокорт аз ӯҳда мебарояд, онро истифода мебарад, ва вақте ки не, протсессорро.',
   'Usar': 'Истифода бурдан',
   'Uso do servidor': 'Истифодаи сервер',
   'Vale a partir do próximo compartilhamento.': 'Аз мубодилаи оянда амал мекунад.',

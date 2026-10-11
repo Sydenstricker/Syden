@@ -147,7 +147,6 @@ export default {
   'Ativar microfone': 'Ndiz mikrofonin',
   'Aurora': 'Agim polar',
   'Ausente': 'Larg',
-  'Automático': 'Automatik',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Njofton për mesazhe të reja kur Syden është i minimizuar, në sfond ose në një kanal tjetër.',
   'Azul claro.': 'Blu e çelët.',
@@ -215,7 +214,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Fillo tëndin, ose hyr në atë të dikujt me kodin që të dha ai person.',
   'Começo': 'Fillimi',
-  'Como a imagem é comprimida': 'Si ngjeshet imazhi',
   'Como administrador, você pode remover membros que não são administradores.':
     'Si administrator, mund të heqësh anëtarët që nuk janë administratorë.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -253,7 +251,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'E pret zërin në goditje, si helikat që rrotullohen.',
   'Cortando…': 'Po pritet…',
   'Cosmos': 'Kozmos',
-  'costuma usar a placa': 'zakonisht përdor kartën grafike',
   'Criar a minha': 'Krijo timen',
   'Criar canal': 'Krijo kanal',
   'Criar tópico': 'Krijo temë',
@@ -565,8 +562,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Ky është fillimi i bisedës. Atë që shkruhet këtu e shohin vetëm ata që janë në të.',
   'Este é o começo do canal.': 'Ky është fillimi i kanalit.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ky shfletues nuk tregon cili kodues është më i mirë. Në automatik mbetet VP8, që punon kudo.',
   'Europa': 'Evropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Shmang që të tjerët të dëgjojnë zërin e vet kur përdor altoparlant.',
@@ -595,11 +590,9 @@ export default {
   'Fechar tópico': 'Mbyll temën',
   'Fica assim:': 'Do të duket kështu:',
   'Fim': 'Fundi',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'E mban H.264 edhe nëse bie te procesori.',
   'Floresta': 'Pyll',
   'Fluido': 'I rrjedhshëm',
   'Folha': 'Gjethe',
-  'Funciona em tudo. Roda no processador.': 'Punon kudo. Ecën në procesor.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Punojnë edhe kur Syden është i minimizuar, gjatë një thirrjeje:',
   'Fundo do perfil': 'Sfondi i profilit',
   'Ganha fazendo alguma coisa no Syden': 'Fitohet duke bërë diçka në Syden',
@@ -722,10 +715,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Asnjë raportim deri tani.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ende asnjë këngë. Ngarko një skedar që ke, që shokët të këndojnë.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Në këtë kompjuter, në automatik: H.264 përmes kartës grafike. Kështu i mbetet më shumë procesor lojës.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Në këtë kompjuter, në automatik: VP8 përmes procesorit. Karta grafike nuk e kodon H.264 në këtë madhësi imazhi.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Askush nuk e ka hapur ende transmetimin tënd. Syden e kodon imazhin vetëm kur dikush e shikon — prandaj këtu nuk ka numra.',
   'Ninguém com a palavra ainda': 'Askush nuk ka fjalën ende',
@@ -736,8 +725,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Askush për t’u sugjeruar tani — hyr në një komunitet për të njohur njerëz.',
   'Ninguém respondeu neste tópico ainda.': 'Askush nuk është përgjigjur ende në këtë temë.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Në automatik, para çdo transmetimi Syden e pyet kompjuterin nëse H.264 del përmes kartës grafike në madhësinë e zgjedhur — dhe e përdor vetëm kur del. Lëre kështu, përveç nëse do t’i krahasosh të dyja. Vlen nga ndarja e ardhshme.',
   'Noite estrelada': 'Natë me yje',
   'Nome': 'Emri',
   'Nome alterado.': 'Emri u ndryshua.',
@@ -759,7 +746,6 @@ export default {
   'O cartão liso.': 'Karta e thjeshtë.',
   'O céu inteiro girando bem devagar.': 'I gjithë qielli që rrotullohet shumë ngadalë.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klipi doli shumë i madh për bisedën. Zgjidh një pjesë më të shkurtër.',
-  'o de sempre': 'i zakonshmi',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Shfletuesi i bllokoi njoftimet e kësaj faqeje. Lejoji te dryni pranë adresës dhe rifresko faqen.',
   'O nome como sempre foi.': 'Emri si gjithmonë.',
@@ -870,7 +856,6 @@ export default {
   'Querem falar': 'Duan të flasin',
   'Rádio de avião': 'Radio avioni',
   'Recado': 'Njoftim',
-  'recomendado': 'e rekomanduar',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'E rekomanduar për shumicën. Kush shikon mund ta ulë cilësinë nëse i duhet.',
   'Recompensa': 'Shpërblim',
@@ -1057,8 +1042,6 @@ export default {
     'Një imazh i gjerë, 1200 me 300 ose diçka e ngjashme. Edhe GIF i animuar vlen, dhe lëviz vërtet. Pa kopertinë, mbetet imazhi që zgjodhe te mirëseardhja.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Një rregull ose njoftim për rresht: lepuri i të ardhurit i lexon një nga një.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Përdor kartën grafike kur ia del, dhe procesorin kur jo.',
   'Usar': 'Përdor',
   'Uso do servidor': 'Përdorimi i serverit',
   'Vale a partir do próximo compartilhamento.': 'Vlen nga ndarja e ardhshme.',

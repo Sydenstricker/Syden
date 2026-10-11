@@ -156,7 +156,6 @@ export default {
   'Ativar microfone': 'Vula imakrofoni',
   'Aurora': 'I-Aurora',
   'Ausente': 'Akekho',
-  'Automático': 'Okuzenzakalelayo',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Ikwazisa ngemilayezo emisha uma i-Syden incishisiwe, isemuva, noma ukwesinye isiteshi.',
   'Azul claro.': 'Okwesibhakabhaka okukhanyayo.',
@@ -224,7 +223,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Qala owakho, noma ungene kowomunye ngekhodi akunikeze yona.',
   'Começo': 'Ukuqala',
-  'Como a imagem é comprimida': 'Indlela isithombe esicindezelwa ngayo',
   'Como administrador, você pode remover membros que não são administradores.':
     'Njengomphathi, ungakhipha amalungu angewona abaphathi.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -262,7 +260,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Isika izwi libe yizigqi, njengezinsimbi ezijikelezayo zophephela.',
   'Cortando…': 'Iyasika…',
   'Cosmos': 'Umkhathi',
-  'costuma usar a placa': 'ivamise ukusebenzisa ikhadi lemifanekiso',
   'Criar a minha': 'Dala owami',
   'Criar canal': 'Dala isiteshi',
   'Criar tópico': 'Dala uchungechunge',
@@ -574,8 +571,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Lesi yisiqalo sengxoxo. Abasengxoxweni kuphela ababona okubhalwe lapha.',
   'Este é o começo do canal.': 'Lesi yisiqalo sesiteshi.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Lesi siphequluli asisho ukuthi iyiphi i-encoder engcono. Ku-Okuzenzakalelayo kuhlala i-VP8, esebenza yonke indawo.',
   'Europa': 'I-Europe',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Kuvimbela abanye ukuthi bezwe amazwi abo ebuya uma usebenzisa isipikha.',
@@ -604,11 +599,9 @@ export default {
   'Fechar tópico': 'Vala uchungechunge',
   'Fica assim:': 'Kuzoba kanje:',
   'Fim': 'Ukuphela',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Igcina i-H.264 noma ingagcina isebenza eprosesa.',
   'Floresta': 'Ihlathi',
   'Fluido': 'Okushelelayo',
   'Folha': 'Iqabunga',
-  'Funciona em tudo. Roda no processador.': 'Isebenza yonke indawo. Isebenza eprosesa.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Kusebenza noma i-Syden incishisiwe, phakathi nekholi:',
   'Fundo do perfil': 'Ingemuva lephrofayela',
   'Ganha fazendo alguma coisa no Syden': 'Kutholakala ngokwenza okuthile ku-Syden',
@@ -731,10 +724,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Awukho umbiko okwamanje.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ayikabi khona ingoma. Layisha ifayela onalo ukuze abangane bacule.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Kule khompyutha, ku-Okuzenzakalelayo: i-H.264 ngekhadi lemifanekiso. Kushiya iprosesa eningi yomdlalo.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Kule khompyutha, ku-Okuzenzakalelayo: i-VP8 ngeprosesa. Ikhadi lemifanekiso alikwazi ukwenza i-H.264 ngalo sayizi wesithombe.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Akekho osevule ukusakaza kwakho. I-Syden yenza isithombe kuphela uma othile ebuka — yingakho zingekho izinombolo lapha.',
   'Ninguém com a palavra ainda': 'Akekho onethuba lokukhuluma okwamanje',
@@ -745,8 +734,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Akekho ongaphakanyiswa okwamanje — joyina umphakathi ukuze wazi abantu.',
   'Ninguém respondeu neste tópico ainda.': 'Akekho ophendule kulolu chungechunge okwamanje.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Ku-Okuzenzakalelayo i-Syden ibuza ikhompyutha, ngaphambi kokusakaza ngakunye, uma i-H.264 ingaphuma ngekhadi lemifanekiso ngosayizi okhethiwe — futhi iyisebenzisa kuphela uma iphuma. Kushiye kunjalo, ngaphandle uma ufuna ukuqhathanisa kokubili. Kusebenza kusukela ekwabelaneni okulandelayo.',
   'Noite estrelada': 'Ubusuku obunezinkanyezi',
   'Nome': 'Igama',
   'Nome alterado.': 'Igama lishintshiwe.',
@@ -768,7 +755,6 @@ export default {
   'O cartão liso.': 'Ikhadi elingenalutho.',
   'O céu inteiro girando bem devagar.': 'Isibhakabhaka sonke sijikeleza kancane kakhulu.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'I-klip inkulu kakhulu engxoxweni. Khetha ingxenye emfushane.',
-  'o de sempre': 'okujwayelekile',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Isiphequluli sivimbe izaziso zale sayithi. Zivumele kungidi eceleni kwekheli bese ulayisha kabusha ikhasi.',
   'O nome como sempre foi.': 'Igama njengakuqala.',
@@ -879,7 +865,6 @@ export default {
   'Querem falar': 'Bafuna ukukhuluma',
   'Rádio de avião': 'Umsakazo wendiza',
   'Recado': 'Isaziso',
-  'recomendado': 'kunconywa',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Kunconyelwa iningi. Obukayo angehlisa ikhwalithi uma kudingeka.',
   'Recompensa': 'Umklomelo',
@@ -1066,8 +1051,6 @@ export default {
     'Isithombe esibanzi, esingu-1200 ngo-300 noma esifana nalokho. I-GIF enyakazayo iyavunyelwa, futhi iyanyakaza ngempela. Ngaphandle kwekhava, kuhlala umdwebo owukhethe esikrinini sokwamukela.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Umthetho noma isaziso esisodwa emugqeni ngamunye: unogwaja walowo ofikayo ufunda kube kunye ngokulandelana.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Isebenzisa ikhadi lemifanekiso uma likwazi, neprosesa uma lingakwazi.',
   'Usar': 'Sebenzisa',
   'Uso do servidor': 'Ukusetshenziswa kweseva',
   'Vale a partir do próximo compartilhamento.': 'Kusebenza kusukela ekwabelaneni okulandelayo.',

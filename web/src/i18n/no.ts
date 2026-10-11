@@ -155,7 +155,6 @@ export default {
   'Ativar microfone': 'Slå på mikrofon',
   'Aurora': 'Nordlys',
   'Ausente': 'Borte',
-  'Automático': 'Automatisk',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Gir beskjed om nye meldinger når Syden er minimert, i bakgrunnen eller i en annen kanal.',
   'Azul claro.': 'Lyseblå.',
@@ -223,7 +222,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Start ditt eget, eller bli med i noen andres med koden du har fått.',
   'Começo': 'Start',
-  'Como a imagem é comprimida': 'Hvordan bildet komprimeres',
   'Como administrador, você pode remover membros que não são administradores.':
     'Som administrator kan du fjerne medlemmer som ikke er administratorer.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -261,7 +259,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Hakker stemmen opp i slag, som roterende rotorblader.',
   'Cortando…': 'Klipper…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'bruker vanligvis skjermkortet',
   'Criar a minha': 'Lag mitt eget',
   'Criar canal': 'Opprett kanal',
   'Criar tópico': 'Opprett tråd',
@@ -573,8 +570,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Dette er starten på samtalen. Bare de som er med i den, ser det som skrives her.',
   'Este é o começo do canal.': 'Dette er starten på kanalen.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Denne nettleseren sier ikke hvilken koder som er best. Automatisk blir det VP8, som virker overalt.',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Hindrer at andre hører sin egen stemme igjen når du bruker høyttaler.',
@@ -603,11 +598,9 @@ export default {
   'Fechar tópico': 'Lukk tråden',
   'Fica assim:': 'Slik blir det:',
   'Fim': 'Slutt',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Låser H.264 selv om det havner på prosessoren.',
   'Floresta': 'Skog',
   'Fluido': 'Flytende',
   'Folha': 'Løv',
-  'Funciona em tudo. Roda no processador.': 'Virker overalt. Kjører på prosessoren.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Virker selv når Syden er minimert, under et anrop:',
   'Fundo do perfil': 'Profilbakgrunn',
   'Ganha fazendo alguma coisa no Syden': 'Fås ved å gjøre noe i Syden',
@@ -730,10 +723,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Ingen rapporter ennå.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ingen sanger ennå. Last opp en fil du har, så gjengen kan synge.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'På denne datamaskinen, automatisk: H.264 via skjermkortet. Det gir mest prosessorkraft til overs for spillet.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'På denne datamaskinen, automatisk: VP8 via prosessoren. Skjermkortet koder ikke H.264 i denne bildestørrelsen.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Ingen har åpnet sendingen din ennå. Syden koder bare bildet når noen ser på — derfor er det ingen tall her.',
   'Ninguém com a palavra ainda': 'Ingen har ordet ennå',
@@ -744,8 +733,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Ingen å foreslå akkurat nå — bli med i et fellesskap for å bli kjent med folk.',
   'Ninguém respondeu neste tópico ainda.': 'Ingen har svart i denne tråden ennå.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automatisk spør Syden datamaskinen før hver sending om H.264 kan gå via skjermkortet i den valgte størrelsen — og bruker det bare når det går. La det være slik, med mindre du vil sammenligne de to. Gjelder fra neste deling.',
   'Noite estrelada': 'Stjernenatt',
   'Nome': 'Navn',
   'Nome alterado.': 'Navnet er endret.',
@@ -767,7 +754,6 @@ export default {
   'O cartão liso.': 'Det glatte kortet.',
   'O céu inteiro girando bem devagar.': 'Hele himmelen som dreier seg veldig sakte.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klippet ble for stort for chatten. Velg et kortere utdrag.',
-  'o de sempre': 'det vanlige',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Nettleseren har blokkert varsler fra dette nettstedet. Tillat dem ved hengelåsen ved siden av adressen, og last inn siden på nytt.',
   'O nome como sempre foi.': 'Navnet slik det alltid har vært.',
@@ -878,7 +864,6 @@ export default {
   'Querem falar': 'Vil snakke',
   'Rádio de avião': 'Flyradio',
   'Recado': 'Oppslag',
-  'recomendado': 'anbefalt',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Anbefalt for de fleste. Den som ser på, kan senke kvaliteten ved behov.',
   'Recompensa': 'Belønning',
@@ -1065,8 +1050,6 @@ export default {
     'Et bredt bilde, 1200 ganger 300 eller omtrent. Animert GIF går fint, og den beveger seg på ordentlig. Uten forsidebilde blir det bildet du valgte for velkomstskjermen.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Én regel eller beskjed per linje: nykommerens kanin leser dem én om gangen.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Bruker skjermkortet når det klarer det, og prosessoren når det ikke gjør det.',
   'Usar': 'Bruk',
   'Uso do servidor': 'Serverbruk',
   'Vale a partir do próximo compartilhamento.': 'Gjelder fra neste deling.',

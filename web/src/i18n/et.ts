@@ -152,7 +152,6 @@ export default {
   'Ativar microfone': 'Lülita mikrofon sisse',
   'Aurora': 'Virmalised',
   'Ausente': 'Eemal',
-  'Automático': 'Automaatne',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Teavitab uutest sõnumitest, kui Syden on minimeeritud, taustal või mõnes teises kanalis.',
   'Azul claro.': 'Helesinine.',
@@ -220,7 +219,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Loo oma või liitu kellegi teise omaga koodiga, mille see inimene sulle andis.',
   'Começo': 'Algus',
-  'Como a imagem é comprimida': 'Kuidas pilti tihendatakse',
   'Como administrador, você pode remover membros que não são administradores.':
     'Administraatorina saad eemaldada liikmeid, kes pole administraatorid.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -258,7 +256,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Hakib hääle löökideks, nagu pöörlevad rootorilabad.',
   'Cortando…': 'Lõikamine…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'kasutab tavaliselt videokaarti',
   'Criar a minha': 'Loo oma',
   'Criar canal': 'Loo kanal',
   'Criar tópico': 'Loo lõim',
@@ -570,8 +567,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'See on vestluse algus. Siia kirjutatut näevad ainult vestluses osalejad.',
   'Este é o começo do canal.': 'See on kanali algus.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'See brauser ei ütle, milline koodek on parem. Automaatselt jääb VP8, mis töötab kõikjal.',
   'Europa': 'Euroopa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Hoiab ära, et teised kuuleksid oma häält tagasi, kui kasutad kõlarit.',
@@ -600,11 +595,9 @@ export default {
   'Fechar tópico': 'Sulge lõim',
   'Fica assim:': 'Näeb välja nii:',
   'Fim': 'Lõpp',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Jääb H.264 juurde ka siis, kui see satub protsessorile.',
   'Floresta': 'Mets',
   'Fluido': 'Sujuv',
   'Folha': 'Leht',
-  'Funciona em tudo. Roda no processador.': 'Töötab kõikjal. Jookseb protsessoril.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Töötavad kõne ajal ka siis, kui Syden on minimeeritud:',
   'Fundo do perfil': 'Profiili taust',
   'Ganha fazendo alguma coisa no Syden': 'Saad, kui teed Sydenis midagi',
@@ -727,10 +720,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Kaebusi seni pole.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Laule veel pole. Laadi üles mõni oma fail, et seltskond saaks laulda.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Selles arvutis automaatselt: H.264 videokaardi kaudu. Nii jääb mängule kõige rohkem protsessorit.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Selles arvutis automaatselt: VP8 protsessori kaudu. Videokaart ei kodeeri H.264 selles pildisuuruses.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Keegi pole sinu ülekannet veel avanud. Syden kodeerib pilti ainult siis, kui keegi vaatab — seepärast pole siin numbreid.',
   'Ninguém com a palavra ainda': 'Kellelgi pole veel sõna',
@@ -741,8 +730,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Praegu pole kedagi soovitada — liitu kogukonnaga, et inimestega tutvuda.',
   'Ninguém respondeu neste tópico ainda.': 'Selles lõimes pole keegi veel vastanud.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automaatrežiimis küsib Syden enne iga ülekannet arvutilt, kas H.264 saab valitud suuruses videokaardi kaudu minna — ja kasutab seda ainult siis, kui saab. Jäta nii, kui sa just ei taha neid kahte võrrelda. Kehtib järgmisest jagamisest.',
   'Noite estrelada': 'Tähistaevas',
   'Nome': 'Nimi',
   'Nome alterado.': 'Nimi muudetud.',
@@ -764,7 +751,6 @@ export default {
   'O cartão liso.': 'Sile kaart.',
   'O céu inteiro girando bem devagar.': 'Kogu taevas pöörleb väga aeglaselt.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klipp on vestluse jaoks liiga suur. Vali lühem lõik.',
-  'o de sempre': 'tavaline',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Brauser blokeeris selle saidi teavitused. Luba need aadressi kõrval oleva luku juures ja laadi leht uuesti.',
   'O nome como sempre foi.': 'Nimi nagu alati.',
@@ -875,7 +861,6 @@ export default {
   'Querem falar': 'Tahavad rääkida',
   'Rádio de avião': 'Lennukiraadio',
   'Recado': 'Teadaanne',
-  'recomendado': 'soovitatav',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Soovitatav enamikule. Vaataja saab vajadusel kvaliteeti langetada.',
   'Recompensa': 'Tasu',
@@ -1062,8 +1047,6 @@ export default {
     'Lai pilt, 1200 × 300 või sarnane. Sobib ka animeeritud GIF ja see tõesti liigub. Ilma kaanepildita jääb tervituse jaoks valitud pilt.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Üks reegel või teade rea kohta: uustulnuka jänes loeb need ükshaaval ette.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Kasutab videokaarti, kui see hakkama saab, ja protsessorit, kui ei saa.',
   'Usar': 'Kasuta',
   'Uso do servidor': 'Serveri kasutus',
   'Vale a partir do próximo compartilhamento.': 'Kehtib järgmisest jagamisest.',

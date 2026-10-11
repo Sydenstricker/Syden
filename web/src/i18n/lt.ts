@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'Įjungti mikrofoną',
   'Aurora': 'Šiaurės pašvaistė',
   'Ausente': 'Ne prie kompiuterio',
-  'Automático': 'Automatiškai',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Praneša apie naujas žinutes, kai Syden sumažintas, fone arba kitame kanale.',
   'Azul claro.': 'Šviesiai mėlyna.',
@@ -225,7 +224,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Sukurk savo arba prisijunk prie kito su kodu, kurį tau davė tas žmogus.',
   'Começo': 'Pradžia',
-  'Como a imagem é comprimida': 'Kaip suspaudžiamas vaizdas',
   'Como administrador, você pode remover membros que não são administradores.':
     'Administratoriaus vaidmeniu gali šalinti narius, kurie nėra administratoriai.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -263,7 +261,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Kapoja balsą smūgiais, kaip besisukančios sraigto mentės.',
   'Cortando…': 'Karpoma…',
   'Cosmos': 'Kosmosas',
-  'costuma usar a placa': 'paprastai naudoja vaizdo plokštę',
   'Criar a minha': 'Sukurti savo',
   'Criar canal': 'Sukurti kanalą',
   'Criar tópico': 'Sukurti giją',
@@ -575,8 +572,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Tai pokalbio pradžia. Ką čia rašai, mato tik pokalbio dalyviai.',
   'Este é o começo do canal.': 'Tai kanalo pradžia.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ši naršyklė nesako, kuris koduotuvas geresnis. Automatiškai lieka VP8, kuris veikia visur.',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Neleidžia kitiems girdėti savo balso atgal, kai naudoji garsiakalbį.',
@@ -605,11 +600,9 @@ export default {
   'Fechar tópico': 'Uždaryti giją',
   'Fica assim:': 'Atrodys taip:',
   'Fim': 'Pabaiga',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Laiko H.264, net jei jis atsiduria procesoriuje.',
   'Floresta': 'Miškas',
   'Fluido': 'Sklandu',
   'Folha': 'Lapas',
-  'Funciona em tudo. Roda no processador.': 'Veikia visur. Veikia procesoriuje.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Veikia ir su sumažintu Syden, skambučio metu:',
   'Fundo do perfil': 'Profilio fonas',
   'Ganha fazendo alguma coisa no Syden': 'Gaunamas ką nors nuveikus Syden',
@@ -732,10 +725,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Kol kas skundų nėra.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Kol kas dainų nėra. Įkelk turimą failą, kad kompanija galėtų padainuoti.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Šiame kompiuteryje automatiškai: H.264 per vaizdo plokštę. Taip žaidimui lieka daugiausia procesoriaus.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Šiame kompiuteryje automatiškai: VP8 per procesorių. Vaizdo plokštė šio dydžio vaizdo H.264 nekoduoja.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Tavo transliacijos dar niekas neatidarė. Syden koduoja vaizdą tik tada, kai kas nors žiūri — todėl čia nėra skaičių.',
   'Ninguém com a palavra ainda': 'Kol kas niekas neturi žodžio',
@@ -746,8 +735,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Kol kas nėra ką pasiūlyti — prisijunk prie bendruomenės ir susipažink su žmonėmis.',
   'Ninguém respondeu neste tópico ainda.': 'Šioje gijoje dar niekas neatsakė.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automatiškai prieš kiekvieną transliaciją Syden paklausia kompiuterio, ar H.264 gali eiti per vaizdo plokštę pasirinktu dydžiu — ir naudoja jį tik tada, kai gali. Palik taip, nebent nori palyginti abu. Galioja nuo kito bendrinimo.',
   'Noite estrelada': 'Žvaigždėta naktis',
   'Nome': 'Pavadinimas',
   'Nome alterado.': 'Vardas pakeistas.',
@@ -769,7 +756,6 @@ export default {
   'O cartão liso.': 'Lygi kortelė.',
   'O céu inteiro girando bem devagar.': 'Visas dangus labai lėtai sukasi.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klipas per didelis pokalbiui. Pasirink trumpesnę atkarpą.',
-  'o de sempre': 'įprastas',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Naršyklė užblokavo šios svetainės pranešimus. Leisk juos prie spynelės šalia adreso ir perkrauk puslapį.',
   'O nome como sempre foi.': 'Vardas kaip visada.',
@@ -880,7 +866,6 @@ export default {
   'Querem falar': 'Nori kalbėti',
   'Rádio de avião': 'Lėktuvo radijas',
   'Recado': 'Skelbimas',
-  'recomendado': 'rekomenduojama',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekomenduojama daugumai. Žiūrint prireikus galima sumažinti kokybę.',
   'Recompensa': 'Apdovanojimas',
@@ -1067,8 +1052,6 @@ export default {
     'Platus paveikslėlis, 1200 × 300 ar panašus. Tinka ir animuotas GIF, ir jis tikrai juda. Be viršelio lieka pasveikinimui pasirinktas paveikslėlis.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Viena taisyklė ar skelbimas eilutėje: naujoko triušis juos perskaito po vieną.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Naudoja vaizdo plokštę, kai ji susidoroja, o procesorių — kai ne.',
   'Usar': 'Naudoti',
   'Uso do servidor': 'Serverio naudojimas',
   'Vale a partir do próximo compartilhamento.': 'Galioja nuo kito bendrinimo.',

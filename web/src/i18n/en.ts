@@ -253,7 +253,6 @@ export default {
   'Volume da transmissão': 'Stream volume',
   'Som da transmissão': 'Stream audio',
   'Nada é baixado enquanto você não abrir': 'Nothing is downloaded until you open',
-  'Como a imagem é comprimida': 'How the image is compressed',
   'Vale a partir do próximo compartilhamento.': 'Applies from the next share onwards.',
   'Seu computador está segurando a qualidade.': 'Your computer is holding the quality back.',
   'Sua internet está segurando a qualidade.': 'Your connection is holding the quality back.',
@@ -636,7 +635,6 @@ export default {
   "Tela cheia": "Full screen",
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Your stream has no sound. The browser only sends sound if you tick “share audio” in the window where you pick the screen.",
-  "Automático": "Automatic",
   "Medindo…": "Measuring…",
   "Administra a comunidade": "Runs the community",
   "Administradores": "Admins",
@@ -651,26 +649,6 @@ export default {
   "Calar esta transmissão": "Mute this stream",
   "Ouvir esta transmissão de novo": "Unmute this stream",
   "é o que você está enviando": "is what you're sending",
-  "costuma usar a placa":
-    "usually uses the graphics card",
-  "Fixa o H.264 mesmo que ele caia no processador.":
-    "Forces H.264 even when it falls back to the processor.",
-  "Funciona em tudo. Roda no processador.":
-    "Works everywhere. Runs on the processor.",
-  "No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.":
-    "On automatic, Syden asks your computer before each stream whether H.264 comes out of the graphics card at the size you picked — and only uses it when it does. Leave it here unless you want to compare the two. Takes effect from the next share on.",
-  "o de sempre":
-    "the usual one",
-  "recomendado":
-    "recommended",
-  "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
-    "Uses the graphics card when it can handle it, and the processor when it cannot.",
-  "Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.":
-    "This browser won't say which encoder is better. On automatic it stays on VP8, which works everywhere.",
-  "Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.":
-    "On this computer, automatic picks H.264 through the graphics card — the option that leaves the most processor for your game.",
-  "Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.":
-    "On this computer, automatic picks VP8 through the processor. The graphics card does not encode H.264 at this image size.",
   "Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.":
     "Nobody has opened your stream yet. Syden only encodes the image when someone is watching — that is why there are no numbers here.",
   "pela placa de vídeo":

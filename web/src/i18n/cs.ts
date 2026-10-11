@@ -154,7 +154,6 @@ export default {
   'Ativar microfone': 'Zapnout mikrofon',
   'Aurora': 'Polární záře',
   'Ausente': 'Pryč',
-  'Automático': 'Automaticky',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Upozorní na nové zprávy, když je Syden minimalizovaný, na pozadí nebo v jiném kanálu.',
   'Azul claro.': 'Světle modrá.',
@@ -222,7 +221,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Založ si vlastní, nebo se připoj k cizí s kódem, který ti dotyčný dal.',
   'Começo': 'Začátek',
-  'Como a imagem é comprimida': 'Jak se obraz komprimuje',
   'Como administrador, você pode remover membros que não são administradores.':
     'V roli správce můžeš odebírat členy, kteří nejsou správci.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -260,7 +258,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Seká hlas do úderů, jako točící se lopatky vrtule.',
   'Cortando…': 'Stříhá se…',
   'Cosmos': 'Vesmír',
-  'costuma usar a placa': 'obvykle používá grafickou kartu',
   'Criar a minha': 'Založit vlastní',
   'Criar canal': 'Vytvořit kanál',
   'Criar tópico': 'Vytvořit vlákno',
@@ -572,8 +569,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Tohle je začátek konverzace. Co se tu píše, vidí jen ti, kdo v ní jsou.',
   'Este é o começo do canal.': 'Tohle je začátek kanálu.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Tento prohlížeč neříká, který kodér je lepší. Automaticky zůstává VP8, který funguje všude.',
   'Europa': 'Evropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Zabrání tomu, aby ostatní slyšeli vlastní hlas zpátky, když používáš reproduktor.',
@@ -602,11 +597,9 @@ export default {
   'Fechar tópico': 'Zavřít vlákno',
   'Fica assim:': 'Bude to vypadat takhle:',
   'Fim': 'Konec',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Drží H.264, i když skončí na procesoru.',
   'Floresta': 'Les',
   'Fluido': 'Plynulé',
   'Folha': 'List',
-  'Funciona em tudo. Roda no processador.': 'Funguje všude. Běží na procesoru.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Fungují i s minimalizovaným Sydenem, během hovoru:',
   'Fundo do perfil': 'Pozadí profilu',
   'Ganha fazendo alguma coisa no Syden': 'Získává se tím, že v Sydenu něco uděláš',
@@ -729,10 +722,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Zatím žádná nahlášení.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Zatím žádné písničky. Nahraj soubor, který máš, ať si parta zazpívá.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Na tomto počítači automaticky: H.264 přes grafickou kartu. Tak zbude pro hru nejvíc procesoru.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Na tomto počítači automaticky: VP8 přes procesor. Grafická karta v této velikosti obrazu H.264 nekóduje.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Tvůj přenos zatím nikdo neotevřel. Syden kóduje obraz, jen když se někdo dívá — proto tu nejsou čísla.',
   'Ninguém com a palavra ainda': 'Zatím nikdo nemá slovo',
@@ -743,8 +732,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Zatím není koho doporučit — připoj se ke komunitě a poznáš lidi.',
   'Ninguém respondeu neste tópico ainda.': 'V tomto vlákně zatím nikdo neodpověděl.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automaticky se Syden před každým přenosem zeptá počítače, jestli H.264 projde grafickou kartou ve zvolené velikosti — a použije ho, jen když ano. Nech to tak, pokud nechceš obojí porovnat. Platí od příštího sdílení.',
   'Noite estrelada': 'Hvězdná noc',
   'Nome': 'Název',
   'Nome alterado.': 'Jméno změněno.',
@@ -766,7 +753,6 @@ export default {
   'O cartão liso.': 'Hladká karta.',
   'O céu inteiro girando bem devagar.': 'Celé nebe se velmi pomalu otáčí.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip je na chat moc velký. Vyber kratší úsek.',
-  'o de sempre': 'obvyklé',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Prohlížeč zablokoval oznámení tohoto webu. Povol je u zámku vedle adresy a obnov stránku.',
   'O nome como sempre foi.': 'Jméno jako vždycky.',
@@ -877,7 +863,6 @@ export default {
   'Querem falar': 'Chtějí mluvit',
   'Rádio de avião': 'Letecká vysílačka',
   'Recado': 'Oznámení',
-  'recomendado': 'doporučeno',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Doporučeno pro většinu. Diváci si můžou kvalitu v případě potřeby snížit.',
   'Recompensa': 'Odměna',
@@ -1064,8 +1049,6 @@ export default {
     'Široký obrázek, 1200 × 300 nebo podobný. Animovaný GIF jde taky a opravdu se hýbe. Bez obálky zůstane obrázek vybraný pro uvítání.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Jedno pravidlo nebo oznámení na řádek: králík nováčka je přečte jedno po druhém.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Používá grafickou kartu, když to zvládne, a procesor, když ne.',
   'Usar': 'Použít',
   'Uso do servidor': 'Využití serveru',
   'Vale a partir do próximo compartilhamento.': 'Platí od příštího sdílení.',

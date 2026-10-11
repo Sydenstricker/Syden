@@ -70,7 +70,6 @@ export default {
   'Ativar áudio': 'Geluid aanzetten',
   'Ativar microfone': 'Microfoon aanzetten',
   Ausente: 'Afwezig',
-  'Automático': 'Automatisch',
   'Azul claro.': 'Lichtblauw.',
   'Azul em movimento.': 'Blauw in beweging.',
   'Azul fechado, quase roxo.': 'Diep blauw, bijna paars.',
@@ -107,7 +106,6 @@ export default {
   'Começa a aparecer': 'Begint te verschijnen',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Begin je eigen, of ga naar die van iemand anders met de code die je gekregen hebt.',
-  'Como a imagem é comprimida': 'Hoe het beeld wordt gecomprimeerd',
   'Como vai ficar': 'Hoe het wordt',
   'Como vão te ver': 'Hoe anderen je zien',
   'comum mostra a letra parada, para acompanhar.': 'gewoon laat de tekst stilstaan, om mee te lezen.',
@@ -133,7 +131,6 @@ export default {
   'Copiar link de convite': 'Uitnodigingslink kopiëren',
   Cor: 'Kleur',
   'Cor do nome': 'Kleur van je naam',
-  'costuma usar a placa': 'gebruikt meestal de videokaart',
   'Criar a minha': 'Mijn eigen maken',
   'Criar canal': 'Kanaal maken',
   'Criar tópico': 'Draadje maken',
@@ -403,8 +400,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Dit is het begin van het gesprek. Alleen wie erin zit, ziet wat hier geschreven wordt.',
   'Este é o começo do canal.': 'Dit is het begin van het kanaal.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Deze browser zegt niet welke encoder beter is. Op automatisch blijft het VP8, dat overal werkt.',
   'Ex.: Chegou!': 'Bijv.: Hij is er!',
   'ex.: Evidências': 'bijv.: Bewijs',
   'Ex.: k3m9xq2p': 'Bijv.: k3m9xq2p',
@@ -421,10 +416,8 @@ export default {
   'Fechar configurações': 'Instellingen sluiten',
   'Fechar o karaokê': 'Karaoke sluiten',
   'Fechar tópico': 'Draadje sluiten',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Zet H.264 vast, ook als die op de processor terechtkomt.',
   Fluido: 'Vloeiend',
   'Folha': 'Blad',
-  'Funciona em tudo. Roda no processador.': 'Werkt overal. Draait op de processor.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Werken ook als Syden geminimaliseerd is, tijdens een gesprek:',
   'Ganha fazendo alguma coisa no Syden': 'Verdien je door iets in Syden te doen',
   GIF: 'GIF',
@@ -499,10 +492,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Tot nu toe geen meldingen.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Nog geen muziek. Upload een bestand dat je hebt, dan kan iedereen meezingen.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Op deze computer, op automatisch: H.264 via de videokaart. Zo blijft er het meeste processor over voor het spel.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Op deze computer, op automatisch: VP8 via de processor. De videokaart codeert geen H.264 op dit formaat.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Niemand heeft je uitzending nog geopend. Syden codeert het beeld pas als er iemand kijkt — daarom staan hier geen cijfers.',
   'Ninguém com a palavra ainda': 'Nog niemand heeft het woord',
@@ -513,8 +502,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Voorlopig niemand om voor te stellen — ga naar een community om mensen te leren kennen.',
   'Ninguém respondeu neste tópico ainda.': 'Nog niemand heeft in dit draadje geantwoord.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Op automatisch vraagt Syden vóór elke uitzending aan de computer of H.264 via de videokaart gaat op het gekozen formaat — en gebruikt het alleen als dat zo is. Laat het zo staan, tenzij je de twee wilt vergelijken. Geldt vanaf de volgende keer dat je deelt.',
   Nome: 'Naam',
   'Nome da comunidade': 'Naam van de community',
   'Nome de usuário': 'Gebruikersnaam',
@@ -531,7 +518,6 @@ export default {
     'Het kanaal verdwijnt voor iedereen, met de berichten erin. Je kunt het {dias} dagen lang terughalen, bij Instellingen → Community → Prullenbak.',
   'O cartão liso.': 'De kaart effen.',
   'O céu inteiro girando bem devagar.': 'De hele hemel die heel langzaam draait.',
-  'o de sempre': 'de gewone',
   'o nome exato da pessoa': 'de precieze naam van die persoon',
   'O nome muda de cor devagar.': 'De naam verandert langzaam van kleur.',
   'O que aconteceu?': 'Wat is er gebeurd?',
@@ -605,7 +591,6 @@ export default {
   'Quente, mas sem gritar.': 'Warm, maar niet schreeuwend.',
   'Querem falar': 'Willen praten',
   Recado: 'Bericht',
-  recomendado: 'aanbevolen',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Aanbevolen voor de meesten. Wie kijkt kan de kwaliteit omlaag zetten als het nodig is.',
   'Reconectando ao servidor…': 'Opnieuw verbinden met de server…',
@@ -726,8 +711,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'Een nieuwe plek, met eigen kanalen, en jij bepaalt wie erin komt.',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'Een nieuwe plek, met eigen kanalen. Jij bepaalt wie erin komt, met de uitnodigingscode.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Gebruikt de videokaart als die het aankan, en anders de processor.',
   Usar: 'Gebruiken',
   'Uso do servidor': 'Gebruik van de server',
   'Vale a partir do próximo compartilhamento.': 'Geldt vanaf de volgende keer dat je deelt.',

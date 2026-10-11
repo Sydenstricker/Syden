@@ -155,7 +155,6 @@ export default {
   'Ativar microfone': 'Mikrofoni päälle',
   'Aurora': 'Revontulet',
   'Ausente': 'Poissa',
-  'Automático': 'Automaattinen',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Ilmoittaa uusista viesteistä, kun Syden on pienennettynä, taustalla tai toisella kanavalla.',
   'Azul claro.': 'Vaaleansininen.',
@@ -223,7 +222,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Perusta oma, tai liity jonkun toisen yhteisöön koodilla, jonka hän antoi sinulle.',
   'Começo': 'Alku',
-  'Como a imagem é comprimida': 'Miten kuva pakataan',
   'Como administrador, você pode remover membros que não são administradores.':
     'Ylläpitäjänä voit poistaa jäseniä, jotka eivät ole ylläpitäjiä.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -261,7 +259,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Pilkkoo puheäänen iskuiksi, kuin pyörivät roottorinlavat.',
   'Cortando…': 'Leikataan…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'käyttää yleensä näytönohjainta',
   'Criar a minha': 'Perusta oma',
   'Criar canal': 'Luo kanava',
   'Criar tópico': 'Luo ketju',
@@ -573,8 +570,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Tämä on keskustelun alku. Vain sen osallistujat näkevät, mitä tänne kirjoitetaan.',
   'Este é o começo do canal.': 'Tämä on kanavan alku.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Tämä selain ei kerro, mikä koodekki on paras. Automaattisesti käytetään VP8:aa, joka toimii kaikkialla.',
   'Europa': 'Eurooppa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Estää muita kuulemasta omaa puhettaan takaisin, kun käytät kaiutinta.',
@@ -603,11 +598,9 @@ export default {
   'Fechar tópico': 'Sulje ketju',
   'Fica assim:': 'Siitä tulee tällainen:',
   'Fim': 'Loppu',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Pitää H.264:n, vaikka se päätyisi suorittimelle.',
   'Floresta': 'Metsä',
   'Fluido': 'Sujuva',
   'Folha': 'Lehti',
-  'Funciona em tudo. Roda no processador.': 'Toimii kaikkialla. Pyörii suorittimella.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Toimivat puhelun aikana, vaikka Syden olisi pienennettynä:',
   'Fundo do perfil': 'Profiilin tausta',
   'Ganha fazendo alguma coisa no Syden': 'Ansaitaan tekemällä jotain Sydenissä',
@@ -730,10 +723,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Ei raportteja toistaiseksi.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ei vielä kappaleita. Lataa tiedosto, joka sinulla on, niin porukka pääsee laulamaan.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Tällä tietokoneella automaattisesti: H.264 näytönohjaimella. Näin pelille jää eniten suoritinta.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Tällä tietokoneella automaattisesti: VP8 suorittimella. Näytönohjain ei koodaa H.264:ää tässä kuvakoossa.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Kukaan ei ole vielä avannut lähetystäsi. Syden koodaa kuvan vain, kun joku katsoo — siksi täällä ei ole lukuja.',
   'Ninguém com a palavra ainda': 'Kenelläkään ei ole vielä puheenvuoroa',
@@ -744,8 +733,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Ei ketään ehdotettavaa toistaiseksi — liity yhteisöön tutustuaksesi ihmisiin.',
   'Ninguém respondeu neste tópico ainda.': 'Kukaan ei ole vielä vastannut tähän ketjuun.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automaattitilassa Syden kysyy tietokoneelta ennen jokaista lähetystä, onnistuuko H.264 näytönohjaimella valitussa koossa — ja käyttää sitä vain, jos onnistuu. Jätä näin, ellet halua verrata kahta. Tulee voimaan seuraavasta jaosta.',
   'Noite estrelada': 'Tähtiyö',
   'Nome': 'Nimi',
   'Nome alterado.': 'Nimi vaihdettu.',
@@ -767,7 +754,6 @@ export default {
   'O cartão liso.': 'Sileä kortti.',
   'O céu inteiro girando bem devagar.': 'Koko taivas pyörii hyvin hitaasti.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klippi on liian iso chattiin. Valitse lyhyempi pätkä.',
-  'o de sempre': 'tavallinen',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Selain on estänyt tämän sivuston ilmoitukset. Salli ne osoitteen vieressä olevasta lukosta ja lataa sivu uudelleen.',
   'O nome como sempre foi.': 'Nimi kuten aina ennenkin.',
@@ -878,7 +864,6 @@ export default {
   'Querem falar': 'Haluavat puhua',
   'Rádio de avião': 'Lentokoneradio',
   'Recado': 'Tiedote',
-  'recomendado': 'suositeltu',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Suositeltu useimmille. Katsoja voi laskea laatua tarvittaessa.',
   'Recompensa': 'Palkinto',
@@ -1065,8 +1050,6 @@ export default {
     'Leveä kuva, 1200 × 300 tai sinnepäin. Animoitu GIF käy, ja se myös liikkuu. Ilman kansikuvaa näkyy tervetulonäkymään valitsemasi kuva.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Yksi sääntö tai tiedote riviä kohden: tulokkaan kani lukee ne yksi kerrallaan.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Käyttää näytönohjainta, kun se jaksaa, ja suoritinta, kun ei.',
   'Usar': 'Käytä',
   'Uso do servidor': 'Palvelimen käyttö',
   'Vale a partir do próximo compartilhamento.': 'Tulee voimaan seuraavasta jaosta.',

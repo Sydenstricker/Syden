@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'Ieslēgt mikrofonu',
   'Aurora': 'Ziemeļblāzma',
   'Ausente': 'Neesmu šeit',
-  'Automático': 'Automātiski',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Paziņo par jaunām ziņām, kad Syden ir minimizēts, fonā vai citā kanālā.',
   'Azul claro.': 'Gaiši zila.',
@@ -225,7 +224,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Izveido savu vai pievienojies kāda cita kopienai ar kodu, ko tev iedeva šis cilvēks.',
   'Começo': 'Sākums',
-  'Como a imagem é comprimida': 'Kā attēls tiek saspiests',
   'Como administrador, você pode remover membros que não são administradores.':
     'Administratora lomā vari noņemt dalībniekus, kas nav administratori.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -263,7 +261,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Sacērt balsi sitienos, kā rotējoši propellera spārni.',
   'Cortando…': 'Griež…',
   'Cosmos': 'Kosmoss',
-  'costuma usar a placa': 'parasti izmanto videokarti',
   'Criar a minha': 'Izveidot savu',
   'Criar canal': 'Izveidot kanālu',
   'Criar tópico': 'Izveidot pavedienu',
@@ -575,8 +572,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Šis ir sarunas sākums. To, kas šeit rakstīts, redz tikai sarunas dalībnieki.',
   'Este é o começo do canal.': 'Šis ir kanāla sākums.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Šis pārlūks nepasaka, kurš kodeks ir labāks. Automātiski paliek VP8, kas darbojas visur.',
   'Europa': 'Eiropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Neļauj citiem dzirdēt savu balsi atpakaļ, kad izmanto skaļruni.',
@@ -605,11 +600,9 @@ export default {
   'Fechar tópico': 'Aizvērt pavedienu',
   'Fica assim:': 'Izskatīsies šādi:',
   'Fim': 'Beigas',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Paliek pie H.264, pat ja tas nonāk procesorā.',
   'Floresta': 'Mežs',
   'Fluido': 'Plūstoši',
   'Folha': 'Lapa',
-  'Funciona em tudo. Roda no processador.': 'Darbojas visur. Strādā procesorā.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Darbojas arī ar minimizētu Syden, zvana laikā:',
   'Fundo do perfil': 'Profila fons',
   'Ganha fazendo alguma coisa no Syden': 'Iegūst, kaut ko paveicot Syden',
@@ -732,10 +725,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Pagaidām nav sūdzību.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Pagaidām nav dziesmu. Augšupielādē kādu savu failu, lai kompānija varētu dziedāt.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Šajā datorā automātiski: H.264 caur videokarti. Tā spēlei paliek visvairāk procesora.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Šajā datorā automātiski: VP8 caur procesoru. Videokarte šādā attēla izmērā nekodē H.264.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Tavu translāciju vēl neviens nav atvēris. Syden kodē attēlu tikai tad, kad kāds skatās — tāpēc šeit nav skaitļu.',
   'Ninguém com a palavra ainda': 'Pagaidām nevienam nav vārda',
@@ -746,8 +735,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Pagaidām nav ko ieteikt — pievienojies kopienai un iepazīsties ar cilvēkiem.',
   'Ninguém respondeu neste tópico ainda.': 'Šajā pavedienā vēl neviens nav atbildējis.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automātiski pirms katras translācijas Syden pajautā datoram, vai H.264 var iet caur videokarti izvēlētajā izmērā — un izmanto to tikai tad, ja var. Atstāj tā, ja vien negribi abus salīdzināt. Darbojas no nākamās kopīgošanas.',
   'Noite estrelada': 'Zvaigžņota nakts',
   'Nome': 'Nosaukums',
   'Nome alterado.': 'Vārds nomainīts.',
@@ -769,7 +756,6 @@ export default {
   'O cartão liso.': 'Gluda kartīte.',
   'O céu inteiro girando bem devagar.': 'Visas debesis griežas ļoti lēni.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klips ir par lielu tērzēšanai. Izvēlies īsāku fragmentu.',
-  'o de sempre': 'parastais',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Pārlūks bloķēja šīs vietnes paziņojumus. Atļauj tos pie slēdzenes blakus adresei un pārlādē lapu.',
   'O nome como sempre foi.': 'Vārds kā vienmēr.',
@@ -880,7 +866,6 @@ export default {
   'Querem falar': 'Grib runāt',
   'Rádio de avião': 'Lidmašīnas rācija',
   'Recado': 'Vēstījums',
-  'recomendado': 'ieteicams',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Ieteicams lielākajai daļai. Skatoties vajadzības gadījumā var samazināt kvalitāti.',
   'Recompensa': 'Balva',
@@ -1067,8 +1052,6 @@ export default {
     'Plats attēls, 1200 × 300 vai līdzīgs. Der arī animēts GIF, un tas tiešām kustas. Bez vāka attēla paliek sveicienam izvēlētais attēls.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Viens noteikums vai vēstījums rindā: jaunpienācēja trusis tos izlasa pa vienam.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Izmanto videokarti, kad tā tiek galā, un procesoru, kad ne.',
   'Usar': 'Izmantot',
   'Uso do servidor': 'Servera noslodze',
   'Vale a partir do próximo compartilhamento.': 'Darbojas no nākamās kopīgošanas.',

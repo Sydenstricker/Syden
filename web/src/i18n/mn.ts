@@ -168,7 +168,6 @@ export default {
   'Ativar microfone': 'Микрофон асаах',
   'Aurora': 'Туйлын туяа',
   'Ausente': 'Холдсон',
-  'Automático': 'Автомат',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden жижигрүүлсэн, арын горимд эсвэл өөр сувагт байхад шинэ зурвасын талаар мэдэгдэнэ.',
   'Azul claro.': 'Цайвар цэнхэр.',
@@ -236,7 +235,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Өөрийнхөө нийгэмлэгийг эхлүүл, эсвэл хэн нэгний өгсөн кодоор түүний нийгэмлэгт нэгд.',
   'Começo': 'Эхлэл',
-  'Como a imagem é comprimida': 'Зураг хэрхэн шахагдах вэ',
   'Como administrador, você pode remover membros que não são administradores.':
     'Админы хувьд чи админ биш гишүүдийг хасаж чадна.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -275,7 +273,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Эргэлдэх сэнс шиг хоолойг цохилтоор тасална.',
   'Cortando…': 'Тайрч байна…',
   'Cosmos': 'Сансар',
-  'costuma usar a placa': 'ихэвчлэн видео картыг ашигладаг',
   'Criar a minha': 'Өөрийнхөө үүсгэх',
   'Criar canal': 'Суваг үүсгэх',
   'Criar tópico': 'Сэдэв үүсгэх',
@@ -588,8 +585,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Энэ бол ярианы эхлэл. Энд бичсэнийг зөвхөн ярианд оролцогчид харна.',
   'Este é o começo do canal.': 'Энэ бол сувгийн эхлэл.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Энэ хөтөч аль кодлогч илүү болохыг хэлдэггүй. Автомат горимд хаана ч ажилладаг VP8 үлдэнэ.',
   'Europa': 'Европ',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Чи чанга яригч ашиглах үед бусад өөрсдийн хоолойг буцаж сонсохоос сэргийлнэ.',
@@ -618,11 +613,9 @@ export default {
   'Fechar tópico': 'Сэдвийг хаах',
   'Fica assim:': 'Ийм харагдана:',
   'Fim': 'Төгсгөл',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Процессор руу шилжсэн ч H.264-ийг тогтооно.',
   'Floresta': 'Ой',
   'Fluido': 'Жигд',
   'Folha': 'Навч',
-  'Funciona em tudo. Roda no processador.': 'Хаана ч ажиллана. Процессор дээр ажиллана.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Дуудлагын үеэр Syden жижигрүүлсэн байсан ч ажиллана:',
   'Fundo do perfil': 'Профайлын арын зураг',
   'Ganha fazendo alguma coisa no Syden': 'Syden дээр ямар нэг юм хийж авна',
@@ -744,10 +737,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Одоогоор гомдол алга.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Одоогоор дуу алга. Бүгд дуулахын тулд өөрт байгаа файлаа оруул.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Энэ компьютер дээр автомат горим: видео картаар H.264. Ингэвэл тоглоомд хамгийн их процессор үлдэнэ.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Энэ компьютер дээр автомат горим: процессороор VP8. Видео карт энэ хэмжээний зурагт H.264 кодлохгүй.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Чиний дамжуулалтыг хараахан хэн ч нээгээгүй. Syden зөвхөн хэн нэгэн үзэж байхад л зургийг кодолдог — тиймээс энд тоо алга.',
   'Ninguém com a palavra ainda': 'Одоогоор хэн ч үг аваагүй',
@@ -758,8 +747,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Одоогоор санал болгох хүн алга — хүмүүстэй танилцахын тулд нэг нийгэмлэгт нэгд.',
   'Ninguém respondeu neste tópico ainda.': 'Энэ сэдэвт хараахан хэн ч хариулаагүй.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Автомат горимд Syden дамжуулалт бүрийн өмнө компьютероос H.264 сонгосон хэмжээгээр видео картаар гарах эсэхийг асууж — гарвал л ашиглана. Хоёрыг харьцуулахыг хүсэхгүй бол ингээд үлдээ. Дараагийн хуваалцлаас хүчинтэй.',
   'Noite estrelada': 'Одтой шөнө',
   'Nome': 'Нэр',
   'Nome alterado.': 'Нэр өөрчлөгдлөө.',
@@ -781,7 +768,6 @@ export default {
   'O cartão liso.': 'Энгийн карт.',
   'O céu inteiro girando bem devagar.': 'Бүх тэнгэр маш аажуухан эргэлдэнэ.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клип чатад хэт том болчихлоо. Богино хэсэг сонго.',
-  'o de sempre': 'ердийнх',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Хөтөч энэ сайтын мэдэгдлийг хаасан байна. Хаягийн хажуугийн цоожноос зөвшөөрөөд хуудсаа дахин ачаал.',
   'O nome como sempre foi.': 'Нэр, үргэлж байсан шигээ.',
@@ -893,7 +879,6 @@ export default {
   'Querem falar': 'Ярихыг хүсэж байна',
   'Rádio de avião': 'Онгоцны радио',
   'Recado': 'Захиа',
-  'recomendado': 'зөвлөмж болгосон',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Ихэнх хүнд зөвлөж байна. Үзэгчид хэрэгтэй бол чанарыг бууруулж болно.',
   'Recompensa': 'Шагнал',
@@ -1079,8 +1064,6 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     '1200×300 эсвэл түүнтэй ойролцоо өргөн зураг. Хөдөлгөөнт GIF ч болно, жинхэнээсээ хөдөлнө. Нүүр зураггүй бол угтах дэлгэцэд сонгосон зураг чинь үлдэнэ.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Мөр бүрт нэг дүрэм эсвэл сануулга: шинээр ирсэн хүний туулай нэг нэгээр нь уншина.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Видео карт даавал түүнийг, даахгүй бол процессорыг ашиглана.',
   'Usar': 'Ашиглах',
   'Uso do servidor': 'Серверийн ашиглалт',
   'Vale a partir do próximo compartilhamento.': 'Дараагийн хуваалцлаас хүчинтэй.',

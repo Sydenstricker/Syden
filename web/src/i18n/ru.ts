@@ -446,7 +446,6 @@ export default {
   'Testando… os números aparecem em instantes.': 'Проверяем… цифры появятся через мгновение.',
   'Seu computador está segurando a qualidade.': 'Твой компьютер сдерживает качество.',
   'Sua internet está segurando a qualidade.': 'Твой интернет сдерживает качество.',
-  Automático: 'Автоматически',
   'Som da transmissão': 'Звук трансляции',
   'Volume da transmissão': 'Громкость трансляции',
   'Calar esta transmissão': 'Приглушить эту трансляцию',
@@ -485,22 +484,6 @@ export default {
     'Подходит большинству. Тот, кто смотрит, может понизить качество, если нужно.',
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.':
     'Для игр. Отправляет одну картинку, самую лучшую: компьютеру остаётся больше сил на игру, а зрители получают её как есть.',
-  'Como a imagem é comprimida': 'Как сжимается картинка',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'В автоматическом режиме Syden перед каждой трансляцией спрашивает компьютер, идёт ли H.264 через видеокарту при выбранном размере, — и использует его только тогда. Оставь так, если не хочешь сравнивать оба варианта. Действует со следующей демонстрации.',
-  recomendado: 'рекомендуется',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Использует видеокарту, когда она справляется, и процессор, когда нет.',
-  'o de sempre': 'привычный',
-  'Funciona em tudo. Roda no processador.': 'Работает везде. Идёт через процессор.',
-  'costuma usar a placa': 'обычно идёт через видеокарту',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Закрепляет H.264, даже если он окажется на процессоре.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'На этом компьютере в автоматическом режиме: H.264 через видеокарту. Так игре остаётся больше процессора.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'На этом компьютере в автоматическом режиме: VP8 через процессор. Видеокарта не кодирует H.264 при таком размере картинки.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Этот браузер не отвечает, какой кодировщик лучше. В автоматическом режиме остаётся VP8 — он работает везде.',
   'pela placa de vídeo': 'через видеокарту',
   'pelo processador': 'через процессор',
 

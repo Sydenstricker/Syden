@@ -66,7 +66,6 @@ export default {
   'Ativar áudio': 'Washa sauti',
   'Ativar microfone': 'Washa maikrofoni',
   Ausente: 'Sipo',
-  'Automático': 'Kiotomatiki',
   'Azul claro.': 'Buluu hafifu.',
   'Azul em movimento.': 'Buluu inayotembea.',
   'Azul fechado, quase roxo.': 'Buluu nzito, karibu zambarau.',
@@ -102,7 +101,6 @@ export default {
   'Começa a aparecer': 'Huanza kuonekana',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Anzisha yako, au ingia kwenye ya mtu mwingine kwa msimbo aliokupa.',
-  'Como a imagem é comprimida': 'Jinsi picha inavyobanwa',
   'Como vai ficar': 'Itakavyoonekana',
   'Como vão te ver': 'Jinsi watakavyokuona',
   'comum mostra a letra parada, para acompanhar.': 'wa kawaida huonyesha maneno bila kusogea, ili kufuatilia.',
@@ -126,7 +124,6 @@ export default {
   'Copiar link de convite': 'Nakili kiungo cha mwaliko',
   Cor: 'Rangi',
   'Cor do nome': 'Rangi ya jina',
-  'costuma usar a placa': 'kwa kawaida hutumia kadi ya video',
   'Criar a minha': 'Anzisha yangu',
   'Criar canal': 'Unda kituo',
   'Criar tópico': 'Unda mada',
@@ -389,8 +386,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Huu ndio mwanzo wa mazungumzo. Ni walio ndani yake pekee wanaoona kinachoandikwa hapa.',
   'Este é o começo do canal.': 'Huu ndio mwanzo wa kituo.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Kivinjari hiki hakisemi ni kisimbaji kipi bora. Kwenye hali ya kiotomatiki inabaki VP8, inayofanya kazi kila mahali.',
   'Ex.: Chegou!': 'Mf.: Amefika!',
   'ex.: Evidências': 'mf.: Ushahidi',
   'Ex.: k3m9xq2p': 'Mf.: k3m9xq2p',
@@ -406,10 +401,8 @@ export default {
   'Fechar configurações': 'Funga mipangilio',
   'Fechar o karaokê': 'Funga karaoke',
   'Fechar tópico': 'Funga mada',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Hulazimisha H.264 hata kama utaishia kwenye kichakataji.',
   Fluido: 'Laini',
   'Folha': 'Jani',
-  'Funciona em tudo. Roda no processador.': 'Hufanya kazi kila mahali. Hutumia kichakataji.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Hufanya kazi hata Syden ikiwa imepunguzwa, wakati wa simu:',
   'Ganha fazendo alguma coisa no Syden': 'Unapata kwa kufanya kitu katika Syden',
   GIF: 'GIF',
@@ -483,10 +476,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Hakuna ripoti hadi sasa.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Bado hakuna wimbo. Pakia faili ulilonalo ili wenzako waimbe.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Kwenye kompyuta hii, kiotomatiki: H.264 kupitia kadi ya video. Ndiyo inayoacha kichakataji zaidi kwa mchezo.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Kwenye kompyuta hii, kiotomatiki: VP8 kupitia kichakataji. Kadi ya video haisimbi H.264 kwa ukubwa huu wa picha.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Bado hakuna aliyefungua matangazo yako. Syden husimba picha pale tu mtu anapotazama — ndiyo maana hakuna namba hapa.',
   'Ninguém com a palavra ainda': 'Bado hakuna mwenye nafasi ya kuongea',
@@ -497,8 +486,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Hakuna wa kupendekeza kwa sasa — jiunge na jumuiya ili kukutana na watu.',
   'Ninguém respondeu neste tópico ainda.': 'Bado hakuna aliyejibu kwenye mada hii.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Kwenye hali ya kiotomatiki, kabla ya kila matangazo, Syden huuliza kompyuta kama H.264 unatoka kupitia kadi ya video kwa ukubwa uliochaguliwa — na hutumia pale tu unapotoka. Iache hivyo, isipokuwa unataka kulinganisha hizo mbili. Hutumika kuanzia matangazo yajayo.',
   Nome: 'Jina',
   'Nome da comunidade': 'Jina la jumuiya',
   'Nome de usuário': 'Jina la mtumiaji',
@@ -515,7 +502,6 @@ export default {
     'Kituo hutoweka machoni pa kila mtu pamoja na jumbe zake. Unaweza kukirudisha ndani ya siku {dias}, katika Mipangilio → Jumuiya → Pipa la taka.',
   'O cartão liso.': 'Kadi tupu.',
   'O céu inteiro girando bem devagar.': 'Mbingu yote inazunguka polepole sana.',
-  'o de sempre': 'ile ya kawaida',
   'o nome exato da pessoa': 'jina kamili la mtu',
   'O nome muda de cor devagar.': 'Jina linabadilika rangi polepole.',
   'O que aconteceu?': 'Nini kilitokea?',
@@ -587,7 +573,6 @@ export default {
   'Quente, mas sem gritar.': 'Joto, lakini bila kupiga kelele.',
   'Querem falar': 'Wanataka kuongea',
   Recado: 'Ujumbe',
-  recomendado: 'inapendekezwa',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Inapendekezwa kwa wengi. Anayetazama anaweza kushusha ubora akihitaji.',
   'Reconectando ao servidor…': 'Inaunganisha upya na seva…',
@@ -686,8 +671,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'Mahali papya, penye vituo vyake, na wewe unaamua nani anaingia.',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'Mahali papya, penye vituo vyake. Wewe unachagua nani anaingia kwa msimbo wa mwaliko.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Hutumia kadi ya video inapoweza, na kichakataji isipoweza.',
   Usar: 'Tumia',
   'Uso do servidor': 'Matumizi ya seva',
   'Vale a partir do próximo compartilhamento.': 'Hutumika kuanzia kushiriki kujako.',

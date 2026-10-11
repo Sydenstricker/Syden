@@ -171,7 +171,6 @@ export default {
   'Ativar microfone': 'Włącz mikrofon',
   'Aurora': 'Zorza',
   'Ausente': 'Zaraz wracam',
-  'Automático': 'Automatycznie',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Powiadamia o nowych wiadomościach, gdy Syden jest zminimalizowany, w tle albo na innym kanale.',
   'Azul claro.': 'Jasnoniebieski.',
@@ -234,7 +233,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Załóż własną albo dołącz do czyjejś z kodem, który ta osoba ci dała.',
   'Começo': 'Początek',
-  'Como a imagem é comprimida': 'Jak obraz jest kompresowany',
   'Como administrador, você pode remover membros que não são administradores.':
     'Masz rolę administratora: możesz usuwać członków, którzy nie są administratorami.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -272,7 +270,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Tnie głos na uderzenia, jak obracające się łopaty wirnika.',
   'Cortando…': 'Przycinanie…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'zwykle używa karty graficznej',
   'Criar a minha': 'Załóż własną',
   'Criar canal': 'Utwórz kanał',
   'Criar tópico': 'Utwórz wątek',
@@ -571,8 +568,6 @@ export default {
   'Este clipe não tem som.': 'Ten klip nie ma dźwięku.',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': 'To początek rozmowy. Tylko jej uczestnicy widzą, co tu jest napisane.',
   'Este é o começo do canal.': 'To początek kanału.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ta przeglądarka nie mówi, który koder jest lepszy. W trybie automatycznym zostaje VP8, który działa wszędzie.',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Sprawia, że inni nie słyszą z powrotem własnego głosu, gdy używasz głośnika.',
@@ -600,11 +595,9 @@ export default {
   'Fechar tópico': 'Zamknij wątek',
   'Fica assim:': 'Będzie wyglądać tak:',
   'Fim': 'Koniec',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Wymusza H.264, nawet jeśli trafi na procesor.',
   'Floresta': 'Las',
   'Fluido': 'Płynnie',
   'Folha': 'Liść',
-  'Funciona em tudo. Roda no processador.': 'Działa wszędzie. Korzysta z procesora.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Działają także przy zminimalizowanym Syden, podczas połączenia:',
   'Fundo do perfil': 'Tło profilu',
   'Ganha fazendo alguma coisa no Syden': 'Zdobywa się ją, robiąc coś w Syden',
@@ -718,10 +711,6 @@ export default {
   'Nenhum som com esse nome.': 'Brak dźwięku o tej nazwie.',
   'Nenhuma denúncia até agora.': 'Na razie brak zgłoszeń.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.': 'Nie ma jeszcze żadnej piosenki. Prześlij plik, który masz u siebie, żeby ekipa mogła śpiewać.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Na tym komputerze, w trybie automatycznym: H.264 przez kartę graficzną. Tak zostaje najwięcej procesora dla gry.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Na tym komputerze, w trybie automatycznym: VP8 przez procesor. Karta graficzna nie koduje H.264 w tym rozmiarze obrazu.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Nikt jeszcze nie otworzył twojej transmisji. Syden koduje obraz tylko wtedy, gdy ktoś ogląda — dlatego nie ma tu liczb.',
   'Ninguém com a palavra ainda': 'Nikt jeszcze nie ma głosu',
@@ -731,8 +720,6 @@ export default {
   'Ninguém na chamada — seja o primeiro': 'Nikogo nie ma w połączeniu — wejdź i zacznij',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.': 'Na razie nie ma kogo zaproponować — dołącz do społeczności, żeby poznać ludzi.',
   'Ninguém respondeu neste tópico ainda.': 'Nikt jeszcze nie odpowiedział w tym wątku.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'W trybie automatycznym Syden przed każdą transmisją pyta komputer, czy H.264 da się zakodować kartą graficzną w wybranym rozmiarze — i używa go tylko wtedy, gdy się da. Zostaw tak, chyba że chcesz porównać oba. Działa od następnego udostępnienia.',
   'Noite estrelada': 'Gwiaździsta noc',
   'Nome': 'Nazwa',
   'Nome alterado.': 'Nazwa zmieniona.',
@@ -754,7 +741,6 @@ export default {
   'O cartão liso.': 'Gładka karta.',
   'O céu inteiro girando bem devagar.': 'Całe niebo obracające się bardzo powoli.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip jest za duży na czat. Wybierz krótszy fragment.',
-  'o de sempre': 'zwykły',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Przeglądarka zablokowała powiadomienia z tej strony. Odblokuj je w kłódce obok adresu i odśwież stronę.',
   'O nome como sempre foi.': 'Nazwa jak zawsze.',
@@ -858,7 +844,6 @@ export default {
   'Querem falar': 'Chcą mówić',
   'Rádio de avião': 'Radio samolotowe',
   'Recado': 'Nagranie',
-  'recomendado': 'zalecane',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Zalecane dla większości. Oglądający mogą w razie potrzeby obniżyć jakość.',
   'Reconectando ao servidor…': 'Ponowne łączenie z serwerem…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Ogranicza hałas w tle, jak klawiatura, wentylator i ruch uliczny.',
@@ -1041,7 +1026,6 @@ export default {
     'Kopia tego, co piszesz, zostaje przez 90 dni poza aplikacją, na wypadek żądania ze strony organów. Nikt nie czyta jej przez Syden.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'Szeroki obraz, 1200 na 300 lub podobny. Animowany GIF też się nadaje i naprawdę się porusza. Bez okładki zostaje obraz wybrany na ekranie powitalnym.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'Używa karty graficznej, gdy daje radę, a procesora, gdy nie.',
   'Usar': 'Załóż',
   'Uso do servidor': 'Użycie serwera',
   'Vale a partir do próximo compartilhamento.': 'Działa od następnego udostępnienia.',

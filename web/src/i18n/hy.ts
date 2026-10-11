@@ -173,7 +173,6 @@ export default {
   'Ativar microfone': 'Միացնել խոսափողը',
   'Aurora': 'Բևեռափայլ',
   'Ausente': 'Բացակա',
-  'Automático': 'Ավտոմատ',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Տեղեկացնում է նոր հաղորդագրությունների մասին, երբ Syden-ը փոքրացված է, ֆոնային ռեժիմում է կամ այլ ալիքում։',
   'Azul claro.': 'Բաց կապույտ։',
@@ -241,7 +240,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Ստեղծիր քոնը կամ միացիր ուրիշինին՝ այն կոդով, որ քեզ տվել են։',
   'Começo': 'Սկիզբ',
-  'Como a imagem é comprimida': 'Ինչպես է պատկերը սեղմվում',
   'Como administrador, você pode remover membros que não são administradores.':
     'Որպես ադմինիստրատոր՝ կարող ես հեռացնել այն անդամներին, ովքեր ադմինիստրատոր չեն։',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -280,7 +278,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Կտրատում է ձայնը զարկերի, ինչպես պտտվող թիակները։',
   'Cortando…': 'Կտրում է…',
   'Cosmos': 'Տիեզերք',
-  'costuma usar a placa': 'սովորաբար օգտագործում է վիդեոքարտը',
   'Criar a minha': 'Ստեղծել իմը',
   'Criar canal': 'Ստեղծել ալիք',
   'Criar tópico': 'Ստեղծել ճյուղ',
@@ -593,8 +590,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Սա զրույցի սկիզբն է։ Այստեղ գրվածը տեսնում են միայն դրա մասնակիցները։',
   'Este é o começo do canal.': 'Սա ալիքի սկիզբն է։',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Այս դիտարկիչը չի ասում, թե որ կոդավորիչն է ավելի լավ։ Ավտոմատ ռեժիմում մնում է VP8-ը, որն աշխատում է ամենուր։',
   'Europa': 'Եվրոպա',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Թույլ չի տալիս, որ մյուսները լսեն իրենց սեփական ձայնը, երբ դու բարձրախոս ես օգտագործում։',
@@ -623,11 +618,9 @@ export default {
   'Fechar tópico': 'Փակել ճյուղը',
   'Fica assim:': 'Այսպես կլինի:',
   'Fim': 'Վերջ',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Ամրագրում է H.264-ը, նույնիսկ եթե այն ընկնի պրոցեսորի վրա։',
   'Floresta': 'Անտառ',
   'Fluido': 'Սահուն',
   'Folha': 'Տերև',
-  'Funciona em tudo. Roda no processador.': 'Աշխատում է ամենուր։ Գործում է պրոցեսորով։',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Աշխատում են նույնիսկ փոքրացված Syden-ով, զանգի ժամանակ:',
   'Fundo do perfil': 'Պրոֆիլի ֆոն',
   'Ganha fazendo alguma coisa no Syden': 'Վաստակվում է Syden-ում ինչ-որ բան անելով',
@@ -749,10 +742,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Առայժմ ոչ մի բողոք չկա։',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Դեռ ոչ մի երգ չկա։ Վերբեռնիր քո ունեցած ֆայլը, որ բոլորը երգեն։',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Այս համակարգչում ավտոմատ ռեժիմը H.264 է՝ վիդեոքարտով։ Այսպես խաղին ամենաշատ պրոցեսորն է մնում։',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Այս համակարգչում ավտոմատ ռեժիմը VP8 է՝ պրոցեսորով։ Վիդեոքարտը չի կոդավորում H.264 պատկերի այս չափով։',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Քո հեռարձակումը դեռ ոչ ոք չի բացել։ Syden-ը պատկերը կոդավորում է միայն այն ժամանակ, երբ ինչ-որ մեկը դիտում է — դրա համար այստեղ թվեր չկան։',
   'Ninguém com a palavra ainda': 'Դեռ ոչ ոքի խոսք չի տրված',
@@ -763,8 +752,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Առայժմ առաջարկելու ոչ ոք չկա — մտիր որևէ համայնք՝ մարդկանց ճանաչելու համար։',
   'Ninguém respondeu neste tópico ainda.': 'Այս ճյուղում դեռ ոչ ոք չի պատասխանել։',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Ավտոմատ ռեժիմում Syden-ը յուրաքանչյուր հեռարձակումից առաջ հարցնում է համակարգչին, թե արդյոք H.264-ը դուրս է գալիս վիդեոքարտից ընտրված չափով — և օգտագործում է միայն այդ դեպքում։ Թող այսպես, եթե չես ուզում համեմատել երկուսը։ Գործում է հաջորդ ցուցադրումից։',
   'Noite estrelada': 'Աստղազարդ գիշեր',
   'Nome': 'Անուն',
   'Nome alterado.': 'Անունը փոխվեց։',
@@ -786,7 +773,6 @@ export default {
   'O cartão liso.': 'Հարթ քարտը։',
   'O céu inteiro girando bem devagar.': 'Ամբողջ երկինքը՝ շատ դանդաղ պտտվող։',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Հոլովակը չափազանց մեծ ստացվեց զրույցի համար։ Ընտրիր ավելի կարճ հատված։',
-  'o de sempre': 'սովորականը',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Դիտարկիչն արգելափակել է այս կայքի ծանուցումները։ Թույլատրիր հասցեի կողքի կողպեքից և վերաբեռնիր էջը։',
   'O nome como sempre foi.': 'Անունը, ինչպես միշտ։',
@@ -898,7 +884,6 @@ export default {
   'Querem falar': 'Ուզում են խոսել',
   'Rádio de avião': 'Ինքնաթիռի ռադիո',
   'Recado': 'Ուղերձ',
-  'recomendado': 'առաջարկվում է',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Առաջարկվում է մեծամասնությանը։ Դիտողները կարող են իջեցնել որակը, եթե պետք լինի։',
   'Recompensa': 'Պարգև',
@@ -1084,8 +1069,6 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'Լայն պատկեր՝ 1200 x 300 կամ մոտ չափի։ Անիմացիոն GIF-ը նույնպես կարելի է, և այն իսկապես շարժվում է։ Առանց շապիկի՝ մնում է ողջույնի էկրանում ընտրած նկարը։',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Մեկ կանոն կամ ծանուցում յուրաքանչյուր տողում․ նորեկի ճագարը կկարդա դրանք մեկ առ մեկ։',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Օգտագործում է վիդեոքարտը, երբ այն հաղթահարում է, և պրոցեսորը, երբ՝ ոչ։',
   'Usar': 'Օգտագործել',
   'Uso do servidor': 'Սերվերի օգտագործում',
   'Vale a partir do próximo compartilhamento.': 'Գործում է հաջորդ ցուցադրումից։',

@@ -2,49 +2,37 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { converterPreferenciasAntigas } from '../src/settings';
 
-// A conversão do padrão antigo de codec. Ela errou uma vez, e o modo como errou é o que este teste
-// guarda: a marca de "já convertido" morava só nesta máquina, então a cópia que o servidor devolvia ao
-// entrar desfazia a conversão — e a partir da segunda vez o automático nunca mais aparecia.
+// A conversão das preferências de quem já usava o Syden. Ela errou uma vez, e o modo como errou é o
+// que este teste guarda: a marca de "já convertido" morava só nesta máquina, então a cópia que o
+// servidor devolvia ao entrar desfazia a conversão.
 //
-// Por isso a conversão é uma FUNÇÃO PURA que roda em toda leitura, local ou vinda do servidor, e a
-// marca viaja dentro do próprio pacote de preferências.
+// Por isso a conversão é uma FUNÇÃO PURA que roda em toda leitura, local ou vinda do servidor.
 
-describe('o padrão antigo de codec vira automático', () => {
-  it('vp8 sem escolha à mão vira auto', () => {
-    assert.deepEqual(converterPreferenciasAntigas({ screenCodec: 'vp8' }), { screenCodec: 'auto' });
+describe('as escolhas que saíram da tela não ficam guardadas', () => {
+  it('o modo Leve vira Padrão', () => {
+    // Sem isto, quem tinha o Leve guardado transmitiria com um modo que não existe mais nas tabelas
+    // de useVoice.ts, e a transmissão quebraria ao começar.
+    assert.deepEqual(converterPreferenciasAntigas({ screenQuality: 'light' }), { screenQuality: 'standard' });
+    assert.deepEqual(converterPreferenciasAntigas({ screenQuality: 'smooth' }), { screenQuality: 'smooth' });
   });
 
-  it('vp8 ESCOLHIDO à mão continua vp8', () => {
-    const escolhido = { screenCodec: 'vp8', codecEscolhidoAMao: true };
-    assert.deepEqual(converterPreferenciasAntigas(escolhido), escolhido, 'escolha de gente não se desfaz sozinha');
-  });
-
-  it('h264 não é mexido', () => {
-    const outro = { screenCodec: 'h264' };
-    assert.deepEqual(converterPreferenciasAntigas(outro), outro);
+  it('o codec escolhido à mão e o teto de quem assiste somem', () => {
+    // Guardados, eles decidiriam a transmissão sem que ninguém pudesse mais ver nem mudar.
+    const antigo = { screenCodec: 'vp8', codecEscolhidoAMao: true, qualidadeQueRecebo: 'baixa', theme: 'dark' };
+    assert.deepEqual(converterPreferenciasAntigas(antigo), { theme: 'dark' });
   });
 
   it('roda quantas vezes for preciso, sem se atrapalhar', () => {
     // É o caso que quebrou: a conversão acontece ao ler o disco E ao receber do servidor, no mesmo
     // minuto. Ela precisa dar o mesmo resultado nas duas, e na terceira.
-    const uma = converterPreferenciasAntigas({ screenCodec: 'vp8', theme: 'dark' });
+    const uma = converterPreferenciasAntigas({ screenQuality: 'light', screenCodec: 'h264', theme: 'dark' });
     const duas = converterPreferenciasAntigas(uma);
     assert.deepEqual(duas, uma);
     assert.equal(duas.theme, 'dark', 'e não perde o resto pelo caminho');
   });
 
-  it('o modo Leve, que saiu, vira Padrão — sem mexer no resto', () => {
-    // Sem isto, quem tinha o Leve guardado transmitiria com um modo que não existe mais nas tabelas
-    // de useVoice.ts, e a transmissão quebraria ao começar.
-    assert.deepEqual(converterPreferenciasAntigas({ screenQuality: 'light', screenCodec: 'h264' }), {
-      screenQuality: 'standard',
-      screenCodec: 'h264',
-    });
-    assert.deepEqual(converterPreferenciasAntigas({ screenQuality: 'smooth' }), { screenQuality: 'smooth' });
-  });
-
-  it('não inventa nada num pacote que nem fala de codec', () => {
-    const semCodec = { theme: 'light', sounds: false };
-    assert.deepEqual(converterPreferenciasAntigas(semCodec), semCodec);
+  it('não inventa nada num pacote que nem fala de transmissão', () => {
+    const outro = { theme: 'light', sounds: false };
+    assert.deepEqual(converterPreferenciasAntigas(outro), outro);
   });
 });

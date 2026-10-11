@@ -151,7 +151,6 @@ export default {
   'Ativar microfone': 'Activar el micròfon',
   'Aurora': 'Aurora',
   'Ausente': 'Absent',
-  'Automático': 'Automàtic',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Avisa dels missatges nous quan el Syden està minimitzat, en segon pla o en un altre canal.',
   'Azul claro.': 'Blau clar.',
@@ -219,7 +218,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Crea la teva, o entra a la d’algú amb el codi que t’ha passat.',
   'Começo': 'Inici',
-  'Como a imagem é comprimida': 'Com es comprimeix la imatge',
   'Como administrador, você pode remover membros que não são administradores.':
     'Amb el rol d’administrador, pots treure membres que no ho siguin.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -257,7 +255,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Talla la veu a cops, com les pales que giren.',
   'Cortando…': 'S’està retallant…',
   'Cosmos': 'Cosmos',
-  'costuma usar a placa': 'sol fer servir la targeta',
   'Criar a minha': 'Crear la meva',
   'Criar canal': 'Crear un canal',
   'Criar tópico': 'Crear un fil',
@@ -569,8 +566,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Aquest és l’inici de la conversa. Només qui hi és veu el que s’escriu aquí.',
   'Este é o começo do canal.': 'Aquest és l’inici del canal.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Aquest navegador no diu quin codificador és millor. En automàtic queda el VP8, que funciona a tot arreu.',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Evita que la resta torni a sentir la seva pròpia veu quan fas servir altaveus.',
@@ -599,11 +594,9 @@ export default {
   'Fechar tópico': 'Tancar el fil',
   'Fica assim:': 'Queda així:',
   'Fim': 'Final',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Fixa l’H.264 encara que acabi al processador.',
   'Floresta': 'Bosc',
   'Fluido': 'Fluid',
   'Folha': 'Fulla',
-  'Funciona em tudo. Roda no processador.': 'Funciona a tot arreu. Va pel processador.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Funcionen fins i tot amb el Syden minimitzat, durant una trucada:',
   'Fundo do perfil': 'Fons del perfil',
   'Ganha fazendo alguma coisa no Syden': 'S’aconsegueix fent alguna cosa al Syden',
@@ -726,10 +719,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Cap denúncia fins ara.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Encara no hi ha cap cançó. Puja un fitxer que tinguis perquè la colla canti.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'En aquest ordinador, en automàtic: H.264 per la targeta gràfica. És el que deixa més processador per al joc.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'En aquest ordinador, en automàtic: VP8 pel processador. La targeta gràfica no codifica H.264 en aquesta mida d’imatge.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Encara ningú no ha obert la teva transmissió. El Syden només codifica la imatge quan algú la mira — per això aquí no hi ha xifres.',
   'Ninguém com a palavra ainda': 'Encara no té la paraula ningú',
@@ -740,8 +729,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'De moment no hi ha ningú per suggerir — entra a una comunitat per conèixer gent.',
   'Ninguém respondeu neste tópico ainda.': 'Encara ningú no ha respost en aquest fil.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'En automàtic, el Syden pregunta a l’ordinador, abans de cada transmissió, si l’H.264 surt per la targeta gràfica a la mida triada — i només el fa servir quan és així. Deixa-ho així, tret que vulguis comparar-los. S’aplica a partir de la propera compartició.',
   'Noite estrelada': 'Nit estrellada',
   'Nome': 'Nom',
   'Nome alterado.': 'Nom canviat.',
@@ -763,7 +750,6 @@ export default {
   'O cartão liso.': 'La targeta llisa.',
   'O céu inteiro girando bem devagar.': 'Tot el cel girant molt a poc a poc.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'El clip és massa gran per al xat. Tria un fragment més curt.',
-  'o de sempre': 'el de sempre',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'El navegador ha bloquejat les notificacions d’aquest web. Permet-les al cadenat del costat de l’adreça i torna a carregar la pàgina.',
   'O nome como sempre foi.': 'El nom com sempre.',
@@ -874,7 +860,6 @@ export default {
   'Querem falar': 'Volen parlar',
   'Rádio de avião': 'Ràdio d’avió',
   'Recado': 'Avís',
-  'recomendado': 'recomanat',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Recomanat per a la majoria. Qui mira pot abaixar la qualitat si cal.',
   'Recompensa': 'Recompensa',
@@ -1061,8 +1046,6 @@ export default {
     'Una imatge ampla, de 1200 per 300 o semblant. Un GIF animat també val, i s’anima de veritat. Sense portada, queda la imatge que vas triar a la benvinguda.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Una norma o un avís per línia: el conill de qui arriba els llegeix un per un.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Fa servir la targeta gràfica quan pot, i el processador quan no.',
   'Usar': 'Fer servir',
   'Uso do servidor': 'Ús del servidor',
   'Vale a partir do próximo compartilhamento.': 'S’aplica a partir de la propera compartició.',

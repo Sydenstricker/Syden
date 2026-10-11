@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'להפעיל מיקרופון',
   'Aurora': 'זוהר קוטבי',
   'Ausente': 'לא ליד המחשב',
-  'Automático': 'אוטומטי',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'מודיע על הודעות חדשות כש-Syden ממוזער, ברקע או בערוץ אחר.',
   'Azul claro.': 'כחול בהיר.',
@@ -220,7 +219,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'אפשר לפתוח קהילה משלך, או להצטרף לקהילה של מישהו עם הקוד שקיבלת ממנו.',
   'Começo': 'התחלה',
-  'Como a imagem é comprimida': 'איך התמונה נדחסת',
   'Como administrador, você pode remover membros que não são administradores.':
     'לתפקיד המנהל יש אפשרות להסיר חברים שאינם מנהלים.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -258,7 +256,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'חותך את הקול לפעימות, כמו להבים מסתובבים.',
   'Cortando…': 'גוזר…',
   'Cosmos': 'קוסמוס',
-  'costuma usar a placa': 'בדרך כלל משתמש בכרטיס המסך',
   'Criar a minha': 'לפתוח משלי',
   'Criar canal': 'ליצור ערוץ',
   'Criar tópico': 'ליצור שרשור',
@@ -557,8 +554,6 @@ export default {
   'Este clipe não tem som.': 'לקליפ הזה אין קול.',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': 'זו תחילת השיחה. רק המשתתפים בה רואים את מה שנכתב כאן.',
   'Este é o começo do canal.': 'זו תחילת הערוץ.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'הדפדפן הזה לא מגלה איזה מקודד עדיף. במצב האוטומטי נשאר VP8, שעובד בכל מקום.',
   'Europa': 'אירופה',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.': 'מונע מאחרים לשמוע את הקול של עצמם חוזר כשמשתמשים ברמקול.',
   'Ex.: Chegou!': 'לדוגמה: הגעתי!',
@@ -585,11 +580,9 @@ export default {
   'Fechar tópico': 'לסגור שרשור',
   'Fica assim:': 'כך זה ייראה:',
   'Fim': 'סוף',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'קובע H.264 גם אם הוא יעבור למעבד.',
   'Floresta': 'יער',
   'Fluido': 'חלק',
   'Folha': 'עלה',
-  'Funciona em tudo. Roda no processador.': 'עובד בכל מקום. רץ על המעבד.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'עובדים גם כש-Syden ממוזער, בזמן שיחה:',
   'Fundo do perfil': 'רקע הפרופיל',
   'Ganha fazendo alguma coisa no Syden': 'מקבלים כשעושים משהו ב-Syden',
@@ -703,10 +696,6 @@ export default {
   'Nenhum som com esse nome.': 'אין צליל בשם הזה.',
   'Nenhuma denúncia até agora.': 'עדיין אין דיווחים.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.': 'עדיין אין שירים. אפשר להעלות קובץ שיש לך כדי שהחבר׳ה ישירו.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'במחשב הזה, במצב אוטומטי: H.264 דרך כרטיס המסך. כך נשאר הכי הרבה מעבד למשחק.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'במחשב הזה, במצב אוטומטי: VP8 דרך המעבד. כרטיס המסך לא מקודד H.264 בגודל התמונה הזה.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'אף אחד עוד לא פתח את השידור שלך. Syden מקודד את התמונה רק כשמישהו צופה — ולכן אין כאן מספרים.',
   'Ninguém com a palavra ainda': 'עדיין לאף אחד אין רשות דיבור',
@@ -716,8 +705,6 @@ export default {
   'Ninguém na chamada — seja o primeiro': 'אין אף אחד בשיחה — אפשר להיכנס ולהתחיל',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.': 'אין כרגע את מי להציע — הצטרפות לקהילה היא הדרך להכיר אנשים.',
   'Ninguém respondeu neste tópico ainda.': 'עוד אף אחד לא ענה בשרשור הזה.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'במצב אוטומטי, Syden שואל את המחשב לפני כל שידור אם כרטיס המסך יכול לקודד H.264 בגודל שנבחר — ומשתמש בו רק אם כן. כדאי להשאיר כך, אלא אם רוצים להשוות בין השניים. חל מהשיתוף הבא.',
   'Noite estrelada': 'ליל כוכבים',
   'Nome': 'שם',
   'Nome alterado.': 'השם שונה.',
@@ -739,7 +726,6 @@ export default {
   'O cartão liso.': 'הכרטיס החלק.',
   'O céu inteiro girando bem devagar.': 'כל השמיים מסתובבים לאט מאוד.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'הקליפ גדול מדי לצ׳אט. כדאי לבחור קטע קצר יותר.',
-  'o de sempre': 'הרגיל',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'הדפדפן חסם את ההתראות של האתר הזה. אפשר לאשר אותן במנעול שליד הכתובת ולרענן את הדף.',
   'O nome como sempre foi.': 'השם כמו תמיד.',
@@ -843,7 +829,6 @@ export default {
   'Querem falar': 'רוצים לדבר',
   'Rádio de avião': 'קשר של מטוס',
   'Recado': 'הקלטה',
-  'recomendado': 'מומלץ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'מומלץ לרוב האנשים. הצופים יכולים להוריד את האיכות אם צריך.',
   'Reconectando ao servidor…': 'מתחבר מחדש לשרת…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'מפחית רעשי רקע כמו מקלדת, מאוורר ותנועה.',
@@ -1026,7 +1011,6 @@ export default {
     'עותק של מה שכתבת נשמר 90 יום מחוץ לאפליקציה, למקרה של בקשה מהרשויות. אף אחד לא קורא אותו דרך Syden.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'תמונה רחבה, 1200 על 300 או דומה. GIF מונפש מתאים, והוא באמת זז. בלי כריכה, נשאר הרקע שנבחר במסך הפתיחה.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'משתמש בכרטיס המסך כשהוא עומד בזה, ובמעבד כשלא.',
   'Usar': 'ללבוש',
   'Uso do servidor': 'שימוש בשרת',
   'Vale a partir do próximo compartilhamento.': 'חל מהשיתוף הבא.',

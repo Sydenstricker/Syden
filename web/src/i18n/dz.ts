@@ -168,7 +168,6 @@ export default {
   'Ativar microfone': 'མའི་ཀོ་ཕོན་ཁ་ཕྱེ།',
   'Aurora': 'བྱང་ཕྱོགས་ཀྱི་འོད།',
   'Ausente': 'ནཱ་མེད།',
-  'Automático': 'རང་བཞིན།',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden ཆུང་ཀུ་བཟོ་ཡོད་རུང་ རྒྱབ་ཁར་ཡོད་རུང་ བརྒྱུད་ལམ་གཞན་ནང་ཡོད་རུང་ འཕྲིན་ཡིག་གསརཔ་གི་བརྡ་བསྐུལ་འབདཝ་ཨིན།',
   'Azul claro.': 'སྔོནམ་གསལ་ཏོག་ཏོ།',
@@ -236,7 +235,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ཁྱོད་རའི་མི་སྡེ་འགོ་བཙུགས། ཡང་ན་ མི་ལ་ལོ་གིས་བྱིན་མི་ཨང་རྟགས་ཀྱིས་ ཁོང་གི་མི་སྡེ་ནང་འཛུལ།',
   'Começo': 'འགོ་བཙུགས།',
-  'Como a imagem é comprimida': 'པར་ག་དེ་སྦེ་བསྡུ་སྒྲིལ་འབདཝ་ཨིན་ན།',
   'Como administrador, você pode remover membros que não são administradores.':
     'འཛིན་སྐྱོང་པ་སྦེ་ ཁྱོད་ཀྱིས་ འཛིན་སྐྱོང་པ་མེན་མི་འཐུས་མི་ཚུ་རྩ་བསྐྲད་གཏང་ཚུགས།',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -274,7 +272,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'སྐད་འདི་ འཁོར་བཞིན་པའི་གཤོག་པ་བཟུམ་ ཆ་ཤས་ཆ་ཤས་སྦེ་གཏུབ།',
   'Cortando…': 'གཏུབ་དོ…',
   'Cosmos': 'འཇིག་རྟེན་ཁམས།',
-  'costuma usar a placa': 'སྤྱིར་བཏང་ བརྙན་པར་པར་ཆས་ལག་ལེན་འཐབ།',
   'Criar a minha': 'ང་རའི་བཟོ།',
   'Criar canal': 'བརྒྱུད་ལམ་བཟོ།',
   'Criar tópico': 'གླེང་རིམ་བཟོ།',
@@ -586,8 +583,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'འདི་ གཏམ་གླེང་གི་འགོ་བཙུགས་ཨིན། ནཱ་ལུ་འབྲི་མི་འདི་ གཏམ་གླེང་ནང་ཡོད་མི་ཚུ་གིས་རྐྱངམ་ཅིག་མཐོངམ་ཨིན།',
   'Este é o começo do canal.': 'འདི་ བརྒྱུད་ལམ་གྱི་འགོ་བཙུགས་ཨིན།',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'བརའུ་ཟར་འདི་གིས་ ཨང་སྒྲིག་ག་ཅི་ལེགས་ན་ མི་སླབ། རང་བཞིན་སྦེ་ ག་ཏེ་ཡང་ལཱ་འབད་མི་ VP8 ལུས་འོང་།',
   'Europa': 'ཡུ་རོབ།',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'ཁྱོད་ཀྱིས་ སྐད་ཤུགས་ཆས་ལག་ལེན་འཐབ་པའི་སྐབས་ གཞན་མི་ཚུ་གིས་ རང་སོའི་སྐད་ལོག་སྟེ་ཐོས་ནི་ བཀག་ཐབས་འབདཝ་ཨིན།',
@@ -616,11 +611,9 @@ export default {
   'Fechar tópico': 'གླེང་རིམ་ཁ་བསྡམས།',
   'Fica assim:': 'འདི་བཟུམ་འོང་:',
   'Fim': 'མཇུག',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'H.264 ལས་སྣོན་ཆས་ནང་ལྷོད་རུང་ H.264 རང་བཞག',
   'Floresta': 'ནགས་ཚལ།',
   'Fluido': 'ལྷུག་ལྷུག',
   'Folha': 'ལོ་མ།',
-  'Funciona em tudo. Roda no processador.': 'ག་ཏེ་ཡང་ལཱ་འབདཝ་ཨིན། ལས་སྣོན་ཆས་ནང་འགྱོཝ་ཨིན།',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ཁ་པར་གྱི་སྐབས་ Syden ཆུང་ཀུ་བཟོ་རུང་ ལཱ་འབདཝ་ཨིན:',
   'Fundo do perfil': 'ངོ་སྤྲོད་ཀྱི་རྒྱབ་གཞི།',
   'Ganha fazendo alguma coisa no Syden': 'Syden ནང་ ག་ཅི་ཅིག་འབད་བ་ཅིན་འཐོབ་ཨིན།',
@@ -743,10 +736,6 @@ export default {
   'Nenhuma denúncia até agora.': 'ད་ཚུན་ ཞུ་གཏུག་མེད།',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'ད་ལྟོ་ གཞས་མེད། ཆ་རོགས་ཚུ་གིས་གཞས་འཐབ་ནི་ལུ་ ཁྱོད་ལུ་ཡོད་པའི་ཡིག་སྣོད་ཅིག་སྐྱེལ་བཙུགས་འབད།',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'གློག་རིག་འདི་ནང་ རང་བཞིན: བརྙན་པར་པར་ཆས་ཐོག་ལས་ H.264། རྩེད་མོའི་དོན་ལུ་ ལས་སྣོན་ཆས་མང་ཤོས་ལུས་འོང་།',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'གློག་རིག་འདི་ནང་ རང་བཞིན: ལས་སྣོན་ཆས་ཐོག་ལས་ VP8། བརྙན་པར་པར་ཆས་ཀྱིས་ པར་ཚད་འདི་ནང་ H.264 ཨང་སྒྲིག་མི་འབད།',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'ད་ལྟོ་ ཁྱོད་ཀྱི་བརྒྱུད་སྤེལ་ ག་གིས་ཡང་ཁ་མ་ཕྱེ། Syden གིས་ མི་ལ་ལོ་གིས་བལྟ་བའི་སྐབས་རྐྱངམ་ཅིག་ པར་ཨང་སྒྲིག་འབདཝ་ཨིན། དེ་འབདཝ་ལས་ ནཱ་ལུ་ཨང་གྲངས་མེད།',
   'Ninguém com a palavra ainda': 'ད་ལྟོ་ ག་ལུ་ཡང་ཁ་སླབ་ནིའི་གོ་སྐབས་མེད།',
@@ -757,8 +746,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'ད་ལྟོ་ གྲོས་འཆར་བཀོད་ནིའི་མི་མེད — མི་ངོ་ཤེས་ནི་ལུ་ མི་སྡེ་ཅིག་ནང་འཛུལ།',
   'Ninguém respondeu neste tópico ainda.': 'གླེང་རིམ་འདི་ནང་ ད་ལྟོ་ ག་གིས་ཡང་ལན་མ་བཏབ།',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'རང་བཞིན་སྦེ་ Syden གིས་ བརྒྱུད་སྤེལ་རེ་རེའི་ཧེ་མ་ H.264 འདི་ གདམ་ཁ་རྐྱབ་མི་ཚད་ནང་ བརྙན་པར་པར་ཆས་ཐོག་ལས་འགྱོ་ཚུགས་ག་ གློག་རིག་ལུ་འདྲིཝ་ཨིན། འགྱོ་ཚུགས་པ་ཅིན་རྐྱངམ་ཅིག་ ལག་ལེན་འཐབ། གཉིས་ག་ག་བསྡུར་འབད་ནི་མེད་པ་ཅིན་ འདི་བཟུམ་བཞག བགོ་བཤའ་ཤུལ་མ་ལས་ནུས་ཅན་འགྱོ།',
   'Noite estrelada': 'སྐར་མ་ཅན་གྱི་ནུབ་མོ།',
   'Nome': 'མིང་།',
   'Nome alterado.': 'མིང་སོར་ཡི།',
@@ -780,7 +767,6 @@ export default {
   'O cartão liso.': 'ཤོག་བྱང་ལྷབ་ལྷབ།',
   'O céu inteiro girando bem devagar.': 'ནམ་མཁའ་ཧྲིལ་བུམ་ ག་བུ་ཟུར་འཁོར་བ།',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ཀིལིཔ་འདི་ ཁ་སླབ་ཀྱི་དོན་ལུ་ཆེ་དྲགས་པས། ཆ་ཤས་ཐུང་ཀུ་ཅིག་གདམ།',
-  'o de sempre': 'སྤྱིར་བཏང་།',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'བརའུ་ཟར་གྱིས་ ཡོངས་འབྲེལ་ས་ཁོངས་འདི་གི་བརྡ་བསྐུལ་ཚུ་བཀག་ཡི། ཁ་བྱང་གི་བོཝ་ཁར་ཡོད་པའི་ཟྭ་ལུ་ཆོག་ཐམ་བྱིན་ཞིནམ་ལས་ ཤོག་ལེབ་ལོག་མངོན་གསལ་འབད།',
   'O nome como sempre foi.': 'མིང་ ཧེ་མ་བཟུམ།',
@@ -891,7 +877,6 @@ export default {
   'Querem falar': 'སླབ་ནི་ཨིན་མས།',
   'Rádio de avião': 'གནམ་གྲུའི་རེ་ཌི་ཡོ།',
   'Recado': 'བརྡ་ཁྱབ།',
-  'recomendado': 'འོས་འཚམ།',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'མི་མང་ཤོས་ཀྱི་དོན་ལུ་འོས་འཚམ། བལྟ་མི་གིས་ དགོས་པ་ཅིན་ སྤུས་ཚད་མར་ཕབ་ཚུགས།',
   'Recompensa': 'ཆ་རྒྱ།',
@@ -1078,8 +1063,6 @@ export default {
     'པར་རྒྱ་ཅན། 1200 × 300 ཡང་ན་ དེ་བཟུམ། འགུལ་བའི་ GIF ཡང་བཏུབ། ཁ་ཐོག་མེད་པ་ཅིན་ བྱོན་པ་ལེགས་སོའི་དོན་ལུ་གདམ་མི་པར་ལུས་འོང་།',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'ཐིག་ཕྲེང་རེ་ལུ་ སྒྲིག་གཞི་ ཡང་ན་ བརྡ་ཁྱབ་གཅིག ལྷོད་མི་གི་རི་བོང་གིས་ རེ་རེ་བཞིན་ལྷགཔ་ཨིན།',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'བརྙན་པར་པར་ཆས་ཀྱིས་ཚུགས་པ་ཅིན་ དེ་ལག་ལེན་འཐབ། མ་ཚུགས་པ་ཅིན་ ལས་སྣོན་ཆས་ལག་ལེན་འཐབ།',
   'Usar': 'ལག་ལེན།',
   'Uso do servidor': 'སར་བར་གྱི་ལག་ལེན།',
   'Vale a partir do próximo compartilhamento.': 'བགོ་བཤའ་ཤུལ་མ་ལས་ ནུས་ཅན་འགྱོ།',

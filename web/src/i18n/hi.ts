@@ -73,7 +73,6 @@ export default {
   'Ativar áudio': 'आवाज़ चालू करो',
   'Ativar microfone': 'माइक चालू करो',
   Ausente: 'दूर',
-  'Automático': 'अपने आप',
   'Azul claro.': 'हल्का नीला।',
   'Azul em movimento.': 'चलता हुआ नीला।',
   'Azul fechado, quase roxo.': 'गहरा नीला, लगभग बैंगनी।',
@@ -110,7 +109,6 @@ export default {
   'Começa a aparecer': 'दिखना शुरू होता है',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'अपना खुद का शुरू करो, या किसी और के समुदाय में उसके दिए कोड से घुसो।',
-  'Como a imagem é comprimida': 'तस्वीर कैसे दबाई जाती है',
   'Como vai ficar': 'ऐसा दिखेगा',
   'Como vão te ver': 'दूसरे तुम्हें ऐसे देखेंगे',
   'comum mostra a letra parada, para acompanhar.': 'सादा वाला बोल रोककर दिखाता है, ताकि साथ पढ़ सको।',
@@ -135,7 +133,6 @@ export default {
   'Copiar link de convite': 'न्योते का लिंक कॉपी करो',
   Cor: 'रंग',
   'Cor do nome': 'नाम का रंग',
-  'costuma usar a placa': 'आम तौर पर ग्राफ़िक्स कार्ड इस्तेमाल करता है',
   'Criar a minha': 'अपना बनाओ',
   'Criar canal': 'चैनल बनाओ',
   'Criar tópico': 'थ्रेड बनाओ',
@@ -405,8 +402,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'यह बातचीत की शुरुआत है। यहाँ जो लिखा जाता है, वह सिर्फ़ इसमें शामिल लोग देखते हैं।',
   'Este é o começo do canal.': 'यह चैनल की शुरुआत है।',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'यह ब्राउज़र नहीं बताता कि कौन सा एनकोडर बेहतर है। अपने आप वाले मोड में VP8 ही रहता है, जो हर जगह चलता है।',
   'Ex.: Chegou!': 'जैसे: आ गया!',
   'ex.: Evidências': 'जैसे: सबूत',
   'Ex.: k3m9xq2p': 'जैसे: k3m9xq2p',
@@ -423,10 +418,8 @@ export default {
   'Fechar configurações': 'सेटिंग बंद करो',
   'Fechar o karaokê': 'कराओके बंद करो',
   'Fechar tópico': 'थ्रेड बंद करो',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'H.264 पक्का कर देता है, चाहे वह प्रोसेसर पर ही क्यों न गिरे।',
   Fluido: 'चिकना',
   'Folha': 'पत्ता',
-  'Funciona em tudo. Roda no processador.': 'हर जगह चलता है। प्रोसेसर पर चलता है।',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'कॉल के दौरान Syden छोटा किया हो तब भी चलते हैं:',
   'Ganha fazendo alguma coisa no Syden': 'Syden में कुछ करके मिलता है',
   GIF: 'GIF',
@@ -501,10 +494,6 @@ export default {
   'Nenhuma denúncia até agora.': 'अब तक कोई शिकायत नहीं।',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'अभी कोई गाना नहीं। अपने पास की कोई फ़ाइल चढ़ाओ ताकि सब मिलकर गाएँ।',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'इस कंप्यूटर पर, अपने आप वाले मोड में: ग्राफ़िक्स कार्ड से H.264। इससे खेल के लिए सबसे ज़्यादा प्रोसेसर बचता है।',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'इस कंप्यूटर पर, अपने आप वाले मोड में: प्रोसेसर से VP8। इस आकार पर ग्राफ़िक्स कार्ड H.264 एनकोड नहीं करता।',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'अभी किसी ने तुम्हारी स्ट्रीम खोली नहीं। Syden तस्वीर तभी एनकोड करता है जब कोई देख रहा हो — इसीलिए यहाँ आँकड़े नहीं हैं।',
   'Ninguém com a palavra ainda': 'अभी किसी को बोलने का मौका नहीं मिला',
@@ -515,8 +504,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'अभी सुझाने लायक कोई नहीं — लोगों से मिलने के लिए किसी समुदाय में जाओ।',
   'Ninguém respondeu neste tópico ainda.': 'इस थ्रेड में अभी किसी ने जवाब नहीं दिया।',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'अपने आप वाले मोड में Syden हर स्ट्रीम से पहले कंप्यूटर से पूछता है कि चुने गए आकार पर H.264 ग्राफ़िक्स कार्ड से निकलता है या नहीं — और तभी उसे इस्तेमाल करता है। इसे ऐसे ही रहने दो, जब तक दोनों की तुलना न करनी हो। अगली बार स्क्रीन साझा करने से लागू।',
   Nome: 'नाम',
   'Nome da comunidade': 'समुदाय का नाम',
   'Nome de usuário': 'उपयोगकर्ता नाम',
@@ -533,7 +520,6 @@ export default {
     'चैनल अपने संदेशों समेत सबकी नज़र से हट जाता है। {dias} दिन तक उसे वापस ला सकते हो: सेटिंग → समुदाय → कूड़ेदान।',
   'O cartão liso.': 'सादा कार्ड।',
   'O céu inteiro girando bem devagar.': 'पूरा आसमान बहुत धीरे घूमता हुआ।',
-  'o de sempre': 'हमेशा वाला',
   'o nome exato da pessoa': 'उस आदमी का पूरा सही नाम',
   'O nome muda de cor devagar.': 'नाम धीरे-धीरे रंग बदलता है।',
   'O que aconteceu?': 'क्या हुआ?',
@@ -607,7 +593,6 @@ export default {
   'Quente, mas sem gritar.': 'गर्म, पर चीखता नहीं।',
   'Querem falar': 'बोलना चाहते हैं',
   Recado: 'संदेश',
-  recomendado: 'सुझाया गया',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ज़्यादातर लोगों के लिए सुझाया गया। देखने वाला ज़रूरत पड़ने पर गुणवत्ता घटा सकता है।',
   'Reconectando ao servidor…': 'सर्वर से फिर जुड़ रहे हैं…',
@@ -728,8 +713,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'एक नई जगह, अपने चैनलों के साथ, और कौन आएगा यह तुम तय करोगे।',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'एक नई जगह, अपने चैनलों के साथ। न्योते के कोड से तुम तय करते हो कौन आएगा।',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'ग्राफ़िक्स कार्ड सँभाल ले तो उसे, और न सँभाले तो प्रोसेसर को इस्तेमाल करता है।',
   Usar: 'इस्तेमाल करो',
   'Uso do servidor': 'सर्वर का इस्तेमाल',
   'Vale a partir do próximo compartilhamento.': 'अगली बार स्क्रीन साझा करने से लागू।',

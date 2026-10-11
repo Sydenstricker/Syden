@@ -152,7 +152,6 @@ export default {
   'Ativar microfone': 'Включи микрофона',
   'Aurora': 'Полярно сияние',
   'Ausente': 'Отсъства',
-  'Automático': 'Автоматично',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Известява за нови съобщения, когато Syden е минимизиран, във фонов режим или в друг канал.',
   'Azul claro.': 'Светлосиньо.',
@@ -220,7 +219,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Започни своя или влез в нечия с кода, който този човек ти е дал.',
   'Começo': 'Начало',
-  'Como a imagem é comprimida': 'Как се компресира картината',
   'Como administrador, você pode remover membros que não são administradores.':
     'Като администратор можеш да премахваш членове, които не са администратори.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -258,7 +256,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Нарязва гласа на удари, като въртящи се перки.',
   'Cortando…': 'Изрязва се…',
   'Cosmos': 'Космос',
-  'costuma usar a placa': 'обикновено ползва видеокартата',
   'Criar a minha': 'Създай своя',
   'Criar canal': 'Създай канал',
   'Criar tópico': 'Създай нишка',
@@ -570,8 +567,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Това е началото на разговора. Написаното тук виждат само участниците в него.',
   'Este é o começo do canal.': 'Това е началото на канала.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Този браузър не казва кой кодек е по-добър. Автоматично остава VP8, който работи навсякъде.',
   'Europa': 'Европа',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Не позволява другите да чуват собствения си глас обратно, когато ползваш високоговорител.',
@@ -600,11 +595,9 @@ export default {
   'Fechar tópico': 'Затвори нишката',
   'Fica assim:': 'Ще изглежда така:',
   'Fim': 'Край',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Държи H.264, дори ако падне на процесора.',
   'Floresta': 'Гора',
   'Fluido': 'Плавно',
   'Folha': 'Лист',
-  'Funciona em tudo. Roda no processador.': 'Работи навсякъде. Върви на процесора.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Работят и при минимизиран Syden, по време на обаждане:',
   'Fundo do perfil': 'Фон на профила',
   'Ganha fazendo alguma coisa no Syden': 'Получава се, когато направиш нещо в Syden',
@@ -727,10 +720,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Засега няма сигнали.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Още няма песни. Качи файл, който имаш, за да пее компанията.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'На този компютър, автоматично: H.264 през видеокартата. Така остава най-много процесор за играта.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'На този компютър, автоматично: VP8 през процесора. Видеокартата не кодира H.264 при този размер на картината.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Още никой не е отворил излъчването ти. Syden кодира картината само когато някой гледа — затова тук няма числа.',
   'Ninguém com a palavra ainda': 'Още никой няма думата',
@@ -741,8 +730,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Засега няма кого да предложим — влез в общност, за да се запознаеш с хора.',
   'Ninguém respondeu neste tópico ainda.': 'Още никой не е отговорил в тази нишка.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Автоматично Syden пита компютъра преди всяко излъчване дали H.264 минава през видеокартата при избрания размер — и го ползва само ако минава. Остави така, освен ако не искаш да сравниш двата. Важи от следващото споделяне.',
   'Noite estrelada': 'Звездна нощ',
   'Nome': 'Име',
   'Nome alterado.': 'Името е сменено.',
@@ -764,7 +751,6 @@ export default {
   'O cartão liso.': 'Гладката карта.',
   'O céu inteiro girando bem devagar.': 'Цялото небе се върти много бавно.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клипът стана твърде голям за чата. Избери по-кратък откъс.',
-  'o de sempre': 'обичайното',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Браузърът блокира известията от този сайт. Разреши ги от катинара до адреса и презареди страницата.',
   'O nome como sempre foi.': 'Името, както винаги.',
@@ -875,7 +861,6 @@ export default {
   'Querem falar': 'Искат думата',
   'Rádio de avião': 'Самолетно радио',
   'Recado': 'Обява',
-  'recomendado': 'препоръчано',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Препоръчано за повечето. Който гледа, може да намали качеството при нужда.',
   'Recompensa': 'Награда',
@@ -1062,8 +1047,6 @@ export default {
     'Широко изображение, 1200 на 300 или подобно. Анимиран GIF също става и наистина се движи. Без корица остава картината, избрана за добре дошли.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'По едно правило или съобщение на ред: заекът на новодошлия ги чете едно по едно.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Ползва видеокартата, когато се справя, и процесора, когато не.',
   'Usar': 'Използвай',
   'Uso do servidor': 'Натоварване на сървъра',
   'Vale a partir do próximo compartilhamento.': 'Важи от следващото споделяне.',

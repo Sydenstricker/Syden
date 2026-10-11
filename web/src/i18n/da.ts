@@ -149,7 +149,6 @@ export default {
   'Ativar microfone': 'Slå mikrofon til',
   'Aurora': 'Nordlys',
   'Ausente': 'Væk',
-  'Automático': 'Automatisk',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Gør opmærksom på nye beskeder, når Syden er minimeret, i baggrunden eller i en anden kanal.',
   'Azul claro.': 'Lyseblå.',
@@ -217,7 +216,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Start dit eget, eller gå med i en andens med den kode, du har fået.',
   'Começo': 'Start',
-  'Como a imagem é comprimida': 'Hvordan billedet komprimeres',
   'Como administrador, você pode remover membros que não são administradores.':
     'Som administrator kan du fjerne medlemmer, der ikke er administratorer.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -255,7 +253,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Hakker stemmen i slag, som roterende rotorblade.',
   'Cortando…': 'Klipper…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'plejer at bruge grafikkortet',
   'Criar a minha': 'Opret mit eget',
   'Criar canal': 'Opret kanal',
   'Criar tópico': 'Opret tråd',
@@ -567,8 +564,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Dette er starten på samtalen. Kun dem, der er med i den, ser, hvad der skrives her.',
   'Este é o começo do canal.': 'Dette er starten på kanalen.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Denne browser siger ikke, hvilken koder der er bedst. Automatisk bliver det VP8, som virker overalt.',
   'Europa': 'Europa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Forhindrer, at andre hører deres egen stemme igen, når du bruger højttaler.',
@@ -597,11 +592,9 @@ export default {
   'Fechar tópico': 'Luk tråden',
   'Fica assim:': 'Det bliver sådan her:',
   'Fim': 'Slut',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Låser H.264, selv om det havner på processoren.',
   'Floresta': 'Skov',
   'Fluido': 'Flydende',
   'Folha': 'Blad',
-  'Funciona em tudo. Roda no processador.': 'Virker overalt. Kører på processoren.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Virker, selv når Syden er minimeret, under et opkald:',
   'Fundo do perfil': 'Profilbaggrund',
   'Ganha fazendo alguma coisa no Syden': 'Fås ved at gøre noget i Syden',
@@ -724,10 +717,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Ingen indberetninger endnu.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ingen sange endnu. Upload en fil, du har, så flokken kan synge.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'På denne computer, automatisk: H.264 via grafikkortet. Det levner mest processorkraft til spillet.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'På denne computer, automatisk: VP8 via processoren. Grafikkortet koder ikke H.264 i denne billedstørrelse.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Ingen har åbnet din udsendelse endnu. Syden koder kun billedet, når nogen ser med — derfor er der ingen tal her.',
   'Ninguém com a palavra ainda': 'Ingen har ordet endnu',
@@ -738,8 +727,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Ingen at foreslå lige nu — gå med i et fællesskab for at møde folk.',
   'Ninguém respondeu neste tópico ainda.': 'Ingen har svaret i denne tråd endnu.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automatisk spørger Syden computeren før hver udsendelse, om H.264 kan gå via grafikkortet i den valgte størrelse — og bruger det kun, når det kan. Lad det være sådan, medmindre du vil sammenligne de to. Gælder fra næste deling.',
   'Noite estrelada': 'Stjernenat',
   'Nome': 'Navn',
   'Nome alterado.': 'Navnet er ændret.',
@@ -761,7 +748,6 @@ export default {
   'O cartão liso.': 'Det glatte kort.',
   'O céu inteiro girando bem devagar.': 'Hele himlen, der drejer meget langsomt.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klippet blev for stort til chatten. Vælg et kortere stykke.',
-  'o de sempre': 'det sædvanlige',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Browseren har blokeret notifikationer fra dette websted. Tillad dem ved hængelåsen ved siden af adressen, og genindlæs siden.',
   'O nome como sempre foi.': 'Navnet, som det altid har været.',
@@ -872,7 +858,6 @@ export default {
   'Querem falar': 'Vil tale',
   'Rádio de avião': 'Flyradio',
   'Recado': 'Opslag',
-  'recomendado': 'anbefales',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Anbefales til de fleste. Den, der ser med, kan sænke kvaliteten efter behov.',
   'Recompensa': 'Belønning',
@@ -1059,8 +1044,6 @@ export default {
     'Et bredt billede, 1200 gange 300 eller deromkring. Animeret GIF er fint, og den bevæger sig for alvor. Uden forsidebillede bliver det billedet, du valgte til velkomstskærmen.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Én regel eller meddelelse pr. linje: nykommerens kanin læser dem én ad gangen.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Bruger grafikkortet, når det kan klare det, og processoren, når det ikke kan.',
   'Usar': 'Brug',
   'Uso do servidor': 'Serverforbrug',
   'Vale a partir do próximo compartilhamento.': 'Gælder fra næste deling.',

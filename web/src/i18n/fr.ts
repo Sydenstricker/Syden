@@ -441,7 +441,6 @@ export default {
   'Testando… os números aparecem em instantes.': 'Test en cours… les chiffres arrivent dans un instant.',
   'Seu computador está segurando a qualidade.': 'Votre ordinateur limite la qualité.',
   'Sua internet está segurando a qualidade.': 'Votre connexion limite la qualité.',
-  Automático: 'Automatique',
   'Som da transmissão': 'Son de la diffusion',
   'Volume da transmissão': 'Volume de la diffusion',
   'Calar esta transmissão': 'Couper le son de cette diffusion',
@@ -480,22 +479,6 @@ export default {
     'Recommandé pour la plupart. Ceux qui regardent peuvent baisser la qualité s’ils en ont besoin.',
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.':
     'Pour les jeux. Envoie une seule image, la meilleure : il reste plus de machine pour le jeu, et ceux qui regardent la reçoivent telle quelle.',
-  'Como a imagem é comprimida': 'Comment l’image est compressée',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'En automatique, Syden demande à l’ordinateur, avant chaque diffusion, si le H.264 passe par la carte graphique à la taille choisie — et ne l’utilise que dans ce cas. Laissez ainsi, sauf si vous voulez comparer les deux. Prend effet au prochain partage.',
-  recomendado: 'recommandé',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Utilise la carte graphique quand elle suit, et le processeur quand elle ne suit pas.',
-  'o de sempre': 'celui de toujours',
-  'Funciona em tudo. Roda no processador.': 'Fonctionne partout. Tourne sur le processeur.',
-  'costuma usar a placa': 'utilise souvent la carte graphique',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Force le H.264 même s’il retombe sur le processeur.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Sur cet ordinateur, en automatique : H.264 par la carte graphique. C’est ce qui laisse le plus de processeur au jeu.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Sur cet ordinateur, en automatique : VP8 par le processeur. La carte graphique n’encode pas le H.264 à cette taille d’image.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ce navigateur ne dit pas quel encodeur est le meilleur. En automatique, on reste sur VP8, qui fonctionne partout.',
   'pela placa de vídeo': 'par la carte graphique',
   'pelo processador': 'par le processeur',
 

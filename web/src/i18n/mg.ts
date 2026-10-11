@@ -155,7 +155,6 @@ export default {
   'Ativar microfone': 'Alefaso ny mikrô',
   'Aurora': 'Aorora',
   'Ausente': 'Tsy eo',
-  'Automático': 'Mandeha ho azy',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Mampahafantatra ny hafatra vaovao rehefa nakelezina ny Syden, ao aoriana, na amin’ny fantsona hafa.',
   'Azul claro.': 'Manga mazava.',
@@ -223,7 +222,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Atombohy ny anao, na midira amin’ny an’olona amin’ny kaody nomeny anao.',
   'Começo': 'Fiandohana',
-  'Como a imagem é comprimida': 'Ny fomba fanerena ny sary',
   'Como administrador, você pode remover membros que não são administradores.':
     'Amin’ny maha-mpitantana anao, afaka mandroaka ireo mpikambana tsy mpitantana ianao.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -261,7 +259,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Manapaka ny feo ho gadona, toy ny elatra mihodina.',
   'Cortando…': 'Manapaka…',
   'Cosmos': 'Habakabaka',
-  'costuma usar a placa': 'matetika mampiasa ny karatra sary',
   'Criar a minha': 'Hamorona ny ahy',
   'Criar canal': 'Hamorona fantsona',
   'Criar tópico': 'Hamorona lohahevitra',
@@ -573,8 +570,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Ity no fiandohan’ny resaka. Ireo ao anatiny ihany no mahita izay voasoratra eto.',
   'Este é o começo do canal.': 'Ity no fiandohan’ny fantsona.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Tsy milaza ity mpitety ity hoe iza no encodeur tsara kokoa. Amin’ny Mandeha ho azy dia VP8 no mijanona, izay mandeha na aiza na aiza.',
   'Europa': 'Eoropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Misoroka ny hafa tsy handre ny feony miverina rehefa mampiasa fanamafisam-peo ianao.',
@@ -603,11 +598,9 @@ export default {
   'Fechar tópico': 'Akatony ny lohahevitra',
   'Fica assim:': 'Ho toy izao:',
   'Fim': 'Farany',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Mitazona ny H.264 na dia mianjera amin’ny mpandrindra aza izy.',
   'Floresta': 'Ala',
   'Fluido': 'Malama',
   'Folha': 'Ravina',
-  'Funciona em tudo. Roda no processador.': 'Mandeha na aiza na aiza. Mandeha amin’ny mpandrindra.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Mandeha na dia nakelezina aza ny Syden, mandritra ny antso:',
   'Fundo do perfil': 'Ambadiky ny mombamomba',
   'Ganha fazendo alguma coisa no Syden': 'Azo amin’ny fanaovana zavatra ao amin’ny Syden',
@@ -730,10 +723,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Tsy misy fitarainana hatreto.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Mbola tsy misy hira. Alefaso rakitra anananao mba hihiran’ny namana.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Amin’ity ordinatera ity, amin’ny Mandeha ho azy: H.264 amin’ny karatra sary. Izy no mamela mpandrindra betsaka kokoa ho an’ny lalao.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Amin’ity ordinatera ity, amin’ny Mandeha ho azy: VP8 amin’ny mpandrindra. Tsy mahavita H.264 amin’ity haben’ny sary ity ny karatra sary.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Mbola tsy nisy nanokatra ny fandefasanao. Tsy mandrindra ny sary ny Syden raha tsy misy mijery — izany no tsy isian’ny isa eto.',
   'Ninguém com a palavra ainda': 'Mbola tsy misy manana ny fitenenana',
@@ -744,8 +733,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Tsy misy olona atolotra aloha — midira amin’ny fiarahamonina mba hahafantarana olona.',
   'Ninguém respondeu neste tópico ainda.': 'Mbola tsy nisy namaly tamin’ity lohahevitra ity.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Amin’ny Mandeha ho azy, manontany ny ordinatera ny Syden alohan’ny fandefasana tsirairay raha mivoaka amin’ny karatra sary amin’ny habe nofidiana ny H.264 — ary tsy mampiasa azy raha tsy mivoaka izy. Avelao ho toy izao, raha tsy te hampitaha azy roa ianao. Manan-kery manomboka amin’ny fizarana manaraka.',
   'Noite estrelada': 'Alina feno kintana',
   'Nome': 'Anarana',
   'Nome alterado.': 'Voaova ny anarana.',
@@ -767,7 +754,6 @@ export default {
   'O cartão liso.': 'Ny karatra tsotra.',
   'O céu inteiro girando bem devagar.': 'Ny lanitra manontolo mihodina moramora.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Lehibe loatra ho an’ny resaka ny clip. Misafidiana ampahany fohy kokoa.',
-  'o de sempre': 'ilay mahazatra',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Nosakanan’ny mpitety ny fampahafantarana avy amin’ity tranonkala ity. Avelao amin’ny hidin-trano eo akaikin’ny adiresy ary avereno sokafana ny pejy.',
   'O nome como sempre foi.': 'Ny anarana toy ny teo aloha.',
@@ -878,7 +864,6 @@ export default {
   'Querem falar': 'Te hiteny',
   'Rádio de avião': 'Radion’ny fiaramanidina',
   'Recado': 'Filazana',
-  'recomendado': 'atoro',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Atoro ho an’ny maro an’isa. Afaka mampidina ny kalitao ny mpijery raha ilaina.',
   'Recompensa': 'Valisoa',
@@ -1065,8 +1050,6 @@ export default {
     'Sary malalaka, 1200 amin’ny 300 na mitovitovy amin’izany. Azo ampiasaina ny GIF mihetsika, ary mihetsika tokoa. Raha tsy misy fonony, mijanona ilay sary nofidinao tamin’ny fandraisana.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Fitsipika na filazana iray isaky ny andalana: vakian’ny bitron’ny vao tonga tsirairay.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Mampiasa ny karatra sary rehefa mahavita izy, ary ny mpandrindra rehefa tsy mahavita.',
   'Usar': 'Ampiasao',
   'Uso do servidor': 'Fampiasana ny mpizara',
   'Vale a partir do próximo compartilhamento.': 'Manan-kery manomboka amin’ny fizarana manaraka.',

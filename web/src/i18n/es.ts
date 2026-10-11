@@ -253,7 +253,6 @@ export default {
   'Volume da transmissão': 'Volumen de la transmisión',
   'Som da transmissão': 'Sonido de la transmisión',
   'Nada é baixado enquanto você não abrir': 'No se descarga nada mientras no abras',
-  'Como a imagem é comprimida': 'Cómo se comprime la imagen',
   'Vale a partir do próximo compartilhamento.': 'Vale a partir del próximo compartir.',
   'Seu computador está segurando a qualidade.': 'Tu ordenador está frenando la calidad.',
   'Sua internet está segurando a qualidade.': 'Tu conexión está frenando la calidad.',
@@ -636,7 +635,6 @@ export default {
   "Tela cheia": "Pantalla completa",
   "Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.":
     "Tu transmisión no tiene sonido. El navegador solo manda el sonido si marcas “compartir audio” en la ventana donde eliges la pantalla.",
-  "Automático": "Automático",
   "Medindo…": "Midiendo…",
   "Administra a comunidade": "Administra la comunidad",
   "Administradores": "Administradores",
@@ -651,26 +649,6 @@ export default {
   "Calar esta transmissão": "Silenciar esta transmisión",
   "Ouvir esta transmissão de novo": "Volver a oír esta transmisión",
   "é o que você está enviando": "es lo que estás enviando",
-  "costuma usar a placa":
-    "suele usar la tarjeta gráfica",
-  "Fixa o H.264 mesmo que ele caia no processador.":
-    "Fija H.264 aunque acabe en el procesador.",
-  "Funciona em tudo. Roda no processador.":
-    "Funciona en todo. Corre en el procesador.",
-  "No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.":
-    "En automático, Syden le pregunta a tu computadora antes de cada transmisión si H.264 sale por la tarjeta gráfica en el tamaño elegido — y solo lo usa cuando sale. Déjalo así, salvo que quieras comparar los dos. Vale a partir del próximo compartir.",
-  "o de sempre":
-    "el de siempre",
-  "recomendado":
-    "recomendado",
-  "Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.":
-    "Usa la tarjeta gráfica cuando da abasto, y el procesador cuando no.",
-  "Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.":
-    "Este navegador no responde cuál codificador es mejor. En automático se queda con VP8, que funciona en todo.",
-  "Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.":
-    "En esta computadora, el automático elige H.264 por la tarjeta gráfica: es lo que deja más procesador para el juego.",
-  "Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.":
-    "En esta computadora, el automático elige VP8 por el procesador. La tarjeta gráfica no codifica H.264 en este tamaño de imagen.",
   "Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.":
     "Nadie abrió tu transmisión todavía. Syden solo codifica la imagen cuando alguien la mira — por eso no hay números aquí.",
   "pela placa de vídeo":

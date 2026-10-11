@@ -36,24 +36,6 @@ export interface Settings {
    * e só é baixada quando você clica em "Assistir" — o que poupa internet e processador de todo mundo.
    */
   abrirTransmissaoSozinha: boolean;
-  /**
-   * Codec da transmissão de tela.
-   *
-   * 'auto' pergunta ao computador, na hora de transmitir, se o H.264 sai pela PLACA DE VÍDEO naquele
-   * tamanho de imagem — e só então o usa. É o padrão porque a resposta certa depende da máquina, e
-   * ninguém deveria precisar saber o que é um codec para transmitir sem travar. Ver escolherCodec.ts.
-   */
-  screenCodec: 'auto' | 'vp8' | 'h264';
-  /**
-   * A pessoa escolheu o codec À MÃO? Enquanto não escolheu, um 'vp8' guardado é só o padrão antigo.
-   *
-   * ISTO PRECISA VIAJAR JUNTO COM AS PREFERÊNCIAS, e é por isso que mora aqui dentro e não numa marca
-   * à parte. A primeira versão usava uma marca local, e ela foi derrotada pelo caminho de volta: a
-   * conversão acontecia, o servidor devolvia a cópia antiga na hora de entrar, e a marca local dizia
-   * "já converti" — então da segunda vez em diante voltava a VP8 para sempre. Com a marca dentro do
-   * pacote, a cópia que vem do servidor também chega com ela, e a conversão sabe o que fazer.
-   */
-  codecEscolhidoAMao?: boolean;
   /** Sons de entrada, saída, mudo etc. */
   sounds: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
@@ -87,8 +69,6 @@ const DEFAULTS: Settings = {
   startDeafened: false,
   showMembers: true,
   abrirTransmissaoSozinha: false,
-  screenCodec: 'auto',
-  codecEscolhidoAMao: false,
   sounds: true,
   soundboardVolume: 0.6,
   efeitosVisuais: true,
@@ -100,34 +80,21 @@ const DEFAULTS: Settings = {
 const STORAGE_KEY = 'janja.settings';
 
 /**
- * Ajustes de quem JÁ USAVA o Syden, para uma escolha nova valer também para eles.
- *
- * PADRÃO NOVO NÃO ALCANÇA QUEM JÁ TEM PREFERÊNCIA GUARDADA — e isso quase fez o "automático" do codec
- * nascer valendo só para contas novas. Todo mundo que já tinha aberto o Syden tinha 'vp8' salvo, não
- * porque escolheu, mas porque era o padrão da época; o novo padrão passaria por cima dele e não
- * mudaria nada na prática.
- *
- * Só se converte o que era o PADRÃO ANTIGO, e uma vez só (a marca abaixo). Quem tiver escolhido H.264
- * à mão continua com H.264, e quem escolher VP8 depois desta conversão continua com VP8.
- */
-/**
- * Ajustes de quem JÁ USAVA o Syden, para uma escolha nova valer também para eles.
- *
- * PADRÃO NOVO NÃO ALCANÇA QUEM JÁ TEM PREFERÊNCIA GUARDADA — e isso quase fez o "automático" do codec
- * nascer valendo só para contas novas. Todo mundo que já tinha aberto o Syden tinha 'vp8' salvo, não
- * porque escolheu, mas porque era o padrão da época.
- *
- * Só se converte o que era o PADRÃO ANTIGO e nunca foi escolhido à mão. Quem escolher VP8 depois
- * disto continua com VP8 — inclusive porque a escolha grava a marca.
+ * Ajustes de quem JÁ USAVA o Syden, para uma mudança valer também para eles.
  *
  * Roda em TODA leitura, e não uma vez só: as preferências também descem do servidor ao entrar (ver
- * preferencias.ts), e a cópia de lá é tão antiga quanto a daqui.
+ * preferencias.ts), e a cópia de lá é tão antiga quanto a daqui. A lição veio do codec: uma marca de
+ * "já converti" guardada só nesta máquina foi desfeita pela cópia do servidor, e a conversão nunca
+ * mais aconteceu. Por isso isto é uma função pura, que dá o mesmo resultado quantas vezes rodar.
+ *
+ * O que ela tira são escolhas que saíram da tela (11/10/2026), e que guardadas fariam o Syden
+ * transmitir de um jeito que ninguém pode mais ver nem mudar.
  */
 export function converterPreferenciasAntigas(guardado: Record<string, unknown>): Record<string, unknown> {
+  const { screenCodec: _codec, codecEscolhidoAMao: _aMao, qualidadeQueRecebo: _teto, ...resto } = guardado;
   // O modo "Leve" não existe mais: quem o tinha guardado passa ao Padrão.
-  if (guardado.screenQuality === 'light') guardado = { ...guardado, screenQuality: 'standard' };
-  if (guardado.screenCodec !== 'vp8' || guardado.codecEscolhidoAMao === true) return guardado;
-  return { ...guardado, screenCodec: 'auto' };
+  if (resto.screenQuality === 'light') resto.screenQuality = 'standard';
+  return resto;
 }
 
 function load(): Settings {

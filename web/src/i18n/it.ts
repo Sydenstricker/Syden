@@ -70,7 +70,6 @@ export default {
   'Ativar áudio': 'Attiva l’audio',
   'Ativar microfone': 'Attiva il microfono',
   Ausente: 'Assente',
-  'Automático': 'Automatico',
   'Azul claro.': 'Azzurro.',
   'Azul em movimento.': 'Azzurro in movimento.',
   'Azul fechado, quase roxo.': 'Blu chiuso, quasi viola.',
@@ -107,7 +106,6 @@ export default {
   'Começa a aparecer': 'Inizia ad apparire',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Crea la tua, o entra in quella di qualcuno con il codice che ti ha dato.',
-  'Como a imagem é comprimida': 'Come viene compressa l’immagine',
   'Como vai ficar': 'Come verrà',
   'Como vão te ver': 'Come ti vedranno',
   'comum mostra a letra parada, para acompanhar.': 'normale mostra il testo fermo, per seguirlo.',
@@ -133,7 +131,6 @@ export default {
   'Copiar link de convite': 'Copia il link di invito',
   Cor: 'Colore',
   'Cor do nome': 'Colore del nome',
-  'costuma usar a placa': 'di solito usa la scheda video',
   'Criar a minha': 'Crea la mia',
   'Criar canal': 'Crea un canale',
   'Criar tópico': 'Crea una discussione',
@@ -403,8 +400,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Questo è l’inizio della conversazione. Solo chi ne fa parte vede quello che si scrive qui.',
   'Este é o começo do canal.': 'Questo è l’inizio del canale.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Questo browser non dice quale codificatore sia migliore. In automatico resta VP8, che funziona ovunque.',
   'Ex.: Chegou!': 'Es.: È arrivato!',
   'ex.: Evidências': 'es.: Prove',
   'Ex.: k3m9xq2p': 'Es.: k3m9xq2p',
@@ -421,10 +416,8 @@ export default {
   'Fechar configurações': 'Chiudi le impostazioni',
   'Fechar o karaokê': 'Chiudi il karaoke',
   'Fechar tópico': 'Chiudi la discussione',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Forza H.264 anche se finisce sul processore.',
   Fluido: 'Fluido',
   'Folha': 'Foglia',
-  'Funciona em tudo. Roda no processador.': 'Funziona ovunque. Gira sul processore.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Funzionano anche con Syden ridotto a icona, durante una chiamata:',
   'Ganha fazendo alguma coisa no Syden': 'Si guadagna facendo qualcosa nel Syden',
   GIF: 'GIF',
@@ -499,10 +492,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Nessuna segnalazione finora.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Ancora nessuna canzone. Carica un file che hai lì, così il gruppo canta.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Su questo computer, in automatico: H.264 con la scheda video. È quello che lascia più processore al gioco.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Su questo computer, in automatico: VP8 sul processore. La scheda video non codifica H.264 a questa dimensione.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Nessuno ha ancora aperto la tua trasmissione. Syden codifica l’immagine solo quando qualcuno guarda — per questo qui non ci sono numeri.',
   'Ninguém com a palavra ainda': 'Ancora nessuno ha la parola',
@@ -513,8 +502,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Nessuno da suggerire per ora — entra in una comunità per conoscere gente.',
   'Ninguém respondeu neste tópico ainda.': 'Nessuno ha ancora risposto in questa discussione.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'In automatico, prima di ogni trasmissione, Syden chiede al computer se H.264 passa dalla scheda video alla dimensione scelta — e lo usa solo se passa. Lascialo così, a meno che tu non voglia confrontare i due. Vale dalla prossima condivisione.',
   Nome: 'Nome',
   'Nome da comunidade': 'Nome della comunità',
   'Nome de usuário': 'Nome utente',
@@ -531,7 +518,6 @@ export default {
     'Il canale sparisce per tutti, messaggi compresi. Puoi recuperarlo entro {dias} giorni, in Impostazioni → Comunità → Cestino.',
   'O cartão liso.': 'La scheda liscia.',
   'O céu inteiro girando bem devagar.': 'Tutto il cielo che gira molto lentamente.',
-  'o de sempre': 'quello di sempre',
   'o nome exato da pessoa': 'il nome esatto della persona',
   'O nome muda de cor devagar.': 'Il nome cambia colore lentamente.',
   'O que aconteceu?': 'Cos’è successo?',
@@ -605,7 +591,6 @@ export default {
   'Quente, mas sem gritar.': 'Caldo, ma senza urlare.',
   'Querem falar': 'Vogliono parlare',
   Recado: 'Messaggio',
-  recomendado: 'consigliato',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Consigliato per la maggior parte. Chi guarda può abbassare la qualità se serve.',
   'Reconectando ao servidor…': 'Riconnessione al server…',
@@ -726,8 +711,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'Un posto nuovo, con canali tuoi, e decidi tu chi entra.',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'Un posto nuovo, con canali tuoi. Scegli tu chi entra, con il codice di invito.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Usa la scheda video quando ce la fa, e il processore quando non ce la fa.',
   Usar: 'Usa',
   'Uso do servidor': 'Uso del server',
   'Vale a partir do próximo compartilhamento.': 'Vale dalla prossima condivisione.',

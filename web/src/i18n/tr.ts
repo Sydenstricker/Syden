@@ -68,7 +68,6 @@ export default {
   'Ativar áudio': 'Sesi aç',
   'Ativar microfone': 'Mikrofonu aç',
   Ausente: 'Uzakta',
-  'Automático': 'Otomatik',
   'Azul claro.': 'Açık mavi.',
   'Azul em movimento.': 'Hareket eden mavi.',
   'Azul fechado, quase roxo.': 'Koyu mavi, neredeyse mor.',
@@ -105,7 +104,6 @@ export default {
   'Começa a aparecer': 'Görünmeye başlar',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Kendi topluluğunu kur ya da sana verilen kodla başkasınınkine katıl.',
-  'Como a imagem é comprimida': 'Görüntünün nasıl sıkıştırıldığı',
   'Como vai ficar': 'Nasıl görünecek',
   'Como vão te ver': 'Seni nasıl görecekler',
   'comum mostra a letra parada, para acompanhar.': 'normal olanı sözleri sabit gösterir, takip edebilesin diye.',
@@ -130,7 +128,6 @@ export default {
   'Copiar link de convite': 'Davet bağlantısını kopyala',
   Cor: 'Renk',
   'Cor do nome': 'Adının rengi',
-  'costuma usar a placa': 'genellikle ekran kartını kullanır',
   'Criar a minha': 'Kendiminkini kur',
   'Criar canal': 'Kanal oluştur',
   'Criar tópico': 'Konu oluştur',
@@ -400,8 +397,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Sohbetin başlangıcı burası. Burada yazılanı yalnızca sohbetin içindekiler görür.',
   'Este é o começo do canal.': 'Kanalın başlangıcı burası.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Bu tarayıcı hangi kodlayıcının daha iyi olduğunu söylemiyor. Otomatikte VP8 kalır, o her yerde çalışır.',
   'Ex.: Chegou!': 'Örn.: Geldi!',
   'ex.: Evidências': 'örn.: Kanıtlar',
   'Ex.: k3m9xq2p': 'Örn.: k3m9xq2p',
@@ -418,10 +413,8 @@ export default {
   'Fechar configurações': 'Ayarları kapat',
   'Fechar o karaokê': 'Karaokeyi kapat',
   'Fechar tópico': 'Konuyu kapat',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'İşlemciye düşse bile H.264’ü sabitler.',
   Fluido: 'Akıcı',
   'Folha': 'Yaprak',
-  'Funciona em tudo. Roda no processador.': 'Her yerde çalışır. İşlemcide döner.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Görüşme sırasında Syden simge durumundayken bile çalışır:',
   'Ganha fazendo alguma coisa no Syden': 'Syden\'de bir şey yaparak kazanılır',
   GIF: 'GIF',
@@ -496,10 +489,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Şimdiye kadar bildirim yok.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Henüz şarkı yok. Elindeki bir dosyayı yükle de herkes söylesin.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Bu bilgisayarda, otomatikte: ekran kartıyla H.264. Oyuna en çok işlemci bırakan yol bu.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Bu bilgisayarda, otomatikte: işlemciyle VP8. Ekran kartı bu görüntü boyutunda H.264 kodlamıyor.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Yayınını henüz kimse açmadı. Syden görüntüyü yalnızca izleyen olduğunda kodlar — bu yüzden burada sayı yok.',
   'Ninguém com a palavra ainda': 'Henüz kimseye söz verilmedi',
@@ -510,8 +499,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Şimdilik önerilecek kimse yok — insanlarla tanışmak için bir topluluğa katıl.',
   'Ninguém respondeu neste tópico ainda.': 'Bu konuya henüz kimse yanıt vermedi.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Otomatikte Syden, her yayından önce bilgisayara sorar: seçilen boyutta H.264 ekran kartından geçiyor mu — ve yalnızca geçiyorsa kullanır. İkisini karşılaştırmak istemiyorsan böyle bırak. Bir sonraki paylaşımdan itibaren geçerli.',
   Nome: 'Ad',
   'Nome da comunidade': 'Topluluğun adı',
   'Nome de usuário': 'Kullanıcı adı',
@@ -528,7 +515,6 @@ export default {
     'Kanal mesajlarıyla birlikte herkesin gözünden kaybolur. {dias} gün boyunca Ayarlar → Topluluk → Çöp kutusu’ndan geri getirebilirsin.',
   'O cartão liso.': 'Düz kart.',
   'O céu inteiro girando bem devagar.': 'Bütün gökyüzü çok yavaş dönüyor.',
-  'o de sempre': 'her zamanki',
   'o nome exato da pessoa': 'kişinin tam adı',
   'O nome muda de cor devagar.': 'İsim yavaşça renk değiştirir.',
   'O que aconteceu?': 'Ne oldu?',
@@ -602,7 +588,6 @@ export default {
   'Quente, mas sem gritar.': 'Sıcak, ama bağırmayan.',
   'Querem falar': 'Konuşmak istiyor',
   Recado: 'Mesaj',
-  recomendado: 'önerilen',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Çoğu kişi için önerilir. İzleyen gerekirse kaliteyi düşürebilir.',
   'Reconectando ao servidor…': 'Sunucuya yeniden bağlanılıyor…',
@@ -723,8 +708,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'Yeni bir yer, kendi kanallarıyla, ve kimin gireceğine sen karar verirsin.',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'Yeni bir yer, kendi kanallarıyla. Kimin gireceğini davet koduyla sen seçersin.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Ekran kartı yetiştiğinde onu, yetişmediğinde işlemciyi kullanır.',
   Usar: 'Kullan',
   'Uso do servidor': 'Sunucu kullanımı',
   'Vale a partir do próximo compartilhamento.': 'Bir sonraki paylaşımdan itibaren geçerli.',

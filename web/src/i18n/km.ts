@@ -154,7 +154,6 @@ export default {
   'Ativar microfone': 'បើកមីក្រូហ្វូន',
   'Aurora': 'ពន្លឺប៉ូល',
   'Ausente': 'មិននៅ',
-  'Automático': 'ស្វ័យប្រវត្តិ',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'ជូនដំណឹងអំពីសារថ្មីនៅពេល Syden ត្រូវបានបង្រួម នៅផ្ទៃខាងក្រោយ ឬនៅក្នុងឆានែលផ្សេង។',
   'Azul claro.': 'ពណ៌ខៀវខ្ចី។',
@@ -222,7 +221,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ចាប់ផ្តើមសហគមន៍របស់អ្នក ឬចូលរួមសហគមន៍របស់គេដោយប្រើកូដដែលគេផ្តល់ឱ្យ។',
   'Começo': 'ចំណុចចាប់ផ្តើម',
-  'Como a imagem é comprimida': 'របៀបបង្ហាប់រូបភាព',
   'Como administrador, você pode remover membros que não são administradores.':
     'ក្នុងនាមជាអ្នកគ្រប់គ្រង អ្នកអាចដកសមាជិកដែលមិនមែនជាអ្នកគ្រប់គ្រងចេញ។',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -260,7 +258,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'កាត់សំឡេងជាចង្វាក់ ដូចស្លាបដែលកំពុងវិល។',
   'Cortando…': 'កំពុងកាត់…',
   'Cosmos': 'សកលលោក',
-  'costuma usar a placa': 'ជាធម្មតាប្រើកាតក្រាហ្វិក',
   'Criar a minha': 'បង្កើតរបស់ខ្ញុំ',
   'Criar canal': 'បង្កើតឆានែល',
   'Criar tópico': 'បង្កើតប្រធានបទ',
@@ -572,8 +569,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'នេះជាការចាប់ផ្តើមនៃការសន្ទនា។ មានតែអ្នកដែលនៅក្នុងវាទេដែលឃើញអ្វីដែលសរសេរនៅទីនេះ។',
   'Este é o começo do canal.': 'នេះជាការចាប់ផ្តើមនៃឆានែល។',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'កម្មវិធីរុករកនេះមិនប្រាប់ថាកម្មវិធីអ៊ិនកូដមួយណាល្អជាងទេ។ ក្នុងរបៀបស្វ័យប្រវត្តិ ប្រើ VP8 ដែលដំណើរការគ្រប់កន្លែង។',
   'Europa': 'អឺរ៉ុប',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'ការពារកុំឱ្យអ្នកដទៃឮសំឡេងខ្លួនឯងត្រឡប់មកវិញ នៅពេលអ្នកប្រើឧបករណ៍បំពងសំឡេង។',
@@ -602,11 +597,9 @@ export default {
   'Fechar tópico': 'បិទប្រធានបទ',
   'Fica assim:': 'វានឹងដូចនេះ៖',
   'Fim': 'ចំណុចបញ្ចប់',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'រក្សា H.264 ទោះបីវាធ្លាក់មកប្រព័ន្ធដំណើរការក៏ដោយ។',
   'Floresta': 'ព្រៃឈើ',
   'Fluido': 'រលូន',
   'Folha': 'ស្លឹកឈើ',
-  'Funciona em tudo. Roda no processador.': 'ដំណើរការគ្រប់កន្លែង។ រត់លើប្រព័ន្ធដំណើរការ។',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ដំណើរការទោះ Syden ត្រូវបានបង្រួមក៏ដោយ អំឡុងពេលហៅ៖',
   'Fundo do perfil': 'ផ្ទៃខាងក្រោយប្រវត្តិរូប',
   'Ganha fazendo alguma coisa no Syden': 'ទទួលបានដោយធ្វើអ្វីមួយនៅក្នុង Syden',
@@ -729,10 +722,6 @@ export default {
   'Nenhuma denúncia até agora.': 'មិនទាន់មានរបាយការណ៍ទេ។',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'មិនទាន់មានបទចម្រៀងទេ។ ផ្ទុកឯកសារដែលអ្នកមានឡើង ដើម្បីឱ្យមិត្តភក្តិច្រៀង។',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'នៅលើកុំព្យូទ័រនេះ ក្នុងរបៀបស្វ័យប្រវត្តិ៖ H.264 តាមកាតក្រាហ្វិក។ វាទុកប្រព័ន្ធដំណើរការច្រើនបំផុតសម្រាប់ហ្គេម។',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'នៅលើកុំព្យូទ័រនេះ ក្នុងរបៀបស្វ័យប្រវត្តិ៖ VP8 តាមប្រព័ន្ធដំណើរការ។ កាតក្រាហ្វិកមិនអ៊ិនកូដ H.264 ក្នុងទំហំរូបភាពនេះទេ។',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'មិនទាន់មាននរណាបើកការផ្សាយរបស់អ្នកទេ។ Syden អ៊ិនកូដរូបភាពតែនៅពេលមាននរណាម្នាក់មើល — ដូច្នេះគ្មានលេខនៅទីនេះទេ។',
   'Ninguém com a palavra ainda': 'មិនទាន់មាននរណាមានវេននិយាយទេ',
@@ -743,8 +732,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'មិនទាន់មាននរណាត្រូវណែនាំទេ — ចូលរួមសហគមន៍មួយដើម្បីស្គាល់មនុស្ស។',
   'Ninguém respondeu neste tópico ainda.': 'មិនទាន់មាននរណាឆ្លើយក្នុងប្រធានបទនេះទេ។',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'ក្នុងរបៀបស្វ័យប្រវត្តិ មុនការផ្សាយនីមួយៗ Syden សួរកុំព្យូទ័រថា H.264 អាចចេញតាមកាតក្រាហ្វិកក្នុងទំហំដែលបានជ្រើសរើសឬទេ — ហើយប្រើតែនៅពេលអាច។ ទុកដូច្នេះ លុះត្រាតែអ្នកចង់ប្រៀបធៀបទាំងពីរ។ មានប្រសិទ្ធភាពចាប់ពីការចែករំលែកលើកក្រោយ។',
   'Noite estrelada': 'យប់មានផ្កាយ',
   'Nome': 'ឈ្មោះ',
   'Nome alterado.': 'បានប្តូរឈ្មោះ។',
@@ -766,7 +753,6 @@ export default {
   'O cartão liso.': 'កាតធម្មតា។',
   'O céu inteiro girando bem devagar.': 'មេឃទាំងមូលវិលយឺតៗ។',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ឃ្លីបធំពេកសម្រាប់ការជជែក។ សូមជ្រើសរើសផ្នែកខ្លីជាង។',
-  'o de sempre': 'ដូចសព្វដង',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'កម្មវិធីរុករកបានទប់ស្កាត់ការជូនដំណឹងពីគេហទំព័រនេះ។ អនុញ្ញាតនៅរូបសោក្បែរអាសយដ្ឋាន ហើយផ្ទុកទំព័រឡើងវិញ។',
   'O nome como sempre foi.': 'ឈ្មោះដូចសព្វដង។',
@@ -877,7 +863,6 @@ export default {
   'Querem falar': 'ចង់និយាយ',
   'Rádio de avião': 'វិទ្យុយន្តហោះ',
   'Recado': 'សេចក្តីជូនដំណឹង',
-  'recomendado': 'បានណែនាំ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ណែនាំសម្រាប់មនុស្សភាគច្រើន។ អ្នកមើលអាចបន្ថយគុណភាពបើចាំបាច់។',
   'Recompensa': 'រង្វាន់',
@@ -1064,8 +1049,6 @@ export default {
     'រូបភាពទូលាយ 1200 × 300 ឬប្រហាក់ប្រហែល។ GIF មានចលនាក៏បាន ហើយវាមានចលនាពិតប្រាកដ។ បើគ្មានរូបគម្រប នឹងប្រើរូបភាពដែលអ្នកបានជ្រើសរើសនៅអេក្រង់ស្វាគមន៍។',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'ច្បាប់ ឬសេចក្តីជូនដំណឹងមួយក្នុងមួយបន្ទាត់៖ ទន្សាយរបស់អ្នកមកថ្មីអានម្តងមួយៗ។',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'ប្រើកាតក្រាហ្វិកនៅពេលវាអាចធ្វើបាន និងប្រព័ន្ធដំណើរការនៅពេលវាមិនអាច។',
   'Usar': 'ប្រើ',
   'Uso do servidor': 'ការប្រើប្រាស់ម៉ាស៊ីនមេ',
   'Vale a partir do próximo compartilhamento.': 'មានប្រសិទ្ធភាពចាប់ពីការចែករំលែកលើកក្រោយ។',

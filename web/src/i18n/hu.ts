@@ -156,7 +156,6 @@ export default {
   'Ativar microfone': 'Mikrofon bekapcsolása',
   'Aurora': 'Sarki fény',
   'Ausente': 'Távol',
-  'Automático': 'Automatikus',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Szól az új üzenetekről, amikor a Syden kis méretben, a háttérben vagy egy másik csatornán van.',
   'Azul claro.': 'Világoskék.',
@@ -224,7 +223,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Indítsd el a sajátodat, vagy lépj be valaki máséba a tőle kapott kóddal.',
   'Começo': 'Eleje',
-  'Como a imagem é comprimida': 'Hogyan tömörül a kép',
   'Como administrador, você pode remover membros que não são administradores.':
     'Adminisztrátorként eltávolíthatod azokat a tagokat, akik nem adminisztrátorok.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -262,7 +260,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Ütemekre szaggatja a hangot, mint a pörgő rotorlapátok.',
   'Cortando…': 'Vágás…',
   'Cosmos': 'Kozmosz',
-  'costuma usar a placa': 'általában a videókártyát használja',
   'Criar a minha': 'Saját létrehozása',
   'Criar canal': 'Csatorna létrehozása',
   'Criar tópico': 'Szál létrehozása',
@@ -574,8 +571,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Ez a beszélgetés eleje. Az itt írtakat csak a résztvevők látják.',
   'Este é o começo do canal.': 'Ez a csatorna eleje.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Ez a böngésző nem árulja el, melyik kódoló a jobb. Automatikusan a VP8 marad, ami mindenen működik.',
   'Europa': 'Európa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Megakadályozza, hogy mások visszahallják a saját hangjukat, ha hangszórót használsz.',
@@ -604,11 +599,9 @@ export default {
   'Fechar tópico': 'Szál bezárása',
   'Fica assim:': 'Így lesz:',
   'Fim': 'Vége',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Rögzíti a H.264-et, akkor is, ha a processzorra kerül.',
   'Floresta': 'Erdő',
   'Fluido': 'Folyamatos',
   'Folha': 'Levél',
-  'Funciona em tudo. Roda no processador.': 'Mindenen működik. A processzoron fut.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Akkor is működnek, ha a Syden kis méretben van, hívás közben:',
   'Fundo do perfil': 'Profilháttér',
   'Ganha fazendo alguma coisa no Syden': 'A Sydenben végzett tettekért jár',
@@ -731,10 +724,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Eddig nincs jelentés.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Még nincs dal. Tölts fel egy fájlt, ami megvan neked, hogy a banda énekelhessen.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Ezen a gépen, automatikusan: H.264 a videókártyán. Így marad a legtöbb processzor a játéknak.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Ezen a gépen, automatikusan: VP8 a processzoron. A videókártya ebben a képméretben nem kódol H.264-et.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Még senki nem nyitotta meg a közvetítésedet. A Syden csak akkor kódolja a képet, ha valaki nézi — ezért nincsenek itt számok.',
   'Ninguém com a palavra ainda': 'Még senki nem kapott szót',
@@ -745,8 +734,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Egyelőre nincs kit ajánlani — csatlakozz egy közösséghez, hogy embereket ismerj meg.',
   'Ninguém respondeu neste tópico ainda.': 'Még senki nem válaszolt ebben a szálban.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Automatikusan a Syden minden közvetítés előtt megkérdezi a gépet, hogy a választott méretben megy-e a H.264 a videókártyán — és csak akkor használja, ha igen. Hagyd így, hacsak nem akarod összehasonlítani a kettőt. A következő megosztástól érvényes.',
   'Noite estrelada': 'Csillagos éj',
   'Nome': 'Név',
   'Nome alterado.': 'Név módosítva.',
@@ -768,7 +755,6 @@ export default {
   'O cartão liso.': 'A sima kártya.',
   'O céu inteiro girando bem devagar.': 'Az egész égbolt nagyon lassan forog.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'A klip túl nagy lett a csevegéshez. Válassz rövidebb részletet.',
-  'o de sempre': 'a szokásos',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'A böngésző letiltotta az oldal értesítéseit. Engedélyezd a cím melletti lakatnál, és töltsd újra az oldalt.',
   'O nome como sempre foi.': 'A név, ahogy mindig is volt.',
@@ -879,7 +865,6 @@ export default {
   'Querem falar': 'Szólni szeretnének',
   'Rádio de avião': 'Repülőrádió',
   'Recado': 'Közlemény',
-  'recomendado': 'ajánlott',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'A legtöbbeknek ajánlott. A néző szükség esetén csökkentheti a minőséget.',
   'Recompensa': 'Jutalom',
@@ -1067,8 +1052,6 @@ export default {
     'Széles kép, 1200×300 vagy hasonló. Animált GIF is jó, és tényleg mozog. Borító nélkül az üdvözlőképernyőn választott kép marad.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Soronként egy szabály vagy közlemény: az érkező nyuszija egyenként felolvassa őket.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'A videókártyát használja, ha bírja, és a processzort, ha nem.',
   'Usar': 'Használat',
   'Uso do servidor': 'Szerverhasználat',
   'Vale a partir do próximo compartilhamento.': 'A következő megosztástól érvényes.',

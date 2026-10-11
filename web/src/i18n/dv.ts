@@ -164,7 +164,6 @@ export default {
   'Ativar microfone': 'މައިކް ހުޅުވާ',
   'Aurora': 'އޯރޯރާ',
   'Ausente': 'ދުރަށް ގޮސް',
-  'Automático': 'އޮޓޯމެޓިކް',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden ކުޑަކޮށްފައި، ފަހަތުގައި ނުވަތަ އެހެން ޗެނަލެއްގައި ހުންނައިރު އާ މެސެޖުތަކުގެ ނޮޓިފިކޭޝަން ދޭނެ.',
   'Azul claro.': 'ލުއި ނޫ.',
@@ -232,7 +231,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ތިބާގެ އަމިއްލަ ކޮމިއުނިޓީއެއް ފަށާ، ނުވަތަ މީހަކު ދިން ކޯޑުން އެމީހާގެ ކޮމިއުނިޓީއަށް ވަދޭ.',
   'Começo': 'ފެށުން',
-  'Como a imagem é comprimida': 'ފޮޓޯ ކޮމްޕްރެސް ކުރާ ގޮތް',
   'Como administrador, você pode remover membros que não são administradores.':
     'އެޑްމިނެއްގެ ގޮތުން، އެޑްމިނުން ނޫން މެމްބަރުން ނެރެވޭނެ.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -271,7 +269,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'އަޑު ބީޓްތަކަށް ކަނޑާ، ބުރުޖަހާ ފަންކާއެއް ފަދައިން.',
   'Cortando…': 'ކަނޑަނީ…',
   'Cosmos': 'ކޮސްމޮސް',
-  'costuma usar a placa': 'އާންމުކޮށް ގްރެފިކްސް ކާޑު ބޭނުންކުރޭ',
   'Criar a minha': 'އަޅުގަނޑުގެ އެއް ހަދާ',
   'Criar canal': 'ޗެނަލެއް ހަދާ',
   'Criar tópico': 'ތްރެޑެއް ހަދާ',
@@ -584,8 +581,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'މިއީ ޗެޓުގެ ފެށުން. މިތާނގައި ލިޔާ އެއްޗެއް ފެންނާނީ ޗެޓުގައިވާ މީހުންނަށް އެކަނި.',
   'Este é o começo do canal.': 'މިއީ ޗެނަލުގެ ފެށުން.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'މި ބްރައުޒަރަކުން ރަނގަޅު އެންކޯޑަރަކީ ކޮބައިކަން ނުބުނޭ. އޮޓޯމެޓިކް ގޮތުގައި ހުންނާނީ VP8، އެއީ ހުރިހާ ތަނެއްގައި ހިނގާ އެއްޗެއް.',
   'Europa': 'ޔޫރަޕު',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'ތިބާ ސްޕީކަރު ބޭނުންކުރާއިރު، އެހެން މީހުންނަށް އަމިއްލަ އަޑު އަނބުރާ އިވުން ހުއްޓުވާ.',
@@ -614,11 +609,9 @@ export default {
   'Fechar tópico': 'ތްރެޑް ބަންދުކުރޭ',
   'Fica assim:': 'ފެންނާނީ މިހެން:',
   'Fim': 'ނިމުން',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'ޕްރޮސެސަރަށް ވެއްޓުނަސް H.264 ހަރުކުރޭ.',
   'Floresta': 'ޖަންގަލި',
   'Fluido': 'ހިމޭން',
   'Folha': 'ފަތް',
-  'Funciona em tudo. Roda no processador.': 'ހުރިހާ ތަނެއްގައި ހިނގާ. ހިނގަނީ ޕްރޮސެސަރުން.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ކޯލެއްގެ ތެރޭގައި، Syden ކުޑަކޮށްފައި ހުއްޓަސް ހިނގާނެ:',
   'Fundo do perfil': 'ޕްރޮފައިލް ބެކްގްރައުންޑް',
   'Ganha fazendo alguma coisa no Syden': 'Syden ގައި އެއްޗެއް ކޮށްގެން ލިބޭ',
@@ -740,10 +733,6 @@ export default {
   'Nenhuma denúncia até agora.': 'މިހާތަނަށް އެއްވެސް ރިޕޯޓެއް ނެތް.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'އަދި އެއްވެސް ލަވައެއް ނެތް. ހުރިހާ މީހުންނަށް ކިޔުމަށް، ތިބާގެ އަތުގައިވާ ފައިލެއް އަޕްލޯޑްކުރޭ.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'މި ކޮމްޕިއުޓަރުގައި އޮޓޯމެޓިކް: ގްރެފިކްސް ކާޑުން H.264. ގޭމަށް އެންމެ ގިނައިން ޕްރޮސެސަރު ބާކީވަނީ މިގޮތުން.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'މި ކޮމްޕިއުޓަރުގައި އޮޓޯމެޓިކް: ޕްރޮސެސަރުން VP8. މި ސައިޒުގެ ފޮޓޯއަށް ގްރެފިކްސް ކާޑުން H.264 އެންކޯޑެއް ނުކުރޭ.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'ތިބާގެ ސްޓްރީމް އަދި އެއްވެސް މީހަކު ނުހުޅުވާ. Syden ފޮޓޯ އެންކޯޑްކުރަނީ މީހަކު ބަލާއިރު އެކަނި — އެހެންވީމާ މިތާނގައި އަދަދެއް ނެތް.',
   'Ninguém com a palavra ainda': 'އަދި އެއްވެސް މީހަކަށް ފުރުޞަތެއް ނުދޭ',
@@ -754,8 +743,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'މިހާރު ހުށަހަޅާނެ އެއްވެސް މީހަކު ނެތް — މީހުންނާ ދެނެގަތުމަށް ކޮމިއުނިޓީއަކަށް ވަދޭ.',
   'Ninguém respondeu neste tópico ainda.': 'މި ތްރެޑުގައި އަދި އެއްވެސް މީހަކު ޖަވާބެއް ނުދޭ.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'އޮޓޯމެޓިކް ގޮތުގައި، ކޮންމެ ސްޓްރީމެއްގެ ކުރިން Syden ކޮމްޕިއުޓަރާ ސުވާލުކުރާނެ، ހޮވި ސައިޒުގައި ގްރެފިކްސް ކާޑުން H.264 ނިކުމޭތޯ — އަދި ނިކުމެއްޖެނަމަ އެކަނި ބޭނުންކުރާނެ. ދެގޮތް އަޅާކިޔަން ބޭނުމެއް ނޫންނަމަ، މިހެން ބާއްވާ. ހިނގާނީ ދެން ކުރާ ޝެއާއިން.',
   'Noite estrelada': 'ތަރިތައް ހުރި ރޭ',
   'Nome': 'ނަން',
   'Nome alterado.': 'ނަން ބަދަލުވެއްޖެ.',
@@ -777,7 +764,6 @@ export default {
   'O cartão liso.': 'ސާދާ ކާޑު.',
   'O céu inteiro girando bem devagar.': 'މުޅި އުޑު ވަރަށް ލަސްލަހުން ބުރުޖަހާ.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ކްލިޕް ޗެޓަށް ވަރަށް ބޮޑުވެއްޖެ. ކުރު ބައެއް ހޮވާ.',
-  'o de sempre': 'އާދައިގެ',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'ބްރައުޒަރު މި ސައިޓުގެ ނޮޓިފިކޭޝަންތައް ބްލޮކްކޮށްފި. އެޑްރެހުގެ ކައިރީގައިވާ ތަޅުން ހުއްދަ ދީ، ޞަފްޙާ ރީލޯޑްކުރޭ.',
   'O nome como sempre foi.': 'ނަން، އަބަދުވެސް ހުރި ގޮތަށް.',
@@ -889,7 +875,6 @@ export default {
   'Querem falar': 'ވާހަކަ ދައްކަން ބޭނުން',
   'Rádio de avião': 'މަތިންދާބޯޓުގެ ރޭޑިއޯ',
   'Recado': 'ނޯޓް',
-  'recomendado': 'ރިކަމެންޑްކުރާ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ގިނަ މީހުންނަށް ރިކަމެންޑްކުރާ. ބަލާ މީހުންނަށް ބޭނުންނަމަ ކޮލިޓީ ދަށްކުރެވޭނެ.',
   'Recompensa': 'އިނާމު',
@@ -1075,8 +1060,6 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'ފުޅާ ފޮޓޯއެއް، 1200×300 ނުވަތަ އެއާ ގާތް. އެނިމޭޓެޑް GIF ވެސް ހިނގާނެ، އަދި ހަގީގަތުގައިވެސް ހަރަކާތްކުރާނެ. ކަވަރެއް ނެތްނަމަ، ފެންނާނީ މަރުޙަބާ ސްކްރީނުގައި ހޮވި ފޮޓޯ.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ކޮންމެ ލައިނެއްގައި އެއް ޤަވާޢިދެއް ނުވަތަ ނޯޓެއް: އަންނަ މީހާގެ ރެބިޓް އެއްޗެއްފަހު އަނެއްޗެއް ކިޔާނެ.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'ގްރެފިކްސް ކާޑަށް ކުރެވޭނަމަ އެއީ، ނުކުރެވޭނަމަ ޕްރޮސެސަރު ބޭނުންކުރޭ.',
   'Usar': 'ބޭނުންކުރޭ',
   'Uso do servidor': 'ސާވަރު ބޭނުންކުރި މިންވަރު',
   'Vale a partir do próximo compartilhamento.': 'ހިނގާނީ ދެން ކުރާ ޝެއާއިން.',

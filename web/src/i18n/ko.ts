@@ -69,7 +69,6 @@ export default {
   'Ativar áudio': '소리 켜기',
   'Ativar microfone': '마이크 켜기',
   Ausente: '자리 비움',
-  'Automático': '자동',
   'Azul claro.': '밝은 파랑.',
   'Azul em movimento.': '움직이는 파랑.',
   'Azul fechado, quase roxo.': '짙은 파랑, 거의 보라.',
@@ -106,7 +105,6 @@ export default {
   'Começa a aparecer': '보이기 시작해요',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     '내 커뮤니티를 만들거나, 받은 코드로 남의 커뮤니티에 들어가세요.',
-  'Como a imagem é comprimida': '화면이 어떻게 압축되는지',
   'Como vai ficar': '이렇게 보여요',
   'Como vão te ver': '다른 사람에게 보이는 모습',
   'comum mostra a letra parada, para acompanhar.': '일반 파일은 가사를 멈춰서 보여줘요. 따라 읽기 좋게요.',
@@ -131,7 +129,6 @@ export default {
   'Copiar link de convite': '초대 링크 복사',
   Cor: '색',
   'Cor do nome': '이름 색',
-  'costuma usar a placa': '보통 그래픽 카드를 써요',
   'Criar a minha': '내 것 만들기',
   'Criar canal': '채널 만들기',
   'Criar tópico': '스레드 만들기',
@@ -397,8 +394,6 @@ export default {
     '이 방송에는 소리가 없어요. 방송하는 사람이 화면을 고를 때 “오디오 공유”를 체크해야 해요.',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': '대화의 시작이에요. 여기 쓰는 내용은 참여한 사람만 봐요.',
   'Este é o começo do canal.': '채널의 시작이에요.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    '이 브라우저는 어느 인코더가 나은지 알려 주지 않아요. 자동에서는 어디서나 되는 VP8로 남습니다.',
   'Ex.: Chegou!': '예: 왔다!',
   'ex.: Evidências': '예: 증거',
   'Ex.: k3m9xq2p': '예: k3m9xq2p',
@@ -415,10 +410,8 @@ export default {
   'Fechar configurações': '설정 닫기',
   'Fechar o karaokê': '노래방 닫기',
   'Fechar tópico': '스레드 닫기',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'CPU로 떨어지더라도 H.264로 고정해요.',
   Fluido: '부드럽게',
   'Folha': '잎',
-  'Funciona em tudo. Roda no processador.': '어디서나 돼요. CPU로 돌아갑니다.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': '통화 중에는 Syden을 최소화해도 작동해요:',
   'Ganha fazendo alguma coisa no Syden': 'Syden에서 무언가를 해서 받아요',
   GIF: 'GIF',
@@ -493,10 +486,6 @@ export default {
   'Nenhuma denúncia até agora.': '아직 신고가 없어요.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     '아직 곡이 없어요. 가지고 있는 파일을 올려서 다 같이 불러 봐요.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    '이 컴퓨터에서 자동일 때: 그래픽 카드로 H.264. 게임에 CPU를 가장 많이 남겨 주는 방식이에요.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    '이 컴퓨터에서 자동일 때: CPU로 VP8. 이 화면 크기에서는 그래픽 카드가 H.264를 인코딩하지 않아요.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     '아직 아무도 방송을 열지 않았어요. Syden은 보는 사람이 있을 때만 화면을 인코딩해요 — 그래서 여기에 숫자가 없습니다.',
   'Ninguém com a palavra ainda': '아직 발언권을 받은 사람이 없어요',
@@ -507,8 +496,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     '아직 추천할 사람이 없어요 — 커뮤니티에 들어가서 사람들을 만나 보세요.',
   'Ninguém respondeu neste tópico ainda.': '이 스레드에는 아직 답이 없어요.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    '자동일 때 Syden은 방송을 시작하기 전에 컴퓨터에 물어봐요. 고른 크기에서 H.264가 그래픽 카드로 나가는지 — 그럴 때만 씁니다. 둘을 비교해 보고 싶은 게 아니라면 그대로 두세요. 다음 화면 공유부터 적용돼요.',
   Nome: '이름',
   'Nome da comunidade': '커뮤니티 이름',
   'Nome de usuário': '사용자 이름',
@@ -525,7 +512,6 @@ export default {
     '채널이 메시지까지 함께 모두의 눈앞에서 사라져요. {dias}일 동안은 설정 → 커뮤니티 → 휴지통에서 되살릴 수 있어요.',
   'O cartão liso.': '무늬 없는 카드.',
   'O céu inteiro girando bem devagar.': '하늘 전체가 아주 천천히 돌아요.',
-  'o de sempre': '늘 쓰던 것',
   'o nome exato da pessoa': '그 사람의 정확한 이름',
   'O nome muda de cor devagar.': '이름 색이 천천히 바뀌어요.',
   'O que aconteceu?': '무슨 일이 있었나요?',
@@ -598,7 +584,6 @@ export default {
   'Quente, mas sem gritar.': '따뜻하지만 요란하지 않아요.',
   'Querem falar': '말하고 싶어 해요',
   Recado: '메시지',
-  recomendado: '추천',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': '대부분에게 추천해요. 보는 사람이 필요하면 화질을 낮출 수 있어요.',
   'Reconectando ao servidor…': '서버에 다시 연결하는 중…',
   Registro: '기록',
@@ -718,7 +703,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': '나만의 채널이 있는 새 공간. 누가 들어올지는 내가 정해요.',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     '나만의 채널이 있는 새 공간. 초대 코드로 누가 들어올지 고릅니다.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': '그래픽 카드가 감당하면 그걸 쓰고, 아니면 CPU를 써요.',
   Usar: '사용',
   'Uso do servidor': '서버 사용량',
   'Vale a partir do próximo compartilhamento.': '다음 화면 공유부터 적용돼요.',

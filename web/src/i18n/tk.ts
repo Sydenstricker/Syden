@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'Mikrofony aç',
   'Aurora': 'Demirgazyk şapagy',
   'Ausente': 'Ýerimde ýok',
-  'Automático': 'Awtomatik',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden kiçeldilen, fonda ýa-da başga kanalda bolanda täze habarlar barada habar berýär.',
   'Azul claro.': 'Açyk gök.',
@@ -225,7 +224,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Öz jemgyýetiňi döret ýa-da saňa berlen kod bilen başga biriniňkä gir.',
   'Começo': 'Başlangyç',
-  'Como a imagem é comprimida': 'Surat nähili gysylýar',
   'Como administrador, você pode remover membros que não são administradores.':
     'Administrator hökmünde administrator däl agzalary aýryp bilýärsiň.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -263,7 +261,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Sesi aýlanýan perler ýaly urgulara bölýär.',
   'Cortando…': 'Kesilýär…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'adatça wideokartany ulanýar',
   'Criar a minha': 'Özümkini döret',
   'Criar canal': 'Kanal döret',
   'Criar tópico': 'Şaha döret',
@@ -575,8 +572,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Bu söhbetiň başlangyjy. Bu ýerde ýazylany diňe söhbetdäkiler görýär.',
   'Este é o começo do canal.': 'Bu kanalyň başlangyjy.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Bu brauzer haýsy kodlaýjynyň gowudygyny aýdanok. Awtomatik ýagdaýda hemme ýerde işleýän VP8 galýar.',
   'Europa': 'Ýewropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Gepleýji ulananyňda beýlekileriň öz seslerini yzyna eşitmeginiň öňüni alýar.',
@@ -605,11 +600,9 @@ export default {
   'Fechar tópico': 'Şahany ýap',
   'Fica assim:': 'Şeýle bolar:',
   'Fim': 'Soňy',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Prosessora düşse-de, H.264-i saklaýar.',
   'Floresta': 'Tokaý',
   'Fluido': 'Ýumşak',
   'Folha': 'Ýaprak',
-  'Funciona em tudo. Roda no processador.': 'Hemme ýerde işleýär. Prosessorda işleýär.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Jaň wagtynda Syden kiçeldilen bolsa-da işleýär:',
   'Fundo do perfil': 'Profiliň fony',
   'Ganha fazendo alguma coisa no Syden': 'Syden-de bir zat edeniňde berilýär',
@@ -732,10 +725,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Häzirlikçe şikaýat ýok.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Entek aýdym ýok. Toparyň aýdym aýtmagy üçin özüňdäki bir faýly ýükle.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Bu kompýuterde, awtomatik: wideokartanyň üsti bilen H.264. Şeýdip oýun üçin iň köp prosessor galýar.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Bu kompýuterde, awtomatik: prosessoryň üsti bilen VP8. Wideokarta bu surat ölçeginde H.264-i kodlamaýar.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Entek hiç kim ýaýlymyňy açmady. Syden suraty diňe kimdir biri tomaşa edende kodlaýar — şonuň üçin bu ýerde san ýok.',
   'Ninguém com a palavra ainda': 'Entek hiç kime söz berilmedi',
@@ -746,8 +735,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Häzirlikçe teklip etmäge hiç kim ýok — adamlar bilen tanyşmak üçin bir jemgyýete gir.',
   'Ninguém respondeu neste tópico ainda.': 'Bu şahada entek hiç kim jogap bermedi.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Awtomatik ýagdaýda Syden her ýaýlymdan öň kompýuterden H.264-iň saýlanan ölçegde wideokartanyň üsti bilen geçip bilýändigini soraýar — we diňe geçip bilse ulanýar. Ikisini deňeşdirjek bolmasaň, şeýle goý. Indiki paýlaşmadan güýje girýär.',
   'Noite estrelada': 'Ýyldyzly gije',
   'Nome': 'At',
   'Nome alterado.': 'At üýtgedildi.',
@@ -769,7 +756,6 @@ export default {
   'O cartão liso.': 'Ýönekeý kart.',
   'O céu inteiro girando bem devagar.': 'Tutuş asman örän haýal aýlanýar.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip çat üçin aşa uly boldy. Gysgaräk bölek saýla.',
-  'o de sempre': 'adatdaky',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Brauzer bu saýtyň bildirişlerini blokirledi. Salgynyň ýanyndaky gulpda rugsat ber we sahypany täzeden ýükle.',
   'O nome como sempre foi.': 'At hemişeki ýaly.',
@@ -880,7 +866,6 @@ export default {
   'Querem falar': 'Gürlemek isleýärler',
   'Rádio de avião': 'Uçar radiosy',
   'Recado': 'Habarnama',
-  'recomendado': 'maslahat berilýär',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Köpüsi üçin maslahat berilýär. Tomaşaçy gerek bolsa hilini peseldip biler.',
   'Recompensa': 'Sylag',
@@ -1067,8 +1052,6 @@ export default {
     'Giň surat, 1200-e 300 ýa-da şoňa meňzeş. Hereketli GIF hem bolýar we hakykatdanam hereket edýär. Örtük bolmasa, garşylaýyş üçin saýlan suratyň galýar.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Her setirde bir düzgün ýa-da habarnama: täze gelen adamyň towşany olary birme-bir okaýar.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Wideokarta başarýan bolsa ony, başarmasa prosessory ulanýar.',
   'Usar': 'Ulan',
   'Uso do servidor': 'Serweriň ulanylyşy',
   'Vale a partir do próximo compartilhamento.': 'Indiki paýlaşmadan güýje girýär.',

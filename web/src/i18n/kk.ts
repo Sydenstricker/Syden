@@ -151,7 +151,6 @@ export default {
   'Ativar microfone': 'Микрофонды қосу',
   'Aurora': 'Солтүстік шұғыла',
   'Ausente': 'Жоқ',
-  'Automático': 'Автоматты',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden кішірейтілгенде, фонда немесе басқа арнада тұрғанда жаңа хабарламалар туралы хабарлайды.',
   'Azul claro.': 'Ашық көк.',
@@ -219,7 +218,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Өзіңіздікін бастаңыз немесе біреу берген кодпен соның қауымдастығына кіріңіз.',
   'Começo': 'Басы',
-  'Como a imagem é comprimida': 'Сурет қалай сығылады',
   'Como administrador, você pode remover membros que não são administradores.':
     'Әкімші ретінде әкімші емес мүшелерді шығара аласыз.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -257,7 +255,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Айналып тұрған қалақтар сияқты дауысты соққыларға бөледі.',
   'Cortando…': 'Кесілуде…',
   'Cosmos': 'Ғарыш',
-  'costuma usar a placa': 'әдетте бейнекартаны пайдаланады',
   'Criar a minha': 'Өзімдікін жасау',
   'Criar canal': 'Арна жасау',
   'Criar tópico': 'Тақырып жасау',
@@ -569,8 +566,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Бұл әңгіменің басы. Мұнда жазылғанды тек оның қатысушылары көреді.',
   'Este é o começo do canal.': 'Бұл арнаның басы.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Бұл браузер қай кодтауыш жақсы екенін айтпайды. Автоматты режимде барлық жерде жұмыс істейтін VP8 қалады.',
   'Europa': 'Еуропа',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Динамик қолданғанда басқалардың өз дауысын қайта естуіне жол бермейді.',
@@ -599,11 +594,9 @@ export default {
   'Fechar tópico': 'Тақырыпты жабу',
   'Fica assim:': 'Былай болады:',
   'Fim': 'Соңы',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Процессорға түсіп кетсе де, H.264-ті бекітеді.',
   'Floresta': 'Орман',
   'Fluido': 'Бірқалыпты',
   'Folha': 'Жапырақ',
-  'Funciona em tudo. Roda no processador.': 'Барлық жерде жұмыс істейді. Процессорда орындалады.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Қоңырау кезінде Syden кішірейтілсе де жұмыс істейді:',
   'Fundo do perfil': 'Профиль фоны',
   'Ganha fazendo alguma coisa no Syden': 'Syden-де бірдеңе істеп алынады',
@@ -726,10 +719,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Әзірге шағым жоқ.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Әзірге ән жоқ. Достар айтуы үшін өзіңізде бар файлды жүктеңіз.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Бұл компьютерде, автоматты режимде: бейнекарта арқылы H.264. Ойынға процессорды ең көп қалдыратыны осы.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Бұл компьютерде, автоматты режимде: процессор арқылы VP8. Бейнекарта бұл сурет өлшемінде H.264 кодтамайды.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Трансляцияңызды әлі ешкім ашқан жоқ. Syden суретті біреу көргенде ғана кодтайды — сондықтан мұнда сандар жоқ.',
   'Ninguém com a palavra ainda': 'Әзірге ешкімге сөз берілмеген',
@@ -740,8 +729,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Әзірге ұсынатын ешкім жоқ — адамдармен танысу үшін қауымдастыққа қосылыңыз.',
   'Ninguém respondeu neste tópico ainda.': 'Бұл тақырыпта әлі ешкім жауап бермеген.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Автоматты режимде Syden әр трансляция алдында компьютерден таңдалған өлшемде H.264 бейнекарта арқылы шыға ала ма деп сұрайды — және тек шыға алса ғана қолданады. Екеуін салыстырғыңыз келмесе, осылай қалдырыңыз. Келесі көрсетуден бастап күшіне енеді.',
   'Noite estrelada': 'Жұлдызды түн',
   'Nome': 'Атауы',
   'Nome alterado.': 'Аты өзгертілді.',
@@ -763,7 +750,6 @@ export default {
   'O cartão liso.': 'Қарапайым карта.',
   'O céu inteiro girando bem devagar.': 'Бүкіл аспан өте баяу айналады.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клип чат үшін тым үлкен болып қалды. Қысқарақ үзінді таңдаңыз.',
-  'o de sempre': 'әдеттегі',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Браузер бұл сайттың хабарландыруларын бұғаттады. Мекенжайдың жанындағы құлып арқылы рұқсат беріп, бетті қайта жүктеңіз.',
   'O nome como sempre foi.': 'Бұрынғыдай ат.',
@@ -874,7 +860,6 @@ export default {
   'Querem falar': 'Сөйлегісі келеді',
   'Rádio de avião': 'Ұшақ радиосы',
   'Recado': 'Хабарландыру',
-  'recomendado': 'ұсынылады',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Көпшілікке ұсынылады. Көрермендер қажет болса сапаны төмендете алады.',
   'Recompensa': 'Марапат',
@@ -1061,8 +1046,6 @@ export default {
     '1200-ге 300 немесе соған жақын кең сурет. Анимациялық GIF те болады және шынымен қозғалады. Мұқаба болмаса, қарсы алу экранында таңдаған суретіңіз қалады.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Әр жолда бір ереже немесе хабарландыру: жаңа келгеннің қояны оларды бір-бірлеп оқиды.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Бейнекарта үлгерсе соны, үлгермесе процессорды пайдаланады.',
   'Usar': 'Пайдалану',
   'Uso do servidor': 'Серверді пайдалану',
   'Vale a partir do próximo compartilhamento.': 'Келесі көрсетуден бастап күшіне енеді.',

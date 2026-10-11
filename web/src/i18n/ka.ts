@@ -172,7 +172,6 @@ export default {
   'Ativar microfone': 'მიკროფონის ჩართვა',
   'Aurora': 'ავრორა',
   'Ausente': 'მოშორებით',
-  'Automático': 'ავტომატური',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'გატყობინებს ახალ მესიჯებზე, როცა Syden ჩაკეცილია, ფონურ რეჟიმშია ან სხვა არხზე ხარ.',
   'Azul claro.': 'ღია ლურჯი.',
@@ -240,7 +239,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'შექმენი შენი ან შეუერთდი სხვისას იმ კოდით, რომელიც მან მოგცა.',
   'Começo': 'დასაწყისი',
-  'Como a imagem é comprimida': 'როგორ იკუმშება გამოსახულება',
   'Como administrador, você pode remover membros que não são administradores.':
     'როგორც ადმინისტრატორს, შეგიძლია გააგდო წევრები, რომლებიც ადმინისტრატორები არ არიან.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -279,7 +277,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'ხმას რიტმულად ჭრის, როგორც მბრუნავი ფრთები.',
   'Cortando…': 'იჭრება…',
   'Cosmos': 'კოსმოსი',
-  'costuma usar a placa': 'ჩვეულებრივ ვიდეობარათს იყენებს',
   'Criar a minha': 'ჩემის შექმნა',
   'Criar canal': 'არხის შექმნა',
   'Criar tópico': 'თემის შექმნა',
@@ -592,8 +589,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'ეს საუბრის დასაწყისია. აქ დაწერილს მხოლოდ მისი მონაწილეები ხედავენ.',
   'Este é o começo do canal.': 'ეს არხის დასაწყისია.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'ეს ბრაუზერი არ ამბობს, რომელი კოდეკია უკეთესი. ავტომატურ რეჟიმში რჩება VP8, რომელიც ყველგან მუშაობს.',
   'Europa': 'ევროპა',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'არ აძლევს სხვებს საშუალებას, საკუთარი ხმა უკან გაიგონ, როცა დინამიკს იყენებ.',
@@ -622,11 +617,9 @@ export default {
   'Fechar tópico': 'თემის დახურვა',
   'Fica assim:': 'ასე გამოიყურება:',
   'Fim': 'დასასრული',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'აფიქსირებს H.264-ს, მაშინაც კი, თუ ის პროცესორზე გადავა.',
   'Floresta': 'ტყე',
   'Fluido': 'გლუვი',
   'Folha': 'ფოთოლი',
-  'Funciona em tudo. Roda no processador.': 'ყველგან მუშაობს. პროცესორზე ეშვება.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ზარის დროს მუშაობს მაშინაც, როცა Syden ჩაკეცილია:',
   'Fundo do perfil': 'პროფილის ფონი',
   'Ganha fazendo alguma coisa no Syden': 'მოიპოვება Syden-ში რამის გაკეთებით',
@@ -748,10 +741,6 @@ export default {
   'Nenhuma denúncia até agora.': 'ჯერჯერობით საჩივარი არ არის.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'ჯერ სიმღერა არ არის. ატვირთე შენთან არსებული ფაილი, რომ ყველამ იმღეროს.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'ამ კომპიუტერზე ავტომატური რეჟიმი: H.264 ვიდეობარათით. ასე თამაშს ყველაზე მეტი პროცესორი რჩება.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'ამ კომპიუტერზე ავტომატური რეჟიმი: VP8 პროცესორით. ვიდეობარათი H.264-ს გამოსახულების ამ ზომაზე ვერ აკოდირებს.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'შენი ტრანსლაცია ჯერ არავის გაუხსნია. Syden გამოსახულებას მხოლოდ მაშინ აკოდირებს, როცა ვინმე უყურებს — ამიტომ აქ რიცხვები არ არის.',
   'Ninguém com a palavra ainda': 'სიტყვა ჯერ არავის აქვს',
@@ -762,8 +751,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'ჯერჯერობით შემოსათავაზებელი არავინაა — შედი რომელიმე საზოგადოებაში ხალხის გასაცნობად.',
   'Ninguém respondeu neste tópico ainda.': 'ამ თემაში ჯერ არავის უპასუხია.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'ავტომატურ რეჟიმში Syden ყოველი ტრანსლაციის წინ კომპიუტერს ეკითხება, გამოდის თუ არა H.264 ვიდეობარათიდან არჩეულ ზომაზე — და მხოლოდ მაშინ იყენებს. ასე დატოვე, თუ ორივეს შედარება არ გინდა. მოქმედებს შემდეგი გაზიარებიდან.',
   'Noite estrelada': 'ვარსკვლავიანი ღამე',
   'Nome': 'სახელი',
   'Nome alterado.': 'სახელი შეიცვალა.',
@@ -785,7 +772,6 @@ export default {
   'O cartão liso.': 'გლუვი ბარათი.',
   'O céu inteiro girando bem devagar.': 'მთელი ცა ძალიან ნელა ბრუნავს.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'კლიპი ჩატისთვის ზედმეტად დიდი გამოვიდა. აირჩიე უფრო მოკლე ფრაგმენტი.',
-  'o de sempre': 'ჩვეულებრივი',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'ბრაუზერმა ამ საიტის შეტყობინებები დაბლოკა. დაუშვი მისამართის გვერდით მდებარე ბოქლომიდან და გვერდი გადატვირთე.',
   'O nome como sempre foi.': 'სახელი, როგორც ყოველთვის.',
@@ -897,7 +883,6 @@ export default {
   'Querem falar': 'ლაპარაკი სურთ',
   'Rádio de avião': 'თვითმფრინავის რადიო',
   'Recado': 'მიმართვა',
-  'recomendado': 'რეკომენდებული',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'რეკომენდებულია უმეტესობისთვის. მაყურებელს საჭიროების შემთხვევაში ხარისხის დაწევა შეუძლია.',
   'Recompensa': 'ჯილდო',
@@ -1083,8 +1068,6 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'ფართო სურათი, 1200×300 ან მსგავსი. ანიმაციური GIF-იც შეიძლება და მართლა მოძრაობს. ყდის გარეშე რჩება სურათი, რომელიც მისალმების ეკრანზე აირჩიე.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'ერთი წესი ან შენიშვნა თითო ხაზზე: ახალმოსულის კურდღელი სათითაოდ წაიკითხავს.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'იყენებს ვიდეობარათს, როცა ის უმკლავდება, და პროცესორს, როცა — არა.',
   'Usar': 'გამოყენება',
   'Uso do servidor': 'სერვერის გამოყენება',
   'Vale a partir do próximo compartilhamento.': 'მოქმედებს შემდეგი გაზიარებიდან.',

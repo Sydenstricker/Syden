@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'माइक्रोफोन खोल्नुहोस्',
   'Aurora': 'ध्रुवीय ज्योति',
   'Ausente': 'टाढा',
-  'Automático': 'स्वचालित',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden सानो पारिएको, पृष्ठभूमिमा वा अर्को च्यानलमा हुँदा नयाँ सन्देशबारे जानकारी दिन्छ।',
   'Azul claro.': 'हल्का नीलो।',
@@ -225,7 +224,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'आफ्नै सुरु गर्नुहोस्, वा कसैले दिएको कोडले उहाँको समुदायमा सामेल हुनुहोस्।',
   'Começo': 'सुरु',
-  'Como a imagem é comprimida': 'तस्बिर कसरी खुम्च्याइन्छ',
   'Como administrador, você pode remover membros que não são administradores.':
     'प्रशासकको नाताले तपाईं प्रशासक नभएका सदस्यहरूलाई हटाउन सक्नुहुन्छ।',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -263,7 +261,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'घुमिरहेका पङ्खाझैँ आवाजलाई ठक्करहरूमा काट्छ।',
   'Cortando…': 'काट्दै…',
   'Cosmos': 'ब्रह्माण्ड',
-  'costuma usar a placa': 'प्रायः ग्राफिक्स कार्ड प्रयोग गर्छ',
   'Criar a minha': 'मेरो आफ्नै बनाउने',
   'Criar canal': 'च्यानल बनाउनुहोस्',
   'Criar tópico': 'थ्रेड बनाउनुहोस्',
@@ -575,8 +572,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'यो कुराकानीको सुरुवात हो। यहाँ लेखिएको कुरा यसमा भएकाहरूले मात्र देख्छन्।',
   'Este é o começo do canal.': 'यो च्यानलको सुरुवात हो।',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'यो ब्राउजरले कुन इन्कोडर राम्रो भनेर बताउँदैन। स्वचालितमा सबैतिर चल्ने VP8 रहन्छ।',
   'Europa': 'युरोप',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'तपाईंले स्पिकर प्रयोग गर्दा अरूले आफ्नै आवाज फर्केर सुन्नबाट जोगाउँछ।',
@@ -605,11 +600,9 @@ export default {
   'Fechar tópico': 'थ्रेड बन्द गर्नुहोस्',
   'Fica assim:': 'यस्तो देखिन्छ:',
   'Fim': 'अन्त्य',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'प्रोसेसरमा चल्नुपरे पनि H.264 नै राख्छ।',
   'Floresta': 'जङ्गल',
   'Fluido': 'सहज',
   'Folha': 'पात',
-  'Funciona em tudo. Roda no processador.': 'सबैतिर चल्छ। प्रोसेसरमा चल्छ।',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'कलको बेला Syden सानो पारिएको भए पनि चल्छन्:',
   'Fundo do perfil': 'प्रोफाइलको पृष्ठभूमि',
   'Ganha fazendo alguma coisa no Syden': 'Syden मा केही गरेर पाइन्छ',
@@ -732,10 +725,6 @@ export default {
   'Nenhuma denúncia até agora.': 'अहिलेसम्म कुनै उजुरी छैन।',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'अहिलेसम्म कुनै गीत छैन। साथीहरूले गाउन सकून् भनेर आफूसँग भएको फाइल अपलोड गर्नुहोस्।',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'यो कम्प्युटरमा स्वचालित: ग्राफिक्स कार्डबाट H.264। यसले खेलका लागि प्रोसेसर बढी बचाउँछ।',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'यो कम्प्युटरमा स्वचालित: प्रोसेसरबाट VP8। ग्राफिक्स कार्डले यो आकारको तस्बिरमा H.264 इन्कोड गर्दैन।',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'तपाईंको स्ट्रिम अहिलेसम्म कसैले खोलेको छैन। कसैले हेर्दा मात्र Syden ले तस्बिर इन्कोड गर्छ — त्यसैले यहाँ अङ्क छैनन्।',
   'Ninguém com a palavra ainda': 'अहिलेसम्म कसैलाई पालो दिइएको छैन',
@@ -746,8 +735,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'अहिलेलाई सुझाउने कोही छैन — मान्छे चिन्न कुनै समुदायमा सामेल हुनुहोस्।',
   'Ninguém respondeu neste tópico ainda.': 'यो थ्रेडमा अहिलेसम्म कसैले जवाफ दिएको छैन।',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'स्वचालितमा, हरेक स्ट्रिमअघि Syden ले कम्प्युटरलाई छानिएको आकारमा H.264 ग्राफिक्स कार्डबाट निस्कन्छ कि भनेर सोध्छ — र निस्कन्छ भने मात्र प्रयोग गर्छ। दुवै तुलना गर्न चाहनुहुन्न भने यस्तै छोड्नुहोस्। अर्को सेयरदेखि लागू हुन्छ।',
   'Noite estrelada': 'तारायुक्त रात',
   'Nome': 'नाम',
   'Nome alterado.': 'नाम बदलियो।',
@@ -769,7 +756,6 @@ export default {
   'O cartão liso.': 'सादा कार्ड।',
   'O céu inteiro girando bem devagar.': 'पूरै आकाश निकै बिस्तारै घुम्दै।',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'क्लिप च्याटका लागि धेरै ठूलो भयो। अझ छोटो टुक्रा छान्नुहोस्।',
-  'o de sempre': 'सधैँको',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'ब्राउजरले यो साइटका सूचनाहरू रोकेको छ। ठेगानाको छेउको तालामा अनुमति दिनुहोस् र पेज रिलोड गर्नुहोस्।',
   'O nome como sempre foi.': 'सधैँजस्तै नाम।',
@@ -880,7 +866,6 @@ export default {
   'Querem falar': 'बोल्न चाहन्छन्',
   'Rádio de avião': 'विमानको रेडियो',
   'Recado': 'सूचना',
-  'recomendado': 'सिफारिस गरिएको',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'धेरैजसोका लागि सिफारिस गरिएको। हेर्नेहरूले चाहिए गुणस्तर घटाउन सक्छन्।',
   'Recompensa': 'पुरस्कार',
@@ -1067,8 +1052,6 @@ export default {
     '1200 × 300 वा त्यस्तै चौडा तस्बिर। एनिमेटेड GIF पनि चल्छ, र साँच्चै चल्छ। कभर नभए स्वागतमा छानेको चित्र रहन्छ।',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'प्रत्येक लाइनमा एउटा नियम वा सूचना: नयाँ आउनेको खरायोले एक-एक गरी पढ्छ।',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'ग्राफिक्स कार्डले भ्याउँदा त्यही, नभ्याउँदा प्रोसेसर प्रयोग गर्छ।',
   'Usar': 'प्रयोग गर्नुहोस्',
   'Uso do servidor': 'सर्भरको प्रयोग',
   'Vale a partir do próximo compartilhamento.': 'अर्को सेयरदेखि लागू हुन्छ।',

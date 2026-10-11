@@ -156,7 +156,6 @@ export default {
   'Ativar microfone': 'Kveikja á hljóðnema',
   'Aurora': 'Norðurljós',
   'Ausente': 'Fjarverandi',
-  'Automático': 'Sjálfvirkt',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Lætur vita af nýjum skilaboðum þegar Syden er lágmarkað, í bakgrunni eða í annarri rás.',
   'Azul claro.': 'Ljósblár.',
@@ -224,7 +223,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Stofnaðu þitt eigið, eða gakktu í samfélag annarra með kóðanum sem viðkomandi lét þig fá.',
   'Começo': 'Upphaf',
-  'Como a imagem é comprimida': 'Hvernig myndin er þjöppuð',
   'Como administrador, você pode remover membros que não são administradores.':
     'Í hlutverki stjórnanda getur þú fjarlægt meðlimi sem eru ekki stjórnendur.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -262,7 +260,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Hakkar röddina í slög, eins og snúningsblöð.',
   'Cortando…': 'Klippir…',
   'Cosmos': 'Alheimur',
-  'costuma usar a placa': 'notar venjulega skjákortið',
   'Criar a minha': 'Stofna mitt eigið',
   'Criar canal': 'Búa til rás',
   'Criar tópico': 'Búa til þráð',
@@ -574,8 +571,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Þetta er upphaf samtalsins. Aðeins þau sem eru í því sjá það sem er skrifað hér.',
   'Este é o começo do canal.': 'Þetta er upphaf rásarinnar.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Þessi vafri segir ekki hvaða kóðari er bestur. Sjálfkrafa verður VP8 fyrir valinu, sem virkar alls staðar.',
   'Europa': 'Evrópa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Kemur í veg fyrir að fólk heyri eigin rödd aftur þegar þú notar hátalara.',
@@ -604,11 +599,9 @@ export default {
   'Fechar tópico': 'Loka þræði',
   'Fica assim:': 'Svona verður það:',
   'Fim': 'Endir',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Heldur sig við H.264 jafnvel þótt það lendi á örgjörvanum.',
   'Floresta': 'Skógur',
   'Fluido': 'Mjúkt',
   'Folha': 'Laufblað',
-  'Funciona em tudo. Roda no processador.': 'Virkar alls staðar. Keyrir á örgjörvanum.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Virka líka þegar Syden er lágmarkað, í símtali:',
   'Fundo do perfil': 'Bakgrunnur prófíls',
   'Ganha fazendo alguma coisa no Syden': 'Fæst með því að gera eitthvað í Syden',
@@ -731,10 +724,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Engar kvartanir enn.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Engin lög enn. Hladdu upp skrá sem þú átt svo hópurinn geti sungið.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Á þessari tölvu, sjálfkrafa: H.264 í gegnum skjákortið. Þannig verður mest eftir af örgjörva fyrir leikinn.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Á þessari tölvu, sjálfkrafa: VP8 í gegnum örgjörvann. Skjákortið kóðar ekki H.264 í þessari myndastærð.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Enginn hefur opnað útsendinguna þína enn. Syden kóðar myndina aðeins þegar einhver horfir — þess vegna eru engar tölur hér.',
   'Ninguém com a palavra ainda': 'Enginn hefur orðið enn',
@@ -745,8 +734,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Enginn til að stinga upp á í bili — gakktu í samfélag til að kynnast fólki.',
   'Ninguém respondeu neste tópico ainda.': 'Enginn hefur svarað í þessum þræði enn.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Sjálfkrafa spyr Syden tölvuna fyrir hverja útsendingu hvort H.264 komist í gegnum skjákortið í valinni stærð — og notar það aðeins ef svo er. Hafðu þetta svona nema þú viljir bera þetta tvennt saman. Gildir frá næstu deilingu.',
   'Noite estrelada': 'Stjörnubjört nótt',
   'Nome': 'Heiti',
   'Nome alterado.': 'Nafni breytt.',
@@ -768,7 +755,6 @@ export default {
   'O cartão liso.': 'Slétta spjaldið.',
   'O céu inteiro girando bem devagar.': 'Allur himinninn snýst mjög hægt.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klippan er of stór fyrir spjallið. Veldu styttri bút.',
-  'o de sempre': 'það venjulega',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Vafrinn lokaði á tilkynningar frá þessum vef. Leyfðu þær við lásinn við hliðina á slóðinni og endurhlaðaðu síðuna.',
   'O nome como sempre foi.': 'Nafnið eins og það hefur alltaf verið.',
@@ -879,7 +865,6 @@ export default {
   'Querem falar': 'Vilja tala',
   'Rádio de avião': 'Flugvélatalstöð',
   'Recado': 'Orðsending',
-  'recomendado': 'mælt með',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Mælt með fyrir flesta. Áhorfendur geta lækkað gæðin ef þarf.',
   'Recompensa': 'Verðlaun',
@@ -1066,8 +1051,6 @@ export default {
     'Breið mynd, 1200 sinnum 300 eða álíka. Hreyfð GIF-mynd gengur, og hún hreyfist í alvöru. Án forsíðumyndar verður myndin sem valin var fyrir móttökuskjáinn.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Ein regla eða orðsending í hverja línu: kanína nýliðans les þær eina í einu.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Notar skjákortið þegar það ræður við það, og örgjörvann þegar það gerir það ekki.',
   'Usar': 'Nota',
   'Uso do servidor': 'Notkun þjóns',
   'Vale a partir do próximo compartilhamento.': 'Gildir frá næstu deilingu.',

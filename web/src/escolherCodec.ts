@@ -18,8 +18,8 @@
 // O QUE ACONTECE QUANDO NÃO DÁ PARA PERGUNTAR: fica VP8, que é o que sempre foi. Um navegador sem esta
 // API não vira cobaia de um palpite.
 //
-// Isto decide o PADRÃO, e não a escolha da pessoa: quem entrou nas configurações e escolheu um codec
-// continua com o que escolheu.
+// Isto decide SEMPRE. Escolher o codec à mão existiu nas Configurações e saiu em 11/10/2026 (ver
+// "Transmissão: o Syden decide", no CLAUDE.md).
 
 export type CodecDaTela = 'vp8' | 'h264';
 

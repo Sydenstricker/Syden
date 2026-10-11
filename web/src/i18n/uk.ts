@@ -157,7 +157,6 @@ export default {
   'Ativar microfone': 'Увімкнути мікрофон',
   'Aurora': 'Полярне сяйво',
   'Ausente': 'Не на місці',
-  'Automático': 'Автоматично',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Сповіщає про нові повідомлення, коли Syden згорнуто, у фоні або відкрито інший канал.',
   'Azul claro.': 'Світло-синій.',
@@ -220,7 +219,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Створи власну або приєднайся до чиєїсь за кодом, який тобі дала ця людина.',
   'Começo': 'Початок',
-  'Como a imagem é comprimida': 'Як стискається зображення',
   'Como administrador, você pode remover membros que não são administradores.':
     'Маєш роль адміністратора: можеш видаляти учасників, які не є адміністраторами.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -258,7 +256,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Розрізає голос на удари, як лопаті, що обертаються.',
   'Cortando…': 'Обрізання…',
   'Cosmos': 'Космос',
-  'costuma usar a placa': 'зазвичай використовує відеокарту',
   'Criar a minha': 'Створити власну',
   'Criar canal': 'Створити канал',
   'Criar tópico': 'Створити гілку',
@@ -557,8 +554,6 @@ export default {
   'Este clipe não tem som.': 'У цього кліпу немає звуку.',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': 'Це початок розмови. Написане тут бачать лише її учасники.',
   'Este é o começo do canal.': 'Це початок каналу.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Цей браузер не повідомляє, який кодек кращий. В автоматичному режимі лишається VP8, який працює всюди.',
   'Europa': 'Європа',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.': 'Не дає іншим чути власний голос у відповідь, коли ти користуєшся динаміком.',
   'Ex.: Chegou!': 'Напр.: Привіт усім!',
@@ -585,11 +580,9 @@ export default {
   'Fechar tópico': 'Закрити гілку',
   'Fica assim:': 'Виглядатиме так:',
   'Fim': 'Кінець',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Закріплює H.264, навіть якщо він піде на процесор.',
   'Floresta': 'Ліс',
   'Fluido': 'Плавно',
   'Folha': 'Листок',
-  'Funciona em tudo. Roda no processador.': 'Працює всюди. Використовує процесор.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Працюють навіть зі згорнутим Syden під час дзвінка:',
   'Fundo do perfil': 'Тло профілю',
   'Ganha fazendo alguma coisa no Syden': 'Здобувається, коли робиш щось у Syden',
@@ -703,10 +696,6 @@ export default {
   'Nenhum som com esse nome.': 'Немає звуку з такою назвою.',
   'Nenhuma denúncia até agora.': 'Поки що скарг немає.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.': 'Пісень ще немає. Завантаж файл, який маєш, щоб компанія могла співати.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'На цьому комп’ютері, автоматично: H.264 через відеокарту. Так для гри лишається найбільше процесора.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'На цьому комп’ютері, автоматично: VP8 через процесор. Відеокарта не кодує H.264 у такому розмірі зображення.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Твою трансляцію ще ніхто не відкрив. Syden кодує зображення лише тоді, коли хтось дивиться, — тому тут немає чисел.',
   'Ninguém com a palavra ainda': 'Слова ще ніхто не має',
@@ -716,8 +705,6 @@ export default {
   'Ninguém na chamada — seja o primeiro': 'У дзвінку нікого — заходь і починай',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.': 'Поки нікого запропонувати — приєднайся до спільноти, щоб познайомитися з людьми.',
   'Ninguém respondeu neste tópico ainda.': 'У цій гілці ще ніхто не відповів.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'В автоматичному режимі Syden перед кожною трансляцією питає комп’ютер, чи може відеокарта кодувати H.264 у вибраному розмірі, — і використовує його лише тоді, коли може. Залиш так, якщо не хочеш порівняти обидва. Діє з наступної демонстрації.',
   'Noite estrelada': 'Зоряна ніч',
   'Nome': 'Ім’я',
   'Nome alterado.': 'Ім’я змінено.',
@@ -739,7 +726,6 @@ export default {
   'O cartão liso.': 'Гладка картка.',
   'O céu inteiro girando bem devagar.': 'Усе небо дуже повільно обертається.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Кліп завеликий для чату. Вибери коротший фрагмент.',
-  'o de sempre': 'звичний',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Браузер заблокував сповіщення цього сайту. Дозволь їх через замочок біля адреси й онови сторінку.',
   'O nome como sempre foi.': 'Ім’я, як завжди.',
@@ -843,7 +829,6 @@ export default {
   'Querem falar': 'Хочуть говорити',
   'Rádio de avião': 'Рація літака',
   'Recado': 'Запис',
-  'recomendado': 'рекомендовано',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Рекомендовано більшості. Глядачі можуть за потреби знизити якість.',
   'Reconectando ao servidor…': 'Повторне підключення до сервера…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Зменшує фоновий шум: клавіатуру, вентилятор, вуличний рух.',
@@ -1026,7 +1011,6 @@ export default {
     'Копія написаного тобою зберігається 90 днів поза застосунком — на випадок запиту від органів влади. Через Syden її ніхто не читає.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'Широке зображення, 1200 на 300 або схоже. Анімований GIF підходить і справді рухається. Без обкладинки лишається тло, вибране на екрані привітання.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'Використовує відеокарту, коли вона справляється, і процесор, коли ні.',
   'Usar': 'Вдягнути',
   'Uso do servidor': 'Використання сервера',
   'Vale a partir do próximo compartilhamento.': 'Діє з наступної демонстрації.',

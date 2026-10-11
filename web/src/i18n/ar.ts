@@ -449,7 +449,6 @@ export default {
   'Testando… os números aparecem em instantes.': 'جارٍ الاختبار… ستظهر الأرقام بعد لحظات.',
   'Seu computador está segurando a qualidade.': 'جهازك يحدّ من الجودة.',
   'Sua internet está segurando a qualidade.': 'اتصالك يحدّ من الجودة.',
-  Automático: 'تلقائي',
   'Som da transmissão': 'صوت البث',
   'Volume da transmissão': 'مستوى صوت البث',
   'Calar esta transmissão': 'كتم هذا البث',
@@ -488,22 +487,6 @@ export default {
     'موصى بها للأغلبية. يمكن للمشاهد خفض الجودة عند الحاجة.',
   'Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.':
     'للألعاب. ترسل صورة واحدة فقط، الأفضل: يبقى من الجهاز ما يكفي للعبة، ويستقبلها المشاهد كما هي.',
-  'Como a imagem é comprimida': 'كيف تُضغط الصورة',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'في الوضع التلقائي يسأل Syden الجهاز، قبل كل بث، إن كان H.264 يمر عبر كرت الشاشة بالحجم المختار — ولا يستخدمه إلا حينها. اتركه هكذا، إلا إن أردت المقارنة بين الاثنين. يسري ابتداءً من المشاركة القادمة.',
-  recomendado: 'موصى به',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'يستخدم كرت الشاشة عندما يقوى على ذلك، والمعالج عندما لا يقوى.',
-  'o de sempre': 'المعتاد',
-  'Funciona em tudo. Roda no processador.': 'يعمل في كل مكان. يعمل على المعالج.',
-  'costuma usar a placa': 'غالبًا يستخدم كرت الشاشة',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'يثبّت H.264 حتى لو انتهى إلى المعالج.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'على هذا الجهاز، في الوضع التلقائي: H.264 عبر كرت الشاشة. وهو ما يترك للّعبة أكبر قدر من المعالج.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'على هذا الجهاز، في الوضع التلقائي: VP8 عبر المعالج. كرت الشاشة لا يرمّز H.264 بهذا الحجم.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'هذا المتصفح لا يجيب أي مرمّز أفضل. في الوضع التلقائي يبقى VP8، وهو يعمل في كل مكان.',
   'pela placa de vídeo': 'عبر كرت الشاشة',
   'pelo processador': 'عبر المعالج',
 

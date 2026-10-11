@@ -155,7 +155,6 @@ export default {
   'Ativar microfone': 'මයික්‍රෆෝනය සක්‍රිය කරන්න',
   'Aurora': 'අරෝරා',
   'Ausente': 'නොමැත',
-  'Automático': 'ස්වයංක්‍රීය',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden අවම කර ඇති විට, පසුබිමේ ඇති විට හෝ වෙනත් නාලිකාවක ඇති විට නව පණිවිඩ ගැන දැනුම් දෙයි.',
   'Azul claro.': 'ලා නිල්.',
@@ -223,7 +222,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ඔබේම එකක් ආරම්භ කරන්න, නැතහොත් ඔබට ලැබුණු කේතයෙන් වෙනත් අයෙකුගේ එකට එක්වන්න.',
   'Começo': 'ආරම්භය',
-  'Como a imagem é comprimida': 'රූපය සම්පීඩනය කරන ආකාරය',
   'Como administrador, você pode remover membros que não são administradores.':
     'පරිපාලකයෙකු ලෙස, පරිපාලකයින් නොවන සාමාජිකයින් ඉවත් කිරීමට ඔබට හැකිය.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -261,7 +259,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'කැරකෙන තල මෙන් හඬ ස්පන්දනවලට කපයි.',
   'Cortando…': 'කපමින්…',
   'Cosmos': 'විශ්වය',
-  'costuma usar a placa': 'සාමාන්‍යයෙන් ග්‍රැෆික් කාඩ්පත භාවිතා කරයි',
   'Criar a minha': 'මගේම එකක් සාදන්න',
   'Criar canal': 'නාලිකාවක් සාදන්න',
   'Criar tópico': 'ත්‍රෙඩයක් සාදන්න',
@@ -573,8 +570,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'මෙය සංවාදයේ ආරම්භයයි. මෙහි ලියන දේ පෙනෙන්නේ එහි සිටින අයට පමණි.',
   'Este é o começo do canal.': 'මෙය නාලිකාවේ ආරම්භයයි.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'මෙම බ්‍රවුසරය වඩා හොඳ කේතකය කුමක්දැයි නොකියයි. ස්වයංක්‍රීය විට සෑම තැනම ක්‍රියා කරන VP8 භාවිතා වේ.',
   'Europa': 'යුරෝපය',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'ඔබ ස්පීකරයක් භාවිතා කරන විට අනෙක් අයට තමන්ගේම හඬ ආපසු ඇසීම වළක්වයි.',
@@ -603,11 +598,9 @@ export default {
   'Fechar tópico': 'ත්‍රෙඩය වසන්න',
   'Fica assim:': 'මෙලෙස පෙනේ:',
   'Fim': 'අවසානය',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'ප්‍රොසෙසරයට වැටුණත් H.264 ම තබා ගනී.',
   'Floresta': 'වනාන්තරය',
   'Fluido': 'සුමට',
   'Folha': 'කොළය',
-  'Funciona em tudo. Roda no processador.': 'සෑම තැනම ක්‍රියා කරයි. ප්‍රොසෙසරයේ ධාවනය වේ.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ඇමතුමක් අතරතුර Syden අවම කර තිබුණත් ක්‍රියා කරයි:',
   'Fundo do perfil': 'පැතිකඩ පසුබිම',
   'Ganha fazendo alguma coisa no Syden': 'Syden හි යමක් කිරීමෙන් ලැබේ',
@@ -730,10 +723,6 @@ export default {
   'Nenhuma denúncia até agora.': 'මේ දක්වා වාර්තා නැත.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'තවම ගීත නැත. යාළුවන්ට ගායනා කිරීමට ඔබ ළඟ ඇති ගොනුවක් උඩුගත කරන්න.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'මෙම පරිගණකයේ, ස්වයංක්‍රීයව: ග්‍රැෆික් කාඩ්පත මගින් H.264. ක්‍රීඩාවට වැඩිම ප්‍රොසෙසරයක් ඉතිරි වන්නේ මෙයින්.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'මෙම පරිගණකයේ, ස්වයංක්‍රීයව: ප්‍රොසෙසරය මගින් VP8. ග්‍රැෆික් කාඩ්පත මෙම රූප ප්‍රමාණයෙන් H.264 කේතනය නොකරයි.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'තවම කිසිවෙකු ඔබේ විකාශනය විවෘත කර නැත. Syden රූපය කේතනය කරන්නේ යමෙකු නරඹන විට පමණි — එබැවින් මෙහි අංක නැත.',
   'Ninguém com a palavra ainda': 'තවම කිසිවෙකුට කතා කිරීමට අවසර නැත',
@@ -744,8 +733,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'දැනට යෝජනා කිරීමට කිසිවෙකු නැත — අය හඳුනා ගැනීමට ප්‍රජාවකට එක්වන්න.',
   'Ninguém respondeu neste tópico ainda.': 'මෙම ත්‍රෙඩයේ තවම කිසිවෙකු පිළිතුරු දී නැත.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'ස්වයංක්‍රීය විට, සෑම විකාශනයකටම පෙර Syden පරිගණකයෙන් අසයි, තෝරාගත් ප්‍රමාණයෙන් H.264 ග්‍රැෆික් කාඩ්පත හරහා යා හැකිදැයි — යා හැකි නම් පමණක් භාවිතා කරයි. දෙක සංසන්දනය කිරීමට අවශ්‍ය නැත්නම් මෙලෙසම තබන්න. ඊළඟ බෙදාගැනීමේ සිට ක්‍රියාත්මක වේ.',
   'Noite estrelada': 'තරු පිරි රාත්‍රිය',
   'Nome': 'නම',
   'Nome alterado.': 'නම වෙනස් කළා.',
@@ -767,7 +754,6 @@ export default {
   'O cartão liso.': 'සරල කාඩ්පත.',
   'O céu inteiro girando bem devagar.': 'මුළු අහසම ඉතා සෙමින් කැරකෙයි.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ක්ලිපය කතාබහට විශාල වැඩියි. කෙටි කොටසක් තෝරන්න.',
-  'o de sempre': 'සුපුරුදු',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'බ්‍රවුසරය මෙම අඩවියේ දැනුම්දීම් අවහිර කර ඇත. ලිපිනය අසල ඇති අගුළෙන් ඉඩ දී පිටුව නැවත පූරණය කරන්න.',
   'O nome como sempre foi.': 'සෑම විටම තිබූ පරිදි නම.',
@@ -878,7 +864,6 @@ export default {
   'Querem falar': 'කතා කිරීමට කැමති අය',
   'Rádio de avião': 'ගුවන් යානා රේඩියෝව',
   'Recado': 'නිවේදනය',
-  'recomendado': 'නිර්දේශිත',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'බොහෝ දෙනෙකුට නිර්දේශිතයි. නරඹන අයට අවශ්‍ය නම් ගුණාත්මකභාවය අඩු කළ හැකිය.',
   'Recompensa': 'ත්‍යාගය',
@@ -1065,8 +1050,6 @@ export default {
     '1200 × 300 හෝ ඊට සමාන පළල් රූපයක්. සජීවිකරණ GIF ද හරි, එය සැබවින්ම චලනය වේ. කවරයක් නැත්නම්, පිළිගැනීමේදී ඔබ තෝරාගත් චිත්‍රය පවතී.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'පේළියකට එක් නීතියක් හෝ නිවේදනයක්: අලුතින් එන අයගේ හාවා ඒවා එකින් එක කියවයි.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'හැකි විට ග්‍රැෆික් කාඩ්පත ද, නොහැකි විට ප්‍රොසෙසරය ද භාවිතා කරයි.',
   'Usar': 'භාවිතා කරන්න',
   'Uso do servidor': 'සේවාදායක භාවිතය',
   'Vale a partir do próximo compartilhamento.': 'ඊළඟ බෙදාගැනීමේ සිට ක්‍රියාත්මක වේ.',

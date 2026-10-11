@@ -669,6 +669,9 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 - **O "Baixar até" (Automático, Média, Baixa) de quem assiste.** Para internet ruim o automático já
   desce de camada; "Média" não diz nada; no Fluido não fazia nada. O caso real, dados contados no
   celular, vem do próprio aparelho: `navigator.connection.saveData` (ver `qualidadeQueRecebo.ts`).
+- **A escolha de codec (Automático, VP8, H.264) nas Configurações.** O Syden já pergunta ao computador
+  se o H.264 sai pela placa (`escolherCodec.ts`); quem a usava era o conselheiro. Quem tinha um codec,
+  ou um teto, guardado perde a escolha na leitura (`converterPreferenciasAntigas`).
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 

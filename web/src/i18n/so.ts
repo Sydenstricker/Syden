@@ -155,7 +155,6 @@ export default {
   'Ativar microfone': 'Shid makarafoonka',
   'Aurora': 'Aroora',
   'Ausente': 'Maqan',
-  'Automático': 'Toos',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Wuxuu kuu sheegaa fariimaha cusub marka Syden la yareeyo, uu gadaal ku jiro, ama aad kanaal kale ku jirto.',
   'Azul claro.': 'Buluug khafiif ah.',
@@ -223,7 +222,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Bilow taada, ama gal mid qof kale adigoo isticmaalaya koodhka laguu siiyay.',
   'Começo': 'Bilow',
-  'Como a imagem é comprimida': 'Sida sawirka loo cufo',
   'Como administrador, você pode remover membros que não são administradores.':
     'Maamule ahaan, waxaad saari kartaa xubnaha aan maamulayaasha ahayn.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -261,7 +259,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Wuxuu codka u jaraa garaacyo, sida baalasha wareegaya.',
   'Cortando…': 'Waa la jarayaa…',
   'Cosmos': 'Koonka',
-  'costuma usar a placa': 'badanaa wuxuu isticmaalaa kaarka sawirka',
   'Criar a minha': 'Samee tayda',
   'Criar canal': 'Samee kanaal',
   'Criar tópico': 'Samee mawduuc',
@@ -573,8 +570,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Tani waa bilowga wadahadalka. Kuwa ku jira oo keliya ayaa arka waxa halkan lagu qoro.',
   'Este é o começo do canal.': 'Tani waa bilowga kanaalka.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Biraawsarkani ma sheego koodeeyaha ka wanaagsan. Habka toos ah waxaa ku jira VP8, oo meel kasta ka shaqeeya.',
   'Europa': 'Yurub',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Waxay ka hortagtaa in kuwa kale ay codkooda dib u maqlaan marka aad isticmaasho sameecad.',
@@ -603,11 +598,9 @@ export default {
   'Fechar tópico': 'Xir mawduuca',
   'Fica assim:': 'Sidan ayay noqonaysaa:',
   'Fim': 'Dhammaad',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Wuxuu ku dhegaa H.264 xitaa haddii uu processor-ka ku dhaco.',
   'Floresta': 'Kayn',
   'Fluido': 'Siman',
   'Folha': 'Caleen',
-  'Funciona em tudo. Roda no processador.': 'Meel kasta ayuu ka shaqeeyaa. Processor-ka ayuu ku shaqeeyaa.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Way shaqeeyaan xitaa marka Syden la yareeyo, inta lagu jiro wicitaan:',
   'Fundo do perfil': 'Gadaasha bogga shakhsiga',
   'Ganha fazendo alguma coisa no Syden': 'Waxaa lagu helaa wax lagu sameeyo Syden',
@@ -730,10 +723,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Ilaa hadda cabasho ma jirto.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Weli hees ma jirto. Soo geli fayl aad haysato si saaxiibbadu u heesaan.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Kombiyuutarkan, habka toos ah: H.264 oo kaarka sawirka maraya. Waa midka ciyaarta u daaya processor badan.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Kombiyuutarkan, habka toos ah: VP8 oo processor-ka maraya. Kaarka sawirku ma koodeyn karo H.264 cabbirkan sawirka.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Weli cidna ma furin baahintaada. Syden wuxuu sawirka koodeeyaa oo keliya marka qof daawado — sidaa darteed halkan tirooyin ma jiraan.',
   'Ninguém com a palavra ainda': 'Weli cidna hadalka ma hayso',
@@ -744,8 +733,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Hadda cid la soo jeediyo ma jirto — ku biir bulsho si aad dad u barato.',
   'Ninguém respondeu neste tópico ainda.': 'Weli cidna kama jawaabin mawduucan.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Habka toos ah, baahin kasta ka hor Syden wuxuu weydiiyaa kombiyuutarka in H.264 uu kaarka sawirka ka soo bixi karo cabbirka la doortay — wuxuuna isticmaalaa oo keliya marka uu soo baxo. Sidaas uga tag, haddii aadan rabin inaad labada isbarbar dhigto. Wuxuu dhaqan galaa wadaagga xiga.',
   'Noite estrelada': 'Habeen xiddigo leh',
   'Nome': 'Magac',
   'Nome alterado.': 'Magaca waa la beddelay.',
@@ -767,7 +754,6 @@ export default {
   'O cartão liso.': 'Kaarka cad.',
   'O céu inteiro girando bem devagar.': 'Cirka oo dhan oo si aad u tartiib ah u wareegaya.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Kiliibku aad buu ugu weyn yahay sheekada. Dooro qayb ka yar.',
-  'o de sempre': 'kii caadiga ahaa',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Biraawsarku wuxuu xannibay ogeysiisyada boggan. Ku oggolow quufulka cinwaanka agtiisa oo dib u soo rar bogga.',
   'O nome como sempre foi.': 'Magaca sidii hore.',
@@ -878,7 +864,6 @@ export default {
   'Querem falar': 'Waxay rabaan inay hadlaan',
   'Rádio de avião': 'Raadiyaha diyaaradda',
   'Recado': 'Ogeysiis',
-  'recomendado': 'lagu taliyay',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Waxaa lagu taliyay inta badan. Daawadayaashu way hoos u dhigi karaan tayada haddii loo baahdo.',
   'Recompensa': 'Abaalmarin',
@@ -1065,8 +1050,6 @@ export default {
     'Sawir ballaaran, 1200 iyo 300 ama wax u dhow. GIF dhaqaaqaya waa la oggol yahay, runtiina wuu dhaqaaqaa. Dabool la’aan, waxaa hadhaya sawirka aad ku doorato soo dhawaynta.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Hal xeer ama ogeysiis xariiq kasta: bakaylaha qofka cusub ayaa midba mid u akhriya.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Wuxuu isticmaalaa kaarka sawirka marka uu awoodo, processor-kana marka uusan awoodin.',
   'Usar': 'Isticmaal',
   'Uso do servidor': 'Isticmaalka seerfarka',
   'Vale a partir do próximo compartilhamento.': 'Wuxuu dhaqan galaa wadaagga xiga.',

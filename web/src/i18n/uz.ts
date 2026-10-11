@@ -163,7 +163,6 @@ export default {
   'Ativar microfone': 'Mikrofonni yoqish',
   'Aurora': 'Qutb shafagʻi',
   'Ausente': 'Uzoqda',
-  'Automático': 'Avtomatik',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden yigʻilgan, orqa fonda yoki boshqa kanalda boʻlganida yangi xabarlar haqida xabar beradi.',
   'Azul claro.': 'Och koʻk.',
@@ -231,7 +230,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Oʻzingiznikini boshlang yoki kimdir bergan kod bilan uning hamjamiyatiga qoʻshiling.',
   'Começo': 'Boshi',
-  'Como a imagem é comprimida': 'Tasvir qanday siqiladi',
   'Como administrador, você pode remover membros que não são administradores.':
     'Administrator sifatida administrator boʻlmagan aʼzolarni chiqarib yubora olasiz.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -269,7 +267,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Aylanayotgan parraklar kabi ovozni zarblarga boʻlib kesadi.',
   'Cortando…': 'Qirqilmoqda…',
   'Cosmos': 'Koinot',
-  'costuma usar a placa': 'odatda videokartadan foydalanadi',
   'Criar a minha': 'Oʻzimnikini yaratish',
   'Criar canal': 'Kanal yaratish',
   'Criar tópico': 'Mavzu yaratish',
@@ -581,8 +578,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Bu suhbatning boshi. Bu yerda yozilganni faqat suhbat ishtirokchilari koʻradi.',
   'Este é o começo do canal.': 'Bu kanalning boshi.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Bu brauzer qaysi kodlovchi yaxshiroq ekanini aytmaydi. Avtomatik rejimda hamma joyda ishlaydigan VP8 qoladi.',
   'Europa': 'Yevropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Karnaydan foydalanganingizda boshqalar oʻz ovozini qaytib eshitmasligi uchun.',
@@ -611,11 +606,9 @@ export default {
   'Fechar tópico': 'Mavzuni yopish',
   'Fica assim:': 'Shunday boʻladi:',
   'Fim': 'Oxiri',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Protsessorga tushib qolsa ham H.264 ni qotirib qoʻyadi.',
   'Floresta': 'Oʻrmon',
   'Fluido': 'Silliq',
   'Folha': 'Barg',
-  'Funciona em tudo. Roda no processador.': 'Hamma joyda ishlaydi. Protsessorda bajariladi.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Qoʻngʻiroq paytida Syden yigʻilgan boʻlsa ham ishlaydi:',
   'Fundo do perfil': 'Profil foni',
   'Ganha fazendo alguma coisa no Syden': 'Syden-da biror ish qilib olinadi',
@@ -738,10 +731,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Hozircha shikoyat yoʻq.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Hali qoʻshiq yoʻq. Davra kuylashi uchun oʻzingizda bor faylni yuklang.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Bu kompyuterda avtomatik: videokarta orqali H.264. Shunda oʻyin uchun protsessor koʻproq qoladi.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Bu kompyuterda avtomatik: protsessor orqali VP8. Videokarta bu tasvir oʻlchamida H.264 ni kodlay olmaydi.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Translyatsiyangizni hali hech kim ochmagan. Syden tasvirni faqat kimdir tomosha qilganda kodlaydi — shuning uchun bu yerda raqamlar yoʻq.',
   'Ninguém com a palavra ainda': 'Hali hech kimga soʻz berilmagan',
@@ -752,8 +741,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Hozircha taklif qiladigan hech kim yoʻq — odamlar bilan tanishish uchun biror hamjamiyatga qoʻshiling.',
   'Ninguém respondeu neste tópico ainda.': 'Bu mavzuda hali hech kim javob bermagan.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Avtomatik rejimda Syden har bir translyatsiyadan oldin kompyuterdan H.264 tanlangan oʻlchamda videokarta orqali chiqa olishini soʻraydi — va faqat chiqsagina undan foydalanadi. Ikkalasini solishtirmoqchi boʻlmasangiz, shunday qoldiring. Keyingi ulashishdan boshlab amal qiladi.',
   'Noite estrelada': 'Yulduzli tun',
   'Nome': 'Nom',
   'Nome alterado.': 'Nom oʻzgartirildi.',
@@ -775,7 +762,6 @@ export default {
   'O cartão liso.': 'Oddiy karta.',
   'O céu inteiro girando bem devagar.': 'Butun osmon juda sekin aylanadi.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip chat uchun juda katta boʻlib qoldi. Qisqaroq boʻlakni tanlang.',
-  'o de sempre': 'odatdagi',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Brauzer bu saytning bildirishnomalarini blokladi. Manzil yonidagi qulf belgisi orqali ruxsat bering va sahifani yangilang.',
   'O nome como sempre foi.': 'Avvalgidek ism.',
@@ -886,7 +872,6 @@ export default {
   'Querem falar': 'Gapirmoqchi',
   'Rádio de avião': 'Samolyot radiosi',
   'Recado': 'Murojaat',
-  'recomendado': 'tavsiya etiladi',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Koʻpchilik uchun tavsiya etiladi. Tomoshabinlar kerak boʻlsa sifatni pasaytirishi mumkin.',
   'Recompensa': 'Mukofot',
@@ -1073,8 +1058,6 @@ export default {
     '1200 ga 300 yoki shunga yaqin keng rasm. Animatsiyali GIF ham boʻladi va haqiqatan harakatlanadi. Muqova boʻlmasa, kutib olish ekranida tanlagan rasmingiz qoladi.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Har qatorda bitta qoida yoki eʼlon: yangi kelganning quyoni ularni birma-bir oʻqiydi.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Videokarta uddalasa undan, uddalamasa protsessordan foydalanadi.',
   'Usar': 'Ishlatish',
   'Uso do servidor': 'Serverdan foydalanish',
   'Vale a partir do próximo compartilhamento.': 'Keyingi ulashishdan boshlab amal qiladi.',

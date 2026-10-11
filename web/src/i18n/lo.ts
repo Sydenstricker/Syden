@@ -156,7 +156,6 @@ export default {
   'Ativar microfone': 'ເປີດໄມ',
   'Aurora': 'ແສງເໜືອ',
   'Ausente': 'ບໍ່ຢູ່',
-  'Automático': 'ອັດຕະໂນມັດ',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'ແຈ້ງຂໍ້ຄວາມໃໝ່ເມື່ອ Syden ຖືກຫຍໍ້ລົງ ຢູ່ເບື້ອງຫຼັງ ຫຼື ຢູ່ຊ່ອງອື່ນ',
   'Azul claro.': 'ສີຟ້າອ່ອນ',
@@ -224,7 +223,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'ເລີ່ມອັນຂອງເຈົ້າເອງ ຫຼື ເຂົ້າຮ່ວມຂອງຄົນອື່ນດ້ວຍລະຫັດທີ່ລາວໃຫ້ເຈົ້າ',
   'Começo': 'ຈຸດເລີ່ມ',
-  'Como a imagem é comprimida': 'ວິທີບີບອັດຮູບ',
   'Como administrador, você pode remover membros que não são administradores.':
     'ໃນຖານະຜູ້ດູແລ ເຈົ້າເອົາສະມາຊິກທີ່ບໍ່ແມ່ນຜູ້ດູແລອອກໄດ້',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -262,7 +260,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'ຕັດສຽງເປັນຈັງຫວະ ຄືກັບໃບພັດທີ່ໝູນ',
   'Cortando…': 'ກຳລັງຕັດ…',
   'Cosmos': 'ຈັກກະວານ',
-  'costuma usar a placa': 'ປົກກະຕິໃຊ້ກາດຈໍ',
   'Criar a minha': 'ສ້າງຂອງຂ້ອຍເອງ',
   'Criar canal': 'ສ້າງຊ່ອງ',
   'Criar tópico': 'ສ້າງກະທູ້',
@@ -574,8 +571,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'ນີ້ແມ່ນຈຸດເລີ່ມຕົ້ນຂອງການສົນທະນາ ມີແຕ່ຄົນໃນການສົນທະນາທີ່ເຫັນສິ່ງທີ່ຂຽນຢູ່ນີ້',
   'Este é o começo do canal.': 'ນີ້ແມ່ນຈຸດເລີ່ມຕົ້ນຂອງຊ່ອງ',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'ບຣາວເຊີນີ້ບໍ່ບອກວ່າຕົວເຂົ້າລະຫັດໃດດີກວ່າ ໃນໂໝດອັດຕະໂນມັດຈະໃຊ້ VP8 ທີ່ໃຊ້ໄດ້ທຸກບ່ອນ',
   'Europa': 'ເອີຣົບ',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'ປ້ອງກັນບໍ່ໃຫ້ຄົນອື່ນໄດ້ຍິນສຽງຕົນເອງກັບຄືນ ເມື່ອເຈົ້າໃຊ້ລຳໂພງ',
@@ -604,11 +599,9 @@ export default {
   'Fechar tópico': 'ປິດກະທູ້',
   'Fica assim:': 'ຈະເປັນແບບນີ້:',
   'Fim': 'ຈຸດຈົບ',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'ໃຊ້ H.264 ສະເໝີ ເຖິງວ່າມັນຈະໄປແລ່ນໃນໂປຣເຊສເຊີ',
   'Floresta': 'ປ່າ',
   'Fluido': 'ລື່ນ',
   'Folha': 'ໃບໄມ້',
-  'Funciona em tudo. Roda no processador.': 'ໃຊ້ໄດ້ທຸກບ່ອນ ແລ່ນໃນໂປຣເຊສເຊີ',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'ໃຊ້ໄດ້ເຖິງວ່າ Syden ຈະຖືກຫຍໍ້ລົງ ລະຫວ່າງໂທ:',
   'Fundo do perfil': 'ພື້ນຫຼັງໂປຣໄຟລ໌',
   'Ganha fazendo alguma coisa no Syden': 'ໄດ້ຮັບໂດຍການເຮັດບາງຢ່າງໃນ Syden',
@@ -731,10 +724,6 @@ export default {
   'Nenhuma denúncia até agora.': 'ຍັງບໍ່ມີການລາຍງານ',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'ຍັງບໍ່ມີເພງ ອັບໂຫຼດໄຟລ໌ທີ່ເຈົ້າມີ ໃຫ້ໝູ່ຮ້ອງນຳກັນ',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'ໃນຄອມພິວເຕີນີ້ ໂໝດອັດຕະໂນມັດ: H.264 ຜ່ານກາດຈໍ ແບບນີ້ເຫຼືອໂປຣເຊສເຊີໃຫ້ເກມຫຼາຍທີ່ສຸດ',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'ໃນຄອມພິວເຕີນີ້ ໂໝດອັດຕະໂນມັດ: VP8 ຜ່ານໂປຣເຊສເຊີ ກາດຈໍເຂົ້າລະຫັດ H.264 ໃນຂະໜາດຮູບນີ້ບໍ່ໄດ້',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'ຍັງບໍ່ມີໃຜເປີດສະຕຣີມຂອງເຈົ້າ Syden ເຂົ້າລະຫັດພາບເມື່ອມີຄົນເບິ່ງເທົ່ານັ້ນ — ສະນັ້ນຈຶ່ງບໍ່ມີຕົວເລກຢູ່ນີ້',
   'Ninguém com a palavra ainda': 'ຍັງບໍ່ມີໃຜໄດ້ຮັບສິດເວົ້າ',
@@ -745,8 +734,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'ຕອນນີ້ຍັງບໍ່ມີໃຜໃຫ້ແນະນຳ — ເຂົ້າຮ່ວມຊຸມຊົນເພື່ອຮູ້ຈັກຄົນ',
   'Ninguém respondeu neste tópico ainda.': 'ຍັງບໍ່ມີໃຜຕອບໃນກະທູ້ນີ້',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'ໃນໂໝດອັດຕະໂນມັດ ກ່ອນສະຕຣີມແຕ່ລະເທື່ອ Syden ຈະຖາມຄອມພິວເຕີວ່າ H.264 ອອກຜ່ານກາດຈໍໃນຂະໜາດທີ່ເລືອກໄດ້ບໍ — ແລະໃຊ້ສະເພາະເມື່ອໄດ້ ປ່ອຍໄວ້ແບບນີ້ ເວັ້ນແຕ່ເຈົ້າຢາກປຽບທຽບທັງສອງ ມີຜົນຕັ້ງແຕ່ການແບ່ງປັນເທື່ອຕໍ່ໄປ',
   'Noite estrelada': 'ຄືນທີ່ມີດາວ',
   'Nome': 'ຊື່',
   'Nome alterado.': 'ປ່ຽນຊື່ແລ້ວ',
@@ -768,7 +755,6 @@ export default {
   'O cartão liso.': 'ບັດລຽບໆ',
   'O céu inteiro girando bem devagar.': 'ທ້ອງຟ້າທັງໝົດໝູນໄປຊ້າໆ',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'ຄລິບໃຫຍ່ເກີນໄປສຳລັບແຊັດ ເລືອກຊ່ວງທີ່ສັ້ນກວ່າ',
-  'o de sempre': 'ແບບເດີມ',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'ບຣາວເຊີບລັອກການແຈ້ງເຕືອນຂອງເວັບນີ້ ອະນຸຍາດທີ່ຮູບກະແຈຂ້າງທີ່ຢູ່ ແລ້ວໂຫຼດໜ້າໃໝ່',
   'O nome como sempre foi.': 'ຊື່ແບບເດີມ',
@@ -879,7 +865,6 @@ export default {
   'Querem falar': 'ຢາກເວົ້າ',
   'Rádio de avião': 'ວິທະຍຸຍົນ',
   'Recado': 'ປະກາດ',
-  'recomendado': 'ແນະນຳ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ແນະນຳສຳລັບຄົນສ່ວນໃຫຍ່ ຄົນເບິ່ງຫຼຸດຄຸນນະພາບລົງໄດ້ຖ້າຈຳເປັນ',
   'Recompensa': 'ລາງວັນ',
@@ -1066,8 +1051,6 @@ export default {
     'ຮູບກວ້າງ 1200 × 300 ຫຼື ໃກ້ຄຽງ GIF ເຄື່ອນໄຫວກໍໄດ້ ແລະເຄື່ອນໄຫວແທ້ ຖ້າບໍ່ມີໜ້າປົກ ຈະໃຊ້ຮູບທີ່ເຈົ້າເລືອກໃນໜ້າຕ້ອນຮັບ',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'ກົດ ຫຼື ປະກາດໜຶ່ງຂໍ້ຕໍ່ແຖວ: ກະຕ່າຍຂອງຄົນທີ່ມາໃໝ່ຈະອ່ານເທື່ອລະຂໍ້',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'ໃຊ້ກາດຈໍເມື່ອມັນເຮັດໄດ້ ແລະໃຊ້ໂປຣເຊສເຊີເມື່ອມັນເຮັດບໍ່ໄດ້',
   'Usar': 'ໃຊ້',
   'Uso do servidor': 'ການໃຊ້ເຊີບເວີ',
   'Vale a partir do próximo compartilhamento.': 'ມີຜົນຕັ້ງແຕ່ການແບ່ງປັນເທື່ອຕໍ່ໄປ',

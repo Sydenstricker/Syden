@@ -6,4 +6,6 @@ rtc:
   port_range_end: 60000
   use_external_ip: true # descobre o IP público da VPS via STUN
 logging:
-  level: info
+  # warn, e não info: cada linha de log custa processador no mesmo lugar que encaminha os pacotes. No
+  # teste de carga (06/10/2026), o log detalhado deu 23% de perda onde o warn deu 0,03%.
+  level: warn

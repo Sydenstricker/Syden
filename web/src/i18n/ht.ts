@@ -164,7 +164,6 @@ export default {
   'Ativar microfone': 'Limen mikwo a',
   'Aurora': 'Owò',
   'Ausente': 'Absan',
-  'Automático': 'Otomatik',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Li avèti w lè gen nouvo mesaj pandan Syden redui, an aryè-plan oswa nan yon lòt chanèl.',
   'Azul claro.': 'Ble klè.',
@@ -232,7 +231,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Kòmanse pa w, oswa antre nan pa yon moun ak kòd moun sa a ba ou a.',
   'Começo': 'Kòmansman',
-  'Como a imagem é comprimida': 'Jan imaj la konprese',
   'Como administrador, você pode remover membros que não são administradores.':
     'Kòm administratè, ou ka retire manm ki pa administratè.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -271,7 +269,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Li koupe vwa a an batman, tankou pal k ap vire.',
   'Cortando…': 'Ap koupe…',
   'Cosmos': 'Kosmòs',
-  'costuma usar a placa': 'abityèlman sèvi ak kat grafik la',
   'Criar a minha': 'Kreye pa m',
   'Criar canal': 'Kreye yon chanèl',
   'Criar tópico': 'Kreye yon sijè',
@@ -584,8 +581,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Sa a se kòmansman konvèsasyon an. Se sèlman moun ki ladan l ki wè sa ki ekri la a.',
   'Este é o começo do canal.': 'Sa a se kòmansman chanèl la.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Navigatè sa a pa di ki kodè ki pi bon. An otomatik, se VP8 ki rete, li mache sou tout bagay.',
   'Europa': 'Ewòp',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Li anpeche lòt moun tande pwòp vwa yo tounen lè w ap sèvi ak opalè.',
@@ -614,11 +609,9 @@ export default {
   'Fechar tópico': 'Fèmen sijè a',
   'Fica assim:': 'Men jan l ap ye:',
   'Fim': 'Fen',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Li fikse H.264 menm si l tonbe sou pwosesè a.',
   'Floresta': 'Forè',
   'Fluido': 'Likid',
   'Folha': 'Fèy',
-  'Funciona em tudo. Roda no processador.': 'Li mache sou tout bagay. Li travay sou pwosesè a.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Yo mache menm lè Syden redui, pandan yon apèl:',
   'Fundo do perfil': 'Fon pwofil la',
   'Ganha fazendo alguma coisa no Syden': 'Ou genyen l lè w fè yon bagay nan Syden',
@@ -740,10 +733,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Pa gen siyalman pou kounye a.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Poko gen mizik. Televèse yon fichye ou genyen pou tout moun ka chante.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Sou òdinatè sa a, an otomatik: H.264 ak kat grafik la. Se sa ki kite plis pwosesè pou jwèt la.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Sou òdinatè sa a, an otomatik: VP8 ak pwosesè a. Kat grafik la pa kode H.264 nan gwosè imaj sa a.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Poko gen pèsonn ki louvri difizyon w lan. Syden kode imaj la sèlman lè yon moun ap gade — se pou sa pa gen chif isit la.',
   'Ninguém com a palavra ainda': 'Poko gen pèsonn ki gen lapawòl',
@@ -754,8 +743,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Pa gen pèsonn pou sijere pou kounye a — antre nan yon kominote pou fè konesans ak moun.',
   'Ninguém respondeu neste tópico ainda.': 'Poko gen pèsonn ki reponn nan sijè sa a.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'An otomatik, anvan chak difizyon Syden mande òdinatè a si H.264 ka soti nan kat grafik la nan gwosè ou chwazi a — epi li sèvi avè l sèlman si li ka. Kite l konsa, sof si ou vle konpare de yo. Li valab apati pwochen pataj la.',
   'Noite estrelada': 'Nwit zetwale',
   'Nome': 'Non',
   'Nome alterado.': 'Non an chanje.',
@@ -777,7 +764,6 @@ export default {
   'O cartão liso.': 'Kat la san dekorasyon.',
   'O céu inteiro girando bem devagar.': 'Tout syèl la k ap vire byen dousman.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip la twò gwo pou chat la. Chwazi yon moso pi kout.',
-  'o de sempre': 'sa k toujou la a',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Navigatè a bloke notifikasyon sit sa a. Debloke yo nan kadna ki bò adrès la epi rechaje paj la.',
   'O nome como sempre foi.': 'Non an jan l te toujou ye.',
@@ -889,7 +875,6 @@ export default {
   'Querem falar': 'Vle pale',
   'Rádio de avião': 'Radyo avyon',
   'Recado': 'Ti mo',
-  'recomendado': 'rekòmande',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekòmande pou pifò moun. Moun k ap gade yo ka bese kalite a si yo bezwen.',
   'Recompensa': 'Rekonpans',
@@ -1075,8 +1060,6 @@ export default {
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'Yon imaj ki laj, 1200 sou 300 oswa konsa. GIF anime mache, epi li bouje vre. San kouvèti, se imaj ou te chwazi pou byenveni an ki rete.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.': 'Yon règ oswa yon avi pa liy: lapen moun ki rive a li yo youn apre lòt.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Li sèvi ak kat grafik la lè l kapab, epi ak pwosesè a lè l pa kapab.',
   'Usar': 'Sèvi',
   'Uso do servidor': 'Itilizasyon sèvè a',
   'Vale a partir do próximo compartilhamento.': 'Li valab apati pwochen pataj la.',

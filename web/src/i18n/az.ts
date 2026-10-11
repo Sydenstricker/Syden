@@ -142,7 +142,6 @@ export default {
   'Ativar microfone': 'Mikrofonu aç',
   'Aurora': 'Qütb parıltısı',
   'Ausente': 'Uzaqda',
-  'Automático': 'Avtomatik',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Syden kiçildiləndə, arxa fonda olanda və ya başqa kanalda olanda yeni mesajlar barədə xəbər verir.',
   'Azul claro.': 'Açıq mavi.',
@@ -204,7 +203,6 @@ export default {
   'Começa a aparecer': 'Görünməyə başlayır',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.': 'Özününkünü yarat, ya da kiminsə sənə verdiyi kodla onun icmasına qoşul.',
   'Começo': 'Başlanğıc',
-  'Como a imagem é comprimida': 'Şəklin necə sıxıldığı',
   'Como administrador, você pode remover membros que não são administradores.': 'Admin kimi admin olmayan üzvləri çıxara bilərsən.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.': 'Sahib kimi kimin idarə edəcəyini seçirsən və istənilən adamı çıxara bilərsən.',
   'Como vai ficar': 'Necə görünəcək',
@@ -240,7 +238,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Səsi fırlanan pərlər kimi zərbələrə bölür.',
   'Cortando…': 'Kəsilir…',
   'Cosmos': 'Kosmos',
-  'costuma usar a placa': 'adətən videokartdan istifadə edir',
   'Criar a minha': 'Özümünkünü yarat',
   'Criar canal': 'Kanal yarat',
   'Criar tópico': 'Mövzu yarat',
@@ -539,8 +536,6 @@ export default {
   'Este clipe não tem som.': 'Bu klipin səsi yoxdur.',
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.': 'Bu, söhbətin başlanğıcıdır. Burada yazılanları yalnız iştirakçılar görür.',
   'Este é o começo do canal.': 'Bu, kanalın başlanğıcıdır.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Bu brauzer hansı kodlayıcının daha yaxşı olduğunu demir. Avtomatik rejimdə hər yerdə işləyən VP8 qalır.',
   'Europa': 'Avropa',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.': 'Dinamikdən istifadə edəndə başqalarının öz səslərini geri eşitməsinin qarşısını alır.',
   'Ex.: Chegou!': 'Məs.: Gəldim!',
@@ -567,11 +562,9 @@ export default {
   'Fechar tópico': 'Mövzunu bağla',
   'Fica assim:': 'Belə olacaq:',
   'Fim': 'Son',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Prosessora düşsə belə H.264-ü sabitləyir.',
   'Floresta': 'Meşə',
   'Fluido': 'Axıcı',
   'Folha': 'Yarpaq',
-  'Funciona em tudo. Roda no processador.': 'Hər yerdə işləyir. Prosessorda işləyir.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Zəng zamanı Syden kiçildilsə belə işləyir:',
   'Fundo do perfil': 'Profilin fonu',
   'Ganha fazendo alguma coisa no Syden': 'Syden-də nəsə edərək qazanılır',
@@ -685,10 +678,6 @@ export default {
   'Nenhum som com esse nome.': 'Bu adda səs yoxdur.',
   'Nenhuma denúncia até agora.': 'İndiyə qədər şikayət yoxdur.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.': 'Hələ mahnı yoxdur. Dostlar oxusun deyə səndə olan bir faylı yüklə.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'Bu kompüterdə, avtomatik rejimdə: videokartla H.264. Oyun üçün ən çox prosessor beləcə qalır.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'Bu kompüterdə, avtomatik rejimdə: prosessorla VP8. Videokart bu şəkil ölçüsündə H.264 kodlamır.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Yayımını hələ heç kim açmayıb. Syden şəkli yalnız kimsə izləyəndə kodlayır — ona görə burada rəqəm yoxdur.',
   'Ninguém com a palavra ainda': 'Hələ heç kimə söz verilməyib',
@@ -698,8 +687,6 @@ export default {
   'Ninguém na chamada — seja o primeiro': 'Zəngdə heç kim yoxdur — birinci sən ol',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.': 'Hələlik təklif ediləcək adam yoxdur — insanlarla tanış olmaq üçün bir icmaya qoşul.',
   'Ninguém respondeu neste tópico ainda.': 'Bu mövzuya hələ heç kim cavab verməyib.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Avtomatik rejimdə Syden hər yayımdan əvvəl kompüterdən soruşur ki, seçilmiş ölçüdə H.264 videokartla alınırmı — və yalnız alınanda istifadə edir. İkisini müqayisə etmək istəmirsənsə, belə saxla. Növbəti paylaşımdan qüvvəyə minir.',
   'Noite estrelada': 'Ulduzlu gecə',
   'Nome': 'Ad',
   'Nome alterado.': 'Ad dəyişdirildi.',
@@ -721,7 +708,6 @@ export default {
   'O cartão liso.': 'Hamar kart.',
   'O céu inteiro girando bem devagar.': 'Bütün səma çox yavaş fırlanır.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Klip çat üçün çox böyük oldu. Daha qısa hissə seç.',
-  'o de sempre': 'həmişəki',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Brauzer bu saytın bildirişlərini bloklayıb. Ünvanın yanındakı kilidə klik edib icazə ver və səhifəni yenilə.',
   'O nome como sempre foi.': 'Ad həmişəki kimi.',
@@ -825,7 +811,6 @@ export default {
   'Querem falar': 'Danışmaq istəyirlər',
   'Rádio de avião': 'Təyyarə ratsiyası',
   'Recado': 'Səsli mesaj',
-  'recomendado': 'tövsiyə olunur',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Çoxu üçün tövsiyə olunur. İzləyənlər lazım olsa keyfiyyəti endirə bilər.',
   'Reconectando ao servidor…': 'Serverə yenidən qoşulur…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Klaviatura, ventilyator və nəqliyyat kimi arxa fon səs-küyünü azaldır.',
@@ -1008,7 +993,6 @@ export default {
     'Yazdıqlarının surəti hakimiyyət orqanlarının sorğusu ehtimalına görə 90 gün tətbiqdən kənarda saxlanılır. Onu Syden vasitəsilə heç kim oxumur.',
   'Uma imagem larga, de 1200 por 300 ou parecida. GIF animado vale, e anima de verdade. Sem capa, fica a arte que você escolheu nas boas-vindas.':
     'Geniş şəkil, 1200×300 və ya oxşar. Animasiyalı GIF də olar və həqiqətən hərəkət edir. Üz qabığı olmasa, xoş gəldin ekranında seçdiyin fon qalır.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.': 'Bacaranda videokartdan, bacarmayanda prosessordan istifadə edir.',
   'Usar': 'Tax',
   'Uso do servidor': 'Serverin istifadəsi',
   'Vale a partir do próximo compartilhamento.': 'Növbəti paylaşımdan qüvvəyə minir.',

@@ -1032,17 +1032,7 @@ export function useVoice(socket: Socket | null) {
       const quality = getSettings().screenQuality;
       const preset = SCREEN_PRESETS[quality];
       const hints = SCREEN_HINTS[quality];
-      const escolhido = getSettings().screenCodec;
-      const codec =
-        escolhido === 'auto'
-          ? (
-              await escolherCodecDaTela(
-                preset.width,
-                preset.height,
-                preset.encoding.maxFramerate ?? 30,
-              )
-            ).codec
-          : escolhido;
+      const { codec } = await escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30);
       try {
         setTelaCompartilhada(surface);
         modoNoArRef.current = quality;
@@ -1069,10 +1059,9 @@ export function useVoice(socket: Socket | null) {
           {
             screenShareEncoding: preset.encoding,
             degradationPreference: hints.degradation,
-            // Escolhido nas configurações, ou MEDIDO quando está em automático: a pergunta é se o
-            // H.264 sai pela placa de vídeo nesta máquina e neste tamanho (ver escolherCodec.ts).
-            // Continua dando para fixar um dos dois à mão e comparar numa chamada de verdade, que é o
-            // único lugar onde a diferença aparece — num teste isolado os números não se repetem.
+            // MEDIDO a cada transmissão: a pergunta é se o H.264 sai pela placa de vídeo nesta máquina
+            // e neste tamanho (ver escolherCodec.ts). Escolher à mão existiu nas Configurações e saiu
+            // em 11/10/2026: ninguém deveria precisar saber o que é um codec para transmitir.
             videoCodec: codec,
             screenShareSimulcastLayers: SCREEN_LAYERS[quality],
           },

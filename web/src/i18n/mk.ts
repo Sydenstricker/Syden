@@ -155,7 +155,6 @@ export default {
   'Ativar microfone': 'Вклучи микрофон',
   'Aurora': 'Поларна светлина',
   'Ausente': 'Не сум тука',
-  'Automático': 'Автоматски',
   'Avisa das mensagens novas quando o Syden está minimizado, em segundo plano ou em outro canal.':
     'Те известува за нови пораки кога Syden е спуштен, во позадина или во друг канал.',
   'Azul claro.': 'Светлосина.',
@@ -223,7 +222,6 @@ export default {
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Започни своја или приклучи се кон туѓа со кодот што ти го даде тој човек.',
   'Começo': 'Почеток',
-  'Como a imagem é comprimida': 'Како се компресира сликата',
   'Como administrador, você pode remover membros que não são administradores.':
     'Во улога на администратор можеш да отстрануваш членови што не се администратори.',
   'Como dono, você escolhe quem administra e pode remover qualquer pessoa.':
@@ -261,7 +259,6 @@ export default {
   'Corta a voz em batidas, como as pás girando.': 'Го сецка гласот на удари, како перките што се вртат.',
   'Cortando…': 'Се сече…',
   'Cosmos': 'Космос',
-  'costuma usar a placa': 'обично ја користи графичката картичка',
   'Criar a minha': 'Создај своја',
   'Criar canal': 'Создај канал',
   'Criar tópico': 'Создај нишка',
@@ -573,8 +570,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'Ова е почетокот на разговорот. Она што се пишува тука го гледаат само тие што се во него.',
   'Este é o começo do canal.': 'Ова е почетокот на каналот.',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'Овој прелистувач не кажува кој кодек е подобар. Автоматски останува VP8, кој работи насекаде.',
   'Europa': 'Европа',
   'Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.':
     'Спречува другите да го слушаат својот глас назад кога користиш звучник.',
@@ -603,11 +598,9 @@ export default {
   'Fechar tópico': 'Затвори ја нишката',
   'Fica assim:': 'Ќе изгледа вака:',
   'Fim': 'Крај',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'Го задржува H.264 дури и ако заврши на процесорот.',
   'Floresta': 'Шума',
   'Fluido': 'Течно',
   'Folha': 'Лист',
-  'Funciona em tudo. Roda no processador.': 'Работи насекаде. Работи на процесорот.',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'Работат и кога Syden е спуштен, за време на повик:',
   'Fundo do perfil': 'Позадина на профилот',
   'Ganha fazendo alguma coisa no Syden': 'Се добива кога ќе направиш нешто во Syden',
@@ -730,10 +723,6 @@ export default {
   'Nenhuma denúncia até agora.': 'Засега нема пријави.',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'Засега нема песни. Прикачи датотека што ја имаш, за друштвото да пее.',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'На овој компјутер, автоматски: H.264 преку графичката картичка. Така за играта останува најмногу процесор.',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'На овој компјутер, автоматски: VP8 преку процесорот. Графичката картичка не кодира H.264 во оваа големина на слика.',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'Никој уште не го отвори твојот пренос. Syden ја кодира сликата само кога некој гледа — затоа тука нема бројки.',
   'Ninguém com a palavra ainda': 'Засега никој нема збор',
@@ -744,8 +733,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Засега нема кого да се предложи — приклучи се кон заедница и запознај луѓе.',
   'Ninguém respondeu neste tópico ainda.': 'Во оваа нишка уште никој не одговори.',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'Автоматски, пред секој пренос Syden го прашува компјутерот дали H.264 може да оди преку графичката картичка во избраната големина — и го користи само кога може. Остави така, освен ако сакаш да ги споредиш двата. Важи од следното споделување.',
   'Noite estrelada': 'Ѕвездена ноќ',
   'Nome': 'Име',
   'Nome alterado.': 'Името е сменето.',
@@ -767,7 +754,6 @@ export default {
   'O cartão liso.': 'Мазна картичка.',
   'O céu inteiro girando bem devagar.': 'Целото небо се врти многу полека.',
   'O clipe ficou grande demais para o chat. Escolha um trecho menor.': 'Клипот е преголем за разговорот. Избери пократок дел.',
-  'o de sempre': 'вообичаеното',
   'O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.':
     'Прелистувачот ги блокираше известувањата од оваа страница. Дозволи ги кај катанецот до адресата и освежи ја страницата.',
   'O nome como sempre foi.': 'Името како отсекогаш.',
@@ -878,7 +864,6 @@ export default {
   'Querem falar': 'Сакаат да зборуваат',
   'Rádio de avião': 'Авионско радио',
   'Recado': 'Објава',
-  'recomendado': 'препорачано',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Препорачано за повеќето. Гледачите може да го намалат квалитетот ако треба.',
   'Recompensa': 'Награда',
@@ -1065,8 +1050,6 @@ export default {
     'Широка слика, 1200 × 300 или слично. Анимиран GIF може, и навистина се движи. Без насловна слика останува сликата избрана за добредојде.',
   'Uma regra ou aviso por linha: o coelho de quem chega lê um por um.':
     'Едно правило или објава по ред: зајакот на новодојдениот ги чита едно по едно.',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'Ја користи графичката картичка кога може, а процесорот кога не може.',
   'Usar': 'Користи',
   'Uso do servidor': 'Користење на серверот',
   'Vale a partir do próximo compartilhamento.': 'Важи од следното споделување.',

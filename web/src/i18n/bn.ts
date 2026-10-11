@@ -71,7 +71,6 @@ export default {
   'Ativar áudio': 'শব্দ চালু করো',
   'Ativar microfone': 'মাইক চালু করো',
   Ausente: 'দূরে',
-  'Automático': 'নিজে থেকে',
   'Azul claro.': 'হালকা নীল।',
   'Azul em movimento.': 'চলমান নীল।',
   'Azul fechado, quase roxo.': 'গাঢ় নীল, প্রায় বেগুনি।',
@@ -108,7 +107,6 @@ export default {
   'Começa a aparecer': 'দেখা যেতে শুরু করে',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'নিজেরটা শুরু করো, কিংবা কারও দেওয়া কোড দিয়ে তার কমিউনিটিতে ঢোকো।',
-  'Como a imagem é comprimida': 'ছবিটা কীভাবে চাপা হয়',
   'Como vai ficar': 'দেখতে এমন হবে',
   'Como vão te ver': 'অন্যরা তোমাকে যেভাবে দেখবে',
   'comum mostra a letra parada, para acompanhar.': 'সাধারণটা কথাগুলো থামিয়ে দেখায়, যাতে সঙ্গে পড়া যায়।',
@@ -133,7 +131,6 @@ export default {
   'Copiar link de convite': 'আমন্ত্রণের লিংক কপি করো',
   Cor: 'রং',
   'Cor do nome': 'নামের রং',
-  'costuma usar a placa': 'সাধারণত গ্রাফিক্স কার্ড ব্যবহার করে',
   'Criar a minha': 'নিজেরটা বানাও',
   'Criar canal': 'চ্যানেল বানাও',
   'Criar tópico': 'থ্রেড বানাও',
@@ -403,8 +400,6 @@ export default {
   'Este é o começo da conversa. Só quem está nela vê o que é escrito aqui.':
     'এটাই কথোপকথনের শুরু। এখানে যা লেখা হয়, শুধু এর ভেতরের লোকজনই দেখে।',
   'Este é o começo do canal.': 'এটাই চ্যানেলের শুরু।',
-  'Este navegador não responde qual codificador é melhor. No automático fica o VP8, que funciona em tudo.':
-    'এই ব্রাউজার বলে না কোন এনকোডার ভালো। নিজে-থেকে মোডে VP8-ই থাকে, যেটা সব জায়গায় চলে।',
   'Ex.: Chegou!': 'যেমন: এসে গেছে!',
   'ex.: Evidências': 'যেমন: প্রমাণ',
   'Ex.: k3m9xq2p': 'যেমন: k3m9xq2p',
@@ -421,10 +416,8 @@ export default {
   'Fechar configurações': 'সেটিং বন্ধ করো',
   'Fechar o karaokê': 'কারাওকে বন্ধ করো',
   'Fechar tópico': 'থ্রেড বন্ধ করো',
-  'Fixa o H.264 mesmo que ele caia no processador.': 'H.264 আটকে রাখে, প্রসেসরে গিয়ে পড়লেও।',
   Fluido: 'মসৃণ',
   'Folha': 'পাতা',
-  'Funciona em tudo. Roda no processador.': 'সব জায়গায় চলে। প্রসেসরে চলে।',
   'Funcionam mesmo com o Syden minimizado, durante uma chamada:': 'কল চলাকালীন Syden ছোট করা থাকলেও কাজ করে:',
   'Ganha fazendo alguma coisa no Syden': 'Syden-এ কিছু করে পাওয়া যায়',
   GIF: 'GIF',
@@ -499,10 +492,6 @@ export default {
   'Nenhuma denúncia até agora.': 'এ পর্যন্ত কোনো অভিযোগ নেই।',
   'Nenhuma música ainda. Suba um arquivo que você tenha aí para a turma cantar.':
     'এখনও কোনো গান নেই। তোমার কাছে থাকা একটা ফাইল তুলে দাও, সবাই মিলে গাইবে।',
-  'Neste computador, no automático: H.264 pela placa de vídeo. É o que sobra mais processador para o jogo.':
-    'এই কম্পিউটারে, নিজে-থেকে মোডে: গ্রাফিক্স কার্ড দিয়ে H.264। এতেই খেলার জন্য সবচেয়ে বেশি প্রসেসর বাঁচে।',
-  'Neste computador, no automático: VP8 pelo processador. A placa de vídeo não codifica H.264 neste tamanho de imagem.':
-    'এই কম্পিউটারে, নিজে-থেকে মোডে: প্রসেসর দিয়ে VP8। এই মাপের ছবিতে গ্রাফিক্স কার্ড H.264 এনকোড করে না।',
   'Ninguém abriu a sua transmissão ainda. O Syden só codifica a imagem quando alguém assiste — por isso não há números aqui.':
     'এখনও কেউ তোমার স্ট্রিম খোলেনি। কেউ দেখলে তবেই Syden ছবিটা এনকোড করে — তাই এখানে কোনো সংখ্যা নেই।',
   'Ninguém com a palavra ainda': 'এখনও কারও কথা বলার পালা আসেনি',
@@ -513,8 +502,6 @@ export default {
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'আপাতত কাউকে দেখানোর নেই — মানুষ চিনতে কোনো কমিউনিটিতে ঢোকো।',
   'Ninguém respondeu neste tópico ainda.': 'এই থ্রেডে এখনও কেউ উত্তর দেয়নি।',
-  'No automático o Syden pergunta ao computador, antes de cada transmissão, se o H.264 sai pela placa de vídeo no tamanho escolhido — e só usa quando sai. Deixe assim, a não ser que você queira comparar os dois. Vale a partir do próximo compartilhamento.':
-    'নিজে-থেকে মোডে Syden প্রতিটি স্ট্রিমের আগে কম্পিউটারকে জিজ্ঞেস করে, বেছে নেওয়া মাপে H.264 গ্রাফিক্স কার্ড দিয়ে বেরোয় কি না — আর বেরোলে তবেই সেটা ব্যবহার করে। দুটোর তুলনা করতে না চাইলে এভাবেই থাকতে দাও। পরের বার পর্দা শেয়ার করা থেকে কার্যকর।',
   Nome: 'নাম',
   'Nome da comunidade': 'কমিউনিটির নাম',
   'Nome de usuário': 'ব্যবহারকারীর নাম',
@@ -531,7 +518,6 @@ export default {
     'চ্যানেলটা তার বার্তাসহ সবার চোখের আড়ালে চলে যায়। {dias} দিন পর্যন্ত ফিরিয়ে আনা যায়: সেটিং → কমিউনিটি → ট্র্যাশ।',
   'O cartão liso.': 'সাদামাটা কার্ড।',
   'O céu inteiro girando bem devagar.': 'পুরো আকাশ খুব ধীরে ঘুরছে।',
-  'o de sempre': 'যেটা সবসময়ের',
   'o nome exato da pessoa': 'লোকটার ঠিক নামটা',
   'O nome muda de cor devagar.': 'নামের রং ধীরে ধীরে বদলায়।',
   'O que aconteceu?': 'কী হয়েছে?',
@@ -605,7 +591,6 @@ export default {
   'Quente, mas sem gritar.': 'উষ্ণ, কিন্তু চেঁচায় না।',
   'Querem falar': 'বলতে চায়',
   Recado: 'বার্তা',
-  recomendado: 'সুপারিশ করা',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'বেশিরভাগের জন্য সুপারিশ করা। যে দেখছে, দরকার হলে মান কমিয়ে নিতে পারে।',
   'Reconectando ao servidor…': 'সার্ভারে আবার যুক্ত হচ্ছে…',
@@ -726,8 +711,6 @@ export default {
   'Um lugar novo, com canais próprios, e você decide quem entra.': 'একটা নতুন জায়গা, নিজের চ্যানেলসহ, আর কে ঢুকবে তুমি ঠিক করবে।',
   'Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.':
     'একটা নতুন জায়গা, নিজের চ্যানেলসহ। আমন্ত্রণের কোড দিয়ে তুমি ঠিক করো কে ঢুকবে।',
-  'Usa a placa de vídeo quando ela dá conta, e o processador quando não dá.':
-    'গ্রাফিক্স কার্ড পারলে সেটাই, না পারলে প্রসেসর ব্যবহার করে।',
   Usar: 'ব্যবহার করো',
   'Uso do servidor': 'সার্ভারের ব্যবহার',
   'Vale a partir do próximo compartilhamento.': 'পরের বার পর্দা শেয়ার করা থেকে কার্যকর।',
