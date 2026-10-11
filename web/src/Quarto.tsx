@@ -44,7 +44,7 @@ const OBJETOS: { id: string; caixa: Caixa; mascara: string }[] = [
   { id: 'quadro', caixa: [83, 53, 109, 100], mascara: mascaraQuadro },
   { id: 'janela', caixa: [146, 22, 239, 145], mascara: mascaraJanela },
   { id: 'cortica', caixa: [237, 73, 265, 113], mascara: mascaraCortica },
-  { id: 'computador', caixa: [211, 115, 268, 173], mascara: mascaraComputador },
+  { id: 'computador', caixa: [211, 115, 268, 190], mascara: mascaraComputador },
   { id: 'fone', caixa: [271, 129, 291, 153], mascara: mascaraFone },
   // O "armário" é o gabinete do computador; o guarda-roupa são as gavetas embaixo da cama (correção de 09/10/2026).
   { id: 'armario', caixa: [266, 193, 298, 240], mascara: mascaraArmario },

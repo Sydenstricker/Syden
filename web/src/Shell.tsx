@@ -25,6 +25,7 @@ import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
 import { loadMyStatus, saveMyStatus } from './presenceStatus';
 import { Revelacao } from './Revelacao';
+import { escutarCodigoSecreto } from './codigoSecreto';
 import { getSettings, updateSettings, useSettings } from './settings';
 import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
@@ -645,6 +646,22 @@ export function Shell({
       .then((itens) => setPorRevelar(itens.map((item) => item.code)))
       .catch(() => {});
   }, []);
+
+  /**
+   * O código secreto (codigoSecreto.ts): achou, o servidor diz se a insígnia é nova, e a nova entra na mesma
+   * fila da tela de destaque das outras — a revelação é a de sempre. Achar de novo não mostra nada.
+   */
+  useEffect(
+    () =>
+      escutarCodigoSecreto(() => {
+        void api<{ novo: boolean }>('/api/me/codigo-secreto', { method: 'POST' })
+          .then(({ novo }) => {
+            if (novo) setPorRevelar((fila) => (fila.includes('codigo-secreto') ? fila : [...fila, 'codigo-secreto']));
+          })
+          .catch(() => {});
+      }),
+    [],
+  );
 
   /**
    * Resgatar tira o item da fila e avisa o servidor, que marca como visto e põe a insígnia na vitrine.

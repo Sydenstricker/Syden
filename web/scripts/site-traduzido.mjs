@@ -51,10 +51,11 @@ const semMarcas = (texto) => texto.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, 
 // Os elementos que levam frase. Os que se aninham (um <a> dentro de um <p>) são pegos pelo de fora: a
 // busca anda da esquerda para a direita e o <p> começa antes.
 const ELEMENTO = /<(title|h1|h2|h3|p|li|a|button|figcaption)\b([^>]*)>([\s\S]*?)<\/\1>/g;
-// O que vai em atributo: o texto alternativo das imagens, as descrições do cabeçalho e as respostas do
-// botão de copiar o Pix (contribuir.js lê de lá).
+// O que vai em atributo: o texto alternativo das imagens, as descrições do cabeçalho, o nome de cada
+// objeto do quarto (aria-label, que o CSS mostra no balão) e os textos que os scripts trocam
+// (contribuir.js e quarto-do-site.js leem de lá).
 const ATRIBUTO =
-  /(<img\b[^>]*?\balt="|<meta (?:name="description"|property="og:description") content="|\bdata-(?:copiado|falhou)=")([^"]+)(")/g;
+  /(<img\b[^>]*?\balt="|<meta (?:name="description"|property="og:description") content="|\baria-label="|\bdata-(?:copiado|falhou|apagar)=")([^"]+)(")/g;
 
 /** Frase que não precisa de tradução: vazia, só a marca, ou marcada translate="no". */
 const pular = (atributos, interno) => /translate="no"/.test(atributos) || ['', 'Syden'].includes(semMarcas(interno));
@@ -82,18 +83,22 @@ export function frasesDoSite() {
  * idioma mostra o app no próprio idioma (sem elas, cai nas do inglês, que é melhor que português).
  */
 function reapontar(html, idioma, avisos) {
-  return html.replace(/\b(src|href)="([^"]+)"/g, (inteiro, atributo, valor) => {
+  // srcset também: a vitrine animada tem a versão parada num <source srcset>, para quem pediu menos movimento.
+  return html.replace(/\b(src|href|srcset)="([^"]+)"/g, (inteiro, atributo, valor) => {
     // A outra página traduzida fica no mesmo idioma: o "contribuir" de /ja/ é o /ja/contribuir.html.
-    if (/^(#|\/|https?:|mailto:|data:)/.test(valor) || valor === './' || PAGINAS.includes(valor)) return inteiro;
+    // E o que começa com "./" é desta mesma pasta: o "./#o-que-tem" do menu do contribuir de /ja/ é /ja/#o-que-tem.
+    if (/^(#|\/|https?:|mailto:|data:|\.\/)/.test(valor) || PAGINAS.includes(valor.split('#')[0])) return inteiro;
     // As páginas legais existem em português e em inglês (web/site/en/). Para quem não lê português, a
     // inglesa serve mais do que o original — e ela mesma aponta para ele, que é o que vale.
     const legal = valor.match(/^(privacidade|termos)\.html(#.*)?$/);
     if (legal) return `${atributo}="../en/${legal[1] === 'privacidade' ? 'privacy' : 'terms'}.html${legal[2] ?? ''}"`;
     const captura = valor.match(/^capturas\/pt-BR\/(.+)$/);
     if (captura) {
-      const deste = join(AQUI, 'site', 'capturas', idioma, captura[1]);
-      const pasta = existsSync(deste) ? idioma : 'en';
-      if (pasta !== idioma) avisos.add(`${idioma}: sem capturas próprias, usa as do inglês`);
+      // Sem a captura do próprio idioma, a do inglês; sem ela (imagem nova, feita só em português), a
+      // original. Imagem quebrada nunca: a falta de uma foto traduzida é aviso, não página sem figura.
+      const tem = (pasta) => existsSync(join(AQUI, 'site', 'capturas', pasta, captura[1]));
+      const pasta = tem(idioma) ? idioma : tem('en') ? 'en' : 'pt-BR';
+      if (pasta !== idioma) avisos.add(`${idioma}: sem ${captura[1]} própria, usa a de ${pasta}`);
       return `${atributo}="../capturas/${pasta}/${captura[1]}"`;
     }
     return `${atributo}="../${valor}"`;
@@ -133,7 +138,12 @@ function enfeitar(html, pagina, atual, idiomas, nomes, prefixo) {
  * Monta todas as versões. Devolve { paginas: Map<caminho relativo, html>, faltando, avisos }; quem chama
  * escreve os arquivos e decide parar quando faltar frase.
  */
-export function montarIdiomas() {
+/**
+ * `rascunho`: o idioma com frase faltando é montado MESMO ASSIM, com o português no lugar do que falta. É para ver o
+ * site enquanto o texto ainda muda (pedido de 10/10/2026: uma palavra nova sem tradução tirava os 71 idiomas do ar
+ * local, e /am/ dava 404). Na montagem de verdade, frase faltando continua parando tudo.
+ */
+export function montarIdiomas({ rascunho = false } = {}) {
   const idiomas = idiomasDoSite();
   const doApp = idiomasDoApp();
   const nomes = new Map(doApp.map((i) => [i.codigo, i.nativo]));
@@ -153,9 +163,9 @@ export function montarIdiomas() {
     const falta = frases.filter((frase) => !dicionario[frase]?.trim());
     if (falta.length) {
       faltando[idioma] = falta;
-      continue;
+      if (!rascunho) continue;
     }
-    const traduzir = (frase) => dicionario[normalizar(frase)];
+    const traduzir = (frase) => dicionario[normalizar(frase)]?.trim() || normalizar(frase);
 
     for (const [pagina, original] of originais) {
       let html = original.replace(/<!--[\s\S]*?-->/g, '');

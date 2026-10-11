@@ -890,6 +890,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Atoro ho an’ny maro an’isa. Afaka mampidina ny kalitao ny mpijery raha ilaina.',
   'Recompensa': 'Valisoa',
+  'Código secreto': 'Kaody miafina',
+  'Achou o código que só quem procura acha': 'Nahita ilay kaody hitan’izay mitady ihany',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Hitanao ilay kaody miafina. Ho an’izay mitady ny tsiambaratelo tsara indrindra.',
+  'Segredo': 'Tsiambaratelo',
   'Reconectando ao servidor…': 'Mifandray indray amin’ny mpizara…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Mampihena ny tabataba ao aoriana, toy ny fafan-tsoratra, ny fanamafisana rivotra ary ny fifamoivoizana.',
   'Registro': 'Diary',
@@ -1037,6 +1042,8 @@ export default {
   'Trocar a capa': 'Ovay ny fonony',
   'Trocar áudio': 'Ovay ny feo',
   'Trocar avatar': 'Ovay ny avatar',
+  'Ou escolha um coelho': 'Na mifidiana bitro',
+  'Usar este coelho': 'Ampiasao ity bitro ity',
   'Trocar imagem': 'Ovay ny sary',
   'Trocar o e-mail': 'Ovay ny mailaka',
   'Trocar senha': 'Ovay ny teny miafina',

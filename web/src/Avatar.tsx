@@ -3,14 +3,6 @@ import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import type { PresenceStatus } from './types';
 
-/** Mesmas cores do Discord: verde online, amarelo ausente, vermelho não perturbe, cinza invisível/offline. */
-const STATUS_COLORS: Record<PresenceStatus, string> = {
-  online: 'var(--green)',
-  ausente: '#f0b232',
-  ocupado: 'var(--red)',
-  invisivel: '#80848e',
-};
-
 /**
  * O coelho em cada status — o mascote, e não o D4 (decisão de 05/10/2026). Cada status é um SVG
  * exportado do estúdio (animacaoSVG/animacoes_d4.html, grupo "O avatar"), recortado perto da cabeça:
@@ -37,6 +29,31 @@ function AvatarCoelho({ pose }: { pose: string }) {
       alt=""
       aria-hidden="true"
       draggable={false}
+    />
+  );
+}
+
+/** O desenho de um coelho pronto (public/avatares/), parado. É também o que a grade de escolha mostra. */
+export function enderecoDoCoelhoPronto(numero: number, estado?: EstadoDoPronto) {
+  return `${import.meta.env.BASE_URL}avatares/coelho-${String(numero).padStart(2, '0')}${estado ? '-' + estado : ''}.png`;
+}
+
+/**
+ * O que um coelho pronto sabe fazer além de ficar parado. Cada estado é uma faixa de QUADROS_DO_PRONTO quadros
+ * (e2e/pixel-art/avatares/folhas.mjs), tocada em laço pelo CSS: falando mexe a boca, ausente dorme, ocupado
+ * franze a testa. Online não tem faixa: é o desenho parado, com o anel verde.
+ */
+export type EstadoDoPronto = 'falando' | 'ausente' | 'ocupado';
+export const QUADROS_DO_PRONTO = 8;
+
+function CoelhoPronto({ numero, estado }: { numero: number; estado: EstadoDoPronto | null }) {
+  if (!estado) return <img className="avatar-pronto" src={enderecoDoCoelhoPronto(numero)} alt="" draggable={false} />;
+  return (
+    <span
+      className="avatar-pronto avatar-pronto-faixa"
+      data-estado={estado}
+      style={{ backgroundImage: `url(${enderecoDoCoelhoPronto(numero, estado)})` }}
+      aria-hidden="true"
     />
   );
 }
@@ -93,7 +110,7 @@ export function Avatar({
   name: string;
   userId?: number;
   online?: boolean;
-  /** Bolinha colorida pelo status (online/ausente/ocupado/invisível) em vez do verde padrão. */
+  /** O estado (online/ausente/ocupado/invisível): a cor do anel e, no coelho, a pose. */
   status?: PresenceStatus;
   /** Sabidamente desconectada (o grupo "Offline" da lista de membros): o coelho recolhe as orelhas. */
   offline?: boolean;
@@ -109,6 +126,7 @@ export function Avatar({
   const { members } = useDirectory();
   const membro = userId === undefined ? undefined : members.get(userId);
   const version = membro?.avatarVersion ?? null;
+  const pronto = version === null ? (membro?.avatarPronto ?? null) : null;
   // A moldura vem do DIRETÓRIO, e não de quem chamou: assim ela aparece em toda parte onde já se
   // desenha um avatar (lista de membros, chamada, mensagem) sem passar a escolha de mão em mão. E
   // muda sozinha quando a pessoa troca, pelo mesmo "user:updated" que já atualiza o nome.
@@ -135,22 +153,28 @@ export function Avatar({
                 ? POSE[status ?? 'online']
                 : 'neutro';
 
+  // O coelho pronto na pose do momento: falar vem antes de tudo (é o que os outros estão ouvindo), depois o
+  // estado escolhido. Offline e "não se sabe" ficam no desenho parado.
+  const estadoDoPronto: EstadoDoPronto | null =
+    fala !== 'parado' ? 'falando' : online && !offline && (status === 'ausente' || status === 'ocupado') ? status : null;
+
   return (
     <span
       className={`avatar${speaking ? ' speaking' : ''}`}
       data-moldura={moldura || undefined}
-      style={{
-        width: size,
-        height: size,
-      }}
+      // O ANEL DO ESTADO (10/10/2026): um anel fino da cor do estado, POR FORA da moldura — a moldura que a
+      // pessoa escolheu continua inteira. Substitui a bolinha do canto, que se perdia nas skins coloridas
+      // (ver styles.css, ".avatar[data-estado]"). Só aparece quando o estado é sabido.
+      data-estado={online && !offline ? (status ?? 'online') : undefined}
+      style={{ width: size, height: size }}
     >
-      {version === null ? (
-        <AvatarCoelho pose={pose} />
-      ) : (
+      {version !== null ? (
         <img src={mediaUrl.avatar(userId!, version)} alt="" draggable={false} />
+      ) : pronto !== null ? (
+        <CoelhoPronto numero={pronto} estado={estadoDoPronto} />
+      ) : (
+        <AvatarCoelho pose={pose} />
       )}
-      {/* Com foto, o status vai na bolinha; no coelho, a pose dele já diz. */}
-      {online && version !== null && <span className="avatar-status" style={{ background: STATUS_COLORS[status ?? 'online'] }} />}
     </span>
   );
 }

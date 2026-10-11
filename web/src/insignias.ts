@@ -9,6 +9,7 @@ import { chave, t } from './i18n';
 import type { TipoDeMoldura } from './Medalha';
 import medalhaUrl from './assets/medalha.png';
 import primeirosUrl from './assets/insignia-primeiros-25.png';
+import segredoUrl from './assets/insignia-codigo-secreto.png';
 
 export interface Insignia {
   codigo: string;
@@ -41,6 +42,17 @@ export const INSIGNIAS: Record<string, Insignia> = {
     arte: medalhaUrl,
     moldura: 'ouro',
     etiqueta: chave('Recompensa'),
+  },
+  // O easter egg: ↑↑↓↓←→←→BA no teclado do app (codigoSecreto.ts). A arte é
+  // um cartucho com a sequência na etiqueta, feita por ele (10/10/2026).
+  'codigo-secreto': {
+    codigo: 'codigo-secreto',
+    nome: chave('Código secreto'),
+    descricao: chave('Achou o código que só quem procura acha'),
+    frase: chave('Você achou o código secreto. Os melhores segredos são de quem procura.'),
+    arte: segredoUrl,
+    moldura: 'prata',
+    etiqueta: chave('Segredo'),
   },
 };
 

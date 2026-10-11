@@ -19,6 +19,16 @@ export const INSIGNIAS = {
   PRIMEIROS: 'primeiros-25',
   /** Teve uma ideia acolhida no Syden. Esta é dada pelo fluxo das sugestões, não pela conferência. */
   IDEIA: 'ideia-acolhida',
+  /**
+   * Achou o código secreto: ↑↑↓↓←→←→BA no teclado do app (no celular não há setas, e ficou de fora).
+   *
+   * É a única insígnia que se ganha por um pedido do app, e isso foi pesado: qualquer um que leia o código
+   * do site pode chamar a rota à mão. Não tem problema, e é por isso que ela pode ser assim — o "segredo" é
+   * a sequência mais famosa dos videogames, e a graça é a pessoa tentar. Ela não dá vantagem nenhuma, não
+   * é contada para nada e sai uma vez por conta. Uma insígnia que significasse esforço ou tempo nunca
+   * poderia nascer de um pedido do navegador.
+   */
+  SEGREDO: 'codigo-secreto',
 } as const;
 
 /** Até qual número de cadastro a insígnia dos primeiros vale. */

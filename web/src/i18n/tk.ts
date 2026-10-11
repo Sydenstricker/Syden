@@ -892,6 +892,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Köpüsi üçin maslahat berilýär. Tomaşaçy gerek bolsa hilini peseldip biler.',
   'Recompensa': 'Sylag',
+  'Código secreto': 'Gizlin kod',
+  'Achou o código que só quem procura acha': 'Diňe gözleýäniň tapýan koduny tapdy',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Gizlin kody tapdyň. Iň gowy syrlar gözleýänleriňkidir.',
+  'Segredo': 'Syr',
   'Reconectando ao servidor…': 'Serwere täzeden birikdirilýär…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Klawiatura, wentilýator we ulag ýaly fon galmagallaryny azaldýar.',
   'Registro': 'Žurnal',
@@ -1039,6 +1044,8 @@ export default {
   'Trocar a capa': 'Örtügi çalyş',
   'Trocar áudio': 'Audiony çalyş',
   'Trocar avatar': 'Awatary çalyş',
+  'Ou escolha um coelho': 'Ýa-da towşan saýla',
+  'Usar este coelho': 'Bu towşany ulan',
   'Trocar imagem': 'Suraty çalyş',
   'Trocar o e-mail': 'E-poçtany çalyş',
   'Trocar senha': 'Paroly çalyş',

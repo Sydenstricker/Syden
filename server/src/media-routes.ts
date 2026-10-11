@@ -73,6 +73,17 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       return user;
     });
 
+    // O coelho pronto: só o número, sem imagem nenhuma subindo (o desenho já mora no site).
+    authed.put<{ Body: { numero?: unknown } }>('/api/me/avatar-pronto', async (request, reply) => {
+      const numero = request.body?.numero;
+      if (typeof numero !== 'number' || !Number.isInteger(numero) || numero < 1 || numero > db.COELHOS_PRONTOS) {
+        return reply.code(400).send({ error: 'Esse coelho não existe.' });
+      }
+      const user = db.setAvatarPronto(request.user.id, numero);
+      io.emit('user:updated', user);
+      return user;
+    });
+
     authed.delete('/api/me/avatar', async (request) => {
       const user = db.setAvatar(request.user.id, null);
       io.emit('user:updated', user);

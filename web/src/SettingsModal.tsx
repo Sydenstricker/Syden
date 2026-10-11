@@ -53,7 +53,7 @@ import { api, mediaUrl, saveToken } from './api';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
-import { Avatar } from './Avatar';
+import { Avatar, enderecoDoCoelhoPronto } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
 import { ConfiguracaoDeNiveis } from './Ranking';
 import { ConfiguracaoDeContadores } from './Contadores';
@@ -1493,7 +1493,8 @@ function PerfilEditor({ user }: { user: User }) {
 function AvatarEditor({ user }: { user: User }) {
   const t = useT();
   const { members } = useDirectory();
-  const hasAvatar = (members.get(user.id)?.avatarVersion ?? null) !== null;
+  const eu = members.get(user.id);
+  const hasAvatar = (eu?.avatarVersion ?? null) !== null || !!eu?.avatarPronto;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cropping, setCropping] = useState<File | null>(null);
@@ -1507,6 +1508,13 @@ function AvatarEditor({ user }: { user: User }) {
     } catch (e) {
       setError((e as Error).message);
     }
+    setBusy(false);
+  }
+
+  async function escolherPronto(numero: number) {
+    setBusy(true);
+    setError(null);
+    await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero } }).catch((e) => setError((e as Error).message));
     setBusy(false);
   }
 
@@ -1537,10 +1545,47 @@ function AvatarEditor({ user }: { user: User }) {
         </div>
       </div>
       {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.')}</p>}
+      <CoelhosProntos disabled={busy} escolhido={eu?.avatarPronto ?? null} onEscolher={escolherPronto} />
       {cropping && (
         <ImageCropper file={cropping} title={t('Ajustar o avatar')} shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
       )}
     </>
+  );
+}
+
+/**
+ * OS COELHOS PRONTOS: avatares em pixel art, no estilo do quarto, para quem não tem foto ou não quer usar a
+ * sua (pedido de 10/10/2026, depois de ver os do squad de demonstração: "podemos disponibilizar para o
+ * usuário"). Os desenhos são do PixelLab (e2e/pixel-art/demonstracao/), guardados em web/public/avatares/
+ * já ampliados a 256 px pelo vizinho mais próximo: nítidos em qualquer tamanho de avatar.
+ *
+ * ESCOLHER UM GUARDA SÓ O NÚMERO (/api/me/avatar-pronto), e não a imagem: assim o app sabe qual coelho é e o
+ * desenha na pose do estado da pessoa — dormindo quando ausente, concentrado quando ocupado, falando na call
+ * (ver Avatar.tsx). Uma foto enviada não tem pose; um coelho conhecido tem.
+ */
+const COELHOS_PRONTOS = Array.from({ length: 16 }, (_, i) => i + 1);
+
+function CoelhosProntos({ disabled, escolhido, onEscolher }: { disabled: boolean; escolhido: number | null; onEscolher: (numero: number) => void }) {
+  const t = useT();
+  return (
+    <div className="coelhos-prontos">
+      <h4>{t('Ou escolha um coelho')}</h4>
+      <div className="coelhos-prontos-grade">
+        {COELHOS_PRONTOS.map((numero) => (
+          <button
+            key={numero}
+            type="button"
+            disabled={disabled}
+            aria-pressed={escolhido === numero}
+            aria-label={t('Usar este coelho')}
+            title={t('Usar este coelho')}
+            onClick={() => onEscolher(numero)}
+          >
+            <img src={enderecoDoCoelhoPronto(numero)} alt="" width={48} height={48} loading="lazy" />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

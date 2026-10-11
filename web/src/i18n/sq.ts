@@ -882,6 +882,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'E rekomanduar për shumicën. Kush shikon mund ta ulë cilësinë nëse i duhet.',
   'Recompensa': 'Shpërblim',
+  'Código secreto': 'Kod sekret',
+  'Achou o código que só quem procura acha': 'Gjeti kodin që e gjen vetëm kush kërkon',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'E gjete kodin sekret. Sekretet më të mira janë të atyre që kërkojnë.',
+  'Segredo': 'Sekret',
   'Reconectando ao servidor…': 'Po rilidhet me serverin…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Ul zhurmat e sfondit, si tastiera, ventilatori dhe trafiku.',
   'Registro': 'Regjistri',
@@ -1029,6 +1034,8 @@ export default {
   'Trocar a capa': 'Ndërro kopertinën',
   'Trocar áudio': 'Ndërro audion',
   'Trocar avatar': 'Ndërro avatarin',
+  'Ou escolha um coelho': 'Ose zgjidh një lepur',
+  'Usar este coelho': 'Përdor këtë lepur',
   'Trocar imagem': 'Ndërro imazhin',
   'Trocar o e-mail': 'Ndërro email-in',
   'Trocar senha': 'Ndërro fjalëkalimin',

@@ -884,6 +884,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Aanbeveel vir die meeste. Wie kyk, kan die kwaliteit verlaag indien nodig.',
   'Recompensa': 'Beloning',
+  'Código secreto': 'Geheime kode',
+  'Achou o código que só quem procura acha': 'Het die kode gevind wat net soekers vind',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Jy het die geheime kode gevind. Die beste geheime behoort aan dié wat soek.',
+  'Segredo': 'Geheim',
   'Reconectando ao servidor…': 'Herkoppel aan die bediener…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Verminder agtergrondgeraas, soos sleutelbord, waaier en verkeer.',
   'Registro': 'Log',
@@ -1031,6 +1036,8 @@ export default {
   'Trocar a capa': 'Verander die voorblad',
   'Trocar áudio': 'Verander klanklêer',
   'Trocar avatar': 'Verander avatar',
+  'Ou escolha um coelho': 'Of kies ’n haas',
+  'Usar este coelho': 'Gebruik hierdie haas',
   'Trocar imagem': 'Verander prent',
   'Trocar o e-mail': 'Verander die e-posadres',
   'Trocar senha': 'Verander wagwoord',

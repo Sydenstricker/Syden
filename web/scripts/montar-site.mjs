@@ -38,13 +38,17 @@ cpSync(SITE, DIST, { recursive: true });
  * própria raiz ganha a escolha de idioma no pé. Frase sem tradução PARA a montagem: no ar, ela seria
  * português no meio da página de outro idioma, sem erro nenhum.
  */
-const traduzido = montarIdiomas();
+const traduzido = montarIdiomas({ rascunho: !!process.env.RASCUNHO });
 const idiomasFaltando = Object.entries(traduzido.faltando);
 if (idiomasFaltando.length) {
   console.error('Faltam frases nos dicionários de web/textos-do-site/:');
   for (const [idioma, frases] of idiomasFaltando) console.error(`  ${idioma}: ${frases.length} — "${frases[0].slice(0, 70)}"…`);
   console.error('Veja tudo com: node web/scripts/site-traduzido.mjs --faltando');
-  process.exit(1);
+  // RASCUNHO=1 é para VER uma mudança de texto em português antes de traduzi-la 71 vezes: os idiomas
+  // incompletos são montados com o português no lugar do que falta. Nunca para publicar — o GitHub Actions não
+  // passa a variável.
+  if (process.env.RASCUNHO) console.error(`RASCUNHO: ${idiomasFaltando.length} idiomas montados com o português no lugar do que falta.`);
+  else process.exit(1);
 }
 for (const aviso of traduzido.avisos) console.log(`  aviso: ${aviso}`);
 for (const [caminho, html] of traduzido.paginas) {
@@ -75,7 +79,7 @@ for (const icone of ICONES_DA_MARCA) {
  * O quarto do topo da apresentação é o MESMO da home do app, e pelo mesmo motivo dos ícones: uma fonte,
  * dois destinos. Quando a arte do quarto mudar (hibrido/exportar.mjs), o site muda junto.
  */
-const QUARTO = ['noite.png', 'coelho.png', 'gato.png'];
+const QUARTO = ['noite.png', 'dia.png', 'coelho.png', 'gato.png', ...['abajur', 'computador', 'cortica', 'fone', 'gavetas', 'janela', 'poster', 'prateleira', 'pufe', 'quadro', 'vaso'].map((o) => `mascara-${o}.png`)];
 mkdirSync(join(DIST, 'quarto'), { recursive: true });
 for (const arquivo of QUARTO) {
   const de = join(AQUI, 'src', 'assets', 'quarto', arquivo);

@@ -891,6 +891,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Барои аксарият тавсия дода мешавад. Тамошобин дар ҳолати зарурӣ метавонад сифатро паст кунад.',
   'Recompensa': 'Мукофот',
+  'Código secreto': 'Рамзи махфӣ',
+  'Achou o código que só quem procura acha': 'Рамзеро ёфт, ки танҳо ҷӯянда меёбад',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Шумо рамзи махфиро ёфтед. Беҳтарин асрор аз они ҷӯяндагон аст.',
+  'Segredo': 'Сир',
   'Reconectando ao servidor…': 'Аз нав пайваст шудан ба сервер…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Садоҳои пасзаминаро, ба монанди клавиатура, вентилятор ва ҳаракати нақлиёт, кам мекунад.',
   'Registro': 'Сабт',
@@ -1038,6 +1043,8 @@ export default {
   'Trocar a capa': 'Иваз кардани муқова',
   'Trocar áudio': 'Иваз кардани аудио',
   'Trocar avatar': 'Иваз кардани аватар',
+  'Ou escolha um coelho': 'Ё харгӯшеро интихоб кунед',
+  'Usar este coelho': 'Истифодаи ин харгӯш',
   'Trocar imagem': 'Иваз кардани тасвир',
   'Trocar o e-mail': 'Иваз кардани почтаи электронӣ',
   'Trocar senha': 'Иваз кардани рамз',

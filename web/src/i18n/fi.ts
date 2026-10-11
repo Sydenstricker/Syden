@@ -890,6 +890,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Suositeltu useimmille. Katsoja voi laskea laatua tarvittaessa.',
   'Recompensa': 'Palkinto',
+  'Código secreto': 'Salainen koodi',
+  'Achou o código que só quem procura acha': 'Löysi koodin, jonka löytää vain etsijä',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Löysit salaisen koodin. Parhaat salaisuudet kuuluvat niille, jotka etsivät.',
+  'Segredo': 'Salaisuus',
   'Reconectando ao servidor…': 'Yhdistetään palvelimeen uudelleen…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Vähentää taustamelua, kuten näppäimistöä, tuuletinta ja liikennettä.',
   'Registro': 'Loki',
@@ -1037,6 +1042,8 @@ export default {
   'Trocar a capa': 'Vaihda kansikuva',
   'Trocar áudio': 'Vaihda äänitiedosto',
   'Trocar avatar': 'Vaihda avatar',
+  'Ou escolha um coelho': 'Tai valitse kani',
+  'Usar este coelho': 'Käytä tätä kania',
   'Trocar imagem': 'Vaihda kuva',
   'Trocar o e-mail': 'Vaihda sähköposti',
   'Trocar senha': 'Vaihda salasana',

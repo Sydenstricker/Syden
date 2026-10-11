@@ -889,6 +889,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Preporučeno za većinu. Gledatelji mogu smanjiti kvalitetu ako treba.',
   'Recompensa': 'Nagrada',
+  'Código secreto': 'Tajni kod',
+  'Achou o código que só quem procura acha': 'Kod koji pronalazi samo onaj tko traži',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Tajni kod je pronađen. Najbolje tajne pripadaju onima koji traže.',
+  'Segredo': 'Tajna',
   'Reconectando ao servidor…': 'Ponovno povezivanje s poslužiteljem…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Smanjuje pozadinsku buku, poput tipkovnice, ventilatora i prometa.',
   'Registro': 'Zapisnik',
@@ -1036,6 +1041,8 @@ export default {
   'Trocar a capa': 'Zamijeni naslovnicu',
   'Trocar áudio': 'Zamijeni zvučnu datoteku',
   'Trocar avatar': 'Zamijeni avatar',
+  'Ou escolha um coelho': 'Ili odaberi zeca',
+  'Usar este coelho': 'Koristi ovog zeca',
   'Trocar imagem': 'Zamijeni sliku',
   'Trocar o e-mail': 'Promijeni e-poštu',
   'Trocar senha': 'Promijeni lozinku',

@@ -884,6 +884,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Anbefales til de fleste. Den, der ser med, kan sænke kvaliteten efter behov.',
   'Recompensa': 'Belønning',
+  'Código secreto': 'Hemmelig kode',
+  'Achou o código que só quem procura acha': 'Fandt koden, som kun den, der leder, finder',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Du fandt den hemmelige kode. De bedste hemmeligheder tilhører dem, der leder.',
+  'Segredo': 'Hemmelighed',
   'Reconectando ao servidor…': 'Genopretter forbindelsen til serveren…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Mindsker baggrundsstøj som tastatur, blæser og trafik.',
   'Registro': 'Log',
@@ -1031,6 +1036,8 @@ export default {
   'Trocar a capa': 'Skift forsidebillede',
   'Trocar áudio': 'Skift lydfil',
   'Trocar avatar': 'Skift avatar',
+  'Ou escolha um coelho': 'Eller vælg en kanin',
+  'Usar este coelho': 'Brug denne kanin',
   'Trocar imagem': 'Skift billede',
   'Trocar o e-mail': 'Skift e-mailadresse',
   'Trocar senha': 'Skift adgangskode',

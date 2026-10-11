@@ -1075,15 +1075,80 @@ textarea {
   box-shadow: 0 0 0 2px var(--green);
 }
 
-.avatar-status {
+/* O ANEL DO ESTADO (ver Avatar.tsx): fino, da cor do estado, com uma folga da cor do fundo entre ele e o
+   avatar. Sem moldura, fica colado ao avatar; com moldura, vai POR FORA dela (a moldura mora em -3px, ver
+   ".avatar[data-moldura]::after"). Falando, ele acende: é o mesmo sinal que o contorno verde dava. */
+.avatar[data-estado]::before {
+  content: '';
   position: absolute;
-  right: -2px;
-  bottom: -2px;
-  width: 12px;
-  height: 12px;
+  inset: -3px;
   border-radius: 50%;
-  background: var(--green);
-  border: 3px solid var(--bg-darkest);
+  border: 2px solid var(--green);
+  pointer-events: none;
+}
+
+/* As mesmas cores da bolinha que o anel substituiu (as do Discord): verde online, amarelo ausente, vermelho
+   não perturbe, cinza invisível. */
+.avatar[data-estado='ausente']::before {
+  border-color: #f0b232;
+}
+
+.avatar[data-estado='ocupado']::before {
+  border-color: var(--red);
+}
+
+.avatar[data-estado='invisivel']::before {
+  border-color: #80848e;
+}
+
+.avatar[data-estado][data-moldura]::before {
+  inset: -6px;
+}
+
+.avatar[data-estado].speaking {
+  box-shadow: none;
+}
+
+.avatar[data-estado].speaking::before {
+  border-color: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+
+/* O coelho pronto: pixel art, então nunca suavizado. Parado é uma imagem; num estado, uma faixa de quadros
+   tocada em laço (QUADROS_DO_PRONTO, em Avatar.tsx: o 800% e o steps(8) são esse número). */
+.avatar-pronto {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #1e2533;
+  image-rendering: pixelated;
+}
+
+.avatar-pronto-faixa {
+  display: block;
+  background-repeat: no-repeat;
+  background-size: 800% 100%;
+  animation: avatar-pronto 1.2s steps(8, jump-none) infinite;
+}
+
+.avatar-pronto-faixa[data-estado='ausente'] {
+  animation-duration: 3.2s;
+}
+
+.avatar-pronto-faixa[data-estado='ocupado'] {
+  animation-duration: 2.4s;
+}
+
+@keyframes avatar-pronto {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-pronto-faixa {
+    animation: none;
+  }
 }
 
 /* ---------- Painéis inferiores ---------- */
@@ -1471,6 +1536,18 @@ textarea {
 
 .tile-avatar .avatar.speaking {
   box-shadow: 0 0 0 3px var(--green);
+}
+
+/* Com moldura, os 3 px de verde ficavam DEBAIXO dela (a moldura mora em -3px): quem falava quase não acendia.
+   O verde vai por fora da moldura, e o quadro inteiro ganha a borda verde, que se vê de longe (10/10/2026). */
+.tile-avatar .avatar[data-moldura].speaking {
+  box-shadow: 0 0 0 7px var(--green);
+}
+
+/* Contorno, e não sombra: o fundo do .lk-participant-tile cobriria uma sombra por dentro. */
+.tile:has(.avatar.speaking) {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
 }
 
 .tile-name {
@@ -11988,4 +12065,58 @@ body.arrastando-barra {
 :root[data-theme='light'] .rail-logo {
   --logo-fundo: #ffffff;
   --logo-linha: #1e2533;
+}
+
+/* ---------- os coelhos prontos, no editor de avatar (SettingsModal.tsx, CoelhosProntos) ---------- */
+
+.coelhos-prontos {
+  margin-top: 16px;
+}
+
+.coelhos-prontos h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.coelhos-prontos-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+}
+
+.coelhos-prontos-grade button {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+}
+
+.coelhos-prontos-grade button:hover:not(:disabled),
+.coelhos-prontos-grade button:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.coelhos-prontos-grade button[aria-pressed='true'] {
+  border: 2px solid var(--accent);
+}
+
+.coelhos-prontos-grade button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* Pixel art: ampliada sem suavizar, senão borra. */
+.coelhos-prontos-grade img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  image-rendering: pixelated;
 }

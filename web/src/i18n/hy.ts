@@ -910,6 +910,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Առաջարկվում է մեծամասնությանը։ Դիտողները կարող են իջեցնել որակը, եթե պետք լինի։',
   'Recompensa': 'Պարգև',
+  'Código secreto': 'Գաղտնի կոդ',
+  'Achou o código que só quem procura acha': 'Գտավ այն կոդը, որը գտնում է միայն փնտրողը',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Դու գտար գաղտնի կոդը։ Լավագույն գաղտնիքները պատկանում են նրանց, ովքեր փնտրում են։',
+  'Segredo': 'Գաղտնիք',
   'Reconectando ao servidor…': 'Նորից միանում է սերվերին…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Նվազեցնում է ֆոնային աղմուկը՝ ստեղնաշար, օդափոխիչ, փողոցի երթևեկություն։',
   'Registro': 'Գրանցամատյան',
@@ -1057,6 +1062,8 @@ export default {
   'Trocar a capa': 'Փոխել շապիկը',
   'Trocar áudio': 'Փոխել աուդիոն',
   'Trocar avatar': 'Փոխել ավատարը',
+  'Ou escolha um coelho': 'Կամ ընտրիր ճագար',
+  'Usar este coelho': 'Օգտագործել այս ճագարը',
   'Trocar imagem': 'Փոխել պատկերը',
   'Trocar o e-mail': 'Փոխել էլ. փոստը',
   'Trocar senha': 'Փոխել գաղտնաբառը',

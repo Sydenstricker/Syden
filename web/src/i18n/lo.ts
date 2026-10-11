@@ -891,6 +891,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ແນະນຳສຳລັບຄົນສ່ວນໃຫຍ່ ຄົນເບິ່ງຫຼຸດຄຸນນະພາບລົງໄດ້ຖ້າຈຳເປັນ',
   'Recompensa': 'ລາງວັນ',
+  'Código secreto': 'ລະຫັດລັບ',
+  'Achou o código que só quem procura acha': 'ພົບລະຫັດທີ່ມີແຕ່ຄົນຊອກຫາເທົ່ານັ້ນຈຶ່ງພົບ',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'ເຈົ້າພົບລະຫັດລັບແລ້ວ ຄວາມລັບທີ່ດີທີ່ສຸດເປັນຂອງຄົນທີ່ຊອກຫາ',
+  'Segredo': 'ຄວາມລັບ',
   'Reconectando ao servidor…': 'ກຳລັງເຊື່ອມຕໍ່ເຊີບເວີຄືນ…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ຫຼຸດສຽງລົບກວນ ເຊັ່ນ ແປ້ນພິມ ພັດລົມ ແລະລົດໃນຖະໜົນ',
   'Registro': 'ບັນທຶກ',
@@ -1038,6 +1043,8 @@ export default {
   'Trocar a capa': 'ປ່ຽນໜ້າປົກ',
   'Trocar áudio': 'ປ່ຽນສຽງ',
   'Trocar avatar': 'ປ່ຽນຮູບໂປຣໄຟລ໌',
+  'Ou escolha um coelho': 'ຫຼື ເລືອກກະຕ່າຍ',
+  'Usar este coelho': 'ໃຊ້ກະຕ່າຍໂຕນີ້',
   'Trocar imagem': 'ປ່ຽນຮູບ',
   'Trocar o e-mail': 'ປ່ຽນອີເມວ',
   'Trocar senha': 'ປ່ຽນລະຫັດຜ່ານ',

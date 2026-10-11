@@ -8,6 +8,7 @@
     <meta name="description" content="O Syden é de graça e sem anúncios. Quem quiser ajudar pode doar por Pix ou pelo Buy Me a Coffee." />
     <link rel="icon" href="icon-192.png?v=d4" />
     <link rel="stylesheet" href="legal.css" />
+    <link rel="stylesheet" href="topo.css" />
     <!-- O botão de copiar o Pix. Arquivo separado porque a política de segurança não aceita script dentro do HTML. -->
     <script src="contribuir.js" defer></script>
   </head>
@@ -32,6 +33,21 @@
     (legal.css): o Pix só serve a quem tem banco no Brasil.
   -->
   <body>
+    <!-- O mesmo menu da página inicial (topo.css): sem ele, o menu sumia ao clicar em "Contribuir". -->
+    <header class="topo">
+      <div class="topo-dentro">
+        <a class="marca" href="./">
+          <img src="icon-192.png" alt="" />
+          Syden
+        </a>
+        <nav>
+          <a href="./#o-que-tem">O que tem</a>
+          <a href="./#idiomas">Idiomas</a>
+          <a href="contribuir.html" aria-current="page">Contribuir</a>
+          <a class="topo-entrar" href="/app/">Entrar ou criar conta</a>
+        </nav>
+      </div>
+    </header>
     <main class="contribuir">
       <h1>Ajudar o Syden</h1>
       <p class="contribuir-sub">

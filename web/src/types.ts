@@ -5,6 +5,8 @@ export interface User {
   /** O dono do servidor é quem dá e tira o cargo de administrador. */
   isOwner: boolean;
   avatarVersion: number | null;
+  /** O coelho pronto escolhido (1 a 16, public/avatares/), ou null. Exclui a foto: é um ou outro. */
+  avatarPronto?: number | null;
   /** Nome da cor escolhida para o nome (ver profileStyles), ou null para a cor do cargo. */
   nameColor: string | null;
   /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
@@ -45,6 +47,7 @@ export type PublicUser = Pick<
   | 'id'
   | 'username'
   | 'avatarVersion'
+  | 'avatarPronto'
   | 'isAdmin'
   | 'isOwner'
   | 'nameColor'

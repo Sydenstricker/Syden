@@ -898,6 +898,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Koʻpchilik uchun tavsiya etiladi. Tomoshabinlar kerak boʻlsa sifatni pasaytirishi mumkin.',
   'Recompensa': 'Mukofot',
+  'Código secreto': 'Maxfiy kod',
+  'Achou o código que só quem procura acha': 'Faqat izlagan topadigan kodni topdi',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Siz maxfiy kodni topdingiz. Eng yaxshi sirlar izlaganlarniki.',
+  'Segredo': 'Sir',
   'Reconectando ao servidor…': 'Serverga qayta ulanmoqda…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Klaviatura, ventilyator va koʻcha shovqini kabi fon shovqinlarini kamaytiradi.',
   'Registro': 'Jurnal',
@@ -1045,6 +1050,8 @@ export default {
   'Trocar a capa': 'Muqovani almashtirish',
   'Trocar áudio': 'Audioni almashtirish',
   'Trocar avatar': 'Avatarni almashtirish',
+  'Ou escolha um coelho': 'Yoki quyon tanlang',
+  'Usar este coelho': 'Bu quyonni ishlatish',
   'Trocar imagem': 'Rasmni almashtirish',
   'Trocar o e-mail': 'E-pochtani almashtirish',
   'Trocar senha': 'Parolni almashtirish',

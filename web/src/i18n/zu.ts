@@ -891,6 +891,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Kunconyelwa iningi. Obukayo angehlisa ikhwalithi uma kudingeka.',
   'Recompensa': 'Umklomelo',
+  'Código secreto': 'Ikhodi eyimfihlo',
+  'Achou o código que só quem procura acha': 'Uthole ikhodi etholwa yilabo abafunayo kuphela',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Uthole ikhodi eyimfihlo. Izimfihlo ezinhle kakhulu ngezalabo abafunayo.',
+  'Segredo': 'Imfihlo',
   'Reconectando ao servidor…': 'Ixhuma kabusha neseva…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Inciphisa imisindo yangemuva, njengekhibhodi, ifeni nezimoto.',
   'Registro': 'Irekhodi',
@@ -1038,6 +1043,8 @@ export default {
   'Trocar a capa': 'Shintsha ikhava',
   'Trocar áudio': 'Shintsha umsindo',
   'Trocar avatar': 'Shintsha i-avatar',
+  'Ou escolha um coelho': 'Noma khetha unogwaja',
+  'Usar este coelho': 'Sebenzisa lo nogwaja',
   'Trocar imagem': 'Shintsha isithombe',
   'Trocar o e-mail': 'Shintsha i-imeyili',
   'Trocar senha': 'Shintsha iphasiwedi',

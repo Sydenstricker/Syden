@@ -250,6 +250,7 @@
             <button class="preset-btn" id="presetBtn8" onclick="setPreset(8)">Autorizado<small>os pontos viram um certo</small></button>
             <button class="preset-btn" id="presetBtn9" onclick="setPreset(9)">Ciclo de status (D4)<small>online, ausente, não perturbe, offline</small></button>
             <button class="preset-btn" id="presetBtn17" onclick="setPreset(17)">Ciclo de status (mascote)<small>o mesmo ciclo com o coelho, para comparar</small></button>
+            <button class="preset-btn" id="presetBtn31" onclick="setPreset(31)">Agradecendo<small>a reverência: se curva de olhos fechados, e volta</small></button>
           </div>
         </div>
 
@@ -339,6 +340,7 @@
       28: { nome: 'Avatar: parou de falar', arquivo: 'avatar-parou-de-falar' },
       29: { nome: 'Avatar: começou a digitar', arquivo: 'avatar-digitando' },
       30: { nome: 'Avatar: parou de digitar', arquivo: 'avatar-parou-de-digitar' },
+      31: { nome: 'Agradecendo', arquivo: 'mascote-agradecendo' },
     };
 
     const STATUS = { verde: '#2FBF71', ausente: '#E8A93A', vermelho: '#E5534B', cinzaTraco: '#7A8294', cinzaFaixa: '#5C6475' };
@@ -1181,6 +1183,37 @@ ${css}
           return transicaoDoAvatar({ rotulo: 'Syden', miolo: MIOLO_PONTOS.miolo, cssMiolo: MIOLO_PONTOS.cssMiolo(), volta: true });
 
         // ---------- o mascote ----------
+        case 31: // Agradecendo (pedido de 10/10/2026, para o fim do site: "algo como arigatō gozaimasu"): a
+                 // REVERÊNCIA. De frente, curvar-se é a cabeça descer e achatar um pouco, as orelhas caírem
+                 // para os lados e os olhos fecharem em arco, de contentamento — o mesmo olho feliz da
+                 // introdução. Dois coraçõezinhos sobem enquanto ele está curvado, e ele volta a se
+                 // endireitar sorrindo. Sem texto: o "obrigado" é da página, em HTML, no idioma de quem lê.
+          return montarMascote({
+            rotulo: 'Obrigado',
+            rosto: `<g class="rosto-normal">${rostoDoMascote({ bochechas: true })}</g>
+      <g class="rosto-feliz">${rostoDoMascote({ olhos: 'felizes', boca: 'sorrisao', bochechas: true })}</g>
+      <g class="coracoes">
+        <path class="coracao c1" d="M80 46 C80 43 84 43 84 46 C84 43 88 43 88 46 C88 49 84 51 84 53 C84 51 80 49 80 46 Z"/>
+        <path class="coracao c2" d="M11 52 C11 49.6 14.2 49.6 14.2 52 C14.2 49.6 17.4 49.6 17.4 52 C17.4 54.4 14.2 56 14.2 57.6 C14.2 56 11 54.4 11 52 Z"/>
+      </g>`,
+            css: CSS_OCIOSO() + `
+    .rosto-normal .m-olho { animation: ${anim('piscar', 4.8, 0)}; }
+    /* Um ciclo de 4,8 s: de pé (0–18%), curva-se (18–30%), fica curvado (30–58%), volta (58–72%), de pé. */
+    .figura { animation: reverencia ${d(4.8)} ease-in-out infinite; }
+    .orelha-e { animation: reverenciaE ${d(4.8)} ease-in-out infinite; }
+    .orelha-d { animation: reverenciaD ${d(4.8)} ease-in-out infinite; }
+    .rosto-normal { animation: rostoDePe ${d(4.8)} linear infinite; }
+    .rosto-feliz { opacity: 0; animation: rostoCurvado ${d(4.8)} linear infinite; }
+    .coracao { fill: var(--faixa, ${cores().faixa}); transform-box: fill-box; transform-origin: center; opacity: 0; animation: coracao ${d(4.8)} ease-out infinite; }
+    .c2 { animation-delay: ${d(0.35)}; }
+    @keyframes reverencia { 0%, 18% { transform: none; } 30%, 58% { transform: translateY(18px) scaleY(.93); } 72%, 100% { transform: none; } }
+    @keyframes reverenciaE { 0%, 18% { transform: none; } 30%, 58% { transform: rotate(-20deg); } 72%, 100% { transform: none; } }
+    @keyframes reverenciaD { 0%, 18% { transform: none; } 30%, 58% { transform: rotate(20deg); } 72%, 100% { transform: none; } }
+    @keyframes rostoDePe { 0%, 24% { opacity: 1; } 26%, 62% { opacity: 0; } 64%, 100% { opacity: 1; } }
+    @keyframes rostoCurvado { 0%, 24% { opacity: 0; } 26%, 62% { opacity: 1; } 64%, 100% { opacity: 0; } }
+    @keyframes coracao { 0%, 32% { opacity: 0; transform: translate(0, 4px) scale(.8); } 38% { opacity: 1; transform: translate(0, 0) scale(1.6); } 58% { opacity: 0; transform: translate(0, -14px) scale(1.7); } 100% { opacity: 0; } }`,
+          });
+
         case 13: // Ocioso: ninguém está digitando nem falando. Ele só existe — pisca, olha em volta, respira.
           return montarMascote({
             rotulo: 'Syden',

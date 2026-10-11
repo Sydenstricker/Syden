@@ -891,6 +891,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Mælt með fyrir flesta. Áhorfendur geta lækkað gæðin ef þarf.',
   'Recompensa': 'Verðlaun',
+  'Código secreto': 'Leynikóði',
+  'Achou o código que só quem procura acha': 'Fann kóðann sem aðeins þau sem leita finna',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Þú fannst leynikóðann. Bestu leyndarmálin eru fyrir þau sem leita.',
+  'Segredo': 'Leyndarmál',
   'Reconectando ao servidor…': 'Tengist þjóninum aftur…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Dregur úr bakgrunnshávaða, eins og lyklaborði, viftu og umferð.',
   'Registro': 'Annáll',
@@ -1038,6 +1043,8 @@ export default {
   'Trocar a capa': 'Skipta um forsíðumynd',
   'Trocar áudio': 'Skipta um hljóðskrá',
   'Trocar avatar': 'Skipta um notandamynd',
+  'Ou escolha um coelho': 'Eða veldu kanínu',
+  'Usar este coelho': 'Nota þessa kanínu',
   'Trocar imagem': 'Skipta um mynd',
   'Trocar o e-mail': 'Skipta um netfang',
   'Trocar senha': 'Skipta um lykilorð',

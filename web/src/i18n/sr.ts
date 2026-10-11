@@ -887,6 +887,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Препоручено за већину. Гледаоци могу да смање квалитет ако треба.',
   'Recompensa': 'Награда',
+  'Código secreto': 'Тајни код',
+  'Achou o código que só quem procura acha': 'Код који налази само онај ко тражи',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Тајни код је пронађен. Најбоље тајне припадају онима који траже.',
+  'Segredo': 'Тајна',
   'Reconectando ao servidor…': 'Поновно повезивање са сервером…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Смањује позадинску буку, као што су тастатура, вентилатор и саобраћај.',
   'Registro': 'Дневник',
@@ -1034,6 +1039,8 @@ export default {
   'Trocar a capa': 'Замени насловну слику',
   'Trocar áudio': 'Замени аудио',
   'Trocar avatar': 'Замени аватар',
+  'Ou escolha um coelho': 'Или изабери зеца',
+  'Usar este coelho': 'Користи овог зеца',
   'Trocar imagem': 'Замени слику',
   'Trocar o e-mail': 'Промени имејл',
   'Trocar senha': 'Промени лозинку',

@@ -887,6 +887,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Soovitatav enamikule. Vaataja saab vajadusel kvaliteeti langetada.',
   'Recompensa': 'Tasu',
+  'Código secreto': 'Salakood',
+  'Achou o código que só quem procura acha': 'Leidis koodi, mille leiab ainult otsija',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Sa leidsid salakoodi. Parimad saladused kuuluvad neile, kes otsivad.',
+  'Segredo': 'Saladus',
   'Reconectando ao servidor…': 'Ühendan serveriga uuesti…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Vähendab taustamüra, näiteks klaviatuuri, ventilaatorit ja liiklust.',
   'Registro': 'Logi',
@@ -1034,6 +1039,8 @@ export default {
   'Trocar a capa': 'Vaheta kaanepilt',
   'Trocar áudio': 'Vaheta helifail',
   'Trocar avatar': 'Vaheta avatar',
+  'Ou escolha um coelho': 'Või vali jänes',
+  'Usar este coelho': 'Kasuta seda jänest',
   'Trocar imagem': 'Vaheta pilt',
   'Trocar o e-mail': 'Vaheta e-post',
   'Trocar senha': 'Vaheta parool',

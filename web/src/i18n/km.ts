@@ -889,6 +889,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ណែនាំសម្រាប់មនុស្សភាគច្រើន។ អ្នកមើលអាចបន្ថយគុណភាពបើចាំបាច់។',
   'Recompensa': 'រង្វាន់',
+  'Código secreto': 'លេខកូដសម្ងាត់',
+  'Achou o código que só quem procura acha': 'បានរកឃើញលេខកូដដែលមានតែអ្នកស្វែងរកទើបរកឃើញ',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'អ្នកបានរកឃើញលេខកូដសម្ងាត់។ អាថ៌កំបាំងល្អបំផុតជារបស់អ្នកដែលស្វែងរក។',
+  'Segredo': 'អាថ៌កំបាំង',
   'Reconectando ao servidor…': 'កំពុងភ្ជាប់ទៅម៉ាស៊ីនមេឡើងវិញ…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'កាត់បន្ថយសំឡេងរំខានពីខាងក្រោយ ដូចជាក្តារចុច កង្ហារ និងចរាចរណ៍។',
   'Registro': 'កំណត់ហេតុ',
@@ -1036,6 +1041,8 @@ export default {
   'Trocar a capa': 'ប្តូររូបគម្រប',
   'Trocar áudio': 'ប្តូរឯកសារសំឡេង',
   'Trocar avatar': 'ប្តូររូបតំណាង',
+  'Ou escolha um coelho': 'ឬជ្រើសរើសទន្សាយមួយ',
+  'Usar este coelho': 'ប្រើទន្សាយនេះ',
   'Trocar imagem': 'ប្តូររូបភាព',
   'Trocar o e-mail': 'ប្តូរអ៊ីមែល',
   'Trocar senha': 'ប្តូរពាក្យសម្ងាត់',

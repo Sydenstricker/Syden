@@ -886,6 +886,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Recomanat per a la majoria. Qui mira pot abaixar la qualitat si cal.',
   'Recompensa': 'Recompensa',
+  'Código secreto': 'Codi secret',
+  'Achou o código que só quem procura acha': 'Ha trobat el codi que només troba qui busca',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Has trobat el codi secret. Els millors secrets són de qui busca.',
+  'Segredo': 'Secret',
   'Reconectando ao servidor…': 'S’està tornant a connectar al servidor…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Redueix els sorolls de fons, com el teclat, el ventilador i el trànsit.',
   'Registro': 'Registre',
@@ -1033,6 +1038,8 @@ export default {
   'Trocar a capa': 'Canviar la portada',
   'Trocar áudio': 'Canviar l’àudio',
   'Trocar avatar': 'Canviar l’avatar',
+  'Ou escolha um coelho': 'O tria un conill',
+  'Usar este coelho': 'Fes servir aquest conill',
   'Trocar imagem': 'Canviar la imatge',
   'Trocar o e-mail': 'Canviar el correu',
   'Trocar senha': 'Canviar la contrasenya',

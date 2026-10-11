@@ -25,7 +25,7 @@ const RAIZ = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '
 const ESTUDIO = new URL('./animacoes_d4.html', import.meta.url).href;
 const PASTA = RAIZ + 'web/public/mascote/';
 
-/** Os presets que vão para o Syden: o mascote, os modos da sala e os erros. */
+/** Os presets que vão para o Syden: o mascote, os modos da sala, os erros e o agradecimento do site. */
 const PRESETS = {
   13: 'ocioso',
   14: 'introducao',
@@ -48,6 +48,7 @@ const PRESETS = {
   28: 'avatar-parou-de-falar',
   29: 'avatar-digitando',
   30: 'avatar-parou-de-digitar',
+  31: 'agradecendo',
 };
 
 /**

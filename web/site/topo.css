@@ -1,0 +1,89 @@
+/* O MENU DE CIMA, igual em todas as páginas do site que o têm (index.html e contribuir.html).
+ *
+ * Mora num arquivo próprio porque o contribuir usa o estilo das páginas legais (legal.css), e o site.css traz
+ * junto regras da página inicial que bagunçariam o contribuir (seções, cartões). Antes o menu morava só no
+ * site.css, e por isso sumia ao clicar em "Contribuir" (relato de 10/10/2026).
+ *
+ * As cores vêm com reserva: o legal.css não define --borda nem --bg-cartao. */
+
+/* ---------- barra de cima ---------- */
+
+.topo {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(17, 20, 26, 0.92);
+  border-bottom: 1px solid var(--borda, #2f3644);
+  backdrop-filter: blur(8px);
+}
+
+.topo-dentro {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--strong);
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.marca img {
+  width: 32px;
+  height: 32px;
+}
+
+.topo nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 15px;
+}
+
+.topo nav a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.topo nav a:hover {
+  color: var(--strong);
+  text-decoration: underline;
+}
+
+
+.topo .marca {
+  font-family: 'Syden Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* O "Entrar" é o que quem chega procura: com borda, para ser achado de relance. */
+.topo nav a.topo-entrar {
+  color: var(--strong);
+  border: 1px solid #3a4560;
+  border-radius: 8px;
+  padding: 5px 12px;
+}
+
+.topo nav a.topo-entrar:hover {
+  background: var(--bg-cartao, #262c38);
+  text-decoration: none;
+}
+
+
+@media (max-width: 900px) {
+  /* No celular, só o essencial no topo: o "Entrar" fica, o resto vai para o pé da página. */
+  .topo nav a:not(.topo-entrar) {
+    display: none;
+  }
+}

@@ -55,6 +55,7 @@ const NOMES = {
   28: 'Avatar: parou fala',
   29: 'Avatar: digitando',
   30: 'Avatar: parou dig.',
+  31: 'Agradecendo',
 };
 const CODIGOS = { 10: 'OFFLINE — Sem conexão', 11: 'ERRO 500 — Problema no servidor', 12: 'ERRO 404 — Página não encontrada' };
 

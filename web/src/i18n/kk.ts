@@ -886,6 +886,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Көпшілікке ұсынылады. Көрермендер қажет болса сапаны төмендете алады.',
   'Recompensa': 'Марапат',
+  'Código secreto': 'Құпия код',
+  'Achou o código que só quem procura acha': 'Тек іздеген адам табатын кодты тапты',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Сіз құпия кодты таптыңыз. Ең жақсы құпиялар іздегендердікі.',
+  'Segredo': 'Құпия',
   'Reconectando ao servidor…': 'Серверге қайта қосылуда…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Пернетақта, желдеткіш және көше шуы сияқты фондық шуды азайтады.',
   'Registro': 'Журнал',
@@ -1033,6 +1038,8 @@ export default {
   'Trocar a capa': 'Мұқабаны ауыстыру',
   'Trocar áudio': 'Аудионы ауыстыру',
   'Trocar avatar': 'Аватарды ауыстыру',
+  'Ou escolha um coelho': 'Немесе қоян таңдаңыз',
+  'Usar este coelho': 'Осы қоянды қолдану',
   'Trocar imagem': 'Суретті ауыстыру',
   'Trocar o e-mail': 'Электрондық поштаны ауыстыру',
   'Trocar senha': 'Құпиясөзді ауыстыру',

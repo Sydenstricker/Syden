@@ -892,6 +892,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Ieteicams lielākajai daļai. Skatoties vajadzības gadījumā var samazināt kvalitāti.',
   'Recompensa': 'Balva',
+  'Código secreto': 'Slepenais kods',
+  'Achou o código que só quem procura acha': 'Kods, ko atrod tikai tie, kas meklē',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Tu atradi slepeno kodu. Labākie noslēpumi pieder tiem, kas meklē.',
+  'Segredo': 'Noslēpums',
   'Reconectando ao servidor…': 'Atkārtoti pieslēdzas serverim…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Samazina fona troksni, piemēram, tastatūru, ventilatoru un satiksmi.',
   'Registro': 'Žurnāls',
@@ -1039,6 +1044,8 @@ export default {
   'Trocar a capa': 'Mainīt vāka attēlu',
   'Trocar áudio': 'Mainīt audio failu',
   'Trocar avatar': 'Mainīt avatāru',
+  'Ou escolha um coelho': 'Vai izvēlies trusi',
+  'Usar este coelho': 'Izmantot šo trusi',
   'Trocar imagem': 'Mainīt attēlu',
   'Trocar o e-mail': 'Mainīt e-pastu',
   'Trocar senha': 'Mainīt paroli',

@@ -208,3 +208,17 @@ html:not(:lang(pt)) .forma-bmc {
 [dir='rtl'] .voltar::before {
   content: '→ ';
 }
+
+/* As promessas, no começo dos termos (vieram da página inicial em 10/10/2026). */
+.promessas {
+  list-style: none;
+  margin: 20px 0 28px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--link);
+  background: rgba(245, 184, 61, 0.08);
+  border-radius: 0 8px 8px 0;
+}
+
+.promessas li + li {
+  margin-top: 6px;
+}

@@ -887,6 +887,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Препоръчано за повечето. Който гледа, може да намали качеството при нужда.',
   'Recompensa': 'Награда',
+  'Código secreto': 'Таен код',
+  'Achou o código que só quem procura acha': 'Кодът, който намира само онзи, който търси',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Тайният код е открит. Най-хубавите тайни са за онези, които търсят.',
+  'Segredo': 'Тайна',
   'Reconectando ao servidor…': 'Повторно свързване със сървъра…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Намалява фоновия шум — клавиатура, вентилатор, трафик.',
   'Registro': 'Дневник',
@@ -1034,6 +1039,8 @@ export default {
   'Trocar a capa': 'Смени корицата',
   'Trocar áudio': 'Смени аудиото',
   'Trocar avatar': 'Смени аватара',
+  'Ou escolha um coelho': 'Или избери заек',
+  'Usar este coelho': 'Използвай този заек',
   'Trocar imagem': 'Смени изображението',
   'Trocar o e-mail': 'Смени имейла',
   'Trocar senha': 'Смени паролата',

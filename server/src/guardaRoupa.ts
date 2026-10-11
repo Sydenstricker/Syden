@@ -81,6 +81,8 @@ export const CATALOGO: ItemDoGuardaRoupa[] = [
 
   { codigo: 'primeiros-25', tipo: 'insignia', comoSeGanha: 'conquista' },
   { codigo: 'ideia-acolhida', tipo: 'insignia', comoSeGanha: 'conquista' },
+  // Achou o código secreto (↑↑↓↓←→←→BA, no teclado do app): o easter egg (10/10/2026).
+  { codigo: 'codigo-secreto', tipo: 'insignia', comoSeGanha: 'conquista' },
 ];
 
 const PORCODIGO = new Map(CATALOGO.map((item) => [item.codigo, item]));

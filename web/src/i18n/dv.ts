@@ -901,6 +901,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ގިނަ މީހުންނަށް ރިކަމެންޑްކުރާ. ބަލާ މީހުންނަށް ބޭނުންނަމަ ކޮލިޓީ ދަށްކުރެވޭނެ.',
   'Recompensa': 'އިނާމު',
+  'Código secreto': 'ސިއްރު ކޯޑު',
+  'Achou o código que só quem procura acha': 'ހޯދާ މީހުންނަށް އެކަނި ފެންނަ ކޯޑު ފެނިއްޖެ',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'ތިބާއަށް ސިއްރު ކޯޑު ފެނިއްޖެ. އެންމެ ރަނގަޅު ސިއްރުތަކަކީ ހޯދާ މީހުންގެ ސިއްރުތައް.',
+  'Segredo': 'ސިއްރު',
   'Reconectando ao servidor…': 'ސާވަރާ އަލުން ގުޅެނީ…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ފަހަތުގެ އަޑުތައް މަދުކުރޭ، މިސާލަކަށް ކީބޯޑު، ފަންކާ، މަގުމަތީގެ އަޑު.',
   'Registro': 'ލޮގް',
@@ -1048,6 +1053,8 @@ export default {
   'Trocar a capa': 'ކަވަރު ބަދަލުކުރޭ',
   'Trocar áudio': 'އޯޑިއޯ ބަދަލުކުރޭ',
   'Trocar avatar': 'އަވަތާރު ބަދަލުކުރޭ',
+  'Ou escolha um coelho': 'ނުވަތަ ރެބިޓެއް ހޮވާ',
+  'Usar este coelho': 'މި ރެބިޓް ބޭނުންކުރޭ',
   'Trocar imagem': 'ފޮޓޯ ބަދަލުކުރޭ',
   'Trocar o e-mail': 'އީމެއިލް ބަދަލުކުރޭ',
   'Trocar senha': 'ޕާސްވޯޑް ބަދަލުކުރޭ',

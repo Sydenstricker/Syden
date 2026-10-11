@@ -909,6 +909,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'რეკომენდებულია უმეტესობისთვის. მაყურებელს საჭიროების შემთხვევაში ხარისხის დაწევა შეუძლია.',
   'Recompensa': 'ჯილდო',
+  'Código secreto': 'საიდუმლო კოდი',
+  'Achou o código que só quem procura acha': 'იპოვა კოდი, რომელსაც მხოლოდ მაძიებელი პოულობს',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'შენ იპოვე საიდუმლო კოდი. საუკეთესო საიდუმლოებები მათია, ვინც ეძებს.',
+  'Segredo': 'საიდუმლო',
   'Reconectando ao servidor…': 'სერვერთან ხელახლა დაკავშირება…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ამცირებს ფონურ ხმაურს — კლავიატურას, ვენტილატორს, ქუჩის მოძრაობას.',
   'Registro': 'ჟურნალი',
@@ -1056,6 +1061,8 @@ export default {
   'Trocar a capa': 'ყდის შეცვლა',
   'Trocar áudio': 'აუდიოს შეცვლა',
   'Trocar avatar': 'ავატარის შეცვლა',
+  'Ou escolha um coelho': 'ან აირჩიე კურდღელი',
+  'Usar este coelho': 'ამ კურდღლის გამოყენება',
   'Trocar imagem': 'სურათის შეცვლა',
   'Trocar o e-mail': 'ელფოსტის შეცვლა',
   'Trocar senha': 'პაროლის შეცვლა',

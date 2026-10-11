@@ -890,6 +890,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Waxaa lagu taliyay inta badan. Daawadayaashu way hoos u dhigi karaan tayada haddii loo baahdo.',
   'Recompensa': 'Abaalmarin',
+  'Código secreto': 'Koodh sir ah',
+  'Achou o código que só quem procura acha': 'Koodhka ay helaan kuwa raadiya oo keliya',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Waxaad heshay koodhka sirta ah. Siraha ugu fiican waxaa iska leh kuwa raadiya.',
+  'Segredo': 'Sir',
   'Reconectando ao servidor…': 'Dib loogu xirayaa seerfarka…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Wuxuu yareeyaa buuqa gadaale, sida kiiboodhka, marawaxadda iyo gaadiidka.',
   'Registro': 'Diiwaan',
@@ -1037,6 +1042,8 @@ export default {
   'Trocar a capa': 'Beddel daboolka',
   'Trocar áudio': 'Beddel maqalka',
   'Trocar avatar': 'Beddel sawirka astaanta',
+  'Ou escolha um coelho': 'Ama dooro bakayle',
+  'Usar este coelho': 'Isticmaal bakaylahan',
   'Trocar imagem': 'Beddel sawirka',
   'Trocar o e-mail': 'Beddel iimaylka',
   'Trocar senha': 'Beddel erayga sirta',

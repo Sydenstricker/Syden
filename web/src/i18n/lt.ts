@@ -892,6 +892,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekomenduojama daugumai. Žiūrint prireikus galima sumažinti kokybę.',
   'Recompensa': 'Apdovanojimas',
+  'Código secreto': 'Slaptas kodas',
+  'Achou o código que só quem procura acha': 'Kodas, kurį randa tik ieškantys',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Radai slaptą kodą. Geriausios paslaptys priklauso tiems, kas ieško.',
+  'Segredo': 'Paslaptis',
   'Reconectando ao servidor…': 'Iš naujo jungiamasi prie serverio…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Slopina foninį triukšmą, pavyzdžiui, klaviatūrą, ventiliatorių ir eismą.',
   'Registro': 'Žurnalas',
@@ -1039,6 +1044,8 @@ export default {
   'Trocar a capa': 'Pakeisti viršelį',
   'Trocar áudio': 'Pakeisti garso failą',
   'Trocar avatar': 'Pakeisti avatarą',
+  'Ou escolha um coelho': 'Arba išsirink triušį',
+  'Usar este coelho': 'Naudoti šį triušį',
   'Trocar imagem': 'Pakeisti paveikslėlį',
   'Trocar o e-mail': 'Pakeisti el. paštą',
   'Trocar senha': 'Pakeisti slaptažodį',

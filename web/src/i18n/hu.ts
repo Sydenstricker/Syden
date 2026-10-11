@@ -891,6 +891,12 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'A legtöbbeknek ajánlott. A néző szükség esetén csökkentheti a minőséget.',
   'Recompensa': 'Jutalom',
+  'Código secreto': 'Titkos kód',
+  'Achou o código que só quem procura acha':
+    'Megtalálta a kódot, amit csak az talál meg, aki keres',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Megtaláltad a titkos kódot. A legjobb titkok azoké, akik keresnek.',
+  'Segredo': 'Titok',
   'Reconectando ao servidor…': 'Újracsatlakozás a szerverhez…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Csökkenti a háttérzajt, például a billentyűzetet, a ventilátort és a forgalmat.',
   'Registro': 'Napló',
@@ -1038,6 +1044,8 @@ export default {
   'Trocar a capa': 'Borító cseréje',
   'Trocar áudio': 'Hangfájl cseréje',
   'Trocar avatar': 'Avatar cseréje',
+  'Ou escolha um coelho': 'Vagy válassz egy nyuszit',
+  'Usar este coelho': 'Ennek a nyuszinak a használata',
   'Trocar imagem': 'Kép cseréje',
   'Trocar o e-mail': 'E-mail-cím cseréje',
   'Trocar senha': 'Jelszó cseréje',

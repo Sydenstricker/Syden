@@ -882,6 +882,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekommenderas för de flesta. Den som tittar kan sänka kvaliteten vid behov.',
   'Recompensa': 'Belöning',
+  'Código secreto': 'Hemlig kod',
+  'Achou o código que só quem procura acha': 'Hittade koden som bara den som letar hittar',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Du hittade den hemliga koden. De bästa hemligheterna tillhör dem som letar.',
+  'Segredo': 'Hemlighet',
   'Reconectando ao servidor…': 'Återansluter till servern…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Minskar bakgrundsljud, som tangentbord, fläkt och trafik.',
   'Registro': 'Logg',
@@ -1029,6 +1034,8 @@ export default {
   'Trocar a capa': 'Byt omslag',
   'Trocar áudio': 'Byt ljudfil',
   'Trocar avatar': 'Byt avatar',
+  'Ou escolha um coelho': 'Eller välj en kanin',
+  'Usar este coelho': 'Använd den här kaninen',
   'Trocar imagem': 'Byt bild',
   'Trocar o e-mail': 'Byt e-postadress',
   'Trocar senha': 'Byt lösenord',

@@ -905,6 +905,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Ихэнх хүнд зөвлөж байна. Үзэгчид хэрэгтэй бол чанарыг бууруулж болно.',
   'Recompensa': 'Шагнал',
+  'Código secreto': 'Нууц код',
+  'Achou o código que só quem procura acha': 'Зөвхөн хайсан хүн олдог кодыг олсон',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Чи нууц кодыг оллоо. Хамгийн сайн нууцууд хайдаг хүмүүсийнх.',
+  'Segredo': 'Нууц',
   'Reconectando ao servidor…': 'Сервертэй дахин холбогдож байна…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Гар, сэнс, замын хөдөлгөөн зэрэг арын чимээг багасгана.',
   'Registro': 'Үйлдлийн түүх',
@@ -1052,6 +1057,8 @@ export default {
   'Trocar a capa': 'Нүүр зураг солих',
   'Trocar áudio': 'Аудио солих',
   'Trocar avatar': 'Аватар солих',
+  'Ou escolha um coelho': 'Эсвэл туулай сонго',
+  'Usar este coelho': 'Энэ туулайг ашиглах',
   'Trocar imagem': 'Зураг солих',
   'Trocar o e-mail': 'Имэйл солих',
   'Trocar senha': 'Нууц үг солих',

@@ -890,6 +890,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'බොහෝ දෙනෙකුට නිර්දේශිතයි. නරඹන අයට අවශ්‍ය නම් ගුණාත්මකභාවය අඩු කළ හැකිය.',
   'Recompensa': 'ත්‍යාගය',
+  'Código secreto': 'රහස් කේතය',
+  'Achou o código que só quem procura acha': 'සොයන අයට පමණක් හමුවන කේතය සොයාගත්තා',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'ඔබ රහස් කේතය සොයාගත්තා. හොඳම රහස් අයිති සොයන අයටයි.',
+  'Segredo': 'රහස',
   'Reconectando ao servidor…': 'සේවාදායකයට නැවත සම්බන්ධ වෙමින්…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'යතුරු පුවරුව, පංකාව සහ වාහන තදබදය වැනි පසුබිම් ඝෝෂා අඩු කරයි.',
   'Registro': 'ලොගය',
@@ -1037,6 +1042,8 @@ export default {
   'Trocar a capa': 'කවරය වෙනස් කරන්න',
   'Trocar áudio': 'ශ්‍රව්‍යය වෙනස් කරන්න',
   'Trocar avatar': 'අවතාරය වෙනස් කරන්න',
+  'Ou escolha um coelho': 'නැත්නම් හාවෙක් තෝරන්න',
+  'Usar este coelho': 'මේ හාවා භාවිත කරන්න',
   'Trocar imagem': 'රූපය වෙනස් කරන්න',
   'Trocar o e-mail': 'ඊමේල් වෙනස් කරන්න',
   'Trocar senha': 'මුරපදය වෙනස් කරන්න',

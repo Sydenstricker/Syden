@@ -901,6 +901,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekòmande pou pifò moun. Moun k ap gade yo ka bese kalite a si yo bezwen.',
   'Recompensa': 'Rekonpans',
+  'Código secreto': 'Kòd sekrè',
+  'Achou o código que só quem procura acha': 'Jwenn kòd sèlman moun k ap chèche jwenn',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Ou jwenn kòd sekrè a. Pi bon sekrè yo se pou moun k ap chèche.',
+  'Segredo': 'Sekrè',
   'Reconectando ao servidor…': 'Ap rekonekte ak sèvè a…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Li diminye bri dèyè yo, tankou klavye, vantilatè ak sikilasyon.',
   'Registro': 'Jounal',
@@ -1048,6 +1053,8 @@ export default {
   'Trocar a capa': 'Chanje kouvèti a',
   'Trocar áudio': 'Chanje odyo a',
   'Trocar avatar': 'Chanje avatar',
+  'Ou escolha um coelho': 'Oswa chwazi yon lapen',
+  'Usar este coelho': 'Sèvi ak lapen sa a',
   'Trocar imagem': 'Chanje imaj la',
   'Trocar o e-mail': 'Chanje imèl la',
   'Trocar senha': 'Chanje mopas',

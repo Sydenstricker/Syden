@@ -889,6 +889,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Doporučeno pro většinu. Diváci si můžou kvalitu v případě potřeby snížit.',
   'Recompensa': 'Odměna',
+  'Código secreto': 'Tajný kód',
+  'Achou o código que só quem procura acha': 'Kód, který najde jen ten, kdo hledá',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Tajný kód je nalezen. Nejlepší tajemství patří těm, kdo hledají.',
+  'Segredo': 'Tajemství',
   'Reconectando ao servidor…': 'Znovu se připojuje k serveru…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Tlumí hluk v pozadí, třeba klávesnici, větrák a dopravu.',
   'Registro': 'Záznam',
@@ -1036,6 +1041,8 @@ export default {
   'Trocar a capa': 'Vyměnit obálku',
   'Trocar áudio': 'Vyměnit zvukový soubor',
   'Trocar avatar': 'Vyměnit avatar',
+  'Ou escolha um coelho': 'Nebo si vyber králíka',
+  'Usar este coelho': 'Použít tohoto králíka',
   'Trocar imagem': 'Vyměnit obrázek',
   'Trocar o e-mail': 'Změnit e-mail',
   'Trocar senha': 'Změnit heslo',

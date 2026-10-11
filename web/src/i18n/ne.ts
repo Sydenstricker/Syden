@@ -892,6 +892,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'धेरैजसोका लागि सिफारिस गरिएको। हेर्नेहरूले चाहिए गुणस्तर घटाउन सक्छन्।',
   'Recompensa': 'पुरस्कार',
+  'Código secreto': 'गोप्य कोड',
+  'Achou o código que só quem procura acha': 'खोज्नेले मात्र भेट्टाउने कोड भेट्टाइयो',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'तपाईंले गोप्य कोड भेट्टाउनुभयो। सबैभन्दा राम्रा रहस्यहरू खोज्नेहरूकै हुन्।',
+  'Segredo': 'रहस्य',
   'Reconectando ao servidor…': 'सर्भरमा फेरि जोडिँदै…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'किबोर्ड, पङ्खा र सडकजस्ता पृष्ठभूमिका हल्ला घटाउँछ।',
   'Registro': 'लग',
@@ -1039,6 +1044,8 @@ export default {
   'Trocar a capa': 'कभर बदल्नुहोस्',
   'Trocar áudio': 'अडियो बदल्नुहोस्',
   'Trocar avatar': 'अवतार बदल्नुहोस्',
+  'Ou escolha um coelho': 'वा एउटा खरायो छान्नुहोस्',
+  'Usar este coelho': 'यो खरायो प्रयोग गर्नुहोस्',
   'Trocar imagem': 'तस्बिर बदल्नुहोस्',
   'Trocar o e-mail': 'इमेल बदल्नुहोस्',
   'Trocar senha': 'पासवर्ड बदल्नुहोस्',

@@ -20,7 +20,7 @@ import { salaDaPessoa,
   salaDeVozDe,
 } from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
-import { LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
+import { INSIGNIAS, LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
@@ -630,6 +630,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       io.to(salaDaPessoa(request.user.id)).emit('bloqueios:mudou', db.listarBloqueios(request.user.id));
       return { ok: true, bloqueios: db.listarBloqueios(request.user.id) };
     });
+
+    // O easter egg: quem digitou o código secreto no app (ver INSIGNIAS.SEGREDO em presentes.ts). Repetir não
+    // dá de novo. A insígnia entra na fila da tela de destaque, como as outras; é o app que a mostra.
+    authed.post('/api/me/codigo-secreto', async (request) => ({
+      novo: db.darItem(request.user.id, INSIGNIAS.SEGREDO, 'Achou o código secreto'),
+    }));
 
     authed.get('/api/me/selo', async (request) => ({
       podeVestir: db.selosQuePodeVestir(request.user.id),

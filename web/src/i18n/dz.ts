@@ -903,6 +903,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'མི་མང་ཤོས་ཀྱི་དོན་ལུ་འོས་འཚམ། བལྟ་མི་གིས་ དགོས་པ་ཅིན་ སྤུས་ཚད་མར་ཕབ་ཚུགས།',
   'Recompensa': 'ཆ་རྒྱ།',
+  'Código secreto': 'གསང་བའི་ཨང་རྟགས།',
+  'Achou o código que só quem procura acha': 'འཚོལ་མི་རྐྱངམ་ཅིག་གིས་འཐོབ་པའི་ཨང་རྟགས་འཐོབ་ཅི།',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'ཁྱོད་ཀྱིས་ གསང་བའི་ཨང་རྟགས་འཐོབ་ཅི། གསང་བ་ལེགས་ཤོས་ཚུ་ འཚོལ་མི་ཚུ་གི་ཨིན།',
+  'Segredo': 'གསང་བ།',
   'Reconectando ao servidor…': 'སར་བར་ལུ་ལོག་མཐུད་དོ…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ལྡེ་སྒྲོམ་དང་ རླུང་འཁོར་ འགྲུལ་འཁོར་བཟུམ་གྱི་ རྒྱབ་སྒྲ་ཉུང་སུ་བཟོཝ་ཨིན།',
   'Registro': 'ཐོ་ཡིག',
@@ -1050,6 +1055,8 @@ export default {
   'Trocar a capa': 'ཁ་ཐོག་སོར།',
   'Trocar áudio': 'སྒྲ་ཡིག་སྣོད་སོར།',
   'Trocar avatar': 'ཨ་ཝ་ཊར་སོར།',
+  'Ou escolha um coelho': 'ཡང་ན་ རི་བོང་ཅིག་གདམ།',
+  'Usar este coelho': 'རི་བོང་འདི་ལག་ལེན་འཐབ།',
   'Trocar imagem': 'པར་སོར།',
   'Trocar o e-mail': 'གློག་འཕྲིན་སོར།',
   'Trocar senha': 'ཆོག་ཡིག་སོར།',

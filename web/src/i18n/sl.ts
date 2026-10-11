@@ -892,6 +892,11 @@ export default {
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Priporočeno za večino. Gledalci lahko po potrebi znižajo kakovost.',
   'Recompensa': 'Nagrada',
+  'Código secreto': 'Skrivna koda',
+  'Achou o código que só quem procura acha': 'Koda, ki jo najde le tisti, ki išče',
+  'Você achou o código secreto. Os melhores segredos são de quem procura.':
+    'Skrivna koda je najdena. Najboljše skrivnosti pripadajo tistim, ki iščejo.',
+  'Segredo': 'Skrivnost',
   'Reconectando ao servidor…': 'Ponovno povezovanje s strežnikom…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Zmanjša hrup v ozadju, na primer tipkovnico, ventilator in promet.',
   'Registro': 'Dnevnik',
@@ -1039,6 +1044,8 @@ export default {
   'Trocar a capa': 'Zamenjaj naslovnico',
   'Trocar áudio': 'Zamenjaj zvočno datoteko',
   'Trocar avatar': 'Zamenjaj avatar',
+  'Ou escolha um coelho': 'Ali izberi zajca',
+  'Usar este coelho': 'Uporabi tega zajca',
   'Trocar imagem': 'Zamenjaj sliko',
   'Trocar o e-mail': 'Spremeni e-naslov',
   'Trocar senha': 'Spremeni geslo',
