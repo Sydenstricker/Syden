@@ -560,30 +560,13 @@ section h2 {
   color: var(--marca);
 }
 
-/* ---------- chamado final ---------- */
-
-.chamado {
-  text-align: center;
-  padding-bottom: 88px;
-}
-
-.chamado p {
-  color: var(--text);
-  margin: 0 0 24px;
-}
-
-.chamado .acoes {
-  justify-content: center;
-}
-
 /* ---------- movimento ao rolar ----------
    Sem JavaScript: a animação é amarrada à rolagem pelo próprio navegador. Onde isso não existe, a
    seção simplesmente aparece pronta — nunca escondida esperando uma animação que não vem. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .vitrine-linha,
-    .idiomas,
-    .chamado {
+    .idiomas {
       animation: subir linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
@@ -796,11 +779,6 @@ html:lang(dz) h3 {
     drop-shadow(0 var(--quarto-px) 0 var(--contorno)) drop-shadow(0 calc(var(--quarto-px) * -1) 0 var(--contorno));
 }
 
-/* O agradecimento é o último bloco antes do pé: o respiro do fim é dele, e não do "Chama a turma". */
-.chamado {
-  padding-bottom: 32px;
-}
-
 .idiomas {
   padding-bottom: 96px;
 }
@@ -902,7 +880,7 @@ html:lang(dz) h3 {
   }
 }
 
-/* O guarda-roupa mostrado vestido: a vitrine de cartões é larga, então a linha vira texto em cima e
+/* A customização mostrada vestida: a vitrine de cartões é larga, então a linha vira texto em cima e
    cartões embaixo, na largura toda. Sem moldura de janela: os cartões já têm a própria. */
 .vitrine-larga {
   grid-template-columns: minmax(0, 1fr);

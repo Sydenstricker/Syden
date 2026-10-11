@@ -106,7 +106,7 @@
             <a class="obj obj-pufe" href="#salas" data-caixa="163,212,218,256" aria-label="Salas"><span class="contorno"><span class="corte noite"></span><span class="corte dia"></span></span></a>
             <button type="button" class="obj obj-abajur" data-caixa="46,127,68,161" aria-label="Acender a luz" data-apagar="Apagar a luz" aria-pressed="false"><span class="contorno"><span class="corte noite"></span><span class="corte dia"></span></span></button>
 
-            <a class="obj quarto-vivo coelho" href="#guarda-roupa" data-caixa="88,98,137,162" data-mascara="coelho" aria-label="Customização">
+            <a class="obj quarto-vivo coelho" href="#customizacao" data-caixa="88,98,137,162" data-mascara="coelho" aria-label="Customização">
               <!-- O contorno vai no corpo, e não no link: no link, o filtro pegava também o balão do nome. -->
               <span class="corpo">
                 <span class="quarto-parte baixo"><img src="quarto/coelho.png" alt="" /></span>
@@ -180,14 +180,14 @@
           </figure>
         </div>
 
-        <div class="vitrine-linha vitrine-larga" id="guarda-roupa">
+        <div class="vitrine-linha vitrine-larga" id="customizacao">
           <div class="vitrine-texto">
             <p class="sobretitulo">Customização</p>
             <h2>Enfeite que ninguém compra</h2>
             <p>Nome, moldura, fundo e insígnias do seu jeito. Tudo de graça: nada tá à venda.</p>
           </div>
           <!-- A vitrine: quatro cartões de perfil da demonstração, cada um com fundo, moldura, avatar, cor, efeito e
-               letra diferentes. É o guarda-roupa mostrado VESTIDO, e não a lista de opções. E ANIMADO (pedido
+               letra diferentes. É a customização mostrada VESTIDA, e não a lista de opções. E ANIMADO (pedido
                de 10/10/2026): a moldura girando, o nome pulsando, o fundo andando — e2e/vitrine-animada.mjs. Quem
                pediu menos movimento no sistema recebe o primeiro quadro, parado. -->
           <figure class="captura captura-vitrine">
@@ -205,17 +205,10 @@
         </div>
       </section>
 
-      <section class="chamado">
-        <img src="icon-192.png" alt="" width="72" height="72" />
-        <h2>Chama o pessoal</h2>
-        <p>Cria a comunidade, manda o código pros amigos e entra na call.</p>
-        <div class="acoes">
-          <a class="botao botao-marca" href="/app/">Abrir no navegador</a>
-          <a class="botao botao-vazio" href="https://apps.microsoft.com/detail/9NPVXDKV471H">Baixar na Microsoft Store</a>
-        </div>
-      </section>
-
       <!--
+        O "CHAMA O PESSOAL" SAIU (decisão dele, 10/10/2026): repetia os botões da abertura, e o menu de cima, com
+        "Entrar ou criar conta", fica à vista a página inteira. O lobby fecha a página logo depois da vitrine.
+
         O OBRIGADO FECHA A VISITA (pedido de 10/10/2026): o quarto chama a atenção na entrada, a sala de voz
         mostra o produto logo em seguida, e no fim o Syden agradece pelo tempo — em várias línguas, que é
         também como ele conta que fala 72.

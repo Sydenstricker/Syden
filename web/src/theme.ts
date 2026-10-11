@@ -18,7 +18,7 @@ export type Paleta = 'd4' | 'classica' | 'grafite' | 'contraste';
 
 /** As opções, na ordem da tela, com as cores da amostra (fundo, lateral, texto, destaque). */
 export const PALETAS: { valor: Paleta; nome: string; descricao: string; amostra: [string, string, string, string] }[] = [
-  { valor: 'd4', nome: chave('D4'), descricao: chave('Azul-noite, creme e âmbar. A do Syden.'), amostra: ['#1c212b', '#11141a', '#e8eaf0', '#f5b83d'] },
+  { valor: 'd4', nome: chave('Syden'), descricao: chave('Azul-noite, creme e âmbar: a cara do app.'), amostra: ['#1c212b', '#11141a', '#e8eaf0', '#f5b83d'] },
   { valor: 'classica', nome: chave('Clássica'), descricao: chave('Cinza e azul, a de antes do coelho novo.'), amostra: ['#313338', '#1e1f22', '#dbdee1', '#5865f2'] },
   { valor: 'grafite', nome: chave('Grafite'), descricao: chave('Cinza neutro, quase preto, com verde-água.'), amostra: ['#18191c', '#0c0d0f', '#e4e5e7', '#3ccfb8'] },
   { valor: 'contraste', nome: chave('Alto contraste'), descricao: chave('Preto, branco e amarelo, para ler sem esforço.'), amostra: ['#0a0a0a', '#000000', '#ffffff', '#ffd400'] },
