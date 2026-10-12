@@ -1155,4 +1155,7 @@ export default {
   'Sala 1': 'කාමරය 1',
   'Sala 2': 'කාමරය 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» හා සමාන ශබ්දයක් ලෙස පෙනේ.',
+  'Procurar sons repetidos': 'පුනරාවර්තන ශබ්ද සොයන්න',
+  'Nenhum som repetido.': 'පුනරාවර්තන ශබ්ද නැත.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'සෑම කණ්ඩායමක්ම එකම ශබ්දය ලෙස පෙනේ. අසා අමතර ඒවා මකන්න.',
 } satisfies Record<string, string>;

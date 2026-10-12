@@ -1055,4 +1055,7 @@ export default {
   'Sala 1': 'Phòng 1',
   'Sala 2': 'Phòng 2',
   'Parece o mesmo som que «{nome}».': 'Có vẻ là cùng âm thanh với «{nome}».',
+  'Procurar sons repetidos': 'Tìm âm thanh bị trùng',
+  'Nenhum som repetido.': 'Không có âm thanh bị trùng.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Mỗi nhóm có vẻ là cùng một âm thanh. Nghe thử và xóa phần thừa.',
 } satisfies Record<string, string>;

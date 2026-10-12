@@ -1147,4 +1147,7 @@ export default {
   'Sala 1': 'Dhoma 1',
   'Sala 2': 'Dhoma 2',
   'Parece o mesmo som que «{nome}».': 'Duket si i njëjti tingull me «{nome}».',
+  'Procurar sons repetidos': 'Kërko tinguj të përsëritur',
+  'Nenhum som repetido.': 'Asnjë tingull i përsëritur.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Çdo grup duket si i njëjti tingull. Dëgjo dhe fshi atë që tepron.',
 } satisfies Record<string, string>;

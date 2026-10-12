@@ -99,6 +99,20 @@ async function impressaoDoArquivo(dados: ArrayBuffer): Promise<Impressao | null>
 // baixa de novo.
 const jaTiradas = new Map<number, Promise<Impressao | null>>();
 
+/** A impressão de um som que já está aqui, baixando-o só da primeira vez. Falha vira null. */
+function impressaoDoSom(id: number, endereco: (id: number) => string): Promise<Impressao | null> {
+  if (!jaTiradas.has(id)) {
+    jaTiradas.set(
+      id,
+      fetch(endereco(id))
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+        .then(impressaoDoArquivo)
+        .catch(() => null),
+    );
+  }
+  return jaTiradas.get(id)!;
+}
+
 /**
  * Procura, entre os sons que já estão no soundboard, um que pareça o mesmo deste arquivo. Devolve o nome
  * dele, ou null. Qualquer falha (arquivo que o navegador não decodifica, som que não baixa) vira "não
@@ -113,20 +127,47 @@ export async function somParecidoCom(
     const nova = await impressaoDoArquivo(await arquivo.arrayBuffer());
     if (!nova) return null;
     for (const som of sons) {
-      if (!jaTiradas.has(som.id)) {
-        jaTiradas.set(
-          som.id,
-          fetch(endereco(som.id))
-            .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
-            .then(impressaoDoArquivo)
-            .catch(() => null),
-        );
-      }
-      const dela = await jaTiradas.get(som.id)!;
+      const dela = await impressaoDoSom(som.id, endereco);
       if (dela && semelhanca(nova, dela) >= PARECIDO) return som.name;
     }
   } catch {
     // não deu para comparar: segue sem aviso
   }
   return null;
+}
+
+/**
+ * Junta os sons que parecem ser o mesmo, em grupos (se A parece B e B parece C, os três ficam juntos). É a
+ * faxina dos repetidos que entraram ANTES do aviso existir — quem administra ouve e decide qual fica.
+ * Devolve só os grupos com dois ou mais.
+ */
+export function agruparParecidos<T extends { id: number }>(sons: T[], impressoes: Map<number, Impressao | null>): T[][] {
+  const pai = new Map(sons.map((s) => [s.id, s.id]));
+  const raiz = (id: number): number => {
+    let r = id;
+    while (pai.get(r) !== r) r = pai.get(r)!;
+    pai.set(id, r);
+    return r;
+  };
+  for (let i = 0; i < sons.length; i++) {
+    const a = impressoes.get(sons[i].id);
+    if (!a) continue;
+    for (let j = i + 1; j < sons.length; j++) {
+      const b = impressoes.get(sons[j].id);
+      if (b && semelhanca(a, b) >= PARECIDO) pai.set(raiz(sons[j].id), raiz(sons[i].id));
+    }
+  }
+  const grupos = new Map<number, T[]>();
+  for (const som of sons) {
+    const r = raiz(som.id);
+    grupos.set(r, [...(grupos.get(r) ?? []), som]);
+  }
+  return [...grupos.values()].filter((g) => g.length > 1);
+}
+
+/** Baixa e compara os sons dados, e devolve os grupos de parecidos. */
+export async function procurarRepetidos<T extends { id: number }>(sons: T[], endereco: (id: number) => string): Promise<T[][]> {
+  const impressoes = new Map<number, Impressao | null>();
+  for (const som of sons) impressoes.set(som.id, await impressaoDoSom(som.id, endereco));
+  return agruparParecidos(sons, impressoes);
 }

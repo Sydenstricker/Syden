@@ -1072,4 +1072,7 @@ export default {
   'Sala 1': '房间1',
   'Sala 2': '房间2',
   'Parece o mesmo som que «{nome}».': '听起来和「{nome}」是同一个声音。',
+  'Procurar sons repetidos': '查找重复的声音',
+  'Nenhum som repetido.': '没有重复的声音。',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': '每一组听起来都是同一个声音。听一听，删掉多余的。',
 } satisfies Record<string, string>;

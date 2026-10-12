@@ -1156,4 +1156,7 @@ export default {
   'Sala 1': 'ຫ້ອງ 1',
   'Sala 2': 'ຫ້ອງ 2',
   'Parece o mesmo som que «{nome}».': 'ເບິ່ງຄືວ່າເປັນສຽງດຽວກັນກັບ «{nome}».',
+  'Procurar sons repetidos': 'ຊອກຫາສຽງທີ່ຊ້ຳກັນ',
+  'Nenhum som repetido.': 'ບໍ່ມີສຽງທີ່ຊ້ຳກັນ.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'ແຕ່ລະກຸ່ມເບິ່ງຄືວ່າເປັນສຽງດຽວກັນ. ຟັງແລ້ວລຶບອັນທີ່ເກີນອອກ.',
 } satisfies Record<string, string>;

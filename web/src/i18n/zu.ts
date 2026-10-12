@@ -1156,4 +1156,7 @@ export default {
   'Sala 1': 'Igumbi 1',
   'Sala 2': 'Igumbi 2',
   'Parece o mesmo som que «{nome}».': 'Kubukeka kungumsindo ofanayo no-«{nome}».',
+  'Procurar sons repetidos': 'Thola imisindo ephindaphindiwe',
+  'Nenhum som repetido.': 'Ayikho imisindo ephindaphindiwe.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Iqembu ngalinye libukeka lingumsindo ofanayo. Lalela bese ususa okweqile.',
 } satisfies Record<string, string>;

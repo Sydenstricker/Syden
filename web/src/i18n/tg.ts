@@ -1156,4 +1156,7 @@ export default {
   'Sala 1': 'Ҳуҷраи 1',
   'Sala 2': 'Ҳуҷраи 2',
   'Parece o mesmo som que «{nome}».': 'Ба назар мерасад, ки ҳамон садои «{nome}» аст.',
+  'Procurar sons repetidos': 'Ҷустуҷӯи садоҳои такрорӣ',
+  'Nenhum som repetido.': 'Садои такрорӣ нест.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Ҳар гурӯҳ ба назар ҳамон як садо аст. Гӯш кун ва зиёдатиро нест кун.',
 } satisfies Record<string, string>;

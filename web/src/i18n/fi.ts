@@ -1155,4 +1155,7 @@ export default {
   'Sala 1': 'Huone 1',
   'Sala 2': 'Huone 2',
   'Parece o mesmo som que «{nome}».': 'Näyttää samalta ääneltä kuin «{nome}».',
+  'Procurar sons repetidos': 'Etsi toistuvat äänet',
+  'Nenhum som repetido.': 'Ei toistuvia ääniä.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Jokainen ryhmä näyttää olevan sama ääni. Kuuntele ja poista ylimääräiset.',
 } satisfies Record<string, string>;

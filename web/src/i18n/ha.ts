@@ -1087,4 +1087,7 @@ export default {
   'Sala 1': 'Ɗaki 1',
   'Sala 2': 'Ɗaki 2',
   'Parece o mesmo som que «{nome}».': 'Kamar sauti ɗaya ne da «{nome}».',
+  'Procurar sons repetidos': 'Nemi sautuka masu maimaituwa',
+  'Nenhum som repetido.': 'Babu sauti mai maimaituwa.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Kowane rukuni kamar sauti ɗaya ne. Ku saurara ku goge abin da ya rage.',
 } satisfies Record<string, string>;

@@ -1163,4 +1163,7 @@ export default {
   'Sala 1': 'Xona 1',
   'Sala 2': 'Xona 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» bilan bir xil ovozga oʻxshaydi.',
+  'Procurar sons repetidos': 'Takrorlangan ovozlarni qidirish',
+  'Nenhum som repetido.': 'Takrorlangan ovoz yoʻq.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Har bir guruh bir xil ovozga oʻxshaydi. Tingla va ortiqchasini oʻchir.',
 } satisfies Record<string, string>;

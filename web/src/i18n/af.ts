@@ -1149,4 +1149,7 @@ export default {
   'Sala 1': 'Kamer 1',
   'Sala 2': 'Kamer 2',
   'Parece o mesmo som que «{nome}».': 'Dit lyk na dieselfde klank as «{nome}».',
+  'Procurar sons repetidos': 'Soek herhaalde klanke',
+  'Nenhum som repetido.': 'Geen herhaalde klanke nie.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Elke groep lyk na dieselfde klank. Luister en vee die ekstras uit.',
 } satisfies Record<string, string>;

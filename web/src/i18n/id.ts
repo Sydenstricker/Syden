@@ -1082,4 +1082,7 @@ export default {
   'Sala 1': 'Ruang 1',
   'Sala 2': 'Ruang 2',
   'Parece o mesmo som que «{nome}».': 'Sepertinya suaranya sama dengan «{nome}».',
+  'Procurar sons repetidos': 'Cari suara yang berulang',
+  'Nenhum som repetido.': 'Tidak ada suara yang berulang.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Setiap kelompok tampaknya suara yang sama. Dengarkan dan hapus yang berlebih.',
 } satisfies Record<string, string>;

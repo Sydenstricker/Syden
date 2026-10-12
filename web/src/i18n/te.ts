@@ -1067,4 +1067,7 @@ export default {
   'Sala 1': 'గది 1',
   'Sala 2': 'గది 2',
   'Parece o mesmo som que «{nome}».': 'ఇది «{nome}» లాంటి అదే శబ్దంలా ఉంది.',
+  'Procurar sons repetidos': 'మళ్లీ వచ్చిన శబ్దాలను వెతుకు',
+  'Nenhum som repetido.': 'మళ్లీ వచ్చిన శబ్దం ఏదీ లేదు.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'ప్రతి గుంపు ఒకే శబ్దంలా ఉంది. విని, ఎక్కువగా ఉన్నవి తొలగించు.',
 } satisfies Record<string, string>;

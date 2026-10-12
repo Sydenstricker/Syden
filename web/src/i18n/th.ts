@@ -1098,4 +1098,7 @@ export default {
   'Sala 1': 'ห้อง 1',
   'Sala 2': 'ห้อง 2',
   'Parece o mesmo som que «{nome}».': 'ดูเหมือนเป็นเสียงเดียวกับ «{nome}»',
+  'Procurar sons repetidos': 'ค้นหาเสียงที่ซ้ำกัน',
+  'Nenhum som repetido.': 'ไม่มีเสียงที่ซ้ำกัน',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'แต่ละกลุ่มดูเหมือนเป็นเสียงเดียวกัน ฟังแล้วลบอันที่เกินออก',
 } satisfies Record<string, string>;

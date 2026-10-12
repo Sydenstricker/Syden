@@ -1085,4 +1085,7 @@ export default {
   'Sala 1': 'Camera 1',
   'Sala 2': 'Camera 2',
   'Parece o mesmo som que «{nome}».': 'Pare același sunet ca «{nome}».',
+  'Procurar sons repetidos': 'Caută sunete repetate',
+  'Nenhum som repetido.': 'Niciun sunet repetat.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Fiecare grup pare să fie același sunet. Ascultă și șterge ce e în plus.',
 } satisfies Record<string, string>;

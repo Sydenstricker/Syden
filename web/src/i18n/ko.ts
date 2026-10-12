@@ -1073,4 +1073,7 @@ export default {
   'Sala 1': '방 1',
   'Sala 2': '방 2',
   'Parece o mesmo som que «{nome}».': '«{nome}»와 같은 소리인 것 같아요.',
+  'Procurar sons repetidos': '중복된 소리 찾기',
+  'Nenhum som repetido.': '중복된 소리가 없어요.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': '각 그룹은 같은 소리인 것 같아요. 들어 보고 남는 것을 지우세요.',
 } satisfies Record<string, string>;

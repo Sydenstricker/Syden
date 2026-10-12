@@ -1091,4 +1091,7 @@ export default {
   'Sala 1': 'Δωμάτιο 1',
   'Sala 2': 'Δωμάτιο 2',
   'Parece o mesmo som que «{nome}».': 'Μοιάζει με τον ίδιο ήχο με το «{nome}».',
+  'Procurar sons repetidos': 'Αναζήτηση επαναλαμβανόμενων ήχων',
+  'Nenhum som repetido.': 'Κανένας επαναλαμβανόμενος ήχος.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Κάθε ομάδα μοιάζει να είναι ο ίδιος ήχος. Άκουσε και σβήσε ό,τι περισσεύει.',
 } satisfies Record<string, string>;

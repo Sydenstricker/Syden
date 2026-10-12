@@ -1173,4 +1173,7 @@ export default {
   'Sala 1': 'ოთახი 1',
   'Sala 2': 'ოთახი 2',
   'Parece o mesmo som que «{nome}».': 'როგორც ჩანს, იგივე ხმაა, რაც «{nome}».',
+  'Procurar sons repetidos': 'გამეორებული ხმების ძებნა',
+  'Nenhum som repetido.': 'გამეორებული ხმა არ არის.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'თითოეული ჯგუფი ერთი და იგივე ხმა ჩანს. მოუსმინე და წაშალე ზედმეტი.',
 } satisfies Record<string, string>;

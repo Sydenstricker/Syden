@@ -1155,4 +1155,7 @@ export default {
   'Sala 1': 'Efitrano 1',
   'Sala 2': 'Efitrano 2',
   'Parece o mesmo som que «{nome}».': 'Toa mitovy amin’ny feo «{nome}».',
+  'Procurar sons repetidos': 'Hikaroka feo miverimberina',
+  'Nenhum som repetido.': 'Tsy misy feo miverimberina.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Toa feo iray ihany ny vondrona tsirairay. Henoy ary fafao izay be loatra.',
 } satisfies Record<string, string>;

@@ -1135,4 +1135,7 @@ export default {
   'Sala 1': 'חדר 1',
   'Sala 2': 'חדר 2',
   'Parece o mesmo som que «{nome}».': 'נשמע כמו אותו צליל כמו «{nome}».',
+  'Procurar sons repetidos': 'חיפוש צלילים כפולים',
+  'Nenhum som repetido.': 'אין צלילים כפולים.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'כל קבוצה נראית כמו אותו צליל. אפשר להאזין ולמחוק את המיותר.',
 } satisfies Record<string, string>;

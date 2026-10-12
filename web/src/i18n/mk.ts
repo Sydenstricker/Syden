@@ -1155,4 +1155,7 @@ export default {
   'Sala 1': 'Соба 1',
   'Sala 2': 'Соба 2',
   'Parece o mesmo som que «{nome}».': 'Изгледа како истиот звук како «{nome}».',
+  'Procurar sons repetidos': 'Барај повторени звуци',
+  'Nenhum som repetido.': 'Нема повторени звуци.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Секоја група изгледа како ист звук. Слушни и избриши го вишокот.',
 } satisfies Record<string, string>;

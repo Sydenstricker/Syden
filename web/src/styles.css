@@ -12200,3 +12200,21 @@ body.arrastando-barra {
   color: var(--text-muted);
   font-size: calc(12.5px * var(--escala-do-texto));
 }
+
+/* A faxina dos sons repetidos (SettingsModal, SonsRepetidos): cada grupo de parecidos num cartão. */
+.sons-repetidos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.sons-repetidos > .btn-secondary {
+  align-self: flex-start;
+}
+
+.sons-repetidos-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

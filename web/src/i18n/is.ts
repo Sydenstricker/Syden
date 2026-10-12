@@ -1156,4 +1156,7 @@ export default {
   'Sala 1': 'Herbergi 1',
   'Sala 2': 'Herbergi 2',
   'Parece o mesmo som que «{nome}».': 'Virðist vera sama hljóðið og «{nome}».',
+  'Procurar sons repetidos': 'Leita að endurteknum hljóðum',
+  'Nenhum som repetido.': 'Engin endurtekin hljóð.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Hver hópur virðist vera sama hljóðið. Hlustaðu og eyddu því sem er umfram.',
 } satisfies Record<string, string>;

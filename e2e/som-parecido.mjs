@@ -7,38 +7,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar, wavDeTeste as wav } from './ajuda.mjs';
 
 const API = process.env.API ?? 'http://localhost:3099';
 const s = Date.now().toString().slice(-5);
-
-/** Um WAV de 16 bits, mono: rajadas de um tom no ritmo dado. */
-function wav(ritmo, { taxa = 22050, ganho = 0.8, silencio = 0 } = {}) {
-  const porNota = Math.round(taxa * 0.12);
-  const total = Math.round(silencio * taxa) + ritmo.length * porNota;
-  const dados = Buffer.alloc(total * 2);
-  let i = Math.round(silencio * taxa);
-  for (const nivel of ritmo) {
-    for (let k = 0; k < porNota; k++, i++) {
-      const v = ganho * nivel * Math.sin((2 * Math.PI * 440 * i) / taxa);
-      dados.writeInt16LE(Math.round(v * 32767), i * 2);
-    }
-  }
-  const cab = Buffer.alloc(44);
-  cab.write('RIFF', 0);
-  cab.writeUInt32LE(36 + dados.length, 4);
-  cab.write('WAVEfmt ', 8);
-  cab.writeUInt32LE(16, 16);
-  cab.writeUInt16LE(1, 20);
-  cab.writeUInt16LE(1, 22);
-  cab.writeUInt32LE(taxa, 24);
-  cab.writeUInt32LE(taxa * 2, 28);
-  cab.writeUInt16LE(2, 32);
-  cab.writeUInt16LE(16, 34);
-  cab.write('data', 36);
-  cab.writeUInt32LE(dados.length, 40);
-  return Buffer.concat([cab, dados]);
-}
 
 const GRITO = [0.2, 0.9, 1, 0.6, 0.1, 0.8, 0.3, 0.05, 0.7, 0.4, 0.9, 0.2];
 const OUTRO = [1, 0.1, 0.1, 0.9, 0.2, 0.2, 1, 0.1, 0.5, 0.9, 0.1, 0.6];

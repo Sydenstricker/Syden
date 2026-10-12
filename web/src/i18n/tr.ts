@@ -1079,4 +1079,7 @@ export default {
   'Sala 1': 'Oda 1',
   'Sala 2': 'Oda 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» ile aynı ses gibi görünüyor.',
+  'Procurar sons repetidos': 'Tekrarlanan sesleri bul',
+  'Nenhum som repetido.': 'Tekrarlanan ses yok.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Her grup aynı ses gibi görünüyor. Dinle ve fazlasını sil.',
 } satisfies Record<string, string>;

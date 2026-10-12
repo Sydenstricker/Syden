@@ -1157,4 +1157,7 @@ export default {
   'Sala 1': 'Otag 1',
   'Sala 2': 'Otag 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» bilen birmeňzeş ses ýaly.',
+  'Procurar sons repetidos': 'Gaýtalanýan sesleri gözle',
+  'Nenhum som repetido.': 'Gaýtalanýan ses ýok.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Her topar birmeňzeş ses ýaly. Diňle we artykmajyny poz.',
 } satisfies Record<string, string>;

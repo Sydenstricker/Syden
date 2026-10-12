@@ -1157,4 +1157,7 @@ export default {
   'Sala 1': 'कोठा 1',
   'Sala 2': 'कोठा 2',
   'Parece o mesmo som que «{nome}».': 'यो «{nome}» जस्तै उही आवाज जस्तो देखिन्छ।',
+  'Procurar sons repetidos': 'दोहोरिएका आवाजहरू खोज्नुहोस्',
+  'Nenhum som repetido.': 'कुनै दोहोरिएको आवाज छैन।',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'हरेक समूह एउटै आवाज जस्तो देखिन्छ। सुन्नुहोस् र बढी भएको मेटाउनुहोस्।',
 } satisfies Record<string, string>;

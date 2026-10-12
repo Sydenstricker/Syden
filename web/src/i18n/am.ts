@@ -1085,4 +1085,7 @@ export default {
   'Sala 1': 'ክፍል 1',
   'Sala 2': 'ክፍል 2',
   'Parece o mesmo som que «{nome}».': 'ከ«{nome}» ጋር አንድ አይነት ድምፅ ይመስላል።',
+  'Procurar sons repetidos': 'የተደጋገሙ ድምፆችን ፈልግ',
+  'Nenhum som repetido.': 'የተደጋገመ ድምፅ የለም።',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'እያንዳንዱ ቡድን አንድ አይነት ድምፅ ይመስላል። ያዳምጡ እና ትርፉን ይሰርዙ።',
 } satisfies Record<string, string>;

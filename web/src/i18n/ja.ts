@@ -1066,4 +1066,7 @@ export default {
   'Sala 1': 'ルーム1',
   'Sala 2': 'ルーム2',
   'Parece o mesmo som que «{nome}».': '「{nome}」と同じ音のようです。',
+  'Procurar sons repetidos': '重複した音を探す',
+  'Nenhum som repetido.': '重複した音はありません。',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': '各グループは同じ音のようです。聞いてみて、余分なものを削除してください。',
 } satisfies Record<string, string>;

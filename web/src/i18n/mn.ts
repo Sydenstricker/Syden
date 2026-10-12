@@ -1169,4 +1169,7 @@ export default {
   'Sala 1': 'Өрөө 1',
   'Sala 2': 'Өрөө 2',
   'Parece o mesmo som que «{nome}».': '«{nome}»-тэй ижил дуу бололтой.',
+  'Procurar sons repetidos': 'Давхардсан дуу хайх',
+  'Nenhum som repetido.': 'Давхардсан дуу алга.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Бүлэг бүр нэг ижил дуу бололтой. Сонсоод илүүг нь устга.',
 } satisfies Record<string, string>;

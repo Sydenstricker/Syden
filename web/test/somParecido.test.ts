@@ -52,3 +52,20 @@ describe('o mesmo som, pelo som', () => {
     assert.equal(impressaoDe(new Float32Array(8000), TAXA), null);
   });
 });
+
+describe('a faxina dos repetidos que já existem', () => {
+  it('junta em grupos quem parece o mesmo, e deixa de fora o diferente e o que não decodificou', async () => {
+    const { agruparParecidos } = await import('../src/somParecido');
+    const sons = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
+    const impressoes = new Map([
+      [1, som(RITMO_DO_GRITO)],
+      [2, som(OUTRO_RITMO)],
+      [3, som(RITMO_DO_GRITO, { taxa: 11025, ganho: 0.5 })],
+      [4, null], // não deu para decodificar: fica de fora, sem palpite
+    ]);
+    assert.deepEqual(
+      agruparParecidos(sons, impressoes).map((g) => g.map((s) => s.id)),
+      [[1, 3]],
+    );
+  });
+});

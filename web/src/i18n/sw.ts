@@ -1084,4 +1084,7 @@ export default {
   'Sala 1': 'Chumba 1',
   'Sala 2': 'Chumba 2',
   'Parece o mesmo som que «{nome}».': 'Inaonekana kuwa sauti ileile kama «{nome}».',
+  'Procurar sons repetidos': 'Tafuta sauti zinazojirudia',
+  'Nenhum som repetido.': 'Hakuna sauti inayojirudia.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Kila kundi linaonekana kuwa sauti ileile. Sikiliza na ufute zilizozidi.',
 } satisfies Record<string, string>;

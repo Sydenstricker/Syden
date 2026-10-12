@@ -1073,4 +1073,7 @@ export default {
   'Sala 1': 'اتاق 1',
   'Sala 2': 'اتاق 2',
   'Parece o mesmo som que «{nome}».': 'به نظر می‌رسد همان صدای «{nome}» است.',
+  'Procurar sons repetidos': 'جست‌وجوی صداهای تکراری',
+  'Nenhum som repetido.': 'هیچ صدای تکراری نیست.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'هر گروه به نظر همان صداست. گوش بده و اضافی‌ها را پاک کن.',
 } satisfies Record<string, string>;

@@ -1147,4 +1147,7 @@ export default {
   'Sala 1': 'Rum 1',
   'Sala 2': 'Rum 2',
   'Parece o mesmo som que «{nome}».': 'Ser ut som samma ljud som «{nome}».',
+  'Procurar sons repetidos': 'Hitta upprepade ljud',
+  'Nenhum som repetido.': 'Inga upprepade ljud.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Varje grupp verkar vara samma ljud. Lyssna och radera det som blir över.',
 } satisfies Record<string, string>;

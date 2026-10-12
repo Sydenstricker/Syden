@@ -1100,4 +1100,7 @@ export default {
   'Sala 1': 'Yàrá 1',
   'Sala 2': 'Yàrá 2',
   'Parece o mesmo som que «{nome}».': 'Ó dàbí ohùn kan náà pẹ̀lú «{nome}».',
+  'Procurar sons repetidos': 'Wá àwọn ohùn tí ó tún ara wọn ṣe',
+  'Nenhum som repetido.': 'Kò sí ohùn tí ó tún ara rẹ̀ ṣe.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Ẹgbẹ́ kọ̀ọ̀kan dàbí ohùn kan náà. Gbọ́ kí o sì pa èyí tí ó pọ̀ jù rẹ́.',
 } satisfies Record<string, string>;

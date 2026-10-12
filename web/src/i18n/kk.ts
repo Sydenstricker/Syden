@@ -1151,4 +1151,7 @@ export default {
   'Sala 1': 'Бөлме 1',
   'Sala 2': 'Бөлме 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» дыбысымен бірдей сияқты.',
+  'Procurar sons repetidos': 'Қайталанған дыбыстарды іздеу',
+  'Nenhum som repetido.': 'Қайталанған дыбыс жоқ.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Әр топ бір дыбыс сияқты. Тыңдап, артығын өшір.',
 } satisfies Record<string, string>;

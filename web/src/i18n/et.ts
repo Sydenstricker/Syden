@@ -1152,4 +1152,7 @@ export default {
   'Sala 1': 'Ruum 1',
   'Sala 2': 'Ruum 2',
   'Parece o mesmo som que «{nome}».': 'Tundub sama heli nagu «{nome}».',
+  'Procurar sons repetidos': 'Otsi korduvaid helisid',
+  'Nenhum som repetido.': 'Korduvaid helisid pole.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Iga rühm tundub olevat sama heli. Kuula ja kustuta üleliigne.',
 } satisfies Record<string, string>;

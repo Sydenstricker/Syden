@@ -1155,4 +1155,7 @@ export default {
   'Sala 1': 'Miestnosť 1',
   'Sala 2': 'Miestnosť 2',
   'Parece o mesmo som que «{nome}».': 'Vyzerá to ako rovnaký zvuk ako «{nome}».',
+  'Procurar sons repetidos': 'Hľadať opakované zvuky',
+  'Nenhum som repetido.': 'Žiadne opakované zvuky.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Každá skupina vyzerá ako rovnaký zvuk. Vypočuj si ich a zmaž, čo prebýva.',
 } satisfies Record<string, string>;

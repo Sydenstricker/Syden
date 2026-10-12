@@ -1157,4 +1157,7 @@ export default {
   'Sala 1': 'Szoba 1',
   'Sala 2': 'Szoba 2',
   'Parece o mesmo som que «{nome}».': 'Úgy tűnik, ugyanaz a hang, mint ez: «{nome}».',
+  'Procurar sons repetidos': 'Ismétlődő hangok keresése',
+  'Nenhum som repetido.': 'Nincs ismétlődő hang.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Minden csoport ugyanannak a hangnak tűnik. Hallgasd meg, és töröld a fölöslegeset.',
 } satisfies Record<string, string>;

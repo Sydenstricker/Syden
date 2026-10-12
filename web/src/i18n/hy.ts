@@ -1174,4 +1174,7 @@ export default {
   'Sala 1': 'Սենյակ 1',
   'Sala 2': 'Սենյակ 2',
   'Parece o mesmo som que «{nome}».': 'Կարծես նույն ձայնն է, ինչ «{nome}»-ը։',
+  'Procurar sons repetidos': 'Գտնել կրկնվող ձայները',
+  'Nenhum som repetido.': 'Կրկնվող ձայներ չկան։',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Յուրաքանչյուր խումբ կարծես նույն ձայնն է։ Լսիր և ջնջիր ավելորդը։',
 } satisfies Record<string, string>;

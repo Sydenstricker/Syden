@@ -1105,4 +1105,7 @@ export default {
   'Sala 1': 'الغرفة 1',
   'Sala 2': 'الغرفة 2',
   'Parece o mesmo som que «{nome}».': 'يبدو أنه الصوت نفسه في «{nome}».',
+  'Procurar sons repetidos': 'البحث عن أصوات مكررة',
+  'Nenhum som repetido.': 'لا توجد أصوات مكررة.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'يبدو أن كل مجموعة هي الصوت نفسه. يمكن الاستماع إليها وحذف الزائد.',
 } satisfies Record<string, string>;

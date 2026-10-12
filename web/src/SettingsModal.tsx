@@ -49,6 +49,7 @@ import { chave, t, useT } from './i18n';
 import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
 import { api, mediaUrl, saveToken } from './api';
+import { procurarRepetidos } from './somParecido';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
@@ -1999,6 +2000,8 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
       )}
       {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
 
+      {manages(community) && ownSounds.length > 1 && <SonsRepetidos sons={ownSounds} />}
+
       <div className="expression-list">
         {ownSounds.map((sound) => (
           <div key={sound.id} className="expression-row">
@@ -2035,6 +2038,55 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
         </>
       )}
     </>
+  );
+}
+
+/**
+ * A FAXINA DOS REPETIDOS, para quem administra (11/10/2026). O aviso de som parecido só vale para o que entra
+ * depois dele; o que já estava ("Por favor, me ajuda" ao lado de "Me ajuda (de novo)") precisa de alguém que
+ * ouça e escolha. Compara os sons da comunidade entre si pela forma do volume (ver somParecido.ts) e mostra os
+ * grupos — ouvir e excluir, ali mesmo. Nada sai sozinho: a mesma forma pode ser dois sons diferentes.
+ */
+function SonsRepetidos({ sons }: { sons: Sound[] }) {
+  const t = useT();
+  const [grupos, setGrupos] = useState<Sound[][] | null>(null);
+  const [procurando, setProcurando] = useState(false);
+  // O que foi excluído some do grupo na hora; o grupo que fica com um só som deixa de ser repetido.
+  const vivos = new Set(sons.map((s) => s.id));
+  const visiveis = grupos?.map((g) => g.filter((s) => vivos.has(s.id))).filter((g) => g.length > 1) ?? null;
+
+  async function procurar() {
+    setProcurando(true);
+    setGrupos(await procurarRepetidos(sons, mediaUrl.sound));
+    setProcurando(false);
+  }
+
+  return (
+    <div className="sons-repetidos">
+      <button type="button" className="btn-secondary" disabled={procurando} onClick={() => void procurar()}>
+        {procurando ? t('Carregando…') : t('Procurar sons repetidos')}
+      </button>
+      {visiveis && visiveis.length === 0 && <p className="settings-hint">{t('Nenhum som repetido.')}</p>}
+      {visiveis && visiveis.length > 0 && (
+        <>
+          <p className="settings-hint">{t('Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.')}</p>
+          {visiveis.map((grupo) => (
+            <div key={grupo[0].id} className="settings-card sons-repetidos-grupo">
+              {grupo.map((sound) => (
+                <div key={sound.id} className="expression-row">
+                  <span className="expression-icon">{sound.icon}</span>
+                  <span className="expression-name">{sound.name}</span>
+                  <button className="icon-plain expression-play" title={t('Ouvir')} aria-label={`${t('Ouvir')}: ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
+                    <Play size={16} />
+                  </button>
+                  <DeleteButton label={`Excluir ${sound.name}`} path={`/api/sounds/${sound.id}`} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </>
+      )}
+    </div>
   );
 }
 

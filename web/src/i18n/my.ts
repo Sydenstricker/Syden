@@ -1124,4 +1124,7 @@ export default {
   'Sala 1': 'အခန်း 1',
   'Sala 2': 'အခန်း 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» နှင့် အသံတူပုံရသည်။',
+  'Procurar sons repetidos': 'ထပ်နေသော အသံများကို ရှာရန်',
+  'Nenhum som repetido.': 'ထပ်နေသော အသံ မရှိပါ။',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'အုပ်စုတိုင်းသည် အသံတူပုံရသည်။ နားထောင်ပြီး ပိုနေသည်ကို ဖျက်ပါ။',
 } satisfies Record<string, string>;

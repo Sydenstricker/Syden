@@ -1157,4 +1157,7 @@ export default {
   'Sala 1': 'Kambarys 1',
   'Sala 2': 'Kambarys 2',
   'Parece o mesmo som que «{nome}».': 'Panašu į tą patį garsą kaip «{nome}».',
+  'Procurar sons repetidos': 'Ieškoti pasikartojančių garsų',
+  'Nenhum som repetido.': 'Pasikartojančių garsų nėra.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Kiekviena grupė atrodo kaip tas pats garsas. Pasiklausyk ir ištrink, kas nereikalinga.',
 } satisfies Record<string, string>;

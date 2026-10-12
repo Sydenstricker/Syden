@@ -1125,4 +1125,7 @@ export default {
   'Sala 1': 'Kutaa 1',
   'Sala 2': 'Kutaa 2',
   'Parece o mesmo som que «{nome}».': 'Sagalee «{nome}» wajjin tokko fakkaata.',
+  'Procurar sons repetidos': 'Sagalee irra deddeebi’an barbaadi',
+  'Nenhum som repetido.': 'Sagaleen irra deddeebi’e hin jiru.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Gareen tokkoon tokkoon isaa sagalee tokko fakkaata. Dhaggeeffadhaa kan hafe haqaa.',
 } satisfies Record<string, string>;

@@ -1165,4 +1165,7 @@ export default {
   'Sala 1': 'ރޫމް 1',
   'Sala 2': 'ރޫމް 2',
   'Parece o mesmo som que «{nome}».': '«{nome}» އާ އެއް ކަހަލަ އަޑެއް ކަމަށް ފެނެއެވެ.',
+  'Procurar sons repetidos': 'ތަކުރާރު އަޑުތައް ހޯދާ',
+  'Nenhum som repetido.': 'ތަކުރާރު އަޑެއް ނެތް.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'ކޮންމެ ގްރޫޕެއް އެއް އަޑު ކަމަށް ފެނެއެވެ. އަޑުއަހާފައި އިތުރުވާ އެއްޗެއް ފޮހެލާ.',
 } satisfies Record<string, string>;

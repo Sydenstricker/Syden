@@ -1157,4 +1157,7 @@ export default {
   'Sala 1': 'Istaba 1',
   'Sala 2': 'Istaba 2',
   'Parece o mesmo som que «{nome}».': 'Izskatās pēc tās pašas skaņas kā «{nome}».',
+  'Procurar sons repetidos': 'Meklēt atkārtotas skaņas',
+  'Nenhum som repetido.': 'Nav atkārtotu skaņu.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Katra grupa šķiet viena un tā pati skaņa. Noklausies un izdzēs lieko.',
 } satisfies Record<string, string>;

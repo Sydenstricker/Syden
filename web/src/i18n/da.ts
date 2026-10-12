@@ -1149,4 +1149,7 @@ export default {
   'Sala 1': 'Rum 1',
   'Sala 2': 'Rum 2',
   'Parece o mesmo som que «{nome}».': 'Det ligner den samme lyd som «{nome}».',
+  'Procurar sons repetidos': 'Søg efter gentagne lyde',
+  'Nenhum som repetido.': 'Ingen gentagne lyde.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Hver gruppe ligner den samme lyd. Lyt og slet det overskydende.',
 } satisfies Record<string, string>;

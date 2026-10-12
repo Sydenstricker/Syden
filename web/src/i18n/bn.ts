@@ -1082,4 +1082,7 @@ export default {
   'Sala 1': 'রুম 1',
   'Sala 2': 'রুম 2',
   'Parece o mesmo som que «{nome}».': '«{nome}»-এর মতো একই শব্দ বলে মনে হচ্ছে।',
+  'Procurar sons repetidos': 'পুনরাবৃত্ত শব্দ খোঁজো',
+  'Nenhum som repetido.': 'কোনো পুনরাবৃত্ত শব্দ নেই।',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'প্রতিটি দল একই শব্দ বলে মনে হচ্ছে। শুনে বাড়তিগুলো মুছে ফেলো।',
 } satisfies Record<string, string>;

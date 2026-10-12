@@ -1154,4 +1154,7 @@ export default {
   'Sala 1': 'បន្ទប់ 1',
   'Sala 2': 'បន្ទប់ 2',
   'Parece o mesmo som que «{nome}».': 'មើលទៅដូចជាសំឡេងដូចគ្នានឹង «{nome}»។',
+  'Procurar sons repetidos': 'ស្វែងរកសំឡេងដែលស្ទួន',
+  'Nenhum som repetido.': 'គ្មានសំឡេងស្ទួនទេ។',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'ក្រុមនីមួយៗហាក់ដូចជាសំឡេងតែមួយ។ ស្ដាប់ ហើយលុបអ្វីដែលលើស។',
 } satisfies Record<string, string>;

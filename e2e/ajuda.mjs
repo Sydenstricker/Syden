@@ -161,3 +161,36 @@ export async function cadastrar(page, username) {
  * espera meio minuto por uma tela que está ali na frente.
  */
 export const tituloDoCanal = (nome) => new RegExp('Bem-vindo a .{0,2}#' + nome);
+
+/**
+ * Um WAV de 16 bits, mono, gerado aqui: rajadas de um tom no ritmo dado. Serve aos testes que precisam de
+ * um som de verdade (que o navegador decodifica) e controlado — o mesmo ritmo com outra taxa, outro volume
+ * ou silêncio no começo é "o mesmo som recodificado" (ver som-parecido.mjs e sons-repetidos.mjs).
+ */
+export function wavDeTeste(ritmo, { taxa = 22050, ganho = 0.8, silencio = 0 } = {}) {
+  const porNota = Math.round(taxa * 0.12);
+  const total = Math.round(silencio * taxa) + ritmo.length * porNota;
+  const dados = Buffer.alloc(total * 2);
+  let i = Math.round(silencio * taxa);
+  for (const nivel of ritmo) {
+    for (let k = 0; k < porNota; k++, i++) {
+      const v = ganho * nivel * Math.sin((2 * Math.PI * 440 * i) / taxa);
+      dados.writeInt16LE(Math.round(v * 32767), i * 2);
+    }
+  }
+  const cab = Buffer.alloc(44);
+  cab.write('RIFF', 0);
+  cab.writeUInt32LE(36 + dados.length, 4);
+  cab.write('WAVEfmt ', 8);
+  cab.writeUInt32LE(16, 16);
+  cab.writeUInt16LE(1, 20);
+  cab.writeUInt16LE(1, 22);
+  cab.writeUInt32LE(taxa, 24);
+  cab.writeUInt32LE(taxa * 2, 28);
+  cab.writeUInt16LE(2, 32);
+  cab.writeUInt16LE(16, 34);
+  cab.write('data', 36);
+  cab.writeUInt32LE(dados.length, 40);
+  return Buffer.concat([cab, dados]);
+}
+

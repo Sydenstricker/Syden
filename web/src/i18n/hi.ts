@@ -1084,4 +1084,7 @@ export default {
   'Sala 1': 'रूम 1',
   'Sala 2': 'रूम 2',
   'Parece o mesmo som que «{nome}».': 'यह «{nome}» जैसी ही आवाज़ लगती है।',
+  'Procurar sons repetidos': 'दोहराई गई आवाज़ें ढूँढें',
+  'Nenhum som repetido.': 'कोई दोहराई गई आवाज़ नहीं।',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'हर समूह एक ही आवाज़ लगता है। सुनें और जो ज़्यादा है उसे हटाएँ।',
 } satisfies Record<string, string>;

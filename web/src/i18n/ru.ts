@@ -1103,4 +1103,7 @@ export default {
   'Sala 1': 'Комната 1',
   'Sala 2': 'Комната 2',
   'Parece o mesmo som que «{nome}».': 'Похоже на тот же звук, что и «{nome}».',
+  'Procurar sons repetidos': 'Найти повторяющиеся звуки',
+  'Nenhum som repetido.': 'Повторяющихся звуков нет.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Каждая группа похожа на один и тот же звук. Послушай и удали лишнее.',
 } satisfies Record<string, string>;

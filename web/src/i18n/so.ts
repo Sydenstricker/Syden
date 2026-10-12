@@ -1155,4 +1155,7 @@ export default {
   'Sala 1': 'Qol 1',
   'Sala 2': 'Qol 2',
   'Parece o mesmo som que «{nome}».': 'Waxay u egtahay cod la mid ah «{nome}».',
+  'Procurar sons repetidos': 'Raadi codadka soo noqnoqday',
+  'Nenhum som repetido.': 'Ma jiro cod soo noqnoqday.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Koox kastaa waxay u egtahay cod isku mid ah. Dhageyso oo tirtir intii dheeraad ah.',
 } satisfies Record<string, string>;

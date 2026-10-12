@@ -1080,4 +1080,7 @@ export default {
   'Sala 1': 'Sala 1',
   'Sala 2': 'Sala 2',
   'Parece o mesmo som que «{nome}».': 'Parece el mismo sonido que «{nome}».',
+  'Procurar sons repetidos': 'Buscar sonidos repetidos',
+  'Nenhum som repetido.': 'Ningún sonido repetido.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Cada grupo parece ser el mismo sonido. Escucha y borra lo que sobre.',
 } satisfies Record<string, string>;

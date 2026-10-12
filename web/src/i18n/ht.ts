@@ -1165,4 +1165,7 @@ export default {
   'Sala 1': 'Chanm 1',
   'Sala 2': 'Chanm 2',
   'Parece o mesmo som que «{nome}».': 'Sa sanble se menm son ak «{nome}».',
+  'Procurar sons repetidos': 'Chèche son ki repete',
+  'Nenhum som repetido.': 'Pa gen son ki repete.',
+  'Cada grupo parece ser o mesmo som. Ouça e exclua o que sobrar.': 'Chak gwoup sanble se menm son an. Koute epi efase sa ki an plis.',
 } satisfies Record<string, string>;
