@@ -68,6 +68,18 @@ export const ERROS_TRADUZIDOS = [
   chave('Entre na sala de voz para jogar com a turma.'),
   chave('Já tem uma partida acontecendo nesta sala.'),
   chave('Só quem começou a partida pode encerrá-la antes do fim.'),
+  chave('Os problemas de xadrez não estão no servidor.'),
+  chave('Este problema já acabou.'),
+  chave('Lance inválido.'),
+  chave('O Lobisomem precisa de pelo menos 4 pessoas na sala.'),
+  chave('Esta partida começou sem você. Espere a próxima.'),
+  chave('Quem saiu do jogo só assiste.'),
+  chave('Agora não é noite.'),
+  chave('Escolha alguém que ainda está no jogo.'),
+  chave('Escolha alguém que não é lobisomem.'),
+  chave('Escolha outra pessoa.'),
+  chave('Quem é da vila dorme à noite.'),
+  chave('A votação é de dia.'),
 ] as const;
 
 /**
