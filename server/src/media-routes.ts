@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { shaDeArquivo } from './arquivos.js';
 import { entregarArquivo } from './entregar.js';
 import { restorePack } from './expressions.js';
 import { parseMedia, parseMediaConferida, sniffMime } from './media.js';
@@ -324,6 +325,9 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         if ([...icon].length > 4) return reply.code(400).send({ error: 'Use um único emoji como ícone.' });
         const media = parseMedia(request.body?.audio, 'audio', LIMITS.sound);
         if (typeof media === 'string') return reply.code(400).send({ error: media });
+        // O mesmo áudio duas vezes na comunidade vira dois botões iguais no soundboard de todo mundo.
+        const igual = db.somDaComunidadeComOAudio(access.communityId, shaDeArquivo(media.data));
+        if (igual) return reply.code(409).send({ error: `Esse som já está no soundboard: «${igual.name}».` });
         const sound = db.createSound(access.communityId, name, icon, media.mime, media.data, request.user.id);
         io.to(communityRoom(access.communityId)).emit('sound:created', sound);
         return sound;

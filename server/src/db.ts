@@ -2448,12 +2448,18 @@ export function clearRating(packId: number, userId: number) {
 /**
  * O soundboard de uma pessoa numa comunidade: o que a comunidade enviou mais os pacotes que ela instalou.
  * Os favoritos vêm marcados para a tela colocá-los na frente.
+ *
+ * CADA ÁUDIO APARECE UMA VEZ SÓ (11/10/2026, relato: "Por favor, me ajuda" e "Me ajuda (de novo)" lado a
+ * lado, o mesmo som). O arquivo é guardado pelo conteúdo, então o mesmo áudio tem o mesmo sha — vindo de
+ * dois pacotes, de um pacote e da comunidade, ou enviado duas vezes antes desta regra. Fica o favoritado,
+ * se um deles for; senão, o primeiro na ordem da lista. Nada é apagado: some só a repetição da tela.
+ * Linha antiga ainda sem sha (de antes de os arquivos irem para o disco) não tem como ser comparada.
  */
 export function boardSounds(communityId: number, userId: number): BoardSound[] {
   const rows = db
     .prepare(
       `SELECT s.id, s.community_id AS communityId, s.pack_id AS packId, s.name, s.icon, s.created_by AS createdBy,
-              p.name AS packName,
+              s.sha, p.name AS packName,
               (SELECT 1 FROM favorite_sounds f WHERE f.sound_id = s.id AND f.user_id = ?) AS favorite
        FROM sounds s
        LEFT JOIN packs p ON p.id = s.pack_id
@@ -2462,7 +2468,29 @@ export function boardSounds(communityId: number, userId: number): BoardSound[] {
        ORDER BY s.pack_id IS NOT NULL, p.name COLLATE NOCASE, s.id`,
     )
     .all(userId, communityId, userId) as Record<string, unknown>[];
-  return rows.map((row) => ({ ...(row as unknown as BoardSound), favorite: Boolean(row.favorite) }));
+  const lista: BoardSound[] = [];
+  const ondeEsta = new Map<string, number>();
+  for (const { sha, ...row } of rows) {
+    const som = { ...(row as unknown as BoardSound), favorite: Boolean(row.favorite) };
+    const jaVisto = typeof sha === 'string' ? ondeEsta.get(sha) : undefined;
+    if (jaVisto === undefined) {
+      if (typeof sha === 'string') ondeEsta.set(sha, lista.length);
+      lista.push(som);
+    } else if (som.favorite && !lista[jaVisto].favorite) {
+      lista[jaVisto] = som; // o favoritado é o que a pessoa procura
+    }
+  }
+  return lista;
+}
+
+/**
+ * Um som da comunidade com exatamente este áudio, se houver. Só os da COMUNIDADE: pacote é de cada
+ * pessoa (cada um instala os seus), então o mesmo áudio num pacote meu não impede a comunidade de tê-lo.
+ */
+export function somDaComunidadeComOAudio(communityId: number, sha: string) {
+  return db.prepare('SELECT name FROM sounds WHERE community_id = ? AND sha = ? LIMIT 1').get(communityId, sha) as
+    | { name: string }
+    | undefined;
 }
 
 /** Quem pode tocar este som: quem é da comunidade dele, ou qualquer um, se ele for de um pacote. */
