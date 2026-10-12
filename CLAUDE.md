@@ -327,8 +327,8 @@ língua dele ao escolher, e os chutes são conferidos contra ela. O traço vai p
 troca o desenho inteiro. Falta do degrau 4 só a palavra do dia, que pede um dicionário com licença (decisão dele).
 
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
-são solo e se pagam com anúncio, vidas e roleta — não entram, nem por integração. Deles, só a ideia do "desafio do dia"
-igual para todos, sem vidas e sem notificação cobrando. Party game de ação (Mario Party, Overcooked) tem aderência
+são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
+peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência
 baixa (meses de trabalho, atraso de rede, qualidade abaixo do original); os de turno estilo Jackbox, telefone sem fio de
 desenho e Codenames têm aderência alta. A recomendação foi medir quais dos 8 a turma joga antes do nono.
 
@@ -452,6 +452,22 @@ ficou combinado:
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
+
+## O salão da comunidade: o quarto é de cada um, o salão é da turma
+
+**Decidido em 12/10/2026, pelo Sydenstricker:** o início da comunidade ainda era arte em vetor (o coelho do recado
+sobre faixas diagonais) e deve ser um espaço em pixel art de evolução COLABORATIVA — o salão do fim do site, "já que ele
+representa o coletivo". Em duas etapas:
+
+1. **Feita no mesmo dia (`web/src/Salao.tsx`), sem gastar crédito do PixelLab:** as peças do lobby do site copiadas
+   para `web/src/assets/salao/`. Cada função mora num objeto: TV → entrar na voz, fliperama → mini-games, estante →
+   canais, janela → chamar alguém, balcão → guarda-roupa, quadro da parede → a imagem da comunidade (e, para quem
+   administra, montar a tela). **O salão enche com quem está na call agora** (sofá primeiro, depois a TV, o fliperama
+   e as rodinhas); sem ninguém, fica vazio, porque a tela não finge movimento. O coelho do balcão está sempre lá e lê
+   o recado do dono. Os mesmos objetos viram atalhos em texto embaixo (no celular não há "passar o mouse").
+2. **Pendente: a evolução.** O salão ganha enfeites pelo que a turma faz JUNTA (horas de call, partidas, karaokê),
+   por marcos coletivos, e quem administra escolhe onde pôr. Sem sequência diária e sem cobrança. Pede arte nova
+   (PixelLab, com os créditos acabando: decisão dele quando gastar) e uma tabela no servidor.
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
