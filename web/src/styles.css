@@ -6845,6 +6845,60 @@ textarea {
   font-size: calc(13px * var(--escala-do-texto));
 }
 
+/* Editar um pacote que já existe (EditorDoPacote, em PackCatalog.tsx): uma linha por som. */
+.pack-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.pack-editor-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pack-editor-name {
+  flex: 1;
+  min-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pack-editor-volume {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.pack-editor-volume span {
+  min-width: 3ch;
+  text-align: right;
+}
+
+.pack-editor-volume input {
+  width: 90px;
+}
+
+.pack-editor select {
+  background: var(--bg-darkest);
+  border: none;
+  border-radius: 4px;
+  padding: 5px 8px;
+  color: var(--text);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.pack-editor .file-picker {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
 @media (max-width: 760px) {
   .pack-card {
     flex-wrap: wrap;

@@ -1877,8 +1877,8 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
   const ownSounds = sounds.filter((sound) => sound.communityId !== null);
   const canEdit = (sound: Sound) => manages(community) || sound.createdBy === user.id;
 
-  async function saveEdit(sound: Sound, values: { name: string; icon: string }) {
-    if (values.name === sound.name && values.icon === sound.icon) return setEditing(null);
+  async function saveEdit(sound: Sound, values: { name: string; icon: string; volume: number }) {
+    if (values.name === sound.name && values.icon === sound.icon && values.volume === sound.volume) return setEditing(null);
     try {
       await api(`/api/sounds/${sound.id}`, { method: 'PATCH', body: values });
       setEditing(null);
@@ -2012,7 +2012,7 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
                 <span className="expression-icon">{sound.icon}</span>
                 <span className="expression-name">{sound.name}</span>
                 <span className="expression-author">{authorLabel(sound.createdBy, members)}</span>
-                <button className="icon-plain expression-play" title={t('Ouvir')} aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
+                <button className="icon-plain expression-play" title={t('Ouvir')} aria-label={`Ouvir ${sound.name}`} onClick={() => playSoundboard(sound.id, sound.volume)}>
                   <Play size={16} />
                 </button>
                 {canEdit(sound) && (
@@ -2076,7 +2076,7 @@ function SonsRepetidos({ sons }: { sons: Sound[] }) {
                 <div key={sound.id} className="expression-row">
                   <span className="expression-icon">{sound.icon}</span>
                   <span className="expression-name">{sound.name}</span>
-                  <button className="icon-plain expression-play" title={t('Ouvir')} aria-label={`${t('Ouvir')}: ${sound.name}`} onClick={() => playSoundboard(sound.id)}>
+                  <button className="icon-plain expression-play" title={t('Ouvir')} aria-label={`${t('Ouvir')}: ${sound.name}`} onClick={() => playSoundboard(sound.id, sound.volume)}>
                     <Play size={16} />
                   </button>
                   <DeleteButton label={`Excluir ${sound.name}`} path={`/api/sounds/${sound.id}`} />
@@ -2098,12 +2098,15 @@ function SoundRename({
 }: {
   sound: Sound;
   onCancel: () => void;
-  onSave: (values: { name: string; icon: string }) => void;
+  onSave: (values: { name: string; icon: string; volume: number }) => void;
 }) {
   const t = useT();
   const [icon, setIcon] = useState(sound.icon);
   const [name, setName] = useState(sound.name);
-  const save = () => onSave({ name: name.trim() || sound.name, icon: icon.trim() || sound.icon });
+  // O volume do som para todo mundo (12/10/2026): o arquivo que veio alto do começo ao fim, e que o
+  // limitador não pega porque ele só achata picos.
+  const [volume, setVolume] = useState(sound.volume);
+  const save = () => onSave({ name: name.trim() || sound.name, icon: icon.trim() || sound.icon, volume });
 
   return (
     <>
@@ -2128,6 +2131,19 @@ function SoundRename({
           if (e.key === 'Enter') save();
         }}
       />
+      <label className="pack-editor-volume" title={t('Volume do som, para todo mundo')}>
+        <span>{Math.round(volume * 100)}%</span>
+        <input
+          type="range"
+          min={0.1}
+          max={1}
+          step={0.05}
+          value={volume}
+          aria-label={`${t('Volume do som, para todo mundo')}: ${sound.name}`}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          onPointerUp={() => playSoundboard(sound.id, volume)}
+        />
+      </label>
       <button className="icon-plain expression-play" title={t('Salvar')} aria-label={`Salvar ${sound.name}`} onClick={save}>
         <Check size={16} />
       </button>

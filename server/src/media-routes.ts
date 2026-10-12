@@ -8,6 +8,16 @@ import { parseMedia, parseMediaConferida, sniffMime } from './media.js';
 import { communityRoom } from './realtime.js';
 import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
+/**
+ * O volume de um som, de 0,1 a 1 (ver a coluna em db.ts). Sem valor válido, fica o que já era. O piso
+ * de 10% é para "baixar" nunca virar "sumir": som mudo no soundboard parece defeito.
+ */
+export function volumeDoSom(bruto: unknown, atual: number): number {
+  const valor = Number(bruto);
+  if (bruto === undefined || bruto === null || !Number.isFinite(valor)) return atual;
+  return Math.round(Math.min(1, Math.max(0.1, valor)) * 100) / 100;
+}
+
 const KB = 1024;
 // A CAPA É A MAIOR DE TODAS, e com motivo: ela é uma faixa larga que a pessoa olha de perto, e
 // comprimir uma foto de 960 pixels de largura até caber em 2 MB deixa artefato visível. Quatro
@@ -334,7 +344,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       },
     );
 
-    authed.patch<{ Params: { id: string }; Body: { name?: string; icon?: string } }>('/api/sounds/:id', async (request, reply) => {
+    authed.patch<{ Params: { id: string }; Body: { name?: string; icon?: string; volume?: number } }>('/api/sounds/:id', async (request, reply) => {
       const sound = db.findSound(Number(request.params.id));
       // Som de pacote não se mexe por aqui: ele pertence ao pacote, e quem o montou cuida dele.
       if (!sound || sound.communityId === null || !roleIn(request.user, sound.communityId))
@@ -346,7 +356,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       if (name.length < 1 || name.length > 32) return reply.code(400).send({ error: 'O nome do som deve ter de 1 a 32 caracteres.' });
       const icon = String(request.body?.icon ?? '').trim() || '🔊';
       if ([...icon].length > 4) return reply.code(400).send({ error: 'Use um único emoji como ícone.' });
-      const updated = db.updateSound(sound.id, name, icon);
+      const updated = db.updateSound(sound.id, name, icon, volumeDoSom(request.body?.volume, sound.volume));
       io.to(communityRoom(sound.communityId)).emit('sound:created', updated); // a lista troca o item pelo id
       return updated;
     });

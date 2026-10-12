@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import * as db from './db.js';
 import { parseMedia } from './media.js';
+import { volumeDoSom } from './media-routes.js';
 import { requireUser } from './routes.js';
 
 // Catálogo de pacotes de sons: qualquer pessoa monta o seu, quem quiser instala no próprio soundboard e
@@ -43,8 +44,8 @@ export function registerPackRoutes(app: FastifyInstance) {
     authed.addHook('preHandler', requireUser);
 
     /** O pacote e a permissão de mexer nele: quem montou, ou quem administra o Syden. */
-    function editable(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) {
-      const pack = db.findPack(Number(request.params.id), request.user.id);
+    function editable(request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply, packId = Number(request.params.id)) {
+      const pack = db.findPack(packId, request.user.id);
       if (!pack) {
         reply.code(404).send({ error: 'Pacote não encontrado.' });
         return undefined;
@@ -153,6 +154,40 @@ export function registerPackRoutes(app: FastifyInstance) {
       db.deleteSound(sound.id);
       return db.findPack(pack.id, request.user.id);
     });
+
+    /** Nome, ícone e volume de um som do pacote. */
+    authed.patch<{ Params: { id: string; soundId: string }; Body: { name?: string; icon?: string; volume?: number } }>(
+      '/api/packs/:id/sounds/:soundId',
+      async (request, reply) => {
+        const pack = editable(request, reply);
+        if (!pack) return reply;
+        const sound = db.findSound(Number(request.params.soundId));
+        if (!sound || sound.packId !== pack.id) return reply.code(404).send({ error: 'Som não encontrado neste pacote.' });
+        const name = String(request.body?.name ?? sound.name).trim();
+        if (name.length < 1 || name.length > 32) return reply.code(400).send({ error: 'O nome do som deve ter de 1 a 32 caracteres.' });
+        return db.updateSound(sound.id, name, icon(request.body?.icon, sound.icon), volumeDoSom(request.body?.volume, sound.volume));
+      },
+    );
+
+    /**
+     * Leva o som para outro pacote — os dois de quem pede. Foi o que faltou em 12/10/2026: o "Não chora",
+     * gravado estourado, estava no pacote Streamer e não no Estourado, e só dava para apagar.
+     */
+    authed.put<{ Params: { id: string; soundId: string }; Body: { para?: number } }>(
+      '/api/packs/:id/sounds/:soundId/pacote',
+      async (request, reply) => {
+        const origem = editable(request, reply);
+        if (!origem) return reply;
+        const sound = db.findSound(Number(request.params.soundId));
+        if (!sound || sound.packId !== origem.id) return reply.code(404).send({ error: 'Som não encontrado neste pacote.' });
+        const destino = editable(request, reply, Number(request.body?.para));
+        if (!destino) return reply;
+        if (destino.id === origem.id) return reply.code(400).send({ error: 'O som já está neste pacote.' });
+        if (destino.soundCount >= MAX_SOUNDS) return reply.code(400).send({ error: `Um pacote pode ter até ${MAX_SOUNDS} sons.` });
+        db.moverSomDePacote(sound.id, destino.id);
+        return db.findPack(origem.id, request.user.id);
+      },
+    );
 
     // ---------- Instalar, tirar e avaliar ----------
 

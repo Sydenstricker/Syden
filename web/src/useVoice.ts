@@ -496,7 +496,7 @@ export function useVoice(socket: Socket | null) {
       const now = Date.now();
       if (now - (lastHeardRef.current.get(participant.identity) ?? 0) < RECEIVE_COOLDOWN_MS) return;
       lastHeardRef.current.set(participant.identity, now);
-      if (!deafenedRef.current) playSoundboard(sound.id);
+      if (!deafenedRef.current) playSoundboard(sound.id, sound.volume);
       showSound(participant.identity, sound.icon);
     };
     room.on(RoomEvent.DataReceived, onData);
@@ -512,7 +512,7 @@ export function useVoice(socket: Socket | null) {
       const now = Date.now();
       if (now - lastSentRef.current < SEND_COOLDOWN_MS) return;
       lastSentRef.current = now;
-      if (!deafenedRef.current) playSoundboard(sound.id);
+      if (!deafenedRef.current) playSoundboard(sound.id, sound.volume);
       showSound(room.localParticipant.identity, sound.icon);
       await room.localParticipant
         .publishData(new TextEncoder().encode(JSON.stringify({ soundId })), { reliable: true, topic: SOUNDBOARD_TOPIC })

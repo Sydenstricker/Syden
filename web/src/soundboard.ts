@@ -10,6 +10,8 @@ import { aoMudarAjustes, getSettings } from './settings';
 // de quem quer que seja, cala o anterior. Antes só o MESMO som recomeçava, e dois sons diferentes
 // tocavam juntos — com alguns de pacote passando de meio minuto, virava um coro que ninguém parava.
 let tocando: HTMLAudioElement | null = null;
+/** O volume do próprio som (ver Sound.volume), que multiplica o do soundboard de quem ouve. */
+let volumeDoTocando = 1;
 
 export function stopAllSounds() {
   if (!tocando) return;
@@ -21,10 +23,10 @@ export function stopAllSounds() {
 // O volume vale também para o som que JÁ está tocando: lido só no começo, mexer na barra durante um
 // som de trinta segundos não fazia nada até o próximo.
 aoMudarAjustes(() => {
-  if (tocando) tocando.volume = getSettings().soundboardVolume;
+  if (tocando) tocando.volume = getSettings().soundboardVolume * volumeDoTocando;
 });
 
-export function playSoundboard(soundId: number) {
+export function playSoundboard(soundId: number, volumeDoSom = 1) {
   // Som de outra pessoa: cala quando quem ouve ensurdeceu. A conferência mora aqui, e não em quem
   // chama, pela mesma razão explicada em sounds.ts.
   if (estaSurdo()) return;
@@ -36,10 +38,11 @@ export function playSoundboard(soundId: number) {
   audio.crossOrigin = 'anonymous';
   audio.src = mediaUrl.sound(soundId);
   tocando = audio;
+  volumeDoTocando = Math.min(1, Math.max(0, volumeDoSom));
   audio.addEventListener('ended', () => {
     if (tocando === audio) tocando = null;
   });
-  audio.volume = settings.soundboardVolume;
+  audio.volume = settings.soundboardVolume * volumeDoTocando;
   // Um som de soundboard é um arquivo que qualquer pessoa da comunidade enviou, e vem como veio: um
   // meme gravado estourado toca muito mais alto que todo o resto do app. Passando pelo limitador, o
   // pico é achatado e o susto some — sem mexer no volume dos sons normais.

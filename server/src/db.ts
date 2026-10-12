@@ -117,6 +117,8 @@ export interface Sound {
   name: string;
   /** Um emoji comum que representa o som no soundboard. */
   icon: string;
+  /** De 0,1 a 1: quanto do volume de cada pessoa este som usa. Para o arquivo que veio alto demais. */
+  volume: number;
   createdBy: number | null;
 }
 
@@ -2277,7 +2279,7 @@ export function findEmojiFile(id: number) {
   return lendoArquivo(() => db.prepare('SELECT mime, sha, bytes, data FROM emojis WHERE id = ?').get(id)) as ArquivoGuardado | undefined;
 }
 
-const soundColumns = 'id, community_id AS communityId, pack_id AS packId, name, icon, created_by AS createdBy';
+const soundColumns = 'id, community_id AS communityId, pack_id AS packId, name, icon, volume, created_by AS createdBy';
 
 export function listSounds(communityId: number): Sound[] {
   return db.prepare(`SELECT ${soundColumns} FROM sounds WHERE community_id = ? ORDER BY id`).all(communityId) as unknown as Sound[];
@@ -2302,9 +2304,15 @@ export function createSound(
   return findSound(Number(result.lastInsertRowid))!;
 }
 
-export function updateSound(id: number, name: string, icon: string): Sound {
-  db.prepare('UPDATE sounds SET name = ?, icon = ? WHERE id = ?').run(name, icon, id);
+export function updateSound(id: number, name: string, icon: string, volume: number): Sound {
+  db.prepare('UPDATE sounds SET name = ?, icon = ?, volume = ? WHERE id = ?').run(name, icon, volume, id);
   return findSound(id)!;
+}
+
+/** Leva um som de um pacote para outro. Quem tem o pacote de destino instalado passa a tê-lo. */
+export function moverSomDePacote(soundId: number, packId: number): Sound {
+  db.prepare('UPDATE sounds SET pack_id = ? WHERE id = ?').run(packId, soundId);
+  return findSound(soundId)!;
 }
 
 export function deleteSound(id: number) {
@@ -2430,15 +2438,15 @@ export function createPackSound(packId: number, name: string, icon: string, mime
  * Os sons dos pacotes que esta pessoa AINDA NÃO instalou, só o que a busca precisa (nome, ícone, pacote).
  * É o que deixa a busca do soundboard responder "não tenho esse som" com "está no pacote tal: instale".
  */
-export function sonsDosPacotesQueFaltam(userId: number): { id: number; name: string; icon: string; packId: number; packName: string }[] {
+export function sonsDosPacotesQueFaltam(userId: number): { id: number; name: string; icon: string; volume: number; packId: number; packName: string }[] {
   return db
     .prepare(
-      `SELECT s.id, s.name, s.icon, s.pack_id AS packId, p.name AS packName
+      `SELECT s.id, s.name, s.icon, s.volume, s.pack_id AS packId, p.name AS packName
        FROM sounds s JOIN packs p ON p.id = s.pack_id
        WHERE s.pack_id NOT IN (SELECT pack_id FROM pack_installs WHERE user_id = ?)
        ORDER BY s.id`,
     )
-    .all(userId) as { id: number; name: string; icon: string; packId: number; packName: string }[];
+    .all(userId) as { id: number; name: string; icon: string; volume: number; packId: number; packName: string }[];
 }
 
 export function installPack(packId: number, userId: number) {
@@ -2473,7 +2481,7 @@ export function clearRating(packId: number, userId: number) {
 export function boardSounds(communityId: number, userId: number): BoardSound[] {
   const rows = db
     .prepare(
-      `SELECT s.id, s.community_id AS communityId, s.pack_id AS packId, s.name, s.icon, s.created_by AS createdBy,
+      `SELECT s.id, s.community_id AS communityId, s.pack_id AS packId, s.name, s.icon, s.volume, s.created_by AS createdBy,
               s.sha, p.name AS packName,
               (SELECT 1 FROM favorite_sounds f WHERE f.sound_id = s.id AND f.user_id = ?) AS favorite
        FROM sounds s
@@ -5208,6 +5216,9 @@ export function definirLimite(channelId: number, limite: number): Channel {
 // ---------------------------------------------------------------------------------------------------
 
 addColumnIfMissing('communities', 'contadores', "TEXT NOT NULL DEFAULT ''");
+// O volume de cada som (12/10/2026): um arquivo alto do começo ao fim passa inteiro pelo limitador, que
+// só achata picos. 1 = como veio; quem pode editar o som baixa, e vale para todo mundo que o ouve.
+addColumnIfMissing('sounds', 'volume', 'REAL NOT NULL DEFAULT 1');
 
 export function definirContadores(communityId: number, lista: string[]) {
   db.prepare('UPDATE communities SET contadores = ? WHERE id = ?').run(lista.join(','), communityId);

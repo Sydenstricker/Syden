@@ -131,6 +131,8 @@ export interface Sound {
   favorite: boolean;
   name: string;
   icon: string;
+  /** De 0,1 a 1: quanto do volume de cada pessoa este som usa (quem pode editar o som baixa). */
+  volume: number;
   createdBy: number | null;
 }
 

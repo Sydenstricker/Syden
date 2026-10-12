@@ -248,6 +248,7 @@ interface SomQueFalta {
   icon: string;
   packId: number;
   packName: string;
+  volume: number;
 }
 
 /** Painel do soundboard: clicar num som toca para todos na sala. */
@@ -309,16 +310,17 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
   useEffect(() => () => previa.current?.pause(), []);
   // A barra de volume vale também para a prévia que já está tocando.
   useEffect(() => {
-    if (previa.current) previa.current.volume = settings.soundboardVolume;
+    if (previa.current) previa.current.volume = settings.soundboardVolume * Number(previa.current.dataset.volumeDoSom ?? 1);
   }, [settings.soundboardVolume]);
-  function ouvir(id: number) {
+  function ouvir(id: number, volumeDoSom = 1) {
     previa.current?.pause();
     if (ouvindo === id) {
       setOuvindo(null);
       return;
     }
     const audio = new Audio(mediaUrl.sound(id));
-    audio.volume = settings.soundboardVolume;
+    audio.dataset.volumeDoSom = String(volumeDoSom);
+    audio.volume = settings.soundboardVolume * volumeDoSom;
     audio.addEventListener('ended', () => setOuvindo((atual) => (atual === id ? null : atual)));
     void audio.play().catch(() => setOuvindo(null));
     previa.current = audio;
@@ -442,7 +444,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
                   aria-label={t('Ouvir')}
                   title={t('Ouvir')}
                   aria-pressed={ouvindo === som.id}
-                  onClick={() => ouvir(som.id)}
+                  onClick={() => ouvir(som.id, som.volume)}
                 >
                   {ouvindo === som.id ? <Square size={14} /> : <Play size={14} />}
                 </button>
