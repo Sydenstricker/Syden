@@ -306,6 +306,14 @@ objetos ficam no site, traduzidos, e os tamanhos só no servidor (um teste confe
 quarto abre os Mini-games: escolher uma sala entra e já começa, e embaixo ficam os sites sem anúncio para transmitir.
 **Manutenção do conteúdo:** acrescentar objeto é uma linha em cada um dos dois `minijogos.ts` e a tradução do nome.
 
+**Mais quatro no mesmo dia, antes de subir** (decisão dele: "mini-games no plural com um jogo só não faz sentido"):
+Stop, Sudoku em corrida, Cinco em linha e Mancala. O botão da sala abre uma ESTANTE com uma capa por jogo, sem texto
+de explicação (pedido dele: "mais limpa"). Cada jogo é uma máquina no servidor sobre um motor comum
+(`server/src/minijogo-motor.ts`): o estado é pedido POR PESSOA, porque no Stop as respostas dos outros ficam
+escondidas até o STOP e no Sudoku cada um vê só o próprio tabuleiro. As letras do Stop vêm da escrita de quem começa
+(`letrasDoStop`), e a turma decide o que vale (mais da metade dos outros contestando derruba a resposta). Os de duas
+pessoas têm a mesa: quem começa senta, o primeiro da sala que apertar "Jogar" senta do outro lado, e o resto assiste.
+
 **O caminho combinado, em degraus:**
 1. Uma lista de links na home ("Mini-games"), só com os sites SEM anúncio acima, com a dica "abra,
    transmita e adivinhem juntos". Umas 2 horas.
