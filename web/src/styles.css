@@ -7819,8 +7819,73 @@ textarea {
 }
 
 .perfil-editar:hover,
-.perfil-editar:focus-visible {
+.perfil-editar:focus-visible,
+.perfil-editar[aria-pressed='true'] {
   background: rgba(0, 0, 0, 0.65);
+}
+
+/* As escolhas do lápis, dentro do cartão (EscolhasDoCartao, em Aparencia.tsx). O cartão tem 300 px:
+   as abas viram etiquetas que quebram linha, e a grade rola em vez de esticar o cartão para fora da
+   tela. */
+.perfil-escolhas {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.perfil-escolhas-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.perfil-escolhas-abas button {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  cursor: pointer;
+}
+
+.perfil-escolhas-abas button.escolhida {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-texto);
+}
+
+.perfil-escolhas-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 56px);
+  gap: 8px;
+  max-height: 188px;
+  overflow-y: auto;
+}
+
+.perfil-escolha {
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: calc(var(--radius) + 2px);
+  background: none;
+  cursor: pointer;
+}
+
+.perfil-escolha:hover {
+  border-color: var(--text-muted);
+}
+
+/* O que está em uso leva a cor de destaque: é a resposta a "o que eu estou vestindo?". */
+.perfil-escolha.vestido {
+  border-color: var(--accent);
+}
+
+.perfil-escolhas-mais {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .perfil-avatar {

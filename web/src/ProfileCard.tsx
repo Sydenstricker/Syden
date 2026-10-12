@@ -2,6 +2,8 @@ import { MessageSquare, Pencil } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Avatar } from './Avatar';
+import { EscolhasDoCartao } from './Aparencia';
+import { useDirectory } from './directory';
 import { EtiquetasDeCargo } from './Cargos';
 import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
@@ -26,7 +28,7 @@ const PRESENCA: Record<PresenceStatus, string> = {
  * na cor dela. É aqui que os enfeites de perfil ganham um lugar de verdade para aparecer.
  */
 export function ProfileCard({
-  membro,
+  membro: doClique,
   status,
   x,
   y,
@@ -43,25 +45,39 @@ export function ProfileCard({
   onSendMessage: (userId: number) => void;
   isSelf: boolean;
   /**
-   * Abre Configurações → Aparência, onde mora tudo o que este cartão mostra (cor do nome, fundo,
-   * moldura, insígnias). Só aparece no SEU cartão: é o atalho de quem se olha e quer mudar algo, e
-   * no cartão dos outros não haveria o que editar.
+   * Abre Configurações → Aparência, a tela completa. O lápis do SEU cartão abre as escolhas ali mesmo
+   * (EscolhasDoCartao); isto é o link no fim delas, para insígnias, pacotes e paleta. No cartão dos
+   * outros não há lápis: não haveria o que editar.
    */
   aoEditar?: () => void;
 }) {
   const t = useT();
+  const [editando, setEditando] = useState(false);
+  // A pessoa vem do DIRETÓRIO, e não da cópia tirada no clique: é o que faz o cartão ser a prévia
+  // enquanto você veste — o "user:updated" que chega depois de salvar atualiza o diretório.
+  const { members } = useDirectory();
+  const membro = members.get(doClique.id) ?? doClique;
   const nota = useNota(membro.id);
   const ref = useRef<HTMLDivElement | null>(null);
   const [lugar, setLugar] = useState({ left: x, top: y });
 
   // O cartão nasce onde o mouse clicou, mas não pode passar da borda da janela.
+  // E ACOMPANHA O PRÓPRIO TAMANHO: abrir as escolhas do lápis aumenta o cartão, e de novo quando o
+  // guarda-roupa termina de carregar. Medir só ao abrir deixava o fim dele para fora da tela.
   useEffect(() => {
-    const caixa = ref.current?.getBoundingClientRect();
-    if (!caixa) return;
-    setLugar({
-      left: Math.max(8, Math.min(x, window.innerWidth - caixa.width - 8)),
-      top: Math.max(8, Math.min(y, window.innerHeight - caixa.height - 8)),
-    });
+    const cartao = ref.current;
+    if (!cartao) return;
+    const posicionar = () => {
+      const caixa = cartao.getBoundingClientRect();
+      setLugar({
+        left: Math.max(8, Math.min(x, window.innerWidth - caixa.width - 8)),
+        top: Math.max(8, Math.min(y, window.innerHeight - caixa.height - 8)),
+      });
+    };
+    posicionar();
+    const observador = new ResizeObserver(posicionar);
+    observador.observe(cartao);
+    return () => observador.disconnect();
   }, [x, y]);
 
   useEffect(() => {
@@ -86,10 +102,8 @@ export function ProfileCard({
             className="perfil-editar"
             aria-label={t('Editar')}
             title={t('Editar')}
-            onClick={() => {
-              onClose();
-              aoEditar();
-            }}
+            aria-pressed={editando}
+            onClick={() => setEditando((antes) => !antes)}
           >
             <Pencil size={16} aria-hidden="true" />
           </button>
@@ -129,6 +143,15 @@ export function ProfileCard({
             <p className="perfil-nota" title={t('Anotação sua, guardada só neste computador')}>
               {nota}
             </p>
+          )}
+          {isSelf && editando && aoEditar && (
+            <EscolhasDoCartao
+              nome={membro.username}
+              aoAbrirAparencia={() => {
+                onClose();
+                aoEditar();
+              }}
+            />
           )}
           {!isSelf && (
             <button

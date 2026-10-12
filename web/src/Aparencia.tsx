@@ -247,10 +247,15 @@ async function buscarOGuardaRoupa(): Promise<GuardaRoupa> {
   }
 }
 
-export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
-  const t = useT();
+type Vestivel = 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra';
+
+/**
+ * O guarda-roupa da pessoa e o jeito de vestir um item. É o MESMO para a Aparência e para o lápis do
+ * cartão de perfil (ProfileCard.tsx): dois caminhos para a mesma escolha, e um só código decidindo o
+ * que ela faz — senão um dia os dois lugares discordariam sobre o que "clicar no que está em uso" faz.
+ */
+export function useGuardaRoupa() {
   const [dados, setDados] = useState<GuardaRoupa | null>(null);
-  const [aba, setAba] = useState<Aba>('cor');
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
@@ -264,9 +269,9 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
     setErro(null);
     // Insígnia não se veste por aqui: ela vai para a vitrine, onde a pessoa escolhe quais e em que ordem.
     const campo = { cor: 'nameColor', fundo: 'banner', moldura: 'moldura', efeito: 'nameEffect', letra: 'nameFont' }[
-      item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra'
+      item.tipo as Vestivel
     ];
-    const jaEstava = dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra'] === item.codigo;
+    const jaEstava = dados.vestindo[item.tipo as Vestivel] === item.codigo;
     try {
       const atualizado = await api<User>('/api/me/profile', {
         method: 'PUT',
@@ -296,22 +301,103 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
     }
   }
 
+  return { dados, erro, vestir };
+}
+
+/**
+ * A LETRA SÓ APARECE SE TEM AS LETRAS DO NOME — a mesma regra do nome da comunidade (ver
+ * fontesDaComunidade.ts). A vestida aparece sempre: sumir com ela deixaria a pessoa sem como trocar.
+ */
+function cobreONome(item: ItemDoGuardaRoupa, dados: GuardaRoupa, nome: string) {
+  if (item.tipo !== 'letra' || item.codigo === dados.vestindo.letra) return true;
+  const fonte = FONTES_DA_COMUNIDADE.find((f) => 'letra-' + f.id === item.codigo);
+  return !fonte || fonteCobre(fonte, nome);
+}
+
+function estaVestido(item: ItemDoGuardaRoupa, dados: GuardaRoupa) {
+  return item.tipo === 'insignia'
+    ? dados.vestindo.insignias.includes(item.codigo)
+    : dados.vestindo[item.tipo as Vestivel] === item.codigo;
+}
+
+const ABAS_DO_CARTAO = ABAS.filter((aba) => aba.tipo !== 'insignia' && aba.tipo !== 'pacotes');
+
+/**
+ * A APARÊNCIA DENTRO DO CARTÃO DE PERFIL, pelo lápis (decisão do Sydenstricker, 11/10/2026: "dois
+ * caminhos" — a Aparência de sempre, e o cartão para quem se vê numa comunidade e quer mudar ali).
+ *
+ * Compacta porque o cartão tem 300 px: só as amostras, com o nome no título, e só o que a pessoa já
+ * tem — trancado é catálogo, e catálogo é a Aparência. Ficam de fora as insígnias (a ordem delas se
+ * escolhe em Minha conta), os pacotes e a paleta, que não aparecem no cartão. O próprio cartão é a
+ * prévia: ele lê a pessoa do diretório, que se atualiza ao vestir.
+ */
+export function EscolhasDoCartao({ nome, aoAbrirAparencia }: { nome: string; aoAbrirAparencia: () => void }) {
+  const t = useT();
+  const { dados, erro, vestir } = useGuardaRoupa();
+  const [aba, setAba] = useState<Vestivel>('cor');
+
+  if (erro && !dados) return <p className="form-error small">{erro}</p>;
+  if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
+
+  const doTipo = dados.itens.filter((item) => item.tipo === aba && item.tenho && cobreONome(item, dados, nome));
+  const corVestida = corDoNome(dados.vestindo.cor ?? 'padrao');
+
+  return (
+    <div className="perfil-escolhas">
+      <div className="perfil-escolhas-abas" role="tablist" aria-label={t('Tipos de cosmético')}>
+        {ABAS_DO_CARTAO.map((opcao) => (
+          <button
+            key={opcao.tipo}
+            type="button"
+            role="tab"
+            aria-selected={aba === opcao.tipo}
+            className={aba === opcao.tipo ? 'escolhida' : ''}
+            onClick={() => setAba(opcao.tipo as Vestivel)}
+          >
+            {t(opcao.nome)}
+          </button>
+        ))}
+      </div>
+      {erro && <p className="form-error small">{erro}</p>}
+      <div className="perfil-escolhas-grade">
+        {doTipo.map((item) => {
+          const visual = acharVisual(item.tipo, item.codigo);
+          if (!visual) return null;
+          const vestido = estaVestido(item, dados);
+          return (
+            <button
+              key={item.codigo}
+              type="button"
+              className={`perfil-escolha${vestido ? ' vestido' : ''}`}
+              aria-pressed={vestido}
+              title={t(visual.nome)}
+              aria-label={t(visual.nome)}
+              onClick={() => void vestir(item)}
+            >
+              <Amostra item={item} corVestida={corVestida} />
+            </button>
+          );
+        })}
+      </div>
+      <button type="button" className="link-button perfil-escolhas-mais" onClick={aoAbrirAparencia}>
+        <Sparkles size={14} aria-hidden="true" /> {t('Aparência')}
+      </button>
+    </div>
+  );
+}
+
+export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
+  const t = useT();
+  const { dados, erro, vestir } = useGuardaRoupa();
+  const [aba, setAba] = useState<Aba>('cor');
+
   if (erro && !dados) return <p className="form-error">{erro}</p>;
   if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
 
-  // A LETRA SÓ APARECE SE TEM AS LETRAS DO NOME — a mesma regra do nome da comunidade (ver
-  // fontesDaComunidade.ts). A vestida aparece sempre: sumir com ela deixaria a pessoa sem como trocar.
-  const cobreMeuNome = (item: ItemDoGuardaRoupa) => {
-    if (item.tipo !== 'letra' || item.codigo === dados.vestindo.letra) return true;
-    const fonte = FONTES_DA_COMUNIDADE.find((f) => 'letra-' + f.id === item.codigo);
-    return !fonte || fonteCobre(fonte, user.username);
-  };
+  const cobreMeuNome = (item: ItemDoGuardaRoupa) => cobreONome(item, dados, user.username);
   const doTipo = dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item));
   const escondidas = dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length;
-  const vestidoAgora = (item: ItemDoGuardaRoupa) =>
-    item.tipo === 'insignia'
-      ? dados.vestindo.insignias.includes(item.codigo)
-      : dados.vestindo[item.tipo as 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra'] === item.codigo;
+  const vestidoAgora = (item: ItemDoGuardaRoupa) => estaVestido(item, dados);
 
   return (
     <>
