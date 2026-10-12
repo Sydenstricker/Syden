@@ -4400,6 +4400,19 @@ textarea {
   opacity: 0.8;
 }
 
+/* "Tem uma versão nova do Syden" (VersaoNova.tsx): um convite, não um alarme — na cor da marca. */
+.aviso-topo.versao-nova {
+  background: var(--accent);
+  color: var(--accent-texto);
+}
+
+.aviso-topo.versao-nova .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+}
+
 /* ---------- A tela de destaque de um item novo ---------- */
 
 .revelacao {

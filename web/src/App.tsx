@@ -4,6 +4,7 @@ import { ApiError, api, loadToken, saveToken } from './api';
 import { sincronizarAoEntrar } from './preferencias';
 import { AuthScreen } from './AuthScreen';
 import { AvisoGeral } from './AvisoGeral';
+import { VersaoNova } from './VersaoNova';
 import { aoVoltarPeloApp, concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
 import { DesktopTitleBar } from './DesktopTitleBar';
 import { Shell } from './Shell';
@@ -190,6 +191,7 @@ export function App() {
       {/* Fica FORA do app-body de propósito: assim o recado aparece na tela de entrada também, que é
           onde ele mais faz falta — quem não consegue entrar é quem mais precisa saber do porquê. */}
       {session.status !== 'loading' && <AvisoGeral />}
+      <VersaoNova />
       {ligacaoFeita && (
         <p className="aviso-topo" role="status">
           Conta do {ligacaoFeita} ligada. Agora dá para entrar por ela.

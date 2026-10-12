@@ -1,5 +1,6 @@
+import { execSync } from 'node:child_process';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 
 // O SYDEN MORA EM /app/, E A RAIZ É O SITE DE APRESENTAÇÃO.
 //
@@ -16,9 +17,30 @@ import { defineConfig } from 'vite';
 // esta mudança sem esperar build nova nem quebrar o pacote que está em certificação.
 const BASE = process.env.VITE_BASE || '/app/';
 
+// A VERSÃO DESTA MONTAGEM: o commit, com a hora de reserva fora do git. Vai embutida no código
+// (import.meta.env.VITE_VERSAO) e num arquivo ao lado (versao.json). A aba aberta compara as duas e,
+// quando o site no ar muda, oferece recarregar (ver VersaoNova.tsx) — o Syden fica aberto por dias, e
+// sem isso quem não recarrega usa a versão de antes do deploy sem saber.
+function versaoDaMontagem(): string {
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  } catch {
+    return String(Date.now());
+  }
+}
+process.env.VITE_VERSAO ??= versaoDaMontagem();
+
+const arquivoDeVersao: Plugin = {
+  name: 'versao-do-syden',
+  apply: 'build',
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: 'versao.json', source: JSON.stringify({ versao: process.env.VITE_VERSAO }) });
+  },
+};
+
 export default defineConfig({
   base: BASE,
-  plugins: [react()],
+  plugins: [react(), arquivoDeVersao],
   build: {
     // O app sai numa subpasta, e os arquivos do site entram na raiz depois (scripts/montar-site.mjs).
     outDir: 'dist/app',
