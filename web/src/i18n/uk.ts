@@ -502,7 +502,7 @@ export default {
   'Entrando…': 'Вхід…',
   'Ao entrar, você concorda com os termos de uso.': 'Входячи, ти приймаєш умови використання.',
   'Já tenho conta': 'У мене вже є акаунт',
-  'Sair do modo sala': 'Вийти з режиму класу',
+  'Sair do modo sala': 'Вийти з режиму кімнати',
   'Vale por': 'Діє',
   'Criar link': 'Створити посилання',
   'Nenhum link valendo.': 'Чинних посилань немає.',

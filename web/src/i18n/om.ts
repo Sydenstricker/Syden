@@ -492,7 +492,7 @@ export default {
   'Entrando…': 'Seenaa jira…',
   'Ao entrar, você concorda com os termos de uso.': 'Seenuun, haalota itti fayyadamaa ni fudhatta.',
   'Já tenho conta': 'Herrega qaba duraan',
-  'Sair do modo sala': 'Haala daree keessaa ba’i',
+  'Sair do modo sala': 'Haala kutaa keessaa ba’i',
   'Vale por': 'Yeroo',
   'Criar link': 'Hidhaa uumi',
   'Nenhum link valendo.': 'Hidhaan hojjetu hin jiru.',

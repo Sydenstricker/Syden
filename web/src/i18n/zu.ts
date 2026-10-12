@@ -511,7 +511,7 @@ export default {
   'Entrando…': 'Iyangena…',
   'Ao entrar, você concorda com os termos de uso.': 'Ngokungena, uyavuma imigomo yokusebenzisa.',
   'Já tenho conta': 'Senginayo i-akhawunti',
-  'Sair do modo sala': 'Phuma kumodi yekilasi',
+  'Sair do modo sala': 'Phuma kumodi yegumbi',
   'Vale por': 'Isikhathi',
   'Criar link': 'Dala isixhumanisi',
   'Nenhum link valendo.': 'Asikho isixhumanisi esisebenzayo.',

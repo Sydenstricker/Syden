@@ -447,7 +447,7 @@ export default {
   'Entrando…': 'داخل ہو رہے ہیں…',
   'Ao entrar, você concorda com os termos de uso.': 'داخل ہونے کا مطلب ہے استعمال کی شرائط سے اتفاق۔',
   'Já tenho conta': 'میرا اکاؤنٹ پہلے سے ہے',
-  'Sair do modo sala': 'کلاس موڈ سے نکلیں',
+  'Sair do modo sala': 'کمرہ موڈ سے نکلیں',
   'Vale por': 'مدت',
   'Criar link': 'لنک بنائیں',
   'Nenhum link valendo.': 'کوئی فعال لنک نہیں۔',

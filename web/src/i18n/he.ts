@@ -502,7 +502,7 @@ export default {
   'Entrando…': 'נכנסים…',
   'Ao entrar, você concorda com os termos de uso.': 'הכניסה מהווה הסכמה לתנאי השימוש.',
   'Já tenho conta': 'כבר יש לי חשבון',
-  'Sair do modo sala': 'יציאה ממצב כיתה',
+  'Sair do modo sala': 'יציאה ממצב חדר',
   'Vale por': 'בתוקף למשך',
   'Criar link': 'יצירת קישור',
   'Nenhum link valendo.': 'אין קישור בתוקף.',

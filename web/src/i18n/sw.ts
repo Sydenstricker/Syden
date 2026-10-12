@@ -344,7 +344,7 @@ export default {
   'Entrando…': 'Inaingia…',
   'Ao entrar, você concorda com os termos de uso.': 'Kwa kuingia, unakubali masharti ya matumizi.',
   'Já tenho conta': 'Tayari nina akaunti',
-  'Sair do modo sala': 'Toka hali ya darasa',
+  'Sair do modo sala': 'Toka hali ya chumba',
   'Vale por': 'Muda',
   'Criar link': 'Unda kiungo',
   'Nenhum link valendo.': 'Hakuna kiungo kinachofanya kazi.',

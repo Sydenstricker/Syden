@@ -478,7 +478,7 @@ export default {
   'Entrando…': 'Ń wọlé…',
   'Ao entrar, você concorda com os termos de uso.': 'Bí o ṣe ń wọlé, o gbà àwọn òfin ìlò.',
   'Já tenho conta': 'Mo ti ní àkọọ́lẹ̀',
-  'Sair do modo sala': 'Jáde kúrò ní ipò kíláàsì',
+  'Sair do modo sala': 'Jáde kúrò ní ipò yàrá',
   'Vale por': 'Àkókò',
   'Criar link': 'Ṣẹ̀dá ìjápọ̀',
   'Nenhum link valendo.': 'Kò sí ìjápọ̀ tó ń ṣiṣẹ́.',

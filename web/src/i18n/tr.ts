@@ -352,7 +352,7 @@ export default {
   'Entrando…': 'Giriliyor…',
   'Ao entrar, você concorda com os termos de uso.': 'Girerek kullanım koşullarını kabul edersin.',
   'Já tenho conta': 'Zaten hesabım var',
-  'Sair do modo sala': 'Sınıf modundan çık',
+  'Sair do modo sala': 'Oda modundan çık',
   'Vale por': 'Geçerlilik',
   'Criar link': 'Bağlantı oluştur',
   'Nenhum link valendo.': 'Geçerli bağlantı yok.',

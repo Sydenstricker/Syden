@@ -509,7 +509,7 @@ export default {
   'Entrando…': 'Vstupuje se…',
   'Ao entrar, você concorda com os termos de uso.': 'Vstupem souhlasíš s podmínkami používání.',
   'Já tenho conta': 'Už mám účet',
-  'Sair do modo sala': 'Opustit režim třídy',
+  'Sair do modo sala': 'Opustit režim místnosti',
   'Vale por': 'Platí',
   'Criar link': 'Vytvořit odkaz',
   'Nenhum link valendo.': 'Žádný platný odkaz.',

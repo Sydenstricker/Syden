@@ -502,7 +502,7 @@ export default {
   'Entrando…': 'Duke hyrë…',
   'Ao entrar, você concorda com os termos de uso.': 'Duke hyrë, pranon kushtet e përdorimit.',
   'Já tenho conta': 'Kam tashmë llogari',
-  'Sair do modo sala': 'Dil nga mënyra e klasës',
+  'Sair do modo sala': 'Dil nga mënyra e dhomës',
   'Vale por': 'Vlen për',
   'Criar link': 'Krijo lidhje',
   'Nenhum link valendo.': 'Asnjë lidhje aktive.',

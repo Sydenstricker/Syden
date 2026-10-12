@@ -511,7 +511,7 @@ export default {
   'Entrando…': 'ກຳລັງເຂົ້າ…',
   'Ao entrar, você concorda com os termos de uso.': 'ການເຂົ້າຖືວ່າເຈົ້າຍອມຮັບເງື່ອນໄຂການນຳໃຊ້.',
   'Já tenho conta': 'ມີບັນຊີແລ້ວ',
-  'Sair do modo sala': 'ອອກຈາກໂໝດຫ້ອງຮຽນ',
+  'Sair do modo sala': 'ອອກຈາກໂໝດຫ້ອງ',
   'Vale por': 'ໃຊ້ໄດ້',
   'Criar link': 'ສ້າງລິ້ງ',
   'Nenhum link valendo.': 'ບໍ່ມີລິ້ງທີ່ໃຊ້ໄດ້.',

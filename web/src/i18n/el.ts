@@ -469,7 +469,7 @@ export default {
   'Entrando…': 'Είσοδος…',
   'Ao entrar, você concorda com os termos de uso.': 'Μπαίνοντας, αποδέχεσαι τους όρους χρήσης.',
   'Já tenho conta': 'Έχω ήδη λογαριασμό',
-  'Sair do modo sala': 'Έξοδος από τη λειτουργία αίθουσας',
+  'Sair do modo sala': 'Βγες από τη λειτουργία δωματίου',
   'Vale por': 'Ισχύει για',
   'Criar link': 'Δημιουργία συνδέσμου',
   'Nenhum link valendo.': 'Κανένας ενεργός σύνδεσμος.',

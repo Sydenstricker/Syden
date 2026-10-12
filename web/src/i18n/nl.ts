@@ -355,7 +355,7 @@ export default {
   'Entrando…': 'Binnenkomen…',
   'Ao entrar, você concorda com os termos de uso.': 'Door binnen te komen, ga je akkoord met de gebruiksvoorwaarden.',
   'Já tenho conta': 'Ik heb al een account',
-  'Sair do modo sala': 'Klasmodus verlaten',
+  'Sair do modo sala': 'Kamermodus verlaten',
   'Vale por': 'Geldig voor',
   'Criar link': 'Link maken',
   'Nenhum link valendo.': 'Geen actieve link.',

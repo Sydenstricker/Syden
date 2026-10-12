@@ -355,7 +355,7 @@ export default {
   'Entrando…': 'Ingresso…',
   'Ao entrar, você concorda com os termos de uso.': 'Entrando, accetti i termini d’uso.',
   'Já tenho conta': 'Ho già un account',
-  'Sair do modo sala': 'Esci dalla modalità aula',
+  'Sair do modo sala': 'Esci dalla modalità stanza',
   'Vale por': 'Valido per',
   'Criar link': 'Crea link',
   'Nenhum link valendo.': 'Nessun link attivo.',

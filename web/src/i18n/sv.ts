@@ -502,7 +502,7 @@ export default {
   'Entrando…': 'Går in…',
   'Ao entrar, você concorda com os termos de uso.': 'Genom att gå in godkänner du villkoren.',
   'Já tenho conta': 'Jag har redan ett konto',
-  'Sair do modo sala': 'Lämna klassrumsläget',
+  'Sair do modo sala': 'Lämna rumsläget',
   'Vale por': 'Gäller i',
   'Criar link': 'Skapa länk',
   'Nenhum link valendo.': 'Ingen aktiv länk.',

@@ -506,7 +506,7 @@ export default {
   'Entrando…': 'Кіруде…',
   'Ao entrar, você concorda com os termos de uso.': 'Кіре отырып, пайдалану шарттарымен келісесің.',
   'Já tenho conta': 'Менде аккаунт бар',
-  'Sair do modo sala': 'Сынып режимінен шығу',
+  'Sair do modo sala': 'Бөлме режимінен шығу',
   'Vale por': 'Жарамдылығы',
   'Criar link': 'Сілтеме жасау',
   'Nenhum link valendo.': 'Жарамды сілтеме жоқ.',

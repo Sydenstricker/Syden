@@ -331,7 +331,7 @@ export default {
   'Entrando…': 'Вход…',
   'Ao entrar, você concorda com os termos de uso.': 'Входя, ты принимаешь условия использования.',
   'Já tenho conta': 'У меня уже есть аккаунт',
-  'Sair do modo sala': 'Выйти из режима класса',
+  'Sair do modo sala': 'Выйти из режима комнаты',
   'Vale por': 'Действует',
   'Criar link': 'Создать ссылку',
   'Nenhum link valendo.': 'Действующих ссылок нет.',

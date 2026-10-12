@@ -509,7 +509,7 @@ export default {
   'Entrando…': 'កំពុងចូល…',
   'Ao entrar, você concorda com os termos de uso.': 'ការចូលមានន័យថាអ្នកយល់ព្រមលើលក្ខខណ្ឌប្រើប្រាស់។',
   'Já tenho conta': 'ខ្ញុំមានគណនីរួចហើយ',
-  'Sair do modo sala': 'ចាកចេញពីរបៀបថ្នាក់',
+  'Sair do modo sala': 'ចាកចេញពីរបៀបបន្ទប់',
   'Vale por': 'មានសុពលភាព',
   'Criar link': 'បង្កើតតំណ',
   'Nenhum link valendo.': 'គ្មានតំណដែលមានសុពលភាព។',

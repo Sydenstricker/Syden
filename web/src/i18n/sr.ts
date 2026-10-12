@@ -507,7 +507,7 @@ export default {
   'Entrando…': 'Улазак…',
   'Ao entrar, você concorda com os termos de uso.': 'Уласком прихваташ услове коришћења.',
   'Já tenho conta': 'Већ имам налог',
-  'Sair do modo sala': 'Изађи из режима учионице',
+  'Sair do modo sala': 'Изађи из режима собе',
   'Vale por': 'Важи',
   'Criar link': 'Направи линк',
   'Nenhum link valendo.': 'Нема важећих линкова.',

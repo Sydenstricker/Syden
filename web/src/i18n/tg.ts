@@ -511,7 +511,7 @@ export default {
   'Entrando…': 'Ворид шудан…',
   'Ao entrar, você concorda com os termos de uso.': 'Бо ворид шудан ту шартҳои истифодаро қабул мекунӣ.',
   'Já tenho conta': 'Ман аллакай ҳисоб дорам',
-  'Sair do modo sala': 'Аз ҳолати синф баромадан',
+  'Sair do modo sala': 'Аз ҳолати ҳуҷра баромадан',
   'Vale por': 'Мӯҳлат',
   'Criar link': 'Сохтани пайванд',
   'Nenhum link valendo.': 'Пайванди амалкунанда нест.',

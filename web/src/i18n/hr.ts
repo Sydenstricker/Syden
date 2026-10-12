@@ -509,7 +509,7 @@ export default {
   'Entrando…': 'Ulazak…',
   'Ao entrar, você concorda com os termos de uso.': 'Ulaskom prihvaćaš uvjete korištenja.',
   'Já tenho conta': 'Već imam račun',
-  'Sair do modo sala': 'Izađi iz načina učionice',
+  'Sair do modo sala': 'Izađi iz načina sobe',
   'Vale por': 'Vrijedi',
   'Criar link': 'Stvori poveznicu',
   'Nenhum link valendo.': 'Nema važećih poveznica.',

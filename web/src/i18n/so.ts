@@ -510,7 +510,7 @@ export default {
   'Entrando…': 'Waa la galayaa…',
   'Ao entrar, você concorda com os termos de uso.': 'Markaad gasho, waxaad aqbashaa shuruudaha isticmaalka.',
   'Já tenho conta': 'Hore ayaan akoon u leeyahay',
-  'Sair do modo sala': 'Ka bax habka fasalka',
+  'Sair do modo sala': 'Ka bax habka qolka',
   'Vale por': 'Muddo',
   'Criar link': 'Samee xiriir',
   'Nenhum link valendo.': 'Ma jiro xiriir shaqeynaya.',

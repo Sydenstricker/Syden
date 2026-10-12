@@ -529,7 +529,7 @@ export default {
   'Entrando…': 'შესვლა…',
   'Ao entrar, você concorda com os termos de uso.': 'შესვლით ეთანხმები გამოყენების პირობებს.',
   'Já tenho conta': 'უკვე მაქვს ანგარიში',
-  'Sair do modo sala': 'კლასის რეჟიმიდან გასვლა',
+  'Sair do modo sala': 'ოთახის რეჟიმიდან გასვლა',
   'Vale por': 'მოქმედებს',
   'Criar link': 'ბმულის შექმნა',
   'Nenhum link valendo.': 'მოქმედი ბმული არ არის.',

@@ -352,7 +352,7 @@ export default {
   'Entrando…': '正在进入…',
   'Ao entrar, você concorda com os termos de uso.': '进入即表示你同意使用条款。',
   'Já tenho conta': '我已有账号',
-  'Sair do modo sala': '退出课堂模式',
+  'Sair do modo sala': '退出房间模式',
   'Vale por': '有效期',
   'Criar link': '创建链接',
   'Nenhum link valendo.': '没有有效的链接。',

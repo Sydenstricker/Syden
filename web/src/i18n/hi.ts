@@ -357,7 +357,7 @@ export default {
   'Entrando…': 'अंदर जा रहे हैं…',
   'Ao entrar, você concorda com os termos de uso.': 'अंदर जाने का मतलब है उपयोग की शर्तों से सहमति।',
   'Já tenho conta': 'मेरा खाता पहले से है',
-  'Sair do modo sala': 'कक्षा मोड से निकलें',
+  'Sair do modo sala': 'रूम मोड से निकलें',
   'Vale por': 'अवधि',
   'Criar link': 'लिंक बनाएँ',
   'Nenhum link valendo.': 'कोई मान्य लिंक नहीं।',

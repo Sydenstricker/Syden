@@ -512,7 +512,7 @@ export default {
   'Entrando…': 'Jungiamasi…',
   'Ao entrar, você concorda com os termos de uso.': 'Prisijungus sutinkama su naudojimo sąlygomis.',
   'Já tenho conta': 'Jau turiu paskyrą',
-  'Sair do modo sala': 'Išeiti iš klasės režimo',
+  'Sair do modo sala': 'Išeiti iš kambario režimo',
   'Vale por': 'Galioja',
   'Criar link': 'Sukurti nuorodą',
   'Nenhum link valendo.': 'Galiojančių nuorodų nėra.',

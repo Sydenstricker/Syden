@@ -523,7 +523,7 @@ export default {
   'Entrando…': 'ནང་འཛུལ་འབད་དོ…',
   'Ao entrar, você concorda com os termos de uso.': 'ནང་འཛུལ་འབད་ཐོག་ལས་ ལག་ལེན་གྱི་ཆ་རྐྱེན་ལུ་ ཁས་ལེན་འབདཝ་ཨིན།',
   'Já tenho conta': 'ང་ལུ་ རྩིས་ཐོ་ཡོད',
-  'Sair do modo sala': 'སློབ་ཁང་ཐབས་ལམ་ལས་ཕྱིར་ཐོན',
+  'Sair do modo sala': 'ཁང་མིག་ཐབས་ལམ་ལས་ཕྱིར་ཐོན',
   'Vale por': 'དུས་ཡུན',
   'Criar link': 'འབྲེལ་ལམ་བཟོ',
   'Nenhum link valendo.': 'ནུས་ཅན་གྱི་འབྲེལ་ལམ་མེད།',

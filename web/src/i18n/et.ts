@@ -507,7 +507,7 @@ export default {
   'Entrando…': 'Sisenemine…',
   'Ao entrar, você concorda com os termos de uso.': 'Sisenedes nõustud kasutustingimustega.',
   'Já tenho conta': 'Mul on juba konto',
-  'Sair do modo sala': 'Välju klassirežiimist',
+  'Sair do modo sala': 'Lahku ruumirežiimist',
   'Vale por': 'Kehtib',
   'Criar link': 'Loo link',
   'Nenhum link valendo.': 'Kehtivaid linke pole.',

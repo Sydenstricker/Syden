@@ -445,7 +445,7 @@ export default {
   'Entrando…': 'நுழைகிறது…',
   'Ao entrar, você concorda com os termos de uso.': 'நுழைவதன் மூலம் பயன்பாட்டு விதிமுறைகளை ஏற்கிறாய்.',
   'Já tenho conta': 'எனக்கு ஏற்கெனவே கணக்கு உள்ளது',
-  'Sair do modo sala': 'வகுப்பு முறையிலிருந்து வெளியேறு',
+  'Sair do modo sala': 'அறை முறையிலிருந்து வெளியேறு',
   'Vale por': 'செல்லுபடி',
   'Criar link': 'இணைப்பை உருவாக்கு',
   'Nenhum link valendo.': 'செல்லுபடியான இணைப்பு இல்லை.',

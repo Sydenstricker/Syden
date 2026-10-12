@@ -530,7 +530,7 @@ export default {
   'Entrando…': 'Մուտք…',
   'Ao entrar, você concorda com os termos de uso.': 'Մտնելով՝ համաձայնում ես օգտագործման պայմաններին։',
   'Já tenho conta': 'Արդեն հաշիվ ունեմ',
-  'Sair do modo sala': 'Դուրս գալ դասարանի ռեժիմից',
+  'Sair do modo sala': 'Դուրս գալ սենյակի ռեժիմից',
   'Vale por': 'Վավեր է',
   'Criar link': 'Ստեղծել հղում',
   'Nenhum link valendo.': 'Գործող հղում չկա։',

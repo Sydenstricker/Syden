@@ -510,7 +510,7 @@ export default {
   'Entrando…': 'Miditra…',
   'Ao entrar, você concorda com os termos de uso.': 'Amin’ny fidirana dia manaiky ny fepetra fampiasana ianao.',
   'Já tenho conta': 'Efa manana kaonty aho',
-  'Sair do modo sala': 'Hivoaka ny fomba kilasy',
+  'Sair do modo sala': 'Hivoaka ny fomba efitrano',
   'Vale por': 'Faharetana',
   'Criar link': 'Mamorona rohy',
   'Nenhum link valendo.': 'Tsy misy rohy manan-kery.',

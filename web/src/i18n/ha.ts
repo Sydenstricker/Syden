@@ -462,7 +462,7 @@ export default {
   'Entrando…': 'Ana shiga…',
   'Ao entrar, você concorda com os termos de uso.': 'Ta shiga, kun yarda da sharuɗɗan amfani.',
   'Já tenho conta': 'Ina da asusu tuni',
-  'Sair do modo sala': 'Fita daga yanayin aji',
+  'Sair do modo sala': 'Fita daga yanayin ɗaki',
   'Vale por': 'Tsawon lokaci',
   'Criar link': 'Ƙirƙiri mahaɗi',
   'Nenhum link valendo.': 'Babu mahaɗin da ke aiki.',

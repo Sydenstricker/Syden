@@ -510,7 +510,7 @@ export default {
   'Entrando…': 'Liitytään…',
   'Ao entrar, você concorda com os termos de uso.': 'Liittymällä hyväksyt käyttöehdot.',
   'Já tenho conta': 'Minulla on jo tili',
-  'Sair do modo sala': 'Poistu luokkatilasta',
+  'Sair do modo sala': 'Poistu huonetilasta',
   'Vale por': 'Voimassa',
   'Criar link': 'Luo linkki',
   'Nenhum link valendo.': 'Ei voimassa olevia linkkejä.',

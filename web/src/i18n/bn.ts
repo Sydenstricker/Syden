@@ -355,7 +355,7 @@ export default {
   'Entrando…': 'ঢোকা হচ্ছে…',
   'Ao entrar, você concorda com os termos de uso.': 'ঢুকে তুমি ব্যবহারের শর্তে রাজি হচ্ছ।',
   'Já tenho conta': 'আমার আগে থেকেই অ্যাকাউন্ট আছে',
-  'Sair do modo sala': 'ক্লাস মোড থেকে বের হও',
+  'Sair do modo sala': 'রুম মোড থেকে বের হও',
   'Vale por': 'মেয়াদ',
   'Criar link': 'লিংক তৈরি করো',
   'Nenhum link valendo.': 'কোনো বৈধ লিংক নেই।',

@@ -512,7 +512,7 @@ export default {
   'Entrando…': 'Pievienojas…',
   'Ao entrar, você concorda com os termos de uso.': 'Pievienojoties tu piekrīti lietošanas noteikumiem.',
   'Já tenho conta': 'Man jau ir konts',
-  'Sair do modo sala': 'Iziet no klases režīma',
+  'Sair do modo sala': 'Iziet no istabas režīma',
   'Vale por': 'Derīga',
   'Criar link': 'Izveidot saiti',
   'Nenhum link valendo.': 'Nav derīgu saišu.',

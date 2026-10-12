@@ -510,7 +510,7 @@ export default {
   'Entrando…': 'ඇතුළු වෙමින්…',
   'Ao entrar, você concorda com os termos de uso.': 'ඇතුළු වීමෙන් ඔබ භාවිත නියමවලට එකඟ වේ.',
   'Já tenho conta': 'මට දැනටමත් ගිණුමක් ඇත',
-  'Sair do modo sala': 'පන්ති ප්‍රකාරයෙන් ඉවත් වන්න',
+  'Sair do modo sala': 'කාමර ප්‍රකාරයෙන් ඉවත් වන්න',
   'Vale por': 'වලංගු කාලය',
   'Criar link': 'සබැඳිය සාදන්න',
   'Nenhum link valendo.': 'වලංගු සබැඳියක් නැත.',

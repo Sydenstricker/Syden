@@ -473,7 +473,7 @@ export default {
   'Entrando…': 'กำลังเข้า…',
   'Ao entrar, você concorda com os termos de uso.': 'การเข้าถือว่าคุณยอมรับข้อกำหนดการใช้งาน',
   'Já tenho conta': 'มีบัญชีอยู่แล้ว',
-  'Sair do modo sala': 'ออกจากโหมดห้องเรียน',
+  'Sair do modo sala': 'ออกจากโหมดห้อง',
   'Vale por': 'ใช้ได้',
   'Criar link': 'สร้างลิงก์',
   'Nenhum link valendo.': 'ไม่มีลิงก์ที่ใช้ได้',

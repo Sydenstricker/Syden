@@ -504,7 +504,7 @@ export default {
   'Entrando…': 'Går ind…',
   'Ao entrar, você concorda com os termos de uso.': 'Ved at gå ind accepterer du vilkårene.',
   'Já tenho conta': 'Jeg har allerede en konto',
-  'Sair do modo sala': 'Forlad lokaletilstand',
+  'Sair do modo sala': 'Forlad rumtilstand',
   'Vale por': 'Gælder i',
   'Criar link': 'Opret link',
   'Nenhum link valendo.': 'Intet aktivt link.',

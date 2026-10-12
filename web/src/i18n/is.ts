@@ -511,7 +511,7 @@ export default {
   'Entrando…': 'Fer inn…',
   'Ao entrar, você concorda com os termos de uso.': 'Með því að fara inn samþykkir þú notkunarskilmálana.',
   'Já tenho conta': 'Ég er nú þegar með aðgang',
-  'Sair do modo sala': 'Hætta í kennslustofuham',
+  'Sair do modo sala': 'Hætta í herbergisham',
   'Vale por': 'Gildir í',
   'Criar link': 'Búa til tengil',
   'Nenhum link valendo.': 'Enginn virkur tengill.',

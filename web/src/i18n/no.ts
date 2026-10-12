@@ -510,7 +510,7 @@ export default {
   'Entrando…': 'Går inn…',
   'Ao entrar, você concorda com os termos de uso.': 'Ved å gå inn godtar du vilkårene.',
   'Já tenho conta': 'Jeg har allerede en konto',
-  'Sair do modo sala': 'Forlat klasseromsmodus',
+  'Sair do modo sala': 'Forlat rommodus',
   'Vale por': 'Gjelder i',
   'Criar link': 'Lag lenke',
   'Nenhum link valendo.': 'Ingen aktiv lenke.',

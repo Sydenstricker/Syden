@@ -442,7 +442,7 @@ export default {
   'Entrando…': 'ప్రవేశిస్తోంది…',
   'Ao entrar, você concorda com os termos de uso.': 'ప్రవేశించడం ద్వారా నువ్వు వినియోగ నిబంధనలను అంగీకరిస్తున్నావు.',
   'Já tenho conta': 'నాకు ఇప్పటికే ఖాతా ఉంది',
-  'Sair do modo sala': 'తరగతి మోడ్ నుండి బయటకు',
+  'Sair do modo sala': 'గది మోడ్ నుండి బయటకు',
   'Vale por': 'చెల్లుబాటు',
   'Criar link': 'లింక్ సృష్టించు',
   'Nenhum link valendo.': 'చెల్లుబాటు అయ్యే లింక్ లేదు.',

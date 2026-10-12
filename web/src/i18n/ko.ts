@@ -351,7 +351,7 @@ export default {
   'Entrando…': '입장 중…',
   'Ao entrar, você concorda com os termos de uso.': '입장하면 이용 약관에 동의하게 돼요.',
   'Já tenho conta': '이미 계정이 있어요',
-  'Sair do modo sala': '교실 모드 끄기',
+  'Sair do modo sala': '채널 모드 끄기',
   'Vale por': '유효 기간',
   'Criar link': '링크 만들기',
   'Nenhum link valendo.': '유효한 링크가 없어요.',

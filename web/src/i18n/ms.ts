@@ -357,7 +357,7 @@ export default {
   'Entrando…': 'Sedang masuk…',
   'Ao entrar, você concorda com os termos de uso.': 'Dengan masuk, kamu bersetuju dengan terma penggunaan.',
   'Já tenho conta': 'Saya sudah ada akaun',
-  'Sair do modo sala': 'Keluar dari mod kelas',
+  'Sair do modo sala': 'Keluar dari mod bilik',
   'Vale por': 'Sah selama',
   'Criar link': 'Cipta pautan',
   'Nenhum link valendo.': 'Tiada pautan aktif.',

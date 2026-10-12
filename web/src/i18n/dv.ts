@@ -521,7 +521,7 @@ export default {
   'Entrando…': 'ވަދެވެނީ…',
   'Ao entrar, você concorda com os termos de uso.': 'ވަދެގެން، ބޭނުންކުރުމުގެ ޝަރުތުތަކަށް ތިބާ އެއްބަސްވޭ.',
   'Já tenho conta': 'އަހަރެންނަށް އެކައުންޓެއް އެބައޮތް',
-  'Sair do modo sala': 'ކްލާސް މޯޑުން ނިކުމޭ',
+  'Sair do modo sala': 'ރޫމް މޯޑުން ނިކުމޭ',
   'Vale por': 'މުއްދަތު',
   'Criar link': 'ލިންކެއް ހަދާ',
   'Nenhum link valendo.': 'ޖާރީ ލިންކެއް ނެތް.',

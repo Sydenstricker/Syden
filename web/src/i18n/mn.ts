@@ -525,7 +525,7 @@ export default {
   'Entrando…': 'Нэвтэрч байна…',
   'Ao entrar, você concorda com os termos de uso.': 'Нэвтэрснээр ашиглалтын нөхцөлийг зөвшөөрнө.',
   'Já tenho conta': 'Надад бүртгэл бий',
-  'Sair do modo sala': 'Ангийн горимоос гарах',
+  'Sair do modo sala': 'Өрөөний горимоос гарах',
   'Vale por': 'Хүчинтэй хугацаа',
   'Criar link': 'Холбоос үүсгэх',
   'Nenhum link valendo.': 'Хүчинтэй холбоос алга.',

@@ -512,7 +512,7 @@ export default {
   'Entrando…': 'Girilýär…',
   'Ao entrar, você concorda com os termos de uso.': 'Girmek bilen ulanyş şertlerini kabul edýärsiň.',
   'Já tenho conta': 'Mende eýýäm hasap bar',
-  'Sair do modo sala': 'Synp tertibinden çyk',
+  'Sair do modo sala': 'Otag tertibinden çyk',
   'Vale por': 'Möhleti',
   'Criar link': 'Salgy döret',
   'Nenhum link valendo.': 'Güýjündäki salgy ýok.',

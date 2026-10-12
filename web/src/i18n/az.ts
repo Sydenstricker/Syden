@@ -484,7 +484,7 @@ export default {
   'Entrando…': 'Daxil olunur…',
   'Ao entrar, você concorda com os termos de uso.': 'Daxil olmaqla istifadə şərtlərini qəbul edirsən.',
   'Já tenho conta': 'Artıq hesabım var',
-  'Sair do modo sala': 'Sinif rejimindən çıx',
+  'Sair do modo sala': 'Otaq rejimindən çıx',
   'Vale por': 'Etibarlılıq',
   'Criar link': 'Keçid yarat',
   'Nenhum link valendo.': 'Etibarlı keçid yoxdur.',

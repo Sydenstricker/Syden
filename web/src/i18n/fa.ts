@@ -448,7 +448,7 @@ export default {
   'Entrando…': 'در حال ورود…',
   'Ao entrar, você concorda com os termos de uso.': 'با ورود، شرایط استفاده را می‌پذیری.',
   'Já tenho conta': 'از قبل حساب دارم',
-  'Sair do modo sala': 'خروج از حالت کلاس',
+  'Sair do modo sala': 'خروج از حالت اتاق',
   'Vale por': 'اعتبار',
   'Criar link': 'ساخت پیوند',
   'Nenhum link valendo.': 'پیوند معتبری نیست.',

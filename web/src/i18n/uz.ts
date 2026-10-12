@@ -518,7 +518,7 @@ export default {
   'Entrando…': 'Kirilmoqda…',
   'Ao entrar, você concorda com os termos de uso.': 'Kirish bilan foydalanish shartlariga rozilik bildirasan.',
   'Já tenho conta': 'Menda allaqachon hisob bor',
-  'Sair do modo sala': 'Sinf rejimidan chiqish',
+  'Sair do modo sala': 'Xona rejimidan chiqish',
   'Vale por': 'Amal qilish',
   'Criar link': 'Havola yaratish',
   'Nenhum link valendo.': 'Amaldagi havola yo‘q.',

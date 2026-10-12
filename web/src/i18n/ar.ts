@@ -336,7 +336,7 @@ export default {
   'Entrando…': 'جارٍ الدخول…',
   'Ao entrar, você concorda com os termos de uso.': 'بالدخول، توافق على شروط الاستخدام.',
   'Já tenho conta': 'لدي حساب بالفعل',
-  'Sair do modo sala': 'الخروج من وضع القاعة',
+  'Sair do modo sala': 'الخروج من وضع الغرفة',
   'Vale por': 'صالح لمدة',
   'Criar link': 'إنشاء رابط',
   'Nenhum link valendo.': 'لا يوجد رابط صالح.',

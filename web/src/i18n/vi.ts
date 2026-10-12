@@ -430,7 +430,7 @@ export default {
   'Entrando…': 'Đang vào…',
   'Ao entrar, você concorda com os termos de uso.': 'Khi vào, bạn đồng ý với điều khoản sử dụng.',
   'Já tenho conta': 'Tôi đã có tài khoản',
-  'Sair do modo sala': 'Thoát chế độ phòng học',
+  'Sair do modo sala': 'Thoát chế độ phòng',
   'Vale por': 'Hiệu lực',
   'Criar link': 'Tạo liên kết',
   'Nenhum link valendo.': 'Không có liên kết còn hiệu lực.',

@@ -510,7 +510,7 @@ export default {
   'Entrando…': 'Влегување…',
   'Ao entrar, você concorda com os termos de uso.': 'Со влегувањето ги прифаќаш условите за користење.',
   'Já tenho conta': 'Веќе имам профил',
-  'Sair do modo sala': 'Излези од режимот на училница',
+  'Sair do modo sala': 'Излези од режимот на соба',
   'Vale por': 'Важи',
   'Criar link': 'Создај врска',
   'Nenhum link valendo.': 'Нема активни врски.',

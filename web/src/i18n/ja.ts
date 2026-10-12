@@ -441,7 +441,7 @@ export default {
   'Entrando…': '入室中…',
   'Ao entrar, você concorda com os termos de uso.': '入室すると、利用規約に同意したことになります。',
   'Já tenho conta': 'アカウントを持っています',
-  'Sair do modo sala': '教室モードを終了',
+  'Sair do modo sala': 'チャンネルモードを終了',
   'Vale por': '有効期間',
   'Criar link': 'リンクを作成',
   'Nenhum link valendo.': '有効なリンクはありません。',

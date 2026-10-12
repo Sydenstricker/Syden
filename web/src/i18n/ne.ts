@@ -512,7 +512,7 @@ export default {
   'Entrando…': 'भित्र जाँदै…',
   'Ao entrar, você concorda com os termos de uso.': 'भित्र जानु भनेको प्रयोगका सर्तहरू स्वीकार्नु हो।',
   'Já tenho conta': 'मेरो खाता पहिल्यै छ',
-  'Sair do modo sala': 'कक्षा मोडबाट निस्क',
+  'Sair do modo sala': 'कोठा मोडबाट निस्क',
   'Vale por': 'म्याद',
   'Criar link': 'लिंक बनाऊ',
   'Nenhum link valendo.': 'कुनै मान्य लिंक छैन।',
