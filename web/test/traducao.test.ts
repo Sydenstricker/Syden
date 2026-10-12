@@ -69,7 +69,9 @@ function idiomasLigados(): string[] {
   // (Promise<{ default: … }>), e cortar ali fazia "default" aparecer como se fosse idioma.
   const bloco = texto.match(/export const TRADUCOES[\s\S]*?=\s*\{([\s\S]*?)\n\};/);
   assert.ok(bloco, 'não achei o TRADUCOES em i18n/idiomas.ts');
-  return [...bloco[1].matchAll(/^\s*([\w-]+):/gm)].map((m) => m[1]);
+  // AS ASPAS SÃO OPCIONAIS, e isto custou o chinês: 'zh-CN' é a única chave entre aspas (o hífen obriga),
+  // a expressão antiga não a via, e o chinês passou sem nenhuma das conferências deste arquivo.
+  return [...bloco[1].matchAll(/^\s*['"]?([\w-]+)['"]?:/gm)].map((m) => m[1]);
 }
 
 function chavesDoDicionario(codigo: string): Set<string> {
