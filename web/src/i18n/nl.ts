@@ -1149,7 +1149,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Er verschijnen twee dingen en iedereen kiest op het eigen scherm welke groter is. De echte grootte verschijnt voor iedereen tegelijk.',
   'Escolha a sala para jogar com a turma:': 'Kies de kamer om met de groep te spelen:',
   'Para jogar fora e transmitir': 'Buiten spelen en streamen',
-  'Começar com a turma': 'Starten met de groep',
   'Rodada {n} de {total}': 'Ronde {n} van {total}',
   'Fim de jogo!': 'Spel voorbij!',
   'Jogar de novo': 'Opnieuw spelen',

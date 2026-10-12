@@ -1145,7 +1145,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Aparecen dos objetos y cada quien elige en su propia pantalla cuál es el más grande. El tamaño real aparece para todos a la vez.',
   'Escolha a sala para jogar com a turma:': 'Elige la sala para jugar con el grupo:',
   'Para jogar fora e transmitir': 'Para jugar fuera y transmitir',
-  'Começar com a turma': 'Empezar con el grupo',
   'Rodada {n} de {total}': 'Ronda {n} de {total}',
   'Fim de jogo!': '¡Fin del juego!',
   'Jogar de novo': 'Jugar otra vez',

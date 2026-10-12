@@ -1131,7 +1131,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': '2つのものが表示され、それぞれが自分の画面でどっちが大きいかを選びます。本当の大きさは全員に同時に表示されます。',
   'Escolha a sala para jogar com a turma:': 'みんなで遊ぶ部屋を選ぼう：',
   'Para jogar fora e transmitir': '外部で遊んで配信する用',
-  'Começar com a turma': 'みんなで始める',
   'Rodada {n} de {total}': 'ラウンド {n}/{total}',
   'Fim de jogo!': 'ゲーム終了！',
   'Jogar de novo': 'もう一度遊ぶ',

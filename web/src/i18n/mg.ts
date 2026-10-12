@@ -1220,7 +1220,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Zavatra roa no miseho ary samy misafidy eo amin’ny efijeriny avy izay lehibe kokoa. Miseho amin’ny rehetra miaraka ny tena habeny.',
   'Escolha a sala para jogar com a turma:': 'Fidio ny efitrano hilalaovana miaraka amin’ny namana:',
   'Para jogar fora e transmitir': 'Hilalaovana any ivelany sy handefasana mivantana',
-  'Começar com a turma': 'Manomboka miaraka amin’ny namana',
   'Rodada {n} de {total}': 'Fihodinana {n} amin’ny {total}',
   'Fim de jogo!': 'Vita ny lalao!',
   'Jogar de novo': 'Milalao indray',

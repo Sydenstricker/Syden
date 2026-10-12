@@ -1233,7 +1233,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'དངོས་པོ་གཉིས་ཐོནམ་ད་ མི་རེ་རེ་གིས་ རང་སོའི་གསལ་གཞི་གུ་ ག་འདི་ཆེ་ག་ གདམ་ཁ་རྐྱབ་ཨིན། ཚད་ངོ་མ་ ག་ར་ལུ་ དུས་ཅིག་ཁར་སྟོནམ་ཨིན།',
   'Escolha a sala para jogar com a turma:': 'ཆ་རོགས་ཚུ་དང་རྩེ་ནིའི་དོན་ལུ་ ཁང་མིག་གདམ་:',
   'Para jogar fora e transmitir': 'ས་གནས་གཞན་ཁར་རྩེ་སྟེ་ བརྒྱུད་སྤེལ་འབད་ནིའི་དོན་ལུ།',
-  'Começar com a turma': 'ཆ་རོགས་ཚུ་དང་གཅིག་ཁར་འགོ་བཙུགས།',
   'Rodada {n} de {total}': 'ཐེངས་ {n} / {total}',
   'Fim de jogo!': 'རྩེད་མོ་རྫོགས་ཡི!',
   'Jogar de novo': 'ལོག་སྟེ་རྩེ།',

@@ -163,7 +163,7 @@ const FORMA_DE_CODIGO = [
 ];
 
 /** Verbo de HTTP e cabeçalho: maiúsculos, mas ninguém os lê na tela. */
-const NAO_E_TELA = new Set(['PUT', 'POST', 'DELETE', 'PATCH', 'GET', 'HEAD', 'OPTIONS', 'Content-Type', 'Authorization']);
+const NAO_E_TELA = new Set(['PUT', 'POST', 'DELETE', 'PATCH', 'GET', 'HEAD', 'OPTIONS', 'Content-Type', 'Authorization', 'SourceAlpha']);
 
 /** Pedaço de nome de classe montado em template: ` active`, ` exibindo`, `disabled `. */
 const PEDACO_DE_CLASSE = /^\s+[a-z-]+\s*$|^\s*[a-z-]+\s+$/;

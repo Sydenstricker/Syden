@@ -1222,7 +1222,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'दुईवटा वस्तु देखिन्छन् र हरेकले आफ्नै स्क्रिनमा कुन ठूलो छ भनेर छान्छन्। वास्तविक आकार सबैलाई एकैसाथ देखिन्छ।',
   'Escolha a sala para jogar com a turma:': 'साथीहरूसँग खेल्न कोठा छान्नुहोस्:',
   'Para jogar fora e transmitir': 'बाहिर खेलेर प्रसारण गर्न',
-  'Começar com a turma': 'साथीहरूसँग सुरु गर्नुहोस्',
   'Rodada {n} de {total}': 'राउन्ड {n}/{total}',
   'Fim de jogo!': 'खेल सकियो!',
   'Jogar de novo': 'फेरि खेल्नुहोस्',

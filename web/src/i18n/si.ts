@@ -1220,7 +1220,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'වස්තු දෙකක් පෙන්වයි; හැමෝම තමන්ගේ තිරයේ වඩා ලොකු එක තෝරනවා. සැබෑ ප්‍රමාණය හැමෝටම එකවර පෙන්වයි.',
   'Escolha a sala para jogar com a turma:': 'යාළුවන් සමඟ සෙල්ලම් කිරීමට කාමරය තෝරන්න:',
   'Para jogar fora e transmitir': 'වෙනත් තැනක සෙල්ලම් කර විකාශනය කරන්න',
-  'Começar com a turma': 'යාළුවන් සමඟ අරඹන්න',
   'Rodada {n} de {total}': 'වටය {n} / {total}',
   'Fim de jogo!': 'ක්‍රීඩාව අවසන්!',
   'Jogar de novo': 'නැවත සෙල්ලම් කරන්න',

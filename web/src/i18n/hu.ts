@@ -1222,7 +1222,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Két dolog jelenik meg, és mindenki a saját képernyőjén választja ki, melyik a nagyobb. A valódi méret egyszerre jelenik meg mindenkinek.',
   'Escolha a sala para jogar com a turma:': 'Válaszd ki a szobát, ahol a társasággal játszol:',
   'Para jogar fora e transmitir': 'Külső játékhoz és közvetítéshez',
-  'Começar com a turma': 'Kezdés a társasággal',
   'Rodada {n} de {total}': '{n}. kör / {total}',
   'Fim de jogo!': 'Vége a játéknak!',
   'Jogar de novo': 'Új játék',

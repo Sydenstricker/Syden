@@ -1150,7 +1150,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'ሁለት ነገሮች ይታያሉ፤ እያንዳንዱ ሰው በየስክሪኑ የትኛው እንደሚበልጥ ይመርጣል። ትክክለኛው መጠን ለሁሉም በአንድ ጊዜ ይታያል።',
   'Escolha a sala para jogar com a turma:': 'ከጓደኞች ጋር ለመጫወት ክፍሉን ይምረጡ፦',
   'Para jogar fora e transmitir': 'ሌላ ቦታ ለመጫወትና ለማሰራጨት',
-  'Começar com a turma': 'ከጓደኞች ጋር ይጀምሩ',
   'Rodada {n} de {total}': 'ዙር {n} ከ{total}',
   'Fim de jogo!': 'ጨዋታው አበቃ!',
   'Jogar de novo': 'እንደገና ይጫወቱ',

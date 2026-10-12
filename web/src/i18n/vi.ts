@@ -1120,7 +1120,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Hai vật xuất hiện và mỗi người chọn trên màn hình của mình xem cái nào lớn hơn. Kích thước thật hiện ra cho mọi người cùng lúc.',
   'Escolha a sala para jogar com a turma:': 'Chọn phòng để chơi cùng nhóm bạn:',
   'Para jogar fora e transmitir': 'Chơi ở nơi khác và phát trực tiếp',
-  'Começar com a turma': 'Bắt đầu cùng nhóm bạn',
   'Rodada {n} de {total}': 'Vòng {n}/{total}',
   'Fim de jogo!': 'Trò chơi kết thúc!',
   'Jogar de novo': 'Chơi lại',

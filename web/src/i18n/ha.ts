@@ -1152,7 +1152,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Abubuwa biyu za su bayyana, kowa ya zaɓi a allonsa wanne ya fi girma. Ainihin girman zai bayyana ga kowa a lokaci guda.',
   'Escolha a sala para jogar com a turma:': 'Zaɓi ɗakin da za ku yi wasa da abokai:',
   'Para jogar fora e transmitir': 'Don yin wasa a wani wuri da watsawa',
-  'Começar com a turma': 'Fara da abokai',
   'Rodada {n} de {total}': 'Zagaye {n} cikin {total}',
   'Fim de jogo!': 'Wasan ya ƙare!',
   'Jogar de novo': 'Sake wasa',

@@ -1132,7 +1132,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'రెండు వస్తువులు కనిపిస్తాయి; ప్రతి ఒక్కరూ తమ స్క్రీన్‌లో ఏది పెద్దదో ఎంచుకుంటారు. అసలు పరిమాణం అందరికీ ఒకేసారి కనిపిస్తుంది.',
   'Escolha a sala para jogar com a turma:': 'స్నేహితులతో ఆడటానికి గదిని ఎంచుకో:',
   'Para jogar fora e transmitir': 'బయట ఆడి ప్రసారం చేయి',
-  'Começar com a turma': 'స్నేహితులతో మొదలుపెట్టు',
   'Rodada {n} de {total}': 'రౌండ్ {n} / {total}',
   'Fim de jogo!': 'ఆట ముగిసింది!',
   'Jogar de novo': 'మళ్ళీ ఆడు',

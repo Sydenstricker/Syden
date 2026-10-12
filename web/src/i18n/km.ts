@@ -1219,7 +1219,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'វត្ថុពីរបង្ហាញឡើង ហើយម្នាក់ៗជ្រើសរើសលើអេក្រង់ខ្លួនឯងថាមួយណាធំជាង។ ទំហំពិតបង្ហាញដល់គ្រប់គ្នាក្នុងពេលតែមួយ។',
   'Escolha a sala para jogar com a turma:': 'ជ្រើសរើសបន្ទប់ដើម្បីលេងជាមួយមិត្តភក្តិ៖',
   'Para jogar fora e transmitir': 'សម្រាប់លេងនៅខាងក្រៅ ហើយផ្សាយ',
-  'Começar com a turma': 'ចាប់ផ្ដើមជាមួយមិត្តភក្តិ',
   'Rodada {n} de {total}': 'ជុំ {n}/{total}',
   'Fim de jogo!': 'ហ្គេមចប់ហើយ!',
   'Jogar de novo': 'លេងម្ដងទៀត',

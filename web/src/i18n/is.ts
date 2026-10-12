@@ -1221,7 +1221,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Tveir hlutir birtast og hver og einn velur á sínum skjá hvor er stærri. Raunveruleg stærð birtist öllum á sama tíma.',
   'Escolha a sala para jogar com a turma:': 'Veldu herbergi til að spila með hópnum:',
   'Para jogar fora e transmitir': 'Til að spila annars staðar og streyma',
-  'Começar com a turma': 'Byrja með hópnum',
   'Rodada {n} de {total}': 'Umferð {n} af {total}',
   'Fim de jogo!': 'Leik lokið!',
   'Jogar de novo': 'Spila aftur',

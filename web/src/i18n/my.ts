@@ -1189,7 +1189,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'ပစ္စည်းနှစ်ခု ပေါ်လာပြီး လူတိုင်းက ကိုယ့်မျက်နှာပြင်ပေါ်မှာ ဘယ်ဟာ ပိုကြီးလဲ ရွေးရပါတယ်။ တကယ့်အရွယ်အစားကို အားလုံး တစ်ပြိုင်နက် မြင်ရပါမယ်။',
   'Escolha a sala para jogar com a turma:': 'သူငယ်ချင်းတွေနဲ့ ကစားဖို့ အခန်းကို ရွေးပါ',
   'Para jogar fora e transmitir': 'အပြင်မှာ ကစားပြီး ထုတ်လွှင့်ရန်',
-  'Começar com a turma': 'သူငယ်ချင်းတွေနဲ့ စတင်ရန်',
   'Rodada {n} de {total}': 'အကြိမ် {n}/{total}',
   'Fim de jogo!': 'ဂိမ်းပြီးပါပြီ။',
   'Jogar de novo': 'ထပ်ကစားရန်',

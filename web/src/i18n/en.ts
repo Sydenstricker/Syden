@@ -1145,7 +1145,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Two objects appear and everyone picks, on their own screen, which one is bigger. The real size shows up for everyone at the same time.',
   'Escolha a sala para jogar com a turma:': 'Pick a room to play with friends:',
   'Para jogar fora e transmitir': 'Play elsewhere and stream it',
-  'Começar com a turma': 'Start with friends',
   'Rodada {n} de {total}': 'Round {n} of {total}',
   'Fim de jogo!': 'Game over!',
   'Jogar de novo': 'Play again',

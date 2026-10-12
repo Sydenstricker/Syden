@@ -1149,7 +1149,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Appaiono due oggetti e ognuno sceglie, sul proprio schermo, quale è il più grande. La misura reale appare a tutti nello stesso momento.',
   'Escolha a sala para jogar com a turma:': 'Scegli la stanza per giocare con il gruppo:',
   'Para jogar fora e transmitir': 'Da giocare fuori e trasmettere',
-  'Começar com a turma': 'Inizia con il gruppo',
   'Rodada {n} de {total}': 'Round {n} di {total}',
   'Fim de jogo!': 'Partita finita!',
   'Jogar de novo': 'Gioca ancora',

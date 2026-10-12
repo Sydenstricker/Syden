@@ -1147,7 +1147,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'দুটো জিনিস আসে, আর প্রত্যেকে নিজের স্ক্রিনে বেছে নেয় কোনটা বড়। আসল মাপ সবাই একসাথে দেখতে পায়।',
   'Escolha a sala para jogar com a turma:': 'বন্ধুদের সাথে খেলতে রুম বেছে নাও:',
   'Para jogar fora e transmitir': 'অন্য কোথাও খেলে স্ট্রিম করার জন্য',
-  'Começar com a turma': 'বন্ধুদের সাথে শুরু করো',
   'Rodada {n} de {total}': 'রাউন্ড {n} / {total}',
   'Fim de jogo!': 'খেলা শেষ!',
   'Jogar de novo': 'আবার খেলো',

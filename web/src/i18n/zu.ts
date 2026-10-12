@@ -1221,7 +1221,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Kuvela izinto ezimbili, futhi ngamunye ukhetha esikrinini sakhe ukuthi yikuphi okukhulu. Usayizi wangempela uvela kubo bonke ngesikhathi esisodwa.',
   'Escolha a sala para jogar com a turma:': 'Khetha igumbi ozodlalela kulo nabangane:',
   'Para jogar fora e transmitir': 'Dlala kwenye indawo bese usakaza',
-  'Começar com a turma': 'Qala nabangane',
   'Rodada {n} de {total}': 'Umzuliswano {n} kwangu-{total}',
   'Fim de jogo!': 'Umdlalo uphelile!',
   'Jogar de novo': 'Dlala futhi',

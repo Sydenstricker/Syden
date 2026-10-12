@@ -1220,7 +1220,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Esiin tulee kaksi asiaa, ja jokainen valitsee omalla näytöllään, kumpi on isompi. Oikea koko näkyy kaikille samaan aikaan.',
   'Escolha a sala para jogar com a turma:': 'Valitse huone, jossa pelaat porukalla:',
   'Para jogar fora e transmitir': 'Pelattavaksi muualla ja striimattavaksi',
-  'Começar com a turma': 'Aloita porukalla',
   'Rodada {n} de {total}': 'Kierros {n} / {total}',
   'Fim de jogo!': 'Peli päättyi!',
   'Jogar de novo': 'Pelaa uudestaan',

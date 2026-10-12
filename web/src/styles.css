@@ -12381,9 +12381,48 @@ body.arrastando-barra {
   margin-left: auto;
 }
 
-.minijogo-convite p {
-  margin: 0 0 12px;
-  color: var(--text-muted);
+.minijogo-estante {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.minijogo-jogo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-strong);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.minijogo-capa {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: transform 120ms ease, outline-color 120ms ease;
+}
+
+.minijogo-jogo:hover .minijogo-capa,
+.minijogo-jogo:focus-visible .minijogo-capa {
+  transform: translateY(-2px);
+  outline-color: var(--accent);
+}
+
+.minijogo-jogo:focus-visible {
+  outline: none;
 }
 
 .minijogo-par {

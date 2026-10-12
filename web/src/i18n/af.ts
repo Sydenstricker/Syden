@@ -1214,7 +1214,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Twee voorwerpe verskyn en almal kies op hul eie skerm watter een groter is. Die regte grootte verskyn vir almal op dieselfde tyd.',
   'Escolha a sala para jogar com a turma:': 'Kies die kamer om saam met jou vriende te speel:',
   'Para jogar fora e transmitir': 'Om elders te speel en te stroom',
-  'Começar com a turma': 'Begin saam met jou vriende',
   'Rodada {n} de {total}': 'Rondte {n} van {total}',
   'Fim de jogo!': 'Speletjie verby!',
   'Jogar de novo': 'Speel weer',

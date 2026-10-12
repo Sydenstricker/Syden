@@ -1234,7 +1234,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Хоёр зүйл гарч ирэхэд хүн бүр өөрийн дэлгэц дээр аль нь илүү том болохыг сонгоно. Жинхэнэ хэмжээ нь бүгдэд нэгэн зэрэг харагдана.',
   'Escolha a sala para jogar com a turma:': 'Найзуудтайгаа тоглох өрөөгөө сонго:',
   'Para jogar fora e transmitir': 'Гадна тоглож, дамжуулахад',
-  'Começar com a turma': 'Найзуудтайгаа эхлэх',
   'Rodada {n} de {total}': 'Тойрог {n}/{total}',
   'Fim de jogo!': 'Тоглоом дууслаа!',
   'Jogar de novo': 'Дахин тоглох',

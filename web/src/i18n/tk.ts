@@ -1222,7 +1222,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Iki zat peýda bolýar we her kim öz ekranynda haýsysynyň uludygyny saýlaýar. Hakyky ölçeg hemmelere birbada görkezilýär.',
   'Escolha a sala para jogar com a turma:': 'Topar bilen oýnamak üçin otagy saýla:',
   'Para jogar fora e transmitir': 'Başga ýerde oýna we ýaýlym et',
-  'Começar com a turma': 'Topar bilen başla',
   'Rodada {n} de {total}': 'Tapgyr {n} / {total}',
   'Fim de jogo!': 'Oýun gutardy!',
   'Jogar de novo': 'Ýene oýna',

@@ -1156,7 +1156,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Εμφανίζονται δύο αντικείμενα και όλοι διαλέγουν στην οθόνη τους ποιο είναι μεγαλύτερο. Το πραγματικό μέγεθος εμφανίζεται σε όλους ταυτόχρονα.',
   'Escolha a sala para jogar com a turma:': 'Διάλεξε δωμάτιο για να παίξεις με την παρέα:',
   'Para jogar fora e transmitir': 'Για να παίξεις αλλού και να το μεταδώσεις',
-  'Começar com a turma': 'Ξεκίνα με την παρέα',
   'Rodada {n} de {total}': 'Γύρος {n} από {total}',
   'Fim de jogo!': 'Τέλος παιχνιδιού!',
   'Jogar de novo': 'Παίξε ξανά',

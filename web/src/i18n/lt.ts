@@ -1222,7 +1222,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Pasirodo du daiktai, ir kiekvienas savo ekrane pasirenka, kuris didesnis. Tikrasis dydis visiems parodomas tuo pačiu metu.',
   'Escolha a sala para jogar com a turma:': 'Pasirink kambarį žaisti su kompanija:',
   'Para jogar fora e transmitir': 'Žaisti kitur ir transliuoti',
-  'Começar com a turma': 'Pradėti su kompanija',
   'Rodada {n} de {total}': 'Raundas {n} iš {total}',
   'Fim de jogo!': 'Žaidimas baigtas!',
   'Jogar de novo': 'Žaisti dar kartą',

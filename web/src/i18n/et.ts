@@ -1217,7 +1217,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Ilmub kaks asja ja igaüks valib oma ekraanil, kumb on suurem. Tegelik suurus ilmub kõigile korraga.',
   'Escolha a sala para jogar com a turma:': 'Vali ruum, et sõpradega mängida:',
   'Para jogar fora e transmitir': 'Mujal mängimiseks ja striimimiseks',
-  'Começar com a turma': 'Alusta sõpradega',
   'Rodada {n} de {total}': 'Voor {n} / {total}',
   'Fim de jogo!': 'Mäng läbi!',
   'Jogar de novo': 'Mängi uuesti',

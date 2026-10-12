@@ -1138,7 +1138,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': '두 물체가 나오면 각자 자기 화면에서 더 큰 쪽을 골라요. 실제 크기는 모두에게 동시에 공개돼요.',
   'Escolha a sala para jogar com a turma:': '친구들과 플레이할 방을 고르세요:',
   'Para jogar fora e transmitir': '밖에서 플레이하고 방송하기',
-  'Começar com a turma': '친구들과 시작',
   'Rodada {n} de {total}': '라운드 {n}/{total}',
   'Fim de jogo!': '게임 끝!',
   'Jogar de novo': '다시 하기',

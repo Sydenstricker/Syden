@@ -1190,7 +1190,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Wantoonni lama mul’atu, tokkoon tokkoon nama iskiriinii ofii irratti kan caalaa guddaa ta’e filata. Hammi dhugaa hunda biratti yeroo tokkotti mul’ata.',
   'Escolha a sala para jogar com a turma:': 'Hiriyyoota waliin taphachuuf kutaa filadhu:',
   'Para jogar fora e transmitir': 'Ala taphachuu fi tamsaasuuf',
-  'Começar com a turma': 'Hiriyyoota waliin jalqabi',
   'Rodada {n} de {total}': 'Marsaa {n}/{total}',
   'Fim de jogo!': 'Taphni xumurame!',
   'Jogar de novo': 'Irra deebi’ii taphadhu',

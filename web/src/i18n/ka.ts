@@ -1238,7 +1238,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'ჩნდება ორი საგანი და თითოეული საკუთარ ეკრანზე ირჩევს, რომელია უფრო დიდი. ნამდვილი ზომა ყველას ერთდროულად უჩნდება.',
   'Escolha a sala para jogar com a turma:': 'აირჩიე ოთახი მეგობრებთან სათამაშოდ:',
   'Para jogar fora e transmitir': 'გარეთ სათამაშოდ და სატრანსლაციოდ',
-  'Começar com a turma': 'დაწყება მეგობრებთან ერთად',
   'Rodada {n} de {total}': 'რაუნდი {n} / {total}',
   'Fim de jogo!': 'თამაში დასრულდა!',
   'Jogar de novo': 'თავიდან თამაში',

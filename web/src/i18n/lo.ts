@@ -1221,7 +1221,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'ມີສອງສິ່ງປາກົດຂຶ້ນ ແລະ ແຕ່ລະຄົນເລືອກໃນໜ້າຈໍຂອງຕົນເອງວ່າອັນໃດໃຫຍ່ກວ່າ. ຂະໜາດແທ້ຈະສະແດງໃຫ້ທຸກຄົນເຫັນພ້ອມກັນ.',
   'Escolha a sala para jogar com a turma:': 'ເລືອກຫ້ອງເພື່ອຫຼິ້ນກັບໝູ່:',
   'Para jogar fora e transmitir': 'ສຳລັບຫຼິ້ນຢູ່ພາຍນອກ ແລະ ຖ່າຍທອດ',
-  'Começar com a turma': 'ເລີ່ມກັບໝູ່',
   'Rodada {n} de {total}': 'ຮອບ {n}/{total}',
   'Fim de jogo!': 'ຈົບເກມ!',
   'Jogar de novo': 'ຫຼິ້ນອີກຄັ້ງ',

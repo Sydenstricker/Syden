@@ -1228,7 +1228,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Ikki narsa paydo boʻladi va har kim oʻz ekranida qaysi biri kattaroq ekanini tanlaydi. Haqiqiy oʻlcham hammaga bir vaqtda koʻrsatiladi.',
   'Escolha a sala para jogar com a turma:': 'Doʻstlar bilan oʻynash uchun xonani tanlang:',
   'Para jogar fora e transmitir': 'Boshqa joyda oʻynab, translyatsiya qiling',
-  'Começar com a turma': 'Doʻstlar bilan boshlash',
   'Rodada {n} de {total}': 'Raund {n} / {total}',
   'Fim de jogo!': 'Oʻyin tugadi!',
   'Jogar de novo': 'Yana oʻynash',

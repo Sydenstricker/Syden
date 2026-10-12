@@ -1220,7 +1220,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Се појавуваат два предмета и секој на својот екран избира кој е поголем. Вистинската големина се појавува за сите во исто време.',
   'Escolha a sala para jogar com a turma:': 'Избери соба за игра со друштвото:',
   'Para jogar fora e transmitir': 'За играње надвор и пренос',
-  'Começar com a turma': 'Почни со друштвото',
   'Rodada {n} de {total}': 'Рунда {n} од {total}',
   'Fim de jogo!': 'Крај на играта!',
   'Jogar de novo': 'Играј повторно',

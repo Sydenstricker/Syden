@@ -1222,7 +1222,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Parādās divi priekšmeti, un katrs savā ekrānā izvēlas, kurš ir lielāks. Īstais izmērs visiem parādās vienlaikus.',
   'Escolha a sala para jogar com a turma:': 'Izvēlies istabu, lai spēlētu ar draugiem:',
   'Para jogar fora e transmitir': 'Spēlēt ārpusē un translēt',
-  'Começar com a turma': 'Sākt ar draugiem',
   'Rodada {n} de {total}': '{n}. kārta no {total}',
   'Fim de jogo!': 'Spēle beigusies!',
   'Jogar de novo': 'Spēlēt vēlreiz',

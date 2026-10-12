@@ -1149,7 +1149,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Vitu viwili vinaonekana na kila mmoja anachagua, kwenye skrini yake, kipi ni kikubwa zaidi. Ukubwa halisi unaonekana kwa wote kwa wakati mmoja.',
   'Escolha a sala para jogar com a turma:': 'Chagua chumba cha kucheza na kundi:',
   'Para jogar fora e transmitir': 'Cheza mahali pengine na utiririshe',
-  'Começar com a turma': 'Anza na kundi',
   'Rodada {n} de {total}': 'Raundi {n} kati ya {total}',
   'Fim de jogo!': 'Mchezo umekwisha!',
   'Jogar de novo': 'Cheza tena',

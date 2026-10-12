@@ -1150,7 +1150,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Dua objek muncul dan setiap orang memilih di skrin sendiri mana yang lebih besar. Saiz sebenar muncul kepada semua orang serentak.',
   'Escolha a sala para jogar com a turma:': 'Pilih bilik untuk main dengan geng:',
   'Para jogar fora e transmitir': 'Untuk main di luar dan strim',
-  'Começar com a turma': 'Mula dengan geng',
   'Rodada {n} de {total}': 'Pusingan {n} daripada {total}',
   'Fim de jogo!': 'Permainan tamat!',
   'Jogar de novo': 'Main lagi',

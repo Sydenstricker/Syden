@@ -1212,7 +1212,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Två saker dyker upp och alla väljer på sin egen skärm vilken som är större. Den riktiga storleken visas för alla samtidigt.',
   'Escolha a sala para jogar com a turma:': 'Välj rum för att spela med gänget:',
   'Para jogar fora e transmitir': 'Spela någon annanstans och streama',
-  'Começar com a turma': 'Starta med gänget',
   'Rodada {n} de {total}': 'Runda {n} av {total}',
   'Fim de jogo!': 'Spelet är slut!',
   'Jogar de novo': 'Spela igen',

@@ -1184,7 +1184,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'İki obyekt görünür və hər kəs öz ekranında hansının daha böyük olduğunu seçir. Əsl ölçü hamıya eyni anda göstərilir.',
   'Escolha a sala para jogar com a turma:': 'Dostlarla oynamaq üçün otağı seç:',
   'Para jogar fora e transmitir': 'Başqa yerdə oynamaq və yayımlamaq üçün',
-  'Começar com a turma': 'Dostlarla başla',
   'Rodada {n} de {total}': 'Raund {n} / {total}',
   'Fim de jogo!': 'Oyun bitdi!',
   'Jogar de novo': 'Yenidən oyna',

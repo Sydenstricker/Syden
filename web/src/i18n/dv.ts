@@ -1230,7 +1230,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'ދެ އެއްޗެއް ފެންނާނެ، އަދި ކޮންމެ މީހަކުވެސް އަމިއްލަ ސްކްރީނުން ބޮޑީ ކޮބައިކަން ހޮވާނެ. ހަގީގީ ބޮޑުމިން އެންމެންނަށް އެއްފަހަރާ ފެންނާނެ.',
   'Escolha a sala para jogar com a turma:': 'ރަޙްމަތްތެރިންނާ އެކު ކުޅޭނެ ރޫމް ހޮވާ:',
   'Para jogar fora e transmitir': 'އެހެން ތަނެއްގައި ކުޅެ ސްޓްރީމް ކުރުމަށް',
-  'Começar com a turma': 'ރަޙްމަތްތެރިންނާ އެކު ފަށާ',
   'Rodada {n} de {total}': 'ރައުންޑް {n} / {total}',
   'Fim de jogo!': 'ގޭމް ނިމުނީ!',
   'Jogar de novo': 'އަލުން ކުޅޭ',

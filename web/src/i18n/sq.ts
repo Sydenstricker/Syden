@@ -1212,7 +1212,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Shfaqen dy objekte dhe secili zgjedh në ekranin e vet cili është më i madh. Madhësia e vërtetë shfaqet për të gjithë njëkohësisht.',
   'Escolha a sala para jogar com a turma:': 'Zgjidh dhomën për të luajtur me shoqërinë:',
   'Para jogar fora e transmitir': 'Luaj diku tjetër dhe transmeto',
-  'Começar com a turma': 'Fillo me shoqërinë',
   'Rodada {n} de {total}': 'Raundi {n} nga {total}',
   'Fim de jogo!': 'Loja mbaroi!',
   'Jogar de novo': 'Luaj përsëri',

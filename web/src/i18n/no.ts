@@ -1220,7 +1220,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'To ting dukker opp, og hver og én velger på sin egen skjerm hvilken som er størst. Den virkelige størrelsen vises for alle samtidig.',
   'Escolha a sala para jogar com a turma:': 'Velg rommet du vil spille med gjengen i:',
   'Para jogar fora e transmitir': 'Til å spille utenfor og strømme',
-  'Começar com a turma': 'Start med gjengen',
   'Rodada {n} de {total}': 'Runde {n} av {total}',
   'Fim de jogo!': 'Spillet er over!',
   'Jogar de novo': 'Spill igjen',

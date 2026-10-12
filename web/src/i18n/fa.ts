@@ -1138,7 +1138,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'دو چیز نمایش داده می‌شود و هر کس روی صفحهٔ خودش انتخاب می‌کند کدام بزرگ‌تر است. اندازهٔ واقعی برای همه هم‌زمان نمایش داده می‌شود.',
   'Escolha a sala para jogar com a turma:': 'اتاق را برای بازی با دوستان انتخاب کنید:',
   'Para jogar fora e transmitir': 'برای بازی در جای دیگر و پخش زنده',
-  'Começar com a turma': 'شروع با دوستان',
   'Rodada {n} de {total}': 'دور {n} از {total}',
   'Fim de jogo!': 'بازی تمام شد!',
   'Jogar de novo': 'بازی دوباره',

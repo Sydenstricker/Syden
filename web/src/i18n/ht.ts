@@ -1230,7 +1230,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'De objè parèt epi chak moun chwazi, sou pwòp ekran yo, kiyès ki pi gwo. Vrè gwosè a parèt pou tout moun an menm tan.',
   'Escolha a sala para jogar com a turma:': 'Chwazi chanm nan pou jwe ak gwoup la:',
   'Para jogar fora e transmitir': 'Pou jwe deyò epi difize',
-  'Começar com a turma': 'Kòmanse ak gwoup la',
   'Rodada {n} de {total}': 'Wonn {n} sou {total}',
   'Fim de jogo!': 'Jwèt la fini!',
   'Jogar de novo': 'Jwe ankò',

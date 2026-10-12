@@ -1150,7 +1150,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Apar două obiecte și fiecare alege, pe propriul ecran, care e mai mare. Mărimea reală apare pentru toți în același timp.',
   'Escolha a sala para jogar com a turma:': 'Alege camera ca să joci cu gașca:',
   'Para jogar fora e transmitir': 'Joacă în altă parte și transmite',
-  'Começar com a turma': 'Începe cu gașca',
   'Rodada {n} de {total}': 'Runda {n} din {total}',
   'Fim de jogo!': 'Joc terminat!',
   'Jogar de novo': 'Joacă din nou',

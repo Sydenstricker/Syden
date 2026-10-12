@@ -1135,7 +1135,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'இரண்டு பொருட்கள் தோன்றும்; ஒவ்வொருவரும் தங்கள் திரையில் எது பெரியது என்று தேர்வு செய்வார்கள். உண்மையான அளவு எல்லோருக்கும் ஒரே நேரத்தில் தெரியும்.',
   'Escolha a sala para jogar com a turma:': 'நண்பர்களுடன் விளையாட அறையைத் தேர்வு செய்:',
   'Para jogar fora e transmitir': 'வெளியே விளையாடி ஒளிபரப்பு',
-  'Começar com a turma': 'நண்பர்களுடன் தொடங்கு',
   'Rodada {n} de {total}': 'சுற்று {n} / {total}',
   'Fim de jogo!': 'விளையாட்டு முடிந்தது!',
   'Jogar de novo': 'மீண்டும் விளையாடு',

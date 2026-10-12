@@ -1219,7 +1219,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Objeví se dva předměty a každý na své obrazovce vybere, který je větší. Skutečná velikost se všem ukáže ve stejnou chvíli.',
   'Escolha a sala para jogar com a turma:': 'Vyber místnost, kde budeš hrát s partou:',
   'Para jogar fora e transmitir': 'Na hraní jinde a streamování',
-  'Começar com a turma': 'Začít s partou',
   'Rodada {n} de {total}': 'Kolo {n} z {total}',
   'Fim de jogo!': 'Konec hry!',
   'Jogar de novo': 'Hrát znovu',

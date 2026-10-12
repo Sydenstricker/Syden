@@ -1200,7 +1200,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'З’являються два предмети, і кожен на своєму екрані обирає, який більший. Справжній розмір бачать усі одночасно.',
   'Escolha a sala para jogar com a turma:': 'Обери кімнату, щоб грати з друзями:',
   'Para jogar fora e transmitir': 'Грай на іншому сайті й транслюй',
-  'Começar com a turma': 'Почати з друзями',
   'Rodada {n} de {total}': 'Раунд {n} з {total}',
   'Fim de jogo!': 'Гру завершено!',
   'Jogar de novo': 'Зіграти ще раз',

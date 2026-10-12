@@ -1220,7 +1220,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Laba shay ayaa soo baxa, qof walbana shaashaddiisa ayuu ka doortaa kan ka weyn. Cabbirka dhabta ah ayaa qof walba isku mar u soo baxa.',
   'Escolha a sala para jogar com a turma:': 'Dooro qolka aad kooxda kula ciyaarayso:',
   'Para jogar fora e transmitir': 'Meel kale ka ciyaar oo baahi',
-  'Começar com a turma': 'Kooxda la bilow',
   'Rodada {n} de {total}': 'Wareegga {n} ee {total}',
   'Fim de jogo!': 'Ciyaartu way dhammaatay!',
   'Jogar de novo': 'Mar kale ciyaar',

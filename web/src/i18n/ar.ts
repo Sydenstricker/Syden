@@ -1170,7 +1170,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'يظهر شيئان، ويختار كل شخص على شاشته أيهما الأكبر. ثم يظهر الحجم الحقيقي للجميع في الوقت نفسه.',
   'Escolha a sala para jogar com a turma:': 'اختيار الغرفة للعب مع الأصدقاء:',
   'Para jogar fora e transmitir': 'للعب في مكان آخر مع البث',
-  'Começar com a turma': 'البدء مع الأصدقاء',
   'Rodada {n} de {total}': 'الجولة {n} من {total}',
   'Fim de jogo!': 'انتهت اللعبة!',
   'Jogar de novo': 'اللعب مجددًا',

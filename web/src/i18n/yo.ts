@@ -1165,7 +1165,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Nǹkan méjì yóò farahàn, olúkúlùkù yóò sì yan èyí tó tóbi jù lórí ojú-ìbòjú tirẹ̀. Ìwọ̀n gidi yóò hàn sí gbogbo ènìyàn lẹ́ẹ̀kan náà.',
   'Escolha a sala para jogar com a turma:': 'Yan yàrá láti ṣeré pẹ̀lú àwọn ọ̀rẹ́:',
   'Para jogar fora e transmitir': 'Ṣeré níbòmíràn kí o sì gbé e jáde',
-  'Começar com a turma': 'Bẹ̀rẹ̀ pẹ̀lú àwọn ọ̀rẹ́',
   'Rodada {n} de {total}': 'Ìpele {n} nínú {total}',
   'Fim de jogo!': 'Eré ti parí!',
   'Jogar de novo': 'Tún ṣeré',

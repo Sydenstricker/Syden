@@ -1219,7 +1219,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Pojave se dva predmeta i svatko na svom zaslonu bira koji je veći. Prava veličina svima se pokaže u isto vrijeme.',
   'Escolha a sala para jogar com a turma:': 'Odaberi sobu za igru s ekipom:',
   'Para jogar fora e transmitir': 'Za igru negdje drugdje uz prijenos',
-  'Começar com a turma': 'Počni s ekipom',
   'Rodada {n} de {total}': 'Runda {n} od {total}',
   'Fim de jogo!': 'Kraj igre!',
   'Jogar de novo': 'Igraj ponovno',

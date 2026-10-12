@@ -1200,7 +1200,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'מופיעים שני דברים, וכולם בוחרים במסך שלהם מה יותר גדול. הגודל האמיתי מופיע לכולם באותו הזמן.',
   'Escolha a sala para jogar com a turma:': 'בחירת חדר כדי לשחק עם החבר\'ה:',
   'Para jogar fora e transmitir': 'לשחק במקום אחר ולשדר',
-  'Começar com a turma': 'להתחיל עם החבר\'ה',
   'Rodada {n} de {total}': 'סיבוב {n} מתוך {total}',
   'Fim de jogo!': 'המשחק נגמר!',
   'Jogar de novo': 'לשחק שוב',

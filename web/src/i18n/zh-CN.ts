@@ -1137,7 +1137,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': '屏幕上出现两样东西，每个人在自己的屏幕上选出哪个更大。真实大小会同时向所有人揭晓。',
   'Escolha a sala para jogar com a turma:': '选择一个房间，和朋友一起玩：',
   'Para jogar fora e transmitir': '去外部网站玩，并直播出来',
-  'Começar com a turma': '和朋友一起开始',
   'Rodada {n} de {total}': '第 {n} 轮，共 {total} 轮',
   'Fim de jogo!': '游戏结束！',
   'Jogar de novo': '再玩一次',

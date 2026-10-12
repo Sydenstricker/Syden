@@ -1239,7 +1239,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Երկու առարկա է հայտնվում, և յուրաքանչյուրն իր էկրանին ընտրում է, թե որն է ավելի մեծ։ Իրական չափը բոլորին երևում է միաժամանակ։',
   'Escolha a sala para jogar com a turma:': 'Ընտրիր սենյակը՝ ընկերների հետ խաղալու համար․',
   'Para jogar fora e transmitir': 'Դրսում խաղալու և հեռարձակելու համար',
-  'Começar com a turma': 'Սկսել ընկերների հետ',
   'Rodada {n} de {total}': 'Ռաունդ {n} / {total}',
   'Fim de jogo!': 'Խաղն ավարտվեց',
   'Jogar de novo': 'Խաղալ նորից',

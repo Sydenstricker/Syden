@@ -1216,7 +1216,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Екі зат шығады, әркім өз экранында қайсысы үлкен екенін таңдайды. Нақты өлшемі бәріне бір мезетте көрсетіледі.',
   'Escolha a sala para jogar com a turma:': 'Достарыңызбен ойнайтын бөлмені таңдаңыз:',
   'Para jogar fora e transmitir': 'Сыртта ойнап, трансляция жасау үшін',
-  'Começar com a turma': 'Достармен бастау',
   'Rodada {n} de {total}': 'Раунд {n}/{total}',
   'Fim de jogo!': 'Ойын бітті!',
   'Jogar de novo': 'Қайта ойнау',

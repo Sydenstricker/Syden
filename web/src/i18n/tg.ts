@@ -1221,7 +1221,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Ду ашё пайдо мешавад ва ҳар кас дар экрани худ интихоб мекунад, ки кадомаш калонтар аст. Андозаи аслӣ ба ҳама якбора нишон дода мешавад.',
   'Escolha a sala para jogar com a turma:': 'Барои бозӣ бо дӯстон ҳуҷраро интихоб кунед:',
   'Para jogar fora e transmitir': 'Дар ҷои дигар бозӣ кунед ва пахш кунед',
-  'Começar com a turma': 'Бо дӯстон оғоз кардан',
   'Rodada {n} de {total}': 'Даври {n} аз {total}',
   'Fim de jogo!': 'Бозӣ тамом шуд!',
   'Jogar de novo': 'Боз бозӣ кардан',

@@ -1163,7 +1163,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'จะมีของสองอย่างปรากฏขึ้น แต่ละคนเลือกบนจอของตัวเองว่าอันไหนใหญ่กว่า แล้วขนาดจริงจะแสดงให้ทุกคนเห็นพร้อมกัน',
   'Escolha a sala para jogar com a turma:': 'เลือกห้องเพื่อเล่นกับแก๊ง:',
   'Para jogar fora e transmitir': 'ไปเล่นที่อื่นแล้วสตรีม',
-  'Começar com a turma': 'เริ่มกับแก๊ง',
   'Rodada {n} de {total}': 'รอบที่ {n} จาก {total}',
   'Fim de jogo!': 'จบเกม!',
   'Jogar de novo': 'เล่นอีกครั้ง',

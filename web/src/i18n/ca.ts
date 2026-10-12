@@ -1216,7 +1216,6 @@ export default {
   'Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.': 'Apareixen dos objectes i cadascú tria, a la seva pantalla, quin és el més gran. La mida real apareix per a tothom alhora.',
   'Escolha a sala para jogar com a turma:': 'Tria la sala per jugar amb la colla:',
   'Para jogar fora e transmitir': 'Per jugar fora i transmetre',
-  'Começar com a turma': 'Comença amb la colla',
   'Rodada {n} de {total}': 'Ronda {n} de {total}',
   'Fim de jogo!': 'Fi de la partida!',
   'Jogar de novo': 'Torna a jugar',
