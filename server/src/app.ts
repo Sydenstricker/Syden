@@ -26,6 +26,7 @@ import { registerAutomodRoutes } from './automod-routes.js';
 import { registerAdvertenciasRoutes } from './advertencias-routes.js';
 import { registerComandosRoutes } from './comandos-routes.js';
 import { registerTicketsRoutes } from './tickets-routes.js';
+import { registerCargosAutomaticosRoutes } from './cargos-automaticos-routes.js';
 import { registerAgendadasRoutes } from './agendadas-routes.js';
 import { registerAniversariosRoutes } from './aniversarios-routes.js';
 import { registerSorteiosRoutes } from './sorteios-routes.js';
@@ -79,6 +80,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerAdvertenciasRoutes(app, io);
   registerComandosRoutes(app);
   registerTicketsRoutes(app, io);
+  registerCargosAutomaticosRoutes(app, io);
   registerAgendadasRoutes(app);
   registerAniversariosRoutes(app);
   registerSorteiosRoutes(app, io);

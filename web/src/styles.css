@@ -12096,6 +12096,49 @@ body.arrastando-barra {
 }
 
 /* ---------- Os comandos personalizados (Comandos.tsx) ---------- */
+/* ---------- Cargos automáticos (ver CargosAutomaticos.tsx) ---------- */
+
+.cargo-auto-cor {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.cargo-auto-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.cargo-auto-opcao {
+  display: flex;
+  gap: 8px;
+}
+
+.cargo-auto-opcao input {
+  width: 72px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  text-align: center;
+}
+
+.cargo-auto-form .link-button {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cargo-auto-form .btn-primary {
+  align-self: flex-start;
+}
+
 /* ---------- Tickets (ver Tickets.tsx) ---------- */
 
 .tickets-lista {

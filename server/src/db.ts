@@ -5618,3 +5618,104 @@ export function encerrarTicket(communityId: number, id: number, por: number) {
     "UPDATE tickets SET fechado_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), fechado_por = ? WHERE community_id = ? AND id = ? AND fechado_em IS NULL",
   ).run(por, communityId, id);
 }
+
+// ===================================================================================================
+// CARGOS AUTOMÁTICOS (pacote MEE6, 12/10/2026): dois jeitos de alguém ganhar cargo sem quem administra dar um
+// por um. (1) CARGO POR REAÇÃO: o Syden publica um painel ("escolha os seus") com um emoji por cargo; reagir
+// dá o cargo, tirar a reação tira. (2) CARGO DE QUEM ENTRA: os cargos que toda pessoa nova recebe ao entrar.
+// ===================================================================================================
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS paineis_de_cargo (
+    id           INTEGER PRIMARY KEY,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    channel_id   INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    message_id   INTEGER NOT NULL UNIQUE REFERENCES messages(id) ON DELETE CASCADE,
+    criado_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE TABLE IF NOT EXISTS opcoes_de_cargo (
+    painel_id INTEGER NOT NULL REFERENCES paineis_de_cargo(id) ON DELETE CASCADE,
+    emoji     TEXT NOT NULL,
+    cargo_id  INTEGER NOT NULL REFERENCES cargos(id) ON DELETE CASCADE,
+    PRIMARY KEY (painel_id, emoji)
+  );
+  CREATE TABLE IF NOT EXISTS cargos_de_entrada (
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    cargo_id     INTEGER NOT NULL REFERENCES cargos(id) ON DELETE CASCADE,
+    PRIMARY KEY (community_id, cargo_id)
+  );
+`);
+
+export const MAXIMO_DE_OPCOES_NO_PAINEL = 10;
+export const MAXIMO_DE_PAINEIS = 10;
+
+export interface PainelDeCargo {
+  id: number;
+  channelId: number;
+  messageId: number;
+  canal: string;
+  opcoes: { emoji: string; cargoId: number }[];
+}
+
+export function criarPainelDeCargo(communityId: number, channelId: number, messageId: number, opcoes: { emoji: string; cargoId: number }[]): number {
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO paineis_de_cargo (community_id, channel_id, message_id) VALUES (?, ?, ?)')
+    .run(communityId, channelId, messageId);
+  const id = Number(lastInsertRowid);
+  const opcao = db.prepare('INSERT INTO opcoes_de_cargo (painel_id, emoji, cargo_id) VALUES (?, ?, ?)');
+  for (const o of opcoes) opcao.run(id, o.emoji, o.cargoId);
+  return id;
+}
+
+export function listarPaineisDeCargo(communityId: number): PainelDeCargo[] {
+  const paineis = db
+    .prepare(
+      `SELECT p.id, p.channel_id AS channelId, p.message_id AS messageId, c.name AS canal
+       FROM paineis_de_cargo p JOIN channels c ON c.id = p.channel_id WHERE p.community_id = ? ORDER BY p.id`,
+    )
+    .all(communityId) as unknown as Omit<PainelDeCargo, 'opcoes'>[];
+  const opcoes = db.prepare('SELECT emoji, cargo_id AS cargoId FROM opcoes_de_cargo WHERE painel_id = ? ORDER BY rowid');
+  return paineis.map((p) => ({ ...p, opcoes: opcoes.all(p.id) as unknown as { emoji: string; cargoId: number }[] }));
+}
+
+export function apagarPainelDeCargo(communityId: number, id: number): { messageId: number; channelId: number } | undefined {
+  const painel = db.prepare('SELECT message_id AS messageId, channel_id AS channelId FROM paineis_de_cargo WHERE community_id = ? AND id = ?').get(communityId, id) as
+    | { messageId: number; channelId: number }
+    | undefined;
+  if (painel) db.prepare('DELETE FROM paineis_de_cargo WHERE id = ?').run(id);
+  return painel;
+}
+
+/** O cargo que reagir com `emoji` naquela mensagem dá, se ela for um painel de cargos. */
+export function cargoDaReacao(messageId: number, emoji: string): { communityId: number; cargoId: number } | undefined {
+  return db
+    .prepare(
+      `SELECT p.community_id AS communityId, o.cargo_id AS cargoId
+       FROM paineis_de_cargo p JOIN opcoes_de_cargo o ON o.painel_id = p.id WHERE p.message_id = ? AND o.emoji = ?`,
+    )
+    .get(messageId, emoji) as { communityId: number; cargoId: number } | undefined;
+}
+
+export function cargosDeEntrada(communityId: number): number[] {
+  return (db.prepare('SELECT cargo_id AS id FROM cargos_de_entrada WHERE community_id = ? ORDER BY cargo_id').all(communityId) as { id: number }[]).map(
+    (r) => r.id,
+  );
+}
+
+export function definirCargosDeEntrada(communityId: number, cargoIds: number[]) {
+  db.exec('BEGIN');
+  try {
+    db.prepare('DELETE FROM cargos_de_entrada WHERE community_id = ?').run(communityId);
+    const inserir = db.prepare('INSERT OR IGNORE INTO cargos_de_entrada (community_id, cargo_id) VALUES (?, ?)');
+    for (const id of cargoIds) inserir.run(communityId, id);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+}
+
+/** Quem acabou de entrar recebe os cargos de entrada da comunidade (chamado antes de a comunidade ser avisada). */
+export function entregarCargosDeEntrada(communityId: number, userId: number) {
+  for (const cargoId of cargosDeEntrada(communityId)) darCargo(communityId, userId, cargoId);
+}

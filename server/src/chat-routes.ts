@@ -1,4 +1,5 @@
 // O que uma mensagem pode carregar além do texto: arquivos, enquetes e tópicos.
+import { aplicarCargoPorReacao } from './cargos-automaticos-routes.js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import { barrarMensagem } from './automod.js';
@@ -350,6 +351,8 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
         reactions: db.reactionCounts(message.id),
       });
       if (marcou && emoji === db.EMOJI_DO_DESTAQUE) talvezDestacar(io, message.id);
+      // Painel de "escolha seus cargos": reagir dá o cargo, tirar a reação tira.
+      aplicarCargoPorReacao(io, message.id, emoji, request.user.id, marcou);
       // Só para quem agiu: a lista já com "mine" certo, pronta para substituir o estado local.
       return db.reactionsForMessage(message.id, request.user.id);
     });

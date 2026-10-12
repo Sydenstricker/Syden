@@ -774,10 +774,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(409).send({ error: 'Esta comunidade já está cheia.' });
       }
       db.addMember(community.id, request.user.id);
+      // Os cargos de entrada (pacote MEE6) chegam antes do aviso: a comunidade já vê a pessoa com eles.
+      db.entregarCargosDeEntrada(community.id, request.user.id);
       joinCommunityRoom(io, request.user.id, community.id);
       io.to(communityRoom(community.id)).emit('member:updated', {
         communityId: community.id,
-        member: { ...request.user, role: 'member' },
+        member: db.listCommunityMembers(community.id).find((m) => m.id === request.user.id) ?? { ...request.user, role: 'member' },
       });
       return db.listCommunitiesForUser(request.user.id).find((c) => c.id === community.id);
     });

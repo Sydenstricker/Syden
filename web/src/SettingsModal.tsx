@@ -19,7 +19,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck } from 'lucide-react';
 import {
   type FormEvent,
   // Apelidados: sem isto o KeyboardEvent do React sombreia o do DOM, e o ouvinte de Escape lá
@@ -63,6 +63,7 @@ import { AgendadasSection } from './Agendadas';
 import { MeuAniversario } from './Aniversario';
 import { SorteiosSection } from './Sorteios';
 import { TicketsSection } from './Tickets';
+import { CargosAutomaticosSection } from './CargosAutomaticos';
 import { DestaquesSection } from './Destaques';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
@@ -88,7 +89,7 @@ import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
+type Section = 'account' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
@@ -106,7 +107,7 @@ const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
 ];
 
 /** Seções que só quem administra enxerga: as regras e o que o Syden publica sozinho são dela. */
-const SO_PARA_QUEM_ADMINISTRA: Section[] = ['moderacao', 'comandos', 'tickets', 'agendadas', 'sorteios', 'destaques'];
+const SO_PARA_QUEM_ADMINISTRA: Section[] = ['moderacao', 'comandos', 'tickets', 'cargos-automaticos', 'agendadas', 'sorteios', 'destaques'];
 
 const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   // Comunidade e Membros seguem com os ícones de traço: o desenho de videochamada é colorido demais para
@@ -117,6 +118,7 @@ const COMMUNITY_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'moderacao', label: chave('Moderação'), icon: <ShieldCheck size={18} /> },
   { id: 'comandos', label: chave('Comandos'), icon: <TerminalSquare size={18} /> },
   { id: 'tickets', label: chave('Tickets'), icon: <TicketIcon size={18} /> },
+  { id: 'cargos-automaticos', label: chave('Cargos automáticos'), icon: <BadgeCheck size={18} /> },
   { id: 'agendadas', label: chave('Mensagens agendadas'), icon: <CalendarClock size={18} /> },
   { id: 'sorteios', label: chave('Sorteios'), icon: <Gift size={18} /> },
   { id: 'destaques', label: chave('Destaques'), icon: <Star size={18} /> },
@@ -224,6 +226,7 @@ export function SettingsModal({
           {community && section === 'moderacao' && manages(community) && <ModeracaoSection community={community} />}
           {community && section === 'comandos' && manages(community) && <ComandosSection community={community} />}
           {community && section === 'tickets' && manages(community) && <TicketsSection community={community} />}
+          {community && section === 'cargos-automaticos' && manages(community) && <CargosAutomaticosSection community={community} />}
           {community && section === 'agendadas' && manages(community) && <AgendadasSection community={community} />}
           {community && section === 'sorteios' && manages(community) && <SorteiosSection community={community} />}
           {community && section === 'destaques' && manages(community) && <DestaquesSection community={community} />}
