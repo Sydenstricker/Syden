@@ -2,7 +2,7 @@ import { Music, Play, Plus, Square, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { lerLetra, letraSemTempo, type LinhaDaLetra, linhaAtual, relogio } from './lrc';
-import { getSettings } from './settings';
+import { aoMudarAjustes, getSettings } from './settings';
 import type { KaraokeSong } from './types';
 import { readAsDataUrl } from './upload';
 import type { Voice } from './useVoice';
@@ -194,6 +194,14 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
 
   const emCartaz = voice.karaoke;
   const song = emCartaz ? musicas?.find((m) => m.id === emCartaz.songId) : undefined;
+
+  // O volume do soundboard vale também para a música que já está tocando, não só para a próxima.
+  useEffect(() => {
+    const largar = aoMudarAjustes(() => {
+      if (audioRef.current) audioRef.current.volume = getSettings().soundboardVolume;
+    });
+    return () => void largar();
+  }, []);
 
   // Toca (ou para) conforme o aviso que chegou na sala.
   useEffect(() => {

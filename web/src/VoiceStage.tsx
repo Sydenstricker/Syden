@@ -312,6 +312,10 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
   const [ouvindo, setOuvindo] = useState<number | null>(null);
   const previa = useRef<HTMLAudioElement | null>(null);
   useEffect(() => () => previa.current?.pause(), []);
+  // A barra de volume vale também para a prévia que já está tocando.
+  useEffect(() => {
+    if (previa.current) previa.current.volume = settings.soundboardVolume;
+  }, [settings.soundboardVolume]);
   function ouvir(id: number) {
     previa.current?.pause();
     if (ouvindo === id) {

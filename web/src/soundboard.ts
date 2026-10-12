@@ -1,43 +1,43 @@
 import { mediaUrl } from './api';
 import { comTeto } from './limitador';
 import { estaSurdo } from './sounds';
-import { getSettings } from './settings';
+import { aoMudarAjustes, getSettings } from './settings';
 
 // Toca um som do soundboard neste computador. Cada pessoa da sala toca o próprio áudio ao receber o
 // aviso pelo canal de dados do LiveKit; o som não passa pelo microfone de ninguém.
 
-// O que está tocando agora neste computador, para o botão "Parar" poder calar tudo de uma vez —
-// alguns sons de pacote passam de meio minuto.
-const playing = new Map<number, HTMLAudioElement>();
+// O que está tocando agora neste computador. UM SOM DE CADA VEZ (pedido de 12/10/2026): o som novo,
+// de quem quer que seja, cala o anterior. Antes só o MESMO som recomeçava, e dois sons diferentes
+// tocavam juntos — com alguns de pacote passando de meio minuto, virava um coro que ninguém parava.
+let tocando: HTMLAudioElement | null = null;
 
 export function stopAllSounds() {
-  for (const audio of playing.values()) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
-  playing.clear();
+  if (!tocando) return;
+  tocando.pause();
+  tocando.currentTime = 0;
+  tocando = null;
 }
+
+// O volume vale também para o som que JÁ está tocando: lido só no começo, mexer na barra durante um
+// som de trinta segundos não fazia nada até o próximo.
+aoMudarAjustes(() => {
+  if (tocando) tocando.volume = getSettings().soundboardVolume;
+});
 
 export function playSoundboard(soundId: number) {
   // Som de outra pessoa: cala quando quem ouve ensurdeceu. A conferência mora aqui, e não em quem
   // chama, pela mesma razão explicada em sounds.ts.
   if (estaSurdo()) return;
   const settings = getSettings();
-  // O mesmo som tocado de novo recomeça em vez de empilhar: dois cliques seguidos num som de trinta
-  // segundos viravam um coro que ninguém conseguia parar.
-  const tocando = playing.get(soundId);
-  if (tocando) {
-    tocando.pause();
-    tocando.currentTime = 0;
-  }
+  stopAllSounds();
   const audio = new Audio();
   // Precisa ser pedido COMO ANÔNIMO para o som poder passar pelo limitador: sem isto o navegador
   // deixa tocar mas não deixa o app olhar as amostras, e o caminho do Web Audio sai mudo.
   audio.crossOrigin = 'anonymous';
   audio.src = mediaUrl.sound(soundId);
-  playing.set(soundId, audio);
+  tocando = audio;
   audio.addEventListener('ended', () => {
-    if (playing.get(soundId) === audio) playing.delete(soundId);
+    if (tocando === audio) tocando = null;
   });
   audio.volume = settings.soundboardVolume;
   // Um som de soundboard é um arquivo que qualquer pessoa da comunidade enviou, e vem como veio: um
