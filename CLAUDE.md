@@ -299,6 +299,13 @@ isso decide quais bibliotecas podem entrar):
 - **O Size It Up será NOSSO, com manutenção a cada 2 semanas** (decisão dele, mesmo sendo gênero de
   pouca tração). O desenho e a rotina de manutenção ainda serão propostos.
 
+**Feito em 12/10/2026 (degraus 1 e 2, com o primeiro jogo):** o "Qual é maior?" (o Size It Up nosso) roda na sala de
+voz: botão de videogame na barra, painel que abre sozinho para a sala inteira, 8 rodadas, votos escondidos até a
+revelação, placar. O servidor decide tudo e a partida mora só na memória (`server/src/minijogos.ts`); os nomes dos
+objetos ficam no site, traduzidos, e os tamanhos só no servidor (um teste confere que as listas batem). O computador do
+quarto abre os Mini-games: escolher uma sala entra e já começa, e embaixo ficam os sites sem anúncio para transmitir.
+**Manutenção do conteúdo:** acrescentar objeto é uma linha em cada um dos dois `minijogos.ts` e a tradução do nome.
+
 **O caminho combinado, em degraus:**
 1. Uma lista de links na home ("Mini-games"), só com os sites SEM anúncio acima, com a dica "abra,
    transmita e adivinhem juntos". Umas 2 horas.
