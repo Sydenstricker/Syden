@@ -32,7 +32,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
   /** O que a tela de entrada mostra antes de a pessoa escrever o nome. Sem login: ela ainda não tem conta. */
   app.get<{ Params: { token: string } }>('/api/aula/:token', async (request, reply) => {
     const aula = db.aulaPeloToken(request.params.token);
-    if (!aula) return reply.code(404).send({ error: 'Este link de aula não vale mais. Peça um novo a quem dá a aula.' });
+    if (!aula) return reply.code(404).send({ error: 'Este link não vale mais. Peça um novo a quem mandou.' });
     return { sala: aula.sala, comunidade: aula.comunidade, expiraEm: aula.expiraEm };
   });
 
@@ -44,7 +44,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       if (espera) return reply.header('retry-after', String(espera)).code(429).send({ error: `Muitas tentativas seguidas. Espere ${espera} s.` });
 
       const aula = db.aulaPeloToken(request.params.token);
-      if (!aula) return reply.code(404).send({ error: 'Este link de aula não vale mais. Peça um novo a quem dá a aula.' });
+      if (!aula) return reply.code(404).send({ error: 'Este link não vale mais. Peça um novo a quem mandou.' });
 
       const nome = String(request.body?.nome ?? '').trim().replace(/\s+/g, ' ');
       if (!NOME_RE.test(nome)) return reply.code(400).send({ error: 'Escreva o seu nome, com 2 a 40 letras.' });
@@ -56,7 +56,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       }
       if (freioDeContas.bloqueado(request.ip)) return reply.code(429).send({ error: 'Muitas entradas deste lugar hoje. Tente amanhã.' });
       if (db.countMembers(aula.communityId) >= config.maxMembersPerCommunity) {
-        return reply.code(409).send({ error: 'A turma está cheia.' });
+        return reply.code(409).send({ error: 'A comunidade está cheia.' });
       }
 
       const user = db.criarUsuarioTemporario(nome, aula.expiraEm);
@@ -73,9 +73,9 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
     /** Entrar COM conta: vira membro da comunidade, se ainda não era, e recebe para onde ir. */
     authed.post<{ Params: { token: string } }>('/api/aula/:token/entrar-com-conta', async (request, reply) => {
       const aula = db.aulaPeloToken(request.params.token);
-      if (!aula) return reply.code(404).send({ error: 'Este link de aula não vale mais. Peça um novo a quem dá a aula.' });
+      if (!aula) return reply.code(404).send({ error: 'Este link não vale mais. Peça um novo a quem mandou.' });
       if (!db.memberRole(aula.communityId, request.user.id)) {
-        if (db.countMembers(aula.communityId) >= config.maxMembersPerCommunity) return reply.code(409).send({ error: 'A turma está cheia.' });
+        if (db.countMembers(aula.communityId) >= config.maxMembersPerCommunity) return reply.code(409).send({ error: 'A comunidade está cheia.' });
         db.addMember(aula.communityId, request.user.id);
         const user = db.findUserById(request.user.id);
         io.to(communityRoom(aula.communityId)).emit('member:updated', { communityId: aula.communityId, member: { ...user, role: 'member' } });
@@ -89,7 +89,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       // Quem não participa recebe 404, como no resto do Syden: um 403 contaria que a sala existe.
       const papel = canal && canal.communityId !== null ? db.memberRole(canal.communityId, request.user.id) : undefined;
       if (!canal || canal.type !== 'voice' || canal.communityId === null || !papel) return reply.code(404).send({ error: 'Sala não encontrada.' });
-      if (!manages(papel)) return reply.code(403).send({ error: 'Só quem administra a comunidade cria links de aula.' });
+      if (!manages(papel)) return reply.code(403).send({ error: 'Só quem administra a comunidade cria links de visitante.' });
       return db.aulasDaSala(canal.id);
     });
 
@@ -98,7 +98,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       // Quem não participa recebe 404, como no resto do Syden: um 403 contaria que a sala existe.
       const papel = canal && canal.communityId !== null ? db.memberRole(canal.communityId, request.user.id) : undefined;
       if (!canal || canal.type !== 'voice' || canal.communityId === null || !papel) return reply.code(404).send({ error: 'Sala não encontrada.' });
-      if (!manages(papel)) return reply.code(403).send({ error: 'Só quem administra a comunidade cria links de aula.' });
+      if (!manages(papel)) return reply.code(403).send({ error: 'Só quem administra a comunidade cria links de visitante.' });
       const horas = Number(request.body?.horas ?? 3);
       if (!HORAS_POSSIVEIS.includes(horas)) return reply.code(400).send({ error: 'O link vale de 1 a 24 horas.' });
       return db.criarAula(canal.id, canal.communityId, request.user.id, horas);
@@ -106,7 +106,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.delete<{ Params: { cid: string; id: string } }>('/api/communities/:cid/aulas/:id', async (request, reply) => {
       const communityId = Number(request.params.cid);
-      if (!manages(db.memberRole(communityId, request.user.id))) return reply.code(403).send({ error: 'Só quem administra a comunidade desliga links de aula.' });
+      if (!manages(db.memberRole(communityId, request.user.id))) return reply.code(403).send({ error: 'Só quem administra a comunidade desliga links de visitante.' });
       if (!db.revogarAula(Number(request.params.id), communityId)) return reply.code(404).send({ error: 'Link não encontrado.' });
       return { ok: true };
     });

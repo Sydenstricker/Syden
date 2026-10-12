@@ -981,7 +981,7 @@ export function Shell({
                 <span>{community?.name ?? ''}</span>
               </span>
               <button type="button" className="btn-secondary" onClick={sairDaAula}>
-                {temporario ? t('Sair da aula') : t('Sair do modo sala')}
+                {temporario ? t('Sair da sala') : t('Sair do modo sala')}
               </button>
             </div>
           )}

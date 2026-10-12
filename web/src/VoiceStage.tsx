@@ -51,7 +51,6 @@ import { ClipButton, PreviaDoClipe, useClipe } from './ClipButton';
 import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
 import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
-import { LinkDaAula } from './LinkDaAula';
 import { quemAssiste } from './assistindo';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
@@ -142,10 +141,6 @@ export function VoiceStage({
         */}
         {/* Apresentar só faz sentido para quem administra, e só numa sala de voz. */}
         {palco?.souApresentador && !simples && <BotaoApresentacao channelId={channel.id} estado={palco} />}
-        {/* Quem administra cria o link que traz a turma direto para esta sala (ver LinkDaAula.tsx). */}
-        {palco?.souApresentador && !simples && channel.communityId !== null && (
-          <LinkDaAula channelId={channel.id} communityId={channel.communityId} />
-        )}
         {inThisRoom && alguemTransmitindo && !simples && (
           <button
             className={`header-toggle${sessao ? ' active' : ''}`}

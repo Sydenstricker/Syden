@@ -18,8 +18,6 @@ import {
   CopyPlus,
   UsersRound,
   Home,
-  Check,
-  Link as LinkIcon,
   Trophy,
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
@@ -27,6 +25,7 @@ import { api } from './api';
 import { DIAS_NA_LIXEIRA } from './lixeira';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { ConfirmDialog } from './ConfirmDialog';
+import { LinkDaSala } from './LinkDaSala';
 import { LINK_PRINCIPAL, PELA_STORE, showDesktopDownload } from './desktopDownload';
 import { AnimatedIcon } from './AnimatedIcon';
 import { CapaDaComunidade } from './CapaDaComunidade';
@@ -136,6 +135,7 @@ export function Sidebar({
       active={channel.id === selectedId}
       manageable={canManage(channel)}
       inviteCode={community.inviteCode ?? null}
+      podeConvidarVisitante={managesCommunity && channel.type === 'voice'}
       podeCriarSalas={managesCommunity && channel.type === 'voice' && !channel.temporaria}
       podeLimitar={channel.type === 'voice' && !channel.criaSalas && (managesCommunity || (!!channel.temporaria && channel.createdBy === user.id))}
       lotacao={channel.limite ? `${voiceMembers.filter((m) => m.channelId === channel.id).length}/${channel.limite}` : null}
@@ -375,6 +375,7 @@ function ChannelRow({
   active,
   manageable,
   inviteCode,
+  podeConvidarVisitante,
   podeCriarSalas,
   podeLimitar,
   lotacao,
@@ -385,8 +386,10 @@ function ChannelRow({
   icon: ReactNode;
   active: boolean;
   manageable: boolean;
-  /** O convite da comunidade: o link da sala é ele mais o canal (ver readInviteFromUrl, em App.tsx). */
+  /** O convite da comunidade: o link da sala é ele mais o canal (ver LinkDaSala.tsx e readInviteFromUrl, em App.tsx). */
   inviteCode: string | null;
+  /** Quem administra cria links de visitante sem conta numa sala de voz (ver LinkDaSala.tsx). */
+  podeConvidarVisitante: boolean;
   /** Quem administra liga "cria salas" numa sala de voz (ver server/src/salas-temporarias.ts). */
   podeCriarSalas: boolean;
   /** Quem administra, ou quem é dona da sala temporária, põe limite de gente. */
@@ -400,20 +403,6 @@ function ChannelRow({
   const [renaming, setRenaming] = useState(false);
   const [limitando, setLimitando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copiado, setCopiado] = useState(false);
-
-  /**
-   * O LINK DA SALA: o convite da comunidade com o canal junto. Quem não participa entra na comunidade
-   * e cai nele; quem já participa só cai nele. Qualquer membro copia, como o convite (decisão de
-   * 03/10/2026: qualquer membro convida).
-   */
-  function copiarLink() {
-    if (!inviteCode) return;
-    const endereco = `${window.location.origin}${import.meta.env.BASE_URL}?convite=${encodeURIComponent(inviteCode)}&canal=${channel.id}`;
-    void navigator.clipboard?.writeText(endereco);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 1500);
-  }
 
   async function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Escape') {
@@ -493,17 +482,16 @@ function ChannelRow({
         {icon} <span className="channel-name">{channel.name}</span>
         {lotacao && <span className="channel-lotacao">{lotacao}</span>}
       </button>
-      {(manageable || inviteCode || podeCriarSalas || podeLimitar) && (
+      {(manageable || inviteCode || podeConvidarVisitante || podeCriarSalas || podeLimitar) && (
         <div className="channel-actions">
-          {inviteCode && (
-            <button
-              className="icon-plain"
-              title={copiado ? t('Link copiado!') : t('Copiar link')}
-              aria-label={copiado ? t('Link copiado!') : `${t('Copiar link')}: ${channel.name}`}
-              onClick={copiarLink}
-            >
-              {copiado ? <Check size={14} /> : <LinkIcon size={14} />}
-            </button>
+          {(inviteCode || podeConvidarVisitante) && channel.communityId !== null && (
+            <LinkDaSala
+              channelId={channel.id}
+              channelName={channel.name}
+              communityId={channel.communityId}
+              inviteCode={inviteCode}
+              podeConvidarVisitante={podeConvidarVisitante}
+            />
           )}
           {podeCriarSalas && (
             <button

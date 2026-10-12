@@ -26,13 +26,13 @@ await professora.locator(`.rail-list .rail-item[aria-label="${turma}"]`).click()
 await professora.locator('.channel-name', { hasText: /^Sala 1$/ }).first().click();
 await professora.locator('.stage-controls').waitFor({ timeout: 30000 });
 
-await professora.locator('button[aria-label="Link da aula"]').first().click();
+await professora.locator('button[aria-label="Link da sala: Sala 1"]').first().click();
 await professora.getByRole('button', { name: 'Criar link' }).click();
-const campo = professora.locator('.link-aula li input').first();
+const campo = professora.locator('.link-sala li input').first();
 await campo.waitFor({ timeout: 10000 });
 const link = await campo.inputValue();
 link.includes('?aula=') ? ok('a professora criou o link da aula') : falhou('o link não saiu: ' + link);
-await professora.locator('.link-aula').screenshot({ path: 'e2e/fotos/aula-link.png' });
+await professora.locator('.link-sala').screenshot({ path: 'e2e/fotos/aula-link.png' });
 
 await professora.keyboard.press('Escape');
 
@@ -40,11 +40,11 @@ await professora.keyboard.press('Escape');
 const aluna = await novaJanela();
 await aluna.goto(link);
 await aluna.locator('.entrada-aula h1', { hasText: 'Sala 1' }).waitFor({ timeout: 20000 });
-ok('a aluna abre o link e vê "Aula de Sala 1", sem cadastro');
+ok('a aluna abre o link e vê "Sala 1", sem cadastro');
 await aluna.locator('#abertura').waitFor({ state: 'detached', timeout: 10000 }).catch(() => {});
 await aluna.screenshot({ path: 'e2e/fotos/aula-entrada.png' });
 await aluna.getByLabel('Seu nome').fill('Maria Clara');
-await aluna.getByRole('button', { name: 'Entrar na aula' }).click();
+await aluna.getByRole('button', { name: 'Entrar na sala' }).click();
 
 await aluna.locator('.app.modo-sala').waitFor({ timeout: 30000 });
 await aluna.locator('.stage-controls').waitFor({ timeout: 30000 });
@@ -91,10 +91,10 @@ await colega.waitForFunction(() => !document.querySelector('.app.modo-sala'), nu
 );
 
 // ---------- 5. a aluna sai ----------
-await aluna.getByRole('button', { name: 'Sair da aula' }).click();
+await aluna.getByRole('button', { name: 'Sair da sala' }).click();
 await aluna.locator('.app.modo-sala').waitFor({ state: 'detached', timeout: 10000 }).then(
   () => ok('a aluna sai da aula'),
-  () => falhou('"Sair da aula" não tirou a aluna da aula'),
+  () => falhou('"Sair da sala" não tirou a aluna da aula'),
 );
 
 await browser.close();

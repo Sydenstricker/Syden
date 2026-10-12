@@ -64,14 +64,14 @@ export function EntradaNaAula({
       <Mascote nome={aula === 'invalida' ? 'erro-404' : 'introducao'} tamanho={220} />
       {aula === 'invalida' ? (
         <>
-          <h1>{t('Este link de aula não vale mais')}</h1>
-          <p>{t('Peça um link novo a quem dá a aula.')}</p>
+          <h1>{t('Este link não vale mais')}</h1>
+          <p>{t('Peça um link novo a quem mandou.')}</p>
         </>
       ) : (
         <form onSubmit={(e) => void entrar(e)}>
           {/* O nome da sala e da turma esperam carregar SEM afirmar nada no lugar (ver CLAUDE.md, "A tela
               não afirma o que não é"): até chegar, o título fica vazio, guardando a altura. */}
-          <h1>{aula ? t('Aula de {sala}', { sala: aula.sala }) : ' '}</h1>
+          <h1>{aula ? aula.sala : ' '}</h1>
           <p className="entrada-aula-turma">{aula?.comunidade ?? ' '}</p>
           <label>
             {t('Seu nome')}
@@ -80,9 +80,9 @@ export function EntradaNaAula({
           {siteKey && <Turnstile siteKey={siteKey} aoResolver={setComprovante} />}
           {erro && <p className="form-error">{erro}</p>}
           <button type="submit" className="btn-primary" disabled={entrando || !aula || nome.trim().length < 2}>
-            {entrando ? t('Entrando…') : t('Entrar na aula')}
+            {entrando ? t('Entrando…') : t('Entrar na sala')}
           </button>
-          <p className="entrada-aula-miudo">{t('Você entra só para esta aula: o acesso some quando o link vencer.')}</p>
+          <p className="entrada-aula-miudo">{t('Você entra só nesta sala: o acesso some quando o link vencer.')}</p>
           <p className="entrada-aula-miudo">
             <a href="../termos.html" target="_blank" rel="noreferrer">
               {t('Ao entrar, você concorda com os termos de uso.')}

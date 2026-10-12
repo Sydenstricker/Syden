@@ -10472,17 +10472,13 @@ body.arrastando-barra {
   color: var(--text-muted);
 }
 
-/* O "Link da aula" no alto da sala: um painel que desce do botão. */
-.link-aula-ancora {
-  position: relative;
-}
-
-.link-aula {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 50;
-  width: min(420px, 92vw);
+/* O "Link da sala" (LinkDaSala.tsx): o balão que desce da corrente na barra de canais. Fixo e por
+   portal, porque dentro da barra a rolagem o cortaria. */
+.link-sala {
+  position: fixed;
+  z-index: 200;
+  width: min(360px, calc(100vw - 16px));
+  box-sizing: border-box;
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -10491,24 +10487,43 @@ body.arrastando-barra {
   font-weight: 400;
 }
 
-.link-aula h3 {
-  margin: 0 0 6px;
+.link-sala h3 {
+  margin: 0 0 8px;
 }
 
-.link-aula p {
+.link-sala h4 {
+  margin: 0 0 4px;
+}
+
+.link-sala p {
   margin: 0 0 10px;
   color: var(--text-muted);
   font-size: calc(13px * var(--escala-do-texto));
 }
 
-.link-aula-criar {
+.link-sala .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.link-sala-turma {
+  padding-bottom: 12px;
+}
+
+.link-sala-turma + .link-sala-visitante {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.link-sala-criar {
   display: flex;
   align-items: end;
   gap: 10px;
   margin-bottom: 10px;
 }
 
-.link-aula-criar label {
+.link-sala-criar label {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -10516,7 +10531,7 @@ body.arrastando-barra {
   color: var(--text-muted);
 }
 
-.link-aula ul {
+.link-sala ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -10525,14 +10540,14 @@ body.arrastando-barra {
   gap: 10px;
 }
 
-.link-aula li {
+.link-sala li {
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
   gap: 6px 8px;
 }
 
-.link-aula li input {
+.link-sala li input {
   grid-column: 1 / -1;
   padding: 8px;
   border-radius: var(--radius);
@@ -10542,17 +10557,11 @@ body.arrastando-barra {
   font-size: calc(12px * var(--escala-do-texto));
 }
 
-.link-aula li small {
+.link-sala li small {
   color: var(--text-muted);
 }
 
-.link-aula li .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.link-aula-vazio {
+.link-sala-vazio {
   font-style: italic;
 }
 
