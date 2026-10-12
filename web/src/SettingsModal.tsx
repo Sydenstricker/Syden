@@ -2105,7 +2105,7 @@ function SoundRename({
   const [name, setName] = useState(sound.name);
   // O volume do som para todo mundo (12/10/2026): o arquivo que veio alto do começo ao fim, e que o
   // limitador não pega porque ele só achata picos.
-  const [volume, setVolume] = useState(sound.volume);
+  const [volume, setVolume] = useState(sound.volume ?? 1); // servidor de antes da coluna nova não manda
   const save = () => onSave({ name: name.trim() || sound.name, icon: icon.trim() || sound.icon, volume });
 
   return (

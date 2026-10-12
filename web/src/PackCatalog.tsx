@@ -254,7 +254,8 @@ function EditorDoPacote({
   return (
     <div className="pack-editor">
       {sounds.map((sound) => {
-        const volume = volumes[sound.id] ?? sound.volume;
+        // `?? 1`: servidor de antes da coluna nova (o site sobe antes do deploy) não manda o volume.
+        const volume = volumes[sound.id] ?? sound.volume ?? 1;
         return (
           <div key={sound.id} className="pack-editor-row">
             <button className="icon-plain" title={t('Ouvir')} aria-label={`${t('Ouvir')}: ${sound.name}`} onClick={() => playSoundboard(sound.id, volume)}>
