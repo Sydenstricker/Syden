@@ -1153,11 +1153,13 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     // Erro no app de alguém (microfone, câmera, conexão): vai para o diário da aba de saúde, para o
     // administrador enxergar problemas que acontecem no computador dos outros.
-    authed.post<{ Body: { kind?: string; message?: string } }>('/api/client-errors', async (request, reply) => {
+    // `onde` é "app 0.1.7" ou "Chrome 154" (ver ondeRoda.ts, no site), para comparar onde dá mais problema.
+    authed.post<{ Body: { kind?: string; message?: string; onde?: string } }>('/api/client-errors', async (request, reply) => {
       const kind = String(request.body?.kind ?? '').slice(0, 24) || 'app';
       const message = String(request.body?.message ?? '').trim().slice(0, 200);
       if (!message) return reply.code(400).send({ error: 'Mensagem vazia.' });
-      recordClientError(request.user.username, kind, message);
+      const onde = String(request.body?.onde ?? '').replace(/[^\w .-]/g, '').trim().slice(0, 24);
+      recordClientError(onde ? `${request.user.username} (${onde})` : request.user.username, kind, message);
       return { ok: true };
     });
 

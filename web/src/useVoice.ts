@@ -16,6 +16,7 @@ import {
 } from 'livekit-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
+import { ondeRoda } from './ondeRoda';
 import { api } from './api';
 import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
@@ -204,7 +205,8 @@ function reportProblem(
   kind: 'microfone' | 'câmera' | 'conexão' | 'efeito de voz' | 'supressão de ruído' | 'transmissão',
   message: string,
 ) {
-  void api('/api/client-errors', { method: 'POST', body: { kind, message } }).catch(() => {});
+  const onde = ondeRoda(navigator.userAgent, desktopBridge !== undefined);
+  void api('/api/client-errors', { method: 'POST', body: { kind, message, onde } }).catch(() => {});
 }
 
 /**
