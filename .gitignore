@@ -49,6 +49,7 @@ desktop/native/build/
 
 # Vídeos de referência que o Sydenstricker grava para mostrar o que quer (pesados, não versionar).
 video/
+Ref Externas/
 
 # As capturas para a página da Microsoft Store.
 #
@@ -56,6 +57,9 @@ video/
 # público. Mesmo com uma comunidade de demonstração, elas se refazem em um comando
 # (e2e/capturas-da-loja.mjs) e não há por que carregá-las para sempre no histórico.
 e2e/fotos/loja/
+
+# As listagens em lotes que o scripts/listagem-da-loja.mjs monta para subir na Store: refazem-se em um comando.
+e2e/fotos/syden-loja*/
 
 # O som que o e2e/clipe.mjs grava para medir (vozes e clipe final): saída de teste, como as fotos.
 e2e/fotos/*.webm
