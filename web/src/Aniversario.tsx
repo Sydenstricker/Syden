@@ -42,7 +42,12 @@ export function MeuAniversario() {
   }
 
   // Os meses escritos pelo Intl, na língua de cada um: "outubro", "October", "十月".
-  const nomeDoMes = (m: number) => new Intl.DateTimeFormat(idioma, { month: 'long' }).format(new Date(2000, m - 1, 1));
+  // SEM OS DADOS DA LÍNGUA, O NÚMERO: o navegador não tem o calendário de todas as línguas do Syden (tétum, samoano,
+  // quiniaruanda…), e aí o Intl escreve o mês na língua dele — "março" para quem lê em tonganês. O número do mês não
+  // é de língua nenhuma.
+  const temOsMeses = Intl.DateTimeFormat.supportedLocalesOf(idioma).length > 0;
+  const nomeDoMes = (m: number) =>
+    temOsMeses ? new Intl.DateTimeFormat(idioma, { month: 'long' }).format(new Date(2000, m - 1, 1)) : String(m).padStart(2, '0');
   const dias = mes === '' ? 31 : DIAS_NO_MES[mes - 1];
 
   return (
