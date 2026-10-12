@@ -1114,6 +1114,13 @@ export function useVoice(socket: Socket | null) {
             // e neste tamanho (ver escolherCodec.ts). Escolher à mão existiu nas Configurações e saiu
             // em 11/10/2026: ninguém deveria precisar saber o que é um codec para transmitir.
             videoCodec: codec,
+            // O VP9 PRECISA DISTO PARA MANTER AS CAMADAS. Sem o L1T3, o LiveKit publica o VP9 de tela como
+            // uma camada só (o Chrome tem defeitos com VP9 de várias camadas na tela) e força o conteúdo
+            // para 'motion' — e aí some a camada pequena de quem tem internet fraca e a nitidez da tela
+            // parada. Com L1T3 e as camadas de sempre, cada tamanho sai como um VP9 separado, igual ao
+            // VP8 (exige servidor acima da 1.13.6). Quem assiste sem VP9 recebe a reserva em VP8, que
+            // o LiveKit só codifica quando alguém pede.
+            ...(codec === 'vp9' && { scalabilityMode: 'L1T3' as const }),
             screenShareSimulcastLayers: SCREEN_LAYERS[quality],
           });
           modoNoArRef.current = quality;

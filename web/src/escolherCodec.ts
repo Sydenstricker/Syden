@@ -21,7 +21,7 @@
 // Isto decide SEMPRE. Escolher o codec à mão existiu nas Configurações e saiu em 11/10/2026 (ver
 // "Transmissão: o Syden decide", no CLAUDE.md).
 
-export type CodecDaTela = 'vp8' | 'h264';
+export type CodecDaTela = 'vp8' | 'h264' | 'vp9';
 
 /** O que o navegador precisa oferecer para a pergunta poder ser feita. */
 interface Perguntavel {
@@ -30,15 +30,43 @@ interface Perguntavel {
 
 export interface EscolhaDeCodec {
   codec: CodecDaTela;
-  /** Para escrever na tela de configurações o que o "Automático" decidiu, e por quê. */
+  /** Por que o automático decidiu assim (aparece no diário e ajuda a entender um relato). */
   motivo: 'placa' | 'processador' | 'nao-deu-para-perguntar';
 }
 
 /**
- * Pergunta ao navegador se o H.264 sai pela placa neste tamanho de imagem.
+ * O VP9 VEM PRIMEIRO, MAS SÓ PELA PLACA (11/10/2026). Ele comprime uns 30% melhor que o VP8 e que o
+ * H.264 — menos internet para quem manda e para quem assiste —, e é ainda melhor com texto. Por software
+ * ele custa 1,5 a 2 vezes o processador do VP8, e quem transmite costuma estar jogando: por isso nunca
+ * por software. Na prática é a placa Intel recente que o codifica; NVIDIA e AMD não, e aí segue a pergunta
+ * do H.264, como antes. Ninguém escolhe nada: a pergunta é ao computador de quem transmite.
+ *
+ * A pergunta leva `scalabilityMode: 'L1T3'` porque é ASSIM que o VP9 sai na tela: o LiveKit publica cada
+ * camada de tamanho como um VP9 separado, de uma camada só (ver useVoice.ts). Uma placa que codifica VP9
+ * mas não desse jeito responde "não", e o Syden não descobre isso no meio da transmissão.
+ */
+async function saiPelaPlaca(
+  capacidades: Perguntavel,
+  contentType: string,
+  largura: number,
+  altura: number,
+  quadrosPorSegundo: number,
+  extra: Record<string, unknown> = {},
+) {
+  const resposta = await capacidades.encodingInfo({
+    // 'webrtc' e não 'record': o que interessa é o codificador de chamada ao vivo, que é outro
+    // caminho dentro do navegador e pode ter outra resposta.
+    type: 'webrtc',
+    video: { contentType, width: largura, height: altura, bitrate: 3_000_000, framerate: quadrosPorSegundo, ...extra },
+  });
+  return Boolean(resposta?.supported && resposta?.powerEfficient);
+}
+
+/**
+ * Pergunta ao navegador qual codec sai pela placa neste tamanho de imagem: VP9, depois H.264.
  *
  * O tamanho importa: uma placa pode dar conta de 720p e não de 1080p60. Por isso a pergunta leva a
- * resolução e a taxa de quadros que a pessoa escolheu, e não um valor genérico.
+ * resolução e a taxa de quadros do modo escolhido, e não um valor genérico.
  */
 export async function escolherCodecDaTela(
   largura: number,
@@ -50,19 +78,12 @@ export async function escolherCodecDaTela(
     return { codec: 'vp8', motivo: 'nao-deu-para-perguntar' };
   }
   try {
-    const resposta = await capacidades.encodingInfo({
-      // 'webrtc' e não 'record': o que interessa é o codificador de chamada ao vivo, que é outro
-      // caminho dentro do navegador e pode ter outra resposta.
-      type: 'webrtc',
-      video: {
-        contentType: 'video/H264',
-        width: largura,
-        height: altura,
-        bitrate: 3_000_000,
-        framerate: quadrosPorSegundo,
-      },
-    });
-    if (resposta?.supported && resposta?.powerEfficient) return { codec: 'h264', motivo: 'placa' };
+    // A do VP9 pode falhar sozinha (navegador que não conhece scalabilityMode): aí só ela não vale.
+    const vp9 = await saiPelaPlaca(capacidades, 'video/VP9', largura, altura, quadrosPorSegundo, { scalabilityMode: 'L1T3' }).catch(
+      () => false,
+    );
+    if (vp9) return { codec: 'vp9', motivo: 'placa' };
+    if (await saiPelaPlaca(capacidades, 'video/H264', largura, altura, quadrosPorSegundo)) return { codec: 'h264', motivo: 'placa' };
     return { codec: 'vp8', motivo: 'processador' };
   } catch {
     // Navegador que não conhece o tipo 'webrtc' recusa a pergunta inteira. Não é erro de ninguém.

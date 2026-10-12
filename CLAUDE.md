@@ -586,6 +586,10 @@ escolheria o jogo, e nem Discord nem Syden entrariam. É mudança pequena no C++
 JavaScript —, mas **só compila no GitHub Actions**, porque o módulo nativo exige as Ferramentas de
 Build do Visual Studio.
 
+**Prioridade baixa, decidido em 11/10/2026:** usar Syden e Discord juntos não é o uso esperado. O mesmo
+conserto também tiraria da transmissão de UMA JANELA o som do resto do computador (Spotify, notificações),
+que hoje vai junto — se alguém reclamar disso, ele volta para a fila.
+
 Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
 **Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa. (No app,
 desmarcar só vale da versão seguinte à 0.1.7 em diante: antes o site ligava a captura de som por fora,
@@ -659,6 +663,12 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 - **A escolha de codec (Automático, VP8, H.264) nas Configurações.** O Syden já pergunta ao computador
   se o H.264 sai pela placa (`escolherCodec.ts`); quem a usava era o conselheiro. Quem tinha um codec,
   ou um teto, guardado perde a escolha na leitura (`converterPreferenciasAntigas`).
+- **O VP9 entra sozinho, e só pela placa.** O automático pergunta primeiro se o VP9 sai pela placa
+  (Intel recente; NVIDIA e AMD não codificam VP9), depois o H.264, e fica no VP8. Ganho estimado: ~30%
+  menos internet, sem custo de processador; por software ele custaria 1,5–2× o VP8 a quem está jogando,
+  e por isso nunca. **Ele sai com `scalabilityMode: 'L1T3'`**: sem isso o LiveKit publica VP9 de tela
+  numa camada só e força `motion`, e somem a camada pequena e a nitidez da tela parada. Exige servidor
+  acima da 1.13.6. Teste de tela: `e2e/vp9-pela-placa.mjs`.
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 
