@@ -187,6 +187,11 @@ export function pessoasNaSala(channelId: number): number {
   return n;
 }
 
+/** Quem está agora numa sala de voz (ids), na ordem em que entrou. Usado pelos mini-games (minijogos.ts). */
+export function quemEstaNaSala(channelId: number): number[] {
+  return [...voiceMembers.values()].filter((m) => m.channelId === channelId).map((m) => m.userId);
+}
+
 let ioDoServidor: IOServer | null = null;
 
 /** Em que sala de voz a pessoa está agora, se estiver. */

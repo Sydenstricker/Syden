@@ -1,4 +1,5 @@
-import { Lightbulb, Send, Volume2 } from 'lucide-react';
+import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
+import { pedirParaComecarAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
 import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
 import { useDirectory } from './directory';
@@ -154,6 +155,7 @@ export function Home({
   // O céu segue o relógio, mas dá para mudar na mão clicando no sol — e isso troca o tema do app.
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
+  const [jogosAbertos, setJogosAbertos] = useState(false);
   const ideiasRef = useRef<HTMLDivElement | null>(null);
 
 
@@ -161,17 +163,32 @@ export function Home({
     setPeriodo(toggleTheme() === 'light' ? periodoClaro() : 'noite');
   }
 
-  // Cada função da home mora num objeto do quarto. O computador e o gabinete (Mini-games) e o vaso (Plantar cenoura)
-  // ficam só como desenho até essas funções existirem: objeto que acende e não leva a lugar nenhum afirmaria o que não
-  // é. O pôster também: ele abria a escolha entre OurBunny e BigChunkus, que não aparecem mais em lugar nenhum da
+  // Cada função da home mora num objeto do quarto. O computador abre os Mini-games (desde 12/10/2026). O gabinete e o
+  // vaso (Plantar cenoura) ficam só como desenho até essas funções existirem: objeto que acende e não leva a lugar
+  // nenhum afirmaria o que não é. O pôster também: ele abria a escolha entre OurBunny e BigChunkus, que não aparecem mais em lugar nenhum da
   // home (o coelho do quarto é o da pintura), e a escolha saiu até haver outros coelhos (09/10/2026).
   const acoes: AcoesDoQuarto = {
-    fone: { rotulo: t('Salas'), sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'), onClick: () => setSalasAbertas((aberto) => !aberto) },
+    fone: {
+      rotulo: t('Salas'),
+      sub: comunidade ? t('Converse e jogue em {nome}', { nome: comunidade }) : t('Converse e jogue'),
+      onClick: () => {
+        setJogosAbertos(false);
+        setSalasAbertas((aberto) => !aberto);
+      },
+    },
     quadro: { rotulo: t('Amigos'), sub: t('Quem anda com você'), onClick: aoAbrirAmigos },
     gavetas: { rotulo: t('Guarda-roupa'), sub: t('Enfeites, sons e emojis'), onClick: aoAbrirGuardaRoupa },
     janela: { rotulo: t('Explorar'), sub: t('Entrar em outra comunidade'), onClick: aoExplorar },
     cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
+    computador: {
+      rotulo: t('Mini-games'),
+      sub: t('Jogar com a turma'),
+      onClick: () => {
+        setSalasAbertas(false);
+        setJogosAbertos((aberto) => !aberto);
+      },
+    },
   };
 
   const atividade = atividadeAgora(comunidades, vozDeTodas, eu);
@@ -215,6 +232,68 @@ export function Home({
                 })}
               </ul>
             )}
+          </div>
+        )}
+        {jogosAbertos && (
+          <div className="vila-painel jogos-painel" role="dialog" aria-label={t('Mini-games')}>
+            <header>
+              <h3>{t('Mini-games')}</h3>
+              <button className="vila-painel-fechar" aria-label={t('Fechar')} onClick={() => setJogosAbertos(false)}>
+                ✕
+              </button>
+            </header>
+            <section className="jogos-do-syden">
+              <h4>
+                <Gamepad2 size={16} aria-hidden="true" /> {t('Qual é maior?')}
+              </h4>
+              <p>{t('Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.')}</p>
+              {salas.length === 0 ? (
+                <p className="vila-painel-vazio">
+                  {comunidade ? t('Esta comunidade ainda não tem sala de voz.') : t('Entre numa comunidade para ver as salas.')}
+                </p>
+              ) : (
+                <>
+                  <p className="jogos-escolha">{t('Escolha a sala para jogar com a turma:')}</p>
+                  <ul>
+                    {salas.map((sala) => {
+                      const gente = naVoz.filter((m) => m.channelId === sala.id);
+                      return (
+                        <li key={sala.id}>
+                          <button
+                            onClick={() => {
+                              setJogosAbertos(false);
+                              pedirParaComecarAoEntrar(sala.id);
+                              aoEntrar(sala.id);
+                            }}
+                          >
+                            <Volume2 size={16} aria-hidden="true" />
+                            <span className="vila-sala-nome">{sala.name}</span>
+                            <span className={`vila-sala-gente${gente.length > 0 ? ' cheia' : ''}`}>
+                              {gente.length === 0 ? t('vazia') : gente.map((g) => g.username).join(', ')}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </section>
+            {/* Os de fora abrem no navegador, fora do Syden: sem anúncio (medido em 07/10/2026), e quem joga transmite. */}
+            <section className="jogos-de-fora">
+              <h4>{t('Para jogar fora e transmitir')}</h4>
+              <ul>
+                {SITES_PARA_TRANSMITIR.map((site) => (
+                  <li key={site.endereco}>
+                    <a href={site.endereco} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink size={14} aria-hidden="true" />
+                      <span className="vila-sala-nome">{site.nome}</span>
+                      <span className="vila-sala-gente">{t(site.dica)}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
         )}
       </div>

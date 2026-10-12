@@ -7503,6 +7503,52 @@ textarea {
   color: var(--green, #23a55a);
 }
 
+/* Os mini-games no computador do quarto (Home.tsx): o jogo do Syden em cima, os sites de fora embaixo. */
+.vila-painel.jogos-painel {
+  width: min(420px, 92%);
+  max-height: 88%;
+  overflow-y: auto;
+}
+
+.jogos-painel h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font-size: calc(14px * var(--escala-do-texto));
+  color: var(--text);
+}
+
+.jogos-painel section + section {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.jogos-do-syden > p {
+  margin: 0 0 8px;
+  font-size: calc(13px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.jogos-painel .jogos-escolha {
+  color: var(--text);
+}
+
+.jogos-de-fora li a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.jogos-de-fora li a:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.06));
+}
+
 .vila-dica {
   position: absolute;
   left: 16px;
@@ -12293,4 +12339,197 @@ body.arrastando-barra {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* ---------- O mini-game da sala de voz (Minijogo.tsx): sobe da barra, como o karaokê ---------- */
+
+.minijogo {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(520px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--bg-float);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.minijogo-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.minijogo-topo strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.minijogo-rodada {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.minijogo-topo .icon-plain {
+  margin-left: auto;
+}
+
+.minijogo-convite p {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+}
+
+.minijogo-par {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.minijogo-carta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 10px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  cursor: pointer;
+  font: inherit;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.minijogo-carta:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.minijogo-carta:disabled {
+  cursor: default;
+  /* Na revelação a carta não aceita clique, mas não é "inativa": o resultado tem de ser lido inteiro. */
+  opacity: 1;
+  color: var(--text-strong);
+}
+
+.minijogo-carta.escolhida {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-darkest));
+}
+
+.minijogo-carta.certo {
+  border-color: #2fbf71;
+  box-shadow: 0 0 0 3px rgba(47, 191, 113, 0.25);
+}
+
+.minijogo-emoji {
+  font-size: 56px;
+  line-height: 1.1;
+}
+
+.minijogo-objeto {
+  font-weight: 700;
+  text-align: center;
+}
+
+.minijogo-tamanho {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.minijogo-selo {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #2fbf71;
+  color: #0b1f14;
+  font-weight: 700;
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.minijogo-quem {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  text-align: center;
+}
+
+.minijogo-tempo {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-darkest);
+  overflow: hidden;
+}
+
+.minijogo-tempo span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 200ms linear;
+}
+
+.minijogo-situacao {
+  margin: 0;
+  text-align: center;
+  color: var(--text);
+}
+
+.minijogo-fim-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: calc(18px * var(--escala-do-texto));
+  font-weight: 700;
+}
+
+.minijogo-placar {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.minijogo-placar li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-darkest);
+}
+
+.minijogo-placar li.eu {
+  outline: 2px solid var(--accent);
+}
+
+.minijogo-medalha {
+  width: 2ch;
+  text-align: center;
+}
+
+.minijogo-nome {
+  flex: 1;
+}
+
+.minijogo-pontos {
+  font-weight: 700;
+}
+
+.minijogo-acoes {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.minijogo-encerrar {
+  align-self: center;
 }

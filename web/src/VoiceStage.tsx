@@ -5,6 +5,7 @@ import {
   type TrackReferenceOrPlaceholder,
   useIsMuted,
   useIsSpeaking,
+  useLocalParticipant,
   useParticipantTracks,
   useTracks,
   VideoTrack,
@@ -54,6 +55,8 @@ import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
 import { quemAssiste } from './assistindo';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
+import { BotaoMinijogo, PainelDoMinijogo } from './Minijogo';
+import { pegarPedidoDeComecar, usarMinijogo } from './minijogos';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
@@ -159,6 +162,8 @@ export function VoiceStage({
         <Stage
           voice={voice}
           members={members}
+          channelId={channel.id}
+          socket={socket}
           communityId={channel.communityId ?? 0}
           canaisDeTexto={canaisDeTexto}
           aoAbrirVozEVideo={aoAbrirVozEVideo}
@@ -1132,6 +1137,8 @@ function useTransmissaoNaTela(screen: TrackReferenceOrPlaceholder | undefined) {
 function Stage({
   voice,
   members,
+  channelId,
+  socket,
   communityId,
   canaisDeTexto,
   aoAbrirVozEVideo,
@@ -1139,6 +1146,9 @@ function Stage({
 }: {
   voice: Voice;
   members: VoiceMember[];
+  channelId: number;
+  /** Por onde chega o aviso de que a partida do mini-game mudou. */
+  socket: Socket | null;
   communityId: number;
   canaisDeTexto: Channel[];
   aoAbrirVozEVideo?: () => void;
@@ -1159,6 +1169,17 @@ function Stage({
   const [soundboardOpen, setSoundboardOpen] = useState(false);
   // O karaokê abre sozinho para todo mundo quando alguém põe uma música.
   const [karaokeOpen, setKaraokeOpen] = useState(false);
+  // O mini-game: o painel abre sozinho quando alguém da sala começa uma partida, e fecha quando ela acaba.
+  const minijogo = usarMinijogo(channelId, socket);
+  const eu = Number(useLocalParticipant().localParticipant.identity);
+  const [minijogoAberto, setMinijogoAberto] = useState(false);
+  const temPartida = minijogo.partida !== null;
+  useEffect(() => setMinijogoAberto(temPartida), [temPartida]);
+  // Veio da home ("Qual é maior?" → escolher a sala): começa assim que entra.
+  useEffect(() => {
+    if (pegarPedidoDeComecar(channelId)) void minijogo.comecar().catch(() => setMinijogoAberto(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channelId]);
 
   const screens = tracks.filter((t) => t.source === Track.Source.ScreenShare);
   /** A sua própria tela você sempre vê; a dos outros, só depois de abrir. */
@@ -1336,6 +1357,7 @@ function Stage({
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         {!simples && <ScreenShareButton voice={voice} />}
+        {!simples && <BotaoMinijogo partida={minijogo.partida} aberto={minijogoAberto} aoAlternar={() => setMinijogoAberto(!minijogoAberto)} />}
         {/*
           Ver lado a lado fica FORA do menu: só aparece quando há mais de uma transmissão aberta, e
           nesse momento é exatamente o que a pessoa quer fazer. Botão que só existe quando é útil não
@@ -1385,6 +1407,17 @@ function Stage({
           <Karaoke voice={voice} communityId={communityId} onClose={() => setKaraokeOpen(false)} />
         )}
         {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
+        {minijogoAberto && (
+          <PainelDoMinijogo
+            partida={minijogo.partida}
+            eu={eu}
+            podeEncerrar={minijogo.partida?.criadaPor === eu}
+            aoComecar={minijogo.comecar}
+            aoVotar={minijogo.votar}
+            aoEncerrar={minijogo.encerrar}
+            aoFechar={() => setMinijogoAberto(false)}
+          />
+        )}
         <PreviaDoClipe clipe={clipe} de={quemTransmite} canais={canaisDeTexto} />
 
         <button className="leave-button" title={t('Desconectar')} onClick={voice.leave}>
