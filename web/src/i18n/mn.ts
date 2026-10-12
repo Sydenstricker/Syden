@@ -1172,4 +1172,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Илгээсэн хүнээс шинэ холбоос гуй.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Чи зөвхөн энэ өрөөнд орж байна: холбоосын хугацаа дуусахад эрх алга болно.',
   'Sair da sala': 'Өрөөнөөс гарах',
+  'Tem uma versão nova do Syden.': 'Syden-ий шинэ хувилбар гарлаа.',
+  'Pronto': 'Болсон',
+  'Editar sons': 'Дуу авиануудыг засах',
+  'Volume do som, para todo mundo': 'Дууны түвшин, бүх хүнд',
+  'Mover para outro pacote': 'Өөр багц руу зөөх',
+  'Mover para…': 'Зөөх…',
+  'Adicionar áudios': 'Аудио файл нэмэх',
 } satisfies Record<string, string>;

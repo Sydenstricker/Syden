@@ -1085,4 +1085,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Minta tautan baru ke orang yang mengirimnya.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Kamu hanya masuk ke ruangan ini: akses hilang saat tautan kedaluwarsa.',
   'Sair da sala': 'Keluar dari ruangan',
+  'Tem uma versão nova do Syden.': 'Ada versi baru Syden.',
+  'Pronto': 'Selesai',
+  'Editar sons': 'Edit suara',
+  'Volume do som, para todo mundo': 'Volume suara ini, untuk semua orang',
+  'Mover para outro pacote': 'Pindahkan ke paket lain',
+  'Mover para…': 'Pindahkan ke…',
+  'Adicionar áudios': 'Tambah berkas audio',
 } satisfies Record<string, string>;

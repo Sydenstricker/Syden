@@ -1075,4 +1075,11 @@ export default {
   'Peça um link novo a quem mandou.': 'جس نے بھیجا اس سے نیا لنک مانگو۔',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'داخلہ صرف اسی کمرے کے لیے ہے: لنک ختم ہونے پر رسائی ختم ہو جائے گی۔',
   'Sair da sala': 'کمرے سے نکلیں',
+  'Tem uma versão nova do Syden.': 'Syden کا نیا ورژن آ گیا ہے۔',
+  'Pronto': 'ہو گیا',
+  'Editar sons': 'آوازوں میں ترمیم کریں',
+  'Volume do som, para todo mundo': 'آواز کا حجم، سب کے لیے',
+  'Mover para outro pacote': 'کسی اور پیکیج میں منتقل کریں',
+  'Mover para…': 'منتقل کریں…',
+  'Adicionar áudios': 'آڈیو فائلیں شامل کریں',
 } satisfies Record<string, string>;

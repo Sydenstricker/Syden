@@ -1157,4 +1157,11 @@ export default {
   'Peça um link novo a quem mandou.': 'សុំតំណថ្មីពីអ្នកដែលបានផ្ញើមក។',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'អ្នកចូលបានតែបន្ទប់នេះប៉ុណ្ណោះ៖ សិទ្ធិចូលនឹងបាត់នៅពេលតំណផុតកំណត់។',
   'Sair da sala': 'ចាកចេញពីបន្ទប់',
+  'Tem uma versão nova do Syden.': 'មានកំណែថ្មីរបស់ Syden។',
+  'Pronto': 'រួចរាល់',
+  'Editar sons': 'កែសម្រួលសំឡេង',
+  'Volume do som, para todo mundo': 'កម្រិតសំឡេង សម្រាប់អ្នកទាំងអស់គ្នា',
+  'Mover para outro pacote': 'ផ្លាស់ទីទៅកញ្ចប់ផ្សេង',
+  'Mover para…': 'ផ្លាស់ទីទៅ…',
+  'Adicionar áudios': 'បន្ថែមឯកសារសំឡេង',
 } satisfies Record<string, string>;

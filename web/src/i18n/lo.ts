@@ -1159,4 +1159,11 @@ export default {
   'Peça um link novo a quem mandou.': 'ຂໍລິ້ງໃໝ່ຈາກຜູ້ທີ່ສົ່ງມາ.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'ເຈົ້າເຂົ້າໄດ້ສະເພາະຫ້ອງນີ້: ສິດເຂົ້າໃຊ້ຈະໝົດເມື່ອລິ້ງໝົດອາຍຸ.',
   'Sair da sala': 'ອອກຈາກຫ້ອງ',
+  'Tem uma versão nova do Syden.': 'ມີ Syden ລຸ້ນໃໝ່ແລ້ວ.',
+  'Pronto': 'ສຳເລັດ',
+  'Editar sons': 'ແກ້ໄຂສຽງ',
+  'Volume do som, para todo mundo': 'ລະດັບສຽງ, ສຳລັບທຸກຄົນ',
+  'Mover para outro pacote': 'ຍ້າຍໄປຊຸດອື່ນ',
+  'Mover para…': 'ຍ້າຍໄປ…',
+  'Adicionar áudios': 'ເພີ່ມໄຟລ໌ສຽງ',
 } satisfies Record<string, string>;

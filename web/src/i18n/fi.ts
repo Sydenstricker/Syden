@@ -1158,4 +1158,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Pyydä uusi linkki lähettäjältä.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Pääset vain tähän huoneeseen: pääsy päättyy, kun linkki vanhenee.',
   'Sair da sala': 'Poistu huoneesta',
+  'Tem uma versão nova do Syden.': 'Sydenistä on uusi versio.',
+  'Pronto': 'Valmis',
+  'Editar sons': 'Muokkaa ääniä',
+  'Volume do som, para todo mundo': 'Äänen voimakkuus, kaikille',
+  'Mover para outro pacote': 'Siirrä toiseen pakettiin',
+  'Mover para…': 'Siirrä…',
+  'Adicionar áudios': 'Lisää äänitiedostoja',
 } satisfies Record<string, string>;

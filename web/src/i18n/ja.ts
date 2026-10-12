@@ -1069,4 +1069,11 @@ export default {
   'Peça um link novo a quem mandou.': '送ってくれた人に新しいリンクをもらってください。',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'このチャンネルにだけ入ります：リンクの期限が切れるとアクセスはなくなります。',
   'Sair da sala': 'チャンネルを出る',
+  'Tem uma versão nova do Syden.': 'Syden の新しいバージョンがあります。',
+  'Pronto': '完了',
+  'Editar sons': 'サウンドを編集',
+  'Volume do som, para todo mundo': 'サウンドの音量（全員に適用）',
+  'Mover para outro pacote': '別のパックへ移動',
+  'Mover para…': '移動先…',
+  'Adicionar áudios': '音声ファイルを追加',
 } satisfies Record<string, string>;

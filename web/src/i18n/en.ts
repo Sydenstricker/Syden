@@ -1083,4 +1083,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Ask whoever sent it for a new link.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'You’re joining just this room: access ends when the link expires.',
   'Sair da sala': 'Leave room',
+  'Tem uma versão nova do Syden.': 'There’s a new version of Syden.',
+  'Pronto': 'Done',
+  'Editar sons': 'Edit sounds',
+  'Volume do som, para todo mundo': 'Sound volume, for everyone',
+  'Mover para outro pacote': 'Move to another pack',
+  'Mover para…': 'Move to…',
+  'Adicionar áudios': 'Add audio files',
 } satisfies Record<string, string>;

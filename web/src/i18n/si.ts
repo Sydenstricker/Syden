@@ -1158,4 +1158,11 @@ export default {
   'Peça um link novo a quem mandou.': 'එය එවූ අයගෙන් නව සබැඳියක් ඉල්ලන්න.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'ඔබ ඇතුළු වන්නේ මෙම කාමරයට පමණි: සබැඳිය කල් ඉකුත් වූ විට ප්‍රවේශය නැති වේ.',
   'Sair da sala': 'කාමරයෙන් ඉවත් වන්න',
+  'Tem uma versão nova do Syden.': 'Syden හි නව අනුවාදයක් ඇත.',
+  'Pronto': 'නිමයි',
+  'Editar sons': 'ශබ්ද සංස්කරණය කරන්න',
+  'Volume do som, para todo mundo': 'ශබ්දයේ ශබ්ද මට්ටම, සැමට',
+  'Mover para outro pacote': 'වෙනත් පැකේජයකට ගෙන යන්න',
+  'Mover para…': 'ගෙන යන්න…',
+  'Adicionar áudios': 'ශ්‍රව්‍ය ගොනු එක් කරන්න',
 } satisfies Record<string, string>;

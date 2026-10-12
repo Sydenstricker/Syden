@@ -1157,4 +1157,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Zatraži novi link od onoga ko ti ga je poslao.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Ulaziš samo u ovu sobu: pristup nestaje kad link istekne.',
   'Sair da sala': 'Izađi iz sobe',
+  'Tem uma versão nova do Syden.': 'Postoji nova verzija Sydena.',
+  'Pronto': 'Gotovo',
+  'Editar sons': 'Uredi zvukove',
+  'Volume do som, para todo mundo': 'Jačina zvuka, za sve',
+  'Mover para outro pacote': 'Premjesti u drugi paket',
+  'Mover para…': 'Premjesti u…',
+  'Adicionar áudios': 'Dodaj zvučne datoteke',
 } satisfies Record<string, string>;

@@ -1108,4 +1108,11 @@ export default {
   'Peça um link novo a quem mandou.': 'يمكن طلب رابط جديد ممن أرسله.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'الدخول لهذه الغرفة فقط: ينتهي الوصول عند انتهاء الرابط.',
   'Sair da sala': 'الخروج من الغرفة',
+  'Tem uma versão nova do Syden.': 'يتوفر إصدار جديد من Syden.',
+  'Pronto': 'تم',
+  'Editar sons': 'تعديل الأصوات',
+  'Volume do som, para todo mundo': 'مستوى الصوت، للجميع',
+  'Mover para outro pacote': 'نقل إلى حزمة أخرى',
+  'Mover para…': 'نقل إلى…',
+  'Adicionar áudios': 'إضافة ملفات صوتية',
 } satisfies Record<string, string>;

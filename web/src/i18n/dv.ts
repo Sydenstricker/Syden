@@ -1168,4 +1168,11 @@ export default {
   'Peça um link novo a quem mandou.': 'ލިންކު ފޮނުވި މީހާގެ ކިބައިން އާ ލިންކެއް ހޯދާ.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'ތިބާ ވަދެވެނީ މި ރޫމަށް އެކަނި: ލިންކުގެ މުއްދަތު ހަމަވުމުން އެކްސެސް ނެތިދާނެ.',
   'Sair da sala': 'ރޫމުން ނިކުމޭ',
+  'Tem uma versão nova do Syden.': 'Syden ގެ އައު ވަރޝަނެއް ނުކުމެއްޖެ.',
+  'Pronto': 'ނިމިއްޖެ',
+  'Editar sons': 'އަޑުތައް އެޑިޓްކުރޭ',
+  'Volume do som, para todo mundo': 'އަޑުގެ ވޮލިއުމް، ހުރިހާ އެންމެންނަށް',
+  'Mover para outro pacote': 'އެހެން ޕެކަކަށް ބަދަލުކުރޭ',
+  'Mover para…': 'ބަދަލުކުރޭ…',
+  'Adicionar áudios': 'އޯޑިއޯ ފައިލްތައް އިތުރުކުރޭ',
 } satisfies Record<string, string>;

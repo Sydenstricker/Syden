@@ -1085,4 +1085,11 @@ export default {
   'Peça um link novo a quem mandou.': 'যে পাঠিয়েছে তার কাছে নতুন লিংক চাও।',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'তুমি শুধু এই রুমে ঢুকছ: লিংকের মেয়াদ শেষ হলে প্রবেশাধিকার চলে যাবে।',
   'Sair da sala': 'রুম থেকে বের হও',
+  'Tem uma versão nova do Syden.': 'Syden-এর নতুন সংস্করণ এসেছে।',
+  'Pronto': 'হয়ে গেছে',
+  'Editar sons': 'সাউন্ড এডিট করো',
+  'Volume do som, para todo mundo': 'সাউন্ডের আওয়াজ, সবার জন্য',
+  'Mover para outro pacote': 'অন্য প্যাকে সরাও',
+  'Mover para…': 'সরাও…',
+  'Adicionar áudios': 'অডিও যোগ করো',
 } satisfies Record<string, string>;

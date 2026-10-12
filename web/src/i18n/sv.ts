@@ -1150,4 +1150,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Be den som skickade den om en ny länk.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Du kommer bara in i det här rummet: åtkomsten försvinner när länken går ut.',
   'Sair da sala': 'Lämna rummet',
+  'Tem uma versão nova do Syden.': 'Det finns en ny version av Syden.',
+  'Pronto': 'Klar',
+  'Editar sons': 'Redigera ljud',
+  'Volume do som, para todo mundo': 'Ljudets volym, för alla',
+  'Mover para outro pacote': 'Flytta till ett annat paket',
+  'Mover para…': 'Flytta till…',
+  'Adicionar áudios': 'Lägg till ljudfiler',
 } satisfies Record<string, string>;

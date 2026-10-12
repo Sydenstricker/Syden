@@ -1176,4 +1176,11 @@ export default {
   'Peça um link novo a quem mandou.': 'ახალი ბმული სთხოვე მას, ვინც გამოგიგზავნა.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'შედიხარ მხოლოდ ამ ოთახში: წვდომა გაქრება, როცა ბმულს ვადა გაუვა.',
   'Sair da sala': 'ოთახიდან გასვლა',
+  'Tem uma versão nova do Syden.': 'Syden-ის ახალი ვერსია გამოვიდა.',
+  'Pronto': 'მზადაა',
+  'Editar sons': 'ბგერების რედაქტირება',
+  'Volume do som, para todo mundo': 'ბგერის ხმის დონე, ყველასთვის',
+  'Mover para outro pacote': 'სხვა პაკეტში გადატანა',
+  'Mover para…': 'გადატანა…',
+  'Adicionar áudios': 'აუდიოფაილების დამატება',
 } satisfies Record<string, string>;

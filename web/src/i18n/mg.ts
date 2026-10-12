@@ -1158,4 +1158,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Mangataha rohy vaovao amin’ilay nandefa azy.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Ity efitrano ity ihany no idiranao: very ny fidirana rehefa lany daty ny rohy.',
   'Sair da sala': 'Hivoaka ny efitrano',
+  'Tem uma versão nova do Syden.': 'Misy kinova vaovao an’i Syden.',
+  'Pronto': 'Vita',
+  'Editar sons': 'Ovay ny feo',
+  'Volume do som, para todo mundo': 'Haavon’ny feo, ho an’ny rehetra',
+  'Mover para outro pacote': 'Afindra amin’ny fonosana hafa',
+  'Mover para…': 'Afindra any…',
+  'Adicionar áudios': 'Ampio rakitra feo',
 } satisfies Record<string, string>;

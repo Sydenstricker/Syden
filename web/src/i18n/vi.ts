@@ -1058,4 +1058,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Xin người đã gửi một liên kết mới.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Bạn chỉ vào được phòng này: quyền truy cập mất khi liên kết hết hạn.',
   'Sair da sala': 'Rời phòng',
+  'Tem uma versão nova do Syden.': 'Đã có phiên bản mới của Syden.',
+  'Pronto': 'Xong',
+  'Editar sons': 'Sửa âm thanh',
+  'Volume do som, para todo mundo': 'Âm lượng của âm thanh, cho mọi người',
+  'Mover para outro pacote': 'Chuyển sang gói khác',
+  'Mover para…': 'Chuyển sang…',
+  'Adicionar áudios': 'Thêm tệp âm thanh',
 } satisfies Record<string, string>;

@@ -1070,4 +1070,11 @@ export default {
   'Peça um link novo a quem mandou.': 'పంపినవారిని కొత్త లింక్ అడుగు.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'నువ్వు ఈ గదికి మాత్రమే వస్తున్నావు: లింక్ గడువు ముగిసినప్పుడు ప్రవేశం పోతుంది.',
   'Sair da sala': 'గది నుండి బయటకు',
+  'Tem uma versão nova do Syden.': 'Syden కొత్త వెర్షన్ వచ్చింది.',
+  'Pronto': 'పూర్తయింది',
+  'Editar sons': 'శబ్దాలను సవరించు',
+  'Volume do som, para todo mundo': 'శబ్దం స్థాయి, అందరికీ',
+  'Mover para outro pacote': 'వేరే ప్యాక్‌కి తరలించు',
+  'Mover para…': 'తరలించు…',
+  'Adicionar áudios': 'ఆడియో ఫైళ్ళను జోడించు',
 } satisfies Record<string, string>;

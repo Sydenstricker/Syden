@@ -1159,4 +1159,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Аз касе, ки фиристод, пайванди нав пурс.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Ту танҳо ба ҳамин ҳуҷра ворид мешавӣ: дастрасӣ ҳангоми ба охир расидани пайванд аз байн меравад.',
   'Sair da sala': 'Аз ҳуҷра баромадан',
+  'Tem uma versão nova do Syden.': 'Версияи нави Syden баромад.',
+  'Pronto': 'Тайёр',
+  'Editar sons': 'Таҳрири садоҳо',
+  'Volume do som, para todo mundo': 'Баландии садо, барои ҳама',
+  'Mover para outro pacote': 'Ба бастаи дигар гузарондан',
+  'Mover para…': 'Гузарондан ба…',
+  'Adicionar áudios': 'Илова кардани аудиоҳо',
 } satisfies Record<string, string>;

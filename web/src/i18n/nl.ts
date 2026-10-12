@@ -1087,4 +1087,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Vraag een nieuwe link aan wie hem stuurde.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Je komt alleen in deze kamer: de toegang verdwijnt als de link verloopt.',
   'Sair da sala': 'Kamer verlaten',
+  'Tem uma versão nova do Syden.': 'Er is een nieuwe versie van Syden.',
+  'Pronto': 'Klaar',
+  'Editar sons': 'Geluiden bewerken',
+  'Volume do som, para todo mundo': 'Volume van het geluid, voor iedereen',
+  'Mover para outro pacote': 'Naar ander pakket verplaatsen',
+  'Mover para…': 'Verplaatsen naar…',
+  'Adicionar áudios': 'Geluiden toevoegen',
 } satisfies Record<string, string>;

@@ -1158,4 +1158,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Požiadaj o nový odkaz toho, kto ti ho poslal.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Vstupuješ len do tejto miestnosti: prístup zmizne, keď odkaz vyprší.',
   'Sair da sala': 'Opustiť miestnosť',
+  'Tem uma versão nova do Syden.': 'Je tu nová verzia Sydenu.',
+  'Pronto': 'Hotovo',
+  'Editar sons': 'Upraviť zvuky',
+  'Volume do som, para todo mundo': 'Hlasitosť zvuku, pre všetkých',
+  'Mover para outro pacote': 'Presunúť do iného balíčka',
+  'Mover para…': 'Presunúť do…',
+  'Adicionar áudios': 'Pridať zvukové súbory',
 } satisfies Record<string, string>;

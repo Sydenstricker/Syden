@@ -1076,4 +1076,11 @@ export default {
   'Peça um link novo a quem mandou.': 'از کسی که پیوند را فرستاده، پیوند تازه بخواه.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'فقط وارد همین اتاق می‌شوی: دسترسی با پایان اعتبار پیوند از بین می‌رود.',
   'Sair da sala': 'خروج از اتاق',
+  'Tem uma versão nova do Syden.': 'نسخهٔ تازه‌ای از Syden آمده است.',
+  'Pronto': 'تمام',
+  'Editar sons': 'ویرایش صداها',
+  'Volume do som, para todo mundo': 'بلندی صدا، برای همه',
+  'Mover para outro pacote': 'انتقال به بستهٔ دیگر',
+  'Mover para…': 'انتقال به…',
+  'Adicionar áudios': 'افزودن فایل‌های صوتی',
 } satisfies Record<string, string>;

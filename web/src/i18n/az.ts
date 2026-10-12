@@ -1122,4 +1122,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Keçidi göndərəndən yenisini istə.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Yalnız bu otağa daxil olursan: keçidin vaxtı bitəndə giriş itir.',
   'Sair da sala': 'Otaqdan çıx',
+  'Tem uma versão nova do Syden.': 'Syden-in yeni versiyası var.',
+  'Pronto': 'Hazırdır',
+  'Editar sons': 'Səsləri redaktə et',
+  'Volume do som, para todo mundo': 'Səsin səviyyəsi, hamı üçün',
+  'Mover para outro pacote': 'Başqa paketə köçür',
+  'Mover para…': 'Köçür…',
+  'Adicionar áudios': 'Səs faylları əlavə et',
 } satisfies Record<string, string>;

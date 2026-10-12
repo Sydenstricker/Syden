@@ -1155,4 +1155,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Küsi saatjalt uut linki.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Sisened ainult sellesse ruumi: ligipääs kaob, kui link aegub.',
   'Sair da sala': 'Lahku ruumist',
+  'Tem uma versão nova do Syden.': 'Sydenist on uus versioon.',
+  'Pronto': 'Valmis',
+  'Editar sons': 'Muuda helisid',
+  'Volume do som, para todo mundo': 'Heli helitugevus, kõigile',
+  'Mover para outro pacote': 'Teisalda teise paketti',
+  'Mover para…': 'Teisalda…',
+  'Adicionar áudios': 'Lisa helifaile',
 } satisfies Record<string, string>;

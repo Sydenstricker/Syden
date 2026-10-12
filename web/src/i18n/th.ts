@@ -1101,4 +1101,11 @@ export default {
   'Peça um link novo a quem mandou.': 'ขอลิงก์ใหม่จากคนที่ส่งมา',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'คุณเข้าได้เฉพาะห้องนี้: สิทธิ์เข้าถึงจะหายไปเมื่อลิงก์หมดอายุ',
   'Sair da sala': 'ออกจากห้อง',
+  'Tem uma versão nova do Syden.': 'Syden มีเวอร์ชันใหม่แล้ว',
+  'Pronto': 'เสร็จ',
+  'Editar sons': 'แก้ไขเสียง',
+  'Volume do som, para todo mundo': 'ระดับเสียงของเสียงนี้ สำหรับทุกคน',
+  'Mover para outro pacote': 'ย้ายไปแพ็กอื่น',
+  'Mover para…': 'ย้ายไปที่…',
+  'Adicionar áudios': 'เพิ่มไฟล์เสียง',
 } satisfies Record<string, string>;

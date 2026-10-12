@@ -1150,4 +1150,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Kërkoji një lidhje të re personit që ta dërgoi.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Hyn vetëm në këtë dhomë: qasja zhduket kur skadon lidhja.',
   'Sair da sala': 'Dil nga dhoma',
+  'Tem uma versão nova do Syden.': 'Ka një version të ri të Syden.',
+  'Pronto': 'Gati',
+  'Editar sons': 'Ndrysho tingujt',
+  'Volume do som, para todo mundo': 'Volumi i tingullit, për të gjithë',
+  'Mover para outro pacote': 'Zhvendose në një paketë tjetër',
+  'Mover para…': 'Zhvendose te…',
+  'Adicionar áudios': 'Shto audio',
 } satisfies Record<string, string>;

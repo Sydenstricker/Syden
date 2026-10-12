@@ -1128,4 +1128,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Nama siif erge irraa hidhaa haaraa gaafadhu.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Kutaa kana qofa seenta: yeroo hidhaan xumuramu seensi ni bada.',
   'Sair da sala': 'Kutaa keessaa ba’i',
+  'Tem uma versão nova do Syden.': 'Gosni haaraan Syden jira.',
+  'Pronto': 'Xumurame',
+  'Editar sons': 'Sagaleewwan gulaali',
+  'Volume do som, para todo mundo': 'Ol-ka’iinsa sagalee kanaa, nama hundaaf',
+  'Mover para outro pacote': 'Gara kuusaa biraatti dabarsi',
+  'Mover para…': 'Dabarsi…',
+  'Adicionar áudios': 'Sagaleewwan dabali',
 } satisfies Record<string, string>;

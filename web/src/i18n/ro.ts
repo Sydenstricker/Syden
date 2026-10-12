@@ -1088,4 +1088,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Cere un link nou de la cine ți l-a trimis.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Intri doar în această cameră: accesul dispare când linkul expiră.',
   'Sair da sala': 'Ieși din cameră',
+  'Tem uma versão nova do Syden.': 'Există o versiune nouă de Syden.',
+  'Pronto': 'Gata',
+  'Editar sons': 'Editează sunetele',
+  'Volume do som, para todo mundo': 'Volumul sunetului, pentru toată lumea',
+  'Mover para outro pacote': 'Mută în alt pachet',
+  'Mover para…': 'Mută în…',
+  'Adicionar áudios': 'Adaugă sunete',
 } satisfies Record<string, string>;

@@ -1166,4 +1166,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Yuborgan kishidan yangi havola so‘ra.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Faqat shu xonaga kirasan: havola muddati tugaganda kirish yo‘qoladi.',
   'Sair da sala': 'Xonadan chiqish',
+  'Tem uma versão nova do Syden.': 'Sydenning yangi versiyasi chiqdi.',
+  'Pronto': 'Tayyor',
+  'Editar sons': 'Tovushlarni tahrirlash',
+  'Volume do som, para todo mundo': 'Tovush balandligi, hamma uchun',
+  'Mover para outro pacote': 'Boshqa toʻplamga koʻchirish',
+  'Mover para…': 'Koʻchirish…',
+  'Adicionar áudios': 'Audiolarni qoʻshish',
 } satisfies Record<string, string>;

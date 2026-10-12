@@ -1159,4 +1159,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Biddu þann sem sendi hann um nýjan tengil.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Þú kemst aðeins inn í þetta herbergi: aðgangurinn hverfur þegar tengillinn rennur út.',
   'Sair da sala': 'Fara úr herberginu',
+  'Tem uma versão nova do Syden.': 'Ný útgáfa af Syden er komin.',
+  'Pronto': 'Búið',
+  'Editar sons': 'Breyta hljóðum',
+  'Volume do som, para todo mundo': 'Hljóðstyrkur hljóðsins, fyrir alla',
+  'Mover para outro pacote': 'Færa í annan pakka',
+  'Mover para…': 'Færa í…',
+  'Adicionar áudios': 'Bæta við hljóðskrám',
 } satisfies Record<string, string>;

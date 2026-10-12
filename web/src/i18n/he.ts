@@ -1138,4 +1138,11 @@ export default {
   'Peça um link novo a quem mandou.': 'אפשר לבקש קישור חדש ממי ששלח אותו.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'הכניסה היא רק לחדר הזה: הגישה נעלמת כשהקישור פג.',
   'Sair da sala': 'יציאה מהחדר',
+  'Tem uma versão nova do Syden.': 'יש גרסה חדשה של Syden.',
+  'Pronto': 'סיום',
+  'Editar sons': 'לערוך צלילים',
+  'Volume do som, para todo mundo': 'עוצמת הצליל, לכולם',
+  'Mover para outro pacote': 'להעביר לחבילה אחרת',
+  'Mover para…': 'להעביר אל…',
+  'Adicionar áudios': 'להוסיף קבצי שמע',
 } satisfies Record<string, string>;

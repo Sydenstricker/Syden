@@ -1073,4 +1073,11 @@ export default {
   'Peça um link novo a quem mandou.': 'அனுப்பியவரிடம் புதிய இணைப்பைக் கேள்.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'இந்த அறைக்கு மட்டுமே நுழைகிறாய்: இணைப்பு காலாவதியானதும் அணுகல் போய்விடும்.',
   'Sair da sala': 'அறையிலிருந்து வெளியேறு',
+  'Tem uma versão nova do Syden.': 'Syden-இன் புதிய பதிப்பு வந்துள்ளது.',
+  'Pronto': 'முடிந்தது',
+  'Editar sons': 'ஒலிகளைத் திருத்து',
+  'Volume do som, para todo mundo': 'ஒலியின் ஒலியளவு, எல்லோருக்கும்',
+  'Mover para outro pacote': 'வேறு தொகுப்புக்கு நகர்த்து',
+  'Mover para…': 'நகர்த்து…',
+  'Adicionar áudios': 'ஒலிக் கோப்புகளைச் சேர்',
 } satisfies Record<string, string>;

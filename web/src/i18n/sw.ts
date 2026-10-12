@@ -1087,4 +1087,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Omba kiungo kipya kwa aliyekutumia.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Unaingia kwenye chumba hiki tu: ufikiaji unaisha kiungo kikiisha muda.',
   'Sair da sala': 'Toka chumbani',
+  'Tem uma versão nova do Syden.': 'Kuna toleo jipya la Syden.',
+  'Pronto': 'Tayari',
+  'Editar sons': 'Hariri sauti',
+  'Volume do som, para todo mundo': 'Kiwango cha sauti hii, kwa kila mtu',
+  'Mover para outro pacote': 'Hamishia kifurushi kingine',
+  'Mover para…': 'Hamishia…',
+  'Adicionar áudios': 'Ongeza sauti',
 } satisfies Record<string, string>;

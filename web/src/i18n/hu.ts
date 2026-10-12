@@ -1160,4 +1160,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Kérj új linket attól, aki küldte.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Csak ebbe a szobába lépsz be: a hozzáférés megszűnik, amikor a link lejár.',
   'Sair da sala': 'Kilépés a szobából',
+  'Tem uma versão nova do Syden.': 'Megjelent a Syden új verziója.',
+  'Pronto': 'Kész',
+  'Editar sons': 'Hangok szerkesztése',
+  'Volume do som, para todo mundo': 'A hang hangereje, mindenkinek',
+  'Mover para outro pacote': 'Áthelyezés másik csomagba',
+  'Mover para…': 'Áthelyezés ide…',
+  'Adicionar áudios': 'Hangfájlok hozzáadása',
 } satisfies Record<string, string>;

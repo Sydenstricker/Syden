@@ -1075,4 +1075,11 @@ export default {
   'Peça um link novo a quem mandou.': '向发链接给你的人要一个新链接。',
   'Você entra só nesta sala: o acesso some quando o link vencer.': '你只能进入这个房间：链接过期后访问权限就会消失。',
   'Sair da sala': '离开房间',
+  'Tem uma versão nova do Syden.': 'Syden 有新版本了。',
+  'Pronto': '完成',
+  'Editar sons': '编辑音效',
+  'Volume do som, para todo mundo': '音效音量，对所有人生效',
+  'Mover para outro pacote': '移到其他包',
+  'Mover para…': '移到…',
+  'Adicionar áudios': '添加音频',
 } satisfies Record<string, string>;

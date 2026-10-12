@@ -1127,4 +1127,11 @@ export default {
   'Peça um link novo a quem mandou.': 'ပို့ပေးသူထံမှ လင့်ခ်အသစ် တောင်းပါ။',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'ဤအခန်းထဲသို့သာ ဝင်ခြင်းဖြစ်သည်: လင့်ခ်သက်တမ်းကုန်လျှင် ဝင်ခွင့် ပျောက်သွားမည်။',
   'Sair da sala': 'အခန်းမှ ထွက်ရန်',
+  'Tem uma versão nova do Syden.': 'Syden ဗားရှင်းအသစ် ထွက်ပါပြီ။',
+  'Pronto': 'ပြီးပြီ',
+  'Editar sons': 'အသံများ ပြင်ရန်',
+  'Volume do som, para todo mundo': 'အသံအတိုးအကျယ်၊ လူတိုင်းအတွက်',
+  'Mover para outro pacote': 'အခြားအထုပ်သို့ ရွှေ့ရန်',
+  'Mover para…': 'ရွှေ့ရန်…',
+  'Adicionar áudios': 'အသံဖိုင်များ ထည့်ရန်',
 } satisfies Record<string, string>;

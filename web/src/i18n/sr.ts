@@ -1155,4 +1155,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Затражи нови линк од онога ко ти га је послао.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Улазиш само у ову собу: приступ нестаје када линк истекне.',
   'Sair da sala': 'Изађи из собе',
+  'Tem uma versão nova do Syden.': 'Изашла је нова верзија Syden-а.',
+  'Pronto': 'Готово',
+  'Editar sons': 'Уреди звуке',
+  'Volume do som, para todo mundo': 'Јачина звука, за све',
+  'Mover para outro pacote': 'Премести у други пакет',
+  'Mover para…': 'Премести у…',
+  'Adicionar áudios': 'Додај аудио датотеке',
 } satisfies Record<string, string>;

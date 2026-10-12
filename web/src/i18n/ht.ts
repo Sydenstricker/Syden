@@ -1168,4 +1168,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Mande moun ki voye l ba ou a yon nouvo lyen.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Ou antre sèlman nan chanm sa a: aksè a disparèt lè lyen an ekspire.',
   'Sair da sala': 'Soti nan chanm nan',
+  'Tem uma versão nova do Syden.': 'Gen yon nouvo vèsyon Syden.',
+  'Pronto': 'Fini',
+  'Editar sons': 'Modifye son yo',
+  'Volume do som, para todo mundo': 'Volim son an, pou tout moun',
+  'Mover para outro pacote': 'Deplase nan yon lòt pakè',
+  'Mover para…': 'Deplase nan…',
+  'Adicionar áudios': 'Ajoute fichye odyo',
 } satisfies Record<string, string>;

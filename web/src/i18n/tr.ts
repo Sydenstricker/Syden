@@ -1082,4 +1082,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Gönderen kişiden yeni bir bağlantı iste.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Yalnızca bu odaya giriyorsun: bağlantının süresi dolunca erişim kalkar.',
   'Sair da sala': 'Odadan ayrıl',
+  'Tem uma versão nova do Syden.': 'Syden\'in yeni bir sürümü var.',
+  'Pronto': 'Bitti',
+  'Editar sons': 'Sesleri düzenle',
+  'Volume do som, para todo mundo': 'Sesin düzeyi, herkes için',
+  'Mover para outro pacote': 'Başka bir pakete taşı',
+  'Mover para…': 'Şuraya taşı…',
+  'Adicionar áudios': 'Ses dosyaları ekle',
 } satisfies Record<string, string>;

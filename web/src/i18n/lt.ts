@@ -1160,4 +1160,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Paprašyk naujos nuorodos to, kas ją atsiuntė.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Įeini tik į šį kambarį: prieiga dings, kai nuoroda nustos galioti.',
   'Sair da sala': 'Išeiti iš kambario',
+  'Tem uma versão nova do Syden.': 'Yra nauja Syden versija.',
+  'Pronto': 'Baigta',
+  'Editar sons': 'Redaguoti garsus',
+  'Volume do som, para todo mundo': 'Garso garsumas, visiems',
+  'Mover para outro pacote': 'Perkelti į kitą paketą',
+  'Mover para…': 'Perkelti į…',
+  'Adicionar áudios': 'Pridėti garso failų',
 } satisfies Record<string, string>;

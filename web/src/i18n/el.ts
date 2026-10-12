@@ -1094,4 +1094,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Ζήτα νέο σύνδεσμο από το άτομο που σου τον έστειλε.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Μπαίνεις μόνο σε αυτό το δωμάτιο: η πρόσβαση χάνεται όταν λήξει ο σύνδεσμος.',
   'Sair da sala': 'Βγες από το δωμάτιο',
+  'Tem uma versão nova do Syden.': 'Υπάρχει νέα έκδοση του Syden.',
+  'Pronto': 'Τέλος',
+  'Editar sons': 'Επεξεργασία ήχων',
+  'Volume do som, para todo mundo': 'Ένταση του ήχου, για όλους',
+  'Mover para outro pacote': 'Μετακίνηση σε άλλο πακέτο',
+  'Mover para…': 'Μετακίνηση σε…',
+  'Adicionar áudios': 'Προσθήκη ήχων',
 } satisfies Record<string, string>;

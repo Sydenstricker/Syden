@@ -1153,4 +1153,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Poproś o nowy link osobę, która go wysłała.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Wchodzisz tylko do tego pokoju: dostęp zniknie, gdy link wygaśnie.',
   'Sair da sala': 'Wyjdź z pokoju',
+  'Tem uma versão nova do Syden.': 'Jest nowa wersja Syden.',
+  'Pronto': 'Gotowe',
+  'Editar sons': 'Edytuj dźwięki',
+  'Volume do som, para todo mundo': 'Głośność dźwięku, dla wszystkich',
+  'Mover para outro pacote': 'Przenieś do innej paczki',
+  'Mover para…': 'Przenieś do…',
+  'Adicionar áudios': 'Dodaj pliki audio',
 } satisfies Record<string, string>;

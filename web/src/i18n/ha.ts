@@ -1090,4 +1090,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Ku nemi sabon mahaɗi daga wanda ya aiko muku shi.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Kuna shiga wannan ɗaki kawai: damar shiga za ta ƙare idan mahaɗin ya ƙare.',
   'Sair da sala': 'Fita daga ɗakin',
+  'Tem uma versão nova do Syden.': 'Akwai sabuwar sigar Syden.',
+  'Pronto': 'An gama',
+  'Editar sons': 'Gyara sautuna',
+  'Volume do som, para todo mundo': 'Ƙarfin sautin, ga kowa',
+  'Mover para outro pacote': 'Matsar zuwa wani fakiti',
+  'Mover para…': 'Matsar zuwa…',
+  'Adicionar áudios': 'Ƙara sautuna',
 } satisfies Record<string, string>;

@@ -1160,4 +1160,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Iberen adamdan täze salgy sora.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Diňe şu otaga girýärsiň: salgynyň möhleti gutaranda giriş ýitýär.',
   'Sair da sala': 'Otagdan çyk',
+  'Tem uma versão nova do Syden.': 'Sydeniň täze wersiýasy çykdy.',
+  'Pronto': 'Taýýar',
+  'Editar sons': 'Owazlary üýtget',
+  'Volume do som, para todo mundo': 'Owazyň güýji, hemmeler üçin',
+  'Mover para outro pacote': 'Başga topluma geçir',
+  'Mover para…': 'Geçir…',
+  'Adicionar áudios': 'Audiolary goş',
 } satisfies Record<string, string>;

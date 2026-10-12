@@ -1088,4 +1088,11 @@ export default {
   'Peça um link novo a quem mandou.': 'ማገናኛውን ከላከልዎ ሰው አዲስ ይጠይቁ።',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'የሚገቡት ወደዚህ ክፍል ብቻ ነው፦ ማገናኛው ሲያልፍ መዳረሻው ይጠፋል።',
   'Sair da sala': 'ከክፍሉ ይውጡ',
+  'Tem uma versão nova do Syden.': 'አዲስ የSyden ስሪት ወጥቷል።',
+  'Pronto': 'ተከናውኗል',
+  'Editar sons': 'ድምፆችን ማስተካከል',
+  'Volume do som, para todo mundo': 'የድምፁ መጠን፣ ለሁሉም ሰው',
+  'Mover para outro pacote': 'ወደ ሌላ ጥቅል ማዛወር',
+  'Mover para…': 'ወደ… ማዛወር',
+  'Adicionar áudios': 'ድምፆችን መጨመር',
 } satisfies Record<string, string>;

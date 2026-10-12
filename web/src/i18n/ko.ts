@@ -1076,4 +1076,11 @@ export default {
   'Peça um link novo a quem mandou.': '보낸 사람에게 새 링크를 요청하세요.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': '이 채널에만 들어가요: 링크가 만료되면 접근이 사라져요.',
   'Sair da sala': '채널 나가기',
+  'Tem uma versão nova do Syden.': 'Syden 새 버전이 나왔어요.',
+  'Pronto': '완료',
+  'Editar sons': '사운드 편집',
+  'Volume do som, para todo mundo': '사운드 볼륨 (모두에게 적용)',
+  'Mover para outro pacote': '다른 팩으로 옮기기',
+  'Mover para…': '옮길 곳…',
+  'Adicionar áudios': '오디오 추가',
 } satisfies Record<string, string>;

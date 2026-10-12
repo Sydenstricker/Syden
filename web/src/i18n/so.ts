@@ -1158,4 +1158,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Weydiiso xiriir cusub qofkii kuu soo diray.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Waxaad gelaysaa qolkan oo kaliya: gelitaanku wuu baaba’aa marka xiriirku dhaco.',
   'Sair da sala': 'Ka bax qolka',
+  'Tem uma versão nova do Syden.': 'Waxaa jira nooc cusub oo Syden ah.',
+  'Pronto': 'Diyaar',
+  'Editar sons': 'Wax ka beddel dhawaaqyada',
+  'Volume do som, para todo mundo': 'Mugga dhawaaqa, qof walba',
+  'Mover para outro pacote': 'U guuri xirmo kale',
+  'Mover para…': 'U guuri…',
+  'Adicionar áudios': 'Ku dar maqallo',
 } satisfies Record<string, string>;

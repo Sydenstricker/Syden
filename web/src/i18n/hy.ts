@@ -1177,4 +1177,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Նոր հղում խնդրիր նրանից, ով ուղարկել է։',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Մտնում ես միայն այս սենյակ․ մուտքը կվերանա, երբ հղումը լրանա։',
   'Sair da sala': 'Դուրս գալ սենյակից',
+  'Tem uma versão nova do Syden.': 'Syden-ի նոր տարբերակ կա։',
+  'Pronto': 'Պատրաստ է',
+  'Editar sons': 'Խմբագրել հնչյունները',
+  'Volume do som, para todo mundo': 'Հնչյունի ուժգնությունը՝ բոլորի համար',
+  'Mover para outro pacote': 'Տեղափոխել այլ փաթեթ',
+  'Mover para…': 'Տեղափոխել…',
+  'Adicionar áudios': 'Ավելացնել աուդիո ֆայլեր',
 } satisfies Record<string, string>;

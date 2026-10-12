@@ -1160,4 +1160,11 @@ export default {
   'Peça um link novo a quem mandou.': 'पठाउने व्यक्तिसँग नयाँ लिंक माग।',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'तिमी यो कोठामा मात्र आउँछौ: लिंकको म्याद सकिएपछि पहुँच हराउँछ।',
   'Sair da sala': 'कोठाबाट निस्क',
+  'Tem uma versão nova do Syden.': 'Syden को नयाँ संस्करण आएको छ।',
+  'Pronto': 'सकियो',
+  'Editar sons': 'आवाजहरू सम्पादन गर्नुहोस्',
+  'Volume do som, para todo mundo': 'आवाजको भोल्युम, सबैका लागि',
+  'Mover para outro pacote': 'अर्को प्याकमा सार्नुहोस्',
+  'Mover para…': 'सार्नुहोस्…',
+  'Adicionar áudios': 'अडियोहरू थप्नुहोस्',
 } satisfies Record<string, string>;

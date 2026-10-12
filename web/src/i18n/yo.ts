@@ -1103,4 +1103,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Béèrè ìjápọ̀ tuntun lọ́wọ́ ẹni tó fi ránṣẹ́.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Yàrá yìí nìkan ni o ń wọ̀: ìwọlé yóò parẹ́ nígbà tí ìjápọ̀ bá parí.',
   'Sair da sala': 'Jáde kúrò ní yàrá',
+  'Tem uma versão nova do Syden.': 'Ẹ̀dà tuntun Syden ti dé.',
+  'Pronto': 'Ó parí',
+  'Editar sons': 'Ṣàtúnṣe àwọn ohùn',
+  'Volume do som, para todo mundo': 'Ìwọ̀n ohùn, fún gbogbo ènìyàn',
+  'Mover para outro pacote': 'Gbé lọ sí ìdì míràn',
+  'Mover para…': 'Gbé lọ sí…',
+  'Adicionar áudios': 'Ṣàfikún àwọn ohùn',
 } satisfies Record<string, string>;

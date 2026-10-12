@@ -1160,4 +1160,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Palūdz jaunu saiti tam, kurš to atsūtīja.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Tu ienāc tikai šajā istabā: piekļuve pazūd, kad saite beidzas.',
   'Sair da sala': 'Iziet no istabas',
+  'Tem uma versão nova do Syden.': 'Ir pieejama jauna Syden versija.',
+  'Pronto': 'Gatavs',
+  'Editar sons': 'Rediģēt skaņas',
+  'Volume do som, para todo mundo': 'Skaņas skaļums, visiem',
+  'Mover para outro pacote': 'Pārvietot uz citu pakotni',
+  'Mover para…': 'Pārvietot uz…',
+  'Adicionar áudios': 'Pievienot audio failus',
 } satisfies Record<string, string>;

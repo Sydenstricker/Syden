@@ -1106,4 +1106,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Попроси новую ссылку у того, кто её прислал.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Ты входишь только в эту комнату: доступ исчезнет, когда ссылка истечёт.',
   'Sair da sala': 'Выйти из комнаты',
+  'Tem uma versão nova do Syden.': 'Вышла новая версия Syden.',
+  'Pronto': 'Готово',
+  'Editar sons': 'Изменить звуки',
+  'Volume do som, para todo mundo': 'Громкость звука, для всех',
+  'Mover para outro pacote': 'Перенести в другой набор',
+  'Mover para…': 'Перенести в…',
+  'Adicionar áudios': 'Добавить аудиофайлы',
 } satisfies Record<string, string>;

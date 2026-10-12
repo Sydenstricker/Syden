@@ -1171,4 +1171,11 @@ export default {
   'Peça um link novo a quem mandou.': 'འབྲེལ་ལམ་གཏང་མི་ལས་ འབྲེལ་ལམ་གསརཔ་ཞུ།',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'ཁྱོད་ ཁང་མིག་འདི་རྐྱངམ་ཅིག་ནང་ ནང་འཛུལ་འབདཝ་ཨིན། འབྲེལ་ལམ་གྱི་དུས་ཚོད་ཚར་བ་ཅིན་ འཛུལ་སྤྱོད་མེདཔ་འགྱོ།',
   'Sair da sala': 'ཁང་མིག་ལས་ཕྱིར་ཐོན',
+  'Tem uma versão nova do Syden.': 'Syden གི་ཐོན་རིམ་གསརཔ་ཅིག་འཐོན་ཡི།',
+  'Pronto': 'ཚར་ཡི།',
+  'Editar sons': 'སྒྲ་ཚུ་ཞུན་དག་འབད།',
+  'Volume do som, para todo mundo': 'སྒྲ་ཤུགས། མི་ག་ར་གི་དོན་ལུ།',
+  'Mover para outro pacote': 'ཐུམ་སྒྲིལ་གཞན་ཅིག་ནང་སྤོ།',
+  'Mover para…': 'སྤོ…',
+  'Adicionar áudios': 'སྒྲ་ཡིག་སྣོད་ཚུ་ཁ་སྐོང་འབད།',
 } satisfies Record<string, string>;

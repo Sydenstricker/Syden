@@ -1159,4 +1159,11 @@ export default {
   'Peça um link novo a quem mandou.': 'Cela isixhumanisi esisha kulowo okuthumelele sona.',
   'Você entra só nesta sala: o acesso some quando o link vencer.': 'Ungena kuleli gumbi kuphela: ukufinyelela kuyaphela lapho isixhumanisi siphelelwa yisikhathi.',
   'Sair da sala': 'Phuma egumbini',
+  'Tem uma versão nova do Syden.': 'Kukhona inguqulo entsha ye-Syden.',
+  'Pronto': 'Kwenziwe',
+  'Editar sons': 'Hlela imisindo',
+  'Volume do som, para todo mundo': 'Ivolumu yomsindo, kubo bonke',
+  'Mover para outro pacote': 'Yisa kwelinye iphakethe',
+  'Mover para…': 'Yisa ku…',
+  'Adicionar áudios': 'Engeza imisindo',
 } satisfies Record<string, string>;
