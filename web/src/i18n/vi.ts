@@ -1028,8 +1028,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Mọi thứ trên màn hình. Muốn có tiếng, hãy tích “Chia sẻ âm thanh hệ thống” trong cửa sổ nhỏ của trình duyệt.',
   'Uma janela ou app': 'Một cửa sổ hoặc ứng dụng',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Chỉ chương trình đó, và âm thanh của máy tính vẫn được gửi kèm.',
-  'Uma aba do navegador': 'Một thẻ trình duyệt',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Chỉ thẻ đó. Đây là lựa chọn duy nhất mà trình duyệt tích sẵn âm thanh.',
   'Opções da transmissão': 'Tùy chọn chia sẻ',
   'Compartilhar tela': 'Chia sẻ màn hình',
   'Trocar para…': 'Chuyển sang…',
@@ -1133,4 +1131,5 @@ export default {
   'Errou!': 'Sai rồi!',
   'Você votou. {n} de {total} já escolheram.': 'Bạn đã bình chọn. {n}/{total} người đã chọn.',
   'Qual é maior? Clique num dos dois.': 'Cái nào lớn hơn? Nhấp vào một trong hai.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Chỉ chương trình đó, không có âm thanh: trình duyệt không thu được âm thanh của một cửa sổ. Muốn có âm thanh, hãy dùng toàn màn hình.',
 } satisfies Record<string, string>;

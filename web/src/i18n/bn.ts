@@ -1055,8 +1055,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'স্ক্রিনে যা কিছু আছে। শব্দসহ পাঠাতে ব্রাউজারের ছোট জানালায় “সিস্টেম অডিও শেয়ার করুন”-এ টিক দাও।',
   'Uma janela ou app': 'একটা জানালা বা অ্যাপ',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'শুধু সেই প্রোগ্রাম, আর কম্পিউটারের শব্দ তবুও সাথে যায়।',
-  'Uma aba do navegador': 'ব্রাউজারের একটা ট্যাব',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'শুধু সেই ট্যাব। এটাই একমাত্র ট্যাব, যেখানে ব্রাউজার শব্দে আগে থেকেই টিক দিয়ে রাখে।',
   'Opções da transmissão': 'স্ট্রিমের অপশন',
   'Compartilhar tela': 'স্ক্রিন শেয়ার করো',
   'Trocar para…': 'এতে বদলাও…',
@@ -1160,4 +1158,5 @@ export default {
   'Errou!': 'ভুল হয়েছে!',
   'Você votou. {n} de {total} já escolheram.': 'তুমি ভোট দিয়েছ। {total} জনের মধ্যে {n} জন বেছে নিয়েছে।',
   'Qual é maior? Clique num dos dois.': 'কোনটা বড়? দুটোর একটায় ক্লিক করো।',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'শুধু ওই প্রোগ্রাম, শব্দ ছাড়া: ব্রাউজার কোনো উইন্ডোর শব্দ ধরে না। শব্দসহ পাঠাতে পুরো স্ক্রিন ব্যবহার করো।',
 } satisfies Record<string, string>;

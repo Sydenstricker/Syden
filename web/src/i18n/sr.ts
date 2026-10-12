@@ -1125,8 +1125,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Све што је на екрану. Да би ишао и звук, означи „Дели системски звук” у прозорчићу прегледача.',
   'Uma janela ou app': 'Прозор или апликација',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Само тај програм, а звук рачунара ипак иде заједно.',
-  'Uma aba do navegador': 'Картица прегледача',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Само та картица. То је једина код које прегледач сам означи звук.',
   'Opções da transmissão': 'Опције преноса',
   'Compartilhar tela': 'Дели екран',
   'Trocar para…': 'Пребаци на…',
@@ -1230,4 +1228,5 @@ export default {
   'Errou!': 'Нетачно!',
   'Você votou. {n} de {total} já escolheram.': 'Глас је дат. Већ је изабрало {n} од {total}.',
   'Qual é maior? Clique num dos dois.': 'Шта је веће? Кликни на једно од два.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Само тај програм, без звука: прегледач не хвата звук прозора. Да иде са звуком, користи цео екран.',
 } satisfies Record<string, string>;

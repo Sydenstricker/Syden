@@ -1130,8 +1130,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandaky ähli zat. Owaz bilen gitmegi üçin brauzeriň kiçi penjiresinde «Ulgam owazyny hem paýlaş» diýen ýeri belle.',
   'Uma janela ou app': 'Penjire ýa-da programma',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Diňe şol programma, kompýuteriň owazy bolsa ýene gidýär.',
-  'Uma aba do navegador': 'Brauzer goýmasy',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Diňe şol goýma. Brauzeriň owazy öňünden belläp berýän ýeke-täk ýeri şu.',
   'Opções da transmissão': 'Ýaýlym sazlamalary',
   'Compartilhar tela': 'Ekrany paýlaş',
   'Trocar para…': 'Şuňa geç…',
@@ -1235,4 +1233,5 @@ export default {
   'Errou!': 'Ýalňyş!',
   'Você votou. {n} de {total} já escolheram.': 'Ses berdiň. Eýýäm saýlanlar: {n} / {total}.',
   'Qual é maior? Clique num dos dois.': 'Haýsysy uly? Ikisiniň birine bas.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Diňe şol programma, sessiz: brauzer penjiräniň sesini almaýar. Ses bilen gitmegi üçin tutuş ekrany ulan.',
 } satisfies Record<string, string>;

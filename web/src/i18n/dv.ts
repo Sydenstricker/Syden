@@ -1138,8 +1138,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ސްކްރީނުގައި ހުރިހާ އެއްޗެއް. އޯޑިއޯއާއެކު ފޮނުވަން، ބްރައުޒަރުގެ ކުޑަ ވިންޑޯގައި "ސިސްޓަމް އޯޑިއޯވެސް ޝެއާކުރޭ" ފާހަގަކުރޭ.',
   'Uma janela ou app': 'ވިންޑޯއެއް ނުވަތަ އެޕެއް',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'އެ ޕްރޮގްރާމް އެކަނި، އަދި ކޮމްޕިއުޓަރުގެ އޯޑިއޯވެސް ދާނެ.',
-  'Uma aba do navegador': 'ބްރައުޒަރުގެ ޓެބެއް',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'އެ ޓެބް އެކަނި. ބްރައުޒަރު އޯޑިއޯ ކުރިން ފާހަގަކޮށްދޭ ހަމައެކަނި ތަނަކީ މިއީ.',
   'Opções da transmissão': 'ސްޓްރީމްގެ އޮޕްޝަންތައް',
   'Compartilhar tela': 'ސްކްރީން ޝެއާކުރޭ',
   'Trocar para…': 'މިއަށް ބަދަލުކުރޭ…',
@@ -1243,4 +1241,5 @@ export default {
   'Errou!': 'ގޯސް!',
   'Você votou. {n} de {total} já escolheram.': 'ވޯޓު ދެވިއްޖެ. {total} މީހުންގެ ތެރެއިން {n} މީހުން ހޮވައިފި.',
   'Qual é maior? Clique num dos dois.': 'ބޮޑީ ކޮބާ؟ ދެއެއްޗިހީގެ ތެރެއިން އެއްޗަކަށް ކްލިކް ކުރޭ.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'ހަމައެކަނި އެ ޕްރޮގްރާމް، އަޑު ނުލައި: ބްރައުޒަރަކުން ވިންޑޯއެއްގެ އަޑު ނުނަގައެވެ. އަޑާއެކު ފޮނުވުމަށް މުޅި ސްކްރީން ބޭނުންކުރޭ.',
 } satisfies Record<string, string>;

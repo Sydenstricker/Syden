@@ -1129,8 +1129,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Allt sem er á skjánum. Til að fá hljóð með skaltu haka við „Deila kerfishljóði“ í litla glugga vafrans.',
   'Uma janela ou app': 'Gluggi eða forrit',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Aðeins það forrit, og hljóð tölvunnar fylgir samt með.',
-  'Uma aba do navegador': 'Flipi í vafranum',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Aðeins sá flipi. Hann er sá eini þar sem vafrinn hefur þegar hakað við hljóð.',
   'Opções da transmissão': 'Valkostir útsendingar',
   'Compartilhar tela': 'Deila skjá',
   'Trocar para…': 'Skipta yfir í…',
@@ -1234,4 +1232,5 @@ export default {
   'Errou!': 'Rangt!',
   'Você votou. {n} de {total} já escolheram.': 'Þú kaust. {n} af {total} hafa valið.',
   'Qual é maior? Clique num dos dois.': 'Hvort er stærra? Smelltu á annað þeirra.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Bara það forrit, án hljóðs: vafrinn nær ekki hljóði úr glugga. Til að senda hljóð með, notaðu allan skjáinn.',
 } satisfies Record<string, string>;

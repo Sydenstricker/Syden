@@ -1060,8 +1060,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Duk abin da ke kan allo. Don ya tafi da sauti, ku zaɓi “raba sautin tsarin” a ƙaramar tagar burauza.',
   'Uma janela ou app': 'Taga ko manhaja',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Wannan shirin kaɗai, kuma sautin kwamfuta yana tafiya tare duk da haka.',
-  'Uma aba do navegador': 'Shafin burauza',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Wannan shafin kaɗai. Shi kaɗai ne burauza ke kawowa da sautinsa an riga an zaɓa.',
   'Opções da transmissão': 'Zaɓuɓɓukan watsawa',
   'Compartilhar tela': 'Raba allo',
   'Trocar para…': 'Canja zuwa…',
@@ -1165,4 +1163,5 @@ export default {
   'Errou!': 'Ba daidai ba!',
   'Você votou. {n} de {total} já escolheram.': 'Kun zaɓa. {n} cikin {total} sun riga sun zaɓa.',
   'Qual é maior? Clique num dos dois.': 'Wanne ya fi girma? Danna ɗaya daga cikin biyun.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Wannan shirin kawai, ba tare da sauti ba: burauza ba ya ɗaukar sautin taga. Don ya tafi da sauti, yi amfani da allon gaba ɗaya.',
 } satisfies Record<string, string>;

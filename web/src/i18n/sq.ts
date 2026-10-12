@@ -1120,8 +1120,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Gjithçka që është në ekran. Që të shkojë edhe tingulli, shëno “Ndaj audion e sistemit” në dritaren e vogël të shfletuesit.',
   'Uma janela ou app': 'Një dritare ose aplikacion',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Vetëm ai program, dhe tingulli i kompjuterit shkon bashkë gjithsesi.',
-  'Uma aba do navegador': 'Një skedë e shfletuesit',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Vetëm ajo skedë. Është e vetmja ku shfletuesi e ka tingullin të shënuar që në fillim.',
   'Opções da transmissão': 'Opsionet e transmetimit',
   'Compartilhar tela': 'Ndaj ekranin',
   'Trocar para…': 'Kalo te…',
@@ -1225,4 +1223,5 @@ export default {
   'Errou!': 'Gabim!',
   'Você votou. {n} de {total} já escolheram.': 'Votove. {n} nga {total} kanë zgjedhur tashmë.',
   'Qual é maior? Clique num dos dois.': 'Cili është më i madh? Kliko njërin nga të dy.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Vetëm ai program, pa zë: shfletuesi nuk e kap zërin e një dritareje. Që të shkojë me zë, përdor gjithë ekranin.',
 } satisfies Record<string, string>;

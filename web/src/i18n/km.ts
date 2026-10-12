@@ -1127,8 +1127,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'អ្វីៗទាំងអស់នៅលើអេក្រង់។ ដើម្បីឱ្យមានសំឡេង សូមគូសធីក “ចែករំលែកសំឡេងប្រព័ន្ធ” នៅក្នុងបង្អួចតូចរបស់កម្មវិធីរុករក។',
   'Uma janela ou app': 'បង្អួច ឬកម្មវិធី',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'តែកម្មវិធីនោះប៉ុណ្ណោះ ហើយសំឡេងកុំព្យូទ័រនៅតែទៅជាមួយដដែល។',
-  'Uma aba do navegador': 'ផ្ទាំងកម្មវិធីរុករក',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'តែផ្ទាំងនោះប៉ុណ្ណោះ។ វាជាជម្រើសតែមួយគត់ដែលកម្មវិធីរុករកគូសធីកសំឡេងស្រាប់។',
   'Opções da transmissão': 'ជម្រើសការផ្សាយ',
   'Compartilhar tela': 'ចែករំលែកអេក្រង់',
   'Trocar para…': 'ប្តូរទៅ…',
@@ -1232,4 +1230,5 @@ export default {
   'Errou!': 'ខុសហើយ!',
   'Você votou. {n} de {total} já escolheram.': 'អ្នកបានបោះឆ្នោតហើយ។ {n} ក្នុងចំណោម {total} បានជ្រើសរើសហើយ។',
   'Qual é maior? Clique num dos dois.': 'មួយណាធំជាង? ចុចលើមួយក្នុងចំណោមទាំងពីរ។',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'តែកម្មវិធីនោះប៉ុណ្ណោះ គ្មានសំឡេង៖ កម្មវិធីរុករកមិនចាប់សំឡេងរបស់បង្អួចទេ។ ដើម្បីផ្ញើជាមួយសំឡេង សូមប្រើអេក្រង់ទាំងមូល។',
 } satisfies Record<string, string>;

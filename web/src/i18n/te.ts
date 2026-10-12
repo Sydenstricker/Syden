@@ -1040,8 +1040,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'తెరపై ఉన్నదంతా. శబ్దంతో పంపడానికి, బ్రౌజర్ చిన్న కిటికీలో “సిస్టమ్ ఆడియోను షేర్ చేయి” గుర్తు పెట్టండి.',
   'Uma janela ou app': 'ఒక కిటికీ లేదా యాప్',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'ఆ ప్రోగ్రామ్ మాత్రమే, అయినా కంప్యూటర్ శబ్దం కూడా వెళ్తుంది.',
-  'Uma aba do navegador': 'ఒక బ్రౌజర్ ట్యాబ్',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'ఆ ట్యాబ్ మాత్రమే. బ్రౌజర్ ముందే శబ్దాన్ని గుర్తు పెట్టి ఇచ్చేది దీనికొక్కదానికే.',
   'Opções da transmissão': 'స్క్రీన్ షేర్ ఎంపికలు',
   'Compartilhar tela': 'స్క్రీన్ షేర్ చేయి',
   'Trocar para…': 'దీనికి మారు…',
@@ -1145,4 +1143,5 @@ export default {
   'Errou!': 'తప్పు!',
   'Você votou. {n} de {total} já escolheram.': 'నువ్వు ఓటు వేశావు. {total} మందిలో {n} మంది ఇప్పటికే ఎంచుకున్నారు.',
   'Qual é maior? Clique num dos dois.': 'ఏది పెద్దది? రెండింటిలో ఒకదాన్ని క్లిక్ చేయి.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'ఆ ప్రోగ్రామ్ మాత్రమే, శబ్దం లేకుండా: బ్రౌజర్ విండో శబ్దాన్ని పట్టుకోదు. శబ్దంతో పంపాలంటే పూర్తి స్క్రీన్‌ని ఉపయోగించు.',
 } satisfies Record<string, string>;

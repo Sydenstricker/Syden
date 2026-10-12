@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kaikki, mitä näytöllä on. Jos haluat äänen mukaan, valitse ”Jaa järjestelmän ääni” selaimen pienessä ikkunassa.',
   'Uma janela ou app': 'Ikkuna tai sovellus',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Vain se ohjelma, ja tietokoneen ääni tulee silti mukaan.',
-  'Uma aba do navegador': 'Selaimen välilehti',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Vain se välilehti. Se on ainoa, jossa selaimessa on ääni valmiiksi valittuna.',
   'Opções da transmissão': 'Lähetyksen asetukset',
   'Compartilhar tela': 'Jaa näyttö',
   'Trocar para…': 'Vaihda kohteeseen…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'Väärin!',
   'Você votou. {n} de {total} já escolheram.': 'Äänestit. {total} pelaajasta {n} on jo valinnut.',
   'Qual é maior? Clique num dos dois.': 'Kumpi on isompi? Klikkaa toista niistä.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Vain se ohjelma, ilman ääntä: selain ei kaappaa ikkunan ääntä. Jos haluat äänen mukaan, käytä koko näyttöä.',
 } satisfies Record<string, string>;

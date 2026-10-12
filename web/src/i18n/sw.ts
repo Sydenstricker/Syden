@@ -1057,8 +1057,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kila kitu kilicho kwenye skrini. Ili iende na sauti, weka alama kwenye “Shiriki sauti ya mfumo” katika dirisha dogo la kivinjari.',
   'Uma janela ou app': 'Dirisha au programu',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Programu hiyo tu, na sauti ya kompyuta inaenda pamoja hata hivyo.',
-  'Uma aba do navegador': 'Kichupo cha kivinjari',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Kichupo hicho tu. Ndicho pekee ambacho kivinjari huja nacho sauti ikiwa tayari imewekwa alama.',
   'Opções da transmissão': 'Chaguo za matangazo',
   'Compartilhar tela': 'Shiriki skrini',
   'Trocar para…': 'Badilisha kwenda…',
@@ -1162,4 +1160,5 @@ export default {
   'Errou!': 'Si sahihi!',
   'Você votou. {n} de {total} já escolheram.': 'Umepiga kura. {n} kati ya {total} wameshachagua.',
   'Qual é maior? Clique num dos dois.': 'Kipi ni kikubwa zaidi? Bofya kimoja kati ya viwili.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Programu hiyo tu, bila sauti: kivinjari hakinasi sauti ya dirisha. Ili iende na sauti, tumia skrini nzima.',
 } satisfies Record<string, string>;

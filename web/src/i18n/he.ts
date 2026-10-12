@@ -1108,8 +1108,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'כל מה שעל המסך. כדי לשלוח גם קול, יש לסמן "שיתוף גם של אודיו המערכת" בחלונית של הדפדפן.',
   'Uma janela ou app': 'חלון או אפליקציה',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'רק התוכנה הזאת, והקול של המחשב נשלח בכל זאת.',
-  'Uma aba do navegador': 'כרטיסייה בדפדפן',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'רק הכרטיסייה הזאת. זו היחידה שבה הדפדפן כבר מסמן את הקול מראש.',
   'Opções da transmissão': 'אפשרויות השידור',
   'Compartilhar tela': 'לשתף מסך',
   'Trocar para…': 'להחליף ל…',
@@ -1213,4 +1211,5 @@ export default {
   'Errou!': 'תשובה שגויה!',
   'Você votou. {n} de {total} já escolheram.': 'ההצבעה שלך נקלטה. {n} מתוך {total} כבר בחרו.',
   'Qual é maior? Clique num dos dois.': 'מה יותר גדול? לוחצים על אחד מהשניים.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'רק התוכנה הזאת, בלי קול: הדפדפן לא קולט את הקול של חלון. כדי לשתף עם קול, יש לבחור במסך המלא.',
 } satisfies Record<string, string>;

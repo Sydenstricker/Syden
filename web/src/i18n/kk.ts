@@ -1124,8 +1124,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Экрандағының бәрі. Дыбыспен жіберу үшін браузер терезесінде «Жүйелік аудионы бөлісу» белгісін қойыңыз.',
   'Uma janela ou app': 'Терезе немесе қолданба',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Тек сол бағдарлама, бірақ компьютер дыбысы бәрібір бірге жіберіледі.',
-  'Uma aba do navegador': 'Браузер қойындысы',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Тек сол қойынды. Браузер дыбысты алдын ала белгілейтін жалғыз нұсқа осы.',
   'Opções da transmissão': 'Трансляция параметрлері',
   'Compartilhar tela': 'Экранды бөлісу',
   'Trocar para…': 'Ауыстыру…',
@@ -1229,4 +1227,5 @@ export default {
   'Errou!': 'Қате!',
   'Você votou. {n} de {total} já escolheram.': 'Дауыс бердіңіз. {total} адамның {n}-і таңдап қойды.',
   'Qual é maior? Clique num dos dois.': 'Қайсысы үлкен? Екеуінің бірін басыңыз.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Тек сол бағдарлама, дыбыссыз: браузер терезенің дыбысын ала алмайды. Дыбыспен жіберу үшін бүкіл экранды таңдаңыз.',
 } satisfies Record<string, string>;

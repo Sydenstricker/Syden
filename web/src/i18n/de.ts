@@ -1082,8 +1082,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alles auf dem Bildschirm. Für Ton setz im kleinen Browserfenster den Haken bei „Systemaudio teilen“.',
   'Uma janela ou app': 'Ein Fenster oder eine App',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Nur dieses Programm, und der Computerton geht trotzdem mit.',
-  'Uma aba do navegador': 'Ein Browser-Tab',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Nur dieser Tab. Er ist der einzige, bei dem der Browser den Ton schon angehakt hat.',
   'Opções da transmissão': 'Übertragungsoptionen',
   'Compartilhar tela': 'Bildschirm teilen',
   'Trocar para…': 'Wechseln zu…',
@@ -1187,4 +1185,5 @@ export default {
   'Errou!': 'Falsch!',
   'Você votou. {n} de {total} já escolheram.': 'Du hast abgestimmt. {n} von {total} haben schon gewählt.',
   'Qual é maior? Clique num dos dois.': 'Was ist größer? Klick auf eins der beiden.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Nur dieses Programm, ohne Ton: Der Browser nimmt den Ton eines Fensters nicht auf. Mit Ton nimm den ganzen Bildschirm.',
 } satisfies Record<string, string>;

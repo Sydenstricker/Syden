@@ -1130,8 +1130,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Viss, kas ir ekrānā. Lai būtu arī skaņa, pārlūka lodziņā atzīmē „Kopīgot sistēmas audio”.',
   'Uma janela ou app': 'Logs vai lietotne',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Tikai šī programma, un datora skaņa tik un tā nāk līdzi.',
-  'Uma aba do navegador': 'Pārlūka cilne',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Tikai šī cilne. Tā ir vienīgā, kurai pārlūks skaņu jau ir atzīmējis.',
   'Opções da transmissão': 'Translācijas opcijas',
   'Compartilhar tela': 'Kopīgot ekrānu',
   'Trocar para…': 'Pārslēgt uz…',
@@ -1235,4 +1233,5 @@ export default {
   'Errou!': 'Nepareizi!',
   'Você votou. {n} de {total} já escolheram.': 'Tu nobalsoji. {n} no {total} jau ir izvēlējušies.',
   'Qual é maior? Clique num dos dois.': 'Kurš ir lielāks? Noklikšķini uz viena no tiem.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Tikai šī programma, bez skaņas: pārlūks neuztver loga skaņu. Lai būtu ar skaņu, izmanto visu ekrānu.',
 } satisfies Record<string, string>;

@@ -1130,8 +1130,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Vse, kar je na zaslonu. Za zvok v brskalnikovem okencu obkljukaj „Deli sistemski zvok“.',
   'Uma janela ou app': 'Okno ali aplikacija',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Samo ta program, zvok računalnika pa gre vseeno zraven.',
-  'Uma aba do navegador': 'Zavihek brskalnika',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Samo ta zavihek. Edini je, pri katerem ima brskalnik zvok že obkljukan.',
   'Opções da transmissão': 'Možnosti prenosa',
   'Compartilhar tela': 'Deli zaslon',
   'Trocar para…': 'Preklopi na…',
@@ -1235,4 +1233,5 @@ export default {
   'Errou!': 'Napačno!',
   'Você votou. {n} de {total} já escolheram.': 'Glas oddan. Izbralo jih je že {n} od {total}.',
   'Qual é maior? Clique num dos dois.': 'Kaj je večje? Klikni enega od dveh.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Samo ta program, brez zvoka: brskalnik ne zajame zvoka okna. Za zvok uporabi cel zaslon.',
 } satisfies Record<string, string>;

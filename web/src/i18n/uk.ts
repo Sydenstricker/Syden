@@ -1108,8 +1108,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Усе, що на екрані. Щоб передати звук, познач «Також надати доступ до системного аудіо» у віконці браузера.',
   'Uma janela ou app': 'Вікно або застосунок',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Лише ця програма, і звук комп’ютера все одно йде разом.',
-  'Uma aba do navegador': 'Вкладка браузера',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Лише ця вкладка. Це єдиний варіант, де браузер одразу позначає звук.',
   'Opções da transmissão': 'Параметри трансляції',
   'Compartilhar tela': 'Показати екран',
   'Trocar para…': 'Перемкнути на…',
@@ -1213,4 +1211,5 @@ export default {
   'Errou!': 'Неправильно!',
   'Você votou. {n} de {total} já escolheram.': 'Голос прийнято. Уже обрали: {n} з {total}.',
   'Qual é maior? Clique num dos dois.': 'Що більше? Натисни на один із двох.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Лише ця програма, без звуку: браузер не захоплює звук вікна. Щоб ішло зі звуком, вибери весь екран.',
 } satisfies Record<string, string>;

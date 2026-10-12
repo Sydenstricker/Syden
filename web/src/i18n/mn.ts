@@ -1142,8 +1142,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Дэлгэц дээрх бүх зүйл. Дуутай явуулахын тулд хөтчийн цонхонд «Системийн аудиог хуваалцах»-ыг тэмдэглэ.',
   'Uma janela ou app': 'Цонх эсвэл апп',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Зөвхөн тэр програм, гэхдээ компьютерын дуу хамт явна.',
-  'Uma aba do navegador': 'Хөтчийн таб',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Зөвхөн тэр таб. Хөтөч дууг урьдчилан тэмдэглэдэг цорын ганц нь энэ.',
   'Opções da transmissão': 'Дамжуулалтын тохиргоо',
   'Compartilhar tela': 'Дэлгэц хуваалцах',
   'Trocar para…': 'Солих…',
@@ -1247,4 +1245,5 @@ export default {
   'Errou!': 'Буруу!',
   'Você votou. {n} de {total} já escolheram.': 'Чи санал өглөө. {total}-с {n} нь сонгосон.',
   'Qual é maior? Clique num dos dois.': 'Аль нь илүү том бэ? Хоёрын нэг дээр дар.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Зөвхөн тэр програм, дуугүй: хөтөч цонхны дууг авдаггүй. Дуутай явуулахын тулд бүтэн дэлгэцийг сонго.',
 } satisfies Record<string, string>;

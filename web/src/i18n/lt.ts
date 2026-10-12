@@ -1130,8 +1130,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Viskas, kas yra ekrane. Kad būtų ir garsas, naršyklės langelyje pažymėk „Bendrinti sistemos garsą“.',
   'Uma janela ou app': 'Langas arba programa',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Tik ta programa, o kompiuterio garsas vis tiek eina kartu.',
-  'Uma aba do navegador': 'Naršyklės skirtukas',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Tik tas skirtukas. Tai vienintelis, kuriam naršyklė garsą jau pažymi pati.',
   'Opções da transmissão': 'Transliacijos parinktys',
   'Compartilhar tela': 'Bendrinti ekraną',
   'Trocar para…': 'Perjungti į…',
@@ -1235,4 +1233,5 @@ export default {
   'Errou!': 'Neteisingai!',
   'Você votou. {n} de {total} já escolheram.': 'Balsavai. {n} iš {total} jau pasirinko.',
   'Qual é maior? Clique num dos dois.': 'Kuris didesnis? Spustelėk vieną iš dviejų.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Tik ta programa, be garso: naršyklė nepagauna lango garso. Kad eitų su garsu, naudok visą ekraną.',
 } satisfies Record<string, string>;

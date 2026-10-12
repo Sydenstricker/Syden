@@ -1073,8 +1073,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Gbogbo ohun tó wà lójú ìwé. Kí ó lè lọ pẹ̀lú ohùn, ẹ sàmì sí “pín ohùn ẹ̀rọ” nínú fèrèsé kékeré awáròyìn.',
   'Uma janela ou app': 'Fèrèsé tàbí áàpù',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Ìṣàfilọ́lẹ̀ yẹn nìkan, ohùn kọ̀ǹpútà yóò sì lọ pẹ̀lú rẹ̀ bákan náà.',
-  'Uma aba do navegador': 'Táàbù awáròyìn',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Táàbù yẹn nìkan. Òun nìkan ni awáròyìn máa ń mú wá pẹ̀lú ohùn tí a ti sàmì sí tẹ́lẹ̀.',
   'Opções da transmissão': 'Àwọn àṣàyàn ìfihàn',
   'Compartilhar tela': 'Pín ojú ìwé',
   'Trocar para…': 'Yí padà sí…',
@@ -1178,4 +1176,5 @@ export default {
   'Errou!': 'Kò tọ̀nà!',
   'Você votou. {n} de {total} já escolheram.': 'O ti dìbò. {n} nínú {total} ti yàn.',
   'Qual é maior? Clique num dos dois.': 'Èwo ló tóbi jù? Tẹ ọ̀kan nínú méjèèjì.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Ètò yẹn nìkan, láìsí ohùn: aṣàwákiri kò lè gba ohùn fèrèsé kan. Láti fi ohùn ránṣẹ́, lo gbogbo ojú-ìbòjú.',
 } satisfies Record<string, string>;

@@ -1078,8 +1078,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'كل ما على الشاشة. لإرسال الصوت، يجب التأشير على «مشاركة صوت النظام أيضًا» في نافذة المتصفح الصغيرة.',
   'Uma janela ou app': 'نافذة أو تطبيق',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'ذلك البرنامج فقط، ويُرسَل صوت الكمبيوتر معه رغم ذلك.',
-  'Uma aba do navegador': 'علامة تبويب في المتصفح',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'تلك العلامة فقط. وهي الوحيدة التي يأتي فيها الصوت محددًا مسبقًا في المتصفح.',
   'Opções da transmissão': 'خيارات البث',
   'Compartilhar tela': 'مشاركة الشاشة',
   'Trocar para…': 'التبديل إلى…',
@@ -1183,4 +1181,5 @@ export default {
   'Errou!': 'إجابة خاطئة!',
   'Você votou. {n} de {total} já escolheram.': 'تم تسجيل صوتك. اختار {n} من {total} حتى الآن.',
   'Qual é maior? Clique num dos dois.': 'أيهما أكبر؟ يكفي النقر على أحدهما.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'هذا البرنامج فقط، بلا صوت: المتصفح لا يلتقط صوت النافذة. لإرساله مع الصوت، استخدم الشاشة كاملة.',
 } satisfies Record<string, string>;

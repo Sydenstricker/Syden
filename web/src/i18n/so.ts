@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Wax kasta oo shaashadda ku jira. Si dhawaaqu ula socdo, calaamadee “wadaag codka nidaamka” daaqadda yar ee biraawsarka.',
   'Uma janela ou app': 'Daaqad ama app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Barnaamijkaas oo keliya, dhawaaqa kombiyuutarkuna si kastaba wuu la socdaa.',
-  'Uma aba do navegador': 'Tab ka mid ah biraawsarka',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Tabkaas oo keliya. Waa kan keliya ee biraawsarku dhawaaqiisa horay u calaamadeeyo.',
   'Opções da transmissão': 'Doorashooyinka baahinta',
   'Compartilhar tela': 'Wadaag shaashadda',
   'Trocar para…': 'U beddel…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'Waa khalad!',
   'Você votou. {n} de {total} já escolheram.': 'Waad codeysay. {n} ka mid ah {total} ayaa horay u doortay.',
   'Qual é maior? Clique num dos dois.': 'Kee ka weyn? Guji mid ka mid ah labada.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Barnaamijkaas oo keliya, cod la\'aan: biraawsarku ma qabto codka daaqad. Si uu cod ula socdo, isticmaal shaashadda oo dhan.',
 } satisfies Record<string, string>;

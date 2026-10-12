@@ -1138,8 +1138,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tout sa ki sou ekran an. Pou son an ale tou, tcheke “pataje son sistèm nan” nan ti fenèt navigatè a.',
   'Uma janela ou app': 'Yon fenèt oswa yon app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Sèlman pwogram sa a, epi son òdinatè a ale tou kanmenm.',
-  'Uma aba do navegador': 'Yon onglè navigatè',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Sèlman onglè sa a. Se sèl youn kote navigatè a deja tcheke son an.',
   'Opções da transmissão': 'Opsyon difizyon an',
   'Compartilhar tela': 'Pataje ekran',
   'Trocar para…': 'Chanje pou…',
@@ -1243,4 +1241,5 @@ export default {
   'Errou!': 'Ou rate li!',
   'Você votou. {n} de {total} já escolheram.': 'Ou vote. {n} sou {total} chwazi deja.',
   'Qual é maior? Clique num dos dois.': 'Kiyès ki pi gwo? Klike sou youn nan de yo.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Sèlman pwogram sa a, san son: navigatè a pa pran son yon fenèt. Pou l ale ak son, sèvi ak tout ekran an.',
 } satisfies Record<string, string>;

@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Izay rehetra eo amin’ny efijery. Raha tianao hiaraka amin’ny feo, mariho ny “Zarao ny feon’ny rafitra” ao amin’ny varavarankely kelin’ny mpitety.',
   'Uma janela ou app': 'Varavarankely na fampiharana',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Io programa io ihany, ary miaraka aminy ihany koa ny feon’ny solosaina.',
-  'Uma aba do navegador': 'Takelaka ao amin’ny mpitety',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Io takelaka io ihany. Izy irery no efa voamarika mialoha ny feony ao amin’ny mpitety.',
   'Opções da transmissão': 'Safidin’ny fandefasana',
   'Compartilhar tela': 'Hizara ny efijery',
   'Trocar para…': 'Hiova ho…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'Diso!',
   'Você votou. {n} de {total} já escolheram.': 'Nifidy ianao. {n} amin’ny {total} no efa nisafidy.',
   'Qual é maior? Clique num dos dois.': 'Iza no lehibe kokoa? Tsindrio ny iray amin’izy roa.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Io fandaharana io ihany, tsy misy feo: tsy maka ny feon\'ny varavarankely ny mpitety. Raha te hisy feo, ampiasao ny efijery manontolo.',
 } satisfies Record<string, string>;

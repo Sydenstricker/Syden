@@ -41,6 +41,7 @@ import {
 import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
+import { desktopBridge } from './desktop';
 import { reloadSounds, useDirectory } from './directory';
 import { buscarSons, contarToque, toquesDosSons } from './buscaDeSons';
 import { somParecidoCom } from './somParecido';
@@ -753,7 +754,11 @@ function StreamAudio({ voice, publisher }: { voice: Voice; publisher: Participan
             {t('Sua transmissão está sem som. O navegador só manda o som se você marcar “compartilhar áudio” na janelinha de escolher a tela.')}
           </span>
           {voice.telaCompartilhada && (
-            <button className="btn-secondary stream-audio-retry" onClick={() => void voice.shareScreen(voice.telaCompartilhada!)}>
+            // Janela pelo navegador nunca tem som (nem a caixinha): escolher de novo vai para a tela inteira.
+            <button
+              className="btn-secondary stream-audio-retry"
+              onClick={() => void voice.shareScreen(voice.telaCompartilhada === 'window' && !desktopBridge ? 'monitor' : voice.telaCompartilhada!)}
+            >
               {t('Escolher de novo, marcando o som')}
             </button>
           )}

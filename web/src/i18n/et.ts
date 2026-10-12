@@ -1125,8 +1125,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kõik, mis on ekraanil. Heli kaasa saamiseks märgi brauseri väikeses aknas „Jaga süsteemi heli”.',
   'Uma janela ou app': 'Aken või rakendus',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Ainult see programm, ja arvuti heli tuleb ikkagi kaasa.',
-  'Uma aba do navegador': 'Brauseri vahekaart',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Ainult see vahekaart. See on ainus, kus brauseril on heli juba märgitud.',
   'Opções da transmissão': 'Ülekande valikud',
   'Compartilhar tela': 'Jaga ekraani',
   'Trocar para…': 'Vaheta…',
@@ -1230,4 +1228,5 @@ export default {
   'Errou!': 'Vale!',
   'Você votou. {n} de {total} já escolheram.': 'Sa hääletasid. {total}-st on {n} juba valinud.',
   'Qual é maior? Clique num dos dois.': 'Kumb on suurem? Klõpsa ühel neist.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Ainult see programm, ilma helita: brauser ei püüa akna heli. Heliga jagamiseks kasuta tervet ekraani.',
 } satisfies Record<string, string>;

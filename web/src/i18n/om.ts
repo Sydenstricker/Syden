@@ -1098,8 +1098,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Wanta iskiriinii irra jiru hunda. Sagaleen akka waliin deemuuf, foddaa xiqqaa brawuzarii keessatti “sagalee sirnaa qoodi” mallatteessi.',
   'Uma janela ou app': 'Foddaa ykn appii',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Sagantaa sana qofa, sagaleen kompiitaraa garuu amma iyyuu waliin deema.',
-  'Uma aba do navegador': 'Tabii brawuzarii',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Tabii sana qofa. Isa qofatu brawuzarii keessatti sagaleen isaa dursee mallattaa’ee dhufa.',
   'Opções da transmissão': 'Filannoo tamsaasaa',
   'Compartilhar tela': 'Iskiriinii qoodi',
   'Trocar para…': 'Jijjiiri gara…',
@@ -1203,4 +1201,5 @@ export default {
   'Errou!': 'Dogoggora!',
   'Você votou. {n} de {total} já escolheram.': 'Filatteetta. {total} keessaa {n} filataniiru.',
   'Qual é maior? Clique num dos dois.': 'Kam caalaa guddaa dha? Lamaan keessaa tokko tuqi.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Sagantaa sana qofa, sagalee malee: biraawzariin sagalee foddaa hin qabatu. Sagaleen akka deemuuf, iskiriinii guutuu fayyadami.',
 } satisfies Record<string, string>;

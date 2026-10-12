@@ -1129,8 +1129,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Konke okusesikrinini. Ukuze kuhambe nomsindo, maka “Yabelana nomsindo wesistimu” ewindini elincane lesiphequluli.',
   'Uma janela ou app': 'Iwindi noma i-app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Lolo hlelo kuphela, futhi umsindo wekhompyutha uhamba nalo noma kunjalo.',
-  'Uma aba do navegador': 'Ithebhu yesiphequluli',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Leyo thebhu kuphela. Yiyo yodwa isiphequluli esiza nayo umsindo usumakiwe.',
   'Opções da transmissão': 'Izinketho zokusakaza',
   'Compartilhar tela': 'Yabelana ngesikrini',
   'Trocar para…': 'Shintshela ku…',
@@ -1234,4 +1232,5 @@ export default {
   'Errou!': 'Akulungile!',
   'Você votou. {n} de {total} já escolheram.': 'Usuvotile. Abangu-{n} kwangu-{total} sebekhethile.',
   'Qual é maior? Clique num dos dois.': 'Yikuphi okukhulu? Chofoza okukodwa kokubili.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Lolo hlelo kuphela, ngaphandle komsindo: isiphequluli asiwuthathi umsindo wewindi. Ukuze kuhambe nomsindo, sebenzisa sonke isikrini.',
 } satisfies Record<string, string>;

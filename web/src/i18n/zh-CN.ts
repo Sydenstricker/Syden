@@ -1045,8 +1045,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': '屏幕上的所有内容。要带上声音，请在浏览器的小窗口里勾选“共享系统音频”。',
   'Uma janela ou app': '窗口或应用',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': '只有那个程序，电脑的声音照样会一起发送。',
-  'Uma aba do navegador': '浏览器标签页',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': '只有那个标签页。只有标签页是浏览器默认就勾好声音的。',
   'Opções da transmissão': '直播选项',
   'Compartilhar tela': '共享屏幕',
   'Trocar para…': '切换到…',
@@ -1150,4 +1148,5 @@ export default {
   'Errou!': '答错了！',
   'Você votou. {n} de {total} já escolheram.': '你已投票。{total} 人中已有 {n} 人做出选择。',
   'Qual é maior? Clique num dos dois.': '哪个更大？点击其中一个。',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': '只有那个程序，没有声音：浏览器无法捕获窗口的声音。要带声音，请选择整个屏幕。',
 } satisfies Record<string, string>;

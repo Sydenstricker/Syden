@@ -1058,8 +1058,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Semua yang ada pada skrin. Untuk menghantar bunyi, tandakan “Kongsi audio sistem” pada tetingkap kecil pelayar.',
   'Uma janela ou app': 'Tetingkap atau aplikasi',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Program itu sahaja, dan bunyi komputer tetap turut dihantar.',
-  'Uma aba do navegador': 'Tab pelayar',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Tab itu sahaja. Hanya tab yang bunyinya sudah ditanda oleh pelayar secara lalai.',
   'Opções da transmissão': 'Pilihan siaran',
   'Compartilhar tela': 'Kongsi skrin',
   'Trocar para…': 'Tukar kepada…',
@@ -1163,4 +1161,5 @@ export default {
   'Errou!': 'Salah!',
   'Você votou. {n} de {total} já escolheram.': 'Kamu sudah mengundi. {n} daripada {total} sudah memilih.',
   'Qual é maior? Clique num dos dois.': 'Mana lebih besar? Klik salah satu.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Hanya program itu, tanpa bunyi: pelayar tidak menangkap bunyi tetingkap. Untuk berkongsi dengan bunyi, guna seluruh skrin.',
 } satisfies Record<string, string>;

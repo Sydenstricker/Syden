@@ -1046,8 +1046,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': '화면에 보이는 모든 것. 소리도 보내려면 브라우저 작은 창에서 “시스템 오디오 공유”를 체크하세요.',
   'Uma janela ou app': '창 또는 앱',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': '그 프로그램만. 그래도 컴퓨터 소리는 같이 가요.',
-  'Uma aba do navegador': '브라우저 탭',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': '그 탭만. 브라우저가 처음부터 소리를 체크해 두는 건 탭뿐이에요.',
   'Opções da transmissão': '방송 옵션',
   'Compartilhar tela': '화면 공유',
   'Trocar para…': '다음으로 바꾸기…',
@@ -1151,4 +1149,5 @@ export default {
   'Errou!': '오답!',
   'Você votou. {n} de {total} já escolheram.': '투표했어요. {total}명 중 {n}명이 골랐어요.',
   'Qual é maior? Clique num dos dois.': '어느 쪽이 더 클까? 둘 중 하나를 클릭하세요.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': '그 프로그램만, 소리 없이: 브라우저는 창의 소리를 가져오지 못해요. 소리도 보내려면 전체 화면을 선택하세요.',
 } satisfies Record<string, string>;

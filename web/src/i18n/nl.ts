@@ -1057,8 +1057,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alles wat op het scherm staat. Wil je geluid, vink dan ‘Systeemaudio delen’ aan in het venstertje van de browser.',
   'Uma janela ou app': 'Een venster of app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Alleen dat programma, en het computergeluid gaat toch mee.',
-  'Uma aba do navegador': 'Een browsertabblad',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Alleen dat tabblad. Het is het enige waarbij de browser het geluid al heeft aangevinkt.',
   'Opções da transmissão': 'Uitzendopties',
   'Compartilhar tela': 'Scherm delen',
   'Trocar para…': 'Overschakelen naar…',
@@ -1162,4 +1160,5 @@ export default {
   'Errou!': 'Fout!',
   'Você votou. {n} de {total} já escolheram.': 'Je hebt gestemd. {n} van de {total} hebben al gekozen.',
   'Qual é maior? Clique num dos dois.': 'Wat is groter? Klik op een van de twee.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Alleen dat programma, zonder geluid: de browser vangt het geluid van een venster niet op. Wil je geluid erbij, gebruik dan het hele scherm.',
 } satisfies Record<string, string>;

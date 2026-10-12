@@ -1092,8 +1092,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandakı hər şey. Səslə getməsi üçün brauzerin pəncərəsində “Sistem səsini paylaş” seçimini işarələ.',
   'Uma janela ou app': 'Pəncərə və ya tətbiq',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Yalnız o proqram, kompüterin səsi isə yenə də gedir.',
-  'Uma aba do navegador': 'Brauzer vərəqi',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Yalnız o vərəq. Brauzerin səsi əvvəlcədən işarələdiyi yeganə seçim budur.',
   'Opções da transmissão': 'Yayım seçimləri',
   'Compartilhar tela': 'Ekranı paylaş',
   'Trocar para…': 'Dəyiş…',
@@ -1197,4 +1195,5 @@ export default {
   'Errou!': 'Səhv etdin!',
   'Você votou. {n} de {total} já escolheram.': 'Səs verdin. {total} nəfərdən {n} nəfər artıq seçib.',
   'Qual é maior? Clique num dos dois.': 'Hansı daha böyükdür? İkisindən birinə klik et.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Yalnız o proqram, səssiz: brauzer pəncərənin səsini götürmür. Səslə getməsi üçün bütün ekranı seç.',
 } satisfies Record<string, string>;

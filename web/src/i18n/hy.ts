@@ -1147,8 +1147,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Այն ամենը, ինչ էկրանին է։ Որ ձայնով գնա, դիտարկիչի փոքր պատուհանում նշիր «Կիսվել համակարգի աուդիոյով»։',
   'Uma janela ou app': 'Պատուհան կամ հավելված',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Միայն այդ ծրագիրը, և համակարգչի ձայնը միևնույն է գնում է հետը։',
-  'Uma aba do navegador': 'Դիտարկիչի ներդիր',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Միայն այդ ներդիրը։ Միակն է, որի ձայնը դիտարկիչում արդեն նշված է լինում։',
   'Opções da transmissão': 'Հեռարձակման ընտրանքներ',
   'Compartilhar tela': 'Կիսվել էկրանով',
   'Trocar para…': 'Անցնել…',
@@ -1252,4 +1250,5 @@ export default {
   'Errou!': 'Սխա՛լ է',
   'Você votou. {n} de {total} já escolheram.': 'Քվեարկեցիր։ {total}-ից {n}-ն արդեն ընտրել են։',
   'Qual é maior? Clique num dos dois.': 'Ո՞րն է ավելի մեծ։ Սեղմիր երկուսից մեկի վրա։',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Միայն այդ ծրագիրը, առանց ձայնի․ դիտարկիչը չի որսում պատուհանի ձայնը։ Ձայնով ուղարկելու համար ընտրիր ամբողջ էկրանը։',
 } satisfies Record<string, string>;

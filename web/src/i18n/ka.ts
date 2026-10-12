@@ -1146,8 +1146,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ყველაფერი, რაც ეკრანზეა. ხმით რომ წავიდეს, ბრაუზერის პატარა ფანჯარაში მონიშნე „სისტემის აუდიოს გაზიარება“.',
   'Uma janela ou app': 'ფანჯარა ან აპი',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'მხოლოდ ეს პროგრამა, და კომპიუტერის ხმა მაინც თან მიჰყვება.',
-  'Uma aba do navegador': 'ბრაუზერის ჩანართი',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'მხოლოდ ეს ჩანართი. ეს ერთადერთია, რომელზეც ბრაუზერს ხმა უკვე მონიშნული აქვს.',
   'Opções da transmissão': 'ტრანსლაციის პარამეტრები',
   'Compartilhar tela': 'ეკრანის გაზიარება',
   'Trocar para…': 'გადართვა…',
@@ -1251,4 +1249,5 @@ export default {
   'Errou!': 'არასწორია!',
   'Você votou. {n} de {total} já escolheram.': 'ხმა მიეცი. {total}-დან {n}-მა უკვე აირჩია.',
   'Qual é maior? Clique num dos dois.': 'რომელია უფრო დიდი? დააწკაპუნე ერთ-ერთზე.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'მხოლოდ ის პროგრამა, ხმის გარეშე: ბრაუზერი ფანჯრის ხმას ვერ იჭერს. ხმით გასაზიარებლად აირჩიე მთელი ეკრანი.',
 } satisfies Record<string, string>;

@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'තිරයේ ඇති සියල්ල. ශබ්දය සමඟ යැවීමට, බ්‍රවුසරයේ කුඩා කවුළුවේ “පද්ධති ශ්‍රව්‍ය බෙදාගන්න” සලකුණු කරන්න.',
   'Uma janela ou app': 'කවුළුවක් හෝ යෙදුමක්',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'එම වැඩසටහන පමණි, නමුත් පරිගණකයේ ශබ්දයද යයි.',
-  'Uma aba do navegador': 'බ්‍රවුසර ටැබයක්',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'එම ටැබය පමණි. බ්‍රවුසරය ශබ්දය කලින්ම සලකුණු කර දෙන්නේ මෙයට පමණි.',
   'Opções da transmissão': 'විකාශන විකල්ප',
   'Compartilhar tela': 'තිරය බෙදාගන්න',
   'Trocar para…': 'මෙයට මාරු වන්න…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'වැරදියි!',
   'Você votou. {n} de {total} já escolheram.': 'ඔබ ඡන්දය දුන්නා. {total} න් {n} දෙනෙක් දැනටමත් තෝරලා.',
   'Qual é maior? Clique num dos dois.': 'වඩා ලොකු කුමක්ද? දෙකෙන් එකක් ක්ලික් කරන්න.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'එම වැඩසටහන පමණයි, ශබ්දය නැතිව: බ්‍රවුසරය කවුළුවක ශබ්දය අල්ලා ගන්නේ නැහැ. ශබ්දය සමඟ යවන්න මුළු තිරයම භාවිත කරන්න.',
 } satisfies Record<string, string>;

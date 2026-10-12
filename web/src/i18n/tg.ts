@@ -1129,8 +1129,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ҳама чизе, ки дар экран аст. Барои бо садо фиристодан, дар равзанаи браузер «Мубодилаи садои система»-ро қайд кунед.',
   'Uma janela ou app': 'Равзана ё барнома',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Танҳо ҳамон барнома, ва садои компютер ба ҳар ҳол ҳамроҳ меравад.',
-  'Uma aba do navegador': 'Ҷадвалаки браузер',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Танҳо ҳамон ҷадвалак. Ин ягона ҳолатест, ки браузер садоро худаш қайд мекунад.',
   'Opções da transmissão': 'Имконоти пахш',
   'Compartilhar tela': 'Мубодилаи экран',
   'Trocar para…': 'Иваз кардан ба…',
@@ -1234,4 +1232,5 @@ export default {
   'Errou!': 'Нодуруст!',
   'Você votou. {n} de {total} já escolheram.': 'Шумо овоз додед. {n} аз {total} аллакай интихоб карданд.',
   'Qual é maior? Clique num dos dois.': 'Кадомаш калонтар аст? Ба яке аз онҳо клик кунед.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Танҳо он барнома, бе садо: браузер садои тирезаро намегирад. Барои бо садо фиристодан тамоми экранро интихоб кунед.',
 } satisfies Record<string, string>;

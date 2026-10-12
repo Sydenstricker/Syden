@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alt på skjermen. For å få med lyd, kryss av for «Del systemlyd» i det lille vinduet i nettleseren.',
   'Uma janela ou app': 'Et vindu eller en app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Bare det programmet, og lyden fra datamaskinen blir med likevel.',
-  'Uma aba do navegador': 'En fane i nettleseren',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Bare den fanen. Det er den eneste der nettleseren allerede har krysset av for lyd.',
   'Opções da transmissão': 'Alternativer for sending',
   'Compartilhar tela': 'Del skjerm',
   'Trocar para…': 'Bytt til…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'Feil!',
   'Você votou. {n} de {total} já escolheram.': 'Du har stemt. {n} av {total} har valgt.',
   'Qual é maior? Clique num dos dois.': 'Hvilken er størst? Klikk på en av dem.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Bare det programmet, uten lyd: nettleseren fanger ikke lyden fra et vindu. Bruk hele skjermen hvis lyden skal være med.',
 } satisfies Record<string, string>;

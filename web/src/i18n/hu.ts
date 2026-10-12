@@ -1130,8 +1130,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Minden, ami a képernyőn van. Ha hangot is szeretnél, jelöld be a „Rendszerhang megosztása” lehetőséget a böngésző kis ablakában.',
   'Uma janela ou app': 'Egy ablak vagy alkalmazás',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Csak az a program, és a számítógép hangja így is megy.',
-  'Uma aba do navegador': 'Egy böngészőlap',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Csak az a lap. Ez az egyetlen, amelynél a böngésző a hangot már bejelöli.',
   'Opções da transmissão': 'Közvetítés beállításai',
   'Compartilhar tela': 'Képernyő megosztása',
   'Trocar para…': 'Váltás erre…',
@@ -1235,4 +1233,5 @@ export default {
   'Errou!': 'Nem talált!',
   'Você votou. {n} de {total} já escolheram.': 'Szavaztál. {total} közül {n} már választott.',
   'Qual é maior? Clique num dos dois.': 'Melyik a nagyobb? Kattints az egyikre.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Csak az a program, hang nélkül: a böngésző nem veszi fel egy ablak hangját. Ha hang is kell, használd a teljes képernyőt.',
 } satisfies Record<string, string>;

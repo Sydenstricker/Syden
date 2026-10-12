@@ -1039,8 +1039,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': '画面に映っているものすべて。音も送るには、ブラウザの小窓で「システム音声を共有」にチェックを入れてください。',
   'Uma janela ou app': 'ウィンドウまたはアプリ',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'そのアプリだけ。それでもパソコンの音は一緒に送られます。',
-  'Uma aba do navegador': 'ブラウザのタブ',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'そのタブだけ。ブラウザが最初から音声にチェックを入れてくれるのはタブだけです。',
   'Opções da transmissão': '画面共有のオプション',
   'Compartilhar tela': '画面を共有',
   'Trocar para…': '切り替え先…',
@@ -1144,4 +1142,5 @@ export default {
   'Errou!': '不正解！',
   'Você votou. {n} de {total} já escolheram.': '投票しました。{total}人中{n}人が選択済み。',
   'Qual é maior? Clique num dos dois.': 'どっちが大きい？ どちらかをクリックしてね。',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'そのプログラムだけ。音声はなし：ブラウザはウィンドウの音を取り込めません。音声も送るなら画面全体を選んでください。',
 } satisfies Record<string, string>;

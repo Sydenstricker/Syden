@@ -1043,8 +1043,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'திரையில் உள்ள அனைத்தும். ஒலியுடன் அனுப்ப, உலாவியின் சிறு சாளரத்தில் “சிஸ்டம் ஆடியோவையும் பகிர்” என்பதைக் குறியுங்கள்.',
   'Uma janela ou app': 'ஒரு சாளரம் அல்லது செயலி',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'அந்த நிரல் மட்டும், கணினியின் ஒலியும் எப்படியும் கூடவே செல்லும்.',
-  'Uma aba do navegador': 'உலாவியின் ஒரு தாவல்',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'அந்தத் தாவல் மட்டும். உலாவி ஒலியை முன்பே குறித்துத் தருவது இதில் மட்டும்தான்.',
   'Opções da transmissão': 'திரைப் பகிர்வு விருப்பங்கள்',
   'Compartilhar tela': 'திரையைப் பகிர்',
   'Trocar para…': 'இதற்கு மாறு…',
@@ -1148,4 +1146,5 @@ export default {
   'Errou!': 'தவறு!',
   'Você votou. {n} de {total} já escolheram.': 'நீ வாக்களித்தாய். {total} பேரில் {n} பேர் ஏற்கனவே தேர்வு செய்துவிட்டனர்.',
   'Qual é maior? Clique num dos dois.': 'எது பெரியது? இரண்டில் ஒன்றைக் கிளிக் செய்.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'அந்த நிரல் மட்டும், ஒலி இல்லாமல்: உலாவி ஒரு சாளரத்தின் ஒலியைப் பிடிக்காது. ஒலியுடன் அனுப்ப, முழுத் திரையைப் பயன்படுத்து.',
 } satisfies Record<string, string>;

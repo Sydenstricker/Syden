@@ -1053,8 +1053,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Everything on the screen. To include sound, tick “Share system audio” in the browser\'s pop-up.',
   'Uma janela ou app': 'A window or app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Just that program, and your computer\'s sound still goes along.',
-  'Uma aba do navegador': 'A browser tab',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Just that tab. It\'s the only one where the browser ticks sound by default.',
   'Opções da transmissão': 'Stream options',
   'Compartilhar tela': 'Share screen',
   'Trocar para…': 'Switch to…',
@@ -1158,4 +1156,5 @@ export default {
   'Errou!': 'Wrong!',
   'Você votou. {n} de {total} já escolheram.': 'You voted. {n} of {total} have picked.',
   'Qual é maior? Clique num dos dois.': 'Which is bigger? Click one of the two.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Just that program, without sound: the browser can\'t capture a window\'s audio. To share sound, use the entire screen.',
 } satisfies Record<string, string>;

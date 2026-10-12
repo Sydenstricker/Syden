@@ -1064,8 +1064,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ό,τι υπάρχει στην οθόνη. Για να πάει και ήχος, τσέκαρε «Κοινή χρήση ήχου συστήματος» στο παραθυράκι του περιηγητή.',
   'Uma janela ou app': 'Ένα παράθυρο ή εφαρμογή',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Μόνο εκείνο το πρόγραμμα, και ο ήχος του υπολογιστή πηγαίνει μαζί ούτως ή άλλως.',
-  'Uma aba do navegador': 'Μια καρτέλα του περιηγητή',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Μόνο εκείνη η καρτέλα. Είναι η μόνη όπου ο περιηγητής έχει ήδη τσεκαρισμένο τον ήχο.',
   'Opções da transmissão': 'Επιλογές μετάδοσης',
   'Compartilhar tela': 'Κοινή χρήση οθόνης',
   'Trocar para…': 'Αλλαγή σε…',
@@ -1169,4 +1167,5 @@ export default {
   'Errou!': 'Λάθος!',
   'Você votou. {n} de {total} já escolheram.': 'Ψήφισες. Έχουν διαλέξει {n} από {total}.',
   'Qual é maior? Clique num dos dois.': 'Ποιο είναι μεγαλύτερο; Κάνε κλικ σε ένα από τα δύο.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Μόνο εκείνο το πρόγραμμα, χωρίς ήχο: ο περιηγητής δεν πιάνει τον ήχο ενός παραθύρου. Για να πάει με ήχο, χρησιμοποίησε ολόκληρη την οθόνη.',
 } satisfies Record<string, string>;

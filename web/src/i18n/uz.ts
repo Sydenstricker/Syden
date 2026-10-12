@@ -1136,8 +1136,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandagi hamma narsa. Ovoz bilan ketishi uchun brauzerning kichik oynasida “Tizim ovozini ham ulashish”ni belgilang.',
   'Uma janela ou app': 'Oyna yoki ilova',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Faqat oʻsha dastur, kompyuter ovozi esa baribir birga ketadi.',
-  'Uma aba do navegador': 'Brauzer varagʻi',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Faqat oʻsha varaq. Brauzer ovozni oldindan belgilab beradigan yagona joy shu.',
   'Opções da transmissão': 'Translyatsiya sozlamalari',
   'Compartilhar tela': 'Ekranni ulashish',
   'Trocar para…': 'Bunga almashtirish…',
@@ -1241,4 +1239,5 @@ export default {
   'Errou!': 'Notoʻgʻri!',
   'Você votou. {n} de {total} já escolheram.': 'Ovoz berdingiz. {total} kishidan {n} nafari tanladi.',
   'Qual é maior? Clique num dos dois.': 'Qaysi biri kattaroq? Ikkalasidan biriga bosing.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Faqat o\'sha dastur, ovozsiz: brauzer oynaning ovozini ololmaydi. Ovoz bilan yuborish uchun butun ekranni tanlang.',
 } satisfies Record<string, string>;

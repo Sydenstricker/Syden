@@ -1,4 +1,4 @@
-import { AppWindow, Globe, Monitor, MonitorOff, MonitorX, Volume2 } from 'lucide-react';
+import { AppWindow, Monitor, MonitorOff, MonitorX, Volume2 } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { chave, useT } from './i18n';
 import { IconButton } from './IconButton';
@@ -21,15 +21,16 @@ interface Opcao {
 }
 
 /**
- * DUAS OPÇÕES EM CADA LUGAR, e não três (11/10/2026). Cada lugar tinha uma que não cumpria o que dizia:
+ * AS MESMAS DUAS OPÇÕES NO APP E NO NAVEGADOR: tela inteira e uma janela do Windows.
  *
- * - No APP, "Uma aba do navegador" prometia "só aquela aba, com o som dela" — e o app não tem aba
- *   nenhuma: abria o mesmo seletor de telas e janelas.
- * - No NAVEGADOR, "Uma janela" sai sempre muda (o navegador não captura o som de uma janela), e o aviso
- *   de "sem som" mandava escolher de novo, o mesmo tipo, em que a caixinha de som nem existe.
+ * - No APP não existe aba de navegador (11/10/2026): "Uma aba" abria o mesmo seletor de telas e janelas.
+ * - No NAVEGADOR a aba saiu e a janela voltou (12/10/2026, pedido do Sydenstricker): quem transmite
+ *   quer mostrar um programa, não uma aba. A janela sai MUDA pelo navegador (ele não captura o som de
+ *   uma janela), e o texto da opção diz isso antes da escolha; o aviso de "sem som" manda para a tela
+ *   inteira, que é onde existe a caixinha de áudio.
  *
- * Quem precisar do terceiro tipo ainda o acha: o seletor do navegador mostra telas, janelas e abas
- * juntas, e o tipo escolhido aqui só decide qual aparece primeiro.
+ * Quem precisar de uma aba ainda a acha: o seletor do navegador mostra telas, janelas e abas juntas,
+ * e o tipo escolhido aqui só decide qual aparece primeiro.
  */
 const OPTIONS: Opcao[] = [
   {
@@ -45,12 +46,7 @@ const OPTIONS: Opcao[] = [
     label: chave('Uma janela ou app'),
     icon: <AppWindow size={16} />,
     noApp: chave('Só aquele programa, e o som do computador vai junto mesmo assim.'),
-  },
-  {
-    surface: 'browser',
-    label: chave('Uma aba do navegador'),
-    icon: <Globe size={16} />,
-    noNavegador: chave('Só aquela aba. É a única em que o navegador já vem com o som marcado.'),
+    noNavegador: chave('Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.'),
   },
 ];
 

@@ -1053,8 +1053,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Todo lo que está en la pantalla. Para que vaya con sonido, marca “Compartir audio del sistema” en la ventanita del navegador.',
   'Uma janela ou app': 'Una ventana o app',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Solo ese programa, y el sonido de la computadora va igualmente.',
-  'Uma aba do navegador': 'Una pestaña del navegador',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Solo esa pestaña. Es la única en la que el navegador ya trae el sonido marcado.',
   'Opções da transmissão': 'Opciones de la transmisión',
   'Compartilhar tela': 'Compartir pantalla',
   'Trocar para…': 'Cambiar a…',
@@ -1158,4 +1156,5 @@ export default {
   'Errou!': '¡Fallaste!',
   'Você votou. {n} de {total} já escolheram.': 'Ya votaste. {n} de {total} ya eligieron.',
   'Qual é maior? Clique num dos dois.': '¿Cuál es más grande? Haz clic en uno de los dos.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Solo ese programa, sin sonido: el navegador no captura el sonido de una ventana. Para enviarlo con sonido, usa la pantalla completa.',
 } satisfies Record<string, string>;

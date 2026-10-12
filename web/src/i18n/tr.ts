@@ -1052,8 +1052,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandaki her şey. Sesli gitmesi için tarayıcının küçük penceresinde “Sistem sesini de paylaş” kutusunu işaretle.',
   'Uma janela ou app': 'Bir pencere ya da uygulama',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Yalnızca o program; bilgisayarın sesi yine de gider.',
-  'Uma aba do navegador': 'Bir tarayıcı sekmesi',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Yalnızca o sekme. Tarayıcının sesi baştan işaretli getirdiği tek seçenek bu.',
   'Opções da transmissão': 'Yayın seçenekleri',
   'Compartilhar tela': 'Ekranı paylaş',
   'Trocar para…': 'Şuna geç…',
@@ -1157,4 +1155,5 @@ export default {
   'Errou!': 'Bilemedin!',
   'Você votou. {n} de {total} já escolheram.': 'Oy verdin. {total} kişiden {n} kişi seçti bile.',
   'Qual é maior? Clique num dos dois.': 'Hangisi daha büyük? İkisinden birine tıkla.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Sadece o program, sessiz: tarayıcı bir pencerenin sesini yakalayamaz. Sesli paylaşmak için tüm ekranı kullan.',
 } satisfies Record<string, string>;

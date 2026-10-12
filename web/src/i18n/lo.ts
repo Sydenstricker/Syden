@@ -1129,8 +1129,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ທຸກຢ່າງໃນໜ້າຈໍ ຖ້າຢາກໃຫ້ມີສຽງ ໃຫ້ໝາຍ “ແບ່ງປັນສຽງຂອງລະບົບ” ໃນໜ້າຕ່າງນ້ອຍຂອງບຣາວເຊີ',
   'Uma janela ou app': 'ໜ້າຕ່າງ ຫຼື ແອັບ',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'ສະເພາະໂປຣແກຣມນັ້ນ ແລະ ສຽງຂອງຄອມພິວເຕີກໍຍັງໄປນຳ',
-  'Uma aba do navegador': 'ແທັບຂອງບຣາວເຊີ',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'ສະເພາະແທັບນັ້ນ ເປັນອັນດຽວທີ່ບຣາວເຊີໝາຍສຽງໄວ້ໃຫ້ແຕ່ທຳອິດ',
   'Opções da transmissão': 'ຕົວເລືອກສະຕຣີມ',
   'Compartilhar tela': 'ແບ່ງປັນໜ້າຈໍ',
   'Trocar para…': 'ປ່ຽນເປັນ…',
@@ -1234,4 +1232,5 @@ export default {
   'Errou!': 'ຜິດ!',
   'Você votou. {n} de {total} já escolheram.': 'ເຈົ້າໂຫວດແລ້ວ. {n} ໃນ {total} ຄົນເລືອກແລ້ວ.',
   'Qual é maior? Clique num dos dois.': 'ອັນໃດໃຫຍ່ກວ່າ? ຄລິກອັນໃດອັນໜຶ່ງ.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'ສະເພາະໂປຣແກຣມນັ້ນ, ບໍ່ມີສຽງ: ບຣາວເຊີບໍ່ຈັບສຽງຂອງໜ້າຕ່າງ. ເພື່ອສົ່ງພ້ອມສຽງ, ໃຫ້ໃຊ້ທັງໜ້າຈໍ.',
 } satisfies Record<string, string>;

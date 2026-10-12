@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Všetko, čo je na obrazovke. Aby išiel aj zvuk, zaškrtni „Zdieľať zvuk systému“ v okienku prehliadača.',
   'Uma janela ou app': 'Okno alebo aplikácia',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Len ten program, a zvuk počítača ide s ním aj tak.',
-  'Uma aba do navegador': 'Karta prehliadača',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Len tá karta. Je to jediná, pri ktorej má prehliadač zvuk už zaškrtnutý.',
   'Opções da transmissão': 'Možnosti vysielania',
   'Compartilhar tela': 'Zdieľať obrazovku',
   'Trocar para…': 'Prepnúť na…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'Zle!',
   'Você votou. {n} de {total} já escolheram.': 'Hlas prijatý. Už vybrali: {n} z {total}.',
   'Qual é maior? Clique num dos dois.': 'Čo je väčšie? Klikni na jedno z dvoch.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Len ten program, bez zvuku: prehliadač nezachytí zvuk okna. So zvukom použi celú obrazovku.',
 } satisfies Record<string, string>;

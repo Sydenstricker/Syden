@@ -1071,8 +1071,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ทุกอย่างบนหน้าจอ ถ้าอยากให้มีเสียง ให้ติ๊ก “แชร์เสียงของระบบ” ในหน้าต่างเล็กของเบราว์เซอร์',
   'Uma janela ou app': 'หน้าต่างหรือแอป',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'เฉพาะโปรแกรมนั้น และเสียงของคอมพิวเตอร์ก็ยังไปด้วย',
-  'Uma aba do navegador': 'แท็บของเบราว์เซอร์',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'เฉพาะแท็บนั้น เป็นแบบเดียวที่เบราว์เซอร์ติ๊กเสียงไว้ให้ตั้งแต่แรก',
   'Opções da transmissão': 'ตัวเลือกการถ่ายทอด',
   'Compartilhar tela': 'แชร์หน้าจอ',
   'Trocar para…': 'เปลี่ยนเป็น…',
@@ -1176,4 +1174,5 @@ export default {
   'Errou!': 'ผิด!',
   'Você votou. {n} de {total} já escolheram.': 'โหวตแล้ว เลือกแล้ว {n} จาก {total} คน',
   'Qual é maior? Clique num dos dois.': 'อะไรใหญ่กว่า? คลิกเลือกหนึ่งในสองอัน',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'เฉพาะโปรแกรมนั้น ไม่มีเสียง: เบราว์เซอร์จับเสียงของหน้าต่างไม่ได้ ถ้าจะส่งพร้อมเสียง ให้ใช้ทั้งหน้าจอ',
 } satisfies Record<string, string>;

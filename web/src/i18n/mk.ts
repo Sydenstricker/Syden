@@ -1128,8 +1128,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Сè што е на екранот. За да оди со звук, штиклирај „Сподели системски звук“ во прозорчето на прелистувачот.',
   'Uma janela ou app': 'Прозорец или апликација',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Само таа програма, а звукот на компјутерот сепак оди заедно.',
-  'Uma aba do navegador': 'Јазиче од прелистувачот',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Само тоа јазиче. Тоа е единственото каде прелистувачот веднаш го штиклира звукот.',
   'Opções da transmissão': 'Опции на преносот',
   'Compartilhar tela': 'Сподели екран',
   'Trocar para…': 'Префрли на…',
@@ -1233,4 +1231,5 @@ export default {
   'Errou!': 'Погрешно!',
   'Você votou. {n} de {total} já escolheram.': 'Гласаше. {n} од {total} веќе избраа.',
   'Qual é maior? Clique num dos dois.': 'Што е поголемо? Кликни на едното од двете.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Само таа програма, без звук: прелистувачот не го фаќа звукот на прозорец. За да оди со звук, користи го целиот екран.',
 } satisfies Record<string, string>;

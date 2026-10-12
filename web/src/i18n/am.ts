@@ -1058,8 +1058,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'በማያው ላይ ያለው ሁሉ። ከድምፅ ጋር እንዲሄድ፣ በአሳሹ ትንሽ መስኮት ላይ “የሥርዓት ድምፅንም አጋራ” የሚለውን ምልክት ያድርጉ።',
   'Uma janela ou app': 'መስኮት ወይም መተግበሪያ',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'ያ ፕሮግራም ብቻ፣ የኮምፒውተሩ ድምፅ ግን ቢሆንም አብሮ ይሄዳል።',
-  'Uma aba do navegador': 'የአሳሽ ትር',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'ያ ትር ብቻ። አሳሹ ድምፁን አስቀድሞ ምልክት አድርጎ የሚያመጣው ለዚህ ብቻ ነው።',
   'Opções da transmissão': 'የስርጭት አማራጮች',
   'Compartilhar tela': 'ማያ አጋራ',
   'Trocar para…': 'ቀይር ወደ…',
@@ -1163,4 +1161,5 @@ export default {
   'Errou!': 'ተሳስቷል!',
   'Você votou. {n} de {total} já escolheram.': 'ድምፅ ሰጥተዋል። እስካሁን ከ{total} {n} መርጠዋል።',
   'Qual é maior? Clique num dos dois.': 'የትኛው ይበልጣል? ከሁለቱ አንዱን ይጫኑ።',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'ያ ፕሮግራም ብቻ፣ ያለ ድምፅ፤ አሳሹ የመስኮትን ድምፅ አይይዝም። ከድምፅ ጋር እንዲሄድ ሙሉውን ማያ ይጠቀሙ።',
 } satisfies Record<string, string>;

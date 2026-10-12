@@ -1058,8 +1058,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tot ce e pe ecran. Ca să meargă și sunetul, bifează „Distribuie conținutul audio al sistemului” în fereastra mică a browserului.',
   'Uma janela ou app': 'O fereastră sau o aplicație',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'Doar programul acela, iar sunetul calculatorului merge oricum.',
-  'Uma aba do navegador': 'O filă din browser',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'Doar fila aceea. E singura la care browserul are deja sunetul bifat.',
   'Opções da transmissão': 'Opțiunile transmisiunii',
   'Compartilhar tela': 'Partajează ecranul',
   'Trocar para…': 'Schimbă la…',
@@ -1163,4 +1161,5 @@ export default {
   'Errou!': 'Ai greșit!',
   'Você votou. {n} de {total} já escolheram.': 'Ai votat. {n} din {total} au ales deja.',
   'Qual é maior? Clique num dos dois.': 'Care e mai mare? Dă clic pe unul dintre ele.',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'Doar acel program, fără sunet: browserul nu preia sunetul unei ferestre. Ca să meargă cu sunet, folosește tot ecranul.',
 } satisfies Record<string, string>;

@@ -1097,8 +1097,6 @@ export default {
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'မျက်နှာပြင်ပေါ်က အားလုံး။ အသံပါ ပို့ချင်ရင် ဘရောက်ဇာရဲ့ ဝင်းဒိုးလေးမှာ “စနစ်အသံ မျှဝေရန်” ကို အမှတ်ခြစ်ပါ။',
   'Uma janela ou app': 'ဝင်းဒိုး သို့မဟုတ် အက်ပ်',
   'Só aquele programa, e o som do computador vai junto mesmo assim.': 'အဲဒီပရိုဂရမ်တစ်ခုတည်း၊ ဒါပေမဲ့ ကွန်ပျူတာအသံကတော့ လိုက်ပါသွားပါတယ်။',
-  'Uma aba do navegador': 'ဘရောက်ဇာ တဘ်',
-  'Só aquela aba. É a única em que o navegador já vem com o som marcado.': 'အဲဒီတဘ်တစ်ခုတည်း။ ဘရောက်ဇာက အသံကို ကြိုတင် အမှတ်ခြစ်ပေးထားတာ ဒါတစ်ခုတည်းပါ။',
   'Opções da transmissão': 'ထုတ်လွှင့်မှု ရွေးချယ်စရာများ',
   'Compartilhar tela': 'မျက်နှာပြင် မျှဝေရန်',
   'Trocar para…': 'ပြောင်းရန်…',
@@ -1202,4 +1200,5 @@ export default {
   'Errou!': 'မှားတယ်!',
   'Você votou. {n} de {total} já escolheram.': 'မဲပေးပြီးပါပြီ။ {total} ယောက်မှာ {n} ယောက် ရွေးပြီးပါပြီ။',
   'Qual é maior? Clique num dos dois.': 'ဘယ်ဟာ ပိုကြီးလဲ။ နှစ်ခုထဲက တစ်ခုကို နှိပ်ပါ။',
+  'Só aquele programa, sem som: o navegador não pega o som de uma janela. Para ir com som, use a tela inteira.': 'ထိုပရိုဂရမ်တစ်ခုတည်း၊ အသံမပါ – ဘရောက်ဇာသည် ဝင်းဒိုး၏ အသံကို မဖမ်းနိုင်ပါ။ အသံပါ ပို့ရန် မျက်နှာပြင်တစ်ခုလုံးကို သုံးပါ။',
 } satisfies Record<string, string>;
