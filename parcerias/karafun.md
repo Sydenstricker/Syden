@@ -1,5 +1,8 @@
 # Contato com a KaraFun — acesso ao catálogo por API
 
+**ENVIADA em 12/10/2026, pelo Sydenstricker** (o texto curto do formulário de contato da página OEM). Agora é esperar a
+resposta; quando ela vier, as perguntas da carta (e a nota sobre a pergunta 3, no fim) são a pauta.
+
 ## Por que vale mandar
 
 Eu tinha dito que esse contrato não sairia para um app pequeno. Isso era **palpite meu, não informação** — e palpite não vale como resposta. O que se sabe de fato:
