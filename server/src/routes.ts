@@ -580,8 +580,6 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     };
 
     authed.get('/api/guarda-roupa', guardaRoupa);
-    /** O nome antigo, só para a janela do deploy. Sai junto com a queda do lado do site. */
-    authed.get('/api/loja', guardaRoupa);
 
     /**
      * As preferências da pessoa, para seguirem com ela entre navegadores e entre o site e o aplicativo.

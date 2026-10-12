@@ -1,6 +1,6 @@
 import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { api, ApiError } from './api';
+import { api } from './api';
 import { Avatar } from './Avatar';
 import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
@@ -225,28 +225,6 @@ function CorDoSyden() {
   );
 }
 
-/**
- * A ROTA MUDOU DE NOME, E O SITE SOBE ANTES DO SERVIDOR.
- *
- * São dois caminhos de publicação independentes: o site sai sozinho no push, o servidor só quando
- * alguém roda o deploy na máquina. Entre um e outro existe uma janela — e nela um site novo pedindo
- * /api/guarda-roupa a um servidor antigo tomaria 404, e esta aba abriria com "Erro 404" em vez do
- * catálogo. Não é hipótese: hoje mesmo o servidor está atrás do site.
- *
- * Então pede o nome novo e, SÓ NO 404, tenta o velho. Qualquer outro erro sobe como erro, porque
- * sessão vencida e servidor fora do ar não se resolvem trocando o endereço.
- *
- * Isto sai quando o servidor estiver atualizado, junto com o apelido `/api/loja` do lado de lá.
- */
-async function buscarOGuardaRoupa(): Promise<GuardaRoupa> {
-  try {
-    return await api<GuardaRoupa>('/api/guarda-roupa');
-  } catch (e) {
-    if (e instanceof ApiError && e.status === 404) return api<GuardaRoupa>('/api/loja');
-    throw e;
-  }
-}
-
 type Vestivel = 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra';
 
 /**
@@ -259,7 +237,7 @@ export function useGuardaRoupa() {
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    void buscarOGuardaRoupa()
+    void api<GuardaRoupa>('/api/guarda-roupa')
       .then(setDados)
       .catch((e) => setErro((e as Error).message));
   }, []);
