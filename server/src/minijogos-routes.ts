@@ -2,9 +2,11 @@ import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
+import { lobisomem } from './minijogo-lobisomem.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
+import { xadrez } from './minijogo-xadrez.js';
 import { PLACAR_MS, tamanho } from './minijogos.js';
 import { communityRoom, quemEstaNaSala, salaDeVozDe } from './realtime.js';
 import { manages, requireUser } from './routes.js';
@@ -20,7 +22,7 @@ import { manages, requireUser } from './routes.js';
  * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
  * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  */
-export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala };
+export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala, xadrez, lobisomem };
 
 interface Partida {
   channelId: number;

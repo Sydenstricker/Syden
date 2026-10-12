@@ -19,7 +19,93 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCincoEmLinha />;
     case 'mancala':
       return <CapaMancala />;
+    case 'xadrez':
+      return <CapaXadrez />;
+    case 'lobisomem':
+      return <CapaLobisomem />;
   }
+}
+
+/** O Lobisomem: a lua cheia sobre o morro, o lobo em silhueta uivando e as casas da vila acesas. */
+function CapaLobisomem() {
+  const id = useId().replace(/:/g, '');
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <defs>
+        <linearGradient id={`${id}-ceu`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#141a3a" />
+          <stop offset="1" stopColor="#2c2350" />
+        </linearGradient>
+        <filter id={`${id}-sombra`}>
+          <feFlood floodColor="#0b0b16" />
+          <feComposite in2={ALFA} operator="in" />
+        </filter>
+      </defs>
+      <rect width="160" height="120" fill={`url(#${id}-ceu)`} />
+      {[
+        [20, 18],
+        [48, 30],
+        [140, 14],
+        [128, 40],
+        [70, 12],
+        [96, 24],
+      ].map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r="1" fill="#e8e4ff" opacity="0.8" />
+      ))}
+      <circle cx="112" cy="40" r="22" fill="#f4e9c1" />
+      <circle cx="104" cy="34" r="4" fill="#e6d8a6" />
+      <circle cx="118" cy="48" r="3" fill="#e6d8a6" />
+      <path d="M0 96 Q40 70 80 84 T160 80 V120 H0 Z" fill="#0f1024" />
+      <text x="62" y="92" fontSize="44" textAnchor="middle" filter={`url(#${id}-sombra)`} transform="scale(-1 1) translate(-124 0)">
+        🐺
+      </text>
+      {[
+        [112, 96],
+        [134, 100],
+      ].map(([x, y]) => (
+        <g key={x}>
+          <path d={`M${x - 9} ${y} L${x} ${y - 9} L${x + 9} ${y} V${y + 10} H${x - 9} Z`} fill="#1b1a33" />
+          <rect x={x - 3} y={y + 2} width="6" height="5" fill="#f2b84b" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/** Os problemas de xadrez: um canto do tabuleiro com o cavalo no meio do lance e a casa de destino marcada. */
+function CapaXadrez() {
+  const lado = 20;
+  const x0 = 20;
+  const y0 = 0;
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#161512" />
+      {Array.from({ length: 36 }, (_, i) => {
+        const c = i % 6;
+        const l = Math.floor(i / 6);
+        return <rect key={i} x={x0 + c * lado} y={y0 + l * lado} width={lado} height={lado} fill={(c + l) % 2 ? '#b58863' : '#f0d9b5'} />;
+      })}
+      <rect x={x0 + 1 * lado} y={y0 + 4 * lado} width={lado} height={lado} fill="#cdd26a" opacity="0.85" />
+      <rect x={x0 + 3 * lado} y={y0 + 3 * lado} width={lado} height={lado} fill="#cdd26a" opacity="0.85" />
+      <path
+        d={`M${x0 + 1.5 * lado} ${y0 + 4.5 * lado} Q${x0 + 2.6 * lado} ${y0 + 4.6 * lado} ${x0 + 3.5 * lado} ${y0 + 3.5 * lado}`}
+        fill="none"
+        stroke="#3fb27f"
+        strokeWidth="3"
+        strokeLinecap="round"
+        opacity="0.8"
+      />
+      <text x={x0 + 3.5 * lado} y={y0 + 4 * lado - 3} fontSize="19" textAnchor="middle" fill="#fdfdfd" stroke="#222" strokeWidth="0.8">
+        {'♞︎'}
+      </text>
+      <text x={x0 + 4.5 * lado} y={y0 + 2 * lado - 3} fontSize="19" textAnchor="middle" fill="#1d1d1f">
+        {'♚︎'}
+      </text>
+      <text x={x0 + 1.5 * lado} y={y0 + 1 * lado - 3} fontSize="19" textAnchor="middle" fill="#1d1d1f">
+        {'♜︎'}
+      </text>
+    </svg>
+  );
 }
 
 // O canal de transparência do desenho: o filtro pinta só onde o emoji tem tinta.

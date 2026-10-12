@@ -4,8 +4,10 @@ import { CapaDoJogo } from './CapasDosJogos';
 import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
 import { JogoDuelo } from './JogoDuelo';
+import { JogoLobisomem } from './JogoLobisomem';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
+import { JogoXadrez } from './JogoXadrez';
 import {
   FRASE_DA_MEDIDA,
   JOGOS,
@@ -13,9 +15,11 @@ import {
   OBJETOS,
   tamanhoLegivel,
   type EstadoDuelo,
+  type EstadoLobisomem,
   type EstadoStop,
   type EstadoSudoku,
   type EstadoTamanho,
+  type EstadoXadrez,
   type IdDoJogo,
   type Partida,
   type PartidaPublica,
@@ -92,7 +96,7 @@ export function PainelDoMinijogo({
   };
   const agir = (corpo: Record<string, unknown>) => tentar(() => aoAgir(corpo));
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
-  const rodada = partida && (partida.jogo === 'tamanho' || partida.jogo === 'stop') && !partida.terminada ? (partida as unknown as EstadoTamanho) : null;
+  const rodada = partida && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez') && !partida.terminada ? (partida as unknown as EstadoTamanho) : null;
 
   return (
     <div className={`minijogo${partida ? ` jogando-${partida.jogo}` : ''}`} role="dialog" aria-label={partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}>
@@ -124,6 +128,8 @@ export function PainelDoMinijogo({
       {partida?.jogo === 'tamanho' && <JogoTamanho estado={partida as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
       {partida?.jogo === 'stop' && <JogoStop estado={partida as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}
       {partida?.jogo === 'sudoku' && <JogoSudoku estado={partida as unknown as EstadoSudoku & Partida} eu={eu} restante={restante} agir={agir} />}
+      {partida?.jogo === 'xadrez' && <JogoXadrez estado={partida as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
+      {partida?.jogo === 'lobisomem' && <JogoLobisomem estado={partida as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(partida?.jogo === 'gomoku' || partida?.jogo === 'mancala') && (
         <JogoDuelo jogo={partida.jogo} estado={partida as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
       )}

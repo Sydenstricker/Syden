@@ -152,7 +152,44 @@ export interface EstadoDuelo {
   linha?: number[] | null;
 }
 
-export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala';
+/** Os problemas de xadrez do Lichess (server/src/minijogo-xadrez.ts). */
+export interface EstadoXadrez {
+  rodada: number;
+  rodadas: number;
+  fase: 'resolvendo' | 'solucao' | 'fim';
+  problema: string;
+  nota: number;
+  /** A cor de quem resolve ('w' brancas, 'b' pretas). */
+  cor: 'w' | 'b';
+  /** As 64 casas, de a8 a h1: '' vazia, maiúscula branca, minúscula preta. */
+  casas: string[];
+  ultimo: string | null;
+  estado: 'resolvendo' | 'acertou' | 'errou';
+  erro: string | null;
+  jogadores: { userId: number; username: string; estado: 'resolvendo' | 'acertou' | 'errou'; tempoMs: number | null }[];
+  placar: LinhaDoPlacar[];
+}
+
+export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'aldeao';
+
+/** O Lobisomem (server/src/minijogo-lobisomem.ts). */
+export interface EstadoLobisomem {
+  fase: 'noite' | 'amanhecer' | 'dia' | 'veredito' | 'fim';
+  dia: number;
+  meuPapel: Papel | null;
+  vivo: boolean;
+  jogadores: { userId: number; username: string; vivo: boolean; papel: Papel | null }[];
+  ataque: Record<string, number> | null;
+  visoes: { alvo: number; lobisomem: boolean }[] | null;
+  protegido: number | null;
+  viuHoje: boolean | null;
+  votos: Record<string, number> | null;
+  mortoDaNoite: number | null;
+  eliminado: number | null;
+  vencedor: 'vila' | 'lobisomens' | null;
+}
+
+export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem';
 
 /** A estante: a ordem é a da tela. O nome e a dica de cada jogo, traduzidos. */
 export const JOGOS: { id: IdDoJogo; nome: string; dica: string }[] = [
@@ -165,6 +202,16 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string }[] = [
     id: 'stop',
     nome: chave('Stop'),
     dica: chave('Sai uma letra e cada um escreve uma palavra com ela em cada categoria. Quem completar primeiro aperta STOP, e a turma decide o que vale.'),
+  },
+  {
+    id: 'lobisomem',
+    nome: chave('Lobisomem'),
+    dica: chave('Cada um recebe um papel em segredo. À noite os lobisomens atacam; de dia a vila conversa e vota em quem tirar do jogo. Precisa de 4 pessoas ou mais.'),
+  },
+  {
+    id: 'xadrez',
+    nome: chave('Problemas de xadrez'),
+    dica: chave('Todo mundo recebe o mesmo problema do Lichess. Quem achar o lance certo mais rápido ganha o ponto extra.'),
   },
   {
     id: 'sudoku',

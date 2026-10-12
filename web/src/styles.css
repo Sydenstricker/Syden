@@ -12389,8 +12389,13 @@ body.arrastando-barra {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 12px 10px;
+}
+
+.minijogo-jogo span {
+  font-size: calc(14px * var(--escala-do-texto));
+  line-height: 1.25;
 }
 
 .minijogo-jogo {
@@ -13075,4 +13080,217 @@ body.arrastando-barra {
   bottom: 0;
   font-size: calc(11px * var(--escala-do-texto));
   font-weight: 700;
+}
+
+/* ---------- Problemas de xadrez ---------- */
+
+.xadrez {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.xadrez-tabuleiro {
+  width: min(100%, 400px, 50vh);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.xadrez-casa {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.xadrez-casa:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.xadrez-casa.clara {
+  background: #f0d9b5;
+}
+
+.xadrez-casa.escura {
+  background: #b58863;
+}
+
+.xadrez-casa.ultimo {
+  box-shadow: inset 0 0 0 100px rgba(205, 210, 106, 0.6);
+}
+
+.xadrez-casa.escolhida {
+  box-shadow: inset 0 0 0 100px rgba(63, 178, 127, 0.55);
+}
+
+.xadrez-peca {
+  font-size: clamp(22px, 5vh, 40px);
+  line-height: 1;
+  font-family: 'Segoe UI Symbol', 'DejaVu Sans', 'Noto Sans Symbols 2', sans-serif;
+}
+
+.xadrez-peca.branca {
+  color: #fdfdfd;
+  -webkit-text-stroke: 1px #222;
+}
+
+.xadrez-peca.preta {
+  color: #1d1d1f;
+}
+
+.xadrez-jogadores {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.xadrez-jogadores li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.xadrez-jogadores li.eu {
+  font-weight: 700;
+}
+
+.xadrez-jogadores li.acertou {
+  color: #2fbf71;
+}
+
+.xadrez-jogadores li.errou {
+  color: #ff6b6b;
+}
+
+.xadrez-tempo {
+  color: var(--text-muted);
+}
+
+.xadrez-credito {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.xadrez-credito a {
+  color: inherit;
+}
+
+/* ---------- Lobisomem ---------- */
+
+.lobisomem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lobisomem-faixa {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f2e6c8;
+  color: #3a2c12;
+  font-weight: 700;
+  text-align: center;
+}
+
+.lobisomem.fase-noite .lobisomem-faixa,
+.lobisomem.fase-fim .lobisomem-faixa {
+  background: #1c2148;
+  color: #e8e4ff;
+}
+
+.lobisomem-papel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-darkest);
+}
+
+.lobisomem-papel p {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.lobisomem-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.lobisomem-jogadores {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.lobisomem-jogador {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lobisomem-jogador:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.lobisomem-jogador:not(:disabled):hover,
+.lobisomem-jogador.escolhido,
+.lobisomem-ninguem.escolhido {
+  border-color: var(--accent);
+}
+
+.lobisomem-jogador.fora .lobisomem-nome {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.lobisomem-jogador.eu .lobisomem-nome {
+  font-weight: 700;
+}
+
+.lobisomem-nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lobisomem-visao,
+.lobisomem-marcas {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.lobisomem-ninguem {
+  align-self: center;
 }

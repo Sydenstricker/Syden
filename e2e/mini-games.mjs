@@ -70,7 +70,7 @@ try {
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
   const capas = await duda.locator('.minijogo-jogo').count();
-  capas === 5 ? ok('a Duda caiu na sala com a estante aberta: 5 jogos') : falhou(`a estante tem ${capas} jogos`);
+  capas === 7 ? ok('a Duda caiu na sala com a estante aberta: 7 jogos') : falhou(`a estante tem ${capas} jogos`);
   await foto(duda, 'estante');
 
   const comecar = async (nome) => {
@@ -80,7 +80,9 @@ try {
   const encerrar = async () => {
     const botao = duda.getByRole('button', { name: /^(Encerrar partida|Outros jogos)$/ });
     await botao.click();
+    // Os dois painéis fecham (a partida acabou); só então a estante pode ser aberta de novo.
     await edu.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
+    await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
   };
 
   // ---- Qual é maior? ----
@@ -171,6 +173,80 @@ try {
   ((await quemJoga.locator('.minijogo-situacao.minha-vez').count()) > 0 ? ok : falhou)('Mancala: a última semente no depósito dá a vez de novo');
   await foto(duda, 'mancala');
   await encerrar();
+
+  // ---- Problemas de xadrez ----
+  // O teste lê a solução do mesmo arquivo que o servidor usa, pelo id do problema que a partida mostra.
+  const PROBLEMAS = JSON.parse(fs.readFileSync(path.join('server', 'assets', 'problemas-de-xadrez.json'), 'utf8'));
+  await comecar('Problemas de xadrez');
+  await duda.locator('.xadrez-tabuleiro').waitFor({ timeout: 10000 });
+  await edu.locator('.xadrez-tabuleiro').waitFor({ timeout: 10000 });
+  await foto(duda, 'xadrez');
+  const partidaDaDuda = await duda.evaluate(async () => {
+    const token = localStorage.getItem('janja.token');
+    const comunidades = await (await fetch('http://localhost:3099/api/communities', { headers: { authorization: 'Bearer ' + token } })).json();
+    const jogos = comunidades.find((c) => c.name.startsWith('Jogos'));
+    const canais = await (await fetch(`http://localhost:3099/api/communities/${jogos.id}/channels`, { headers: { authorization: 'Bearer ' + token } })).json();
+    const sala = canais.find((c) => c.name === 'Sala 1');
+    return (await (await fetch(`http://localhost:3099/api/channels/${sala.id}/minijogo`, { headers: { authorization: 'Bearer ' + token } })).json()).partida;
+  });
+  const lances = PROBLEMAS.find(([id]) => id === partidaDaDuda.problema)[2].split(' ');
+  for (let i = 1; i < lances.length; i += 2) {
+    await duda.getByRole('button', { name: lances[i].slice(0, 2), exact: true }).click();
+    await duda.getByRole('button', { name: lances[i].slice(2, 4), exact: true }).click();
+    await duda.waitForTimeout(400);
+  }
+  await duda.locator('.xadrez-jogadores li.acertou.eu').waitFor({ timeout: 5000 });
+  ok('Xadrez: a Duda achou a solução clicando no tabuleiro');
+  await edu.locator('.xadrez-jogadores li.acertou').waitFor({ timeout: 5000 });
+  ok('e o Edu vê que ela acertou');
+  await encerrar();
+
+  // ---- Lobisomem: precisa de quatro na sala ----
+  const outros = [];
+  for (const nome of ['fabi', 'gui']) {
+    const p = await pessoa();
+    await cadastrar(p, nome + s);
+    await dispensarPresentes(p);
+    await p.evaluate(
+      async (codigo) =>
+        fetch('http://localhost:3099/api/communities/join', {
+          method: 'POST',
+          headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token'), 'content-type': 'application/json' },
+          body: JSON.stringify({ code: codigo }),
+        }),
+      convite,
+    );
+    await p.reload();
+    await dispensarPresentes(p);
+    await p.locator('.rail-item', { hasText: /^J/ }).first().click();
+    await p.locator('.channel-name', { hasText: /^Sala 1$/ }).first().click();
+    await p.locator('.stage-controls').waitFor({ timeout: 30000 });
+    outros.push(p);
+  }
+  const todos = [duda, edu, ...outros];
+  const nomes = ['duda', 'edu', 'fabi', 'gui'].map((n) => n + s);
+  await comecar('Lobisomem');
+  for (const p of todos) await p.locator('.lobisomem-papel strong').waitFor({ timeout: 15000 });
+  const papeis = await Promise.all(todos.map((p) => p.locator('.lobisomem-papel strong').innerText()));
+  ([...papeis].sort().join() === ['Da vila', 'Da vila', 'Lobisomem', 'Vidente'].sort().join() ? ok : falhou)(`Lobisomem: cada um recebeu um papel (${papeis.join(', ')})`);
+  await foto(duda, 'lobisomem-noite');
+  const lobo = papeis.indexOf('Lobisomem');
+  const vidente = papeis.indexOf('Vidente');
+  const vitima = papeis.indexOf('Da vila');
+  await todos[vidente].locator('.lobisomem-jogador', { hasText: nomes[lobo] }).click();
+  await todos[vidente].getByText('é lobisomem', { exact: false }).first().waitFor({ timeout: 5000 });
+  ok('a vidente descobriu o lobisomem');
+  await todos[lobo].locator('.lobisomem-jogador', { hasText: nomes[vitima] }).click();
+  await duda.getByText(`Os lobisomens atacaram ${nomes[vitima]}`).waitFor({ timeout: 5000 });
+  ok('todos agiram, e o dia amanheceu com a vítima anunciada');
+  await duda.locator('.lobisomem.fase-dia').waitFor({ timeout: 12000 });
+  for (const [i, p] of todos.entries()) {
+    if (i === vitima) continue;
+    await p.locator('.lobisomem-jogador', { hasText: nomes[lobo] }).click();
+  }
+  await duda.getByText('A vila venceu!').waitFor({ timeout: 5000 });
+  ok('a vila votou no lobisomem e venceu');
+  await foto(duda, 'lobisomem-fim');
 } finally {
   await browser.close();
 }
