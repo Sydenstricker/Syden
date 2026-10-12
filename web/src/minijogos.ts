@@ -196,7 +196,7 @@ export interface EstadoDesenho {
   vezes: number;
   quemDesenha: number;
   opcoes: string[] | null;
-  palavra: { id: string; texto: string } | null;
+  palavra: { id: string; texto: string; outras: string[] } | null;
   mascara: string[] | null;
   acertaram: number[];
   chutes: { userId: number; texto: string; perto: boolean }[];
@@ -524,6 +524,12 @@ export const PALAVRAS_DO_DESENHO: Record<string, string> = {
   pilha: chave('Pilha'),
   lanterna: chave('Lanterna'),
 };
+
+/**
+ * UMA PALAVRA PODE TER MAIS DE UMA FORMA na tradução, separadas por "|" ("Computadora|Ordenador", "犬|いぬ"): a
+ * primeira é a que aparece; todas valem no chute do desenho. Onde a palavra só é mostrada, vale a primeira.
+ */
+export const primeiraForma = (texto: string) => texto.split('|')[0].trim();
 
 /** As cores do lápis (o índice é o que viaja) — a branca é a borracha — e as espessuras, na largura de 1000. */
 export const CORES_DO_DESENHO = ['#1d1d1f', '#ffffff', '#9aa0a6', '#e5484d', '#f2603f', '#f2b84b', '#3fb27f', '#2c8a5a', '#4f7df5', '#8e5cd9', '#e88ab5', '#8b5a2b'];

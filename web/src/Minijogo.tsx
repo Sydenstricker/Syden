@@ -15,6 +15,7 @@ import {
   JOGOS,
   nomeDoJogo,
   OBJETOS,
+  primeiraForma,
   tamanhoLegivel,
   type EstadoDesenho,
   type EstadoDuelo,
@@ -246,7 +247,7 @@ function JogoTamanho({
               <span className="minijogo-emoji" aria-hidden="true">
                 {info?.emoji ?? '❓'}
               </span>
-              <span className="minijogo-objeto">{info ? t(info.nome) : objeto.id}</span>
+              <span className="minijogo-objeto">{info ? primeiraForma(t(info.nome)) : objeto.id}</span>
               {revelando && objeto.cm !== undefined && objeto.medida && (
                 <span className="minijogo-tamanho">{t(FRASE_DA_MEDIDA[objeto.medida], { tamanho: tamanhoLegivel(objeto.cm, idiomaAtual()) })}</span>
               )}

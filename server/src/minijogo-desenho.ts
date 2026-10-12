@@ -89,7 +89,8 @@ export const desenho: Definicao = {
     let fase: Fase = 'escolhendo';
     let quemDesenha = ordem[0];
     let opcoes: string[] = [];
-    let palavra: { id: string; texto: string } | null = null;
+    /** A palavra da vez: a forma que aparece na tela e as outras que também valem como chute. */
+    let palavra: { id: string; texto: string; outras: string[] } | null = null;
     let inicio = 0;
     const acertaram: number[] = [];
     const chutes: { userId: number; texto: string; perto: boolean }[] = [];
@@ -130,7 +131,13 @@ export const desenho: Definicao = {
     function escolher(id: string, texto: string | null) {
       if (fase !== 'escolhendo') return;
       usadas.add(id);
-      palavra = { id, texto: (texto ?? '').trim() || id };
+      // MAIS DE UMA FORMA VALE: a tradução pode trazer alternativas separadas por "|" ("Computadora|Ordenador",
+      // "犬|いぬ"). A primeira é a que aparece; todas valem no chute.
+      const formas = (texto ?? '')
+        .split('|')
+        .map((f) => f.trim())
+        .filter(Boolean);
+      palavra = { id, texto: formas[0] ?? id, outras: formas.slice(1) };
       fase = 'desenhando';
       inicio = Date.now();
       ctx.agendar(DESENHANDO_MS, revelar);
@@ -192,7 +199,7 @@ export const desenho: Definicao = {
           if (quem !== quemDesenha) return 'Quem escolhe a palavra é quem vai desenhar.';
           const id = String(corpo.id ?? '');
           if (!opcoes.includes(id)) return 'Escolha uma das três palavras.';
-          escolher(id, String(corpo.texto ?? '').slice(0, 40));
+          escolher(id, String(corpo.texto ?? '').slice(0, 120));
           return null;
         }
         if (corpo.tipo === 'chute') {
@@ -203,7 +210,7 @@ export const desenho: Definicao = {
           if (!texto) return null;
           if (!pontos.has(quem)) pontos.set(quem, 0);
           const chute = comparavel(texto);
-          const certas = [comparavel(palavra.texto), comparavel(palavra.id)];
+          const certas = [palavra.texto, ...palavra.outras, palavra.id].map(comparavel);
           if (certas.includes(chute)) {
             acertaram.push(quem);
             // Quanto antes, mais: de 100 (na hora) a 40 (no fim), e quem desenha ganha 25 por acerto.

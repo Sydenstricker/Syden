@@ -85,3 +85,17 @@ test('desenho: sozinho não dá; a dois, quem desenha escolhe, risca, e os chute
   assert.ok(pontos[quemChuta] >= 90, 'acertou logo: quase os 100');
   assert.equal((await ana('DELETE', rota)).statusCode, 200);
 });
+
+test('desenho: a tradução com "|" traz formas que também valem ("Computadora|Ordenador")', async () => {
+  const p0 = (await ana('POST', rota, { jogo: 'desenho' })).json().partida;
+  const [desenha, chuta] = p0.quemDesenha === contaAna.user.id ? [ana, bia] : [bia, ana];
+  const opcoes = (await desenha('GET', rota)).json().partida.opcoes;
+  await desenha('POST', `${rota}/acao`, { tipo: 'escolher', id: opcoes[0], texto: 'Computadora|Ordenador' });
+  const visto = (await chuta('GET', rota)).json().partida;
+  assert.equal(visto.mascara.length, 'Computadora'.length, 'a máscara é da primeira forma');
+  const certo = (await chuta('POST', `${rota}/acao`, { tipo: 'chute', texto: 'ORDENADOR' })).json().partida;
+  assert.equal(certo.fase, 'revelando', 'a segunda forma também vale');
+  assert.equal(certo.palavra.texto, 'Computadora');
+  assert.deepEqual(certo.palavra.outras, ['Ordenador']);
+  assert.equal((await ana('DELETE', rota)).statusCode, 200);
+});

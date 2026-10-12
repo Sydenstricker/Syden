@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from '
 import type { Socket } from 'socket.io-client';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
-import { CORES_DO_DESENHO, ESPESSURAS_DO_DESENHO, PALAVRAS_DO_DESENHO, type EstadoDesenho, type Partida } from './minijogos';
+import { CORES_DO_DESENHO, ESPESSURAS_DO_DESENHO, PALAVRAS_DO_DESENHO, primeiraForma, type EstadoDesenho, type Partida } from './minijogos';
 
 const ESCOLHENDO_MS = 15_000;
 const DESENHANDO_MS = 80_000;
@@ -183,15 +183,16 @@ export function JogoDesenho({
     return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />;
   }
 
-  const nomeDaPalavra = (id: string) => t(PALAVRAS_DO_DESENHO[id] ?? id);
+  // Todas as formas da tradução vão ao servidor (todas valem no chute); o botão mostra só a primeira.
+  const formasDaPalavra = (id: string) => t(PALAVRAS_DO_DESENHO[id] ?? id);
   let topo: ReactNode;
   if (estado.fase === 'escolhendo') {
     topo = desenho ? (
       <div className="desenho-opcoes">
         <span>{t('Escolha o que desenhar:')}</span>
         {(estado.opcoes ?? []).map((id) => (
-          <button key={id} type="button" className="btn-secondary" onClick={() => agir({ tipo: 'escolher', id, texto: nomeDaPalavra(id) })}>
-            {nomeDaPalavra(id)}
+          <button key={id} type="button" className="btn-secondary" onClick={() => agir({ tipo: 'escolher', id, texto: formasDaPalavra(id) })}>
+            {primeiraForma(formasDaPalavra(id))}
           </button>
         ))}
       </div>
@@ -199,7 +200,7 @@ export function JogoDesenho({
       t('{nome} está escolhendo o que desenhar…', { nome: nome(estado.quemDesenha) })
     );
   } else if (estado.fase === 'revelando') {
-    topo = t('Era: {palavra}', { palavra: estado.palavra?.texto ?? '' });
+    topo = t('Era: {palavra}', { palavra: [estado.palavra?.texto ?? '', ...(estado.palavra?.outras ?? [])].join(' / ') });
   } else if (estado.palavra) {
     topo = desenho ? t('Desenhe: {palavra}', { palavra: estado.palavra.texto }) : t('Você acertou: {palavra}', { palavra: estado.palavra.texto });
   } else {
