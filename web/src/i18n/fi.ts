@@ -849,7 +849,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Huoneessa olevien yhteys katkaistaan. Huoneen voi palauttaa {dias} päivän ajan kohdassa Asetukset → Yhteisö → Roskakori.',
   'Quem falou': 'Kuka puhui',
-  'Quem mora aqui': 'Kuka täällä asuu',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Tällä koodilla pääsee yhteisöön: rekisteröitymällä, jos tiliä ei vielä ole, tai kirjautumispainikkeesta, jos Syden on jo käytössä.',
   'Quente, mas sem gritar.': 'Lämmin, mutta ei huutava.',

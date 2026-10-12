@@ -532,7 +532,6 @@ export default {
   Pessoa: 'Person',
   Pessoas: 'Personen',
   'Pessoas das suas comunidades': 'Personen aus deinen Communitys',
-  'Quem mora aqui': 'Wer hier wohnt',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Zurzeit gibt es niemanden vorzuschlagen — tritt einer Community bei, um Leute kennenzulernen.',
   'Você ainda não tem amigos no Syden. A aba': 'Du hast auf Syden noch keine Freunde. Der Reiter',

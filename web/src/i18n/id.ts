@@ -579,7 +579,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Yang ada di ruangan akan diputus. Kamu bisa mengembalikan ruangannya dalam {dias} hari, di Pengaturan → Komunitas → Tempat sampah.',
   'Quem falou': 'Yang bicara',
-  'Quem mora aqui': 'Yang tinggal di sini',
   'Quente, mas sem gritar.': 'Hangat, tapi tidak berteriak.',
   'Querem falar': 'Ingin bicara',
   Recado: 'Pesan',

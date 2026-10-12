@@ -529,7 +529,6 @@ export default {
   Pessoa: 'Человек',
   Pessoas: 'Люди',
   'Pessoas das suas comunidades': 'Люди из твоих сообществ',
-  'Quem mora aqui': 'Кто здесь живёт',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Пока некого предложить — зайди в сообщество, чтобы познакомиться с людьми.',
   'Você ainda não tem amigos no Syden. A aba': 'У тебя пока нет друзей в Syden. Вкладка',

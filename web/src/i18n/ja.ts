@@ -712,7 +712,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'ここにいる人は、あなたのメッセージを見られず、あなたも相手のメッセージを見られません。あなたとダイレクトメッセージを始めることも、フレンド申請を送ることもできません。',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': '部屋にいる人は全員切断されます。{dias}日間は、設定 → コミュニティ → ゴミ箱から部屋を復元できます。',
   'Quem falou': '発言した人',
-  'Quem mora aqui': 'ここに住んでいる人',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'このコードを持っている人はコミュニティに入れます。アカウントがなければ新規登録の画面から、すでにSydenを使っているならログインのボタンから。',
   'Quente, mas sem gritar.': 'あたたかいけれど、騒がしくない色。',
   'Querem falar': '話したい人',

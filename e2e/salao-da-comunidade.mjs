@@ -1,0 +1,76 @@
+// O SALÃO DA COMUNIDADE (12/10/2026): o início da comunidade é o salão em pixel art, e ele enche com quem está na call.
+//
+// - Sem ninguém na call, o salão fica vazio (só o coelho do balcão) — a tela não finge movimento.
+// - O Edu e a Fabi entram na Sala 1: dois lugares do salão se ocupam, na tela da Duda, sem recarregar.
+// - Passar o mouse na TV mostra o que ela faz; o fliperama leva à sala de voz com a estante de jogos aberta.
+//
+//   node e2e/salao-da-comunidade.mjs   (API de teste na 3099, site na 5174 e LiveKit local na 7880)
+import fs from 'node:fs';
+import path from 'node:path';
+import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
+
+const FOTOS = process.env.FOTOS ?? path.join('e2e', 'fotos');
+fs.mkdirSync(FOTOS, { recursive: true });
+const s = Date.now().toString().slice(-5);
+const { browser } = await abrirNavegador();
+const pessoa = async () =>
+  vigiar(await (await browser.newContext({ viewport: { width: 1400, height: 1000 }, permissions: ['microphone', 'camera'] })).newPage());
+
+try {
+  const duda = await pessoa();
+  await cadastrar(duda, 'duda' + s);
+  await dispensarPresentes(duda);
+  await duda.getByRole('button', { name: 'Adicionar comunidade' }).click();
+  await duda.locator('.community-choice-option').first().click();
+  await duda.locator('form.dialog input').first().fill('Salão ' + s);
+  await duda.locator('form.dialog .btn-primary').click();
+  await duda.locator('.channel-name', { hasText: /^geral$/ }).first().waitFor({ timeout: 20000 });
+  const convite = await duda.evaluate(async () => {
+    const r = await fetch('http://localhost:3099/api/communities', { headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token') } });
+    return (await r.json()).find((c) => c.name.startsWith('Salão'))?.inviteCode;
+  });
+
+  await duda.locator('.inicio-link').first().click();
+  const salao = duda.locator('.salao');
+  await salao.waitFor({ timeout: 10000 });
+  const vazio = await salao.locator('.salao-peca.na-call').count();
+  vazio === 0 ? ok('sem ninguém na call, o salão fica vazio (só o coelho do balcão)') : falhou(`o salão vazio tem ${vazio} pessoas`);
+  await duda.locator('.bv').screenshot({ path: path.join(FOTOS, 'salao-vazio.png') });
+
+  for (const nome of ['edu', 'fabi']) {
+    const p = await pessoa();
+    await cadastrar(p, nome + s);
+    await dispensarPresentes(p);
+    await p.evaluate(
+      async (codigo) =>
+        fetch('http://localhost:3099/api/communities/join', {
+          method: 'POST',
+          headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token'), 'content-type': 'application/json' },
+          body: JSON.stringify({ code: codigo }),
+        }),
+      convite,
+    );
+    await p.reload();
+    await dispensarPresentes(p);
+    // As iniciais de "Salão 12345" são S1…S9; "SY" é a comunidade do Syden, onde todo mundo entra.
+    await p.locator('.rail-item', { hasText: /^S\d$/ }).first().click();
+    await p.locator('.channel-name', { hasText: /^Sala 1$/ }).first().click();
+    await p.locator('.stage-controls').waitFor({ timeout: 30000 });
+  }
+  await duda.waitForFunction(() => document.querySelectorAll('.salao .salao-peca.na-call').length === 2, null, { timeout: 10000 });
+  ok('o Edu e a Fabi entraram na call, e o salão da Duda encheu sozinho');
+  const nomes = await salao.locator('.salao-peca.na-call').evaluateAll((els) => els.map((e) => e.title));
+  nomes.length === 2 ? ok(`quem está na call tem nome no salão: ${nomes.join(', ')}`) : falhou(`nomes: ${nomes.join(', ')}`);
+
+  await duda.getByRole('button', { name: /^Entrar na voz/ }).first().hover();
+  await duda.locator('.salao-rotulo').waitFor({ timeout: 3000 });
+  ((await duda.locator('.salao-rotulo').innerText()).includes('2 na chamada agora') ? ok : falhou)('a TV diz quantos estão na chamada');
+  await duda.locator('.bv').screenshot({ path: path.join(FOTOS, 'salao-com-gente.png') });
+
+  await duda.getByRole('button', { name: /^Mini-games/ }).first().click();
+  await duda.locator('.minijogo-estante').waitFor({ timeout: 30000 });
+  ok('o fliperama levou a Duda para a sala de voz, com a estante de jogos aberta');
+} finally {
+  await browser.close();
+}
+resumo('Salão da comunidade');

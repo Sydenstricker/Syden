@@ -31,6 +31,7 @@ SFX/
 # O quarto da home (web/src/Quarto.tsx): sem esta linha as imagens ficavam fora do git, e a home ia ao ar sem
 # pintura. Elas saem de e2e/pixel-art/quarto/hibrido/exportar.mjs.
 !web/src/assets/quarto/*.png
+!web/src/assets/salao/*.png
 # A MESMA ARMADILHA, achada de novo em 10/10/2026, antes do commit: os coelhos prontos do avatar (com as faixas de
 # cada estado), as peças do lobby do site e a imagem de compartilhar o link ficavam fora do git — no ar, o avatar
 # escolhido e o fim do site apareceriam quebrados, e o link compartilhado iria sem imagem (este já ia).

@@ -851,7 +851,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Povezava vseh v sobi se prekine. Sobo je mogoče obnoviti {dias} dni v Nastavitve → Skupnost → Koš.',
   'Quem falou': 'Kdo je govoril',
-  'Quem mora aqui': 'Kdo tu živi',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'S to kodo se vstopi v skupnost: prek registracije, če računa še ni, ali z gumbom za prijavo, če se Syden že uporablja.',
   'Quente, mas sem gritar.': 'Topla, a ne kričeča.',

@@ -860,7 +860,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Moun ki nan chanm lan ap dekonekte. Ou ka retabli chanm lan pandan {dias} jou, nan Paramèt → Kominote → Poubèl.',
   'Quem falou': 'Kiyès ki pale',
-  'Quem mora aqui': 'Kiyès ki rete isit la',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Nenpòt moun ki gen kòd sa a antre nan kominote a: sou ekran enskripsyon an si li poko gen kont, oswa ak bouton antre a si li deja sèvi ak Syden.',
   'Quente, mas sem gritar.': 'Cho, men san l pa rele.',

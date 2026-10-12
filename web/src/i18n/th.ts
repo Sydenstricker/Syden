@@ -744,7 +744,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'คนที่อยู่ในรายการนี้จะไม่เห็นข้อความของคุณ และคุณก็ไม่เห็นของเขา เปิดแชทส่วนตัวกับคุณไม่ได้ และส่งคำขอเป็นเพื่อนมาไม่ได้',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'ใครที่อยู่ในห้องจะถูกตัดออก กู้ห้องคืนได้ภายใน {dias} วัน ที่ การตั้งค่า → ชุมชน → ถังขยะ',
   'Quem falou': 'คนที่พูด',
-  'Quem mora aqui': 'คนที่อยู่ที่นี่',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'ใครมีรหัสนี้ก็เข้าชุมชนได้ ผ่านหน้าสมัคร ถ้ายังไม่มีบัญชี หรือผ่านปุ่มเข้าสู่ระบบ ถ้าใช้ Syden อยู่แล้ว',
   'Quente, mas sem gritar.': 'โทนอุ่น แต่ไม่ฉูดฉาด',
   'Querem falar': 'ขอพูด',

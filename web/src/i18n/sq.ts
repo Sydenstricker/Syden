@@ -841,7 +841,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kush është në dhomë do të shkëputet. Dhoma mund të rikthehet brenda {dias} ditëve, te Cilësimet → Komuniteti → Koshi.',
   'Quem falou': 'Kush foli',
-  'Quem mora aqui': 'Kush jeton këtu',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Kush e ka këtë kod hyn në komunitet: nga ekrani i regjistrimit, nëse ende nuk ka llogari, ose nga butoni i hyrjes, nëse e përdor tashmë Syden.',
   'Quente, mas sem gritar.': 'E ngrohtë, por pa bërtitur.',

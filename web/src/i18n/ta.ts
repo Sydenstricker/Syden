@@ -716,7 +716,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'இங்கே இருப்பவருக்கு உங்கள் செய்திகள் தெரியாது, உங்களுக்கு அவருடையதும் தெரியாது; அவர் உங்களுடன் தனி உரையாடலைத் தொடங்க முடியாது, நட்புக் கோரிக்கையும் அனுப்ப முடியாது.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'அறையில் இருப்பவர்கள் அனைவரும் வெளியேற்றப்படுவார்கள். {dias} நாட்கள் வரை அமைப்புகள் → சமூகம் → குப்பைத் தொட்டியிலிருந்து அறையைத் திரும்பக் கொண்டுவரலாம்.',
   'Quem falou': 'யார் பேசினார்',
-  'Quem mora aqui': 'இங்கே யார் வசிக்கிறார்கள்',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'இந்தக் குறியீடு உள்ளவர் சமூகத்தில் சேரலாம்: கணக்கு இல்லையென்றால் பதிவுத் திரையிலிருந்து, ஏற்கெனவே Syden பயன்படுத்துபவரானால் உள்நுழைவுப் பொத்தானிலிருந்து.',
   'Quente, mas sem gritar.': 'சூடானது, ஆனால் கூச்சலிடாதது.',
   'Querem falar': 'பேச விரும்புகிறார்கள்',

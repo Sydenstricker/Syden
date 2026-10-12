@@ -849,7 +849,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'De som er i rommet, blir koblet fra. Rommet kan gjenopprettes i {dias} dager under Innstillinger → Fellesskap → Papirkurv.',
   'Quem falou': 'Hvem som snakket',
-  'Quem mora aqui': 'Hvem som bor her',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Den som har denne koden, kommer inn i fellesskapet: via registreringen hvis man ikke har konto ennå, eller via innloggingsknappen hvis man allerede bruker Syden.',
   'Quente, mas sem gritar.': 'Varm, men uten å rope.',

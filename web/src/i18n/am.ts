@@ -737,7 +737,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'እዚህ ያለ ሰው መልእክቶችዎን አያይም እርስዎም የእሱን አያዩም፣ ከእርስዎ ጋር የግል ውይይት መክፈት አይችልም እና የጓደኝነት ጥያቄ ሊልክልዎ አይችልም።',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'በክፍሉ ውስጥ ያለ ሁሉ ይወጣል። ክፍሉን በ{dias} ቀናት ውስጥ መመለስ ይቻላል፣ በቅንብሮች → ማህበረሰብ → መጣያ።',
   'Quem falou': 'የተናገረው',
-  'Quem mora aqui': 'እዚህ የሚኖሩት',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'ይህ ኮድ ያለው ሁሉ ወደ ማህበረሰቡ ይገባል፦ መለያ ከሌለው በምዝገባ ገጽ፣ Syden የሚጠቀም ከሆነ በመግቢያ አዝራር።',
   'Quente, mas sem gritar.': 'ሞቅ ያለ፣ ግን የማይጮህ።',
   'Querem falar': 'መናገር ይፈልጋሉ',

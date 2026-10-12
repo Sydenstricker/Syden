@@ -525,7 +525,6 @@ export default {
   Pessoa: 'Personne',
   Pessoas: 'Personnes',
   'Pessoas das suas comunidades': 'Les personnes de vos communautés',
-  'Quem mora aqui': 'Qui vit ici',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'Personne à suggérer pour l’instant — rejoignez une communauté pour rencontrer du monde.',
   'Você ainda não tem amigos no Syden. A aba': 'Vous n’avez pas encore d’amis sur Syden. L’onglet',

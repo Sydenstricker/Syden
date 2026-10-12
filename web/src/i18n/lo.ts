@@ -850,7 +850,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ຄົນທີ່ຢູ່ໃນຫ້ອງຈະຖືກຕັດການເຊື່ອມຕໍ່ ກູ້ຄືນຫ້ອງໄດ້ພາຍໃນ {dias} ມື້ ທີ່ ການຕັ້ງຄ່າ → ຊຸມຊົນ → ຖັງຂີ້ເຫຍື້ອ',
   'Quem falou': 'ຜູ້ເວົ້າ',
-  'Quem mora aqui': 'ຄົນທີ່ຢູ່ທີ່ນີ້',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'ໃຜມີລະຫັດນີ້ກໍເຂົ້າຊຸມຊົນໄດ້: ຜ່ານໜ້າລົງທະບຽນຖ້າຍັງບໍ່ມີບັນຊີ ຫຼື ຜ່ານປຸ່ມເຂົ້າສູ່ລະບົບຖ້າໃຊ້ Syden ຢູ່ແລ້ວ',
   'Quente, mas sem gritar.': 'ອົບອຸ່ນ ແຕ່ບໍ່ສະດຸດຕາເກີນ',

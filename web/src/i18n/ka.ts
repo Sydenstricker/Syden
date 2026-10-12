@@ -868,7 +868,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ოთახში მყოფები გაითიშებიან. ოთახის დაბრუნება {dias} დღის განმავლობაში შეიძლება: პარამეტრები → საზოგადოება → ნაგვის ყუთი.',
   'Quem falou': 'ვინ ილაპარაკა',
-  'Quem mora aqui': 'ვინ ცხოვრობს აქ',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'ვისაც ეს კოდი აქვს, საზოგადოებაში შედის: რეგისტრაციის გვერდიდან, თუ ჯერ ანგარიში არ აქვს, ან შესვლის ღილაკით, თუ Syden-ს უკვე იყენებს.',
   'Quente, mas sem gritar.': 'თბილი, მაგრამ არა მყვირალა.',

@@ -752,7 +752,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'Ẹni tó wà níbí kò ní rí ìfiránṣẹ́ yín, ẹ kò sì ní rí tirẹ̀, kò lè ṣí ìbánisọ̀rọ̀ aládàáni pẹ̀lú yín, kò sì lè fi ìbéèrè ọ̀rẹ́ ránṣẹ́ sí yín.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'A ó yọ ẹni tó bá wà nínú yàrá náà jáde. Ẹ lè mú yàrá náà padà fún ọjọ́ {dias}, ní Ètò → Àwùjọ → Pàǹtí.',
   'Quem falou': 'Ẹni tó sọ̀rọ̀',
-  'Quem mora aqui': 'Ẹni tó ń gbé níbí',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'Ẹni tó bá ní kóòdù yìí yóò wọ àwùjọ náà: nípasẹ̀ ojú ìwé ìforúkọsílẹ̀, tí kò bá tíì ní àkáǹtì, tàbí nípasẹ̀ bọ́tìnì ìwọlé, tí ó bá ti ń lo Syden.',
   'Quente, mas sem gritar.': 'Gbígbóná, ṣùgbọ́n láìkígbe.',
   'Querem falar': 'Wọ́n fẹ́ sọ̀rọ̀',

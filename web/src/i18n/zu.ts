@@ -850,7 +850,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Abasegumbini bazonqanyulwa. Ungalibuyisa igumbi phakathi kwezinsuku ezingu-{dias}, ku-Izilungiselelo → Umphakathi → Umgqomo.',
   'Quem falou': 'Okhulumile',
-  'Quem mora aqui': 'Abahlala lapha',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Onale khodi angena emphakathini: ngesikrini sokubhalisa, uma engakabi ne-akhawunti, noma ngenkinobho yokungena, uma esebenzisa i-Syden.',
   'Quente, mas sem gritar.': 'Okufudumele, kodwa okungamemezi.',

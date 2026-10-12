@@ -851,7 +851,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Visu istabā esošo savienojums tiks pārtraukts. Istabu var atjaunot {dias} dienas sadaļā Iestatījumi → Kopiena → Atkritne.',
   'Quem falou': 'Kas runāja',
-  'Quem mora aqui': 'Kas šeit dzīvo',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Ar šo kodu var ienākt kopienā: caur reģistrāciju, ja konta vēl nav, vai ar pieteikšanās pogu, ja Syden jau tiek lietots.',
   'Quente, mas sem gritar.': 'Silta, bet ne kliedzoša.',

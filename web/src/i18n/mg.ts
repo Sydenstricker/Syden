@@ -849,7 +849,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Hotapahina ireo ao amin’ny efitrano. Azo averina mandritra ny {dias} andro ny efitrano, ao amin’ny Fikirana → Fiarahamonina → Fitoeram-pako.',
   'Quem falou': 'Ny niteny',
-  'Quem mora aqui': 'Ireo mipetraka eto',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Miditra ao amin’ny fiarahamonina izay manana ity kaody ity: amin’ny efijery fisoratana anarana raha mbola tsy manana kaonty, na amin’ny bokotra fidirana raha efa mampiasa ny Syden.',
   'Quente, mas sem gritar.': 'Mafana, nefa tsy mikiakiaka.',

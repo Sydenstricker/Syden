@@ -850,7 +850,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Akik a szobában vannak, le lesznek választva. A szoba {dias} napig visszaállítható itt: Beállítások → Közösség → Lomtár.',
   'Quem falou': 'Ki beszélt',
-  'Quem mora aqui': 'Kik laknak itt',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Akinek megvan ez a kód, beléphet a közösségbe: a regisztrációs képernyőn, ha még nincs fiókja, vagy a belépés gombbal, ha már használja a Sydent.',
   'Quente, mas sem gritar.': 'Meleg, de nem rikító.',

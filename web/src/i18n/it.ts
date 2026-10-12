@@ -579,7 +579,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Chi è nella stanza verrà disconnesso. Puoi recuperare la stanza entro {dias} giorni, in Impostazioni → Comunità → Cestino.',
   'Quem falou': 'Chi ha parlato',
-  'Quem mora aqui': 'Chi abita qui',
   'Quente, mas sem gritar.': 'Caldo, ma senza urlare.',
   'Querem falar': 'Vogliono parlare',
   Recado: 'Messaggio',

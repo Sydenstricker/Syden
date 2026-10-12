@@ -803,7 +803,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'အခန်းထဲရှိသူများ ချိတ်ဆက်မှု ပြတ်ပါမယ်။ ဆက်တင်များ → အသိုင်းအဝိုင်း → အမှိုက်ပုံး မှာ {dias} ရက်အတွင်း အခန်းကို ပြန်ယူနိုင်ပါတယ်။',
   'Quem falou': 'ပြောခဲ့သူ',
-  'Quem mora aqui': 'ဒီမှာ နေထိုင်သူများ',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'ဒီကုဒ်ရှိသူ အသိုင်းအဝိုင်းထဲ ဝင်နိုင်ပါတယ်- အကောင့်မရှိသေးရင် စာရင်းသွင်းမျက်နှာပြင်ကနေ၊ Syden သုံးပြီးသားဆိုရင် ဝင်ရန် ခလုတ်ကနေ။',
   'Quente, mas sem gritar.': 'နွေးပေမဲ့ မစူးရှ။',

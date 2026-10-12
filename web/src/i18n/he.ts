@@ -814,7 +814,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'מי שבחדר ינותק. אפשר לשחזר את החדר במשך {dias} ימים, בהגדרות ← קהילה ← סל המחזור.',
   'Quem falou': 'מי דיבר',
-  'Quem mora aqui': 'מי גר כאן',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'מי שיש לו את הקוד הזה נכנס לקהילה: דרך מסך ההרשמה אם אין לו עדיין חשבון, או דרך כפתור ההתחברות אם הוא כבר ב-Syden.',
   'Quente, mas sem gritar.': 'חם, אבל לא צועק.',

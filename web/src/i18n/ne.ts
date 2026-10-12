@@ -851,7 +851,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'कोठामा भएकाहरू विच्छेद हुनेछन्। {dias} दिनसम्म सेटिङहरू → समुदाय → रद्दीटोकरीबाट कोठा फर्काउन सकिन्छ।',
   'Quem falou': 'बोल्ने व्यक्ति',
-  'Quem mora aqui': 'यहाँका बासिन्दा',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'यो कोडले समुदायमा प्रवेश दिलाउँछ: खाता नभएकालाई दर्ता स्क्रिनबाट, Syden चलाइरहेकालाई भित्र पस्ने बटनबाट।',
   'Quente, mas sem gritar.': 'न्यानो, तर चर्को होइन।',

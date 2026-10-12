@@ -701,7 +701,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'Người ở đây không thấy tin nhắn của bạn và bạn cũng không thấy của họ, không mở được cuộc trò chuyện riêng với bạn và không gửi được lời mời kết bạn cho bạn.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Ai đang trong phòng sẽ bị ngắt. Có thể khôi phục phòng trong {dias} ngày, ở Cài đặt → Cộng đồng → Thùng rác.',
   'Quem falou': 'Ai đã nói',
-  'Quem mora aqui': 'Người sống ở đây',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'Ai có mã này thì vào được cộng đồng: qua trang đăng ký, nếu chưa có tài khoản, hoặc qua nút đăng nhập, nếu đã dùng Syden.',
   'Quente, mas sem gritar.': 'Ấm, mà không ồn ào.',
   'Querem falar': 'Muốn nói',

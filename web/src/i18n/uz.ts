@@ -857,7 +857,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Xonadagilar uziladi. Xonani {dias} kun davomida Sozlamalar → Hamjamiyat → Savat orqali qaytarish mumkin.',
   'Quem falou': 'Kim gapirdi',
-  'Quem mora aqui': 'Bu yerda kim yashaydi',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Bu kodga ega boʻlgan kishi hamjamiyatga kiradi: hisobi boʻlmasa, roʻyxatdan oʻtish ekrani orqali, Syden-dan foydalansa, kirish tugmasi orqali.',
   'Quente, mas sem gritar.': 'Iliq, lekin baqiroq emas.',

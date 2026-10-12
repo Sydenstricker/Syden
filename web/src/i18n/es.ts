@@ -563,7 +563,6 @@ export default {
   'Pessoa': 'persona',
   'Pessoas': 'personas',
   'Pronto. Quem entrar agora vai ver isto.': 'Listo. Quien entre ahora va a ver esto.',
-  'Quem mora aqui': 'Quién vive aquí',
   'Recado': 'Recado',
   'Registro': 'Registro',
   'Remover': 'Quitar',

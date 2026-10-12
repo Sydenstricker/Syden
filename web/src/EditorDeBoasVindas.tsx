@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
 import { ARTES, ARTE_PADRAO, acharArte } from './boasVindas';
 import { useT } from './i18n';
-import { CoelhoGuia } from './InicioDaComunidade';
+import { RecadoDoBalcao } from './InicioDaComunidade';
 import type { Community } from './types';
 
 // Onde o dono monta o espaço de boas-vindas da comunidade (ver InicioDaComunidade.tsx).
@@ -108,7 +108,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
       <span className="settings-label">{t('Como vai ficar')}</span>
       <div className="bv bv-previa" data-tom={escolhida.tom} style={{ '--bv-destaque': escolhida.destaque } as React.CSSProperties}>
         <div className="bv-arte" style={{ background: escolhida.fundo }}>
-          <CoelhoGuia titulo={titulo || t('Bem-vindo!')} texto={texto} />
+          <RecadoDoBalcao titulo={titulo || t('Bem-vindo!')} texto={texto} />
         </div>
       </div>
 

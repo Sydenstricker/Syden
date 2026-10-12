@@ -864,7 +864,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Өрөөнд байгаа хүмүүс салгагдана. {dias} хоногийн дотор өрөөг буцааж болно: Тохиргоо → Нийгэмлэг → Хогийн сав.',
   'Quem falou': 'Хэн ярьсан',
-  'Quem mora aqui': 'Энд хэн амьдардаг вэ',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Энэ кодтой хүн нийгэмлэгт орно: бүртгэлгүй бол бүртгүүлэх дэлгэцээр, Syden ашигладаг бол нэгдэх товчоор.',
   'Quente, mas sem gritar.': 'Дулаан, гэхдээ хашгирахгүй.',

@@ -40,7 +40,7 @@ await page.locator('.inicio-link').first().click();
 await page.waitForTimeout(1000);
 
 const comBoasVindas = await page.evaluate(() => ({
-  boasVindas: document.querySelectorAll('.bv-blocos').length,
+  boasVindas: document.querySelectorAll('.salao').length,
   palco: document.querySelectorAll('.palco-e-conversa').length,
 }));
 
@@ -61,7 +61,7 @@ await umaSala.click();
 await page.waitForTimeout(1000);
 
 const depois = await page.evaluate(() => ({
-  boasVindas: document.querySelectorAll('.bv-blocos').length,
+  boasVindas: document.querySelectorAll('.salao').length,
   palco: document.querySelectorAll('.palco-e-conversa').length,
 }));
 

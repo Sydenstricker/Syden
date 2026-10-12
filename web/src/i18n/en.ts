@@ -563,7 +563,6 @@ export default {
   'Pessoa': 'person',
   'Pessoas': 'people',
   'Pronto. Quem entrar agora vai ver isto.': 'Done. Anyone joining now will see this.',
-  'Quem mora aqui': 'Who lives here',
   'Recado': 'Message',
   'Registro': 'Log',
   'Remover': 'Remove',

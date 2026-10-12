@@ -862,7 +862,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'ཁང་མིག་ནང་ཡོད་མི་ཚུ་ མཐུད་ལམ་བཏོག་འོང་། ཉིན་ {dias} ཚུན་ སྒྲིག་སྟངས → མི་སྡེ → གད་སྙིགས་སྣོད་ ནང་ལས་ ཁང་མིག་ལོག་ལེན་འབད་ཚུགས།',
   'Quem falou': 'སླབ་མི།',
-  'Quem mora aqui': 'ནཱ་ལུ་སྡོད་མི།',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'ཨང་རྟགས་འདི་ཡོད་མི་ཚུ་ མི་སྡེ་ནང་འཛུལ་ཚུགས། རྩིས་ཐོ་མེད་པ་ཅིན་ ཐོ་བཀོད་གསལ་གཞི་ཐོག་ལས། Syden ལག་ལེན་འཐབ་དོ་ཡོད་པ་ཅིན་ ནང་བསྐྱོད་ཨེབ་རྟ་ཐོག་ལས།',
   'Quente, mas sem gritar.': 'དྲོད་ཅན། འབོ་མེད།',

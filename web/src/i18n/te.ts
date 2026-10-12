@@ -713,7 +713,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'ఇక్కడ ఉన్నవారికి మీ సందేశాలు కనిపించవు, మీకు వారివి కనిపించవు; వారు మీతో ప్రైవేట్ సంభాషణ మొదలుపెట్టలేరు, స్నేహ అభ్యర్థన పంపలేరు.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'గదిలో ఉన్నవారందరూ బయటికి వస్తారు. {dias} రోజుల వరకు సెట్టింగ్‌లు → కమ్యూనిటీ → చెత్తబుట్ట నుంచి గదిని తిరిగి తేవచ్చు.',
   'Quem falou': 'ఎవరు మాట్లాడారు',
-  'Quem mora aqui': 'ఇక్కడ ఎవరు ఉంటారు',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'ఈ కోడ్ ఉన్నవారు కమ్యూనిటీలోకి రాగలరు: ఖాతా లేకపోతే నమోదు తెర నుంచి, ఇప్పటికే Syden వాడుతుంటే లాగిన్ బటన్ నుంచి.',
   'Quente, mas sem gritar.': 'వెచ్చగా, కానీ కేకలు వేయకుండా.',
   'Querem falar': 'మాట్లాడాలనుకుంటున్నారు',

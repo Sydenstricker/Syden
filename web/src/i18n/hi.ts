@@ -581,7 +581,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'रूम में जो होंगे, उनका कनेक्शन टूट जाएगा। {dias} दिन तक रूम वापस ला सकते हो: सेटिंग → समुदाय → कूड़ेदान।',
   'Quem falou': 'किसने बोला',
-  'Quem mora aqui': 'यहाँ कौन रहता है',
   'Quente, mas sem gritar.': 'गर्म, पर चीखता नहीं।',
   'Querem falar': 'बोलना चाहते हैं',
   Recado: 'संदेश',

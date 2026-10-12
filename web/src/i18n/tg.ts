@@ -850,7 +850,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Ҳар касе, ки дар ҳуҷра бошад, ҷудо карда мешавад. Ҳуҷраро дар давоми {dias} рӯз дар Танзимот → Анҷуман → Сабад барқарор кардан мумкин аст.',
   'Quem falou': 'Кӣ гап зад',
-  'Quem mora aqui': 'Кӣ ин ҷо зиндагӣ мекунад',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Касе, ки ин рамзро дорад, ба анҷуман ворид мешавад: тавассути саҳифаи сабти ном, агар ҳанӯз ҳисоб надошта бошад, ё тавассути тугмаи вуруд, агар аллакай Syden-ро истифода барад.',
   'Quente, mas sem gritar.': 'Гарм, вале на фарёдзананда.',

@@ -576,7 +576,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Odadakilerin bağlantısı kesilir. Odayı {dias} gün boyunca Ayarlar → Topluluk → Çöp kutusu’ndan geri getirebilirsin.',
   'Quem falou': 'Konuşanlar',
-  'Quem mora aqui': 'Burada yaşayanlar',
   'Quente, mas sem gritar.': 'Sıcak, ama bağırmayan.',
   'Querem falar': 'Konuşmak istiyor',
   Recado: 'Mesaj',

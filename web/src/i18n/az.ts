@@ -796,7 +796,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Otaqdakılar ayrılacaq. Otağı {dias} gün ərzində Ayarlar → İcma → Zibil qutusu bölməsindən geri qaytarmaq olar.',
   'Quem falou': 'Danışan',
-  'Quem mora aqui': 'Burada yaşayanlar',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Bu kodu olan icmaya girir: hesabı yoxdursa qeydiyyat ekranından, artıq Syden istifadə edirsə giriş düyməsindən.',
   'Quente, mas sem gritar.': 'İsti, amma qışqırmadan.',

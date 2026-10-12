@@ -846,7 +846,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kõik ruumis olijad ühendatakse lahti. Ruumi saab {dias} päeva jooksul taastada jaotises Seaded → Kogukond → Prügikast.',
   'Quem falou': 'Kes rääkis',
-  'Quem mora aqui': 'Kes siin elab',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Selle koodiga pääseb kogukonda: registreerudes, kui kontot veel pole, või sisselogimisnupu kaudu, kui Syden on juba kasutusel.',
   'Quente, mas sem gritar.': 'Soe, aga mitte karjuv.',

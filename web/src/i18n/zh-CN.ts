@@ -570,7 +570,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     '房间里的人会被断开。{dias} 天内可以在 设置 → 社区 → 回收站 里把房间恢复。',
   'Quem falou': '谁说过话',
-  'Quem mora aqui': '住在这里的人',
   'Quente, mas sem gritar.': '暖，但不吵。',
   'Querem falar': '想发言',
   Recado: '留言',

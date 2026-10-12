@@ -718,7 +718,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'یہاں موجود لوگ نہ آپ کے پیغامات دیکھتے ہیں نہ آپ اُن کے، وہ آپ سے نجی گفتگو شروع نہیں کر سکتے اور نہ ہی دوستی کی درخواست بھیج سکتے ہیں۔',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'کمرے میں موجود سب لوگ نکال دیے جائیں گے۔ کمرہ {dias} دن تک واپس لایا جا سکتا ہے، ترتیبات → کمیونٹی → ردی کی ٹوکری سے۔',
   'Quem falou': 'کس نے کہا',
-  'Quem mora aqui': 'یہاں کون رہتا ہے',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'جس کے پاس یہ کوڈ ہو وہ کمیونٹی میں آ سکتا ہے: اگر اکاؤنٹ نہیں تو رجسٹر والے صفحے سے، اور اگر پہلے سے Syden استعمال کرتا ہے تو لاگ ان کے بٹن سے۔',
   'Quente, mas sem gritar.': 'گرم، مگر چیختا ہوا نہیں۔',
   'Querem falar': 'بولنا چاہتے ہیں',

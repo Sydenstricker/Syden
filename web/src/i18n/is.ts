@@ -850,7 +850,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Tengingin rofnar hjá öllum í herberginu. Hægt er að endurheimta herbergið í {dias} daga undir Stillingar → Samfélag → Ruslafata.',
   'Quem falou': 'Hver talaði',
-  'Quem mora aqui': 'Hver býr hér',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Með þessum kóða er gengið í samfélagið: í gegnum nýskráningu ef aðgangur er ekki til enn, eða með innskráningarhnappnum ef Syden er þegar í notkun.',
   'Quente, mas sem gritar.': 'Hlýr, en ekki æpandi.',

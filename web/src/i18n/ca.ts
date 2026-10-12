@@ -845,7 +845,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'La connexió de qui sigui a la sala es tallarà. Es pot recuperar la sala durant {dias} dies, a Configuració → Comunitat → Paperera.',
   'Quem falou': 'Qui ha parlat',
-  'Quem mora aqui': 'Qui viu aquí',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Qui tingui aquest codi entra a la comunitat: per la pantalla de registre, si encara no té compte, o pel botó d’entrar, si ja fa servir el Syden.',
   'Quente, mas sem gritar.': 'Càlid, però sense cridar.',

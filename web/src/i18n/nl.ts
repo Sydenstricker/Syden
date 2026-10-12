@@ -579,7 +579,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Wie in de kamer zit wordt losgekoppeld. Je kunt de kamer {dias} dagen lang terughalen, bij Instellingen → Community → Prullenbak.',
   'Quem falou': 'Wie sprak',
-  'Quem mora aqui': 'Wie hier woont',
   'Quente, mas sem gritar.': 'Warm, maar niet schreeuwend.',
   'Querem falar': 'Willen praten',
   Recado: 'Bericht',

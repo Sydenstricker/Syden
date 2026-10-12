@@ -849,7 +849,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kuwa qolka ku jira waa la gooyn doonaa. Qolka dib ayaa loo soo celin karaa {dias} maalmood gudahood, Dejinta → Bulsho → Qashin-qubka.',
   'Quem falou': 'Cidda hadashay',
-  'Quem mora aqui': 'Kuwa halkan deggan',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Koodhkan cidii haysata waxay gali kartaa bulshada: shaashadda diiwaangelinta haddii aan weli akoon la lahayn, ama badhanka galitaanka haddii Syden horay loo isticmaalo.',
   'Quente, mas sem gritar.': 'Diiran, laakiin aan qaylo ahayn.',

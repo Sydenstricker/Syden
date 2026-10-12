@@ -846,7 +846,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Всички в стаята ще бъдат изключени. Стаята може да се върне до {dias} дни в Настройки → Общност → Кошче.',
   'Quem falou': 'Кой говори',
-  'Quem mora aqui': 'Кой живее тук',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Който има този код, влиза в общността: през регистрацията, ако още няма акаунт, или с бутона за вход, ако вече ползва Syden.',
   'Quente, mas sem gritar.': 'Топло, но без да крещи.',

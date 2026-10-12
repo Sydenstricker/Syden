@@ -843,7 +843,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Wie in die kamer is, sal ontkoppel word. Jy kan die kamer vir {dias} dae terugbring, in Instellings → Gemeenskap → Asblik.',
   'Quem falou': 'Wie gepraat het',
-  'Quem mora aqui': 'Wie hier woon',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Wie hierdie kode het, kom in die gemeenskap: deur die registrasieskerm as hulle nog nie ’n rekening het nie, of deur die inteken-knoppie as hulle reeds Syden gebruik.',
   'Quente, mas sem gritar.': 'Warm, maar sonder om te skree.',

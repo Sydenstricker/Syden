@@ -851,7 +851,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Otagdakylaryň hemmesi aýrylar. Otagy {dias} günüň dowamynda Sazlamalar → Jemgyýet → Sebet bölüminde dikeldip bolýar.',
   'Quem falou': 'Kim gürledi',
-  'Quem mora aqui': 'Bu ýerde kim ýaşaýar',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Bu kody bolan adam jemgyýete girýär: hasaby ýok bolsa hasap döretmek ekrany arkaly, Syden-i eýýäm ulanýan bolsa girmek düwmesi arkaly.',
   'Quente, mas sem gritar.': 'Ýyly, ýöne gykylyksyz.',

@@ -743,7 +743,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'Όποιος είναι εδώ δεν βλέπει τα μηνύματά σου ούτε εσύ τα δικά του, δεν μπορεί να ανοίξει προσωπική συνομιλία μαζί σου ούτε να σου στείλει αίτημα φιλίας.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Όποιος είναι στο δωμάτιο θα αποσυνδεθεί. Το δωμάτιο μπορεί να επανέλθει για {dias} μέρες, στις Ρυθμίσεις → Κοινότητα → Κάδος.',
   'Quem falou': 'Ποιος μίλησε',
-  'Quem mora aqui': 'Ποιος μένει εδώ',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'Όποιος έχει αυτόν τον κωδικό μπαίνει στην κοινότητα: από την οθόνη εγγραφής, αν δεν έχει ακόμη λογαριασμό, ή από το κουμπί εισόδου, αν χρησιμοποιεί ήδη το Syden.',
   'Quente, mas sem gritar.': 'Ζεστό, αλλά χωρίς να φωνάζει.',
   'Querem falar': 'Θέλουν να μιλήσουν',

@@ -719,7 +719,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'کسی که اینجاست نه پیام‌های شما را می‌بیند و نه شما پیام‌های او را، نمی‌تواند با شما گفتگوی خصوصی باز کند و نمی‌تواند برایتان درخواست دوستی بفرستد.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'هر کس در اتاق باشد بیرون می‌آید. تا {dias} روز می‌توان اتاق را برگرداند، از تنظیمات ← انجمن ← سطل زباله.',
   'Quem falou': 'چه کسی گفت',
-  'Quem mora aqui': 'چه کسانی اینجا زندگی می‌کنند',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'هر کس این کد را داشته باشد وارد انجمن می‌شود: از صفحهٔ ثبت‌نام، اگر هنوز حساب ندارد، یا از دکمهٔ ورود، اگر از قبل Syden را دارد.',
   'Quente, mas sem gritar.': 'گرم، اما بی‌داد و فریاد.',
   'Querem falar': 'می‌خواهند حرف بزنند',

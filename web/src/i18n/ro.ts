@@ -737,7 +737,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'Cine e aici nu-ți vede mesajele și nici tu pe ale lui, nu poate deschide o conversație privată cu tine și nu-ți poate trimite cerere de prietenie.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Cine e în cameră va fi deconectat. Camera poate fi recuperată timp de {dias} zile, în Setări → Comunitate → Coș de gunoi.',
   'Quem falou': 'Cine a vorbit',
-  'Quem mora aqui': 'Cine locuiește aici',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'Cine are acest cod intră în comunitate: din ecranul de înregistrare, dacă încă nu are cont, sau din butonul de intrare, dacă folosește deja Syden.',
   'Quente, mas sem gritar.': 'Cald, dar fără să strige.',
   'Querem falar': 'Vor să vorbească',

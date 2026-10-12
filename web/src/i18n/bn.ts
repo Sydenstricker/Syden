@@ -579,7 +579,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'রুমে যারা থাকবে, তাদের সংযোগ কেটে যাবে। {dias} দিন পর্যন্ত রুমটা ফিরিয়ে আনা যায়: সেটিং → কমিউনিটি → ট্র্যাশ।',
   'Quem falou': 'কে বলেছে',
-  'Quem mora aqui': 'এখানে কারা থাকে',
   'Quente, mas sem gritar.': 'উষ্ণ, কিন্তু চেঁচায় না।',
   'Querem falar': 'বলতে চায়',
   Recado: 'বার্তা',

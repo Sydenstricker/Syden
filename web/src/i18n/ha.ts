@@ -733,7 +733,6 @@ export default {
   'Quem está aqui não vê as suas mensagens nem você as dele, não consegue abrir conversa privada com você e não pode te mandar pedido de amizade.': 'Wanda ke nan ba ya ganin saƙonninku kuma ku ba ku ganin nasa, ba ya iya buɗe tattaunawar sirri da ku kuma ba ya iya turo muku buƙatar abota.',
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.': 'Za a fitar da duk wanda ke cikin ɗakin. Ana iya mayar da ɗakin cikin kwanaki {dias}, a Saituna → Ƙungiya → Kwandon shara.',
   'Quem falou': 'Wanda ya yi magana',
-  'Quem mora aqui': 'Masu zama a nan',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.': 'Duk wanda ke da wannan lambar yana shiga ƙungiyar: ta allon rajista, idan bai da asusu, ko ta maɓallin shiga, idan ya riga yana amfani da Syden.',
   'Quente, mas sem gritar.': 'Mai ɗumi, amma ba mai ihu ba.',
   'Querem falar': 'Suna son magana',

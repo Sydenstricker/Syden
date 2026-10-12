@@ -829,7 +829,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Osoby w pokoju zostaną rozłączone. Pokój można przywrócić przez {dias} dni w Ustawienia → Społeczność → Kosz.',
   'Quem falou': 'Kto mówił',
-  'Quem mora aqui': 'Kto tu mieszka',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Każdy, kto ma ten kod, dołączy do społeczności: przez ekran rejestracji, jeśli nie ma jeszcze konta, albo przez przycisk dołączania, jeśli już używa Syden.',
   'Quente, mas sem gritar.': 'Ciepły, ale nie krzykliwy.',

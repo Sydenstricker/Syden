@@ -804,7 +804,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Namoonni kutaa keessa jiran addaan kutamu. Guyyaa {dias} keessatti Qindaa’ina → Hawaasa → Kuusaa haqamee keessaa kutaa deebisuun ni danda’ama.',
   'Quem falou': 'Kan dubbate',
-  'Quem mora aqui': 'Kan asitti jiraatu',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Namni koodii kana qabu hawaasa seena: yoo akkaawuntii hin qabaanne iskiriinii galmee irraan, yoo duraan Syden fayyadame immoo qabduu seenuu irraan.',
   'Quente, mas sem gritar.': 'Ho’aa, garuu kan hin iyyine.',

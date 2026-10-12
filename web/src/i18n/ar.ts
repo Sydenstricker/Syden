@@ -532,7 +532,6 @@ export default {
   Pessoa: 'شخص',
   Pessoas: 'أشخاص',
   'Pessoas das suas comunidades': 'أشخاص من مجتمعاتك',
-  'Quem mora aqui': 'من يسكن هنا',
   'Ninguém para sugerir por enquanto — entre numa comunidade para conhecer gente.':
     'لا أحد لاقتراحه الآن — ادخل مجتمعًا لتتعرف على أشخاص.',
   'Você ainda não tem amigos no Syden. A aba': 'ليس لديك أصدقاء في Syden بعد. تبويب',

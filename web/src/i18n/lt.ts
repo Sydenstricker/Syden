@@ -851,7 +851,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Kambaryje esančių ryšys bus nutrauktas. Kambarį atkurti galima {dias} d. skiltyje Nustatymai → Bendruomenė → Šiukšlinė.',
   'Quem falou': 'Kas kalbėjo',
-  'Quem mora aqui': 'Kas čia gyvena',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'Su šiuo kodu patenkama į bendruomenę: per registraciją, jei paskyros dar nėra, arba prisijungimo mygtuku, jei Syden jau naudojamas.',
   'Quente, mas sem gritar.': 'Šilta, bet nerėkianti.',

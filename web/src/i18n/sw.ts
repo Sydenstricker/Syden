@@ -561,7 +561,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'Waliomo chumbani watakatishwa. Unaweza kukirudisha chumba ndani ya siku {dias}, katika Mipangilio → Jumuiya → Pipa la taka.',
   'Quem falou': 'Aliyeongea',
-  'Quem mora aqui': 'Wanaoishi hapa',
   'Quente, mas sem gritar.': 'Joto, lakini bila kupiga kelele.',
   'Querem falar': 'Wanataka kuongea',
   Recado: 'Ujumbe',

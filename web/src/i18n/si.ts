@@ -849,7 +849,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     'කාමරයේ සිටින අය විසන්ධි වේ. දින {dias}ක් ඇතුළත සැකසීම් → ප්‍රජාව → කුණු බඳුන තුළින් කාමරය ආපසු ගෙන ආ හැකිය.',
   'Quem falou': 'කතා කළ අය',
-  'Quem mora aqui': 'මෙහි වෙසෙන අය',
   'Quem tiver este código entra na comunidade: pela tela de cadastro, se ainda não tem conta, ou pelo botão de entrar, se já usa o Syden.':
     'මෙම කේතය ඇති ඕනෑම අයෙකුට ප්‍රජාවට ඇතුළු විය හැකිය: ගිණුමක් නැත්නම් ලියාපදිංචි තිරයෙන්, දැනටමත් Syden භාවිතා කරයි නම් ඇතුළු වීමේ බොත්තමෙන්.',
   'Quente, mas sem gritar.': 'උණුසුම්, නමුත් කෑගසන්නේ නැත.',

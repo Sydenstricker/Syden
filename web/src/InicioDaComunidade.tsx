@@ -1,51 +1,40 @@
-import { Check, Hash, Link2, Mic, Sparkles, Store, Users, X } from 'lucide-react';
+import { Gamepad2, Hash, Link2, Mic, Sparkles, Store, X } from 'lucide-react';
 import { useState } from 'react';
 import { api } from './api';
+import balcaoUrl from './assets/salao/balcao.png';
 import { acharArte } from './boasVindas';
-import { useCoelho } from './coelho';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { useT } from './i18n';
+import { pedirParaAbrirAoEntrar } from './minijogos';
+import { Salao, type AcoesDoSalao } from './Salao';
 import { SeloDaComunidade } from './SeloDaComunidade';
-import type { Channel, Community } from './types';
-import { CoelhoArte } from './Vila';
+import type { Channel, Community, VoiceMember } from './types';
 
 // A PRIMEIRA COISA QUE ALGUÉM VÊ AO ENTRAR NUMA COMUNIDADE.
 //
 // Antes, entrar era cair numa lista de canais — correto e frio, como chegar numa casa e ver só o
-// corredor. Aqui a comunidade tem cara: uma arte grande, o que o dono quis dizer, e blocos que apontam
-// o que fazer primeiro.
-//
-// O DESENHO É DE PAINÉIS GRANDES, e não de lista, de propósito. A referência que ele deu foi a loja do
-// Warzone, e o que faz aquilo funcionar não é o brilho: é que cada coisa é um alvo grande, com uma
-// palavra curta e uma imagem que diz o que é. Lista de texto obriga a LER para escolher; painel grande
-// deixa ESCOLHER e só depois ler. Para quem acabou de entrar e não conhece nada, a diferença é enorme.
+// corredor. Depois virou uma vitrine em vetor com blocos grandes. DESDE 12/10/2026 É O SALÃO (pedido do
+// Sydenstricker: o início da comunidade ainda era vetor, e o quarto já era pixel art): o quarto é de cada
+// um, o salão é da turma. Os blocos viraram objetos do salão (ver Salao.tsx), e o salão enche com quem
+// está na call agora.
 
 /**
- * O RECADO DO DONO, LIDO PELO COELHO DE QUEM CHEGA.
+ * O RECADO DO DONO, LIDO PELO COELHO DO BALCÃO.
  *
- * Antes, o "Início" de uma comunidade mostrava a vila do Syden, com a estátua do coelho no meio — a
- * mesma em toda comunidade, por cima da capa e da letra que o dono escolheu. Destoava, e não dizia
- * nada sobre o lugar. Aqui o coelho é o DE QUEM LÊ (o que a pessoa escolheu em Coelhos), e o que ele
- * diz é o que quem administra escreveu: o mesmo bicho em todas as comunidades, contando as regras de
- * cada uma. É isso que dispensa os canais de "regras" e "faq" que enchem a lista no Discord.
- *
- * Cada linha do recado vira um item. Uma linha só fica como frase; o balão não inventa lista.
- * SEM RECADO, O COELHO SÓ DÁ AS BOAS-VINDAS: ele não tem regra nenhuma para contar, e inventar uma
- * seria a tela afirmando o que não é.
+ * Quem administra escreve; o coelho que recebe no salão conta. É isso que dispensa os canais de "regras" e
+ * "faq" que enchem a lista no Discord. Cada linha do recado vira um item; uma linha só fica como frase.
+ * SEM RECADO, O COELHO SÓ DÁ AS BOAS-VINDAS: inventar uma regra seria a tela afirmando o que não é.
  */
-export function CoelhoGuia({ titulo, texto }: { titulo: string; texto: string }) {
-  const gordo = useCoelho() === 'big';
+export function RecadoDoBalcao({ titulo, texto }: { titulo: string; texto: string }) {
   const linhas = texto
     .split('\n')
     .map((linha) => linha.trim())
     .filter(Boolean);
   return (
     <div className="bv-guia">
-      <svg className="bv-guia-coelho" viewBox="-19 -43 38 49" aria-hidden="true">
-        <CoelhoArte id={0} gordo={gordo} />
-      </svg>
+      <span className="bv-guia-balconista" style={{ backgroundImage: `url(${balcaoUrl})` }} aria-hidden="true" />
       <div className="bv-balao" role="note">
         <strong className="bv-balao-titulo">{titulo}</strong>
         {linhas.length > 1 ? (
@@ -73,7 +62,7 @@ export function InicioDaComunidade({
   dados,
   canais,
   quantosMembros,
-  quantosNaVoz,
+  naVoz,
   aoAbrirCanal,
   aoAbrirGuardaRoupa,
   aoEditar,
@@ -83,7 +72,8 @@ export function InicioDaComunidade({
   dados: DadosDeBoasVindas;
   canais: Channel[];
   quantosMembros: number;
-  quantosNaVoz: number;
+  /** Quem está nas salas de voz desta comunidade agora: é quem enche o salão. */
+  naVoz: VoiceMember[];
   aoAbrirCanal: (canal: Channel) => void;
   aoAbrirGuardaRoupa: () => void;
   aoEditar: () => void;
@@ -94,15 +84,10 @@ export function InicioDaComunidade({
   const arte = acharArte(dados.boasVindas?.arte);
 
   const primeiroTexto = canais.find((c) => c.type === 'text');
-  const primeiraVoz = canais.find((c) => c.type === 'voice');
+  // A sala de voz para onde a TV e o fliperama levam: a que tem gente, se houver; senão, a primeira.
+  const comGente = canais.find((c) => c.type === 'voice' && naVoz.some((m) => m.channelId === c.id));
+  const salaDeVoz = comGente ?? canais.find((c) => c.type === 'voice');
 
-  /**
-   * Fechar marca como visto no servidor.
-   *
-   * O pedido não é esperado (sem await) e a falha dele é ignorada de propósito: se a marcação não
-   * chegar, o pior que acontece é a tela abrir de novo da próxima vez. Travar a saída de uma tela de
-   * boas-vindas por causa de internet ruim seria trocar um incômodo pequeno por um grande.
-   */
   /** Copia o link de convite. O aviso de "copiado" some sozinho: confirmação que fica vira enfeite. */
   async function copiarConvite() {
     const endereco = `${window.location.origin}/app/?convite=${community.inviteCode}`;
@@ -116,10 +101,62 @@ export function InicioDaComunidade({
     }
   }
 
+  /**
+   * Fechar marca como visto no servidor. O pedido não é esperado e a falha é ignorada de propósito: se a
+   * marcação não chegar, o pior que acontece é a tela abrir de novo da próxima vez.
+   */
   function fechar() {
     void api(`/api/communities/${community.id}/boas-vindas/visto`, { method: 'POST' }).catch(() => {});
     aoFechar();
   }
+
+  const naChamada =
+    naVoz.length > 0 ? t('{n} na chamada agora', { n: naVoz.length }) : t('Ninguém na chamada — seja o primeiro');
+
+  // Cada objeto com função. O mesmo conjunto vira, embaixo do salão, uma fileira de atalhos em texto: no
+  // celular não há "passar o mouse", e quem não reconhece a TV como sala de voz também chega.
+  const acoes: AcoesDoSalao = {
+    ...(salaDeVoz && {
+      tv: { rotulo: t('Entrar na voz'), sub: naChamada, onClick: () => aoAbrirCanal(salaDeVoz) },
+      fliperama: {
+        rotulo: t('Mini-games'),
+        sub: t('Na sala de voz, com a turma'),
+        onClick: () => {
+          pedirParaAbrirAoEntrar(salaDeVoz.id);
+          aoAbrirCanal(salaDeVoz);
+        },
+      },
+    }),
+    ...(primeiroTexto && {
+      estante: { rotulo: t('Entrar na conversa'), sub: nomeDeCanal(primeiroTexto.name, true), onClick: () => aoAbrirCanal(primeiroTexto) },
+    }),
+    // DESDE 03/10/2026 TODO MEMBRO RECEBE O CÓDIGO e pode chamar gente; sem código, a janela copiaria um link
+    // que não leva a lugar nenhum e não dá erro.
+    ...(community.inviteCode && {
+      janela: {
+        rotulo: copiado ? t('Link copiado!') : t('Chamar alguém'),
+        sub: t('Copia o convite desta comunidade'),
+        onClick: () => void copiarConvite(),
+      },
+    }),
+    balcao: { rotulo: t('Guarda-roupa'), sub: t('Tudo de graça, sempre'), onClick: aoAbrirGuardaRoupa },
+    ...(dados.podeEditar && {
+      quadro: {
+        rotulo: dados.boasVindas ? t('Mudar esta tela') : t('Montar esta tela'),
+        sub: t('Só quem administra vê este bloco'),
+        onClick: aoEditar,
+      },
+    }),
+  };
+
+  const atalhos: { id: keyof AcoesDoSalao; icone: React.ReactNode }[] = [
+    { id: 'tv', icone: <Mic size={16} /> },
+    { id: 'fliperama', icone: <Gamepad2 size={16} /> },
+    { id: 'estante', icone: <Hash size={16} /> },
+    { id: 'janela', icone: <Link2 size={16} /> },
+    { id: 'balcao', icone: <Store size={16} /> },
+    { id: 'quadro', icone: <Sparkles size={16} /> },
+  ];
 
   return (
     <div className="bv" data-tom={arte.tom} style={{ '--bv-destaque': arte.destaque } as React.CSSProperties}>
@@ -145,65 +182,26 @@ export function InicioDaComunidade({
             )}
           </h1>
         </div>
+        <p className="bv-moradores">
+          {t('{n} pessoas nesta comunidade', { n: quantosMembros })} · {naChamada}
+        </p>
 
-        <CoelhoGuia titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} />
+        <Salao acoes={acoes} naCall={naVoz.map((m) => m.username)} quadro={<CommunityIcon community={community} size={40} standalone />} />
+
+        <RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} />
       </div>
 
-      <div className="bv-blocos">
-        {primeiroTexto && (
-          <button className="bv-bloco" onClick={() => aoAbrirCanal(primeiroTexto)}>
-            <Hash size={26} />
-            <strong>{t('Entrar na conversa')}</strong>
-            <small>{nomeDeCanal(primeiroTexto.name, true)}</small>
-          </button>
-        )}
-
-        {primeiraVoz && (
-          <button className="bv-bloco" onClick={() => aoAbrirCanal(primeiraVoz)}>
-            <Mic size={26} />
-            <strong>{t('Entrar na voz')}</strong>
-            <small>
-              {quantosNaVoz > 0
-                ? t('{n} na chamada agora', { n: quantosNaVoz })
-                : t('Ninguém na chamada — seja o primeiro')}
-            </small>
-          </button>
-        )}
-
-        <div className="bv-bloco bv-bloco-parado">
-          <Users size={26} />
-          <strong>{t('Quem mora aqui')}</strong>
-          <small>{t('{n} pessoas nesta comunidade', { n: quantosMembros })}</small>
-        </div>
-
-        {/* CONVIDAR, e não karaokê como eu tinha posto primeiro: o karaokê só existe dentro de uma
-            chamada, e um bloco que não leva a lugar nenhum é pior do que bloco nenhum. Convidar é a
-            ação que mais faz sentido numa tela de boas-vindas — quem acabou de entrar costuma querer
-            trazer alguém junto. */}
-        {/* DESDE 03/10/2026 TODO MEMBRO RECEBE O CÓDIGO e pode chamar gente (ver
-            db.listCommunitiesForUser); trocar o código continua com quem administra. A condição fica
-            porque, sem código, o bloco copiaria um link que não leva a lugar nenhum e não dá erro. */}
-        {community.inviteCode && (
-        <button className="bv-bloco" onClick={copiarConvite}>
-          {copiado ? <Check size={26} /> : <Link2 size={26} />}
-          <strong>{copiado ? t('Link copiado!') : t('Chamar alguém')}</strong>
-          <small>{t('Copia o convite desta comunidade')}</small>
-        </button>
-        )}
-
-        <button className="bv-bloco" onClick={aoAbrirGuardaRoupa}>
-          <Store size={26} />
-          <strong>{t('Guarda-roupa')}</strong>
-          <small>{t('Tudo de graça, sempre')}</small>
-        </button>
-
-        {dados.podeEditar && (
-          <button className="bv-bloco bv-bloco-dono" onClick={aoEditar}>
-            <Sparkles size={26} />
-            <strong>{dados.boasVindas ? t('Mudar esta tela') : t('Montar esta tela')}</strong>
-            <small>{t('Só quem administra vê este bloco')}</small>
-          </button>
-        )}
+      <div className="bv-atalhos">
+        {atalhos.map(({ id, icone }) => {
+          const acao = acoes[id];
+          if (!acao) return null;
+          return (
+            <button key={id} className={`bv-atalho${id === 'quadro' ? ' bv-bloco-dono' : ''}`} onClick={acao.onClick}>
+              {copiado && id === 'janela' ? <Link2 size={16} /> : icone}
+              <span>{acao.rotulo}</span>
+            </button>
+          );
+        })}
       </div>
 
       <button className="bv-pular" onClick={fechar}>

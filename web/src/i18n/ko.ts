@@ -572,7 +572,6 @@ export default {
   'Quem estiver na sala será desconectado. Dá para trazer a sala de volta por {dias} dias, em Configurações → Comunidade → Lixeira.':
     '방에 있는 사람들은 연결이 끊겨요. {dias}일 동안은 설정 → 커뮤니티 → 휴지통에서 방을 되살릴 수 있어요.',
   'Quem falou': '말한 사람',
-  'Quem mora aqui': '여기 사는 사람',
   'Quente, mas sem gritar.': '따뜻하지만 요란하지 않아요.',
   'Querem falar': '말하고 싶어 해요',
   Recado: '메시지',
