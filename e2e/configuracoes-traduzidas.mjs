@@ -111,7 +111,7 @@ function detectorPorChaves(codigo) {
 }
 
 /** As línguas de escrita latina deste teste, cada uma com o seu dicionário e o seu reforço medido. */
-const POR_CHAVES = new Map(['vi', 'ha', 'yo', 'ro', 'pl', 'om', 'az', 'uz', 'zu', 'mg', 'so', 'af', 'sv', 'hu', 'cs', 'sq', 'hr', 'da', 'sk', 'fi', 'no', 'sl', 'lt', 'lv', 'et', 'is', 'ca', 'cnr', 'tk', 'ht'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
+const POR_CHAVES = new Map(['vi', 'ha', 'yo', 'ro', 'pl', 'om', 'az', 'uz', 'zu', 'mg', 'so', 'af', 'sv', 'hu', 'cs', 'sq', 'hr', 'da', 'sk', 'fi', 'no', 'sl', 'lt', 'lv', 'et', 'is', 'ca', 'cnr', 'tk', 'ht', 'ga', 'mt', 'ig', 'rw', 'sm', 'fj', 'to', 'tet'].map((codigo) => [codigo, detectorPorChaves(codigo)]));
 
 /** O detector da vez. Cada idioma mede o que ele próprio consegue distinguir. */
 function sobrouPortugues(codigo, texto) {
@@ -182,6 +182,14 @@ const IDIOMAS = [
   { codigo: 'mn', nome: 'Монгол', rtl: false },
   { codigo: 'dv', nome: 'ދިވެހި', rtl: true },
   { codigo: 'ht', nome: 'Kreyòl ayisyen', rtl: false },
+  { codigo: 'ga', nome: 'Gaeilge', rtl: false },
+  { codigo: 'mt', nome: 'Malti', rtl: false },
+  { codigo: 'ig', nome: 'Igbo', rtl: false },
+  { codigo: 'rw', nome: 'Kinyarwanda', rtl: false },
+  { codigo: 'sm', nome: 'Gagana Sāmoa', rtl: false },
+  { codigo: 'fj', nome: 'Na Vosa Vakaviti', rtl: false },
+  { codigo: 'to', nome: 'Lea faka-Tonga', rtl: false },
+  { codigo: 'tet', nome: 'Tetun', rtl: false },
 ];
 
 // Todas as abas, e não uma lista escrita à mão. A primeira versão deste teste listava quatro por

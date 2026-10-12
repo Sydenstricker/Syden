@@ -571,6 +571,70 @@ const TEXTOS = {
     tentando: 'N ap eseye…',
     codigo: 'OFFLINE — Pa gen koneksyon',
   },
+  // tú (informal). Confiança média. Ver web/src/i18n/ga.ts.
+  ga: {
+    titulo: 'Níorbh fhéidir ceangal',
+    explicacao: 'Seiceáil do cheangal idirlín. D\'fhéadfadh an freastalaí a bheith as líne freisin.',
+    botao: 'Bain triail eile as',
+    tentando: 'Ag iarraidh…',
+    codigo: 'OFFLINE — Gan cheangal',
+  },
+  // int (informal). Confiança média. Ver web/src/i18n/mt.ts.
+  mt: {
+    titulo: 'Ma stajtx naqbad',
+    explicacao: 'Iċċekkja l-internet tiegħek. Jista\' jkun ukoll li s-server mhux qed jaħdem.',
+    botao: 'Erġa\' pprova',
+    tentando: 'Qed nipprova…',
+    codigo: 'OFFLINE — Ebda konnessjoni',
+  },
+  // i/gị (sem forma de cerimônia). Confiança média para baixa. Ver web/src/i18n/ig.ts.
+  ig: {
+    titulo: 'Enweghị ike ijikọ',
+    explicacao: 'Lelee ịntanetị gị. Ọ nwekwara ike ịbụ na sava anaghị arụ ọrụ.',
+    botao: 'Nwaa ọzọ',
+    tentando: 'Na-anwa…',
+    codigo: 'OFFLINE — Enweghị njikọ',
+  },
+  // u-/wowe (singular direto). Confiança média para baixa. Ver web/src/i18n/rw.ts.
+  rw: {
+    titulo: 'Ntibyashobotse kwihuza',
+    explicacao: 'Reba interineti yawe. Birashoboka kandi ko seriveri idakora.',
+    botao: 'Ongera ugerageze',
+    tentando: 'Biragerageza…',
+    codigo: 'OFFLINE — Nta murandasi',
+  },
+  // ʻoe (registro do dia a dia). Confiança baixa para média. Ver web/src/i18n/sm.ts.
+  sm: {
+    titulo: 'Lē mafai ona fesoʻotaʻi',
+    explicacao: 'Siaki lau initaneti. E ono lē o aogā foʻi le sava.',
+    botao: 'Toe taumafai',
+    tentando: 'O loʻo taumafai…',
+    codigo: 'OFFLINE — Leai se fesoʻotaʻiga',
+  },
+  // iko (informal). Confiança baixa para média. Ver web/src/i18n/fj.ts.
+  fj: {
+    titulo: 'E sega ni rawa ni sema',
+    explicacao: 'Raica mada na nomu initaneti. E rawa tale ni sega ni cakacaka na seva.',
+    botao: 'Tovolea tale',
+    tentando: 'Tovolea tiko…',
+    codigo: 'OFFLINE — Sega ni sema',
+  },
+  // koe (registro comum). Confiança baixa para média. Ver web/src/i18n/to.ts.
+  to: {
+    titulo: 'ʻIkai lava ke fehokotaki',
+    explicacao: 'Sivisivi hoʻo ʻinitaneti. Mahalo foki ʻoku ʻikai ngāue ʻa e sēva.',
+    botao: 'Toe feinga',
+    tentando: 'ʻOku feinga…',
+    codigo: 'OFFLINE — ʻIkai ha fehokotaki',
+  },
+  // ó (informal). Confiança média. Ver web/src/i18n/tet.ts.
+  tet: {
+    titulo: 'La konsege liga',
+    explicacao: 'Haree ó-nia internet. Bele mós servidór la funsiona.',
+    botao: 'Koko fali',
+    tentando: 'Koko hela…',
+    codigo: 'OFFLINE — Laiha ligasaun',
+  },
 };
 
 /** Quem escreve da direita para a esquerda. Hoje é só o árabe; o dia que entrar hebraico ou persa, aqui. */

@@ -322,6 +322,30 @@ export const OFICIAL: Record<string, string[]> = {
   // Haiti. A Constituição de 1987 (art. 5) faz do crioulo e do francês as línguas oficiais; o crioulo é o
   // que praticamente todo haitiano fala.
   ht: ['HT'],
+
+  // Irlanda. O irlandês é a primeira língua oficial pela Constituição (art. 8), ao lado do inglês.
+  ga: ['IE'],
+
+  // Malta. O maltês é a língua nacional e oficial, ao lado do inglês (Constituição, art. 5).
+  mt: ['MT'],
+
+  // Nigéria. Uma das três grandes línguas do país, falada por uns 30 milhões no sudeste.
+  ig: ['NG'],
+
+  // Ruanda. O quiniaruanda é a língua de praticamente todo ruandês, e oficial (Constituição, art. 8).
+  rw: ['RW'],
+
+  // Samoa. O samoano é a língua nacional, oficial ao lado do inglês.
+  sm: ['WS'],
+
+  // Fiji. O fijiano é oficial pela Constituição de 2013, ao lado do inglês e do hindi de Fiji.
+  fj: ['FJ'],
+
+  // Tonga. O tonganês é oficial ao lado do inglês, e a língua de quase todo tonganês.
+  to: ['TO'],
+
+  // Timor-Leste. O tétum é oficial ao lado do português (Constituição, art. 13), e é o que se fala no dia a dia.
+  tet: ['TL'],
 };
 
 /**
