@@ -33,3 +33,11 @@ describe('mini-games: o "Qual é maior?"', () => {
     assert.equal(tamanhoLegivel(550, 'en'), '5.5 m');
   });
 });
+
+describe('mini-games: o desenha e adivinha', () => {
+  it('o site e o servidor têm as mesmas palavras (o nome mora aqui, o id lá)', async () => {
+    const { PALAVRAS_DO_DESENHO: DO_SERVIDOR_D } = await import('../../server/src/minijogo-desenho');
+    const { PALAVRAS_DO_DESENHO } = await import('../src/minijogos');
+    assert.deepEqual(Object.keys(PALAVRAS_DO_DESENHO).sort(), [...DO_SERVIDOR_D].sort());
+  });
+});

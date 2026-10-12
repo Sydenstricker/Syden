@@ -13187,6 +13187,211 @@ body.arrastando-barra {
   color: inherit;
 }
 
+/* ---------- Desenha e adivinha ---------- */
+
+/* O desenho pede mais largura que os outros: o quadro à esquerda e os chutes ao lado. */
+.minijogo.jogando-desenho {
+  width: min(760px, 94vw);
+}
+
+.desenho {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.desenho-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.desenho-palavra {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-weight: 700;
+  font-size: calc(16px * var(--escala-do-texto));
+}
+
+.desenho-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.desenho-mascara {
+  display: inline-flex;
+  gap: 6px;
+  letter-spacing: 0;
+}
+
+.desenho-mascara span {
+  display: inline-block;
+  min-width: 14px;
+  text-align: center;
+}
+
+.desenho-mascara .oculta {
+  border-bottom: 3px solid var(--text-strong);
+  height: 1.2em;
+}
+
+.desenho-mascara .espaco {
+  min-width: 10px;
+}
+
+.desenho-mascara .dica {
+  border-bottom: 3px solid var(--accent);
+}
+
+.desenho-corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .desenho-corpo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.desenho-quadro-e-ferramentas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.desenho-quadro {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background: #fff;
+  touch-action: none;
+}
+
+.desenho-quadro.meu {
+  cursor: crosshair;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.desenho-ferramentas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.desenho-cor {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  color: #555;
+  cursor: pointer;
+}
+
+.desenho-cor.escolhida {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.desenho-espessura {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  cursor: pointer;
+}
+
+.desenho-espessura span {
+  border-radius: 50%;
+  background: var(--text-strong);
+}
+
+.desenho-espessura.escolhida {
+  border-color: var(--accent);
+}
+
+.desenho-separador {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+.desenho-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.desenho-placar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.desenho-placar li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 6px;
+  border-radius: 6px;
+}
+
+.desenho-placar li.acertou {
+  background: color-mix(in srgb, #2fbf71 18%, transparent);
+}
+
+.desenho-chutes {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  flex: 1;
+  min-height: 120px;
+  max-height: 240px;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: var(--bg-darkest);
+  font-size: calc(13px * var(--escala-do-texto));
+  overflow-wrap: anywhere;
+}
+
+.desenho-chutes li.acertou {
+  color: #2fbf71;
+  font-weight: 700;
+}
+
+.desenho-chutes li.perto {
+  color: #f2b84b;
+}
+
+.desenho-chute input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+}
+
 /* ---------- Lobisomem ---------- */
 
 .lobisomem {

@@ -70,7 +70,7 @@ try {
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
   const capas = await duda.locator('.minijogo-jogo').count();
-  capas === 7 ? ok('a Duda caiu na sala com a estante aberta: 7 jogos') : falhou(`a estante tem ${capas} jogos`);
+  capas === 8 ? ok('a Duda caiu na sala com a estante aberta: 8 jogos') : falhou(`a estante tem ${capas} jogos`);
   await foto(duda, 'estante');
 
   const comecar = async (nome) => {
@@ -199,6 +199,42 @@ try {
   ok('Xadrez: a Duda achou a solução clicando no tabuleiro');
   await edu.locator('.xadrez-jogadores li.acertou').waitFor({ timeout: 5000 });
   ok('e o Edu vê que ela acertou');
+  await encerrar();
+
+  // ---- Desenha e adivinha ----
+  await comecar('Desenha e adivinha');
+  await duda.locator('.desenho-quadro').waitFor({ timeout: 10000 });
+  await edu.locator('.desenho-quadro').waitFor({ timeout: 10000 });
+  const dudaDesenha = (await duda.locator('.desenho-opcoes button').count()) > 0;
+  const [artista, palpiteiro] = dudaDesenha ? [duda, edu] : [edu, duda];
+  await artista.locator('.desenho-opcoes button').first().waitFor({ timeout: 5000 });
+  await artista.locator('.desenho-opcoes button').first().click();
+  await artista.locator('.desenho-palavra', { hasText: 'Desenhe:' }).waitFor({ timeout: 5000 });
+  const palavra = (await artista.locator('.desenho-palavra').innerText()).replace(/^.*?:\s*/, '').trim();
+  // Um rabisco com o mouse: a diagonal do quadro.
+  const caixa = await artista.locator('.desenho-quadro').boundingBox();
+  await artista.mouse.move(caixa.x + 40, caixa.y + 40);
+  await artista.mouse.down();
+  for (let k = 1; k <= 20; k++) await artista.mouse.move(caixa.x + 40 + k * 12, caixa.y + 40 + k * 8);
+  await artista.mouse.up();
+  await palpiteiro.waitForTimeout(400);
+  const tinta = await palpiteiro.locator('.desenho-quadro').evaluate((tela) => {
+    const d = tela.getContext('2d').getImageData(0, 0, tela.width, tela.height).data;
+    let escuros = 0;
+    for (let i = 0; i < d.length; i += 4) if (d[i] < 100 && d[i + 1] < 100 && d[i + 2] < 100) escuros++;
+    return escuros;
+  });
+  tinta > 200 ? ok(`Desenho: o rabisco chegou ao outro quadro (${tinta} pontos de tinta)`) : falhou(`o rabisco não chegou (${tinta})`);
+  await foto(artista, 'desenho');
+  await palpiteiro.locator('.desenho-chute input').fill('banana com abacaxi');
+  await palpiteiro.keyboard.press('Enter');
+  await artista.locator('.desenho-chutes li', { hasText: 'banana com abacaxi' }).waitFor({ timeout: 5000 });
+  ok('o chute errado aparece para quem desenha');
+  await palpiteiro.locator('.desenho-chute input').fill(palavra.toUpperCase());
+  await palpiteiro.keyboard.press('Enter');
+  await artista.getByText(`Era: ${palavra}`).waitFor({ timeout: 5000 });
+  ok(`o outro acertou "${palavra}" (em maiúsculas) e a palavra foi revelada`);
+  await foto(palpiteiro, 'desenho-acertou');
   await encerrar();
 
   // ---- Lobisomem: precisa de quatro na sala ----

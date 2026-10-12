@@ -25,6 +25,11 @@ export interface Jogo {
   publico(quem: number): Record<string, unknown>;
   /** Uma ação de alguém da sala. Devolve o erro (em português: o site traduz), ou null. */
   acao(quem: number, corpo: Record<string, unknown>): string | null;
+  /**
+   * O que precisa chegar aos outros NA HORA, sem passar pelo "mudou, busque de novo": o traço do desenho.
+   * Vem pelo socket; devolve o que repassar a quem está na sala, ou null para descartar.
+   */
+  tempoReal?(quem: number, dados: unknown): unknown;
 }
 
 export interface Definicao {

@@ -23,7 +23,37 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaXadrez />;
     case 'lobisomem':
       return <CapaLobisomem />;
+    case 'desenho':
+      return <CapaDesenho />;
   }
+}
+
+/** O desenha e adivinha: o quadro com um gato rabiscado, o lápis, e o balão de chute com "?". */
+function CapaDesenho() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#1a1d2b" />
+      <rect x="14" y="12" width="98" height="74" rx="4" fill="#fdfcf8" />
+      <g fill="none" stroke="#1d1d1f" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M44 66 Q40 44 52 40 L50 28 L60 37 Q66 35 72 37 L82 28 L80 40 Q92 44 88 66 Q66 76 44 66 Z" />
+        <circle cx="58" cy="50" r="1.6" fill="#1d1d1f" />
+        <circle cx="74" cy="50" r="1.6" fill="#1d1d1f" />
+        <path d="M63 57 L66 60 L69 57" />
+        <path d="M44 56 L32 53 M44 60 L32 62 M88 56 L100 53 M88 60 L100 62" stroke="#4f7df5" />
+      </g>
+      <path d="M86 70 Q96 74 104 68" fill="none" stroke="#e5484d" strokeWidth="3" strokeLinecap="round" />
+      <g transform="rotate(38 118 66)">
+        <rect x="112" y="40" width="9" height="40" rx="1.5" fill="#f2b84b" />
+        <rect x="112" y="40" width="9" height="6" fill="#e88ab5" />
+        <path d="M112 80 L116.5 90 L121 80 Z" fill="#f0d9b5" />
+        <path d="M115 86.5 L116.5 90 L118 86.5 Z" fill="#1d1d1f" />
+      </g>
+      <path d="M118 88 h30 a6 6 0 0 1 6 6 v12 a6 6 0 0 1 -6 6 h-20 l-6 6 v-6 h-4 a6 6 0 0 1 -6 -6 v-12 a6 6 0 0 1 6 -6 z" fill="#3fb27f" />
+      <text x="134" y="107" fontSize="15" fontWeight="800" textAnchor="middle" fill="#fff">
+        ?
+      </text>
+    </svg>
+  );
 }
 
 /** O Lobisomem: a lua cheia sobre o morro, o lobo em silhueta uivando e as casas da vila acesas. */

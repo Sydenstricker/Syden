@@ -1420,6 +1420,8 @@ function Stage({
             aoAgir={minijogo.agir}
             aoEncerrar={minijogo.encerrar}
             aoFechar={() => setMinijogoAberto(false)}
+            socket={socket}
+            channelId={channelId}
           />
         )}
         <PreviaDoClipe clipe={clipe} de={quemTransmite} canais={canaisDeTexto} />

@@ -1,8 +1,10 @@
 import { Gamepad2, Trophy, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { Socket } from 'socket.io-client';
 import { CapaDoJogo } from './CapasDosJogos';
 import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
+import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoStop } from './JogoStop';
@@ -14,6 +16,7 @@ import {
   nomeDoJogo,
   OBJETOS,
   tamanhoLegivel,
+  type EstadoDesenho,
   type EstadoDuelo,
   type EstadoLobisomem,
   type EstadoStop,
@@ -69,6 +72,8 @@ export function PainelDoMinijogo({
   aoAgir,
   aoEncerrar,
   aoFechar,
+  socket,
+  channelId,
 }: {
   partida: Partida | null;
   eu: number;
@@ -77,6 +82,9 @@ export function PainelDoMinijogo({
   aoAgir: Agir;
   aoEncerrar: Acao;
   aoFechar: () => void;
+  /** O desenho manda e recebe o traço por aqui, na hora. */
+  socket: Socket | null;
+  channelId: number;
 }) {
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
@@ -128,6 +136,9 @@ export function PainelDoMinijogo({
       {partida?.jogo === 'tamanho' && <JogoTamanho estado={partida as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
       {partida?.jogo === 'stop' && <JogoStop estado={partida as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}
       {partida?.jogo === 'sudoku' && <JogoSudoku estado={partida as unknown as EstadoSudoku & Partida} eu={eu} restante={restante} agir={agir} />}
+      {partida?.jogo === 'desenho' && (
+        <JogoDesenho estado={partida as unknown as EstadoDesenho & Partida} eu={eu} restante={restante} agir={agir} socket={socket} channelId={channelId} />
+      )}
       {partida?.jogo === 'xadrez' && <JogoXadrez estado={partida as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
       {partida?.jogo === 'lobisomem' && <JogoLobisomem estado={partida as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(partida?.jogo === 'gomoku' || partida?.jogo === 'mancala') && (

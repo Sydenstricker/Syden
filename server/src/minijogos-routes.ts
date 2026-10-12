@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
-import type { Server as IOServer } from 'socket.io';
+import type { Server as IOServer, Socket } from 'socket.io';
 import * as db from './db.js';
+import { desenho } from './minijogo-desenho.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
 import { stop } from './minijogo-stop.js';
@@ -8,7 +9,7 @@ import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
 import { xadrez } from './minijogo-xadrez.js';
 import { PLACAR_MS, tamanho } from './minijogos.js';
-import { communityRoom, quemEstaNaSala, salaDeVozDe } from './realtime.js';
+import { communityRoom, emitToUser, quemEstaNaSala, salaDeVozDe } from './realtime.js';
 import { manages, requireUser } from './routes.js';
 
 /**
@@ -22,7 +23,7 @@ import { manages, requireUser } from './routes.js';
  * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
  * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  */
-export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala, xadrez, lobisomem };
+export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala, xadrez, lobisomem, desenho };
 
 interface Partida {
   channelId: number;
@@ -68,6 +69,22 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     terminada: p.terminada,
     restanteMs: Math.max(0, p.ate - Date.now()),
     ...p.instancia?.publico(quem),
+  });
+
+  // O que precisa chegar NA HORA (o traço do desenho) vem pelo socket e vai direto a quem está na sala,
+  // sem o "mudou, busque de novo" das rotas. O jogo decide o que aceita (ver `tempoReal` no motor).
+  io.on('connection', (socket: Socket) => {
+    socket.on('minijogo:tempo-real', (dados: { channelId?: unknown; dados?: unknown }) => {
+      const userId = (socket.data.user as { id: number } | undefined)?.id;
+      const channelId = Number(dados?.channelId);
+      const p = partidas.get(channelId);
+      if (!userId || !p?.instancia?.tempoReal || p.terminada || salaDeVozDe(userId)?.channelId !== channelId) return;
+      const repassar = p.instancia.tempoReal(userId, dados.dados);
+      if (repassar === null || repassar === undefined) return;
+      for (const id of quemEstaNaSala(channelId)) {
+        if (id !== userId) emitToUser(io, id, 'minijogo:tempo-real', { channelId, dados: repassar });
+      }
+    });
   });
 
   app.register(async (authed) => {
