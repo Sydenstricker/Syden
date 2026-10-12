@@ -318,8 +318,19 @@ pessoas têm a mesa: quem começa senta, o primeiro da sala que apertar "Jogar" 
 sexo de quem os recebe: "Anjo" no lugar de médico, "Da vila" no lugar de aldeão) e os **problemas de xadrez do
 Lichess**, em corrida: 1000 problemas CC0 em `server/assets/`, tirados por `server/scripts/problemas-de-xadrez.mjs`
 (o arquivo do Lichess é pzstd, com quadros puláveis que o Node não pula sozinho). O servidor não tem biblioteca de
-xadrez: só compara o lance com a solução e move as peças. Fica do caminho: o degrau 4 (palavra do dia e desenho, só
-pt-BR) pede uma lista de palavras com licença, e isso é decisão dele.
+xadrez: só compara o lance com a solução e move as peças.
+
+**O desenha e adivinha (o Gartic do Syden), no mesmo dia, nos 71 idiomas e não só em pt-BR:** a lista de 263 palavras é
+NOSSA (escrita para o Syden, sem fonte de terceiro) e passa pela tradução como o resto. Quem desenha manda a palavra na
+língua dele ao escolher, e os chutes são conferidos contra ela. O traço vai pelo socket (`minijogo:tempo-real`, o
+`tempoReal` do motor), em pedaços numerados de 40 ms: os pedaços se JUNTAM no site, e só a `versao` (apagar/desfazer)
+troca o desenho inteiro. Falta do degrau 4 só a palavra do dia, que pede um dicionário com licença (decisão dele).
+
+**A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
+são solo e se pagam com anúncio, vidas e roleta — não entram, nem por integração. Deles, só a ideia do "desafio do dia"
+igual para todos, sem vidas e sem notificação cobrando. Party game de ação (Mario Party, Overcooked) tem aderência
+baixa (meses de trabalho, atraso de rede, qualidade abaixo do original); os de turno estilo Jackbox, telefone sem fio de
+desenho e Codenames têm aderência alta. A recomendação foi medir quais dos 8 a turma joga antes do nono.
 
 **O caminho combinado, em degraus:**
 1. Uma lista de links na home ("Mini-games"), só com os sites SEM anúncio acima, com a dica "abra,
