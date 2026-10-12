@@ -3,8 +3,10 @@
 //
 // A base é uma foto DE VERDADE da call de sexta do squad de demonstração (pixel-art/demonstracao/call-base.webp:
 // a tela da clara, 3200 × 1800, tirada no Syden local com o LiveKit). Em cima dela, quadro a quadro:
-//   - O JOGO ANDA: a área da transmissão recebe os quadros de jogo-1-anim-*.png (PixelLab, a partir do próprio
-//     jogo-1.png que estava na tela), ampliados sem suavizar. O que a interface desenha por cima do vídeo (o "i",
+//   - O JOGO ANDA: a área da transmissão recebe os quadros de pixel-art/demonstracao/jogo-animado/ (montados por
+//     jogo-animado.py: o coelho pega as moedas, o contador sobe, e no fim chega um amigo e aparece o balão do
+//     Syden), ampliados sem suavizar. Até 12/10/2026 eram os quadros do PixelLab, em que o coelho passava por
+//     cima das moedas sem pegá-las. O que a interface desenha por cima do vídeo (o "i",
 //     o título, o botão de tela cheia) é guardado da foto e volta por cima.
 //   - QUEM FALA ACENDE como no app: o quadro ganha o contorno verde, o anel verde vai por fora da moldura e o
 //     coelho pronto faz a pose de falando (as faixas de web/public/avatares/, as mesmas do Avatar.tsx).
@@ -14,6 +16,7 @@
 // Escreve em web/site/capturas/pt-BR/: call.webp (animada) e call-parada.webp (a foto, para quem pediu menos
 // movimento — o <picture> de index.html). Precisa só do ffmpeg no PATH.
 //
+//   python e2e/pixel-art/demonstracao/jogo-animado.py   (os quadros do jogo, antes)
 //   node e2e/call-animada.mjs
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -26,19 +29,20 @@ const DEMO = path.join(AQUI, 'pixel-art', 'demonstracao');
 const AVATARES = path.join(AQUI, '..', 'web', 'public', 'avatares');
 const DESTINO = path.join(AQUI, '..', 'web', 'site', 'capturas', 'pt-BR');
 
-/** O laço: 6 s a 12 quadros por segundo. O jogo anda a 6 quadros por segundo; a boca, a 8 por 1,2 s. */
-const [LACO, FPS] = [6, 12];
+/** O laço: 8 s a 12 quadros por segundo, o mesmo do jogo (um quadro do jogo por quadro); a boca, a 8 por 1,2 s. */
+const [LACO, FPS] = [8, 12];
 /** Os quadrinhos da faixa de baixo, na foto (pixels da foto, que é 2×): o 1º começa em x = 648 e cada um anda 416. */
 const QUADRINHO = { x: 648, y: 1408, w: 400, h: 240, passo: 416, raio: 16, avatar: { cx: 200, cy: 120, r: 48, moldura: 54 } };
 /** A caixa da transmissão na foto (2040 × 1148 é 16:9). */
 const JOGO_NA_FOTO = { x: 648, y: 185, w: 2040, h: 1148 };
 /** Quem está em cada quadrinho (o número do coelho pronto) e quando fala, em segundos do laço. */
+// No fim do jogo (o amigo chegando, o balão), a sala reage: todo mundo fala um pouco.
 const PESSOAS = [
-  { nome: 'clara', coelho: 12, fala: [] },
-  { nome: 'rafa', coelho: 2, fala: [[1.6, 3.3]] },
+  { nome: 'clara', coelho: 12, fala: [[6.3, 7.1]] },
+  { nome: 'rafa', coelho: 2, fala: [[1.6, 3.3], [6.4, 7.3]] },
   { nome: 'kai', coelho: 1, fala: [[3.5, 4.9]] },
-  { nome: 'helena', coelho: 5, fala: [[0, 1.8], [4.7, 6]] },
-  { nome: 'bento', coelho: 3, fala: [[2.4, 3.1]] },
+  { nome: 'helena', coelho: 5, fala: [[0, 1.8], [5.4, 6.6]] },
+  { nome: 'bento', coelho: 3, fala: [[2.4, 3.1], [6.2, 6.9]] },
 ];
 
 const p = await abrir();
@@ -111,7 +115,7 @@ const lote = await p.evaluate(
       const t = q / FPS;
       g.drawImage(cFoto, 0, 0);
       g.imageSmoothingEnabled = false;
-      g.drawImage(jogoAnim[Math.floor(t * 6) % jogoAnim.length], R.x, R.y, R.w, R.h);
+      g.drawImage(jogoAnim[q % jogoAnim.length], R.x, R.y, R.w, R.h);
       g.drawImage(cCima, 0, 0);
       PESSOAS.forEach((pessoa, i) => {
         if (!pessoa.fala.some(([de, ate]) => t >= de && t < ate)) return;
@@ -151,7 +155,7 @@ const lote = await p.evaluate(
   {
     base: ler64(path.join(DEMO, 'call-base.webp')),
     jogo: ler64(path.join(DEMO, 'jogo-1.png')),
-    anim: Array.from({ length: 9 }, (_, i) => ler64(path.join(DEMO, `jogo-1-anim-${i + 1}.png`))),
+    anim: Array.from({ length: LACO * FPS }, (_, i) => ler64(path.join(DEMO, 'jogo-animado', `q${String(i).padStart(3, '0')}.png`))),
     faixas: PESSOAS.map((pessoa) => ler64(path.join(AVATARES, `coelho-${String(pessoa.coelho).padStart(2, '0')}-falando.png`))),
     PESSOAS,
     QUADRINHO,
@@ -166,7 +170,8 @@ lote.saida.forEach((b, i) => fs.writeFileSync(path.join(pasta, `q${String(i).pad
 fs.mkdirSync(DESTINO, { recursive: true });
 const ffmpeg = (...args) => execFileSync('ffmpeg', ['-y', '-loglevel', 'error', ...args]);
 ffmpeg('-framerate', String(FPS), '-i', path.join(pasta, 'q%03d.png'), '-vf', 'scale=1200:-2:flags=lanczos', '-c:v', 'libwebp_anim', '-lossless', '0', '-q:v', '74', '-loop', '0', path.join(DESTINO, 'call.webp'));
-ffmpeg('-i', path.join(DEMO, 'call-base.webp'), '-vf', 'scale=1600:-2:flags=lanczos', '-c:v', 'libwebp', '-q:v', '88', path.join(DESTINO, 'call-parada.webp'));
+// A versão parada (para quem pediu menos movimento) é o momento mais marcante: o balão do Syden com o coração.
+ffmpeg('-i', path.join(pasta, `q${String(Math.round(6.6 * FPS)).padStart(3, '0')}.png`), '-vf', 'scale=1600:-2:flags=lanczos', '-c:v', 'libwebp', '-q:v', '88', path.join(DESTINO, 'call-parada.webp'));
 fs.rmSync(pasta, { recursive: true });
 console.log(`jogo em ${lote.R.x},${lote.R.y} ${lote.R.w}×${lote.R.h}`);
 for (const nome of ['call.webp', 'call-parada.webp']) console.log(`${nome}: ${(fs.statSync(path.join(DESTINO, nome)).size / 1024).toFixed(0)} KB`);

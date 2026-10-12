@@ -41,6 +41,8 @@ SFX/
 !store/logos/*.png
 # O teste de pixel art: as imagens SÃO o resultado (pagas, e não se refazem iguais). Ver e2e/pixel-art/README.md.
 !e2e/pixel-art/**/*.png
+# Os quadros do jogo da call do site: saem de e2e/pixel-art/demonstracao/jogo-animado.py em um comando.
+e2e/pixel-art/demonstracao/jogo-animado/
 
 # Pasta de trabalho de ícones animados (Lottie) que o usuário está avaliando.
 IconesAnimados/
