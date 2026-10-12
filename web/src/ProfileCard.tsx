@@ -1,4 +1,4 @@
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Pencil } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Avatar } from './Avatar';
@@ -33,6 +33,7 @@ export function ProfileCard({
   onClose,
   onSendMessage,
   isSelf,
+  aoEditar,
 }: {
   membro: CommunityMember;
   status: PresenceStatus | undefined;
@@ -41,6 +42,12 @@ export function ProfileCard({
   onClose: () => void;
   onSendMessage: (userId: number) => void;
   isSelf: boolean;
+  /**
+   * Abre Configurações → Aparência, onde mora tudo o que este cartão mostra (cor do nome, fundo,
+   * moldura, insígnias). Só aparece no SEU cartão: é o atalho de quem se olha e quer mudar algo, e
+   * no cartão dos outros não haveria o que editar.
+   */
+  aoEditar?: () => void;
 }) {
   const t = useT();
   const nota = useNota(membro.id);
@@ -74,6 +81,19 @@ export function ProfileCard({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`perfil-banner ${classeDoFundo(membro.banner)}`} aria-hidden="true" />
+        {isSelf && aoEditar && (
+          <button
+            className="perfil-editar"
+            aria-label={t('Editar')}
+            title={t('Editar')}
+            onClick={() => {
+              onClose();
+              aoEditar();
+            }}
+          >
+            <Pencil size={16} aria-hidden="true" />
+          </button>
+        )}
         <div className="perfil-avatar">
           <Avatar name={membro.username} userId={membro.id} size={72} />
         </div>

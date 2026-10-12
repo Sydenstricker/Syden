@@ -933,6 +933,7 @@ export function Shell({
             onSetStatus={setMyStatus}
             onWatchStream={watchStream}
             onSendMessage={(id) => void startConversation(id)}
+            aoEditarPerfil={() => setSettingsOpen('aparencia')}
             onSelect={selectChannel}
             onOpenUsage={() => {
               setView('community');
@@ -1150,6 +1151,7 @@ export function Shell({
             selfId={user.id}
             onWatchStream={watchStream}
             onSendMessage={(id) => void startConversation(id)}
+            aoEditarPerfil={() => setSettingsOpen('aparencia')}
           />
         )}
       </div>

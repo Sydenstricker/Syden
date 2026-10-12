@@ -71,6 +71,8 @@ interface Props {
   onWatchStream: (channelId: number, userId: number) => void;
   /** Abre a conversa privada com alguém, pelo menu do botão direito. */
   onSendMessage: (userId: number) => void;
+  /** O lápis do seu próprio cartão de perfil: abre Configurações → Aparência. */
+  aoEditarPerfil?: () => void;
   /** No modo conversas, a lista de canais dá lugar à lista de conversas privadas. */
   directMode: boolean;
   directList: ReactNode;
@@ -99,6 +101,7 @@ export function Sidebar({
   onSetStatus,
   onWatchStream,
   onSendMessage,
+  aoEditarPerfil,
   directMode,
   directList,
   onSelect,
@@ -356,6 +359,7 @@ export function Sidebar({
           isSelf={perfil.membro.id === user.id}
           onClose={() => setPerfil(null)}
           onSendMessage={onSendMessage}
+          aoEditar={aoEditarPerfil}
         />
       )}
       {statusMenu.open && (

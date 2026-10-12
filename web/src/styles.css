@@ -7801,6 +7801,28 @@ textarea {
   height: 84px;
 }
 
+/* O lápis do próprio cartão: no canto da faixa, onde não disputa espaço com o nome nem com as
+   insígnias. Fundo escuro translúcido porque a faixa pode ser de qualquer cor que a pessoa escolheu. */
+.perfil-editar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+}
+
+.perfil-editar:hover,
+.perfil-editar:focus-visible {
+  background: rgba(0, 0, 0, 0.65);
+}
+
 .perfil-avatar {
   margin: -36px 0 0 18px;
   width: 80px;

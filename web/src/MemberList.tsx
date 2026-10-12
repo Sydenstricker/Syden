@@ -37,6 +37,7 @@ export function MemberList({
   selfId,
   onWatchStream,
   onSendMessage,
+  aoEditarPerfil,
 }: {
   online: PresenceEntry[];
   voiceMembers: VoiceMember[];
@@ -50,6 +51,8 @@ export function MemberList({
   onWatchStream: (channelId: number, userId: number) => void;
   /** Abre a conversa privada com alguém, pelo menu do botão direito. */
   onSendMessage: (userId: number) => void;
+  /** O lápis do seu próprio cartão de perfil: abre Configurações → Aparência. */
+  aoEditarPerfil?: () => void;
 }) {
   const t = useT();
   const { members, cargos } = useDirectory();
@@ -189,6 +192,7 @@ export function MemberList({
           isSelf={perfil.membro.id === selfId}
           onClose={() => setPerfil(null)}
           onSendMessage={onSendMessage}
+          aoEditar={aoEditarPerfil}
         />
       )}
 
