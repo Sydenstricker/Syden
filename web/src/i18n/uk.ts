@@ -1134,4 +1134,5 @@ export default {
   'jogos': 'ігри',
   'Sala 1': 'Кімната 1',
   'Sala 2': 'Кімната 2',
+  'Parece o mesmo som que «{nome}».': 'Схоже на той самий звук, що й «{nome}».',
 } satisfies Record<string, string>;

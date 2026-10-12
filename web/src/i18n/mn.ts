@@ -1168,4 +1168,5 @@ export default {
   'jogos': 'тоглоом',
   'Sala 1': 'Өрөө 1',
   'Sala 2': 'Өрөө 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}»-тэй ижил дуу бололтой.',
 } satisfies Record<string, string>;

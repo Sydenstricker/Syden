@@ -1156,4 +1156,5 @@ export default {
   'jogos': 'játékok',
   'Sala 1': 'Szoba 1',
   'Sala 2': 'Szoba 2',
+  'Parece o mesmo som que «{nome}».': 'Úgy tűnik, ugyanaz a hang, mint ez: «{nome}».',
 } satisfies Record<string, string>;

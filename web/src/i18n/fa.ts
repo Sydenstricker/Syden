@@ -1072,4 +1072,5 @@ export default {
   'jogos': 'بازی‌ها',
   'Sala 1': 'اتاق 1',
   'Sala 2': 'اتاق 2',
+  'Parece o mesmo som que «{nome}».': 'به نظر می‌رسد همان صدای «{nome}» است.',
 } satisfies Record<string, string>;

@@ -1155,4 +1155,5 @@ export default {
   'jogos': 'ເກມ',
   'Sala 1': 'ຫ້ອງ 1',
   'Sala 2': 'ຫ້ອງ 2',
+  'Parece o mesmo som que «{nome}».': 'ເບິ່ງຄືວ່າເປັນສຽງດຽວກັນກັບ «{nome}».',
 } satisfies Record<string, string>;

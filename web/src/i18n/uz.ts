@@ -1162,4 +1162,5 @@ export default {
   'jogos': 'oʻyinlar',
   'Sala 1': 'Xona 1',
   'Sala 2': 'Xona 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» bilan bir xil ovozga oʻxshaydi.',
 } satisfies Record<string, string>;

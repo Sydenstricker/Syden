@@ -1099,4 +1099,5 @@ export default {
   'jogos': 'eré',
   'Sala 1': 'Yàrá 1',
   'Sala 2': 'Yàrá 2',
+  'Parece o mesmo som que «{nome}».': 'Ó dàbí ohùn kan náà pẹ̀lú «{nome}».',
 } satisfies Record<string, string>;

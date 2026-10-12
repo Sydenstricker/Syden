@@ -1150,4 +1150,5 @@ export default {
   'jogos': 'jocs',
   'Sala 1': 'Sala 1',
   'Sala 2': 'Sala 2',
+  'Parece o mesmo som que «{nome}».': 'Sembla el mateix so que «{nome}».',
 } satisfies Record<string, string>;

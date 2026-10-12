@@ -38,10 +38,11 @@ import {
   X,
 } from 'lucide-react';
 import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
-import { api } from './api';
+import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
 import { buscarSons, contarToque, toquesDosSons } from './buscaDeSons';
+import { somParecidoCom } from './somParecido';
 import { chave, idiomaAtual, useT } from './i18n';
 import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
@@ -454,7 +455,10 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
 /** Formulário compacto para gravar um som novo sem sair da chamada, direto no painel do soundboard. */
 function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDone: () => void }) {
   const t = useT();
+  const { sounds } = useDirectory();
   const [file, setFile] = useState<File | null>(null);
+  // O nome de um som que já está no soundboard e parece o mesmo deste (ver somParecido.ts). Só avisa.
+  const [parecido, setParecido] = useState<string | null>(null);
   const [audio, setAudio] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('🔊');
@@ -467,6 +471,8 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
       setAudio(await prepareSound(chosen, 1024 * 1024));
       setFile(chosen);
       if (!name) setName(chosen.name.replace(/\.[^.]+$/, '').slice(0, 32));
+      setParecido(null);
+      void somParecidoCom(chosen, sounds, mediaUrl.sound).then(setParecido);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -507,6 +513,7 @@ function SoundboardAddForm({ communityId, onDone }: { communityId: number; onDon
           maxLength={32}
         />
       </div>
+      {parecido && <p className="soundboard-parecido">{t('Parece o mesmo som que «{nome}».', { nome: parecido })}</p>}
       {error && <p className="form-error small">{error}</p>}
       <div className="soundboard-add-actions">
         <button className="link-button" onClick={onDone}>

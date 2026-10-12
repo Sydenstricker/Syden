@@ -1081,4 +1081,5 @@ export default {
   'jogos': 'game',
   'Sala 1': 'Ruang 1',
   'Sala 2': 'Ruang 2',
+  'Parece o mesmo som que «{nome}».': 'Sepertinya suaranya sama dengan «{nome}».',
 } satisfies Record<string, string>;

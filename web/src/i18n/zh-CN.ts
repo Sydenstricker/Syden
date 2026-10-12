@@ -629,7 +629,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': '没在那个页面找到音频。在 MyInstants 上复制下载按钮的链接，粘贴到这里。',
   'Esse endereço não é de um arquivo de áudio.': '这个地址不是音频文件。',
   'Caixa de ideias (como os outros veem)': '点子箱（别人看到的样子）',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': '这就是你的朋友们在村子下方看到的内容。他们写的东西会以私聊的形式发给你，前面带着 💡——Syden 会立刻回复致谢。等这个点子真的加进应用后，给那条消息点个赞：他们那边会落下彩纸，勋章也会出现在个人资料上。',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': '这就是你的朋友们在房间下方看到的内容。他们写的东西会以私聊的形式发给你，前面带着 💡——Syden 会立刻回复致谢。等这个点子真的加进应用后，给那条消息点个赞：他们那边会落下彩纸，勋章也会出现在个人资料上。',
   'Entre numa comunidade para ver as salas.': '加入一个社区，就能看到它的房间。',
   'Escreva um pouco mais sobre a sua ideia.': '再多写一点你的想法吧。',
   'Esta comunidade ainda não tem sala de voz.': '这个社区还没有语音房间。',
@@ -1071,4 +1071,5 @@ export default {
   'jogos': '游戏',
   'Sala 1': '房间1',
   'Sala 2': '房间2',
+  'Parece o mesmo som que «{nome}».': '听起来和「{nome}」是同一个声音。',
 } satisfies Record<string, string>;

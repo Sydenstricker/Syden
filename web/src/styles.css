@@ -12193,3 +12193,10 @@ body.arrastando-barra {
 .soundboard-falta-texto small {
   color: var(--text-muted);
 }
+
+/* O aviso de som parecido no formulário do soundboard (somParecido.ts): só avisa, não impede o envio. */
+.soundboard-parecido {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(12.5px * var(--escala-do-texto));
+}

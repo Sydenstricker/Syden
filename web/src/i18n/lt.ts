@@ -1156,4 +1156,5 @@ export default {
   'jogos': 'žaidimai',
   'Sala 1': 'Kambarys 1',
   'Sala 2': 'Kambarys 2',
+  'Parece o mesmo som que «{nome}».': 'Panašu į tą patį garsą kaip «{nome}».',
 } satisfies Record<string, string>;

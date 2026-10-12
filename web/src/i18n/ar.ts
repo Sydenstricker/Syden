@@ -1104,4 +1104,5 @@ export default {
   'jogos': 'ألعاب',
   'Sala 1': 'الغرفة 1',
   'Sala 2': 'الغرفة 2',
+  'Parece o mesmo som que «{nome}».': 'يبدو أنه الصوت نفسه في «{nome}».',
 } satisfies Record<string, string>;

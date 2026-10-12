@@ -1155,4 +1155,5 @@ export default {
   'jogos': 'leikir',
   'Sala 1': 'Herbergi 1',
   'Sala 2': 'Herbergi 2',
+  'Parece o mesmo som que «{nome}».': 'Virðist vera sama hljóðið og «{nome}».',
 } satisfies Record<string, string>;

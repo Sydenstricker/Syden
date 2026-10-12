@@ -1154,4 +1154,5 @@ export default {
   'jogos': 'ciyaaro',
   'Sala 1': 'Qol 1',
   'Sala 2': 'Qol 2',
+  'Parece o mesmo som que «{nome}».': 'Waxay u egtahay cod la mid ah «{nome}».',
 } satisfies Record<string, string>;

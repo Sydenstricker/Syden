@@ -1155,4 +1155,5 @@ export default {
   'jogos': 'imidlalo',
   'Sala 1': 'Igumbi 1',
   'Sala 2': 'Igumbi 2',
+  'Parece o mesmo som que «{nome}».': 'Kubukeka kungumsindo ofanayo no-«{nome}».',
 } satisfies Record<string, string>;

@@ -1054,4 +1054,5 @@ export default {
   'jogos': 'trò chơi',
   'Sala 1': 'Phòng 1',
   'Sala 2': 'Phòng 2',
+  'Parece o mesmo som que «{nome}».': 'Có vẻ là cùng âm thanh với «{nome}».',
 } satisfies Record<string, string>;

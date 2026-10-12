@@ -1124,4 +1124,5 @@ export default {
   'jogos': 'taphataa',
   'Sala 1': 'Kutaa 1',
   'Sala 2': 'Kutaa 2',
+  'Parece o mesmo som que «{nome}».': 'Sagalee «{nome}» wajjin tokko fakkaata.',
 } satisfies Record<string, string>;

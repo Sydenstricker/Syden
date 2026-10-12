@@ -1084,4 +1084,5 @@ export default {
   'jogos': 'ጨዋታዎች',
   'Sala 1': 'ክፍል 1',
   'Sala 2': 'ክፍል 2',
+  'Parece o mesmo som que «{nome}».': 'ከ«{nome}» ጋር አንድ አይነት ድምፅ ይመስላል።',
 } satisfies Record<string, string>;

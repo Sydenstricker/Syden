@@ -1123,4 +1123,5 @@ export default {
   'jogos': 'ဂိမ်း',
   'Sala 1': 'အခန်း 1',
   'Sala 2': 'အခန်း 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» နှင့် အသံတူပုံရသည်။',
 } satisfies Record<string, string>;

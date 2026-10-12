@@ -1118,4 +1118,5 @@ export default {
   'jogos': 'oyunlar',
   'Sala 1': 'Otaq 1',
   'Sala 2': 'Otaq 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» ilə eyni səs kimi görünür.',
 } satisfies Record<string, string>;

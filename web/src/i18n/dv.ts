@@ -1164,4 +1164,5 @@ export default {
   'jogos': 'ކުޅިވަރު',
   'Sala 1': 'ރޫމް 1',
   'Sala 2': 'ރޫމް 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» އާ އެއް ކަހަލަ އަޑެއް ކަމަށް ފެނެއެވެ.',
 } satisfies Record<string, string>;

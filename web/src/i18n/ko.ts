@@ -1072,4 +1072,5 @@ export default {
   'jogos': '게임',
   'Sala 1': '방 1',
   'Sala 2': '방 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}»와 같은 소리인 것 같아요.',
 } satisfies Record<string, string>;

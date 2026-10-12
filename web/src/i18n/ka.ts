@@ -1172,4 +1172,5 @@ export default {
   'jogos': 'თამაშები',
   'Sala 1': 'ოთახი 1',
   'Sala 2': 'ოთახი 2',
+  'Parece o mesmo som que «{nome}».': 'როგორც ჩანს, იგივე ხმაა, რაც «{nome}».',
 } satisfies Record<string, string>;

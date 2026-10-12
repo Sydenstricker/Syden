@@ -1155,4 +1155,5 @@ export default {
   'jogos': 'бозиҳо',
   'Sala 1': 'Ҳуҷраи 1',
   'Sala 2': 'Ҳуҷраи 2',
+  'Parece o mesmo som que «{nome}».': 'Ба назар мерасад, ки ҳамон садои «{nome}» аст.',
 } satisfies Record<string, string>;

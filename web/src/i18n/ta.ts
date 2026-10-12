@@ -1069,4 +1069,5 @@ export default {
   'jogos': 'விளையாட்டு',
   'Sala 1': 'அறை 1',
   'Sala 2': 'அறை 2',
+  'Parece o mesmo som que «{nome}».': 'இது «{nome}» போன்ற அதே ஒலி போலத் தெரிகிறது.',
 } satisfies Record<string, string>;

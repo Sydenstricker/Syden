@@ -1173,4 +1173,5 @@ export default {
   'jogos': 'խաղեր',
   'Sala 1': 'Սենյակ 1',
   'Sala 2': 'Սենյակ 2',
+  'Parece o mesmo som que «{nome}».': 'Կարծես նույն ձայնն է, ինչ «{nome}»-ը։',
 } satisfies Record<string, string>;

@@ -1164,4 +1164,5 @@ export default {
   'jogos': 'jwèt',
   'Sala 1': 'Chanm 1',
   'Sala 2': 'Chanm 2',
+  'Parece o mesmo som que «{nome}».': 'Sa sanble se menm son ak «{nome}».',
 } satisfies Record<string, string>;

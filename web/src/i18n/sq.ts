@@ -1146,4 +1146,5 @@ export default {
   'jogos': 'lojëra',
   'Sala 1': 'Dhoma 1',
   'Sala 2': 'Dhoma 2',
+  'Parece o mesmo som que «{nome}».': 'Duket si i njëjti tingull me «{nome}».',
 } satisfies Record<string, string>;

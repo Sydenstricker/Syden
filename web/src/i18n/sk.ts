@@ -1154,4 +1154,5 @@ export default {
   'jogos': 'hry',
   'Sala 1': 'Miestnosť 1',
   'Sala 2': 'Miestnosť 2',
+  'Parece o mesmo som que «{nome}».': 'Vyzerá to ako rovnaký zvuk ako «{nome}».',
 } satisfies Record<string, string>;

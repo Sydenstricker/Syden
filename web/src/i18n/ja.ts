@@ -1065,4 +1065,5 @@ export default {
   'jogos': 'ゲーム',
   'Sala 1': 'ルーム1',
   'Sala 2': 'ルーム2',
+  'Parece o mesmo som que «{nome}».': '「{nome}」と同じ音のようです。',
 } satisfies Record<string, string>;

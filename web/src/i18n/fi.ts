@@ -1154,4 +1154,5 @@ export default {
   'jogos': 'pelit',
   'Sala 1': 'Huone 1',
   'Sala 2': 'Huone 2',
+  'Parece o mesmo som que «{nome}».': 'Näyttää samalta ääneltä kuin «{nome}».',
 } satisfies Record<string, string>;

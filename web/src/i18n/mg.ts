@@ -1154,4 +1154,5 @@ export default {
   'jogos': 'lalao',
   'Sala 1': 'Efitrano 1',
   'Sala 2': 'Efitrano 2',
+  'Parece o mesmo som que «{nome}».': 'Toa mitovy amin’ny feo «{nome}».',
 } satisfies Record<string, string>;

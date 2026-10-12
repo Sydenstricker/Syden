@@ -1083,4 +1083,5 @@ export default {
   'jogos': 'michezo',
   'Sala 1': 'Chumba 1',
   'Sala 2': 'Chumba 2',
+  'Parece o mesmo som que «{nome}».': 'Inaonekana kuwa sauti ileile kama «{nome}».',
 } satisfies Record<string, string>;

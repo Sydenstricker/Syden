@@ -1154,4 +1154,5 @@ export default {
   'jogos': 'spill',
   'Sala 1': 'Rom 1',
   'Sala 2': 'Rom 2',
+  'Parece o mesmo som que «{nome}».': 'Ser ut som samme lyd som «{nome}».',
 } satisfies Record<string, string>;

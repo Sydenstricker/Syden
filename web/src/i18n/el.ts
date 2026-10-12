@@ -1090,4 +1090,5 @@ export default {
   'jogos': 'παιχνίδια',
   'Sala 1': 'Δωμάτιο 1',
   'Sala 2': 'Δωμάτιο 2',
+  'Parece o mesmo som que «{nome}».': 'Μοιάζει με τον ίδιο ήχο με το «{nome}».',
 } satisfies Record<string, string>;

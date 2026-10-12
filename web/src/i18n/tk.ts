@@ -1156,4 +1156,5 @@ export default {
   'jogos': 'oýunlar',
   'Sala 1': 'Otag 1',
   'Sala 2': 'Otag 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» bilen birmeňzeş ses ýaly.',
 } satisfies Record<string, string>;

@@ -1084,4 +1084,5 @@ export default {
   'jogos': 'jocuri',
   'Sala 1': 'Camera 1',
   'Sala 2': 'Camera 2',
+  'Parece o mesmo som que «{nome}».': 'Pare același sunet ca «{nome}».',
 } satisfies Record<string, string>;

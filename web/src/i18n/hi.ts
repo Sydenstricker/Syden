@@ -1083,4 +1083,5 @@ export default {
   'jogos': 'गेम्स',
   'Sala 1': 'रूम 1',
   'Sala 2': 'रूम 2',
+  'Parece o mesmo som que «{nome}».': 'यह «{nome}» जैसी ही आवाज़ लगती है।',
 } satisfies Record<string, string>;

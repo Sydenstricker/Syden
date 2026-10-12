@@ -1150,4 +1150,5 @@ export default {
   'jogos': 'ойындар',
   'Sala 1': 'Бөлме 1',
   'Sala 2': 'Бөлме 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» дыбысымен бірдей сияқты.',
 } satisfies Record<string, string>;

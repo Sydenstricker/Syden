@@ -1097,4 +1097,5 @@ export default {
   'jogos': 'เกม',
   'Sala 1': 'ห้อง 1',
   'Sala 2': 'ห้อง 2',
+  'Parece o mesmo som que «{nome}».': 'ดูเหมือนเป็นเสียงเดียวกับ «{nome}»',
 } satisfies Record<string, string>;

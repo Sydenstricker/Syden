@@ -1086,4 +1086,5 @@ export default {
   'jogos': 'wasanni',
   'Sala 1': 'Ɗaki 1',
   'Sala 2': 'Ɗaki 2',
+  'Parece o mesmo som que «{nome}».': 'Kamar sauti ɗaya ne da «{nome}».',
 } satisfies Record<string, string>;

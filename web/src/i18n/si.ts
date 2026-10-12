@@ -1154,4 +1154,5 @@ export default {
   'jogos': 'ක්‍රීඩා',
   'Sala 1': 'කාමරය 1',
   'Sala 2': 'කාමරය 2',
+  'Parece o mesmo som que «{nome}».': '«{nome}» හා සමාන ශබ්දයක් ලෙස පෙනේ.',
 } satisfies Record<string, string>;
