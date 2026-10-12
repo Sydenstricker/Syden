@@ -88,11 +88,50 @@ export function notaDoSom(busca: string, nome: string, pacote: string | null = n
   return nota;
 }
 
-/** Os sons que casam com a busca, do mais provável para o menos provável. */
-export function buscarSons<T extends { name: string; packName?: string | null }>(sons: T[], busca: string): T[] {
+/**
+ * Os sons que casam com a busca, do mais provável para o menos provável.
+ *
+ * `toques` é quantas vezes ESTE aparelho já tocou cada som: entre dois resultados parecidos, vem antes o que
+ * a pessoa costuma usar. O peso é pequeno de propósito (no máximo 20, menos que a distância entre "palavra
+ * inteira" e "começo de palavra"): o hábito desempata, não passa por cima do que foi digitado.
+ */
+export function buscarSons<T extends { id: number; name: string; packName?: string | null }>(
+  sons: T[],
+  busca: string,
+  toques: Record<number, number> = {},
+): T[] {
   return sons
-    .map((som) => ({ som, nota: notaDoSom(busca, som.name, som.packName ?? null) }))
+    .map((som) => {
+      const nota = notaDoSom(busca, som.name, som.packName ?? null);
+      return { som, nota: nota > 0 ? nota + Math.min(toques[som.id] ?? 0, 10) * 2 : 0 };
+    })
     .filter((r) => r.nota > 0)
     .sort((a, b) => b.nota - a.nota || a.som.name.localeCompare(b.som.name))
     .map((r) => r.som);
+}
+
+// ---------- O que este aparelho mais toca ----------
+//
+// Fica no localStorage, e não no servidor: é uma conveniência deste aparelho, como a última aba aberta, e
+// não precisa sair daqui. Se o armazenamento não existir (janela anônima, bloqueado), a busca só perde o
+// desempate — por isso tudo aqui engole o erro.
+
+const CHAVE_DOS_TOQUES = 'syden.sonsTocados';
+
+export function toquesDosSons(): Record<number, number> {
+  try {
+    return JSON.parse(localStorage.getItem(CHAVE_DOS_TOQUES) ?? '{}') as Record<number, number>;
+  } catch {
+    return {};
+  }
+}
+
+export function contarToque(id: number) {
+  try {
+    const toques = toquesDosSons();
+    toques[id] = (toques[id] ?? 0) + 1;
+    localStorage.setItem(CHAVE_DOS_TOQUES, JSON.stringify(toques));
+  } catch {
+    // sem armazenamento: o som toca do mesmo jeito
+  }
 }

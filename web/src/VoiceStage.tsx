@@ -41,7 +41,7 @@ import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect,
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
-import { buscarSons } from './buscaDeSons';
+import { buscarSons, contarToque, toquesDosSons } from './buscaDeSons';
 import { chave, idiomaAtual, useT } from './i18n';
 import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
@@ -276,7 +276,7 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
   // Buscando, a lista é UMA SÓ, do mais provável para o menos provável (ver buscaDeSons.ts); os grupos
   // por pacote só fazem sentido quando se está olhando tudo.
   const term = search.trim();
-  const found = term ? buscarSons(sounds, term) : sounds;
+  const found = term ? buscarSons(sounds, term, toquesDosSons()) : sounds;
   const favorites = term ? [] : found.filter((s) => s.favorite);
   const groups = new Map<string, Sound[]>();
   for (const sound of term ? [] : found.filter((s) => !s.favorite)) {
@@ -295,11 +295,16 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
     }
   }
 
+  function tocar(sound: Sound) {
+    contarToque(sound.id);
+    void voice.playSound(sound.id);
+  }
+
   const grid = (list: Sound[]) => (
     <div className="soundboard-grid">
       {list.map((sound) => (
         <div key={sound.id} className="soundboard-item">
-          <button className="soundboard-sound" onClick={() => void voice.playSound(sound.id)}>
+          <button className="soundboard-sound" onClick={() => tocar(sound)}>
             <span className="soundboard-icon">{sound.icon}</span>
             <span className="soundboard-name">{sound.name}</span>
           </button>
@@ -346,6 +351,10 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
           placeholder={t('Procurar som')}
           aria-label={t('Procurar som')}
           onChange={(e) => setSearch(e.target.value)}
+          // Enter toca o primeiro da lista: digitar "ajdua" e Enter, sem tirar a mão do teclado no meio da partida.
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && term && found[0]) tocar(found[0]);
+          }}
         />
       )}
 

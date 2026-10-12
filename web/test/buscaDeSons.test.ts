@@ -6,12 +6,12 @@ import { buscarSons, normalizar } from '../src/buscaDeSons';
 // sequencial de sons prováveis". Cada caso abaixo é um jeito real de digitar rápido numa chamada.
 
 const sons = [
-  { name: 'Por favor, me ajuda', packName: null },
-  { name: 'Música de suspense', packName: 'Memes' },
-  { name: 'Ajudante do Papai Noel', packName: null },
-  { name: 'Risada', packName: 'Memes' },
-  { name: 'Aplausos', packName: 'Futebol' },
-  { name: 'Ai que delícia', packName: null },
+  { id: 1, name: 'Por favor, me ajuda', packName: null },
+  { id: 2, name: 'Música de suspense', packName: 'Memes' },
+  { id: 3, name: 'Ajudante do Papai Noel', packName: null },
+  { id: 4, name: 'Risada', packName: 'Memes' },
+  { id: 5, name: 'Aplausos', packName: 'Futebol' },
+  { id: 6, name: 'Ai que delícia', packName: null },
 ];
 const nomes = (busca: string) => buscarSons(sons, busca).map((s) => s.name);
 
@@ -47,5 +47,22 @@ describe('a busca do soundboard', () => {
   it('o que não casa com nada não aparece', () => {
     assert.deepEqual(nomes('xyzw'), []);
     assert.deepEqual(nomes('   '), []);
+  });
+});
+
+describe('o que você mais toca desempata', () => {
+  const parecidos = [
+    { id: 1, name: 'Risada alta', packName: null },
+    { id: 2, name: 'Risada baixa', packName: null },
+  ];
+  it('sem histórico, empate vai pelo nome', () => {
+    assert.deepEqual(buscarSons(parecidos, 'risada').map((s) => s.id), [1, 2]);
+  });
+  it('o que você toca mais vem antes, entre os parecidos', () => {
+    assert.deepEqual(buscarSons(parecidos, 'risada', { 2: 5 }).map((s) => s.id), [2, 1]);
+  });
+  it('mas o hábito não passa por cima do que foi digitado', () => {
+    // "alta" é palavra inteira só no 1; tocar o 2 mil vezes não o põe na frente.
+    assert.deepEqual(buscarSons(parecidos, 'risada alta', { 2: 1000 }).map((s) => s.id), [1, 2]);
   });
 });
