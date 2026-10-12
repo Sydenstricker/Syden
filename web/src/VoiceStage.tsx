@@ -57,7 +57,7 @@ import { quemAssiste } from './assistindo';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { BotaoMinijogo, PainelDoMinijogo } from './Minijogo';
-import { pegarPedidoDeComecar, usarMinijogo } from './minijogos';
+import { pegarPedidoDeAbrir, usarMinijogo } from './minijogos';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
@@ -1180,10 +1180,9 @@ function Stage({
   const [minijogoAberto, setMinijogoAberto] = useState(false);
   const temPartida = minijogo.partida !== null;
   useEffect(() => setMinijogoAberto(temPartida), [temPartida]);
-  // Veio da home ("Qual é maior?" → escolher a sala): começa assim que entra.
+  // Veio da home (o computador do quarto → escolher a sala): a estante de jogos abre assim que entra.
   useEffect(() => {
-    if (pegarPedidoDeComecar(channelId)) void minijogo.comecar().catch(() => setMinijogoAberto(true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (pegarPedidoDeAbrir(channelId)) setMinijogoAberto(true);
   }, [channelId]);
 
   const screens = tracks.filter((t) => t.source === Track.Source.ScreenShare);
@@ -1418,7 +1417,7 @@ function Stage({
             eu={eu}
             podeEncerrar={minijogo.partida?.criadaPor === eu}
             aoComecar={minijogo.comecar}
-            aoVotar={minijogo.votar}
+            aoAgir={minijogo.agir}
             aoEncerrar={minijogo.encerrar}
             aoFechar={() => setMinijogoAberto(false)}
           />

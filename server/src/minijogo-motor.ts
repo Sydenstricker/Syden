@@ -1,0 +1,55 @@
+/**
+ * O MOTOR DOS MINI-GAMES (12/10/2026): o que todo jogo da sala de voz tem em comum, e o que cada um faz
+ * diferente. As rotas (minijogos-routes.ts) cuidam da sala, do relógio e do aviso à comunidade; cada jogo
+ * só conhece as próprias regras.
+ *
+ * TODO JOGO É UMA MÁQUINA NO SERVIDOR: ele recebe as ações de quem está na sala, decide, e diz o que cada
+ * um pode ver. "Cada um" importa: no Stop as respostas dos outros ficam escondidas até o fim da rodada, e
+ * no Sudoku cada um vê só o próprio tabuleiro. Por isso o estado público é pedido POR PESSOA.
+ */
+
+export interface Contexto {
+  /** O relógio da partida (um só): marcar de novo troca o que estava marcado. */
+  agendar(ms: number, depois: () => void): void;
+  /** Avisa a comunidade de que a partida mudou: quem está na sala busca o estado de novo. */
+  avisar(): void;
+  /** A partida acabou: o placar fica na tela por um tempo e some sozinho. */
+  terminar(): void;
+  /** Quem está na sala de voz agora. */
+  naSala(): number[];
+  nome(userId: number): string;
+}
+
+export interface Jogo {
+  /** O que `quem` vê agora. */
+  publico(quem: number): Record<string, unknown>;
+  /** Uma ação de alguém da sala. Devolve o erro (em português: o site traduz), ou null. */
+  acao(quem: number, corpo: Record<string, unknown>): string | null;
+}
+
+export interface Definicao {
+  /** Começa com quem está na sala. Devolve o jogo, ou o erro que impede de começar. */
+  comecar(ctx: Contexto, opcoes: { naSala: number[]; criadaPor: number; corpo: Record<string, unknown> }): Jogo | string;
+}
+
+export interface LinhaDoPlacar {
+  userId: number;
+  username: string;
+  pontos: number;
+}
+
+/** O placar em ordem: mais pontos primeiro, e o nome desempata. */
+export function placar(pontos: Map<number, number>, nome: (userId: number) => string): LinhaDoPlacar[] {
+  return [...pontos.entries()]
+    .map(([userId, p]) => ({ userId, username: nome(userId), pontos: p }))
+    .sort((a, b) => b.pontos - a.pontos || a.username.localeCompare(b.username));
+}
+
+/** Embaralha no lugar (Fisher–Yates). `aleatorio` é trocável para o teste. */
+export function embaralhar<T>(lista: T[], aleatorio = Math.random): T[] {
+  for (let i = lista.length - 1; i > 0; i--) {
+    const j = Math.floor(aleatorio() * (i + 1));
+    [lista[i], lista[j]] = [lista[j], lista[i]];
+  }
+  return lista;
+}

@@ -16,6 +16,8 @@
  * é o que decide quem acertou.
  */
 
+import { placar, type Definicao } from './minijogo-motor.js';
+
 export type Medida = 'altura' | 'comprimento' | 'diametro';
 
 /** O tamanho de cada objeto, em centímetros, e o que foi medido. Valores típicos, de fontes de referência. */
@@ -91,42 +93,76 @@ export function sortearPar(usados: Set<string>, aleatorio = Math.random): [strin
 
 export type Fase = 'votando' | 'revelando' | 'fim';
 
-export interface Partida {
-  channelId: number;
-  communityId: number;
-  jogo: 'tamanho';
-  criadaPor: number;
-  rodada: number;
-  fase: Fase;
-  par: [string, string];
-  usados: Set<string>;
-  /** O voto de cada um na rodada: 0 = o da esquerda, 1 = o da direita. */
-  votos: Map<number, 0 | 1>;
-  pontos: Map<number, number>;
-  /** Quando a fase atual acaba (hora do servidor). */
-  ate: number;
-  relogio: ReturnType<typeof setTimeout> | null;
-}
-
 /** Qual dos dois é o maior. */
 export const maior = (par: [string, string]): 0 | 1 => (OBJETOS[par[0]].cm >= OBJETOS[par[1]].cm ? 0 : 1);
 
-/** O que todo mundo vê. Os votos só aparecem depois de revelados. */
-export function estadoPublico(p: Partida, nomes: (userId: number) => string, agora = Date.now()) {
-  const revelado = p.fase !== 'votando';
-  return {
-    jogo: p.jogo,
-    criadaPor: p.criadaPor,
-    rodada: p.rodada,
-    rodadas: RODADAS,
-    fase: p.fase,
-    par: p.par.map((id) => ({ id, ...(revelado ? OBJETOS[id] : {}) })),
-    restanteMs: Math.max(0, p.ate - agora),
-    votaram: [...p.votos.keys()],
-    votos: revelado ? Object.fromEntries(p.votos) : null,
-    certo: revelado ? maior(p.par) : null,
-    placar: [...p.pontos.entries()]
-      .map(([userId, pontos]) => ({ userId, username: nomes(userId), pontos }))
-      .sort((a, b) => b.pontos - a.pontos || a.username.localeCompare(b.username)),
-  };
-}
+/**
+ * O "Qual é maior?" como jogo do motor (ver minijogo-motor.ts): 8 rodadas de votar e revelar. Todo mundo
+ * que está na sala começa no placar, com zero: quem não votar aparece, e não some.
+ */
+export const tamanho: Definicao = {
+  comecar(ctx, { naSala }) {
+    let rodada = 1;
+    let fase: Fase = 'votando';
+    let par: [string, string] = ['gato', 'cavalo'];
+    const usados = new Set<string>();
+    /** O voto de cada um na rodada: 0 = o da esquerda, 1 = o da direita. */
+    const votos = new Map<number, 0 | 1>();
+    const pontos = new Map(naSala.map((id) => [id, 0]));
+
+    function novaRodada() {
+      par = sortearPar(usados);
+      par.forEach((id) => usados.add(id));
+      votos.clear();
+      fase = 'votando';
+      ctx.agendar(VOTANDO_MS, revelar);
+      ctx.avisar();
+    }
+
+    function revelar() {
+      if (fase !== 'votando') return;
+      const certo = maior(par);
+      for (const [userId, escolha] of votos) pontos.set(userId, (pontos.get(userId) ?? 0) + (escolha === certo ? 1 : 0));
+      fase = 'revelando';
+      ctx.agendar(REVELANDO_MS, () => {
+        if (rodada >= RODADAS) {
+          fase = 'fim';
+          return ctx.terminar();
+        }
+        rodada++;
+        novaRodada();
+      });
+      ctx.avisar();
+    }
+
+    novaRodada();
+    return {
+      publico() {
+        // Os votos e os tamanhos só aparecem depois da revelação — senão o último a votar copiaria a maioria.
+        const revelado = fase !== 'votando';
+        return {
+          rodada,
+          rodadas: RODADAS,
+          fase,
+          par: par.map((id) => ({ id, ...(revelado ? OBJETOS[id] : {}) })),
+          votaram: [...votos.keys()],
+          votos: revelado ? Object.fromEntries(votos) : null,
+          certo: revelado ? maior(par) : null,
+          placar: placar(pontos, ctx.nome),
+        };
+      },
+      acao(quem, corpo) {
+        if (corpo.tipo !== 'voto') return 'Ação desconhecida.';
+        if (fase !== 'votando') return 'Agora não é hora de votar.';
+        const escolha = corpo.escolha;
+        if (escolha !== 0 && escolha !== 1) return 'Escolha um dos dois.';
+        votos.set(quem, escolha);
+        if (!pontos.has(quem)) pontos.set(quem, 0);
+        // Todo mundo da sala votou: revela na hora, sem esperar o relógio.
+        if (ctx.naSala().every((id) => votos.has(id))) revelar();
+        else ctx.avisar();
+        return null;
+      },
+    };
+  },
+};

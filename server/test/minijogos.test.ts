@@ -65,19 +65,19 @@ test('a partida: começa, esconde os votos, revela quando todos votam, e conta o
   const certo = maior(par);
   assert.ok(OBJETOS[par[0]].cm !== OBJETOS[par[1]].cm);
 
-  const voto1 = (await ana('POST', `/api/channels/${sala.id}/minijogo/voto`, { escolha: certo })).json().partida;
+  const voto1 = (await ana('POST', `/api/channels/${sala.id}/minijogo/acao`, { tipo: 'voto', escolha: certo })).json().partida;
   assert.equal(voto1.fase, 'votando', 'falta a Bia');
   assert.deepEqual(voto1.votaram, [contaAna.user.id]);
   assert.equal(voto1.votos, null, 'o voto da Ana fica escondido até a revelação');
 
-  const revelado = (await bia('POST', `/api/channels/${sala.id}/minijogo/voto`, { escolha: certo === 0 ? 1 : 0 })).json().partida;
+  const revelado = (await bia('POST', `/api/channels/${sala.id}/minijogo/acao`, { tipo: 'voto', escolha: certo === 0 ? 1 : 0 })).json().partida;
   assert.equal(revelado.fase, 'revelando', 'todo mundo votou: revela na hora');
   assert.equal(revelado.certo, certo);
   assert.ok(revelado.par[0].cm > 0, 'os tamanhos aparecem');
   const placar = Object.fromEntries(revelado.placar.map((l: { username: string; pontos: number }) => [l.username, l.pontos]));
   assert.deepEqual(placar, { 'ana-minijogo': 1, 'bia-minijogo': 0 });
 
-  assert.equal((await ana('POST', `/api/channels/${sala.id}/minijogo/voto`, { escolha: 0 })).statusCode, 409, 'depois da revelação não se vota');
+  assert.equal((await ana('POST', `/api/channels/${sala.id}/minijogo/acao`, { tipo: 'voto', escolha: 0 })).statusCode, 409, 'depois da revelação não se vota');
 });
 
 test('quem não começou não encerra no meio; quem começou, sim', async () => {

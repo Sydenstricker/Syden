@@ -1,29 +1,42 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
-import {
-  estadoPublico,
-  maior,
-  PLACAR_MS,
-  REVELANDO_MS,
-  RODADAS,
-  sortearPar,
-  VOTANDO_MS,
-  type Partida,
-} from './minijogos.js';
+import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
+import { stop } from './minijogo-stop.js';
+import { sudoku } from './minijogo-sudoku.js';
+import { gomoku, mancala } from './minijogo-tabuleiro.js';
+import { PLACAR_MS, tamanho } from './minijogos.js';
 import { communityRoom, quemEstaNaSala, salaDeVozDe } from './realtime.js';
 import { manages, requireUser } from './routes.js';
 
 /**
- * As rotas dos mini-games (ver minijogos.ts). Como o palco: as ações vão por HTTP, e a cada mudança a
- * comunidade recebe 'minijogo:mudou' e quem está na sala busca o estado de novo.
+ * As rotas dos mini-games (ver minijogo-motor.ts). Como o palco: as ações vão por HTTP, e a cada mudança a
+ * comunidade recebe 'minijogo:mudou' e quem está na sala busca o estado de novo — cada um o SEU estado,
+ * porque o que se vê depende de quem pede (as próprias respostas, o próprio tabuleiro).
  *
  * Jogar exige ESTAR NA SALA DE VOZ: o jogo é da turma que está conversando. Ver o estado basta participar
  * da comunidade, para quem entra no meio já cair na rodada certa.
+ *
+ * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
+ * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  */
+export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala };
+
+interface Partida {
+  channelId: number;
+  communityId: number;
+  jogo: string;
+  criadaPor: number;
+  terminada: boolean;
+  /** Quando o relógio da partida dispara (hora do servidor). */
+  ate: number;
+  relogio: ReturnType<typeof setTimeout> | null;
+  instancia: Jogo | null;
+}
+
 const partidas = new Map<number, Partida>();
 
-/** Para os testes: as partidas de agora e um jeito de adiantar o relógio. */
+/** Para os testes: as partidas de agora. */
 export const _partidas = partidas;
 
 export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
@@ -41,39 +54,19 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     p.relogio.unref?.();
   }
 
-  function novaRodada(p: Partida) {
-    p.par = sortearPar(p.usados);
-    p.par.forEach((id) => p.usados.add(id));
-    p.votos.clear();
-    p.fase = 'votando';
-    agendar(p, VOTANDO_MS, () => revelar(p));
-    avisar(p);
-  }
-
-  function revelar(p: Partida) {
-    if (p.fase !== 'votando') return;
-    const certo = maior(p.par);
-    for (const [userId, escolha] of p.votos) p.pontos.set(userId, (p.pontos.get(userId) ?? 0) + (escolha === certo ? 1 : 0));
-    p.fase = 'revelando';
-    agendar(p, REVELANDO_MS, () => {
-      if (p.rodada >= RODADAS) return terminar(p);
-      p.rodada++;
-      novaRodada(p);
-    });
-    avisar(p);
-  }
-
-  function terminar(p: Partida) {
-    p.fase = 'fim';
-    agendar(p, PLACAR_MS, () => encerrar(p));
-    avisar(p);
-  }
-
   function encerrar(p: Partida) {
     if (p.relogio) clearTimeout(p.relogio);
     if (partidas.get(p.channelId) === p) partidas.delete(p.channelId);
     avisar(p);
   }
+
+  const estado = (p: Partida, quem: number) => ({
+    jogo: p.jogo,
+    criadaPor: p.criadaPor,
+    terminada: p.terminada,
+    restanteMs: Math.max(0, p.ate - Date.now()),
+    ...p.instancia?.publico(quem),
+  });
 
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
@@ -94,52 +87,63 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const canal = sala(request.params.id, request.user.id, reply);
       if (!canal) return reply;
       const p = partidas.get(canal.id);
-      return { partida: p ? estadoPublico(p, nome) : null };
+      return { partida: p ? estado(p, request.user.id) : null };
     });
 
-    authed.post<{ Params: { id: string }; Body: { jogo?: string } }>('/api/channels/:id/minijogo', async (request, reply) => {
-      const canal = sala(request.params.id, request.user.id, reply);
-      if (!canal) return reply;
-      if (request.body?.jogo !== 'tamanho') return reply.code(400).send({ error: 'Jogo desconhecido.' });
-      if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
-      const atual = partidas.get(canal.id);
-      if (atual && atual.fase !== 'fim') return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
-      if (atual?.relogio) clearTimeout(atual.relogio);
+    authed.post<{ Params: { id: string }; Body: Record<string, unknown> & { jogo?: string } }>(
+      '/api/channels/:id/minijogo',
+      async (request, reply) => {
+        const canal = sala(request.params.id, request.user.id, reply);
+        if (!canal) return reply;
+        const definicao = JOGOS[request.body?.jogo ?? ''];
+        if (!definicao) return reply.code(400).send({ error: 'Jogo desconhecido.' });
+        if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
+        const atual = partidas.get(canal.id);
+        if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
+        if (atual?.relogio) clearTimeout(atual.relogio);
 
-      const p: Partida = {
-        channelId: canal.id,
-        communityId: canal.communityId,
-        jogo: 'tamanho',
-        criadaPor: request.user.id,
-        rodada: 1,
-        fase: 'votando',
-        par: ['gato', 'cavalo'],
-        usados: new Set(),
-        votos: new Map(),
-        // Todo mundo que está na sala começa no placar, com zero: quem não votar aparece, e não some.
-        pontos: new Map(quemEstaNaSala(canal.id).map((id) => [id, 0])),
-        ate: 0,
-        relogio: null,
-      };
-      partidas.set(canal.id, p);
-      novaRodada(p);
-      return { partida: estadoPublico(p, nome) };
-    });
+        const p: Partida = {
+          channelId: canal.id,
+          communityId: canal.communityId,
+          jogo: request.body!.jogo!,
+          criadaPor: request.user.id,
+          terminada: false,
+          ate: 0,
+          relogio: null,
+          instancia: null,
+        };
+        const ctx: Contexto = {
+          agendar: (ms, depois) => agendar(p, ms, depois),
+          avisar: () => avisar(p),
+          terminar: () => {
+            p.terminada = true;
+            agendar(p, PLACAR_MS, () => encerrar(p));
+            avisar(p);
+          },
+          naSala: () => quemEstaNaSala(canal.id),
+          nome,
+        };
+        const instancia = definicao.comecar(ctx, { naSala: quemEstaNaSala(canal.id), criadaPor: request.user.id, corpo: request.body ?? {} });
+        if (typeof instancia === 'string') {
+          if (p.relogio) clearTimeout(p.relogio);
+          return reply.code(400).send({ error: instancia });
+        }
+        p.instancia = instancia;
+        partidas.set(canal.id, p);
+        avisar(p);
+        return { partida: estado(p, request.user.id) };
+      },
+    );
 
-    authed.post<{ Params: { id: string }; Body: { escolha?: number } }>('/api/channels/:id/minijogo/voto', async (request, reply) => {
+    authed.post<{ Params: { id: string }; Body: Record<string, unknown> }>('/api/channels/:id/minijogo/acao', async (request, reply) => {
       const canal = sala(request.params.id, request.user.id, reply);
       if (!canal) return reply;
       const p = partidas.get(canal.id);
-      if (!p || p.fase !== 'votando') return reply.code(409).send({ error: 'Agora não é hora de votar.' });
+      if (!p?.instancia || p.terminada) return reply.code(409).send({ error: 'A partida acabou.' });
       if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
-      const escolha = request.body?.escolha;
-      if (escolha !== 0 && escolha !== 1) return reply.code(400).send({ error: 'Escolha um dos dois.' });
-      p.votos.set(request.user.id, escolha);
-      if (!p.pontos.has(request.user.id)) p.pontos.set(request.user.id, 0);
-      // Todo mundo da sala votou: revela na hora, sem esperar o relógio.
-      if (quemEstaNaSala(canal.id).every((id) => p.votos.has(id))) revelar(p);
-      else avisar(p);
-      return { partida: estadoPublico(p, nome) };
+      const erro = p.instancia.acao(request.user.id, request.body ?? {});
+      if (erro) return reply.code(409).send({ error: erro });
+      return { partida: estado(p, request.user.id) };
     });
 
     authed.delete<{ Params: { id: string } }>('/api/channels/:id/minijogo', async (request, reply) => {
@@ -151,7 +155,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const pode =
         p.criadaPor === request.user.id ||
         manages(db.memberRole(canal.communityId, request.user.id)) ||
-        (p.fase === 'fim' && estaNaSala(request.user.id, canal.id));
+        (p.terminada && estaNaSala(request.user.id, canal.id));
       if (!pode) return reply.code(403).send({ error: 'Só quem começou a partida pode encerrá-la antes do fim.' });
       encerrar(p);
       return { ok: true };

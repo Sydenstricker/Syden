@@ -1,5 +1,5 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
-import { pedirParaComecarAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
+import { JOGOS, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
 import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
 import { useDirectory } from './directory';
@@ -244,9 +244,9 @@ export function Home({
             </header>
             <section className="jogos-do-syden">
               <h4>
-                <Gamepad2 size={16} aria-hidden="true" /> {t('Qual é maior?')}
+                <Gamepad2 size={16} aria-hidden="true" /> {t('Na sala de voz, com a turma')}
               </h4>
-              <p>{t('Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.')}</p>
+              <p>{JOGOS.map((jogo) => t(jogo.nome)).join(' · ')}</p>
               {salas.length === 0 ? (
                 <p className="vila-painel-vazio">
                   {comunidade ? t('Esta comunidade ainda não tem sala de voz.') : t('Entre numa comunidade para ver as salas.')}
@@ -262,7 +262,7 @@ export function Home({
                           <button
                             onClick={() => {
                               setJogosAbertos(false);
-                              pedirParaComecarAoEntrar(sala.id);
+                              pedirParaAbrirAoEntrar(sala.id);
                               aoEntrar(sala.id);
                             }}
                           >

@@ -12358,6 +12358,9 @@ body.arrastando-barra {
   background: var(--bg-float);
   border: 1px solid var(--border);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  /* O painel nasce em cima da barra da sala: em tela baixa, rola por dentro em vez de sair por cima. */
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 
 .minijogo-topo {
@@ -12571,4 +12574,505 @@ body.arrastando-barra {
 
 .minijogo-encerrar {
   align-self: center;
+}
+
+/* ---------- Stop ---------- */
+
+.stop {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stop-letra {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 38px;
+  font-weight: 800;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #e5484d 30%, transparent);
+}
+
+.stop-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px 12px;
+}
+
+.stop-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: calc(13px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.stop-campo input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  font-size: calc(15px * var(--escala-do-texto));
+}
+
+.stop-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stop-botao {
+  background: #e5484d;
+  border-color: #e5484d;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.stop-parou {
+  font-weight: 700;
+  color: #e5484d;
+}
+
+.stop-conferencia {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.stop-conferencia h4 {
+  margin: 0 0 6px;
+  font-size: calc(13px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.stop-conferencia ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stop-resposta {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stop-resposta:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.stop-resposta:not(:disabled):hover,
+.stop-resposta.contestei {
+  border-color: #e5484d;
+}
+
+.stop-resposta.nao-vale .stop-texto {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.stop-quem {
+  flex: 0 0 auto;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.stop-texto {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.stop-contra {
+  color: #e5484d;
+  font-size: calc(12px * var(--escala-do-texto));
+  font-weight: 700;
+}
+
+.stop-pontos {
+  font-weight: 700;
+  color: #2fbf71;
+}
+
+/* ---------- Sudoku ---------- */
+
+.sudoku {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.sudoku-grade {
+  width: min(100%, 360px, 46vh);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  border: 2px solid var(--text-strong);
+  border-radius: 6px;
+  overflow: hidden;
+  outline: none;
+}
+
+.sudoku-grade:focus-visible {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.sudoku-casa {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: #6f9cff;
+  font: inherit;
+  font-size: clamp(14px, 3.2vh, 20px);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sudoku-casa.dada {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.sudoku-casa.borda-direita {
+  border-right: 2px solid var(--text-strong);
+}
+
+.sudoku-casa.borda-baixo {
+  border-bottom: 2px solid var(--text-strong);
+}
+
+.sudoku-casa.mesmo {
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-darkest));
+}
+
+.sudoku-casa.escolhida {
+  background: color-mix(in srgb, var(--accent) 34%, var(--bg-darkest));
+}
+
+.sudoku-casa.errada {
+  color: #ff6b6b;
+}
+
+.sudoku-numeros {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  width: min(100%, 360px);
+}
+
+.sudoku-numeros button {
+  display: grid;
+  place-items: center;
+  padding: 6px 0;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sudoku-numeros button:not(:disabled):hover {
+  border-color: var(--accent);
+}
+
+.sudoku-corrida {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sudoku-corrida li {
+  display: grid;
+  grid-template-columns: minmax(0, 8em) 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.sudoku-corrida li .minijogo-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sudoku-corrida li.eu .minijogo-nome {
+  font-weight: 700;
+}
+
+.sudoku-barra {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bg-darkest);
+  overflow: hidden;
+}
+
+.sudoku-barra span {
+  display: block;
+  height: 100%;
+  background: #2fbf71;
+  transition: width 300ms ease;
+}
+
+.sudoku-erros {
+  color: #ff6b6b;
+}
+
+/* ---------- Mesa de duas pessoas ---------- */
+
+.duelo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.duelo-mesa {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.duelo-jogador {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-weight: 700;
+}
+
+.duelo-jogador.da-vez {
+  border-color: var(--accent);
+}
+
+.duelo-jogador.venceu {
+  border-color: #2fbf71;
+}
+
+.duelo-peca {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.duelo-gomoku .duelo-peca.lado-0 {
+  background: #1d1d1f;
+  box-shadow: 0 0 0 1px #8a8a8a;
+}
+
+.duelo-gomoku .duelo-peca.lado-1 {
+  background: #f4f1ea;
+}
+
+.duelo-mancala .duelo-peca.lado-0 {
+  background: #f2b84b;
+}
+
+.duelo-mancala .duelo-peca.lado-1 {
+  background: #4f7df5;
+}
+
+.minijogo-situacao.minha-vez {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.gomoku {
+  width: min(100%, 52vh);
+  aspect-ratio: 1;
+  display: grid;
+  padding: 6px;
+  border-radius: 6px;
+  background: #d9b26f;
+}
+
+.gomoku-casa {
+  position: relative;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* As linhas do tabuleiro passam pelo meio de cada casa: a pedra fica no cruzamento, como no Go. */
+.gomoku-casa::before,
+.gomoku-casa::after {
+  content: '';
+  position: absolute;
+  background: #8a6a3a;
+}
+
+.gomoku-casa::before {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+}
+
+.gomoku-casa::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+}
+
+/* Fora da vez o tabuleiro não aceita clique, mas continua inteiro à vista: nada de pedra desbotada. */
+.gomoku-casa:disabled,
+.mancala-casa:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.gomoku-casa:not(:disabled):hover {
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.18) 0 38%, transparent 40%);
+}
+
+.gomoku-casa.pedra {
+  background: radial-gradient(circle, var(--cor-da-pedra) 0 42%, transparent 44%);
+}
+
+.gomoku-casa.pedra::before,
+.gomoku-casa.pedra::after {
+  display: none;
+}
+
+.gomoku-casa.lado-0 {
+  --cor-da-pedra: #1d1d1f;
+}
+
+.gomoku-casa.lado-1 {
+  --cor-da-pedra: #f4f1ea;
+}
+
+.gomoku-casa.ultima {
+  outline: 2px solid #e5484d;
+  outline-offset: -3px;
+  border-radius: 50%;
+}
+
+.gomoku-casa.na-linha {
+  outline: 3px solid #2fbf71;
+  outline-offset: -2px;
+  border-radius: 50%;
+}
+
+.mancala {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 40px;
+  background: #a9733f;
+  border: 2px solid #7a4f27;
+}
+
+.mancala-fileiras {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mancala-fileira {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.mancala-casa,
+.mancala-deposito {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: #6b4423;
+  color: #f6ead7;
+  font: inherit;
+}
+
+.mancala-casa {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+}
+
+.mancala-casa:not(:disabled):hover {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.mancala-casa.ultima {
+  box-shadow: 0 0 0 2px #f6ead7;
+}
+
+.mancala-deposito {
+  width: 54px;
+  border-radius: 27px;
+}
+
+.mancala-deposito.meu {
+  box-shadow: inset 0 0 0 2px #f2b84b;
+}
+
+.mancala-sementes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  max-width: 70%;
+}
+
+.mancala-sementes span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.mancala-numero {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+  font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 700;
 }
