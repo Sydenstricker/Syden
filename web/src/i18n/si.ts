@@ -300,8 +300,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'ප්‍රජාවට ඇතුළු වන විට යමෙකු දකින පළමු දෙය මෙයයි, එක් වරක් පමණි. මෙය නොමැතිව, කෙළින්ම නාලිකා ලැයිස්තුවට යයි.',
   'É assim que os outros veem você na lista e nas conversas.': 'ලැයිස්තුවේ සහ සංවාදවල අනෙක් අයට ඔබ පෙනෙන්නේ මෙලෙසයි.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ගම්මානයට පහළින් ඔබේ මිතුරන්ට පෙනෙන්නේ මෙයයි. ඔවුන් ලියන දේ 💡 ඉදිරියෙන් ඇතිව පෞද්ගලික සංවාදයක් ලෙස ඔබට ලැබේ — Syden වහාම ස්තූති කරමින් පිළිතුරු දෙයි. අදහස යෙදුමට එකතු වූ විට, පණිවිඩයට 👍 දමන්න: ඔවුන්ගේ පැත්තේ කොන්ෆෙටි වැටෙන අතර පදක්කම පැතිකඩේ දිස් වේ.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'කාමරයට පහළින් ඔබේ මිතුරන්ට පෙනෙන්නේ මෙයයි. ඔවුන් ලියන දේ 💡 ඉදිරියෙන් ඇතිව පෞද්ගලික සංවාදයක් ලෙස ඔබට ලැබේ — Syden වහාම ස්තූති කරමින් පිළිතුරු දෙයි. අදහස යෙදුමට එකතු වූ විට, පණිවිඩයට 👍 දමන්න: ඔවුන්ගේ පැත්තේ කොන්ෆෙටි වැටෙන අතර පදක්කම පැතිකඩේ දිස් වේ.',
   'é o que você está enviando': 'යනු ඔබ යවන දෙයයි',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'ඔබට ඇතුළු විය හැකි එකම ක්‍රමය එයයි. විසන්ධි කිරීමට පෙර මුරපදයක් සකසන්න.',
   'E-mail': 'ඊමේල්',

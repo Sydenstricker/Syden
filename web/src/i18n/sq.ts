@@ -292,8 +292,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Është gjëja e parë që sheh dikush kur hyn në komunitet, vetëm një herë. Pa këtë, personi bie drejt në listën e kanaleve.',
   'É assim que os outros veem você na lista e nas conversas.': 'Kështu të shohin të tjerët në listë dhe në biseda.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Kjo është ajo që shohin miqtë e tu këtu poshtë fshatit. Ajo që shkruajnë të vjen si bisedë private, me 💡 përpara — dhe Syden përgjigjet menjëherë me falënderim. Kur ideja hyn në aplikacion, vëri mesazhit një 👍: tek ata bie konfeti dhe medalja shfaqet në profil.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Kjo është ajo që shohin miqtë e tu këtu poshtë dhomës. Ajo që shkruajnë të vjen si bisedë private, me 💡 përpara — dhe Syden përgjigjet menjëherë me falënderim. Kur ideja hyn në aplikacion, vëri mesazhit një 👍: tek ata bie konfeti dhe medalja shfaqet në profil.',
   'é o que você está enviando': 'është ajo që po dërgon',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Është mënyra jote e vetme për të hyrë. Vendos një fjalëkalim para se ta shkëputësh.',
   'E-mail': 'Email',

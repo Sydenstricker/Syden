@@ -297,8 +297,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'See on esimene asi, mida kogukonnaga liituja näeb, ainult üks kord. Ilma selleta satub ta otse kanalite loendisse.',
   'É assim que os outros veem você na lista e nas conversas.': 'Nii näevad teised sind loendis ja vestlustes.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Seda näevad sinu sõbrad siin küla all. Mida nad kirjutavad, jõuab sinuni privaatse vestlusena, 💡 ees — ja Syden vastab kohe tänuga. Kui idee jõuab rakendusse, pane sõnumile 👍: nende poolel sajab konfette ja profiilile ilmub medal.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Seda näevad sinu sõbrad siin toa all. Mida nad kirjutavad, jõuab sinuni privaatse vestlusena, 💡 ees — ja Syden vastab kohe tänuga. Kui idee jõuab rakendusse, pane sõnumile 👍: nende poolel sajab konfette ja profiilile ilmub medal.',
   'é o que você está enviando': 'on see, mida sa saadad',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'See on sinu ainus viis sisse logida. Enne lahtiühendamist määra parool.',
   'E-mail': 'E-post',

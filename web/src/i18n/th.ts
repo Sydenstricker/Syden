@@ -823,7 +823,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'ไม่พบเสียงในหน้านั้น ใน MyInstants ให้คัดลอกลิงก์ของปุ่มดาวน์โหลดแล้ววางที่นี่',
   'Esse endereço não é de um arquivo de áudio.': 'ที่อยู่นี้ไม่ใช่ไฟล์เสียง',
   'Caixa de ideias (como os outros veem)': 'กล่องไอเดีย (แบบที่คนอื่นเห็น)',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'นี่คือสิ่งที่เพื่อน ๆ ของคุณเห็นตรงนี้ ใต้หมู่บ้าน สิ่งที่พวกเขาเขียนจะส่งถึงคุณเป็นแชตส่วนตัว มี 💡 นำหน้า — และ Syden จะตอบขอบคุณทันที เมื่อไอเดียได้เข้าไปอยู่ในแอป ให้กดถูกใจที่ข้อความนั้น ฝั่งของพวกเขาจะมีกระดาษสีโปรยลงมา และเหรียญจะปรากฏในโปรไฟล์',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'นี่คือสิ่งที่เพื่อน ๆ ของคุณเห็นตรงนี้ ใต้ห้อง สิ่งที่พวกเขาเขียนจะส่งถึงคุณเป็นแชตส่วนตัว มี 💡 นำหน้า — และ Syden จะตอบขอบคุณทันที เมื่อไอเดียได้เข้าไปอยู่ในแอป ให้กดถูกใจที่ข้อความนั้น ฝั่งของพวกเขาจะมีกระดาษสีโปรยลงมา และเหรียญจะปรากฏในโปรไฟล์',
   'Entre numa comunidade para ver as salas.': 'เข้าร่วมชุมชนเพื่อดูห้องต่าง ๆ',
   'Escreva um pouco mais sobre a sua ideia.': 'เขียนเกี่ยวกับไอเดียของคุณเพิ่มอีกนิด',
   'Esta comunidade ainda não tem sala de voz.': 'ชุมชนนี้ยังไม่มีห้องเสียง',

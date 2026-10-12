@@ -297,8 +297,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Това е първото, което човек вижда, когато влезе в общността, само веднъж. Без него отива направо в списъка с канали.',
   'É assim que os outros veem você na lista e nas conversas.': 'Така те виждат другите в списъка и в разговорите.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Това виждат приятелите ти тук, под селото. Каквото напишат, стига до теб като личен разговор с 💡 отпред — а Syden веднага отговаря с благодарност. Когато идеята влезе в приложението, сложи 👍 на съобщението: при тях заваляват конфети и медалът се появява в профила.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Това виждат приятелите ти тук, под стаята. Каквото напишат, стига до теб като личен разговор с 💡 отпред — а Syden веднага отговаря с благодарност. Когато идеята влезе в приложението, сложи 👍 на съобщението: при тях заваляват конфети и медалът се появява в профила.',
   'é o que você está enviando': 'е това, което изпращаш',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Това е единственият ти начин да влизаш. Задай парола, преди да прекъснеш.',
   'E-mail': 'Имейл',

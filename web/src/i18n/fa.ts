@@ -798,7 +798,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'صدای آن صفحه پیدا نشد. در MyInstants پیوند دکمهٔ دانلود را کپی کنید و اینجا بچسبانید.',
   'Esse endereço não é de um arquivo de áudio.': 'این نشانی یک فایل صوتی نیست.',
   'Caixa de ideias (como os outros veem)': 'صندوق ایده‌ها (آن‌طور که دیگران می‌بینند)',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'این چیزی است که دوستانتان اینجا پایین دهکده می‌بینند. هرچه بنویسند به‌صورت گفتگوی خصوصی به شما می‌رسد، با 💡 در ابتدا — و Syden همان لحظه با تشکر پاسخ می‌دهد. وقتی ایده وارد برنامه شد، روی پیام لایک بزنید: در طرف آن‌ها کاغذ رنگی می‌ریزد و مدال در نمایه ظاهر می‌شود.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'این چیزی است که دوستانتان اینجا پایین اتاق می‌بینند. هرچه بنویسند به‌صورت گفتگوی خصوصی به شما می‌رسد، با 💡 در ابتدا — و Syden همان لحظه با تشکر پاسخ می‌دهد. وقتی ایده وارد برنامه شد، روی پیام لایک بزنید: در طرف آن‌ها کاغذ رنگی می‌ریزد و مدال در نمایه ظاهر می‌شود.',
   'Entre numa comunidade para ver as salas.': 'برای دیدن کانال‌ها به یک انجمن بپیوندید.',
   'Escreva um pouco mais sobre a sua ideia.': 'کمی بیشتر درباره ایده‌تان بنویسید.',
   'Esta comunidade ainda não tem sala de voz.': 'این انجمن هنوز کانال صوتی ندارد.',

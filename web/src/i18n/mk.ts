@@ -300,8 +300,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Тоа е првото што човек го гледа кога ќе влезе во заедницата, само еднаш. Без ова, оди директно во списокот на канали.',
   'É assim que os outros veem você na lista e nas conversas.': 'Вака те гледаат другите во списокот и во разговорите.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Ова го гледаат твоите пријатели тука под селото. Она што ќе го напишат ти стига како приватен разговор со 💡 напред — а Syden веднаш одговара со благодарност. Кога идејата ќе влезе во апликацијата, стави 👍 на пораката: кај нив паѓаат конфети и на профилот се појавува медал.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Ова го гледаат твоите пријатели тука под собата. Она што ќе го напишат ти стига како приватен разговор со 💡 напред — а Syden веднаш одговара со благодарност. Кога идејата ќе влезе во апликацијата, стави 👍 на пораката: кај нив паѓаат конфети и на профилот се појавува медал.',
   'é o que você está enviando': 'е она што го праќаш',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Тоа е твојот единствен начин за најава. Пред да исклучиш, постави лозинка.',
   'E-mail': 'Е-пошта',

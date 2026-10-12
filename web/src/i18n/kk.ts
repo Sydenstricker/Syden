@@ -296,8 +296,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Бұл қауымдастыққа кірген адамның бір рет қана көретін алғашқы нәрсесі. Онсыз адам бірден арналар тізіміне түседі.',
   'É assim que os outros veem você na lista e nas conversas.': 'Басқалар сізді тізімде және әңгімелерде осылай көреді.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Достарыңыз ауылдың астында дәл осыны көреді. Олардың жазғаны сізге алдында 💡 белгісі бар жеке әңгіме ретінде келеді — ал Syden бірден алғыс айтып жауап береді. Идея қолданбаға енгенде, хабарламаға 👍 қойыңыз: олардың жағында конфетти түседі, ал профилінде медаль пайда болады.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Достарыңыз бөлменің астында дәл осыны көреді. Олардың жазғаны сізге алдында 💡 белгісі бар жеке әңгіме ретінде келеді — ал Syden бірден алғыс айтып жауап береді. Идея қолданбаға енгенде, хабарламаға 👍 қойыңыз: олардың жағында конфетти түседі, ал профилінде медаль пайда болады.',
   'é o que você está enviando': 'сіз жіберіп жатқан нәрсе',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Бұл кірудің жалғыз жолыңыз. Ажыратпас бұрын құпиясөз орнатыңыз.',
   'E-mail': 'Электрондық пошта',

@@ -310,8 +310,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'މިއީ ކޮމިއުނިޓީއަށް ވަންނައިރު ފުރަތަމަ ފެންނަ އެއްޗެވެ، އެއްފަހަރު އެކަނި. މިއެއް ނެތިއްޖެނަމަ، ސީދާ ދާނީ ޗެނަލް ލިސްޓަށް.',
   'É assim que os outros veem você na lista e nas conversas.': 'ލިސްޓާއި ޗެޓްތަކުގައި އެހެން މީހުންނަށް ތިބާ ފެންނަނީ މިގޮތަށް.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ރަށުގެ ދަށުގައި ތިބާގެ ރަޙުމަތްތެރިންނަށް ފެންނަނީ މިއެވެ. އެމީހުން ލިޔާ އެއްޗެއް ތިބާއަށް ލިބޭނީ ޕްރައިވެޓް ޗެޓެއްގެ ގޮތުގައި، ކުރިމަތީގައި 💡 އާއެކު — އަދި Syden އެވަގުތު ޝުކުރުގެ ޖަވާބެއް ދޭނެ. އެ ޚިޔާލު އެޕަށް ވަދެއްޖެނަމަ، މެސެޖަށް 👍 ދީ: އެމީހުންގެ ފަރާތުން ކޮންފެޓީ ވެއްޓި، މެޑަލް ޕްރޮފައިލަށް އަރާނެ.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'ކޮޓަރީގެ ދަށުގައި ތިބާގެ ރަޙުމަތްތެރިންނަށް ފެންނަނީ މިއެވެ. އެމީހުން ލިޔާ އެއްޗެއް ތިބާއަށް ލިބޭނީ ޕްރައިވެޓް ޗެޓެއްގެ ގޮތުގައި، ކުރިމަތީގައި 💡 އާއެކު — އަދި Syden އެވަގުތު ޝުކުރުގެ ޖަވާބެއް ދޭނެ. އެ ޚިޔާލު އެޕަށް ވަދެއްޖެނަމަ، މެސެޖަށް 👍 ދީ: އެމީހުންގެ ފަރާތުން ކޮންފެޓީ ވެއްޓި، މެޑަލް ޕްރޮފައިލަށް އަރާނެ.',
   'é o que você está enviando': 'އަކީ ތިބާ ފޮނުވާ އެއްޗެވެ',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'މިއީ ތިބާ ވަނުމުގެ ހަމައެކަނި ގޮތް. ނިއްވުމުގެ ކުރިން ޕާސްވޯޑެއް ހަމަޖައްސާ.',

@@ -302,8 +302,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Tas ir pirmais, ko cilvēks redz, ienākot kopienā, tikai vienu reizi. Bez tā nonāk tieši kanālu sarakstā.',
   'É assim que os outros veem você na lista e nas conversas.': 'Tā tevi redz citi sarakstā un sarunās.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tas ir tas, ko tavi draugi redz šeit zem ciema. Ko viņi uzrakstīs, atnāks pie tevis kā privāta saruna ar 💡 priekšā — un Syden uzreiz atbildēs ar pateicību. Kad ideja nonāks lietotnē, atzīmē ziņu ar 👍: pie viņiem birs konfeti, un profilā parādīsies medaļa.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Tas ir tas, ko tavi draugi redz šeit zem istabas. Ko viņi uzrakstīs, atnāks pie tevis kā privāta saruna ar 💡 priekšā — un Syden uzreiz atbildēs ar pateicību. Kad ideja nonāks lietotnē, atzīmē ziņu ar 👍: pie viņiem birs konfeti, un profilā parādīsies medaļa.',
   'é o que você está enviando': 'ir tas, ko tu sūti',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Tas ir tavs vienīgais veids, kā pieteikties. Pirms atslēgšanas iestati paroli.',
   'E-mail': 'E-pasts',

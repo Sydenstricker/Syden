@@ -308,8 +308,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Bu hamjamiyatga kirgan kishi bir marta koʻradigan birinchi narsa. Busiz u toʻgʻridan-toʻgʻri kanallar roʻyxatiga tushadi.',
   'É assim que os outros veem você na lista e nas conversas.': 'Boshqalar sizni roʻyxatda va suhbatlarda shunday koʻradi.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Doʻstlaringiz qishloq ostida aynan shuni koʻradi. Ular yozgan narsa sizga oldida 💡 bilan shaxsiy suhbat sifatida keladi — Syden esa darhol minnatdorchilik bilan javob beradi. Gʻoya ilovaga qoʻshilganda, xabarga 👍 qoʻying: ular tomonida konfetti yogʻiladi va profilida medal paydo boʻladi.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Doʻstlaringiz xona ostida aynan shuni koʻradi. Ular yozgan narsa sizga oldida 💡 bilan shaxsiy suhbat sifatida keladi — Syden esa darhol minnatdorchilik bilan javob beradi. Gʻoya ilovaga qoʻshilganda, xabarga 👍 qoʻying: ular tomonida konfetti yogʻiladi va profilida medal paydo boʻladi.',
   'é o que você está enviando': 'siz yuborayotganingiz shu',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Bu kirishning yagona yoʻlingiz. Uzishdan oldin parol oʻrnating.',
   'E-mail': 'E-pochta',

@@ -318,8 +318,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'ეს პირველია, რასაც ადამიანი საზოგადოებაში შესვლისას ხედავს, მხოლოდ ერთხელ. მის გარეშე პირდაპირ არხების სიაში ხვდება.',
   'É assim que os outros veem você na lista e nas conversas.': 'ასე გხედავენ სხვები სიაში და საუბრებში.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ამას ხედავენ შენი მეგობრები აქ, სოფლის ქვემოთ. რასაც დაწერენ, პირად საუბრად მოგივა, თავში 💡-ით — და Syden მაშინვე მადლობით უპასუხებს. როცა იდეა აპში მოხვდება, მესიჯს 👍 დაუსვი: მათ მხარეს კონფეტი ჩამოცვივა და მედალი პროფილში გამოჩნდება.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'ამას ხედავენ შენი მეგობრები აქ, ოთახის ქვემოთ. რასაც დაწერენ, პირად საუბრად მოგივა, თავში 💡-ით — და Syden მაშინვე მადლობით უპასუხებს. როცა იდეა აპში მოხვდება, მესიჯს 👍 დაუსვი: მათ მხარეს კონფეტი ჩამოცვივა და მედალი პროფილში გამოჩნდება.',
   'é o que você está enviando': 'არის ის, რასაც აგზავნი',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'ეს შესვლის ერთადერთი გზაა. გამორთვამდე პაროლი დააყენე.',

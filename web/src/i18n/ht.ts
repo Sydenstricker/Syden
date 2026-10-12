@@ -310,8 +310,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Se premye bagay yon moun wè lè l antre nan kominote a, yon sèl fwa. San sa, moun nan tonbe dirèk sou lis chanèl yo.',
   'É assim que os outros veem você na lista e nas conversas.': 'Se konsa lòt moun wè w nan lis la ak nan konvèsasyon yo.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Se sa zanmi w yo wè isit la anba bouk la. Sa yo ekri rive jwenn ou tankou yon konvèsasyon prive, ak 💡 devan — epi Syden reponn yo touswit pou di mèsi. Lè lide a antre nan app la, mete yon 👍 sou mesaj la: bò kote yo, konfeti tonbe epi meday la parèt sou pwofil yo.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Se sa zanmi w yo wè isit la anba chanm nan. Sa yo ekri rive jwenn ou tankou yon konvèsasyon prive, ak 💡 devan — epi Syden reponn yo touswit pou di mèsi. Lè lide a antre nan app la, mete yon 👍 sou mesaj la: bò kote yo, konfeti tonbe epi meday la parèt sou pwofil yo.',
   'é o que você está enviando': 'se sa w ap voye a',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'Se sèl fason ou genyen pou antre. Mete yon mopas anvan ou dekonekte l.',

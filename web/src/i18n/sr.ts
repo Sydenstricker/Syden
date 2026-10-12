@@ -297,8 +297,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'То је прво што неко види при уласку у заједницу, само једном. Без тога, иде се право на листу канала.',
   'É assim que os outros veem você na lista e nas conversas.': 'Овако те други виде на листи и у разговорима.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Ово твоји пријатељи виде овде испод села. Оно што напишу стиже ти као приватни разговор, са 💡 испред — а Syden одмах одговара захвалом. Кад идеја уђе у апликацију, стави 👍 на поруку: код њих падају конфете, а медаља се појављује на профилу.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Ово твоји пријатељи виде овде испод собе. Оно што напишу стиже ти као приватни разговор, са 💡 испред — а Syden одмах одговара захвалом. Кад идеја уђе у апликацију, стави 👍 на поруку: код њих падају конфете, а медаља се појављује на профилу.',
   'é o que você está enviando': 'је оно што шаљеш',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'То ти је једини начин да се пријавиш. Постави лозинку пре него што прекинеш везу.',
   'E-mail': 'Имејл',

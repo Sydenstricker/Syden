@@ -407,8 +407,7 @@ ficou combinado:
 - **Para o quarto novo virar a home:** recheio (plantas, quadros, objetos sobre os móveis), os objetos com função
   (fone, quadro, gavetas, janela, abajur), a montagem virar componente do app, e a arrumação de cada pessoa guardada
   no servidor. Depois: animação na vista, variações de tapete (cor por código), mais móveis que giram.
-- **Pendente pequeno:** a caixa de ideias ainda diz "aqui embaixo da vila" (frase traduzida em 71 idiomas: trocar e
-  retraduzir).
+- **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 

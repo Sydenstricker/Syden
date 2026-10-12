@@ -302,8 +302,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Bu jemgyýete giren adamyň ilki görýän zady, diňe bir gezek. Bu bolmasa, adam göni kanallaryň sanawyna düşýär.',
   'É assim que os outros veem você na lista e nas conversas.': 'Beýlekiler seni sanawda we söhbetlerde şeýle görýärler.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Dostlaryň muny şu ýerde, obanyň aşagynda görýärler. Olaryň ýazanlary saňa öňünde 💡 bilen şahsy söhbet bolup gelýär — Syden bolsa derrew minnetdarlyk bilen jogap berýär. Pikir programma girende, habara 👍 goý: olaryň tarapynda konfetti ýagýar we profilde medal peýda bolýar.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Dostlaryň muny şu ýerde, otagyň aşagynda görýärler. Olaryň ýazanlary saňa öňünde 💡 bilen şahsy söhbet bolup gelýär — Syden bolsa derrew minnetdarlyk bilen jogap berýär. Pikir programma girende, habara 👍 goý: olaryň tarapynda konfetti ýagýar we profilde medal peýda bolýar.',
   'é o que você está enviando': 'seniň iberýän zadyň',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Bu seniň girmegiň ýeke-täk ýoly. Aýyrmazdan öň parol belle.',
   'E-mail': 'E-poçta',

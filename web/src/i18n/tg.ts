@@ -301,8 +301,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Ин аввалин чизест, ки касе ҳангоми ворид шудан ба анҷуман мебинад, танҳо як бор. Бе он, шахс мустақиман ба рӯйхати каналҳо меравад.',
   'É assim que os outros veem você na lista e nas conversas.': 'Дигарон шуморо дар рӯйхат ва сӯҳбатҳо ҳамин тавр мебинанд.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Дӯстони шумо ин ҷо, дар зери деҳа, инро мебинанд. Он чи онҳо менависанд, ба шумо ҳамчун сӯҳбати хусусӣ бо 💡 дар пеш мерасад — ва Syden фавран бо ташаккур ҷавоб медиҳад. Вақте ки ғоя ба барнома ворид шавад, ба паём 👍 гузоред: дар тарафи онҳо конфетти мерезад ва медал дар профил пайдо мешавад.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Дӯстони шумо ин ҷо, дар зери ҳуҷра, инро мебинанд. Он чи онҳо менависанд, ба шумо ҳамчун сӯҳбати хусусӣ бо 💡 дар пеш мерасад — ва Syden фавран бо ташаккур ҷавоб медиҳад. Вақте ки ғоя ба барнома ворид шавад, ба паём 👍 гузоред: дар тарафи онҳо конфетти мерезад ва медал дар профил пайдо мешавад.',
   'é o que você está enviando': 'чизест, ки шумо мефиристед',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Ин ягона роҳи вуруди шумост. Пеш аз ҷудо кардан рамз муқаррар кунед.',
   'E-mail': 'Почтаи электронӣ',

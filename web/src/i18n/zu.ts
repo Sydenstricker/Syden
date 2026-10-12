@@ -301,8 +301,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Yinto yokuqala umuntu ayibonayo lapho engena emphakathini, kanye kuphela. Ngaphandle kwalokhu, ungena ngqo ohlwini leziteshi.',
   'É assim que os outros veem você na lista e nas conversas.': 'Yileyo ndlela abanye abakubona ngayo ohlwini nasezingxoxweni.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Yilokhu abangane bakho abakubona lapha ngaphansi kwesigodi. Abakubhalayo kufika kuwe njengengxoxo eyimfihlo, ne-💡 phambili — futhi i-Syden iphendula ibonga ngaso leso sikhathi. Uma umbono ungena kuhlelo, faka u-👍 emlayezweni: ngakubo kuwa ama-confetti futhi indondo ivela kuphrofayela.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Yilokhu abangane bakho abakubona lapha ngaphansi kwegumbi. Abakubhalayo kufika kuwe njengengxoxo eyimfihlo, ne-💡 phambili — futhi i-Syden iphendula ibonga ngaso leso sikhathi. Uma umbono ungena kuhlelo, faka u-👍 emlayezweni: ngakubo kuwa ama-confetti futhi indondo ivela kuphrofayela.',
   'é o que você está enviando': 'yilokho okuthumelayo',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Yiyo kuphela indlela yakho yokungena. Setha iphasiwedi ngaphambi kokunqamula.',
   'E-mail': 'I-imeyili',

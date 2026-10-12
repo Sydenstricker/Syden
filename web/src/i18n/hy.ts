@@ -319,8 +319,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Սա առաջին բանն է, որ մարդը տեսնում է համայնք մտնելիս, միայն մեկ անգամ։ Առանց դրա՝ նա հայտնվում է ուղիղ ալիքների ցանկում։',
   'É assim que os outros veem você na lista e nas conversas.': 'Այսպես են քեզ տեսնում մյուսները ցանկում և զրույցներում։',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Սա այն է, ինչ քո ընկերները տեսնում են այստեղ՝ գյուղի ներքևում։ Այն, ինչ նրանք գրեն, քեզ կհասնի որպես անձնական զրույց՝ սկզբում 💡-ով — և Syden-ն անմիջապես կպատասխանի շնորհակալությամբ։ Երբ գաղափարը մտնի հավելված, հաղորդագրությանը 👍 դիր․ նրանց մոտ կոնֆետի կթափվի, և մեդալը կհայտնվի պրոֆիլում։',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Սա այն է, ինչ քո ընկերները տեսնում են այստեղ՝ սենյակի ներքևում։ Այն, ինչ նրանք գրեն, քեզ կհասնի որպես անձնական զրույց՝ սկզբում 💡-ով — և Syden-ն անմիջապես կպատասխանի շնորհակալությամբ։ Երբ գաղափարը մտնի հավելված, հաղորդագրությանը 👍 դիր․ նրանց մոտ կոնֆետի կթափվի, և մեդալը կհայտնվի պրոֆիլում։',
   'é o que você está enviando': 'այն է, ինչ դու ուղարկում ես',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'Սա մուտքի քո միակ ճանապարհն է։ Սահմանիր գաղտնաբառ՝ անջատելուց առաջ։',

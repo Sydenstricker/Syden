@@ -791,7 +791,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'そのページの音声が見つかりませんでした。MyInstantsでダウンロードボタンのリンクをコピーして、ここに貼り付けてください。',
   'Esse endereço não é de um arquivo de áudio.': 'このアドレスは音声ファイルではありません。',
   'Caixa de ideias (como os outros veem)': 'アイデア箱（ほかの人からの見え方）',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'これは村の下で友達に見えている画面です。友達が書いたことは、先頭に💡が付いた個人チャットとして届き、Sydenがすぐにお礼の返事をします。アイデアがアプリに取り入れられたら、そのメッセージにいいねを付けてください。相手の画面に紙吹雪が舞い、プロフィールにメダルが表示されます。',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'これは部屋の下で友達に見えている画面です。友達が書いたことは、先頭に💡が付いた個人チャットとして届き、Sydenがすぐにお礼の返事をします。アイデアがアプリに取り入れられたら、そのメッセージにいいねを付けてください。相手の画面に紙吹雪が舞い、プロフィールにメダルが表示されます。',
   'Entre numa comunidade para ver as salas.': 'チャンネルを見るには、コミュニティに参加してください。',
   'Escreva um pouco mais sobre a sua ideia.': 'アイデアについて、もう少し詳しく書いてください。',
   'Esta comunidade ainda não tem sala de voz.': 'このコミュニティにはまだボイスチャンネルがありません。',

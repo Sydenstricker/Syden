@@ -301,8 +301,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Ez az első, amit valaki lát, amikor belép a közösségbe, csak egyszer. Enélkül egyenesen a csatornalistára kerül.',
   'É assim que os outros veem você na lista e nas conversas.': 'Így látnak mások a listában és a beszélgetésekben.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Ezt látják a barátaid itt a falu alatt. Amit írnak, privát beszélgetésként érkezik hozzád, 💡 jellel az elején — és a Syden azonnal megköszöni. Amikor az ötlet bekerül az alkalmazásba, adj az üzenetre egy 👍-t: náluk konfetti hull, és a profiljukon megjelenik az érem.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Ezt látják a barátaid itt a szoba alatt. Amit írnak, privát beszélgetésként érkezik hozzád, 💡 jellel az elején — és a Syden azonnal megköszöni. Amikor az ötlet bekerül az alkalmazásba, adj az üzenetre egy 👍-t: náluk konfetti hull, és a profiljukon megjelenik az érem.',
   'é o que você está enviando': 'ezt küldöd',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Ez az egyetlen módod a belépésre. Állíts be jelszót, mielőtt leválasztod.',
   'E-mail': 'E-mail',

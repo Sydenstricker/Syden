@@ -300,8 +300,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Izy no zavatra voalohany hitan’ny olona rehefa miditra ao amin’ny fiarahamonina, indray mandeha ihany. Raha tsy misy izy, dia tonga mivantana amin’ny lisitry ny fantsona ny olona.',
   'É assim que os outros veem você na lista e nas conversas.': 'Toy izao no ahitan’ny hafa anao ao amin’ny lisitra sy ny resaka.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Izao no hitan’ny namanao eto ambanin’ny vohitra. Tonga aminao ho resaka manokana izay soratany, misy 💡 eo aloha — ary misaotra avy hatrany ny Syden. Rehefa tafiditra ao amin’ny rindrambaiko ny hevitra, apetaho 👍 amin’ny hafatra: milatsaka ny konfety eo aminy ary miseho eo amin’ny mombamombany ny medaly.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Izao no hitan’ny namanao eto ambanin’ny efitrano. Tonga aminao ho resaka manokana izay soratany, misy 💡 eo aloha — ary misaotra avy hatrany ny Syden. Rehefa tafiditra ao amin’ny rindrambaiko ny hevitra, apetaho 👍 amin’ny hafatra: milatsaka ny konfety eo aminy ary miseho eo amin’ny mombamombany ny medaly.',
   'é o que você está enviando': 'no alefanao',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Io ihany no fomba hidiranao. Apetraho ny teny miafina alohan’ny hanapahana.',
   'E-mail': 'Mailaka',

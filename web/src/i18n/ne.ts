@@ -302,8 +302,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'समुदायमा पस्दा मान्छेले एक पटक मात्र देख्ने पहिलो कुरा यही हो। यो नभए सिधै च्यानल सूचीमा पुगिन्छ।',
   'É assim que os outros veem você na lista e nas conversas.': 'सूची र कुराकानीमा अरूले तपाईंलाई यसरी देख्छन्।',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'तपाईंका साथीहरूले गाउँमुनि यही देख्छन्। उनीहरूले लेखेको कुरा अगाडि 💡 सहित निजी कुराकानीको रूपमा तपाईंकहाँ आउँछ — र Syden ले तुरुन्तै धन्यवाद दिँदै जवाफ दिन्छ। विचार एपमा थपिएपछि सन्देशमा 👍 लगाउनुहोस्: उनीहरूतिर कन्फेटी झर्छ र प्रोफाइलमा पदक देखिन्छ।',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'तपाईंका साथीहरूले कोठामुनि यही देख्छन्। उनीहरूले लेखेको कुरा अगाडि 💡 सहित निजी कुराकानीको रूपमा तपाईंकहाँ आउँछ — र Syden ले तुरुन्तै धन्यवाद दिँदै जवाफ दिन्छ। विचार एपमा थपिएपछि सन्देशमा 👍 लगाउनुहोस्: उनीहरूतिर कन्फेटी झर्छ र प्रोफाइलमा पदक देखिन्छ।',
   'é o que você está enviando': 'तपाईंले पठाइरहनुभएको यही हो',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'भित्र पस्ने तपाईंको एउटै उपाय यही हो। हटाउनुअघि पासवर्ड राख्नुहोस्।',
   'E-mail': 'इमेल',

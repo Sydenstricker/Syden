@@ -301,8 +301,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Þetta er það fyrsta sem fólk sér þegar það kemur inn í samfélagið, aðeins einu sinni. Án þess lendir það beint á rásalistanum.',
   'É assim que os outros veem você na lista e nas conversas.': 'Svona sér fólk þig á listanum og í samtölum.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Þetta sjá vinir þínir hér fyrir neðan þorpið. Það sem þau skrifa berst þér sem einkasamtal með 💡 fremst — og Syden svarar strax með þökkum. Þegar hugmyndin kemst inn í forritið, settu 👍 á skilaboðin: hjá þeim rignir konfetti og medalían birtist á prófílnum.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Þetta sjá vinir þínir hér fyrir neðan herbergið. Það sem þau skrifa berst þér sem einkasamtal með 💡 fremst — og Syden svarar strax með þökkum. Þegar hugmyndin kemst inn í forritið, settu 👍 á skilaboðin: hjá þeim rignir konfetti og medalían birtist á prófílnum.',
   'é o que você está enviando': 'er það sem þú sendir',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Þetta er eina leiðin þín til að skrá þig inn. Settu lykilorð áður en þú aftengir.',
   'E-mail': 'Netfang',

@@ -302,8 +302,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Tai pirmas dalykas, kurį žmogus pamato įėjęs į bendruomenę, tik vieną kartą. Be to jis patenka tiesiai į kanalų sąrašą.',
   'É assim que os outros veem você na lista e nas conversas.': 'Taip tave mato kiti sąraše ir pokalbiuose.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tai mato tavo draugai čia po kaimeliu. Ką jie parašys, tau ateis kaip privatus pokalbis su 💡 priekyje — o Syden iš karto atsakys padėka. Kai idėja pateks į programėlę, pažymėk žinutę 👍: pas juos pasipils konfeti, o profilyje atsiras medalis.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Tai mato tavo draugai čia po kambariu. Ką jie parašys, tau ateis kaip privatus pokalbis su 💡 priekyje — o Syden iš karto atsakys padėka. Kai idėja pateks į programėlę, pažymėk žinutę 👍: pas juos pasipils konfeti, o profilyje atsiras medalis.',
   'é o que você está enviando': 'yra tai, ką siunti',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Tai tavo vienintelis būdas prisijungti. Prieš atjungiant nustatyk slaptažodį.',
   'E-mail': 'El. paštas',

@@ -301,8 +301,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'ນີ້ແມ່ນສິ່ງທຳອິດທີ່ຄົນເຫັນເມື່ອເຂົ້າຊຸມຊົນ ພຽງເທື່ອດຽວ ຖ້າບໍ່ມີ ເຂົາຈະໄປຮອດລາຍການຊ່ອງໂດຍກົງ',
   'É assim que os outros veem você na lista e nas conversas.': 'ນີ້ແມ່ນວິທີທີ່ຄົນອື່ນເຫັນເຈົ້າໃນລາຍການແລະໃນການສົນທະນາ',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ນີ້ແມ່ນສິ່ງທີ່ໝູ່ຂອງເຈົ້າເຫັນຢູ່ລຸ່ມໝູ່ບ້ານ ສິ່ງທີ່ເຂົາຂຽນຈະມາຫາເຈົ້າເປັນການສົນທະນາສ່ວນຕົວ ມີ 💡 ຢູ່ທາງໜ້າ — ແລະ Syden ຈະຕອບຂອບໃຈທັນທີ ເມື່ອແນວຄິດເຂົ້າໄປໃນແອັບ ໃຫ້ກົດ 👍 ທີ່ຂໍ້ຄວາມ: ຝ່າຍເຂົາຈະມີເຈ້ຍສີຕົກລົງມາ ແລະຫຼຽນຈະສະແດງໃນໂປຣໄຟລ໌',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'ນີ້ແມ່ນສິ່ງທີ່ໝູ່ຂອງເຈົ້າເຫັນຢູ່ລຸ່ມຫ້ອງ ສິ່ງທີ່ເຂົາຂຽນຈະມາຫາເຈົ້າເປັນການສົນທະນາສ່ວນຕົວ ມີ 💡 ຢູ່ທາງໜ້າ — ແລະ Syden ຈະຕອບຂອບໃຈທັນທີ ເມື່ອແນວຄິດເຂົ້າໄປໃນແອັບ ໃຫ້ກົດ 👍 ທີ່ຂໍ້ຄວາມ: ຝ່າຍເຂົາຈະມີເຈ້ຍສີຕົກລົງມາ ແລະຫຼຽນຈະສະແດງໃນໂປຣໄຟລ໌',
   'é o que você está enviando': 'ແມ່ນສິ່ງທີ່ເຈົ້າກຳລັງສົ່ງ',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'ນີ້ແມ່ນທາງດຽວທີ່ເຈົ້າເຂົ້າໄດ້ ຕັ້ງລະຫັດຜ່ານກ່ອນຕັດການເຊື່ອມຕໍ່',
   'E-mail': 'ອີເມວ',

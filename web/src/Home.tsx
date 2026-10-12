@@ -53,7 +53,7 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
         </h2>
         <p className="ideias-lead">
           {t(
-            'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.',
+            'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.',
           )}
         </p>
         <form onSubmit={(e) => e.preventDefault()} aria-hidden="true">

@@ -300,8 +300,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Se on ensimmäinen asia, jonka uusi tulija näkee yhteisöön liittyessään, vain kerran. Ilman sitä hän päätyy suoraan kanavaluetteloon.',
   'É assim que os outros veem você na lista e nas conversas.': 'Näin muut näkevät sinut luettelossa ja keskusteluissa.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Tämän kaverisi näkevät täällä kylän alapuolella. Mitä he kirjoittavat, tulee sinulle yksityisenä keskusteluna, 💡 edessä — ja Syden vastaa heti kiittäen. Kun idea päätyy sovellukseen, anna viestille peukku: heidän puolellaan sataa konfetteja ja mitali ilmestyy profiiliin.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Tämän kaverisi näkevät täällä huoneen alapuolella. Mitä he kirjoittavat, tulee sinulle yksityisenä keskusteluna, 💡 edessä — ja Syden vastaa heti kiittäen. Kun idea päätyy sovellukseen, anna viestille peukku: heidän puolellaan sataa konfetteja ja mitali ilmestyy profiiliin.',
   'é o que você está enviando': 'on se, mitä lähetät',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Se on ainoa tapasi kirjautua. Aseta salasana ennen kuin katkaiset yhteyden.',
   'E-mail': 'Sähköposti',

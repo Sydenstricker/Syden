@@ -816,7 +816,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'በዚያ ገጽ ላይ ድምፅ አልተገኘም። በMyInstants ላይ የማውረጃ ቁልፉን ሊንክ ቀድተው እዚህ ይለጥፉ።',
   'Esse endereço não é de um arquivo de áudio.': 'ይህ አድራሻ የድምፅ ፋይል አይደለም።',
   'Caixa de ideias (como os outros veem)': 'የሐሳብ ሣጥን (ሌሎች እንደሚያዩት)',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'ጓደኞችዎ እዚህ ከመንደሩ በታች የሚያዩት ይህ ነው። የሚጽፉት ከፊቱ 💡 ይዞ እንደ የግል ውይይት ይደርስዎታል — Syden ደግሞ ወዲያውኑ በምስጋና ይመልሳል። ሐሳቡ ወደ መተግበሪያው ሲገባ፣ በመልእክቱ ላይ አውራ ጣት ያድርጉ፦ በእነሱ በኩል ኮንፈቲ ይወርዳል፣ ሜዳሊያውም በመገለጫው ላይ ይታያል።',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'ጓደኞችዎ እዚህ ከክፍሉ በታች የሚያዩት ይህ ነው። የሚጽፉት ከፊቱ 💡 ይዞ እንደ የግል ውይይት ይደርስዎታል — Syden ደግሞ ወዲያውኑ በምስጋና ይመልሳል። ሐሳቡ ወደ መተግበሪያው ሲገባ፣ በመልእክቱ ላይ አውራ ጣት ያድርጉ፦ በእነሱ በኩል ኮንፈቲ ይወርዳል፣ ሜዳሊያውም በመገለጫው ላይ ይታያል።',
   'Entre numa comunidade para ver as salas.': 'ክፍሎቹን ለማየት ማህበረሰብ ይቀላቀሉ።',
   'Escreva um pouco mais sobre a sua ideia.': 'ስለ ሐሳብዎ ትንሽ ተጨማሪ ይጻፉ።',
   'Esta comunidade ainda não tem sala de voz.': 'ይህ ማህበረሰብ እስካሁን የድምፅ ክፍል የለውም።',

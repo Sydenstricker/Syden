@@ -636,7 +636,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'O sayfada ses bulunamadı. MyInstants’ta indirme düğmesinin bağlantısını kopyalayıp buraya yapıştır.',
   'Esse endereço não é de um arquivo de áudio.': 'Bu adres bir ses dosyası değil.',
   'Caixa de ideias (como os outros veem)': 'Fikir kutusu (başkalarının gördüğü hâli)',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Arkadaşlarının köyün aşağısında gördüğü bu. Yazdıkları sana özel sohbet olarak gelir, başında 💡 ile — ve Syden hemen teşekkür ederek yanıt verir. Fikir uygulamaya girdiğinde mesaja başparmak bırak: onların tarafında konfeti yağar ve madalya profilde görünür.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'Arkadaşlarının odanın aşağısında gördüğü bu. Yazdıkları sana özel sohbet olarak gelir, başında 💡 ile — ve Syden hemen teşekkür ederek yanıt verir. Fikir uygulamaya girdiğinde mesaja başparmak bırak: onların tarafında konfeti yağar ve madalya profilde görünür.',
   'Entre numa comunidade para ver as salas.': 'Odalarını görmek için bir topluluğa katıl.',
   'Escreva um pouco mais sobre a sua ideia.': 'Fikrin hakkında biraz daha yaz.',
   'Esta comunidade ainda não tem sala de voz.': 'Bu topluluğun henüz ses odası yok.',

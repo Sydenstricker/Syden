@@ -639,7 +639,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'ওই পাতায় শব্দ পাওয়া যায়নি। MyInstants-এ ডাউনলোড বোতামের লিংক কপি করে এখানে পেস্ট করো।',
   'Esse endereço não é de um arquivo de áudio.': 'এই ঠিকানাটা কোনো অডিও ফাইলের নয়।',
   'Caixa de ideias (como os outros veem)': 'ভাবনার বাক্স (অন্যরা যেভাবে দেখে)',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'এটাই তোমার বন্ধুরা এখানে গ্রামের নিচে দেখে। ওরা যা লিখবে, তা তোমার কাছে ব্যক্তিগত কথোপকথন হিসেবে আসবে, সামনে 💡 নিয়ে — আর Syden সঙ্গে সঙ্গে ধন্যবাদ জানিয়ে উত্তর দেয়। ভাবনাটা অ্যাপে ঢুকলে বার্তায় থাম্বস-আপ দাও: ওদের দিকে কনফেটি পড়ে আর প্রোফাইলে পদক দেখা যায়।',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'এটাই তোমার বন্ধুরা এখানে ঘরের নিচে দেখে। ওরা যা লিখবে, তা তোমার কাছে ব্যক্তিগত কথোপকথন হিসেবে আসবে, সামনে 💡 নিয়ে — আর Syden সঙ্গে সঙ্গে ধন্যবাদ জানিয়ে উত্তর দেয়। ভাবনাটা অ্যাপে ঢুকলে বার্তায় থাম্বস-আপ দাও: ওদের দিকে কনফেটি পড়ে আর প্রোফাইলে পদক দেখা যায়।',
   'Entre numa comunidade para ver as salas.': 'রুমগুলো দেখতে কোনো কমিউনিটিতে যোগ দাও।',
   'Escreva um pouco mais sobre a sua ideia.': 'তোমার ভাবনা নিয়ে আরেকটু লেখো।',
   'Esta comunidade ainda não tem sala de voz.': 'এই কমিউনিটিতে এখনো কোনো ভয়েস রুম নেই।',

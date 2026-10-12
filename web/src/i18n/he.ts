@@ -896,7 +896,7 @@ export default {
   'Não achei o áudio dessa página. No MyInstants, copie o link do botão de baixar e cole aqui.': 'לא נמצא שמע בעמוד הזה. ב-MyInstants אפשר להעתיק את הקישור של כפתור ההורדה ולהדביק אותו כאן.',
   'Esse endereço não é de um arquivo de áudio.': 'הכתובת הזו אינה קובץ שמע.',
   'Caixa de ideias (como os outros veem)': 'תיבת רעיונות (כפי שאחרים רואים אותה)',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'זה מה שהחברים שלך רואים כאן מתחת לכפר. מה שהם כותבים מגיע כשיחה פרטית, עם 💡 בהתחלה — ו-Syden עונה מיד בתודה. כשהרעיון נכנס לאפליקציה, אפשר לסמן אגודל למעלה על ההודעה: אצלם נופלים קונפטי והמדליה מופיעה בפרופיל.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.': 'זה מה שהחברים שלך רואים כאן מתחת לחדר. מה שהם כותבים מגיע כשיחה פרטית, עם 💡 בהתחלה — ו-Syden עונה מיד בתודה. כשהרעיון נכנס לאפליקציה, אפשר לסמן אגודל למעלה על ההודעה: אצלם נופלים קונפטי והמדליה מופיעה בפרופיל.',
   'Entre numa comunidade para ver as salas.': 'כדי לראות את החדרים צריך להצטרף לקהילה.',
   'Escreva um pouco mais sobre a sua ideia.': 'כדאי לכתוב עוד קצת על הרעיון.',
   'Esta comunidade ainda não tem sala de voz.': 'לקהילה הזו עדיין אין חדר קולי.',

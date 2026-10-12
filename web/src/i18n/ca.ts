@@ -296,8 +296,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'És el primer que es veu en entrar a la comunitat, una sola vegada. Sense això, s’entra directament a la llista de canals.',
   'É assim que os outros veem você na lista e nas conversas.': 'Així et veu la resta a la llista i a les converses.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Això és el que veuen els teus amics aquí sota el poble. El que escriguin t’arriba com una conversa privada, amb 💡 al davant — i el Syden ja respon donant les gràcies a l’instant. Quan la idea entri a l’aplicació, posa un 👍 al missatge: al seu costat cau confeti i la medalla apareix al perfil.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Això és el que veuen els teus amics aquí sota el dormitori. El que escriguin t’arriba com una conversa privada, amb 💡 al davant — i el Syden ja respon donant les gràcies a l’instant. Quan la idea entri a l’aplicació, posa un 👍 al missatge: al seu costat cau confeti i la medalla apareix al perfil.',
   'é o que você está enviando': 'és el que estàs enviant',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'És l’única manera que tens d’entrar. Defineix una contrasenya abans de desconnectar-lo.',
   'E-mail': 'Correu electrònic',

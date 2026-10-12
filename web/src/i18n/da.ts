@@ -294,8 +294,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Det er det første, man ser, når man kommer ind i fællesskabet, kun én gang. Uden det lander man direkte i kanallisten.',
   'É assim que os outros veem você na lista e nas conversas.': 'Sådan ser andre dig på listen og i samtalerne.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Det er det, dine venner ser her under landsbyen. Det, de skriver, kommer til dig som en privat samtale med 💡 foran — og Syden svarer straks med et tak. Når idéen kommer med i appen, så giv beskeden en tommelfinger op: hos dem regner det med konfetti, og medaljen dukker op på profilen.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Det er det, dine venner ser her under værelset. Det, de skriver, kommer til dig som en privat samtale med 💡 foran — og Syden svarer straks med et tak. Når idéen kommer med i appen, så giv beskeden en tommelfinger op: hos dem regner det med konfetti, og medaljen dukker op på profilen.',
   'é o que você está enviando': 'er det, du sender',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Det er din eneste måde at logge ind på. Vælg en adgangskode, før du afbryder.',
   'E-mail': 'E-mail',

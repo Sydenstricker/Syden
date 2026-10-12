@@ -313,8 +313,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'མི་སྡེ་ནང་འཛུལ་བའི་སྐབས་ མཐོང་མི་དང་པ་ཨིན། ཐེངས་གཅིག་རྐྱངམ་ཅིག ཨིན་མེན་པ་ཅིན་ ཐད་ཀར་ བརྒྱུད་ལམ་ཐོ་ཡིག་ནང་འགྱོ་འོང་།',
   'É assim que os outros veem você na lista e nas conversas.': 'གཞན་མི་ཚུ་གིས་ ཐོ་ཡིག་དང་གཏམ་གླེང་ནང་ ཁྱོད་འདི་བཟུམ་སྦེ་མཐོངམ་ཨིན།',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'ཁྱོད་ཀྱི་ཆ་རོགས་ཚུ་གིས་ གྲོང་གསེབ་ཀྱི་འོག་ལུ་ འདི་མཐོངམ་ཨིན། ཁོང་གིས་འབྲི་མི་འདི་ 💡 དང་གཅིག་ཁར་ སྒེར་གྱི་གཏམ་གླེང་སྦེ་ཁྱོད་ལུ་ལྷོད་འོང་། Syden གིས་ ཕྱིར་སྦེ་བཀྲིན་ཆེ་ཞུ་འོང་། འཆར་སྣང་འདི་ ཨེཔ་ནང་ཚུད་པ་ཅིན་ འཕྲིན་ཡིག་ལུ་ 👍 བཀལ། ཁོང་གི་ཕྱོགས་ལས་ ཀོན་ཕེ་ཊི་བབ་འོང་ ངོ་སྤྲོད་ནང་ གསེར་ཐམ་སྟོན་འོང་།',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'ཁྱོད་ཀྱི་ཆ་རོགས་ཚུ་གིས་ ཁང་མིག་གི་འོག་ལུ་ འདི་མཐོངམ་ཨིན། ཁོང་གིས་འབྲི་མི་འདི་ 💡 དང་གཅིག་ཁར་ སྒེར་གྱི་གཏམ་གླེང་སྦེ་ཁྱོད་ལུ་ལྷོད་འོང་། Syden གིས་ ཕྱིར་སྦེ་བཀྲིན་ཆེ་ཞུ་འོང་། འཆར་སྣང་འདི་ ཨེཔ་ནང་ཚུད་པ་ཅིན་ འཕྲིན་ཡིག་ལུ་ 👍 བཀལ། ཁོང་གི་ཕྱོགས་ལས་ ཀོན་ཕེ་ཊི་བབ་འོང་ ངོ་སྤྲོད་ནང་ གསེར་ཐམ་སྟོན་འོང་།',
   'é o que você está enviando': 'ཁྱོད་ཀྱིས་གཏང་དོ་ཡོད་མི་འདི་ཨིན།',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'འདི་ ཁྱོད་ནང་བསྐྱོད་འབད་ནིའི་ཐབས་ལམ་གཅིག་རྐྱངམ་ཨིན། མཐུད་ལམ་མ་བཏོག་པའི་ཧེ་མ་ ཆོག་ཡིག་གཞི་སྒྲིག་འབད།',
   'E-mail': 'གློག་འཕྲིན།',

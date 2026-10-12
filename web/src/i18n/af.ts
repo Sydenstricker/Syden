@@ -294,8 +294,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Dit is die eerste ding wat iemand sien wanneer hulle by die gemeenskap aansluit, net een keer. Daarsonder beland hulle direk in die kanaallys.',
   'É assim que os outros veem você na lista e nas conversas.': 'Só sien ander jou in die lys en in gesprekke.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Dit is wat jou vriende hier onder die dorp sien. Wat hulle skryf, kom by jou aan as ’n privaat gesprek met 💡 voor — en Syden antwoord dadelik met ’n dankie. Wanneer die idee in die toep kom, gee die boodskap ’n duim op: aan hulle kant val daar konfetti en die medalje verskyn op die profiel.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Dit is wat jou vriende hier onder die kamer sien. Wat hulle skryf, kom by jou aan as ’n privaat gesprek met 💡 voor — en Syden antwoord dadelik met ’n dankie. Wanneer die idee in die toep kom, gee die boodskap ’n duim op: aan hulle kant val daar konfetti en die medalje verskyn op die profiel.',
   'é o que você está enviando': 'is wat jy stuur',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Dit is jou enigste manier om in te kom. Stel ’n wagwoord voor jy ontkoppel.',
   'E-mail': 'E-pos',

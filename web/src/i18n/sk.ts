@@ -300,8 +300,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Je to prvé, čo človek uvidí po vstupe do komunity, iba raz. Bez toho skončí rovno v zozname kanálov.',
   'É assim que os outros veem você na lista e nas conversas.': 'Takto ťa vidia ostatní v zozname a v konverzáciách.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Toto vidia tvoji priatelia tu pod dedinkou. Čo napíšu, príde ti ako súkromná konverzácia s 💡 na začiatku — a Syden hneď odpovie poďakovaním. Keď sa nápad dostane do aplikácie, daj správe 👍: u nich začnú padať konfety a na profile sa objaví medaila.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Toto vidia tvoji priatelia tu pod izbou. Čo napíšu, príde ti ako súkromná konverzácia s 💡 na začiatku — a Syden hneď odpovie poďakovaním. Keď sa nápad dostane do aplikácie, daj správe 👍: u nich začnú padať konfety a na profile sa objaví medaila.',
   'é o que você está enviando': 'je to, čo posielaš',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.': 'Je to tvoj jediný spôsob prihlásenia. Kým to odpojíš, nastav si heslo.',
   'E-mail': 'E-mail',

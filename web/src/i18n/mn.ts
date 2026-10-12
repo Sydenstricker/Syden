@@ -314,8 +314,8 @@ export default {
   'É a primeira coisa que alguém vê ao entrar na comunidade, uma vez só. Sem isto, a pessoa cai direto na lista de canais.':
     'Энэ бол хүн нийгэмлэгт ороход хамгийн түрүүнд, зөвхөн нэг удаа хардаг зүйл. Үүнгүйгээр хүн шууд сувгийн жагсаалт руу орно.',
   'É assim que os outros veem você na lista e nas conversas.': 'Бусад чамайг жагсаалт болон яриан дээр ингэж хардаг.',
-  'É isto que os seus amigos veem aqui embaixo da vila. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
-    'Найзууд чинь энд, тосгоны доор үүнийг хардаг. Тэдний бичсэн зүйл чамд урдаа 💡-тэй хувийн яриа болж ирнэ — Syden даруй талархал илэрхийлж хариулна. Санаа апп-д орвол зурвас дээр 👍 дар: тэдний талд конфетти бууж, медаль профайлд нь гарч ирнэ.',
+  'É isto que os seus amigos veem aqui embaixo do quarto. O que eles escreverem chega para você como conversa privada, com 💡 na frente — e o Syden já responde agradecendo na hora. Quando a ideia entrar no app, use o joinha na mensagem: do lado deles cai confete e a medalha aparece no perfil.':
+    'Найзууд чинь энд, өрөөний доор үүнийг хардаг. Тэдний бичсэн зүйл чамд урдаа 💡-тэй хувийн яриа болж ирнэ — Syden даруй талархал илэрхийлж хариулна. Санаа апп-д орвол зурвас дээр 👍 дар: тэдний талд конфетти бууж, медаль профайлд нь гарч ирнэ.',
   'é o que você está enviando': 'чиний илгээж буй зүйл',
   'É o seu único jeito de entrar. Defina uma senha antes de desligar.':
     'Энэ бол нэвтрэх цорын ганц арга чинь. Унтраахаас өмнө нууц үг тохируул.',
