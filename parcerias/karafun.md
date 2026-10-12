@@ -23,9 +23,9 @@ E há um argumento técnico que é nosso e é raro: no Syden **o áudio não pas
 > Hello,
 >
 > I'm the developer of **Syden** (<https://syden.chat>), a voice, video and text chat
-> application for small groups of friends. It's free, it runs in the browser and as a
-> Windows desktop app, and it has just been submitted to the Microsoft Store. Our users
-> are in Brazil.
+> application for small groups of friends. It's free, with no ads and no subscription,
+> and it runs in the browser and as a Windows desktop app, available on the Microsoft
+> Store (<LINK DA STORE>). Our users are in Brazil.
 >
 > Syden has a built-in karaoke feature, and I'd like to ask about your OEM/API programme.
 >
@@ -43,7 +43,7 @@ E há um argumento técnico que é nosso e é raro: no Syden **o áudio não pas
 > don't have to commit to volume we can't yet promise.
 >
 > **Being straightforward about our size.** Syden is small today: a few dozen active
-> users, growing by word of mouth. I'm not going to present it as bigger than it is. What
+> users (<NÚMERO REAL>), growing by word of mouth. I'm not going to present it as bigger than it is. What
 > I can offer is a well-built product, a licensing-friendly playback architecture, and a
 > market (Brazil) where karaoke is popular and legal catalogue access is scarce.
 >
@@ -70,6 +70,6 @@ cobrada pelo **ECAD**, e isso é separado do direito que a KaraFun licencia. Se 
 deles não cobrir o ECAD, sobra para o Syden — e aí o modelo por música precisa embutir esse
 custo, ou a conta não fecha.
 
-Se a resposta for não, ou nem vier, não se perdeu nada. E fica valendo a alternativa que já
-está pronta: música própria gerada por código, mais o que é de domínio público de verdade
-(ver `scripts/musica-de-exemplo.mjs`).
+Se a resposta for não, ou nem vier, não se perdeu nada: o karaokê continua sendo só o que os usuários
+sobem, com a responsabilidade em quem sobe. Música própria NÃO é alternativa (ver "Música: nunca fazer a
+nossa", no CLAUDE.md).
