@@ -25,8 +25,8 @@
 
     OS DOIS CAMINHOS SÃO SÓ LINK E IMAGEM, nunca o botão pronto dos serviços. O widget do Buy Me a Coffee
     é um script de terceiro rodando aqui dentro: a política de segurança o barraria, e se não barrasse,
-    a política de privacidade deixaria de ser verdade. O QR do Pix é um SVG fixo, gerado na máquina por
-    scripts/qr-do-pix.mjs — quem visita não fala com ninguém além do syden.chat.
+    a política de privacidade deixaria de ser verdade. Os QRs são SVG fixos, gerados na máquina por
+    scripts/qr-do-pix.mjs e scripts/qr-do-buy-me-a-coffee.mjs — quem visita não fala com ninguém além do syden.chat.
 
     POUCO TEXTO, DE PROPÓSITO (pedido de 10/10/2026: "ainda tem muito texto"). A página existe em todos os
     idiomas do site (web/scripts/site-traduzido.mjs), e fora do português o Buy Me a Coffee vem primeiro
@@ -67,8 +67,11 @@
 
         <section class="forma forma-bmc" aria-labelledby="bmc">
           <h2 id="bmc">De qualquer lugar: cartão</h2>
+          <img class="qr" src="buy-me-a-coffee-qr.svg" width="200" height="200" alt="QR code do Buy Me a Coffee para doar ao Syden" />
           <p>Pelo Buy Me a Coffee, uma vez só ou quando quiser.</p>
-          <a class="botao" href="https://buymeacoffee.com/syden" rel="noopener">Doar pelo Buy Me a Coffee</a>
+          <!-- O botão oficial deles, como IMAGEM guardada aqui: o código que o painel gera é um script ou puxa
+               a imagem do servidor deles, e a política de segurança barra os dois. -->
+          <a class="botao-bmc" href="https://buymeacoffee.com/syden" rel="noopener"><img src="buy-me-a-coffee.png" width="217" height="61" alt="Buy Me a Coffee" /></a>
         </section>
       </div>
 

@@ -178,13 +178,26 @@ h3 {
   margin: 8px 0 0;
 }
 
-.forma-pix {
+/* Os dois cartões com a mesma forma: título, QR, e o botão no pé. */
+.forma-pix,
+.forma-bmc {
   align-items: center;
   text-align: center;
 }
 
-.forma-bmc .botao {
+.botao-bmc {
   margin-top: auto;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.botao-bmc img {
+  width: 217px;
+  height: auto;
+}
+
+.botao-bmc:hover img {
+  filter: brightness(1.05);
 }
 
 /* Fora do português, o cartão vem primeiro: o Pix só serve a quem tem banco no Brasil. */

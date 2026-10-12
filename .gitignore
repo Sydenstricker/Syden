@@ -36,6 +36,7 @@ SFX/
 # escolhido e o fim do site apareceriam quebrados, e o link compartilhado iria sem imagem (este já ia).
 !web/public/avatares/*.png
 !web/site/lobby/*.png
+!web/site/buy-me-a-coffee.png
 !web/site/capturas/compartilhar.png
 !store/logos/*.png
 # O teste de pixel art: as imagens SÃO o resultado (pagas, e não se refazem iguais). Ver e2e/pixel-art/README.md.
