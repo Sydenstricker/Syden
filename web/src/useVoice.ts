@@ -86,9 +86,11 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * mais do que muita máquina aguenta — e o sintoma aparece do lado errado, na tela de quem assiste,
  * enquanto o jogo continua liso para quem joga.
  *
- * NO MODO FLUIDO NÃO HÁ CAMADA NENHUMA, e essa é a mudança: quem escolhe "para jogos, 60 quadros"
- * está dizendo que a máquina é o gargalo. Cobrar dela mais duas codificações para dar opção aos
- * outros é cobrar do lado errado. Ali vai uma imagem só, a melhor, e quem assiste recebe o que ela é.
+ * NO MODO FLUIDO HÁ UMA CAMADA SÓ, A PEQUENA. Ele já não teve nenhuma: quem escolhe "para jogos, 60
+ * quadros" está dizendo que a máquina é o gargalo, e cobrar dela mais duas codificações de 1080p para
+ * dar opção aos outros seria cobrar do lado errado. Mas sem camada nenhuma quem assistia com menos de
+ * 8 Mbps engasgava, e o servidor não tinha nada menor para mandar (auditoria de 11/10/2026). A de 360p
+ * custa pouco — um nono dos pixels, a metade dos quadros — e devolve a quem assiste uma saída.
  *
  * No Padrão as camadas ficam: elas são o que permite a alguém no celular pagar menos internet sem
  * estragar a transmissão de quem está no computador, e a conta cabe.
@@ -97,10 +99,15 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * ela que chega no quadro grande. Medido (05/10/2026) com imagem em movimento: a 400 kbps — e também a
  * 600 —, o "manter os quadros" do Padrão encolhia a camada até 142×80 e 213×120, com o Chrome dando
  * todo o teto e apontando falta de banda; a 800 ela segura os 640×360 sem limitação nenhuma.
+ *
+ * E ELA SAI A 30 QUADROS, NÃO 15 (11/10/2026). Por ser a que chega no quadro pequeno e no notebook, a
+ * 15 ela fazia o jogo parecer travado justamente para quem tem menos tela — e não havia aviso nenhum,
+ * porque do lado de quem transmite estava tudo certo. Codificar 360p é barato; a conta continua cabendo.
  */
+const CAMADA_PEQUENA = new VideoPreset(640, 360, 800_000, 30);
 const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
-  standard: [new VideoPreset(640, 360, 800_000, 15), new VideoPreset(1280, 720, 2_000_000, 30)],
-  smooth: [],
+  standard: [CAMADA_PEQUENA, new VideoPreset(1280, 720, 2_000_000, 30)],
+  smooth: [CAMADA_PEQUENA],
 };
 
 // De quanto em quanto tempo a otimização dinâmica confere como a transmissão está indo.
@@ -1229,10 +1236,12 @@ export function useVoice(socket: Socket | null) {
         if (modoNoArRef.current === 'smooth' && !fluido.em30) {
           fluido = proximoFluido(fluido, { fps, limitedBy });
           if (fluido.em30) {
+            // Só a camada grande, que é a última: a pequena já sai a 30 e com a taxa dela.
             const parameters = sender.getParameters();
-            for (const encoding of parameters.encodings) {
-              encoding.maxFramerate = 30;
-              encoding.maxBitrate = SCREEN_PRESETS.standard.encoding.maxBitrate;
+            const grande = parameters.encodings[parameters.encodings.length - 1];
+            if (grande) {
+              grande.maxFramerate = 30;
+              grande.maxBitrate = SCREEN_PRESETS.standard.encoding.maxBitrate;
             }
             await sender.setParameters(parameters).catch(console.error);
           }
