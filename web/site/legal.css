@@ -191,9 +191,17 @@ h3 {
   line-height: 0;
 }
 
+/* Os dois botões do pé do mesmo tamanho: o do Buy Me a Coffee é imagem (545 × 153), então a altura
+   comum decide a largura dele, e o "Copiar o Pix" ganha essa largura. */
 .botao-bmc img {
-  width: 217px;
-  height: auto;
+  height: 48px;
+  width: auto;
+}
+
+.forma .copiar {
+  height: 48px;
+  min-width: 171px;
+  margin-top: auto;
 }
 
 .botao-bmc:hover img {
