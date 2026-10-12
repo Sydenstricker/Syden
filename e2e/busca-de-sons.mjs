@@ -124,6 +124,16 @@ try {
     () => falhou('o som do pacote não instalado não apareceu'),
   );
   await page.locator('.soundboard').screenshot({ path: path.join(FOTOS, 'busca-nos-pacotes.png') });
+
+  // Ouvir antes de instalar: toca só aqui, e o botão mostra que está tocando.
+  await falta.getByRole('button', { name: 'Ouvir' }).click();
+  (await falta.getByRole('button', { name: 'Ouvir' }).getAttribute('aria-pressed')) === 'true'
+    ? ok('"Ouvir" toca o som do pacote antes de instalar')
+    : falhou('o botão Ouvir não ficou tocando');
+  (await page.locator('.tile-sound', { hasText: '⚽' }).count()) === 0
+    ? ok('e não vai para a sala: nenhum ícone de som no quadro')
+    : falhou('a prévia apareceu na sala como som tocado');
+
   await falta.getByRole('button', { name: 'Instalar' }).click();
   await page
     .locator('.soundboard .soundboard-sound .soundboard-name', { hasText: 'Gol do Brasil ' + s })

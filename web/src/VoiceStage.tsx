@@ -305,6 +305,27 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
   }, [buscando, faltam]);
   const nosPacotes = term && faltam ? buscarSons(faltam, term).slice(0, 6) : [];
 
+  /*
+   * OUVIR ANTES DE INSTALAR, e só aqui. O som do pacote toca neste computador, no volume do soundboard, e não
+   * vai para a sala: ninguém mais escuta a pessoa escolhendo. Clicar de novo para; fechar o painel também.
+   */
+  const [ouvindo, setOuvindo] = useState<number | null>(null);
+  const previa = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => () => previa.current?.pause(), []);
+  function ouvir(id: number) {
+    previa.current?.pause();
+    if (ouvindo === id) {
+      setOuvindo(null);
+      return;
+    }
+    const audio = new Audio(mediaUrl.sound(id));
+    audio.volume = settings.soundboardVolume;
+    audio.addEventListener('ended', () => setOuvindo((atual) => (atual === id ? null : atual)));
+    void audio.play().catch(() => setOuvindo(null));
+    previa.current = audio;
+    setOuvindo(id);
+  }
+
   async function instalar(packId: number) {
     setInstalando(packId);
     try {
@@ -416,6 +437,16 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
                   <span className="soundboard-name">{som.name}</span>
                   <small>{som.packName}</small>
                 </span>
+                <button
+                  type="button"
+                  className={`icon-plain soundboard-ouvir${ouvindo === som.id ? ' on' : ''}`}
+                  aria-label={t('Ouvir')}
+                  title={t('Ouvir')}
+                  aria-pressed={ouvindo === som.id}
+                  onClick={() => ouvir(som.id)}
+                >
+                  {ouvindo === som.id ? <Square size={14} /> : <Play size={14} />}
+                </button>
                 <button type="button" className="btn-secondary" disabled={instalando !== null} onClick={() => void instalar(som.packId)}>
                   {t('Instalar')}
                 </button>
