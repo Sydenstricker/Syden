@@ -80,6 +80,13 @@ export const ERROS_TRADUZIDOS = [
   chave('Escolha outra pessoa.'),
   chave('Quem é da vila dorme à noite.'),
   chave('A votação é de dia.'),
+  chave('O desenho precisa de pelo menos 2 pessoas na sala.'),
+  chave('Agora não é hora de escolher.'),
+  chave('Quem escolhe a palavra é quem vai desenhar.'),
+  chave('Escolha uma das três palavras.'),
+  chave('Agora não é hora de chutar.'),
+  chave('Quem desenha não chuta.'),
+  chave('Só quem desenha mexe no desenho.'),
 ] as const;
 
 /**
