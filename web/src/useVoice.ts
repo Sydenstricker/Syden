@@ -1,10 +1,12 @@
 import {
   ConnectionState,
   type LocalParticipant,
+  type LocalVideoTrack,
   type Participant,
   type RemoteParticipant,
   Room,
   RoomEvent,
+  type ScreenShareCaptureOptions,
   AudioPresets,
   ScreenSharePresets,
   Track,
@@ -1021,42 +1023,75 @@ export function useVoice(socket: Socket | null) {
   }, [room]);
 
   /**
+   * Põe uma tela nova por baixo da transmissão que já está no ar, sem despublicar nada.
+   *
+   * O seletor abre primeiro: se a pessoa desiste, o erro sobe antes de qualquer coisa mudar. A imagem
+   * troca pela mesma publicação, e o som acompanha a escolha nova — troca por baixo, entra ou sai.
+   * O som do app de desktop (o módulo nativo) não passa por aqui: ele não vem do seletor.
+   */
+  const trocarATela = useCallback(
+    async (lp: LocalParticipant, noAr: LocalVideoTrack, captura: ScreenShareCaptureOptions) => {
+      const novas = await lp.createScreenTracks(captura);
+      const imagem = novas.find((faixa) => faixa.kind === Track.Kind.Video);
+      const som = novas.find((faixa) => faixa.kind === Track.Kind.Audio);
+      if (!imagem) throw new Error('A captura nova veio sem imagem.');
+      // false = a faixa é do LiveKit: ele mesmo para a antiga ao trocar, e o seletor do sistema some.
+      await noAr.replaceTrack(imagem.mediaStreamTrack, { userProvidedTrack: false });
+
+      if (appAudioRef.current) {
+        som?.stop(); // no app com o módulo o som vem por fora; uma faixa do seletor aqui seria a mistura
+        return;
+      }
+      const somNoAr = lp.getTrackPublication(Track.Source.ScreenShareAudio)?.audioTrack;
+      if (som && somNoAr) await somNoAr.replaceTrack(som.mediaStreamTrack, { userProvidedTrack: false });
+      else if (som) await lp.publishTrack(som, { source: Track.Source.ScreenShareAudio });
+      else if (somNoAr) await lp.unpublishTrack(somNoAr);
+    },
+    [],
+  );
+
+  /**
    * Começa (ou troca) a transmissão. `surface` decide o que o seletor do navegador abre primeiro:
    * tela inteira, uma janela/app específico ou uma aba — janela e aba tendem a vir com áudio só daquele
    * programa; tela inteira traz o som do sistema inteiro junto (o que inclui a própria chamada, se ela
    * estiver tocando pelo alto-falante). Chamar já compartilhando troca para a tela nova.
+   *
+   * TROCAR NÃO DERRUBA MAIS (11/10/2026). A transmissão antiga era desligada ANTES de o seletor abrir:
+   * quem desistia no seletor ficava sem transmissão nenhuma, calado, e quem assistia via a imagem sumir
+   * e voltar a cada troca. Agora a imagem nova é escolhida primeiro e entra POR BAIXO da publicação que
+   * já está no ar (replaceTrack): quem assiste não vê nada piscar, e desistir deixa tudo como estava.
+   * O modo e o codec continuam os da transmissão no ar — mudar as Configurações vale para a próxima.
    */
   const shareScreen = useCallback(
     async (surface: 'monitor' | 'window' | 'browser') => {
       const lp = room.localParticipant;
-      const quality = getSettings().screenQuality;
+      const noAr = lp.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
+      const quality = noAr ? modoNoArRef.current : getSettings().screenQuality;
       const preset = SCREEN_PRESETS[quality];
       const hints = SCREEN_HINTS[quality];
-      const { codec } = await escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30);
       try {
-        setTelaCompartilhada(surface);
-        modoNoArRef.current = quality;
         // No app, o seletor é nosso e abre na aba que o menu pediu.
         desktopBridge?.prepararSeletor?.(surface === 'window' ? 'window' : 'screen');
-        if (lp.isScreenShareEnabled) await lp.setScreenShareEnabled(false);
-        await lp.setScreenShareEnabled(
-          true,
-          {
-            contentHint: hints.contentHint,
-            // "restrictOwnAudio" tira da captura o som que o PRÓPRIO Syden está tocando — as vozes da
-            // chamada. ELE VAI DENTRO DE `audio`, porque é uma restrição da FAIXA de som, não uma opção
-            // solta do getDisplayMedia. Estava no lugar errado, o navegador ignorava calado, e o som da
-            // chamada voltava para dentro da transmissão: todo mundo se ouvia. Logo abaixo, o app
-            // confere se a opção pegou de verdade, em vez de confiar.
-            audio: { restrictOwnAudio: true },
-            systemAudio: 'include',
-            selfBrowserSurface: 'exclude',
-            video: { displaySurface: surface },
-            preferCurrentTab: false,
-            surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
-            resolution: preset.resolution,
-          } as Parameters<typeof lp.setScreenShareEnabled>[1],
-          {
+        const captura = {
+          contentHint: hints.contentHint,
+          // "restrictOwnAudio" tira da captura o som que o PRÓPRIO Syden está tocando — as vozes da
+          // chamada. ELE VAI DENTRO DE `audio`, porque é uma restrição da FAIXA de som, não uma opção
+          // solta do getDisplayMedia. Estava no lugar errado, o navegador ignorava calado, e o som da
+          // chamada voltava para dentro da transmissão: todo mundo se ouvia. Logo abaixo, o app
+          // confere se a opção pegou de verdade, em vez de confiar.
+          audio: { restrictOwnAudio: true },
+          systemAudio: 'include',
+          selfBrowserSurface: 'exclude',
+          video: { displaySurface: surface },
+          preferCurrentTab: false,
+          surfaceSwitching: 'include', // deixa trocar o que está sendo mostrado sem parar o compartilhamento
+          resolution: preset.resolution,
+        } as ScreenShareCaptureOptions;
+        if (noAr) {
+          await trocarATela(lp, noAr, captura);
+        } else {
+          const { codec } = await escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30);
+          await lp.setScreenShareEnabled(true, captura, {
             screenShareEncoding: preset.encoding,
             degradationPreference: hints.degradation,
             // MEDIDO a cada transmissão: a pergunta é se o H.264 sai pela placa de vídeo nesta máquina
@@ -1064,8 +1099,10 @@ export function useVoice(socket: Socket | null) {
             // em 11/10/2026: ninguém deveria precisar saber o que é um codec para transmitir.
             videoCodec: codec,
             screenShareSimulcastLayers: SCREEN_LAYERS[quality],
-          },
-        );
+          });
+          modoNoArRef.current = quality;
+        }
+        setTelaCompartilhada(surface);
         // O navegador diz, na própria faixa, se conseguiu tirar o som da chamada da captura. Quando não
         // conseguiu (navegador antigo, ou o tipo de tela escolhido não tem som de sistema), quem está
         // transmitindo precisa saber — senão a sala inteira se ouve e ninguém entende por quê.
@@ -1086,8 +1123,10 @@ export function useVoice(socket: Socket | null) {
           socketRef.current?.emit('voice:update', { ...readLocalMedia(lp), screenName: nomeDaTelaRef.current });
         }
         // A caixinha de som do seletor do app. Ligava-se a captura SEMPRE, e desmarcar não tirava o
-        // som; só um app antigo, que não conta a escolha (null), segue ligando sempre.
+        // som; só um app antigo, que não conta a escolha (null), segue ligando sempre. Numa troca, ela
+        // vale de novo: desmarcar ao trocar desliga o som que estava indo.
         if (desktopBridge?.somEscolhido?.() !== false) await startAppAudio();
+        else stopAppAudio();
       } catch (e) {
         // Fechar o seletor de tela sem escolher nada não é erro.
         if (!isCancelledPicker(e)) {
@@ -1100,7 +1139,7 @@ export function useVoice(socket: Socket | null) {
         }
       }
     },
-    [room, startAppAudio],
+    [room, startAppAudio, stopAppAudio, trocarATela],
   );
 
   const stopScreen = useCallback(async () => {
