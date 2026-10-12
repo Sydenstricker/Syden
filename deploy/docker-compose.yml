@@ -25,7 +25,9 @@ services:
 
   livekit:
     logging: *logging
-    image: livekit/livekit-server:latest
+    # VERSÃO FIXA, a mesma que já rodava (conferida no servidor em 11/10/2026). Com "latest", qualquer deploy
+    # podia trazer um LiveKit novo sem ninguém escolher. Atualizar é trocar este número de propósito.
+    image: livekit/livekit-server:v1.13.7
     network_mode: host
     restart: unless-stopped
     command: --config /etc/livekit.yaml
