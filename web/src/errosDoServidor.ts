@@ -87,6 +87,19 @@ export const ERROS_TRADUZIDOS = [
   chave('Agora não é hora de chutar.'),
   chave('Quem desenha não chuta.'),
   chave('Só quem desenha mexe no desenho.'),
+  // Tickets e cargos automáticos (pacote MEE6, 12/10/2026).
+  chave('Só quem administra a comunidade liga os tickets.'),
+  chave('Esta comunidade não usa tickets.'),
+  chave('Diga em poucas palavras qual é o assunto.'),
+  chave('Ainda não há quem atenda os tickets nesta comunidade.'),
+  chave('Ticket não encontrado.'),
+  chave('Só quem abriu o ticket ou quem administra pode encerrá-lo.'),
+  chave('Só quem administra a comunidade mexe nos cargos automáticos.'),
+  chave('Escolha um canal de texto da comunidade.'),
+  chave('Um dos emojis não vale.'),
+  chave('Um dos cargos não existe.'),
+  chave('Cada emoji só pode dar um cargo.'),
+  chave('Painel não encontrado.'),
 ] as const;
 
 /**
