@@ -5197,3 +5197,134 @@ addColumnIfMissing('communities', 'contadores', "TEXT NOT NULL DEFAULT ''");
 export function definirContadores(communityId: number, lista: string[]) {
   db.prepare('UPDATE communities SET contadores = ? WHERE id = ?').run(lista.join(','), communityId);
 }
+
+// ---------------------------------------------------------------------------------------------------
+// RETIRADA POR DIREITO AUTORAL (11/10/2026). Os termos (seção 4) prometem três coisas a quem escreve para
+// direitos@syden.chat: o conteúdo é retirado, quem o publicou é avisado do motivo e pode contestar, e a
+// reincidência custa a conta. Esta tabela é o registro que sustenta a terceira: quantas vezes o conteúdo
+// de alguém já foi retirado. Guarda o nome do que saiu e de quem reclamou, nunca o arquivo.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS retiradas_autorais (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    at           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    tipo         TEXT NOT NULL CHECK (tipo IN ('som', 'musica', 'emoji')),
+    nome         TEXT NOT NULL,
+    onde         TEXT NOT NULL,
+    autor_id     INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    autor_nome   TEXT,
+    reclamante   TEXT NOT NULL,
+    por          TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_retiradas_autor ON retiradas_autorais(autor_id);
+`);
+
+export type TipoRetiravel = 'som' | 'musica' | 'emoji';
+
+export interface ConteudoRetiravel {
+  tipo: TipoRetiravel;
+  id: number;
+  nome: string;
+  /** "Comunidade X" ou "Pacote Y": onde o conteúdo aparece. */
+  onde: string;
+  communityId: number | null;
+  /** Pacote de sons de onde ele vem, quando vem de um. */
+  packId: number | null;
+  autorId: number | null;
+  autorNome: string | null;
+  /** Quantas vezes o conteúdo desta pessoa já foi retirado antes. */
+  retiradasAntes: number;
+}
+
+export interface RetiradaAutoral {
+  id: number;
+  at: string;
+  tipo: TipoRetiravel;
+  nome: string;
+  onde: string;
+  autorId: number | null;
+  autorNome: string | null;
+  reclamante: string;
+  por: string;
+}
+
+export function retiradasDe(autorId: number | null): number {
+  if (autorId === null) return 0;
+  return (db.prepare('SELECT COUNT(*) AS n FROM retiradas_autorais WHERE autor_id = ?').get(autorId) as { n: number }).n;
+}
+
+/**
+ * Procura, pelo nome, o que pode ser retirado: sons (da comunidade e de pacote), músicas do karaokê e
+ * emojis. Quem escreve para direitos@ diz "o que é e onde está" — o nome é o que se tem em mãos.
+ */
+export function procurarRetiravel(termo: string, limite = 40): ConteudoRetiravel[] {
+  const like = `%${termo.replace(/[%_!]/g, (c) => '!' + c)}%`;
+  const sons = db
+    .prepare(
+      `SELECT 'som' AS tipo, s.id, s.name AS nome, s.community_id AS communityId, s.pack_id AS packId,
+              COALESCE(s.created_by, p.created_by) AS autorId,
+              CASE WHEN s.pack_id IS NOT NULL THEN 'Pacote ' || p.name ELSE 'Comunidade ' || c.name END AS onde
+       FROM sounds s LEFT JOIN packs p ON p.id = s.pack_id LEFT JOIN communities c ON c.id = s.community_id
+       WHERE s.name LIKE ? ESCAPE '!' ORDER BY s.id DESC LIMIT ?`,
+    )
+    .all(like, limite) as Record<string, unknown>[];
+  const musicas = db
+    .prepare(
+      `SELECT 'musica' AS tipo, k.id, k.title || CASE WHEN k.artist <> '' THEN ' — ' || k.artist ELSE '' END AS nome,
+              k.community_id AS communityId, NULL AS packId, k.created_by AS autorId, 'Comunidade ' || c.name AS onde
+       FROM karaoke_songs k LEFT JOIN communities c ON c.id = k.community_id
+       WHERE k.title LIKE ? ESCAPE '!' OR k.artist LIKE ? ESCAPE '!' ORDER BY k.id DESC LIMIT ?`,
+    )
+    .all(like, like, limite) as Record<string, unknown>[];
+  const emojis = db
+    .prepare(
+      `SELECT 'emoji' AS tipo, e.id, e.name AS nome, e.community_id AS communityId, NULL AS packId,
+              e.created_by AS autorId, 'Comunidade ' || c.name AS onde
+       FROM emojis e LEFT JOIN communities c ON c.id = e.community_id
+       WHERE e.name LIKE ? ESCAPE '!' ORDER BY e.id DESC LIMIT ?`,
+    )
+    .all(like, limite) as Record<string, unknown>[];
+  return [...sons, ...musicas, ...emojis].map((linha) => {
+    const autorId = (linha.autorId as number | null) ?? null;
+    return {
+      tipo: linha.tipo as TipoRetiravel,
+      id: linha.id as number,
+      nome: linha.nome as string,
+      onde: (linha.onde as string | null) ?? '—',
+      communityId: (linha.communityId as number | null) ?? null,
+      packId: (linha.packId as number | null) ?? null,
+      autorId,
+      autorNome: autorId === null ? null : (findUserById(autorId)?.username ?? null),
+      retiradasAntes: retiradasDe(autorId),
+    };
+  });
+}
+
+/** Um conteúdo retirável pelo tipo e id, com os mesmos campos da busca. */
+export function acharRetiravel(tipo: TipoRetiravel, id: number): ConteudoRetiravel | undefined {
+  const nome =
+    tipo === 'som' ? findSound(id)?.name : tipo === 'musica' ? findKaraokeSong(id)?.title : tipo === 'emoji' ? findEmoji(id)?.name : undefined;
+  if (nome === undefined) return undefined;
+  return procurarRetiravel(nome, 200).find((c) => c.tipo === tipo && c.id === id);
+}
+
+/** Quem instalou um pacote de sons: são essas pessoas que têm o som no soundboard. */
+export function quemInstalou(packId: number): number[] {
+  return (db.prepare('SELECT user_id AS id FROM pack_installs WHERE pack_id = ?').all(packId) as { id: number }[]).map((r) => r.id);
+}
+
+export function registrarRetirada(conteudo: ConteudoRetiravel, reclamante: string, por: string) {
+  db.prepare(
+    'INSERT INTO retiradas_autorais (tipo, nome, onde, autor_id, autor_nome, reclamante, por) VALUES (?, ?, ?, ?, ?, ?, ?)',
+  ).run(conteudo.tipo, conteudo.nome, conteudo.onde, conteudo.autorId, conteudo.autorNome, reclamante, por);
+}
+
+export function listarRetiradas(limite = 200): RetiradaAutoral[] {
+  return db
+    .prepare(
+      `SELECT id, at, tipo, nome, onde, autor_id AS autorId, autor_nome AS autorNome, reclamante, por
+       FROM retiradas_autorais ORDER BY id DESC LIMIT ?`,
+    )
+    .all(limite) as unknown as RetiradaAutoral[];
+}

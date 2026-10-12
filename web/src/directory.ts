@@ -107,8 +107,9 @@ export function syncDirectory(socket: Socket) {
     // Sons de pacote não chegam por aqui (eles não são de comunidade nenhuma).
     if (sound.communityId !== null && mine(sound.communityId)) set({ sounds: [...state.sounds.filter((s) => s.id !== sound.id), sound] });
   };
-  const onSoundDeleted = ({ id, communityId }: { id: number; communityId: number }) => {
-    if (mine(communityId)) set({ sounds: state.sounds.filter((s) => s.id !== id) });
+  // communityId nulo: som de PACOTE retirado (ver direito-autoral-routes.ts), que mora em qualquer comunidade.
+  const onSoundDeleted = ({ id, communityId }: { id: number; communityId: number | null }) => {
+    if (communityId === null || mine(communityId)) set({ sounds: state.sounds.filter((s) => s.id !== id) });
   };
 
   // Ao reconectar (ex.: o servidor reiniciou), recarrega tudo da comunidade aberta.

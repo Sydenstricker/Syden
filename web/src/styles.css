@@ -12145,3 +12145,24 @@ body.arrastando-barra {
   border-radius: 50%;
   image-rendering: pixelated;
 }
+
+/* Retirada por direito autoral (PainelDireitoAutoral.tsx): a busca numa linha, o resultado logo abaixo. */
+.direito-autoral-busca {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.direito-autoral-busca input {
+  flex: 1;
+}
+
+.direito-autoral .denuncia-resolver input,
+.direito-autoral .denuncia-resolver textarea {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.direito-autoral-feito {
+  color: var(--text);
+}

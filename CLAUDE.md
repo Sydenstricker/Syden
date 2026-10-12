@@ -30,6 +30,12 @@ Duas consequências que não dá para contornar:
 Enquanto não houver licença, **o karaokê continua sendo só o que os usuários sobem**, com a
 responsabilidade em quem sobe (já está nos termos) — e o Syden não traz acervo nenhum.
 
+**A outra metade de "quem sobe responde" existe desde 11/10/2026:** quem tem o direito escreve para
+direitos@syden.chat (termos, seção 4), e quem cuida do Syden retira pelo painel (Uso do servidor → Direito
+autoral): procura pelo nome, retira dizendo quem reclamou, e quem subiu recebe o aviso numa conversa privada,
+onde pode contestar. Cada retirada fica registrada por pessoa — a reincidência que os termos dizem custar a
+conta aparece ali, mas banir continua sendo decisão de uma pessoa. Cobre sons, músicas do karaokê e emojis.
+
 O gerador continua no projeto como **ferramenta de teste**, para ter um arquivo de áudio com letra
 sincronizada ao mexer no karaokê. Não é produto: a saída dele não mora em `web/public/`, e por isso
 nunca vai para o site.

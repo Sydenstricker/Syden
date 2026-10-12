@@ -5,6 +5,7 @@ import { PainelAuditoria } from './PainelAuditoria';
 import { PainelDeAviso } from './PainelDeAviso';
 import { PainelDeCrescimento } from './PainelDeCrescimento';
 import { PainelDenuncias } from './PainelDenuncias';
+import { PainelDireitoAutoral } from './PainelDireitoAutoral';
 import { PainelDeAudiencia } from './PainelDeAudiencia';
 import { PainelDeComunidades } from './PainelDeComunidades';
 import { PainelDisponibilidade } from './PainelDisponibilidade';
@@ -41,7 +42,7 @@ export function UsageDashboard({
   onMobileBack: () => void;
 }) {
   const t = useT();
-  const [tab, setTab] = useState<'consumo' | 'saude' | 'denuncias' | 'auditoria' | 'aviso'>('consumo');
+  const [tab, setTab] = useState<'consumo' | 'saude' | 'denuncias' | 'direito' | 'auditoria' | 'aviso'>('consumo');
   const [usage, setUsage] = useState<UsageSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +96,14 @@ export function UsageDashboard({
           </button>
           <button
             role="tab"
+            aria-selected={tab === 'direito'}
+            className={`tab${tab === 'direito' ? ' active' : ''}`}
+            onClick={() => setTab('direito')}
+          >
+            {t('Direito autoral')}
+          </button>
+          <button
+            role="tab"
             aria-selected={tab === 'auditoria'}
             className={`tab${tab === 'auditoria' ? ' active' : ''}`}
             onClick={() => setTab('auditoria')}
@@ -114,6 +123,7 @@ export function UsageDashboard({
       )}
 
       {tab === 'denuncias' && <PainelDenuncias />}
+      {tab === 'direito' && <PainelDireitoAutoral />}
 
       {tab === 'auditoria' && <PainelAuditoria />}
 
