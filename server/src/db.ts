@@ -5538,3 +5538,83 @@ export function listarRetiradas(limite = 200): RetiradaAutoral[] {
     )
     .all(limite) as unknown as RetiradaAutoral[];
 }
+
+// ===================================================================================================
+// TICKETS (pacote MEE6, 12/10/2026): alguém da comunidade abre um pedido, e ele vira uma CONVERSA
+// PRIVADA EM GRUPO com quem administra — a conversa em grupo que já existe, e não um tipo novo de canal
+// secreto (o desenho proposto em 06/10/2026). Aqui fica só o registro: quem abriu, o assunto, a conversa,
+// e se já foi encerrado. Desligado por padrão: cada comunidade liga nas configurações.
+// ===================================================================================================
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tickets (
+    id           INTEGER PRIMARY KEY,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    channel_id   INTEGER NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    aberto_por   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    assunto      TEXT NOT NULL,
+    aberto_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    fechado_em   TEXT,
+    fechado_por  INTEGER REFERENCES users(id) ON DELETE SET NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_tickets_comunidade ON tickets(community_id, fechado_em);
+`);
+addColumnIfMissing('communities', 'tickets_ligados', 'INTEGER NOT NULL DEFAULT 0');
+
+export interface Ticket {
+  id: number;
+  communityId: number;
+  channelId: number;
+  abertoPor: number | null;
+  abertoPorNome: string | null;
+  assunto: string;
+  abertoEm: string;
+  fechadoEm: string | null;
+  fechadoPorNome: string | null;
+}
+
+const COLUNAS_DO_TICKET = `t.id, t.community_id AS communityId, t.channel_id AS channelId, t.aberto_por AS abertoPor,
+  a.username AS abertoPorNome, t.assunto, t.aberto_em AS abertoEm, t.fechado_em AS fechadoEm, f.username AS fechadoPorNome
+  FROM tickets t LEFT JOIN users a ON a.id = t.aberto_por LEFT JOIN users f ON f.id = t.fechado_por`;
+
+export function ticketsLigados(communityId: number): boolean {
+  return Boolean((db.prepare('SELECT tickets_ligados AS l FROM communities WHERE id = ?').get(communityId) as { l: number } | undefined)?.l);
+}
+
+export function ligarTickets(communityId: number, ligados: boolean) {
+  db.prepare('UPDATE communities SET tickets_ligados = ? WHERE id = ?').run(ligados ? 1 : 0, communityId);
+}
+
+export function abrirTicket(communityId: number, channelId: number, abertoPor: number, assunto: string): Ticket {
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO tickets (community_id, channel_id, aberto_por, assunto) VALUES (?, ?, ?, ?)')
+    .run(communityId, channelId, abertoPor, assunto);
+  return acharTicket(communityId, Number(lastInsertRowid))!;
+}
+
+export function acharTicket(communityId: number, id: number): Ticket | undefined {
+  return db.prepare(`SELECT ${COLUNAS_DO_TICKET} WHERE t.community_id = ? AND t.id = ?`).get(communityId, id) as unknown as Ticket | undefined;
+}
+
+/** Os tickets da comunidade (ou só os de uma pessoa): os abertos primeiro, os mais novos em cima. */
+export function listarTickets(communityId: number, deQuem?: number): Ticket[] {
+  const filtro = deQuem === undefined ? '' : 'AND t.aberto_por = ?';
+  const args: number[] = deQuem === undefined ? [communityId] : [communityId, deQuem];
+  return db
+    .prepare(`SELECT ${COLUNAS_DO_TICKET} WHERE t.community_id = ? ${filtro} ORDER BY t.fechado_em IS NOT NULL, t.id DESC LIMIT 200`)
+    .all(...args) as unknown as Ticket[];
+}
+
+export function ticketsAbertosDe(communityId: number, userId: number): number {
+  return (
+    db.prepare('SELECT COUNT(*) AS n FROM tickets WHERE community_id = ? AND aberto_por = ? AND fechado_em IS NULL').get(communityId, userId) as {
+      n: number;
+    }
+  ).n;
+}
+
+export function encerrarTicket(communityId: number, id: number, por: number) {
+  db.prepare(
+    "UPDATE tickets SET fechado_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), fechado_por = ? WHERE community_id = ? AND id = ? AND fechado_em IS NULL",
+  ).run(por, communityId, id);
+}

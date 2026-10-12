@@ -10,7 +10,8 @@ import { useT } from './i18n';
 import { pedirParaAbrirAoEntrar } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
 import { SeloDaComunidade } from './SeloDaComunidade';
-import type { Channel, Community, VoiceMember } from './types';
+import { AbrirTicket } from './Tickets';
+import type { Channel, Community, DirectChannel, VoiceMember } from './types';
 
 // A PRIMEIRA COISA QUE ALGUÉM VÊ AO ENTRAR NUMA COMUNIDADE.
 //
@@ -67,6 +68,7 @@ export function InicioDaComunidade({
   aoAbrirGuardaRoupa,
   aoEditar,
   aoFechar,
+  aoAbrirConversa,
 }: {
   community: Community;
   dados: DadosDeBoasVindas;
@@ -78,6 +80,8 @@ export function InicioDaComunidade({
   aoAbrirGuardaRoupa: () => void;
   aoEditar: () => void;
   aoFechar: () => void;
+  /** Um ticket aberto: a conversa privada nova abre na hora. */
+  aoAbrirConversa: (conversa: DirectChannel) => void;
 }) {
   const t = useT();
   const [copiado, setCopiado] = useState(false);
@@ -202,6 +206,7 @@ export function InicioDaComunidade({
             </button>
           );
         })}
+        <AbrirTicket community={community} aoAbrir={aoAbrirConversa} />
       </div>
 
       <button className="bv-pular" onClick={fechar}>
