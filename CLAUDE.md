@@ -314,6 +314,13 @@ escondidas até o STOP e no Sudoku cada um vê só o próprio tabuleiro. As letr
 (`letrasDoStop`), e a turma decide o que vale (mais da metade dos outros contestando derruba a resposta). Os de duas
 pessoas têm a mesa: quem começa senta, o primeiro da sala que apertar "Jogar" senta do outro lado, e o resto assiste.
 
+**Degrau 3, no mesmo dia:** o **Lobisomem** (o Syden é o narrador; 4 pessoas ou mais; os papéis têm nomes que não dizem o
+sexo de quem os recebe: "Anjo" no lugar de médico, "Da vila" no lugar de aldeão) e os **problemas de xadrez do
+Lichess**, em corrida: 1000 problemas CC0 em `server/assets/`, tirados por `server/scripts/problemas-de-xadrez.mjs`
+(o arquivo do Lichess é pzstd, com quadros puláveis que o Node não pula sozinho). O servidor não tem biblioteca de
+xadrez: só compara o lance com a solução e move as peças. Fica do caminho: o degrau 4 (palavra do dia e desenho, só
+pt-BR) pede uma lista de palavras com licença, e isso é decisão dele.
+
 **O caminho combinado, em degraus:**
 1. Uma lista de links na home ("Mini-games"), só com os sites SEM anúncio acima, com a dica "abra,
    transmita e adivinhem juntos". Umas 2 horas.
