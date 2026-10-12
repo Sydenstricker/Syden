@@ -41,6 +41,7 @@ import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect,
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { reloadSounds, useDirectory } from './directory';
+import { buscarSons } from './buscaDeSons';
 import { chave, idiomaAtual, useT } from './i18n';
 import { DURACAO_DO_TESTE_MS, ligarCodificacaoParaTestar } from './testarCodificacao';
 import { IconButton } from './IconButton';
@@ -272,11 +273,13 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
     };
   }, [onClose, adding]);
 
-  const term = search.trim().toLowerCase();
-  const found = term ? sounds.filter((s) => s.name.toLowerCase().includes(term)) : sounds;
-  const favorites = found.filter((s) => s.favorite);
+  // Buscando, a lista é UMA SÓ, do mais provável para o menos provável (ver buscaDeSons.ts); os grupos
+  // por pacote só fazem sentido quando se está olhando tudo.
+  const term = search.trim();
+  const found = term ? buscarSons(sounds, term) : sounds;
+  const favorites = term ? [] : found.filter((s) => s.favorite);
   const groups = new Map<string, Sound[]>();
-  for (const sound of found.filter((s) => !s.favorite)) {
+  for (const sound of term ? [] : found.filter((s) => !s.favorite)) {
     const group = sound.packName ?? 'Da comunidade';
     const list = groups.get(group);
     if (list) list.push(sound);
@@ -352,6 +355,8 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
         </p>
       )}
       {sounds.length > 0 && found.length === 0 && <p className="soundboard-empty">{t('Nenhum som com esse nome.')}</p>}
+
+      {term && found.length > 0 && grid(found)}
 
       {favorites.length > 0 && (
         <>
