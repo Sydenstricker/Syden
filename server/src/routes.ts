@@ -1209,6 +1209,17 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     });
 
     /**
+     * Os mini-games: quais a turma joga, com quantas pessoas, e quantas partidas vão até o fim. Só
+     * contagem — o que cada um respondeu ou desenhou não é guardado em lugar nenhum.
+     */
+    authed.get<{ Querystring: { dias?: string } }>('/api/status/jogos', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o uso do servidor.' });
+      const dias = Math.min(365, Math.max(1, Number(request.query?.dias) || 30));
+      const desde = new Date(Date.now() - dias * 86_400_000).toISOString();
+      return { dias, jogos: db.panoramaDeJogos(desde) };
+    });
+
+    /**
      * O panorama das comunidades: quantas existem, de que tamanho e com quanta conversa.
      *
      * Só METADADO — nunca o conteúdo de mensagem nenhuma. A janela vem em dias, porque "mais ativa"

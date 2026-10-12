@@ -8,6 +8,7 @@ import { PainelDenuncias } from './PainelDenuncias';
 import { PainelDireitoAutoral } from './PainelDireitoAutoral';
 import { PainelDeAudiencia } from './PainelDeAudiencia';
 import { PainelDeComunidades } from './PainelDeComunidades';
+import { PainelDeJogos } from './PainelDeJogos';
 import { PainelDisponibilidade } from './PainelDisponibilidade';
 import { HealthPanel } from './HealthPanel';
 import { MobileBackButton } from './MobileBackButton';
@@ -149,6 +150,9 @@ export function UsageDashboard({
 
             {/* Logo depois de quantas PESSOAS existem: onde elas estão é a pergunta seguinte. */}
             <PainelDeComunidades />
+
+            {/* O que a turma faz dentro da chamada: quais mini-games pegaram. */}
+            <PainelDeJogos />
 
             <section className="usage-card">
               <h2>{t('Tráfego de saída este mês')}</h2>

@@ -35,6 +35,8 @@ interface Partida {
   ate: number;
   relogio: ReturnType<typeof setTimeout> | null;
   instancia: Jogo | null;
+  /** A linha da partida na estatística do painel de uso (ver db.registrarPartida). */
+  registro: number | null;
 }
 
 const partidas = new Map<number, Partida>();
@@ -59,6 +61,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
 
   function encerrar(p: Partida) {
     if (p.relogio) clearTimeout(p.relogio);
+    // Encerrada antes do placar final (se já tinha terminado, a linha já está fechada e nada muda).
+    if (p.registro !== null) db.fecharPartida(p.registro, false);
     if (partidas.get(p.channelId) === p) partidas.delete(p.channelId);
     avisar(p);
   }
@@ -130,12 +134,14 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
           ate: 0,
           relogio: null,
           instancia: null,
+          registro: null,
         };
         const ctx: Contexto = {
           agendar: (ms, depois) => agendar(p, ms, depois),
           avisar: () => avisar(p),
           terminar: () => {
             p.terminada = true;
+            if (p.registro !== null) db.fecharPartida(p.registro, true);
             agendar(p, PLACAR_MS, () => encerrar(p));
             avisar(p);
           },
@@ -148,6 +154,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
           return reply.code(400).send({ error: instancia });
         }
         p.instancia = instancia;
+        p.registro = db.registrarPartida(p.jogo, canal.communityId, canal.id, request.user.id, quemEstaNaSala(canal.id));
         partidas.set(canal.id, p);
         avisar(p);
         return { partida: estado(p, request.user.id) };

@@ -342,6 +342,28 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_usage_sessions_ended ON usage_sessions(ended_at);
 
+  -- As partidas dos mini-games, para o painel de uso: qual jogo, onde, com quantos e se foi até o fim. Só
+  -- CONTAGEM — o que cada um respondeu, desenhou ou votou não é guardado (a partida mora na memória).
+  -- Comunidade e sala são números soltos, sem chave: apagar uma comunidade não apaga a estatística.
+  CREATE TABLE IF NOT EXISTS minijogo_partidas (
+    id           INTEGER PRIMARY KEY,
+    jogo         TEXT NOT NULL,
+    community_id INTEGER NOT NULL,
+    channel_id   INTEGER NOT NULL,
+    criada_por   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    jogadores    INTEGER NOT NULL,
+    comecou_em   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    terminou_em  TEXT,
+    completa     INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX IF NOT EXISTS idx_minijogo_partidas_comecou ON minijogo_partidas(comecou_em);
+  -- Quem estava na sala quando a partida começou: é o que deixa contar PESSOAS diferentes por jogo.
+  CREATE TABLE IF NOT EXISTS minijogo_jogadores (
+    partida_id INTEGER NOT NULL REFERENCES minijogo_partidas(id) ON DELETE CASCADE,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (partida_id, user_id)
+  );
+
   -- Bytes enviados pela máquina em cada mês (chave 'AAAA-MM', UTC), medidos pelo próprio servidor.
   CREATE TABLE IF NOT EXISTS traffic_months (
     month TEXT PRIMARY KEY,
@@ -2688,6 +2710,8 @@ export function deleteAccount(userId: number) {
     guardarNaCaixaPreta(userId);
     db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM minijogo_jogadores WHERE user_id = ?').run(userId);
+    db.prepare('UPDATE minijogo_partidas SET criada_por = NULL WHERE criada_por = ?').run(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
     // O ON DELETE CASCADE já daria conta, mas aqui dentro estão as ANOTAÇÕES QUE A PESSOA ESCREVEU
     // SOBRE OUTRAS — dado pessoal de terceiro. Apagar por efeito indireto de uma configuração que
@@ -3670,6 +3694,58 @@ export interface PanoramaDeComunidade {
    *  aconteceram — as de antes de 27/09/2026 não sabem. */
   segundosDeVoz: number;
   segundosDeTela: number;
+}
+
+/** Uma partida de mini-game começou: guarda o jogo, onde, e quem estava na sala. Devolve o id. */
+export function registrarPartida(jogo: string, communityId: number, channelId: number, criadaPor: number, naSala: number[]): number {
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO minijogo_partidas (jogo, community_id, channel_id, criada_por, jogadores) VALUES (?, ?, ?, ?, ?)')
+    .run(jogo, communityId, channelId, criadaPor, naSala.length);
+  const id = Number(lastInsertRowid);
+  const jogador = db.prepare('INSERT OR IGNORE INTO minijogo_jogadores (partida_id, user_id) VALUES (?, ?)');
+  for (const userId of naSala) jogador.run(id, userId);
+  return id;
+}
+
+/** A partida acabou: `completa` diz se chegou ao placar final ou foi encerrada no meio. */
+export function fecharPartida(id: number, completa: boolean) {
+  db.prepare(
+    "UPDATE minijogo_partidas SET terminou_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), completa = ? WHERE id = ? AND terminou_em IS NULL",
+  ).run(completa ? 1 : 0, id);
+}
+
+export interface PanoramaDeJogo {
+  jogo: string;
+  partidas: number;
+  completas: number;
+  pessoas: number;
+  mediaDeJogadores: number;
+  comunidades: number;
+  /** Duração média das partidas que foram até o fim, em segundos. */
+  duracaoMedia: number | null;
+  ultimaEm: string;
+}
+
+/** Os mini-games desde `desde`: quantas partidas de cada um, com quantas pessoas, e quantas foram até o fim. */
+export function panoramaDeJogos(desde: string): PanoramaDeJogo[] {
+  return db
+    .prepare(
+      `SELECT
+         p.jogo                                   AS jogo,
+         COUNT(*)                                 AS partidas,
+         SUM(p.completa)                          AS completas,
+         (SELECT COUNT(DISTINCT j.user_id) FROM minijogo_jogadores j JOIN minijogo_partidas q ON q.id = j.partida_id
+            WHERE q.jogo = p.jogo AND q.comecou_em >= ?)  AS pessoas,
+         ROUND(AVG(p.jogadores), 1)               AS mediaDeJogadores,
+         COUNT(DISTINCT p.community_id)           AS comunidades,
+         ROUND(AVG(CASE WHEN p.completa = 1 THEN strftime('%s', p.terminou_em) - strftime('%s', p.comecou_em) END)) AS duracaoMedia,
+         MAX(p.comecou_em)                        AS ultimaEm
+       FROM minijogo_partidas p
+       WHERE p.comecou_em >= ?
+       GROUP BY p.jogo
+       ORDER BY partidas DESC, jogo ASC`,
+    )
+    .all(desde, desde) as unknown as PanoramaDeJogo[];
 }
 
 export function panoramaDeComunidades(desde: string): PanoramaDeComunidade[] {

@@ -20,7 +20,7 @@ after(async () => {
 
 const { OBJETOS, maior, RODADAS } = await import('../src/minijogos.js');
 
-await criarConta(app, 'primeira-minijogo'); // a primeira conta administra o Syden: fica de fora
+const contaAdmin = await criarConta(app, 'primeira-minijogo'); // a primeira conta administra o Syden: fica de fora
 const contaAna = await criarConta(app, 'ana-minijogo');
 const contaBia = await criarConta(app, 'bia-minijogo');
 const contaCaio = await criarConta(app, 'caio-minijogo');
@@ -84,6 +84,18 @@ test('quem não começou não encerra no meio; quem começou, sim', async () => 
   assert.equal((await bia('DELETE', `/api/channels/${sala.id}/minijogo`)).statusCode, 403);
   assert.equal((await ana('DELETE', `/api/channels/${sala.id}/minijogo`)).statusCode, 200);
   assert.equal((await ana('GET', `/api/channels/${sala.id}/minijogo`)).json().partida, null);
+});
+
+test('o painel de uso conta a partida: o jogo, com quantos, e que foi encerrada no meio', async () => {
+  assert.equal((await ana('GET', '/api/status/jogos')).statusCode, 403, 'só quem administra o Syden vê');
+  const admin = comToken(app, contaAdmin.token);
+  const { jogos } = (await admin('GET', '/api/status/jogos?dias=7')).json();
+  const tamanho = jogos.find((j: { jogo: string }) => j.jogo === 'tamanho');
+  assert.equal(tamanho.partidas, 1);
+  assert.equal(tamanho.completas, 0, 'a Ana encerrou antes do placar');
+  assert.equal(tamanho.pessoas, 2);
+  assert.equal(tamanho.mediaDeJogadores, 2);
+  assert.equal(tamanho.comunidades, 1);
 });
 
 test('o sorteio nunca dá empate nem diferença absurda', async () => {
