@@ -178,7 +178,7 @@ export const lobisomem: Definicao = {
             viuHoje = true;
           } else if (meu === 'anjo') {
             protegido = alvo;
-          } else return 'Os aldeões dormem à noite.';
+          } else return 'Quem é da vila dorme à noite.';
           if (noiteCompleta()) amanhecer();
           else ctx.avisar();
           return null;
