@@ -5218,33 +5218,41 @@ export function definirContadores(communityId: number, lista: string[]) {
 // direitos@syden.chat: o conteúdo é retirado, quem o publicou é avisado do motivo e pode contestar, e a
 // reincidência custa a conta. Esta tabela é o registro que sustenta a terceira: quantas vezes o conteúdo
 // de alguém já foi retirado. Guarda o nome do que saiu e de quem reclamou, nunca o arquivo.
+//
+// RETIRAR LEVA AS CÓPIAS. Os arquivos são guardados pelo conteúdo (sha), e o mesmo arquivo mora em vários
+// lugares: o emoji de um pacote é COPIADO para cada comunidade que o instala, e alguém pode ter subido o
+// mesmo som em outra comunidade. Retirar só a linha escolhida deixaria a obra no ar em outro lugar.
+//
+// ANEXOS: SÓ OS DOS CANAIS DE COMUNIDADE. A busca nunca olha conversa privada — senão este painel viraria
+// um jeito de ver o nome dos arquivos que as pessoas trocam no particular.
 // ---------------------------------------------------------------------------------------------------
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS retiradas_autorais (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     at           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    tipo         TEXT NOT NULL CHECK (tipo IN ('som', 'musica', 'emoji')),
+    tipo         TEXT NOT NULL CHECK (tipo IN ('som', 'musica', 'emoji', 'emoji-pacote', 'anexo')),
     nome         TEXT NOT NULL,
     onde         TEXT NOT NULL,
     autor_id     INTEGER REFERENCES users(id) ON DELETE SET NULL,
     autor_nome   TEXT,
     reclamante   TEXT NOT NULL,
-    por          TEXT NOT NULL
+    por          TEXT NOT NULL,
+    copias       INTEGER NOT NULL DEFAULT 0
   );
   CREATE INDEX IF NOT EXISTS idx_retiradas_autor ON retiradas_autorais(autor_id);
 `);
 
-export type TipoRetiravel = 'som' | 'musica' | 'emoji';
+export type TipoRetiravel = 'som' | 'musica' | 'emoji' | 'emoji-pacote' | 'anexo';
 
 export interface ConteudoRetiravel {
   tipo: TipoRetiravel;
   id: number;
   nome: string;
-  /** "Comunidade X" ou "Pacote Y": onde o conteúdo aparece. */
+  /** "Comunidade X", "Pacote Y" ou "#canal em X": onde o conteúdo aparece. */
   onde: string;
   communityId: number | null;
-  /** Pacote de sons de onde ele vem, quando vem de um. */
+  /** Pacote (de sons ou de emojis) de onde ele vem, quando vem de um. */
   packId: number | null;
   autorId: number | null;
   autorNome: string | null;
@@ -5262,6 +5270,20 @@ export interface RetiradaAutoral {
   autorNome: string | null;
   reclamante: string;
   por: string;
+  /** Quantas outras cópias do mesmo arquivo saíram junto. */
+  copias: number;
+}
+
+/** O que saiu de cada lugar, para quem retirou avisar as telas abertas. */
+export interface RetiradoDe {
+  tipo: TipoRetiravel;
+  id: number;
+  communityId: number | null;
+  packId: number | null;
+  /** Anexo: a mensagem dele, e se ela foi apagada por ter ficado vazia. */
+  messageId?: number;
+  channelId?: number;
+  mensagemApagada?: boolean;
 }
 
 export function retiradasDe(autorId: number | null): number {
@@ -5269,59 +5291,69 @@ export function retiradasDe(autorId: number | null): number {
   return (db.prepare('SELECT COUNT(*) AS n FROM retiradas_autorais WHERE autor_id = ?').get(autorId) as { n: number }).n;
 }
 
+// As consultas de cada tipo, com as mesmas colunas: é o que deixa procurar e achar pelo id usarem a mesma
+// fonte. O filtro (por nome ou por id) entra no lugar de FILTRO.
+const CONSULTAS: Record<TipoRetiravel, string> = {
+  som: `SELECT 'som' AS tipo, s.id, s.name AS nome, s.community_id AS communityId, s.pack_id AS packId,
+               COALESCE(s.created_by, p.created_by) AS autorId,
+               CASE WHEN s.pack_id IS NOT NULL THEN 'Pacote ' || p.name ELSE 'Comunidade ' || c.name END AS onde
+        FROM sounds s LEFT JOIN packs p ON p.id = s.pack_id LEFT JOIN communities c ON c.id = s.community_id
+        WHERE FILTRO(s.name, s.id)`,
+  musica: `SELECT 'musica' AS tipo, k.id, k.title || CASE WHEN k.artist <> '' THEN ' — ' || k.artist ELSE '' END AS nome,
+                  k.community_id AS communityId, NULL AS packId, k.created_by AS autorId, 'Comunidade ' || c.name AS onde
+           FROM karaoke_songs k LEFT JOIN communities c ON c.id = k.community_id
+           WHERE FILTRO(k.title || ' ' || k.artist, k.id)`,
+  emoji: `SELECT 'emoji' AS tipo, e.id, e.name AS nome, e.community_id AS communityId, NULL AS packId,
+                 e.created_by AS autorId, 'Comunidade ' || c.name AS onde
+          FROM emojis e LEFT JOIN communities c ON c.id = e.community_id
+          WHERE FILTRO(e.name, e.id)`,
+  'emoji-pacote': `SELECT 'emoji-pacote' AS tipo, i.id, i.name AS nome, NULL AS communityId, i.pack_id AS packId,
+                          p.created_by AS autorId, 'Pacote de emojis ' || p.name AS onde
+                   FROM emoji_pack_items i JOIN emoji_packs p ON p.id = i.pack_id
+                   WHERE FILTRO(i.name, i.id)`,
+  anexo: `SELECT 'anexo' AS tipo, a.id, a.name AS nome, ch.community_id AS communityId, NULL AS packId,
+                 m.user_id AS autorId, '#' || ch.name || ' em ' || c.name AS onde
+          FROM attachments a JOIN messages m ON m.id = a.message_id JOIN channels ch ON ch.id = m.channel_id
+          JOIN communities c ON c.id = ch.community_id
+          WHERE ch.community_id IS NOT NULL AND FILTRO(a.name, a.id)`,
+};
+
+function paraConteudo(linha: Record<string, unknown>): ConteudoRetiravel {
+  const autorId = (linha.autorId as number | null) ?? null;
+  return {
+    tipo: linha.tipo as TipoRetiravel,
+    id: linha.id as number,
+    nome: linha.nome as string,
+    onde: (linha.onde as string | null) ?? '—',
+    communityId: (linha.communityId as number | null) ?? null,
+    packId: (linha.packId as number | null) ?? null,
+    autorId,
+    autorNome: autorId === null ? null : (findUserById(autorId)?.username ?? null),
+    retiradasAntes: retiradasDe(autorId),
+  };
+}
+
 /**
- * Procura, pelo nome, o que pode ser retirado: sons (da comunidade e de pacote), músicas do karaokê e
- * emojis. Quem escreve para direitos@ diz "o que é e onde está" — o nome é o que se tem em mãos.
+ * Procura, pelo nome, o que pode ser retirado: sons (da comunidade e de pacote), músicas do karaokê, emojis
+ * (da comunidade e de pacote) e anexos dos canais de comunidade. Quem escreve para direitos@ diz "o que é e
+ * onde está" — o nome é o que se tem em mãos.
  */
 export function procurarRetiravel(termo: string, limite = 40): ConteudoRetiravel[] {
   const like = `%${termo.replace(/[%_!]/g, (c) => '!' + c)}%`;
-  const sons = db
-    .prepare(
-      `SELECT 'som' AS tipo, s.id, s.name AS nome, s.community_id AS communityId, s.pack_id AS packId,
-              COALESCE(s.created_by, p.created_by) AS autorId,
-              CASE WHEN s.pack_id IS NOT NULL THEN 'Pacote ' || p.name ELSE 'Comunidade ' || c.name END AS onde
-       FROM sounds s LEFT JOIN packs p ON p.id = s.pack_id LEFT JOIN communities c ON c.id = s.community_id
-       WHERE s.name LIKE ? ESCAPE '!' ORDER BY s.id DESC LIMIT ?`,
-    )
-    .all(like, limite) as Record<string, unknown>[];
-  const musicas = db
-    .prepare(
-      `SELECT 'musica' AS tipo, k.id, k.title || CASE WHEN k.artist <> '' THEN ' — ' || k.artist ELSE '' END AS nome,
-              k.community_id AS communityId, NULL AS packId, k.created_by AS autorId, 'Comunidade ' || c.name AS onde
-       FROM karaoke_songs k LEFT JOIN communities c ON c.id = k.community_id
-       WHERE k.title LIKE ? ESCAPE '!' OR k.artist LIKE ? ESCAPE '!' ORDER BY k.id DESC LIMIT ?`,
-    )
-    .all(like, like, limite) as Record<string, unknown>[];
-  const emojis = db
-    .prepare(
-      `SELECT 'emoji' AS tipo, e.id, e.name AS nome, e.community_id AS communityId, NULL AS packId,
-              e.created_by AS autorId, 'Comunidade ' || c.name AS onde
-       FROM emojis e LEFT JOIN communities c ON c.id = e.community_id
-       WHERE e.name LIKE ? ESCAPE '!' ORDER BY e.id DESC LIMIT ?`,
-    )
-    .all(like, limite) as Record<string, unknown>[];
-  return [...sons, ...musicas, ...emojis].map((linha) => {
-    const autorId = (linha.autorId as number | null) ?? null;
-    return {
-      tipo: linha.tipo as TipoRetiravel,
-      id: linha.id as number,
-      nome: linha.nome as string,
-      onde: (linha.onde as string | null) ?? '—',
-      communityId: (linha.communityId as number | null) ?? null,
-      packId: (linha.packId as number | null) ?? null,
-      autorId,
-      autorNome: autorId === null ? null : (findUserById(autorId)?.username ?? null),
-      retiradasAntes: retiradasDe(autorId),
-    };
-  });
+  return (Object.keys(CONSULTAS) as TipoRetiravel[]).flatMap((tipo) =>
+    (
+      db
+        .prepare(`${CONSULTAS[tipo].replace(/FILTRO\(([^,]+), [^)]+\)/, "$1 LIKE ? ESCAPE '!'")} ORDER BY 2 DESC LIMIT ?`)
+        .all(like, limite) as Record<string, unknown>[]
+    ).map(paraConteudo),
+  );
 }
 
 /** Um conteúdo retirável pelo tipo e id, com os mesmos campos da busca. */
 export function acharRetiravel(tipo: TipoRetiravel, id: number): ConteudoRetiravel | undefined {
-  const nome =
-    tipo === 'som' ? findSound(id)?.name : tipo === 'musica' ? findKaraokeSong(id)?.title : tipo === 'emoji' ? findEmoji(id)?.name : undefined;
-  if (nome === undefined) return undefined;
-  return procurarRetiravel(nome, 200).find((c) => c.tipo === tipo && c.id === id);
+  if (!(tipo in CONSULTAS)) return undefined;
+  const linha = db.prepare(CONSULTAS[tipo].replace(/FILTRO\([^,]+, ([^)]+)\)/, '$1 = ?')).get(id) as Record<string, unknown> | undefined;
+  return linha && paraConteudo(linha);
 }
 
 /** Quem instalou um pacote de sons: são essas pessoas que têm o som no soundboard. */
@@ -5329,16 +5361,92 @@ export function quemInstalou(packId: number): number[] {
   return (db.prepare('SELECT user_id AS id FROM pack_installs WHERE pack_id = ?').all(packId) as { id: number }[]).map((r) => r.id);
 }
 
-export function registrarRetirada(conteudo: ConteudoRetiravel, reclamante: string, por: string) {
+/**
+ * Apaga o conteúdo E as cópias do mesmo arquivo (mesmo sha), e devolve de onde cada um saiu. Linha antiga,
+ * ainda sem sha, sai sozinha: não há como saber quais são as cópias dela.
+ */
+export function retirarComCopias(conteudo: ConteudoRetiravel): RetiradoDe[] {
+  const shaDe = (tabela: string) => (db.prepare(`SELECT sha FROM ${tabela} WHERE id = ?`).get(conteudo.id) as { sha: string | null } | undefined)?.sha ?? null;
+  const saiu: RetiradoDe[] = [];
+  db.exec('BEGIN');
+  try {
+    if (conteudo.tipo === 'som') {
+      const sha = shaDe('sounds');
+      const linhas = (sha
+        ? db.prepare('SELECT id, community_id AS communityId, pack_id AS packId FROM sounds WHERE sha = ?').all(sha)
+        : [{ id: conteudo.id, communityId: conteudo.communityId, packId: conteudo.packId }]) as { id: number; communityId: number | null; packId: number | null }[];
+      for (const l of linhas) {
+        db.prepare('DELETE FROM sounds WHERE id = ?').run(l.id);
+        saiu.push({ tipo: 'som', ...l });
+      }
+    } else if (conteudo.tipo === 'musica') {
+      const sha = shaDe('karaoke_songs');
+      const linhas = (sha
+        ? db.prepare('SELECT id, community_id AS communityId FROM karaoke_songs WHERE sha = ?').all(sha)
+        : [{ id: conteudo.id, communityId: conteudo.communityId }]) as { id: number; communityId: number }[];
+      for (const l of linhas) {
+        db.prepare('DELETE FROM karaoke_songs WHERE id = ?').run(l.id);
+        saiu.push({ tipo: 'musica', id: l.id, communityId: l.communityId, packId: null });
+      }
+    } else if (conteudo.tipo === 'emoji' || conteudo.tipo === 'emoji-pacote') {
+      // Emoji de comunidade e item de pacote são a mesma obra em dois lugares: um leva o outro.
+      const sha = shaDe(conteudo.tipo === 'emoji' ? 'emojis' : 'emoji_pack_items');
+      const daComunidade = (sha
+        ? db.prepare('SELECT id, community_id AS communityId FROM emojis WHERE sha = ?').all(sha)
+        : conteudo.tipo === 'emoji'
+          ? [{ id: conteudo.id, communityId: conteudo.communityId }]
+          : []) as { id: number; communityId: number }[];
+      const doPacote = (sha
+        ? db.prepare('SELECT id, pack_id AS packId FROM emoji_pack_items WHERE sha = ?').all(sha)
+        : conteudo.tipo === 'emoji-pacote'
+          ? [{ id: conteudo.id, packId: conteudo.packId }]
+          : []) as { id: number; packId: number }[];
+      for (const l of daComunidade) {
+        db.prepare('DELETE FROM emojis WHERE id = ?').run(l.id);
+        saiu.push({ tipo: 'emoji', id: l.id, communityId: l.communityId, packId: null });
+      }
+      for (const l of doPacote) {
+        db.prepare('DELETE FROM emoji_pack_items WHERE id = ?').run(l.id);
+        saiu.push({ tipo: 'emoji-pacote', id: l.id, communityId: null, packId: l.packId });
+      }
+    } else {
+      // Anexo: as cópias também só nos canais de comunidade, pela mesma razão da busca.
+      const sha = shaDe('attachments');
+      const linhas = db
+        .prepare(
+          `SELECT a.id, a.message_id AS messageId, m.channel_id AS channelId, ch.community_id AS communityId
+           FROM attachments a JOIN messages m ON m.id = a.message_id JOIN channels ch ON ch.id = m.channel_id
+           WHERE ch.community_id IS NOT NULL AND ${sha ? 'a.sha = ?' : 'a.id = ?'}`,
+        )
+        .all(sha ?? conteudo.id) as { id: number; messageId: number; channelId: number; communityId: number }[];
+      for (const l of linhas) {
+        db.prepare('DELETE FROM attachments WHERE id = ?').run(l.id);
+        // Mensagem que ficou sem texto e sem anexo some, como na vassoura dos recados vencidos.
+        const resto = db.prepare('SELECT COUNT(*) AS n FROM attachments WHERE message_id = ?').get(l.messageId) as { n: number };
+        const mensagem = db.prepare('SELECT content FROM messages WHERE id = ?').get(l.messageId) as { content: string } | undefined;
+        const vazia = !!mensagem && resto.n === 0 && mensagem.content.trim() === '';
+        if (vazia) db.prepare('DELETE FROM messages WHERE id = ?').run(l.messageId);
+        saiu.push({ tipo: 'anexo', id: l.id, communityId: l.communityId, packId: null, messageId: l.messageId, channelId: l.channelId, mensagemApagada: vazia });
+      }
+    }
+    db.exec('COMMIT');
+  } catch (erro) {
+    db.exec('ROLLBACK');
+    throw erro;
+  }
+  return saiu;
+}
+
+export function registrarRetirada(conteudo: ConteudoRetiravel, reclamante: string, por: string, copias = 0) {
   db.prepare(
-    'INSERT INTO retiradas_autorais (tipo, nome, onde, autor_id, autor_nome, reclamante, por) VALUES (?, ?, ?, ?, ?, ?, ?)',
-  ).run(conteudo.tipo, conteudo.nome, conteudo.onde, conteudo.autorId, conteudo.autorNome, reclamante, por);
+    'INSERT INTO retiradas_autorais (tipo, nome, onde, autor_id, autor_nome, reclamante, por, copias) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(conteudo.tipo, conteudo.nome, conteudo.onde, conteudo.autorId, conteudo.autorNome, reclamante, por, copias);
 }
 
 export function listarRetiradas(limite = 200): RetiradaAutoral[] {
   return db
     .prepare(
-      `SELECT id, at, tipo, nome, onde, autor_id AS autorId, autor_nome AS autorNome, reclamante, por
+      `SELECT id, at, tipo, nome, onde, autor_id AS autorId, autor_nome AS autorNome, reclamante, por, copias
        FROM retiradas_autorais ORDER BY id DESC LIMIT ?`,
     )
     .all(limite) as unknown as RetiradaAutoral[];

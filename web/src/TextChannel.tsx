@@ -88,7 +88,11 @@ export function TextChannel({
       setOpenThread((current) => (current?.id === id ? null : current));
     };
     socket.on('message:new', onMessage);
+    // Um anexo retirado (por direito autoral, ver direito-autoral-routes.ts) sai da mensagem, que fica com o texto.
+    const onAnexoRetirado = ({ id, messageId }: { id: number; messageId: number }) =>
+      setMessages((list) => list.map((m) => (m.id === messageId ? { ...m, attachments: m.attachments.filter((a) => a.id !== id) } : m)));
     socket.on('message:deleted', onDeleted);
+    socket.on('attachment:removed', onAnexoRetirado);
     socket.on('user:deleted', onUserDeleted);
     socket.on('poll:tally', onTally);
     socket.on('reaction:updated', onReaction);
@@ -98,6 +102,7 @@ export function TextChannel({
     return () => {
       socket.off('message:new', onMessage);
       socket.off('message:deleted', onDeleted);
+      socket.off('attachment:removed', onAnexoRetirado);
       socket.off('user:deleted', onUserDeleted);
       socket.off('poll:tally', onTally);
       socket.off('reaction:updated', onReaction);

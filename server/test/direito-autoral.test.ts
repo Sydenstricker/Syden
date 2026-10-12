@@ -85,6 +85,64 @@ describe('retirada por direito autoral', () => {
     assert.equal(depois[0].retiradasAntes, 1);
   });
 
+  it('retirar leva as cópias do mesmo arquivo, inclusive emoji de pacote copiado para comunidades', async () => {
+    const dono = comToken(app, (await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'donodosyden', password: 'segredo123' } })).json().token);
+    const a = await criarConta(app, 'copiaa');
+    const b = await criarConta(app, 'copiab');
+    const comA = (await comToken(app, a.token)('POST', '/api/communities', { name: 'Comunidade A' })).json();
+    const comB = (await comToken(app, b.token)('POST', '/api/communities', { name: 'Comunidade B' })).json();
+
+    // O mesmo áudio subido em duas comunidades, por duas pessoas.
+    const somA = (await comToken(app, a.token)('POST', `/api/communities/${comA.id}/sounds`, { name: 'Hit copiado', icon: '🎵', audio: ogg(40) })).json();
+    const somB = (await comToken(app, b.token)('POST', `/api/communities/${comB.id}/sounds`, { name: 'Outro nome', icon: '🎵', audio: ogg(40) })).json();
+    const r = (await dono('POST', '/api/direito-autoral/retirar', { tipo: 'som', id: somA.id, reclamante: 'Selo Y' })).json();
+    assert.equal(r.copias, 1, 'a cópia da outra comunidade saiu junto');
+    assert.equal(db.findSound(somA.id), undefined);
+    assert.equal(db.findSound(somB.id), undefined);
+
+    // Emoji de pacote: instalar copia para a comunidade; retirar o do pacote leva a cópia.
+    const png = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.from('desenho-unico')]);
+    const pacote = db.createEmojiPack('Figurinhas', 'x', '😀', a.user.id);
+    const item = db.addEmojiToPack(pacote, 'personagem', 'image/png', png);
+    const copia = db.createEmoji(comB.id, 'personagem', 'image/png', png, b.user.id);
+    const achado = (await dono('GET', '/api/direito-autoral/procurar?q=personagem')).json() as { tipo: string; id: number }[];
+    assert.ok(achado.some((c) => c.tipo === 'emoji-pacote' && c.id === item), 'o emoji do pacote aparece na busca');
+    const re = (await dono('POST', '/api/direito-autoral/retirar', { tipo: 'emoji-pacote', id: item, reclamante: 'Estúdio Z' })).json();
+    assert.equal(re.copias, 1);
+    assert.equal(db.findEmojiPackItem(item), undefined);
+    assert.equal(db.findEmoji(copia.id), undefined, 'a cópia na comunidade saiu junto');
+  });
+
+  it('anexo: sai da mensagem e o texto fica; conversa privada nunca aparece na busca', async () => {
+    const dono = comToken(app, (await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'donodosyden', password: 'segredo123' } })).json().token);
+    const pessoa = await criarConta(app, 'quemanexa');
+    const outra = await criarConta(app, 'quemconversa');
+    const comunidade = (await comToken(app, pessoa.token)('POST', '/api/communities', { name: 'Anexos' })).json();
+    const canal = db.listChannels(comunidade.id).find((c) => c.type === 'text')!;
+    const imagem = Buffer.from('imagem-do-filme');
+    const mensagem = db.createMessage(canal.id, pessoa.user.id, 'olha o pôster');
+    const anexo = db.addAttachment(mensagem.id, { name: 'poster-do-filme.png', mime: 'image/png', data: imagem, width: null, height: null });
+
+    // O mesmo nome de arquivo numa conversa privada: não pode aparecer.
+    const privada = db.createDirectChannel('', pessoa.user.id, [outra.user.id]);
+    const noPrivado = db.createMessage(privada.id, pessoa.user.id, '');
+    db.addAttachment(noPrivado.id, { name: 'poster-do-filme-privado.png', mime: 'image/png', data: Buffer.from('outro'), width: null, height: null });
+
+    const achados = (await dono('GET', '/api/direito-autoral/procurar?q=poster-do-filme')).json() as { tipo: string; nome: string; onde: string }[];
+    assert.deepEqual(
+      achados.filter((c) => c.tipo === 'anexo').map((c) => c.nome),
+      ['poster-do-filme.png'],
+      'só o do canal; o da conversa privada não aparece',
+    );
+    assert.match(achados.find((c) => c.tipo === 'anexo')!.onde, /em Anexos$/);
+
+    const r = await dono('POST', '/api/direito-autoral/retirar', { tipo: 'anexo', id: anexo.id, reclamante: 'Distribuidora W' });
+    assert.equal(r.statusCode, 200);
+    const depois = db.findMessageFull(mensagem.id, pessoa.user.id)!;
+    assert.equal(depois.content, 'olha o pôster', 'o texto da mensagem fica');
+    assert.equal(depois.attachments.length, 0, 'o anexo saiu');
+  });
+
   it('o que já saiu responde 404, e não apaga outra coisa', async () => {
     const dono = comToken(app, (await app.inject({ method: 'POST', url: '/api/auth/login', payload: { username: 'donodosyden', password: 'segredo123' } })).json().token);
     assert.equal((await dono('POST', '/api/direito-autoral/retirar', { tipo: 'som', id: 999999, reclamante: 'Alguém' })).statusCode, 404);

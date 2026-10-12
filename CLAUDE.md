@@ -34,7 +34,10 @@ responsabilidade em quem sobe (já está nos termos) — e o Syden não traz ace
 direitos@syden.chat (termos, seção 4), e quem cuida do Syden retira pelo painel (Uso do servidor → Direito
 autoral): procura pelo nome, retira dizendo quem reclamou, e quem subiu recebe o aviso numa conversa privada,
 onde pode contestar. Cada retirada fica registrada por pessoa — a reincidência que os termos dizem custar a
-conta aparece ali, mas banir continua sendo decisão de uma pessoa. Cobre sons, músicas do karaokê e emojis.
+conta aparece ali, mas banir continua sendo decisão de uma pessoa. Cobre sons, músicas do karaokê, emojis
+(de comunidade e de pacote) e anexos. **Retirar leva as cópias do mesmo arquivo** (mesmo sha: o emoji de pacote é
+copiado para cada comunidade que instala). **Anexo só dos canais de comunidade:** a busca nunca olha conversa
+privada, senão o painel viraria um jeito de ver os nomes dos arquivos trocados no particular.
 
 O gerador continua no projeto como **ferramenta de teste**, para ter um arquivo de áudio com letra
 sincronizada ao mexer no karaokê. Não é produto: a saída dele não mora em `web/public/`, e por isso

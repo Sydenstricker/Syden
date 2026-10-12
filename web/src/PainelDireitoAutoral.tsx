@@ -4,7 +4,7 @@ import { api } from './api';
 import { chave, useT } from './i18n';
 
 interface Conteudo {
-  tipo: 'som' | 'musica' | 'emoji';
+  tipo: 'som' | 'musica' | 'emoji' | 'emoji-pacote' | 'anexo';
   id: number;
   nome: string;
   onde: string;
@@ -22,9 +22,17 @@ interface Retirada {
   autorNome: string | null;
   reclamante: string;
   por: string;
+  /** Outras cópias do mesmo arquivo que saíram junto. */
+  copias: number;
 }
 
-const NOME_DO_TIPO: Record<Conteudo['tipo'], string> = { som: chave('O som'), musica: chave('A música'), emoji: chave('O emoji') };
+const NOME_DO_TIPO: Record<Conteudo['tipo'], string> = {
+  som: chave('O som'),
+  musica: chave('A música'),
+  emoji: chave('O emoji'),
+  'emoji-pacote': chave('O emoji'),
+  anexo: chave('O arquivo'),
+};
 const quando = (iso: string) => new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 
 /**
@@ -89,13 +97,14 @@ export function PainelDireitoAutoral() {
     setOcupado(true);
     setErro(null);
     try {
-      const r = await api<{ avisado: boolean; retiradasDoAutor: number }>('/api/direito-autoral/retirar', {
+      const r = await api<{ avisado: boolean; copias: number; retiradasDoAutor: number }>('/api/direito-autoral/retirar', {
         method: 'POST',
         body: { tipo: escolhido.tipo, id: escolhido.id, reclamante: reclamante.trim(), aviso: aviso.trim() },
       });
       setFeito(
         t('«{nome}» saiu.', { nome: escolhido.nome }) +
           ' ' +
+          (r.copias > 0 ? t('Saíram junto {n} cópia(s) do mesmo arquivo.', { n: r.copias }) + ' ' : '') +
           (r.avisado ? t('Quem subiu recebeu o aviso numa conversa com você.') : t('Não havia a quem avisar.')) +
           (r.retiradasDoAutor > 1 ? ' ' + t('É a retirada número {n} desta pessoa.', { n: r.retiradasDoAutor }) : ''),
       );
@@ -122,7 +131,7 @@ export function PainelDireitoAutoral() {
       </p>
 
       <form className="direito-autoral-busca" onSubmit={(e) => void procurar(e)}>
-        <input value={termo} onChange={(e) => setTermo(e.target.value)} placeholder={t('Nome do som, da música ou do emoji')} aria-label={t('Procurar conteúdo')} />
+        <input value={termo} onChange={(e) => setTermo(e.target.value)} placeholder={t('Nome do som, da música, do emoji ou do arquivo')} aria-label={t('Procurar conteúdo')} />
         <button type="submit" className="btn-secondary" disabled={termo.trim().length < 2}>
           <Search size={14} aria-hidden="true" /> {t('Procurar')}
         </button>
@@ -207,7 +216,10 @@ export function PainelDireitoAutoral() {
                   {r.autorNome && ` · ${t('quem subiu: {nome}', { nome: r.autorNome })}`}
                 </small>
               </div>
-              <p className="settings-hint">{t('Reclamação de {quem}. Quem retirou: {por}.', { quem: r.reclamante, por: r.por })}</p>
+              <p className="settings-hint">
+                {t('Reclamação de {quem}. Quem retirou: {por}.', { quem: r.reclamante, por: r.por })}
+                {r.copias > 0 && ' ' + t('Saíram junto {n} cópia(s) do mesmo arquivo.', { n: r.copias })}
+              </p>
             </li>
           ))}
         </ul>

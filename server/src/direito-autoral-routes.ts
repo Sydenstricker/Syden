@@ -5,8 +5,10 @@
  * RETIRADO, quem o publicou é AVISADO do motivo e pode contestar, e a REINCIDÊNCIA custa a conta. Até aqui
  * só a promessa existia — cumpri-la era mexer no banco à mão. Estas rotas são o lado de dentro:
  *
- *   - procurar pelo nome (é o que o e-mail traz: "o que é e onde está");
- *   - retirar: apaga, some da tela de quem tinha, fica registrado e quem subiu recebe o aviso;
+ *   - procurar pelo nome (é o que o e-mail traz: "o que é e onde está"): sons, músicas, emojis (de comunidade
+ *     e de pacote) e anexos dos canais de comunidade — nunca de conversa privada;
+ *   - retirar: apaga COM AS CÓPIAS do mesmo arquivo, some da tela de quem tinha, fica registrado e quem subiu
+ *     recebe o aviso;
  *   - o histórico, com quantas vezes cada pessoa já teve conteúdo retirado — o número que decide a conta.
  *
  * O AVISO SAI DE QUEM RETIROU, numa conversa privada, e não da conta do Syden: ela não tem conversa privada
@@ -18,10 +20,10 @@
 import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
-import { communityRoom, directRoom, emitToUser, joinDirectRoom } from './realtime.js';
+import { channelRoom, communityRoom, directRoom, emitToUser, joinDirectRoom } from './realtime.js';
 import { requireUser } from './routes.js';
 
-const TIPOS: db.TipoRetiravel[] = ['som', 'musica', 'emoji'];
+const TIPOS: db.TipoRetiravel[] = ['som', 'musica', 'emoji', 'emoji-pacote', 'anexo'];
 
 export function registerDireitoAutoralRoutes(app: FastifyInstance, io: IOServer) {
   app.register(async (authed) => {
@@ -50,31 +52,39 @@ export function registerDireitoAutoralRoutes(app: FastifyInstance, io: IOServer)
         const conteudo = db.acharRetiravel(tipo, Number(request.body?.id));
         if (!conteudo) return reply.code(404).send({ error: 'Esse conteúdo não existe mais.' });
 
-        // 1. Retirar, e sumir da tela de quem tinha — pelos mesmos avisos que a exclusão comum usa.
-        if (tipo === 'som') {
-          db.deleteSound(conteudo.id);
-          if (conteudo.communityId !== null) {
-            io.to(communityRoom(conteudo.communityId)).emit('sound:deleted', { id: conteudo.id, communityId: conteudo.communityId });
-          } else if (conteudo.packId !== null) {
-            // Som de pacote mora no soundboard de quem instalou, em qualquer comunidade.
-            for (const userId of db.quemInstalou(conteudo.packId)) emitToUser(io, userId, 'sound:deleted', { id: conteudo.id, communityId: null });
+        // 1. Retirar — com as cópias do mesmo arquivo — e sumir da tela de quem tinha, pelos mesmos avisos
+        // que a exclusão comum usa.
+        const saiu = db.retirarComCopias(conteudo);
+        for (const item of saiu) {
+          if (item.tipo === 'som') {
+            if (item.communityId !== null) {
+              io.to(communityRoom(item.communityId)).emit('sound:deleted', { id: item.id, communityId: item.communityId });
+            } else if (item.packId !== null) {
+              // Som de pacote mora no soundboard de quem instalou, em qualquer comunidade.
+              for (const userId of db.quemInstalou(item.packId)) emitToUser(io, userId, 'sound:deleted', { id: item.id, communityId: null });
+            }
+          } else if (item.tipo === 'musica') {
+            io.to(communityRoom(item.communityId!)).emit('karaoke:deleted', { id: item.id, communityId: item.communityId });
+          } else if (item.tipo === 'emoji') {
+            io.to(communityRoom(item.communityId!)).emit('emoji:deleted', { id: item.id, communityId: item.communityId });
+          } else if (item.tipo === 'anexo') {
+            const canal = db.findChannel(item.channelId!);
+            if (!canal) continue;
+            if (item.mensagemApagada) io.to(channelRoom(canal)).emit('message:deleted', { id: item.messageId, channelId: item.channelId, threadId: null });
+            else io.to(channelRoom(canal)).emit('attachment:removed', { id: item.id, messageId: item.messageId, channelId: item.channelId });
           }
-        } else if (tipo === 'musica') {
-          db.deleteKaraokeSong(conteudo.id);
-          io.to(communityRoom(conteudo.communityId!)).emit('karaoke:deleted', { id: conteudo.id, communityId: conteudo.communityId });
-        } else {
-          db.deleteEmoji(conteudo.id);
-          io.to(communityRoom(conteudo.communityId!)).emit('emoji:deleted', { id: conteudo.id, communityId: conteudo.communityId });
+          // Item de pacote de emojis não tem tela aberta para avisar: ele só aparece no catálogo, que relê.
         }
+        const copias = Math.max(0, saiu.length - 1);
 
         // 2. O registro: é ele que conta a reincidência, e a auditoria responde "por que isto sumiu?".
-        db.registrarRetirada(conteudo, reclamante, request.user.username);
+        db.registrarRetirada(conteudo, reclamante, request.user.username, copias);
         db.registrarAuditoria({
           actor: request.user,
           action: 'retirada por direito autoral',
           target: `${conteudo.tipo} «${conteudo.nome}» (${conteudo.onde})`,
           communityId: conteudo.communityId,
-          detail: `Reclamação de ${reclamante}`,
+          detail: `Reclamação de ${reclamante}${copias ? ` · mais ${copias} cópia(s) do mesmo arquivo` : ''}`,
         });
 
         // 3. O aviso a quem subiu. Sem autor conhecido (conta apagada) ou sendo a própria pessoa, não há a quem.
@@ -96,7 +106,7 @@ export function registerDireitoAutoralRoutes(app: FastifyInstance, io: IOServer)
           avisado = true;
         }
 
-        return { ok: true, avisado, retiradasDoAutor: db.retiradasDe(conteudo.autorId) };
+        return { ok: true, avisado, copias, retiradasDoAutor: db.retiradasDe(conteudo.autorId) };
       },
     );
   });
