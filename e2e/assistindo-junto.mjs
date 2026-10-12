@@ -73,8 +73,9 @@ const rotulo = await bia.locator('.canal-assistindo .so-para-leitor').first().te
 rotulo === 'Assistindo junto' ? ok('e quem usa leitor de tela ouve "Assistindo junto"') : falhou('rótulo para leitor de tela: ' + rotulo);
 await bia.locator('.sidebar').screenshot({ path: 'e2e/fotos/assistindo-junto.png' });
 
-// No quadro grande, um "i" só: o da fileira de controles. O do próprio quadro (o das miniaturas)
-// aparecia junto ao passar o mouse, e eram dois lado a lado.
+// Quem ASSISTE não tem "i" nenhum (11/10/2026): ali só restava o "Baixar até", que saiu — a qualidade
+// que chega é decisão do Syden. Antes disso a regra era "um só", porque o das miniaturas aparecia junto
+// com o da fileira de controles.
 const quadro = bia.locator('.stage-main', { has: bia.locator('.stream-controls') }).first();
 await quadro.waitFor({ timeout: 20000 });
 await quadro.hover();
@@ -82,7 +83,7 @@ await bia.waitForTimeout(400);
 const is = await quadro.locator('button[aria-label="Informações da transmissão"]').evaluateAll((botoes) =>
   botoes.filter((b) => b.getClientRects().length > 0 && getComputedStyle(b).visibility !== 'hidden').length,
 );
-is === 1 ? ok('no quadro grande da transmissão há um "i" só') : falhou(`o quadro grande mostra ${is} botões "i"`);
+is === 0 ? ok('quem assiste não recebe "i" no quadro grande') : falhou(`o quadro grande de quem assiste mostra ${is} botões "i"`);
 await quadro.screenshot({ path: 'e2e/fotos/transmissao-um-i.png' });
 
 // Quantas pessoas assistem: quem abriu a transmissão, e não quem só está na sala. A Bia abriu, então a

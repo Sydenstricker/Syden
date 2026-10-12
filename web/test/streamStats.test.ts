@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { describeStats, proximoFluido, taxaRedonda } from '../src/streamStats.js';
+import { describeStats, proximaParada, proximoFluido, taxaRedonda } from '../src/streamStats.js';
 
 // ===================================================================================================
 // O NÚMERO DE QUADROS NÃO PODE FAZER UMA TRANSMISSÃO SAUDÁVEL PARECER QUEBRADA.
@@ -84,5 +84,41 @@ describe('o Fluido cai para 30 quando não aguenta', () => {
   it('depois de cair, não volta a subir', () => {
     const caiu = { apertos: 3, em30: true };
     assert.equal(proximoFluido(caiu, { fps: 60, limitedBy: 'none' }).em30, true);
+  });
+});
+
+// A tela parada pede nitidez (a pendência "Texto borrado"): site e planilha legíveis, sem ninguém
+// precisar escolher um modo. O que importa aqui é a folga — sem ela, um jogo com pausa ficaria
+// alternando entre nítido e fluido o tempo todo.
+describe('a tela parada pede nitidez', () => {
+  const inicio = { paradas: 0, nitida: false };
+  const nitida = { paradas: 2, nitida: true };
+
+  it('duas medições paradas seguidas ligam a nitidez; uma não', () => {
+    const uma = proximaParada(inicio, 1);
+    assert.equal(uma.nitida, false, 'uma pausa curta num jogo não troca nada');
+    assert.equal(proximaParada(uma, 0).nitida, true);
+  });
+
+  it('tela totalmente parada (zero quadros) também conta como parada', () => {
+    assert.equal(proximaParada(proximaParada(inicio, 0), 0).nitida, true);
+  });
+
+  it('sem medida (ninguém assistindo, primeira medição) não muda nada', () => {
+    assert.deepEqual(proximaParada(inicio, null), inicio);
+    assert.deepEqual(proximaParada(nitida, null), nitida);
+  });
+
+  it('voltar ao movimento é na hora: uma medição com quadros basta', () => {
+    assert.deepEqual(proximaParada(nitida, 25), inicio);
+  });
+
+  it('entre parada e movimento, quem está nítido continua nítido (a folga)', () => {
+    assert.deepEqual(proximaParada(nitida, 8), nitida);
+  });
+
+  it('aperto conta como movimento: um jogo estrangulado não fica preso na nitidez', () => {
+    assert.deepEqual(proximaParada(nitida, 6, true), inicio);
+    assert.equal(proximaParada(proximaParada(inicio, 2, true), 2, true).nitida, false);
   });
 });

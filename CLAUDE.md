@@ -591,35 +591,22 @@ Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao es
 desmarcar só vale da versão seguinte à 0.1.7 em diante: antes o site ligava a captura de som por fora,
 sempre.)
 
-## Texto borrado na transmissão: o Padrão foi ajustado para jogo
+## Texto borrado na transmissão: o Padrão decide pela imagem parada
 
-**Diagnosticado em 06/10/2026, não consertado. PENDÊNCIA para o Sydenstricker fazer.** Relato: o
-Magnitudle transmitido chegava com as formas grandes visíveis (avião, botões) e o texto pequeno
-ilegível. É resolução baixa esticada, provavelmente 360p ou menos, e não defeito de rede.
+**Diagnosticado em 06/10/2026, consertado em 11/10/2026.** Relato: o Magnitudle transmitido chegava com
+as formas grandes visíveis e o texto pequeno ilegível — resolução baixa esticada, não defeito de rede.
 
-**A causa é nossa, em boa parte.** O modo Padrão usa `maintain-framerate` e `contentHint: 'motion'`
-(`SCREEN_HINTS`, em `useVoice.ts`): sob aperto de processador ou de internet de quem transmite, ele
-corta resolução para segurar os 30 quadros. É o certo para jogo e o errado para site, slide ou
-planilha, que ficam quase parados e precisam de letra legível. O modo Leve (`maintain-resolution`,
-`detail`) resolvia isso, mas dependia de quem transmite saber escolher, e ninguém sabia — e ele saiu
-em 11/10/2026 (ver "Transmissão: o Syden decide"). Agora o conserto abaixo é o único caminho.
+**A causa era nossa.** O Padrão usa `maintain-framerate` e `contentHint: 'motion'`: sob aperto, corta
+resolução para segurar os 30 quadros. Certo para jogo, errado para site, slide e planilha. O Leve
+resolvia, mas dependia de quem transmite saber escolher, e saiu.
 
-**Para confirmar antes de mexer:**
-1. Quem transmite passa o mouse no "i" do quadro. Se aparecer "Seu computador está segurando a
-   qualidade" ou "Sua internet está segurando a qualidade", é o aperto com o Padrão cortando resolução.
-2. Quem assiste confere se o quadro não está pequeno (o `adaptiveStream` baixa a camada do tamanho
-   em que o vídeo é mostrado), e se o celular dele não está em economia de dados.
-
-**O conserto combinado (meio dia, com teste):** o Padrão decide sozinho o que sacrificar. A
-otimização dinâmica já confere a transmissão a cada `SCREEN_CHECK_MS`; ela passa a perguntar também
-"a imagem está quase parada?". Tela parada → `maintain-resolution` + `detail`; com movimento →
-`maintain-framerate` + `motion`. A medida sai das estatísticas do próprio codificador
-(`getStats` do `outbound-rtp` de quem transmite: bytes e quadros codificados por intervalo; tela
-parada gera quase nada), sem processar a imagem. Cuidados:
-- Trocar com folga (alguns segundos parado antes de ir para nitidez), senão um jogo com pausa fica
-  alternando o tempo todo.
-- O modo Fluido (jogos, 60 quadros) não entra nisso: ali a escolha da pessoa é explícita.
-- Quem assiste continua sem comentário nenhum sobre a imagem (ver "O número verdadeiro que mente").
+**O conserto:** a otimização dinâmica (`useVoice.ts`) mede os quadros CODIFICADOS por camada entre uma
+conferência e outra (`framesEncoded`, não o `framesPerSecond`: tela parada e camada pausada dão os dois
+zero). A regra é `proximaParada` (`streamStats.ts`): parada → `maintain-resolution` + `detail`, e os
+degraus de tamanho desligados; movimento → `maintain-framerate` + `motion`. Folga: duas medições paradas
+para ir à nitidez (~8 s), uma com quadros para voltar. **Aperto de processador ou internet conta como
+movimento**: tela parada quase não gera dados, e sem isso um jogo começando depois de um slide podia
+ficar preso na nitidez, a menos de 12 quadros. O Fluido não entra. Teste de tela: `e2e/tela-parada.mjs`.
 
 ## O número verdadeiro que mente: a tela não pode cobrar o preço sem mostrar a compra
 

@@ -208,3 +208,41 @@ export function proximoFluido(atual: Fluido, amostra: { fps: number; limitedBy: 
   const apertos = atual.apertos + 1;
   return { apertos, em30: apertos >= APERTOS_PARA_CAIR };
 }
+
+// ---------- A tela parada pede nitidez ----------
+
+/** Abaixo disto, em quadros codificados por segundo, a imagem está parada: site, slide, planilha. */
+export const FPS_PARADA = 5;
+/** A partir disto voltou o movimento. O vão entre os dois é a folga que impede o vaivém. */
+export const FPS_MOVIMENTO = 12;
+/** Medições paradas seguidas antes de ir para a nitidez (~8 s com a conferência de 4 em 4). */
+const PARADAS_PARA_NITIDEZ = 2;
+
+export interface Parada {
+  /** Medições paradas seguidas até agora. */
+  paradas: number;
+  /** A transmissão está priorizando a nitidez (manter a resolução) em vez dos quadros. */
+  nitida: boolean;
+}
+
+/**
+ * Decide se o Padrão prioriza nitidez ou quadros, pela quantidade de quadros que o codificador
+ * produziu desde a última medição. A captura de tela só entrega quadro quando algo muda: imagem parada
+ * gera quase nada, e é isso que a medida enxerga, sem processar a imagem.
+ *
+ * Ir para a nitidez é devagar (duas medições paradas: um jogo com pausa curta não troca); voltar ao
+ * movimento é na hora (uma medição com quadros: rolar a página não pode borrar à espera da regra).
+ * `null` é "não deu para medir" — ninguém assistindo, ou a primeira medição — e não muda nada.
+ *
+ * APERTO CONTA COMO MOVIMENTO. Tela parada quase não gera dados, então ela praticamente nunca aperta o
+ * processador nem a internet. Se apertou, é porque há movimento sendo estrangulado — e com a nitidez
+ * ligada o navegador sacrifica os quadros, então um jogo começando depois de um slide podia nunca passar
+ * dos 12 e ficar preso numa sequência de fotos.
+ */
+export function proximaParada(atual: Parada, fps: number | null, apertado = false): Parada {
+  if (fps === null) return atual;
+  if (atual.nitida) return fps >= FPS_MOVIMENTO || apertado ? { paradas: 0, nitida: false } : atual;
+  if (fps >= FPS_PARADA || apertado) return { paradas: 0, nitida: false };
+  const paradas = atual.paradas + 1;
+  return { paradas, nitida: paradas >= PARADAS_PARA_NITIDEZ };
+}

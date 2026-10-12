@@ -24,7 +24,16 @@ import { nomeDaTransmissao } from './streamName';
 import { aoMudarEconomia, aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { applyAllVolumes, idsComVolumeAjustado } from './voiceVolumes';
 import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOuvir';
-import { SCALE_STEPS, type AutoQuality, type Fluido, type StreamStats, nextQuality, proximoFluido } from './streamStats';
+import {
+  SCALE_STEPS,
+  type AutoQuality,
+  type Fluido,
+  type Parada,
+  type StreamStats,
+  nextQuality,
+  proximaParada,
+  proximoFluido,
+} from './streamStats';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
 import { escolherCodecDaTela } from './escolherCodec';
@@ -1206,6 +1215,13 @@ export function useVoice(socket: Socket | null) {
    * jogo quer. Este efeito mede a transmissão de quatro em quatro segundos e, pela regra de nextQuality,
    * encolhe a imagem para segurar a fluidez (ou devolve a nitidez quando sobra folga).
    *
+   * NO PADRÃO, A TELA PARADA PEDE NITIDEZ (11/10/2026, a pendência "Texto borrado" do CLAUDE.md). O
+   * Padrão segura os quadros e sacrifica a resolução, que é o certo para jogo e o errado para site,
+   * slide e planilha: o texto pequeno chegava ilegível. O modo Leve resolvia isso, mas dependia de quem
+   * transmite saber escolher, e saiu. Agora a regra de proximaParada decide sozinha: imagem parada →
+   * manter a resolução e 'detail'; voltou o movimento → manter os quadros e 'motion'. Com a imagem
+   * parada, os degraus de tamanho ficam desligados — o texto nítido é justamente o que se quer ali.
+   *
    * NO FLUIDO HÁ UM DEGRAU ANTES: sair dos 60 quadros. Isto era um aviso ("seu computador não está dando
    * conta dos 60 quadros", com um botão de mudar para 30) e virou trabalho do Syden em 11/10/2026: o
    * problema é de quem assiste, quem transmite não o vê, e não é ônus de ninguém resolvê-lo à mão. Vale
@@ -1217,6 +1233,12 @@ export function useVoice(socket: Socket | null) {
     let base: (number | undefined)[] | null = null;
     let busy = false;
     let fluido: Fluido = { apertos: 0, em30: false };
+    let parada: Parada = { paradas: 0, nitida: false };
+    // Quadros codificados por camada na medição anterior, e quando: é a diferença que diz se a tela
+    // está parada. O framesPerSecond do navegador não serve aqui — tela parada e camada pausada dão
+    // os dois zero, e só a segunda quer dizer "ninguém assistindo".
+    let quadrosAntes = new Map<string, number>();
+    let quandoAntes = 0;
 
     const check = async () => {
       if (busy) return;
@@ -1226,12 +1248,25 @@ export function useVoice(socket: Socket | null) {
       try {
         let fps = 0;
         let limitedBy: StreamStats['limitedBy'] = 'none';
+        const quadrosAgora = new Map<string, number>();
+        let quadrosNoIntervalo: number | null = null;
+        const agora = performance.now();
         (await sender.getStats()).forEach((entry: Record<string, unknown>) => {
           if (entry.type !== 'outbound-rtp' || entry.kind !== 'video') return;
           fps = Math.max(fps, Number(entry.framesPerSecond ?? 0));
           const reason = String(entry.qualityLimitationReason ?? 'none');
           if (reason === 'cpu' || reason === 'bandwidth') limitedBy = reason;
+          if (entry.active === false) return; // camada pausada (ninguém assistindo): não diz nada da tela
+          const camada = String(entry.rid ?? entry.ssrc ?? '');
+          const quadros = Number(entry.framesEncoded ?? 0);
+          quadrosAgora.set(camada, quadros);
+          const antes = quadrosAntes.get(camada);
+          if (antes !== undefined) quadrosNoIntervalo = Math.max(quadrosNoIntervalo ?? 0, quadros - antes);
         });
+        const segundos = (agora - quandoAntes) / 1000;
+        const fpsCodificado = quadrosNoIntervalo !== null && quandoAntes > 0 ? quadrosNoIntervalo / segundos : null;
+        quadrosAntes = quadrosAgora;
+        quandoAntes = agora;
 
         if (modoNoArRef.current === 'smooth' && !fluido.em30) {
           fluido = proximoFluido(fluido, { fps, limitedBy });
@@ -1246,6 +1281,27 @@ export function useVoice(socket: Socket | null) {
             await sender.setParameters(parameters).catch(console.error);
           }
           return; // os degraus de tamanho só depois dos 30: a 60 a medida deles não vale
+        }
+
+        if (modoNoArRef.current === 'standard') {
+          const seguinte = proximaParada(parada, fpsCodificado, limitedBy !== 'none');
+          if (seguinte.nitida !== parada.nitida) {
+            const faixa = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
+            if (faixa) faixa.mediaStreamTrack.contentHint = seguinte.nitida ? 'detail' : 'motion';
+            const parameters = sender.getParameters();
+            parameters.degradationPreference = seguinte.nitida ? 'maintain-resolution' : 'maintain-framerate';
+            if (seguinte.nitida) {
+              // Nitidez é o tamanho cheio: desfaz o que os degraus tinham encolhido.
+              base ??= parameters.encodings.map((encoding) => encoding.scaleResolutionDownBy);
+              parameters.encodings.forEach((encoding, index) => {
+                encoding.scaleResolutionDownBy = base?.[index] ?? 1;
+              });
+              quality = { step: 0, comfortable: 0 };
+            }
+            await sender.setParameters(parameters).catch(console.error);
+          }
+          parada = seguinte;
+          if (parada.nitida) return; // parada, os degraus de tamanho ficam quietos
         }
 
         const next = nextQuality(quality, { fps, limitedBy });
