@@ -12,8 +12,8 @@ E há um argumento técnico que é nosso e é raro: no Syden **o áudio não pas
 
 ## Antes de enviar, confira
 
-- [ ] O app já está **publicado** na Microsoft Store (não só enviado)? Se sim, ponha o link — muda o tom da conversa.
-- [ ] Número de usuários ativos, de verdade. **Não aumente.** Eles conseguem verificar, e um número inflado encerra a conversa antes de começar.
+- Sem link da Store na carta (decisão dele, 12/10/2026): link de loja num e-mail frio parece golpe, e o site já leva à Store.
+- [x] Número de usuários ativos, de verdade (30 em 12/10/2026). **Não aumente.** Eles conseguem verificar, e um número inflado encerra a conversa antes de começar.
 - [ ] Um endereço de e-mail do domínio syden.chat, se houver. Um Gmail funciona, um domínio próprio pesa mais.
 
 ## A carta
@@ -24,8 +24,8 @@ E há um argumento técnico que é nosso e é raro: no Syden **o áudio não pas
 >
 > I'm the developer of **Syden** (<https://syden.chat>), a voice, video and text chat
 > application for small groups of friends. It's free, with no ads and no subscription,
-> and it runs in the browser and as a Windows desktop app, available on the Microsoft
-> Store (<LINK DA STORE>). Our users are in Brazil.
+> and it runs in the browser and as a Windows desktop app on the Microsoft Store.
+> Our users are in Brazil.
 >
 > Syden has a built-in karaoke feature, and I'd like to ask about your OEM/API programme.
 >
@@ -42,8 +42,8 @@ E há um argumento técnico que é nosso e é raro: no Syden **o áudio não pas
 > at our current size — you earn per actual use rather than per registered user, and we
 > don't have to commit to volume we can't yet promise.
 >
-> **Being straightforward about our size.** Syden is small today: a few dozen active
-> users (<NÚMERO REAL>), growing by word of mouth. I'm not going to present it as bigger than it is. What
+> **Being straightforward about our size.** Syden is small today: about 30 active
+> users, growing by word of mouth. I'm not going to present it as bigger than it is. What
 > I can offer is a well-built product, a licensing-friendly playback architecture, and a
 > market (Brazil) where karaoke is popular and legal catalogue access is scarce.
 >
