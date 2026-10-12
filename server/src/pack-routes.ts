@@ -61,6 +61,9 @@ export function registerPackRoutes(app: FastifyInstance) {
     }
 
     authed.get('/api/packs', async (request) => db.listPacks(request.user.id));
+    // Para a busca do soundboard: o que existe nos pacotes que a pessoa ainda não tem. Só nomes — o
+    // ranqueamento é o mesmo da busca (buscaDeSons.ts, no site), feito lá.
+    authed.get('/api/packs/sons-que-faltam', async (request) => db.sonsDosPacotesQueFaltam(request.user.id));
 
     authed.get<{ Params: { id: string } }>('/api/packs/:id/sounds', async (request, reply) => {
       const pack = db.findPack(Number(request.params.id), request.user.id);

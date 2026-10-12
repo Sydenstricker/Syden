@@ -3,7 +3,8 @@
 //
 // - um erro de digitação ("ajdua") ainda acha o som, e ele vem PRIMEIRO;
 // - a lista traz os outros prováveis atrás, em ordem;
-// - Enter toca o primeiro, sem mouse (o sinal é o ícone do som aparecendo no quadro de quem tocou).
+// - Enter toca o primeiro, sem mouse (o sinal é o ícone do som aparecendo no quadro de quem tocou);
+// - um som que só existe num pacote NÃO instalado aparece em "Pacotes", e Instalar o traz para a lista.
 //
 //   node e2e/busca-de-sons.mjs   (API de teste na 3099, site na 5174 e LiveKit local)
 import fs from 'node:fs';
@@ -57,6 +58,34 @@ try {
   );
   enviados === SONS.length ? ok(`${enviados} sons enviados`) : falhou(`só ${enviados} sons entraram`);
 
+  // Outra pessoa publica um pacote que a primeira não tem.
+  const entrar = async (usuario) => {
+    await fetch(API + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username: usuario, password: 'segredo123', email: usuario + '@exemplo.test', inviteCode: 'teste' }),
+    });
+    const r = await fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username: usuario, password: 'segredo123' }),
+    });
+    return (await r.json()).token;
+  };
+  const tokenDoPacote = await entrar('pacote' + s);
+  const golBytes = Buffer.from([79, 103, 103, 83, 99, ...String(s).split('').map(Number)]);
+  const pacote = await fetch(API + '/api/packs', {
+    method: 'POST',
+    headers: { authorization: 'Bearer ' + tokenDoPacote, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      name: 'Futebol ' + s,
+      description: 'gritos',
+      icon: '⚽',
+      sounds: [{ name: 'Gol do Brasil ' + s, icon: '⚽', audio: 'data:audio/ogg;base64,' + golBytes.toString('base64') }],
+    }),
+  });
+  pacote.ok ? ok('outra pessoa publicou o pacote "Futebol"') : falhou('pacote: ' + (await pacote.text()));
+
   await page.reload();
   await dispensarPresentes(page);
   await page.locator('.rail-list .rail-item').first().click();
@@ -86,6 +115,23 @@ try {
     );
   const toques = await page.evaluate(() => JSON.parse(localStorage.getItem('syden.sonsTocados') ?? '{}'));
   Object.values(toques).includes(1) ? ok('e o toque ficou contado neste aparelho') : falhou('toques: ' + JSON.stringify(toques));
+
+  // O som que só existe num pacote não instalado.
+  await busca.fill('gol brasil');
+  const falta = page.locator('.soundboard-falta', { hasText: 'Gol do Brasil ' + s });
+  await falta.waitFor({ timeout: 8000 }).then(
+    () => ok('"gol brasil" acha o som no pacote que ela não tem, em "Pacotes"'),
+    () => falhou('o som do pacote não instalado não apareceu'),
+  );
+  await page.locator('.soundboard').screenshot({ path: path.join(FOTOS, 'busca-nos-pacotes.png') });
+  await falta.getByRole('button', { name: 'Instalar' }).click();
+  await page
+    .locator('.soundboard .soundboard-sound .soundboard-name', { hasText: 'Gol do Brasil ' + s })
+    .waitFor({ timeout: 8000 })
+    .then(
+      () => ok('Instalar trouxe o som para a lista dela, pronto para tocar'),
+      () => falhou('depois de instalar, o som não entrou na lista'),
+    );
 } catch (erro) {
   falhou(String(erro));
 } finally {

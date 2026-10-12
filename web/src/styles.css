@@ -12166,3 +12166,30 @@ body.arrastando-barra {
 .direito-autoral-feito {
   color: var(--text);
 }
+
+/* Sons de pacotes que a pessoa não tem, na busca do soundboard: um por linha, com o pacote e o Instalar. */
+.soundboard-faltam {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.soundboard-falta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  background: var(--overlay);
+}
+
+.soundboard-falta-texto {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.soundboard-falta-texto small {
+  color: var(--text-muted);
+}

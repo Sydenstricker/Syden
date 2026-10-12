@@ -2426,6 +2426,21 @@ export function createPackSound(packId: number, name: string, icon: string, mime
   return findSound(Number(result.lastInsertRowid))!;
 }
 
+/**
+ * Os sons dos pacotes que esta pessoa AINDA NÃO instalou, só o que a busca precisa (nome, ícone, pacote).
+ * É o que deixa a busca do soundboard responder "não tenho esse som" com "está no pacote tal: instale".
+ */
+export function sonsDosPacotesQueFaltam(userId: number): { id: number; name: string; icon: string; packId: number; packName: string }[] {
+  return db
+    .prepare(
+      `SELECT s.id, s.name, s.icon, s.pack_id AS packId, p.name AS packName
+       FROM sounds s JOIN packs p ON p.id = s.pack_id
+       WHERE s.pack_id NOT IN (SELECT pack_id FROM pack_installs WHERE user_id = ?)
+       ORDER BY s.id`,
+    )
+    .all(userId) as { id: number; name: string; icon: string; packId: number; packName: string }[];
+}
+
 export function installPack(packId: number, userId: number) {
   db.prepare('INSERT OR IGNORE INTO pack_installs (pack_id, user_id) VALUES (?, ?)').run(packId, userId);
 }

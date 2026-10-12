@@ -245,6 +245,15 @@ function PersonTile({
   );
 }
 
+/** Um som de pacote que a pessoa ainda não instalou: o que a busca mostra com o botão de instalar. */
+interface SomQueFalta {
+  id: number;
+  name: string;
+  icon: string;
+  packId: number;
+  packName: string;
+}
+
 /** Painel do soundboard: clicar num som toca para todos na sala. */
 /**
  * Painel do soundboard dentro da chamada. Com os pacotes, a lista ficou grande: por isso os favoritos de
@@ -278,6 +287,34 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
   const term = search.trim();
   const found = term ? buscarSons(sounds, term, toquesDosSons()) : sounds;
   const favorites = term ? [] : found.filter((s) => s.favorite);
+
+  /*
+   * O QUE ESTÁ NOS PACOTES QUE VOCÊ AINDA NÃO TEM. A busca respondia "nenhum som" quando o som existia, só
+   * que num pacote não instalado. Agora ela mostra esses também, depois dos seus, com o botão de instalar:
+   * instalado, o pacote entra no soundboard e o som passa a tocar. Carrega uma vez, na primeira busca.
+   */
+  const [faltam, setFaltam] = useState<SomQueFalta[] | null>(null);
+  const [instalando, setInstalando] = useState<number | null>(null);
+  const buscando = term.length > 0;
+  useEffect(() => {
+    if (!buscando || faltam) return;
+    api<SomQueFalta[]>('/api/packs/sons-que-faltam')
+      .then(setFaltam)
+      .catch(() => setFaltam([])); // sem a lista, a busca continua com os seus sons
+  }, [buscando, faltam]);
+  const nosPacotes = term && faltam ? buscarSons(faltam, term).slice(0, 6) : [];
+
+  async function instalar(packId: number) {
+    setInstalando(packId);
+    try {
+      await api(`/api/packs/${packId}/install`, { method: 'POST' });
+      await reloadSounds();
+      setFaltam((lista) => lista?.filter((s) => s.packId !== packId) ?? null);
+    } catch (e) {
+      console.error(e);
+    }
+    setInstalando(null);
+  }
   const groups = new Map<string, Sound[]>();
   for (const sound of term ? [] : found.filter((s) => !s.favorite)) {
     const group = sound.packName ?? 'Da comunidade';
@@ -344,28 +381,48 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
         />
       </label>
 
-      {sounds.length > 8 && (
-        <input
-          className="soundboard-search"
-          value={search}
-          placeholder={t('Procurar som')}
-          aria-label={t('Procurar som')}
-          onChange={(e) => setSearch(e.target.value)}
-          // Enter toca o primeiro da lista: digitar "ajdua" e Enter, sem tirar a mão do teclado no meio da partida.
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && term && found[0]) tocar(found[0]);
-          }}
-        />
-      )}
+      {/* SEMPRE À VISTA: desde que a busca também acha sons nos pacotes que você não tem, quem tem poucos
+          sons é justamente quem mais precisa dela. Antes ela só aparecia com mais de oito. */}
+      <input
+        className="soundboard-search"
+        value={search}
+        placeholder={t('Procurar som')}
+        aria-label={t('Procurar som')}
+        onChange={(e) => setSearch(e.target.value)}
+        // Enter toca o primeiro da lista: digitar "ajdua" e Enter, sem tirar a mão do teclado no meio da partida.
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && term && found[0]) tocar(found[0]);
+        }}
+      />
 
       {sounds.length === 0 && !adding && (
         <p className="soundboard-empty">
           {t('Nenhum som ainda. Adicione um abaixo, ou instale um pacote em Configurações → Soundboard.')}
         </p>
       )}
-      {sounds.length > 0 && found.length === 0 && <p className="soundboard-empty">{t('Nenhum som com esse nome.')}</p>}
+      {sounds.length > 0 && found.length === 0 && nosPacotes.length === 0 && <p className="soundboard-empty">{t('Nenhum som com esse nome.')}</p>}
 
       {term && found.length > 0 && grid(found)}
+
+      {nosPacotes.length > 0 && (
+        <>
+          <div className="soundboard-group">{t('Pacotes')}</div>
+          <div className="soundboard-faltam">
+            {nosPacotes.map((som) => (
+              <div key={som.id} className="soundboard-falta">
+                <span className="soundboard-icon">{som.icon}</span>
+                <span className="soundboard-falta-texto">
+                  <span className="soundboard-name">{som.name}</span>
+                  <small>{som.packName}</small>
+                </span>
+                <button type="button" className="btn-secondary" disabled={instalando !== null} onClick={() => void instalar(som.packId)}>
+                  {t('Instalar')}
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {favorites.length > 0 && (
         <>
