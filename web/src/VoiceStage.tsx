@@ -57,6 +57,7 @@ import { quemAssiste } from './assistindo';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { BotaoMinijogo, PainelDoMinijogo } from './Minijogo';
+import { SiteNoPalco } from './SiteEmbutido';
 import { pegarPedidoDeAbrir, usarMinijogo } from './minijogos';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
@@ -1178,6 +1179,8 @@ function Stage({
   const minijogo = usarMinijogo(channelId, socket);
   const eu = Number(useLocalParticipant().localParticipant.identity);
   const [minijogoAberto, setMinijogoAberto] = useState(false);
+  /** O jogo de parceiro (o Termo) aberto no palco, no lugar dos cartões e das transmissões: só para mim. */
+  const [siteNoPalco, setSiteNoPalco] = useState<{ nome: string; endereco: string } | null>(null);
   const temPartida = minijogo.partida !== null;
   useEffect(() => setMinijogoAberto(temPartida), [temPartida]);
   // Veio da home (o computador do quarto → escolher a sala): a estante de jogos abre assim que entra.
@@ -1273,7 +1276,9 @@ function Stage({
 
   return (
     <div className="stage" data-lk-theme="default">
-      {splitting ? (
+      {siteNoPalco ? (
+        <SiteNoPalco nome={siteNoPalco.nome} endereco={siteNoPalco.endereco} aoFechar={() => setSiteNoPalco(null)} />
+      ) : splitting ? (
         // Todas as transmissões do mesmo tamanho, lado a lado.
         <div className="stage-focus">
           <div className="stage-split">
@@ -1422,6 +1427,10 @@ function Stage({
             aoFechar={() => setMinijogoAberto(false)}
             socket={socket}
             channelId={channelId}
+            aoAbrirSite={(site) => {
+              setSiteNoPalco(site);
+              setMinijogoAberto(false);
+            }}
           />
         )}
         <PreviaDoClipe clipe={clipe} de={quemTransmite} canais={canaisDeTexto} />

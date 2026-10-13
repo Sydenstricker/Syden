@@ -7598,6 +7598,17 @@ textarea {
   color: var(--text-strong);
 }
 
+/* Na sala de voz, o jogo ocupa o palco inteiro (o espaço do vídeo), e a barra da call fica embaixo. */
+.site-no-palco {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-main);
+}
+
 .site-embutido iframe {
   flex: 1;
   width: 100%;

@@ -11,7 +11,6 @@ import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
-import { SiteEmbutido } from './SiteEmbutido';
 import {
   JOGOS,
   nomeDoJogo,
@@ -74,6 +73,7 @@ export function PainelDoMinijogo({
   aoFechar,
   socket,
   channelId,
+  aoAbrirSite,
 }: {
   partida: Partida | null;
   eu: number;
@@ -85,14 +85,14 @@ export function PainelDoMinijogo({
   /** O desenho manda e recebe o traço por aqui, na hora. */
   socket: Socket | null;
   channelId: number;
+  /** Abre um jogo de parceiro (o Termo) no palco da sala: só para quem clicou. */
+  aoAbrirSite: (site: { nome: string; endereco: string }) => void;
 }) {
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
   const [agora, setAgora] = useState(Date.now());
   /** O "Qual é o tamanho?" pede a categoria antes de começar. */
   const [escolhendoCategoria, setEscolhendoCategoria] = useState(false);
-  /** O jogo de parceiro aberto (o Termo): só para quem clicou, porque ele é de um jogador só. */
-  const [siteAberto, setSiteAberto] = useState<{ nome: string; endereco: string } | null>(null);
 
   // O relógio anda na tela; quem manda no fim de cada fase é o servidor.
   const andando = partida !== null && !partida.terminada;
@@ -149,7 +149,7 @@ export function PainelDoMinijogo({
               clicou — a partida da sala continua livre para os outros. */}
           {SITES_PARA_TRANSMITIR.filter((site) => site.embutir).map((site) => (
             <li key={site.endereco}>
-              <button type="button" className="minijogo-jogo minijogo-parceiro" title={t(site.dica)} onClick={() => setSiteAberto(site)}>
+              <button type="button" className="minijogo-jogo minijogo-parceiro" title={t(site.dica)} onClick={() => aoAbrirSite(site)}>
                 <CapaPalavraDoDia />
                 <span>{site.nome}</span>
               </button>
@@ -157,7 +157,6 @@ export function PainelDoMinijogo({
           ))}
         </ul>
       )}
-      {siteAberto && <SiteEmbutido nome={siteAberto.nome} endereco={siteAberto.endereco} aoFechar={() => setSiteAberto(null)} />}
 
       {partida?.jogo === 'tamanho' && <JogoTamanho estado={partida as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
       {partida?.jogo === 'stop' && <JogoStop estado={partida as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}

@@ -86,21 +86,22 @@ try {
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
   const capas = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
   capas === 8 ? ok('a Duda caiu na sala com a estante aberta: 8 jogos') : falhou(`a estante tem ${capas} jogos`);
-  // O Termo também está na estante da sala, e abre só para quem clicou.
+  // O Termo também está na estante da sala: abre NO PALCO (o lugar do vídeo), só para quem clicou, e a barra da call
+  // continua à vista embaixo (desenho do Sydenstricker).
   await duda.locator('.minijogo-parceiro', { hasText: 'Termo' }).click();
-  await duda.locator('.site-embutido iframe').waitFor({ timeout: 10000 });
-  (await edu.locator('.site-embutido').count()) === 0 ? ok('o Termo abriu da estante, só para a Duda') : falhou('o Termo abriu para o Edu também');
-  // Na tela inteira, e não preso dentro do painel (o painel tem transform, que prendia o position: fixed).
-  const janelaDoTermo = await duda.locator('.site-embutido').boundingBox();
-  const tela = duda.viewportSize();
-  janelaDoTermo.width > tela.width * 0.55 && janelaDoTermo.height > tela.height * 0.7
-    ? ok('a janela do Termo ocupa a tela, fora do painel')
-    : falhou(`a janela do Termo ficou presa: ${Math.round(janelaDoTermo.width)}×${Math.round(janelaDoTermo.height)}`);
+  await duda.locator('.site-no-palco iframe').waitFor({ timeout: 10000 });
+  (await edu.locator('.site-no-palco').count()) === 0 ? ok('o Termo abriu da estante, no palco, só para a Duda') : falhou('o Termo abriu para o Edu também');
+  const noPalco = await duda.locator('.site-no-palco').boundingBox();
+  const barra = await duda.locator('.stage-controls').boundingBox();
+  noPalco.height > 400 && barra && barra.y >= noPalco.y + noPalco.height - 2
+    ? ok('o Termo ocupa o palco, e a barra da call continua embaixo')
+    : falhou(`o Termo no palco: ${Math.round(noPalco.width)}×${Math.round(noPalco.height)}, barra em ${barra?.y}`);
   await duda.waitForTimeout(1500);
   await duda.screenshot({ path: path.join(FOTOS, 'mini-games-termo-na-sala.png') });
-  await foto(duda, 'estante');
   await duda.keyboard.press('Escape');
-  await duda.locator('.site-embutido').waitFor({ state: 'detached', timeout: 5000 });
+  await duda.locator('.site-no-palco').waitFor({ state: 'detached', timeout: 5000 });
+  await duda.getByRole('button', { name: 'Mini-games' }).click();
+  await duda.locator('.minijogo-estante').waitFor({ timeout: 5000 });
   await foto(duda, 'estante');
 
   const comecar = async (nome) => {

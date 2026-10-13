@@ -281,7 +281,8 @@ esqueleto, e anúncio só se mede com o navegador rodando.
   quem clicou), corrigindo o "embutir está fora" de 06/10, que era sobre anúncio. Nas palavras dele: "a comodidade da
   aba de mini-games é justamente rodar no Syden; não temos anúncio, que é o prometido". O preço é trabalho, não
   promessa: o site entra na frame-src (`e2e/politica-de-seguranca.mjs` E a Cloudflare, à mão) e o que ele carrega
-  entra na política de privacidade (`#jogos-de-parceiros`) ANTES de ir ao ar. Primeiro: o Termo.
+  entra na política de privacidade (`#jogos-de-parceiros`) ANTES de ir ao ar. Primeiro: o Termo. Na sala de voz o jogo ocupa o PALCO
+  (o lugar do vídeo), com a lista de gente e a barra da call à mão — desenho dele; fora da sala, janela por cima.
 
 **Licenças conferidas em 07/10/2026** (o Syden é de código fechado, "todos os direitos reservados", e
 isso decide quais bibliotecas podem entrar):
