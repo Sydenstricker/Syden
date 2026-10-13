@@ -84,8 +84,15 @@ try {
   await painel.locator('.jogos-do-syden li button', { hasText: 'Sala 1' }).click();
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
-  const capas = await duda.locator('.minijogo-jogo').count();
+  const capas = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
   capas === 8 ? ok('a Duda caiu na sala com a estante aberta: 8 jogos') : falhou(`a estante tem ${capas} jogos`);
+  // O Termo também está na estante da sala, e abre só para quem clicou.
+  await duda.locator('.minijogo-parceiro', { hasText: 'Termo' }).click();
+  await duda.locator('.site-embutido iframe').waitFor({ timeout: 10000 });
+  (await edu.locator('.site-embutido').count()) === 0 ? ok('o Termo abriu da estante, só para a Duda') : falhou('o Termo abriu para o Edu também');
+  await foto(duda, 'estante');
+  await duda.keyboard.press('Escape');
+  await duda.locator('.site-embutido').waitFor({ state: 'detached', timeout: 5000 });
   await foto(duda, 'estante');
 
   const comecar = async (nome) => {

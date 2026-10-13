@@ -28,6 +28,26 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
   }
 }
 
+/**
+ * A capa de um jogo de palavra do dia (o Termo, que roda embutido: SiteEmbutido.tsx). Só as peças coloridas, sem
+ * letra nenhuma e sem o visual do site: o jogo é dele, e a capa é nossa.
+ */
+export function CapaPalavraDoDia() {
+  const linhas = [
+    ['#3a3a3c', '#d3ad69', '#3a3a3c', '#3a3a3c', '#3a3a3c'],
+    ['#3aa394', '#3a3a3c', '#d3ad69', '#3a3a3c', '#3aa394'],
+    ['#3aa394', '#3aa394', '#3aa394', '#3aa394', '#3aa394'],
+  ];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#6e5c62" />
+      {linhas.map((linha, l) =>
+        linha.map((cor, c) => <rect key={`${l}-${c}`} x={22 + c * 24} y={18 + l * 29} width="20" height="24" rx="3" fill={cor} />),
+      )}
+    </svg>
+  );
+}
+
 /** O desenha e adivinha: o quadro com um gato rabiscado, o lápis, e o balão de chute com "?". */
 function CapaDesenho() {
   return (

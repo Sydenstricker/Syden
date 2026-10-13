@@ -1,7 +1,7 @@
 import { Gamepad2, Trophy, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { CapaDoJogo } from './CapasDosJogos';
+import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
 import { IconButton } from './IconButton';
 import { useT } from './i18n';
 import { JogoDesenho } from './JogoDesenho';
@@ -11,9 +11,11 @@ import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
+import { SiteEmbutido } from './SiteEmbutido';
 import {
   JOGOS,
   nomeDoJogo,
+  SITES_PARA_TRANSMITIR,
   type EstadoDesenho,
   type EstadoDuelo,
   type EstadoLobisomem,
@@ -89,6 +91,8 @@ export function PainelDoMinijogo({
   const [agora, setAgora] = useState(Date.now());
   /** O "Qual é o tamanho?" pede a categoria antes de começar. */
   const [escolhendoCategoria, setEscolhendoCategoria] = useState(false);
+  /** O jogo de parceiro aberto (o Termo): só para quem clicou, porque ele é de um jogador só. */
+  const [siteAberto, setSiteAberto] = useState<{ nome: string; endereco: string } | null>(null);
 
   // O relógio anda na tela; quem manda no fim de cada fase é o servidor.
   const andando = partida !== null && !partida.terminada;
@@ -141,8 +145,19 @@ export function PainelDoMinijogo({
               </button>
             </li>
           ))}
+          {/* Os jogos de parceiro que rodam dentro do Syden (o Termo): no fim da estante, e abrem SÓ para quem
+              clicou — a partida da sala continua livre para os outros. */}
+          {SITES_PARA_TRANSMITIR.filter((site) => site.embutir).map((site) => (
+            <li key={site.endereco}>
+              <button type="button" className="minijogo-jogo minijogo-parceiro" title={t(site.dica)} onClick={() => setSiteAberto(site)}>
+                <CapaPalavraDoDia />
+                <span>{site.nome}</span>
+              </button>
+            </li>
+          ))}
         </ul>
       )}
+      {siteAberto && <SiteEmbutido nome={siteAberto.nome} endereco={siteAberto.endereco} aoFechar={() => setSiteAberto(null)} />}
 
       {partida?.jogo === 'tamanho' && <JogoTamanho estado={partida as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
       {partida?.jogo === 'stop' && <JogoStop estado={partida as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}
