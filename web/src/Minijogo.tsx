@@ -9,7 +9,7 @@ import { JogoDuelo } from './JogoDuelo';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
-import { JogoTamanho } from './JogoTamanho';
+import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
   JOGOS,
@@ -56,7 +56,7 @@ interface Acao {
   (): Promise<void>;
 }
 interface Comecar {
-  (jogo: IdDoJogo): Promise<void>;
+  (jogo: IdDoJogo, escolhas?: Record<string, unknown>): Promise<void>;
 }
 export interface Agir {
   (corpo: Record<string, unknown>): Promise<void>;
@@ -87,6 +87,8 @@ export function PainelDoMinijogo({
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
   const [agora, setAgora] = useState(Date.now());
+  /** O "Qual é o tamanho?" pede a categoria antes de começar. */
+  const [escolhendoCategoria, setEscolhendoCategoria] = useState(false);
 
   // O relógio anda na tela; quem manda no fim de cada fase é o servidor.
   const andando = partida !== null && !partida.terminada;
@@ -118,11 +120,22 @@ export function PainelDoMinijogo({
 
       {/* A ESTANTE DE JOGOS (pedido do Sydenstricker: a tela mais limpa). Uma capa por jogo, e clicar já
           começa para a sala inteira. A explicação mora na dica do mouse: a capa diz o que é. */}
-      {!partida && (
+      {!partida && escolhendoCategoria && (
+        <EscolhaDeCategoria
+          aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }).then(() => setEscolhendoCategoria(false)))}
+          aoVoltar={() => setEscolhendoCategoria(false)}
+        />
+      )}
+      {!partida && !escolhendoCategoria && (
         <ul className="minijogo-estante">
           {JOGOS.map((jogo) => (
             <li key={jogo.id}>
-              <button type="button" className="minijogo-jogo" title={t(jogo.dica)} onClick={() => tentar(() => aoComecar(jogo.id))}>
+              <button
+                type="button"
+                className="minijogo-jogo"
+                title={t(jogo.dica)}
+                onClick={() => (jogo.id === 'tamanho' ? setEscolhendoCategoria(true) : tentar(() => aoComecar(jogo.id)))}
+              >
                 <CapaDoJogo jogo={jogo.id} />
                 <span>{t(jogo.nome)}</span>
               </button>
@@ -145,7 +158,11 @@ export function PainelDoMinijogo({
 
       {partida?.terminada && (
         <div className="minijogo-acoes">
-          <button type="button" className="btn-primary" onClick={() => tentar(() => aoComecar(partida.jogo))}>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => tentar(() => aoComecar(partida.jogo, partida.jogo === 'tamanho' ? { categoria: partida.categoria } : {}))}
+          >
             {t('Jogar de novo')}
           </button>
           <button type="button" className="btn-secondary" onClick={() => tentar(aoEncerrar)}>

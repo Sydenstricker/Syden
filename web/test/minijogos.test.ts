@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { describe, it } from 'node:test';
 import { CATEGORIAS, RODADAS_STOP } from '../../server/src/minijogo-stop';
-import { OBJETOS as DO_SERVIDOR } from '../../server/src/minijogos';
+import { CATEGORIAS as CATEGORIAS_DO_SERVIDOR, OBJETOS as DO_SERVIDOR } from '../../server/src/minijogos';
 import { FIGURAS_DO_TAMANHO } from '../src/figurasDoTamanho';
 import { IDIOMAS } from '../src/i18n/idiomas';
-import { CATEGORIAS_DO_STOP, letrasDoStop, OBJETOS, tamanhoLegivel } from '../src/minijogos';
+import { CATEGORIAS_DO_STOP, CATEGORIAS_DO_TAMANHO, letrasDoStop, OBJETOS, tamanhoLegivel } from '../src/minijogos';
 
 describe('mini-games: o Stop', () => {
   it('o site e o servidor têm as mesmas categorias', () => {
@@ -24,6 +24,11 @@ describe('mini-games: o Stop', () => {
 describe('mini-games: o "Qual é o tamanho?"', () => {
   it('o site e o servidor têm os mesmos objetos (o nome mora aqui, o tamanho lá)', () => {
     assert.deepEqual(Object.keys(OBJETOS).sort(), Object.keys(DO_SERVIDOR).sort());
+  });
+
+  it('as categorias são as mesmas do servidor (mais o "tudo"), e o botão de cada uma usa figuras que existem', () => {
+    assert.deepEqual(CATEGORIAS_DO_TAMANHO.map((c) => c.id).sort(), ['tudo', ...Object.keys(CATEGORIAS_DO_SERVIDOR)].sort());
+    for (const c of CATEGORIAS_DO_TAMANHO) for (const id of c.figuras) assert.ok(OBJETOS[id], `${c.id}: ${id}`);
   });
 
   it('todo objeto tem a figura, medida, e a licença dela vai junto', () => {

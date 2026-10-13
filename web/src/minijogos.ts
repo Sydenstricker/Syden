@@ -86,6 +86,17 @@ export const NA_DIAGONAL = new Set(['lapis', 'banana', 'violao', 'aviao', 'fogue
 /** Figuras em que o objeto medido é só PARTE do desenho: em Júpiter, o anel passa para fora da esfera. */
 export const PARTE_MEDIDA: Record<string, number> = { jupiter: 0.72 };
 
+/**
+ * As categorias do "Qual é o tamanho?" (quais objetos entram em cada uma mora no servidor: CATEGORIAS, em
+ * server/src/minijogos.ts). Aqui, o nome e as três figuras que desenham o botão.
+ */
+export const CATEGORIAS_DO_TAMANHO: { id: string; nome: string; figuras: [string, string, string] }[] = [
+  { id: 'tudo', nome: chave('Tudo'), figuras: ['formiga', 'girafa', 'terra'] },
+  { id: 'animais', nome: chave('Animais'), figuras: ['coelho', 'zebra', 'elefante'] },
+  { id: 'dia-a-dia', nome: chave('Dia a dia'), figuras: ['lapis', 'violao', 'bicicleta'] },
+  { id: 'gigantes', nome: chave('Gigantes'), figuras: ['onibus', 'torre-eiffel', 'everest'] },
+];
+
 export type Medida = 'altura' | 'comprimento' | 'diametro';
 
 /** "{tamanho} de altura" etc. — o tamanho vai pronto, com a unidade (as unidades são as do SI em toda língua). */
@@ -130,6 +141,7 @@ export interface EstadoTamanho {
   rodada: number;
   rodadas: number;
   fase: 'estimando' | 'revelando' | 'fim';
+  categoria: string;
   referencia: { id: string; cm: number; medida: Medida };
   /** O tamanho (`cm`) só chega na revelação. */
   objeto: { id: string; medida: Medida; cm?: number };
@@ -660,9 +672,9 @@ export function usarMinijogo(channelId: number | null, socket: Socket | null) {
   }, [socket, channelId, recarregar]);
 
   const comecar = useCallback(
-    async (jogo: IdDoJogo) => {
+    async (jogo: IdDoJogo, escolhas: Record<string, unknown> = {}) => {
       if (channelId === null) return;
-      const extras = jogo === 'stop' ? letrasDoStop(idiomaAtual()) : {};
+      const extras = jogo === 'stop' ? letrasDoStop(idiomaAtual()) : escolhas;
       const { partida: p } = await api<{ partida: PartidaPublica }>(`/api/channels/${channelId}/minijogo`, {
         method: 'POST',
         body: { jogo, ...extras },

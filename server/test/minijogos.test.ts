@@ -123,3 +123,32 @@ test('o sorteio nunca dá empate nem diferença absurda', async () => {
     assert.ok(razao >= 1.5 && razao <= 20, `${a} × ${b}: ${razao}`);
   }
 });
+
+test('as categorias: cada uma rende as 8 rodadas sem repetir o objeto, e só com objetos dela', async () => {
+  const { CATEGORIAS, sortearPar } = await import('../src/minijogos.js');
+  for (const [nome, ids] of Object.entries(CATEGORIAS)) {
+    for (const id of ids) assert.ok(OBJETOS[id], `${nome}: ${id} não existe`);
+    for (let partida = 0; partida < 50; partida++) {
+      const usados = new Set<string>();
+      const alvos = new Set<string>();
+      for (let r = 0; r < RODADAS; r++) {
+        const [ref, alvo] = sortearPar(usados, ids);
+        assert.ok(ids.includes(ref) && ids.includes(alvo), `${nome}: ${ref} × ${alvo} fora da categoria`);
+        assert.ok(!alvos.has(alvo), `${nome}: ${alvo} saiu duas vezes`);
+        alvos.add(alvo);
+        usados.add(ref).add(alvo);
+      }
+    }
+  }
+});
+
+test('a categoria escolhida chega na partida; uma que não existe vira "tudo"', async () => {
+  const animais = (await ana('POST', `/api/channels/${sala.id}/minijogo`, { jogo: 'tamanho', categoria: 'animais' })).json().partida;
+  assert.equal(animais.categoria, 'animais');
+  const { CATEGORIAS } = await import('../src/minijogos.js');
+  assert.ok(CATEGORIAS.animais.includes(animais.objeto.id) && CATEGORIAS.animais.includes(animais.referencia.id));
+  await ana('DELETE', `/api/channels/${sala.id}/minijogo`);
+  const tudo = (await ana('POST', `/api/channels/${sala.id}/minijogo`, { jogo: 'tamanho', categoria: 'inventada' })).json().partida;
+  assert.equal(tudo.categoria, 'tudo');
+  await ana('DELETE', `/api/channels/${sala.id}/minijogo`);
+});

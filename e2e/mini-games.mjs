@@ -87,6 +87,11 @@ try {
 
   // ---- Qual é o tamanho? ----
   await comecar('Qual é o tamanho?');
+  // Antes de começar, a categoria (como no Size It Up). A Duda escolhe Animais.
+  await duda.locator('.tamanho-categorias .minijogo-jogo').first().waitFor({ timeout: 10000 });
+  (await duda.locator('.tamanho-categorias .minijogo-jogo').count()) === 4 ? ok('a escolha de categoria abriu, com 4') : falhou('a escolha de categoria não tem as 4');
+  await foto(duda, 'tamanho-categorias');
+  await duda.locator('.tamanho-categorias .minijogo-jogo', { hasText: 'Animais' }).click();
   await duda.locator('.tamanho-palco').waitFor({ timeout: 15000 });
   await edu.locator('.tamanho-palco').waitFor({ timeout: 10000 });
   ok('Qual é o tamanho?: começou, e o painel abriu sozinho para o Edu');

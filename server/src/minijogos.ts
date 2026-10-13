@@ -18,7 +18,7 @@
  * é o que decide quem chegou mais perto.
  */
 
-import { placar, type Definicao } from './minijogo-motor.js';
+import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 
 export type Medida = 'altura' | 'comprimento' | 'diametro';
 
@@ -105,18 +105,48 @@ export const REVELANDO_MS = 7_000;
 /** O placar final fica na tela por um tempo e some sozinho, se ninguém fechar antes. */
 export const PLACAR_MS = 60_000;
 
-/** Sorteia [referência, objeto], dois que ainda não saíram nesta partida. `aleatorio` é trocável para o teste. */
-export function sortearPar(usados: Set<string>, aleatorio = Math.random): [string, string] {
-  const ids = Object.keys(OBJETOS);
-  for (let tentativa = 0; tentativa < 500; tentativa++) {
-    const a = ids[Math.floor(aleatorio() * ids.length)];
-    const b = ids[Math.floor(aleatorio() * ids.length)];
-    if (a === b || usados.has(a) || usados.has(b)) continue;
-    const razao = Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
-    if (razao >= RAZAO_MINIMA && razao <= RAZAO_MAXIMA) return [a, b];
+/**
+ * AS CATEGORIAS (13/10/2026, como no Size It Up): quem começa escolhe, e os pares saem só dela. A pessoa adulta
+ * entra em duas, porque é a régua que todo mundo tem na cabeça. Uma categoria precisa de objetos que se
+ * encadeiem (de 1,5× a 20× um do outro) para render as 8 rodadas; o teste confere.
+ */
+export const CATEGORIAS: Record<string, string[]> = {
+  animais: [
+    'formiga', 'joaninha', 'abelha', 'caracol', 'camundongo', 'coelho', 'gato', 'cachorro', 'pinguim', 'flamingo',
+    'zebra', 'vaca', 'hipopotamo', 'cavalo', 'pessoa', 'rinoceronte', 'lhama', 'bisao', 'camelo', 'elefante',
+    'mamute', 'girafa', 'tiranossauro-rex', 'braquiossauro', 'baleia-azul',
+  ],
+  'dia-a-dia': [
+    'morango', 'ovo', 'lampada', 'celular', 'lapis', 'banana', 'bola-de-futebol', 'bola-de-basquete', 'abacaxi',
+    'notebook', 'tulipa', 'cadeira', 'guarda-chuva', 'violao', 'bicicleta', 'cama', 'porta', 'pessoa', 'carro', 'casa',
+  ],
+  gigantes: [
+    'carro', 'trator', 'casa', 'onibus', 'cacto', 'coqueiro', 'baleia-azul', 'braquiossauro', 'aviao', 'moai',
+    'estatua-da-liberdade', 'campo-de-futebol', 'foguete', 'roda-gigante', 'titanic', 'torre-eiffel', 'monte-fuji',
+    'everest', 'lua', 'terra', 'jupiter', 'sol',
+  ],
+};
+
+const combinam = (a: string, b: string) => {
+  const razao = Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
+  return razao >= RAZAO_MINIMA && razao <= RAZAO_MAXIMA;
+};
+
+/**
+ * Sorteia [referência, objeto] entre `ids`. Primeiro, dois que ainda não saíram; se a categoria já não tem,
+ * a REFERÊNCIA pode repetir (o objeto a estimar nunca); só no fim de tudo a lista recomeça. `aleatorio` é
+ * trocável para o teste.
+ */
+export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), aleatorio = Math.random): [string, string] {
+  const embaralhados = embaralhar([...ids], aleatorio);
+  for (const refPodeRepetir of [false, true]) {
+    for (const alvo of embaralhados) {
+      if (usados.has(alvo)) continue;
+      const ref = embaralhados.find((r) => r !== alvo && (refPodeRepetir || !usados.has(r)) && combinam(r, alvo));
+      if (ref) return [ref, alvo];
+    }
   }
-  // Raríssimo (todos os objetos bons já saíram): libera a repetição.
-  return usados.size > 0 ? sortearPar(new Set(), aleatorio) : ['gato', 'cavalo'];
+  return usados.size > 0 ? sortearPar(new Set(), ids, aleatorio) : ['gato', 'cavalo'];
 }
 
 export type Fase = 'estimando' | 'revelando' | 'fim';
@@ -141,7 +171,9 @@ export function pontosDoPalpite(palpite: number, real: number): number {
  * deixou o objeto no tamanho certo e não confirmou não perde a rodada para o relógio.
  */
 export const tamanho: Definicao = {
-  comecar(ctx, { naSala }) {
+  comecar(ctx, { naSala, corpo }) {
+    const categoria = typeof corpo.categoria === 'string' && CATEGORIAS[corpo.categoria] ? corpo.categoria : 'tudo';
+    const ids = CATEGORIAS[categoria] ?? Object.keys(OBJETOS);
     let rodada = 1;
     let fase: Fase = 'estimando';
     let par: [string, string] = ['gato', 'cavalo'];
@@ -153,7 +185,7 @@ export const tamanho: Definicao = {
     const pontos = new Map(naSala.map((id) => [id, 0]));
 
     function novaRodada() {
-      par = sortearPar(usados);
+      par = sortearPar(usados, ids);
       par.forEach((id) => usados.add(id));
       palpites.clear();
       confirmaram.clear();
@@ -192,6 +224,7 @@ export const tamanho: Definicao = {
           rodada,
           rodadas: RODADAS,
           fase,
+          categoria,
           referencia: { id: ref, ...OBJETOS[ref] },
           // O que se mede no objeto (altura, comprimento) se sabe desde o começo; o tamanho, só na revelação.
           objeto: { id: alvo, medida: OBJETOS[alvo].medida, ...(revelado ? { cm: OBJETOS[alvo].cm } : {}) },

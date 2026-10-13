@@ -12735,6 +12735,59 @@ body.arrastando-barra {
   outline: none;
 }
 
+/* A escolha da categoria do "Qual é o tamanho?": como a estante, com três figuras no lugar da capa. */
+.tamanho-categorias {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px 10px;
+}
+
+.tamanho-categoria-figuras {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  aspect-ratio: 4 / 3;
+  padding: 12px 10px;
+  border-radius: 10px;
+  background: linear-gradient(to top, color-mix(in srgb, var(--text-muted) 22%, transparent) 2px, transparent 2px), var(--bg-darkest);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: transform 120ms ease, outline-color 120ms ease;
+}
+
+/* Pequena, média e grande: a categoria já sugere a escala. */
+.tamanho-categoria-figuras img {
+  min-width: 0;
+  object-fit: contain;
+  object-position: bottom;
+}
+
+.tamanho-categoria-figuras img:nth-child(1) {
+  height: 30%;
+}
+
+.tamanho-categoria-figuras img:nth-child(2) {
+  height: 60%;
+}
+
+.tamanho-categoria-figuras img:nth-child(3) {
+  height: 90%;
+}
+
+.minijogo-jogo:hover .tamanho-categoria-figuras,
+.minijogo-jogo:focus-visible .tamanho-categoria-figuras {
+  transform: translateY(-2px);
+  outline-color: var(--accent);
+}
+
+.tamanho-categorias .minijogo-jogo > span:last-child {
+  text-align: center;
+}
+
 /* O "Qual é o tamanho?": os dois objetos em pé no mesmo chão, a referência à esquerda. */
 .tamanho-palco {
   position: relative;

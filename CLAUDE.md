@@ -316,6 +316,10 @@ partir de 4×. Na revelação o objeto vai ao tamanho real, e o palpite vira a S
 sistema e vinha com objeto que não batia com o nome (o urso era só a cabeça, a pizza uma fatia). A altura do desenho é a
 altura do objeto e a largura é o comprimento; os desenhados na diagonal medem pela diagonal (`NA_DIAGONAL`), e o anel de
 Júpiter é descontado (`PARTE_MEDIDA`). **Objeto novo só entra se o desenho mostrar o objeto INTEIRO.**
+**Categorias, como no Size It Up (13/10/2026):** ao clicar na capa, quem começa escolhe Tudo, Animais, Dia a dia ou
+Gigantes (prédios, veículos, montanhas e planetas). Quais objetos entram em cada uma mora no servidor (`CATEGORIAS`); o
+nome e as três figuras do botão, no site. Categoria nova precisa de objetos que se encadeiem (1,5× a 20×) para render 8
+rodadas sem repetir o objeto a estimar — o teste do servidor confere.
 
 **Mais quatro no mesmo dia, antes de subir** (decisão dele: "mini-games no plural com um jogo só não faz sentido"):
 Stop, Sudoku em corrida, Cinco em linha e Mancala. O botão da sala abre uma ESTANTE com uma capa por jogo, sem texto

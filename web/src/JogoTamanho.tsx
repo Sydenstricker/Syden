@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent as EventoDoPonteiro } fr
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { FIGURAS_DO_TAMANHO } from './figurasDoTamanho';
-import { FRASE_DA_MEDIDA, NA_DIAGONAL, OBJETOS, PARTE_MEDIDA, primeiraForma, tamanhoLegivel, type EstadoTamanho, type Medida, type Partida } from './minijogos';
+import { CATEGORIAS_DO_TAMANHO, FRASE_DA_MEDIDA, NA_DIAGONAL, OBJETOS, PARTE_MEDIDA, primeiraForma, tamanhoLegivel, type EstadoTamanho, type Medida, type Partida } from './minijogos';
 
 const ESTIMANDO_MS = 25_000;
 const REVELANDO_MS = 7_000;
@@ -231,6 +231,37 @@ export function JogoTamanho({
               })
             : t('Arraste para aumentar ou diminuir.')}
       </p>
+    </>
+  );
+}
+
+/**
+ * A escolha da categoria, antes de começar (como no Size It Up). Sem texto de explicação, como a estante: cada
+ * botão mostra três figuras da categoria e o nome dela. Escolher já começa para a sala inteira.
+ */
+export function EscolhaDeCategoria({ aoEscolher, aoVoltar }: { aoEscolher: (categoria: string) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <>
+      <ul className="tamanho-categorias">
+        {CATEGORIAS_DO_TAMANHO.map((categoria) => (
+          <li key={categoria.id}>
+            <button type="button" className="minijogo-jogo" onClick={() => aoEscolher(categoria.id)}>
+              <span className="tamanho-categoria-figuras" aria-hidden="true">
+                {categoria.figuras.map((id) => (
+                  <img key={id} src={figura(id)} alt="" draggable={false} />
+                ))}
+              </span>
+              <span>{t(categoria.nome)}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
     </>
   );
 }
