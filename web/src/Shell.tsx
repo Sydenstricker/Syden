@@ -1120,6 +1120,7 @@ export function Shell({
                 aoAbrirVozEVideo={() => setSettingsOpen('voice')}
                 canais={channels}
                 aoMandarMensagem={(id) => void startConversation(id)}
+                aoEditarPerfil={() => setSettingsOpen('aparencia')}
               />
               {/* A conversa ao lado é o que separa "assistir junto" de "assistir ao mesmo tempo" —
                   sem ela, cada um comenta no vazio. Reaproveita o canal de texto que já existe: a

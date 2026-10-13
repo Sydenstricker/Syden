@@ -144,6 +144,10 @@ export default {
   'Denúncia enviada': 'Bildirim gönderildi',
   'Denúncias': 'Bildirimler',
   'Desativar áudio': 'Sesi kapat',
+  'Perfil': 'Profil',
+  'Silenciar': 'Sustur',
+  'Cargo': 'Rol',
+  'Mover para': 'Taşı',
   Desbloqueado: 'Engeli kaldırıldı',
   Desbloquear: 'Engeli kaldır',
   Descartar: 'At',
@@ -188,7 +192,6 @@ export default {
   'Enviar mensagem': 'Mesaj gönder',
   'Enviar pedido': 'İstek gönder',
   ESC: 'ESC',
-  'Escolha a sala…': 'Odayı seç…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden’ın dilini buradan seç. Hemen geçerli olur, yalnızca senin için, ve bu bilgisayarda saklanır.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -464,7 +467,6 @@ export default {
   'Minhas insígnias': 'Rozetlerim',
   'Moderação': 'Moderasyon',
   'Montar esta tela': 'Bu ekranı kur',
-  'Mover para outra sala': 'Başka bir odaya taşı',
   'Abrir em janela flutuante': 'Yüzen pencerede aç',
   'Mostrar quem está sem vídeo': 'Videosu olmayanları göster',
   'Mostrar a minha própria câmera': 'Kendi kameramı göster',

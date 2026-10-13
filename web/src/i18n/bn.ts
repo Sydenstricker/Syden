@@ -147,6 +147,10 @@ export default {
   'Denúncia enviada': 'অভিযোগ পাঠানো হয়েছে',
   'Denúncias': 'অভিযোগ',
   'Desativar áudio': 'শব্দ বন্ধ করো',
+  'Perfil': 'প্রোফাইল',
+  'Silenciar': 'চুপ করাও',
+  'Cargo': 'ভূমিকা',
+  'Mover para': 'সরাও',
   Desbloqueado: 'বাধা তুলে নেওয়া হয়েছে',
   Desbloquear: 'বাধা তুলে নাও',
   Descartar: 'ফেলে দাও',
@@ -191,7 +195,6 @@ export default {
   'Enviar mensagem': 'বার্তা পাঠাও',
   'Enviar pedido': 'অনুরোধ পাঠাও',
   ESC: 'ESC',
-  'Escolha a sala…': 'রুম বেছে নাও…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'এখানে Syden-এর ভাষা বেছে নাও। সঙ্গে সঙ্গে কাজ করে, শুধু তোমার জন্য, আর এই কম্পিউটারেই থেকে যায়।',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -467,7 +470,6 @@ export default {
   'Minhas insígnias': 'আমার ব্যাজ',
   'Moderação': 'তদারকি',
   'Montar esta tela': 'এই পর্দা বানাও',
-  'Mover para outra sala': 'অন্য রুমে সরাও',
   'Abrir em janela flutuante': 'ভাসমান উইন্ডোতে খোলো',
   'Mostrar quem está sem vídeo': 'ভিডিও ছাড়া লোকদের দেখাও',
   'Mostrar a minha própria câmera': 'আমার নিজের ক্যামেরা দেখাও',

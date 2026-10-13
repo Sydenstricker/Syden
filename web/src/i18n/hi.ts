@@ -149,6 +149,10 @@ export default {
   'Denúncia enviada': 'शिकायत भेज दी',
   'Denúncias': 'शिकायतें',
   'Desativar áudio': 'आवाज़ बंद करो',
+  'Perfil': 'प्रोफ़ाइल',
+  'Silenciar': 'चुप करो',
+  'Cargo': 'भूमिका',
+  'Mover para': 'यहाँ ले जाओ',
   Desbloqueado: 'रोक हटा दी',
   Desbloquear: 'रोक हटाओ',
   Descartar: 'फेंक दो',
@@ -193,7 +197,6 @@ export default {
   'Enviar mensagem': 'संदेश भेजो',
   'Enviar pedido': 'अनुरोध भेजो',
   ESC: 'ESC',
-  'Escolha a sala…': 'रूम चुनो…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Syden की भाषा यहाँ चुनो। तुरंत लागू होती है, सिर्फ़ तुम्हारे लिए, और इसी कंप्यूटर पर सहेजी रहती है।',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -469,7 +472,6 @@ export default {
   'Minhas insígnias': 'मेरे बैज',
   'Moderação': 'निगरानी',
   'Montar esta tela': 'यह स्क्रीन बनाओ',
-  'Mover para outra sala': 'दूसरे रूम में ले जाओ',
   'Abrir em janela flutuante': 'फ़्लोटिंग विंडो में खोलो',
   'Mostrar quem está sem vídeo': 'बिना वीडियो वाले लोगों को दिखाओ',
   'Mostrar a minha própria câmera': 'मेरा अपना कैमरा दिखाओ',

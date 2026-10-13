@@ -147,6 +147,10 @@ export default {
   'Denúncia enviada': 'Melding verstuurd',
   'Denúncias': 'Meldingen',
   'Desativar áudio': 'Geluid uitzetten',
+  'Perfil': 'Profiel',
+  'Silenciar': 'Dempen',
+  'Cargo': 'Rol',
+  'Mover para': 'Verplaatsen naar',
   Desbloqueado: 'Gedeblokkeerd',
   Desbloquear: 'Deblokkeren',
   Descartar: 'Weggooien',
@@ -191,7 +195,6 @@ export default {
   'Enviar mensagem': 'Bericht versturen',
   'Enviar pedido': 'Verzoek versturen',
   ESC: 'ESC',
-  'Escolha a sala…': 'Kies de kamer…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Kies hier de taal van Syden. Het verandert meteen, geldt alleen voor jou, en blijft op deze computer bewaard.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -467,7 +470,6 @@ export default {
   'Minhas insígnias': 'Mijn insignes',
   'Moderação': 'Moderatie',
   'Montar esta tela': 'Dit scherm maken',
-  'Mover para outra sala': 'Naar een andere kamer verplaatsen',
   'Abrir em janela flutuante': 'Openen in zwevend venster',
   'Mostrar quem está sem vídeo': 'Mensen zonder video tonen',
   'Mostrar a minha própria câmera': 'Mijn eigen camera tonen',

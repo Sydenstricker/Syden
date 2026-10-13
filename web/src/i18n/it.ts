@@ -147,6 +147,10 @@ export default {
   'Denúncia enviada': 'Segnalazione inviata',
   'Denúncias': 'Segnalazioni',
   'Desativar áudio': 'Disattiva l’audio',
+  'Perfil': 'Profilo',
+  'Silenciar': 'Silenzia',
+  'Cargo': 'Ruolo',
+  'Mover para': 'Sposta in',
   Desbloqueado: 'Sbloccato',
   Desbloquear: 'Sblocca',
   Descartar: 'Scarta',
@@ -191,7 +195,6 @@ export default {
   'Enviar mensagem': 'Invia un messaggio',
   'Enviar pedido': 'Invia la richiesta',
   ESC: 'ESC',
-  'Escolha a sala…': 'Scegli la stanza…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Scegli qui la lingua di Syden. Cambia subito, vale solo per te, e resta salvata su questo computer.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -467,7 +470,6 @@ export default {
   'Minhas insígnias': 'I miei distintivi',
   'Moderação': 'Moderazione',
   'Montar esta tela': 'Crea questa schermata',
-  'Mover para outra sala': 'Sposta in un’altra stanza',
   'Abrir em janela flutuante': 'Apri in una finestra mobile',
   'Mostrar quem está sem vídeo': 'Mostra chi non ha il video',
   'Mostrar a minha própria câmera': 'Mostra la mia videocamera',

@@ -147,6 +147,10 @@ export default {
   'Denúncia enviada': 'Laporan terkirim',
   'Denúncias': 'Laporan',
   'Desativar áudio': 'Matikan suara',
+  'Perfil': 'Profil',
+  'Silenciar': 'Bisukan',
+  'Cargo': 'Peran',
+  'Mover para': 'Pindahkan ke',
   Desbloqueado: 'Sudah dibuka blokirnya',
   Desbloquear: 'Buka blokir',
   Descartar: 'Buang',
@@ -191,7 +195,6 @@ export default {
   'Enviar mensagem': 'Kirim pesan',
   'Enviar pedido': 'Kirim permintaan',
   ESC: 'ESC',
-  'Escolha a sala…': 'Pilih ruangannya…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Pilih bahasa Syden di sini. Langsung berlaku, hanya untukmu, dan tersimpan di komputer ini.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -467,7 +470,6 @@ export default {
   'Minhas insígnias': 'Lencanaku',
   'Moderação': 'Moderasi',
   'Montar esta tela': 'Bikin layar ini',
-  'Mover para outra sala': 'Pindahkan ke ruang lain',
   'Abrir em janela flutuante': 'Buka di jendela mengambang',
   'Mostrar quem está sem vídeo': 'Tampilkan orang tanpa video',
   'Mostrar a minha própria câmera': 'Tampilkan kameraku sendiri',

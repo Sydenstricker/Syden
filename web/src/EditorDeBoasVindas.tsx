@@ -125,7 +125,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
       <span className="settings-label">{t('Como vai ficar')}</span>
       <div className="bv bv-previa" data-tom={escolhida.tom} style={{ '--bv-destaque': escolhida.destaque } as React.CSSProperties}>
         <div className="bv-arte" style={{ background: escolhida.fundo }}>
-          <RecadoDoBalcao titulo={titulo || t('Bem-vindo!')} texto={texto} coelho={coelho} />
+          <RecadoDoBalcao titulo={titulo || t('Bem-vindo!')} texto={texto} coelho={coelho} fixo />
         </div>
       </div>
 

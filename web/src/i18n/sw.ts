@@ -139,6 +139,10 @@ export default {
   'Denúncia enviada': 'Ripoti imetumwa',
   'Denúncias': 'Ripoti',
   'Desativar áudio': 'Zima sauti',
+  'Perfil': 'Wasifu',
+  'Silenciar': 'Nyamazisha',
+  'Cargo': 'Jukumu',
+  'Mover para': 'Hamisha hadi',
   Desbloqueado: 'Amefunguliwa',
   Desbloquear: 'Mfungulie',
   Descartar: 'Tupa',
@@ -180,7 +184,6 @@ export default {
   'Enviar mensagem': 'Tuma ujumbe',
   'Enviar pedido': 'Tuma ombi',
   ESC: 'ESC',
-  'Escolha a sala…': 'Chagua chumba…',
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     'Chagua hapa lugha ya Syden. Hubadilika papo hapo, kwa ajili yako tu, na huhifadhiwa kwenye kompyuta hii.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
@@ -451,7 +454,6 @@ export default {
   'Minhas insígnias': 'Beji zangu',
   'Moderação': 'Usimamizi',
   'Montar esta tela': 'Tengeneza skrini hii',
-  'Mover para outra sala': 'Hamishia chumba kingine',
   'Abrir em janela flutuante': 'Fungua kwenye dirisha linaloelea',
   'Mostrar quem está sem vídeo': 'Onyesha watu bila video',
   'Mostrar a minha própria câmera': 'Onyesha kamera yangu mwenyewe',

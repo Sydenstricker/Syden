@@ -39,17 +39,33 @@ export const estiloDoCoelho = (c: CoelhoDoRecado) =>
     '--fim-do-gesto': `${c.duracao * c.vezes}s`,
   }) as React.CSSProperties;
 
-export function RecadoDoBalcao({ titulo, texto, coelho }: { titulo: string; texto: string; coelho?: string | null }) {
+export function RecadoDoBalcao({
+  titulo,
+  texto,
+  coelho,
+  fixo = false,
+}: {
+  titulo: string;
+  texto: string;
+  coelho?: string | null;
+  /** Na prévia do editor o balão não some: quem está escrevendo precisa ver o que escreve. */
+  fixo?: boolean;
+}) {
   const quem = acharCoelho(coelho);
   const linhas = texto
     .split('\n')
     .map((linha) => linha.trim())
     .filter(Boolean);
+  // O RECADO É UMA CENA (13/10/2026, pedido dele): o balão aparece enquanto o coelho faz o gesto, fica o tempo de
+  // ler — mais tempo para recado comprido — e some. Clicar no coelho repete tudo. O texto continua no documento o
+  // tempo todo (o balão só fica transparente), e quem usa leitor de tela o lê normalmente.
+  const [vez, setVez] = useState(0);
+  const leitura = Math.max(quem.duracao * quem.vezes, 3.5 + 0.05 * (titulo.length + texto.length));
   return (
-    <div className="bv-guia">
-      {/* A chave recomeça o gesto quando o coelho muda (na prévia do editor). */}
-      <span key={quem.url} className="bv-guia-coelho" style={estiloDoCoelho(quem)} aria-hidden="true" />
-      <div className="bv-balao" role="note">
+    <div className={`bv-guia${fixo ? '' : ' em-cena'}`} onClick={fixo ? undefined : () => setVez((v) => v + 1)}>
+      {/* A chave recomeça o gesto quando o coelho muda (na prévia do editor) ou quando alguém clica nele. */}
+      <span key={`${quem.url}-${vez}`} className="bv-guia-coelho" style={estiloDoCoelho(quem)} aria-hidden="true" />
+      <div key={vez} className="bv-balao" role="note" style={{ '--leitura': `${leitura}s` } as React.CSSProperties}>
         <strong className="bv-balao-titulo">{titulo}</strong>
         {linhas.length > 1 ? (
           <ol>

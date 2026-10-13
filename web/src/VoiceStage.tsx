@@ -43,6 +43,7 @@ import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
 import { desktopBridge } from './desktop';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
+import { ProfileCard } from './ProfileCard';
 import { reloadSounds, useDirectory } from './directory';
 import { buscarSons, contarToque, toquesDosSons } from './buscaDeSons';
 import { somParecidoCom } from './somParecido';
@@ -100,6 +101,7 @@ export function VoiceStage({
   simples = false,
   canais = [],
   aoMandarMensagem,
+  aoEditarPerfil,
 }: {
   channel: Channel;
   voice: Voice;
@@ -124,6 +126,8 @@ export function VoiceStage({
   canais?: Channel[];
   /** "Enviar mensagem", no menu do botão direito de um quadro. */
   aoMandarMensagem?: (userId: number) => void;
+  /** O lápis do seu cartão de perfil, aberto pelo "Perfil" do menu. */
+  aoEditarPerfil?: () => void;
 }) {
   const t = useT();
   const { estado: palco } = usarPalco(channel.type === 'voice' ? channel.id : null, socket);
@@ -179,6 +183,7 @@ export function VoiceStage({
           simples={simples}
           canais={canais}
           aoMandarMensagem={aoMandarMensagem}
+          aoEditarPerfil={aoEditarPerfil}
         />
       ) : (
         <div className="voice-lobby">
@@ -1160,6 +1165,7 @@ function Stage({
   simples = false,
   canais,
   aoMandarMensagem,
+  aoEditarPerfil,
 }: {
   voice: Voice;
   members: VoiceMember[];
@@ -1173,6 +1179,7 @@ function Stage({
   simples?: boolean;
   canais: Channel[];
   aoMandarMensagem?: (userId: number) => void;
+  aoEditarPerfil?: () => void;
 }) {
   const t = useT();
   const plateia = quemAssiste(members);
@@ -1180,6 +1187,7 @@ function Stage({
   // do palco — a janela flutuante daquele vídeo, e o que o palco mostra.
   const menu = usePersonMenu();
   const [videoDoMenu, setVideoDoMenu] = useState<HTMLVideoElement | null>(null);
+  const [perfil, setPerfil] = useState<{ userId: number; x: number; y: number } | null>(null);
   const ajustes = useSettings();
   const { members: daComunidade } = useDirectory();
   const todasAsFaixas = useTracks(
@@ -1492,6 +1500,7 @@ function Stage({
           isSelf={menu.target.userId === eu}
           onWatchStream={(_, userId) => voice.assistir(String(userId), true)}
           onSendMessage={(userId) => aoMandarMensagem?.(userId)}
+          onOpenProfile={(userId, x, y) => setPerfil({ userId, x, y })}
           palco={{
             aoJanelaFlutuante:
               videoDoMenu && document.pictureInPictureEnabled ? () => void videoDoMenu.requestPictureInPicture().catch(() => {}) : undefined,
@@ -1500,6 +1509,18 @@ function Stage({
             minhaCamera: ajustes.mostrarMinhaCamera,
             aoAlternarMinhaCamera: () => updateSettings({ mostrarMinhaCamera: !ajustes.mostrarMinhaCamera }),
           }}
+        />
+      )}
+      {perfil && daComunidade.get(perfil.userId) && (
+        <ProfileCard
+          membro={daComunidade.get(perfil.userId)!}
+          status={undefined}
+          x={perfil.x}
+          y={perfil.y}
+          isSelf={perfil.userId === eu}
+          onClose={() => setPerfil(null)}
+          onSendMessage={(userId) => aoMandarMensagem?.(userId)}
+          aoEditar={aoEditarPerfil}
         />
       )}
     </div>

@@ -104,13 +104,30 @@ try {
   ((await duda.locator('.salao-rotulo').innerText()).includes('2 na chamada agora') ? ok : falhou)('a TV diz quantos estão na chamada');
   await duda.locator('.bv').screenshot({ path: path.join(FOTOS, 'salao-com-gente.png') });
 
-  // O botão direito num quadro da call (como no Discord): o menu da pessoa, com a parte do palco.
+  // O botão direito num quadro da call (como no Discord): primeiro o próprio, depois o de outra pessoa.
   const edu = naCall[0];
+  // No próprio quadro, como no Discord: perfil, silenciar e desativar o áudio, em caixinhas de marcar.
+  await edu.locator('.stage .tile', { hasText: 'edu' + s }).first().click({ button: 'right' });
+  const silenciar = edu.getByRole('menuitemcheckbox', { name: 'Silenciar' });
+  await silenciar.waitFor({ timeout: 5000 });
+  (await edu.getByRole('menuitemcheckbox', { name: 'Desativar áudio' }).count()) === 1 && (await edu.getByRole('menuitem', { name: 'Perfil' }).count()) === 1
+    ? ok('no próprio quadro: Perfil, Silenciar e Desativar áudio')
+    : falhou('faltam opções no menu do próprio quadro');
+  await edu.locator('.person-menu').screenshot({ path: path.join(FOTOS, 'menu-do-proprio-quadro.png') });
+  await silenciar.click();
+  await edu.waitForFunction(() => document.querySelector('[role=menuitemcheckbox][aria-checked=true]') !== null, null, { timeout: 5000 }).then(
+    () => ok('Silenciar pelo menu marca a caixinha'),
+    () => falhou('a caixinha de Silenciar não marcou'),
+  );
+  await edu.keyboard.press('Escape');
+  await edu.locator('.stage-controls button[aria-label="Ativar microfone"]').click({ timeout: 3000 }).catch(() => {});
+
+  // O botão direito num quadro da call (como no Discord): o menu da pessoa, com a parte do palco.
   const quadrosAntes = await edu.locator('.stage .tile').count();
   await edu.locator('.stage .tile', { hasText: 'fabi' + s }).first().click({ button: 'right' });
-  await edu.getByRole('menuitem', { name: 'Mostrar quem está sem vídeo' }).waitFor({ timeout: 5000 });
+  await edu.getByRole('menuitemcheckbox', { name: 'Mostrar quem está sem vídeo' }).waitFor({ timeout: 5000 });
   ok('o botão direito num quadro abre o menu da pessoa, com as opções do palco');
-  await edu.getByRole('menuitem', { name: 'Mostrar quem está sem vídeo' }).click();
+  await edu.getByRole('menuitemcheckbox', { name: 'Mostrar quem está sem vídeo' }).click();
   await edu
     .waitForFunction((n) => document.querySelectorAll('.stage .tile').length < n, quadrosAntes, { timeout: 5000 })
     .then(
@@ -118,7 +135,6 @@ try {
       () => falhou('os cartões sem câmera continuaram no palco'),
     );
   await edu.keyboard.press('Escape');
-
   // A TV ao vivo: os dois transmitem.
   for (const p of naCall) {
     await p.locator('.stage-controls button[aria-label="Compartilhar tela"]').click();

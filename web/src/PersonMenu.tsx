@@ -1,6 +1,7 @@
 import { Ban,
   AtSign,
   Check,
+  ChevronRight,
   PictureInPicture2,
   Flag,
   IdCard,
@@ -58,19 +59,36 @@ function Item({
   icone,
   children,
   perigo,
+  marcado,
+  seta,
   onClick,
 }: {
   icone: ReactNode;
   children: ReactNode;
   perigo?: boolean;
+  /** Liga/desliga: a caixinha de marcar à direita, como no Discord. */
+  marcado?: boolean;
+  /** Abre uma lista embaixo (Cargo, Mover para): a seta à direita. */
+  seta?: boolean;
   onClick: () => void;
 }) {
   return (
-    <button className={`person-menu-item${perigo ? ' danger' : ''}`} role="menuitem" onClick={onClick}>
+    <button
+      className={`person-menu-item${perigo ? ' danger' : ''}`}
+      role={marcado === undefined ? 'menuitem' : 'menuitemcheckbox'}
+      aria-checked={marcado}
+      onClick={onClick}
+    >
       <span className="person-menu-icone" aria-hidden="true">
         {icone}
       </span>
       <span className="person-menu-texto">{children}</span>
+      {marcado !== undefined && (
+        <span className={`person-menu-caixa${marcado ? ' marcada' : ''}`} aria-hidden="true">
+          {marcado && <Check size={14} />}
+        </span>
+      )}
+      {seta && <ChevronRight className="person-menu-seta" size={16} aria-hidden="true" />}
     </button>
   );
 }
@@ -126,8 +144,10 @@ export function PersonMenu({
   };
 }) {
   const t = useT();
-  const { members } = useDirectory();
+  const { members, cargos } = useDirectory();
   const membro = members.get(target.userId);
+  /** A lista que está aberta embaixo de "Cargo" ou de "Mover para" (os submenus do Discord, aqui abrindo no lugar). */
+  const [aberto, setAberto] = useState<'cargo' | 'mover' | null>(null);
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
   const [muted, setMuted] = useState(() => isLocallyMuted(target.userId));
   const [error, setError] = useState<string | null>(null);
@@ -253,8 +273,64 @@ export function PersonMenu({
             onClose();
           }}
         >
-          Ver perfil
+          {t('Perfil')}
         </Item>
+      )}
+
+      {/* NA CALL, O SEU PRÓPRIO QUADRO: o microfone e o áudio, como no Discord (13/10/2026). */}
+      {isSelf && voice.channelId !== null && (
+        <>
+          <hr className="person-menu-linha" />
+          <Item icone={<MicOff size={16} />} marcado={voice.media.muted} onClick={() => void voice.toggleMute()}>
+            {t('Silenciar')}
+          </Item>
+          <Item icone={<VolumeX size={16} />} marcado={voice.deafened} onClick={() => void voice.toggleDeafen()}>
+            {t('Desativar áudio')}
+          </Item>
+        </>
+      )}
+
+      {/* CARGO E MOVER PARA, para quem administra — também sobre si mesmo, como no Discord. */}
+      {manages && (cargos.length > 0 || (inVoiceChannel !== null && voiceChannels.length > 1)) && <hr className="person-menu-linha" />}
+      {manages && cargos.length > 0 && (
+        <>
+          <Item icone={<ShieldPlus size={16} />} seta onClick={() => setAberto(aberto === 'cargo' ? null : 'cargo')}>
+            {t('Cargo')}
+          </Item>
+          {aberto === 'cargo' &&
+            cargos.map((cargo) => {
+              const tem = membro?.cargos?.includes(cargo.id) ?? false;
+              return (
+                <Item
+                  key={cargo.id}
+                  icone={<span className="person-menu-cor" style={{ background: cargo.cor }} />}
+                  marcado={tem}
+                  onClick={() =>
+                    void api(`/api/communities/${communityId}/members/${target.userId}/cargos/${cargo.id}`, { method: tem ? 'DELETE' : 'PUT' }).catch(
+                      (e) => setError((e as Error).message),
+                    )
+                  }
+                >
+                  {cargo.nome}
+                </Item>
+              );
+            })}
+        </>
+      )}
+      {manages && inVoiceChannel !== null && voiceChannels.length > 1 && (
+        <>
+          <Item icone={<MonitorPlay size={16} />} seta onClick={() => setAberto(aberto === 'mover' ? null : 'mover')}>
+            {t('Mover para')}
+          </Item>
+          {aberto === 'mover' &&
+            voiceChannels
+              .filter((c) => c.id !== inVoiceChannel)
+              .map((c) => (
+                <Item key={c.id} icone={<span />} onClick={() => act(`/api/channels/${inVoiceChannel}/move`, { toChannelId: c.id })}>
+                  {c.name}
+                </Item>
+              ))}
+        </>
       )}
 
       {!isSelf && (
@@ -357,7 +433,7 @@ export function PersonMenu({
             />
           </label>
 
-          <Item icone={muted ? <Volume2 size={16} /> : <VolumeX size={16} />} onClick={toggleLocalMute}>
+          <Item icone={muted ? <Volume2 size={16} /> : <VolumeX size={16} />} marcado={muted} onClick={toggleLocalMute}>
             {muted ? 'Ouvir de novo' : 'Silenciar só para mim'}
           </Item>
 
@@ -393,10 +469,10 @@ export function PersonMenu({
               {t('Abrir em janela flutuante')}
             </Item>
           )}
-          <Item icone={palco.semVideo ? <Check size={16} /> : <span />} onClick={palco.aoAlternarSemVideo}>
+          <Item icone={<span />} marcado={palco.semVideo} onClick={palco.aoAlternarSemVideo}>
             {t('Mostrar quem está sem vídeo')}
           </Item>
-          <Item icone={palco.minhaCamera ? <Check size={16} /> : <span />} onClick={palco.aoAlternarMinhaCamera}>
+          <Item icone={<span />} marcado={palco.minhaCamera} onClick={palco.aoAlternarMinhaCamera}>
             {t('Mostrar a minha própria câmera')}
           </Item>
         </>
@@ -427,29 +503,6 @@ export function PersonMenu({
                 Desconectar da chamada
               </Item>
             </>
-          )}
-
-          {/* Mover de sala: só faz sentido para quem está em alguma, e só para as outras salas. */}
-          {inVoiceChannel !== null && voiceChannels.length > 1 && (
-            <label className="person-menu-volume">
-              {t('Mover para outra sala')}
-              <select
-                value=""
-                aria-label={`Mover ${target.username} para outra sala`}
-                onChange={(e) => act(`/api/channels/${inVoiceChannel}/move`, { toChannelId: Number(e.target.value) })}
-              >
-                <option value="" disabled>
-                  {t('Escolha a sala…')}
-                </option>
-                {voiceChannels
-                  .filter((c) => c.id !== inVoiceChannel)
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-              </select>
-            </label>
           )}
 
           {role === 'owner' && targetRole !== 'owner' && (
