@@ -1185,6 +1185,8 @@ textarea {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  /* Sem isto o "…" nunca aparecia: o nome quebrava em três linhas com a barra a 200 px. */
+  white-space: nowrap;
   text-overflow: ellipsis;
   font-size: calc(14px * var(--escala-do-texto));
   font-weight: 600;

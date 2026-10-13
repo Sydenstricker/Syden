@@ -301,7 +301,7 @@ export function Sidebar({
         <span onContextMenu={statusMenu.onOpen} title={t('Botão direito para mudar o status')}>
           <Avatar name={user.username} userId={user.id} online status={myStatus} />
         </span>
-        <span className="user-panel-name" data-cor={corDoNome(members.get(user.id)?.nameColor)}>
+        <span className="user-panel-name" data-cor={corDoNome(members.get(user.id)?.nameColor)} title={user.username}>
           {user.username}
         </span>
         <div className="icon-row">
