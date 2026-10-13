@@ -2,8 +2,9 @@
 Termo rodando dentro do Syden (e o Google Analytics dele), "não mineramos seus dados" deixou de ser a frase mais
 precisa. A promessa exata é a da Microsoft Store: SEM ANÚNCIOS.
 
-A cena reaproveita a ilha, o coelho de cachecol, o proibido e o coração da mineração (../mineracao/mineracao.py):
-o coelho está na ilha, e janelinhas de anúncio pipocam em volta dele, piscando. O proibido cai sobre elas, elas se
+O coelho (incomodado e feliz) e a ilha são do PixelLab (gerar.mjs, pedido dele: "o cenário e o coelho podem melhorar").
+As janelas de anúncio, o proibido e o coração são desenhados por código, com as funções da mineração
+(../mineracao/mineracao.py): janelinhas pipocam em volta do coelho incomodado, piscando. O proibido cai sobre elas, elas se
 desfazem em pixels, e o coelho ganha o coração. Nenhum texto na imagem: a frase mora no HTML, para ser traduzida.
 
     python e2e/pixel-art/sem-anuncio/sem-anuncio.py
@@ -86,13 +87,25 @@ def janela(a, x0, y0, w, h, miolo, piscando):
         m.px(a, cx + dx, cy + dy, cor)
 
 
+# A cena tem o DOBRO da resolução da mineração: o coelho e a ilha vêm do PixelLab (gerar.mjs) e nasceram
+# assim. As janelas, o proibido e o coração continuam desenhados por código na grade antiga (96 × 64) e são
+# ampliados 2× — a parte da cena que ele aprovou fica igual.
+CW, CH, CESCALA = 192, 132, 3
+COELHO_X, COELHO_Y = 30, 2
+ILHA_Y = 66  # a grama da ilha (linha 16 da figura) fica na altura dos pés do coelho
+
+
+def recortar(arquivo):
+    im = Image.open(AQUI / arquivo).convert("RGBA")
+    return im.crop(im.getbbox())
+
+
 def montar(pasta):
-    base = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    base.alpha_composite(m.ilha())
-    originais = jogo.quadros_originais()
-    mediana = np.median(np.stack(originais), axis=0).astype(int)
-    coelho = jogo.recortar_coelho(originais[0], mediana)
-    coelho_x, coelho_y = 24, 46 - coelho.height
+    ilha = Image.open(AQUI / "ilha-1.png").convert("RGBA")
+    incomodado = recortar("incomodado-1.png")
+    feliz = recortar("feliz-4.png")
+    # os dois coelhos de pé no mesmo chão: o de baixo da figura alinhado
+    pe = COELHO_Y + incomodado.height
 
     rnd = random.Random(5)
     pedacos = []  # os pixels das janelas que estouram: (x, y, vx, vy, cor)
@@ -110,21 +123,27 @@ def montar(pasta):
 
     for q in range(QUADROS):
         t = q / FPS
-        im = base.copy()
-        im.alpha_composite(coelho, (coelho_x, coelho_y))
-        a = np.array(im)
+        cena = Image.new("RGBA", (CW, CH), (0, 0, 0, 0))
+        cena.alpha_composite(ilha, (0, ILHA_Y))
+        # incomodado enquanto os anúncios pipocam (balança de leve, impaciente); feliz depois do proibido (pula)
+        if t < QUANDO_CAI + 0.5:
+            coelho, dy = incomodado, (1 if (q // 4) % 2 else 0)
+        else:
+            coelho, dy = feliz, (-2 if (q // 3) % 2 else 0)
+        cena.alpha_composite(coelho, (COELHO_X + (incomodado.width - coelho.width) // 2, pe - coelho.height + dy))
+
+        # a camada desenhada por código, na grade antiga
+        a = np.zeros((H, W, 4), "uint8")
         if t < QUANDO_CAI + 0.15:
             for i, (x0, y0, w, h, nasce, miolo) in enumerate(JANELAS):
                 if t < nasce:
                     continue
-                # pipoca: nasce pequena, passa do tamanho e volta, e depois treme de leve
                 p = min(1.0, (t - nasce) / 0.25)
                 escala = p * 1.15 if p < 0.8 else 1.15 - (p - 0.8) * 0.75
                 ww, hh = max(3, int(w * escala)), max(3, int(h * escala))
                 tremor = (1 if (q + i) % 4 == 0 else 0) if p >= 1 else 0
                 janela(a, x0 + (w - ww) // 2 + tremor, y0 + (h - hh) // 2, ww, hh, miolo, (q // 3 + i) % 2 == 0)
         else:
-            # as janelas estouram em pixels que caem
             idade = (t - QUANDO_CAI - 0.15) * FPS
             if idade < 14:
                 for x, y, vx, vy, cor in pedacos:
@@ -133,15 +152,17 @@ def montar(pasta):
             p = min(1.0, (t - QUANDO_CAI) / 0.35)
             raio = int(19 * (p * 1.12 if p < 0.8 else 1.12 - (p - 0.8) * 0.6))
             m.proibido(a, *CENTRO, max(4, raio))
-        im = Image.fromarray(a)
+        camada = Image.fromarray(a)
         if 3.2 <= t < 4.7:
-            subida = (t - 3.2) * 6
-            im.alpha_composite(jogo.CORACAO, (coelho_x + 6, int(coelho_y - 8 - subida)))
+            subida = (t - 3.2) * 5
+            camada.alpha_composite(jogo.CORACAO, (44, max(0, int(14 - subida))))
+        cena.alpha_composite(camada.resize((W * 2, H * 2), Image.NEAREST), (0, 0))
+
         if t >= 4.7:
-            fade = np.array(im)
+            fade = np.array(cena)
             fade[..., 3] = (fade[..., 3] * max(0.0, 1 - (t - 4.7) / 0.3)).astype("uint8")
-            im = Image.fromarray(fade)
-        im.resize((W * ESCALA, H * ESCALA), Image.NEAREST).save(pasta / f"q{q:03d}.png")
+            cena = Image.fromarray(fade)
+        cena.resize((CW * CESCALA, CH * CESCALA), Image.NEAREST).save(pasta / f"q{q:03d}.png")
 
 
 def main():
@@ -157,9 +178,9 @@ def main():
         subprocess.run(ffmpeg + ["-i", str(pasta / f"q{int((QUANDO_CAI + 0.1) * FPS):03d}.png"), "-c:v", "libwebp", "-lossless", "1", str(SITE / "sem-anuncio-parada.webp")], check=True)
         # para conferir sem abrir o site: quatro momentos lado a lado
         momentos = [int(s * FPS) for s in (0.6, 2.0, 2.6, 3.6)]
-        folha = Image.new("RGBA", (W * ESCALA * 4, H * ESCALA), (22, 24, 31, 255))
+        folha = Image.new("RGBA", (CW * CESCALA * 4, CH * CESCALA), (22, 24, 31, 255))
         for i, q in enumerate(momentos):
-            folha.alpha_composite(Image.open(pasta / f"q{q:03d}.png"), (i * W * ESCALA, 0))
+            folha.alpha_composite(Image.open(pasta / f"q{q:03d}.png"), (i * CW * CESCALA, 0))
         folha.save(AQUI / "folha.png")
     for nome in ("sem-anuncio.webp", "sem-anuncio-parada.webp"):
         print(f"{nome}: {(SITE / nome).stat().st_size / 1024:.0f} KB")
