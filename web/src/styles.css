@@ -10162,13 +10162,39 @@ textarea {
      balcão aparecia por cima dela (relato de 13/10/2026). */
   isolation: isolate;
   width: min(960px, 100%);
-  aspect-ratio: 384 / 192;
+  aspect-ratio: 384 / 266;
   margin: 0 auto;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
   container-type: inline-size;
   --px-do-salao: calc(100cqw / 384);
+}
+
+/* O recado dentro da cena: o coelho de pé no tapete da entrada (canto de baixo, à esquerda) e o balão ao lado,
+   crescendo para cima pelo chão. Um recado comprido rola por dentro do balão, em vez de sair da cena. */
+.salao-recado {
+  position: absolute;
+  z-index: 250;
+  left: calc(14 * var(--px-do-salao));
+  bottom: calc(18 * var(--px-do-salao));
+  max-width: 70%;
+}
+
+.salao-recado .bv-guia {
+  margin: 0;
+  gap: calc(6 * var(--px-do-salao));
+}
+
+.salao-recado .bv-guia-coelho {
+  width: calc(64 * var(--px-do-salao));
+  height: calc(64 * var(--px-do-salao));
+}
+
+.salao-recado .bv-balao {
+  max-height: calc(110 * var(--px-do-salao));
+  overflow-y: auto;
+  margin-bottom: calc(20 * var(--px-do-salao));
 }
 
 .salao-cena {
@@ -14160,4 +14186,12 @@ body.arrastando-barra {
 
 .lobisomem-ninguem {
   align-self: center;
+}
+
+/* O coelho pronto como escolha no lápis do cartão: o desenho inteiro, nítido. */
+.perfil-escolha-coelho {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
 }

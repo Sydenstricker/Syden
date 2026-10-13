@@ -42,6 +42,24 @@ try {
   else ok('o lápis abre as escolhas dentro do cartão');
   await page.screenshot({ path: path.join(FOTOS, 'lapis-cor.png'), clip: (await cartao.boundingBox()) ?? undefined });
 
+  // A primeira aba é a do COELHO (o avatar pronto): escolher um marca a escolha e troca o avatar do cartão.
+  (await escolhas.getByRole('tab').first().innerText()).trim() === 'Coelho' ? ok('a primeira aba do lápis é a do coelho') : falhou('a aba do coelho não é a primeira');
+  await escolhas.locator('.perfil-escolha').nth(4).click();
+  await escolhas
+    .locator('.perfil-escolha.vestido')
+    .first()
+    .waitFor({ timeout: 8000 })
+    .then(
+      () => ok('escolher um coelho pelo lápis marca a escolha'),
+      () => falhou('o coelho escolhido pelo lápis não ficou marcado'),
+    );
+  await page
+    .waitForFunction(() => [...document.querySelectorAll('.perfil-cartao img')].some((i) => i.getAttribute('src')?.includes('coelho-05')), null, { timeout: 8000 })
+    .then(
+      () => ok('o avatar do cartão virou o coelho escolhido'),
+      () => falhou('o avatar do cartão não mudou'),
+    );
+
   // Vestir um fundo: a faixa do cartão tem de trocar de classe sem fechar nada.
   await escolhas.getByRole('tab', { name: 'Fundo do perfil' }).click();
   // O segundo da lista, e não o primeiro: o primeiro é o fundo liso, igual a não ter fundo nenhum.

@@ -220,6 +220,7 @@ export function InicioDaComunidade({
           acoes={acoes}
           naCall={naVoz.map((m) => ({ nome: m.username, pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
           quadro={<CommunityIcon community={community} size={40} standalone />}
+          recado={<RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />}
           aoVivo={
             noAr && {
               nome: noAr.username,
@@ -231,7 +232,6 @@ export function InicioDaComunidade({
           }
         />
 
-        <RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />
       </div>
 
       <div className="bv-atalhos">

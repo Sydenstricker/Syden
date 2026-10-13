@@ -2,9 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type CSSProperties, type ReactNode, useState } from 'react';
 import { enderecoDoCoelhoPronto } from './Avatar';
 import { useT } from './i18n';
-import balcaoUrl from './assets/salao/balcao.png';
 import fliperamaUrl from './assets/salao/fliperama.png';
-import frenteBalcaoUrl from './assets/salao/frente-balcao.png';
 import janelaUrl from './assets/salao/janela.png';
 import lacoUrl from './assets/salao/laco-vermelho.png';
 import regataUrl from './assets/salao/regata.png';
@@ -43,7 +41,13 @@ import tv2Url from './assets/salao/tv-2.png';
  */
 
 const W = 384;
-const H = 192;
+/**
+ * 266 desde 13/10/2026: a arte é a que o Sydenstricker desenhou para a home — o mesmo salão, com o chão estendido
+ * para baixo (a porta, o tapete da entrada, a planta do canto) e o coelho do balcão já pintado. Ela foi reduzida
+ * à grade do salão, e a parte de cima ficou no mesmo lugar: as caixas e os lugares de antes continuam valendo.
+ * No tapete da entrada mora o recado (quem administra escolhe quem o dá).
+ */
+const H = 266;
 
 type Caixa = [number, number, number, number];
 
@@ -64,9 +68,11 @@ export type AcoesDoSalao = Partial<Record<ObjetoDoSalao, { rotulo: string; sub?:
  * Os lugares de quem está na call, na ordem em que enchem (as posições e os tempos são os do lobby do site,
  * e2e/pixel-art/lobby/montar.mjs). `quadros` > 1 é faixa animada; as outras respiram um pixel.
  */
-const LUGARES: { url: string; caixa: Caixa; quadros?: number; duracao: number; atraso: number }[] = [
-  { url: sofa1Url, caixa: [88, 81, 128, 121], quadros: 16, duracao: 5.6, atraso: -1.1 },
-  { url: sofa2Url, caixa: [111, 81, 151, 121], quadros: 16, duracao: 6.4, atraso: -3.3 },
+const LUGARES: { url: string; caixa: Caixa; quadros?: number; duracao: number; atraso: number; pe?: number }[] = [
+  // `pe`: onde pisa o coelho de corpo inteiro, que está de pé. No sofá, o chão na frente dele (no assento, ele parecia
+  // flutuar em pé em cima da almofada — relato de 13/10/2026).
+  { url: sofa1Url, caixa: [88, 81, 128, 121], quadros: 16, duracao: 5.6, atraso: -1.1, pe: 139 },
+  { url: sofa2Url, caixa: [111, 81, 151, 121], quadros: 16, duracao: 6.4, atraso: -3.3, pe: 141 },
   { url: tv1Url, caixa: [152, 109, 179, 136], duracao: 2.9, atraso: -2 },
   { url: tv2Url, caixa: [205, 111, 231, 137], duracao: 3.3, atraso: -0.7 },
   { url: fliperamaUrl, caixa: [256, 78, 301, 145], duracao: 2.6, atraso: -1.5 },
@@ -136,7 +142,7 @@ export interface TvAoVivo {
   aoTrocar: (passo: 1 | -1) => void;
 }
 
-export function Salao({ acoes, naCall, quadro, aoVivo }: {
+export function Salao({ acoes, naCall, quadro, aoVivo, recado }: {
   acoes: AcoesDoSalao;
   /** Quem está na call agora, em qualquer sala de voz da comunidade: o nome e o coelho pronto, se escolheu um. */
   naCall: { nome: string; pronto: number | null }[];
@@ -144,6 +150,8 @@ export function Salao({ acoes, naCall, quadro, aoVivo }: {
   quadro: ReactNode;
   /** Alguém transmitindo: a TV vira o canal ao vivo. */
   aoVivo?: TvAoVivo | null;
+  /** O recado de quem administra (RecadoDoBalcao), de pé no tapete da entrada. */
+  recado?: ReactNode;
 }) {
   const t = useT();
   const [aceso, setAceso] = useState<ObjetoDoSalao | null>(null);
@@ -179,8 +187,9 @@ export function Salao({ acoes, naCall, quadro, aoVivo }: {
         const meio = (x0 + x1) / 2;
         const corpo = pessoa.pronto ? CORPOS[pessoa.pronto] : undefined;
         const lado = Math.min(34, y1 - y0 + 6);
+        const pe = lugar.pe ?? y1;
         const caixa: Caixa = corpo
-          ? [meio - corpo[0] / 2, y1 - corpo[1], meio + corpo[0] / 2, y1]
+          ? [meio - corpo[0] / 2, pe - corpo[1], meio + corpo[0] / 2, pe]
           : pessoa.pronto
             ? [meio - lado / 2, y1 - lado, meio + lado / 2, y1]
             : lugar.caixa;
@@ -194,7 +203,7 @@ export function Salao({ acoes, naCall, quadro, aoVivo }: {
                   {
                     ...posicao(caixa),
                     backgroundImage: `url(${corpo ? enderecoDoCorpo(pessoa.pronto) : enderecoDoCoelhoPronto(pessoa.pronto)})`,
-                    zIndex: y1,
+                    zIndex: corpo ? pe : y1,
                     '--duracao': `${lugar.duracao}s`,
                     '--atraso': `${lugar.atraso}s`,
                   } as CSSProperties
@@ -214,9 +223,8 @@ export function Salao({ acoes, naCall, quadro, aoVivo }: {
           +{sobra}
         </span>
       )}
-      {/* O coelho do balcão, sempre lá: da cintura para baixo, a frente do balcão passa na frente dele. */}
-      <Peca url={balcaoUrl} caixa={[332, 71, 371, 129]} duracao={3.5} atraso={-2.4} gente />
-      <Peca url={frenteBalcaoUrl} caixa={[336, 90, 384, 138]} />
+      {/* O recado, no tapete da entrada: o coelho escolhido e o balão, dentro da cena. */}
+      {recado && <div className="salao-recado">{recado}</div>}
 
       {comAcao.map((o) => (
         <span key={`d-${o.id}`} className={`salao-destaque${aceso === o.id ? ' aceso' : ''}`} style={posicao(o.caixa)} aria-hidden="true" />

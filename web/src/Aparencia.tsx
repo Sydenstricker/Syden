@@ -1,7 +1,9 @@
 import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import { Avatar } from './Avatar';
+import { Avatar, enderecoDoCoelhoPronto } from './Avatar';
+import { useDirectory } from './directory';
+import { primeiraForma } from './minijogos';
 import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
@@ -328,7 +330,22 @@ const ABAS_DO_CARTAO = ABAS.filter((aba) => aba.tipo !== 'insignia' && aba.tipo 
 export function EscolhasDoCartao({ nome, aoAbrirAparencia }: { nome: string; aoAbrirAparencia: () => void }) {
   const t = useT();
   const { dados, erro, vestir } = useGuardaRoupa();
-  const [aba, setAba] = useState<Vestivel>('cor');
+  // A aba do COELHO vem primeiro (13/10/2026: ele procurou trocar o coelho pelo lápis e não achou; só havia em
+  // Configurações → Minha conta). Ela troca o avatar pronto, e não um cosmético do guarda-roupa.
+  const [aba, setAba] = useState<Vestivel | 'coelho'>('coelho');
+  const { members } = useDirectory();
+  const [coelho, setCoelho] = useState<number | null | undefined>(undefined);
+  const coelhoAtual = coelho !== undefined ? coelho : ([...members.values()].find((m) => m.username === nome)?.avatarPronto ?? null);
+  const [erroDoCoelho, setErroDoCoelho] = useState<string | null>(null);
+  async function escolherCoelho(numero: number) {
+    setErroDoCoelho(null);
+    try {
+      await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero } });
+      setCoelho(numero);
+    } catch (e) {
+      setErroDoCoelho((e as Error).message);
+    }
+  }
 
   if (erro && !dados) return <p className="form-error small">{erro}</p>;
   if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
@@ -339,6 +356,9 @@ export function EscolhasDoCartao({ nome, aoAbrirAparencia }: { nome: string; aoA
   return (
     <div className="perfil-escolhas">
       <div className="perfil-escolhas-abas" role="tablist" aria-label={t('Tipos de cosmético')}>
+        <button type="button" role="tab" aria-selected={aba === 'coelho'} className={aba === 'coelho' ? 'escolhida' : ''} onClick={() => setAba('coelho')}>
+          {primeiraForma(t('Coelho'))}
+        </button>
         {ABAS_DO_CARTAO.map((opcao) => (
           <button
             key={opcao.tipo}
@@ -353,7 +373,22 @@ export function EscolhasDoCartao({ nome, aoAbrirAparencia }: { nome: string; aoA
         ))}
       </div>
       {erro && <p className="form-error small">{erro}</p>}
+      {aba === 'coelho' && erroDoCoelho && <p className="form-error small">{erroDoCoelho}</p>}
       <div className="perfil-escolhas-grade">
+        {aba === 'coelho' &&
+          Array.from({ length: 16 }, (_, i) => i + 1).map((numero) => (
+            <button
+              key={numero}
+              type="button"
+              className={`perfil-escolha${coelhoAtual === numero ? ' vestido' : ''}`}
+              aria-pressed={coelhoAtual === numero}
+              title={t('Usar este coelho')}
+              aria-label={t('Usar este coelho')}
+              onClick={() => void escolherCoelho(numero)}
+            >
+              <img className="perfil-escolha-coelho" src={enderecoDoCoelhoPronto(numero)} alt="" loading="lazy" />
+            </button>
+          ))}
         {doTipo.map((item) => {
           const visual = acharVisual(item.tipo, item.codigo);
           if (!visual) return null;
