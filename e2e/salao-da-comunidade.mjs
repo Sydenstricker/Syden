@@ -96,7 +96,7 @@ try {
   const etiquetas = await salao.locator('.salao-nome').allInnerTexts();
   etiquetas.includes('edu' + s) && etiquetas.includes('fabi' + s) ? ok('os dois têm o nome em cima') : falhou(`etiquetas: ${etiquetas.join(', ')}`);
   const busto = await salao.locator('.salao-busto').getAttribute('style');
-  busto?.includes('coelho-03') ? ok('o Edu aparece com o coelho que ele escolheu') : falhou(`o coelho do Edu: ${busto}`);
+  busto?.includes('coelho-03-corpo') ? ok('o Edu aparece com o coelho que ele escolheu, de corpo inteiro') : falhou(`o coelho do Edu: ${busto}`);
   (await duda.getByRole('button', { name: /Guarda-roupa/ }).count()) === 0 ? ok('o balcão não leva mais ao guarda-roupa') : falhou('o guarda-roupa ainda está no salão');
 
   await duda.getByRole('button', { name: /^Entrar na voz/ }).first().hover();

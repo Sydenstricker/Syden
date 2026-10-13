@@ -76,6 +76,18 @@ const LUGARES: { url: string; caixa: Caixa; quadros?: number; duracao: number; a
   { url: lacoUrl, caixa: [67, 106, 103, 160], duracao: 3.6, atraso: -0.5 },
 ];
 
+/**
+ * O CORPO INTEIRO de cada coelho pronto, de pé (13/10/2026, gerado no PixelLab: e2e/pixel-art/avatares/corpos.mjs),
+ * em web/public/avatares/coelho-NN-corpo.png, com a largura e a altura em pixels do salão. O coelho pronto em si é só
+ * cabeça e ombros, e no sofá ele saía "cortado ao meio" (relato dele). O 16 ainda não tem corpo (o saldo do
+ * PixelLab acabou nele): segue com o busto.
+ */
+const CORPOS: Record<number, [number, number]> = {
+  1: [27, 51], 2: [32, 50], 3: [34, 51], 4: [28, 54], 5: [27, 54], 6: [28, 52], 7: [26, 53], 8: [27, 52],
+  9: [26, 52], 10: [23, 53], 11: [31, 54], 12: [26, 55], 13: [26, 54], 14: [32, 48], 15: [30, 57],
+};
+const enderecoDoCorpo = (n: number) => `${import.meta.env.BASE_URL}avatares/coelho-${String(n).padStart(2, '0')}-corpo.png`;
+
 const posicao = ([x0, y0, x1, y1]: Caixa): CSSProperties => ({
   left: `${(x0 / W) * 100}%`,
   top: `${(y0 / H) * 100}%`,
@@ -162,10 +174,16 @@ export function Salao({ acoes, naCall, quadro, aoVivo }: {
       {naCall.slice(0, LUGARES.length).map((pessoa, i) => {
         const lugar = LUGARES[i];
         const [x0, y0, x1, y1] = lugar.caixa;
-        // O coelho pronto é um busto: fica de pé no fundo do lugar, um pouco maior que as caixas pequenas da TV.
-        const lado = Math.min(34, y1 - y0 + 6);
+        // O coelho pronto de corpo inteiro fica de pé no fundo do lugar, no tamanho em que nasceu; sem corpo (o 16),
+        // o busto, um pouco maior que as caixas pequenas da TV.
         const meio = (x0 + x1) / 2;
-        const caixa: Caixa = pessoa.pronto ? [meio - lado / 2, y1 - lado, meio + lado / 2, y1] : lugar.caixa;
+        const corpo = pessoa.pronto ? CORPOS[pessoa.pronto] : undefined;
+        const lado = Math.min(34, y1 - y0 + 6);
+        const caixa: Caixa = corpo
+          ? [meio - corpo[0] / 2, y1 - corpo[1], meio + corpo[0] / 2, y1]
+          : pessoa.pronto
+            ? [meio - lado / 2, y1 - lado, meio + lado / 2, y1]
+            : lugar.caixa;
         return (
           <span key={i}>
             {pessoa.pronto ? (
@@ -175,7 +193,7 @@ export function Salao({ acoes, naCall, quadro, aoVivo }: {
                 style={
                   {
                     ...posicao(caixa),
-                    backgroundImage: `url(${enderecoDoCoelhoPronto(pessoa.pronto)})`,
+                    backgroundImage: `url(${corpo ? enderecoDoCorpo(pessoa.pronto) : enderecoDoCoelhoPronto(pessoa.pronto)})`,
                     zIndex: y1,
                     '--duracao': `${lugar.duracao}s`,
                     '--atraso': `${lugar.atraso}s`,

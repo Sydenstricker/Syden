@@ -496,6 +496,25 @@ representa o coletivo". Em duas etapas:
    por marcos coletivos, e quem administra escolhe onde pôr. Sem sequência diária e sem cobrança. Pede arte nova
    (PixelLab, com os créditos acabando: decisão dele quando gastar) e uma tabela no servidor.
 
+**O que já está no salão (13/10/2026):** cada pessoa na call aparece com o PRÓPRIO coelho (o pronto que escolheu de
+avatar; o corpo inteiro de pé foi gerado no PixelLab, `e2e/pixel-art/avatares/corpos.mjs`) e o nome em cima; a TV
+mostra quem está transmitindo ("Ao vivo"), as setas trocam de canal e clicar entra assistindo — a imagem da
+transmissão NÃO vai para a TV (decisão dele: cada pessoa no início baixaria o vídeo sem ter entrado na sala); quem
+administra escolhe quem dá o recado (17 coelhos animados, `COELHOS_DO_RECADO` em `web/src/boasVindas.ts`); o
+guarda-roupa saiu do salão ("na home não precisa").
+
+**DECIDIDO (13/10/2026), À ESPERA DE CRÉDITOS DO PIXELLAB:** o salão vira personalizável — **móveis diferentes e
+layouts do ambiente**, e também o coelho do recado. **Uma parte vem liberada, e o resto se DESBLOQUEIA POR CONQUISTAS
+COLETIVAS** (o que a turma faz junta: horas de call, partidas, karaokê) — é a etapa 2 acima, agora com a regra de
+liberação decidida. Ele parou aqui só por falta de créditos ("preciso de mais créditos no PixelLab para dar
+continuidade"). O que ainda falta desenhar quando voltar:
+- **A arte:** cada móvel e cada layout é peça nova do PixelLab (o salão hoje é `sala.png` pintado inteiro, com as
+  pessoas e as telas por cima; móvel trocável pede que ele vire peças, como o quarto de móveis soltos em
+  `e2e/pixel-art/quarto/novo/` — a mesma lição: peças que nascem na grade têm bordas limpas).
+- **Quais vêm liberados e quais cada conquista abre**, e os marcos (ex.: 10 horas de call juntos, 50 partidas).
+- **O servidor:** a arrumação de cada comunidade e as conquistas dela, numa tabela; quem administra escolhe e arruma.
+- **Sem sequência diária e sem cobrança** (regra da etapa 2 e da avaliação da sondagem de jogos: nada de "volte todo dia").
+
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
 **Registrado em 09/10/2026, pelo Sydenstricker.** A pergunta: quem lê em português entra numa comunidade japonesa —
