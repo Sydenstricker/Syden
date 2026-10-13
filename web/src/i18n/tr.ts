@@ -64,6 +64,8 @@ export default {
   'As duas juntas': 'İkisi birden',
   Assistir: 'İzle',
   'Assistir transmissão': 'Yayını izle',
+  'Transmissão anterior': 'Önceki yayın',
+  'Próxima transmissão': 'Sonraki yayın',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'En fazla {minutos} dakika. Mesaj 7 gün sonra sohbetten kaybolur.',
   'Ativar áudio': 'Sesi aç',
   'Ativar microfone': 'Mikrofonu aç',

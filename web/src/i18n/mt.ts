@@ -288,6 +288,8 @@ export default {
   'Vídeo': 'Vidjo',
   'Transmissões dos outros': 'Xandiriet tal-oħrajn',
   'Assistir transmissão': 'Ara x-xandira',
+  'Transmissão anterior': 'X-xandira preċedenti',
+  'Próxima transmissão': 'X-xandira li jmiss',
   'Parar de assistir esta transmissão': 'Tibqax tara din ix-xandira',
   'Informações da transmissão': 'Informazzjoni dwar ix-xandira',
   'Volume da transmissão': 'Volum tax-xandira',

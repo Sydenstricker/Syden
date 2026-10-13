@@ -152,6 +152,8 @@ export default {
   'Ásia': 'Āzija',
   'Assistir': 'Skatīties',
   'Assistir transmissão': 'Skatīties translāciju',
+  'Transmissão anterior': 'Iepriekšējā translācija',
+  'Próxima transmissão': 'Nākamā translācija',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Līdz {minutos} min. Ziņa pazudīs no sarunas pēc 7 dienām.',
   'Ativar áudio': 'Ieslēgt skaņu',
   'Ativar microfone': 'Ieslēgt mikrofonu',

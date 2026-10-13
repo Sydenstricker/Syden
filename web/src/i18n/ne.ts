@@ -152,6 +152,8 @@ export default {
   'Ásia': 'एसिया',
   'Assistir': 'हेर्नुहोस्',
   'Assistir transmissão': 'स्ट्रिम हेर्नुहोस्',
+  'Transmissão anterior': 'अघिल्लो स्ट्रिम',
+  'Próxima transmissão': 'अर्को स्ट्रिम',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} मिनेटसम्म। सन्देश ७ दिनमा कुराकानीबाट हराउँछ।',
   'Ativar áudio': 'आवाज खोल्नुहोस्',
   'Ativar microfone': 'माइक्रोफोन खोल्नुहोस्',

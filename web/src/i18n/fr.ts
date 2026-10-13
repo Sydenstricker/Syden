@@ -421,6 +421,8 @@ export default {
   Tela: 'Écran',
   Assistir: 'Regarder',
   'Assistir transmissão': 'Regarder la diffusion',
+  'Transmissão anterior': 'Diffusion précédente',
+  'Próxima transmissão': 'Diffusion suivante',
   'Transmissões dos outros': 'Les diffusions des autres',
   'Parar de assistir esta transmissão': 'Arrêter de regarder cette diffusion',
   'Nada é baixado enquanto você não abrir': 'Rien n’est téléchargé tant que vous n’ouvrez pas',

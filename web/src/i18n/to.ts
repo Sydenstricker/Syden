@@ -278,6 +278,8 @@ export default {
   'Vídeo': 'Vitiō',
   'Transmissões dos outros': 'Ngaahi fakamafola ʻa e niʻihi kehe',
   'Assistir transmissão': 'Mamata ki he fakamafola',
+  'Transmissão anterior': 'Fakamafola ki mu\'a',
+  'Próxima transmissão': 'Fakamafola hoko',
   'Parar de assistir esta transmissão': 'Taʻofi hoʻo mamata ki he fakamafola ko ʻeni',
   'Informações da transmissão': 'Fakamatala ʻo e fakamafola',
   'Volume da transmissão': 'Lahi ʻo e leʻo ʻo e fakamafola',

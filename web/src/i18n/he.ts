@@ -152,6 +152,8 @@ export default {
   'Ásia': 'אסיה',
   'Assistir': 'לצפות',
   'Assistir transmissão': 'לצפות בשידור',
+  'Transmissão anterior': 'שידור קודם',
+  'Próxima transmissão': 'שידור הבא',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'עד {minutos} דק׳. ההקלטה נעלמת מהשיחה אחרי 7 ימים.',
   'Ativar áudio': 'להפעיל שמע',
   'Ativar microfone': 'להפעיל מיקרופון',

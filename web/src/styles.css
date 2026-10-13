@@ -10115,6 +10115,9 @@ textarea {
    pixel. É o mesmo desenho do lobby do site (web/site/site.css). */
 .salao {
   position: relative;
+  /* As peças usam z-index alto entre si (até 320); sem isto elas disputavam com a tela de configurações e o
+     balcão aparecia por cima dela (relato de 13/10/2026). */
+  isolation: isolate;
   width: min(960px, 100%);
   aspect-ratio: 384 / 192;
   margin: 0 auto;
@@ -10234,6 +10237,87 @@ textarea {
   box-shadow:
     0 0 0 var(--px-do-salao) #fff4d6,
     0 0 calc(6 * var(--px-do-salao)) rgba(255, 220, 150, 0.55);
+}
+
+/* A TV ao vivo: tela escura com o selo vermelho, quem transmite e o quê. Em pixels do salão (--px-do-salao). */
+.salao-tv-ao-vivo {
+  position: absolute;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(1 * var(--px-do-salao));
+  padding: calc(2 * var(--px-do-salao));
+  background: radial-gradient(circle at 50% 40%, #2a2f4a, #0d0f1a 75%);
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.salao-tv-ao-vivo strong {
+  max-width: 100%;
+  font-size: calc(6.5 * var(--px-do-salao));
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.salao-tv-ao-vivo small {
+  max-width: 100%;
+  opacity: 0.75;
+  font-size: calc(4.5 * var(--px-do-salao));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.salao-tv-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(1.5 * var(--px-do-salao));
+  padding: 0 calc(2 * var(--px-do-salao));
+  border-radius: 999px;
+  background: #e5484d;
+  font-size: calc(4.5 * var(--px-do-salao));
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.salao-tv-canal {
+  position: absolute;
+  right: calc(2 * var(--px-do-salao));
+  bottom: calc(1 * var(--px-do-salao));
+  font-size: calc(4 * var(--px-do-salao));
+  opacity: 0.6;
+}
+
+/* As setas de trocar de canal, dos dois lados da TV, acima da área de clique dela. */
+.salao-tv-seta {
+  position: absolute;
+  z-index: 315;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: calc(2 * var(--px-do-salao));
+  background: rgba(13, 15, 26, 0.75);
+  color: #fff;
+  cursor: pointer;
+}
+
+.salao-tv-seta svg {
+  width: 100%;
+  height: 100%;
+}
+
+.salao-tv-seta:hover,
+.salao-tv-seta:focus-visible {
+  background: #e5484d;
+  outline: none;
 }
 
 .salao-alvo {

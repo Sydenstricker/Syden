@@ -271,6 +271,8 @@ export default {
   'Vídeo': 'Vidio',
   'Transmissões dos outros': 'Vakaraitaki nei ira na tani',
   'Assistir transmissão': 'Raica na vakaraitaki',
+  'Transmissão anterior': 'Vakaraitaki sa oti',
+  'Próxima transmissão': 'Vakaraitaki tarava',
   'Parar de assistir esta transmissão': 'Kua ni raica tale na vakaraitaki oqo',
   'Informações da transmissão': 'Itukutuku ni vakaraitaki',
   'Volume da transmissão': 'Rorogo levu ni vakaraitaki',

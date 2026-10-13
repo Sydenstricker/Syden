@@ -1066,6 +1066,7 @@ export function Shell({
               // O mesmo caminho do clique na barra lateral: numa sala de voz, ENTRA na chamada (antes só
               // escolhia a sala, e a TV/"Entrar na voz" do início deixava a pessoa na porta).
               aoAbrirCanal={selectChannel}
+              aoAssistir={watchStream}
               aoAbrirConversa={openConversation}
               aoEditar={() => {
                 setMostrandoBoasVindas(false);

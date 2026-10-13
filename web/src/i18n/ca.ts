@@ -146,6 +146,8 @@ export default {
   'Ásia': 'Àsia',
   'Assistir': 'Mirar',
   'Assistir transmissão': 'Mirar la transmissió',
+  'Transmissão anterior': 'Transmissió anterior',
+  'Próxima transmissão': 'Transmissió següent',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Fins a {minutos} minuts. El missatge desapareix de la conversa al cap de 7 dies.',
   'Ativar áudio': 'Activar l’àudio',
   'Ativar microfone': 'Activar el micròfon',

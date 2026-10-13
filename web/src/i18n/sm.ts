@@ -276,6 +276,8 @@ export default {
   'Vídeo': 'Vitio',
   'Transmissões dos outros': 'Faʻasalalauga a isi',
   'Assistir transmissão': 'Matamata i le faʻasalalauga',
+  'Transmissão anterior': 'Faʻasalalauga ua mavae',
+  'Próxima transmissão': 'Faʻasalalauga o le isi',
   'Parar de assistir esta transmissão': 'Taofi le matamata i lenei faʻasalalauga',
   'Informações da transmissão': 'Faʻamatalaga o le faʻasalalauga',
   'Volume da transmissão': 'Leo tele o le faʻasalalauga',

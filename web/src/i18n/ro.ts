@@ -137,6 +137,8 @@ export default {
   'Ásia': 'Asia',
   'Assistir': 'Urmărește',
   'Assistir transmissão': 'Urmărește transmisiunea',
+  'Transmissão anterior': 'Transmisiunea anterioară',
+  'Próxima transmissão': 'Transmisiunea următoare',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Până la {minutos} minute. Mesajul dispare din conversație în 7 zile.',
   'Ativar áudio': 'Pornește sunetul',
   'Ativar microfone': 'Pornește microfonul',

@@ -106,6 +106,8 @@ export default {
   'Ásia': 'Châu Á',
   'Assistir': 'Xem',
   'Assistir transmissão': 'Xem màn hình chia sẻ',
+  'Transmissão anterior': 'Màn hình chia sẻ trước',
+  'Próxima transmissão': 'Màn hình chia sẻ tiếp theo',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Tối đa {minutos} phút. Lời nhắn sẽ tự mất khỏi cuộc trò chuyện sau 7 ngày.',
   'Ativar áudio': 'Bật âm thanh',
   'Ativar microfone': 'Bật micro',

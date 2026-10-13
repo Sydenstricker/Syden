@@ -151,6 +151,8 @@ export default {
   'Ásia': 'Asía',
   'Assistir': 'Horfa',
   'Assistir transmissão': 'Horfa á útsendingu',
+  'Transmissão anterior': 'Fyrri útsending',
+  'Próxima transmissão': 'Næsta útsending',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Allt að {minutos} mín. Skilaboðin hverfa úr samtalinu eftir 7 daga.',
   'Ativar áudio': 'Kveikja á hljóði',
   'Ativar microfone': 'Kveikja á hljóðnema',

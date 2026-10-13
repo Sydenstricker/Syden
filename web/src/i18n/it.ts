@@ -66,6 +66,8 @@ export default {
   'As duas juntas': 'Tutte e due insieme',
   Assistir: 'Guarda',
   'Assistir transmissão': 'Guarda la trasmissione',
+  'Transmissão anterior': 'Trasmissione precedente',
+  'Próxima transmissão': 'Trasmissione successiva',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Fino a {minutos} minuti. Il messaggio sparisce dalla conversazione dopo 7 giorni.',
   'Ativar áudio': 'Attiva l’audio',
   'Ativar microfone': 'Attiva il microfono',

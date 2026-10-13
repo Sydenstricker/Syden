@@ -121,6 +121,8 @@ export default {
   'Ásia': 'ஆசியா',
   'Assistir': 'பார்',
   'Assistir transmissão': 'திரைப் பகிர்வைப் பார்',
+  'Transmissão anterior': 'முந்தைய திரைப் பகிர்வு',
+  'Próxima transmissão': 'அடுத்த திரைப் பகிர்வு',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'அதிகபட்சம் {minutos} நிமிடங்கள். செய்தி 7 நாட்களில் உரையாடலிலிருந்து மறையும்.',
   'Ativar áudio': 'ஒலியை இயக்கு',
   'Ativar microfone': 'ஒலிவாங்கியை இயக்கு',

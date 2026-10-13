@@ -150,6 +150,8 @@ export default {
   'Ásia': 'Aasia',
   'Assistir': 'Katso',
   'Assistir transmissão': 'Katso lähetystä',
+  'Transmissão anterior': 'Edellinen lähetys',
+  'Próxima transmissão': 'Seuraava lähetys',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Enintään {minutos} min. Viesti katoaa keskustelusta 7 päivässä.',
   'Ativar áudio': 'Ääni päälle',
   'Ativar microfone': 'Mikrofoni päälle',

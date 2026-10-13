@@ -280,6 +280,8 @@ export default {
   'Vídeo': 'Vidiyo',
   'Transmissões dos outros': 'Mgbasa ndị ọzọ',
   'Assistir transmissão': 'Lee mgbasa',
+  'Transmissão anterior': 'Mgbasa gara aga',
+  'Próxima transmissão': 'Mgbasa na-esote',
   'Parar de assistir esta transmissão': 'Kwụsị ilele mgbasa a',
   'Informações da transmissão': 'Nkọwa mgbasa',
   'Volume da transmissão': 'Olu mgbasa',

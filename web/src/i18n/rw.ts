@@ -283,6 +283,8 @@ export default {
   'Vídeo': 'Videwo',
   'Transmissões dos outros': 'Amatambutsa y\'abandi',
   'Assistir transmissão': 'Reba itambutsa',
+  'Transmissão anterior': 'Itambutsa ryabanje',
+  'Próxima transmissão': 'Itambutsa rikurikira',
   'Parar de assistir esta transmissão': 'Reka kureba iri tambutsa',
   'Informações da transmissão': 'Amakuru y\'itambutsa',
   'Volume da transmissão': 'Ingano y\'ijwi ry\'itambutsa',

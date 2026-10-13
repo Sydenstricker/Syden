@@ -6,6 +6,8 @@
 //   Os dois com o nome em cima (13/10/2026).
 // - O balcão não leva mais ao guarda-roupa.
 // - Passar o mouse na TV mostra o que ela faz; o fliperama leva à sala de voz com a estante de jogos aberta.
+// - A TV AO VIVO: o Edu e a Fabi transmitem a tela; a TV da Duda mostra "Ao vivo" e quem, as setas trocam de canal, e
+//   clicar na TV leva a Duda para a sala já assistindo (a watch party).
 //
 //   node e2e/salao-da-comunidade.mjs   (API de teste na 3099, site na 5174 e LiveKit local na 7880)
 import fs from 'node:fs';
@@ -16,8 +18,24 @@ const FOTOS = process.env.FOTOS ?? path.join('e2e', 'fotos');
 fs.mkdirSync(FOTOS, { recursive: true });
 const s = Date.now().toString().slice(-5);
 const { browser } = await abrirNavegador();
-const pessoa = async () =>
-  vigiar(await (await browser.newContext({ viewport: { width: 1400, height: 1000 }, permissions: ['microphone', 'camera'] })).newPage());
+// O navegador de teste não tem tela para compartilhar: uma tela falsa, pintada num canvas (como em tela-parada.mjs).
+const TELA_FALSA = () => {
+  navigator.mediaDevices.getDisplayMedia = async () => {
+    const canvas = Object.assign(document.createElement('canvas'), { width: 640, height: 360 });
+    const ctx = canvas.getContext('2d');
+    let n = 0;
+    setInterval(() => {
+      ctx.fillStyle = `hsl(${(n += 7) % 360} 70% 50%)`;
+      ctx.fillRect(0, 0, 640, 360);
+    }, 1000 / 15);
+    return canvas.captureStream(15);
+  };
+};
+const pessoa = async () => {
+  const page = vigiar(await (await browser.newContext({ viewport: { width: 1400, height: 1000 }, permissions: ['microphone', 'camera'] })).newPage());
+  await page.addInitScript(TELA_FALSA);
+  return page;
+};
 
 try {
   const duda = await pessoa();
@@ -40,8 +58,10 @@ try {
   vazio === 0 ? ok('sem ninguém na call, o salão fica vazio (só o coelho do balcão)') : falhou(`o salão vazio tem ${vazio} pessoas`);
   await duda.locator('.bv').screenshot({ path: path.join(FOTOS, 'salao-vazio.png') });
 
+  const naCall = [];
   for (const nome of ['edu', 'fabi']) {
     const p = await pessoa();
+    naCall.push(p);
     await cadastrar(p, nome + s);
     await dispensarPresentes(p);
     await p.evaluate(
@@ -82,6 +102,25 @@ try {
   await duda.locator('.salao-rotulo').waitFor({ timeout: 3000 });
   ((await duda.locator('.salao-rotulo').innerText()).includes('2 na chamada agora') ? ok : falhou)('a TV diz quantos estão na chamada');
   await duda.locator('.bv').screenshot({ path: path.join(FOTOS, 'salao-com-gente.png') });
+
+  // A TV ao vivo: os dois transmitem.
+  for (const p of naCall) {
+    await p.locator('.stage-controls button[aria-label="Compartilhar tela"]').click();
+    await p.locator('.screenshare-option').first().click();
+  }
+  await duda.locator('.salao-tv-ao-vivo').waitFor({ timeout: 15000 });
+  const primeiro = (await duda.locator('.salao-tv-ao-vivo strong').innerText()).trim();
+  ok(`alguém transmitindo: a TV mostra "Ao vivo" e ${primeiro}`);
+  (await duda.locator('.salao-tv-seta').count()) === 2 ? ok('com duas transmissões, as setas de trocar de canal aparecem') : falhou('faltam as setas da TV');
+  await duda.locator('.salao-tv-seta').last().click();
+  const segundo = (await duda.locator('.salao-tv-ao-vivo strong').innerText()).trim();
+  segundo !== primeiro ? ok(`a seta trocou de canal: ${primeiro} → ${segundo}`) : falhou('a seta não trocou de canal');
+  await duda.locator('.bv').screenshot({ path: path.join(FOTOS, 'salao-tv-ao-vivo.png') });
+  await duda.getByRole('button', { name: /^Assistir transmissão/ }).first().click();
+  await duda.locator('.stage-main video').first().waitFor({ timeout: 30000 });
+  ok(`clicar na TV levou a Duda para a sala, já assistindo ${segundo}`);
+  await duda.locator('.inicio-link').first().click();
+  await duda.locator('.salao').waitFor({ timeout: 10000 });
 
   await duda.getByRole('button', { name: /^Mini-games/ }).first().click();
   await duda.locator('.minijogo-estante').waitFor({ timeout: 30000 });

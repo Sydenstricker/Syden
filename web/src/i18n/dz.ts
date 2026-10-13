@@ -163,6 +163,8 @@ export default {
   'Ásia': 'ཨེ་ཤི་ཡ།',
   'Assistir': 'བལྟ།',
   'Assistir transmissão': 'བརྒྱུད་སྤེལ་བལྟ།',
+  'Transmissão anterior': 'ཧེ་མའི་བརྒྱུད་སྤེལ།',
+  'Próxima transmissão': 'རྗེས་མའི་བརྒྱུད་སྤེལ།',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'སྐར་མ་ {minutos} ཚུན། འཕྲིན་ཡིག་འདི་ ཉིན་ ༧ ཤུལ་ལས་ གཏམ་གླེང་ནང་ལས་མེདཔ་འགྱོ་འོང་།',
   'Ativar áudio': 'སྒྲ་ཁ་ཕྱེ།',
   'Ativar microfone': 'མའི་ཀོ་ཕོན་ཁ་ཕྱེ།',

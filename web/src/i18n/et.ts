@@ -147,6 +147,8 @@ export default {
   'Ásia': 'Aasia',
   'Assistir': 'Vaata',
   'Assistir transmissão': 'Vaata ülekannet',
+  'Transmissão anterior': 'Eelmine ülekanne',
+  'Próxima transmissão': 'Järgmine ülekanne',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Kuni {minutos} min. Sõnum kaob vestlusest 7 päeva pärast.',
   'Ativar áudio': 'Lülita heli sisse',
   'Ativar microfone': 'Lülita mikrofon sisse',

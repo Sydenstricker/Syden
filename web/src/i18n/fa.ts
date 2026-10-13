@@ -124,6 +124,8 @@ export default {
   'Ásia': 'آسیا',
   'Assistir': 'تماشا',
   'Assistir transmissão': 'تماشای اشتراک صفحه',
+  'Transmissão anterior': 'اشتراک صفحه قبلی',
+  'Próxima transmissão': 'اشتراک صفحه بعدی',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'حداکثر {minutos} دقیقه. پیام پس از ۷ روز از گفتگو حذف می‌شود.',
   'Ativar áudio': 'روشن کردن صدا',
   'Ativar microfone': 'روشن کردن میکروفون',

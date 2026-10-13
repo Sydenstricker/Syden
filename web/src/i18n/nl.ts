@@ -66,6 +66,8 @@ export default {
   'As duas juntas': 'Allebei samen',
   Assistir: 'Kijken',
   'Assistir transmissão': 'Uitzending bekijken',
+  'Transmissão anterior': 'Vorige uitzending',
+  'Próxima transmissão': 'Volgende uitzending',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Tot {minutos} minuten. Het bericht verdwijnt na 7 dagen uit het gesprek.',
   'Ativar áudio': 'Geluid aanzetten',
   'Ativar microfone': 'Microfoon aanzetten',

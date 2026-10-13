@@ -167,6 +167,8 @@ export default {
   'Ásia': 'აზია',
   'Assistir': 'ყურება',
   'Assistir transmissão': 'ტრანსლაციის ყურება',
+  'Transmissão anterior': 'წინა ტრანსლაცია',
+  'Próxima transmissão': 'შემდეგი ტრანსლაცია',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} წუთამდე. მიმართვა საუბრიდან 7 დღეში ქრება.',
   'Ativar áudio': 'ხმის ჩართვა',
   'Ativar microfone': 'მიკროფონის ჩართვა',

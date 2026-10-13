@@ -144,6 +144,8 @@ export default {
   'Ásia': 'Asië',
   'Assistir': 'Kyk',
   'Assistir transmissão': 'Kyk na uitsending',
+  'Transmissão anterior': 'Vorige uitsending',
+  'Próxima transmissão': 'Volgende uitsending',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Tot {minutos} minute. Die boodskap verdwyn ná 7 dae uit die gesprek.',
   'Ativar áudio': 'Skakel klank aan',
   'Ativar microfone': 'Skakel mikrofoon aan',

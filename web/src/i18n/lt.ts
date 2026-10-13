@@ -152,6 +152,8 @@ export default {
   'Ásia': 'Azija',
   'Assistir': 'Žiūrėti',
   'Assistir transmissão': 'Žiūrėti transliaciją',
+  'Transmissão anterior': 'Ankstesnė transliacija',
+  'Próxima transmissão': 'Kita transliacija',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Iki {minutos} min. Žinutė iš pokalbio dings po 7 dienų.',
   'Ativar áudio': 'Įjungti garsą',
   'Ativar microfone': 'Įjungti mikrofoną',

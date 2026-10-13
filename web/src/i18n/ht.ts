@@ -159,6 +159,8 @@ export default {
   'Ásia': 'Azi',
   'Assistir': 'Gade',
   'Assistir transmissão': 'Gade difizyon an',
+  'Transmissão anterior': 'Difizyon anvan an',
+  'Próxima transmissão': 'Difizyon ki vini an',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Jiska {minutos} minit. Mesaj la ap disparèt nan konvèsasyon an apre 7 jou.',
   'Ativar áudio': 'Limen son an',
   'Ativar microfone': 'Limen mikwo a',

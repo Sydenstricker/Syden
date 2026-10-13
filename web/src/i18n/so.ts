@@ -150,6 +150,8 @@ export default {
   'Ásia': 'Aasiya',
   'Assistir': 'Daawo',
   'Assistir transmissão': 'Daawo baahinta',
+  'Transmissão anterior': 'Baahinta hore',
+  'Próxima transmissão': 'Baahinta xigta',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Ilaa {minutos} daqiiqo. Fariintu waxay ka baaba’aysaa wadahadalka 7 maalmood kadib.',
   'Ativar áudio': 'Shid codka',
   'Ativar microfone': 'Shid makarafoonka',

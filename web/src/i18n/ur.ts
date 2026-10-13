@@ -123,6 +123,8 @@ export default {
   'Ásia': 'ایشیا',
   'Assistir': 'دیکھیں',
   'Assistir transmissão': 'اسکرین شیئر دیکھیں',
+  'Transmissão anterior': 'پچھلا اسکرین شیئر',
+  'Próxima transmissão': 'اگلا اسکرین شیئر',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'زیادہ سے زیادہ {minutos} منٹ۔ پیغام 7 دن بعد گفتگو سے خود ہٹ جائے گا۔',
   'Ativar áudio': 'آواز چالو کریں',
   'Ativar microfone': 'مائیک چالو کریں',

@@ -147,6 +147,8 @@ export default {
   'Ásia': 'Азия',
   'Assistir': 'Гледай',
   'Assistir transmissão': 'Гледай излъчването',
+  'Transmissão anterior': 'Предишно излъчване',
+  'Próxima transmissão': 'Следващо излъчване',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'До {minutos} мин. Съобщението изчезва от разговора след 7 дни.',
   'Ativar áudio': 'Включи звука',
   'Ativar microfone': 'Включи микрофона',

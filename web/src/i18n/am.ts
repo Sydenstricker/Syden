@@ -137,6 +137,8 @@ export default {
   'Ásia': 'እስያ',
   'Assistir': 'ተመልከት',
   'Assistir transmissão': 'ስርጭቱን ተመልከት',
+  'Transmissão anterior': 'ቀዳሚ ስርጭት',
+  'Próxima transmissão': 'ቀጣይ ስርጭት',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'እስከ {minutos} ደቂቃ። የድምፅ መልእክቱ በ7 ቀናት ውስጥ ከውይይቱ ይጠፋል።',
   'Ativar áudio': 'ድምፅ አብራ',
   'Ativar microfone': 'ማይክሮፎን አብራ',

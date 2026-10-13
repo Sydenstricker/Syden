@@ -151,6 +151,8 @@ export default {
   'Ásia': 'I-Asia',
   'Assistir': 'Buka',
   'Assistir transmissão': 'Buka ukusakaza',
+  'Transmissão anterior': 'Ukusakaza kwangaphambilini',
+  'Próxima transmissão': 'Ukusakaza okulandelayo',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Kufika emizuzwini engu-{minutos}. Umlayezo unyamalala engxoxweni ngemuva kwezinsuku ezingu-7.',
   'Ativar áudio': 'Vula umsindo',
   'Ativar microfone': 'Vula imakrofoni',

@@ -149,6 +149,8 @@ export default {
   'Ásia': 'អាស៊ី',
   'Assistir': 'មើល',
   'Assistir transmissão': 'មើលការផ្សាយ',
+  'Transmissão anterior': 'ការផ្សាយមុន',
+  'Próxima transmissão': 'ការផ្សាយបន្ទាប់',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'រហូតដល់ {minutos} នាទី។ សារនឹងបាត់ពីការសន្ទនាក្នុងរយៈពេល 7 ថ្ងៃ។',
   'Ativar áudio': 'បើកសំឡេង',
   'Ativar microfone': 'បើកមីក្រូហ្វូន',

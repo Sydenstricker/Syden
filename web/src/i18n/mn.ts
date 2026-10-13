@@ -163,6 +163,8 @@ export default {
   'Ásia': 'Ази',
   'Assistir': 'Үзэх',
   'Assistir transmissão': 'Дамжуулалт үзэх',
+  'Transmissão anterior': 'Өмнөх дамжуулалт',
+  'Próxima transmissão': 'Дараагийн дамжуулалт',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} минут хүртэл. Захиа 7 хоногийн дараа ярианаас алга болно.',
   'Ativar áudio': 'Дуу асаах',
   'Ativar microfone': 'Микрофон асаах',

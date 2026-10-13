@@ -62,6 +62,8 @@ export default {
   'As duas juntas': 'Zote mbili pamoja',
   Assistir: 'Tazama',
   'Assistir transmissão': 'Tazama matangazo',
+  'Transmissão anterior': 'Matangazo yaliyotangulia',
+  'Próxima transmissão': 'Matangazo yanayofuata',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Hadi dakika {minutos}. Ujumbe hupotea kwenye mazungumzo baada ya siku 7.',
   'Ativar áudio': 'Washa sauti',
   'Ativar microfone': 'Washa maikrofoni',

@@ -150,6 +150,8 @@ export default {
   'Ásia': 'Азија',
   'Assistir': 'Гледај',
   'Assistir transmissão': 'Гледај го преносот',
+  'Transmissão anterior': 'Претходен пренос',
+  'Próxima transmissão': 'Следен пренос',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'До {minutos} мин. Пораката исчезнува од разговорот за 7 дена.',
   'Ativar áudio': 'Вклучи звук',
   'Ativar microfone': 'Вклучи микрофон',

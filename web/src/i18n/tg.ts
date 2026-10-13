@@ -151,6 +151,8 @@ export default {
   'Ásia': 'Осиё',
   'Assistir': 'Тамошо кардан',
   'Assistir transmissão': 'Тамошои пахш',
+  'Transmissão anterior': 'Пахши қаблӣ',
+  'Próxima transmissão': 'Пахши навбатӣ',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'То {minutos} дақиқа. Паём пас аз 7 рӯз аз сӯҳбат нест мешавад.',
   'Ativar áudio': 'Фаъол кардани садо',
   'Ativar microfone': 'Фаъол кардани микрофон',

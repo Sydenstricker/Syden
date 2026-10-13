@@ -152,6 +152,8 @@ export default {
   'Ásia': 'Aziýa',
   'Assistir': 'Tomaşa et',
   'Assistir transmissão': 'Ýaýlyma tomaşa et',
+  'Transmissão anterior': 'Öňki ýaýlym',
+  'Próxima transmissão': 'Indiki ýaýlym',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} minuda çenli. Habar 7 günden söhbetden ýok bolýar.',
   'Ativar áudio': 'Owazy aç',
   'Ativar microfone': 'Mikrofony aç',

@@ -143,6 +143,8 @@ export default {
   'Ásia': 'အာရှ',
   'Assistir': 'ကြည့်ရန်',
   'Assistir transmissão': 'ထုတ်လွှင့်မှု ကြည့်ရန်',
+  'Transmissão anterior': 'ယခင် ထုတ်လွှင့်မှု',
+  'Próxima transmissão': 'နောက် ထုတ်လွှင့်မှု',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'အများဆုံး {minutos} မိနစ်။ မှတ်စုက ၇ ရက်အကြာမှာ စကားဝိုင်းထဲက ပျောက်ပါမယ်။',
   'Ativar áudio': 'အသံ ဖွင့်ရန်',
   'Ativar microfone': 'မိုက်ခရိုဖုန်း ဖွင့်ရန်',

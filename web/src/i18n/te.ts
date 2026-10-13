@@ -118,6 +118,8 @@ export default {
   'Ásia': 'ఆసియా',
   'Assistir': 'చూడు',
   'Assistir transmissão': 'స్క్రీన్ షేర్‌ను చూడు',
+  'Transmissão anterior': 'మునుపటి స్క్రీన్ షేర్',
+  'Próxima transmissão': 'తదుపరి స్క్రీన్ షేర్',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'గరిష్ఠంగా {minutos} నిమిషాలు. సందేశం 7 రోజుల్లో సంభాషణ నుంచి పోతుంది.',
   'Ativar áudio': 'శబ్దాన్ని ఆన్ చేయి',
   'Ativar microfone': 'మైక్‌ను ఆన్ చేయి',

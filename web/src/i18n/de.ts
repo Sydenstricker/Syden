@@ -428,6 +428,8 @@ export default {
   Tela: 'Bildschirm',
   Assistir: 'Zusehen',
   'Assistir transmissão': 'Übertragung ansehen',
+  'Transmissão anterior': 'Vorherige Übertragung',
+  'Próxima transmissão': 'Nächste Übertragung',
   'Transmissões dos outros': 'Übertragungen der anderen',
   'Parar de assistir esta transmissão': 'Diese Übertragung nicht mehr ansehen',
   'Nada é baixado enquanto você não abrir': 'Es wird nichts geladen, solange du sie nicht öffnest',

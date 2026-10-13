@@ -150,6 +150,8 @@ export default {
   'Ásia': 'ආසියාව',
   'Assistir': 'නරඹන්න',
   'Assistir transmissão': 'විකාශනය නරඹන්න',
+  'Transmissão anterior': 'කලින් විකාශනය',
+  'Próxima transmissão': 'ඊළඟ විකාශනය',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'මිනිත්තු {minutos} දක්වා. පණිවිඩය දින 7කින් සංවාදයෙන් අතුරුදහන් වේ.',
   'Ativar áudio': 'ශබ්දය සක්‍රිය කරන්න',
   'Ativar microfone': 'මයික්‍රෆෝනය සක්‍රිය කරන්න',

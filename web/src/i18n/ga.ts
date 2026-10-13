@@ -278,6 +278,8 @@ export default {
   'Vídeo': 'Físeán',
   'Transmissões dos outros': 'Craoltaí daoine eile',
   'Assistir transmissão': 'Féach ar an gcraoladh',
+  'Transmissão anterior': 'An craoladh roimhe',
+  'Próxima transmissão': 'An chéad chraoladh eile',
   'Parar de assistir esta transmissão': 'Stop ag féachaint ar an gcraoladh seo',
   'Informações da transmissão': 'Eolas faoin gcraoladh',
   'Volume da transmissão': 'Airde an chraolta',

@@ -248,6 +248,8 @@ export default {
   'Vídeo': 'Video',
   'Transmissões dos outros': 'Other people\'s streams',
   'Assistir transmissão': 'Watch stream',
+  'Transmissão anterior': 'Previous stream',
+  'Próxima transmissão': 'Next stream',
   'Parar de assistir esta transmissão': 'Stop watching this stream',
   'Informações da transmissão': 'Stream details',
   'Volume da transmissão': 'Stream volume',

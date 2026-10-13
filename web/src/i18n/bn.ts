@@ -67,6 +67,8 @@ export default {
   'As duas juntas': 'দুটোই একসঙ্গে',
   Assistir: 'দেখো',
   'Assistir transmissão': 'স্ট্রিম দেখো',
+  'Transmissão anterior': 'আগের স্ট্রিম',
+  'Próxima transmissão': 'পরের স্ট্রিম',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} মিনিট পর্যন্ত। বার্তাটা ৭ দিন পরে কথোপকথন থেকে মিলিয়ে যায়।',
   'Ativar áudio': 'শব্দ চালু করো',
   'Ativar microfone': 'মাইক চালু করো',

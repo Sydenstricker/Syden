@@ -142,6 +142,8 @@ export default {
   'Ásia': 'Azia',
   'Assistir': 'Shiko',
   'Assistir transmissão': 'Shiko transmetimin',
+  'Transmissão anterior': 'Transmetimi i mëparshëm',
+  'Próxima transmissão': 'Transmetimi tjetër',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Deri në {minutos} minuta. Mesazhi zhduket nga biseda pas 7 ditësh.',
   'Ativar áudio': 'Ndiz zërin',
   'Ativar microfone': 'Ndiz mikrofonin',

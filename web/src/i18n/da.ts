@@ -144,6 +144,8 @@ export default {
   'Ásia': 'Asien',
   'Assistir': 'Se med',
   'Assistir transmissão': 'Se udsendelsen',
+  'Transmissão anterior': 'Forrige udsendelse',
+  'Próxima transmissão': 'Næste udsendelse',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Op til {minutos} minutter. Beskeden forsvinder fra samtalen efter 7 dage.',
   'Ativar áudio': 'Slå lyd til',
   'Ativar microfone': 'Slå mikrofon til',

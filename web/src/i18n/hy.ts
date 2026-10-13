@@ -168,6 +168,8 @@ export default {
   'Ásia': 'Ասիա',
   'Assistir': 'Դիտել',
   'Assistir transmissão': 'Դիտել հեռարձակումը',
+  'Transmissão anterior': 'Նախորդ հեռարձակումը',
+  'Próxima transmissão': 'Հաջորդ հեռարձակումը',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Մինչև {minutos} րոպե։ Ուղերձը զրույցից կվերանա 7 օրում։',
   'Ativar áudio': 'Միացնել ձայնը',
   'Ativar microfone': 'Միացնել խոսափողը',

@@ -137,6 +137,8 @@ export default {
   'Ásia': 'Asiya',
   'Assistir': 'İzlə',
   'Assistir transmissão': 'Yayımı izlə',
+  'Transmissão anterior': 'Əvvəlki yayım',
+  'Próxima transmissão': 'Növbəti yayım',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} dəqiqəyə qədər. Səsli mesaj 7 gündən sonra söhbətdən silinir.',
   'Ativar áudio': 'Səsi aç',
   'Ativar microfone': 'Mikrofonu aç',

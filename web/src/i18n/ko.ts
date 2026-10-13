@@ -65,6 +65,8 @@ export default {
   'As duas juntas': '둘 다 함께',
   Assistir: '보기',
   'Assistir transmissão': '방송 보기',
+  'Transmissão anterior': '이전 방송',
+  'Próxima transmissão': '다음 방송',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '최대 {minutos}분. 메시지는 7일 뒤 대화에서 사라져요.',
   'Ativar áudio': '소리 켜기',
   'Ativar microfone': '마이크 켜기',

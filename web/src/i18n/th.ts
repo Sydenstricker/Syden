@@ -149,6 +149,8 @@ export default {
   'Ásia': 'เอเชีย',
   'Assistir': 'ดู',
   'Assistir transmissão': 'ดูการถ่ายทอด',
+  'Transmissão anterior': 'การถ่ายทอดก่อนหน้า',
+  'Próxima transmissão': 'การถ่ายทอดถัดไป',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'ได้ถึง {minutos} นาที ข้อความเสียงจะหายจากการสนทนาใน 7 วัน',
   'Ativar áudio': 'เปิดเสียง',
   'Ativar microfone': 'เปิดไมโครโฟน',

@@ -150,6 +150,8 @@ export default {
   'Ásia': 'Asia',
   'Assistir': 'Se på',
   'Assistir transmissão': 'Se sendingen',
+  'Transmissão anterior': 'Forrige sending',
+  'Próxima transmissão': 'Neste sending',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Opptil {minutos} minutter. Meldingen forsvinner fra samtalen etter 7 dager.',
   'Ativar áudio': 'Slå på lyd',
   'Ativar microfone': 'Slå på mikrofon',

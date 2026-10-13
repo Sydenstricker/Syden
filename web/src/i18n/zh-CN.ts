@@ -67,6 +67,8 @@ export default {
   'As duas juntas': '两个一起',
   Assistir: '观看',
   'Assistir transmissão': '观看直播',
+  'Transmissão anterior': '上一个直播',
+  'Próxima transmissão': '下一个直播',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '最长 {minutos} 分钟。留言 7 天后会从对话里消失。',
   'Ativar áudio': '打开声音',
   'Ativar microfone': '打开麦克风',

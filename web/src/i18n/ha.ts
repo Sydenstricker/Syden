@@ -138,6 +138,8 @@ export default {
   'Ásia': 'Asiya',
   'Assistir': 'Kallo',
   'Assistir transmissão': 'Kallon watsawa',
+  'Transmissão anterior': 'Watsawar da ta gabata',
+  'Próxima transmissão': 'Watsawa ta gaba',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Har zuwa minti {minutos}. Saƙon muryar yana ɓacewa daga tattaunawar cikin kwana 7.',
   'Ativar áudio': 'Kunna sauti',
   'Ativar microfone': 'Kunna makirufo',

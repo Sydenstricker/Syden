@@ -151,6 +151,8 @@ export default {
   'Ásia': 'Ázsia',
   'Assistir': 'Megnézés',
   'Assistir transmissão': 'Közvetítés megnézése',
+  'Transmissão anterior': 'Előző közvetítés',
+  'Próxima transmissão': 'Következő közvetítés',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Legfeljebb {minutos} perc. Az üzenet 7 nap múlva eltűnik a beszélgetésből.',
   'Ativar áudio': 'Hang bekapcsolása',
   'Ativar microfone': 'Mikrofon bekapcsolása',

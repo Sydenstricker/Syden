@@ -142,6 +142,8 @@ export default {
   'Ásia': 'Asien',
   'Assistir': 'Titta',
   'Assistir transmissão': 'Titta på sändningen',
+  'Transmissão anterior': 'Föregående sändning',
+  'Próxima transmissão': 'Nästa sändning',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Upp till {minutos} minuter. Meddelandet försvinner ur konversationen efter 7 dagar.',
   'Ativar áudio': 'Slå på ljud',
   'Ativar microfone': 'Slå på mikrofon',

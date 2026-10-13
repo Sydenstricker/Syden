@@ -274,6 +274,8 @@ export default {
   'Vídeo': 'Vídeu',
   'Transmissões dos outros': 'Transmisaun husi ema seluk',
   'Assistir transmissão': 'Haree transmisaun',
+  'Transmissão anterior': 'Transmisaun molok',
+  'Próxima transmissão': 'Transmisaun tuir mai',
   'Parar de assistir esta transmissão': 'Para haree transmisaun ne\'e',
   'Informações da transmissão': 'Informasaun transmisaun nian',
   'Volume da transmissão': 'Volume transmisaun nian',

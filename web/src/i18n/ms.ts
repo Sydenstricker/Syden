@@ -68,6 +68,8 @@ export default {
   'As duas juntas': 'Kedua-duanya sekali',
   Assistir: 'Tonton',
   'Assistir transmissão': 'Tonton siaran',
+  'Transmissão anterior': 'Siaran sebelumnya',
+  'Próxima transmissão': 'Siaran seterusnya',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Sehingga {minutos} minit. Mesej hilang daripada perbualan selepas 7 hari.',
   'Ativar áudio': 'Hidupkan bunyi',
   'Ativar microfone': 'Hidupkan mikrofon',

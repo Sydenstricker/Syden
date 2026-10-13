@@ -117,6 +117,8 @@ export default {
   'Ásia': 'アジア',
   'Assistir': '見る',
   'Assistir transmissão': '画面共有を見る',
+  'Transmissão anterior': '前の画面共有',
+  'Próxima transmissão': '次の画面共有',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '最大{minutos}分。メッセージは7日後に会話から消えます。',
   'Ativar áudio': '音をオンにする',
   'Ativar microfone': 'マイクをオンにする',

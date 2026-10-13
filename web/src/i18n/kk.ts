@@ -146,6 +146,8 @@ export default {
   'Ásia': 'Азия',
   'Assistir': 'Көру',
   'Assistir transmissão': 'Трансляцияны көру',
+  'Transmissão anterior': 'Алдыңғы трансляция',
+  'Próxima transmissão': 'Келесі трансляция',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} минутқа дейін. Хабарлама 7 күннен кейін әңгімеден жоғалады.',
   'Ativar áudio': 'Дыбысты қосу',
   'Ativar microfone': 'Микрофонды қосу',

@@ -1,5 +1,7 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type CSSProperties, type ReactNode, useState } from 'react';
 import { enderecoDoCoelhoPronto } from './Avatar';
+import { useT } from './i18n';
 import balcaoUrl from './assets/salao/balcao.png';
 import fliperamaUrl from './assets/salao/fliperama.png';
 import frenteBalcaoUrl from './assets/salao/frente-balcao.png';
@@ -31,6 +33,11 @@ import tv2Url from './assets/salao/tv-2.png';
  *   13/10/2026: "seria legal se aparecesse o MEU coelho, não UM coelho"). Quem usa foto segue com um coelho do salão.
  * - O CLIQUE ACERTA A CAIXA DO OBJETO (o salão não tem máscaras por objeto, que pediriam arte nova); quem usa o
  *   teclado chega pelos botões invisíveis em cada caixa, e o foco acende o mesmo contorno.
+ *
+ * A TV AO VIVO (13/10/2026, ideia dele): quando alguém da comunidade transmite a tela, a TV sai da animação e mostra
+ * "Ao vivo", quem e o quê; clicar entra na sala já assistindo (a watch party). Com mais de uma transmissão, as setas
+ * trocam de canal. A imagem da transmissão NÃO vai para a TV, de propósito: cada pessoa no início baixaria o vídeo sem
+ * ter entrado na sala (decisão dele, mesmo dia).
  *
  * Etapa 2, ainda não feita: o salão evoluindo com o que a turma faz junta (enfeites por marcos coletivos).
  */
@@ -108,13 +115,25 @@ function Peca({ url, caixa, quadros, duracao, atraso, gente, titulo, naCall }: {
   );
 }
 
-export function Salao({ acoes, naCall, quadro }: {
+/** O que a TV mostra quando há transmissão: o canal da vez e como trocar. */
+export interface TvAoVivo {
+  nome: string;
+  titulo: string | null;
+  canal: number;
+  total: number;
+  aoTrocar: (passo: 1 | -1) => void;
+}
+
+export function Salao({ acoes, naCall, quadro, aoVivo }: {
   acoes: AcoesDoSalao;
   /** Quem está na call agora, em qualquer sala de voz da comunidade: o nome e o coelho pronto, se escolheu um. */
   naCall: { nome: string; pronto: number | null }[];
   /** O que vai dentro do quadro da parede: a imagem da comunidade. */
   quadro: ReactNode;
+  /** Alguém transmitindo: a TV vira o canal ao vivo. */
+  aoVivo?: TvAoVivo | null;
 }) {
+  const t = useT();
   const [aceso, setAceso] = useState<ObjetoDoSalao | null>(null);
   const comAcao = OBJETOS.filter((o) => acoes[o.id]);
   const sobra = naCall.length - LUGARES.length;
@@ -123,7 +142,18 @@ export function Salao({ acoes, naCall, quadro }: {
     <div className="salao">
       <img className="salao-cena" src={salaUrl} alt="" draggable={false} />
       <Peca url={janelaUrl} caixa={[24, 30, 68, 96]} quadros={16} duracao={6.4} />
-      <Peca url={telaTvUrl} caixa={[161, 53, 225, 93]} quadros={9} duracao={2.7} />
+      {aoVivo ? (
+        <div className="salao-tv-ao-vivo" style={posicao([161, 53, 225, 93])}>
+          <span className="salao-tv-selo">
+            <span className="live-dot" aria-hidden="true" /> {t('Ao vivo')}
+          </span>
+          <strong>{aoVivo.nome}</strong>
+          {aoVivo.titulo && <small>{aoVivo.titulo}</small>}
+          {aoVivo.total > 1 && <span className="salao-tv-canal">{`${aoVivo.canal + 1}/${aoVivo.total}`}</span>}
+        </div>
+      ) : (
+        <Peca url={telaTvUrl} caixa={[161, 53, 225, 93]} quadros={9} duracao={2.7} />
+      )}
       <Peca url={telaFliperamaUrl} caixa={[258, 58, 298, 98]} quadros={9} duracao={1.8} />
       <div className="salao-quadro" style={posicao([96, 58, 110, 78])}>
         {quadro}
@@ -190,6 +220,30 @@ export function Salao({ acoes, naCall, quadro }: {
           />
         );
       })}
+      {aoVivo && aoVivo.total > 1 && (
+        <>
+          <button
+            type="button"
+            className="salao-tv-seta"
+            style={posicao([151, 64, 160, 82])}
+            aria-label={t('Transmissão anterior')}
+            title={t('Transmissão anterior')}
+            onClick={() => aoVivo.aoTrocar(-1)}
+          >
+            <ChevronLeft />
+          </button>
+          <button
+            type="button"
+            className="salao-tv-seta"
+            style={posicao([227, 64, 236, 82])}
+            aria-label={t('Próxima transmissão')}
+            title={t('Próxima transmissão')}
+            onClick={() => aoVivo.aoTrocar(1)}
+          >
+            <ChevronRight />
+          </button>
+        </>
+      )}
       {aceso && acoes[aceso] && (
         <span
           className="salao-rotulo"

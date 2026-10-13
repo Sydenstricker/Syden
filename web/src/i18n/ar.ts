@@ -429,6 +429,8 @@ export default {
   Tela: 'الشاشة',
   Assistir: 'مشاهدة',
   'Assistir transmissão': 'مشاهدة البث',
+  'Transmissão anterior': 'البث السابق',
+  'Próxima transmissão': 'البث التالي',
   'Transmissões dos outros': 'بثوث الآخرين',
   'Parar de assistir esta transmissão': 'إيقاف مشاهدة هذا البث',
   'Nada é baixado enquanto você não abrir': 'لا يُحمَّل شيء قبل أن تفتحه',

@@ -158,6 +158,8 @@ export default {
   'Ásia': 'Osiyo',
   'Assistir': 'Tomosha qilish',
   'Assistir transmissão': 'Translyatsiyani tomosha qilish',
+  'Transmissão anterior': 'Oldingi translyatsiya',
+  'Próxima transmissão': 'Keyingi translyatsiya',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} daqiqagacha. Xabar 7 kundan keyin suhbatdan yoʻqoladi.',
   'Ativar áudio': 'Ovozni yoqish',
   'Ativar microfone': 'Mikrofonni yoqish',

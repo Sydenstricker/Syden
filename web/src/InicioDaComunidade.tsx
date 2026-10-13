@@ -66,6 +66,7 @@ export function InicioDaComunidade({
   quantosMembros,
   naVoz,
   aoAbrirCanal,
+  aoAssistir,
   aoEditar,
   aoFechar,
   aoAbrirConversa,
@@ -77,6 +78,8 @@ export function InicioDaComunidade({
   /** Quem está nas salas de voz desta comunidade agora: é quem enche o salão. */
   naVoz: VoiceMember[];
   aoAbrirCanal: (canal: Channel) => void;
+  /** Entra na sala de voz já assistindo a transmissão desta pessoa (a TV ao vivo do salão). */
+  aoAssistir: (channelId: number, userId: number) => void;
   aoEditar: () => void;
   aoFechar: () => void;
   /** Um ticket aberto: a conversa privada nova abre na hora. */
@@ -85,6 +88,11 @@ export function InicioDaComunidade({
   const t = useT();
   const { members: membros } = useDirectory();
   const [copiado, setCopiado] = useState(false);
+  // A TV AO VIVO: quem transmite agora, nesta comunidade. O canal é um índice nessa lista, e volta ao começo
+  // quando a lista encolhe (alguém parou de transmitir).
+  const transmissoes = naVoz.filter((m) => m.screen);
+  const [canal, setCanal] = useState(0);
+  const noAr = transmissoes.length > 0 ? transmissoes[canal % transmissoes.length] : null;
   const arte = acharArte(dados.boasVindas?.arte);
 
   const primeiroTexto = canais.find((c) => c.type === 'text');
@@ -121,7 +129,13 @@ export function InicioDaComunidade({
   // celular não há "passar o mouse", e quem não reconhece a TV como sala de voz também chega.
   const acoes: AcoesDoSalao = {
     ...(salaDeVoz && {
-      tv: { rotulo: t('Entrar na voz'), sub: naChamada, onClick: () => aoAbrirCanal(salaDeVoz) },
+      tv: noAr
+        ? {
+            rotulo: t('Assistir transmissão'),
+            sub: noAr.screenName ? `${noAr.username} · ${noAr.screenName}` : noAr.username,
+            onClick: () => aoAssistir(noAr.channelId, noAr.userId),
+          }
+        : { rotulo: t('Entrar na voz'), sub: naChamada, onClick: () => aoAbrirCanal(salaDeVoz) },
       fliperama: {
         rotulo: t('Mini-games'),
         sub: t('Na sala de voz, com a turma'),
@@ -194,6 +208,15 @@ export function InicioDaComunidade({
           acoes={acoes}
           naCall={naVoz.map((m) => ({ nome: m.username, pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
           quadro={<CommunityIcon community={community} size={40} standalone />}
+          aoVivo={
+            noAr && {
+              nome: noAr.username,
+              titulo: noAr.screenName,
+              canal: canal % transmissoes.length,
+              total: transmissoes.length,
+              aoTrocar: (passo) => setCanal((c) => (c + passo + transmissoes.length) % transmissoes.length),
+            }
+          }
         />
 
         <RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} />

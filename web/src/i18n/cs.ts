@@ -149,6 +149,8 @@ export default {
   'Ásia': 'Asie',
   'Assistir': 'Sledovat',
   'Assistir transmissão': 'Sledovat přenos',
+  'Transmissão anterior': 'Předchozí přenos',
+  'Próxima transmissão': 'Další přenos',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Až {minutos} min. Zpráva z konverzace zmizí za 7 dní.',
   'Ativar áudio': 'Zapnout zvuk',
   'Ativar microfone': 'Zapnout mikrofon',

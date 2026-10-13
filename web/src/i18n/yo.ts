@@ -152,6 +152,8 @@ export default {
   'Ásia': 'Éṣíà',
   'Assistir': 'Wò ó',
   'Assistir transmissão': 'Wo ìfihàn náà',
+  'Transmissão anterior': 'Ìfihàn tẹ́lẹ̀',
+  'Próxima transmissão': 'Ìfihàn tó kàn',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Dé ìṣẹ́jú {minutos}. Ìkìlọ̀ náà yóò parẹ́ nínú ìbánisọ̀rọ̀ lẹ́yìn ọjọ́ 7.',
   'Ativar áudio': 'Tan ohùn',
   'Ativar microfone': 'Tan máíkì',

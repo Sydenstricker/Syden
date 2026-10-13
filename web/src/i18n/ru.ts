@@ -426,6 +426,8 @@ export default {
   Tela: 'Экран',
   Assistir: 'Смотреть',
   'Assistir transmissão': 'Смотреть трансляцию',
+  'Transmissão anterior': 'Предыдущая трансляция',
+  'Próxima transmissão': 'Следующая трансляция',
   'Transmissões dos outros': 'Трансляции других',
   'Parar de assistir esta transmissão': 'Перестать смотреть эту трансляцию',
   'Nada é baixado enquanto você não abrir': 'Пока ты не откроешь, ничего не загружается',

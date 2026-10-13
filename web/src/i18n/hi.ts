@@ -69,6 +69,8 @@ export default {
   'As duas juntas': 'दोनों एक साथ',
   Assistir: 'देखो',
   'Assistir transmissão': 'स्ट्रीम देखो',
+  'Transmissão anterior': 'पिछली स्ट्रीम',
+  'Próxima transmissão': 'अगली स्ट्रीम',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': '{minutos} मिनट तक। संदेश 7 दिन बाद बातचीत से गायब हो जाता है।',
   'Ativar áudio': 'आवाज़ चालू करो',
   'Ativar microfone': 'माइक चालू करो',

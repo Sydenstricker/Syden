@@ -166,6 +166,8 @@ export default {
   'Ásia': 'Azja',
   'Assistir': 'Oglądaj',
   'Assistir transmissão': 'Oglądaj transmisję',
+  'Transmissão anterior': 'Poprzednia transmisja',
+  'Próxima transmissão': 'Następna transmisja',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Maksymalnie {minutos} min. Nagranie znika z rozmowy po 7 dniach.',
   'Ativar áudio': 'Włącz dźwięk',
   'Ativar microfone': 'Włącz mikrofon',

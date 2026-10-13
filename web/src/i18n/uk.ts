@@ -152,6 +152,8 @@ export default {
   'Ásia': 'Азія',
   'Assistir': 'Дивитися',
   'Assistir transmissão': 'Дивитися трансляцію',
+  'Transmissão anterior': 'Попередня трансляція',
+  'Próxima transmissão': 'Наступна трансляція',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'До {minutos} хв. Запис зникає з розмови через 7 днів.',
   'Ativar áudio': 'Увімкнути звук',
   'Ativar microfone': 'Увімкнути мікрофон',

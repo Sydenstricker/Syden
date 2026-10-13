@@ -151,6 +151,8 @@ export default {
   'Ásia': 'ເອເຊຍ',
   'Assistir': 'ເບິ່ງ',
   'Assistir transmissão': 'ເບິ່ງສະຕຣີມ',
+  'Transmissão anterior': 'ສະຕຣີມກ່ອນໜ້າ',
+  'Próxima transmissão': 'ສະຕຣີມຖັດໄປ',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'ສູງສຸດ {minutos} ນາທີ ຂໍ້ຄວາມຈະຫາຍຈາກການສົນທະນາໃນ 7 ມື້',
   'Ativar áudio': 'ເປີດສຽງ',
   'Ativar microfone': 'ເປີດໄມ',

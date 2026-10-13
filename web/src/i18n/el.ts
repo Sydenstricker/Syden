@@ -143,6 +143,8 @@ export default {
   'Ásia': 'Ασία',
   'Assistir': 'Παρακολούθηση',
   'Assistir transmissão': 'Παρακολούθηση μετάδοσης',
+  'Transmissão anterior': 'Προηγούμενη μετάδοση',
+  'Próxima transmissão': 'Επόμενη μετάδοση',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Έως {minutos} λεπτά. Το μήνυμα φεύγει από τη συνομιλία σε 7 μέρες.',
   'Ativar áudio': 'Ενεργοποίηση ήχου',
   'Ativar microfone': 'Ενεργοποίηση μικροφώνου',

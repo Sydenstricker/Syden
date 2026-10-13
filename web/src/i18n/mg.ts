@@ -150,6 +150,8 @@ export default {
   'Ásia': 'Azia',
   'Assistir': 'Jereo',
   'Assistir transmissão': 'Jereo ny fandefasana',
+  'Transmissão anterior': 'Fandefasana teo aloha',
+  'Próxima transmissão': 'Fandefasana manaraka',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Hatramin’ny minitra {minutos}. Manjavona ao amin’ny resaka ny hafatra afaka 7 andro.',
   'Ativar áudio': 'Alefaso ny feo',
   'Ativar microfone': 'Alefaso ny mikrô',

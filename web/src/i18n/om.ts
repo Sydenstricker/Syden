@@ -144,6 +144,8 @@ export default {
   'Ásia': 'Eeshiyaa',
   'Assistir': 'Ilaali',
   'Assistir transmissão': 'Tamsaasa ilaali',
+  'Transmissão anterior': 'Tamsaasa kan duraa',
+  'Próxima transmissão': 'Tamsaasa itti aanu',
   'Até {minutos} minutos. O recado some da conversa em 7 dias.': 'Hanga daqiiqaa {minutos}. Ergaan sagalee guyyaa 7 booda haasaa keessaa bada.',
   'Ativar áudio': 'Sagalee banadhu',
   'Ativar microfone': 'Maayikiroofoonii banadhu',
