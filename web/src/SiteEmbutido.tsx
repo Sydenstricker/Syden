@@ -1,5 +1,6 @@
 import { ExternalLink, X } from 'lucide-react';
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useT } from './i18n';
 
 /**
@@ -7,6 +8,10 @@ import { useT } from './i18n';
  * mini-games é justamente rodar no Syden"). O site só carrega DEPOIS do clique de quem quer jogar — nunca sozinho,
  * nem para os outros. O que ele carrega (o Termo: o Google Analytics) está declarado na política de privacidade,
  * em #jogos-de-parceiros, e o endereço está na frame-src da política de segurança.
+ *
+ * VAI DIRETO NO <body> (portal): aberto da estante da sala, ele nascia dentro do painel de mini-games, que usa
+ * `transform` — e um elemento com transform prende o `position: fixed` de quem está dentro. O Termo saiu espremido
+ * no painel, com barras de rolagem ("inviável usar assim", 13/10/2026).
  *
  * O quadro é isolado: o site roda os scripts dele e guarda o próprio progresso, mas não navega a janela do Syden,
  * e não recebe de onde veio (sem referrer). O botão de abrir no navegador fica sempre à mão, com o nome do site:
@@ -20,7 +25,7 @@ export function SiteEmbutido({ nome, endereco, aoFechar }: { nome: string; ender
     return () => window.removeEventListener('keydown', aoTeclar);
   }, [aoFechar]);
 
-  return (
+  return createPortal(
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && aoFechar()}>
       <div className="dialog site-embutido" role="dialog" aria-modal="true" aria-label={nome}>
         <header>
@@ -40,6 +45,7 @@ export function SiteEmbutido({ nome, endereco, aoFechar }: { nome: string; ender
           allow="clipboard-write"
         />
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

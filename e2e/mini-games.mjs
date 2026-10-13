@@ -90,6 +90,14 @@ try {
   await duda.locator('.minijogo-parceiro', { hasText: 'Termo' }).click();
   await duda.locator('.site-embutido iframe').waitFor({ timeout: 10000 });
   (await edu.locator('.site-embutido').count()) === 0 ? ok('o Termo abriu da estante, só para a Duda') : falhou('o Termo abriu para o Edu também');
+  // Na tela inteira, e não preso dentro do painel (o painel tem transform, que prendia o position: fixed).
+  const janelaDoTermo = await duda.locator('.site-embutido').boundingBox();
+  const tela = duda.viewportSize();
+  janelaDoTermo.width > tela.width * 0.55 && janelaDoTermo.height > tela.height * 0.7
+    ? ok('a janela do Termo ocupa a tela, fora do painel')
+    : falhou(`a janela do Termo ficou presa: ${Math.round(janelaDoTermo.width)}×${Math.round(janelaDoTermo.height)}`);
+  await duda.waitForTimeout(1500);
+  await duda.screenshot({ path: path.join(FOTOS, 'mini-games-termo-na-sala.png') });
   await foto(duda, 'estante');
   await duda.keyboard.press('Escape');
   await duda.locator('.site-embutido').waitFor({ state: 'detached', timeout: 5000 });
