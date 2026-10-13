@@ -73,6 +73,21 @@ try {
       () => ok('o link "Aparência" abre a tela completa'),
       () => falhou('o link "Aparência" não abriu a tela completa'),
     );
+
+  // Na tela completa, o CARTÃO INTEIRO veste (13/10/2026: saiu o botão "Usar" de dentro de cada um).
+  await page.getByRole('tab', { name: 'Fundo do perfil' }).last().click();
+  const vestivel = page.locator('.guarda-roupa-cartao.vestivel').first();
+  await vestivel.waitFor({ timeout: 5000 });
+  const nomeDoFundo = (await vestivel.locator('strong').innerText()).trim();
+  (await page.locator('.guarda-roupa-cartao button', { hasText: 'Usar' }).count()) === 0 ? ok('não há mais botão "Usar" nos cartões') : falhou('ainda há botão "Usar"');
+  await vestivel.click();
+  await page
+    .locator('.guarda-roupa-cartao.vestido', { hasText: nomeDoFundo })
+    .waitFor({ timeout: 5000 })
+    .then(
+      () => ok(`clicar no cartão vestiu o fundo "${nomeDoFundo}"`),
+      () => falhou('clicar no cartão não vestiu o fundo'),
+    );
 } catch (erro) {
   falhou(String(erro));
 } finally {

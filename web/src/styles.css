@@ -9483,6 +9483,18 @@ textarea {
   border-color: var(--green);
 }
 
+.guarda-roupa-cartao.vestivel {
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.guarda-roupa-cartao.vestivel:hover,
+.guarda-roupa-cartao.vestivel:focus-visible {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+  outline: none;
+}
+
 /* Trancado continua visível e legível: a graça de um guarda-roupa é ver o que existe. */
 .guarda-roupa-cartao.trancado {
   opacity: 0.75;

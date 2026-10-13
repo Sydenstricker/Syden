@@ -98,8 +98,26 @@ function Cartao({
   if (!visual) return null;
 
   const trancado = !item.tenho;
+  // O CARTÃO INTEIRO É O BOTÃO (13/10/2026, pedido do Sydenstricker: "clicar no card já deveria aplicar"). Havia um
+  // "Usar" dentro de cada um. O que já está em uso não faz nada ao clicar: tirá-lo é escolher outro, ou o "sem nada".
+  const vestivel = !trancado && !vestido;
   return (
-    <div className={`guarda-roupa-cartao${vestido ? ' vestido' : ''}${trancado ? ' trancado' : ''}`}>
+    <div
+      className={`guarda-roupa-cartao${vestido ? ' vestido' : ''}${trancado ? ' trancado' : ''}${vestivel ? ' vestivel' : ''}`}
+      role={vestivel ? 'button' : undefined}
+      tabIndex={vestivel ? 0 : undefined}
+      onClick={vestivel ? () => onVestir(item) : undefined}
+      onKeyDown={
+        vestivel
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onVestir(item);
+              }
+            }
+          : undefined
+      }
+    >
       <Amostra item={item} corVestida={corVestida} />
       <div className="guarda-roupa-cartao-texto">
         <strong>{t(visual.nome)}</strong>
@@ -114,14 +132,12 @@ function Cartao({
         <span className="guarda-roupa-vestido" aria-label={t('Em uso')}>
           <Check size={16} /> {t('Em uso')}
         </span>
-      ) : trancado ? (
-        <span className="guarda-roupa-trancado" aria-label={t('Você ainda não tem este item')}>
-          <Lock size={16} />
-        </span>
       ) : (
-        <button type="button" className="btn-secondary" onClick={() => onVestir(item)}>
-          {t('Usar')}
-        </button>
+        trancado && (
+          <span className="guarda-roupa-trancado" aria-label={t('Você ainda não tem este item')}>
+            <Lock size={16} />
+          </span>
+        )
       )}
     </div>
   );
