@@ -271,6 +271,10 @@ esqueleto, e anúncio só se mede com o navegador rodando.
   GuessThe.Game, WhenTaken, Skribbl, Letreco, GeoGuessr.
 - Gartic Phone e Gartic.io quase não carregaram nada na entrada, mas mostram anúncio jogando: fora.
 - Ressalva: só a página de entrada foi medida. Anúncio pode aparecer no meio da partida.
+- **A promessa da lista é "sem anúncio", não "sem rastreio"** (decisão dele, 13/10/2026: "sem anúncio é honesto"). O
+  rastreio de um site que a pessoa abre por vontade própria é entre ela e o site. Por isso o **Termo** entrou (só Google
+  Analytics), e só para quem usa o Syden em português. Embutir continua fora: aí o rastreio rodaria na janela do Syden,
+  e isso entraria na política de privacidade.
 
 **Licenças conferidas em 07/10/2026** (o Syden é de código fechado, "todos os direitos reservados", e
 isso decide quais bibliotecas podem entrar):

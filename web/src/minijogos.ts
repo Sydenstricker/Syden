@@ -724,11 +724,20 @@ export const pegarPedidoDeAbrir = (channelId: number): boolean =>
  * Os sites para jogar FORA do Syden e transmitir (degrau 1 do caminho combinado em 07/10/2026). Só os que
  * a varredura num Chrome de verdade mostrou SEM anúncio (ver CLAUDE.md, "Mini-games"). Abrem no navegador,
  * fora do Syden: o anúncio e o rastreio de um site de fora nunca entram aqui.
+ *
+ * A promessa da lista é "sem anúncio", e não "sem rastreio" (decisão do Sydenstricker, 13/10/2026: "sem anúncio é
+ * honesto"). O Termo só carrega o Google Analytics, que fica entre quem abre o site e o site: o Syden não carrega
+ * nada dele. `idiomas` restringe a quem usa o Syden numa dessas línguas (o Termo é só em português).
  */
-export const SITES_PARA_TRANSMITIR: { nome: string; endereco: string; dica: string }[] = [
+export const SITES_PARA_TRANSMITIR: { nome: string; endereco: string; dica: string; idiomas?: string[] }[] = [
   { nome: 'Lichess', endereco: 'https://lichess.org', dica: chave('Xadrez, contra a turma ou contra o computador') },
   { nome: 'Clues by Sam', endereco: 'https://cluesbysam.com', dica: chave('Um mistério de lógica por dia') },
   { nome: 'Wikitrivia', endereco: 'https://wikitrivia.tomjwatson.com', dica: chave('Pôr acontecimentos na ordem do tempo') },
   { nome: 'JKLM.fun', endereco: 'https://jklm.fun', dica: chave('Palavras e perguntas rápidas, todo mundo junto') },
   { nome: 'Neal.fun', endereco: 'https://neal.fun', dica: chave('Brincadeiras curiosas para fazer junto') },
+  { nome: 'Termo', endereco: 'https://term.ooo', dica: chave('A palavra do dia, em português'), idiomas: ['pt'] },
 ];
+
+/** Os sites da lista que servem para quem usa o Syden em `idioma` ("pt-BR" casa com "pt"). */
+export const sitesParaTransmitir = (idioma: string) =>
+  SITES_PARA_TRANSMITIR.filter((site) => !site.idiomas || site.idiomas.some((i) => idioma === i || idioma.startsWith(`${i}-`)));

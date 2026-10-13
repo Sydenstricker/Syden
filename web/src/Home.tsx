@@ -1,5 +1,5 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
-import { JOGOS, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
+import { JOGOS, pedirParaAbrirAoEntrar, sitesParaTransmitir } from './minijogos';
 import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
 import { useDirectory } from './directory';
@@ -8,7 +8,7 @@ import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
 import type { Periodo } from './Vila';
-import { useT } from './i18n';
+import { idiomaAtual, useT } from './i18n';
 
 // Tela inicial do Syden: o quarto do coelho (Quarto.tsx). Um lugar para chegar, dar uma olhada no que mudou e cutucar
 // o coelho antes de entrar numa sala. Os objetos não são enfeite: cada um leva a uma parte de verdade do app. Até
@@ -283,7 +283,7 @@ export function Home({
             <section className="jogos-de-fora">
               <h4>{t('Para jogar fora e transmitir')}</h4>
               <ul>
-                {SITES_PARA_TRANSMITIR.map((site) => (
+                {sitesParaTransmitir(idiomaAtual()).map((site) => (
                   <li key={site.endereco}>
                     <a href={site.endereco} target="_blank" rel="noopener noreferrer">
                       <ExternalLink size={14} aria-hidden="true" />

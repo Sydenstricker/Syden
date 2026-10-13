@@ -65,7 +65,8 @@ try {
   await duda.keyboard.press('Enter');
   const painel = duda.locator('.jogos-painel');
   await painel.waitFor();
-  (await painel.locator('.jogos-de-fora li').count()) >= 5 ? ok('os sites sem anúncio estão no computador') : falhou('faltam os sites de fora');
+  const sitesDeFora = await painel.locator('.jogos-de-fora li').allInnerTexts();
+  sitesDeFora.length >= 6 && sitesDeFora.some((s) => s.includes('Termo')) ? ok('os sites sem anúncio estão no computador, com o Termo (a Duda usa português)') : falhou(`faltam os sites de fora: ${sitesDeFora.join(' | ')}`);
   await painel.locator('.jogos-do-syden li button', { hasText: 'Sala 1' }).click();
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
