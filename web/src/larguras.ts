@@ -18,7 +18,10 @@ import { chave } from './i18n';
  * tradução que funciona.
  */
 export const BARRAS = {
-  sidebar: { nome: chave('Canais'), padrao: 240, minimo: 160, maximo: 420 },
+  // 200 desde 13/10/2026 (era 240), decisão do Sydenstricker: "coisa de 1 cm" a mais para o palco — com o Termo no
+  // palco, o Quarteto (4 tabuleiros lado a lado) ainda cortava uma pontinha. O preço, mostrado a ele antes: o nome
+  // no rodapé da barra fica com reticências a partir de 3 ou 4 letras. Quem já arrastou a barra guarda a sua.
+  sidebar: { nome: chave('Canais'), padrao: 200, minimo: 160, maximo: 420 },
   membros: { nome: chave('Pessoas'), padrao: 240, minimo: 160, maximo: 420 },
 } as const;
 

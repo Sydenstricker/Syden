@@ -26,7 +26,7 @@
      Definida no CSS, a tela já nasce no tamanho certo — sem isto ela apareceria sem largura nenhuma
      até o script rodar, e o Syden piscaria a cada abertura. Quem ajusta o tamanho sobrescreve estas
      duas no <html>. */
-  --largura-sidebar: 240px;
+  --largura-sidebar: 200px;
   --largura-membros: 240px;
   --green: #2fbf71;
   --red: #e5534b;
