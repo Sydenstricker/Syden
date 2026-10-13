@@ -12751,6 +12751,12 @@ body.arrastando-barra {
   gap: 12px 10px;
 }
 
+/* A estante é mais larga que um jogo em andamento: com 9 capas, na largura de 520 px a terceira fileira caía abaixo da
+   altura do painel, e o Termo só aparecia rolando (13/10/2026). Assim cabem 5 por fileira. */
+.minijogo.na-estante {
+  width: min(700px, 92vw);
+}
+
 .minijogo-jogo span {
   font-size: calc(14px * var(--escala-do-texto));
   line-height: 1.25;

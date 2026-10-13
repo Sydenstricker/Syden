@@ -111,7 +111,7 @@ export function PainelDoMinijogo({
   const rodada = partida && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez') && !partida.terminada ? (partida as unknown as EstadoTamanho) : null;
 
   return (
-    <div className={`minijogo${partida ? ` jogando-${partida.jogo}` : ''}`} role="dialog" aria-label={partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}>
+    <div className={`minijogo${partida ? ` jogando-${partida.jogo}` : ' na-estante'}`} role="dialog" aria-label={partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}>
       <div className="minijogo-topo">
         <strong>
           <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}
