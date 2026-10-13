@@ -37,13 +37,18 @@ function QuadroDoSite({ nome, endereco, aoFechar }: { nome: string; endereco: st
           <X size={16} />
         </button>
       </header>
-      <iframe
-        src={endereco}
-        title={nome}
-        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"
-        referrerPolicy="no-referrer"
-        allow="clipboard-write"
-      />
+      {/* O quadro nunca fica mais alto que a largura ÷ 1,5: o Termo mede as peças pela ALTURA, e no Quarteto (4
+          tabuleiros lado a lado) um quadro alto e estreito cortava os tabuleiros dos lados (medido em 13/10/2026:
+          de 1,5 para cima cabe). Sobrando altura, ele fica no meio. */}
+      <div className="site-embutido-quadro">
+        <iframe
+          src={endereco}
+          title={nome}
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"
+          referrerPolicy="no-referrer"
+          allow="clipboard-write"
+        />
+      </div>
     </>
   );
 }

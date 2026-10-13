@@ -7566,7 +7566,7 @@ textarea {
 .dialog.site-embutido {
   display: flex;
   flex-direction: column;
-  width: min(960px, calc(100vw - 32px));
+  width: min(1240px, calc(100vw - 32px));
   max-width: none;
   height: min(820px, calc(100vh - 48px));
   padding: 0;
@@ -7609,9 +7609,19 @@ textarea {
   background: var(--bg-main);
 }
 
-.site-embutido iframe {
+.site-embutido-quadro {
   flex: 1;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  /* a cor de fundo do Termo: a sobra de altura some no desenho dele */
+  background: #6e5c62;
+}
+
+.site-embutido iframe {
   width: 100%;
+  height: min(100cqh, 100cqw / 1.5);
   border: none;
   background: #fff;
 }
