@@ -683,6 +683,9 @@ export default {
   'Monstro': 'Hirviö',
   'Montar esta tela': 'Rakenna tämä näkymä',
   'Mover para outra sala': 'Siirrä toiseen huoneeseen',
+  'Abrir em janela flutuante': 'Avaa kelluvassa ikkunassa',
+  'Mostrar quem está sem vídeo': 'Näytä ihmiset ilman videota',
+  'Mostrar a minha própria câmera': 'Näytä oma kamerani',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Muuttaa sitä, miten muut kuulevat sinut puhelussa. Tulee voimaan heti, vaihdettavissa kesken puhelun — ja loppuu, kun poistut huoneesta: seuraavalla kerralla tulet omalla äänelläsi.',
   'Mudar a largura de {barra}': 'Muuta leveyttä: {barra}',

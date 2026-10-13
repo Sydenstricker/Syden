@@ -684,6 +684,9 @@ export default {
   'Monstro': 'Ҳаюло',
   'Montar esta tela': 'Сохтани ин экран',
   'Mover para outra sala': 'Ба ҳуҷраи дигар гузаронидан',
+  'Abrir em janela flutuante': 'Дар тирезаи шинокунанда кушо',
+  'Mostrar quem está sem vídeo': 'Одамони бидуни видео нишон деҳ',
+  'Mostrar a minha própria câmera': 'Камераи худамро нишон деҳ',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Тағйир медиҳад, ки дигарон шуморо дар занг чӣ гуна мешунаванд. Фавран амал мекунад, ҳангоми сӯҳбат иваз кардан мумкин аст — ва вақте ки аз ҳуҷра мебароед, тамом мешавад: дафъаи оянда бо овози худ ворид мешавед.',
   'Mudar a largura de {barra}': 'Тағйири паҳнӣ: {barra}',

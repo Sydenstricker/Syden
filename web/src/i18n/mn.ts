@@ -698,6 +698,9 @@ export default {
   'Monstro': 'Мангас',
   'Montar esta tela': 'Энэ дэлгэцийг бүтээх',
   'Mover para outra sala': 'Өөр өрөө рүү шилжүүлэх',
+  'Abrir em janela flutuante': 'Хөвөгч цонхонд нээ',
+  'Mostrar quem está sem vídeo': 'Видеогүй хүмүүсийг харуул',
+  'Mostrar a minha própria câmera': 'Өөрийн камерыг харуул',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Дуудлагад бусад чамайг хэрхэн сонсохыг өөрчилнө. Шууд хүчинтэй, ярианы дундуур сольж болно — өрөөнөөс гарахад дуусна: дараагийн удаа өөрийнхөө хоолойгоор орно.',
   'Mudar a largura de {barra}': 'Өргөнийг өөрчлөх: {barra}',

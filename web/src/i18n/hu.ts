@@ -684,6 +684,9 @@ export default {
   'Monstro': 'Szörny',
   'Montar esta tela': 'A képernyő összeállítása',
   'Mover para outra sala': 'Áthelyezés másik szobába',
+  'Abrir em janela flutuante': 'Megnyitás lebegő ablakban',
+  'Mostrar quem está sem vídeo': 'Videó nélküli emberek mutatása',
+  'Mostrar a minha própria câmera': 'Saját kamerám mutatása',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Megváltoztatja, hogyan hallanak mások a hívásban. Azonnal érvényes, beszélgetés közben is cserélhető — és véget ér, amikor kilépsz a szobából: legközelebb a saját hangodon jössz be.',
   'Mudar a largura de {barra}': 'Szélesség módosítása: {barra}',

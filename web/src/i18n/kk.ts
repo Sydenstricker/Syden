@@ -679,6 +679,9 @@ export default {
   'Monstro': 'Құбыжық',
   'Montar esta tela': 'Осы экранды жасау',
   'Mover para outra sala': 'Басқа бөлмеге ауыстыру',
+  'Abrir em janela flutuante': 'Қалқымалы терезеде аш',
+  'Mostrar quem está sem vídeo': 'Бейнесіз адамдарды көрсет',
+  'Mostrar a minha própria câmera': 'Өз камерамды көрсет',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Қоңырауда басқалардың сізді қалай еститінін өзгертеді. Бірден күшіне енеді, әңгіме кезінде ауыстыруға болады — ал бөлмеден шыққанда тоқтайды: келесі жолы өз дауысыңызбен кіресіз.',
   'Mudar a largura de {barra}': '{barra} енін өзгерту',

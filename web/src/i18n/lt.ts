@@ -685,6 +685,9 @@ export default {
   'Monstro': 'Pabaisa',
   'Montar esta tela': 'Sukurti šį ekraną',
   'Mover para outra sala': 'Perkelti į kitą kambarį',
+  'Abrir em janela flutuante': 'Atidaryk plaukiojančiame lange',
+  'Mostrar quem está sem vídeo': 'Rodyk žmones be vaizdo',
+  'Mostrar a minha própria câmera': 'Rodyk mano paties kamerą',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Keičia, kaip tave girdi kiti skambutyje. Galioja iš karto, galima keisti pokalbio metu — ir baigiasi, kai išeini iš kambario: kitą kartą ateisi su savo balsu.',
   'Mudar a largura de {barra}': 'Keisti plotį: {barra}',

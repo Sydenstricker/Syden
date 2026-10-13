@@ -675,6 +675,9 @@ export default {
   'Monstro': 'Përbindësh',
   'Montar esta tela': 'Ndërto këtë ekran',
   'Mover para outra sala': 'Kaloje në një dhomë tjetër',
+  'Abrir em janela flutuante': 'Hape në dritare lundruese',
+  'Mostrar quem está sem vídeo': 'Shfaq njerëzit pa video',
+  'Mostrar a minha própria câmera': 'Shfaq kamerën time',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Ndryshon si të dëgjojnë të tjerët në thirrje. Vlen menjëherë, mund ta ndërrosh gjatë bisedës — dhe mbaron kur del nga dhoma: herën tjetër hyn me zërin tënd.',
   'Mudar a largura de {barra}': 'Ndrysho gjerësinë e {barra}',

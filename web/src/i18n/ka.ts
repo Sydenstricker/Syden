@@ -702,6 +702,9 @@ export default {
   'Monstro': 'ურჩხული',
   'Montar esta tela': 'ამ ეკრანის აწყობა',
   'Mover para outra sala': 'სხვა ოთახში გადაყვანა',
+  'Abrir em janela flutuante': 'გახსენი მცურავ ფანჯარაში',
+  'Mostrar quem está sem vídeo': 'აჩვენე ადამიანები ვიდეოს გარეშე',
+  'Mostrar a minha própria câmera': 'აჩვენე ჩემი კამერა',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ცვლის, როგორ გისმენენ სხვები ზარში. მაშინვე მოქმედებს, საუბრისას შეგიძლია შეცვალო — და მთავრდება, როცა ოთახიდან გახვალ: შემდეგ ჯერზე საკუთარი ხმით შემოხვალ.',
   'Mudar a largura de {barra}': 'სიგანის შეცვლა: {barra}',

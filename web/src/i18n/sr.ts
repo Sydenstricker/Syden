@@ -680,6 +680,9 @@ export default {
   'Monstro': 'Чудовиште',
   'Montar esta tela': 'Направи овај екран',
   'Mover para outra sala': 'Премести у другу собу',
+  'Abrir em janela flutuante': 'Отвори у плутајућем прозору',
+  'Mostrar quem está sem vídeo': 'Прикажи особе без видеа',
+  'Mostrar a minha própria câmera': 'Прикажи моју камеру',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Мења како те други чују у позиву. Важи одмах, може да се мења током разговора — и престаје кад изађеш из собе: следећи пут улазиш са својим гласом.',
   'Mudar a largura de {barra}': 'Промени ширину: {barra}',

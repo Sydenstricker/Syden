@@ -684,6 +684,9 @@ export default {
   'Monstro': 'Isilo',
   'Montar esta tela': 'Yakha lesi sikrini',
   'Mover para outra sala': 'Yisa kwelinye igumbi',
+  'Abrir em janela flutuante': 'Vula efasiteleni elintantayo',
+  'Mostrar quem está sem vídeo': 'Khombisa abantu abangenayo ividiyo',
+  'Mostrar a minha própria câmera': 'Khombisa ikhamera yami',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Ishintsha indlela abanye abakuzwa ngayo ekholini. Isebenza ngokushesha, ungayishintsha phakathi nengxoxo — futhi iyaphela uma uphuma egumbini: ngokuzayo ungena nezwi lakho.',
   'Mudar a largura de {barra}': 'Shintsha ububanzi be-{barra}',

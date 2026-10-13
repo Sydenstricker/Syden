@@ -696,6 +696,9 @@ export default {
   'Monstro': 'སྲིན་པོ།',
   'Montar esta tela': 'གསལ་གཞི་འདི་བཟོ།',
   'Mover para outra sala': 'ཁང་མིག་གཞན་ལུ་སྤོ།',
+  'Abrir em janela flutuante': 'འཕུར་བའི་སྒོ་སྒྲིག་ནང་ཁ་ཕྱེ།',
+  'Mostrar quem está sem vídeo': 'བརྙན་འཕྲིན་མེད་མི་ཚུ་སྟོན།',
+  'Mostrar a minha própria câmera': 'ངེ་རའི་ཀེ་མ་ར་སྟོན།',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ཁ་པར་ནང་ གཞན་མི་ཚུ་གིས་ ཁྱོད་ཀྱི་སྐད་ག་དེ་སྦེ་ཐོས་ནི་ཨིན་ན་ སོརཝ་ཨིན། ཕྱིར་སྦེ་ནུས་ཅན་འགྱོ། གཏམ་གླེང་གི་སྐབས་ སོར་ཚུགས། ཁང་མིག་ལས་ཐོན་པ་ཅིན་ མཇུག་བསྡུ་འོང་། ཤུལ་མ་ ཁྱོད་རའི་སྐད་ཐོག་ལས་འཛུལ་འོང་།',
   'Mudar a largura de {barra}': 'རྒྱ་ཚད་སོར: {barra}',

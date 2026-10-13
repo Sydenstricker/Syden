@@ -683,6 +683,9 @@ export default {
   'Monstro': 'Biby goavam-be',
   'Montar esta tela': 'Amboary ity efijery ity',
   'Mover para outra sala': 'Afindrao any amin’ny efitrano hafa',
+  'Abrir em janela flutuante': 'Sokafy amin\'ny fikandrana mihetsika',
+  'Mostrar quem está sem vídeo': 'Asehoy ny olona tsy misy video',
+  'Mostrar a minha própria câmera': 'Asehoy ny fakan-tsary ahy',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Manova ny fandrenesan’ny hafa anao amin’ny antso. Manan-kery avy hatrany, azo ovaina mandritra ny resaka — ary mifarana rehefa mivoaka ny efitrano ianao: amin’ny manaraka dia miditra amin’ny feonao ianao.',
   'Mudar a largura de {barra}': 'Ovay ny sakan’ny {barra}',

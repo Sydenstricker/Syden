@@ -683,6 +683,9 @@ export default {
   'Monstro': 'Bahal',
   'Montar esta tela': 'Dhis shaashaddan',
   'Mover para outra sala': 'U wareeji qol kale',
+  'Abrir em janela flutuante': 'Ku fur daaqad sabeynaysa',
+  'Mostrar quem está sem vídeo': 'Tus dadka muuqaal la\'aanta',
+  'Mostrar a minha própria câmera': 'Tus kamaradayda',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Wuxuu beddelaa sida ay kuwa kale kuugu maqlaan wicitaanka. Isla markiiba wuu shaqeeyaa, waa la beddeli karaa inta lagu jiro wadahadalka — wuuna dhammaadaa marka aad qolka ka baxdo: marka xigta codkaaga ayaad ku soo gelaysaa.',
   'Mudar a largura de {barra}': 'Beddel ballaca {barra}',

@@ -651,6 +651,9 @@ export default {
   'Monstro': 'Bineensa sodaachisaa',
   'Montar esta tela': 'Iskiriinii kana qopheessi',
   'Mover para outra sala': 'Gara kutaa biraatti dabarsi',
+  'Abrir em janela flutuante': 'Foddaa sukkaanuu keessatti bani',
+  'Mostrar quem está sem vídeo': 'Namoota viidiyoo hin qabne agarsiisi',
+  'Mostrar a minha própria câmera': 'Kaameraa koo mataa koo agarsiisi',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Akkaataa namoonni biroo waamicha keessatti si dhagahan jijjiira. Battaluma hojjeta, haasaa gidduutti jijjiiruun ni danda’ama — yeroo kutaa keessaa baatu dhuma: yeroo itti aanu sagalee keetiin seenta.',
   'Mudar a largura de {barra}': 'Bal’ina {barra} jijjiiri',

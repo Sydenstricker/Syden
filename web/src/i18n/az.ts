@@ -643,6 +643,9 @@ export default {
   'Monstro': 'Canavar',
   'Montar esta tela': 'Bu ekranı qur',
   'Mover para outra sala': 'Başqa otağa keçir',
+  'Abrir em janela flutuante': 'Üzən pəncərədə aç',
+  'Mostrar quem está sem vídeo': 'Videosu olmayanları göstər',
+  'Mostrar a minha própria câmera': 'Öz kameramı göstər',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Başqalarının səni zəngdə necə eşitdiyini dəyişir. Dərhal işləyir, söhbət zamanı dəyişmək olar — otaqdan çıxanda bitir: növbəti dəfə öz səsinlə girirsən.',
   'Mudar a largura de {barra}': '{barra} enini dəyiş',

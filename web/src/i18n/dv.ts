@@ -694,6 +694,9 @@ export default {
   'Monstro': 'ބިރުވެރި ޖަނަވާރު',
   'Montar esta tela': 'މި ސްކްރީން ހަދާ',
   'Mover para outra sala': 'އެހެން ރޫމަކަށް ބަދަލުކުރޭ',
+  'Abrir em janela flutuante': 'ފްލޯޓިންގ ވިންޑޯގައި ހުޅުވާ',
+  'Mostrar quem está sem vídeo': 'ވީޑިއޯ ނެތް މީހުން ދައްކާ',
+  'Mostrar a minha própria câmera': 'އަޅުގަނޑުގެ ކެމެރާ ދައްކާ',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ކޯލުގައި އެހެން މީހުންނަށް ތިބާގެ އަޑު އިވޭ ގޮތް ބަދަލުކުރޭ. އެވަގުތު ހިނގާނެ، ވާހަކަދައްކަމުން ބަދަލު ކުރެވޭނެ — އަދި ރޫމުން ނުކުމެވުމުން ނިމޭނެ: ދެން ވަންނާނީ ތިބާގެ އަމިއްލަ އަޑުގައި.',
   'Mudar a largura de {barra}': 'ފުޅާމިން ބަދަލުކުރޭ: {barra}',

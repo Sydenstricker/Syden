@@ -680,6 +680,9 @@ export default {
   'Monstro': 'Koletis',
   'Montar esta tela': 'Koosta see ekraan',
   'Mover para outra sala': 'Teisalda teise ruumi',
+  'Abrir em janela flutuante': 'Ava ujuvas aknas',
+  'Mostrar quem está sem vídeo': 'Näita inimesi ilma videota',
+  'Mostrar a minha própria câmera': 'Näita minu enda kaamerat',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Muudab seda, kuidas teised sind kõnes kuulevad. Kehtib kohe, saab vestluse ajal vahetada — ja lõpeb, kui ruumist lahkud: järgmine kord tuled oma häälega.',
   'Mudar a largura de {barra}': 'Muuda laiust: {barra}',

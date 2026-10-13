@@ -661,6 +661,9 @@ export default {
   'Monstro': 'Монстр',
   'Montar esta tela': 'Налаштувати цей екран',
   'Mover para outra sala': 'Перемістити в іншу кімнату',
+  'Abrir em janela flutuante': 'Відкрити у плаваючому вікні',
+  'Mostrar quem está sem vídeo': 'Показувати людей без відео',
+  'Mostrar a minha própria câmera': 'Показувати мою камеру',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Змінює те, як інші чують тебе в дзвінку. Діє одразу, його можна змінити під час розмови — і він вимикається, коли виходиш із кімнати: наступного разу заходиш зі своїм голосом.',
   'Mudar a largura de {barra}': 'Змінити ширину: {barra}',

@@ -703,6 +703,9 @@ export default {
   'Monstro': 'Հրեշ',
   'Montar esta tela': 'Կառուցել այս էկրանը',
   'Mover para outra sala': 'Տեղափոխել այլ սենյակ',
+  'Abrir em janela flutuante': 'Բացել լողացող պատուհանում',
+  'Mostrar quem está sem vídeo': 'Ցույց տալ առանց տեսանյութի մարդկանց',
+  'Mostrar a minha própria câmera': 'Ցույց տալ իմ սեփական տեսախցիկը',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Փոխում է, թե ինչպես են մյուսները քեզ լսում զանգում։ Գործում է անմիջապես, կարող ես փոխել զրույցի ընթացքում — և ավարտվում է, երբ դուրս ես գալիս սենյակից․ հաջորդ անգամ կմտնես քո ձայնով։',
   'Mudar a largura de {barra}': 'Փոխել լայնությունը՝ {barra}',

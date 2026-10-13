@@ -685,6 +685,9 @@ export default {
   'Monstro': 'Briesmonis',
   'Montar esta tela': 'Izveidot šo ekrānu',
   'Mover para outra sala': 'Pārvietot uz citu istabu',
+  'Abrir em janela flutuante': 'Atver peldošā logā',
+  'Mostrar quem está sem vídeo': 'Rādīt cilvēkus bez video',
+  'Mostrar a minha própria câmera': 'Rādīt manu kameru',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Maina to, kā citi tevi dzird zvanā. Darbojas uzreiz, to var mainīt sarunas laikā — un tas beidzas, kad izej no istabas: nākamreiz ienāc ar savu balsi.',
   'Mudar a largura de {barra}': 'Mainīt platumu: {barra}',

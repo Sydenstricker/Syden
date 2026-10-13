@@ -684,6 +684,9 @@ export default {
   'Monstro': 'ສັດປະຫຼາດ',
   'Montar esta tela': 'ສ້າງໜ້ານີ້',
   'Mover para outra sala': 'ຍ້າຍໄປຫ້ອງອື່ນ',
+  'Abrir em janela flutuante': 'ເປີດໃນໜ້າຕ່າງລອຍ',
+  'Mostrar quem está sem vídeo': 'ສະແດງຄົນທີ່ບໍ່ມີວິດີໂອ',
+  'Mostrar a minha própria câmera': 'ສະແດງກ້ອງຂອງຂ້ອຍເອງ',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ປ່ຽນວິທີທີ່ຄົນອື່ນໄດ້ຍິນເຈົ້າໃນການໂທ ໃຊ້ໄດ້ທັນທີ ປ່ຽນໄດ້ລະຫວ່າງລົມ — ແລະຈະໝົດເມື່ອເຈົ້າອອກຈາກຫ້ອງ: ເທື່ອໜ້າເຈົ້າຈະເຂົ້າດ້ວຍສຽງຂອງເຈົ້າເອງ',
   'Mudar a largura de {barra}': 'ປ່ຽນຄວາມກວ້າງຂອງ {barra}',

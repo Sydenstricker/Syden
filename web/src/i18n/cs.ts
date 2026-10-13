@@ -682,6 +682,9 @@ export default {
   'Monstro': 'Příšera',
   'Montar esta tela': 'Sestavit tuto obrazovku',
   'Mover para outra sala': 'Přesunout do jiné místnosti',
+  'Abrir em janela flutuante': 'Otevři v plovoucím okně',
+  'Mostrar quem está sem vídeo': 'Zobraz lidi bez videa',
+  'Mostrar a minha própria câmera': 'Zobraz moji kameru',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Mění, jak tě ostatní v hovoru slyší. Platí hned, dá se přepnout během hovoru — a skončí, když odejdeš z místnosti: příště přijdeš se svým hlasem.',
   'Mudar a largura de {barra}': 'Změnit šířku: {barra}',

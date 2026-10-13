@@ -677,6 +677,9 @@ export default {
   'Monstro': 'Monster',
   'Montar esta tela': 'Bou hierdie skerm',
   'Mover para outra sala': 'Skuif na ’n ander kamer',
+  'Abrir em janela flutuante': 'Maak oop in swewende venster',
+  'Mostrar quem está sem vídeo': 'Wys mense sonder video',
+  'Mostrar a minha própria câmera': 'Wys my eie kamera',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Verander hoe ander jou in die oproep hoor. Dit geld dadelik, jy kan dit tydens die gesprek verander — en dit hou op wanneer jy die kamer verlaat: volgende keer kom jy in met jou eie stem.',
   'Mudar a largura de {barra}': 'Verander die breedte van {barra}',

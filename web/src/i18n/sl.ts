@@ -685,6 +685,9 @@ export default {
   'Monstro': 'Pošast',
   'Montar esta tela': 'Sestavi ta zaslon',
   'Mover para outra sala': 'Premakni v drugo sobo',
+  'Abrir em janela flutuante': 'Odpri v plavajočem oknu',
+  'Mostrar quem está sem vídeo': 'Pokaži ljudi brez videa',
+  'Mostrar a minha própria câmera': 'Pokaži mojo kamero',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Spremeni, kako te drugi slišijo v klicu. Velja takoj, lahko ga zamenjaš med pogovorom — in se konča, ko zapustiš sobo: naslednjič prideš s svojim glasom.',
   'Mudar a largura de {barra}': 'Spremeni širino: {barra}',

@@ -694,6 +694,9 @@ export default {
   'Monstro': 'Mons',
   'Montar esta tela': 'Monte ekran sa a',
   'Mover para outra sala': 'Deplase nan yon lòt chanm',
+  'Abrir em janela flutuante': 'Louvri nan yon fenèt k ap flote',
+  'Mostrar quem está sem vídeo': 'Montre moun ki pa gen videyo',
+  'Mostrar a minha própria câmera': 'Montre pwòp kamera mwen',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Li chanje jan lòt moun tande w nan apèl la. Li mache touswit, ou ka chanje l pandan w ap pale — epi li fini lè ou soti nan chanm lan: pwochen fwa, ou antre ak pwòp vwa w.',
   'Mudar a largura de {barra}': 'Chanje lajè: {barra}',

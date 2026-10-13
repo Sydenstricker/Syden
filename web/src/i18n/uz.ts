@@ -691,6 +691,9 @@ export default {
   'Monstro': 'Maxluq',
   'Montar esta tela': 'Bu ekranni yaratish',
   'Mover para outra sala': 'Boshqa xonaga koʻchirish',
+  'Abrir em janela flutuante': 'Suzuvchi oynada och',
+  'Mostrar quem está sem vídeo': 'Videosiz odamlarni ko\'rsat',
+  'Mostrar a minha própria câmera': 'O\'z kameramni ko\'rsat',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Qoʻngʻiroqda boshqalar sizni qanday eshitishini oʻzgartiradi. Darhol amal qiladi, suhbat davomida almashtirish mumkin — xonadan chiqqaningizda tugaydi: keyingi safar oʻz ovozingiz bilan kirasiz.',
   'Mudar a largura de {barra}': '{barra} kengligini oʻzgartirish',

@@ -684,6 +684,9 @@ export default {
   'Monstro': 'Skrímsli',
   'Montar esta tela': 'Setja upp þennan skjá',
   'Mover para outra sala': 'Færa í annað herbergi',
+  'Abrir em janela flutuante': 'Opna í fljótandi glugga',
+  'Mostrar quem está sem vídeo': 'Sýna fólk án myndskeiðs',
+  'Mostrar a minha própria câmera': 'Sýna mína eigin myndavél',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Breytir því hvernig aðrir heyra í þér í símtalinu. Gildir strax, má skipta um í miðju samtali — og hættir þegar þú ferð úr herberginu: næst kemurðu inn með þinni eigin rödd.',
   'Mudar a largura de {barra}': 'Breyta breidd: {barra}',

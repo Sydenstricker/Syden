@@ -676,6 +676,9 @@ export default {
   'Monstro': 'Potwór',
   'Montar esta tela': 'Przygotuj ten ekran',
   'Mover para outra sala': 'Przenieś do innego pokoju',
+  'Abrir em janela flutuante': 'Otwórz w oknie pływającym',
+  'Mostrar quem está sem vídeo': 'Pokaż osoby bez wideo',
+  'Mostrar a minha própria câmera': 'Pokaż moją własną kamerę',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Zmienia to, jak inni słyszą cię w połączeniu. Działa od razu, można go zmienić w trakcie rozmowy — i kończy się, gdy wychodzisz z pokoju: następnym razem wchodzisz ze swoim głosem.',
   'Mudar a largura de {barra}': 'Zmień szerokość: {barra}',

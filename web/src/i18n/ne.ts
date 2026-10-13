@@ -685,6 +685,9 @@ export default {
   'Monstro': 'राक्षस',
   'Montar esta tela': 'यो स्क्रिन बनाउनुहोस्',
   'Mover para outra sala': 'अर्को कोठामा सार्नुहोस्',
+  'Abrir em janela flutuante': 'तैरिने विन्डोमा खोल',
+  'Mostrar quem está sem vídeo': 'भिडियो नभएका मान्छे देखाऊ',
+  'Mostrar a minha própria câmera': 'मेरो आफ्नै क्यामेरा देखाऊ',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'कलमा अरूले तपाईंलाई कसरी सुन्छन् भन्ने बदल्छ। तुरुन्तै लागू हुन्छ, कुराकानीकै बीचमा बदल्न सकिन्छ — र कोठाबाट निस्किएपछि सकिन्छ: अर्को पटक आफ्नै आवाजमा भित्र पस्नुहुन्छ।',
   'Mudar a largura de {barra}': '{barra} को चौडाइ बदल्नुहोस्',

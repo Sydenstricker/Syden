@@ -682,6 +682,9 @@ export default {
   'Monstro': 'បិសាច',
   'Montar esta tela': 'បង្កើតអេក្រង់នេះ',
   'Mover para outra sala': 'ផ្លាស់ទៅបន្ទប់ផ្សេង',
+  'Abrir em janela flutuante': 'បើកក្នុងបង្អួចអណ្តែត',
+  'Mostrar quem está sem vídeo': 'បង្ហាញអ្នកដែលគ្មានវីដេអូ',
+  'Mostrar a minha própria câmera': 'បង្ហាញកាមេរ៉ារបស់ខ្ញុំ',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ផ្លាស់ប្តូររបៀបដែលអ្នកដទៃឮអ្នកក្នុងការហៅ។ មានប្រសិទ្ធភាពភ្លាម អាចប្តូរបានក្នុងពេលសន្ទនា — ហើយបញ្ចប់នៅពេលអ្នកចាកចេញពីបន្ទប់៖ លើកក្រោយអ្នកនឹងចូលដោយសំឡេងរបស់អ្នក។',
   'Mudar a largura de {barra}': 'ប្តូរទទឹងរបស់ {barra}',

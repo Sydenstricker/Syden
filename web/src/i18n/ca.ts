@@ -679,6 +679,9 @@ export default {
   'Monstro': 'Monstre',
   'Montar esta tela': 'Muntar aquesta pantalla',
   'Mover para outra sala': 'Moure a una altra sala',
+  'Abrir em janela flutuante': 'Obre en una finestra flotant',
+  'Mostrar quem está sem vídeo': 'Mostra qui no té vídeo',
+  'Mostrar a minha própria câmera': 'Mostra la meva càmera',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Canvia com et sent la resta a la trucada. S’aplica a l’instant, es pot canviar durant la conversa — i s’acaba quan surts de la sala: la propera vegada entres amb la teva veu.',
   'Mudar a largura de {barra}': 'Canviar l’amplada de: {barra}',

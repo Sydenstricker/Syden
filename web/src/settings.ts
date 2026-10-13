@@ -54,6 +54,10 @@ export interface Settings {
   corDeDestaque: string | null;
   /** Acessibilidade → Tamanho do texto. Multiplica todo tamanho de letra do app; 1 é o de sempre. */
   escalaDoTexto: number;
+  /** No palco da call: os cartões de quem está sem câmera (botão direito num quadro, como no Discord). */
+  mostrarSemVideo: boolean;
+  /** No palco da call: o quadro da sua própria câmera. */
+  mostrarMinhaCamera: boolean;
 }
 
 const DEFAULTS: Settings = {
@@ -72,6 +76,8 @@ const DEFAULTS: Settings = {
   sounds: true,
   soundboardVolume: 0.6,
   efeitosVisuais: true,
+  mostrarSemVideo: true,
+  mostrarMinhaCamera: true,
   notifications: true,
   corDeDestaque: null,
   escalaDoTexto: 1,

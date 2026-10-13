@@ -1,5 +1,7 @@
 import { Ban,
   AtSign,
+  Check,
+  PictureInPicture2,
   Flag,
   IdCard,
   MessageSquare,
@@ -88,6 +90,7 @@ export function PersonMenu({
   onWatchStream,
   onSendMessage,
   onOpenProfile,
+  palco,
 }: {
   target: { userId: number; username: string; x: number; y: number };
   onClose: () => void;
@@ -110,6 +113,17 @@ export function PersonMenu({
   onSendMessage: (userId: number) => void;
   /** Abre o cartão de perfil dela, no mesmo lugar em que o menu estava. */
   onOpenProfile?: (userId: number, x: number, y: number) => void;
+  /**
+   * Aberto num quadro da call (13/10/2026, como no Discord): o vídeo daquele quadro numa janela flutuante, e o
+   * que o palco mostra — quem está sem câmera e a sua própria câmera.
+   */
+  palco?: {
+    aoJanelaFlutuante?: () => void;
+    semVideo: boolean;
+    aoAlternarSemVideo: () => void;
+    minhaCamera: boolean;
+    aoAlternarMinhaCamera: () => void;
+  };
 }) {
   const t = useT();
   const { members } = useDirectory();
@@ -361,6 +375,29 @@ export function PersonMenu({
           */}
           <Item icone={<Ban size={16} />} perigo onClick={() => void bloquearPessoa()}>
             {bloqueado ? 'Desbloquear esta pessoa' : 'Bloquear esta pessoa'}
+          </Item>
+        </>
+      )}
+
+      {palco && (
+        <>
+          <hr className="person-menu-linha" />
+          {palco.aoJanelaFlutuante && (
+            <Item
+              icone={<PictureInPicture2 size={16} />}
+              onClick={() => {
+                palco.aoJanelaFlutuante?.();
+                onClose();
+              }}
+            >
+              {t('Abrir em janela flutuante')}
+            </Item>
+          )}
+          <Item icone={palco.semVideo ? <Check size={16} /> : <span />} onClick={palco.aoAlternarSemVideo}>
+            {t('Mostrar quem está sem vídeo')}
+          </Item>
+          <Item icone={palco.minhaCamera ? <Check size={16} /> : <span />} onClick={palco.aoAlternarMinhaCamera}>
+            {t('Mostrar a minha própria câmera')}
           </Item>
         </>
       )}

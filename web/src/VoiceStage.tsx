@@ -42,6 +42,7 @@ import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect,
 import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
 import { desktopBridge } from './desktop';
+import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { reloadSounds, useDirectory } from './directory';
 import { buscarSons, contarToque, toquesDosSons } from './buscaDeSons';
 import { somParecidoCom } from './somParecido';
@@ -97,6 +98,8 @@ export function VoiceStage({
   socket,
   aoAbrirVozEVideo,
   simples = false,
+  canais = [],
+  aoMandarMensagem,
 }: {
   channel: Channel;
   voice: Voice;
@@ -117,6 +120,10 @@ export function VoiceStage({
   socket: Socket | null;
   /** Modo sala (aula): o cabeçalho e os controles ficam só com o que a aula precisa. */
   simples?: boolean;
+  /** Todos os canais da comunidade: o menu do botão direito move gente para outra sala. */
+  canais?: Channel[];
+  /** "Enviar mensagem", no menu do botão direito de um quadro. */
+  aoMandarMensagem?: (userId: number) => void;
 }) {
   const t = useT();
   const { estado: palco } = usarPalco(channel.type === 'voice' ? channel.id : null, socket);
@@ -170,6 +177,8 @@ export function VoiceStage({
           canaisDeTexto={canaisDeTexto}
           aoAbrirVozEVideo={aoAbrirVozEVideo}
           simples={simples}
+          canais={canais}
+          aoMandarMensagem={aoMandarMensagem}
         />
       ) : (
         <div className="voice-lobby">
@@ -1149,6 +1158,8 @@ function Stage({
   canaisDeTexto,
   aoAbrirVozEVideo,
   simples = false,
+  canais,
+  aoMandarMensagem,
 }: {
   voice: Voice;
   members: VoiceMember[];
@@ -1160,16 +1171,31 @@ function Stage({
   aoAbrirVozEVideo?: () => void;
   /** Modo sala (aula): só microfone, áudio, câmera e sair — o resto do Syden fica de fora. */
   simples?: boolean;
+  canais: Channel[];
+  aoMandarMensagem?: (userId: number) => void;
 }) {
   const t = useT();
   const plateia = quemAssiste(members);
-  const tracks = useTracks(
+  // O MENU DO BOTÃO DIREITO NUM QUADRO (13/10/2026, como no Discord): o mesmo da lista de pessoas, com a parte
+  // do palco — a janela flutuante daquele vídeo, e o que o palco mostra.
+  const menu = usePersonMenu();
+  const [videoDoMenu, setVideoDoMenu] = useState<HTMLVideoElement | null>(null);
+  const ajustes = useSettings();
+  const { members: daComunidade } = useDirectory();
+  const todasAsFaixas = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
     { onlySubscribed: false },
   );
+  // O que o palco mostra (as duas escolhas do menu): sem elas, os cartões de quem está sem câmera e o da sua.
+  const tracks = todasAsFaixas.filter((ref) => {
+    if (ref.source !== Track.Source.Camera) return true;
+    if (!ajustes.mostrarMinhaCamera && ref.participant.isLocal) return false;
+    if (!ajustes.mostrarSemVideo && (!ref.publication || ref.publication.isMuted)) return false;
+    return true;
+  });
   const [pinned, setPinned] = useState<string | null>(null);
   const [split, setSplit] = useState(false);
   const [soundboardOpen, setSoundboardOpen] = useState(false);
@@ -1222,11 +1248,23 @@ function Stage({
     setPinned(focused && trackKey(focused) === trackKey(ref) ? null : trackKey(ref));
   };
 
+  const abrirMenu = (e: React.MouseEvent<HTMLDivElement>, ref: TrackReferenceOrPlaceholder) => {
+    const userId = Number(ref.participant.identity);
+    if (!Number.isFinite(userId)) return;
+    setVideoDoMenu(e.currentTarget.querySelector('video'));
+    menu.open(e, userId, ref.participant.name || ref.participant.identity);
+  };
+
   const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number, naFaixa = false) => {
     // Transmissão que você ainda não abriu vira convite, e clicar nele abre (não fixa).
     if (ref.source === Track.Source.ScreenShare && !aberta(ref)) {
       return (
-        <div key={trackKey(ref)} className="tile" onClick={() => voice.assistir(ref.participant.identity, true)}>
+        <div
+          key={trackKey(ref)}
+          className="tile"
+          onClick={() => voice.assistir(ref.participant.identity, true)}
+          onContextMenu={(e) => abrirMenu(e, ref)}
+        >
           <ConviteDeTransmissao
             trackRef={ref}
             membro={members.find((m) => String(m.userId) === ref.participant.identity)}
@@ -1236,7 +1274,7 @@ function Stage({
       );
     }
     return (
-    <div key={trackKey(ref)} className="tile" onClick={() => togglePin(ref)}>
+    <div key={trackKey(ref)} className="tile" onClick={() => togglePin(ref)} onContextMenu={(e) => abrirMenu(e, ref)}>
       {ref.source === Track.Source.Camera ? (
         <PersonTile
           trackRef={ref}
@@ -1439,6 +1477,31 @@ function Stage({
           <PhoneOff />
         </button>
       </div>
+      {menu.target && (
+        <PersonMenu
+          target={menu.target}
+          onClose={menu.close}
+          voice={voice}
+          role={daComunidade.get(eu)?.role ?? 'member'}
+          channelId={voice.channelId}
+          communityId={communityId}
+          channels={canais}
+          inVoiceChannel={channelId}
+          targetScreen={members.find((m) => m.userId === menu.target!.userId)?.screen ?? false}
+          targetRole={daComunidade.get(menu.target.userId)?.role ?? 'member'}
+          isSelf={menu.target.userId === eu}
+          onWatchStream={(_, userId) => voice.assistir(String(userId), true)}
+          onSendMessage={(userId) => aoMandarMensagem?.(userId)}
+          palco={{
+            aoJanelaFlutuante:
+              videoDoMenu && document.pictureInPictureEnabled ? () => void videoDoMenu.requestPictureInPicture().catch(() => {}) : undefined,
+            semVideo: ajustes.mostrarSemVideo,
+            aoAlternarSemVideo: () => updateSettings({ mostrarSemVideo: !ajustes.mostrarSemVideo }),
+            minhaCamera: ajustes.mostrarMinhaCamera,
+            aoAlternarMinhaCamera: () => updateSettings({ mostrarMinhaCamera: !ajustes.mostrarMinhaCamera }),
+          }}
+        />
+      )}
     </div>
   );
 }

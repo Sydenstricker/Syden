@@ -661,6 +661,9 @@ export default {
   'Monstro': 'מפלצת',
   'Montar esta tela': 'לבנות את המסך הזה',
   'Mover para outra sala': 'להעביר לחדר אחר',
+  'Abrir em janela flutuante': 'פתח בחלון צף',
+  'Mostrar quem está sem vídeo': 'הצג אנשים בלי וידאו',
+  'Mostrar a minha própria câmera': 'הצג את המצלמה שלי',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'משנה איך אחרים שומעים אותך בשיחה. חל מיד, אפשר להחליף באמצע — ונגמר ביציאה מהחדר: בפעם הבאה הכניסה היא עם הקול הרגיל שלך.',
   'Mudar a largura de {barra}': 'לשנות את הרוחב: {barra}',

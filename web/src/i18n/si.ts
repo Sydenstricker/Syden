@@ -683,6 +683,9 @@ export default {
   'Monstro': 'රාක්ෂයා',
   'Montar esta tela': 'මෙම තිරය සාදන්න',
   'Mover para outra sala': 'වෙනත් කාමරයකට ගෙන යන්න',
+  'Abrir em janela flutuante': 'පාවෙන කවුළුවක විවෘත කරන්න',
+  'Mostrar quem está sem vídeo': 'වීඩියෝ නැති අය පෙන්වන්න',
+  'Mostrar a minha própria câmera': 'මගේ කැමරාව පෙන්වන්න',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ඇමතුමේ අනෙක් අයට ඔබ ඇසෙන ආකාරය වෙනස් කරයි. වහාම ක්‍රියාත්මක වේ, සංවාදය අතරතුර වෙනස් කළ හැකිය — ඔබ කාමරයෙන් ඉවත් වූ විට අවසන් වේ: ඊළඟ වතාවේ ඔබ ඔබේම හඬින් ඇතුළු වේ.',
   'Mudar a largura de {barra}': '{barra} හි පළල වෙනස් කරන්න',

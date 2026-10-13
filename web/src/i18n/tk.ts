@@ -685,6 +685,9 @@ export default {
   'Monstro': 'Aždarha',
   'Montar esta tela': 'Bu ekrany düz',
   'Mover para outra sala': 'Başga otaga geçir',
+  'Abrir em janela flutuante': 'Ýüzýän penjirede aç',
+  'Mostrar quem está sem vídeo': 'Wideosyz adamlary görkez',
+  'Mostrar a minha própria câmera': 'Öz kameramy görkez',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Beýlekileriň jaňda seni nähili eşidýändigini üýtgedýär. Derrew güýje girýär, söhbetiň dowamynda çalşyp bolýar — otagdan çykanyňda bolsa gutarýar: indiki gezek öz sesiň bilen girýärsiň.',
   'Mudar a largura de {barra}': 'Giňligi üýtget: {barra}',

@@ -650,6 +650,9 @@ export default {
   'Monstro': 'သားရဲ',
   'Montar esta tela': 'ဒီမျက်နှာပြင် ပြင်ဆင်ရန်',
   'Mover para outra sala': 'တခြားအခန်းသို့ ရွှေ့ရန်',
+  'Abrir em janela flutuante': 'မျောနေသောဝင်းဒိုးတွင် ဖွင့်ပါ',
+  'Mostrar quem está sem vídeo': 'ဗီဒီယိုမရှိသူများကို ပြပါ',
+  'Mostrar a minha própria câmera': 'ကျွန်ုပ်ကိုယ်ပိုင် ကင်မရာကို ပြပါ',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'ခေါ်ဆိုမှုထဲမှာ တခြားသူများ သင့်အသံကို ကြားရပုံကို ပြောင်းသည်။ ချက်ချင်း သက်ရောက်ပြီး စကားပြောနေစဉ် ပြောင်းနိုင်ပါတယ် — အခန်းက ထွက်ရင် ပြီးဆုံးပါမယ်- နောက်တစ်ခါ မူလအသံနဲ့ ဝင်ပါမယ်။',
   'Mudar a largura de {barra}': '{barra} ရဲ့ အကျယ် ပြောင်းရန်',

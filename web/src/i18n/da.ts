@@ -677,6 +677,9 @@ export default {
   'Monstro': 'Monster',
   'Montar esta tela': 'Byg denne skærm',
   'Mover para outra sala': 'Flyt til et andet rum',
+  'Abrir em janela flutuante': 'Åbn i svævende vindue',
+  'Mostrar quem está sem vídeo': 'Vis folk uden video',
+  'Mostrar a minha própria câmera': 'Vis mit eget kamera',
   'Muda como os outros ouvem você na chamada. Vale na hora, dá para trocar durante a conversa — e acaba quando você sai da sala: na próxima você entra com a sua voz.':
     'Ændrer, hvordan andre hører dig i opkaldet. Det gælder med det samme, kan skiftes under samtalen — og ophører, når du forlader rummet: næste gang kommer du ind med din egen stemme.',
   'Mudar a largura de {barra}': 'Ændr bredden på {barra}',
