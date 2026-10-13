@@ -99,12 +99,13 @@ export const CATEGORIAS_DO_TAMANHO: { id: string; nome: string; figuras: [string
 
 export type Medida = 'altura' | 'comprimento' | 'diametro';
 
-/** "{tamanho} de altura" etc. — o tamanho vai pronto, com a unidade (as unidades são as do SI em toda língua). */
-export const FRASE_DA_MEDIDA: Record<Medida, string> = {
-  altura: chave('{tamanho} de altura'),
-  comprimento: chave('{tamanho} de comprimento'),
-  diametro: chave('{tamanho} de diâmetro'),
-};
+/**
+ * O que se mede, numa seta antes do número: ↕ em pé (altura), ↔ deitado (comprimento e diâmetro). Era uma frase ("de
+ * altura", "de diâmetro"), e a mistura confundia (relato do Sydenstricker, 13/10/2026); hoje os dois objetos de uma
+ * rodada são medidos sempre do mesmo jeito (server/src/minijogos.ts, `sentido`), e a seta diz qual sem precisar de
+ * tradução.
+ */
+export const SETA_DA_MEDIDA: Record<Medida, string> = { altura: '↕', comprimento: '↔', diametro: '↔' };
 
 /** O tamanho na unidade que faz sentido: 2 µm, 6,7 cm, 5,5 m, 3.474 km. */
 export function tamanhoLegivel(cm: number, locale: string): string {

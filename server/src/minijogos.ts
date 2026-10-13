@@ -127,9 +127,15 @@ export const CATEGORIAS: Record<string, string[]> = {
   ],
 };
 
+/**
+ * Em pé (altura) ou deitado (comprimento e diâmetro): numa rodada, os dois objetos são medidos DO MESMO JEITO. Relato
+ * do Sydenstricker (13/10/2026): "o guarda-chuva fala diâmetro e a porta fala altura; critérios diferentes confundem".
+ */
+export const sentido = (id: string) => (OBJETOS[id].medida === 'altura' ? 'vertical' : 'horizontal');
+
 const combinam = (a: string, b: string) => {
   const razao = Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
-  return razao >= RAZAO_MINIMA && razao <= RAZAO_MAXIMA;
+  return sentido(a) === sentido(b) && razao >= RAZAO_MINIMA && razao <= RAZAO_MAXIMA;
 };
 
 /**
@@ -146,7 +152,7 @@ export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), alea
       if (ref) return [ref, alvo];
     }
   }
-  return usados.size > 0 ? sortearPar(new Set(), ids, aleatorio) : ['gato', 'cavalo'];
+  return usados.size > 0 ? sortearPar(new Set(), ids, aleatorio) : ['cavalo', 'girafa'];
 }
 
 export type Fase = 'estimando' | 'revelando' | 'fim';

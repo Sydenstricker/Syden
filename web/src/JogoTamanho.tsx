@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent as EventoDoPonteiro } fr
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { FIGURAS_DO_TAMANHO } from './figurasDoTamanho';
-import { CATEGORIAS_DO_TAMANHO, FRASE_DA_MEDIDA, NA_DIAGONAL, OBJETOS, PARTE_MEDIDA, primeiraForma, tamanhoLegivel, type EstadoTamanho, type Medida, type Partida } from './minijogos';
+import { CATEGORIAS_DO_TAMANHO, NA_DIAGONAL, OBJETOS, PARTE_MEDIDA, primeiraForma, SETA_DA_MEDIDA, tamanhoLegivel, type EstadoTamanho, type Medida, type Partida } from './minijogos';
 
 const ESTIMANDO_MS = 25_000;
 const REVELANDO_MS = 7_000;
@@ -124,7 +124,7 @@ export function JogoTamanho({
     const altura = o.altura * escala * minimo;
     return { width: largura, height: altura, left: (larguraDoPalco / 4) * (lado === 0 ? 1 : 3) - largura / 2 };
   };
-  const medida = (cm: number, frase: string) => t(frase, { tamanho: tamanhoLegivel(cm, locale) });
+  const medida = (cm: number, como: Medida) => `${SETA_DA_MEDIDA[como]} ${tamanhoLegivel(cm, locale)}`;
   const nomeDe = (userId: number) => estado.placar.find((l) => l.userId === userId)?.username ?? '?';
   const meus = estado.palpites?.find((p) => p.userId === eu);
 
@@ -172,15 +172,15 @@ export function JogoTamanho({
       <div className="tamanho-legendas">
         <div>
           <span className="minijogo-objeto">{OBJETOS[ref.id] ? primeiraForma(t(OBJETOS[ref.id].nome)) : ref.id}</span>
-          <span className="minijogo-tamanho">{medida(ref.cm, FRASE_DA_MEDIDA[ref.medida])}</span>
+          <span className="minijogo-tamanho">{medida(ref.cm, ref.medida)}</span>
         </div>
         <div>
           <span className="minijogo-objeto">{OBJETOS[obj.id] ? primeiraForma(t(OBJETOS[obj.id].nome)) : obj.id}</span>
           {/* Enquanto estima, o número acompanha o palpite: quem pensa em metros também joga. */}
           <span className={`minijogo-tamanho${revelando ? ' de-verdade' : ''}`}>
             {revelando && obj.cm !== undefined
-              ? medida(obj.cm, FRASE_DA_MEDIDA[obj.medida])
-              : t(FRASE_DA_MEDIDA[obj.medida], { tamanho: `≈ ${tamanhoLegivel(ref.cm * palpite, locale)}` })}
+              ? medida(obj.cm, obj.medida)
+              : `${SETA_DA_MEDIDA[obj.medida]} ≈ ${tamanhoLegivel(ref.cm * palpite, locale)}`}
           </span>
         </div>
       </div>
