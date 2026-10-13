@@ -59,6 +59,7 @@ export default {
   Aproximar: 'Kuza',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Buruta ili kubadilisha upana. Bofya mara mbili kurudi kawaida.',
   'Arte de fundo': 'Mchoro wa mandharinyuma',
+  'Quem dá o recado': 'Nani anayetoa ujumbe',
   'As duas juntas': 'Zote mbili pamoja',
   Assistir: 'Tazama',
   'Assistir transmissão': 'Tazama matangazo',

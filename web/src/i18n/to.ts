@@ -595,6 +595,7 @@ export default {
   'Pessoas': 'kakai',
   'Pronto. Quem entrar agora vai ver isto.': 'ʻOsi. Ko ia ʻe hū mai he taimí ni ʻe sio ki he meʻa ni.',
   'Recado': 'Pōpoaki',
+  'Quem dá o recado': 'Ko hai ʻoku ne ʻoatu e pōpoaki',
   'Registro': 'Lēkooti',
   'Remover': 'Toʻo',
   'Resgatar': 'Maʻu',

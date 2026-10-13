@@ -854,6 +854,7 @@ export default {
   'Querem falar': 'Желе да говоре',
   'Rádio de avião': 'Авионски радио',
   'Recado': 'Обавештење',
+  'Quem dá o recado': 'Ко саопштава обавештење',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Препоручено за већину. Гледаоци могу да смање квалитет ако треба.',
   'Recompensa': 'Награда',

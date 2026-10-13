@@ -600,6 +600,7 @@ export default {
   'Pessoas': 'abantu',
   'Pronto. Quem entrar agora vai ver isto.': 'Byarangiye. Uzinjira ubu azabona ibi.',
   'Recado': 'Ubutumwa',
+  'Quem dá o recado': 'Uwatanga ubutumwa',
   'Registro': 'Amateka',
   'Remover': 'Kuraho',
   'Resgatar': 'Fata',

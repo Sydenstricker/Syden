@@ -66,6 +66,7 @@ export default {
   Aproximar: 'बड़ा करो',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'चौड़ाई बदलने के लिए खींचो। दो बार क्लिक करने पर पहले जैसा।',
   'Arte de fundo': 'पृष्ठभूमि',
+  'Quem dá o recado': 'संदेश कौन देता है',
   'As duas juntas': 'दोनों एक साथ',
   Assistir: 'देखो',
   'Assistir transmissão': 'स्ट्रीम देखो',

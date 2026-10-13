@@ -853,6 +853,7 @@ export default {
   'Querem falar': 'Сөйлегісі келеді',
   'Rádio de avião': 'Ұшақ радиосы',
   'Recado': 'Хабарландыру',
+  'Quem dá o recado': 'Хабарландыруды кім жеткізеді',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Көпшілікке ұсынылады. Көрермендер қажет болса сапаны төмендете алады.',
   'Recompensa': 'Марапат',

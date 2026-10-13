@@ -859,6 +859,7 @@ export default {
   'Querem falar': 'Grib runāt',
   'Rádio de avião': 'Lidmašīnas rācija',
   'Recado': 'Vēstījums',
+  'Quem dá o recado': 'Kas nodod vēstījumu',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Ieteicams lielākajai daļai. Skatoties vajadzības gadījumā var samazināt kvalitāti.',
   'Recompensa': 'Balva',

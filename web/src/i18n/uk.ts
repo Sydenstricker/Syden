@@ -822,6 +822,7 @@ export default {
   'Querem falar': 'Хочуть говорити',
   'Rádio de avião': 'Рація літака',
   'Recado': 'Запис',
+  'Quem dá o recado': 'Хто передає запис',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Рекомендовано більшості. Глядачі можуть за потреби знизити якість.',
   'Reconectando ao servidor…': 'Повторне підключення до сервера…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Зменшує фоновий шум: клавіатуру, вентилятор, вуличний рух.',

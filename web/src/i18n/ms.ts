@@ -65,6 +65,7 @@ export default {
   Aproximar: 'Zum masuk',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Seret untuk menukar lebar. Klik dua kali kembali ke asal.',
   'Arte de fundo': 'Latar belakang',
+  'Quem dá o recado': 'Siapa yang menyampaikan mesej',
   'As duas juntas': 'Kedua-duanya sekali',
   Assistir: 'Tonton',
   'Assistir transmissão': 'Tonton siaran',

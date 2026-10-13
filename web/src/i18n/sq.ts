@@ -849,6 +849,7 @@ export default {
   'Querem falar': 'Duan të flasin',
   'Rádio de avião': 'Radio avioni',
   'Recado': 'Njoftim',
+  'Quem dá o recado': 'Kush e jep njoftimin',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'E rekomanduar për shumicën. Kush shikon mund ta ulë cilësinë nëse i duhet.',
   'Recompensa': 'Shpërblim',

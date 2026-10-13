@@ -726,6 +726,7 @@ export default {
   'Querem falar': 'می‌خواهند حرف بزنند',
   'Rádio de avião': 'بی‌سیم هواپیما',
   'Recado': 'پیام',
+  'Quem dá o recado': 'چه کسی پیام را می‌رساند',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'برای بیشتر مردم مناسب است. بیننده در صورت نیاز می‌تواند کیفیت را پایین بیاورد.',
   'Reconectando ao servidor…': 'در حال اتصال دوباره به سرور…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'صداهای پس‌زمینه را کم می‌کند، مثل صفحه‌کلید، پنکه و رفت‌وآمد.',

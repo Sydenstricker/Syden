@@ -566,6 +566,7 @@ export default {
   'Pessoas': 'people',
   'Pronto. Quem entrar agora vai ver isto.': 'Done. Anyone joining now will see this.',
   'Recado': 'Message',
+  'Quem dá o recado': 'Who delivers the message',
   'Registro': 'Log',
   'Remover': 'Remove',
   'Resgatar': 'Redeem',

@@ -61,6 +61,7 @@ export default {
   Aproximar: 'Yakınlaştır',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Genişliği değiştirmek için sürükle. Çift tıklama varsayılana döndürür.',
   'Arte de fundo': 'Arka plan',
+  'Quem dá o recado': 'Mesajı kim iletiyor',
   'As duas juntas': 'İkisi birden',
   Assistir: 'İzle',
   'Assistir transmissão': 'Yayını izle',

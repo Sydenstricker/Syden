@@ -858,6 +858,7 @@ export default {
   'Querem falar': 'Мехоҳанд гап зананд',
   'Rádio de avião': 'Радиои ҳавопаймо',
   'Recado': 'Эълон',
+  'Quem dá o recado': 'Эълонро кӣ мерасонад',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Барои аксарият тавсия дода мешавад. Тамошобин дар ҳолати зарурӣ метавонад сифатро паст кунад.',
   'Recompensa': 'Мукофот',

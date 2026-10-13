@@ -64,6 +64,7 @@ export default {
   Aproximar: '放大',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': '拖动可以改变宽度。双击恢复默认。',
   'Arte de fundo': '背景图',
+  'Quem dá o recado': '谁来留言',
   'As duas juntas': '两个一起',
   Assistir: '观看',
   'Assistir transmissão': '观看直播',

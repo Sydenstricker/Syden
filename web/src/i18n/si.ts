@@ -857,6 +857,7 @@ export default {
   'Querem falar': 'කතා කිරීමට කැමති අය',
   'Rádio de avião': 'ගුවන් යානා රේඩියෝව',
   'Recado': 'නිවේදනය',
+  'Quem dá o recado': 'නිවේදනය කරන්නේ කවුද',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'බොහෝ දෙනෙකුට නිර්දේශිතයි. නරඹන අයට අවශ්‍ය නම් ගුණාත්මකභාවය අඩු කළ හැකිය.',
   'Recompensa': 'ත්‍යාගය',

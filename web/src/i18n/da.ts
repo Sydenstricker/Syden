@@ -851,6 +851,7 @@ export default {
   'Querem falar': 'Vil tale',
   'Rádio de avião': 'Flyradio',
   'Recado': 'Opslag',
+  'Quem dá o recado': 'Hvem læser opslaget',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Anbefales til de fleste. Den, der ser med, kan sænke kvaliteten efter behov.',
   'Recompensa': 'Belønning',

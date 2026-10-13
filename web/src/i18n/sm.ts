@@ -593,6 +593,7 @@ export default {
   'Pessoas': 'tagata',
   'Pronto. Quem entrar agora vai ver isto.': 'Ua uma. O ē e ulufale nei o le a latou vaʻaia lenei.',
   'Recado': 'Feʻau',
+  'Quem dá o recado': 'O ai e tuʻuina atu le feʻau',
   'Registro': 'Faʻamaumauga',
   'Remover': 'Aveese',
   'Resgatar': 'Toe maua',

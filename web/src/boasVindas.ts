@@ -1,3 +1,4 @@
+import coelhoDoSalaoUrl from './assets/salao/coelho-do-recado.png';
 // A arte do espaço de boas-vindas de cada comunidade.
 //
 // O servidor guarda só um CÓDIGO ('aurora', 'brasa'); o desenho mora aqui, pelo mesmo acordo das
@@ -76,3 +77,29 @@ export const ARTE_PADRAO = 'aurora';
 export function acharArte(codigo: string | null | undefined): ArteDeBoasVindas {
   return (codigo && ARTES[codigo]) || ARTES[ARTE_PADRAO];
 }
+
+/**
+ * QUEM DÁ O RECADO (13/10/2026, pedido do Sydenstricker: "não tem opção de mudar o coelho; coloque opções que
+ * tenham animação, ele parado assim fica estranho"). Todas são faixas de quadros tocadas em laço: o coelho de
+ * moletom do salão do site (o padrão) e os 16 coelhos prontos de avatar, FALANDO — quem dá um recado está falando.
+ * O servidor só guarda o código; um código que este catálogo não conhece cai no padrão.
+ */
+export interface CoelhoDoRecado {
+  url: string;
+  quadros: number;
+}
+
+export const COELHO_PADRAO = 'salao';
+
+export const COELHOS_DO_RECADO: Record<string, CoelhoDoRecado> = {
+  salao: { url: coelhoDoSalaoUrl, quadros: 18 },
+  ...Object.fromEntries(
+    Array.from({ length: 16 }, (_, i) => [
+      `pronto-${i + 1}`,
+      { url: `${import.meta.env.BASE_URL}avatares/coelho-${String(i + 1).padStart(2, '0')}-falando.png`, quadros: 8 },
+    ]),
+  ),
+};
+
+export const acharCoelho = (codigo: string | null | undefined): CoelhoDoRecado =>
+  COELHOS_DO_RECADO[codigo ?? ''] ?? COELHOS_DO_RECADO[COELHO_PADRAO];

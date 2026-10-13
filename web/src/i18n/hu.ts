@@ -858,6 +858,7 @@ export default {
   'Querem falar': 'Szólni szeretnének',
   'Rádio de avião': 'Repülőrádió',
   'Recado': 'Közlemény',
+  'Quem dá o recado': 'Ki adja át a közleményt',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'A legtöbbeknek ajánlott. A néző szükség esetén csökkentheti a minőséget.',
   'Recompensa': 'Jutalom',

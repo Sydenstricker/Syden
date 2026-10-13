@@ -595,6 +595,7 @@ export default {
   'Pessoas': 'daoine',
   'Pronto. Quem entrar agora vai ver isto.': 'Déanta. Feicfidh gach duine a thagann isteach anois é seo.',
   'Recado': 'Teachtaireacht',
+  'Quem dá o recado': 'Cé a thugann an teachtaireacht',
   'Registro': 'Loga',
   'Remover': 'Bain',
   'Resgatar': 'Fuascail',

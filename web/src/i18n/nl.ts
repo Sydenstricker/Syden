@@ -63,6 +63,7 @@ export default {
   Aproximar: 'Inzoomen',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Sleep om de breedte te veranderen. Dubbelklik zet het terug.',
   'Arte de fundo': 'Achtergrond',
+  'Quem dá o recado': 'Wie het bericht brengt',
   'As duas juntas': 'Allebei samen',
   Assistir: 'Kijken',
   'Assistir transmissão': 'Uitzending bekijken',

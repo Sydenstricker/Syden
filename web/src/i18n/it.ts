@@ -63,6 +63,7 @@ export default {
   Aproximar: 'Ingrandisci',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'Trascina per cambiare la larghezza. Doppio clic torna al valore normale.',
   'Arte de fundo': 'Sfondo',
+  'Quem dá o recado': 'Chi dà il messaggio',
   'As duas juntas': 'Tutte e due insieme',
   Assistir: 'Guarda',
   'Assistir transmissão': 'Guarda la trasmissione',

@@ -812,6 +812,7 @@ export default {
   'Querem falar': 'Dubbachuu barbaadu',
   'Rádio de avião': 'Raadiyoo xiyyaaraa',
   'Recado': 'Ergaa sagalee',
+  'Quem dá o recado': 'Eenyu ergaa sagalee dabarsa',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Namoota baay’eef gorfame. Warri ilaalan yoo barbaachise qulqullina gadi buusuu danda’u.',
   'Reconectando ao servidor…': 'Sarvarii wajjin irra deebi’ee walqabachaa jira…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Sagalee duubaa akka kiiboordii, bubbisaa fi tiraafikaa hir’isa.',

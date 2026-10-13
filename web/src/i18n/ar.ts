@@ -171,6 +171,7 @@ export default {
   'Sem imagem, a comunidade aparece com as iniciais do nome.': 'بدون صورة، يظهر المجتمع بالأحرف الأولى من اسمه.',
   Ícone: 'أيقونة',
   'Arte de fundo': 'صورة الخلفية',
+  'Quem dá o recado': 'من يقدّم الرسالة',
   'O selo desta comunidade é': 'شارة هذا المجتمع هي',
   'Selo que você veste': 'الشارة التي ترتديها',
   'Só o seu nome, sem selo': 'اسمك فقط، بدون شارة',

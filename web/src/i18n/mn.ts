@@ -872,6 +872,7 @@ export default {
   'Querem falar': 'Ярихыг хүсэж байна',
   'Rádio de avião': 'Онгоцны радио',
   'Recado': 'Захиа',
+  'Quem dá o recado': 'Захиаг хэн хүргэх вэ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Ихэнх хүнд зөвлөж байна. Үзэгчид хэрэгтэй бол чанарыг бууруулж болно.',
   'Recompensa': 'Шагнал',

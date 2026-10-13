@@ -837,6 +837,7 @@ export default {
   'Querem falar': 'Chcą mówić',
   'Rádio de avião': 'Radio samolotowe',
   'Recado': 'Nagranie',
+  'Quem dá o recado': 'Kto przekazuje nagranie',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Zalecane dla większości. Oglądający mogą w razie potrzeby obniżyć jakość.',
   'Reconectando ao servidor…': 'Ponowne łączenie z serwerem…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Ogranicza hałas w tle, jak klawiatura, wentylator i ruch uliczny.',

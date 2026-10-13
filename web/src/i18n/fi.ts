@@ -857,6 +857,7 @@ export default {
   'Querem falar': 'Haluavat puhua',
   'Rádio de avião': 'Lentokoneradio',
   'Recado': 'Tiedote',
+  'Quem dá o recado': 'Kuka kertoo tiedotteen',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Suositeltu useimmille. Katsoja voi laskea laatua tarvittaessa.',
   'Recompensa': 'Palkinto',

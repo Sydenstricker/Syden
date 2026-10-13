@@ -10093,13 +10093,49 @@ textarea {
 }
 
 /* O coelho do balcão do salão, em pixel art, ao lado do recado: o mesmo que está atrás do balcão na cena. */
-.bv-guia-balconista {
+/* Quem dá o recado: uma faixa de quadros tocada em laço (o coelho do salão ou um coelho pronto, falando). */
+.bv-guia-coelho {
+  --quadros: 1;
+  display: block;
   flex: none;
-  width: 78px;
-  height: 116px;
-  background: no-repeat 0 0 / 100% 100%;
+  width: 104px;
+  height: 104px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
   image-rendering: pixelated;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+  animation: salao-faixa 1.6s steps(var(--quadros), jump-none) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bv-guia-coelho {
+    animation: none;
+  }
+}
+
+.bv-coelhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bv-coelho-opcao {
+  padding: 4px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-darkest);
+  cursor: pointer;
+}
+
+.bv-coelho-opcao .bv-guia-coelho {
+  width: 52px;
+  height: 52px;
+  filter: none;
+}
+
+.bv-coelho-opcao:hover,
+.bv-coelho-opcao.escolhida {
+  border-color: var(--accent);
 }
 
 .bv-moradores {
@@ -10394,15 +10430,6 @@ textarea {
   border-color: var(--bv-destaque);
 }
 
-.bv-guia-coelho {
-  flex: none;
-  width: 120px;
-  height: auto;
-  /* O bicho é desenhado para a praça, visto de cima e de longe; aqui ele está perto, e uma sombra
-     leve o descola do degradê. */
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
-}
-
 .bv-balao {
   position: relative;
   max-width: 62ch;
@@ -10469,6 +10496,7 @@ textarea {
 
   .bv-guia-coelho {
     width: 72px;
+    height: 72px;
   }
 
   .bv-balao {
@@ -10680,6 +10708,7 @@ textarea {
 
 .bv-previa .bv-guia-coelho {
   width: 80px;
+  height: 80px;
 }
 
 /* O puxador que muda a largura das barras (ver Puxador.tsx).

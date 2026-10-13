@@ -877,6 +877,7 @@ export default {
   'Querem falar': 'Ուզում են խոսել',
   'Rádio de avião': 'Ինքնաթիռի ռադիո',
   'Recado': 'Ուղերձ',
+  'Quem dá o recado': 'Ով է փոխանցում ուղերձը',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Առաջարկվում է մեծամասնությանը։ Դիտողները կարող են իջեցնել որակը, եթե պետք լինի։',
   'Recompensa': 'Պարգև',

@@ -597,6 +597,7 @@ export default {
   'Pessoas': 'ndị mmadụ',
   'Pronto. Quem entrar agora vai ver isto.': 'O mechaala. Onye ọ bụla bata ugbu a ga-ahụ nke a.',
   'Recado': 'Ozi',
+  'Quem dá o recado': 'Onye na-ebu ozi',
   'Registro': 'Ndekọ',
   'Remover': 'Wepụ',
   'Resgatar': 'Nata',

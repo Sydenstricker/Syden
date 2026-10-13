@@ -723,6 +723,7 @@ export default {
   'Querem falar': 'பேச விரும்புகிறார்கள்',
   'Rádio de avião': 'விமான வானொலி',
   'Recado': 'செய்தி',
+  'Quem dá o recado': 'செய்தியை யார் தருகிறார்',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'பெரும்பாலானோருக்குப் பொருத்தம். தேவைப்பட்டால் பார்ப்பவர் தரத்தைக் குறைத்துக்கொள்ளலாம்.',
   'Reconectando ao servidor…': 'சேவையகத்துடன் மீண்டும் இணைகிறது…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'விசைப்பலகை, மின்விசிறி, வாகனங்கள் போன்ற பின்னணிச் சத்தங்களைக் குறைக்கும்.',

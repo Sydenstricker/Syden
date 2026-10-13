@@ -868,6 +868,7 @@ export default {
   'Querem falar': 'ވާހަކަ ދައްކަން ބޭނުން',
   'Rádio de avião': 'މަތިންދާބޯޓުގެ ރޭޑިއޯ',
   'Recado': 'ނޯޓް',
+  'Quem dá o recado': 'ނޯޓް ދައްކައިދޭ ފަރާތް',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ގިނަ މީހުންނަށް ރިކަމެންޑްކުރާ. ބަލާ މީހުންނަށް ބޭނުންނަމަ ކޮލިޓީ ދަށްކުރެވޭނެ.',
   'Recompensa': 'އިނާމު',

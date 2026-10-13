@@ -868,6 +868,7 @@ export default {
   'Querem falar': 'Vle pale',
   'Rádio de avião': 'Radyo avyon',
   'Recado': 'Ti mo',
+  'Quem dá o recado': 'Ki moun ki bay ti mo a',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekòmande pou pifò moun. Moun k ap gade yo ka bese kalite a si yo bezwen.',
   'Recompensa': 'Rekonpans',

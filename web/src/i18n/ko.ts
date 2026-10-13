@@ -62,6 +62,7 @@ export default {
   Aproximar: '확대',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': '끌어서 너비를 바꿔요. 두 번 누르면 원래대로.',
   'Arte de fundo': '배경',
+  'Quem dá o recado': '메시지를 전하는 친구',
   'As duas juntas': '둘 다 함께',
   Assistir: '보기',
   'Assistir transmissão': '방송 보기',

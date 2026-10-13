@@ -1,8 +1,7 @@
 import { Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
 import { useState } from 'react';
 import { api } from './api';
-import balcaoUrl from './assets/salao/balcao.png';
-import { acharArte } from './boasVindas';
+import { acharArte, acharCoelho } from './boasVindas';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
@@ -29,14 +28,19 @@ import type { Channel, Community, DirectChannel, VoiceMember } from './types';
  * "faq" que enchem a lista no Discord. Cada linha do recado vira um item; uma linha só fica como frase.
  * SEM RECADO, O COELHO SÓ DÁ AS BOAS-VINDAS: inventar uma regra seria a tela afirmando o que não é.
  */
-export function RecadoDoBalcao({ titulo, texto }: { titulo: string; texto: string }) {
+export function RecadoDoBalcao({ titulo, texto, coelho }: { titulo: string; texto: string; coelho?: string | null }) {
+  const quem = acharCoelho(coelho);
   const linhas = texto
     .split('\n')
     .map((linha) => linha.trim())
     .filter(Boolean);
   return (
     <div className="bv-guia">
-      <span className="bv-guia-balconista" style={{ backgroundImage: `url(${balcaoUrl})` }} aria-hidden="true" />
+      <span
+        className="bv-guia-coelho"
+        style={{ backgroundImage: `url(${quem.url})`, backgroundSize: `${quem.quadros * 100}% 100%`, '--quadros': quem.quadros } as React.CSSProperties}
+        aria-hidden="true"
+      />
       <div className="bv-balao" role="note">
         <strong className="bv-balao-titulo">{titulo}</strong>
         {linhas.length > 1 ? (
@@ -54,7 +58,7 @@ export function RecadoDoBalcao({ titulo, texto }: { titulo: string; texto: strin
 }
 
 export interface DadosDeBoasVindas {
-  boasVindas: { titulo: string; texto: string; arte: string } | null;
+  boasVindas: { titulo: string; texto: string; arte: string; coelho?: string } | null;
   podeEditar: boolean;
   jaViu: boolean;
 }
@@ -219,7 +223,7 @@ export function InicioDaComunidade({
           }
         />
 
-        <RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} />
+        <RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />
       </div>
 
       <div className="bv-atalhos">

@@ -858,6 +858,7 @@ export default {
   'Querem falar': 'ຢາກເວົ້າ',
   'Rádio de avião': 'ວິທະຍຸຍົນ',
   'Recado': 'ປະກາດ',
+  'Quem dá o recado': 'ຜູ້ປະກາດ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ແນະນຳສຳລັບຄົນສ່ວນໃຫຍ່ ຄົນເບິ່ງຫຼຸດຄຸນນະພາບລົງໄດ້ຖ້າຈຳເປັນ',
   'Recompensa': 'ລາງວັນ',

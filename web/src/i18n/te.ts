@@ -720,6 +720,7 @@ export default {
   'Querem falar': 'మాట్లాడాలనుకుంటున్నారు',
   'Rádio de avião': 'విమానపు రేడియో',
   'Recado': 'సందేశం',
+  'Quem dá o recado': 'సందేశాన్ని ఎవరు ఇస్తారు',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'చాలామందికి సరిపోతుంది. అవసరమైతే చూసేవారు నాణ్యతను తగ్గించుకోవచ్చు.',
   'Reconectando ao servidor…': 'సర్వర్‌కు మళ్ళీ కలుస్తోంది…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'కీబోర్డ్, ఫ్యాన్, వాహనాల వంటి నేపథ్య శబ్దాలను తగ్గిస్తుంది.',

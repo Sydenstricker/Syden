@@ -725,6 +725,7 @@ export default {
   'Querem falar': 'بولنا چاہتے ہیں',
   'Rádio de avião': 'جہاز کا ریڈیو',
   'Recado': 'پیغام',
+  'Quem dá o recado': 'پیغام کون دیتا ہے',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'زیادہ تر لوگوں کے لیے موزوں۔ دیکھنے والا ضرورت پڑنے پر معیار کم کر سکتا ہے۔',
   'Reconectando ao servidor…': 'سرور سے دوبارہ جُڑ رہے ہیں…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'پس منظر کا شور کم کرتا ہے، جیسے کی بورڈ، پنکھا اور ٹریفک۔',

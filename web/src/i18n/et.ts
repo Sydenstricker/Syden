@@ -854,6 +854,7 @@ export default {
   'Querem falar': 'Tahavad rääkida',
   'Rádio de avião': 'Lennukiraadio',
   'Recado': 'Teadaanne',
+  'Quem dá o recado': 'Kes teadaande esitab',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Soovitatav enamikule. Vaataja saab vajadusel kvaliteeti langetada.',
   'Recompensa': 'Tasu',

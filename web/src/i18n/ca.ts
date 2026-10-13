@@ -853,6 +853,7 @@ export default {
   'Querem falar': 'Volen parlar',
   'Rádio de avião': 'Ràdio d’avió',
   'Recado': 'Avís',
+  'Quem dá o recado': 'Qui dona l\'avís',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Recomanat per a la majoria. Qui mira pot abaixar la qualitat si cal.',
   'Recompensa': 'Recompensa',

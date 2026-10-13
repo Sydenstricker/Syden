@@ -858,6 +858,7 @@ export default {
   'Querem falar': 'Bafuna ukukhuluma',
   'Rádio de avião': 'Umsakazo wendiza',
   'Recado': 'Isaziso',
+  'Quem dá o recado': 'Ubani onikeza isaziso',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Kunconyelwa iningi. Obukayo angehlisa ikhwalithi uma kudingeka.',
   'Recompensa': 'Umklomelo',

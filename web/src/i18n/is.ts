@@ -858,6 +858,7 @@ export default {
   'Querem falar': 'Vilja tala',
   'Rádio de avião': 'Flugvélatalstöð',
   'Recado': 'Orðsending',
+  'Quem dá o recado': 'Hver flytur orðsendinguna',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Mælt með fyrir flesta. Áhorfendur geta lækkað gæðin ef þarf.',
   'Recompensa': 'Verðlaun',

@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
-import { ARTES, ARTE_PADRAO, acharArte } from './boasVindas';
+import { ARTES, ARTE_PADRAO, acharArte, COELHO_PADRAO, COELHOS_DO_RECADO } from './boasVindas';
 import { useT } from './i18n';
 import { RecadoDoBalcao } from './InicioDaComunidade';
 import type { Community } from './types';
@@ -12,7 +12,7 @@ import type { Community } from './types';
 // desenhada com o texto de verdade por cima, a escolha leva três segundos e acerta.
 
 interface Resposta {
-  boasVindas: { titulo: string; texto: string; arte: string } | null;
+  boasVindas: { titulo: string; texto: string; arte: string; coelho?: string } | null;
 }
 
 export function EditorDeBoasVindas({ community }: { community: Community }) {
@@ -20,6 +20,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
   const [titulo, setTitulo] = useState('');
   const [texto, setTexto] = useState('');
   const [arte, setArte] = useState(ARTE_PADRAO);
+  const [coelho, setCoelho] = useState(COELHO_PADRAO);
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [aviso, setAviso] = useState<{ ok: boolean; texto: string } | null>(null);
@@ -32,6 +33,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
         setTitulo(r.boasVindas?.titulo ?? '');
         setTexto(r.boasVindas?.texto ?? '');
         setArte(r.boasVindas?.arte ?? ARTE_PADRAO);
+        setCoelho(r.boasVindas?.coelho ?? COELHO_PADRAO);
       })
       .catch(() => {})
       .finally(() => valeu && setCarregando(false));
@@ -45,7 +47,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
     setSalvando(true);
     setAviso(null);
     try {
-      await api(`/api/communities/${community.id}/boas-vindas`, { method: 'PUT', body: { titulo, texto, arte } });
+      await api(`/api/communities/${community.id}/boas-vindas`, { method: 'PUT', body: { titulo, texto, arte, coelho } });
       setAviso({
         ok: true,
         texto: titulo.trim() || texto.trim() ? t('Pronto. Quem entrar agora vai ver isto.') : t('Espaço desmontado.'),
@@ -103,12 +105,31 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
         ))}
       </div>
 
+      <span className="settings-label">{t('Quem dá o recado')}</span>
+      <div className="bv-coelhos" role="group" aria-label={t('Quem dá o recado')}>
+        {Object.entries(COELHOS_DO_RECADO).map(([codigo, c]) => (
+          <button
+            key={codigo}
+            type="button"
+            className={`bv-coelho-opcao${coelho === codigo ? ' escolhida' : ''}`}
+            onClick={() => setCoelho(codigo)}
+            aria-pressed={coelho === codigo}
+          >
+            <span
+              className="bv-guia-coelho"
+              style={{ backgroundImage: `url(${c.url})`, backgroundSize: `${c.quadros * 100}% 100%`, '--quadros': c.quadros } as React.CSSProperties}
+              aria-hidden="true"
+            />
+          </button>
+        ))}
+      </div>
+
       {/* A prévia usa o MESMO degradê e o MESMO tom de texto da tela de verdade. Se um dia as duas
           divergirem, o dono escolhe uma coisa e a comunidade vê outra. */}
       <span className="settings-label">{t('Como vai ficar')}</span>
       <div className="bv bv-previa" data-tom={escolhida.tom} style={{ '--bv-destaque': escolhida.destaque } as React.CSSProperties}>
         <div className="bv-arte" style={{ background: escolhida.fundo }}>
-          <RecadoDoBalcao titulo={titulo || t('Bem-vindo!')} texto={texto} />
+          <RecadoDoBalcao titulo={titulo || t('Bem-vindo!')} texto={texto} coelho={coelho} />
         </div>
       </div>
 

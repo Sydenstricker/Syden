@@ -865,6 +865,7 @@ export default {
   'Querem falar': 'Gapirmoqchi',
   'Rádio de avião': 'Samolyot radiosi',
   'Recado': 'Murojaat',
+  'Quem dá o recado': 'Murojaatni kim yetkazadi',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Koʻpchilik uchun tavsiya etiladi. Tomoshabinlar kerak boʻlsa sifatni pasaytirishi mumkin.',
   'Recompensa': 'Mukofot',

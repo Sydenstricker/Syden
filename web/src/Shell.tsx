@@ -250,6 +250,19 @@ export function Shell({
    */
   const [boasVindas, setBoasVindas] = useState<DadosDeBoasVindas | null>(null);
   const [mostrandoBoasVindas, setMostrandoBoasVindas] = useState(false);
+  // Muda quando quem administra salva as boas-vindas (o servidor avisa a comunidade): o salão relê o recado e
+  // quem o dá, sem ninguém recarregar a página.
+  const [versaoDasBoasVindas, setVersaoDasBoasVindas] = useState(0);
+  useEffect(() => {
+    if (!socket) return;
+    const aoMudar = ({ communityId }: { communityId: number }) => {
+      if (communityId === visivelId) setVersaoDasBoasVindas((v) => v + 1);
+    };
+    socket.on('boas-vindas:mudou', aoMudar);
+    return () => {
+      socket.off('boas-vindas:mudou', aoMudar);
+    };
+  }, [socket, visivelId]);
 
   useEffect(() => {
     if (visivelId === null) {
@@ -270,7 +283,7 @@ export function Shell({
     return () => {
       valeu = false;
     };
-  }, [visivelId]);
+  }, [visivelId, versaoDasBoasVindas]);
   const openDirect = directs.find((c) => c.id === directId);
   // A conversa privada aberta vira um "canal" para a tela de conversa poder ser a mesma dos canais de texto.
   const directAsChannel: Channel | undefined = openDirect && {

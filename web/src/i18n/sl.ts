@@ -859,6 +859,7 @@ export default {
   'Querem falar': 'Želijo govoriti',
   'Rádio de avião': 'Letalski radio',
   'Recado': 'Obvestilo',
+  'Quem dá o recado': 'Kdo poda obvestilo',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Priporočeno za večino. Gledalci lahko po potrebi znižajo kakovost.',
   'Recompensa': 'Nagrada',

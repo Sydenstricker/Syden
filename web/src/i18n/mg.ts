@@ -857,6 +857,7 @@ export default {
   'Querem falar': 'Te hiteny',
   'Rádio de avião': 'Radion’ny fiaramanidina',
   'Recado': 'Filazana',
+  'Quem dá o recado': 'Iza no manao ny filazana',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Atoro ho an’ny maro an’isa. Afaka mampidina ny kalitao ny mpijery raha ilaina.',
   'Recompensa': 'Valisoa',

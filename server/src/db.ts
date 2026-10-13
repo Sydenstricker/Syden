@@ -889,6 +889,8 @@ addColumnIfMissing('channels', 'apresentacao', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('communities', 'bv_titulo', 'TEXT');
 addColumnIfMissing('communities', 'bv_texto', 'TEXT');
 addColumnIfMissing('communities', 'bv_arte', 'TEXT');
+// Quem dá o recado (13/10/2026): um código do catálogo do site (web/src/boasVindas.ts), como a arte.
+addColumnIfMissing('communities', 'bv_coelho', 'TEXT');
 
 // Quando esta pessoa viu as boas-vindas desta comunidade. Nulo = nunca viu.
 //
@@ -4139,22 +4141,25 @@ export interface BoasVindas {
   texto: string;
   /** Código da arte de fundo; o desenho mora em web/src/boasVindas.ts. */
   arte: string;
+  /** Quem dá o recado: código do catálogo do site (o coelho do salão, ou um coelho pronto). */
+  coelho: string;
 }
 
 /** O que o dono escreveu. Nulo quando a comunidade ainda não montou o espaço dela. */
 export function lerBoasVindas(communityId: number): BoasVindas | null {
   const linha = db
-    .prepare('SELECT bv_titulo AS titulo, bv_texto AS texto, bv_arte AS arte FROM communities WHERE id = ?')
-    .get(communityId) as { titulo: string | null; texto: string | null; arte: string | null } | undefined;
+    .prepare('SELECT bv_titulo AS titulo, bv_texto AS texto, bv_arte AS arte, bv_coelho AS coelho FROM communities WHERE id = ?')
+    .get(communityId) as { titulo: string | null; texto: string | null; arte: string | null; coelho: string | null } | undefined;
   if (!linha?.titulo && !linha?.texto) return null;
-  return { titulo: linha.titulo ?? '', texto: linha.texto ?? '', arte: linha.arte ?? 'aurora' };
+  return { titulo: linha.titulo ?? '', texto: linha.texto ?? '', arte: linha.arte ?? 'aurora', coelho: linha.coelho ?? 'salao' };
 }
 
 export function guardarBoasVindas(communityId: number, bv: BoasVindas | null) {
-  db.prepare('UPDATE communities SET bv_titulo = ?, bv_texto = ?, bv_arte = ? WHERE id = ?').run(
+  db.prepare('UPDATE communities SET bv_titulo = ?, bv_texto = ?, bv_arte = ?, bv_coelho = ? WHERE id = ?').run(
     bv?.titulo ?? null,
     bv?.texto ?? null,
     bv?.arte ?? null,
+    bv?.coelho ?? null,
     communityId,
   );
 }

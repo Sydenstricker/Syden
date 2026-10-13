@@ -744,6 +744,7 @@ export default {
   'Querem falar': 'Vor să vorbească',
   'Rádio de avião': 'Stație de avion',
   'Recado': 'Mesaj',
+  'Quem dá o recado': 'Cine dă mesajul',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Recomandat pentru majoritate. Cine se uită poate coborî calitatea dacă are nevoie.',
   'Reconectando ao servidor…': 'Se reconectează la server…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Reduce zgomotele de fundal, cum ar fi tastatura, ventilatorul și traficul.',

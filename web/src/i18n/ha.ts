@@ -740,6 +740,7 @@ export default {
   'Querem falar': 'Suna son magana',
   'Rádio de avião': 'Radiyon jirgin sama',
   'Recado': 'Saƙon murya',
+  'Quem dá o recado': 'Wanda ke bayar da saƙon murya',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'An ba da shawarar ga mafi yawa. Mai kallo yana iya rage ingancin idan ya buƙata.',
   'Reconectando ao servidor…': 'Ana sake haɗawa da sabar…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Yana rage hayaniyar baya, kamar madannai, fanka da ababen hawa.',

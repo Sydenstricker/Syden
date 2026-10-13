@@ -859,6 +859,7 @@ export default {
   'Querem falar': 'बोल्न चाहन्छन्',
   'Rádio de avião': 'विमानको रेडियो',
   'Recado': 'सूचना',
+  'Quem dá o recado': 'सूचना को दिन्छ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'धेरैजसोका लागि सिफारिस गरिएको। हेर्नेहरूले चाहिए गुणस्तर घटाउन सक्छन्।',
   'Recompensa': 'पुरस्कार',

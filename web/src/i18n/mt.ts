@@ -605,6 +605,7 @@ export default {
   'Pessoas': 'nies',
   'Pronto. Quem entrar agora vai ver isto.': 'Lest. Min jidħol minn issa \'l quddiem se jara dan.',
   'Recado': 'Messaġġ',
+  'Quem dá o recado': 'Min jagħti l-messaġġ',
   'Registro': 'Reġistru',
   'Remover': 'Neħħi',
   'Resgatar': 'Ifdi',

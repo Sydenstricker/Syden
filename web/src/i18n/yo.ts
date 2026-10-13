@@ -759,6 +759,7 @@ export default {
   'Querem falar': 'Wọ́n fẹ́ sọ̀rọ̀',
   'Rádio de avião': 'Rédíò ọkọ̀ òfurufú',
   'Recado': 'Ìkìlọ̀',
+  'Quem dá o recado': 'Ẹni tí ó ń fúnni ní ìkìlọ̀',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'A dámọ̀ràn rẹ̀ fún ọ̀pọ̀ jùlọ. Ẹni tó ń wò ó lè dín ìdára kù tí ó bá nílò rẹ̀.',
   'Reconectando ao servidor…': 'Ó ń tún so mọ́ sáfà…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Ó ń dín ariwo ẹ̀yìn kù, bí i kíbọ́ọ̀dù, abẹ́fẹ́lẹ́ àti ọkọ̀ ojú ọ̀nà.',

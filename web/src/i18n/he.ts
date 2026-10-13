@@ -822,6 +822,7 @@ export default {
   'Querem falar': 'רוצים לדבר',
   'Rádio de avião': 'קשר של מטוס',
   'Recado': 'הקלטה',
+  'Quem dá o recado': 'מי מוסר את ההקלטה',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'מומלץ לרוב האנשים. הצופים יכולים להוריד את האיכות אם צריך.',
   'Reconectando ao servidor…': 'מתחבר מחדש לשרת…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'מפחית רעשי רקע כמו מקלדת, מאוורר ותנועה.',

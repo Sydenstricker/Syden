@@ -165,6 +165,7 @@ export default {
     'Sans image, la communauté apparaît avec les initiales de son nom.',
   Ícone: 'Icône',
   'Arte de fundo': 'Image de fond',
+  'Quem dá o recado': 'Qui donne le message',
   'O selo desta comunidade é': 'Le badge de cette communauté est',
   'Selo que você veste': 'Le badge que vous portez',
   'Só o seu nome, sem selo': 'Seulement votre nom, sans badge',

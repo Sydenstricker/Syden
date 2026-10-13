@@ -909,7 +909,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       };
     });
 
-    authed.put<{ Params: { id: string }; Body: { titulo?: string; texto?: string; arte?: string } }>(
+    authed.put<{ Params: { id: string }; Body: { titulo?: string; texto?: string; arte?: string; coelho?: string } }>(
       '/api/communities/:id/boas-vindas',
       async (request, reply) => {
         const access = requireRole(request, reply);
@@ -921,6 +921,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         const titulo = String(request.body?.titulo ?? '').trim().slice(0, 80);
         const texto = String(request.body?.texto ?? '').trim().slice(0, 1000);
         const arte = String(request.body?.arte ?? '').trim().slice(0, 40);
+        const coelho = String(request.body?.coelho ?? '').trim().slice(0, 40);
 
         // Tudo em branco desmonta o espaço, e a comunidade volta a abrir direto nos canais. É a saída
         // para quem experimentou e não gostou — sem ela, montar seria irreversível.
@@ -936,7 +937,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         // A arte NÃO é validada contra uma lista aqui, e isso é deliberado: o catálogo mora no site
         // (web/src/boasVindas.ts), e um código que a tela não conhece simplesmente cai no padrão em vez
         // de virar erro. É o mesmo acordo do guarda-roupa — arte nova se publica sem mexer no servidor.
-        const boasVindas = { titulo, texto, arte: arte || 'aurora' };
+        // O coelho segue o mesmo acordo da arte: o catálogo mora no site.
+        const boasVindas = { titulo, texto, arte: arte || 'aurora', coelho: coelho || 'salao' };
         db.guardarBoasVindas(access.community.id, boasVindas);
         io.to(communityRoom(access.community.id)).emit('boas-vindas:mudou', { communityId: access.community.id });
         return { boasVindas };

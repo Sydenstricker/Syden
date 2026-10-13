@@ -859,6 +859,7 @@ export default {
   'Querem falar': 'Nori kalbėti',
   'Rádio de avião': 'Lėktuvo radijas',
   'Recado': 'Skelbimas',
+  'Quem dá o recado': 'Kas perduoda skelbimą',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekomenduojama daugumai. Žiūrint prireikus galima sumažinti kokybę.',
   'Recompensa': 'Apdovanojimas',

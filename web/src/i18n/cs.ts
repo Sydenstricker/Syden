@@ -856,6 +856,7 @@ export default {
   'Querem falar': 'Chtějí mluvit',
   'Rádio de avião': 'Letecká vysílačka',
   'Recado': 'Oznámení',
+  'Quem dá o recado': 'Kdo předává oznámení',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Doporučeno pro většinu. Diváci si můžou kvalitu v případě potřeby snížit.',
   'Recompensa': 'Odměna',

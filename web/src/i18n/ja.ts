@@ -719,6 +719,7 @@ export default {
   'Querem falar': '話したい人',
   'Rádio de avião': '航空無線',
   'Recado': 'メッセージ',
+  'Quem dá o recado': 'メッセージを伝える子',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'ほとんどの人におすすめ。見る人は必要なら画質を下げられます。',
   'Reconectando ao servidor…': 'サーバーに再接続しています…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'キーボード・扇風機・車の音など、まわりの雑音を抑えます。',

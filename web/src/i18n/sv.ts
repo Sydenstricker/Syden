@@ -849,6 +849,7 @@ export default {
   'Querem falar': 'Vill prata',
   'Rádio de avião': 'Flygradio',
   'Recado': 'Anslag',
+  'Quem dá o recado': 'Vem som läser anslaget',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Rekommenderas för de flesta. Den som tittar kan sänka kvaliteten vid behov.',
   'Recompensa': 'Belöning',

@@ -588,6 +588,7 @@ export default {
   'Pessoas': 'Tamata',
   'Pronto. Quem entrar agora vai ver isto.': 'Sa oti. O ira era curu mai ena raica na ka oqo.',
   'Recado': 'Itukutuku',
+  'Quem dá o recado': 'Ai koya e solia na itukutuku',
   'Registro': 'Ivolatukutuku',
   'Remover': 'Kauta tani',
   'Resgatar': 'Taura',

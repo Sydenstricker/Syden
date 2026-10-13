@@ -750,6 +750,7 @@ export default {
   'Querem falar': 'Θέλουν να μιλήσουν',
   'Rádio de avião': 'Ασύρματος αεροπλάνου',
   'Recado': 'Μήνυμα',
+  'Quem dá o recado': 'Ποιος δίνει το μήνυμα',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Συνιστάται για τους περισσότερους. Όποιος βλέπει μπορεί να ρίξει την ποιότητα αν χρειαστεί.',
   'Reconectando ao servidor…': 'Επανασύνδεση στον διακομιστή…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Μειώνει τους θορύβους του περιβάλλοντος, όπως πληκτρολόγιο, ανεμιστήρα και κίνηση.',

@@ -566,6 +566,7 @@ export default {
   'Pessoas': 'personas',
   'Pronto. Quem entrar agora vai ver isto.': 'Listo. Quien entre ahora va a ver esto.',
   'Recado': 'Recado',
+  'Quem dá o recado': 'Quién da el recado',
   'Registro': 'Registro',
   'Remover': 'Quitar',
   'Resgatar': 'Canjear',

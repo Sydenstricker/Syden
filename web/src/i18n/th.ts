@@ -751,6 +751,7 @@ export default {
   'Querem falar': 'ขอพูด',
   'Rádio de avião': 'วิทยุเครื่องบิน',
   'Recado': 'ข้อความเสียง',
+  'Quem dá o recado': 'ใครเป็นคนส่งข้อความเสียง',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'แนะนำสำหรับคนส่วนใหญ่ คนดูลดคุณภาพลงได้ถ้าจำเป็น',
   'Reconectando ao servidor…': 'กำลังเชื่อมต่อเซิร์ฟเวอร์ใหม่…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ลดเสียงรบกวนรอบข้าง เช่น คีย์บอร์ด พัดลม และรถบนถนน',

@@ -744,6 +744,7 @@ export default {
   'Querem falar': 'መናገር ይፈልጋሉ',
   'Rádio de avião': 'የአውሮፕላን ሬዲዮ',
   'Recado': 'የድምፅ መልእክት',
+  'Quem dá o recado': 'የድምፅ መልእክቱን የሚያደርሰው ማነው',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'ለአብዛኛው ሰው የሚመከር። ተመልካቹ ካስፈለገው ጥራቱን ዝቅ ማድረግ ይችላል።',
   'Reconectando ao servidor…': 'ከሰርቨሩ ጋር እንደገና በመገናኘት ላይ…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'እንደ ኪቦርድ፣ ማራገቢያና የመንገድ ጫጫታ ያሉ የጀርባ ድምፆችን ይቀንሳል።',

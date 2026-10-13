@@ -166,6 +166,7 @@ export default {
     'Без картинки сообщество показывается первыми буквами названия.',
   Ícone: 'Значок',
   'Arte de fundo': 'Фон',
+  'Quem dá o recado': 'Кто передаёт сообщение',
   'O selo desta comunidade é': 'Знак этого сообщества —',
   'Selo que você veste': 'Знак, который ты носишь',
   'Só o seu nome, sem selo': 'Только имя, без знака',

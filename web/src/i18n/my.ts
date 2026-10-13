@@ -811,6 +811,7 @@ export default {
   'Querem falar': 'ပြောချင်သူများ',
   'Rádio de avião': 'လေယာဉ် ရေဒီယို',
   'Recado': 'မှတ်စု',
+  'Quem dá o recado': 'မှတ်စုကို ပေးမည့်သူ',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'လူအများစုအတွက် အကြံပြုပါတယ်။ ကြည့်သူက လိုအပ်ရင် အရည်အသွေး လျှော့နိုင်ပါတယ်။',
   'Reconectando ao servidor…': 'ဆာဗာနဲ့ ပြန်ချိတ်ဆက်နေသည်…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'ကီးဘုတ်၊ ပန်ကာ၊ ယာဉ်ကြောလို နောက်ခံဆူညံသံများကို လျှော့ချသည်။',

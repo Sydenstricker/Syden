@@ -859,6 +859,7 @@ export default {
   'Querem falar': 'Gürlemek isleýärler',
   'Rádio de avião': 'Uçar radiosy',
   'Recado': 'Habarnama',
+  'Quem dá o recado': 'Habarnamany kim ýetirýär',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Köpüsi üçin maslahat berilýär. Tomaşaçy gerek bolsa hilini peseldip biler.',
   'Recompensa': 'Sylag',

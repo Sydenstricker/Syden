@@ -8,6 +8,7 @@
 // - Passar o mouse na TV mostra o que ela faz; o fliperama leva à sala de voz com a estante de jogos aberta.
 // - A TV AO VIVO: o Edu e a Fabi transmitem a tela; a TV da Duda mostra "Ao vivo" e quem, as setas trocam de canal, e
 //   clicar na TV leva a Duda para a sala já assistindo (a watch party).
+// - Quem dá o recado: a Duda escolhe um coelho pronto no editor, e ele aparece animado no salão.
 //
 //   node e2e/salao-da-comunidade.mjs   (API de teste na 3099, site na 5174 e LiveKit local na 7880)
 import fs from 'node:fs';
@@ -111,7 +112,12 @@ try {
   await duda.locator('.salao-tv-ao-vivo').waitFor({ timeout: 15000 });
   const primeiro = (await duda.locator('.salao-tv-ao-vivo strong').innerText()).trim();
   ok(`alguém transmitindo: a TV mostra "Ao vivo" e ${primeiro}`);
-  (await duda.locator('.salao-tv-seta').count()) === 2 ? ok('com duas transmissões, as setas de trocar de canal aparecem') : falhou('faltam as setas da TV');
+  await duda
+    .waitForFunction(() => document.querySelectorAll('.salao-tv-seta').length === 2, null, { timeout: 15000 })
+    .then(
+      () => ok('com duas transmissões, as setas de trocar de canal aparecem'),
+      () => falhou('faltam as setas da TV'),
+    );
   await duda.locator('.salao-tv-seta').last().click();
   const segundo = (await duda.locator('.salao-tv-ao-vivo strong').innerText()).trim();
   segundo !== primeiro ? ok(`a seta trocou de canal: ${primeiro} → ${segundo}`) : falhou('a seta não trocou de canal');
@@ -121,6 +127,29 @@ try {
   ok(`clicar na TV levou a Duda para a sala, já assistindo ${segundo}`);
   await duda.locator('.inicio-link').first().click();
   await duda.locator('.salao').waitFor({ timeout: 10000 });
+
+  // Quem dá o recado: o coelho é escolhido no editor, e todos têm animação.
+  (await duda.locator('.bv-guia-coelho').getAttribute('style'))?.includes('coelho-do-recado')
+    ? ok('sem escolha, quem dá o recado é o coelho do salão, animado')
+    : falhou('o coelho do recado não é o do salão');
+  await duda.getByRole('button', { name: /^Montar esta tela/ }).last().click();
+  await duda.locator('.bv-coelho-opcao').nth(5).waitFor({ timeout: 10000 });
+  (await duda.locator('.bv-coelho-opcao').count()) === 17 ? ok('o editor oferece 17 coelhos para dar o recado') : falhou('faltam opções de coelho');
+  await duda.locator('.bv-editor input').first().fill('Chegou!');
+  await duda.locator('.bv-coelho-opcao').nth(5).click();
+  await duda.locator('.bv-editor').screenshot({ path: path.join(FOTOS, 'recado-editor.png') });
+  await duda.locator('.bv-editor .btn-primary').click();
+  await duda.locator('.bv-editor .form-success').waitFor({ timeout: 10000 });
+  await duda.keyboard.press('Escape');
+  await duda.locator('.inicio-link').first().click();
+  await duda.locator('.salao').waitFor({ timeout: 10000 });
+  await duda
+    .waitForFunction(() => document.querySelector('.bv-guia-coelho')?.getAttribute('style')?.includes('coelho-05-falando'), null, { timeout: 10000 })
+    .then(
+      () => ok('o coelho escolhido dá o recado no salão, falando'),
+      () => falhou('o coelho escolhido não apareceu no salão'),
+    );
+  await duda.locator('.bv-guia').screenshot({ path: path.join(FOTOS, 'recado-coelho.png') });
 
   await duda.getByRole('button', { name: /^Mini-games/ }).first().click();
   await duda.locator('.minijogo-estante').waitFor({ timeout: 30000 });

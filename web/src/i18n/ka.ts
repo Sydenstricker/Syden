@@ -876,6 +876,7 @@ export default {
   'Querem falar': 'ლაპარაკი სურთ',
   'Rádio de avião': 'თვითმფრინავის რადიო',
   'Recado': 'მიმართვა',
+  'Quem dá o recado': 'ვინ გადმოსცემს მიმართვას',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'რეკომენდებულია უმეტესობისთვის. მაყურებელს საჭიროების შემთხვევაში ხარისხის დაწევა შეუძლია.',
   'Recompensa': 'ჯილდო',

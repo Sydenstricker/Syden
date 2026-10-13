@@ -804,6 +804,7 @@ export default {
   'Querem falar': 'Danışmaq istəyirlər',
   'Rádio de avião': 'Təyyarə ratsiyası',
   'Recado': 'Səsli mesaj',
+  'Quem dá o recado': 'Səsli mesajı kim çatdırır',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Çoxu üçün tövsiyə olunur. İzləyənlər lazım olsa keyfiyyəti endirə bilər.',
   'Reconectando ao servidor…': 'Serverə yenidən qoşulur…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Klaviatura, ventilyator və nəqliyyat kimi arxa fon səs-küyünü azaldır.',

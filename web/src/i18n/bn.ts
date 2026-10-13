@@ -64,6 +64,7 @@ export default {
   Aproximar: 'বড় করো',
   'Arraste para mudar a largura. Dois cliques volta ao padrão.': 'চওড়া বদলাতে টানো। দুবার ক্লিক করলে আগের মতো হয়ে যায়।',
   'Arte de fundo': 'পটভূমি',
+  'Quem dá o recado': 'কে বার্তা দেয়',
   'As duas juntas': 'দুটোই একসঙ্গে',
   Assistir: 'দেখো',
   'Assistir transmissão': 'স্ট্রিম দেখো',

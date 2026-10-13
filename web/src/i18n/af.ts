@@ -851,6 +851,7 @@ export default {
   'Querem falar': 'Wil praat',
   'Rádio de avião': 'Vliegtuigradio',
   'Recado': 'Kennisgewing',
+  'Quem dá o recado': 'Wie die kennisgewing gee',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Aanbeveel vir die meeste. Wie kyk, kan die kwaliteit verlaag indien nodig.',
   'Recompensa': 'Beloning',

@@ -870,6 +870,7 @@ export default {
   'Querem falar': 'སླབ་ནི་ཨིན་མས།',
   'Rádio de avião': 'གནམ་གྲུའི་རེ་ཌི་ཡོ།',
   'Recado': 'བརྡ་ཁྱབ།',
+  'Quem dá o recado': 'བརྡ་ཁྱབ་སྤྲོད་མཁན།',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'མི་མང་ཤོས་ཀྱི་དོན་ལུ་འོས་འཚམ། བལྟ་མི་གིས་ དགོས་པ་ཅིན་ སྤུས་ཚད་མར་ཕབ་ཚུགས།',
   'Recompensa': 'ཆ་རྒྱ།',

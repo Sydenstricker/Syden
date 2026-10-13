@@ -591,6 +591,7 @@ export default {
   'Pessoas': 'ema',
   'Pronto. Quem entrar agora vai ver isto.': 'Di\'ak. Ema ne\'ebé tama agora sei haree ne\'e.',
   'Recado': 'Rekadu',
+  'Quem dá o recado': 'Se mak fó rekadu',
   'Registro': 'Rejistu',
   'Remover': 'Hasai',
   'Resgatar': 'Resgata',

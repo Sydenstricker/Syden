@@ -167,6 +167,7 @@ export default {
     'Ohne Bild erscheint die Community mit den Anfangsbuchstaben ihres Namens.',
   Ícone: 'Symbol',
   'Arte de fundo': 'Hintergrundbild',
+  'Quem dá o recado': 'Wer die Nachricht überbringt',
   'O selo desta comunidade é': 'Das Abzeichen dieser Community ist',
   'Selo que você veste': 'Dein Abzeichen',
   'Só o seu nome, sem selo': 'Nur dein Name, ohne Abzeichen',

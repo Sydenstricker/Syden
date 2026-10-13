@@ -856,6 +856,7 @@ export default {
   'Querem falar': 'ចង់និយាយ',
   'Rádio de avião': 'វិទ្យុយន្តហោះ',
   'Recado': 'សេចក្តីជូនដំណឹង',
+  'Quem dá o recado': 'អ្នកផ្តល់សេចក្តីជូនដំណឹង',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'ណែនាំសម្រាប់មនុស្សភាគច្រើន។ អ្នកមើលអាចបន្ថយគុណភាពបើចាំបាច់។',
   'Recompensa': 'រង្វាន់',

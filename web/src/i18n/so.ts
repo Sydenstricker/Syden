@@ -857,6 +857,7 @@ export default {
   'Querem falar': 'Waxay rabaan inay hadlaan',
   'Rádio de avião': 'Raadiyaha diyaaradda',
   'Recado': 'Ogeysiis',
+  'Quem dá o recado': 'Cidda ogeysiiska bixisa',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.':
     'Waxaa lagu taliyay inta badan. Daawadayaashu way hoos u dhigi karaan tayada haddii loo baahdo.',
   'Recompensa': 'Abaalmarin',

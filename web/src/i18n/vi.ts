@@ -708,6 +708,7 @@ export default {
   'Querem falar': 'Muốn nói',
   'Rádio de avião': 'Bộ đàm máy bay',
   'Recado': 'Lời nhắn',
+  'Quem dá o recado': 'Ai gửi lời nhắn',
   'Recomendado para a maioria. Quem assiste pode baixar a qualidade se precisar.': 'Phù hợp với phần lớn mọi người. Người xem có thể hạ chất lượng nếu cần.',
   'Reconectando ao servidor…': 'Đang kết nối lại với máy chủ…',
   'Reduz barulhos de fundo, como teclado, ventilador e trânsito.': 'Giảm tiếng ồn xung quanh, như bàn phím, quạt và xe cộ.',
