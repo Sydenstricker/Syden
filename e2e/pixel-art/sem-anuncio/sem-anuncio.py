@@ -100,12 +100,25 @@ def recortar(arquivo):
     return im.crop(im.getbbox())
 
 
+def animacao(base):
+    """Os 9 quadros do PixelLab (gerar.mjs animar), cada um com o quanto o pé dele fica acima do fundo da figura:
+    na cena, todo quadro pisa no chão, e o movimento é o do desenho (o pulo do feliz vem do código)."""
+    quadros = []
+    for i in range(1, 10):
+        im = Image.open(AQUI / f"animado-{base}-{i}.png").convert("RGBA")
+        quadros.append((im, im.getbbox()[3]))
+    return quadros
+
+
 def montar(pasta):
     ilha = Image.open(AQUI / "ilha-1.png").convert("RGBA")
     incomodado = recortar("incomodado-1.png")
-    feliz = recortar("feliz-4.png")
-    # os dois coelhos de pé no mesmo chão: o de baixo da figura alinhado
+    # o chão do coelho: onde pisava a pose parada (os quadros animados pisam no mesmo lugar)
     pe = COELHO_Y + incomodado.height
+    anim_incomodado = animacao("incomodado-1")
+    anim_feliz = animacao("feliz-4")
+    # a figura animada tem a borda de 64 × 96: o x dela é o da pose parada menos a sobra da esquerda
+    x_figura = COELHO_X - Image.open(AQUI / "incomodado-1.png").getbbox()[0]
 
     rnd = random.Random(5)
     pedacos = []  # os pixels das janelas que estouram: (x, y, vx, vy, cor)
@@ -125,12 +138,16 @@ def montar(pasta):
         t = q / FPS
         cena = Image.new("RGBA", (CW, CH), (0, 0, 0, 0))
         cena.alpha_composite(ilha, (0, ILHA_Y))
-        # incomodado enquanto os anúncios pipocam (balança de leve, impaciente); feliz depois do proibido (pula)
+        # incomodado enquanto os anúncios pipocam (bate o pé, balança a cabeça); feliz depois do proibido, pulando
+        # — cada quadro do desenho dura 2 da cena (6 por segundo)
         if t < QUANDO_CAI + 0.5:
-            coelho, dy = incomodado, (1 if (q // 4) % 2 else 0)
+            figura, base = anim_incomodado[(q // 2) % len(anim_incomodado)]
+            dy = 0
         else:
-            coelho, dy = feliz, (-2 if (q // 3) % 2 else 0)
-        cena.alpha_composite(coelho, (COELHO_X + (incomodado.width - coelho.width) // 2, pe - coelho.height + dy))
+            k = q - int((QUANDO_CAI + 0.5) * FPS)
+            figura, base = anim_feliz[(k // 2) % len(anim_feliz)]
+            dy = -int(round(7 * abs(math.sin(math.pi * k / 9))))
+        cena.alpha_composite(figura, (x_figura, pe - base + dy))
 
         # a camada desenhada por código, na grade antiga
         a = np.zeros((H, W, 4), "uint8")
