@@ -6,7 +6,7 @@ import { SeloDaComunidade } from './SeloDaComunidade';
 import { useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
-import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
+import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { fraseDaTransmissao } from './streamName';
 import { quemAssiste } from './assistindo';
 import { silencioVale } from './ModeracaoDaPessoa';
@@ -85,10 +85,13 @@ export function MemberList({
 
   const row = (member: CommunityMember, className: string) => {
     const agora = status(member.id);
+    // A PLACA (13/10/2026, pedido do Sydenstricker, como as do Discord): o fundo que a pessoa escolheu para o cartão de
+    // perfil aparece atrás da linha dela, esmaecido do lado do avatar. Nada novo para escolher; só quem está online.
+    const placa = member.banner && member.banner !== 'nenhum' ? member.banner : null;
     return (
       <div
         key={member.id}
-        className="member"
+        className={`member${placa ? ' com-placa' : ''}`}
         role="button"
         tabIndex={0}
         onClick={(e) => setPerfil({ membro: member, x: e.clientX - 150, y: e.clientY - 40 })}
@@ -100,6 +103,7 @@ export function MemberList({
         }}
         onContextMenu={(e) => menu.open(e, member.id, member.username)}
       >
+        {placa && <span className={`member-placa ${classeDoFundo(placa)}`} aria-hidden="true" />}
         <Avatar
           name={member.username}
           userId={member.id}

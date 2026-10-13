@@ -1367,6 +1367,39 @@ textarea {
   background: var(--bg-hover);
 }
 
+/* A placa: o fundo do perfil atrás da linha, como no Discord. Some do lado do avatar (a foto e o status ficam
+   limpos) e cresce para a direita; o texto ganha uma sombra para seguir legível em cima de qualquer fundo. */
+.member.com-placa {
+  position: relative;
+  border-radius: 8px;
+  margin: 2px 0;
+  overflow: hidden;
+}
+
+.member.com-placa > :not(.member-placa) {
+  position: relative;
+  z-index: 1;
+}
+
+.member-placa {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 28%, #000 75%);
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 28%, #000 75%);
+}
+
+.member.com-placa .member-name,
+.member.com-placa .member-status {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+.member.com-placa:hover .member-placa {
+  opacity: 1;
+}
+
 /* ---------- Voz ---------- */
 
 .voice-stage {
