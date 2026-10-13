@@ -10104,7 +10104,14 @@ textarea {
   background-position: 0 0;
   image-rendering: pixelated;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
-  animation: salao-faixa 1.6s steps(var(--quadros), jump-none) infinite;
+  /* O gesto `--vezes` vezes e, ao acabar, a faixa volta ao primeiro quadro (sem `forwards`): dali em diante só a
+     respiração de um pixel, como as pessoas do salão. */
+  --duracao: 3s;
+  --vezes: 1;
+  --fim-do-gesto: 3s;
+  animation:
+    salao-faixa var(--duracao) steps(var(--quadros), jump-none) var(--vezes),
+    salao-respira 3.4s steps(1) var(--fim-do-gesto) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,7 +1,7 @@
 import { Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
 import { useState } from 'react';
 import { api } from './api';
-import { acharArte, acharCoelho } from './boasVindas';
+import { acharArte, acharCoelho, type CoelhoDoRecado } from './boasVindas';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
@@ -28,6 +28,17 @@ import type { Channel, Community, DirectChannel, VoiceMember } from './types';
  * "faq" que enchem a lista no Discord. Cada linha do recado vira um item; uma linha só fica como frase.
  * SEM RECADO, O COELHO SÓ DÁ AS BOAS-VINDAS: inventar uma regra seria a tela afirmando o que não é.
  */
+/** A faixa do coelho do recado: o gesto `vezes` vezes no ritmo dele, e depois parado respirando (ver styles.css). */
+export const estiloDoCoelho = (c: CoelhoDoRecado) =>
+  ({
+    backgroundImage: `url(${c.url})`,
+    backgroundSize: `${c.quadros * 100}% 100%`,
+    '--quadros': c.quadros,
+    '--duracao': `${c.duracao}s`,
+    '--vezes': c.vezes,
+    '--fim-do-gesto': `${c.duracao * c.vezes}s`,
+  }) as React.CSSProperties;
+
 export function RecadoDoBalcao({ titulo, texto, coelho }: { titulo: string; texto: string; coelho?: string | null }) {
   const quem = acharCoelho(coelho);
   const linhas = texto
@@ -36,11 +47,8 @@ export function RecadoDoBalcao({ titulo, texto, coelho }: { titulo: string; text
     .filter(Boolean);
   return (
     <div className="bv-guia">
-      <span
-        className="bv-guia-coelho"
-        style={{ backgroundImage: `url(${quem.url})`, backgroundSize: `${quem.quadros * 100}% 100%`, '--quadros': quem.quadros } as React.CSSProperties}
-        aria-hidden="true"
-      />
+      {/* A chave recomeça o gesto quando o coelho muda (na prévia do editor). */}
+      <span key={quem.url} className="bv-guia-coelho" style={estiloDoCoelho(quem)} aria-hidden="true" />
       <div className="bv-balao" role="note">
         <strong className="bv-balao-titulo">{titulo}</strong>
         {linhas.length > 1 ? (

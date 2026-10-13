@@ -83,20 +83,31 @@ export function acharArte(codigo: string | null | undefined): ArteDeBoasVindas {
  * tenham animação, ele parado assim fica estranho"). Todas são faixas de quadros tocadas em laço: o coelho de
  * moletom do salão do site (o padrão) e os 16 coelhos prontos de avatar, FALANDO — quem dá um recado está falando.
  * O servidor só guarda o código; um código que este catálogo não conhece cai no padrão.
+ *
+ * O GESTO É UMA VEZ SÓ, e depois o coelho fica parado respirando (relato dele: "a animação está muito rápida; ele
+ * deveria fazer o agradecimento uma vez, depois ficar em idle"). `duracao` é o tempo de uma passada pela faixa, no
+ * ritmo do site (o coelho do salão leva 3,6 s, como no lobby), e `vezes` quantas passadas antes de parar.
  */
 export interface CoelhoDoRecado {
   url: string;
   quadros: number;
+  duracao: number;
+  vezes: number;
 }
 
 export const COELHO_PADRAO = 'salao';
 
 export const COELHOS_DO_RECADO: Record<string, CoelhoDoRecado> = {
-  salao: { url: coelhoDoSalaoUrl, quadros: 18 },
+  salao: { url: coelhoDoSalaoUrl, quadros: 18, duracao: 3.6, vezes: 1 },
   ...Object.fromEntries(
     Array.from({ length: 16 }, (_, i) => [
       `pronto-${i + 1}`,
-      { url: `${import.meta.env.BASE_URL}avatares/coelho-${String(i + 1).padStart(2, '0')}-falando.png`, quadros: 8 },
+      {
+        url: `${import.meta.env.BASE_URL}avatares/coelho-${String(i + 1).padStart(2, '0')}-falando.png`,
+        quadros: 8,
+        duracao: 1.2,
+        vezes: 3,
+      },
     ]),
   ),
 };

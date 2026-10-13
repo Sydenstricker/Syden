@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
 import { ARTES, ARTE_PADRAO, acharArte, COELHO_PADRAO, COELHOS_DO_RECADO } from './boasVindas';
 import { useT } from './i18n';
-import { RecadoDoBalcao } from './InicioDaComunidade';
+import { estiloDoCoelho, RecadoDoBalcao } from './InicioDaComunidade';
 import type { Community } from './types';
 
 // Onde o dono monta o espaço de boas-vindas da comunidade (ver InicioDaComunidade.tsx).
@@ -115,11 +115,7 @@ export function EditorDeBoasVindas({ community }: { community: Community }) {
             onClick={() => setCoelho(codigo)}
             aria-pressed={coelho === codigo}
           >
-            <span
-              className="bv-guia-coelho"
-              style={{ backgroundImage: `url(${c.url})`, backgroundSize: `${c.quadros * 100}% 100%`, '--quadros': c.quadros } as React.CSSProperties}
-              aria-hidden="true"
-            />
+            <span className="bv-guia-coelho" style={estiloDoCoelho(c)} aria-hidden="true" />
           </button>
         ))}
       </div>
