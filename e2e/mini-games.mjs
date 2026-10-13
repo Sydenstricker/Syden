@@ -99,11 +99,11 @@ try {
   await duda.waitForTimeout(1500);
   await duda.screenshot({ path: path.join(FOTOS, 'mini-games-termo-na-sala.png') });
   // O Quarteto (4 tabuleiros lado a lado): o Termo mede as peças pela altura, e num quadro alto demais os tabuleiros
-  // dos lados saíam cortados. O quadro agora não passa de largura ÷ 1,5.
+  // dos lados saíam cortados. O quadro agora não passa de largura ÷ 1,7.
   await duda.locator('.site-no-palco iframe').evaluate((f) => (f.src = 'https://term.ooo/4'));
   await duda.waitForTimeout(2500);
   const quadroDoTermo = await duda.locator('.site-no-palco iframe').boundingBox();
-  quadroDoTermo.width / quadroDoTermo.height >= 1.49 ? ok(`o quadro do Termo tem a proporção que cabe o Quarteto (${(quadroDoTermo.width / quadroDoTermo.height).toFixed(2)})`) : falhou(`o quadro do Termo está alto demais: ${Math.round(quadroDoTermo.width)}×${Math.round(quadroDoTermo.height)}`);
+  quadroDoTermo.width / quadroDoTermo.height >= 1.69 ? ok(`o quadro do Termo tem a proporção que cabe o Quarteto (${(quadroDoTermo.width / quadroDoTermo.height).toFixed(2)})`) : falhou(`o quadro do Termo está alto demais: ${Math.round(quadroDoTermo.width)}×${Math.round(quadroDoTermo.height)}`);
   await duda.screenshot({ path: path.join(FOTOS, 'mini-games-quarteto-na-sala.png') });
   await duda.keyboard.press('Escape');
   await duda.locator('.site-no-palco').waitFor({ state: 'detached', timeout: 5000 });

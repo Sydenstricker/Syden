@@ -7621,7 +7621,7 @@ textarea {
 
 .site-embutido iframe {
   width: 100%;
-  height: min(100cqh, 100cqw / 1.5);
+  height: min(100cqh, 100cqw / 1.7);
   border: none;
   background: #fff;
 }

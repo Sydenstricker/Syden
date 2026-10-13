@@ -37,9 +37,10 @@ function QuadroDoSite({ nome, endereco, aoFechar }: { nome: string; endereco: st
           <X size={16} />
         </button>
       </header>
-      {/* O quadro nunca fica mais alto que a largura ÷ 1,5: o Termo mede as peças pela ALTURA, e no Quarteto (4
-          tabuleiros lado a lado) um quadro alto e estreito cortava os tabuleiros dos lados (medido em 13/10/2026:
-          de 1,5 para cima cabe). Sobrando altura, ele fica no meio. */}
+      {/* O quadro nunca fica mais alto que a largura ÷ 1,7: o Termo mede as peças pela ALTURA, e no Quarteto (4
+          tabuleiros lado a lado) um quadro alto e estreito cortava os tabuleiros dos lados. Era ÷ 1,5, e no app dele
+          ainda cortava (13/10/2026: 1,46 cortou, 1,49 coube — o limite muda com o tamanho, porque o teclado do
+          Termo tem altura fixa); 1,7 deixa folga. Sobrando altura, ele fica no meio. */}
       <div className="site-embutido-quadro">
         <iframe
           src={endereco}
