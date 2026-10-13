@@ -6,7 +6,7 @@ import { chave, idiomaAtual } from './i18n';
 /**
  * Os mini-games da sala de voz, do lado do site (o servidor decide tudo: server/src/minijogos.ts).
  *
- * O CATÁLOGO DO "QUAL É MAIOR?": o emoji e o nome de cada objeto, marcados para traduzir. Os TAMANHOS
+ * O CATÁLOGO DO "QUAL É O TAMANHO?": o emoji e o nome de cada objeto, marcados para traduzir. Os TAMANHOS
  * moram só no servidor, que é quem decide quem acertou — e só chegam na revelação. O teste
  * web/test/minijogos.test.ts confere que as duas listas têm os mesmos ids.
  */
@@ -95,15 +95,18 @@ export interface LinhaDoPlacar {
   pontos: number;
 }
 
-/** O "Qual é maior?" (server/src/minijogos.ts). */
+/** O "Qual é o tamanho?" (server/src/minijogos.ts). O palpite é a razão objeto ÷ referência. */
 export interface EstadoTamanho {
   rodada: number;
   rodadas: number;
-  fase: 'votando' | 'revelando' | 'fim';
-  par: { id: string; cm?: number; medida?: Medida }[];
-  votaram: number[];
-  votos: Record<string, 0 | 1> | null;
-  certo: 0 | 1 | null;
+  fase: 'estimando' | 'revelando' | 'fim';
+  referencia: { id: string; cm: number; medida: Medida };
+  /** O tamanho (`cm`) só chega na revelação. */
+  objeto: { id: string; medida: Medida; cm?: number };
+  real: number | null;
+  meuPalpite: number | null;
+  confirmaram: number[];
+  palpites: { userId: number; palpite: number; pontos: number }[] | null;
   placar: LinhaDoPlacar[];
 }
 
@@ -212,8 +215,8 @@ export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'x
 export const JOGOS: { id: IdDoJogo; nome: string; dica: string }[] = [
   {
     id: 'tamanho',
-    nome: chave('Qual é maior?'),
-    dica: chave('Dois objetos aparecem e cada um escolhe, na própria tela, qual é o maior. O tamanho de verdade aparece para todo mundo ao mesmo tempo.'),
+    nome: chave('Qual é o tamanho?'),
+    dica: chave('Ao lado de um objeto de tamanho conhecido aparece outro, e cada um aumenta ou diminui esse outro até achar o tamanho certo. Quem chegar mais perto ganha mais pontos.'),
   },
   {
     id: 'stop',

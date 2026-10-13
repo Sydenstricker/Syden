@@ -1,19 +1,21 @@
 /**
  * OS MINI-GAMES DA SALA DE VOZ (12/10/2026). A turma está na call; alguém aperta o controle e todo mundo
- * joga junto, cada um na própria tela, e a revelação é junta. O primeiro é o "Qual é maior?" (o Size It Up
- * do Syden, decidido em 07/10/2026): dois objetos, cada um chuta qual é maior, e o tamanho de verdade
- * aparece para todo mundo ao mesmo tempo — é aí que a conversa acontece.
+ * joga junto, cada um na própria tela, e a revelação é junta. O primeiro é o "Qual é o tamanho?" (o Size It
+ * Up do Syden, decidido em 07/10/2026): um objeto de referência, com o tamanho dito, e ao lado outro que cada
+ * um AUMENTA E DIMINUI na própria tela até achar a proporção. O tamanho de verdade aparece para todo mundo ao
+ * mesmo tempo, com o palpite de cada um — é aí que a conversa acontece. (Até 13/10/2026 era "qual dos dois é
+ * maior", em duas cartas; o Sydenstricker jogou e não era o que ele tinha imaginado.)
  *
  * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
  * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  *
- * QUEM DECIDE É O SERVIDOR: ele sorteia o par, guarda os votos, conta o tempo e dá os pontos. O voto de
- * cada um fica escondido até a revelação (antes dela, só se sabe QUEM já votou) — senão o último a votar
- * copiaria a maioria.
+ * QUEM DECIDE É O SERVIDOR: ele sorteia o par, guarda os palpites, conta o tempo e dá os pontos. O tamanho
+ * do objeto e o palpite de cada um ficam escondidos até a revelação (antes dela, só se sabe QUEM já
+ * confirmou) — senão o último copiaria a turma.
  *
  * Os NOMES dos objetos não estão aqui: o site os tem, traduzidos (web/src/minijogos.ts), e o teste
  * web/test/minijogos.test.ts confere que as duas listas têm os mesmos ids. Aqui ficam só os tamanhos, que
- * é o que decide quem acertou.
+ * é o que decide quem chegou mais perto.
  */
 
 import { placar, type Definicao } from './minijogo-motor.js';
@@ -67,17 +69,23 @@ export const OBJETOS: Record<string, { cm: number; medida: Medida }> = {
   sol: { cm: 139_140_000_000, medida: 'diametro' },
 };
 
-/** O par só é bom quando a resposta não é óbvia nem é empate: de 1,3× a 12× de diferença. */
-const RAZAO_MINIMA = 1.3;
-const RAZAO_MAXIMA = 12;
+/**
+ * O par é bom quando o objeto é de 1,5× a 20× maior (ou menor) que a referência: menos que isso é empate a
+ * olho, e mais que isso o menor vira um ponto na tela.
+ */
+const RAZAO_MINIMA = 1.5;
+const RAZAO_MAXIMA = 20;
+/** O palpite é a razão objeto ÷ referência; fora disto é bobagem (o site nem deixa chegar lá). */
+export const PALPITE_MINIMO = 1 / 50;
+export const PALPITE_MAXIMO = 50;
 
 export const RODADAS = 8;
-export const VOTANDO_MS = 15_000;
-export const REVELANDO_MS = 5_000;
+export const ESTIMANDO_MS = 25_000;
+export const REVELANDO_MS = 7_000;
 /** O placar final fica na tela por um tempo e some sozinho, se ninguém fechar antes. */
 export const PLACAR_MS = 60_000;
 
-/** Sorteia um par que ainda não saiu nesta partida. `aleatorio` é trocável para o teste. */
+/** Sorteia [referência, objeto], dois que ainda não saíram nesta partida. `aleatorio` é trocável para o teste. */
 export function sortearPar(usados: Set<string>, aleatorio = Math.random): [string, string] {
   const ids = Object.keys(OBJETOS);
   for (let tentativa = 0; tentativa < 500; tentativa++) {
@@ -91,38 +99,58 @@ export function sortearPar(usados: Set<string>, aleatorio = Math.random): [strin
   return usados.size > 0 ? sortearPar(new Set(), aleatorio) : ['gato', 'cavalo'];
 }
 
-export type Fase = 'votando' | 'revelando' | 'fim';
+export type Fase = 'estimando' | 'revelando' | 'fim';
 
-/** Qual dos dois é o maior. */
-export const maior = (par: [string, string]): 0 | 1 => (OBJETOS[par[0]].cm >= OBJETOS[par[1]].cm ? 0 : 1);
+/** Quantas vezes o objeto é maior que a referência (menos que 1: menor). */
+export const razaoReal = (par: [string, string]) => OBJETOS[par[1]].cm / OBJETOS[par[0]].cm;
 
 /**
- * O "Qual é maior?" como jogo do motor (ver minijogo-motor.ts): 8 rodadas de votar e revelar. Todo mundo
- * que está na sala começa no placar, com zero: quem não votar aparece, e não some.
+ * Os pontos de um palpite: 100 na mosca, 50 errando pelo dobro (ou pela metade), zero errando por 4× ou mais.
+ * O erro é medido em PROPORÇÃO, não em centímetros: chutar 2 m para 1 m erra tanto quanto chutar 50 cm.
+ */
+export function pontosDoPalpite(palpite: number, real: number): number {
+  const erro = Math.abs(Math.log(palpite / real));
+  return Math.round(100 * Math.max(0, 1 - erro / Math.log(4)));
+}
+
+/**
+ * O "Qual é o tamanho?" como jogo do motor (ver minijogo-motor.ts): 8 rodadas de estimar e revelar. Todo
+ * mundo que está na sala começa no placar, com zero: quem não jogar aparece, e não some.
+ *
+ * O palpite chega ao servidor ENQUANTO a pessoa mexe (o site manda devagar), e não só no "Confirmar": quem
+ * deixou o objeto no tamanho certo e não confirmou não perde a rodada para o relógio.
  */
 export const tamanho: Definicao = {
   comecar(ctx, { naSala }) {
     let rodada = 1;
-    let fase: Fase = 'votando';
+    let fase: Fase = 'estimando';
     let par: [string, string] = ['gato', 'cavalo'];
     const usados = new Set<string>();
-    /** O voto de cada um na rodada: 0 = o da esquerda, 1 = o da direita. */
-    const votos = new Map<number, 0 | 1>();
+    const palpites = new Map<number, number>();
+    const confirmaram = new Set<number>();
+    /** Os pontos de cada um na última revelação. */
+    const daRodada = new Map<number, number>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
 
     function novaRodada() {
       par = sortearPar(usados);
       par.forEach((id) => usados.add(id));
-      votos.clear();
-      fase = 'votando';
-      ctx.agendar(VOTANDO_MS, revelar);
+      palpites.clear();
+      confirmaram.clear();
+      daRodada.clear();
+      fase = 'estimando';
+      ctx.agendar(ESTIMANDO_MS, revelar);
       ctx.avisar();
     }
 
     function revelar() {
-      if (fase !== 'votando') return;
-      const certo = maior(par);
-      for (const [userId, escolha] of votos) pontos.set(userId, (pontos.get(userId) ?? 0) + (escolha === certo ? 1 : 0));
+      if (fase !== 'estimando') return;
+      const real = razaoReal(par);
+      for (const [userId, palpite] of palpites) {
+        const ganhou = pontosDoPalpite(palpite, real);
+        daRodada.set(userId, ganhou);
+        pontos.set(userId, (pontos.get(userId) ?? 0) + ganhou);
+      }
       fase = 'revelando';
       ctx.agendar(REVELANDO_MS, () => {
         if (rodada >= RODADAS) {
@@ -137,29 +165,34 @@ export const tamanho: Definicao = {
 
     novaRodada();
     return {
-      publico() {
-        // Os votos e os tamanhos só aparecem depois da revelação — senão o último a votar copiaria a maioria.
-        const revelado = fase !== 'votando';
+      publico(quem) {
+        const revelado = fase !== 'estimando';
+        const [ref, alvo] = par;
         return {
           rodada,
           rodadas: RODADAS,
           fase,
-          par: par.map((id) => ({ id, ...(revelado ? OBJETOS[id] : {}) })),
-          votaram: [...votos.keys()],
-          votos: revelado ? Object.fromEntries(votos) : null,
-          certo: revelado ? maior(par) : null,
+          referencia: { id: ref, ...OBJETOS[ref] },
+          // O que se mede no objeto (altura, comprimento) se sabe desde o começo; o tamanho, só na revelação.
+          objeto: { id: alvo, medida: OBJETOS[alvo].medida, ...(revelado ? { cm: OBJETOS[alvo].cm } : {}) },
+          real: revelado ? razaoReal(par) : null,
+          meuPalpite: palpites.get(quem) ?? null,
+          confirmaram: [...confirmaram],
+          palpites: revelado ? [...palpites].map(([userId, palpite]) => ({ userId, palpite, pontos: daRodada.get(userId) ?? 0 })) : null,
           placar: placar(pontos, ctx.nome),
         };
       },
       acao(quem, corpo) {
-        if (corpo.tipo !== 'voto') return 'Ação desconhecida.';
-        if (fase !== 'votando') return 'Agora não é hora de votar.';
-        const escolha = corpo.escolha;
-        if (escolha !== 0 && escolha !== 1) return 'Escolha um dos dois.';
-        votos.set(quem, escolha);
+        if (corpo.tipo !== 'palpite') return 'Ação desconhecida.';
+        if (fase !== 'estimando') return 'Agora não é hora de votar.';
+        const palpite = corpo.razao;
+        if (typeof palpite !== 'number' || !Number.isFinite(palpite) || palpite <= 0) return 'Ação desconhecida.';
+        palpites.set(quem, Math.min(PALPITE_MAXIMO, Math.max(PALPITE_MINIMO, palpite)));
         if (!pontos.has(quem)) pontos.set(quem, 0);
-        // Todo mundo da sala votou: revela na hora, sem esperar o relógio.
-        if (ctx.naSala().every((id) => votos.has(id))) revelar();
+        if (corpo.confirmar !== true) return null; // ainda mexendo: os outros não precisam saber
+        confirmaram.add(quem);
+        // Todo mundo da sala confirmou: revela na hora, sem esperar o relógio.
+        if (ctx.naSala().every((id) => confirmaram.has(id))) revelar();
         else ctx.avisar();
         return null;
       },

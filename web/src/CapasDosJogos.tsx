@@ -142,7 +142,7 @@ function CapaXadrez() {
 const ALFA = 'SourceAlpha';
 
 /**
- * O "Qual é maior?": duas silhuetas lado a lado sobre uma grade, a de referência medida e a outra com "?".
+ * O "Qual é o tamanho?": duas silhuetas lado a lado sobre uma grade, a de referência medida e a outra com "?".
  * As silhuetas são os próprios emojis do jogo pintados de uma cor só (o filtro troca a cor e guarda o
  * contorno).
  */

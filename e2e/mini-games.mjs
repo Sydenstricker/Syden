@@ -2,7 +2,7 @@
 //
 // - A Duda entra pelo computador do quarto: Mini-games → escolhe a sala → cai na sala com a estante aberta.
 // - O Edu já está na sala: quando a Duda começa um jogo, o painel abre sozinho para ele.
-// - "Qual é maior?": os dois votam, e a revelação vem na hora em que os dois votaram.
+// - "Qual é o tamanho?": os dois aumentam/diminuem o objeto e confirmam, e a revelação vem na hora.
 // - Stop: os dois escrevem, a Duda aperta STOP, o Edu contesta uma resposta dela, os dois ficam prontos.
 // - Sudoku: o mesmo tabuleiro para os dois, e o número da Duda não aparece no do Edu.
 // - Cinco em linha: o Edu senta do outro lado, e quem começa faz cinco seguidas.
@@ -85,17 +85,35 @@ try {
     await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
   };
 
-  // ---- Qual é maior? ----
-  await comecar('Qual é maior?');
-  await duda.locator('.minijogo-carta').first().waitFor({ timeout: 15000 });
-  await edu.locator('.minijogo-carta').first().waitFor({ timeout: 10000 });
-  ok('Qual é maior?: começou, e o painel abriu sozinho para o Edu');
-  await duda.locator('.minijogo-carta').nth(0).click();
-  await duda.getByText(/Você votou/).waitFor({ timeout: 5000 });
-  (await edu.locator('.minijogo-tamanho').count()) === 0 ? ok('o tamanho não aparece antes de todos votarem') : falhou('o tamanho vazou antes da hora');
-  await edu.locator('.minijogo-carta').nth(1).click();
-  await duda.locator('.minijogo-selo').waitFor({ timeout: 5000 });
-  ok('os dois votaram e a revelação veio na hora, com o "Maior!"');
+  // ---- Qual é o tamanho? ----
+  await comecar('Qual é o tamanho?');
+  await duda.locator('.tamanho-palco').waitFor({ timeout: 15000 });
+  await edu.locator('.tamanho-palco').waitFor({ timeout: 10000 });
+  ok('Qual é o tamanho?: começou, e o painel abriu sozinho para o Edu');
+  // A Duda arrasta o objeto para cima (aumenta); o número do palpite acompanha.
+  const palco = await duda.locator('.tamanho-palco').boundingBox();
+  await duda.mouse.move(palco.x + palco.width * 0.75, palco.y + palco.height * 0.8);
+  await duda.mouse.down();
+  await duda.mouse.move(palco.x + palco.width * 0.75, palco.y + palco.height * 0.3, { steps: 8 });
+  await duda.mouse.up();
+  const depois = await duda.locator('.tamanho-figura.alvo').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  const refDepois = await duda.locator('.tamanho-figura:not(.alvo)').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  depois / refDepois > 1.5 ? ok('arrastar para cima aumentou o objeto em relação à referência') : falhou(`o objeto não cresceu (${depois} contra ${refDepois} da referência)`);
+  await foto(duda, 'tamanho-estimando');
+  await duda.getByRole('button', { name: 'Confirmar' }).click();
+  await duda.getByText(/Confirmado\./).waitFor({ timeout: 5000 });
+  (await edu.locator('.minijogo-tamanho.de-verdade').count()) === 0 ? ok('o tamanho não aparece antes de todos confirmarem') : falhou('o tamanho vazou antes da hora');
+  // O Edu arrasta para baixo (diminui).
+  const palcoDoEdu = await edu.locator('.tamanho-palco').boundingBox();
+  await edu.mouse.move(palcoDoEdu.x + palcoDoEdu.width * 0.75, palcoDoEdu.y + palcoDoEdu.height * 0.3);
+  await edu.mouse.down();
+  await edu.mouse.move(palcoDoEdu.x + palcoDoEdu.width * 0.75, palcoDoEdu.y + palcoDoEdu.height * 0.7, { steps: 8 });
+  await edu.mouse.up();
+  await edu.getByRole('button', { name: 'Confirmar' }).click();
+  await duda.locator('.minijogo-tamanho.de-verdade').waitFor({ timeout: 5000 });
+  (await duda.locator('.tamanho-palpites li').count()) === 2 ? ok('os dois confirmaram, e a revelação trouxe o tamanho e os dois palpites') : falhou('faltam palpites na revelação');
+  await duda.getByText(/^\+\d+ pontos$/).waitFor({ timeout: 5000 });
+  await duda.waitForTimeout(800);
   await foto(duda, 'tamanho');
   (await edu.getByRole('button', { name: 'Encerrar partida' }).count()) === 0 ? ok('o Edu, que não começou, não vê "Encerrar"') : falhou('o Edu pode encerrar');
   await encerrar();

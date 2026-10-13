@@ -3,20 +3,17 @@ import { useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { CapaDoJogo } from './CapasDosJogos';
 import { IconButton } from './IconButton';
-import { idiomaAtual, useT } from './i18n';
+import { useT } from './i18n';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
+import { JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
-  FRASE_DA_MEDIDA,
   JOGOS,
   nomeDoJogo,
-  OBJETOS,
-  primeiraForma,
-  tamanhoLegivel,
   type EstadoDesenho,
   type EstadoDuelo,
   type EstadoLobisomem,
@@ -193,87 +190,5 @@ export function Placar({ linhas, eu }: { linhas: { userId: number; username: str
         ))}
       </ol>
     </div>
-  );
-}
-
-function JogoTamanho({
-  estado,
-  eu,
-  restante,
-  agir,
-}: {
-  estado: EstadoTamanho & Partida;
-  eu: number;
-  restante: number;
-  agir: (corpo: Record<string, unknown>) => void;
-}) {
-  const t = useT();
-  const revelando = estado.fase === 'revelando';
-  const jaVotei = estado.votaram.includes(eu);
-  // A carta que EU escolhi fica marcada já na votação: o servidor esconde os votos de todo mundo, mas o
-  // meu eu sei. Zera a cada rodada.
-  const [escolhi, setEscolhi] = useState<{ rodada: number; lado: 0 | 1 } | null>(null);
-  const minhaCarta = escolhi?.rodada === estado.rodada ? escolhi.lado : null;
-  const meuVoto = estado.votos?.[String(eu)];
-  const nomeDe = (userId: number) => estado.placar.find((l) => l.userId === userId)?.username ?? '?';
-
-  if (estado.terminada) {
-    return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: `${l.pontos}/${estado.rodadas}` }))} />;
-  }
-
-  return (
-    <>
-      <div className="minijogo-par">
-        {estado.par.map((objeto, lado) => {
-          const info = OBJETOS[objeto.id];
-          const eraEsse = estado.certo === lado;
-          const quem = revelando
-            ? Object.entries(estado.votos ?? {})
-                .filter(([, e]) => e === lado)
-                .map(([id]) => nomeDe(Number(id)))
-            : [];
-          return (
-            <button
-              key={objeto.id}
-              type="button"
-              className={`minijogo-carta${revelando && eraEsse ? ' certo' : ''}${minhaCarta === lado ? ' escolhida' : ''}`}
-              disabled={revelando}
-              aria-pressed={minhaCarta === lado}
-              onClick={() => {
-                setEscolhi({ rodada: estado.rodada, lado: lado as 0 | 1 });
-                agir({ tipo: 'voto', escolha: lado });
-              }}
-            >
-              <span className="minijogo-emoji" aria-hidden="true">
-                {info?.emoji ?? '❓'}
-              </span>
-              <span className="minijogo-objeto">{info ? primeiraForma(t(info.nome)) : objeto.id}</span>
-              {revelando && objeto.cm !== undefined && objeto.medida && (
-                <span className="minijogo-tamanho">{t(FRASE_DA_MEDIDA[objeto.medida], { tamanho: tamanhoLegivel(objeto.cm, idiomaAtual()) })}</span>
-              )}
-              {revelando && eraEsse && <span className="minijogo-selo">{t('Maior!')}</span>}
-              {revelando && quem.length > 0 && <span className="minijogo-quem">{quem.join(', ')}</span>}
-            </button>
-          );
-        })}
-      </div>
-
-      <Relogio restante={restante} total={revelando ? 5000 : 15_000} />
-
-      <p className="minijogo-situacao" role="status">
-        {revelando
-          ? meuVoto === undefined
-            ? t('Você não votou nesta.')
-            : meuVoto === estado.certo
-              ? t('Acertou!')
-              : t('Errou!')
-          : jaVotei
-            ? t('Você votou. {n} de {total} já escolheram.', {
-                n: estado.votaram.length,
-                total: Math.max(estado.placar.length, estado.votaram.length),
-              })
-            : t('Qual é maior? Clique num dos dois.')}
-      </p>
-    </>
   );
 }

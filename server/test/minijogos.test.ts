@@ -1,6 +1,6 @@
 /**
- * Os mini-games da sala de voz (12/10/2026): o "Qual é maior?". Duas pessoas entram na sala pelo socket, uma
- * começa a partida, as duas votam, e o servidor revela na hora em que todo mundo votou.
+ * Os mini-games da sala de voz (12/10/2026): o "Qual é o tamanho?". Duas pessoas entram na sala pelo socket,
+ * uma começa a partida, as duas estimam, e o servidor revela na hora em que todo mundo confirmou.
  */
 import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
@@ -18,7 +18,7 @@ after(async () => {
   await fechar();
 });
 
-const { OBJETOS, maior, RODADAS } = await import('../src/minijogos.js');
+const { OBJETOS, razaoReal, pontosDoPalpite, RODADAS } = await import('../src/minijogos.js');
 
 const contaAdmin = await criarConta(app, 'primeira-minijogo'); // a primeira conta administra o Syden: fica de fora
 const contaAna = await criarConta(app, 'ana-minijogo');
@@ -45,39 +45,56 @@ test('quem não está na sala de voz não começa nem vota', async () => {
   assert.equal(r.statusCode, 403);
 });
 
-test('a partida: começa, esconde os votos, revela quando todos votam, e conta os pontos', async () => {
+test('a partida: começa, esconde o tamanho e os palpites, revela quando todos confirmam, e conta os pontos', async () => {
   await entrarNaVoz(await ligar(contaAna.token), sala.id);
   await entrarNaVoz(await ligar(contaBia.token), sala.id);
 
   const inicio = await ana('POST', `/api/channels/${sala.id}/minijogo`, { jogo: 'tamanho' });
   assert.equal(inicio.statusCode, 200);
   const p0 = inicio.json().partida;
-  assert.equal(p0.fase, 'votando');
+  assert.equal(p0.fase, 'estimando');
   assert.equal(p0.rodada, 1);
   assert.equal(p0.rodadas, RODADAS);
-  assert.equal(p0.par.length, 2);
-  assert.equal(p0.par[0].cm, undefined, 'o tamanho só aparece na revelação');
+  assert.ok(p0.referencia.cm > 0, 'a referência vem com o tamanho');
+  assert.equal(p0.objeto.cm, undefined, 'o tamanho do objeto só aparece na revelação');
+  assert.ok(p0.objeto.medida, 'o que se mede no objeto se sabe desde o começo');
   assert.equal(p0.placar.length, 2, 'quem está na sala começa no placar');
 
   assert.equal((await bia('POST', `/api/channels/${sala.id}/minijogo`, { jogo: 'tamanho' })).statusCode, 409, 'uma partida por sala');
 
-  const par = p0.par.map((o: { id: string }) => o.id) as [string, string];
-  const certo = maior(par);
-  assert.ok(OBJETOS[par[0]].cm !== OBJETOS[par[1]].cm);
+  const real = razaoReal([p0.referencia.id, p0.objeto.id]);
+  assert.equal(real, OBJETOS[p0.objeto.id].cm / OBJETOS[p0.referencia.id].cm);
+  const acao = `/api/channels/${sala.id}/minijogo/acao`;
 
-  const voto1 = (await ana('POST', `/api/channels/${sala.id}/minijogo/acao`, { tipo: 'voto', escolha: certo })).json().partida;
-  assert.equal(voto1.fase, 'votando', 'falta a Bia');
-  assert.deepEqual(voto1.votaram, [contaAna.user.id]);
-  assert.equal(voto1.votos, null, 'o voto da Ana fica escondido até a revelação');
+  // A Ana mexe sem confirmar: o palpite fica guardado, e ninguém fica sabendo.
+  const mexendo = (await ana('POST', acao, { tipo: 'palpite', razao: 1 })).json().partida;
+  assert.equal(mexendo.meuPalpite, 1);
+  assert.deepEqual(mexendo.confirmaram, []);
+  assert.equal((await bia('GET', `/api/channels/${sala.id}/minijogo`)).json().partida.meuPalpite, null, 'o palpite da Ana não aparece para a Bia');
+  assert.equal((await ana('POST', acao, { tipo: 'palpite', razao: 'muito' })).statusCode, 409);
 
-  const revelado = (await bia('POST', `/api/channels/${sala.id}/minijogo/acao`, { tipo: 'voto', escolha: certo === 0 ? 1 : 0 })).json().partida;
-  assert.equal(revelado.fase, 'revelando', 'todo mundo votou: revela na hora');
-  assert.equal(revelado.certo, certo);
-  assert.ok(revelado.par[0].cm > 0, 'os tamanhos aparecem');
+  const conf = (await ana('POST', acao, { tipo: 'palpite', razao: real, confirmar: true })).json().partida;
+  assert.equal(conf.fase, 'estimando', 'falta a Bia');
+  assert.deepEqual(conf.confirmaram, [contaAna.user.id]);
+  assert.equal(conf.palpites, null, 'os palpites ficam escondidos até a revelação');
+
+  const revelado = (await bia('POST', acao, { tipo: 'palpite', razao: real * 2, confirmar: true })).json().partida;
+  assert.equal(revelado.fase, 'revelando', 'todo mundo confirmou: revela na hora');
+  assert.equal(revelado.real, real);
+  assert.ok(revelado.objeto.cm > 0, 'o tamanho aparece');
+  assert.equal(revelado.palpites.length, 2);
   const placar = Object.fromEntries(revelado.placar.map((l: { username: string; pontos: number }) => [l.username, l.pontos]));
-  assert.deepEqual(placar, { 'ana-minijogo': 1, 'bia-minijogo': 0 });
+  assert.deepEqual(placar, { 'ana-minijogo': 100, 'bia-minijogo': 50 }, 'na mosca vale 100; errar pelo dobro, 50');
 
-  assert.equal((await ana('POST', `/api/channels/${sala.id}/minijogo/acao`, { tipo: 'voto', escolha: 0 })).statusCode, 409, 'depois da revelação não se vota');
+  assert.equal((await ana('POST', acao, { tipo: 'palpite', razao: 1, confirmar: true })).statusCode, 409, 'depois da revelação não se mexe');
+});
+
+test('os pontos: o erro é em proporção, para cima e para baixo', async () => {
+  assert.equal(pontosDoPalpite(3, 3), 100);
+  assert.equal(pontosDoPalpite(6, 3), 50);
+  assert.equal(pontosDoPalpite(1.5, 3), 50, 'metade erra tanto quanto o dobro');
+  assert.equal(pontosDoPalpite(12, 3), 0);
+  assert.equal(pontosDoPalpite(100, 3), 0, 'nunca negativo');
 });
 
 test('quem não começou não encerra no meio; quem começou, sim', async () => {
@@ -103,6 +120,6 @@ test('o sorteio nunca dá empate nem diferença absurda', async () => {
   for (let i = 0; i < 200; i++) {
     const [a, b] = sortearPar(new Set());
     const razao = Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
-    assert.ok(razao >= 1.3 && razao <= 12, `${a} × ${b}: ${razao}`);
+    assert.ok(razao >= 1.5 && razao <= 20, `${a} × ${b}: ${razao}`);
   }
 });

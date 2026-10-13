@@ -305,6 +305,11 @@ revelação, placar. O servidor decide tudo e a partida mora só na memória (`s
 objetos ficam no site, traduzidos, e os tamanhos só no servidor (um teste confere que as listas batem). O computador do
 quarto abre os Mini-games: escolher uma sala entra e já começa, e embaixo ficam os sites sem anúncio para transmitir.
 **Manutenção do conteúdo:** acrescentar objeto é uma linha em cada um dos dois `minijogos.ts` e a tradução do nome.
+**Refeito em 13/10/2026 como o Size It Up de verdade** (ele jogou as duas cartas e "não era o que eu imaginei"): agora é
+o **"Qual é o tamanho?"**. A referência aparece com o tamanho dito, e ao lado o objeto que cada um aumenta e diminui
+(arrastando, pela roda ou pela barra) até achar a proporção. O palpite vai ao servidor enquanto a pessoa mexe, e não
+só no "Confirmar". Os pontos medem o erro em PROPORÇÃO: 100 na mosca, 50 errando pelo dobro ou pela metade, zero a
+partir de 4×. Na revelação o objeto cresce até o tamanho real, e uma linha tracejada marca onde estava o palpite.
 
 **Mais quatro no mesmo dia, antes de subir** (decisão dele: "mini-games no plural com um jogo só não faz sentido"):
 Stop, Sudoku em corrida, Cinco em linha e Mancala. O botão da sala abre uma ESTANTE com uma capa por jogo, sem texto

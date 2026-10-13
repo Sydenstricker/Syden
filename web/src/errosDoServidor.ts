@@ -62,7 +62,6 @@ export const ERROS_TRADUZIDOS = [
   chave('Escolha uma casa do seu lado.'),
   chave('Essa casa está vazia.'),
   chave('Agora não é hora de votar.'),
-  chave('Escolha um dos dois.'),
   chave('Sala de voz não encontrada.'),
   chave('Jogo desconhecido.'),
   chave('Entre na sala de voz para jogar com a turma.'),
