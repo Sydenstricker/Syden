@@ -6,55 +6,85 @@ import { chave, idiomaAtual } from './i18n';
 /**
  * Os mini-games da sala de voz, do lado do site (o servidor decide tudo: server/src/minijogos.ts).
  *
- * O CATÁLOGO DO "QUAL É O TAMANHO?": o emoji e o nome de cada objeto, marcados para traduzir. Os TAMANHOS
- * moram só no servidor, que é quem decide quem acertou — e só chegam na revelação. O teste
- * web/test/minijogos.test.ts confere que as duas listas têm os mesmos ids.
+ * O CATÁLOGO DO "QUAL É O TAMANHO?": o nome de cada objeto, marcado para traduzir. A figura mora em
+ * web/public/tamanho/<id>.png (o Fluent Emoji, ver web/scripts/figuras-do-tamanho.mjs). Os TAMANHOS moram só
+ * no servidor, que é quem decide quem acertou — e só chegam na revelação. O teste web/test/minijogos.test.ts
+ * confere que as listas têm os mesmos ids.
  */
-export const OBJETOS: Record<string, { emoji: string; nome: string }> = {
-  bacteria: { emoji: '🦠', nome: chave('Bactéria') },
-  formiga: { emoji: '🐜', nome: chave('Formiga') },
-  abelha: { emoji: '🐝', nome: chave('Abelha') },
-  morango: { emoji: '🍓', nome: chave('Morango') },
-  ovo: { emoji: '🥚', nome: chave('Ovo de galinha') },
-  'bola-de-tenis': { emoji: '🎾', nome: chave('Bola de tênis') },
-  camundongo: { emoji: '🐭', nome: chave('Camundongo') },
-  celular: { emoji: '📱', nome: chave('Celular') },
-  lapis: { emoji: '✏️', nome: chave('Lápis') },
-  banana: { emoji: '🍌', nome: chave('Banana') },
-  'bola-de-futebol': { emoji: '⚽', nome: chave('Bola de futebol') },
-  pizza: { emoji: '🍕', nome: chave('Pizza grande') },
-  melancia: { emoji: '🍉', nome: chave('Melancia') },
-  gato: { emoji: '🐈', nome: chave('Gato') },
-  violao: { emoji: '🎸', nome: chave('Violão') },
-  pinguim: { emoji: '🐧', nome: chave('Pinguim-imperador') },
-  flamingo: { emoji: '🦩', nome: chave('Flamingo') },
-  cavalo: { emoji: '🐎', nome: chave('Cavalo') },
-  pessoa: { emoji: '🧍', nome: chave('Pessoa adulta') },
-  bicicleta: { emoji: '🚲', nome: chave('Bicicleta') },
-  porta: { emoji: '🚪', nome: chave('Porta') },
-  urso: { emoji: '🐻', nome: chave('Urso-pardo em pé') },
-  elefante: { emoji: '🐘', nome: chave('Elefante-africano') },
-  moai: { emoji: '🗿', nome: chave('Moai da Ilha de Páscoa') },
-  carro: { emoji: '🚗', nome: chave('Carro') },
-  girafa: { emoji: '🦒', nome: chave('Girafa') },
-  onibus: { emoji: '🚌', nome: chave('Ônibus') },
-  'tiranossauro-rex': { emoji: '🦖', nome: chave('Tiranossauro rex') },
-  'baleia-azul': { emoji: '🐋', nome: chave('Baleia-azul') },
-  aviao: { emoji: '✈️', nome: chave('Avião de passageiros') },
-  'piscina-olimpica': { emoji: '🏊', nome: chave('Piscina olímpica') },
-  'estatua-da-liberdade': { emoji: '🗽', nome: chave('Estátua da Liberdade') },
-  'campo-de-futebol': { emoji: '🏟️', nome: chave('Campo de futebol') },
-  foguete: { emoji: '🚀', nome: chave('Foguete Saturno V') },
-  'roda-gigante': { emoji: '🎡', nome: chave('London Eye') },
-  titanic: { emoji: '🚢', nome: chave('Titanic') },
-  'torre-eiffel': { emoji: '🗼', nome: chave('Torre Eiffel') },
-  'monte-fuji': { emoji: '🗻', nome: chave('Monte Fuji') },
-  everest: { emoji: '🏔️', nome: chave('Monte Everest') },
-  lua: { emoji: '🌕', nome: chave('Lua') },
-  terra: { emoji: '🌍', nome: chave('Terra') },
-  jupiter: { emoji: '🪐', nome: chave('Júpiter') },
-  sol: { emoji: '☀️', nome: chave('Sol') },
+export const OBJETOS: Record<string, { nome: string }> = {
+  bacteria: { nome: chave('Bactéria') },
+  formiga: { nome: chave('Formiga') },
+  joaninha: { nome: chave('Joaninha') },
+  abelha: { nome: chave('Abelha') },
+  morango: { nome: chave('Morango') },
+  caracol: { nome: chave('Caracol') },
+  ovo: { nome: chave('Ovo de galinha') },
+  camundongo: { nome: chave('Camundongo') },
+  lampada: { nome: chave('Lâmpada') },
+  celular: { nome: chave('Celular') },
+  lapis: { nome: chave('Lápis') },
+  banana: { nome: chave('Banana') },
+  'bola-de-futebol': { nome: chave('Bola de futebol') },
+  'bola-de-basquete': { nome: chave('Bola de basquete') },
+  abacaxi: { nome: chave('Abacaxi') },
+  notebook: { nome: chave('Notebook') },
+  tulipa: { nome: chave('Tulipa') },
+  coelho: { nome: chave('Coelho') },
+  gato: { nome: chave('Gato') },
+  cachorro: { nome: chave('Cachorro') },
+  cadeira: { nome: chave('Cadeira') },
+  'guarda-chuva': { nome: chave('Guarda-chuva') },
+  violao: { nome: chave('Violão') },
+  pinguim: { nome: chave('Pinguim-imperador') },
+  flamingo: { nome: chave('Flamingo') },
+  zebra: { nome: chave('Zebra') },
+  vaca: { nome: chave('Vaca') },
+  hipopotamo: { nome: chave('Hipopótamo') },
+  cavalo: { nome: chave('Cavalo') },
+  pessoa: { nome: chave('Pessoa adulta') },
+  bicicleta: { nome: chave('Bicicleta') },
+  rinoceronte: { nome: chave('Rinoceronte') },
+  lhama: { nome: chave('Lhama') },
+  bisao: { nome: chave('Bisão') },
+  cama: { nome: chave('Cama') },
+  camelo: { nome: chave('Camelo') },
+  porta: { nome: chave('Porta') },
+  trator: { nome: chave('Trator') },
+  elefante: { nome: chave('Elefante-africano') },
+  mamute: { nome: chave('Mamute') },
+  moai: { nome: chave('Moai da Ilha de Páscoa') },
+  carro: { nome: chave('Carro') },
+  girafa: { nome: chave('Girafa') },
+  casa: { nome: chave('Casa') },
+  onibus: { nome: chave('Ônibus') },
+  cacto: { nome: chave('Cacto saguaro') },
+  'tiranossauro-rex': { nome: chave('Tiranossauro rex') },
+  braquiossauro: { nome: chave('Braquiossauro') },
+  coqueiro: { nome: chave('Coqueiro') },
+  'baleia-azul': { nome: chave('Baleia-azul') },
+  aviao: { nome: chave('Avião de passageiros') },
+  'estatua-da-liberdade': { nome: chave('Estátua da Liberdade') },
+  'campo-de-futebol': { nome: chave('Campo de futebol') },
+  foguete: { nome: chave('Foguete Saturno V') },
+  'roda-gigante': { nome: chave('London Eye') },
+  titanic: { nome: chave('Titanic') },
+  'torre-eiffel': { nome: chave('Torre Eiffel') },
+  'monte-fuji': { nome: chave('Monte Fuji') },
+  everest: { nome: chave('Monte Everest') },
+  lua: { nome: chave('Lua') },
+  terra: { nome: chave('Terra') },
+  jupiter: { nome: chave('Júpiter') },
+  sol: { nome: chave('Sol') },
 };
+
+/**
+ * As figuras desenhadas NA DIAGONAL (o lápis, o avião, o foguete): o comprimento delas é o da diagonal do
+ * desenho, e não a largura nem a altura.
+ */
+export const NA_DIAGONAL = new Set(['lapis', 'banana', 'violao', 'aviao', 'foguete']);
+
+/** Figuras em que o objeto medido é só PARTE do desenho: em Júpiter, o anel passa para fora da esfera. */
+export const PARTE_MEDIDA: Record<string, number> = { jupiter: 0.72 };
 
 export type Medida = 'altura' | 'comprimento' | 'diametro';
 

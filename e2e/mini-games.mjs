@@ -90,15 +90,19 @@ try {
   await duda.locator('.tamanho-palco').waitFor({ timeout: 15000 });
   await edu.locator('.tamanho-palco').waitFor({ timeout: 10000 });
   ok('Qual é o tamanho?: começou, e o painel abriu sozinho para o Edu');
-  // A Duda arrasta o objeto para cima (aumenta); o número do palpite acompanha.
+  // A Duda arrasta o objeto para cima (aumenta): ele cresce em relação à referência.
+  const proporcao = async () => {
+    const [alvo, ref] = await Promise.all([duda.locator('.tamanho-figura.alvo').boundingBox(), duda.locator('.tamanho-figura:not(.alvo)').boundingBox()]);
+    return alvo.height / ref.height;
+  };
+  const antes = await proporcao();
   const palco = await duda.locator('.tamanho-palco').boundingBox();
   await duda.mouse.move(palco.x + palco.width * 0.75, palco.y + palco.height * 0.8);
   await duda.mouse.down();
   await duda.mouse.move(palco.x + palco.width * 0.75, palco.y + palco.height * 0.3, { steps: 8 });
   await duda.mouse.up();
-  const depois = await duda.locator('.tamanho-figura.alvo').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-  const refDepois = await duda.locator('.tamanho-figura:not(.alvo)').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-  depois / refDepois > 1.5 ? ok('arrastar para cima aumentou o objeto em relação à referência') : falhou(`o objeto não cresceu (${depois} contra ${refDepois} da referência)`);
+  const depois = await proporcao();
+  depois > antes * 1.5 ? ok('arrastar para cima aumentou o objeto em relação à referência') : falhou(`o objeto não cresceu (${antes.toFixed(2)} → ${depois.toFixed(2)})`);
   await foto(duda, 'tamanho-estimando');
   await duda.getByRole('button', { name: 'Confirmar' }).click();
   await duda.getByText(/Confirmado\./).waitFor({ timeout: 5000 });
@@ -112,6 +116,7 @@ try {
   await edu.getByRole('button', { name: 'Confirmar' }).click();
   await duda.locator('.minijogo-tamanho.de-verdade').waitFor({ timeout: 5000 });
   (await duda.locator('.tamanho-palpites li').count()) === 2 ? ok('os dois confirmaram, e a revelação trouxe o tamanho e os dois palpites') : falhou('faltam palpites na revelação');
+  (await duda.locator('.tamanho-silhueta').count()) === 1 ? ok('o palpite da Duda virou a silhueta sobre o objeto') : falhou('a silhueta do palpite não apareceu');
   await duda.getByText(/^\+\d+ pontos$/).waitFor({ timeout: 5000 });
   await duda.waitForTimeout(800);
   await foto(duda, 'tamanho');

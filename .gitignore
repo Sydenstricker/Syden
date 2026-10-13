@@ -36,6 +36,8 @@ SFX/
 # cada estado), as peças do lobby do site e a imagem de compartilhar o link ficavam fora do git — no ar, o avatar
 # escolhido e o fim do site apareceriam quebrados, e o link compartilhado iria sem imagem (este já ia).
 !web/public/avatares/*.png
+# As figuras do "Qual é o tamanho?" (web/scripts/figuras-do-tamanho.mjs).
+!web/public/tamanho/*.png
 !web/site/lobby/*.png
 !web/site/buy-me-a-coffee.png
 !web/site/capturas/compartilhar.png

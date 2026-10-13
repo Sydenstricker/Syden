@@ -309,7 +309,13 @@ quarto abre os Mini-games: escolher uma sala entra e já começa, e embaixo fica
 o **"Qual é o tamanho?"**. A referência aparece com o tamanho dito, e ao lado o objeto que cada um aumenta e diminui
 (arrastando, pela roda ou pela barra) até achar a proporção. O palpite vai ao servidor enquanto a pessoa mexe, e não
 só no "Confirmar". Os pontos medem o erro em PROPORÇÃO: 100 na mosca, 50 errando pelo dobro ou pela metade, zero a
-partir de 4×. Na revelação o objeto cresce até o tamanho real, e uma linha tracejada marca onde estava o palpite.
+partir de 4×. Na revelação o objeto vai ao tamanho real, e o palpite vira a SILHUETA do mesmo desenho (atrás quando
+é maior, na frente quando é menor), como no Size It Up.
+**As figuras são do Fluent Emoji da Microsoft (MIT), embutidas** em `web/public/tamanho/` com a licença ao lado
+(`web/scripts/figuras-do-tamanho.mjs` baixa, corta a borda e mede). O emoji do sistema não servia: muda de sistema para
+sistema e vinha com objeto que não batia com o nome (o urso era só a cabeça, a pizza uma fatia). A altura do desenho é a
+altura do objeto e a largura é o comprimento; os desenhados na diagonal medem pela diagonal (`NA_DIAGONAL`), e o anel de
+Júpiter é descontado (`PARTE_MEDIDA`). **Objeto novo só entra se o desenho mostrar o objeto INTEIRO.**
 
 **Mais quatro no mesmo dia, antes de subir** (decisão dele: "mini-games no plural com um jogo só não faz sentido"):
 Stop, Sudoku em corrida, Cinco em linha e Mancala. O botão da sala abre uma ESTANTE com uma capa por jogo, sem texto

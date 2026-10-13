@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { describe, it } from 'node:test';
 import { CATEGORIAS, RODADAS_STOP } from '../../server/src/minijogo-stop';
 import { OBJETOS as DO_SERVIDOR } from '../../server/src/minijogos';
+import { FIGURAS_DO_TAMANHO } from '../src/figurasDoTamanho';
 import { IDIOMAS } from '../src/i18n/idiomas';
 import { CATEGORIAS_DO_STOP, letrasDoStop, OBJETOS, tamanhoLegivel } from '../src/minijogos';
 
@@ -19,9 +21,17 @@ describe('mini-games: o Stop', () => {
   });
 });
 
-describe('mini-games: o "Qual é maior?"', () => {
+describe('mini-games: o "Qual é o tamanho?"', () => {
   it('o site e o servidor têm os mesmos objetos (o nome mora aqui, o tamanho lá)', () => {
     assert.deepEqual(Object.keys(OBJETOS).sort(), Object.keys(DO_SERVIDOR).sort());
+  });
+
+  it('todo objeto tem a figura, medida, e a licença dela vai junto', () => {
+    for (const id of Object.keys(OBJETOS)) {
+      assert.ok(FIGURAS_DO_TAMANHO[id], `${id}: falta em figurasDoTamanho.ts (rode web/scripts/figuras-do-tamanho.mjs)`);
+      assert.ok(fs.existsSync(new URL(`../public/tamanho/${id}.png`, import.meta.url)), `${id}: falta a figura`);
+    }
+    assert.match(fs.readFileSync(new URL('../public/tamanho/LICENCA.txt', import.meta.url), 'utf8'), /MIT License/);
   });
 
   it('o tamanho aparece na unidade que faz sentido', () => {
