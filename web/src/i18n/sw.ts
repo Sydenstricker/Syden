@@ -140,7 +140,6 @@ export default {
   'Denúncias': 'Ripoti',
   'Desativar áudio': 'Zima sauti',
   'Perfil': 'Wasifu',
-  'Silenciar': 'Nyamazisha',
   'Cargo': 'Jukumu',
   'Mover para': 'Hamisha hadi',
   Desbloqueado: 'Amefunguliwa',

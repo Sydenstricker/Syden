@@ -421,7 +421,6 @@ export default {
   'Ativar áudio': 'تشغيل الصوت',
   'Desativar áudio': 'كتم الصوت',
   'Perfil': 'الملف الشخصي',
-  'Silenciar': 'كتم',
   'Cargo': 'الدور',
   'Mover para': 'نقل إلى',
   'Abrir em janela flutuante': 'افتح في نافذة عائمة',

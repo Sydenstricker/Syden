@@ -147,7 +147,6 @@ export default {
   'Denúncias': '举报',
   'Desativar áudio': '关闭声音',
   'Perfil': '资料',
-  'Silenciar': '静音',
   'Cargo': '身份组',
   'Mover para': '移动到',
   Desbloqueado: '已解除屏蔽',

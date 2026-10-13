@@ -150,7 +150,6 @@ export default {
   'Denúncias': 'Laporan',
   'Desativar áudio': 'Matikan bunyi',
   'Perfil': 'Profil',
-  'Silenciar': 'Senyapkan',
   'Cargo': 'Peranan',
   'Mover para': 'Alihkan ke',
   Desbloqueado: 'Sudah dinyahsekat',

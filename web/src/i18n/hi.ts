@@ -150,7 +150,6 @@ export default {
   'Denúncias': 'शिकायतें',
   'Desativar áudio': 'आवाज़ बंद करो',
   'Perfil': 'प्रोफ़ाइल',
-  'Silenciar': 'चुप करो',
   'Cargo': 'भूमिका',
   'Mover para': 'यहाँ ले जाओ',
   Desbloqueado: 'रोक हटा दी',

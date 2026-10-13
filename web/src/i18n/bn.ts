@@ -148,7 +148,6 @@ export default {
   'Denúncias': 'অভিযোগ',
   'Desativar áudio': 'শব্দ বন্ধ করো',
   'Perfil': 'প্রোফাইল',
-  'Silenciar': 'চুপ করাও',
   'Cargo': 'ভূমিকা',
   'Mover para': 'সরাও',
   Desbloqueado: 'বাধা তুলে নেওয়া হয়েছে',

@@ -148,7 +148,6 @@ export default {
   'Denúncias': 'Meldingen',
   'Desativar áudio': 'Geluid uitzetten',
   'Perfil': 'Profiel',
-  'Silenciar': 'Dempen',
   'Cargo': 'Rol',
   'Mover para': 'Verplaatsen naar',
   Desbloqueado: 'Gedeblokkeerd',

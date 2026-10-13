@@ -146,7 +146,6 @@ export default {
   'Denúncias': '신고',
   'Desativar áudio': '소리 끄기',
   'Perfil': '프로필',
-  'Silenciar': '음소거',
   'Cargo': '역할',
   'Mover para': '이동',
   Desbloqueado: '차단을 풀었어요',

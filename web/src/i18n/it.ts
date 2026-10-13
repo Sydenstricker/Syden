@@ -148,7 +148,6 @@ export default {
   'Denúncias': 'Segnalazioni',
   'Desativar áudio': 'Disattiva l’audio',
   'Perfil': 'Profilo',
-  'Silenciar': 'Silenzia',
   'Cargo': 'Ruolo',
   'Mover para': 'Sposta in',
   Desbloqueado: 'Sbloccato',

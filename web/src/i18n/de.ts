@@ -420,7 +420,6 @@ export default {
   'Ativar áudio': 'Ton einschalten',
   'Desativar áudio': 'Ton ausschalten',
   'Perfil': 'Profil',
-  'Silenciar': 'Stummschalten',
   'Cargo': 'Rolle',
   'Mover para': 'Verschieben nach',
   'Abrir em janela flutuante': 'In schwebendem Fenster öffnen',

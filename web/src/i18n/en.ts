@@ -73,7 +73,6 @@ export default {
   'Ativar áudio': 'Undeafen',
   'Desativar áudio': 'Deafen',
   'Perfil': 'Profile',
-  'Silenciar': 'Mute',
   'Cargo': 'Role',
   'Mover para': 'Move to',
   'Desligar câmera': 'Turn camera off',

@@ -418,7 +418,6 @@ export default {
   'Ativar áudio': 'Включить звук',
   'Desativar áudio': 'Выключить звук',
   'Perfil': 'Профиль',
-  'Silenciar': 'Приглушить',
   'Cargo': 'Роль',
   'Mover para': 'Переместить в',
   'Abrir em janela flutuante': 'Открыть в плавающем окне',

@@ -413,7 +413,6 @@ export default {
   'Ativar áudio': 'Activer le son',
   'Desativar áudio': 'Couper le son',
   'Perfil': 'Profil',
-  'Silenciar': 'Couper le micro',
   'Cargo': 'Rôle',
   'Mover para': 'Déplacer vers',
   'Abrir em janela flutuante': 'Ouvrir dans une fenêtre flottante',

@@ -148,7 +148,6 @@ export default {
   'Denúncias': 'Laporan',
   'Desativar áudio': 'Matikan suara',
   'Perfil': 'Profil',
-  'Silenciar': 'Bisukan',
   'Cargo': 'Peran',
   'Mover para': 'Pindahkan ke',
   Desbloqueado: 'Sudah dibuka blokirnya',

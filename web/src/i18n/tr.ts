@@ -145,7 +145,6 @@ export default {
   'Denúncias': 'Bildirimler',
   'Desativar áudio': 'Sesi kapat',
   'Perfil': 'Profil',
-  'Silenciar': 'Sustur',
   'Cargo': 'Rol',
   'Mover para': 'Taşı',
   Desbloqueado: 'Engeli kaldırıldı',
