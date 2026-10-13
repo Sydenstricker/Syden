@@ -1219,6 +1219,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Seřadit události podle času',
   'Palavras e perguntas rápidas, todo mundo junto': 'Rychlá slova a otázky, všichni spolu',
   'Brincadeiras curiosas para fazer junto': 'Zvláštní hračky na společné hraní',
+  'A palavra do dia': 'Slovo dne',
   'Mini-games': 'Minihry',
   'Jogar com a turma': 'Hraj s partou',
   'Qual é o tamanho?': 'Jak je to velké?',

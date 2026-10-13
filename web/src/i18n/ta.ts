@@ -1135,6 +1135,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'நிகழ்வுகளைக் கால வரிசைப்படி அடுக்கு',
   'Palavras e perguntas rápidas, todo mundo junto': 'வார்த்தைகளும் விரைவுக் கேள்விகளும், எல்லோரும் சேர்ந்து',
   'Brincadeiras curiosas para fazer junto': 'சேர்ந்து விளையாட சுவாரஸ்யமான விளையாட்டுகள்',
+  'A palavra do dia': 'இன்றைய சொல்',
   'Mini-games': 'சிறு விளையாட்டுகள்',
   'Jogar com a turma': 'நண்பர்களுடன் விளையாடு',
   'Qual é o tamanho?': 'எவ்வளவு பெரியது?',

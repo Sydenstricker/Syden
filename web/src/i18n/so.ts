@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Dhacdooyinka u kala hormari waqtiga',
   'Palavras e perguntas rápidas, todo mundo junto': 'Erayo iyo su\'aalo degdeg ah, dhammaan wada jir',
   'Brincadeiras curiosas para fazer junto': 'Ciyaaro xiiso leh oo la wada sameeyo',
+  'A palavra do dia': 'Erayga maanta',
   'Mini-games': 'Ciyaaro yaryar',
   'Jogar com a turma': 'La ciyaar kooxda',
   'Qual é o tamanho?': 'Intee le’eg yahay?',

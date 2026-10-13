@@ -41,7 +41,10 @@
  *   media-src     sons do soundboard e karaokê vêm da API; `blob:` é o áudio e o vídeo da chamada.
  *   style-src     'unsafe-inline' é inevitável: o React escreve `style=` direto nos elementos, e o
  *                 LiveKit injeta folhas de estilo próprias. Sem isso a tela abre sem formatação nenhuma.
- *   frame-src     o Turnstile da Cloudflare é um quadro dentro da nossa página.
+ *   frame-src     o Turnstile da Cloudflare é um quadro dentro da nossa página. E os jogos de parceiro que
+ *                 rodam dentro do Syden depois do clique (SiteEmbutido.tsx; `embutir`, em web/src/minijogos.ts):
+ *                 o Termo. Cada um só entra aqui com o que carrega declarado na política de privacidade
+ *                 (#jogos-de-parceiros) — a mesma condição da medição da Cloudflare.
  *   static.cloudflareinsights.com
  *                 a medição de audiência, que a Cloudflare injeta sozinha nas páginas enquanto o proxy
  *                 está ligado. Ela só pode estar liberada aqui porque está DECLARADA na política de
@@ -65,7 +68,7 @@ export const CSP = [
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://api.syden.chat wss://api.syden.chat https://live.syden.chat wss://live.syden.chat",
   "worker-src 'self' blob:",
-  "frame-src https://challenges.cloudflare.com",
+  "frame-src https://challenges.cloudflare.com https://term.ooo",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

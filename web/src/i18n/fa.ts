@@ -1138,6 +1138,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'چیدن رویدادها به ترتیب زمانی',
   'Palavras e perguntas rápidas, todo mundo junto': 'کلمه‌ها و سؤال‌های سریع، همه با هم',
   'Brincadeiras curiosas para fazer junto': 'سرگرمی‌های عجیب برای با هم بودن',
+  'A palavra do dia': 'کلمهٔ روز',
   'Mini-games': 'مینی‌گیم‌ها',
   'Jogar com a turma': 'بازی با دوستان',
   'Qual é o tamanho?': 'اندازه‌اش چقدر است؟',

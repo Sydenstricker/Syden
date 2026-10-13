@@ -1132,6 +1132,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'సంఘటనలను కాలక్రమంలో అమర్చు',
   'Palavras e perguntas rápidas, todo mundo junto': 'పదాలు, వేగవంతమైన ప్రశ్నలు, అందరూ కలిసి',
   'Brincadeiras curiosas para fazer junto': 'కలిసి ఆడుకునే సరదా ఆటలు',
+  'A palavra do dia': 'నేటి పదం',
   'Mini-games': 'చిన్న ఆటలు',
   'Jogar com a turma': 'స్నేహితులతో ఆడు',
   'Qual é o tamanho?': 'ఎంత పెద్దది?',

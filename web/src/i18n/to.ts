@@ -1156,6 +1156,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Fokotuʻu ʻa e ngaahi meʻa naʻe hoko ʻi he hokohoko ʻo e taimi',
   'Palavras e perguntas rápidas, todo mundo junto': 'Ngaahi lea mo e fehuʻi vave, fakataha ʻa e tokotaha kotoa',
   'Brincadeiras curiosas para fazer junto': 'Ngaahi meʻa vaʻinga fakaʻofoʻofa ke fai fakataha',
+  'A palavra do dia': 'Ko e lea ʻo e ʻahó',
   'Mini-games': 'Vaʻinga',
   'Jogar com a turma': 'Vaʻinga mo e kulupu',
   'Qual é o tamanho?': 'Ko e lahi fēfē ia?',

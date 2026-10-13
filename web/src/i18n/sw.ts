@@ -1149,6 +1149,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Panga matukio kwa mpangilio wa wakati',
   'Palavras e perguntas rápidas, todo mundo junto': 'Maneno na maswali ya haraka, wote pamoja',
   'Brincadeiras curiosas para fazer junto': 'Michezo ya kuvutia ya kufanya pamoja',
+  'A palavra do dia': 'Neno la leo',
   'Mini-games': 'Michezo midogo',
   'Jogar com a turma': 'Cheza na kundi',
   'Qual é o tamanho?': 'Ni kubwa kiasi gani?',

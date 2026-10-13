@@ -1212,6 +1212,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Sätt händelser i tidsordning',
   'Palavras e perguntas rápidas, todo mundo junto': 'Ord och snabba frågor, alla tillsammans',
   'Brincadeiras curiosas para fazer junto': 'Kluriga lekar att göra tillsammans',
+  'A palavra do dia': 'Dagens ord',
   'Mini-games': 'Minispel',
   'Jogar com a turma': 'Spela med gänget',
   'Qual é o tamanho?': 'Hur stor är den?',

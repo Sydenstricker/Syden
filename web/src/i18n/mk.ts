@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Редење настани по хронолошки ред',
   'Palavras e perguntas rápidas, todo mundo junto': 'Зборови и брзи прашања, сите заедно',
   'Brincadeiras curiosas para fazer junto': 'Интересни игри за заедно',
+  'A palavra do dia': 'Зборот на денот',
   'Mini-games': 'Мини-игри',
   'Jogar com a turma': 'Играј со друштвото',
   'Qual é o tamanho?': 'Колку е големо?',

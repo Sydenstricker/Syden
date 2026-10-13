@@ -1145,6 +1145,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Put events in order of time',
   'Palavras e perguntas rápidas, todo mundo junto': 'Quick words and questions, everyone together',
   'Brincadeiras curiosas para fazer junto': 'Curious toys to play with together',
+  'A palavra do dia': 'The word of the day',
   'Mini-games': 'Mini-games',
   'Jogar com a turma': 'Play with friends',
   'Qual é o tamanho?': 'How big is it?',

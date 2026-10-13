@@ -1221,6 +1221,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Raðaðu atburðum í tímaröð',
   'Palavras e perguntas rápidas, todo mundo junto': 'Orð og hraðar spurningar, allir saman',
   'Brincadeiras curiosas para fazer junto': 'Skemmtilegir leikir til að gera saman',
+  'A palavra do dia': 'Orð dagsins',
   'Mini-games': 'Smáleikir',
   'Jogar com a turma': 'Spilaðu með hópnum',
   'Qual é o tamanho?': 'Hversu stórt er það?',

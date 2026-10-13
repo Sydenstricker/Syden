@@ -67,6 +67,20 @@ try {
   await painel.waitFor();
   const sitesDeFora = await painel.locator('.jogos-de-fora li').allInnerTexts();
   sitesDeFora.length >= 6 && sitesDeFora.some((s) => s.includes('Termo')) ? ok('os sites sem anúncio estão no computador, com o Termo (a Duda usa português)') : falhou(`faltam os sites de fora: ${sitesDeFora.join(' | ')}`);
+  // O Termo roda aqui dentro, depois do clique (SiteEmbutido.tsx), e fecha com Esc.
+  await painel.locator('.jogos-de-fora li button', { hasText: 'Termo' }).click();
+  const quadro = duda.locator('.site-embutido iframe');
+  await quadro.waitFor({ timeout: 10000 });
+  let termoCarregou = false;
+  for (let i = 0; i < 40 && !termoCarregou; i++) {
+    termoCarregou = duda.frames().some((f) => f.url().startsWith('https://term.ooo'));
+    if (!termoCarregou) await duda.waitForTimeout(250);
+  }
+  termoCarregou ? ok('o Termo abriu dentro do Syden') : falhou('o quadro do Termo não carregou');
+  await duda.waitForTimeout(1500);
+  await duda.screenshot({ path: path.join(FOTOS, 'mini-games-termo.png') });
+  await duda.keyboard.press('Escape');
+  await quadro.waitFor({ state: 'detached', timeout: 5000 });
   await painel.locator('.jogos-do-syden li button', { hasText: 'Sala 1' }).click();
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });

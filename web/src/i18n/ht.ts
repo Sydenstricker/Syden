@@ -1230,6 +1230,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Mete evènman yo nan lòd tan',
   'Palavras e perguntas rápidas, todo mundo junto': 'Mo ak kesyon rapid, tout moun ansanm',
   'Brincadeiras curiosas para fazer junto': 'Jwèt kirye pou fè ansanm',
+  'A palavra do dia': 'Mo jou a',
   'Mini-games': 'Mini-jwèt',
   'Jogar com a turma': 'Jwe ak gwoup la',
   'Qual é o tamanho?': 'Ki gwosè li?',

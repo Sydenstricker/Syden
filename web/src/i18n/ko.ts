@@ -1138,6 +1138,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': '사건을 시간 순서대로 놓기',
   'Palavras e perguntas rápidas, todo mundo junto': '단어와 스피드 퀴즈, 다 같이',
   'Brincadeiras curiosas para fazer junto': '함께 하는 신기한 놀이',
+  'A palavra do dia': '오늘의 단어',
   'Mini-games': '미니게임',
   'Jogar com a turma': '친구들과 플레이',
   'Qual é o tamanho?': '얼마나 클까?',

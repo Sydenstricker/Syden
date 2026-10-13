@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Tapahtumat aikajärjestykseen',
   'Palavras e perguntas rápidas, todo mundo junto': 'Nopeita sanoja ja kysymyksiä, kaikki yhdessä',
   'Brincadeiras curiosas para fazer junto': 'Hassuja leluja yhdessä kokeiltavaksi',
+  'A palavra do dia': 'Päivän sana',
   'Mini-games': 'Minipelit',
   'Jogar com a turma': 'Pelaa porukalla',
   'Qual é o tamanho?': 'Kuinka suuri se on?',

@@ -1144,6 +1144,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Olayları zaman sırasına koy',
   'Palavras e perguntas rápidas, todo mundo junto': 'Kelimeler ve hızlı sorular, hep birlikte',
   'Brincadeiras curiosas para fazer junto': 'Birlikte yapılacak ilginç oyunlar',
+  'A palavra do dia': 'Günün kelimesi',
   'Mini-games': 'Mini oyunlar',
   'Jogar com a turma': 'Ekiple oyna',
   'Qual é o tamanho?': 'Ne kadar büyük?',

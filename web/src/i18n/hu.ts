@@ -1222,6 +1222,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Események időrendbe rakása',
   'Palavras e perguntas rápidas, todo mundo junto': 'Szavak és gyors kérdések, mindenki együtt',
   'Brincadeiras curiosas para fazer junto': 'Érdekes játékok közös szórakozáshoz',
+  'A palavra do dia': 'A nap szava',
   'Mini-games': 'Minijátékok',
   'Jogar com a turma': 'Játék a társasággal',
   'Qual é o tamanho?': 'Mekkora?',

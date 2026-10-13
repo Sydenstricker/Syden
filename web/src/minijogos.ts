@@ -726,18 +726,30 @@ export const pegarPedidoDeAbrir = (channelId: number): boolean =>
  * fora do Syden: o anúncio e o rastreio de um site de fora nunca entram aqui.
  *
  * A promessa da lista é "sem anúncio", e não "sem rastreio" (decisão do Sydenstricker, 13/10/2026: "sem anúncio é
- * honesto"). O Termo só carrega o Google Analytics, que fica entre quem abre o site e o site: o Syden não carrega
- * nada dele. `idiomas` restringe a quem usa o Syden numa dessas línguas (o Termo é só em português).
+ * honesto"). O Termo só carrega o Google Analytics.
+ *
+ * TODO MUNDO VÊ TODOS OS SITES (decisão dele, mesmo dia): esconder por idioma tiraria de quem não configurou a
+ * chance de conhecer, e esconderia de nós os jogos africanos e asiáticos. O site de uma língua só leva `idioma`,
+ * e a tela põe o nome dela, na língua de quem lê.
+ *
+ * `embutir`: o site roda DENTRO do Syden (SiteEmbutido.tsx), depois do clique. Só entra aqui quem deixa ser
+ * embutido, está na frame-src da política de segurança (e2e/politica-de-seguranca.mjs e a Cloudflare) e tem o que
+ * carrega declarado na política de privacidade (#jogos-de-parceiros).
  */
-export const SITES_PARA_TRANSMITIR: { nome: string; endereco: string; dica: string; idiomas?: string[] }[] = [
+export const SITES_PARA_TRANSMITIR: { nome: string; endereco: string; dica: string; idioma?: string; embutir?: boolean }[] = [
   { nome: 'Lichess', endereco: 'https://lichess.org', dica: chave('Xadrez, contra a turma ou contra o computador') },
   { nome: 'Clues by Sam', endereco: 'https://cluesbysam.com', dica: chave('Um mistério de lógica por dia') },
   { nome: 'Wikitrivia', endereco: 'https://wikitrivia.tomjwatson.com', dica: chave('Pôr acontecimentos na ordem do tempo') },
   { nome: 'JKLM.fun', endereco: 'https://jklm.fun', dica: chave('Palavras e perguntas rápidas, todo mundo junto') },
   { nome: 'Neal.fun', endereco: 'https://neal.fun', dica: chave('Brincadeiras curiosas para fazer junto') },
-  { nome: 'Termo', endereco: 'https://term.ooo', dica: chave('A palavra do dia, em português'), idiomas: ['pt'] },
+  { nome: 'Termo', endereco: 'https://term.ooo', dica: chave('A palavra do dia'), idioma: 'pt', embutir: true },
 ];
 
-/** Os sites da lista que servem para quem usa o Syden em `idioma` ("pt-BR" casa com "pt"). */
-export const sitesParaTransmitir = (idioma: string) =>
-  SITES_PARA_TRANSMITIR.filter((site) => !site.idiomas || site.idiomas.some((i) => idioma === i || idioma.startsWith(`${i}-`)));
+/**
+ * O nome de uma língua na língua de quem lê ("português", "Portuguese", "ポルトガル語"). Onde o navegador não tem os
+ * dados de quem lê (ver Aniversario.tsx), cai no nome da língua nela mesma ("português").
+ */
+export function nomeDoIdioma(codigo: string, quemLe: string): string {
+  const locale = Intl.DisplayNames.supportedLocalesOf(quemLe).length > 0 ? quemLe : codigo;
+  return new Intl.DisplayNames([locale], { type: 'language' }).of(codigo) ?? codigo;
+}

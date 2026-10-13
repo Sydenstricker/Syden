@@ -1120,6 +1120,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Xếp các sự kiện theo thứ tự thời gian',
   'Palavras e perguntas rápidas, todo mundo junto': 'Từ ngữ và câu hỏi nhanh, mọi người cùng chơi',
   'Brincadeiras curiosas para fazer junto': 'Trò chơi thú vị để chơi cùng nhau',
+  'A palavra do dia': 'Từ của ngày hôm nay',
   'Mini-games': 'Mini game',
   'Jogar com a turma': 'Chơi cùng nhóm bạn',
   'Qual é o tamanho?': 'Nó to cỡ nào?',

@@ -1166,6 +1166,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Poġġi l-ġrajjiet fl-ordni taż-żmien',
   'Palavras e perguntas rápidas, todo mundo junto': 'Kliem u mistoqsijiet malajr, kulħadd flimkien',
   'Brincadeiras curiosas para fazer junto': 'Ġugarelli kurjużi biex tilgħab bihom flimkien',
+  'A palavra do dia': 'Il-kelma tal-ġurnata',
   'Mini-games': 'Mini-games',
   'Jogar com a turma': 'Ilgħab mal-grupp',
   'Qual é o tamanho?': 'Kemm hu kbir?',

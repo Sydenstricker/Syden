@@ -1228,6 +1228,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Voqealarni vaqt tartibida joylang',
   'Palavras e perguntas rápidas, todo mundo junto': 'Soʻzlar va tezkor savollar, hamma birga',
   'Brincadeiras curiosas para fazer junto': 'Birga oʻynash uchun qiziqarli oʻyinlar',
+  'A palavra do dia': 'Kun so‘zi',
   'Mini-games': 'Mini-oʻyinlar',
   'Jogar com a turma': 'Doʻstlar bilan oʻynash',
   'Qual é o tamanho?': 'U qanchalik katta?',

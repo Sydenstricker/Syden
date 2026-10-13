@@ -1215,6 +1215,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Układanie wydarzeń w kolejności chronologicznej',
   'Palavras e perguntas rápidas, todo mundo junto': 'Słowa i szybkie pytania, wszyscy razem',
   'Brincadeiras curiosas para fazer junto': 'Ciekawe zabawy do wspólnego grania',
+  'A palavra do dia': 'Słowo dnia',
   'Mini-games': 'Minigry',
   'Jogar com a turma': 'Graj z ekipą',
   'Qual é o tamanho?': 'Jak duże to jest?',

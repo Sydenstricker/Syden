@@ -1219,6 +1219,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Poređaj događaje hronološki',
   'Palavras e perguntas rápidas, todo mundo junto': 'Brze riječi i pitanja, svi zajedno',
   'Brincadeiras curiosas para fazer junto': 'Neobične igračke za igru u društvu',
+  'A palavra do dia': 'Riječ dana',
   'Mini-games': 'Mini-igre',
   'Jogar com a turma': 'Igraj s društvom',
   'Qual é o tamanho?': 'Koliko je veliko?',

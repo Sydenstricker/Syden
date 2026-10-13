@@ -1219,6 +1219,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'រៀបព្រឹត្តិការណ៍តាមលំដាប់ពេលវេលា',
   'Palavras e perguntas rápidas, todo mundo junto': 'ពាក្យ និងសំណួររហ័ស លេងជាមួយគ្នា',
   'Brincadeiras curiosas para fazer junto': 'ល្បែងគួរឱ្យចាប់អារម្មណ៍សម្រាប់លេងជាមួយគ្នា',
+  'A palavra do dia': 'ពាក្យប្រចាំថ្ងៃ',
   'Mini-games': 'ហ្គេមខ្លីៗ',
   'Jogar com a turma': 'លេងជាមួយមិត្តភក្តិ',
   'Qual é o tamanho?': 'តើវាធំប៉ុណ្ណា?',

@@ -1200,6 +1200,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Розстав події в часовому порядку',
   'Palavras e perguntas rápidas, todo mundo junto': 'Слова й швидкі запитання — всі разом',
   'Brincadeiras curiosas para fazer junto': 'Цікаві забавки, щоб гратися разом',
+  'A palavra do dia': 'Слово дня',
   'Mini-games': 'Міні-ігри',
   'Jogar com a turma': 'Грати з друзями',
   'Qual é o tamanho?': 'Який він завбільшки?',

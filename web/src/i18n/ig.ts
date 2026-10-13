@@ -1158,6 +1158,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Debe ihe ndị mere n\'usoro oge',
   'Palavras e perguntas rápidas, todo mundo junto': 'Okwu na ajụjụ ngwa ngwa, onye ọ bụla ọnụ',
   'Brincadeiras curiosas para fazer junto': 'Ihe egwuregwu na-adọrọ mmasị iji gwuo ọnụ',
+  'A palavra do dia': 'Okwu nke ụbọchị',
   'Mini-games': 'Obere egwuregwu',
   'Jogar com a turma': 'Gwuo egwu na ndị enyi',
   'Qual é o tamanho?': 'Olee ka o buru ibu?',

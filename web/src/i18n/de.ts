@@ -1174,6 +1174,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Ereignisse zeitlich ordnen',
   'Palavras e perguntas rápidas, todo mundo junto': 'Schnelle Wörter und Fragen, alle zusammen',
   'Brincadeiras curiosas para fazer junto': 'Kuriose Spielereien für alle zusammen',
+  'A palavra do dia': 'Das Wort des Tages',
   'Mini-games': 'Minispiele',
   'Jogar com a turma': 'Mit der Clique spielen',
   'Qual é o tamanho?': 'Wie groß ist es?',

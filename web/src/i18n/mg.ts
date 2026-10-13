@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Mandahatra ny zava-nitranga araka ny fotoana',
   'Palavras e perguntas rápidas, todo mundo junto': 'Teny sy fanontaniana haingana, miaraka daholo',
   'Brincadeiras curiosas para fazer junto': 'Lalao mahaliana atao miaraka',
+  'A palavra do dia': 'Ny teny androany',
   'Mini-games': 'Lalao kely',
   'Jogar com a turma': 'Milalao miaraka amin’ny namana',
   'Qual é o tamanho?': 'Hoatrinona ny habeny?',

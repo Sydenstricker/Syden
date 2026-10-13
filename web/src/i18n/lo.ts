@@ -1221,6 +1221,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'ຮຽງເຫດການຕາມລຳດັບເວລາ',
   'Palavras e perguntas rápidas, todo mundo junto': 'ຄຳສັບ ແລະ ຄຳຖາມໄວ, ຫຼິ້ນພ້ອມກັນ',
   'Brincadeiras curiosas para fazer junto': 'ເກມແປກໆໄວ້ຫຼິ້ນນຳກັນ',
+  'A palavra do dia': 'ຄຳສັບຂອງມື້ນີ້',
   'Mini-games': 'ມິນິເກມ',
   'Jogar com a turma': 'ຫຼິ້ນກັບໝູ່',
   'Qual é o tamanho?': 'ໃຫຍ່ປານໃດ?',

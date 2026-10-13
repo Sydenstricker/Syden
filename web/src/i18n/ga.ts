@@ -1156,6 +1156,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Cuir imeachtaí in ord ama',
   'Palavras e perguntas rápidas, todo mundo junto': 'Focail agus ceisteanna gasta, gach duine le chéile',
   'Brincadeiras curiosas para fazer junto': 'Bréagáin aisteacha le súgradh leo le chéile',
+  'A palavra do dia': 'Focal an lae',
   'Mini-games': 'Mionchluichí',
   'Jogar com a turma': 'Imir le do chairde',
   'Qual é o tamanho?': 'Cé chomh mór is atá sé?',

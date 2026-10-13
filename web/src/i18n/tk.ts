@@ -1222,6 +1222,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Wakalary wagt tertibinde ýerleşdir',
   'Palavras e perguntas rápidas, todo mundo junto': 'Sözler we çalt soraglar, hemmeler bile',
   'Brincadeiras curiosas para fazer junto': 'Bile oýnamak üçin gyzykly oýunlar',
+  'A palavra do dia': 'Günüň sözi',
   'Mini-games': 'Mini-oýunlar',
   'Jogar com a turma': 'Topar bilen oýna',
   'Qual é o tamanho?': 'Näçe uly?',

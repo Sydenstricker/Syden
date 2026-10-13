@@ -1239,6 +1239,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Իրադարձությունները դասավորել ժամանակագրական կարգով',
   'Palavras e perguntas rápidas, todo mundo junto': 'Բառեր և արագ հարցեր՝ բոլորը միասին',
   'Brincadeiras curiosas para fazer junto': 'Հետաքրքիր խաղեր՝ միասին խաղալու համար',
+  'A palavra do dia': 'Օրվա բառը',
   'Mini-games': 'Մինի-խաղեր',
   'Jogar com a turma': 'Խաղալ ընկերների հետ',
   'Qual é o tamanho?': 'Որքա՞ն մեծ է։',

@@ -1150,6 +1150,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Susun peristiwa mengikut urutan masa',
   'Palavras e perguntas rápidas, todo mundo junto': 'Perkataan dan soalan pantas, semua bersama',
   'Brincadeiras curiosas para fazer junto': 'Permainan menarik untuk dimain bersama',
+  'A palavra do dia': 'Perkataan hari ini',
   'Mini-games': 'Permainan mini',
   'Jogar com a turma': 'Main dengan geng',
   'Qual é o tamanho?': 'Sebesar mana ia?',

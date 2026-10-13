@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Sett hendelser i tidsrekkefølge',
   'Palavras e perguntas rápidas, todo mundo junto': 'Ord og raske spørsmål, alle sammen',
   'Brincadeiras curiosas para fazer junto': 'Morsomme leker å gjøre sammen',
+  'A palavra do dia': 'Dagens ord',
   'Mini-games': 'Minispill',
   'Jogar com a turma': 'Spill med gjengen',
   'Qual é o tamanho?': 'Hvor stor er den?',

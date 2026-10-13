@@ -1190,6 +1190,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Taateewwan akka tartiiba yeroo kaa’i',
   'Palavras e perguntas rápidas, todo mundo junto': 'Jechoota fi gaaffii saffisaa, hundi waliin',
   'Brincadeiras curiosas para fazer junto': 'Taphoota nama ajaa’iban waliin taphatamu',
+  'A palavra do dia': 'Jecha har\'aa',
   'Mini-games': 'Taphoota xixiqqoo',
   'Jogar com a turma': 'Hiriyyoota waliin taphadhu',
   'Qual é o tamanho?': 'Hammam guddaa dha?',

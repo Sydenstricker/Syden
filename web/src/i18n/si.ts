@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'සිදුවීම් කාල පිළිවෙළට තබන්න',
   'Palavras e perguntas rápidas, todo mundo junto': 'වචන සහ ඉක්මන් ප්‍රශ්න, හැමෝම එකට',
   'Brincadeiras curiosas para fazer junto': 'එකට කරන්න රසවත් විනෝද ක්‍රීඩා',
+  'A palavra do dia': 'අද දවසේ වචනය',
   'Mini-games': 'කුඩා ක්‍රීඩා',
   'Jogar com a turma': 'යාළුවන් සමඟ සෙල්ලම් කරන්න',
   'Qual é o tamanho?': 'එය කොච්චර ලොකුද?',

@@ -1161,6 +1161,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Shyira ibyabaye ku murongo w\'igihe',
   'Palavras e perguntas rápidas, todo mundo junto': 'Amagambo n\'ibibazo byihuse, mwese hamwe',
   'Brincadeiras curiosas para fazer junto': 'Udukino dutangaje two gukinira hamwe',
+  'A palavra do dia': 'Ijambo ry\'uyu munsi',
   'Mini-games': 'Mini-games',
   'Jogar com a turma': 'Kina n\'inshuti',
   'Qual é o tamanho?': 'Ingana ite?',

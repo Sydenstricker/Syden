@@ -7535,18 +7535,74 @@ textarea {
   color: var(--text);
 }
 
-.jogos-de-fora li a {
+.jogos-de-fora li a,
+.jogos-de-fora li button {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
   padding: 8px 10px;
+  border: none;
   border-radius: 8px;
+  background: none;
   color: var(--text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.jogos-de-fora li a:hover,
+.jogos-de-fora li button:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.06));
+}
+
+.jogos-idioma {
+  font-style: italic;
+}
+
+/* Um jogo de parceiro rodando dentro do Syden (SiteEmbutido.tsx): quase a janela inteira, com o nome do site e
+   o caminho para abri-lo fora sempre à vista. */
+.dialog.site-embutido {
+  display: flex;
+  flex-direction: column;
+  width: min(960px, calc(100vw - 32px));
+  max-width: none;
+  height: min(820px, calc(100vh - 48px));
+  padding: 0;
+  overflow: hidden;
+}
+
+.site-embutido header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.site-embutido header strong {
+  flex: 1;
+}
+
+.site-embutido-fora {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
   text-decoration: none;
 }
 
-.jogos-de-fora li a:hover {
-  background: var(--bg-hover, rgba(255, 255, 255, 0.06));
+.site-embutido-fora:hover {
+  color: var(--text-strong);
+}
+
+.site-embutido iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
 }
 
 .vila-dica {

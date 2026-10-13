@@ -1234,6 +1234,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Үйл явдлыг цаг хугацааны дарааллаар байрлуулах',
   'Palavras e perguntas rápidas, todo mundo junto': 'Үг, хурдан асуулт, бүгд хамтдаа',
   'Brincadeiras curiosas para fazer junto': 'Хамтдаа тоглох сонирхолтой тоглоомууд',
+  'A palavra do dia': 'Өдрийн үг',
   'Mini-games': 'Мини тоглоомууд',
   'Jogar com a turma': 'Найзуудтайгаа тоглох',
   'Qual é o tamanho?': 'Хэр том вэ?',

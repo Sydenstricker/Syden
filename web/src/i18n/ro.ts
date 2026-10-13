@@ -1150,6 +1150,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Pune evenimentele în ordine cronologică',
   'Palavras e perguntas rápidas, todo mundo junto': 'Cuvinte și întrebări rapide, toți împreună',
   'Brincadeiras curiosas para fazer junto': 'Jocuri curioase de făcut împreună',
+  'A palavra do dia': 'Cuvântul zilei',
   'Mini-games': 'Mini-jocuri',
   'Jogar com a turma': 'Joacă cu gașca',
   'Qual é o tamanho?': 'Cât de mare e?',

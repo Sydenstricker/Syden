@@ -1152,6 +1152,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Tau akontesimentu sira tuir tempu nia orden',
   'Palavras e perguntas rápidas, todo mundo junto': 'Liafuan no pergunta lalais, ema hotu hamutuk',
   'Brincadeiras curiosas para fazer junto': 'Halimar kuriozu atu halo hamutuk',
+  'A palavra do dia': 'Liafuan loron nian',
   'Mini-games': 'Mini-jogu',
   'Jogar com a turma': 'Halimar ho grupu',
   'Qual é o tamanho?': 'Boot hira?',

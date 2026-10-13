@@ -1147,6 +1147,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Urutkan peristiwa sesuai waktunya',
   'Palavras e perguntas rápidas, todo mundo junto': 'Kata dan pertanyaan kilat, semua bareng',
   'Brincadeiras curiosas para fazer junto': 'Permainan seru untuk dimainkan bareng',
+  'A palavra do dia': 'Kata hari ini',
   'Mini-games': 'Mini-game',
   'Jogar com a turma': 'Main bareng teman-teman',
   'Qual é o tamanho?': 'Seberapa besar?',

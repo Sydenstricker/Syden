@@ -1217,6 +1217,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Sündmused ajalisse järjekorda',
   'Palavras e perguntas rápidas, todo mundo junto': 'Kiired sõnad ja küsimused, kõik koos',
   'Brincadeiras curiosas para fazer junto': 'Veidrad mänguasjad koos katsetamiseks',
+  'A palavra do dia': 'Päeva sõna',
   'Mini-games': 'Minimängud',
   'Jogar com a turma': 'Mängi sõpradega',
   'Qual é o tamanho?': 'Kui suur see on?',

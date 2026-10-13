@@ -1137,6 +1137,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': '把事件按时间顺序排好',
   'Palavras e perguntas rápidas, todo mundo junto': '文字和快问快答，大家一起玩',
   'Brincadeiras curiosas para fazer junto': '适合一起玩的趣味小游戏',
+  'A palavra do dia': '今日单词',
   'Mini-games': '小游戏',
   'Jogar com a turma': '和朋友一起玩',
   'Qual é o tamanho?': '有多大？',

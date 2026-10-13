@@ -1147,6 +1147,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'ঘটনাগুলো সময়ের ক্রমে সাজানো',
   'Palavras e perguntas rápidas, todo mundo junto': 'দ্রুত শব্দ আর প্রশ্ন, সবাই মিলে',
   'Brincadeiras curiosas para fazer junto': 'একসাথে খেলার মতো মজার জিনিস',
+  'A palavra do dia': 'আজকের শব্দ',
   'Mini-games': 'মিনি-গেম',
   'Jogar com a turma': 'বন্ধুদের সাথে খেলো',
   'Qual é o tamanho?': 'এটা কত বড়?',

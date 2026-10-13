@@ -1,5 +1,6 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
-import { JOGOS, pedirParaAbrirAoEntrar, sitesParaTransmitir } from './minijogos';
+import { JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
+import { SiteEmbutido } from './SiteEmbutido';
 import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
 import { useDirectory } from './directory';
@@ -156,6 +157,8 @@ export function Home({
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
   const [jogosAbertos, setJogosAbertos] = useState(false);
+  /** O jogo de parceiro aberto aqui dentro (SiteEmbutido.tsx). */
+  const [siteAberto, setSiteAberto] = useState<{ nome: string; endereco: string } | null>(null);
   const ideiasRef = useRef<HTMLDivElement | null>(null);
 
 
@@ -279,19 +282,39 @@ export function Home({
                 </>
               )}
             </section>
-            {/* Os de fora abrem no navegador, fora do Syden: sem anúncio (medido em 07/10/2026), e quem joga transmite. */}
+            {/* Os de fora: sem anúncio (medido em 07/10/2026). Os que deixam ser embutidos rodam aqui dentro, depois
+                do clique (SiteEmbutido.tsx); os outros abrem no navegador, e quem joga transmite. */}
             <section className="jogos-de-fora">
               <h4>{t('Para jogar fora e transmitir')}</h4>
               <ul>
-                {sitesParaTransmitir(idiomaAtual()).map((site) => (
-                  <li key={site.endereco}>
-                    <a href={site.endereco} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink size={14} aria-hidden="true" />
+                {SITES_PARA_TRANSMITIR.map((site) => {
+                  const conteudo = (
+                    <>
+                      {site.embutir ? <Gamepad2 size={14} aria-hidden="true" /> : <ExternalLink size={14} aria-hidden="true" />}
                       <span className="vila-sala-nome">{site.nome}</span>
-                      <span className="vila-sala-gente">{t(site.dica)}</span>
-                    </a>
-                  </li>
-                ))}
+                      <span className="vila-sala-gente">
+                        {t(site.dica)}
+                        {/* O site de uma língua só aparece para todo mundo, com o nome da língua (decisão dele). */}
+                        {site.idioma && !idiomaAtual().startsWith(site.idioma) && (
+                          <span className="jogos-idioma"> · {nomeDoIdioma(site.idioma, idiomaAtual())}</span>
+                        )}
+                      </span>
+                    </>
+                  );
+                  return (
+                    <li key={site.endereco}>
+                      {site.embutir ? (
+                        <button type="button" onClick={() => setSiteAberto(site)}>
+                          {conteudo}
+                        </button>
+                      ) : (
+                        <a href={site.endereco} target="_blank" rel="noopener noreferrer">
+                          {conteudo}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           </div>
@@ -299,6 +322,7 @@ export function Home({
       </div>
 
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
+      {siteAberto && <SiteEmbutido nome={siteAberto.nome} endereco={siteAberto.endereco} aoFechar={() => setSiteAberto(null)} />}
 
 
       <div ref={ideiasRef}>

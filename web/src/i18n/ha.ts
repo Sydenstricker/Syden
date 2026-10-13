@@ -1152,6 +1152,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Jera abubuwan da suka faru bisa lokaci',
   'Palavras e perguntas rápidas, todo mundo junto': 'Kalmomi da tambayoyi cikin sauri, kowa tare',
   'Brincadeiras curiosas para fazer junto': 'Wasanni masu ban sha\'awa don yi tare',
+  'A palavra do dia': 'Kalmar yau',
   'Mini-games': 'Ƙananan wasanni',
   'Jogar com a turma': 'Ku yi wasa da abokai',
   'Qual é o tamanho?': 'Menene girmansa?',

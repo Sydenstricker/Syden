@@ -1170,6 +1170,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'ترتيب الأحداث حسب زمن وقوعها',
   'Palavras e perguntas rápidas, todo mundo junto': 'كلمات وأسئلة سريعة، والجميع معًا',
   'Brincadeiras curiosas para fazer junto': 'ألعاب طريفة للّعب معًا',
+  'A palavra do dia': 'كلمة اليوم',
   'Mini-games': 'ألعاب صغيرة',
   'Jogar com a turma': 'اللعب مع الأصدقاء',
   'Qual é o tamanho?': 'ما حجمه؟',

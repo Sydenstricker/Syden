@@ -1137,6 +1137,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'واقعات کو وقت کی ترتیب میں لگائیں',
   'Palavras e perguntas rápidas, todo mundo junto': 'الفاظ اور فوری سوالات، سب مل کر',
   'Brincadeiras curiosas para fazer junto': 'مل کر کھیلنے کے دلچسپ کھیل',
+  'A palavra do dia': 'آج کا لفظ',
   'Mini-games': 'منی گیمز',
   'Jogar com a turma': 'دوستوں کے ساتھ کھیلیں',
   'Qual é o tamanho?': 'یہ کتنا بڑا ہے؟',

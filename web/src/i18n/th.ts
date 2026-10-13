@@ -1163,6 +1163,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'เรียงเหตุการณ์ตามลำดับเวลา',
   'Palavras e perguntas rápidas, todo mundo junto': 'คำศัพท์และคำถามเร็ว เล่นพร้อมกันทุกคน',
   'Brincadeiras curiosas para fazer junto': 'เกมแปลกๆ สนุกๆ ไว้เล่นด้วยกัน',
+  'A palavra do dia': 'คำประจำวัน',
   'Mini-games': 'มินิเกม',
   'Jogar com a turma': 'เล่นกับแก๊ง',
   'Qual é o tamanho?': 'ใหญ่แค่ไหน?',

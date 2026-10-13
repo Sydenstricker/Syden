@@ -1222,6 +1222,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Išdėlioti įvykius laiko tvarka',
   'Palavras e perguntas rápidas, todo mundo junto': 'Žodžiai ir greiti klausimai, visi kartu',
   'Brincadeiras curiosas para fazer junto': 'Įdomūs žaidimai kartu',
+  'A palavra do dia': 'Dienos žodis',
   'Mini-games': 'Mini žaidimai',
   'Jogar com a turma': 'Žaisti su kompanija',
   'Qual é o tamanho?': 'Kokio dydžio?',

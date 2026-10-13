@@ -1230,6 +1230,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'ހާދިސާތައް ވަގުތުގެ ތަރުތީބަށް ލުން',
   'Palavras e perguntas rápidas, todo mundo junto': 'އަވަސް ބަސްތަކާއި ސުވާލުތައް، އެންމެން އެކުގައި',
   'Brincadeiras curiosas para fazer junto': 'އެކުގައި ކުޅެވޭނެ ތަފާތު ކުޅިވަރުތައް',
+  'A palavra do dia': 'މިއަދުގެ ބަސް',
   'Mini-games': 'މިނި ގޭމްތައް',
   'Jogar com a turma': 'ރަޙްމަތްތެރިންނާ އެކު ކުޅޭ',
   'Qual é o tamanho?': 'ބޮޑުމިން ކިހާވަރެއް؟',

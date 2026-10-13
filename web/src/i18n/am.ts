@@ -1150,6 +1150,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'ክስተቶችን በጊዜ ቅደም ተከተል ማስቀመጥ',
   'Palavras e perguntas rápidas, todo mundo junto': 'ፈጣን ቃላትና ጥያቄዎች፣ ሁሉም በአንድ ላይ',
   'Brincadeiras curiosas para fazer junto': 'በጋራ የሚጫወቱባቸው አስገራሚ ነገሮች',
+  'A palavra do dia': 'የዕለቱ ቃል',
   'Mini-games': 'ሚኒ ጨዋታዎች',
   'Jogar com a turma': 'ከጓደኞች ጋር ይጫወቱ',
   'Qual é o tamanho?': 'መጠኑ ምን ያህል ነው?',

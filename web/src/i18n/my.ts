@@ -1189,6 +1189,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'ဖြစ်ရပ်တွေကို အချိန်အစဉ်လိုက် စီပါ',
   'Palavras e perguntas rápidas, todo mundo junto': 'စကားလုံးနဲ့ အမြန်မေးခွန်း၊ အားလုံးအတူတူ',
   'Brincadeiras curiosas para fazer junto': 'အတူကစားဖို့ စိတ်ဝင်စားစရာ ကစားနည်းများ',
+  'A palavra do dia': 'ယနေ့စကားလုံး',
   'Mini-games': 'မီနီဂိမ်းများ',
   'Jogar com a turma': 'သူငယ်ချင်းတွေနဲ့ ကစားရန်',
   'Qual é o tamanho?': 'ဘယ်လောက်ကြီးလဲ။',

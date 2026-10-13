@@ -1220,6 +1220,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Zoraď udalosti podľa času',
   'Palavras e perguntas rápidas, todo mundo junto': 'Slová a rýchle otázky, všetci spolu',
   'Brincadeiras curiosas para fazer junto': 'Zvláštne hry na spoločnú zábavu',
+  'A palavra do dia': 'Slovo dňa',
   'Mini-games': 'Minihry',
   'Jogar com a turma': 'Hraj s partiou',
   'Qual é o tamanho?': 'Aké je to veľké?',

@@ -1154,6 +1154,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Faʻasolosolo mea na tutupu e tusa ma le taimi',
   'Palavras e perguntas rápidas, todo mundo junto': 'Upu ma fesili vave, tagata uma faʻatasi',
   'Brincadeiras curiosas para fazer junto': 'Meataʻalo manaia e taʻalo faʻatasi',
+  'A palavra do dia': 'Le upu o le aso',
   'Mini-games': 'Taʻaloga laiti',
   'Jogar com a turma': 'Taʻalo ma le ʻau',
   'Qual é o tamanho?': 'E fia le tele?',

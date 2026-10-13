@@ -1214,6 +1214,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Sit gebeure in tydsvolgorde',
   'Palavras e perguntas rápidas, todo mundo junto': 'Vinnige woorde en vrae, almal saam',
   'Brincadeiras curiosas para fazer junto': 'Snaakse speelgoed om saam mee te speel',
+  'A palavra do dia': 'Die woord van die dag',
   'Mini-games': 'Minispeletjies',
   'Jogar com a turma': 'Speel saam met jou vriende',
   'Qual é o tamanho?': 'Hoe groot is dit?',

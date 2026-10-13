@@ -273,8 +273,15 @@ esqueleto, e anúncio só se mede com o navegador rodando.
 - Ressalva: só a página de entrada foi medida. Anúncio pode aparecer no meio da partida.
 - **A promessa da lista é "sem anúncio", não "sem rastreio"** (decisão dele, 13/10/2026: "sem anúncio é honesto"). O
   rastreio de um site que a pessoa abre por vontade própria é entre ela e o site. Por isso o **Termo** entrou (só Google
-  Analytics), e só para quem usa o Syden em português. Embutir continua fora: aí o rastreio rodaria na janela do Syden,
-  e isso entraria na política de privacidade.
+  Analytics).
+- **Todo mundo vê todos os sites**, com o nome da língua do site quando ela não é a de quem lê (decisão dele, mesmo
+  dia): esconder por idioma tiraria de quem não configurou a chance de conhecer, e esconderia de nós os jogos
+  africanos e asiáticos.
+- **Site sem anúncio que deixa ser embutido RODA DENTRO do Syden** (`SiteEmbutido.tsx`, depois do clique, só para
+  quem clicou), corrigindo o "embutir está fora" de 06/10, que era sobre anúncio. Nas palavras dele: "a comodidade da
+  aba de mini-games é justamente rodar no Syden; não temos anúncio, que é o prometido". O preço é trabalho, não
+  promessa: o site entra na frame-src (`e2e/politica-de-seguranca.mjs` E a Cloudflare, à mão) e o que ele carrega
+  entra na política de privacidade (`#jogos-de-parceiros`) ANTES de ir ao ar. Primeiro: o Termo.
 
 **Licenças conferidas em 07/10/2026** (o Syden é de código fechado, "todos os direitos reservados", e
 isso decide quais bibliotecas podem entrar):

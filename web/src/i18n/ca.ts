@@ -1216,6 +1216,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Posar fets en ordre cronològic',
   'Palavras e perguntas rápidas, todo mundo junto': 'Paraules i preguntes ràpides, tothom alhora',
   'Brincadeiras curiosas para fazer junto': 'Joguines curioses per fer plegats',
+  'A palavra do dia': 'La paraula del dia',
   'Mini-games': 'Minijocs',
   'Jogar com a turma': 'Juga amb la colla',
   'Qual é o tamanho?': 'Quant fa?',

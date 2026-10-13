@@ -1221,6 +1221,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Рӯйдодҳоро аз рӯи вақт тартиб диҳед',
   'Palavras e perguntas rápidas, todo mundo junto': 'Калимаҳо ва саволҳои зуд, ҳама якҷоя',
   'Brincadeiras curiosas para fazer junto': 'Бозиҳои ҷолиб барои якҷоя',
+  'A palavra do dia': 'Калимаи рӯз',
   'Mini-games': 'Мини-бозиҳо',
   'Jogar com a turma': 'Бо дӯстон бозӣ кунед',
   'Qual é o tamanho?': 'Чӣ қадар калон аст?',

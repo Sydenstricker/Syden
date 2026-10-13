@@ -1131,6 +1131,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': '出来事を時代順に並べる',
   'Palavras e perguntas rápidas, todo mundo junto': '言葉と早押しクイズを、みんなで一緒に',
   'Brincadeiras curiosas para fazer junto': 'みんなで楽しむ不思議な遊び',
+  'A palavra do dia': '今日の単語',
   'Mini-games': 'ミニゲーム',
   'Jogar com a turma': 'みんなで遊ぶ',
   'Qual é o tamanho?': 'どのくらいの大きさ？',

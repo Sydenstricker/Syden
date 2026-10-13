@@ -1238,6 +1238,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'მოვლენების დალაგება დროის მიხედვით',
   'Palavras e perguntas rápidas, todo mundo junto': 'სიტყვები და სწრაფი კითხვები, ყველა ერთად',
   'Brincadeiras curiosas para fazer junto': 'საინტერესო თამაშები ერთად სათამაშოდ',
+  'A palavra do dia': 'დღის სიტყვა',
   'Mini-games': 'მინი-თამაშები',
   'Jogar com a turma': 'ითამაშე მეგობრებთან ერთად',
   'Qual é o tamanho?': 'რამდენად დიდია?',

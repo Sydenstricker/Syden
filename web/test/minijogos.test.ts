@@ -5,7 +5,7 @@ import { CATEGORIAS, RODADAS_STOP } from '../../server/src/minijogo-stop';
 import { CATEGORIAS as CATEGORIAS_DO_SERVIDOR, OBJETOS as DO_SERVIDOR } from '../../server/src/minijogos';
 import { FIGURAS_DO_TAMANHO } from '../src/figurasDoTamanho';
 import { IDIOMAS } from '../src/i18n/idiomas';
-import { CATEGORIAS_DO_STOP, CATEGORIAS_DO_TAMANHO, letrasDoStop, OBJETOS, sitesParaTransmitir, tamanhoLegivel } from '../src/minijogos';
+import { CATEGORIAS_DO_STOP, CATEGORIAS_DO_TAMANHO, letrasDoStop, nomeDoIdioma, OBJETOS, SITES_PARA_TRANSMITIR, tamanhoLegivel } from '../src/minijogos';
 
 describe('mini-games: o Stop', () => {
   it('o site e o servidor têm as mesmas categorias', () => {
@@ -58,12 +58,16 @@ describe('mini-games: o desenha e adivinha', () => {
 });
 
 describe('mini-games: os sites para jogar fora', () => {
-  it('o Termo, que é só em português, aparece só para quem usa o Syden em português', () => {
-    const nomes = (idioma: string) => sitesParaTransmitir(idioma).map((s) => s.nome);
-    assert.ok(nomes('pt-BR').includes('Termo'));
-    assert.ok(nomes('pt').includes('Termo'));
-    assert.ok(!nomes('en').includes('Termo'));
-    assert.ok(!nomes('ps').includes('Termo'), 'pashto não é português');
-    assert.ok(nomes('en').includes('Lichess'));
+  it('todo mundo vê todos; o de uma língua só leva o nome dela, na língua de quem lê', () => {
+    const termo = SITES_PARA_TRANSMITIR.find((s) => s.nome === 'Termo');
+    assert.equal(termo?.idioma, 'pt');
+    assert.equal(nomeDoIdioma('pt', 'en'), 'Portuguese');
+    assert.equal(nomeDoIdioma('pt', 'pt-BR'), 'português');
+  });
+
+  it('o que roda dentro do Syden está liberado na política de segurança', async () => {
+    const { CSP } = await import('../../e2e/politica-de-seguranca.mjs');
+    const quadros = CSP.split('; ').find((d: string) => d.startsWith('frame-src')) ?? '';
+    for (const site of SITES_PARA_TRANSMITIR.filter((s) => s.embutir)) assert.ok(quadros.includes(site.endereco), site.nome);
   });
 });

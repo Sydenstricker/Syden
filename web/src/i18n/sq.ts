@@ -1212,6 +1212,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Rendit ngjarjet sipas kohës',
   'Palavras e perguntas rápidas, todo mundo junto': 'Fjalë dhe pyetje të shpejta, të gjithë bashkë',
   'Brincadeiras curiosas para fazer junto': 'Lojëra kurioze për t\'i bërë bashkë',
+  'A palavra do dia': 'Fjala e ditës',
   'Mini-games': 'Mini-lojëra',
   'Jogar com a turma': 'Luaj me shoqërinë',
   'Qual é o tamanho?': 'Sa i madh është?',

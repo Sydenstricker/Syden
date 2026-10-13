@@ -1216,6 +1216,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Оқиғаларды уақыт ретімен қою',
   'Palavras e perguntas rápidas, todo mundo junto': 'Сөздер мен жылдам сұрақтар, бәрі бірге',
   'Brincadeiras curiosas para fazer junto': 'Бірге ойнауға қызық ойындар',
+  'A palavra do dia': 'Күн сөзі',
   'Mini-games': 'Мини-ойындар',
   'Jogar com a turma': 'Достармен ойнау',
   'Qual é o tamanho?': 'Көлемі қандай?',

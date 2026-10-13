@@ -1149,6 +1149,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Tuvanaka na veika e yaco me vaka na gauna',
   'Palavras e perguntas rápidas, todo mundo junto': 'Vosa kei na taro totolo, kece vata',
   'Brincadeiras curiosas para fazer junto': 'Qito veivakurabuitaki me qito vata',
+  'A palavra do dia': 'Na vosa ni siga',
   'Mini-games': 'Qito lalai',
   'Jogar com a turma': 'Qito vata kei na nomu itokani',
   'Qual é o tamanho?': 'E levu vakacava?',

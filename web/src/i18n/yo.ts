@@ -1165,6 +1165,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Ṣètò àwọn ìṣẹ̀lẹ̀ bí àkókò ṣe tẹ̀ léra',
   'Palavras e perguntas rápidas, todo mundo junto': 'Ọ̀rọ̀ àti ìbéèrè kíákíá, gbogbo wa papọ̀',
   'Brincadeiras curiosas para fazer junto': 'Eré àrà láti ṣe papọ̀',
+  'A palavra do dia': 'Ọ̀rọ̀ ọjọ́ òní',
   'Mini-games': 'Àwọn eré kékeré',
   'Jogar com a turma': 'Ṣeré pẹ̀lú àwọn ọ̀rẹ́',
   'Qual é o tamanho?': 'Báwo ló ṣe tóbi tó?',

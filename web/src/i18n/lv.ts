@@ -1222,6 +1222,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Sakārtot notikumus laika secībā',
   'Palavras e perguntas rápidas, todo mundo junto': 'Vārdi un ātri jautājumi, visi kopā',
   'Brincadeiras curiosas para fazer junto': 'Interesantas spēles, ko spēlēt kopā',
+  'A palavra do dia': 'Dienas vārds',
   'Mini-games': 'Minispēles',
   'Jogar com a turma': 'Spēlēt ar draugiem',
   'Qual é o tamanho?': 'Cik liels tas ir?',

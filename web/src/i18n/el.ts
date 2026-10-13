@@ -1156,6 +1156,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Βάλε γεγονότα σε χρονολογική σειρά',
   'Palavras e perguntas rápidas, todo mundo junto': 'Γρήγορες λέξεις και ερωτήσεις, όλοι μαζί',
   'Brincadeiras curiosas para fazer junto': 'Παράξενα παιχνιδάκια για όλους μαζί',
+  'A palavra do dia': 'Η λέξη της ημέρας',
   'Mini-games': 'Μίνι παιχνίδια',
   'Jogar com a turma': 'Παίξε με την παρέα',
   'Qual é o tamanho?': 'Πόσο μεγάλο είναι;',

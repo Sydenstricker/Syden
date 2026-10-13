@@ -1149,6 +1149,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'घटनाओं को समय के क्रम में लगाना',
   'Palavras e perguntas rápidas, todo mundo junto': 'तेज़ शब्द और सवाल, सब एक साथ',
   'Brincadeiras curiosas para fazer junto': 'साथ मिलकर खेलने वाली मज़ेदार चीज़ें',
+  'A palavra do dia': 'आज का शब्द',
   'Mini-games': 'मिनी-गेम',
   'Jogar com a turma': 'दोस्तों के साथ खेलो',
   'Qual é o tamanho?': 'यह कितना बड़ा है?',

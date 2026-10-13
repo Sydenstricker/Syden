@@ -1200,6 +1200,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'לסדר אירועים לפי סדר הזמנים',
   'Palavras e perguntas rápidas, todo mundo junto': 'מילים ושאלות מהירות, כולם ביחד',
   'Brincadeiras curiosas para fazer junto': 'צעצועים משונים לשחק בהם ביחד',
+  'A palavra do dia': 'המילה של היום',
   'Mini-games': 'מיני־משחקים',
   'Jogar com a turma': 'לשחק עם החבר\'ה',
   'Qual é o tamanho?': 'מה הגודל?',

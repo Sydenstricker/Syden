@@ -1221,6 +1221,7 @@ export default {
   'Pôr acontecimentos na ordem do tempo': 'Hlela izehlakalo ngokulandelana kwesikhathi',
   'Palavras e perguntas rápidas, todo mundo junto': 'Amagama nemibuzo esheshayo, sonke ndawonye',
   'Brincadeiras curiosas para fazer junto': 'Imidlalo emnandi yokwenza ndawonye',
+  'A palavra do dia': 'Igama losuku',
   'Mini-games': 'Imidlalo emincane',
   'Jogar com a turma': 'Dlala nabangane',
   'Qual é o tamanho?': 'Kukhulu kangakanani?',
