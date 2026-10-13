@@ -10325,6 +10325,37 @@ textarea {
   pointer-events: none;
 }
 
+.salao-tv-quem {
+  display: flex;
+  align-items: center;
+  gap: calc(3 * var(--px-do-salao));
+  max-width: 100%;
+  text-align: left;
+}
+
+.salao-tv-quem .avatar {
+  flex: none;
+  width: calc(16 * var(--px-do-salao));
+  height: calc(16 * var(--px-do-salao));
+}
+
+.salao-tv-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  gap: calc(0.5 * var(--px-do-salao));
+}
+
+.salao-tv-sala {
+  max-width: 100%;
+  opacity: 0.75;
+  font-size: calc(4.5 * var(--px-do-salao));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .salao-tv-ao-vivo strong {
   max-width: 100%;
   font-size: calc(6.5 * var(--px-do-salao));

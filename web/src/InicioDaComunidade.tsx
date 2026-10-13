@@ -223,7 +223,9 @@ export function InicioDaComunidade({
           recado={<RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />}
           aoVivo={
             noAr && {
+              userId: noAr.userId,
               nome: noAr.username,
+              sala: canais.find((c) => c.id === noAr.channelId)?.name ?? '',
               titulo: noAr.screenName,
               canal: canal % transmissoes.length,
               total: transmissoes.length,

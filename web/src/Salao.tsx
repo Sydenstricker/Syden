@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type CSSProperties, type ReactNode, useState } from 'react';
-import { enderecoDoCoelhoPronto } from './Avatar';
+import { Avatar, enderecoDoCoelhoPronto } from './Avatar';
 import { useT } from './i18n';
 import fliperamaUrl from './assets/salao/fliperama.png';
 import janelaUrl from './assets/salao/janela.png';
@@ -135,7 +135,10 @@ function Peca({ url, caixa, quadros, duracao, atraso, gente, titulo, naCall }: {
 
 /** O que a TV mostra quando há transmissão: o canal da vez e como trocar. */
 export interface TvAoVivo {
+  userId: number;
   nome: string;
+  /** O nome da sala de voz onde a transmissão está. */
+  sala: string;
   titulo: string | null;
   canal: number;
   total: number;
@@ -163,11 +166,19 @@ export function Salao({ acoes, naCall, quadro, aoVivo, recado }: {
       <img className="salao-cena" src={salaUrl} alt="" draggable={false} />
       <Peca url={janelaUrl} caixa={[24, 30, 68, 96]} quadros={16} duracao={6.4} />
       {aoVivo ? (
+        // Como a etiqueta de quem transmite na lista de pessoas (pedido dele, 13/10/2026): o avatar à esquerda, e ao
+        // lado o selo, o nome e a sala; o que se transmite vai embaixo.
         <div className="salao-tv-ao-vivo" style={posicao([161, 53, 225, 93])}>
-          <span className="salao-tv-selo">
-            <span className="live-dot" aria-hidden="true" /> {t('Ao vivo')}
-          </span>
-          <strong>{aoVivo.nome}</strong>
+          <div className="salao-tv-quem">
+            <Avatar name={aoVivo.nome} userId={aoVivo.userId} online size={30} />
+            <div className="salao-tv-texto">
+              <span className="salao-tv-selo">
+                <span className="live-dot" aria-hidden="true" /> {t('Ao vivo')}
+              </span>
+              <strong>{aoVivo.nome}</strong>
+              <span className="salao-tv-sala">{t('Em {sala}', { sala: aoVivo.sala })}</span>
+            </div>
+          </div>
           {aoVivo.titulo && <small>{aoVivo.titulo}</small>}
           {aoVivo.total > 1 && <span className="salao-tv-canal">{`${aoVivo.canal + 1}/${aoVivo.total}`}</span>}
         </div>
