@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Microsoft Store से डाउनलोड करो",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "ब्राउज़र में बिना कुछ इंस्टॉल किए चलता है। Windows वाला प्रोग्राम कीबोर्ड शॉर्टकट के लिए और स्क्रीन शेयर में कंप्यूटर की आवाज़ के लिए है।",
   "De graça, inteiro": "मुफ़्त, पूरा का पूरा",
-  "Sem anúncios": "कोई विज्ञापन नहीं",
+  "Sem anúncios": "बिना विज्ञापन",
   "Não vende os seus dados": "तुम्हारा डेटा नहीं बेचता",
   "Em 72 idiomas": "72 भाषाओं में",
   "Salas de voz": "वॉइस रूम",
@@ -110,9 +110,8 @@
   "Customização": "कस्टमाइज़ेशन",
   "QR code do Buy Me a Coffee para doar ao Syden": "Syden को दान देने के लिए Buy Me a Coffee QR कोड",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "तुम्हारा डेटा",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden मुफ़्त है। हम तुम्हारे डेटा की माइनिंग नहीं करते।",
+  "O Syden é gratuito e não tem anúncios.": "Syden मुफ़्त है और इसमें कोई विज्ञापन नहीं है।",
   "Como o Syden cuida do que é seu": "Syden तुम्हारी चीज़ों का ख़याल कैसे रखता है",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "मफ़लर पहने एक ख़रगोश गैंती से एक पत्थर पर चोट करता है और उसमें से डेटा के छोटे-छोटे टुकड़े निकालता है; पत्थर पर मनाही का एक निशान गिरता है, और ख़रगोश को एक दिल मिलता है",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "मफ़लर पहने एक ख़रगोश के चारों ओर टिमटिमाती विज्ञापन विंडो उभर आती हैं; उन पर मनाही का एक निशान गिरता है, वे पिक्सेल बनकर बिखर जाती हैं, और ख़रगोश को एक दिल मिलता है",
   "Mini-games na call, pra jogar com a turma": "कॉल में ही मिनी-गेम, दोस्तों के साथ खेलने के लिए"
 }

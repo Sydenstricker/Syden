@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Microsoft Store irraa buufadhu",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "Homaa osoo hin fe’in biraawzara keessatti hojjeta. Sagantaan Windows furtuuwwan gabaabduu fi, iskiriinii yommuu qooddu, sagalee kompiitaraa siif dabala.",
   "De graça, inteiro": "Bilisa, guutummaatti",
-  "Sem anúncios": "Beeksisa malee",
+  "Sem anúncios": "Beeksisa Hin Qabu",
   "Não vende os seus dados": "Daataa kee hin gurguru",
   "Em 72 idiomas": "Afaan 72n",
   "Salas de voz": "Kutaalee sagalee",
@@ -110,9 +110,8 @@
   "Customização": "Akka fedhiitti qindeessuu",
   "QR code do Buy Me a Coffee para doar ao Syden": "Koodii QR Buy Me a Coffee Syden gargaaruuf",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "Daataa kee",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden bilisa. Daataa kee hin qotannu.",
+  "O Syden é gratuito e não tem anúncios.": "Syden bilisa dha, beeksisa hin qabu.",
   "Como o Syden cuida do que é seu": "Syden waan kee akkamitti eega",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "Illeettiin shaashii mormatti hidhatte qottoon dhagaa rukuttee daataa xixiqqoo keessaa baasti; mallattoon dhorkaa dhagaa irratti kufa, illeettiinis onnee argatti",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "Foddaawwan beeksisaa ibsanii dhaama'an naannoo illeettii shaashii mormatti hidhatte keessaa ba'u; mallattoon dhorkaa isaan irratti kufa, gara pikseelotaatti bittinaa'u, illeettiinis onnee argatti",
   "Mini-games na call, pra jogar com a turma": "Taphoota xixiqqoo bilbila keessatti, hiriyyoota waliin taphachuuf"
 }

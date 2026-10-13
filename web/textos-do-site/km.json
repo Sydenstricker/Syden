@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "ទាញយកពី Microsoft Store",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "ប្រើបានក្នុងកម្មវិធីរុករក ដោយមិនបាច់ដំឡើងអ្វីទាំងអស់។ កម្មវិធីសម្រាប់ Windows បន្ថែមផ្លូវកាត់ក្តារចុច និងសំឡេងកុំព្យូទ័រពេលអ្នកចែករំលែកអេក្រង់។",
   "De graça, inteiro": "ឥតគិតថ្លៃ ទាំងអស់",
-  "Sem anúncios": "គ្មានការផ្សាយពាណិជ្ជកម្ម",
+  "Sem anúncios": "គ្មានពាណិជ្ជកម្ម",
   "Não vende os seus dados": "មិនលក់ទិន្នន័យរបស់អ្នកទេ",
   "Em 72 idiomas": "មាន 72 ភាសា",
   "Salas de voz": "បន្ទប់សំឡេង",
@@ -110,9 +110,8 @@
   "Customização": "ការប្ដូរតាមចិត្ត",
   "QR code do Buy Me a Coffee para doar ao Syden": "កូដ QR របស់ Buy Me a Coffee សម្រាប់បរិច្ចាគដល់ Syden",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "ទិន្នន័យរបស់អ្នក",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden ឥតគិតថ្លៃ។ យើងមិនជីកយកទិន្នន័យរបស់អ្នកទេ។",
+  "O Syden é gratuito e não tem anúncios.": "Syden ឥតគិតថ្លៃ ហើយគ្មានពាណិជ្ជកម្ម។",
   "Como o Syden cuida do que é seu": "របៀបដែល Syden ថែរក្សាអ្វីដែលជារបស់អ្នក",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "ទន្សាយពាក់កន្សែងបង់កយកចបជីកវាយថ្ម ហើយយកបំណែកទិន្នន័យតូចៗចេញពីវា។ សញ្ញាហាមឃាត់ធ្លាក់មកលើថ្ម ហើយទន្សាយទទួលបានបេះដូង",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "បង្អួចពាណិជ្ជកម្មភ្លឹបភ្លែតៗលោតចេញមកជុំវិញទន្សាយពាក់កន្សែងបង់ក។ សញ្ញាហាមឃាត់ធ្លាក់មកលើវា វាបែកជាភីកសែល ហើយទន្សាយទទួលបានបេះដូង",
   "Mini-games na call, pra jogar com a turma": "ហ្គេមខ្នាតតូចក្នុងការហៅ សម្រាប់លេងជាមួយក្រុម"
 }

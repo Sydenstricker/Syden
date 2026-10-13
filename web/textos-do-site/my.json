@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Microsoft Store မှ ဒေါင်းလုဒ်လုပ်ရန်",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "ဘာမှ ထည့်သွင်းစရာမလိုဘဲ ဘရောက်ဇာမှာ အလုပ်လုပ်ပါတယ်။ Windows ပရိုဂရမ်က ကီးဘုတ် ဖြတ်လမ်းများနှင့် မျက်နှာပြင်မျှဝေစဉ် ကွန်ပျူတာအသံကို ထပ်ပေးပါတယ်။",
   "De graça, inteiro": "အခမဲ့၊ အားလုံး",
-  "Sem anúncios": "ကြော်ငြာမပါ",
+  "Sem anúncios": "ကြော်ငြာ မရှိ",
   "Não vende os seus dados": "သင့်ဒေတာကို မရောင်းပါ",
   "Em 72 idiomas": "ဘာသာစကား ၇၂ မျိုး",
   "Salas de voz": "အသံအခန်းများ",
@@ -110,9 +110,8 @@
   "Customização": "စိတ်ကြိုက်ပြင်ဆင်ခြင်း",
   "QR code do Buy Me a Coffee para doar ao Syden": "Syden ကို လှူဒါန်းရန် Buy Me a Coffee QR ကုဒ်",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "သင့်ဒေတာ",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden က အခမဲ့ပါ။ သင့်ဒေတာကို ကျွန်ုပ်တို့ မတူးဖော်ပါ။",
+  "O Syden é gratuito e não tem anúncios.": "Syden က အခမဲ့ဖြစ်ပြီး ကြော်ငြာ မရှိပါ။",
   "Como o Syden cuida do que é seu": "Syden က သင့်ပိုင်တာတွေကို ဘယ်လို ဂရုစိုက်လဲ",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "လည်ပင်းပတ်ပဝါ ပတ်ထားတဲ့ ယုန်တစ်ကောင်က ပေါက်တူးနဲ့ ကျောက်တုံးကို ထုပြီး ဒေတာအပိုင်းအစလေးတွေ ထုတ်ယူတယ်၊ တားမြစ်သင်္ကေတတစ်ခု ကျောက်တုံးပေါ် ကျလာပြီး ယုန်က နှလုံးသားတစ်ခု ရတယ်",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "လည်ပင်းပတ်ပဝါ ပတ်ထားတဲ့ ယုန်ကို ဝိုင်းပြီး မှိတ်တုတ်မှိတ်တုတ် ကြော်ငြာ ဝင်းဒိုးတွေ ပေါ်လာတယ်၊ တားမြစ်သင်္ကေတတစ်ခု သူတို့ပေါ် ကျလာပြီး ပစ်ဆယ်တွေအဖြစ် ပြိုကွဲသွားကာ ယုန်က နှလုံးသားတစ်ခု ရတယ်",
   "Mini-games na call, pra jogar com a turma": "ဖုန်းခေါ်ဆိုမှုထဲမှာ အဖွဲ့နဲ့ ဆော့ဖို့ မီနီဂိမ်းများ"
 }

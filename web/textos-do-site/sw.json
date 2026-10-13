@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Pakua kwenye Microsoft Store",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "Inafanya kazi kwenye kivinjari bila kusakinisha chochote. Programu ya Windows inaongeza njia za mkato za kibodi na sauti ya kompyuta unaposhiriki skrini.",
   "De graça, inteiro": "Bure, yote",
-  "Sem anúncios": "Bila matangazo",
+  "Sem anúncios": "Hakuna matangazo",
   "Não vende os seus dados": "Haiuzi data zako",
   "Em 72 idiomas": "Kwa lugha 72",
   "Salas de voz": "Vyumba vya sauti",
@@ -110,9 +110,8 @@
   "Customização": "Ubinafsishaji",
   "QR code do Buy Me a Coffee para doar ao Syden": "Msimbo wa QR wa Buy Me a Coffee wa kuchangia Syden",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "Data yako",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden ni bure. Hatuchimbi data yako.",
+  "O Syden é gratuito e não tem anúncios.": "Syden ni bure na haina matangazo.",
   "Como o Syden cuida do que é seu": "Jinsi Syden inavyotunza vilivyo vyako",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "Sungura aliyevaa skafu anapiga jiwe kwa sululu na kubandua vipande vidogo vya data; alama ya marufuku inaangukia jiwe, na sungura anapata moyo",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "Madirisha ya matangazo yanayomulika huibuka kuzunguka sungura aliyevaa skafu; alama ya marufuku inayaangukia, yanasambaratika kuwa pikseli, na sungura anapata moyo",
   "Mini-games na call, pra jogar com a turma": "Michezo midogo ndani ya simu, ya kucheza na marafiki"
 }

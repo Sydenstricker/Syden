@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Microsoft Store बाट डाउनलोड गर्नुहोस्",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "केही इन्स्टल नगरी ब्राउजरमै चल्छ। Windows को प्रोग्रामले किबोर्ड सर्टकट र स्क्रिन सेयर गर्दा कम्प्युटरको आवाज थप्छ।",
   "De graça, inteiro": "निःशुल्क, पूरै",
-  "Sem anúncios": "विज्ञापनबिना",
+  "Sem anúncios": "विज्ञापन छैन",
   "Não vende os seus dados": "तपाईंको डेटा बेच्दैन",
   "Em 72 idiomas": "७२ भाषामा",
   "Salas de voz": "भ्वाइस कोठाहरू",
@@ -110,9 +110,8 @@
   "Customização": "आफ्नो अनुकूल बनाउने",
   "QR code do Buy Me a Coffee para doar ao Syden": "Syden लाई दान गर्ने Buy Me a Coffee QR कोड",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "तपाईंको डेटा",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden निःशुल्क छ। हामी तपाईंको डेटा खन्दैनौं।",
+  "O Syden é gratuito e não tem anúncios.": "Syden निःशुल्क छ र विज्ञापनरहित छ।",
   "Como o Syden cuida do que é seu": "Syden ले तपाईंको कुराको कसरी हेरचाह गर्छ",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "मफलर लगाएको खरायोले गैँतीले चट्टानमा हिर्काएर डेटाका साना टुक्राहरू निकाल्छ; चट्टानमाथि निषेधको चिन्ह खस्छ, र खरायोले एउटा मुटु पाउँछ",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "मफलर लगाएको खरायोको वरिपरि झिमझिम गर्ने विज्ञापन विन्डोहरू देखा पर्छन्; तिनीहरूमाथि निषेधको चिन्ह खस्छ, तिनीहरू पिक्सेल बनेर बिखरिन्छन्, र खरायोले एउटा मुटु पाउँछ",
   "Mini-games na call, pra jogar com a turma": "कलभित्रै मिनी-गेम, साथीहरूसँग खेल्न"
 }

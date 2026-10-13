@@ -525,15 +525,15 @@ section h2 {
   height: auto;
 }
 
-/* A cena da mineração (#dados): pixel art solta, sem moldura de captura — ela não é uma tela do app. Cresce só
+/* A cena do sem anúncios (#dados): pixel art solta, sem moldura de captura — ela não é uma tela do app. Cresce só
    em múltiplos do pixel dela (96 × 64, exportada a 6×) e sem suavizar, senão o pixel vira borrão. */
-.mineracao {
+.sem-anuncio {
   margin: 0;
   justify-self: center;
   width: min(100%, 480px);
 }
 
-.mineracao img {
+.sem-anuncio img {
   display: block;
   width: 100%;
   height: auto;

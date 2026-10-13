@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Microsoft Store އިން ޑައުންލޯޑްކުރޭ",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "އެއްވެސް އެއްޗެއް އިންސްޓޯލް ނުކޮށް ބްރައުޒަރުގައި ހިނގާ. Windows ޕްރޮގްރާމުން ކީބޯޑް ޝޯޓްކަޓްތަކާއި، ސްކްރީން ޝެއާކުރާއިރު ކޮމްޕިއުޓަރުގެ ސައުންޑް ލިބޭ.",
   "De graça, inteiro": "ހިލޭ، މުޅިން",
-  "Sem anúncios": "އިޝްތިހާރެއް ނެތް",
+  "Sem anúncios": "އިޝްތިހާރު ނެތް",
   "Não vende os seus dados": "ތިބާގެ ޑޭޓާ ނުވިއްކާ",
   "Em 72 idiomas": "72 ބަހުން",
   "Salas de voz": "ވޮއިސް ރޫމްތައް",
@@ -110,9 +110,8 @@
   "Customização": "ކަސްޓަމައިޒޭޝަން",
   "QR code do Buy Me a Coffee para doar ao Syden": "Syden އަށް ހަދިޔާކުރުމަށް Buy Me a Coffee ގެ QR ކޯޑު",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "ތިބާގެ ޑޭޓާ",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden ހިލޭ. ތިބާގެ ޑޭޓާ އަޅުގަނޑުމެން ނުކޮނަމު.",
+  "O Syden é gratuito e não tem anúncios.": "Syden ހިލޭ، އަދި އިޝްތިހާރެއް ނެތް.",
   "Como o Syden cuida do que é seu": "ތިބާގެ އެއްޗެހި Syden ބަލަހައްޓާ ގޮތް",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "ސްކާފެއް އަޅާފައިވާ ސަވާރެއް ކޮށާރަކުން ހިލައެއްގައި ތަޅައިގެން ޑޭޓާގެ ކުދި ބައިތައް ނަގައެވެ؛ މަނާ ނިޝާނެއް ހިލަ މައްޗަށް ވެއްޓި، ސަވާރަށް ހިތެއް ލިބެއެވެ",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "ސްކާފެއް އަޅާފައިވާ ސަވާރެއްގެ ވަށައިގެން ދިއްލޭ އިޝްތިހާރު ވިންޑޯތައް ފެންނައެވެ؛ މަނާ ނިޝާނެއް އެތަކުގެ މައްޗަށް ވެއްޓި، ޕިކްސަލްތަކަށް ބިކި ގޮސް، ސަވާރަށް ހިތެއް ލިބެއެވެ",
   "Mini-games na call, pra jogar com a turma": "ގުރޫޕާއެކު ކުޅޭނެ މިނި ގޭމްތައް ކޯލުގެ ތެރޭގައި"
 }

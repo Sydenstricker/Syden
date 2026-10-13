@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Laadi alla Microsoft Store’ist",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "Töötab brauseris, midagi pole vaja paigaldada. Windowsi programm lisab kiirklahvid ja arvuti heli ekraani jagamisel.",
   "De graça, inteiro": "Tasuta, tervenisti",
-  "Sem anúncios": "Reklaamideta",
+  "Sem anúncios": "Reklaamivaba",
   "Não vende os seus dados": "Ei müü sinu andmeid",
   "Em 72 idiomas": "72 keeles",
   "Salas de voz": "Häälruumid",
@@ -110,9 +110,8 @@
   "Customização": "Kohandamine",
   "QR code do Buy Me a Coffee para doar ao Syden": "Buy Me a Coffee QR-kood Sydenile annetamiseks",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "Sinu andmed",
-  "O Syden é gratuito. Não mineramos seus dados.": "Syden on tasuta. Me ei kaevanda sinu andmeid.",
+  "O Syden é gratuito e não tem anúncios.": "Syden on tasuta ja reklaamivaba.",
   "Como o Syden cuida do que é seu": "Kuidas Syden hoolitseb selle eest, mis on sinu",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "Salliga jänes taob kirkaga kivi ja raiub sellest välja pisikesi andmetükke; kivile kukub keelumärk ja jänes saab südame",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "Salliga jänese ümber hüppavad esile vilkuvad reklaamiaknad; neile kukub keelumärk, need pudenevad pikslitena laiali ja jänes saab südame",
   "Mini-games na call, pra jogar com a turma": "Minimängud kõnes, et sõpradega koos mängida"
 }

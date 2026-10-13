@@ -11,7 +11,7 @@
   "Baixar na Microsoft Store": "Letöltés a Microsoft Store-ból",
   "Funciona no navegador sem instalar nada. O programa para Windows serve para atalhos de teclado e para o som do computador na tela compartilhada.": "A böngészőben is működik, semmit sem kell telepíteni. A windowsos program a billentyűparancsokhoz és a számítógép hangjához kell képernyőmegosztáskor.",
   "De graça, inteiro": "Ingyen, az egész",
-  "Sem anúncios": "Reklámok nélkül",
+  "Sem anúncios": "Reklámmentes",
   "Não vende os seus dados": "Nem adja el az adataidat",
   "Em 72 idiomas": "72 nyelven",
   "Salas de voz": "Hangszobák",
@@ -110,9 +110,8 @@
   "Customização": "Testreszabás",
   "QR code do Buy Me a Coffee para doar ao Syden": "Buy Me a Coffee QR-kód a Syden támogatásához",
   "Buy Me a Coffee": "Buy Me a Coffee",
-  "Seus dados": "Az adataid",
-  "O Syden é gratuito. Não mineramos seus dados.": "A Syden ingyenes. Nem bányásszuk az adataidat.",
+  "O Syden é gratuito e não tem anúncios.": "A Syden ingyenes és reklámmentes.",
   "Como o Syden cuida do que é seu": "Hogyan vigyáz a Syden arra, ami a tiéd",
-  "Um coelho de cachecol dá picaretadas numa pedra e tira dela pedacinhos de dados; um símbolo de proibido cai sobre a pedra, e o coelho ganha um coração": "Egy sálas nyúl csákánnyal üt egy sziklát, és apró adatdarabokat fejt ki belőle; egy tiltó jel esik a sziklára, és a nyúl kap egy szívet",
+  "Janelas de anúncio piscando pipocam em volta de um coelho de cachecol; um símbolo de proibido cai sobre elas, elas se desfazem em pixels, e o coelho ganha um coração": "Villogó hirdetési ablakok bukkannak fel egy sálas nyúl körül; egy tiltó jel esik rájuk, pixelekre hullanak szét, és a nyúl kap egy szívet",
   "Mini-games na call, pra jogar com a turma": "Minijátékok a hívásban, a bandával együtt"
 }
