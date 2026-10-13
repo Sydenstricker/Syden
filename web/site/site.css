@@ -526,7 +526,7 @@ section h2 {
 }
 
 /* A cena do sem anúncios (#dados): pixel art solta, sem moldura de captura — ela não é uma tela do app. Cresce só
-   em múltiplos do pixel dela (192 × 132, exportada a 3×) e sem suavizar, senão o pixel vira borrão. */
+   em múltiplos do pixel dela (192 × 141, exportada a 3×) e sem suavizar, senão o pixel vira borrão. */
 .sem-anuncio {
   margin: 0;
   justify-self: center;

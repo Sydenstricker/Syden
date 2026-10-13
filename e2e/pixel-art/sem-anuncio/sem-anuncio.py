@@ -90,9 +90,11 @@ def janela(a, x0, y0, w, h, miolo, piscando):
 # A cena tem o DOBRO da resolução da mineração: o coelho e a ilha vêm do PixelLab (gerar.mjs) e nasceram
 # assim. As janelas, o proibido e o coração continuam desenhados por código na grade antiga (96 × 64) e são
 # ampliados 2× — a parte da cena que ele aprovou fica igual.
-CW, CH, CESCALA = 192, 132, 3
-COELHO_X, COELHO_Y = 30, 2
-ILHA_Y = 66  # a grama da ilha (linha 16 da figura) fica na altura dos pés do coelho
+# TOPO: a folga em cima, para o pulo do feliz (7 px) não cortar as orelhas (relato dele, 13/10/2026).
+TOPO = 9
+CW, CH, CESCALA = 192, 132 + TOPO, 3
+COELHO_X, COELHO_Y = 30, 2 + TOPO
+ILHA_Y = 66 + TOPO  # a grama da ilha (linha 16 da figura) fica na altura dos pés do coelho
 
 
 def recortar(arquivo):
@@ -173,7 +175,7 @@ def montar(pasta):
         if 3.2 <= t < 4.7:
             subida = (t - 3.2) * 5
             camada.alpha_composite(jogo.CORACAO, (44, max(0, int(14 - subida))))
-        cena.alpha_composite(camada.resize((W * 2, H * 2), Image.NEAREST), (0, 0))
+        cena.alpha_composite(camada.resize((W * 2, H * 2), Image.NEAREST), (0, TOPO))
 
         if t >= 4.7:
             fade = np.array(cena)
