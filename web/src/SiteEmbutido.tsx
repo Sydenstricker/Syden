@@ -1,5 +1,5 @@
 import { ExternalLink, X } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useT } from './i18n';
 
@@ -26,6 +26,22 @@ function QuadroDoSite({ nome, endereco, aoFechar }: { nome: string; endereco: st
     return () => window.removeEventListener('keydown', aoTeclar);
   }, [aoFechar]);
 
+  // O EMPURRÃOZINHO: cada modo do Termo é uma página, e ela mede a janela ao carregar. Trocando de modo lá dentro, o
+  // Termo sozinho saiu com as peças grandes demais e cortado dos lados (relato de 13/10/2026). Depois de cada
+  // carregamento o quadro encolhe 1 px e volta: o site recebe um "a janela mudou de tamanho" e mede de novo.
+  const [ajuste, setAjuste] = useState(0);
+  const relogio = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (relogio.current) clearTimeout(relogio.current);
+  }, []);
+  const aoCarregar = () => {
+    if (relogio.current) clearTimeout(relogio.current);
+    relogio.current = setTimeout(() => {
+      setAjuste(1);
+      relogio.current = setTimeout(() => setAjuste(0), 120);
+    }, 400);
+  };
+
   return (
     <>
       <header>
@@ -48,6 +64,8 @@ function QuadroDoSite({ nome, endereco, aoFechar }: { nome: string; endereco: st
           sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"
           referrerPolicy="no-referrer"
           allow="clipboard-write"
+          onLoad={aoCarregar}
+          style={ajuste ? { width: `calc(100% - ${ajuste}px)` } : undefined}
         />
       </div>
     </>
