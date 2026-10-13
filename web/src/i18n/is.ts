@@ -1019,7 +1019,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Allt hér er ókeypis. Veldu það sem þú vilt, skiptu þegar þú vilt.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Allt rólegt í bili. Þegar einhver fer í símtal birtist það hér.',
-  'Tudo de graça, sempre': 'Allt ókeypis, alltaf',
   'Turma formada': 'Hópurinn er kominn',
   'Última': 'Síðast',
   'Últimas 24 horas': 'Síðustu 24 klukkustundir',

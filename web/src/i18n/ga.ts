@@ -605,7 +605,6 @@ export default {
   'Tela de boas-vindas': 'Scáileán fáilte',
   'Tirar': 'Bain',
   'Título': 'Teideal',
-  'Tudo de graça, sempre': 'Gach rud saor in aisce, i gcónaí',
   'Usar': 'Úsáid',
   'Visitas': 'Cuairteanna',
   'Voz': 'Guth',

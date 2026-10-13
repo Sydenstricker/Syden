@@ -615,7 +615,6 @@ export default {
   'Tela de boas-vindas': 'Skrin ta\' merħba',
   'Tirar': 'Neħħi',
   'Título': 'Titlu',
-  'Tudo de graça, sempre': 'Kollox b\'xejn, dejjem',
   'Usar': 'Uża',
   'Visitas': 'Żjarat',
   'Voz': 'Vuċi',

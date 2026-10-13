@@ -1020,7 +1020,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Viskas čia nemokama. Rinkis, ką nori, keisk, kada nori.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Kol kas ramu. Kai kas nors prisijungs prie skambučio, tai atsiras čia.',
-  'Tudo de graça, sempre': 'Viskas nemokamai, visada',
   'Turma formada': 'Kompanija susirinko',
   'Última': 'Paskutinė',
   'Últimas 24 horas': 'Paskutinės 24 valandos',

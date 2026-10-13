@@ -1015,7 +1015,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Kõik siin on tasuta. Vali, mida tahad, vaheta, millal tahad.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Praegu on vaikne. Kui keegi kõnega liitub, ilmub see siia.',
-  'Tudo de graça, sempre': 'Kõik tasuta, alati',
   'Turma formada': 'Seltskond koos',
   'Última': 'Viimane',
   'Últimas 24 horas': 'Viimased 24 tundi',

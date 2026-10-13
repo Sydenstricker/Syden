@@ -1018,7 +1018,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Wax walba halkan waa bilaash. Dooro waxaad rabto, beddel goor kasta.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Hadda wax walba waa deggan yihiin. Marka qof wicitaan galo, halkan ayay ka muuqanaysaa.',
-  'Tudo de graça, sempre': 'Wax walba bilaash, had iyo jeer',
   'Turma formada': 'Kooxdii waa samaysantay',
   'Última': 'Ugu dambeysay',
   'Últimas 24 horas': '24-kii saacadood ee la soo dhaafay',

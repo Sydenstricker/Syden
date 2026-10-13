@@ -855,7 +855,6 @@ export default {
   'Trocar o e-mail': 'Đổi e-mail',
   'Trocar senha': 'Đổi mật khẩu',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Ở đây mọi thứ đều miễn phí. Chọn gì cũng được, đổi lúc nào cũng được.',
-  'Tudo de graça, sempre': 'Luôn miễn phí, mãi mãi',
   'Turma formada': 'Đã thành một hội',
   'Última': 'Mới nhất',
   'Últimas 24 horas': '24 giờ qua',

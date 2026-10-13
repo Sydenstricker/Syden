@@ -1012,7 +1012,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Alles hier is gratis. Kies wat jy wil, verander wanneer jy wil.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Alles rustig vir eers. Wanneer iemand by ’n oproep aansluit, verskyn dit hier.',
-  'Tudo de graça, sempre': 'Alles gratis, altyd',
   'Turma formada': 'Span gevorm',
   'Última': 'Laaste',
   'Últimas 24 horas': 'Laaste 24 uur',

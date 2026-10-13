@@ -1010,7 +1010,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Gjithçka këtu është falas. Zgjidh çfarë të duash, ndërro kur të duash.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Gjithçka e qetë për momentin. Kur dikush hyn në një thirrje, shfaqet këtu.',
-  'Tudo de graça, sempre': 'Gjithçka falas, gjithmonë',
   'Turma formada': 'Shoqëria u mblodh',
   'Última': 'E fundit',
   'Últimas 24 horas': '24 orët e fundit',

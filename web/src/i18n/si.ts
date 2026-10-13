@@ -1018,7 +1018,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'මෙහි සියල්ල නොමිලේ. කැමති දේ තෝරන්න, කැමති විටෙක වෙනස් කරන්න.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'දැනට සියල්ල නිස්කලංකයි. යමෙකු ඇමතුමකට එක් වූ විට, එය මෙහි දිස් වේ.',
-  'Tudo de graça, sempre': 'සියල්ල නොමිලේ, සැමවිටම',
   'Turma formada': 'කණ්ඩායම සෑදුණා',
   'Última': 'අවසන්',
   'Últimas 24 horas': 'පසුගිය පැය 24',

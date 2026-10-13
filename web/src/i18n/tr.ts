@@ -689,7 +689,6 @@ export default {
   'Trazer de volta': 'Geri getir',
   'Trazer de volta para esta janela': 'Bu pencereye geri getir',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Buradaki her şey ücretsiz. İstediğini seç, istediğinde değiştir.',
-  'Tudo de graça, sempre': 'Her zaman ücretsiz',
   'Última': 'Sonuncu',
   'Últimas 24 horas': 'Son 24 saat',
   'Últimas quedas': 'Son kesintiler',

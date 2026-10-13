@@ -652,7 +652,6 @@ export default {
   'Trazer de volta': 'Rudisha',
   'Trazer de volta para esta janela': 'Rudisha kwenye dirisha hili',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Kila kitu hapa ni bure. Chagua unachotaka, badilisha wakati wowote.',
-  'Tudo de graça, sempre': 'Bure daima',
   'Última': 'Ya mwisho',
   'Últimas 24 horas': 'Saa 24 zilizopita',
   'Últimas quedas': 'Kukatika kwa mwisho',

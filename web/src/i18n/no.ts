@@ -1018,7 +1018,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Alt her er gratis. Velg hva du vil, bytt når du vil.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Rolig så langt. Når noen blir med i et anrop, vises det her.',
-  'Tudo de graça, sempre': 'Alt gratis, alltid',
   'Turma formada': 'Gjengen er samlet',
   'Última': 'Siste',
   'Últimas 24 horas': 'Siste 24 timer',

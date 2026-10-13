@@ -560,7 +560,6 @@ export default {
   ESC: 'Esc',
 
   // Магазин и знаки
-  'Tudo de graça, sempre': 'Всё бесплатно, всегда',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Здесь всё бесплатно. Бери что хочешь и меняй когда хочешь.',
   'Carregando…': 'Загрузка…',

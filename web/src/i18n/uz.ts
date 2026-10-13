@@ -1026,7 +1026,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Bu yerda hammasi bepul. Xohlaganingizni tanlang, xohlagan vaqtda almashtiring.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Hozircha hammasi tinch. Kimdir qoʻngʻiroqqa kirsa, shu yerda koʻrinadi.',
-  'Tudo de graça, sempre': 'Hammasi bepul, doimo',
   'Turma formada': 'Davra yigʻildi',
   'Última': 'Oxirgi',
   'Últimas 24 horas': 'Soʻnggi 24 soat',

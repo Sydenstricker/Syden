@@ -563,7 +563,6 @@ export default {
   ESC: 'Esc',
 
   // Shop und Abzeichen
-  'Tudo de graça, sempre': 'Alles kostenlos, immer',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Hier ist alles kostenlos. Nimm, was du willst, und wechsle, wann du willst.',
   'Carregando…': 'Wird geladen…',

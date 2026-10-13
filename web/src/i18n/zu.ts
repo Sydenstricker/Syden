@@ -1019,7 +1019,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Konke lapha kumahhala. Khetha okufunayo, ushintshe noma nini.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Konke kuthule okwamanje. Uma othile engena ekholini, kuvela lapha.',
-  'Tudo de graça, sempre': 'Konke mahhala, njalo',
   'Turma formada': 'Iqembu selakhiwe',
   'Última': 'Okokugcina',
   'Últimas 24 horas': 'Amahora angu-24 adlule',

@@ -1015,7 +1015,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Овде је све бесплатно. Изабери шта хоћеш, мењај кад хоћеш.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'За сада је мирно. Кад неко уђе у позив, појавиће се овде.',
-  'Tudo de graça, sempre': 'Све бесплатно, увек',
   'Turma formada': 'Екипа на окупу',
   'Última': 'Последња',
   'Últimas 24 horas': 'Последња 24 сата',

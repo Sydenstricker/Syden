@@ -2,6 +2,9 @@
 //
 // - Sem ninguém na call, o salão fica vazio (só o coelho do balcão) — a tela não finge movimento.
 // - O Edu e a Fabi entram na Sala 1: dois lugares do salão se ocupam, na tela da Duda, sem recarregar.
+// - O Edu escolheu um coelho pronto de avatar: aparece COM ELE no salão; a Fabi (sem pronto) com um coelho do salão.
+//   Os dois com o nome em cima (13/10/2026).
+// - O balcão não leva mais ao guarda-roupa.
 // - Passar o mouse na TV mostra o que ela faz; o fliperama leva à sala de voz com a estante de jogos aberta.
 //
 //   node e2e/salao-da-comunidade.mjs   (API de teste na 3099, site na 5174 e LiveKit local na 7880)
@@ -50,6 +53,14 @@ try {
         }),
       convite,
     );
+    if (nome === 'edu')
+      await p.evaluate(async () =>
+        fetch('http://localhost:3099/api/me/avatar-pronto', {
+          method: 'PUT',
+          headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token'), 'content-type': 'application/json' },
+          body: JSON.stringify({ numero: 3 }),
+        }),
+      );
     await p.reload();
     await dispensarPresentes(p);
     // As iniciais de "Salão 12345" são S1…S9; "SY" é a comunidade do Syden, onde todo mundo entra.
@@ -61,6 +72,11 @@ try {
   ok('o Edu e a Fabi entraram na call, e o salão da Duda encheu sozinho');
   const nomes = await salao.locator('.salao-peca.na-call').evaluateAll((els) => els.map((e) => e.title));
   nomes.length === 2 ? ok(`quem está na call tem nome no salão: ${nomes.join(', ')}`) : falhou(`nomes: ${nomes.join(', ')}`);
+  const etiquetas = await salao.locator('.salao-nome').allInnerTexts();
+  etiquetas.includes('edu' + s) && etiquetas.includes('fabi' + s) ? ok('os dois têm o nome em cima') : falhou(`etiquetas: ${etiquetas.join(', ')}`);
+  const busto = await salao.locator('.salao-busto').getAttribute('style');
+  busto?.includes('coelho-03') ? ok('o Edu aparece com o coelho que ele escolheu') : falhou(`o coelho do Edu: ${busto}`);
+  (await duda.getByRole('button', { name: /Guarda-roupa/ }).count()) === 0 ? ok('o balcão não leva mais ao guarda-roupa') : falhou('o guarda-roupa ainda está no salão');
 
   await duda.getByRole('button', { name: /^Entrar na voz/ }).first().hover();
   await duda.locator('.salao-rotulo').waitFor({ timeout: 3000 });

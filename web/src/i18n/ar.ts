@@ -562,7 +562,6 @@ export default {
   ESC: 'Esc',
 
   // المتجر والشارات
-  'Tudo de graça, sempre': 'كل شيء مجاني، دائمًا',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'كل ما هنا مجاني. اختر ما تشاء، وبدّل متى تشاء.',
   'Carregando…': 'جارٍ التحميل…',

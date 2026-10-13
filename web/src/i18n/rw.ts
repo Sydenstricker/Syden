@@ -610,7 +610,6 @@ export default {
   'Tela de boas-vindas': 'Ekara y\'ikaze',
   'Tirar': 'Kuraho',
   'Título': 'Umutwe',
-  'Tudo de graça, sempre': 'Byose ni ubuntu, iteka',
   'Usar': 'Koresha',
   'Visitas': 'Gusurwa',
   'Voz': 'Ijwi',

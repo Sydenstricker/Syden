@@ -1020,7 +1020,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Vse tukaj je brezplačno. Izberi, kar želiš, in menjaj, kadar želiš.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Zaenkrat mirno. Ko se kdo pridruži klicu, se to pojavi tukaj.',
-  'Tudo de graça, sempre': 'Vse brezplačno, vedno',
   'Turma formada': 'Ekipa zbrana',
   'Última': 'Zadnja',
   'Últimas 24 horas': 'Zadnjih 24 ur',

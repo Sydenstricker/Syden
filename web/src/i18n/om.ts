@@ -974,7 +974,6 @@ export default {
   'Trocar o e-mail': 'Imeelii jijjiiri',
   'Trocar senha': 'Jecha icciitii jijjiiri',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Wanti asii hundi bilisa. Waan barbaadde filadhu, yeroo barbaadde jijjiiri.',
-  'Tudo de graça, sempre': 'Hundi bilisa, yeroo hunda',
   'Turma formada': 'Gareen guutameera',
   'Última': 'Dhumaa',
   'Últimas 24 horas': 'Sa’aatii 24 darban',

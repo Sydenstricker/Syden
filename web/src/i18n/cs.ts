@@ -1017,7 +1017,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Všechno tady je zdarma. Vyber si, co chceš, a měň, kdy chceš.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Zatím klid. Když se někdo připojí k hovoru, objeví se to tady.',
-  'Tudo de graça, sempre': 'Všechno zdarma, vždycky',
   'Turma formada': 'Parta pohromadě',
   'Última': 'Poslední',
   'Últimas 24 horas': 'Posledních 24 hodin',

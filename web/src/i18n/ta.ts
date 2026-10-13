@@ -870,7 +870,6 @@ export default {
   'Trocar o e-mail': 'மின்னஞ்சலை மாற்று',
   'Trocar senha': 'கடவுச்சொல்லை மாற்று',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'இங்கே எல்லாம் இலவசம். வேண்டியதைத் தேர்ந்தெடுங்கள், எப்போது வேண்டுமானாலும் மாற்றுங்கள்.',
-  'Tudo de graça, sempre': 'எப்போதும் எல்லாம் இலவசம்',
   'Turma formada': 'கூட்டம் சேர்ந்தது',
   'Última': 'சமீபத்தியது',
   'Últimas 24 horas': 'கடந்த 24 மணி நேரம்',

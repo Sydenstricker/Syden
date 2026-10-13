@@ -682,7 +682,6 @@ export default {
   'Trazer de volta': '恢复',
   'Trazer de volta para esta janela': '收回这个窗口',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': '这里全部免费。想要什么就选，随时可以换。',
-  'Tudo de graça, sempre': '永远免费',
   'Última': '最近一次',
   'Últimas 24 horas': '最近 24 小时',
   'Últimas quedas': '最近的中断',

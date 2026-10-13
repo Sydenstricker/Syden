@@ -1020,7 +1020,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Viss šeit ir bez maksas. Izvēlies, ko gribi, maini, kad gribi.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Pagaidām mierīgi. Kad kāds pievienosies zvanam, tas parādīsies šeit.',
-  'Tudo de graça, sempre': 'Viss bez maksas, vienmēr',
   'Turma formada': 'Kompānija sanākusi',
   'Última': 'Pēdējā',
   'Últimas 24 horas': 'Pēdējās 24 stundas',

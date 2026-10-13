@@ -692,7 +692,6 @@ export default {
   'Trazer de volta': 'ফিরিয়ে আনো',
   'Trazer de volta para esta janela': 'এই জানালায় ফিরিয়ে আনো',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'এখানে সব বিনামূল্যে। যা খুশি বেছে নাও, যখন খুশি বদলাও।',
-  'Tudo de graça, sempre': 'সবসময় বিনামূল্যে',
   'Última': 'শেষটা',
   'Últimas 24 horas': 'শেষ ২৪ ঘণ্টা',
   'Últimas quedas': 'শেষ কয়েকবার বন্ধ',

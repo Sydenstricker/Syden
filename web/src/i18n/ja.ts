@@ -866,7 +866,6 @@ export default {
   'Trocar o e-mail': 'メールアドレスを変える',
   'Trocar senha': 'パスワードを変える',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'ここにあるものはすべて無料です。好きなものを選んで、いつでも変えられます。',
-  'Tudo de graça, sempre': 'ずっと無料',
   'Turma formada': '仲間ができました',
   'Última': '最新',
   'Últimas 24 horas': '直近24時間',

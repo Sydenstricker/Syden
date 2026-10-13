@@ -999,7 +999,6 @@ export default {
   'Trocar o e-mail': 'Zmień e-mail',
   'Trocar senha': 'Zmień hasło',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Wszystko tutaj jest za darmo. Wybierz, co chcesz, zmieniaj, kiedy chcesz.',
-  'Tudo de graça, sempre': 'Wszystko za darmo, zawsze',
   'Turma formada': 'Ekipa w komplecie',
   'Última': 'Ostatnia',
   'Últimas 24 horas': 'Ostatnie 24 godziny',

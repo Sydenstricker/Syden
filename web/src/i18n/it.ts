@@ -692,7 +692,6 @@ export default {
   'Trazer de volta': 'Recupera',
   'Trazer de volta para esta janela': 'Riporta in questa finestra',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Qui è tutto gratis. Scegli quello che vuoi, cambialo quando vuoi.',
-  'Tudo de graça, sempre': 'Tutto gratis, sempre',
   'Última': 'Ultima',
   'Últimas 24 horas': 'Ultime 24 ore',
   'Últimas quedas': 'Ultime interruzioni',

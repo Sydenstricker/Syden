@@ -867,7 +867,6 @@ export default {
   'Trocar o e-mail': 'ఇమెయిల్‌ను మార్చు',
   'Trocar senha': 'పాస్‌వర్డ్‌ను మార్చు',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'ఇక్కడ అన్నీ ఉచితం. కావలసినది ఎంచుకోండి, ఎప్పుడైనా మార్చుకోండి.',
-  'Tudo de graça, sempre': 'ఎప్పుడూ అంతా ఉచితం',
   'Turma formada': 'గుంపు తయారైంది',
   'Última': 'తాజాది',
   'Últimas 24 horas': 'గత 24 గంటలు',

@@ -1029,7 +1029,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'މިތާނގައި ހުރިހާ އެއްޗެއް ހިލޭ. ބޭނުން އެއްޗެއް ހޮވާ، ބޭނުން ވަގުތަކު ބަދަލުކުރޭ.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'މިހާރު ހުރިހާ ކަމެއް ހަމަޖެހިފައި. މީހަކު ކޯލަކަށް ވަދެއްޖެނަމަ، މިތާނގައި ފެންނާނެ.',
-  'Tudo de graça, sempre': 'ހުރިހާ އެއްޗެއް ހިލޭ، އަބަދުވެސް',
   'Turma formada': 'ޓީމު ހެދިއްޖެ',
   'Última': 'އެންމެ ފަހުގެ',
   'Últimas 24 horas': 'ފަހު 24 ގަޑިއިރު',

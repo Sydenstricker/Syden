@@ -975,7 +975,6 @@ export default {
   'Trocar o e-mail': 'အီးမေးလ် ပြောင်းရန်',
   'Trocar senha': 'စကားဝှက် ပြောင်းရန်',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'ဒီမှာ အားလုံး အခမဲ့ပါ။ ကြိုက်တာ ရွေး၊ ကြိုက်တဲ့အချိန် ပြောင်းပါ။',
-  'Tudo de graça, sempre': 'အားလုံး အခမဲ့၊ အမြဲတမ်း',
   'Turma formada': 'အဖွဲ့ ဖွဲ့ပြီး',
   'Última': 'နောက်ဆုံး',
   'Últimas 24 horas': 'နောက်ဆုံး ၂၄ နာရီ',

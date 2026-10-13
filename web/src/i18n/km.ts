@@ -1017,7 +1017,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'អ្វីៗនៅទីនេះឥតគិតថ្លៃ។ ជ្រើសរើសអ្វីដែលអ្នកចង់ ប្តូរពេលណាក៏បាន។',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'អ្វីៗស្ងប់ស្ងាត់សម្រាប់ពេលនេះ។ នៅពេលនរណាម្នាក់ចូលការហៅ វានឹងបង្ហាញនៅទីនេះ។',
-  'Tudo de graça, sempre': 'អ្វីៗឥតគិតថ្លៃ ជានិច្ច',
   'Turma formada': 'ក្រុមបានបង្កើតឡើង',
   'Última': 'ចុងក្រោយ',
   'Últimas 24 horas': '24 ម៉ោងចុងក្រោយ',

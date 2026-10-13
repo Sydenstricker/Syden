@@ -1020,7 +1020,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'यहाँ सबै निःशुल्क छ। जे मन लाग्छ छान्नुहोस्, जहिले मन लाग्छ बदल्नुहोस्।',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'अहिलेलाई सबै शान्त छ। कोही कलमा आएपछि यहाँ देखिन्छ।',
-  'Tudo de graça, sempre': 'सबै निःशुल्क, सधैँ',
   'Turma formada': 'टोली बन्यो',
   'Última': 'पछिल्लो',
   'Últimas 24 horas': 'पछिल्लो २४ घण्टा',

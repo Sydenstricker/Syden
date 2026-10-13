@@ -1020,7 +1020,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Bu ýerde hemme zat mugt. Isleniňi saýla, islän wagtyň çalyş.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Häzirlikçe asuda. Kimdir biri jaňa girende, bu ýerde görüner.',
-  'Tudo de graça, sempre': 'Hemme zat mugt, hemişe',
   'Turma formada': 'Topar ýygnandy',
   'Última': 'Iň soňky',
   'Últimas 24 horas': 'Soňky 24 sagat',

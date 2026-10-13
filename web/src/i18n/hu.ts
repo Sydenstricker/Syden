@@ -1020,7 +1020,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Itt minden ingyenes. Válassz, amit akarsz, cseréld, amikor akarod.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Egyelőre csend van. Ha valaki belép egy hívásba, itt megjelenik.',
-  'Tudo de graça, sempre': 'Minden ingyenes, mindig',
   'Turma formada': 'Összeállt a banda',
   'Última': 'Utolsó',
   'Últimas 24 horas': 'Elmúlt 24 óra',

@@ -897,7 +897,6 @@ export default {
   'Trocar o e-mail': 'Αλλαγή του email',
   'Trocar senha': 'Αλλαγή κωδικού',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Όλα εδώ είναι δωρεάν. Διάλεξε ό,τι θες, άλλαξέ το όποτε θες.',
-  'Tudo de graça, sempre': 'Όλα δωρεάν, πάντα',
   'Turma formada': 'Η παρέα σχηματίστηκε',
   'Última': 'Τελευταία',
   'Últimas 24 horas': 'Τελευταίες 24 ώρες',

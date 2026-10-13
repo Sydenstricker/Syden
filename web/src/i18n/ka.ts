@@ -1037,7 +1037,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'აქ ყველაფერი უფასოა. აირჩიე, რაც გინდა, შეცვალე, როცა გინდა.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'ჯერჯერობით ყველაფერი მშვიდადაა. როცა ვინმე ზარში შევა, აქ გამოჩნდება.',
-  'Tudo de graça, sempre': 'ყველაფერი უფასოდ, ყოველთვის',
   'Turma formada': 'გუნდი შეიკრა',
   'Última': 'ბოლო',
   'Últimas 24 horas': 'ბოლო 24 საათი',

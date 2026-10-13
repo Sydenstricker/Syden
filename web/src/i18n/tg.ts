@@ -1019,7 +1019,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Ҳама чиз ин ҷо ройгон аст. Ҳар чӣ мехоҳед интихоб кунед, ҳар вақт мехоҳед иваз кунед.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Ҳоло ором аст. Вақте ки касе ба занг ворид шавад, ин ҷо пайдо мешавад.',
-  'Tudo de graça, sempre': 'Ҳама чиз ройгон, ҳамеша',
   'Turma formada': 'Гурӯҳ ҷамъ шуд',
   'Última': 'Охирин',
   'Últimas 24 horas': '24 соати охир',

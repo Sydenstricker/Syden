@@ -692,7 +692,6 @@ export default {
   'Trazer de volta': 'Terughalen',
   'Trazer de volta para esta janela': 'Terug naar dit venster halen',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Alles hier is gratis. Kies wat je wilt, wissel wanneer je wilt.',
-  'Tudo de graça, sempre': 'Altijd gratis',
   'Última': 'Laatste',
   'Últimas 24 horas': 'Laatste 24 uur',
   'Últimas quedas': 'Laatste storingen',

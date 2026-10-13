@@ -1014,7 +1014,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Мұндағының бәрі тегін. Қалағаныңызды таңдаңыз, қалаған кезде ауыстырыңыз.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Әзірге бәрі тыныш. Біреу қоңырауға кірсе, осында көрінеді.',
-  'Tudo de graça, sempre': 'Бәрі тегін, әрқашан',
   'Turma formada': 'Топ жиналды',
   'Última': 'Соңғы',
   'Últimas 24 horas': 'Соңғы 24 сағат',

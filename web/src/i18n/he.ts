@@ -984,7 +984,6 @@ export default {
   'Trocar o e-mail': 'להחליף את המייל',
   'Trocar senha': 'להחליף סיסמה',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'הכל כאן בחינם. בוחרים מה שרוצים, מחליפים מתי שרוצים.',
-  'Tudo de graça, sempre': 'הכל בחינם, תמיד',
   'Turma formada': 'החבורה בהרכב מלא',
   'Última': 'אחרונה',
   'Últimas 24 horas': '24 השעות האחרונות',

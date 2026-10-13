@@ -891,7 +891,6 @@ export default {
   'Trocar o e-mail': 'Schimbă emailul',
   'Trocar senha': 'Schimbă parola',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Totul de aici e gratuit. Alege ce vrei, schimbă când vrei.',
-  'Tudo de graça, sempre': 'Totul gratuit, mereu',
   'Turma formada': 'Gașcă formată',
   'Última': 'Ultima',
   'Últimas 24 horas': 'Ultimele 24 de ore',

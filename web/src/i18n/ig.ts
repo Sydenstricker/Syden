@@ -607,7 +607,6 @@ export default {
   'Tela de boas-vindas': 'Ihuenyo nnabata',
   'Tirar': 'Wepụ',
   'Título': 'Aha isi',
-  'Tudo de graça, sempre': 'Ihe niile n\'efu, mgbe niile',
   'Usar': 'Jiri',
   'Visitas': 'Nleta',
   'Voz': 'Olu',

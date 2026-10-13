@@ -1,4 +1,5 @@
 import { type CSSProperties, type ReactNode, useState } from 'react';
+import { enderecoDoCoelhoPronto } from './Avatar';
 import balcaoUrl from './assets/salao/balcao.png';
 import fliperamaUrl from './assets/salao/fliperama.png';
 import frenteBalcaoUrl from './assets/salao/frente-balcao.png';
@@ -21,10 +22,13 @@ import tv2Url from './assets/salao/tv-2.png';
  * peças (e2e/pixel-art/lobby/, copiadas para web/src/assets/salao/), sem gerar arte nova.
  *
  * - CADA FUNÇÃO MORA NUM OBJETO, como no quarto: a TV leva à sala de voz, o fliperama aos mini-games, a estante aos
- *   canais, a janela chama alguém de fora, o balcão é o guarda-roupa, e o quadro na parede tem a cara da comunidade.
+ *   canais, a janela chama alguém de fora, e o quadro na parede tem a cara da comunidade. (O balcão era o guarda-roupa;
+ *   saiu em 13/10/2026, decisão dele: "na home não precisa ter guarda-roupa aqui".)
  * - O SALÃO ENCHE COM QUEM ESTÁ NA CALL AGORA: cada pessoa na sala de voz ocupa um lugar (o sofá primeiro, depois o
  *   chão em frente à TV, o fliperama, as rodinhas de conversa). Sem ninguém na call, o salão fica vazio — a tela não
  *   finge movimento que não existe. Só o coelho do balcão está sempre lá: é quem recebe e quem lê o recado do dono.
+ *   Quem escolheu um coelho pronto de avatar aparece COM ELE, e todo mundo leva o nome em cima (pedido dele,
+ *   13/10/2026: "seria legal se aparecesse o MEU coelho, não UM coelho"). Quem usa foto segue com um coelho do salão.
  * - O CLIQUE ACERTA A CAIXA DO OBJETO (o salão não tem máscaras por objeto, que pediriam arte nova); quem usa o
  *   teclado chega pelos botões invisíveis em cada caixa, e o foco acende o mesmo contorno.
  *
@@ -106,8 +110,8 @@ function Peca({ url, caixa, quadros, duracao, atraso, gente, titulo, naCall }: {
 
 export function Salao({ acoes, naCall, quadro }: {
   acoes: AcoesDoSalao;
-  /** Os nomes de quem está na call agora, em qualquer sala de voz da comunidade. */
-  naCall: string[];
+  /** Quem está na call agora, em qualquer sala de voz da comunidade: o nome e o coelho pronto, se escolheu um. */
+  naCall: { nome: string; pronto: number | null }[];
   /** O que vai dentro do quadro da parede: a imagem da comunidade. */
   quadro: ReactNode;
 }) {
@@ -125,9 +129,38 @@ export function Salao({ acoes, naCall, quadro }: {
         {quadro}
       </div>
 
-      {naCall.slice(0, LUGARES.length).map((nome, i) => (
-        <Peca key={i} {...LUGARES[i]} gente naCall titulo={nome} />
-      ))}
+      {naCall.slice(0, LUGARES.length).map((pessoa, i) => {
+        const lugar = LUGARES[i];
+        const [x0, y0, x1, y1] = lugar.caixa;
+        // O coelho pronto é um busto: fica de pé no fundo do lugar, um pouco maior que as caixas pequenas da TV.
+        const lado = Math.min(34, y1 - y0 + 6);
+        const meio = (x0 + x1) / 2;
+        const caixa: Caixa = pessoa.pronto ? [meio - lado / 2, y1 - lado, meio + lado / 2, y1] : lugar.caixa;
+        return (
+          <span key={i}>
+            {pessoa.pronto ? (
+              <span
+                className="salao-peca gente na-call salao-busto"
+                title={pessoa.nome}
+                style={
+                  {
+                    ...posicao(caixa),
+                    backgroundImage: `url(${enderecoDoCoelhoPronto(pessoa.pronto)})`,
+                    zIndex: y1,
+                    '--duracao': `${lugar.duracao}s`,
+                    '--atraso': `${lugar.atraso}s`,
+                  } as CSSProperties
+                }
+              />
+            ) : (
+              <Peca {...lugar} gente naCall titulo={pessoa.nome} />
+            )}
+            <span className="salao-nome" style={{ left: `${(meio / W) * 100}%`, top: `${(caixa[1] / H) * 100}%`, zIndex: 200 + y1 }}>
+              {pessoa.nome}
+            </span>
+          </span>
+        );
+      })}
       {sobra > 0 && (
         <span className="salao-mais" aria-hidden="true">
           +{sobra}

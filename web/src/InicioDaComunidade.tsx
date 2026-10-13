@@ -1,4 +1,4 @@
-import { Gamepad2, Hash, Link2, Mic, Sparkles, Store, X } from 'lucide-react';
+import { Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
 import { useState } from 'react';
 import { api } from './api';
 import balcaoUrl from './assets/salao/balcao.png';
@@ -6,6 +6,7 @@ import { acharArte } from './boasVindas';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
+import { useDirectory } from './directory';
 import { useT } from './i18n';
 import { pedirParaAbrirAoEntrar } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
@@ -65,7 +66,6 @@ export function InicioDaComunidade({
   quantosMembros,
   naVoz,
   aoAbrirCanal,
-  aoAbrirGuardaRoupa,
   aoEditar,
   aoFechar,
   aoAbrirConversa,
@@ -77,13 +77,13 @@ export function InicioDaComunidade({
   /** Quem está nas salas de voz desta comunidade agora: é quem enche o salão. */
   naVoz: VoiceMember[];
   aoAbrirCanal: (canal: Channel) => void;
-  aoAbrirGuardaRoupa: () => void;
   aoEditar: () => void;
   aoFechar: () => void;
   /** Um ticket aberto: a conversa privada nova abre na hora. */
   aoAbrirConversa: (conversa: DirectChannel) => void;
 }) {
   const t = useT();
+  const { members: membros } = useDirectory();
   const [copiado, setCopiado] = useState(false);
   const arte = acharArte(dados.boasVindas?.arte);
 
@@ -143,7 +143,6 @@ export function InicioDaComunidade({
         onClick: () => void copiarConvite(),
       },
     }),
-    balcao: { rotulo: t('Guarda-roupa'), sub: t('Tudo de graça, sempre'), onClick: aoAbrirGuardaRoupa },
     ...(dados.podeEditar && {
       quadro: {
         rotulo: dados.boasVindas ? t('Mudar esta tela') : t('Montar esta tela'),
@@ -158,7 +157,6 @@ export function InicioDaComunidade({
     { id: 'fliperama', icone: <Gamepad2 size={16} /> },
     { id: 'estante', icone: <Hash size={16} /> },
     { id: 'janela', icone: <Link2 size={16} /> },
-    { id: 'balcao', icone: <Store size={16} /> },
     { id: 'quadro', icone: <Sparkles size={16} /> },
   ];
 
@@ -190,7 +188,13 @@ export function InicioDaComunidade({
           {t('{n} pessoas nesta comunidade', { n: quantosMembros })} · {naChamada}
         </p>
 
-        <Salao acoes={acoes} naCall={naVoz.map((m) => m.username)} quadro={<CommunityIcon community={community} size={40} standalone />} />
+        {/* Cada um com o PRÓPRIO coelho (o avatar pronto que escolheu) e o nome em cima: pedido do Sydenstricker em
+            13/10/2026 (ver Salao.tsx). */}
+        <Salao
+          acoes={acoes}
+          naCall={naVoz.map((m) => ({ nome: m.username, pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
+          quadro={<CommunityIcon community={community} size={40} standalone />}
+        />
 
         <RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} />
       </div>

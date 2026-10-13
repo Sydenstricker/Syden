@@ -603,7 +603,6 @@ export default {
   'Tela de boas-vindas': 'Sikirini faʻafeiloaʻi',
   'Tirar': 'Aveese',
   'Título': 'Ulutala',
-  'Tudo de graça, sempre': 'E leai se totogi, e faʻavavau',
   'Usar': 'Faʻaaoga',
   'Visitas': 'Asiasiga',
   'Voz': 'Leo',

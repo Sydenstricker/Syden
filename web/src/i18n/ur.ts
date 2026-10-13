@@ -872,7 +872,6 @@ export default {
   'Trocar o e-mail': 'ای میل بدلیں',
   'Trocar senha': 'پاس ورڈ بدلیں',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'یہاں سب کچھ مفت ہے۔ جو چاہیں چنیں، جب چاہیں بدلیں۔',
-  'Tudo de graça, sempre': 'ہمیشہ، سب کچھ مفت',
   'Turma formada': 'ٹولی بن گئی',
   'Última': 'تازہ ترین',
   'Últimas 24 horas': 'پچھلے 24 گھنٹے',

@@ -605,7 +605,6 @@ export default {
   'Tela de boas-vindas': 'Sikilini talitali',
   'Tirar': 'Toʻo',
   'Título': 'ʻUluʻi tohi',
-  'Tudo de graça, sempre': 'Taʻetotongi kotoa, maʻu ai pē',
   'Usar': 'Ngāueʻaki',
   'Visitas': 'Ngaahi ʻaʻahi',
   'Voz': 'Leʻo',

@@ -873,7 +873,6 @@ export default {
   'Trocar o e-mail': 'تعویض ایمیل',
   'Trocar senha': 'تعویض رمز عبور',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'اینجا همه‌چیز رایگان است. هرچه خواستید انتخاب کنید، هر وقت خواستید عوض کنید.',
-  'Tudo de graça, sempre': 'همیشه رایگان',
   'Turma formada': 'جمع شکل گرفت',
   'Última': 'تازه‌ترین',
   'Últimas 24 horas': '۲۴ ساعت گذشته',

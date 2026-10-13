@@ -1018,7 +1018,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Kaikki täällä on ilmaista. Valitse mitä haluat, vaihda kun haluat.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Rauhallista toistaiseksi. Kun joku liittyy puheluun, se näkyy tässä.',
-  'Tudo de graça, sempre': 'Kaikki ilmaista, aina',
   'Turma formada': 'Porukka koossa',
   'Última': 'Viimeisin',
   'Últimas 24 horas': 'Viimeiset 24 tuntia',

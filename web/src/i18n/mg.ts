@@ -1018,7 +1018,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Maimaim-poana ny zava-drehetra eto. Safidio izay tianao, ovay amin’ny fotoana tianao.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Milamina ny zava-drehetra aloha. Rehefa misy miditra antso, hiseho eto izany.',
-  'Tudo de graça, sempre': 'Maimaim-poana avokoa, mandrakariva',
   'Turma formada': 'Vondrona vita',
   'Última': 'Farany',
   'Últimas 24 horas': 'Ora 24 farany',

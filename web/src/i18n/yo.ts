@@ -906,7 +906,6 @@ export default {
   'Trocar o e-mail': 'Yí ímeèlì náà padà',
   'Trocar senha': 'Yí ọ̀rọ̀ aṣínà padà',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Gbogbo ohun tó wà níbí jẹ́ ọ̀fẹ́. Ẹ yan ohun tí ẹ fẹ́, ẹ sì yí i padà nígbàkúgbà.',
-  'Tudo de graça, sempre': 'Gbogbo rẹ̀ lọ́fẹ̀ẹ́, nígbà gbogbo',
   'Turma formada': 'Ẹgbẹ́ ti pé',
   'Última': 'Ìkẹyìn',
   'Últimas 24 horas': 'Wákàtí 24 tó kọjá',

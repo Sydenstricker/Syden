@@ -598,7 +598,6 @@ export default {
   'Tela de boas-vindas': 'Sikirini ni veikidavaki',
   'Tirar': 'Kauta tani',
   'Título': 'Ulutaga',
-  'Tudo de graça, sempre': 'Sega ni saumi na ka kece, ena veigauna kece',
   'Usar': 'Vakayagataka',
   'Visitas': 'Veisiko',
   'Voz': 'Domo',

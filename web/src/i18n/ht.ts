@@ -1029,7 +1029,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Tout bagay isit la gratis. Chwazi sa ou vle, chanje l lè ou vle.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Tout bagay kalm pou kounye a. Lè yon moun antre nan yon apèl, l ap parèt isit la.',
-  'Tudo de graça, sempre': 'Tout bagay gratis, toujou',
   'Turma formada': 'Ekip la fòme',
   'Última': 'Dènye',
   'Últimas 24 horas': 'Dènye 24 èdtan yo',

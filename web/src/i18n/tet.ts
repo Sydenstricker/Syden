@@ -601,7 +601,6 @@ export default {
   'Tela de boas-vindas': 'Ekrán simu-malu nian',
   'Tirar': 'Hasai',
   'Título': 'Títulu',
-  'Tudo de graça, sempre': 'Buat hotu grátis, sempre',
   'Usar': 'Uza',
   'Visitas': 'Vizita sira',
   'Voz': 'Lian',

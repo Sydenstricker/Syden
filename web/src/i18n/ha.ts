@@ -887,7 +887,6 @@ export default {
   'Trocar o e-mail': 'Canza imel',
   'Trocar senha': 'Canza kalmar sirri',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Komai a nan kyauta ne. Ku zaɓi abin da kuke so, ku canza a lokacin da kuke so.',
-  'Tudo de graça, sempre': 'Komai kyauta, kullum',
   'Turma formada': 'Tawaga ta cika',
   'Última': 'Ta ƙarshe',
   'Últimas 24 horas': 'Awanni 24 na ƙarshe',

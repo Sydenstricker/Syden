@@ -10181,6 +10181,24 @@ textarea {
   }
 }
 
+/* O nome de quem está na call, em cima do coelho dele: uma etiqueta pequena, legível sobre a pintura. */
+.salao-nome {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 2px));
+  max-width: 22%;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(16, 18, 26, 0.78);
+  color: #fff;
+  font-size: calc(10px * var(--escala-do-texto));
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
 /* O quadro da parede: a imagem da comunidade, emoldurada, ocupando o vidro do quadro pintado. */
 .salao-quadro {
   position: absolute;

@@ -1038,7 +1038,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Այստեղ ամեն ինչ անվճար է։ Ընտրիր ինչ ուզում ես, փոխիր՝ երբ ուզես։',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Առայժմ ամեն ինչ հանգիստ է։ Երբ ինչ-որ մեկը միանա զանգի, այստեղ կերևա։',
-  'Tudo de graça, sempre': 'Ամեն ինչ անվճար, միշտ',
   'Turma formada': 'Թիմը կազմված է',
   'Última': 'Վերջինը',
   'Últimas 24 horas': 'Վերջին 24 ժամը',

@@ -898,7 +898,6 @@ export default {
   'Trocar o e-mail': 'เปลี่ยนอีเมล',
   'Trocar senha': 'เปลี่ยนรหัสผ่าน',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'ทุกอย่างที่นี่ฟรี เลือกอะไรก็ได้ เปลี่ยนเมื่อไรก็ได้',
-  'Tudo de graça, sempre': 'ฟรีทั้งหมด ตลอดไป',
   'Turma formada': 'ตั้งแก๊งได้แล้ว',
   'Última': 'ล่าสุด',
   'Últimas 24 horas': '24 ชั่วโมงที่ผ่านมา',

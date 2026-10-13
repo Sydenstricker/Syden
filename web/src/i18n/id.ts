@@ -692,7 +692,6 @@ export default {
   'Trazer de volta': 'Kembalikan',
   'Trazer de volta para esta janela': 'Bawa kembali ke jendela ini',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Semua di sini gratis. Pilih yang kamu mau, ganti kapan saja.',
-  'Tudo de graça, sempre': 'Gratis selamanya',
   'Última': 'Terakhir',
   'Últimas 24 horas': '24 jam terakhir',
   'Últimas quedas': 'Gangguan terakhir',

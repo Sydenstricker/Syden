@@ -576,7 +576,6 @@ export default {
   'Tela de boas-vindas': 'Welcome screen',
   'Tirar': 'Remove',
   'Título': 'Title',
-  'Tudo de graça, sempre': 'All free, always',
   'Usar': 'Use',
   'Visitas': 'Visits',
   'Voz': 'Voice',

@@ -1031,7 +1031,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'ནཱ་གི་ཆ་མཉམ་ རིན་མེད་ཨིན། ག་ཅི་དགོ་རུང་གདམ། ནམ་དགོ་རུང་སོར།',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'ད་ལྟོ་ ག་ནི་ཡང་མེད། མི་ལ་ལོ་ ཁ་པར་ནང་འཛུལ་བ་ཅིན་ ནཱ་ལུ་སྟོན་འོང་།',
-  'Tudo de graça, sempre': 'ཆ་མཉམ་རིན་མེད། ནམ་ཡང་།',
   'Turma formada': 'སྡེ་ཚན་ཚང་ཡི།',
   'Última': 'མཇུག་མ།',
   'Últimas 24 horas': 'ཆུ་ཚོད་ ༢༤ ཧེ་མ་ལས་',

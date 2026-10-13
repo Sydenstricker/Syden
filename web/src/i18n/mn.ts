@@ -1033,7 +1033,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Энд бүх зүйл үнэгүй. Хүссэнээ сонго, хүссэн үедээ соль.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Одоогоор бүх зүйл тайван. Хэн нэгэн дуудлагад ороход энд харагдана.',
-  'Tudo de graça, sempre': 'Бүгд үнэгүй, үргэлж',
   'Turma formada': 'Баг бүрдлээ',
   'Última': 'Сүүлийнх',
   'Últimas 24 horas': 'Сүүлийн 24 цаг',

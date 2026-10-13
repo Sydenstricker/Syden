@@ -966,7 +966,6 @@ export default {
   'Trocar o e-mail': 'E-poçtu dəyiş',
   'Trocar senha': 'Şifrəni dəyiş',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Burada hər şey pulsuzdur. İstədiyini seç, istədiyin vaxt dəyiş.',
-  'Tudo de graça, sempre': 'Hər şey pulsuz, həmişə',
   'Turma formada': 'Komanda toplandı',
   'Última': 'Sonuncu',
   'Últimas 24 horas': 'Son 24 saat',

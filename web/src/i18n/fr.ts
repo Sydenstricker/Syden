@@ -556,7 +556,6 @@ export default {
   ESC: 'Échap',
 
   // Boutique, badges et cosmétiques
-  'Tudo de graça, sempre': 'Tout est gratuit, toujours',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.':
     'Tout ici est gratuit. Choisissez ce que vous voulez, changez quand vous voulez.',
   'Tipos de cosmético': 'Types de cosmétiques',

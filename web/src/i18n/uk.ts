@@ -984,7 +984,6 @@ export default {
   'Trocar o e-mail': 'Змінити пошту',
   'Trocar senha': 'Змінити пароль',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Тут усе безкоштовно. Вибирай що хочеш, змінюй коли хочеш.',
-  'Tudo de graça, sempre': 'Усе безкоштовно, завжди',
   'Turma formada': 'Компанія зібралася',
   'Última': 'Остання',
   'Últimas 24 horas': 'Останні 24 години',

@@ -891,7 +891,6 @@ export default {
   'Trocar o e-mail': 'ኢሜይል ቀይር',
   'Trocar senha': 'የይለፍ ቃል ቀይር',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'እዚህ ሁሉም ነገር ነፃ ነው። የፈለጉትን ይምረጡ፣ በፈለጉት ጊዜ ይቀይሩ።',
-  'Tudo de graça, sempre': 'ሁሉም ነፃ፣ ሁሌም',
   'Turma formada': 'ቡድኑ ተሟልቷል',
   'Última': 'የመጨረሻው',
   'Últimas 24 horas': 'ያለፉት 24 ሰዓታት',

@@ -694,7 +694,6 @@ export default {
   'Trazer de volta': 'वापस लाओ',
   'Trazer de volta para esta janela': 'इस विंडो में वापस लाओ',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'यहाँ सब मुफ़्त है। जो चाहो चुनो, जब चाहो बदलो।',
-  'Tudo de graça, sempre': 'हमेशा मुफ़्त',
   'Última': 'पिछली',
   'Últimas 24 horas': 'पिछले 24 घंटे',
   'Últimas quedas': 'पिछली रुकावटें',

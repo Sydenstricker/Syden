@@ -1014,7 +1014,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'Aquí tot és de franc. Tria el que vulguis, canvia-ho quan vulguis.',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'Tot tranquil de moment. Quan algú entri en una trucada, apareixerà aquí.',
-  'Tudo de graça, sempre': 'Tot de franc, sempre',
   'Turma formada': 'Colla formada',
   'Última': 'Última',
   'Últimas 24 horas': 'Últimes 24 hores',

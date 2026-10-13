@@ -1019,7 +1019,6 @@ export default {
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': 'ທຸກຢ່າງຢູ່ນີ້ຟຣີ ເລືອກຕາມໃຈ ປ່ຽນເມື່ອໃດກໍໄດ້',
   'Tudo calmo por enquanto. Quando alguém entrar numa chamada, aparece aqui.':
     'ຕອນນີ້ຍັງງຽບຢູ່ ເມື່ອມີຄົນເຂົ້າການໂທ ຈະສະແດງຢູ່ນີ້',
-  'Tudo de graça, sempre': 'ຟຣີທຸກຢ່າງ ຕະຫຼອດໄປ',
   'Turma formada': 'ຮວມກຸ່ມໄດ້ແລ້ວ',
   'Última': 'ຫຼ້າສຸດ',
   'Últimas 24 horas': '24 ຊົ່ວໂມງຫຼ້າສຸດ',

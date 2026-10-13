@@ -684,7 +684,6 @@ export default {
   'Trazer de volta': '되살리기',
   'Trazer de volta para esta janela': '이 창으로 되돌리기',
   'Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.': '여기 있는 건 전부 공짜예요. 원하는 걸 고르고, 언제든 바꾸세요.',
-  'Tudo de graça, sempre': '언제나 무료',
   'Última': '마지막',
   'Últimas 24 horas': '지난 24시간',
   'Últimas quedas': '최근 끊김',
