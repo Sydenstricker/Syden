@@ -145,7 +145,10 @@ function versionarReferencias(pasta, paginas) {
     if (!existsSync(caminho)) continue;
     const antes = readFileSync(caminho, 'utf8');
     // Só endereços relativos e sem busca: o `[^"?:#]` deixa de fora https://... e o que já tem ?v=.
-    const depois = antes.replace(/(src|href)="([^"?:#]+\.(?:js|css))"/g, (inteiro, atributo, arquivo) => {
+    // As IMAGENS entraram em 13/10/2026: a cena do "sem anúncios" foi trocada com o mesmo nome de arquivo, e quem já
+    // tinha visitado o site seguiu vendo o coelho antigo por até quatro horas ("o coelho ainda está travado"). O
+    // srcset vale só com um endereço sozinho (o `[^"\s,]` recusa a lista "a.webp 1x, b.webp 2x").
+    const depois = antes.replace(/(src|href|srcset)="([^"?:#\s,]+\.(?:js|css|webp|png|svg|jpe?g|gif))"/g, (inteiro, atributo, arquivo) => {
       const alvo = join(pasta, arquivo);
       if (!existsSync(alvo)) return inteiro;
       versionadas++;

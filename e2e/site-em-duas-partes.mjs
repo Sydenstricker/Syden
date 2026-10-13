@@ -138,6 +138,19 @@ console.log('');
 }
 
 {
+  // E AS IMAGENS TAMBÉM (13/10/2026): a cena do "sem anúncios" foi trocada com o mesmo nome de arquivo, e quem já
+  // tinha visitado o site seguiu vendo o coelho antigo ("o coelho ainda está travado").
+  const { page, contexto } = await abrir();
+  await page.goto(BASE + '/', { waitUntil: 'load' });
+  const cena = await page.evaluate(() => document.querySelector('#dados img')?.getAttribute('src') ?? '');
+  const ok = /\?v=[0-9a-f]{8}$/.test(cena);
+  console.log(`  ${ok ? 'OK ' : 'XX '} as imagens têm impressão digital, e uma troca chega na hora`);
+  console.log(`        ${cena}`);
+  if (!ok) problemas.push(`a cena do "sem anúncios" é carregada como "${cena}": uma troca levaria horas para chegar`);
+  await contexto.close();
+}
+
+{
   const { page, contexto, barrados } = await abrir({ comoApp: true });
   await page.goto(BASE + '/', { waitUntil: 'load' });
   // O desvio é uma troca de página; esperar a rede parar não serve, porque o app nunca para.
