@@ -287,7 +287,7 @@ function dados(im, filtro, w = W, h = W) {
   const ehDeitado = (id) => id === 'tapete';
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
   const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
-    id !== 'pufe' && id !== 'poltrona' && !(id === 'guarda-roupa' && VISTAS_ABERTO) && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
+    id !== 'pufe' && id !== 'poltrona' && !(id === 'guarda-roupa' && VISTAS_ABERTO) && !(id === 'abajur' && VISTAS.abajur) && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
     && Math.abs(c[0] - INICIAL[id].c[0]) < 0.01 && Math.abs(c[1] - INICIAL[id].c[1]) < 0.01 && lado === INICIAL[id].lado;
   // O pé na grade (a área que ocupa) e o pé MEDIDO (o do desenho, para a forma e a profundidade).
   const peDe = (id, c = ARR[id].c, lado = ARR[id].lado) => {
@@ -1144,11 +1144,43 @@ function dados(im, filtro, w = W, h = W) {
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
   let lampadaAgora = [0, 0];
   const lampada = () => lampadaAgora;
-  const luzPintadaAgora = () => modo === 'noite' && luzPintada && noLugar('abajur');
+  // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
+  // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
+  const naOrigem = (id) => Math.abs(ARR[id].c[0] - INICIAL[id].c[0]) < 0.01 && Math.abs(ARR[id].c[1] - INICIAL[id].c[1]) < 0.01 && ARR[id].lado === INICIAL[id].lado;
+  const luzPintadaAgora = () => modo === 'noite' && luzPintada && naOrigem('abajur');
+  // A pintura da noite sem a silhueta do criado-mudo: o buraco é preenchido com a luz em volta, de fora para dentro
+  // (cada pixel vira a média dos vizinhos já preenchidos), feito uma vez.
+  let noiteLimpa = null;
+  function noiteAbajurSemMovel() {
+    if (noiteLimpa) return noiteLimpa;
+    const img = new Uint8ClampedArray(noiteAbajur), falta = new Uint8Array(W * W), mudou = new Uint8Array(W * W);
+    img.mudou = mudou;
+    for (let k = 0; k < W * W; k++) if (pecas.abajur.movel[k * 4 + 3]) falta[k] = 1;
+    // quatro pixels de folga em volta (a borda do recorte tinha o contorno escuro e o brilho da cúpula)
+    for (let volta = 0; volta < 4; volta++) {
+      const borda = []; for (let k = W; k < W * W - W; k++) if (!falta[k]) { const x = k % W; if ((x > 0 && falta[k - 1]) || (x < W - 1 && falta[k + 1]) || falta[k - W] || falta[k + W]) borda.push(k); }
+      for (const k of borda) falta[k] = 1;
+    }
+    for (let passada = 0, resta = 1; resta && passada < 80; passada++) {
+      resta = 0; const agora = [];
+      for (let k = W; k < W * W - W; k++) {
+        if (!falta[k]) continue;
+        let n = 0; const soma = [0, 0, 0];
+        for (const v of [k - 1, k + 1, k - W, k + W]) if (!falta[v]) { n++; for (let c = 0; c < 3; c++) soma[c] += img[v * 4 + c]; }
+        if (n) agora.push([k, soma.map((x) => x / n)]); else resta++;
+      }
+      for (const [k, cor] of agora) { for (let c = 0; c < 3; c++) img[k * 4 + c] = cor[c]; falta[k] = 0; mudou[k] = 1; }
+      if (agora.length) resta = 1;
+    }
+    return (noiteLimpa = img);
+  }
   function montarCena() {
     D.fill(0); fundoNoite.fill(0); eMovel.fill(0); acesa.fill(0); peY.fill(0); dono.fill('');
     const pintada = luzPintadaAgora(), fundoN = pintada ? noiteAbajur : noite;
     for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
+    // A pintura da noite com o abajur traz a silhueta do criado-mudo PINTADO; a vista solta é um pouco menor e deixava
+    // um abajur fantasma por cima. Onde ele ficava, entra a noite sem ele.
+    if (pintada) { const limpa = noiteAbajurSemMovel(); for (let k = 0; k < W * W; k++) if (limpa.mudou[k]) for (let c = 0; c < 3; c++) fundoNoite[k * 3 + c] = limpa[k * 4 + c]; }
     // A paisagem atrás do vidro, com um véu leve da cor do vidro (de dia, creme; de noite, azul).
     for (let k = 0; k < W * W; k++) if (vidro[k * 4 + 3] > 127) {
       const x = k % W, y = (k / W) | 0;
