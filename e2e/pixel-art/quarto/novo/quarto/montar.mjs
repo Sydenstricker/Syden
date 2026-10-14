@@ -19,13 +19,6 @@ const IMAGENS = {
   vidro: png(path.join(AQUI, '..', 'janela', 'vidro.png')),
   cortinaDia: png(path.join(AQUI, 'cortina-dia.png')), cortinaNoite: png(path.join(AQUI, 'cortina-noite.png')),
   janelaAberta: png(path.join(AQUI, 'janela-aberta-dia.png')),
-  // A poltrona solta, em duas orientações PINTADAS (avulso.mjs), a mesma poltrona de orelha: a 0 olha para a
-  // esquerda, a 1 para a direita.
-  // AS 4 POSIÇÕES DA POLTRONA (girar.mjs, 14/10/2026): as 4 diagonais do mesmo móvel, na ordem do botão Girar.
-  poltrona0: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'south-west.png')),
-  poltrona1: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'north-west.png')),
-  poltrona2: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'north-east.png')),
-  poltrona3: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'south-east.png')),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
   noite: png(path.join(AQUI, 'noite.png')),
@@ -78,6 +71,14 @@ for (const [nome, pastas] of Object.entries(FONTES)) {
 for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-west'], ['nordeste', 'north-east'], ['noroeste', 'north-west']]) {
   IMAGENS['mascote-' + nosso] = png(path.join(MASCOTE, deles + '.png'));
 }
+// AS 4 POSIÇÕES DE CADA MÓVEL (girar.mjs): as 4 diagonais do mesmo móvel, na ordem do botão Girar. Móvel sem as 4
+// vistas fica onde foi pintado.
+const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-giros' };
+const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
+for (const [id, pasta] of Object.entries(GIROS)) {
+  const dir = path.join(AQUI, 'avulsos', pasta);
+  if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-' + id + l] = png(path.join(dir, d + '.png')); });
+}
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -106,15 +107,16 @@ const html = `<!doctype html>
 <body><main>
 <h1>O quarto do coelho</h1>
 <p>À esquerda, o quarto: a base sem porta do PixelLab, com a cama, o criado-mudo com abajur, o guarda-roupa, o tapete e o
-pufe pintados dentro dela e recortados, e a paisagem atrás do vidro. À direita, o conceito do ChatGPT. <b>Arraste o pufe</b>
-pelo chão: ele usa a versão pintada mais perto (perto da janela, no meio, na frente) e a intensidade da luz do lugar.
-A <b>poltrona</b> também se arrasta, e <b>Girar</b> (ou a tecla R) troca o lado para onde ela olha.</p>
+pufe pintados dentro dela e recortados, e a paisagem atrás do vidro. À direita, o conceito do ChatGPT. <b>Arraste qualquer móvel</b>
+pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lugar). <b>Girar</b> (ou a tecla R) gira o
+último móvel tocado. A arrumação fica guardada neste navegador; <b>Arrumação inicial</b> volta à de fábrica.</p>
 <div class="barra">
   <button id="dia" aria-pressed="true">Dia</button><button id="noite" aria-pressed="false">Noite</button>
   <button id="grade" aria-pressed="false">Mostrar a grade</button>
   <button id="luz" aria-pressed="true">Luz do abajur à noite: pintada</button>
   <button id="vista" aria-pressed="false">Vista: 1</button>
   <button id="girar">Girar a poltrona</button>
+  <button id="inicial">Arrumação inicial</button>
   <button id="janela" aria-pressed="false">Janela: fechada</button>
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
 </div>
@@ -286,13 +288,20 @@ function dados(im, filtro, w = W, h = W) {
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
     pecas[m.id] = { ...m, movel, sombra, topo: y0, centroX: (x0 + x1) / 2, centroTopo: soma / Math.max(1, n), base, peColuna };
   }
-  // A POLTRONA: um móvel solto que não é redondo, para o botão de girar. Cada orientação é uma peça; a base desenhada
-  // (o ponto mais baixo, menos um quarto da largura) vai para o cruzamento da grade, como no pufe.
-  const poltronas = [im.poltrona0, im.poltrona1, im.poltrona2, im.poltrona3].map((img) => {
+  // ============================== OS MÓVEIS SOLTOS (14/10/2026) ==============================
+  // Pedido dele: "quero dar um layout inicial, mas quero permitir o usuário customizar o quarto como achar melhor". Todo
+  // móvel se arrasta e gira (4 posições). Cada um tem as 4 vistas do MESMO móvel (girar.mjs), e o TAMANHO NO CHÃO sai do
+  // próprio desenho (a cama pedida numa área saiu uma casa menor, e o coelho deitava longe dela): da quina da frente (o
+  // ponto mais baixo) até a ponta da esquerda é o comprimento em u, até a da direita, em v (27 px por casa).
+  // O layout inicial é o da PINTURA: enquanto um móvel pintado no quarto está no lugar e na posição de origem, é a
+  // pintura dele que aparece (com a luz e a sombra de lá); mexido, entra a vista solta, com a intensidade da luz do lugar.
+  const KX = (CANTOS.direita[0] - CANTOS.fundo[0]) / N;
+  const VAZIA = new Uint8ClampedArray(W * W * 4);
+  function pecaDeImagem(img, id) {
     const c = document.createElement('canvas'); c.width = W; c.height = W; const gc = c.getContext('2d'); gc.drawImage(img, 0, 0);
     const movel = gc.getImageData(0, 0, W, W).data;
-    // Uma das duas veio com sombra pintada embaixo (marrom chapado) e a outra não: tira-se a cor mais comum das
-    // últimas linhas, que é a da sombra. As duas usam a sombra de contato da página.
+    // A vista veio com a sombra pintada embaixo (cinza ou marrom chapado): tira-se a cor mais comum das últimas linhas.
+    // Todas usam a sombra de contato da página, no formato do pé do móvel.
     let fundo = 0; for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] > 127) fundo = Math.max(fundo, (k / W) | 0);
     const conta = {};
     for (let y = fundo - 5; y <= fundo; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4; if (movel[k + 3] > 127) { const cor = movel[k] + ',' + movel[k + 1] + ',' + movel[k + 2]; conta[cor] = (conta[cor] || 0) + 1; } }
@@ -301,29 +310,97 @@ function dados(im, filtro, w = W, h = W) {
     let x0 = W, x1 = 0, y0 = W, y1 = 0;
     for (let k = 0; k < W * W; k++) { if (movel[k * 4 + 3] < 128) { movel[k * 4 + 3] = 0; continue; } const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
     let sx = 0, nb = 0; for (let x = 0; x < W; x++) for (let y = y1 - 2; y <= y1; y++) if (movel[(y * W + x) * 4 + 3]) { sx += x; nb++; }
+    sx /= Math.max(1, nb);
     const peColuna = new Int16Array(W).fill(-1);
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
-    return { id: 'poltrona', movel, sombra: new Uint8ClampedArray(W * W * 4), topo: y0, peColuna, base: [sx / Math.max(1, nb), y1 - (x1 - x0) / 4] };
-  });
-  let poltrona = [3, 6], lado = 0, pegado = null;
-  // Para onde a poltrona olha em cada posição (a ordem das imagens: Girar anda nesta lista).
+    let soma = 0, n = 0;
+    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
+    const mede = [Math.max(0.6, (sx - x0) / KX), Math.max(0.6, (x1 + 1 - sx) / KX)];
+    return { id, movel, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n) };
+  }
+  const VISTAS = {};
+  for (const id of ['poltrona', 'abajur', 'guarda-roupa', 'cama', 'mesa']) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  // O pufe: onde está (o centro em u, v) e de que versão ele sai.
+  const NOMES = { pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa' };
   const pufes = MOVEIS.filter((m) => m.pufe);
-  const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
-  let pufe = centro(pecas['pufe-meio'].pe).map(Math.round), modo = 'dia', grade = false, arrastando = false, alvo = null;
-  // O pufe ocupa 2×2 casas e o centro dele fica num cruzamento da grade: assim a área acesa ao arrastar é
-  // exatamente quatro casas desenhadas. Antes ele tinha 1,5 casa e saltava de meia em meia, fora das linhas.
-  const LADO_PUFE = 2;
   const fixos = MOVEIS.filter((m) => !m.pufe);
-  const ocupa = (c, quem = pegado) => {
-    const [u0, u1, v0, v1] = [c[0] - LADO_PUFE / 2, c[0] + LADO_PUFE / 2, c[1] - LADO_PUFE / 2, c[1] + LADO_PUFE / 2];
-    if (u0 < 0 || v0 < 0 || u1 > N || v1 > N) return true;
-    // Os dois soltos (pufe e poltrona), também 2 × 2 casas cada, não se sobrepõem.
-    const outro = quem === 'poltrona' ? pufe : poltrona;
-    if (Math.abs(c[0] - outro[0]) < LADO_PUFE && Math.abs(c[1] - outro[1]) < LADO_PUFE) return true;
-    return fixos.some((m) => !m.deitado && u0 < m.pe[1] && u1 > m.pe[0] && v0 < m.pe[3] && v1 > m.pe[2]);
+  const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
+  const pintado = (id) => fixos.find((m) => m.id === id);
+  // Onde cada móvel foi pintado, e para onde ele olha na pintura (o criado-mudo e o guarda-roupa, de frente para o quarto).
+  const LADO_PINTADO = { abajur: 3, 'guarda-roupa': 3, cama: 0, tapete: 0 };
+  // O tamanho em casas inteiras, para a grade: o pufe 2 × 2, o tapete 4 × 4, o resto medido no desenho.
+  const tamDe = (id, lado) => {
+    if (id === 'pufe') return [2, 2];
+    if (id === 'tapete') return [4, 4];
+    const m = VISTAS[id]?.[lado].mede;
+    if (m) return m.map((d) => Math.max(1, Math.ceil(d - 0.25)));
+    const pe = pintado(id).pe; return [pe[1] - pe[0], pe[3] - pe[2]];
   };
+  const encaixar = (id, u, v, lado) => { const [tu, tv] = tamDe(id, lado); return [Math.round(u - tu / 2) + tu / 2, Math.round(v - tv / 2) + tv / 2]; };
+  function arrumacaoInicial() {
+    const a = { pufe: { c: centro(pintado('tapete') ? MOVEIS.find((m) => m.id === 'pufe-meio').pe : [4, 6, 4, 6]).map(Math.round), lado: 0 }, poltrona: { c: [3, 6], lado: 0 } };
+    for (const m of fixos) a[m.id] = { c: centro(m.pe), lado: LADO_PINTADO[m.id] ?? 0 };
+    // A cama de casal não foi pintada aqui: começa no canto da cama pintada, encostada na parede da esquerda.
+    if (VISTAS.cama) { const [tu, tv] = tamDe('cama', 0); a.cama = { c: [1.5 + tu / 2, tv / 2], lado: 0 }; }
+    if (VISTAS.mesa) { const [tu, tv] = tamDe('mesa', 3); a.mesa = { c: [tu / 2 + 0.5, N - tv / 2], lado: 3 }; }
+    return a;
+  }
+  const INICIAL = arrumacaoInicial();
+  // A ARRUMAÇÃO DE CADA UM fica no navegador por enquanto (na página de teste); no app, ela vai para o servidor.
+  let ARR = JSON.parse(JSON.stringify(INICIAL));
+  try {
+    const guardada = JSON.parse(localStorage.getItem('syden-quarto-arrumacao') ?? 'null');
+    if (guardada && Object.keys(INICIAL).every((id) => guardada[id]?.c)) ARR = guardada;
+  } catch { /* sem guardar: começa da inicial */ }
+  const guardar = () => { try { localStorage.setItem('syden-quarto-arrumacao', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } };
+  const ehDeitado = (id) => id === 'tapete';
+  // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
+  const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
+    id !== 'pufe' && id !== 'poltrona' && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
+    && Math.abs(c[0] - INICIAL[id].c[0]) < 0.01 && Math.abs(c[1] - INICIAL[id].c[1]) < 0.01 && lado === INICIAL[id].lado;
+  // O pé na grade (a área que ocupa) e o pé MEDIDO (o do desenho, para a forma e a profundidade).
+  const peDe = (id, c = ARR[id].c, lado = ARR[id].lado) => {
+    if (noLugar(id, c, lado)) return pintado(id).pe;
+    const [tu, tv] = tamDe(id, lado); return [c[0] - tu / 2, c[0] + tu / 2, c[1] - tv / 2, c[1] + tv / 2];
+  };
+  const peMedidoDe = (id, c = ARR[id].c, lado = ARR[id].lado) => {
+    if (noLugar(id, c, lado) || !VISTAS[id]) return peDe(id, c, lado);
+    const [du, dv] = VISTAS[id][lado].mede; return [c[0] - du / 2, c[0] + du / 2, c[1] - dv / 2, c[1] + dv / 2];
+  };
+  const sobrepoe = (a, b) => a[0] < b[1] - 0.01 && a[1] > b[0] + 0.01 && a[2] < b[3] - 0.01 && a[3] > b[2] + 0.01;
+  let pegado = null, selecionado = 'poltrona', modo = 'dia', grade = false, arrastando = false, alvo = null;
+  // Cabe aqui? Dentro do quarto e sem passar por cima de outro móvel (o tapete fica embaixo de tudo).
+  const ocupa = (c, quem = pegado, lado = ARR[quem].lado) => {
+    const pe = peDe(quem, c, lado);
+    if (pe[0] < -0.01 || pe[2] < -0.01 || pe[1] > N + 0.01 || pe[3] > N + 0.01) return true;
+    if (ehDeitado(quem)) return false;
+    return Object.keys(ARR).some((id) => id !== quem && !ehDeitado(id) && sobrepoe(peDe(id), pe));
+  };
+  // O TAPETE MEXIDO: o desenho é levado pelo chão, ponto a ponto (ele é plano, então girar é só girar a textura).
+  const cacheDoTapete = new Map();
+  function tapeteEm(c, lado) {
+    const chave = c.join(',') + '|' + lado;
+    if (cacheDoTapete.has(chave)) return cacheDoTapete.get(chave);
+    const orig = pecas.tapete, [oc0, oc1] = INICIAL.tapete.c;
+    const movel = new Uint8ClampedArray(W * W * 4), peColuna = new Int16Array(W).fill(-1);
+    let y0 = W;
+    for (let k = 0; k < W * W; k++) {
+      if (casa[k] < 0) continue;
+      let a = mapaU[k] - c[0], b = mapaV[k] - c[1];
+      for (let r = 0; r < lado; r++) [a, b] = [-b, a];
+      const [sx, sy] = ponto(oc0 + a, oc1 + b), X = Math.floor(sx), Y = Math.floor(sy);
+      if (X < 0 || Y < 0 || X >= W || Y >= W) continue;
+      const s = (Y * W + X) * 4;
+      if (!orig.movel[s + 3]) continue;
+      for (let q = 0; q < 4; q++) movel[k * 4 + q] = orig.movel[s + q];
+      peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0); y0 = Math.min(y0, (k / W) | 0);
+    }
+    const p = { id: 'tapete', movel, sombra: VAZIA, topo: y0, peColuna, centroTopo: 0 };
+    if (cacheDoTapete.size > 8) cacheDoTapete.clear();
+    cacheDoTapete.set(chave, p);
+    return p;
+  }
   const luz = (x, y) => { const i = (Math.round(y) * W + Math.round(x)) * 4; return (diaBorrado[i] + diaBorrado[i + 1] + diaBorrado[i + 2]) / 3; };
 
   // A grade em pixel: a casa de cada pixel do chão; a borda é onde a casa muda.
@@ -393,8 +470,7 @@ function dados(im, filtro, w = W, h = W) {
     // coelho parecia atravessar a cortina (relato de 14/10/2026).
     if (i === 0) return false;
     const cu = i + 0.5, cv = j + 0.5;
-    if (fixos.some((m) => !m.deitado && cu > m.pe[0] && cu < m.pe[1] && cv > m.pe[2] && cv < m.pe[3])) return false;
-    return ![pufe, poltrona].some((c) => Math.abs(cu - c[0]) < 1 && Math.abs(cv - c[1]) < 1);
+    return !Object.keys(ARR).some((id) => { if (ehDeitado(id)) return false; const pe = peDe(id); return cu > pe[0] && cu < pe[1] && cv > pe[2] && cv < pe[3]; });
   };
   const todasAsCasas = () => [...Array(N * N).keys()].map((k) => [Math.floor(k / N), k % N]);
   // OS PONTOS SÃO DO MÓVEL: calculados de onde ele está AGORA (arrastou, o ponto foi junto; girou, o olhar mudou).
@@ -405,7 +481,7 @@ function dados(im, filtro, w = W, h = W) {
     // A borda é a do lado por onde ele SUBIU: virar no pufe muda para onde ele olha, não onde está sentado (relato de
     // 14/10/2026: virando para trás, ele pulava para a outra borda).
     const o = coelho.ladoDoPufe ?? coelho.olharNoPufe ?? 'sudeste', vet = { sudoeste: [1, 0], sudeste: [0, 1], nordeste: [-1, 0], noroeste: [0, -1] }[o];
-    return [pufe[0] + vet[0] * 0.3, pufe[1] + vet[1] * 0.3];
+    return [ARR.pufe.c[0] + vet[0] * 0.3, ARR.pufe.c[1] + vet[1] * 0.3];
   }
   function pontos() {
     const vizinhas = (u0, u1, v0, v1) => {
@@ -417,16 +493,25 @@ function dados(im, filtro, w = W, h = W) {
       return r;
     };
     const em2x2 = (c) => vizinhas(c[0] - 1, c[0] + 1, c[1] - 1, c[1] + 1);
-    const cama = fixos.find((m) => m.id === 'cama').pe, gr = fixos.find((m) => m.id === 'guarda-roupa').pe;
+    // A CAMA, em qualquer posição: a cabeceira fica do lado oposto ao olhar; ele deita no meio do colchão, a cabeça
+    // para a cabeceira, e se prepara no lado comprido que dá para a frente da tela (u ou v maior).
+    const olhaC = ORIENTA[ARR.cama.lado], [fu, fv] = VET[olhaC], peC = peMedidoDe('cama'), eixoU = fu !== 0;
+    const cab = eixoU ? (fu > 0 ? peC[0] : peC[1]) : (fv > 0 ? peC[2] : peC[3]);
+    const ondeC = eixoU ? [cab + fu * 1.25, (peC[2] + peC[3]) / 2 - 0.1] : [(peC[0] + peC[1]) / 2 - 0.1, cab + fv * 1.25];
+    const beiraC = eixoU ? [ondeC[0], peC[3] + 0.12] : [peC[1] + 0.12, ondeC[1]];
+    // O GUARDA-ROUPA: ele para na casa da frente dele, olhando para ele.
+    const OPOSTO = { sudoeste: 'nordeste', nordeste: 'sudoeste', sudeste: 'noroeste', noroeste: 'sudeste' };
+    const olhaG = ORIENTA[ARR['guarda-roupa'].lado], [gu, gv] = VET[olhaG], peG = peDe('guarda-roupa'), [gcu, gcv] = centro(peG);
+    const frenteG = [Math.floor(gcu + gu * ((peG[1] - peG[0]) / 2 + 0.5)), Math.floor(gcv + gv * ((peG[3] - peG[2]) / 2 + 0.5))];
+    const olhaP = ORIENTA[ARR.poltrona.lado];
     return {
       // O pufe é redondo: ele senta virado para qualquer um dos 4 lados (sorteado ao chegar) e vira de vez em quando.
-      pufe: { ao: em2x2(pufe), onde: assentoNoPufe(), sobe: 26, pose: 'sentado', olha: coelho.olharNoPufe ?? 'sudeste', sobre: 'pufe' },
+      pufe: { ao: em2x2(ARR.pufe.c), onde: assentoNoPufe(), sobe: 26, pose: 'sentado', olha: coelho.olharNoPufe ?? 'sudeste', sobre: 'pufe' },
       // Virada de costas, o encosto fica NA FRENTE do coelho: ele é desenhado antes dela.
-      poltrona: { ao: em2x2(poltrona), onde: [poltrona[0], poltrona[1]], sobe: 8, pose: 'sentado', olha: ORIENTA[lado], sobre: 'poltrona', atras: ORIENTA[lado].startsWith('n') },
-      // Na cama: recostado na cabeceira (o fundo, u pequeno), como no conceito.
+      poltrona: { ao: vizinhas(...peDe('poltrona')), onde: [...ARR.poltrona.c], sobe: 8, pose: 'sentado', olha: olhaP, sobre: 'poltrona', atras: olhaP.startsWith('n') },
       // Na cama ele DEITA (lendo ou dormindo), no meio do colchão, a cabeça para a cabeceira (pedido dele, 14/10/2026).
-      cama: { ao: vizinhas(...cama), onde: [cama[0] + 1.25, (cama[2] + cama[3]) / 2 - 0.1], sobe: 40, pose: 'na cama', olha: 'sudoeste', sobre: 'cama' },
-      'guarda-roupa': { ao: [[Math.floor((gr[0] + gr[1]) / 2), Math.ceil(gr[3])]].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha: 'noroeste' },
+      cama: { ao: vizinhas(...peDe('cama')), onde: ondeC, beira: beiraC, sobe: 40, pose: 'na cama', olha: olhaC, sobre: 'cama' },
+      'guarda-roupa': { ao: [frenteG].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha: OPOSTO[olhaG] },
     };
   }
   // A caminhada: busca em largura pela grade, nas 4 direções da grade (que na tela são as 4 diagonais).
@@ -493,9 +578,8 @@ function dados(im, filtro, w = W, h = W) {
   function roteiro(id, pt, dormindo = estado === 'ausente') {
     let beira, nomeT;
     if (id === 'cama') {
-      const cama = fixos.find((m) => m.id === 'cama').pe;
       nomeT = dormindo ? 'deitar' : 'deitar-lendo';
-      beira = [pt.onde[0], cama[3] + 0.12]; // encostado na cama, no lado comprido da frente
+      beira = pt.beira; // encostado na cama, no lado comprido da frente
     } else {
       const [vu, vv] = VET[pt.olha], r = id === 'pufe' ? 0.62 : 0.7; // no pufe, encostado na borda (0,45 do assento) antes de subir
       beira = [pt.onde[0] + vu * r, pt.onde[1] + vv * r];
@@ -847,7 +931,7 @@ function dados(im, filtro, w = W, h = W) {
     caixaDaSombra = null;
     const c = ultimaCaixa, pe = coelhoPe;
     if (!c || !pe) return;
-    const luz = modo === 'noite' ? { x: pecas.abajur.centroTopo, y: pecas.abajur.topo + 40, alongamento: 1.0, forca: 0.5 } : LUZ_DIA;
+    const lp = lampada(), luz = modo === 'noite' ? { x: lp[0], y: lp[1] + 40, alongamento: 1.0, forca: 0.5 } : LUZ_DIA;
     forcaDaSombra = luz.forca;
     let dx = pe[0] - luz.x, dy = (pe[1] - luz.y) * 0.5;
     const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n;
@@ -985,9 +1069,13 @@ function dados(im, filtro, w = W, h = W) {
     }
   }
 
+  // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
+  let lampadaAgora = [0, 0];
+  const lampada = () => lampadaAgora;
+  const luzPintadaAgora = () => modo === 'noite' && luzPintada && noLugar('abajur');
   function montarCena() {
     D.fill(0); fundoNoite.fill(0); eMovel.fill(0); acesa.fill(0); peY.fill(0); dono.fill('');
-    const pintada = modo === 'noite' && luzPintada, fundoN = pintada ? noiteAbajur : noite;
+    const pintada = luzPintadaAgora(), fundoN = pintada ? noiteAbajur : noite;
     for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
     // A paisagem atrás do vidro, com um véu leve da cor do vidro (de dia, creme; de noite, azul).
     for (let k = 0; k < W * W; k++) if (vidro[k * 4 + 3] > 127) {
@@ -1011,29 +1099,31 @@ function dados(im, filtro, w = W, h = W) {
       else if (casa[k] >= 0) { const larga = pintada ? abajurLargo : noiteLarga; for (let c = 0; c < 3; c++) fundoNoite[k * 3 + c] = base[k * 4 + c] * Math.min(1, larga[k * 4 + c] / Math.max(1, diaLargo[k * 4 + c])); }
     }
     // Os móveis, de trás para a frente (a ordem pela área no chão).
-    const [pu, pv] = pufe;
+    const [pu, pv] = ARR.pufe.c, [mx, my] = ponto(N / 2, N / 2);
     variante = pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; });
-    const lista0 = [...fixos.map((m) => ({ p: pecas[m.id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, forma: FORMAS[m.id], olha: OLHA_DE[m.id] ?? null })),
-      (() => {
+    const lista0 = Object.keys(ARR).map((id) => {
+      const { c, lado: l } = ARR[id], olha = ORIENTA[l];
+      if (id === 'pufe') {
         const p = pecas[variante.id];
         const [ox, oy] = p.base, [nx, ny] = ponto(pu, pv);
         // Só intensidade: a luz do chão onde ele está, sobre a luz do chão onde ele foi pintado.
         const fator = Math.min(1.3, Math.max(0.75, luz(nx, ny) / luz(ox, oy)));
         return { p: { ...p, id: 'pufe' }, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, pe: [pu - 0.75, pu + 0.75, pv - 0.75, pv + 0.75], forma: FORMAS.pufe };
-      })(),
-      (() => {
-        // A poltrona foi pintada fora do quarto, com luz neutra: ganha a intensidade do lugar, em relação ao meio do chão.
-        const p = poltronas[lado], [nx, ny] = ponto(poltrona[0], poltrona[1]), [mx, my] = ponto(N / 2, N / 2);
-        const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
-        return { p, dx: Math.round(nx - p.base[0]), dy: Math.round(ny - p.base[1]), fator, pe: [poltrona[0] - 0.8, poltrona[0] + 0.8, poltrona[1] - 0.8, poltrona[1] + 0.8], contato: [nx, ny], forma: FORMAS.poltrona, olha: ORIENTA[lado] };
-      })()];
+      }
+      if (noLugar(id)) { const m = pintado(id); return { p: pecas[id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, forma: FORMAS[id], olha }; }
+      if (id === 'tapete') return { p: tapeteEm(c, l), dx: 0, dy: 0, fator: 1, pe: peDe(id), deitado: true };
+      // A vista solta: a quina da frente do desenho vai para a quina da frente do pé, e a luz é a do lugar.
+      const p = VISTAS[id][l], pe = peMedidoDe(id), [fx, fy] = ponto(pe[1], pe[3]), [nx, ny] = ponto(c[0], c[1]);
+      const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
+      return { p, dx: Math.round(fx - p.frente[0]), dy: Math.round(fy - p.frente[1]), fator, pe, contatoPe: pe, forma: FORMAS[id], olha };
+    });
     for (const it of lista0) if (it.forma) it.caixas = caixasDe(it.pe, it.olha, it.forma);
     lista = ordenar(lista0);
     listaAgora = lista;
     chaoPx.fill(-2);
     chaveDoPixel.fill(-1);
     for (const it of lista) {
-      const { p, dx, dy, fator, contato, raio } = it;
+      const { p, dx, dy, fator, contato, raio, contatoPe } = it;
       const hs = alturasDe(it);
       // A sombra de contato de quem não a trouxe pintada (a poltrona): uma elipse no chão, mais escura no meio.
       const [rx, ry] = raio ?? [30, 15];
@@ -1042,6 +1132,17 @@ function dados(im, filtro, w = W, h = W) {
         if (d >= 1 || x < 0 || y < 0 || x >= W || y >= W || casa[k] < 0) continue;
         const f = 0.72 + 0.28 * d;
         for (let c = 0; c < 3; c++) { D[k * 3 + c] *= f; fundoNoite[k * 3 + c] *= f; }
+      }
+      // A SOMBRA DE CONTATO de quem não a trouxe pintada: o pé do móvel no chão, um pouco maior, mais escura por dentro.
+      if (contatoPe) {
+        const [u0, u1, v0, v1] = contatoPe, m = 0.14;
+        for (let k = 0; k < W * W; k++) {
+          if (casa[k] < 0) continue;
+          const u = mapaU[k], v = mapaV[k];
+          if (u < u0 - m || u > u1 + m || v < v0 - m || v > v1 + m) continue;
+          const f = u > u0 && u < u1 && v > v0 && v < v1 ? 0.74 : 0.86;
+          for (let c = 0; c < 3; c++) { D[k * 3 + c] *= f; fundoNoite[k * 3 + c] *= f; }
+        }
       }
       for (let k = 0; k < W * W; k++) {
         const x = k % W + dx, y = ((k / W) | 0) + dy;
@@ -1058,13 +1159,15 @@ function dados(im, filtro, w = W, h = W) {
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
           const m4 = k * 4;
-          if (p.id === 'abajur' && y < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
+          if (p.id === 'abajur' && ((k / W) | 0) < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
         }
       }
     }
     // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
     baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseTipo.set(tipoPx); baseChave.set(chaveDoPixel);
     for (let k = 0; k < W * W; k++) baseDono[k] = dono[k];
+    const ab = lista.find((i) => i.p.id === 'abajur');
+    lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     imagem = g.createImageData(W, W);
     sombraFinal.fill(0);
     passeFinal([0, 0, W, W]);
@@ -1074,8 +1177,8 @@ function dados(im, filtro, w = W, h = W) {
   // A cor final de cada pixel de uma região: a luz da noite, a cortina, a sombra do coelho, a grade e o destino do arraste.
   function passeFinal(r) {
     const [x0, y0, x1, y1] = prender(r);
-    const pintada = modo === 'noite' && luzPintada, razaoPe = pintada ? noiteAbajurPe : noitePe;
-    const ab = pecas.abajur, lx = ab.centroTopo, ly = ab.topo + 6;
+    const pintada = luzPintadaAgora(), razaoPe = pintada ? noiteAbajurPe : noitePe;
+    const [lx, ly0] = lampada(), ly = ly0 + 6;
     const alvoOcupado = alvo ? ocupa(alvo) : false;
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
@@ -1105,7 +1208,8 @@ function dados(im, filtro, w = W, h = W) {
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
       if (alvo && casa[k] >= 0) {
         const i = Math.floor(casa[k] / N), j = casa[k] % N;
-        if (i >= alvo[0] - 1 && i < alvo[0] + 1 && j >= alvo[1] - 1 && j < alvo[1] + 1) {
+        const pa = peDe(pegado, alvo);
+        if (i + 0.5 > pa[0] && i + 0.5 < pa[1] && j + 0.5 > pa[2] && j + 0.5 < pa[3]) {
           const cor = alvoOcupado ? [220, 80, 60] : [255, 240, 200];
           for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = imagem.data[k * 4 + c] * 0.65 + cor[c] * 0.35;
         }
@@ -1121,7 +1225,7 @@ function dados(im, filtro, w = W, h = W) {
 
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, pufe, poltrona, lado, grade, alvo]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, ARR, grade, alvo, pegado]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     if (regiaoAnterior) restaurar(regiaoAnterior);
@@ -1161,7 +1265,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   function escreverLegenda() {
     const pf = lista.find((i) => i.p.id === 'pufe');
-    document.getElementById('legenda').textContent = 'Poltrona olhando para ' + ORIENTA[lado] + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' && pf ? ', luz do lugar ×' + pf.fator.toFixed(2) : '') + '. Coelho: ' + (coelho.caminho.length ? 'andando' : falando && !coelho.destino ? 'falando' : coelho.pose) + ', olhando para ' + coelho.dir + (coelho.destino ? ' (' + coelho.destino + ')' : '') + '. Desenho do quadro: ' + Math.round(tempoDeDesenho) + ' ms.';
+    document.getElementById('legenda').textContent = 'Poltrona olhando para ' + ORIENTA[ARR.poltrona.lado] + '. Escolhido: ' + NOMES[selecionado] + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' && pf ? ', luz do lugar ×' + pf.fator.toFixed(2) : '') + '. Coelho: ' + (coelho.caminho.length ? 'andando' : falando && !coelho.destino ? 'falando' : coelho.pose) + ', olhando para ' + coelho.dir + (coelho.destino ? ' (' + coelho.destino + ')' : '') + '. Desenho do quadro: ' + Math.round(tempoDeDesenho) + ' ms.';
   }
 
   // Arrastar: o centro do pufe salta de cruzamento em cruzamento da grade, e só para onde cabe. A grade aparece
@@ -1183,31 +1287,50 @@ function dados(im, filtro, w = W, h = W) {
   // fechadas, o clique é sempre delas.
   tela.addEventListener('pointerdown', (e) => { const k = pixelDo(e); if (!naJanela[k]) return; if (noCaixilho[k] && !fechada) trocarJanela(); else trocarCortina(); });
   tela.addEventListener('pointermove', (e) => { if (!arrastando) tela.style.cursor = naJanela[pixelDo(e)] ? 'pointer' : 'grab'; });
-  // Arrasta-se o que está sob o ponteiro: a poltrona, o pufe, ou nada (clicar no chão vazio não move ninguém).
-  const sob = (e) => {
-    const r = tela.getBoundingClientRect(), [u, v] = uvDe((e.clientX - r.left) * W / r.width, (e.clientY - r.top) * W / r.height);
-    const perto = (c) => Math.abs(u - c[0]) <= 1 && Math.abs(v - c[1]) <= 1;
-    return perto(poltrona) ? 'poltrona' : perto(pufe) ? 'pufe' : null;
-  };
+  // ARRASTA-SE O MÓVEL SOB O PONTEIRO (qualquer um; o tapete por baixo de tudo). O centro anda de casa em casa e só
+  // fica onde cabe. Clicar sem arrastar leva o coelho até ele (se ele tiver o que fazer ali).
+  const uvDoPonteiro = (e) => { const r = tela.getBoundingClientRect(); return uvDe((e.clientX - r.left) * W / r.width, (e.clientY - r.top) * W / r.height); };
+  let pegaDelta = [0, 0];
+  const bgirar = document.getElementById('girar');
+  const escolher = (id) => { selecionado = id; bgirar.textContent = 'Girar ' + NOMES[id]; bgirar.disabled = id === 'pufe'; };
   tela.addEventListener('pointerdown', (e) => {
     if (naJanela[pixelDo(e)]) return;
-    pegado = sob(e);
-    if (!pegado) { const d = dono[pixelDo(e)]; if (d === 'cama' || d === 'guarda-roupa') ir(d); return; }
-    arrastando = true; tela.setPointerCapture(e.pointerId); alvo = casaDoPonteiro(e); desenhar();
+    const d = dono[pixelDo(e)];
+    if (!ARR[d]) return;
+    pegado = d; escolher(d);
+    const [u, v] = uvDoPonteiro(e);
+    pegaDelta = [ARR[d].c[0] - u, ARR[d].c[1] - v];
+    arrastando = true; tela.setPointerCapture(e.pointerId); alvo = [...ARR[d].c]; desenhar();
   });
-  tela.addEventListener('pointermove', (e) => { if (!arrastando) return; const c = casaDoPonteiro(e); if (!alvo || c[0] !== alvo[0] || c[1] !== alvo[1]) { alvo = c; desenhar(); } });
+  tela.addEventListener('pointermove', (e) => {
+    if (!arrastando) return;
+    const [u, v] = uvDoPonteiro(e), c = encaixar(pegado, u + pegaDelta[0], v + pegaDelta[1], ARR[pegado].lado);
+    const mesmo = Math.abs(c[0] - ARR[pegado].c[0]) < 0.6 && Math.abs(c[1] - ARR[pegado].c[1]) < 0.6;
+    const novo = mesmo ? [...ARR[pegado].c] : c;
+    if (!alvo || novo[0] !== alvo[0] || novo[1] !== alvo[1]) { alvo = novo; desenhar(); }
+  });
   tela.addEventListener('pointerup', () => {
     if (!arrastando) return;
     arrastando = false;
-    const atual = pegado === 'poltrona' ? poltrona : pufe;
-    if (alvo && alvo[0] === atual[0] && alvo[1] === atual[1]) ir(pegado); // clicou sem arrastar: o coelho vai até ele
-    else if (alvo && !ocupa(alvo)) { if (pegado === 'poltrona') poltrona = alvo; else pufe = alvo; }
-    alvo = null; desenhar();
+    const atual = ARR[pegado].c;
+    if (alvo && alvo[0] === atual[0] && alvo[1] === atual[1]) { if (pontos()[pegado]) ir(pegado); } // clicou sem arrastar
+    else if (alvo && !ocupa(alvo)) { ARR[pegado] = { c: alvo, lado: ARR[pegado].lado }; guardar(); decidir(); }
+    alvo = null; pegado = null; desenhar();
   });
-  // GIRAR (pedido dele em 08/10/2026): troca a orientação pintada da poltrona. As duas ocupam as mesmas 2 × 2 casas.
-  const girar = () => { lado = (lado + 1) % 4; desenhar(); };
-  document.getElementById('girar').onclick = girar;
+  // GIRAR o móvel escolhido (o último que se tocou): a próxima das 4 posições. Se ele não couber girado ali, tenta a
+  // seguinte; não cabendo em nenhuma, fica como está.
+  const girar = () => {
+    const id = selecionado;
+    if (id === 'pufe') return;
+    for (let passo = 1; passo < 4; passo++) {
+      const lado = (ARR[id].lado + passo) % 4, c = noLugar(id) ? encaixar(id, ...ARR[id].c, lado) : encaixar(id, ...ARR[id].c, lado);
+      if (!ocupa(c, id, lado)) { ARR[id] = { c, lado }; guardar(); decidir(); desenhar(); return; }
+    }
+  };
+  bgirar.onclick = girar;
   document.addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') girar(); });
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); decidir(); desenhar(); };
+  escolher('poltrona');
   const botoes = { dia: document.getElementById('dia'), noite: document.getElementById('noite') };
   for (const [m, b] of Object.entries(botoes)) b.onclick = () => { modo = m; for (const [n, o] of Object.entries(botoes)) o.setAttribute('aria-pressed', String(n === m)); decidir(); desenhar(); };
   const bg = document.getElementById('grade');
