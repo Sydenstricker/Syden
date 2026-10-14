@@ -1,0 +1,41 @@
+{
+  "id": "9dae16de-6a6d-4213-af20-3a2c3d6886de",
+  "name": "a wooden computer desk with dr",
+  "state_name": "base",
+  "prompt": "a wooden computer desk with drawers, a flat monitor, a keyboard and a mouse on top and a computer tower under it",
+  "size": {
+    "width": 113,
+    "height": 113
+  },
+  "directions": 8,
+  "created_at": "2026-10-14T21:53:37.862263+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/9dae16de-6a6d-4213-af20-3a2c3d6886de/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "ce54a9e0-2e15-49f9-bd2a-4f3bb27e53c9",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

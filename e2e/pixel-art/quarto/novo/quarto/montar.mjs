@@ -353,8 +353,9 @@ function dados(im, filtro, w = W, h = W) {
     for (const m of fixos) a[m.id] = { c: centro(m.pe), lado: LADO_PINTADO[m.id] ?? 0 };
     // A cama de casal não foi pintada aqui: começa no canto da cama pintada, encostada na parede da esquerda.
     if (VISTAS.cama) { const [tu, tv] = tamDe('cama', 0); a.cama = { c: [1.5 + tu / 2, tv / 2], lado: 0 }; }
-    // A mesa do computador: na frente, à direita, virada para o meio do quarto (nordeste).
-    if (VISTAS.mesa) a.mesa = { c: encaixar('mesa', N - tamDe('mesa', 2)[0] / 2, 6.5, 2), lado: 2 };
+    // A mesa do computador: encostada na parede da janela, no canto da direita, virada para o quarto (como na home); a
+    // poltrona vai para o meio.
+    if (VISTAS.mesa) { const [tu, tv] = tamDe('mesa', 0); a.mesa = { c: encaixar('mesa', 1 + tu / 2, N - tv / 2, 0), lado: 0 }; a.poltrona = { c: [3, 4], lado: 0 }; }
     return a;
   }
   const INICIAL = arrumacaoInicial();
