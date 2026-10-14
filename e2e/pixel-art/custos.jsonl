@@ -57,3 +57,9 @@
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/south-west","geracoes":10,"quando":"2026-10-14T18:58:40.319Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fb/north-west","geracoes":10,"quando":"2026-10-14T19:00:28.438Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fc/south-west","geracoes":20,"quando":"2026-10-14T19:02:07.569Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fa/south-west","geracoes":10,"quando":"2026-10-14T19:05:18.984Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/south-west","geracoes":20,"quando":"2026-10-14T19:08:06.691Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fc/south-west","geracoes":10,"quando":"2026-10-14T19:11:12.855Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/south-west","geracoes":10,"quando":"2026-10-14T19:41:28.012Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/south-west","geracoes":20,"quando":"2026-10-14T19:49:14.994Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/south-east","geracoes":10,"quando":"2026-10-14T19:53:19.797Z"}
