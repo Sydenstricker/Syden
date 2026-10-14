@@ -42,6 +42,9 @@ const FONTES = {
   sentado: ['estados/sentado-2', 'estados/sentado'],
   // Na poltrona, afundado e com os braços nos apoios (pedido dele, 14/10/2026).
   'sentado-poltrona': ['estados/sentado-poltrona', 'estados/sentado-2'],
+  // Na cadeira do computador: inclinado para a frente, as mãos no teclado (pedido dele, 14/10/2026: a pose da poltrona,
+  // largada, ficava ruim ali).
+  'no-computador': ['estados/no-computador', 'estados/sentado-2'],
   lendo: ['estados/lendo-deitado', 'estados/lendo'],
   dormindo: ['estados/dormindo'],
   'dormindo-largado': ['estados/dormindo-largado', 'estados/dormindo'],
@@ -805,7 +808,7 @@ function dados(im, filtro, w = W, h = W) {
   // (relato de 14/10/2026: ele dormia e levantava com o livro, porque o estado já tinha virado "à toa").
   function poseDoAssento(id, dormindo) {
     if (id === 'cama') return dormindo ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : 'lendo';
-    return id === 'poltrona' || id === 'cadeira' ? 'sentado-poltrona' : 'sentado';
+    return id === 'poltrona' ? 'sentado-poltrona' : id === 'cadeira' ? 'no-computador' : 'sentado';
   }
   function roteiro(id, pt, dormindo = estado === 'ausente') {
     let beira, nomeT;
@@ -827,7 +830,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     // Na poltrona de frente, o fim do sentar já abre os braços até os apoios (trecho próprio, sem a poltrona inventada
     // que a primeira tentativa desenhou): os 4 primeiros quadros do sentar e os 2 dos braços.
-    if ((id === 'poltrona' || id === 'cadeira') && ANIM.bracos?.[pt.olha]) quadros = [...quadros.slice(0, 4), ...ANIM.bracos[pt.olha].quadros];
+    if (id === 'poltrona' && ANIM.bracos?.[pt.olha]) quadros = [...quadros.slice(0, 4), ...ANIM.bracos[pt.olha].quadros];
     return { beira, atrasNaBeira: id !== 'cama' && pt.olha.startsWith('n'), quadros, de: { chao: beira, h: 0, anim: 'parado' }, para: { chao: pt.onde, h: pt.sobe, anim: poseDoAssento(id, dormindo) } };
   }
   const DUR_TOTAL = 1500; // a transição inteira (sentar, deitar), com quantos quadros tiver
@@ -962,7 +965,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     // A ANIMAÇÃO pelo que ele está fazendo: andando, sentado (lendo ou dormindo, na cama), falando de pé, ou parado.
     const nomeAnim = coelho.caminho.length || ap ? 'andando'
-      : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' || coelho.destino === 'cadeira' ? 'sentado-poltrona' : 'sentado')
+      : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' ? 'sentado-poltrona' : coelho.destino === 'cadeira' ? 'no-computador' : 'sentado')
       : falando ? 'falando' : 'parado';
     // A VIRADA SUAVE (ideia dele, 14/10/2026): a direção que APARECE anda um passo por quadro no círculo das 8, pelo lado
     // mais curto, até a que ele quer; os passos do meio são a pose dele (de pé ou sentado) naquela direção. 90° = 200 ms.
