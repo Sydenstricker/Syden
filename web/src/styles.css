@@ -14423,3 +14423,170 @@ body.arrastando-barra {
   color: var(--text-muted);
   font-size: 0.9em;
 }
+
+/* AS ABAS DA ESTANTE (14/10/2026): Solo e Coletivo, no topo do painel, ao lado do título. */
+.minijogo-abas {
+  display: flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.minijogo-abas button {
+  padding: 4px 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.15));
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: calc(13px * var(--escala-do-texto));
+  cursor: pointer;
+}
+
+.minijogo-abas button.ativa {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast, #fff);
+  font-weight: 700;
+}
+
+.minijogo-idioma {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* A PALAVRA SECRETA: as cores são as do Termo (verde no lugar, amarelo noutro lugar, cinza não tem), porque são as que
+   todo mundo já conhece. */
+.palavra {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.palavra-quadro {
+  display: grid;
+  gap: 5px;
+}
+
+.palavra-linha {
+  display: grid;
+  grid-template-columns: repeat(5, 44px);
+  gap: 5px;
+}
+
+.palavra-casa {
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-strong);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.palavra-linha.atual .palavra-casa {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.palavra .nao-tem {
+  background: #3a3a3c;
+  border-color: #3a3a3c;
+  color: #fff;
+}
+
+.palavra .outro-lugar {
+  background: #d3ad69;
+  border-color: #d3ad69;
+  color: #1d1d1f;
+}
+
+.palavra .no-lugar {
+  background: #3aa394;
+  border-color: #3aa394;
+  color: #fff;
+}
+
+.palavra-teclado {
+  display: grid;
+  gap: 5px;
+}
+
+.palavra-teclado div {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.palavra-teclado button {
+  min-width: 30px;
+  height: 38px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-strong);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.palavra-teclado button.larga {
+  min-width: 56px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.palavra-outros {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 16px;
+}
+
+.palavra-outros li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.palavra-mini {
+  display: grid;
+  gap: 2px;
+}
+
+.palavra-mini div {
+  display: grid;
+  grid-template-columns: repeat(5, 14px);
+  gap: 2px;
+}
+
+.palavra-mini span {
+  height: 14px;
+  border-radius: 2px;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+@media (max-width: 480px) {
+  .palavra-linha {
+    grid-template-columns: repeat(5, 38px);
+  }
+
+  .palavra-casa {
+    height: 38px;
+    font-size: 19px;
+  }
+
+  .palavra-teclado button {
+    min-width: 24px;
+    padding: 0 3px;
+  }
+}

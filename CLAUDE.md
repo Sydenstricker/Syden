@@ -356,6 +356,16 @@ língua dele ao escolher, e os chutes são conferidos contra ela. O traço vai p
 `tempoReal` do motor), em pedaços numerados de 40 ms: os pedaços se JUNTAM no site, e só a `versao` (apagar/desfazer)
 troca o desenho inteiro. Falta do degrau 4 só a palavra do dia, que pede um dicionário com licença (decisão dele).
 
+**A estante em duas abas e a Palavra secreta (14/10/2026, pedido dele):** **Solo** (dá para jogar sozinho: Qual é o
+tamanho?, Problemas de xadrez, Sudoku e o Termo de parceiro) e **Coletivo** (o jogo é a turma: Stop, Desenha e adivinha,
+Lobisomem, Palavra secreta, Cinco em linha, Mancala) — `grupo` em `JOGOS`, no site. A **Palavra secreta** é o Termo da
+turma, em corrida: a mesma palavra para todos, 6 chutes cada um, a sala vê as CORES dos outros e nunca as letras, 3 rodadas
+(`server/src/minijogo-palavra.ts`). O dicionário foi resolvido assim: as palavras que SAEM são nossas (373, escritas para o
+Syden), e as que se pode CHUTAR (~18 mil) saem do **VERO**, o corretor do LibreOffice (LGPLv3/MPL), expandido e guardado
+em `server/assets/palavra-secreta/` com o leia-me dele. **Ele fica só no servidor**: o site manda o chute e recebe as cores.
+Por enquanto só em português — idioma novo pede um dicionário, e tradução não produz um; quem lê noutra língua vê o jogo
+com "· português" ao lado do nome.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

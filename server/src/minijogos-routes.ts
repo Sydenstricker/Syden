@@ -4,6 +4,7 @@ import * as db from './db.js';
 import { desenho } from './minijogo-desenho.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
+import { palavra } from './minijogo-palavra.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
@@ -29,7 +30,7 @@ import { manages, requireUser } from './routes.js';
  * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
  * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  */
-export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala, xadrez, lobisomem, desenho };
+export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala, xadrez, lobisomem, desenho, palavra };
 
 interface Partida {
   channelId: number;

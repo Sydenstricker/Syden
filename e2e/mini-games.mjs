@@ -86,8 +86,14 @@ try {
   await painel.locator('.jogos-do-syden li button', { hasText: 'Sala 1' }).click();
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
-  const capas = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
-  capas === 8 ? ok('a Duda caiu na sala com a estante aberta: 8 jogos') : falhou(`a estante tem ${capas} jogos`);
+  // As abas (14/10/2026): Coletivo primeiro, com os 6 da turma; Solo com os 3 de jogar sozinho e o Termo.
+  const coletivos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
+  coletivos === 6 ? ok('a Duda caiu na sala com a estante aberta, na aba Coletivo: 6 jogos') : falhou(`a aba Coletivo tem ${coletivos} jogos`);
+  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
+  const solos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
+  const parceiros = await duda.locator('.minijogo-parceiro').count();
+  solos === 3 && parceiros === 1 ? ok('a aba Solo tem 3 jogos e o Termo') : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
+  await foto(duda, 'estante-solo');
   // O Termo também está na estante da sala: abre NO PALCO (o lugar do vídeo), só para quem clicou, e a barra da call
   // continua à vista embaixo (desenho do Sydenstricker).
   await duda.locator('.minijogo-parceiro', { hasText: 'Termo' }).click();
@@ -113,8 +119,10 @@ try {
   await duda.locator('.minijogo-estante').waitFor({ timeout: 5000 });
   await foto(duda, 'estante');
 
+  const SOLO = ['Qual é o tamanho?', 'Sudoku', 'Problemas de xadrez'];
   const comecar = async (nome) => {
     if ((await duda.locator('.minijogo-estante').count()) === 0) await duda.getByRole('button', { name: 'Mini-games' }).click();
+    await duda.locator('.minijogo-abas').getByRole('tab', { name: SOLO.includes(nome) ? 'Solo' : 'Coletivo' }).click();
     await duda.locator('.minijogo-jogo', { hasText: nome }).click();
   };
   const encerrar = async () => {
@@ -340,6 +348,28 @@ try {
   await artista.getByText(`Era: ${palavra}`).waitFor({ timeout: 5000 });
   ok(`o outro acertou "${palavra}" (em maiúsculas) e a palavra foi revelada`);
   await foto(palpiteiro, 'desenho-acertou');
+  await encerrar();
+
+  // ---- Palavra secreta: o Termo da turma, em corrida ----
+  await comecar('Palavra secreta');
+  await aceitarELargar('Palavra secreta');
+  await duda.locator('.palavra-quadro').waitFor({ timeout: 10000 });
+  await edu.locator('.palavra-quadro').waitFor({ timeout: 10000 });
+  ok('Palavra secreta: o quadro abriu para os dois');
+  await duda.keyboard.type('xkcdz');
+  await duda.keyboard.press('Enter');
+  await duda.getByText('Essa palavra não está na lista.').waitFor({ timeout: 5000 });
+  ok('a palavra fora do dicionário é recusada');
+  for (let i = 0; i < 5; i++) await duda.keyboard.press('Backspace');
+  await duda.keyboard.type('aviao');
+  await duda.keyboard.press('Enter');
+  await duda.locator('.palavra-linha').first().locator('.palavra-casa.no-lugar, .palavra-casa.outro-lugar, .palavra-casa.nao-tem').first().waitFor({ timeout: 5000 });
+  const escrito = await duda.locator('.palavra-linha').first().innerText();
+  escrito.replace(/\s/g, '') === 'AVIÃO' ? ok('o chute sem acento aparece com acento: AVIÃO') : falhou(`o chute apareceu como ${escrito}`);
+  await edu.locator('.palavra-outros li', { hasText: 'duda' + s }).locator('.palavra-mini div').first().waitFor({ timeout: 5000 });
+  const letrasVistas = await edu.locator('.palavra-outros li', { hasText: 'duda' + s }).locator('.palavra-mini').innerText();
+  letrasVistas.trim() === '' ? ok('o Edu vê as cores do quadro da Duda, sem as letras') : falhou(`o Edu viu letras da Duda: ${letrasVistas}`);
+  await foto(duda, 'palavra-secreta');
   await encerrar();
 
   // ---- Lobisomem: precisa de quatro na sala ----

@@ -25,6 +25,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaLobisomem />;
     case 'desenho':
       return <CapaDesenho />;
+    case 'palavra':
+      return <CapaPalavraSecreta />;
   }
 }
 
@@ -44,6 +46,38 @@ export function CapaPalavraDoDia() {
       {linhas.map((linha, l) =>
         linha.map((cor, c) => <rect key={`${l}-${c}`} x={22 + c * 24} y={18 + l * 29} width="20" height="24" rx="3" fill={cor} />),
       )}
+    </svg>
+  );
+}
+
+/**
+ * A Palavra secreta: dois quadros lado a lado, cada um com as suas cores (a corrida), e as peças sem letra — o que a
+ * sala vê dos outros. Outra cor de fundo que a do Termo, para as duas capas não se confundirem.
+ */
+function CapaPalavraSecreta() {
+  const cor = ['#3a3a3c', '#d3ad69', '#3aa394'];
+  const quadros = [
+    [
+      [0, 1, 0, 0, 0],
+      [2, 0, 1, 0, 2],
+      [2, 2, 2, 2, 2],
+    ],
+    [
+      [0, 0, 1, 0, 1],
+      [1, 2, 0, 0, 2],
+      [2, 2, 0, 2, 2],
+    ],
+  ];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#24304a" />
+      {quadros.map((linhas, q) =>
+        linhas.map((linha, l) =>
+          linha.map((c, i) => <rect key={`${q}-${l}-${i}`} x={12 + q * 72 + i * 13} y={30 + l * 22} width="11" height="18" rx="2" fill={cor[c]} />),
+        ),
+      )}
+      <circle cx="44" cy="17" r="6" fill="#f2c9a0" />
+      <circle cx="116" cy="17" r="6" fill="#a0c4f2" />
     </svg>
   );
 }

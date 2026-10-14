@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
 import { IconButton } from './IconButton';
-import { useT } from './i18n';
+import { idiomaAtual, useT } from './i18n';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoLobisomem } from './JogoLobisomem';
+import { JogoPalavra } from './JogoPalavra';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -14,16 +15,19 @@ import { JogoXadrez } from './JogoXadrez';
 import {
   JOGOS,
   JOGOS_DE_MESA,
+  nomeDoIdioma,
   nomeDoJogo,
   souJogador,
   SITES_PARA_TRANSMITIR,
   type EstadoDesenho,
   type EstadoDuelo,
   type EstadoLobisomem,
+  type EstadoPalavra,
   type EstadoStop,
   type EstadoSudoku,
   type EstadoTamanho,
   type EstadoXadrez,
+  type GrupoDoJogo,
   type IdDoJogo,
   type Partida,
   type PartidaPublica,
@@ -104,6 +108,22 @@ export function PainelDoMinijogo({
   const [agora, setAgora] = useState(Date.now());
   /** O "Qual é o tamanho?" pede a categoria antes de começar. */
   const [escolhendoCategoria, setEscolhendoCategoria] = useState(false);
+  /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
+  const [aba, setAba] = useState<GrupoDoJogo>(() => {
+    try {
+      return localStorage.getItem('syden:aba-dos-minijogos') === 'solo' ? 'solo' : 'coletivo';
+    } catch {
+      return 'coletivo';
+    }
+  });
+  const escolherAba = (grupo: GrupoDoJogo) => {
+    setAba(grupo);
+    try {
+      localStorage.setItem('syden:aba-dos-minijogos', grupo);
+    } catch {
+      /* sem guardar: volta no Coletivo */
+    }
+  };
 
   // O relógio anda na tela; quem manda no fim de cada fase é o servidor.
   const andando = partida !== null && !partida.terminada;
@@ -121,7 +141,7 @@ export function PainelDoMinijogo({
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
-    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez') && !partida.terminada
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra') && !partida.terminada
       ? (partida as unknown as EstadoTamanho)
       : null;
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
@@ -134,6 +154,16 @@ export function PainelDoMinijogo({
         <strong>
           <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}
         </strong>
+        {/* As abas da estante (pedido dele, 14/10/2026): o que se joga sozinho e o que é da turma. */}
+        {!partida && !escolhendoCategoria && (
+          <div className="minijogo-abas" role="tablist" aria-label={t('Mini-games')}>
+            {(['solo', 'coletivo'] as const).map((grupo) => (
+              <button key={grupo} type="button" role="tab" aria-selected={aba === grupo} className={aba === grupo ? 'ativa' : ''} onClick={() => escolherAba(grupo)}>
+                {grupo === 'solo' ? t('Solo') : t('Coletivo')}
+              </button>
+            ))}
+          </div>
+        )}
         {rodada && <span className="minijogo-rodada">{t('Rodada {n} de {total}', { n: rodada.rodada, total: rodada.rodadas })}</span>}
         <button type="button" className="icon-plain" aria-label={t('Fechar')} onClick={aoFechar}>
           <X size={16} />
@@ -150,7 +180,7 @@ export function PainelDoMinijogo({
       )}
       {!partida && !escolhendoCategoria && (
         <ul className="minijogo-estante">
-          {JOGOS.map((jogo) => (
+          {JOGOS.filter((jogo) => jogo.grupo === aba).map((jogo) => (
             <li key={jogo.id}>
               <button
                 type="button"
@@ -159,13 +189,19 @@ export function PainelDoMinijogo({
                 onClick={() => (jogo.id === 'tamanho' ? setEscolhendoCategoria(true) : tentar(() => aoComecar(jogo.id)))}
               >
                 <CapaDoJogo jogo={jogo.id} />
-                <span>{t(jogo.nome)}</span>
+                <span>
+                  {t(jogo.nome)}
+                  {/* O jogo de uma língua só aparece para todo mundo, com o nome da língua (a regra dos sites). */}
+                  {jogo.idioma && !idiomaAtual().startsWith(jogo.idioma) && (
+                    <small className="minijogo-idioma"> · {nomeDoIdioma(jogo.idioma, idiomaAtual())}</small>
+                  )}
+                </span>
               </button>
             </li>
           ))}
           {/* Os jogos de parceiro que rodam dentro do Syden (o Termo): no fim da estante, e abrem SÓ para quem
               clicou — a partida da sala continua livre para os outros. */}
-          {SITES_PARA_TRANSMITIR.filter((site) => site.embutir).map((site) => (
+          {aba === 'solo' && SITES_PARA_TRANSMITIR.filter((site) => site.embutir).map((site) => (
             <li key={site.endereco}>
               <button type="button" className="minijogo-jogo minijogo-parceiro" title={t(site.dica)} onClick={() => aoAbrirSite(site)}>
                 <CapaPalavraDoDia />
@@ -195,6 +231,7 @@ export function PainelDoMinijogo({
         <JogoDesenho estado={jogoNaTela as unknown as EstadoDesenho & Partida} eu={eu} restante={restante} agir={agir} socket={socket} channelId={channelId} />
       )}
       {jogoNaTela?.jogo === 'xadrez' && <JogoXadrez estado={jogoNaTela as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
+      {jogoNaTela?.jogo === 'palavra' && <JogoPalavra estado={jogoNaTela as unknown as EstadoPalavra & Partida} eu={eu} restante={restante} agir={agir} />}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
         <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />

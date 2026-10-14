@@ -279,49 +279,84 @@ export interface EstadoDesenho {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho';
+/** A Palavra secreta (server/src/minijogo-palavra.ts). As cores: 2 no lugar, 1 noutro lugar, 0 não tem. */
+export interface EstadoPalavra {
+  rodada: number;
+  rodadas: number;
+  fase: 'chutando' | 'revelando' | 'fim';
+  chutes: number;
+  meu: { texto: string; cores: number[] }[];
+  acertei: boolean;
+  palavra: string | null;
+  outros: { userId: number; username: string; cores: number[][]; acertou: boolean; letras: string[] | null }[];
+  placar: LinhaDoPlacar[];
+}
+
+export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra';
+
+/**
+ * As duas abas da estante (pedido dele, 14/10/2026). SOLO: dá para jogar sozinho, e quem estiver na sala entra na
+ * corrida se quiser. COLETIVO: o jogo é a turma (precisa de outra pessoa, ou não tem graça sem ela).
+ */
+export type GrupoDoJogo = 'solo' | 'coletivo';
 
 /** A estante: a ordem é a da tela. O nome e a dica de cada jogo, traduzidos. */
-export const JOGOS: { id: IdDoJogo; nome: string; dica: string }[] = [
+export const JOGOS: { id: IdDoJogo; nome: string; dica: string; grupo: GrupoDoJogo; idioma?: string }[] = [
   {
     id: 'tamanho',
     nome: chave('Qual é o tamanho?'),
     dica: chave('Ao lado de um objeto de tamanho conhecido aparece outro, e cada um aumenta ou diminui esse outro até achar o tamanho certo. Quem chegar mais perto ganha mais pontos.'),
+    grupo: 'solo',
   },
   {
     id: 'stop',
     nome: chave('Stop'),
     dica: chave('Sai uma letra e cada um escreve uma palavra com ela em cada categoria. Quem completar primeiro aperta STOP, e a turma decide o que vale.'),
+    grupo: 'coletivo',
   },
   {
     id: 'desenho',
     nome: chave('Desenha e adivinha'),
     dica: chave('Cada um desenha uma vez, e a sala chuta o que é. Quem acerta mais rápido ganha mais pontos.'),
+    grupo: 'coletivo',
   },
   {
     id: 'lobisomem',
     nome: chave('Lobisomem'),
     dica: chave('Cada um recebe um papel em segredo. À noite os lobisomens atacam; de dia a vila conversa e vota em quem tirar do jogo. Precisa de 4 pessoas ou mais.'),
+    grupo: 'coletivo',
   },
   {
     id: 'xadrez',
     nome: chave('Problemas de xadrez'),
     dica: chave('Todo mundo recebe o mesmo problema do Lichess. Quem achar o lance certo mais rápido ganha o ponto extra.'),
+    grupo: 'solo',
   },
   {
     id: 'sudoku',
     nome: chave('Sudoku'),
     dica: chave('Todo mundo recebe o mesmo sudoku, e a sala vê quem está mais perto de terminar.'),
+    grupo: 'solo',
   },
   {
     id: 'gomoku',
     nome: chave('Cinco em linha'),
     dica: chave('Duas pessoas põem pedras no tabuleiro, uma de cada vez. Vence quem fizer cinco seguidas. A sala assiste.'),
+    grupo: 'coletivo',
   },
   {
     id: 'mancala',
     nome: chave('Mancala'),
     dica: chave('O jogo de semear: pegue as sementes de uma casa e espalhe uma por casa. Vence quem guardar mais no depósito. A sala assiste.'),
+    grupo: 'coletivo',
+  },
+  {
+    id: 'palavra',
+    nome: chave('Palavra secreta'),
+    dica: chave('Todo mundo tenta adivinhar a mesma palavra de 5 letras, em 6 chutes. A sala vê as cores dos outros, mas não as letras. Quem acertar com menos chutes ganha mais pontos.'),
+    grupo: 'coletivo',
+    // As palavras são do dicionário do servidor, que por enquanto só existe em português.
+    idioma: 'pt',
   },
 ];
 
