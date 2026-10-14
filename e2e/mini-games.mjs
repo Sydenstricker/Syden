@@ -367,6 +367,15 @@ try {
   const todos = [duda, edu, ...outros];
   const nomes = ['duda', 'edu', 'fabi', 'gui'].map((n) => n + s);
   await comecar('Lobisomem');
+  // O convite: com menos de 4 jogadores, a largada fica travada; os três aceitam e ela libera.
+  await duda.locator('.minijogo-espera').waitFor({ timeout: 10000 });
+  ((await duda.getByRole('button', { name: 'Começar' }).isDisabled()) ? ok : falhou)('Lobisomem: sozinha, a Duda não consegue dar a largada');
+  for (const p of [edu, ...outros]) {
+    await p.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
+    await p.locator('.minijogo-espera').waitFor({ timeout: 5000 });
+  }
+  await duda.locator('.minijogo-espera-lista li').nth(3).waitFor({ timeout: 5000 });
+  await duda.getByRole('button', { name: 'Começar' }).click();
   for (const p of todos) await p.locator('.lobisomem-papel strong').waitFor({ timeout: 15000 });
   const papeis = await Promise.all(todos.map((p) => p.locator('.lobisomem-papel strong').innerText()));
   ([...papeis].sort().join() === ['Da vila', 'Da vila', 'Lobisomem', 'Vidente'].sort().join() ? ok : falhou)(`Lobisomem: cada um recebeu um papel (${papeis.join(', ')})`);
