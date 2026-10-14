@@ -29,3 +29,6 @@
 {"ferramenta":"pixellab","peca":"personagem/transicao/sentar/south-east","geracoes":10,"quando":"2026-10-14T16:53:55.383Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/sentar/south-west","geracoes":10,"quando":"2026-10-14T16:55:50.678Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/sentar/north-east","geracoes":10,"quando":"2026-10-14T16:57:48.562Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar/north-west","geracoes":10,"quando":"2026-10-14T16:59:41.976Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar/south-west","geracoes":10,"quando":"2026-10-14T17:01:13.232Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/south-west","geracoes":10,"quando":"2026-10-14T17:03:17.626Z"}
