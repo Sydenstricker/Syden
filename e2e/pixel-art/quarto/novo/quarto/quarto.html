@@ -392,7 +392,7 @@ function dados(im, filtro, w = W, h = W) {
       { anim: 'sentar', q: 1, ponto: [beira[0], beira[1], 0] },
     ] };
   }
-  const DUR_DO_PASSO = 240;
+  const DUR_DO_PASSO = 340; // cada quadro do meio; mais curto, a sentada passava sem se ver
   function tocar(id, pt, ro, reverso, depois) {
     if (semAndar || !ANIM[ro.passos[0].anim] || !Object.keys(ANIM[ro.passos[0].anim]).length) { depois(); return; }
     coelho.trans = { passos: reverso ? [...ro.passos].reverse() : ro.passos, t0: performance.now(), depois, alvo: id, dir: pt.olha, atrasNaBeira: ro.atrasNaBeira };
