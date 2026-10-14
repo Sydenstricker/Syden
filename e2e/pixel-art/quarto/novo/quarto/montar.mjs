@@ -292,7 +292,7 @@ function dados(im, filtro, w = W, h = W) {
   // Pedido dele: "quero dar um layout inicial, mas quero permitir o usuário customizar o quarto como achar melhor". Todo
   // móvel se arrasta e gira (4 posições). Cada um tem as 4 vistas do MESMO móvel (girar.mjs), e o TAMANHO NO CHÃO sai do
   // próprio desenho (a cama pedida numa área saiu uma casa menor, e o coelho deitava longe dela): da quina da frente (o
-  // ponto mais baixo) até a ponta da esquerda é o comprimento em u, até a da direita, em v (27 px por casa).
+  // ponto mais baixo) até a ponta da direita é o comprimento em u, até a da esquerda, em v (27 px por casa).
   // O layout inicial é o da PINTURA: enquanto um móvel pintado no quarto está no lugar e na posição de origem, é a
   // pintura dele que aparece (com a luz e a sombra de lá); mexido, entra a vista solta, com a intensidade da luz do lugar.
   const KX = (CANTOS.direita[0] - CANTOS.fundo[0]) / N;
@@ -315,7 +315,9 @@ function dados(im, filtro, w = W, h = W) {
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
     let soma = 0, n = 0;
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
-    const mede = [Math.max(0.6, (sx - x0) / KX), Math.max(0.6, (x1 + 1 - sx) / KX)];
+    // Da quina da frente (u1, v1): a ponta da DIREITA é (u0, v1), então a distância até ela é o comprimento em u; a da
+    // esquerda é (u1, v0), o comprimento em v (x cresce com v e diminui com u).
+    const mede = [Math.max(0.6, (x1 + 1 - sx) / KX), Math.max(0.6, (sx - x0) / KX)];
     return { id, movel, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n) };
   }
   const VISTAS = {};
