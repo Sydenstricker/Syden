@@ -11,8 +11,8 @@ Este arquivo é o FORMATO, escrito antes da arte, para a arte já nascer encaixa
 O coelho do recado colado no quarto modular (base de 512 px) em 64, 82 e 100 px de altura. **~80 px de pé** fica na
 proporção do conceito: a cama o comporta deitado, o pufe chega à cintura. 64 parece filhote; 100 enche o quarto.
 
-- **Quadro de 96 × 96**, o mesmo para todo coelho e toda animação.
-- **O pé é a âncora:** o ponto (48, 90) do quadro fica no ponto do chão da casa. Trocar de coelho não mexe na cena.
+- **Quadro de 120 × 120** (era 96; ver abaixo), o mesmo para todo coelho e toda animação.
+- **O pé é a âncora:** o meio da última linha com desenho fica no ponto do chão da casa. Trocar de coelho não mexe na cena.
 - Pixel art não encolhe (desfaz o rosto, lição do lobby): ele NASCE nesse tamanho.
 
 ## As direções
@@ -75,6 +75,19 @@ pé, como mais um móvel.
 | clicou num objeto | anda até ele, e então a função abre | — |
 
 Movimento reduzido no sistema: o coelho aparece já no lugar, sem andar.
+
+## O que já foi feito (14/10/2026)
+
+- **A estrutura**, no quarto modular (`../quarto/novo/quarto/`, abrir `quarto.html`): pontos nos móveis, caminhada
+  pela grade, ordem de desenho, luz do chão no pé, estados (à toa, em call, ausente, falando), clique no móvel, e
+  "sem caminhada". ~20 ms por quadro. Falta a camada da frente (pede a arte dos móveis de sentar).
+- **O mascote, parado, nas 8 direções** (`gerar.mjs`; a versão boa é `mascote/baixa-120/`, ~90 px de pé num quadro de
+  120, vista "low top-down"). Ele já está no quarto de teste, com o desenho certo para cada diagonal.
+  - **Com o recorte do quarto como imagem de estilo, a ferramenta COPIOU a cama para dentro de cada direção**
+    (`mascote/baixa`, `mascote/alta`). O estilo vai por texto. É a mesma lição das bases de 512: referência vira
+    conteúdo.
+  - Num quadro de 96 ele saiu com ~60 px; o quadro de 120 dá ~90. O quadro de 96 do formato acima vira 120.
+  - Custo: 15 (alta), 15 (baixa) e 25 (baixa-120) gerações. Restam 2.277 das 2.332 do plano novo.
 
 ## A ordem do trabalho
 

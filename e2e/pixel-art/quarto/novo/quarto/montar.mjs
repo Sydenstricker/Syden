@@ -32,6 +32,12 @@ const IMAGENS = {
   // (e2e/pixel-art/personagem/README.md). Serve para testar a estrutura: pontos, caminhada, ordem e luz.
   coelho: png(path.join(AQUI, '..', '..', '..', '..', '..', 'web', 'src', 'assets', 'salao', 'coelho-do-recado.png')),
 };
+// O MASCOTE ISOMÉTRICO (personagem/mascote/baixa-120, 14/10/2026): as 4 diagonais, paradas. Os nomes do PixelLab
+// (south-east...) viram os do README (sudeste...).
+const MASCOTE = path.join(AQUI, '..', '..', '..', 'personagem', 'mascote', 'baixa-120');
+for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-west'], ['nordeste', 'north-east'], ['noroeste', 'north-west']]) {
+  IMAGENS['mascote-' + nosso] = png(path.join(MASCOTE, deles + '.png'));
+}
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -72,7 +78,8 @@ A <b>poltrona</b> também se arrasta, e <b>Girar</b> (ou a tecla R) troca o lado
   <button id="janela" aria-pressed="false">Janela: fechada</button>
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
 </div>
-<p><b>O coelho</b> (provisório: o desenho do recado, de frente, até o mascote isométrico nascer). O estado decide o
+<p><b>O coelho</b>: o mascote isométrico, parado nas 4 diagonais (as animações ainda não existem: andando, ele
+desliza; sentado, fica de pé sobre o móvel; falando, usa o gesto do coelho provisório do recado). O estado decide o
 lugar; <b>clicar num móvel</b> (sem arrastar) o leva até ele; arrastar o pufe ou a poltrona com ele sentado leva o
 coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
 <div class="barra" id="estados">
@@ -274,6 +281,15 @@ function dados(im, filtro, w = W, h = W) {
   // e escurece-se para "de costas", só para VER a direção. A arte de verdade não espelha (a lição da poltrona).
   const QUADROS = 18, fw = im.coelho.width / QUADROS, fh = im.coelho.height;
   const folha = dados(im.coelho, null, im.coelho.width, fh);
+  // O mascote: um quadro por direção. O pé é o meio da última linha com desenho (a âncora do README).
+  const mascote = {};
+  for (const d of ['sudeste', 'sudoeste', 'nordeste', 'noroeste']) {
+    const img = im['mascote-' + d], w = img.width, h = img.height, px = dados(img, null, w, h);
+    let fundo = 0, sx = 0, n = 0;
+    for (let k = 0; k < w * h; k++) if (px[k * 4 + 3] > 127) fundo = Math.max(fundo, (k / w) | 0);
+    for (let x = 0; x < w; x++) for (let y = fundo - 3; y <= fundo; y++) if (px[(y * w + x) * 4 + 3] > 127) { sx += x; n++; }
+    mascote[d] = { px, w, h, peX: sx / Math.max(1, n), peY: fundo };
+  }
   const coelho = { u: 6.5, v: 6.5, dir: 'sudeste', pose: 'parado', caminho: [], destino: null, quadro: 0 };
   let estado = 'atoa', falando = false, semAndar = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // A casa ocupada: o pé dos móveis fixos (menos o tapete), e o pufe e a poltrona (2 × 2 em volta do cruzamento).
@@ -369,26 +385,31 @@ function dados(im, filtro, w = W, h = W) {
     const [u, v] = sentado ? pt.onde : [coelho.u, coelho.v];
     const [px, py] = ponto(u, v);
     const balanco = coelho.caminho.length ? coelho.quadro % 2 : 0;
-    const x0 = Math.round(px - fw / 2), y0 = Math.round(py - fh - (sentado ? pt.sobe : 0) - balanco);
     if (ultimaCaixa) {
       const [a, b, c, d] = ultimaCaixa;
       for (let y = b; y < d; y++) for (let x = a; x < c; x++) if (x >= 0 && y >= 0 && x < W && y < W) quadroBuf[(y * W + x) * 4 + 3] = 0;
       peBuf.fill(-1);
     }
-    const q = falando ? coelho.quadro % QUADROS : 0;
-    const oeste = coelho.dir === 'sudoeste' || coelho.dir === 'noroeste', costas = coelho.dir.startsWith('n');
-    for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) {
-      const sx = oeste ? fw - 1 - x : x, s = (y * im.coelho.width + q * fw + sx) * 4;
-      if (folha[s + 3] < 128) continue;
-      const X = x0 + x, Y = y0 + y;
+    // Falando, o gesto do provisório (o mascote ainda não tem essa animação); no resto, o mascote na direção dele.
+    const usarProvisorio = falando;
+    const m = mascote[coelho.dir];
+    const sw = usarProvisorio ? fw : m.w, sh = usarProvisorio ? fh : m.h;
+    const ax = usarProvisorio ? fw / 2 : m.peX, ay = usarProvisorio ? fh : m.peY + 1;
+    const X0 = Math.round(px - ax), Y0 = Math.round(py - ay - (sentado ? pt.sobe : 0) - balanco);
+    const q = coelho.quadro % QUADROS;
+    for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
+      const s = usarProvisorio ? (y * im.coelho.width + q * fw + x) * 4 : (y * m.w + x) * 4;
+      const fonte = usarProvisorio ? folha : m.px;
+      if (fonte[s + 3] < 128) continue;
+      const X = X0 + x, Y = Y0 + y;
       if (X < 0 || Y < 0 || X >= W || Y >= W) continue;
-      const d = (Y * W + X) * 4, f = costas ? 0.72 : 1;
-      quadroBuf[d] = folha[s] * f; quadroBuf[d + 1] = folha[s + 1] * f; quadroBuf[d + 2] = folha[s + 2] * f; quadroBuf[d + 3] = 255;
+      const d = (Y * W + X) * 4;
+      quadroBuf[d] = fonte[s]; quadroBuf[d + 1] = fonte[s + 1]; quadroBuf[d + 2] = fonte[s + 2]; quadroBuf[d + 3] = 255;
       // A luz dele, de noite, é a do chão onde o pé está (como a dos móveis).
       peBuf[X] = Math.round(py);
     }
-    ultimaCaixa = [x0, y0, x0 + fw, y0 + fh];
-    const p = { id: 'coelho', movel: quadroBuf, sombra: semSombra, topo: y0, peColuna: peBuf };
+    ultimaCaixa = [X0, Y0, X0 + sw, Y0 + sh];
+    const p = { id: 'coelho', movel: quadroBuf, sombra: semSombra, topo: Y0, peColuna: peBuf };
     const frente = sentado ? pt.frente : coelho.u + coelho.v + 0.6;
     return [{ p, dx: 0, dy: 0, fator: 1, frente, ...(sentado ? {} : { contato: [px, py], raio: [12, 5] }) }];
   }

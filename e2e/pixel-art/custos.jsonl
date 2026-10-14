@@ -9,3 +9,6 @@
 {"ferramenta":"rd-plus","pose":"pipoca","usd":0.06,"saldo":0.26,"quando":"2026-10-07T01:01:52.634Z"}
 {"ferramenta":"pixellab-pro","pose":"parado","usd":null,"usage":{"type":"generations","generations":20},"quando":"2026-10-07T01:03:44.758Z"}
 {"ferramenta":"rd-pro","pose":"cenoura","usd":0.18,"saldo":0.08,"quando":"2026-10-07T01:04:32.173Z"}
+{"ferramenta":"pixellab","peca":"personagem/mascote/alta","geracoes":15,"quando":"2026-10-14T13:49:32.305Z"}
+{"ferramenta":"pixellab","peca":"personagem/mascote/baixa","geracoes":30,"quando":"2026-10-14T13:51:45.623Z"}
+{"ferramenta":"pixellab","peca":"personagem/mascote/baixa-120","geracoes":25,"quando":"2026-10-14T13:58:31.275Z"}
