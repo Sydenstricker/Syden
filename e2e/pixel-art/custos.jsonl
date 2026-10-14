@@ -32,3 +32,4 @@
 {"ferramenta":"pixellab","peca":"personagem/transicao/sentar/north-west","geracoes":10,"quando":"2026-10-14T16:59:41.976Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar/south-west","geracoes":10,"quando":"2026-10-14T17:01:13.232Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/south-west","geracoes":10,"quando":"2026-10-14T17:03:17.626Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/sentado-poltrona","geracoes":25,"quando":"2026-10-14T18:04:11.476Z"}
