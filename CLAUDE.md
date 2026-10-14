@@ -495,6 +495,9 @@ ficou combinado:
   parou. A física da cadeira continua rodando só na tela de quem mexe; o servidor guarda onde ela ficou.
 - **As camas para desbloquear já têm 4 candidatas** (`avulsos/cama-casal-1..4.png`, madeiras e cabeceiras diferentes);
   a 2 é a de fábrica. O que libera cama nova ainda é decisão dele.
+- **Para depois de terminar o quarto (pedidos dele, 14/10/2026):** a animação do coelho DIGITANDO e mexendo no mouse
+  (parte da pose `estados/no-computador`, ~6 gerações por direção) e a animação das portas do guarda-roupa abrindo (a API
+  anima o objeto entre os dois estados).
 - **PARA DEPOIS de terminar o quarto (anotado em 14/10/2026, pedido dele):** mudar a JANELA de lugar e trocar o TIPO de
   janela, e não só a vista lá fora. Hoje ela é fixa (a fonte da luz, pintada na parede e no chão), então isso pede que a
   luz da janela também passe a ser montada.
