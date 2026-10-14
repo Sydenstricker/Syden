@@ -439,7 +439,8 @@ ficou combinado:
     brilho vem de **três versões pintadas por móvel**, escolhidas pela posição — o meio-termo entre pintar
     uma imagem por casa (64) e nenhuma. Reacender por código (normais pela silhueta) destruiu o desenho
     (`hibrido/grade/falhas/`).
-  - **A janela é fixa:** é a fonte da luz, pintada na parede e no chão. Troca-se a aparência, nunca o lugar.
+  - **A janela é fixa:** é a fonte da luz, pintada na parede e no chão. Troca-se a aparência, nunca o lugar. (Revisto em
+    14/10/2026: mudar o lugar e o tipo de janela entra DEPOIS de o quarto ficar pronto; ver mais abaixo.)
   - **Esvaziar a pintura do conceito não deu:** a edição do PixelLab redesenhou o quarto, e a reconstrução por
     código ficou abaixo do ideal (`hibrido/vazio/`). Daí o quarto novo, já gerado como pixel art: **pixel art
     que nasce na grade tem bordas limpas** (as do conceito convertido têm degraus desiguais, e o
@@ -486,6 +487,12 @@ ficou combinado:
   do ícone de início e o changelog.ts (a escolha de coelhos saiu até haver outros coelhos); o quadrado escuro do conceito foi tirado
   na exportação; o quarto tem no máximo 626 px e 72% da altura. Mover/girar móveis NÃO está no app (só na página de
   teste do quarto novo).
+- **O quarto é INDIVIDUAL; o coletivo é o salão** (dele, 14/10/2026). **Ele dá um layout inicial, e cada pessoa arruma
+  como quiser:** todo móvel se arrasta e gira (4 posições), não só o pufe e a poltrona. A cadeira do computador terá
+  FÍSICA de verdade (rola, perde força no atrito, bate e quica nos móveis), não só o desenho mudando.
+- **PARA DEPOIS de terminar o quarto (anotado em 14/10/2026, pedido dele):** mudar a JANELA de lugar e trocar o TIPO de
+  janela, e não só a vista lá fora. Hoje ela é fixa (a fonte da luz, pintada na parede e no chão), então isso pede que a
+  luz da janela também passe a ser montada.
 - **Para o quarto novo virar a home:** recheio (plantas, quadros, objetos sobre os móveis), os objetos com função
   (fone, quadro, gavetas, janela, abajur), a montagem virar componente do app, e a arrumação de cada pessoa guardada
   no servidor. Depois: animação na vista, variações de tapete (cor por código), mais móveis que giram.
