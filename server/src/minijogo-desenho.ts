@@ -79,6 +79,7 @@ interface Traco {
 type Fase = 'escolhendo' | 'desenhando' | 'revelando' | 'fim';
 
 export const desenho: Definicao = {
+  minimo: 2,
   comecar(ctx, { naSala }) {
     if (naSala.length < 2) return 'O desenho precisa de pelo menos 2 pessoas na sala.';
     const ordem = embaralhar([...naSala]).slice(0, MAXIMO_DE_VEZES);

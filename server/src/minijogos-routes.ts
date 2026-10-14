@@ -20,6 +20,12 @@ import { manages, requireUser } from './routes.js';
  * Jogar exige ESTAR NA SALA DE VOZ: o jogo é da turma que está conversando. Ver o estado basta participar
  * da comunidade, para quem entra no meio já cair na rodada certa.
  *
+ * O CONVITE (13/10/2026). O painel abria sozinho para a sala inteira, e todo mundo virava jogador: com três pessoas
+ * transmitindo outro jogo, o Stop ficava preso esperando o "pronto" delas. Agora quem começa CONVIDA (`convidar`):
+ * a partida nasce como convite, cada um da sala responde "Jogar" ou "Agora não", e quem começou dá a largada com
+ * quem aceitou. Só eles jogam (ctx.naSala); os outros podem abrir e assistir. Os jogos de mesa começam na hora,
+ * porque a mesa já é o convite, e quem senta vira jogador. Sem `convidar` (um site anterior), tudo como antes.
+ *
  * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
  * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  */
@@ -37,7 +43,16 @@ interface Partida {
   instancia: Jogo | null;
   /** A linha da partida na estatística do painel de uso (ver db.registrarPartida). */
   registro: number | null;
+  /** Quem joga. null = a sala inteira (a partida começada por um site anterior ao convite). */
+  jogadores: Set<number> | null;
+  /** Quem respondeu "Agora não": o convite não volta para essa pessoa nesta partida. */
+  recusaram: Set<number>;
+  /** Enquanto é convite: o que veio no pedido de começar, guardado para a largada. */
+  convite: { corpo: Record<string, unknown> } | null;
 }
+
+/** Quanto o convite espera a largada antes de se desfazer sozinho. */
+export const CONVITE_MS = 3 * 60_000;
 
 const partidas = new Map<number, Partida>();
 
@@ -46,14 +61,19 @@ export const _partidas = partidas;
 
 export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
   const nome = (userId: number) => db.findUserById(userId)?.username ?? '?';
+  /** Quem joga e está na sala agora (com o convite, só quem aceitou). */
+  const presentes = (p: Partida) => {
+    const naSala = quemEstaNaSala(p.channelId);
+    return p.jogadores ? naSala.filter((id) => p.jogadores!.has(id)) : naSala;
+  };
   const avisar = (p: Partida) => io.to(communityRoom(p.communityId)).emit('minijogo:mudou', { channelId: p.channelId });
 
   function agendar(p: Partida, ms: number, depois: () => void) {
     if (p.relogio) clearTimeout(p.relogio);
     p.ate = Date.now() + ms;
     p.relogio = setTimeout(() => {
-      // A sala esvaziou: a partida acaba junto, sem esperar ninguém.
-      if (quemEstaNaSala(p.channelId).length === 0) return encerrar(p);
+      // Os jogadores saíram da sala: a partida acaba junto, sem esperar ninguém.
+      if (presentes(p).length === 0) return encerrar(p);
       depois();
     }, ms);
     p.relogio.unref?.();
@@ -67,13 +87,50 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     avisar(p);
   }
 
+  const pessoas = (ids: Iterable<number>) => [...ids].map((userId) => ({ userId, username: nome(userId) }));
   const estado = (p: Partida, quem: number) => ({
     jogo: p.jogo,
     criadaPor: p.criadaPor,
     terminada: p.terminada,
     restanteMs: Math.max(0, p.ate - Date.now()),
+    // O convite: quem vai jogar, quem disse "agora não", e o mínimo para dar a largada.
+    convite: p.convite ? { minimo: JOGOS[p.jogo].minimo ?? 1 } : null,
+    jogadores: p.jogadores ? pessoas(p.jogadores) : null,
+    recusaram: pessoas(p.recusaram),
+    souJogador: p.jogadores ? p.jogadores.has(quem) : true,
+    recusei: p.recusaram.has(quem),
     ...p.instancia?.publico(quem),
   });
+
+  /** Dá a largada: o jogo começa com quem aceitou e está na sala. Devolve o erro, ou null. */
+  function largar(p: Partida, corpo: Record<string, unknown>): string | null {
+    const ctx: Contexto = {
+      agendar: (ms, depois) => agendar(p, ms, depois),
+      avisar: () => avisar(p),
+      terminar: () => {
+        p.terminada = true;
+        if (p.registro !== null) db.fecharPartida(p.registro, true);
+        agendar(p, PLACAR_MS, () => encerrar(p));
+        avisar(p);
+      },
+      naSala: () => presentes(p),
+      nome,
+    };
+    // O relógio do convite sai antes: um jogo que não marca relógio ao começar herdaria o fim do convite.
+    if (p.relogio) clearTimeout(p.relogio);
+    p.relogio = null;
+    p.ate = 0;
+    const naSala = presentes(p);
+    const instancia = JOGOS[p.jogo].comecar(ctx, { naSala, criadaPor: p.criadaPor, corpo });
+    if (typeof instancia === 'string') {
+      if (p.relogio) clearTimeout(p.relogio);
+      return instancia;
+    }
+    p.instancia = instancia;
+    p.convite = null;
+    p.registro = db.registrarPartida(p.jogo, p.communityId, p.channelId, p.criadaPor, naSala);
+    return null;
+  }
 
   // O que precisa chegar NA HORA (o traço do desenho) vem pelo socket e vai direto a quem está na sala,
   // sem o "mudou, busque de novo" das rotas. O jogo decide o que aceita (ver `tempoReal` no motor).
@@ -125,6 +182,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
         if (atual?.relogio) clearTimeout(atual.relogio);
 
+        const convidar = request.body?.convidar === true;
+        const { convidar: _, ...corpo } = request.body ?? {};
         const p: Partida = {
           channelId: canal.id,
           communityId: canal.communityId,
@@ -135,26 +194,17 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
           relogio: null,
           instancia: null,
           registro: null,
+          jogadores: convidar ? new Set([request.user.id]) : null,
+          recusaram: new Set(),
+          convite: convidar && !definicao.mesa ? { corpo } : null,
         };
-        const ctx: Contexto = {
-          agendar: (ms, depois) => agendar(p, ms, depois),
-          avisar: () => avisar(p),
-          terminar: () => {
-            p.terminada = true;
-            if (p.registro !== null) db.fecharPartida(p.registro, true);
-            agendar(p, PLACAR_MS, () => encerrar(p));
-            avisar(p);
-          },
-          naSala: () => quemEstaNaSala(canal.id),
-          nome,
-        };
-        const instancia = definicao.comecar(ctx, { naSala: quemEstaNaSala(canal.id), criadaPor: request.user.id, corpo: request.body ?? {} });
-        if (typeof instancia === 'string') {
-          if (p.relogio) clearTimeout(p.relogio);
-          return reply.code(400).send({ error: instancia });
+        if (p.convite) {
+          // Só o convite: ninguém joga ainda, e ele se desfaz sozinho se a largada não vier.
+          agendar(p, CONVITE_MS, () => encerrar(p));
+        } else {
+          const erro = largar(p, corpo);
+          if (erro) return reply.code(400).send({ error: erro });
         }
-        p.instancia = instancia;
-        p.registro = db.registrarPartida(p.jogo, canal.communityId, canal.id, request.user.id, quemEstaNaSala(canal.id));
         partidas.set(canal.id, p);
         avisar(p);
         return { partida: estado(p, request.user.id) };
@@ -165,10 +215,69 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const canal = sala(request.params.id, request.user.id, reply);
       if (!canal) return reply;
       const p = partidas.get(canal.id);
+      if (p?.convite) return reply.code(409).send({ error: 'A partida ainda não começou.' });
       if (!p?.instancia || p.terminada) return reply.code(409).send({ error: 'A partida acabou.' });
       if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
+      // Quem não aceitou o convite assiste. Na mesa, sentar é o jeito de aceitar, e o jogo decide quem pode.
+      const mesa = JOGOS[p.jogo].mesa === true;
+      if (p.jogadores && !mesa && !p.jogadores.has(request.user.id)) {
+        return reply.code(403).send({ error: 'Você está assistindo esta partida.' });
+      }
       const erro = p.instancia.acao(request.user.id, request.body ?? {});
       if (erro) return reply.code(409).send({ error: erro });
+      if (mesa && p.jogadores && request.body?.tipo === 'sentar') {
+        p.jogadores.add(request.user.id);
+        p.recusaram.delete(request.user.id);
+      }
+      return { partida: estado(p, request.user.id) };
+    });
+
+    /**
+     * A resposta ao convite: 'jogar' entra, 'sair' desiste antes da largada, 'agora-nao' recusa (e o convite não
+     * volta para essa pessoa nesta partida). Quem começou não sai do próprio convite: ele o cancela (DELETE).
+     */
+    authed.post<{ Params: { id: string }; Body: { resposta?: string } }>('/api/channels/:id/minijogo/convite', async (request, reply) => {
+      const canal = sala(request.params.id, request.user.id, reply);
+      if (!canal) return reply;
+      const p = partidas.get(canal.id);
+      if (!p || p.terminada) return reply.code(409).send({ error: 'A partida acabou.' });
+      const quem = request.user.id;
+      const resposta = request.body?.resposta;
+      if (resposta === 'agora-nao') {
+        // Recusar vale também depois da largada (e na mesa): o aviso some e não volta.
+        if (quem !== p.criadaPor) {
+          p.recusaram.add(quem);
+          if (p.convite) p.jogadores?.delete(quem);
+        }
+      } else if (resposta === 'jogar' || resposta === 'sair') {
+        if (!p.convite || !p.jogadores) return reply.code(409).send({ error: 'A partida já começou.' });
+        if (resposta === 'jogar') {
+          if (!estaNaSala(quem, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
+          p.jogadores.add(quem);
+          p.recusaram.delete(quem);
+        } else if (quem !== p.criadaPor) {
+          p.jogadores.delete(quem);
+        }
+      } else {
+        return reply.code(400).send({ error: 'Resposta desconhecida.' });
+      }
+      avisar(p);
+      return { partida: estado(p, quem) };
+    });
+
+    /** A largada: quem começou o convite começa a partida com quem aceitou. */
+    authed.post<{ Params: { id: string } }>('/api/channels/:id/minijogo/largada', async (request, reply) => {
+      const canal = sala(request.params.id, request.user.id, reply);
+      if (!canal) return reply;
+      const p = partidas.get(canal.id);
+      if (!p?.convite) return reply.code(409).send({ error: 'A partida já começou.' });
+      if (p.criadaPor !== request.user.id) return reply.code(403).send({ error: 'Só quem começou dá a largada.' });
+      if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
+      const minimo = JOGOS[p.jogo].minimo ?? 1;
+      if (presentes(p).length < minimo) return reply.code(409).send({ error: 'Ainda falta gente para começar.' });
+      const erro = largar(p, p.convite.corpo);
+      if (erro) return reply.code(400).send({ error: erro });
+      avisar(p);
       return { partida: estado(p, request.user.id) };
     });
 

@@ -15,7 +15,10 @@ export interface Contexto {
   avisar(): void;
   /** A partida acabou: o placar fica na tela por um tempo e some sozinho. */
   terminar(): void;
-  /** Quem está na sala de voz agora. */
+  /**
+   * Quem JOGA e está na sala agora. Com o convite, só quem aceitou: quem está na sala transmitindo ou só conversando
+   * não segura a rodada de ninguém (relato de 13/10/2026, com três pessoas transmitindo).
+   */
   naSala(): number[];
   nome(userId: number): string;
 }
@@ -33,7 +36,14 @@ export interface Jogo {
 }
 
 export interface Definicao {
-  /** Começa com quem está na sala. Devolve o jogo, ou o erro que impede de começar. */
+  /** Quantos jogadores, no mínimo, para começar (o convite só deixa começar com eles). */
+  minimo?: number;
+  /**
+   * Jogo de MESA, de duas pessoas (Cinco em linha, Mancala): começa na hora, porque a mesa já é o convite — quem
+   * começa senta e espera, e quem aceitar senta do outro lado (a ação 'sentar').
+   */
+  mesa?: boolean;
+  /** Começa com quem aceitou o convite (`naSala`). Devolve o jogo, ou o erro que impede de começar. */
   comecar(ctx: Contexto, opcoes: { naSala: number[]; criadaPor: number; corpo: Record<string, unknown> }): Jogo | string;
 }
 

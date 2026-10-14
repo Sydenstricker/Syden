@@ -24,6 +24,7 @@ interface Regras<T> {
 /** A mesa de duas pessoas (sentar, a vez, o prazo, desistir) em volta das regras de um jogo. */
 function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao {
   return {
+    mesa: true,
     comecar(ctx, { criadaPor }) {
       let fase: 'esperando' | 'jogando' | 'fim' = 'esperando';
       const lugares: number[] = [criadaPor];

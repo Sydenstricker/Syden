@@ -53,6 +53,7 @@ export function maisVotado(votos: Iterable<number>): number | null {
 type Fase = 'noite' | 'amanhecer' | 'dia' | 'veredito' | 'fim';
 
 export const lobisomem: Definicao = {
+  minimo: MINIMO_LOBISOMEM,
   comecar(ctx, { naSala }) {
     if (naSala.length < MINIMO_LOBISOMEM) return 'O Lobisomem precisa de pelo menos 4 pessoas na sala.';
     const sorteio = embaralhar(papeisPara(naSala.length));
