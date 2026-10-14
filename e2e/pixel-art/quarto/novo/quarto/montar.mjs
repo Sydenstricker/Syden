@@ -1324,7 +1324,10 @@ function dados(im, filtro, w = W, h = W) {
           eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id;
           // A altura visível (da forma) dá o ponto do chão embaixo dele e a profundidade; fora da forma, o pé da coluna.
           const h = hs[k];
-          if (h >= 0) { chaoPx[d] = (y + h) * W + x; alturaPx[d] = h; tipoPx[d] = hs.tipos[k]; chaveDoPixel[d] = y + h; }
+          // O que fica DEITADO (o tapete) nunca está na frente de nada: com a profundidade do próprio pixel, a borda da
+          // frente dele cortava as rodinhas da cadeira (relato de 14/10/2026).
+          if (it.deitado) { chaoPx[d] = y * W + x; alturaPx[d] = 0; tipoPx[d] = 0; chaveDoPixel[d] = -1; }
+          else if (h >= 0) { chaoPx[d] = (y + h) * W + x; alturaPx[d] = h; tipoPx[d] = hs.tipos[k]; chaveDoPixel[d] = y + h; }
           else { const pc = Math.min(W - 1, peY[d]); chaoPx[d] = pc * W + x; alturaPx[d] = pc - y; tipoPx[d] = 0; chaveDoPixel[d] = pc; }
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
