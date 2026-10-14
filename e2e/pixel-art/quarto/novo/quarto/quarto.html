@@ -59,6 +59,23 @@ function ponto(u, v) {
   return [0, 1].map((k) => B[k] * (1 - a) * (1 - b) + L[k] * a * (1 - b) + R[k] * (1 - a) * b + F[k] * a * b);
 }
 // O inverso: de um pixel para (u, v), pelo método de Newton na interpolação bilinear.
+// A CONTA DIRETA (desempenho, 14/10/2026): o chão é quase um paralelogramo, então a inversa da parte linear já cai a
+// menos de um centésimo de casa; dois passos de Newton acertam o resto. O Newton puro, de 12 passos, em cada pixel,
+// custava a maior parte dos ~9 s de abertura num processador 4× mais lento.
+function uvRapido(x, y) {
+  const { fundo: B, esquerda: L, direita: R } = CANTOS;
+  const a1 = L[0] - B[0], a2 = L[1] - B[1], b1 = R[0] - B[0], b2 = R[1] - B[1], det = a1 * b2 - b1 * a2;
+  const dx = x - B[0], dy = y - B[1];
+  let u = ((dx * b2 - b1 * dy) / det) * N, v = ((a1 * dy - dx * a2) / det) * N;
+  for (let i = 0; i < 2; i++) {
+    const [px, py] = ponto(u, v), e = 0.01;
+    const [ax, ay] = ponto(u + e, v), [bx, by] = ponto(u, v + e);
+    const j11 = (ax - px) / e, j21 = (ay - py) / e, j12 = (bx - px) / e, j22 = (by - py) / e;
+    const d2 = j11 * j22 - j12 * j21, ex = x - px, ey = y - py;
+    u += (j22 * ex - j12 * ey) / d2; v += (-j21 * ex + j11 * ey) / d2;
+  }
+  return [u, v];
+}
 function uvDe(x, y) {
   let u = 4, v = 4;
   for (let i = 0; i < 12; i++) {
@@ -226,7 +243,7 @@ function dados(im, filtro, w = W, h = W) {
   // A grade em pixel: a casa de cada pixel do chão; a borda é onde a casa muda.
   const casa = new Int16Array(W * W).fill(-1);
   for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
-    const [u, v] = uvDe(x + 0.5, y + 0.5);
+    const [u, v] = uvRapido(x + 0.5, y + 0.5);
     if (u >= 0 && v >= 0 && u < N && v < N) casa[y * W + x] = Math.floor(u) * N + Math.floor(v);
   }
 
@@ -443,7 +460,7 @@ function dados(im, filtro, w = W, h = W) {
     if (c) andarAte(c);
   }
   const quadroBuf = new Uint8ClampedArray(W * W * 4), peBuf = new Int16Array(W).fill(-1), semSombra = new Uint8ClampedArray(W * W * 4);
-  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0;
+  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '';
   function pecaDoCoelho() {
     const tr = coelho.trans, ap = coelho.aproximar;
     const pt = !tr && !ap && coelho.destino && !coelho.caminho.length ? pontos()[coelho.destino] : null;
@@ -478,6 +495,7 @@ function dados(im, filtro, w = W, h = W) {
     const RESPIRA = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 8, 8, 8];
     const iq = nomeAnim === 'parado' && !quadroT ? Math.min(a.quadros.length - 1, RESPIRA[coelho.quadro % RESPIRA.length]) : coelho.quadro % a.quadros.length;
     const quadro = quadroT ? quadroT.q : a.quadros[iq];
+    rotuloDoQuadro = (quadroT ? 'T' + tr.passos.indexOf(tr.passos[Math.min(tr.passos.length - 1, Math.floor((performance.now() - tr.t0) / DUR_DO_PASSO))]) : nomeAnim + iq) + coelho.dir + (falando ? Math.floor(coelho.quadro / 3) % 3 : '');
     const sw = quadro.w, sh = quadro.h;
     const altura = tr ? subida : sentado ? pt.sobe : 0;
     if (tr && quadroT && subida === 0) { /* na beirada: os pés do quadro no chão */ }
@@ -636,7 +654,7 @@ function dados(im, filtro, w = W, h = W) {
   const TAMPO = { cama: 30, pufe: 30, poltrona: 22, abajur: 52, 'guarda-roupa': 135 };
   // O mapa do chão: para cada pixel da tela, a casa (u, v) do ponto do chão ali. Calculado uma vez.
   const mapaU = new Float32Array(W * W), mapaV = new Float32Array(W * W);
-  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) { const [u, v] = uvDe(x + 0.5, y + 0.5); mapaU[y * W + x] = u; mapaV[y * W + x] = v; }
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) { const [u, v] = uvRapido(x + 0.5, y + 0.5); mapaU[y * W + x] = u; mapaV[y * W + x] = v; }
   const dentroDaArea = (k, a) => mapaU[k] >= a[0] && mapaU[k] <= a[1] && mapaV[k] >= a[2] && mapaV[k] <= a[3];
   const chaoPx = new Int32Array(W * W).fill(-2), alturaPx = new Float32Array(W * W);
 
@@ -648,9 +666,10 @@ function dados(im, filtro, w = W, h = W) {
   const alturaDoRaio = new Float32Array(W * W), forcaDoRaio = new Float32Array(W * W), sombraFinal = new Float32Array(W * W);
   const tmp = new Float32Array(W * W), solido = new Float32Array(W * W);
   let listaAgora = [];
-  let forcaDaSombra = 0.55;
+  let forcaDaSombra = 0.55, caixaDaSombra = null;
   function calcularSombra() {
     alturaDoRaio.fill(-1); forcaDoRaio.fill(0); sombraFinal.fill(0);
+    caixaDaSombra = null;
     const c = ultimaCaixa, pe = coelhoPe;
     if (!c || !pe) return;
     const luz = modo === 'noite' ? { x: pecas.abajur.centroTopo, y: pecas.abajur.topo + 40, alongamento: 1.0, forca: 0.5 } : LUZ_DIA;
@@ -700,6 +719,7 @@ function dados(im, filtro, w = W, h = W) {
       if (d < 1) marca(Math.round(pe[0] + xx), Math.round(pe[1] + yy), 0, 1.1 * (1 - d));
     }
     if (bx1 < bx0) return;
+    caixaDaSombra = [Math.max(0, bx0 - 3), Math.max(0, by0 - 140), Math.min(W, bx1 + 4), Math.min(W, by1 + 4)];
     // O teste por pixel, só na caixa da sombra (mais a altura dos móveis acima dela).
     const X0 = Math.max(0, bx0 - 3), X1 = Math.min(W - 1, bx1 + 3), Y0 = Math.max(0, by0 - 140), Y1 = Math.min(W - 1, by1 + 3);
     for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
@@ -769,13 +789,30 @@ function dados(im, filtro, w = W, h = W) {
 
 
   const tela = document.getElementById('tela'), g = tela.getContext('2d');
-  function desenhar() {
-    const D = new Float32Array(W * W * 3); // a cena com as cores do dia
-    dono.fill('');
-    const eMovel = new Uint8Array(W * W), acesa = new Uint8Array(W * W), peY = new Int16Array(W * W);
-    const fundoNoite = new Float32Array(W * W * 3);
-    const pintada = modo === 'noite' && luzPintada, fundoN = pintada ? noiteAbajur : noite, razaoN = pintada ? noiteAbajurPouco : noitePouco;
-    const razaoPe = pintada ? noiteAbajurPe : noitePe;
+  // ============================== O DESENHO EM DUAS PARTES (desempenho, 14/10/2026) ==============================
+  // Medido: redesenhar o quarto inteiro a cada quadro custava ~21 ms aqui e ~92 ms num processador 4× mais lento (um
+  // núcleo inteiro). Agora: a CENA (móveis, luz, profundidades) é montada uma vez e só refeita quando algo nela muda
+  // (arrastar, girar, dia/noite, janela, cortina, vista, grade); a cada quadro, só a REGIÃO do coelho, da sombra e do
+  // balão é recalculada e enviada à tela; e, se nada mudou (sentado parado, dormindo), o quadro nem é desenhado.
+  const D = new Float32Array(W * W * 3), fundoNoite = new Float32Array(W * W * 3);
+  const eMovel = new Uint8Array(W * W), acesa = new Uint8Array(W * W), peY = new Int16Array(W * W);
+  const baseD = new Float32Array(W * W * 3), baseEMovel = new Uint8Array(W * W), basePeY = new Int16Array(W * W);
+  const baseDono = new Array(W * W).fill(''), baseChao = new Int32Array(W * W), baseAltura = new Float32Array(W * W), baseChave = new Float32Array(W * W);
+  let imagem = null, assinaturaCena = '', assinaturaQuadro = '', regiaoAnterior = null, lista = [], variante = null;
+  const unir = (a, b) => (!a ? b : !b ? a : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])]);
+  const prender = (r) => [Math.max(0, Math.floor(r[0])), Math.max(0, Math.floor(r[1])), Math.min(W, Math.ceil(r[2])), Math.min(W, Math.ceil(r[3]))];
+  function restaurar(r) {
+    const [x0, y0, x1, y1] = prender(r);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      const k = y * W + x;
+      D[k * 3] = baseD[k * 3]; D[k * 3 + 1] = baseD[k * 3 + 1]; D[k * 3 + 2] = baseD[k * 3 + 2];
+      eMovel[k] = baseEMovel[k]; peY[k] = basePeY[k]; dono[k] = baseDono[k]; chaoPx[k] = baseChao[k]; alturaPx[k] = baseAltura[k]; chaveDoPixel[k] = baseChave[k];
+    }
+  }
+
+  function montarCena() {
+    D.fill(0); fundoNoite.fill(0); eMovel.fill(0); acesa.fill(0); peY.fill(0); dono.fill('');
+    const pintada = modo === 'noite' && luzPintada, fundoN = pintada ? noiteAbajur : noite;
     for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
     // A paisagem atrás do vidro, com um véu leve da cor do vidro (de dia, creme; de noite, azul).
     for (let k = 0; k < W * W; k++) if (vidro[k * 4 + 3] > 127) {
@@ -798,12 +835,12 @@ function dados(im, filtro, w = W, h = W) {
       if (naJanela[k]) { for (let c = 0; c < 3; c++) { D[k * 3 + c] = cortinaDia[k * 4 + c]; fundoNoite[k * 3 + c] = cortinaNoite[k * 4 + c]; } }
       else if (casa[k] >= 0) { const larga = pintada ? abajurLargo : noiteLarga; for (let c = 0; c < 3; c++) fundoNoite[k * 3 + c] = base[k * 4 + c] * Math.min(1, larga[k * 4 + c] / Math.max(1, diaLargo[k * 4 + c])); }
     }
-    // A ordem: o tapete primeiro; depois de trás para a frente, pela casa mais à frente do pé.
+    // Os móveis, de trás para a frente (a ordem pela área no chão).
     const [pu, pv] = pufe;
-    const variante = pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; });
+    variante = pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; });
     const lista0 = [...fixos.map((m) => ({ p: pecas[m.id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, forma: FORMAS[m.id], olha: OLHA_DE[m.id] ?? null })),
       (() => {
-        const p = pecas[variante.id], [cu, cv] = centro(p.pe);
+        const p = pecas[variante.id];
         const [ox, oy] = p.base, [nx, ny] = ponto(pu, pv);
         // Só intensidade: a luz do chão onde ele está, sobre a luz do chão onde ele foi pintado.
         const fator = Math.min(1.3, Math.max(0.75, luz(nx, ny) / luz(ox, oy)));
@@ -816,8 +853,7 @@ function dados(im, filtro, w = W, h = W) {
         return { p, dx: Math.round(nx - p.base[0]), dy: Math.round(ny - p.base[1]), fator, pe: [poltrona[0] - 0.8, poltrona[0] + 0.8, poltrona[1] - 0.8, poltrona[1] + 0.8], contato: [nx, ny], forma: FORMAS.poltrona, olha: ORIENTA[lado] };
       })()];
     for (const it of lista0) if (it.forma) it.caixas = caixasDe(it.pe, it.olha, it.forma);
-    const peca = pecaDoCoelho()[0];
-    const lista = ordenar(lista0);
+    lista = ordenar(lista0);
     listaAgora = lista;
     chaoPx.fill(-2);
     chaveDoPixel.fill(-1);
@@ -829,12 +865,9 @@ function dados(im, filtro, w = W, h = W) {
       if (contato) for (let y = Math.round(contato[1] - ry - 1); y <= contato[1] + ry + 1; y++) for (let x = Math.round(contato[0] - rx - 2); x <= contato[0] + rx + 2; x++) {
         const d = ((x - contato[0]) / rx) ** 2 + ((y - contato[1]) / ry) ** 2, k = y * W + x;
         if (d >= 1 || x < 0 || y < 0 || x >= W || y >= W || casa[k] < 0) continue;
-        // Mais escura no meio, embaixo dos pés: sem ela, o coelho parecia flutuar.
-        const f = p.id === 'coelho' ? 0.5 + 0.5 * d : 0.72 + 0.28 * d;
+        const f = 0.72 + 0.28 * d;
         for (let c = 0; c < 3; c++) { D[k * 3 + c] *= f; fundoNoite[k * 3 + c] *= f; }
       }
-      // Com a luz pintada, o criado-mudo da noite pintada NÃO é usado: a repintura o redesenhou uns pixels ao lado, e
-      // ao trocar dia e noite ele parecia empurrar a cabeceira. Vale o mesmo recorte do dia, com a luz da pintura.
       for (let k = 0; k < W * W; k++) {
         const x = k % W + dx, y = ((k / W) | 0) + dy;
         if (x < 0 || y < 0 || x >= W || y >= W) continue;
@@ -843,14 +876,10 @@ function dados(im, filtro, w = W, h = W) {
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
           eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id;
-          // ONDE A SOMBRA PODE CAIR NESTE PIXEL: o ponto do chão embaixo dele e a altura dele acima desse ponto.
-          // Deitado (o tapete) é chão. No TAMPO (o pixel está em cima da área do móvel, na altura do tampo), o chão fica
-          // "tampo" px abaixo; na LATERAL, é o pé da coluna. Usar sempre o pé da coluna (a v1) fazia triângulos.
           // A altura visível (da forma) dá o ponto do chão embaixo dele e a profundidade; fora da forma, o pé da coluna.
           const h = hs[k];
           if (h >= 0) { chaoPx[d] = (y + h) * W + x; alturaPx[d] = h; chaveDoPixel[d] = y + h; }
           else { const pc = Math.min(W - 1, peY[d]); chaoPx[d] = pc * W + x; alturaPx[d] = pc - y; chaveDoPixel[d] = pc; }
-          // A cúpula do abajur (o alto da peça) é luz, não superfície: de noite ela não escurece.
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
           const m4 = k * 4;
@@ -858,8 +887,77 @@ function dados(im, filtro, w = W, h = W) {
         }
       }
     }
-    // O COELHO, por profundidade: o pixel dele aparece onde está mais à frente que o móvel ali (a "chave" é o y do ponto
-    // do chão: maior, mais perto da câmera). Ele é uma figura em pé no ponto dele, com uma espessura (deitado, maior).
+    // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
+    baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseChave.set(chaveDoPixel);
+    for (let k = 0; k < W * W; k++) baseDono[k] = dono[k];
+    imagem = g.createImageData(W, W);
+    sombraFinal.fill(0);
+    passeFinal([0, 0, W, W]);
+    document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
+  }
+
+  // A cor final de cada pixel de uma região: a luz da noite, a cortina, a sombra do coelho, a grade e o destino do arraste.
+  function passeFinal(r) {
+    const [x0, y0, x1, y1] = prender(r);
+    const pintada = modo === 'noite' && luzPintada, razaoPe = pintada ? noiteAbajurPe : noitePe;
+    const ab = pecas.abajur, lx = ab.centroTopo, ly = ab.topo + 6;
+    const alvoOcupado = alvo ? ocupa(alvo) : false;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      const k = y * W + x;
+      const sombraAqui = sombraFinal[k];
+      for (let c = 0; c < 3; c++) {
+        let v = D[k * 3 + c];
+        if (modo === 'noite') {
+          // Com a luz pintada, os móveis só herdam a razão noite/dia (que já traz o abajur). Com a luz por código:
+          // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
+          const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
+          const quente = [1, 0.72, 0.42][c] * brilho;
+          if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
+          // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel.
+          else if (eMovel[k]) {
+            const j = (Math.min(W - 1, peY[k] + 3) * W + x) * 4;
+            const perto = pintada ? 0.75 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.3) ** 2) / (2 * 60 * 60)) * [1, 0.7, 0.4][c] : 0;
+            v = v * Math.min(pintada ? 1.2 : 0.9, razaoPe[j + c] / Math.max(1, diaPe[j + c])) + v * (quente + perto);
+          }
+          else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
+        }
+        // A luz da janela, coada pelo linho: o quarto inteiro escurece por igual.
+        if (fechada && modo === 'dia') v *= 0.86;
+        if (sombraAqui) v *= 1 - sombraAqui * (1 - forcaDaSombra - (modo === 'noite' ? 0.12 : 0));
+        imagem.data[k * 4 + c] = Math.min(255, v);
+      }
+      imagem.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
+      // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
+      if (alvo && casa[k] >= 0) {
+        const i = Math.floor(casa[k] / N), j = casa[k] % N;
+        if (i >= alvo[0] - 1 && i < alvo[0] + 1 && j >= alvo[1] - 1 && j < alvo[1] + 1) {
+          const cor = alvoOcupado ? [220, 80, 60] : [255, 240, 200];
+          for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = imagem.data[k * 4 + c] * 0.65 + cor[c] * 0.35;
+        }
+      }
+      if ((grade || alvo) && casa[k] >= 0 && !eMovel[k]) {
+        const direita = x + 1 < W ? casa[k + 1] : -1, baixo = y + 1 < W ? casa[k + W] : -1;
+        const cima = y > 0 ? casa[k - W] : -1;
+        if ((direita !== casa[k] && direita >= 0) || (baixo !== casa[k] && baixo >= 0)) for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] * 1.35 + 18);
+        else if (cima >= 0 && cima !== casa[k]) for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] *= 0.7;
+      }
+    }
+  }
+
+  function desenhar() {
+    // A CENA muda? Refaz a fotografia (e a tela inteira).
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, pufe, poltrona, lado, grade, alvo]);
+    if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
+    // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
+    if (regiaoAnterior) restaurar(regiaoAnterior);
+    pecaDoCoelho();
+    const caixaC = ultimaCaixa ? [ultimaCaixa[0], ultimaCaixa[1] - 18, ultimaCaixa[2], ultimaCaixa[3]] : null; // com o balão
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave]);
+    const mexeu = sig !== assinaturaQuadro;
+    if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
+    assinaturaQuadro = sig;
+    if (caixaC) restaurar(caixaC);
+    // O coelho, por profundidade: o pixel dele aparece onde está mais à frente que o móvel ali.
     if (ultimaCaixa) {
       const [a0, b0, a1, b1] = ultimaCaixa;
       for (let y = Math.max(0, b0); y < Math.min(W, b1); y++) for (let x = Math.max(0, a0); x < Math.min(W, a1); x++) {
@@ -871,56 +969,17 @@ function dados(im, filtro, w = W, h = W) {
       }
     }
     calcularSombra();
-    const saida = g.createImageData(W, W);
-    const ab = pecas.abajur, lx = ab.centroTopo, ly = ab.topo + 6;
-    for (let k = 0; k < W * W; k++) {
-      const x = k % W, y = (k / W) | 0;
-      const sombraAqui = sombraFinal[k];
-      for (let c = 0; c < 3; c++) {
-        let v = D[k * 3 + c];
-        if (modo === 'noite') {
-          // Com a luz pintada, os móveis só herdam a razão noite/dia (que já traz o abajur). Com a luz por código:
-          // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
-          const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
-          const quente = [1, 0.72, 0.42][c] * brilho;
-          if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
-          // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel: o travesseiro,
-          // colado no abajur, pegava o luar azul da parede atrás dele (relato de 08/10/2026).
-          else if (eMovel[k]) {
-            const j = (Math.min(W - 1, peY[k] + 3) * W + x) * 4;
-            // O halo pintado na parede é pequeno; o abajur também esquenta os móveis em volta (o travesseiro ao
-            // lado dele não pode ficar no azul da noite). Suave, sem faixas, só nos móveis.
-            const perto = pintada ? 0.75 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.3) ** 2) / (2 * 60 * 60)) * [1, 0.7, 0.4][c] : 0;
-            v = v * Math.min(pintada ? 1.2 : 0.9, razaoPe[j + c] / Math.max(1, diaPe[j + c])) + v * (quente + perto);
-          }
-          else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
-        }
-        // A luz da janela, coada pelo linho: o quarto inteiro escurece por igual. Deixar a região da janela de fora fazia
-        // um retângulo claro na parede em volta da cortina (relato de 08/10/2026).
-        if (fechada && modo === 'dia') v *= 0.86;
-        if (sombraAqui) v *= 1 - sombraAqui * (1 - forcaDaSombra - (modo === 'noite' ? 0.12 : 0));
-        saida.data[k * 4 + c] = Math.min(255, v);
-      }
-      saida.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
-      // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
-      if (alvo && casa[k] >= 0) {
-        const i = Math.floor(casa[k] / N), j = casa[k] % N;
-        if (i >= alvo[0] - 1 && i < alvo[0] + 1 && j >= alvo[1] - 1 && j < alvo[1] + 1) {
-          const cor = ocupa(alvo) ? [220, 80, 60] : [255, 240, 200];
-          for (let c = 0; c < 3; c++) saida.data[k * 4 + c] = saida.data[k * 4 + c] * 0.65 + cor[c] * 0.35;
-        }
-      }
-      if ((grade || alvo) && casa[k] >= 0 && !eMovel[k]) {
-        const direita = x + 1 < W ? casa[k + 1] : -1, baixo = y + 1 < W ? casa[k + W] : -1;
-        const cima = y > 0 ? casa[k - W] : -1;
-        if ((direita !== casa[k] && direita >= 0) || (baixo !== casa[k] && baixo >= 0)) for (let c = 0; c < 3; c++) saida.data[k * 4 + c] = Math.min(255, saida.data[k * 4 + c] * 1.35 + 18);
-        else if (cima >= 0 && cima !== casa[k]) for (let c = 0; c < 3; c++) saida.data[k * 4 + c] *= 0.7;
-      }
-    }
-    if (falando) balao(saida.data); // falando de pé ou sentado
-    g.putImageData(saida, 0, 0);
-    document.getElementById('legenda').textContent = 'Poltrona olhando para ' + ORIENTA[lado] + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' ? ', luz do lugar ×' + lista.find((i) => i.p.id === 'pufe').fator.toFixed(2) : '') + '. Coelho: ' + (coelho.caminho.length ? 'andando' : falando && !coelho.destino ? 'falando' : coelho.pose) + ', olhando para ' + coelho.dir + (coelho.destino ? ' (' + coelho.destino + ')' : '') + '. Desenho do quadro: ' + Math.round(tempoDeDesenho) + ' ms.';
-    document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
+    const agora = unir(caixaC, caixaDaSombra);
+    const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
+    passeFinal(r);
+    if (falando) balao(imagem.data); // falando de pé ou sentado
+    g.putImageData(imagem, 0, 0, r[0], r[1], r[2] - r[0], r[3] - r[1]);
+    regiaoAnterior = agora;
+    escreverLegenda();
+  }
+  function escreverLegenda() {
+    const pf = lista.find((i) => i.p.id === 'pufe');
+    document.getElementById('legenda').textContent = 'Poltrona olhando para ' + ORIENTA[lado] + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' && pf ? ', luz do lugar ×' + pf.fator.toFixed(2) : '') + '. Coelho: ' + (coelho.caminho.length ? 'andando' : falando && !coelho.destino ? 'falando' : coelho.pose) + ', olhando para ' + coelho.dir + (coelho.destino ? ' (' + coelho.destino + ')' : '') + '. Desenho do quadro: ' + Math.round(tempoDeDesenho) + ' ms.';
   }
 
   // Arrastar: o centro do pufe salta de cruzamento em cruzamento da grade, e só para onde cabe. A grade aparece
