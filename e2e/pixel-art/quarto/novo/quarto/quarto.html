@@ -316,7 +316,9 @@ function dados(im, filtro, w = W, h = W) {
   // acima do chão (o assento); "frente": a posição na ordem de desenho (logo depois do móvel, por cima dele).
   // No pufe ele senta PERTO DA BORDA do lado para onde olha (no meio, a distância até a beirada virava um salto).
   function assentoNoPufe() {
-    const o = coelho.olharNoPufe ?? 'sudeste', vet = { sudoeste: [1, 0], sudeste: [0, 1], nordeste: [-1, 0], noroeste: [0, -1] }[o];
+    // A borda é a do lado por onde ele SUBIU: virar no pufe muda para onde ele olha, não onde está sentado (relato de
+    // 14/10/2026: virando para trás, ele pulava para a outra borda).
+    const o = coelho.ladoDoPufe ?? coelho.olharNoPufe ?? 'sudeste', vet = { sudoeste: [1, 0], sudeste: [0, 1], nordeste: [-1, 0], noroeste: [0, -1] }[o];
     return [pufe[0] + vet[0] * 0.3, pufe[1] + vet[1] * 0.3];
   }
   function pontos() {
@@ -376,7 +378,7 @@ function dados(im, filtro, w = W, h = W) {
     // último trecho em linha reta atravessava o móvel. No pufe, o lado para onde ele vai olhar é sorteado antes.
     let alvos = pt.ao;
     if (pt.onde) {
-      if (id === 'pufe') coelho.olharNoPufe = window.olharNoPufeDoTeste ?? ['sudeste', 'sudoeste', 'nordeste', 'noroeste'][Math.floor(Math.random() * 4)];
+      if (id === 'pufe') coelho.olharNoPufe = coelho.ladoDoPufe = window.olharNoPufeDoTeste ?? ['sudeste', 'sudoeste', 'nordeste', 'noroeste'][Math.floor(Math.random() * 4)];
       const ro = roteiro(id, pontos()[id]), d = ([i, j]) => Math.hypot(i + 0.5 - ro.beira[0], j + 0.5 - ro.beira[1]);
       alvos = [[...pt.ao].sort((a, b) => d(a) - d(b))[0]];
     }
@@ -414,6 +416,13 @@ function dados(im, filtro, w = W, h = W) {
       nomeT = 'sentar';
     }
     let quadros = [...quadrosDe(nomeT, pt.olha).quadros];
+    // NA CAMA, PRIMEIRO SENTA NA BEIRADA (relato de 14/10/2026: "no primeiro quadro ele já está lendo"). O deitar do
+    // PixelLab começa sentado, e o deitar-lendo, sentado com o livro aberto. Na frente vão os três primeiros do sentar (de
+    // pé, agachando) e, para ler, o sentado SEM livro do deitar: ele senta, abre o livro e só então se deita.
+    if (id === 'cama') {
+      const sentar = quadrosDe('sentar', pt.olha).quadros.slice(0, 3);
+      quadros = [...sentar, ...(nomeT === 'deitar-lendo' ? [quadrosDe('deitar', pt.olha).quadros[0]] : []), ...quadros];
+    }
     // Na poltrona de frente, o fim do sentar já abre os braços até os apoios (trecho próprio, sem a poltrona inventada
     // que a primeira tentativa desenhou): os 4 primeiros quadros do sentar e os 2 dos braços.
     if (id === 'poltrona' && ANIM.bracos?.[pt.olha]) quadros = [...quadros.slice(0, 4), ...ANIM.bracos[pt.olha].quadros];
@@ -446,6 +455,14 @@ function dados(im, filtro, w = W, h = W) {
     aproximar(ro.beira, ro.atrasNaBeira, id, () => { coelho.dir = p2.olha; tocar(id, p2, ro, false, () => chegarDeVez()); });
   }
   function levantar(depois) {
+    // No pufe, virado para outro lado: primeiro se vira de volta para o lado por onde subiu (a virada suave leva até
+    // 400 ms), e só então desce por ele.
+    if (coelho.destino === 'pufe' && coelho.ladoDoPufe && coelho.olharNoPufe !== coelho.ladoDoPufe) {
+      coelho.olharNoPufe = coelho.ladoDoPufe;
+      coelho.descendo = true;
+      setTimeout(() => { coelho.descendo = false; levantar(depois); }, 450);
+      return;
+    }
     const id = coelho.destino, pt = pontos()[id], ro = roteiro(id, pt, coelho.pose === 'dormindo');
     coelho.destino = null; coelho.pose = 'parado';
     tocar(id, pt, ro, true, () => {
@@ -464,7 +481,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   // O ESTADO REAL DECIDE O LUGAR. Em call, a poltrona faz o papel do computador, que o quarto ainda não tem.
   function decidir() {
-    if (coelho.trans || coelho.aproximar) { coelho.redecidir = true; return; } // no meio de sentar ou levantar: decide quando terminar
+    if (coelho.trans || coelho.aproximar || coelho.descendo) { coelho.redecidir = true; return; } // no meio de sentar ou levantar: decide quando terminar
     if (estado === 'ausente' || (estado === 'atoa' && modo === 'noite')) {
       // Já na cama: só troca entre ler e dormir, sem levantar.
       if (coelho.destino === 'cama' && !coelho.caminho.length) { chegarDeVez(); return; }
@@ -484,7 +501,7 @@ function dados(im, filtro, w = W, h = W) {
     if (c) andarAte(c);
   }
   const quadroBuf = new Uint8ClampedArray(W * W * 4), peBuf = new Int16Array(W).fill(-1), semSombra = new Uint8ClampedArray(W * W * 4);
-  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '', coelhoLinha = W;
+  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '', coelhoLinha = W, coelhoSobre = null;
   function pecaDoCoelho() {
     const tr = coelho.trans, ap = coelho.aproximar;
     const pt = !tr && !ap && coelho.destino && !coelho.caminho.length ? pontos()[coelho.destino] : null;
@@ -582,6 +599,7 @@ function dados(im, filtro, w = W, h = W) {
     // A linha das pernas é a altura de VERDADE do assento (na poltrona o desenho fica mais baixo que ele: a perna era cortada).
     const alvoAgora = tr ? tr.alvo : pt && pt.onde ? coelho.destino : null;
     coelhoLinha = altura > 0 ? py - Math.max(altura, ASSENTO[alvoAgora] ?? 0) - 4 : W;
+    coelhoSobre = altura > 0 ? alvoAgora : null;
     const p = { id: 'coelho', movel: quadroBuf, sombra: semSombra, topo: Y0, peColuna: peBuf };
     // A ÁREA NO CHÃO: de pé, um quadradinho em volta do pé; sentado ou deitado, ele está SOBRE o móvel.
     const r = 0.3, area = [coelho.u - r, coelho.u + r, coelho.v - r, coelho.v + r];
@@ -639,22 +657,26 @@ function dados(im, filtro, w = W, h = W) {
     'guarda-roupa': [{ h: [0, 135] }],
   };
   const OLHA_DE = { cama: 'sudoeste' };
-  // As caixas absolutas [u0, u1, v0, v1, h0, h1] de uma forma numa área, olhando para "olha".
+  // O TIPO de cada caixa, guardado por pixel: as pernas do coelho sentado passam à frente do assento, mas nunca do
+  // encosto nem da face dos braços (relato de 14/10/2026: o rabo e o quadril apareciam por cima do encosto).
+  const TIPO_DE_CAIXA = { base: 1, tras: 2, lados: 3, frente: 4 };
+  // As caixas absolutas [u0, u1, v0, v1, h0, h1, tipo] de uma forma numa área, olhando para "olha".
   function caixasDe(area, olha, forma) {
     const [u0, u1, v0, v1] = area, du = u1 - u0, dv = v1 - v0;
     // O eixo do olhar e o sinal: sudoeste = +u, nordeste = -u, sudeste = +v, noroeste = -v.
     const eixoU = olha === 'sudoeste' || olha === 'nordeste', sinal = olha === 'sudoeste' || olha === 'sudeste' ? 1 : -1;
     const caixas = [];
     for (const c of forma) {
-      if (!c.lado || !olha) { caixas.push([u0, u1, v0, v1, ...c.h]); continue; }
+      const tipo = TIPO_DE_CAIXA[c.lado ?? 'base'];
+      if (!c.lado || !olha) { caixas.push([u0, u1, v0, v1, ...c.h, tipo]); continue; }
       const fat = (lo, hi, f, doAlto) => (doAlto ? [hi - (hi - lo) * f, hi] : [lo, lo + (hi - lo) * f]);
       if (c.lado === 'frente' || c.lado === 'tras') {
         const noAlto = (c.lado === 'frente') === (sinal > 0);
-        if (eixoU) caixas.push([...fat(u0, u1, c.fatia, noAlto), v0, v1, ...c.h]);
-        else caixas.push([u0, u1, ...fat(v0, v1, c.fatia, noAlto), ...c.h]);
+        if (eixoU) caixas.push([...fat(u0, u1, c.fatia, noAlto), v0, v1, ...c.h, tipo]);
+        else caixas.push([u0, u1, ...fat(v0, v1, c.fatia, noAlto), ...c.h, tipo]);
       } else for (const noAlto of [false, true]) {
-        if (eixoU) caixas.push([u0, u1, ...fat(v0, v1, c.fatia, noAlto), ...c.h]);
-        else caixas.push([...fat(u0, u1, c.fatia, noAlto), v0, v1, ...c.h]);
+        if (eixoU) caixas.push([u0, u1, ...fat(v0, v1, c.fatia, noAlto), ...c.h, tipo]);
+        else caixas.push([...fat(u0, u1, c.fatia, noAlto), v0, v1, ...c.h, tipo]);
       }
     }
     return caixas;
@@ -665,7 +687,8 @@ function dados(im, filtro, w = W, h = W) {
     const chave = it.p.id + '|' + it.dx + '|' + it.dy + '|' + (it.olha ?? '');
     if (cacheDeAlturas.has(chave)) return cacheDeAlturas.get(chave);
     if (cacheDeAlturas.size > 24) cacheDeAlturas.clear();
-    const hs = new Float32Array(W * W).fill(-1), m = it.p.movel, cx = it.caixas ?? [];
+    const hs = new Float32Array(W * W).fill(-1), tipos = new Int8Array(W * W), m = it.p.movel, cx = it.caixas ?? [];
+    hs.tipos = tipos;
     const alto = Math.max(0, ...cx.map((c) => c[5]));
     for (let k = 0; k < W * W; k++) {
       if (!m[k * 4 + 3]) continue;
@@ -676,7 +699,8 @@ function dados(im, filtro, w = W, h = W) {
         const Y = y + h;
         if (Y >= W || x < 0 || x >= W) continue;
         const g = Y * W + x, u = mapaU[g], v = mapaV[g];
-        if (cx.some((c) => u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3] && h >= c[4] && h <= c[5])) { hs[k] = h; break; }
+        const achou = cx.find((c) => u >= c[0] && u <= c[1] && v >= c[2] && v <= c[3] && h >= c[4] && h <= c[5]);
+        if (achou) { hs[k] = h; tipos[k] = achou[6]; break; }
       }
     }
     cacheDeAlturas.set(chave, hs);
@@ -721,7 +745,7 @@ function dados(im, filtro, w = W, h = W) {
   const mapaU = new Float32Array(W * W), mapaV = new Float32Array(W * W);
   for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) { const [u, v] = uvRapido(x + 0.5, y + 0.5); mapaU[y * W + x] = u; mapaV[y * W + x] = v; }
   const dentroDaArea = (k, a) => mapaU[k] >= a[0] && mapaU[k] <= a[1] && mapaV[k] >= a[2] && mapaV[k] <= a[3];
-  const chaoPx = new Int32Array(W * W).fill(-2), alturaPx = new Float32Array(W * W);
+  const chaoPx = new Int32Array(W * W).fill(-2), alturaPx = new Float32Array(W * W), tipoPx = new Int8Array(W * W);
 
   // A SOMBRA DO COELHO (relatos de 14/10/2026): cada pixel dele, a uma altura h, lança um raio que desce até o chão
   // afastando-se da luz. "alturaDoRaio" guarda, por ponto do chão, o raio mais alto que passa por cima; "forcaDoRaio",
@@ -819,7 +843,7 @@ function dados(im, filtro, w = W, h = W) {
     coelho.quadro++;
     if (coelho.trans && agora - coelho.trans.t0 >= coelho.trans.dur) { const d = coelho.trans.depois; coelho.trans = null; d(); if (coelho.redecidir && !coelho.trans) { coelho.redecidir = false; decidir(); } }
     // No pufe, de vez em quando vira para outro lado (ele é redondo).
-    if (!coelho.trans && coelho.destino === 'pufe' && !coelho.caminho.length && agora > (coelho.proximaVirada ?? 0)) {
+    if (!coelho.trans && !coelho.descendo && coelho.destino === 'pufe' && !coelho.caminho.length && agora > (coelho.proximaVirada ?? 0)) {
       if (coelho.proximaVirada) {
         const L = ['sudeste', 'sudoeste', 'noroeste', 'nordeste'], i = L.indexOf(coelho.olharNoPufe ?? 'sudeste');
         coelho.olharNoPufe = L[(i + (Math.random() < 0.5 ? 1 : 3)) % 4];
@@ -862,7 +886,7 @@ function dados(im, filtro, w = W, h = W) {
   const D = new Float32Array(W * W * 3), fundoNoite = new Float32Array(W * W * 3);
   const eMovel = new Uint8Array(W * W), acesa = new Uint8Array(W * W), peY = new Int16Array(W * W);
   const baseD = new Float32Array(W * W * 3), baseEMovel = new Uint8Array(W * W), basePeY = new Int16Array(W * W);
-  const baseDono = new Array(W * W).fill(''), baseChao = new Int32Array(W * W), baseAltura = new Float32Array(W * W), baseChave = new Float32Array(W * W);
+  const baseDono = new Array(W * W).fill(''), baseChao = new Int32Array(W * W), baseAltura = new Float32Array(W * W), baseTipo = new Int8Array(W * W), baseChave = new Float32Array(W * W);
   let imagem = null, assinaturaCena = '', assinaturaQuadro = '', regiaoAnterior = null, lista = [], variante = null;
   const unir = (a, b) => (!a ? b : !b ? a : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])]);
   const prender = (r) => [Math.max(0, Math.floor(r[0])), Math.max(0, Math.floor(r[1])), Math.min(W, Math.ceil(r[2])), Math.min(W, Math.ceil(r[3]))];
@@ -871,7 +895,7 @@ function dados(im, filtro, w = W, h = W) {
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       D[k * 3] = baseD[k * 3]; D[k * 3 + 1] = baseD[k * 3 + 1]; D[k * 3 + 2] = baseD[k * 3 + 2];
-      eMovel[k] = baseEMovel[k]; peY[k] = basePeY[k]; dono[k] = baseDono[k]; chaoPx[k] = baseChao[k]; alturaPx[k] = baseAltura[k]; chaveDoPixel[k] = baseChave[k];
+      eMovel[k] = baseEMovel[k]; peY[k] = basePeY[k]; dono[k] = baseDono[k]; chaoPx[k] = baseChao[k]; alturaPx[k] = baseAltura[k]; tipoPx[k] = baseTipo[k]; chaveDoPixel[k] = baseChave[k];
     }
   }
 
@@ -943,8 +967,8 @@ function dados(im, filtro, w = W, h = W) {
           eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id;
           // A altura visível (da forma) dá o ponto do chão embaixo dele e a profundidade; fora da forma, o pé da coluna.
           const h = hs[k];
-          if (h >= 0) { chaoPx[d] = (y + h) * W + x; alturaPx[d] = h; chaveDoPixel[d] = y + h; }
-          else { const pc = Math.min(W - 1, peY[d]); chaoPx[d] = pc * W + x; alturaPx[d] = pc - y; chaveDoPixel[d] = pc; }
+          if (h >= 0) { chaoPx[d] = (y + h) * W + x; alturaPx[d] = h; tipoPx[d] = hs.tipos[k]; chaveDoPixel[d] = y + h; }
+          else { const pc = Math.min(W - 1, peY[d]); chaoPx[d] = pc * W + x; alturaPx[d] = pc - y; tipoPx[d] = 0; chaveDoPixel[d] = pc; }
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
           const m4 = k * 4;
@@ -953,7 +977,7 @@ function dados(im, filtro, w = W, h = W) {
       }
     }
     // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
-    baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseChave.set(chaveDoPixel);
+    baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseTipo.set(tipoPx); baseChave.set(chaveDoPixel);
     for (let k = 0; k < W * W; k++) baseDono[k] = dono[k];
     imagem = g.createImageData(W, W);
     sombraFinal.fill(0);
@@ -1028,11 +1052,14 @@ function dados(im, filtro, w = W, h = W) {
       for (let y = Math.max(0, b0); y < Math.min(W, b1); y++) for (let x = Math.max(0, a0); x < Math.min(W, a1); x++) {
         const d = y * W + x, q = d * 4;
         if (!quadroBuf[q + 3]) continue;
-        // As pernas à frente valem só sobre o ASSENTO: a face do braço da poltrona, acima dele, fica na frente do quadril
-        // (relato de 14/10/2026: "o coelho está por cima do apoio"). O tampo do braço não: ali o braço dele apoia.
-        const bracoDaPoltrona = dono[d].startsWith('poltrona') && alturaPx[d] > ASSENTO.poltrona + 2 && alturaPx[d] < BRACO_POLTRONA - 1;
-        const pernas = bracoDaPoltrona ? 0 : Math.max(0, y - coelhoLinha) * 1.5;
-        if (eMovel[d] && chaveDoPixel[d] > coelhoChave + pernas) continue; // o móvel está na frente
+        // AS PERNAS À FRENTE valem só sobre o assento e o tampo dos braços (onde ele apoia), nunca sobre o encosto nem a
+        // face dos braços (relatos de 14/10/2026: o coelho "por cima do apoio", e o rabo por cima do encosto).
+        const tipo = tipoPx[d], doMovel = coelhoSobre && dono[d].startsWith(coelhoSobre);
+        const tampoDoBraco = tipo === 3 && alturaPx[d] >= BRACO_POLTRONA - 1;
+        const pernas = doMovel && (tipo === 2 || (tipo === 3 && !tampoDoBraco)) ? 0 : Math.max(0, y - coelhoLinha) * 1.5;
+        // O TAMPO DO ASSENTO nunca cobre quem está sentado nele: no pufe, de costas, o tampo da frente cortava o quadril.
+        const noTampo = doMovel && tipo === 1 && alturaPx[d] >= (ASSENTO[coelhoSobre] ?? 99) - 1;
+        if (eMovel[d] && !noTampo && chaveDoPixel[d] > coelhoChave + pernas) continue; // o móvel está na frente
         for (let c = 0; c < 3; c++) D[d * 3 + c] = quadroBuf[q + c];
         eMovel[d] = 1; peY[d] = peBuf[x] >= 0 ? peBuf[x] : coelhoPe[1]; dono[d] = 'coelho'; chaoPx[d] = -1;
       }
