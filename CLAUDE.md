@@ -186,7 +186,10 @@ lendo, e um erro aqui atinge metade das pessoas em todas as frases.
   a forma de cortesia እርስዎ, que é neutra.
 
 **O árabe tem a mesma divisão e passou batido**, porque o sufixo ـك se escreve igual para os dois sem
-os sinais de vogal. As formas verbais dele seguem no masculino: é dívida conhecida, não descuido.
+os sinais de vogal. **Paga em 13/10/2026:** 132 frases reescritas — botões no nome de ação (masdar: إرسال، حذف),
+frases com يمكنك/يُرجى + masdar ou na passiva, e {nome} de terceiro como substantivo ("بث {nome}"). Ficou no masculino
+só o genérico de terceiros indefinidos (كل لاعب، من يرسم), que é a norma, e três rótulos de status (متاح، غائب،
+غير متصل) sem forma neutra idiomática. Frase nova em árabe nasce assim.
 
 ## Culturas na home (idiomas, leitura, culinária, dança, música)
 
