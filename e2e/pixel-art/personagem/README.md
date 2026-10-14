@@ -89,6 +89,23 @@ Movimento reduzido no sistema: o coelho aparece já no lugar, sem andar.
   - Num quadro de 96 ele saiu com ~60 px; o quadro de 120 dá ~90. O quadro de 96 do formato acima vira 120.
   - Custo: 15 (alta), 15 (baixa) e 25 (baixa-120) gerações. Restam 2.277 das 2.332 do plano novo.
 
+## As animações: o que funcionou e o que não (14/10/2026)
+
+- **Andar, respirar e falar: animação por TEXTO** (`animar.mjs` com `texto:…`, ~6 gerações por direção). Pernas e
+  braços mexem e o tamanho fica o do parado (~90 px). A caminhada por ESQUELETO (`walking`, 1 geração) saiu fraca: pernas
+  quase paradas, 80 a 91 px conforme a direção, e de costas a cabeça virava de lado.
+- **Sentar, ler e deitar: ESTADO do personagem** (`estado.mjs`, ~25 gerações, as 8 direções de uma vez). A animação por
+  texto NÃO SAI da pose de pé (o "sentado" saía de pé), e o esqueleto do corpo "mannequin" não tem sentar nem deitar.
+  Pedir "nothing underneath: no stool" — a primeira versão veio com um banquinho desenhado.
+- **O PixelLab aceita menos direções quando há trabalhos demais ao mesmo tempo** (sete pedidos em paralelo: cada um
+  levou só uma parte, e a resposta diz quais). Pedir em sequência; `animar.mjs` guarda o grupo e completa depois.
+- **A âncora é a do primeiro quadro** de cada animação e direção (de pé, o pé; sentado, o assento; deitado, o meio do
+  corpo): fixa na animação inteira, para ele não tremer.
+- **Os móveis giram nas 4 posições** com `create-8-direction-object` sobre a peça que já existe (`../quarto/novo/quarto/girar.mjs`).
+- Falta: as TRANSIÇÕES (sentar e levantar animados; hoje a pose troca de uma vez) — candidata: `interpolation-v2`
+  entre o parado e o sentado. E a camada da frente dos móveis.
+- Custo da rodada: ~175 gerações (restam 2.103).
+
 ## A ordem do trabalho
 
 1. **A estrutura, sem arte nova** (página de teste do quarto modular): pontos nos móveis, andar pela grade, ordem de
