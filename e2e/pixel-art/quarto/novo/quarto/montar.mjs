@@ -492,7 +492,7 @@ function dados(im, filtro, w = W, h = W) {
   const VISTAS_CADEIRA = im['cadeira-south-west'] ? OITO.map((d) => pecaDeImagem(im['cadeira-' + d], 'cadeira')) : null;
   const R_CADEIRA = 0.38;
   // A altura do assento acima do chão (medida na vista) e quanto o coelho sobe para sentar nela.
-  const ASSENTO_CADEIRA = 34, SOBE_CADEIRA = 20;
+  const ASSENTO_CADEIRA = 34, SOBE_CADEIRA = 20, AVANCO_NA_CADEIRA = 0.4;
   const cadeira = { u: 6, v: 6, vu: 0, vv: 0, th: 0, w: 0, presa: false, kin: null, alvo: null };
   window.cadeiraDoTeste = cadeira; // para as fotos e o teste
   // O lugar dela na mesa: S é sentado à mesa (encostado); P0, puxada para trás, de onde se senta. Virada para a mesa.
@@ -713,7 +713,11 @@ function dados(im, filtro, w = W, h = W) {
     const L = lugarNaMesa(), olha = OLHA_DO_VETOR[Math.round(Math.cos(L.th)) + ',' + Math.round(Math.sin(L.th))] ?? 'sudoeste';
     const [fu, fv] = VET[olha], beira = [L.P0[0] + fu * 0.7, L.P0[1] + fv * 0.7];
     const perto = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - beira[0], a[1] + 0.5 - beira[1]) - Math.hypot(b[0] + 0.5 - beira[0], b[1] + 0.5 - beira[1]));
-    return { ao: perto.slice(0, 1), onde: [cadeira.u, cadeira.v], sobe: SOBE_CADEIRA, pose: 'sentado', olha, sobre: 'cadeira', atras: olha.startsWith('n') };
+    // A pose ao computador é ancorada pelo fim do desenho, e sentado com as pernas para a frente esse ponto não é o meio
+    // do assento: ele ficava para trás e fora da cadeira (relato de 14/10/2026). O lugar dele é um pouco à frente do
+    // meio dela, para onde ela olha.
+    const [ou, ov] = VET[olha];
+    return { ao: perto.slice(0, 1), onde: [cadeira.u + ou * AVANCO_NA_CADEIRA, cadeira.v + ov * AVANCO_NA_CADEIRA], sobe: SOBE_CADEIRA, pose: 'sentado', olha, sobre: 'cadeira', atras: olha.startsWith('n') };
   }
   function pontos() {
     const vizinhas = (u0, u1, v0, v1) => {
