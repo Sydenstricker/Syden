@@ -29,7 +29,7 @@ function BotaoCopiar({ texto, rotulo }: { texto: string; rotulo: string }) {
   }
 
   return (
-    <button type="button" className="jogo-copiar" onClick={() => void copiar()} aria-label={`Copiar ${rotulo}`}>
+    <button type="button" className="jogo-copiar" onClick={() => void copiar()} aria-label={rotulo}>
       {copiou ? <Check size={14} /> : <Copy size={14} />}
       <code>{texto}</code>
     </button>
@@ -175,8 +175,8 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
         {servidores.length === 0 && editando === null && (
           <p className="jogos-vazio">
             {administra
-              ? 'Nenhum servidor ainda. Ponha o endereço aqui e ele para de se perder nas mensagens antigas.'
-              : 'A turma ainda não cadastrou nenhum servidor de jogo aqui.'}
+              ? t('Nenhum servidor ainda. Ponha o endereço aqui e ele para de se perder nas mensagens antigas.')
+              : t('A turma ainda não cadastrou nenhum servidor de jogo aqui.')}
           </p>
         )}
 
@@ -202,20 +202,20 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
                 <article key={servidor.id} className="jogo-cartao">
                   <div className="jogo-cartao-texto">
                     <strong>{servidor.nome}</strong>
-                    <BotaoCopiar texto={servidor.endereco} rotulo="o endereço" />
+                    <BotaoCopiar texto={servidor.endereco} rotulo={t('Copiar o endereço')} />
                     {servidor.senha && (
                       <span className="jogo-senha">
-                        {t('Senha:')} <BotaoCopiar texto={servidor.senha} rotulo="a senha" />
+                        {t('Senha:')} <BotaoCopiar texto={servidor.senha} rotulo={t('Copiar a senha')} />
                       </span>
                     )}
                     {servidor.observacao && <small>{servidor.observacao}</small>}
                   </div>
                   {administra && (
                     <div className="jogo-cartao-acoes">
-                      <button className="icon-button" aria-label="Editar" onClick={() => setEditando(servidor.id)}>
+                      <button className="icon-button" aria-label={t('Editar')} onClick={() => setEditando(servidor.id)}>
                         <Pencil size={16} />
                       </button>
-                      <button className="icon-button danger" aria-label="Apagar" onClick={() => setApagando(servidor)}>
+                      <button className="icon-button danger" aria-label={t('Apagar')} onClick={() => setApagando(servidor)}>
                         <Trash2 size={16} />
                       </button>
                     </div>

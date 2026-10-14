@@ -40,13 +40,13 @@ function ListaDeMusicas({
     <ul className="karaoke-lista">
       {musicas.map((song) => (
         <li key={song.id} className={song.id === tocando ? 'tocando' : undefined}>
-          <button className="karaoke-tocar" onClick={() => onCantar(song)} title={`Cantar ${song.title}`}>
+          <button className="karaoke-tocar" onClick={() => onCantar(song)} title={t('Cantar {musica}', { musica: song.title })}>
             <Play size={14} />
             <span className="karaoke-titulo">{song.title}</span>
             {song.artist && <span className="karaoke-artista">{song.artist}</span>}
-            {song.lyrics ? <span className="karaoke-tem-letra">com letra</span> : <span className="karaoke-sem-letra">sem letra</span>}
+            {song.lyrics ? <span className="karaoke-tem-letra">{t('com letra')}</span> : <span className="karaoke-sem-letra">{t('sem letra')}</span>}
           </button>
-          <button className="icon-plain" title={`Apagar ${song.title}`} aria-label={`Apagar ${song.title}`} onClick={() => onApagar(song)}>
+          <button className="icon-plain" title={t('Apagar {musica}', { musica: song.title })} aria-label={t('Apagar {musica}', { musica: song.title })} onClick={() => onApagar(song)}>
             <Trash2 size={15} />
           </button>
         </li>
@@ -104,7 +104,7 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
 
   async function escolherAudio(arquivo: File) {
     setErro(null);
-    if (arquivo.size > LIMITE_MB * 1024 * 1024) return setErro(`O arquivo passa de ${LIMITE_MB} MB.`);
+    if (arquivo.size > LIMITE_MB * 1024 * 1024) return setErro(t('O arquivo passa de {n} MB.', { n: LIMITE_MB }));
     try {
       const data = await readAsDataUrl(arquivo);
       // A duração vem do próprio arquivo, para a lista poder mostrá-la sem baixar tudo de novo.
@@ -140,7 +140,7 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
   return (
     <div className="karaoke-subir">
       <label className="file-picker btn-secondary">
-        <Upload size={15} /> {audio ? audio.nome : 'Escolher a música'}
+        <Upload size={15} /> {audio ? audio.nome : t('Escolher a música')}
         <input type="file" accept="audio/*" hidden onChange={(e) => e.target.files?.[0] && void escolherAudio(e.target.files[0])} />
       </label>
       <label className="settings-field">
@@ -149,10 +149,10 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
       </label>
       <label className="settings-field">
         {t('Quem canta')}
-        <input value={artist} onChange={(e) => setArtist(e.target.value)} maxLength={80} placeholder="opcional" />
+        <input value={artist} onChange={(e) => setArtist(e.target.value)} maxLength={80} placeholder={t('opcional')} />
       </label>
       <label className="file-picker btn-secondary">
-        <Plus size={15} /> {lyrics ? 'Trocar a letra' : 'Letra (.lrc ou .txt)'}
+        <Plus size={15} /> {lyrics ? t('Trocar a letra') : t('Letra (.lrc ou .txt)')}
         <input
           type="file"
           accept=".lrc,.txt,text/plain"
@@ -174,7 +174,7 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
       </p>
       {erro && <p className="form-error">{erro}</p>}
       <button className="btn-primary" disabled={busy || !audio || title.trim().length < 2} onClick={() => void subir()}>
-        {busy ? 'Subindo…' : 'Guardar na comunidade'}
+        {busy ? t('Subindo…') : t('Guardar na comunidade')}
       </button>
     </div>
   );
@@ -261,7 +261,7 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
         <div className="karaoke-topo-acoes">
           {!emCartaz && (
             <button className="link-button" onClick={() => setSubindo(!subindo)}>
-              {subindo ? 'Cancelar' : 'Subir música'}
+              {subindo ? t('Cancelar') : t('Subir música')}
             </button>
           )}
           <button className="icon-plain" aria-label={t('Fechar o karaokê')} onClick={onClose}>
@@ -276,9 +276,9 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
         <>
           <div className="karaoke-agora">
             <div>
-              <strong>{song?.title ?? 'Carregando…'}</strong>
+              <strong>{song?.title ?? t('Carregando…')}</strong>
               {song?.artist && <span className="karaoke-artista"> · {song.artist}</span>}
-              <span className="settings-hint"> · posto por {emCartaz.quem}</span>
+              <span className="settings-hint"> · {t('posto por {quem}', { quem: emCartaz.quem })}</span>
             </div>
             <div className="karaoke-tempo">
               {relogio(segundos)}

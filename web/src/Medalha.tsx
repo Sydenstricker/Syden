@@ -1,4 +1,5 @@
 import medalhaUrl from './assets/medalha.png';
+import { useT } from './i18n';
 
 // A recompensa de quem teve uma ideia acolhida no Syden.
 //
@@ -123,10 +124,11 @@ export function Medalha({
   tamanho?: number;
   tipo?: TipoDeMoldura;
 }) {
+  const t = useT();
   const titulo =
     quantas > 1
-      ? `Contribuiu com o Syden — ${quantas} ideias suas entraram no app`
-      : 'Contribuiu com o Syden — uma ideia sua entrou no app';
+      ? t('Contribuiu com o Syden — {n} ideias suas entraram no app', { n: quantas })
+      : t('Contribuiu com o Syden — uma ideia sua entrou no app');
 
   return <Insignia arte={medalhaUrl} titulo={titulo} tamanho={tamanho} moldura={tipo} quantas={quantas} />;
 }

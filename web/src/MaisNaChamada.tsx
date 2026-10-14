@@ -1,6 +1,7 @@
 import { MoreHorizontal } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { IconButton } from './IconButton';
+import { useT } from './i18n';
 
 // O "..." da barra da chamada: guarda o que se usa pouco.
 //
@@ -14,6 +15,7 @@ import { IconButton } from './IconButton';
 // A REGRA PARA ACRESCENTAR COISA: se pode ser apertado com pressa, fica fora; se é uma decisão, entra.
 
 export function MaisNaChamada({ children, quantosAtivos = 0 }: { children: ReactNode; quantosAtivos?: number }) {
+  const t = useT();
   const [aberto, setAberto] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -33,7 +35,7 @@ export function MaisNaChamada({ children, quantosAtivos = 0 }: { children: React
 
   return (
     <div className="mais-anchor" ref={ref}>
-      <IconButton label="Mais" active={aberto || quantosAtivos > 0} onClick={() => setAberto(!aberto)}>
+      <IconButton label={t('Mais')} active={aberto || quantosAtivos > 0} onClick={() => setAberto(!aberto)}>
         <MoreHorizontal />
       </IconButton>
       {/*

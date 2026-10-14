@@ -1,6 +1,7 @@
 import { CircleAlert, Megaphone, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
+import { idiomaAtual, useT } from './i18n';
 
 // A faixa do Syden no alto da tela: "vai ter manutenção às 22h", "a voz está instável", "voltamos".
 //
@@ -26,15 +27,17 @@ const ICONE = {
 const DE_QUANTO_EM_QUANTO_MS = 60_000;
 
 /** Quando a manutenção acaba, em palavras. Só a hora, que é o que interessa em um aviso do mesmo dia. */
-function ateQuando(ate: string | null): string {
+function ateQuando(ate: string | null, t: ReturnType<typeof useT>): string {
   if (!ate) return '';
   const quando = new Date(ate);
   const hoje = new Date().toDateString() === quando.toDateString();
-  const hora = quando.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return hoje ? ` Até as ${hora}.` : ` Até ${quando.toLocaleDateString('pt-BR')}, ${hora}.`;
+  const idioma = idiomaAtual();
+  const hora = quando.toLocaleTimeString(idioma, { hour: '2-digit', minute: '2-digit' });
+  return ' ' + (hoje ? t('Até as {hora}.', { hora }) : t('Até {data}, {hora}.', { data: quando.toLocaleDateString(idioma), hora }));
 }
 
 export function AvisoGeral() {
+  const t = useT();
   const [aviso, setAviso] = useState<AvisoDoServidor | null>(null);
   // Fechado fica fechado só para ESTE texto: um recado novo volta a aparecer mesmo para quem fechou o
   // anterior. Sem isso, quem fechou a faixa de uma vez nunca mais veria aviso nenhum.
@@ -64,9 +67,9 @@ export function AvisoGeral() {
       <Icone size={16} aria-hidden="true" />
       <span>
         {aviso.texto}
-        {ateQuando(aviso.ate)}
+        {ateQuando(aviso.ate, t)}
       </span>
-      <button type="button" className="link" onClick={() => setFechado(aviso.texto)} aria-label="Fechar aviso">
+      <button type="button" className="link" onClick={() => setFechado(aviso.texto)} aria-label={t('Fechar aviso')}>
         ✕
       </button>
     </p>

@@ -35,12 +35,12 @@ export function VoiceEffectButton({ voice }: { voice: Voice }) {
 
   return (
     <div className="voice-effect-anchor" ref={ref}>
-      <IconButton label="Modificador de voz" active={active} onClick={() => setOpen(!open)}>
+      <IconButton label={t('Modificador de voz')} active={active} onClick={() => setOpen(!open)}>
         <Wand2 />
       </IconButton>
       {open && (
         <div className="voice-effect-menu" role="menu">
-          <div className="screenshare-menu-title">Modificador de voz</div>
+          <div className="screenshare-menu-title">{t('Modificador de voz')}</div>
           {VOICE_EFFECTS.map((effect) => (
             <button
               key={effect.id}

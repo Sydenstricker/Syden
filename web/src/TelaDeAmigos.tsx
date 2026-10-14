@@ -29,9 +29,9 @@ interface Sugestao {
  * acaso — e a primeira pergunta de quem olha é "por que esta pessoa está aqui?". Com o motivo
  * escrito, ela reconhece a ligação e decide com informação em vez de desconfiança.
  */
-function porQue(s: Sugestao): string {
-  if (s.jaConversaram) return s.emComum > 0 ? 'vocês já conversam · mesma comunidade' : 'vocês já conversam';
-  return s.emComum === 1 ? '1 comunidade em comum' : `${s.emComum} comunidades em comum`;
+function porQue(s: Sugestao, t: ReturnType<typeof useT>): string {
+  if (s.jaConversaram) return s.emComum > 0 ? t('vocês já conversam · mesma comunidade') : t('vocês já conversam');
+  return s.emComum === 1 ? t('1 comunidade em comum') : t('{n} comunidades em comum', { n: s.emComum });
 }
 
 type Aba = 'amigos' | 'pedidos' | 'adicionar';
@@ -83,14 +83,14 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
       await carregar();
       if (mensagem) setAviso(mensagem);
     } catch (e) {
-      setErro(e instanceof ApiError ? e.message : 'Não deu certo. Tente de novo.');
+      setErro(e instanceof ApiError ? e.message : t('Não deu certo. Tente de novo.'));
     } finally {
       setOcupado(false);
     }
   }
 
   const pedir = (username: string) =>
-    agir(() => api('/api/amigos', { method: 'POST', body: { username } }), `Pedido enviado para ${username}.`);
+    agir(() => api('/api/amigos', { method: 'POST', body: { username } }), t('Pedido enviado para {nome}.', { nome: username }));
 
   return (
     <div className="amigos">
@@ -120,7 +120,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
       {aviso && (
         <p className="amigos-aviso" role="status">
           {aviso}
-          <button type="button" className="link" onClick={() => setAviso(null)} aria-label="Fechar aviso">
+          <button type="button" className="link" onClick={() => setAviso(null)} aria-label={t('Fechar aviso')}>
             ✕
           </button>
         </p>
@@ -141,8 +141,8 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 className="btn-sutil perigo"
                 disabled={ocupado}
                 onClick={() => agir(() => api(`/api/amigos/${a.userId}`, { method: 'DELETE' }))}
-                aria-label={`Desfazer amizade com ${a.username}`}
-                title="Desfazer amizade"
+                aria-label={t('Desfazer amizade com {nome}', { nome: a.username })}
+                title={t('Desfazer amizade')}
               >
                 <UserX size={15} aria-hidden="true" />
               </button>
@@ -150,8 +150,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           ))}
           {aceitos.length === 0 && (
             <li className="amigos-vazio">
-              {t('Você ainda não tem amigos no Syden. A aba')} <strong>{t('Adicionar')}</strong> mostra quem divide comunidade com
-              você.
+              {t('Você ainda não tem amigos no Syden. A aba')} <strong>{t('Adicionar')}</strong> {t('mostra quem divide comunidade com você.')}
             </li>
           )}
         </ul>
@@ -176,13 +175,13 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                   className="btn-sutil perigo"
                   disabled={ocupado}
                   onClick={() => agir(() => api(`/api/amigos/${a.userId}`, { method: 'DELETE' }))}
-                  aria-label={`Recusar o pedido de ${a.username}`}
+                  aria-label={t('Recusar o pedido de {nome}', { nome: a.username })}
                 >
                   <X size={15} aria-hidden="true" />
                 </button>
               </li>
             ))}
-            {recebidos.length === 0 && <li className="amigos-vazio">Nenhum pedido esperando.</li>}
+            {recebidos.length === 0 && <li className="amigos-vazio">{t('Nenhum pedido esperando.')}</li>}
           </ul>
 
           <h4 className="amigos-titulo">{t('Pedidos que você enviou')}</h4>
@@ -191,12 +190,12 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
               <li key={a.userId}>
                 <Avatar name={a.username} userId={a.userId} size={36} />
                 <span className="amigos-nome">{a.username}</span>
-                <small className="amigos-esperando">esperando resposta</small>
+                <small className="amigos-esperando">{t('esperando resposta')}</small>
                 <button
                   className="btn-sutil perigo"
                   disabled={ocupado}
                   onClick={() => agir(() => api(`/api/amigos/${a.userId}`, { method: 'DELETE' }))}
-                  aria-label={`Cancelar o pedido para ${a.username}`}
+                  aria-label={t('Cancelar o pedido para {nome}', { nome: a.username })}
                 >
                   <X size={15} aria-hidden="true" />
                 </button>
@@ -235,8 +234,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 busca é por nome exato de propósito. Uma busca parcial deixaria qualquer um listar as
                 contas do Syden digitando letra por letra. */}
             <small>
-              Precisa ser o nome exato — o Syden não lista contas por pedaços de nome, para ninguém
-              conseguir descobrir quem existe aqui dentro.
+              {t('Precisa ser o nome exato — o Syden não lista contas por pedaços de nome, para ninguém conseguir descobrir quem existe aqui dentro.')}
             </small>
           </form>
 
@@ -247,7 +245,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 <Avatar name={s.username} userId={s.userId} size={36} />
                 <span className="amigos-nome">
                   {s.username}
-                  <small>{porQue(s)}</small>
+                  <small>{porQue(s, t)}</small>
                 </span>
                 <button className="btn-sutil" disabled={ocupado} onClick={() => pedir(s.username)}>
                   <UserPlus size={15} aria-hidden="true" /> {t('Adicionar')}

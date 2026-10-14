@@ -24,6 +24,7 @@ function nomeDoArquivo(arquivo: string): string {
 }
 
 function Stars({ pack, onRate }: { pack: EmojiPack; onRate: (stars: number) => void }) {
+  const t = useT();
   const [hover, setHover] = useState(0);
   const shown = hover || pack.myStars || Math.round(pack.stars ?? 0);
 
@@ -33,15 +34,15 @@ function Stars({ pack, onRate }: { pack: EmojiPack; onRate: (stars: number) => v
         <button
           key={n}
           className={`pack-star${n <= shown ? ' on' : ''}${pack.myStars ? ' mine' : ''}`}
-          title={`Dar ${n} de 5`}
-          aria-label={`Dar ${n} de 5 estrelas para ${pack.name}`}
+          title={t('Dar {n} de 5', { n })}
+          aria-label={t('Dar {n} de 5 estrelas para {pacote}', { n, pacote: pack.name })}
           onMouseEnter={() => setHover(n)}
           onClick={() => onRate(n)}
         >
           <Star size={15} />
         </button>
       ))}
-      <span className="pack-stars-count">{pack.stars === null ? 'sem notas ainda' : `${pack.stars.toFixed(1)} (${pack.ratings})`}</span>
+      <span className="pack-stars-count">{pack.stars === null ? t('sem notas ainda') : `${pack.stars.toFixed(1)} (${pack.ratings})`}</span>
     </div>
   );
 }
@@ -87,7 +88,11 @@ function PackCard({
     act(async () => {
       if (pack.installed) {
         const r = await api<{ removed: number }>(`/api/emoji-packs/${pack.id}/install?communityId=${community.id}`, { method: 'DELETE' });
-        setAviso(`${r.removed} ${r.removed === 1 ? 'emoji saiu' : 'emojis saíram'} de ${community.name}.`);
+        setAviso(
+          r.removed === 1
+            ? t('1 emoji saiu de {comunidade}.', { comunidade: community.name })
+            : t('{n} emojis saíram de {comunidade}.', { n: r.removed, comunidade: community.name }),
+        );
       } else {
         const r = await api<{ added: number; skipped: string[] }>(`/api/emoji-packs/${pack.id}/install`, {
           method: 'POST',
@@ -95,8 +100,15 @@ function PackCard({
         });
         setAviso(
           r.skipped.length > 0
-            ? `${r.added} ${r.added === 1 ? 'emoji entrou' : 'emojis entraram'}. Ficaram de fora, porque a comunidade já tem esses nomes: ${r.skipped.map((n) => `:${n}:`).join(', ')}`
-            : `Pronto: ${r.added} ${r.added === 1 ? 'emoji entrou' : 'emojis entraram'} em ${community.name}.`,
+            ? r.added === 1
+              ? t('1 emoji entrou. Ficaram de fora, porque a comunidade já tem esses nomes: {nomes}', { nomes: r.skipped.map((n) => `:${n}:`).join(', ') })
+              : t('{n} emojis entraram. Ficaram de fora, porque a comunidade já tem esses nomes: {nomes}', {
+                  n: r.added,
+                  nomes: r.skipped.map((n) => `:${n}:`).join(', '),
+                })
+            : r.added === 1
+              ? t('Pronto: 1 emoji entrou em {comunidade}.', { comunidade: community.name })
+              : t('Pronto: {n} emojis entraram em {comunidade}.', { n: r.added, comunidade: community.name }),
         );
       }
       await recarregar();
@@ -130,8 +142,12 @@ function PackCard({
       setEmojis(await api<EmojiPackItem[]>(`/api/emoji-packs/${pack.id}/emojis`));
       setAviso(
         pack.installs > 0
-          ? `${novos.length === 1 ? 'Emoji acrescentado' : `${novos.length} emojis acrescentados`} — quem já tem o pacote recebeu na hora.`
-          : `${novos.length === 1 ? 'Emoji acrescentado' : `${novos.length} emojis acrescentados`} ao pacote.`,
+          ? novos.length === 1
+            ? t('Emoji acrescentado — quem já tem o pacote recebeu na hora.')
+            : t('{n} emojis acrescentados — quem já tem o pacote recebeu na hora.', { n: novos.length })
+          : novos.length === 1
+            ? t('Emoji acrescentado ao pacote.')
+            : t('{n} emojis acrescentados ao pacote.', { n: novos.length }),
       );
       onChange({ ...atualizado, installed: pack.installed });
     });
@@ -140,7 +156,11 @@ function PackCard({
     act(async () => {
       const atualizado = await api<EmojiPack>(`/api/emoji-packs/${pack.id}/emojis/${item.id}`, { method: 'DELETE' });
       setEmojis((lista) => (lista ?? []).filter((x) => x.id !== item.id));
-      setAviso(`:${item.name}: saiu do pacote${pack.installs > 0 ? ' e das comunidades que o usam' : ''}.`);
+      setAviso(
+        pack.installs > 0
+          ? t(':{nome}: saiu do pacote e das comunidades que o usam.', { nome: item.name })
+          : t(':{nome}: saiu do pacote.', { nome: item.name }),
+      );
       onChange({ ...atualizado, installed: pack.installed });
     });
 
@@ -152,14 +172,15 @@ function PackCard({
           <h4>{pack.name}</h4>
           {pack.installed && (
             <span className="pack-badge">
-              <Check size={12} /> em {community.name}
+              <Check size={12} /> {t('em {comunidade}', { comunidade: community.name })}
             </span>
           )}
         </div>
-        <p className="pack-description">{pack.description || 'Sem descrição.'}</p>
+        <p className="pack-description">{pack.description || t('Sem descrição.')}</p>
         <p className="pack-meta">
-          Feito por {pack.authorName ?? 'alguém que saiu'} · {pack.emojiCount} {pack.emojiCount === 1 ? 'emoji' : 'emojis'} ·{' '}
-          {pack.installs} {pack.installs === 1 ? 'comunidade usa' : 'comunidades usam'}
+          {t('Feito por {pessoa}', { pessoa: pack.authorName ?? t('alguém que saiu') })} ·{' '}
+          {pack.emojiCount === 1 ? t('1 emoji') : t('{n} emojis', { n: pack.emojiCount })} ·{' '}
+          {pack.installs === 1 ? t('1 comunidade usa') : t('{n} comunidades usam', { n: pack.installs })}
         </p>
         <Stars pack={pack} onRate={(stars) => void avaliar(stars)} />
         {aviso && <p className="settings-hint">{aviso}</p>}
@@ -174,8 +195,8 @@ function PackCard({
                 {meu && (
                   <button
                     className="icon-plain emoji-pack-tirar"
-                    title={`Tirar :${item.name}: do pacote`}
-                    aria-label={`Tirar :${item.name}: do pacote`}
+                    title={t('Tirar :{nome}: do pacote', { nome: item.name })}
+                    aria-label={t('Tirar :{nome}: do pacote', { nome: item.name })}
                     disabled={busy}
                     onClick={() => void tirarDoPacote(item)}
                   >
@@ -203,7 +224,7 @@ function PackCard({
         <button
           className={pack.installed ? 'btn-secondary' : 'btn-primary'}
           disabled={busy || !podeInstalar}
-          title={podeInstalar ? undefined : 'Só quem administra a comunidade pode mexer nos emojis dela'}
+          title={podeInstalar ? undefined : t('Só quem administra a comunidade pode mexer nos emojis dela')}
           onClick={() => void instalar()}
         >
           {pack.installed ? (
@@ -217,11 +238,11 @@ function PackCard({
           )}
         </button>
         <button className="link-button" onClick={() => void verEmojis()}>
-          {emojis ? 'Esconder os emojis' : meu ? 'Ver e mexer nos emojis' : 'Ver os emojis'}
+          {emojis ? t('Esconder os emojis') : meu ? t('Ver e mexer nos emojis') : t('Ver os emojis')}
         </button>
         {(meu || user.isAdmin) && (
           <button className="link-button danger" disabled={busy} onClick={() => void apagar()}>
-            <Trash2 size={14} /> Apagar pacote
+            <Trash2 size={14} /> {t('Apagar pacote')}
           </button>
         )}
       </div>
@@ -274,7 +295,7 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
         </label>
         <label className="settings-field">
           {t('Nome do pacote')}
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Caras da turma" maxLength={32} />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('ex.: Caras da turma')} maxLength={32} />
         </label>
       </div>
       <label className="settings-field">
@@ -283,11 +304,11 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
       </label>
 
       <label className="file-picker btn-secondary">
-        <Plus size={16} /> Escolher imagens
+        <Plus size={16} /> {t('Escolher imagens')}
         <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden onChange={(e) => e.target.files && void adicionar([...e.target.files])} />
       </label>
       <p className="settings-hint">
-        PNG, JPG, GIF ou WEBP; cada um vira um quadradinho de 128 pixels. No máximo {MAX_EMOJIS} emojis por pacote.
+        {t('PNG, JPG, GIF ou WEBP; cada um vira um quadradinho de 128 pixels. No máximo {n} emojis por pacote.', { n: MAX_EMOJIS })}
       </p>
 
       <div className="emoji-pack-novos">
@@ -297,10 +318,10 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
             <input
               value={emoji.name}
               maxLength={32}
-              aria-label={`Nome do emoji ${index + 1}`}
+              aria-label={t('Nome do emoji {n}', { n: index + 1 })}
               onChange={(e) => setEmojis((lista) => lista.map((x, i) => (i === index ? { ...x, name: nomeDoArquivo(e.target.value) } : x)))}
             />
-            <button className="icon-plain" aria-label={`Tirar ${emoji.name}`} onClick={() => setEmojis((lista) => lista.filter((_, i) => i !== index))}>
+            <button className="icon-plain" aria-label={t('Tirar {nome}', { nome: emoji.name })} onClick={() => setEmojis((lista) => lista.filter((_, i) => i !== index))}>
               <Trash2 size={15} />
             </button>
           </div>
@@ -314,7 +335,11 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
         disabled={busy || name.trim().length < 2 || emojis.length === 0 || emojis.some((e) => e.name.length < 2) || nomesRepetidos}
         onClick={() => void criar()}
       >
-        {busy ? 'Enviando…' : `Criar pacote com ${emojis.length} ${emojis.length === 1 ? 'emoji' : 'emojis'}`}
+        {busy
+          ? t('Enviando…')
+          : emojis.length === 1
+            ? t('Criar pacote com 1 emoji')
+            : t('Criar pacote com {n} emojis', { n: emojis.length })}
       </button>
     </div>
   );
@@ -323,9 +348,16 @@ function NovoPacote({ onDone }: { onDone: (created: EmojiPack) => void }) {
 /** Publica os emojis que a comunidade já tem, para outras comunidades poderem instalar. */
 function PublicarDaComunidade({ community, onDone }: { community: Community; onDone: (created: EmojiPack) => void }) {
   const t = useT();
-  const [name, setName] = useState(`Emojis de ${community.name}`.slice(0, 32));
+  const [name, setName] = useState(t('Emojis de {comunidade}', { comunidade: community.name }).slice(0, 32));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // A frase é uma chave só; o nome entra em negrito no lugar de {comunidade}.
+  const [antesDoNome, depoisDoNome = ''] = t(
+    'Junta todos os emojis que {comunidade} tem hoje num pacote só, para as suas outras comunidades (ou as dos seus amigos) instalarem de uma vez.',
+  )
+    .split('{comunidade}')
+    .map((pedaco) => pedaco.trim());
 
   async function publicar() {
     setBusy(true);
@@ -334,7 +366,7 @@ function PublicarDaComunidade({ community, onDone }: { community: Community; onD
       onDone(
         await api<EmojiPack>('/api/emoji-packs/from-community', {
           method: 'POST',
-          body: { communityId: community.id, name, description: `Os emojis de ${community.name}`, icon: '😀' },
+          body: { communityId: community.id, name, description: t('Os emojis de {comunidade}', { comunidade: community.name }), icon: '😀' },
         }),
       );
     } catch (e) {
@@ -350,12 +382,11 @@ function PublicarDaComunidade({ community, onDone }: { community: Community; onD
         <input value={name} onChange={(e) => setName(e.target.value)} maxLength={32} />
       </label>
       <p className="settings-hint">
-        {t('Junta todos os emojis que')} <strong>{community.name}</strong> tem hoje num pacote só, para as suas outras comunidades (ou
-        as dos seus amigos) instalarem de uma vez.
+        {antesDoNome} <strong>{community.name}</strong> {depoisDoNome}
       </p>
       {error && <p className="form-error">{error}</p>}
       <button className="btn-primary" disabled={busy || name.trim().length < 2} onClick={() => void publicar()}>
-        {busy ? 'Publicando…' : 'Publicar os emojis desta comunidade'}
+        {busy ? t('Publicando…') : t('Publicar os emojis desta comunidade')}
       </button>
     </div>
   );
@@ -379,7 +410,7 @@ export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User
   return (
     <>
       <div className="section-head">
-        <h3>{packs ? `${packs.length} ${packs.length === 1 ? 'pacote' : 'pacotes'}` : 'Pacotes de emoji'}</h3>
+        <h3>{packs ? (packs.length === 1 ? t('1 pacote') : t('{n} pacotes', { n: packs.length })) : t('Pacotes de emoji')}</h3>
         <div className="section-head-actions">
           <button
             className="btn-secondary"
@@ -388,7 +419,7 @@ export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User
               setPublicando(false);
             }}
           >
-            <Plus size={16} /> {criando ? 'Cancelar' : 'Criar pacote'}
+            <Plus size={16} /> {criando ? t('Cancelar') : t('Criar pacote')}
           </button>
           {podeInstalar && (
             <button
@@ -398,7 +429,7 @@ export function EmojiPackCatalog({ user, community, podeInstalar }: { user: User
                 setCriando(false);
               }}
             >
-              <Upload size={16} /> {publicando ? 'Cancelar' : 'Publicar os daqui'}
+              <Upload size={16} /> {publicando ? t('Cancelar') : t('Publicar os daqui')}
             </button>
           )}
         </div>

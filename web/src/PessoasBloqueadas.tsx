@@ -86,8 +86,20 @@ export function PessoasBloqueadas() {
 
       {lista.length > 0 && (
         <p className="settings-hint">
-          Desbloquear reabre a conversa, mas <strong>não devolve a amizade</strong>: ela foi desfeita quando você
-          bloqueou, e refazê-la é escolha das duas pessoas de novo.
+          {/* A frase inteira numa chave só, com o negrito no lugar de {destaque}: quem traduz vê a frase
+              toda e põe o destaque onde a língua dele pede. */}
+          {(() => {
+            const [antes, depois = ''] = t(
+              'Desbloquear reabre a conversa, mas {destaque}: ela foi desfeita quando você bloqueou, e refazê-la é escolha das duas pessoas de novo.',
+            ).split('{destaque}');
+            return (
+              <>
+                {antes}
+                <strong>{t('não devolve a amizade')}</strong>
+                {depois}
+              </>
+            );
+          })()}
         </p>
       )}
     </section>

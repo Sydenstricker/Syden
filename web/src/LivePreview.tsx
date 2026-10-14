@@ -67,10 +67,12 @@ export function LivePreview({
             ) : peeked.track ? (
               <PeekVideo track={peeked.track} />
             ) : (
-              <div className="live-preview-empty">{peeked.error ?? 'Carregando a imagem…'}</div>
+              <div className="live-preview-empty">{peeked.error ?? t('Carregando a imagem…')}</div>
             )}
             <div className="live-preview-caption">
-              {transmitindo ? `${username} está transmitindo ${transmitindo}` : `${username} está compartilhando a tela`}
+              {transmitindo
+                ? t('{nome} está transmitindo {oque}', { nome: username, oque: transmitindo })
+                : t('{nome} está compartilhando a tela', { nome: username })}
               {!connected && <span className="live-preview-hint">{t('Clique na sala para entrar e assistir.')}</span>}
             </div>
           </div>,

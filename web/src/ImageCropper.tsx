@@ -49,7 +49,7 @@ export function ImageCropper({
         if (cancelled) loaded.close();
         else setBitmap(loaded);
       },
-      () => setError('Não foi possível abrir essa imagem.'),
+      () => setError(t('Não foi possível abrir essa imagem.')),
     );
     return () => {
       cancelled = true;
@@ -124,7 +124,7 @@ export function ImageCropper({
       const canvas = document.createElement('canvas');
       draw(canvas, OUTPUT);
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.9));
-      if (!blob) throw new Error('Não foi possível processar essa imagem.');
+      if (!blob) throw new Error(t('Não foi possível processar essa imagem.'));
       await onDone(await readAsDataUrl(blob));
     } catch (e) {
       setError((e as Error).message);
@@ -162,7 +162,7 @@ export function ImageCropper({
             <h3>{t('Como vão te ver')}</h3>
             <canvas ref={previewRef} className={`cropper-thumb ${shape}`} width={88} height={88} />
             <canvas ref={smallRef} className={`cropper-thumb small ${shape}`} width={40} height={40} />
-            <p className="settings-hint">Na lista e na barra lateral.</p>
+            <p className="settings-hint">{t('Na lista e na barra lateral.')}</p>
           </aside>
         </div>
 
@@ -175,7 +175,7 @@ export function ImageCropper({
             step={0.01}
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
-            aria-label="Aproximar a imagem"
+            aria-label={t('Aproximar a imagem')}
           />
         </label>
 
@@ -185,7 +185,7 @@ export function ImageCropper({
             {t('Cancelar')}
           </button>
           <button className="btn-primary" onClick={save} disabled={busy || !bitmap}>
-            {busy ? 'Enviando…' : 'Usar esta imagem'}
+            {busy ? t('Enviando…') : t('Usar esta imagem')}
           </button>
         </div>
       </div>

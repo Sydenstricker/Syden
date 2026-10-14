@@ -157,13 +157,13 @@ export function EmojiPicker({
               <div className="emoji-picker-grid">{found.map((char) => unicodeButton(char, char))}</div>
             </>
           ) : (
-            serverMatches.length === 0 && <p className="emoji-picker-empty">Nenhum emoji com "{search}".</p>
+            serverMatches.length === 0 && <p className="emoji-picker-empty">{t('Nenhum emoji com "{busca}".', { busca: search })}</p>
           )
         ) : (
           <>
             {recent.length > 0 && (
               <>
-                <div className="emoji-picker-section">Usados recentemente</div>
+                <div className="emoji-picker-section">{t('Usados recentemente')}</div>
                 <div className="emoji-picker-grid">{recent.map((char) => unicodeButton(char, `recent-${char}`))}</div>
               </>
             )}
@@ -177,7 +177,7 @@ export function EmojiPicker({
         )}
       </div>
 
-      <div className="emoji-picker-footer">{hovered ?? 'Passe o mouse sobre um emoji'}</div>
+      <div className="emoji-picker-footer">{hovered ?? t('Passe o mouse sobre um emoji')}</div>
     </div>
   );
 }

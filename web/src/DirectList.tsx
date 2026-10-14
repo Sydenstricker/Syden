@@ -61,7 +61,7 @@ export function DirectList({
 
         {conversas.length === 0 && (
           <p className="direct-empty">
-            Nenhuma conversa ainda. Clique com o botão direito em alguém da comunidade e escolha "Enviar mensagem".
+            {t('Nenhuma conversa ainda. Clique com o botão direito em alguém da comunidade e escolha "Enviar mensagem".')}
           </p>
         )}
 
@@ -85,7 +85,7 @@ export function DirectList({
               <span className="direct-info">
                 <span className="direct-name">{directName(conversa, selfId, t)}</span>
                 <span className="direct-preview">
-                  {conversa.lastMessage || (grupo ? `${conversa.members.length} pessoas` : 'Sem mensagens ainda')}
+                  {conversa.lastMessage || (grupo ? t('{n} pessoas', { n: conversa.members.length }) : t('Sem mensagens ainda'))}
                 </span>
               </span>
               {nova && <span className="direct-row-dot" aria-label={t('mensagem nova')} />}
@@ -99,11 +99,24 @@ export function DirectList({
 
 /** Botão do topo da coluna de comunidades que abre as conversas privadas. */
 export function DirectRailButton({ active, unread, onClick }: { active: boolean; unread: number; onClick: () => void }) {
+  const t = useT();
   return (
     <button
       className={`rail-item rail-action direct-rail${active ? ' active' : ''}`}
-      title={unread > 0 ? `Conversas (${unread} com mensagem nova)` : 'Conversas'}
-      aria-label={unread > 0 ? `Conversas, ${unread} com mensagem nova` : 'Conversas'}
+      title={
+        unread === 1
+          ? t('Conversas (1 com mensagem nova)')
+          : unread > 0
+            ? t('Conversas ({n} com mensagem nova)', { n: unread })
+            : t('Conversas')
+      }
+      aria-label={
+        unread === 1
+          ? t('Conversas, 1 com mensagem nova')
+          : unread > 0
+            ? t('Conversas, {n} com mensagem nova', { n: unread })
+            : t('Conversas')
+      }
       aria-current={active}
       onClick={onClick}
     >

@@ -76,7 +76,7 @@ export function DialogoDeDenuncia({
                 {t('Cancelar')}
               </button>
               <button className="btn-primary" disabled={ocupado || motivo.trim().length < 3}>
-                {ocupado ? 'Enviando…' : 'Enviar denúncia'}
+                {ocupado ? t('Enviando…') : t('Enviar denúncia')}
               </button>
             </div>
           </form>

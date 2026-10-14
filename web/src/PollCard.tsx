@@ -1,6 +1,7 @@
 import { BarChart3, Check } from 'lucide-react';
 import { useState } from 'react';
 import { api } from './api';
+import { useT } from './i18n';
 import type { Poll } from './types';
 
 /**
@@ -8,6 +9,7 @@ import type { Poll } from './types';
  * Clicar de novo na mesma opção tira o voto, como no Discord.
  */
 export function PollCard({ poll, canClose, onChange }: { poll: Poll; canClose: boolean; onChange: (poll: Poll) => void }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,13 +60,17 @@ export function PollCard({ poll, canClose, onChange }: { poll: Poll; canClose: b
 
       <div className="poll-foot">
         <span>
-          {poll.voters === 0 ? 'Ninguém votou ainda' : poll.voters === 1 ? '1 pessoa votou' : `${poll.voters} pessoas votaram`}
-          {poll.multiple && !poll.closed && ' · dá para marcar mais de uma'}
-          {poll.closed && ' · enquete encerrada'}
+          {poll.voters === 0
+            ? t('Ninguém votou ainda')
+            : poll.voters === 1
+              ? t('1 pessoa votou')
+              : t('{n} pessoas votaram', { n: poll.voters })}
+          {poll.multiple && !poll.closed && ' · ' + t('dá para marcar mais de uma')}
+          {poll.closed && ' · ' + t('enquete encerrada')}
         </span>
         {canClose && !poll.closed && (
           <button className="link-button" disabled={busy} onClick={() => void act(`/api/polls/${poll.id}/close`)}>
-            Encerrar enquete
+            {t('Encerrar enquete')}
           </button>
         )}
       </div>

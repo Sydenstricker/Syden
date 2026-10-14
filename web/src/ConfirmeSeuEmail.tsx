@@ -34,18 +34,18 @@ export function ConfirmeSeuEmail({ paraOndeFoi, username, aoVoltar }: { paraOnde
       <MailCheck size={40} aria-hidden="true" className="confirme-email-icone" />
       <h1>{t('Falta só confirmar')}</h1>
       <p>
-        {t('Mandamos um link para')} <strong>{paraOndeFoi}</strong>. Abra ele e a sua conta está pronta — é o que garante que
-        você consiga recuperar a senha um dia, se esquecer.
+        {t('Mandamos um link para')} <strong>{paraOndeFoi}</strong>.{' '}
+        {t('Abra ele e a sua conta está pronta — é o que garante que você consiga recuperar a senha um dia, se esquecer.')}
       </p>
       <p className="settings-hint">
-        Não chegou em alguns minutos? Dê uma olhada no spam ou nas promoções. Se não estiver lá, mande de novo.
+        {t('Não chegou em alguns minutos? Dê uma olhada no spam ou nas promoções. Se não estiver lá, mande de novo.')}
       </p>
 
       {erro && <p className="form-error">{erro}</p>}
       {estado === 'enviado' && <p className="form-success">{t('Enviado. Confira a sua caixa.')}</p>}
 
       <button type="button" className="btn-primary" disabled={estado === 'enviando'} onClick={() => void reenviar()}>
-        {estado === 'enviando' ? 'Enviando…' : 'Mandar o link de novo'}
+        {estado === 'enviando' ? t('Enviando…') : t('Mandar o link de novo')}
       </button>
       <p className="auth-switch">
         <button type="button" className="link" onClick={aoVoltar}>

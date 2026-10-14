@@ -772,7 +772,7 @@ export function Vila({
           style={{ transform: `translate(${ponto.x}px, ${ponto.y}px)`, transitionDuration: `${coelho.dur}s` }}
           role="button"
           tabIndex={0}
-          aria-label={pessoa ? `${pessoa.nome} — ${pessoa.legenda}` : 'Cutucar o coelho'}
+          aria-label={pessoa ? `${pessoa.nome} — ${pessoa.legenda}` : t('Cutucar o coelho')}
           onClick={(e) => {
             e.stopPropagation();
             if (pessoa) pessoa.onClick();
@@ -780,7 +780,7 @@ export function Vila({
           }}
           onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (pessoa ? pessoa.onClick() : cutucar(coelho.id))}
         >
-          <title>{pessoa ? `${pessoa.nome} — ${pessoa.legenda}` : 'Cutucar o coelho'}</title>
+          <title>{pessoa ? `${pessoa.nome} — ${pessoa.legenda}` : t('Cutucar o coelho')}</title>
           {pessoa && <ellipse cx={0} cy={0} rx={15} ry={6.5} className="v-pessoa-aro" />}
           {/* o tamanho vai no atributo, não no CSS: assim a animação de andar mexe só na posição */}
           <g transform={`scale(${(coelho.olhandoEsquerda ? -escala : escala).toFixed(2)} ${escala.toFixed(2)})`}>
@@ -808,7 +808,7 @@ export function Vila({
 
   return (
     <div className={`vila vila-${periodo}`}>
-      <svg ref={svgRef} className="vila-art" viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="img" aria-label="A vila do Syden">
+      <svg ref={svgRef} className="vila-art" viewBox={`0 0 ${LARGURA} ${ALTURA}`} role="img" aria-label={t('A vila do Syden')}>
         <defs>
           <linearGradient id="v-ceu" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" className="v-ceu-alto" />
@@ -831,11 +831,11 @@ export function Vila({
           className="v-luz"
           role="button"
           tabIndex={0}
-          aria-label={noite ? 'Clarear o Syden' : 'Escurecer o Syden'}
+          aria-label={noite ? t('Clarear o Syden') : t('Escurecer o Syden')}
           onClick={onLuz}
           onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onLuz()}
         >
-          <title>{noite ? 'Clarear o Syden' : 'Escurecer o Syden'}</title>
+          <title>{noite ? t('Clarear o Syden') : t('Escurecer o Syden')}</title>
           <circle cx={1064} cy={96} r={noite ? 78 : 146} className="v-halo" fill="url(#v-brilho-sol)" />
           <circle cx={1064} cy={96} r={noite ? 54 : 118} className="v-disco" />
           {noite && <circle cx={1092} cy={76} r={46} className="v-lua-mordida" />}
@@ -925,9 +925,9 @@ export function Vila({
         {cenouras > 0 && ` · 🥕 ${cenouras}`}
         {gordos && (
           <>
-            {' · a turma engordou! '}
+            {` · ${t('a turma engordou!')} `}
             <button className="vila-dieta" onClick={reiniciarDieta}>
-              colocar de dieta
+              {t('colocar de dieta')}
             </button>
           </>
         )}

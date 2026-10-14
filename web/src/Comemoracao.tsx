@@ -120,8 +120,9 @@ export function Comemoracao({ ideia, aoFechar }: { ideia: string; aoFechar: () =
         <h2>{t('Sua ideia entrou no Syden!')}</h2>
         <blockquote className="comemoracao-ideia">{ideia}</blockquote>
         <p>
-          Obrigado de verdade. Fique de olho nas novidades da tela inicial para ver a sua ideia funcionando — e a
-          medalha de contribuição já está no seu perfil.
+          {t(
+            'Obrigado de verdade. Fique de olho nas novidades da tela inicial para ver a sua ideia funcionando — e a medalha de contribuição já está no seu perfil.',
+          )}
         </p>
         <Medalha tamanho={132} />
         <button className="btn-primary" onClick={aoFechar}>

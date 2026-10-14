@@ -161,7 +161,7 @@ function Previa({
       const data = await readAsDataUrl(arquivo);
       await api(`/api/channels/${canalId}/messages`, {
         method: 'POST',
-        body: { content: `Clipe de ${de}`, files: [{ name: nome, data, width: null, height: null }] },
+        body: { content: t('Clipe de {quem}', { quem: de }), files: [{ name: nome, data, width: null, height: null }] },
       });
       setPronto(true);
       setTimeout(onFechar, 1200);
@@ -173,9 +173,9 @@ function Previa({
 
   return (
     <div className="dialog-backdrop" onClick={onFechar}>
-      <div className="dialog clipe-dialog" role="dialog" aria-label="Clipe" onClick={(e) => e.stopPropagation()}>
+      <div className="dialog clipe-dialog" role="dialog" aria-label={t('Clipe')} onClick={(e) => e.stopPropagation()}>
         <h2>
-          <Scissors size={18} /> Últimos {segundos} segundos
+          <Scissors size={18} /> {t('Últimos {segundos} segundos', { segundos })}
         </h2>
         <video ref={video} className="clipe-video" src={url ?? undefined} controls loop playsInline onTimeUpdate={aoAndar} />
         {vozesDaSala && comVozes && <VozesNaPrevia video={video} vozes={vozesDaSala} />}
@@ -249,13 +249,13 @@ function Previa({
         {temSom === false && !comVozes && <p className="clipe-sem-som">{t('Este clipe não tem som.')}</p>}
 
         <p className="settings-hint">
-          {formatBytes(blob.size)} · de {de}
-          {!cabeNoChat && ' · grande demais para o chat, mas dá para guardar no computador'}
+          {t('{tamanho} · de {quem}', { tamanho: formatBytes(blob.size), quem: de })}
+          {!cabeNoChat && ` · ${t('grande demais para o chat, mas dá para guardar no computador')}`}
         </p>
 
         {canais.length > 0 && cabeNoChat && (
           <label className="settings-field">
-            Mandar em
+            {t('Mandar em')}
             <select value={canalId} onChange={(e) => setCanalId(Number(e.target.value))}>
               {canais.map((canal) => (
                 <option key={canal.id} value={canal.id}>
@@ -285,7 +285,7 @@ function Previa({
             <X size={15} /> {t('Descartar')}
           </button>
           <button type="button" className="btn-secondary" disabled={cortando !== null} onClick={() => void baixarEditado()}>
-            <Download size={15} /> Guardar no computador
+            <Download size={15} /> {t('Guardar no computador')}
           </button>
           {canais.length > 0 && cabeNoChat && (
             <button
@@ -294,7 +294,7 @@ function Previa({
               disabled={enviando || pronto || cortando !== null}
               onClick={() => void mandar()}
             >
-              <Send size={15} /> {pronto ? 'Mandado!' : enviando ? 'Mandando…' : 'Mandar na conversa'}
+              <Send size={15} /> {pronto ? t('Mandado!') : enviando ? t('Mandando…') : t('Mandar na conversa')}
             </button>
           )}
         </div>

@@ -262,7 +262,7 @@ export function PersonMenu({
       ref={ref}
       className="person-menu"
       role="menu"
-      aria-label={`Opções de ${target.username}`}
+      aria-label={t('Opções de {nome}', { nome: target.username })}
       style={{ top: lugar.top, left: lugar.left }}
       onPointerDown={(e) => e.stopPropagation()}
     >
@@ -385,7 +385,7 @@ export function PersonMenu({
             onClose();
           }}
         >
-          Mencionar na conversa
+          {t('Mencionar na conversa')}
         </Item>
       )}
 
@@ -422,8 +422,8 @@ export function PersonMenu({
               rows={2}
               value={rascunho}
               maxLength={LIMITE_DA_NOTA}
-              placeholder={`Anotação sobre ${target.username}`}
-              aria-label={`Anotação sobre ${target.username}`}
+              placeholder={t('Anotação sobre {nome}', { nome: target.username })}
+              aria-label={t('Anotação sobre {nome}', { nome: target.username })}
               onChange={(e) => setRascunho(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -454,7 +454,7 @@ export function PersonMenu({
               </>
             ) : (
               <>
-                Anotar sobre esta pessoa
+                {t('Anotar sobre esta pessoa')}
                 <small>{t('Só você vê')}</small>
               </>
             )}
@@ -465,26 +465,26 @@ export function PersonMenu({
         <>
           <hr className="person-menu-linha" />
           <label className="person-menu-volume">
-            Volume para você: {Math.round(volume * 100)}%
+            {t('Volume para você: {quanto}%', { quanto: Math.round(volume * 100) })}
             <input
               type="range"
               min={0}
               max={1}
               step={0.05}
               value={volume}
-              aria-label={`Volume de ${target.username}`}
+              aria-label={t('Volume de {nome}', { nome: target.username })}
               onChange={(e) => changeVolume(Number(e.target.value))}
             />
           </label>
 
           <Item icone={muted ? <Volume2 size={16} /> : <VolumeX size={16} />} marcado={muted} onClick={toggleLocalMute}>
-            {muted ? 'Ouvir de novo' : 'Silenciar só para mim'}
+            {muted ? t('Ouvir de novo') : t('Silenciar só para mim')}
           </Item>
 
           {/* Fica disponível para todo mundo, e não só para quem modera: é justamente quem não tem poder
               nenhum que precisa de um caminho para dizer que algo está errado. */}
           <Item icone={<Flag size={16} />} onClick={() => setDenunciando(true)}>
-            Denunciar esta pessoa
+            {t('Denunciar esta pessoa')}
           </Item>
 
           {/*
@@ -494,7 +494,7 @@ export function PersonMenu({
             aparecer.
           */}
           <Item icone={<Ban size={16} />} perigo onClick={() => void bloquearPessoa()}>
-            {bloqueado ? 'Desbloquear esta pessoa' : 'Bloquear esta pessoa'}
+            {bloqueado ? t('Desbloquear esta pessoa') : t('Bloquear esta pessoa')}
           </Item>
         </>
       )}
@@ -524,7 +524,7 @@ export function PersonMenu({
 
       {denunciando && (
         <DialogoDeDenuncia
-          titulo={`Denunciar ${target.username}`}
+          titulo={t('Denunciar {nome}', { nome: target.username })}
           corpo={{ tipo: 'pessoa', alvo: target.userId }}
           aoFechar={() => {
             setDenunciando(false);
@@ -544,7 +544,7 @@ export function PersonMenu({
                 {t('Silenciar microfone para todos')}
               </Item>
               <Item icone={<PhoneOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/kick`, {})}>
-                Desconectar da chamada
+                {t('Desconectar da chamada')}
               </Item>
             </>
           )}
@@ -556,7 +556,7 @@ export function PersonMenu({
                 act(`/api/communities/${communityId}/members/${target.userId}`, { role: targetRole === 'admin' ? 'member' : 'admin' }, 'PUT')
               }
             >
-              {targetRole === 'admin' ? 'Tirar o cargo de administrador' : 'Tornar administrador'}
+              {targetRole === 'admin' ? t('Tirar o cargo de administrador') : t('Tornar administrador')}
             </Item>
           )}
         </>

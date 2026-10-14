@@ -11,6 +11,7 @@ import { Shell } from './Shell';
 import type { User } from './types';
 import { esquecerLinkDaAula, guardarAulaEmCurso, lerLinkDaAula } from './aula';
 import { EntradaNaAula } from './EntradaNaAula';
+import { chave, useT } from './i18n';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
 
@@ -46,6 +47,7 @@ function lerConfirmacaoDaUrl(): string | null {
 }
 
 export function App() {
+  const t = useT();
   const [session, setSession] = useState<Session>({ status: 'loading' });
   const [inviteCode] = useState(readInviteFromUrl);
   // O link da aula (?aula=…): sem conta, a porta é a EntradaNaAula; com conta, o Shell põe na sala.
@@ -93,7 +95,7 @@ export function App() {
   useEffect(() => {
     if (!codigoDeConfirmacao) return;
     void api('/api/auth/confirmar-email', { method: 'POST', body: { codigo: codigoDeConfirmacao }, token: null }).then(
-      () => setConfirmacao({ ok: true, texto: 'E-mail confirmado. Agora dá para recuperar a sua senha por ele.' }),
+      () => setConfirmacao({ ok: true, texto: chave('E-mail confirmado. Agora dá para recuperar a sua senha por ele.') }),
       (e) => setConfirmacao({ ok: false, texto: (e as Error).message }),
     );
   }, [codigoDeConfirmacao]);
@@ -128,7 +130,7 @@ export function App() {
             setLigacaoFeita(NOMES[resultado.ligado]);
             return entrarComOTokenGuardado();
           }
-          if (!resultado.token || !resultado.user) throw new Error('A resposta veio sem a sua conta. Tente de novo.');
+          if (!resultado.token || !resultado.user) throw new Error(t('A resposta veio sem a sua conta. Tente de novo.'));
           saveToken(resultado.token);
           await sincronizarAoEntrar();
           setSession({ status: 'ready', token: resultado.token, user: resultado.user });
@@ -194,8 +196,8 @@ export function App() {
       <VersaoNova />
       {ligacaoFeita && (
         <p className="aviso-topo" role="status">
-          Conta do {ligacaoFeita} ligada. Agora dá para entrar por ela.
-          <button type="button" className="link" onClick={() => setLigacaoFeita(null)} aria-label="Fechar aviso">
+          {t('Conta do {provedor} ligada. Agora dá para entrar por ela.', { provedor: ligacaoFeita })}
+          <button type="button" className="link" onClick={() => setLigacaoFeita(null)} aria-label={t('Fechar aviso')}>
             ✕
           </button>
         </p>
@@ -203,15 +205,15 @@ export function App() {
       {erroSocial && (
         <p className="aviso-topo ruim" role="alert">
           {erroSocial}
-          <button type="button" className="link" onClick={() => setErroSocial(null)} aria-label="Fechar aviso">
+          <button type="button" className="link" onClick={() => setErroSocial(null)} aria-label={t('Fechar aviso')}>
             ✕
           </button>
         </p>
       )}
       {confirmacao && (
         <p className={`aviso-topo${confirmacao.ok ? '' : ' ruim'}`} role="status">
-          {confirmacao.texto}
-          <button type="button" className="link" onClick={() => setConfirmacao(null)} aria-label="Fechar aviso">
+          {confirmacao.ok ? t(confirmacao.texto) : confirmacao.texto}
+          <button type="button" className="link" onClick={() => setConfirmacao(null)} aria-label={t('Fechar aviso')}>
             ✕
           </button>
         </p>

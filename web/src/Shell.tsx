@@ -347,7 +347,7 @@ export function Shell({
     if (!pendingInviteCode) return;
     api<Community>('/api/communities/join', { method: 'POST', body: { code: pendingInviteCode } }).then(
       (community) => {
-        setNotice(`Você entrou em ${community.name}.`);
+        setNotice(t('Você entrou em {nome}.', { nome: community.name }));
         void afterCommunityChange(community).then(() => {
           if (pendingInviteChannel) setIrParaCanal({ communityId: community.id, channelId: pendingInviteChannel });
         });

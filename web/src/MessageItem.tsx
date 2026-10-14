@@ -25,16 +25,17 @@ function imageSize(file: Attachment) {
   return { width: Math.round(file.width * scale), height: Math.round(file.height * scale) };
 }
 
-/** "em 6 dias", "amanhã", "hoje" — só para os anexos que têm prazo. */
-function quantoFalta(quando: string | null | undefined): string | null {
+/** "Some em 6 dias", "Some amanhã", "Some hoje" — só para os anexos que têm prazo. */
+function quandoSome(quando: string | null | undefined, t: ReturnType<typeof useT>): string | null {
   if (!quando) return null;
   const dias = Math.ceil((new Date(quando).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
-  if (dias <= 0) return 'hoje';
-  if (dias === 1) return 'amanhã';
-  return `em ${dias} dias`;
+  if (dias <= 0) return t('Some hoje');
+  if (dias === 1) return t('Some amanhã');
+  return t('Some em {n} dias', { n: dias });
 }
 
 function Attachments({ files }: { files: Attachment[] }) {
+  const t = useT();
   return (
     <div className="attachments">
       {files.map((file) => {
@@ -48,7 +49,7 @@ function Attachments({ files }: { files: Attachment[] }) {
           );
         }
         if (file.mime.startsWith('video/')) {
-          const somePor = quantoFalta(file.expiresAt);
+          const somePor = quandoSome(file.expiresAt, t);
           return (
             <div key={file.id} className="attachment-video-wrap">
               <video
@@ -60,7 +61,7 @@ function Attachments({ files }: { files: Attachment[] }) {
                 controls
                 preload="metadata"
               />
-              {somePor && <span className="attachment-expira">Some {somePor}</span>}
+              {somePor && <span className="attachment-expira">{somePor}</span>}
             </div>
           );
         }
@@ -265,7 +266,7 @@ export function MessageItem({
       {message.thread && onOpenThread && <ThreadChip thread={message.thread} onOpen={() => onOpenThread(message.thread!)} />}
       {message.suggestion?.accepted && (
         <span className="ideia-acolhida">
-          <ThumbsUp size={13} aria-hidden="true" /> Ideia acolhida no Syden
+          <ThumbsUp size={13} aria-hidden="true" /> {t('Ideia acolhida no Syden')}
         </span>
       )}
       <ReactionBar reactions={message.reactions} onToggle={(emoji) => void reactWith(emoji)} />
@@ -279,8 +280,8 @@ export function MessageItem({
       {onAcolher && message.suggestion && !message.suggestion.accepted && (
         <button
           className="message-action acolher"
-          title="Acolher: esta ideia entrou no Syden"
-          aria-label="Acolher a ideia"
+          title={t('Acolher: esta ideia entrou no Syden')}
+          aria-label={t('Acolher a ideia')}
           onClick={() => onAcolher(message)}
         >
           <ThumbsUp size={16} />

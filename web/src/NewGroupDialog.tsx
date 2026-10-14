@@ -40,7 +40,7 @@ export function NewGroupDialog({
     try {
       const conversa = await api<DirectChannel>('/api/direct', {
         method: 'POST',
-        body: { userIds: chosen, name: name.trim() || (chosen.length > 1 ? 'Grupo' : '') },
+        body: { userIds: chosen, name: name.trim() || (chosen.length > 1 ? t('Grupo') : '') },
       });
       onCreated(conversa);
     } catch (e) {
@@ -75,7 +75,7 @@ export function NewGroupDialog({
           {chosen.length > 1 && (
             <label>
               {t('Nome do grupo (opcional)')}
-              <input value={name} maxLength={50} placeholder="Ex.: Time do Valorant" onChange={(e) => setName(e.target.value)} />
+              <input value={name} maxLength={50} placeholder={t('Ex.: Time do Valorant')} onChange={(e) => setName(e.target.value)} />
             </label>
           )}
         </div>
@@ -86,7 +86,7 @@ export function NewGroupDialog({
             {t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={chosen.length === 0 || busy} onClick={() => void create()}>
-            {busy ? 'Criando…' : 'Começar conversa'}
+            {busy ? t('Criando…') : t('Começar conversa')}
           </button>
         </div>
       </div>

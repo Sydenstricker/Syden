@@ -107,7 +107,7 @@ export function ThreadPanel({
     >
       <header className="main-header thread-header">
         <span className="thread-header-title" title={thread.title}>
-          Tópico · {thread.title}
+          {t('Tópico · {titulo}', { titulo: thread.title })}
         </span>
         {canDeleteThread && (
           <button className="icon-plain" title={t('Apagar tópico')} aria-label={t('Apagar tópico')} onClick={() => setDeleting(true)}>

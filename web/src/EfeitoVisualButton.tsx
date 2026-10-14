@@ -33,7 +33,7 @@ export function EfeitoVisualButton({ voice }: { voice: Voice }) {
 
   return (
     <div className="screenshare-anchor" ref={ref}>
-      <IconButton label="Mandar um efeito para a sala" onClick={() => setOpen(!open)}>
+      <IconButton label={t('Mandar um efeito para a sala')} onClick={() => setOpen(!open)}>
         <Sparkles />
       </IconButton>
       {open && (

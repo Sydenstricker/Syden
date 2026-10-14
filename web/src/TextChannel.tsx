@@ -194,7 +194,7 @@ export function TextChannel({
         >
           {hasMore ? (
             <button className="load-older" onClick={loadOlder}>
-              Carregar mensagens anteriores
+              {t('Carregar mensagens anteriores')}
             </button>
           ) : (
             <div className="channel-intro">
@@ -358,7 +358,7 @@ function NewThreadDialog({
           </label>
           <p className="dialog-note">{t('A conversa do tópico fica separada, pendurada nesta mensagem:')}</p>
           <blockquote className="dialog-quote">
-            <MessageText content={message.content || (message.poll ? `Enquete: ${message.poll.question}` : 'Arquivo')} />
+            <MessageText content={message.content || (message.poll ? t('Enquete: {pergunta}', { pergunta: message.poll.question }) : t('Arquivo'))} />
           </blockquote>
         </div>
         {error && <p className="form-error">{error}</p>}
@@ -367,7 +367,7 @@ function NewThreadDialog({
             {t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={busy || !title.trim()} onClick={() => void create()}>
-            {busy ? 'Criando…' : 'Criar tópico'}
+            {busy ? t('Criando…') : t('Criar tópico')}
           </button>
         </div>
       </div>

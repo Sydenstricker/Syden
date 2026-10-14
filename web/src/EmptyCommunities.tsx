@@ -30,13 +30,12 @@ export function EmptyCommunities({
       <Mascote nome="ocioso" tamanho={150} />
       <h2>{t('Você ainda não está em nenhuma comunidade')}</h2>
       <p>
-        Uma comunidade é um lugar com canais de texto e salas de voz, como um servidor do Discord. Entre na de um amigo
-        com o código de convite dele, ou crie a sua.
+        {t('Uma comunidade é um lugar com canais de texto e salas de voz, como um servidor do Discord. Entre na de um amigo com o código de convite dele, ou crie a sua.')}
       </p>
       <div className="no-community-actions">
         {/* Um caminho só, igual ao botão da coluna: a escolha entre criar e entrar mora dentro da janela. */}
         <button className="btn-primary" onClick={() => setAbrindo(true)}>
-          Adicionar comunidade
+          {t('Adicionar comunidade')}
         </button>
       </div>
 

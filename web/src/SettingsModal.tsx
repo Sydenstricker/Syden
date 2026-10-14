@@ -345,7 +345,7 @@ function MinhasInsignias() {
 
   function alternar(codigo: string) {
     const nova = vitrine.includes(codigo) ? vitrine.filter((c) => c !== codigo) : [...vitrine, codigo];
-    if (nova.length > limite) return setErro(`Dá para exibir no máximo ${limite} insígnias ao mesmo tempo.`);
+    if (nova.length > limite) return setErro(t('Dá para exibir no máximo {limite} insígnias ao mesmo tempo.', { limite }));
     setErro(null);
     setVitrine(nova); // a tela responde na hora; se o servidor recusar, a mensagem aparece embaixo
     void api('/api/me/vitrine', { method: 'PUT', body: { codigos: nova } }).catch((e) => setErro((e as Error).message));
@@ -1761,7 +1761,7 @@ function EmojisSection({ user, community }: { user: User; community: Community }
             {editing?.id === emoji.id ? (
               <InlineRename
                 value={emoji.name}
-                label={`Novo nome para :${emoji.name}:`}
+                label={t('Novo nome para :{nome}:', { nome: emoji.name })}
                 onCancel={() => setEditing(null)}
                 onSave={(newName) => rename(emoji, newName)}
               />
@@ -1994,11 +1994,11 @@ function SoundboardSection({ user, community }: { user: User; community: Communi
                 </label>
               </div>
               <button className="btn-primary" disabled={!audio || !name.trim() || busy}>
-                {busy ? 'Enviando…' : t('Enviar som')}
+                {busy ? t('Enviando…') : t('Enviar som')}
               </button>
             </div>
           </form>
-          <p className="settings-hint">MP3, OGG ou WAV, até {MAX_SOUND_SECONDS} segundos e 1 MB.</p>
+          <p className="settings-hint">{t('MP3, OGG ou WAV, até {segundos} segundos e 1 MB.', { segundos: MAX_SOUND_SECONDS })}</p>
 
           <h3>{t('Vários de uma vez')}</h3>
           <BulkSoundUpload community={community} />
@@ -2119,7 +2119,7 @@ function SoundRename({
       <input
         className="channel-input icon-input"
         value={icon}
-        aria-label={`Ícone de ${sound.name}`}
+        aria-label={t('Ícone de {som}', { som: sound.name })}
         maxLength={8}
         onChange={(e) => setIcon(e.target.value)}
         onKeyDown={(e) => e.key === 'Escape' && onCancel()}
@@ -2127,7 +2127,7 @@ function SoundRename({
       <input
         className="channel-input"
         value={name}
-        aria-label={`Novo nome para ${sound.name}`}
+        aria-label={t('Novo nome para {som}', { som: sound.name })}
         maxLength={32}
         autoFocus
         onFocus={(e) => e.currentTarget.select()}

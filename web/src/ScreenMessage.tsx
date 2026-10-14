@@ -69,7 +69,7 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
   async function comecar() {
     setErro(null);
     const tipo = tipoSuportado();
-    if (!tipo) return setErro('Este navegador não sabe gravar vídeo.');
+    if (!tipo) return setErro(t('Este navegador não sabe gravar vídeo.'));
 
     let tela: MediaStream;
     try {
@@ -84,15 +84,15 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
         const voz = await navigator.mediaDevices.getUserMedia({ audio: true });
         trilhas.push(...voz.getAudioTracks());
       } catch {
-        setErro('Sem o microfone: o recado vai só com o som da tela.');
+        setErro(t('Sem o microfone: o recado vai só com o som da tela.'));
       }
     }
     faixas.current = trilhas;
 
     // Uma faixa de som só: a da tela e a da voz misturadas, senão o navegador grava só a primeira.
-    const sons = trilhas.filter((t) => t.kind === 'audio');
-    const video = trilhas.find((t) => t.kind === 'video');
-    if (!video) return setErro('Não veio imagem da tela.');
+    const sons = trilhas.filter((trilha) => trilha.kind === 'audio');
+    const video = trilhas.find((trilha) => trilha.kind === 'video');
+    if (!video) return setErro(t('Não veio imagem da tela.'));
 
     let misturado: MediaStreamTrack | null = null;
     let contexto: AudioContext | null = null;
@@ -155,7 +155,7 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
       );
       if (!resposta.ok) {
         const corpo = await resposta.json().catch(() => ({}));
-        throw new Error(corpo.error ?? `Erro ${resposta.status}`);
+        throw new Error(corpo.error ?? t('Erro {status}', { status: resposta.status }));
       }
       descartar();
       onEnviado?.();
@@ -169,11 +169,11 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
     return (
       <div className="recado-linha">
         <button className="btn-secondary" onClick={() => void comecar()}>
-          <MonitorPlay size={16} /> Gravar a tela
+          <MonitorPlay size={16} /> {t('Gravar a tela')}
         </button>
         <button
           className={`icon-plain${comVoz ? ' ativo' : ''}`}
-          title={comVoz ? 'Gravando com a sua voz' : 'Gravando sem a sua voz'}
+          title={comVoz ? t('Gravando com a sua voz') : t('Gravando sem a sua voz')}
           aria-pressed={comVoz}
           onClick={() => setComVoz(!comVoz)}
         >
@@ -190,9 +190,9 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
       <div className="recado-linha gravando">
         <span className="recado-ponto" aria-hidden="true" />
         <strong>{relogio(segundos)}</strong>
-        <span className="settings-hint">de {relogio(LIMITE_SEGUNDOS)}</span>
+        <span className="settings-hint">{t('de {total}', { total: relogio(LIMITE_SEGUNDOS) })}</span>
         <button className="btn-primary" onClick={parar}>
-          <Square size={14} /> Parar e ver
+          <Square size={14} /> {t('Parar e ver')}
         </button>
         {erro && <span className="form-error small">{erro}</span>}
       </div>
@@ -210,7 +210,7 @@ export function ScreenMessage({ channelId, onEnviado }: { channelId: number; onE
           <Trash2 size={15} /> {t('Descartar')}
         </button>
         <button className="btn-primary" disabled={enviando} onClick={() => void enviar()}>
-          <Send size={15} /> {enviando ? 'Enviando…' : 'Mandar na conversa'}
+          <Send size={15} /> {enviando ? t('Enviando…') : t('Mandar na conversa')}
         </button>
       </div>
       {erro && <p className="form-error">{erro}</p>}

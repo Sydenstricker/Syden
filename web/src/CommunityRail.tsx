@@ -58,7 +58,7 @@ export function CommunityRail({ communities, currentId, onSelect, onChanged, top
           comunidade na lista), e a escolha fica dentro da janela. */}
       <button
         className="rail-item rail-action"
-        title="Adicionar comunidade"
+        title={t('Adicionar comunidade')}
         aria-label={t('Adicionar comunidade')}
         onClick={() => setDialog('choose')}
       >
@@ -209,8 +209,8 @@ export function CommunityDialog({
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>
-      <form className="dialog" role="dialog" aria-label={creating ? 'Criar comunidade' : 'Entrar com um convite'} onClick={(e) => e.stopPropagation()} onSubmit={submit}>
-        <h2>{creating ? 'Criar comunidade' : 'Entrar com um convite'}</h2>
+      <form className="dialog" role="dialog" aria-label={creating ? t('Criar comunidade') : t('Entrar com um convite')} onClick={(e) => e.stopPropagation()} onSubmit={submit}>
+        <h2>{creating ? t('Criar comunidade') : t('Entrar com um convite')}</h2>
         <p className="dialog-body">
           {creating
             ? t('Um lugar novo, com canais próprios. Você escolhe quem entra pelo código de convite.')
@@ -233,10 +233,10 @@ export function CommunityDialog({
             className="link-button"
             onClick={() => (modoInicial === 'choose' ? escolher('choose') : onClose())}
           >
-            {modoInicial === 'choose' ? 'Voltar' : 'Cancelar'}
+            {modoInicial === 'choose' ? t('Voltar') : t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={busy}>
-            {busy ? 'Aguarde…' : creating ? 'Criar' : 'Entrar'}
+            {busy ? t('Aguarde…') : creating ? t('Criar') : t('Entrar')}
           </button>
         </div>
       </form>

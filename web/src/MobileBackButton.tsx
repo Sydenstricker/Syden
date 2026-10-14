@@ -1,4 +1,5 @@
 import { ChevronLeft } from 'lucide-react';
+import { useT } from './i18n';
 
 /**
  * Seta de voltar para a lista de canais, só visível em telas estreitas (a classe .mobile-back fica
@@ -6,8 +7,9 @@ import { ChevronLeft } from 'lucide-react';
  * lado a lado — ver @media em styles.css). Em telas largas não aparece nada, mesmo com o botão montado.
  */
 export function MobileBackButton({ onBack }: { onBack: () => void }) {
+  const t = useT();
   return (
-    <button className="mobile-back" title="Voltar aos canais" aria-label="Voltar aos canais" onClick={onBack}>
+    <button className="mobile-back" title={t('Voltar aos canais')} aria-label={t('Voltar aos canais')} onClick={onBack}>
       <ChevronLeft size={22} />
     </button>
   );

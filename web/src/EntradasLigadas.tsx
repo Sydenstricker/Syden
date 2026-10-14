@@ -74,8 +74,7 @@ export function EntradasLigadas() {
     <>
       <h3>{t('Entrar com')}</h3>
       <p className="settings-hint">
-        Ligue a sua conta do Google, Discord, GitHub ou Steam para entrar no Syden por lá, sem digitar senha. Dá para
-        ligar mais de um, e todos levam a esta mesma conta.
+        {t('Ligue a sua conta do Google, Discord, GitHub ou Steam para entrar no Syden por lá, sem digitar senha. Dá para ligar mais de um, e todos levam a esta mesma conta.')}
       </p>
 
       {erro && <p className="form-error">{erro}</p>}
@@ -89,7 +88,7 @@ export function EntradasLigadas() {
               <MarcaSocial provedor={provedor} size={20} />
               <span className="entradas-ligadas-texto">
                 <strong>{NOMES[provedor]}</strong>
-                <small>{ligado ? 'Ligado a esta conta' : (AVISOS[provedor] ?? 'Não está ligado')}</small>
+                <small>{ligado ? t('Ligado a esta conta') : (AVISOS[provedor] ?? t('Não está ligado'))}</small>
                 {trancado && <small className="entradas-ligadas-travado">{t('É o seu único jeito de entrar. Defina uma senha antes de desligar.')}</small>}
               </span>
               <button
@@ -99,7 +98,7 @@ export function EntradasLigadas() {
                 onClick={() => void (ligado ? desligar(provedor) : ligar(provedor))}
               >
                 {ligado ? <Unlink size={15} /> : <Link2 size={15} />}
-                {ocupado === provedor ? 'Um instante…' : ligado ? 'Desligar' : 'Ligar'}
+                {ocupado === provedor ? t('Um instante…') : ligado ? t('Desligar') : t('Ligar')}
               </button>
             </li>
           );

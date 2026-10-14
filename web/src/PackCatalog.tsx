@@ -24,6 +24,7 @@ interface AoMudar {
 
 /** Estrelas do pacote: mostra a média e, ao clicar, guarda a sua nota. */
 function Stars({ pack, onRate }: { pack: Pack; onRate: (stars: number) => void }) {
+  const t = useT();
   const [hover, setHover] = useState(0);
   const shown = hover || pack.myStars || Math.round(pack.stars ?? 0);
 
@@ -33,8 +34,8 @@ function Stars({ pack, onRate }: { pack: Pack; onRate: (stars: number) => void }
         <button
           key={n}
           className={`pack-star${n <= shown ? ' on' : ''}${pack.myStars ? ' mine' : ''}`}
-          title={pack.myStars === n ? 'Tirar a sua nota' : `Dar ${n} de 5`}
-          aria-label={`Dar ${n} de 5 estrelas para ${pack.name}`}
+          title={pack.myStars === n ? t('Tirar a sua nota') : t('Dar {n} de 5', { n })}
+          aria-label={t('Dar {n} de 5 estrelas para {pacote}', { n, pacote: pack.name })}
           onMouseEnter={() => setHover(n)}
           onClick={() => onRate(pack.myStars === n ? 0 : n)}
         >
@@ -42,7 +43,7 @@ function Stars({ pack, onRate }: { pack: Pack; onRate: (stars: number) => void }
         </button>
       ))}
       <span className="pack-stars-count">
-        {pack.stars === null ? 'sem notas ainda' : `${pack.stars.toFixed(1)} (${pack.ratings})`}
+        {pack.stars === null ? t('sem notas ainda') : `${pack.stars.toFixed(1)} (${pack.ratings})`}
       </span>
     </div>
   );
@@ -121,14 +122,15 @@ function PackCard({
           <h4>{pack.name}</h4>
           {pack.installed && (
             <span className="pack-badge">
-              <Check size={12} /> no seu soundboard
+              <Check size={12} /> {t('no seu soundboard')}
             </span>
           )}
         </div>
-        <p className="pack-description">{pack.description || 'Sem descrição.'}</p>
+        <p className="pack-description">{pack.description || t('Sem descrição.')}</p>
         <p className="pack-meta">
-          {pack.builtin ? 'Vem com o Syden' : `Feito por ${pack.authorName ?? 'alguém que saiu'}`} · {pack.soundCount} sons ·{' '}
-          {pack.installs} {pack.installs === 1 ? 'pessoa baixou' : 'pessoas baixaram'}
+          {pack.builtin ? t('Vem com o Syden') : t('Feito por {pessoa}', { pessoa: pack.authorName ?? t('alguém que saiu') })} ·{' '}
+          {t('{n} sons', { n: pack.soundCount })} ·{' '}
+          {pack.installs === 1 ? t('1 pessoa baixou') : t('{n} pessoas baixaram', { n: pack.installs })}
         </p>
         <Stars pack={pack} onRate={(stars) => void rate(stars)} />
         {error && <p className="form-error small">{error}</p>}
@@ -145,7 +147,7 @@ function PackCard({
         {sounds && !editando && (
           <div className="pack-sounds">
             {sounds.map((sound) => (
-              <button key={sound.id} className="pack-sound" onClick={() => playSoundboard(sound.id, sound.volume)} title="Ouvir">
+              <button key={sound.id} className="pack-sound" onClick={() => playSoundboard(sound.id, sound.volume)} title={t('Ouvir')}>
                 <span>{sound.icon}</span> {sound.name} <Play size={11} />
               </button>
             ))}
@@ -168,7 +170,7 @@ function PackCard({
           )}
         </button>
         <button className="link-button" onClick={() => void toggleSounds()}>
-          {sounds ? 'Esconder sons' : 'Ouvir os sons'}
+          {sounds ? t('Esconder sons') : t('Ouvir os sons')}
         </button>
         {podeEditar && sounds && (
           <button className="link-button" onClick={() => setEditando(!editando)}>
@@ -177,7 +179,7 @@ function PackCard({
         )}
         {(mine || user.isAdmin) && !pack.builtin && (
           <button className="link-button danger" disabled={busy} onClick={() => void remove()}>
-            <Trash2 size={14} /> Apagar pacote
+            <Trash2 size={14} /> {t('Apagar pacote')}
           </button>
         )}
       </div>
@@ -365,7 +367,7 @@ function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
         </label>
         <label className="settings-field">
           {t('Nome do pacote')}
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="ex.: Zoeira da turma" maxLength={32} />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('ex.: Zoeira da turma')} maxLength={32} />
         </label>
       </div>
       <label className="settings-field">
@@ -389,7 +391,10 @@ function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
         />
       </label>
       <p className="settings-hint">
-        MP3, OGG ou WAV, até {MAX_SOUND_SECONDS} segundos e 1 MB cada; no máximo {MAX_SOUNDS} sons por pacote.
+        {t('MP3, OGG ou WAV, até {segundos} segundos e 1 MB cada; no máximo {n} sons por pacote.', {
+          segundos: MAX_SOUND_SECONDS,
+          n: MAX_SOUNDS,
+        })}
       </p>
 
       {sounds.map((sound, index) => (
@@ -398,16 +403,16 @@ function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
             className="soundboard-add-icon"
             value={sound.icon}
             maxLength={8}
-            aria-label={`Ícone do som ${index + 1}`}
+            aria-label={t('Ícone do som {n}', { n: index + 1 })}
             onChange={(e) => setSounds((list) => list.map((s, i) => (i === index ? { ...s, icon: e.target.value } : s)))}
           />
           <input
             value={sound.name}
             maxLength={32}
-            aria-label={`Nome do som ${index + 1}`}
+            aria-label={t('Nome do som {n}', { n: index + 1 })}
             onChange={(e) => setSounds((list) => list.map((s, i) => (i === index ? { ...s, name: e.target.value } : s)))}
           />
-          <button className="icon-plain" aria-label={`Tirar ${sound.name}`} onClick={() => setSounds((list) => list.filter((_, i) => i !== index))}>
+          <button className="icon-plain" aria-label={t('Tirar {nome}', { nome: sound.name })} onClick={() => setSounds((list) => list.filter((_, i) => i !== index))}>
             <Trash2 size={15} />
           </button>
         </div>
@@ -419,7 +424,11 @@ function NewPackForm({ onDone }: { onDone: (created: Pack) => void }) {
         disabled={busy || name.trim().length < 2 || sounds.length === 0 || sounds.some((s) => !s.name.trim())}
         onClick={() => void create()}
       >
-        {busy ? 'Enviando…' : `Criar pacote com ${sounds.length} ${sounds.length === 1 ? 'som' : 'sons'}`}
+        {busy
+          ? t('Enviando…')
+          : sounds.length === 1
+            ? t('Criar pacote com 1 som')
+            : t('Criar pacote com {n} sons', { n: sounds.length })}
       </button>
     </div>
   );
@@ -441,14 +450,13 @@ export function PackCatalog({ user }: { user: User }) {
   return (
     <>
       <div className="section-head">
-        <h3>{packs ? `${packs.length} pacotes` : 'Pacotes'}</h3>
+        <h3>{packs ? t('{n} pacotes', { n: packs.length }) : t('Pacotes')}</h3>
         <button className="btn-secondary" onClick={() => setCreating(!creating)}>
-          <Plus size={16} /> {creating ? 'Cancelar' : 'Criar pacote'}
+          <Plus size={16} /> {creating ? t('Cancelar') : t('Criar pacote')}
         </button>
       </div>
       <p className="settings-hint">
-        Instale os pacotes que quiser: os sons deles entram no seu soundboard, e só no seu. As estrelas ajudam a turma a
-        achar os melhores.
+        {t('Instale os pacotes que quiser: os sons deles entram no seu soundboard, e só no seu. As estrelas ajudam a turma a achar os melhores.')}
       </p>
 
       {creating && (

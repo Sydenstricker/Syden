@@ -52,7 +52,7 @@ export function PollDialog({
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className="dialog poll-dialog" role="dialog" aria-modal="true" aria-labelledby="poll-dialog-title">
-        <h2 id="poll-dialog-title">Criar enquete</h2>
+        <h2 id="poll-dialog-title">{t('Criar enquete')}</h2>
         <div className="dialog-body">
           <label>
             {t('Pergunta')}
@@ -72,8 +72,8 @@ export function PollDialog({
                 <input
                   value={option}
                   maxLength={100}
-                  placeholder={`Opção ${i + 1}`}
-                  aria-label={`Opção ${i + 1}`}
+                  placeholder={t('Opção {n}', { n: i + 1 })}
+                  aria-label={t('Opção {n}', { n: i + 1 })}
                   onChange={(e) => setOptions((list) => list.map((o, j) => (j === i ? e.target.value : o)))}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && options.length < MAX_OPTIONS && i === options.length - 1) {
@@ -85,7 +85,7 @@ export function PollDialog({
                 {options.length > 2 && (
                   <button
                     className="icon-plain"
-                    aria-label={`Tirar opção ${i + 1}`}
+                    aria-label={t('Tirar opção {n}', { n: i + 1 })}
                     title={t('Tirar opção')}
                     onClick={() => setOptions((list) => list.filter((_, j) => j !== i))}
                   >
@@ -113,7 +113,7 @@ export function PollDialog({
             {t('Cancelar')}
           </button>
           <button className="btn-primary" disabled={!ready || busy} onClick={() => void create()}>
-            {busy ? 'Criando…' : 'Criar enquete'}
+            {busy ? t('Criando…') : t('Criar enquete')}
           </button>
         </div>
       </div>
