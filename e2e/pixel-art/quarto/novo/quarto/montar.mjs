@@ -548,7 +548,7 @@ function dados(im, filtro, w = W, h = W) {
     if (c) andarAte(c);
   }
   const quadroBuf = new Uint8ClampedArray(W * W * 4), peBuf = new Int16Array(W).fill(-1), semSombra = new Uint8ClampedArray(W * W * 4);
-  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '';
+  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '', coelhoLinha = W;
   function pecaDoCoelho() {
     const tr = coelho.trans, ap = coelho.aproximar;
     const pt = !tr && !ap && coelho.destino && !coelho.caminho.length ? pontos()[coelho.destino] : null;
@@ -606,6 +606,9 @@ function dados(im, filtro, w = W, h = W) {
     // A espessura dele na profundidade: de pé, fino; sentado, as pernas à frente; deitado, o corpo inteiro no colchão.
     const deitadoAgora = (pt && pt.onde && coelho.destino === 'cama') || (tr && tr.alvo === 'cama' && subida > 0);
     coelhoChave = py + (deitadoAgora ? 28 : (pt && pt.onde) || (tr && subida > 0) ? 10 : 5);
+    // SENTADO OU DEITADO, o que fica abaixo da linha do assento (pernas, pés) está À FRENTE: cada pixel abaixo dela ganha
+    // profundidade. Com uma profundidade só, os pés eram cobertos pela frente do assento e pela beirada da cama.
+    coelhoLinha = altura > 0 ? py - altura - 4 : W;
     const p = { id: 'coelho', movel: quadroBuf, sombra: semSombra, topo: Y0, peColuna: peBuf };
     // A ÁREA NO CHÃO: de pé, um quadradinho em volta do pé; sentado ou deitado, ele está SOBRE o móvel.
     const r = 0.3, area = [coelho.u - r, coelho.u + r, coelho.v - r, coelho.v + r];
@@ -1051,7 +1054,7 @@ function dados(im, filtro, w = W, h = W) {
       for (let y = Math.max(0, b0); y < Math.min(W, b1); y++) for (let x = Math.max(0, a0); x < Math.min(W, a1); x++) {
         const d = y * W + x, q = d * 4;
         if (!quadroBuf[q + 3]) continue;
-        if (eMovel[d] && chaveDoPixel[d] > coelhoChave) continue; // o móvel está na frente
+        if (eMovel[d] && chaveDoPixel[d] > coelhoChave + Math.max(0, y - coelhoLinha) * 1.5) continue; // o móvel está na frente
         for (let c = 0; c < 3; c++) D[d * 3 + c] = quadroBuf[q + c];
         eMovel[d] = 1; peY[d] = peBuf[x] >= 0 ? peBuf[x] : coelhoPe[1]; dono[d] = 'coelho'; chaoPx[d] = -1;
       }
