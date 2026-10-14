@@ -73,7 +73,7 @@ for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-wes
 }
 // AS 4 POSIÇÕES DE CADA MÓVEL (girar.mjs): as 4 diagonais do mesmo móvel, na ordem do botão Girar. Móvel sem as 4
 // vistas fica onde foi pintado.
-const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-giros' };
+const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = path.join(AQUI, 'avulsos', pasta);
@@ -126,6 +126,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="vista" aria-pressed="false">Vista: 1</button>
   <button id="girar">Girar a poltrona</button>
   <button id="inicial">Arrumação inicial</button>
+  <button id="tela-pc">Tela: automática</button>
   <button id="janela" aria-pressed="false">Janela: fechada</button>
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
 </div>
@@ -340,6 +341,81 @@ function dados(im, filtro, w = W, h = W) {
   }
   const VISTAS = {};
   for (const id of ['poltrona', 'abajur', 'guarda-roupa', 'cama', 'mesa']) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
+  // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
+  // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
+  // em cada coluna, de cima a baixo da tela, s vai de 0 a 1 na largura e t na altura. Ela brilha sozinha (não escurece
+  // de noite) e, de noite, clareia um pouco o que está em volta. Só as vistas de frente têm tela; nas de costas, o
+  // monitor mostra a traseira.
+  function telaDaVista(peca) {
+    const m = peca.movel, ate = peca.caixa[1] + Math.round((peca.caixa[3] - peca.caixa[1]) * 0.5);
+    const conta = new Map();
+    for (let y = peca.caixa[1]; y < ate; y++) for (let x = peca.caixa[0]; x < peca.caixa[2]; x++) {
+      const k = (y * W + x) * 4; if (!m[k + 3]) continue;
+      const r = m[k], g2 = m[k + 1], b = m[k + 2];
+      if (Math.max(r, g2, b) - Math.min(r, g2, b) >= 25 || r + g2 + b <= 120) continue;
+      const chave = r + ',' + g2 + ',' + b; conta.set(chave, (conta.get(chave) ?? 0) + 1);
+    }
+    const cor = [...conta.entries()].sort((a, b) => b[1] - a[1])[0]?.[0].split(',').map(Number);
+    if (!cor) return null;
+    const perto = (k) => m[k * 4 + 3] && Math.abs(m[k * 4] - cor[0]) + Math.abs(m[k * 4 + 1] - cor[1]) + Math.abs(m[k * 4 + 2] - cor[2]) < 14;
+    // a maior região ligada
+    const visto = new Uint8Array(W * W); let maior = [];
+    for (let y = peca.caixa[1]; y < ate; y++) for (let x = peca.caixa[0]; x < peca.caixa[2]; x++) {
+      const k0 = y * W + x; if (visto[k0] || !perto(k0)) continue;
+      const fila = [k0]; visto[k0] = 1;
+      for (let i = 0; i < fila.length; i++) { const k = fila[i]; for (const v of [k - 1, k + 1, k - W, k + W]) if (v >= 0 && v < W * W && !visto[v] && perto(v)) { visto[v] = 1; fila.push(v); } }
+      if (fila.length > maior.length) maior = fila;
+    }
+    if (maior.length < 60) return null;
+    // a tela é convexa: em cada coluna, de cima a baixo dela
+    const col = new Map();
+    for (const k of maior) { const x = k % W, y = (k / W) | 0, c = col.get(x); if (!c) col.set(x, [y, y]); else { c[0] = Math.min(c[0], y); c[1] = Math.max(c[1], y); } }
+    const xs = [...col.keys()].sort((a, b) => a - b), x0 = xs[0], x1 = xs[xs.length - 1];
+    const pts = [];
+    for (const x of xs) { const [ya, yb] = col.get(x); for (let y = ya; y <= yb; y++) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), (y - ya) / Math.max(1, yb - ya)]); }
+    return pts;
+  }
+  const TELAS = VISTAS.mesa ? VISTAS.mesa.map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null)) : [];
+  // O CONTEÚDO: "auto" segue o estado (em call, a chamada; à toa, a conversa; ausente, desligada); o botão escolhe.
+  const CONTEUDOS = ['auto', 'call', 'conversa', 'jogo', 'desligada'];
+  let conteudo = 'auto';
+  const conteudoAgora = () => (conteudo !== 'auto' ? conteudo : estado === 'call' ? 'call' : estado === 'ausente' ? 'desligada' : 'conversa');
+  const misturar = (a, b, f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+  // A cor de um ponto (s, t) da tela, no instante "q" (quartos de segundo). Pixel art: blocos chapados, poucas cores.
+  function corDaTela(s, t, q, tipo) {
+    if (tipo === 'call') {
+      // A chamada: quatro quadros com as pessoas (a cabeça redonda), a borda verde em quem fala, e a barra embaixo.
+      if (t > 0.86) return s > 0.44 && s < 0.56 ? [214, 72, 72] : [28, 30, 44];
+      const i = s < 0.5 ? 0 : 1, j = t < 0.43 ? 0 : 1, quem = i + j * 2, fala = Math.floor(q / 6) % 4;
+      const ls = (s - i * 0.5) / 0.5, lt = (t - j * 0.43) / 0.43;
+      if (ls < 0.06 || ls > 0.94 || lt < 0.07 || lt > 0.93) return quem === fala ? [96, 210, 120] : [28, 30, 44];
+      const CORES = [[236, 170, 178], [160, 214, 196], [240, 214, 140], [190, 170, 230]];
+      const dx = (ls - 0.5) * 1.6, dy = (lt - 0.48) * 1.1;
+      if (dx * dx + dy * dy < 0.12) return CORES[quem];
+      if (lt > 0.78 && Math.abs(ls - 0.5) < 0.34) return misturar(CORES[quem], [40, 44, 62], 0.45); // os ombros
+      return [48, 52, 74];
+    }
+    if (tipo === 'conversa') {
+      // A conversa do Syden: a barra dos canais à esquerda e as mensagens subindo devagar.
+      if (s < 0.22) return t < 0.18 ? [120, 96, 170] : [40, 36, 56];
+      const linha = Math.floor(t * 9 + q / 8) % 9;
+      const larg = [0.6, 0.85, 0, 0.45, 0.75, 0, 0.9, 0.5, 0][linha];
+      const lt = (t * 9 + q / 8) % 1;
+      if (larg && lt > 0.3 && lt < 0.8 && (s - 0.28) / 0.66 < larg && s > 0.28) return linha % 3 === 1 ? [200, 190, 240] : [226, 222, 236];
+      if (larg && s > 0.24 && s < 0.27 && lt > 0.2 && lt < 0.9) return [236, 170, 178];
+      return [58, 54, 78];
+    }
+    if (tipo === 'jogo') {
+      // Um joguinho de plataforma: céu, nuvem, chão, e o bonequinho pulando.
+      const pulo = Math.abs(Math.sin(q / 3)) * 0.25, bx = 0.3 + ((q % 40) / 40) * 0.4;
+      if (Math.abs(s - bx) < 0.05 && t > 0.62 - pulo && t < 0.74 - pulo) return [236, 120, 90];
+      if (t > 0.74) return t > 0.8 ? [120, 86, 60] : [110, 190, 90];
+      if (t > 0.18 && t < 0.28 && ((s + q / 60) % 1) > 0.55 && ((s + q / 60) % 1) < 0.8) return [246, 246, 250];
+      return [130, 190, 236];
+    }
+    return null; // desligada: o cinza do desenho
+  }
   // O GUARDA-ROUPA ABERTO (pedido dele, 14/10/2026: "precisa de mais estados, como temos na janela"): as portas abertas
   // com as roupas, nas mesmas 4 vistas. Clicar nele leva o coelho até lá e abre; clicar de novo fecha.
   const VISTAS_ABERTO = im['giro-guarda-roupa-aberto0'] ? [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-guarda-roupa-aberto' + l], 'guarda-roupa')) : null;
@@ -1238,7 +1314,7 @@ function dados(im, filtro, w = W, h = W) {
   }
 
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
-  let lampadaAgora = [0, 0];
+  let lampadaAgora = [0, 0], telaAgora = null, caixaDaTela = null;
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
@@ -1371,11 +1447,15 @@ function dados(im, filtro, w = W, h = W) {
     // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
     baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseTipo.set(tipoPx); baseChave.set(chaveDoPixel);
     for (let k = 0; k < W * W; k++) baseDono[k] = dono[k];
+    const me = lista.find((i) => i.p.id === 'mesa');
+    telaAgora = me && TELAS[ARR.mesa.lado] ? TELAS[ARR.mesa.lado].map(([x, y, s2, t2]) => [x + me.dx, y + me.dy, s2, t2]) : null;
+    caixaDaTela = telaAgora ? telaAgora.reduce((c, [x, y]) => [Math.min(c[0], x - 34), Math.min(c[1], y - 34), Math.max(c[2], x + 35), Math.max(c[3], y + 35)], [W, W, 0, 0]) : null;
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     imagem = g.createImageData(W, W);
     sombraFinal.fill(0);
     passeFinal([0, 0, W, W]);
+    pintarTela([0, 0, W, W]);
     document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
@@ -1385,6 +1465,13 @@ function dados(im, filtro, w = W, h = W) {
     const pintada = luzPintadaAgora(), razaoPe = pintada ? noiteAbajurPe : noitePe;
     const [lx, ly0] = lampada(), ly = ly0 + 6;
     const alvoOcupado = alvo ? ocupa(alvo) : false;
+    // A luz da tela, de noite: o centro e a cor média, para clarear em volta.
+    const tipoTela = conteudoAgora(), q = Math.floor(performance.now() / 250);
+    let brilhoTela = null;
+    if (telaAgora && modo === 'noite' && tipoTela !== 'desligada') {
+      let sx = 0, sy = 0; for (const [x, y] of telaAgora) { sx += x; sy += y; }
+      brilhoTela = [sx / telaAgora.length, sy / telaAgora.length, tipoTela === 'call' ? [90, 110, 160] : tipoTela === 'jogo' ? [120, 170, 210] : [140, 120, 190]];
+    }
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -1410,6 +1497,10 @@ function dados(im, filtro, w = W, h = W) {
         imagem.data[k * 4 + c] = Math.min(255, v);
       }
       imagem.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
+      if (brilhoTela) {
+        const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3);
+        if (d2 < 34) { const f = Math.floor((1 - d2 / 34) * 4) / 4 * 0.32; for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
+      }
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
       if (alvo && casa[k] >= 0) {
         const i = Math.floor(casa[k] / N), j = casa[k] % N;
@@ -1428,6 +1519,21 @@ function dados(im, filtro, w = W, h = W) {
     }
   }
 
+  // Pinta o conteúdo da tela por cima da imagem (dentro da região r), só onde o pixel ainda é da mesa.
+  function pintarTela(r) {
+    if (!telaAgora) return;
+    const tipo = conteudoAgora(), q = Math.floor(performance.now() / 250);
+    for (const [x, y, s2, t2] of telaAgora) {
+      if (x < r[0] || y < r[1] || x >= r[2] || y >= r[3]) continue;
+      const k = y * W + x;
+      if (dono[k] !== 'mesa') continue;
+      const cor = corDaTela(s2, t2, q, tipo);
+      if (!cor) continue;
+      // de dia, a tela é um pouco mais apagada que de noite (o sol na sala)
+      const f = modo === 'noite' ? 1 : 0.92;
+      for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = cor[c] * f;
+    }
+  }
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
     const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, ARR, grade, alvo, pegado, guardaRoupaAberto]);
@@ -1439,7 +1545,8 @@ function dados(im, filtro, w = W, h = W) {
     const vc = VISTAS_CADEIRA ? VISTAS_CADEIRA[indiceDaVista()] : null, [cgx, cgy] = ponto(cadeira.u, cadeira.v);
     const cx0 = vc ? Math.round(cgx - vc.meioDaBase[0]) : 0, cy0 = vc ? Math.round(cgy - vc.meioDaBase[1]) : 0;
     const caixaCadeira = vc ? [cx0 + vc.caixa[0] - 18, cy0 + vc.caixa[1], cx0 + vc.caixa[2] + 18, cy0 + vc.caixa[3] + 8] : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0]);
+    const telaMexe = telaAgora && conteudoAgora() !== 'desligada';
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora()]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     assinaturaQuadro = sig;
@@ -1486,9 +1593,10 @@ function dados(im, filtro, w = W, h = W) {
       }
     }
     calcularSombra();
-    const agora = unir(unir(caixaC, caixaDaSombra), caixaCadeira);
+    const agora = unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null);
     const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
     passeFinal(r);
+    pintarTela(r);
     if (falando) balao(imagem.data); // falando de pé ou sentado
     g.putImageData(imagem, 0, 0, r[0], r[1], r[2] - r[0], r[3] - r[1]);
     regiaoAnterior = agora;
@@ -1583,6 +1691,8 @@ function dados(im, filtro, w = W, h = W) {
   document.addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') girar(); });
   document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); decidir(); desenhar(); };
   escolher('poltrona');
+  const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
+  btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
   iniciarCadeira();
   const botoes = { dia: document.getElementById('dia'), noite: document.getElementById('noite') };
   for (const [m, b] of Object.entries(botoes)) b.onclick = () => { modo = m; for (const [n, o] of Object.entries(botoes)) o.setAttribute('aria-pressed', String(n === m)); decidir(); desenhar(); };
