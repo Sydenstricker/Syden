@@ -518,6 +518,27 @@ continuidade"). O que ainda falta desenhar quando voltar:
 - **O servidor:** a arrumação de cada comunidade e as conquistas dela, numa tabela; quem administra escolhe e arruma.
 - **Sem sequência diária e sem cobrança** (regra da etapa 2 e da avaliação da sondagem de jogos: nada de "volte todo dia").
 
+## Os coelhos vivem nos ambientes: um sistema isométrico só, e o personagem antes da arte
+
+**Decidido em 14/10/2026, pelo Sydenstricker:** os avatares precisam de várias animações e de interagir com o ambiente
+de forma orgânica, no quarto do início e no salão da comunidade. E **estruturar o formato antes de criar as artes.**
+
+- **Os dois ambientes são ISOMÉTRICOS** ("o quarto isométrico tem um charme único"). O salão de hoje, de frente, fica
+  até o isométrico ficar pronto. Um sistema só: a mesma grade, os mesmos móveis soltos, os mesmos pontos de interação,
+  e **um jogo só de animações por coelho** (de frente e de quina, cada coelho precisaria de dois).
+- **O quarto que fica é o MODULAR** (`e2e/pixel-art/quarto/novo/quarto/`). O da home é só o lugar guardado: pintura
+  fixa, e ajustar móvel nela gera problema atrás de problema.
+- **UM personagem primeiro, validado, depois os outros com a mesma receita. O primeiro é o MASCOTE** (o coelho branco
+  de moletom: o do recado no salão, o da cama na home). Validado, ele é também quem aparece para quem não tem coelho
+  pronto.
+- **O ponto de interação é do MÓVEL** (deitar na cama, sentar na poltrona virada para onde ela foi girada): arrastou o
+  móvel, o ponto vai junto — por isso só o quarto modular serve. Móvel de sentar/deitar tem a CAMADA DA FRENTE à parte
+  (o braço da poltrona, o cobertor), para o coelho ficar dentro dele. Andar é pela grade, desviando dos móveis.
+- **O estado real decide o lugar** (a tela não mente): ausente dorme, em call vai ao computador, quem assiste senta
+  virado para a TV; quem prefere menos movimento vê o coelho já no lugar.
+- **O formato e o passo a passo** estão em `e2e/pixel-art/personagem/README.md`. Plano do PixelLab: Tier 2 desde
+  14/10/2026 (a repintura `inpaint-v3` e a API de personagens com 8 direções e animação).
+
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
 **Registrado em 09/10/2026, pelo Sydenstricker.** A pergunta: quem lê em português entra numa comunidade japonesa —
