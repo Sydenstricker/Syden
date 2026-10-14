@@ -9,7 +9,7 @@
         [
           "OS==\"win\"",
           {
-            "libraries": ["-lmmdevapi.lib", "-lole32.lib", "-lavrt.lib"],
+            "libraries": ["-lmmdevapi.lib", "-lole32.lib", "-lavrt.lib", "-luser32.lib"],
             "msvs_settings": {
               "VCCLCompilerTool": {
                 "ExceptionHandling": 1,

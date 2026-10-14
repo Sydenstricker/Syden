@@ -2,7 +2,7 @@
 const { app, BrowserWindow, Menu, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, session, shell } = require('electron');
 const path = require('node:path');
 const config = require('../app.config.json');
-const { setupScreenAudio, screenAudioAvailable, stopScreenAudio } = require('./screen-audio');
+const { setupScreenAudio, screenAudioAvailable, stopScreenAudio, escolherFonteDoSom } = require('./screen-audio');
 const { setupRuido, pararRuido } = require('./ruido');
 const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
@@ -436,6 +436,8 @@ function setupScreenShare() {
       // A caixinha de som vai junto: com o módulo de som, quem liga a captura é o site, e ele precisa
       // saber se a pessoa desmarcou.
       mainWindow.webContents.send('tela:escolhida', { nome: choice.source.name || null, som: choice.audio });
+      // Janela escolhida: o som passa a ser só o do programa dela (ver screen-audio.js).
+      escolherFonteDoSom(choice.source.id);
       // Com o módulo nativo, o som vem por fora (sem as vozes da chamada); sem ele, sobra o jeito antigo,
       // que é a mistura do computador inteiro.
       const legacyAudio = choice.audio && !screenAudioAvailable();

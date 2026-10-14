@@ -1,4 +1,5 @@
-// Captura o som do computador MENOS o do próprio Syden.
+// Captura o som do computador MENOS o do próprio Syden — ou, quando a transmissão é de uma janela, SÓ o do
+// programa dono dela.
 //
 // O Windows não deixa um programa gravar o som de outro, mas desde a versão 2004 ele oferece o contrário:
 // "me dê tudo o que está tocando, exceto esta árvore de processos". Apontando essa exceção para o próprio
@@ -6,7 +7,7 @@
 // na chamada, que é o eco que incomodava todo mundo.
 //
 // O caminho é o WASAPI: ativa-se um cliente de áudio "virtual" (VAD\Process_Loopback) passando o processo
-// a excluir, e a partir daí a leitura é igual à de um microfone qualquer. Os pedaços de som saem daqui
+// a excluir (ou a incluir), e a partir daí a leitura é igual à de um microfone qualquer. Os pedaços de som saem daqui
 // para o JavaScript por uma função segura entre threads.
 
 #include <napi.h>
@@ -18,6 +19,7 @@
 #include <mmdeviceapi.h>
 
 #include <atomic>
+#include <cstdint>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -107,7 +109,7 @@ class Capture {
   ~Capture() { Stop(); }
 
   /** Liga a captura. Devolve uma mensagem de erro (vazia quando deu certo). */
-  std::string Start(Napi::Env env, Napi::Function on_chunk, DWORD exclude_pid, int sample_rate, int channels) {
+  std::string Start(Napi::Env env, Napi::Function on_chunk, DWORD pid, bool include, int sample_rate, int channels) {
     Stop();
 
     {
@@ -118,8 +120,8 @@ class Capture {
     tsfn_ = Napi::ThreadSafeFunction::New(env, on_chunk, "syden-audio", 0, 1);
     running_ = true;
 
-    worker_ = std::thread([this, exclude_pid, sample_rate, channels]() {
-      const std::string erro = Run(exclude_pid, sample_rate, channels);
+    worker_ = std::thread([this, pid, include, sample_rate, channels]() {
+      const std::string erro = Run(pid, include, sample_rate, channels);
       if (!erro.empty()) {
         std::lock_guard<std::mutex> lock(mutex_);
         start_error_ = erro;
@@ -158,7 +160,7 @@ class Capture {
 
  private:
   /** Roda na thread de captura: abre o fluxo, avisa quem chamou e depois só lê som até mandarem parar. */
-  std::string Run(DWORD exclude_pid, int sample_rate, int channels) {
+  std::string Run(DWORD pid, bool include, int sample_rate, int channels) {
     const auto fail = [&](const char* what, HRESULT hr) {
       char buffer[160];
       snprintf(buffer, sizeof(buffer), "%s (erro 0x%08lX)", what, static_cast<unsigned long>(hr));
@@ -170,8 +172,11 @@ class Capture {
 
     AUDIOCLIENT_ACTIVATION_PARAMS params{};
     params.ActivationType = AUDIOCLIENT_ACTIVATION_TYPE_PROCESS_LOOPBACK;
-    params.ProcessLoopbackParams.TargetProcessId = exclude_pid;
-    params.ProcessLoopbackParams.ProcessLoopbackMode = PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE;
+    params.ProcessLoopbackParams.TargetProcessId = pid;
+    // INCLUDE: só o som deste programa e dos filhos dele (a janela escolhida). Nem Discord nem Spotify entram.
+    // EXCLUDE: tudo menos o Syden (a tela inteira).
+    params.ProcessLoopbackParams.ProcessLoopbackMode =
+        include ? PROCESS_LOOPBACK_MODE_INCLUDE_TARGET_PROCESS_TREE : PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE;
 
     PROPVARIANT activation{};
     activation.vt = VT_BLOB;
@@ -275,15 +280,17 @@ Capture g_capture;
 Napi::Value Start(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   if (info.Length() < 2 || !info[0].IsFunction() || !info[1].IsObject()) {
-    Napi::TypeError::New(env, "start(onChunk, { sampleRate, channels, excludePid })").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "start(onChunk, { sampleRate, channels, excludePid | includePid })")
+        .ThrowAsJavaScriptException();
     return env.Undefined();
   }
   Napi::Object options = info[1].As<Napi::Object>();
   const int sample_rate = options.Get("sampleRate").ToNumber().Int32Value();
   const int channels = options.Get("channels").ToNumber().Int32Value();
-  const DWORD exclude_pid = static_cast<DWORD>(options.Get("excludePid").ToNumber().Int64Value());
+  const bool include = options.Has("includePid") && options.Get("includePid").IsNumber();
+  const DWORD pid = static_cast<DWORD>(options.Get(include ? "includePid" : "excludePid").ToNumber().Int64Value());
 
-  const std::string error = g_capture.Start(env, info[0].As<Napi::Function>(), exclude_pid, sample_rate, channels);
+  const std::string error = g_capture.Start(env, info[0].As<Napi::Function>(), pid, include, sample_rate, channels);
   if (!error.empty()) {
     Napi::Error::New(env, error).ThrowAsJavaScriptException();
   }
@@ -295,8 +302,47 @@ Napi::Value Stop(const Napi::CallbackInfo& info) {
   return info.Env().Undefined();
 }
 
+/**
+ * De quem é uma janela: windowProcess(hwnd) → { pid, exe } ou null.
+ *
+ * O seletor do Electron identifica a janela por "window:<hwnd>:0", e o som é por PROCESSO. Esta é a ponte.
+ * O exe vai junto porque há janela cujo dono não é quem toca: os apps da Store moram dentro do
+ * ApplicationFrameHost, e capturar só ele daria silêncio. Quem decide o que fazer com isso é o JavaScript.
+ */
+Napi::Value WindowProcess(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  if (info.Length() < 1 || !info[0].IsNumber()) return env.Null();
+  const HWND hwnd = reinterpret_cast<HWND>(static_cast<intptr_t>(info[0].As<Napi::Number>().Int64Value()));
+  if (!IsWindow(hwnd)) return env.Null();
+  DWORD pid = 0;
+  GetWindowThreadProcessId(hwnd, &pid);
+  if (pid == 0) return env.Null();
+
+  std::string exe;
+  if (HANDLE process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid)) {
+    wchar_t path[MAX_PATH];
+    DWORD size = MAX_PATH;
+    if (QueryFullProcessImageNameW(process, 0, path, &size)) {
+      const wchar_t* name = wcsrchr(path, L'\\');
+      name = name ? name + 1 : path;
+      const int bytes = WideCharToMultiByte(CP_UTF8, 0, name, -1, nullptr, 0, nullptr, nullptr);
+      if (bytes > 1) {
+        exe.resize(static_cast<size_t>(bytes) - 1);
+        WideCharToMultiByte(CP_UTF8, 0, name, -1, exe.data(), bytes, nullptr, nullptr);
+      }
+    }
+    CloseHandle(process);
+  }
+
+  Napi::Object result = Napi::Object::New(env);
+  result.Set("pid", Napi::Number::New(env, pid));
+  result.Set("exe", Napi::String::New(env, exe));
+  return result;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("start", Napi::Function::New(env, Start));
+  exports.Set("windowProcess", Napi::Function::New(env, WindowProcess));
   exports.Set("stop", Napi::Function::New(env, Stop));
   return exports;
 }

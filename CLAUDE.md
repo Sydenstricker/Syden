@@ -675,7 +675,7 @@ dele é o oposto do da sobreposição: status que ninguém atualiza vira enfeite
 
 ## O som da transmissão pega o Discord junto, e isso não é defeito do Syden
 
-**Diagnosticado em 02/10/2026, não consertado.** A turma usa Discord para voz e Syden para tela; quem
+**Diagnosticado em 02/10/2026; consertado para JANELA em 13/10/2026.** A turma usa Discord para voz e Syden para tela; quem
 ouve a transmissão no Syden escuta as vozes duas vezes.
 
 A captura de som pede ao Windows *"tudo o que está tocando, EXCETO o Syden"*
@@ -693,7 +693,14 @@ Build do Visual Studio.
 conserto também tiraria da transmissão de UMA JANELA o som do resto do computador (Spotify, notificações),
 que hoje vai junto — se alguém reclamar disso, ele volta para a fila.
 
-Enquanto isso não existe, as saídas são desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
+**Feito em 13/10/2026 (chega com a versão seguinte do app):** transmitindo UMA JANELA, a captura usa o INCLUDE
+apontado para o processo dono dela (`windowProcess` no C++, chamado por `screen-audio.js`): vai só o som do jogo, sem
+Discord, Spotify nem notificação. Medido com o Discord tocando: janela do Discord dá som, a do Firefox dá silêncio. A
+TELA INTEIRA continua no EXCLUDE (tudo menos o Syden, Discord junto), e também os apps da Store, cuja janela é do
+ApplicationFrameHost e daria silêncio. O módulo compila nesta máquina também (`npm run build:native` em `desktop/`,
+com as Build Tools do VS 2022 instaladas).
+
+Para a tela inteira, as saídas continuam sendo desmarcar "compartilhar áudio" ao escolher a tela, ou baixar o
 **Volume da transmissão** no "i" do quadro, que é separado da voz e vale só para quem baixa. (No app,
 desmarcar só vale da versão seguinte à 0.1.7 em diante: antes o site ligava a captura de som por fora,
 sempre.)
