@@ -68,7 +68,7 @@ for (const [nome, pastas] of Object.entries(FONTES)) {
 for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-west'], ['nordeste', 'north-east'], ['noroeste', 'north-west']]) {
   IMAGENS['mascote-' + nosso] = png(path.join(MASCOTE, deles + '.png'));
 }
-const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
+const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
   IMAGENS[m.id + '-sombra'] = png(path.join(AQUI, 'pecas', m.id + '-sombra.png'));
@@ -480,13 +480,14 @@ function dados(im, filtro, w = W, h = W) {
       peBuf[X] = Math.round(py);
     }
     ultimaCaixa = [X0, Y0, X0 + sw, Y0 + sh];
+    window.caixaDoCoelho = ultimaCaixa; // para as fotos de perto do teste
     // [x, y do chão, altura do assento]: sentado, a sombra sai do assento e cai no chão em volta do móvel.
     coelhoPe = [px, py + (sentado ? 0 : 0), sentado ? pt.sobe : 0];
     const p = { id: 'coelho', movel: quadroBuf, sombra: semSombra, topo: Y0, peColuna: peBuf };
     // A ÁREA NO CHÃO: de pé, um quadradinho em volta do pé; sentado ou deitado, ele está SOBRE o móvel.
     const r = 0.3, area = [coelho.u - r, coelho.u + r, coelho.v - r, coelho.v + r];
     coelhoTopo = Y0 + a.topo;
-    return [{ p, dx: 0, dy: 0, fator: 1, pe: area, sobre: sentado ? pt.sobre : null, atras: sentado ? !!pt.atras : false, ...(sentado ? {} : { contato: [px, py], raio: [14, 6] }) }];
+    return [{ p, dx: 0, dy: 0, fator: 1, pe: area, sobre: sentado ? pt.sobre : null, atras: sentado ? !!pt.atras : false }];
   }
   // O BALÃO DE FALA (ideia dele, como no The Sims): o balão do D4 com os três pontos, que se acendem um de cada vez,
   // acima da cabeça. Desenhado por cima de tudo, em pixel: borda escura, miolo creme, rabicho apontando para a cabeça.
@@ -549,46 +550,79 @@ function dados(im, filtro, w = W, h = W) {
   // na direção contrária à da luz. Pixel art: sombra chapada, sem borrão. Só o chão escurece.
   const LUZ_DIA = { x: 420, y: 170, alongamento: 0.85, forca: 0.55 };
   const sombraBuf = new Uint8Array(W * W);
-  // A SOMBRA É UM VOLUME (relato de 14/10/2026: ela devia cair na poltrona e no pufe). Cada pixel do coelho, a uma
-  // altura h, lança um raio que desce da altura h até o chão, afastando-se da luz. "alturaDaSombra" guarda, para cada
-  // ponto do chão, a altura do raio mais alto que passa por cima dele. Um pixel de móvel cuja altura acima do pé (o pé
-  // da coluna dele) está abaixo desse raio fica na sombra; um pixel de chão, se algum raio passa por ali.
-  const alturaDaSombra = new Float32Array(W * W).fill(-1);
+  // A ALTURA DO TAMPO de cada peça (onde a sombra cai em cima): o colchão, o tampo do pufe, o assento da poltrona. O que
+  // fica acima (a cabeceira, o encosto) é lateral.
+  const TAMPO = { cama: 30, pufe: 30, poltrona: 22, abajur: 52, 'guarda-roupa': 135 };
+  // O mapa do chão: para cada pixel da tela, a casa (u, v) do ponto do chão ali. Calculado uma vez.
+  const mapaU = new Float32Array(W * W), mapaV = new Float32Array(W * W);
+  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) { const [u, v] = uvDe(x + 0.5, y + 0.5); mapaU[y * W + x] = u; mapaV[y * W + x] = v; }
+  const dentroDaArea = (k, a) => mapaU[k] >= a[0] && mapaU[k] <= a[1] && mapaV[k] >= a[2] && mapaV[k] <= a[3];
+  const chaoPx = new Int32Array(W * W).fill(-2), alturaPx = new Float32Array(W * W);
+
+  // A SOMBRA DO COELHO (relatos de 14/10/2026): cada pixel dele, a uma altura h, lança um raio que desce até o chão
+  // afastando-se da luz. "alturaDoRaio" guarda, por ponto do chão, o raio mais alto que passa por cima; "forcaDoRaio",
+  // quão escura a sombra é ali (mais forte perto dos pés, sumindo na ponta). Um pixel (de chão, de tapete ou de móvel) está
+  // na sombra se o raio passa acima dele no ponto do chão que fica embaixo dele. A sombra de contato (embaixo dos pés)
+  // entra na mesma camada. No fim, um borrão leve e poucos tons: macia nas bordas, ainda com cara de pixel art.
+  const alturaDoRaio = new Float32Array(W * W), forcaDoRaio = new Float32Array(W * W), sombraFinal = new Float32Array(W * W);
+  const tmp = new Float32Array(W * W);
   let forcaDaSombra = 0.55;
   function calcularSombra() {
-    alturaDaSombra.fill(-1);
+    alturaDoRaio.fill(-1); forcaDoRaio.fill(0); sombraFinal.fill(0);
     const c = ultimaCaixa, pe = coelhoPe;
     if (!c || !pe) return;
-    const luz = modo === 'noite' ? { x: pecas.abajur.centroTopo, y: pecas.abajur.topo + 40, alongamento: 1.1, forca: 0.5 } : LUZ_DIA;
+    const luz = modo === 'noite' ? { x: pecas.abajur.centroTopo, y: pecas.abajur.topo + 40, alongamento: 1.0, forca: 0.5 } : LUZ_DIA;
     forcaDaSombra = luz.forca;
-    // A direção da sombra no chão: do ponto da luz até o pé, achatada como o chão isométrico (metade em y).
     let dx = pe[0] - luz.x, dy = (pe[1] - luz.y) * 0.5;
     const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n;
     const [x0, y0, x1, y1] = c;
+    let bx0 = W, by0 = W, bx1 = 0, by1 = 0;
+    const marca = (X, Y, h, f) => {
+      if (X < 0 || Y < 0 || X >= W || Y >= W) return;
+      const k = Y * W + X;
+      if (h > alturaDoRaio[k]) alturaDoRaio[k] = h;
+      if (f > forcaDoRaio[k]) forcaDoRaio[k] = f;
+      bx0 = Math.min(bx0, X); bx1 = Math.max(bx1, X); by0 = Math.min(by0, Y); by1 = Math.max(by1, Y);
+    };
     for (let y = Math.max(0, y0); y < Math.min(W, y1); y++) for (let x = Math.max(0, x0); x < Math.min(W, x1); x++) {
       if (!quadroBuf[(y * W + x) * 4 + 3]) continue;
-      const alto = Math.max(0, pe[1] - y); // a altura deste pixel acima do chão (sentado, o assento também conta)
+      const alto = Math.max(0, pe[1] - y);
       const comprimento = alto * luz.alongamento, passos = Math.max(1, Math.ceil(comprimento));
       for (let t = 0; t <= passos; t++) {
-        const f = t / passos, X = Math.round(x + dx * comprimento * f), Y = Math.round(pe[1] + dy * comprimento * f);
-        const h = alto * (1 - f);
-        for (const [ax, ay] of [[0, 0], [1, 0], [0, 1]]) {
-          const XX = X + ax, YY = Y + ay;
-          if (XX >= 0 && YY >= 0 && XX < W && YY < W) { const k = YY * W + XX; if (h > alturaDaSombra[k]) alturaDaSombra[k] = h; }
-        }
+        const f = t / passos;
+        marca(Math.round(x + dx * comprimento * f), Math.round(pe[1] + dy * comprimento * f), alto * (1 - f), 1 - 0.6 * (comprimento * f) / 90);
       }
     }
-  }
-  /** A sombra cobre este pixel? (chamado no fim, com a cena montada.) */
-  function naSombra(k, x, y) {
-    if (dono[k] === 'coelho') return false;
-    if (eMovelAgora[k]) {
-      const pe = peYAgora[k], F = pe * W + x;
-      return pe >= 0 && pe < W && alturaDaSombra[F] >= 0 && pe - y <= alturaDaSombra[F] + 1;
+    // O contato: uma mancha macia embaixo dos pés (sentado, embaixo do assento, no chão), mais forte no meio.
+    for (let yy = -6; yy <= 6; yy++) for (let xx = -16; xx <= 16; xx++) {
+      const d = (xx / 16) ** 2 + (yy / 6) ** 2;
+      if (d < 1) marca(Math.round(pe[0] + xx), Math.round(pe[1] + yy), 0, 1.1 * (1 - d));
     }
-    return casa[k] >= 0 && alturaDaSombra[k] >= 0;
+    if (bx1 < bx0) return;
+    // O teste por pixel, só na caixa da sombra (mais a altura dos móveis acima dela).
+    const X0 = Math.max(0, bx0 - 3), X1 = Math.min(W - 1, bx1 + 3), Y0 = Math.max(0, by0 - 140), Y1 = Math.min(W - 1, by1 + 3);
+    for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+      const k = y * W + x;
+      if (dono[k] === 'coelho') continue;
+      let G = k, h = 0;
+      if (chaoPx[k] >= 0) { G = chaoPx[k]; h = alturaPx[k]; }
+      else if (chaoPx[k] === -1 || casa[k] < 0) continue;
+      if (alturaDoRaio[G] >= 0 && h <= alturaDoRaio[G] + 1) sombraFinal[k] = Math.min(1, forcaDoRaio[G]);
+    }
+    // Macia: dois borrões 3 × 3, e então poucos tons (quartos), como a luz é desenhada em pixel art.
+    for (let passada = 0; passada < 2; passada++) {
+      for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+        let soma = 0, n2 = 0;
+        for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const xx = x + i, yy = y + j; if (xx >= 0 && yy >= 0 && xx < W && yy < W) { soma += sombraFinal[yy * W + xx]; n2++; } }
+        tmp[y * W + x] = soma / n2;
+      }
+      for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) sombraFinal[y * W + x] = tmp[y * W + x];
+    }
+    for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+      const k = y * W + x;
+      sombraFinal[k] = dono[k] === 'coelho' ? 0 : Math.round(sombraFinal[k] * 4) / 4;
+    }
   }
-  let eMovelAgora = null, peYAgora = null;
 
 
   // O relógio: 10 quadros por segundo; o coelho anda 2,5 casas por segundo.
@@ -610,11 +644,13 @@ function dados(im, filtro, w = W, h = W) {
   }, 100);
   for (const b of document.querySelectorAll('[data-estado]')) b.onclick = () => {
     estado = b.dataset.estado;
+    // Quem está ausente não está falando (relato de 14/10/2026: o balão aparecia com ele dormindo).
+    if (estado === 'ausente' && falando) { falando = false; bf.setAttribute('aria-pressed', 'false'); }
     for (const o of document.querySelectorAll('[data-estado]')) o.setAttribute('aria-pressed', String(o === b));
     decidir();
   };
   const bf = document.getElementById('falando');
-  bf.onclick = () => { falando = !falando; bf.setAttribute('aria-pressed', String(falando)); };
+  bf.onclick = () => { if (estado === 'ausente') return; falando = !falando; bf.setAttribute('aria-pressed', String(falando)); };
 
 
   const tela = document.getElementById('tela'), g = tela.getContext('2d');
@@ -650,24 +686,23 @@ function dados(im, filtro, w = W, h = W) {
     // A ordem: o tapete primeiro; depois de trás para a frente, pela casa mais à frente do pé.
     const [pu, pv] = pufe;
     const variante = pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; });
-    const lista0 = [...fixos.map((m) => ({ p: pecas[m.id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado })),
+    const lista0 = [...fixos.map((m) => ({ p: pecas[m.id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, tampo: TAMPO[m.id] ?? m.alto })),
       (() => {
         const p = pecas[variante.id], [cu, cv] = centro(p.pe);
         const [ox, oy] = p.base, [nx, ny] = ponto(pu, pv);
         // Só intensidade: a luz do chão onde ele está, sobre a luz do chão onde ele foi pintado.
         const fator = Math.min(1.3, Math.max(0.75, luz(nx, ny) / luz(ox, oy)));
-        return { p: { ...p, id: 'pufe' }, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, pe: [pu - 1, pu + 1, pv - 1, pv + 1] };
+        return { p: { ...p, id: 'pufe' }, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, pe: [pu - 1, pu + 1, pv - 1, pv + 1], tampo: TAMPO.pufe };
       })(),
       (() => {
         // A poltrona foi pintada fora do quarto, com luz neutra: ganha a intensidade do lugar, em relação ao meio do chão.
         const p = poltronas[lado], [nx, ny] = ponto(poltrona[0], poltrona[1]), [mx, my] = ponto(N / 2, N / 2);
         const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
-        return { p, dx: Math.round(nx - p.base[0]), dy: Math.round(ny - p.base[1]), fator, pe: [poltrona[0] - 1, poltrona[0] + 1, poltrona[1] - 1, poltrona[1] + 1], contato: [nx, ny] };
+        return { p, dx: Math.round(nx - p.base[0]), dy: Math.round(ny - p.base[1]), fator, pe: [poltrona[0] - 0.8, poltrona[0] + 0.8, poltrona[1] - 0.8, poltrona[1] + 0.8], contato: [nx, ny], tampo: TAMPO.poltrona };
       })(), ...pecaDoCoelho()];
     const lista = ordenar(lista0);
-    calcularSombra();
-    eMovelAgora = eMovel; peYAgora = peY;
-    for (const { p, dx, dy, fator, contato, raio } of lista) {
+    chaoPx.fill(-2);
+    for (const { p, dx, dy, fator, contato, raio, pe: area, deitado, tampo } of lista) {
       // A sombra de contato de quem não a trouxe pintada (a poltrona): uma elipse no chão, mais escura no meio.
       const [rx, ry] = raio ?? [30, 15];
       if (contato) for (let y = Math.round(contato[1] - ry - 1); y <= contato[1] + ry + 1; y++) for (let x = Math.round(contato[0] - rx - 2); x <= contato[0] + rx + 2; x++) {
@@ -687,6 +722,16 @@ function dados(im, filtro, w = W, h = W) {
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
           eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id;
+          // ONDE A SOMBRA PODE CAIR NESTE PIXEL: o ponto do chão embaixo dele e a altura dele acima desse ponto.
+          // Deitado (o tapete) é chão. No TAMPO (o pixel está em cima da área do móvel, na altura do tampo), o chão fica
+          // "tampo" px abaixo; na LATERAL, é o pé da coluna. Usar sempre o pé da coluna (a v1) fazia triângulos.
+          if (p.id === 'coelho') { chaoPx[d] = -1; }
+          else if (deitado) { chaoPx[d] = d; alturaPx[d] = 0; }
+          else {
+            const yt = y + (tampo ?? 0), t = yt * W + x;
+            if (tampo && yt < W && dentroDaArea(t, area)) { chaoPx[d] = t; alturaPx[d] = tampo; }
+            else { const pc = Math.min(W - 1, peY[d]); chaoPx[d] = pc * W + x; alturaPx[d] = pc - y; }
+          }
           // A cúpula do abajur (o alto da peça) é luz, não superfície: de noite ela não escurece.
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
@@ -695,11 +740,12 @@ function dados(im, filtro, w = W, h = W) {
         }
       }
     }
+    calcularSombra();
     const saida = g.createImageData(W, W);
     const ab = pecas.abajur, lx = ab.centroTopo, ly = ab.topo + 6;
     for (let k = 0; k < W * W; k++) {
       const x = k % W, y = (k / W) | 0;
-      const sombraAqui = naSombra(k, x, y);
+      const sombraAqui = sombraFinal[k];
       for (let c = 0; c < 3; c++) {
         let v = D[k * 3 + c];
         if (modo === 'noite') {
@@ -722,7 +768,7 @@ function dados(im, filtro, w = W, h = W) {
         // A luz da janela, coada pelo linho: o quarto inteiro escurece por igual. Deixar a região da janela de fora fazia
         // um retângulo claro na parede em volta da cortina (relato de 08/10/2026).
         if (fechada && modo === 'dia') v *= 0.86;
-        if (sombraAqui) v *= forcaDaSombra + (modo === 'noite' ? 0.12 : 0);
+        if (sombraAqui) v *= 1 - sombraAqui * (1 - forcaDaSombra - (modo === 'noite' ? 0.12 : 0));
         saida.data[k * 4 + c] = Math.min(255, v);
       }
       saida.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
