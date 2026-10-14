@@ -594,8 +594,11 @@ export function useVoice(socket: Socket | null) {
     const onConnect = () => {
       if (channelRef.current === null) return;
       socket.emit('voice:join', { channelId: channelRef.current });
+      const media = readLocalMedia(room.localParticipant);
       socket.emit('voice:update', {
-        ...readLocalMedia(room.localParticipant),
+        ...media,
+        // Sem o nome, quem caiu e voltou seguia "AO VIVO", mas sem dizer o quê (o voice:join zera tudo).
+        screenName: media.screen ? nomeDaTelaRef.current : null,
         deafened: deafenedRef.current,
         assistindo: [...assistindoRef.current].map(Number),
       });
