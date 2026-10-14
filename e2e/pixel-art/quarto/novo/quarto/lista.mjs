@@ -11,7 +11,10 @@ const GRANDE = 'large, filling the whole masked area';
 // `dica` é o nome curto para a remoção de fundo, que limpa o recorte.
 export const FIXOS = [
   // A primeira cama saiu pequena e com um banquinho ao lado (falhas/): outra semente, e só a cama no pedido.
-  { id: 'cama', semente: 7, dica: 'wooden bed with blanket and pillows', pe: [1.5, 4.6, 0.05, 2.7], alto: 72, texto: `ONLY ONE large bed and nothing else, the bed filling the whole masked area: a single wooden bed with a full wooden headboard, a dark blue plaid blanket and two cream pillows, its long side against the left wall, the headboard at the end toward the back corner, ${ESTILO}` },
+  // A área no chão é a do DESENHO (medida em 14/10/2026: a cama encosta no chão até v 1,7): pedida de 0,05 a 2,7, a
+  // ferramenta a desenhou uma casa mais estreita, e o coelho se preparava para deitar longe dela. Para repintar a
+  // cama, a máscara era a de 2,7 (o git tem).
+  { id: 'cama', semente: 7, dica: 'wooden bed with blanket and pillows', pe: [1.5, 4.6, 0.05, 1.8], alto: 72, texto: `ONLY ONE large bed and nothing else, the bed filling the whole masked area: a single wooden bed with a full wooden headboard, a dark blue plaid blanket and two cream pillows, its long side against the left wall, the headboard at the end toward the back corner, ${ESTILO}` },
   { id: 'abajur', dica: 'wooden nightstand with a table lamp and a mug', pe: [0.15, 1.35, 0.05, 1.25], alto: 78, texto: `${GRANDE}: a wooden nightstand in the back corner of the room, next to the bed headboard, with a table lamp with a cream lampshade that is TURNED OFF (no glow, no light on the wall) and a mug on top, ${ESTILO}` },
   // A estante saiu embutida na parede duas vezes (falhas/, a segunda um nicho arredondado). Ele pediu para consertar ou
   // trocar (08/10/2026): no lugar, o GUARDA-ROUPA, que é da lista de móveis pela função (a aba "Guarda-roupa").
