@@ -36,7 +36,7 @@ import { useT } from './i18n';
 import { Puxador } from './Puxador';
 import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
-import { useDirectory } from './directory';
+import { nomeNaComunidade, useDirectory } from './directory';
 import { corDoNome } from './profileStyles';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
@@ -252,14 +252,14 @@ export function Sidebar({
                       {/* A música do karaokê só é conhecida dentro da chamada em que ela toca: por isso o
                           fone aparece só na sala em que VOCÊ está. */}
                       <Avatar
-                        name={m.username}
+                        name={nomeNaComunidade(m.userId, m.username)}
                         userId={m.userId}
                         size={22}
                         speaking={speaking.has(String(m.userId))}
                         musica={voice.karaoke !== null && m.channelId === voice.channelId}
                         assistindo={plateia.has(m.userId)}
                       />
-                      <span className="voice-member-name">{m.username}</span>
+                      <span className="voice-member-name">{nomeNaComunidade(m.userId, m.username)}</span>
                       {/* A PIPOCA COM LEGENDA: o coelho de pipoca a 22 px ninguém distinguia do coelho comum
                           (relato de 06/10/2026: funcionou, mas ninguém reparou). Igual ao "AO VIVO": texto e cor. */}
                       {plateia.has(m.userId) && <span className="assistindo-badge">🍿 {t('Assistindo')}</span>}

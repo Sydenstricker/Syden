@@ -109,12 +109,14 @@ export function ProfileCard({
           </button>
         )}
         <div className="perfil-avatar">
-          <Avatar name={membro.username} userId={membro.id} size={72} />
+          <Avatar name={membro.apelido || membro.username} userId={membro.id} size={72} />
         </div>
         <div className="perfil-corpo">
           <h3 className="perfil-nome" data-cor={corDoNome(membro.nameColor)} data-efeito={efeitoDoNome(membro.nameEffect)} style={{ fontFamily: letraDoNome(membro.nameFont) }}>
-            {membro.username}
+            {membro.apelido || membro.username}
           </h3>
+          {/* Com apelido, o nome da conta fica embaixo, como no Discord: é por ele que se acha a pessoa. */}
+          {membro.apelido && <p className="perfil-conta">{membro.username}</p>}
           <p className="perfil-linha">{t(CARGO[membro.role] ?? chave('Membro'))}</p>
           <EtiquetasDeCargo ids={membro.cargos} />
           <p className="perfil-linha">{t(status ? PRESENCA[status] : chave('Offline'))}</p>

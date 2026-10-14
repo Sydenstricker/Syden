@@ -124,7 +124,7 @@ function AutorNome({ id, nome, app }: { id: number; nome: string; app?: boolean 
   return (
     <>
       <span className="message-author" data-cor={corDoNome(membro?.nameColor)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>
-        {nome}
+        {membro?.apelido || nome}
       </span>
       {/* O selo vem do DIRETÓRIO, como a moldura do avatar: assim ele aparece em toda parte onde já
           se desenha um nome, sem passar a escolha de mão em mão, e muda sozinho pelo mesmo

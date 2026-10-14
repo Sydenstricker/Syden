@@ -5,7 +5,7 @@ import { acharArte, acharCoelho, type CoelhoDoRecado } from './boasVindas';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
-import { useDirectory } from './directory';
+import { nomeNaComunidade, useDirectory } from './directory';
 import { useT } from './i18n';
 import { pedirParaAbrirAoEntrar } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
@@ -234,7 +234,7 @@ export function InicioDaComunidade({
             13/10/2026 (ver Salao.tsx). */}
         <Salao
           acoes={acoes}
-          naCall={naVoz.map((m) => ({ nome: m.username, pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
+          naCall={naVoz.map((m) => ({ nome: nomeNaComunidade(m.userId, m.username), pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
           quadro={<CommunityIcon community={community} size={40} standalone />}
           recado={<RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />}
           aoVivo={

@@ -35,6 +35,34 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
       return member;
     };
 
+    /**
+     * O APELIDO NA COMUNIDADE, como o do Discord: cada um troca o seu, e quem administra troca o de qualquer um
+     * (o "Alterar apelido" do menu). Vazio volta ao nome da conta. Mora aqui porque, como o cargo, é identidade
+     * dentro da comunidade e chega a todos pelo mesmo evento do membro.
+     */
+    authed.put<{ Params: { id: string; userId: string }; Body: { apelido?: string | null } }>(
+      '/api/communities/:id/members/:userId/apelido',
+      async (request, reply) => {
+        const communityId = Number(request.params.id);
+        const papel = db.memberRole(communityId, request.user.id);
+        if (!papel) return reply.code(404).send({ error: NAO_ENCONTRADA });
+        const alvo = Number(request.params.userId);
+        if (alvo !== request.user.id && !manages(papel)) {
+          return reply.code(403).send({ error: 'Só quem administra a comunidade troca o apelido dos outros.' });
+        }
+        const papelDoAlvo = db.memberRole(communityId, alvo);
+        if (!papelDoAlvo) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
+        // Como no Discord, ninguém mexe no apelido de quem está no mesmo nível ou acima: só o dono troca o de administrador.
+        if (alvo !== request.user.id && papel !== 'owner' && papelDoAlvo !== 'member') {
+          return reply.code(403).send({ error: 'Só quem criou a comunidade troca o apelido de quem administra.' });
+        }
+        const texto = String(request.body?.apelido ?? '').trim().replace(/\s+/g, ' ');
+        if (texto.length > NOME_MAXIMO) return reply.code(400).send({ error: `O apelido pode ter até ${NOME_MAXIMO} caracteres.` });
+        db.setApelido(communityId, alvo, texto || null);
+        return avisarMembro(communityId, alvo);
+      },
+    );
+
     authed.get<{ Params: { id: string } }>('/api/communities/:id/cargos', async (request, reply) => {
       const communityId = Number(request.params.id);
       if (!db.memberRole(communityId, request.user.id)) return reply.code(404).send({ error: NAO_ENCONTRADA });

@@ -1,6 +1,7 @@
 import { Avatar } from './Avatar';
 import { isolar } from './bidi';
 import { useDigitando } from './digitando';
+import { nomeNaComunidade, useDirectory } from './directory';
 import { useT } from './i18n';
 
 /**
@@ -15,7 +16,8 @@ import { useT } from './i18n';
  */
 export function QuemDigita({ channelId }: { channelId: number }) {
   const t = useT();
-  const quem = useDigitando(channelId);
+  useDirectory();
+  const quem = useDigitando(channelId).map((q) => ({ ...q, username: nomeNaComunidade(q.userId, q.username) }));
   const frase =
     quem.length === 0
       ? ''

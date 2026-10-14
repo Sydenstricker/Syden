@@ -5357,8 +5357,10 @@ textarea {
   padding: 6px 8px;
 }
 
-.person-menu-nota textarea {
+.person-menu-nota textarea,
+.person-menu-nota input {
   width: 100%;
+  box-sizing: border-box;
   resize: none;
   padding: 8px;
   border-radius: 6px;
@@ -14292,4 +14294,11 @@ body.arrastando-barra {
   .bv-guia.em-cena .bv-balao {
     animation: none;
   }
+}
+
+/* Com apelido, o nome da conta embaixo do nome grande do cartão. */
+.perfil-conta {
+  margin: -2px 0 4px;
+  color: var(--text-muted);
+  font-size: 13px;
 }

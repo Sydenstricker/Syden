@@ -44,7 +44,7 @@ import { Avatar } from './Avatar';
 import { desktopBridge } from './desktop';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
-import { reloadSounds, useDirectory } from './directory';
+import { nomeNaComunidade, reloadSounds, useDirectory } from './directory';
 import { buscarSons, contarToque, toquesDosSons } from './buscaDeSons';
 import { somParecidoCom } from './somParecido';
 import { chave, idiomaAtual, useT } from './i18n';
@@ -189,11 +189,11 @@ export function VoiceStage({
         <div className="voice-lobby">
           <div className="voice-lobby-avatars">
             {members.map((m) => (
-              <Avatar key={m.userId} name={m.username} userId={m.userId} size={64} />
+              <Avatar key={m.userId} name={nomeNaComunidade(m.userId, m.username)} userId={m.userId} size={64} />
             ))}
           </div>
           <h2>{channel.name}</h2>
-          <p>{members.length === 0 ? t('Ninguém na sala ainda.') : t('{quem} na sala.', { quem: members.map((m) => m.username).join(', ') })}</p>
+          <p>{members.length === 0 ? t('Ninguém na sala ainda.') : t('{quem} na sala.', { quem: members.map((m) => nomeNaComunidade(m.userId, m.username)).join(', ') })}</p>
           <button className="btn-primary" disabled={voice.connecting} onClick={() => voice.join(channel.id)}>
             {voice.connecting ? t('Conectando…') : t('Entrar na sala')}
           </button>
@@ -227,7 +227,8 @@ function PersonTile({
 }) {
   const speaking = useIsSpeaking(trackRef.participant);
   const cameraMuted = useIsMuted(trackRef);
-  const name = trackRef.participant.name || trackRef.participant.identity;
+  useDirectory(); // redesenha quando o apelido muda
+  const name = nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity);
 
   const hasVideo = isTrackReference(trackRef) && !cameraMuted;
 
@@ -865,7 +866,8 @@ function ConviteDeTransmissao({
   onAssistir: () => void;
 }) {
   const t = useT();
-  const nome = trackRef.participant.name || trackRef.participant.identity;
+  useDirectory();
+  const nome = nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity);
   const oQue = membro?.screenName;
 
   return (
@@ -940,6 +942,7 @@ function BotaoTelaCheia({ alvo }: { alvo: RefObject<HTMLDivElement | null> }) {
  * ===================================================================================================
  */
 function ScreenTile({ trackRef, membro, plateia }: { trackRef: TrackReferenceOrPlaceholder; membro?: VoiceMember; plateia: VoiceMember[] }) {
+  useDirectory();
   return (
     <ParticipantTile trackRef={trackRef}>
       {/* A guarda estreita o tipo: um quadro pode ser um lugar reservado, ainda sem faixa. */}
@@ -951,7 +954,7 @@ function ScreenTile({ trackRef, membro, plateia }: { trackRef: TrackReferenceOrP
           e, quando ele ainda não chegou, fica o nome de quem transmite. */}
       <div className="tile-name">
         <MonitorPlay size={14} />
-        <span>{membro?.screenName || trackRef.participant.name || trackRef.participant.identity}</span>
+        <span>{membro?.screenName || nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity)}</span>
         <ContagemDePlateia plateia={plateia} />
       </div>
     </ParticipantTile>
@@ -970,7 +973,7 @@ function ContagemDePlateia({ plateia }: { plateia: VoiceMember[] }) {
   const rotulo = t('Assistindo: {n}', { n: new Intl.NumberFormat(idiomaAtual()).format(plateia.length) });
   return (
     <span className="contagem-de-plateia" title={`${rotulo}
-${plateia.map((m) => m.username).join(', ')}`} aria-label={rotulo}>
+${plateia.map((m) => nomeNaComunidade(m.userId, m.username)).join(', ')}`} aria-label={rotulo}>
       <Eye size={13} aria-hidden="true" />
       {plateia.length}
     </span>

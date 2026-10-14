@@ -52,6 +52,15 @@ export async function buscarComunidade(communityId: number): Promise<DadosDaComu
   return { communityId, members: new Map(members.map((m) => [m.id, m])), emojis, sounds, cargos };
 }
 
+/**
+ * O NOME QUE APARECE NA COMUNIDADE ABERTA: o apelido dela, ou o nome da conta (`reserva`). Fora de comunidade (início,
+ * conversas privadas) o diretório está vazio, e sai sempre o nome da conta. Quem chama e precisa redesenhar quando o
+ * apelido muda deve estar inscrito com useDirectory().
+ */
+export function nomeNaComunidade(userId: number, reserva: string): string {
+  return state.members.get(userId)?.apelido || reserva;
+}
+
 /** Põe na tela o que `buscarComunidade` trouxe. */
 export function aplicarComunidade(dados: DadosDaComunidade) {
   set(dados);

@@ -99,6 +99,8 @@ export type CommunityMember = PublicUser & {
   cargos: number[];
   /** Em silêncio nesta comunidade até quando (ISO); null quando não está. Ver ADVERTÊNCIAS E SILÊNCIO. */
   silenciadoAte: string | null;
+  /** O nome que a pessoa usa SÓ nesta comunidade; null = o nome da conta. Ver setApelido. */
+  apelido: string | null;
 };
 
 export interface Emoji {
@@ -891,6 +893,8 @@ addColumnIfMissing('communities', 'bv_texto', 'TEXT');
 addColumnIfMissing('communities', 'bv_arte', 'TEXT');
 // Quem dá o recado (13/10/2026): um código do catálogo do site (web/src/boasVindas.ts), como a arte.
 addColumnIfMissing('communities', 'bv_coelho', 'TEXT');
+// O APELIDO NA COMUNIDADE, como o do Discord: o nome que a pessoa usa SÓ ali. Nulo = o nome da conta.
+addColumnIfMissing('community_members', 'apelido', 'TEXT');
 
 // Quando esta pessoa viu as boas-vindas desta comunidade. Nulo = nunca viu.
 //
@@ -1411,6 +1415,11 @@ export function setMemberRole(communityId: number, userId: number, role: Role) {
   db.prepare('UPDATE community_members SET role = ? WHERE community_id = ? AND user_id = ?').run(role, communityId, userId);
 }
 
+/** Troca (ou tira, com null) o apelido de alguém numa comunidade. */
+export function setApelido(communityId: number, userId: number, apelido: string | null) {
+  db.prepare('UPDATE community_members SET apelido = ? WHERE community_id = ? AND user_id = ?').run(apelido, communityId, userId);
+}
+
 export function removeMember(communityId: number, userId: number) {
   db.prepare('DELETE FROM community_members WHERE community_id = ? AND user_id = ?').run(communityId, userId);
   // Os cargos ficam com a comunidade: quem volta depois começa sem nenhum, como quem chega pela primeira vez.
@@ -1426,11 +1435,11 @@ export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
       `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_pronto AS avatarPronto,
-              u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role, m.silenciado_ate AS silenciadoAte
+              u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role, m.silenciado_ate AS silenciadoAte, m.apelido
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
     )
-    .all(communityId) as unknown as (UserRow & { role: Role; silenciadoAte: string | null })[];
+    .all(communityId) as unknown as (UserRow & { role: Role; silenciadoAte: string | null; apelido: string | null })[];
   const cargos = cargosDosMembros(communityId);
   const agora = Date.now();
   return rows.map((row) => ({
@@ -1439,6 +1448,7 @@ export function listCommunityMembers(communityId: number): CommunityMember[] {
     cargos: cargos.get(row.id) ?? [],
     // Só o silêncio que ainda vale: o vencido some sozinho, sem ninguém precisar tirar.
     silenciadoAte: row.silenciadoAte && Date.parse(row.silenciadoAte) > agora ? row.silenciadoAte : null,
+    apelido: row.apelido ?? null,
   }));
 }
 

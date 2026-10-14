@@ -1,4 +1,5 @@
 import { Hand, Mic, MicOff, Presentation, X } from 'lucide-react';
+import { nomeNaComunidade } from './directory';
 import { useCallback, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
@@ -136,7 +137,7 @@ export function FaixaDoPalco({
       <span className="palco-quem">
         {noPalco.length === 0
           ? t('Ninguém com a palavra ainda')
-          : noPalco.map((p) => p.username).join(', ')}
+          : noPalco.map((p) => nomeNaComunidade(p.userId, p.username)).join(', ')}
       </span>
 
       {/* A plateia pede a palavra. Quem já fala não vê este botão: não há o que pedir. */}
@@ -158,7 +159,7 @@ export function FaixaDoPalco({
           <span className="palco-fila-titulo">{t('Querem falar')}</span>
           {maos.map((p) => (
             <button key={p.userId} className="palco-fila-item" disabled={ocupado} onClick={() => void mexerNoPalco(p.userId, true)}>
-              <Hand size={13} /> {p.username}
+              <Hand size={13} /> {nomeNaComunidade(p.userId, p.username)}
               <Mic size={13} />
             </button>
           ))}
@@ -176,7 +177,7 @@ export function FaixaDoPalco({
               onClick={() => void mexerNoPalco(p.userId, false)}
               title={t('Tirar a palavra')}
             >
-              {p.username}
+              {nomeNaComunidade(p.userId, p.username)}
               <X size={13} />
             </button>
           ))}

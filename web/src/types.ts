@@ -69,6 +69,8 @@ export type CommunityMember = PublicUser & {
   cargos?: number[];
   /** Em silêncio nesta comunidade até quando (ISO); null/ausente quando não está. */
   silenciadoAte?: string | null;
+  /** O nome que a pessoa usa SÓ nesta comunidade (o apelido do Discord); null/ausente = o nome da conta. */
+  apelido?: string | null;
 };
 
 /** Um cargo personalizado da comunidade: identidade (nome e cor), não poder. Ver Cargos.tsx. */

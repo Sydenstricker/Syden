@@ -8,6 +8,7 @@ import { Ban,
   MessageSquare,
   MicOff,
   MonitorPlay,
+  PenLine,
   PhoneOff,
   ShieldOff,
   ShieldPlus,
@@ -153,6 +154,9 @@ export function PersonMenu({
   const [error, setError] = useState<string | null>(null);
   const nota = useNota(target.userId);
   const [anotando, setAnotando] = useState(false);
+  /** O campo do "Alterar apelido", aberto no lugar, como a anotação. */
+  const [apelidando, setApelidando] = useState(false);
+  const [apelido, setApelido] = useState(membro?.apelido ?? '');
   const [denunciando, setDenunciando] = useState(false);
 
   const bloqueados = useBloqueados();
@@ -190,7 +194,7 @@ export function PersonMenu({
       left: Math.max(8, Math.min(target.x, window.innerWidth - caixa.width - 8)),
       top: Math.max(8, Math.min(target.y, window.innerHeight - caixa.height - 8)),
     });
-  }, [target.x, target.y, anotando]);
+  }, [target.x, target.y, anotando, apelidando]);
 
   useEffect(() => {
     const fora = () => onClose();
@@ -240,6 +244,17 @@ export function PersonMenu({
     }
   }
 
+  /** O APELIDO NA COMUNIDADE: cada um troca o seu; quem administra, o de quem está abaixo (o dono, o de todos). */
+  const podeApelidar = isSelf || (manages && (role === 'owner' || targetRole === 'member'));
+  async function salvarApelido() {
+    try {
+      await api(`/api/communities/${communityId}/members/${target.userId}/apelido`, { method: 'PUT', body: { apelido } });
+      onClose();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   const moderando = manages && !isSelf && (channelId !== null || inVoiceChannel !== null || role === 'owner');
 
   return createPortal(
@@ -255,7 +270,7 @@ export function PersonMenu({
       <div className="person-menu-topo">
         <Avatar name={target.username} userId={target.userId} size={36} />
         <div className="person-menu-quem">
-          <strong data-cor={corDoNome(membro?.nameColor ?? null)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>{target.username}</strong>
+          <strong data-cor={corDoNome(membro?.nameColor ?? null)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>{membro?.apelido || target.username}</strong>
           <small>{t(CARGO[targetRole])}</small>
         </div>
       </div>
@@ -276,6 +291,35 @@ export function PersonMenu({
           {t('Perfil')}
         </Item>
       )}
+      {podeApelidar &&
+        (apelidando ? (
+          <div className="person-menu-nota">
+            <input
+              autoFocus
+              value={apelido}
+              maxLength={32}
+              placeholder={target.username}
+              aria-label={t('Apelido nesta comunidade')}
+              onChange={(e) => setApelido(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  void salvarApelido();
+                }
+              }}
+            />
+            <div className="person-menu-nota-rodape">
+              <span>{t('Vazio volta ao nome da conta')}</span>
+              <button className="link-button" onClick={() => void salvarApelido()}>
+                {t('Guardar')}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <Item icone={<PenLine size={16} />} onClick={() => setApelidando(true)}>
+            {t('Alterar apelido')}
+          </Item>
+        ))}
 
       {/* NA CALL, O SEU PRÓPRIO QUADRO: o microfone e o áudio, como no Discord (13/10/2026). */}
       {isSelf && voice.channelId !== null && (
