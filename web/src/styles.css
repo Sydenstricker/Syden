@@ -14302,3 +14302,124 @@ body.arrastando-barra {
   color: var(--text-muted);
   font-size: 13px;
 }
+
+/* ---------- O convite do mini-game (13/10/2026): pequeno, em cima da barra, sem cobrir o palco ---------- */
+
+.minijogo-convite {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(440px, 92vw);
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  grid-template-areas: 'capa texto' 'capa acoes' 'erro erro';
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-float);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4);
+  animation: minijogo-convite-entra 0.22s ease-out;
+}
+
+@keyframes minijogo-convite-entra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .minijogo-convite {
+    animation: none;
+  }
+}
+
+.minijogo-convite-capa {
+  grid-area: capa;
+}
+
+.minijogo-convite-capa .minijogo-capa {
+  border-radius: 8px;
+}
+
+.minijogo-convite p {
+  grid-area: texto;
+  margin: 0;
+  color: var(--text-strong);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.minijogo-convite-acoes {
+  grid-area: acoes;
+  display: flex;
+  gap: 8px;
+}
+
+.minijogo-convite .form-error {
+  grid-area: erro;
+}
+
+/* A sala de espera, dentro do painel: a capa, quem vai jogar e os botões. */
+.minijogo-espera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.minijogo-espera-capa {
+  width: 120px;
+}
+
+.minijogo-espera-titulo {
+  margin: 0;
+  text-align: center;
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.minijogo-espera-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.minijogo-espera-lista li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-hover);
+  color: var(--text-strong);
+  font-size: 0.9em;
+}
+
+.minijogo-espera-lista li.eu {
+  outline: 2px solid var(--accent);
+}
+
+.minijogo-espera-recusaram {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  text-align: center;
+}
+
+/* Quem não joga vê a partida sem mexer nela. O invólucro não muda o espaçamento do painel. */
+.minijogo-corpo {
+  display: contents;
+}
+
+.minijogo-assistindo-aviso {
+  margin: 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}

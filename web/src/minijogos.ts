@@ -127,7 +127,34 @@ export interface PartidaPublica {
   terminada: boolean;
   restanteMs: number;
   fase: string;
+  /**
+   * O CONVITE (13/10/2026): enquanto não é null, a partida ainda não começou e cada um da sala responde se joga.
+   * Ausente = servidor de antes do convite, em que a sala inteira joga.
+   */
+  convite?: { minimo: number } | null;
+  /** Quem joga (null = a sala inteira). */
+  jogadores?: { userId: number; username: string }[] | null;
+  /** Quem respondeu "Agora não". */
+  recusaram?: { userId: number; username: string }[];
+  souJogador?: boolean;
+  recusei?: boolean;
   [campo: string]: unknown;
+}
+
+/** Quem pediu é jogador? Num servidor de antes do convite, todo mundo da sala é. */
+export const souJogador = (p: PartidaPublica | null) => p !== null && p.souJogador !== false;
+
+/** Os jogos de MESA, de duas pessoas: começam na hora, e sentar é aceitar o convite. */
+export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala'];
+
+/**
+ * O convite está esperando a MINHA resposta? Antes da largada (ou, na mesa, enquanto ninguém sentou do outro lado),
+ * para quem ainda não entrou e não disse "agora não".
+ */
+export function convitePendente(p: PartidaPublica | null): boolean {
+  if (!p || p.terminada || p.souJogador !== false || p.recusei) return false;
+  if (p.convite) return true;
+  return JOGOS_DE_MESA.includes(p.jogo) && p.fase === 'esperando';
 }
 export type Partida = PartidaPublica & { recebidaEm: number };
 
@@ -676,9 +703,10 @@ export function usarMinijogo(channelId: number | null, socket: Socket | null) {
     async (jogo: IdDoJogo, escolhas: Record<string, unknown> = {}) => {
       if (channelId === null) return;
       const extras = jogo === 'stop' ? letrasDoStop(idiomaAtual()) : escolhas;
+      // Convidar: a sala responde se joga, e quem começou dá a largada (ver o convite no servidor).
       const { partida: p } = await api<{ partida: PartidaPublica }>(`/api/channels/${channelId}/minijogo`, {
         method: 'POST',
-        body: { jogo, ...extras },
+        body: { jogo, ...extras, convidar: true },
       });
       setPartida({ ...p, recebidaEm: Date.now() });
     },
@@ -704,7 +732,27 @@ export function usarMinijogo(channelId: number | null, socket: Socket | null) {
     setPartida(null);
   }, [channelId]);
 
-  return { partida, comecar, agir, encerrar };
+  /** A resposta ao convite: jogar, sair antes da largada, ou "agora não". */
+  const responder = useCallback(
+    async (resposta: 'jogar' | 'sair' | 'agora-nao') => {
+      if (channelId === null) return;
+      const { partida: p } = await api<{ partida: PartidaPublica }>(`/api/channels/${channelId}/minijogo/convite`, {
+        method: 'POST',
+        body: { resposta },
+      });
+      setPartida({ ...p, recebidaEm: Date.now() });
+    },
+    [channelId],
+  );
+
+  /** A largada, de quem começou: a partida começa com quem aceitou. */
+  const largar = useCallback(async () => {
+    if (channelId === null) return;
+    const { partida: p } = await api<{ partida: PartidaPublica }>(`/api/channels/${channelId}/minijogo/largada`, { method: 'POST' });
+    setPartida({ ...p, recebidaEm: Date.now() });
+  }, [channelId]);
+
+  return { partida, comecar, agir, encerrar, responder, largar };
 }
 
 /**

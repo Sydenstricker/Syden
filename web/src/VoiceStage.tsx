@@ -58,9 +58,9 @@ import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
 import { quemAssiste } from './assistindo';
 import { Karaoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
-import { BotaoMinijogo, PainelDoMinijogo } from './Minijogo';
+import { BotaoMinijogo, ConviteDoMinijogo, PainelDoMinijogo } from './Minijogo';
 import { SiteNoPalco } from './SiteEmbutido';
-import { pegarPedidoDeAbrir, usarMinijogo } from './minijogos';
+import { convitePendente, pegarPedidoDeAbrir, souJogador, usarMinijogo } from './minijogos';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
@@ -1212,14 +1212,16 @@ function Stage({
   const [soundboardOpen, setSoundboardOpen] = useState(false);
   // O karaokê abre sozinho para todo mundo quando alguém põe uma música.
   const [karaokeOpen, setKaraokeOpen] = useState(false);
-  // O mini-game: o painel abre sozinho quando alguém da sala começa uma partida, e fecha quando ela acaba.
+  // O mini-game: o painel abre sozinho para quem JOGA (quem começou, quem aceitou o convite) e fecha quando a partida
+  // acaba. Quem não respondeu recebe o convite pequeno; quem não joga pode abrir pelo botão e assistir.
   const minijogo = usarMinijogo(channelId, socket);
   const eu = Number(useLocalParticipant().localParticipant.identity);
   const [minijogoAberto, setMinijogoAberto] = useState(false);
   /** O jogo de parceiro (o Termo) aberto no palco, no lugar dos cartões e das transmissões: só para mim. */
   const [siteNoPalco, setSiteNoPalco] = useState<{ nome: string; endereco: string } | null>(null);
   const temPartida = minijogo.partida !== null;
-  useEffect(() => setMinijogoAberto(temPartida), [temPartida]);
+  const participo = souJogador(minijogo.partida);
+  useEffect(() => setMinijogoAberto(participo), [participo, temPartida]);
   // Veio da home (o computador do quarto → escolher a sala): a estante de jogos abre assim que entra.
   useEffect(() => {
     if (pegarPedidoDeAbrir(channelId)) setMinijogoAberto(true);
@@ -1465,6 +1467,14 @@ function Stage({
           <Karaoke voice={voice} communityId={communityId} onClose={() => setKaraokeOpen(false)} />
         )}
         {soundboardOpen && <Soundboard voice={voice} communityId={communityId} onClose={() => setSoundboardOpen(false)} />}
+        {!minijogoAberto && minijogo.partida && convitePendente(minijogo.partida) && (
+          <ConviteDoMinijogo
+            partida={minijogo.partida}
+            aoResponder={minijogo.responder}
+            aoAgir={minijogo.agir}
+            aoAbrir={() => setMinijogoAberto(true)}
+          />
+        )}
         {minijogoAberto && (
           <PainelDoMinijogo
             partida={minijogo.partida}
@@ -1473,6 +1483,8 @@ function Stage({
             aoComecar={minijogo.comecar}
             aoAgir={minijogo.agir}
             aoEncerrar={minijogo.encerrar}
+            aoResponder={minijogo.responder}
+            aoLargar={minijogo.largar}
             aoFechar={() => setMinijogoAberto(false)}
             socket={socket}
             channelId={channelId}

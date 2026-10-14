@@ -13,7 +13,9 @@ import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
   JOGOS,
+  JOGOS_DE_MESA,
   nomeDoJogo,
+  souJogador,
   SITES_PARA_TRANSMITIR,
   type EstadoDesenho,
   type EstadoDuelo,
@@ -30,8 +32,9 @@ import {
 /**
  * O botão de videogame da sala de voz e o painel do jogo (12/10/2026). O botão fica na barra, ao lado do
  * compartilhar tela e do soundboard: sem partida, ele abre a estante de jogos; com partida, mostra ou
- * esconde o painel. O painel aparece SOZINHO para todo mundo da sala quando alguém começa — é um jogo da
- * turma, e ninguém precisa procurar onde entrar.
+ * esconde o painel. Desde 13/10/2026 começar é CONVIDAR: o painel abre para quem começou e para quem aceita; os
+ * outros recebem um convite pequeno (ConviteDoMinijogo), e quem não joga pode abrir e assistir. Antes ele abria
+ * sozinho para a sala inteira, e quem estava transmitindo outro jogo virava jogador sem querer.
  */
 export function BotaoMinijogo({
   partida,
@@ -59,6 +62,10 @@ interface Acao {
 interface Comecar {
   (jogo: IdDoJogo, escolhas?: Record<string, unknown>): Promise<void>;
 }
+/** A resposta ao convite (ver o convite em minijogos-routes.ts, no servidor). */
+interface Responder {
+  (resposta: 'jogar' | 'sair' | 'agora-nao'): Promise<void>;
+}
 export interface Agir {
   (corpo: Record<string, unknown>): Promise<void>;
 }
@@ -70,6 +77,8 @@ export function PainelDoMinijogo({
   aoComecar,
   aoAgir,
   aoEncerrar,
+  aoResponder,
+  aoLargar,
   aoFechar,
   socket,
   channelId,
@@ -81,6 +90,8 @@ export function PainelDoMinijogo({
   aoComecar: Comecar;
   aoAgir: Agir;
   aoEncerrar: Acao;
+  aoResponder: Responder;
+  aoLargar: Acao;
   aoFechar: () => void;
   /** O desenho manda e recebe o traço por aqui, na hora. */
   socket: Socket | null;
@@ -108,7 +119,14 @@ export function PainelDoMinijogo({
   };
   const agir = (corpo: Record<string, unknown>) => tentar(() => aoAgir(corpo));
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
-  const rodada = partida && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez') && !partida.terminada ? (partida as unknown as EstadoTamanho) : null;
+  const naEspera = Boolean(partida?.convite);
+  const rodada =
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez') && !partida.terminada
+      ? (partida as unknown as EstadoTamanho)
+      : null;
+  // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
+  const soAssiste = partida !== null && !naEspera && !souJogador(partida) && !JOGOS_DE_MESA.includes(partida.jogo);
+  const jogoNaTela = partida && !naEspera ? partida : null;
 
   return (
     <div className={`minijogo${partida ? ` jogando-${partida.jogo}` : ' na-estante'}`} role="dialog" aria-label={partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}>
@@ -158,17 +176,30 @@ export function PainelDoMinijogo({
         </ul>
       )}
 
-      {partida?.jogo === 'tamanho' && <JogoTamanho estado={partida as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
-      {partida?.jogo === 'stop' && <JogoStop estado={partida as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}
-      {partida?.jogo === 'sudoku' && <JogoSudoku estado={partida as unknown as EstadoSudoku & Partida} eu={eu} restante={restante} agir={agir} />}
-      {partida?.jogo === 'desenho' && (
-        <JogoDesenho estado={partida as unknown as EstadoDesenho & Partida} eu={eu} restante={restante} agir={agir} socket={socket} channelId={channelId} />
+      {partida?.convite && (
+        <SalaDeEspera
+          partida={partida}
+          eu={eu}
+          aoResponder={(resposta) => tentar(() => aoResponder(resposta))}
+          aoLargar={() => tentar(aoLargar)}
+          aoCancelar={() => tentar(aoEncerrar)}
+        />
       )}
-      {partida?.jogo === 'xadrez' && <JogoXadrez estado={partida as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
-      {partida?.jogo === 'lobisomem' && <JogoLobisomem estado={partida as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
-      {(partida?.jogo === 'gomoku' || partida?.jogo === 'mancala') && (
-        <JogoDuelo jogo={partida.jogo} estado={partida as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
+      {soAssiste && !partida.terminada && <p className="minijogo-assistindo-aviso">{t('Você está assistindo. Dá para entrar na próxima partida.')}</p>}
+
+      <div className={`minijogo-corpo${soAssiste ? ' so-assistindo' : ''}`} inert={soAssiste || undefined}>
+      {jogoNaTela?.jogo === 'tamanho' && <JogoTamanho estado={jogoNaTela as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
+      {jogoNaTela?.jogo === 'stop' && <JogoStop estado={jogoNaTela as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}
+      {jogoNaTela?.jogo === 'sudoku' && <JogoSudoku estado={jogoNaTela as unknown as EstadoSudoku & Partida} eu={eu} restante={restante} agir={agir} />}
+      {jogoNaTela?.jogo === 'desenho' && (
+        <JogoDesenho estado={jogoNaTela as unknown as EstadoDesenho & Partida} eu={eu} restante={restante} agir={agir} socket={socket} channelId={channelId} />
       )}
+      {jogoNaTela?.jogo === 'xadrez' && <JogoXadrez estado={jogoNaTela as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
+      {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
+      {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
+        <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
+      )}
+      </div>
 
       {partida?.terminada && (
         <div className="minijogo-acoes">
@@ -184,12 +215,135 @@ export function PainelDoMinijogo({
           </button>
         </div>
       )}
-      {partida && !partida.terminada && podeEncerrar && (
+      {partida && !partida.terminada && !naEspera && podeEncerrar && (
         <button type="button" className="link-button minijogo-encerrar" onClick={() => tentar(aoEncerrar)}>
           {t('Encerrar partida')}
         </button>
       )}
       {erro && <p className="form-error small">{erro}</p>}
+    </div>
+  );
+}
+
+/**
+ * O CONVITE, para quem está na sala e ainda não respondeu: pequeno, em cima da barra, sem cobrir o palco. "Jogar"
+ * entra (na mesa, senta) e abre o painel; "Agora não" some e não volta nesta partida. Ignorar também vale: a partida
+ * começa sem a pessoa, e o convite some na largada.
+ */
+export function ConviteDoMinijogo({
+  partida,
+  aoResponder,
+  aoAgir,
+  aoAbrir,
+}: {
+  partida: Partida;
+  aoResponder: Responder;
+  aoAgir: Agir;
+  aoAbrir: () => void;
+}) {
+  const t = useT();
+  const [erro, setErro] = useState<string | null>(null);
+  const mesa = JOGOS_DE_MESA.includes(partida.jogo);
+  const quem = partida.jogadores?.find((j) => j.userId === partida.criadaPor)?.username ?? '';
+  const jogo = t(nomeDoJogo(partida.jogo));
+  const jogar = () => {
+    setErro(null);
+    void (mesa ? aoAgir({ tipo: 'sentar' }) : aoResponder('jogar')).then(aoAbrir, (e) => setErro((e as Error).message));
+  };
+  return (
+    <div className="minijogo-convite" role="status">
+      <span className="minijogo-convite-capa" aria-hidden="true">
+        <CapaDoJogo jogo={partida.jogo} />
+      </span>
+      <p>{mesa ? t('{nome} quer jogar {jogo}.', { nome: quem, jogo }) : t('{nome} chamou a sala para jogar {jogo}.', { nome: quem, jogo })}</p>
+      <div className="minijogo-convite-acoes">
+        <button type="button" className="btn-primary" onClick={jogar}>
+          {mesa ? t('Sentar') : t('Jogar')}
+        </button>
+        <button type="button" className="btn-secondary" onClick={() => void aoResponder('agora-nao').catch((e) => setErro((e as Error).message))}>
+          {t('Agora não')}
+        </button>
+      </div>
+      {erro && <p className="form-error small">{erro}</p>}
+    </div>
+  );
+}
+
+/**
+ * O CONVITE ABERTO, dentro do painel: quem vai jogar, quem disse "agora não", e o que cada um pode fazer. Quem começou
+ * dá a largada quando quiser (com o mínimo do jogo); quem aceitou espera; quem ainda não respondeu responde aqui.
+ */
+function SalaDeEspera({
+  partida,
+  eu,
+  aoResponder,
+  aoLargar,
+  aoCancelar,
+}: {
+  partida: Partida;
+  eu: number;
+  aoResponder: (resposta: 'jogar' | 'sair' | 'agora-nao') => void;
+  aoLargar: () => void;
+  aoCancelar: () => void;
+}) {
+  const t = useT();
+  const jogadores = partida.jogadores ?? [];
+  const minimo = partida.convite?.minimo ?? 1;
+  const falta = Math.max(0, minimo - jogadores.length);
+  const quemConvidou = jogadores.find((j) => j.userId === partida.criadaPor)?.username ?? '';
+  const souEu = partida.criadaPor === eu;
+  const dentro = souJogador(partida);
+  return (
+    <div className="minijogo-espera">
+      <div className="minijogo-espera-capa" aria-hidden="true">
+        <CapaDoJogo jogo={partida.jogo} />
+      </div>
+      <p className="minijogo-espera-titulo">
+        {souEu ? t('Convite feito. Quem aceitar aparece aqui.') : t('{nome} chamou a sala para jogar.', { nome: quemConvidou })}
+      </p>
+      <ul className="minijogo-espera-lista" aria-label={t('Vão jogar')}>
+        {jogadores.map((j) => (
+          <li key={j.userId} className={j.userId === eu ? 'eu' : undefined}>
+            {j.username}
+          </li>
+        ))}
+      </ul>
+      {(partida.recusaram?.length ?? 0) > 0 && (
+        <p className="minijogo-espera-recusaram">
+          {t('Agora não: {nomes}', { nomes: partida.recusaram!.map((r) => r.username).join(', ') })}
+        </p>
+      )}
+      {souEu && falta > 0 && (
+        <p className="minijogo-situacao">{falta === 1 ? t('Falta 1 pessoa para começar.') : t('Faltam {n} pessoas para começar.', { n: falta })}</p>
+      )}
+      <div className="minijogo-acoes">
+        {souEu ? (
+          <>
+            <button type="button" className="btn-primary" disabled={falta > 0} onClick={aoLargar}>
+              {t('Começar')}
+            </button>
+            <button type="button" className="btn-secondary" onClick={aoCancelar}>
+              {t('Cancelar')}
+            </button>
+          </>
+        ) : dentro ? (
+          <>
+            <span className="minijogo-situacao">{t('Esperando {nome} começar.', { nome: quemConvidou })}</span>
+            <button type="button" className="btn-secondary" onClick={() => aoResponder('sair')}>
+              {t('Sair')}
+            </button>
+          </>
+        ) : (
+          <>
+            <button type="button" className="btn-primary" onClick={() => aoResponder('jogar')}>
+              {t('Jogar')}
+            </button>
+            <button type="button" className="btn-secondary" onClick={() => aoResponder('agora-nao')}>
+              {t('Agora não')}
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

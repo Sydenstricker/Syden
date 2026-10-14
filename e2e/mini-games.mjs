@@ -1,7 +1,9 @@
 // OS MINI-GAMES (12/10/2026): os cinco jogos da sala de voz, de ponta a ponta, com duas pessoas.
 //
 // - A Duda entra pelo computador do quarto: Mini-games → escolhe a sala → cai na sala com a estante aberta.
-// - O Edu já está na sala: quando a Duda começa um jogo, o painel abre sozinho para ele.
+// - O Edu já está na sala: quando a Duda começa um jogo, ele recebe o CONVITE (13/10/2026), sem o painel por cima;
+//   "Jogar" o põe na lista, e a Duda dá a largada. Na mesa, o convite diz "Sentar".
+// - "Agora não": o convite some, a partida começa sem o Edu, e ele pode abrir o painel e só assistir.
 // - "Qual é o tamanho?": os dois aumentam/diminuem o objeto e confirmam, e a revelação vem na hora.
 // - Stop: os dois escrevem, a Duda aperta STOP, o Edu contesta uma resposta dela, os dois ficam prontos.
 // - Sudoku: o mesmo tabuleiro para os dois, e o número da Duda não aparece no do Edu.
@@ -123,6 +125,16 @@ try {
     await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
   };
 
+  /** O convite chega ao Edu (sem o painel abrir sozinho), ele aceita, e a Duda dá a largada. */
+  const aceitarELargar = async (jogo) => {
+    await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
+    (await edu.locator('.minijogo').count()) === 0 ? ok(`${jogo}: o convite chegou ao Edu, sem o painel por cima`) : falhou(`${jogo}: o painel abriu sozinho para o Edu`);
+    await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
+    await edu.locator('.minijogo-espera').waitFor({ timeout: 5000 });
+    await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
+    await duda.getByRole('button', { name: 'Começar' }).click();
+  };
+
   // ---- Qual é o tamanho? ----
   await comecar('Qual é o tamanho?');
   // Antes de começar, a categoria (como no Size It Up). A Duda escolhe Animais.
@@ -130,9 +142,14 @@ try {
   (await duda.locator('.tamanho-categorias .minijogo-jogo').count()) === 4 ? ok('a escolha de categoria abriu, com 4') : falhou('a escolha de categoria não tem as 4');
   await foto(duda, 'tamanho-categorias');
   await duda.locator('.tamanho-categorias .minijogo-jogo', { hasText: 'Animais' }).click();
+  await duda.locator('.minijogo-espera').waitFor({ timeout: 10000 });
+  await foto(duda, 'convite-espera');
+  await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
+  await edu.locator('.minijogo-convite').screenshot({ path: path.join(FOTOS, 'mini-games-convite.png') });
+  await aceitarELargar('Qual é o tamanho?');
   await duda.locator('.tamanho-palco').waitFor({ timeout: 15000 });
   await edu.locator('.tamanho-palco').waitFor({ timeout: 10000 });
-  ok('Qual é o tamanho?: começou, e o painel abriu sozinho para o Edu');
+  ok('Qual é o tamanho?: a largada veio, e o painel está aberto para os dois');
   // A Duda arrasta o objeto para cima (aumenta): ele cresce em relação à referência.
   const proporcao = async () => {
     const [alvo, ref] = await Promise.all([duda.locator('.tamanho-figura.alvo').boundingBox(), duda.locator('.tamanho-figura:not(.alvo)').boundingBox()]);
@@ -169,6 +186,7 @@ try {
 
   // ---- Stop ----
   await comecar('Stop');
+  await aceitarELargar('Stop');
   await duda.locator('.stop-letra').waitFor({ timeout: 10000 });
   await edu.locator('.stop-letra').waitFor({ timeout: 10000 });
   const letra = (await duda.locator('.stop-letra').innerText()).trim();
@@ -193,8 +211,27 @@ try {
   await foto(duda, 'stop-pontos');
   await encerrar();
 
+  // ---- "Agora não": a partida começa sem o Edu, e ele só assiste ----
+  await comecar('Sudoku');
+  await edu.locator('.minijogo-convite').getByRole('button', { name: 'Agora não' }).click();
+  await edu.locator('.minijogo-convite').waitFor({ state: 'detached', timeout: 5000 });
+  await duda.locator('.minijogo-espera-recusaram', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
+  ok('"Agora não": o convite sumiu para o Edu, e a Duda vê quem recusou');
+  await duda.getByRole('button', { name: 'Começar' }).click();
+  await duda.locator('.sudoku-grade').waitFor({ timeout: 10000 });
+  await edu.waitForTimeout(800);
+  ((await edu.locator('.minijogo').count()) === 0 && (await edu.locator('.minijogo-convite').count()) === 0 ? ok : falhou)(
+    'a partida começou sem o Edu, e nada abriu por cima da tela dele',
+  );
+  await edu.getByRole('button', { name: 'Mini-games' }).click();
+  await edu.locator('.minijogo-assistindo-aviso').waitFor({ timeout: 5000 });
+  ok('o Edu abriu o painel e está só assistindo');
+  await foto(edu, 'assistindo');
+  await encerrar();
+
   // ---- Sudoku ----
   await comecar('Sudoku');
+  await aceitarELargar('Sudoku');
   await duda.locator('.sudoku-grade').waitFor({ timeout: 10000 });
   await edu.locator('.sudoku-grade').waitFor({ timeout: 10000 });
   const vazia = duda.locator('.sudoku-casa:not(.dada)').first();
@@ -209,7 +246,7 @@ try {
 
   // ---- Cinco em linha ----
   await comecar('Cinco em linha');
-  await edu.getByRole('button', { name: 'Jogar' }).click();
+  await edu.locator('.minijogo-convite').getByRole('button', { name: 'Sentar' }).click();
   await duda.locator('.gomoku').waitFor({ timeout: 10000 });
   await duda.locator('.duelo-jogador.da-vez').waitFor({ timeout: 10000 });
   const dudaComeca = (await duda.locator('.minijogo-situacao.minha-vez').count()) > 0;
@@ -229,7 +266,7 @@ try {
 
   // ---- Mancala ----
   await comecar('Mancala');
-  await edu.getByRole('button', { name: 'Jogar' }).click();
+  await edu.locator('.minijogo-convite').getByRole('button', { name: 'Sentar' }).click();
   await duda.locator('.mancala').waitFor({ timeout: 10000 });
   await duda.locator('.duelo-jogador.da-vez').waitFor({ timeout: 10000 });
   const quemJoga = (await duda.locator('.minijogo-situacao.minha-vez').count()) > 0 ? duda : edu;
@@ -244,6 +281,7 @@ try {
   // O teste lê a solução do mesmo arquivo que o servidor usa, pelo id do problema que a partida mostra.
   const PROBLEMAS = JSON.parse(fs.readFileSync(path.join('server', 'assets', 'problemas-de-xadrez.json'), 'utf8'));
   await comecar('Problemas de xadrez');
+  await aceitarELargar('Problemas de xadrez');
   await duda.locator('.xadrez-tabuleiro').waitFor({ timeout: 10000 });
   await edu.locator('.xadrez-tabuleiro').waitFor({ timeout: 10000 });
   await foto(duda, 'xadrez');
@@ -269,6 +307,7 @@ try {
 
   // ---- Desenha e adivinha ----
   await comecar('Desenha e adivinha');
+  await aceitarELargar('Desenha e adivinha');
   await duda.locator('.desenho-quadro').waitFor({ timeout: 10000 });
   await edu.locator('.desenho-quadro').waitFor({ timeout: 10000 });
   const dudaDesenha = (await duda.locator('.desenho-opcoes button').count()) > 0;
