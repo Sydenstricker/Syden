@@ -82,6 +82,12 @@ for (const [id, pasta] of Object.entries(GIROS)) {
 // A CADEIRA DO COMPUTADOR gira livre (física): as 8 vistas, e a que aparece é a mais perto do ângulo dela.
 const OITO = ['south-west', 'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west'];
 if (OITO.every((d) => fs.existsSync(path.join(AQUI, 'avulsos', 'cadeira-giros', d + '.png')))) for (const d of OITO) IMAGENS['cadeira-' + d] = png(path.join(AQUI, 'avulsos', 'cadeira-giros', d + '.png'));
+// OS ESTADOS DE UM MÓVEL (estado.mjs): o mesmo objeto, editado, nas mesmas vistas e no mesmo enquadramento.
+const ESTADOS = { 'guarda-roupa': { aberto: 'guarda-roupa-aberto-giros' } };
+for (const [id, estados] of Object.entries(ESTADOS)) for (const [nome, pasta] of Object.entries(estados)) {
+  const dir = path.join(AQUI, 'avulsos', pasta);
+  if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-' + id + '-' + nome + l] = png(path.join(dir, d + '.png')); });
+}
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -309,7 +315,11 @@ function dados(im, filtro, w = W, h = W) {
     const conta = {};
     for (let y = fundo - 5; y <= fundo; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4; if (movel[k + 3] > 127) { const cor = movel[k] + ',' + movel[k + 1] + ',' + movel[k + 2]; conta[cor] = (conta[cor] || 0) + 1; } }
     const [sombraCor, vezes] = Object.entries(conta).sort((a, b) => b[1] - a[1])[0] ?? ['', 0];
-    if (vezes > 12) { const [sr, sg, sb] = sombraCor.split(',').map(Number); for (let k = 0; k < W * W; k++) if (Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18) movel[k * 4 + 3] = 0; }
+    // Só é sombra a cor que mora no PÉ da imagem: a madeira da mesa e da cama e o contorno preto também são as mais
+    // comuns nas últimas linhas, mas aparecem no móvel inteiro (tirá-las deixava a mesa transparente, 14/10/2026).
+    const [sr, sg, sb] = sombraCor.split(',').map(Number), parecida = (k) => Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18;
+    let emCima = 0; for (let k = 0; k < (fundo - 25) * W; k++) if (movel[k * 4 + 3] > 127 && parecida(k)) emCima++;
+    if (vezes > 12 && emCima <= vezes * 0.1) for (let k = 0; k < W * W; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
     let x0 = W, x1 = 0, y0 = W, y1 = 0;
     for (let k = 0; k < W * W; k++) { if (movel[k * 4 + 3] < 128) { movel[k * 4 + 3] = 0; continue; } const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
     let sx = 0, nb = 0; for (let x = 0; x < W; x++) for (let y = y1 - 2; y <= y1; y++) if (movel[(y * W + x) * 4 + 3]) { sx += x; nb++; }
@@ -330,6 +340,10 @@ function dados(im, filtro, w = W, h = W) {
   }
   const VISTAS = {};
   for (const id of ['poltrona', 'abajur', 'guarda-roupa', 'cama', 'mesa']) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  // O GUARDA-ROUPA ABERTO (pedido dele, 14/10/2026: "precisa de mais estados, como temos na janela"): as portas abertas
+  // com as roupas, nas mesmas 4 vistas. Clicar nele leva o coelho até lá e abre; clicar de novo fecha.
+  const VISTAS_ABERTO = im['giro-guarda-roupa-aberto0'] ? [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-guarda-roupa-aberto' + l], 'guarda-roupa')) : null;
+  let guardaRoupaAberto = false;
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
   const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa' };
@@ -369,7 +383,7 @@ function dados(im, filtro, w = W, h = W) {
   const ehDeitado = (id) => id === 'tapete';
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
   const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
-    id !== 'pufe' && id !== 'poltrona' && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
+    id !== 'pufe' && id !== 'poltrona' && !(id === 'guarda-roupa' && VISTAS_ABERTO) && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
     && Math.abs(c[0] - INICIAL[id].c[0]) < 0.01 && Math.abs(c[1] - INICIAL[id].c[1]) < 0.01 && lado === INICIAL[id].lado;
   // O pé na grade (a área que ocupa) e o pé MEDIDO (o do desenho, para a forma e a profundidade).
   const peDe = (id, c = ARR[id].c, lado = ARR[id].lado) => {
@@ -395,11 +409,13 @@ function dados(im, filtro, w = W, h = W) {
   // quando bate de raspão. O coelho andando também a empurra. O ângulo é contínuo; a vista é a mais perto das 8.
   // Ela é desenhada como o coelho (a cada quadro, só a região dela), nunca na fotografia da cena: remontar a cena a
   // cada quadro custaria um núcleo inteiro num computador modesto.
+  const OITO = ['south-west', 'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west'];
   const VISTAS_CADEIRA = im['cadeira-south-west'] ? OITO.map((d) => pecaDeImagem(im['cadeira-' + d], 'cadeira')) : null;
   const R_CADEIRA = 0.38;
   // A altura do assento acima do chão (medida na vista) e quanto o coelho sobe para sentar nela.
   const ASSENTO_CADEIRA = 34, SOBE_CADEIRA = 20;
   const cadeira = { u: 6, v: 6, vu: 0, vv: 0, th: 0, w: 0, presa: false, kin: null, alvo: null };
+  window.cadeiraDoTeste = cadeira; // para as fotos e o teste
   // O lugar dela na mesa: S é sentado à mesa (encostado); P0, puxada para trás, de onde se senta. Virada para a mesa.
   function lugarNaMesa() {
     if (!ARR.mesa) return null;
@@ -426,7 +442,7 @@ function dados(im, filtro, w = W, h = W) {
       cadeira.vu -= (1 + quique) * vn * nu; cadeira.vv -= (1 + quique) * vn * nv;
       // De raspão, ela gira: a velocidade ao longo da batida vira giro.
       const vt = -cadeira.vu * nv + cadeira.vv * nu;
-      cadeira.w += vt * 1.4;
+      cadeira.w = Math.max(-6, Math.min(6, cadeira.w + vt * 0.7)); // e nunca vira pião
     }
   }
   function colidir() {
@@ -467,7 +483,7 @@ function dados(im, filtro, w = W, h = W) {
       c.vv = Math.max(-12, Math.min(12, (c.alvo[1] - c.v) / Math.max(dt, 0.016)));
     } else {
       const atrito = Math.exp(-2.4 * dt);
-      c.vu *= atrito; c.vv *= atrito; c.w *= Math.exp(-3.2 * dt);
+      c.vu *= atrito; c.vv *= atrito; c.w *= Math.exp(-4.5 * dt);
       if (Math.hypot(c.vu, c.vv) < 0.03) c.vu = c.vv = 0;
       if (Math.abs(c.w) < 0.05) c.w = 0;
     }
@@ -759,7 +775,7 @@ function dados(im, filtro, w = W, h = W) {
   function chegar() {
     const pt = coelho.destino && pontos()[coelho.destino];
     if (!pt) { coelho.pose = 'parado'; return; }
-    if (!pt.onde) return chegarDeVez();
+    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) guardaRoupaAberto = true; return chegarDeVez(); }
     coelho.largado = Math.random() < 0.5; // dormindo rígido ou largado: sorteado antes, a transição já vai para ele
     const id = coelho.destino, p2 = pontos()[id], ro = roteiro(id, p2);
     aproximar(ro.beira, ro.atrasNaBeira, id, () => { coelho.dir = p2.olha; tocar(id, p2, ro, false, () => chegarDeVez()); });
@@ -1267,7 +1283,9 @@ function dados(im, filtro, w = W, h = W) {
       // A vista solta: a quina da frente do desenho vai para a quina da frente do pé, e a luz é a do lugar.
       const p = VISTAS[id][l], pe = peMedidoDe(id), [fx, fy] = ponto(pe[1], pe[3]), [nx, ny] = ponto(c[0], c[1]);
       const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
-      return { p, dx: Math.round(fx - p.frente[0]), dy: Math.round(fy - p.frente[1]), fator, pe, contatoPe: pe, forma: FORMAS[id], olha };
+      // Aberto: a vista aberta, posta onde a fechada estaria (o mesmo enquadramento).
+      const desenho = id === 'guarda-roupa' && guardaRoupaAberto && VISTAS_ABERTO ? VISTAS_ABERTO[l] : p;
+      return { p: desenho, dx: Math.round(fx - p.frente[0]), dy: Math.round(fy - p.frente[1]), fator, pe, contatoPe: pe, forma: FORMAS[id], olha };
     });
     for (const it of lista0) if (it.forma) it.caixas = caixasDe(it.pe, it.olha, it.forma);
     lista = ordenar(lista0);
@@ -1377,7 +1395,7 @@ function dados(im, filtro, w = W, h = W) {
 
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, ARR, grade, alvo, pegado]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, ARR, grade, alvo, pegado, guardaRoupaAberto]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     if (regiaoAnterior) restaurar(regiaoAnterior);
@@ -1398,7 +1416,7 @@ function dados(im, filtro, w = W, h = W) {
         const dd = (xx / 17) ** 2 + (yy / 7) ** 2, X = Math.round(cgx + xx), Y = Math.round(cgy + yy);
         if (dd >= 1 || X < 0 || Y < 0 || X >= W || Y >= W) continue;
         const k = Y * W + X;
-        if (casa[k] < 0 || (eMovel[k] && chaveDoPixel[k] > cgy + 4)) continue;
+        if (casa[k] < 0 || eMovel[k]) continue; // só no chão (sobre a mesa, ela a escurecia como se fosse vidro)
         const f = 0.7 + 0.3 * dd; for (let c = 0; c < 3; c++) D[k * 3 + c] *= f;
       }
       const chave = cgy + 4, fator = Math.min(1.2, Math.max(0.8, luz(cgx, cgy) / luz(...ponto(N / 2, N / 2))));
@@ -1501,14 +1519,17 @@ function dados(im, filtro, w = W, h = W) {
       cadeira.presa = false; cadeira.alvo = null;
       const vel = Math.hypot(cadeira.vu, cadeira.vv), max = 7;
       if (vel > max) { cadeira.vu *= max / vel; cadeira.vv *= max / vel; }
-      cadeira.w += (Math.random() - 0.5) * Math.min(vel, max) * 0.8;
+      cadeira.w += (Math.random() - 0.5) * Math.min(vel, max) * 0.35;
       acordarCadeira();
       return;
     }
     if (!arrastando) return;
     arrastando = false;
     const atual = ARR[pegado].c;
-    if (alvo && alvo[0] === atual[0] && alvo[1] === atual[1]) { if (pontos()[pegado]) ir(pegado); } // clicou sem arrastar
+    if (alvo && alvo[0] === atual[0] && alvo[1] === atual[1]) { // clicou sem arrastar
+      if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
+      else if (pontos()[pegado]) ir(pegado);
+    }
     else if (alvo && !ocupa(alvo)) { ARR[pegado] = { c: alvo, lado: ARR[pegado].lado }; guardar(); colidir(); acordarCadeira(); decidir(); }
     alvo = null; pegado = null; desenhar();
   });

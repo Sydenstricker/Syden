@@ -1,0 +1,47 @@
+{
+  "id": "183dd1d7-94e7-4e3a-b852-6429f679a060",
+  "name": "a tall wooden wardrobe with tw",
+  "state_name": "aberto",
+  "prompt": "a tall wooden wardrobe with two doors and small round knobs",
+  "size": {
+    "width": 113,
+    "height": 113
+  },
+  "directions": 8,
+  "created_at": "2026-10-14T22:01:49.896533+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/183dd1d7-94e7-4e3a-b852-6429f679a060/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {
+    "state_source": {
+      "id": "ff1ba49f-878b-4144-9502-4eed134a36a6",
+      "edit_description": "both doors wide open, showing a few clothes on hangers inside, the same wardrobe, same size, same colors"
+    },
+    "no_background": true
+  },
+  "tags": [],
+  "status": "completed",
+  "group_id": "a4216b97-21f3-4e82-a100-8d7272f2c034",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

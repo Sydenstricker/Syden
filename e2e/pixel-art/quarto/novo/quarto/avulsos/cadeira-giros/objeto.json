@@ -1,0 +1,41 @@
+{
+  "id": "3a4ad568-1b4a-417b-9b8f-a340db929619",
+  "name": "a dark grey office swivel chai",
+  "state_name": "base",
+  "prompt": "a dark grey office swivel chair with armrests and a five-star base with caster wheels",
+  "size": {
+    "width": 113,
+    "height": 113
+  },
+  "directions": 8,
+  "created_at": "2026-10-14T21:57:21.857364+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/3a4ad568-1b4a-417b-9b8f-a340db929619/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "2995e038-8717-46bc-a3b7-990c24f4e89e",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}
