@@ -227,7 +227,7 @@ export default {
   'Com serifa': 'Serifli',
   'Com tecnologia {modelo}': 'Texnologiya: {modelo}',
   '{modelo} parou. Sua voz está saindo sem supressão de ruído.':
-    '{modelo} toʻxtadi. Ovozing shovqin bostirilmasdan chiqyapti.',
+    '{modelo} toʻxtadi. Ovozingiz shovqin bostirilmasdan chiqyapti.',
   'Começa a aparecer': 'Koʻrina boshlaydi',
   'Comece a sua, ou entre na de alguém com o código que essa pessoa te passou.':
     'Oʻzingiznikini boshlang yoki kimdir bergan kod bilan uning hamjamiyatiga qoʻshiling.',
@@ -287,7 +287,7 @@ export default {
   'Perfil': 'Profil',
   'Alterar apelido': 'Taxallusni o\'zgartirish',
   'Apelido nesta comunidade': 'Bu jamiyatdagi taxallus',
-  'Vazio volta ao nome da conta': 'Bo\'sh qoldirsang, hisob nomiga qaytadi',
+  'Vazio volta ao nome da conta': 'Boʻsh qoldirilsa, hisob nomiga qaytadi',
   'Cargo': 'Rol',
   'Mover para': 'Koʻchirish',
   'Desbloqueado': 'Ochilgan',
@@ -521,7 +521,7 @@ export default {
   'Preto, branco e amarelo, para ler sem esforço.': 'Qora, oq va sariq, oson oʻqish uchun.',
   'A paleta vale no tema escuro. Com o sol ligado, o Syden usa o tema claro.': 'Palitra qorongʻi mavzuda amal qiladi. Quyosh yoqilganda Syden yorugʻ mavzudan foydalanadi.',
   'Não deu para entrar agora. Tente de novo.': 'Hozir kirib bo‘lmadi. Qayta urinib ko‘r.',
-  'Seu nome': 'Isming',
+  'Seu nome': 'Ismingiz',
   'Entrando…': 'Kirilmoqda…',
   'Ao entrar, você concorda com os termos de uso.': 'Kirish bilan foydalanish shartlariga rozilik bildirasan.',
   'Já tenho conta': 'Menda allaqachon hisob bor',
