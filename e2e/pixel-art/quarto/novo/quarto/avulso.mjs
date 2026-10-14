@@ -18,6 +18,9 @@ const POLTRONA = 'a small cozy upholstered armchair with a soft dusty-green fabr
 export const AVULSOS = {
   'poltrona-esquerda': { lado: [120, 136], texto: `${POLTRONA}, the seat and the front of the armchair facing to the LEFT-front (toward the lower left of the image), ${ANGULO}` },
   'poltrona-direita': { lado: [120, 136], texto: `${POLTRONA}, the seat and the front of the armchair facing to the RIGHT-front (toward the lower right of the image), ${ANGULO}` },
+  // A CAMA DE CASAL (pedido dele, 14/10/2026: "essa atual parece de solteiro"; a referência é a cama da home, do conceito):
+  // larga, com gavetas embaixo e a colcha xadrez. A primeira de uma coleção de camas para desbloquear.
+  'cama-casal': { lado: [176, 160], texto: `ONLY ONE large double bed and nothing else: a wide wooden bed frame with a headboard, a row of wooden drawers along the long side under the mattress, a thick soft checkered blanket in muted grey and beige, two big cream pillows side by side at the headboard, the headboard at the back on the UPPER RIGHT of the image and the foot of the bed toward the LOWER LEFT, the long side with the drawers facing the right-front (toward the lower right of the image), the whole piece visible, ${ANGULO}` },
   'guarda-roupa': { lado: [64, 160], texto: `a tall freestanding wooden wardrobe with two doors and small round knobs, the whole piece visible from the top cornice to the feet, its doors facing to the right-front, the back against a wall on its left side, ${ANGULO}` },
 };
 
