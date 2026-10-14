@@ -1,0 +1,47 @@
+[
+  {
+    "direction": "north-east",
+    "frame_count": 9,
+    "frames": [
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/0.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/1.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/2.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/3.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/4.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/5.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/6.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/7.png?t=1791989902",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/fc00c29d-4ad8-4845-91c5-0a937d5faa96/north-east/8.png?t=1791989902"
+    ]
+  },
+  {
+    "direction": "south-west",
+    "frame_count": 9,
+    "frames": [
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/0.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/1.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/2.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/3.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/4.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/5.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/6.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/7.png?t=1791988955",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/0a395455-eab9-4212-9e6a-6f3c30c0d344/south-west/8.png?t=1791988955"
+    ]
+  },
+  {
+    "direction": "north-west",
+    "frame_count": 9,
+    "frames": [
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/0.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/1.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/2.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/3.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/4.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/5.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/6.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/7.png?t=1791989876",
+      "https://backblaze.pixellab.ai/file/pixellab-characters/302d20c3-468e-443d-8fd5-96ab9ab92d85/2ae291db-1b14-480f-8cff-dac7c446fc97/animations/dec3c29e-7b7a-4372-9fea-d4c25a6ed30c/north-west/8.png?t=1791989876"
+    ]
+  }
+]

@@ -21,7 +21,11 @@ const IMAGENS = {
   janelaAberta: png(path.join(AQUI, 'janela-aberta-dia.png')),
   // A poltrona solta, em duas orientações PINTADAS (avulso.mjs), a mesma poltrona de orelha: a 0 olha para a
   // esquerda, a 1 para a direita.
-  poltrona0: png(path.join(AQUI, 'avulsos', 'poltrona-esquerda-4.png')), poltrona1: png(path.join(AQUI, 'avulsos', 'poltrona-direita-3.png')),
+  // AS 4 POSIÇÕES DA POLTRONA (girar.mjs, 14/10/2026): as 4 diagonais do mesmo móvel, na ordem do botão Girar.
+  poltrona0: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'south-west.png')),
+  poltrona1: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'north-west.png')),
+  poltrona2: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'north-east.png')),
+  poltrona3: png(path.join(AQUI, 'avulsos', 'poltrona-giros', 'south-east.png')),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
   noite: png(path.join(AQUI, 'noite.png')),
@@ -35,6 +39,31 @@ const IMAGENS = {
 // O MASCOTE ISOMÉTRICO (personagem/mascote/baixa-120, 14/10/2026): as 4 diagonais, paradas. Os nomes do PixelLab
 // (south-east...) viram os do README (sudeste...).
 const MASCOTE = path.join(AQUI, '..', '..', '..', 'personagem', 'mascote', 'baixa-120');
+// AS ANIMAÇÕES DO MASCOTE (personagem/animar.mjs e estado.mjs): para cada animação, as pastas em ordem de preferência;
+// cada direção vem da primeira que a tiver. Uma pasta com <direção>-<n>.png é uma animação; com <direção>.png, uma pose.
+const PERS = path.join(AQUI, '..', '..', '..', 'personagem', 'mascote');
+const FONTES = {
+  andando: ['baixa-120/animacoes/andando-v3', 'baixa-120/animacoes/andando-v3b'],
+  parado: ['baixa-120/animacoes/parado', 'baixa-120'],
+  falando: ['baixa-120/animacoes/falando'],
+  sentado: ['estados/sentado-2', 'estados/sentado'],
+  lendo: ['estados/lendo'],
+  dormindo: ['estados/dormindo'],
+};
+const DELES = { sudeste: 'south-east', sudoeste: 'south-west', nordeste: 'north-east', noroeste: 'north-west' };
+const ANIMACOES = {};
+for (const [nome, pastas] of Object.entries(FONTES)) {
+  ANIMACOES[nome] = {};
+  for (const [nossa, deles] of Object.entries(DELES)) {
+    for (const p of pastas) {
+      const dir = path.join(PERS, p);
+      if (!fs.existsSync(dir)) continue;
+      const quadros = fs.readdirSync(dir).filter((f) => f.startsWith(deles + '-') && /-\d+\.png$/.test(f)).sort((a, b) => Number(a.match(/-(\d+)\.png$/)[1]) - Number(b.match(/-(\d+)\.png$/)[1]));
+      const lista = quadros.length ? quadros : fs.existsSync(path.join(dir, deles + '.png')) ? [deles + '.png'] : [];
+      if (lista.length) { ANIMACOES[nome][nossa] = lista.map((f) => png(path.join(dir, f))); break; }
+    }
+  }
+}
 for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-west'], ['nordeste', 'north-east'], ['noroeste', 'north-west']]) {
   IMAGENS['mascote-' + nosso] = png(path.join(MASCOTE, deles + '.png'));
 }
@@ -78,8 +107,9 @@ A <b>poltrona</b> também se arrasta, e <b>Girar</b> (ou a tecla R) troca o lado
   <button id="janela" aria-pressed="false">Janela: fechada</button>
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
 </div>
-<p><b>O coelho</b>: o mascote isométrico, parado nas 4 diagonais (as animações ainda não existem: andando, ele
-desliza; sentado, fica de pé sobre o móvel; falando, usa o gesto do coelho provisório do recado). O estado decide o
+<p><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
+dormindo), todas do mesmo personagem, no mesmo quadro e com a mesma âncora. A sombra vem da janela (de dia) ou do
+abajur (de noite). O estado decide o
 lugar; <b>clicar num móvel</b> (sem arrastar) o leva até ele; arrastar o pufe ou a poltrona com ele sentado leva o
 coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
 <div class="barra" id="estados">
@@ -97,6 +127,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
 <script>
 const IMAGENS = ${JSON.stringify(IMAGENS)};
 const MOVEIS = ${JSON.stringify(MOVEIS)};
+const ANIMACOES = ${JSON.stringify(ANIMACOES)};
 const CANTOS = ${JSON.stringify(CANTOS)}, N = ${N};
 const W = 512;
 function ponto(u, v) {
@@ -230,7 +261,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   // A POLTRONA: um móvel solto que não é redondo, para o botão de girar. Cada orientação é uma peça; a base desenhada
   // (o ponto mais baixo, menos um quarto da largura) vai para o cruzamento da grade, como no pufe.
-  const poltronas = [im.poltrona0, im.poltrona1].map((img) => {
+  const poltronas = [im.poltrona0, im.poltrona1, im.poltrona2, im.poltrona3].map((img) => {
     const c = document.createElement('canvas'); c.width = W; c.height = W; const gc = c.getContext('2d'); gc.drawImage(img, 0, 0);
     const movel = gc.getImageData(0, 0, W, W).data;
     // Uma das duas veio com sombra pintada embaixo (marrom chapado) e a outra não: tira-se a cor mais comum das
@@ -248,6 +279,8 @@ function dados(im, filtro, w = W, h = W) {
     return { id: 'poltrona', movel, sombra: new Uint8ClampedArray(W * W * 4), topo: y0, peColuna, base: [sx / Math.max(1, nb), y1 - (x1 - x0) / 4] };
   });
   let poltrona = [3, 6], lado = 0, pegado = null;
+  // Para onde a poltrona olha em cada posição (a ordem das imagens: Girar anda nesta lista).
+  const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
   // O pufe: onde está (o centro em u, v) e de que versão ele sai.
   const pufes = MOVEIS.filter((m) => m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -281,6 +314,36 @@ function dados(im, filtro, w = W, h = W) {
   // e escurece-se para "de costas", só para VER a direção. A arte de verdade não espelha (a lição da poltrona).
   const QUADROS = 18, fw = im.coelho.width / QUADROS, fh = im.coelho.height;
   const folha = dados(im.coelho, null, im.coelho.width, fh);
+  // AS ANIMAÇÕES: cada quadro decodificado uma vez. A ÂNCORA é do PRIMEIRO quadro de cada animação e direção (o meio da
+  // última linha com desenho): de pé, é o pé; sentado, é o assento. Fixa na animação inteira, para o coelho não tremer.
+  const ANIM = {};
+  for (const [nome, porDir] of Object.entries(ANIMACOES)) {
+    ANIM[nome] = {};
+    for (const [d, srcs] of Object.entries(porDir)) {
+      const quadros = [];
+      for (const src of srcs) {
+        const img = await carregar(src), w = img.width, h = img.height;
+        quadros.push({ px: dados(img, null, w, h), w, h });
+      }
+      const q0 = quadros[0];
+      let fundo = 0, sx = 0, n = 0;
+      for (let k = 0; k < q0.w * q0.h; k++) if (q0.px[k * 4 + 3] > 127) fundo = Math.max(fundo, (k / q0.w) | 0);
+      for (let x = 0; x < q0.w; x++) for (let y = fundo - 3; y <= fundo; y++) if (q0.px[(y * q0.w + x) * 4 + 3] > 127) { sx += x; n++; }
+      ANIM[nome][d] = { quadros, peX: sx / Math.max(1, n), peY: fundo };
+      // DEITADO, a âncora é o meio do corpo (ele fica estendido sobre a cama, não de pé num ponto).
+      if (nome === 'dormindo') {
+        let x0 = q0.w, x1 = 0, y0 = q0.h, y1 = 0;
+        for (let k = 0; k < q0.w * q0.h; k++) if (q0.px[k * 4 + 3] > 127) { const x = k % q0.w, y = (k / q0.w) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+        ANIM[nome][d] = { quadros, peX: (x0 + x1) / 2, peY: (y0 + y1) / 2 };
+      }
+    }
+  }
+  // A direção que falta numa animação: a do mesmo lado (de frente ↔ de frente), e por fim a pose parada.
+  const PAR = { sudeste: 'sudoeste', sudoeste: 'sudeste', nordeste: 'noroeste', noroeste: 'nordeste' };
+  function quadrosDe(nome, d) {
+    const a = ANIM[nome] ?? {};
+    return a[d] ?? a[PAR[d]] ?? (d.startsWith('n') ? a.sudoeste ?? a.sudeste : a.noroeste ?? a.nordeste) ?? ANIM.parado[d] ?? ANIM.parado.sudeste;
+  }
   // O mascote: um quadro por direção. O pé é o meio da última linha com desenho (a âncora do README).
   const mascote = {};
   for (const d of ['sudeste', 'sudoeste', 'nordeste', 'noroeste']) {
@@ -316,9 +379,12 @@ function dados(im, filtro, w = W, h = W) {
     const cama = fixos.find((m) => m.id === 'cama').pe, gr = fixos.find((m) => m.id === 'guarda-roupa').pe;
     return {
       pufe: { ao: em2x2(pufe), onde: [pufe[0], pufe[1]], sobe: 26, pose: 'sentado', olha: 'sudeste', frente: pufe[0] + pufe[1] + LADO_PUFE + 0.01 },
-      poltrona: { ao: em2x2(poltrona), onde: [poltrona[0], poltrona[1]], sobe: 20, pose: 'sentado', olha: lado ? 'sudeste' : 'sudoeste', frente: poltrona[0] + poltrona[1] + LADO_PUFE + 0.01 },
+      poltrona: { ao: em2x2(poltrona), onde: [poltrona[0], poltrona[1]], sobe: 20, pose: 'sentado', olha: ORIENTA[lado], frente: poltrona[0] + poltrona[1] + LADO_PUFE + (ORIENTA[lado].startsWith('n') ? -0.01 : 0.01) },
       // Na cama: recostado na cabeceira (o fundo, u pequeno), como no conceito.
-      cama: { ao: vizinhas(...cama), onde: [cama[0] + 0.9, (cama[2] + cama[3]) / 2], sobe: 30, pose: 'na cama', olha: 'sudoeste', frente: cama[1] + cama[3] + 0.01 },
+      // Lendo, recostado na cabeceira (o fundo, u pequeno); dormindo, deitado no meio da cama, a cabeça para a cabeceira.
+      cama: estado === 'ausente'
+        ? { ao: vizinhas(...cama), onde: [(cama[0] + cama[1]) / 2 - 0.1, (cama[2] + cama[3]) / 2 - 0.15], sobe: 38, pose: 'na cama', olha: 'sudoeste', frente: cama[1] + cama[3] + 0.01 }
+        : { ao: vizinhas(...cama), onde: [cama[0] + 0.9, (cama[2] + cama[3]) / 2], sobe: 30, pose: 'na cama', olha: 'sudoeste', frente: cama[1] + cama[3] + 0.01 },
       'guarda-roupa': { ao: [[Math.floor((gr[0] + gr[1]) / 2), Math.ceil(gr[3])]].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha: 'noroeste' },
     };
   }
@@ -376,7 +442,7 @@ function dados(im, filtro, w = W, h = W) {
     if (c) andarAte(c);
   }
   const quadroBuf = new Uint8ClampedArray(W * W * 4), peBuf = new Int16Array(W).fill(-1), semSombra = new Uint8ClampedArray(W * W * 4);
-  let ultimaCaixa = null;
+  let ultimaCaixa = null, coelhoPe = null;
   function pecaDoCoelho() {
     const pt = coelho.destino && !coelho.caminho.length ? pontos()[coelho.destino] : null;
     // No ponto, o olhar é o do móvel AGORA: girar a poltrona com ele sentado vira o coelho junto.
@@ -384,22 +450,22 @@ function dados(im, filtro, w = W, h = W) {
     const sentado = pt && pt.onde;
     const [u, v] = sentado ? pt.onde : [coelho.u, coelho.v];
     const [px, py] = ponto(u, v);
-    const balanco = coelho.caminho.length ? coelho.quadro % 2 : 0;
     if (ultimaCaixa) {
       const [a, b, c, d] = ultimaCaixa;
       for (let y = b; y < d; y++) for (let x = a; x < c; x++) if (x >= 0 && y >= 0 && x < W && y < W) quadroBuf[(y * W + x) * 4 + 3] = 0;
       peBuf.fill(-1);
     }
-    // Falando, o gesto do provisório (o mascote ainda não tem essa animação); no resto, o mascote na direção dele.
-    const usarProvisorio = falando;
-    const m = mascote[coelho.dir];
-    const sw = usarProvisorio ? fw : m.w, sh = usarProvisorio ? fh : m.h;
-    const ax = usarProvisorio ? fw / 2 : m.peX, ay = usarProvisorio ? fh : m.peY + 1;
-    const X0 = Math.round(px - ax), Y0 = Math.round(py - ay - (sentado ? pt.sobe : 0) - balanco);
-    const q = coelho.quadro % QUADROS;
+    // A ANIMAÇÃO pelo que ele está fazendo: andando, sentado (lendo ou dormindo, na cama), falando de pé, ou parado.
+    const nomeAnim = coelho.caminho.length ? 'andando'
+      : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? 'dormindo' : 'sentado')
+      : falando ? 'falando' : 'parado';
+    const a = quadrosDe(nomeAnim, coelho.dir);
+    const quadro = a.quadros[coelho.quadro % a.quadros.length];
+    const sw = quadro.w, sh = quadro.h;
+    const X0 = Math.round(px - a.peX), Y0 = Math.round(py - a.peY - 1 - (sentado ? pt.sobe : 0));
     for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
-      const s = usarProvisorio ? (y * im.coelho.width + q * fw + x) * 4 : (y * m.w + x) * 4;
-      const fonte = usarProvisorio ? folha : m.px;
+      const s = (y * quadro.w + x) * 4;
+      const fonte = quadro.px;
       if (fonte[s + 3] < 128) continue;
       const X = X0 + x, Y = Y0 + y;
       if (X < 0 || Y < 0 || X >= W || Y >= W) continue;
@@ -409,10 +475,40 @@ function dados(im, filtro, w = W, h = W) {
       peBuf[X] = Math.round(py);
     }
     ultimaCaixa = [X0, Y0, X0 + sw, Y0 + sh];
+    // [x, y do chão, altura do assento]: sentado, a sombra sai do assento e cai no chão em volta do móvel.
+    coelhoPe = [px, py + (sentado ? 0 : 0), sentado ? pt.sobe : 0];
     const p = { id: 'coelho', movel: quadroBuf, sombra: semSombra, topo: Y0, peColuna: peBuf };
     const frente = sentado ? pt.frente : coelho.u + coelho.v + 0.6;
     return [{ p, dx: 0, dy: 0, fator: 1, frente, ...(sentado ? {} : { contato: [px, py], raio: [12, 5] }) }];
   }
+  // A SOMBRA DO COELHO (ideia dele, 14/10/2026): a silhueta projetada no chão, para o lado oposto à luz. De dia a luz é
+  // a JANELA (o meio do vidro, alto: sombra curta e para a esquerda-frente); de noite, o ABAJUR (baixo e perto: sombra
+  // mais comprida, para longe dele). Cada pixel do coelho a uma altura h acima do pé cai no chão a h × alongamento,
+  // na direção contrária à da luz. Pixel art: sombra chapada, sem borrão. Só o chão escurece.
+  const LUZ_DIA = { x: 420, y: 170, alongamento: 0.85, forca: 0.55 };
+  const sombraBuf = new Uint8Array(W * W);
+  function sombraDoCoelho(D, fundoNoite) {
+    const c = ultimaCaixa, pe = coelhoPe;
+    if (!c || !pe) return;
+    const luz = modo === 'noite' ? { x: pecas.abajur.centroTopo, y: pecas.abajur.topo + 40, alongamento: 1.1, forca: 0.5 } : LUZ_DIA;
+    // A direção da sombra no chão: do ponto da luz no chão até o pé, achatada como o chão isométrico (metade em y).
+    let dx = pe[0] - luz.x, dy = (pe[1] - luz.y) * 0.5;
+    const n = Math.hypot(dx, dy) || 1; dx /= n; dy /= n;
+    sombraBuf.fill(0);
+    const [x0, y0, x1, y1] = c;
+    for (let y = Math.max(0, y0); y < Math.min(W, y1); y++) for (let x = Math.max(0, x0); x < Math.min(W, x1); x++) {
+      if (!quadroBuf[(y * W + x) * 4 + 3]) continue;
+      const h = Math.max(0, pe[1] - pe[2] - y); // a altura deste pixel acima do pé (sentado, acima do assento)
+      const alto = h + pe[2]; // contando do chão: sentado, o assento também está no ar
+      const sx = Math.round(x + dx * alto * luz.alongamento), sy = Math.round(pe[1] + dy * alto * luz.alongamento);
+      for (const [ax, ay] of [[0, 0], [1, 0], [0, 1]]) {
+        const X = sx + ax, Y = sy + ay;
+        if (X >= 0 && Y >= 0 && X < W && Y < W && casa[Y * W + X] >= 0) sombraBuf[Y * W + X] = 1;
+      }
+    }
+    for (let k = 0; k < W * W; k++) if (sombraBuf[k]) for (let c2 = 0; c2 < 3; c2++) { D[k * 3 + c2] *= luz.forca; fundoNoite[k * 3 + c2] *= luz.forca + 0.12; }
+  }
+
   // O relógio: 10 quadros por segundo; o coelho anda 2,5 casas por segundo.
   let ultimo = performance.now(), proximoPasseio = 0, tempoDeDesenho = 0;
   setInterval(() => {
@@ -488,7 +584,11 @@ function dados(im, filtro, w = W, h = W) {
         const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
         return { p, dx: Math.round(nx - p.base[0]), dy: Math.round(ny - p.base[1]), fator, frente: poltrona[0] + poltrona[1] + LADO_PUFE, contato: [nx, ny] };
       })(), ...pecaDoCoelho()].sort((a, b) => a.frente - b.frente);
-    for (const { p, dx, dy, fator, contato, raio } of lista) {
+    // A sombra do coelho vai DEPOIS do que fica deitado no chão (o tapete: frente -1) e antes dos móveis de pé, que a
+    // cobrem quando estão na frente. Antes dos dois, o tapete a apagava.
+    let sombraFeita = false;
+    for (const { p, dx, dy, fator, contato, raio, frente } of lista) {
+      if (!sombraFeita && frente >= 0) { sombraDoCoelho(D, fundoNoite); sombraFeita = true; }
       // A sombra de contato de quem não a trouxe pintada (a poltrona): uma elipse no chão, mais escura no meio.
       const [rx, ry] = raio ?? [30, 15];
       if (contato) for (let y = Math.round(contato[1] - ry - 1); y <= contato[1] + ry + 1; y++) for (let x = Math.round(contato[0] - rx - 2); x <= contato[0] + rx + 2; x++) {
@@ -560,7 +660,7 @@ function dados(im, filtro, w = W, h = W) {
       }
     }
     g.putImageData(saida, 0, 0);
-    document.getElementById('legenda').textContent = 'Poltrona olhando para a ' + (lado ? 'direita' : 'esquerda') + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' ? ', luz do lugar ×' + lista.find((i) => i.p.pufe).fator.toFixed(2) : '') + '. Coelho: ' + (coelho.caminho.length ? 'andando' : coelho.pose) + ', olhando para ' + coelho.dir + (coelho.destino ? ' (' + coelho.destino + ')' : '') + '. Desenho do quadro: ' + Math.round(tempoDeDesenho) + ' ms.';
+    document.getElementById('legenda').textContent = 'Poltrona olhando para ' + ORIENTA[lado] + '. Pufe: versão "' + variante.id.replace('pufe-', '') + '"' + (modo === 'dia' ? ', luz do lugar ×' + lista.find((i) => i.p.pufe).fator.toFixed(2) : '') + '. Coelho: ' + (coelho.caminho.length ? 'andando' : falando && !coelho.destino ? 'falando' : coelho.pose) + ', olhando para ' + coelho.dir + (coelho.destino ? ' (' + coelho.destino + ')' : '') + '. Desenho do quadro: ' + Math.round(tempoDeDesenho) + ' ms.';
     document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
@@ -605,7 +705,7 @@ function dados(im, filtro, w = W, h = W) {
     alvo = null; desenhar();
   });
   // GIRAR (pedido dele em 08/10/2026): troca a orientação pintada da poltrona. As duas ocupam as mesmas 2 × 2 casas.
-  const girar = () => { lado = 1 - lado; desenhar(); };
+  const girar = () => { lado = (lado + 1) % 4; desenhar(); };
   document.getElementById('girar').onclick = girar;
   document.addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') girar(); });
   const botoes = { dia: document.getElementById('dia'), noite: document.getElementById('noite') };

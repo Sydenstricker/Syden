@@ -12,3 +12,15 @@
 {"ferramenta":"pixellab","peca":"personagem/mascote/alta","geracoes":15,"quando":"2026-10-14T13:49:32.305Z"}
 {"ferramenta":"pixellab","peca":"personagem/mascote/baixa","geracoes":30,"quando":"2026-10-14T13:51:45.623Z"}
 {"ferramenta":"pixellab","peca":"personagem/mascote/baixa-120","geracoes":25,"quando":"2026-10-14T13:58:31.275Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/andando","geracoes":1,"quando":"2026-10-14T14:34:44.937Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/andando-v3","geracoes":6,"quando":"2026-10-14T14:38:04.993Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/lendo","geracoes":9,"quando":"2026-10-14T14:41:22.788Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/sentado","geracoes":21,"quando":"2026-10-14T14:42:45.861Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/dormindo","geracoes":27,"quando":"2026-10-14T14:42:55.296Z"}
+{"ferramenta":"pixellab","peca":"quarto/giros/poltrona","geracoes":25,"quando":"2026-10-14T14:53:17.137Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/andando-v3b","geracoes":6,"quando":"2026-10-14T14:58:15.107Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/sentado","geracoes":31,"quando":"2026-10-14T14:58:53.220Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/parado","geracoes":6,"quando":"2026-10-14T15:02:23.408Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/sentado-2","geracoes":25,"quando":"2026-10-14T15:12:48.980Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/lendo","geracoes":25,"quando":"2026-10-14T15:16:32.687Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/dormindo","geracoes":25,"quando":"2026-10-14T15:20:27.507Z"}
