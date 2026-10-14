@@ -24,3 +24,5 @@
 {"ferramenta":"pixellab","peca":"personagem/estado/sentado-2","geracoes":25,"quando":"2026-10-14T15:12:48.980Z"}
 {"ferramenta":"pixellab","peca":"personagem/estado/lendo","geracoes":25,"quando":"2026-10-14T15:16:32.687Z"}
 {"ferramenta":"pixellab","peca":"personagem/estado/dormindo","geracoes":25,"quando":"2026-10-14T15:20:27.507Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/lendo-deitado","geracoes":25,"quando":"2026-10-14T16:09:46.902Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/dormindo-largado","geracoes":25,"quando":"2026-10-14T16:13:29.021Z"}

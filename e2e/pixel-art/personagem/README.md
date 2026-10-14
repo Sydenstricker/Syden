@@ -106,6 +106,19 @@ Movimento reduzido no sistema: o coelho aparece já no lugar, sem andar.
   entre o parado e o sentado. E a camada da frente dos móveis.
 - Custo da rodada: ~175 gerações (restam 2.103).
 
+## A rodada dos relatos dele (14/10/2026, à tarde)
+
+- **A ordem de desenho é pela ÁREA no chão**, não por um número por peça: um número só (a soma da casa da frente)
+  cortava o coelho ao lado da poltrona, do pufe e da cabeceira. Quem está inteiramente mais ao fundo num dos eixos vai
+  antes; o coelho sentado vai logo depois do móvel (ou logo antes, com a poltrona de costas).
+- **A sombra é um VOLUME:** cada pixel do coelho lança um raio que desce até o chão longe da luz; móvel abaixo do raio
+  escurece. Cai no chão, no tapete, na poltrona e no pufe. A de contato, embaixo dos pés, é mais escura: sem ela ele
+  parecia flutuar.
+- **Na cama ele DEITA:** lendo deitado (`estados/lendo-deitado`) e dormindo rígido ou largado (`estados/dormindo-largado`),
+  sorteado; o rígido relaxa depois de 20 s. A fileira junto da janela saiu do caminho (a cortina é da parede pintada).
+- **O balão de fala** (o do D4, com os três pontos acendendo) sobre a cabeça, de pé ou sentado.
+- Saiu o botão "sem caminhada" (pedido dele); quem pede menos movimento no sistema continua sem caminhada.
+
 ## A ordem do trabalho
 
 1. **A estrutura, sem arte nova** (página de teste do quarto modular): pontos nos móveis, andar pela grade, ordem de
