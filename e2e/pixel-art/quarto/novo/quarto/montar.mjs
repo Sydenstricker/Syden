@@ -73,7 +73,7 @@ for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-wes
 }
 // AS 4 POSIÇÕES DE CADA MÓVEL (girar.mjs): as 4 diagonais do mesmo móvel, na ordem do botão Girar. Móvel sem as 4
 // vistas fica onde foi pintado.
-const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros' };
+const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = path.join(AQUI, 'avulsos', pasta);
