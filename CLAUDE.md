@@ -490,6 +490,11 @@ ficou combinado:
 - **O quarto é INDIVIDUAL; o coletivo é o salão** (dele, 14/10/2026). **Ele dá um layout inicial, e cada pessoa arruma
   como quiser:** todo móvel se arrasta e gira (4 posições), não só o pufe e a poltrona. A cadeira do computador terá
   FÍSICA de verdade (rola, perde força no atrito, bate e quica nos móveis), não só o desenho mudando.
+- **IDEIA DELE, para depois (14/10/2026): VISITAR o quarto de outra pessoa.** Muda onde a arrumação mora: hoje ela é
+  do navegador (página de teste); com visitas, ela vai para o servidor, e quem visita vê igual — inclusive onde a cadeira
+  parou. A física da cadeira continua rodando só na tela de quem mexe; o servidor guarda onde ela ficou.
+- **As camas para desbloquear já têm 4 candidatas** (`avulsos/cama-casal-1..4.png`, madeiras e cabeceiras diferentes);
+  a 2 é a de fábrica. O que libera cama nova ainda é decisão dele.
 - **PARA DEPOIS de terminar o quarto (anotado em 14/10/2026, pedido dele):** mudar a JANELA de lugar e trocar o TIPO de
   janela, e não só a vista lá fora. Hoje ela é fixa (a fonte da luz, pintada na parede e no chão), então isso pede que a
   luz da janela também passe a ser montada.
