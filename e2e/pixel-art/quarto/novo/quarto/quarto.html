@@ -407,9 +407,9 @@ function dados(im, filtro, w = W, h = W) {
     if (id === 'cama') {
       const cama = fixos.find((m) => m.id === 'cama').pe;
       nomeT = dormindo ? 'deitar' : 'deitar-lendo';
-      beira = [pt.onde[0], cama[3] + 0.35]; // ao lado da cama, no lado comprido da frente
+      beira = [pt.onde[0], cama[3] + 0.12]; // encostado na cama, no lado comprido da frente
     } else {
-      const [vu, vv] = VET[pt.olha], r = id === 'pufe' ? 0.8 : 0.7;
+      const [vu, vv] = VET[pt.olha], r = id === 'pufe' ? 0.62 : 0.7; // no pufe, encostado na borda (0,45 do assento) antes de subir
       beira = [pt.onde[0] + vu * r, pt.onde[1] + vv * r];
       nomeT = 'sentar';
     }
@@ -424,13 +424,13 @@ function dados(im, filtro, w = W, h = W) {
     if (semAndar || !ro.quadros.length) { depois(); return; }
     coelho.trans = {
       quadros: reverso ? [...ro.quadros].reverse() : ro.quadros, de: reverso ? ro.para : ro.de, para: reverso ? ro.de : ro.para,
-      t0: performance.now(), dur: DUR_TOTAL * (ro.quadros.length > 6 ? 1.3 : 1), depois, alvo: id, dir: pt.olha, atrasNaBeira: ro.atrasNaBeira,
+      reverso, t0: performance.now(), dur: DUR_TOTAL * (ro.quadros.length > 6 ? 1.3 : 1), depois, alvo: id, dir: pt.olha, atrasNaBeira: ro.atrasNaBeira,
     };
   }
-  // Onde fica o centro do corpo de uma pose, desenhada no lugar dela (pelo pé, como sempre).
-  function centroDaPose(pose, dir) {
-    const a = quadrosDe(pose.anim, dir), q = a.quadros[0], [x, y] = ponto(pose.chao[0], pose.chao[1]);
-    return [x - a.peX + q.cx, y - a.peY - 1 - pose.h + q.cy];
+  // Onde fica o centro do corpo de uma pose em relação ao ponto do chão embaixo dela (sem a altura do assento).
+  function desvioDaPose(pose, dir) {
+    const a = quadrosDe(pose.anim, dir), q = a.quadros[0];
+    return [q.cx - a.peX, q.cy - a.peY - 1];
   }
   // O último trecho a pé, fora da grade: da casa até a beirada (ou de volta).
   function aproximar(alvo, atras, sobre, depois) {
@@ -493,14 +493,33 @@ function dados(im, filtro, w = W, h = W) {
     let u, v, subida = 0, quadroT = null, sobreT = null, atrasT = false;
     let centroT = null, indiceT = 0;
     if (tr) {
-      const f = Math.min(1, (performance.now() - tr.t0) / tr.dur), e = f * f * (3 - 2 * f);
-      indiceT = Math.min(tr.quadros.length - 1, Math.floor(f * tr.quadros.length));
+      const f = Math.min(1, (performance.now() - tr.t0) / tr.dur);
       coelho.dir = tr.dir;
-      u = tr.de.chao[0] + (tr.para.chao[0] - tr.de.chao[0]) * e;
-      v = tr.de.chao[1] + (tr.para.chao[1] - tr.de.chao[1]) * e;
-      subida = tr.de.h + (tr.para.h - tr.de.h) * e;
-      const c0 = centroDaPose(tr.de, tr.dir), c1 = centroDaPose(tr.para, tr.dir);
-      centroT = [c0[0] + (c1[0] - c0[0]) * e, c0[1] + (c1[1] - c0[1]) * e];
+      // EM DUAS ETAPAS (relato de 14/10/2026: ele começava longe e deslizava pelo ar até o assento). Na primeira, ele SOBE
+      // e o corpo passa da beirada para a BORDA do móvel (meia casa para dentro, no máximo); na segunda, já em cima, se
+      // acomoda até o lugar (o meio da cama, o assento). "p" é o quanto ele já está no móvel (0 na beirada, 1 no lugar),
+      // nos dois sentidos: ao levantar, ele vai do lugar à borda ainda em cima, e só então desce.
+      const p = tr.reverso ? 1 - f : f, liso = (x) => { const c = Math.min(1, Math.max(0, x)); return c * c * (3 - 2 * c); };
+      const B = tr.reverso ? tr.para : tr.de, S = tr.reverso ? tr.de : tr.para;
+      const du = S.chao[0] - B.chao[0], dv = S.chao[1] - B.chao[1], dist = Math.hypot(du, dv) || 1, k = Math.min(1, 0.45 / dist);
+      const borda = [B.chao[0] + du * k, B.chao[1] + dv * k];
+      // O corpo passa a borda um pouco ANTES de a altura subir: sentado no ar ao lado do móvel era o "flutuar".
+      // NO PUFE, UM PULINHO (relato de 14/10/2026: "ainda está deslizando"): o "sentar" do PixelLab é sentar NO CHÃO —
+      // cinco quadros de pé e agachando, e só o último sentado. Subindo junto, ele chegava em cima do pufe ainda de pé.
+      // Então ele agacha na beirada, com os pés no chão, e sobe de uma vez já sentado; o fim é se ajeitar no assento.
+      const pulo = tr.alvo === 'pufe', n = tr.quadros.length;
+      const eB = pulo ? liso((p - 0.36) / 0.3) : liso(p / 0.35);
+      const e1 = pulo ? liso((p - 0.36) / 0.3) : liso((p - 0.08) / 0.47); // o impulso começa ainda agachado
+      const e2 = pulo ? liso((p - 0.7) / 0.3) : liso((p - 0.55) / 0.45);
+      const eO = pulo ? liso(p / 0.6) : liso(p);
+      const iOrig = pulo ? (p < 0.45 ? Math.min(n - 2, Math.floor((p / 0.45) * (n - 1))) : n - 1) : Math.min(n - 1, Math.floor(p * n));
+      indiceT = tr.reverso ? n - 1 - iOrig : iOrig;
+      u = e2 > 0 ? borda[0] + (S.chao[0] - borda[0]) * e2 : B.chao[0] + (borda[0] - B.chao[0]) * eB;
+      v = e2 > 0 ? borda[1] + (S.chao[1] - borda[1]) * e2 : B.chao[1] + (borda[1] - B.chao[1]) * eB;
+      subida = B.h + (S.h - B.h) * e1;
+      // O centro do corpo: o ponto do chão, menos a altura, mais o centro da forma (de pé → sentado ou deitado).
+      const oB = desvioDaPose(B, tr.dir), oS = desvioDaPose(S, tr.dir), [gx, gy] = ponto(u, v);
+      centroT = [gx + oB[0] + (oS[0] - oB[0]) * eO, gy - subida + oB[1] + (oS[1] - oB[1]) * eO];
       quadroT = { a: quadrosDe('parado', tr.dir), q: tr.quadros[indiceT] };
       sobreT = tr.alvo;
       atrasT = subida < 2 ? tr.atrasNaBeira : tr.alvo === 'poltrona' && tr.dir.startsWith('n');
@@ -610,8 +629,9 @@ function dados(im, filtro, w = W, h = W) {
   // baixo): daí sai a profundidade (o coelho aparece na frente ou atrás pixel a pixel) e o ponto do chão embaixo dele
   // (a sombra). Móvel novo traz a forma dele; nada de camada recortada à mão (relato de 14/10/2026: a borda reta da
   // camada da frente cortava o coelho).
+  const BRACO_POLTRONA = 34; // a altura do tampo dos braços da poltrona
   const FORMAS = {
-    poltrona: [{ h: [0, 22] }, { lado: 'tras', fatia: 0.32, h: [0, 62] }, { lado: 'lados', fatia: 0.22, h: [0, 34] }],
+    poltrona: [{ h: [0, 22] }, { lado: 'tras', fatia: 0.32, h: [0, 62] }, { lado: 'lados', fatia: 0.22, h: [0, BRACO_POLTRONA] }],
     pufe: [{ h: [0, 30] }],
     // A cama olha para o sudoeste: a cabeceira fica atrás (u pequeno), os pés na frente.
     cama: [{ h: [0, 30] }, { lado: 'tras', fatia: 0.1, h: [0, 72] }, { lado: 'frente', fatia: 0.05, h: [0, 38] }],
@@ -1008,7 +1028,11 @@ function dados(im, filtro, w = W, h = W) {
       for (let y = Math.max(0, b0); y < Math.min(W, b1); y++) for (let x = Math.max(0, a0); x < Math.min(W, a1); x++) {
         const d = y * W + x, q = d * 4;
         if (!quadroBuf[q + 3]) continue;
-        if (eMovel[d] && chaveDoPixel[d] > coelhoChave + Math.max(0, y - coelhoLinha) * 1.5) continue; // o móvel está na frente
+        // As pernas à frente valem só sobre o ASSENTO: a face do braço da poltrona, acima dele, fica na frente do quadril
+        // (relato de 14/10/2026: "o coelho está por cima do apoio"). O tampo do braço não: ali o braço dele apoia.
+        const bracoDaPoltrona = dono[d].startsWith('poltrona') && alturaPx[d] > ASSENTO.poltrona + 2 && alturaPx[d] < BRACO_POLTRONA - 1;
+        const pernas = bracoDaPoltrona ? 0 : Math.max(0, y - coelhoLinha) * 1.5;
+        if (eMovel[d] && chaveDoPixel[d] > coelhoChave + pernas) continue; // o móvel está na frente
         for (let c = 0; c < 3; c++) D[d * 3 + c] = quadroBuf[q + c];
         eMovel[d] = 1; peY[d] = peBuf[x] >= 0 ? peBuf[x] : coelhoPe[1]; dono[d] = 'coelho'; chaoPx[d] = -1;
       }
