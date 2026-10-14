@@ -58,7 +58,8 @@ const FONTES = {
   deitar: ['transicoes/deitar-fluido', 'transicoes/deitar'],
   'deitar-lendo': ['transicoes/deitar-lendo-fluido', 'transicoes/deitar-lendo'],
 };
-const DELES = { sudeste: 'south-east', sudoeste: 'south-west', nordeste: 'north-east', noroeste: 'north-west' };
+// As 8 direções do personagem: as diagonais são as de uso; as outras 4 (de frente, de costas, de lado) servem à VIRADA.
+const DELES = { sudeste: 'south-east', sudoeste: 'south-west', nordeste: 'north-east', noroeste: 'north-west', sul: 'south', oeste: 'west', norte: 'north', leste: 'east' };
 const ANIMACOES = {};
 for (const [nome, pastas] of Object.entries(FONTES)) {
   ANIMACOES[nome] = {};
@@ -577,13 +578,24 @@ function dados(im, filtro, w = W, h = W) {
     const nomeAnim = coelho.caminho.length || ap ? 'andando'
       : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' ? 'sentado-poltrona' : 'sentado')
       : falando ? 'falando' : 'parado';
-    const a = quadroT ? quadroT.a : quadrosDe(nomeAnim, coelho.dir);
+    // A VIRADA SUAVE (ideia dele, 14/10/2026): a direção que APARECE anda um passo por quadro no círculo das 8, pelo lado
+    // mais curto, até a que ele quer; os passos do meio são a pose dele (de pé ou sentado) naquela direção. 90° = 200 ms.
+    const ANEL = ['sudeste', 'sul', 'sudoeste', 'oeste', 'noroeste', 'norte', 'nordeste', 'leste'];
+    if (tr || semAndar || !coelho.dirVista) coelho.dirVista = coelho.dir;
+    else if (coelho.dirVista !== coelho.dir && coelho.ultimoGiro !== coelho.quadro) {
+      const i = ANEL.indexOf(coelho.dirVista), j = ANEL.indexOf(coelho.dir), dif = (j - i + 8) % 8;
+      coelho.dirVista = ANEL[(i + (dif <= 4 ? 1 : -1) + 8) % 8];
+      coelho.ultimoGiro = coelho.quadro;
+    }
+    const virando = coelho.dirVista !== coelho.dir;
+    const animDaVirada = nomeAnim === 'sentado' || nomeAnim === 'sentado-poltrona' ? 'sentado' : 'parado';
+    const a = quadroT ? quadroT.a : virando ? quadrosDe(animDaVirada, coelho.dirVista) : quadrosDe(nomeAnim, coelho.dir);
     // PARADO, a respiração é discreta (relato de 14/10/2026: o ciclo inteiro do PixelLab balançava "como bêbado", 5 px
     // na cabeça e 3 px para o lado). Só os quadros mais parecidos com a pose, devagar, a maior parte do tempo nela.
     const RESPIRA = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 8, 8, 8];
     const iq = nomeAnim === 'parado' && !quadroT ? Math.min(a.quadros.length - 1, RESPIRA[coelho.quadro % RESPIRA.length]) : coelho.quadro % a.quadros.length;
-    const quadro = quadroT ? quadroT.q : a.quadros[iq];
-    rotuloDoQuadro = (quadroT ? 'T' + tr.passos.indexOf(tr.passos[Math.min(tr.passos.length - 1, Math.floor((performance.now() - tr.t0) / tr.durPasso))]) : nomeAnim + iq) + coelho.dir + (falando ? Math.floor(coelho.quadro / 3) % 3 : '');
+    const quadro = quadroT ? quadroT.q : virando ? a.quadros[0] : a.quadros[iq];
+    rotuloDoQuadro = (quadroT ? 'T' + tr.passos.indexOf(tr.passos[Math.min(tr.passos.length - 1, Math.floor((performance.now() - tr.t0) / tr.durPasso))]) : nomeAnim + iq) + coelho.dirVista + (falando ? Math.floor(coelho.quadro / 3) % 3 : '');
     const sw = quadro.w, sh = quadro.h;
     const altura = tr ? subida : sentado ? pt.sobe : 0;
     if (tr && quadroT && subida === 0) { /* na beirada: os pés do quadro no chão */ }

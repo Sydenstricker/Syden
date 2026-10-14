@@ -53,3 +53,7 @@
 {"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fc/north-west","geracoes":20,"quando":"2026-10-14T18:53:16.565Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/south-west","geracoes":20,"quando":"2026-10-14T18:53:48.750Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fa/south-west","geracoes":20,"quando":"2026-10-14T18:55:33.121Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fc/south-west","geracoes":20,"quando":"2026-10-14T18:56:33.127Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/south-west","geracoes":10,"quando":"2026-10-14T18:58:40.319Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fb/north-west","geracoes":10,"quando":"2026-10-14T19:00:28.438Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fc/south-west","geracoes":20,"quando":"2026-10-14T19:02:07.569Z"}

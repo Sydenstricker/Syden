@@ -4,6 +4,8 @@ T = sys.argv[1]
 for nome in ['sentar', 'deitar', 'deitar-lendo']:
     for d in ['south-east', 'south-west', 'north-east', 'north-west']:
         partes = [f'{T}/{nome}/{d}-0.png', f'{T}/{nome}-fb/{d}-0.png', f'{T}/{nome}-fb/{d}-1.png', f'{T}/{nome}/{d}-1.png', f'{T}/{nome}-fc/{d}-0.png', f'{T}/{nome}-fc/{d}-1.png']
+        # Deitar: o último trecho (fc) desenhou uma cama (e, no de ler, o abajur e um fundo) em volta (14/10/2026): fica de fora.
+        if nome.startswith('deitar'): partes = partes[:4]
         if not all(os.path.exists(p) for p in partes): continue
         os.makedirs(f'{T}/{nome}-fluido', exist_ok=True)
         for f in os.listdir(f'{T}/{nome}-fluido'):

@@ -7,6 +7,7 @@ T = sys.argv[1]
 def madeira(r, g, b): return (r - g >= 18 and g - b >= 6 and r <= 210) or (r - g >= 20 and r - b >= 12 and 50 <= r <= 145) or (r - g >= 18 and r - b >= 22 and 30 <= r <= 120)
 for pasta in sorted(glob.glob(os.path.join(T, '*'))):
     if not os.path.isdir(pasta): continue
+    if 'lendo' in os.path.basename(pasta): continue  # o LIVRO é marrom: ali a cor de madeira não é banco
     for f in sorted(glob.glob(os.path.join(pasta, '*-*.png'))):
         im = Image.open(f).convert('RGBA'); px = im.load(); W, H = im.size
         bb = im.getbbox()
@@ -50,6 +51,7 @@ for pasta in sorted(glob.glob(os.path.join(T, '*'))):
 def escuro(p): return p[3] > 0 and p[0] + p[1] + p[2] < 60
 for pasta in sorted(glob.glob(os.path.join(T, '*'))):
     if not os.path.isdir(pasta): continue
+    if 'lendo' in os.path.basename(pasta): continue  # o LIVRO é marrom: ali a cor de madeira não é banco
     for f in sorted(glob.glob(os.path.join(pasta, '*-*.png'))):
         im = Image.open(f).convert('RGBA'); px = im.load(); W, H = im.size
         bb = im.getbbox()
