@@ -83,6 +83,30 @@ const LUGARES: { url: string; caixa: Caixa; quadros?: number; duracao: number; a
 ];
 
 /**
+ * Onde senta quem NÃO tem coelho pronto. Essa pessoa aparece com a figura do lugar, e diante da TV a figura está sentada
+ * no chão, com metade da altura de quem está de pé: ao lado dos corpos inteiros ela parecia minúscula (relato de
+ * 13/10/2026). Então quem não tem coelho pronto deixa os dois lugares do chão da TV para o fim (o sofá continua primeiro:
+ * a figura sentada ali tem a altura de gente); o corpo inteiro de pé cabe em qualquer lugar.
+ */
+const SEM_PRONTO = [0, 1, 4, 5, 6, 7, 8, 2, 3];
+
+/** Que lugar cada pessoa ocupa (o índice em LUGARES), na ordem de naCall. */
+function distribuir(prontos: boolean[]): number[] {
+  const livre = LUGARES.map(() => true);
+  const lugar: number[] = prontos.map(() => -1);
+  const pegar = (i: number, ordem: number[]) => {
+    const j = ordem.find((k) => livre[k]);
+    if (j === undefined) return;
+    livre[j] = false;
+    lugar[i] = j;
+  };
+  const todos = LUGARES.map((_, k) => k);
+  prontos.forEach((p, i) => !p && pegar(i, SEM_PRONTO));
+  prontos.forEach((p, i) => lugar[i] < 0 && pegar(i, todos));
+  return lugar;
+}
+
+/**
  * O CORPO INTEIRO de cada coelho pronto, de pé (13/10/2026, gerado no PixelLab: e2e/pixel-art/avatares/corpos.mjs),
  * em web/public/avatares/coelho-NN-corpo.png, com a largura e a altura em pixels do salão. O coelho pronto em si é só
  * cabeça e ombros, e no sofá ele saía "cortado ao meio" (relato dele). O 16 ainda não tem corpo (o saldo do
@@ -160,6 +184,8 @@ export function Salao({ acoes, naCall, quadro, aoVivo, recado }: {
   const [aceso, setAceso] = useState<ObjetoDoSalao | null>(null);
   const comAcao = OBJETOS.filter((o) => acoes[o.id]);
   const sobra = naCall.length - LUGARES.length;
+  const visiveis = naCall.slice(0, LUGARES.length);
+  const lugarDe = distribuir(visiveis.map((p) => Boolean(p.pronto)));
 
   return (
     <div className="salao">
@@ -190,8 +216,8 @@ export function Salao({ acoes, naCall, quadro, aoVivo, recado }: {
         {quadro}
       </div>
 
-      {naCall.slice(0, LUGARES.length).map((pessoa, i) => {
-        const lugar = LUGARES[i];
+      {visiveis.map((pessoa, i) => {
+        const lugar = LUGARES[lugarDe[i]];
         const [x0, y0, x1, y1] = lugar.caixa;
         // O coelho pronto de corpo inteiro fica de pé no fundo do lugar, no tamanho em que nasceu; sem corpo (o 16),
         // o busto, um pouco maior que as caixas pequenas da TV.
