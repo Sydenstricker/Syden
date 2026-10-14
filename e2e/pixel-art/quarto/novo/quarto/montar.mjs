@@ -361,10 +361,10 @@ function dados(im, filtro, w = W, h = W) {
   // A ARRUMAÇÃO DE CADA UM fica no navegador por enquanto (na página de teste); no app, ela vai para o servidor.
   let ARR = JSON.parse(JSON.stringify(INICIAL));
   try {
-    const guardada = JSON.parse(localStorage.getItem('syden-quarto-arrumacao') ?? 'null');
+    const guardada = JSON.parse(localStorage.getItem('syden-quarto-arrumacao-2') ?? 'null');
     if (guardada && Object.keys(INICIAL).every((id) => guardada[id]?.c)) ARR = guardada;
   } catch { /* sem guardar: começa da inicial */ }
-  const guardar = () => { try { localStorage.setItem('syden-quarto-arrumacao', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } };
+  const guardar = () => { try { localStorage.setItem('syden-quarto-arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } };
   const ehDeitado = (id) => id === 'tapete';
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
   const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
@@ -971,7 +971,8 @@ function dados(im, filtro, w = W, h = W) {
     pufe: [{ h: [0, 30] }],
     mesa: [{ h: [0, 42] }],
     // A cama olha para o sudoeste: a cabeceira fica atrás (u pequeno), os pés na frente.
-    cama: [{ h: [0, 30] }, { lado: 'tras', fatia: 0.1, h: [0, 72] }, { lado: 'frente', fatia: 0.05, h: [0, 38] }],
+    // A cama de casal (cama-casal-giros): colchão e cabeceira, sem peseira.
+    cama: [{ h: [0, 30] }, { lado: 'tras', fatia: 0.1, h: [0, 62] }],
     abajur: [{ h: [0, 78] }],
     'guarda-roupa': [{ h: [0, 135] }],
   };
