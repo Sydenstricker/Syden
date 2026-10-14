@@ -33,3 +33,9 @@
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar/south-west","geracoes":10,"quando":"2026-10-14T17:01:13.232Z"}
 {"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/south-west","geracoes":10,"quando":"2026-10-14T17:03:17.626Z"}
 {"ferramenta":"pixellab","peca":"personagem/estado/sentado-poltrona","geracoes":25,"quando":"2026-10-14T18:04:11.476Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fa/south-east","geracoes":10,"quando":"2026-10-14T18:22:12.794Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fb/south-east","geracoes":10,"quando":"2026-10-14T18:24:05.880Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fc/south-east","geracoes":10,"quando":"2026-10-14T18:26:15.171Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fa/south-west","geracoes":0,"quando":"2026-10-14T18:28:27.472Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fb/south-west","geracoes":0,"quando":"2026-10-14T18:31:13.066Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-fc/south-west","geracoes":10,"quando":"2026-10-14T18:33:30.558Z"}
