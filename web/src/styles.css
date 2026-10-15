@@ -14445,7 +14445,7 @@ body.arrastando-barra {
 .minijogo-abas button.ativa {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--accent-contrast, #fff);
+  color: var(--accent-texto);
   font-weight: 700;
 }
 
