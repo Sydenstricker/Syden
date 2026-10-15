@@ -130,7 +130,7 @@ const CENA = "salao", DX = 256, DY = 27;
 // O que cada pessoa arrumou fica guardado por cena (o quarto e o salão não se misturam).
 const PREFIXO = CENA === 'salao' ? 'syden-salao-' : 'syden-quarto-';
 const MOVEIS_GIRADOS = ["sofa","tv","fliperama","balcao","estante","mesinha","banqueta","banqueta-2","planta-alta","planta-baixa","sofa-2","poltrona","poltrona-2","mesa-jogo","cadeira","cadeira-2","cadeira-3","cadeira-4","jukebox","microfone","pufao","ilha","geladeira"];
-const TELAS_MEDIDAS = {"_leia":"A TELA de cada móvel, medida uma vez nas vistas de frente (0 = south-west, 3 = south-east), em pixels da imagem da vista: as colunas x0..x1 e as retas de cima e de baixo, y = topo + k·x e y = pe + k·x. O recuo deixa a moldura à vista (a TV) ou só tira o contorno (o fliperama). Medido por telas.py a partir da região cinza da tela, conferido à mão. E só onde também é painel desenhado (a cor do painel, na TV; o cinza do vidro, no fliperama), recolhido pelo recuo: a reta sozinha passava da moldura nos cantos.","tv":{"0":{"x0":44,"x1":99,"k":0.5,"topo":-6.5,"pe":35},"3":{"x0":37,"x1":91,"k":-0.481,"topo":60.1,"pe":95.9},"recuo":[3,3,3,5],"painel":{"cor":[45,38,58],"tol":14,"recolher":3}},"fliperama":{"0":{"x0":61,"x1":85,"k":0.417,"topo":27.6,"pe":45.5},"3":{"x0":67,"x1":90,"k":-0.417,"topo":90.8,"pe":108.8},"recuo":[1,1,1,0],"painel":{"cinza":true,"recolher":1}}};
+const TELAS_MEDIDAS = {"_leia":"A TELA de cada móvel, medida uma vez nas vistas de frente (0 = south-west, 3 = south-east), em pixels da imagem da vista: as colunas x0..x1 e as retas de cima e de baixo, y = topo + k·x e y = pe + k·x. O recuo deixa a moldura à vista (a TV) ou só tira o contorno (o fliperama). Medido por telas.py a partir da região cinza da tela, conferido à mão. E só onde também é painel desenhado (a cor do painel, na TV; o cinza do vidro, no fliperama), recolhido pelo recuo: a reta sozinha passava da moldura nos cantos.","tv":{"0":{"x0":44,"x1":99,"k":0.5,"topo":-6.5,"pe":35,"recuo":[6,3,3,5]},"3":{"x0":37,"x1":91,"k":-0.481,"topo":60.1,"pe":95.9},"recuo":[3,3,3,5],"painel":{"cor":[45,38,58],"tol":14,"recolher":3}},"fliperama":{"0":{"x0":61,"x1":85,"k":0.417,"topo":27.6,"pe":45.5},"3":{"x0":67,"x1":90,"k":-0.417,"topo":90.8,"pe":108.8},"recuo":[1,1,1,0],"painel":{"cinza":true,"recolher":1}}};
 const W = 1024;
 function ponto(u, v) {
   const a = u / N, b = v / N, { fundo: B, esquerda: L, direita: R, frente: F } = CANTOS;
@@ -615,7 +615,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     return pts;
   }
-  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
+  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id][l].recuo ?? TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
   const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
