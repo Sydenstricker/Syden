@@ -58,8 +58,12 @@ function CoelhoPronto({ numero, estado }: { numero: number; estado: EstadoDoPron
   );
 }
 
-/** Silêncio que precisa passar para o balão voltar a ser coelho; e quanto dura a volta. */
+/** Silêncio que precisa passar para o balão voltar a ser coelho; e quanto dura a volta.
+ *  A FALA tem folga curta (15/10/2026, relato dele: "fica na animação de falando por mais tempo do que a pessoa de fato
+ *  está falando"): o sinal de fala do LiveKit já chega com a margem dele, e 1,2 s a mais somava mais de 2 s de boca
+ *  mexendo depois do silêncio. 0,45 s ainda cobre a pausa entre palavras. Digitar continua com a folga longa. */
 const FOLGA_MS = 1200;
+const FOLGA_DA_FALA_MS = 450;
 const VOLTA_MS = 750;
 
 /**
@@ -70,7 +74,7 @@ const VOLTA_MS = 750;
  * seguindo ela ao pé da letra, o coelho viraria balão e voltaria várias vezes numa frase. Entrar no
  * balão é imediato (é o que diz "ele começou"); sair só depois de um silêncio de verdade.
  */
-function useMomentoDaConversa(ativo: boolean): 'parado' | 'balao' | 'voltando' {
+function useMomentoDaConversa(ativo: boolean, folgaMs = FOLGA_MS): 'parado' | 'balao' | 'voltando' {
   const [momento, setMomento] = useState<'parado' | 'balao' | 'voltando'>(ativo ? 'balao' : 'parado');
   useEffect(() => {
     if (ativo) {
@@ -78,9 +82,9 @@ function useMomentoDaConversa(ativo: boolean): 'parado' | 'balao' | 'voltando' {
       return;
     }
     if (momento !== 'balao') return;
-    const folga = setTimeout(() => setMomento('voltando'), FOLGA_MS);
+    const folga = setTimeout(() => setMomento('voltando'), folgaMs);
     return () => clearTimeout(folga);
-  }, [ativo, momento]);
+  }, [ativo, momento, folgaMs]);
   useEffect(() => {
     if (momento !== 'voltando') return;
     const volta = setTimeout(() => setMomento('parado'), VOLTA_MS);
@@ -132,7 +136,7 @@ export function Avatar({
   // muda sozinha quando a pessoa troca, pelo mesmo "user:updated" que já atualiza o nome.
   const moldura = membro?.moldura ?? undefined;
   // Falar tem precedência sobre digitar: é o que os outros estão ouvindo agora.
-  const fala = useMomentoDaConversa(!!speaking);
+  const fala = useMomentoDaConversa(!!speaking, FOLGA_DA_FALA_MS);
   const escrita = useMomentoDaConversa(!!digitando && !speaking);
   const pose =
     fala === 'balao'
@@ -156,7 +160,8 @@ export function Avatar({
   // O coelho pronto na pose do momento: falar vem antes de tudo (é o que os outros estão ouvindo), depois o
   // estado escolhido. Offline e "não se sabe" ficam no desenho parado.
   const estadoDoPronto: EstadoDoPronto | null =
-    fala !== 'parado' ? 'falando' : online && !offline && (status === 'ausente' || status === 'ocupado') ? status : null;
+    // (só no balão: na volta ele já parou de falar, e a boca mexendo ali era o "demora para voltar")
+    fala === 'balao' ? 'falando' : online && !offline && (status === 'ausente' || status === 'ocupado') ? status : null;
 
   return (
     <span
