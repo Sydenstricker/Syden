@@ -1842,4 +1842,9 @@ export default {
   'Tapete': 'விரிப்பு',
   'Objetos da parede': 'சுவர் அலங்காரங்கள்',
   'Em cima dos móveis': 'தளவாடங்களின் மேல்',
+  'Gráficos': 'கிராபிக்ஸ்',
+  'Partículas': 'துகள்கள்',
+  'Sombras': 'நிழல்கள்',
+  'Telas animadas': 'அசையும் திரைகள்',
+  'Ajustar sozinho quando ficar lento': 'மெதுவானால் தானாகச் சரிசெய்',
 } satisfies Record<string, string>;

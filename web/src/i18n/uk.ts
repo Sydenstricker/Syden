@@ -1907,4 +1907,9 @@ export default {
   'Tapete': 'Килим',
   'Objetos da parede': 'Речі на стіні',
   'Em cima dos móveis': 'На меблях',
+  'Gráficos': 'Графіка',
+  'Partículas': 'Частинки',
+  'Sombras': 'Тіні',
+  'Telas animadas': 'Анімовані екрани',
+  'Ajustar sozinho quando ficar lento': 'Автоматично підлаштовувати, коли гальмує',
 } satisfies Record<string, string>;

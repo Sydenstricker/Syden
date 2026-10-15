@@ -1924,4 +1924,9 @@ export default {
   'Tapete': 'Vaip',
   'Objetos da parede': 'Seinakaunistused',
   'Em cima dos móveis': 'Mööbli peal',
+  'Gráficos': 'Graafika',
+  'Partículas': 'Osakesed',
+  'Sombras': 'Varjud',
+  'Telas animadas': 'Animeeritud ekraanid',
+  'Ajustar sozinho quando ficar lento': 'Kohanda automaatselt, kui läheb aeglaseks',
 } satisfies Record<string, string>;

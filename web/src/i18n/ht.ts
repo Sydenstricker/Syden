@@ -1937,4 +1937,9 @@ export default {
   'Tapete': 'Tapi',
   'Objetos da parede': 'Dekorasyon miray',
   'Em cima dos móveis': 'Sou mèb yo',
+  'Gráficos': 'Grafik',
+  'Partículas': 'Patikil',
+  'Sombras': 'Lonbraj',
+  'Telas animadas': 'Ekran ki bouje',
+  'Ajustar sozinho quando ficar lento': 'Ajiste poukont li lè l vin lan',
 } satisfies Record<string, string>;

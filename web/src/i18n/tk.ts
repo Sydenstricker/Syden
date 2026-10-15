@@ -1929,4 +1929,9 @@ export default {
   'Tapete': 'Haly',
   'Objetos da parede': 'Diwar bezegleri',
   'Em cima dos móveis': 'Mebelleriň üstünde',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Bölejikler',
+  'Sombras': 'Kölegeler',
+  'Telas animadas': 'Hereketli ekranlar',
+  'Ajustar sozinho quando ficar lento': 'Haýallanda özi sazlasyn',
 } satisfies Record<string, string>;

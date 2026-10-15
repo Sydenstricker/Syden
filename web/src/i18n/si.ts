@@ -1927,4 +1927,9 @@ export default {
   'Tapete': 'පාපිස්ස',
   'Objetos da parede': 'බිත්ති සැරසිලි',
   'Em cima dos móveis': 'ගෘහ භාණ්ඩ මත',
+  'Gráficos': 'ග්‍රැෆික්ස්',
+  'Partículas': 'අංශු',
+  'Sombras': 'සෙවණැලි',
+  'Telas animadas': 'චලනය වන තිර',
+  'Ajustar sozinho quando ficar lento': 'මන්දගාමී වූ විට ස්වයංක්‍රීයව සකසන්න',
 } satisfies Record<string, string>;

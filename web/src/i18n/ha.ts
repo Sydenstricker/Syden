@@ -1859,4 +1859,9 @@ export default {
   'Tapete': 'Kafet',
   'Objetos da parede': 'Kayan bango',
   'Em cima dos móveis': 'A kan kayan daki',
+  'Gráficos': 'Zane-zane',
+  'Partículas': 'Tartsatsi',
+  'Sombras': 'Inuwoyi',
+  'Telas animadas': 'Allon da ke motsi',
+  'Ajustar sozinho quando ficar lento': 'Daidaita kai tsaye idan ya yi jinkiri',
 } satisfies Record<string, string>;

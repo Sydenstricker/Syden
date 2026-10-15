@@ -1929,4 +1929,9 @@ export default {
   'Tapete': 'Kilimas',
   'Objetos da parede': 'Sienų dekoracijos',
   'Em cima dos móveis': 'Ant baldų',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Dalelės',
+  'Sombras': 'Šešėliai',
+  'Telas animadas': 'Animuoti ekranai',
+  'Ajustar sozinho quando ficar lento': 'Prisitaikyti automatiškai, kai sulėtėja',
 } satisfies Record<string, string>;

@@ -1857,4 +1857,9 @@ export default {
   'Tapete': 'Covor',
   'Objetos da parede': 'Decorațiuni de perete',
   'Em cima dos móveis': 'Pe mobilă',
+  'Gráficos': 'Grafică',
+  'Partículas': 'Particule',
+  'Sombras': 'Umbre',
+  'Telas animadas': 'Ecrane animate',
+  'Ajustar sozinho quando ficar lento': 'Ajustare automată când merge greu',
 } satisfies Record<string, string>;

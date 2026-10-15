@@ -1941,4 +1941,9 @@ export default {
   'Tapete': 'Хивс',
   'Objetos da parede': 'Ханын чимэглэл',
   'Em cima dos móveis': 'Тавилга дээр',
+  'Gráficos': 'График',
+  'Partículas': 'Бөөмс',
+  'Sombras': 'Сүүдэр',
+  'Telas animadas': 'Хөдөлгөөнт дэлгэц',
+  'Ajustar sozinho quando ficar lento': 'Удаашрахад автоматаар тохируулах',
 } satisfies Record<string, string>;

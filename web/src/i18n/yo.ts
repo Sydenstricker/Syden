@@ -1872,4 +1872,9 @@ export default {
   'Tapete': 'Kápẹ́ẹ̀tì',
   'Objetos da parede': 'Ọ̀ṣọ́ ògiri',
   'Em cima dos móveis': 'Lórí àga àti tábìlì',
+  'Gráficos': 'Àwòrán',
+  'Partículas': 'Ìtànná',
+  'Sombras': 'Òjìji',
+  'Telas animadas': 'Àwọn ìbòjú tó ń rìn',
+  'Ajustar sozinho quando ficar lento': 'Ṣàtúnṣe fúnra rẹ̀ nígbà tó bá ń lọ́ra',
 } satisfies Record<string, string>;

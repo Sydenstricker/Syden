@@ -1838,4 +1838,9 @@ export default {
   'Tapete': 'ラグ',
   'Objetos da parede': '壁の飾り',
   'Em cima dos móveis': '家具の上',
+  'Gráficos': 'グラフィック',
+  'Partículas': 'パーティクル',
+  'Sombras': '影',
+  'Telas animadas': '画面のアニメーション',
+  'Ajustar sozinho quando ficar lento': '重くなったら自動で調整',
 } satisfies Record<string, string>;

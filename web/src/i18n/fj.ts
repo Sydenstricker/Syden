@@ -1856,4 +1856,9 @@ export default {
   'Tapete': 'Ibe',
   'Objetos da parede': 'iUkuuku ni lalaga',
   'Em cima dos móveis': 'E dela ni iyaya',
+  'Gráficos': 'Na iyaloyalo',
+  'Partículas': 'Na vuka ni rarama',
+  'Sombras': 'Na yaloyalo',
+  'Telas animadas': 'Na sikirini e yavavala',
+  'Ajustar sozinho quando ficar lento': 'Vakadodonutaka ga vakataki koya ni sa berabera',
 } satisfies Record<string, string>;

@@ -1919,4 +1919,9 @@ export default {
   'Tapete': 'Matta',
   'Objetos da parede': 'Väggdekor',
   'Em cima dos móveis': 'På möblerna',
+  'Gráficos': 'Grafik',
+  'Partículas': 'Partiklar',
+  'Sombras': 'Skuggor',
+  'Telas animadas': 'Animerade skärmar',
+  'Ajustar sozinho quando ficar lento': 'Justera automatiskt när det blir segt',
 } satisfies Record<string, string>;

@@ -1928,4 +1928,9 @@ export default {
   'Tapete': 'ພົມ',
   'Objetos da parede': 'ເຄື່ອງປະດັບຝາ',
   'Em cima dos móveis': 'ເທິງເຄື່ອງເຮືອນ',
+  'Gráficos': 'ກຣາບຟິກ',
+  'Partículas': 'ອະນຸພາກ',
+  'Sombras': 'ເງົາ',
+  'Telas animadas': 'ໜ້າຈໍເຄື່ອນໄຫວ',
+  'Ajustar sozinho quando ficar lento': 'ປັບເອງເມື່ອຊ້າລົງ',
 } satisfies Record<string, string>;

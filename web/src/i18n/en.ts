@@ -1852,4 +1852,9 @@ export default {
   'Tapete': 'Rug',
   'Objetos da parede': 'Wall decor',
   'Em cima dos móveis': 'On the furniture',
+  'Gráficos': 'Graphics',
+  'Partículas': 'Particles',
+  'Sombras': 'Shadows',
+  'Telas animadas': 'Animated screens',
+  'Ajustar sozinho quando ficar lento': 'Adjust automatically when it gets slow',
 } satisfies Record<string, string>;

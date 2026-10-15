@@ -1845,4 +1845,9 @@ export default {
   'Tapete': '러그',
   'Objetos da parede': '벽 장식',
   'Em cima dos móveis': '가구 위',
+  'Gráficos': '그래픽',
+  'Partículas': '파티클',
+  'Sombras': '그림자',
+  'Telas animadas': '움직이는 화면',
+  'Ajustar sozinho quando ficar lento': '느려지면 자동으로 조정',
 } satisfies Record<string, string>;

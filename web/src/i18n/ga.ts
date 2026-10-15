@@ -1863,4 +1863,9 @@ export default {
   'Tapete': 'Ruga',
   'Objetos da parede': 'Maisiúcháin bhalla',
   'Em cima dos móveis': 'Ar an troscán',
+  'Gráficos': 'Grafaic',
+  'Partículas': 'Cáithníní',
+  'Sombras': 'Scáthanna',
+  'Telas animadas': 'Scáileáin bheo',
+  'Ajustar sozinho quando ficar lento': 'Coigeartaigh go huathoibríoch nuair a éiríonn sé mall',
 } satisfies Record<string, string>;

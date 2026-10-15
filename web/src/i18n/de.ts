@@ -1881,4 +1881,9 @@ export default {
   'Tapete': 'Teppich',
   'Objetos da parede': 'Wanddeko',
   'Em cima dos móveis': 'Auf den Möbeln',
+  'Gráficos': 'Grafik',
+  'Partículas': 'Partikel',
+  'Sombras': 'Schatten',
+  'Telas animadas': 'Animierte Bildschirme',
+  'Ajustar sozinho quando ficar lento': 'Automatisch anpassen, wenn es langsam wird',
 } satisfies Record<string, string>;

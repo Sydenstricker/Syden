@@ -1929,4 +1929,9 @@ export default {
   'Tapete': 'गलैँचा',
   'Objetos da parede': 'भित्ताका सजावट',
   'Em cima dos móveis': 'फर्निचरमाथि',
+  'Gráficos': 'ग्राफिक्स',
+  'Partículas': 'कणहरू',
+  'Sombras': 'छायाहरू',
+  'Telas animadas': 'चल्ने स्क्रिनहरू',
+  'Ajustar sozinho quando ficar lento': 'ढिलो हुँदा आफैँ मिलाउने',
 } satisfies Record<string, string>;

@@ -1852,4 +1852,9 @@ export default {
   'Tapete': 'Alfombra',
   'Objetos da parede': 'Objetos de la pared',
   'Em cima dos móveis': 'Sobre los muebles',
+  'Gráficos': 'Gráficos',
+  'Partículas': 'Partículas',
+  'Sombras': 'Sombras',
+  'Telas animadas': 'Pantallas animadas',
+  'Ajustar sozinho quando ficar lento': 'Ajustar automáticamente cuando vaya lento',
 } satisfies Record<string, string>;

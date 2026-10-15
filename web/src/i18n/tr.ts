@@ -1851,4 +1851,9 @@ export default {
   'Tapete': 'Halı',
   'Objetos da parede': 'Duvar süsleri',
   'Em cima dos móveis': 'Mobilyaların üstünde',
+  'Gráficos': 'Grafikler',
+  'Partículas': 'Parçacıklar',
+  'Sombras': 'Gölgeler',
+  'Telas animadas': 'Hareketli ekranlar',
+  'Ajustar sozinho quando ficar lento': 'Yavaşlayınca kendi ayarlasın',
 } satisfies Record<string, string>;

@@ -1845,4 +1845,9 @@ export default {
   'Tapete': 'فرش',
   'Objetos da parede': 'وسایل دیوار',
   'Em cima dos móveis': 'روی وسایل',
+  'Gráficos': 'گرافیک',
+  'Partículas': 'ذرات',
+  'Sombras': 'سایه‌ها',
+  'Telas animadas': 'صفحه‌های متحرک',
+  'Ajustar sozinho quando ficar lento': 'تنظیم خودکار هنگام کند شدن',
 } satisfies Record<string, string>;

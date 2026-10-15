@@ -1827,4 +1827,9 @@ export default {
   'Tapete': 'Thảm',
   'Objetos da parede': 'Đồ treo tường',
   'Em cima dos móveis': 'Trên đồ nội thất',
+  'Gráficos': 'Đồ họa',
+  'Partículas': 'Hạt hiệu ứng',
+  'Sombras': 'Bóng đổ',
+  'Telas animadas': 'Màn hình chuyển động',
+  'Ajustar sozinho quando ficar lento': 'Tự điều chỉnh khi bị chậm',
 } satisfies Record<string, string>;

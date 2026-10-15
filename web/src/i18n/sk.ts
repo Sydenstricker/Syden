@@ -1927,4 +1927,9 @@ export default {
   'Tapete': 'Koberec',
   'Objetos da parede': 'Ozdoby na stenu',
   'Em cima dos móveis': 'Na nábytku',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Častice',
+  'Sombras': 'Tiene',
+  'Telas animadas': 'Animované obrazovky',
+  'Ajustar sozinho quando ficar lento': 'Upraviť automaticky, keď sa to spomalí',
 } satisfies Record<string, string>;

@@ -1896,4 +1896,9 @@ export default {
   'Tapete': 'ကော်ဇော',
   'Objetos da parede': 'နံရံအလှဆင်ပစ္စည်းများ',
   'Em cima dos móveis': 'ပရိဘောဂပေါ်မှာ',
+  'Gráficos': 'ဂရပ်ဖစ်',
+  'Partículas': 'အမှုန်များ',
+  'Sombras': 'အရိပ်များ',
+  'Telas animadas': 'လှုပ်ရှားသော မျက်နှာပြင်များ',
+  'Ajustar sozinho quando ficar lento': 'နှေးလာရင် အလိုအလျောက် ချိန်ညှိမည်',
 } satisfies Record<string, string>;

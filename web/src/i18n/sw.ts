@@ -1856,4 +1856,9 @@ export default {
   'Tapete': 'Zulia',
   'Objetos da parede': 'Vitu vya ukutani',
   'Em cima dos móveis': 'Juu ya samani',
+  'Gráficos': 'Michoro',
+  'Partículas': 'Chembechembe',
+  'Sombras': 'Vivuli',
+  'Telas animadas': 'Skrini zinazosogea',
+  'Ajustar sozinho quando ficar lento': 'Rekebisha yenyewe ikianza kuwa polepole',
 } satisfies Record<string, string>;

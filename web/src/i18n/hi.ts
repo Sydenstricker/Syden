@@ -1856,4 +1856,9 @@ export default {
   'Tapete': 'कालीन',
   'Objetos da parede': 'दीवार की सजावट',
   'Em cima dos móveis': 'फ़र्नीचर के ऊपर',
+  'Gráficos': 'ग्राफ़िक्स',
+  'Partículas': 'कण',
+  'Sombras': 'परछाइयाँ',
+  'Telas animadas': 'चलती स्क्रीनें',
+  'Ajustar sozinho quando ficar lento': 'धीमा होने पर अपने-आप ठीक करें',
 } satisfies Record<string, string>;

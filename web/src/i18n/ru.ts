@@ -1875,4 +1875,9 @@ export default {
   'Tapete': 'Ковёр',
   'Objetos da parede': 'Предметы на стене',
   'Em cima dos móveis': 'На мебели',
+  'Gráficos': 'Графика',
+  'Partículas': 'Частицы',
+  'Sombras': 'Тени',
+  'Telas animadas': 'Анимированные экраны',
+  'Ajustar sozinho quando ficar lento': 'Автоматически подстраивать, если тормозит',
 } satisfies Record<string, string>;

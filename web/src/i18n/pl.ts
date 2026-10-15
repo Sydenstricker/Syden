@@ -1922,4 +1922,9 @@ export default {
   'Tapete': 'Dywan',
   'Objetos da parede': 'Ozdoby na ścianę',
   'Em cima dos móveis': 'Na meblach',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Cząsteczki',
+  'Sombras': 'Cienie',
+  'Telas animadas': 'Animowane ekrany',
+  'Ajustar sozinho quando ficar lento': 'Dostosuj automatycznie, gdy zwalnia',
 } satisfies Record<string, string>;

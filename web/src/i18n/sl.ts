@@ -1929,4 +1929,9 @@ export default {
   'Tapete': 'Preproga',
   'Objetos da parede': 'Stenski okraski',
   'Em cima dos móveis': 'Na pohištvu',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Delci',
+  'Sombras': 'Sence',
+  'Telas animadas': 'Animirani zasloni',
+  'Ajustar sozinho quando ficar lento': 'Samodejno prilagodi, ko se upočasni',
 } satisfies Record<string, string>;

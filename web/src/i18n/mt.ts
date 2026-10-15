@@ -1873,4 +1873,9 @@ export default {
   'Tapete': 'Tapit',
   'Objetos da parede': 'Tiżjin tal-ħajt',
   'Em cima dos móveis': 'Fuq l-għamara',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Partiċelli',
+  'Sombras': 'Dellijiet',
+  'Telas animadas': 'Skrins animati',
+  'Ajustar sozinho quando ficar lento': 'Aġġusta awtomatikament meta jkun bil-mod',
 } satisfies Record<string, string>;

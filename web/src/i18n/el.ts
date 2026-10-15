@@ -1863,4 +1863,9 @@ export default {
   'Tapete': 'Χαλί',
   'Objetos da parede': 'Διακοσμητικά τοίχου',
   'Em cima dos móveis': 'Πάνω στα έπιπλα',
+  'Gráficos': 'Γραφικά',
+  'Partículas': 'Σωματίδια',
+  'Sombras': 'Σκιές',
+  'Telas animadas': 'Κινούμενες οθόνες',
+  'Ajustar sozinho quando ficar lento': 'Αυτόματη προσαρμογή όταν κολλάει',
 } satisfies Record<string, string>;

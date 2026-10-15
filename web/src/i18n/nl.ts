@@ -1856,4 +1856,9 @@ export default {
   'Tapete': 'Vloerkleed',
   'Objetos da parede': 'Wanddecoratie',
   'Em cima dos móveis': 'Op de meubels',
+  'Gráficos': 'Graphics',
+  'Partículas': 'Deeltjes',
+  'Sombras': 'Schaduwen',
+  'Telas animadas': 'Bewegende schermen',
+  'Ajustar sozinho quando ficar lento': 'Automatisch aanpassen als het traag wordt',
 } satisfies Record<string, string>;

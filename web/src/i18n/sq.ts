@@ -1919,4 +1919,9 @@ export default {
   'Tapete': 'Qilim',
   'Objetos da parede': 'Zbukurime muri',
   'Em cima dos móveis': 'Mbi mobiljet',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Grimca',
+  'Sombras': 'Hije',
+  'Telas animadas': 'Ekrane të animuara',
+  'Ajustar sozinho quando ficar lento': 'Përshtatje automatike kur ngadalësohet',
 } satisfies Record<string, string>;

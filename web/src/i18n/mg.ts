@@ -1927,4 +1927,9 @@ export default {
   'Tapete': 'Karipetra',
   'Objetos da parede': 'Haingon\'ny rindrina',
   'Em cima dos móveis': 'Ambonin\'ny fanaka',
+  'Gráficos': 'Sary',
+  'Partículas': 'Pitik’afo',
+  'Sombras': 'Aloka',
+  'Telas animadas': 'Efijery mihetsika',
+  'Ajustar sozinho quando ficar lento': 'Manitsy ho azy rehefa miadana',
 } satisfies Record<string, string>;

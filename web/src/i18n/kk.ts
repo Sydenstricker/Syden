@@ -1923,4 +1923,9 @@ export default {
   'Tapete': 'Кілем',
   'Objetos da parede': 'Қабырға әшекейлері',
   'Em cima dos móveis': 'Жиһаздың үстінде',
+  'Gráficos': 'Графика',
+  'Partículas': 'Бөлшектер',
+  'Sombras': 'Көлеңкелер',
+  'Telas animadas': 'Қозғалатын экрандар',
+  'Ajustar sozinho quando ficar lento': 'Баяулағанда өзі реттесін',
 } satisfies Record<string, string>;

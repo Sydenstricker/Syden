@@ -1854,4 +1854,9 @@ export default {
   'Tapete': 'কার্পেট',
   'Objetos da parede': 'দেয়ালের জিনিস',
   'Em cima dos móveis': 'আসবাবের ওপর',
+  'Gráficos': 'গ্রাফিক্স',
+  'Partículas': 'কণা',
+  'Sombras': 'ছায়া',
+  'Telas animadas': 'চলমান স্ক্রিন',
+  'Ajustar sozinho quando ficar lento': 'ধীর হলে নিজে থেকেই মানিয়ে নেবে',
 } satisfies Record<string, string>;

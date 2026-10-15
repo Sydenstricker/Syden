@@ -1928,4 +1928,9 @@ export default {
   'Tapete': 'Gólfmotta',
   'Objetos da parede': 'Veggskraut',
   'Em cima dos móveis': 'Á húsgögnunum',
+  'Gráficos': 'Grafík',
+  'Partículas': 'Agnir',
+  'Sombras': 'Skuggar',
+  'Telas animadas': 'Hreyfanlegir skjáir',
+  'Ajustar sozinho quando ficar lento': 'Stilla sjálfkrafa þegar hægist á',
 } satisfies Record<string, string>;

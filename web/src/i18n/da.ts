@@ -1921,4 +1921,9 @@ export default {
   'Tapete': 'Tæppe',
   'Objetos da parede': 'Vægpynt',
   'Em cima dos móveis': 'På møblerne',
+  'Gráficos': 'Grafik',
+  'Partículas': 'Partikler',
+  'Sombras': 'Skygger',
+  'Telas animadas': 'Animerede skærme',
+  'Ajustar sozinho quando ficar lento': 'Justér automatisk, når det bliver langsomt',
 } satisfies Record<string, string>;

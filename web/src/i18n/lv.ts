@@ -1929,4 +1929,9 @@ export default {
   'Tapete': 'Paklājs',
   'Objetos da parede': 'Sienas rotājumi',
   'Em cima dos móveis': 'Uz mēbelēm',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Daļiņas',
+  'Sombras': 'Ēnas',
+  'Telas animadas': 'Animēti ekrāni',
+  'Ajustar sozinho quando ficar lento': 'Pielāgot automātiski, kad kļūst lēns',
 } satisfies Record<string, string>;

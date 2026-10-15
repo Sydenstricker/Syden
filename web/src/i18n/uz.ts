@@ -1935,4 +1935,9 @@ export default {
   'Tapete': 'Gilam',
   'Objetos da parede': 'Devor bezaklari',
   'Em cima dos móveis': 'Mebel ustida',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Zarrachalar',
+  'Sombras': 'Soyalar',
+  'Telas animadas': 'Harakatlanuvchi ekranlar',
+  'Ajustar sozinho quando ficar lento': 'Sekinlashganda oʻzi sozlansin',
 } satisfies Record<string, string>;

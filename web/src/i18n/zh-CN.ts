@@ -1844,4 +1844,9 @@ export default {
   'Tapete': '地毯',
   'Objetos da parede': '墙面装饰',
   'Em cima dos móveis': '家具上的物品',
+  'Gráficos': '图形',
+  'Partículas': '粒子效果',
+  'Sombras': '阴影',
+  'Telas animadas': '动态屏幕',
+  'Ajustar sozinho quando ficar lento': '卡顿时自动调整',
 } satisfies Record<string, string>;

@@ -1921,4 +1921,9 @@ export default {
   'Tapete': 'Mat',
   'Objetos da parede': 'Muurversierings',
   'Em cima dos móveis': 'Op die meubels',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Deeltjies',
+  'Sombras': 'Skaduwees',
+  'Telas animadas': 'Bewegende skerms',
+  'Ajustar sozinho quando ficar lento': 'Pas outomaties aan as dit stadig raak',
 } satisfies Record<string, string>;

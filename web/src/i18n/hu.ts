@@ -1929,4 +1929,9 @@ export default {
   'Tapete': 'Szőnyeg',
   'Objetos da parede': 'Falidíszek',
   'Em cima dos móveis': 'A bútorokon',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Részecskék',
+  'Sombras': 'Árnyékok',
+  'Telas animadas': 'Animált képernyők',
+  'Ajustar sozinho quando ficar lento': 'Magától igazodjon, ha lelassul',
 } satisfies Record<string, string>;

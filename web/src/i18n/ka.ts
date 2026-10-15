@@ -1945,4 +1945,9 @@ export default {
   'Tapete': 'ხალიჩა',
   'Objetos da parede': 'კედლის დეკორი',
   'Em cima dos móveis': 'ავეჯზე',
+  'Gráficos': 'გრაფიკა',
+  'Partículas': 'ნაწილაკები',
+  'Sombras': 'ჩრდილები',
+  'Telas animadas': 'მოძრავი ეკრანები',
+  'Ajustar sozinho quando ficar lento': 'ავტომატური მორგება, როცა ნელდება',
 } satisfies Record<string, string>;

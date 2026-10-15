@@ -1877,4 +1877,9 @@ export default {
   'Tapete': 'السجادة',
   'Objetos da parede': 'أغراض الجدار',
   'Em cima dos móveis': 'فوق الأثاث',
+  'Gráficos': 'الرسومات',
+  'Partículas': 'الجسيمات',
+  'Sombras': 'الظلال',
+  'Telas animadas': 'شاشات متحركة',
+  'Ajustar sozinho quando ficar lento': 'الضبط التلقائي عند البطء',
 } satisfies Record<string, string>;

@@ -1865,4 +1865,9 @@ export default {
   'Tapete': 'Kapeeti',
   'Objetos da parede': 'Ihe ịchọ mma mgbidi',
   'Em cima dos móveis': 'N\'elu ngwongwo ụlọ',
+  'Gráficos': 'Eserese',
+  'Partículas': 'Ntụpọ ọkụ',
+  'Sombras': 'Onyinyo',
+  'Telas animadas': 'Ihuenyo na-emegharị',
+  'Ajustar sozinho quando ficar lento': 'Hazie onwe ya mgbe ọ na-adị nwayọ',
 } satisfies Record<string, string>;

@@ -1926,4 +1926,9 @@ export default {
   'Tapete': 'កម្រាលព្រំ',
   'Objetos da parede': 'គ្រឿងតុបតែងជញ្ជាំង',
   'Em cima dos móveis': 'លើគ្រឿងសង្ហារិម',
+  'Gráficos': 'ក្រាហ្វិក',
+  'Partículas': 'ភាគល្អិត',
+  'Sombras': 'ស្រមោល',
+  'Telas animadas': 'អេក្រង់មានចលនា',
+  'Ajustar sozinho quando ficar lento': 'កែសម្រួលដោយស្វ័យប្រវត្តិពេលយឺត',
 } satisfies Record<string, string>;

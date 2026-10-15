@@ -1891,4 +1891,9 @@ export default {
   'Tapete': 'Xalça',
   'Objetos da parede': 'Divar bəzəkləri',
   'Em cima dos móveis': 'Mebel üstündə',
+  'Gráficos': 'Qrafika',
+  'Partículas': 'Hissəciklər',
+  'Sombras': 'Kölgələr',
+  'Telas animadas': 'Hərəkətli ekranlar',
+  'Ajustar sozinho quando ficar lento': 'Yavaşlayanda özü tənzimləsin',
 } satisfies Record<string, string>;

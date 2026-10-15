@@ -1839,4 +1839,9 @@ export default {
   'Tapete': 'తివాచీ',
   'Objetos da parede': 'గోడ అలంకరణలు',
   'Em cima dos móveis': 'ఫర్నిచర్ మీద',
+  'Gráficos': 'గ్రాఫిక్స్',
+  'Partículas': 'కణాలు',
+  'Sombras': 'నీడలు',
+  'Telas animadas': 'కదిలే స్క్రీన్‌లు',
+  'Ajustar sozinho quando ficar lento': 'నెమ్మదిగా ఉంటే దానంతటదే సర్దుబాటు చేయి',
 } satisfies Record<string, string>;

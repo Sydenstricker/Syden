@@ -1927,4 +1927,9 @@ export default {
   'Tapete': 'Тепих',
   'Objetos da parede': 'Украси за ѕид',
   'Em cima dos móveis': 'На мебелот',
+  'Gráficos': 'Графика',
+  'Partículas': 'Честички',
+  'Sombras': 'Сенки',
+  'Telas animadas': 'Анимирани екрани',
+  'Ajustar sozinho quando ficar lento': 'Самостојно прилагодување кога ќе забави',
 } satisfies Record<string, string>;

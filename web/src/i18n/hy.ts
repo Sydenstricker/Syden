@@ -1946,4 +1946,9 @@ export default {
   'Tapete': 'Գորգ',
   'Objetos da parede': 'Պատի զարդեր',
   'Em cima dos móveis': 'Կահույքի վրա',
+  'Gráficos': 'Գրաֆիկա',
+  'Partículas': 'Մասնիկներ',
+  'Sombras': 'Ստվերներ',
+  'Telas animadas': 'Շարժվող էկրաններ',
+  'Ajustar sozinho quando ficar lento': 'Ինքնաշխատ կարգավորել, երբ դանդաղի',
 } satisfies Record<string, string>;

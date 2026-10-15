@@ -1870,4 +1870,9 @@ export default {
   'Tapete': 'พรม',
   'Objetos da parede': 'ของตกแต่งผนัง',
   'Em cima dos móveis': 'บนเฟอร์นิเจอร์',
+  'Gráficos': 'กราฟิก',
+  'Partículas': 'อนุภาค',
+  'Sombras': 'เงา',
+  'Telas animadas': 'หน้าจอเคลื่อนไหว',
+  'Ajustar sozinho quando ficar lento': 'ปรับเองอัตโนมัติเมื่อเครื่องช้า',
 } satisfies Record<string, string>;

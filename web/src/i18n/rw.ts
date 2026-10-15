@@ -1868,4 +1868,9 @@ export default {
   'Tapete': 'Itapi',
   'Objetos da parede': 'Imitako yo ku rukuta',
   'Em cima dos móveis': 'Ku bikoresho byo mu nzu',
+  'Gráficos': 'Ibishushanyo',
+  'Partículas': 'Uduce',
+  'Sombras': 'Ibicucu',
+  'Telas animadas': 'Amashusho agenda',
+  'Ajustar sozinho quando ficar lento': 'Hindura ubwabyo iyo bitinze',
 } satisfies Record<string, string>;

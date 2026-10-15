@@ -1844,4 +1844,9 @@ export default {
   'Tapete': 'قالین',
   'Objetos da parede': 'دیوار کی سجاوٹ',
   'Em cima dos móveis': 'فرنیچر کے اوپر',
+  'Gráficos': 'گرافکس',
+  'Partículas': 'ذرات',
+  'Sombras': 'سائے',
+  'Telas animadas': 'متحرک اسکرینیں',
+  'Ajustar sozinho quando ficar lento': 'سست ہونے پر خود ہی ایڈجسٹ کرنا',
 } satisfies Record<string, string>;

@@ -1907,4 +1907,9 @@ export default {
   'Tapete': 'שטיח',
   'Objetos da parede': 'קישוטי קיר',
   'Em cima dos móveis': 'על הרהיטים',
+  'Gráficos': 'גרפיקה',
+  'Partículas': 'חלקיקים',
+  'Sombras': 'צללים',
+  'Telas animadas': 'מסכים מונפשים',
+  'Ajustar sozinho quando ficar lento': 'התאמה אוטומטית כשזה נהיה איטי',
 } satisfies Record<string, string>;

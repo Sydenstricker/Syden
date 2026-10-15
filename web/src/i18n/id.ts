@@ -1854,4 +1854,9 @@ export default {
   'Tapete': 'Karpet',
   'Objetos da parede': 'Hiasan dinding',
   'Em cima dos móveis': 'Di atas perabot',
+  'Gráficos': 'Grafis',
+  'Partículas': 'Partikel',
+  'Sombras': 'Bayangan',
+  'Telas animadas': 'Layar bergerak',
+  'Ajustar sozinho quando ficar lento': 'Sesuaikan otomatis saat jadi lambat',
 } satisfies Record<string, string>;

@@ -1924,4 +1924,9 @@ export default {
   'Tapete': 'Килим',
   'Objetos da parede': 'Декорации за стена',
   'Em cima dos móveis': 'Върху мебелите',
+  'Gráficos': 'Графика',
+  'Partículas': 'Частици',
+  'Sombras': 'Сенки',
+  'Telas animadas': 'Анимирани екрани',
+  'Ajustar sozinho quando ficar lento': 'Автоматично нагласяне при забавяне',
 } satisfies Record<string, string>;

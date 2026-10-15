@@ -1861,4 +1861,9 @@ export default {
   'Tapete': 'Fala',
   'Objetos da parede': 'Teuga o le puipui',
   'Em cima dos móveis': 'I luga o meafale',
+  'Gráficos': 'Ata',
+  'Partículas': 'Fasi laiti',
+  'Sombras': 'Ata lafoia',
+  'Telas animadas': 'Lau mata e gaoioi',
+  'Ajustar sozinho quando ficar lento': 'Fetuunai na o ia pe a telegese',
 } satisfies Record<string, string>;

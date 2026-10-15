@@ -1927,4 +1927,9 @@ export default {
   'Tapete': 'Roog',
   'Objetos da parede': 'Qurxinta derbiga',
   'Em cima dos móveis': 'Alaabta dusheeda',
+  'Gráficos': 'Garaafyada',
+  'Partículas': 'Qaybo yaryar',
+  'Sombras': 'Hadhyo',
+  'Telas animadas': 'Shaashado dhaqdhaqaaqa',
+  'Ajustar sozinho quando ficar lento': 'Iskiis u hagaaji marka uu gaabiyo',
 } satisfies Record<string, string>;

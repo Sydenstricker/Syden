@@ -1926,4 +1926,9 @@ export default {
   'Tapete': 'Tepih',
   'Objetos da parede': 'Ukrasi za zid',
   'Em cima dos móveis': 'Na namještaju',
+  'Gráficos': 'Grafika',
+  'Partículas': 'Čestice',
+  'Sombras': 'Sjene',
+  'Telas animadas': 'Animirani zasloni',
+  'Ajustar sozinho quando ficar lento': 'Automatsko prilagođavanje kad uspori',
 } satisfies Record<string, string>;

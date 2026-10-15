@@ -1928,4 +1928,9 @@ export default {
   'Tapete': 'Қолин',
   'Objetos da parede': 'Ороишҳои девор',
   'Em cima dos móveis': 'Дар болои мебел',
+  'Gráficos': 'Графика',
+  'Partículas': 'Зарраҳо',
+  'Sombras': 'Сояҳо',
+  'Telas animadas': 'Экранҳои ҳаракаткунанда',
+  'Ajustar sozinho quando ficar lento': 'Ҳангоми суст шудан худкор танзим кардан',
 } satisfies Record<string, string>;

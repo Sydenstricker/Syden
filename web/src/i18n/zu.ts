@@ -1928,4 +1928,9 @@ export default {
   'Tapete': 'Umata',
   'Objetos da parede': 'Imihlobiso yodonga',
   'Em cima dos móveis': 'Phezu kwefenisha',
+  'Gráficos': 'Imidwebo',
+  'Partículas': 'Izinhlayiya',
+  'Sombras': 'Izithunzi',
+  'Telas animadas': 'Izikrini ezinyakazayo',
+  'Ajustar sozinho quando ficar lento': 'Lungisa ngokuzenzakalela uma kuhamba kancane',
 } satisfies Record<string, string>;

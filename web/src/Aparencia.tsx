@@ -211,6 +211,58 @@ function PaletaDoSyden() {
  * texto branco continuar legível (ver corDeDestaque.ts). Por isso a bolinha de prévia mostra a cor
  * que vai MESMO aparecer, e não a do seletor: entre prometer e cumprir, a tela mostra o que cumpre.
  */
+/**
+ * OS GRÁFICOS DO QUARTO E DO SALÃO (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para
+ * ligar e desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador, em 'syden:graficos', e as
+ * páginas do quarto e do salão (o mesmo site, num iframe) leem dali e percebem a troca na hora. "Ajustar sozinho" é o
+ * Syden decidindo: com o desenho lento neste computador, o que pesa desliga sozinho naquela visita.
+ *
+ * SÓ NO DESENVOLVIMENTO por enquanto, como o quarto e o salão novos: no site publicado a opção não mudaria nada, e a tela
+ * não oferece o que não faz.
+ */
+const GRAFICOS_PADRAO = { particulas: true, sombras: true, telas: true, auto: true };
+type Graficos = typeof GRAFICOS_PADRAO;
+function lerGraficos(): Graficos {
+  try {
+    return { ...GRAFICOS_PADRAO, ...JSON.parse(localStorage.getItem('syden:graficos') ?? '{}') };
+  } catch {
+    return { ...GRAFICOS_PADRAO };
+  }
+}
+function GraficosDosAmbientes() {
+  const t = useT();
+  const [g, setG] = useState(lerGraficos);
+  const mudar = (k: keyof Graficos, valor: boolean) => {
+    const novo = { ...g, [k]: valor };
+    setG(novo);
+    try {
+      localStorage.setItem('syden:graficos', JSON.stringify(novo));
+    } catch {
+      /* só nesta visita */
+    }
+  };
+  const opcoes: { k: keyof Graficos; nome: string }[] = [
+    { k: 'particulas', nome: t('Partículas') },
+    { k: 'sombras', nome: t('Sombras') },
+    { k: 'telas', nome: t('Telas animadas') },
+    { k: 'auto', nome: t('Ajustar sozinho quando ficar lento') },
+  ];
+  return (
+    <section className="graficos-dos-ambientes">
+      <h3>{t('Gráficos')}</h3>
+      {opcoes.map(({ k, nome }) => (
+        <label key={k} className="toggle-row">
+          <span>
+            <span className="toggle-label">{nome}</span>
+          </span>
+          <input type="checkbox" role="switch" checked={g[k]} onChange={(e) => mudar(k, e.target.checked)} />
+          <span className="switch" aria-hidden="true" />
+        </label>
+      ))}
+    </section>
+  );
+}
+
 function CorDoSyden() {
   const t = useT();
   const settings = useSettings();
@@ -437,6 +489,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
 
       <PaletaDoSyden />
       <CorDoSyden />
+      {import.meta.env.DEV && <GraficosDosAmbientes />}
 
       {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de
           referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é

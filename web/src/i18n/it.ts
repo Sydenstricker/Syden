@@ -1856,4 +1856,9 @@ export default {
   'Tapete': 'Tappeto',
   'Objetos da parede': 'Oggetti da parete',
   'Em cima dos móveis': 'Sui mobili',
+  'Gráficos': 'Grafica',
+  'Partículas': 'Particelle',
+  'Sombras': 'Ombre',
+  'Telas animadas': 'Schermi animati',
+  'Ajustar sozinho quando ficar lento': 'Regola automaticamente quando rallenta',
 } satisfies Record<string, string>;

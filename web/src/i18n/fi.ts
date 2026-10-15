@@ -1927,4 +1927,9 @@ export default {
   'Tapete': 'Matto',
   'Objetos da parede': 'Seinäkoristeet',
   'Em cima dos móveis': 'Huonekalujen päällä',
+  'Gráficos': 'Grafiikka',
+  'Partículas': 'Partikkelit',
+  'Sombras': 'Varjot',
+  'Telas animadas': 'Animoidut näytöt',
+  'Ajustar sozinho quando ficar lento': 'Säädä automaattisesti, kun alkaa hidastella',
 } satisfies Record<string, string>;

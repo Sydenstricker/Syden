@@ -1937,4 +1937,9 @@ export default {
   'Tapete': 'ފަރުދާ',
   'Objetos da parede': 'ފާރުގެ ޒީނަތްތެރިކަން',
   'Em cima dos móveis': 'ފަރުނީޗަރުގެ މައްޗަށް',
+  'Gráficos': 'ގްރެފިކްސް',
+  'Partículas': 'ޕާޓިކަލްސް',
+  'Sombras': 'ހިޔަނި',
+  'Telas animadas': 'ހަރަކާތްކުރާ ސްކްރީން',
+  'Ajustar sozinho quando ficar lento': 'ލަސްވާނަމަ އަމިއްލައަށް ބަދަލުކުރުން',
 } satisfies Record<string, string>;
