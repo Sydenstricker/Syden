@@ -5,7 +5,7 @@ import json
 import os
 import numpy as np
 from PIL import Image
-from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, label
+from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, label, distance_transform_edt
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 J = os.path.join(os.path.dirname(AQUI), 'janelas')
@@ -59,6 +59,23 @@ for item, meta in ITENS.items():
     rot2, _ = label(m & ~sombra)
     t2 = np.bincount(rot2.ravel()); t2[0] = 0
     m = np.isin(rot2, np.nonzero(t2 >= max(20, t2.max() * 0.05))[0])
+    # DESCASCAR A BORDA (relato de 15/10/2026: manchas em volta do violão, dos troféus, do neon, da prateleira de snacks):
+    # o que sobra em volta é o creme da parede do quarto TINGIDO pela peça (o rosado do neon, o bege do violão), e não
+    # sombra pura. De fora para dentro, sai da borda todo pixel claro e pouco saturado, até bater no contorno escuro da peça
+    # ou numa cor viva (os tubos do neon); por dentro, nada muda.
+    lum = dia.mean(2); sat = (dia.max(2) - dia.min(2)) / np.maximum(1, dia.max(2))
+    # só numa faixa de 4 px da borda de fora: sem isso, entrava por uma falha do contorno e comia o mostrador do relógio, o
+    # vidro dos potes e a placa da porta
+    parece_parede = (lum > 105) & (sat < 0.42) & (distance_transform_edt(m) <= 4)
+    for _ in range(4):
+        fora = ~m
+        borda = m & (np.roll(fora, 1, 0) | np.roll(fora, -1, 0) | np.roll(fora, 1, 1) | np.roll(fora, -1, 1))
+        tira = borda & parece_parede
+        if not tira.any(): break
+        m = m & ~tira
+    # o que ficou cercado pela peça é dela (o mostrador do relógio, as fotos do quadro): o filtro de sombra o tomava por
+    # parede escurecida
+    m = binary_fill_holes(m)
     # "vaos": o que é parede pura por dentro da peça (o vão entre as tábuas da prateleira) também sai. Não vale para
     # todas: o mostrador do relógio é creme como a parede.
     if meta.get('vaos'): m = m & (dif > 14)
