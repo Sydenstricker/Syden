@@ -1920,4 +1920,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Alustamiseks on puudu {n} inimest.',
   'Começar': 'Alusta',
   'Esperando {nome} começar.': 'Ootame, et {nome} alustaks.',
+  'Girar': 'Pööra',
+  'Tapete': 'Vaip',
+  'Objetos da parede': 'Seinakaunistused',
 } satisfies Record<string, string>;

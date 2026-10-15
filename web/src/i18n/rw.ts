@@ -1864,4 +1864,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Haracyabura abantu {n} ngo dutangire.',
   'Começar': 'Tangira',
   'Esperando {nome} começar.': 'Dutegereje ko {nome} atangira.',
+  'Girar': 'Hindukiza',
+  'Tapete': 'Itapi',
+  'Objetos da parede': 'Imitako yo ku rukuta',
 } satisfies Record<string, string>;

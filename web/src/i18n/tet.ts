@@ -1855,4 +1855,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Falta ema {n} tan atu hahú.',
   'Começar': 'Hahú',
   'Esperando {nome} começar.': 'Hein {nome} hahú.',
+  'Girar': 'Fila',
+  'Tapete': 'Tapete',
+  'Objetos da parede': 'Dekorasaun parede nian',
 } satisfies Record<string, string>;

@@ -1923,4 +1923,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Aloittamiseen puuttuu {n} pelaajaa.',
   'Começar': 'Aloita',
   'Esperando {nome} começar.': 'Odotetaan, että {nome} aloittaa.',
+  'Girar': 'Käännä',
+  'Tapete': 'Matto',
+  'Objetos da parede': 'Seinäkoristeet',
 } satisfies Record<string, string>;

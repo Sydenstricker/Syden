@@ -1848,4 +1848,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Faltan {n} personas para empezar.',
   'Começar': 'Empezar',
   'Esperando {nome} começar.': 'Esperando a que {nome} empiece.',
+  'Girar': 'Girar',
+  'Tapete': 'Alfombra',
+  'Objetos da parede': 'Objetos de la pared',
 } satisfies Record<string, string>;

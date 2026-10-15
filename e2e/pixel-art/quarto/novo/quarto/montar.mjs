@@ -2074,26 +2074,29 @@ function dados(im, filtro, w = W, h = W) {
       b.textContent = (it.nome[0].toUpperCase() + it.nome.slice(1)) + ': ' + (NA_PAREDE[id] ? 'na parede' : 'guardado');
       b.setAttribute('aria-pressed', String(!!NA_PAREDE[id]));
       b.disabled = soVer;
-      b.onclick = () => {
-        if (NA_PAREDE[id]) { delete NA_PAREDE[id]; mudarParede(id, null); return; }
-        let lugar = null;
-        // (de cima para baixo e de meia em meia casa: dois objetos baixos cabem um em cima do outro)
-        for (const parede of ['esquerda', 'direita']) for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0] && !lugar; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1] && !lugar; v += 0.25) { const P = prenderNaParede(id, { parede, v, h }); if (livreNaParede(id, P)) lugar = P; }
-        // Parede cheia: onde ele cobre menos dos outros (e nunca a janela).
-        if (!lugar) {
-          let menor = Infinity;
-          for (const parede of ['esquerda', 'direita']) for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0]; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1]; v += 0.25) {
-            const P = prenderNaParede(id, { parede, v, h }), a = [P.v + it.ocupa[0], P.v + it.ocupa[1]], al = [P.h + it.alto[0], P.h + it.alto[1]];
-            const sobra = (x, y) => Math.max(0, Math.min(x[1], y[1]) - Math.max(x[0], y[0]));
-            if (JAN.parede === parede && sobra(a, TIPOS_JANELA[JAN.tipo].ocupa.map((o) => o + JAN.v)) > 0) continue;
-            const custo = Object.entries(NA_PAREDE).reduce((t, [o, Q]) => t + (o === id || Q.parede !== parede ? 0 : sobra(a, [Q.v + ITENS_PAREDE[o].ocupa[0], Q.v + ITENS_PAREDE[o].ocupa[1]]) * sobra(al, [Q.h + ITENS_PAREDE[o].alto[0], Q.h + ITENS_PAREDE[o].alto[1]])), 0);
-            if (custo < menor) { menor = custo; lugar = P; }
-          }
-        }
-        mudarParede(id, lugar ?? prenderNaParede(id, { parede: 'esquerda', v: 0, h: 0 }));
-      };
+      b.onclick = () => alternarNaParede(id);
       return b;
     }));
+  }
+  // Pôr e guardar um objeto da parede (os botões daqui e a barra de arrumar do app).
+  function alternarNaParede(id) {
+    const it = ITENS_PAREDE[id];
+    if (NA_PAREDE[id]) { delete NA_PAREDE[id]; mudarParede(id, null); return; }
+    let lugar = null;
+    // (de cima para baixo e de meia em meia casa: dois objetos baixos cabem um em cima do outro)
+    for (const parede of ['esquerda', 'direita']) for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0] && !lugar; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1] && !lugar; v += 0.25) { const P = prenderNaParede(id, { parede, v, h }); if (livreNaParede(id, P)) lugar = P; }
+    // Parede cheia: onde ele cobre menos dos outros (e nunca a janela).
+    if (!lugar) {
+      let menor = Infinity;
+      for (const parede of ['esquerda', 'direita']) for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0]; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1]; v += 0.25) {
+        const P = prenderNaParede(id, { parede, v, h }), a = [P.v + it.ocupa[0], P.v + it.ocupa[1]], al = [P.h + it.alto[0], P.h + it.alto[1]];
+        const sobra = (x, y) => Math.max(0, Math.min(x[1], y[1]) - Math.max(x[0], y[0]));
+        if (JAN.parede === parede && sobra(a, TIPOS_JANELA[JAN.tipo].ocupa.map((o) => o + JAN.v)) > 0) continue;
+        const custo = Object.entries(NA_PAREDE).reduce((t, [o, Q]) => t + (o === id || Q.parede !== parede ? 0 : sobra(a, [Q.v + ITENS_PAREDE[o].ocupa[0], Q.v + ITENS_PAREDE[o].ocupa[1]]) * sobra(al, [Q.h + ITENS_PAREDE[o].alto[0], Q.h + ITENS_PAREDE[o].alto[1]])), 0);
+        if (custo < menor) { menor = custo; lugar = P; }
+      }
+    }
+    mudarParede(id, lugar ?? prenderNaParede(id, { parede: 'esquerda', v: 0, h: 0 }));
   }
   botoesDaParede();
   window.paredeDoTeste = () => NA_PAREDE; // para o teste
@@ -2287,6 +2290,7 @@ function dados(im, filtro, w = W, h = W) {
   // Cada mudança vai ao servidor, juntando as que chegam em sequência (arrastar a cadeira guarda a cada parada).
   let esperaDoEnvio = 0;
   enviar = () => {
+    relatar();
     if (!conta || soVer) return;
     clearTimeout(esperaDoEnvio);
     esperaDoEnvio = setTimeout(() => { pedir('PUT', '/api/quarto', retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)); }, 700);
@@ -2329,6 +2333,31 @@ function dados(im, filtro, w = W, h = W) {
   window.visitaDoTeste = () => ({ soVer, conta: conta && { nome: conta.nome, id: conta.id }, retrato: retrato(), estado, pose: coelho.pose, destino: coelho.destino }); // para o teste
   if (conta && !MODO_APP) { campo('api').value = conta.api; carregarMeu().catch((e) => dizer('A conta guardada não respondeu: ' + e.message)); }
 
+  // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
+  function relatar() {
+    if (!MODO_APP || window.parent === window) return;
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+  }
+  // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
+  function figurasDaBarra() {
+    const miniaturas = {};
+    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) {
+      let x0 = W, y0 = W, x1 = 0, y1 = 0;
+      for (let k = 0; k < W * W; k++) if (T2.dia[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      const c = document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
+      const d = new ImageData(c.width, c.height);
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = T2.dia[k + q]; }
+      c.getContext('2d').putImageData(d, 0, 0);
+      miniaturas[id] = c.toDataURL();
+    }
+    // a cor média do tapete pintado, tingida em cada uma
+    let n = 0; const m = [0, 0, 0];
+    for (let k = 0; k < W * W; k++) if (pecas.tapete.movel[k * 4 + 3]) { for (let q = 0; q < 3; q++) m[q] += pecas.tapete.movel[k * 4 + q]; n++; }
+    const media = m.map((v) => v / Math.max(1, n));
+    const cores = Object.fromEntries(Object.entries(CORES_DO_TAPETE).map(([id, cor]) => [id, 'rgb(' + (id === 'salvia' ? media : tingirPixel(media[0], media[1], media[2], cor)).map(Math.round).join(',') + ')']));
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE) };
+  }
+
   // ============================== NO APP (15/10/2026) ==============================
   // Dentro do QuartoNovo.tsx, o app manda por mensagem: as funções (o nome de cada uma, na língua de quem lê), se é noite
   // (o tema do app), o estado de quem mora aqui e a conta (para guardar a arrumação no servidor). O quarto devolve o
@@ -2343,8 +2372,15 @@ function dados(im, filtro, w = W, h = W) {
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
       if (d.conta && !conta) { conta = d.conta; carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ }); }
       if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
+      // A BARRA DE ARRUMAR do app (QuartoNovo.tsx): os mesmos botões da página de teste.
+      if (d.comando === 'girar') girar();
+      if (d.comando === 'janela') btj.click();
+      if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
+      if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
+      if (d.comando === 'inicial') document.getElementById('inicial').click();
     });
-    window.parent.postMessage({ syden: 'quarto', pronto: true }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasDaBarra() }, location.origin);
+    relatar();
   }
   desenhar();
 })();

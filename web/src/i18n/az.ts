@@ -1887,4 +1887,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Başlamaq üçün {n} nəfər çatmır.',
   'Começar': 'Başla',
   'Esperando {nome} começar.': '{nome} başlamasını gözləyirik.',
+  'Girar': 'Döndər',
+  'Tapete': 'Xalça',
+  'Objetos da parede': 'Divar bəzəkləri',
 } satisfies Record<string, string>;

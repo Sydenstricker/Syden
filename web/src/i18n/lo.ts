@@ -1924,4 +1924,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'ຂາດອີກ {n} ຄົນຈຶ່ງຈະເລີ່ມໄດ້.',
   'Começar': 'ເລີ່ມ',
   'Esperando {nome} começar.': 'ລໍຖ້າ {nome} ເລີ່ມເກມ.',
+  'Girar': 'ໝຸນ',
+  'Tapete': 'ພົມ',
+  'Objetos da parede': 'ເຄື່ອງປະດັບຝາ',
 } satisfies Record<string, string>;

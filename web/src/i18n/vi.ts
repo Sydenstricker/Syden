@@ -1823,4 +1823,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Còn thiếu {n} người để bắt đầu.',
   'Começar': 'Bắt đầu',
   'Esperando {nome} começar.': 'Đang chờ {nome} bắt đầu.',
+  'Girar': 'Xoay',
+  'Tapete': 'Thảm',
+  'Objetos da parede': 'Đồ treo tường',
 } satisfies Record<string, string>;

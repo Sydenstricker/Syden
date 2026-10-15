@@ -1834,4 +1834,7 @@ export default {
   'Faltam {n} pessoas para começar.': '始めるにはあと{n}人必要です。',
   'Começar': 'スタート',
   'Esperando {nome} começar.': '{nome} さんが始めるのを待っています。',
+  'Girar': '回転',
+  'Tapete': 'ラグ',
+  'Objetos da parede': '壁の飾り',
 } satisfies Record<string, string>;

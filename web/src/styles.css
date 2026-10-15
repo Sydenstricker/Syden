@@ -12669,6 +12669,69 @@ body.arrastando-barra {
   color-scheme: light dark;
 }
 
+.quarto-novo-caixa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* A barra de arrumar: figuras em vez de nomes (o recorte de cada objeto da parede, a cor de cada tapete). */
+.quarto-novo-barra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 0 16px;
+}
+
+.quarto-novo-barra > button,
+.quarto-novo-objeto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.quarto-novo-barra button[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.quarto-novo-grupo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.quarto-novo-cor {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+}
+
+.quarto-novo-objeto {
+  padding: 2px 6px;
+  height: 40px;
+}
+
+.quarto-novo-objeto img {
+  height: 32px;
+  width: auto;
+  image-rendering: pixelated;
+}
+
 .quarto-novo-alternar {
   position: absolute;
   top: 8px;

@@ -1871,4 +1871,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Для начала не хватает людей: {n}.',
   'Começar': 'Начать',
   'Esperando {nome} começar.': 'Ждём, когда {nome} даст старт.',
+  'Girar': 'Повернуть',
+  'Tapete': 'Ковёр',
+  'Objetos da parede': 'Предметы на стене',
 } satisfies Record<string, string>;

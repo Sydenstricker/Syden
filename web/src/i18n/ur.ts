@@ -1840,4 +1840,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'شروع کرنے کے لیے {n} افراد کم ہیں۔',
   'Começar': 'شروع کریں',
   'Esperando {nome} começar.': '{nome} کے شروع کرنے کا انتظار ہے۔',
+  'Girar': 'گھمائیں',
+  'Tapete': 'قالین',
+  'Objetos da parede': 'دیوار کی سجاوٹ',
 } satisfies Record<string, string>;

@@ -1925,4 +1925,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Pradėti trūksta žaidėjų: {n}.',
   'Começar': 'Pradėti',
   'Esperando {nome} começar.': 'Laukiame, kol {nome} pradės.',
+  'Girar': 'Pasukti',
+  'Tapete': 'Kilimas',
+  'Objetos da parede': 'Sienų dekoracijos',
 } satisfies Record<string, string>;

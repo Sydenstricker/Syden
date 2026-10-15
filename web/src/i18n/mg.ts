@@ -1923,4 +1923,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Mbola mila olona {n} hanombohana.',
   'Começar': 'Atombohy',
   'Esperando {nome} começar.': 'Miandry an’i {nome} hanomboka.',
+  'Girar': 'Ahodino',
+  'Tapete': 'Karipetra',
+  'Objetos da parede': 'Haingon\'ny rindrina',
 } satisfies Record<string, string>;

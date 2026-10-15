@@ -1840,4 +1840,7 @@ export default {
   'Faltam {n} pessoas para começar.': '还差 {n} 人就能开始。',
   'Começar': '开始',
   'Esperando {nome} começar.': '等 {nome} 开始。',
+  'Girar': '旋转',
+  'Tapete': '地毯',
+  'Objetos da parede': '墙面装饰',
 } satisfies Record<string, string>;

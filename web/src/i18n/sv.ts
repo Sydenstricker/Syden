@@ -1915,4 +1915,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Det saknas {n} personer för att börja.',
   'Começar': 'Börja',
   'Esperando {nome} começar.': 'Väntar på att {nome} ska börja.',
+  'Girar': 'Rotera',
+  'Tapete': 'Matta',
+  'Objetos da parede': 'Väggdekor',
 } satisfies Record<string, string>;

@@ -1915,4 +1915,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Mungojnë edhe {n} persona për të nisur.',
   'Começar': 'Nis',
   'Esperando {nome} começar.': 'Në pritje që {nome} të nisë.',
+  'Girar': 'Rrotullo',
+  'Tapete': 'Qilim',
+  'Objetos da parede': 'Zbukurime muri',
 } satisfies Record<string, string>;

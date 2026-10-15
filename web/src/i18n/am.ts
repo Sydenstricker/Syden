@@ -1853,4 +1853,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'ለመጀመር {n} ሰዎች ይቀራሉ።',
   'Começar': 'ይጀምሩ',
   'Esperando {nome} começar.': '{nome} እስኪጀምሩ በመጠበቅ ላይ።',
+  'Girar': 'ማዞር',
+  'Tapete': 'ምንጣፍ',
+  'Objetos da parede': 'የግድግዳ ጌጦች',
 } satisfies Record<string, string>;

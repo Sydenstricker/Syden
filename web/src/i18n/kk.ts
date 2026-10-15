@@ -1919,4 +1919,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Бастау үшін {n} адам жетпейді.',
   'Começar': 'Бастау',
   'Esperando {nome} começar.': '{nome} бастауын күтудеміз.',
+  'Girar': 'Бұру',
+  'Tapete': 'Кілем',
+  'Objetos da parede': 'Қабырға әшекейлері',
 } satisfies Record<string, string>;

@@ -1873,4 +1873,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'عدد الأشخاص الناقصين للبدء: {n}.',
   'Começar': 'البدء',
   'Esperando {nome} começar.': 'بانتظار البدء من {nome}.',
+  'Girar': 'تدوير',
+  'Tapete': 'السجادة',
+  'Objetos da parede': 'أغراض الجدار',
 } satisfies Record<string, string>;

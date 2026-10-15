@@ -1920,4 +1920,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Брой липсващи играчи за начало: {n}.',
   'Começar': 'Започни',
   'Esperando {nome} começar.': 'Чакаме {nome} да започне.',
+  'Girar': 'Завърти',
+  'Tapete': 'Килим',
+  'Objetos da parede': 'Декорации за стена',
 } satisfies Record<string, string>;

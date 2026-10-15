@@ -1838,4 +1838,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'தொடங்க இன்னும் {n} ஆட்கள் தேவை.',
   'Começar': 'தொடங்கு',
   'Esperando {nome} começar.': '{nome} தொடங்குவதற்காகக் காத்திருக்கிறோம்.',
+  'Girar': 'சுழற்று',
+  'Tapete': 'விரிப்பு',
+  'Objetos da parede': 'சுவர் அலங்காரங்கள்',
 } satisfies Record<string, string>;

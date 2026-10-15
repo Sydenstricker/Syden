@@ -1859,4 +1859,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Tá {n} duine eile ag teastáil chun tosú.',
   'Começar': 'Tosaigh',
   'Esperando {nome} começar.': 'Ag fanacht go dtosóidh {nome}.',
+  'Girar': 'Rothlaigh',
+  'Tapete': 'Ruga',
+  'Objetos da parede': 'Maisiúcháin bhalla',
 } satisfies Record<string, string>;

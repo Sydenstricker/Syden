@@ -1933,4 +1933,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Manke {n} moun pou kòmanse.',
   'Começar': 'Kòmanse',
   'Esperando {nome} começar.': 'N ap tann {nome} kòmanse.',
+  'Girar': 'Vire',
+  'Tapete': 'Tapi',
+  'Objetos da parede': 'Dekorasyon miray',
 } satisfies Record<string, string>;

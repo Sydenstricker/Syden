@@ -1903,4 +1903,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Для початку бракує людей: {n}.',
   'Começar': 'Почати',
   'Esperando {nome} começar.': 'Чекаємо, поки {nome} дасть старт.',
+  'Girar': 'Повернути',
+  'Tapete': 'Килим',
+  'Objetos da parede': 'Речі на стіні',
 } satisfies Record<string, string>;

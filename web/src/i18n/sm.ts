@@ -1857,4 +1857,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'E manaʻomia isi tagata e {n} e amata ai.',
   'Começar': 'Amata',
   'Esperando {nome} começar.': 'O loʻo faʻatali mo {nome} e amata.',
+  'Girar': 'Taamilo',
+  'Tapete': 'Fala',
+  'Objetos da parede': 'Teuga o le puipui',
 } satisfies Record<string, string>;

@@ -1841,4 +1841,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'برای شروع {n} نفر کم است.',
   'Começar': 'شروع',
   'Esperando {nome} começar.': 'منتظر شروع بازی توسط {nome}.',
+  'Girar': 'چرخاندن',
+  'Tapete': 'فرش',
+  'Objetos da parede': 'وسایل دیوار',
 } satisfies Record<string, string>;

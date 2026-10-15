@@ -1866,4 +1866,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'ขาดอีก {n} คนจึงจะเริ่มได้',
   'Começar': 'เริ่ม',
   'Esperando {nome} começar.': 'รอ {nome} เริ่มเกม',
+  'Girar': 'หมุน',
+  'Tapete': 'พรม',
+  'Objetos da parede': 'ของตกแต่งผนัง',
 } satisfies Record<string, string>;

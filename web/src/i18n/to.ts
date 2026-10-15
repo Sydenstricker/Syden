@@ -1859,4 +1859,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'ʻOku toe fiemaʻu ha toko {n} ke kamata.',
   'Começar': 'Kamata',
   'Esperando {nome} começar.': 'ʻOku tatali ke kamata ʻe {nome}.',
+  'Girar': 'Takai',
+  'Tapete': 'Kapeti',
+  'Objetos da parede': 'Teuteu ʻo e holisi',
 } satisfies Record<string, string>;

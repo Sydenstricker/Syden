@@ -1861,4 +1861,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'A chọrọ mmadụ {n} ọzọ iji malite.',
   'Começar': 'Malite',
   'Esperando {nome} começar.': 'Na-eche ka {nome} malite.',
+  'Girar': 'Tụgharịa',
+  'Tapete': 'Kapeeti',
+  'Objetos da parede': 'Ihe ịchọ mma mgbidi',
 } satisfies Record<string, string>;

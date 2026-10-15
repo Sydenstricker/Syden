@@ -1924,4 +1924,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Það vantar {n} í viðbót til að byrja.',
   'Começar': 'Byrja',
   'Esperando {nome} começar.': 'Beðið eftir að {nome} byrji.',
+  'Girar': 'Snúa',
+  'Tapete': 'Gólfmotta',
+  'Objetos da parede': 'Veggskraut',
 } satisfies Record<string, string>;

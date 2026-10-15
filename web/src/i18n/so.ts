@@ -1923,4 +1923,7 @@ export default {
   'Faltam {n} pessoas para começar.': '{n} qof oo kale ayaa loo baahan yahay si loo bilaabo.',
   'Começar': 'Bilow',
   'Esperando {nome} começar.': 'Waxaa la sugayaa bilowga {nome}.',
+  'Girar': 'Wareeji',
+  'Tapete': 'Roog',
+  'Objetos da parede': 'Qurxinta derbiga',
 } satisfies Record<string, string>;

@@ -1841,4 +1841,7 @@ export default {
   'Faltam {n} pessoas para começar.': '시작하려면 {n}명이 더 필요해요.',
   'Começar': '시작',
   'Esperando {nome} começar.': '{nome}님이 시작하기를 기다리는 중이에요.',
+  'Girar': '회전',
+  'Tapete': '러그',
+  'Objetos da parede': '벽 장식',
 } satisfies Record<string, string>;

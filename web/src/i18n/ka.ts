@@ -1941,4 +1941,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'დასაწყებად {n} ადამიანი აკლია.',
   'Começar': 'დაწყება',
   'Esperando {nome} começar.': 'ველოდებით, როდის დაიწყებს {nome}.',
+  'Girar': 'შემობრუნება',
+  'Tapete': 'ხალიჩა',
+  'Objetos da parede': 'კედლის დეკორი',
 } satisfies Record<string, string>;

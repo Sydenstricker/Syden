@@ -1925,4 +1925,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'सुरु गर्न अझै {n} जना चाहिन्छ।',
   'Começar': 'सुरु गर्नुहोस्',
   'Esperando {nome} começar.': '{nome} ले सुरु गर्ने प्रतीक्षा गर्दै।',
+  'Girar': 'घुमाउनुहोस्',
+  'Tapete': 'गलैँचा',
+  'Objetos da parede': 'भित्ताका सजावट',
 } satisfies Record<string, string>;

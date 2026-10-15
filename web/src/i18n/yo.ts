@@ -1868,4 +1868,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Ó ku ènìyàn {n} kí a tó bẹ̀rẹ̀.',
   'Começar': 'Bẹ̀rẹ̀',
   'Esperando {nome} começar.': 'À ń dúró de {nome} láti bẹ̀rẹ̀.',
+  'Girar': 'Yí i padà',
+  'Tapete': 'Kápẹ́ẹ̀tì',
+  'Objetos da parede': 'Ọ̀ṣọ́ ògiri',
 } satisfies Record<string, string>;

@@ -1853,4 +1853,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Perlu {n} orang lagi untuk bermula.',
   'Começar': 'Mula',
   'Esperando {nome} começar.': 'Menunggu {nome} memulakan.',
+  'Girar': 'Putar',
+  'Tapete': 'Permaidani',
+  'Objetos da parede': 'Hiasan dinding',
 } satisfies Record<string, string>;

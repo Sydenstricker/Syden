@@ -1937,4 +1937,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Эхлэхэд {n} хүн дутуу байна.',
   'Começar': 'Эхлүүлэх',
   'Esperando {nome} começar.': '{nome} эхлүүлэхийг хүлээж байна.',
+  'Girar': 'Эргүүлэх',
+  'Tapete': 'Хивс',
+  'Objetos da parede': 'Ханын чимэглэл',
 } satisfies Record<string, string>;

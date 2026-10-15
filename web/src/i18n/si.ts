@@ -1923,4 +1923,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'පටන් ගන්න තව {n} දෙනෙක් ඕනෑ.',
   'Começar': 'පටන් ගන්න',
   'Esperando {nome} começar.': '{nome} පටන් ගන්නකම් බලාගෙන ඉන්නවා.',
+  'Girar': 'කරකවන්න',
+  'Tapete': 'පාපිස්ස',
+  'Objetos da parede': 'බිත්ති සැරසිලි',
 } satisfies Record<string, string>;

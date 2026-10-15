@@ -1859,4 +1859,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Λείπουν {n} άτομα για να ξεκινήσει.',
   'Começar': 'Έναρξη',
   'Esperando {nome} começar.': 'Περιμένουμε να ξεκινήσει {nome}.',
+  'Girar': 'Περιστροφή',
+  'Tapete': 'Χαλί',
+  'Objetos da parede': 'Διακοσμητικά τοίχου',
 } satisfies Record<string, string>;

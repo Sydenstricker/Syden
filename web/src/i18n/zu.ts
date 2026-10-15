@@ -1924,4 +1924,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Kusadingeka abantu abangu-{n} ukuze kuqalwe.',
   'Começar': 'Qala',
   'Esperando {nome} começar.': 'Silinde u-{nome} ukuthi aqale.',
+  'Girar': 'Jikisa',
+  'Tapete': 'Umata',
+  'Objetos da parede': 'Imihlobiso yodonga',
 } satisfies Record<string, string>;

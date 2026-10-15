@@ -1855,4 +1855,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Ana buƙatar ƙarin mutane {n} kafin a fara.',
   'Começar': 'Fara',
   'Esperando {nome} começar.': 'Ana jiran {nome} su fara.',
+  'Girar': 'Juya',
+  'Tapete': 'Kafet',
+  'Objetos da parede': 'Kayan bango',
 } satisfies Record<string, string>;

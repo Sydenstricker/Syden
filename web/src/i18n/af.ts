@@ -1917,4 +1917,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Nog {n} mense nodig om te begin.',
   'Começar': 'Begin',
   'Esperando {nome} começar.': 'Wag dat {nome} begin.',
+  'Girar': 'Draai',
+  'Tapete': 'Mat',
+  'Objetos da parede': 'Muurversierings',
 } satisfies Record<string, string>;

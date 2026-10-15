@@ -1869,4 +1869,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Persuni li għadhom nieqsa biex nibdew: {n}.',
   'Começar': 'Ibda',
   'Esperando {nome} começar.': 'Qed nistennew il-bidu minn {nome}.',
+  'Girar': 'Dawwar',
+  'Tapete': 'Tapit',
+  'Objetos da parede': 'Tiżjin tal-ħajt',
 } satisfies Record<string, string>;

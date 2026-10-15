@@ -1852,4 +1852,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Wanahitajika watu {n} zaidi ili kuanza.',
   'Começar': 'Anza',
   'Esperando {nome} começar.': 'Tunamsubiri {nome} aanze.',
+  'Girar': 'Zungusha',
+  'Tapete': 'Zulia',
+  'Objetos da parede': 'Vitu vya ukutani',
 } satisfies Record<string, string>;

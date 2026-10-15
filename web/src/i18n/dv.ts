@@ -1933,4 +1933,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'ފެށުމަށް {n} މީހުން މަދު.',
   'Começar': 'ފަށާ',
   'Esperando {nome} começar.': '{nome} ފަށަންދެން މަޑުކުރަނީ.',
+  'Girar': 'އަނބުރާ',
+  'Tapete': 'ފަރުދާ',
+  'Objetos da parede': 'ފާރުގެ ޒީނަތްތެރިކަން',
 } satisfies Record<string, string>;

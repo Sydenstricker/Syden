@@ -1848,4 +1848,7 @@ export default {
   'Faltam {n} pessoas para começar.': '{n} more people needed to start.',
   'Começar': 'Start',
   'Esperando {nome} começar.': 'Waiting for {nome} to start.',
+  'Girar': 'Rotate',
+  'Tapete': 'Rug',
+  'Objetos da parede': 'Wall decor',
 } satisfies Record<string, string>;

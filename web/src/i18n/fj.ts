@@ -1852,4 +1852,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'E se gadrevi e {n} tale na tamata me tekivu.',
   'Começar': 'Tekivu',
   'Esperando {nome} começar.': 'Waraka tiko me tekivuna o {nome}.',
+  'Girar': 'Vukica',
+  'Tapete': 'Ibe',
+  'Objetos da parede': 'iUkuuku ni lalaga',
 } satisfies Record<string, string>;

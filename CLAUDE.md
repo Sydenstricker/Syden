@@ -511,9 +511,9 @@ ficou combinado:
   mesa → Mini-games; o nome aparece ao passar o mouse. **No app, `QuartoNovo.tsx` mostra a página do quarto num iframe
   (`?app`), SÓ NO DESENVOLVIMENTO:** o Vite a serve do disco e ela não entra no build; o botão 🧪 da home troca de quarto.
   Para lançar: a página precisa ir para o build (2,7 MB desde 15/10, com as imagens dentro) e a home trocar de
-  componente. **E falta a barra de ARRUMAR no app:** hoje, no app, só se arrasta (e gira pela rodinha); girar, trocar a
-  janela, pôr e guardar os objetos da parede e a cor do tapete (sálvia, terracota, azul, mostarda, rosa, cinza) só têm
-  botão na página de teste. A barra pede textos novos ("Girar", "Tapete", "Parede"…) traduzidos nos 80 idiomas.
+  componente. **A barra de ARRUMAR do app existe (15/10/2026):** Editar → Girar, Janela, as cores do tapete (sálvia,
+  terracota, azul, mostarda, rosa, cinza) e os objetos da parede, estes dois como FIGURAS e não nomes, para não pedir
+  um texto novo por objeto nos 80 idiomas (só "Girar", "Tapete" e "Objetos da parede" entraram).
   O coelho do quarto no app já segue o estado de verdade (em call, ausente).
 - **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.

@@ -1835,4 +1835,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'మొదలుపెట్టడానికి ఇంకా {n} మంది కావాలి.',
   'Começar': 'మొదలుపెట్టు',
   'Esperando {nome} começar.': '{nome} మొదలుపెట్టడం కోసం ఎదురుచూస్తున్నాం.',
+  'Girar': 'తిప్పు',
+  'Tapete': 'తివాచీ',
+  'Objetos da parede': 'గోడ అలంకరణలు',
 } satisfies Record<string, string>;

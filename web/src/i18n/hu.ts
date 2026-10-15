@@ -1925,4 +1925,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Még {n} ember hiányzik a kezdéshez.',
   'Começar': 'Kezdés',
   'Esperando {nome} começar.': 'Várjuk, hogy {nome} elindítsa.',
+  'Girar': 'Forgatás',
+  'Tapete': 'Szőnyeg',
+  'Objetos da parede': 'Falidíszek',
 } satisfies Record<string, string>;

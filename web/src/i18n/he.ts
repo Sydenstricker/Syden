@@ -1903,4 +1903,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'חסרים עוד {n} משתתפים כדי להתחיל.',
   'Começar': 'להתחיל',
   'Esperando {nome} começar.': 'ממתינים להתחלה של {nome}.',
+  'Girar': 'סיבוב',
+  'Tapete': 'שטיח',
+  'Objetos da parede': 'קישוטי קיר',
 } satisfies Record<string, string>;

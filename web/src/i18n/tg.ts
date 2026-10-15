@@ -1924,4 +1924,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Барои оғоз {n} нафар намерасад.',
   'Começar': 'Оғоз кардан',
   'Esperando {nome} começar.': 'Интизори оғози {nome}.',
+  'Girar': 'Гардонидан',
+  'Tapete': 'Қолин',
+  'Objetos da parede': 'Ороишҳои девор',
 } satisfies Record<string, string>;

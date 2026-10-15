@@ -1852,4 +1852,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'शुरू करने के लिए {n} लोग और चाहिए।',
   'Começar': 'शुरू करो',
   'Esperando {nome} começar.': '{nome} के शुरू करने का इंतज़ार है।',
+  'Girar': 'घुमाएँ',
+  'Tapete': 'कालीन',
+  'Objetos da parede': 'दीवार की सजावट',
 } satisfies Record<string, string>;

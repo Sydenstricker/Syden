@@ -1925,4 +1925,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Başlamak üçin {n} adam ýetenok.',
   'Começar': 'Başla',
   'Esperando {nome} começar.': '{nome} başlamagyna garaşylýar.',
+  'Girar': 'Aýlamak',
+  'Tapete': 'Haly',
+  'Objetos da parede': 'Diwar bezegleri',
 } satisfies Record<string, string>;

@@ -1852,4 +1852,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Nog {n} mensen nodig om te beginnen.',
   'Começar': 'Beginnen',
   'Esperando {nome} começar.': 'Wachten tot {nome} begint.',
+  'Girar': 'Draaien',
+  'Tapete': 'Vloerkleed',
+  'Objetos da parede': 'Wanddecoratie',
 } satisfies Record<string, string>;

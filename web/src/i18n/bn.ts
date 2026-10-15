@@ -1850,4 +1850,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'শুরু করতে আরও {n} জন দরকার।',
   'Começar': 'শুরু করো',
   'Esperando {nome} começar.': '{nome} শুরু করবে, তার অপেক্ষা।',
+  'Girar': 'ঘোরাও',
+  'Tapete': 'কার্পেট',
+  'Objetos da parede': 'দেয়ালের জিনিস',
 } satisfies Record<string, string>;

@@ -1922,4 +1922,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'ខ្វះ {n} នាក់ទៀតដើម្បីចាប់ផ្តើម។',
   'Começar': 'ចាប់ផ្តើម',
   'Esperando {nome} começar.': 'កំពុងរង់ចាំ {nome} ចាប់ផ្តើម។',
+  'Girar': 'បង្វិល',
+  'Tapete': 'កម្រាលព្រំ',
+  'Objetos da parede': 'គ្រឿងតុបតែងជញ្ជាំង',
 } satisfies Record<string, string>;

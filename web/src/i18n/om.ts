@@ -1893,4 +1893,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Jalqabuuf namoota {n} dabalataa barbaachisa.',
   'Começar': 'Jalqabi',
   'Esperando {nome} começar.': '{nome} akka jalqaban eegaa jirra.',
+  'Girar': 'Naannessi',
+  'Tapete': 'Afata lafaa',
+  'Objetos da parede': 'Miidhagina keenyan',
 } satisfies Record<string, string>;

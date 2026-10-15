@@ -1923,4 +1923,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Det mangler {n} personer for å starte.',
   'Começar': 'Start',
   'Esperando {nome} começar.': 'Venter på at {nome} skal starte.',
+  'Girar': 'Roter',
+  'Tapete': 'Teppe',
+  'Objetos da parede': 'Veggpynt',
 } satisfies Record<string, string>;

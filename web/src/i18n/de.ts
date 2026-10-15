@@ -1877,4 +1877,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Es fehlen noch {n} Personen zum Starten.',
   'Começar': 'Starten',
   'Esperando {nome} começar.': 'Warte darauf, dass {nome} startet.',
+  'Girar': 'Drehen',
+  'Tapete': 'Teppich',
+  'Objetos da parede': 'Wanddeko',
 } satisfies Record<string, string>;

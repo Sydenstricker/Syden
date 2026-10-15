@@ -51,11 +51,22 @@ await p.mouse.click(...ponto); await p.waitForTimeout(600);
 conferir(await p.locator('.vila-painel').isVisible(), 'clicar no fone abre o painel das Salas no app');
 await p.screenshot({ path: path.join(FOTOS, 'no-app-salas.png') });
 
-// A arrumação vai ao servidor: troca o tipo de janela pelo quarto (por dentro) e confere na API.
-await frame.evaluate(() => document.getElementById('tipo-janela').click());
-await p.waitForTimeout(1600);
+// A BARRA DE ARRUMAR do app: Editar, trocar a janela, a cor do tapete e pôr a pintura na parede; tudo vai ao servidor.
+await p.locator('.vila-painel-fechar').click().catch(() => {});
+await p.locator('.quarto-novo-barra > button').first().click();
+await p.locator('.quarto-novo-barra > button', { hasText: 'Janela' }).click();
+await p.locator('.quarto-novo-cor').nth(2).click(); // o azul
+const nObjetos = await p.locator('.quarto-novo-objeto').count();
+await p.locator('.quarto-novo-objeto').nth(4).click(); // a pintura (estava guardada)
+await p.waitForTimeout(1800);
+conferir(nObjetos === 5, 'a barra mostra os 5 objetos da parede como figuras');
+conferir(await p.locator('.quarto-novo-cor').nth(2).getAttribute('aria-pressed') === 'true', 'a cor escolhida fica marcada na barra');
+conferir(await p.locator('.quarto-novo-objeto').nth(4).getAttribute('aria-pressed') === 'true', 'a pintura fica marcada como posta');
+await p.screenshot({ path: path.join(FOTOS, 'no-app-barra.png') });
 const guardado = await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json();
-conferir(guardado.arrumacao?.janela?.tipo === 'arco', 'a arrumação feita no app foi para o servidor (janela: ' + guardado.arrumacao?.janela?.tipo + ')');
+conferir(guardado.arrumacao?.janela?.tipo === 'arco', 'a janela trocada pela barra foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
+conferir(guardado.arrumacao?.cores?.tapete === 'azul', 'a cor do tapete foi ao servidor (' + guardado.arrumacao?.cores?.tapete + ')');
+conferir(!!guardado.arrumacao?.parede?.pintura, 'a pintura posta foi ao servidor');
 
 await navegador.close();
 console.log(falhas.length ? falhas.length + ' falha(s)' : 'tudo certo');

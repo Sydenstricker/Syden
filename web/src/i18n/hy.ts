@@ -1942,4 +1942,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Սկսելու համար {n} հոգի է պակասում։',
   'Começar': 'Սկսել',
   'Esperando {nome} começar.': 'Սպասում ենք, որ {nome} սկսի։',
+  'Girar': 'Պտտել',
+  'Tapete': 'Գորգ',
+  'Objetos da parede': 'Պատի զարդեր',
 } satisfies Record<string, string>;

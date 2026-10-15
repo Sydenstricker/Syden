@@ -1853,4 +1853,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Persoane care mai lipsesc ca să înceapă: {n}.',
   'Começar': 'Începe',
   'Esperando {nome} começar.': 'Se așteaptă ca {nome} să înceapă.',
+  'Girar': 'Rotește',
+  'Tapete': 'Covor',
+  'Objetos da parede': 'Decorațiuni de perete',
 } satisfies Record<string, string>;

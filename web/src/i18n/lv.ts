@@ -1925,4 +1925,7 @@ export default {
   'Faltam {n} pessoas para começar.': 'Lai sāktu, trūkst spēlētāju: {n}.',
   'Começar': 'Sākt',
   'Esperando {nome} começar.': 'Gaidām, kad {nome} sāks.',
+  'Girar': 'Pagriezt',
+  'Tapete': 'Paklājs',
+  'Objetos da parede': 'Sienas rotājumi',
 } satisfies Record<string, string>;
