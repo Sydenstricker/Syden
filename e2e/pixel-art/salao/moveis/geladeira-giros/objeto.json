@@ -1,0 +1,41 @@
+{
+  "id": "76e3edc0-3a74-4853-8103-59c8e25d2773",
+  "name": "retro rounded refrigerator and",
+  "state_name": "base",
+  "prompt": "retro rounded refrigerator and nothing else: a pastel mint-green fridge with a chrome handle",
+  "size": {
+    "width": 136,
+    "height": 136
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T23:15:55.250872+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/76e3edc0-3a74-4853-8103-59c8e25d2773/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "83d44157-92ac-401c-a8ec-0d8db35a422c",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

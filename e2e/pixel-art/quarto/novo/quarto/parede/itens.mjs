@@ -21,6 +21,18 @@ export const ITENS = {
   cortica: { area: area(3.2, 5.0, 80, 150), texto: `ONLY a small cork board in a wooden frame with a few colorful paper notes pinned on it, ${ESTILO}` },
   // Só enfeite.
   prateleira: { area: area(2.9, 5.3, 95, 165), texto: `ONLY a short wooden wall shelf with a few books, a tiny potted succulent and a small ceramic vase on it, ${ESTILO}` },
+  // O SALÃO (escolhas dele, 15/10/2026): a prateleira de bar com o lampião (o conceito dele; garrafas SEM álcool), a de
+  // snacks da cozinha, a estante de troféus (as conquistas da turma), o neon (sem texto: não pede tradução), o relógio, o
+  // violão perto do karaokê e a porta do banheiro (só enfeite, com a placa).
+  // (a primeira saiu minúscula, sem o lampião e com um pedaço do chão; a de snacks e a de troféus, cortadas retas na
+  // esquerda: pedidos mais compactos, outra semente)
+  'prateleira-bar': { area: area(2.6, 5.8, 70, 190), semente: 3, texto: `ONLY two wide dark wooden wall shelves filling the area, one above the other, with glass jars, mugs, soda bottles and juice bottles on them, and a warm glowing old lantern hanging from a hook at the right end, all well above the floor, ${ESTILO}` },
+  'prateleira-snacks': { area: area(2.8, 5.6, 80, 170), semente: 9, texto: `ONLY a SHORT wooden kitchen wall shelf, fully inside the area, with three small glass jars of cookies, popcorn and candy, ${ESTILO}` },
+  trofeus: { area: area(2.7, 5.7, 80, 180), semente: 4, texto: `ONLY a SHORT dark wooden display shelf, fully inside the area, with three shiny trophy cups (gold, silver, bronze), ${ESTILO}` },
+  neon: { area: area(3.0, 5.4, 100, 175), texto: `ONLY a glowing neon sign shaped like a cute bunny head next to a music note, bright pink and cyan neon tubes, no letters, no text, ${ESTILO}` },
+  relogio: { area: area(3.6, 4.7, 120, 165), texto: `ONLY a small round wooden wall clock with a cream face and dark hands, ${ESTILO}` },
+  violao: { area: area(3.4, 4.8, 70, 175), texto: `ONLY a wooden acoustic guitar hanging vertically on a small wall hook, ${ESTILO}` },
+  porta: { area: area(3.0, 5.2, 0, 150), texto: `ONLY a closed dark wooden door with a small round restroom sign on it showing a simple bunny icon, a brass door handle, standing on the floor, set into the plain cream wall, ${ESTILO}` },
   pintura: { area: area(3.3, 4.9, 90, 170), texto: `ONLY a framed landscape painting of green hills and a soft sunset sky, in a thin wooden frame, ${ESTILO}` },
 };
 const base = ler64(path.join(AQUI, '..', 'janelas', 'sem-janela-dia.png'));

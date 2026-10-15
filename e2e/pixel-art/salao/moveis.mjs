@@ -32,6 +32,9 @@ export const MOVEIS = {
   cadeira: { lado: [56, 88], texto: `ONLY ONE simple wooden chair with a cushioned seat and a slatted back, and nothing else, ${ANGULO}` },
   jukebox: { lado: [80, 128], texto: `ONLY ONE retro jukebox music machine and nothing else: rounded wooden top with warm glowing lights, a record selection panel, a speaker grille, ${ANGULO}` },
   microfone: { lado: [88, 120], texto: `ONLY ONE karaoke corner set and nothing else: a microphone on a tall stand next to one wooden floor speaker box, ${ANGULO}` },
+  // A COZINHA AMERICANA (escolha dele, 15/10/2026): a ilha com cooktop e a geladeira; as comidas vão em cima, como objetos.
+  ilha: { lado: [144, 112], texto: `ONLY ONE kitchen island counter and nothing else: light wood cabinets below, a smooth stone countertop with a built-in black cooktop, the countertop otherwise empty, ${ANGULO}` },
+  geladeira: { lado: [72, 128], texto: `ONLY ONE retro rounded refrigerator and nothing else: a pastel mint-green fridge with a chrome handle, ${ANGULO}` },
   pufao: { lado: [96, 80], texto: `ONLY ONE big soft bean bag chair and nothing else: plump mustard-yellow fabric, ${ANGULO}` },
 };
 

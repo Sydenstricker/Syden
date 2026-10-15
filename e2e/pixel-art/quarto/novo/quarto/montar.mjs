@@ -100,7 +100,7 @@ const GIROS = CENA === 'salao'
     'sofa-2': 'S:sofa-giros', poltrona: 'poltrona-giros', 'poltrona-2': 'poltrona-giros',
     // os móveis novos do 16 × 16 (escolhidos por ele: a caixa de som 4 e o pufão 1), e as 4 cadeiras da mesa de jogos
     'mesa-jogo': 'S:mesa-jogo-giros', cadeira: 'S:cadeira-giros', 'cadeira-2': 'S:cadeira-giros', 'cadeira-3': 'S:cadeira-giros', 'cadeira-4': 'S:cadeira-giros',
-    jukebox: 'S:jukebox-giros', microfone: 'S:microfone-giros', pufao: 'S:pufao-giros' }
+    jukebox: 'S:jukebox-giros', microfone: 'S:microfone-giros', pufao: 'S:pufao-giros', ilha: 'S:ilha-giros', geladeira: 'S:geladeira-giros' }
   : { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-limpo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
@@ -143,7 +143,7 @@ for (const tipo of ['original', 'arco', 'redonda', 'floreira', 'cortinas']) {
 }
 // OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
 const ITENS_PAREDE = {};
-for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura']) {
+for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta']) {
   const d = path.join(AQUI, 'parede', item);
   if (!fs.existsSync(path.join(d, 'item.json'))) continue;
   ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
@@ -415,7 +415,13 @@ function dados(im, filtro, w = W, h = W) {
   // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
   // está aqui fica guardado. De fábrica, os três com função ficam na parede da esquerda (a da direita é da janela).
   // (no salão, nenhum objeto de parede de fábrica: o quadro saiu, pedido dele em 15/10/2026)
-  const PAREDE_INICIAL = CENA === 'salao' ? {} : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
+  // O salão (15/10/2026, escolhas dele): a porta do banheiro, a prateleira do bar, o neon, os troféus, o relógio, o violão
+  // perto do karaokê e a prateleira de snacks na cozinha. (v: quantas casas o objeto anda a partir de onde foi pintado.)
+  const PAREDE_INICIAL = CENA === 'salao' ? {
+    porta: { parede: 'esquerda', v: 0.4, h: 0 }, 'prateleira-bar': { parede: 'esquerda', v: 3.4, h: 6 }, relogio: { parede: 'esquerda', v: -1.6, h: 30 },
+    'prateleira-snacks': { parede: 'esquerda', v: 10.4, h: 0 }, neon: { parede: 'direita', v: 1.8, h: 24 }, trofeus: { parede: 'direita', v: -2.4, h: 10 },
+    violao: { parede: 'direita', v: 9.7, h: 0 },
+  } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
   try { const gp = JSON.parse(localStorage.getItem(PREFIXO + 'parede') ?? 'null'); if (gp) NA_PAREDE = Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])); } catch { /* a de fábrica */ }
   const guardarParede = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'parede', JSON.stringify(NA_PAREDE)); } catch { /* fica só nesta visita */ } enviar(); };
@@ -423,7 +429,8 @@ function dados(im, filtro, w = W, h = W) {
   for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
   // Até onde um objeto vai na parede: inteiro nela, acima do rodapé (30 px) e até a sombra da cornija (190 px: a parede
   // clara vai a ~176 px do chão, e o recorte traz uns pixels de sombra em volta).
-  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
+  // (o que fica no CHÃO, como a porta, não sobe nem desce: só anda ao longo da parede)
+  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: it.chao ? 0 : Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
   const mapaDaParede = (P) => { const dx = Math.round(27 * P.v), dy = Math.round(14.25 * P.v) - Math.round(P.h) + DY; return (x, y) => { x += dx + DX; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
   const naParede = new Int8Array(W * W);
   const guardarJanela = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } enviar(); };
@@ -550,7 +557,7 @@ function dados(im, filtro, w = W, h = W) {
     cortinaNoite = noiteSemLuar;
     abertaDia = T.aberta ? compor(semDia, T.aberta, semDiaL, semDiaL, null, null, mapa) : base;
     // Os objetos da parede, por cima da janela (pendurados na parede, à frente da cortina).
-    naParede.fill(0);
+    naParede.fill(0); luzesDaParede = [];
     const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
     ids.forEach((id, i) => {
       const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : TEXTURAS_PAREDE[id], mp = mapaDaParede(P);
@@ -562,6 +569,19 @@ function dados(im, filtro, w = W, h = W) {
       noiteAbajur = compor(noiteAbajur, p2, semAbajurL, L2, null, null, mp);
       abajurSemLuar = compor(abajurSemLuar, p2, semAbajurL, L2, null, null, mp);
       for (let k = 0; k < W * W; k++) if (T2.dia[k * 4 + 3] > 127) { const d = mp(k % W, (k / W) | 0); if (d >= 0) naParede[d] = i + 1; }
+      // O QUE ACENDE (o neon, o lampião da prateleira do bar): de noite, as cores claras dele ficam como de dia, e ele
+      // brilha em volta (passeFinal), como a jukebox.
+      if (ITENS_PAREDE[id].luz) {
+        let sx = 0, sy = 0, n = 0, cr = 0, cg = 0, cb = 0;
+        for (let k = 0; k < W * W; k++) {
+          const t4 = k * 4, r = T2.dia[t4], g2 = T2.dia[t4 + 1], b = T2.dia[t4 + 2];
+          if (T2.dia[t4 + 3] < 128 || Math.max(r, g2, b) < 190 || Math.max(r, g2, b) - Math.min(r, g2, b) < 60) continue;
+          const d = mp(k % W, (k / W) | 0); if (d < 0) continue;
+          for (const A of [noite, noiteSemLuar, noiteAbajur, abajurSemLuar]) { A[d * 4] = r; A[d * 4 + 1] = g2; A[d * 4 + 2] = b; }
+          sx += d % W; sy += (d / W) | 0; n++; cr += r; cg += g2; cb += b;
+        }
+        if (n) luzesDaParede.push([sx / n, sy / n, [cr / n, cg / n, cb / n].map((c) => c * 0.8), 54]);
+      }
     });
     ordemDaParede = ids;
     if (!T.cortinaDia) cortinaDia = base;
@@ -590,7 +610,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     noiteLimpa = null;
   }
-  let noiteLimpa = null, ordemDaParede = [];
+  let noiteLimpa = null, ordemDaParede = [], luzesDaParede = [];
   aplicarJanela();
   const pecas = {};
   for (const m of MOVEIS) {
@@ -667,7 +687,7 @@ function dados(im, filtro, w = W, h = W) {
   for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
   // (o criado-mudo era 50, e a caneca flutuava na altura da cúpula: a "mancha" no abajur, relato de 15/10/2026)
-  const TOPOS = { 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
+  const TOPOS = { ilha: 42, 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
@@ -850,6 +870,10 @@ function dados(im, filtro, w = W, h = W) {
       if (OBJ_VISTAS.suco && VISTAS.balcao) a.o2 = { tipo: 'suco', em: 'balcao', s: 0.5, t: 0.3, lado: 0 };
       if (OBJ_VISTAS.refrigerante && VISTAS.balcao) a.o3 = { tipo: 'refrigerante', em: 'balcao', s: 0.5, t: 0.7, lado: 0 };
       if (OBJ_VISTAS.videogame && VISTAS.tv) a.o4 = { tipo: 'videogame', em: 'tv', s: 0.5, t: 0.82, lado: 0 };
+      // as comidas em cima da ilha
+      if (OBJ_VISTAS.pizza && VISTAS.ilha) a.o5 = { tipo: 'pizza', em: 'ilha', s: 0.3, t: 0.3, lado: 0 };
+      if (OBJ_VISTAS.bolo && VISTAS.ilha) a.o6 = { tipo: 'bolo', em: 'ilha', s: 0.75, t: 0.3, lado: 0 };
+      if (OBJ_VISTAS.salgadinho && VISTAS.ilha) a.o7 = { tipo: 'salgadinho', em: 'ilha', s: 0.5, t: 0.75, lado: 0 };
       return a;
     }
     if (OBJ_VISTAS.plantinha && VISTAS.mesa) a.o1 = { tipo: 'plantinha', em: 'mesa', s: 0.25, t: 0.82, lado: 0 };
@@ -870,7 +894,7 @@ function dados(im, filtro, w = W, h = W) {
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão' };
+  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão', ilha: 'a ilha da cozinha', geladeira: 'a geladeira' };
   const pufes = MOVEIS.filter((m) => m.pufe);
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -904,16 +928,21 @@ function dados(im, filtro, w = W, h = W) {
       por('banqueta', 6.6, 2.9, 0);
       por('banqueta-2', 7.9, 2.9, 0);
       por('planta-alta', 0.6, 0.6, 0);
-      por('planta-baixa', 15.2, 0.8, 0);
+      por('planta-baixa', 10.5, 15.4, 0);
       // o canto do karaokê, na parede da TV: a jukebox e o microfone com a caixa de som
       por('jukebox', 0.8, 12.3, 0);
       por('microfone', 1.6, 14.6, 0);
-      // a mesa de jogos, na frente da parede de tijolo, com as quatro cadeiras viradas para ela
-      por('mesa-jogo', 13, 3, 0);
-      por('cadeira', 11.6, 3, 0);
-      por('cadeira-2', 14.4, 3, 2);
-      por('cadeira-3', 13, 1.6, 3);
-      por('cadeira-4', 13, 4.4, 1);
+      // a mesa de jogos, no meio da frente, com as quatro cadeiras viradas para ela
+      // (a mesa ocupa 2 × 2 casas e a cadeira 1 × 1: em cata-vento, uma de cada lado, meia casa para o lado, para caber na
+      // grade sem cair em cima da mesa)
+      por('mesa-jogo', 7, 13, 0);
+      por('cadeira', 5.5, 12.5, 0);
+      por('cadeira-2', 8.5, 13.5, 2);
+      por('cadeira-3', 7.5, 11.5, 3);
+      por('cadeira-4', 6.5, 14.5, 1);
+      // A COZINHA AMERICANA (15/10/2026), no fim da parede de tijolo da esquerda: a geladeira encostada, e a ilha na frente
+      por('geladeira', 15.2, 0.8, 3);
+      por('ilha', 13.6, 3.4, 3);
       // a segunda roda: o outro sofá e as duas poltronas de frente para ele, e o pufão
       por('sofa-2', 13.5, 9.5, 2);
       por('poltrona', 10.2, 8.1, 0);
@@ -1094,7 +1123,7 @@ function dados(im, filtro, w = W, h = W) {
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2 };
+  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 };
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -2360,6 +2389,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     // a luz da jukebox, onde ela estiver (só de noite; fixa, para não redesenhar a cada quadro)
     // (de dia também, bem mais fraco: ela está ligada, e o sol da sala não apaga a lâmpada)
+    if (modo === 'noite') for (const L of luzesDaParede) brilhos.push(L);
     if (luzDaJukebox) brilhos.push(modo === 'noite' ? [luzDaJukebox[0], luzDaJukebox[1], [230, 140, 60], 72] : [luzDaJukebox[0], luzDaJukebox[1], [255, 170, 80], 56, 0.12]);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;

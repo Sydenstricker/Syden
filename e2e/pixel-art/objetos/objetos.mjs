@@ -26,6 +26,10 @@ export const MOVEIS = {
   livros: { lado: [48, 40], texto: `ONLY ONE short stack of three colorful books lying flat, and nothing else, ${PEQUENO}, ${ANGULO}` },
   videogame: { lado: [56, 40], texto: `ONLY ONE small modern game console with one wireless controller beside it, and nothing else, ${PEQUENO}, ${ANGULO}` },
   pipoca: { lado: [48, 40], texto: `ONLY ONE striped bowl full of popcorn, and nothing else, ${PEQUENO}, ${ANGULO}` },
+  // A cozinha americana do salão (15/10/2026): as comidas em cima da ilha.
+  pizza: { lado: [56, 40], texto: `ONLY ONE whole pepperoni pizza on a round wooden board, and nothing else, ${PEQUENO}, ${ANGULO}` },
+  salgadinho: { lado: [40, 48], texto: `ONLY ONE open bag of potato chips with a few chips spilling out, and nothing else, ${PEQUENO}, ${ANGULO}` },
+  bolo: { lado: [48, 48], texto: `ONLY ONE round chocolate cake with strawberries on top, on a small cake stand, and nothing else, ${PEQUENO}, ${ANGULO}` },
   retrato: { lado: [40, 48], texto: `ONLY ONE small standing wooden picture frame with a tiny photo, and nothing else, ${PEQUENO}, ${ANGULO}` },
 };
 

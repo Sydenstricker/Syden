@@ -23,6 +23,14 @@ ITENS = {
     'cortica': {'nome': 'a cortiça', 'funcao': 'cortica'},
     'prateleira': {'nome': 'a prateleira', 'funcao': None},
     'pintura': {'nome': 'a pintura', 'funcao': None},
+    # O salão (15/10/2026). "luz": as cores claras ficam acesas de noite e brilham em volta; "chao": fica no chão (a porta).
+    'prateleira-bar': {'nome': 'a prateleira do bar', 'funcao': None, 'luz': True, 'vaos': True},
+    'prateleira-snacks': {'nome': 'a prateleira de snacks', 'funcao': None},
+    'trofeus': {'nome': 'os troféus', 'funcao': None},
+    'neon': {'nome': 'o neon', 'funcao': None, 'luz': True},
+    'relogio': {'nome': 'o relógio', 'funcao': None},
+    'violao': {'nome': 'o violão', 'funcao': None},
+    'porta': {'nome': 'a porta do banheiro', 'funcao': None, 'chao': True},
 }
 for item, meta in ITENS.items():
     d = os.path.join(AQUI, item)
@@ -40,6 +48,20 @@ for item, meta in ITENS.items():
     # A borda é só o que mudou de verdade (o contorno e a sombra, dif > 16): com dif > 6 entrava uma faixa da parede creme
     # do quarto, que na parede de tijolo do salão virava um halo claro em volta do quadro (15/10/2026).
     m = binary_fill_holes(binary_dilation(forte, iterations=2) & (dif > 16) & PAREDE | forte) & PAREDE
+    # SEM A FRANJA DA PAREDE (15/10/2026): na borda, o que é quase da cor da parede creme do quarto é parede, e no tijolo
+    # do salão virava um contorno claro em volta do relógio, do violão e dos troféus. Por dentro (o branco do mostrador,
+    # as fotos), os buracos se fecham de novo.
+    m = binary_fill_holes(m & (dif > 26)) & PAREDE
+    # E SEM A SOMBRA PINTADA NA PAREDE: o pixel que é só a parede creme escurecida (os três canais na mesma proporção) é
+    # sombra no reboco do quarto, e no tijolo do salão virava uma mancha clara em volta da peça.
+    razao = dia / np.maximum(1, semDia)
+    sombra = (razao.max(2) - razao.min(2) < 0.07) & (razao.mean(2) < 0.97) & (razao.mean(2) > 0.35)
+    rot2, _ = label(m & ~sombra)
+    t2 = np.bincount(rot2.ravel()); t2[0] = 0
+    m = np.isin(rot2, np.nonzero(t2 >= max(20, t2.max() * 0.05))[0])
+    # "vaos": o que é parede pura por dentro da peça (o vão entre as tábuas da prateleira) também sai. Não vale para
+    # todas: o mostrador do relógio é creme como a parede.
+    if meta.get('vaos'): m = m & (dif > 14)
     for nome, cor in [('peca-dia', dia), ('peca-noite', dia * razao)]:
         # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB)
         Image.fromarray(np.dstack([np.clip(cor, 0, 255) * m[..., None], m * 255.0]).astype(np.uint8), 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)
@@ -47,5 +69,5 @@ for item, meta in ITENS.items():
     # a altura: de quanto acima do chão até quanto (medida na coluna do meio)
     meio = int((cols.min() + cols.max()) / 2)
     hs = chao(meio) - np.nonzero(m[:, cols.min():cols.max() + 1].any(1))[0]
-    json.dump({**meta, 'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)]}, open(os.path.join(d, 'item.json'), 'w', encoding='utf8'), ensure_ascii=False)
+    json.dump({**{k: v for k, v in meta.items() if k != 'vaos'}, 'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)]}, open(os.path.join(d, 'item.json'), 'w', encoding='utf8'), ensure_ascii=False)
     print(item, json.load(open(os.path.join(d, 'item.json'))))

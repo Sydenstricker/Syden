@@ -1,0 +1,41 @@
+{
+  "id": "32d093fc-ed72-45fb-9c97-81200cca63f8",
+  "name": "kitchen island counter and not",
+  "state_name": "base",
+  "prompt": "kitchen island counter and nothing else: light wood cabinets below, a smooth stone countertop with a built-in black cooktop, the countertop otherwise empty",
+  "size": {
+    "width": 151,
+    "height": 151
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T23:11:35.185712+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/32d093fc-ed72-45fb-9c97-81200cca63f8/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "b486df71-bdac-4f11-95ce-7c1cca9842a6",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}
