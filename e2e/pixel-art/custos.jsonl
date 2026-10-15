@@ -74,3 +74,5 @@
 {"ferramenta":"pixellab","peca":"quarto/estado/criado-mudo-pes","geracoes":15,"quando":"2026-10-14T23:06:54.773Z"}
 {"ferramenta":"pixellab","peca":"personagem/estado/no-computador","geracoes":25,"quando":"2026-10-14T23:10:15.142Z"}
 {"ferramenta":"pixellab","peca":"personagem/animacao/digitando","geracoes":12,"quando":"2026-10-15T00:12:42.419Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/digitando-devagar","geracoes":12,"quando":"2026-10-15T00:40:56.149Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/mexendo-no-mouse","geracoes":12,"quando":"2026-10-15T00:45:18.514Z"}

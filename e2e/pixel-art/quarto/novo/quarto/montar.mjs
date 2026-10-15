@@ -44,7 +44,8 @@ const FONTES = {
   'sentado-poltrona': ['estados/sentado-poltrona', 'estados/sentado-2'],
   // Na cadeira do computador: inclinado para a frente, as mãos no teclado (pedido dele, 14/10/2026: a pose da poltrona,
   // largada, ficava ruim ali).
-  'no-computador': ['baixa-120/animacoes/digitando', 'estados/no-computador', 'estados/sentado-2'], // digitando e no mouse
+  // Digitando: o corpo PARADO e só as mãos (personagem/maos.py); a do PixelLab balançava o corpo inteiro.
+  'no-computador': ['baixa-120/animacoes/digitando-maos', 'estados/no-computador', 'estados/sentado-2'],
   lendo: ['estados/lendo-deitado', 'estados/lendo'],
   dormindo: ['estados/dormindo'],
   'dormindo-largado': ['estados/dormindo-largado', 'estados/dormindo'],
@@ -1059,7 +1060,14 @@ function dados(im, filtro, w = W, h = W) {
     // PARADO, a respiração é discreta (relato de 14/10/2026: o ciclo inteiro do PixelLab balançava "como bêbado", 5 px
     // na cabeça e 3 px para o lado). Só os quadros mais parecidos com a pose, devagar, a maior parte do tempo nela.
     const RESPIRA = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 8, 8, 8];
-    const iq = nomeAnim === 'parado' && !quadroT ? Math.min(a.quadros.length - 1, RESPIRA[coelho.quadro % RESPIRA.length]) : coelho.quadro % a.quadros.length;
+    // AO COMPUTADOR (pedido dele, 14/10/2026: "digitando devagar e de vez em quando mexendo no mouse"): 12 s de roteiro,
+    // a 10 quadros por segundo. Os quadros: 0 a pose, 1 e 2 uma mão descendo (um toque), 3 e 4 o pulso no mouse.
+    const DIGITA = [...'0011000220001100000220011002200000110000022000110000000220011000002200000110000'].map(Number);
+    const MOUSE = [...'03343343433443340000'].map(Number);
+    const NO_PC = [...DIGITA, ...MOUSE, ...DIGITA.slice(0, 20)];
+    const iq = nomeAnim === 'parado' && !quadroT ? Math.min(a.quadros.length - 1, RESPIRA[coelho.quadro % RESPIRA.length])
+      : nomeAnim === 'no-computador' && !quadroT ? Math.min(a.quadros.length - 1, NO_PC[coelho.quadro % NO_PC.length])
+      : coelho.quadro % a.quadros.length;
     const quadro = quadroT ? quadroT.q : virando ? a.quadros[0] : a.quadros[iq];
     rotuloDoQuadro = (quadroT ? 'T' + indiceT + ':' + Math.round(centroT[0]) + ',' + Math.round(centroT[1]) : nomeAnim + iq) + coelho.dirVista + (falando ? Math.floor(coelho.quadro / 3) % 3 : '');
     const sw = quadro.w, sh = quadro.h;
