@@ -426,6 +426,8 @@ function dados(im, filtro, w = W, h = W) {
   try { const gp = JSON.parse(localStorage.getItem(PREFIXO + 'parede') ?? 'null'); if (gp) NA_PAREDE = Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])); } catch { /* a de fábrica */ }
   const guardarParede = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'parede', JSON.stringify(NA_PAREDE)); } catch { /* fica só nesta visita */ } enviar(); };
   const TEXTURAS_PAREDE = {};
+  const caixasDaParede = {};
+  const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
   for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
   // Até onde um objeto vai na parede: inteiro nela, acima do rodapé (30 px) e até a sombra da cornija (190 px: a parede
   // clara vai a ~176 px do chão, e o recorte traz uns pixels de sombra em volta).
@@ -615,6 +617,34 @@ function dados(im, filtro, w = W, h = W) {
   const pecas = {};
   for (const m of MOVEIS) {
     const movel = deslocar(dados(im[m.id])), sombra = deslocar(dados(im[m.id + '-sombra']));
+    // O TAPETE NO SALÃO (relato de 15/10/2026, "manchas no tapete"): recortado da pintura do quarto, ele traz na borda
+    // pontos do chão claro de lá, que no chão escuro do salão viram manchas. Na borda (até 3 px), sai o que tem cor de
+    // madeira (laranja: o tapete é verde).
+    if (CENA === 'salao' && m.id === 'tapete') for (let volta = 0; volta < 3; volta++) {
+      const tira = [];
+      for (let k = W; k < W * W - W; k++) {
+        if (!movel[k * 4 + 3]) continue;
+        if (movel[(k - 1) * 4 + 3] && movel[(k + 1) * 4 + 3] && movel[(k - W) * 4 + 3] && movel[(k + W) * 4 + 3]) continue;
+        const r = movel[k * 4], g2 = movel[k * 4 + 1], b = movel[k * 4 + 2];
+        if (r > g2 + 12 && r - b > 40) tira.push(k);
+      }
+      for (const k of tira) movel[k * 4 + 3] = 0;
+    }
+    // e por DENTRO: as marcas que os móveis pintados em cima dele deixaram no quarto (o pé de um móvel, um claro): o tapete
+    // é verde e cinza, e o pixel avermelhado vira a média dos vizinhos que são tapete
+    if (CENA === 'salao' && m.id === 'tapete') {
+      const mancha = (k) => movel[k * 4 + 3] && movel[k * 4] > movel[k * 4 + 1] + 10;
+      for (let volta = 0; volta < 6; volta++) {
+        let mudou = 0;
+        for (let k = W; k < W * W - W; k++) {
+          if (!mancha(k)) continue;
+          let n = 0; const soma = [0, 0, 0];
+          for (const v of [k - 1, k + 1, k - W, k + W, k - W - 1, k - W + 1, k + W - 1, k + W + 1]) if (movel[v * 4 + 3] && !mancha(v)) { for (let c = 0; c < 3; c++) soma[c] += movel[v * 4 + c]; n++; }
+          if (n >= 2) { for (let c = 0; c < 3; c++) movel[k * 4 + c] = soma[c] / n; mudou++; }
+        }
+        if (!mudou) break;
+      }
+    }
     let x0 = W, y0 = W, x1 = 0;
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); }
     // O centro do alto da peça (no abajur, a cúpula): a média dos x das 8 primeiras linhas.
@@ -2480,7 +2510,7 @@ function dados(im, filtro, w = W, h = W) {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     // Só limpa a região de antes quando vai redesenhar: limpando e saindo, o coelho e a cadeira sumiam do mapa de quem é
@@ -2572,11 +2602,25 @@ function dados(im, filtro, w = W, h = W) {
       const pa = peDe(pegado, alvo), cs = [[pa[0], pa[2]], [pa[1], pa[2]], [pa[1], pa[3]], [pa[0], pa[3]]].map(([u, v]) => ponto(Math.max(0, Math.min(N, u)), Math.max(0, Math.min(N, v))));
       caixaDoAlvo = [Math.floor(Math.min(...cs.map((c) => c[0]))) - 2, Math.floor(Math.min(...cs.map((c) => c[1]))) - 2, Math.ceil(Math.max(...cs.map((c) => c[0]))) + 2, Math.ceil(Math.max(...cs.map((c) => c[1]))) + 2];
     }
+    // o objeto de parede vivo: os pixels dele levados para onde está agora
+    let paredeViva = null;
+    if (paredePega?.vivo && TEXTURAS_PAREDE[paredePega.id]) {
+      const id = paredePega.id, T2 = TEXTURAS_PAREDE[id], mp = mapaDaParede(paredePega.vivo), cx = caixaDoItemDaParede(id), px = [];
+      let bx0 = W, by0 = W, bx1 = 0, by1 = 0;
+      const tex = modo === 'noite' && CENA !== 'salao' ? T2.noite : T2.dia, f = modo === 'noite' && CENA === 'salao' ? 0.6 : 1;
+      for (let y = cx[1]; y < cx[3]; y++) for (let x = cx[0]; x < cx[2]; x++) {
+        const k4 = (y * W + x) * 4; if (T2.dia[k4 + 3] < 128) continue;
+        const d = mp(x, y); if (d < 0) continue;
+        px.push([d, tex[k4] * f, tex[k4 + 1] * f, tex[k4 + 2] * f]);
+        const X = d % W, Y = (d / W) | 0; bx0 = Math.min(bx0, X); bx1 = Math.max(bx1, X); by0 = Math.min(by0, Y); by1 = Math.max(by1, Y);
+      }
+      if (px.length) paredeViva = { px, caixa: [bx0 - 2, by0 - 2, bx1 + 3, by1 + 3] };
+    }
     // o objeto vivo (pego e sendo arrastado): onde ele está agora
-    let caixaObjVivo = null, objVivo = null;
+    let caixaObjVivo = paredeViva?.caixa ?? null, objVivo = null;
     if (objPego?.vivo && OBJ_VISTAS[objPego.o.tipo]) {
       const vis = OBJ_VISTAS[objPego.o.tipo][objPego.vivo.lado], ox = Math.round(objPego.vivo.x - vis.meioDaBase[0]), oy = Math.round(objPego.vivo.y - vis.meioDaBase[1]);
-      objVivo = { vis, ox, oy }; caixaObjVivo = [vis.caixa[0] + ox - 2, vis.caixa[1] + oy - 2, vis.caixa[2] + ox + 2, vis.caixa[3] + oy + 2];
+      objVivo = { vis, ox, oy }; caixaObjVivo = unir(caixaObjVivo, [vis.caixa[0] + ox - 2, vis.caixa[1] + oy - 2, vis.caixa[2] + ox + 2, vis.caixa[3] + oy + 2]);
     }
     const agora = unir(unir(unir(unir(unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaObjVivo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
     regiaoDasFaiscas = caixaFaiscas;
@@ -2584,6 +2628,11 @@ function dados(im, filtro, w = W, h = W) {
     passeFinal(r);
     pintarTela(r);
     // o contorno branco do móvel pego e as faíscas: por cima de tudo, sem a luz da noite
+    if (paredeViva) {
+      const meu = new Set();
+      for (const [d, r2, g2, b2] of paredeViva.px) { imagem.data[d * 4] = r2; imagem.data[d * 4 + 1] = g2; imagem.data[d * 4 + 2] = b2; meu.add(d); }
+      for (const d of meu) for (const n of [d - 1, d + 1, d - W, d + W]) if (n >= 0 && n < W * W && !meu.has(n)) contorno.push(n);
+    }
     if (objVivo) {
       // por cima de tudo (está na mão), com a luz do lugar só de leve, e o contorno branco em volta
       const { vis, ox, oy } = objVivo, [c0, r0, c1, r1] = vis.caixa, meu = new Set(), f = modo === 'noite' ? 0.62 : 1;
@@ -2729,8 +2778,11 @@ function dados(im, filtro, w = W, h = W) {
       let a = (u - pe[0]) / (pe[1] - pe[0]), b = (v - pe[2]) / (pe[3] - pe[2]);
       for (let k = 0; k < ARR[id].lado; k++) [a, b] = [b, 1 - a]; // o avesso do giro de ondeEmCima
       const [s2, t2] = foraDoQueEstaEmPe(id, Math.min(0.96, Math.max(0.04, a)), Math.min(0.96, Math.max(0.04, b)));
-      const cand = { em: id, s: s2, t: t2, alto: TOPOS[id] };
-      if (!melhor || cand.alto > melhor.alto) melhor = cand;
+      // O MÓVEL QUE ESTÁ EMBAIXO do ponto de apoio ganha (relato de 15/10/2026: o refrigerante "não lia a mesa" e pulava
+      // para um móvel alto atrás dela, como a estante, cujo tampo projetado também cobria o ponto); empatando, o mais alto.
+      const k = Math.round(y) * W + Math.round(x), embaixo = k >= 0 && k < W * W && dono[k] === id ? 1 : 0;
+      const cand = { em: id, s: s2, t: t2, alto: TOPOS[id], embaixo };
+      if (!melhor || cand.embaixo > melhor.embaixo || (cand.embaixo === melhor.embaixo && cand.alto > melhor.alto)) melhor = cand;
     }
     return melhor;
   }
@@ -2800,7 +2852,12 @@ function dados(im, filtro, w = W, h = W) {
   tela.addEventListener('pointermove', (e) => {
     if (!paredePega) return;
     if (!paredePega.mexeu && Math.hypot(e.clientX - paredePega.x, e.clientY - paredePega.y) < 6) return;
-    paredePega.mexeu = true;
+    if (!paredePega.mexeu) {
+      // VIVO, como os objetos de cima (relato de 15/10/2026: "os objetos da parede estão muito lentos ao arrastar"): sai da
+      // parede (uma montagem) e é desenhado na mão, com contorno; cada passo antes remontava a janela, as luzes e a cena.
+      paredePega.mexeu = true; paredePega.vivo = { ...NA_PAREDE[paredePega.id] };
+      delete NA_PAREDE[paredePega.id]; aplicarJanela(true); assinaturaCena = '';
+    }
     const r = tela.getBoundingClientRect(), esc = W / r.height;
     const p = naParedeDo(e), { P0, p0, id } = paredePega, it = ITENS_PAREDE[id], meio = (it.ocupa[0] + it.ocupa[1]) / 2;
     // Ao longo da parede, o que o ponteiro andou; trocando de parede, o meio do objeto vai para o ponteiro.
@@ -2809,14 +2866,14 @@ function dados(im, filtro, w = W, h = W) {
     // Subir: o que o ponteiro subiu na tela, menos o que a própria parede sobe ao andar nela (14,25 px por casa).
     const h = P0.h - ((e.clientY - paredePega.y) * esc - 14.25 * dv);
     const novo = prenderNaParede(id, { parede: p.parede, v: Math.round(v * 10) / 10, h: Math.round(h) });
-    const atual = NA_PAREDE[id];
-    if (novo.parede !== atual.parede || novo.v !== atual.v || novo.h !== atual.h) mudarParede(id, novo, true);
+    const atual = paredePega.vivo;
+    if (novo.parede !== atual.parede || novo.v !== atual.v || novo.h !== atual.h) { paredePega.vivo = novo; desenhar(); }
   });
   tela.addEventListener('pointerup', () => {
     if (!paredePega) return;
-    const { id, mexeu } = paredePega;
+    const { id, mexeu, vivo } = paredePega;
     paredePega = null;
-    if (mexeu) { mudarParede(id, NA_PAREDE[id]); return; }
+    if (mexeu) { mudarParede(id, vivo); return; }
     const f = ITENS_PAREDE[id].funcao;
     if (FUNCOES && f && FUNCOES[f]) acao(f);
   });
