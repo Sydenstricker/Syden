@@ -91,7 +91,7 @@ await D.p.locator('.salao-novo .quarto-novo-barra > button').first().click();
 await D.p.locator('.salao-novo .quarto-novo-barra > button', { hasText: 'Janela' }).click();
 await D.p.waitForTimeout(2500);
 const guardado = await pedir('GET', `/api/communities/${comunidade.id}/salao`, membro);
-conferir(guardado.arrumacao?.janela?.tipo && guardado.arrumacao.janela.tipo !== 'redonda', 'a janela trocada pela dona foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
+conferir(guardado.arrumacao?.janela?.tipo && guardado.arrumacao.janela.tipo !== 'floreira', 'a janela trocada pela dona foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
 await M.p.waitForTimeout(1500);
 const doMembro = await M.frame.evaluate(() => window.visitaDoTeste().retrato.janela.tipo);
 conferir(doMembro === guardado.arrumacao?.janela?.tipo, 'o salão do membro relê na hora (' + doMembro + ')');

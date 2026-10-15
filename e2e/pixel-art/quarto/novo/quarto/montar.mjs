@@ -371,7 +371,8 @@ function dados(im, filtro, w = W, h = W) {
   }
   const ORDEM_JANELAS = Object.keys(TIPOS_JANELA);
   // No salão, a redonda na parede da direita, acima do lambri (a original, de cortinas até o chão, é a do quarto).
-  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'redonda', parede: 'direita', v: 2.2 } : { tipo: 'original', parede: 'direita', v: 0 };
+  // No salão, a com floreira (pedido dele, 15/10/2026: a redonda saía cortada e ele não gostou do desenho).
+  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'floreira', parede: 'direita', v: 2.2 } : { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
   try { const gj = JSON.parse(localStorage.getItem(PREFIXO + 'janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
   // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
