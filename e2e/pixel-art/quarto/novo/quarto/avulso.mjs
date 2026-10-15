@@ -27,7 +27,9 @@ export const AVULSOS = {
   cadeira: { lado: [80, 104], texto: `ONLY ONE office swivel chair and nothing else: a dark grey fabric desk chair with a backrest, armrests, a gas lift and a five-star base with small black caster wheels, the seat facing the left-front (toward the lower left of the image), the whole piece visible, ${ANGULO}` },
   // AS PLANTAS (pedido dele, 15/10/2026: "recheio: plantas"). Uma planta é igual de todos os lados: o mesmo desenho
   // serve às 4 posições.
-  'planta-alta': { lado: [72, 120], texto: `ONLY ONE tall leafy monstera houseplant in a round terracotta pot standing on the floor, and nothing else, the whole plant visible from the leaves to the pot, ${ANGULO}` },
+  // Num quadro de 72 × 120 as folhas encostavam no topo e saíam cortadas (relato dele, 15/10/2026): quadro maior e margem.
+  'planta-alta': { lado: [104, 152], texto: `ONLY ONE tall leafy monstera houseplant in a round terracotta pot standing on the floor, and nothing else, the whole plant visible with empty space all around it, nothing touching the edges, ${ANGULO}` },
+  'planta-alta-antiga': { lado: [72, 120], texto: `ONLY ONE tall leafy monstera houseplant in a round terracotta pot standing on the floor, and nothing else, the whole plant visible from the leaves to the pot, ${ANGULO}` },
   'planta-baixa': { lado: [64, 72], texto: `ONLY ONE small round bushy green fern in a woven wicker basket pot standing on the floor, and nothing else, the whole plant visible, ${ANGULO}` },
   'guarda-roupa': { lado: [64, 160], texto: `a tall freestanding wooden wardrobe with two doors and small round knobs, the whole piece visible from the top cornice to the feet, its doors facing to the right-front, the back against a wall on its left side, ${ANGULO}` },
 };

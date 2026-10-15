@@ -14,8 +14,10 @@ const ESTILO = 'flat against the plain cream plaster wall, nothing else around i
 export const ITENS = {
   // Com função (a do quarto da home de hoje, Home.tsx): o fone abre as salas, o quadro os amigos, a cortiça as ideias.
   // O fone e o quadro saíram cortados retos do lado direito na área justa (falhas/): áreas largas, outra semente.
-  fone: { area: area(3.2, 5.2, 85, 160), semente: 11, texto: `ONLY a pair of over-ear headphones hanging from a small wooden wall hook, ${ESTILO}` },
-  quadro: { area: area(2.9, 5.6, 80, 170), semente: 11, texto: `ONLY a wooden picture frame holding a few small instant photos of friends pinned on a string, ${ESTILO}` },
+  // O fone saiu grande demais para o quarto (relato dele, 15/10/2026): pequeno, do tamanho de um livro.
+  fone: { area: area(3.5, 4.7, 100, 150), semente: 23, texto: `ONLY a SMALL pair of over-ear headphones, about the size of a book, hanging from a tiny wooden wall hook, ${ESTILO}` },
+  // As fotos eram de PESSOAS, e o universo é de coelhos (relato dele, 15/10/2026): fotos de coelhos.
+  quadro: { area: area(2.9, 5.6, 80, 170), semente: 11, texto: `ONLY a wooden picture frame holding a few small instant photos of cute cartoon bunny rabbit friends (white, brown and grey bunnies, no humans) pinned on a string, ${ESTILO}` },
   cortica: { area: area(3.2, 5.0, 80, 150), texto: `ONLY a small cork board in a wooden frame with a few colorful paper notes pinned on it, ${ESTILO}` },
   // Só enfeite.
   prateleira: { area: area(2.9, 5.3, 95, 165), texto: `ONLY a short wooden wall shelf with a few books, a tiny potted succulent and a small ceramic vase on it, ${ESTILO}` },

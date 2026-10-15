@@ -1,0 +1,41 @@
+{
+  "id": "41b2fb0a-d138-4960-ba67-597a6621a587",
+  "name": "a tall leafy monstera housepla",
+  "state_name": "base",
+  "prompt": "a tall leafy monstera houseplant in a round terracotta pot",
+  "size": {
+    "width": 170,
+    "height": 170
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T18:10:31.010679+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/41b2fb0a-d138-4960-ba67-597a6621a587/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "3c0c02e7-3cfa-43b2-9454-3af67c8f643c",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}
