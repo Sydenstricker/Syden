@@ -40,10 +40,12 @@ def recortar(img, sem, chao_tambem=False):
     return np.dstack([img, m * 255.0]), m
 
 def gravar_rgba(a, *p):
-    Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), 'RGBA').save(os.path.join(*p))
+    # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB)
+    a = a * (a[..., 3:4] > 127)
+    Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), 'RGBA').save(os.path.join(*p), optimize=True)
 
 def mascara(m, *p):
-    Image.fromarray((m * 255).astype(np.uint8)).save(os.path.join(*p))
+    Image.fromarray((m * 255).astype(np.uint8)).save(os.path.join(*p), optimize=True)
 
 def projetar(vidro):
     """O luar de um vidro: cada pixel do chão olha para trás, ao longo da luz, e acende se cai no vidro."""

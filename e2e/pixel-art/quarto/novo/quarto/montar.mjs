@@ -115,6 +115,12 @@ for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura']) {
   ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
   for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-' + q] = png(path.join(d, 'peca-' + q + '.png'));
 }
+const QUADROS = [], ANIMACOES_IDX = {};
+{ const indice = new Map();
+  for (const [nome, dirs] of Object.entries(ANIMACOES)) {
+    ANIMACOES_IDX[nome] = {};
+    for (const [d, qs] of Object.entries(dirs)) ANIMACOES_IDX[nome][d] = qs.map((q) => { if (!indice.has(q)) { indice.set(q, QUADROS.length); QUADROS.push(q); } return indice.get(q); });
+  } }
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -202,7 +208,10 @@ const IMAGENS = ${JSON.stringify(IMAGENS)};
 const MOVEIS = ${JSON.stringify(MOVEIS)};
 const JANELAS = ${JSON.stringify(JANELAS)};
 const ITENS_PAREDE = ${JSON.stringify(ITENS_PAREDE)};
-const ANIMACOES = ${JSON.stringify(ANIMACOES)};
+// Cada quadro vai UMA vez (as animações repetem quadros entre si: a pose parada no começo de cada uma, as pastas de
+// reserva); as animações guardam o número dele.
+const QUADROS = ${JSON.stringify(QUADROS)};
+const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS[i])]))]));
 const CANTOS = ${JSON.stringify(CANTOS)}, N = ${N};
 const W = 512;
 function ponto(u, v) {

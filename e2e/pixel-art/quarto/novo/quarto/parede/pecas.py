@@ -40,7 +40,8 @@ for item, meta in ITENS.items():
     m = binary_fill_holes(binary_dilation(forte, iterations=3) & (dif > 6) & PAREDE | forte)
     m = binary_fill_holes(binary_dilation(m, iterations=1) & ~binary_dilation(~m, iterations=1) | m) & PAREDE
     for nome, cor in [('peca-dia', dia), ('peca-noite', dia * razao)]:
-        Image.fromarray(np.dstack([np.clip(cor, 0, 255), m * 255.0]).astype(np.uint8), 'RGBA').save(os.path.join(d, nome + '.png'))
+        # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB)
+        Image.fromarray(np.dstack([np.clip(cor, 0, 255) * m[..., None], m * 255.0]).astype(np.uint8), 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)
     cols = np.nonzero(m.any(0))[0]; linhas = np.nonzero(m.any(1))[0]
     # a altura: de quanto acima do chão até quanto (medida na coluna do meio)
     meio = int((cols.min() + cols.max()) / 2)
