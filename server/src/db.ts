@@ -746,6 +746,15 @@ db.exec(`
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
 
+  -- O SALÃO de cada comunidade (15/10/2026): a arrumação do salão isométrico, no mesmo formato do quarto (quarto.ts).
+  -- É da TURMA: todo membro vê igual, e só quem administra mexe (salao-routes.ts).
+  CREATE TABLE IF NOT EXISTS saloes (
+    community_id INTEGER PRIMARY KEY REFERENCES communities(id) ON DELETE CASCADE,
+    arrumacao    TEXT NOT NULL,
+    updated_by   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
   CREATE TABLE IF NOT EXISTS reports (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
@@ -3830,6 +3839,22 @@ export function guardarQuarto(userId: number, arrumacao: string) {
     `INSERT INTO quartos (user_id, arrumacao, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
      ON CONFLICT(user_id) DO UPDATE SET arrumacao = excluded.arrumacao, updated_at = excluded.updated_at`,
   ).run(userId, arrumacao);
+}
+
+// ---------- O salão de cada comunidade ----------
+
+export function lerSalao(communityId: number): { arrumacao: string; em: string } | null {
+  const linha = db
+    .prepare('SELECT arrumacao, updated_at AS em FROM saloes WHERE community_id = ?')
+    .get(communityId) as { arrumacao: string; em: string } | undefined;
+  return linha ?? null;
+}
+
+export function guardarSalao(communityId: number, userId: number, arrumacao: string) {
+  db.prepare(
+    `INSERT INTO saloes (community_id, arrumacao, updated_by, updated_at) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(community_id) DO UPDATE SET arrumacao = excluded.arrumacao, updated_by = excluded.updated_by, updated_at = excluded.updated_at`,
+  ).run(communityId, arrumacao, userId);
 }
 
 // ---------- Amizades ----------
