@@ -567,6 +567,12 @@ derivar dele; reaproveita as mecânicas do quarto (móveis soltos, janela e obje
 SALA é nova (não há salão isométrico), com o salão de frente de referência ("ele está bem legal"). As pessoas aparecem
 com o mascote base até os outros virarem isométricos.
 
+**MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
+garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
+parte: põe-se no tampo de qualquer móvel que tenha tampo, anda e gira com ele, e tem as suas posições. "Aumenta as
+possibilidades de customização e variação, e fica barato de implementar"; e quem quiser o móvel limpo, sem adereços,
+tem. **O padrão é SEM ÁLCOOL:** bebida no salão é suco, refrigerante, café.
+
 **DECIDIDO (13/10/2026), À ESPERA DE CRÉDITOS DO PIXELLAB:** o salão vira personalizável — **móveis diferentes e
 layouts do ambiente**, e também o coelho do recado. **Uma parte vem liberada, e o resto se DESBLOQUEIA POR CONQUISTAS
 COLETIVAS** (o que a turma faz junta: horas de call, partidas, karaokê) — é a etapa 2 acima, agora com a regra de
