@@ -180,6 +180,18 @@ function Subir({ communityId, onPronto }: { communityId: number; onPronto: (song
   );
 }
 
+/**
+ * ABRIR O KARAOKÊ AO ENTRAR (15/10/2026): o microfone e a jukebox do salão levam à sala de voz já com o karaokê aberto,
+ * como o fliperama faz com os mini-games (pedirParaAbrirAoEntrar, em minijogos.ts). O pedido vale 15 s e não é gasto na
+ * leitura (o React monta a sala duas vezes no desenvolvimento).
+ */
+let karaokeAoEntrar: { channelId: number; em: number } | null = null;
+export const pedirKaraokeAoEntrar = (channelId: number) => {
+  karaokeAoEntrar = { channelId, em: Date.now() };
+};
+export const pegarPedidoDeKaraoke = (channelId: number): boolean =>
+  karaokeAoEntrar?.channelId === channelId && Date.now() - karaokeAoEntrar.em < 15_000;
+
 export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communityId: number; onClose: () => void }) {
   const t = useT();
   const [musicas, setMusicas] = useState<KaraokeSong[] | null>(null);

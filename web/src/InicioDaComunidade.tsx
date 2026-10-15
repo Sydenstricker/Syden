@@ -7,6 +7,7 @@ import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { nomeNaComunidade, useDirectory } from './directory';
 import { useT } from './i18n';
+import { pedirKaraokeAoEntrar } from './Karaoke';
 import { pedirParaAbrirAoEntrar, usarMinijogo } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
 import { type PessoaNoSalao, SalaoNovo } from './SalaoNovo';
@@ -203,6 +204,21 @@ export function InicioDaComunidade({
         onClick: () => void copiarConvite(),
       },
     }),
+    // O KARAOKÊ no salão novo: o microfone e a jukebox levam à sala de voz já com ele aberto (pedido dele, 15/10/2026: "é
+    // melhor o usuário saber que essa função está sendo evoluída"; o karaokê já existe na sala de voz).
+    ...(salaoNovo &&
+      salaDeVoz &&
+      (() => {
+        const karaoke = {
+          rotulo: t('Karaokê'),
+          sub: t('Na sala de voz, com a turma'),
+          onClick: () => {
+            pedirKaraokeAoEntrar(salaDeVoz.id);
+            aoAbrirCanal(salaDeVoz);
+          },
+        };
+        return { microfone: karaoke, jukebox: karaoke };
+      })()),
     // O balcão do salão novo abre o recado (o balão é desenhado lá; o nome é o título do recado).
     ...(salaoNovo && dados.boasVindas?.texto && { balcao: { rotulo: dados.boasVindas.titulo || t('Bem-vindo!'), onClick: () => {} } }),
     ...(dados.podeEditar && {

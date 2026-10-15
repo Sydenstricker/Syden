@@ -26,6 +26,10 @@
   body.salao .vista.andando { cursor: grabbing; }
   body.salao .mundo { position: absolute; left: 0; top: 0; will-change: transform; }
   html.app body.salao .vista { aspect-ratio: auto; width: 100vw; height: 100vh; }
+  /* QUEM ESTÁ FORA DA VISTA (ideia dele, 15/10/2026): uma marca na borda, na direção das pessoas, com quantas são. */
+  #fora-da-vista { position: absolute; inset: 0; pointer-events: none; }
+  #fora-da-vista button { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; border: 2px solid #ff9a3c; background: rgba(30, 24, 20, 0.82); color: #fff4e6; font: 700 14px/26px system-ui, sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  #fora-da-vista button span { font-size: 11px; opacity: 0.85; }
   /* No salão não há conceito ao lado: o salão sozinho, maior. */
   body.salao .lado { grid-template-columns: 1fr; max-width: 900px; }
   body.salao .lado > figure:not(.com-rotulo) { display: none; }
@@ -106,7 +110,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div><div id="fora-da-vista"></div></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -625,7 +629,7 @@ function dados(im, filtro, w = W, h = W) {
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta' };
+  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona' };
   const pufes = MOVEIS.filter((m) => m.pufe);
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -660,6 +664,10 @@ function dados(im, filtro, w = W, h = W) {
       por('banqueta-2', 7.9, 2.9, 0);
       por('planta-alta', 0.6, 0.6, 0);
       por('planta-baixa', 0.7, 14.5, 0);
+      // a segunda roda: o outro sofá e as duas poltronas de frente para ele, com o meio livre (uma mesa, um pufão)
+      por('sofa-2', 12.5, 6, 2);
+      por('poltrona', 9.3, 4.6, 0);
+      por('poltrona-2', 9.3, 7.4, 0);
       if (pintado('tapete')) s.tapete = { c: [4.3, 6.2], lado: 0 };
       return s;
     }
@@ -835,7 +843,7 @@ function dados(im, filtro, w = W, h = W) {
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5 };
+  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3 };
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -1131,16 +1139,18 @@ function dados(im, filtro, w = W, h = W) {
   const SOBE_NA_BANQUETA = 19; // o assento está a ~34 px; a perna pendurada desce uns 15
   function lugaresDoSalao() {
     const sentar = [], tv = [], fliperama = [], chao = [];
-    if (ARR.sofa) {
-      const pe = peDe('sofa'), olha = ORIENTA[ARR.sofa.lado], [fu, fv] = VET[olha], [cu, cv] = centro(pe);
+    for (const id of ['sofa', 'sofa-2']) if (ARR[id]) {
+      const pe = peDe(id), olha = ORIENTA[ARR[id].lado], [fu, fv] = VET[olha], [cu, cv] = centro(pe);
       // ao longo do lado comprido, um pouco para a frente do meio
       const longoU = fu === 0, n = 3;
       for (let i = 0; i < n; i++) {
         const f = (i + 0.5) / n;
         const u = longoU ? pe[0] + f * (pe[1] - pe[0]) : cu + fu * 0.15, v = longoU ? cv + fv * 0.15 : pe[2] + f * (pe[3] - pe[2]);
-        sentar.push({ u, v, sobe: 16, pose: 'sentado', olha, sobre: 'sofa' });
+        sentar.push({ u, v, sobe: 16, pose: 'sentado', olha, sobre: id });
       }
     }
+    // as poltronas: um lugar cada, afundado (a pose da poltrona do quarto)
+    for (const id of ['poltrona', 'poltrona-2']) if (ARR[id]) sentar.push({ u: ARR[id].c[0], v: ARR[id].c[1], sobe: 8, pose: 'sentado-poltrona', olha: ORIENTA[ARR[id].lado], sobre: id });
     for (const id of ['banqueta', 'banqueta-2']) if (ARR[id]) {
       const [u, v] = ARR[id].c, alvo = ARR.balcao ? centro(peDe('balcao')) : [u, v - 1];
       sentar.push({ u, v, sobe: SOBE_NA_BANQUETA, pose: 'sentado-banqueta', olha: DIAGONAL(alvo[0] - u, alvo[1] - v), sobre: id });
@@ -1621,6 +1631,9 @@ function dados(im, filtro, w = W, h = W) {
   // A ALTURA DO TAMPO de cada peça (onde a sombra cai em cima): o colchão, o tampo do pufe, o assento da poltrona. O que
   // fica acima (a cabeceira, o encosto) é lateral.
   const TAMPO = { cama: 30, pufe: 30, poltrona: 22, abajur: 52, 'guarda-roupa': 135, sofa: 20, tv: 30, fliperama: 118, balcao: 52, estante: 120, mesinha: 20, banqueta: 40, 'banqueta-2': 40 };
+  // AS CÓPIAS (o mesmo desenho de outro móvel): a forma e o tampo são os do original.
+  const COPIAS = { 'sofa-2': 'sofa', 'poltrona-2': 'poltrona', 'banqueta-2': 'banqueta' };
+  for (const [c, o] of Object.entries(COPIAS)) { if (FORMAS[o] && !FORMAS[c]) FORMAS[c] = FORMAS[o]; if (TAMPO[o] && !TAMPO[c]) TAMPO[c] = TAMPO[o]; }
   // O mapa do chão: para cada pixel da tela, a casa (u, v) do ponto do chão ali. Calculado uma vez.
   const mapaU = new Float32Array(W * W), mapaV = new Float32Array(W * W);
   for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) { const [u, v] = uvRapido(x + 0.5, y + 0.5); mapaU[y * W + x] = u; mapaV[y * W + x] = v; }
@@ -2034,6 +2047,8 @@ function dados(im, filtro, w = W, h = W) {
       } }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
+    pessoasNaTela = pessoas.map((it) => ({ x: it.cabeca[0], y: it.cabeca[1] + 30 }));
+    if (typeof marcarForaDaVista === 'function') marcarForaDaVista();
     // os nomes, em cima de cada coelho
     { const caixa = document.getElementById('nomes'); caixa.replaceChildren(...pessoas.map((it) => { const e = document.createElement('span'); e.textContent = it.nome; e.style.left = (it.cabeca[0] / W) * 100 + '%'; e.style.top = ((it.cabeca[1] - 2) / W) * 100 + '%'; return e; })); }
     imagem = g.createImageData(W, W);
@@ -2825,6 +2840,34 @@ function dados(im, filtro, w = W, h = W) {
     const vw = vistaEl.clientWidth, vh = vistaEl.clientHeight, mw = W * camera.px, mh = ALTURA_UTIL * camera.px;
     camera.x = Math.max(0, Math.min(mw - vw, camera.x)); camera.y = Math.max(0, Math.min(Math.max(0, mh - vh), camera.y));
     mundoEl.style.transform = 'translate(' + -Math.round(camera.x) + 'px, ' + -Math.round(camera.y) + 'px)';
+    marcarForaDaVista();
+  }
+  // AS MARCAS NA BORDA: quem está na call e ficou fora da vista, agrupado pela direção (as 8: os lados e as quinas),
+  // com quantos são e uma seta. Clicar leva a câmera até eles.
+  let pessoasNaTela = []; // [{ x, y }] da cabeça de cada pessoa, em pixels da cena (montarCena)
+  function marcarForaDaVista() {
+    const caixa = document.getElementById('fora-da-vista');
+    if (!camera.ativa || !caixa) return;
+    const vw = vistaEl.clientWidth, vh = vistaEl.clientHeight, px = camera.px, folga = 6;
+    const grupos = new Map();
+    for (const q of pessoasNaTela) {
+      const sx = q.x * px - camera.x, sy = q.y * px - camera.y;
+      const gx = sx < folga ? -1 : sx > vw - folga ? 1 : 0, gy = sy < folga ? -1 : sy > vh - folga ? 1 : 0;
+      if (!gx && !gy) continue;
+      const k = gx + ',' + gy, g = grupos.get(k) ?? { gx, gy, n: 0, sx: 0, sy: 0, cx: 0, cy: 0 };
+      g.n++; g.sx += sx; g.sy += sy; g.cx += q.x; g.cy += q.y; grupos.set(k, g);
+    }
+    const SETA = { '-1,0': '←', '1,0': '→', '0,-1': '↑', '0,1': '↓', '-1,-1': '↖', '1,-1': '↗', '-1,1': '↙', '1,1': '↘' };
+    caixa.replaceChildren(...[...grupos.entries()].map(([k, g]) => {
+      const b = document.createElement('button'), seta = document.createElement('span');
+      b.type = 'button'; seta.textContent = SETA[k]; b.append(String(g.n), seta);
+      // na borda, na altura (ou largura) média de quem está daquele lado
+      const m = 22, x = g.gx < 0 ? m : g.gx > 0 ? vw - m : Math.max(m, Math.min(vw - m, g.sx / g.n));
+      const y = g.gy < 0 ? m : g.gy > 0 ? vh - m : Math.max(m, Math.min(vh - m, g.sy / g.n));
+      b.style.left = x + 'px'; b.style.top = y + 'px';
+      b.onclick = () => { camera.x = (g.cx / g.n) * px - vw / 2; camera.y = (g.cy / g.n) * px - vh / 2; prenderCamera(); };
+      return b;
+    }));
   }
   function medirCamera(centrarEm) {
     if (!camera.ativa) return;

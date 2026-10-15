@@ -26,6 +26,10 @@
   body.salao .vista.andando { cursor: grabbing; }
   body.salao .mundo { position: absolute; left: 0; top: 0; will-change: transform; }
   html.app body.salao .vista { aspect-ratio: auto; width: 100vw; height: 100vh; }
+  /* QUEM ESTÁ FORA DA VISTA (ideia dele, 15/10/2026): uma marca na borda, na direção das pessoas, com quantas são. */
+  #fora-da-vista { position: absolute; inset: 0; pointer-events: none; }
+  #fora-da-vista button { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; border: 2px solid #ff9a3c; background: rgba(30, 24, 20, 0.82); color: #fff4e6; font: 700 14px/26px system-ui, sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  #fora-da-vista button span { font-size: 11px; opacity: 0.85; }
   /* No salão não há conceito ao lado: o salão sozinho, maior. */
   body.salao .lado { grid-template-columns: 1fr; max-width: 900px; }
   body.salao .lado > figure:not(.com-rotulo) { display: none; }
@@ -107,7 +111,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="1024" height="1024" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="1024" height="1024" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div><div id="fora-da-vista"></div></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -2044,6 +2048,8 @@ function dados(im, filtro, w = W, h = W) {
       } }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
+    pessoasNaTela = pessoas.map((it) => ({ x: it.cabeca[0], y: it.cabeca[1] + 30 }));
+    if (typeof marcarForaDaVista === 'function') marcarForaDaVista();
     // os nomes, em cima de cada coelho
     { const caixa = document.getElementById('nomes'); caixa.replaceChildren(...pessoas.map((it) => { const e = document.createElement('span'); e.textContent = it.nome; e.style.left = (it.cabeca[0] / W) * 100 + '%'; e.style.top = ((it.cabeca[1] - 2) / W) * 100 + '%'; return e; })); }
     imagem = g.createImageData(W, W);
@@ -2835,6 +2841,34 @@ function dados(im, filtro, w = W, h = W) {
     const vw = vistaEl.clientWidth, vh = vistaEl.clientHeight, mw = W * camera.px, mh = ALTURA_UTIL * camera.px;
     camera.x = Math.max(0, Math.min(mw - vw, camera.x)); camera.y = Math.max(0, Math.min(Math.max(0, mh - vh), camera.y));
     mundoEl.style.transform = 'translate(' + -Math.round(camera.x) + 'px, ' + -Math.round(camera.y) + 'px)';
+    marcarForaDaVista();
+  }
+  // AS MARCAS NA BORDA: quem está na call e ficou fora da vista, agrupado pela direção (as 8: os lados e as quinas),
+  // com quantos são e uma seta. Clicar leva a câmera até eles.
+  let pessoasNaTela = []; // [{ x, y }] da cabeça de cada pessoa, em pixels da cena (montarCena)
+  function marcarForaDaVista() {
+    const caixa = document.getElementById('fora-da-vista');
+    if (!camera.ativa || !caixa) return;
+    const vw = vistaEl.clientWidth, vh = vistaEl.clientHeight, px = camera.px, folga = 6;
+    const grupos = new Map();
+    for (const q of pessoasNaTela) {
+      const sx = q.x * px - camera.x, sy = q.y * px - camera.y;
+      const gx = sx < folga ? -1 : sx > vw - folga ? 1 : 0, gy = sy < folga ? -1 : sy > vh - folga ? 1 : 0;
+      if (!gx && !gy) continue;
+      const k = gx + ',' + gy, g = grupos.get(k) ?? { gx, gy, n: 0, sx: 0, sy: 0, cx: 0, cy: 0 };
+      g.n++; g.sx += sx; g.sy += sy; g.cx += q.x; g.cy += q.y; grupos.set(k, g);
+    }
+    const SETA = { '-1,0': '←', '1,0': '→', '0,-1': '↑', '0,1': '↓', '-1,-1': '↖', '1,-1': '↗', '-1,1': '↙', '1,1': '↘' };
+    caixa.replaceChildren(...[...grupos.entries()].map(([k, g]) => {
+      const b = document.createElement('button'), seta = document.createElement('span');
+      b.type = 'button'; seta.textContent = SETA[k]; b.append(String(g.n), seta);
+      // na borda, na altura (ou largura) média de quem está daquele lado
+      const m = 22, x = g.gx < 0 ? m : g.gx > 0 ? vw - m : Math.max(m, Math.min(vw - m, g.sx / g.n));
+      const y = g.gy < 0 ? m : g.gy > 0 ? vh - m : Math.max(m, Math.min(vh - m, g.sy / g.n));
+      b.style.left = x + 'px'; b.style.top = y + 'px';
+      b.onclick = () => { camera.x = (g.cx / g.n) * px - vw / 2; camera.y = (g.cy / g.n) * px - vh / 2; prenderCamera(); };
+      return b;
+    }));
   }
   function medirCamera(centrarEm) {
     if (!camera.ativa) return;
@@ -2846,6 +2880,7 @@ function dados(im, filtro, w = W, h = W) {
     prenderCamera();
   }
   window.cameraDoTeste = () => ({ ...camera }); // para o teste
+  window.moverCameraDoTeste = (x, y) => { camera.x = x; camera.y = y; prenderCamera(); }; // para o teste
   if (camera.ativa) {
     const ondeAbre = ARR.tv && ARR.sofa ? ponto((ARR.tv.c[0] + ARR.sofa.c[0]) / 2, (ARR.tv.c[1] + ARR.sofa.c[1]) / 2) : ponto(N / 4, N / 4);
     medirCamera([ondeAbre[0], ondeAbre[1] - 40]);

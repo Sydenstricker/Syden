@@ -61,7 +61,8 @@ const OBJETOS: { id: ObjetoDoSalao; caixa: Caixa }[] = [
   { id: 'balcao', caixa: [308, 92, 384, 140] },
 ];
 
-export type ObjetoDoSalao = 'quadro' | 'janela' | 'estante' | 'tv' | 'fliperama' | 'balcao';
+/** (microfone e jukebox só existem no salão isométrico, SalaoNovo.tsx: os dois levam ao karaokê.) */
+export type ObjetoDoSalao = 'quadro' | 'janela' | 'estante' | 'tv' | 'fliperama' | 'balcao' | 'microfone' | 'jukebox';
 export type AcoesDoSalao = Partial<Record<ObjetoDoSalao, { rotulo: string; sub?: string; onClick: () => void }>>;
 
 /**

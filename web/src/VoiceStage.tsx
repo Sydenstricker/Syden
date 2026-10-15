@@ -56,7 +56,7 @@ import type { Socket } from 'socket.io-client';
 import { BotaoDestacar } from './BotaoDestacar';
 import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
 import { quemAssiste } from './assistindo';
-import { Karaoke } from './Karaoke';
+import { Karaoke, pegarPedidoDeKaraoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { BotaoMinijogo, ConviteDoMinijogo, PainelDoMinijogo } from './Minijogo';
 import { SiteNoPalco } from './SiteEmbutido';
@@ -1225,6 +1225,7 @@ function Stage({
   // Veio da home (o computador do quarto → escolher a sala): a estante de jogos abre assim que entra.
   useEffect(() => {
     if (pegarPedidoDeAbrir(channelId)) setMinijogoAberto(true);
+    if (pegarPedidoDeKaraoke(channelId)) setKaraokeOpen(true);
   }, [channelId]);
 
   const screens = tracks.filter((t) => t.source === Track.Source.ScreenShare);
