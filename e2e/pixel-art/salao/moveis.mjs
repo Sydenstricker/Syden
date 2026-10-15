@@ -27,6 +27,12 @@ export const MOVEIS = {
   banqueta: { lado: [56, 80], texto: `ONLY ONE round wooden bar stool with a cushioned top and four tall legs, and nothing else, ${ANGULO}` },
   estante: { lado: [96, 144], texto: `ONLY ONE tall freestanding wooden bookshelf and nothing else: filled with colorful books, a small plant and a few board game boxes, ${ANGULO}` },
   mesinha: { lado: [96, 80], texto: `ONLY ONE low wooden coffee table and nothing else, with two mugs and a small bowl of snacks on it, ${ANGULO}` },
+  // O SALÃO 16 × 16 (15/10/2026): o que enche a frente. Móveis LIMPOS (o que vai em cima é objeto à parte, decisão dele).
+  'mesa-jogo': { lado: [112, 96], texto: `ONLY ONE round wooden table for board games and nothing else: a sturdy round dark-wood top on one central pedestal leg, the top completely empty, ${ANGULO}` },
+  cadeira: { lado: [56, 88], texto: `ONLY ONE simple wooden chair with a cushioned seat and a slatted back, and nothing else, ${ANGULO}` },
+  jukebox: { lado: [80, 128], texto: `ONLY ONE retro jukebox music machine and nothing else: rounded wooden top with warm glowing lights, a record selection panel, a speaker grille, ${ANGULO}` },
+  microfone: { lado: [88, 120], texto: `ONLY ONE karaoke corner set and nothing else: a microphone on a tall stand next to one wooden floor speaker box, ${ANGULO}` },
+  pufao: { lado: [96, 80], texto: `ONLY ONE big soft bean bag chair and nothing else: plump mustard-yellow fabric, ${ANGULO}` },
 };
 
 const [modo, id, n, descricao] = process.argv.slice(2);
