@@ -668,11 +668,12 @@ function dados(im, filtro, w = W, h = W) {
     const med = (v) => { const o = [...v].sort((a, b) => a - b); return o[Math.floor(o.length / 2)] ?? 0; };
     const meio = Math.max(1, Math.floor(xs.length / 2)), incl = [];
     for (let i = 0; i + meio < xs.length; i++) incl.push((col.get(xs[i + meio])[0] - col.get(xs[i])[0]) / (xs[i + meio] - xs[i]));
-    const k = med(incl), alto = med(xs.map((x) => col.get(x)[0] - k * x)), pe = Math.max(...xs.map((x) => col.get(x)[1] - k * x));
+    const k = med(incl), alto = med(xs.map((x) => col.get(x)[0] - k * x)), pe = med(xs.map((x) => col.get(x)[1] - k * x));
     const pts = [];
-    // O paralelogramo inteiro é tela (a sombra pintada no pé dela, mais escura, ficava de fora e mordia a imagem); só o
-    // que não é do desenho (transparente) fica de fora.
-    for (const x of xs) { const ta = alto + k * x, tb = pe + k * x; for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (m[(y * W + x) * 4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]); }
+    // A MOLDURA fica: o paralelogramo é o da região lisa (dentro dela), com o pé na MEDIANA das colunas (o máximo pegava a
+    // faixa escura de baixo e a imagem cobria a moldura, parecendo colada por cima: relato de 15/10/2026); o contorno do
+    // suporte desenhado sobre a tela fica por baixo da imagem.
+    for (const x of xs) { const ta = alto + k * x, tb = pe + k * x; for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) { const k4 = (y * W + x) * 4; if (m[k4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]); } }
     return pts;
   }
   const TELAS = VISTAS.mesa ? VISTAS.mesa.map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null)) : [];
@@ -2471,8 +2472,8 @@ function dados(im, filtro, w = W, h = W) {
   // guardado. Seguro, a rodinha (ou o R) o gira.
   let objPego = null;
   const guardarObjetos = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'objetos', JSON.stringify(EM_CIMA)); } catch { /* fica só nesta visita */ } enviar(); };
-  function tampoDoPonteiro(e) {
-    const r = tela.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * W / r.height;
+  function tampoDoPonteiro(e, mao = [0, 0]) {
+    const r = tela.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width - mao[0], y = (e.clientY - r.top) * W / r.height - mao[1];
     let melhor = null;
     for (const id of Object.keys(TOPOS)) {
       if (!ARR[id]) continue;
@@ -2490,16 +2491,21 @@ function dados(im, filtro, w = W, h = W) {
     if (!objPego) return;
     if (!objPego.mexeu && Math.hypot(e.clientX - objPego.x, e.clientY - objPego.y) < 6) return;
     objPego.mexeu = true;
-    const tp = tampoDoPonteiro(e), o = EM_CIMA[objPego.uid];
-    objPego.fora = !tp;
+    const tp = tampoDoPonteiro(e, objPego.mao), o = EM_CIMA[objPego.uid];
+    objPego.fora = !tp; objPego.k = pixelDo(e);
     if (tp && (tp.em !== o.em || Math.abs(tp.s - o.s) > 0.01 || Math.abs(tp.t - o.t) > 0.01)) { EM_CIMA = { ...EM_CIMA, [objPego.uid]: { ...o, em: tp.em, s: +tp.s.toFixed(3), t: +tp.t.toFixed(3) } }; desenhar(); }
   });
   tela.addEventListener('pointerup', () => {
     if (!objPego) return;
-    const { uid, mexeu, fora } = objPego, o = EM_CIMA[uid];
+    const { uid, mexeu, fora, antes, k } = objPego;
     objPego = null;
-    void o;
-    if (mexeu && fora) { const { [uid]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; }
+    // Solto fora de qualquer tampo: DENTRO da sala, volta para onde estava (soltar no chão sem querer não some com ele);
+    // FORA da sala (no fundo em volta), é guardado.
+    if (mexeu && fora) {
+      const naSala = k >= 0 && !(modo === 'dia' ? foraDia : foraNoite)[k];
+      if (naSala) EM_CIMA = { ...EM_CIMA, [uid]: antes };
+      else { const { [uid]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; }
+    }
     guardarObjetos(); desenhar();
   });
   // Pôr um objeto: no último móvel tocado, se ele recebe objetos (senão na mesa), no primeiro lugar livre do tampo.
@@ -2639,7 +2645,14 @@ function dados(im, filtro, w = W, h = W) {
   tela.addEventListener('pointerdown', (e) => {
     // Um OBJETO DE CIMA sob o ponteiro: pega-se ele, e não o móvel embaixo.
     const uo = donoObj[pixelDo(e)];
-    if (uo && EM_CIMA[uo]) { objPego = { uid: uo, x: e.clientX, y: e.clientY, mexeu: false }; tela.setPointerCapture(e.pointerId); return; }
+    if (uo && EM_CIMA[uo]) {
+      // A MÃO e a BASE do objeto (relato de 15/10/2026: o suco sumia ao arrastar uns pixels para trás): o tampo é o da
+      // base, e a mão pega no meio do copo, acima dela. Guarda-se a distância entre as duas, e ela vale o arraste todo.
+      const o = EM_CIMA[uo], [ub, vb] = ondeEmCima(o), [bx, by] = ponto(ub, vb), r = tela.getBoundingClientRect();
+      const mx = (e.clientX - r.left) * W / r.width, my = (e.clientY - r.top) * W / r.height;
+      objPego = { uid: uo, x: e.clientX, y: e.clientY, mexeu: false, antes: { ...o }, mao: [mx - bx, my - (by - TOPOS[o.em])] };
+      tela.setPointerCapture(e.pointerId); return;
+    }
     if (naJanela[pixelDo(e)] && !dono[pixelDo(e)]) return;
     const d = dono[pixelDo(e)];
     if (d === 'cadeira') {

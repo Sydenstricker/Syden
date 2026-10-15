@@ -16,7 +16,7 @@ import json
 import os
 import numpy as np
 from PIL import Image
-from scipy.ndimage import gaussian_filter, binary_dilation
+from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, label
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 Q = os.path.dirname(AQUI)
@@ -37,6 +37,18 @@ def recortar(img, sem, chao_tambem=False):
     """A peça: o que difere do quarto sem janela, na parede da direita (e nas pontas da cortina no chão)."""
     m = (np.abs(img - sem).max(2) > 10) & DIREITA & (ACIMA | (PONTA if chao_tambem else False))
     m = binary_dilation(m, iterations=1) & DIREITA & (ACIMA | (PONTA if chao_tambem else False))  # o contorno inteiro
+    return np.dstack([img, m * 255.0]), m
+
+def recortar_limpo(img, sem):
+    """Os tipos novos, como os objetos da parede (parede/pecas.py): o que mudou MUITO, só os pedaços grandes, sem buracos,
+    e a borda só onde mudou de verdade (dif > 16). Com o contorno de 1 px do recortar(), vinha junto uma faixa da parede
+    creme do quarto, que no salão virava um halo claro em volta da janela (relato de 15/10/2026)."""
+    dif = np.abs(img - sem).max(2)
+    forte = (dif > 28) & DIREITA & ACIMA
+    rot, n = label(forte)
+    tam = np.bincount(rot.ravel()); tam[0] = 0
+    forte = np.isin(rot, np.nonzero(tam >= tam.max() * 0.15)[0])
+    m = binary_fill_holes(binary_dilation(forte, iterations=2) & (dif > 16) & DIREITA & ACIMA | forte) & DIREITA & ACIMA
     return np.dstack([img, m * 255.0]), m
 
 def gravar_rgba(a, *p):
@@ -87,7 +99,10 @@ for tipo, nome in NOMES.items():
     if not os.path.exists(os.path.join(d, 'dia.png')): continue
     dia = ler(d, 'dia.png')
     vidro = (dia[..., 0] > 200) & (dia[..., 1] < 80) & (dia[..., 2] > 200)
-    p, m = recortar(dia, semDia); gravar_rgba(p, d, 'peca-dia.png')
+    # a beira do magenta (pixels meio magenta, do serrilhado) também é vidro: senão ficavam pontinhos rosa na borda
+    rosado = (dia[..., 0] - dia[..., 1] > 60) & (dia[..., 2] - dia[..., 1] > 60)
+    vidro = vidro | (binary_dilation(vidro, iterations=2) & rosado)
+    p, m = recortar_limpo(dia, semDia); gravar_rgba(p, d, 'peca-dia.png')
     # de noite: o desenho vezes a luz da noite do lugar
     pn = p.copy(); pn[..., :3] = dia * razaoNoite; gravar_rgba(pn, d, 'peca-noite.png')
     mascara(vidro, d, 'vidro.png')
