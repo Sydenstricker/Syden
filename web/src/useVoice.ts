@@ -196,6 +196,8 @@ function erroDaTransmissao(error: unknown) {
   }
 }
 
+import { criarVigiaDePicote } from './vigiaDePicote';
+
 /**
  * Conta ao servidor um problema que só acontece no computador da pessoa (microfone bloqueado, voz barrada
  * pela rede). Vira uma linha no diário da aba de saúde, e é assim que o administrador descobre o que houve
@@ -641,6 +643,8 @@ export function useVoice(socket: Socket | null) {
         await track.stopProcessor();
         return;
       }
+      // Cada caminho novo do microfone tem o seu vigia de picote (o primeiro relato da chamada não espera 10 min).
+      const vigiarPicote = criarVigiaDePicote((m) => reportProblem('supressão de ruído', m));
       try {
         await track.setProcessor(
           new ProcessadorDoMicrofone({
@@ -650,6 +654,7 @@ export function useVoice(socket: Socket | null) {
             // ponta a ponta e para quem for investigar um "minha voz está picotando".
             aoMedirCusto: (medida) => {
               (window as unknown as { sydenSupressao?: object }).sydenSupressao = medida;
+              vigiarPicote(medida);
             },
             aoFalhar: (motivo) => reportProblem('supressão de ruído', `Parou, voz sem supressão — ${motivo}`),
           }),
