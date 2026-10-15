@@ -567,6 +567,16 @@ derivar dele; reaproveita as mecânicas do quarto (móveis soltos, janela e obje
 SALA é nova (não há salão isométrico), com o salão de frente de referência ("ele está bem legal"). As pessoas aparecem
 com o mascote base até os outros virarem isométricos.
 
+**O que o salão isométrico já faz (15/10/2026, `e2e/pixel-art/salao/`, no app pelo `SalaoNovo.tsx`, SÓ NO
+DESENVOLVIMENTO, com o mesmo botão 🧪 do quarto):** as funções do Salao.tsx nos objetos (TV → voz e Ao vivo, fliperama →
+mini-games, estante → canais, janela → chamar alguém, balcão → o recado num balão sobre o coelho, quadro → montar a tela);
+a TV e o fliperama têm TELA POR CÓDIGO (a TV à toa passa um desenho calmo e, com transmissão, o selo Ao vivo e quem
+transmite em cima, com as setas de canal; a imagem de verdade continua fora da TV); o quadro mostra a CAPA da comunidade
+(ou o ícone, inteiro) no plano da parede; quem transmite fica na frente da TV, quem está numa partida no fliperama (pose
+própria), e as banquetas têm a pose sentada alta. **A arrumação é da COMUNIDADE** (`saloes`, `salao-routes.ts`): todo
+membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`).
+Para lançar: as duas páginas vão para o build e o início da comunidade troca de componente. Teste: `salao/no-app.mjs`.
+
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
 parte: põe-se no tampo de qualquer móvel que tenha tampo, anda e gira com ele, e tem as suas posições. "Aumenta as
