@@ -1,0 +1,41 @@
+{
+  "id": "274d5b54-c1f7-4b92-8d08-4aec500dfe0e",
+  "name": "tall freestanding wooden books",
+  "state_name": "base",
+  "prompt": "tall freestanding wooden bookshelf and nothing else: filled with colorful books, a small plant and a few board game boxes",
+  "size": {
+    "width": 151,
+    "height": 151
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T18:01:57.197524+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/274d5b54-c1f7-4b92-8d08-4aec500dfe0e/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "0bba078b-a961-4567-aa82-d076dba6bff0",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

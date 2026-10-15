@@ -81,3 +81,15 @@
 {"ferramenta":"pixellab","peca":"quarto/passagem/guarda-roupa-aberto/north-east","geracoes":10,"quando":"2026-10-15T11:29:08.229Z"}
 {"ferramenta":"pixellab","peca":"quarto/passagem/guarda-roupa-aberto/north-west","geracoes":10,"quando":"2026-10-15T11:31:37.899Z"}
 {"ferramenta":"pixellab","peca":"quarto/estado/mesa-teclado-enfeitada","geracoes":25,"quando":"2026-10-15T13:12:49.415Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/sofa","geracoes":25,"quando":"2026-10-15T17:49:07.135Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/tv","geracoes":25,"quando":"2026-10-15T17:53:13.084Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/fliperama","geracoes":31,"quando":"2026-10-15T17:57:16.892Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/balcao","geracoes":25,"quando":"2026-10-15T18:01:21.748Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/estante","geracoes":25,"quando":"2026-10-15T18:05:04.165Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/mesinha","geracoes":31,"quando":"2026-10-15T18:11:48.454Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/banqueta","geracoes":10,"quando":"2026-10-15T18:15:12.129Z"}
+{"ferramenta":"pixellab","peca":"quarto/giros/planta-alta","geracoes":50,"quando":"2026-10-15T18:16:20.743Z"}
+{"ferramenta":"pixellab","peca":"quarto/giros/planta-baixa","geracoes":10,"quando":"2026-10-15T18:19:24.548Z"}
+{"ferramenta":"pixellab","peca":"salao/estado/balcao-limpo","geracoes":35,"quando":"2026-10-15T18:43:45.085Z"}
+{"ferramenta":"pixellab","peca":"salao/estado/mesinha-limpa","geracoes":15,"quando":"2026-10-15T18:48:05.181Z"}
+{"ferramenta":"pixellab","peca":"salao/estado/tv-limpa","geracoes":25,"quando":"2026-10-15T18:51:42.138Z"}

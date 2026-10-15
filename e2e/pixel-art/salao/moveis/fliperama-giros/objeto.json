@@ -1,0 +1,41 @@
+{
+  "id": "b58309f6-4c0a-405e-a08c-70c9a38e3305",
+  "name": "retro arcade cabinet machine a",
+  "state_name": "base",
+  "prompt": "retro arcade cabinet machine and nothing else: a tall cabinet with colorful side art, a dark blank screen, joysticks and buttons",
+  "size": {
+    "width": 151,
+    "height": 151
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T17:53:50.699403+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/b58309f6-4c0a-405e-a08c-70c9a38e3305/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "e421843a-6e49-439e-a3bf-8ff8b0be245d",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

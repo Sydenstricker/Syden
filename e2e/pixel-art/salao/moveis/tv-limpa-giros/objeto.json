@@ -1,0 +1,47 @@
+{
+  "id": "d29743b2-136d-42b8-a8e9-6b2f043383ed",
+  "name": "low wooden TV stand with a lar",
+  "state_name": "limpa",
+  "prompt": "low wooden TV stand with a large flat-screen television on top and a small game console beside it, the screen dark and blank, and nothing else",
+  "size": {
+    "width": 136,
+    "height": 136
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T18:48:44.409342+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/d29743b2-136d-42b8-a8e9-6b2f043383ed/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {
+    "state_source": {
+      "id": "a0b76f34-6e18-490b-9c58-ff931db61186",
+      "edit_description": "the same TV stand and television, but with no game console and nothing else on the stand beside the TV"
+    },
+    "no_background": true
+  },
+  "tags": [],
+  "status": "completed",
+  "group_id": "50eaf412-a9f7-4332-90cc-521b7d056ca1",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

@@ -1,0 +1,41 @@
+{
+  "id": "fa11d536-c567-4c86-98e3-e8c563d2c9e4",
+  "name": "short wooden bar counter and n",
+  "state_name": "base",
+  "prompt": "short wooden bar counter and nothing else: a dark wood counter top with a few bottles and glasses on it, panelled front",
+  "size": {
+    "width": 170,
+    "height": 170
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T17:58:05.411607+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/fa11d536-c567-4c86-98e3-e8c563d2c9e4/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "538afc41-83a1-45df-8e1b-3e970d561c9c",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

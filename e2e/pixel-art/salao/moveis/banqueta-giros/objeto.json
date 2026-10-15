@@ -1,0 +1,41 @@
+{
+  "id": "42a69485-7231-40b1-b5f2-8932f1ec587b",
+  "name": "round wooden bar stool with a ",
+  "state_name": "base",
+  "prompt": "round wooden bar stool with a cushioned top and four tall legs, and nothing else",
+  "size": {
+    "width": 85,
+    "height": 85
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T18:12:28.885804+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/42a69485-7231-40b1-b5f2-8932f1ec587b/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "c8f16adf-dd74-421d-9dd2-53d7cf9f7f07",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}
