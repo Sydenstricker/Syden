@@ -520,6 +520,25 @@ ficou combinado:
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
 
+## A caixa de correio das novidades: pendente, depois do quarto e do salão
+
+**Decidido em 15/10/2026, pelo Sydenstricker. Fica para DEPOIS de terminar o quarto e o hub da comunidade, e sem conjunto
+de exemplo agora.**
+
+- **A entrada é uma CAIXA DE CORREIO no quarto.** Ela abre as Novidades: os pacotes novos, e dentro de cada pacote os
+  CONJUNTOS (de Halloween, por exemplo).
+- **Um conjunto é de COSMÉTICOS, de qualquer tipo:** do guarda-roupa, móveis e objetos do quarto, acessórios da etiqueta
+  (tag) da pessoa, e o que vier.
+- **Clicar desbloqueia, e NÃO CUSTA NADA.** É a regra do guarda-roupa (tudo livre, sem cosmético de pagante): "desbloquear"
+  é só pegar, sem preço, sem moeda, sem pedir nada em troca. O servidor já tem o resgate dos presentes ("Um dos 25
+  primeiros") para aproveitar.
+- **Sem forçar retorno diário.** Nada de "pegue antes que acabe": um conjunto de época ganha destaque na época dele e
+  continua na vitrine depois.
+- **Para que serve a medida:** saber quais conjuntos as pessoas pegam, para DIRECIONAR OS PRÓXIMOS COSMÉTICOS (melhoria do
+  Syden, nas palavras dele). O painel mostra os números somados por conjunto. O que cada pessoa pegou fica guardado
+  porque é o inventário dela; usar isso para traçar o perfil de alguém está fora. A política de privacidade ganha a linha
+  que diz isso ANTES de ir ao ar.
+
 ## O salão da comunidade: o quarto é de cada um, o salão é da turma
 
 **Decidido em 12/10/2026, pelo Sydenstricker:** o início da comunidade ainda era arte em vetor (o coelho do recado
