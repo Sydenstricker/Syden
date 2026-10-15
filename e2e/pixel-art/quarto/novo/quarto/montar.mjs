@@ -44,7 +44,7 @@ const FONTES = {
   'sentado-poltrona': ['estados/sentado-poltrona', 'estados/sentado-2'],
   // Na cadeira do computador: inclinado para a frente, as mãos no teclado (pedido dele, 14/10/2026: a pose da poltrona,
   // largada, ficava ruim ali).
-  'no-computador': ['estados/no-computador', 'estados/sentado-2'],
+  'no-computador': ['baixa-120/animacoes/digitando', 'estados/no-computador', 'estados/sentado-2'], // digitando e no mouse
   lendo: ['estados/lendo-deitado', 'estados/lendo'],
   dormindo: ['estados/dormindo'],
   'dormindo-largado': ['estados/dormindo-largado', 'estados/dormindo'],
@@ -579,7 +579,8 @@ function dados(im, filtro, w = W, h = W) {
     passoDaCadeira(dt);
     passoDoVivo(dt);
     desenhar();
-    if (cadeiraMexendo() || (viva && viva.modo !== 'arrasto')) requestAnimationFrame(rolar);
+    particulas = particulas.filter((q) => performance.now() - q.t0 < q.vida);
+    if (cadeiraMexendo() || (viva && viva.modo !== 'arrasto') || particulas.length) requestAnimationFrame(rolar);
     else { rolando = false; guardarCadeira(); }
   }
   function acordarCadeira() { if (!rolando) { rolando = true; tAnterior = performance.now(); requestAnimationFrame(rolar); } }
@@ -610,6 +611,22 @@ function dados(im, filtro, w = W, h = W) {
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
   const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18 };
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
+  // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
+  // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
+  let particulas = [];
+  function soltarFaiscas(pe) {
+    const [u0, u1, v0, v1] = pe, agora0 = performance.now(), borda = [];
+    for (let i = 0; i < 34; i++) {
+      const t = i / 34, lado = Math.floor(t * 4), f = (t * 4) % 1;
+      borda.push(lado === 0 ? [u0 + (u1 - u0) * f, v0] : lado === 1 ? [u1, v0 + (v1 - v0) * f] : lado === 2 ? [u1 - (u1 - u0) * f, v1] : [u0, v1 - (v1 - v0) * f]);
+    }
+    const [cx, cy] = ponto((u0 + u1) / 2, (v0 + v1) / 2);
+    for (const [u, v] of borda) {
+      const [x, y] = ponto(u, v), dx = x - cx, dy = y - cy, n = Math.hypot(dx, dy) || 1;
+      particulas.push({ x, y, vx: (dx / n) * (10 + Math.random() * 14), vy: (dy / n) * 6 - 18 - Math.random() * 22, t0: agora0 + Math.random() * 160, vida: 900 + Math.random() * 500, grande: Math.random() < 0.5 });
+    }
+    acordarCadeira();
+  }
   function caixaDoVivo(c) { const [tu, tv] = tamDe(viva.id, ARR[viva.id].lado); return [c[0] - tu / 2, c[0] + tu / 2, c[1] - tv / 2, c[1] + tv / 2]; }
   function baterVivo() {
     const id = viva.id, c = ARR[id].c, [tu, tv] = tamDe(id, ARR[id].lado), Q = 0.3;
@@ -653,7 +670,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     const f = Math.min(1, (performance.now() - viva.t0) / 160), e = f * f * (3 - 2 * f);
     c[0] = viva.de[0] + (viva.para[0] - viva.de[0]) * e; c[1] = viva.de[1] + (viva.para[1] - viva.de[1]) * e;
-    if (f >= 1) { ARR[viva.id].c = [...viva.para]; viva = null; alvo = null; pegado = null; guardar(); colidir(); decidir(); }
+    if (f >= 1) { const id = viva.id; ARR[id].c = [...viva.para]; viva = null; alvo = null; pegado = null; guardar(); colidir(); decidir(); soltarFaiscas(peDe(id)); }
   }
   // O TAPETE MEXIDO: o desenho é levado pelo chão, ponto a ponto (ele é plano, então girar é só girar a textura).
   const cacheDoTapete = new Map();
@@ -1406,7 +1423,7 @@ function dados(im, filtro, w = W, h = W) {
     const c = [x0, y0, x1 + 1, y1 + 1]; caixas.set(p.movel, c); return c;
   }
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
-  let lampadaAgora = [0, 0], telaAgora = null, caixaDaTela = null;
+  let lampadaAgora = [0, 0], telaAgora = null, caixaDaTela = null, regiaoDasFaiscas = null;
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
@@ -1577,7 +1594,7 @@ function dados(im, filtro, w = W, h = W) {
         if (d2 < 34) { const f = Math.floor((1 - d2 / 34) * 4) / 4 * 0.32; for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
       }
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
-      if (alvo && casa[k] >= 0) {
+      if (alvo && casa[k] >= 0 && !eMovel[k]) { // só no chão: por cima, desbotava o próprio móvel pego
         const i = Math.floor(casa[k] / N), j = casa[k] % N;
         const pa = peDe(pegado, alvo);
         if (i + 0.5 > pa[0] && i + 0.5 < pa[1] && j + 0.5 > pa[2] && j + 0.5 < pa[3]) {
@@ -1621,10 +1638,10 @@ function dados(im, filtro, w = W, h = W) {
     const caixaCadeira = vc ? [cx0 + vc.caixa[0] - 18, cy0 + vc.caixa[1], cx0 + vc.caixa[2] + 18, cy0 + vc.caixa[3] + 8] : null;
     const telaMexe = telaAgora && conteudoAgora() !== 'desligada';
     // O MÓVEL VIVO (arrastado ou deslizando): a peça dele onde ele está agora.
-    const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null;
+    const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null, contorno = [];
     const caixaViva = iv ? (() => { const pe = iv.pe, cantos = [ponto(pe[0], pe[2]), ponto(pe[1], pe[2]), ponto(pe[0], pe[3]), ponto(pe[1], pe[3])];
       return unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]); })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     // Só limpa a região de antes quando vai redesenhar: limpando e saindo, o coelho e a cadeira sumiam do mapa de quem é
@@ -1651,6 +1668,11 @@ function dados(im, filtro, w = W, h = W) {
         if (iv.deitado ? eMovel[d] : eMovel[d] && chaveDoPixel[d] > chave) continue;
         for (let c = 0; c < 3; c++) D[d * 3 + c] = iv.p.movel[s4 + c] * iv.fator;
         eMovel[d] = 1; dono[d] = viva.id; chaveDoPixel[d] = chave; peY[d] = Math.round(gy); chaoPx[d] = -1; tipoPx[d] = 0;
+      }
+      if (viva.modo === 'arrasto') for (let y = cxv[1] - 1; y <= cxv[3]; y++) for (let x = cxv[0] - 1; x <= cxv[2]; x++) {
+        const dentro = (xx, yy) => xx >= 0 && yy >= 0 && xx < W && yy < W && iv.p.movel[(yy * W + xx) * 4 + 3];
+        if (dentro(x, y)) continue;
+        if (dentro(x - 1, y) || dentro(x + 1, y) || dentro(x, y - 1) || dentro(x, y + 1)) contorno.push((y + iv.dy) * W + x + iv.dx);
       }
     }
     // A CADEIRA: a sombra de contato embaixo das rodinhas, e então ela, por profundidade (o pé dela no chão).
@@ -1694,10 +1716,27 @@ function dados(im, filtro, w = W, h = W) {
       }
     }
     calcularSombra();
-    const agora = unir(unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva ? unir(caixaViva, alvo ? [0, 0, 0, 0] : null) : null);
+    let caixaFaiscas = null;
+    for (const q of particulas) { const t = Math.max(0, (performance.now() - q.t0) / 1000), x = q.x + q.vx * t, y = q.y + q.vy * t + 20 * t * t; caixaFaiscas = unir(caixaFaiscas, [x - 3, y - 3, x + 4, y + 4]); }
+    if (particulas.length && !caixaFaiscas) caixaFaiscas = null;
+    const agora = unir(unir(unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
+    regiaoDasFaiscas = caixaFaiscas;
     const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
     passeFinal(r);
     pintarTela(r);
+    // o contorno branco do móvel pego e as faíscas: por cima de tudo, sem a luz da noite
+    for (const k of contorno) if (k >= 0 && k < W * W) { imagem.data[k * 4] = 255; imagem.data[k * 4 + 1] = 250; imagem.data[k * 4 + 2] = 240; imagem.data[k * 4 + 3] = 255; }
+    const agoraF = performance.now();
+    for (const q of particulas) {
+      const t = (agoraF - q.t0) / 1000; if (t < 0) continue;
+      const vida = Math.min(1, (t * 1000) / q.vida), a = vida < 0.15 ? vida / 0.15 : vida < 0.6 ? 1 : 1 - (vida - 0.6) / 0.4;
+      const x = Math.round(q.x + q.vx * t), y = Math.round(q.y + q.vy * t + 20 * t * t);
+      for (const [ox, oy] of q.grande ? [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]] : [[0, 0]]) {
+        const X = x + ox, Y = y + oy; if (X < r[0] || Y < r[1] || X >= r[2] || Y >= r[3]) continue;
+        const k = (Y * W + X) * 4, cor = ox || oy ? [255, 226, 170] : [255, 252, 240];
+        for (let c = 0; c < 3; c++) imagem.data[k + c] = imagem.data[k + c] * (1 - a) + cor[c] * a;
+      }
+    }
     if (falando) balao(imagem.data); // falando de pé ou sentado
     g.putImageData(imagem, 0, 0, r[0], r[1], r[2] - r[0], r[3] - r[1]);
     regiaoAnterior = agora;

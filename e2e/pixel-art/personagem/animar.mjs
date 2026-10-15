@@ -18,7 +18,9 @@ const API = 'https://api.pixellab.ai/v2';
 const cab = { authorization: `Bearer ${process.env.PIXELLAB_KEY}`, 'content-type': 'application/json' };
 const saldo = async () => (await (await fetch(API + '/balance', { headers: cab })).json()).subscription.generations;
 const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));
-const PERSONAGEM = JSON.parse(fs.readFileSync(path.join(AQUI, 'mascote', 'baixa-120', 'personagem.json'), 'utf8')).id;
+// PERSONAGEM=<id> anima a partir de um ESTADO (uma pose do mesmo mascote, estado.mjs): o "digitando" parte do sentado ao
+// computador.
+const PERSONAGEM = process.env.PERSONAGEM || JSON.parse(fs.readFileSync(path.join(AQUI, 'mascote', 'baixa-120', 'personagem.json'), 'utf8')).id;
 
 const [nome, modelo, direcoes] = process.argv.slice(2);
 // O PixelLab ACEITA MENOS DIREÇÕES do que se pede quando há trabalhos demais ao mesmo tempo (14/10/2026: sete pedidos
