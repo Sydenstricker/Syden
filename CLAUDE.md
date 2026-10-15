@@ -577,6 +577,19 @@ própria), e as banquetas têm a pose sentada alta. **A arrumação é da COMUNI
 membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`).
 Para lançar: as duas páginas vão para o build e o início da comunidade troca de componente. Teste: `salao/no-app.mjs`.
 
+**O SALÃO É 16 × 16, COM CÂMERA (decisão dele, 15/10/2026: "imaginei 4× o tamanho"; "câmera que anda").** A casca sai por
+código da 8 × 8 (`salao/casca16.py`: a mesma casa de 27 × 14,25 px, os cantos como estão e o meio repetindo 4 casas), e
+**as duas paredes são de tijolo** (a da direita era creme com lambri; "o estilo das duas paredes é bem diferente"). A
+imagem tem 1024 px; a vista mostra um pedaço, abre no canto da TV, e arrastar onde não há nada para pegar leva a câmera.
+O pixel acompanha a largura da vista, para o coelho ficar do tamanho de sempre. O servidor aceita até 16 casas no salão
+(o quarto segue em 8).
+
+**Gráficos e o jogo (15/10/2026):** o quarto e o salão são desenhados pelo PROCESSADOR (a luz e as sombras pixel a pixel;
+a placa só mostra a imagem pronta). Por isso: (1) **param de desenhar quando a janela do Syden perde o foco ou fica
+escondida** — o app desliga o freio de janela escondida por causa da chamada, e sem isso o quarto seguiria desenhando
+atrás do jogo, que é o uso principal; (2) **opção de Gráficos** nas Configurações (Aparência): partículas, sombras, telas
+animadas e "ajustar sozinho quando ficar lento" (desliga o que pesa acima de 30 ms por quadro), pedido dele.
+
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
 parte: põe-se no tampo de qualquer móvel que tenha tampo, anda e gira com ele, e tem as suas posições. "Aumenta as
