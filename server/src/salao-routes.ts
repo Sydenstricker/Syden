@@ -14,7 +14,7 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { communityRoom } from './realtime.js';
 import { manages, requireUser, roleIn } from './routes.js';
-import { MAX_BYTES, validarArrumacao } from './quarto.js';
+import { CASAS_DO_SALAO, MAX_BYTES, validarArrumacao } from './quarto.js';
 
 export function registerSalaoRoutes(app: FastifyInstance, io: IOServer) {
   app.register(async (authed) => {
@@ -42,7 +42,7 @@ export function registerSalaoRoutes(app: FastifyInstance, io: IOServer) {
       const m = membro(request, reply);
       if (!m) return reply;
       if (!manages(m.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade arruma o salão.' });
-      const v = validarArrumacao(request.body);
+      const v = validarArrumacao(request.body, CASAS_DO_SALAO);
       if ('erro' in v) return reply.code(400).send({ error: v.erro });
       const texto = JSON.stringify(v.ok);
       if (texto.length > MAX_BYTES) return reply.code(413).send({ error: 'Arrumação grande demais.' });

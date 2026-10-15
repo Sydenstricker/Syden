@@ -12669,6 +12669,12 @@ body.arrastando-barra {
   color-scheme: light dark;
 }
 
+/* O salão 16 × 16 tem câmera (a página do salão a move): a vista é mais larga que o quarto, 4:3. */
+.salao-novo .quarto-novo {
+  width: min(100%, 960px);
+  aspect-ratio: 4 / 3;
+}
+
 .quarto-novo-caixa {
   display: flex;
   flex-direction: column;

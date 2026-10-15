@@ -11,8 +11,9 @@
  * absurdos (NaN, casas fora do quarto) viraria um quarto quebrado, ou travado, na tela de outra pessoa.
  */
 
-/** O quarto é uma grade de 8 × 8 casas. */
-const N = 8;
+/** O quarto é uma grade de 8 × 8 casas; o salão da comunidade, de 16 × 16 (salao-routes.ts, desde 15/10/2026). */
+export const CASAS_DO_QUARTO = 8;
+export const CASAS_DO_SALAO = 16;
 const CODIGO = /^[a-z][a-z0-9-]{0,23}$/;
 const MAX_MOVEIS = 40;
 /** Folgado para 40 móveis com números longos; o que passa disto não é arrumação. */
@@ -37,7 +38,7 @@ const numero = (x: unknown, min: number, max: number): number | null =>
   typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max ? Math.round(x * 1000) / 1000 : null;
 
 /** Devolve a arrumação limpa (só os campos conhecidos), ou o motivo da recusa. */
-export function validarArrumacao(x: unknown): { ok: Arrumacao } | { erro: string } {
+export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok: Arrumacao } | { erro: string } {
   if (!x || typeof x !== 'object' || Array.isArray(x)) return { erro: 'Arrumação inválida.' };
   const a = x as Record<string, unknown>;
   const m = a.moveis;

@@ -20,7 +20,8 @@ await membro('POST', '/api/communities/join', { code: comunidade.inviteCode });
 const url = `/api/communities/${comunidade.id}/salao`;
 
 const SALAO = {
-  moveis: { sofa: { c: [2.5, 3], lado: 1 }, tv: { c: [0.5, 3], lado: 0 }, banqueta: { c: [6, 2], lado: 0 } },
+  // o salão é 16 × 16: casas além da 8 valem aqui (e não no quarto)
+  moveis: { sofa: { c: [12.5, 3], lado: 1 }, tv: { c: [0.5, 3], lado: 0 }, banqueta: { c: [6, 15.5], lado: 0 } },
   janela: { tipo: 'redonda', parede: 'esquerda', v: 1 },
   parede: { pintura: { parede: 'direita', v: 0, h: 0 } },
   emCima: { o1: { tipo: 'refrigerante', em: 'balcao', s: 0.3, t: 0.5, lado: 0 } },
@@ -51,6 +52,6 @@ test('quem não participa: 404 para ler e para guardar', async () => {
 });
 
 test('o que quebraria o salão é recusado', async () => {
-  assert.equal((await dona('PUT', url, { moveis: { sofa: { c: [99, 1], lado: 0 } } })).statusCode, 400);
+  assert.equal((await dona('PUT', url, { moveis: { sofa: { c: [17, 1], lado: 0 } } })).statusCode, 400);
   assert.deepEqual((await membro('GET', url)).json().arrumacao, SALAO);
 });

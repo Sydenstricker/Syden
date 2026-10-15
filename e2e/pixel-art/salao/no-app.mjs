@@ -79,7 +79,8 @@ conferir(!(await M.p.locator('.salao-novo .quarto-novo-barra').isVisible()), 'o 
 const tv = await M.frame.evaluate(() => { const L = window.arrumacaoDoTeste(); return L.tv && window.ondeDoMovel ? window.ondeDoMovel('tv') : null; });
 if (tv) {
   const caixa = await M.frame.locator('#tela').boundingBox();
-  const ponto = [caixa.x + tv[0] * caixa.width / 512, caixa.y + tv[1] * caixa.height / 512];
+  const lado = await M.frame.evaluate(() => document.getElementById('tela').width); // 1024 no salão 16 × 16
+  const ponto = [caixa.x + tv[0] * caixa.width / lado, caixa.y + tv[1] * caixa.height / lado];
   await M.p.mouse.move(...ponto); await M.p.waitForTimeout(300);
   const rot = await M.frame.locator('#rotulo').textContent();
   conferir(!(await M.frame.locator('#rotulo').isHidden()) && rot.length > 0, 'a TV mostra o nome da função para o membro: ' + rot);
