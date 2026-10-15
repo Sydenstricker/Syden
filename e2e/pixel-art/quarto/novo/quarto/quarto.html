@@ -781,6 +781,7 @@ function dados(im, filtro, w = W, h = W) {
     if (u >= 0 && v >= 0 && u < N && v < N) casa[y * W + x] = Math.floor(u) * N + Math.floor(v);
   }
 
+  const VISTO = new Uint8Array(W * W); // os pixels que o móvel pego desenhou neste quadro (para o contorno)
   const dono = new Array(W * W).fill(''), donoObj = new Array(W * W).fill(''), baseDonoObj = new Array(W * W).fill('');
   window.ondeEsta = (id) => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (dono[k] === id) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
 
@@ -1768,7 +1769,7 @@ function dados(im, filtro, w = W, h = W) {
     const caixaCadeira = vc ? [cx0 + vc.caixa[0] - 18, cy0 + vc.caixa[1], cx0 + vc.caixa[2] + 18, cy0 + vc.caixa[3] + 8] : null;
     const telaMexe = telaAgora && conteudoAgora() !== 'desligada';
     // O MÓVEL VIVO (arrastado ou deslizando): a peça dele onde ele está agora.
-    const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null, contorno = [];
+    const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null, contorno = [], desenhados = [];
     const caixaViva = iv ? (() => { const pe = iv.pe, cantos = [ponto(pe[0], pe[2]), ponto(pe[1], pe[2]), ponto(pe[0], pe[3]), ponto(pe[1], pe[3])];
       return unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]); })() : null;
     const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0]);
@@ -1797,13 +1798,19 @@ function dados(im, filtro, w = W, h = W) {
         const d = Y * W + X;
         if (iv.deitado ? eMovel[d] : eMovel[d] && chaveDoPixel[d] > chave) continue;
         for (let c = 0; c < 3; c++) D[d * 3 + c] = iv.p.movel[s4 + c] * iv.fator;
+        VISTO[d] = 1; desenhados.push(d);
         eMovel[d] = 1; dono[d] = viva.id; donoObj[d] = iv.p.objPx ? iv.p.objPx[y * W + x] : ''; chaveDoPixel[d] = chave; peY[d] = Math.round(gy); chaoPx[d] = -1; tipoPx[d] = 0;
       }
-      if (viva.modo === 'arrasto') for (let y = cxv[1] - 1; y <= cxv[3]; y++) for (let x = cxv[0] - 1; x <= cxv[2]; x++) {
-        const dentro = (xx, yy) => xx >= 0 && yy >= 0 && xx < W && yy < W && iv.p.movel[(yy * W + xx) * 4 + 3];
-        if (dentro(x, y)) continue;
-        if (dentro(x - 1, y) || dentro(x + 1, y) || dentro(x, y - 1) || dentro(x, y + 1)) contorno.push((y + iv.dy) * W + x + iv.dx);
+      // O CONTORNO BRANCO do móvel pego: em volta do que APARECE dele, e nunca por cima do que está na frente (relato de
+      // 15/10/2026: o contorno da poltrona atravessava a planta à frente dela).
+      if (viva.modo === 'arrasto') for (let Y = cxv[1] + iv.dy - 1; Y <= cxv[3] + iv.dy; Y++) for (let X = cxv[0] + iv.dx - 1; X <= cxv[2] + iv.dx; X++) {
+        if (X < 1 || Y < 1 || X >= W - 1 || Y >= W - 1) continue;
+        const k = Y * W + X;
+        if (VISTO[k] || !(VISTO[k - 1] || VISTO[k + 1] || VISTO[k - W] || VISTO[k + W])) continue;
+        if (eMovel[k] && (iv.deitado || chaveDoPixel[k] > chave)) continue;
+        contorno.push(k);
       }
+      for (const d of desenhados) VISTO[d] = 0;
     }
     // A CADEIRA: a sombra de contato embaixo das rodinhas, e então ela, por profundidade (o pé dela no chão).
     if (vc) {
@@ -1956,7 +1963,7 @@ function dados(im, filtro, w = W, h = W) {
 
   // ============================== OS OBJETOS DE CIMA: pegar, levar, girar, pôr e guardar ==============================
   // Pego, ele vai para o tampo sob o ponteiro (de qualquer móvel que receba objetos); solto fora de todo tampo, ele é
-  // guardado. Clicar sem arrastar gira o objeto.
+  // guardado. Seguro, a rodinha (ou o R) o gira.
   let objPego = null;
   const guardarObjetos = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-objetos', JSON.stringify(EM_CIMA)); } catch { /* fica só nesta visita */ } enviar(); };
   function tampoDoPonteiro(e) {
@@ -1985,8 +1992,8 @@ function dados(im, filtro, w = W, h = W) {
     if (!objPego) return;
     const { uid, mexeu, fora } = objPego, o = EM_CIMA[uid];
     objPego = null;
-    if (!mexeu) EM_CIMA = { ...EM_CIMA, [uid]: { ...o, lado: (o.lado + 1) % 4 } };
-    else if (fora) { const { [uid]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; }
+    void o;
+    if (mexeu && fora) { const { [uid]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; }
     guardarObjetos(); desenhar();
   });
   // Pôr um objeto: no último móvel tocado, se ele recebe objetos (senão na mesa), no primeiro lugar livre do tampo.
@@ -2140,6 +2147,10 @@ function dados(im, filtro, w = W, h = W) {
     const [u, v] = uvDoPonteiro(e);
     pegaDelta = [ARR[d].c[0] - u, ARR[d].c[1] - v]; inicioDoArraste = [u, v]; amostras = [[performance.now(), u, v]];
     arrastando = true; tela.setPointerCapture(e.pointerId); alvo = [...ARR[d].c];
+    // SEGURAR É POSICIONAR (pedido dele, 15/10/2026): o contorno aparece já, e é só com ele que a rodinha e o R giram.
+    // Soltar sem ter andado nem girado é um clique.
+    viva = { id: d, orig: [...ARR[d].c], modo: 'arrasto', vu: 0, vv: 0, parado: true };
+    desenhar();
   });
   tela.addEventListener('pointermove', (e) => {
     if (cadeira.presa) {
@@ -2160,8 +2171,9 @@ function dados(im, filtro, w = W, h = W) {
     const [u, v] = uvDoPonteiro(e), agoraT = performance.now();
     amostras.push([agoraT, u, v]); amostras = amostras.filter((a) => agoraT - a[0] < 120);
     // Só vira arraste depois de andar um pouco: um clique leva o coelho até o móvel.
-    if (!viva && Math.hypot(u - inicioDoArraste[0], v - inicioDoArraste[1]) < 0.15) return;
+    if (viva?.parado && Math.hypot(u - inicioDoArraste[0], v - inicioDoArraste[1]) < 0.15) return;
     if (!viva) viva = { id: pegado, orig: [...ARR[pegado].c], modo: 'arrasto', vu: 0, vv: 0 };
+    viva.parado = false;
     const [tu, tv] = tamDe(pegado, ARR[pegado].lado);
     ARR[pegado].c = [Math.max(tu / 2, Math.min(N - tu / 2, u + pegaDelta[0])), Math.max(tv / 2, Math.min(N - tv / 2, v + pegaDelta[1]))];
     alvo = encaixar(pegado, ...ARR[pegado].c, ARR[pegado].lado);
@@ -2179,6 +2191,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     if (!arrastando) return;
     arrastando = false;
+    if (viva?.parado && !viva.girou) { viva = null; } // não andou nem girou: um clique
     if (!viva) { // clicou sem arrastar
       const f = FUNCOES && !soVer ? FUNCAO_DO_MOVEL[pegado] : null;
       if (f && FUNCOES[f] && f !== 'gavetas') acao(f); // o guarda-roupa conta a função quando as portas abrem
@@ -2208,18 +2221,27 @@ function dados(im, filtro, w = W, h = W) {
   };
   bgirar.onclick = girar;
   let ultimaRodinha = 0;
-  tela.addEventListener('wheel', (e) => {
-    const d = dono[pixelDo(e)];
-    if (d === 'cadeira' && coelho.destino !== 'cadeira') {
-      e.preventDefault(); escolher('cadeira');
-      cadeira.kin = null; cadeira.w = Math.max(-18, Math.min(18, cadeira.w - e.deltaY * 0.02)); acordarCadeira();
-    } else if (ARR[d] && !viva) {
-      e.preventDefault();
-      if (performance.now() - ultimaRodinha < 180) return;
-      ultimaRodinha = performance.now(); escolher(d); girar();
+  // A RODINHA E O R GIRAM SÓ O QUE ESTÁ SEGURO (pedido dele, 15/10/2026: passar por cima e rodar girava o móvel sem
+  // querer). O móvel pego gira na hora, ali mesmo, e ao soltar ele encaixa na casa livre mais perto; o objeto de cima
+  // gira no tampo; a cadeira segura gira com a força da rodinha.
+  window.pixelDe = (id) => { let m = null; for (let k = 0; k < W * W; k++) if (dono[k] === id) { m = k; break; } return m === null ? null : [m % W, ((m / W) | 0) + 4]; }; // para o teste
+  window.seguradoDoTeste = () => ({ arrastando, viva: viva && { ...viva }, pegado, objPego }); // para o teste
+  function girarSegurado(sentido) {
+    if (objPego) { const o = EM_CIMA[objPego.uid]; EM_CIMA = { ...EM_CIMA, [objPego.uid]: { ...o, lado: (o.lado + (sentido > 0 ? 1 : 3)) % 4 } }; objPego.girou = true; guardarObjetos(); desenhar(); return true; }
+    if (arrastando && viva && viva.modo === 'arrasto' && viva.id !== 'pufe') {
+      const id = viva.id, lado = (ARR[id].lado + (sentido > 0 ? 1 : 3)) % 4;
+      ARR[id] = { c: [...ARR[id].c], lado }; alvo = encaixar(id, ...ARR[id].c, lado); viva.girou = true; desenhar(); return true;
     }
+    return false;
+  }
+  tela.addEventListener('wheel', (e) => {
+    if (cadeira.presa) { e.preventDefault(); cadeira.kin = null; cadeira.w = Math.max(-18, Math.min(18, cadeira.w - e.deltaY * 0.02)); acordarCadeira(); return; }
+    if (!objPego && !(arrastando && viva)) return;
+    e.preventDefault();
+    if (performance.now() - ultimaRodinha < 180) return;
+    ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
-  document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girar(); });
+  document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
   document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
