@@ -93,7 +93,7 @@ json.dump({'nome': 'Grande, com cortinas', 'ocupa': extensao(mdia), 'ganho': lua
 mascara(projetar(vidroO), AQUI, 'original-luar-projetado.png')  # para conferir a projeção contra o luar pintado
 
 # ---- Os tipos novos (tipos.mjs).
-NOMES = {'arco': 'Em arco', 'redonda': 'Redonda', 'floreira': 'Com floreira'}
+NOMES = {'arco': 'Em arco', 'redonda': 'Redonda', 'floreira': 'Com floreira', 'cortinas': 'Com cortinas'}
 for tipo, nome in NOMES.items():
     d = os.path.join(AQUI, tipo)
     if not os.path.exists(os.path.join(d, 'dia.png')): continue

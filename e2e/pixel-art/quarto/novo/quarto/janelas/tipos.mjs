@@ -18,6 +18,10 @@ export const TIPOS = {
   // A redonda: na área estreita, saiu cortada reta do lado direito; com "ONLY" numa área larga, com um quarto em miniatura
   // dentro (o defeito conhecido desta base, falhas/). O pedido da primeira, um pouco mais largo e com outra semente.
   redonda: { area: area(3.3, 5.4, 72, 172), semente: 21, texto: `a single round wooden porthole window with a thick circular wooden frame and a cross-shaped muntin, set into the plain cream wall, ${VIDRO}, clean isometric pixel art` },
+  // A DO CONCEITO (pedido dele, 15/10/2026, para o salão): alta, de moldura escura, com cortinas dos dois lados. As cortinas
+  // em cinza-azulado, como no conceito: creme, elas se confundiriam com a parede de onde a peça é recortada.
+  cortinas: { area: area(2.7, 5.9, 18, 196), texto: `a tall wooden double window with a dark wood frame and thin muntins, long soft muted blue-grey fabric curtains hanging on both sides from a dark curtain rod above, a wooden sill, set into the plain cream wall, ${VIDRO}, clean isometric pixel art` },
+  'cortinas-2': { area: area(2.7, 5.9, 18, 196), semente: 7, texto: `a tall wooden double window with a dark wood frame and thin muntins, long soft muted blue-grey fabric curtains hanging on both sides from a dark curtain rod above, a wooden sill, set into the plain cream wall, ${VIDRO}, clean isometric pixel art` },
   floreira: { area: area(3.1, 5.5, 40, 156), texto: `a small square wooden window with four panes and a wooden flower box below it full of small red and yellow flowers, set into the plain cream wall, ${VIDRO}, clean isometric pixel art` },
 };
 const base = ler64(path.join(AQUI, 'sem-janela-dia.png'));

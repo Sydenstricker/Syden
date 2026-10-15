@@ -134,7 +134,7 @@ if (CENA === 'salao') {
 }
 for (const q of ['dia', 'noite', 'noite-abajur']) IMAGENS['sem-' + q] = png(CENA === 'salao' ? path.join(SALAO, q === 'dia' ? 'base16.png' : 'noite16.png') : path.join(JAN_DIR, `sem-janela-${q}.png`));
 const JANELAS = {};
-for (const tipo of ['original', 'arco', 'redonda', 'floreira']) {
+for (const tipo of ['original', 'arco', 'redonda', 'floreira', 'cortinas']) {
   const d = path.join(JAN_DIR, tipo);
   if (!fs.existsSync(path.join(d, 'janela.json'))) continue;
   JANELAS[tipo] = JSON.parse(fs.readFileSync(path.join(d, 'janela.json'), 'utf8'));
@@ -408,13 +408,14 @@ function dados(im, filtro, w = W, h = W) {
   }
   const ORDEM_JANELAS = Object.keys(TIPOS_JANELA);
   // No salão, a redonda na parede da direita, acima do lambri (a original, de cortinas até o chão, é a do quarto).
-  // No salão, a com floreira (pedido dele, 15/10/2026: a redonda saía cortada e ele não gostou do desenho).
-  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'floreira', parede: 'direita', v: 4.5 } : { tipo: 'original', parede: 'direita', v: 0 };
+  // No salão, a com cortinas, como o conceito dele (15/10/2026; antes a com floreira, e antes a redonda, que saía cortada).
+  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'cortinas', parede: 'esquerda', v: 6.6 } : { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
   try { const gj = JSON.parse(localStorage.getItem(PREFIXO + 'janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
   // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
   // está aqui fica guardado. De fábrica, os três com função ficam na parede da esquerda (a da direita é da janela).
-  const PAREDE_INICIAL = CENA === 'salao' ? { quadro: { parede: 'esquerda', v: 0.5, h: -22 } } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
+  // (no salão, nenhum objeto de parede de fábrica: o quadro saiu, pedido dele em 15/10/2026)
+  const PAREDE_INICIAL = CENA === 'salao' ? {} : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
   try { const gp = JSON.parse(localStorage.getItem(PREFIXO + 'parede') ?? 'null'); if (gp) NA_PAREDE = Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])); } catch { /* a de fábrica */ }
   const guardarParede = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'parede', JSON.stringify(NA_PAREDE)); } catch { /* fica só nesta visita */ } enviar(); };
