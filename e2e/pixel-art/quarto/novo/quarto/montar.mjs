@@ -14,15 +14,18 @@ import { FIXOS, PUFES } from './lista.mjs';
 
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
 const png = (arquivo) => 'data:image/png;base64,' + ler64(arquivo);
-// A CENA (15/10/2026): o mesmo motor monta o QUARTO e o SALÃO da comunidade (e2e/pixel-art/salao/). O salão tem a
-// geometria do quarto, 27 px abaixo (a mesma largura; o chão e as paredes descem): os cantos do chão descem 27 px, e as
-// peças pintadas no quarto (as janelas, os objetos da parede, o tapete) descem junto.
+// A CENA (15/10/2026): o mesmo motor monta o QUARTO e o SALÃO da comunidade (e2e/pixel-art/salao/). O SALÃO É 16 × 16
+// (pedido dele, mesmo dia: "4× o tamanho"), numa imagem de 1024 px com a casca de salao/casca16.py: a mesma casa do
+// quarto (27 × 14,25 px), o fundo do chão em (512, 253). As peças pintadas no quarto (as janelas, os objetos da parede, o
+// tapete) estão nas coordenadas dele e vão para as do salão deslocadas de (DX, DY): o fundo do quarto, (256, 226), cai
+// no fundo do salão. Como o fundo fica no meio da imagem nas duas cenas, o espelho de uma parede na outra é x → W − 1 − x.
 //   node montar.mjs           → quarto.html
 //   node montar.mjs salao     → ../../../salao/salao.html
 const CENA = process.argv[2] === 'salao' ? 'salao' : 'quarto';
 const SALAO = path.join(AQUI, '..', '..', '..', 'salao');
-const DESLOC = CENA === 'salao' ? 27 : 0;
-const CANTOS_DA_CENA = Object.fromEntries(Object.entries(CANTOS).map(([k, [x, y]]) => [k, [x, y + DESLOC]]));
+const DX = CENA === 'salao' ? 256 : 0, DY = CENA === 'salao' ? 27 : 0;
+const NC = CENA === 'salao' ? 16 : N, WC = CENA === 'salao' ? 1024 : 512;
+const CANTOS_DA_CENA = CENA === 'salao' ? { fundo: [512, 253], esquerda: [80, 481], frente: [512, 709], direita: [944, 481] } : CANTOS;
 const IMAGENS = {
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
@@ -124,7 +127,7 @@ if (CENA === 'salao') {
   IMAGENS.iconeDeTeste = png(path.join(WEB, 'icon-512.png'));
   IMAGENS.capaDeTeste = png(path.join(AQUI, '..', '..', '..', 'salao', 'bases', 'tarde-1.png'));
 }
-for (const q of ['dia', 'noite', 'noite-abajur']) IMAGENS['sem-' + q] = png(CENA === 'salao' ? path.join(SALAO, q === 'dia' ? 'base.png' : 'noite.png') : path.join(JAN_DIR, `sem-janela-${q}.png`));
+for (const q of ['dia', 'noite', 'noite-abajur']) IMAGENS['sem-' + q] = png(CENA === 'salao' ? path.join(SALAO, q === 'dia' ? 'base16.png' : 'noite16.png') : path.join(JAN_DIR, `sem-janela-${q}.png`));
 const JANELAS = {};
 for (const tipo of ['original', 'arco', 'redonda', 'floreira']) {
   const d = path.join(JAN_DIR, tipo);
@@ -193,8 +196,15 @@ const html = `<!doctype html>
   .com-rotulo { position: relative; }
   /* NO APP (?app, dentro do QuartoNovo.tsx): só o quarto, sem nada da página de teste, sobre o fundo do app. */
   /* O mesmo esquema de cor do iframe (styles.css): diferentes, o navegador pinta um fundo branco atrás do quarto. */
+  /* A CÂMERA DO SALÃO (16 × 16): a vista recorta, e o mundo (a tela e os nomes em cima dela) anda dentro dela. */
+  .vista { position: relative; }
+  .mundo { position: relative; }
+  body.salao .vista { overflow: hidden; aspect-ratio: 4 / 3; touch-action: none; cursor: grab; }
+  body.salao .vista.andando { cursor: grabbing; }
+  body.salao .mundo { position: absolute; left: 0; top: 0; will-change: transform; }
+  html.app body.salao .vista { aspect-ratio: auto; width: 100vw; height: 100vh; }
   /* No salão não há conceito ao lado: o salão sozinho, maior. */
-  body.salao .lado { grid-template-columns: 1fr; max-width: 760px; }
+  body.salao .lado { grid-template-columns: 1fr; max-width: 900px; }
   body.salao .lado > figure:not(.com-rotulo) { display: none; }
   /* e sem o que é só do quarto: o abajur, a tela do computador, a cortina e a janela que abre, os estados do coelho */
   body.salao #luz, body.salao #tela-pc, body.salao #janela, body.salao #cortina, body.salao #estados, body.salao .so-do-quarto { display: none; }
@@ -273,7 +283,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="${WC}" height="${WC}" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -287,12 +297,12 @@ const OBJETOS_DE_CIMA = ${JSON.stringify(OBJETOS_DE_CIMA)};
 // reserva); as animações guardam o número dele.
 const QUADROS_DO_COELHO = ${JSON.stringify(QUADROS)};
 const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS_DO_COELHO[i])]))]));
-const CANTOS = ${JSON.stringify(CANTOS_DA_CENA)}, N = ${N};
-const CENA = ${JSON.stringify(CENA)}, DESLOC = ${DESLOC};
+const CANTOS = ${JSON.stringify(CANTOS_DA_CENA)}, N = ${NC};
+const CENA = ${JSON.stringify(CENA)}, DX = ${DX}, DY = ${DY};
 // O que cada pessoa arrumou fica guardado por cena (o quarto e o salão não se misturam).
 const PREFIXO = CENA === 'salao' ? 'syden-salao-' : 'syden-quarto-';
 const MOVEIS_GIRADOS = ${JSON.stringify(Object.keys(GIROS))};
-const W = 512;
+const W = ${WC};
 function ponto(u, v) {
   const a = u / N, b = v / N, { fundo: B, esquerda: L, direita: R, frente: F } = CANTOS;
   return [0, 1].map((k) => B[k] * (1 - a) * (1 - b) + L[k] * a * (1 - b) + R[k] * (1 - a) * b + F[k] * a * b);
@@ -316,7 +326,7 @@ function uvRapido(x, y) {
   return [u, v];
 }
 function uvDe(x, y) {
-  let u = 4, v = 4;
+  let u = N / 2, v = N / 2;
   for (let i = 0; i < 12; i++) {
     const [px, py] = ponto(u, v), e = 0.01;
     const [ax, ay] = ponto(u + e, v), [bx, by] = ponto(u, v + e);
@@ -326,8 +336,13 @@ function uvDe(x, y) {
   }
   return [u, v];
 }
-// Desce uma imagem 512 × 512 dy linhas (as peças pintadas no quarto, levadas para o salão).
-function descer(arr, dy) { if (!dy) return arr; const out = new Uint8ClampedArray(arr.length); out.set(arr.subarray(0, arr.length - dy * 512 * 4), dy * 512 * 4); return out; }
+// Leva uma peça pintada no quarto (desenhada em 0, 0) para as coordenadas da cena.
+function deslocar(arr) {
+  if (!DX && !DY) return arr;
+  const out = new Uint8ClampedArray(arr.length);
+  for (let y = 0; y + DY < W && y < 512; y++) out.set(arr.subarray(y * W * 4, (y * W + Math.min(512, W - DX)) * 4), ((y + DY) * W + DX) * 4);
+  return out;
+}
 const carregar = (src) => new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.src = src; });
 function dados(im, filtro, w = W, h = W) {
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
@@ -340,7 +355,7 @@ function dados(im, filtro, w = W, h = W) {
   for (const [k, src] of Object.entries(IMAGENS)) im[k] = await carregar(src);
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
-  let soVer = false, enviar = () => {};
+  let soVer = false, enviar = () => {}, comecarPan = () => {};
   // AS OPÇÕES DE GRÁFICOS (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para ligar e
   // desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador ('syden:graficos'), as mesmas no quarto
   // e no salão; no app, quem as escolhe são as Configurações (Aparência), e a página percebe na hora pelo evento storage
@@ -383,7 +398,7 @@ function dados(im, filtro, w = W, h = W) {
   const ORDEM_JANELAS = Object.keys(TIPOS_JANELA);
   // No salão, a redonda na parede da direita, acima do lambri (a original, de cortinas até o chão, é a do quarto).
   // No salão, a com floreira (pedido dele, 15/10/2026: a redonda saía cortada e ele não gostou do desenho).
-  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'floreira', parede: 'direita', v: 2.2 } : { tipo: 'original', parede: 'direita', v: 0 };
+  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'floreira', parede: 'direita', v: 4.5 } : { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
   try { const gj = JSON.parse(localStorage.getItem(PREFIXO + 'janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
   // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
@@ -397,12 +412,12 @@ function dados(im, filtro, w = W, h = W) {
   // Até onde um objeto vai na parede: inteiro nela, acima do rodapé (30 px) e até a sombra da cornija (190 px: a parede
   // clara vai a ~176 px do chão, e o recorte traz uns pixels de sombra em volta).
   const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
-  const mapaDaParede = (P) => { const dx = Math.round(27 * P.v), dy = Math.round(14.25 * P.v) - Math.round(P.h) + DESLOC; return (x, y) => { x += dx; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
+  const mapaDaParede = (P) => { const dx = Math.round(27 * P.v), dy = Math.round(14.25 * P.v) - Math.round(P.h) + DY; return (x, y) => { x += dx + DX; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
   const naParede = new Int8Array(W * W);
   const guardarJanela = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } enviar(); };
   // Para onde vai cada pixel da peça: ao longo da parede, o vetor de uma casa em v (27 px, 14,25 px); na outra parede, o
   // espelho (o quarto é simétrico em volta de x = 256).
-  const mapaDe = (J) => { const dx = Math.round(27 * J.v), dy = Math.round(14.25 * J.v) + DESLOC; return (x, y) => { x += dx; y += dy; if (J.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
+  const mapaDe = (J) => { const dx = Math.round(27 * J.v), dy = Math.round(14.25 * J.v) + DY; return (x, y) => { x += dx + DX; y += dy; if (J.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
   // Onde a janela pode ficar: inteira na parede.
   const limitesDe = (t) => [-TIPOS_JANELA[t].ocupa[0], N - TIPOS_JANELA[t].ocupa[1]];
   const ehChao = new Uint8Array(W * W);
@@ -427,7 +442,7 @@ function dados(im, filtro, w = W, h = W) {
   const naJanela = new Uint8Array(W * W), noCaixilho = new Uint8Array(W * W), vao = new Uint8Array(W * W), vidroAberto = new Uint8Array(W * W);
   // De onde veio cada pixel de vidro (a vista é posta nas coordenadas da pintura, espelhada, em (330, 105)).
   const origemDoVidro = new Int32Array(W * W).fill(-1);
-  let luzDoDia = [420, 170];
+  let luzDoDia = [420 + DX, 170 + DY];
   const vistasNoite = [1, 2, 3, 4].map((n) => dados(im['noite' + n], null, 128, 160));
   const vistasDia = [1, 2, 3, 4].map((n) => dados(im['vista' + n], null, 128, 160));
   let vista = 0, fechada = false, aberta = false;
@@ -556,7 +571,7 @@ function dados(im, filtro, w = W, h = W) {
       if (emVA) { vidroAberto[d] = 1; origemDoVidro[d] = k; }
     }
     // A sombra do coelho de dia sai da janela: o ponto de luz anda com ela.
-    const pl = mapa(420, 170); luzDoDia = pl >= 0 ? [pl % W, (pl / W) | 0] : [420, 170];
+    const pl = mapa(420, 170); luzDoDia = pl >= 0 ? [pl % W, (pl / W) | 0] : [420 + DX, 170 + DY];
     if (!rapido) {
       diaBorrado = borrar(base, 10); diaPouco = borrar(base, 2); noitePouco = borrar(noite, 2); diaPe = borrar(base, 6);
       noiteAbajurPouco = borrar(noiteAbajur, 2); noitePe = borrar(noite, 6); noiteAbajurPe = borrar(noiteAbajur, 6);
@@ -567,7 +582,7 @@ function dados(im, filtro, w = W, h = W) {
   aplicarJanela();
   const pecas = {};
   for (const m of MOVEIS) {
-    const movel = descer(dados(im[m.id]), DESLOC), sombra = descer(dados(im[m.id + '-sombra']), DESLOC);
+    const movel = deslocar(dados(im[m.id])), sombra = deslocar(dados(im[m.id + '-sombra']));
     let x0 = W, y0 = W, x1 = 0;
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); }
     // O centro do alto da peça (no abajur, a cúpula): a média dos x das 8 primeiras linhas.
@@ -810,17 +825,19 @@ function dados(im, filtro, w = W, h = W) {
     if (CENA === 'salao') {
       const s = {};
       const por = (id, u, v, lado) => { if (VISTAS[id] || pintado(id)) s[id] = { c: VISTAS[id] ? encaixar(id, u, v, lado) : [u, v], lado }; };
-      por('tv', 1.2, 4, 0);
-      por('sofa', 5.2, 4, 2);
-      por('mesinha', 3.4, 4, 0);
-      por('fliperama', 0.8, 7, 0);
+      // 16 × 16 (15/10/2026): o canto da TV, o bar e o fliperama perto do fundo, como no 8 × 8, e a frente livre para o
+      // que vier (outro sofá, mesas, o karaokê).
+      por('tv', 1.2, 6, 0);
+      por('sofa', 5.2, 6, 2);
+      por('mesinha', 3.4, 6, 0);
+      por('fliperama', 0.8, 11, 0);
       por('estante', 2.5, 0.6, 3);
-      por('balcao', 6.3, 1.6, 3);
-      por('banqueta', 5.6, 2.9, 0);
-      por('banqueta-2', 6.9, 2.9, 0);
+      por('balcao', 7.3, 1.6, 3);
+      por('banqueta', 6.6, 2.9, 0);
+      por('banqueta-2', 7.9, 2.9, 0);
       por('planta-alta', 0.6, 0.6, 0);
-      por('planta-baixa', 7.4, 7.3, 0);
-      if (pintado('tapete')) s.tapete = { c: [4.3, 4.2], lado: 0 };
+      por('planta-baixa', 0.7, 14.5, 0);
+      if (pintado('tapete')) s.tapete = { c: [4.3, 6.2], lado: 0 };
       return s;
     }
     const a = { pufe: { c: centro(pintado('tapete') ? MOVEIS.find((m) => m.id === 'pufe-meio').pe : [4, 6, 4, 6]).map(Math.round), lado: 0 }, poltrona: { c: [3, 6], lado: 0 } };
@@ -1314,7 +1331,7 @@ function dados(im, filtro, w = W, h = W) {
     const t = naFrente('tv', 1.6); if (t) tv.push(t);
     const fl = naFrente('fliperama', 0.7); if (fl) fliperama.push({ ...fl, pose: 'no-fliperama' });
     // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
-    const meio = ARR.mesinha ? centro(peDe('mesinha')) : [4, 4], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, 4];
+    const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, N / 2];
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
     for (const [i, j] of livres.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: DIAGONAL(alvoTv[0] - i - 0.5, alvoTv[1] - j - 0.5), sobre: null });
     return { sentar, tv, fliperama, chao };
@@ -1776,7 +1793,7 @@ function dados(im, filtro, w = W, h = W) {
   // a JANELA (o meio do vidro, alto: sombra curta e para a esquerda-frente); de noite, o ABAJUR (baixo e perto: sombra
   // mais comprida, para longe dele). Cada pixel do coelho a uma altura h acima do pé cai no chão a h × alongamento,
   // na direção contrária à da luz. Pixel art: sombra chapada, sem borrão. Só o chão escurece.
-  const LUZ_DIA = { x: 420, y: 170, alongamento: 0.85, forca: 0.55 };
+  const LUZ_DIA = { x: 420 + DX, y: 170 + DY, alongamento: 0.85, forca: 0.55 };
   const sombraBuf = new Uint8Array(W * W);
   // A ALTURA DO TAMPO de cada peça (onde a sombra cai em cima): o colchão, o tampo do pufe, o assento da poltrona. O que
   // fica acima (a cabeceira, o encosto) é lateral.
@@ -1941,7 +1958,7 @@ function dados(im, filtro, w = W, h = W) {
     if (!soVer) return;
     e.stopImmediatePropagation();
     // No salão, quem só olha ainda clica nas funções (a TV, o fliperama, a estante...).
-    if (ev === 'pointerdown' && CENA === 'salao') { const f = funcaoEm(pixelDo(e)); if (f) acao(f); }
+    if (ev === 'pointerdown' && CENA === 'salao') { const f = funcaoEm(pixelDo(e)); if (f) acao(f); else comecarPan(e); }
   }, { capture: true });
   // ============================== O DESENHO EM DUAS PARTES (desempenho, 14/10/2026) ==============================
   // Medido: redesenhar o quarto inteiro a cada quadro custava ~21 ms aqui e ~92 ms num processador 4× mais lento (um
@@ -2973,6 +2990,39 @@ function dados(im, filtro, w = W, h = W) {
     };
   }
   window.pessoasDoTeste = (lista) => { PESSOAS = lista; desenhar(); }; // para o teste
+  // ============================== A CÂMERA (o salão 16 × 16, 15/10/2026) ==============================
+  // Decisão dele: "câmera que anda". O salão inteiro não cabe no tamanho de pixel do quarto, então a vista mostra um pedaço
+  // e o mundo anda dentro dela: arrastar onde não há nada para pegar (o chão, a parede, o fundo) leva a câmera. Ela abre
+  // no canto da TV e do sofá. O pixel acompanha a largura da vista (nunca menor que 1), para o coelho ficar do tamanho de
+  // sempre na tela. Só a parte com desenho conta: a câmera não passa da borda da frente do chão.
+  const vistaEl = tela.closest('.vista'), mundoEl = tela.closest('.mundo');
+  const camera = { x: 0, y: 0, px: 1, ativa: CENA === 'salao' };
+  const ALTURA_UTIL = Math.min(W, Math.ceil(CANTOS.frente[1] + 40)); // até a borda da frente
+  function prenderCamera() {
+    const vw = vistaEl.clientWidth, vh = vistaEl.clientHeight, mw = W * camera.px, mh = ALTURA_UTIL * camera.px;
+    camera.x = Math.max(0, Math.min(mw - vw, camera.x)); camera.y = Math.max(0, Math.min(Math.max(0, mh - vh), camera.y));
+    mundoEl.style.transform = 'translate(' + -Math.round(camera.x) + 'px, ' + -Math.round(camera.y) + 'px)';
+  }
+  function medirCamera(centrarEm) {
+    if (!camera.ativa) return;
+    const antes = camera.px, vw = vistaEl.clientWidth;
+    camera.px = Math.max(1, vw / 560);
+    mundoEl.style.width = W * camera.px + 'px';
+    if (centrarEm) { camera.x = centrarEm[0] * camera.px - vw / 2; camera.y = centrarEm[1] * camera.px - vistaEl.clientHeight / 2; }
+    else { camera.x *= camera.px / antes; camera.y *= camera.px / antes; }
+    prenderCamera();
+  }
+  window.cameraDoTeste = () => ({ ...camera }); // para o teste
+  if (camera.ativa) {
+    const ondeAbre = ARR.tv && ARR.sofa ? ponto((ARR.tv.c[0] + ARR.sofa.c[0]) / 2, (ARR.tv.c[1] + ARR.sofa.c[1]) / 2) : ponto(N / 4, N / 4);
+    medirCamera([ondeAbre[0], ondeAbre[1] - 40]);
+    window.addEventListener('resize', () => medirCamera());
+    let pan = null;
+    comecarPan = (e) => { pan = { x: e.clientX, y: e.clientY, cx: camera.x, cy: camera.y, id: e.pointerId }; vistaEl.classList.add('andando'); };
+    vistaEl.addEventListener('pointerdown', (e) => { if (!tela.hasPointerCapture(e.pointerId) && !pan) comecarPan(e); });
+    window.addEventListener('pointermove', (e) => { if (!pan || e.pointerId !== pan.id) return; camera.x = pan.cx - (e.clientX - pan.x); camera.y = pan.cy - (e.clientY - pan.y); prenderCamera(); });
+    window.addEventListener('pointerup', (e) => { if (pan && e.pointerId === pan.id) { pan = null; vistaEl.classList.remove('andando'); } });
+  }
   // Os gráficos: os botões da página de teste, e o que o app mudar nas Configurações.
   function botoesDosGraficos() {
     for (const [k, nome] of [['particulas', 'Partículas'], ['sombras', 'Sombras'], ['telas', 'Telas animadas'], ['auto', 'Ajustar sozinho']]) {
