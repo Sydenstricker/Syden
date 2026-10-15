@@ -1,13 +1,60 @@
 {
-  "_leia": "A TELA de cada móvel, medida uma vez nas vistas de frente (0 = south-west, 3 = south-east), em pixels da imagem da vista: as colunas x0..x1 e as retas de cima e de baixo, y = topo + k·x e y = pe + k·x. O recuo deixa a moldura à vista (a TV) ou só tira o contorno (o fliperama). Medido por telas.py a partir da região cinza da tela, conferido à mão.",
+  "_leia": "A TELA de cada móvel, medida uma vez nas vistas de frente (0 = south-west, 3 = south-east), em pixels da imagem da vista: as colunas x0..x1 e as retas de cima e de baixo, y = topo + k·x e y = pe + k·x. O recuo deixa a moldura à vista (a TV) ou só tira o contorno (o fliperama). Medido por telas.py a partir da região cinza da tela, conferido à mão. E só onde também é painel desenhado (a cor do painel, na TV; o cinza do vidro, no fliperama), recolhido pelo recuo: a reta sozinha passava da moldura nos cantos.",
   "tv": {
-    "recuo": [3, 3, 3, 5],
-    "0": { "x0": 44, "x1": 99, "k": 0.5, "topo": -6.5, "pe": 35.0 },
-    "3": { "x0": 37, "x1": 91, "k": -0.481, "topo": 60.1, "pe": 95.9 }
+    "recuo": [
+      3,
+      3,
+      3,
+      5
+    ],
+    "0": {
+      "x0": 44,
+      "x1": 99,
+      "k": 0.5,
+      "topo": -6.5,
+      "pe": 35.0
+    },
+    "3": {
+      "x0": 37,
+      "x1": 91,
+      "k": -0.481,
+      "topo": 60.1,
+      "pe": 95.9
+    },
+    "painel": {
+      "cor": [
+        45,
+        38,
+        58
+      ],
+      "tol": 14,
+      "recolher": 3
+    }
   },
   "fliperama": {
-    "recuo": [1, 1, 1, 0],
-    "0": { "x0": 61, "x1": 85, "k": 0.417, "topo": 27.6, "pe": 45.5 },
-    "3": { "x0": 67, "x1": 90, "k": -0.417, "topo": 90.8, "pe": 108.8 }
+    "recuo": [
+      1,
+      1,
+      1,
+      0
+    ],
+    "0": {
+      "x0": 61,
+      "x1": 85,
+      "k": 0.417,
+      "topo": 27.6,
+      "pe": 45.5
+    },
+    "3": {
+      "x0": 67,
+      "x1": 90,
+      "k": -0.417,
+      "topo": 90.8,
+      "pe": 108.8
+    },
+    "painel": {
+      "cinza": true,
+      "recolher": 1
+    }
   }
 }

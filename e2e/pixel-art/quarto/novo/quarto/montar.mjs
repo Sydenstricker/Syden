@@ -736,15 +736,43 @@ function dados(im, filtro, w = W, h = W) {
   // A TELA MEDIDA (salao/moveis/telas.json, 15/10/2026): procurar a tela pela cor falhava nos dois (o vidro do fliperama
   // tem vários tons, e o suporte da TV tem a cor do painel: relatos dele). Os quatro cantos de cada tela foram medidos uma
   // vez; aqui só se enche o quadrilátero, com o recuo de cada um (a moldura da TV fica à vista).
-  function telaMedida(peca, q, recuo) {
-    const [re, rd, rc, rb] = recuo, x0 = q.x0 + re, x1 = q.x1 - rd, pts = [];
+  // E SÓ ONDE É PAINEL (relato de 15/10/2026: "nos cantos está transbordando"): a reta passava da moldura nas pontas.
+  // O painel é o maior pedaço da cor dele (a TV) ou do cinza do vidro (o fliperama) dentro do quadrilátero, cheio coluna a
+  // coluna (o suporte riscado por dentro entra), e recolhido para a moldura ficar à vista.
+  function painelDe(peca, q, P) {
+    const m = peca.movel, ok = new Uint8Array(W * W);
+    const eh = (k) => { const r = m[k * 4], g2 = m[k * 4 + 1], b = m[k * 4 + 2]; if (!m[k * 4 + 3]) return false;
+      if (P.cor) return Math.abs(r - P.cor[0]) + Math.abs(g2 - P.cor[1]) + Math.abs(b - P.cor[2]) < P.tol;
+      const mx = Math.max(r, g2, b), mn = Math.min(r, g2, b), l = (r + g2 + b) / 3; return mx - mn < 32 && l > 35 && l < 150; };
+    const ys = [q.topo + q.k * q.x0, q.topo + q.k * q.x1, q.pe + q.k * q.x0, q.pe + q.k * q.x1], y0 = Math.floor(Math.min(...ys)) - 2, y1 = Math.ceil(Math.max(...ys)) + 2;
+    for (let y = Math.max(0, y0); y <= Math.min(W - 1, y1); y++) for (let x = q.x0; x <= q.x1; x++) if (eh(y * W + x)) ok[y * W + x] = 1;
+    // o maior pedaço ligado
+    const visto = new Uint8Array(W * W); let maior = [];
+    for (let y = Math.max(0, y0); y <= Math.min(W - 1, y1); y++) for (let x = q.x0; x <= q.x1; x++) {
+      const k0 = y * W + x; if (!ok[k0] || visto[k0]) continue;
+      const fila = [k0]; visto[k0] = 1;
+      for (let i = 0; i < fila.length; i++) { const k = fila[i]; for (const v of [k - 1, k + 1, k - W, k + W]) if (ok[v] && !visto[v]) { visto[v] = 1; fila.push(v); } }
+      if (fila.length > maior.length) maior = fila;
+    }
+    const dentro = new Uint8Array(W * W), col = new Map();
+    for (const k of maior) { const x = k % W, y = (k / W) | 0, c = col.get(x); if (!c) col.set(x, [y, y]); else { c[0] = Math.min(c[0], y); c[1] = Math.max(c[1], y); } }
+    for (const [x, [a, b]] of col) for (let y = a; y <= b; y++) dentro[y * W + x] = 1;
+    for (let volta = 0; volta < (P.recolher ?? 0); volta++) {
+      const tira = [];
+      for (const [x, [a, b]] of col) for (let y = a; y <= b; y++) { const k = y * W + x; if (dentro[k] && (!dentro[k - 1] || !dentro[k + 1] || !dentro[k - W] || !dentro[k + W])) tira.push(k); }
+      for (const k of tira) dentro[k] = 0;
+    }
+    return dentro;
+  }
+  function telaMedida(peca, q, recuo, P) {
+    const [re, rd, rc, rb] = recuo, x0 = q.x0 + re, x1 = q.x1 - rd, pts = [], dentro = P ? painelDe(peca, q, P) : null;
     for (let x = x0; x <= x1; x++) {
       const ta = q.topo + q.k * x + rc, tb = q.pe + q.k * x - rb;
-      for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (peca.movel[(y * W + x) * 4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]);
+      for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (peca.movel[(y * W + x) * 4 + 3] && (!dentro || dentro[y * W + x])) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]);
     }
     return pts;
   }
-  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id].recuo) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
+  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
   const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };

@@ -590,6 +590,13 @@ escondida** — o app desliga o freio de janela escondida por causa da chamada, 
 atrás do jogo, que é o uso principal; (2) **opção de Gráficos** nas Configurações (Aparência), no ar já: partículas, sombras e telas
 animadas, **TODAS DESLIGADAS DE FÁBRICA** (decisão dele: quem quiser o enfeite liga), sem "ajustar sozinho" (ele tirou).
 
+**WEBGL: OPÇÃO REGISTRADA, NÃO AGORA (decisão dele, 15/10/2026).** O travamento ao arrastar móvel no salão era do nosso
+código, e foi corrigido medindo (`window.temposDoTeste`; o quadro do arraste de 46 para 9 ms, montar a cena de 281 para
+~83 ms). O que sobra é a montagem da luz da imagem inteira (`passeFinal`), uns 40 ms quando a cena é refeita (ao pegar e
+soltar um móvel): é ela que iria para um shader WebGL, junto com o que se pinta por cima (o contorno, as faíscas, o balão e
+as telas), uns 1–2 dias. **Lembrar ao decidir:** a GPU é o que o jogo mais usa, e com a janela sem foco o salão já não gasta
+nada; medir antes de fazer.
+
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
 parte: põe-se no tampo de qualquer móvel que tenha tampo, anda e gira com ele, e tem as suas posições. "Aumenta as
