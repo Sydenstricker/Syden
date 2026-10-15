@@ -25,6 +25,10 @@ export const AVULSOS = {
   // com física. A referência é o canto do computador da home (o conceito): mesa de madeira, monitor, teclado, gabinete.
   mesa: { lado: [150, 136], texto: `ONLY ONE wooden computer desk and nothing else: a simple wooden desk with a computer monitor, a keyboard and a mouse on top, a small desktop computer tower on the floor under one side, the front of the desk facing the right-front (toward the lower right of the image), the whole piece visible, no chair, ${ANGULO}` },
   cadeira: { lado: [80, 104], texto: `ONLY ONE office swivel chair and nothing else: a dark grey fabric desk chair with a backrest, armrests, a gas lift and a five-star base with small black caster wheels, the seat facing the left-front (toward the lower left of the image), the whole piece visible, ${ANGULO}` },
+  // AS PLANTAS (pedido dele, 15/10/2026: "recheio: plantas"). Uma planta é igual de todos os lados: o mesmo desenho
+  // serve às 4 posições.
+  'planta-alta': { lado: [72, 120], texto: `ONLY ONE tall leafy monstera houseplant in a round terracotta pot standing on the floor, and nothing else, the whole plant visible from the leaves to the pot, ${ANGULO}` },
+  'planta-baixa': { lado: [64, 72], texto: `ONLY ONE small round bushy green fern in a woven wicker basket pot standing on the floor, and nothing else, the whole plant visible, ${ANGULO}` },
   'guarda-roupa': { lado: [64, 160], texto: `a tall freestanding wooden wardrobe with two doors and small round knobs, the whole piece visible from the top cornice to the feet, its doors facing to the right-front, the back against a wall on its left side, ${ANGULO}` },
 };
 

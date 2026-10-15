@@ -97,3 +97,17 @@ mais 68. A rodada da poltrona, da cortina e das máscaras do híbrido custou mai
   pessoa como ela deixou, só para olhar (nada se arrasta, gira ou se guarda; nem no navegador de quem visita).
 - Teste: suba a API de teste (`PORT=3099 CORS_ORIGIN=http://localhost:5181 INVITE_CODE=teste`, banco novo) e rode
   `node visita.mjs`: a Ana arruma, o Zeca visita e vê igual, não consegue mexer, e volta ao quarto dele.
+
+## O recheio e as funções (15/10/2026, pedido dele)
+
+- **Objetos da parede** (`parede/itens.mjs` pinta, `parede/pecas.py` recorta): fone, quadro de fotos, cortiça,
+  prateleira e pintura. Andam pelas duas paredes e sobem e descem, como a janela; os botões embaixo põem e guardam
+  (posto, vai ao primeiro lugar livre; com a parede cheia, onde cobre menos). O fone e o quadro saíram cortados na
+  primeira (`falhas/`). O recorte pega o que mudou muito e a borda dele, e fecha os buracos (o branco das fotos tem a cor
+  da parede).
+- **Plantas** (`avulso.mjs`): uma monstera alta e uma samambaia, o mesmo desenho nas 4 posições. **A mesa enfeitada**
+  (`estado.mjs`, 25 gerações): o mesmo objeto, com plantinha e livros no tampo.
+- **As funções** da home de hoje moram nos objetos: fone → Salas, quadro → Amigos, cortiça → ideias, guarda-roupa →
+  Guarda-roupa (quando as portas abrem), janela (o vidro) → Explorar, abajur → Dia e noite, mesa/cadeira → Mini-games. O
+  nome aparece ao passar o mouse. Na página de teste, o botão "Funções do app" as liga, e o clique só conta o que faria.
+  Teste: `node parede/testar.mjs`.

@@ -71,7 +71,9 @@ for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-wes
 }
 // AS 4 POSIÇÕES DE CADA MÓVEL (girar.mjs): as 4 diagonais do mesmo móvel, na ordem do botão Girar. Móvel sem as 4
 // vistas fica onde foi pintado.
-const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros' };
+// A mesa vem ENFEITADA (15/10/2026, "recheio"): o mesmo objeto, com uma plantinha e livros no tampo (estado.mjs). As
+// plantas são o mesmo desenho nas 4 posições (uma planta é igual de todos os lados).
+const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-enfeitada-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = path.join(AQUI, 'avulsos', pasta);
@@ -105,6 +107,14 @@ for (const tipo of ['original', 'arco', 'redonda', 'floreira']) {
   const arqs = ['peca-dia', 'peca-noite', 'vidro', 'luar', ...(JANELAS[tipo].cortina ? ['cortina-dia', 'cortina-noite'] : []), ...(JANELAS[tipo].abre ? ['aberta-dia', 'aberta-vao', 'aberta-vidro'] : [])];
   for (const a of arqs) IMAGENS[`jan-${tipo}-${a}`] = png(path.join(d, a + '.png'));
 }
+// OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
+const ITENS_PAREDE = {};
+for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura']) {
+  const d = path.join(AQUI, 'parede', item);
+  if (!fs.existsSync(path.join(d, 'item.json'))) continue;
+  ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
+  for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-' + q] = png(path.join(d, 'peca-' + q + '.png'));
+}
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -129,6 +139,9 @@ const html = `<!doctype html>
   figcaption { color: var(--suave); font-size: 13px; margin-top: 4px; }
   canvas, .lado img { width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block; }
   canvas { cursor: grab; touch-action: none; }
+  .com-rotulo { position: relative; }
+  #rotulo { position: absolute; pointer-events: none; transform: translate(-50%, -120%); background: rgba(30, 24, 20, 0.92); color: var(--texto); padding: 4px 10px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
+  #rotulo small { display: block; color: var(--suave); font-size: 11px; }
 </style></head>
 <body><main>
 <h1>O quarto do coelho</h1>
@@ -147,7 +160,10 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="janela" aria-pressed="false">Janela: fechada</button>
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
   <button id="tipo-janela">Tipo de janela</button>
+  <button id="funcoes" aria-pressed="false">Funções do app: desligadas</button>
 </div>
+<div class="barra" id="enfeites"></div>
+<p id="acao-teste" aria-live="polite"></p>
 <p><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
 dormindo), todas do mesmo personagem, no mesmo quadro e com a mesma âncora. A sombra vem da janela (de dia) ou do
 abajur (de noite). O estado decide o
@@ -170,7 +186,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -178,6 +194,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
 const IMAGENS = ${JSON.stringify(IMAGENS)};
 const MOVEIS = ${JSON.stringify(MOVEIS)};
 const JANELAS = ${JSON.stringify(JANELAS)};
+const ITENS_PAREDE = ${JSON.stringify(ITENS_PAREDE)};
 const ANIMACOES = ${JSON.stringify(ANIMACOES)};
 const CANTOS = ${JSON.stringify(CANTOS)}, N = ${N};
 const W = 512;
@@ -227,6 +244,7 @@ function dados(im, filtro, w = W, h = W) {
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {};
+  const MODO_APP = new URLSearchParams(location.search).has('app');
   // ============================== A JANELA MÓVEL (15/10/2026) ==============================
   // O quarto sem janela, e a janela como peça (o tipo, a parede e quantas casas ela andou). Tudo o que a página usava da
   // pintura com a janela (a base, as noites, o vidro, a cortina, a janela aberta e as luzes borradas) é MONTADO aqui, e
@@ -259,6 +277,19 @@ function dados(im, filtro, w = W, h = W) {
   const JANELA_INICIAL = { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
   try { const gj = JSON.parse(localStorage.getItem('syden-quarto-janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
+  // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
+  // está aqui fica guardado. De fábrica, os três com função ficam na parede da esquerda (a da direita é da janela).
+  const PAREDE_INICIAL = { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
+  let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
+  try { const gp = JSON.parse(localStorage.getItem('syden-quarto-parede') ?? 'null'); if (gp) NA_PAREDE = Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])); } catch { /* a de fábrica */ }
+  const guardarParede = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-parede', JSON.stringify(NA_PAREDE)); } catch { /* fica só nesta visita */ } enviar(); };
+  const TEXTURAS_PAREDE = {};
+  for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
+  // Até onde um objeto vai na parede: inteiro nela, acima do rodapé (30 px) e até a sombra da cornija (190 px: a parede
+  // clara vai a ~176 px do chão, e o recorte traz uns pixels de sombra em volta).
+  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
+  const mapaDaParede = (P) => { const dx = Math.round(27 * P.v), dy = Math.round(14.25 * P.v) - Math.round(P.h); return (x, y) => { x += dx; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
+  const naParede = new Int8Array(W * W);
   const guardarJanela = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } enviar(); };
   // Para onde vai cada pixel da peça: ao longo da parede, o vetor de uma casa em v (27 px, 14,25 px); na outra parede, o
   // espelho (o quarto é simétrico em volta de x = 256).
@@ -336,6 +367,22 @@ function dados(im, filtro, w = W, h = W) {
     cortinaDia = T.cortinaDia ? compor(semDia, T.cortinaDia, semDiaL, semDiaL, null, null, mapa) : base;
     cortinaNoite = noiteSemLuar;
     abertaDia = T.aberta ? compor(semDia, T.aberta, semDiaL, semDiaL, null, null, mapa) : base;
+    // Os objetos da parede, por cima da janela (pendurados na parede, à frente da cortina).
+    naParede.fill(0);
+    const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
+    ids.forEach((id, i) => {
+      const P = NA_PAREDE[id], T2 = TEXTURAS_PAREDE[id], mp = mapaDaParede(P);
+      base = compor(base, T2.dia, semDiaL, semDiaL, null, null, mp);
+      if (T.cortinaDia) cortinaDia = compor(cortinaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
+      abertaDia = compor(abertaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
+      for (const nome of ['noite', 'noiteSemLuar']) { const v0 = nome === 'noite' ? noite : noiteSemLuar; const v1 = compor(v0, T2.noite, semNoiteL, semNoiteL, null, null, mp); if (nome === 'noite') noite = v1; else noiteSemLuar = v1; }
+      noiteAbajur = compor(noiteAbajur, T2.noite, semAbajurL, semNoiteL, null, null, mp);
+      abajurSemLuar = compor(abajurSemLuar, T2.noite, semAbajurL, semNoiteL, null, null, mp);
+      for (let k = 0; k < W * W; k++) if (T2.dia[k * 4 + 3] > 127) { const d = mp(k % W, (k / W) | 0); if (d >= 0) naParede[d] = i + 1; }
+    });
+    ordemDaParede = ids;
+    if (!T.cortinaDia) cortinaDia = base;
+    cortinaNoite = noiteSemLuar;
     contorno(base, foraDia); contorno(noite, foraNoite); contorno(noiteAbajur, foraNoite);
     vidro = new Uint8ClampedArray(W * W * 4);
     naJanela.fill(0); noCaixilho.fill(0); vao.fill(0); vidroAberto.fill(0); origemDoVidro.fill(-1);
@@ -360,7 +407,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     noiteLimpa = null;
   }
-  let noiteLimpa = null;
+  let noiteLimpa = null, ordemDaParede = [];
   aplicarJanela();
   const pecas = {};
   for (const m of MOVEIS) {
@@ -424,7 +471,7 @@ function dados(im, filtro, w = W, h = W) {
     return { id, movel, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, caixa: [x0, y0, x1 + 1, y1 + 1] };
   }
   const VISTAS = {};
-  for (const id of ['poltrona', 'abajur', 'guarda-roupa', 'cama', 'mesa']) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  for (const id of ['poltrona', 'abajur', 'guarda-roupa', 'cama', 'mesa', 'planta-alta', 'planta-baixa']) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
@@ -511,7 +558,7 @@ function dados(im, filtro, w = W, h = W) {
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa' };
+  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia' };
   const pufes = MOVEIS.filter((m) => m.pufe);
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -535,6 +582,9 @@ function dados(im, filtro, w = W, h = W) {
     // A mesa do computador: encostada na parede da janela, no canto da direita, virada para o quarto (como na home); a
     // poltrona vai para o meio.
     if (VISTAS.mesa) { const [tu, tv] = tamDe('mesa', 0); a.mesa = { c: encaixar('mesa', 1 + tu / 2, N - tv / 2, 0), lado: 0 }; a.poltrona = { c: [3, 4], lado: 0 }; }
+    // As plantas (15/10/2026): a alta no canto da frente, junto da parede da esquerda; a samambaia ao lado da mesa.
+    if (VISTAS['planta-alta']) a['planta-alta'] = { c: encaixar('planta-alta', 7.5, 0.5, 0), lado: 0 };
+    if (VISTAS['planta-baixa']) a['planta-baixa'] = { c: encaixar('planta-baixa', 4, 7.5, 0), lado: 0 };
     return a;
   }
   const INICIAL = arrumacaoInicial();
@@ -542,7 +592,8 @@ function dados(im, filtro, w = W, h = W) {
   let ARR = JSON.parse(JSON.stringify(INICIAL));
   try {
     const guardada = JSON.parse(localStorage.getItem('syden-quarto-arrumacao-2') ?? 'null');
-    if (guardada && Object.keys(INICIAL).every((id) => guardada[id]?.c)) ARR = guardada;
+    // Móvel novo (as plantas, 15/10/2026) entra no lugar de fábrica, sem desfazer o resto do que a pessoa arrumou.
+    if (guardada) for (const id of Object.keys(INICIAL)) if (guardada[id]?.c) ARR[id] = guardada[id];
   } catch { /* sem guardar: começa da inicial */ }
   window.arrumacaoDoTeste = () => ARR; // para o teste
   const guardar = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } enviar(); };
@@ -696,7 +747,7 @@ function dados(im, filtro, w = W, h = W) {
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18 };
+  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5 };
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -1019,7 +1070,7 @@ function dados(im, filtro, w = W, h = W) {
   function chegar() {
     const pt = coelho.destino && pontos()[coelho.destino];
     if (!pt) { coelho.pose = 'parado'; return; }
-    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) guardaRoupaAberto = true; return chegarDeVez(); }
+    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer) acao('gavetas'); } return chegarDeVez(); }
     coelho.largado = Math.random() < 0.5; // dormindo rígido ou largado: sorteado antes, a transição já vai para ele
     const id = coelho.destino, p2 = pontos()[id], ro = roteiro(id, p2);
     aproximar(ro.beira, ro.atrasNaBeira, id, () => { coelho.dir = p2.olha; tocar(id, p2, ro, false, () => chegarDeVez()); });
@@ -1243,6 +1294,8 @@ function dados(im, filtro, w = W, h = W) {
     cama: [{ h: [0, 30] }, { lado: 'tras', fatia: 0.1, h: [0, 62] }],
     abajur: [{ h: [0, 78] }],
     'guarda-roupa': [{ h: [0, 135] }],
+    'planta-alta': [{ h: [0, 100] }],
+    'planta-baixa': [{ h: [0, 50] }],
   };
   const OLHA_DE = { cama: 'sudoeste' };
   // O TIPO de cada caixa, guardado por pixel: as pernas do coelho sentado passam à frente do assento, mas nunca do
@@ -1887,6 +1940,118 @@ function dados(im, filtro, w = W, h = W) {
     return { parede, v: (x - W / 2) / KX };
   };
   let janelaPega = null;
+  // ============================== AS FUNÇÕES (15/10/2026) ==============================
+  // Cada função da home de hoje (Home.tsx) mora num objeto: o fone abre as salas, o quadro os amigos, a cortiça as ideias,
+  // o guarda-roupa o guarda-roupa, a janela o explorar, o abajur o dia e a noite, e o computador os mini-games. No app, quem
+  // diz o nome e faz a ação é o app (FUNCOES chega por mensagem); aqui, na página de teste, um botão as liga e o clique só
+  // conta o que faria.
+  let FUNCOES = null; // { id: { rotulo, sub } }
+  const FUNCOES_DE_TESTE = { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
+  // O móvel e a função dele (o guarda-roupa é a função "gavetas" da home: lá eram as gavetas da cama).
+  const FUNCAO_DO_MOVEL = { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador', cadeira: 'computador' };
+  const rotulo = document.getElementById('rotulo');
+  function funcaoEm(k) {
+    if (!FUNCOES || soVer) return null;
+    const ip = naParede[k];
+    if (ip && !dono[k]) { const f = ITENS_PAREDE[ordemDaParede[ip - 1]].funcao; return f && FUNCOES[f] ? f : null; }
+    if (dono[k]) { const f = FUNCAO_DO_MOVEL[dono[k]]; return f && FUNCOES[f] ? f : null; }
+    if (naJanela[k] && (vidro[k * 4 + 3] > 127 || noCaixilho[k]) && FUNCOES.janela) return 'janela';
+    return null;
+  }
+  function acao(f) {
+    if (window.parent !== window && MODO_APP) { window.parent.postMessage({ syden: 'quarto', acao: f }, location.origin); return; }
+    document.getElementById('acao-teste').textContent = 'No app, abriria: ' + FUNCOES[f].rotulo + (FUNCOES[f].sub ? ' (' + FUNCOES[f].sub + ')' : '') + '.';
+    if (f === 'abajur') botoes[modo === 'dia' ? 'noite' : 'dia'].click(); // aqui, o próprio quarto troca
+  }
+  const bFuncoes = document.getElementById('funcoes');
+  bFuncoes.onclick = () => { FUNCOES = FUNCOES ? null : FUNCOES_DE_TESTE; bFuncoes.setAttribute('aria-pressed', String(!!FUNCOES)); bFuncoes.textContent = 'Funções do app: ' + (FUNCOES ? 'ligadas' : 'desligadas'); };
+  tela.addEventListener('pointermove', (e) => {
+    const f = arrastando || paredePega || janelaPega ? null : funcaoEm(pixelDo(e));
+    rotulo.hidden = !f;
+    if (f) {
+      const r = tela.getBoundingClientRect(), rf = rotulo.parentElement.getBoundingClientRect();
+      rotulo.style.left = e.clientX - rf.left + 'px'; rotulo.style.top = e.clientY - rf.top + 'px';
+      rotulo.innerHTML = ''; rotulo.append(FUNCOES[f].rotulo);
+      if (FUNCOES[f].sub) { const sm = document.createElement('small'); sm.textContent = FUNCOES[f].sub; rotulo.append(sm); }
+      void r;
+    }
+  });
+  tela.addEventListener('pointerleave', () => { rotulo.hidden = true; });
+
+  // ============================== OS OBJETOS DA PAREDE: arrastar, pôr e guardar ==============================
+  // Pegos como a janela, andam pelas duas paredes e também sobem e descem. Clicar sem arrastar faz a função.
+  const mudarParede = (id, P, rapido) => { if (P) NA_PAREDE[id] = prenderNaParede(id, P); aplicarJanela(rapido); assinaturaCena = ''; if (!rapido) { guardarParede(); botoesDaParede(); } desenhar(); };
+  let paredePega = null;
+  tela.addEventListener('pointerdown', (e) => {
+    const k = pixelDo(e), ip = naParede[k];
+    if (!ip || dono[k]) return;
+    const id = ordemDaParede[ip - 1];
+    paredePega = { id, k, x: e.clientX, y: e.clientY, mexeu: false, P0: { ...NA_PAREDE[id] }, p0: naParedeDo(e) };
+    tela.setPointerCapture(e.pointerId);
+    e.stopImmediatePropagation(); // na frente da janela: a janela e os móveis não pegam este clique
+  });
+  tela.addEventListener('pointermove', (e) => {
+    if (!paredePega) return;
+    if (!paredePega.mexeu && Math.hypot(e.clientX - paredePega.x, e.clientY - paredePega.y) < 6) return;
+    paredePega.mexeu = true;
+    const r = tela.getBoundingClientRect(), esc = W / r.height;
+    const p = naParedeDo(e), { P0, p0, id } = paredePega, it = ITENS_PAREDE[id], meio = (it.ocupa[0] + it.ocupa[1]) / 2;
+    // Ao longo da parede, o que o ponteiro andou; trocando de parede, o meio do objeto vai para o ponteiro.
+    const v = p.parede === P0.parede ? P0.v + (p.v - p0.v) : p.v - meio;
+    const dv = p.parede === P0.parede ? p.v - p0.v : 0;
+    // Subir: o que o ponteiro subiu na tela, menos o que a própria parede sobe ao andar nela (14,25 px por casa).
+    const h = P0.h - ((e.clientY - paredePega.y) * esc - 14.25 * dv);
+    const novo = prenderNaParede(id, { parede: p.parede, v: Math.round(v * 10) / 10, h: Math.round(h) });
+    const atual = NA_PAREDE[id];
+    if (novo.parede !== atual.parede || novo.v !== atual.v || novo.h !== atual.h) mudarParede(id, novo, true);
+  });
+  tela.addEventListener('pointerup', () => {
+    if (!paredePega) return;
+    const { id, mexeu } = paredePega;
+    paredePega = null;
+    if (mexeu) { mudarParede(id, NA_PAREDE[id]); return; }
+    const f = ITENS_PAREDE[id].funcao;
+    if (FUNCOES && f && FUNCOES[f]) acao(f);
+  });
+  // Pôr e guardar: um botão por objeto. Posto, ele vai para o primeiro lugar livre (sem cobrir outro objeto nem a janela).
+  const livreNaParede = (id, P) => {
+    const it = ITENS_PAREDE[id], a = [P.v + it.ocupa[0], P.v + it.ocupa[1]], al = [P.h + it.alto[0], P.h + it.alto[1]];
+    const cruza = (x, y) => x[0] < y[1] && y[0] < x[1];
+    if (JAN.parede === P.parede) { const o = TIPOS_JANELA[JAN.tipo].ocupa; if (cruza(a, [o[0] + JAN.v, o[1] + JAN.v])) return false; }
+    return Object.entries(NA_PAREDE).every(([o, Q]) => o === id || Q.parede !== P.parede || !cruza(a, [Q.v + ITENS_PAREDE[o].ocupa[0], Q.v + ITENS_PAREDE[o].ocupa[1]]) || !cruza(al, [Q.h + ITENS_PAREDE[o].alto[0], Q.h + ITENS_PAREDE[o].alto[1]]));
+  };
+  function botoesDaParede() {
+    const caixa = document.getElementById('enfeites');
+    caixa.replaceChildren(...Object.entries(ITENS_PAREDE).map(([id, it]) => {
+      const b = document.createElement('button');
+      b.textContent = (it.nome[0].toUpperCase() + it.nome.slice(1)) + ': ' + (NA_PAREDE[id] ? 'na parede' : 'guardado');
+      b.setAttribute('aria-pressed', String(!!NA_PAREDE[id]));
+      b.disabled = soVer;
+      b.onclick = () => {
+        if (NA_PAREDE[id]) { delete NA_PAREDE[id]; mudarParede(id, null); return; }
+        let lugar = null;
+        // (de cima para baixo e de meia em meia casa: dois objetos baixos cabem um em cima do outro)
+        for (const parede of ['esquerda', 'direita']) for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0] && !lugar; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1] && !lugar; v += 0.25) { const P = prenderNaParede(id, { parede, v, h }); if (livreNaParede(id, P)) lugar = P; }
+        // Parede cheia: onde ele cobre menos dos outros (e nunca a janela).
+        if (!lugar) {
+          let menor = Infinity;
+          for (const parede of ['esquerda', 'direita']) for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0]; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1]; v += 0.25) {
+            const P = prenderNaParede(id, { parede, v, h }), a = [P.v + it.ocupa[0], P.v + it.ocupa[1]], al = [P.h + it.alto[0], P.h + it.alto[1]];
+            const sobra = (x, y) => Math.max(0, Math.min(x[1], y[1]) - Math.max(x[0], y[0]));
+            if (JAN.parede === parede && sobra(a, TIPOS_JANELA[JAN.tipo].ocupa.map((o) => o + JAN.v)) > 0) continue;
+            const custo = Object.entries(NA_PAREDE).reduce((t, [o, Q]) => t + (o === id || Q.parede !== parede ? 0 : sobra(a, [Q.v + ITENS_PAREDE[o].ocupa[0], Q.v + ITENS_PAREDE[o].ocupa[1]]) * sobra(al, [Q.h + ITENS_PAREDE[o].alto[0], Q.h + ITENS_PAREDE[o].alto[1]])), 0);
+            if (custo < menor) { menor = custo; lugar = P; }
+          }
+        }
+        mudarParede(id, lugar ?? prenderNaParede(id, { parede: 'esquerda', v: 0, h: 0 }));
+      };
+      return b;
+    }));
+  }
+  botoesDaParede();
+  window.paredeDoTeste = () => NA_PAREDE; // para o teste
+  window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
+
   tela.addEventListener('pointerdown', (e) => {
     const k = pixelDo(e);
     if (!naJanela[k] || dono[k]) return;
@@ -1912,6 +2077,7 @@ function dados(im, filtro, w = W, h = W) {
     if (mexeu) { mudarJanela(JAN); return; }
     // No vidro, abre e fecha a janela; no resto da janela (as cortinas), abre e fecha as cortinas. Com as cortinas
     // fechadas, o clique é sempre delas.
+    if (funcaoEm(k) === 'janela') { acao('janela'); return; }
     if (T.abre && noCaixilho[k] && !fechada) trocarJanela(); else if (T.cortina) trocarCortina();
   });
   // ARRASTA-SE O MÓVEL SOB O PONTEIRO (qualquer um; o tapete por baixo de tudo). O centro anda de casa em casa e só
@@ -1977,7 +2143,10 @@ function dados(im, filtro, w = W, h = W) {
     if (!arrastando) return;
     arrastando = false;
     if (!viva) { // clicou sem arrastar
-      if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
+      const f = FUNCOES && !soVer ? FUNCAO_DO_MOVEL[pegado] : null;
+      if (f && FUNCOES[f] && f !== 'gavetas') acao(f); // o guarda-roupa conta a função quando as portas abrem
+      if (f === 'abajur' && FUNCOES?.abajur) { /* o abajur só troca a luz */ }
+      else if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
       else if (pontos()[pegado]) ir(pegado);
       alvo = null; pegado = null; desenhar();
       return;
@@ -2014,7 +2183,7 @@ function dados(im, filtro, w = W, h = W) {
     }
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girar(); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -2034,6 +2203,7 @@ function dados(im, filtro, w = W, h = W) {
     moveis: Object.fromEntries(Object.entries(ARR).map(([id, m]) => [id, { c: [+m.c[0].toFixed(3), +m.c[1].toFixed(3)], lado: m.lado }])),
     cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
+    parede: Object.fromEntries(Object.entries(NA_PAREDE).map(([id, P]) => [id, { parede: P.parede, v: +P.v.toFixed(2), h: Math.round(P.h) }])),
   });
   // Põe no quarto uma arrumação (a guardada, ou a de quem se visita). Móvel que o quarto não conhece fica de fora; o que
   // falta nela fica onde está na de fábrica.
@@ -2043,10 +2213,11 @@ function dados(im, filtro, w = W, h = W) {
     ARR = novo;
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
+    NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : JSON.parse(JSON.stringify(PAREDE_INICIAL));
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }
-    botoesDaJanela();
+    botoesDaJanela(); botoesDaParede();
     assinaturaCena = ''; decidir(); desenhar();
   }
   const campo = (id) => document.getElementById(id);
@@ -2085,6 +2256,7 @@ function dados(im, filtro, w = W, h = W) {
   let meu = null;
   const modoVisita = (dono) => {
     soVer = !!dono;
+    botoesDaParede();
     for (const id of ['girar', 'inicial', 'tipo-janela', 'janela', 'cortina', 'vista']) campo(id).disabled = soVer || (id === 'janela' && !TIPOS_JANELA[JAN.tipo].abre) || (id === 'cortina' && !TIPOS_JANELA[JAN.tipo].cortina);
     campo('voltar').hidden = !soVer;
     tela.style.cursor = soVer ? 'default' : 'grab';

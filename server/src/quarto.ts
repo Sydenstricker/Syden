@@ -25,6 +25,8 @@ export interface Arrumacao {
   cortina?: boolean;
   janelaAberta?: boolean;
   vista?: number;
+  /** Os objetos da parede (quadro, fone, prateleira…): a parede, quantas casas andaram nela e quantos px subiram. */
+  parede?: Record<string, { parede: 'direita' | 'esquerda'; v: number; h: number }>;
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -64,6 +66,16 @@ export function validarArrumacao(x: unknown): { ok: Arrumacao } | { erro: string
     if (a[k] === undefined) continue;
     if (typeof a[k] !== 'boolean') return { erro: 'Arrumação inválida.' };
     saida[k] = a[k] as boolean;
+  }
+  if (a.parede !== undefined) {
+    const p = a.parede;
+    if (!p || typeof p !== 'object' || Array.isArray(p) || Object.keys(p).length > MAX_MOVEIS) return { erro: 'Objetos da parede inválidos.' };
+    saida.parede = {};
+    for (const [id, q] of Object.entries(p as Record<string, { parede?: unknown; v?: unknown; h?: unknown } | null>)) {
+      const v = numero(q?.v, -N, N), h = numero(q?.h, -300, 300);
+      if (!CODIGO.test(id) || (q?.parede !== 'direita' && q?.parede !== 'esquerda') || v === null || h === null) return { erro: 'Objeto da parede inválido.' };
+      saida.parede[id] = { parede: q.parede, v, h };
+    }
   }
   if (a.vista !== undefined) {
     if (!Number.isInteger(a.vista) || (a.vista as number) < 0 || (a.vista as number) > 15) return { erro: 'Vista inválida.' };

@@ -1,0 +1,47 @@
+{
+  "id": "ab51555a-a077-42cd-b412-367783475974",
+  "name": "a wooden computer desk with dr",
+  "state_name": "enfeitada",
+  "prompt": "a wooden computer desk with drawers, a flat monitor, a keyboard and a mouse on top and a computer tower under it",
+  "size": {
+    "width": 113,
+    "height": 113
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T13:07:08.311105+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/ab51555a-a077-42cd-b412-367783475974/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {
+    "state_source": {
+      "id": "da65a6c9-8007-4bc4-b2fb-76692aa323d3",
+      "edit_description": "the same desk, same monitor with the same flat grey screen, same keyboard and mouse, and now also a small potted plant and a short stack of books on the free corner of the desk top"
+    },
+    "no_background": true
+  },
+  "tags": [],
+  "status": "completed",
+  "group_id": "ce54a9e0-2e15-49f9-bd2a-4f3bb27e53c9",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}
