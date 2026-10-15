@@ -174,6 +174,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
   <button id="tipo-janela">Tipo de janela</button>
   <button id="funcoes" aria-pressed="false">Funções do app: desligadas</button>
+  <button id="cor-tapete">Cor do tapete</button>
 </div>
 <div class="barra" id="enfeites"></div>
 <p id="acao-teste" aria-live="polite"></p>
@@ -210,8 +211,8 @@ const JANELAS = ${JSON.stringify(JANELAS)};
 const ITENS_PAREDE = ${JSON.stringify(ITENS_PAREDE)};
 // Cada quadro vai UMA vez (as animações repetem quadros entre si: a pose parada no começo de cada uma, as pastas de
 // reserva); as animações guardam o número dele.
-const QUADROS = ${JSON.stringify(QUADROS)};
-const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS[i])]))]));
+const QUADROS_DO_COELHO = ${JSON.stringify(QUADROS)};
+const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS_DO_COELHO[i])]))]));
 const CANTOS = ${JSON.stringify(CANTOS)}, N = ${N};
 const W = 512;
 function ponto(u, v) {
@@ -826,6 +827,35 @@ function dados(im, filtro, w = W, h = W) {
     const f = Math.min(1, (performance.now() - viva.t0) / 160), e = f * f * (3 - 2 * f);
     c[0] = viva.de[0] + (viva.para[0] - viva.de[0]) * e; c[1] = viva.de[1] + (viva.para[1] - viva.de[1]) * e;
     if (f >= 1) { const id = viva.id; ARR[id].c = [...viva.para]; viva = null; alvo = null; pegado = null; guardar(); colidir(); decidir(); soltarFaiscas(peDe(id)); }
+  }
+  // AS CORES DO TAPETE (15/10/2026, "variações de tapete, cor por código"): a matiz de cada pixel gira até a da cor
+  // escolhida e a saturação muda, mas a CLARIDADE fica — o desenho (as tramas, as sombras) é o mesmo, só o tom muda. O
+  // tapete pintado é sálvia (matiz 0,16, saturação 0,27).
+  const CORES_DO_TAPETE = { salvia: { nome: 'sálvia', h: 0.158, s: 1 }, terracota: { nome: 'terracota', h: 0.03, s: 2.1 }, azul: { nome: 'azul', h: 0.58, s: 1.15 }, mostarda: { nome: 'mostarda', h: 0.105, s: 2.4 }, rosa: { nome: 'rosa', h: 0.95, s: 1.05 }, cinza: { nome: 'cinza', h: 0.158, s: 0.2 } };
+  let CORES = {};
+  try { CORES = JSON.parse(localStorage.getItem('syden-quarto-cores') ?? '{}') || {}; } catch { /* as de fábrica */ }
+  const guardarCores = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-cores', JSON.stringify(CORES)); } catch { /* fica só nesta visita */ } enviar(); };
+  function tingirPixel(r, g, b, alvo) {
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx / 255, d = mx - mn;
+    let h = 0, sat = mx ? d / mx : 0;
+    if (d) h = mx === r ? ((g - b) / d + 6) % 6 / 6 : mx === g ? ((b - r) / d + 2) / 6 : ((r - g) / d + 4) / 6;
+    // Só o que tem a cor do tapete: a borda traz pixels da madeira do chão, que virariam pontinhos coloridos.
+    if (sat > 0.06 && Math.abs(h - 0.158) > 0.07) return [r, g, b];
+    h = (((h - 0.158 + alvo.h) % 1) + 1) % 1; sat = Math.min(1, sat * alvo.s);
+    const i = Math.floor(h * 6), f = h * 6 - i, p = v * (1 - sat), q = v * (1 - f * sat), t = v * (1 - (1 - f) * sat);
+    const [R, G, B] = [[v, t, p], [q, v, p], [p, v, t], [p, q, v], [t, p, v], [v, p, q]][i % 6];
+    return [R * 255, G * 255, B * 255];
+  }
+  const tingidos = new Map();
+  function tingir(p) {
+    const cor = CORES.tapete && CORES.tapete !== 'salvia' ? CORES_DO_TAPETE[CORES.tapete] : null;
+    if (!cor) return p;
+    let porCor = tingidos.get(p);
+    if (!porCor) { porCor = {}; tingidos.set(p, porCor); }
+    if (porCor[CORES.tapete]) return porCor[CORES.tapete];
+    const movel = new Uint8ClampedArray(p.movel);
+    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) { const [r, g, b] = tingirPixel(movel[k * 4], movel[k * 4 + 1], movel[k * 4 + 2], cor); movel[k * 4] = r; movel[k * 4 + 1] = g; movel[k * 4 + 2] = b; }
+    return (porCor[CORES.tapete] = { ...p, movel });
   }
   // O TAPETE MEXIDO: o desenho é levado pelo chão, ponto a ponto (ele é plano, então girar é só girar a textura).
   const cacheDoTapete = new Map();
@@ -1576,8 +1606,8 @@ function dados(im, filtro, w = W, h = W) {
       const fator = Math.min(1.3, Math.max(0.75, luz(nx, ny) / luz(ox, oy)));
       return { p: { ...p, id: 'pufe' }, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, pe: [pu - 0.75, pu + 0.75, pv - 0.75, pv + 0.75], forma: FORMAS.pufe };
     }
-    if (noLugar(id)) { const m = pintado(id); return { p: pecas[id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, forma: FORMAS[id], olha }; }
-    if (id === 'tapete') return { p: tapeteEm(c, l), dx: 0, dy: 0, fator: 1, pe: peDe(id), deitado: true };
+    if (noLugar(id)) { const m = pintado(id); return { p: id === 'tapete' ? tingir(pecas[id]) : pecas[id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, forma: FORMAS[id], olha }; }
+    if (id === 'tapete') return { p: tingir(tapeteEm(c, l)), dx: 0, dy: 0, fator: 1, pe: peDe(id), deitado: true };
     // A vista solta: a quina da frente do desenho vai para a quina da frente do pé, e a luz é a do lugar.
     const p = VISTAS[id][l], pe = peMedidoDe(id), [fx, fy] = ponto(pe[1], pe[3]), [nx, ny] = ponto(c[0], c[1]);
     const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
@@ -1799,7 +1829,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, viva?.id ?? null]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, viva?.id ?? null]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     pecaDoCoelho();
@@ -2067,6 +2097,10 @@ function dados(im, filtro, w = W, h = W) {
   }
   botoesDaParede();
   window.paredeDoTeste = () => NA_PAREDE; // para o teste
+  const bct = document.getElementById('cor-tapete'), ORDEM_CORES = Object.keys(CORES_DO_TAPETE);
+  const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + CORES_DO_TAPETE[CORES.tapete ?? 'salvia'].nome; bct.disabled = soVer; };
+  bct.onclick = () => { CORES = { ...CORES, tapete: ORDEM_CORES[(ORDEM_CORES.indexOf(CORES.tapete ?? 'salvia') + 1) % ORDEM_CORES.length] }; guardarCores(); botaoDaCor(); desenhar(); };
+  botaoDaCor();
   window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
 
   tela.addEventListener('pointerdown', (e) => {
@@ -2200,7 +2234,7 @@ function dados(im, filtro, w = W, h = W) {
     }
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girar(); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -2220,6 +2254,7 @@ function dados(im, filtro, w = W, h = W) {
     moveis: Object.fromEntries(Object.entries(ARR).map(([id, m]) => [id, { c: [+m.c[0].toFixed(3), +m.c[1].toFixed(3)], lado: m.lado }])),
     cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
+    cores: { ...CORES },
     parede: Object.fromEntries(Object.entries(NA_PAREDE).map(([id, P]) => [id, { parede: P.parede, v: +P.v.toFixed(2), h: Math.round(P.h) }])),
   });
   // Põe no quarto uma arrumação (a guardada, ou a de quem se visita). Móvel que o quarto não conhece fica de fora; o que
@@ -2230,6 +2265,8 @@ function dados(im, filtro, w = W, h = W) {
     ARR = novo;
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
+    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => id === 'tapete' && CORES_DO_TAPETE[c])) : {};
+    botaoDaCor();
     NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : JSON.parse(JSON.stringify(PAREDE_INICIAL));
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
@@ -2273,7 +2310,7 @@ function dados(im, filtro, w = W, h = W) {
   let meu = null;
   const modoVisita = (dono) => {
     soVer = !!dono;
-    botoesDaParede();
+    botoesDaParede(); botaoDaCor();
     for (const id of ['girar', 'inicial', 'tipo-janela', 'janela', 'cortina', 'vista']) campo(id).disabled = soVer || (id === 'janela' && !TIPOS_JANELA[JAN.tipo].abre) || (id === 'cortina' && !TIPOS_JANELA[JAN.tipo].cortina);
     campo('voltar').hidden = !soVer;
     tela.style.cursor = soVer ? 'default' : 'grab';

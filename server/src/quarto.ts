@@ -27,6 +27,8 @@ export interface Arrumacao {
   vista?: number;
   /** Os objetos da parede (quadro, fone, prateleira…): a parede, quantas casas andaram nela e quantos px subiram. */
   parede?: Record<string, { parede: 'direita' | 'esquerda'; v: number; h: number }>;
+  /** A cor escolhida de um móvel (o tapete: sálvia, terracota…), por código. */
+  cores?: Record<string, string>;
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -75,6 +77,15 @@ export function validarArrumacao(x: unknown): { ok: Arrumacao } | { erro: string
       const v = numero(q?.v, -N, N), h = numero(q?.h, -300, 300);
       if (!CODIGO.test(id) || (q?.parede !== 'direita' && q?.parede !== 'esquerda') || v === null || h === null) return { erro: 'Objeto da parede inválido.' };
       saida.parede[id] = { parede: q.parede, v, h };
+    }
+  }
+  if (a.cores !== undefined) {
+    const c = a.cores;
+    if (!c || typeof c !== 'object' || Array.isArray(c) || Object.keys(c).length > MAX_MOVEIS) return { erro: 'Cores inválidas.' };
+    saida.cores = {};
+    for (const [id, cor] of Object.entries(c as Record<string, unknown>)) {
+      if (!CODIGO.test(id) || typeof cor !== 'string' || !CODIGO.test(cor)) return { erro: 'Cor inválida.' };
+      saida.cores[id] = cor;
     }
   }
   if (a.vista !== undefined) {
