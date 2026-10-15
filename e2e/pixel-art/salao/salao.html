@@ -1704,7 +1704,13 @@ function dados(im, filtro, w = W, h = W) {
 
   // O relógio: 10 quadros por segundo; o coelho anda 2,5 casas por segundo.
   let ultimo = performance.now(), proximoPasseio = 0, tempoDeDesenho = 0;
+  // EM PAUSA COM O JOGO NA FRENTE (pergunta dele, 15/10/2026: "o principal uso envolve jogo concomitante"). O app de
+  // desktop desliga o freio do navegador para janela escondida (backgroundThrottling: false, para a chamada não cair),
+  // então esta página seguiria desenhando atrás do jogo. Ela para sozinha quando a janela do Syden não está em foco ou
+  // está escondida: o relógio passa sem desenhar nada, e o quadro volta ao voltar o foco.
+  const emPausa = () => { if (document.hidden) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
   setInterval(() => {
+    if (emPausa()) { ultimo = performance.now(); return; }
     const agora = performance.now(), dt = Math.min(0.25, (agora - ultimo) / 1000);
     ultimo = agora;
     coelho.quadro++;
