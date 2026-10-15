@@ -1921,4 +1921,5 @@ export default {
   'Girar': 'Obróć',
   'Tapete': 'Dywan',
   'Objetos da parede': 'Ozdoby na ścianę',
+  'Em cima dos móveis': 'Na meblach',
 } satisfies Record<string, string>;

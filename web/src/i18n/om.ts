@@ -1896,4 +1896,5 @@ export default {
   'Girar': 'Naannessi',
   'Tapete': 'Afata lafaa',
   'Objetos da parede': 'Miidhagina keenyan',
+  'Em cima dos móveis': 'Meeshaa irratti',
 } satisfies Record<string, string>;

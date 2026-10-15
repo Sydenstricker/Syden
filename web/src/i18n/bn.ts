@@ -1853,4 +1853,5 @@ export default {
   'Girar': 'ঘোরাও',
   'Tapete': 'কার্পেট',
   'Objetos da parede': 'দেয়ালের জিনিস',
+  'Em cima dos móveis': 'আসবাবের ওপর',
 } satisfies Record<string, string>;

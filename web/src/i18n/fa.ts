@@ -1844,4 +1844,5 @@ export default {
   'Girar': 'چرخاندن',
   'Tapete': 'فرش',
   'Objetos da parede': 'وسایل دیوار',
+  'Em cima dos móveis': 'روی وسایل',
 } satisfies Record<string, string>;

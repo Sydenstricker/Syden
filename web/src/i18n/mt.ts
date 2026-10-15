@@ -1872,4 +1872,5 @@ export default {
   'Girar': 'Dawwar',
   'Tapete': 'Tapit',
   'Objetos da parede': 'Tiżjin tal-ħajt',
+  'Em cima dos móveis': 'Fuq l-għamara',
 } satisfies Record<string, string>;

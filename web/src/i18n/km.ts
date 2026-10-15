@@ -1925,4 +1925,5 @@ export default {
   'Girar': 'បង្វិល',
   'Tapete': 'កម្រាលព្រំ',
   'Objetos da parede': 'គ្រឿងតុបតែងជញ្ជាំង',
+  'Em cima dos móveis': 'លើគ្រឿងសង្ហារិម',
 } satisfies Record<string, string>;

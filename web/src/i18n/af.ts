@@ -1920,4 +1920,5 @@ export default {
   'Girar': 'Draai',
   'Tapete': 'Mat',
   'Objetos da parede': 'Muurversierings',
+  'Em cima dos móveis': 'Op die meubels',
 } satisfies Record<string, string>;

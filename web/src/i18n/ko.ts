@@ -1844,4 +1844,5 @@ export default {
   'Girar': '회전',
   'Tapete': '러그',
   'Objetos da parede': '벽 장식',
+  'Em cima dos móveis': '가구 위',
 } satisfies Record<string, string>;

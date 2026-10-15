@@ -1906,4 +1906,5 @@ export default {
   'Girar': 'סיבוב',
   'Tapete': 'שטיח',
   'Objetos da parede': 'קישוטי קיר',
+  'Em cima dos móveis': 'על הרהיטים',
 } satisfies Record<string, string>;

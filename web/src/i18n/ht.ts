@@ -1936,4 +1936,5 @@ export default {
   'Girar': 'Vire',
   'Tapete': 'Tapi',
   'Objetos da parede': 'Dekorasyon miray',
+  'Em cima dos móveis': 'Sou mèb yo',
 } satisfies Record<string, string>;

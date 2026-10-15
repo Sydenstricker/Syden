@@ -1926,4 +1926,5 @@ export default {
   'Girar': 'Roter',
   'Tapete': 'Teppe',
   'Objetos da parede': 'Veggpynt',
+  'Em cima dos móveis': 'På møblene',
 } satisfies Record<string, string>;

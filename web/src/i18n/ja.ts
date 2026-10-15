@@ -1837,4 +1837,5 @@ export default {
   'Girar': '回転',
   'Tapete': 'ラグ',
   'Objetos da parede': '壁の飾り',
+  'Em cima dos móveis': '家具の上',
 } satisfies Record<string, string>;

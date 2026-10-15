@@ -1934,4 +1934,5 @@ export default {
   'Girar': 'Burish',
   'Tapete': 'Gilam',
   'Objetos da parede': 'Devor bezaklari',
+  'Em cima dos móveis': 'Mebel ustida',
 } satisfies Record<string, string>;

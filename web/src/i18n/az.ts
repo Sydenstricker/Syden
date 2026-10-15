@@ -1890,4 +1890,5 @@ export default {
   'Girar': 'Döndər',
   'Tapete': 'Xalça',
   'Objetos da parede': 'Divar bəzəkləri',
+  'Em cima dos móveis': 'Mebel üstündə',
 } satisfies Record<string, string>;

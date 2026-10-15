@@ -1864,4 +1864,5 @@ export default {
   'Girar': 'Tụgharịa',
   'Tapete': 'Kapeeti',
   'Objetos da parede': 'Ihe ịchọ mma mgbidi',
+  'Em cima dos móveis': 'N\'elu ngwongwo ụlọ',
 } satisfies Record<string, string>;

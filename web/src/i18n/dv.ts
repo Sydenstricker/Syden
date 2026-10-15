@@ -1936,4 +1936,5 @@ export default {
   'Girar': 'އަނބުރާ',
   'Tapete': 'ފަރުދާ',
   'Objetos da parede': 'ފާރުގެ ޒީނަތްތެރިކަން',
+  'Em cima dos móveis': 'ފަރުނީޗަރުގެ މައްޗަށް',
 } satisfies Record<string, string>;

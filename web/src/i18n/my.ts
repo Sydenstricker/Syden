@@ -1895,4 +1895,5 @@ export default {
   'Girar': 'လှည့်ရန်',
   'Tapete': 'ကော်ဇော',
   'Objetos da parede': 'နံရံအလှဆင်ပစ္စည်းများ',
+  'Em cima dos móveis': 'ပရိဘောဂပေါ်မှာ',
 } satisfies Record<string, string>;

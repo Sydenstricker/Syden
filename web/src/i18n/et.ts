@@ -1923,4 +1923,5 @@ export default {
   'Girar': 'Pööra',
   'Tapete': 'Vaip',
   'Objetos da parede': 'Seinakaunistused',
+  'Em cima dos móveis': 'Mööbli peal',
 } satisfies Record<string, string>;

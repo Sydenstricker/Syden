@@ -71,9 +71,10 @@ for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-wes
 }
 // AS 4 POSIÇÕES DE CADA MÓVEL (girar.mjs): as 4 diagonais do mesmo móvel, na ordem do botão Girar. Móvel sem as 4
 // vistas fica onde foi pintado.
-// A mesa vem ENFEITADA (15/10/2026, "recheio"): o mesmo objeto, com uma plantinha e livros no tampo (estado.mjs). As
-// plantas são o mesmo desenho nas 4 posições (uma planta é igual de todos os lados).
-const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-enfeitada-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
+// A mesa vem LIMPA (decisão dele, 15/10/2026: "o móvel deve ser uma coisa, os elementos outra"); a plantinha e os
+// livros que chegaram a vir pintados nela (mesa-teclado-enfeitada-giros) são OBJETOS DE CIMA, peças à parte. As plantas
+// são o mesmo desenho nas 4 posições (uma planta é igual de todos os lados).
+const GIROS = { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = path.join(AQUI, 'avulsos', pasta);
@@ -121,6 +122,17 @@ const QUADROS = [], ANIMACOES_IDX = {};
     ANIMACOES_IDX[nome] = {};
     for (const [d, qs] of Object.entries(dirs)) ANIMACOES_IDX[nome][d] = qs.map((q) => { if (!indice.has(q)) { indice.set(q, QUADROS.length); QUADROS.push(q); } return indice.get(q); });
   } }
+// OS OBJETOS DE CIMA (../../../objetos/, escolhidos.json: a opção escolhida de cada um): 4 vistas do mesmo objeto, ou a
+// mesma vista nas 4 posições para o que é igual de todos os lados (o copo, a planta).
+const OBJ_DIR = path.join(AQUI, '..', '..', '..', 'objetos');
+const OBJETOS_DE_CIMA = {};
+if (fs.existsSync(path.join(OBJ_DIR, 'escolhidos.json'))) for (const [id, meta] of Object.entries(JSON.parse(fs.readFileSync(path.join(OBJ_DIR, 'escolhidos.json'), 'utf8')))) {
+  const giros = path.join(OBJ_DIR, id + '-giros');
+  const vistas = ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(giros, d + '.png'))) ? ORDEM_DO_GIRO.map((d) => path.join(giros, d + '.png')) : [0, 1, 2, 3].map(() => path.join(OBJ_DIR, id + '-' + meta.opcao + '.png'));
+  if (!vistas.every((f) => fs.existsSync(f))) continue;
+  OBJETOS_DE_CIMA[id] = { nome: meta.nome };
+  vistas.forEach((f, l) => { IMAGENS['obj-' + id + l] = png(f); });
+}
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -177,6 +189,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="cor-tapete">Cor do tapete</button>
 </div>
 <div class="barra" id="enfeites"></div>
+<div class="barra" id="objetos-de-cima"></div>
 <p id="acao-teste" aria-live="polite"></p>
 <p><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
 dormindo), todas do mesmo personagem, no mesmo quadro e com a mesma âncora. A sombra vem da janela (de dia) ou do
@@ -209,6 +222,7 @@ const IMAGENS = ${JSON.stringify(IMAGENS)};
 const MOVEIS = ${JSON.stringify(MOVEIS)};
 const JANELAS = ${JSON.stringify(JANELAS)};
 const ITENS_PAREDE = ${JSON.stringify(ITENS_PAREDE)};
+const OBJETOS_DE_CIMA = ${JSON.stringify(OBJETOS_DE_CIMA)};
 // Cada quadro vai UMA vez (as animações repetem quadros entre si: a pose parada no começo de cada uma, as pastas de
 // reserva); as animações guardam o número dele.
 const QUADROS_DO_COELHO = ${JSON.stringify(QUADROS)};
@@ -490,6 +504,14 @@ function dados(im, filtro, w = W, h = W) {
   }
   const VISTAS = {};
   for (const id of ['poltrona', 'abajur', 'guarda-roupa', 'cama', 'mesa', 'planta-alta', 'planta-baixa']) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  // ============================== OS OBJETOS DE CIMA (15/10/2026) ==============================
+  // Decisão dele: "o móvel deve ser uma coisa, os elementos outra". O que vai no tampo é peça à parte: mora num móvel,
+  // numa posição relativa ao tampo dele (s, t de 0 a 1, no sentido do móvel), e tem a sua posição (lado). A peça do móvel
+  // SAI COM OS OBJETOS dentro (comObjetos): arrastar, jogar, girar, a luz e a profundidade do móvel valem para eles.
+  const OBJ_VISTAS = {};
+  for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['obj-' + id + l], id));
+  // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
+  const TOPOS = { mesa: 44, abajur: 50, 'guarda-roupa': 136 };
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
@@ -565,6 +587,16 @@ function dados(im, filtro, w = W, h = W) {
     }
     return null; // desligada: o cinza do desenho
   }
+  let EM_CIMA = {};
+  const EM_CIMA_INICIAL = () => {
+    const a = {};
+    if (OBJ_VISTAS.plantinha && VISTAS.mesa) a.o1 = { tipo: 'plantinha', em: 'mesa', s: 0.25, t: 0.82, lado: 0 };
+    if (OBJ_VISTAS.livros && VISTAS.mesa) a.o2 = { tipo: 'livros', em: 'mesa', s: 0.7, t: 0.85, lado: 0 };
+    if (OBJ_VISTAS.caneca && VISTAS.abajur) a.o3 = { tipo: 'caneca', em: 'abajur', s: 0.7, t: 0.35, lado: 0 };
+    return a;
+  };
+  EM_CIMA = EM_CIMA_INICIAL();
+  try { const go = JSON.parse(localStorage.getItem('syden-quarto-objetos') ?? 'null'); if (go) EM_CIMA = Object.fromEntries(Object.entries(go).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em])); } catch { /* os de fábrica */ }
   // O GUARDA-ROUPA ABERTO (pedido dele, 14/10/2026: "precisa de mais estados, como temos na janela"): as portas abertas
   // com as roupas, nas mesmas 4 vistas. Clicar nele leva o coelho até lá e abre; clicar de novo fecha.
   const VISTAS_ABERTO = im['giro-guarda-roupa-aberto0'] ? [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-guarda-roupa-aberto' + l], 'guarda-roupa')) : null;
@@ -890,7 +922,7 @@ function dados(im, filtro, w = W, h = W) {
     if (u >= 0 && v >= 0 && u < N && v < N) casa[y * W + x] = Math.floor(u) * N + Math.floor(v);
   }
 
-  const dono = new Array(W * W).fill('');
+  const dono = new Array(W * W).fill(''), donoObj = new Array(W * W).fill(''), baseDonoObj = new Array(W * W).fill('');
   window.ondeEsta = (id) => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (dono[k] === id) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
 
   // ============================== O COELHO (ver e2e/pixel-art/personagem/README.md) ==============================
@@ -1591,13 +1623,51 @@ function dados(im, filtro, w = W, h = W) {
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       D[k * 3] = baseD[k * 3]; D[k * 3 + 1] = baseD[k * 3 + 1]; D[k * 3 + 2] = baseD[k * 3 + 2];
-      eMovel[k] = baseEMovel[k]; peY[k] = basePeY[k]; dono[k] = baseDono[k]; chaoPx[k] = baseChao[k]; alturaPx[k] = baseAltura[k]; tipoPx[k] = baseTipo[k]; chaveDoPixel[k] = baseChave[k];
+      eMovel[k] = baseEMovel[k]; peY[k] = basePeY[k]; dono[k] = baseDono[k]; donoObj[k] = baseDonoObj[k]; chaoPx[k] = baseChao[k]; alturaPx[k] = baseAltura[k]; tipoPx[k] = baseTipo[k]; chaveDoPixel[k] = baseChave[k];
     }
   }
 
   // O DESENHO DE UM MÓVEL onde ele está agora: a peça, o deslocamento na tela, a luz do lugar, o pé e a forma.
   const varianteDoPufe = () => { const [pu, pv] = ARR.pufe.c; return pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; }); };
+  // Onde um objeto está no chão (u, v): a posição dele no tampo, girada com o móvel.
+  function ondeEmCima(o) {
+    const pe = peDe(o.em), l = ARR[o.em].lado;
+    let a = o.s, b = o.t;
+    for (let r = 0; r < l; r++) [a, b] = [1 - b, a];
+    return [pe[0] + a * (pe[1] - pe[0]), pe[2] + b * (pe[3] - pe[2])];
+  }
+  const comObjetosCache = new WeakMap();
+  // A peça do móvel com os objetos de cima desenhados nela, e um mapa de qual objeto é cada pixel (para pegá-los).
   function itemDe(id) {
+    const it = itemSemObjetos(id);
+    if (!TOPOS[id] || !ARR[id]) return it;
+    const meus = Object.entries(EM_CIMA).filter(([, o]) => o.em === id);
+    if (!meus.length) return it;
+    // de trás para a frente (o que está mais à frente no chão cobre o de trás)
+    const lista = meus.map(([uid, o]) => { const [u, v] = ondeEmCima(o); return { uid, o, u, v }; }).sort((a, b) => a.u + a.v - (b.u + b.v));
+    const chave = JSON.stringify([it.dx, it.dy, ARR[id].lado, lista.map((x) => [x.uid, x.o.tipo, x.o.lado, x.u.toFixed(3), x.v.toFixed(3)])]);
+    let porPeca = comObjetosCache.get(it.p);
+    if (!porPeca) { porPeca = new Map(); comObjetosCache.set(it.p, porPeca); }
+    if (!porPeca.has(chave)) {
+      if (porPeca.size > 6) porPeca.clear();
+      const movel = new Uint8ClampedArray(it.p.movel), objPx = new Array(W * W).fill('');
+      let [x0, y0, x1, y1] = caixaDaPeca(it.p);
+      for (const { uid, o, u, v } of lista) {
+        const vis = OBJ_VISTAS[o.tipo][(ARR[id].lado + o.lado) % 4], [bx, by] = vis.meioDaBase, [sx, sy] = ponto(u, v);
+        const ox = Math.round(sx - TOPOS[id] * 0 - it.dx - bx), oy = Math.round(sy - TOPOS[id] - it.dy - by), [c0, r0, c1, r1] = vis.caixa;
+        for (let y = r0; y < r1; y++) for (let x = c0; x < c1; x++) {
+          const k = (y * W + x) * 4; if (vis.movel[k + 3] < 128) continue;
+          const X = x + ox, Y = y + oy; if (X < 0 || Y < 0 || X >= W || Y >= W) continue;
+          const d = (Y * W + X) * 4; for (let q = 0; q < 4; q++) movel[d + q] = vis.movel[k + q];
+          objPx[Y * W + X] = uid;
+        }
+        x0 = Math.min(x0, c0 + ox); y0 = Math.min(y0, r0 + oy); x1 = Math.max(x1, c1 + ox); y1 = Math.max(y1, r1 + oy);
+      }
+      porPeca.set(chave, { ...it.p, movel, objPx, caixa: [Math.max(0, x0), Math.max(0, y0), Math.min(W, x1), Math.min(W, y1)] });
+    }
+    return { ...it, p: porPeca.get(chave) };
+  }
+  function itemSemObjetos(id) {
     const { c, lado: l } = ARR[id], olha = ORIENTA[l], [mx, my] = ponto(N / 2, N / 2);
     if (id === 'pufe') {
       const [pu, pv] = c, p = pecas[varianteDoPufe().id];
@@ -1657,7 +1727,7 @@ function dados(im, filtro, w = W, h = W) {
     return (noiteLimpa = img);
   }
   function montarCena() {
-    D.fill(0); fundoNoite.fill(0); eMovel.fill(0); acesa.fill(0); peY.fill(0); dono.fill('');
+    D.fill(0); fundoNoite.fill(0); eMovel.fill(0); acesa.fill(0); peY.fill(0); dono.fill(''); donoObj.fill('');
     const pintada = luzPintadaAgora(), fundoN = pintada ? noiteAbajur : noite;
     for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
     // A pintura da noite com o abajur traz a silhueta do criado-mudo PINTADO; a vista solta é um pouco menor e deixava
@@ -1722,7 +1792,7 @@ function dados(im, filtro, w = W, h = W) {
         if (a) { const f = 1 - a / 255; for (let c = 0; c < 3; c++) { D[d * 3 + c] *= f; fundoNoite[d * 3 + c] *= f; } }
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
-          eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id;
+          eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id; donoObj[d] = p.objPx ? p.objPx[k] : '';
           // A altura visível (da forma) dá o ponto do chão embaixo dele e a profundidade; fora da forma, o pé da coluna.
           const h = hs[k];
           // O que fica DEITADO (o tapete) nunca está na frente de nada: com a profundidade do próprio pixel, a borda da
@@ -1739,7 +1809,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
     baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseTipo.set(tipoPx); baseChave.set(chaveDoPixel);
-    for (let k = 0; k < W * W; k++) baseDono[k] = dono[k];
+    for (let k = 0; k < W * W; k++) { baseDono[k] = dono[k]; baseDonoObj[k] = donoObj[k]; }
     const me = lista.find((i) => i.p.id === 'mesa');
     telaAgora = me && TELAS[ARR.mesa.lado] ? TELAS[ARR.mesa.lado].map(([x, y, s2, t2]) => [x + me.dx, y + me.dy, s2, t2]) : null;
     caixaDaTela = telaAgora ? telaAgora.reduce((c, [x, y]) => [Math.min(c[0], x - 34), Math.min(c[1], y - 34), Math.max(c[2], x + 35), Math.max(c[3], y + 35)], [W, W, 0, 0]) : null;
@@ -1829,7 +1899,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, viva?.id ?? null]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, EM_CIMA, viva?.id ?? null]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     pecaDoCoelho();
@@ -1868,7 +1938,7 @@ function dados(im, filtro, w = W, h = W) {
         const d = Y * W + X;
         if (iv.deitado ? eMovel[d] : eMovel[d] && chaveDoPixel[d] > chave) continue;
         for (let c = 0; c < 3; c++) D[d * 3 + c] = iv.p.movel[s4 + c] * iv.fator;
-        eMovel[d] = 1; dono[d] = viva.id; chaveDoPixel[d] = chave; peY[d] = Math.round(gy); chaoPx[d] = -1; tipoPx[d] = 0;
+        eMovel[d] = 1; dono[d] = viva.id; donoObj[d] = iv.p.objPx ? iv.p.objPx[y * W + x] : ''; chaveDoPixel[d] = chave; peY[d] = Math.round(gy); chaoPx[d] = -1; tipoPx[d] = 0;
       }
       if (viva.modo === 'arrasto') for (let y = cxv[1] - 1; y <= cxv[3]; y++) for (let x = cxv[0] - 1; x <= cxv[2]; x++) {
         const dentro = (xx, yy) => xx >= 0 && yy >= 0 && xx < W && yy < W && iv.p.movel[(yy * W + xx) * 4 + 3];
@@ -2025,6 +2095,57 @@ function dados(im, filtro, w = W, h = W) {
   });
   tela.addEventListener('pointerleave', () => { rotulo.hidden = true; });
 
+  // ============================== OS OBJETOS DE CIMA: pegar, levar, girar, pôr e guardar ==============================
+  // Pego, ele vai para o tampo sob o ponteiro (de qualquer móvel que receba objetos); solto fora de todo tampo, ele é
+  // guardado. Clicar sem arrastar gira o objeto.
+  let objPego = null;
+  const guardarObjetos = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-objetos', JSON.stringify(EM_CIMA)); } catch { /* fica só nesta visita */ } enviar(); };
+  function tampoDoPonteiro(e) {
+    const r = tela.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * W / r.height;
+    let melhor = null;
+    for (const id of Object.keys(TOPOS)) {
+      if (!ARR[id]) continue;
+      const [u, v] = uvDe(x, y + TOPOS[id]), pe = peDe(id);
+      if (u < pe[0] || u > pe[1] || v < pe[2] || v > pe[3]) continue;
+      let a = (u - pe[0]) / (pe[1] - pe[0]), b = (v - pe[2]) / (pe[3] - pe[2]);
+      for (let k = 0; k < ARR[id].lado; k++) [a, b] = [b, 1 - a]; // o avesso do giro de ondeEmCima
+      const cand = { em: id, s: Math.min(0.9, Math.max(0.1, a)), t: Math.min(0.9, Math.max(0.1, b)), alto: TOPOS[id] };
+      if (!melhor || cand.alto > melhor.alto) melhor = cand;
+    }
+    return melhor;
+  }
+  tela.addEventListener('pointermove', (e) => {
+    if (!objPego) return;
+    if (!objPego.mexeu && Math.hypot(e.clientX - objPego.x, e.clientY - objPego.y) < 6) return;
+    objPego.mexeu = true;
+    const tp = tampoDoPonteiro(e), o = EM_CIMA[objPego.uid];
+    objPego.fora = !tp;
+    if (tp && (tp.em !== o.em || Math.abs(tp.s - o.s) > 0.01 || Math.abs(tp.t - o.t) > 0.01)) { EM_CIMA = { ...EM_CIMA, [objPego.uid]: { ...o, em: tp.em, s: +tp.s.toFixed(3), t: +tp.t.toFixed(3) } }; desenhar(); }
+  });
+  tela.addEventListener('pointerup', () => {
+    if (!objPego) return;
+    const { uid, mexeu, fora } = objPego, o = EM_CIMA[uid];
+    objPego = null;
+    if (!mexeu) EM_CIMA = { ...EM_CIMA, [uid]: { ...o, lado: (o.lado + 1) % 4 } };
+    else if (fora) { const { [uid]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; }
+    guardarObjetos(); desenhar();
+  });
+  // Pôr um objeto: no último móvel tocado, se ele recebe objetos (senão na mesa), no primeiro lugar livre do tampo.
+  function porObjeto(tipo) {
+    const em = TOPOS[selecionado] && ARR[selecionado] ? selecionado : Object.keys(TOPOS).find((id) => ARR[id]);
+    if (!em) return;
+    const outros = Object.values(EM_CIMA).filter((o) => o.em === em);
+    let lugar = [0.5, 0.5];
+    for (const s2 of [0.25, 0.5, 0.75]) for (const t2 of [0.25, 0.5, 0.75]) if (outros.every((o) => Math.hypot(o.s - s2, o.t - t2) > 0.3)) { lugar = [s2, t2]; break; }
+    EM_CIMA = { ...EM_CIMA, ['o' + Date.now().toString(36)]: { tipo, em, s: lugar[0], t: lugar[1], lado: 0 } };
+    guardarObjetos(); desenhar();
+  }
+  {
+    const caixa = document.getElementById('objetos-de-cima');
+    caixa.replaceChildren(...Object.entries(OBJETOS_DE_CIMA).map(([id, it]) => { const b = document.createElement('button'); b.textContent = 'Pôr ' + it.nome; b.onclick = () => { if (!soVer) porObjeto(id); }; return b; }));
+  }
+  window.objetosDoTeste = () => EM_CIMA; // para o teste
+
   // ============================== OS OBJETOS DA PAREDE: arrastar, pôr e guardar ==============================
   // Pegos como a janela, andam pelas duas paredes e também sobem e descem. Clicar sem arrastar faz a função.
   const mudarParede = (id, P, rapido) => { if (P) NA_PAREDE[id] = prenderNaParede(id, P); aplicarJanela(rapido); assinaturaCena = ''; if (!rapido) { guardarParede(); botoesDaParede(); } desenhar(); };
@@ -2143,6 +2264,9 @@ function dados(im, filtro, w = W, h = W) {
   const bgirar = document.getElementById('girar');
   const escolher = (id) => { selecionado = id; bgirar.textContent = 'Girar ' + NOMES[id]; bgirar.disabled = id === 'pufe'; };
   tela.addEventListener('pointerdown', (e) => {
+    // Um OBJETO DE CIMA sob o ponteiro: pega-se ele, e não o móvel embaixo.
+    const uo = donoObj[pixelDo(e)];
+    if (uo && EM_CIMA[uo]) { objPego = { uid: uo, x: e.clientX, y: e.clientY, mexeu: false }; tela.setPointerCapture(e.pointerId); return; }
     if (naJanela[pixelDo(e)] && !dono[pixelDo(e)]) return;
     const d = dono[pixelDo(e)];
     if (d === 'cadeira') {
@@ -2237,7 +2361,7 @@ function dados(im, filtro, w = W, h = W) {
     }
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girar(); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -2258,6 +2382,7 @@ function dados(im, filtro, w = W, h = W) {
     cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
     cores: { ...CORES },
+    emCima: Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => [uid, { tipo: o.tipo, em: o.em, s: +o.s.toFixed(3), t: +o.t.toFixed(3), lado: o.lado }])),
     parede: Object.fromEntries(Object.entries(NA_PAREDE).map(([id, P]) => [id, { parede: P.parede, v: +P.v.toFixed(2), h: Math.round(P.h) }])),
   });
   // Põe no quarto uma arrumação (a guardada, ou a de quem se visita). Móvel que o quarto não conhece fica de fora; o que
@@ -2268,6 +2393,7 @@ function dados(im, filtro, w = W, h = W) {
     ARR = novo;
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
+    EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
     CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => id === 'tapete' && CORES_DO_TAPETE[c])) : {};
     botaoDaCor();
     NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : JSON.parse(JSON.stringify(PAREDE_INICIAL));
@@ -2355,7 +2481,16 @@ function dados(im, filtro, w = W, h = W) {
     for (let k = 0; k < W * W; k++) if (pecas.tapete.movel[k * 4 + 3]) { for (let q = 0; q < 3; q++) m[q] += pecas.tapete.movel[k * 4 + q]; n++; }
     const media = m.map((v) => v / Math.max(1, n));
     const cores = Object.fromEntries(Object.entries(CORES_DO_TAPETE).map(([id, cor]) => [id, 'rgb(' + (id === 'salvia' ? media : tingirPixel(media[0], media[1], media[2], cor)).map(Math.round).join(',') + ')']));
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE) };
+    // e o primeiro desenho de cada objeto de cima
+    const deCima = {};
+    for (const [id, vs] of Object.entries(OBJ_VISTAS)) {
+      const v0 = vs[0], [x0, y0, x1, y1] = v0.caixa, c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0;
+      const d = new ImageData(c.width, c.height);
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = v0.movel[k + q]; }
+      c.getContext('2d').putImageData(d, 0, 0);
+      deCima[id] = c.toDataURL();
+    }
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima };
   }
 
   // ============================== NO APP (15/10/2026) ==============================
@@ -2378,6 +2513,7 @@ function dados(im, filtro, w = W, h = W) {
       if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
       if (d.comando === 'inicial') document.getElementById('inicial').click();
+      if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);
     });
     window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasDaBarra() }, location.origin);
     relatar();

@@ -1855,4 +1855,5 @@ export default {
   'Girar': 'घुमाएँ',
   'Tapete': 'कालीन',
   'Objetos da parede': 'दीवार की सजावट',
+  'Em cima dos móveis': 'फ़र्नीचर के ऊपर',
 } satisfies Record<string, string>;

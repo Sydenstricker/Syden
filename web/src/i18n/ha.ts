@@ -1858,4 +1858,5 @@ export default {
   'Girar': 'Juya',
   'Tapete': 'Kafet',
   'Objetos da parede': 'Kayan bango',
+  'Em cima dos móveis': 'A kan kayan daki',
 } satisfies Record<string, string>;

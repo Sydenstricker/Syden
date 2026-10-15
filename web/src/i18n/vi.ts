@@ -1826,4 +1826,5 @@ export default {
   'Girar': 'Xoay',
   'Tapete': 'Thảm',
   'Objetos da parede': 'Đồ treo tường',
+  'Em cima dos móveis': 'Trên đồ nội thất',
 } satisfies Record<string, string>;

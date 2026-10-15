@@ -1862,4 +1862,5 @@ export default {
   'Girar': 'Takai',
   'Tapete': 'Kapeti',
   'Objetos da parede': 'Teuteu ʻo e holisi',
+  'Em cima dos móveis': 'ʻI he ngaahi naunau',
 } satisfies Record<string, string>;

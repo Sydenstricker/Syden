@@ -1838,4 +1838,5 @@ export default {
   'Girar': 'తిప్పు',
   'Tapete': 'తివాచీ',
   'Objetos da parede': 'గోడ అలంకరణలు',
+  'Em cima dos móveis': 'ఫర్నిచర్ మీద',
 } satisfies Record<string, string>;

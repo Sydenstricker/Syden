@@ -1858,4 +1858,5 @@ export default {
   'Girar': 'Fila',
   'Tapete': 'Tapete',
   'Objetos da parede': 'Dekorasaun parede nian',
+  'Em cima dos móveis': 'Iha mobília leten',
 } satisfies Record<string, string>;

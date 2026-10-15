@@ -4,6 +4,8 @@
 // (web/src/assets/salao/sala.png): sofá, TV no rack, fliperama, balcão do bar com banquetas, estante, mesinha.
 //   node e2e/pixel-art/salao/moveis.mjs opcoes <id>          → moveis/<id>-<n>.png (várias opções numa chamada)
 //   node e2e/pixel-art/salao/moveis.mjs girar <id> <n>        → moveis/<id>-giros/<direção>.png
+//   node e2e/pixel-art/salao/moveis.mjs estado <id> <nome> "<o que muda>"   → moveis/<id>-<nome>-giros/ (o mesmo objeto,
+//   editado: as mesmas vistas e o mesmo enquadramento, como o guarda-roupa aberto do quarto)
 import fs from 'node:fs';
 import path from 'node:path';
 import { abrir, fechar, ler64, gravar64 } from '../quarto/imagem.mjs';
@@ -27,7 +29,7 @@ export const MOVEIS = {
   mesinha: { lado: [96, 80], texto: `ONLY ONE low wooden coffee table and nothing else, with two mugs and a small bowl of snacks on it, ${ANGULO}` },
 };
 
-const [modo, id, n] = process.argv.slice(2);
+const [modo, id, n, descricao] = process.argv.slice(2);
 const m = MOVEIS[id];
 if (!m) throw new Error('móveis: ' + Object.keys(MOVEIS).join(', '));
 if (modo === 'opcoes') {
@@ -45,6 +47,35 @@ if (modo === 'opcoes') {
   });
   imagens.forEach((b, i) => gravar64(path.join(SAIDA, `${id}-${i + 1}.png`), b));
   console.log(id, '→', imagens.length, 'opções');
+} else if (modo === 'estado') {
+  const origem = JSON.parse(fs.readFileSync(path.join(SAIDA, id + '-giros', 'objeto.json'), 'utf8'));
+  const pasta = path.join(SAIDA, `${id}-${n}-giros`);
+  fs.mkdirSync(pasta, { recursive: true });
+  const antes = await saldo();
+  const r = await fetch(`${API}/objects/${origem.id ?? origem.object_id}/states`, { method: 'POST', headers: cab, body: JSON.stringify({ edit_description: descricao, state_name: n }) });
+  const t = await r.text();
+  if (!r.ok) throw new Error(r.status + ': ' + t.slice(0, 600));
+  const resp = JSON.parse(t), oid = resp.object_id ?? resp.id;
+  let det;
+  for (let i = 0; ; i++) {
+    if (i > 160) throw new Error('demorou demais');
+    await esperar(5000);
+    det = await (await fetch(`${API}/objects/${oid}`, { headers: cab })).json();
+    if (['completed', 'review'].includes(det.status)) break;
+    if (['failed', 'error'].includes(det.status)) throw new Error(JSON.stringify(det).slice(0, 600));
+  }
+  fs.writeFileSync(path.join(pasta, 'objeto.json'), JSON.stringify(det, null, 2));
+  let k = 0;
+  for (const [d, v] of Object.entries(det.rotation_urls ?? {})) {
+    const url = typeof v === 'string' ? v : v?.url;
+    for (let tentativa = 0; url && tentativa < 4; tentativa++) {
+      const buf = Buffer.from(await (await fetch(url)).arrayBuffer());
+      if (buf.slice(1, 4).toString() === 'PNG' && buf.length > 500) { fs.writeFileSync(path.join(pasta, d + '.png'), buf); k++; break; }
+      await esperar(4000);
+    }
+  }
+  fs.appendFileSync(path.join(AQUI, '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `salao/estado/${id}-${n}`, geracoes: +(antes - (await saldo())).toFixed(1), quando: new Date().toISOString() }) + String.fromCharCode(10));
+  console.log(id, n, k, 'vistas');
 } else if (modo === 'girar') {
   const pasta = path.join(SAIDA, id + '-giros');
   fs.mkdirSync(pasta, { recursive: true });

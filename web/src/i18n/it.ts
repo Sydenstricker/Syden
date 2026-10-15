@@ -1855,4 +1855,5 @@ export default {
   'Girar': 'Ruota',
   'Tapete': 'Tappeto',
   'Objetos da parede': 'Oggetti da parete',
+  'Em cima dos móveis': 'Sui mobili',
 } satisfies Record<string, string>;

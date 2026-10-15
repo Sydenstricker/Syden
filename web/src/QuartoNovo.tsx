@@ -31,6 +31,8 @@ interface Figuras {
   miniaturas: Record<string, string>;
   cores: Record<string, string>;
   ordem: string[];
+  /** O primeiro desenho de cada objeto de cima (a caneca, os livros…): clicar põe um no tampo do último móvel tocado. */
+  deCima?: Record<string, string>;
 }
 interface Arrumacao {
   janela: string;
@@ -122,6 +124,21 @@ export function QuartoNovo({ noite, acoes, estado }: { noite: boolean; acoes: Ac
                       onClick={() => enviar({ comando: 'parede', id })}
                     >
                       <img src={figuras.miniaturas[id]} alt="" />
+                    </button>
+                  ))}
+                </div>
+              )}
+              {figuras?.deCima && Object.keys(figuras.deCima).length > 0 && (
+                <div className="quarto-novo-grupo" role="group" aria-label={t('Em cima dos móveis')}>
+                  {Object.entries(figuras.deCima).map(([id, src], i) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className="quarto-novo-objeto"
+                      aria-label={`${t('Em cima dos móveis')} ${i + 1}`}
+                      onClick={() => enviar({ comando: 'objeto', tipo: id })}
+                    >
+                      <img src={src} alt="" />
                     </button>
                   ))}
                 </div>

@@ -1855,4 +1855,5 @@ export default {
   'Girar': 'Draaien',
   'Tapete': 'Vloerkleed',
   'Objetos da parede': 'Wanddecoratie',
+  'Em cima dos móveis': 'Op de meubels',
 } satisfies Record<string, string>;

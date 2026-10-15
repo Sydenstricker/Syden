@@ -1856,4 +1856,5 @@ export default {
   'Girar': 'ማዞር',
   'Tapete': 'ምንጣፍ',
   'Objetos da parede': 'የግድግዳ ጌጦች',
+  'Em cima dos móveis': 'በዕቃዎቹ ላይ',
 } satisfies Record<string, string>;

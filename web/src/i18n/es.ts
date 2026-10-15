@@ -1851,4 +1851,5 @@ export default {
   'Girar': 'Girar',
   'Tapete': 'Alfombra',
   'Objetos da parede': 'Objetos de la pared',
+  'Em cima dos móveis': 'Sobre los muebles',
 } satisfies Record<string, string>;

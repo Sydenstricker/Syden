@@ -1925,4 +1925,5 @@ export default {
   'Girar': 'Okreni',
   'Tapete': 'Tepih',
   'Objetos da parede': 'Ukrasi za zid',
+  'Em cima dos móveis': 'Na namještaju',
 } satisfies Record<string, string>;

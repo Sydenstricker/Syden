@@ -1922,4 +1922,5 @@ export default {
   'Girar': 'Бұру',
   'Tapete': 'Кілем',
   'Objetos da parede': 'Қабырға әшекейлері',
+  'Em cima dos móveis': 'Жиһаздың үстінде',
 } satisfies Record<string, string>;

@@ -1906,4 +1906,5 @@ export default {
   'Girar': 'Повернути',
   'Tapete': 'Килим',
   'Objetos da parede': 'Речі на стіні',
+  'Em cima dos móveis': 'На меблях',
 } satisfies Record<string, string>;

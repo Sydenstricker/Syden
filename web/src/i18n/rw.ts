@@ -1867,4 +1867,5 @@ export default {
   'Girar': 'Hindukiza',
   'Tapete': 'Itapi',
   'Objetos da parede': 'Imitako yo ku rukuta',
+  'Em cima dos móveis': 'Ku bikoresho byo mu nzu',
 } satisfies Record<string, string>;

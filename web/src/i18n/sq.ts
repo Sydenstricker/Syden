@@ -1918,4 +1918,5 @@ export default {
   'Girar': 'Rrotullo',
   'Tapete': 'Qilim',
   'Objetos da parede': 'Zbukurime muri',
+  'Em cima dos móveis': 'Mbi mobiljet',
 } satisfies Record<string, string>;

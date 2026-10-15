@@ -1855,4 +1855,5 @@ export default {
   'Girar': 'Vukica',
   'Tapete': 'Ibe',
   'Objetos da parede': 'iUkuuku ni lalaga',
+  'Em cima dos móveis': 'E dela ni iyaya',
 } satisfies Record<string, string>;

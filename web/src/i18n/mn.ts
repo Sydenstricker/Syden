@@ -1940,4 +1940,5 @@ export default {
   'Girar': 'Эргүүлэх',
   'Tapete': 'Хивс',
   'Objetos da parede': 'Ханын чимэглэл',
+  'Em cima dos móveis': 'Тавилга дээр',
 } satisfies Record<string, string>;

@@ -1926,4 +1926,5 @@ export default {
   'Girar': 'Ahodino',
   'Tapete': 'Karipetra',
   'Objetos da parede': 'Haingon\'ny rindrina',
+  'Em cima dos móveis': 'Ambonin\'ny fanaka',
 } satisfies Record<string, string>;

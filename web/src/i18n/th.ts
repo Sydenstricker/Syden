@@ -1869,4 +1869,5 @@ export default {
   'Girar': 'หมุน',
   'Tapete': 'พรม',
   'Objetos da parede': 'ของตกแต่งผนัง',
+  'Em cima dos móveis': 'บนเฟอร์นิเจอร์',
 } satisfies Record<string, string>;

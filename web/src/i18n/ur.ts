@@ -1843,4 +1843,5 @@ export default {
   'Girar': 'گھمائیں',
   'Tapete': 'قالین',
   'Objetos da parede': 'دیوار کی سجاوٹ',
+  'Em cima dos móveis': 'فرنیچر کے اوپر',
 } satisfies Record<string, string>;

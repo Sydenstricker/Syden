@@ -1871,4 +1871,5 @@ export default {
   'Girar': 'Yí i padà',
   'Tapete': 'Kápẹ́ẹ̀tì',
   'Objetos da parede': 'Ọ̀ṣọ́ ògiri',
+  'Em cima dos móveis': 'Lórí àga àti tábìlì',
 } satisfies Record<string, string>;

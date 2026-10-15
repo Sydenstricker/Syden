@@ -1928,4 +1928,5 @@ export default {
   'Girar': 'Aýlamak',
   'Tapete': 'Haly',
   'Objetos da parede': 'Diwar bezegleri',
+  'Em cima dos móveis': 'Mebelleriň üstünde',
 } satisfies Record<string, string>;

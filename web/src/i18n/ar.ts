@@ -1876,4 +1876,5 @@ export default {
   'Girar': 'تدوير',
   'Tapete': 'السجادة',
   'Objetos da parede': 'أغراض الجدار',
+  'Em cima dos móveis': 'فوق الأثاث',
 } satisfies Record<string, string>;

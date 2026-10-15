@@ -1927,4 +1927,5 @@ export default {
   'Girar': 'Snúa',
   'Tapete': 'Gólfmotta',
   'Objetos da parede': 'Veggskraut',
+  'Em cima dos móveis': 'Á húsgögnunum',
 } satisfies Record<string, string>;

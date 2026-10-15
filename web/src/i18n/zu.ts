@@ -1927,4 +1927,5 @@ export default {
   'Girar': 'Jikisa',
   'Tapete': 'Umata',
   'Objetos da parede': 'Imihlobiso yodonga',
+  'Em cima dos móveis': 'Phezu kwefenisha',
 } satisfies Record<string, string>;

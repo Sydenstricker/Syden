@@ -1853,4 +1853,5 @@ export default {
   'Girar': 'Putar',
   'Tapete': 'Karpet',
   'Objetos da parede': 'Hiasan dinding',
+  'Em cima dos móveis': 'Di atas perabot',
 } satisfies Record<string, string>;

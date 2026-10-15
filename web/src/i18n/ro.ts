@@ -1856,4 +1856,5 @@ export default {
   'Girar': 'Rotește',
   'Tapete': 'Covor',
   'Objetos da parede': 'Decorațiuni de perete',
+  'Em cima dos móveis': 'Pe mobilă',
 } satisfies Record<string, string>;

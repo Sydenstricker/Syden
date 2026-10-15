@@ -1927,4 +1927,5 @@ export default {
   'Girar': 'ໝຸນ',
   'Tapete': 'ພົມ',
   'Objetos da parede': 'ເຄື່ອງປະດັບຝາ',
+  'Em cima dos móveis': 'ເທິງເຄື່ອງເຮືອນ',
 } satisfies Record<string, string>;

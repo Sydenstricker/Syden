@@ -1841,4 +1841,5 @@ export default {
   'Girar': 'சுழற்று',
   'Tapete': 'விரிப்பு',
   'Objetos da parede': 'சுவர் அலங்காரங்கள்',
+  'Em cima dos móveis': 'தளவாடங்களின் மேல்',
 } satisfies Record<string, string>;

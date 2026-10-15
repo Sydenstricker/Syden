@@ -1928,4 +1928,5 @@ export default {
   'Girar': 'Pagriezt',
   'Tapete': 'Paklājs',
   'Objetos da parede': 'Sienas rotājumi',
+  'Em cima dos móveis': 'Uz mēbelēm',
 } satisfies Record<string, string>;

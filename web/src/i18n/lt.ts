@@ -1928,4 +1928,5 @@ export default {
   'Girar': 'Pasukti',
   'Tapete': 'Kilimas',
   'Objetos da parede': 'Sienų dekoracijos',
+  'Em cima dos móveis': 'Ant baldų',
 } satisfies Record<string, string>;

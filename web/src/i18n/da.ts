@@ -1920,4 +1920,5 @@ export default {
   'Girar': 'Drej',
   'Tapete': 'Tæppe',
   'Objetos da parede': 'Vægpynt',
+  'Em cima dos móveis': 'På møblerne',
 } satisfies Record<string, string>;

@@ -1926,4 +1926,5 @@ export default {
   'Girar': 'කරකවන්න',
   'Tapete': 'පාපිස්ස',
   'Objetos da parede': 'බිත්ති සැරසිලි',
+  'Em cima dos móveis': 'ගෘහ භාණ්ඩ මත',
 } satisfies Record<string, string>;

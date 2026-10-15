@@ -1880,4 +1880,5 @@ export default {
   'Girar': 'Drehen',
   'Tapete': 'Teppich',
   'Objetos da parede': 'Wanddeko',
+  'Em cima dos móveis': 'Auf den Möbeln',
 } satisfies Record<string, string>;

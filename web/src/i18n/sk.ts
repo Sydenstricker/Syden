@@ -1926,4 +1926,5 @@ export default {
   'Girar': 'Otočiť',
   'Tapete': 'Koberec',
   'Objetos da parede': 'Ozdoby na stenu',
+  'Em cima dos móveis': 'Na nábytku',
 } satisfies Record<string, string>;

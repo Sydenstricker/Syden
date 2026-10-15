@@ -1928,4 +1928,5 @@ export default {
   'Girar': 'Forgatás',
   'Tapete': 'Szőnyeg',
   'Objetos da parede': 'Falidíszek',
+  'Em cima dos móveis': 'A bútorokon',
 } satisfies Record<string, string>;

@@ -1926,4 +1926,5 @@ export default {
   'Girar': 'Wareeji',
   'Tapete': 'Roog',
   'Objetos da parede': 'Qurxinta derbiga',
+  'Em cima dos móveis': 'Alaabta dusheeda',
 } satisfies Record<string, string>;

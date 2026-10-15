@@ -1851,4 +1851,5 @@ export default {
   'Girar': 'Rotate',
   'Tapete': 'Rug',
   'Objetos da parede': 'Wall decor',
+  'Em cima dos móveis': 'On the furniture',
 } satisfies Record<string, string>;

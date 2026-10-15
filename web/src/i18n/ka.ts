@@ -1944,4 +1944,5 @@ export default {
   'Girar': 'შემობრუნება',
   'Tapete': 'ხალიჩა',
   'Objetos da parede': 'კედლის დეკორი',
+  'Em cima dos móveis': 'ავეჯზე',
 } satisfies Record<string, string>;

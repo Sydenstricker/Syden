@@ -1850,4 +1850,5 @@ export default {
   'Girar': 'Döndür',
   'Tapete': 'Halı',
   'Objetos da parede': 'Duvar süsleri',
+  'Em cima dos móveis': 'Mobilyaların üstünde',
 } satisfies Record<string, string>;

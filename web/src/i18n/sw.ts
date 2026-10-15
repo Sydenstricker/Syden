@@ -1855,4 +1855,5 @@ export default {
   'Girar': 'Zungusha',
   'Tapete': 'Zulia',
   'Objetos da parede': 'Vitu vya ukutani',
+  'Em cima dos móveis': 'Juu ya samani',
 } satisfies Record<string, string>;

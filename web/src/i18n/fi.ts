@@ -1926,4 +1926,5 @@ export default {
   'Girar': 'Käännä',
   'Tapete': 'Matto',
   'Objetos da parede': 'Seinäkoristeet',
+  'Em cima dos móveis': 'Huonekalujen päällä',
 } satisfies Record<string, string>;

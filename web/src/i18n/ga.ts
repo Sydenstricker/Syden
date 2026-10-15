@@ -1862,4 +1862,5 @@ export default {
   'Girar': 'Rothlaigh',
   'Tapete': 'Ruga',
   'Objetos da parede': 'Maisiúcháin bhalla',
+  'Em cima dos móveis': 'Ar an troscán',
 } satisfies Record<string, string>;

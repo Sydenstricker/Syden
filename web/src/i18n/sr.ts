@@ -1923,4 +1923,5 @@ export default {
   'Girar': 'Окрени',
   'Tapete': 'Тепих',
   'Objetos da parede': 'Украси за зид',
+  'Em cima dos móveis': 'На намештају',
 } satisfies Record<string, string>;

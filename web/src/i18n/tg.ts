@@ -1927,4 +1927,5 @@ export default {
   'Girar': 'Гардонидан',
   'Tapete': 'Қолин',
   'Objetos da parede': 'Ороишҳои девор',
+  'Em cima dos móveis': 'Дар болои мебел',
 } satisfies Record<string, string>;

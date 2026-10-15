@@ -1945,4 +1945,5 @@ export default {
   'Girar': 'Պտտել',
   'Tapete': 'Գորգ',
   'Objetos da parede': 'Պատի զարդեր',
+  'Em cima dos móveis': 'Կահույքի վրա',
 } satisfies Record<string, string>;

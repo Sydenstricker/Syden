@@ -1922,4 +1922,5 @@ export default {
   'Girar': 'Girar',
   'Tapete': 'Catifa',
   'Objetos da parede': 'Objectes de la paret',
+  'Em cima dos móveis': 'Sobre els mobles',
 } satisfies Record<string, string>;

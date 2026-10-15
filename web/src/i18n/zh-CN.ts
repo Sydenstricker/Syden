@@ -1843,4 +1843,5 @@ export default {
   'Girar': '旋转',
   'Tapete': '地毯',
   'Objetos da parede': '墙面装饰',
+  'Em cima dos móveis': '家具上的物品',
 } satisfies Record<string, string>;

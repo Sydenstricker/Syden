@@ -1862,4 +1862,5 @@ export default {
   'Girar': 'Περιστροφή',
   'Tapete': 'Χαλί',
   'Objetos da parede': 'Διακοσμητικά τοίχου',
+  'Em cima dos móveis': 'Πάνω στα έπιπλα',
 } satisfies Record<string, string>;

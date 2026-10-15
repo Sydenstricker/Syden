@@ -29,6 +29,8 @@ export interface Arrumacao {
   parede?: Record<string, { parede: 'direita' | 'esquerda'; v: number; h: number }>;
   /** A cor escolhida de um móvel (o tapete: sálvia, terracota…), por código. */
   cores?: Record<string, string>;
+  /** Os objetos de cima (a caneca, os livros…): o tipo, o móvel em que estão, a posição no tampo (0 a 1) e o lado. */
+  emCima?: Record<string, { tipo: string; em: string; s: number; t: number; lado: number }>;
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -86,6 +88,16 @@ export function validarArrumacao(x: unknown): { ok: Arrumacao } | { erro: string
     for (const [id, cor] of Object.entries(c as Record<string, unknown>)) {
       if (!CODIGO.test(id) || typeof cor !== 'string' || !CODIGO.test(cor)) return { erro: 'Cor inválida.' };
       saida.cores[id] = cor;
+    }
+  }
+  if (a.emCima !== undefined) {
+    const e = a.emCima;
+    if (!e || typeof e !== 'object' || Array.isArray(e) || Object.keys(e).length > 60) return { erro: 'Objetos inválidos.' };
+    saida.emCima = {};
+    for (const [uid, o] of Object.entries(e as Record<string, { tipo?: unknown; em?: unknown; s?: unknown; t?: unknown; lado?: unknown } | null>)) {
+      const s0 = numero(o?.s, 0, 1), t0 = numero(o?.t, 0, 1);
+      if (!CODIGO.test(uid) || typeof o?.tipo !== 'string' || !CODIGO.test(o.tipo) || typeof o.em !== 'string' || !CODIGO.test(o.em) || s0 === null || t0 === null || !Number.isInteger(o.lado) || (o.lado as number) < 0 || (o.lado as number) > 3) return { erro: 'Objeto inválido.' };
+      saida.emCima[uid] = { tipo: o.tipo, em: o.em, s: s0, t: t0, lado: o.lado as number };
     }
   }
   if (a.vista !== undefined) {
