@@ -29,6 +29,18 @@
   /* Os nomes de quem está na call, em cima de cada coelho (no salão). */
   #nomes { position: absolute; inset: 0; pointer-events: none; }
   #nomes span { position: absolute; transform: translate(-50%, -100%); background: rgba(30, 24, 20, 0.78); color: #fff4e6; padding: 1px 6px; border-radius: 6px; font-size: 11px; white-space: nowrap; }
+  /* A TV AO VIVO (no salão): quem transmite, em cima da TV; as setas trocam de canal. */
+  #aovivo { position: absolute; transform: translate(-50%, -100%); display: flex; align-items: center; gap: 4px; background: rgba(30, 24, 20, 0.9); color: #fff4e6; padding: 2px 6px; border-radius: 8px; font-size: 11px; white-space: nowrap; line-height: 1.3; }
+  #aovivo .selo { color: #ff8a80; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+  #aovivo .selo::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #e53935; animation: piscar 1.2s steps(2) infinite; }
+  #aovivo small { display: block; color: var(--suave); font-size: 10px; }
+  #aovivo button { background: transparent; color: inherit; padding: 0 3px; font-size: 13px; line-height: 1; }
+  @keyframes piscar { 50% { opacity: 0.35; } }
+  @media (prefers-reduced-motion: reduce) { #aovivo .selo::before { animation: none; } }
+  /* O RECADO de quem administra, no balão do coelho atrás do balcão. */
+  #recado { position: absolute; transform: translate(-50%, -100%); max-width: 46%; background: #fff7ea; color: #3a2c22; padding: 5px 9px; border-radius: 10px; font-size: 12px; line-height: 1.35; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); pointer-events: none; white-space: pre-line; }
+  #recado b { display: block; font-size: 12px; }
+  #recado::after { content: ''; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #fff7ea; }
 </style></head>
 <body><main>
 <h1>O quarto do coelho</h1>
@@ -49,6 +61,9 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="tipo-janela">Tipo de janela</button>
   <button id="funcoes" aria-pressed="false">Funções do app: desligadas</button>
   <button id="pessoas-teste" hidden>Pessoas na call: 0</button>
+  <button id="aovivo-teste" hidden aria-pressed="false">Ao vivo: ninguém</button>
+  <button id="imagem-teste" hidden aria-pressed="false">Imagem da comunidade: nenhuma</button>
+  <button id="recado-teste" hidden aria-pressed="false">Recado: nenhum</button>
   <button id="cor-tapete">Cor do tapete</button>
 </div>
 <div class="barra" id="enfeites"></div>
@@ -76,7 +91,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -255,6 +270,50 @@ function dados(im, filtro, w = W, h = W) {
       if (escuro !== undefined) for (let c = 0; c < 3; c++) img[k * 4 + c] = img[escuro * 4 + c];
     }
   }
+  // O QUADRO DA COMUNIDADE (no salão, 15/10/2026: "o quadro precisa mostrar a imagem da comunidade"). É o quadro de
+  // fotos com a imagem no lugar das fotos, por código: a parte de dentro da moldura (medida no recorte, parede/quadro/,
+  // nas coordenadas da parede da direita onde foi pintado) é um paralelogramo — colunas em pé, e o alto e o pé subindo
+  // com a parede. A imagem é desenhada no plano da parede e cada coluna pega a sua fatia. Na parede da esquerda o recorte
+  // é espelhado, e a imagem é espelhada antes, para sair do lado certo. Sem imagem, ficam as fotos dos coelhos.
+  const DENTRO_DO_QUADRO = { x0: 352, x1: 397, a: 114 / 216, t: -65, b: -39 };
+  let IMAGEM_DA_COMUNIDADE = null, versaoDaImagem = 0; // { w, h, px }: já no tamanho de dentro do quadro
+  let cacheDoQuadro = { chave: '', t: null };
+  function quadroComImagem(parede) {
+    const chave = parede + versaoDaImagem;
+    if (cacheDoQuadro.chave === chave) return cacheDoQuadro.t;
+    const dia = new Uint8ClampedArray(TEXTURAS_PAREDE.quadro.dia), { x0, x1, a, t, b } = DENTRO_DO_QUADRO, { w, h, px } = IMAGEM_DA_COMUNIDADE;
+    for (let x = x0; x <= x1; x++) {
+      const ya = Math.round(a * x + t), yb = Math.round(a * x + b);
+      const sx = parede === 'esquerda' ? (x1 - x) / (x1 - x0) : (x - x0) / (x1 - x0);
+      for (let y = ya; y <= yb; y++) {
+        const k = (y * W + x) * 4;
+        if (!dia[k + 3]) continue;
+        const i = (Math.min(h - 1, Math.floor(((y - ya) / (yb - ya + 1)) * h)) * w + Math.min(w - 1, Math.floor(sx * w))) * 4;
+        for (let c = 0; c < 3; c++) dia[k + c] = px[i + c];
+      }
+    }
+    cacheDoQuadro = { chave, t: { ...TEXTURAS_PAREDE.quadro, dia } };
+    return cacheDoQuadro.t;
+  }
+  // A imagem (o endereço que o app manda): desenhada no plano da parede, no tamanho de dentro do quadro, sobre o creme do
+  // passe-partout. "cobrir" (a capa, larga) enche e corta; "conter" (o ícone, quadrado) fica inteiro, no meio.
+  function carregarImagem(d) {
+    if (!d || !d.url || !TEXTURAS_PAREDE.quadro) { IMAGEM_DA_COMUNIDADE = null; versaoDaImagem++; aplicarJanela(); desenhar(); return; }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const { x0, x1, a, t, b } = DENTRO_DO_QUADRO, w = Math.round((x1 - x0 + 1) * Math.hypot(1, a)), h = Math.round(b - t + 1);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const g2 = c.getContext('2d');
+      g2.fillStyle = '#e8d6b6'; g2.fillRect(0, 0, w, h);
+      const esc = d.encaixe === 'cobrir' ? Math.max(w / img.width, h / img.height) : Math.min((w - 4) / img.width, (h - 4) / img.height);
+      g2.drawImage(img, (w - img.width * esc) / 2, (h - img.height * esc) / 2, img.width * esc, img.height * esc);
+      try { IMAGEM_DA_COMUNIDADE = { w, h, px: g2.getImageData(0, 0, w, h).data }; } catch { IMAGEM_DA_COMUNIDADE = null; } // imagem de outro site sem licença de leitura: ficam as fotos
+      versaoDaImagem++; aplicarJanela(); assinaturaCena = ''; desenhar();
+    };
+    img.onerror = () => { IMAGEM_DA_COMUNIDADE = null; versaoDaImagem++; aplicarJanela(); desenhar(); };
+    img.src = d.url;
+  }
   // A MONTAGEM da janela onde ela está (rapido: arrastando, sem refazer as luzes borradas, refeitas ao soltar).
   function aplicarJanela(rapido) {
     const T = TIPOS_JANELA[JAN.tipo], mapa = mapaDe(JAN);
@@ -275,7 +334,7 @@ function dados(im, filtro, w = W, h = W) {
     naParede.fill(0);
     const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
     ids.forEach((id, i) => {
-      const P = NA_PAREDE[id], T2 = TEXTURAS_PAREDE[id], mp = mapaDaParede(P);
+      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : TEXTURAS_PAREDE[id], mp = mapaDaParede(P);
       base = compor(base, T2.dia, semDiaL, semDiaL, null, null, mp);
       if (T.cortinaDia) cortinaDia = compor(cortinaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
       abertaDia = compor(abertaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
@@ -425,6 +484,15 @@ function dados(im, filtro, w = W, h = W) {
     return pts;
   }
   const TELAS = VISTAS.mesa ? VISTAS.mesa.map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null)) : [];
+  // NO SALÃO, A TV E O FLIPERAMA (15/10/2026): as mesmas telas por código, achadas do mesmo jeito (a maior região lisa e
+  // apagada no alto do desenho). A TV à toa passa um desenho calmo e, com alguém transmitindo, mostra o AO VIVO (o selo
+  // piscando e uma transmissão genérica: a imagem de verdade não vem para cá, decisão dele de 13/10/2026); o fliperama
+  // fica sempre ligado no joguinho, como os de verdade.
+  const TELAS_DO_MOVEL = { mesa: TELAS };
+  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null));
+  let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
+  const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
+  const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
   // O CONTEÚDO: "auto" segue o estado (em call, a chamada; à toa, a conversa; ausente, desligada); o botão escolhe.
   const CONTEUDOS = ['auto', 'call', 'conversa', 'jogo', 'desligada'];
   let conteudo = 'auto';
@@ -453,6 +521,29 @@ function dados(im, filtro, w = W, h = W) {
       if (larg && lt > 0.3 && lt < 0.8 && (s - 0.28) / 0.66 < larg && s > 0.28) return linha % 3 === 1 ? [200, 190, 240] : [226, 222, 236];
       if (larg && s > 0.24 && s < 0.27 && lt > 0.2 && lt < 0.9) return [236, 170, 178];
       return [58, 54, 78];
+    }
+    if (tipo === 'tv') {
+      // A TV à toa: um desenho calmo, o fim de tarde com o sol e os morros, a grama balançando.
+      const morro = 0.64 + Math.sin(s * 8 + q / 6) * 0.04;
+      if (t > morro) return t > 0.84 ? [92, 140, 84] : [122, 178, 98];
+      if ((s - 0.72) ** 2 * 2.4 + (t - 0.32) ** 2 < 0.014) return [250, 216, 124];
+      return t < 0.3 ? [232, 150, 126] : t < 0.5 ? [240, 184, 140] : [246, 208, 158];
+    }
+    if (tipo === 'ao-vivo') {
+      // AO VIVO: o selo vermelho piscando no canto e, no resto, alguém jogando (o joguinho do computador do quarto).
+      if (s < 0.32 && t < 0.26) return s > 0.05 && s < 0.27 && t > 0.06 && t < 0.2 ? (q % 4 < 3 ? [228, 64, 64] : [120, 40, 48]) : [24, 22, 34];
+      return corDaTela(s, t, q, 'jogo');
+    }
+    if (tipo === 'fliperama') {
+      // O fliperama: os invasores marchando de um lado para o outro, e a navinha atirando embaixo.
+      const passo = q % 16 < 8 ? (q % 8) / 8 : 1 - (q % 8) / 8;
+      const col = (s - 0.08 - passo * 0.2) / 0.16, lin = (t - 0.1) / 0.16;
+      if (col >= 0 && col < 4 && lin >= 0 && lin < 3 && col % 1 > 0.18 && col % 1 < 0.82 && lin % 1 > 0.22 && lin % 1 < 0.78) return [[236, 110, 200], [120, 220, 160], [250, 210, 110]][Math.floor(lin)];
+      const nave = 0.5 + Math.sin(q / 4) * 0.3;
+      if (t > 0.8 && t < 0.93 && Math.abs(s - nave) < 0.09) return [130, 200, 250];
+      const tiro = 0.78 - ((q % 6) / 6) * 0.6;
+      if (Math.abs(s - nave) < 0.04 && Math.abs(t - tiro) < 0.05) return [250, 250, 220];
+      return [20, 16, 36];
     }
     if (tipo === 'jogo') {
       // Um joguinho de plataforma: céu, nuvem, chão, e o bonequinho pulando.
@@ -947,6 +1038,27 @@ function dados(im, filtro, w = W, h = W) {
       ...(VISTAS_CADEIRA && ARR.mesa ? { cadeira: pontoDaCadeira(), mesa: pontoDaCadeira() } : {}),
     };
   }
+  // O RECADO (no salão): o que quem administra escreveu, num balão em cima do coelho do balcão. Como o recado do salão de
+  // frente (RecadoDoBalcao): aparece ao chegar, fica o tempo de ler (mais para recado comprido) e some — senão cobria os
+  // nomes de quem senta nas banquetas. Clicar no balcão mostra de novo.
+  let RECADO = null, recadoAberto = true, recadoEm = '', fimDoRecado = 0;
+  const abrirRecado = () => {
+    recadoAberto = true; clearTimeout(fimDoRecado);
+    const leitura = Math.max(4, 3.5 + 0.05 * ((RECADO?.titulo ?? '').length + (RECADO?.texto ?? '').length));
+    fimDoRecado = setTimeout(() => { recadoAberto = false; posicionarRecado(true); }, leitura * 1000);
+    posicionarRecado(true);
+  };
+  function posicionarRecado(forcar) {
+    const e = document.getElementById('recado');
+    const mostra = CENA === 'salao' && !!RECADO && recadoAberto && !!ultimaCaixa && coelho.destino === 'balcao' && !coelho.caminho.length;
+    const chave = mostra ? JSON.stringify([ultimaCaixa[0], ultimaCaixa[1], ultimaCaixa[2], RECADO]) : '';
+    if (!forcar && chave === recadoEm) return;
+    recadoEm = chave; e.hidden = !mostra;
+    if (!mostra) return;
+    const titulo = document.createElement('b'); titulo.textContent = RECADO.titulo || '';
+    e.replaceChildren(...(RECADO.titulo ? [titulo] : []), RECADO.texto || '');
+    e.style.left = (((ultimaCaixa[0] + ultimaCaixa[2]) / 2) / W) * 100 + '%'; e.style.top = ((ultimaCaixa[1] + 6) / W) * 100 + '%';
+  }
   // OS PONTOS DO SALÃO: o coelho do recado mora atrás do balcão, de pé, olhando para quem chega.
   window.pontosDoTeste = () => ({ pontos: pontos(), coelho: { u: coelho.u, v: coelho.v, destino: coelho.destino, pose: coelho.pose }, balcao: ARR.balcao && { ...ARR.balcao, pe: peDe('balcao') } }); // para o teste
   function pontosDoSalao(vizinhas) {
@@ -968,6 +1080,8 @@ function dados(im, filtro, w = W, h = W) {
   // finge movimento).
   let PESSOAS = []; // [{ id, nome, papel: 'call' | 'transmitindo' | 'jogando' }]
   const DIAGONAL = (du, dv) => (Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : dv > 0 ? 'sudeste' : 'noroeste');
+  // Quantos px o assento da banqueta sobe do chão (a pose da banqueta tem o pé na ponta da perna pendurada).
+  const SOBE_NA_BANQUETA = 19; // o assento está a ~34 px; a perna pendurada desce uns 15
   function lugaresDoSalao() {
     const sentar = [], tv = [], fliperama = [], chao = [];
     if (ARR.sofa) {
@@ -982,7 +1096,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     for (const id of ['banqueta', 'banqueta-2']) if (ARR[id]) {
       const [u, v] = ARR[id].c, alvo = ARR.balcao ? centro(peDe('balcao')) : [u, v - 1];
-      sentar.push({ u, v, sobe: 34, pose: 'sentado', olha: DIAGONAL(alvo[0] - u, alvo[1] - v), sobre: id });
+      sentar.push({ u, v, sobe: SOBE_NA_BANQUETA, pose: 'sentado-banqueta', olha: DIAGONAL(alvo[0] - u, alvo[1] - v), sobre: id });
     }
     const naFrente = (id, casas) => {
       if (!ARR[id]) return null;
@@ -991,7 +1105,7 @@ function dados(im, filtro, w = W, h = W) {
       return { u, v, sobe: 0, pose: 'parado', olha: DIAGONAL(-fu, -fv), sobre: null };
     };
     const t = naFrente('tv', 1.6); if (t) tv.push(t);
-    const fl = naFrente('fliperama', 0.7); if (fl) fliperama.push(fl);
+    const fl = naFrente('fliperama', 0.7); if (fl) fliperama.push({ ...fl, pose: 'no-fliperama' });
     // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
     const meio = ARR.mesinha ? centro(peDe('mesinha')) : [4, 4], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, 4];
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
@@ -1604,7 +1718,12 @@ function dados(im, filtro, w = W, h = W) {
 
   const tela = document.getElementById('tela'), g = tela.getContext('2d');
   // Visitando, o quarto é só para olhar: o clique e a rodinha param aqui, antes de chegar aos móveis e à janela.
-  for (const ev of ['pointerdown', 'wheel']) tela.addEventListener(ev, (e) => { if (soVer) e.stopImmediatePropagation(); }, { capture: true });
+  for (const ev of ['pointerdown', 'wheel']) tela.addEventListener(ev, (e) => {
+    if (!soVer) return;
+    e.stopImmediatePropagation();
+    // No salão, quem só olha ainda clica nas funções (a TV, o fliperama, a estante...).
+    if (ev === 'pointerdown' && CENA === 'salao') { const f = funcaoEm(pixelDo(e)); if (f) acao(f); }
+  }, { capture: true });
   // ============================== O DESENHO EM DUAS PARTES (desempenho, 14/10/2026) ==============================
   // Medido: redesenhar o quarto inteiro a cada quadro custava ~21 ms aqui e ~92 ms num processador 4× mais lento (um
   // núcleo inteiro). Agora: a CENA (móveis, luz, profundidades) é montada uma vez e só refeita quando algo nela muda
@@ -1694,7 +1813,7 @@ function dados(im, filtro, w = W, h = W) {
     const c = [x0, y0, x1 + 1, y1 + 1]; caixas.set(p.movel, c); return c;
   }
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
-  let lampadaAgora = [0, 0], telaAgora = null, caixaDaTela = null, regiaoDasFaiscas = null;
+  let lampadaAgora = [0, 0], telasAgora = [], caixaDaTela = null, regiaoDasFaiscas = null;
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
@@ -1811,9 +1930,25 @@ function dados(im, filtro, w = W, h = W) {
     // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
     baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseTipo.set(tipoPx); baseChave.set(chaveDoPixel);
     for (let k = 0; k < W * W; k++) { baseDono[k] = dono[k]; baseDonoObj[k] = donoObj[k]; }
-    const me = lista.find((i) => i.p.id === 'mesa');
-    telaAgora = me && TELAS[ARR.mesa.lado] ? TELAS[ARR.mesa.lado].map(([x, y, s2, t2]) => [x + me.dx, y + me.dy, s2, t2]) : null;
-    caixaDaTela = telaAgora ? telaAgora.reduce((c, [x, y]) => [Math.min(c[0], x - 34), Math.min(c[1], y - 34), Math.max(c[2], x + 35), Math.max(c[3], y + 35)], [W, W, 0, 0]) : null;
+    telasAgora = [];
+    for (const [id, vs] of Object.entries(TELAS_DO_MOVEL)) {
+      const it = lista.find((i) => i.p.id === id);
+      if (it && ARR[id] && vs[ARR[id].lado]) telasAgora.push({ id, pts: vs[ARR[id].lado].map(([x, y, s2, t2]) => [x + it.dx, y + it.dy, s2, t2]) });
+    }
+    caixaDaTela = telasAgora.length ? telasAgora.flatMap((t) => t.pts).reduce((c, [x, y]) => [Math.min(c[0], x - 34), Math.min(c[1], y - 34), Math.max(c[2], x + 35), Math.max(c[3], y + 35)], [W, W, 0, 0]) : null;
+    // O AO VIVO, em cima da TV: quem transmite (com as setas, havendo mais de uma transmissão).
+    { const e = document.getElementById('aovivo'), tv = lista.find((i) => i.p.id === 'tv');
+      e.hidden = !(AO_VIVO && tv);
+      if (AO_VIVO && tv) {
+        const [x0, y0, x1] = caixaDaPeca(tv.p);
+        e.style.left = (((x0 + x1) / 2 + tv.dx) / W) * 100 + '%'; e.style.top = ((y0 + tv.dy - 3) / W) * 100 + '%';
+        const seta = (passo, txt) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; b.onclick = () => trocarCanal(passo); return b; };
+        const meio = document.createElement('span'), selo = document.createElement('span'), nome = document.createElement('b');
+        selo.className = 'selo'; selo.textContent = AO_VIVO.rotulo; nome.textContent = ' ' + AO_VIVO.nome;
+        meio.append(selo, nome);
+        if (AO_VIVO.sub) { const sm = document.createElement('small'); sm.textContent = AO_VIVO.sub; meio.append(sm); }
+        e.replaceChildren(...(AO_VIVO.total > 1 ? [seta(-1, '‹'), meio, seta(1, '›')] : [meio]));
+      } }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     // os nomes, em cima de cada coelho
@@ -1832,11 +1967,12 @@ function dados(im, filtro, w = W, h = W) {
     const [lx, ly0] = lampada(), ly = ly0 + 6;
     const alvoOcupado = alvo ? ocupa(alvo) : false;
     // A luz da tela, de noite: o centro e a cor média, para clarear em volta.
-    const tipoTela = conteudoAgora(), q = Math.floor(performance.now() / 250);
-    let brilhoTela = null;
-    if (telaAgora && modo === 'noite' && tipoTela !== 'desligada') {
-      let sx = 0, sy = 0; for (const [x, y] of telaAgora) { sx += x; sy += y; }
-      brilhoTela = [sx / telaAgora.length, sy / telaAgora.length, tipoTela === 'call' ? [90, 110, 160] : tipoTela === 'jogo' ? [120, 170, 210] : [140, 120, 190]];
+    const brilhos = [];
+    if (modo === 'noite') for (const { id, pts } of telasAgora) {
+      const tipoTela = tipoDaTela(id);
+      if (tipoTela === 'desligada') continue;
+      let sx = 0, sy = 0; for (const [x, y] of pts) { sx += x; sy += y; }
+      brilhos.push([sx / pts.length, sy / pts.length, COR_DO_BRILHO[tipoTela] ?? [140, 120, 190]]);
     }
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
@@ -1863,7 +1999,7 @@ function dados(im, filtro, w = W, h = W) {
         imagem.data[k * 4 + c] = Math.min(255, v);
       }
       imagem.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
-      if (brilhoTela) {
+      for (const brilhoTela of brilhos) {
         const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3);
         if (d2 < 34) { const f = Math.floor((1 - d2 / 34) * 4) / 4 * 0.32; for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
       }
@@ -1887,12 +2023,12 @@ function dados(im, filtro, w = W, h = W) {
 
   // Pinta o conteúdo da tela por cima da imagem (dentro da região r), só onde o pixel ainda é da mesa.
   function pintarTela(r) {
-    if (!telaAgora) return;
-    const tipo = conteudoAgora(), q = Math.floor(performance.now() / 250);
-    for (const [x, y, s2, t2] of telaAgora) {
+    const q = Math.floor(performance.now() / 250);
+    for (const { id, pts } of telasAgora) for (const [x, y, s2, t2] of pts) {
       if (x < r[0] || y < r[1] || x >= r[2] || y >= r[3]) continue;
       const k = y * W + x;
-      if (dono[k] !== 'mesa') continue;
+      if (dono[k] !== id) continue;
+      const tipo = tipoDaTela(id);
       const cor = corDaTela(s2, t2, q, tipo);
       if (!cor) continue;
       // de dia, a tela é um pouco mais apagada que de noite (o sol na sala)
@@ -1902,15 +2038,16 @@ function dados(im, filtro, w = W, h = W) {
   }
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, EM_CIMA, PESSOAS, viva?.id ?? null]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, EM_CIMA, PESSOAS, AO_VIVO, versaoDaImagem, viva?.id ?? null]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     pecaDoCoelho();
+    if (CENA === 'salao') posicionarRecado();
     const caixaC = ultimaCaixa ? [ultimaCaixa[0], ultimaCaixa[1] - 18, ultimaCaixa[2], ultimaCaixa[3]] : null; // com o balão
     const vc = VISTAS_CADEIRA ? VISTAS_CADEIRA[indiceDaVista()] : null, [cgx, cgy] = ponto(cadeira.u, cadeira.v);
     const cx0 = vc ? Math.round(cgx - vc.meioDaBase[0]) : 0, cy0 = vc ? Math.round(cgy - vc.meioDaBase[1]) : 0;
     const caixaCadeira = vc ? [cx0 + vc.caixa[0] - 18, cy0 + vc.caixa[1], cx0 + vc.caixa[2] + 18, cy0 + vc.caixa[3] + 8] : null;
-    const telaMexe = telaAgora && conteudoAgora() !== 'desligada';
+    const telaMexe = telasAgora.some((t) => tipoDaTela(t.id) !== 'desligada');
     // O MÓVEL VIVO (arrastado ou deslizando): a peça dele onde ele está agora.
     const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null, contorno = [], desenhados = [];
     const caixaViva = iv ? (() => { const pe = iv.pe, cantos = [ponto(pe[0], pe[2]), ponto(pe[1], pe[2]), ponto(pe[0], pe[3]), ponto(pe[1], pe[3])];
@@ -2072,13 +2209,16 @@ function dados(im, filtro, w = W, h = W) {
   // diz o nome e faz a ação é o app (FUNCOES chega por mensagem); aqui, na página de teste, um botão as liga e o clique só
   // conta o que faria.
   let FUNCOES = null; // { id: { rotulo, sub } }
-  const FUNCOES_DE_TESTE = { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
+  const FUNCOES_DE_TESTE = CENA === 'salao'
+    ? { tv: { rotulo: 'Entrar na voz', sub: '3 na chamada agora' }, fliperama: { rotulo: 'Mini-games', sub: 'Na sala de voz, com a turma' }, estante: { rotulo: 'Entrar na conversa', sub: '# geral' }, janela: { rotulo: 'Chamar alguém', sub: 'Copia o convite desta comunidade' }, balcao: { rotulo: 'Recado', sub: 'O que quem administra escreveu' }, quadro: { rotulo: 'Mudar esta tela', sub: 'Só quem administra vê este bloco' } }
+    : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
   // O móvel e a função dele (o guarda-roupa é a função "gavetas" da home: lá eram as gavetas da cama).
   // (no salão, as do Salao.tsx: a TV leva à voz, o fliperama aos mini-games, a estante aos canais, o balcão ao recado)
   const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador', cadeira: 'computador' };
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
-    if (!FUNCOES || soVer) return null;
+    // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
+    if (!FUNCOES || (soVer && CENA !== 'salao')) return null;
     const ip = naParede[k];
     if (ip && !dono[k]) { const f = ITENS_PAREDE[ordemDaParede[ip - 1]].funcao; return f && FUNCOES[f] ? f : null; }
     if (dono[k]) { const f = FUNCAO_DO_MOVEL[dono[k]]; return f && FUNCOES[f] ? f : null; }
@@ -2086,6 +2226,8 @@ function dados(im, filtro, w = W, h = W) {
     return null;
   }
   function acao(f) {
+    // O balcão abre e fecha o recado, aqui mesmo (o balão é da página).
+    if (f === 'balcao' && CENA === 'salao' && RECADO) { if (recadoAberto) { recadoAberto = false; clearTimeout(fimDoRecado); posicionarRecado(true); } else abrirRecado(); return; }
     if (window.parent !== window && MODO_APP) { window.parent.postMessage({ syden: 'quarto', acao: f }, location.origin); return; }
     document.getElementById('acao-teste').textContent = 'No app, abriria: ' + FUNCOES[f].rotulo + (FUNCOES[f].sub ? ' (' + FUNCOES[f].sub + ')' : '') + '.';
     if (f === 'abajur') botoes[modo === 'dia' ? 'noite' : 'dia'].click(); // aqui, o próprio quarto troca
@@ -2095,6 +2237,7 @@ function dados(im, filtro, w = W, h = W) {
   tela.addEventListener('pointermove', (e) => {
     const f = arrastando || paredePega || janelaPega ? null : funcaoEm(pixelDo(e));
     rotulo.hidden = !f;
+    if (soVer) tela.style.cursor = f ? 'pointer' : 'default';
     if (f) {
       const r = tela.getBoundingClientRect(), rf = rotulo.parentElement.getBoundingClientRect();
       rotulo.style.left = e.clientX - rf.left + 'px'; rotulo.style.top = e.clientY - rf.top + 'px';
@@ -2339,6 +2482,7 @@ function dados(im, filtro, w = W, h = W) {
     if (!viva) { // clicou sem arrastar
       const f = FUNCOES && !soVer ? FUNCAO_DO_MOVEL[pegado] : null;
       if (f && FUNCOES[f] && f !== 'gavetas') acao(f); // o guarda-roupa conta a função quando as portas abrem
+      if (CENA === 'salao' && f) { alvo = null; pegado = null; desenhar(); return; } // no salão o coelho do recado não sai do balcão
       if (f === 'abajur' && FUNCOES?.abajur) { /* o abajur só troca a luz */ }
       else if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
       else if (pontos()[pegado]) ir(pegado);
@@ -2430,6 +2574,8 @@ function dados(im, filtro, w = W, h = W) {
   }
   const campo = (id) => document.getElementById(id);
   let conta = null; // { api, token, nome, id }
+  // Onde a arrumação mora: o quarto é de cada um (/api/quarto); o salão, da comunidade (o app manda a rota dela).
+  let ROTA = '/api/quarto';
   try { conta = JSON.parse(localStorage.getItem('syden-teste-conta') ?? 'null'); } catch { /* sem conta */ }
   const pedir = async (metodo, rota, corpo) => {
     const r = await fetch(conta.api + rota, { method: metodo, headers: { authorization: 'Bearer ' + conta.token, ...(corpo && { 'content-type': 'application/json' }) }, body: corpo ? JSON.stringify(corpo) : undefined });
@@ -2444,10 +2590,10 @@ function dados(im, filtro, w = W, h = W) {
     relatar();
     if (!conta || soVer) return;
     clearTimeout(esperaDoEnvio);
-    esperaDoEnvio = setTimeout(() => { pedir('PUT', '/api/quarto', retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)); }, 700);
+    esperaDoEnvio = setTimeout(() => { pedir('PUT', ROTA, retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)); }, 700);
   };
   async function carregarMeu() {
-    const { arrumacao } = await pedir('GET', '/api/quarto');
+    const { arrumacao } = await pedir('GET', ROTA);
     if (arrumacao) vestir(arrumacao); else enviar(); // ainda não tinha: o que está na tela vira o dele
     dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + ').');
   }
@@ -2530,7 +2676,18 @@ function dados(im, filtro, w = W, h = W) {
       if (d.funcoes) FUNCOES = d.funcoes;
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
-      if (d.conta && !conta) { conta = d.conta; carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ }); }
+      if (d.conta && !conta) {
+        conta = d.conta;
+        // O SALÃO: a arrumação da comunidade, e só quem administra mexe (o servidor confere; aqui é só não deixar tentar).
+        if (d.conta.rota) ROTA = d.conta.rota;
+        if (d.conta.podeEditar === false) { soVer = true; tela.style.cursor = 'default'; }
+        carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ });
+      }
+      // Quem administra mudou o salão (salao:mudou): relê. Não no meio de um arraste.
+      if (d.recarregar && conta && !arrastando && !viva) carregarMeu().catch(() => {});
+      if ('aoVivo' in d) { AO_VIVO = d.aoVivo || null; desenhar(); }
+      if ('imagem' in d) carregarImagem(d.imagem);
+      if ('recado' in d) { const antes = JSON.stringify(RECADO); RECADO = d.recado && (d.recado.titulo || d.recado.texto) ? d.recado : null; if (RECADO && JSON.stringify(RECADO) !== antes) abrirRecado(); else posicionarRecado(true); }
       if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
       // A BARRA DE ARRUMAR do app (QuartoNovo.tsx): os mesmos botões da página de teste.
       if (d.comando === 'girar') girar();
@@ -2557,6 +2714,36 @@ function dados(im, filtro, w = W, h = W) {
     };
   }
   window.pessoasDoTeste = (lista) => { PESSOAS = lista; desenhar(); }; // para o teste
+  // O canal da TV: no app, o app troca (e manda o novo AO_VIVO); aqui, a lista de teste.
+  let canaisDeTeste = [];
+  function trocarCanal(passo) {
+    if (MODO_APP && window.parent !== window) { window.parent.postMessage({ syden: 'quarto', canal: passo }, location.origin); return; }
+    if (!canaisDeTeste.length || !AO_VIVO) return;
+    const i = (AO_VIVO.canal + passo + canaisDeTeste.length) % canaisDeTeste.length;
+    AO_VIVO = { ...canaisDeTeste[i], canal: i, total: canaisDeTeste.length }; desenhar();
+  }
+  if (CENA === 'salao' && !MODO_APP) {
+    const ba = document.getElementById('aovivo-teste'), bi = document.getElementById('imagem-teste'), br = document.getElementById('recado-teste');
+    ba.hidden = bi.hidden = br.hidden = false;
+    ba.onclick = () => {
+      // ninguém → uma transmissão → duas → ninguém
+      const n = AO_VIVO ? (AO_VIVO.total === 1 ? 2 : 0) : 1;
+      canaisDeTeste = [{ rotulo: 'Ao vivo', nome: 'Zeca', sub: 'Em Sala 1 · Stardew Valley' }, { rotulo: 'Ao vivo', nome: 'Bia', sub: 'Em Sala 2' }].slice(0, n);
+      AO_VIVO = n ? { ...canaisDeTeste[0], canal: 0, total: n } : null;
+      ba.setAttribute('aria-pressed', String(!!n)); ba.textContent = 'Ao vivo: ' + (n ? n + ' transmissão' + (n > 1 ? 'ões' : '') : 'ninguém'); desenhar();
+    };
+    let ni = 0;
+    bi.onclick = () => {
+      // nenhuma → o ícone (contido) → a capa (cobrindo) → nenhuma
+      ni = (ni + 1) % 3;
+      carregarImagem(ni === 0 ? null : ni === 1 ? { url: IMAGENS.iconeDeTeste, encaixe: 'conter' } : { url: IMAGENS.capaDeTeste, encaixe: 'cobrir' });
+      bi.setAttribute('aria-pressed', String(ni > 0)); bi.textContent = 'Imagem da comunidade: ' + ['nenhuma', 'ícone', 'capa'][ni];
+    };
+    br.onclick = () => {
+      RECADO = RECADO ? null : { titulo: 'Bem-vindo!', texto: 'Sexta tem karaokê às 21h. Chega mais!' };
+      br.setAttribute('aria-pressed', String(!!RECADO)); br.textContent = 'Recado: ' + (RECADO ? 'escrito' : 'nenhum'); if (RECADO) abrirRecado(); else posicionarRecado(true);
+    };
+  }
   desenhar();
 })();
 </script>
