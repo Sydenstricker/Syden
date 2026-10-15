@@ -89,3 +89,11 @@ mais 68. A rodada da poltrona, da cortina e das máscaras do híbrido custou mai
   ela estiver: ao longo da parede é deslocar, na outra parede é espelhar, e cada pixel ganha a luz do lugar novo. A
   janela se arrasta pelas duas paredes (de meia em meia casa); clicar sem arrastar abre a janela ou a cortina. Só a
   original tem cortina e abre. Fotos: `node janelas/fotografar.mjs`.
+
+## A visita (15/10/2026)
+
+- A arrumação (móveis, cadeira, janela, cortina, vista) vai ao servidor (`PUT /api/quarto`) a cada mudança, quando se
+  entra numa conta pelo painel "Conta no servidor (teste)". Visitar é `GET /api/quarto/<número da conta>`: o quarto da
+  pessoa como ela deixou, só para olhar (nada se arrasta, gira ou se guarda; nem no navegador de quem visita).
+- Teste: suba a API de teste (`PORT=3099 CORS_ORIGIN=http://localhost:5181 INVITE_CODE=teste`, banco novo) e rode
+  `node visita.mjs`: a Ana arruma, o Zeca visita e vê igual, não consegue mexer, e volta ao quarto dele.

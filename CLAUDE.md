@@ -440,7 +440,7 @@ ficou combinado:
     uma imagem por casa (64) e nenhuma. Reacender por código (normais pela silhueta) destruiu o desenho
     (`hibrido/grade/falhas/`).
   - **A janela é fixa:** é a fonte da luz, pintada na parede e no chão. Troca-se a aparência, nunca o lugar. (Revisto em
-    14/10/2026: mudar o lugar e o tipo de janela entra DEPOIS de o quarto ficar pronto; ver mais abaixo.)
+    15/10/2026: a janela ANDA e troca de tipo; ver "A janela se arrasta" mais abaixo.)
   - **Esvaziar a pintura do conceito não deu:** a edição do PixelLab redesenhou o quarto, e a reconstrução por
     código ficou abaixo do ideal (`hibrido/vazio/`). Daí o quarto novo, já gerado como pixel art: **pixel art
     que nasce na grade tem bordas limpas** (as do conceito convertido têm degraus desiguais, e o
@@ -490,19 +490,22 @@ ficou combinado:
 - **O quarto é INDIVIDUAL; o coletivo é o salão** (dele, 14/10/2026). **Ele dá um layout inicial, e cada pessoa arruma
   como quiser:** todo móvel se arrasta e gira (4 posições), não só o pufe e a poltrona. A cadeira do computador terá
   FÍSICA de verdade (rola, perde força no atrito, bate e quica nos móveis), não só o desenho mudando.
-- **IDEIA DELE, para depois (14/10/2026): VISITAR o quarto de outra pessoa.** Muda onde a arrumação mora: hoje ela é
-  do navegador (página de teste); com visitas, ela vai para o servidor, e quem visita vê igual — inclusive onde a cadeira
-  parou. A física da cadeira continua rodando só na tela de quem mexe; o servidor guarda onde ela ficou.
+- **VISITAR o quarto de outra pessoa (feito em 15/10/2026, ideia dele).** A arrumação mora no servidor (`quartos`,
+  `server/src/quarto.ts`: só posições e códigos, validados porque são desenhados na tela de quem visita), e quem visita vê
+  igual, inclusive onde a cadeira parou. **Quem visita: QUALQUER CONTA** (decisão dele), menos quando há bloqueio em
+  qualquer sentido, com a resposta de "não arrumou o quarto". Visita é por id, nunca por nome. **Por enquanto só na
+  página de teste** (conta numa API de teste; `visita.mjs` testa): o quarto novo entra no app quando substituir o atual
+  (decisão dele: "quando eu lançar, ele vai substituir o quarto atual").
 - **As camas para desbloquear já têm 4 candidatas** (`avulsos/cama-casal-1..4.png`, madeiras e cabeceiras diferentes);
   a 2 é a de fábrica. O que libera cama nova ainda é decisão dele.
-- **Para depois de terminar o quarto (pedido dele, 14/10/2026):** a animação das portas do guarda-roupa abrindo (a API
-  anima o objeto entre os dois estados). O coelho DIGITANDO já foi feito (animacoes/digitando, 12 gerações).
-- **PARA DEPOIS de terminar o quarto (anotado em 14/10/2026, pedido dele):** mudar a JANELA de lugar e trocar o TIPO de
-  janela, e não só a vista lá fora. Hoje ela é fixa (a fonte da luz, pintada na parede e no chão), então isso pede que a
-  luz da janela também passe a ser montada.
+- **As portas do guarda-roupa abrem animadas (15/10/2026):** os quadros do meio entre o fechado e o aberto
+  (`animar-estado.mjs`, interpolation-v2, 40 gerações nas 4 vistas); fechar toca ao avesso.
+- **A janela se arrasta pelas duas paredes e troca de tipo (15/10/2026, pedido dele):** o quarto ficou SEM janela
+  (`janelas/sem-janela.py`: a parede da direita é a da esquerda espelhada, vezes a cor medida), e a janela virou peça,
+  com a luz e o luar dela montados por código (o luar dos tipos novos é projetado do vidro). Tipos: a original (a única
+  com cortina e que abre), em arco, redonda e com floreira (`janelas/tipos.mjs`, vidro em magenta).
 - **Para o quarto novo virar a home:** recheio (plantas, quadros, objetos sobre os móveis), os objetos com função
-  (fone, quadro, gavetas, janela, abajur), a montagem virar componente do app, e a arrumação de cada pessoa guardada
-  no servidor. Depois: animação na vista, variações de tapete (cor por código), mais móveis que giram.
+  (fone, quadro, gavetas, janela, abajur), a montagem virar componente do app (a arrumação no servidor já existe). Depois: animação na vista, variações de tapete (cor por código), mais móveis que giram.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.

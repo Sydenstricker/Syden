@@ -159,6 +159,16 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button data-estado="ausente" aria-pressed="false">Ausente</button>
   <button id="falando" aria-pressed="false">Falando</button>
 </div>
+<details id="conta" class="barra"><summary>Conta no servidor (teste) e visitas</summary>
+  <p>O quarto de cada pessoa mora no servidor, e qualquer conta pode visitar (decisão dele, 15/10/2026). Aqui, numa API de
+  teste: entre com uma conta, e a arrumação passa a ser guardada lá; ponha o número de outra conta para visitar o quarto
+  dela (só olhar: nada se arrasta nem se guarda). <span id="quem"></span></p>
+  <input id="api" value="http://localhost:3099" aria-label="Endereço da API" size="22">
+  <input id="nome" placeholder="nome" aria-label="Nome"> <input id="senha" type="password" placeholder="senha" aria-label="Senha">
+  <button id="entrar">Entrar</button>
+  <input id="visitar-id" placeholder="número da conta" aria-label="Número da conta a visitar" size="10">
+  <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
+</details>
 <div class="lado">
   <figure><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
@@ -214,6 +224,9 @@ function dados(im, filtro, w = W, h = W) {
 (async () => {
   const im = {};
   for (const [k, src] of Object.entries(IMAGENS)) im[k] = await carregar(src);
+  // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
+  // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
+  let soVer = false, enviar = () => {};
   // ============================== A JANELA MÓVEL (15/10/2026) ==============================
   // O quarto sem janela, e a janela como peça (o tipo, a parede e quantas casas ela andou). Tudo o que a página usava da
   // pintura com a janela (a base, as noites, o vidro, a cortina, a janela aberta e as luzes borradas) é MONTADO aqui, e
@@ -246,7 +259,7 @@ function dados(im, filtro, w = W, h = W) {
   const JANELA_INICIAL = { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
   try { const gj = JSON.parse(localStorage.getItem('syden-quarto-janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
-  const guardarJanela = () => { try { localStorage.setItem('syden-quarto-janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } };
+  const guardarJanela = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } enviar(); };
   // Para onde vai cada pixel da peça: ao longo da parede, o vetor de uma casa em v (27 px, 14,25 px); na outra parede, o
   // espelho (o quarto é simétrico em volta de x = 256).
   const mapaDe = (J) => { const dx = Math.round(27 * J.v), dy = Math.round(14.25 * J.v); return (x, y) => { x += dx; y += dy; if (J.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
@@ -532,7 +545,7 @@ function dados(im, filtro, w = W, h = W) {
     if (guardada && Object.keys(INICIAL).every((id) => guardada[id]?.c)) ARR = guardada;
   } catch { /* sem guardar: começa da inicial */ }
   window.arrumacaoDoTeste = () => ARR; // para o teste
-  const guardar = () => { try { localStorage.setItem('syden-quarto-arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } };
+  const guardar = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } enviar(); };
   const ehDeitado = (id) => id === 'tapete';
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
   const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
@@ -583,7 +596,7 @@ function dados(im, filtro, w = W, h = W) {
     if (g0 && Number.isFinite(g0.u)) Object.assign(cadeira, { u: g0.u, v: g0.v, th: g0.th });
     else { const L = lugarNaMesa(); if (L) Object.assign(cadeira, { u: L.P0[0], v: L.P0[1], th: L.th }); }
   }
-  const guardarCadeira = () => { try { localStorage.setItem('syden-quarto-cadeira', JSON.stringify({ u: cadeira.u, v: cadeira.v, th: cadeira.th })); } catch { /* fica só nesta visita */ } };
+  const guardarCadeira = () => { if (soVer) return; try { localStorage.setItem('syden-quarto-cadeira', JSON.stringify({ u: cadeira.u, v: cadeira.v, th: cadeira.th })); } catch { /* fica só nesta visita */ } enviar(); };
   const indiceDaVista = () => (((Math.round(cadeira.th / (Math.PI / 4)) % 8) + 8) % 8);
   // De costas para a tela (o encosto na frente de quem senta): as vistas do norte.
   const cadeiraDeCostas = () => [4, 5, 6].includes(indiceDaVista());
@@ -1459,6 +1472,8 @@ function dados(im, filtro, w = W, h = W) {
 
 
   const tela = document.getElementById('tela'), g = tela.getContext('2d');
+  // Visitando, o quarto é só para olhar: o clique e a rodinha param aqui, antes de chegar aos móveis e à janela.
+  for (const ev of ['pointerdown', 'wheel']) tela.addEventListener(ev, (e) => { if (soVer) e.stopImmediatePropagation(); }, { capture: true });
   // ============================== O DESENHO EM DUAS PARTES (desempenho, 14/10/2026) ==============================
   // Medido: redesenhar o quarto inteiro a cada quadro custava ~21 ms aqui e ~92 ms num processador 4× mais lento (um
   // núcleo inteiro). Agora: a CENA (móveis, luz, profundidades) é montada uma vez e só refeita quando algo nela muda
@@ -1842,11 +1857,11 @@ function dados(im, filtro, w = W, h = W) {
   };
   const pixelDo = (e) => { const r = tela.getBoundingClientRect(); return Math.floor((e.clientY - r.top) * W / r.height) * W + Math.floor((e.clientX - r.left) * W / r.width); };
   const bc = document.getElementById('cortina');
-  const trocarCortina = () => { fechada = !fechada; bc.setAttribute('aria-pressed', String(fechada)); bc.textContent = 'Cortina: ' + (fechada ? 'fechada' : 'aberta'); desenhar(); };
+  const trocarCortina = () => { fechada = !fechada; bc.setAttribute('aria-pressed', String(fechada)); bc.textContent = 'Cortina: ' + (fechada ? 'fechada' : 'aberta'); if (!soVer) enviar(); desenhar(); };
   bc.onclick = trocarCortina;
   // Na janela, o clique é da cortina, e a mão aparece; no resto, arrasta o pufe.
   const bj = document.getElementById('janela');
-  const trocarJanela = () => { aberta = !aberta; bj.setAttribute('aria-pressed', String(aberta)); bj.textContent = 'Janela: ' + (aberta ? 'aberta' : 'fechada'); desenhar(); };
+  const trocarJanela = () => { aberta = !aberta; bj.setAttribute('aria-pressed', String(aberta)); bj.textContent = 'Janela: ' + (aberta ? 'aberta' : 'fechada'); if (!soVer) enviar(); desenhar(); };
   bj.onclick = trocarJanela;
   // No vidro, abre e fecha a janela; no resto da janela (as cortinas), abre e fecha as cortinas. Com as cortinas
   // fechadas, o clique é sempre delas.
@@ -1998,7 +2013,7 @@ function dados(im, filtro, w = W, h = W) {
       ultimaRodinha = performance.now(); escolher(d); girar();
     }
   }, { passive: false });
-  document.addEventListener('keydown', (e) => { if (e.key === 'r' || e.key === 'R') girar(); });
+  document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girar(); });
   document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
@@ -2009,9 +2024,84 @@ function dados(im, filtro, w = W, h = W) {
   const bg = document.getElementById('grade');
   bg.onclick = () => { grade = !grade; bg.setAttribute('aria-pressed', String(grade)); desenhar(); };
   const bv = document.getElementById('vista');
-  bv.onclick = () => { vista = (vista + 1) % 4; bv.textContent = 'Vista: ' + (vista + 1); desenhar(); };
+  bv.onclick = () => { vista = (vista + 1) % 4; bv.textContent = 'Vista: ' + (vista + 1); enviar(); desenhar(); };
   const bl = document.getElementById('luz');
   bl.onclick = () => { luzPintada = !luzPintada; bl.setAttribute('aria-pressed', String(luzPintada)); bl.textContent = 'Luz do abajur à noite: ' + (luzPintada ? 'pintada' : 'por código'); desenhar(); };
+
+  // ============================== A CONTA E A VISITA (15/10/2026) ==============================
+  // O que o servidor guarda (server/src/quarto.ts): posições e códigos, nada de desenho.
+  const retrato = () => ({
+    moveis: Object.fromEntries(Object.entries(ARR).map(([id, m]) => [id, { c: [+m.c[0].toFixed(3), +m.c[1].toFixed(3)], lado: m.lado }])),
+    cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
+    janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
+  });
+  // Põe no quarto uma arrumação (a guardada, ou a de quem se visita). Móvel que o quarto não conhece fica de fora; o que
+  // falta nela fica onde está na de fábrica.
+  function vestir(a) {
+    const novo = JSON.parse(JSON.stringify(INICIAL));
+    for (const [id, m] of Object.entries(a.moveis ?? {})) if (novo[id] && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
+    ARR = novo;
+    if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); }
+    JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
+    aplicarJanela();
+    fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
+    if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }
+    botoesDaJanela();
+    assinaturaCena = ''; decidir(); desenhar();
+  }
+  const campo = (id) => document.getElementById(id);
+  let conta = null; // { api, token, nome, id }
+  try { conta = JSON.parse(localStorage.getItem('syden-quarto-conta') ?? 'null'); } catch { /* sem conta */ }
+  const pedir = async (metodo, rota, corpo) => {
+    const r = await fetch(conta.api + rota, { method: metodo, headers: { authorization: 'Bearer ' + conta.token, ...(corpo && { 'content-type': 'application/json' }) }, body: corpo ? JSON.stringify(corpo) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || 'erro ' + r.status);
+    return j;
+  };
+  const dizer = (t) => { campo('quem').textContent = t; };
+  // Cada mudança vai ao servidor, juntando as que chegam em sequência (arrastar a cadeira guarda a cada parada).
+  let esperaDoEnvio = 0;
+  enviar = () => {
+    if (!conta || soVer) return;
+    clearTimeout(esperaDoEnvio);
+    esperaDoEnvio = setTimeout(() => { pedir('PUT', '/api/quarto', retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)); }, 700);
+  };
+  async function carregarMeu() {
+    const { arrumacao } = await pedir('GET', '/api/quarto');
+    if (arrumacao) vestir(arrumacao); else enviar(); // ainda não tinha: o que está na tela vira o dele
+    dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + ').');
+  }
+  campo('entrar').onclick = async () => {
+    const api = campo('api').value.replace(/[/]+$/, '');
+    try {
+      const r = await fetch(api + '/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: campo('nome').value, password: campo('senha').value }) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'erro ' + r.status);
+      conta = { api, token: j.token, nome: j.user.username, id: j.user.id };
+      try { localStorage.setItem('syden-quarto-conta', JSON.stringify(conta)); } catch { /* só nesta visita */ }
+      await carregarMeu();
+    } catch (e) { dizer('Não entrou: ' + e.message); }
+  };
+  let meu = null;
+  const modoVisita = (dono) => {
+    soVer = !!dono;
+    for (const id of ['girar', 'inicial', 'tipo-janela', 'janela', 'cortina', 'vista']) campo(id).disabled = soVer || (id === 'janela' && !TIPOS_JANELA[JAN.tipo].abre) || (id === 'cortina' && !TIPOS_JANELA[JAN.tipo].cortina);
+    campo('voltar').hidden = !soVer;
+    tela.style.cursor = soVer ? 'default' : 'grab';
+    document.body.dataset.visita = soVer ? dono : '';
+  };
+  campo('visitar').onclick = async () => {
+    if (!conta) { dizer('Entre numa conta primeiro.'); return; }
+    try {
+      const j = await pedir('GET', '/api/quarto/' + encodeURIComponent(campo('visitar-id').value.trim()));
+      if (!soVer) meu = retrato();
+      modoVisita(j.dono.username); vestir(j.arrumacao); modoVisita(j.dono.username);
+      dizer('Visitando o quarto de ' + j.dono.username + ' (só olhar).');
+    } catch (e) { dizer('Não deu para visitar: ' + e.message); }
+  };
+  campo('voltar').onclick = () => { modoVisita(null); if (meu) vestir(meu); meu = null; dizer(conta ? 'De volta ao seu quarto, ' + conta.nome + '.' : ''); };
+  window.visitaDoTeste = () => ({ soVer, conta: conta && { nome: conta.nome, id: conta.id }, retrato: retrato() }); // para o teste
+  if (conta) { campo('api').value = conta.api; carregarMeu().catch((e) => dizer('A conta guardada não respondeu: ' + e.message)); }
   desenhar();
 })();
 </script>
