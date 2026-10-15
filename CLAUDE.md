@@ -562,6 +562,11 @@ transmissão NÃO vai para a TV (decisão dele: cada pessoa no início baixaria 
 administra escolhe quem dá o recado (17 coelhos animados, `COELHOS_DO_RECADO` em `web/src/boasVindas.ts`); o
 guarda-roupa saiu do salão ("na home não precisa").
 
+**O SALÃO ISOMÉTRICO (15/10/2026, decisão dele):** substitui o salão de frente. Pode gastar os créditos nele e no que
+derivar dele; reaproveita as mecânicas do quarto (móveis soltos, janela e objetos de parede, pontos de interação); a
+SALA é nova (não há salão isométrico), com o salão de frente de referência ("ele está bem legal"). As pessoas aparecem
+com o mascote base até os outros virarem isométricos.
+
 **DECIDIDO (13/10/2026), À ESPERA DE CRÉDITOS DO PIXELLAB:** o salão vira personalizável — **móveis diferentes e
 layouts do ambiente**, e também o coelho do recado. **Uma parte vem liberada, e o resto se DESBLOQUEIA POR CONQUISTAS
 COLETIVAS** (o que a turma faz junta: horas de call, partidas, karaokê) — é a etapa 2 acima, agora com a regra de
@@ -592,6 +597,9 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
   (o braço da poltrona, o cobertor), para o coelho ficar dentro dele. Andar é pela grade, desviando dos móveis.
 - **O estado real decide o lugar** (a tela não mente): ausente dorme, em call vai ao computador, quem assiste senta
   virado para a TV; quem prefere menos movimento vê o coelho já no lugar.
+- **PENDÊNCIA (decisão dele, 15/10/2026): TODOS os mascotes de frente viram modelos isométricos.** Cada pessoa aparece
+  nos ambientes com o mascote que ela usa; enquanto só o mascote base existe em isométrico, ele é quem aparece para
+  todos (com o nome em cima). Trocar os coelhos prontos de avatar, um a um, pela receita validada do mascote.
 - **O formato e o passo a passo** estão em `e2e/pixel-art/personagem/README.md`. Plano do PixelLab: Tier 2 desde
   14/10/2026 (a repintura `inpaint-v3` e a API de personagens com 8 direções e animação).
 
