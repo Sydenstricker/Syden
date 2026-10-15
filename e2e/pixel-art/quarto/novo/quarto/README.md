@@ -76,3 +76,16 @@ grade, trocam a luz do abajur (pintada ou por código) e a paisagem da janela. O
 eram refeitas a cada nova tentativa do pufe do meio). A rodada da noite (guarda-roupa, tapete que falhou, pufes, as
 três noites das vistas) custou mais 76. A janela interativa e os consertos (luz do abajur, guarda-roupa avulso, pufes refeitos) custaram
 mais 68. A rodada da poltrona, da cortina e das máscaras do híbrido custou mais 64. Em 08/10/2026 **restam 493 das 2.000** do mês.
+
+## A janela móvel (15/10/2026, pedido dele)
+
+- **A janela virou peça.** `janelas/sem-janela.py` tira a janela da pintura: a parede da direita é a da esquerda
+  espelhada (o quarto é simétrico), vezes a razão de cor medida nos pedaços lisos que a janela deixava ver; de noite, o
+  chão inteiro é o dia vezes a luz da noite (um polinômio da razão, sem o luar), e o luar vira MÁSCARA + um ganho de cor.
+- **Os tipos** (`janelas/tipos.mjs`): em arco, redonda e com floreira, pintados na parede vazia com o vidro em magenta
+  puro. A redonda veio duas vezes com o "quarto em miniatura" e uma vez cortada (`falhas/`); saiu na quarta. A noite deles
+  é o dia vezes a luz da noite do lugar, e o luar é PROJETADO do vidro na direção da luz medida na janela original.
+- **A página** (`aplicarJanela` em `montar.mjs`) monta a base, as noites, a cortina e a janela aberta com a peça onde
+  ela estiver: ao longo da parede é deslocar, na outra parede é espelhar, e cada pixel ganha a luz do lugar novo. A
+  janela se arrasta pelas duas paredes (de meia em meia casa); clicar sem arrastar abre a janela ou a cortina. Só a
+  original tem cortina e abre. Fotos: `node janelas/fotografar.mjs`.
