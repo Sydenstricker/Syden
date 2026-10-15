@@ -71,6 +71,9 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="recado-teste" hidden aria-pressed="false">Recado: nenhum</button>
   <button id="cor-tapete">Cor do tapete</button>
 </div>
+<div class="barra" id="graficos">
+  <button id="graf-particulas">Partículas</button><button id="graf-sombras">Sombras</button><button id="graf-telas">Telas animadas</button><button id="graf-auto">Ajustar sozinho</button>
+</div>
 <div class="barra" id="enfeites"></div>
 <div class="barra" id="objetos-de-cima"></div>
 <p id="acao-teste" aria-live="polite"></p>
@@ -164,6 +167,14 @@ function dados(im, filtro, w = W, h = W) {
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {};
+  // AS OPÇÕES DE GRÁFICOS (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para ligar e
+  // desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador ('syden:graficos'), as mesmas no quarto
+  // e no salão; no app, quem as escolhe são as Configurações (Aparência), e a página percebe na hora pelo evento storage
+  // (é o mesmo site). "auto": quando o desenho passa de 30 ms por quadro em média, o que pesa desliga sozinho nesta visita.
+  const GRAFICOS_PADRAO = { particulas: true, sombras: true, telas: true, auto: true };
+  const lerGraficos = () => { try { return { ...GRAFICOS_PADRAO, ...JSON.parse(localStorage.getItem('syden:graficos') ?? '{}') }; } catch { return { ...GRAFICOS_PADRAO }; } };
+  let GRAFICOS = lerGraficos(), lento = false;
+  const liga = (k) => GRAFICOS[k] && !(GRAFICOS.auto && lento);
   const MODO_APP = new URLSearchParams(location.search).has('app');
   if (CENA === 'salao') document.body.classList.add('salao');
   if (MODO_APP) document.documentElement.classList.add('app');
@@ -816,6 +827,7 @@ function dados(im, filtro, w = W, h = W) {
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
   let particulas = [];
   function soltarFaiscas(pe) {
+    if (!liga('particulas')) return;
     const [u0, u1, v0, v1] = pe, agora0 = performance.now(), borda = [];
     for (let i = 0; i < 34; i++) {
       const t = i / 34, lado = Math.floor(t * 4), f = (t * 4) % 1;
@@ -1614,7 +1626,7 @@ function dados(im, filtro, w = W, h = W) {
     alturaDoRaio.fill(-1); forcaDoRaio.fill(0); sombraFinal.fill(0);
     caixaDaSombra = null;
     const c = ultimaCaixa, pe = coelhoPe;
-    if (!c || !pe) return;
+    if (!c || !pe || !liga('sombras')) return;
     const lp = lampada(), luz = modo === 'noite' ? { x: lp[0], y: lp[1] + 40, alongamento: 1.0, forca: 0.5 } : { ...LUZ_DIA, x: luzDoDia[0], y: luzDoDia[1] };
     forcaDaSombra = luz.forca;
     let dx = pe[0] - luz.x, dy = (pe[1] - luz.y) * 0.5;
@@ -1725,7 +1737,13 @@ function dados(im, filtro, w = W, h = W) {
     const t0 = performance.now();
     desenhar();
     tempoDeDesenho = performance.now() - t0;
+    // O AUTOMÁTICO: a média dos últimos 20 quadros que desenharam alguma coisa.
+    if (tempoDeDesenho > 1 && !lento) {
+      medidas.push(tempoDeDesenho); if (medidas.length > 20) medidas.shift();
+      if (medidas.length === 20 && medidas.reduce((a, b) => a + b, 0) / 20 > 30) { lento = true; botoesDosGraficos(); if (GRAFICOS.auto) { assinaturaCena = ''; desenhar(); } }
+    }
   }, 100);
+  const medidas = [];
   for (const b of document.querySelectorAll('[data-estado]')) b.onclick = () => {
     estado = b.dataset.estado;
     // Quem está ausente não está falando (relato de 14/10/2026: o balão aparecia com ele dormindo).
@@ -2068,7 +2086,7 @@ function dados(im, filtro, w = W, h = W) {
 
   // Pinta o conteúdo da tela por cima da imagem (dentro da região r), só onde o pixel ainda é da mesa.
   function pintarTela(r) {
-    const q = Math.floor(performance.now() / 250);
+    const q = liga('telas') ? Math.floor(performance.now() / 250) : 0; // paradas: o primeiro quadro, aceso
     for (const { id, pts } of telasAgora) for (const [x, y, s2, t2] of pts) {
       if (x < r[0] || y < r[1] || x >= r[2] || y >= r[3]) continue;
       const k = y * W + x;
@@ -2092,7 +2110,7 @@ function dados(im, filtro, w = W, h = W) {
     const vc = VISTAS_CADEIRA ? VISTAS_CADEIRA[indiceDaVista()] : null, [cgx, cgy] = ponto(cadeira.u, cadeira.v);
     const cx0 = vc ? Math.round(cgx - vc.meioDaBase[0]) : 0, cy0 = vc ? Math.round(cgy - vc.meioDaBase[1]) : 0;
     const caixaCadeira = vc ? [cx0 + vc.caixa[0] - 18, cy0 + vc.caixa[1], cx0 + vc.caixa[2] + 18, cy0 + vc.caixa[3] + 8] : null;
-    const telaMexe = telasAgora.some((t) => tipoDaTela(t.id) !== 'desligada');
+    const telaMexe = liga('telas') && telasAgora.some((t) => tipoDaTela(t.id) !== 'desligada');
     // O MÓVEL VIVO (arrastado ou deslizando): a peça dele onde ele está agora.
     const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null, contorno = [], desenhados = [];
     const caixaViva = iv ? (() => { const pe = iv.pe, cantos = [ponto(pe[0], pe[2]), ponto(pe[1], pe[2]), ponto(pe[0], pe[3]), ponto(pe[1], pe[3])];
@@ -2775,6 +2793,21 @@ function dados(im, filtro, w = W, h = W) {
     };
   }
   window.pessoasDoTeste = (lista) => { PESSOAS = lista; desenhar(); }; // para o teste
+  // Os gráficos: os botões da página de teste, e o que o app mudar nas Configurações.
+  function botoesDosGraficos() {
+    for (const [k, nome] of [['particulas', 'Partículas'], ['sombras', 'Sombras'], ['telas', 'Telas animadas'], ['auto', 'Ajustar sozinho']]) {
+      const b = document.getElementById('graf-' + k); if (!b) continue;
+      b.setAttribute('aria-pressed', String(!!GRAFICOS[k]));
+      b.textContent = nome + ': ' + (GRAFICOS[k] ? 'sim' : 'não') + (k === 'auto' && lento ? ' (lento: desligou)' : '');
+    }
+  }
+  for (const k of ['particulas', 'sombras', 'telas', 'auto']) {
+    const b = document.getElementById('graf-' + k);
+    if (b) b.onclick = () => { GRAFICOS = { ...GRAFICOS, [k]: !GRAFICOS[k] }; try { localStorage.setItem('syden:graficos', JSON.stringify(GRAFICOS)); } catch { /* só nesta visita */ } botoesDosGraficos(); assinaturaCena = ''; desenhar(); };
+  }
+  window.addEventListener('storage', (e) => { if (e.key === 'syden:graficos') { GRAFICOS = lerGraficos(); botoesDosGraficos(); assinaturaCena = ''; desenhar(); } });
+  window.graficosDoTeste = () => ({ ...GRAFICOS, lento }); // para o teste
+  botoesDosGraficos();
   // O canal da TV: no app, o app troca (e manda o novo AO_VIVO); aqui, a lista de teste.
   let canaisDeTeste = [];
   function trocarCanal(passo) {
