@@ -31,7 +31,7 @@ export const MOVEIS = {
 
 const [modo, id, n, descricao] = process.argv.slice(2);
 const m = MOVEIS[id];
-if (!m) throw new Error('móveis: ' + Object.keys(MOVEIS).join(', '));
+if (!m && !(modo === 'estado' && id.startsWith('q:'))) throw new Error('móveis: ' + Object.keys(MOVEIS).join(', '));
 if (modo === 'opcoes') {
   // A referência de estilo: o chão e o tijolo da base escolhida (o pedaço de baixo, à esquerda).
   const p = await abrir();
@@ -48,8 +48,11 @@ if (modo === 'opcoes') {
   imagens.forEach((b, i) => gravar64(path.join(SAIDA, `${id}-${i + 1}.png`), b));
   console.log(id, '→', imagens.length, 'opções');
 } else if (modo === 'estado') {
-  const origem = JSON.parse(fs.readFileSync(path.join(SAIDA, id + '-giros', 'objeto.json'), 'utf8'));
-  const pasta = path.join(SAIDA, `${id}-${n}-giros`);
+  // Um móvel do QUARTO também serve (q:<pasta dos giros>, em quarto/novo/quarto/avulsos/): o criado-mudo limpo, sem a
+  // caneca pintada (a caneca é objeto à parte, 15/10/2026).
+  const DIR = id.startsWith('q:') ? path.join(AQUI, '..', 'quarto', 'novo', 'quarto', 'avulsos') : SAIDA, base = id.startsWith('q:') ? id.slice(2) : id + '-giros';
+  const origem = JSON.parse(fs.readFileSync(path.join(DIR, base, 'objeto.json'), 'utf8'));
+  const pasta = path.join(DIR, base.replace(/-giros$/, '') + '-' + n + '-giros');
   fs.mkdirSync(pasta, { recursive: true });
   const antes = await saldo();
   const r = await fetch(`${API}/objects/${origem.id ?? origem.object_id}/states`, { method: 'POST', headers: cab, body: JSON.stringify({ edit_description: descricao, state_name: n }) });

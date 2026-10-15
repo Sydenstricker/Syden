@@ -93,7 +93,7 @@ const GIROS = CENA === 'salao'
   // O SALÃO: os móveis escolhidos (salao/moveis/), LIMPOS (sem garrafas, canecas e videogame: o que vai em cima é objeto),
   // mais as plantas do quarto. A banqueta entra duas vezes (o mesmo desenho).
   ? { sofa: 'S:sofa-giros', tv: 'S:tv-limpa-giros', fliperama: 'S:fliperama-giros', balcao: 'S:balcao-limpo-giros', estante: 'S:estante-giros', mesinha: 'S:mesinha-limpa-giros', banqueta: 'S:banqueta-giros', 'banqueta-2': 'S:banqueta-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' }
-  : { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
+  : { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-limpo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = pasta.startsWith('S:') ? path.join(SALAO, 'moveis', pasta.slice(2)) : path.join(AQUI, 'avulsos', pasta);
@@ -627,7 +627,8 @@ function dados(im, filtro, w = W, h = W) {
   const reduzir = (img) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * ESCALA_DOS_OBJETOS)); c.height = Math.max(1, Math.round(img.height * ESCALA_DOS_OBJETOS)); const g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(img, 0, 0, c.width, c.height); return c; };
   for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
-  const TOPOS = { mesa: 44, abajur: 50, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
+  // (o criado-mudo era 50, e a caneca flutuava na altura da cúpula: a "mancha" no abajur, relato de 15/10/2026)
+  const TOPOS = { mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
@@ -659,8 +660,18 @@ function dados(im, filtro, w = W, h = W) {
     const col = new Map();
     for (const k of maior) { const x = k % W, y = (k / W) | 0, c = col.get(x); if (!c) col.set(x, [y, y]); else { c[0] = Math.min(c[0], y); c[1] = Math.max(c[1], y); } }
     const xs = [...col.keys()].sort((a, b) => a - b), x0 = xs[0], x1 = xs[xs.length - 1];
+    // As bordas de cima e de baixo são RETAS com a mesma inclinação (a tela é um paralelogramo): medidas pela coluna
+    // de cada uma, sem o que tapa a tela (o suporte da TV encurtava as colunas de baixo, e a imagem encolhia ali:
+    // relato de 15/10/2026, "a TV está com a imagem distorcida"). A inclinação é a mediana entre colunas afastadas; o
+    // alto e o pé, a mediana e o máximo de cada borda.
+    const med = (v) => { const o = [...v].sort((a, b) => a - b); return o[Math.floor(o.length / 2)] ?? 0; };
+    const meio = Math.max(1, Math.floor(xs.length / 2)), incl = [];
+    for (let i = 0; i + meio < xs.length; i++) incl.push((col.get(xs[i + meio])[0] - col.get(xs[i])[0]) / (xs[i + meio] - xs[i]));
+    const k = med(incl), alto = med(xs.map((x) => col.get(x)[0] - k * x)), pe = Math.max(...xs.map((x) => col.get(x)[1] - k * x));
     const pts = [];
-    for (const x of xs) { const [ya, yb] = col.get(x); for (let y = ya; y <= yb; y++) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), (y - ya) / Math.max(1, yb - ya)]); }
+    // O paralelogramo inteiro é tela (a sombra pintada no pé dela, mais escura, ficava de fora e mordia a imagem); só o
+    // que não é do desenho (transparente) fica de fora.
+    for (const x of xs) { const ta = alto + k * x, tb = pe + k * x; for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (m[(y * W + x) * 4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]); }
     return pts;
   }
   const TELAS = VISTAS.mesa ? VISTAS.mesa.map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null)) : [];
@@ -747,7 +758,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     if (OBJ_VISTAS.plantinha && VISTAS.mesa) a.o1 = { tipo: 'plantinha', em: 'mesa', s: 0.25, t: 0.82, lado: 0 };
     if (OBJ_VISTAS.livros && VISTAS.mesa) a.o2 = { tipo: 'livros', em: 'mesa', s: 0.7, t: 0.85, lado: 0 };
-    if (OBJ_VISTAS.caneca && VISTAS.abajur) a.o3 = { tipo: 'caneca', em: 'abajur', s: 0.7, t: 0.35, lado: 0 };
+    if (OBJ_VISTAS.caneca && VISTAS.abajur) a.o3 = { tipo: 'caneca', em: 'abajur', s: 0.2, t: 0.5, lado: 0 };
     return a;
   };
   EM_CIMA = EM_CIMA_INICIAL();
@@ -1930,11 +1941,31 @@ function dados(im, filtro, w = W, h = W) {
   // O DESENHO DE UM MÓVEL onde ele está agora: a peça, o deslocamento na tela, a luz do lugar, o pé e a forma.
   const varianteDoPufe = () => { if (!ARR.pufe || !pufes.length) return null; const [pu, pv] = ARR.pufe.c; return pufes.reduce((a, b) => { const d = (m) => Math.hypot(centro(m.pe)[0] - pu, centro(m.pe)[1] - pv); return d(a) <= d(b) ? a : b; }); };
   // Onde um objeto está no chão (u, v): a posição dele no tampo, girada com o móvel.
+  // O QUE ESTÁ EM PÉ NO TAMPO (relato de 15/10/2026: a caneca atrás do abajur saía pintada na cúpula). O objeto é
+  // desenhado por cima do móvel, e visto do alto a cúpula fica sobre a metade de trás do próprio tampo: não há como
+  // saber, pelo desenho, o que está na frente. Então o lugar de quem está em pé (o pé do abajur, no meio) não recebe
+  // objeto: o que cair ali escorrega para a borda desse círculo. Em s, t do próprio móvel (gira com ele).
+  const EM_PE = { abajur: [0.5, 0.5, 0.34] };
+  function foraDoQueEstaEmPe(em, s0, t0) {
+    const z = EM_PE[em];
+    if (!z) return [s0, t0];
+    const [zs, zt, r] = z, ds = s0 - zs, dt = t0 - zt, d = Math.hypot(ds, dt);
+    if (d >= r) return [s0, t0];
+    const [us, ut] = d < 1e-3 ? [Math.SQRT1_2, Math.SQRT1_2] : [ds / d, dt / d]; // no meio exato: para a frente
+    return [Math.min(0.9, Math.max(0.1, zs + us * r)), Math.min(0.9, Math.max(0.1, zt + ut * r))];
+  }
   function ondeEmCima(o) {
     const pe = peDe(o.em), l = ARR[o.em].lado;
-    let a = o.s, b = o.t;
+    let [a, b] = foraDoQueEstaEmPe(o.em, o.s, o.t);
     for (let r = 0; r < l; r++) [a, b] = [1 - b, a];
-    return [pe[0] + a * (pe[1] - pe[0]), pe[2] + b * (pe[3] - pe[2])];
+    let u = pe[0] + a * (pe[1] - pe[0]), v = pe[2] + b * (pe[3] - pe[2]);
+    // E nada ATRÁS de quem está em pé: a cúpula é larga e cobre, na tela, a metade de trás do tampo inteira. O que ficar
+    // atrás da linha do pé dela vem para a frente (u + v cresce para a frente da tela, seja qual for o giro).
+    if (EM_PE[o.em]) {
+      const [cu, cv] = centro(pe), falta = 0.3 - (u - cu + v - cv);
+      if (falta > 0) { u = Math.min(pe[1] - 0.1, u + falta / 2); v = Math.min(pe[3] - 0.1, v + falta / 2); }
+    }
+    return [u, v];
   }
   const comObjetosCache = new WeakMap();
   // A peça do móvel com os objetos de cima desenhados nela, e um mapa de qual objeto é cada pixel (para pegá-los).
@@ -1958,7 +1989,8 @@ function dados(im, filtro, w = W, h = W) {
         for (let y = r0; y < r1; y++) for (let x = c0; x < c1; x++) {
           const k = (y * W + x) * 4; if (vis.movel[k + 3] < 128) continue;
           const X = x + ox, Y = y + oy; if (X < 0 || Y < 0 || X >= W || Y >= W) continue;
-          const d = (Y * W + X) * 4; for (let q = 0; q < 4; q++) movel[d + q] = vis.movel[k + q];
+          const d = (Y * W + X) * 4;
+          for (let q = 0; q < 4; q++) movel[d + q] = vis.movel[k + q];
           objPx[Y * W + X] = uid;
         }
         x0 = Math.min(x0, c0 + ox); y0 = Math.min(y0, r0 + oy); x1 = Math.max(x1, c1 + ox); y1 = Math.max(y1, r1 + oy);
@@ -2447,7 +2479,8 @@ function dados(im, filtro, w = W, h = W) {
       if (u < pe[0] || u > pe[1] || v < pe[2] || v > pe[3]) continue;
       let a = (u - pe[0]) / (pe[1] - pe[0]), b = (v - pe[2]) / (pe[3] - pe[2]);
       for (let k = 0; k < ARR[id].lado; k++) [a, b] = [b, 1 - a]; // o avesso do giro de ondeEmCima
-      const cand = { em: id, s: Math.min(0.9, Math.max(0.1, a)), t: Math.min(0.9, Math.max(0.1, b)), alto: TOPOS[id] };
+      const [s2, t2] = foraDoQueEstaEmPe(id, Math.min(0.9, Math.max(0.1, a)), Math.min(0.9, Math.max(0.1, b)));
+      const cand = { em: id, s: s2, t: t2, alto: TOPOS[id] };
       if (!melhor || cand.alto > melhor.alto) melhor = cand;
     }
     return melhor;
@@ -2698,6 +2731,7 @@ function dados(im, filtro, w = W, h = W) {
   // A RODINHA E O R GIRAM SÓ O QUE ESTÁ SEGURO (pedido dele, 15/10/2026: passar por cima e rodar girava o móvel sem
   // querer). O móvel pego gira na hora, ali mesmo, e ao soltar ele encaixa na casa livre mais perto; o objeto de cima
   // gira no tampo; a cadeira segura gira com a força da rodinha.
+  window.donoDoPixel = (x, y) => ({ dono: dono[y * W + x], obj: donoObj[y * W + x] }); // para o teste
   window.pixelDe = (id) => { let m = null; for (let k = 0; k < W * W; k++) if (dono[k] === id) { m = k; break; } return m === null ? null : [m % W, ((m / W) | 0) + 4]; }; // para o teste
   window.seguradoDoTeste = () => ({ arrastando, viva: viva && { ...viva }, pegado, objPego }); // para o teste
   function girarSegurado(sentido) {

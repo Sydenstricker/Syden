@@ -1,0 +1,47 @@
+{
+  "id": "7fc7b4d0-ea97-4719-8596-1f2201a9f633",
+  "name": "a small wooden nightstand with",
+  "state_name": "limpo",
+  "prompt": "a small wooden nightstand with one drawer, a table lamp with a cream shade and a mug on top",
+  "size": {
+    "width": 97,
+    "height": 97
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T21:05:25.652818+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/7fc7b4d0-ea97-4719-8596-1f2201a9f633/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {
+    "state_source": {
+      "id": "e0add680-198d-44ad-9dcc-c5fa9a9c1509",
+      "edit_description": "remove the mug from the top: the nightstand top is empty except the table lamp, which stays exactly the same; nothing else changes"
+    },
+    "no_background": true
+  },
+  "tags": [],
+  "status": "completed",
+  "group_id": "66f54a86-142e-42fd-bc0a-fc71bc7964dc",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}
