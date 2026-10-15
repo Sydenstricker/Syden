@@ -737,6 +737,15 @@ db.exec(`
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
 
+  -- O QUARTO de cada pessoa (15/10/2026): onde ela pôs cada móvel, a cadeira, a janela. Mora no servidor, e não no
+  -- navegador, porque outra pessoa pode VISITAR (decisão dele: qualquer conta, menos quem tem bloqueio com o dono) e
+  -- tem de ver igual, inclusive onde a cadeira parou. O conteúdo é validado em quarto.ts antes de entrar.
+  CREATE TABLE IF NOT EXISTS quartos (
+    user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    arrumacao  TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
   CREATE TABLE IF NOT EXISTS reports (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
@@ -3805,6 +3814,22 @@ export function guardarPreferencias(userId: number, data: string) {
     `INSERT INTO user_prefs (user_id, data, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
      ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
   ).run(userId, data);
+}
+
+// ---------- O quarto de cada pessoa ----------
+
+export function lerQuarto(userId: number): { arrumacao: string; em: string } | null {
+  const linha = db
+    .prepare('SELECT arrumacao, updated_at AS em FROM quartos WHERE user_id = ?')
+    .get(userId) as { arrumacao: string; em: string } | undefined;
+  return linha ?? null;
+}
+
+export function guardarQuarto(userId: number, arrumacao: string) {
+  db.prepare(
+    `INSERT INTO quartos (user_id, arrumacao, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id) DO UPDATE SET arrumacao = excluded.arrumacao, updated_at = excluded.updated_at`,
+  ).run(userId, arrumacao);
 }
 
 // ---------- Amizades ----------
