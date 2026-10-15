@@ -47,5 +47,5 @@ for item, meta in ITENS.items():
     # a altura: de quanto acima do chão até quanto (medida na coluna do meio)
     meio = int((cols.min() + cols.max()) / 2)
     hs = chao(meio) - np.nonzero(m[:, cols.min():cols.max() + 1].any(1))[0]
-    json.dump({**meta, 'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)]}, open(os.path.join(d, 'item.json'), 'w'), ensure_ascii=False)
+    json.dump({**meta, 'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)]}, open(os.path.join(d, 'item.json'), 'w', encoding='utf8'), ensure_ascii=False)
     print(item, json.load(open(os.path.join(d, 'item.json'))))

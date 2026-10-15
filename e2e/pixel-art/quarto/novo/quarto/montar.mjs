@@ -165,9 +165,16 @@ for (const m of MOVEIS) {
   IMAGENS[m.id + '-sombra'] = png(path.join(AQUI, 'pecas', m.id + '-sombra.png'));
 }
 
+// O topo da página de teste do salão (a do quarto fica como está, logo abaixo no HTML).
+const SALAO_TOPO = `<h1>O salão da comunidade</h1>
+<p>O salão isométrico, da turma. <b>Arraste e gire</b> os móveis (no app, só quem administra). Os botões de teste simulam o
+que o app manda: <b>Pessoas na call</b> (quem transmite vai para a TV, quem joga para o fliperama, o resto senta no sofá e nas
+banquetas), <b>Ao vivo</b> (a TV liga e mostra quem transmite, com as setas de canal), <b>Imagem da comunidade</b> (o ícone ou a
+capa no quadro) e <b>Recado</b> (o balão do coelho atrás do balcão; clicar no balcão mostra de novo). Ligue as <b>Funções do
+app</b> para ver o nome de cada objeto ao passar o mouse. A arrumação fica guardada neste navegador.</p>`;
 const html = `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quarto do coelho</title>
+<title>${CENA === 'salao' ? 'Salão da comunidade' : 'Quarto do coelho'}</title>
 <style>
   :root { --fundo: #2a2522; --texto: #efe6dc; --suave: #b9ab9c; --botao: #4a3f38; --ativo: #8a6a4a; }
   body { margin: 0; background: var(--fundo); color: var(--texto); font: 15px/1.5 system-ui, sans-serif; }
@@ -186,6 +193,11 @@ const html = `<!doctype html>
   .com-rotulo { position: relative; }
   /* NO APP (?app, dentro do QuartoNovo.tsx): só o quarto, sem nada da página de teste, sobre o fundo do app. */
   /* O mesmo esquema de cor do iframe (styles.css): diferentes, o navegador pinta um fundo branco atrás do quarto. */
+  /* No salão não há conceito ao lado: o salão sozinho, maior. */
+  body.salao .lado { grid-template-columns: 1fr; max-width: 760px; }
+  body.salao .lado > figure:not(.com-rotulo) { display: none; }
+  /* e sem o que é só do quarto: o abajur, a tela do computador, a cortina e a janela que abre, os estados do coelho */
+  body.salao #luz, body.salao #tela-pc, body.salao #janela, body.salao #cortina, body.salao #estados, body.salao .so-do-quarto { display: none; }
   html.app { color-scheme: light dark; }
   html.app body { background: transparent; }
   html.app main { padding: 0; max-width: none; }
@@ -210,17 +222,17 @@ const html = `<!doctype html>
   #recado::after { content: ''; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #fff7ea; }
 </style></head>
 <body><main>
-<h1>O quarto do coelho</h1>
+${CENA === 'salao' ? SALAO_TOPO : `<h1>O quarto do coelho</h1>
 <p>À esquerda, o quarto: a base sem porta do PixelLab, com a cama, o criado-mudo com abajur, o guarda-roupa, o tapete e o
 pufe pintados dentro dela e recortados, e a paisagem atrás do vidro. À direita, o conceito do ChatGPT. <b>Arraste qualquer móvel</b>
 pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lugar). <b>Girar</b> (ou a tecla R) gira o
-último móvel tocado. A arrumação fica guardada neste navegador; <b>Arrumação inicial</b> volta à de fábrica.</p>
+último móvel tocado. A arrumação fica guardada neste navegador; <b>Arrumação inicial</b> volta à de fábrica.</p>`}
 <div class="barra">
   <button id="dia" aria-pressed="true">Dia</button><button id="noite" aria-pressed="false">Noite</button>
   <button id="grade" aria-pressed="false">Mostrar a grade</button>
   <button id="luz" aria-pressed="true">Luz do abajur à noite: pintada</button>
   <button id="vista" aria-pressed="false">Vista: 1</button>
-  <button id="girar">Girar a poltrona</button>
+  <button id="girar">${CENA === 'salao' ? 'Girar' : 'Girar a poltrona'}</button>
   <button id="inicial">Arrumação inicial</button>
   <button id="tela-pc">Tela: automática</button>
   <button id="janela" aria-pressed="false">Janela: fechada</button>
@@ -236,7 +248,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
 <div class="barra" id="enfeites"></div>
 <div class="barra" id="objetos-de-cima"></div>
 <p id="acao-teste" aria-live="polite"></p>
-<p><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
+<p class="so-do-quarto"><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
 dormindo), todas do mesmo personagem, no mesmo quadro e com a mesma âncora. A sombra vem da janela (de dia) ou do
 abajur (de noite). O estado decide o
 lugar; <b>clicar num móvel</b> (sem arrastar) o leva até ele; arrastar o pufe ou a poltrona com ele sentado leva o
@@ -327,6 +339,7 @@ function dados(im, filtro, w = W, h = W) {
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {};
   const MODO_APP = new URLSearchParams(location.search).has('app');
+  if (CENA === 'salao') document.body.classList.add('salao');
   if (MODO_APP) document.documentElement.classList.add('app');
   // ============================== A JANELA MÓVEL (15/10/2026) ==============================
   // O quarto sem janela, e a janela como peça (o tipo, a parede e quantas casas ela andou). Tudo o que a página usava da
