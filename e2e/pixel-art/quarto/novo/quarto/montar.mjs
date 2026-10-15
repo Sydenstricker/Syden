@@ -768,7 +768,10 @@ function dados(im, filtro, w = W, h = W) {
     const [re, rd, rc, rb] = recuo, x0 = q.x0 + re, x1 = q.x1 - rd, pts = [], dentro = P ? painelDe(peca, q, P) : null;
     for (let x = x0; x <= x1; x++) {
       const ta = q.topo + q.k * x + rc, tb = q.pe + q.k * x - rb;
-      for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (peca.movel[(y * W + x) * 4 + 3] && (!dentro || dentro[y * W + x])) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]);
+      // o painel só manda nas pontas (onde a reta passava da moldura); no meio, a reta: o desenho do painel tem um dente
+      // em cima, que mordia a imagem
+      const ponta = x < x0 + 6 || x > x1 - 6;
+      for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (peca.movel[(y * W + x) * 4 + 3] && (!dentro || !ponta || dentro[y * W + x])) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]);
     }
     return pts;
   }
@@ -1094,7 +1097,11 @@ function dados(im, filtro, w = W, h = W) {
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
-  let particulas = [];
+  let particulas = [], notas = [], proximaNota = 0;
+  // A notinha em pixel: a colcheia (♪) e, às vezes, duas ligadas (♫).
+  const NOTA = ['..##', '..#.#', '..#..', '..#..', '###..', '###..', '.#...'];
+  const NOTA_DUPLA = ['.#####', '.#...#', '.#...#', '.#...#', '##..##', '##.###', '#...#.'];
+  const ondeEstaANota = (n, agora) => { const t = (agora - n.t0) / 1000; return [Math.round(n.x + n.lado * (t * 5 + Math.sin(t * 3) * 3)), Math.round(n.y - t * 14)]; };
   function soltarFaiscas(pe) {
     if (!liga('particulas')) return;
     const [u0, u1, v0, v1] = pe, agora0 = performance.now(), borda = [];
@@ -2003,6 +2010,13 @@ function dados(im, filtro, w = W, h = W) {
   const emPausa = () => { if (document.hidden) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
   setInterval(() => {
     if (emPausa()) { ultimo = performance.now(); return; }
+    // AS NOTAS DA JUKEBOX (ideia dele, 15/10/2026): uma notinha a cada ~0,9 s, que sobe balançando e some. É partícula:
+    // só com a opção ligada (Gráficos → Partículas), porque animação obriga a redesenhar.
+    if (topoDaJukebox && liga('particulas')) {
+      const t = performance.now();
+      notas = notas.filter((n) => t - n.t0 < n.vida);
+      if (notas.length < 4 && t > proximaNota) { proximaNota = t + 700 + Math.random() * 500; notas.push({ x: topoDaJukebox[0] + (Math.random() - 0.5) * 16, y: topoDaJukebox[1], t0: t, vida: 2600 + Math.random() * 800, lado: Math.random() < 0.5 ? -1 : 1, dupla: Math.random() < 0.35, cor: [[255, 214, 120], [255, 170, 110], [250, 150, 190], [170, 220, 255]][Math.floor(Math.random() * 4)] }); }
+    } else if (notas.length) notas = [];
     const agora = performance.now(), dt = Math.min(0.25, (agora - ultimo) / 1000);
     ultimo = agora;
     coelho.quadro++;
@@ -2166,7 +2180,7 @@ function dados(im, filtro, w = W, h = W) {
     const c = [x0, y0, x1 + 1, y1 + 1]; caixas.set(p.movel, c); return c;
   }
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
-  let lampadaAgora = [0, 0], telasAgora = [], caixaDaTela = null, regiaoDasFaiscas = null, luzDaJukebox = null;
+  let lampadaAgora = [0, 0], telasAgora = [], caixaDaTela = null, regiaoDasFaiscas = null, luzDaJukebox = null, topoDaJukebox = null;
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
@@ -2314,7 +2328,7 @@ function dados(im, filtro, w = W, h = W) {
         if (AO_VIVO.sub) { const sm = document.createElement('small'); sm.textContent = AO_VIVO.sub; meio.append(sm); }
         e.replaceChildren(...(AO_VIVO.total > 1 ? [seta(-1, '‹'), meio, seta(1, '›')] : [meio]));
       } }
-    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.75 + jb.dy]; } else luzDaJukebox = null; }
+    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.75 + jb.dy]; topoDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + jb.dy + 6]; } else luzDaJukebox = topoDaJukebox = null; }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     pessoasNaTela = pessoas.map((it) => ({ x: it.cabeca[0], y: it.cabeca[1] + 30 }));
@@ -2344,7 +2358,8 @@ function dados(im, filtro, w = W, h = W) {
       brilhos.push([sx / pts.length, sy / pts.length, COR_DO_BRILHO[tipoTela] ?? [140, 120, 190]]);
     }
     // a luz da jukebox, onde ela estiver (só de noite; fixa, para não redesenhar a cada quadro)
-    if (modo === 'noite' && luzDaJukebox) brilhos.push([luzDaJukebox[0], luzDaJukebox[1], [230, 140, 60], 72]);
+    // (de dia também, bem mais fraco: ela está ligada, e o sol da sala não apaga a lâmpada)
+    if (luzDaJukebox) brilhos.push(modo === 'noite' ? [luzDaJukebox[0], luzDaJukebox[1], [230, 140, 60], 72] : [luzDaJukebox[0], luzDaJukebox[1], [255, 170, 80], 56, 0.12]);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -2373,7 +2388,7 @@ function dados(im, filtro, w = W, h = W) {
       imagem.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
       for (const brilhoTela of brilhos) {
         const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3), raio = brilhoTela[3] ?? 34;
-        if (d2 < raio) { const f = Math.floor((1 - d2 / raio) * 4) / 4 * 0.32; for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
+        if (d2 < raio) { const f = Math.floor((1 - d2 / raio) * 4) / 4 * (brilhoTela[4] ?? 0.32); for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
       }
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
       if (alvo && casa[k] >= 0 && !eMovel[k]) { // só no chão: por cima, desbotava o próprio móvel pego
@@ -2399,7 +2414,9 @@ function dados(im, filtro, w = W, h = W) {
     for (const { id, pts } of telasAgora) for (const [x, y, s2, t2] of pts) {
       if (x < r[0] || y < r[1] || x >= r[2] || y >= r[3]) continue;
       const k = y * W + x;
-      if (dono[k] !== id) continue;
+      // (o que está em cima do móvel, como o videogame no rack, é da peça dele, mas fica NA FRENTE da tela: relato de
+      // 15/10/2026, "a TV está tampando o videogame")
+      if (dono[k] !== id || donoObj[k]) continue;
       const tipo = tipoDaTela(id);
       const cor = corDaTela(s2, t2, q, tipo);
       if (!cor) continue;
@@ -2432,7 +2449,7 @@ function dados(im, filtro, w = W, h = W) {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     // Só limpa a região de antes quando vai redesenhar: limpando e saindo, o coelho e a cadeira sumiam do mapa de quem é
@@ -2514,6 +2531,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     calcularSombra();
     let caixaFaiscas = null;
+    { const t = performance.now(); for (const n of notas) { const [x, y] = ondeEstaANota(n, t); caixaFaiscas = unir(caixaFaiscas, [x - 3, y - 11, x + 10, y + 3]); } }
     for (const q of particulas) { const t = Math.max(0, (performance.now() - q.t0) / 1000), x = q.x + q.vx * t, y = q.y + q.vy * t + 20 * t * t; caixaFaiscas = unir(caixaFaiscas, [x - 3, y - 3, x + 4, y + 4]); }
     if (particulas.length && !caixaFaiscas) caixaFaiscas = null;
     // O DESTINO DO ARRASTE (as casas clareadas embaixo do móvel pego) também é pintado aqui: sem a caixa dele na região,
@@ -2539,6 +2557,18 @@ function dados(im, filtro, w = W, h = W) {
         const X = x + ox, Y = y + oy; if (X < r[0] || Y < r[1] || X >= r[2] || Y >= r[3]) continue;
         const k = (Y * W + X) * 4, cor = ox || oy ? [255, 226, 170] : [255, 252, 240];
         for (let c = 0; c < 3; c++) imagem.data[k + c] = imagem.data[k + c] * (1 - a) + cor[c] * a;
+      }
+    }
+    for (const n of notas) {
+      const [x, y] = ondeEstaANota(n, agoraF), vida = (agoraF - n.t0) / n.vida, a = vida < 0.15 ? vida / 0.15 : vida > 0.7 ? Math.max(0, 1 - (vida - 0.7) / 0.3) : 1;
+      const forma = n.dupla ? NOTA_DUPLA : NOTA, cheio = (i, j) => forma[j]?.[i] === '#';
+      // o contorno escuro (a nota se lê sobre o tijolo) e, por cima, a nota
+      for (let j = -1; j <= forma.length; j++) for (let i = -1; i <= 6; i++) {
+        const dentro = cheio(i, j), borda = !dentro && (cheio(i - 1, j) || cheio(i + 1, j) || cheio(i, j - 1) || cheio(i, j + 1));
+        if (!dentro && !borda) continue;
+        const X = x + i, Y = y - forma.length + j; if (X < r[0] || Y < r[1] || X >= r[2] || Y >= r[3]) continue;
+        const k = (Y * W + X) * 4, cor = dentro ? n.cor : [44, 26, 22], f = dentro ? a : a * 0.75;
+        for (let c = 0; c < 3; c++) imagem.data[k + c] = imagem.data[k + c] * (1 - f) + cor[c] * f;
       }
     }
     if (falando) balao(imagem.data); // falando de pé ou sentado
