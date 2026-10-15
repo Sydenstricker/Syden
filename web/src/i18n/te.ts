@@ -1843,5 +1843,4 @@ export default {
   'Partículas': 'కణాలు',
   'Sombras': 'నీడలు',
   'Telas animadas': 'కదిలే స్క్రీన్‌లు',
-  'Ajustar sozinho quando ficar lento': 'నెమ్మదిగా ఉంటే దానంతటదే సర్దుబాటు చేయి',
 } satisfies Record<string, string>;

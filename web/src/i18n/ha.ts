@@ -1863,5 +1863,4 @@ export default {
   'Partículas': 'Tartsatsi',
   'Sombras': 'Inuwoyi',
   'Telas animadas': 'Allon da ke motsi',
-  'Ajustar sozinho quando ficar lento': 'Daidaita kai tsaye idan ya yi jinkiri',
 } satisfies Record<string, string>;

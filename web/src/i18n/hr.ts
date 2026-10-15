@@ -1930,5 +1930,4 @@ export default {
   'Partículas': 'Čestice',
   'Sombras': 'Sjene',
   'Telas animadas': 'Animirani zasloni',
-  'Ajustar sozinho quando ficar lento': 'Automatsko prilagođavanje kad uspori',
 } satisfies Record<string, string>;

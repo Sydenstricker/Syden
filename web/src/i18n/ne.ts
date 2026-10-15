@@ -1933,5 +1933,4 @@ export default {
   'Partículas': 'कणहरू',
   'Sombras': 'छायाहरू',
   'Telas animadas': 'चल्ने स्क्रिनहरू',
-  'Ajustar sozinho quando ficar lento': 'ढिलो हुँदा आफैँ मिलाउने',
 } satisfies Record<string, string>;

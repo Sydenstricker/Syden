@@ -214,13 +214,11 @@ function PaletaDoSyden() {
 /**
  * OS GRÁFICOS DO QUARTO E DO SALÃO (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para
  * ligar e desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador, em 'syden:graficos', e as
- * páginas do quarto e do salão (o mesmo site, num iframe) leem dali e percebem a troca na hora. "Ajustar sozinho" é o
- * Syden decidindo: com o desenho lento neste computador, o que pesa desliga sozinho naquela visita.
- *
- * SÓ NO DESENVOLVIMENTO por enquanto, como o quarto e o salão novos: no site publicado a opção não mudaria nada, e a tela
- * não oferece o que não faz.
+ * páginas do quarto e do salão (o mesmo site, num iframe) leem dali e percebem a troca na hora. TODAS DESLIGADAS DE
+ * FÁBRICA, e sem "ajustar sozinho" (decisões dele, mesmo dia: o uso principal é com um jogo aberto). Fica no ar desde já,
+ * também por decisão dele.
  */
-const GRAFICOS_PADRAO = { particulas: true, sombras: true, telas: true, auto: true };
+const GRAFICOS_PADRAO = { particulas: false, sombras: false, telas: false };
 type Graficos = typeof GRAFICOS_PADRAO;
 function lerGraficos(): Graficos {
   try {
@@ -245,7 +243,6 @@ function GraficosDosAmbientes() {
     { k: 'particulas', nome: t('Partículas') },
     { k: 'sombras', nome: t('Sombras') },
     { k: 'telas', nome: t('Telas animadas') },
-    { k: 'auto', nome: t('Ajustar sozinho quando ficar lento') },
   ];
   return (
     <section className="graficos-dos-ambientes">
@@ -489,7 +486,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
 
       <PaletaDoSyden />
       <CorDoSyden />
-      {import.meta.env.DEV && <GraficosDosAmbientes />}
+      <GraficosDosAmbientes />
 
       {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de
           referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é

@@ -1927,5 +1927,4 @@ export default {
   'Partículas': 'Бөлшектер',
   'Sombras': 'Көлеңкелер',
   'Telas animadas': 'Қозғалатын экрандар',
-  'Ajustar sozinho quando ficar lento': 'Баяулағанда өзі реттесін',
 } satisfies Record<string, string>;

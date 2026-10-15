@@ -1860,5 +1860,4 @@ export default {
   'Partículas': 'Chembechembe',
   'Sombras': 'Vivuli',
   'Telas animadas': 'Skrini zinazosogea',
-  'Ajustar sozinho quando ficar lento': 'Rekebisha yenyewe ikianza kuwa polepole',
 } satisfies Record<string, string>;

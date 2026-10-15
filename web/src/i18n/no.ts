@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'Partikler',
   'Sombras': 'Skygger',
   'Telas animadas': 'Animerte skjermer',
-  'Ajustar sozinho quando ficar lento': 'Juster automatisk når det går tregt',
 } satisfies Record<string, string>;

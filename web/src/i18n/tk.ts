@@ -1933,5 +1933,4 @@ export default {
   'Partículas': 'Bölejikler',
   'Sombras': 'Kölegeler',
   'Telas animadas': 'Hereketli ekranlar',
-  'Ajustar sozinho quando ficar lento': 'Haýallanda özi sazlasyn',
 } satisfies Record<string, string>;

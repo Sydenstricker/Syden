@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'Честички',
   'Sombras': 'Сенки',
   'Telas animadas': 'Анимирани екрани',
-  'Ajustar sozinho quando ficar lento': 'Самостојно прилагодување кога ќе забави',
 } satisfies Record<string, string>;

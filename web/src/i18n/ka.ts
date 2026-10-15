@@ -1949,5 +1949,4 @@ export default {
   'Partículas': 'ნაწილაკები',
   'Sombras': 'ჩრდილები',
   'Telas animadas': 'მოძრავი ეკრანები',
-  'Ajustar sozinho quando ficar lento': 'ავტომატური მორგება, როცა ნელდება',
 } satisfies Record<string, string>;

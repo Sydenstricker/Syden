@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'Pitik’afo',
   'Sombras': 'Aloka',
   'Telas animadas': 'Efijery mihetsika',
-  'Ajustar sozinho quando ficar lento': 'Manitsy ho azy rehefa miadana',
 } satisfies Record<string, string>;

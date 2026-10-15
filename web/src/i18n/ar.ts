@@ -1881,5 +1881,4 @@ export default {
   'Partículas': 'الجسيمات',
   'Sombras': 'الظلال',
   'Telas animadas': 'شاشات متحركة',
-  'Ajustar sozinho quando ficar lento': 'الضبط التلقائي عند البطء',
 } satisfies Record<string, string>;

@@ -1932,5 +1932,4 @@ export default {
   'Partículas': 'ອະນຸພາກ',
   'Sombras': 'ເງົາ',
   'Telas animadas': 'ໜ້າຈໍເຄື່ອນໄຫວ',
-  'Ajustar sozinho quando ficar lento': 'ປັບເອງເມື່ອຊ້າລົງ',
 } satisfies Record<string, string>;

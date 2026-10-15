@@ -1941,5 +1941,4 @@ export default {
   'Partículas': 'ޕާޓިކަލްސް',
   'Sombras': 'ހިޔަނި',
   'Telas animadas': 'ހަރަކާތްކުރާ ސްކްރީން',
-  'Ajustar sozinho quando ficar lento': 'ލަސްވާނަމަ އަމިއްލައަށް ބަދަލުކުރުން',
 } satisfies Record<string, string>;

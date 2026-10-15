@@ -1860,5 +1860,4 @@ export default {
   'Partículas': 'Deeltjes',
   'Sombras': 'Schaduwen',
   'Telas animadas': 'Bewegende schermen',
-  'Ajustar sozinho quando ficar lento': 'Automatisch aanpassen als het traag wordt',
 } satisfies Record<string, string>;

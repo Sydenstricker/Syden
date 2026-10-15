@@ -1900,5 +1900,4 @@ export default {
   'Partículas': 'အမှုန်များ',
   'Sombras': 'အရိပ်များ',
   'Telas animadas': 'လှုပ်ရှားသော မျက်နှာပြင်များ',
-  'Ajustar sozinho quando ficar lento': 'နှေးလာရင် အလိုအလျောက် ချိန်ညှိမည်',
 } satisfies Record<string, string>;

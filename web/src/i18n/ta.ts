@@ -1846,5 +1846,4 @@ export default {
   'Partículas': 'துகள்கள்',
   'Sombras': 'நிழல்கள்',
   'Telas animadas': 'அசையும் திரைகள்',
-  'Ajustar sozinho quando ficar lento': 'மெதுவானால் தானாகச் சரிசெய்',
 } satisfies Record<string, string>;

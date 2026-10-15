@@ -1861,5 +1861,4 @@ export default {
   'Partículas': 'Particule',
   'Sombras': 'Umbre',
   'Telas animadas': 'Ecrane animate',
-  'Ajustar sozinho quando ficar lento': 'Ajustare automată când merge greu',
 } satisfies Record<string, string>;

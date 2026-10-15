@@ -1932,5 +1932,4 @@ export default {
   'Partículas': 'Izinhlayiya',
   'Sombras': 'Izithunzi',
   'Telas animadas': 'Izikrini ezinyakazayo',
-  'Ajustar sozinho quando ficar lento': 'Lungisa ngokuzenzakalela uma kuhamba kancane',
 } satisfies Record<string, string>;

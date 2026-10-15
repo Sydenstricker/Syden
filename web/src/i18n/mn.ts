@@ -1945,5 +1945,4 @@ export default {
   'Partículas': 'Бөөмс',
   'Sombras': 'Сүүдэр',
   'Telas animadas': 'Хөдөлгөөнт дэлгэц',
-  'Ajustar sozinho quando ficar lento': 'Удаашрахад автоматаар тохируулах',
 } satisfies Record<string, string>;

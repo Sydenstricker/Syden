@@ -1849,5 +1849,4 @@ export default {
   'Partículas': 'ذرات',
   'Sombras': 'سایه‌ها',
   'Telas animadas': 'صفحه‌های متحرک',
-  'Ajustar sozinho quando ficar lento': 'تنظیم خودکار هنگام کند شدن',
 } satisfies Record<string, string>;

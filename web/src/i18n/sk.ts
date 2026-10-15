@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'Častice',
   'Sombras': 'Tiene',
   'Telas animadas': 'Animované obrazovky',
-  'Ajustar sozinho quando ficar lento': 'Upraviť automaticky, keď sa to spomalí',
 } satisfies Record<string, string>;

@@ -1877,5 +1877,4 @@ export default {
   'Partículas': 'Partiċelli',
   'Sombras': 'Dellijiet',
   'Telas animadas': 'Skrins animati',
-  'Ajustar sozinho quando ficar lento': 'Aġġusta awtomatikament meta jkun bil-mod',
 } satisfies Record<string, string>;

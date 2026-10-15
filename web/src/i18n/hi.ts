@@ -1860,5 +1860,4 @@ export default {
   'Partículas': 'कण',
   'Sombras': 'परछाइयाँ',
   'Telas animadas': 'चलती स्क्रीनें',
-  'Ajustar sozinho quando ficar lento': 'धीमा होने पर अपने-आप ठीक करें',
 } satisfies Record<string, string>;

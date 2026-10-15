@@ -1863,5 +1863,4 @@ export default {
   'Partículas': 'Partíkula',
   'Sombras': 'Mahon sira',
   'Telas animadas': 'Ekrã ne’ebé book-an',
-  'Ajustar sozinho quando ficar lento': 'Hadia rasik bainhira neineik',
 } satisfies Record<string, string>;

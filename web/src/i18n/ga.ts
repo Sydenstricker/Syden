@@ -1867,5 +1867,4 @@ export default {
   'Partículas': 'Cáithníní',
   'Sombras': 'Scáthanna',
   'Telas animadas': 'Scáileáin bheo',
-  'Ajustar sozinho quando ficar lento': 'Coigeartaigh go huathoibríoch nuair a éiríonn sé mall',
 } satisfies Record<string, string>;

@@ -1930,5 +1930,4 @@ export default {
   'Partículas': 'ភាគល្អិត',
   'Sombras': 'ស្រមោល',
   'Telas animadas': 'អេក្រង់មានចលនា',
-  'Ajustar sozinho quando ficar lento': 'កែសម្រួលដោយស្វ័យប្រវត្តិពេលយឺត',
 } satisfies Record<string, string>;

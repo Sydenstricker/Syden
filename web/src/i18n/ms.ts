@@ -1861,5 +1861,4 @@ export default {
   'Partículas': 'Zarah',
   'Sombras': 'Bayang',
   'Telas animadas': 'Skrin beranimasi',
-  'Ajustar sozinho quando ficar lento': 'Laraskan secara automatik apabila perlahan',
 } satisfies Record<string, string>;

@@ -1858,5 +1858,4 @@ export default {
   'Partículas': 'কণা',
   'Sombras': 'ছায়া',
   'Telas animadas': 'চলমান স্ক্রিন',
-  'Ajustar sozinho quando ficar lento': 'ধীর হলে নিজে থেকেই মানিয়ে নেবে',
 } satisfies Record<string, string>;

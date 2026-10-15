@@ -1848,5 +1848,4 @@ export default {
   'Partículas': '粒子效果',
   'Sombras': '阴影',
   'Telas animadas': '动态屏幕',
-  'Ajustar sozinho quando ficar lento': '卡顿时自动调整',
 } satisfies Record<string, string>;

@@ -1950,5 +1950,4 @@ export default {
   'Partículas': 'Մասնիկներ',
   'Sombras': 'Ստվերներ',
   'Telas animadas': 'Շարժվող էկրաններ',
-  'Ajustar sozinho quando ficar lento': 'Ինքնաշխատ կարգավորել, երբ դանդաղի',
 } satisfies Record<string, string>;

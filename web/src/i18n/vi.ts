@@ -1831,5 +1831,4 @@ export default {
   'Partículas': 'Hạt hiệu ứng',
   'Sombras': 'Bóng đổ',
   'Telas animadas': 'Màn hình chuyển động',
-  'Ajustar sozinho quando ficar lento': 'Tự điều chỉnh khi bị chậm',
 } satisfies Record<string, string>;

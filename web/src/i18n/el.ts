@@ -1867,5 +1867,4 @@ export default {
   'Partículas': 'Σωματίδια',
   'Sombras': 'Σκιές',
   'Telas animadas': 'Κινούμενες οθόνες',
-  'Ajustar sozinho quando ficar lento': 'Αυτόματη προσαρμογή όταν κολλάει',
 } satisfies Record<string, string>;

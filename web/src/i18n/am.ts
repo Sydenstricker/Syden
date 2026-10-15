@@ -1861,5 +1861,4 @@ export default {
   'Partículas': 'ብልጭታዎች',
   'Sombras': 'ጥላዎች',
   'Telas animadas': 'የሚንቀሳቀሱ ስክሪኖች',
-  'Ajustar sozinho quando ficar lento': 'ሲዘገይ በራስ-ሰር ማስተካከል',
 } satisfies Record<string, string>;

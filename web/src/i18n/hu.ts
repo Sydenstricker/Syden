@@ -1933,5 +1933,4 @@ export default {
   'Partículas': 'Részecskék',
   'Sombras': 'Árnyékok',
   'Telas animadas': 'Animált képernyők',
-  'Ajustar sozinho quando ficar lento': 'Magától igazodjon, ha lelassul',
 } satisfies Record<string, string>;

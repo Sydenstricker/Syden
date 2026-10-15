@@ -1858,5 +1858,4 @@ export default {
   'Partículas': 'Partikel',
   'Sombras': 'Bayangan',
   'Telas animadas': 'Layar bergerak',
-  'Ajustar sozinho quando ficar lento': 'Sesuaikan otomatis saat jadi lambat',
 } satisfies Record<string, string>;

@@ -1869,5 +1869,4 @@ export default {
   'Partículas': 'Ntụpọ ọkụ',
   'Sombras': 'Onyinyo',
   'Telas animadas': 'Ihuenyo na-emegharị',
-  'Ajustar sozinho quando ficar lento': 'Hazie onwe ya mgbe ọ na-adị nwayọ',
 } satisfies Record<string, string>;

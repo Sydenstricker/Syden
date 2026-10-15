@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'Partikkelit',
   'Sombras': 'Varjot',
   'Telas animadas': 'Animoidut näytöt',
-  'Ajustar sozinho quando ficar lento': 'Säädä automaattisesti, kun alkaa hidastella',
 } satisfies Record<string, string>;

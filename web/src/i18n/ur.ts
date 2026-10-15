@@ -1848,5 +1848,4 @@ export default {
   'Partículas': 'ذرات',
   'Sombras': 'سائے',
   'Telas animadas': 'متحرک اسکرینیں',
-  'Ajustar sozinho quando ficar lento': 'سست ہونے پر خود ہی ایڈجسٹ کرنا',
 } satisfies Record<string, string>;

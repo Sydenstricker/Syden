@@ -1923,5 +1923,4 @@ export default {
   'Partículas': 'Grimca',
   'Sombras': 'Hije',
   'Telas animadas': 'Ekrane të animuara',
-  'Ajustar sozinho quando ficar lento': 'Përshtatje automatike kur ngadalësohet',
 } satisfies Record<string, string>;

@@ -1932,5 +1932,4 @@ export default {
   'Partículas': 'Agnir',
   'Sombras': 'Skuggar',
   'Telas animadas': 'Hreyfanlegir skjáir',
-  'Ajustar sozinho quando ficar lento': 'Stilla sjálfkrafa þegar hægist á',
 } satisfies Record<string, string>;

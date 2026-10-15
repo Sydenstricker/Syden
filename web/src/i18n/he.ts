@@ -1911,5 +1911,4 @@ export default {
   'Partículas': 'חלקיקים',
   'Sombras': 'צללים',
   'Telas animadas': 'מסכים מונפשים',
-  'Ajustar sozinho quando ficar lento': 'התאמה אוטומטית כשזה נהיה איטי',
 } satisfies Record<string, string>;

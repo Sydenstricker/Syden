@@ -1874,5 +1874,4 @@ export default {
   'Partículas': 'อนุภาค',
   'Sombras': 'เงา',
   'Telas animadas': 'หน้าจอเคลื่อนไหว',
-  'Ajustar sozinho quando ficar lento': 'ปรับเองอัตโนมัติเมื่อเครื่องช้า',
 } satisfies Record<string, string>;

@@ -1867,5 +1867,4 @@ export default {
   'Partículas': 'Ngaahi konga iiki',
   'Sombras': 'Ngaahi malumalu',
   'Telas animadas': 'Ngaahi sikalini ʻoku ngaue',
-  'Ajustar sozinho quando ficar lento': 'Fakatonutonu pē ʻe ia ʻo ka tuai',
 } satisfies Record<string, string>;

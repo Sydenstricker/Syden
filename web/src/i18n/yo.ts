@@ -1876,5 +1876,4 @@ export default {
   'Partículas': 'Ìtànná',
   'Sombras': 'Òjìji',
   'Telas animadas': 'Àwọn ìbòjú tó ń rìn',
-  'Ajustar sozinho quando ficar lento': 'Ṣàtúnṣe fúnra rẹ̀ nígbà tó bá ń lọ́ra',
 } satisfies Record<string, string>;

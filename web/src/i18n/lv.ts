@@ -1933,5 +1933,4 @@ export default {
   'Partículas': 'Daļiņas',
   'Sombras': 'Ēnas',
   'Telas animadas': 'Animēti ekrāni',
-  'Ajustar sozinho quando ficar lento': 'Pielāgot automātiski, kad kļūst lēns',
 } satisfies Record<string, string>;

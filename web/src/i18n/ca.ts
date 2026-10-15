@@ -1927,5 +1927,4 @@ export default {
   'Partículas': 'Partícules',
   'Sombras': 'Ombres',
   'Telas animadas': 'Pantalles animades',
-  'Ajustar sozinho quando ficar lento': 'Ajustar automàticament quan vagi lent',
 } satisfies Record<string, string>;

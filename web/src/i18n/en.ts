@@ -1856,5 +1856,4 @@ export default {
   'Partículas': 'Particles',
   'Sombras': 'Shadows',
   'Telas animadas': 'Animated screens',
-  'Ajustar sozinho quando ficar lento': 'Adjust automatically when it gets slow',
 } satisfies Record<string, string>;

@@ -1939,5 +1939,4 @@ export default {
   'Partículas': 'Zarrachalar',
   'Sombras': 'Soyalar',
   'Telas animadas': 'Harakatlanuvchi ekranlar',
-  'Ajustar sozinho quando ficar lento': 'Sekinlashganda oʻzi sozlansin',
 } satisfies Record<string, string>;

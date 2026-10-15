@@ -1901,5 +1901,4 @@ export default {
   'Partículas': 'Qaama xixiqqaa',
   'Sombras': 'Gaaddisawwan',
   'Telas animadas': 'Iskiriinota sochii qaban',
-  'Ajustar sozinho quando ficar lento': 'Yeroo suuta deemu ofumaan sirreessi',
 } satisfies Record<string, string>;

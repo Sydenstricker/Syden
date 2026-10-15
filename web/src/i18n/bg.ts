@@ -1928,5 +1928,4 @@ export default {
   'Partículas': 'Частици',
   'Sombras': 'Сенки',
   'Telas animadas': 'Анимирани екрани',
-  'Ajustar sozinho quando ficar lento': 'Автоматично нагласяне при забавяне',
 } satisfies Record<string, string>;

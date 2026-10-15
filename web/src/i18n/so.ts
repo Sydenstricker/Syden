@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'Qaybo yaryar',
   'Sombras': 'Hadhyo',
   'Telas animadas': 'Shaashado dhaqdhaqaaqa',
-  'Ajustar sozinho quando ficar lento': 'Iskiis u hagaaji marka uu gaabiyo',
 } satisfies Record<string, string>;

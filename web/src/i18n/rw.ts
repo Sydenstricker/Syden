@@ -1872,5 +1872,4 @@ export default {
   'Partículas': 'Uduce',
   'Sombras': 'Ibicucu',
   'Telas animadas': 'Amashusho agenda',
-  'Ajustar sozinho quando ficar lento': 'Hindura ubwabyo iyo bitinze',
 } satisfies Record<string, string>;

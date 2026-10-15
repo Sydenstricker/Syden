@@ -1931,5 +1931,4 @@ export default {
   'Partículas': 'අංශු',
   'Sombras': 'සෙවණැලි',
   'Telas animadas': 'චලනය වන තිර',
-  'Ajustar sozinho quando ficar lento': 'මන්දගාමී වූ විට ස්වයංක්‍රීයව සකසන්න',
 } satisfies Record<string, string>;

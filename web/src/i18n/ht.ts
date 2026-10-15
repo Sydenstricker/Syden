@@ -1941,5 +1941,4 @@ export default {
   'Partículas': 'Patikil',
   'Sombras': 'Lonbraj',
   'Telas animadas': 'Ekran ki bouje',
-  'Ajustar sozinho quando ficar lento': 'Ajiste poukont li lè l vin lan',
 } satisfies Record<string, string>;

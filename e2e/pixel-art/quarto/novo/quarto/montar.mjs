@@ -97,7 +97,10 @@ const GIROS = CENA === 'salao'
   // mais as plantas do quarto. A banqueta entra duas vezes (o mesmo desenho).
   ? { sofa: 'S:sofa-giros', tv: 'S:tv-limpa-giros', fliperama: 'S:fliperama-giros', balcao: 'S:balcao-limpo-giros', estante: 'S:estante-giros', mesinha: 'S:mesinha-limpa-giros', banqueta: 'S:banqueta-giros', 'banqueta-2': 'S:banqueta-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros',
     // o 16 × 16: mais um sofá (o mesmo desenho) e as duas poltronas do quarto, sem gerar arte nova
-    'sofa-2': 'S:sofa-giros', poltrona: 'poltrona-giros', 'poltrona-2': 'poltrona-giros' }
+    'sofa-2': 'S:sofa-giros', poltrona: 'poltrona-giros', 'poltrona-2': 'poltrona-giros',
+    // os móveis novos do 16 × 16 (escolhidos por ele: a caixa de som 4 e o pufão 1), e as 4 cadeiras da mesa de jogos
+    'mesa-jogo': 'S:mesa-jogo-giros', cadeira: 'S:cadeira-giros', 'cadeira-2': 'S:cadeira-giros', 'cadeira-3': 'S:cadeira-giros', 'cadeira-4': 'S:cadeira-giros',
+    jukebox: 'S:jukebox-giros', microfone: 'S:microfone-giros', pufao: 'S:pufao-giros' }
   : { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-limpo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
@@ -262,7 +265,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="cor-tapete">Cor do tapete</button>
 </div>
 <div class="barra" id="graficos">
-  <button id="graf-particulas">Partículas</button><button id="graf-sombras">Sombras</button><button id="graf-telas">Telas animadas</button><button id="graf-auto">Ajustar sozinho</button>
+  <button id="graf-particulas">Partículas</button><button id="graf-sombras">Sombras</button><button id="graf-telas">Telas animadas</button>
 </div>
 <div class="barra" id="enfeites"></div>
 <div class="barra" id="objetos-de-cima"></div>
@@ -365,11 +368,12 @@ function dados(im, filtro, w = W, h = W) {
   // AS OPÇÕES DE GRÁFICOS (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para ligar e
   // desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador ('syden:graficos'), as mesmas no quarto
   // e no salão; no app, quem as escolhe são as Configurações (Aparência), e a página percebe na hora pelo evento storage
-  // (é o mesmo site). "auto": quando o desenho passa de 30 ms por quadro em média, o que pesa desliga sozinho nesta visita.
-  const GRAFICOS_PADRAO = { particulas: true, sombras: true, telas: true, auto: true };
+  // (é o mesmo site). TODAS DESLIGADAS DE FÁBRICA (decisão dele, mesmo dia: o uso principal é com um jogo aberto, e quem
+  // quiser o enfeite liga); o "ajustar sozinho" saiu, também por decisão dele.
+  const GRAFICOS_PADRAO = { particulas: false, sombras: false, telas: false };
   const lerGraficos = () => { try { return { ...GRAFICOS_PADRAO, ...JSON.parse(localStorage.getItem('syden:graficos') ?? '{}') }; } catch { return { ...GRAFICOS_PADRAO }; } };
-  let GRAFICOS = lerGraficos(), lento = false;
-  const liga = (k) => GRAFICOS[k] && !(GRAFICOS.auto && lento);
+  let GRAFICOS = lerGraficos();
+  const liga = (k) => !!GRAFICOS[k];
   const MODO_APP = new URLSearchParams(location.search).has('app');
   if (CENA === 'salao') document.body.classList.add('salao');
   if (MODO_APP) document.documentElement.classList.add('app');
@@ -661,14 +665,14 @@ function dados(im, filtro, w = W, h = W) {
   for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
   // (o criado-mudo era 50, e a caneca flutuava na altura da cúpula: a "mancha" no abajur, relato de 15/10/2026)
-  const TOPOS = { mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
+  const TOPOS = { 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
   // em cada coluna, de cima a baixo da tela, s vai de 0 a 1 na largura e t na altura. Ela brilha sozinha (não escurece
   // de noite) e, de noite, clareia um pouco o que está em volta. Só as vistas de frente têm tela; nas de costas, o
   // monitor mostra a traseira.
-  function telaDaVista(peca) {
+  function telaDaVista(peca, recolher = 0) {
     const m = peca.movel, ate = peca.caixa[1] + Math.round((peca.caixa[3] - peca.caixa[1]) * 0.5);
     const conta = new Map();
     for (let y = peca.caixa[1]; y < ate; y++) for (let x = peca.caixa[0]; x < peca.caixa[2]; x++) {
@@ -690,8 +694,22 @@ function dados(im, filtro, w = W, h = W) {
     }
     if (maior.length < 60) return null;
     // a tela é convexa: em cada coluna, de cima a baixo dela
-    const col = new Map();
+    let col = new Map();
     for (const k of maior) { const x = k % W, y = (k / W) | 0, c = col.get(x); if (!c) col.set(x, [y, y]); else { c[0] = Math.min(c[0], y); c[1] = Math.max(c[1], y); } }
+    // A MOLDURA (o esboço dele, 15/10/2026): a imagem fica RECOLHIDA 3 px dentro do painel, por igual em volta; o painel
+    // escuro que sobra é a moldura. (Por dentro do painel, o que o suporte risca entra junto: preenche-se cada coluna.)
+    if (recolher) {
+      const dentro = new Uint8Array(W * W);
+      for (const [x, [ya, yb]] of col) for (let y = ya; y <= yb; y++) dentro[y * W + x] = 1;
+      for (let volta = 0; volta < recolher; volta++) {
+        const tira = [];
+        for (const [x, [ya, yb]] of col) for (let y = ya; y <= yb; y++) { const k = y * W + x; if (dentro[k] && (!dentro[k - 1] || !dentro[k + 1] || !dentro[k - W] || !dentro[k + W])) tira.push(k); }
+        for (const k of tira) dentro[k] = 0;
+      }
+      const novo = new Map();
+      for (const [x, [ya, yb]] of col) for (let y = ya; y <= yb; y++) if (dentro[y * W + x]) { const c = novo.get(x); if (!c) novo.set(x, [y, y]); else { c[0] = Math.min(c[0], y); c[1] = Math.max(c[1], y); } }
+      if (novo.size > 4) col = novo;
+    }
     const xs = [...col.keys()].sort((a, b) => a - b), x0 = xs[0], x1 = xs[xs.length - 1];
     // As bordas de cima e de baixo são RETAS com a mesma inclinação (a tela é um paralelogramo): medidas pela coluna
     // de cada uma, sem o que tapa a tela (o suporte da TV encurtava as colunas de baixo, e a imagem encolhia ali:
@@ -700,12 +718,12 @@ function dados(im, filtro, w = W, h = W) {
     const med = (v) => { const o = [...v].sort((a, b) => a - b); return o[Math.floor(o.length / 2)] ?? 0; };
     const meio = Math.max(1, Math.floor(xs.length / 2)), incl = [];
     for (let i = 0; i + meio < xs.length; i++) incl.push((col.get(xs[i + meio])[0] - col.get(xs[i])[0]) / (xs[i + meio] - xs[i]));
-    const k = med(incl), alto = med(xs.map((x) => col.get(x)[0] - k * x)), pe = med(xs.map((x) => col.get(x)[1] - k * x));
+    const k = med(incl), alto = med(xs.map((x) => col.get(x)[0] - k * x)), pe = Math.max(...xs.map((x) => col.get(x)[1] - k * x));
     const pts = [];
-    // A MOLDURA fica: o paralelogramo é o da região lisa (dentro dela), com o pé na MEDIANA das colunas (o máximo pegava a
-    // faixa escura de baixo e a imagem cobria a moldura, parecendo colada por cima: relato de 15/10/2026); o contorno do
-    // suporte desenhado sobre a tela fica por baixo da imagem.
-    for (const x of xs) { const ta = alto + k * x, tb = pe + k * x; for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) { const k4 = (y * W + x) * 4; if (m[k4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]); } }
+    // A IMAGEM SÓ NO PAINEL (relato de 15/10/2026, com o esboço dele): os pixels são os do próprio painel escuro (de cima a
+    // baixo dele em cada coluna, com o que o suporte risca por dentro), e a moldura fica à vista em volta. A reta só decide
+    // ONDE na imagem cai cada pixel (t), para ela não entortar onde o suporte encurta a coluna.
+    for (const x of xs) { const [ya, yb] = col.get(x), ta = alto + k * x, tb = pe + k * x; for (let y = ya; y <= yb; y++) { const k4 = (y * W + x) * 4; if (m[k4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]); } }
     return pts;
   }
   const TELAS = VISTAS.mesa ? VISTAS.mesa.map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null)) : [];
@@ -714,7 +732,7 @@ function dados(im, filtro, w = W, h = W) {
   // piscando e uma transmissão genérica: a imagem de verdade não vem para cá, decisão dele de 13/10/2026); o fliperama
   // fica sempre ligado no joguinho, como os de verdade.
   const TELAS_DO_MOVEL = { mesa: TELAS };
-  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? telaDaVista(p) : null));
+  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? telaDaVista(p, id === 'tv' ? 3 : 0) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
   const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
@@ -808,7 +826,7 @@ function dados(im, filtro, w = W, h = W) {
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona' };
+  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão' };
   const pufes = MOVEIS.filter((m) => m.pufe);
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -1022,7 +1040,7 @@ function dados(im, filtro, w = W, h = W) {
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3 };
+  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2 };
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -1328,6 +1346,12 @@ function dados(im, filtro, w = W, h = W) {
         sentar.push({ u, v, sobe: 16, pose: 'sentado', olha, sobre: id });
       }
     }
+    // as cadeiras da mesa de jogos, viradas para a mesa, e o pufão
+    for (const id of ['cadeira', 'cadeira-2', 'cadeira-3', 'cadeira-4']) if (ARR[id]) {
+      const [u, v] = ARR[id].c, alvo = ARR['mesa-jogo'] ? centro(peDe('mesa-jogo')) : [u + 1, v];
+      sentar.push({ u, v, sobe: 18, pose: 'sentado', olha: DIAGONAL(alvo[0] - u, alvo[1] - v), sobre: id });
+    }
+    if (ARR.pufao) sentar.push({ u: ARR.pufao.c[0], v: ARR.pufao.c[1], sobe: 6, pose: 'sentado', olha: ORIENTA[ARR.pufao.lado], sobre: 'pufao' });
     // as poltronas: um lugar cada, afundado (a pose da poltrona do quarto)
     for (const id of ['poltrona', 'poltrona-2']) if (ARR[id]) sentar.push({ u: ARR[id].c[0], v: ARR[id].c[1], sobe: 8, pose: 'sentado-poltrona', olha: ORIENTA[ARR[id].lado], sobre: id });
     for (const id of ['banqueta', 'banqueta-2']) if (ARR[id]) {
@@ -1811,7 +1835,7 @@ function dados(im, filtro, w = W, h = W) {
   // fica acima (a cabeceira, o encosto) é lateral.
   const TAMPO = { cama: 30, pufe: 30, poltrona: 22, abajur: 52, 'guarda-roupa': 135, sofa: 20, tv: 30, fliperama: 118, balcao: 52, estante: 120, mesinha: 20, banqueta: 40, 'banqueta-2': 40 };
   // AS CÓPIAS (o mesmo desenho de outro móvel): a forma e o tampo são os do original.
-  const COPIAS = { 'sofa-2': 'sofa', 'poltrona-2': 'poltrona', 'banqueta-2': 'banqueta' };
+  const COPIAS = { 'sofa-2': 'sofa', 'poltrona-2': 'poltrona', 'banqueta-2': 'banqueta', 'cadeira-2': 'cadeira', 'cadeira-3': 'cadeira', 'cadeira-4': 'cadeira' };
   for (const [c, o] of Object.entries(COPIAS)) { if (FORMAS[o] && !FORMAS[c]) FORMAS[c] = FORMAS[o]; if (TAMPO[o] && !TAMPO[c]) TAMPO[c] = TAMPO[o]; }
   // O mapa do chão: para cada pixel da tela, a casa (u, v) do ponto do chão ali. Calculado uma vez.
   const mapaU = new Float32Array(W * W), mapaV = new Float32Array(W * W);
@@ -1949,13 +1973,7 @@ function dados(im, filtro, w = W, h = W) {
     const t0 = performance.now();
     desenhar();
     tempoDeDesenho = performance.now() - t0;
-    // O AUTOMÁTICO: a média dos últimos 20 quadros que desenharam alguma coisa.
-    if (tempoDeDesenho > 1 && !lento) {
-      medidas.push(tempoDeDesenho); if (medidas.length > 20) medidas.shift();
-      if (medidas.length === 20 && medidas.reduce((a, b) => a + b, 0) / 20 > 30) { lento = true; botoesDosGraficos(); if (GRAFICOS.auto) { assinaturaCena = ''; desenhar(); } }
-    }
   }, 100);
-  const medidas = [];
   for (const b of document.querySelectorAll('[data-estado]')) b.onclick = () => {
     estado = b.dataset.estado;
     // Quem está ausente não está falando (relato de 14/10/2026: o balão aparecia com ele dormindo).
@@ -2085,7 +2103,7 @@ function dados(im, filtro, w = W, h = W) {
     const c = [x0, y0, x1 + 1, y1 + 1]; caixas.set(p.movel, c); return c;
   }
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
-  let lampadaAgora = [0, 0], telasAgora = [], caixaDaTela = null, regiaoDasFaiscas = null;
+  let lampadaAgora = [0, 0], telasAgora = [], caixaDaTela = null, regiaoDasFaiscas = null, luzDaJukebox = null;
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
@@ -2199,6 +2217,9 @@ function dados(im, filtro, w = W, h = W) {
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
           const m4 = k * 4;
           if (p.id === 'abajur' && ((k / W) | 0) < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
+          // AS LUZES DA JUKEBOX (15/10/2026): os pixels claros e quentes do desenho são lâmpadas, e de noite ficam acesos
+          // como estão (acesa = 2: a cor do dia, sem escurecer).
+          else if (p.id === 'jukebox' && p.movel[m4] > 200 && p.movel[m4 + 1] > 130 && p.movel[m4] - p.movel[m4 + 2] > 60) acesa[d] = 2;
         }
       }
     }
@@ -2224,6 +2245,7 @@ function dados(im, filtro, w = W, h = W) {
         if (AO_VIVO.sub) { const sm = document.createElement('small'); sm.textContent = AO_VIVO.sub; meio.append(sm); }
         e.replaceChildren(...(AO_VIVO.total > 1 ? [seta(-1, '‹'), meio, seta(1, '›')] : [meio]));
       } }
+    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.45 + jb.dy]; } else luzDaJukebox = null; }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     pessoasNaTela = pessoas.map((it) => ({ x: it.cabeca[0], y: it.cabeca[1] + 30 }));
@@ -2251,6 +2273,8 @@ function dados(im, filtro, w = W, h = W) {
       let sx = 0, sy = 0; for (const [x, y] of pts) { sx += x; sy += y; }
       brilhos.push([sx / pts.length, sy / pts.length, COR_DO_BRILHO[tipoTela] ?? [140, 120, 190]]);
     }
+    // a luz da jukebox, onde ela estiver (só de noite; fixa, para não redesenhar a cada quadro)
+    if (modo === 'noite' && luzDaJukebox) brilhos.push([luzDaJukebox[0], luzDaJukebox[1], [210, 130, 60], 60]);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -2261,7 +2285,8 @@ function dados(im, filtro, w = W, h = W) {
           // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
           const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
           const quente = [1, 0.72, 0.42][c] * brilho;
-          if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
+          if (acesa[k] === 2) { /* a lâmpada da jukebox: a cor do dia */ }
+          else if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
           // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel.
           else if (eMovel[k]) {
             const j = (Math.min(W - 1, peY[k] + 3) * W + x) * 4;
@@ -2277,8 +2302,8 @@ function dados(im, filtro, w = W, h = W) {
       }
       imagem.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
       for (const brilhoTela of brilhos) {
-        const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3);
-        if (d2 < 34) { const f = Math.floor((1 - d2 / 34) * 4) / 4 * 0.32; for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
+        const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3), raio = brilhoTela[3] ?? 34;
+        if (d2 < raio) { const f = Math.floor((1 - d2 / raio) * 4) / 4 * 0.32; for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
       }
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
       if (alvo && casa[k] >= 0 && !eMovel[k]) { // só no chão: por cima, desbotava o próprio móvel pego
@@ -2487,11 +2512,11 @@ function dados(im, filtro, w = W, h = W) {
   // conta o que faria.
   let FUNCOES = null; // { id: { rotulo, sub } }
   const FUNCOES_DE_TESTE = CENA === 'salao'
-    ? { tv: { rotulo: 'Entrar na voz', sub: '3 na chamada agora' }, fliperama: { rotulo: 'Mini-games', sub: 'Na sala de voz, com a turma' }, estante: { rotulo: 'Entrar na conversa', sub: '# geral' }, janela: { rotulo: 'Chamar alguém', sub: 'Copia o convite desta comunidade' }, balcao: { rotulo: 'Recado', sub: 'O que quem administra escreveu' }, quadro: { rotulo: 'Mudar esta tela', sub: 'Só quem administra vê este bloco' } }
+    ? { tv: { rotulo: 'Entrar na voz', sub: '3 na chamada agora' }, fliperama: { rotulo: 'Mini-games', sub: 'Na sala de voz, com a turma' }, estante: { rotulo: 'Entrar na conversa', sub: '# geral' }, janela: { rotulo: 'Chamar alguém', sub: 'Copia o convite desta comunidade' }, balcao: { rotulo: 'Recado', sub: 'O que quem administra escreveu' }, quadro: { rotulo: 'Mudar esta tela', sub: 'Só quem administra vê este bloco' }, microfone: { rotulo: 'Karaokê', sub: 'Na sala de voz, com a turma' }, jukebox: { rotulo: 'Karaokê', sub: 'Na sala de voz, com a turma' } }
     : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
   // O móvel e a função dele (o guarda-roupa é a função "gavetas" da home: lá eram as gavetas da cama).
   // (no salão, as do Salao.tsx: a TV leva à voz, o fliperama aos mini-games, a estante aos canais, o balcão ao recado)
-  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador', cadeira: 'computador' };
+  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador', cadeira: 'computador' };
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
@@ -3071,18 +3096,18 @@ function dados(im, filtro, w = W, h = W) {
   }
   // Os gráficos: os botões da página de teste, e o que o app mudar nas Configurações.
   function botoesDosGraficos() {
-    for (const [k, nome] of [['particulas', 'Partículas'], ['sombras', 'Sombras'], ['telas', 'Telas animadas'], ['auto', 'Ajustar sozinho']]) {
+    for (const [k, nome] of [['particulas', 'Partículas'], ['sombras', 'Sombras'], ['telas', 'Telas animadas']]) {
       const b = document.getElementById('graf-' + k); if (!b) continue;
       b.setAttribute('aria-pressed', String(!!GRAFICOS[k]));
-      b.textContent = nome + ': ' + (GRAFICOS[k] ? 'sim' : 'não') + (k === 'auto' && lento ? ' (lento: desligou)' : '');
+      b.textContent = nome + ': ' + (GRAFICOS[k] ? 'sim' : 'não');
     }
   }
-  for (const k of ['particulas', 'sombras', 'telas', 'auto']) {
+  for (const k of ['particulas', 'sombras', 'telas']) {
     const b = document.getElementById('graf-' + k);
     if (b) b.onclick = () => { GRAFICOS = { ...GRAFICOS, [k]: !GRAFICOS[k] }; try { localStorage.setItem('syden:graficos', JSON.stringify(GRAFICOS)); } catch { /* só nesta visita */ } botoesDosGraficos(); assinaturaCena = ''; desenhar(); };
   }
   window.addEventListener('storage', (e) => { if (e.key === 'syden:graficos') { GRAFICOS = lerGraficos(); botoesDosGraficos(); assinaturaCena = ''; desenhar(); } });
-  window.graficosDoTeste = () => ({ ...GRAFICOS, lento }); // para o teste
+  window.graficosDoTeste = () => ({ ...GRAFICOS }); // para o teste
   botoesDosGraficos();
   // O canal da TV: no app, o app troca (e manda o novo AO_VIVO); aqui, a lista de teste.
   let canaisDeTeste = [];

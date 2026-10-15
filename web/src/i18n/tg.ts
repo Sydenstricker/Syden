@@ -1932,5 +1932,4 @@ export default {
   'Partículas': 'Зарраҳо',
   'Sombras': 'Сояҳо',
   'Telas animadas': 'Экранҳои ҳаракаткунанда',
-  'Ajustar sozinho quando ficar lento': 'Ҳангоми суст шудан худкор танзим кардан',
 } satisfies Record<string, string>;

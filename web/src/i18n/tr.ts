@@ -1855,5 +1855,4 @@ export default {
   'Partículas': 'Parçacıklar',
   'Sombras': 'Gölgeler',
   'Telas animadas': 'Hareketli ekranlar',
-  'Ajustar sozinho quando ficar lento': 'Yavaşlayınca kendi ayarlasın',
 } satisfies Record<string, string>;

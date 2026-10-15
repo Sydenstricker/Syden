@@ -1883,5 +1883,4 @@ export default {
   'Partículas': 'Particules',
   'Sombras': 'Ombres',
   'Telas animadas': 'Écrans animés',
-  'Ajustar sozinho quando ficar lento': 'Ajuster automatiquement quand ça rame',
 } satisfies Record<string, string>;
