@@ -86,7 +86,7 @@ export interface VoiceMember {
   assistindo: number[];
 }
 
-type Ack = (result: { ok: true } | { ok: false; error: string }) => void;
+type Ack = (result: { ok: true; communityId?: number } | { ok: false; error: string }) => void;
 
 interface VoiceSession extends VoiceMember {
   socketId: string;
@@ -395,7 +395,8 @@ export function setupRealtime(io: IOServer) {
       });
       if (previous !== undefined && previous !== channel.communityId) broadcastVoice(io, previous);
       broadcastVoice(io, channel.communityId);
-      ack?.({ ok: true });
+      // A comunidade volta para o app conferir, em cada voice:state dela, que continua na lista (useVoice.ts).
+      ack?.({ ok: true, communityId: channel.communityId });
     });
 
     socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'assistindo'>>) => {

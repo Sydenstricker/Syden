@@ -333,6 +333,8 @@ export function useVoice(socket: Socket | null) {
 
   // Refs para os handlers de eventos lerem o valor atual sem precisar se reinscrever.
   const channelRef = useRef<number | null>(null);
+  /** A comunidade da sala em que estamos (vem na resposta do voice:join): é a lista dela que tem de nos ter. */
+  const comunidadeRef = useRef<number | null>(null);
   // O efeito que escuta o LiveKit é montado uma vez só; esta ref deixa ele chamar a versão atual.
   const stopAppAudioRef = useRef<() => void>(() => {});
   const deafenedRef = useRef(false);
@@ -606,8 +608,31 @@ export function useVoice(socket: Socket | null) {
       });
     };
     socket.on('connect', onConnect);
+    // A LISTA DA SALA NÃO PODE ESQUECER QUEM ESTÁ NA CALL (relato de 15/10/2026: três pessoas na chamada, duas na barra
+    // lateral). Os quadros vêm do LiveKit; a lista, do registro do servidor, e nada conferia um contra o outro: se o
+    // registro se perdia, a pessoa seguia falando e sumia da lista de todo mundo. Agora quem está conectado confere a
+    // cada voice:state da própria comunidade; se não está nela, e continua fora 3 s depois (uma lista atrasada no meio
+    // de uma troca de sala não conta), reanuncia como na volta do socket.
+    let conferir: ReturnType<typeof setTimeout> | undefined;
+    let ultima: number[] = [];
+    const naLista = () => ultima.includes(Number(room.localParticipant.identity));
+    const onState = ({ communityId, members }: { communityId: number; members: { userId: number }[] }) => {
+      if (communityId !== comunidadeRef.current) return;
+      ultima = members.map((m) => m.userId);
+      if (channelRef.current === null || room.state !== ConnectionState.Connected || naLista() || conferir) return;
+      conferir = setTimeout(() => {
+        conferir = undefined;
+        if (channelRef.current !== null && room.state === ConnectionState.Connected && !naLista() && socket.connected) {
+          console.warn('[voz] fora da lista da sala com a chamada aberta; reanunciando');
+          onConnect();
+        }
+      }, 3000);
+    };
+    socket.on('voice:state', onState);
     return () => {
       socket.off('connect', onConnect);
+      socket.off('voice:state', onState);
+      clearTimeout(conferir);
     };
   }, [socket, room]);
 
@@ -764,7 +789,9 @@ export function useVoice(socket: Socket | null) {
         await room.connect(url, token, { autoSubscribe: false });
         channelRef.current = sala;
         setChannelId(sala);
-        socketRef.current.emit('voice:join', { channelId: sala });
+        socketRef.current.emit('voice:join', { channelId: sala }, (r?: { communityId?: number }) => {
+          if (typeof r?.communityId === 'number') comunidadeRef.current = r.communityId;
+        });
         sounds.selfJoin();
       } catch (e) {
         console.error(e);
