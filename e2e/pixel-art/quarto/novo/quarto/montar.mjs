@@ -181,6 +181,9 @@ const html = `<!doctype html>
   html.app .lado { display: block; }
   #rotulo { position: absolute; pointer-events: none; transform: translate(-50%, -120%); background: rgba(30, 24, 20, 0.92); color: var(--texto); padding: 4px 10px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
   #rotulo small { display: block; color: var(--suave); font-size: 11px; }
+  /* Os nomes de quem está na call, em cima de cada coelho (no salão). */
+  #nomes { position: absolute; inset: 0; pointer-events: none; }
+  #nomes span { position: absolute; transform: translate(-50%, -100%); background: rgba(30, 24, 20, 0.78); color: #fff4e6; padding: 1px 6px; border-radius: 6px; font-size: 11px; white-space: nowrap; }
 </style></head>
 <body><main>
 <h1>O quarto do coelho</h1>
@@ -200,6 +203,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="cortina" aria-pressed="false">Cortina: aberta</button>
   <button id="tipo-janela">Tipo de janela</button>
   <button id="funcoes" aria-pressed="false">Funções do app: desligadas</button>
+  <button id="pessoas-teste" hidden>Pessoas na call: 0</button>
   <button id="cor-tapete">Cor do tapete</button>
 </div>
 <div class="barra" id="enfeites"></div>
@@ -227,7 +231,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><canvas id="tela" width="512" height="512" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -1111,6 +1115,76 @@ function dados(im, filtro, w = W, h = W) {
     }
     return r;
   }
+  // ============================== AS PESSOAS NA CALL (o salão, 15/10/2026) ==============================
+  // O salão enche com quem está na call agora (como o Salao.tsx de frente): cada pessoa é um coelho no lugar dela, com o
+  // nome em cima. Todos com o MASCOTE BASE por enquanto (decisão dele: os outros mascotes viram isométricos depois). Os
+  // lugares saem dos móveis, onde eles estiverem: os assentos do sofá, as banquetas, e o chão em volta da mesinha. Quem
+  // TRANSMITE fica de pé na frente da TV, e quem JOGA, no fliperama. Sem ninguém na call, o salão fica vazio (a tela não
+  // finge movimento).
+  let PESSOAS = []; // [{ id, nome, papel: 'call' | 'transmitindo' | 'jogando' }]
+  const DIAGONAL = (du, dv) => (Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : dv > 0 ? 'sudeste' : 'noroeste');
+  function lugaresDoSalao() {
+    const sentar = [], tv = [], fliperama = [], chao = [];
+    if (ARR.sofa) {
+      const pe = peDe('sofa'), olha = ORIENTA[ARR.sofa.lado], [fu, fv] = VET[olha], [cu, cv] = centro(pe);
+      // ao longo do lado comprido, um pouco para a frente do meio
+      const longoU = fu === 0, n = 3;
+      for (let i = 0; i < n; i++) {
+        const f = (i + 0.5) / n;
+        const u = longoU ? pe[0] + f * (pe[1] - pe[0]) : cu + fu * 0.15, v = longoU ? cv + fv * 0.15 : pe[2] + f * (pe[3] - pe[2]);
+        sentar.push({ u, v, sobe: 16, pose: 'sentado', olha, sobre: 'sofa' });
+      }
+    }
+    for (const id of ['banqueta', 'banqueta-2']) if (ARR[id]) {
+      const [u, v] = ARR[id].c, alvo = ARR.balcao ? centro(peDe('balcao')) : [u, v - 1];
+      sentar.push({ u, v, sobe: 34, pose: 'sentado', olha: DIAGONAL(alvo[0] - u, alvo[1] - v), sobre: id });
+    }
+    const naFrente = (id, casas) => {
+      if (!ARR[id]) return null;
+      const olha = ORIENTA[ARR[id].lado], [fu, fv] = VET[olha], pe = peDe(id), [cu, cv] = centro(pe);
+      const u = cu + fu * ((pe[1] - pe[0]) / 2 + casas), v = cv + fv * ((pe[3] - pe[2]) / 2 + casas);
+      return { u, v, sobe: 0, pose: 'parado', olha: DIAGONAL(-fu, -fv), sobre: null };
+    };
+    const t = naFrente('tv', 1.6); if (t) tv.push(t);
+    const fl = naFrente('fliperama', 0.7); if (fl) fliperama.push(fl);
+    // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
+    const meio = ARR.mesinha ? centro(peDe('mesinha')) : [4, 4], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, 4];
+    const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
+    for (const [i, j] of livres.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: DIAGONAL(alvoTv[0] - i - 0.5, alvoTv[1] - j - 0.5), sobre: null });
+    return { sentar, tv, fliperama, chao };
+  }
+  function lugaresDasPessoas() {
+    const L = lugaresDoSalao(), usados = [];
+    const pegar = (lista) => { const x = lista.shift(); if (x) usados.push(x); return x; };
+    return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || null })).filter((x) => x.lugar);
+  }
+  // Cada pessoa vira uma PEÇA da cena, como um móvel: o mascote parado naquela pose, com a profundidade do pé dele (e, sentado,
+  // desenhado depois do móvel em que senta).
+  const pecasDasPessoas = new Map();
+  function itensDasPessoas() {
+    const itens = [];
+    for (const [i, { pessoa, lugar }] of lugaresDasPessoas().entries()) {
+      const a = quadrosDe(lugar.pose, lugar.olha), q = a.quadros[0], [px, py] = ponto(lugar.u, lugar.v);
+      const X0 = Math.round(px - a.peX), Y0 = Math.round(py - a.peY - 1 - lugar.sobe);
+      const chave = [pessoa.id, lugar.pose, lugar.olha, X0, Y0].join('|');
+      let p = pecasDasPessoas.get(chave);
+      if (!p) {
+        const movel = new Uint8ClampedArray(W * W * 4), peColuna = new Int16Array(W).fill(-1);
+        for (let y = 0; y < q.h; y++) for (let x = 0; x < q.w; x++) {
+          const s4 = (y * q.w + x) * 4; if (q.px[s4 + 3] < 128) continue;
+          const X = X0 + x, Y = Y0 + y; if (X < 0 || Y < 0 || X >= W || Y >= W) continue;
+          const d = (Y * W + X) * 4; for (let c = 0; c < 4; c++) movel[d + c] = q.px[s4 + c];
+          peColuna[X] = Math.round(py);
+        }
+        p = { id: 'pessoa-' + pessoa.id, movel, sombra: VAZIA, topo: Y0 + a.topo, peColuna, caixa: [Math.max(0, X0), Math.max(0, Y0), Math.min(W, X0 + q.w), Math.min(W, Y0 + q.h)] };
+        if (pecasDasPessoas.size > 40) pecasDasPessoas.clear();
+        pecasDasPessoas.set(chave, p);
+      }
+      const r = 0.28;
+      itens.push({ p, dx: 0, dy: 0, fator: 1, pe: [lugar.u - r, lugar.u + r, lugar.v - r, lugar.v + r], sobre: lugar.sobre, atras: false, nome: pessoa.nome, cabeca: [px, Y0 + a.topo] });
+    }
+    return itens;
+  }
   // A caminhada: busca em largura pela grade, nas 4 direções da grade (que na tela são as 4 diagonais).
   function caminho(de, para) {
     const alvo = new Set(para.map(([i, j]) => i * N + j)), veio = new Map([[de[0] * N + de[1], -1]]), fila = [de[0] * N + de[1]];
@@ -1838,6 +1912,8 @@ function dados(im, filtro, w = W, h = W) {
     // O móvel que está sendo arrastado ou deslizando não entra na fotografia: ele é desenhado vivo, a cada quadro.
     variante = varianteDoPufe();
     const lista0 = Object.keys(ARR).filter((id) => !(viva && viva.id === id)).map(itemDe);
+    const pessoas = CENA === 'salao' ? itensDasPessoas() : [];
+    lista0.push(...pessoas);
     for (const it of lista0) if (it.forma) it.caixas = caixasDe(it.pe, it.olha, it.forma);
     lista = ordenar(lista0);
     listaAgora = lista;
@@ -1895,6 +1971,8 @@ function dados(im, filtro, w = W, h = W) {
     caixaDaTela = telaAgora ? telaAgora.reduce((c, [x, y]) => [Math.min(c[0], x - 34), Math.min(c[1], y - 34), Math.max(c[2], x + 35), Math.max(c[3], y + 35)], [W, W, 0, 0]) : null;
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
+    // os nomes, em cima de cada coelho
+    { const caixa = document.getElementById('nomes'); caixa.replaceChildren(...pessoas.map((it) => { const e = document.createElement('span'); e.textContent = it.nome; e.style.left = (it.cabeca[0] / W) * 100 + '%'; e.style.top = ((it.cabeca[1] - 2) / W) * 100 + '%'; return e; })); }
     imagem = g.createImageData(W, W);
     sombraFinal.fill(0);
     passeFinal([0, 0, W, W]);
@@ -1979,7 +2057,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, EM_CIMA, viva?.id ?? null]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, CORES, EM_CIMA, PESSOAS, viva?.id ?? null]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     pecaDoCoelho();
@@ -2616,12 +2694,24 @@ function dados(im, filtro, w = W, h = W) {
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
       if (d.comando === 'inicial') document.getElementById('inicial').click();
       if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);
+      if (Array.isArray(d.pessoas)) { PESSOAS = d.pessoas.slice(0, 12); desenhar(); }
     });
     window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasDaBarra() }, location.origin);
     relatar();
   }
   // No salão o coelho não passeia: ao abrir, ele vai para o lugar dele (o recado, atrás do balcão).
   if (CENA === 'salao') decidir();
+  // Na página de teste, gente de mentira na call (o app manda a de verdade: { pessoas }).
+  if (CENA === 'salao') {
+    const bp = document.getElementById('pessoas-teste'), NOMES_DE_TESTE = ['Ana', 'Zeca', 'Rui', 'Bia', 'Lia', 'Teo', 'Duda', 'Gil'];
+    bp.hidden = false;
+    bp.onclick = () => {
+      const n = (PESSOAS.length + 1) % 9;
+      PESSOAS = NOMES_DE_TESTE.slice(0, n).map((nome, i) => ({ id: i + 1, nome, papel: i === 1 ? 'transmitindo' : i === 3 ? 'jogando' : 'call' }));
+      bp.textContent = 'Pessoas na call: ' + n; desenhar();
+    };
+  }
+  window.pessoasDoTeste = (lista) => { PESSOAS = lista; desenhar(); }; // para o teste
   desenhar();
 })();
 </script>
