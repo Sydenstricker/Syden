@@ -311,6 +311,7 @@ const CENA = ${JSON.stringify(CENA)}, DX = ${DX}, DY = ${DY};
 // O que cada pessoa arrumou fica guardado por cena (o quarto e o salão não se misturam).
 const PREFIXO = CENA === 'salao' ? 'syden-salao-' : 'syden-quarto-';
 const MOVEIS_GIRADOS = ${JSON.stringify(Object.keys(GIROS))};
+const TELAS_MEDIDAS = ${JSON.stringify(CENA === 'salao' ? JSON.parse(fs.readFileSync(path.join(SALAO, 'moveis', 'telas.json'), 'utf8')) : {})};
 const W = ${WC};
 function ponto(u, v) {
   const a = u / N, b = v / N, { fundo: B, esquerda: L, direita: R, frente: F } = CANTOS;
@@ -732,7 +733,18 @@ function dados(im, filtro, w = W, h = W) {
   // piscando e uma transmissão genérica: a imagem de verdade não vem para cá, decisão dele de 13/10/2026); o fliperama
   // fica sempre ligado no joguinho, como os de verdade.
   const TELAS_DO_MOVEL = { mesa: TELAS };
-  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? telaDaVista(p, id === 'tv' ? 3 : 0) : null));
+  // A TELA MEDIDA (salao/moveis/telas.json, 15/10/2026): procurar a tela pela cor falhava nos dois (o vidro do fliperama
+  // tem vários tons, e o suporte da TV tem a cor do painel: relatos dele). Os quatro cantos de cada tela foram medidos uma
+  // vez; aqui só se enche o quadrilátero, com o recuo de cada um (a moldura da TV fica à vista).
+  function telaMedida(peca, q, recuo) {
+    const [re, rd, rc, rb] = recuo, x0 = q.x0 + re, x1 = q.x1 - rd, pts = [];
+    for (let x = x0; x <= x1; x++) {
+      const ta = q.topo + q.k * x + rc, tb = q.pe + q.k * x - rb;
+      for (let y = Math.ceil(ta); y <= Math.floor(tb); y++) if (peca.movel[(y * W + x) * 4 + 3]) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]);
+    }
+    return pts;
+  }
+  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id].recuo) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
   const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
