@@ -144,7 +144,8 @@ for (const tipo of ['original', 'arco', 'redonda', 'floreira', 'cortinas']) {
 // OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
 const ITENS_PAREDE = {};
 for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta']) {
-  const d = path.join(AQUI, 'parede', item);
+  // no salão, a versão pintada no tijolo dele, se houver (parede-salao/)
+  const ds = path.join(AQUI, 'parede-salao', item), d = CENA === 'salao' && fs.existsSync(path.join(ds, 'item.json')) ? ds : path.join(AQUI, 'parede', item);
   if (!fs.existsSync(path.join(d, 'item.json'))) continue;
   ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
   for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-' + q] = png(path.join(d, 'peca-' + q + '.png'));
@@ -577,7 +578,8 @@ function dados(im, filtro, w = W, h = W) {
         let sx = 0, sy = 0, n = 0, cr = 0, cg = 0, cb = 0;
         for (let k = 0; k < W * W; k++) {
           const t4 = k * 4, r = T2.dia[t4], g2 = T2.dia[t4 + 1], b = T2.dia[t4 + 2];
-          if (T2.dia[t4 + 3] < 128 || Math.max(r, g2, b) < 190 || Math.max(r, g2, b) - Math.min(r, g2, b) < 60) continue;
+          // a cor viva acesa, e também o miolo BRANCO do tubo (antes ficava cinza à noite)
+          if (T2.dia[t4 + 3] < 128 || Math.max(r, g2, b) < 190 || (Math.max(r, g2, b) - Math.min(r, g2, b) < 60 && r + g2 + b < 600)) continue;
           const d = mp(k % W, (k / W) | 0); if (d < 0) continue;
           for (const A of [noite, noiteSemLuar, noiteAbajur, abajurSemLuar]) { A[d * 4] = r; A[d * 4 + 1] = g2; A[d * 4 + 2] = b; }
           sx += d % W; sy += (d / W) | 0; n++; cr += r; cg += g2; cb += b;

@@ -28,6 +28,13 @@ noite = dia * np.clip(desloc, 0, 1.2)
 r, g, b = dia[..., 0], dia[..., 1], dia[..., 2]
 ys = np.mgrid[0:512, 0:512][0]
 luz = (r > 200) & (g > 150) & (b < 150) & (r - b > 90) & (ys < 200)
+# só as LÂMPADAS: pedaços de 3 pixels ou mais com o miolo bem claro (relato de 15/10/2026, "de noite tem vários pontos
+# brancos": os fiapos claros do rejunte do tijolo novo passavam no teste e ficavam acesos)
+from scipy.ndimage import label as rotular
+rot, _ = rotular(luz)
+tam = np.bincount(rot.ravel()); tam[0] = 0
+brilho_max = np.zeros(tam.size); np.maximum.at(brilho_max, rot.ravel(), (r + g).ravel())
+luz = np.isin(rot, np.nonzero((tam >= 3) & (brilho_max >= 430))[0])
 luz = binary_dilation(luz, iterations=1) & (r > 150)
 noite[luz] = dia[luz]
 brilho = gaussian_filter(luz.astype(float), 9)

@@ -121,6 +121,21 @@ def montar(fonte):
     tem = sx >= 0
     ix = np.clip(np.round(sx).astype(int), 0, src.shape[1] - 1); iy = np.clip(np.round(sy).astype(int), 0, src.shape[0] - 1)
     out[tem] = src[iy[tem], ix[tem]]
+    # OS FUROS (relato de 15/10/2026, "de noite tem vários pontos brancos"): perto das bordas e das costuras, alguns
+    # pixels iam buscar a cor fora do desenho da base e traziam o cinza do fundo para dentro da parede. Viram a média dos
+    # vizinhos que são sala.
+    furo = tem & (np.abs(out.astype(int) - fundo.astype(int)).max(2) < 4)
+    for _ in range(6):
+        if not furo.any(): break
+        soma = np.zeros(out.shape, float); n = np.zeros(out.shape[:2], float)
+        bom = tem & ~furo
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)):
+            b = np.roll(np.roll(bom, dy, 0), dx, 1); c = np.roll(np.roll(out, dy, 0), dx, 1)
+            soma += c * b[..., None]; n += b
+        pode = furo & (n >= 2)
+        out[pode] = (soma[pode] / n[pode][:, None]).astype(np.uint8)
+        furo = furo & ~pode
+    print('furos que sobraram:', int(furo.sum()))
     return out
 
 

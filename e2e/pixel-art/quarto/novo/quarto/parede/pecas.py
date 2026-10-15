@@ -3,6 +3,7 @@
 #   python e2e/pixel-art/quarto/novo/quarto/parede/pecas.py   → parede/<item>/peca-dia.png, peca-noite.png, item.json
 import json
 import os
+import sys
 import numpy as np
 from PIL import Image
 from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, label, distance_transform_edt
@@ -10,10 +11,17 @@ from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, l
 AQUI = os.path.dirname(os.path.abspath(__file__))
 J = os.path.join(os.path.dirname(AQUI), 'janelas')
 ler = lambda *p: np.array(Image.open(os.path.join(*p)).convert('RGB')).astype(float)
-chao = lambda x: 226 + (x - 256) * (114 / 216)
+# O SALÃO ("pecas.py salao"): os objetos pintados no TIJOLO do salão (itens.mjs salao), recortados contra ele, em
+# parede-salao/<item>/; a peça é gravada nas coordenadas do quarto (27 px acima), que o motor leva ao salão.
+SALAO = sys.argv[1:2] == ['salao']
+DESLOC = 27 if SALAO else 0
+chao = lambda x: 226 + DESLOC + (x - 256) * (114 / 216)
 ys, xs = np.mgrid[0:512, 0:512]
 PAREDE = (xs >= 257) & (xs < 472) & (ys <= chao(xs) - 4)
-semDia = ler(J, 'sem-janela-dia.png'); semNoite = ler(J, 'sem-janela-noite.png')
+if SALAO:
+    semDia = ler(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(AQUI)))), 'salao', 'base-tijolo.png'); semNoite = semDia
+else:
+    semDia = ler(J, 'sem-janela-dia.png'); semNoite = ler(J, 'sem-janela-noite.png')
 borrar = lambda a: np.stack([gaussian_filter(a[..., c], 10) for c in range(3)], 2)
 razao = borrar(semNoite) / np.maximum(1, borrar(semDia))
 # O que cada um é (o nome para a página) e o que ele abre no app (a ação da home de hoje, Home.tsx).
@@ -33,7 +41,7 @@ ITENS = {
     'porta': {'nome': 'a porta do banheiro', 'funcao': None, 'chao': True},
 }
 for item, meta in ITENS.items():
-    d = os.path.join(AQUI, item)
+    d = os.path.join(os.path.dirname(AQUI), 'parede-salao', item) if SALAO else os.path.join(AQUI, item)
     if not os.path.exists(os.path.join(d, 'dia.png')): continue
     dia = ler(d, 'dia.png')
     # O objeto é o que mudou MUITO, e mais a borda dele (contorno e sombra) onde mudou pouco: a repintura também mexe de
@@ -54,11 +62,12 @@ for item, meta in ITENS.items():
     m = binary_fill_holes(m & (dif > 26)) & PAREDE
     # E SEM A SOMBRA PINTADA NA PAREDE: o pixel que é só a parede creme escurecida (os três canais na mesma proporção) é
     # sombra no reboco do quarto, e no tijolo do salão virava uma mancha clara em volta da peça.
-    razao = dia / np.maximum(1, semDia)
-    sombra = (razao.max(2) - razao.min(2) < 0.07) & (razao.mean(2) < 0.97) & (razao.mean(2) > 0.35)
+    rs = dia / np.maximum(1, semDia)  # (antes se chamava razao e apagava a luz da noite, usada embaixo na peça de noite)
+    sombra = (rs.max(2) - rs.min(2) < 0.07) & (rs.mean(2) < 0.97) & (rs.mean(2) > 0.35)
     rot2, _ = label(m & ~sombra)
     t2 = np.bincount(rot2.ravel()); t2[0] = 0
-    m = np.isin(rot2, np.nonzero(t2 >= max(20, t2.max() * 0.05))[0])
+    if not SALAO: m = np.isin(rot2, np.nonzero(t2 >= max(20, t2.max() * 0.05))[0])
+    # (no salão a peça foi pintada no próprio tijolo: o que sobra em volta já é da cor certa, e descascar só comia a peça)
     # DESCASCAR A BORDA (relato de 15/10/2026: manchas em volta do violão, dos troféus, do neon, da prateleira de snacks):
     # o que sobra em volta é o creme da parede do quarto TINGIDO pela peça (o rosado do neon, o bege do violão), e não
     # sombra pura. De fora para dentro, sai da borda todo pixel claro e pouco saturado, até bater no contorno escuro da peça
@@ -67,7 +76,7 @@ for item, meta in ITENS.items():
     # só numa faixa de 4 px da borda de fora: sem isso, entrava por uma falha do contorno e comia o mostrador do relógio, o
     # vidro dos potes e a placa da porta
     parece_parede = (lum > 105) & (sat < 0.42) & (distance_transform_edt(m) <= 4)
-    for _ in range(4):
+    for _ in range(0 if SALAO else 4):
         fora = ~m
         borda = m & (np.roll(fora, 1, 0) | np.roll(fora, -1, 0) | np.roll(fora, 1, 1) | np.roll(fora, -1, 1))
         tira = borda & parece_parede
@@ -76,12 +85,20 @@ for item, meta in ITENS.items():
     # o que ficou cercado pela peça é dela (o mostrador do relógio, as fotos do quadro): o filtro de sombra o tomava por
     # parede escurecida
     m = binary_fill_holes(m)
+    # no salão, só os pedaços grandes: a repintura mexe no fio das luzinhas e nos tijolos perto, e esses pedaços soltos
+    # andariam junto com a peça
+    if SALAO:
+        rot3, _ = label(m); t3 = np.bincount(rot3.ravel()); t3[0] = 0
+        m = np.isin(rot3, np.nonzero(t3 >= t3.max() * 0.3)[0])
     # "vaos": o que é parede pura por dentro da peça (o vão entre as tábuas da prateleira) também sai. Não vale para
     # todas: o mostrador do relógio é creme como a parede.
     if meta.get('vaos'): m = m & (dif > 14)
-    for nome, cor in [('peca-dia', dia), ('peca-noite', dia * razao)]:
-        # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB)
-        Image.fromarray(np.dstack([np.clip(cor, 0, 255) * m[..., None], m * 255.0]).astype(np.uint8), 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)
+    for nome, cor in [('peca-dia', dia), ('peca-noite', dia if SALAO else dia * razao)]:
+        # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB; no salão, a peça sobe
+        # os 27 px para as coordenadas do quarto)
+        a = np.dstack([np.clip(cor, 0, 255) * m[..., None], m * 255.0])
+        if DESLOC: a = np.roll(a, -DESLOC, 0)
+        Image.fromarray(a.astype(np.uint8), 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)
     cols = np.nonzero(m.any(0))[0]; linhas = np.nonzero(m.any(1))[0]
     # a altura: de quanto acima do chão até quanto (medida na coluna do meio)
     meio = int((cols.min() + cols.max()) / 2)

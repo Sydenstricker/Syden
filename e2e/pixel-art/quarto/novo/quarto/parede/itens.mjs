@@ -31,14 +31,23 @@ export const ITENS = {
   trofeus: { area: area(2.7, 5.7, 80, 180), semente: 4, texto: `ONLY a SHORT dark wooden display shelf, fully inside the area, with three shiny trophy cups (gold, silver, bronze), ${ESTILO}` },
   neon: { area: area(3.0, 5.4, 100, 175), texto: `ONLY a glowing neon sign shaped like a cute bunny head next to a music note, bright pink and cyan neon tubes, no letters, no text, ${ESTILO}` },
   relogio: { area: area(3.6, 4.7, 120, 165), texto: `ONLY a small round wooden wall clock with a cream face and dark hands, ${ESTILO}` },
-  violao: { area: area(3.4, 4.8, 70, 175), texto: `ONLY a wooden acoustic guitar hanging vertically on a small wall hook, ${ESTILO}` },
+  // (no salão, a primeira saiu cortada reta na direita: área mais larga, outra semente)
+  violao: { area: area(2.9, 5.5, 60, 186), semente: 17, texto: `ONLY a SMALL wooden acoustic guitar hanging vertically on a small wall hook, CENTERED in the area with empty wall all around it, ${ESTILO}` },
   porta: { area: area(3.0, 5.2, 0, 150), texto: `ONLY a closed dark wooden door with a small round restroom sign on it showing a simple bunny icon, a brass door handle, standing on the floor, set into the plain cream wall, ${ESTILO}` },
   pintura: { area: area(3.3, 4.9, 90, 170), texto: `ONLY a framed landscape painting of green hills and a soft sunset sky, in a thin wooden frame, ${ESTILO}` },
 };
-const base = ler64(path.join(AQUI, '..', 'janelas', 'sem-janela-dia.png'));
-for (const item of process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(ITENS)) {
-  const { area: a, texto, semente } = ITENS[item];
-  const pasta = path.join(AQUI, item), destino = path.join(pasta, 'dia.png');
+// O SALÃO (15/10/2026): "itens.mjs salao <item...>" pinta no TIJOLO do salão (salao/base-tijolo.png, 27 px abaixo do
+// quarto), em parede-salao/<item>/: pintado no reboco creme do quarto, o objeto trazia em volta a cor de lá, que no tijolo
+// virava mancha, e às vezes saía cortado (relatos dele).
+const SALAO = process.argv[2] === 'salao';
+const args = process.argv.slice(SALAO ? 3 : 2);
+const base = ler64(SALAO ? path.join(AQUI, '..', '..', '..', '..', 'salao', 'base-tijolo.png') : path.join(AQUI, '..', 'janelas', 'sem-janela-dia.png'));
+const noSalao = (a) => a.map(([x, y]) => [x, y + 27]);
+const deTijolo = (t) => t.replace(/the plain cream plaster wall|the plain cream wall/g, 'the red brick wall');
+for (const item of args.length ? args : Object.keys(ITENS)) {
+  const { area: a0, texto: t0, semente } = ITENS[item];
+  const a = SALAO ? noSalao(a0) : a0, texto = SALAO ? deTijolo(t0) : t0;
+  const pasta = SALAO ? path.join(AQUI, '..', 'parede-salao', item) : path.join(AQUI, item), destino = path.join(pasta, 'dia.png');
   if (fs.existsSync(destino)) { console.log('já existe:', item); continue; }
   fs.mkdirSync(pasta, { recursive: true });
   const xs = a.map((p) => p[0]), ys = a.map((p) => p[1]);
