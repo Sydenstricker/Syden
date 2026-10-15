@@ -1,0 +1,41 @@
+{
+  "id": "1bcc4820-062d-4c40-b1a2-419830f2a163",
+  "name": "ceramic coffee mug with a hand",
+  "state_name": "base",
+  "prompt": "ceramic coffee mug with a handle and a little steam, and nothing else, a small object meant to sit on top of a table, drawn at the same pixel scale as the reference furniture",
+  "size": {
+    "width": 42,
+    "height": 42
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T19:18:21.664471+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1bcc4820-062d-4c40-b1a2-419830f2a163/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "b01692d9-116a-4bff-b80f-fcb5527d950b",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

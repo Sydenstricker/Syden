@@ -1,0 +1,10 @@
+{
+  "caneca": { "opcao": 2, "nome": "a caneca" },
+  "suco": { "opcao": 6, "nome": "o suco" },
+  "refrigerante": { "opcao": 3, "nome": "o refrigerante" },
+  "plantinha": { "opcao": 6, "nome": "a plantinha" },
+  "livros": { "opcao": 1, "nome": "os livros" },
+  "videogame": { "opcao": 6, "nome": "o videogame" },
+  "pipoca": { "opcao": 1, "nome": "a pipoca" },
+  "retrato": { "opcao": 2, "nome": "o porta-retrato" }
+}

@@ -37,8 +37,9 @@ for item, meta in ITENS.items():
     rot, n = label(forte)
     tam = np.bincount(rot.ravel()); tam[0] = 0
     forte = np.isin(rot, np.nonzero(tam >= tam.max() * 0.15)[0])
-    m = binary_fill_holes(binary_dilation(forte, iterations=3) & (dif > 6) & PAREDE | forte)
-    m = binary_fill_holes(binary_dilation(m, iterations=1) & ~binary_dilation(~m, iterations=1) | m) & PAREDE
+    # A borda é só o que mudou de verdade (o contorno e a sombra, dif > 16): com dif > 6 entrava uma faixa da parede creme
+    # do quarto, que na parede de tijolo do salão virava um halo claro em volta do quadro (15/10/2026).
+    m = binary_fill_holes(binary_dilation(forte, iterations=2) & (dif > 16) & PAREDE | forte) & PAREDE
     for nome, cor in [('peca-dia', dia), ('peca-noite', dia * razao)]:
         # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB)
         Image.fromarray(np.dstack([np.clip(cor, 0, 255) * m[..., None], m * 255.0]).astype(np.uint8), 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)
