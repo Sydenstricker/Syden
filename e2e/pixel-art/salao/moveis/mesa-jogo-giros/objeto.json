@@ -1,0 +1,41 @@
+{
+  "id": "53fec525-9eda-4e27-9022-ecfaadaec714",
+  "name": "round wooden table for board g",
+  "state_name": "base",
+  "prompt": "round wooden table for board games and nothing else: a sturdy round dark-wood top on one central pedestal leg, the top completely empty",
+  "size": {
+    "width": 113,
+    "height": 113
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T21:50:44.901087+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/53fec525-9eda-4e27-9022-ecfaadaec714/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "4fa9d706-5af8-4081-8397-ec6a5ef89776",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

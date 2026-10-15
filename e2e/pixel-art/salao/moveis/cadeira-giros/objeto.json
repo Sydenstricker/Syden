@@ -1,0 +1,41 @@
+{
+  "id": "746d64c7-5c4e-42bc-b0b6-162b11e97bcb",
+  "name": "simple wooden chair with a cus",
+  "state_name": "base",
+  "prompt": "simple wooden chair with a cushioned seat and a slatted back, and nothing else",
+  "size": {
+    "width": 97,
+    "height": 97
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T21:56:06.941824+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/746d64c7-5c4e-42bc-b0b6-162b11e97bcb/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "0966ef47-2ef5-45fa-9d14-c48c78b801c0",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

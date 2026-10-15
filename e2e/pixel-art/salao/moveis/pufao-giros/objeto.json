@@ -1,0 +1,41 @@
+{
+  "id": "1b1ac99b-d65d-4d67-8577-24f7d446806b",
+  "name": "big soft bean bag chair and no",
+  "state_name": "base",
+  "prompt": "big soft bean bag chair and nothing else: plump mustard-yellow fabric",
+  "size": {
+    "width": 97,
+    "height": 97
+  },
+  "directions": 8,
+  "created_at": "2026-10-15T22:05:27.487139+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/1b1ac99b-d65d-4d67-8577-24f7d446806b/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "d0ac092e-cead-459c-aeff-0282fbc164a8",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

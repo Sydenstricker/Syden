@@ -100,3 +100,8 @@
 {"ferramenta":"pixellab","peca":"personagem/estado/sentado-banqueta","geracoes":25,"quando":"2026-10-15T20:36:18.470Z"}
 {"ferramenta":"pixellab","peca":"personagem/estado/no-fliperama","geracoes":25,"quando":"2026-10-15T20:40:10.350Z"}
 {"ferramenta":"pixellab","peca":"salao/estado/q:criado-mudo-pes-giros-limpo","geracoes":15,"quando":"2026-10-15T21:08:07.081Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/mesa-jogo","geracoes":15,"quando":"2026-10-15T21:55:29.292Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/cadeira","geracoes":15,"quando":"2026-10-15T21:57:37.929Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/jukebox","geracoes":25,"quando":"2026-10-15T22:00:58.512Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/microfone","geracoes":25,"quando":"2026-10-15T22:04:47.767Z"}
+{"ferramenta":"pixellab","peca":"salao/giros/pufao","geracoes":15,"quando":"2026-10-15T22:07:35.746Z"}

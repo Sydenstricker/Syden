@@ -854,17 +854,27 @@ function dados(im, filtro, w = W, h = W) {
       por('tv', 1.2, 6, 0);
       por('sofa', 5.2, 6, 2);
       por('mesinha', 3.4, 6, 0);
-      por('fliperama', 0.8, 11, 0);
+      por('fliperama', 0.8, 9, 0);
       por('estante', 2.5, 0.6, 3);
       por('balcao', 7.3, 1.6, 3);
       por('banqueta', 6.6, 2.9, 0);
       por('banqueta-2', 7.9, 2.9, 0);
       por('planta-alta', 0.6, 0.6, 0);
-      por('planta-baixa', 0.7, 14.5, 0);
-      // a segunda roda: o outro sofá e as duas poltronas de frente para ele, com o meio livre (uma mesa, um pufão)
-      por('sofa-2', 12.5, 6, 2);
-      por('poltrona', 9.3, 4.6, 0);
-      por('poltrona-2', 9.3, 7.4, 0);
+      por('planta-baixa', 15.2, 0.8, 0);
+      // o canto do karaokê, na parede da TV: a jukebox e o microfone com a caixa de som
+      por('jukebox', 0.8, 12.3, 0);
+      por('microfone', 1.6, 14.6, 0);
+      // a mesa de jogos, na frente da parede de tijolo, com as quatro cadeiras viradas para ela
+      por('mesa-jogo', 13, 3, 0);
+      por('cadeira', 11.6, 3, 0);
+      por('cadeira-2', 14.4, 3, 2);
+      por('cadeira-3', 13, 1.6, 3);
+      por('cadeira-4', 13, 4.4, 1);
+      // a segunda roda: o outro sofá e as duas poltronas de frente para ele, e o pufão
+      por('sofa-2', 13.5, 9.5, 2);
+      por('poltrona', 10.2, 8.1, 0);
+      por('poltrona-2', 10.2, 10.9, 0);
+      por('pufao', 12, 12.6, 1);
       if (pintado('tapete')) s.tapete = { c: [4.3, 6.2], lado: 0 };
       return s;
     }
@@ -2245,7 +2255,7 @@ function dados(im, filtro, w = W, h = W) {
         if (AO_VIVO.sub) { const sm = document.createElement('small'); sm.textContent = AO_VIVO.sub; meio.append(sm); }
         e.replaceChildren(...(AO_VIVO.total > 1 ? [seta(-1, '‹'), meio, seta(1, '›')] : [meio]));
       } }
-    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.45 + jb.dy]; } else luzDaJukebox = null; }
+    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.75 + jb.dy]; } else luzDaJukebox = null; }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     pessoasNaTela = pessoas.map((it) => ({ x: it.cabeca[0], y: it.cabeca[1] + 30 }));
@@ -2274,7 +2284,7 @@ function dados(im, filtro, w = W, h = W) {
       brilhos.push([sx / pts.length, sy / pts.length, COR_DO_BRILHO[tipoTela] ?? [140, 120, 190]]);
     }
     // a luz da jukebox, onde ela estiver (só de noite; fixa, para não redesenhar a cada quadro)
-    if (modo === 'noite' && luzDaJukebox) brilhos.push([luzDaJukebox[0], luzDaJukebox[1], [210, 130, 60], 60]);
+    if (modo === 'noite' && luzDaJukebox) brilhos.push([luzDaJukebox[0], luzDaJukebox[1], [230, 140, 60], 72]);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -2438,7 +2448,14 @@ function dados(im, filtro, w = W, h = W) {
     let caixaFaiscas = null;
     for (const q of particulas) { const t = Math.max(0, (performance.now() - q.t0) / 1000), x = q.x + q.vx * t, y = q.y + q.vy * t + 20 * t * t; caixaFaiscas = unir(caixaFaiscas, [x - 3, y - 3, x + 4, y + 4]); }
     if (particulas.length && !caixaFaiscas) caixaFaiscas = null;
-    const agora = unir(unir(unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
+    // O DESTINO DO ARRASTE (as casas clareadas embaixo do móvel pego) também é pintado aqui: sem a caixa dele na região,
+    // o destino que andou deixava pedaços clareados para trás (relato de 15/10/2026, "artefatos estranhos na grade").
+    let caixaDoAlvo = null;
+    if (alvo && pegado && ARR[pegado]) {
+      const pa = peDe(pegado, alvo), cs = [[pa[0], pa[2]], [pa[1], pa[2]], [pa[1], pa[3]], [pa[0], pa[3]]].map(([u, v]) => ponto(Math.max(0, Math.min(N, u)), Math.max(0, Math.min(N, v))));
+      caixaDoAlvo = [Math.floor(Math.min(...cs.map((c) => c[0]))) - 2, Math.floor(Math.min(...cs.map((c) => c[1]))) - 2, Math.ceil(Math.max(...cs.map((c) => c[0]))) + 2, Math.ceil(Math.max(...cs.map((c) => c[1]))) + 2];
+    }
+    const agora = unir(unir(unir(unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
     regiaoDasFaiscas = caixaFaiscas;
     const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
     passeFinal(r);
