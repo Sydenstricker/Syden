@@ -8,7 +8,8 @@ import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
-import { QuartoNovo } from './QuartoNovo';
+import { type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
+import { loadMyStatus } from './presenceStatus';
 import type { Periodo } from './Vila';
 import { idiomaAtual, useT } from './i18n';
 
@@ -214,11 +215,17 @@ export function Home({
   };
 
   const atividade = atividadeAgora(comunidades, vozDeTodas, eu);
+  // O estado de verdade, para o coelho do quarto novo: em alguma chamada, ou ausente pela escolha da pessoa.
+  const estadoNoQuarto: EstadoNoQuarto = Object.values(vozDeTodas).some((lista) => lista.some((m) => m.userId === eu))
+    ? 'call'
+    : loadMyStatus() === 'ausente'
+      ? 'ausente'
+      : 'atoa';
 
   return (
     <div className="home">
       <div className="home-cena">
-        {quartoNovo ? <QuartoNovo noite={periodo === 'noite'} acoes={acoes} /> : <Quarto noite={periodo === 'noite'} acoes={acoes} />}
+        {quartoNovo ? <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} /> : <Quarto noite={periodo === 'noite'} acoes={acoes} />}
         {/* SÓ NO DESENVOLVIMENTO: liga e desliga o quarto novo (QuartoNovo.tsx), que ainda não foi lançado. Um ícone, sem
             texto: o botão não existe no site publicado, e texto aqui seria mais uma frase cravada fora da tradução. */}
         {import.meta.env.DEV && (

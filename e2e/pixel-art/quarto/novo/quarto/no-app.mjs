@@ -21,7 +21,7 @@ const conferir = (ok, oque) => { console.log((ok ? 'ok  ' : 'FALHOU ') + oque); 
 const navegador = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const p = await (await navegador.newContext({ viewport: { width: 1280, height: 960 } })).newPage();
 p.on('pageerror', (e) => console.log('ERRO:', String(e)));
-await p.addInitScript((tk) => { localStorage.setItem('janja.token', tk); localStorage.setItem('syden:quarto-novo', '1'); }, token);
+await p.addInitScript((tk) => { localStorage.setItem('janja.token', tk); localStorage.setItem('syden:quarto-novo', '1'); localStorage.setItem('syden.status', 'ausente'); }, token);
 await p.goto(APP);
 const quadro = p.frameLocator('.quarto-novo iframe');
 await p.waitForSelector('.quarto-novo iframe', { timeout: 60000 });
@@ -29,6 +29,11 @@ const frame = p.frames().find((f) => f.url().includes('quarto-novo')) ?? (await 
 await frame.waitForFunction(() => window.visitaDoTeste && window.ondeNaParede?.('fone'), null, { timeout: 90000 });
 await frame.waitForFunction(() => window.visitaDoTeste().conta, null, { timeout: 30000 }).catch(() => {});
 conferir(!!(await frame.evaluate(() => window.visitaDoTeste().conta)), 'o quarto recebeu a conta do app');
+// Ausente (escolhido pela pessoa): o coelho do quarto vai dormir.
+await frame.waitForFunction(() => window.visitaDoTeste().estado === 'ausente', null, { timeout: 10000 }).catch(() => {});
+await p.waitForTimeout(6000);
+const ev = await frame.evaluate(() => window.visitaDoTeste());
+conferir(ev.estado === 'ausente' && ev.destino === 'cama', 'ausente, o coelho vai para a cama (estado ' + ev.estado + ', indo para ' + ev.destino + ', pose ' + ev.pose + ')');
 // Conta nova ganha o presente dos primeiros, que cobre a tela: resgata e segue.
 for (let i = 0; i < 3; i++) { const b = p.getByRole('button', { name: 'Resgatar' }); if (await b.isVisible().catch(() => false)) { await b.click(); await p.waitForTimeout(1200); } }
 await p.keyboard.press('Escape'); await p.waitForTimeout(1500);

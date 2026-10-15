@@ -10,14 +10,19 @@ import type { AcoesDoQuarto } from './Quarto';
  *
  * O quarto é a própria página do teste, num iframe do mesmo site, em "modo app" (?app): só o quarto. A conversa é por
  * mensagem, e só com a mesma origem:
- * - daqui para lá: as funções (o nome de cada uma já traduzido, as mesmas ações do Quarto.tsx), se é noite, e a conta
+ * - daqui para lá: as funções (o nome de cada uma já traduzido, as mesmas ações do Quarto.tsx), se é noite, o estado de
+ *   quem mora aqui (em call, ausente), e a conta
  *   (para a arrumação ir ao servidor, /api/quarto);
  * - de lá para cá: que o quarto está pronto, e o clique numa função (o fone, o quadro, o guarda-roupa…).
  */
 /** A página do quarto, servida pelo Vite no desenvolvimento (vite.config.ts). */
 const ENDERECO = import.meta.env.BASE_URL + 'quarto-novo/?app';
 
-export function QuartoNovo({ noite, acoes }: { noite: boolean; acoes: AcoesDoQuarto }) {
+/** O que o coelho faz no quarto é o estado de VERDADE de quem mora nele (a tela não mente): em call, vai ao computador;
+ *  ausente, dorme; senão, fica à toa. */
+export type EstadoNoQuarto = 'atoa' | 'call' | 'ausente';
+
+export function QuartoNovo({ noite, acoes, estado }: { noite: boolean; acoes: AcoesDoQuarto; estado: EstadoNoQuarto }) {
   const t = useT();
   const ref = useRef<HTMLIFrameElement>(null);
   const acoesRef = useRef(acoes);
@@ -41,6 +46,9 @@ export function QuartoNovo({ noite, acoes }: { noite: boolean; acoes: AcoesDoQua
   useEffect(() => {
     if (pronto) enviar({ funcoes: JSON.parse(funcoes), noite });
   }, [pronto, funcoes, noite]);
+  useEffect(() => {
+    if (pronto) enviar({ estado });
+  }, [pronto, estado]);
   useEffect(() => {
     const token = loadToken();
     if (pronto && token) enviar({ conta: { api: API_URL, token, nome: '', id: 0 } });

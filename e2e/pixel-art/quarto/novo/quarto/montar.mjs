@@ -2289,7 +2289,7 @@ function dados(im, filtro, w = W, h = W) {
     } catch (e) { dizer('Não deu para visitar: ' + e.message); }
   };
   campo('voltar').onclick = () => { modoVisita(null); if (meu) vestir(meu); meu = null; dizer(conta ? 'De volta ao seu quarto, ' + conta.nome + '.' : ''); };
-  window.visitaDoTeste = () => ({ soVer, conta: conta && { nome: conta.nome, id: conta.id }, retrato: retrato() }); // para o teste
+  window.visitaDoTeste = () => ({ soVer, conta: conta && { nome: conta.nome, id: conta.id }, retrato: retrato(), estado, pose: coelho.pose, destino: coelho.destino }); // para o teste
   if (conta && !MODO_APP) { campo('api').value = conta.api; carregarMeu().catch((e) => dizer('A conta guardada não respondeu: ' + e.message)); }
 
   // ============================== NO APP (15/10/2026) ==============================
