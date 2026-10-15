@@ -140,6 +140,13 @@ const html = `<!doctype html>
   canvas, .lado img { width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block; }
   canvas { cursor: grab; touch-action: none; }
   .com-rotulo { position: relative; }
+  /* NO APP (?app, dentro do QuartoNovo.tsx): só o quarto, sem nada da página de teste, sobre o fundo do app. */
+  /* O mesmo esquema de cor do iframe (styles.css): diferentes, o navegador pinta um fundo branco atrás do quarto. */
+  html.app { color-scheme: light dark; }
+  html.app body { background: transparent; }
+  html.app main { padding: 0; max-width: none; }
+  html.app main > :not(.lado), html.app .lado > figure:not(.com-rotulo), html.app figcaption { display: none; }
+  html.app .lado { display: block; }
   #rotulo { position: absolute; pointer-events: none; transform: translate(-50%, -120%); background: rgba(30, 24, 20, 0.92); color: var(--texto); padding: 4px 10px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
   #rotulo small { display: block; color: var(--suave); font-size: 11px; }
 </style></head>
@@ -245,6 +252,7 @@ function dados(im, filtro, w = W, h = W) {
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {};
   const MODO_APP = new URLSearchParams(location.search).has('app');
+  if (MODO_APP) document.documentElement.classList.add('app');
   // ============================== A JANELA MÓVEL (15/10/2026) ==============================
   // O quarto sem janela, e a janela como peça (o tipo, a parede e quantas casas ela andou). Tudo o que a página usava da
   // pintura com a janela (a base, as noites, o vidro, a cortina, a janela aberta e as luzes borradas) é MONTADO aqui, e
@@ -2273,7 +2281,25 @@ function dados(im, filtro, w = W, h = W) {
   };
   campo('voltar').onclick = () => { modoVisita(null); if (meu) vestir(meu); meu = null; dizer(conta ? 'De volta ao seu quarto, ' + conta.nome + '.' : ''); };
   window.visitaDoTeste = () => ({ soVer, conta: conta && { nome: conta.nome, id: conta.id }, retrato: retrato() }); // para o teste
-  if (conta) { campo('api').value = conta.api; carregarMeu().catch((e) => dizer('A conta guardada não respondeu: ' + e.message)); }
+  if (conta && !MODO_APP) { campo('api').value = conta.api; carregarMeu().catch((e) => dizer('A conta guardada não respondeu: ' + e.message)); }
+
+  // ============================== NO APP (15/10/2026) ==============================
+  // Dentro do QuartoNovo.tsx, o app manda por mensagem: as funções (o nome de cada uma, na língua de quem lê), se é noite
+  // (o tema do app), o estado de quem mora aqui e a conta (para guardar a arrumação no servidor). O quarto devolve o
+  // clique de cada função. Só mensagens da própria origem: o quarto mora no mesmo site que o app.
+  if (MODO_APP) {
+    conta = null;
+    window.addEventListener('message', (e) => {
+      if (e.origin !== location.origin || e.source !== window.parent || e.data?.syden !== 'quarto') return;
+      const d = e.data;
+      if (d.funcoes) FUNCOES = d.funcoes;
+      if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
+      if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
+      if (d.conta && !conta) { conta = d.conta; carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ }); }
+      if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
+    });
+    window.parent.postMessage({ syden: 'quarto', pronto: true }, location.origin);
+  }
   desenhar();
 })();
 </script>

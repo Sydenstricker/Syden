@@ -1,4 +1,6 @@
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 
@@ -38,9 +40,25 @@ const arquivoDeVersao: Plugin = {
   },
 };
 
+// O QUARTO NOVO, SÓ NO DESENVOLVIMENTO (15/10/2026). O quarto de móveis soltos ainda é a página de teste
+// (e2e/pixel-art/quarto/novo/quarto/quarto.html, gerada por montar.mjs), e o QuartoNovo.tsx a mostra num iframe. Ela é
+// servida daqui, lida do disco a cada pedido (montar de novo e recarregar basta), e NÃO entra no build: até ele lançar,
+// a home publicada continua sendo o quarto atual (decisão dele: "quando eu lançar, ele vai substituir o quarto atual").
+const QUARTO_NOVO = fileURLToPath(new URL('../e2e/pixel-art/quarto/novo/quarto/quarto.html', import.meta.url));
+const quartoNovo: Plugin = {
+  name: 'quarto-novo',
+  apply: 'serve',
+  configureServer(server) {
+    server.middlewares.use(BASE + 'quarto-novo/', (_req, res) => {
+      res.setHeader('content-type', 'text/html; charset=utf-8');
+      res.end(readFileSync(QUARTO_NOVO));
+    });
+  },
+};
+
 export default defineConfig({
   base: BASE,
-  plugins: [react(), arquivoDeVersao],
+  plugins: [react(), arquivoDeVersao, quartoNovo],
   build: {
     // O app sai numa subpasta, e os arquivos do site entram na raiz depois (scripts/montar-site.mjs).
     outDir: 'dist/app',

@@ -12653,6 +12653,42 @@ body.arrastando-barra {
   cursor: pointer;
 }
 
+/* O quarto novo (QuartoNovo.tsx, só no desenvolvimento): a página do quarto num iframe, 512 px de lado. */
+.quarto-novo {
+  width: min(100%, 640px, 78vh);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.quarto-novo iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  /* o mesmo da página do quarto (html.app): diferentes, o navegador pinta um fundo branco atrás dela */
+  color-scheme: light dark;
+}
+
+.quarto-novo-alternar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.quarto-novo-alternar[aria-pressed='true'] {
+  opacity: 1;
+  border-style: solid;
+}
+
 .quarto-cena {
   position: absolute;
   inset: 0;
