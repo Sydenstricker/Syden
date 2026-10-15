@@ -7,10 +7,13 @@ import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { nomeNaComunidade, useDirectory } from './directory';
 import { useT } from './i18n';
-import { pedirParaAbrirAoEntrar } from './minijogos';
+import { pedirParaAbrirAoEntrar, usarMinijogo } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
+import { type PessoaNoSalao, SalaoNovo } from './SalaoNovo';
+import { getTheme } from './theme';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { AbrirTicket } from './Tickets';
+import type { Socket } from 'socket.io-client';
 import type { Channel, Community, DirectChannel, VoiceMember } from './types';
 
 // A PRIMEIRA COISA QUE ALGUÉM VÊ AO ENTRAR NUMA COMUNIDADE.
@@ -98,6 +101,7 @@ export function InicioDaComunidade({
   aoEditar,
   aoFechar,
   aoAbrirConversa,
+  socket,
 }: {
   community: Community;
   dados: DadosDeBoasVindas;
@@ -112,6 +116,8 @@ export function InicioDaComunidade({
   aoFechar: () => void;
   /** Um ticket aberto: a conversa privada nova abre na hora. */
   aoAbrirConversa: (conversa: DirectChannel) => void;
+  /** Para o salão novo: quem está numa partida (vai para o fliperama) e o aviso de que o salão mudou. */
+  socket?: Socket | null;
 }) {
   const t = useT();
   const { members: membros } = useDirectory();
@@ -127,6 +133,18 @@ export function InicioDaComunidade({
   // A sala de voz para onde a TV e o fliperama levam: a que tem gente, se houver; senão, a primeira.
   const comGente = canais.find((c) => c.type === 'voice' && naVoz.some((m) => m.channelId === c.id));
   const salaDeVoz = comGente ?? canais.find((c) => c.type === 'voice');
+  // O SALÃO NOVO (o isométrico, SalaoNovo.tsx), SÓ NO DESENVOLVIMENTO: o mesmo botão 🧪 da home que troca o quarto.
+  const [salaoNovo] = useState(() => {
+    try {
+      return import.meta.env.DEV && localStorage.getItem('syden:quarto-novo') === '1';
+    } catch {
+      return false;
+    }
+  });
+  // Quem está numa partida na sala de voz vai para o fliperama (sem a lista de jogadores, a sala inteira joga).
+  const { partida } = usarMinijogo(salaoNovo ? (salaDeVoz?.id ?? null) : null, salaoNovo ? (socket ?? null) : null);
+  const naSalaDoJogo = naVoz.filter((m) => m.channelId === salaDeVoz?.id).map((m) => m.userId);
+  const jogando = new Set(partida && !partida.terminada ? (partida.jogadores?.map((j) => j.userId) ?? naSalaDoJogo) : []);
 
   /** Copia o link de convite. O aviso de "copiado" some sozinho: confirmação que fica vira enfeite. */
   async function copiarConvite() {
@@ -185,6 +203,8 @@ export function InicioDaComunidade({
         onClick: () => void copiarConvite(),
       },
     }),
+    // O balcão do salão novo abre o recado (o balão é desenhado lá; o nome é o título do recado).
+    ...(salaoNovo && dados.boasVindas?.texto && { balcao: { rotulo: dados.boasVindas.titulo || t('Bem-vindo!'), onClick: () => {} } }),
     ...(dados.podeEditar && {
       quadro: {
         rotulo: dados.boasVindas ? t('Mudar esta tela') : t('Montar esta tela'),
@@ -232,23 +252,50 @@ export function InicioDaComunidade({
 
         {/* Cada um com o PRÓPRIO coelho (o avatar pronto que escolheu) e o nome em cima: pedido do Sydenstricker em
             13/10/2026 (ver Salao.tsx). */}
-        <Salao
-          acoes={acoes}
-          naCall={naVoz.map((m) => ({ nome: nomeNaComunidade(m.userId, m.username), pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
-          quadro={<CommunityIcon community={community} size={40} standalone />}
-          recado={<RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />}
-          aoVivo={
-            noAr && {
-              userId: noAr.userId,
-              nome: noAr.username,
-              sala: canais.find((c) => c.id === noAr.channelId)?.name ?? '',
-              titulo: noAr.screenName,
-              canal: canal % transmissoes.length,
-              total: transmissoes.length,
-              aoTrocar: (passo) => setCanal((c) => (c + passo + transmissoes.length) % transmissoes.length),
+        {salaoNovo ? (
+          <SalaoNovo
+            community={community}
+            acoes={acoes}
+            naCall={naVoz.map(
+              (m): PessoaNoSalao => ({
+                id: m.userId,
+                nome: nomeNaComunidade(m.userId, m.username),
+                papel: m.screen ? 'transmitindo' : jogando.has(m.userId) ? 'jogando' : 'call',
+              }),
+            )}
+            aoVivo={
+              noAr && {
+                nome: noAr.username,
+                sub: [canais.find((c) => c.id === noAr.channelId)?.name, noAr.screenName].filter(Boolean).join(' · '),
+                canal: canal % transmissoes.length,
+                total: transmissoes.length,
+                aoTrocar: (passo) => setCanal((c) => (c + passo + transmissoes.length) % transmissoes.length),
+              }
             }
-          }
-        />
+            recado={dados.boasVindas?.texto ? { titulo: dados.boasVindas.titulo || t('Bem-vindo!'), texto: dados.boasVindas.texto } : null}
+            podeEditar={dados.podeEditar}
+            noite={getTheme() !== 'light'}
+            socket={socket ?? null}
+          />
+        ) : (
+          <Salao
+            acoes={acoes}
+            naCall={naVoz.map((m) => ({ nome: nomeNaComunidade(m.userId, m.username), pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
+            quadro={<CommunityIcon community={community} size={40} standalone />}
+            recado={<RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />}
+            aoVivo={
+              noAr && {
+                userId: noAr.userId,
+                nome: noAr.username,
+                sala: canais.find((c) => c.id === noAr.channelId)?.name ?? '',
+                titulo: noAr.screenName,
+                canal: canal % transmissoes.length,
+                total: transmissoes.length,
+                aoTrocar: (passo) => setCanal((c) => (c + passo + transmissoes.length) % transmissoes.length),
+              }
+            }
+          />
+        )}
 
       </div>
 

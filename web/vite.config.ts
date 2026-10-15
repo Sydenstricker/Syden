@@ -45,6 +45,7 @@ const arquivoDeVersao: Plugin = {
 // servida daqui, lida do disco a cada pedido (montar de novo e recarregar basta), e NÃO entra no build: até ele lançar,
 // a home publicada continua sendo o quarto atual (decisão dele: "quando eu lançar, ele vai substituir o quarto atual").
 const QUARTO_NOVO = fileURLToPath(new URL('../e2e/pixel-art/quarto/novo/quarto/quarto.html', import.meta.url));
+const SALAO_NOVO = fileURLToPath(new URL('../e2e/pixel-art/salao/salao.html', import.meta.url));
 const quartoNovo: Plugin = {
   name: 'quarto-novo',
   apply: 'serve',
@@ -52,6 +53,11 @@ const quartoNovo: Plugin = {
     server.middlewares.use(BASE + 'quarto-novo/', (_req, res) => {
       res.setHeader('content-type', 'text/html; charset=utf-8');
       res.end(readFileSync(QUARTO_NOVO));
+    });
+    // O SALÃO NOVO, do mesmo jeito (SalaoNovo.tsx): a página do salão isométrico, montada por montar.mjs salao.
+    server.middlewares.use(BASE + 'salao-novo/', (_req, res) => {
+      res.setHeader('content-type', 'text/html; charset=utf-8');
+      res.end(readFileSync(SALAO_NOVO));
     });
   },
 };

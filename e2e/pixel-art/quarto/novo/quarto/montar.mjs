@@ -1208,13 +1208,9 @@ function dados(im, filtro, w = W, h = W) {
   // O RECADO (no salão): o que quem administra escreveu, num balão em cima do coelho do balcão. Como o recado do salão de
   // frente (RecadoDoBalcao): aparece ao chegar, fica o tempo de ler (mais para recado comprido) e some — senão cobria os
   // nomes de quem senta nas banquetas. Clicar no balcão mostra de novo.
-  let RECADO = null, recadoAberto = true, recadoEm = '', fimDoRecado = 0;
-  const abrirRecado = () => {
-    recadoAberto = true; clearTimeout(fimDoRecado);
-    const leitura = Math.max(4, 3.5 + 0.05 * ((RECADO?.titulo ?? '').length + (RECADO?.texto ?? '').length));
-    fimDoRecado = setTimeout(() => { recadoAberto = false; posicionarRecado(true); }, leitura * 1000);
-    posicionarRecado(true);
-  };
+  // O tempo de leitura conta de quando o balão APARECE (o coelho pode estar chegando ao balcão).
+  let RECADO = null, recadoAberto = true, recadoEm = '', fimDoRecado = 0, contarLeitura = false;
+  const abrirRecado = () => { recadoAberto = true; contarLeitura = true; clearTimeout(fimDoRecado); fimDoRecado = 0; posicionarRecado(true); };
   function posicionarRecado(forcar) {
     const e = document.getElementById('recado');
     const mostra = CENA === 'salao' && !!RECADO && recadoAberto && !!ultimaCaixa && coelho.destino === 'balcao' && !coelho.caminho.length;
@@ -1222,10 +1218,16 @@ function dados(im, filtro, w = W, h = W) {
     if (!forcar && chave === recadoEm) return;
     recadoEm = chave; e.hidden = !mostra;
     if (!mostra) return;
+    if (contarLeitura) {
+      contarLeitura = false;
+      const leitura = Math.max(4, 3.5 + 0.05 * ((RECADO.titulo ?? '').length + (RECADO.texto ?? '').length));
+      fimDoRecado = setTimeout(() => { recadoAberto = false; posicionarRecado(true); }, leitura * 1000);
+    }
     const titulo = document.createElement('b'); titulo.textContent = RECADO.titulo || '';
     e.replaceChildren(...(RECADO.titulo ? [titulo] : []), RECADO.texto || '');
     e.style.left = (((ultimaCaixa[0] + ultimaCaixa[2]) / 2) / W) * 100 + '%'; e.style.top = ((ultimaCaixa[1] + 6) / W) * 100 + '%';
   }
+  window.recadoDoTeste = () => ({ RECADO, recadoAberto, caixa: ultimaCaixa, destino: coelho.destino, caminho: coelho.caminho.length, visivel: !document.getElementById('recado').hidden }); // para o teste
   // OS PONTOS DO SALÃO: o coelho do recado mora atrás do balcão, de pé, olhando para quem chega.
   window.pontosDoTeste = () => ({ pontos: pontos(), coelho: { u: coelho.u, v: coelho.v, destino: coelho.destino, pose: coelho.pose }, balcao: ARR.balcao && { ...ARR.balcao, pe: peDe('balcao') } }); // para o teste
   function pontosDoSalao(vizinhas) {
@@ -2397,7 +2399,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   function acao(f) {
     // O balcão abre e fecha o recado, aqui mesmo (o balão é da página).
-    if (f === 'balcao' && CENA === 'salao' && RECADO) { if (recadoAberto) { recadoAberto = false; clearTimeout(fimDoRecado); posicionarRecado(true); } else abrirRecado(); return; }
+    if (f === 'balcao' && CENA === 'salao' && RECADO) { if (recadoAberto) { recadoAberto = false; contarLeitura = false; clearTimeout(fimDoRecado); posicionarRecado(true); } else abrirRecado(); return; }
     if (window.parent !== window && MODO_APP) { window.parent.postMessage({ syden: 'quarto', acao: f }, location.origin); return; }
     document.getElementById('acao-teste').textContent = 'No app, abriria: ' + FUNCOES[f].rotulo + (FUNCOES[f].sub ? ' (' + FUNCOES[f].sub + ')' : '') + '.';
     if (f === 'abajur') botoes[modo === 'dia' ? 'noite' : 'dia'].click(); // aqui, o próprio quarto troca
@@ -2548,6 +2550,7 @@ function dados(im, filtro, w = W, h = W) {
   const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + CORES_DO_TAPETE[CORES.tapete ?? 'salvia'].nome; bct.disabled = soVer; };
   bct.onclick = () => { CORES = { ...CORES, tapete: ORDEM_CORES[(ORDEM_CORES.indexOf(CORES.tapete ?? 'salvia') + 1) % ORDEM_CORES.length] }; guardarCores(); botaoDaCor(); desenhar(); };
   botaoDaCor();
+  window.ondeDoMovel = (id) => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (dono[k] === id) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
   window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
 
   tela.addEventListener('pointerdown', (e) => {
@@ -2871,8 +2874,9 @@ function dados(im, filtro, w = W, h = W) {
     window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasDaBarra() }, location.origin);
     relatar();
   }
-  // No salão o coelho não passeia: ao abrir, ele vai para o lugar dele (o recado, atrás do balcão).
-  if (CENA === 'salao') decidir();
+  // No salão o coelho não passeia: ao abrir, ele JÁ ESTÁ no lugar dele (o recado, atrás do balcão). Atravessar a sala a
+  // cada visita seria movimento à toa, e o recado esperaria ele chegar.
+  if (CENA === 'salao') { const s0 = semAndar; semAndar = true; decidir(); semAndar = s0; }
   // Na página de teste, gente de mentira na call (o app manda a de verdade: { pessoas }).
   if (CENA === 'salao') {
     const bp = document.getElementById('pessoas-teste'), NOMES_DE_TESTE = ['Ana', 'Zeca', 'Rui', 'Bia', 'Lia', 'Teo', 'Duda', 'Gil'];

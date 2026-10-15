@@ -27,14 +27,14 @@ const ENDERECO = import.meta.env.BASE_URL + 'quarto-novo/?app';
  *  ausente, dorme; senão, fica à toa. */
 export type EstadoNoQuarto = 'atoa' | 'call' | 'ausente';
 
-interface Figuras {
+export interface Figuras {
   miniaturas: Record<string, string>;
   cores: Record<string, string>;
   ordem: string[];
   /** O primeiro desenho de cada objeto de cima (a caneca, os livros…): clicar põe um no tampo do último móvel tocado. */
   deCima?: Record<string, string>;
 }
-interface Arrumacao {
+export interface Arrumacao {
   janela: string;
   tapete: string;
   parede: Record<string, boolean>;
@@ -48,7 +48,6 @@ export function QuartoNovo({ noite, acoes, estado }: { noite: boolean; acoes: Ac
   const [pronto, setPronto] = useState(false);
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
-  const [arrumando, setArrumando] = useState(false);
 
   const enviar = (msg: Record<string, unknown>) => ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
 
@@ -84,71 +83,81 @@ export function QuartoNovo({ noite, acoes, estado }: { noite: boolean; acoes: Ac
       <div className="quarto-novo">
         <iframe ref={ref} src={ENDERECO} title={t('Início')} />
       </div>
-      {pronto && (
-        <div className="quarto-novo-barra">
-          <button type="button" aria-pressed={arrumando} onClick={() => setArrumando((a) => !a)}>
-            <Pencil size={16} aria-hidden="true" /> {arrumando ? t('Pronto') : t('Editar')}
+      {pronto && <BarraDeArrumar figuras={figuras} arrumacao={arrumacao} enviar={enviar} />}
+    </div>
+  );
+}
+
+/**
+ * A BARRA DE ARRUMAR, a mesma no quarto e no salão (SalaoNovo.tsx): os comandos vão por mensagem para a página da cena,
+ * que faz o mesmo que os botões da página de teste.
+ */
+export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figuras | null; arrumacao: Arrumacao | null; enviar: (msg: Record<string, unknown>) => void }) {
+  const t = useT();
+  const [arrumando, setArrumando] = useState(false);
+  return (
+    <div className="quarto-novo-barra">
+      <button type="button" aria-pressed={arrumando} onClick={() => setArrumando((a) => !a)}>
+        <Pencil size={16} aria-hidden="true" /> {arrumando ? t('Pronto') : t('Editar')}
+      </button>
+      {arrumando && (
+        <>
+          <button type="button" onClick={() => enviar({ comando: 'girar' })}>
+            <RotateCw size={16} aria-hidden="true" /> {t('Girar')}
           </button>
-          {arrumando && (
-            <>
-              <button type="button" onClick={() => enviar({ comando: 'girar' })}>
-                <RotateCw size={16} aria-hidden="true" /> {t('Girar')}
-              </button>
-              <button type="button" onClick={() => enviar({ comando: 'janela' })}>
-                <AppWindow size={16} aria-hidden="true" /> {t('Janela')}
-              </button>
-              {figuras && (
-                <div className="quarto-novo-grupo" role="group" aria-label={t('Tapete')}>
-                  {Object.entries(figuras.cores).map(([id, cor], i) => (
-                    <button
-                      key={id}
-                      type="button"
-                      className="quarto-novo-cor"
-                      style={{ background: cor }}
-                      aria-label={`${t('Tapete')} ${i + 1}`}
-                      aria-pressed={arrumacao?.tapete === id}
-                      onClick={() => enviar({ comando: 'tapete', cor: id })}
-                    />
-                  ))}
-                </div>
-              )}
-              {figuras && (
-                <div className="quarto-novo-grupo" role="group" aria-label={t('Objetos da parede')}>
-                  {figuras.ordem.map((id, i) => (
-                    <button
-                      key={id}
-                      type="button"
-                      className="quarto-novo-objeto"
-                      aria-label={`${t('Objetos da parede')} ${i + 1}`}
-                      aria-pressed={!!arrumacao?.parede[id]}
-                      onClick={() => enviar({ comando: 'parede', id })}
-                    >
-                      <img src={figuras.miniaturas[id]} alt="" />
-                    </button>
-                  ))}
-                </div>
-              )}
-              {figuras?.deCima && Object.keys(figuras.deCima).length > 0 && (
-                <div className="quarto-novo-grupo" role="group" aria-label={t('Em cima dos móveis')}>
-                  {Object.entries(figuras.deCima).map(([id, src], i) => (
-                    <button
-                      key={id}
-                      type="button"
-                      className="quarto-novo-objeto"
-                      aria-label={`${t('Em cima dos móveis')} ${i + 1}`}
-                      onClick={() => enviar({ comando: 'objeto', tipo: id })}
-                    >
-                      <img src={src} alt="" />
-                    </button>
-                  ))}
-                </div>
-              )}
-              <button type="button" onClick={() => enviar({ comando: 'inicial' })}>
-                <Undo2 size={16} aria-hidden="true" /> {t('Voltar ao padrão')}
-              </button>
-            </>
+          <button type="button" onClick={() => enviar({ comando: 'janela' })}>
+            <AppWindow size={16} aria-hidden="true" /> {t('Janela')}
+          </button>
+          {figuras && (
+            <div className="quarto-novo-grupo" role="group" aria-label={t('Tapete')}>
+              {Object.entries(figuras.cores).map(([id, cor], i) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="quarto-novo-cor"
+                  style={{ background: cor }}
+                  aria-label={`${t('Tapete')} ${i + 1}`}
+                  aria-pressed={arrumacao?.tapete === id}
+                  onClick={() => enviar({ comando: 'tapete', cor: id })}
+                />
+              ))}
+            </div>
           )}
-        </div>
+          {figuras && (
+            <div className="quarto-novo-grupo" role="group" aria-label={t('Objetos da parede')}>
+              {figuras.ordem.map((id, i) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="quarto-novo-objeto"
+                  aria-label={`${t('Objetos da parede')} ${i + 1}`}
+                  aria-pressed={!!arrumacao?.parede[id]}
+                  onClick={() => enviar({ comando: 'parede', id })}
+                >
+                  <img src={figuras.miniaturas[id]} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
+          {figuras?.deCima && Object.keys(figuras.deCima).length > 0 && (
+            <div className="quarto-novo-grupo" role="group" aria-label={t('Em cima dos móveis')}>
+              {Object.entries(figuras.deCima).map(([id, src], i) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="quarto-novo-objeto"
+                  aria-label={`${t('Em cima dos móveis')} ${i + 1}`}
+                  onClick={() => enviar({ comando: 'objeto', tipo: id })}
+                >
+                  <img src={src} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
+          <button type="button" onClick={() => enviar({ comando: 'inicial' })}>
+            <Undo2 size={16} aria-hidden="true" /> {t('Voltar ao padrão')}
+          </button>
+        </>
       )}
     </div>
   );

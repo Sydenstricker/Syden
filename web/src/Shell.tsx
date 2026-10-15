@@ -1081,6 +1081,7 @@ export function Shell({
               aoAbrirCanal={selectChannel}
               aoAssistir={watchStream}
               aoAbrirConversa={openConversation}
+              socket={socket}
               aoEditar={() => {
                 setMostrandoBoasVindas(false);
                 setSettingsOpen('community');
