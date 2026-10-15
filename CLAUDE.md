@@ -504,8 +504,15 @@ ficou combinado:
   (`janelas/sem-janela.py`: a parede da direita é a da esquerda espelhada, vezes a cor medida), e a janela virou peça,
   com a luz e o luar dela montados por código (o luar dos tipos novos é projetado do vidro). Tipos: a original (a única
   com cortina e que abre), em arco, redonda e com floreira (`janelas/tipos.mjs`, vidro em magenta).
-- **Para o quarto novo virar a home:** recheio (plantas, quadros, objetos sobre os móveis), os objetos com função
-  (fone, quadro, gavetas, janela, abajur), a montagem virar componente do app (a arrumação no servidor já existe). Depois: animação na vista, variações de tapete (cor por código), mais móveis que giram.
+- **O recheio, as funções e o componente (15/10/2026, pedido dele):** fone, quadro de fotos, cortiça, prateleira e pintura
+  são OBJETOS DA PAREDE (como a janela: andam pelas duas paredes e sobem e descem; `parede/`), há duas plantas e a mesa
+  enfeitada. As funções da home moram nos objetos: fone → Salas, quadro → Amigos, cortiça → ideias, **o guarda-roupa (o
+  móvel) → Guarda-roupa** (na home atual eram as gavetas da cama), o vidro da janela → Explorar, abajur → Dia e noite,
+  mesa → Mini-games; o nome aparece ao passar o mouse. **No app, `QuartoNovo.tsx` mostra a página do quarto num iframe
+  (`?app`), SÓ NO DESENVOLVIMENTO:** o Vite a serve do disco e ela não entra no build; o botão 🧪 da home troca de quarto.
+  Para lançar: a página precisa ir para o build (hoje 5,8 MB, com as imagens dentro; recortar as peças da parede, que são
+  512 × 512, é o primeiro corte) e a home trocar de componente.
+- **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
