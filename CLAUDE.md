@@ -510,8 +510,11 @@ ficou combinado:
   móvel) → Guarda-roupa** (na home atual eram as gavetas da cama), o vidro da janela → Explorar, abajur → Dia e noite,
   mesa → Mini-games; o nome aparece ao passar o mouse. **No app, `QuartoNovo.tsx` mostra a página do quarto num iframe
   (`?app`), SÓ NO DESENVOLVIMENTO:** o Vite a serve do disco e ela não entra no build; o botão 🧪 da home troca de quarto.
-  Para lançar: a página precisa ir para o build (hoje 5,8 MB, com as imagens dentro; recortar as peças da parede, que são
-  512 × 512, é o primeiro corte) e a home trocar de componente.
+  Para lançar: a página precisa ir para o build (2,7 MB desde 15/10, com as imagens dentro) e a home trocar de
+  componente. **E falta a barra de ARRUMAR no app:** hoje, no app, só se arrasta (e gira pela rodinha); girar, trocar a
+  janela, pôr e guardar os objetos da parede e a cor do tapete (sálvia, terracota, azul, mostarda, rosa, cinza) só têm
+  botão na página de teste. A barra pede textos novos ("Girar", "Tapete", "Parede"…) traduzidos nos 80 idiomas.
+  O coelho do quarto no app já segue o estado de verdade (em call, ausente).
 - **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
