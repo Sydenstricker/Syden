@@ -2031,7 +2031,10 @@ function dados(im, filtro, w = W, h = W) {
       const x = k % W, y = (k / W) | 0;
       for (let c = 0; c < 3; c++) {
         if (vao[k]) { D[k * 3 + c] = daVista(vistasDia[vista], k, c); fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], k, c); }
-        else if (vidroAberto[k]) { D[k * 3 + c] = daVista(vistasDia[vista], k, c) * 0.8 + 250 * 0.2; fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], k, c) * 0.85 + [40, 46, 80][c] * 0.15; }
+        // O vidro da folha aberta: ela abre para DENTRO, então atrás dele está a PAREDE, não a paisagem (relato de
+        // 15/10/2026: com a vista de árvores, a folha aparecia salpicada de verde). A parede vista pelo vidro, com o
+        // reflexo claro dele.
+        else if (vidroAberto[k]) { D[k * 3 + c] = semDia[k * 4 + c] * 0.82 + [250, 243, 224][c] * 0.18; fundoNoite[k * 3 + c] = semNoite[k * 4 + c] * 0.85 + [40, 46, 80][c] * 0.15; }
         else { D[k * 3 + c] = abertaDia[k * 4 + c]; fundoNoite[k * 3 + c] = abertaDia[k * 4 + c] * Math.min(1, noitePe[k * 4 + c] / Math.max(1, diaPe[k * 4 + c])); }
       }
     }
