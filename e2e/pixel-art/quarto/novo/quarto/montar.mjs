@@ -92,6 +92,12 @@ for (const [id, estados] of Object.entries(ESTADOS)) for (const [nome, pasta] of
   const dir = path.join(AQUI, 'avulsos', pasta);
   if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-' + id + '-' + nome + l] = png(path.join(dir, d + '.png')); });
 }
+// A PASSAGEM entre dois estados (animar-estado.mjs): os quadros do meio, das portas abrindo; fechar toca ao avesso.
+const PASSAGENS = { 'guarda-roupa': 'guarda-roupa-aberto-passagem' };
+for (const [id, pasta] of Object.entries(PASSAGENS)) {
+  const dir = path.join(AQUI, 'avulsos', pasta);
+  if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '-1.png')))) ORDEM_DO_GIRO.forEach((d, l) => { for (const k of [0, 1]) IMAGENS['passagem-' + id + l + '-' + k] = png(path.join(dir, d + '-' + k + '.png')); });
+}
 const MOVEIS = [...FIXOS, ...PUFES].map((m) => ({ id: m.id, pe: m.pe, alto: m.alto ?? 34, deitado: !!m.deitado, pufe: m.id.startsWith('pufe') }));
 for (const m of MOVEIS) {
   IMAGENS[m.id] = png(path.join(AQUI, 'pecas', m.id + '.png'));
@@ -424,6 +430,11 @@ function dados(im, filtro, w = W, h = W) {
   // com as roupas, nas mesmas 4 vistas. Clicar nele leva o coelho até lá e abre; clicar de novo fecha.
   const VISTAS_ABERTO = im['giro-guarda-roupa-aberto0'] ? [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-guarda-roupa-aberto' + l], 'guarda-roupa')) : null;
   let guardaRoupaAberto = false;
+  // As portas ABRINDO (pedido dele, 15/10/2026): os quadros do meio entre o fechado e o aberto. "portas" vai de 0
+  // (fechado) a 3 (aberto) e anda um passo a cada dois quadros do relógio na direção de guardaRoupaAberto.
+  const PASSAGEM_GR = im['passagem-guarda-roupa0-0'] ? [0, 1, 2, 3].map((l) => [0, 1].map((k) => pecaDeImagem(im['passagem-guarda-roupa' + l + '-' + k], 'guarda-roupa'))) : null;
+  let portas = 0;
+  window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
   const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa' };
@@ -1343,6 +1354,11 @@ function dados(im, filtro, w = W, h = W) {
     ultimo = agora;
     coelho.quadro++;
     esbarrao(dt);
+    if (VISTAS_ABERTO) {
+      const alvoP = guardaRoupaAberto ? 3 : 0;
+      if (!PASSAGEM_GR) portas = alvoP;
+      else if (portas !== alvoP && coelho.quadro % 2 === 0) portas += Math.sign(alvoP - portas);
+    }
     if (coelho.trans && agora - coelho.trans.t0 >= coelho.trans.dur) { const d = coelho.trans.depois; coelho.trans = null; d(); if (coelho.redecidir && !coelho.trans) { coelho.redecidir = false; decidir(); } }
     // No pufe, de vez em quando vira para outro lado (ele é redondo).
     if (!coelho.trans && !coelho.descendo && coelho.destino === 'pufe' && !coelho.caminho.length && agora > (coelho.proximaVirada ?? 0)) {
@@ -1418,7 +1434,7 @@ function dados(im, filtro, w = W, h = W) {
     const p = VISTAS[id][l], pe = peMedidoDe(id), [fx, fy] = ponto(pe[1], pe[3]), [nx, ny] = ponto(c[0], c[1]);
     const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
     // Aberto: a vista aberta, posta onde a fechada estaria (o mesmo enquadramento).
-    const desenho = id === 'guarda-roupa' && guardaRoupaAberto && VISTAS_ABERTO ? VISTAS_ABERTO[l] : p;
+    const desenho = id === 'guarda-roupa' && VISTAS_ABERTO && portas ? (portas === 3 ? VISTAS_ABERTO[l] : PASSAGEM_GR ? PASSAGEM_GR[l][portas - 1] : p) : p;
     return { p: desenho, dx: Math.round(fx - p.frente[0]), dy: Math.round(fy - p.frente[1]), fator, pe, contatoPe: pe, forma: FORMAS[id], olha };
   }
   // A caixa do desenho de uma peça (as pintadas não a trazem), guardada.
@@ -1636,7 +1652,7 @@ function dados(im, filtro, w = W, h = W) {
   }
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).
-    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, guardaRoupaAberto, viva?.id ?? null]);
+    const assin = JSON.stringify([modo, luzPintada, vista, aberta, fechada, Object.keys(ARR).map((k) => (viva && viva.id === k ? 'vivo' : ARR[k])), grade, viva ? null : alvo, viva ? null : pegado, portas, viva?.id ?? null]);
     if (assin !== assinaturaCena) { montarCena(); assinaturaCena = assin; assinaturaQuadro = ''; regiaoAnterior = [0, 0, W, W]; }
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     pecaDoCoelho();
