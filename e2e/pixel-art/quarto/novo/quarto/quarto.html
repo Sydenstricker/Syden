@@ -824,7 +824,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       return a;
     }
     if (OBJ_VISTAS.plantinha && VISTAS.mesa) a.o1 = { tipo: 'plantinha', em: 'mesa', s: 0.25, t: 0.82, lado: 0 };
-    if (OBJ_VISTAS.livros && VISTAS.mesa) a.o2 = { tipo: 'livros', em: 'mesa', s: 0.7, t: 0.85, lado: 0 };
+    if (OBJ_VISTAS.livros && VISTAS.mesa) a.o2 = { tipo: 'livros', em: 'mesa', s: 0.3, t: 0.85, lado: 0 };
     if (OBJ_VISTAS.caneca && VISTAS.abajur) a.o3 = { tipo: 'caneca', em: 'abajur', s: 0.2, t: 0.5, lado: 0 };
     return a;
   };
@@ -910,8 +910,19 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // As plantas (15/10/2026): a alta no canto da frente, junto da parede da esquerda; a samambaia ao lado da mesa.
     if (VISTAS['planta-alta']) a['planta-alta'] = { c: encaixar('planta-alta', 7.5, 0.5, 0), lado: 0 };
     if (VISTAS['planta-baixa']) a['planta-baixa'] = { c: encaixar('planta-baixa', 4, 7.5, 0), lado: 0 };
+    // A ARRUMAÇÃO DE FÁBRICA É A DELE (16/10/2026: "eu quero essa configuração, com exceção da poltrona, como base inicial
+    // do quarto para as pessoas"): a mesa e o guarda-roupa na parede da esquerda, as plantas entre eles, a cama e o
+    // criado-mudo na da janela, o pufe no tapete. A poltrona começa GUARDADA (GUARDADOS_DE_FABRICA); posta de volta, vai
+    // para o canto da frente.
+    const DELE = { pufe: [4, 4, 0], poltrona: [7, 5, 0], cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], 'guarda-roupa': [6, 0.5, 3], tapete: [5, 4, 0], mesa: [1.5, 0.5, 3], 'planta-alta': [4.5, 0.5, 0], 'planta-baixa': [7.5, 0.5, 0] };
+    for (const [id, [u, v, lado]] of Object.entries(DELE)) if (a[id]) a[id] = { c: [u, v], lado };
     return a;
   }
+  // Onde cada móvel PINTADO no quarto está na pintura: lá, e só lá, aparece a pintura dele (com a luz e a sombra de lá).
+  // Antes a comparação era com a arrumação de fábrica, que era a própria pintura; desde que a de fábrica é a dele, não é.
+  // (no salão, o tapete pintado vale onde a arrumação de fábrica dele o põe, como sempre foi)
+  const PINTURA_NO_QUARTO = Object.fromEntries(fixos.map((m) => [m.id, { c: centro(m.pe), lado: LADO_PINTADO[m.id] ?? 0 }]));
+  const origemPintada = (id) => (CENA === 'salao' ? INICIAL[id] : PINTURA_NO_QUARTO[id]);
   const INICIAL = arrumacaoInicial();
   // A ARRUMAÇÃO DE CADA UM fica no navegador por enquanto (na página de teste); no app, ela vai para o servidor.
   let ARR = JSON.parse(JSON.stringify(INICIAL));
@@ -929,8 +940,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // quando a pessoa está ausente (a tela não mente).
   const SO_COM_FUNCAO = CENA === 'salao' ? ['tv', 'fliperama', 'estante', 'balcao', 'microfone', 'jukebox'] : ['guarda-roupa', 'abajur', 'mesa', 'cama'];
   const podeGuardar = (id) => !!INICIAL[id] && !SO_COM_FUNCAO.includes(id);
+  // Os guardados de fábrica (a poltrona, no quarto: decisão dele, 16/10/2026). Quem já tinha arrumado antes da lista
+  // existir fica com o que tinha.
+  const GUARDADOS_DE_FABRICA = CENA === 'quarto' ? ['poltrona'] : [];
   let GUARDADOS = new Set();
-  try { GUARDADOS = new Set((JSON.parse(localStorage.getItem(PREFIXO + 'guardados') ?? '[]') || []).filter(podeGuardar)); } catch { /* nenhum */ }
+  try {
+    const gg = localStorage.getItem(PREFIXO + 'guardados');
+    GUARDADOS = new Set((gg !== null ? JSON.parse(gg) || [] : localStorage.getItem(PREFIXO + 'arrumacao-2') ? [] : GUARDADOS_DE_FABRICA).filter(podeGuardar));
+  } catch { GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); }
   for (const id of GUARDADOS) delete ARR[id];
   const guardarGuardados = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'guardados', JSON.stringify([...GUARDADOS])); } catch { /* fica só nesta visita */ } };
   window.arrumacaoDoTeste = () => ARR; // para o teste
@@ -939,7 +956,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
   const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
     id !== 'pufe' && id !== 'poltrona' && !(id === 'guarda-roupa' && VISTAS_ABERTO) && !(id === 'abajur' && VISTAS.abajur) && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
-    && Math.abs(c[0] - INICIAL[id].c[0]) < 0.01 && Math.abs(c[1] - INICIAL[id].c[1]) < 0.01 && lado === INICIAL[id].lado;
+    && !!origemPintada(id) && Math.abs(c[0] - origemPintada(id).c[0]) < 0.01 && Math.abs(c[1] - origemPintada(id).c[1]) < 0.01 && lado === origemPintada(id).lado;
   // O pé na grade (a área que ocupa) e o pé MEDIDO (o do desenho, para a forma e a profundidade).
   const peDe = (id, c = ARR[id].c, lado = ARR[id].lado) => {
     if (noLugar(id, c, lado)) return pintado(id).pe;
@@ -2188,7 +2205,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
-  const naOrigem = (id) => Math.abs(ARR[id].c[0] - INICIAL[id].c[0]) < 0.01 && Math.abs(ARR[id].c[1] - INICIAL[id].c[1]) < 0.01 && ARR[id].lado === INICIAL[id].lado;
+  const naOrigem = (id) => !!origemPintada(id) && Math.abs(ARR[id].c[0] - origemPintada(id).c[0]) < 0.01 && Math.abs(ARR[id].c[1] - origemPintada(id).c[1]) < 0.01 && ARR[id].lado === origemPintada(id).lado;
   const luzPintadaAgora = () => CENA === 'quarto' && modo === 'noite' && luzPintada && ARR.abajur && naOrigem('abajur');
   // A pintura da noite sem a silhueta do criado-mudo: o buraco é preenchido com a luz em volta, de fora para dentro
   // (cada pixel vira a média dos vizinhos já preenchidos), feito uma vez.
@@ -3339,7 +3356,7 @@ void main() {
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); GUARDADOS = new Set(); guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher(ARR.poltrona ? 'poltrona' : Object.keys(ARR)[0]);
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
