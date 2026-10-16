@@ -56,7 +56,10 @@
  *                 e o Google vê o endereço de rede dela — está declarado na política de privacidade.
  *                 Hospedar a Noto junto com o site tiraria duas linhas desta política.
  *   worker-src    o tocador de som cru e o processamento do LiveKit rodam em workers.
- *   frame-ancestors 'none'  ninguém põe o Syden dentro de um quadro. É o que impede clickjacking — e é o
+ *   frame-src 'self' e frame-ancestors 'self' (16/10/2026): o quarto e o salão são páginas do PRÓPRIO site num
+ *                 quadro (web/src/QuartoNovo.tsx, SalaoNovo.tsx). O X-Frame-Options do painel vai junto, de DENY para
+ *                 SAMEORIGIN. Fechado qualquer um dos três, o app mostra o quarto e o salão antigos (web/src/cenaNova.ts).
+ *   frame-ancestors 'self'  ninguém DE FORA põe o Syden dentro de um quadro. É o que impede clickjacking — e é o
  *                 único item desta lista que NÃO funciona por meta tag, só por cabeçalho.
  */
 export const CSP = [
@@ -68,8 +71,8 @@ export const CSP = [
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://api.syden.chat wss://api.syden.chat https://live.syden.chat wss://live.syden.chat",
   "worker-src 'self' blob:",
-  "frame-src https://challenges.cloudflare.com https://term.ooo",
-  "frame-ancestors 'none'",
+  "frame-src 'self' https://challenges.cloudflare.com https://term.ooo",
+  "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",

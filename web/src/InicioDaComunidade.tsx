@@ -10,7 +10,8 @@ import { useT } from './i18n';
 import { pedirKaraokeAoEntrar } from './Karaoke';
 import { pedirParaAbrirAoEntrar, usarMinijogo } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
-import { type PessoaNoSalao, SalaoNovo } from './SalaoNovo';
+import { usarCenaNova } from './cenaNova';
+import { ENDERECO_DO_SALAO, type PessoaNoSalao, SalaoNovo } from './SalaoNovo';
 import { getTheme } from './theme';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { AbrirTicket } from './Tickets';
@@ -134,14 +135,10 @@ export function InicioDaComunidade({
   // A sala de voz para onde a TV e o fliperama levam: a que tem gente, se houver; senão, a primeira.
   const comGente = canais.find((c) => c.type === 'voice' && naVoz.some((m) => m.channelId === c.id));
   const salaDeVoz = comGente ?? canais.find((c) => c.type === 'voice');
-  // O SALÃO NOVO (o isométrico, SalaoNovo.tsx), SÓ NO DESENVOLVIMENTO: o mesmo botão 🧪 da home que troca o quarto.
-  const [salaoNovo] = useState(() => {
-    try {
-      return import.meta.env.DEV && localStorage.getItem('syden:quarto-novo') === '1';
-    } catch {
-      return false;
-    }
-  });
+  // O SALÃO ISOMÉTRICO (SalaoNovo.tsx), para todo mundo desde 16/10/2026; o de frente só se a página do novo não puder
+  // abrir (cenaNova.ts).
+  const salao = usarCenaNova(ENDERECO_DO_SALAO);
+  const salaoNovo = salao.cena === 'nova';
   // Quem está numa partida na sala de voz vai para o fliperama (sem a lista de jogadores, a sala inteira joga).
   const { partida } = usarMinijogo(salaoNovo ? (salaDeVoz?.id ?? null) : null, salaoNovo ? (socket ?? null) : null);
   const naSalaDoJogo = naVoz.filter((m) => m.channelId === salaDeVoz?.id).map((m) => m.userId);
@@ -292,7 +289,12 @@ export function InicioDaComunidade({
             podeEditar={dados.podeEditar}
             noite={getTheme() !== 'light'}
             socket={socket ?? null}
+            aoFalhar={salao.desistir}
           />
+        ) : salao.cena === 'conferindo' ? (
+          <div className="salao-novo" aria-hidden="true">
+            <div className="quarto-novo" />
+          </div>
         ) : (
           <Salao
             acoes={acoes}

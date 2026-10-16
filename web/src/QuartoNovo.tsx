@@ -21,7 +21,8 @@ import type { AcoesDoQuarto } from './Quarto';
  * fica igual nos 80 idiomas sem um texto novo por objeto.
  */
 /** A página do quarto, servida pelo Vite no desenvolvimento (vite.config.ts). */
-const ENDERECO = import.meta.env.BASE_URL + 'quarto-novo/?app';
+export const ENDERECO_DO_QUARTO = import.meta.env.BASE_URL + 'quarto-novo/';
+const ENDERECO = ENDERECO_DO_QUARTO + '?app';
 
 /** O que o coelho faz no quarto é o estado de VERDADE de quem mora nele (a tela não mente): em call, vai ao computador;
  *  ausente, dorme; senão, fica à toa. */
@@ -48,7 +49,18 @@ export interface Arrumacao {
   parede: Record<string, boolean>;
 }
 
-export function QuartoNovo({ noite, acoes, estado }: { noite: boolean; acoes: AcoesDoQuarto; estado: EstadoNoQuarto }) {
+export function QuartoNovo({
+  noite,
+  acoes,
+  estado,
+  aoFalhar,
+}: {
+  noite: boolean;
+  acoes: AcoesDoQuarto;
+  estado: EstadoNoQuarto;
+  /** A cena não disse "pronto" a tempo: quem mostra volta ao quarto antigo. */
+  aoFalhar?: () => void;
+}) {
   const t = useT();
   const ref = useRef<HTMLIFrameElement>(null);
   const acoesRef = useRef(acoes);
@@ -72,6 +84,13 @@ export function QuartoNovo({ noite, acoes, estado }: { noite: boolean; acoes: Ac
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);
   }, []);
+
+  // Sem o "pronto" da cena a tempo (a página não carregou, ou foi barrada): volta a cena antiga (ver cenaNova.ts).
+  useEffect(() => {
+    if (pronto || !aoFalhar) return;
+    const prazo = setTimeout(aoFalhar, 20_000);
+    return () => clearTimeout(prazo);
+  }, [pronto, aoFalhar]);
 
   // Só o que se mostra de cada função (o clique volta para cá, onde mora a ação).
   const funcoes = JSON.stringify(Object.fromEntries(Object.entries(acoes).map(([id, a]) => [id, { rotulo: a?.rotulo, sub: a?.sub }])));

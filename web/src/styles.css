@@ -12738,26 +12738,6 @@ body.arrastando-barra {
   image-rendering: pixelated;
 }
 
-.quarto-novo-alternar {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 20;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px dashed var(--border);
-  background: var(--bg-raised);
-  color: inherit;
-  opacity: 0.8;
-  cursor: pointer;
-}
-
-.quarto-novo-alternar[aria-pressed='true'] {
-  opacity: 1;
-  border-style: solid;
-}
-
 .quarto-cena {
   position: absolute;
   inset: 0;

@@ -6,14 +6,37 @@
 //     cor do dia vezes a razão noite/dia;
 //   - a vista (../janela/) entra nos pixels do vidro, espelhada, e troca com a hora.
 //   node e2e/pixel-art/quarto/novo/quarto/montar.mjs   → quarto.html
+//
+// PUBLICAR (o lançamento, 16/10/2026: "o quarto novo substitui para todo mundo, assim como o salão isométrico"): com
+//   node montar.mjs [salao] --publicar <pasta da página> <pasta das imagens> <endereço das imagens>
+// a página sai para o build do site (web/vite.config.ts) do jeito que a política do site aceita: as imagens em arquivos
+// com a impressão digital no nome (o cache longo de /app/assets/, em vez de 3–5 MB de imagem dentro do HTML a cada
+// visita), o script num arquivo à parte (script-src 'self' não roda script dentro da página) e sem as imagens que só a
+// página de teste usa (o conceito, o ícone e a capa de teste). Sem --publicar, a página de teste de sempre, com tudo
+// dentro (aberta como arquivo, o canvas não lê imagem de outro arquivo).
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ler64 } from '../../imagem.mjs';
 import { CANTOS, N } from './chao.mjs';
 import { FIXOS, PUFES } from './lista.mjs';
 
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
-const png = (arquivo) => 'data:image/png;base64,' + ler64(arquivo);
+// (o ler64 daqui, e não o de ../../imagem.mjs: aquele traz junto o Playwright, que o build do site não tem)
+const ler64 = (arquivo) => fs.readFileSync(arquivo).toString('base64');
+const iPub = process.argv.indexOf('--publicar');
+const PUBLICAR = iPub >= 0 ? { pagina: process.argv[iPub + 1], imagens: process.argv[iPub + 2], url: process.argv[iPub + 3] } : null;
+if (PUBLICAR && !(PUBLICAR.pagina && PUBLICAR.imagens && PUBLICAR.url)) throw new Error('--publicar <pasta da página> <pasta das imagens> <endereço das imagens>');
+const impressao = (dados) => createHash('sha256').update(dados).digest('hex').slice(0, 10);
+const png = (arquivo) => {
+  if (!PUBLICAR) return 'data:image/png;base64,' + ler64(arquivo);
+  const dados = fs.readFileSync(arquivo), nome = 'cena-' + impressao(dados) + '.png';
+  fs.mkdirSync(PUBLICAR.imagens, { recursive: true });
+  const destino = path.join(PUBLICAR.imagens, nome);
+  if (!fs.existsSync(destino)) fs.writeFileSync(destino, dados);
+  return PUBLICAR.url + nome;
+};
+// O que só a página de teste mostra (o conceito ao lado, as imagens de teste do quadro): fora da publicada.
+const soNoTeste = (arquivo) => (PUBLICAR ? null : png(arquivo));
 // A CENA (15/10/2026): o mesmo motor monta o QUARTO e o SALÃO da comunidade (e2e/pixel-art/salao/). O SALÃO É 16 × 16
 // (pedido dele, mesmo dia: "4× o tamanho"), numa imagem de 1024 px com a casca de salao/casca16.py: a mesma casa do
 // quarto (27 × 14,25 px), o fundo do chão em (512, 253). As peças pintadas no quarto (as janelas, os objetos da parede, o
@@ -29,8 +52,8 @@ const CANTOS_DA_CENA = CENA === 'salao' ? { fundo: [512, 253], esquerda: [80, 48
 const IMAGENS = {
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['vista' + n, png(path.join(AQUI, '..', 'janela', `vista-dia-${n}.png`))])),
   ...Object.fromEntries([1, 2, 3, 4].map((n) => ['noite' + n, png(path.join(AQUI, '..', 'janela', `vista-noite-${n}.png`))])),
-  conceitoNoite: png(path.join(AQUI, '..', '..', 'hibrido', 'conceito-unzoom.png')),
-  conceitoDia: png(path.join(AQUI, '..', '..', 'hibrido', 'dia.png')),
+  conceitoNoite: soNoTeste(path.join(AQUI, '..', '..', 'hibrido', 'conceito-unzoom.png')),
+  conceitoDia: soNoTeste(path.join(AQUI, '..', '..', 'hibrido', 'dia.png')),
   // O COELHO PROVISÓRIO (14/10/2026): o do recado do salão, de frente, até o mascote isométrico nascer
   // (e2e/pixel-art/personagem/README.md). Serve para testar a estrutura: pontos, caminhada, ordem e luz.
   coelho: png(path.join(AQUI, '..', '..', '..', '..', '..', 'web', 'src', 'assets', 'salao', 'coelho-do-recado.png')),
@@ -136,8 +159,8 @@ const JAN_DIR = path.join(AQUI, 'janelas');
 // As imagens de teste do quadro da comunidade (só na página de teste do salão): o ícone do Syden e a imagem da loja.
 if (CENA === 'salao') {
   const WEB = path.join(AQUI, '..', '..', '..', '..', '..', 'web', 'public');
-  IMAGENS.iconeDeTeste = png(path.join(WEB, 'icon-512.png'));
-  IMAGENS.capaDeTeste = png(path.join(AQUI, '..', '..', '..', 'salao', 'bases', 'tarde-1.png'));
+  IMAGENS.iconeDeTeste = soNoTeste(path.join(WEB, 'icon-512.png'));
+  IMAGENS.capaDeTeste = soNoTeste(path.join(AQUI, '..', '..', '..', 'salao', 'bases', 'tarde-1.png'));
   // as luzinhas do alto das paredes, à parte (salao/luzes16.py): vão por cima da janela e dos objetos da parede
   IMAGENS.luzes = png(path.join(SALAO, 'luzes16.png'));
 }
@@ -376,7 +399,18 @@ function deslocar(arr) {
   for (let y = 0; y + DY < W && y < 512; y++) out.set(arr.subarray(y * W * 4, (y * W + Math.min(512, W - DX)) * 4), ((y + DY) * W + DX) * 4);
   return out;
 }
-const carregar = (src) => new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.src = src; });
+// Cada imagem uma vez, e TODAS pedidas de uma vez no começo (publicada, são ~430 arquivos: uma de cada vez, pela
+// internet, seriam centenas de idas e voltas). A que falhar vira um pixel transparente, em vez de travar a página.
+const imagensPedidas = new Map();
+const carregar = (src) => {
+  if (!imagensPedidas.has(src)) imagensPedidas.set(src, new Promise((ok) => {
+    const im = new Image();
+    im.onload = () => ok(im);
+    im.onerror = () => { console.warn('imagem não carregou:', src); const c = document.createElement('canvas'); c.width = c.height = 1; ok(c); };
+    im.src = src;
+  }));
+  return imagensPedidas.get(src);
+};
 function dados(im, filtro, w = W, h = W) {
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
   if (filtro) g.filter = filtro;
@@ -385,7 +419,8 @@ function dados(im, filtro, w = W, h = W) {
 
 (async () => {
   const im = {};
-  for (const [k, src] of Object.entries(IMAGENS)) im[k] = await carregar(src);
+  for (const src of [...Object.values(IMAGENS), ...QUADROS_DO_COELHO]) if (src) carregar(src);
+  for (const [k, src] of Object.entries(IMAGENS)) if (src) im[k] = await carregar(src);
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {}, comecarPan = () => {};
@@ -2537,7 +2572,7 @@ function dados(im, filtro, w = W, h = W) {
     sombraFinal.fill(0);
     passeFinal([0, 0, W, W]);
     pintarTela([0, 0, W, W]);
-    document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
+    if (IMAGENS.conceitoDia) document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
   // O FOCO de um aparelho: sai da frente dele, na direção para onde está virado, com o alcance e a abertura em casas; e a
@@ -3828,6 +3863,19 @@ void main() {
 </script>
 </body></html>
 `;
-const SAIDA = CENA === 'salao' ? path.join(SALAO, 'salao.html') : path.join(AQUI, 'quarto.html');
-fs.writeFileSync(SAIDA, html);
-console.log(path.basename(SAIDA), Math.round(html.length / 1024), 'KB');
+if (PUBLICAR) {
+  // o script vai para um arquivo com a impressão digital (é ele que muda a cada versão; o HTML fica pequeno)
+  const i0 = html.indexOf('<script>\n'), i1 = html.lastIndexOf('</script>');
+  if (i0 < 0 || i1 < i0) throw new Error('não achei o script da página');
+  const js = html.slice(i0 + '<script>\n'.length, i1), nomeJs = 'cena-' + impressao(js) + '.js';
+  fs.mkdirSync(PUBLICAR.imagens, { recursive: true });
+  fs.writeFileSync(path.join(PUBLICAR.imagens, nomeJs), js);
+  const pagina = html.slice(0, i0) + '<script src="' + PUBLICAR.url + nomeJs + '"></script>' + html.slice(i1 + '</script>'.length);
+  fs.mkdirSync(PUBLICAR.pagina, { recursive: true });
+  fs.writeFileSync(path.join(PUBLICAR.pagina, 'index.html'), pagina);
+  console.log(CENA, 'publicado:', Math.round(pagina.length / 1024), 'KB de página +', Math.round(js.length / 1024), 'KB de script');
+} else {
+  const SAIDA = CENA === 'salao' ? path.join(SALAO, 'salao.html') : path.join(AQUI, 'quarto.html');
+  fs.writeFileSync(SAIDA, html);
+  console.log(path.basename(SAIDA), Math.round(html.length / 1024), 'KB');
+}

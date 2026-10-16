@@ -173,7 +173,18 @@ function deslocar(arr) {
   for (let y = 0; y + DY < W && y < 512; y++) out.set(arr.subarray(y * W * 4, (y * W + Math.min(512, W - DX)) * 4), ((y + DY) * W + DX) * 4);
   return out;
 }
-const carregar = (src) => new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.src = src; });
+// Cada imagem uma vez, e TODAS pedidas de uma vez no começo (publicada, são ~430 arquivos: uma de cada vez, pela
+// internet, seriam centenas de idas e voltas). A que falhar vira um pixel transparente, em vez de travar a página.
+const imagensPedidas = new Map();
+const carregar = (src) => {
+  if (!imagensPedidas.has(src)) imagensPedidas.set(src, new Promise((ok) => {
+    const im = new Image();
+    im.onload = () => ok(im);
+    im.onerror = () => { console.warn('imagem não carregou:', src); const c = document.createElement('canvas'); c.width = c.height = 1; ok(c); };
+    im.src = src;
+  }));
+  return imagensPedidas.get(src);
+};
 function dados(im, filtro, w = W, h = W) {
   const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
   if (filtro) g.filter = filtro;
@@ -182,7 +193,8 @@ function dados(im, filtro, w = W, h = W) {
 
 (async () => {
   const im = {};
-  for (const [k, src] of Object.entries(IMAGENS)) im[k] = await carregar(src);
+  for (const src of [...Object.values(IMAGENS), ...QUADROS_DO_COELHO]) if (src) carregar(src);
+  for (const [k, src] of Object.entries(IMAGENS)) if (src) im[k] = await carregar(src);
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {}, comecarPan = () => {};
@@ -2334,7 +2346,7 @@ function dados(im, filtro, w = W, h = W) {
     sombraFinal.fill(0);
     passeFinal([0, 0, W, W]);
     pintarTela([0, 0, W, W]);
-    document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
+    if (IMAGENS.conceitoDia) document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
   // O FOCO de um aparelho: sai da frente dele, na direção para onde está virado, com o alcance e a abertura em casas; e a

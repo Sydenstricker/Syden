@@ -21,7 +21,8 @@ import type { Community } from './types';
  * A ARRUMAÇÃO É DA COMUNIDADE (salao-routes.ts): todo membro vê igual, e só quem administra tem a barra de arrumar. O
  * servidor também confere: a barra escondida não é a trava. Quando quem administra muda o salão, a turma relê na hora.
  */
-const ENDERECO = import.meta.env.BASE_URL + 'salao-novo/?app';
+export const ENDERECO_DO_SALAO = import.meta.env.BASE_URL + 'salao-novo/';
+const ENDERECO = ENDERECO_DO_SALAO + '?app';
 
 /** Uma pessoa no salão: transmitindo fica na frente da TV; numa partida, no fliperama; o resto senta. */
 export interface PessoaNoSalao {
@@ -39,6 +40,7 @@ export function SalaoNovo({
   podeEditar,
   noite,
   socket,
+  aoFalhar,
 }: {
   community: Pick<Community, 'id' | 'iconVersion' | 'bannerVersion'>;
   acoes: AcoesDoSalao;
@@ -55,6 +57,8 @@ export function SalaoNovo({
   podeEditar: boolean;
   noite: boolean;
   socket: Socket | null;
+  /** A cena não disse "pronto" a tempo: quem mostra volta ao salão antigo. */
+  aoFalhar?: () => void;
 }) {
   const t = useT();
   const ref = useRef<HTMLIFrameElement>(null);
@@ -83,6 +87,13 @@ export function SalaoNovo({
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);
   }, []);
+
+  // Sem o "pronto" da cena a tempo (a página não carregou, ou foi barrada): volta o salão antigo (ver cenaNova.ts).
+  useEffect(() => {
+    if (pronto || !aoFalhar) return;
+    const prazo = setTimeout(aoFalhar, 20_000);
+    return () => clearTimeout(prazo);
+  }, [pronto, aoFalhar]);
 
   // Só o que se mostra de cada função (o clique volta para cá, onde mora a ação).
   const funcoes = JSON.stringify(

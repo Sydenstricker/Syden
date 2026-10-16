@@ -8,7 +8,8 @@ import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
-import { type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
+import { usarCenaNova } from './cenaNova';
+import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
 import { loadMyStatus } from './presenceStatus';
 import type { Periodo } from './Vila';
 import { idiomaAtual, useT } from './i18n';
@@ -159,24 +160,8 @@ export function Home({
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
   const [jogosAbertos, setJogosAbertos] = useState(false);
-  // O quarto novo, só no desenvolvimento, escolhido por um botão e lembrado neste navegador.
-  const [quartoNovo, setQuartoNovo] = useState(() => {
-    try {
-      return import.meta.env.DEV && localStorage.getItem('syden:quarto-novo') === '1';
-    } catch {
-      return false;
-    }
-  });
-  function alternarQuartoNovo() {
-    setQuartoNovo((agora) => {
-      try {
-        localStorage.setItem('syden:quarto-novo', agora ? '0' : '1');
-      } catch {
-        /* só nesta visita */
-      }
-      return !agora;
-    });
-  }
+  // O QUARTO NOVO, para todo mundo desde 16/10/2026; o antigo só se a página do novo não puder abrir (cenaNova.ts).
+  const quarto = usarCenaNova(ENDERECO_DO_QUARTO);
   /** O jogo de parceiro aberto aqui dentro (SiteEmbutido.tsx). */
   const [siteAberto, setSiteAberto] = useState<{ nome: string; endereco: string } | null>(null);
   const ideiasRef = useRef<HTMLDivElement | null>(null);
@@ -225,13 +210,15 @@ export function Home({
   return (
     <div className="home">
       <div className="home-cena">
-        {quartoNovo ? <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} /> : <Quarto noite={periodo === 'noite'} acoes={acoes} />}
-        {/* SÓ NO DESENVOLVIMENTO: liga e desliga o quarto novo (QuartoNovo.tsx), que ainda não foi lançado. Um ícone, sem
-            texto: o botão não existe no site publicado, e texto aqui seria mais uma frase cravada fora da tradução. */}
-        {import.meta.env.DEV && (
-          <button type="button" className="quarto-novo-alternar" aria-pressed={quartoNovo} onClick={() => alternarQuartoNovo()}>
-            🧪
-          </button>
+        {/* (conferindo: o lugar fica guardado, sem afirmar nenhum dos dois) */}
+        {quarto.cena === 'nova' ? (
+          <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} />
+        ) : quarto.cena === 'antiga' ? (
+          <Quarto noite={periodo === 'noite'} acoes={acoes} />
+        ) : (
+          <div className="quarto-novo-caixa" aria-hidden="true">
+            <div className="quarto-novo" />
+          </div>
         )}
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label={t('Salas de voz')}>

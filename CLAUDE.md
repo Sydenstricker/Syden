@@ -509,9 +509,11 @@ ficou combinado:
   enfeitada. As funções da home moram nos objetos: fone → Salas, quadro → Amigos, cortiça → ideias, **o guarda-roupa (o
   móvel) → Guarda-roupa** (na home atual eram as gavetas da cama), o vidro da janela → Explorar, abajur → Dia e noite,
   mesa → Mini-games; o nome aparece ao passar o mouse. **No app, `QuartoNovo.tsx` mostra a página do quarto num iframe
-  (`?app`), SÓ NO DESENVOLVIMENTO:** o Vite a serve do disco e ela não entra no build; o botão 🧪 da home troca de quarto.
-  Para lançar: a página precisa ir para o build (2,7 MB desde 15/10, com as imagens dentro) e a home trocar de
-  componente. **A barra de ARRUMAR do app existe (15/10/2026):** Editar → Girar, Janela, as cores do tapete (sálvia,
+  (`?app`); LANÇADO PARA TODO MUNDO em 16/10/2026** ("o quarto novo substitui para todo mundo, assim como o salão
+  isométrico"). No build, `montar.mjs --publicar` (chamado por web/vite.config.ts) tira as imagens e o script para
+  /app/assets/ com a impressão digital. **O iframe depende de três cabeçalhos da Cloudflare** (frame-src 'self',
+  frame-ancestors 'self', X-Frame-Options SAMEORIGIN); fechado qualquer um, ou sem o "pronto" da cena em 20 s, a home mostra
+  o quarto antigo (`web/src/cenaNova.ts`). Teste do build de produção: `e2e/cenas-no-ar.mjs`. **A barra de ARRUMAR do app existe (15/10/2026):** Editar → Girar, Janela, as cores do tapete (sálvia,
   terracota, azul, mostarda, rosa, cinza) e os objetos da parede, estes dois como FIGURAS e não nomes, para não pedir
   um texto novo por objeto nos 80 idiomas (só "Girar", "Tapete" e "Objetos da parede" entraram).
   O coelho do quarto no app já segue o estado de verdade (em call, ausente).
@@ -567,15 +569,15 @@ derivar dele; reaproveita as mecânicas do quarto (móveis soltos, janela e obje
 SALA é nova (não há salão isométrico), com o salão de frente de referência ("ele está bem legal"). As pessoas aparecem
 com o mascote base até os outros virarem isométricos.
 
-**O que o salão isométrico já faz (15/10/2026, `e2e/pixel-art/salao/`, no app pelo `SalaoNovo.tsx`, SÓ NO
-DESENVOLVIMENTO, com o mesmo botão 🧪 do quarto):** as funções do Salao.tsx nos objetos (TV → voz e Ao vivo, fliperama →
+**O que o salão isométrico já faz (15/10/2026, `e2e/pixel-art/salao/`, no app pelo `SalaoNovo.tsx`, LANÇADO com o
+quarto em 16/10/2026, com a mesma volta ao salão de frente se a página não puder abrir):** as funções do Salao.tsx nos objetos (TV → voz e Ao vivo, fliperama →
 mini-games, estante → canais, janela → chamar alguém, balcão → o recado num balão sobre o coelho, quadro → montar a tela);
 a TV e o fliperama têm TELA POR CÓDIGO (a TV à toa passa um desenho calmo e, com transmissão, o selo Ao vivo e quem
 transmite em cima, com as setas de canal; a imagem de verdade continua fora da TV); o quadro mostra a CAPA da comunidade
 (ou o ícone, inteiro) no plano da parede; quem transmite fica na frente da TV, quem está numa partida no fliperama (pose
 própria), e as banquetas têm a pose sentada alta. **A arrumação é da COMUNIDADE** (`saloes`, `salao-routes.ts`): todo
 membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`).
-Para lançar: as duas páginas vão para o build e o início da comunidade troca de componente. Teste: `salao/no-app.mjs`.
+Testes: `salao/no-app.mjs` (no app de desenvolvimento) e `e2e/cenas-no-ar.mjs` (no build de produção).
 
 **O SALÃO É 16 × 16, COM CÂMERA (decisão dele, 15/10/2026: "imaginei 4× o tamanho"; "câmera que anda").** A casca sai por
 código da 8 × 8 (`salao/casca16.py`: a mesma casa de 27 × 14,25 px, os cantos como estão e o meio repetindo 4 casas), e

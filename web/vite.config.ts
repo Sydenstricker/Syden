@@ -1,5 +1,6 @@
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
@@ -40,10 +41,11 @@ const arquivoDeVersao: Plugin = {
   },
 };
 
-// O QUARTO NOVO, SÓ NO DESENVOLVIMENTO (15/10/2026). O quarto de móveis soltos ainda é a página de teste
-// (e2e/pixel-art/quarto/novo/quarto/quarto.html, gerada por montar.mjs), e o QuartoNovo.tsx a mostra num iframe. Ela é
-// servida daqui, lida do disco a cada pedido (montar de novo e recarregar basta), e NÃO entra no build: até ele lançar,
-// a home publicada continua sendo o quarto atual (decisão dele: "quando eu lançar, ele vai substituir o quarto atual").
+// O QUARTO NOVO E O SALÃO ISOMÉTRICO (lançados em 16/10/2026: "o quarto novo substitui para todo mundo, assim como o
+// salão isométrico"). As duas cenas são as páginas montadas por e2e/pixel-art/quarto/novo/quarto/montar.mjs, e o
+// QuartoNovo.tsx e o SalaoNovo.tsx as mostram num iframe. No desenvolvimento, servidas daqui, lidas do disco a cada
+// pedido (montar de novo e recarregar basta). No build, montadas para publicar (--publicar, ver montar.mjs): a página
+// em quarto-novo/ e salao-novo/, as imagens e o script em assets/, com a impressão digital no nome.
 const QUARTO_NOVO = fileURLToPath(new URL('../e2e/pixel-art/quarto/novo/quarto/quarto.html', import.meta.url));
 const SALAO_NOVO = fileURLToPath(new URL('../e2e/pixel-art/salao/salao.html', import.meta.url));
 const quartoNovo: Plugin = {
@@ -62,9 +64,25 @@ const quartoNovo: Plugin = {
   },
 };
 
+const MONTAR = fileURLToPath(new URL('../e2e/pixel-art/quarto/novo/quarto/montar.mjs', import.meta.url));
+let pastaDoBuild = 'dist/app';
+const cenasNoBuild: Plugin = {
+  name: 'cenas-no-build',
+  apply: 'build',
+  configResolved(config) {
+    pastaDoBuild = join(config.root, config.build.outDir);
+  },
+  closeBundle() {
+    for (const [cena, pasta] of [[null, 'quarto-novo'], ['salao', 'salao-novo']] as const) {
+      const args = [MONTAR, ...(cena ? [cena] : []), '--publicar', join(pastaDoBuild, pasta), join(pastaDoBuild, 'assets'), '../assets/'];
+      process.stdout.write(execFileSync(process.execPath, args, { encoding: 'utf8' }));
+    }
+  },
+};
+
 export default defineConfig({
   base: BASE,
-  plugins: [react(), arquivoDeVersao, quartoNovo],
+  plugins: [react(), arquivoDeVersao, quartoNovo, cenasNoBuild],
   build: {
     // O app sai numa subpasta, e os arquivos do site entram na raiz depois (scripts/montar-site.mjs).
     outDir: 'dist/app',
