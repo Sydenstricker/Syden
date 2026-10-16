@@ -152,10 +152,14 @@ const PREFIXO = CENA === 'salao' ? 'syden-salao-' : 'syden-quarto-';
 const MOVEIS_GIRADOS = ["poltrona","abajur","guarda-roupa","cama","mesa","planta-alta","planta-baixa"];
 const TELAS_MEDIDAS = {};
 const W = 512;
+// (sem .map nem desestruturar: é chamada milhões de vezes na abertura — 16/10/2026, o salão levava ~5 s para abrir; a
+// conta é a mesma, na mesma ordem, então o resultado é idêntico)
 function ponto(u, v) {
-  const a = u / N, b = v / N, { fundo: B, esquerda: L, direita: R, frente: F } = CANTOS;
-  return [0, 1].map((k) => B[k] * (1 - a) * (1 - b) + L[k] * a * (1 - b) + R[k] * (1 - a) * b + F[k] * a * b);
+  const a = u / N, b = v / N, B = CANTOS.fundo, L = CANTOS.esquerda, R = CANTOS.direita, F = CANTOS.frente;
+  return [pontoX(a, b, B, L, R, F), pontoY(a, b, B, L, R, F)];
 }
+function pontoX(a, b, B, L, R, F) { return B[0] * (1 - a) * (1 - b) + L[0] * a * (1 - b) + R[0] * (1 - a) * b + F[0] * a * b; }
+function pontoY(a, b, B, L, R, F) { return B[1] * (1 - a) * (1 - b) + L[1] * a * (1 - b) + R[1] * (1 - a) * b + F[1] * a * b; }
 // O inverso: de um pixel para (u, v), pelo método de Newton na interpolação bilinear.
 // A CONTA DIRETA (desempenho, 14/10/2026): o chão é quase um paralelogramo, então a inversa da parte linear já cai a
 // menos de um centésimo de casa; dois passos de Newton acertam o resto. O Newton puro, de 12 passos, em cada pixel,
@@ -165,9 +169,11 @@ function uvRapido(x, y) {
   const a1 = L[0] - B[0], a2 = L[1] - B[1], b1 = R[0] - B[0], b2 = R[1] - B[1], det = a1 * b2 - b1 * a2;
   const dx = x - B[0], dy = y - B[1];
   let u = ((dx * b2 - b1 * dy) / det) * N, v = ((a1 * dy - dx * a2) / det) * N;
+  const F = CANTOS.frente;
   for (let i = 0; i < 2; i++) {
-    const [px, py] = ponto(u, v), e = 0.01;
-    const [ax, ay] = ponto(u + e, v), [bx, by] = ponto(u, v + e);
+    const e = 0.01, a = u / N, b = v / N, ae = (u + e) / N, be = (v + e) / N;
+    const px = pontoX(a, b, B, L, R, F), py = pontoY(a, b, B, L, R, F);
+    const ax = pontoX(ae, b, B, L, R, F), ay = pontoY(ae, b, B, L, R, F), bx = pontoX(a, be, B, L, R, F), by = pontoY(a, be, B, L, R, F);
     const j11 = (ax - px) / e, j21 = (ay - py) / e, j12 = (bx - px) / e, j22 = (by - py) / e;
     const d2 = j11 * j22 - j12 * j21, ex = x - px, ey = y - py;
     u += (j22 * ex - j12 * ey) / d2; v += (-j21 * ex + j11 * ey) / d2;
@@ -202,16 +208,34 @@ const abrirPacote = () => (pacoteAberto ??= fetch(PACOTE.url).then((r) => r.arra
 const carregar = (src) => {
   if (!imagensPedidas.has(src)) imagensPedidas.set(src, (src.startsWith('pacote:') ? abrirPacote().then((m) => m[src.slice(7)]) : Promise.resolve(src)).then((url) => new Promise((ok) => {
     const im = new Image();
-    im.onload = () => ok(im);
+    // DECODIFICADA EM SEGUNDO PLANO (desempenho, 16/10/2026): a imagem só se descomprimia no primeiro desenho, em
+    // sequência e travando a página (~1 s no salão, com as vistas de 1024 × 1024). createImageBitmap descomprime fora da
+    // linha principal enquanto as outras ainda chegam; sem ele, fica a imagem como antes.
+    im.onload = () => (typeof createImageBitmap === 'function' ? createImageBitmap(im).then(ok, () => ok(im)) : ok(im));
     im.onerror = () => { console.warn('imagem não carregou:', src); const c = document.createElement('canvas'); c.width = c.height = 1; ok(c); };
     im.src = url;
   })).catch(() => { console.warn('o pacote de imagens não veio'); const c = document.createElement('canvas'); c.width = c.height = 1; return c; }));
   return imagensPedidas.get(src);
 };
+// LER PIXELS SEM PASSAR PELA PLACA (desempenho, 16/10/2026): sem "willReadFrequently", a tela vive na placa de vídeo e
+// cada leitura de volta (getImageData) de uma imagem de 1024 × 1024 custava ~15 ms; são mais de cem na abertura do salão.
+// Com o desfoque (filter), a placa continua: é ela que o faz rápido.
 function dados(im, filtro, w = W, h = W) {
-  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  if (!filtro && (im.width < w || im.height < h)) return dadosPequenos(im, w, h);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', filtro ? undefined : { willReadFrequently: true });
   if (filtro) g.filter = filtro;
   g.drawImage(im, 0, 0); return g.getImageData(0, 0, w, h).data;
+}
+// A IMAGEM MENOR QUE A CENA (as vistas dos móveis têm 97 a 170 px): desenhada numa tela do tamanho DELA e copiada para
+// o canto de um quadro vazio do tamanho da cena. Antes, cada uma ia para uma tela de 1024 × 1024 só para ler de volta
+// 4 MB quase todos vazios (~6 ms por vista, 136 vistas no salão). O resultado é o mesmo, byte a byte.
+function dadosPequenos(im, w = W, h = W) {
+  const iw = Math.min(w, im.width), ih = Math.min(h, im.height), r = new Uint8ClampedArray(w * h * 4);
+  if (!iw || !ih) return r;
+  const c = document.createElement('canvas'); c.width = iw; c.height = ih; const g = c.getContext('2d', { willReadFrequently: true });
+  g.drawImage(im, 0, 0); const p = g.getImageData(0, 0, iw, ih).data;
+  for (let y = 0; y < ih; y++) r.set(p.subarray(y * iw * 4, (y + 1) * iw * 4), y * w * 4);
+  return r;
 }
 
 // O MODO APP antes de qualquer imagem (relato dele, 16/10/2026: "aparece isso no início" — a página de teste inteira,
@@ -491,26 +515,48 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // próprio objeto com uma brecha na linha (o corpo do violão). Medido em todos os objetos (scratchpad: nucleo.py).
   function nucleoDe(T2) {
     if (T2.nucleo) return T2.nucleo;
-    const a = T2.dia, peca = new Uint8Array(W * W);
-    for (let k = 0; k < W * W; k++) peca[k] = a[k * 4 + 3] > 127 ? 1 : 0;
-    const passa = (k) => { if (!peca[k]) return true; const r = a[k * 4], g = a[k * 4 + 1], b = a[k * 4 + 2]; return 0.3 * r + 0.59 * g + 0.11 * b >= 130 && r >= g && g >= b - 6 && r - b >= 25; };
-    const viz = (k) => { const x = k % W; return [x > 0 ? k - 1 : -1, x < W - 1 ? k + 1 : -1, k - W, k + W].filter((n) => n >= 0 && n < W * W); };
-    const fora = new Uint8Array(W * W), fila = [];
-    for (let i = 0; i < W; i++) for (const k of [i, (W - 1) * W + i, i * W, i * W + W - 1]) if (passa(k) && !fora[k]) { fora[k] = 1; fila.push(k); }
-    for (let q = 0; q < fila.length; q++) for (const n of viz(fila[q])) if (!fora[n] && passa(n)) { fora[n] = 1; fila.push(n); }
-    const nuc = new Uint8Array(peca), visto = new Uint8Array(W * W);
-    for (let k0 = 0; k0 < W * W; k0++) {
-      if (!peca[k0] || !fora[k0] || visto[k0]) continue;
-      const comp = [k0]; visto[k0] = 1;
-      for (let q = 0; q < comp.length; q++) for (const n of viz(comp[q])) if (peca[n] && fora[n] && !visto[n]) { visto[n] = 1; comp.push(n); }
+    // (só no retângulo do objeto, com 1 px de folga: na imagem inteira, eram ~0,6 s na abertura do salão)
+    const a = T2.dia, nucleo = new Uint8Array(W * W);
+    let x0 = W, y0 = W, x1 = -1, y1 = -1;
+    for (let k = 0; k < W * W; k++) if (a[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return (T2.nucleo = nucleo);
+    x0 = Math.max(0, x0 - 1); y0 = Math.max(0, y0 - 1); x1 = Math.min(W - 1, x1 + 1); y1 = Math.min(W - 1, y1 + 1);
+    const w = x1 - x0 + 1, h = y1 - y0 + 1, n = w * h, K = (i) => (y0 + ((i / w) | 0)) * W + x0 + (i % w);
+    const peca = new Uint8Array(n), passa = new Uint8Array(n);
+    for (let i = 0; i < n; i++) {
+      const k = K(i);
+      if (a[k * 4 + 3] <= 127) { passa[i] = 1; continue; }
+      peca[i] = 1;
+      const r = a[k * 4], g = a[k * 4 + 1], b = a[k * 4 + 2];
+      passa[i] = 0.3 * r + 0.59 * g + 0.11 * b >= 130 && r >= g && g >= b - 6 && r - b >= 25 ? 1 : 0;
+    }
+    const viz = (i, f) => { const x = i % w; if (x > 0) f(i - 1); if (x < w - 1) f(i + 1); if (i >= w) f(i - w); if (i + w < n) f(i + w); };
+    // a inundação a partir da borda do retângulo, pelo que é transparente ou de tom de parede
+    const fora = new Uint8Array(n), fila = [];
+    const entra = (i) => { if (!fora[i] && passa[i]) { fora[i] = 1; fila.push(i); } };
+    for (let x = 0; x < w; x++) { entra(x); entra((h - 1) * w + x); }
+    for (let y = 0; y < h; y++) { entra(y * w); entra(y * w + w - 1); }
+    for (let q = 0; q < fila.length; q++) viz(fila[q], entra);
+    const nuc = new Uint8Array(peca), visto = new Uint8Array(n), prof = new Int32Array(n);
+    for (let i0 = 0; i0 < n; i0++) {
+      if (!peca[i0] || !fora[i0] || visto[i0]) continue;
+      const comp = [i0]; visto[i0] = 1;
+      for (let q = 0; q < comp.length; q++) viz(comp[q], (j) => { if (peca[j] && fora[j] && !visto[j]) { visto[j] = 1; comp.push(j); } });
       // a espessura: a distância até a borda da peça, dentro do pedaço
-      const prof = new Map(), f2 = [];
-      for (const c of comp) if (viz(c).some((n) => !peca[n])) { prof.set(c, 1); f2.push(c); }
+      const f2 = [];
+      for (const c of comp) { let borda = false; viz(c, (j) => { if (!peca[j]) borda = true; }); if (c % w === 0 || c % w === w - 1 || c < w || c >= n - w) borda = true; if (borda) { prof[c] = 1; f2.push(c); } }
       let fundo = 0;
-      for (let q = 0; q < f2.length; q++) { const c = f2[q], d = prof.get(c); fundo = Math.max(fundo, d); for (const n of viz(c)) if (visto[n] && peca[n] && fora[n] && !prof.has(n)) { prof.set(n, d + 1); f2.push(n); } }
+      for (let q = 0; q < f2.length; q++) { const c = f2[q], d = prof[c]; if (d > fundo) fundo = d; viz(c, (j) => { if (visto[j] && peca[j] && fora[j] && !prof[j]) { prof[j] = d + 1; f2.push(j); } }); }
       if (comp.length <= 60 || fundo <= 2) for (const c of comp) nuc[c] = 0;
     }
-    return (T2.nucleo = semFuros(nuc));
+    // os furos fechados (o que não se alcança da borda sem passar pelo núcleo) entram
+    const fora2 = new Uint8Array(n), fila2 = [];
+    const entra2 = (i) => { if (!fora2[i] && !nuc[i]) { fora2[i] = 1; fila2.push(i); } };
+    for (let x = 0; x < w; x++) { entra2(x); entra2((h - 1) * w + x); }
+    for (let y = 0; y < h; y++) { entra2(y * w); entra2(y * w + w - 1); }
+    for (let q = 0; q < fila2.length; q++) viz(fila2[q], entra2);
+    for (let i = 0; i < n; i++) if (!fora2[i]) nucleo[K(i)] = 1;
+    return (T2.nucleo = nucleo);
   }
   function aplicarJanela(rapido) {
     const T = TIPOS_JANELA[JAN.tipo], mapa = mapaDe(JAN);
@@ -655,19 +701,25 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const KX = (CANTOS.direita[0] - CANTOS.fundo[0]) / N;
   const VAZIA = new Uint8ClampedArray(W * W * 4);
   function pecaDeImagem(img, id) {
-    const c = document.createElement('canvas'); c.width = W; c.height = W; const gc = c.getContext('2d'); gc.drawImage(img, 0, 0);
-    const movel = gc.getImageData(0, 0, W, W).data;
+    const movel = dadosPequenos(img);
+    // SÓ AS LINHAS ONDE A PEÇA EXISTE (desempenho, 16/10/2026: no salão, de 1024 × 1024, cada passada pela imagem inteira
+    // custava ~15 ms, e são umas oito por vista, em ~100 vistas). Fora delas a imagem é transparente: o resultado é o mesmo.
+    let ly0 = 0, ly1 = Math.min(W, img.height || W) - 1; // (abaixo da altura da imagem, tudo é vazio)
+    const linhaVazia = (y) => { for (let k = y * W * 4 + 3, f = (y + 1) * W * 4; k < f; k += 4) if (movel[k]) return false; return true; };
+    while (ly0 < W && linhaVazia(ly0)) ly0++;
+    while (ly1 > ly0 && linhaVazia(ly1)) ly1--;
+    const K0 = ly0 * W, K1 = Math.min(W, ly1 + 1) * W;
     // A vista veio com a sombra pintada embaixo (cinza ou marrom chapado): tira-se a cor mais comum das últimas linhas.
     // Todas usam a sombra de contato da página, no formato do pé do móvel.
-    let fundo = 0; for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] > 127) fundo = Math.max(fundo, (k / W) | 0);
+    let fundo = 0; for (let k = K0; k < K1; k++) if (movel[k * 4 + 3] > 127) fundo = Math.max(fundo, (k / W) | 0);
     const conta = {};
     for (let y = fundo - 5; y <= fundo; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4; if (movel[k + 3] > 127) { const cor = movel[k] + ',' + movel[k + 1] + ',' + movel[k + 2]; conta[cor] = (conta[cor] || 0) + 1; } }
     const [sombraCor, vezes] = Object.entries(conta).sort((a, b) => b[1] - a[1])[0] ?? ['', 0];
     // Só é sombra a cor que mora no PÉ da imagem: a madeira da mesa e da cama e o contorno preto também são as mais
     // comuns nas últimas linhas, mas aparecem no móvel inteiro (tirá-las deixava a mesa transparente, 14/10/2026).
     const [sr, sg, sb] = sombraCor.split(',').map(Number), parecida = (k) => Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18;
-    let emCima = 0; for (let k = 0; k < (fundo - 25) * W; k++) if (movel[k * 4 + 3] > 127 && parecida(k)) emCima++;
-    if (vezes > 12 && emCima <= vezes * 0.1) for (let k = 0; k < W * W; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
+    let emCima = 0; for (let k = K0; k < Math.max(K0, (fundo - 25) * W); k++) if (movel[k * 4 + 3] > 127 && parecida(k)) emCima++;
+    if (vezes > 12 && emCima <= vezes * 0.1) for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
     // A TELA TRANSPARENTE (ele recortou as telas da TV, 15/10/2026): o buraco FECHADO dentro do móvel (o transparente que
     // não se alcança pela borda da imagem) é a tela. Ele vira pixel do móvel, escuro, e a tela por código pinta por cima.
     let buraco = null;
@@ -676,17 +728,17 @@ if (CENA === 'salao') document.body.classList.add('salao');
       for (let i = 0; i < W; i++) for (const k of [i, (W - 1) * W + i, i * W, i * W + W - 1]) if (movel[k * 4 + 3] < 128 && !fora[k]) { fora[k] = 1; fila.push(k); }
       for (let i = 0; i < fila.length; i++) { const k = fila[i], x = k % W; for (const v of [x > 0 ? k - 1 : -1, x < W - 1 ? k + 1 : -1, k - W, k + W]) if (v >= 0 && v < W * W && !fora[v] && movel[v * 4 + 3] < 128) { fora[v] = 1; fila.push(v); } }
       const ks = [];
-      for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] < 128 && !fora[k]) ks.push(k);
+      for (let k = K0; k < K1; k++) if (movel[k * 4 + 3] < 128 && !fora[k]) ks.push(k);
       if (ks.length >= 30) { buraco = ks; for (const k of ks) { movel[k * 4] = 22; movel[k * 4 + 1] = 20; movel[k * 4 + 2] = 30; movel[k * 4 + 3] = 255; } }
     }
     let x0 = W, x1 = 0, y0 = W, y1 = 0;
-    for (let k = 0; k < W * W; k++) { if (movel[k * 4 + 3] < 128) { movel[k * 4 + 3] = 0; continue; } const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    for (let k = K0; k < K1; k++) { if (movel[k * 4 + 3] < 128) { movel[k * 4 + 3] = 0; continue; } const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
     let sx = 0, nb = 0; for (let x = 0; x < W; x++) for (let y = y1 - 2; y <= y1; y++) if (movel[(y * W + x) * 4 + 3]) { sx += x; nb++; }
     sx /= Math.max(1, nb);
     const peColuna = new Int16Array(W).fill(-1);
-    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
+    for (let k = K0; k < K1; k++) if (movel[k * 4 + 3]) peColuna[k % W] = Math.max(peColuna[k % W], (k / W) | 0);
     let soma = 0, n = 0;
-    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
+    for (let k = K0; k < K1; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
     // Da quina da frente (u1, v1): a ponta da DIREITA é (u0, v1), então a distância até ela é o comprimento em u; a da
     // esquerda é (u1, v0), o comprimento em v (x cresce com v e diminui com u).
     // AS PLANTAS OCUPAM O VASO, não as folhas (relato dele, 16/10/2026: "estou tentando colocar a planta em um espaço que
