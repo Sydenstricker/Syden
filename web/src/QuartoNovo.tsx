@@ -1,13 +1,13 @@
-import { AppWindow, Pencil, RotateCw, Undo2 } from 'lucide-react';
+import { AppWindow, Coffee, Frame, Grid2x2, Pencil, RotateCw, Sofa, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { useT } from './i18n';
 import type { AcoesDoQuarto } from './Quarto';
 
 /**
- * O QUARTO NOVO, o de móveis soltos que cada pessoa arruma (e2e/pixel-art/quarto/novo/quarto/), dentro do app. Por
- * enquanto SÓ NO DESENVOLVIMENTO: a página é servida pelo Vite (vite.config.ts, "quarto-novo") e não entra no build, e
- * a home publicada continua sendo o Quarto.tsx até ele lançar este (decisão dele, 15/10/2026).
+ * O QUARTO NOVO, o de móveis soltos que cada pessoa arruma (e2e/pixel-art/quarto/novo/quarto/), dentro do app. No ar
+ * para todo mundo desde 16/10/2026: no build, a página sai de montar.mjs --publicar (vite.config.ts), e o Quarto.tsx só
+ * volta se ela não puder abrir (cenaNova.ts).
  *
  * O quarto é a própria página do teste, num iframe do mesmo site, em "modo app" (?app): só o quarto. A conversa é por
  * mensagem, e só com a mesma origem:
@@ -38,6 +38,8 @@ export interface Figuras {
   opcoes?: Record<string, Record<string, string>>;
   /** Os móveis que se podem guardar (os sem função), com a figura de cada um. */
   moveis?: Record<string, string>;
+  /** Cada tipo de janela, com a figura dele (só a original tem cortina e abre). */
+  janelas?: Record<string, string>;
 }
 export interface Arrumacao {
   janela: string;
@@ -130,114 +132,107 @@ export function QuartoNovo({
 /**
  * A BARRA DE ARRUMAR, a mesma no quarto e no salão (SalaoNovo.tsx): os comandos vão por mensagem para a página da cena,
  * que faz o mesmo que os botões da página de teste.
+ *
+ * EM ABAS (pedido dele, 16/10/2026: "essas opções precisam de um agrupamento mais adequado"): eram umas 40 figuras numa
+ * fila só, misturando cores, objetos da parede, móveis e o que vai em cima deles. Agora a linha de cima tem o Editar, uma
+ * aba por grupo e o Voltar ao padrão, e embaixo aparecem só as figuras da aba aberta. Os nomes das abas já existiam
+ * traduzidos; nenhum texto novo.
  */
+type Aba = 'moveis' | 'parede' | 'emCima' | 'tapete' | 'janela';
+
 export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figuras | null; arrumacao: Arrumacao | null; enviar: (msg: Record<string, unknown>) => void }) {
   const t = useT();
   const [arrumando, setArrumando] = useState(false);
+  const [aba, setAba] = useState<Aba>('moveis');
   // Editando, o clique na cena arruma (a cortina, abrir a janela) e não abre a função do objeto.
   const enviarRef = useRef(enviar);
   enviarRef.current = enviar;
   useEffect(() => {
     enviarRef.current({ editando: arrumando });
   }, [arrumando]);
+
+  const moveis = figuras?.moveis ?? {};
+  const deCima = figuras?.deCima ?? {};
+  const janelas = figuras?.janelas ?? {};
+  const abas: { id: Aba; rotulo: string; Icone: typeof Sofa }[] = [
+    { id: 'moveis', rotulo: t('Móveis'), Icone: Sofa },
+    { id: 'parede', rotulo: t('Objetos da parede'), Icone: Frame },
+    { id: 'emCima', rotulo: t('Em cima dos móveis'), Icone: Coffee },
+    { id: 'tapete', rotulo: t('Tapete'), Icone: Grid2x2 },
+    { id: 'janela', rotulo: t('Janela'), Icone: AppWindow },
+  ];
+  const visiveis = abas.filter((a) => a.id !== 'emCima' || Object.keys(deCima).length > 0);
+  const aberta = visiveis.some((a) => a.id === aba) ? aba : 'moveis';
+
+  const figura = (chave: string, src: string, rotulo: string, ligada: boolean | undefined, msg: Record<string, unknown>) => (
+    <button key={chave} type="button" className="quarto-novo-objeto" aria-label={rotulo} aria-pressed={ligada} onClick={() => enviar(msg)}>
+      <img src={src} alt="" />
+    </button>
+  );
+
   return (
     <div className="quarto-novo-barra">
-      <button type="button" aria-pressed={arrumando} onClick={() => setArrumando((a) => !a)}>
-        <Pencil size={16} aria-hidden="true" /> {arrumando ? t('Pronto') : t('Editar')}
-      </button>
-      {arrumando && (
-        <>
-          <button type="button" onClick={() => enviar({ comando: 'girar' })}>
-            <RotateCw size={16} aria-hidden="true" /> {t('Girar')}
-          </button>
-          <button type="button" onClick={() => enviar({ comando: 'janela' })}>
-            <AppWindow size={16} aria-hidden="true" /> {t('Janela')}
-          </button>
-          {figuras && (
-            <div className="quarto-novo-grupo" role="group" aria-label={t('Tapete')}>
-              {Object.entries(figuras.cores).map(([id, cor], i) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="quarto-novo-cor"
-                  style={{ background: cor }}
-                  aria-label={`${t('Tapete')} ${i + 1}`}
-                  aria-pressed={arrumacao?.tapete === id}
-                  onClick={() => enviar({ comando: 'tapete', cor: id })}
-                />
-              ))}
-            </div>
-          )}
-          {figuras && (
-            <div className="quarto-novo-grupo" role="group" aria-label={t('Objetos da parede')}>
-              {figuras.ordem.map((id, i) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="quarto-novo-objeto"
-                  aria-label={`${t('Objetos da parede')} ${i + 1}`}
-                  aria-pressed={!!arrumacao?.parede[id]}
-                  onClick={() => enviar({ comando: 'parede', id })}
-                >
-                  <img src={figuras.miniaturas[id]} alt="" />
+      <div className="quarto-novo-linha">
+        <button type="button" aria-pressed={arrumando} onClick={() => setArrumando((a) => !a)}>
+          <Pencil size={16} aria-hidden="true" /> {arrumando ? t('Pronto') : t('Editar')}
+        </button>
+        {arrumando && (
+          <>
+            <div className="quarto-novo-abas" role="tablist">
+              {visiveis.map(({ id, rotulo, Icone }) => (
+                <button key={id} type="button" role="tab" aria-selected={aberta === id} onClick={() => setAba(id)}>
+                  <Icone size={16} aria-hidden="true" /> <span>{rotulo}</span>
                 </button>
               ))}
             </div>
+            <button type="button" onClick={() => enviar({ comando: 'inicial' })}>
+              <Undo2 size={16} aria-hidden="true" /> {t('Voltar ao padrão')}
+            </button>
+          </>
+        )}
+      </div>
+      {arrumando && figuras && (
+        <div className="quarto-novo-gaveta" role="tabpanel">
+          {aberta === 'moveis' && (
+            <>
+              {/* girar vale para o último móvel tocado na cena */}
+              <button type="button" className="quarto-novo-acao" onClick={() => enviar({ comando: 'girar' })}>
+                <RotateCw size={16} aria-hidden="true" /> {t('Girar')}
+              </button>
+              {Object.entries(moveis).map(([id, src], i) => figura(id, src, `${t('Móveis')} ${i + 1}`, arrumacao?.moveis?.[id] !== false, { comando: 'movel', id }))}
+            </>
           )}
-          {figuras?.moveis && Object.keys(figuras.moveis).length > 0 && (
-            <div className="quarto-novo-grupo" role="group" aria-label={t('Móveis')}>
-              {Object.entries(figuras.moveis).map(([id, src], i) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="quarto-novo-objeto"
-                  aria-label={`${t('Móveis')} ${i + 1}`}
-                  aria-pressed={arrumacao?.moveis?.[id] !== false}
-                  onClick={() => enviar({ comando: 'movel', id })}
-                >
-                  <img src={src} alt="" />
-                </button>
-              ))}
-            </div>
-          )}
-          {/* as opções de um objeto (o pôster), só enquanto ele está na parede */}
-          {Object.entries(figuras?.opcoes ?? {})
-            .filter(([id]) => arrumacao?.parede[id])
-            .map(([id, ops]) => (
-              <div key={id} className="quarto-novo-grupo" role="group" aria-label={t('Objetos da parede')}>
-                {Object.entries(ops).map(([opcao, src], i) => (
-                  <button
-                    key={opcao}
-                    type="button"
-                    className="quarto-novo-objeto"
-                    aria-label={`${t('Objetos da parede')} ${i + 1}`}
-                    aria-pressed={arrumacao?.opcoes?.[id] === opcao}
-                    onClick={() => enviar({ comando: 'opcao', id, opcao })}
-                  >
-                    <img src={src} alt="" />
-                  </button>
+          {aberta === 'parede' && (
+            <>
+              {figuras.ordem.map((id, i) => figura(id, figuras.miniaturas[id], `${t('Objetos da parede')} ${i + 1}`, !!arrumacao?.parede[id], { comando: 'parede', id }))}
+              {/* as opções de um objeto (o pôster), só enquanto ele está na parede, separadas por um traço */}
+              {Object.entries(figuras.opcoes ?? {})
+                .filter(([id]) => arrumacao?.parede[id])
+                .map(([id, ops]) => (
+                  <div key={id} className="quarto-novo-grupo quarto-novo-opcoes" role="group" aria-label={t('Objetos da parede')}>
+                    {Object.entries(ops).map(([opcao, src], i) =>
+                      figura(opcao, src, `${t('Objetos da parede')} ${i + 1}`, arrumacao?.opcoes?.[id] === opcao, { comando: 'opcao', id, opcao }),
+                    )}
+                  </div>
                 ))}
-              </div>
-            ))}
-          {figuras?.deCima && Object.keys(figuras.deCima).length > 0 && (
-            <div className="quarto-novo-grupo" role="group" aria-label={t('Em cima dos móveis')}>
-              {Object.entries(figuras.deCima).map(([id, src], i) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="quarto-novo-objeto"
-                  aria-label={`${t('Em cima dos móveis')} ${i + 1}`}
-                  onClick={() => enviar({ comando: 'objeto', tipo: id })}
-                >
-                  <img src={src} alt="" />
-                </button>
-              ))}
-            </div>
+            </>
           )}
-          <button type="button" onClick={() => enviar({ comando: 'inicial' })}>
-            <Undo2 size={16} aria-hidden="true" /> {t('Voltar ao padrão')}
-          </button>
-        </>
+          {aberta === 'emCima' && Object.entries(deCima).map(([id, src], i) => figura(id, src, `${t('Em cima dos móveis')} ${i + 1}`, undefined, { comando: 'objeto', tipo: id }))}
+          {aberta === 'tapete' &&
+            Object.entries(figuras.cores).map(([id, cor], i) => (
+              <button
+                key={id}
+                type="button"
+                className="quarto-novo-cor"
+                style={{ background: cor }}
+                aria-label={`${t('Tapete')} ${i + 1}`}
+                aria-pressed={arrumacao?.tapete === id}
+                onClick={() => enviar({ comando: 'tapete', cor: id })}
+              />
+            ))}
+          {/* cada tipo de janela como figura: só a original tem cortina e abre (clicando nela, na cena) */}
+          {aberta === 'janela' && Object.entries(janelas).map(([id, src], i) => figura(id, src, `${t('Janela')} ${i + 1}`, arrumacao?.janela === id, { comando: 'janela', tipo: id }))}
+        </div>
       )}
     </div>
   );

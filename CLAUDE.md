@@ -517,6 +517,11 @@ ficou combinado:
   terracota, azul, mostarda, rosa, cinza) e os objetos da parede, estes dois como FIGURAS e não nomes, para não pedir
   um texto novo por objeto nos 80 idiomas (só "Girar", "Tapete" e "Objetos da parede" entraram).
   O coelho do quarto no app já segue o estado de verdade (em call, ausente).
+  **Desde 16/10/2026 (pedidos dele):** a barra é EM ABAS (Móveis, Objetos da parede, Em cima dos móveis, Tapete, Janela;
+  os tipos de janela como figuras, porque o antigo "Janela" trocava o tipo às cegas e só a original tem cortina e abre);
+  **a animação vem antes da função** (o coelho vai ao móvel, senta ao computador ou para diante do abajur, e só então a
+  função abre, como as portas do guarda-roupa); passar o mouse no que tem função dá o **contorno claro**; e no Editar
+  nenhum clique abre função.
 - **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova

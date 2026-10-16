@@ -88,8 +88,12 @@ if (tv) {
 } else conferir(false, 'achar a TV na tela');
 
 // A dona troca a janela pela barra: vai ao servidor e chega ao salão aberto do membro.
-await D.p.locator('.salao-novo .quarto-novo-barra > button').first().click();
-await D.p.locator('.salao-novo .quarto-novo-barra > button', { hasText: 'Janela' }).click();
+// (em abas desde 16/10/2026: cada grupo de figuras aparece só com a aba dele aberta)
+const aba = (nome) => D.p.locator('.salao-novo .quarto-novo-abas').getByRole('tab', { name: nome, exact: true }).click();
+const figuras = D.p.locator('.salao-novo .quarto-novo-gaveta .quarto-novo-objeto');
+await D.p.locator('.salao-novo .quarto-novo-linha > button').first().click();
+await aba('Janela');
+await D.p.locator('.salao-novo .quarto-novo-gaveta .quarto-novo-objeto[aria-pressed="false"]').first().click(); // outro tipo de janela
 await D.p.waitForTimeout(2500);
 const guardado = await pedir('GET', `/api/communities/${comunidade.id}/salao`, membro);
 conferir(guardado.arrumacao?.janela?.tipo && guardado.arrumacao.janela.tipo !== 'floreira', 'a janela trocada pela dona foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
@@ -99,12 +103,13 @@ conferir(doMembro === guardado.arrumacao?.janela?.tipo, 'o salão do membro rel�
 await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro.png') });
 // GUARDAR UM MÓVEL E ESCOLHER O PÔSTER pela barra (16/10/2026): vão ao servidor (guardados, cores.poster e conhecidos)
 // e chegam ao salão aberto do membro.
-const grupoMoveis = D.p.locator('.salao-novo [role="group"][aria-label="Móveis"]');
 const primeiroMovel = await D.frame.evaluate(() => Object.keys(window.visitaDoTeste().retrato.moveis).find((id) => ['sofa', 'mesinha', 'poltrona'].includes(id)));
 const ordemDosMoveis = await D.frame.evaluate(() => [...document.querySelectorAll('#moveis button')].map((b) => b.textContent));
 const indice = ordemDosMoveis.findIndex((t) => t.toLowerCase().startsWith(primeiroMovel === 'sofa' ? 'sofá' : primeiroMovel));
-await grupoMoveis.locator('button').nth(indice).click();
-await D.p.locator('.salao-novo [role="group"][aria-label="Objetos da parede"]').nth(1).locator('button').nth(2).click(); // o pôster "fogo"
+await aba('Móveis');
+await figuras.nth(indice).click();
+await aba('Objetos da parede');
+await D.p.locator('.salao-novo .quarto-novo-opcoes').first().locator('button').nth(2).click(); // o pôster "fogo"
 await D.p.waitForTimeout(2500);
 const depois = (await pedir('GET', `/api/communities/${comunidade.id}/salao`, membro)).arrumacao;
 conferir(depois.guardados?.includes(primeiroMovel), 'o móvel guardado pela dona foi ao servidor (' + JSON.stringify(depois.guardados) + ')');

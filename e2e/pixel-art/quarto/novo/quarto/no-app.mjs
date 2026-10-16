@@ -53,15 +53,23 @@ await p.screenshot({ path: path.join(FOTOS, 'no-app-salas.png') });
 
 // A BARRA DE ARRUMAR do app: Editar, trocar a janela, a cor do tapete e pôr a pintura na parede; tudo vai ao servidor.
 await p.locator('.vila-painel-fechar').click().catch(() => {});
-await p.locator('.quarto-novo-barra > button').first().click();
-await p.locator('.quarto-novo-barra > button', { hasText: 'Janela' }).click();
+// (em abas desde 16/10/2026: cada grupo de figuras aparece só com a aba dele aberta)
+const aba = (nome) => p.locator('.quarto-novo-abas').getByRole('tab', { name: nome, exact: true }).click();
+const figuras = p.locator('.quarto-novo-gaveta .quarto-novo-objeto');
+await p.locator('.quarto-novo-linha > button').first().click();
+await aba('Janela');
+await figuras.nth(1).click(); // a em arco (a figura de cada tipo; a original é a primeira)
+await aba('Tapete');
 await p.locator('.quarto-novo-cor').nth(2).click(); // o azul
-const nObjetos = await p.locator('.quarto-novo-objeto').count();
-await p.locator('.quarto-novo-objeto').nth(4).click(); // a pintura (estava guardada)
+await p.waitForTimeout(600); // a marca volta do quarto, com a arrumação
+const corMarcada = await p.locator('.quarto-novo-cor').nth(2).getAttribute('aria-pressed');
+await aba('Objetos da parede');
+const nObjetos = await figuras.count();
+await figuras.nth(4).click(); // a pintura (estava guardada)
 await p.waitForTimeout(1800);
-conferir(nObjetos === 5, 'a barra mostra os 5 objetos da parede como figuras');
-conferir(await p.locator('.quarto-novo-cor').nth(2).getAttribute('aria-pressed') === 'true', 'a cor escolhida fica marcada na barra');
-conferir(await p.locator('.quarto-novo-objeto').nth(4).getAttribute('aria-pressed') === 'true', 'a pintura fica marcada como posta');
+conferir(nObjetos >= 5, 'a aba mostra os objetos da parede como figuras (' + nObjetos + ')');
+conferir(corMarcada === 'true', 'a cor escolhida fica marcada na barra');
+conferir(await figuras.nth(4).getAttribute('aria-pressed') === 'true', 'a pintura fica marcada como posta');
 await p.screenshot({ path: path.join(FOTOS, 'no-app-barra.png') });
 const guardado = await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json();
 conferir(guardado.arrumacao?.janela?.tipo === 'arco', 'a janela trocada pela barra foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');

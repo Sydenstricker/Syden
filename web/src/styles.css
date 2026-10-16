@@ -12682,18 +12682,82 @@ body.arrastando-barra {
   gap: 8px;
 }
 
-/* A barra de arrumar: figuras em vez de nomes (o recorte de cada objeto da parede, a cor de cada tapete). */
+/* A barra de arrumar: figuras em vez de nomes (o recorte de cada objeto da parede, a cor de cada tapete), em abas: a
+   linha de cima com o Editar, as abas e o Voltar ao padrão; embaixo, só as figuras da aba aberta. */
 .quarto-novo-barra {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   gap: 8px;
   max-width: 100%;
   padding: 0 16px;
 }
 
-.quarto-novo-barra > button,
+.quarto-novo-linha {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.quarto-novo-abas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+
+.quarto-novo-abas > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.quarto-novo-abas > button:hover {
+  color: var(--text);
+  background: var(--bg-hover);
+}
+
+.quarto-novo-abas > button[aria-selected='true'] {
+  color: var(--text-strong);
+  background: var(--bg-active);
+}
+
+.quarto-novo-gaveta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 48px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-sidebar);
+}
+
+/* as opções do pôster, separadas dos objetos por um traço */
+.quarto-novo-opcoes {
+  padding-left: 8px;
+  margin-left: 4px;
+  border-left: 1px solid var(--border);
+}
+
+.quarto-novo-linha > button,
+.quarto-novo-acao,
 .quarto-novo-objeto {
   display: inline-flex;
   align-items: center;

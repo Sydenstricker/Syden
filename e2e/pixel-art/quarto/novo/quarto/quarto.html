@@ -1227,7 +1227,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function tapeteEm(c, lado) {
     const chave = c.join(',') + '|' + lado;
     if (cacheDoTapete.has(chave)) return cacheDoTapete.get(chave);
-    const orig = pecas.tapete, [oc0, oc1] = INICIAL.tapete.c;
+    const orig = pecas.tapete, [oc0, oc1] = origemPintada('tapete').c; // onde ele está na pintura (desde 16/10 a arrumação de fábrica é outra)
     const movel = new Uint8ClampedArray(W * W * 4), peColuna = new Int16Array(W).fill(-1);
     let y0 = W;
     for (let k = 0; k < W * W; k++) {
@@ -1382,6 +1382,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // Virada de costas, o encosto fica NA FRENTE do coelho: ele é desenhado antes dela.
     if (ARR.poltrona) { const olhaP = ORIENTA[ARR.poltrona.lado]; r.poltrona = { ao: vizinhas(...peDe('poltrona')), onde: [...ARR.poltrona.c], sobe: 8, pose: 'sentado', olha: olhaP, sobre: 'poltrona', atras: olhaP.startsWith('n') }; }
     if (VISTAS_CADEIRA && ARR.mesa) { r.cadeira = pontoDaCadeira(); r.mesa = pontoDaCadeira(); }
+    // O ABAJUR (16/10/2026, para a função vir depois da animação): ele para numa casa ao lado, olhando para o abajur.
+    if (ARR.abajur) {
+      const pa = peDe('abajur'), [au, av] = centro(pa), du = au - coelho.u, dv = av - coelho.v;
+      r.abajur = { ao: vizinhas(...pa), onde: null, sobe: 0, pose: 'parado', olha: Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : (dv > 0 ? 'sudeste' : 'noroeste') };
+    }
     return r;
   }
   // O RECADO (no salão): o que quem administra escreveu, num balão em cima do coelho do balcão. Como o recado do salão de
@@ -1525,9 +1530,32 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (semAndar) { const f = c[c.length - 1]; coelho.u = f[0] + 0.5; coelho.v = f[1] + 0.5; coelho.caminho = []; chegar(); }
     else { coelho.u = c[0][0] + 0.5; coelho.v = c[0][1] + 0.5; coelho.caminho = c.slice(1); if (!coelho.caminho.length) chegar(); }
   }
+  // A ANIMAÇÃO ANTES DA FUNÇÃO (pedido dele, 16/10/2026: "todos os móveis que possuem função deveriam primeiro tocar a
+  // animação, depois a funcionalidade"): clicado o móvel, o coelho vai até ele e faz o que faz ali (senta ao computador,
+  // para diante do abajur), e só então a função abre. O guarda-roupa já era assim (as portas abrem antes da aba).
+  let funcaoNaChegada = null; // { destino, f, prazo }
+  const destinoDe = (id) => (id === 'mesa' ? 'cadeira' : id);
+  function cumprirNaChegada(destino, agora) {
+    if (!funcaoNaChegada || (destino && funcaoNaChegada.destino !== destino)) return;
+    const { f, prazo } = funcaoNaChegada;
+    funcaoNaChegada = null; clearTimeout(prazo);
+    if (agora) acao(f); else setTimeout(() => acao(f), 200);
+  }
+  function pedirNaChegada(id, f) {
+    const destino = destinoDe(id);
+    if (funcaoNaChegada) clearTimeout(funcaoNaChegada.prazo);
+    funcaoNaChegada = null;
+    // já está lá (sentado ao computador, parado diante do abajur): a função vem na hora
+    if (coelho.destino === destino && !coelho.caminho.length && !coelho.trans && !coelho.aproximar && !coelho.descendo) { acao(f); return; }
+    // se algo prender o coelho no caminho, a função não se perde
+    funcaoNaChegada = { destino, f, prazo: setTimeout(() => cumprirNaChegada(destino, true), 8000) };
+    ir(id);
+  }
   function ir(id) {
+    // Outro destino (o estado mudou e ele foi para outro lugar): a função pedida não espera mais por ele.
+    if (funcaoNaChegada && funcaoNaChegada.destino !== destinoDe(id)) cumprirNaChegada(null, true);
     const pt = pontos()[id];
-    if (!pt || !pt.ao.length) return;
+    if (!pt || !pt.ao.length) return cumprirNaChegada(destinoDe(id), true);
     // Sentado ou deitado: LEVANTA primeiro, e só então anda.
     const atual = coelho.destino && !coelho.caminho.length && !coelho.trans && !coelho.aproximar ? pontos()[coelho.destino] : null;
     if (atual && atual.onde && coelho.destino !== id) return levantar(() => ir(id));
@@ -1540,7 +1568,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       alvos = [[...pt.ao].sort((a, b) => d(a) - d(b))[0]];
     }
     const c = caminho(saida(), alvos);
-    if (!c) return;
+    if (!c) return cumprirNaChegada(destinoDe(id), true);
     if (id === 'mesa') return ir('cadeira');
     if (id === 'cadeira') { const L = lugarNaMesa(); levarCadeira(L.P0, L.th, 900); }
     coelho.pose = 'parado'; coelho.destino = id;
@@ -1607,7 +1635,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function chegar() {
     const pt = coelho.destino && pontos()[coelho.destino];
     if (!pt) { coelho.pose = 'parado'; return; }
-    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer) gavetasPedidas = true; } return chegarDeVez(); }
+    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer && !EDITANDO) gavetasPedidas = true; } return chegarDeVez(); }
     coelho.largado = Math.random() < 0.5; // dormindo rígido ou largado: sorteado antes, a transição já vai para ele
     const id = coelho.destino, p2 = pontos()[id], ro = roteiro(id, p2);
     aproximar(ro.beira, ro.atrasNaBeira, id, () => { coelho.dir = p2.olha; tocar(id, p2, ro, false, () => chegarDeVez()); });
@@ -1642,7 +1670,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (!pt) { coelho.pose = 'parado'; return; }
     coelho.dir = pt.olha;
     coelho.pose = coelho.destino === 'cama' ? (estado === 'ausente' ? 'dormindo' : 'lendo') : pt.pose;
-    if (coelho.destino === 'cadeira') { const L = lugarNaMesa(); coelho.descendo = true; levarCadeira(L.S, L.th, 700, () => { coelho.descendo = false; if (coelho.redecidir) { coelho.redecidir = false; decidir(); } }); }
+    if (coelho.destino === 'cadeira') { const L = lugarNaMesa(); coelho.descendo = true; levarCadeira(L.S, L.th, 700, () => { coelho.descendo = false; cumprirNaChegada('cadeira'); if (coelho.redecidir) { coelho.redecidir = false; decidir(); } }); }
+    else cumprirNaChegada(coelho.destino);
     // DORMINDO (ideia dele): às vezes rígido, às vezes largado; o rígido relaxa sozinho depois de um tempo.
     coelho.desde = performance.now();
   }
@@ -2728,6 +2757,7 @@ void main() {
     }
   }
   // Os tempos do desenho (para o teste de desempenho): a cena montada de novo, e o quadro inteiro.
+  let realce = null; // o que tem função sob o ponteiro: { chave, caixa } (ver realcar)
   const TEMPOS = { cena: 0, nCena: 0, quadro: 0, nQuadro: 0, passe: 0, nPasse: 0 };
   window.temposDoTeste = () => ({ ...TEMPOS });
   function desenhar() {
@@ -2751,7 +2781,7 @@ void main() {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     // Só limpa a região de antes quando vai redesenhar: limpando e saindo, o coelho e a cadeira sumiam do mapa de quem é
@@ -2867,7 +2897,7 @@ void main() {
       const vis = OBJ_VISTAS[objPego.o.tipo][objPego.vivo.lado], ox = Math.round(objPego.vivo.x - vis.meioDaBase[0]), oy = Math.round(objPego.vivo.y - vis.meioDaBase[1]);
       objVivo = { vis, ox, oy }; caixaObjVivo = unir(caixaObjVivo, [vis.caixa[0] + ox - 2, vis.caixa[1] + oy - 2, vis.caixa[2] + ox + 2, vis.caixa[3] + oy + 2]);
     }
-    const agora = unir(unir(unir(unir(unir(unir(unir(caixaC, caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaObjVivo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
+    const agora = unir(unir(unir(unir(unir(unir(unir(unir(realce?.caixa ?? null, caixaC), caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaObjVivo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
     regiaoDasFaiscas = caixaFaiscas;
     const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
     passeFinal(r);
@@ -2888,6 +2918,16 @@ void main() {
         for (let c = 0; c < 3; c++) imagem.data[d * 4 + c] = vis.movel[s4 + c] * f;
       }
       for (const d of meu) for (const n of [d - 1, d + 1, d - W, d + W]) if (n >= 0 && n < W * W && !meu.has(n)) contorno.push(n);
+    }
+    // o contorno de quem tem função, sob o ponteiro: em volta do que aparece dele, e nunca por cima do que está na frente
+    if (realce) {
+      const [x0, y0, x1, y1] = realce.caixa, ch = realce.chave;
+      for (let y = Math.max(1, y0); y < Math.min(W - 1, y1); y++) for (let x = Math.max(1, x0); x < Math.min(W - 1, x1); x++) {
+        const k = y * W + x; if (doRealce(k, ch)) continue;
+        const n = [k - 1, k + 1, k - W, k + W].find((q) => doRealce(q, ch)); if (n === undefined) continue;
+        if (eMovel[k] && (ch[0] !== 'm' || chaveDoPixel[k] > chaveDoPixel[n])) continue;
+        contorno.push(k);
+      }
     }
     for (const k of contorno) if (k >= 0 && k < W * W) { imagem.data[k * 4] = 255; imagem.data[k * 4 + 1] = 250; imagem.data[k * 4 + 2] = 240; imagem.data[k * 4 + 3] = 255; }
     const agoraF = performance.now();
@@ -2956,6 +2996,8 @@ void main() {
   btj.onclick = () => mudarJanela({ ...JAN, tipo: ORDEM_JANELAS[(ORDEM_JANELAS.indexOf(JAN.tipo) + 1) % ORDEM_JANELAS.length] });
   botoesDaJanela();
   window.janelaDoTeste = () => JAN; // para o teste
+  // um pixel do vidro e um da cortina (o resto da janela), livres de móvel: para o teste clicar
+  window.pixelDaJanelaDoTeste = () => { const r = { vidro: null, cortina: null }; for (let k = 0; k < W * W; k++) { if (!naJanela[k] || dono[k]) continue; const q = vidro[k * 4 + 3] > 127 || noCaixilho[k] ? 'vidro' : 'cortina'; r[q] ??= []; r[q].push(k); } for (const q in r) if (r[q]) { const ks = r[q]; const k = ks[ks.length >> 1]; r[q] = [k % W, (k / W) | 0]; } return r; };
   // Em que parede o ponteiro está, e em que casa dela (v, contada do canto do fundo).
   const naParedeDo = (e) => {
     const r = tela.getBoundingClientRect(), px = (e.clientX - r.left) * W / r.width;
@@ -2997,8 +3039,25 @@ void main() {
   }
   const bFuncoes = document.getElementById('funcoes');
   bFuncoes.onclick = () => { FUNCOES = FUNCOES ? null : FUNCOES_DE_TESTE; bFuncoes.setAttribute('aria-pressed', String(!!FUNCOES)); bFuncoes.textContent = 'Funções do app: ' + (FUNCOES ? 'ligadas' : 'desligadas'); };
+  // O CONTORNO DE QUEM TEM FUNÇÃO (pedido dele, 16/10/2026: "quando passo em cima de móvel que tenha função, deveria dar
+  // um outline nele"): o móvel, o objeto da parede ou a janela sob o ponteiro ganha a borda clara, como o móvel pego.
+  // A caixa dele é medida uma vez, ao entrar; a cada quadro só ela é percorrida.
+  const doRealce = (k, chave) => chave[0] === 'm' ? dono[k] === chave.slice(1) : chave[0] === 'p' ? naParede[k] === +chave.slice(1) && !dono[k] : !!naJanela[k] && !dono[k];
+  function realcar(k) {
+    const f = k === null ? null : funcaoEm(k);
+    const chave = !f ? null : dono[k] ? 'm' + dono[k] : naParede[k] ? 'p' + naParede[k] : 'j';
+    if ((realce?.chave ?? null) === chave) return;
+    realce = null;
+    if (chave) {
+      let x0 = W, y0 = W, x1 = -1, y1 = -1;
+      for (let q = 0; q < W * W; q++) if (doRealce(q, chave)) { const x = q % W, y = (q / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 >= 0) realce = { chave, caixa: [Math.max(0, x0 - 3), Math.max(0, y0 - 3), Math.min(W, x1 + 4), Math.min(W, y1 + 4)] };
+    }
+    desenhar();
+  }
   tela.addEventListener('pointermove', (e) => {
     const f = arrastando || paredePega || janelaPega ? null : funcaoEm(pixelDo(e));
+    realcar(f ? pixelDo(e) : null);
     rotulo.hidden = !f;
     if (soVer) tela.style.cursor = f ? 'pointer' : 'default';
     if (f) {
@@ -3013,7 +3072,7 @@ void main() {
       rotulo.style.left = cx - rf.left + 'px'; rotulo.style.top = Math.min(innerHeight - M + h * 0.2, cy) - rf.top + 'px';
     }
   });
-  tela.addEventListener('pointerleave', () => { rotulo.hidden = true; });
+  tela.addEventListener('pointerleave', () => { rotulo.hidden = true; realcar(null); });
 
   // ============================== OS OBJETOS DE CIMA: pegar, levar, girar, pôr e guardar ==============================
   // Pego, ele vai para o tampo sob o ponteiro (de qualquer móvel que receba objetos); solto fora de todo tampo, ele é
@@ -3130,7 +3189,7 @@ void main() {
     paredePega = null;
     if (mexeu) { mudarParede(id, vivo); return; }
     const f = ITENS_PAREDE[id].funcao;
-    if (FUNCOES && f && FUNCOES[f]) acao(f);
+    if (FUNCOES && f && FUNCOES[f] && !EDITANDO) acao(f);
   });
   // Pôr e guardar: um botão por objeto. Posto, ele vai para o primeiro lugar livre (sem cobrir outro objeto nem a janela).
   const livreNaParede = (id, P) => {
@@ -3338,11 +3397,13 @@ void main() {
     arrastando = false;
     if (viva?.parado && !viva.girou) { viva = null; } // não andou nem girou: um clique
     if (!viva) { // clicou sem arrastar
-      const f = FUNCOES && !soVer ? FUNCAO_DO_MOVEL[pegado] : null;
-      if (f && FUNCOES[f] && f !== 'gavetas') acao(f); // o guarda-roupa conta a função quando as portas abrem
-      if (CENA === 'salao' && f) { alvo = null; pegado = null; desenhar(); return; } // no salão o coelho do recado não sai do balcão
-      if (f === 'abajur' && FUNCOES?.abajur) { /* o abajur só troca a luz */ }
-      else if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
+      // Editando, o clique arruma: a função não abre (relato dele, 16/10/2026).
+      const f = FUNCOES && !soVer && !EDITANDO ? FUNCAO_DO_MOVEL[pegado] : null, comFuncao = !!(f && FUNCOES[f]);
+      if (CENA === 'salao' && f) { if (comFuncao) acao(f); alvo = null; pegado = null; desenhar(); return; } // no salão o coelho do recado não sai do balcão
+      if (funcaoNaChegada) { clearTimeout(funcaoNaChegada.prazo); funcaoNaChegada = null; } // mudou de ideia: a função de antes não abre mais
+      if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
+      // a animação primeiro, e a função na chegada (o guarda-roupa conta a dele quando as portas abrem)
+      else if (comFuncao && f !== 'gavetas') pedirNaChegada(pegado, f);
       else if (pontos()[pegado]) ir(pegado);
       alvo = null; pegado = null; desenhar();
       return;
@@ -3370,6 +3431,8 @@ void main() {
   // A RODINHA E O R GIRAM SÓ O QUE ESTÁ SEGURO (pedido dele, 15/10/2026: passar por cima e rodar girava o móvel sem
   // querer). O móvel pego gira na hora, ali mesmo, e ao soltar ele encaixa na casa livre mais perto; o objeto de cima
   // gira no tampo; a cadeira segura gira com a força da rodinha.
+  // o pé do tapete na grade e o chão que o desenho dele cobre de verdade (o teste confere que batem)
+  window.tapeteDoTeste = () => { let u0 = N, u1 = 0, v0 = N, v1 = 0; for (let k = 0; k < W * W; k++) if (dono[k] === 'tapete' && casa[k] >= 0) { u0 = Math.min(u0, mapaU[k]); u1 = Math.max(u1, mapaU[k]); v0 = Math.min(v0, mapaV[k]); v1 = Math.max(v1, mapaV[k]); } return { pe: ARR.tapete && peDe('tapete'), desenho: [u0, u1, v0, v1] }; };
   window.donoDoPixel = (x, y) => ({ dono: dono[y * W + x], obj: donoObj[y * W + x] }); // para o teste
   window.pixelDe = (id) => { let m = null; for (let k = 0; k < W * W; k++) if (dono[k] === id) { m = k; break; } return m === null ? null : [m % W, ((m / W) | 0) + 4]; }; // para o teste
   window.seguradoDoTeste = () => ({ arrastando, viva: viva && { ...viva }, pegado, objPego }); // para o teste
@@ -3533,7 +3596,16 @@ void main() {
     // e cada móvel que se pode guardar: a vista de fábrica dele (ou o recorte da pintura, como o tapete)
     const moveis = {};
     for (const id of Object.keys(INICIAL).filter(podeGuardar)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel; if (fonte) moveis[id] = recorte(fonte); }
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis };
+    // e cada tipo de janela (com a cortina, na que tem): a barra mostra a figura de cada uma, e não um botão que troca às
+    // cegas (relato dele, 16/10/2026: o "Janela" trocava o tipo, e só a original tem cortina e abre)
+    const janelas = {};
+    for (const [t, T2] of Object.entries(TIPOS_JANELA)) {
+      if (!T2.dia) continue;
+      const d = new Uint8ClampedArray(T2.dia);
+      if (T2.cortinaDia) for (let k = 0; k < W * W; k++) if (T2.cortinaDia[k * 4 + 3] > 127) for (let q = 0; q < 4; q++) d[k * 4 + q] = T2.cortinaDia[k * 4 + q];
+      janelas[t] = recorte(d);
+    }
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, janelas };
   }
 
   // ============================== NO APP (15/10/2026) ==============================
@@ -3547,7 +3619,7 @@ void main() {
       const d = e.data;
       if (d.funcoes) FUNCOES = d.funcoes;
       if (d.fecharGuardaRoupa && guardaRoupaAberto) { guardaRoupaAberto = false; gavetasPedidas = false; }
-      if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; }
+      if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null); }
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
       if (d.conta && !conta) {
@@ -3565,7 +3637,7 @@ void main() {
       if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
       // A BARRA DE ARRUMAR do app (QuartoNovo.tsx): os mesmos botões da página de teste.
       if (d.comando === 'girar') girar();
-      if (d.comando === 'janela') btj.click();
+      if (d.comando === 'janela') { if (TIPOS_JANELA[d.tipo]) mudarJanela({ ...JAN, tipo: d.tipo }); else btj.click(); }
       if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
       if (d.comando === 'movel' && podeGuardar(d.id)) alternarMovel(d.id);
