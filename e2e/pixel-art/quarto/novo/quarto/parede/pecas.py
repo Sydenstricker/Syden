@@ -39,6 +39,8 @@ ITENS = {
     'relogio': {'nome': 'o relógio', 'funcao': None},
     'violao': {'nome': 'o violão', 'funcao': None},
     'porta': {'nome': 'a porta do banheiro', 'funcao': None, 'chao': True},
+    # o pôster do coelho roqueiro abre o karaokê (a função do microfone)
+    'poster': {'nome': 'o pôster do karaokê', 'funcao': 'microfone'},
 }
 SO = sys.argv[2:] if SALAO else sys.argv[1:]  # só estes itens (vazio: todos)
 for item, meta in ITENS.items():

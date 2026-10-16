@@ -152,7 +152,7 @@ for (const tipo of CENA === 'salao' ? ['tijolo', 'original', 'arco', 'redonda', 
 }
 // OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
 const ITENS_PAREDE = {};
-for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta']) {
+for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta', 'poster']) {
   // no salão, a versão pintada no tijolo dele, se houver (parede-salao/)
   const ds = path.join(AQUI, 'parede-salao', item), d = CENA === 'salao' && fs.existsSync(path.join(ds, 'item.json')) ? ds : path.join(AQUI, 'parede', item);
   if (!fs.existsSync(path.join(d, 'item.json'))) continue;
@@ -431,6 +431,8 @@ function dados(im, filtro, w = W, h = W) {
     porta: { parede: 'esquerda', v: 0.4, h: 0 }, 'prateleira-bar': { parede: 'esquerda', v: 3.4, h: 6 }, relogio: { parede: 'esquerda', v: -1.6, h: 30 },
     'prateleira-snacks': { parede: 'esquerda', v: 10.4, h: 0 }, neon: { parede: 'direita', v: 1.8, h: 24 }, trofeus: { parede: 'direita', v: -2.4, h: 10 },
     violao: { parede: 'direita', v: 9.7, h: 0 },
+    // o pôster do coelho roqueiro, acima da jukebox: o canto do karaokê se anuncia (pedido dele, 15/10/2026)
+    poster: { parede: 'direita', v: 8.6, h: 6 },
   } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
   try { const gp = JSON.parse(localStorage.getItem(PREFIXO + 'parede') ?? 'null'); if (gp) NA_PAREDE = Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])); } catch { /* a de fábrica */ }

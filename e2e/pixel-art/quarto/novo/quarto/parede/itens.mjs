@@ -35,6 +35,9 @@ export const ITENS = {
   // (no salão, a primeira saiu cortada reta na direita: área mais larga, outra semente)
   violao: { area: area(2.9, 5.5, 60, 186), semente: 17, texto: `ONLY a SMALL wooden acoustic guitar hanging vertically on a small wall hook, CENTERED in the area with empty wall all around it, ${ESTILO}` },
   porta: { area: area(3.0, 5.2, 0, 150), texto: `ONLY a closed dark wooden door with a small round restroom sign on it showing a simple bunny icon, a brass door handle, standing on the floor, set into the plain cream wall, ${ESTILO}` },
+  // O PÔSTER DO KARAOKÊ (pedido dele, 15/10/2026: "um pôster de algum rock star de coelho ... até para sinalizar ao
+  // usuário que tem essa função"): abre o karaokê, como o microfone e a jukebox. Sem letras: não pede tradução.
+  poster: { area: area(3.0, 5.0, 85, 185), semente: 5, texto: `ONLY a tall rectangular rock concert poster taped flat to the wall, showing a cool cartoon bunny rock star with sunglasses singing into a microphone and holding an electric guitar under colorful stage spotlights, bold warm colors, a thin white paper border, no letters, no text, no words, ${ESTILO}` },
   pintura: { area: area(3.3, 4.9, 90, 170), texto: `ONLY a framed landscape painting of green hills and a soft sunset sky, in a thin wooden frame, ${ESTILO}` },
 };
 // (só quando chamado direto: avulsos.mjs importa a lista daqui)

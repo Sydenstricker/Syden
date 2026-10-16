@@ -31,7 +31,10 @@ for (const item of process.argv.slice(2)) {
   }, { dia: ler64(path.join(d, 'dia.png')), peca: ler64(path.join(d, 'peca-dia.png')) });
   fs.writeFileSync(path.join(d, 'ref.json'), JSON.stringify({ x0: ref.x0, y0: ref.y0, w: ref.w, h: ref.h }));
   gravar64(path.join(d, 'ref.png'), ref.b64);
-  const texto = ITENS[item].texto.replace(/,?\s*(flat against|set into) the plain cream[^,]*,?/g, ', ').replace(/ONLY/, 'ONLY ONE') + ', isolated on a transparent background, NO wall and NO bricks drawn behind or around it, the same isometric angle as the reference';
+  // (o violão, pedido "SMALL ... com parede em volta" para caber na parede, saía pequeno no quadro sozinho: relato de
+  // 15/10/2026, "o violão está com falhas e artefatos")
+  const PROPRIO = { violao: 'ONLY ONE light wooden acoustic guitar hanging vertically from a small dark wall hook at the top, the guitar FILLS the whole image height from the hook at the top to the bottom of its body, clean dark outline, clean isometric pixel art' };
+  const texto = PROPRIO[item] ? PROPRIO[item] + ', isolated on a transparent background, NO wall and NO bricks drawn behind or around it, the same isometric angle as the reference' : ITENS[item].texto.replace(/,?\s*(flat against|set into) the plain cream[^,]*,?/g, ', ').replace(/ONLY/, 'ONLY ONE') + ', isolated on a transparent background, NO wall and NO bricks drawn behind or around it, the same isometric angle as the reference';
   const imagens = await chamar('/generate-image-v2', {
     description: texto, image_size: { width: ref.w, height: ref.h }, no_background: true,
     reference_images: [{ image: { type: 'base64', base64: ref.b64, format: 'png' }, size: { width: ref.w, height: ref.h }, usage_description: 'This exact object, at this exact angle, size and colors: redraw ONLY the object itself, without the brick wall behind it' }],
