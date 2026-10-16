@@ -1946,6 +1946,7 @@ export default {
   'Tapete': 'Գորգ',
   'Objetos da parede': 'Պատի զարդեր',
   'Em cima dos móveis': 'Կահույքի վրա',
+  'Móveis': 'Կահույք',
   'Gráficos': 'Գրաֆիկա',
   'Partículas': 'Մասնիկներ',
   'Sombras': 'Ստվերներ',

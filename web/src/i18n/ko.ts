@@ -1845,6 +1845,7 @@ export default {
   'Tapete': '러그',
   'Objetos da parede': '벽 장식',
   'Em cima dos móveis': '가구 위',
+  'Móveis': '가구',
   'Gráficos': '그래픽',
   'Partículas': '파티클',
   'Sombras': '그림자',

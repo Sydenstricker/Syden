@@ -1857,6 +1857,7 @@ export default {
   'Tapete': 'Covor',
   'Objetos da parede': 'Decorațiuni de perete',
   'Em cima dos móveis': 'Pe mobilă',
+  'Móveis': 'Mobilă',
   'Gráficos': 'Grafică',
   'Partículas': 'Particule',
   'Sombras': 'Umbre',

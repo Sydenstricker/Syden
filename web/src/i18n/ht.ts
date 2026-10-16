@@ -1937,6 +1937,7 @@ export default {
   'Tapete': 'Tapi',
   'Objetos da parede': 'Dekorasyon miray',
   'Em cima dos móveis': 'Sou mèb yo',
+  'Móveis': 'Mèb',
   'Gráficos': 'Grafik',
   'Partículas': 'Patikil',
   'Sombras': 'Lonbraj',

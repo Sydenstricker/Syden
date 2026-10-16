@@ -1926,6 +1926,7 @@ export default {
   'Tapete': 'កម្រាលព្រំ',
   'Objetos da parede': 'គ្រឿងតុបតែងជញ្ជាំង',
   'Em cima dos móveis': 'លើគ្រឿងសង្ហារិម',
+  'Móveis': 'គ្រឿងសង្ហារិម',
   'Gráficos': 'ក្រាហ្វិក',
   'Partículas': 'ភាគល្អិត',
   'Sombras': 'ស្រមោល',

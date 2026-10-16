@@ -1854,6 +1854,7 @@ export default {
   'Tapete': 'Karpet',
   'Objetos da parede': 'Hiasan dinding',
   'Em cima dos móveis': 'Di atas perabot',
+  'Móveis': 'Perabot',
   'Gráficos': 'Grafis',
   'Partículas': 'Partikel',
   'Sombras': 'Bayangan',

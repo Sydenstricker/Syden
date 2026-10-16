@@ -1919,6 +1919,7 @@ export default {
   'Tapete': 'Matta',
   'Objetos da parede': 'Väggdekor',
   'Em cima dos móveis': 'På möblerna',
+  'Móveis': 'Möbler',
   'Gráficos': 'Grafik',
   'Partículas': 'Partiklar',
   'Sombras': 'Skuggor',

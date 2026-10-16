@@ -1927,6 +1927,7 @@ export default {
   'Tapete': 'Teppe',
   'Objetos da parede': 'Veggpynt',
   'Em cima dos móveis': 'På møblene',
+  'Móveis': 'Møbler',
   'Gráficos': 'Grafikk',
   'Partículas': 'Partikler',
   'Sombras': 'Skygger',

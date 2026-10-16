@@ -1929,6 +1929,7 @@ export default {
   'Tapete': 'Kilimas',
   'Objetos da parede': 'Sienų dekoracijos',
   'Em cima dos móveis': 'Ant baldų',
+  'Móveis': 'Baldai',
   'Gráficos': 'Grafika',
   'Partículas': 'Dalelės',
   'Sombras': 'Šešėliai',

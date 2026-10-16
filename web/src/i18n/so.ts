@@ -1927,6 +1927,7 @@ export default {
   'Tapete': 'Roog',
   'Objetos da parede': 'Qurxinta derbiga',
   'Em cima dos móveis': 'Alaabta dusheeda',
+  'Móveis': 'Alaabta',
   'Gráficos': 'Garaafyada',
   'Partículas': 'Qaybo yaryar',
   'Sombras': 'Hadhyo',

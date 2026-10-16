@@ -1927,6 +1927,7 @@ export default {
   'Tapete': 'Matto',
   'Objetos da parede': 'Seinäkoristeet',
   'Em cima dos móveis': 'Huonekalujen päällä',
+  'Móveis': 'Huonekalut',
   'Gráficos': 'Grafiikka',
   'Partículas': 'Partikkelit',
   'Sombras': 'Varjot',

@@ -1851,6 +1851,7 @@ export default {
   'Tapete': 'Halı',
   'Objetos da parede': 'Duvar süsleri',
   'Em cima dos móveis': 'Mobilyaların üstünde',
+  'Móveis': 'Mobilya',
   'Gráficos': 'Grafikler',
   'Partículas': 'Parçacıklar',
   'Sombras': 'Gölgeler',

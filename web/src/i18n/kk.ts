@@ -1923,6 +1923,7 @@ export default {
   'Tapete': 'Кілем',
   'Objetos da parede': 'Қабырға әшекейлері',
   'Em cima dos móveis': 'Жиһаздың үстінде',
+  'Móveis': 'Жиһаз',
   'Gráficos': 'Графика',
   'Partículas': 'Бөлшектер',
   'Sombras': 'Көлеңкелер',

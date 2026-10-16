@@ -1854,6 +1854,7 @@ export default {
   'Tapete': 'কার্পেট',
   'Objetos da parede': 'দেয়ালের জিনিস',
   'Em cima dos móveis': 'আসবাবের ওপর',
+  'Móveis': 'আসবাব',
   'Gráficos': 'গ্রাফিক্স',
   'Partículas': 'কণা',
   'Sombras': 'ছায়া',

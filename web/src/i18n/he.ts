@@ -1907,6 +1907,7 @@ export default {
   'Tapete': 'שטיח',
   'Objetos da parede': 'קישוטי קיר',
   'Em cima dos móveis': 'על הרהיטים',
+  'Móveis': 'רהיטים',
   'Gráficos': 'גרפיקה',
   'Partículas': 'חלקיקים',
   'Sombras': 'צללים',

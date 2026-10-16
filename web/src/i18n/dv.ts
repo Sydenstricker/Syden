@@ -1937,6 +1937,7 @@ export default {
   'Tapete': 'ފަރުދާ',
   'Objetos da parede': 'ފާރުގެ ޒީނަތްތެރިކަން',
   'Em cima dos móveis': 'ފަރުނީޗަރުގެ މައްޗަށް',
+  'Móveis': 'ފަރުނީޗަރު',
   'Gráficos': 'ގްރެފިކްސް',
   'Partículas': 'ޕާޓިކަލްސް',
   'Sombras': 'ހިޔަނި',

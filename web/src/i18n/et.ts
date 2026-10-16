@@ -1924,6 +1924,7 @@ export default {
   'Tapete': 'Vaip',
   'Objetos da parede': 'Seinakaunistused',
   'Em cima dos móveis': 'Mööbli peal',
+  'Móveis': 'Mööbel',
   'Gráficos': 'Graafika',
   'Partículas': 'Osakesed',
   'Sombras': 'Varjud',

@@ -35,12 +35,16 @@ export interface Figuras {
   deCima?: Record<string, string>;
   /** As opções de um objeto da parede (o pôster: palco, neon, fogo), com o recorte de cada uma. */
   opcoes?: Record<string, Record<string, string>>;
+  /** Os móveis que se podem guardar (os sem função), com a figura de cada um. */
+  moveis?: Record<string, string>;
 }
 export interface Arrumacao {
   janela: string;
   tapete: string;
   /** A opção escolhida de cada objeto que tem opções (o pôster). */
   opcoes?: Record<string, string>;
+  /** Quais desses móveis estão no lugar (false: guardado). */
+  moveis?: Record<string, boolean>;
   parede: Record<string, boolean>;
 }
 
@@ -139,6 +143,22 @@ export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figura
                   onClick={() => enviar({ comando: 'parede', id })}
                 >
                   <img src={figuras.miniaturas[id]} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
+          {figuras?.moveis && Object.keys(figuras.moveis).length > 0 && (
+            <div className="quarto-novo-grupo" role="group" aria-label={t('Móveis')}>
+              {Object.entries(figuras.moveis).map(([id, src], i) => (
+                <button
+                  key={id}
+                  type="button"
+                  className="quarto-novo-objeto"
+                  aria-label={`${t('Móveis')} ${i + 1}`}
+                  aria-pressed={arrumacao?.moveis?.[id] !== false}
+                  onClick={() => enviar({ comando: 'movel', id })}
+                >
+                  <img src={src} alt="" />
                 </button>
               ))}
             </div>

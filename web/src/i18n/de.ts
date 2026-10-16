@@ -1881,6 +1881,7 @@ export default {
   'Tapete': 'Teppich',
   'Objetos da parede': 'Wanddeko',
   'Em cima dos móveis': 'Auf den Möbeln',
+  'Móveis': 'Möbel',
   'Gráficos': 'Grafik',
   'Partículas': 'Partikel',
   'Sombras': 'Schatten',

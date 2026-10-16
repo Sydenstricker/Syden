@@ -1940,6 +1940,7 @@ export default {
   'Tapete': 'གདན།',
   'Objetos da parede': 'གྱང་རྒྱན།',
   'Em cima dos móveis': 'ཅ་ཆས་ཀྱི་ཁར།',
+  'Móveis': 'ཅ་ཆས།',
   'Gráficos': 'ཚད་རིས།',
   'Partículas': 'རྡུལ་ཕྲན།',
   'Sombras': 'གྲིབ་མ།',

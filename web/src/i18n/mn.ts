@@ -1941,6 +1941,7 @@ export default {
   'Tapete': 'Хивс',
   'Objetos da parede': 'Ханын чимэглэл',
   'Em cima dos móveis': 'Тавилга дээр',
+  'Móveis': 'Тавилга',
   'Gráficos': 'График',
   'Partículas': 'Бөөмс',
   'Sombras': 'Сүүдэр',

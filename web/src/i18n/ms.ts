@@ -1857,6 +1857,7 @@ export default {
   'Tapete': 'Permaidani',
   'Objetos da parede': 'Hiasan dinding',
   'Em cima dos móveis': 'Di atas perabot',
+  'Móveis': 'Perabot',
   'Gráficos': 'Grafik',
   'Partículas': 'Zarah',
   'Sombras': 'Bayang',

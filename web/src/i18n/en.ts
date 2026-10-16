@@ -1852,6 +1852,7 @@ export default {
   'Tapete': 'Rug',
   'Objetos da parede': 'Wall decor',
   'Em cima dos móveis': 'On the furniture',
+  'Móveis': 'Furniture',
   'Gráficos': 'Graphics',
   'Partículas': 'Particles',
   'Sombras': 'Shadows',

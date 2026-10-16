@@ -88,6 +88,7 @@ app</b> para ver o nome de cada objeto ao passar o mouse. A arrumação fica gua
   <button id="graf-particulas">Partículas</button><button id="graf-sombras">Sombras</button><button id="graf-telas">Telas animadas</button>
 </div>
 <div class="barra" id="enfeites"></div>
+<div class="barra" id="moveis"></div>
 <div class="barra" id="objetos-de-cima"></div>
 <p id="acao-teste" aria-live="polite"></p>
 <p class="so-do-quarto"><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
@@ -895,6 +896,16 @@ function dados(im, filtro, w = W, h = W) {
   // A planta guardada quando ocupava 2 × 2 (até 16/10/2026) tem o centro no canto de uma casa: volta para dentro de uma.
   const reencaixarPlantas = () => { for (const id of ['planta-alta', 'planta-baixa']) if (ARR[id]) ARR[id].c = encaixar(id, ...ARR[id].c, ARR[id].lado); };
   reencaixarPlantas();
+  // GUARDAR E PÔR MÓVEIS (pedido dele, 16/10/2026: "quero diminuir [os móveis] no quarto e não acho a opção"). Guardado, o
+  // móvel sai da arrumação e fica numa lista; pôr de volta acha a casa livre mais perto da de fábrica. Móvel com FUNÇÃO
+  // (o guarda-roupa, a mesa, a TV…) não se guarda, senão a função some junto; nem a cama do quarto, onde o coelho dorme
+  // quando a pessoa está ausente (a tela não mente).
+  const SO_COM_FUNCAO = CENA === 'salao' ? ['tv', 'fliperama', 'estante', 'balcao', 'microfone', 'jukebox'] : ['guarda-roupa', 'abajur', 'mesa', 'cama'];
+  const podeGuardar = (id) => !!INICIAL[id] && !SO_COM_FUNCAO.includes(id);
+  let GUARDADOS = new Set();
+  try { GUARDADOS = new Set((JSON.parse(localStorage.getItem(PREFIXO + 'guardados') ?? '[]') || []).filter(podeGuardar)); } catch { /* nenhum */ }
+  for (const id of GUARDADOS) delete ARR[id];
+  const guardarGuardados = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'guardados', JSON.stringify([...GUARDADOS])); } catch { /* fica só nesta visita */ } };
   window.arrumacaoDoTeste = () => ARR; // para o teste
   const guardar = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } enviar(); };
   const ehDeitado = (id) => id === 'tapete';
@@ -1285,25 +1296,28 @@ function dados(im, filtro, w = W, h = W) {
     // A CAMA, em qualquer posição: a cabeceira fica do lado oposto ao olhar; ele deita no meio do colchão, a cabeça
     // para a cabeceira, e se prepara no lado comprido que dá para a frente da tela (u ou v maior).
     if (CENA === 'salao') return pontosDoSalao(vizinhas);
+    const r = {};
+    if (ARR.cama) {
     const olhaC = ORIENTA[ARR.cama.lado], [fu, fv] = VET[olhaC], peC = peMedidoDe('cama'), eixoU = fu !== 0;
     const cab = eixoU ? (fu > 0 ? peC[0] : peC[1]) : (fv > 0 ? peC[2] : peC[3]);
     const ondeC = eixoU ? [cab + fu * 1.25, (peC[2] + peC[3]) / 2 - 0.1] : [(peC[0] + peC[1]) / 2 - 0.1, cab + fv * 1.25];
     const beiraC = eixoU ? [ondeC[0], peC[3] + 0.12] : [peC[1] + 0.12, ondeC[1]];
+      // Na cama ele DEITA (lendo ou dormindo), no meio do colchão, a cabeça para a cabeceira (pedido dele, 14/10/2026).
+      r.cama = { ao: vizinhas(...peDe('cama')), onde: ondeC, beira: beiraC, sobe: 40, pose: 'na cama', olha: olhaC, sobre: 'cama' };
+    }
     // O GUARDA-ROUPA: ele para na casa da frente dele, olhando para ele.
     const OPOSTO = { sudoeste: 'nordeste', nordeste: 'sudoeste', sudeste: 'noroeste', noroeste: 'sudeste' };
-    const olhaG = ORIENTA[ARR['guarda-roupa'].lado], [gu, gv] = VET[olhaG], peG = peDe('guarda-roupa'), [gcu, gcv] = centro(peG);
-    const frenteG = [Math.floor(gcu + gu * ((peG[1] - peG[0]) / 2 + 0.5)), Math.floor(gcv + gv * ((peG[3] - peG[2]) / 2 + 0.5))];
-    const olhaP = ORIENTA[ARR.poltrona.lado];
-    return {
-      // O pufe é redondo: ele senta virado para qualquer um dos 4 lados (sorteado ao chegar) e vira de vez em quando.
-      pufe: { ao: em2x2(ARR.pufe.c), onde: assentoNoPufe(), sobe: 26, pose: 'sentado', olha: coelho.olharNoPufe ?? 'sudeste', sobre: 'pufe' },
-      // Virada de costas, o encosto fica NA FRENTE do coelho: ele é desenhado antes dela.
-      poltrona: { ao: vizinhas(...peDe('poltrona')), onde: [...ARR.poltrona.c], sobe: 8, pose: 'sentado', olha: olhaP, sobre: 'poltrona', atras: olhaP.startsWith('n') },
-      // Na cama ele DEITA (lendo ou dormindo), no meio do colchão, a cabeça para a cabeceira (pedido dele, 14/10/2026).
-      cama: { ao: vizinhas(...peDe('cama')), onde: ondeC, beira: beiraC, sobe: 40, pose: 'na cama', olha: olhaC, sobre: 'cama' },
-      'guarda-roupa': { ao: [frenteG].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha: OPOSTO[olhaG] },
-      ...(VISTAS_CADEIRA && ARR.mesa ? { cadeira: pontoDaCadeira(), mesa: pontoDaCadeira() } : {}),
-    };
+    if (ARR['guarda-roupa']) {
+      const olhaG = ORIENTA[ARR['guarda-roupa'].lado], [gu, gv] = VET[olhaG], peG = peDe('guarda-roupa'), [gcu, gcv] = centro(peG);
+      const frenteG = [Math.floor(gcu + gu * ((peG[1] - peG[0]) / 2 + 0.5)), Math.floor(gcv + gv * ((peG[3] - peG[2]) / 2 + 0.5))];
+      r['guarda-roupa'] = { ao: [frenteG].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha: OPOSTO[olhaG] };
+    }
+    // O pufe é redondo: ele senta virado para qualquer um dos 4 lados (sorteado ao chegar) e vira de vez em quando.
+    if (ARR.pufe) r.pufe = { ao: em2x2(ARR.pufe.c), onde: assentoNoPufe(), sobe: 26, pose: 'sentado', olha: coelho.olharNoPufe ?? 'sudeste', sobre: 'pufe' };
+    // Virada de costas, o encosto fica NA FRENTE do coelho: ele é desenhado antes dela.
+    if (ARR.poltrona) { const olhaP = ORIENTA[ARR.poltrona.lado]; r.poltrona = { ao: vizinhas(...peDe('poltrona')), onde: [...ARR.poltrona.c], sobe: 8, pose: 'sentado', olha: olhaP, sobre: 'poltrona', atras: olhaP.startsWith('n') }; }
+    if (VISTAS_CADEIRA && ARR.mesa) { r.cadeira = pontoDaCadeira(); r.mesa = pontoDaCadeira(); }
+    return r;
   }
   // O RECADO (no salão): o que quem administra escreveu, num balão em cima do coelho do balcão. Como o recado do salão de
   // frente (RecadoDoBalcao): aparece ao chegar, fica o tempo de ler (mais para recado comprido) e some — senão cobria os
@@ -2847,6 +2861,38 @@ function dados(im, filtro, w = W, h = W) {
       return b;
     }));
   }
+  // Guardar e pôr um MÓVEL (os botões daqui e a barra de arrumar do app). Guardado, os objetos que estavam em cima dele
+  // saem junto. De volta, ele vai para a casa livre mais perto da de fábrica, na posição de fábrica; sem casa livre, não volta.
+  function alternarMovel(id) {
+    if (soVer || !podeGuardar(id)) return;
+    if (ARR[id]) {
+      if (viva?.id === id || pegado === id) return;
+      delete ARR[id]; GUARDADOS.add(id);
+      EM_CIMA = Object.fromEntries(Object.entries(EM_CIMA).filter(([, o]) => o.em !== id)); guardarObjetos();
+      if (selecionado === id) escolher(Object.keys(ARR)[0]);
+      if (coelho.destino === id) { coelho.destino = null; coelho.pose = 'parado'; }
+    } else {
+      const { c: c0, lado } = INICIAL[id], base = encaixar(id, ...c0, lado), opcoes = [];
+      for (let di = -N; di <= N; di++) for (let dj = -N; dj <= N; dj++) opcoes.push(encaixar(id, base[0] + di, base[1] + dj, lado));
+      opcoes.sort((a, b) => Math.hypot(a[0] - base[0], a[1] - base[1]) - Math.hypot(b[0] - base[0], b[1] - base[1]));
+      ARR[id] = { c: base, lado };
+      const c = opcoes.find((p) => !ocupa(p, id, lado));
+      if (!c) { delete ARR[id]; dizer('Não há espaço livre para ' + NOMES[id] + '.'); return; }
+      ARR[id] = { c, lado }; GUARDADOS.delete(id); soltarFaiscas(peDe(id));
+    }
+    guardarGuardados(); guardar(); colidir(); assinaturaCena = ''; botoesDosMoveis(); decidir(); desenhar();
+  }
+  function botoesDosMoveis() {
+    const caixa = document.getElementById('moveis');
+    caixa.replaceChildren(...Object.keys(INICIAL).filter(podeGuardar).map((id) => {
+      const b = document.createElement('button');
+      b.textContent = (NOMES[id] ?? id).replace(/^(o|a|os|as) /, '').replace(/^./, (l) => l.toUpperCase()) + ': ' + (ARR[id] ? 'no lugar' : 'guardado');
+      b.setAttribute('aria-pressed', String(!!ARR[id]));
+      b.disabled = soVer;
+      b.onclick = () => alternarMovel(id);
+      return b;
+    }));
+  }
   // Pôr e guardar um objeto da parede (os botões daqui e a barra de arrumar do app).
   function alternarNaParede(id) {
     const it = ITENS_PAREDE[id];
@@ -2867,7 +2913,7 @@ function dados(im, filtro, w = W, h = W) {
     }
     mudarParede(id, lugar ?? prenderNaParede(id, { parede: 'esquerda', v: 0, h: 0 }));
   }
-  botoesDaParede();
+  botoesDaParede(); botoesDosMoveis();
   window.paredeDoTeste = () => NA_PAREDE; // para o teste
   const bct = document.getElementById('cor-tapete'), ORDEM_CORES = Object.keys(CORES_DO_TAPETE);
   const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + CORES_DO_TAPETE[CORES.tapete ?? 'salvia'].nome; bct.disabled = soVer; };
@@ -3024,7 +3070,7 @@ function dados(im, filtro, w = W, h = W) {
   const girar = () => {
     if (selecionado === 'cadeira') { levarCadeira([cadeira.u, cadeira.v], cadeira.th + Math.PI / 4, 250); return; }
     const id = selecionado;
-    if (id === 'pufe') return;
+    if (id === 'pufe' || !ARR[id]) return;
     for (let passo = 1; passo < 4; passo++) {
       const lado = (ARR[id].lado + passo) % 4, c = noLugar(id) ? encaixar(id, ...ARR[id].c, lado) : encaixar(id, ...ARR[id].c, lado);
       if (!ocupa(c, id, lado)) { ARR[id] = { c, lado }; guardar(); decidir(); desenhar(); return; }
@@ -3055,8 +3101,8 @@ function dados(im, filtro, w = W, h = W) {
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
-  escolher('poltrona');
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); GUARDADOS = new Set(); guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  escolher(ARR.poltrona ? 'poltrona' : Object.keys(ARR)[0]);
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
   iniciarCadeira();
@@ -3076,6 +3122,7 @@ function dados(im, filtro, w = W, h = W) {
     cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
     cores: { ...CORES },
+    guardados: [...GUARDADOS],
     emCima: Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => [uid, { tipo: o.tipo, em: o.em, s: +o.s.toFixed(3), t: +o.t.toFixed(3), lado: o.lado }])),
     parede: Object.fromEntries(Object.entries(NA_PAREDE).map(([id, P]) => [id, { parede: P.parede, v: +P.v.toFixed(2), h: Math.round(P.h) }])),
   });
@@ -3084,6 +3131,8 @@ function dados(im, filtro, w = W, h = W) {
   function vestir(a) {
     const novo = JSON.parse(JSON.stringify(INICIAL));
     for (const [id, m] of Object.entries(a.moveis ?? {})) if (novo[id] && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
+    GUARDADOS = new Set((Array.isArray(a.guardados) ? a.guardados : []).filter(podeGuardar));
+    for (const id of GUARDADOS) delete novo[id];
     ARR = novo; reencaixarPlantas();
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); soltarDosMoveis(); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
@@ -3094,7 +3143,8 @@ function dados(im, filtro, w = W, h = W) {
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }
-    botoesDaJanela(); botoesDaParede();
+    botoesDaJanela(); botoesDaParede(); botoesDosMoveis();
+    if (!ARR[selecionado] && selecionado !== 'cadeira') escolher(Object.keys(ARR)[0]);
     assinaturaCena = ''; decidir(); desenhar();
   }
   const campo = (id) => document.getElementById(id);
@@ -3158,7 +3208,7 @@ function dados(im, filtro, w = W, h = W) {
   // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
   function relatar() {
     if (!MODO_APP || window.parent === window) return;
-    window.parent.postMessage({ syden: 'quarto', arrumacao: { janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
   }
   // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
   function figurasDaBarra() {
@@ -3189,7 +3239,10 @@ function dados(im, filtro, w = W, h = W) {
     }
     // e as opções de cada objeto que tem (o pôster): o recorte de cada uma
     const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(o.dia)]))]));
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes };
+    // e cada móvel que se pode guardar: a vista de fábrica dele (ou o recorte da pintura, como o tapete)
+    const moveis = {};
+    for (const id of Object.keys(INICIAL).filter(podeGuardar)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel; if (fonte) moveis[id] = recorte(fonte); }
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis };
   }
 
   // ============================== NO APP (15/10/2026) ==============================
@@ -3222,6 +3275,7 @@ function dados(im, filtro, w = W, h = W) {
       if (d.comando === 'janela') btj.click();
       if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
+      if (d.comando === 'movel' && podeGuardar(d.id)) alternarMovel(d.id);
       if (d.comando === 'opcao' && OPCOES_PAREDE[d.id]?.[d.opcao]) escolherOpcao(d.id, d.opcao);
       if (d.comando === 'inicial') document.getElementById('inicial').click();
       if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);

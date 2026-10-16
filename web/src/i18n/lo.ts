@@ -1928,6 +1928,7 @@ export default {
   'Tapete': 'ພົມ',
   'Objetos da parede': 'ເຄື່ອງປະດັບຝາ',
   'Em cima dos móveis': 'ເທິງເຄື່ອງເຮືອນ',
+  'Móveis': 'ເຄື່ອງເຮືອນ',
   'Gráficos': 'ກຣາບຟິກ',
   'Partículas': 'ອະນຸພາກ',
   'Sombras': 'ເງົາ',

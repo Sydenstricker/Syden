@@ -1868,6 +1868,7 @@ export default {
   'Tapete': 'Itapi',
   'Objetos da parede': 'Imitako yo ku rukuta',
   'Em cima dos móveis': 'Ku bikoresho byo mu nzu',
+  'Móveis': 'Ibikoresho byo mu nzu',
   'Gráficos': 'Ibishushanyo',
   'Partículas': 'Uduce',
   'Sombras': 'Ibicucu',

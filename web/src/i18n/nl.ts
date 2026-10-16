@@ -1856,6 +1856,7 @@ export default {
   'Tapete': 'Vloerkleed',
   'Objetos da parede': 'Wanddecoratie',
   'Em cima dos móveis': 'Op de meubels',
+  'Móveis': 'Meubels',
   'Gráficos': 'Graphics',
   'Partículas': 'Deeltjes',
   'Sombras': 'Schaduwen',

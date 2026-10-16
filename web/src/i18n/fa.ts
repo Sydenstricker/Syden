@@ -1845,6 +1845,7 @@ export default {
   'Tapete': 'فرش',
   'Objetos da parede': 'وسایل دیوار',
   'Em cima dos móveis': 'روی وسایل',
+  'Móveis': 'وسایل',
   'Gráficos': 'گرافیک',
   'Partículas': 'ذرات',
   'Sombras': 'سایه‌ها',

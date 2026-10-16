@@ -1842,6 +1842,7 @@ export default {
   'Tapete': 'விரிப்பு',
   'Objetos da parede': 'சுவர் அலங்காரங்கள்',
   'Em cima dos móveis': 'தளவாடங்களின் மேல்',
+  'Móveis': 'தளவாடங்கள்',
   'Gráficos': 'கிராபிக்ஸ்',
   'Partículas': 'துகள்கள்',
   'Sombras': 'நிழல்கள்',

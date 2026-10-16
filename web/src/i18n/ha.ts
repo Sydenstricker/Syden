@@ -1859,6 +1859,7 @@ export default {
   'Tapete': 'Kafet',
   'Objetos da parede': 'Kayan bango',
   'Em cima dos móveis': 'A kan kayan daki',
+  'Móveis': 'Kayan daki',
   'Gráficos': 'Zane-zane',
   'Partículas': 'Tartsatsi',
   'Sombras': 'Inuwoyi',

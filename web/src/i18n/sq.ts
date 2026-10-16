@@ -1919,6 +1919,7 @@ export default {
   'Tapete': 'Qilim',
   'Objetos da parede': 'Zbukurime muri',
   'Em cima dos móveis': 'Mbi mobiljet',
+  'Móveis': 'Mobilje',
   'Gráficos': 'Grafika',
   'Partículas': 'Grimca',
   'Sombras': 'Hije',

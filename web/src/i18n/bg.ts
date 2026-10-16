@@ -1924,6 +1924,7 @@ export default {
   'Tapete': 'Килим',
   'Objetos da parede': 'Декорации за стена',
   'Em cima dos móveis': 'Върху мебелите',
+  'Móveis': 'Мебели',
   'Gráficos': 'Графика',
   'Partículas': 'Частици',
   'Sombras': 'Сенки',

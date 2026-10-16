@@ -1922,6 +1922,7 @@ export default {
   'Tapete': 'Dywan',
   'Objetos da parede': 'Ozdoby na ścianę',
   'Em cima dos móveis': 'Na meblach',
+  'Móveis': 'Meble',
   'Gráficos': 'Grafika',
   'Partículas': 'Cząsteczki',
   'Sombras': 'Cienie',

@@ -603,6 +603,11 @@ duas cores da lâmpada e o preto do fio), e o motor recopia esses pixels da casc
 **O salão SEM O LAMBRI (pedido dele, 16/10/2026):** a janela e a porta ficavam metade na madeira. `casca16.py` troca a faixa
 de madeira pelo tijolo 46 px acima (4 fiadas) e refaz o rodapé reto; a base 8 × 8 (`base.png`) continua com o lambri, porque
 é a referência das gerações. Peça gerada com a inclinação da parede errada (o neon) leva `"espelhar": true` no item.json.
+**GUARDAR E PÔR MÓVEIS, nos dois ambientes (pedido dele, 16/10/2026):** a barra de Editar ganha o grupo "Móveis" (figuras,
+"Móveis" nos 79 idiomas); guardado, o móvel sai da arrumação (`guardados` no servidor, que precisa ser publicado para o app
+lembrar) e os objetos em cima dele saem junto; de volta, ele vai para a casa livre mais perto da de fábrica. **Móvel com
+função não se guarda** (o guarda-roupa, a mesa, o abajur, a TV, o fliperama, a estante, o balcão, a jukebox, o microfone) nem
+a cama do quarto, onde o coelho dorme quando a pessoa está ausente.
 **Objeto da parede com OPÇÕES (o pôster: palco, neon, fogo; pedido dele, 16/10/2026):** `parede-salao/<item>/opcoes/<nome>/`,
 saídas de `parede/avulsos.py <item>=<n>`; a escolha vai no campo `cores` da arrumação, o mesmo do tapete, sem mexer no
 servidor, e a barra de arrumar mostra as figuras enquanto o objeto está na parede.

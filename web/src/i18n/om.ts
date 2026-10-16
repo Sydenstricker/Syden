@@ -1897,6 +1897,7 @@ export default {
   'Tapete': 'Afata lafaa',
   'Objetos da parede': 'Miidhagina keenyan',
   'Em cima dos móveis': 'Meeshaa irratti',
+  'Móveis': 'Meeshaa',
   'Gráficos': 'Giraafiksii',
   'Partículas': 'Qaama xixiqqaa',
   'Sombras': 'Gaaddisawwan',

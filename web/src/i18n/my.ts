@@ -1896,6 +1896,7 @@ export default {
   'Tapete': 'ကော်ဇော',
   'Objetos da parede': 'နံရံအလှဆင်ပစ္စည်းများ',
   'Em cima dos móveis': 'ပရိဘောဂပေါ်မှာ',
+  'Móveis': 'ပရိဘောဂ',
   'Gráficos': 'ဂရပ်ဖစ်',
   'Partículas': 'အမှုန်များ',
   'Sombras': 'အရိပ်များ',

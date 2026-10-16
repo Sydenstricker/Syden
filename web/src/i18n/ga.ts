@@ -1863,6 +1863,7 @@ export default {
   'Tapete': 'Ruga',
   'Objetos da parede': 'Maisiúcháin bhalla',
   'Em cima dos móveis': 'Ar an troscán',
+  'Móveis': 'Troscán',
   'Gráficos': 'Grafaic',
   'Partículas': 'Cáithníní',
   'Sombras': 'Scáthanna',

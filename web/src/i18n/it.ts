@@ -1856,6 +1856,7 @@ export default {
   'Tapete': 'Tappeto',
   'Objetos da parede': 'Oggetti da parete',
   'Em cima dos móveis': 'Sui mobili',
+  'Móveis': 'Mobili',
   'Gráficos': 'Grafica',
   'Partículas': 'Particelle',
   'Sombras': 'Ombre',

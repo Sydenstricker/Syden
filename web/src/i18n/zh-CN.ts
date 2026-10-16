@@ -1844,6 +1844,7 @@ export default {
   'Tapete': '地毯',
   'Objetos da parede': '墙面装饰',
   'Em cima dos móveis': '家具上的物品',
+  'Móveis': '家具',
   'Gráficos': '图形',
   'Partículas': '粒子效果',
   'Sombras': '阴影',

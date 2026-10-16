@@ -1870,6 +1870,7 @@ export default {
   'Tapete': 'พรม',
   'Objetos da parede': 'ของตกแต่งผนัง',
   'Em cima dos móveis': 'บนเฟอร์นิเจอร์',
+  'Móveis': 'เฟอร์นิเจอร์',
   'Gráficos': 'กราฟิก',
   'Partículas': 'อนุภาค',
   'Sombras': 'เงา',

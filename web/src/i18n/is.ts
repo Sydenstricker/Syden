@@ -1928,6 +1928,7 @@ export default {
   'Tapete': 'Gólfmotta',
   'Objetos da parede': 'Veggskraut',
   'Em cima dos móveis': 'Á húsgögnunum',
+  'Móveis': 'Húsgögn',
   'Gráficos': 'Grafík',
   'Partículas': 'Agnir',
   'Sombras': 'Skuggar',

@@ -1865,6 +1865,7 @@ export default {
   'Tapete': 'Kapeeti',
   'Objetos da parede': 'Ihe ịchọ mma mgbidi',
   'Em cima dos móveis': 'N\'elu ngwongwo ụlọ',
+  'Móveis': 'Ngwongwo ụlọ',
   'Gráficos': 'Eserese',
   'Partículas': 'Ntụpọ ọkụ',
   'Sombras': 'Onyinyo',

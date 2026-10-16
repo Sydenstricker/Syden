@@ -1928,6 +1928,7 @@ export default {
   'Tapete': 'Umata',
   'Objetos da parede': 'Imihlobiso yodonga',
   'Em cima dos móveis': 'Phezu kwefenisha',
+  'Móveis': 'Ifenisha',
   'Gráficos': 'Imidwebo',
   'Partículas': 'Izinhlayiya',
   'Sombras': 'Izithunzi',

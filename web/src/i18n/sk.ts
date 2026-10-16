@@ -1927,6 +1927,7 @@ export default {
   'Tapete': 'Koberec',
   'Objetos da parede': 'Ozdoby na stenu',
   'Em cima dos móveis': 'Na nábytku',
+  'Móveis': 'Nábytok',
   'Gráficos': 'Grafika',
   'Partículas': 'Častice',
   'Sombras': 'Tiene',

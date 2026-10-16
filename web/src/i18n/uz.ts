@@ -1935,6 +1935,7 @@ export default {
   'Tapete': 'Gilam',
   'Objetos da parede': 'Devor bezaklari',
   'Em cima dos móveis': 'Mebel ustida',
+  'Móveis': 'Mebel',
   'Gráficos': 'Grafika',
   'Partículas': 'Zarrachalar',
   'Sombras': 'Soyalar',

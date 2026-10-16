@@ -1929,6 +1929,7 @@ export default {
   'Tapete': 'Paklājs',
   'Objetos da parede': 'Sienas rotājumi',
   'Em cima dos móveis': 'Uz mēbelēm',
+  'Móveis': 'Mēbeles',
   'Gráficos': 'Grafika',
   'Partículas': 'Daļiņas',
   'Sombras': 'Ēnas',

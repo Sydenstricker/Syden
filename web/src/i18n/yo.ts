@@ -1872,6 +1872,7 @@ export default {
   'Tapete': 'Kápẹ́ẹ̀tì',
   'Objetos da parede': 'Ọ̀ṣọ́ ògiri',
   'Em cima dos móveis': 'Lórí àga àti tábìlì',
+  'Móveis': 'Àga àti tábìlì',
   'Gráficos': 'Àwòrán',
   'Partículas': 'Ìtànná',
   'Sombras': 'Òjìji',

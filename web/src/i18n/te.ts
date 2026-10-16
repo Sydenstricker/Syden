@@ -1839,6 +1839,7 @@ export default {
   'Tapete': 'తివాచీ',
   'Objetos da parede': 'గోడ అలంకరణలు',
   'Em cima dos móveis': 'ఫర్నిచర్ మీద',
+  'Móveis': 'ఫర్నిచర్',
   'Gráficos': 'గ్రాఫిక్స్',
   'Partículas': 'కణాలు',
   'Sombras': 'నీడలు',

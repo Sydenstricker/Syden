@@ -1891,6 +1891,7 @@ export default {
   'Tapete': 'Xalça',
   'Objetos da parede': 'Divar bəzəkləri',
   'Em cima dos móveis': 'Mebel üstündə',
+  'Móveis': 'Mebel',
   'Gráficos': 'Qrafika',
   'Partículas': 'Hissəciklər',
   'Sombras': 'Kölgələr',

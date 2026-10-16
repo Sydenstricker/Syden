@@ -1879,6 +1879,7 @@ export default {
   'Tapete': 'Tapis',
   'Objetos da parede': 'Objets muraux',
   'Em cima dos móveis': 'Sur les meubles',
+  'Móveis': 'Meubles',
   'Gráficos': 'Graphismes',
   'Partículas': 'Particules',
   'Sombras': 'Ombres',

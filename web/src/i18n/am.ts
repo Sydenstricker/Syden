@@ -1857,6 +1857,7 @@ export default {
   'Tapete': 'ምንጣፍ',
   'Objetos da parede': 'የግድግዳ ጌጦች',
   'Em cima dos móveis': 'በዕቃዎቹ ላይ',
+  'Móveis': 'የቤት ዕቃዎች',
   'Gráficos': 'ግራፊክስ',
   'Partículas': 'ብልጭታዎች',
   'Sombras': 'ጥላዎች',

@@ -1929,6 +1929,7 @@ export default {
   'Tapete': 'Preproga',
   'Objetos da parede': 'Stenski okraski',
   'Em cima dos móveis': 'Na pohištvu',
+  'Móveis': 'Pohištvo',
   'Gráficos': 'Grafika',
   'Partículas': 'Delci',
   'Sombras': 'Sence',

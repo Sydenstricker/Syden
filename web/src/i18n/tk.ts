@@ -1929,6 +1929,7 @@ export default {
   'Tapete': 'Haly',
   'Objetos da parede': 'Diwar bezegleri',
   'Em cima dos móveis': 'Mebelleriň üstünde',
+  'Móveis': 'Mebel',
   'Gráficos': 'Grafika',
   'Partículas': 'Bölejikler',
   'Sombras': 'Kölegeler',

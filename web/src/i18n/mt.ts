@@ -1873,6 +1873,7 @@ export default {
   'Tapete': 'Tapit',
   'Objetos da parede': 'Tiżjin tal-ħajt',
   'Em cima dos móveis': 'Fuq l-għamara',
+  'Móveis': 'Għamara',
   'Gráficos': 'Grafika',
   'Partículas': 'Partiċelli',
   'Sombras': 'Dellijiet',

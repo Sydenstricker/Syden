@@ -1844,6 +1844,7 @@ export default {
   'Tapete': 'قالین',
   'Objetos da parede': 'دیوار کی سجاوٹ',
   'Em cima dos móveis': 'فرنیچر کے اوپر',
+  'Móveis': 'فرنیچر',
   'Gráficos': 'گرافکس',
   'Partículas': 'ذرات',
   'Sombras': 'سائے',

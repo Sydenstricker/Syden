@@ -1927,6 +1927,7 @@ export default {
   'Tapete': 'Karipetra',
   'Objetos da parede': 'Haingon\'ny rindrina',
   'Em cima dos móveis': 'Ambonin\'ny fanaka',
+  'Móveis': 'Fanaka',
   'Gráficos': 'Sary',
   'Partículas': 'Pitik’afo',
   'Sombras': 'Aloka',

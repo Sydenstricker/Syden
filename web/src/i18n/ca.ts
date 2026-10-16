@@ -1923,6 +1923,7 @@ export default {
   'Tapete': 'Catifa',
   'Objetos da parede': 'Objectes de la paret',
   'Em cima dos móveis': 'Sobre els mobles',
+  'Móveis': 'Mobles',
   'Gráficos': 'Gràfics',
   'Partículas': 'Partícules',
   'Sombras': 'Ombres',

@@ -1929,6 +1929,7 @@ export default {
   'Tapete': 'गलैँचा',
   'Objetos da parede': 'भित्ताका सजावट',
   'Em cima dos móveis': 'फर्निचरमाथि',
+  'Móveis': 'फर्निचर',
   'Gráficos': 'ग्राफिक्स',
   'Partículas': 'कणहरू',
   'Sombras': 'छायाहरू',

@@ -1877,6 +1877,7 @@ export default {
   'Tapete': 'السجادة',
   'Objetos da parede': 'أغراض الجدار',
   'Em cima dos móveis': 'فوق الأثاث',
+  'Móveis': 'الأثاث',
   'Gráficos': 'الرسومات',
   'Partículas': 'الجسيمات',
   'Sombras': 'الظلال',

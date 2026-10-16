@@ -1929,6 +1929,7 @@ export default {
   'Tapete': 'Szőnyeg',
   'Objetos da parede': 'Falidíszek',
   'Em cima dos móveis': 'A bútorokon',
+  'Móveis': 'Bútorok',
   'Gráficos': 'Grafika',
   'Partículas': 'Részecskék',
   'Sombras': 'Árnyékok',

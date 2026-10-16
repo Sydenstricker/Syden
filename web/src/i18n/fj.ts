@@ -1856,6 +1856,7 @@ export default {
   'Tapete': 'Ibe',
   'Objetos da parede': 'iUkuuku ni lalaga',
   'Em cima dos móveis': 'E dela ni iyaya',
+  'Móveis': 'Iyaya',
   'Gráficos': 'Na iyaloyalo',
   'Partículas': 'Na vuka ni rarama',
   'Sombras': 'Na yaloyalo',

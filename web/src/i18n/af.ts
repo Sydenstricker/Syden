@@ -1921,6 +1921,7 @@ export default {
   'Tapete': 'Mat',
   'Objetos da parede': 'Muurversierings',
   'Em cima dos móveis': 'Op die meubels',
+  'Móveis': 'Meubels',
   'Gráficos': 'Grafika',
   'Partículas': 'Deeltjies',
   'Sombras': 'Skaduwees',

@@ -1927,6 +1927,7 @@ export default {
   'Tapete': 'පාපිස්ස',
   'Objetos da parede': 'බිත්ති සැරසිලි',
   'Em cima dos móveis': 'ගෘහ භාණ්ඩ මත',
+  'Móveis': 'ගෘහ භාණ්ඩ',
   'Gráficos': 'ග්‍රැෆික්ස්',
   'Partículas': 'අංශු',
   'Sombras': 'සෙවණැලි',

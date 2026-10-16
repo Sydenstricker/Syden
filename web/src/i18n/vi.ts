@@ -1827,6 +1827,7 @@ export default {
   'Tapete': 'Thảm',
   'Objetos da parede': 'Đồ treo tường',
   'Em cima dos móveis': 'Trên đồ nội thất',
+  'Móveis': 'Đồ nội thất',
   'Gráficos': 'Đồ họa',
   'Partículas': 'Hạt hiệu ứng',
   'Sombras': 'Bóng đổ',

@@ -32,6 +32,8 @@ export interface Arrumacao {
   cores?: Record<string, string>;
   /** Os objetos de cima (a caneca, os livros…): o tipo, o móvel em que estão, a posição no tampo (0 a 1) e o lado. */
   emCima?: Record<string, { tipo: string; em: string; s: number; t: number; lado: number }>;
+  /** Os móveis GUARDADOS (16/10/2026: "quero diminuir os móveis"): fora da arrumação, por código. */
+  guardados?: string[];
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -90,6 +92,11 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
       if (!CODIGO.test(id) || typeof cor !== 'string' || !CODIGO.test(cor)) return { erro: 'Cor inválida.' };
       saida.cores[id] = cor;
     }
+  }
+  if (a.guardados !== undefined) {
+    const g = a.guardados;
+    if (!Array.isArray(g) || g.length > MAX_MOVEIS || !g.every((id) => typeof id === 'string' && CODIGO.test(id))) return { erro: 'Móveis guardados inválidos.' };
+    saida.guardados = [...new Set(g as string[])];
   }
   if (a.emCima !== undefined) {
     const e = a.emCima;

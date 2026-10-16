@@ -1924,6 +1924,7 @@ export default {
   'Tapete': 'Тепих',
   'Objetos da parede': 'Украси за зид',
   'Em cima dos móveis': 'На намештају',
+  'Móveis': 'Намештај',
   'Gráficos': 'Графика',
   'Partículas': 'Честице',
   'Sombras': 'Сенке',

@@ -1856,6 +1856,7 @@ export default {
   'Tapete': 'Zulia',
   'Objetos da parede': 'Vitu vya ukutani',
   'Em cima dos móveis': 'Juu ya samani',
+  'Móveis': 'Samani',
   'Gráficos': 'Michoro',
   'Partículas': 'Chembechembe',
   'Sombras': 'Vivuli',

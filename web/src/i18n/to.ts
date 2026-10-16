@@ -1863,6 +1863,7 @@ export default {
   'Tapete': 'Kapeti',
   'Objetos da parede': 'Teuteu ʻo e holisi',
   'Em cima dos móveis': 'ʻI he ngaahi naunau',
+  'Móveis': 'Ngaahi naunau',
   'Gráficos': 'Ngaahi tā',
   'Partículas': 'Ngaahi konga iiki',
   'Sombras': 'Ngaahi malumalu',

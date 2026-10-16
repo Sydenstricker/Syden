@@ -1838,6 +1838,7 @@ export default {
   'Tapete': 'ラグ',
   'Objetos da parede': '壁の飾り',
   'Em cima dos móveis': '家具の上',
+  'Móveis': '家具',
   'Gráficos': 'グラフィック',
   'Partículas': 'パーティクル',
   'Sombras': '影',

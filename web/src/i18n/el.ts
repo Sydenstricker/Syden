@@ -1863,6 +1863,7 @@ export default {
   'Tapete': 'Χαλί',
   'Objetos da parede': 'Διακοσμητικά τοίχου',
   'Em cima dos móveis': 'Πάνω στα έπιπλα',
+  'Móveis': 'Έπιπλα',
   'Gráficos': 'Γραφικά',
   'Partículas': 'Σωματίδια',
   'Sombras': 'Σκιές',

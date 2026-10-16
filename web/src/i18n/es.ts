@@ -1852,6 +1852,7 @@ export default {
   'Tapete': 'Alfombra',
   'Objetos da parede': 'Objetos de la pared',
   'Em cima dos móveis': 'Sobre los muebles',
+  'Móveis': 'Muebles',
   'Gráficos': 'Gráficos',
   'Partículas': 'Partículas',
   'Sombras': 'Sombras',

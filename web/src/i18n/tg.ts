@@ -1928,6 +1928,7 @@ export default {
   'Tapete': 'Қолин',
   'Objetos da parede': 'Ороишҳои девор',
   'Em cima dos móveis': 'Дар болои мебел',
+  'Móveis': 'Мебел',
   'Gráficos': 'Графика',
   'Partículas': 'Зарраҳо',
   'Sombras': 'Сояҳо',
