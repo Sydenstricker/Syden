@@ -138,6 +138,8 @@ if (CENA === 'salao') {
   const WEB = path.join(AQUI, '..', '..', '..', '..', '..', 'web', 'public');
   IMAGENS.iconeDeTeste = png(path.join(WEB, 'icon-512.png'));
   IMAGENS.capaDeTeste = png(path.join(AQUI, '..', '..', '..', 'salao', 'bases', 'tarde-1.png'));
+  // as luzinhas do alto das paredes, à parte (salao/luzes16.py): vão por cima da janela e dos objetos da parede
+  IMAGENS.luzes = png(path.join(SALAO, 'luzes16.png'));
 }
 for (const q of ['dia', 'noite', 'noite-abajur']) IMAGENS['sem-' + q] = png(CENA === 'salao' ? path.join(SALAO, q === 'dia' ? 'base16.png' : 'noite16.png') : path.join(JAN_DIR, `sem-janela-${q}.png`));
 const JANELAS = {};
@@ -158,6 +160,15 @@ for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prate
   if (!fs.existsSync(path.join(d, 'item.json'))) continue;
   ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
   for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-' + q] = png(path.join(d, 'peca-' + q + '.png'));
+  // AS OPÇÕES DE UM OBJETO (o pôster, 16/10/2026: "o usuário pode escolher qual pôster usar?"): opcoes/<nome>/, geradas
+  // por parede/avulsos.py forçando cada opção. A de fábrica é a do próprio item; a escolha vai em "cores" (como o tapete).
+  const dop = path.join(d, 'opcoes');
+  if (fs.existsSync(dop)) {
+    const ops = fs.readdirSync(dop).map((nome) => ({ ...JSON.parse(fs.readFileSync(path.join(dop, nome, 'item.json'), 'utf8')), nome })).sort((a, b) => a.avulso - b.avulso);
+    ITENS_PAREDE[item].opcoes = Object.fromEntries(ops.map((o) => [o.nome, { ocupa: o.ocupa, alto: o.alto }]));
+    ITENS_PAREDE[item].fabrica = ops.find((o) => o.avulso === ITENS_PAREDE[item].avulso)?.nome ?? ops[0].nome;
+    for (const o of ops) for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '@' + o.nome + '-' + q] = png(path.join(dop, o.nome, 'peca-' + q + '.png'));
+  }
 }
 const QUADROS = [], ANIMACOES_IDX = {};
 { const indice = new Map();
@@ -273,6 +284,7 @@ pelo chão (o pufe usa a versão pintada mais perto e a intensidade da luz do lu
   <button id="imagem-teste" hidden aria-pressed="false">Imagem da comunidade: nenhuma</button>
   <button id="recado-teste" hidden aria-pressed="false">Recado: nenhum</button>
   <button id="cor-tapete">Cor do tapete</button>
+  <button id="opcao-poster" hidden>Pôster</button>
 </div>
 <div class="barra" id="graficos">
   <button id="graf-particulas">Partículas</button><button id="graf-sombras">Sombras</button><button id="graf-telas">Telas animadas</button>
@@ -441,6 +453,26 @@ function dados(im, filtro, w = W, h = W) {
   const caixasDaParede = {};
   const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
   for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
+  // A escolha de cor do tapete e de OPÇÃO de um objeto da parede (o pôster): { tapete: 'azul', poster: 'fogo' }.
+  let CORES = {};
+  try { CORES = JSON.parse(localStorage.getItem(PREFIXO + 'cores') ?? '{}') || {}; } catch { /* as de fábrica */ }
+  const guardarCores = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'cores', JSON.stringify(CORES)); } catch { /* fica só nesta visita */ } enviar(); };
+  // As opções: a textura e o tamanho de cada uma. Escolher troca o objeto NO LUGAR (TEXTURAS_PAREDE e ITENS_PAREDE), e
+  // tudo o que desenha, mede ou encaixa o objeto continua lendo dali.
+  const OPCOES_PAREDE = {};
+  for (const [id, it] of Object.entries(ITENS_PAREDE)) if (it.opcoes) {
+    OPCOES_PAREDE[id] = Object.fromEntries(Object.entries(it.opcoes).map(([nome, o]) => [nome, { ...o, dia: dados(im['par-' + id + '@' + nome + '-dia']), noite: dados(im['par-' + id + '@' + nome + '-noite']) }]));
+  }
+  const opcaoDe = (id) => (OPCOES_PAREDE[id]?.[CORES[id]] ? CORES[id] : ITENS_PAREDE[id]?.fabrica);
+  function vestirOpcoes() {
+    for (const [id, ops] of Object.entries(OPCOES_PAREDE)) {
+      const o = ops[opcaoDe(id)];
+      TEXTURAS_PAREDE[id] = { dia: o.dia, noite: o.noite };
+      ITENS_PAREDE[id].ocupa = o.ocupa; ITENS_PAREDE[id].alto = o.alto;
+      delete caixasDaParede[id];
+    }
+  }
+  vestirOpcoes();
   // Até onde um objeto vai na parede: inteiro nela, acima do rodapé (30 px) e até a sombra da cornija (190 px: a parede
   // clara vai a ~176 px do chão, e o recorte traz uns pixels de sombra em volta).
   // (o que fica no CHÃO, como a porta, não sobe nem desce: só anda ao longo da parede)
@@ -560,6 +592,7 @@ function dados(im, filtro, w = W, h = W) {
     img.src = d.url;
   }
   // A MONTAGEM da janela onde ela está (rapido: arrastando, sem refazer as luzes borradas, refeitas ao soltar).
+  const LUZES = im.luzes ? (() => { const d = dados(im.luzes), ks = []; for (let k = 0; k < W * W; k++) if (d[k * 4] > 127) ks.push(k); return ks; })() : null;
   function aplicarJanela(rapido) {
     const T = TIPOS_JANELA[JAN.tipo], mapa = mapaDe(JAN);
     if (!T.cortina) fechada = false;
@@ -604,6 +637,10 @@ function dados(im, filtro, w = W, h = W) {
       }
     });
     ordemDaParede = ids;
+    // AS LUZINHAS NA FRENTE (relato dele, 16/10/2026: "a janela está passando por cima das luzes"): o cordão está
+    // pintado na casca, e o que vai na parede era composto por cima dele. Os pixels dele voltam da casca, por cima de tudo.
+    if (LUZES) for (const [A, F] of [[base, semDia], [cortinaDia, semDia], [abertaDia, semDia], [noite, semNoite], [noiteSemLuar, semNoite], [noiteAbajur, semAbajur], [abajurSemLuar, semAbajur]])
+      for (const k of LUZES) for (let c = 0; c < 3; c++) A[k * 4 + c] = F[k * 4 + c];
     if (!T.cortinaDia) cortinaDia = base;
     cortinaNoite = noiteSemLuar;
     contorno(base, foraDia); contorno(noite, foraNoite); contorno(noiteAbajur, foraNoite);
@@ -1285,9 +1322,6 @@ function dados(im, filtro, w = W, h = W) {
   // escolhida e a saturação muda, mas a CLARIDADE fica — o desenho (as tramas, as sombras) é o mesmo, só o tom muda. O
   // tapete pintado é sálvia (matiz 0,16, saturação 0,27).
   const CORES_DO_TAPETE = { salvia: { nome: 'sálvia', h: 0.158, s: 1 }, terracota: { nome: 'terracota', h: 0.03, s: 2.1 }, azul: { nome: 'azul', h: 0.58, s: 1.15 }, mostarda: { nome: 'mostarda', h: 0.105, s: 2.4 }, rosa: { nome: 'rosa', h: 0.95, s: 1.05 }, cinza: { nome: 'cinza', h: 0.158, s: 0.2 } };
-  let CORES = {};
-  try { CORES = JSON.parse(localStorage.getItem(PREFIXO + 'cores') ?? '{}') || {}; } catch { /* as de fábrica */ }
-  const guardarCores = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'cores', JSON.stringify(CORES)); } catch { /* fica só nesta visita */ } enviar(); };
   function tingirPixel(r, g, b, alvo) {
     const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx / 255, d = mx - mn;
     let h = 0, sat = mx ? d / mx : 0;
@@ -3033,6 +3067,17 @@ function dados(im, filtro, w = W, h = W) {
   const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + CORES_DO_TAPETE[CORES.tapete ?? 'salvia'].nome; bct.disabled = soVer; };
   bct.onclick = () => { CORES = { ...CORES, tapete: ORDEM_CORES[(ORDEM_CORES.indexOf(CORES.tapete ?? 'salvia') + 1) % ORDEM_CORES.length] }; guardarCores(); botaoDaCor(); desenhar(); };
   botaoDaCor();
+  // A OPÇÃO de um objeto da parede (o pôster): troca o desenho no mesmo lugar, preso de novo à parede (o tamanho muda um
+  // pouco de uma opção para outra).
+  function escolherOpcao(id, nome) {
+    CORES = { ...CORES, [id]: nome }; guardarCores(); vestirOpcoes();
+    if (NA_PAREDE[id]) NA_PAREDE[id] = prenderNaParede(id, NA_PAREDE[id]);
+    aplicarJanela(); assinaturaCena = ''; botaoDaOpcao(); desenhar();
+  }
+  const bop = document.getElementById('opcao-poster');
+  function botaoDaOpcao() { if (!OPCOES_PAREDE.poster) return; bop.hidden = false; bop.textContent = 'Pôster: ' + opcaoDe('poster'); bop.disabled = soVer; }
+  bop.onclick = () => { const ops = Object.keys(OPCOES_PAREDE.poster); escolherOpcao('poster', ops[(ops.indexOf(opcaoDe('poster')) + 1) % ops.length]); };
+  botaoDaOpcao();
   window.ondeDoMovel = (id) => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (dono[k] === id) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
   window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
 
@@ -3195,7 +3240,7 @@ function dados(im, filtro, w = W, h = W) {
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -3228,8 +3273,8 @@ function dados(im, filtro, w = W, h = W) {
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); soltarDosMoveis(); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
-    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => id === 'tapete' && CORES_DO_TAPETE[c])) : {};
-    botaoDaCor();
+    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && CORES_DO_TAPETE[c]) || OPCOES_PAREDE[id]?.[c])) : {};
+    botaoDaCor(); vestirOpcoes(); botaoDaOpcao();
     NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : prenderTudo(PAREDE_INICIAL);
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
@@ -3298,20 +3343,21 @@ function dados(im, filtro, w = W, h = W) {
   // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
   function relatar() {
     if (!MODO_APP || window.parent === window) return;
-    window.parent.postMessage({ syden: 'quarto', arrumacao: { janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
   }
   // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
   function figurasDaBarra() {
     const miniaturas = {};
-    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) {
+    const recorte = (dia) => {
       let x0 = W, y0 = W, x1 = 0, y1 = 0;
-      for (let k = 0; k < W * W; k++) if (T2.dia[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      for (let k = 0; k < W * W; k++) if (dia[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
       const c = document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
       const d = new ImageData(c.width, c.height);
-      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = T2.dia[k + q]; }
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = dia[k + q]; }
       c.getContext('2d').putImageData(d, 0, 0);
-      miniaturas[id] = c.toDataURL();
-    }
+      return c.toDataURL();
+    };
+    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) miniaturas[id] = recorte(T2.dia);
     // a cor média do tapete pintado, tingida em cada uma
     let n = 0; const m = [0, 0, 0];
     for (let k = 0; k < W * W; k++) if (pecas.tapete && pecas.tapete.movel[k * 4 + 3]) { for (let q = 0; q < 3; q++) m[q] += pecas.tapete.movel[k * 4 + q]; n++; }
@@ -3326,7 +3372,9 @@ function dados(im, filtro, w = W, h = W) {
       c.getContext('2d').putImageData(d, 0, 0);
       deCima[id] = c.toDataURL();
     }
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima };
+    // e as opções de cada objeto que tem (o pôster): o recorte de cada uma
+    const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(o.dia)]))]));
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes };
   }
 
   // ============================== NO APP (15/10/2026) ==============================
@@ -3359,6 +3407,7 @@ function dados(im, filtro, w = W, h = W) {
       if (d.comando === 'janela') btj.click();
       if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
+      if (d.comando === 'opcao' && OPCOES_PAREDE[d.id]?.[d.opcao]) escolherOpcao(d.id, d.opcao);
       if (d.comando === 'inicial') document.getElementById('inicial').click();
       if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);
       if (Array.isArray(d.pessoas)) { PESSOAS = d.pessoas.slice(0, 12); desenhar(); }

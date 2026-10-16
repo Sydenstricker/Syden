@@ -33,10 +33,14 @@ export interface Figuras {
   ordem: string[];
   /** O primeiro desenho de cada objeto de cima (a caneca, os livros…): clicar põe um no tampo do último móvel tocado. */
   deCima?: Record<string, string>;
+  /** As opções de um objeto da parede (o pôster: palco, neon, fogo), com o recorte de cada uma. */
+  opcoes?: Record<string, Record<string, string>>;
 }
 export interface Arrumacao {
   janela: string;
   tapete: string;
+  /** A opção escolhida de cada objeto que tem opções (o pôster). */
+  opcoes?: Record<string, string>;
   parede: Record<string, boolean>;
 }
 
@@ -139,6 +143,25 @@ export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figura
               ))}
             </div>
           )}
+          {/* as opções de um objeto (o pôster), só enquanto ele está na parede */}
+          {Object.entries(figuras?.opcoes ?? {})
+            .filter(([id]) => arrumacao?.parede[id])
+            .map(([id, ops]) => (
+              <div key={id} className="quarto-novo-grupo" role="group" aria-label={t('Objetos da parede')}>
+                {Object.entries(ops).map(([opcao, src], i) => (
+                  <button
+                    key={opcao}
+                    type="button"
+                    className="quarto-novo-objeto"
+                    aria-label={`${t('Objetos da parede')} ${i + 1}`}
+                    aria-pressed={arrumacao?.opcoes?.[id] === opcao}
+                    onClick={() => enviar({ comando: 'opcao', id, opcao })}
+                  >
+                    <img src={src} alt="" />
+                  </button>
+                ))}
+              </div>
+            ))}
           {figuras?.deCima && Object.keys(figuras.deCima).length > 0 && (
             <div className="quarto-novo-grupo" role="group" aria-label={t('Em cima dos móveis')}>
               {Object.entries(figuras.deCima).map(([id, src], i) => (

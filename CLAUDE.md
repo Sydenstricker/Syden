@@ -597,6 +597,13 @@ soltar um móvel): é ela que iria para um shader WebGL, junto com o que se pint
 as telas), uns 1–2 dias. **Lembrar ao decidir:** a GPU é o que o jogo mais usa, e com a janela sem foco o salão já não gasta
 nada; medir antes de fazer.
 
+**As luzinhas do alto das paredes vão NA FRENTE do que se pendura (16/10/2026):** estão pintadas na casca, e a janela e
+os objetos da parede as cobriam (a lâmpada no canto da janela saía cortada). `salao/luzes16.py` tira a máscara delas (as
+duas cores da lâmpada e o preto do fio), e o motor recopia esses pixels da casca por cima. Casca nova pede rodar de novo.
+**Objeto da parede com OPÇÕES (o pôster: palco, neon, fogo; pedido dele, 16/10/2026):** `parede-salao/<item>/opcoes/<nome>/`,
+saídas de `parede/avulsos.py <item>=<n>`; a escolha vai no campo `cores` da arrumação, o mesmo do tapete, sem mexer no
+servidor, e a barra de arrumar mostra as figuras enquanto o objeto está na parede.
+
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
 parte: põe-se no tampo de qualquer móvel que tenha tampo, anda e gira com ele, e tem as suas posições. "Aumenta as
