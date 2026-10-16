@@ -2669,7 +2669,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
           else if (acesa[k]) v = Math.min(255, v * CUPULA_X[c] + CUPULA_M[c]); // a cúpula acesa, laranja como na pintura
           // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel.
           else if (eMovel[k]) {
-            const j = (Math.min(W - 1, peY[k] + 3) * W + x) * 4;
+            // (o chão de VERDADE embaixo do pixel, pela forma do móvel; sem ela, o pé da coluna. Relato dele, 16/10/2026: a
+            // poltrona com uma faixa clara no braço — pelo pé da coluna, a coluna da perna pegava a luz de um chão uns 10 px
+            // abaixo das vizinhas, e mudava inteira de brilho)
+            const gy = chaoPx[k] >= 0 ? (chaoPx[k] / W) | 0 : peY[k];
+            const j = (Math.min(W - 1, gy + 3) * W + x) * 4;
             const perto = pertoBase * PERTO[c];
             v = v * Math.min(pintada ? 1.2 : 0.9, razaoPe[j + c] / Math.max(1, diaPe[j + c])) + v * (quente + perto);
           }
@@ -2767,7 +2771,8 @@ void main() {
     else if (ac == 3u) v = v * 0.7 + vec3(120.0, 26.0, 16.0) * 0.45;
     else if (ac != 0u) v = min(vec3(255.0), v * vec3(1.05, 0.8, 0.5) + vec3(34.0, 14.0, 0.0));
     else if (em) {
-      ivec2 j = ivec2(x, min(W - 1, peY + 3));
+      int chao = texelFetch(tChao, q, 0).r, gy = chao >= 0 ? chao / W : peY;
+      ivec2 j = ivec2(x, min(W - 1, gy + 3));
       vec3 raz = texelFetch(tRaz, j, 0).rgb * 255.0, dia = texelFetch(tDiaPe, j, 0).rgb * 255.0;
       vec3 perto = pertoBase * vec3(1.0, 0.7, 0.4);
       v = v * min(vec3(pin ? 1.2 : 0.9), raz / max(vec3(1.0), dia)) + v * (quente + perto);
