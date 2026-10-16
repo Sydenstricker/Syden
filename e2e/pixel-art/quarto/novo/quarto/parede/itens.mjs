@@ -4,6 +4,7 @@
 //   node e2e/pixel-art/quarto/novo/quarto/parede/itens.mjs [item...]   → parede/<item>/dia.png
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { fechar, ler64, gravar64 } from '../../../imagem.mjs';
 import { pintar } from '../pintar.mjs';
 
@@ -36,22 +37,25 @@ export const ITENS = {
   porta: { area: area(3.0, 5.2, 0, 150), texto: `ONLY a closed dark wooden door with a small round restroom sign on it showing a simple bunny icon, a brass door handle, standing on the floor, set into the plain cream wall, ${ESTILO}` },
   pintura: { area: area(3.3, 4.9, 90, 170), texto: `ONLY a framed landscape painting of green hills and a soft sunset sky, in a thin wooden frame, ${ESTILO}` },
 };
-// O SALÃO (15/10/2026): "itens.mjs salao <item...>" pinta no TIJOLO do salão (salao/base-tijolo.png, 27 px abaixo do
-// quarto), em parede-salao/<item>/: pintado no reboco creme do quarto, o objeto trazia em volta a cor de lá, que no tijolo
-// virava mancha, e às vezes saía cortado (relatos dele).
-const SALAO = process.argv[2] === 'salao';
-const args = process.argv.slice(SALAO ? 3 : 2);
-const base = ler64(SALAO ? path.join(AQUI, '..', '..', '..', '..', 'salao', 'base-tijolo.png') : path.join(AQUI, '..', 'janelas', 'sem-janela-dia.png'));
-const noSalao = (a) => a.map(([x, y]) => [x, y + 27]);
-const deTijolo = (t) => t.replace(/the plain cream plaster wall|the plain cream wall/g, 'the red brick wall');
-for (const item of args.length ? args : Object.keys(ITENS)) {
-  const { area: a0, texto: t0, semente } = ITENS[item];
-  const a = SALAO ? noSalao(a0) : a0, texto = SALAO ? deTijolo(t0) : t0;
-  const pasta = SALAO ? path.join(AQUI, '..', 'parede-salao', item) : path.join(AQUI, item), destino = path.join(pasta, 'dia.png');
-  if (fs.existsSync(destino)) { console.log('já existe:', item); continue; }
-  fs.mkdirSync(pasta, { recursive: true });
-  const xs = a.map((p) => p[0]), ys = a.map((p) => p[1]);
-  gravar64(destino, await pintar(base, { caixa: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], poligonos: [a], texto, semente }, null));
-  console.log('parede:', item);
+// (só quando chamado direto: avulsos.mjs importa a lista daqui)
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // O SALÃO (15/10/2026): "itens.mjs salao <item...>" pinta no TIJOLO do salão (salao/base-tijolo.png, 27 px abaixo do
+  // quarto), em parede-salao/<item>/: pintado no reboco creme do quarto, o objeto trazia em volta a cor de lá, que no tijolo
+  // virava mancha, e às vezes saía cortado (relatos dele).
+  const SALAO = process.argv[2] === 'salao';
+  const args = process.argv.slice(SALAO ? 3 : 2);
+  const base = ler64(SALAO ? path.join(AQUI, '..', '..', '..', '..', 'salao', 'base-tijolo.png') : path.join(AQUI, '..', 'janelas', 'sem-janela-dia.png'));
+  const noSalao = (a) => a.map(([x, y]) => [x, y + 27]);
+  const deTijolo = (t) => t.replace(/the plain cream plaster wall|the plain cream wall/g, 'the red brick wall');
+  for (const item of args.length ? args : Object.keys(ITENS)) {
+    const { area: a0, texto: t0, semente } = ITENS[item];
+    const a = SALAO ? noSalao(a0) : a0, texto = SALAO ? deTijolo(t0) : t0;
+    const pasta = SALAO ? path.join(AQUI, '..', 'parede-salao', item) : path.join(AQUI, item), destino = path.join(pasta, 'dia.png');
+    if (fs.existsSync(destino)) { console.log('já existe:', item); continue; }
+    fs.mkdirSync(pasta, { recursive: true });
+    const xs = a.map((p) => p[0]), ys = a.map((p) => p[1]);
+    gravar64(destino, await pintar(base, { caixa: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], poligonos: [a], texto, semente }, null));
+    console.log('parede:', item);
+  }
+  await fechar();
 }
-await fechar();

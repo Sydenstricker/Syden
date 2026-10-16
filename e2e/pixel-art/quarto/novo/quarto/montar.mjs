@@ -2445,11 +2445,11 @@ function dados(im, filtro, w = W, h = W) {
       let sx = 0, sy = 0; for (const [x, y] of pts) { sx += x; sy += y; }
       if (noite) brilhos.push([sx / pts.length, sy / pts.length, cor, 22, 0.28]);
       // (o leque só de noite: de dia ele mal se via e custava a montagem da luz da imagem inteira)
-      const f = noite && focoDe(id, cor, id === 'mesa' ? 2 : id === 'tv' ? 5.2 : 3.4, id === 'tv' ? 1.8 : 1.2, id === 'tv' ? 0.42 : 0.34); if (f) focos.push(f);
+      const f = noite && focoDe(id, cor, id === 'mesa' ? 2 : id === 'tv' ? 5 : 3.2, id === 'tv' ? 2.2 : 1.4, id === 'tv' ? 0.36 : 0.3); if (f) focos.push(f);
     }
     if (luzDaJukebox) {
       if (noite) brilhos.push([luzDaJukebox[0], luzDaJukebox[1] - 14, [230, 140, 60], 26, 0.26]);
-      const f = noite && focoDe('jukebox', [235, 150, 70], 2.6, 1.1, 0.36); if (f) focos.push(f);
+      const f = noite && focoDe('jukebox', [235, 150, 70], 2.6, 1.3, 0.32); if (f) focos.push(f);
     }
     if (noite) for (const L of luzesDaParede) brilhos.push(L);
     if (noite && luzDoFogao) brilhos.push([luzDoFogao[0], luzDoFogao[1], [255, 110, 50], 40, 0.3]);
@@ -2494,11 +2494,15 @@ function dados(im, filtro, w = W, h = W) {
         // o ponto do chão deste pixel (num móvel, o chão embaixo dele)
         const g2 = eMovel[k] ? chaoPx[k] : casa[k] >= 0 ? k : -1;
         if (g2 < 0) continue;
+        // uma MANCHA OVAL de luz na frente da tela, mais forte perto dela e esmaecendo para as bordas (o leque em cone, com
+        // a ponta na tela, parecia um farol: relato de 15/10/2026)
         const du = mapaU[g2] - F.u0, dv = mapaV[g2] - F.v0, along = du * F.fu + dv * F.fv;
-        if (along < -0.15 || along > F.alcance) continue;
-        const lado = Math.abs(-du * F.fv + dv * F.fu), abre = 0.5 + (F.largura - 0.5) * Math.max(0, along) / F.alcance;
-        if (lado > abre) continue;
-        const i = Math.floor((1 - Math.max(0, along) / F.alcance) * (1 - (lado / abre) ** 2) * 4) / 4 * F.forca;
+        if (along < -0.2) continue;
+        const lado = -du * F.fv + dv * F.fu, ra = F.alcance * 0.55, ca = F.alcance * 0.4;
+        const q = ((along - ca) / ra) ** 2 + (lado / F.largura) ** 2;
+        if (q >= 1) continue;
+        const perto = Math.max(0.45, 1 - Math.max(0, along) / F.alcance);
+        const i = Math.floor((1 - q) * perto * 5) / 5 * F.forca;
         if (i > 0) for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + F.cor[c] * i);
       }
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).

@@ -89,7 +89,7 @@ for item, meta in ITENS.items():
     # andariam junto com a peça
     if SALAO:
         rot3, _ = label(m); t3 = np.bincount(rot3.ravel()); t3[0] = 0
-        m = np.isin(rot3, np.nonzero(t3 >= t3.max() * 0.3)[0])
+        m = np.isin(rot3, np.nonzero(t3 >= t3.max() * 0.12)[0])
     # "vaos": o que é parede pura por dentro da peça (o vão entre as tábuas da prateleira) também sai. Não vale para
     # todas: o mostrador do relógio é creme como a parede.
     if meta.get('vaos'): m = m & (dif > 14)
