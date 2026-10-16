@@ -113,6 +113,11 @@ export const sudoku: Definicao = {
       ctx.terminar();
     };
     ctx.agendar(SUDOKU_MS, acabar);
+    // Acaba quando todo mundo da sala terminou; quem saiu da sala não segura os outros.
+    const todosProntos = () => {
+      const naSalaAgora = ctx.naSala();
+      return [...jogadores.entries()].every(([id, x]) => x.terminouEm !== null || !naSalaAgora.includes(id));
+    };
 
     return {
       publico(quem) {
@@ -148,11 +153,12 @@ export const sudoku: Definicao = {
         j.tabuleiro[casa] = valor;
         if (valor && valor !== solucao[casa]) j.erros++;
         if (certas(j) === aPreencher) j.terminouEm = Date.now() - inicio;
-        // Acaba quando todo mundo da sala terminou; quem saiu da sala não segura os outros.
-        const naSalaAgora = ctx.naSala();
-        if ([...jogadores.entries()].every(([id, x]) => x.terminouEm !== null || !naSalaAgora.includes(id))) acabar();
+        if (todosProntos()) acabar();
         else ctx.avisar();
         return null;
+      },
+      conferir() {
+        if (fase === 'jogando' && todosProntos()) acabar();
       },
     };
   },

@@ -131,7 +131,8 @@ export interface PartidaPublica {
    * O CONVITE (13/10/2026): enquanto não é null, a partida ainda não começou e cada um da sala responde se joga.
    * Ausente = servidor de antes do convite, em que a sala inteira joga.
    */
-  convite?: { minimo: number } | null;
+  /** presentes: dos que aceitaram, quantos estão na sala agora (é o que a largada conta; o servidor antigo não manda). */
+  convite?: { minimo: number; presentes?: number } | null;
   /** Quem joga (null = a sala inteira). */
   jogadores?: { userId: number; username: string }[] | null;
   /** Quem respondeu "Agora não". */

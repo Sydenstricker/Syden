@@ -14387,11 +14387,12 @@ body.arrastando-barra {
   }
 }
 
+/* (sem visibility: hidden, que tirava o recado também de quem usa leitor de tela; só deixa de receber o clique) */
 @keyframes bv-balao-sai {
   to {
     opacity: 0;
     transform: scale(0.92);
-    visibility: hidden;
+    pointer-events: none;
   }
 }
 

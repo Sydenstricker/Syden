@@ -376,7 +376,10 @@ export function setupRealtime(io: IOServer) {
         return ack?.({ ok: false, error: 'Sala inválida.' });
       }
       if (!db.memberRole(channel.communityId, user.id)) return ack?.({ ok: false, error: 'Você não participa desta comunidade.' });
-      const previous = voiceMembers.get(user.id)?.communityId;
+      const anterior = voiceMembers.get(user.id), previous = anterior?.communityId;
+      // A chamada foi assumida por OUTRO aparelho ou aba (revisão de 16/10/2026): o antigo é avisado, para não
+      // "reanunciar" a cada 3 s e tomar a chamada de volta (os dois ficavam se alternando na lista para sempre).
+      if (anterior && anterior.socketId !== socket.id) io.to(anterior.socketId).emit('voice:substituida', { channelId: anterior.channelId });
       endVoiceSession(user.id); // trocou de sala, ou entrou por outra aba
       voiceMembers.set(user.id, {
         userId: user.id,

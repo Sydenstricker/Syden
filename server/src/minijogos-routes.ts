@@ -95,7 +95,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     terminada: p.terminada,
     restanteMs: Math.max(0, p.ate - Date.now()),
     // O convite: quem vai jogar, quem disse "agora não", e o mínimo para dar a largada.
-    convite: p.convite ? { minimo: JOGOS[p.jogo].minimo ?? 1 } : null,
+    // ("presentes": dos que aceitaram, quantos estão na sala agora: é o que a largada conta)
+    convite: p.convite ? { minimo: JOGOS[p.jogo].minimo ?? 1, presentes: presentes(p).length } : null,
     jogadores: p.jogadores ? pessoas(p.jogadores) : null,
     recusaram: pessoas(p.recusaram),
     souJogador: p.jogadores ? p.jogadores.has(quem) : true,
@@ -125,6 +126,9 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     const instancia = JOGOS[p.jogo].comecar(ctx, { naSala, criadaPor: p.criadaPor, corpo });
     if (typeof instancia === 'string') {
       if (p.relogio) clearTimeout(p.relogio);
+      // A largada recusada (revisão de 16/10/2026): o convite segue de pé, e com o relógio dele de volta. Sem isso ele
+      // ficava sem prazo, e a sala inteira presa em "já tem uma partida acontecendo".
+      if (p.convite) agendar(p, CONVITE_MS, () => encerrar(p));
       return instancia;
     }
     p.instancia = instancia;
@@ -132,6 +136,13 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     p.registro = db.registrarPartida(p.jogo, p.communityId, p.channelId, p.criadaPor, naSala);
     return null;
   }
+
+  // QUEM SAIU DA SALA (revisão de 16/10/2026): a rodada que só esperava essa pessoa segue sem ela, sem esperar o relógio.
+  const conferencia = setInterval(() => {
+    for (const p of partidas.values()) if (p.instancia && !p.terminada && !p.convite) p.instancia.conferir?.();
+  }, 4000);
+  conferencia.unref?.();
+  app.addHook('onClose', async () => clearInterval(conferencia));
 
   // O que precisa chegar NA HORA (o traço do desenho) vem pelo socket e vai direto a quem está na sala,
   // sem o "mudou, busque de novo" das rotas. O jogo decide o que aceita (ver `tempoReal` no motor).
@@ -180,7 +191,9 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         if (!definicao) return reply.code(400).send({ error: 'Jogo desconhecido.' });
         if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
         const atual = partidas.get(canal.id);
-        if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
+        // O convite de quem já saiu da sala não segura a sala: um jogo novo o substitui.
+        if (atual && !atual.terminada && atual.convite && !estaNaSala(atual.criadaPor, canal.id)) encerrar(atual);
+        else if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
         if (atual?.relogio) clearTimeout(atual.relogio);
 
         const convidar = request.body?.convidar === true;
@@ -291,7 +304,9 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const pode =
         p.criadaPor === request.user.id ||
         manages(db.memberRole(canal.communityId, request.user.id)) ||
-        (p.terminada && estaNaSala(request.user.id, canal.id));
+        (p.terminada && estaNaSala(request.user.id, canal.id)) ||
+        // o convite de quem saiu da sala: qualquer um que está nela o desfaz
+        (p.convite !== null && !estaNaSala(p.criadaPor, canal.id) && estaNaSala(request.user.id, canal.id));
       if (!pode) return reply.code(403).send({ error: 'Só quem começou a partida pode encerrá-la antes do fim.' });
       encerrar(p);
       return { ok: true };

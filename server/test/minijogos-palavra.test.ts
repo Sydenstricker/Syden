@@ -67,7 +67,8 @@ test('Palavra secreta: a corrida — os outros veem as cores, nunca as letras, a
   assert.equal(ver(2).palavra, null);
 
   // O 2 gasta os 6 chutes: todo mundo terminou, e a palavra aparece na hora.
-  for (let i = 0; i < CHUTES; i++) jogo.acao(2, { tipo: 'chute', texto: 'termo' });
+  // (seis palavras diferentes: o mesmo chute duas vezes não conta, desde 16/10/2026)
+  for (const p of SORTEIO.filter((x) => semAcento(x) !== 'aviao').slice(0, CHUTES)) assert.equal(jogo.acao(2, { tipo: 'chute', texto: p }), null);
   assert.equal(ver(2).fase, 'revelando');
   assert.equal(ver(2).palavra, 'avião');
   assert.deepEqual(ver(2).outros.find((o) => o.userId === 1)!.letras, ['fazer', 'avião']);

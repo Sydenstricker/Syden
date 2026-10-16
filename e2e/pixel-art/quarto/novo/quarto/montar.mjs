@@ -3203,6 +3203,9 @@ void main() {
   });
   // Pôr um objeto: no último móvel tocado, se ele recebe objetos (senão na mesa), no primeiro lugar livre do tampo.
   function porObjeto(tipo) {
+    // O servidor guarda até 60 objetos (server/src/quarto.ts): passar disso fazia toda arrumação seguinte ser recusada
+    // calada (revisão de 16/10/2026).
+    if (Object.keys(EM_CIMA).length >= 60) { dizer('Já há objetos demais em cima dos móveis.'); return; }
     const em = TOPOS[selecionado] && ARR[selecionado] ? selecionado : Object.keys(TOPOS).find((id) => ARR[id]);
     if (!em) return;
     const outros = Object.values(EM_CIMA).filter((o) => o.em === em);

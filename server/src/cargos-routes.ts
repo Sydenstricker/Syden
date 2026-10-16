@@ -56,7 +56,11 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
         if (alvo !== request.user.id && papel !== 'owner' && papelDoAlvo !== 'member') {
           return reply.code(403).send({ error: 'Só quem criou a comunidade troca o apelido de quem administra.' });
         }
-        const texto = String(request.body?.apelido ?? '').trim().replace(/\s+/g, ' ');
+        // Sem os caracteres invisíveis e de controle (revisão de 16/10/2026): um espaço de largura zero deixava o nome em
+        // branco para todo mundo, e o U+202E virava de trás para frente o nome e o texto depois dele. Fica o U+200D, que
+        // junta os emojis compostos. Sem nada visível, é como apagar o apelido.
+        const limpo = String(request.body?.apelido ?? '').replace(/(?!\u{200D})[\p{Cc}\p{Cf}]/gu, '').trim().replace(/\s+/g, ' ');
+        const texto = /[^\s\u{200D}]/u.test(limpo) ? limpo : '';
         if (texto.length > NOME_MAXIMO) return reply.code(400).send({ error: `O apelido pode ter até ${NOME_MAXIMO} caracteres.` });
         db.setApelido(communityId, alvo, texto || null);
         return avisarMembro(communityId, alvo);

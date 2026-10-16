@@ -33,6 +33,12 @@ test('vazio volta ao nome da conta; longo é recusado', async () => {
   assert.equal((await membro('PUT', url(membroId), { apelido: '   ' })).json().apelido, null);
 });
 
+test('caractere invisível ou de inverter o texto não entra no apelido (revisão de 16/10/2026)', async () => {
+  assert.equal((await membro('PUT', url(membroId), { apelido: '\u200B' })).json().apelido, null, 'só invisível: como apagar');
+  assert.equal((await membro('PUT', url(membroId), { apelido: 'Ana\u202Eodom' })).json().apelido, 'Anaodom');
+  assert.equal((await membro('PUT', url(membroId), { apelido: 'Turma 👨\u200D👩\u200D👧' })).json().apelido, 'Turma 👨\u200D👩\u200D👧', 'o emoji composto fica');
+});
+
 test('membro comum não troca o dos outros; quem administra troca', async () => {
   assert.equal((await membro('PUT', url(outroId), { apelido: 'Bobo' })).statusCode, 403);
   const r = await dona('PUT', url(outroId), { apelido: 'Capitão' });

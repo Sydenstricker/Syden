@@ -33,6 +33,11 @@ export interface Jogo {
    * Vem pelo socket; devolve o que repassar a quem está na sala, ou null para descartar.
    */
   tempoReal?(quem: number, dados: unknown): unknown;
+  /**
+   * Alguém pode ter saído da sala: o jogo confere se já dá para seguir (a rodada que só esperava quem saiu). As rotas
+   * chamam de tempos em tempos (revisão de 16/10/2026: a rodada ficava presa até o relógio de 3 minutos).
+   */
+  conferir?(): void;
 }
 
 export interface Definicao {

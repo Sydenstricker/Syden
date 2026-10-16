@@ -47,7 +47,7 @@ const nomes = (lista: { username: string }[]) => lista.map((p) => p.username).so
 
 test('o convite: ninguém joga antes da largada, e cada um responde', async () => {
   const p0 = (await ana('POST', rota, { jogo: 'tamanho', convidar: true })).json().partida;
-  assert.deepEqual(p0.convite, { minimo: 1 });
+  assert.deepEqual(p0.convite, { minimo: 1, presentes: 1 });
   assert.deepEqual(nomes(p0.jogadores), ['ana-convite'], 'quem convida já está dentro');
   assert.equal(p0.souJogador, true);
   assert.equal(p0.rodada, undefined, 'o jogo ainda não começou');
@@ -88,7 +88,7 @@ test('a largada: só quem aceitou joga, e a rodada não espera quem está na sal
 
 test('o mínimo: o Lobisomem não larga com menos de 4 jogadores', async () => {
   const p = (await ana('POST', rota, { jogo: 'lobisomem', convidar: true })).json().partida;
-  assert.deepEqual(p.convite, { minimo: 4 });
+  assert.deepEqual(p.convite, { minimo: 4, presentes: 1 });
   await bia('POST', `${rota}/convite`, { resposta: 'jogar' });
   await caio('POST', `${rota}/convite`, { resposta: 'jogar' });
   assert.equal((await ana('POST', `${rota}/largada`)).statusCode, 409, 'três não bastam');

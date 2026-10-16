@@ -24,17 +24,24 @@ const limpar = (texto: string) =>
 export function JogoPalavra({
   estado,
   eu,
+  jogador,
   restante,
   agir,
 }: {
   estado: EstadoPalavra & Partida;
   eu: number;
+  /** Quem só assiste não chuta: nem quadro para escrever, nem teclado. */
+  jogador: boolean;
   restante: number;
-  agir: (corpo: Record<string, unknown>) => void;
+  /** (devolve a promessa do pedido: o próximo chute espera ela terminar) */
+  agir: (corpo: Record<string, unknown>) => unknown;
 }) {
   const t = useT();
   const [escrito, setEscrito] = useState('');
-  const chutando = estado.fase === 'chutando' && !estado.acertei && estado.meu.length < estado.chutes;
+  // Um chute por vez (revisão de 16/10/2026): Enter segurado, ou duas vezes com a internet lenta, mandava o mesmo
+  // chute de novo e gastava duas das 6 tentativas.
+  const [enviando, setEnviando] = useState(false);
+  const chutando = jogador && estado.fase === 'chutando' && !estado.acertei && estado.meu.length < estado.chutes;
 
   // Rodada nova: o que estava escrito some.
   useEffect(() => setEscrito(''), [estado.rodada]);
@@ -44,17 +51,24 @@ export function JogoPalavra({
   const tecla = (k: string) => {
     if (!chutando) return;
     if (k === 'Enter') {
-      if (escrito.length === 5) agir({ tipo: 'chute', texto: escrito });
+      if (escrito.length === 5 && !enviando) {
+        setEnviando(true);
+        void Promise.resolve(agir({ tipo: 'chute', texto: escrito })).finally(() => setEnviando(false));
+      }
     } else if (k === 'Backspace') setEscrito((e) => e.slice(0, -1));
     else if (/^[a-z]$/.test(k)) setEscrito((e) => (e.length < 5 ? e + k : e));
   };
 
   useEffect(() => {
+    // Só enquanto há o que chutar: fora disso (quem assiste, quem já acertou, a revelação, o placar), o Enter dos botões
+    // do app inteiro voltava a não funcionar com o painel aberto.
+    if (!chutando) return;
     const ouvir = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      // Quem está escrevendo no chat (ou em qualquer campo) não está chutando.
+      if (e.ctrlKey || e.metaKey || e.altKey || (e.repeat && e.key === 'Enter')) return;
+      // Quem está escrevendo no chat (ou em qualquer campo) não está chutando; o Enter de um botão é do botão.
       const alvo = e.target as HTMLElement | null;
-      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) return;
+      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
+      if (alvo && e.key === 'Enter' && (alvo.tagName === 'BUTTON' || alvo.tagName === 'A')) return;
       const k = e.key === 'Enter' || e.key === 'Backspace' ? e.key : limpar(e.key);
       if (k === 'Enter' || k === 'Backspace' || /^[a-z]$/.test(k)) {
         e.preventDefault();

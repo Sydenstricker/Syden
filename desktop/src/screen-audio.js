@@ -64,17 +64,29 @@ const DONO_NAO_TOCA = new Set(['applicationframehost.exe', 'explorer.exe']);
 
 /** O que foi escolhido no seletor por último: "window:<hwnd>:0", "screen:0:0" ou nada. */
 let fonteEscolhida = /** @type {string | null} */ (null);
+/** A janela do app que recebe o som (a da última captura ligada). */
+let destino = /** @type {Electron.WebContents | null} */ (null);
 function escolherFonte(/** @type {string | null} */ id) {
+  const mudou = id !== fonteEscolhida;
   fonteEscolhida = id;
+  // TROCOU DE FONTE NO MEIO DA TRANSMISSÃO (revisão de 16/10/2026): a captura seguia com o modo da primeira escolha —
+  // da janela A para a B, quem assistia via a B e ouvia a A; da janela para a tela inteira, só um programa. Recomeça.
+  if (mudou && running && destino && !destino.isDestroyed()) start(destino);
 }
 
 /** Só o som do programa da janela escolhida, quando dá para saber qual é e ele mesmo toca o som. */
 function processoDaJanela() {
   const hwnd = /^window:(\d+):/.exec(fonteEscolhida ?? '')?.[1];
   if (!hwnd || !native?.windowProcess) return null; // tela inteira, ou módulo de uma versão anterior
-  const dono = native.windowProcess(Number(hwnd));
-  if (!dono || dono.pid === process.pid || DONO_NAO_TOCA.has(dono.exe.toLowerCase())) return null;
-  return dono.pid;
+  // (se a consulta falhar, fica o som do computador sem o Syden, e não o silêncio)
+  try {
+    const dono = native.windowProcess(Number(hwnd));
+    if (!dono || dono.pid === process.pid || DONO_NAO_TOCA.has(String(dono.exe).toLowerCase())) return null;
+    return dono.pid;
+  } catch (error) {
+    console.error('Não deu para saber o programa da janela:', error);
+    return null;
+  }
 }
 
 /** O app consegue mandar o som sem devolver a chamada? */
@@ -96,6 +108,7 @@ function start(/** @type {Electron.WebContents} */ webContents) {
   if (!available()) return { ok: false, source: null };
   if (running) stop();
   running = true;
+  destino = webContents;
 
   const send = (/** @type {Float32Array} */ pcm) => {
     if (!running || webContents.isDestroyed()) return;

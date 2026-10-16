@@ -37,7 +37,10 @@ export const semAcento = (texto: string) =>
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase();
 
-for (const p of SORTEIO) GRAFIA.set(semAcento(p), p); // a grafia da palavra sorteada vale também para quem a chuta
+// A grafia da palavra SORTEADA (a nossa, com acento) vale para quem chuta essa mesma palavra. Antes ela sobrescrevia a do
+// dicionário, e outra palavra válida com as mesmas letras ("avos" contra a sorteada "avós") aparecia com o acento errado.
+const GRAFIA_SORTEADA = new Map(SORTEIO.map((p) => [semAcento(p).replace(/ç/g, 'c'), p]));
+for (const [chave, p] of GRAFIA_SORTEADA) if (!GRAFIA.has(chave)) GRAFIA.set(chave, p);
 
 /** É uma palavra que se pode chutar? */
 export const valida = (chave: string) => GRAFIA.has(chave);
@@ -84,6 +87,11 @@ export const palavra: Definicao = {
     let inicio = Date.now();
     const quadros = new Map<number, Quadro>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
+    // Todo mundo da sala acertou ou gastou os 6 chutes (quem saiu da sala não segura os outros): a palavra aparece na hora.
+    const todosProntos = () => {
+      const naSalaAgora = ctx.naSala();
+      return [...quadros.entries()].every(([id, x]) => x.acertouEm !== null || x.chutes.length >= CHUTES || !naSalaAgora.includes(id));
+    };
     const secreta = () => semAcento(sorteadas[rodada - 1]);
 
     function novaRodada() {
@@ -151,13 +159,17 @@ export const palavra: Definicao = {
           if (!pontos.has(quem)) pontos.set(quem, 0);
         }
         if (q.acertouEm !== null || q.chutes.length >= CHUTES) return null;
-        q.chutes.push({ texto: GRAFIA.get(limpa) ?? limpa, cores: cores(limpa, secreta()) });
+        // O mesmo chute duas vezes não gasta outra tentativa (Enter apertado duas vezes com a internet lenta).
+        if (q.chutes.some((c) => semAcento(c.texto).replace(/ç/g, 'c') === limpa)) return 'Você já chutou essa palavra.';
+        const grafia = limpa === secreta() ? (GRAFIA_SORTEADA.get(limpa) ?? limpa) : (GRAFIA.get(limpa) ?? limpa);
+        q.chutes.push({ texto: grafia, cores: cores(limpa, secreta()) });
         if (limpa === secreta()) q.acertouEm = Date.now() - inicio;
-        // Todo mundo da sala acertou ou gastou os 6 chutes: a palavra aparece na hora.
-        const naSalaAgora = ctx.naSala();
-        if ([...quadros.entries()].every(([id, x]) => x.acertouEm !== null || x.chutes.length >= CHUTES || !naSalaAgora.includes(id))) revelar();
+        if (todosProntos()) revelar();
         else ctx.avisar();
         return null;
+      },
+      conferir() {
+        if (fase === 'chutando' && quadros.size > 0 && todosProntos()) revelar();
       },
     };
   },

@@ -289,6 +289,8 @@ export function useVoice(socket: Socket | null) {
   const [connecting, setConnecting] = useState(false);
   // O que está sendo transmitido agora, em palavras ("League of Legends"), para os outros verem.
   const nomeDaTelaRef = useRef<string | null>(null);
+  // A sala cuja chamada outro aparelho ou aba assumiu (voice:substituida): nela não se reanuncia sozinho.
+  const substituidaRef = useRef<number | null>(null);
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
   // A transmissão está levando as vozes da chamada junto? Quando sim, a tela avisa quem transmite.
   const [ecoNaTransmissao, setEcoNaTransmissao] = useState(false);
@@ -615,11 +617,19 @@ export function useVoice(socket: Socket | null) {
     // de uma troca de sala não conta), reanuncia como na volta do socket.
     let conferir: ReturnType<typeof setTimeout> | undefined;
     let ultima: number[] = [];
+    // A chamada desta sala foi assumida por outro aparelho ou aba (voice:substituida): aqui não se reanuncia nela, senão
+    // os dois a tomariam um do outro a cada 3 s. Entrar de novo pela tela volta a valer.
+    const onSubstituida = ({ channelId }: { channelId: number }) => {
+      substituidaRef.current = channelId;
+      clearTimeout(conferir);
+      conferir = undefined;
+    };
     const naLista = () => ultima.includes(Number(room.localParticipant.identity));
     const onState = ({ communityId, members }: { communityId: number; members: { userId: number }[] }) => {
       if (communityId !== comunidadeRef.current) return;
       ultima = members.map((m) => m.userId);
       if (channelRef.current === null || room.state !== ConnectionState.Connected || naLista() || conferir) return;
+      if (substituidaRef.current === channelRef.current) return;
       conferir = setTimeout(() => {
         conferir = undefined;
         if (channelRef.current !== null && room.state === ConnectionState.Connected && !naLista() && socket.connected) {
@@ -629,9 +639,11 @@ export function useVoice(socket: Socket | null) {
       }, 3000);
     };
     socket.on('voice:state', onState);
+    socket.on('voice:substituida', onSubstituida);
     return () => {
       socket.off('connect', onConnect);
       socket.off('voice:state', onState);
+      socket.off('voice:substituida', onSubstituida);
       clearTimeout(conferir);
     };
   }, [socket, room]);
@@ -789,6 +801,7 @@ export function useVoice(socket: Socket | null) {
         await room.connect(url, token, { autoSubscribe: false });
         channelRef.current = sala;
         setChannelId(sala);
+        substituidaRef.current = null;
         socketRef.current.emit('voice:join', { channelId: sala }, (r?: { communityId?: number }) => {
           if (typeof r?.communityId === 'number') comunidadeRef.current = r.communityId;
         });

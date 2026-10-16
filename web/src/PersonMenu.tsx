@@ -194,7 +194,7 @@ export function PersonMenu({
       left: Math.max(8, Math.min(target.x, window.innerWidth - caixa.width - 8)),
       top: Math.max(8, Math.min(target.y, window.innerHeight - caixa.height - 8)),
     });
-  }, [target.x, target.y, anotando, apelidando]);
+  }, [target.x, target.y, anotando, apelidando, aberto]); // (aberto: as listas de Cargo e Mover para crescem o menu)
 
   useEffect(() => {
     const fora = () => onClose();
@@ -202,7 +202,7 @@ export function PersonMenu({
     const tecla = (event: KeyboardEvent) => {
       if (event.key === 'Escape') return onClose();
       if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-      const itens = [...(ref.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
+      const itens = [...(ref.current?.querySelectorAll<HTMLElement>('[role="menuitem"],[role="menuitemcheckbox"]') ?? [])];
       if (itens.length === 0) return;
       event.preventDefault();
       const atual = itens.indexOf(document.activeElement as HTMLElement);

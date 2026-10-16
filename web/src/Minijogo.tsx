@@ -135,7 +135,7 @@ export function PainelDoMinijogo({
 
   const tentar = (acao: Acao) => {
     setErro(null);
-    void acao().catch((e) => setErro((e as Error).message));
+    return acao().catch((e) => setErro((e as Error).message));
   };
   const agir = (corpo: Record<string, unknown>) => tentar(() => aoAgir(corpo));
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
@@ -231,7 +231,7 @@ export function PainelDoMinijogo({
         <JogoDesenho estado={jogoNaTela as unknown as EstadoDesenho & Partida} eu={eu} restante={restante} agir={agir} socket={socket} channelId={channelId} />
       )}
       {jogoNaTela?.jogo === 'xadrez' && <JogoXadrez estado={jogoNaTela as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
-      {jogoNaTela?.jogo === 'palavra' && <JogoPalavra estado={jogoNaTela as unknown as EstadoPalavra & Partida} eu={eu} restante={restante} agir={agir} />}
+      {jogoNaTela?.jogo === 'palavra' && <JogoPalavra estado={jogoNaTela as unknown as EstadoPalavra & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
         <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
@@ -326,7 +326,8 @@ function SalaDeEspera({
   const t = useT();
   const jogadores = partida.jogadores ?? [];
   const minimo = partida.convite?.minimo ?? 1;
-  const falta = Math.max(0, minimo - jogadores.length);
+  // quem aceitou e saiu da sala não conta para a largada (o servidor conta só os presentes)
+  const falta = Math.max(0, minimo - (partida.convite?.presentes ?? jogadores.length));
   const quemConvidou = jogadores.find((j) => j.userId === partida.criadaPor)?.username ?? '';
   const souEu = partida.criadaPor === eu;
   const dentro = souJogador(partida);
