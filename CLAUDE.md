@@ -600,6 +600,9 @@ nada; medir antes de fazer.
 **As luzinhas do alto das paredes vão NA FRENTE do que se pendura (16/10/2026):** estão pintadas na casca, e a janela e
 os objetos da parede as cobriam (a lâmpada no canto da janela saía cortada). `salao/luzes16.py` tira a máscara delas (as
 duas cores da lâmpada e o preto do fio), e o motor recopia esses pixels da casca por cima. Casca nova pede rodar de novo.
+**O salão SEM O LAMBRI (pedido dele, 16/10/2026):** a janela e a porta ficavam metade na madeira. `casca16.py` troca a faixa
+de madeira pelo tijolo 46 px acima (4 fiadas) e refaz o rodapé reto; a base 8 × 8 (`base.png`) continua com o lambri, porque
+é a referência das gerações. Peça gerada com a inclinação da parede errada (o neon) leva `"espelhar": true` no item.json.
 **Objeto da parede com OPÇÕES (o pôster: palco, neon, fogo; pedido dele, 16/10/2026):** `parede-salao/<item>/opcoes/<nome>/`,
 saídas de `parede/avulsos.py <item>=<n>`; a escolha vai no campo `cores` da arrumação, o mesmo do tapete, sem mexer no
 servidor, e a barra de arrumar mostra as figuras enquanto o objeto está na parede.

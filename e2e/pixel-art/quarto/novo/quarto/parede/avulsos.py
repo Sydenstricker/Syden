@@ -30,6 +30,10 @@ for arg in sys.argv[1:]:
     tela[..., 3] = np.where(tela[..., 3] > 127, 255, 0); tela[..., :3] *= (tela[..., 3:] > 0)
     m = tela[..., 3] > 0
     cols = np.nonzero(m.any(0))[0]; meio = int((cols.min() + cols.max()) / 2)
+    # GERADO COM A INCLINAÇÃO DA OUTRA PAREDE (o neon, relato dele de 16/10/2026: "a regra de espelhamento invertida"): a
+    # peça é da parede da direita, e "espelhar" no item.json a vira dentro da própria caixa.
+    if json.load(open(os.path.join(d, 'item.json'), encoding='utf8')).get('espelhar'):
+        c0, c1 = cols.min(), cols.max(); tela[:, c0:c1 + 1] = tela[:, c0:c1 + 1][:, ::-1].copy(); m = tela[..., 3] > 0
     hs = chao(meio) - np.nonzero(m[:, cols.min():cols.max() + 1].any(1))[0]
     tq = np.roll(tela, -27, 0).astype(np.uint8)
     for nome in ('peca-dia', 'peca-noite'): Image.fromarray(tq, 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)

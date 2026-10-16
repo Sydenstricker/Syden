@@ -76,8 +76,34 @@ def costurar(coord, outra, cor, valido, px_por_casa):
     return base
 
 
+# SEM O LAMBRI (pedido dele, 16/10/2026: "a janela e a porta estão nessa parte de madeira da parede. Talvez a parede fique
+# melhor sem essa coisa de madeira?"): na base, a faixa de madeira da parede da esquerda (do rodapé, 18 px acima do chão,
+# até o friso, que desce de ~68 px na ponta para ~58 px no canto, por causa da pintura) vira o tijolo de cima, buscado 4
+# fiadas acima (46 px: o passo em que o tijolo mais se repete, medido) quantas vezes for preciso. O rodapé fica, RETO: a
+# pintura o tinha torto como o friso, e os pés dos montantes do lambri apareciam em cima dele; cada coluna recebe o perfil
+# de uma coluna limpa (x = 120), pela altura acima do chão.
+RODAPE, PASSO, COLUNA_LIMPA = 19, 46, 120
+
+
+def sem_lambri(src):
+    out = src.copy()
+    H = src.shape[0]
+    ac = (F0[0] - COLUNA_LIMPA) / CX
+    perfil = {hi: src[int(round(F0[1] + CY * ac - hi)), COLUNA_LIMPA].copy() for hi in range(-1, RODAPE)}
+    for x in range(int(F0[0] - CX * N0) - 2, int(F0[0]) + 1):
+        a = (F0[0] - x) / CX
+        topo = 68 - (x - 80) * 0.062 + 5  # o friso e o brilho dele
+        for y in range(H):
+            h = F0[1] + CY * a - y
+            if 0 <= h < RODAPE: out[y, x] = perfil[int(round(h))] if int(round(h)) < RODAPE else perfil[RODAPE - 1]
+            elif RODAPE <= h < topo:
+                k = int(np.ceil((topo - h) / PASSO)); yy = int(round(y - k * PASSO))
+                if 0 <= yy < H: out[y, x] = src[yy, x]
+    return out
+
+
 def montar(fonte):
-    src = np.array(Image.open(fonte).convert('RGB'))
+    src = sem_lambri(np.array(Image.open(fonte).convert('RGB')))
     fundo = src[0, 0].copy()
     ys, xs = np.mgrid[0:W1, 0:W1].astype(float)
     sx = np.full(xs.shape, -1.0); sy = np.full(xs.shape, -1.0)
