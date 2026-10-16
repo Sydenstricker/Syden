@@ -2541,7 +2541,13 @@ function dados(im, filtro, w = W, h = W) {
   // A cor final de cada pixel de uma região: a luz da noite, a cortina, a sombra do coelho, a grade e o destino do arraste.
   const QUENTE = [1, 0.72, 0.42], BRASA = [120, 26, 16], CUPULA_X = [1.05, 0.8, 0.5], CUPULA_M = [34, 14, 0], PERTO = [1, 0.7, 0.4];
   function passeFinal(r) {
-    const [x0, y0, x1, y1] = prender(r);
+    const tp = performance.now(), P = parametrosDaLuz();
+    if (!(GPU && GPU.passe(prender(r), P))) passeFinalCPU(r, P);
+    TEMPOS.passe += performance.now() - tp; TEMPOS.nPasse++;
+  }
+  // O que a luz deste passe precisa, igual para a CPU e a GPU: as fontes (os brilhos em volta e os leques para a frente),
+  // a lâmpada do abajur e o destino do arraste.
+  function parametrosDaLuz() {
     const pintada = luzPintadaAgora(), razaoPe = pintada ? noiteAbajurPe : noitePe;
     const [lx, ly0] = lampada(), ly = ly0 + 6;
     const alvoOcupado = alvo ? ocupa(alvo) : false;
@@ -2567,6 +2573,11 @@ function dados(im, filtro, w = W, h = W) {
     }
     if (noite) for (const L of luzesDaParede) brilhos.push(L);
     if (noite && luzDoFogao) brilhos.push([luzDoFogao[0], luzDoFogao[1], [255, 110, 50], 40, 0.3]);
+    return { pintada, razaoPe, lx, ly, alvoOcupado, paAlvo, brilhos, focos };
+  }
+  function passeFinalCPU(r, P) {
+    const [x0, y0, x1, y1] = prender(r);
+    const { pintada, razaoPe, lx, ly, alvoOcupado, paAlvo, brilhos, focos } = P;
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -2637,6 +2648,195 @@ function dados(im, filtro, w = W, h = W) {
     }
   }
 
+  // ============================== A LUZ NA PLACA DE VÍDEO (WebGL2, 16/10/2026) ==============================
+  // Pedido dele: "podemos implementar a solução WebGL agora?". O passe da luz (passeFinalCPU, logo acima) é conta pura,
+  // pixel a pixel, sobre os buffers que a montagem já tem: aqui ele roda num shader, com os MESMOS números e a mesma ordem
+  // (cada passo grava e arredonda como o Uint8ClampedArray da imagem). Os buffers viram texturas — só a região que mudou
+  // sobe a cada quadro (UNPACK_ROW_LENGTH: sem copiar) — e o resultado volta para a mesma "imagem" (readPixels direto
+  // nela), então a tela das TVs, o contorno, as faíscas e o balão continuam pintados por cima, como antes. Sem WebGL2, com
+  // o shader recusado ou com o contexto perdido, volta a CPU. "?cpu" no endereço força a CPU (para comparar).
+  const inicioDaGpu = performance.now();
+  const GPU = (() => {
+    if (new URLSearchParams(location.search).has('cpu')) return null;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = W;
+    const gl = cv.getContext('webgl2', { antialias: false, depth: false, stencil: false, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power' });
+    if (!gl) return null;
+    const MAX_B = 32, MAX_F = 8;
+    const vs = \`#version 300 es
+in vec2 p; void main() { gl_Position = vec4(p, 0.0, 1.0); }\`;
+    const fs = \`#version 300 es
+precision highp float; precision highp int; precision highp sampler2D; precision highp isampler2D; precision highp usampler2D;
+uniform sampler2D tD, tFN, tBase, tRaz, tDiaPe, tSom, tUV;
+uniform usampler2D tEM, tAc, tFora;
+uniform isampler2D tPeY, tChao, tCasa;
+uniform int W, N, noite, pintada, fechadaDia, grade, temAlvo, alvoOcupado, nB, nF;
+uniform float lx, ly, forcaSombra; uniform vec4 pa;
+uniform vec4 bPos[\${MAX_B}]; uniform vec3 bCor[\${MAX_B}];
+uniform vec4 fA[\${MAX_F}]; uniform vec4 fB[\${MAX_F}]; uniform vec4 fCx[\${MAX_F}]; uniform vec3 fCor[\${MAX_F}];
+out vec4 cor;
+vec3 grava(vec3 v) { return roundEven(clamp(v, 0.0, 255.0)); }
+float sq(float a) { return a * a; }
+int casaEm(int x, int y) { return (x < 0 || y < 0 || x >= W || y >= W) ? -1 : texelFetch(tCasa, ivec2(x, y), 0).r; }
+void main() {
+  int x = int(gl_FragCoord.x), y = int(gl_FragCoord.y); ivec2 q = ivec2(x, y);
+  float fx = float(x), fy = float(y);
+  vec3 d = texelFetch(tD, q, 0).rgb;
+  bool em = texelFetch(tEM, q, 0).r != 0u; uint ac = texelFetch(tAc, q, 0).r;
+  int peY = texelFetch(tPeY, q, 0).r; float som = texelFetch(tSom, q, 0).r;
+  int casa = texelFetch(tCasa, q, 0).r;
+  bool nt = noite != 0, pin = pintada != 0;
+  float brilho = nt && !pin ? floor(0.85 * exp(-(sq(fx - lx) + sq((fy - ly) * 1.4)) / (2.0 * 85.0 * 85.0)) * 12.0) / 12.0 : 0.0;
+  float pertoBase = nt && pin && em ? 0.75 * exp(-(sq(fx - lx) + sq((fy - ly) * 1.3)) / (2.0 * 60.0 * 60.0)) : 0.0;
+  vec3 v = d;
+  if (nt) {
+    vec3 quente = vec3(1.0, 0.72, 0.42) * brilho;
+    if (ac == 2u) {}
+    else if (ac == 3u) v = v * 0.7 + vec3(120.0, 26.0, 16.0) * 0.45;
+    else if (ac != 0u) v = min(vec3(255.0), v * vec3(1.05, 0.8, 0.5) + vec3(34.0, 14.0, 0.0));
+    else if (em) {
+      ivec2 j = ivec2(x, min(W - 1, peY + 3));
+      vec3 raz = texelFetch(tRaz, j, 0).rgb * 255.0, dia = texelFetch(tDiaPe, j, 0).rgb * 255.0;
+      vec3 perto = pertoBase * vec3(1.0, 0.7, 0.4);
+      v = v * min(vec3(pin ? 1.2 : 0.9), raz / max(vec3(1.0), dia)) + v * (quente + perto);
+    }
+    else v = texelFetch(tFN, q, 0).rgb + texelFetch(tBase, q, 0).rgb * 255.0 * quente;
+  }
+  if (fechadaDia != 0) v *= 0.86;
+  if (som != 0.0) v *= 1.0 - som * (1.0 - forcaSombra - (nt ? 0.12 : 0.0));
+  vec3 o = grava(v);
+  float a = (texelFetch(tFora, q, 0).r != 0u && !em) ? 0.0 : 255.0;
+  for (int i = 0; i < nB; i++) {
+    vec4 b = bPos[i]; float raio = b.z;
+    if (abs(fx - b.x) > raio || abs(fy - b.y) * 1.3 > raio) continue;
+    float d2 = length(vec2(fx - b.x, (fy - b.y) * 1.3));
+    if (d2 < raio) { float f = floor((1.0 - d2 / raio) * 4.0) / 4.0 * b.w; o = grava(o + bCor[i] * f); }
+  }
+  for (int i = 0; i < nF; i++) {
+    vec4 cx = fCx[i];
+    if (fx < cx.x || fx > cx.z || fy < cx.y || fy > cx.w) continue;
+    int g2 = em ? texelFetch(tChao, q, 0).r : casa >= 0 ? y * W + x : -1;
+    if (g2 < 0) continue;
+    vec2 uv = texelFetch(tUV, ivec2(g2 % W, g2 / W), 0).rg;
+    vec4 A = fA[i], B = fB[i]; // A: u0 v0 fu fv; B: alcance largura forca -
+    float du = uv.x - A.x, dv = uv.y - A.y, along = du * A.z + dv * A.w;
+    if (along < -0.2) continue;
+    float lado = -du * A.w + dv * A.z, ra = B.x * 0.55, ca = B.x * 0.4;
+    float qq = sq((along - ca) / ra) + sq(lado / B.y);
+    if (qq >= 1.0) continue;
+    float perto = max(0.45, 1.0 - max(0.0, along) / B.x);
+    float it = floor((1.0 - qq) * perto * 5.0) / 5.0 * B.z;
+    if (it > 0.0) o = grava(o + fCor[i] * it);
+  }
+  if (temAlvo != 0 && casa >= 0 && !em) {
+    float i2 = float(casa / N), j2 = float(casa - (casa / N) * N);
+    if (i2 + 0.5 > pa.x && i2 + 0.5 < pa.y && j2 + 0.5 > pa.z && j2 + 0.5 < pa.w) {
+      vec3 c2 = alvoOcupado != 0 ? vec3(220.0, 80.0, 60.0) : vec3(255.0, 240.0, 200.0);
+      o = grava(o * 0.65 + c2 * 0.35);
+    }
+  }
+  if ((grade != 0 || temAlvo != 0) && casa >= 0 && !em) {
+    int dir = x + 1 < W ? casaEm(x + 1, y) : -1, baixo = y + 1 < W ? casaEm(x, y + 1) : -1, cima = y > 0 ? casaEm(x, y - 1) : -1;
+    if ((dir != casa && dir >= 0) || (baixo != casa && baixo >= 0)) o = grava(o * 1.35 + 18.0);
+    else if (cima >= 0 && cima != casa) o = grava(o * 0.7);
+  }
+  cor = vec4(o, a) / 255.0;
+}\`;
+    const sh = (tipo, src) => { const s2 = gl.createShader(tipo); gl.shaderSource(s2, src); gl.compileShader(s2); if (!gl.getShaderParameter(s2, gl.COMPILE_STATUS)) { console.warn('shader da luz:', gl.getShaderInfoLog(s2)); return null; } return s2; };
+    const v1 = sh(gl.VERTEX_SHADER, vs), f1 = sh(gl.FRAGMENT_SHADER, fs);
+    if (!v1 || !f1) return null;
+    const pr = gl.createProgram(); gl.attachShader(pr, v1); gl.attachShader(pr, f1); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { console.warn('programa da luz:', gl.getProgramInfoLog(pr)); return null; }
+    gl.useProgram(pr);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const lp = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+    const U = {}; const u = (n) => (U[n] ??= gl.getUniformLocation(pr, n));
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1); gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
+    // [nome, formato interno, formato, tipo]
+    const FORMATOS = {
+      tD: [gl.RGB32F, gl.RGB, gl.FLOAT], tFN: [gl.RGB32F, gl.RGB, gl.FLOAT], tBase: [gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE],
+      tRaz: [gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE], tDiaPe: [gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE], tSom: [gl.R32F, gl.RED, gl.FLOAT],
+      tUV: [gl.RG32F, gl.RG, gl.FLOAT], tEM: [gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE], tAc: [gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE],
+      tFora: [gl.R8UI, gl.RED_INTEGER, gl.UNSIGNED_BYTE], tPeY: [gl.R16I, gl.RED_INTEGER, gl.SHORT], tChao: [gl.R32I, gl.RED_INTEGER, gl.INT],
+      tCasa: [gl.R16I, gl.RED_INTEGER, gl.SHORT],
+    };
+    const T = {};
+    Object.entries(FORMATOS).forEach(([nome, [interno]], i) => {
+      const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texStorage2D(gl.TEXTURE_2D, 1, interno, W, W);
+      for (const [k2, v2] of [[gl.TEXTURE_MIN_FILTER, gl.NEAREST], [gl.TEXTURE_MAG_FILTER, gl.NEAREST], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k2, v2);
+      gl.uniform1i(u(nome), i); T[nome] = { t, i, dados: null };
+    });
+    const alvoT = gl.createTexture(); gl.activeTexture(gl.TEXTURE15); gl.bindTexture(gl.TEXTURE_2D, alvoT); gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA8, W, W);
+    const fb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, alvoT, 0);
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) return null;
+    let perdido = false;
+    cv.addEventListener('webglcontextlost', (e) => { e.preventDefault(); perdido = true; });
+    // Sobe a região r de uma textura (ou a imagem inteira), lendo direto do buffer da montagem.
+    const subir = (nome, dados, r) => {
+      const { t, i } = T[nome], [, formato, tipo] = FORMATOS[nome];
+      gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+      const [x0, y0, x1, y1] = r ?? [0, 0, W, W];
+      gl.pixelStorei(gl.UNPACK_ROW_LENGTH, W); gl.pixelStorei(gl.UNPACK_SKIP_PIXELS, x0); gl.pixelStorei(gl.UNPACK_SKIP_ROWS, y0);
+      const v = dados instanceof Uint8ClampedArray ? new Uint8Array(dados.buffer, dados.byteOffset, dados.length) : dados;
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, x0, y0, x1 - x0, y1 - y0, formato, tipo, v);
+      T[nome].dados = dados;
+    };
+    let uv = null, sujo = true;
+    const passe = (r, P) => {
+      if (perdido || gl.isContextLost()) return false;
+      const [x0, y0, x1, y1] = r, w = x1 - x0, h = y1 - y0;
+      if (w <= 0 || h <= 0) return true;
+      const tudo = w === W && h === W;
+      // O que muda a cada quadro (o coelho, o móvel vivo, a cadeira, a sombra): só a região deste passe.
+      subir('tD', D, r); subir('tEM', eMovel, r); subir('tPeY', peY, r); subir('tSom', sombraFinal, r); subir('tChao', chaoPx, r);
+      // O que só muda com a cena montada de novo (ou com a janela): inteiro, quando muda ou no passe da cena.
+      // (a noite, o que acende e a razão de luz só são lidos de noite: de dia, ficam para quando a noite chegar)
+      if (tudo) sujo = true;
+      const noiteAgora = modo === 'noite';
+      if (noiteAgora && sujo) { subir('tFN', fundoNoite); subir('tAc', acesa); sujo = false; }
+      if (!uv) { uv = new Float32Array(W * W * 2); for (let k = 0; k < W * W; k++) { uv[k * 2] = mapaU[k]; uv[k * 2 + 1] = mapaV[k]; } subir('tUV', uv); subir('tCasa', casa); }
+      const fora = modo === 'dia' ? foraDia : foraNoite;
+      for (const [nome, dados] of noiteAgora ? [['tBase', base], ['tRaz', P.razaoPe], ['tDiaPe', diaPe], ['tFora', fora]] : [['tFora', fora]]) if (dados && ((tudo && nome !== 'tFora') || T[nome].dados !== dados)) subir(nome, dados);
+      gl.uniform1i(u('W'), W); gl.uniform1i(u('N'), N);
+      gl.uniform1i(u('noite'), modo === 'noite' ? 1 : 0); gl.uniform1i(u('pintada'), P.pintada ? 1 : 0);
+      gl.uniform1i(u('fechadaDia'), fechada && modo === 'dia' ? 1 : 0); gl.uniform1i(u('grade'), grade ? 1 : 0);
+      gl.uniform1i(u('temAlvo'), alvo && P.paAlvo ? 1 : 0); gl.uniform1i(u('alvoOcupado'), P.alvoOcupado ? 1 : 0);
+      gl.uniform4fv(u('pa'), P.paAlvo ?? [0, 0, 0, 0]);
+      gl.uniform1f(u('lx'), P.lx); gl.uniform1f(u('ly'), P.ly); gl.uniform1f(u('forcaSombra'), forcaDaSombra);
+      const bs = P.brilhos.slice(0, MAX_B), fs2 = P.focos.slice(0, MAX_F);
+      gl.uniform1i(u('nB'), bs.length); gl.uniform1i(u('nF'), fs2.length);
+      if (bs.length) {
+        gl.uniform4fv(u('bPos[0]'), bs.flatMap((b) => [b[0], b[1], b[3] ?? 34, b[4] ?? 0.32]));
+        gl.uniform3fv(u('bCor[0]'), bs.flatMap((b) => b[2]));
+      }
+      if (fs2.length) {
+        gl.uniform4fv(u('fA[0]'), fs2.flatMap((F) => [F.u0, F.v0, F.fu, F.fv]));
+        gl.uniform4fv(u('fB[0]'), fs2.flatMap((F) => [F.alcance, F.largura, F.forca, 0]));
+        gl.uniform4fv(u('fCx[0]'), fs2.flatMap((F) => F.caixa));
+        gl.uniform3fv(u('fCor[0]'), fs2.flatMap((F) => F.cor));
+      }
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+      gl.viewport(0, 0, W, W); gl.enable(gl.SCISSOR_TEST); gl.scissor(x0, y0, w, h);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      // de volta para a imagem, na mesma região (a linha 0 da textura é a linha 0 da imagem)
+      gl.pixelStorei(gl.PACK_ROW_LENGTH, W); gl.pixelStorei(gl.PACK_SKIP_PIXELS, x0); gl.pixelStorei(gl.PACK_SKIP_ROWS, y0);
+      gl.readPixels(x0, y0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(imagem.data.buffer));
+      return !gl.isContextLost();
+    };
+    return { passe };
+  })();
+  const TEMPO_DA_GPU = performance.now() - inicioDaGpu; // criar o contexto e compilar o shader, ao abrir a página
+  window.gpuDoTeste = () => (GPU ? 'webgl2 (abriu em ' + TEMPO_DA_GPU.toFixed(1) + ' ms)' : 'cpu');
+  // Para o teste: o passe da imagem inteira nos dois caminhos, e quantos pixels diferem (e por quanto).
+  window.compararGpuDoTeste = () => {
+    if (!GPU) return null;
+    const r = [0, 0, W, W], P = parametrosDaLuz(), antes = new Uint8ClampedArray(imagem.data);
+    passeFinalCPU(r, P); const cpu = new Uint8ClampedArray(imagem.data);
+    GPU.passe(r, P); const gpu = imagem.data;
+    let n = 0, max = 0; for (let i = 0; i < cpu.length; i++) { const d2 = Math.abs(cpu[i] - gpu[i]); if (d2) { n++; max = Math.max(max, d2); } }
+    imagem.data.set(antes);
+    return { canais: cpu.length, diferentes: n, maior: max };
+  };
   // Pinta o conteúdo da tela por cima da imagem (dentro da região r), só onde o pixel ainda é da mesa.
   function pintarTela(r) {
     const q = liga('telas') ? Math.floor(performance.now() / 250) : 0; // paradas: o primeiro quadro, aceso
@@ -2655,7 +2855,7 @@ function dados(im, filtro, w = W, h = W) {
     }
   }
   // Os tempos do desenho (para o teste de desempenho): a cena montada de novo, e o quadro inteiro.
-  const TEMPOS = { cena: 0, nCena: 0, quadro: 0, nQuadro: 0 };
+  const TEMPOS = { cena: 0, nCena: 0, quadro: 0, nQuadro: 0, passe: 0, nPasse: 0 };
   window.temposDoTeste = () => ({ ...TEMPOS });
   function desenhar() {
     // A CENA muda? Refaz a fotografia (e a tela inteira).

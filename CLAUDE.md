@@ -590,12 +590,14 @@ escondida** — o app desliga o freio de janela escondida por causa da chamada, 
 atrás do jogo, que é o uso principal; (2) **opção de Gráficos** nas Configurações (Aparência), no ar já: partículas, sombras e telas
 animadas, **TODAS DESLIGADAS DE FÁBRICA** (decisão dele: quem quiser o enfeite liga), sem "ajustar sozinho" (ele tirou).
 
-**WEBGL: OPÇÃO REGISTRADA, NÃO AGORA (decisão dele, 15/10/2026).** O travamento ao arrastar móvel no salão era do nosso
-código, e foi corrigido medindo (`window.temposDoTeste`; o quadro do arraste de 46 para 9 ms, montar a cena de 281 para
-~83 ms). O que sobra é a montagem da luz da imagem inteira (`passeFinal`), uns 40 ms quando a cena é refeita (ao pegar e
-soltar um móvel): é ela que iria para um shader WebGL, junto com o que se pinta por cima (o contorno, as faíscas, o balão e
-as telas), uns 1–2 dias. **Lembrar ao decidir:** a GPU é o que o jogo mais usa, e com a janela sem foco o salão já não gasta
-nada; medir antes de fazer.
+**A LUZ NA PLACA (WebGL2, feito em 16/10/2026, decisão dele: "o usuário só renderiza o quarto e o salão no início e na
+home").** O passe da luz (`passeFinal`) roda num shader com os mesmos números do da CPU (`passeFinalCPU`, que fica como
+reserva: sem WebGL2, shader recusado, contexto perdido, ou `?cpu` no endereço). Os buffers sobem como texturas (só a região
+que mudou, a cada quadro) e o resultado volta para a mesma imagem, então o que se pinta por cima (telas, contorno, faíscas,
+balão) não mudou. `window.compararGpuDoTeste()` confere: de dia, idêntico; de noite, ~200 de 4 milhões de canais diferem
+em 1 (arredondamento). **Medido no salão, de noite:** montar a cena de ~183 para ~77 ms, o quadro do arraste de 19 para 9 ms;
+criar o contexto, ~40 ms, uma vez, ao abrir. A montagem dos móveis (`montarCena`, ~60 ms) continua na CPU. O contexto vive no
+iframe da página: sair do início ou da home desmonta o iframe e o libera; com a janela sem foco, nada é desenhado.
 
 **As luzinhas do alto das paredes vão NA FRENTE do que se pendura (16/10/2026):** estão pintadas na casca, e a janela e
 os objetos da parede as cobriam (a lâmpada no canto da janela saía cortada). `salao/luzes16.py` tira a máscara delas (as
