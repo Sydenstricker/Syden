@@ -1632,7 +1632,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (c) andarAte(c);
   }
   const quadroBuf = new Uint8ClampedArray(W * W * 4), peBuf = new Int16Array(W).fill(-1), semSombra = new Uint8ClampedArray(W * W * 4);
-  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '', coelhoLinha = W, coelhoSobre = null;
+  let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '', coelhoLinha = W, coelhoSobre = null, coelhoAtras = false;
   function pecaDoCoelho() {
     const tr = coelho.trans, ap = coelho.aproximar;
     const pt = !tr && !ap && coelho.destino && !coelho.caminho.length ? pontos()[coelho.destino] : null;
@@ -1744,7 +1744,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     coelhoTopo = Y0 + a.topo;
     // Na transição e no trecho até a beirada, a ordem é a do móvel (antes ou depois dele).
     const sobre = sobreT ?? (sentado ? pt.sobre : null);
-    return [{ p, dx: 0, dy: 0, fator: 1, pe: area, sobre, atras: sobreT ? atrasT : sentado ? !!pt.atras : false }];
+    coelhoAtras = sobreT ? atrasT : sentado ? !!pt.atras : false;
+    return [{ p, dx: 0, dy: 0, fator: 1, pe: area, sobre, atras: coelhoAtras }];
   }
   // O BALÃO DE FALA (ideia dele, como no The Sims): o balão do D4 com os três pontos, que se acendem um de cada vez,
   // acima da cabeça. Desenhado por cima de tudo, em pixel: borda escura, miolo creme, rabicho apontando para a cabeça.
@@ -2778,6 +2779,10 @@ void main() {
         // O TAMPO DO ASSENTO nunca cobre quem está sentado nele: no pufe, de costas, o tampo da frente cortava o quadril.
         const noTampo = doMovel && tipo === 1 && alturaPx[d] >= (ASSENTO[coelhoSobre] ?? 99) - 1;
         if (dono[d] === 'cadeira' && coelhoSobre === 'cadeira') { if (cadeiraDeCostas()) continue; }
+        // A POLTRONA DE COSTAS para quem olha (relato dele, 16/10/2026: "de costas o coelho atravessa o sofá"): o encosto
+        // está sempre na frente de quem senta nela. Só pela profundidade, a folga das pernas do sentado (10 px) passava o
+        // coelho à frente do encosto, que fica uns 5 a 8 px mais perto.
+        else if (doMovel && coelhoAtras && tipo === 2) continue;
         else if (eMovel[d] && !noTampo && chaveDoPixel[d] > coelhoChave + pernas) continue; // o móvel está na frente
         for (let c = 0; c < 3; c++) D[d * 3 + c] = quadroBuf[q + c];
         eMovel[d] = 1; peY[d] = peBuf[x] >= 0 ? peBuf[x] : coelhoPe[1]; dono[d] = 'coelho'; chaoPx[d] = -1;
@@ -2917,6 +2922,9 @@ void main() {
   // diz o nome e faz a ação é o app (FUNCOES chega por mensagem); aqui, na página de teste, um botão as liga e o clique só
   // conta o que faria.
   let FUNCOES = null; // { id: { rotulo, sub } }
+  // EDITANDO (a barra de arrumar do app em "Editar", 16/10/2026): o clique arruma e não abre a função. Relato dele: "não
+  // consigo ajustar a janela (cortina, abrir a janela), pois se eu clico sou direcionado para a função da janela".
+  let EDITANDO = false;
   const FUNCOES_DE_TESTE = CENA === 'salao'
     ? { tv: { rotulo: 'Entrar na voz', sub: '3 na chamada agora' }, fliperama: { rotulo: 'Mini-games', sub: 'Na sala de voz, com a turma' }, estante: { rotulo: 'Entrar na conversa', sub: '# geral' }, janela: { rotulo: 'Chamar alguém', sub: 'Copia o convite desta comunidade' }, balcao: { rotulo: 'Recado', sub: 'O que quem administra escreveu' }, quadro: { rotulo: 'Mudar esta tela', sub: 'Só quem administra vê este bloco' }, microfone: { rotulo: 'Karaokê', sub: 'Na sala de voz, com a turma' }, jukebox: { rotulo: 'Karaokê', sub: 'Na sala de voz, com a turma' } }
     : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
@@ -2926,7 +2934,7 @@ void main() {
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
-    if (!FUNCOES || (soVer && CENA !== 'salao')) return null;
+    if (!FUNCOES || EDITANDO || (soVer && CENA !== 'salao')) return null;
     const ip = naParede[k];
     if (ip && !dono[k]) { const f = ITENS_PAREDE[ordemDaParede[ip - 1]].funcao; return f && FUNCOES[f] ? f : null; }
     if (dono[k]) { const f = FUNCAO_DO_MOVEL[dono[k]]; return f && FUNCOES[f] ? f : null; }
@@ -3486,6 +3494,7 @@ void main() {
       if (e.origin !== location.origin || e.source !== window.parent || e.data?.syden !== 'quarto') return;
       const d = e.data;
       if (d.funcoes) FUNCOES = d.funcoes;
+      if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; }
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
       if (d.conta && !conta) {

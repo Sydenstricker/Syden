@@ -122,6 +122,12 @@ export function QuartoNovo({
 export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figuras | null; arrumacao: Arrumacao | null; enviar: (msg: Record<string, unknown>) => void }) {
   const t = useT();
   const [arrumando, setArrumando] = useState(false);
+  // Editando, o clique na cena arruma (a cortina, abrir a janela) e não abre a função do objeto.
+  const enviarRef = useRef(enviar);
+  enviarRef.current = enviar;
+  useEffect(() => {
+    enviarRef.current({ editando: arrumando });
+  }, [arrumando]);
   return (
     <div className="quarto-novo-barra">
       <button type="button" aria-pressed={arrumando} onClick={() => setArrumando((a) => !a)}>
