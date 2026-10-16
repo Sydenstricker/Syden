@@ -34,6 +34,8 @@ export interface Arrumacao {
   emCima?: Record<string, { tipo: string; em: string; s: number; t: number; lado: number }>;
   /** Os móveis GUARDADOS (16/10/2026: "quero diminuir os móveis"): fora da arrumação, por código. */
   guardados?: string[];
+  /** Os objetos da parede que a página conhecia ao salvar: um que vier depois entra sozinho (16/10/2026). */
+  conhecidos?: string[];
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -97,6 +99,11 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     const g = a.guardados;
     if (!Array.isArray(g) || g.length > MAX_MOVEIS || !g.every((id) => typeof id === 'string' && CODIGO.test(id))) return { erro: 'Móveis guardados inválidos.' };
     saida.guardados = [...new Set(g as string[])];
+  }
+  if (a.conhecidos !== undefined) {
+    const c = a.conhecidos;
+    if (!Array.isArray(c) || c.length > MAX_MOVEIS || !c.every((id) => typeof id === 'string' && CODIGO.test(id))) return { erro: 'Objetos conhecidos inválidos.' };
+    saida.conhecidos = [...new Set(c as string[])];
   }
   if (a.emCima !== undefined) {
     const e = a.emCima;

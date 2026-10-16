@@ -245,8 +245,20 @@ function dados(im, filtro, w = W, h = W) {
     poster: { parede: 'direita', v: 8.6, h: 6 },
   } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
-  try { const gp = JSON.parse(localStorage.getItem(PREFIXO + 'parede') ?? 'null'); if (gp) NA_PAREDE = Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])); } catch { /* a de fábrica */ }
-  const guardarParede = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'parede', JSON.stringify(NA_PAREDE)); } catch { /* fica só nesta visita */ } enviar(); };
+  // OBJETO NOVO ENTRA SOZINHO (relato dele, 16/10/2026: "atualizei a sala mas não vi o pôster"): a arrumação guarda quais
+  // objetos da parede a página conhecia ao salvar ("conhecidos"). Um objeto de fábrica que ela não conhecia (veio depois)
+  // entra no lugar de fábrica; o que a pessoa tirou de propósito continua fora. A arrumação de antes desta regra não traz a
+  // lista: vale como conhecido só o que estava na parede (o tirado antes dela volta, uma vez).
+  const comNovos = (parede, conhecidos) => {
+    const sabe = new Set(Array.isArray(conhecidos) ? conhecidos : Object.keys(parede));
+    for (const [id, P] of Object.entries(PAREDE_INICIAL)) if (ITENS_PAREDE[id] && !sabe.has(id) && !parede[id]) parede[id] = P;
+    return parede;
+  };
+  try {
+    const gp = JSON.parse(localStorage.getItem(PREFIXO + 'parede') ?? 'null');
+    if (gp) NA_PAREDE = comNovos(Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])), JSON.parse(localStorage.getItem(PREFIXO + 'conhecidos') ?? 'null'));
+  } catch { /* a de fábrica */ }
+  const guardarParede = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'parede', JSON.stringify(NA_PAREDE)); localStorage.setItem(PREFIXO + 'conhecidos', JSON.stringify(Object.keys(ITENS_PAREDE))); } catch { /* fica só nesta visita */ } enviar(); };
   const TEXTURAS_PAREDE = {};
   const caixasDaParede = {};
   const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
@@ -3322,6 +3334,7 @@ void main() {
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
     cores: { ...CORES },
     guardados: [...GUARDADOS],
+    conhecidos: Object.keys(ITENS_PAREDE),
     emCima: Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => [uid, { tipo: o.tipo, em: o.em, s: +o.s.toFixed(3), t: +o.t.toFixed(3), lado: o.lado }])),
     parede: Object.fromEntries(Object.entries(NA_PAREDE).map(([id, P]) => [id, { parede: P.parede, v: +P.v.toFixed(2), h: Math.round(P.h) }])),
   });
@@ -3338,7 +3351,7 @@ void main() {
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
     CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && CORES_DO_TAPETE[c]) || OPCOES_PAREDE[id]?.[c])) : {};
     botaoDaCor(); vestirOpcoes(); botaoDaOpcao();
-    NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : prenderTudo(PAREDE_INICIAL);
+    NA_PAREDE = a.parede ? prenderTudo(comNovos(Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id])), a.conhecidos)) : prenderTudo(PAREDE_INICIAL);
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }

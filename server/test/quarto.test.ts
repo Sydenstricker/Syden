@@ -29,6 +29,7 @@ const ARRUMACAO = {
   cores: { tapete: 'terracota' },
   emCima: { o1: { tipo: 'caneca', em: 'mesa', s: 0.25, t: 0.5, lado: 2 } },
   guardados: ['poltrona', 'planta-alta'],
+  conhecidos: ['quadro', 'fone', 'cortica'],
 };
 
 before(async () => {
@@ -80,6 +81,7 @@ describe('o meu quarto', () => {
       { moveis: {}, guardados: 'poltrona' },
       { moveis: {}, guardados: ['<b>'] },
       { moveis: {}, guardados: Array.from({ length: 41 }, (_, i) => 'm' + i) },
+      { moveis: {}, conhecidos: [1, 2] },
     ];
     for (const r of ruins) assert.equal((await ana('PUT', '/api/quarto', r)).statusCode, 400, JSON.stringify(r)?.slice(0, 80));
     assert.deepEqual((await ana('GET', '/api/quarto')).json().arrumacao, ARRUMACAO, 'a recusa não mexeu no que estava');
