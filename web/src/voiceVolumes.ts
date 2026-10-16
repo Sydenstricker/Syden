@@ -70,10 +70,18 @@ export function setLocalMute(room: Room, userId: number, muted: boolean) {
 // dele esteja. É o mesmo ajuste do Discord, separado do volume da pessoa.
 
 const SCREEN_KEY = 'syden.screenVolumes';
-let screenVolumes = read<Record<string, number>>(SCREEN_KEY, {});
+/**
+ * O VOLUME GUARDADO NUNCA É ZERO (16/10/2026, relato dele: as transmissões de um amigo chegavam sem som, pela janela, pela
+ * aba e pela tela inteira). Silenciar gravava 0 aqui — e isto sobe para a conta (preferencias.ts) — então quem calou a
+ * transmissão de alguém uma vez passava a receber todas as transmissões dele mudas, em qualquer aparelho, sem nada na
+ * tela dizer por quê. O mudo é da sessão (`caladas`, abaixo); o 0 que já estava gravado é descartado ao ler.
+ */
+let screenVolumes = Object.fromEntries(Object.entries(read<Record<string, number>>(SCREEN_KEY, {})).filter(([, v]) => typeof v === 'number' && v > 0));
+/** As transmissões caladas nesta sessão (o clique no alto-falante, ou a régua levada a zero). */
+const caladas = new Set<number>();
 
 export function getScreenVolume(userId: number) {
-  return screenVolumes[String(userId)] ?? 1;
+  return caladas.has(userId) ? 0 : (screenVolumes[String(userId)] ?? 1);
 }
 
 function screenAudioTrack(room: Room, userId: number) {
@@ -119,9 +127,16 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
   if (typeof interna.setAudioContext !== 'function') return false;
   try {
     contextoDoReforco ??= new AudioContext();
-    // O contexto nasce suspenso quando a página ainda não teve gesto nenhum; aqui sempre teve (a
-    // pessoa arrastou um controle), mas retomar é barato e cobre o caso de ele ter dormido.
-    void contextoDoReforco.resume().catch(() => {});
+    // O contexto nasce suspenso quando a página ainda não teve gesto nenhum. Arrastando a régua sempre teve; mas o
+    // volume acima de 100% GUARDADO é ligado sozinho quando o som chega (applyAllVolumes), e um contexto suspenso deixa
+    // a transmissão muda. Por isso, além de tentar já, ele é retomado no próximo clique ou tecla da pessoa.
+    const ctx = contextoDoReforco;
+    void ctx.resume().catch(() => {});
+    if (ctx.state !== 'running') {
+      const retomar = () => { void ctx.resume().catch(() => {}); if (ctx.state === 'running') { removeEventListener('pointerdown', retomar, true); removeEventListener('keydown', retomar, true); } };
+      addEventListener('pointerdown', retomar, true);
+      addEventListener('keydown', retomar, true);
+    }
     const teto = criarTeto(contextoDoReforco);
     if (teto && typeof interna.setWebAudioPlugins === 'function') interna.setWebAudioPlugins([teto]);
     interna.setAudioContext(contextoDoReforco);
@@ -133,32 +148,24 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
   }
 }
 
-/**
- * O volume que a pessoa tinha antes de silenciar aquela transmissão, para o clique de volta devolver
- * o mesmo e não um 100% no ouvido de quem estava em 40%.
- *
- * Fica na memória desta sessão, e não no disco: mudo é uma decisão do momento ("já volto"), e alguém
- * que fecha o Syden mudo e volta no dia seguinte espera ouvir. É o contrário do volume, que é uma
- * característica da pessoa do outro lado e por isso é guardada.
- */
-const antesDoMudo = new Map<number, number>();
-
-/** O clique no alto-falante: cala, e o clique seguinte devolve o volume que estava. */
+/** O clique no alto-falante: cala, e o clique seguinte devolve o volume que estava (que continua guardado). */
 export function alternarMudoDaTela(room: Room, userId: number) {
-  const atual = getScreenVolume(userId);
-  if (atual > 0) {
-    antesDoMudo.set(userId, atual);
-    setScreenVolume(room, userId, 0);
-  } else {
-    setScreenVolume(room, userId, antesDoMudo.get(userId) ?? 1);
-  }
+  if (caladas.has(userId) || !(screenVolumes[String(userId)] ?? 1)) caladas.delete(userId);
+  else caladas.add(userId);
+  aplicarVolumeDaTela(screenAudioTrack(room, userId), getScreenVolume(userId));
   return getScreenVolume(userId);
 }
 
 export function setScreenVolume(room: Room, userId: number, volume: number) {
-  screenVolumes = { ...screenVolumes, [String(userId)]: Math.min(TETO_DA_TRANSMISSAO, Math.max(0, volume)) };
-  write(SCREEN_KEY, screenVolumes);
-  void import('./preferencias').then((m) => m.guardarEmBreve());
+  const v = Math.min(TETO_DA_TRANSMISSAO, Math.max(0, volume));
+  // A régua no zero é calar (desta sessão); acima dele, é o volume, e esse fica guardado.
+  if (v === 0) caladas.add(userId);
+  else {
+    caladas.delete(userId);
+    screenVolumes = { ...screenVolumes, [String(userId)]: v };
+    write(SCREEN_KEY, screenVolumes);
+    void import('./preferencias').then((m) => m.guardarEmBreve());
+  }
   aplicarVolumeDaTela(screenAudioTrack(room, userId), getScreenVolume(userId));
 }
 
