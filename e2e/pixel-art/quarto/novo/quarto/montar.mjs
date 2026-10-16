@@ -969,7 +969,9 @@ function dados(im, filtro, w = W, h = W) {
     if (m) return m.map((d) => Math.max(1, Math.ceil(d - 0.25)));
     const pe = pintado(id).pe; return [pe[1] - pe[0], pe[3] - pe[2]];
   };
-  const encaixar = (id, u, v, lado) => { const [tu, tv] = tamDe(id, lado); return [Math.round(u - tu / 2) + tu / 2, Math.round(v - tv / 2) + tv / 2]; };
+  // (preso DENTRO do chão: a planta alta, 2 × 2, pedida em 7,5 arredondava para 8 e ficava com meio vaso fora do quarto,
+  // relato de 15/10/2026)
+  const encaixar = (id, u, v, lado) => { const [tu, tv] = tamDe(id, lado), dentro = (x, t) => Math.max(t / 2, Math.min(N - t / 2, x)); return [dentro(Math.round(u - tu / 2) + tu / 2, tu), dentro(Math.round(v - tv / 2) + tv / 2, tv)]; };
   function arrumacaoInicial() {
     // O SALÃO (o layout combinado com ele, 15/10/2026): a TV encostada na parede da direita e o sofá de frente para ela,
     // a mesinha no meio; o fliperama no fundo, à direita; a estante na parede de tijolo; o balcão com as banquetas no
@@ -1081,7 +1083,16 @@ function dados(im, filtro, w = W, h = W) {
     let g0 = null;
     try { g0 = JSON.parse(localStorage.getItem(PREFIXO + 'cadeira') ?? 'null'); } catch { /* começa na mesa */ }
     if (g0 && Number.isFinite(g0.u)) Object.assign(cadeira, { u: g0.u, v: g0.v, th: g0.th });
-    else { const L = lugarNaMesa(); if (L) Object.assign(cadeira, { u: L.P0[0], v: L.P0[1], th: L.th }); }
+    else naMesa();
+    soltarDosMoveis();
+  }
+  function naMesa() { const L = lugarNaMesa(); if (L) Object.assign(cadeira, { u: L.P0[0], v: L.P0[1], th: L.th, vu: 0, vv: 0, w: 0, kin: null }); }
+  // A CADEIRA DENTRO DE UM MÓVEL (relato de 15/10/2026: "a cadeira do PC está atravessando a mesa"): a arrumação mudou
+  // (a inicial, ou a de outro computador) e a cadeira guardada ficou onde agora há móvel. A física só a empurra quando ela
+  // anda; parada, ela volta para a frente da mesa.
+  function soltarDosMoveis() {
+    const dentro = Object.keys(ARR).some((id) => { if (ehDeitado(id)) return false; const [u0, u1, v0, v1] = peDe(id); return cadeira.u > u0 && cadeira.u < u1 && cadeira.v > v0 && cadeira.v < v1; });
+    if (dentro) naMesa();
   }
   const guardarCadeira = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'cadeira', JSON.stringify({ u: cadeira.u, v: cadeira.v, th: cadeira.th })); } catch { /* fica só nesta visita */ } enviar(); };
   const indiceDaVista = () => (((Math.round(cadeira.th / (Math.PI / 4)) % 8) + 8) % 8);
@@ -3165,7 +3176,7 @@ function dados(im, filtro, w = W, h = W) {
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -3195,7 +3206,7 @@ function dados(im, filtro, w = W, h = W) {
     const novo = JSON.parse(JSON.stringify(INICIAL));
     for (const [id, m] of Object.entries(a.moveis ?? {})) if (novo[id] && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
     ARR = novo;
-    if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); }
+    if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); soltarDosMoveis(); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
     CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => id === 'tapete' && CORES_DO_TAPETE[c])) : {};

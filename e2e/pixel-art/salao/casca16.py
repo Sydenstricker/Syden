@@ -139,6 +139,27 @@ def montar(fonte):
     return out
 
 
-for nome, saida in (('base.png', 'base16.png'), ('noite.png', 'noite16.png')):
-    Image.fromarray(montar(os.path.join(AQUI, nome))).save(os.path.join(AQUI, saida))
+# A BORDA PRETA DE CIMA (relato de 15/10/2026: "em cima tem essas bordas pretas, pode remover?"): o contorno escuro do alto
+# das paredes, com uns 6 px e serrilhado pela amostragem, com pontinhos azulados. Em cada coluna, os pixels escuros do topo
+# (até 10, até chegar na madeira) viram fundo, medidos no dia e tirados também da noite (de noite tudo é escuro).
+dia = montar(os.path.join(AQUI, 'base.png')); noite = montar(os.path.join(AQUI, 'noite.png'))
+fundo = dia[0, 0].copy()
+for x in range(W1):
+    tem = np.nonzero(np.abs(dia[:, x].astype(int) - fundo.astype(int)).max(1) >= 4)[0]
+    if not len(tem) or tem[0] > 300: continue  # só o alto das paredes (a borda de baixo fica)
+    y = tem[0]
+    for _ in range(10):
+        c = dia[y, x].astype(int)
+        if c.sum() >= 80 and c[0] > c[2] + 8: break  # a madeira do acabamento (os pontinhos azulados também saem)
+        dia[y, x] = fundo; noite[y, x] = fundo; y += 1
+# e os calombos que sobram acima da linha (as pontas da moldura repetida): a borda de cima de cada coluna desce até a
+# mediana das vizinhas
+from scipy.ndimage import median_filter
+topos = np.array([next(iter(np.nonzero(np.abs(dia[:, x].astype(int) - fundo.astype(int)).max(1) >= 4)[0]), W1) for x in range(W1)])
+alvo = median_filter(topos, size=15, mode='nearest')
+for x in range(W1):
+    if topos[x] < alvo[x] and alvo[x] <= 300:
+        dia[topos[x]:alvo[x], x] = fundo; noite[topos[x]:alvo[x], x] = fundo
+for img, saida in ((dia, 'base16.png'), (noite, 'noite16.png')):
+    Image.fromarray(img).save(os.path.join(AQUI, saida))
     print(saida)
