@@ -2242,6 +2242,8 @@ function dados(im, filtro, w = W, h = W) {
     const c = [x0, y0, x1 + 1, y1 + 1]; caixas.set(p.movel, c); return c;
   }
   // Onde está a lâmpada (o alto do abajur), e se a luz pintada vale: só com o criado-mudo no lugar da pintura.
+  let luzDoFogao = null;
+  const dentroDoPoligono = (x, y, P) => { let dentro = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) dentro = !dentro; } return dentro; };
   let lampadaAgora = [0, 0], telasAgora = [], caixaDaTela = null, regiaoDasFaiscas = null, luzDaJukebox = null, topoDaJukebox = null;
   const lampada = () => lampadaAgora;
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
@@ -2315,6 +2317,12 @@ function dados(im, filtro, w = W, h = W) {
     listaAgora = lista;
     chaoPx.fill(-2);
     chaveDoPixel.fill(-1);
+    let tampoDaIlha = null; luzDoFogao = null;
+    if (ARR.ilha && TOPOS.ilha) {
+      const pe = peDe('ilha'), m2 = 0.22;
+      tampoDaIlha = [[pe[0] + m2, pe[2] + m2], [pe[1] - m2, pe[2] + m2], [pe[1] - m2, pe[3] - m2], [pe[0] + m2, pe[3] - m2]].map(([u, v]) => { const [x, y] = ponto(u, v); return [x, y - TOPOS.ilha]; });
+      const [cu, cv] = centro(pe), [x, y] = ponto(cu, cv); luzDoFogao = [x, y - TOPOS.ilha];
+    }
     for (const it of lista) {
       const { p, dx, dy, fator, contato, raio, contatoPe } = it;
       const hs = alturasDe(it);
@@ -2365,6 +2373,8 @@ function dados(im, filtro, w = W, h = W) {
           // AS LUZES DA JUKEBOX (15/10/2026): os pixels claros e quentes do desenho são lâmpadas, e de noite ficam acesos
           // como estão (acesa = 2: a cor do dia, sem escurecer).
           else if (p.id === 'jukebox' && p.movel[m4] > 200 && p.movel[m4 + 1] > 130 && p.movel[m4] - p.movel[m4 + 2] > 60) acesa[d] = 2;
+          // O COOKTOP DA ILHA: o preto que está no tampo dela (dentro do tampo, recolhido, para o contorno não acender)
+          else if (p.id === 'ilha' && tampoDaIlha && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] < 130 && dentroDoPoligono(x, y, tampoDaIlha)) acesa[d] = 3;
         }
       }
     }
@@ -2404,6 +2414,16 @@ function dados(im, filtro, w = W, h = W) {
     document.getElementById('conceito').src = modo === 'dia' ? IMAGENS.conceitoDia : IMAGENS.conceitoNoite;
   }
 
+  // O FOCO de um aparelho: sai da frente dele, na direção para onde está virado, com o alcance e a abertura em casas; e a
+  // caixa na tela que ele pode tocar (o chão do leque e, acima, os móveis em pé nele).
+  function focoDe(id, cor, alcance, largura, forca) {
+    if (!ARR[id]) return null;
+    const pe = peDe(id), [cu, cv] = centro(pe), [fu, fv] = VET[ORIENTA[ARR[id].lado]];
+    const meio = fu ? (pe[1] - pe[0]) / 2 : (pe[3] - pe[2]) / 2, u0 = cu + fu * meio, v0 = cv + fv * meio;
+    const cantos = [[u0 - fv * 0.6, v0 + fu * 0.6], [u0 + fv * 0.6, v0 - fu * 0.6], [u0 + fu * alcance - fv * largura, v0 + fv * alcance + fu * largura], [u0 + fu * alcance + fv * largura, v0 + fv * alcance - fu * largura]].map(([u, v]) => ponto(u, v));
+    const caixa = [Math.min(...cantos.map((c) => c[0])) - 4, Math.min(...cantos.map((c) => c[1])) - 70, Math.max(...cantos.map((c) => c[0])) + 4, Math.max(...cantos.map((c) => c[1])) + 4];
+    return { u0, v0, fu, fv, cor, alcance, largura, forca, caixa };
+  }
   // A cor final de cada pixel de uma região: a luz da noite, a cortina, a sombra do coelho, a grade e o destino do arraste.
   function passeFinal(r) {
     const [x0, y0, x1, y1] = prender(r);
@@ -2412,17 +2432,25 @@ function dados(im, filtro, w = W, h = W) {
     const alvoOcupado = alvo ? ocupa(alvo) : false;
     const paAlvo = alvo && pegado && ARR[pegado] ? peDe(pegado, alvo) : null; // uma vez por quadro, e não por pixel
     // A luz da tela, de noite: o centro e a cor média, para clarear em volta.
-    const brilhos = [];
-    if (modo === 'noite') for (const { id, pts } of telasAgora) {
+    const brilhos = [], focos = [], noite = modo === 'noite';
+    // A LUZ DE CADA FONTE CONFORME O TIPO DELA (relato de 15/10/2026: "a luz do fliperama e da jukebox são feitas como se
+    // fossem lâmpadas"). Tela e painel (a TV, o fliperama, o computador, a jukebox) jogam luz PARA A FRENTE, para onde o
+    // aparelho está virado, num leque que se abre pelo chão e pelos móveis da frente (o FOCO), e um halo pequeno em volta
+    // da própria tela. A lâmpada e o neon brilham em volta (o círculo). O cooktop acende as bocas e esquenta em volta.
+    for (const { id, pts } of telasAgora) {
       const tipoTela = tipoDaTela(id);
       if (tipoTela === 'desligada') continue;
+      const cor = COR_DO_BRILHO[tipoTela] ?? [140, 120, 190];
       let sx = 0, sy = 0; for (const [x, y] of pts) { sx += x; sy += y; }
-      brilhos.push([sx / pts.length, sy / pts.length, COR_DO_BRILHO[tipoTela] ?? [140, 120, 190]]);
+      if (noite) brilhos.push([sx / pts.length, sy / pts.length, cor, 22, 0.28]);
+      const f = focoDe(id, cor, id === 'mesa' ? 2 : id === 'tv' ? 5.2 : 3.4, id === 'tv' ? 1.8 : 1.2, noite ? (id === 'tv' ? 0.42 : 0.34) : 0.1); if (f) focos.push(f);
     }
-    // a luz da jukebox, onde ela estiver (só de noite; fixa, para não redesenhar a cada quadro)
-    // (de dia também, bem mais fraco: ela está ligada, e o sol da sala não apaga a lâmpada)
-    if (modo === 'noite') for (const L of luzesDaParede) brilhos.push(L);
-    if (luzDaJukebox) brilhos.push(modo === 'noite' ? [luzDaJukebox[0], luzDaJukebox[1], [230, 140, 60], 72] : [luzDaJukebox[0], luzDaJukebox[1], [255, 170, 80], 56, 0.12]);
+    if (luzDaJukebox) {
+      if (noite) brilhos.push([luzDaJukebox[0], luzDaJukebox[1] - 14, [230, 140, 60], 26, 0.26]);
+      const f = focoDe('jukebox', [235, 150, 70], 2.6, 1.1, noite ? 0.36 : 0.1); if (f) focos.push(f);
+    }
+    if (noite) for (const L of luzesDaParede) brilhos.push(L);
+    if (noite && luzDoFogao) brilhos.push([luzDoFogao[0], luzDoFogao[1], [255, 110, 50], 40, 0.3]);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -2434,6 +2462,7 @@ function dados(im, filtro, w = W, h = W) {
           const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
           const quente = [1, 0.72, 0.42][c] * brilho;
           if (acesa[k] === 2) { /* a lâmpada da jukebox: a cor do dia */ }
+          else if (acesa[k] === 3) v = v * 0.7 + [120, 26, 16][c] * 0.45; // a boca do cooktop, acesa (brasa, não lâmpada)
           else if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
           // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel.
           else if (eMovel[k]) {
@@ -2452,6 +2481,18 @@ function dados(im, filtro, w = W, h = W) {
       for (const brilhoTela of brilhos) {
         const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3), raio = brilhoTela[3] ?? 34;
         if (d2 < raio) { const f = Math.floor((1 - d2 / raio) * 4) / 4 * (brilhoTela[4] ?? 0.32); for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
+      }
+      for (const F of focos) {
+        if (x < F.caixa[0] || x > F.caixa[2] || y < F.caixa[1] || y > F.caixa[3]) continue;
+        // o ponto do chão deste pixel (num móvel, o chão embaixo dele)
+        const g2 = eMovel[k] ? chaoPx[k] : casa[k] >= 0 ? k : -1;
+        if (g2 < 0) continue;
+        const du = mapaU[g2] - F.u0, dv = mapaV[g2] - F.v0, along = du * F.fu + dv * F.fv;
+        if (along < -0.15 || along > F.alcance) continue;
+        const lado = Math.abs(-du * F.fv + dv * F.fu), abre = 0.5 + (F.largura - 0.5) * Math.max(0, along) / F.alcance;
+        if (lado > abre) continue;
+        const i = Math.floor((1 - Math.max(0, along) / F.alcance) * (1 - (lado / abre) ** 2) * 4) / 4 * F.forca;
+        if (i > 0) for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + F.cor[c] * i);
       }
       // O destino do arraste, pintado nas próprias casas (pixel a pixel, sem polígono suavizado).
       if (alvo && casa[k] >= 0 && !eMovel[k]) { // só no chão: por cima, desbotava o próprio móvel pego
