@@ -239,7 +239,8 @@ export function InicioDaComunidade({
     <div className="bv" data-tom={arte.tom} style={{ '--bv-destaque': arte.destaque } as React.CSSProperties}>
       <div className="bv-arte" style={{ background: arte.fundo }}>
         {/* As faixas diagonais são o que dá o ar de vitrine sem custar imagem nenhuma. */}
-        <div className="bv-faixas" aria-hidden="true" />
+        {/* as faixas diagonais eram do salão de frente; com o isométrico, a cena basta (pedido dele, 16/10/2026) */}
+        {salao.cena !== 'nova' && <div className="bv-faixas" aria-hidden="true" />}
 
         <button className="bv-fechar" onClick={fechar} aria-label={t('Fechar')} title={t('Fechar')}>
           <X size={20} />

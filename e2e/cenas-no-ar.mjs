@@ -60,7 +60,8 @@ const navegador = await chromium.launch({ executablePath: 'C:/Program Files/Goog
 
 async function abrir() {
   const p = await (await navegador.newContext({ viewport: { width: 1280, height: 960 } })).newPage();
-  const barrados = [];
+  const barrados = [], pedidos = [];
+  p.context().on('request', (r) => { if (/\/assets\/cena-/.test(r.url())) pedidos.push(r.url().replace(/.*\/assets\//, '')); });
   p.on('console', (m) => { if (/Content Security Policy|Refused to|X-Frame-Options/i.test(m.text())) barrados.push(m.text().slice(0, 200)); });
   p.on('pageerror', (e) => barrados.push('ERRO: ' + String(e).slice(0, 200)));
   await p.addInitScript((tk) => localStorage.setItem('janja.token', tk), token);
@@ -73,7 +74,7 @@ async function abrir() {
     if (await b.isVisible().catch(() => false)) await b.click().catch(() => {}); else await p.keyboard.press('Escape');
     await p.waitForTimeout(800);
   }
-  return { p, barrados };
+  return { p, barrados, pedidos };
 }
 
 // 1. Os cabeçalhos de antes: o quarto antigo, e nenhum quadro em branco.
@@ -92,7 +93,7 @@ cabecalhos = ANTES;
 // 2. Os cabeçalhos ajustados: o quarto novo e o salão isométrico, sem nada barrado.
 cabecalhos = DEPOIS;
 {
-  const { p, barrados } = await abrir();
+  const { p, barrados, pedidos } = await abrir();
   await p.waitForSelector('.home-cena iframe', { timeout: 60000 });
   const t0 = Date.now();
   const quarto = await (await p.$('.home-cena iframe')).contentFrame();
@@ -100,6 +101,10 @@ cabecalhos = DEPOIS;
   await p.waitForSelector('.quarto-novo-barra', { timeout: 60000 }); // a barra só aparece com o "pronto" da cena
   conferir(true, `o quarto novo abriu e disse "pronto" (${((Date.now() - t0) / 1000).toFixed(1)} s; ${await quarto.evaluate(() => window.gpuDoTeste())})`);
   await p.screenshot({ path: 'e2e/fotos/cenas-quarto.png' });
+  // as imagens vêm num pacote (2 arquivos por cena, e não ~350), e o do salão é baixado antes de alguém entrar na comunidade
+  await p.waitForTimeout(8000);
+  const pacotes = [...new Set(pedidos.filter((u) => u.startsWith('cena-pacote-')))];
+  conferir(pacotes.length === 2 && new Set(pedidos).size <= 4, `os arquivos das cenas: ${new Set(pedidos).size} (${pacotes.length} pacotes), o do salão já baixado antes de entrar`);
   await p.getByRole('button', { name: comunidade.name }).first().click();
   await p.getByRole('button', { name: 'Início' }).last().click(); // (sem recado, a comunidade abre no #geral)
   await p.waitForSelector('.salao-novo iframe', { timeout: 60000 });

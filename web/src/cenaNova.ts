@@ -39,7 +39,36 @@ function conferir(endereco: string): Promise<boolean> {
   conferencia ??= fetch(endereco, { method: 'HEAD', cache: 'no-store' })
     .then((r) => r.ok && cabecalhosPermitem(r.headers))
     .catch(() => false);
+  void conferencia.then((ok) => ok && precarregarCenas());
   return conferencia;
+}
+
+/**
+ * AS DUAS CENAS BAIXADAS DE ANTEMÃO (pedido dele, 16/10/2026: "demorei uns 15 segundos para carregar o salão, que tal
+ * carregar salão e quarto na tela de carregamento?"). Com o app aberto e a cena liberada, baixa em segundo plano, com
+ * prioridade baixa, a página, o script e o pacote de imagens do quarto e do salão (precarregar.json, do build). Ficam no
+ * cache do navegador, e abrir o início ou a comunidade só monta a cena. Uma vez por sessão; falha calada (é só adiantar).
+ */
+let precarregou = false;
+function precarregarCenas() {
+  if (precarregou || import.meta.env.DEV) return;
+  precarregou = true;
+  const baixar = (url: string) => fetch(url, { priority: 'low' } as RequestInit).then((r) => r.arrayBuffer()).catch(() => null);
+  const quando = (window as { requestIdleCallback?: (f: () => void, o?: { timeout: number }) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 2000));
+  quando(
+    () => {
+      void (async () => {
+        for (const cena of ['quarto-novo/', 'salao-novo/']) {
+          const pagina = new URL(import.meta.env.BASE_URL + cena, location.href);
+          const lista = await fetch(new URL('precarregar.json', pagina), { priority: 'low' } as RequestInit)
+            .then((r) => (r.ok ? (r.json() as Promise<string[]>) : []))
+            .catch(() => []);
+          await Promise.all([baixar(pagina.href), ...lista.map((u) => baixar(new URL(u, pagina).href))]);
+        }
+      })();
+    },
+    { timeout: 4000 },
+  );
 }
 
 /** Qual cena mostrar: a nova, se a página dela pode ser embutida, e a antiga, se não pode (ou se desistiu). */

@@ -27,14 +27,26 @@ const iPub = process.argv.indexOf('--publicar');
 const PUBLICAR = iPub >= 0 ? { pagina: process.argv[iPub + 1], imagens: process.argv[iPub + 2], url: process.argv[iPub + 3] } : null;
 if (PUBLICAR && !(PUBLICAR.pagina && PUBLICAR.imagens && PUBLICAR.url)) throw new Error('--publicar <pasta da página> <pasta das imagens> <endereço das imagens>');
 const impressao = (dados) => createHash('sha256').update(dados).digest('hex').slice(0, 10);
+// O PACOTE (16/10/2026, relato dele: "demorei uns 15 segundos para carregar o salão"): publicadas uma a uma, eram ~435
+// imagens, ~435 idas ao servidor na primeira visita. Agora as imagens de cada cena saem num arquivo só, com o índice de
+// onde cada uma começa; a página o baixa de uma vez e recorta em blob: (a política do site já aceita img-src blob:).
+const PACOTE_ITENS = new Map(); // nome → dados
 const png = (arquivo) => {
   if (!PUBLICAR) return 'data:image/png;base64,' + ler64(arquivo);
-  const dados = fs.readFileSync(arquivo), nome = 'cena-' + impressao(dados) + '.png';
-  fs.mkdirSync(PUBLICAR.imagens, { recursive: true });
-  const destino = path.join(PUBLICAR.imagens, nome);
-  if (!fs.existsSync(destino)) fs.writeFileSync(destino, dados);
-  return PUBLICAR.url + nome;
+  const dados = fs.readFileSync(arquivo), nome = impressao(dados);
+  if (!PACOTE_ITENS.has(nome)) PACOTE_ITENS.set(nome, dados);
+  return 'pacote:' + nome;
 };
+function fecharPacote() {
+  if (!PUBLICAR) return null;
+  const indice = {}, partes = [];
+  let pos = 0;
+  for (const [nome, dados] of PACOTE_ITENS) { indice[nome] = [pos, dados.length]; partes.push(dados); pos += dados.length; }
+  const tudo = Buffer.concat(partes), arquivo = 'cena-pacote-' + impressao(tudo) + '.bin';
+  fs.mkdirSync(PUBLICAR.imagens, { recursive: true });
+  fs.writeFileSync(path.join(PUBLICAR.imagens, arquivo), tudo);
+  return { url: PUBLICAR.url + arquivo, indice, bytes: tudo.length };
+}
 // O que só a página de teste mostra (o conceito ao lado, as imagens de teste do quadro): fora da publicada.
 const soNoTeste = (arquivo) => (PUBLICAR ? null : png(arquivo));
 // A CENA (15/10/2026): o mesmo motor monta o QUARTO e o SALÃO da comunidade (e2e/pixel-art/salao/). O SALÃO É 16 × 16
@@ -224,6 +236,7 @@ que o app manda: <b>Pessoas na call</b> (quem transmite vai para a TV, quem joga
 banquetas), <b>Ao vivo</b> (a TV liga e mostra quem transmite, com as setas de canal), <b>Imagem da comunidade</b> (o ícone ou a
 capa no quadro) e <b>Recado</b> (o balão do coelho atrás do balcão; clicar no balcão mostra de novo). Ligue as <b>Funções do
 app</b> para ver o nome de cada objeto ao passar o mouse. A arrumação fica guardada neste navegador.</p>`;
+const PACOTE = fecharPacote();
 const html = `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${CENA === 'salao' ? 'Salão da comunidade' : 'Quarto do coelho'}</title>
@@ -266,6 +279,9 @@ const html = `<!doctype html>
   /* a cena nunca rola dentro do app (relato dele, 16/10/2026: com o mouse no canto, o rótulo saía da página e apareciam
      barras de rolagem, "quebra a imersão") */
   html.app, html.app body { overflow: hidden; }
+  /* o escondido fica escondido, mesmo com display próprio (relato dele, 16/10/2026: de dia, uma pílula escura no canto de
+     baixo, à esquerda — era a etiqueta do Ao vivo, vazia, com display: flex vencendo o hidden) */
+  [hidden] { display: none !important; }
   html.app main { padding: 0; max-width: none; }
   html.app main > :not(.lado), html.app .lado > figure:not(.com-rotulo), html.app figcaption { display: none; }
   html.app .lado { display: block; }
@@ -347,6 +363,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
 </main>
 <script>
 const IMAGENS = ${JSON.stringify(IMAGENS)};
+const PACOTE = ${JSON.stringify(PACOTE && { url: PACOTE.url, indice: PACOTE.indice })};
 const MOVEIS = ${JSON.stringify(MOVEIS)};
 const JANELAS = ${JSON.stringify(JANELAS)};
 const ITENS_PAREDE = ${JSON.stringify(ITENS_PAREDE)};
@@ -405,13 +422,17 @@ function deslocar(arr) {
 // Cada imagem uma vez, e TODAS pedidas de uma vez no começo (publicada, são ~430 arquivos: uma de cada vez, pela
 // internet, seriam centenas de idas e voltas). A que falhar vira um pixel transparente, em vez de travar a página.
 const imagensPedidas = new Map();
+// o pacote, baixado uma vez e recortado: "pacote:<nome>" → um endereço blob: de cada imagem
+let pacoteAberto = null;
+const abrirPacote = () => (pacoteAberto ??= fetch(PACOTE.url).then((r) => r.arrayBuffer()).then((buf) =>
+  Object.fromEntries(Object.entries(PACOTE.indice).map(([nome, [ini, tam]]) => [nome, URL.createObjectURL(new Blob([new Uint8Array(buf, ini, tam)], { type: 'image/png' }))]))));
 const carregar = (src) => {
-  if (!imagensPedidas.has(src)) imagensPedidas.set(src, new Promise((ok) => {
+  if (!imagensPedidas.has(src)) imagensPedidas.set(src, (src.startsWith('pacote:') ? abrirPacote().then((m) => m[src.slice(7)]) : Promise.resolve(src)).then((url) => new Promise((ok) => {
     const im = new Image();
     im.onload = () => ok(im);
     im.onerror = () => { console.warn('imagem não carregou:', src); const c = document.createElement('canvas'); c.width = c.height = 1; ok(c); };
-    im.src = src;
-  }));
+    im.src = url;
+  })).catch(() => { console.warn('o pacote de imagens não veio'); const c = document.createElement('canvas'); c.width = c.height = 1; return c; }));
   return imagensPedidas.get(src);
 };
 function dados(im, filtro, w = W, h = W) {
@@ -3922,7 +3943,9 @@ if (PUBLICAR) {
     .replace('<body>', CENA === 'salao' ? '<body class="salao">' : '<body>');
   fs.mkdirSync(PUBLICAR.pagina, { recursive: true });
   fs.writeFileSync(path.join(PUBLICAR.pagina, 'index.html'), pagina);
-  console.log(CENA, 'publicado:', Math.round(pagina.length / 1024), 'KB de página +', Math.round(js.length / 1024), 'KB de script');
+  // O que o app baixa em segundo plano, com ele já aberto (web/src/cenaNova.ts): o script e o pacote, relativos à página.
+  fs.writeFileSync(path.join(PUBLICAR.pagina, 'precarregar.json'), JSON.stringify([PUBLICAR.url + nomeJs, PACOTE.url]));
+  console.log(CENA, 'publicado:', Math.round(pagina.length / 1024), 'KB de página +', Math.round(js.length / 1024), 'KB de script +', Math.round(PACOTE.bytes / 1024), 'KB de imagens num pacote (' + PACOTE_ITENS.size + ')');
 } else {
   const SAIDA = CENA === 'salao' ? path.join(SALAO, 'salao.html') : path.join(AQUI, 'quarto.html');
   fs.writeFileSync(SAIDA, html);
