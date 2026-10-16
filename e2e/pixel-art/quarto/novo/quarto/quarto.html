@@ -558,7 +558,12 @@ function dados(im, filtro, w = W, h = W) {
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3] && ((k / W) | 0) < y0 + 8) { soma += k % W; n++; }
     // Da quina da frente (u1, v1): a ponta da DIREITA é (u0, v1), então a distância até ela é o comprimento em u; a da
     // esquerda é (u1, v0), o comprimento em v (x cresce com v e diminui com u).
-    const mede = [Math.max(0.6, (x1 + 1 - sx) / KX), Math.max(0.6, (sx - x0) / KX)];
+    // AS PLANTAS OCUPAM O VASO, não as folhas (relato dele, 16/10/2026: "estou tentando colocar a planta em um espaço que
+    // ela cabe, mas fica dando como impossível"): medidas pelas folhas, a monstera dava 2 × 2 casas, com o vaso de uma.
+    // A largura vem das últimas 12 linhas (o pé do vaso); as folhas passam por cima dos vizinhos, como planta de verdade.
+    let mx0 = x0, mx1 = x1;
+    if (id === 'planta-alta' || id === 'planta-baixa') { mx0 = W; mx1 = 0; for (let y = y1 - 11; y <= y1; y++) for (let x = 0; x < W; x++) if (y >= 0 && movel[(y * W + x) * 4 + 3]) { mx0 = Math.min(mx0, x); mx1 = Math.max(mx1, x); } }
+    const mede = [Math.max(0.6, (mx1 + 1 - sx) / KX), Math.max(0.6, (sx - mx0) / KX)];
     // O MEIO DA BASE (para a cadeira, que é uma roda no chão): a largura das últimas 12 linhas é o pé de rodinhas; o meio
     // dele fica um quarto dessa largura acima do ponto mais baixo (a projeção 2:1 de um círculo).
     let bx0 = W, bx1 = 0;
@@ -886,6 +891,9 @@ function dados(im, filtro, w = W, h = W) {
     // Móvel novo (as plantas, 15/10/2026) entra no lugar de fábrica, sem desfazer o resto do que a pessoa arrumou.
     if (guardada) for (const id of Object.keys(INICIAL)) if (guardada[id]?.c) ARR[id] = guardada[id];
   } catch { /* sem guardar: começa da inicial */ }
+  // A planta guardada quando ocupava 2 × 2 (até 16/10/2026) tem o centro no canto de uma casa: volta para dentro de uma.
+  const reencaixarPlantas = () => { for (const id of ['planta-alta', 'planta-baixa']) if (ARR[id]) ARR[id].c = encaixar(id, ...ARR[id].c, ARR[id].lado); };
+  reencaixarPlantas();
   window.arrumacaoDoTeste = () => ARR; // para o teste
   const guardar = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } enviar(); };
   const ehDeitado = (id) => id === 'tapete';
@@ -2966,8 +2974,17 @@ function dados(im, filtro, w = W, h = W) {
     if (viva?.parado && Math.hypot(u - inicioDoArraste[0], v - inicioDoArraste[1]) < 0.15) return;
     if (!viva) viva = { id: pegado, orig: [...ARR[pegado].c], modo: 'arrasto', vu: 0, vv: 0 };
     viva.parado = false;
+    // PASSOU DO MEIO, VIRA (pedido dele, 16/10/2026): o quarto é espelhado na diagonal u = v (a parede da esquerda é
+    // v = 0, a da direita u = 0). O móvel que atravessa a diagonal troca para a vista espelhada — o que estava de costas
+    // para uma parede fica de costas para a outra: sudoeste ↔ sudeste, noroeste ↔ nordeste (lado → 3 − lado). Meia casa
+    // de folga, para não ficar virando em cima da linha.
+    const qu = u + pegaDelta[0], qv = v + pegaDelta[1];
+    if (VISTAS[pegado] && !ehDeitado(pegado)) {
+      viva.metade ??= Math.sign(ARR[pegado].c[0] - ARR[pegado].c[1]) || 1;
+      if ((qu - qv) * viva.metade < -0.5) { ARR[pegado].lado = 3 - ARR[pegado].lado; viva.metade = -viva.metade; viva.girou = true; }
+    }
     const [tu, tv] = tamDe(pegado, ARR[pegado].lado);
-    ARR[pegado].c = [Math.max(tu / 2, Math.min(N - tu / 2, u + pegaDelta[0])), Math.max(tv / 2, Math.min(N - tv / 2, v + pegaDelta[1]))];
+    ARR[pegado].c = [Math.max(tu / 2, Math.min(N - tu / 2, qu)), Math.max(tv / 2, Math.min(N - tv / 2, qv))];
     alvo = encaixar(pegado, ...ARR[pegado].c, ARR[pegado].lado);
     if (colidirQuieto()) acordarCadeira(); // empurra a cadeira
     desenhar();
@@ -3066,7 +3083,7 @@ function dados(im, filtro, w = W, h = W) {
   function vestir(a) {
     const novo = JSON.parse(JSON.stringify(INICIAL));
     for (const [id, m] of Object.entries(a.moveis ?? {})) if (novo[id] && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
-    ARR = novo;
+    ARR = novo; reencaixarPlantas();
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); soltarDosMoveis(); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
