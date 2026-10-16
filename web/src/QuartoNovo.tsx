@@ -54,10 +54,13 @@ export function QuartoNovo({
   acoes,
   estado,
   aoFalhar,
+  ajustesAbertos,
 }: {
   noite: boolean;
   acoes: AcoesDoQuarto;
   estado: EstadoNoQuarto;
+  /** As configurações abertas (o guarda-roupa abre a de aparência): fechando, o guarda-roupa do quarto fecha junto. */
+  ajustesAbertos?: boolean;
   /** A cena não disse "pronto" a tempo: quem mostra volta ao quarto antigo. */
   aoFalhar?: () => void;
 }) {
@@ -100,6 +103,12 @@ export function QuartoNovo({
   useEffect(() => {
     if (pronto) enviar({ estado });
   }, [pronto, estado]);
+  // Fechou a aba de aparência (pedido dele, 16/10/2026): de volta ao quarto, as portas do guarda-roupa fecham animadas.
+  const ajustesAntes = useRef(false);
+  useEffect(() => {
+    if (ajustesAntes.current && !ajustesAbertos && pronto) enviar({ fecharGuardaRoupa: true });
+    ajustesAntes.current = !!ajustesAbertos;
+  }, [ajustesAbertos, pronto]);
   useEffect(() => {
     const token = loadToken();
     if (pronto && token) enviar({ conta: { api: API_URL, token, nome: '', id: 0 } });

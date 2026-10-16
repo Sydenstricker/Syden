@@ -129,6 +129,7 @@ export function Home({
   naVoz,
   aoEntrar,
   aoAbrirGuardaRoupa,
+  ajustesAbertos,
   aoAbrirAmigos,
   aoExplorar,
   souODono,
@@ -145,6 +146,8 @@ export function Home({
   naVoz: VoiceMember[];
   aoEntrar: (channelId: number) => void;
   aoAbrirGuardaRoupa: () => void;
+  /** As configurações (a aba de aparência, que o guarda-roupa abre) estão abertas: ao fechar, o quarto fecha as portas. */
+  ajustesAbertos?: boolean;
   aoAbrirAmigos: () => void;
   aoExplorar: () => void;
   /** Quem cuida do Syden recebe as ideias em vez de mandar: para ele a caixa não aparece. */
@@ -212,7 +215,7 @@ export function Home({
       <div className="home-cena">
         {/* (conferindo: o lugar fica guardado, sem afirmar nenhum dos dois) */}
         {quarto.cena === 'nova' ? (
-          <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} />
+          <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} ajustesAbertos={ajustesAbertos} />
         ) : quarto.cena === 'antiga' ? (
           <Quarto noite={periodo === 'noite'} acoes={acoes} />
         ) : (

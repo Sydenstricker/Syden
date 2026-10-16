@@ -1019,6 +1019,7 @@ export function Shell({
               // vila e pela tela de boas-vindas DA COMUNIDADE — e por isso parecia ser da
               // comunidade, embora nunca tenha sido. Agora ela está onde mora o resto do que é seu.
               aoAbrirGuardaRoupa={() => setSettingsOpen('aparencia')}
+              ajustesAbertos={settingsOpen !== null}
               aoAbrirAmigos={() => setView('amigos')}
               aoExplorar={() => setExplorarAberto(true)}
               souODono={user.isOwner}

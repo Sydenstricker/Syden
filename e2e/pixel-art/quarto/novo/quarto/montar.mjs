@@ -1088,6 +1088,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // (fechado) a 3 (aberto) e anda um passo a cada dois quadros do relógio na direção de guardaRoupaAberto.
   const PASSAGEM_GR = im['passagem-guarda-roupa0-0'] ? [0, 1, 2, 3].map((l) => [0, 1].map((k) => pecaDeImagem(im['passagem-guarda-roupa' + l + '-' + k], 'guarda-roupa'))) : null;
   let portas = 0;
+  // A FUNÇÃO DEPOIS DA ANIMAÇÃO (pedido dele, 16/10/2026: "deveria esperar a animação de abrir o guarda-roupa, para aí
+  // abrir a aba de aparência"): o pedido fica guardado e sai quando as portas terminam de abrir, com uma pausa curta para
+  // ver o guarda-roupa aberto. E ao fechar a aba, o app manda fechar as portas (fecharGuardaRoupa).
+  let gavetasPedidas = false, gavetasAbertasEm = 0;
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
@@ -1840,7 +1844,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function chegar() {
     const pt = coelho.destino && pontos()[coelho.destino];
     if (!pt) { coelho.pose = 'parado'; return; }
-    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer) acao('gavetas'); } return chegarDeVez(); }
+    if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer) gavetasPedidas = true; } return chegarDeVez(); }
     coelho.largado = Math.random() < 0.5; // dormindo rígido ou largado: sorteado antes, a transição já vai para ele
     const id = coelho.destino, p2 = pontos()[id], ro = roteiro(id, p2);
     aproximar(ro.beira, ro.atrasNaBeira, id, () => { coelho.dir = p2.olha; tocar(id, p2, ro, false, () => chegarDeVez()); });
@@ -2298,6 +2302,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const alvoP = guardaRoupaAberto ? 3 : 0;
       if (!PASSAGEM_GR) portas = alvoP;
       else if (portas !== alvoP && coelho.quadro % 2 === 0) portas += Math.sign(alvoP - portas);
+      if (gavetasPedidas && portas === 3) {
+        gavetasAbertasEm ||= agora;
+        if (agora - gavetasAbertasEm >= 250) { gavetasPedidas = false; gavetasAbertasEm = 0; acao('gavetas'); }
+      } else if (!guardaRoupaAberto) { gavetasPedidas = false; gavetasAbertasEm = 0; }
     }
     if (coelho.trans && agora - coelho.trans.t0 >= coelho.trans.dur) { const d = coelho.trans.depois; coelho.trans = null; d(); if (coelho.redecidir && !coelho.trans) { coelho.redecidir = false; decidir(); } }
     // No pufe, de vez em quando vira para outro lado (ele é redondo).
@@ -3774,6 +3782,7 @@ void main() {
       if (e.origin !== location.origin || e.source !== window.parent || e.data?.syden !== 'quarto') return;
       const d = e.data;
       if (d.funcoes) FUNCOES = d.funcoes;
+      if (d.fecharGuardaRoupa && guardaRoupaAberto) { guardaRoupaAberto = false; gavetasPedidas = false; }
       if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; }
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
