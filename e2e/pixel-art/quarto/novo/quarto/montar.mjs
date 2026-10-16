@@ -417,6 +417,10 @@ function dados(im, filtro, w = W, h = W) {
   g.drawImage(im, 0, 0); return g.getImageData(0, 0, w, h).data;
 }
 
+// O MODO APP antes de qualquer imagem (relato dele, 16/10/2026: "aparece isso no início" — a página de teste inteira,
+// com os botões e as explicações, durante os segundos em que as imagens baixavam).
+if (new URLSearchParams(location.search).has('app')) document.documentElement.classList.add('app');
+if (CENA === 'salao') document.body.classList.add('salao');
 (async () => {
   const im = {};
   for (const src of [...Object.values(IMAGENS), ...QUADROS_DO_COELHO]) if (src) carregar(src);
@@ -3870,7 +3874,10 @@ if (PUBLICAR) {
   const js = html.slice(i0 + '<script>\n'.length, i1), nomeJs = 'cena-' + impressao(js) + '.js';
   fs.mkdirSync(PUBLICAR.imagens, { recursive: true });
   fs.writeFileSync(path.join(PUBLICAR.imagens, nomeJs), js);
-  const pagina = html.slice(0, i0) + '<script src="' + PUBLICAR.url + nomeJs + '"></script>' + html.slice(i1 + '</script>'.length);
+  // A publicada só serve ao app: o modo app (e a classe do salão) já vêm no HTML, valendo antes do script chegar.
+  const pagina = (html.slice(0, i0) + '<script src="' + PUBLICAR.url + nomeJs + '"></script>' + html.slice(i1 + '</script>'.length))
+    .replace('<html lang="pt-BR">', '<html lang="pt-BR" class="app">')
+    .replace('<body>', CENA === 'salao' ? '<body class="salao">' : '<body>');
   fs.mkdirSync(PUBLICAR.pagina, { recursive: true });
   fs.writeFileSync(path.join(PUBLICAR.pagina, 'index.html'), pagina);
   console.log(CENA, 'publicado:', Math.round(pagina.length / 1024), 'KB de página +', Math.round(js.length / 1024), 'KB de script');
