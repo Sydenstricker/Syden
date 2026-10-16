@@ -28,18 +28,27 @@ export async function appAudioSupported(): Promise<boolean> {
 /**
  * Liga a captura e devolve a faixa de áudio pronta para publicar (ou null, quando não há como).
  * Chamar de novo sem parar a anterior não faz sentido: pare a antiga primeiro.
+ *
+ * `aoProblema` recebe, em poucas palavras, cada coisa que deixa a transmissão sem som (16/10/2026, relato dele: "a
+ * stream foi em tela cheia, com som, mas saiu sem som"). Antes, cada etapa desistia calada e não havia como saber qual
+ * falhou: agora o motivo vai para o diário da aba de saúde, e o VIGIA conta, durante a transmissão, se o som do Windows
+ * continua chegando (a queixa de 15/10, "o som cai depois de 1 s", também cai aqui).
  */
-export async function captureAppAudio(): Promise<AppAudio | null> {
+export async function captureAppAudio(aoProblema: (motivo: string) => void = () => {}): Promise<AppAudio | null> {
   const bridge = desktopBridge?.screenAudio;
   if (!bridge) return null;
 
   let started: { ok: boolean } | undefined;
   try {
     started = await bridge.start();
-  } catch {
+  } catch (e) {
+    aoProblema('a captura do Windows deu erro ao ligar: ' + String(e).slice(0, 60));
     return null;
   }
-  if (!started?.ok) return null;
+  if (!started?.ok) {
+    aoProblema('a captura do Windows não ligou');
+    return null;
+  }
 
   const context = new AudioContext({ sampleRate: SAMPLE_RATE });
   // O contexto pode nascer parado (a captura começa longe do clique que abriu o seletor de tela).
@@ -48,6 +57,7 @@ export async function captureAppAudio(): Promise<AppAudio | null> {
     await context.audioWorklet.addModule(WORKLET_URL);
   } catch (error) {
     console.error(error);
+    aoProblema('o tocador do som não carregou: ' + String(error).slice(0, 60));
     bridge.stop();
     void context.close();
     return null;
@@ -60,12 +70,34 @@ export async function captureAppAudio(): Promise<AppAudio | null> {
   // ouvido de todo mundo ao mesmo tempo. Consertar na origem conserta para a sala inteira.
   const teto = comTeto(context, destination);
   player.connect(teto ?? destination);
-  const unsubscribe = bridge.onChunk((pcm) => player.port.postMessage(pcm, [pcm.buffer]));
+  // O VIGIA: quantos pedaços chegaram do Windows e o maior volume deles, conferidos a cada 4 s. Avisa uma vez de cada
+  // coisa: nada chegou, o som parou de chegar (depois de quanto tempo), o contexto de áudio parado.
+  let pedacos = 0, pico = 0;
+  const unsubscribe = bridge.onChunk((pcm) => {
+    pedacos++;
+    for (let i = 0; i < pcm.length; i += 16) { const v = Math.abs(pcm[i]); if (v > pico) pico = v; }
+    player.port.postMessage(pcm, [pcm.buffer]);
+  });
+  const inicio = performance.now(), avisado = new Set<string>();
+  const avisar = (chave: string, motivo: string) => { if (!avisado.has(chave)) { avisado.add(chave); aoProblema(motivo); } };
+  let antes = 0;
+  const vigia = setInterval(() => {
+    const s = Math.round((performance.now() - inicio) / 1000);
+    if (context.state !== 'running') avisar('contexto', `o contexto de áudio está "${context.state}" (${s} s)`);
+    if (pedacos === 0) avisar('nada', `nenhum som chegou do Windows em ${s} s`);
+    // (em silêncio o Windows pode parar de mandar pedaços: por isso o "voltou", que separa PC calado de captura morta)
+    else if (pedacos === antes) avisar('parou', `o Windows parou de mandar som depois de ${s} s (${pedacos} pedaços; pode ser só o PC em silêncio)`);
+    else if (avisado.has('parou')) avisar('voltou', `o som do Windows voltou a chegar (${s} s)`);
+    // mudo de verdade (zeros) por 20 s seguidos com a captura viva: o jogo calado, ou a captura do lugar errado
+    if (pedacos > 0 && pico === 0 && s >= 20) avisar('mudo', `o som chega do Windows, mas em silêncio absoluto (${s} s)`);
+    antes = pedacos;
+  }, 4000);
 
   const track = destination.stream.getAudioTracks()[0];
   return {
     track,
     stop: () => {
+      clearInterval(vigia);
       unsubscribe();
       bridge.stop();
       player.disconnect();

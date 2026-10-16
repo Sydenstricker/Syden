@@ -1070,7 +1070,9 @@ export function useVoice(socket: Socket | null) {
 
   const startAppAudio = useCallback(async () => {
     if (appAudioRef.current) return;
-    const audio = await captureAppAudio();
+    // (cada coisa que deixa a transmissão sem som vai para o diário da aba de saúde, com onde aconteceu)
+    const aoProblema = (motivo: string) => reportProblem('transmissão', `som do app: ${motivo} · ${onde()}`.slice(0, 200));
+    const audio = await captureAppAudio(aoProblema);
     if (!audio) return; // no navegador, ou sem o módulo nativo: segue o caminho antigo
     try {
       await room.localParticipant.publishTrack(audio.track, {
@@ -1084,6 +1086,7 @@ export function useVoice(socket: Socket | null) {
       appAudioRef.current = audio;
     } catch (e) {
       console.error(e);
+      aoProblema('a faixa de som não foi publicada: ' + (e instanceof Error ? `${e.name}: ${e.message}` : String(e)).slice(0, 80));
       audio.stop();
     }
   }, [room]);
@@ -1182,6 +1185,9 @@ export function useVoice(socket: Socket | null) {
         const faixaDeSom = lp.getTrackPublication(Track.Source.ScreenShareAudio)?.audioTrack?.mediaStreamTrack;
         const ajuste = faixaDeSom?.getSettings() as (MediaTrackSettings & { restrictOwnAudio?: boolean }) | undefined;
         setEcoNaTransmissao(Boolean(faixaDeSom) && ajuste?.restrictOwnAudio !== true);
+        // No NAVEGADOR, a transmissão que sobe sem nenhuma faixa de som vai para o diário (o Firefox nunca entrega som de
+        // tela; no Chrome e no Edge, é a caixinha "compartilhar áudio" desmarcada). No app, quem conta é o vigia do som.
+        if (!desktopBridge && !faixaDeSom && !noAr) reportProblem('transmissão', `sem som: o navegador não entregou som da tela (${surface}) · ${onde()}`);
 
         // De onde sai "League of Legends" na lista dos outros.
         //

@@ -19,9 +19,12 @@ class PcmPlayer extends AudioWorkletProcessor {
       if (!(chunk instanceof Float32Array)) return;
       this.queue.push(chunk);
       this.queued += chunk.length / 2;
+      // (o que sai da fila é o que faltava tocar do pedaço: "offset" conta AMOSTRAS dos dois canais, e "queued",
+      // QUADROS. Descontar "offset" inteiro, em vez da metade, inflava a fila a cada descarte, e ela passava a
+      // jogar fora até o pedaço que estava tocando: o som picotava. Revisão de 16/10/2026.)
       while (this.queued > MAX_QUEUED_FRAMES && this.queue.length > 1) {
         const dropped = this.queue.shift();
-        this.queued -= dropped.length / 2 - this.offset;
+        this.queued -= (dropped.length - this.offset) / 2;
         this.offset = 0;
       }
     };
