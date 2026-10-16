@@ -40,7 +40,9 @@ ITENS = {
     'violao': {'nome': 'o violão', 'funcao': None},
     'porta': {'nome': 'a porta do banheiro', 'funcao': None, 'chao': True},
 }
+SO = sys.argv[2:] if SALAO else sys.argv[1:]  # só estes itens (vazio: todos)
 for item, meta in ITENS.items():
+    if SO and item not in SO: continue
     d = os.path.join(os.path.dirname(AQUI), 'parede-salao', item) if SALAO else os.path.join(AQUI, item)
     if not os.path.exists(os.path.join(d, 'dia.png')): continue
     dia = ler(d, 'dia.png')
