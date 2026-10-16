@@ -86,7 +86,12 @@ for quando, sem in [('dia', semDia), ('noite', semNoite)]:
 ab = ler(Q, 'janela-aberta-dia.png')
 p, _ = recortar(ab, semDia, True); gravar_rgba(p, o, 'aberta-dia.png')
 mascara((ab[..., 0] > 200) & (ab[..., 1] < 70) & (ab[..., 2] > 200), o, 'aberta-vao.png')
-mascara((ab[..., 0] == 250) & (ab[..., 1] == 243) & (ab[..., 2] == 224) & DIREITA & ACIMA & (ys < 260) & (xs > 320) & (xs < 440), o, 'aberta-vidro.png')
+# O VIDRO DAS FOLHAS ABERTAS: a cor exata dele, só a partir de x 338. A parede de dentro do vão (x 321-332) tem a mesma
+# cor em pontinhos, e eles entravam como vidro: de noite, uma mancha clara salpicada no vão (relato dele, 16/10/2026).
+vidroAb = (ab[..., 0] == 250) & (ab[..., 1] == 243) & (ab[..., 2] == 224) & DIREITA & ACIMA & (ys < 260) & (xs > 338) & (xs < 440)
+rot, n = label(vidroAb)
+tam = np.bincount(rot.ravel())
+mascara(vidroAb & (tam[rot] >= 3), o, 'aberta-vidro.png')
 vidroO = np.array(Image.open(os.path.join(Q, '..', 'janela', 'vidro.png')))[..., 3] > 127
 mascara(vidroO, o, 'vidro.png')
 json.dump({'nome': 'Grande, com cortinas', 'ocupa': extensao(mdia), 'ganho': luarOriginal, 'cortina': True, 'abre': True}, open(os.path.join(o, 'janela.json'), 'w'), ensure_ascii=False)
