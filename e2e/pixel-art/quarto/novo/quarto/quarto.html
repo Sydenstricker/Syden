@@ -2959,7 +2959,7 @@ void main() {
     : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
   // O móvel e a função dele (o guarda-roupa é a função "gavetas" da home: lá eram as gavetas da cama).
   // (no salão, as do Salao.tsx: a TV leva à voz, o fliperama aos mini-games, a estante aos canais, o balcão ao recado)
-  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', cadeira: 'computador' };
+  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador' } /* (os mini-games só na mesa: a cadeira é de arrastar pelo quarto, decisão dele de 16/10/2026) */;
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
