@@ -97,6 +97,23 @@ await M.p.waitForTimeout(1500);
 const doMembro = await M.frame.evaluate(() => window.visitaDoTeste().retrato.janela.tipo);
 conferir(doMembro === guardado.arrumacao?.janela?.tipo, 'o salão do membro relê na hora (' + doMembro + ')');
 await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro.png') });
+// GUARDAR UM MÓVEL E ESCOLHER O PÔSTER pela barra (16/10/2026): vão ao servidor (guardados, cores.poster e conhecidos)
+// e chegam ao salão aberto do membro.
+const grupoMoveis = D.p.locator('.salao-novo [role="group"][aria-label="Móveis"]');
+const primeiroMovel = await D.frame.evaluate(() => Object.keys(window.visitaDoTeste().retrato.moveis).find((id) => ['sofa', 'mesinha', 'poltrona'].includes(id)));
+const ordemDosMoveis = await D.frame.evaluate(() => [...document.querySelectorAll('#moveis button')].map((b) => b.textContent));
+const indice = ordemDosMoveis.findIndex((t) => t.toLowerCase().startsWith(primeiroMovel === 'sofa' ? 'sofá' : primeiroMovel));
+await grupoMoveis.locator('button').nth(indice).click();
+await D.p.locator('.salao-novo [role="group"][aria-label="Objetos da parede"]').nth(1).locator('button').nth(2).click(); // o pôster "fogo"
+await D.p.waitForTimeout(2500);
+const depois = (await pedir('GET', `/api/communities/${comunidade.id}/salao`, membro)).arrumacao;
+conferir(depois.guardados?.includes(primeiroMovel), 'o móvel guardado pela dona foi ao servidor (' + JSON.stringify(depois.guardados) + ')');
+conferir(depois.cores?.poster === 'fogo', 'o pôster escolhido foi ao servidor (' + depois.cores?.poster + ')');
+conferir(depois.conhecidos?.includes('poster'), 'a arrumação guarda os objetos conhecidos (' + (depois.conhecidos?.length ?? 0) + ')');
+await M.p.waitForTimeout(1500);
+const doMembro2 = await M.frame.evaluate(() => ({ moveis: Object.keys(window.arrumacaoDoTeste()), cores: window.visitaDoTeste().retrato.cores }));
+conferir(!doMembro2.moveis.includes(primeiroMovel) && doMembro2.cores.poster === 'fogo', 'o salão do membro mostra o móvel guardado e o pôster novo');
+await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro-guardado.png') });
 // E o servidor recusa o membro, mesmo que ele tente por fora da tela.
 const r = await fetch(API + `/api/communities/${comunidade.id}/salao`, { method: 'PUT', headers: { authorization: 'Bearer ' + membro, 'content-type': 'application/json' }, body: JSON.stringify({ moveis: {} }) });
 conferir(r.status === 403, 'o servidor recusa o membro (' + r.status + ')');
