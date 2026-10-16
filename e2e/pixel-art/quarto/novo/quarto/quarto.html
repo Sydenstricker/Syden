@@ -1345,7 +1345,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const olhaC = ORIENTA[ARR.cama.lado], [fu, fv] = VET[olhaC], peC = peMedidoDe('cama'), eixoU = fu !== 0;
     const cab = eixoU ? (fu > 0 ? peC[0] : peC[1]) : (fv > 0 ? peC[2] : peC[3]);
     const ondeC = eixoU ? [cab + fu * 1.25, (peC[2] + peC[3]) / 2 - 0.1] : [(peC[0] + peC[1]) / 2 - 0.1, cab + fv * 1.25];
-    const beiraC = eixoU ? [ondeC[0], peC[3] + 0.12] : [peC[1] + 0.12, ondeC[1]];
+    // O LADO COMPRIDO POR ONDE ELE SOBE: o da frente da tela, se ali há chão livre; senão, o outro (relato dele, 16/10/2026:
+    // com a cama encostada na borda da frente, ele tentava subir pelo lado de fora do quarto e atravessava a cama).
+    const frenteC = eixoU ? [ondeC[0], peC[3] + 0.12] : [peC[1] + 0.12, ondeC[1]], fundoC = eixoU ? [ondeC[0], peC[2] - 0.12] : [peC[0] - 0.12, ondeC[1]];
+    const chaoLivre = ([u, v], [du, dv]) => { const i = Math.floor(u + du * 0.4), j = Math.floor(v + dv * 0.4); return i >= 0 && j >= 0 && i < N && j < N && livre(i, j); };
+    const beiraC = chaoLivre(frenteC, eixoU ? [0, 1] : [1, 0]) || !chaoLivre(fundoC, eixoU ? [0, -1] : [-1, 0]) ? frenteC : fundoC;
       // Na cama ele DEITA (lendo ou dormindo), no meio do colchão, a cabeça para a cabeceira (pedido dele, 14/10/2026).
       r.cama = { ao: vizinhas(...peDe('cama')), onde: ondeC, beira: beiraC, sobe: 40, pose: 'na cama', olha: olhaC, sobre: 'cama' };
     }
