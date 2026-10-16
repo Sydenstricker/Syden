@@ -2242,6 +2242,7 @@ function dados(im, filtro, w = W, h = W) {
     return { u0, v0, fu, fv, cor, alcance, largura, forca, caixa };
   }
   // A cor final de cada pixel de uma região: a luz da noite, a cortina, a sombra do coelho, a grade e o destino do arraste.
+  const QUENTE = [1, 0.72, 0.42], BRASA = [120, 26, 16], CUPULA_X = [1.05, 0.8, 0.5], CUPULA_M = [34, 14, 0], PERTO = [1, 0.7, 0.4];
   function passeFinal(r) {
     const [x0, y0, x1, y1] = prender(r);
     const pintada = luzPintadaAgora(), razaoPe = pintada ? noiteAbajurPe : noitePe;
@@ -2260,31 +2261,35 @@ function dados(im, filtro, w = W, h = W) {
       const cor = COR_DO_BRILHO[tipoTela] ?? [140, 120, 190];
       let sx = 0, sy = 0; for (const [x, y] of pts) { sx += x; sy += y; }
       if (noite) brilhos.push([sx / pts.length, sy / pts.length, cor, 22, 0.28]);
-      const f = focoDe(id, cor, id === 'mesa' ? 2 : id === 'tv' ? 5.2 : 3.4, id === 'tv' ? 1.8 : 1.2, noite ? (id === 'tv' ? 0.42 : 0.34) : 0.1); if (f) focos.push(f);
+      // (o leque só de noite: de dia ele mal se via e custava a montagem da luz da imagem inteira)
+      const f = noite && focoDe(id, cor, id === 'mesa' ? 2 : id === 'tv' ? 5.2 : 3.4, id === 'tv' ? 1.8 : 1.2, id === 'tv' ? 0.42 : 0.34); if (f) focos.push(f);
     }
     if (luzDaJukebox) {
       if (noite) brilhos.push([luzDaJukebox[0], luzDaJukebox[1] - 14, [230, 140, 60], 26, 0.26]);
-      const f = focoDe('jukebox', [235, 150, 70], 2.6, 1.1, noite ? 0.36 : 0.1); if (f) focos.push(f);
+      const f = noite && focoDe('jukebox', [235, 150, 70], 2.6, 1.1, 0.36); if (f) focos.push(f);
     }
     if (noite) for (const L of luzesDaParede) brilhos.push(L);
     if (noite && luzDoFogao) brilhos.push([luzDoFogao[0], luzDoFogao[1], [255, 110, 50], 40, 0.3]);
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
+      // (por pixel, e não por canal: a exponencial do abajur era refeita três vezes por pixel)
+      const noiteAqui = modo === 'noite';
+      const brilho = noiteAqui && !pintada ? Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12 : 0;
+      const pertoBase = noiteAqui && pintada && eMovel[k] ? 0.75 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.3) ** 2) / (2 * 60 * 60)) : 0;
       for (let c = 0; c < 3; c++) {
         let v = D[k * 3 + c];
-        if (modo === 'noite') {
+        if (noiteAqui) {
           // Com a luz pintada, os móveis só herdam a razão noite/dia (que já traz o abajur). Com a luz por código:
           // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
-          const brilho = pintada ? 0 : Math.floor(0.85 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.4) ** 2) / (2 * 85 * 85)) * 12) / 12;
-          const quente = [1, 0.72, 0.42][c] * brilho;
+          const quente = QUENTE[c] * brilho;
           if (acesa[k] === 2) { /* a lâmpada da jukebox: a cor do dia */ }
-          else if (acesa[k] === 3) v = v * 0.7 + [120, 26, 16][c] * 0.45; // a boca do cooktop, acesa (brasa, não lâmpada)
-          else if (acesa[k]) v = Math.min(255, v * [1.05, 0.8, 0.5][c] + [34, 14, 0][c]); // a cúpula acesa, laranja como na pintura
+          else if (acesa[k] === 3) v = v * 0.7 + BRASA[c] * 0.45; // a boca do cooktop, acesa (brasa, não lâmpada)
+          else if (acesa[k]) v = Math.min(255, v * CUPULA_X[c] + CUPULA_M[c]); // a cúpula acesa, laranja como na pintura
           // A luz de um móvel à noite é a do CHÃO no pé daquela coluna, e não a da parede atrás do pixel.
           else if (eMovel[k]) {
             const j = (Math.min(W - 1, peY[k] + 3) * W + x) * 4;
-            const perto = pintada ? 0.75 * Math.exp(-((x - lx) ** 2 + ((y - ly) * 1.3) ** 2) / (2 * 60 * 60)) * [1, 0.7, 0.4][c] : 0;
+            const perto = pertoBase * PERTO[c];
             v = v * Math.min(pintada ? 1.2 : 0.9, razaoPe[j + c] / Math.max(1, diaPe[j + c])) + v * (quente + perto);
           }
           else v = fundoNoite[k * 3 + c] + base[k * 4 + c] * quente;
@@ -2296,7 +2301,9 @@ function dados(im, filtro, w = W, h = W) {
       }
       imagem.data[k * 4 + 3] = (modo === 'dia' ? foraDia : foraNoite)[k] && !eMovel[k] ? 0 : 255;
       for (const brilhoTela of brilhos) {
-        const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3), raio = brilhoTela[3] ?? 34;
+        const raio = brilhoTela[3] ?? 34;
+        if (Math.abs(x - brilhoTela[0]) > raio || Math.abs(y - brilhoTela[1]) * 1.3 > raio) continue; // longe: nem calcula
+        const d2 = Math.hypot(x - brilhoTela[0], (y - brilhoTela[1]) * 1.3);
         if (d2 < raio) { const f = Math.floor((1 - d2 / raio) * 4) / 4 * (brilhoTela[4] ?? 0.32); for (let c = 0; c < 3; c++) imagem.data[k * 4 + c] = Math.min(255, imagem.data[k * 4 + c] + brilhoTela[2][c] * f); }
       }
       for (const F of focos) {
