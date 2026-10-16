@@ -1871,6 +1871,7 @@ export default {
   'Objetos da parede': 'ของตกแต่งผนัง',
   'Em cima dos móveis': 'บนเฟอร์นิเจอร์',
   'Móveis': 'เฟอร์นิเจอร์',
+  'Cortina': 'ผ้าม่าน',
   'Gráficos': 'กราฟิก',
   'Partículas': 'อนุภาค',
   'Sombras': 'เงา',

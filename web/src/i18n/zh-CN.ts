@@ -1845,6 +1845,7 @@ export default {
   'Objetos da parede': '墙面装饰',
   'Em cima dos móveis': '家具上的物品',
   'Móveis': '家具',
+  'Cortina': '窗帘',
   'Gráficos': '图形',
   'Partículas': '粒子效果',
   'Sombras': '阴影',

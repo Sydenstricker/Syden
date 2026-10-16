@@ -1880,6 +1880,7 @@ export default {
   'Objetos da parede': 'Objets muraux',
   'Em cima dos móveis': 'Sur les meubles',
   'Móveis': 'Meubles',
+  'Cortina': 'Rideau',
   'Gráficos': 'Graphismes',
   'Partículas': 'Particules',
   'Sombras': 'Ombres',

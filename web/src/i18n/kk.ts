@@ -1924,6 +1924,7 @@ export default {
   'Objetos da parede': 'Қабырға әшекейлері',
   'Em cima dos móveis': 'Жиһаздың үстінде',
   'Móveis': 'Жиһаз',
+  'Cortina': 'Перде',
   'Gráficos': 'Графика',
   'Partículas': 'Бөлшектер',
   'Sombras': 'Көлеңкелер',

@@ -1930,6 +1930,7 @@ export default {
   'Objetos da parede': 'Diwar bezegleri',
   'Em cima dos móveis': 'Mebelleriň üstünde',
   'Móveis': 'Mebel',
+  'Cortina': 'Perde',
   'Gráficos': 'Grafika',
   'Partículas': 'Bölejikler',
   'Sombras': 'Kölegeler',

@@ -1860,6 +1860,7 @@ export default {
   'Objetos da parede': 'Kayan bango',
   'Em cima dos móveis': 'A kan kayan daki',
   'Móveis': 'Kayan daki',
+  'Cortina': 'Labule',
   'Gráficos': 'Zane-zane',
   'Partículas': 'Tartsatsi',
   'Sombras': 'Inuwoyi',

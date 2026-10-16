@@ -1,4 +1,4 @@
-import { AppWindow, Coffee, Frame, Grid2x2, Pencil, RotateCw, Sofa, Undo2 } from 'lucide-react';
+import { AppWindow, Coffee, Frame, Grid2x2, Pencil, Sofa, Undo, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { useT } from './i18n';
@@ -42,6 +42,8 @@ export interface Figuras {
   janelas?: Record<string, string>;
 }
 export interface Arrumacao {
+  /** Há o que desfazer (a cena guarda os passos da arrumação). */
+  desfazer?: boolean;
   janela: string;
   tapete: string;
   /** A opção escolhida de cada objeto que tem opções (o pôster). */
@@ -150,6 +152,24 @@ export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figura
   useEffect(() => {
     enviarRef.current({ editando: arrumando });
   }, [arrumando]);
+  // Os nomes da barrinha que a cena põe em cima do que está escolhido (girar, tirar, opções, cortina, janela).
+  useEffect(() => {
+    enviarRef.current({ rotulos: { girar: t('Girar'), tirar: t('Tirar'), opcoes: t('Opções'), cortina: t('Cortina'), janela: t('Janela') } });
+  }, [t]);
+  // Ctrl+Z com o foco aqui fora (depois de clicar na barra); com o foco na cena, a própria cena desfaz.
+  useEffect(() => {
+    if (!arrumando) return;
+    const tecla = (e: KeyboardEvent) => {
+      const alvo = e.target as HTMLElement | null;
+      if (alvo?.closest('input, textarea, [contenteditable="true"]')) return;
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        enviarRef.current({ comando: 'desfazer' });
+      }
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  }, [arrumando]);
 
   const moveis = figuras?.moveis ?? {};
   const deCima = figuras?.deCima ?? {};
@@ -185,6 +205,9 @@ export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figura
                 </button>
               ))}
             </div>
+            <button type="button" disabled={!arrumacao?.desfazer} onClick={() => enviar({ comando: 'desfazer' })}>
+              <Undo size={16} aria-hidden="true" /> {t('Desfazer')}
+            </button>
             <button type="button" onClick={() => enviar({ comando: 'inicial' })}>
               <Undo2 size={16} aria-hidden="true" /> {t('Voltar ao padrão')}
             </button>
@@ -195,10 +218,6 @@ export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figura
         <div className="quarto-novo-gaveta" role="tabpanel">
           {aberta === 'moveis' && (
             <>
-              {/* girar vale para o último móvel tocado na cena */}
-              <button type="button" className="quarto-novo-acao" onClick={() => enviar({ comando: 'girar' })}>
-                <RotateCw size={16} aria-hidden="true" /> {t('Girar')}
-              </button>
               {Object.entries(moveis).map(([id, src], i) => figura(id, src, `${t('Móveis')} ${i + 1}`, arrumacao?.moveis?.[id] !== false, { comando: 'movel', id }))}
             </>
           )}

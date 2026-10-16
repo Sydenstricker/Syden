@@ -1929,6 +1929,7 @@ export default {
   'Objetos da parede': 'ເຄື່ອງປະດັບຝາ',
   'Em cima dos móveis': 'ເທິງເຄື່ອງເຮືອນ',
   'Móveis': 'ເຄື່ອງເຮືອນ',
+  'Cortina': 'ຜ້າມ່ານ',
   'Gráficos': 'ກຣາບຟິກ',
   'Partículas': 'ອະນຸພາກ',
   'Sombras': 'ເງົາ',

@@ -1828,6 +1828,7 @@ export default {
   'Objetos da parede': 'Đồ treo tường',
   'Em cima dos móveis': 'Trên đồ nội thất',
   'Móveis': 'Đồ nội thất',
+  'Cortina': 'Rèm',
   'Gráficos': 'Đồ họa',
   'Partículas': 'Hạt hiệu ứng',
   'Sombras': 'Bóng đổ',

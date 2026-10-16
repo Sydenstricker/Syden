@@ -1929,6 +1929,7 @@ export default {
   'Objetos da parede': 'Veggskraut',
   'Em cima dos móveis': 'Á húsgögnunum',
   'Móveis': 'Húsgögn',
+  'Cortina': 'Gluggatjald',
   'Gráficos': 'Grafík',
   'Partículas': 'Agnir',
   'Sombras': 'Skuggar',

@@ -1925,6 +1925,7 @@ export default {
   'Objetos da parede': 'Seinakaunistused',
   'Em cima dos móveis': 'Mööbli peal',
   'Móveis': 'Mööbel',
+  'Cortina': 'Kardin',
   'Gráficos': 'Graafika',
   'Partículas': 'Osakesed',
   'Sombras': 'Varjud',

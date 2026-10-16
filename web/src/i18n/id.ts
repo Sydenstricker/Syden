@@ -1855,6 +1855,7 @@ export default {
   'Objetos da parede': 'Hiasan dinding',
   'Em cima dos móveis': 'Di atas perabot',
   'Móveis': 'Perabot',
+  'Cortina': 'Tirai',
   'Gráficos': 'Grafis',
   'Partículas': 'Partikel',
   'Sombras': 'Bayangan',

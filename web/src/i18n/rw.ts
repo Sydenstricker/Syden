@@ -1869,6 +1869,7 @@ export default {
   'Objetos da parede': 'Imitako yo ku rukuta',
   'Em cima dos móveis': 'Ku bikoresho byo mu nzu',
   'Móveis': 'Ibikoresho byo mu nzu',
+  'Cortina': 'Rido',
   'Gráficos': 'Ibishushanyo',
   'Partículas': 'Uduce',
   'Sombras': 'Ibicucu',

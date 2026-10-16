@@ -1930,6 +1930,7 @@ export default {
   'Objetos da parede': 'Falidíszek',
   'Em cima dos móveis': 'A bútorokon',
   'Móveis': 'Bútorok',
+  'Cortina': 'Függöny',
   'Gráficos': 'Grafika',
   'Partículas': 'Részecskék',
   'Sombras': 'Árnyékok',

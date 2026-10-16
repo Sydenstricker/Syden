@@ -1857,6 +1857,7 @@ export default {
   'Objetos da parede': 'दीवार की सजावट',
   'Em cima dos móveis': 'फ़र्नीचर के ऊपर',
   'Móveis': 'फ़र्नीचर',
+  'Cortina': 'पर्दा',
   'Gráficos': 'ग्राफ़िक्स',
   'Partículas': 'कण',
   'Sombras': 'परछाइयाँ',

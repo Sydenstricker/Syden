@@ -43,6 +43,18 @@
   /* o escondido fica escondido, mesmo com display próprio (relato dele, 16/10/2026: de dia, uma pílula escura no canto de
      baixo, à esquerda — era a etiqueta do Ao vivo, vazia, com display: flex vencendo o hidden) */
   [hidden] { display: none !important; }
+  /* A BARRINHA do que está escolhido no Editar (girar, tirar, opções), em cima dele */
+  #barrinha { position: absolute; z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: auto; }
+  #barrinha .botoes, #barrinha .opcoes { display: flex; gap: 2px; padding: 3px; background: rgba(30, 24, 20, 0.95); border: 1px solid rgba(255, 236, 200, 0.22); border-radius: 10px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); }
+  #barrinha .opcoes { flex-wrap: wrap; justify-content: center; gap: 4px; padding: 4px; max-width: 280px; }
+  #barrinha button { width: 34px; height: 34px; display: grid; place-items: center; margin: 0; padding: 0; border: 0; border-radius: 7px; background: transparent; color: #f3e6d0; cursor: pointer; }
+  #barrinha button:hover { background: rgba(255, 236, 200, 0.14); }
+  #barrinha button[aria-pressed="true"] { background: rgba(255, 200, 120, 0.28); color: #ffd58a; box-shadow: inset 0 0 0 1px rgba(255, 213, 138, 0.7); }
+  #barrinha button:disabled { opacity: 0.35; cursor: default; }
+  #barrinha svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  #barrinha .opcoes button { width: auto; min-width: 34px; height: 40px; padding: 2px 5px; }
+  #barrinha .opcoes img { height: 34px; width: auto; image-rendering: pixelated; }
+  #barrinha .opcoes .cor { width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.3); }
   html.app main { padding: 0; max-width: none; }
   html.app main > :not(.lado), html.app .lado > figure:not(.com-rotulo), html.app figcaption { display: none; }
   html.app .lado { display: block; }
@@ -119,7 +131,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="1024" height="1024" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div><div id="fora-da-vista"></div></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="1024" height="1024" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="barrinha" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div><div id="fora-da-vista"></div></div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -2759,6 +2771,7 @@ void main() {
   }
   // Os tempos do desenho (para o teste de desempenho): a cena montada de novo, e o quadro inteiro.
   let realce = null; // o que tem função sob o ponteiro: { chave, caixa } (ver realcar)
+  let selecao = null; // o que está escolhido no Editar: { chave, caixa, cena } (ver selecionar)
   const TEMPOS = { cena: 0, nCena: 0, quadro: 0, nQuadro: 0, passe: 0, nPasse: 0 };
   window.temposDoTeste = () => ({ ...TEMPOS });
   function desenhar() {
@@ -2782,9 +2795,10 @@ void main() {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
+    if (selecao && !EDITANDO) selecao = null;
     // Só limpa a região de antes quando vai redesenhar: limpando e saindo, o coelho e a cadeira sumiam do mapa de quem é
     // cada pixel, e o clique na cadeira parada não a achava.
     if (regiaoAnterior) restaurar(regiaoAnterior);
@@ -2898,7 +2912,12 @@ void main() {
       const vis = OBJ_VISTAS[objPego.o.tipo][objPego.vivo.lado], ox = Math.round(objPego.vivo.x - vis.meioDaBase[0]), oy = Math.round(objPego.vivo.y - vis.meioDaBase[1]);
       objVivo = { vis, ox, oy }; caixaObjVivo = unir(caixaObjVivo, [vis.caixa[0] + ox - 2, vis.caixa[1] + oy - 2, vis.caixa[2] + ox + 2, vis.caixa[3] + oy + 2]);
     }
-    const agora = unir(unir(unir(unir(unir(unir(unir(unir(realce?.caixa ?? null, caixaC), caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaObjVivo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
+    // A ESCOLHIDA (no Editar): a caixa dela é medida de novo quando a cena muda (girou, mudou de lugar, trocou de tipo);
+    // enquanto algo está na mão, ela some (o pego já tem o contorno dele).
+    const ocupado = arrastando || !!viva || !!paredePega?.mexeu || !!janelaPega?.mexeu || !!objPego?.mexeu;
+    const sel = selecao && EDITANDO && !ocupado ? selecao : null;
+    if (sel && sel.cena !== assinaturaCena) { sel.caixa = caixaDaChave(sel.chave); sel.cena = assinaturaCena; if (!sel.caixa) { selecao = null; montarBarrinha(); } }
+    const agora = unir(unir(unir(unir(unir(unir(unir(unir(unir(sel?.caixa ?? null, realce?.caixa ?? null), caixaC), caixaDaSombra), caixaCadeira), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaObjVivo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
     regiaoDasFaiscas = caixaFaiscas;
     const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
     passeFinal(r);
@@ -2921,8 +2940,9 @@ void main() {
       for (const d of meu) for (const n of [d - 1, d + 1, d - W, d + W]) if (n >= 0 && n < W * W && !meu.has(n)) contorno.push(n);
     }
     // o contorno de quem tem função, sob o ponteiro: em volta do que aparece dele, e nunca por cima do que está na frente
-    if (realce) {
-      const [x0, y0, x1, y1] = realce.caixa, ch = realce.chave;
+    for (const rc of [realce, selecao && sel && sel.caixa ? sel : null]) {
+      if (!rc) continue;
+      const [x0, y0, x1, y1] = rc.caixa, ch = rc.chave;
       for (let y = Math.max(1, y0); y < Math.min(W - 1, y1); y++) for (let x = Math.max(1, x0); x < Math.min(W - 1, x1); x++) {
         const k = y * W + x; if (doRealce(k, ch)) continue;
         const n = [k - 1, k + 1, k - W, k + W].find((q) => doRealce(q, ch)); if (n === undefined) continue;
@@ -2957,6 +2977,7 @@ void main() {
     if (falando) balao(imagem.data); // falando de pé ou sentado
     g.putImageData(imagem, 0, 0, r[0], r[1], r[2] - r[0], r[3] - r[1]);
     regiaoAnterior = agora;
+    posicionarBarrinha(sel);
     TEMPOS.quadro += performance.now() - tq0; TEMPOS.nQuadro++;
     escreverLegenda();
   }
@@ -3043,17 +3064,19 @@ void main() {
   // O CONTORNO DE QUEM TEM FUNÇÃO (pedido dele, 16/10/2026: "quando passo em cima de móvel que tenha função, deveria dar
   // um outline nele"): o móvel, o objeto da parede ou a janela sob o ponteiro ganha a borda clara, como o móvel pego.
   // A caixa dele é medida uma vez, ao entrar; a cada quadro só ela é percorrida.
-  const doRealce = (k, chave) => chave[0] === 'm' ? dono[k] === chave.slice(1) : chave[0] === 'p' ? naParede[k] === +chave.slice(1) && !dono[k] : !!naJanela[k] && !dono[k];
+  // As chaves: 'm' + móvel, 'p' + objeto da parede, 'o' + objeto de cima, 'j' a janela.
+  const doRealce = (k, chave) => chave[0] === 'm' ? dono[k] === chave.slice(1) : chave[0] === 'p' ? !!naParede[k] && !dono[k] && ordemDaParede[naParede[k] - 1] === chave.slice(1) : chave[0] === 'o' ? donoObj[k] === chave.slice(1) : !!naJanela[k] && !dono[k];
+  const caixaDaChave = (chave) => {
+    let x0 = W, y0 = W, x1 = -1, y1 = -1;
+    for (let q = 0; q < W * W; q++) if (doRealce(q, chave)) { const x = q % W, y = (q / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    return x1 < 0 ? null : [Math.max(0, x0 - 3), Math.max(0, y0 - 3), Math.min(W, x1 + 4), Math.min(W, y1 + 4)];
+  };
   function realcar(k) {
     const f = k === null ? null : funcaoEm(k);
-    const chave = !f ? null : dono[k] ? 'm' + dono[k] : naParede[k] ? 'p' + naParede[k] : 'j';
+    const chave = !f ? null : dono[k] ? 'm' + dono[k] : naParede[k] ? 'p' + ordemDaParede[naParede[k] - 1] : 'j';
     if ((realce?.chave ?? null) === chave) return;
     realce = null;
-    if (chave) {
-      let x0 = W, y0 = W, x1 = -1, y1 = -1;
-      for (let q = 0; q < W * W; q++) if (doRealce(q, chave)) { const x = q % W, y = (q / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-      if (x1 >= 0) realce = { chave, caixa: [Math.max(0, x0 - 3), Math.max(0, y0 - 3), Math.min(W, x1 + 4), Math.min(W, y1 + 4)] };
-    }
+    if (chave) { const caixa = caixaDaChave(chave); if (caixa) realce = { chave, caixa }; }
     desenhar();
   }
   tela.addEventListener('pointermove', (e) => {
@@ -3453,7 +3476,11 @@ void main() {
     if (performance.now() - ultimaRodinha < 180) return;
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
-  document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
+  document.addEventListener('keydown', (e) => {
+    if (soVer) return;
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); desfazer(); return; }
+    if (e.key === 'r' || e.key === 'R') girarSegurado(e.shiftKey ? -1 : 1);
+  });
   document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher(ARR.poltrona ? 'poltrona' : Object.keys(ARR)[0]);
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
@@ -3515,16 +3542,49 @@ void main() {
   };
   const dizer = (t) => { campo('quem').textContent = t; };
   // Cada mudança vai ao servidor, juntando as que chegam em sequência (arrastar a cadeira guarda a cada parada).
-  let esperaDoEnvio = 0;
+  let esperaDoEnvio = 0, envioPendente = false;
+  // DESFAZER (16/10/2026, da referência de interface dele): toda mudança da arrumação passa por aqui, e o retrato de
+  // antes vai para uma pilha; Ctrl+Z (ou o Desfazer da barra do app) volta um passo. Sem "Aplicar": cada mudança já vale
+  // ("depois do sim, não pergunte de novo"), e desfazer é o arrependimento.
+  const historico = [];
+  let retratoAtual = null, desfazendo = false;
+  const marcarBase = () => { retratoAtual = JSON.stringify(retrato()); historico.length = 0; relatar(); };
+  function anotar() {
+    if (soVer) return;
+    const r = JSON.stringify(retrato());
+    if (retratoAtual !== null && r !== retratoAtual && !desfazendo) { historico.push(retratoAtual); if (historico.length > 50) historico.shift(); }
+    retratoAtual = r;
+  }
+  function desfazer() {
+    if (soVer || !historico.length || arrastando || viva || paredePega || janelaPega || objPego) return;
+    desfazendo = true;
+    try {
+      vestir(JSON.parse(historico.pop()));
+      guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
+    } finally { desfazendo = false; }
+    selecionar(null);
+  }
+  window.desfazerDoTeste = () => historico.length; // para o teste
   enviar = () => {
+    anotar();
     relatar();
     if (!conta || soVer) return;
     clearTimeout(esperaDoEnvio);
-    esperaDoEnvio = setTimeout(() => { pedir('PUT', ROTA, retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)); }, 700);
+    envioPendente = true;
+    esperaDoEnvio = setTimeout(() => { pedir('PUT', ROTA, retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)).finally(() => { envioPendente = false; }); }, 700);
   };
   async function carregarMeu() {
     const { arrumacao } = await pedir('GET', ROTA);
     if (arrumacao) vestir(arrumacao); else enviar(); // ainda não tinha: o que está na tela vira o dele
+    marcarBase(); // desfazer não volta para antes do que veio do servidor
+  }
+  // O SALÃO MUDOU (salao:mudou): relê. O aviso chega também para quem mudou; aí a arrumação lida é a mesma da tela, e o
+  // desfazer dele continua valendo.
+  async function reler() {
+    const { arrumacao } = await pedir('GET', ROTA);
+    if (!arrumacao || envioPendente || arrastando || viva) return;
+    vestir(arrumacao);
+    if (JSON.stringify(retrato()) !== retratoAtual) marcarBase();
     dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + ').');
   }
   campo('entrar').onclick = async () => {
@@ -3563,7 +3623,7 @@ void main() {
   // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
   function relatar() {
     if (!MODO_APP || window.parent === window) return;
-    window.parent.postMessage({ syden: 'quarto', arrumacao: { janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
   }
   // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
   function figurasDaBarra() {
@@ -3609,6 +3669,101 @@ void main() {
     return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, janelas };
   }
 
+  // ============================== A BARRINHA DO QUE ESTÁ ESCOLHIDO (16/10/2026) ==============================
+  // Da referência de interface dele: no Editar, o que se toca (o móvel, o objeto da parede, a janela, o objeto de cima)
+  // fica ESCOLHIDO, com o contorno claro, e ganha em cima dele uma barrinha com o que se faz com ELE: girar, tirar, as
+  // opções (a cor do tapete, a arte do pôster, o tipo de janela) e, na janela, a cortina e abrir. Antes o Girar ficava na
+  // barra do app e girava "o último móvel tocado", o que ninguém adivinha. Os nomes (dica e leitor de tela) vêm do app.
+  let ROTULOS = { girar: 'Girar', tirar: 'Tirar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela' };
+  const barrinha = document.getElementById('barrinha');
+  let opcoesAbertas = false, FIGURAS = null;
+  const figurasCache = () => (FIGURAS ??= figurasDaBarra());
+  const ICONES = {
+    girar: '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
+    tirar: '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
+    opcoes: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+    cortina: '<path d="M3 3h18"/><path d="M5 3v18c2.5-1.5 4-5 4-9S7.5 4.5 5 3"/><path d="M19 3v18c-2.5-1.5-4-5-4-9s1.5-7.5 4-9"/>',
+    janela: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 3v18"/><path d="M4 12h16"/>',
+  };
+  function escolhaEm(k) {
+    const uo = donoObj[k];
+    if (uo && EM_CIMA[uo]) return 'o' + uo;
+    if (dono[k] === 'cadeira' || ARR[dono[k]]) return 'm' + dono[k];
+    if (naParede[k] && !dono[k]) return 'p' + ordemDaParede[naParede[k] - 1];
+    if (naJanela[k] && !dono[k]) return 'j';
+    return null;
+  }
+  function selecionar(chave) {
+    if ((selecao?.chave ?? null) === (chave ?? null)) return;
+    selecao = chave ? { chave, caixa: null, cena: null } : null; opcoesAbertas = false;
+    if (chave?.[0] === 'm') escolher(chave.slice(1));
+    montarBarrinha(); desenhar();
+  }
+  window.selecaoDoTeste = () => selecao && selecao.chave; // para o teste
+  // No Editar, tocar escolhe (antes de os outros pegarem o clique: o objeto da parede o segura só para ele).
+  tela.addEventListener('pointerdown', (e) => { if (EDITANDO && !soVer) selecionar(escolhaEm(pixelDo(e))); }, true);
+  const botaoDaBarrinha = (nome, acao, { pressionado, desligado } = {}) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICONES[nome] + '</svg>';
+    b.setAttribute('aria-label', ROTULOS[nome]); b.title = ROTULOS[nome]; b.dataset.acao = nome;
+    if (pressionado !== undefined) b.setAttribute('aria-pressed', String(!!pressionado));
+    b.disabled = !!desligado;
+    b.onclick = (ev) => { ev.stopPropagation(); acao(); };
+    return b;
+  };
+  const figuraDaBarrinha = (conteudo, ligada, acao) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed', String(!!ligada));
+    if (typeof conteudo === 'string') { const im = document.createElement('img'); im.src = conteudo; im.alt = ''; b.append(im); } else b.append(conteudo);
+    b.onclick = (ev) => { ev.stopPropagation(); acao(); montarBarrinha(); };
+    return b;
+  };
+  function montarBarrinha() {
+    const ch = selecao?.chave;
+    if (!ch) { barrinha.hidden = true; barrinha.replaceChildren(); return; }
+    const tipo = ch[0], id = ch.slice(1), botoesB = [], opcoes = [];
+    if (tipo === 'm') {
+      if (id !== 'pufe') botoesB.push(botaoDaBarrinha('girar', () => { escolher(id); girar(); }));
+      if (podeGuardar(id)) botoesB.push(botaoDaBarrinha('tirar', () => { selecionar(null); alternarMovel(id); }));
+      if (id === 'tapete') for (const [cor, css] of Object.entries(figurasCache().cores)) {
+        const bola = document.createElement('span'); bola.className = 'cor'; bola.style.background = css;
+        opcoes.push(figuraDaBarrinha(bola, (CORES.tapete ?? 'salvia') === cor, () => { CORES = { ...CORES, tapete: cor }; guardarCores(); botaoDaCor(); desenhar(); }));
+      }
+    } else if (tipo === 'p') {
+      botoesB.push(botaoDaBarrinha('tirar', () => { selecionar(null); alternarNaParede(id); }));
+      if (OPCOES_PAREDE[id] && Object.keys(OPCOES_PAREDE[id]).length > 1) for (const [nome, src] of Object.entries(figurasCache().opcoes[id] ?? {})) opcoes.push(figuraDaBarrinha(src, opcaoDe(id) === nome, () => escolherOpcao(id, nome)));
+    } else if (tipo === 'o') {
+      botoesB.push(botaoDaBarrinha('girar', () => { const o = EM_CIMA[id]; if (o) { EM_CIMA = { ...EM_CIMA, [id]: { ...o, lado: (o.lado + 1) % 4 } }; guardarObjetos(); desenhar(); } }));
+      botoesB.push(botaoDaBarrinha('tirar', () => { selecionar(null); const { [id]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; guardarObjetos(); desenhar(); }));
+    } else if (tipo === 'j') {
+      const T = TIPOS_JANELA[JAN.tipo];
+      if (T.cortina) botoesB.push(botaoDaBarrinha('cortina', () => { trocarCortina(); montarBarrinha(); }, { pressionado: fechada }));
+      // abrir com as cortinas fechadas não se veria: abre-se a cortina antes
+      if (T.abre) botoesB.push(botaoDaBarrinha('janela', () => { trocarJanela(); montarBarrinha(); }, { pressionado: aberta, desligado: fechada }));
+      const janelas = figurasCache().janelas ?? {};
+      if (Object.keys(janelas).length > 1) for (const [t2, src] of Object.entries(janelas)) opcoes.push(figuraDaBarrinha(src, JAN.tipo === t2, () => { mudarJanela({ ...JAN, tipo: t2 }); selecao && (selecao.cena = null); }));
+    }
+    if (opcoes.length) botoesB.push(botaoDaBarrinha('opcoes', () => { opcoesAbertas = !opcoesAbertas; montarBarrinha(); }, { pressionado: opcoesAbertas }));
+    const linha = document.createElement('div'); linha.className = 'botoes'; linha.append(...botoesB);
+    const partes = [linha];
+    if (opcoesAbertas && opcoes.length) { const o = document.createElement('div'); o.className = 'opcoes'; o.append(...opcoes); partes.push(o); }
+    barrinha.replaceChildren(...partes);
+    barrinha.hidden = !botoesB.length;
+  }
+  // Em cima do escolhido, centrada; sem espaço em cima (o alto da cena), vai para baixo dele.
+  function posicionarBarrinha(sel) {
+    if (!sel || !sel.caixa || !barrinha.childElementCount) { if (!barrinha.hidden && (!sel || !sel.caixa)) barrinha.style.visibility = 'hidden'; return; }
+    barrinha.style.visibility = '';
+    const rt = tela.getBoundingClientRect(), rm = barrinha.parentElement.getBoundingClientRect(), esc = rt.width / W, [x0, y0, x1, y1] = sel.caixa;
+    const cx = rt.left + ((x0 + x1) / 2) * esc, topo = rt.top + y0 * esc, base = rt.top + y1 * esc, h = barrinha.offsetHeight, w = barrinha.offsetWidth;
+    const embaixo = topo - h - 6 < 4;
+    const x = Math.max(w / 2 + 4, Math.min(innerWidth - w / 2 - 4, cx));
+    barrinha.style.left = x - rm.left + 'px';
+    barrinha.style.top = (embaixo ? base + 6 : topo - h - 6) - rm.top + 'px';
+    barrinha.style.transform = 'translateX(-50%)';
+  }
+  addEventListener('resize', () => { if (selecao) desenhar(); });
+
   // ============================== NO APP (15/10/2026) ==============================
   // Dentro do QuartoNovo.tsx, o app manda por mensagem: as funções (o nome de cada uma, na língua de quem lê), se é noite
   // (o tema do app), o estado de quem mora aqui e a conta (para guardar a arrumação no servidor). O quarto devolve o
@@ -3620,7 +3775,9 @@ void main() {
       const d = e.data;
       if (d.funcoes) FUNCOES = d.funcoes;
       if (d.fecharGuardaRoupa && guardaRoupaAberto) { guardaRoupaAberto = false; gavetasPedidas = false; }
-      if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null); }
+      if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null); if (!EDITANDO) selecionar(null); }
+      if (d.rotulos) { ROTULOS = { ...ROTULOS, ...d.rotulos }; montarBarrinha(); }
+      if (d.comando === 'desfazer') desfazer();
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
       if (d.conta && !conta) {
@@ -3631,7 +3788,7 @@ void main() {
         carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ });
       }
       // Quem administra mudou o salão (salao:mudou): relê. Não no meio de um arraste.
-      if (d.recarregar && conta && !arrastando && !viva) carregarMeu().catch(() => {});
+      if (d.recarregar && conta && !arrastando && !viva && !envioPendente) reler().catch(() => {});
       if ('aoVivo' in d) { AO_VIVO = d.aoVivo || null; desenhar(); }
       if ('imagem' in d) carregarImagem(d.imagem);
       if ('recado' in d) { const antes = JSON.stringify(RECADO); RECADO = d.recado && (d.recado.titulo || d.recado.texto) ? d.recado : null; if (RECADO && JSON.stringify(RECADO) !== antes) abrirRecado(); else posicionarRecado(true); }
@@ -3647,7 +3804,7 @@ void main() {
       if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);
       if (Array.isArray(d.pessoas)) { PESSOAS = d.pessoas.slice(0, 12); desenhar(); }
     });
-    window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasDaBarra() }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasCache() }, location.origin);
     relatar();
   }
   // No salão o coelho não passeia: ao abrir, ele JÁ ESTÁ no lugar dele (o recado, atrás do balcão). Atravessar a sala a

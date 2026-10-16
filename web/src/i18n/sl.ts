@@ -1930,6 +1930,7 @@ export default {
   'Objetos da parede': 'Stenski okraski',
   'Em cima dos móveis': 'Na pohištvu',
   'Móveis': 'Pohištvo',
+  'Cortina': 'Zavesa',
   'Gráficos': 'Grafika',
   'Partículas': 'Delci',
   'Sombras': 'Sence',

@@ -1864,6 +1864,7 @@ export default {
   'Objetos da parede': 'Maisiúcháin bhalla',
   'Em cima dos móveis': 'Ar an troscán',
   'Móveis': 'Troscán',
+  'Cortina': 'Cuirtín',
   'Gráficos': 'Grafaic',
   'Partículas': 'Cáithníní',
   'Sombras': 'Scáthanna',

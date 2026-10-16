@@ -1874,6 +1874,7 @@ export default {
   'Objetos da parede': 'Tiżjin tal-ħajt',
   'Em cima dos móveis': 'Fuq l-għamara',
   'Móveis': 'Għamara',
+  'Cortina': 'Purtiera',
   'Gráficos': 'Grafika',
   'Partículas': 'Partiċelli',
   'Sombras': 'Dellijiet',

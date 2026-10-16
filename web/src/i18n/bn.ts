@@ -1855,6 +1855,7 @@ export default {
   'Objetos da parede': 'দেয়ালের জিনিস',
   'Em cima dos móveis': 'আসবাবের ওপর',
   'Móveis': 'আসবাব',
+  'Cortina': 'পর্দা',
   'Gráficos': 'গ্রাফিক্স',
   'Partículas': 'কণা',
   'Sombras': 'ছায়া',

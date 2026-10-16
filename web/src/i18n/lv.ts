@@ -1930,6 +1930,7 @@ export default {
   'Objetos da parede': 'Sienas rotājumi',
   'Em cima dos móveis': 'Uz mēbelēm',
   'Móveis': 'Mēbeles',
+  'Cortina': 'Aizkars',
   'Gráficos': 'Grafika',
   'Partículas': 'Daļiņas',
   'Sombras': 'Ēnas',

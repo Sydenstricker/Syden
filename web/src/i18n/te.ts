@@ -1840,6 +1840,7 @@ export default {
   'Objetos da parede': 'గోడ అలంకరణలు',
   'Em cima dos móveis': 'ఫర్నిచర్ మీద',
   'Móveis': 'ఫర్నిచర్',
+  'Cortina': 'తెర',
   'Gráficos': 'గ్రాఫిక్స్',
   'Partículas': 'కణాలు',
   'Sombras': 'నీడలు',

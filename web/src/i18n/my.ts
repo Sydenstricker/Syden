@@ -1897,6 +1897,7 @@ export default {
   'Objetos da parede': 'နံရံအလှဆင်ပစ္စည်းများ',
   'Em cima dos móveis': 'ပရိဘောဂပေါ်မှာ',
   'Móveis': 'ပရိဘောဂ',
+  'Cortina': 'လိုက်ကာ',
   'Gráficos': 'ဂရပ်ဖစ်',
   'Partículas': 'အမှုန်များ',
   'Sombras': 'အရိပ်များ',

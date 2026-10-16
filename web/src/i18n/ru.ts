@@ -1876,6 +1876,7 @@ export default {
   'Objetos da parede': 'Предметы на стене',
   'Em cima dos móveis': 'На мебели',
   'Móveis': 'Мебель',
+  'Cortina': 'Занавеска',
   'Gráficos': 'Графика',
   'Partículas': 'Частицы',
   'Sombras': 'Тени',

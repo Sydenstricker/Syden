@@ -1927,6 +1927,7 @@ export default {
   'Objetos da parede': 'គ្រឿងតុបតែងជញ្ជាំង',
   'Em cima dos móveis': 'លើគ្រឿងសង្ហារិម',
   'Móveis': 'គ្រឿងសង្ហារិម',
+  'Cortina': 'វាំងនន',
   'Gráficos': 'ក្រាហ្វិក',
   'Partículas': 'ភាគល្អិត',
   'Sombras': 'ស្រមោល',

@@ -1908,6 +1908,7 @@ export default {
   'Objetos da parede': 'קישוטי קיר',
   'Em cima dos móveis': 'על הרהיטים',
   'Móveis': 'רהיטים',
+  'Cortina': 'וילון',
   'Gráficos': 'גרפיקה',
   'Partículas': 'חלקיקים',
   'Sombras': 'צללים',

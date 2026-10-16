@@ -1882,6 +1882,7 @@ export default {
   'Objetos da parede': 'Wanddeko',
   'Em cima dos móveis': 'Auf den Möbeln',
   'Móveis': 'Möbel',
+  'Cortina': 'Vorhang',
   'Gráficos': 'Grafik',
   'Partículas': 'Partikel',
   'Sombras': 'Schatten',

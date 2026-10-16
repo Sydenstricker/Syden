@@ -1930,6 +1930,7 @@ export default {
   'Objetos da parede': 'Sienų dekoracijos',
   'Em cima dos móveis': 'Ant baldų',
   'Móveis': 'Baldai',
+  'Cortina': 'Užuolaida',
   'Gráficos': 'Grafika',
   'Partículas': 'Dalelės',
   'Sombras': 'Šešėliai',

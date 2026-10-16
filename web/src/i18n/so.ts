@@ -1928,6 +1928,7 @@ export default {
   'Objetos da parede': 'Qurxinta derbiga',
   'Em cima dos móveis': 'Alaabta dusheeda',
   'Móveis': 'Alaabta',
+  'Cortina': 'Daah',
   'Gráficos': 'Garaafyada',
   'Partículas': 'Qaybo yaryar',
   'Sombras': 'Hadhyo',

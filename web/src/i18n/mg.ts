@@ -1928,6 +1928,7 @@ export default {
   'Objetos da parede': 'Haingon\'ny rindrina',
   'Em cima dos móveis': 'Ambonin\'ny fanaka',
   'Móveis': 'Fanaka',
+  'Cortina': 'Ridao',
   'Gráficos': 'Sary',
   'Partículas': 'Pitik’afo',
   'Sombras': 'Aloka',

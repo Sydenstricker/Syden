@@ -1920,6 +1920,7 @@ export default {
   'Objetos da parede': 'Väggdekor',
   'Em cima dos móveis': 'På möblerna',
   'Móveis': 'Möbler',
+  'Cortina': 'Gardin',
   'Gráficos': 'Grafik',
   'Partículas': 'Partiklar',
   'Sombras': 'Skuggor',

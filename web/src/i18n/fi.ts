@@ -1928,6 +1928,7 @@ export default {
   'Objetos da parede': 'Seinäkoristeet',
   'Em cima dos móveis': 'Huonekalujen päällä',
   'Móveis': 'Huonekalut',
+  'Cortina': 'Verho',
   'Gráficos': 'Grafiikka',
   'Partículas': 'Partikkelit',
   'Sombras': 'Varjot',

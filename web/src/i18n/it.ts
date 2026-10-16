@@ -1857,6 +1857,7 @@ export default {
   'Objetos da parede': 'Oggetti da parete',
   'Em cima dos móveis': 'Sui mobili',
   'Móveis': 'Mobili',
+  'Cortina': 'Tenda',
   'Gráficos': 'Grafica',
   'Partículas': 'Particelle',
   'Sombras': 'Ombre',

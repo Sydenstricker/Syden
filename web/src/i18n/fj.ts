@@ -1857,6 +1857,7 @@ export default {
   'Objetos da parede': 'iUkuuku ni lalaga',
   'Em cima dos móveis': 'E dela ni iyaya',
   'Móveis': 'Iyaya',
+  'Cortina': 'Ilati',
   'Gráficos': 'Na iyaloyalo',
   'Partículas': 'Na vuka ni rarama',
   'Sombras': 'Na yaloyalo',

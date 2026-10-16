@@ -1928,6 +1928,7 @@ export default {
   'Objetos da parede': 'Украси за ѕид',
   'Em cima dos móveis': 'На мебелот',
   'Móveis': 'Мебел',
+  'Cortina': 'Завеса',
   'Gráficos': 'Графика',
   'Partículas': 'Честички',
   'Sombras': 'Сенки',

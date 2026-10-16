@@ -1923,6 +1923,7 @@ export default {
   'Objetos da parede': 'Ozdoby na ścianę',
   'Em cima dos móveis': 'Na meblach',
   'Móveis': 'Meble',
+  'Cortina': 'Zasłona',
   'Gráficos': 'Grafika',
   'Partículas': 'Cząsteczki',
   'Sombras': 'Cienie',

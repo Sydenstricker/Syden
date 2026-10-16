@@ -76,6 +76,20 @@ conferir(guardado.arrumacao?.janela?.tipo === 'arco', 'a janela trocada pela bar
 conferir(guardado.arrumacao?.cores?.tapete === 'azul', 'a cor do tapete foi ao servidor (' + guardado.arrumacao?.cores?.tapete + ')');
 conferir(!!guardado.arrumacao?.parede?.pintura, 'a pintura posta foi ao servidor');
 
+// A BARRINHA em cima do escolhido e o DESFAZER (16/10/2026): tocar o pufe no Editar o escolhe, e a barrinha aparece com o
+// nome traduzido que o app mandou; o Desfazer da barra tira a pintura que acabou de ser posta.
+const pufe = await frame.evaluate(() => window.ondeDoMovel('pufe'));
+await p.mouse.click(telaNoFrame.x + pufe[0] * telaNoFrame.width / 512, telaNoFrame.y + pufe[1] * telaNoFrame.height / 512);
+await p.waitForTimeout(500);
+const barrinha = await frame.evaluate(() => ({ sel: window.selecaoDoTeste(), botoes: [...document.querySelectorAll('#barrinha .botoes button')].map((b) => b.getAttribute('aria-label')) }));
+conferir(barrinha.sel === 'mpufe' && barrinha.botoes.includes('Tirar'), 'tocar o pufe no Editar o escolhe, com a barrinha (' + JSON.stringify(barrinha) + ')');
+await p.screenshot({ path: path.join(FOTOS, 'no-app-barrinha.png') });
+const desfazer = p.locator('.quarto-novo-linha > button', { hasText: 'Desfazer' });
+conferir(!(await desfazer.isDisabled()), 'há o que desfazer');
+await desfazer.click(); await p.waitForTimeout(1800);
+const depois = await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json();
+conferir(!depois.arrumacao?.parede?.pintura, 'o Desfazer tirou a pintura, e o servidor ficou sabendo');
+
 await navegador.close();
 console.log(falhas.length ? falhas.length + ' falha(s)' : 'tudo certo');
 process.exit(falhas.length ? 1 : 0);

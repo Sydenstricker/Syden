@@ -1845,6 +1845,7 @@ export default {
   'Objetos da parede': 'دیوار کی سجاوٹ',
   'Em cima dos móveis': 'فرنیچر کے اوپر',
   'Móveis': 'فرنیچر',
+  'Cortina': 'پردہ',
   'Gráficos': 'گرافکس',
   'Partículas': 'ذرات',
   'Sombras': 'سائے',

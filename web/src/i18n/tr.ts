@@ -1852,6 +1852,7 @@ export default {
   'Objetos da parede': 'Duvar süsleri',
   'Em cima dos móveis': 'Mobilyaların üstünde',
   'Móveis': 'Mobilya',
+  'Cortina': 'Perde',
   'Gráficos': 'Grafikler',
   'Partículas': 'Parçacıklar',
   'Sombras': 'Gölgeler',

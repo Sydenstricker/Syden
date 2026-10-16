@@ -1839,6 +1839,7 @@ export default {
   'Objetos da parede': '壁の飾り',
   'Em cima dos móveis': '家具の上',
   'Móveis': '家具',
+  'Cortina': 'カーテン',
   'Gráficos': 'グラフィック',
   'Partículas': 'パーティクル',
   'Sombras': '影',

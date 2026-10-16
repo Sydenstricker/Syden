@@ -1930,6 +1930,7 @@ export default {
   'Objetos da parede': 'भित्ताका सजावट',
   'Em cima dos móveis': 'फर्निचरमाथि',
   'Móveis': 'फर्निचर',
+  'Cortina': 'पर्दा',
   'Gráficos': 'ग्राफिक्स',
   'Partículas': 'कणहरू',
   'Sombras': 'छायाहरू',

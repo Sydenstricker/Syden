@@ -1920,6 +1920,7 @@ export default {
   'Objetos da parede': 'Zbukurime muri',
   'Em cima dos móveis': 'Mbi mobiljet',
   'Móveis': 'Mobilje',
+  'Cortina': 'Perde',
   'Gráficos': 'Grafika',
   'Partículas': 'Grimca',
   'Sombras': 'Hije',

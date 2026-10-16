@@ -1878,6 +1878,7 @@ export default {
   'Objetos da parede': 'أغراض الجدار',
   'Em cima dos móveis': 'فوق الأثاث',
   'Móveis': 'الأثاث',
+  'Cortina': 'الستارة',
   'Gráficos': 'الرسومات',
   'Partículas': 'الجسيمات',
   'Sombras': 'الظلال',

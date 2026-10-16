@@ -1846,6 +1846,7 @@ export default {
   'Objetos da parede': '벽 장식',
   'Em cima dos móveis': '가구 위',
   'Móveis': '가구',
+  'Cortina': '커튼',
   'Gráficos': '그래픽',
   'Partículas': '파티클',
   'Sombras': '그림자',

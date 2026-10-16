@@ -1927,6 +1927,7 @@ export default {
   'Objetos da parede': 'Ozdoby na zeď',
   'Em cima dos móveis': 'Na nábytku',
   'Móveis': 'Nábytek',
+  'Cortina': 'Závěs',
   'Gráficos': 'Grafika',
   'Partículas': 'Částice',
   'Sombras': 'Stíny',

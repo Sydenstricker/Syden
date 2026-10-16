@@ -1928,6 +1928,7 @@ export default {
   'Objetos da parede': 'Veggpynt',
   'Em cima dos móveis': 'På møblene',
   'Móveis': 'Møbler',
+  'Cortina': 'Gardin',
   'Gráficos': 'Grafikk',
   'Partículas': 'Partikler',
   'Sombras': 'Skygger',

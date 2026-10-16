@@ -1938,6 +1938,7 @@ export default {
   'Objetos da parede': 'ފާރުގެ ޒީނަތްތެރިކަން',
   'Em cima dos móveis': 'ފަރުނީޗަރުގެ މައްޗަށް',
   'Móveis': 'ފަރުނީޗަރު',
+  'Cortina': 'ފަރުދާ',
   'Gráficos': 'ގްރެފިކްސް',
   'Partículas': 'ޕާޓިކަލްސް',
   'Sombras': 'ހިޔަނި',

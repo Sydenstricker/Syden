@@ -1857,6 +1857,7 @@ export default {
   'Objetos da parede': 'Vitu vya ukutani',
   'Em cima dos móveis': 'Juu ya samani',
   'Móveis': 'Samani',
+  'Cortina': 'Pazia',
   'Gráficos': 'Michoro',
   'Partículas': 'Chembechembe',
   'Sombras': 'Vivuli',

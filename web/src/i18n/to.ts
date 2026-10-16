@@ -1864,6 +1864,7 @@ export default {
   'Objetos da parede': 'Teuteu ʻo e holisi',
   'Em cima dos móveis': 'ʻI he ngaahi naunau',
   'Móveis': 'Ngaahi naunau',
+  'Cortina': 'Puipui',
   'Gráficos': 'Ngaahi tā',
   'Partículas': 'Ngaahi konga iiki',
   'Sombras': 'Ngaahi malumalu',

@@ -1853,6 +1853,7 @@ export default {
   'Objetos da parede': 'Objetos de la pared',
   'Em cima dos móveis': 'Sobre los muebles',
   'Móveis': 'Muebles',
+  'Cortina': 'Cortina',
   'Gráficos': 'Gráficos',
   'Partículas': 'Partículas',
   'Sombras': 'Sombras',

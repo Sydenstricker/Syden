@@ -1846,6 +1846,7 @@ export default {
   'Objetos da parede': 'وسایل دیوار',
   'Em cima dos móveis': 'روی وسایل',
   'Móveis': 'وسایل',
+  'Cortina': 'پرده',
   'Gráficos': 'گرافیک',
   'Partículas': 'ذرات',
   'Sombras': 'سایه‌ها',

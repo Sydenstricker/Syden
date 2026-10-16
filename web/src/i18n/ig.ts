@@ -1866,6 +1866,7 @@ export default {
   'Objetos da parede': 'Ihe ịchọ mma mgbidi',
   'Em cima dos móveis': 'N\'elu ngwongwo ụlọ',
   'Móveis': 'Ngwongwo ụlọ',
+  'Cortina': 'Ákwà mgbochi',
   'Gráficos': 'Eserese',
   'Partículas': 'Ntụpọ ọkụ',
   'Sombras': 'Onyinyo',

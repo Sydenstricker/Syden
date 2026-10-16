@@ -1858,6 +1858,7 @@ export default {
   'Objetos da parede': 'Decorațiuni de perete',
   'Em cima dos móveis': 'Pe mobilă',
   'Móveis': 'Mobilă',
+  'Cortina': 'Perdea',
   'Gráficos': 'Grafică',
   'Partículas': 'Particule',
   'Sombras': 'Umbre',

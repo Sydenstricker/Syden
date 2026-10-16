@@ -1922,6 +1922,7 @@ export default {
   'Objetos da parede': 'Muurversierings',
   'Em cima dos móveis': 'Op die meubels',
   'Móveis': 'Meubels',
+  'Cortina': 'Gordyn',
   'Gráficos': 'Grafika',
   'Partículas': 'Deeltjies',
   'Sombras': 'Skaduwees',

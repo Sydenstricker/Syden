@@ -1936,6 +1936,7 @@ export default {
   'Objetos da parede': 'Devor bezaklari',
   'Em cima dos móveis': 'Mebel ustida',
   'Móveis': 'Mebel',
+  'Cortina': 'Parda',
   'Gráficos': 'Grafika',
   'Partículas': 'Zarrachalar',
   'Sombras': 'Soyalar',

@@ -1942,6 +1942,7 @@ export default {
   'Objetos da parede': 'Ханын чимэглэл',
   'Em cima dos móveis': 'Тавилга дээр',
   'Móveis': 'Тавилга',
+  'Cortina': 'Хөшиг',
   'Gráficos': 'График',
   'Partículas': 'Бөөмс',
   'Sombras': 'Сүүдэр',

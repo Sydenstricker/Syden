@@ -1864,6 +1864,7 @@ export default {
   'Objetos da parede': 'Διακοσμητικά τοίχου',
   'Em cima dos móveis': 'Πάνω στα έπιπλα',
   'Móveis': 'Έπιπλα',
+  'Cortina': 'Κουρτίνα',
   'Gráficos': 'Γραφικά',
   'Partículas': 'Σωματίδια',
   'Sombras': 'Σκιές',

@@ -1892,6 +1892,7 @@ export default {
   'Objetos da parede': 'Divar bəzəkləri',
   'Em cima dos móveis': 'Mebel üstündə',
   'Móveis': 'Mebel',
+  'Cortina': 'Pərdə',
   'Gráficos': 'Qrafika',
   'Partículas': 'Hissəciklər',
   'Sombras': 'Kölgələr',

@@ -1860,6 +1860,7 @@ export default {
   'Objetos da parede': 'Dekorasaun parede nian',
   'Em cima dos móveis': 'Iha mobília leten',
   'Móveis': 'Mobília',
+  'Cortina': 'Kortina',
   'Gráficos': 'Gráfiku',
   'Partículas': 'Partíkula',
   'Sombras': 'Mahon sira',

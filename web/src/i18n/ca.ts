@@ -1924,6 +1924,7 @@ export default {
   'Objetos da parede': 'Objectes de la paret',
   'Em cima dos móveis': 'Sobre els mobles',
   'Móveis': 'Mobles',
+  'Cortina': 'Cortina',
   'Gráficos': 'Gràfics',
   'Partículas': 'Partícules',
   'Sombras': 'Ombres',

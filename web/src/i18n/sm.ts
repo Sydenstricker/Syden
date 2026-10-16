@@ -1862,6 +1862,7 @@ export default {
   'Objetos da parede': 'Teuga o le puipui',
   'Em cima dos móveis': 'I luga o meafale',
   'Móveis': 'Meafale',
+  'Cortina': 'Pupuni',
   'Gráficos': 'Ata',
   'Partículas': 'Fasi laiti',
   'Sombras': 'Ata lafoia',

@@ -1946,6 +1946,7 @@ export default {
   'Objetos da parede': 'კედლის დეკორი',
   'Em cima dos móveis': 'ავეჯზე',
   'Móveis': 'ავეჯი',
+  'Cortina': 'ფარდა',
   'Gráficos': 'გრაფიკა',
   'Partículas': 'ნაწილაკები',
   'Sombras': 'ჩრდილები',

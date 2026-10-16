@@ -1929,6 +1929,7 @@ export default {
   'Objetos da parede': 'Ороишҳои девор',
   'Em cima dos móveis': 'Дар болои мебел',
   'Móveis': 'Мебел',
+  'Cortina': 'Парда',
   'Gráficos': 'Графика',
   'Partículas': 'Зарраҳо',
   'Sombras': 'Сояҳо',

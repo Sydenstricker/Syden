@@ -1927,6 +1927,7 @@ export default {
   'Objetos da parede': 'Ukrasi za zid',
   'Em cima dos móveis': 'Na namještaju',
   'Móveis': 'Namještaj',
+  'Cortina': 'Zavjesa',
   'Gráficos': 'Grafika',
   'Partículas': 'Čestice',
   'Sombras': 'Sjenke',

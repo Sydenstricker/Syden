@@ -1929,6 +1929,7 @@ export default {
   'Objetos da parede': 'Imihlobiso yodonga',
   'Em cima dos móveis': 'Phezu kwefenisha',
   'Móveis': 'Ifenisha',
+  'Cortina': 'Ikhethini',
   'Gráficos': 'Imidwebo',
   'Partículas': 'Izinhlayiya',
   'Sombras': 'Izithunzi',

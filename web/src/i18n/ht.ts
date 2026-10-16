@@ -1938,6 +1938,7 @@ export default {
   'Objetos da parede': 'Dekorasyon miray',
   'Em cima dos móveis': 'Sou mèb yo',
   'Móveis': 'Mèb',
+  'Cortina': 'Rido',
   'Gráficos': 'Grafik',
   'Partículas': 'Patikil',
   'Sombras': 'Lonbraj',

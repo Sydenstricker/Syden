@@ -1873,6 +1873,7 @@ export default {
   'Objetos da parede': 'Ọ̀ṣọ́ ògiri',
   'Em cima dos móveis': 'Lórí àga àti tábìlì',
   'Móveis': 'Àga àti tábìlì',
+  'Cortina': 'Aṣọ ìkélé',
   'Gráficos': 'Àwòrán',
   'Partículas': 'Ìtànná',
   'Sombras': 'Òjìji',

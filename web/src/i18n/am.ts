@@ -1858,6 +1858,7 @@ export default {
   'Objetos da parede': 'የግድግዳ ጌጦች',
   'Em cima dos móveis': 'በዕቃዎቹ ላይ',
   'Móveis': 'የቤት ዕቃዎች',
+  'Cortina': 'መጋረጃ',
   'Gráficos': 'ግራፊክስ',
   'Partículas': 'ብልጭታዎች',
   'Sombras': 'ጥላዎች',

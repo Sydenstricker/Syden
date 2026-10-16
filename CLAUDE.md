@@ -521,7 +521,11 @@ ficou combinado:
   os tipos de janela como figuras, porque o antigo "Janela" trocava o tipo às cegas e só a original tem cortina e abre);
   **a animação vem antes da função** (o coelho vai ao móvel, senta ao computador ou para diante do abajur, e só então a
   função abre, como as portas do guarda-roupa); passar o mouse no que tem função dá o **contorno claro**; e no Editar
-  nenhum clique abre função.
+  nenhum clique abre função. **Da referência de interface dele (mesmo dia), entrou só o que serve a leigos:** no Editar, o
+  que se toca fica ESCOLHIDO (contorno) com uma **barrinha em cima dele** (girar, tirar, "…" com as opções dele: cor do
+  tapete, arte do pôster, tipo de janela; na janela, cortina e abrir) e o **Desfazer** (Ctrl+Z e botão). Ficaram de fora,
+  de propósito: painel de propriedades com números, escala, colisão desligável, setas 3D, duplicar (móvel é peça única do
+  inventário), Aplicar/Cancelar (cada mudança já vale) e nome por objeto (80 idiomas).
 - **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova

@@ -1947,6 +1947,7 @@ export default {
   'Objetos da parede': 'Պատի զարդեր',
   'Em cima dos móveis': 'Կահույքի վրա',
   'Móveis': 'Կահույք',
+  'Cortina': 'Վարագույր',
   'Gráficos': 'Գրաֆիկա',
   'Partículas': 'Մասնիկներ',
   'Sombras': 'Ստվերներ',

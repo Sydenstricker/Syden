@@ -1898,6 +1898,7 @@ export default {
   'Objetos da parede': 'Miidhagina keenyan',
   'Em cima dos móveis': 'Meeshaa irratti',
   'Móveis': 'Meeshaa',
+  'Cortina': 'Golgaa',
   'Gráficos': 'Giraafiksii',
   'Partículas': 'Qaama xixiqqaa',
   'Sombras': 'Gaaddisawwan',
