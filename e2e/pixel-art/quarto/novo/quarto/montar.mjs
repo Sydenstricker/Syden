@@ -1221,7 +1221,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const [du, dv] = VISTAS[id][lado].mede; return [c[0] - du / 2, c[0] + du / 2, c[1] - dv / 2, c[1] + dv / 2];
   };
   const sobrepoe = (a, b) => a[0] < b[1] - 0.01 && a[1] > b[0] + 0.01 && a[2] < b[3] - 0.01 && a[3] > b[2] + 0.01;
-  let pegado = null, selecionado = 'poltrona', modo = 'dia', grade = false, arrastando = false, alvo = null;
+  // O app diz no endereço se é noite (16/10/2026, relato dele: "por um segundo o quarto começa de dia, depois carrega a
+  // noite"): a mensagem com o tema só chega depois do "pronto", e o primeiro quadro saía de dia.
+  let pegado = null, selecionado = 'poltrona', modo = MODO_APP && new URLSearchParams(location.search).has('noite') ? 'noite' : 'dia', grade = false, arrastando = false, alvo = null;
   // Cabe aqui? Dentro do quarto e sem passar por cima de outro móvel (o tapete fica embaixo de tudo).
   const ocupa = (c, quem = pegado, lado = ARR[quem].lado) => {
     const pe = peDe(quem, c, lado);
@@ -3633,6 +3635,7 @@ void main() {
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
   iniciarCadeira();
   const botoes = { dia: document.getElementById('dia'), noite: document.getElementById('noite') };
+  for (const [n, o] of Object.entries(botoes)) o.setAttribute('aria-pressed', String(n === modo));
   for (const [m, b] of Object.entries(botoes)) b.onclick = () => { modo = m; for (const [n, o] of Object.entries(botoes)) o.setAttribute('aria-pressed', String(n === m)); decidir(); desenhar(); };
   const bg = document.getElementById('grade');
   bg.onclick = () => { grade = !grade; bg.setAttribute('aria-pressed', String(grade)); desenhar(); };

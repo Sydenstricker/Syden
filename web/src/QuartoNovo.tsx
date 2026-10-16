@@ -68,6 +68,9 @@ export function QuartoNovo({
   const ref = useRef<HTMLIFrameElement>(null);
   const acoesRef = useRef(acoes);
   acoesRef.current = acoes;
+  // Se é noite vai no endereço, e não só na mensagem que segue o "pronto": senão o primeiro quadro sai de dia. Só o da
+  // abertura (trocar o endereço recarregaria a cena; depois, a troca vai por mensagem).
+  const [endereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
   const [pronto, setPronto] = useState(false);
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
@@ -117,7 +120,7 @@ export function QuartoNovo({
   return (
     <div className="quarto-novo-caixa">
       <div className="quarto-novo">
-        <iframe ref={ref} src={ENDERECO} title={t('Início')} />
+        <iframe ref={ref} src={endereco} title={t('Início')} />
       </div>
       {pronto && <BarraDeArrumar figuras={figuras} arrumacao={arrumacao} enviar={enviar} />}
     </div>
