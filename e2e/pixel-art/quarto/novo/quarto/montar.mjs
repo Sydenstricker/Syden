@@ -263,6 +263,9 @@ const html = `<!doctype html>
   body.salao #luz, body.salao #tela-pc, body.salao #janela, body.salao #cortina, body.salao #estados, body.salao .so-do-quarto { display: none; }
   html.app { color-scheme: light dark; }
   html.app body { background: transparent; }
+  /* a cena nunca rola dentro do app (relato dele, 16/10/2026: com o mouse no canto, o rótulo saía da página e apareciam
+     barras de rolagem, "quebra a imersão") */
+  html.app, html.app body { overflow: hidden; }
   html.app main { padding: 0; max-width: none; }
   html.app main > :not(.lado), html.app .lado > figure:not(.com-rotulo), html.app figcaption { display: none; }
   html.app .lado { display: block; }
@@ -3182,7 +3185,7 @@ void main() {
     : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
   // O móvel e a função dele (o guarda-roupa é a função "gavetas" da home: lá eram as gavetas da cama).
   // (no salão, as do Salao.tsx: a TV leva à voz, o fliperama aos mini-games, a estante aos canais, o balcão ao recado)
-  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador', cadeira: 'computador' };
+  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', cadeira: 'computador' };
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
@@ -3207,11 +3210,15 @@ void main() {
     rotulo.hidden = !f;
     if (soVer) tela.style.cursor = f ? 'pointer' : 'default';
     if (f) {
-      const r = tela.getBoundingClientRect(), rf = rotulo.parentElement.getBoundingClientRect();
-      rotulo.style.left = e.clientX - rf.left + 'px'; rotulo.style.top = e.clientY - rf.top + 'px';
+      const rf = rotulo.parentElement.getBoundingClientRect();
       rotulo.innerHTML = ''; rotulo.append(FUNCOES[f].rotulo);
       if (FUNCOES[f].sub) { const sm = document.createElement('small'); sm.textContent = FUNCOES[f].sub; rotulo.append(sm); }
-      void r;
+      // DENTRO DA CENA (relato dele, 16/10/2026: "às vezes o texto fica para fora do quarto"): centrado no ponteiro e acima
+      // dele, mas preso às bordas do que se vê; sem espaço em cima, vai para baixo do ponteiro.
+      const w = rotulo.offsetWidth, h = rotulo.offsetHeight, M = 6;
+      const cx = Math.max(w / 2 + M, Math.min(innerWidth - w / 2 - M, e.clientX));
+      const cy = e.clientY - h * 1.2 < M ? e.clientY + h * 1.2 + 18 : e.clientY;
+      rotulo.style.left = cx - rf.left + 'px'; rotulo.style.top = Math.min(innerHeight - M + h * 0.2, cy) - rf.top + 'px';
     }
   });
   tela.addEventListener('pointerleave', () => { rotulo.hidden = true; });
