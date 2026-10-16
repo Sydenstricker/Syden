@@ -107,6 +107,13 @@ for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = pasta.startsWith('S:') ? path.join(SALAO, 'moveis', pasta.slice(2)) : path.join(AQUI, 'avulsos', pasta);
   if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-' + id + l] = png(path.join(dir, d + '.png')); });
 }
+// A MÁSCARA DA TELA (pedido dele, 15/10/2026: "me fala qual o arquivo da TV que eu crio um com máscara"): uma cópia da
+// vista de frente com a tela pintada de MAGENTA puro (255, 0, 255), ao lado dela: <vista>-tela.png. Quando existe, ela
+// decide quais pixels são tela (no lugar da medida de telas.json e da procura pela cor).
+for (const id of ['tv', 'fliperama']) {
+  const pasta = GIROS[id]; if (!pasta?.startsWith('S:')) continue;
+  for (const l of [0, 3]) { const f = path.join(SALAO, 'moveis', pasta.slice(2), ORDEM_DO_GIRO[l] + '-tela.png'); if (fs.existsSync(f)) IMAGENS['tela-' + id + l] = png(f); }
+}
 // A CADEIRA DO COMPUTADOR gira livre (física): as 8 vistas, e a que aparece é a mais perto do ângulo dela.
 const OITO = ['south-west', 'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west'];
 if (CENA === 'quarto' && OITO.every((d) => fs.existsSync(path.join(AQUI, 'avulsos', 'cadeira-giros', d + '.png')))) for (const d of OITO) IMAGENS['cadeira-' + d] = png(path.join(AQUI, 'avulsos', 'cadeira-giros', d + '.png'));
@@ -134,7 +141,9 @@ if (CENA === 'salao') {
 }
 for (const q of ['dia', 'noite', 'noite-abajur']) IMAGENS['sem-' + q] = png(CENA === 'salao' ? path.join(SALAO, q === 'dia' ? 'base16.png' : 'noite16.png') : path.join(JAN_DIR, `sem-janela-${q}.png`));
 const JANELAS = {};
-for (const tipo of ['original', 'arco', 'redonda', 'floreira', 'cortinas']) {
+// No salão, a de tijolo primeiro (janelas/avulsa.mjs) e sem a de cortinas: "além de ter mancha, não combina com a estética
+// da sala" (relato dele, 15/10/2026).
+for (const tipo of CENA === 'salao' ? ['tijolo', 'original', 'arco', 'redonda', 'floreira'] : ['original', 'arco', 'redonda', 'floreira', 'cortinas']) {
   const d = path.join(JAN_DIR, tipo);
   if (!fs.existsSync(path.join(d, 'janela.json'))) continue;
   JANELAS[tipo] = JSON.parse(fs.readFileSync(path.join(d, 'janela.json'), 'utf8'));
@@ -409,8 +418,8 @@ function dados(im, filtro, w = W, h = W) {
   }
   const ORDEM_JANELAS = Object.keys(TIPOS_JANELA);
   // No salão, a redonda na parede da direita, acima do lambri (a original, de cortinas até o chão, é a do quarto).
-  // No salão, a com cortinas, como o conceito dele (15/10/2026; antes a com floreira, e antes a redonda, que saía cortada).
-  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'cortinas', parede: 'esquerda', v: 6.6 } : { tipo: 'original', parede: 'direita', v: 0 };
+  // No salão, a de tijolo (15/10/2026; antes a com cortinas, a com floreira e a redonda, que saía cortada).
+  const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'tijolo', parede: 'esquerda', v: 6.6 } : { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
   try { const gj = JSON.parse(localStorage.getItem(PREFIXO + 'janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
   // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
@@ -433,8 +442,13 @@ function dados(im, filtro, w = W, h = W) {
   // Até onde um objeto vai na parede: inteiro nela, acima do rodapé (30 px) e até a sombra da cornija (190 px: a parede
   // clara vai a ~176 px do chão, e o recorte traz uns pixels de sombra em volta).
   // (o que fica no CHÃO, como a porta, não sobe nem desce: só anda ao longo da parede)
-  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: it.chao ? 0 : Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
+  // O QUE FICA NO CHÃO (a porta): o pé dele no chão. A porta do salão foi pintada 17 px acima (relato de 15/10/2026: "a porta
+  // do banheiro não consegue encostar no chão"), e desce o que falta.
+  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: it.chao ? -Math.max(0, Math.round(it.alto[0])) : Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
   const mapaDaParede = (P) => { const dx = Math.round(27 * P.v), dy = Math.round(14.25 * P.v) - Math.round(P.h) + DY; return (x, y) => { x += dx + DX; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
+  // a de fábrica e a guardada também passam por aqui (a porta desce até o chão)
+  const prenderTudo = (o) => Object.fromEntries(Object.entries(o).map(([id, P]) => [id, prenderNaParede(id, P)]));
+  NA_PAREDE = prenderTudo(NA_PAREDE);
   const naParede = new Int8Array(W * W);
   const guardarJanela = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } enviar(); };
   // Para onde vai cada pixel da peça: ao longo da parede, o vetor de uma casa em v (27 px, 14,25 px); na outra parede, o
@@ -828,7 +842,21 @@ function dados(im, filtro, w = W, h = W) {
     }
     return pts;
   }
-  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id][l].recuo ?? TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
+  // a tela pela máscara magenta dele: os pixels são os da máscara; s e t pelas retas medidas (para a imagem não entortar
+  // onde a máscara faz curva), ou pelo alto e pé de cada coluna da máscara quando não há medida
+  function telaDaMascara(img, q) {
+    const c = document.createElement('canvas'); c.width = W; c.height = W; const gc = c.getContext('2d'); gc.drawImage(img, 0, 0);
+    const m = gc.getImageData(0, 0, W, W).data, col = new Map();
+    for (let k = 0; k < W * W; k++) if (m[k * 4 + 3] > 127 && m[k * 4] > 200 && m[k * 4 + 2] > 200 && m[k * 4 + 1] < 80) { const x = k % W, y = (k / W) | 0, cc = col.get(x); if (!cc) col.set(x, [y, y]); else { cc[0] = Math.min(cc[0], y); cc[1] = Math.max(cc[1], y); } }
+    if (!col.size) return null;
+    const xs = [...col.keys()].sort((a, b) => a - b), x0 = xs[0], x1 = xs[xs.length - 1], pts = [];
+    for (const x of xs) {
+      const [ya, yb] = col.get(x), ta = q ? q.topo + q.k * x : ya, tb = q ? q.pe + q.k * x : yb;
+      for (let y = ya; y <= yb; y++) { const k = y * W + x; if (m[k * 4 + 3] > 127 && m[k * 4] > 200 && m[k * 4 + 2] > 200 && m[k * 4 + 1] < 80) pts.push([x, y, (x - x0) / Math.max(1, x1 - x0), Math.min(1, Math.max(0, (y - ta) / Math.max(1, tb - ta)))]); }
+    }
+    return pts;
+  }
+  for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? im['tela-' + id + l] ? telaDaMascara(im['tela-' + id + l], TELAS_MEDIDAS[id]?.[l]) : (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id][l].recuo ?? TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
   const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
@@ -3137,7 +3165,7 @@ function dados(im, filtro, w = W, h = W) {
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
   document.addEventListener('keydown', (e) => { if (!soVer && (e.key === 'r' || e.key === 'R')) girarSegurado(e.shiftKey ? -1 : 1); });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL)); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher('poltrona');
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -3172,7 +3200,7 @@ function dados(im, filtro, w = W, h = W) {
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
     CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => id === 'tapete' && CORES_DO_TAPETE[c])) : {};
     botaoDaCor();
-    NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : JSON.parse(JSON.stringify(PAREDE_INICIAL));
+    NA_PAREDE = a.parede ? Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id]).map(([id, P]) => [id, prenderNaParede(id, P)])) : prenderTudo(PAREDE_INICIAL);
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }
