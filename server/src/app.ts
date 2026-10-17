@@ -112,6 +112,9 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
     const limpar = () => {
       const quantas = db.limparCaixaPreta();
       if (quantas > 0) app.log.info({ quantas }, 'caixa-preta: contas que passaram dos 90 dias foram apagadas');
+      // os prazos da proteção (o tempo de uso dos menores, a imagem das denúncias resolvidas): ver limparProtecaoVencida
+      const protecao = db.limparProtecaoVencida();
+      if (protecao.usos || protecao.imagens) app.log.info(protecao, 'proteção: o que passou do prazo foi apagado');
     };
     limpar();
     setInterval(limpar, 24 * 60 * 60 * 1000).unref();

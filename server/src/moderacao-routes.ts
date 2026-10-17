@@ -209,6 +209,25 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
             sorteiosGanhos: db.sorteiosGanhos(c.id, eu.id),
           };
         }),
+        // A PROTEÇÃO (ECA Digital): a data de nascimento informada (só a própria pessoa a recebe), as regras e o
+        // responsável de quem é menor, o tempo de uso medido, e de quem a pessoa é responsável.
+        idade: (() => {
+          const p = db.protecaoDe(eu.id);
+          const sup = db.supervisaoSeHouver(eu.id);
+          return {
+            nascimento: p?.nascimento ?? null,
+            informadaEm: p?.nascimentoEm ?? null,
+            regras: sup && {
+              conversaPrivadaSoComAmigos: sup.dmSoAmigos,
+              transmitirSoParaAmigos: sup.transmitirSoAmigos,
+              assistirSoDeAmigos: sup.assistirSoAmigos,
+              limiteDiarioEmMinutos: sup.limiteMinutos,
+            },
+            responsavel: sup?.responsavelId ? (db.findUserById(sup.responsavelId)?.username ?? null) : null,
+            tempoDeUsoPorDia: db.usoDosDias(eu.id, '0000-00-00'),
+            responsavelPor: db.menoresDe(eu.id).map((m) => m.username),
+          };
+        })(),
         insignias: db.itensDaPessoa(eu.id),
         mensagens: db.mensagensDaPessoa(eu.id),
         tempoEmChamada: db.usoDaPessoa(eu.id),

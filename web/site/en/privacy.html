@@ -15,7 +15,7 @@
   <body>
     <main>
       <h1>Syden privacy policy</h1>
-      <p class="updated">Last updated October 13, 2026</p>
+      <p class="updated">Last updated October 17, 2026</p>
       <p class="traducao">
         This is a translation of the <a href="../privacidade.html">original in Portuguese</a>. Syden is run from
         Brazil, and if the two ever differ, the Portuguese version is the one that applies.
@@ -45,9 +45,26 @@
         <li><strong>Badges:</strong> which ones you received, when and why, and which ones you chose to show on your profile.</li>
         <li><strong>Call usage:</strong> when you join and leave voice rooms and when you share your screen, for the "Server usage" panel, which only administrators see.</li>
         <li>
+          <strong>Date of birth:</strong> asked of everyone, because of ECA Digital (see <a href="#idade">Age</a>). It is
+          used <strong>only</strong> to know the age range (under 13, 13 to 15, 16 and 17, adult), and for nothing else —
+          not for ads, which Syden doesn't have, nor for behavioral profiling. Nobody sees it: not other people, nor the
+          guardian of a minor, who sees only the range.
+        </li>
+        <li>
+          <strong>If you are under 18:</strong> your account's protection rules (private chat, screen, camera and streams
+          only with friends, and the time limit, if any), the link to your guardian, and the <strong>daily usage
+          time</strong>, counted in minutes while Syden is open. For adults, usage time is not measured.
+        </li>
+        <li>
           <strong>Reports:</strong> if someone reports a message of yours, we keep a copy of what was reported, the
           written reason, the name of the person who reported it and yours. The copy exists because the message may be
-          deleted before anyone reviews the report.
+          deleted before anyone reviews the report. A report of a <strong>screen share</strong> also keeps the image of
+          that moment, taken from the screen of whoever reported it — Syden doesn't record streams; that image is the only
+          evidence, and only the Syden team opens it.
+        </li>
+        <li>
+          <strong>Bans and suspensions:</strong> if your account is banned or suspended, we keep the reason, when, and the
+          appeal you write.
         </li>
         <li>
           <strong>Moderation log:</strong> when someone deletes another person's message, removes a member, deletes an
@@ -127,6 +144,11 @@
         <li><strong>Server members:</strong> see your name, avatar, badges, messages, whether you are online and which voice room you are in.</li>
         <li><strong>Your community's administrator</strong> can delete messages, remove members and read the reports made there.</li>
         <li>
+          <strong>The guardian of someone under 18</strong> (only if the accounts are linked) sees the age range, the
+          daily usage time, the account's rules and the names of the adults the teenager is friends with or chats with
+          privately. <strong>They don't see the messages</strong>, nor the date of birth.
+        </li>
+        <li>
           <strong>Whoever maintains Syden</strong> sees only the <em>count</em> for each community: name, how many
           members, how many messages there were in a period, how many people wrote and when the last one was. It is used
           to know where Syden is growing and to notice a space being used for something it shouldn't be.
@@ -179,7 +201,7 @@
         </li>
         <li id="imagens">
           <strong>Project Arachnid (Canada) — every image you upload.</strong> Before an image is stored — avatar,
-          community image, emoji or message attachment — it is checked against a database of known child sexual abuse
+          community image, emoji, message attachment or the image of a screen-share report — it is checked against a database of known child sexual abuse
           material, maintained by the Canadian Centre for Child Protection. The image is sent to them for that check, and
           that is why this must be said plainly instead of being hidden in a technical line.
           <br /><br />
@@ -213,6 +235,12 @@
         written, even after the account is deleted. Without this there would be no way to answer, months later, why a
         message was deleted or an account removed. They are not used for any other purpose.
       </p>
+      <p>
+        Two deadlines of their own, which the server keeps by itself: a minor's <strong>usage time</strong> is kept for 90
+        days and then deleted; the <strong>image of a screen-share report</strong> is deleted 180 days after the report is
+        resolved — except in serious cases (exploitation, abuse or grooming of a child or teenager), where it is evidence
+        an authority may request and is kept for as long as the law requires.
+      </p>
 
       <h2>The 90 days after deleting your account</h2>
       <p>
@@ -245,7 +273,10 @@
         data. Two things you can do yourself in the app, without asking anyone:
       </p>
       <ul>
-        <li><strong>Take your data:</strong> download a file with everything Syden stores about you.</li>
+        <li>
+          <strong>Take your data:</strong> under <em>Settings → My account → Take your data</em>, download a file with
+          everything Syden stores about you. It works even if the account is banned or suspended.
+        </li>
         <li>
           <strong>Delete your account:</strong> under <em>Settings → My account → Delete account</em>. The account
           disappears from Syden immediately; a copy of what you wrote stays outside the app for 90 days, in case an
@@ -253,8 +284,9 @@
         </li>
       </ul>
       <p>
-        For other requests, talk to your server's administrator or open a request at
-        <a href="https://github.com/Sydenstricker/Syden/issues">github.com/Sydenstricker/Syden/issues</a>.
+        For other requests — including correcting your date of birth —, write to
+        <a href="mailto:contato@syden.chat">contato@syden.chat</a>, which is Syden's privacy channel and is read by whoever
+        maintains it.
       </p>
 
       <h2>Security</h2>
@@ -264,8 +296,19 @@
         nobody can keep guessing yours. No system is 100% secure, but we take care to reduce the risks.
       </p>
 
-      <h2>Age</h2>
-      <p>Syden is intended for people over 13. Minors need permission from their parents or guardians.</p>
+      <h2 id="idade">Age</h2>
+      <p>
+        Syden is for people aged <strong>13 or older</strong>. From 13 to 15, the account is linked to a father's,
+        mother's or guardian's, and anyone under 18 starts with all protections on. The full rules are in the
+        <a href="terms.html#menores">terms of use, section 2</a>.
+      </p>
+      <p>
+        <strong>The gov.br age token.</strong> Syden has committed to adopting it as soon as the Brazilian government
+        offers it to apps (see <a href="terms.html#gov-br">the terms</a>). When that happens, age confirmation will go
+        through your gov.br account, and Syden will receive <strong>only the confirmation of the age range</strong> —
+        never the CPF, a document or the date. This policy will be updated beforehand, saying what starts being received.
+        The same applies to the age range Windows reports for the Microsoft account, in the Windows app.
+      </p>
 
       <h2>Changes</h2>
       <p>
@@ -279,6 +322,15 @@
         receiving anything appears here before it is turned on.
       </p>
       <ul class="historico">
+        <li>
+          <strong>October 17, 2026</strong> — protection of children and teenagers (ECA Digital): the date of birth is
+          now asked of everyone, used only for the age range; for minors, we keep the account's rules, the link to the
+          guardian and the daily usage time (90 days); the guardian sees what is described in <em>Who sees your data</em>;
+          a screen-share report keeps the image of the moment, checked by Project Arachnid and deleted 180 days after the
+          report is resolved, except in serious cases; bans and suspensions keep the reason and the appeal. The
+          <a href="#idade">Age</a> section carries the commitment to the gov.br age token. The channel for privacy
+          requests is now contato@syden.chat. No new third party.
+        </li>
         <li>
           <strong>October 13, 2026</strong> — <a href="#jogos-de-parceiros">partner games</a> were added: Termo can run
           inside Syden, only after you click it, and it uses Google Analytics.

@@ -6108,3 +6108,18 @@ export function parceirosDeConversa(userId: number): number[] {
       .all(userId, userId) as { id: number }[]
   ).map((r) => r.id);
 }
+
+/**
+ * OS PRAZOS DA PROTEÇÃO (o que a política de privacidade promete, 17/10/2026): o tempo de uso dos menores fica 90 dias;
+ * a imagem de uma denúncia de transmissão resolvida e NÃO grave fica 180 dias depois da resolução (o prazo do Marco
+ * Civil para os registros de aplicação). A de caso grave fica, porque é prova que a autoridade pode pedir.
+ */
+export function limparProtecaoVencida(): { usos: number; imagens: number } {
+  const usos = db.prepare("DELETE FROM uso_diario WHERE dia < date('now', '-90 days')").run().changes;
+  const imagens = db
+    .prepare(
+      "UPDATE reports SET sha = NULL WHERE sha IS NOT NULL AND grave = 0 AND status = 'resolvida' AND resolved_at < strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-180 days')",
+    )
+    .run().changes;
+  return { usos: Number(usos), imagens: Number(imagens) };
+}

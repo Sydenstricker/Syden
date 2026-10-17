@@ -106,6 +106,23 @@ export const ERROS_TRADUZIDOS = [
   chave('Um dos cargos não existe.'),
   chave('Cada emoji só pode dar um cargo.'),
   chave('Painel não encontrado.'),
+  // A proteção de crianças e adolescentes (17/10/2026): são lidas justamente por adolescentes e pelos responsáveis.
+  chave('O Syden é para quem tem 13 anos ou mais.'),
+  chave('Escreva a sua data de nascimento.'),
+  chave('A sua data de nascimento já foi informada. Para corrigir, escreva para contato@syden.chat.'),
+  chave('Por segurança, menores de idade conversam no particular só com amigos.'),
+  chave('Por segurança, a prévia das transmissões fica fechada para menores de idade.'),
+  chave('Conte em poucas palavras por que a decisão deve mudar (de 10 a 2000 caracteres).'),
+  chave('Só contas de menores de idade se ligam a um responsável.'),
+  chave('A sua conta já está ligada a um responsável.'),
+  chave('Limite inválido: de 15 minutos a 24 horas.'),
+  chave('Só um adulto pode ser o responsável por outra conta.'),
+  chave('Confirme que você é o pai, a mãe ou o responsável legal.'),
+  chave('Código não encontrado ou vencido. Peça um novo.'),
+  chave('Você não pode ser o seu próprio responsável.'),
+  chave('Esta conta já está ligada a um responsável.'),
+  chave('Sua conta tem uma pendência. Abra o Syden de novo para ver o que fazer.'),
+  chave('Transmissão não encontrada.'),
 ] as const;
 
 /**
