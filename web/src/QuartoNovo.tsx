@@ -422,7 +422,7 @@ export function EditorDaCena({
             texto, como toda espera do Syden (ver CLAUDE.md, "Animações"). */}
         {carregando && (
           <div className="editor-carregando" aria-hidden="true">
-            <Mascote nome="ocioso" tamanho={180} />
+            <Mascote nome="introducao" tamanho={180} />
           </div>
         )}
       </div>

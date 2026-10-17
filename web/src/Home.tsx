@@ -223,7 +223,7 @@ export function Home({
           <div className="quarto-novo-caixa" aria-hidden="true">
             {/* o mascote esperando (a espera não diz qual quarto vem: só espera) */}
             <div className="quarto-novo editor-esperando">
-              <Mascote nome="ocioso" tamanho={180} />
+              <Mascote nome="introducao" tamanho={180} />
             </div>
           </div>
         )}

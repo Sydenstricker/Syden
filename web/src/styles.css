@@ -15271,3 +15271,37 @@ body.arrastando-barra {
   color: var(--text);
   font: inherit;
 }
+
+/* O MASCOTE ESPERANDO A CENA (quarto e salão; relato dele, 17/10/2026: "parece travado"). As animações de dentro do SVG
+   rodam na mesma linha de execução da página, e a cena (um iframe da mesma origem) a ocupa inteira enquanto se monta:
+   o coelho congelava. Este pulinho é no próprio elemento, só com transform, e roda no compositor: continua fluido com a
+   página ocupada. */
+.editor-esperando .mascote,
+.editor-carregando .mascote {
+  animation: mascote-esperando 1.1s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  transform-origin: 50% 90%;
+  will-change: transform;
+}
+
+@keyframes mascote-esperando {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  15% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+  45% {
+    transform: translateY(-14px) scale(0.98, 1.03);
+  }
+  75% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-esperando .mascote,
+  .editor-carregando .mascote {
+    animation: none;
+  }
+}
