@@ -315,6 +315,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     violao: { parede: 'direita', v: 9.7, h: 0 },
     // o pôster do coelho roqueiro, acima da jukebox: o canto do karaokê se anuncia (pedido dele, 15/10/2026)
     poster: { parede: 'direita', v: 8.6, h: 6 },
+    // o pôster "Café & Fofoca" na cozinha, ao lado da prateleira de snacks (dele, 17/10/2026, feito no ChatGPT)
+    cafe: { parede: 'esquerda', v: 12.6, h: 6 },
   } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
   // OBJETO NOVO ENTRA SOZINHO (relato dele, 16/10/2026: "atualizei a sala mas não vi o pôster"): a arrumação guarda quais
@@ -334,7 +336,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const TEXTURAS_PAREDE = porTipo({}, TEXTURAS_DA_COPIA);
   const caixasDaParede = {};
   const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
-  for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
+  for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']), ...(ITENS_PAREDE[id].texto ? { esq: { dia: dados(im['par-' + id + '-esq-dia']), noite: dados(im['par-' + id + '-esq-noite']) } } : {}) };
+  // A arte de um objeto da parede onde ele está: na da esquerda, a peça própria quando ele tem texto.
+  const texturaNaParede = (id, parede) => (parede === 'esquerda' && TEXTURAS_PAREDE[id].esq) || TEXTURAS_PAREDE[id];
   // A escolha de cor do tapete e de OPÇÃO de um objeto da parede (o pôster): { tapete: 'azul', poster: 'fogo' }.
   let CORES = {};
   try { CORES = JSON.parse(localStorage.getItem(PREFIXO + 'cores') ?? '{}') || {}; } catch { /* as de fábrica */ }
@@ -657,7 +661,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     naParede.fill(0); formaParede.fill(0); luzesDaParede = [];
     const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
     ids.forEach((id, i) => {
-      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : TEXTURAS_PAREDE[id], mp = mapaDaParede(P);
+      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : texturaNaParede(id, P.parede), mp = mapaDaParede(P);
       base = compor(base, T2.dia, semDiaL, semDiaL, null, null, mp);
       if (T.cortinaDia) cortinaDia = compor(cortinaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
       abertaDia = compor(abertaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
@@ -1731,6 +1735,24 @@ if (CENA === 'salao') document.body.classList.add('salao');
     };
     const t = naFrente('tv', 1.6); if (t) tv.push(t);
     const fl = naFrente('fliperama', 0.7); if (fl) fliperama.push({ ...fl, pose: 'no-fliperama' });
+    // A TURMA DA PARTIDA EM VOLTA (pergunta dele, 17/10/2026: "se tiver mais de uma pessoa jogando mini-game, o que
+    // acontece?"): só o primeiro cabia na máquina, e o resto ia para o sofá, como se não estivesse no jogo. Agora quem
+    // joga junto (até mais três) fica de pé atrás e dos lados do fliperama, olhando para a tela;
+    // quem passa disso volta ao sofá, para a roda não virar um bolo na frente da TV. Na TV, a segunda pessoa transmitindo fica
+    // ao lado da primeira.
+    const emVolta = (id, lugares) => {
+      if (!ARR[id]) return [];
+      const [fu, fv] = VET[ORIENTA[ARR[id].lado]], pe = peDe(id), [cu, cv] = centro(pe), meia = Math.abs(fu) ? (pe[1] - pe[0]) / 2 : (pe[3] - pe[2]) / 2;
+      const [lu, lv] = [fv, fu]; // o lado (perpendicular à frente, no chão)
+      const tela = [cu + fu * meia, cv + fv * meia];
+      return lugares.map(([frente, lado]) => [cu + fu * (meia + frente) + lu * lado, cv + fv * (meia + frente) + lv * lado])
+        .filter(([u, v]) => u > 0.3 && v > 0.3 && u < N - 0.3 && v < N - 0.3 && livre(Math.floor(u), Math.floor(v)))
+        .map(([u, v]) => ({ u, v, sobe: 0, pose: 'parado', olha: DIAGONAL(tela[0] - u, tela[1] - v), sobre: null }));
+    };
+    // primeiro os lugares do lado de lá da TV (os dois móveis costumam ficar lado a lado, e a turma de um engolia o outro)
+    const longeDaTv = (x) => (ARR.tv ? -Math.hypot(x.u - centro(peDe('tv'))[0], x.v - centro(peDe('tv'))[1]) : 0);
+    fliperama.push(...emVolta('fliperama', [[1.0, 1.1], [1.0, -1.1], [2.0, 0]]).sort((a, b) => longeDaTv(a) - longeDaTv(b)));
+    tv.push(...emVolta('tv', [[1.6, 1], [1.6, -1]]));
     // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
     const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, N / 2];
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
@@ -1739,7 +1761,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   function lugaresDasPessoas() {
     const L = lugaresDoSalao(), usados = [];
-    const pegar = (lista) => { const x = lista.shift(); if (x) usados.push(x); return x; };
+    // um lugar DE PÉ a menos de 0,8 casa de outro já tomado é pulado (as rodas da TV e do fliperama se cruzam); os assentos
+    // do sofá são mais juntos que isso e valem todos
+    const pegar = (lista) => { let x; while ((x = lista.shift()) && !x.sobre && usados.some((y) => Math.hypot(y.u - x.u, y.v - x.v) < 0.8)); if (x) usados.push(x); return x; };
     return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || null })).filter((x) => x.lugar);
   }
   // Cada pessoa vira uma PEÇA da cena, como um móvel: o mascote parado naquela pose, com a profundidade do pé dele (e, sentado,
@@ -3176,7 +3200,7 @@ void main() {
     // o objeto de parede vivo: os pixels dele levados para onde está agora
     let paredeViva = null;
     if (paredePega?.vivo && TEXTURAS_PAREDE[paredePega.id]) {
-      const id = paredePega.id, T2 = TEXTURAS_PAREDE[id], mp = mapaDaParede(paredePega.vivo), cx = caixaDoItemDaParede(id), px = [];
+      const id = paredePega.id, T2 = texturaNaParede(id, paredePega.vivo.parede), mp = mapaDaParede(paredePega.vivo), cx = caixaDoItemDaParede(id), px = [];
       let bx0 = W, by0 = W, bx1 = 0, by1 = 0;
       const tex = modo === 'noite' && CENA !== 'salao' ? T2.noite : T2.dia, f = modo === 'noite' && CENA === 'salao' ? 0.6 : 1;
       for (let y = cx[1]; y < cx[3]; y++) for (let x = cx[0]; x < cx[2]; x++) {
