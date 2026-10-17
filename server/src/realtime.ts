@@ -323,7 +323,11 @@ export function setupRealtime(io: IOServer) {
     if (!achado || achado.sessionVersion !== sessao!.sessionVersion) return next(new Error('unauthorized'));
     // Conta barrada (banida, suspensa, sem a idade, sem o responsável, com o tempo do dia esgotado) não fica online:
     // a tela dela é a da barreira, que fala só pelas rotas (ver protecao.ts).
-    if (barreiraDe(achado.user.id)) return next(new Error('barreira'));
+    if (barreiraDe(achado.user.id)) {
+      // e não fica na chamada: o áudio é do LiveKit e sobreviveria à conexão recusada (ver tirarDeTodasAsChamadas)
+      void import('./routes.js').then(({ tirarDeTodasAsChamadas }) => tirarDeTodasAsChamadas(achado.user.id)).catch(() => {});
+      return next(new Error('barreira'));
+    }
     socket.data.user = achado.user;
     next();
   });

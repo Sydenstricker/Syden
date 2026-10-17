@@ -48,6 +48,26 @@ export async function tirarDaChamada(channelId: number, userId: number) {
 }
 
 /**
+ * TIRA DE TODA CHAMADA, sem saber de qual (relato dele, 17/10/2026: o "saibot" aparecia no palco da sala e não na lista
+ * dela). Quem é barrado quando a conexão em tempo real cai (o servidor reiniciou, ou a barreira nasceu com ele) perde o
+ * lugar na lista, mas a conexão de áudio, que é do LiveKit, continuava: um app antigo, que não conhece a barreira, seguia
+ * ouvindo a sala. Uma vez por minuto por pessoa, porque o app antigo tenta reconectar sem parar.
+ */
+const tiradosHaPouco = new Map<number, number>();
+export async function tirarDeTodasAsChamadas(userId: number) {
+  const agora = Date.now();
+  if ((tiradosHaPouco.get(userId) ?? 0) > agora - 60_000) return;
+  tiradosHaPouco.set(userId, agora);
+  for (const comunidade of db.listCommunitiesForUser(userId)) {
+    for (const canal of db.listChannels(comunidade.id)) {
+      if (canal.type !== 'voice') continue;
+      await rooms.removeParticipant(voiceRoomName(canal.id), String(userId)).catch(() => {});
+      await rooms.removeParticipant(voiceRoomName(canal.id), 'peek-' + userId).catch(() => {});
+    }
+  }
+}
+
+/**
  * A rede de segurança do vídeo dos menores (ver vigiarVideoDosMenores, em realtime.ts): desinscreve à força cada
  * espectador do vídeo (tela e câmera) que ele não pode ver. Quem espia a prévia entra como "peek-<id>".
  */
