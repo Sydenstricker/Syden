@@ -15,11 +15,9 @@
 export default {
   ', e a resposta volta pela mesma conversa.': ', e la risposta torna nella stessa conversazione.',
   '{dias} dias para trazer de volta': '{dias} giorni per recuperarlo',
-  '{n} cutucadas hoje': '{n} colpetti oggi',
   '{n} mensagens': '{n} messaggi',
   '{n} na chamada agora': '{n} in chiamata adesso',
   '{n} pessoas nesta comunidade': '{n} persone in questa comunità',
-  '1 cutucada hoje': '1 colpetto oggi',
   '1 mensagem': '1 messaggio',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     'L’autorizzazione si è aperta nel browser ed è ancora valida. Se hai già autorizzato e qui non è successo nulla, la risposta non è arrivata a Syden.',
@@ -139,7 +137,6 @@ export default {
   'Criar tópico': 'Crea una discussione',
   'Criar tópico a partir desta mensagem': 'Crea una discussione da questo messaggio',
   'Criar uma conta': 'Crea un account',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': 'Tocca i conigli, clicca sull’erba per piantare una carota.',
   'De graça, para qualquer pessoa': 'Gratis, per chiunque',
   'Deixar marcar mais de uma opção': 'Permetti di scegliere più di un’opzione',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -201,7 +198,6 @@ export default {
     'Scegli qui la lingua di Syden. Cambia subito, vale solo per te, e resta salvata su questo computer.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Scegli chi entra. Con più di una persona diventa una conversazione di gruppo.',
-  'Escolha o coelho da estátua da praça.': 'Scegli il coniglio della statua in piazza.',
   'Escolher emoji': 'Scegli un’emoji',
   'Excluir {canal}': 'Elimina {canal}',
   'Nome da sala': 'Nome della stanza',
@@ -384,7 +380,6 @@ export default {
   'Escolher áudios': 'Scegli gli audio',
   'Escolher de novo, marcando o som': 'Scegli di nuovo, spuntando l’audio',
   'Escolher GIF': 'Scegli una GIF',
-  'Escolher o coelho do Syden': 'Scegli il coniglio di Syden',
   Escreva: 'Scrivi',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     'Scrivi qui cosa vorresti che esistesse — o cosa ti dà fastidio. Arriva come messaggio privato a',
@@ -561,7 +556,6 @@ export default {
   Pessoa: 'Persona',
   Pessoas: 'Persone',
   'Pessoas das suas comunidades': 'Persone delle tue comunità',
-  'Plantar uma cenoura': 'Pianta una carota',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG o WEBP, di qualunque dimensione: scegli tu il ritaglio.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP o GIF animata, fino a 512 KB. L’immagine viene adattata a 128×128.',
@@ -1829,12 +1823,6 @@ export default {
   'Carregar mensagens anteriores': 'Carica messaggi precedenti',
   'Arquivo': 'File',
   'Tópico · {titulo}': 'Discussione · {titulo}',
-  'Cutucar o coelho': 'Stuzzica il coniglio',
-  'A vila do Syden': 'Il villaggio di Syden',
-  'Clarear o Syden': 'Schiarisci Syden',
-  'Escurecer o Syden': 'Scurisci Syden',
-  'a turma engordou!': 'il gruppo è ingrassato!',
-  'colocar de dieta': 'mettili a dieta',
   'A partida ainda não começou.': 'La partita non è ancora iniziata.',
   'A partida já começou.': 'La partita è già iniziata.',
   'Só quem começou dá a largada.': 'Solo chi l\'ha creata può dare il via.',

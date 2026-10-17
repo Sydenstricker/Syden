@@ -19,12 +19,10 @@
 export default {
   ', e a resposta volta pela mesma conversa.': ', और जवाब उसी बातचीत में वापस आता है।',
   '{dias} dias para trazer de volta': 'वापस लाने के लिए {dias} दिन',
-  '{n} cutucadas hoje': 'आज {n} बार कोंचा',
   '{n} mensagens': '{n} संदेश',
   '{n} na chamada agora': 'अभी कॉल में {n} लोग',
   '{n} pessoas nesta comunidade': 'इस समुदाय में {n} लोग',
   '{quantos} dos 193 países da ONU': '193 संयुक्त राष्ट्र सदस्य देशों में से {quantos}',
-  '1 cutucada hoje': 'आज 1 बार कोंचा',
   '1 mensagem': '1 संदेश',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     'अनुमति ब्राउज़र में खुली और अब भी चालू है। अगर तुमने अनुमति दे दी और यहाँ कुछ नहीं हुआ, तो जवाब Syden तक नहीं पहुँचा।',
@@ -141,7 +139,6 @@ export default {
   'Criar tópico': 'थ्रेड बनाओ',
   'Criar tópico a partir desta mensagem': 'इस संदेश से थ्रेड बनाओ',
   'Criar uma conta': 'खाता बनाओ',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': 'खरगोशों को कोंचो, गाजर बोने के लिए घास पर क्लिक करो।',
   'De graça, para qualquer pessoa': 'मुफ़्त, किसी के लिए भी',
   'Deixar marcar mais de uma opção': 'एक से ज़्यादा विकल्प चुनने दो',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -203,7 +200,6 @@ export default {
     'Syden की भाषा यहाँ चुनो। तुरंत लागू होती है, सिर्फ़ तुम्हारे लिए, और इसी कंप्यूटर पर सहेजी रहती है।',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'चुनो कौन आएगा। एक से ज़्यादा लोग होने पर यह समूह की बातचीत बन जाती है।',
-  'Escolha o coelho da estátua da praça.': 'चौक की मूर्ति के लिए खरगोश चुनो।',
   'Escolher emoji': 'इमोजी चुनें',
   'Excluir {canal}': '{canal} हटाएँ',
   'Nome da sala': 'कमरे का नाम',
@@ -386,7 +382,6 @@ export default {
   'Escolher áudios': 'ऑडियो चुनो',
   'Escolher de novo, marcando o som': 'फिर से चुनो, आवाज़ पर निशान लगाकर',
   'Escolher GIF': 'GIF चुनो',
-  'Escolher o coelho do Syden': 'Syden का खरगोश चुनो',
   Escreva: 'लिखो',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     'यहाँ लिखो कि तुम क्या चाहते हो कि हो — या क्या अटका रहा है। यह निजी संदेश बनकर पहुँचता है:',
@@ -563,7 +558,6 @@ export default {
   Pessoa: 'व्यक्ति',
   Pessoas: 'लोग',
   'Pessoas das suas comunidades': 'तुम्हारे समुदायों के लोग',
-  'Plantar uma cenoura': 'गाजर बोओ',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG या WEBP, किसी भी आकार में: कटाई तुम चुनोगे।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP या चलती-फिरती GIF, 512 KB तक। तस्वीर 128×128 पर ढाल दी जाती है।',
@@ -1829,12 +1823,6 @@ export default {
   'Carregar mensagens anteriores': 'पुराने संदेश लोड करो',
   'Arquivo': 'फ़ाइल',
   'Tópico · {titulo}': 'थ्रेड · {titulo}',
-  'Cutucar o coelho': 'खरगोश को छेड़ो',
-  'A vila do Syden': 'Syden का गाँव',
-  'Clarear o Syden': 'Syden को हल्का करो',
-  'Escurecer o Syden': 'Syden को गहरा करो',
-  'a turma engordou!': 'ग्रुप मोटा हो गया!',
-  'colocar de dieta': 'डाइट पर डालो',
   'A partida ainda não começou.': 'मैच अभी शुरू नहीं हुआ है।',
   'A partida já começou.': 'मैच शुरू हो चुका है।',
   'Só quem começou dá a largada.': 'मैच शुरू करना सिर्फ़ उसके हाथ में है जिसने न्योता भेजा।',

@@ -17,11 +17,9 @@
 export default {
   ', e a resposta volta pela mesma conversa.': ', en het antwoord komt terug in datzelfde gesprek.',
   '{dias} dias para trazer de volta': 'nog {dias} dagen om terug te halen',
-  '{n} cutucadas hoje': '{n} porren vandaag',
   '{n} mensagens': '{n} berichten',
   '{n} na chamada agora': '{n} nu in gesprek',
   '{n} pessoas nesta comunidade': '{n} mensen in deze community',
-  '1 cutucada hoje': '1 por vandaag',
   '1 mensagem': '1 bericht',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     'De toestemming is in de browser geopend en geldt nog steeds. Als je al toestemming hebt gegeven en hier gebeurt niets, dan is het antwoord niet bij Syden aangekomen.',
@@ -139,7 +137,6 @@ export default {
   'Criar tópico': 'Draadje maken',
   'Criar tópico a partir desta mensagem': 'Draadje maken vanaf dit bericht',
   'Criar uma conta': 'Een account maken',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': 'Por de konijnen, klik op het gras om een wortel te planten.',
   'De graça, para qualquer pessoa': 'Gratis, voor iedereen',
   'Deixar marcar mais de uma opção': 'Meer dan één optie laten kiezen',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -201,7 +198,6 @@ export default {
     'Kies hier de taal van Syden. Het verandert meteen, geldt alleen voor jou, en blijft op deze computer bewaard.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kies wie erbij komt. Met meer dan één persoon wordt het een groepsgesprek.',
-  'Escolha o coelho da estátua da praça.': 'Kies het konijn voor het standbeeld op het plein.',
   'Escolher emoji': 'Emoji kiezen',
   'Excluir {canal}': '{canal} verwijderen',
   'Nome da sala': 'Naam van de kamer',
@@ -384,7 +380,6 @@ export default {
   'Escolher áudios': 'Geluiden kiezen',
   'Escolher de novo, marcando o som': 'Opnieuw kiezen, met het geluid aangevinkt',
   'Escolher GIF': 'Een GIF kiezen',
-  'Escolher o coelho do Syden': 'Het konijn van Syden kiezen',
   Escreva: 'Schrijf',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     'Schrijf hier wat je zou willen dat er was — of wat je in de weg zit. Het komt als privébericht aan bij',
@@ -561,7 +556,6 @@ export default {
   Pessoa: 'Persoon',
   Pessoas: 'Mensen',
   'Pessoas das suas comunidades': 'Mensen uit jouw communities',
-  'Plantar uma cenoura': 'Een wortel planten',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG of WEBP, elk formaat: jij kiest de uitsnede.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP of bewegende GIF, tot 512 KB. De afbeelding wordt naar 128×128 gebracht.',
@@ -1829,12 +1823,6 @@ export default {
   'Carregar mensagens anteriores': 'Eerdere berichten laden',
   'Arquivo': 'Bestand',
   'Tópico · {titulo}': 'Draadje · {titulo}',
-  'Cutucar o coelho': 'Het konijn porren',
-  'A vila do Syden': 'Het dorp van Syden',
-  'Clarear o Syden': 'Syden lichter maken',
-  'Escurecer o Syden': 'Syden donkerder maken',
-  'a turma engordou!': 'de club is dik geworden!',
-  'colocar de dieta': 'op dieet zetten',
   'A partida ainda não começou.': 'Het potje is nog niet begonnen.',
   'A partida já começou.': 'Het potje is al begonnen.',
   'Só quem começou dá a largada.': 'Alleen wie het potje opende, kan het starten.',

@@ -12,12 +12,11 @@ import { type AcoesDoQuarto, Quarto } from './Quarto';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
 import { loadMyStatus } from './presenceStatus';
-import type { Periodo } from './Vila';
 import { idiomaAtual, useT } from './i18n';
 
 // Tela inicial do Syden: o quarto do coelho (Quarto.tsx). Um lugar para chegar, dar uma olhada no que mudou e cutucar
 // o coelho antes de entrar numa sala. Os objetos não são enfeite: cada um leva a uma parte de verdade do app. Até
-// 08/10/2026 era a vila (Vila.tsx), que continua no projeto: os desenhos de coelho dela são usados em outras telas.
+// 08/10/2026 era a vila, que saiu do projeto em 17/10/2026.
 
 /**
  * A caixa de ideias da vila. Por baixo não existe caixa nenhuma: o que a pessoa escreve vira uma
@@ -115,6 +114,9 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
     </section>
   );
 }
+
+/** A hora da cena: de noite o quarto é o da noite; de dia, a nuance segue o relógio. */
+type Periodo = 'manha' | 'tarde' | 'entardecer' | 'noite';
 
 /** De dia a cena segue o relógio; se já for noite pelo relógio, mostra a tarde. */
 function periodoClaro(): Periodo {

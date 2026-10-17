@@ -36,14 +36,14 @@ describe('o que sobe e o que fica', () => {
 
   it('o que é estado desta máquina não entra no pacote', () => {
     const { ler } = armazenamento({
-      'syden.coelho': 'big',
+      'syden.status': 'ausente',
       'syden.community': 7,
       'syden.lidas': { 1: 99 },
       'syden.cenouras': 12,
     });
     const pacote = montar(ler);
 
-    assert.equal(pacote['syden.coelho'], 'big');
+    assert.equal(pacote['syden.status'], 'ausente');
     for (const chave of ['syden.community', 'syden.lidas', 'syden.cenouras']) {
       assert.equal(pacote[chave], undefined, `${chave} não devia subir`);
     }
@@ -71,17 +71,17 @@ describe('o que sobe e o que fica', () => {
   });
 
   it('o que o servidor não manda não é apagado daqui', () => {
-    const { ler, escrever, dados } = armazenamento({ 'syden.coelho': 'big', 'syden.idioma': 'en' });
+    const { ler, escrever, dados } = armazenamento({ 'syden.status': 'ausente', 'syden.idioma': 'en' });
     aplicar({ 'syden.idioma': 'es' }, ler, escrever);
 
     assert.equal(dados['syden.idioma'], 'es');
-    assert.equal(dados['syden.coelho'], 'big', 'sumiu uma preferência que o servidor nem mencionou');
+    assert.equal(dados['syden.status'], 'ausente', 'sumiu uma preferência que o servidor nem mencionou');
   });
 
   it('conta que nunca guardou nada não zera o que já existe aqui', () => {
-    const { ler, escrever, dados } = armazenamento({ 'syden.coelho': 'big' });
+    const { ler, escrever, dados } = armazenamento({ 'syden.status': 'ausente' });
     aplicar({}, ler, escrever);
-    assert.equal(dados['syden.coelho'], 'big');
+    assert.equal(dados['syden.status'], 'ausente');
   });
 
   it('as anotações sobem: foi decisão, e o teste existe para ela ser deliberada', () => {

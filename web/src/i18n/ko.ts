@@ -15,12 +15,10 @@
 export default {
   ', e a resposta volta pela mesma conversa.': ', 답장은 같은 대화로 돌아와요.',
   '{dias} dias para trazer de volta': '되살릴 수 있는 기간 {dias}일',
-  '{n} cutucadas hoje': '오늘 {n}번 쿡 찔렀어요',
   '{n} mensagens': '메시지 {n}개',
   '{n} na chamada agora': '지금 통화 중 {n}명',
   '{n} pessoas nesta comunidade': '이 커뮤니티에 {n}명',
   '{quantos} dos 193 países da ONU': 'UN 회원국 193개국 중 {quantos}개국',
-  '1 cutucada hoje': '오늘 1번 쿡 찔렀어요',
   '1 mensagem': '메시지 1개',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     '인증 창이 브라우저에서 열렸고 아직 유효해요. 이미 허용했는데 여기서 아무 일도 없다면, 응답이 Syden까지 오지 않은 거예요.',
@@ -137,7 +135,6 @@ export default {
   'Criar tópico': '스레드 만들기',
   'Criar tópico a partir desta mensagem': '이 메시지로 스레드 만들기',
   'Criar uma conta': '계정 만들기',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': '토끼를 쿡 찔러 보고, 잔디를 눌러 당근을 심어 보세요.',
   'De graça, para qualquer pessoa': '무료, 누구나',
   'Deixar marcar mais de uma opção': '여러 개 고를 수 있게 하기',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -197,7 +194,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     '여기서 Syden의 언어를 고르세요. 바로 적용되고, 나에게만 해당되며, 이 컴퓨터에 저장돼요.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '누가 들어올지 고르세요. 두 명 이상이면 단체 대화가 돼요.',
-  'Escolha o coelho da estátua da praça.': '광장 동상이 될 토끼를 고르세요.',
   'Escolher emoji': '이모지 선택',
   'Excluir {canal}': '{canal} 삭제',
   'Nome da sala': '방 이름',
@@ -380,7 +376,6 @@ export default {
   'Escolher áudios': '오디오 고르기',
   'Escolher de novo, marcando o som': '소리를 체크하고 다시 고르기',
   'Escolher GIF': 'GIF 고르기',
-  'Escolher o coelho do Syden': 'Syden의 토끼 고르기',
   Escreva: '쓰기',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     '있었으면 하는 것 — 또는 불편한 것 — 을 여기에 적어 주세요. 개인 메시지로 이 사람에게 갑니다:',
@@ -554,7 +549,6 @@ export default {
   Pessoa: '사람',
   Pessoas: '사람들',
   'Pessoas das suas comunidades': '내 커뮤니티의 사람들',
-  'Plantar uma cenoura': '당근 심기',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG 또는 WEBP, 크기는 상관없어요. 자르는 건 직접 고릅니다.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP 또는 움직이는 GIF, 512 KB까지. 사진은 128×128로 맞춰집니다.',
@@ -1818,12 +1812,6 @@ export default {
   'Carregar mensagens anteriores': '이전 메시지 불러오기',
   'Arquivo': '파일',
   'Tópico · {titulo}': '스레드 · {titulo}',
-  'Cutucar o coelho': '토끼 콕 찌르기',
-  'A vila do Syden': 'Syden 마을',
-  'Clarear o Syden': 'Syden 밝게 하기',
-  'Escurecer o Syden': 'Syden 어둡게 하기',
-  'a turma engordou!': '다들 살쪘어요!',
-  'colocar de dieta': '다이어트 시키기',
   'A partida ainda não começou.': '게임이 아직 시작되지 않았어요.',
   'A partida já começou.': '게임이 이미 시작됐어요.',
   'Só quem começou dá a largada.': '초대한 사람만 게임을 시작할 수 있어요.',

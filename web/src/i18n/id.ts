@@ -16,12 +16,10 @@
 export default {
   ', e a resposta volta pela mesma conversa.': ', dan balasannya kembali di percakapan yang sama.',
   '{dias} dias para trazer de volta': '{dias} hari lagi untuk mengembalikannya',
-  '{n} cutucadas hoje': '{n} colekan hari ini',
   '{n} mensagens': '{n} pesan',
   '{n} na chamada agora': '{n} orang sedang di panggilan',
   '{n} pessoas nesta comunidade': '{n} orang di komunitas ini',
   '{quantos} dos 193 países da ONU': '{quantos} dari 193 negara anggota PBB',
-  '1 cutucada hoje': '1 colekan hari ini',
   '1 mensagem': '1 pesan',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     'Izinnya terbuka di peramban dan masih berlaku. Kalau kamu sudah memberi izin dan di sini tidak terjadi apa-apa, berarti balasannya tidak sampai ke Syden.',
@@ -139,7 +137,6 @@ export default {
   'Criar tópico': 'Buat topik',
   'Criar tópico a partir desta mensagem': 'Buat topik dari pesan ini',
   'Criar uma conta': 'Buat akun',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': 'Colek kelincinya, klik rumputnya untuk menanam wortel.',
   'De graça, para qualquer pessoa': 'Gratis, untuk siapa saja',
   'Deixar marcar mais de uma opção': 'Boleh pilih lebih dari satu',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -201,7 +198,6 @@ export default {
     'Pilih bahasa Syden di sini. Langsung berlaku, hanya untukmu, dan tersimpan di komputer ini.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Pilih siapa yang masuk. Kalau lebih dari satu orang, jadi percakapan grup.',
-  'Escolha o coelho da estátua da praça.': 'Pilih kelinci untuk patung di alun-alun.',
   'Escolher emoji': 'Pilih emoji',
   'Excluir {canal}': 'Hapus {canal}',
   'Nome da sala': 'Nama ruang',
@@ -384,7 +380,6 @@ export default {
   'Escolher áudios': 'Pilih berkas audio',
   'Escolher de novo, marcando o som': 'Pilih ulang, dengan mencentang suaranya',
   'Escolher GIF': 'Pilih GIF',
-  'Escolher o coelho do Syden': 'Pilih kelinci Syden',
   Escreva: 'Tulis',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     'Tulis di sini apa yang kamu ingin ada — atau apa yang mengganggu. Sampai sebagai pesan pribadi ke',
@@ -561,7 +556,6 @@ export default {
   Pessoa: 'Orang',
   Pessoas: 'Orang',
   'Pessoas das suas comunidades': 'Orang dari komunitasmu',
-  'Plantar uma cenoura': 'Tanam wortel',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG atau WEBP, ukuran berapa pun: kamu yang memilih potongannya.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP atau GIF bergerak, maksimal 512 KB. Gambarnya disesuaikan jadi 128×128.',
@@ -1827,12 +1821,6 @@ export default {
   'Carregar mensagens anteriores': 'Muat pesan sebelumnya',
   'Arquivo': 'Berkas',
   'Tópico · {titulo}': 'Topik · {titulo}',
-  'Cutucar o coelho': 'Colek kelincinya',
-  'A vila do Syden': 'Kampung Syden',
-  'Clarear o Syden': 'Terangkan Syden',
-  'Escurecer o Syden': 'Gelapkan Syden',
-  'a turma engordou!': 'gengnya jadi gendut!',
-  'colocar de dieta': 'suruh diet',
   'A partida ainda não começou.': 'Permainan belum dimulai.',
   'A partida já começou.': 'Permainan sudah dimulai.',
   'Só quem começou dá a largada.': 'Hanya yang mengajak yang bisa memulai permainan.',

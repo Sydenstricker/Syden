@@ -73,7 +73,6 @@ As fotos de tela vão para `e2e/fotos/` e não entram no Git.
 | `ideias` | o ciclo da sugestão: enviar, o agradecimento automático, o dono acolher, o confete e a medalha | API + site, **banco limpo** |
 | `idioma` | trocar de idioma sem recarregar, e o idioma do navegador na tela de entrada | API + site |
 | `menu-elegante` | o menu do botão direito no nome de alguém: as ações, o teclado e as notas | API + site, **banco limpo** |
-| `vila-ordem` | a ordem de desenho da vila (nada aparecendo na frente do que deveria tampá-lo) e a estátua | API + site |
 | `sob-demanda` | transmissão só chega a quem abriu: quem não abriu não gasta banda nem processador | API + site + **LiveKit** |
 | `producao` | **só olha, não cria nada**: confere o Syden que está no ar — arquivos, endereço da API, tela de entrada e páginas legais | nada (roda contra a internet) |
 | `insignias` | a insígnia dos 25 primeiros: o presente espera, é resgatado com um clique e só então vai para o perfil | API + site |
@@ -86,10 +85,6 @@ esse papel, eles não cabem na mesma rodada; o executor avisa se você pedir os 
 # pare a API, apague o banco e suba de novo, entre um e outro
 rm -f server/teste.db server/teste.db-wal server/teste.db-shm
 ```
-
-`vila-ordem` deixa os coelhos de fora da conferência de ordem de desenho, de propósito: eles andam o tempo
-todo e são sempre desenhados por cima do cenário. O comentário dentro do teste explica o porquê e o que
-aconteceria se um dia eles passeassem atrás das casas.
 
 ## csp.mjs — a política de segurança de conteúdo, antes de ir ao ar
 

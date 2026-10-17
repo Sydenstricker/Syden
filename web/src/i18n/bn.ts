@@ -17,12 +17,10 @@
 export default {
   ', e a resposta volta pela mesma conversa.': ', আর উত্তর সেই একই কথোপকথনে ফিরে আসে।',
   '{dias} dias para trazer de volta': 'ফিরিয়ে আনতে আর {dias} দিন',
-  '{n} cutucadas hoje': 'আজ {n} বার খোঁচা',
   '{n} mensagens': '{n}টি বার্তা',
   '{n} na chamada agora': 'এখন কলে {n} জন',
   '{n} pessoas nesta comunidade': 'এই কমিউনিটিতে {n} জন',
   '{quantos} dos 193 países da ONU': '১৯৩টি জাতিসংঘ সদস্য দেশের মধ্যে {quantos}টি',
-  '1 cutucada hoje': 'আজ ১ বার খোঁচা',
   '1 mensagem': '১টি বার্তা',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     'অনুমতি ব্রাউজারে খুলেছে এবং এখনও চালু আছে। তুমি যদি অনুমতি দিয়ে থাকো আর এখানে কিছুই না ঘটে, তাহলে উত্তরটা Syden পর্যন্ত পৌঁছায়নি।',
@@ -139,7 +137,6 @@ export default {
   'Criar tópico': 'থ্রেড বানাও',
   'Criar tópico a partir desta mensagem': 'এই বার্তা থেকে থ্রেড বানাও',
   'Criar uma conta': 'অ্যাকাউন্ট বানাও',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': 'খরগোশদের খোঁচা দাও, গাজর পুঁততে ঘাসে ক্লিক করো।',
   'De graça, para qualquer pessoa': 'ফ্রি, যে কারও জন্য',
   'Deixar marcar mais de uma opção': 'একের বেশি বিকল্প বেছে নিতে দাও',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -201,7 +198,6 @@ export default {
     'এখানে Syden-এর ভাষা বেছে নাও। সঙ্গে সঙ্গে কাজ করে, শুধু তোমার জন্য, আর এই কম্পিউটারেই থেকে যায়।',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'কে ঢুকবে বেছে নাও। একজনের বেশি হলে সেটা দলগত কথোপকথন হয়ে যায়।',
-  'Escolha o coelho da estátua da praça.': 'চত্বরের মূর্তির জন্য খরগোশটি বেছে নাও।',
   'Escolher emoji': 'ইমোজি বেছে নিন',
   'Excluir {canal}': '{canal} মুছুন',
   'Nome da sala': 'রুমের নাম',
@@ -384,7 +380,6 @@ export default {
   'Escolher áudios': 'অডিও বেছে নাও',
   'Escolher de novo, marcando o som': 'আবার বেছে নাও, শব্দে টিক দিয়ে',
   'Escolher GIF': 'GIF বেছে নাও',
-  'Escolher o coelho do Syden': 'Syden-এর খরগোশ বেছে নাও',
   Escreva: 'লেখো',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     'এখানে লেখো কী থাকলে ভালো হতো — বা কী আটকাচ্ছে। এটা ব্যক্তিগত বার্তা হয়ে পৌঁছায়:',
@@ -561,7 +556,6 @@ export default {
   Pessoa: 'জন',
   Pessoas: 'লোকজন',
   'Pessoas das suas comunidades': 'তোমার কমিউনিটির লোকজন',
-  'Plantar uma cenoura': 'গাজর পোঁতো',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG বা WEBP, যেকোনো মাপে: কোন অংশটা কাটবে তুমি ঠিক করবে।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP বা চলমান GIF, ৫১২ KB পর্যন্ত। ছবিটা ১২৮×১২৮-এ বসিয়ে দেওয়া হয়।',
@@ -1827,12 +1821,6 @@ export default {
   'Carregar mensagens anteriores': 'আগের বার্তা লোড করো',
   'Arquivo': 'ফাইল',
   'Tópico · {titulo}': 'থ্রেড · {titulo}',
-  'Cutucar o coelho': 'খরগোশকে খোঁচা দাও',
-  'A vila do Syden': 'Syden-এর গ্রাম',
-  'Clarear o Syden': 'Syden উজ্জ্বল করো',
-  'Escurecer o Syden': 'Syden গাঢ় করো',
-  'a turma engordou!': 'দলটা মোটা হয়ে গেছে!',
-  'colocar de dieta': 'ডায়েটে দাও',
   'A partida ainda não começou.': 'খেলা এখনো শুরু হয়নি।',
   'A partida já começou.': 'খেলা শুরু হয়ে গেছে।',
   'Só quem começou dá a largada.': 'শুধু যে ডেকেছে, সে-ই খেলা শুরু করতে পারে।',

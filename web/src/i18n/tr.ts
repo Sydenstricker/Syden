@@ -14,12 +14,10 @@
 export default {
   ', e a resposta volta pela mesma conversa.':'ve yanıt aynı sohbetten geri gelir.',
   '{dias} dias para trazer de volta': 'geri getirmek için {dias} gün',
-  '{n} cutucadas hoje': 'bugün {n} dürtme',
   '{n} mensagens': '{n} mesaj',
   '{n} na chamada agora': 'şu anda görüşmede {n} kişi',
   '{n} pessoas nesta comunidade': 'bu toplulukta {n} kişi',
   '{quantos} dos 193 países da ONU': '193 BM üyesi ülkeden {quantos} tanesi',
-  '1 cutucada hoje': 'bugün 1 dürtme',
   '1 mensagem': '1 mesaj',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     'İzin tarayıcıda açıldı ve hâlâ geçerli. İzni verdiysen ve burada bir şey olmadıysa, yanıt Syden’a ulaşmamış demektir.',
@@ -136,7 +134,6 @@ export default {
   'Criar tópico': 'Konu oluştur',
   'Criar tópico a partir desta mensagem': 'Bu mesajdan konu oluştur',
   'Criar uma conta': 'Hesap oluştur',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': 'Tavşanları dürt, havuç ekmek için çimene tıkla.',
   'De graça, para qualquer pessoa': 'Herkes için, bedava',
   'Deixar marcar mais de uma opção': 'Birden fazla seçeneğe izin ver',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -198,7 +195,6 @@ export default {
     'Syden’ın dilini buradan seç. Hemen geçerli olur, yalnızca senin için, ve bu bilgisayarda saklanır.',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.':
     'Kimin katılacağını seç. Birden fazla kişi olunca grup sohbetine dönüşür.',
-  'Escolha o coelho da estátua da praça.': 'Meydandaki heykel için tavşanı seç.',
   'Escolher emoji': 'Emoji seç',
   'Excluir {canal}': '{canal} sil',
   'Nome da sala': 'Oda adı',
@@ -381,7 +377,6 @@ export default {
   'Escolher áudios': 'Ses dosyalarını seç',
   'Escolher de novo, marcando o som': 'Sesi işaretleyerek yeniden seç',
   'Escolher GIF': 'GIF seç',
-  'Escolher o coelho do Syden': 'Syden’ın tavşanını seç',
   Escreva: 'Yaz',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     'Olmasını istediğin şeyi — ya da seni rahatsız edeni — buraya yaz. Şu kişiye özel mesaj olarak ulaşır:',
@@ -558,7 +553,6 @@ export default {
   Pessoa: 'Kişi',
   Pessoas: 'Kişiler',
   'Pessoas das suas comunidades': 'Topluluklarındaki kişiler',
-  'Plantar uma cenoura': 'Havuç ek',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ya da WEBP, herhangi bir boyutta: kırpmayı sen seçersin.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ya da hareketli GIF, en fazla 512 KB. Görsel 128×128 boyutuna getirilir.',
@@ -1824,12 +1818,6 @@ export default {
   'Carregar mensagens anteriores': 'Önceki mesajları yükle',
   'Arquivo': 'Dosya',
   'Tópico · {titulo}': 'Konu · {titulo}',
-  'Cutucar o coelho': 'Tavşanı dürt',
-  'A vila do Syden': 'Syden köyü',
-  'Clarear o Syden': 'Syden’ı aydınlat',
-  'Escurecer o Syden': 'Syden’ı karart',
-  'a turma engordou!': 'ekip şişmanladı!',
-  'colocar de dieta': 'diyete sok',
   'A partida ainda não começou.': 'Maç henüz başlamadı.',
   'A partida já começou.': 'Maç zaten başladı.',
   'Só quem começou dá a largada.': 'Maçı yalnızca davet eden başlatabilir.',

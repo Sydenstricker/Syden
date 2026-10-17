@@ -17,12 +17,10 @@
 export default {
   ', e a resposta volta pela mesma conversa.': '，回复会回到同一个对话里。',
   '{dias} dias para trazer de volta': '还有 {dias} 天可以恢复',
-  '{n} cutucadas hoje': '今天戳了 {n} 次',
   '{n} mensagens': '{n} 条消息',
   '{n} na chamada agora': '现在有 {n} 人在通话',
   '{n} pessoas nesta comunidade': '这个社区有 {n} 人',
   '{quantos} dos 193 países da ONU': '193 个联合国成员国中的 {quantos} 个',
-  '1 cutucada hoje': '今天戳了 1 次',
   '1 mensagem': '1 条消息',
   'A autorização abriu no navegador e continua valendo. Se você já autorizou e nada aconteceu aqui, a resposta não chegou ao Syden.':
     '授权已在浏览器中打开，并且仍然有效。如果你已经授权而这里没有反应，说明回复没有送达 Syden。',
@@ -138,7 +136,6 @@ export default {
   'Criar tópico': '创建话题',
   'Criar tópico a partir desta mensagem': '从这条消息创建话题',
   'Criar uma conta': '创建账号',
-  'Cutuque os coelhos, clique na grama para plantar uma cenoura.': '戳一戳兔子，点草地可以种胡萝卜。',
   'De graça, para qualquer pessoa': '免费，谁都能用',
   'Deixar marcar mais de uma opção': '允许选多个选项',
   'Deixe o título e o recado em branco para desmontar a tela: a comunidade volta a abrir direto nos canais.':
@@ -198,7 +195,6 @@ export default {
   'Escolha aqui a língua do Syden. Vale na hora, só para você, e fica guardada neste computador.':
     '在这里选择 Syden 的语言。马上生效，只对你有效，并保存在这台电脑上。',
   'Escolha quem entra. Com mais de uma pessoa, vira uma conversa em grupo.': '选择谁加入。超过一个人就变成群聊。',
-  'Escolha o coelho da estátua da praça.': '选择广场雕像上的兔子。',
   'Escolher emoji': '选择表情',
   'Excluir {canal}': '删除 {canal}',
   'Nome da sala': '房间名称',
@@ -381,7 +377,6 @@ export default {
   'Escolher áudios': '选择音频',
   'Escolher de novo, marcando o som': '重新选择，并勾上声音',
   'Escolher GIF': '选择 GIF',
-  'Escolher o coelho do Syden': '选择 Syden 的兔子',
   Escreva: '写',
   'Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para':
     '在这里写下你希望有什么功能，或者什么地方碍事。它会作为私信发给',
@@ -552,7 +547,6 @@ export default {
   Pessoa: '人',
   Pessoas: '成员',
   'Pessoas das suas comunidades': '你社区里的人',
-  'Plantar uma cenoura': '种一根胡萝卜',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG、JPG 或 WEBP，任意尺寸：裁剪由你决定。',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG、JPG、WEBP 或动态 GIF，最大 512 KB。图片会被调整为 128×128。',
@@ -1817,12 +1811,6 @@ export default {
   'Carregar mensagens anteriores': '加载更早的消息',
   'Arquivo': '文件',
   'Tópico · {titulo}': '话题 · {titulo}',
-  'Cutucar o coelho': '戳一戳兔子',
-  'A vila do Syden': 'Syden 的村子',
-  'Clarear o Syden': '让 Syden 变亮',
-  'Escurecer o Syden': '让 Syden 变暗',
-  'a turma engordou!': '大家吃胖了！',
-  'colocar de dieta': '让大家节食',
   'A partida ainda não começou.': '对局还没开始。',
   'A partida já começou.': '对局已经开始了。',
   'Só quem começou dá a largada.': '只有发起邀请的人才能开局。',

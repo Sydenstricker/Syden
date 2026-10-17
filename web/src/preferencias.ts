@@ -25,7 +25,6 @@ import { converterPreferenciasAntigas } from './settings';
 export const CHAVES_QUE_SOBEM = [
   /** Tema, sons, efeitos, qualidade da transmissão — o grosso das configurações. */
   'janja.settings',
-  'syden.coelho',
   'syden.idioma',
   'syden.status',
   /** Volume que você ajustou de cada pessoa, e quem você silenciou só para você. */
