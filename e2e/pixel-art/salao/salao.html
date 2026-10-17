@@ -860,9 +860,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // numa posição relativa ao tampo dele (s, t de 0 a 1, no sentido do móvel), e tem a sua posição (lado). A peça do móvel
   // SAI COM OS OBJETOS dentro (comObjetos): arrastar, jogar, girar, a luz e a profundidade do móvel valem para eles.
   const OBJ_VISTAS = {};
-  // Na METADE do tamanho em que foram gerados: inteiros, eles saíam 2,5 vezes maiores que de verdade (o copo de suco quase
-  // do tamanho da banqueta, relato de 15/10/2026). Metade, pixel a pixel e sem suavizar, ainda se lê.
-  const ESCALA_DOS_OBJETOS = 0.5;
+  // O TAMANHO: eles foram gerados 2,5 vezes maiores que de verdade (o copo de suco quase do tamanho da banqueta), e de
+  // 15/10 a 17/10/2026 eram mostrados pela metade. DESDE 17/10/2026, NO TAMANHO INTEIRO (decisão dele, depois de ver: "pode deixar desse tamanho"). Pela metade, o
+  // vizinho mais próximo pulava um pixel a cada dois e quebrava o contorno: os itens viravam "poluição". Inteiros, ficam
+  // nítidos e grandes demais para os móveis; o conserto de verdade é gerá-los no tamanho final (dívida de arte, CLAUDE.md).
+  const ESCALA_DOS_OBJETOS = 1;
   const reduzir = (img) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * ESCALA_DOS_OBJETOS)); c.height = Math.max(1, Math.round(img.height * ESCALA_DOS_OBJETOS)); const g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(img, 0, 0, c.width, c.height); return c; };
   for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
