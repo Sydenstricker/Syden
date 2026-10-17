@@ -541,7 +541,10 @@ ficou combinado:
   (`limpar-recorte.py`, o "contorno" de `parede/pecas.py`) quando a última sair. Faltam, em 17/10: os objetos da parede
   fone, quadro, cortiça, prateleira e pintura; o pufe e o tapete (`pecas/`); as janelas original (com aberta e cortina),
   arco, redonda, floreira e cortinas. Onde já existe a avulsa (os objetos do salão em `parede-salao/`), ela vale nos dois
-  ambientes.
+  ambientes. **Plano para quando houver créditos (ele quer em novembro/2026), nesta ordem:** (1) os 5 da parede e (2) o pufe
+  e o tapete, ~60 gerações, que resolvem os relatos de 17/10; (3) as 4 janelas simples; (4) a original por último,
+  comparando lado a lado (a peça e os estados aberta e cortina, ~55). Total ~150 (100 a 200); depois, os pedidos novos
+  abaixo. Registrar no `custos.jsonl` também o custo das gerações avulsas (hoje só giros e estados ficam lá).
 - **DÍVIDA DE ARTE (pedidos dele, à espera de créditos do PixelLab):**
   - **Um ventilador ou um ar-condicionado** (16/10/2026).
   - **Um gatinho olhando a janela** (16/10/2026): deitado, dormindo; clicado, ele se espreguiça e senta. Precisa das
