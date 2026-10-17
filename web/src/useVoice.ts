@@ -344,6 +344,12 @@ export function useVoice(socket: Socket | null) {
   // O efeito que escuta o LiveKit é montado uma vez só; esta ref deixa ele chamar a versão atual.
   const stopAppAudioRef = useRef<() => void>(() => {});
   const deafenedRef = useRef(false);
+  /**
+   * Se o microfone já estava desligado ANTES de ensurdecer. Tirar o ensurdecer devolve o microfone a esse estado, como
+   * no Discord: quem estava mudo e ensurdeceu continua mudo ao voltar a ouvir. Antes, voltar a ouvir LIGAVA o microfone
+   * de quem tinha se mutado de propósito (auditoria do áudio, 17/10/2026). null: não se sabe (ensurdecido de outra visita).
+   */
+  const mudoAntesDeEnsurdecerRef = useRef<boolean | null>(null);
   const socketRef = useRef(socket);
   socketRef.current = socket;
 
@@ -1087,18 +1093,24 @@ export function useVoice(socket: Socket | null) {
   const toggleDeafen = useCallback(async () => {
     if (channelRef.current === null) {
       const next = !getSettings().startDeafened;
-      updateSettings({ startDeafened: next, startMuted: next || getSettings().startMuted });
+      if (next) mudoAntesDeEnsurdecerRef.current = getSettings().startMuted;
+      const mudo = next || (mudoAntesDeEnsurdecerRef.current ?? getSettings().startMuted);
+      updateSettings({ startDeafened: next, startMuted: mudo });
       setWantDeafened(next);
-      setWantMuted(next || getSettings().startMuted);
+      setWantMuted(mudo);
       (next ? sounds.deafen : sounds.undeafen)();
       return;
     }
     const next = !deafenedRef.current;
+    const lp = room.localParticipant;
+    if (next) mudoAntesDeEnsurdecerRef.current = !lp.isMicrophoneEnabled;
     setDeafenedState(next);
     updateSettings({ startDeafened: next });
     setWantDeafened(next);
     (next ? sounds.deafen : sounds.undeafen)();
-    await room.localParticipant.setMicrophoneEnabled(!next).catch(console.error);
+    // Ensurdecer desliga o microfone; voltar a ouvir só o religa se ele estava ligado antes.
+    const ligar = !next && !(mudoAntesDeEnsurdecerRef.current ?? false);
+    await lp.setMicrophoneEnabled(ligar).catch(console.error);
   }, [room, setDeafenedState]);
 
   const toggleCamera = useCallback(async () => {

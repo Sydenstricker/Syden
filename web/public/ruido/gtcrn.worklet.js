@@ -80,6 +80,7 @@ class SupressorGtcrn extends AudioWorkletProcessor {
     this.ganho = 1;
     // Quanto custa, medido aqui dentro, para o Syden poder mostrar e o diário poder registrar.
     this.custoMs = 0; this.quadros = 0;
+    this.quebrados = 0; // quadros seguidos com NaN na saída do modelo
     this.port.onmessage = (e) => { if (typeof e.data?.ligado === 'boolean') this.ligado = e.data.ligado; };
   }
 
@@ -91,13 +92,32 @@ class SupressorGtcrn extends AudioWorkletProcessor {
 
     const t0 = Date.now();
     const s = this.motor.rodar(this.entradas);
-    this.caches.conv_cache.set(s.conv_cache_out);
-    this.caches.tra_cache.set(s.tra_cache_out);
-    this.caches.inter_cache.set(s.inter_cache_out);
     this.custoMs += Date.now() - t0;
     this.quadros++;
 
+    // NaN OU INFINITO NA SAÍDA DO MODELO (auditoria do áudio, 17/10/2026): o estado da rede volta pelos caches, então um
+    // quadro estragado estragaria todos os seguintes, e a voz viraria silêncio ou ruído para sempre. A saída ruim se
+    // descarta, o estado volta ao zero (o modelo reaprende em poucos quadros) e este bloco sai como silêncio. Se nem
+    // zerando passa (muitos quadros seguidos), o worklet desiste e a página segue sem supressão, avisando o diário.
     const e = s.enh;
+    let conferir = 0;
+    for (let k = 0; k < e.length; k++) conferir += e[k];
+    if (!Number.isFinite(conferir)) {
+      this.caches.conv_cache.fill(0);
+      this.caches.tra_cache.fill(0);
+      this.caches.inter_cache.fill(0);
+      this.soma.fill(0);
+      this.ganho = 1;
+      if (++this.quebrados === 20) this.port.postMessage({ falhou: 'o modelo só devolve NaN, mesmo com o estado zerado' });
+      for (let i = 0; i < H; i++) this.fila[(this.escritos + i) % this.fila.length] = 0;
+      this.escritos += H;
+      return;
+    }
+    this.quebrados = 0;
+    this.caches.conv_cache.set(s.conv_cache_out);
+    this.caches.tra_cache.set(s.tra_cache_out);
+    this.caches.inter_cache.set(s.inter_cache_out);
+
     for (let k = 0; k < B; k++) { re[k] = e[2 * k]; im[k] = e[2 * k + 1]; }
     for (let k = 1; k < N / 2; k++) { re[N - k] = re[k]; im[N - k] = -im[k]; }
     fft(re, im, true);

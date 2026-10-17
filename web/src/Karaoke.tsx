@@ -215,6 +215,10 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
     return () => void largar();
   }, []);
 
+  // O ensurdecer de AGORA, lido ao criar o áudio sem fazer a música recomeçar a cada troca.
+  const surdoRef = useRef(voice.deafened);
+  surdoRef.current = voice.deafened;
+
   // Toca (ou para) conforme o aviso que chegou na sala.
   useEffect(() => {
     const anterior = audioRef.current;
@@ -228,6 +232,9 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
     const audio = new Audio(mediaUrl.karaoke(emCartaz.songId));
     audioRef.current = audio;
     audio.volume = getSettings().soundboardVolume;
+    // Música que começa com a pessoa JÁ surda nasce muda: o efeito de baixo só roda quando o ensurdecer muda, e ela
+    // tocava inteira para quem tinha escolhido não ouvir nada (auditoria do áudio, 17/10/2026).
+    audio.muted = surdoRef.current;
     const saida = getSettings().audioOutput;
     if (saida && 'setSinkId' in audio) {
       void (audio as HTMLAudioElement & { setSinkId(id: string): Promise<void> }).setSinkId(saida).catch(() => {});

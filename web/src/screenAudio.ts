@@ -78,6 +78,8 @@ export async function captureAppAudio(aoProblema: (motivo: string) => void = () 
     for (let i = 0; i < pcm.length; i += 16) { const v = Math.abs(pcm[i]); if (v > pico) pico = v; }
     player.port.postMessage(pcm, [pcm.buffer]);
   });
+  // O app conta quando a captura do Windows morre no meio e o que fez (religou ou desistiu): vai direto ao diário.
+  const largarAviso = bridge.onAviso?.((motivo) => aoProblema(motivo)) ?? (() => {});
   const inicio = performance.now(), avisado = new Set<string>();
   const avisar = (chave: string, motivo: string) => { if (!avisado.has(chave)) { avisado.add(chave); aoProblema(motivo); } };
   let antes = 0;
@@ -99,6 +101,7 @@ export async function captureAppAudio(aoProblema: (motivo: string) => void = () 
     stop: () => {
       clearInterval(vigia);
       unsubscribe();
+      largarAviso();
       bridge.stop();
       player.disconnect();
       teto?.disconnect();

@@ -23,7 +23,7 @@ const CHANNELS = 2;
 const CHUNK_MS = 10;
 const CHUNK_FRAMES = (SAMPLE_RATE * CHUNK_MS) / 1000;
 
-/** @type {{ start(onChunk: (pcm: Float32Array) => void, options: { sampleRate: number, channels: number, excludePid?: number, includePid?: number }): void, stop(): void, windowProcess?: (hwnd: number) => { pid: number, exe: string } | null } | null} */
+/** @type {{ start(onChunk: (pcm: Float32Array | null, erro?: string) => void, options: { sampleRate: number, channels: number, excludePid?: number, includePid?: number }): void, stop(): void, windowProcess?: (hwnd: number) => { pid: number, exe: string } | null } | null} */
 let native = null;
 try {
   const path = require('node:path');
@@ -39,6 +39,8 @@ const fake = process.env.SYDEN_FAKE_AUDIO === '1';
 /** @type {NodeJS.Timeout | null} */
 let fakeTimer = null;
 let running = false;
+/** Quando a captura morreu no meio e foi religada sozinha (para não religar em laço se ela morrer de novo e de novo). */
+let religadas = /** @type {number[]} */ ([]);
 
 /** Tom de teste no lugar do módulo nativo: 440 Hz nos dois canais. */
 function startFake(/** @type {(pcm: Float32Array) => void} */ onChunk) {
@@ -103,6 +105,36 @@ function stop() {
   native?.stop();
 }
 
+/** Conta à página o que aconteceu com a captura, para o diário da aba de saúde (ver web/src/screenAudio.ts). */
+function avisar(/** @type {Electron.WebContents} */ webContents, /** @type {string} */ motivo) {
+  if (!webContents.isDestroyed()) webContents.send('screen-audio:aviso', motivo);
+}
+
+/**
+ * A captura morreu no meio (o módulo nativo avisa: trocou a saída de som, tirou o fone, o serviço de áudio do Windows
+ * reiniciou). Antes isso era silêncio para sempre, com tudo dizendo que o som ia (auditoria do áudio, 17/10/2026).
+ * RELIGA SOZINHA, que é o que resolve os casos comuns (a captura de processo segue a saída padrão nova); até 3 vezes por
+ * minuto, e depois desiste, porque aí é a máquina que não deixa, e religar em laço só esconderia isso.
+ */
+function morreuNoMeio(/** @type {Electron.WebContents} */ webContents, /** @type {string} */ erro) {
+  console.error('A captura de som parou no meio:', erro);
+  if (!running || webContents.isDestroyed()) return;
+  const agora = Date.now();
+  religadas = religadas.filter((t) => agora - t < 60_000);
+  if (religadas.length >= 3) {
+    stop();
+    avisar(webContents, `${erro}; desisti de religar (3 vezes no último minuto)`);
+    return;
+  }
+  religadas.push(agora);
+  // Fora do aviso do módulo: o stop() do religar espera a thread de captura terminar.
+  setImmediate(() => {
+    if (!running || webContents.isDestroyed()) return;
+    const r = start(webContents);
+    avisar(webContents, r.ok ? `${erro}; religada sozinha` : `${erro}; não religou`);
+  });
+}
+
 /** Liga a captura e passa a mandar os pedaços de som para a janela. */
 function start(/** @type {Electron.WebContents} */ webContents) {
   if (!available()) return { ok: false, source: null };
@@ -110,8 +142,12 @@ function start(/** @type {Electron.WebContents} */ webContents) {
   running = true;
   destino = webContents;
 
-  const send = (/** @type {Float32Array} */ pcm) => {
+  const send = (/** @type {Float32Array | null} */ pcm, /** @type {string | undefined} */ erro) => {
     if (!running || webContents.isDestroyed()) return;
+    if (!pcm) {
+      morreuNoMeio(webContents, erro ?? 'a captura de som parou no meio');
+      return;
+    }
     webContents.send('screen-audio:chunk', pcm);
   };
 

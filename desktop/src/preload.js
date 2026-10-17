@@ -94,6 +94,12 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
       ipcRenderer.on('screen-audio:chunk', handler);
       return () => ipcRenderer.off('screen-audio:chunk', handler);
     },
+    /** O que aconteceu com a captura no meio da transmissão (morreu, religou, desistiu), para o diário de saúde. */
+    onAviso: (callback) => {
+      const handler = (_event, motivo) => callback(String(motivo));
+      ipcRenderer.on('screen-audio:aviso', handler);
+      return () => ipcRenderer.off('screen-audio:aviso', handler);
+    },
   },
   /**
    * Supressão de ruído nativa (DPDFNet), num processo à parte — ver desktop/src/ruido/index.js.

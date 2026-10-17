@@ -42,6 +42,8 @@ interface DesktopBridge {
     start(): Promise<{ ok: boolean; source: 'native' | 'fake' | null }>;
     stop(): void;
     onChunk(callback: (pcm: Float32Array) => void): () => void;
+    /** Só nos apps a partir de 17/10/2026: a captura morreu no meio, religou ou desistiu. */
+    onAviso?(callback: (motivo: string) => void): () => void;
   };
 }
 

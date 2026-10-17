@@ -265,6 +265,7 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
         this.semSupressao('dpdfnet', d.falhou);
       }
     };
+    this.vigiarQuebra(ponte, 'dpdfnet');
     ponte.port.postMessage({ porta }, [porta]);
     this.trocarSupressor(ponte);
     definirEstado({ motor: 'dpdfnet', rodando: true });
@@ -283,11 +284,25 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
       processorOptions: { grafo, pesos },
     });
     gtcrn.port.onmessage = (e) => {
-      const custo = (e.data as { custoMsPorQuadro?: number })?.custoMsPorQuadro;
-      if (typeof custo === 'number') this.opcoes.aoMedirCusto?.({ motor: 'gtcrn', msPorQuadro: custo, quadroMs: 16 });
+      const d = e.data as { custoMsPorQuadro?: number; falhou?: string };
+      if (typeof d?.custoMsPorQuadro === 'number') this.opcoes.aoMedirCusto?.({ motor: 'gtcrn', msPorQuadro: d.custoMsPorQuadro, quadroMs: 16 });
+      // O próprio worklet desistiu (o modelo dando NaN mesmo depois de zerar o estado): voz sem supressão.
+      if (d?.falhou && this.supressor === gtcrn) this.semSupressao('gtcrn', d.falhou);
     };
+    this.vigiarQuebra(gtcrn, 'gtcrn');
     this.trocarSupressor(gtcrn);
     definirEstado({ motor: 'gtcrn', rodando: true });
+  }
+
+  /**
+   * O worklet QUEBROU (uma exceção dentro do process): o navegador o desliga para sempre e ele passa a entregar só
+   * silêncio — a voz sumia da sala e nada avisava ninguém (auditoria do áudio, 17/10/2026). O processorerror é o único
+   * sinal que sai dele; aqui ele vira o mesmo caminho de quando o modelo cai: voz sem supressão, e o diário registra.
+   */
+  private vigiarQuebra(no: AudioWorkletNode, motor: MotorDeRuido) {
+    no.onprocessorerror = () => {
+      if (this.supressor === no) this.semSupressao(motor, 'o processador de áudio quebrou (processorerror)');
+    };
   }
 
   /** Põe um motor entre o microfone e o efeito de voz, tirando o que estava lá. */
