@@ -737,6 +737,32 @@ porque duas das conclusões abaixo custaram investigação:
 5. **O bloqueio real não é técnico, é moderação.** Intercâmbio de idioma é desconhecido encontrando
    desconhecido, que é o problema mais difícil que existe — e o Syden tem uma pessoa moderando.
 
+## Adolescentes no Syden: proteger de verdade, não fugir para os 18 (ECA Digital)
+
+**Decidido em 17/10/2026, pelo Sydenstricker, depois do caso Discord** (a ANPD suspendeu o vídeo e o compartilhamento de
+tela dele no Brasil em 12/08/2026, por medida preventiva do ECA Digital, a Lei 15.211/2025, depois da morte de uma menina
+de 13 anos induzida numa transmissão). Nas palavras dele: *"a idade de 18 é o caminho dos covardes"*, e *"prefiro ter mais
+trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem a MESMA arquitetura que derrubou o Discord
+(transmissão em sala fechada, que ninguém vê em tempo real), então o caso é o nosso espelho.
+
+- **Idade mínima: 13.** De 13 a 15, a conta fica LIGADA à de um responsável (art. 24); 16 e 17 com as proteções de menor.
+- **Fechado por padrão para menor** (arts. 7 e 17; o responsável pode abrir): conversa privada só com amigos aceitos;
+  transmitir tela/câmera só para amigos; assistir transmissão só de amigos; o tempo de uso visível ao responsável, com
+  limite diário opcional (art. 18 também pede: ver os adultos com quem o menor fala, e mexer nas configurações dele).
+- **Verificação de idade: em aberto.** Fatos levantados: o login do Google/Steam NÃO entrega idade ao Syden; CPF prova que
+  um número existe, não que é de quem digitou (o menor usa o do pai), e guardar CPF de todos pesa na LGPD (art. 13 do ECA
+  Digital: dado de verificação só serve para verificar); foto se burla. O que vem: o **Windows já dá a faixa etária da
+  conta Microsoft** aos apps (`GetUserAgeRangeAsync`, com "verificado", pedindo cadastro na plataforma de segurança digital
+  da Microsoft); o governo monta um **token de idade pelo gov.br** (só a faixa, sem CPF; PL 2410/26 em tramitação). Por
+  isso a verificação é em CAMADAS e trocável: data de nascimento no cadastro (guarda só a faixa) + o sinal do Windows no app
+  + suspeita de idade falsa suspende com recurso rápido (art. 24) + o gov.br quando existir.
+- **Para todo mundo, antes da idade (fase 1):** denunciar mensagem (os termos já prometiam, e a tela não tinha) e
+  TRANSMISSÃO (com a imagem do momento); quem modera corta a tela de alguém sem tirá-lo da chamada; banimento geral;
+  aviso com motivo e recurso a quem teve conteúdo retirado (art. 30); o botão "Levar seus dados" que a política promete;
+  procedimento escrito de comunicar às autoridades (art. 27/28) e a guarda da prova pelo prazo do Marco Civil.
+- **Validar com advogado de proteção de dados** antes de publicar a política nova: o enquadramento (porte, art. 39;
+  "acesso provável", art. 1º) pede alguém que responda por ele.
+
 ## A caixa-preta: exclusão apaga, mas 90 dias ficam para a justiça
 
 **Decidido em 02/10/2026, pelo Sydenstricker.** O Syden apagava tudo de quem excluía a conta — o que
