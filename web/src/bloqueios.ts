@@ -21,10 +21,6 @@ function avisar() {
   for (const ouvinte of ouvintes) ouvinte();
 }
 
-export function estaBloqueado(userId: number): boolean {
-  return bloqueados.has(userId);
-}
-
 export function idsBloqueados(): ReadonlySet<number> {
   return bloqueados;
 }

@@ -57,11 +57,6 @@ export function limparMencoes(channelId: number) {
   guardar();
 }
 
-/** Quantas menções esperam neste canal (a bolinha ao lado do nome do canal). */
-export function mencoesDoCanal(channelId: number): number {
-  return mencoes[channelId] ?? 0;
-}
-
 /** Quantas conversas diretas estão por ler. Vem do módulo de não lidas, que já sabia disso. */
 export function definirDiretasNaoLidas(quantas: number) {
   if (quantas === naoLidasDiretas) return;

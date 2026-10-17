@@ -184,11 +184,6 @@ function aplicarVolumeDaTela(faixa: RemoteAudioTrack | undefined, volume: number
   faixa.setVolume(conseguiu ? volume : Math.min(1, volume));
 }
 
-/** Essa transmissão está vindo com som? */
-export function hasScreenAudio(room: Room, userId: number) {
-  return screenAudioTrack(room, userId) !== undefined;
-}
-
 /** Ao entrar na sala (ou quando alguém chega), devolve a cada pessoa o volume que você tinha escolhido. */
 export function applyAllVolumes(room: Room) {
   for (const [identity, participant] of room.remoteParticipants) {

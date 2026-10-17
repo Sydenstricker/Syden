@@ -21,10 +21,6 @@ function ler(): Notas {
 let atual = ler();
 const ouvintes = new Set<() => void>();
 
-export function notaDe(userId: number): string {
-  return atual[String(userId)] ?? '';
-}
-
 /** Guarda (ou apaga, se vier vazia) a nota de alguém. */
 export function guardarNota(userId: number, texto: string) {
   void import('./preferencias').then((m) => m.guardarEmBreve());

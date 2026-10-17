@@ -1,4 +1,3 @@
-import type { AudioProcessorOptions, Track, TrackProcessor } from 'livekit-client';
 import { chave } from './i18n';
 
 // Modificador de voz: o som do microfone passa por uma cadeia de efeitos do próprio navegador antes de
@@ -20,10 +19,6 @@ export const VOICE_EFFECTS: { id: VoiceEffectId; name: string; hint: string }[] 
   { id: 'chipmunk', name: chave('Esquilo'), hint: chave('Voz fininha, de desenho animado.') },
   { id: 'cave', name: chave('Caverna'), hint: chave('Eco de lugar grande e vazio.') },
 ];
-
-export function voiceEffectName(id: VoiceEffectId): string {
-  return VOICE_EFFECTS.find((e) => e.id === id)?.name ?? 'Sua voz';
-}
 
 /** Saturação suave: o que dá o "chiado" do rádio e o peso do monstro, sem estourar o som. */
 function saturation(drive: number): Float32Array<ArrayBuffer> {
@@ -212,59 +207,5 @@ export function connectVoiceEffect(ctx: BaseAudioContext, effect: VoiceEffectId,
     default:
       input.connect(output);
       return () => {};
-  }
-}
-
-/**
- * Encaixa o efeito no microfone que já está indo para a chamada (o LiveKit troca o áudio enviado pelo
- * daqui). O `restart` é chamado quando o microfone reinicia — ao trocar de aparelho, por exemplo.
- */
-export class VoiceEffectProcessor implements TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
-  readonly name = 'syden-voice-effect';
-  processedTrack?: MediaStreamTrack;
-  private source?: MediaStreamAudioSourceNode;
-  private destination?: MediaStreamAudioDestinationNode;
-  private stopEffect: () => void = () => {};
-
-  constructor(private readonly effect: VoiceEffectId) {}
-
-  async init(options: AudioProcessorOptions) {
-    // Desmonta antes de montar: `init` pode ser chamado de novo sem `destroy` no meio (ao trocar de
-    // microfone, por exemplo), e sem isto ficariam dois caminhos de som vivos ao mesmo tempo.
-    this.teardown();
-    this.build(options.audioContext, options.track);
-  }
-
-  async restart(options: AudioProcessorOptions) {
-    this.teardown();
-    this.build(options.audioContext, options.track);
-  }
-
-  async destroy() {
-    this.teardown();
-    this.processedTrack = undefined;
-  }
-
-  private build(ctx: AudioContext, track: MediaStreamTrack) {
-    this.source = ctx.createMediaStreamSource(new MediaStream([track]));
-    this.destination = ctx.createMediaStreamDestination();
-    this.stopEffect = connectVoiceEffect(ctx, this.effect, this.source, this.destination);
-    this.processedTrack = this.destination.stream.getAudioTracks()[0];
-  }
-
-  private teardown() {
-    try {
-      this.stopEffect();
-    } catch {
-      // Já parado: nada a fazer.
-    }
-    this.stopEffect = () => {};
-    comCuidado(() => this.source?.disconnect());
-    comCuidado(() => this.destination?.disconnect());
-    // O som processado sai por uma faixa própria, criada aqui. Sem encerrá-la, cada troca de efeito
-    // deixa mais uma faixa viva presa ao contexto de áudio.
-    for (const faixa of this.destination?.stream.getTracks() ?? []) comCuidado(() => faixa.stop());
-    this.source = undefined;
-    this.destination = undefined;
   }
 }

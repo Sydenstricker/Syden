@@ -59,11 +59,8 @@ export interface Resultado {
 
 export const shieldConfigurado = () => Boolean(config.shield?.usuario && config.shield?.senha);
 
-/** Escreve no registro do servidor. Trocado por um logger de verdade em app.ts. */
-let anotar: (linha: string) => void = (linha) => console.log(linha);
-export function ondeAnotarShield(fn: (linha: string) => void) {
-  anotar = fn;
-}
+/** Escreve no registro do servidor. */
+const anotar = (linha: string) => console.log(linha);
 
 /**
  * O cache de vereditos, por SHA-256.

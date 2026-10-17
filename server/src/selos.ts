@@ -80,9 +80,6 @@ export const MARCOS: readonly Marco[] = [
   },
 ];
 
-/** O primeiro marco é o que destrava o selo; os outros são história. */
-export const MARCO_QUE_DESTRAVA = MARCOS[0].codigo;
-
 export function marcosAlcancados(fatos: FatosDaComunidade): string[] {
   return MARCOS.filter((m) => m.alcancado(fatos)).map((m) => m.codigo);
 }

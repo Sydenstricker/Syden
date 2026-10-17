@@ -18,10 +18,6 @@ export function ehEfeitoVisual(valor: unknown): valor is EfeitoVisualId {
   return EFEITOS_VISUAIS.some((e) => e.id === valor);
 }
 
-export function nomeDoEfeitoVisual(id: EfeitoVisualId): string {
-  return EFEITOS_VISUAIS.find((e) => e.id === id)?.nome ?? 'Efeito';
-}
-
 /**
  * Teto de partículas vivas ao mesmo tempo, somando TODOS os efeitos na tela.
  *
