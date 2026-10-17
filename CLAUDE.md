@@ -770,6 +770,14 @@ trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem
   primeira conta é a que bane). Escolhas que ficaram: a conta de AULA não pede idade (só alcança a aula); a transmissão
   recusada diz "não está disponível para você" SEM dizer o porquê (marcar quem é menor para estranhos seria dar o mapa a
   quem procura criança); a conta banida continua existindo (o mesmo e-mail e a mesma conta social não abrem outra).
+- **Onde estão as duas peças de fora (17/10/2026):** o token do gov.br é o **PL 2410/2026** (dep. Duda Salabert), que altera o
+  ECA Digital: verificação prioritariamente pelo gov.br, a plataforma recebe só a faixa etária, sem CPF; tramita em caráter
+  conclusivo nas comissões de Comunicação, de Infância/Família e de CCJ, e depois vai ao Senado. A ANPD (agora agência) deve
+  regulamentar a verificação etária. O Windows: `GetUserAgeRangeAsync` (faixas <10, 10–12, 13–15, 16–17, 18+) e
+  `GetAgeVerificationStatusAsync` saíram para os Insiders em 09/2026, ainda sem data de lançamento geral e com documentação
+  rala; o acesso exige registrar o app na plataforma de segurança digital da Microsoft, uma conta Microsoft na sessão do
+  Windows e a permissão de informações da conta. Quando devolver valores de verdade: chamar pelo módulo nativo
+  (`desktop/native`), gravar `idade_fonte = 'windows'`, e o "verificado" sobrepõe a data declarada.
 - **Falta, e é dele ou de fora:** cadastrar o Syden na plataforma de segurança digital da Microsoft para usar a faixa de
   idade do Windows (`GetUserAgeRangeAsync`) no app; o token do gov.br quando o governo oferecer (o compromisso está nos
   termos); o advogado; e o deploy (servidor e site juntos: com o servidor novo, TODA conta antiga é perguntada pela data
