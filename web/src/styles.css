@@ -12690,6 +12690,14 @@ body.arrastando-barra {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  width: 100%;
+}
+
+/* fora do Editar, a cena ocupa a largura toda, como antes da moldura (centrada, ela encolhia ao tamanho do que tinha
+   dentro: o salão ficou pequeno) */
+.editor-cena:not(.editando) .editor-palco,
+.editor-cena:not(.editando) .quarto-novo-caixa {
+  width: 100%;
 }
 
 .editor-entrar {

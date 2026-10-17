@@ -1901,7 +1901,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
         pecasDasPessoas.set(chave, p);
       }
       const r = 0.28;
-      itens.push({ p, dx: 0, dy: 0, fator: 1, pe: [lugar.u - r, lugar.u + r, lugar.v - r, lugar.v + r], sobre: lugar.sobre, atras: false, nome: pessoa.nome, cabeca: [px, Y0 + a.topo] });
+      itens.push({ p, dx: 0, dy: 0, fator: 1, pe: [lugar.u - r, lugar.u + r, lugar.v - r, lugar.v + r], sobre: lugar.sobre,
+        // DE COSTAS PARA QUEM OLHA (relato dele, 16/10/2026: "parece que os coelhos estão flutuando no sofá"): virado para a
+        // TV, quem senta tem o encosto do NOSSO lado, e o móvel vai por cima dele, como o coelho na poltrona do quarto
+        atras: !!lugar.sobre && String(lugar.olha).startsWith('n'), nome: pessoa.nome, cabeca: [px, Y0 + a.topo] });
     }
     return itens;
   }
@@ -2347,8 +2350,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function antes(a, b) {
     if (a.porCima !== b.porCima) return !b.porCima ? false : true; // a camada da frente vai por último
     if (a.deitado !== b.deitado) return !!a.deitado;
-    if (a.sobre && a.sobre === b.p.id) return a.atras;
-    if (b.sobre && b.sobre === a.p.id) return !b.atras;
+    if (a.sobre && a.sobre === (b.dono ?? b.p.id)) return a.atras;
+    if (b.sobre && b.sobre === (a.dono ?? a.p.id)) return !b.atras;
     const e = 0.001;
     if (a.pe[1] <= b.pe[0] + e || a.pe[3] <= b.pe[2] + e) return true;
     if (b.pe[1] <= a.pe[0] + e || b.pe[3] <= a.pe[2] + e) return false;
