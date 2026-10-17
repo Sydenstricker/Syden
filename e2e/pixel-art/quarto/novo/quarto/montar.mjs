@@ -1981,6 +1981,24 @@ if (CENA === 'salao') document.body.classList.add('salao');
     };
     const t = naFrente('tv', 1.6); if (t) tv.push(t);
     const fl = naFrente('fliperama', 0.7); if (fl) fliperama.push({ ...fl, pose: 'no-fliperama' });
+    // A TURMA DA PARTIDA EM VOLTA (pergunta dele, 17/10/2026: "se tiver mais de uma pessoa jogando mini-game, o que
+    // acontece?"): só o primeiro cabia na máquina, e o resto ia para o sofá, como se não estivesse no jogo. Agora quem
+    // joga junto (até mais três) fica de pé atrás e dos lados do fliperama, olhando para a tela;
+    // quem passa disso volta ao sofá, para a roda não virar um bolo na frente da TV. Na TV, a segunda pessoa transmitindo fica
+    // ao lado da primeira.
+    const emVolta = (id, lugares) => {
+      if (!ARR[id]) return [];
+      const [fu, fv] = VET[ORIENTA[ARR[id].lado]], pe = peDe(id), [cu, cv] = centro(pe), meia = Math.abs(fu) ? (pe[1] - pe[0]) / 2 : (pe[3] - pe[2]) / 2;
+      const [lu, lv] = [fv, fu]; // o lado (perpendicular à frente, no chão)
+      const tela = [cu + fu * meia, cv + fv * meia];
+      return lugares.map(([frente, lado]) => [cu + fu * (meia + frente) + lu * lado, cv + fv * (meia + frente) + lv * lado])
+        .filter(([u, v]) => u > 0.3 && v > 0.3 && u < N - 0.3 && v < N - 0.3 && livre(Math.floor(u), Math.floor(v)))
+        .map(([u, v]) => ({ u, v, sobe: 0, pose: 'parado', olha: DIAGONAL(tela[0] - u, tela[1] - v), sobre: null }));
+    };
+    // primeiro os lugares do lado de lá da TV (os dois móveis costumam ficar lado a lado, e a turma de um engolia o outro)
+    const longeDaTv = (x) => (ARR.tv ? -Math.hypot(x.u - centro(peDe('tv'))[0], x.v - centro(peDe('tv'))[1]) : 0);
+    fliperama.push(...emVolta('fliperama', [[1.0, 1.1], [1.0, -1.1], [2.0, 0]]).sort((a, b) => longeDaTv(a) - longeDaTv(b)));
+    tv.push(...emVolta('tv', [[1.6, 1], [1.6, -1]]));
     // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
     const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, N / 2];
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
@@ -1989,7 +2007,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   function lugaresDasPessoas() {
     const L = lugaresDoSalao(), usados = [];
-    const pegar = (lista) => { const x = lista.shift(); if (x) usados.push(x); return x; };
+    // um lugar DE PÉ a menos de 0,8 casa de outro já tomado é pulado (as rodas da TV e do fliperama se cruzam); os assentos
+    // do sofá são mais juntos que isso e valem todos
+    const pegar = (lista) => { let x; while ((x = lista.shift()) && !x.sobre && usados.some((y) => Math.hypot(y.u - x.u, y.v - x.v) < 0.8)); if (x) usados.push(x); return x; };
     return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || null })).filter((x) => x.lugar);
   }
   // Cada pessoa vira uma PEÇA da cena, como um móvel: o mascote parado naquela pose, com a profundidade do pé dele (e, sentado,
