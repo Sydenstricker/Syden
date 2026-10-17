@@ -57,6 +57,7 @@ const tiradosHaPouco = new Map<number, number>();
 export async function tirarDeTodasAsChamadas(userId: number) {
   const agora = Date.now();
   if ((tiradosHaPouco.get(userId) ?? 0) > agora - 60_000) return;
+  for (const [quem, quando] of tiradosHaPouco) if (quando <= agora - 60_000) tiradosHaPouco.delete(quem); // o que já venceu sai
   tiradosHaPouco.set(userId, agora);
   for (const comunidade of db.listCommunitiesForUser(userId)) {
     for (const canal of db.listChannels(comunidade.id)) {

@@ -15,6 +15,7 @@ import {
   VideoPresets,
 } from 'livekit-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { avisarChamada } from './VersaoNova';
 import type { Socket } from 'socket.io-client';
 import { ondeRoda } from './ondeRoda';
 import { api } from './api';
@@ -287,6 +288,8 @@ export function useVoice(socket: Socket | null) {
     });
   });
   const [channelId, setChannelId] = useState<number | null>(null);
+  // A versão nova só recarrega a aba sozinha fora de chamada (ver VersaoNova.tsx).
+  useEffect(() => avisarChamada(channelId !== null), [channelId]);
   const [connecting, setConnecting] = useState(false);
   // O que está sendo transmitido agora, em palavras ("League of Legends"), para os outros verem.
   const nomeDaTelaRef = useRef<string | null>(null);

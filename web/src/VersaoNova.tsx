@@ -9,13 +9,29 @@ import { useT } from './i18n';
  * antes do deploy e vê o que já foi consertado (relato de 12/10/2026: o menu de compartilhar com três
  * opções, horas depois de ele ter virado dois).
  *
- * NUNCA recarrega sozinho: recarregar derruba a chamada de quem está nela. O aviso fica no alto até a
- * pessoa escolher a hora. E não pergunta nada a terceiro: o versao.json mora ao lado do próprio app
- * (ver o plugin em vite.config.ts).
+ * O aviso fica no alto até a pessoa escolher a hora. E não pergunta nada a terceiro: o versao.json mora
+ * ao lado do próprio app (ver o plugin em vite.config.ts).
+ *
+ * RECARREGA SOZINHO SÓ QUANDO NINGUÉM VÊ (17/10/2026, depois do "saibot": uma aba de antes do servidor
+ * novo ficou ouvindo a sala, no palco e fora da lista, com o aviso ignorado). As condições, todas juntas:
+ * a janela escondida há 2 minutos (minimizada, na bandeja, outra aba na frente), FORA DE CHAMADA
+ * (recarregar a derrubaria) e NENHUM TEXTO DIGITADO em campo algum (o rascunho de mensagem não é
+ * guardado e se perderia). Quem volta encontra a versão nova, sem ter visto nada acontecer.
  */
 const MINHA_VERSAO: string | undefined = import.meta.env.VITE_VERSAO;
 // Dez minutos: o deploy não tem pressa de ser notado, e a pergunta é um arquivo de poucos bytes.
 const DE_QUANTO_EM_QUANTO_MS = 10 * 60_000;
+const ESCONDIDA_HA_MS = 2 * 60_000;
+
+/** Se esta aba está numa chamada agora (quem sabe é o useVoice, que avisa a cada troca). */
+let emChamada = false;
+export function avisarChamada(sim: boolean) {
+  emChamada = sim;
+}
+const temTextoDigitado = () =>
+  [...document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('textarea, input:not([type]), input[type="text"], input[type="search"]')].some(
+    (campo) => campo.value.trim() !== '',
+  ) || !!document.querySelector('[contenteditable="true"]:not(:empty)');
 
 export function VersaoNova() {
   const t = useT();
@@ -43,6 +59,24 @@ export function VersaoNova() {
       vivo = false;
       clearInterval(relogio);
       document.removeEventListener('visibilitychange', aoVoltar);
+    };
+  }, [mudou]);
+
+  useEffect(() => {
+    if (!mudou) return;
+    let escondidaDesde = document.visibilityState === 'hidden' ? Date.now() : null;
+    const aoMudar = () => {
+      escondidaDesde = document.visibilityState === 'hidden' ? (escondidaDesde ?? Date.now()) : null;
+    };
+    document.addEventListener('visibilitychange', aoMudar);
+    const relogio = setInterval(() => {
+      if (escondidaDesde === null || Date.now() - escondidaDesde < ESCONDIDA_HA_MS) return;
+      if (emChamada || temTextoDigitado()) return;
+      window.location.reload();
+    }, 30_000);
+    return () => {
+      clearInterval(relogio);
+      document.removeEventListener('visibilitychange', aoMudar);
     };
   }, [mudou]);
 
