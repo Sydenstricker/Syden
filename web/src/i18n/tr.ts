@@ -2018,4 +2018,6 @@ export default {
   'Transmissão não encontrada.': 'Yayın bulunamadı.',
   'Você não pode ser o seu próprio responsável.': 'Kendi velin olamazsın.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'İstersen hesabını bir anne, baba ya da veliye bağlayabilirsin.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Araçlar',
 } satisfies Record<string, string>;

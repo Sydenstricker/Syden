@@ -15305,3 +15305,16 @@ body.arrastando-barra {
     animation: none;
   }
 }
+
+/* O grupo recolhível das Configurações (as ferramentas de quem administra): a seta gira aberta, e os itens de dentro
+   recuam um pouco, para se ver que são do grupo. */
+.settings-grupo .settings-grupo-seta {
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+.settings-grupo[aria-expanded='false'] .settings-grupo-seta {
+  transform: rotate(-90deg);
+}
+.settings-tab.settings-sub {
+  padding-left: 22px;
+}

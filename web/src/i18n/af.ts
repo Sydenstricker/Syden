@@ -2088,4 +2088,6 @@ export default {
   'Transmissão não encontrada.': 'Uitsending nie gevind nie.',
   'Você não pode ser o seu próprio responsável.': 'Jy kan nie jou eie ouer of voog wees nie.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Jy kan jou rekening aan \'n pa, ma of voog koppel as jy wil.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Gereedskap',
 } satisfies Record<string, string>;

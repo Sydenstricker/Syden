@@ -2090,4 +2090,6 @@ export default {
   'Transmissão não encontrada.': 'Трансляция табылмады.',
   'Você não pode ser o seu próprio responsável.': 'Өзіңізге өзіңіз қамқоршы бола алмайсыз.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Қаласаңыз, аккаунтыңызды әке, ана немесе қамқоршыға байланыстыра аласыз.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Құралдар',
 } satisfies Record<string, string>;

@@ -2063,4 +2063,6 @@ export default {
   'Transmissão não encontrada.': 'ထုတ်လွှင့်မှု မတွေ့ပါ။',
   'Você não pode ser o seu próprio responsável.': 'သင်ကိုယ်တိုင် သင့်အုပ်ထိန်းသူ မဖြစ်နိုင်ပါ။',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'လိုချင်လျှင် သင့်အကောင့်ကို ဖခင်၊ မိခင် သို့မဟုတ် အုပ်ထိန်းသူနှင့် ချိတ်နိုင်သည်။',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ကိရိယာများ',
 } satisfies Record<string, string>;

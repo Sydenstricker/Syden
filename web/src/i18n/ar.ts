@@ -2044,4 +2044,6 @@ export default {
   'Transmissão não encontrada.': 'البث غير موجود.',
   'Você não pode ser o seu próprio responsável.': 'لا يمكن لأحد أن يكون ولي أمر نفسه.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'يمكنك ربط حسابك بأب أو أم أو ولي أمر، إن أردت.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'الأدوات',
 } satisfies Record<string, string>;

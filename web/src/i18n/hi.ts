@@ -2023,4 +2023,6 @@ export default {
   'Transmissão não encontrada.': 'स्ट्रीम नहीं मिली।',
   'Você não pode ser o seu próprio responsável.': 'खुद को अपना अभिभावक नहीं बनाया जा सकता।',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'चाहें तो अपना खाता पिता, माता या अभिभावक से जोड़ें।',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'टूल',
 } satisfies Record<string, string>;

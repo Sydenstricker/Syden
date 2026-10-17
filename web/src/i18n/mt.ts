@@ -2040,4 +2040,6 @@ export default {
   'Transmissão não encontrada.': 'Xandira mhux misjuba.',
   'Você não pode ser o seu próprio responsável.': 'Ma tistax torbot il-kont tiegħek miegħek innifsek.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Tista\' torbot il-kont tiegħek ma\' missier, omm jew tutur, jekk trid.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Għodod',
 } satisfies Record<string, string>;

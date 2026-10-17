@@ -2094,4 +2094,6 @@ export default {
   'Transmissão não encontrada.': 'Преносот не е пронајден.',
   'Você não pode ser o seu próprio responsável.': 'Сметката не може да се поврзе сама со себе.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ако сакаш, можеш да ја поврзеш својата сметка со родител или старател.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Алатки',
 } satisfies Record<string, string>;

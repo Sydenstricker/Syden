@@ -2012,4 +2012,6 @@ export default {
   'Transmissão não encontrada.': '방송을 찾을 수 없어요.',
   'Você não pode ser o seu próprio responsável.': '자기 자신의 보호자가 될 수는 없어요.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': '원하면 계정을 부모님이나 보호자와 연결할 수 있어요.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': '도구',
 } satisfies Record<string, string>;

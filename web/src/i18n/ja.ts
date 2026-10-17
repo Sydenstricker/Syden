@@ -2005,4 +2005,6 @@ export default {
   'Transmissão não encontrada.': '画面共有が見つかりません。',
   'Você não pode ser o seu próprio responsável.': '自分自身の保護者にはなれません。',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': '希望すれば、アカウントを父親、母親、または保護者と連携できます。',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ツール',
 } satisfies Record<string, string>;

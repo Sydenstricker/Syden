@@ -2086,4 +2086,6 @@ export default {
   'Transmissão não encontrada.': 'Sändningen hittades inte.',
   'Você não pode ser o seu próprio responsável.': 'Du kan inte vara din egen vårdnadshavare.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Du kan koppla ditt konto till en förälder eller vårdnadshavare om du vill.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Verktyg',
 } satisfies Record<string, string>;

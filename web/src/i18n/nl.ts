@@ -2023,4 +2023,6 @@ export default {
   'Transmissão não encontrada.': 'Uitzending niet gevonden.',
   'Você não pode ser o seu próprio responsável.': 'Je kunt niet je eigen ouder of voogd zijn.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Je kunt je account koppelen aan een ouder of voogd, als je wilt.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Hulpmiddelen',
 } satisfies Record<string, string>;

@@ -2093,4 +2093,6 @@ export default {
   'Transmissão não encontrada.': 'Přenos nebyl nalezen.',
   'Você não pode ser o seu próprio responsável.': 'Účet nejde propojit sám se sebou.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Pokud chceš, můžeš svůj účet propojit s rodičem nebo zákonným zástupcem.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Nástroje',
 } satisfies Record<string, string>;

@@ -2019,4 +2019,6 @@ export default {
   'Transmissão não encontrada.': 'Stream not found.',
   'Você não pode ser o seu próprio responsável.': 'You can\'t be your own guardian.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'You can link your account to a parent or guardian if you want.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Tools',
 } satisfies Record<string, string>;

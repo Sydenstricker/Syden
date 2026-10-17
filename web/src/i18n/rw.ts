@@ -2035,4 +2035,6 @@ export default {
   'Transmissão não encontrada.': 'Itambutsa ntiryabonetse.',
   'Você não pode ser o seu próprio responsável.': 'Ntushobora kuba umurezi wawe bwite.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ushobora guhuza konti yawe n\'umubyeyi cyangwa umurezi, nubishaka.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Ibikoresho',
 } satisfies Record<string, string>;

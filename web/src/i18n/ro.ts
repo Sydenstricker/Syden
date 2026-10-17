@@ -2024,4 +2024,6 @@ export default {
   'Transmissão não encontrada.': 'Transmisiunea nu a fost găsită.',
   'Você não pode ser o seu próprio responsável.': 'Nu poți fi propriul tău tutore.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Dacă vrei, îți poți lega contul de un părinte sau tutore.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Instrumente',
 } satisfies Record<string, string>;

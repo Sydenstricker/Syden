@@ -2030,4 +2030,6 @@ export default {
   'Transmissão não encontrada.': 'Níor aimsíodh an craoladh.',
   'Você não pode ser o seu próprio responsável.': 'Ní féidir leat a bheith i do chaomhnóir ort féin.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Más mian leat, is féidir leat do chuntas a nascadh le tuismitheoir nó caomhnóir.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Uirlisí',
 } satisfies Record<string, string>;

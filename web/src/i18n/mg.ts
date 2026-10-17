@@ -2094,4 +2094,6 @@ export default {
   'Transmissão não encontrada.': 'Tsy hita ny fandefasana.',
   'Você não pode ser o seu próprio responsável.': 'Tsy afaka ho mpiahy ny tenanao ianao.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Afaka mampifandray ny kaontinao amin’ny ray, reny na mpiahy ianao, raha tianao.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Fitaovana',
 } satisfies Record<string, string>;

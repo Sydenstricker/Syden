@@ -2021,4 +2021,6 @@ export default {
   'Transmissão não encontrada.': 'স্ট্রিম পাওয়া যায়নি।',
   'Você não pode ser o seu próprio responsável.': 'তুমি নিজের অভিভাবক হতে পারো না।',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'চাইলে তোমার অ্যাকাউন্ট বাবা, মা বা অভিভাবকের সঙ্গে যুক্ত করতে পারো।',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'টুল',
 } satisfies Record<string, string>;

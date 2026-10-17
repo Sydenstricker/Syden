@@ -2021,4 +2021,6 @@ export default {
   'Transmissão não encontrada.': 'Siaran tidak ditemukan.',
   'Você não pode ser o seu próprio responsável.': 'Kamu tidak bisa menjadi walimu sendiri.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Kamu bisa menghubungkan akunmu dengan ayah, ibu, atau wali jika mau.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Alat',
 } satisfies Record<string, string>;

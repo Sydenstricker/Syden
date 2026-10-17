@@ -2096,4 +2096,6 @@ export default {
   'Transmissão não encontrada.': 'Translācija nav atrasta.',
   'Você não pode ser o seu próprio responsável.': 'Nevar būt aizbildnis savam kontam.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ja vēlies, vari sasaistīt savu kontu ar vecāku vai aizbildni.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Rīki',
 } satisfies Record<string, string>;

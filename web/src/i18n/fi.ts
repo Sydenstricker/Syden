@@ -2094,4 +2094,6 @@ export default {
   'Transmissão não encontrada.': 'Lähetystä ei löytynyt.',
   'Você não pode ser o seu próprio responsável.': 'Et voi olla oma huoltajasi.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Halutessasi voit yhdistää tilisi vanhempaan tai huoltajaan.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Työkalut',
 } satisfies Record<string, string>;

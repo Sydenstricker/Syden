@@ -2012,4 +2012,6 @@ export default {
   'Transmissão não encontrada.': 'اشتراک صفحه پیدا نشد.',
   'Você não pode ser o seu próprio responsável.': 'نمی‌توانید سرپرست خودتان باشید.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'اگر بخواهید، می‌توانید حساب خود را به پدر، مادر یا سرپرست وصل کنید.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ابزارها',
 } satisfies Record<string, string>;

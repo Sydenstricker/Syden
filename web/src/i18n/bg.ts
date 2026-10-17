@@ -2091,4 +2091,6 @@ export default {
   'Transmissão não encontrada.': 'Излъчването не е намерено.',
   'Você não pode ser o seu próprio responsável.': 'Акаунтът не може да се свърже сам със себе си.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ако искаш, можеш да свържеш акаунта си с родител или настойник.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Инструменти',
 } satisfies Record<string, string>;

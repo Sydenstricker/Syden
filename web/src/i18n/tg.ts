@@ -2095,4 +2095,6 @@ export default {
   'Transmissão não encontrada.': 'Пахш ёфт нашуд.',
   'Você não pode ser o seu próprio responsável.': 'Шумо наметавонед сарпарасти худ бошед.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Агар хоҳед, метавонед ҳисоби худро ба падар, модар ё сарпараст пайваст кунед.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Абзорҳо',
 } satisfies Record<string, string>;

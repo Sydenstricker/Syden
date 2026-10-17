@@ -2090,4 +2090,6 @@ export default {
   'Transmissão não encontrada.': 'No s’ha trobat la transmissió.',
   'Você não pode ser o seu próprio responsável.': 'No pots ser el tutor del teu propi compte.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Pots vincular el teu compte al d’un pare, mare o tutor, si vols.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Eines',
 } satisfies Record<string, string>;

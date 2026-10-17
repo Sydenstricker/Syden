@@ -2102,4 +2102,6 @@ export default {
   'Transmissão não encontrada.': 'Translyatsiya topilmadi.',
   'Você não pode ser o seu próprio responsável.': 'Oʻzingizga oʻzingiz vasiy boʻla olmaysiz.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Xohlasangiz, hisobingizni ota, ona yoki vasiyga bogʻlashingiz mumkin.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Vositalar',
 } satisfies Record<string, string>;

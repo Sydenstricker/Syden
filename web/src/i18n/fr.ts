@@ -2046,4 +2046,6 @@ export default {
   'Transmissão não encontrada.': 'Diffusion introuvable.',
   'Você não pode ser o seu próprio responsável.': 'Tu ne peux pas être ton propre responsable légal.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Tu peux lier ton compte à celui d’un parent ou d’un responsable légal, si tu veux.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Outils',
 } satisfies Record<string, string>;

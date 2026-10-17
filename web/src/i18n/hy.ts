@@ -2113,4 +2113,6 @@ export default {
   'Transmissão não encontrada.': 'Հեռարձակումը չի գտնվել։',
   'Você não pode ser o seu próprio responsável.': 'Դուք չեք կարող լինել ձեր սեփական խնամակալը։',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Եթե ցանկանում եք, կարող եք կապել ձեր հաշիվը հոր, մոր կամ խնամակալի հետ։',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Գործիքներ',
 } satisfies Record<string, string>;

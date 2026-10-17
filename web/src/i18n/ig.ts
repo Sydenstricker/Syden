@@ -2032,4 +2032,6 @@ export default {
   'Transmissão não encontrada.': 'Ahụghị mgbasa ahụ.',
   'Você não pode ser o seu próprio responsável.': 'Ị nweghị ike ịbụ onye nlekọta nke onwe gị.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ị nwere ike ijikọ akaụntụ gị na nna, nne ma ọ bụ onye nlekọta, ọ bụrụ na ị chọrọ.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Ngwaọrụ',
 } satisfies Record<string, string>;

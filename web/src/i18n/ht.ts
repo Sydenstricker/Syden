@@ -2104,4 +2104,6 @@ export default {
   'Transmissão não encontrada.': 'Difizyon an pa jwenn.',
   'Você não pode ser o seu próprio responsável.': 'Ou pa ka responsab tèt ou.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ou ka konekte kont ou ak yon papa, manman oswa responsab, si ou vle.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Zouti',
 } satisfies Record<string, string>;

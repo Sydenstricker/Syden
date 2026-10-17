@@ -2095,4 +2095,6 @@ export default {
   'Transmissão não encontrada.': 'ບໍ່ພົບສະຕຣີມ.',
   'Você não pode ser o seu próprio responsável.': 'ທ່ານເປັນຜູ້ປົກຄອງຂອງຕົນເອງບໍ່ໄດ້.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ຖ້າຕ້ອງການ, ທ່ານສາມາດເຊື່ອມບັນຊີຂອງທ່ານກັບພໍ່, ແມ່ ຫຼື ຜູ້ປົກຄອງໄດ້.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ເຄື່ອງມື',
 } satisfies Record<string, string>;

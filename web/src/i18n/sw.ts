@@ -2023,4 +2023,6 @@ export default {
   'Transmissão não encontrada.': 'Matangazo hayakupatikana.',
   'Você não pode ser o seu próprio responsável.': 'Huwezi kuwa mzazi au mlezi wako mwenyewe.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Unaweza kuunganisha akaunti yako na baba, mama au mlezi, ukipenda.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Zana',
 } satisfies Record<string, string>;

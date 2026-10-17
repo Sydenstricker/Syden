@@ -2091,4 +2091,6 @@ export default {
   'Transmissão não encontrada.': 'Ülekannet ei leitud.',
   'Você não pode ser o seu próprio responsável.': 'Sa ei saa olla iseenda eestkostja.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Soovi korral võid oma konto siduda vanema või eestkostjaga.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Tööriistad',
 } satisfies Record<string, string>;

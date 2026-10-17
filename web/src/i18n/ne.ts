@@ -2096,4 +2096,6 @@ export default {
   'Transmissão não encontrada.': 'स्ट्रिम भेटिएन।',
   'Você não pode ser o seu próprio responsável.': 'आफू आफ्नै अभिभावक हुन सकिँदैन।',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'चाहनुभयो भने आफ्नो खाता बुबा, आमा वा अभिभावकसँग जोड्न सक्नुहुन्छ।',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'उपकरणहरू',
 } satisfies Record<string, string>;

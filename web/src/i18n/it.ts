@@ -2023,4 +2023,6 @@ export default {
   'Transmissão não encontrada.': 'Trasmissione non trovata.',
   'Você não pode ser o seu próprio responsável.': 'Non puoi essere il tutore del tuo stesso account.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Puoi collegare il tuo account a quello di un genitore o tutore, se vuoi.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Strumenti',
 } satisfies Record<string, string>;

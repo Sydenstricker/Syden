@@ -2095,4 +2095,6 @@ export default {
   'Transmissão não encontrada.': 'Útsending fannst ekki.',
   'Você não pode ser o seu próprio responsável.': 'Þú getur ekki verið þinn eigin forráðamaður.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ef þú vilt geturðu tengt aðganginn þinn við foreldri eða forráðamann.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Verkfæri',
 } satisfies Record<string, string>;

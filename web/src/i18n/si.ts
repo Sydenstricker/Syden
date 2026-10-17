@@ -2094,4 +2094,6 @@ export default {
   'Transmissão não encontrada.': 'විකාශනය හමු නොවීය.',
   'Você não pode ser o seu próprio responsável.': 'ඔබට ඔබේම භාරකරු විය නොහැක.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'කැමති නම් ඔබේ ගිණුම පියා, මව හෝ භාරකරුවෙකුට සම්බන්ධ කළ හැක.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'මෙවලම්',
 } satisfies Record<string, string>;

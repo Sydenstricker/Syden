@@ -2112,4 +2112,6 @@ export default {
   'Transmissão não encontrada.': 'ტრანსლაცია ვერ მოიძებნა.',
   'Você não pode ser o seu próprio responsável.': 'საკუთარი თავის მეურვე ვერ იქნებით.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'თუ გსურთ, შეგიძლიათ თქვენი ანგარიში დაუკავშიროთ მამას, დედას ან მეურვეს.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ხელსაწყოები',
 } satisfies Record<string, string>;

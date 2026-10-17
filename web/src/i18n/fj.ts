@@ -2023,4 +2023,6 @@ export default {
   'Transmissão não encontrada.': 'E sega ni kunei na vakaraitaki.',
   'Você não pode ser o seu próprio responsável.': 'O sega ni rawa ni dauqaqa ga vei iko.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'E rawa ni o semata na nomu akaude vua na tamamu, tinamu se dauqaqa, kevaka o vinakata.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Iyaya',
 } satisfies Record<string, string>;

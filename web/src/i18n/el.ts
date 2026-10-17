@@ -2030,4 +2030,6 @@ export default {
   'Transmissão não encontrada.': 'Η μετάδοση δεν βρέθηκε.',
   'Você não pode ser o seu próprio responsável.': 'Δεν μπορείς να είσαι ο κηδεμόνας του εαυτού σου.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Αν θέλεις, μπορείς να συνδέσεις τον λογαριασμό σου με γονιό ή κηδεμόνα.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Εργαλεία',
 } satisfies Record<string, string>;

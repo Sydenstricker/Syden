@@ -2009,4 +2009,6 @@ export default {
   'Transmissão não encontrada.': 'திரைப் பகிர்வு கிடைக்கவில்லை.',
   'Você não pode ser o seu próprio responsável.': 'நீங்களே உங்கள் பாதுகாவலராக இருக்க முடியாது.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'விரும்பினால், உங்கள் கணக்கைத் தந்தை, தாய் அல்லது பாதுகாவலருடன் இணைக்கலாம்.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'கருவிகள்',
 } satisfies Record<string, string>;

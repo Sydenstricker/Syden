@@ -2026,4 +2026,6 @@ export default {
   'Transmissão não encontrada.': 'Ba a sami watsawar ba.',
   'Você não pode ser o seu próprio responsável.': 'Ba za ku iya zama mai kula da kanku ba.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Kuna iya haɗa asusunku da uba, uwa ko mai kula, idan kuna so.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Kayan aiki',
 } satisfies Record<string, string>;

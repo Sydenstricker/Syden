@@ -2096,4 +2096,6 @@ export default {
   'Transmissão não encontrada.': 'A közvetítés nem található.',
   'Você não pode ser o seu próprio responsável.': 'Nem lehetsz a saját gondviselőd.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ha szeretnéd, összekapcsolhatod a fiókodat egy szülővel vagy gondviselővel.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Eszközök',
 } satisfies Record<string, string>;

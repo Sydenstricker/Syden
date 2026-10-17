@@ -2094,4 +2094,6 @@ export default {
   'Transmissão não encontrada.': 'Fant ikke sendingen.',
   'Você não pode ser o seu próprio responsável.': 'Du kan ikke være din egen forelder eller verge.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Du kan knytte kontoen din til en forelder eller verge hvis du vil.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Verktøy',
 } satisfies Record<string, string>;

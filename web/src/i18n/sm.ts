@@ -2028,4 +2028,6 @@ export default {
   'Transmissão não encontrada.': 'E leʻi maua le faʻasalalauga.',
   'Você não pode ser o seu próprio responsável.': 'E le mafai ona avea oe ma ou lava tausi.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'E mafai ona e faʻafesoʻotaʻi lau ʻakauni ma se tamā, tinā po o se tausi, pe a e manaʻo ai.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Meafaigaluega',
 } satisfies Record<string, string>;

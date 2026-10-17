@@ -2093,4 +2093,6 @@ export default {
   'Transmissão não encontrada.': 'រកមិនឃើញការផ្សាយ។',
   'Você não pode ser o seu próprio responsável.': 'អ្នកមិនអាចជាអាណាព្យាបាលរបស់ខ្លួនឯងបានទេ។',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'បើចង់ អ្នកអាចភ្ជាប់គណនីរបស់អ្នកជាមួយឪពុក ម្តាយ ឬអាណាព្យាបាល។',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ឧបករណ៍',
 } satisfies Record<string, string>;

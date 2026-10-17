@@ -2011,4 +2011,6 @@ export default {
   'Transmissão não encontrada.': 'اسکرین شیئر نہیں ملا۔',
   'Você não pode ser o seu próprio responsável.': 'کوئی خود اپنا سرپرست نہیں بن سکتا۔',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'چاہیں تو اپنا اکاؤنٹ والد، والدہ یا سرپرست سے جوڑیں۔',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ٹولز',
 } satisfies Record<string, string>;

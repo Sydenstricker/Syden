@@ -2104,4 +2104,6 @@ export default {
   'Transmissão não encontrada.': 'ސްޓްރީމް ނުފެނުނު.',
   'Você não pode ser o seu próprio responsável.': 'އަމިއްލަ ބެލެނިވެރިޔަކަށް ނުވެވޭނެ.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ބޭނުންނަމަ، އެކައުންޓް ބައްޕަ، މަންމަ ނުވަތަ ބެލެނިވެރިއަކާ ގުޅިދާނެ.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'ޓޫލްތައް',
 } satisfies Record<string, string>;

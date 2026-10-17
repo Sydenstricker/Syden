@@ -2037,4 +2037,6 @@ export default {
   'Transmissão não encontrada.': 'ไม่พบการถ่ายทอด',
   'Você não pode ser o seu próprio responsável.': 'คุณเป็นผู้ปกครองของตัวเองไม่ได้',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ถ้าต้องการ คุณเชื่อมบัญชีกับพ่อ แม่ หรือผู้ปกครองได้',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'เครื่องมือ',
 } satisfies Record<string, string>;

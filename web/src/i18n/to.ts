@@ -2030,4 +2030,6 @@ export default {
   'Transmissão não encontrada.': 'ʻOku ʻikai maʻu ʻa e fakamafola.',
   'Você não pode ser o seu próprio responsável.': 'ʻOku ʻikai lava ke ke hoko ko hoʻo tauhi ʻaʻau.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ʻE lava ke ke fakafehokotaki hoʻo ʻakauni mo ha tamai, faʻē pe tauhi, kapau ʻoku ke loto ki ai.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Ngaahi meʻangāue',
 } satisfies Record<string, string>;

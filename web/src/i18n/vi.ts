@@ -1994,4 +1994,6 @@ export default {
   'Transmissão não encontrada.': 'Không tìm thấy màn hình chia sẻ.',
   'Você não pode ser o seu próprio responsável.': 'Bạn không thể là người giám hộ của chính mình.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Bạn có thể liên kết tài khoản với cha, mẹ hoặc người giám hộ nếu muốn.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Công cụ',
 } satisfies Record<string, string>;

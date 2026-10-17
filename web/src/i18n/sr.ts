@@ -2091,4 +2091,6 @@ export default {
   'Transmissão não encontrada.': 'Пренос није пронађен.',
   'Você não pode ser o seu próprio responsável.': 'Налог не може да се повеже сам са собом.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ако желиш, можеш да повежеш свој налог са родитељем или старатељем.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Алати',
 } satisfies Record<string, string>;

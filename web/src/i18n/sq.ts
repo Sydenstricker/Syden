@@ -2086,4 +2086,6 @@ export default {
   'Transmissão não encontrada.': 'Transmetimi nuk u gjet.',
   'Você não pode ser o seu próprio responsável.': 'Nuk mund ta lidhësh llogarinë tënde me veten.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Mund ta lidhësh llogarinë tënde me një prind ose kujdestar, nëse do.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Mjetet',
 } satisfies Record<string, string>;

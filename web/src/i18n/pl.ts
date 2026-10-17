@@ -2089,4 +2089,6 @@ export default {
   'Transmissão não encontrada.': 'Nie znaleziono transmisji.',
   'Você não pode ser o seu próprio responsável.': 'Nie możesz być swoim własnym opiekunem.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Jeśli chcesz, możesz połączyć konto z rodzicem lub opiekunem.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Narzędzia',
 } satisfies Record<string, string>;

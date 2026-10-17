@@ -2026,4 +2026,6 @@ export default {
   'Transmissão não encontrada.': 'Transmisaun la hetan.',
   'Você não pode ser o seu próprio responsável.': 'Ó labele sai ó-nia responsavel rasik.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ó bele liga ó-nia konta ho aman, inan ka responsavel, se ó hakarak.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Ferramenta',
 } satisfies Record<string, string>;

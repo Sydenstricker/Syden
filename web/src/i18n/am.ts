@@ -2024,4 +2024,6 @@ export default {
   'Transmissão não encontrada.': 'ስርጭቱ አልተገኘም።',
   'Você não pode ser o seu próprio responsável.': 'የራስዎ አሳዳጊ መሆን አይችሉም።',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ከፈለጉ መለያዎን ከአባት፣ እናት ወይም አሳዳጊ ጋር ማገናኘት ይችላሉ።',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'መሳሪያዎች',
 } satisfies Record<string, string>;

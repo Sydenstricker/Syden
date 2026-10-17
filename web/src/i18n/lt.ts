@@ -2096,4 +2096,6 @@ export default {
   'Transmissão não encontrada.': 'Transliacija nerasta.',
   'Você não pode ser o seu próprio responsável.': 'Negalima būti savo paskyros globėju.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Jei nori, gali susieti savo paskyrą su tėvais ar globėju.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Įrankiai',
 } satisfies Record<string, string>;

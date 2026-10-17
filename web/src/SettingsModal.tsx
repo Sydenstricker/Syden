@@ -20,7 +20,7 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown } from 'lucide-react';
 import {
   type FormEvent,
   // Apelidados: sem isto o KeyboardEvent do React sombreia o do DOM, e o ouvinte de Escape lá
@@ -34,6 +34,7 @@ import {
 } from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
 import { Aparencia } from './Aparencia';
+import { GraficosSection } from './Graficos';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
 import { AjusteDasBarras } from './AjusteDasBarras';
@@ -91,7 +92,7 @@ import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'familia' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
+type Section = 'account' | 'familia' | 'aparencia' | 'graficos' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
@@ -101,6 +102,9 @@ const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   // perfil: cor do nome, fundo, moldura e insígnias se escolhiam em dois lugares diferentes, e a
   // moldura só num deles. Ver web/src/Aparencia.tsx.
   { id: 'aparencia', label: chave('Aparência'), icon: <Sparkles size={20} /> },
+  // OS GRÁFICOS DO QUARTO E DO SALÃO ganharam lugar próprio (pedido dele, 17/10/2026): dentro da Aparência ninguém os
+  // achava, e não são cosmético, são o peso que o Syden põe no computador. Ver Graficos.tsx.
+  { id: 'graficos', label: chave('Gráficos'), icon: <Gauge size={20} /> },
   // A FAMÍLIA (17/10/2026, ECA Digital): o menor vê as proteções dele e o código para o responsável; o adulto liga a
   // conta de um filho e acompanha. Ver Familia.tsx.
   { id: 'familia', label: chave('Família'), icon: <HeartHandshake size={20} /> },
@@ -156,6 +160,8 @@ export function SettingsModal({
 }) {
   const t = useT();
   const [section, setSection] = useState<Section>(secaoInicial);
+  const [ferramentasAbertas, setFerramentasAbertas] = useState(false);
+  const ferramentaAberta = SO_PARA_QUEM_ADMINISTRA.includes(section);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose();
@@ -177,11 +183,32 @@ export function SettingsModal({
             <>
               <hr />
               <h4 title={community.name}>{community.name}</h4>
-              {COMMUNITY_SECTIONS.filter((s) => !SO_PARA_QUEM_ADMINISTRA.includes(s.id) || manages(community)).map((s) => (
+              {COMMUNITY_SECTIONS.filter((s) => !SO_PARA_QUEM_ADMINISTRA.includes(s.id)).map((s) => (
                 <button key={s.id} className={`settings-tab${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
                   {s.icon} {t(s.label)}
                 </button>
               ))}
+              {/* AS FERRAMENTAS DE QUEM ADMINISTRA, RECOLHIDAS (pedido dele, 17/10/2026: "temos muitas opções de
+                  configurações"): sete itens que se usam ao montar a comunidade e quase nunca depois. Abrem sozinhas
+                  quando uma delas é a aba aberta. */}
+              {manages(community) && (
+                <>
+                  <button
+                    className="settings-tab settings-grupo"
+                    aria-expanded={ferramentasAbertas || ferramentaAberta}
+                    onClick={() => setFerramentasAbertas((a) => !(a || ferramentaAberta))}
+                  >
+                    <Wrench size={18} /> {t('Ferramentas')}
+                    <ChevronDown size={16} className="settings-grupo-seta" aria-hidden="true" />
+                  </button>
+                  {(ferramentasAbertas || ferramentaAberta) &&
+                    COMMUNITY_SECTIONS.filter((s) => SO_PARA_QUEM_ADMINISTRA.includes(s.id)).map((s) => (
+                      <button key={s.id} className={`settings-tab settings-sub${section === s.id ? ' active' : ''}`} onClick={() => setSection(s.id)}>
+                        {s.icon} {t(s.label)}
+                      </button>
+                    ))}
+                </>
+              )}
             </>
           )}
           <hr />
@@ -204,6 +231,7 @@ export function SettingsModal({
             </>
           )}
           {section === 'familia' && <FamiliaSection />}
+          {section === 'graficos' && <GraficosSection />}
           {section === 'aparencia' && <Aparencia user={user} aoAbrirPacotes={() => setSection('soundboard')} />}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}

@@ -2074,4 +2074,6 @@ export default {
   'Transmissão não encontrada.': 'השידור לא נמצא.',
   'Você não pode ser o seu próprio responsável.': 'אי אפשר להיות ההורה או האפוטרופוס של עצמך.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'אפשר לקשר את החשבון שלך להורה או לאפוטרופוס, אם רוצים.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'כלים',
 } satisfies Record<string, string>;

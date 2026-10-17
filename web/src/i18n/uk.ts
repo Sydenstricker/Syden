@@ -2074,4 +2074,6 @@ export default {
   'Transmissão não encontrada.': 'Трансляцію не знайдено.',
   'Você não pode ser o seu próprio responsável.': 'Обліковий запис не можна прив’язати до самого себе.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Якщо хочеш, можеш прив’язати свій обліковий запис до батьків або опікуна.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Інструменти',
 } satisfies Record<string, string>;

@@ -2093,4 +2093,6 @@ export default {
   'Transmissão não encontrada.': 'Prenos nije pronađen.',
   'Você não pode ser o seu próprio responsável.': 'Nalog ne može da se poveže sam sa sobom.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ako želiš, možeš da povežeš svoj nalog s roditeljem ili starateljem.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Alati',
 } satisfies Record<string, string>;

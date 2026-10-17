@@ -2064,4 +2064,6 @@ export default {
   'Transmissão não encontrada.': 'Tamsaasni hin argamne.',
   'Você não pode ser o seu próprio responsável.': 'Itti gaafatamaa ofii kee ta’uu hin dandeessu.',
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Yoo barbaadde, akkaawuntii kee abbaa, haadha ykn itti gaafatamaa waliin walqabsiisuu ni dandeessa.',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Ferramentas': 'Meeshaalee',
 } satisfies Record<string, string>;
