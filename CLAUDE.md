@@ -762,6 +762,18 @@ trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem
   procedimento escrito de comunicar às autoridades (art. 27/28) e a guarda da prova pelo prazo do Marco Civil.
 - **Validar com advogado de proteção de dados** antes de publicar a política nova: o enquadramento (porte, art. 39;
   "acesso provável", art. 1º) pede alguém que responda por ele.
+- **FEITO em 17/10/2026 (fases 1 e 2, pedido dele: "pode fazer a fase 1 e 2")**: `server/src/protecao.ts` (as regras e a
+  BARREIRA: a conta banida, suspensa, sem a data, sem o responsável depois de 7 dias ou com o tempo do dia esgotado entra,
+  mas só alcança o que resolve a pendência e os direitos de levar os dados e excluir a conta), `protecao-routes.ts`,
+  `web/src/TelaDaBarreira.tsx`, `Familia.tsx`, `PainelBarrados.tsx`; termos (seção 2, com o COMPROMISSO do token do gov.br)
+  e política nas duas línguas; `docs/autoridades.md` (o caso grave, passo a passo); `e2e/protecao.mjs` (pede banco novo: a
+  primeira conta é a que bane). Escolhas que ficaram: a conta de AULA não pede idade (só alcança a aula); a transmissão
+  recusada diz "não está disponível para você" SEM dizer o porquê (marcar quem é menor para estranhos seria dar o mapa a
+  quem procura criança); a conta banida continua existindo (o mesmo e-mail e a mesma conta social não abrem outra).
+- **Falta, e é dele ou de fora:** cadastrar o Syden na plataforma de segurança digital da Microsoft para usar a faixa de
+  idade do Windows (`GetUserAgeRangeAsync`) no app; o token do gov.br quando o governo oferecer (o compromisso está nos
+  termos); o advogado; e o deploy (servidor e site juntos: com o servidor novo, TODA conta antiga é perguntada pela data
+  de nascimento na próxima vez que abrir o Syden, inclusive a dele).
 
 ## A caixa-preta: exclusão apaga, mas 90 dias ficam para a justiça
 
