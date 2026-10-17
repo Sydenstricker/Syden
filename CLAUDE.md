@@ -524,9 +524,19 @@ ficou combinado:
   nenhum clique abre função. **Da referência de interface dele (mesmo dia), entrou só o que serve a leigos:** no Editar, o
   que se toca fica ESCOLHIDO (contorno) com uma **barrinha em cima dele** (girar, tirar, "…" com as opções dele: cor do
   tapete, arte do pôster, tipo de janela; na janela, cortina e abrir) e o **Desfazer** (Ctrl+Z e botão). Ficaram de fora,
-  de propósito: painel de propriedades com números, escala, colisão desligável, setas 3D, duplicar (móvel é peça única do
-  inventário), Aplicar/Cancelar (cada mudança já vale) e nome por objeto (80 idiomas).
+  de propósito: painel de propriedades com números, escala, colisão desligável e setas 3D.
+  **O EDITOR NO LAYOUT DELE (mesmo dia, ele escolheu cada ponto):** o Editar ocupa a tela (topo com Salvar,
+  Desfazer/Refazer, dia e noite e configurações; categorias, busca e catálogo à esquerda; atalhos G, R, Del, Ctrl+D, E e
+  Cancelar/Aplicar embaixo). **As mudanças do Editar ficam PENDENTES até Aplicar** — exceção escolhida por ele ao "cada
+  mudança já vale"; fora do Editar, continua valendo na hora. **Tudo pode duplicar** (móvel, objeto da parede, objeto de
+  cima: "cama~2"; o original de função continua o único com função de coelho, e a cópia se tira, não se guarda); o
+  servidor aceita cópias e avisa (`copias`), e a página só oferece Duplicar então. **Cada peça tem nome traduzido nos 80**
+  (`web/src/nomesDaCena.ts`), para a busca e as dicas.
 - **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
+- **DÍVIDA DE ARTE (pedidos dele, à espera de créditos do PixelLab):**
+  - **Um ventilador ou um ar-condicionado** (16/10/2026).
+  - **Um gatinho olhando a janela** (16/10/2026): deitado, dormindo; clicado, ele se espreguiça e senta. Precisa das
+    poses (deitado dormindo, espreguiçando, sentado) e da passagem entre elas, como o coelho; é peça viva, não móvel.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
