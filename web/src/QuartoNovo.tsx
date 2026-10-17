@@ -1,6 +1,7 @@
 import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
+import { desktopBridge } from './desktop';
 import { useT } from './i18n';
 import { casaComABusca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { AcoesDoQuarto } from './Quarto';
@@ -271,8 +272,8 @@ export function EditorDaCena({
     for (const [id, src] of Object.entries(figuras.janelas ?? {})) r.push({ chave: 'j' + id, grupo: 'j', ids: [id], src });
     return r;
   }, [figuras]);
-  const naCategoria = (it: ItemDoCatalogo) => {
-    switch (categoria) {
+  const noGrupo = (cat: Categoria, it: ItemDoCatalogo) => {
+    switch (cat) {
       case 'moveis':
         return it.grupo === 'm' && !PLANTAS.has(it.ids[0]);
       case 'plantas':
@@ -290,7 +291,7 @@ export function EditorDaCena({
     }
   };
   // a busca vale em todas as categorias
-  const visiveis = itens.filter((it) => (busca.trim() ? casaComABusca(t, it.grupo, it.ids[0], busca) : naCategoria(it)));
+  const visiveis = itens.filter((it) => (busca.trim() ? casaComABusca(t, it.grupo, it.ids[0], busca) : noGrupo(categoria, it)));
   const quantos = (it: ItemDoCatalogo) => {
     const p = arrumacao?.presentes;
     if (it.grupo === 'c') return arrumacao?.tapete === it.ids[0] ? 1 : 0;
@@ -301,7 +302,9 @@ export function EditorDaCena({
   const por = (it: ItemDoCatalogo) => {
     if (it.grupo === 'c') return enviar({ comando: 'tapete', cor: it.ids[0] });
     if (it.grupo === 'j') return enviar({ comando: 'janela', tipo: it.ids[0] });
-    // o original guardado volta primeiro; com todos postos, o primeiro ganha uma cópia
+    // O QUE JÁ ESTÁ NA CENA (marcado em amarelo) SAI, como a lixeira (pedido dele, 16/10/2026); o que não está, entra.
+    // (os iguais com número no salão: entra o primeiro que estiver fora). Mais um igual é o Duplicar.
+    if (quantos(it) > 0) return enviar({ comando: 'tirarTipo', grupo: it.grupo, ids: it.ids });
     const tabela = it.grupo === 'm' ? arrumacao?.presentes?.m : it.grupo === 'p' ? arrumacao?.presentes?.p : undefined;
     const fora = it.ids.find((id) => !(tabela?.[id] ?? 0));
     enviar({ comando: 'por', grupo: it.grupo, id: fora ?? it.ids[0] });
@@ -322,11 +325,21 @@ export function EditorDaCena({
     { comando: 'duplicar', rotulo: t('Duplicar'), tecla: 'ctrl+d', Icone: Copy },
     { comando: 'opcoes', rotulo: t('Mais opções'), tecla: 'e', Icone: Ellipsis },
   ];
+  // Na aba Tudo (sem busca), um grupo por categoria, com o nome dela; nas outras, uma grade só.
+  const secoes =
+    categoria === 'tudo' && !busca.trim()
+      ? categorias
+          .slice(1)
+          .map((c) => ({ id: c.id, rotulo: c.rotulo, itens: itens.filter((it) => noGrupo(c.id, it)) }))
+          .filter((sec) => sec.itens.length)
+      : [{ id: categoria, rotulo: '', itens: visiveis }];
   const semEscolha = !arrumacao?.selecao;
   const noiteAgora = previa ?? noite;
 
   return (
-    <div className={'editor-cena' + (editando ? ' editando' : '')}>
+    // (no app de desktop, o editor começa abaixo da faixa de título: senão os botões da direita ficavam por baixo do
+    // minimizar, maximizar e fechar do Windows)
+    <div className={'editor-cena' + (editando ? ' editando' : '') + (desktopBridge ? ' no-desktop' : '')}>
       {editando ? (
         <header className="editor-topo">
           <div className="editor-titulo">
@@ -343,6 +356,10 @@ export function EditorDaCena({
               <Redo2 size={18} aria-hidden="true" /> {t('Refazer')} <kbd>{'ctrl+y'}</kbd>
             </button>
           </div>
+          {/* volta a arrumação de fábrica (no rascunho: Cancelar ainda desfaz) */}
+          <button type="button" className="editor-botao" onClick={() => enviar({ comando: 'inicial' })}>
+            <RotateCcw size={18} aria-hidden="true" /> {t('Voltar ao padrão')}
+          </button>
           <div className="editor-vao" />
           <div className="editor-par editor-dia-noite" role="group">
             <button type="button" aria-pressed={!noiteAgora} aria-label={t('Dia')} title={t('Dia')} onClick={() => { setPrevia(false); enviar({ noite: false }); }}>
@@ -373,20 +390,24 @@ export function EditorDaCena({
               <Search size={16} aria-hidden="true" />
               <input type="search" value={busca} placeholder={t('Buscar objeto…')} onChange={(e) => setBusca(e.target.value)} />
             </label>
-            <div className="editor-grade">
-              {visiveis.map((it) => {
-                const nome = nomeDaPeca(t, it.grupo, it.ids[0]), n = quantos(it);
-                return (
-                  <button key={it.chave} type="button" className="editor-item" title={nome} aria-label={nome} aria-pressed={n > 0} onClick={() => por(it)}>
-                    {it.cor ? <span className="editor-cor" style={{ background: it.cor }} /> : <img src={it.src} alt="" />}
-                    {n > 1 && <span className="editor-quantos">×{n}</span>}
-                  </button>
-                );
-              })}
+            <div className="editor-lista">
+              {secoes.map((sec) => (
+                <section key={sec.id} className="editor-secao">
+                  {sec.rotulo && <h3>{sec.rotulo}</h3>}
+                  <div className="editor-grade">
+                    {sec.itens.map((it) => {
+                      const nome = nomeDaPeca(t, it.grupo, it.ids[0]), n = quantos(it);
+                      return (
+                        <button key={it.chave} type="button" className="editor-item" title={nome} aria-label={nome} aria-pressed={n > 0} onClick={() => por(it)}>
+                          {it.cor ? <span className="editor-cor" style={{ background: it.cor }} /> : <img src={it.src} alt="" />}
+                          {n > 1 && <span className="editor-quantos">×{n}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))}
             </div>
-            <button type="button" className="editor-padrao" onClick={() => enviar({ comando: 'inicial' })}>
-              <RotateCcw size={14} aria-hidden="true" /> {t('Voltar ao padrão')}
-            </button>
           </div>
         </aside>
       ) : null}

@@ -4094,7 +4094,10 @@ void main() {
       c.getContext('2d').putImageData(d, 0, 0);
       return c.toDataURL();
     };
-    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) miniaturas[id] = recorte(T2.dia);
+    // (só o NÚCLEO do objeto: o recorte traz pedaços da parede e da sombra em volta — o fone parecia "com pedaços da
+    // parede" no catálogo, relato dele de 16/10/2026)
+    const soNucleo = (T2) => { const nuc = nucleoDe(T2), d = new Uint8ClampedArray(T2.dia); for (let k = 0; k < W * W; k++) if (!nuc[k]) d[k * 4 + 3] = 0; return d; };
+    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) miniaturas[id] = recorte(soNucleo(T2));
     // a cor média do tapete pintado, tingida em cada uma
     let n = 0; const m = [0, 0, 0];
     for (let k = 0; k < W * W; k++) if (pecas.tapete && pecas.tapete.movel[k * 4 + 3]) { for (let q = 0; q < 3; q++) m[q] += pecas.tapete.movel[k * 4 + q]; n++; }
@@ -4102,20 +4105,22 @@ void main() {
     const cores = Object.fromEntries(Object.entries(CORES_DO_TAPETE).map(([id, cor]) => [id, 'rgb(' + (id === 'salvia' ? media : tingirPixel(media[0], media[1], media[2], cor)).map(Math.round).join(',') + ')']));
     // e o primeiro desenho de cada objeto de cima
     const deCima = {};
+    // (do desenho INTEIRO, preparado como na cena: na cena eles vão pela metade, no tamanho de verdade, e ampliados no
+    // catálogo pareciam borrados — relato dele de 16/10/2026)
     for (const [id, vs] of Object.entries(OBJ_VISTAS)) {
-      const v0 = vs[0], [x0, y0, x1, y1] = v0.caixa, c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0;
+      const v0 = im['obj-' + id + '0'] ? pecaDeImagem(im['obj-' + id + '0'], id) : vs[0], [x0, y0, x1, y1] = v0.caixa, c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0;
       const d = new ImageData(c.width, c.height);
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = v0.movel[k + q]; }
       c.getContext('2d').putImageData(d, 0, 0);
       deCima[id] = c.toDataURL();
     }
     // e as opções de cada objeto que tem (o pôster): o recorte de cada uma
-    const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(o.dia)]))]));
+    const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(soNucleo(o))]))]));
     // e cada móvel que se pode guardar: a vista de fábrica dele (ou o recorte da pintura, como o tapete)
     const moveis = {};
     // (todos, desde 16/10/2026: no catálogo do Editar, o que já está no quarto ganha uma cópia; os que se guardam vão
     // também em "guardaveis", a lista de antes)
-    for (const id of Object.keys(INICIAL)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel; if (fonte) moveis[id] = recorte(fonte); }
+    for (const id of Object.keys(INICIAL)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel ?? (id === 'pufe' ? pecas[(varianteDoPufe() ?? pufes[0])?.id]?.movel : null); if (fonte) moveis[id] = recorte(fonte); } // (o pufe mora nas variantes de luz dele)
     const guardaveis = Object.keys(INICIAL).filter((id) => podeGuardar(id) && moveis[id]);
     // e cada tipo de janela (com a cortina, na que tem): a barra mostra a figura de cada uma, e não um botão que troca às
     // cegas (relato dele, 16/10/2026: o "Janela" trocava o tipo, e só a original tem cortina e abre)
@@ -4332,6 +4337,28 @@ void main() {
     }
     if (novo && EDITANDO) selecionar(grupo + novo);
   }
+  // TIRAR PELO CATÁLOGO (o item marcado sai, como a lixeira): o escolhido, se for desse tipo; senão a última cópia;
+  // senão o original, guardado (o que tem função não se guarda: fica).
+  function tirarDoCatalogo(grupo, ids) {
+    if (soVer || !Array.isArray(ids)) return;
+    const doTipo = (id) => ids.includes(tipoDe(id)), sel = selecao?.chave;
+    const escolher1 = (todos) => (sel && sel[0] === grupo && todos.includes(sel.slice(1)) ? sel.slice(1) : todos.filter(ehCopia).pop() ?? [...todos].reverse().find((id) => grupo !== 'm' || podeGuardar(id)));
+    if (grupo === 'm') {
+      const alvo = escolher1(Object.keys(ARR).filter(doTipo)); if (!alvo) return;
+      if (selecao && selecao.chave === 'm' + alvo) selecionar(null);
+      if (ehCopia(alvo)) tirarCopiaDoMovel(alvo); else alternarMovel(alvo);
+    } else if (grupo === 'p') {
+      const alvo = escolher1(Object.keys(NA_PAREDE).filter(doTipo)); if (!alvo) return;
+      if (selecao && selecao.chave === 'p' + alvo) selecionar(null);
+      alternarNaParede(alvo);
+      if (ehCopia(alvo) && CORES[alvo]) { const { [alvo]: _fora, ...resto } = CORES; CORES = resto; guardarCores(); }
+    } else if (grupo === 'o') {
+      const uids = Object.keys(EM_CIMA).filter((u) => ids.includes(EM_CIMA[u].tipo));
+      const alvo = sel && sel[0] === 'o' && uids.includes(sel.slice(1)) ? sel.slice(1) : uids.pop(); if (!alvo) return;
+      if (selecao && selecao.chave === 'o' + alvo) selecionar(null);
+      const { [alvo]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; guardarObjetos(); desenhar();
+    }
+  }
   // Quantos de cada tipo estão no quarto (a lateral marca o que está posto, e quantas cópias).
   function presentes() {
     const conta = (ids) => { const r = {}; for (const id of ids) { const t = tipoDe(id); r[t] = (r[t] ?? 0) + 1; } return r; };
@@ -4400,6 +4427,7 @@ void main() {
       if (d.comando === 'mover') comecarAMover();
       if (d.comando === 'opcoes' && selecao) { opcoesAbertas = !opcoesAbertas; montarBarrinha(); }
       if (d.comando === 'por' && typeof d.id === 'string') porDoCatalogo(d.grupo, d.id);
+      if (d.comando === 'tirarTipo') tirarDoCatalogo(d.grupo, d.ids);
       if (d.rotulos) { ROTULOS = { ...ROTULOS, ...d.rotulos }; montarBarrinha(); }
       if (d.comando === 'desfazer') desfazer();
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();

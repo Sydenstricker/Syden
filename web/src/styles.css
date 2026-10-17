@@ -12722,6 +12722,11 @@ body.arrastando-barra {
   align-items: stretch;
 }
 
+/* no app de desktop, abaixo da faixa de título (36 px, a dos botões da janela) */
+.editor-cena.editando.no-desktop {
+  top: 36px;
+}
+
 .editor-topo {
   grid-area: topo;
   display: flex;
@@ -12905,19 +12910,36 @@ body.arrastando-barra {
   font: inherit;
 }
 
-.editor-grade {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 6px;
+.editor-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   overflow-y: auto;
-  align-content: start;
   flex: 1;
   min-height: 0;
 }
 
+.editor-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  grid-auto-rows: 84px;
+  gap: 6px;
+}
+
+/* na aba Tudo, cada grupo com o nome dele */
+.editor-secao h3 {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .editor-item {
   position: relative;
-  aspect-ratio: 1;
+  /* altura fixa: pela proporção, com muitos itens a grade os espremia uns sobre os outros (a aba Tudo) */
+  height: 84px;
   display: grid;
   place-items: center;
   padding: 5px;
