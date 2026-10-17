@@ -1451,9 +1451,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx / 255, d = mx - mn;
     let h = 0, sat = mx ? d / mx : 0;
     if (d) h = mx === r ? ((g - b) / d + 6) % 6 / 6 : mx === g ? ((b - r) / d + 2) / 6 : ((r - g) / d + 4) / 6;
-    // Só o que tem a cor do tapete: a borda traz pixels da madeira do chão, que virariam pontinhos coloridos.
-    if (sat > 0.06 && Math.abs(h - 0.158) > 0.07) return [r, g, b];
-    h = (((h - 0.158 + alvo.h) % 1) + 1) % 1; sat = Math.min(1, sat * alvo.s);
+    // A borda traz pixels da madeira do chão (o recorte antigo): eles SAEM, e o chão de verdade aparece no lugar.
+    if (sat > 0.2 && (h < 0.12 || h > 0.95)) return null;
+    // O CONTORNO E A LISTA DE DENTRO são do tapete, num cinza arroxeado fora do tom da sálvia: ficavam sem tingir e, no
+    // tapete azul ou rosa, viravam uma linha de outra cor (relato dele, 17/10/2026). Eles recebem o tom novo direto.
+    if (sat > 0.06 && Math.abs(h - 0.158) > 0.07) h = alvo.h;
+    else h = (((h - 0.158 + alvo.h) % 1) + 1) % 1;
+    sat = Math.min(1, sat * alvo.s);
     const i = Math.floor(h * 6), f = h * 6 - i, p = v * (1 - sat), q = v * (1 - f * sat), t = v * (1 - (1 - f) * sat);
     const [R, G, B] = [[v, t, p], [q, v, p], [p, v, t], [p, q, v], [t, p, v], [v, p, q]][i % 6];
     return [R * 255, G * 255, B * 255];
@@ -1466,7 +1470,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (!porCor) { porCor = {}; tingidos.set(p, porCor); }
     if (porCor[CORES.tapete]) return porCor[CORES.tapete];
     const movel = new Uint8ClampedArray(p.movel);
-    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) { const [r, g, b] = tingirPixel(movel[k * 4], movel[k * 4 + 1], movel[k * 4 + 2], cor); movel[k * 4] = r; movel[k * 4 + 1] = g; movel[k * 4 + 2] = b; }
+    for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) {
+      const novo = tingirPixel(movel[k * 4], movel[k * 4 + 1], movel[k * 4 + 2], cor);
+      if (!novo) { movel[k * 4 + 3] = 0; continue; }
+      movel[k * 4] = novo[0]; movel[k * 4 + 1] = novo[1]; movel[k * 4 + 2] = novo[2];
+    }
     return (porCor[CORES.tapete] = { ...p, movel });
   }
   // O TAPETE MEXIDO: o desenho é levado pelo chão, ponto a ponto (ele é plano, então girar é só girar a textura).
