@@ -1012,6 +1012,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // esquerdo, use a função"). O abajur apagado vai com a arrumação; as telas desligadas valem nesta visita.
   let abajurApagado = false;
   const telasDesligadas = new Set();
+  // O FOGÃO (relato dele, 17/10/2026: "o fogão não desliga?"): as bocas ficavam acesas a noite inteira, sem ninguém
+  // cozinhando. Agora começa apagado, e o botão direito acende e apaga, nesta visita, como as telas.
+  let fogaoAceso = false;
   const conteudoAgora = () => (conteudo !== 'auto' ? conteudo : estado === 'call' ? 'call' : estado === 'ausente' ? 'desligada' : 'conversa');
   const misturar = (a, b, f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
   // A cor de um ponto (s, t) da tela, no instante "q" (quartos de segundo). Pixel art: blocos chapados, poucas cores.
@@ -2641,7 +2644,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     chaoPx.fill(-2);
     chaveDoPixel.fill(-1);
     let tampoDaIlha = null; luzDoFogao = null;
-    if (ARR.ilha && TOPOS.ilha) {
+    if (fogaoAceso && ARR.ilha && TOPOS.ilha) {
       const pe = peDe('ilha'), m2 = 0.22;
       tampoDaIlha = [[pe[0] + m2, pe[2] + m2], [pe[1] - m2, pe[2] + m2], [pe[1] - m2, pe[3] - m2], [pe[0] + m2, pe[3] - m2]].map(([u, v]) => { const [x, y] = ponto(u, v); return [x, y - TOPOS.ilha]; });
       const [cu, cv] = centro(pe), [x, y] = ponto(cu, cv); luzDoFogao = [x, y - TOPOS.ilha];
@@ -4172,10 +4175,11 @@ void main() {
     if (tipo === 'abajur' && CENA === 'quarto' && podeArrumar) { abajurApagado = !abajurApagado; assinaturaCena = ''; enviar(); desenhar(); return true; }
     if (d === 'guarda-roupa' && VISTAS_ABERTO && podeArrumar) { guardaRoupaAberto = !guardaRoupaAberto; gavetasPedidas = false; desenhar(); return true; }
     if (d === 'mesa' && CENA === 'quarto') { conteudo = conteudoAgora() === 'desligada' ? 'conversa' : 'desligada'; assinaturaCena = ''; desenhar(); return true; }
+    if (d === 'ilha') { fogaoAceso = !fogaoAceso; assinaturaCena = ''; desenhar(); return true; }
     if (d === 'tv' || d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; desenhar(); return true; }
     return false;
   }
-  window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], cortina: fechada, aberta }); // para o teste
+  window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], fogaoAceso, cortina: fechada, aberta }); // para o teste
   // (o botão direito não pega, não arrasta nem escolhe: só o menu de contexto, logo abaixo, o atende)
   addEventListener('pointerdown', (e) => { if (e.target === tela && e.button !== 0) e.stopImmediatePropagation(); }, true);
   tela.addEventListener('contextmenu', (e) => {

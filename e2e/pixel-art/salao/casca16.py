@@ -26,7 +26,10 @@ def dobrar(a):
     return np.where(a <= CANTO, a, np.where(a >= N1 - CANTO, a - (N1 - N0), meio))
 
 
-SEAMS = [CANTO + PERIODO * i for i in range(1, 4)]  # onde o trecho recomeça (6, 10, 14)
+# onde o trecho recomeça (6 e 10). Em 14 NÃO há emenda: a ponta (a - 8) continua exatamente o trecho de 10 a 14, porque
+# os 8 de diferença são dois períodos. A costura em 14 trocava de cópia à toa, trazia um pedaço deslocado de 4 casas e
+# cortava o varal da ponta ao meio (relato dele, 17/10/2026: "no canto do salão está com falha na parede e lâmpadas").
+SEAMS = [A for A in (CANTO + PERIODO * i for i in range(1, 4)) if A < N1 - CANTO]
 FAIXA = 0.6  # meia largura, em casas, da faixa em que a costura procura o caminho
 
 
