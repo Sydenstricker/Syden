@@ -246,7 +246,13 @@ de assinatura de código, que é pago.
 ### Atualizar
 
 - Site: basta dar push, o GitHub Actions publica.
-- Servidor: `git pull && docker compose up -d --build --wait` dentro de `deploy/`.
+- Servidor: `git pull && docker compose up -d --build --wait && docker builder prune -f --filter until=168h` dentro de
+  `deploy/`.
+
+  **O `builder prune` no fim também não é enfeite.** Cada `--build` guarda no cache as camadas da versão anterior, e
+  nada as apaga sozinho: em 17/10/2026 eram 5,1 GB de cache contra 16 MB de dados das pessoas. O filtro apaga só o que
+  tem mais de uma semana, então o deploy seguinte continua rápido. Não use `docker system prune --volumes` nem
+  `docker volume prune`: o banco e os arquivos do Syden moram num volume.
 
   **O `--wait` não é enfeite.** Sem ele o comando devolve o terminal assim que o container é criado,
   e um servidor que sobe e morre em seguida (um `.env` errado, por exemplo) passa despercebido: você
