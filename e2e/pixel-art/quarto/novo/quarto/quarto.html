@@ -429,19 +429,56 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     return fora;
   }
-  const foraDia = fundoDe(semDia), foraNoite = fundoDe(semNoite);
-  // Dois pixels creme soltos na borda de fora do friso (156,68 e 379,80 na base): a ponta clara da madeira encostada
-  // no fundo, que vira um ponto branco sobre a página escura. Pixel claro com 2 ou mais vizinhos de fundo ganha a cor
-  // do vizinho mais escuro, que é o contorno.
-  function contorno(img, fora) {
+  // A SILHUETA IDEAL (relato dele, 17/10/2026: "dois artefatos e um certo nível de contornos de média qualidade"). A casca
+  // gerada tem a borda torta: de 24 a 28 degraus duplos por lado (a linha pula 2 px de uma coluna para a outra) e pontos
+  // claros do fundo que ficavam na beira. As seis retas da silhueta (as quatro diagonais e as duas laterais) são medidas na
+  // própria pintura, e o quarto passa a ser recortado por elas, em escada regular. A borda nova é repintada com o contorno
+  // escuro que a pintura tinha ali perto (ver contornoLimpo). Vale para todas as versões (dia, noite, abajur…).
+  const fora0 = fundoDe(semDia);
+  const foraIdeal = (() => {
+    const topo = new Int16Array(W).fill(-1), pe = new Int16Array(W).fill(-1);
+    for (let x = 0; x < W; x++) for (let y = 0; y < W; y++) if (!fora0[y * W + x]) { if (topo[x] < 0) topo[x] = y; pe[x] = y; }
+    let x0 = 0, x1 = W - 1;
+    while (x0 < W && topo[x0] < 0) x0++;
+    while (x1 > 0 && topo[x1] < 0) x1--;
+    let meio = x0; for (let x = x0; x <= x1; x++) if (topo[x] < topo[meio]) meio = x;
+    const reta = (arr, a0, a1) => {
+      let n = 0, sx = 0, sy = 0, sxx = 0, sxy = 0;
+      for (let x = a0; x <= a1; x++) { n++; sx += x; sy += arr[x]; sxx += x * x; sxy += x * arr[x]; }
+      const a = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+      return [a, (sy - a * sx) / n];
+    };
+    const tE = reta(topo, x0 + 3, meio - 4), tD = reta(topo, meio + 4, x1 - 3), pE = reta(pe, x0 + 3, meio - 4), pD = reta(pe, meio + 4, x1 - 3);
+    const f = new Uint8Array(W * W).fill(1);
+    for (let x = x0; x <= x1; x++) {
+      const yt = Math.max(Math.round(tE[0] * x + tE[1]), Math.round(tD[0] * x + tD[1]));
+      const yb = Math.min(Math.round(pE[0] * x + pE[1]), Math.round(pD[0] * x + pD[1]));
+      for (let y = Math.max(0, yt); y <= Math.min(W - 1, yb); y++) f[y * W + x] = 0;
+    }
+    return f;
+  })();
+  // A borda nova: o pixel da beira ganha o mais escuro da pintura original em volta (até 2 px); o que era fundo e passou
+  // para dentro ganha a cor do vizinho de dentro mais perto.
+  function contornoLimpo(img) {
+    const fonte = new Uint8ClampedArray(img);
+    const soma = (k) => fonte[k * 4] + fonte[k * 4 + 1] + fonte[k * 4 + 2];
     for (let k = 0; k < W * W; k++) {
-      if (fora[k] || img[k * 4] + img[k * 4 + 1] + img[k * 4 + 2] <= 360) continue;
-      const x = k % W, y = (k / W) | 0, viz = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => (y + dy) * W + x + dx);
-      if (viz.filter((n) => fora[n]).length < 2) continue;
-      const escuro = viz.filter((n) => !fora[n]).sort((p, q) => img[p * 4] + img[p * 4 + 1] + img[p * 4 + 2] - (img[q * 4] + img[q * 4 + 1] + img[q * 4 + 2]))[0];
-      if (escuro !== undefined) for (let c = 0; c < 3; c++) img[k * 4 + c] = img[escuro * 4 + c];
+      if (foraIdeal[k]) continue;
+      const x = k % W, y = (k / W) | 0;
+      const beira = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => foraIdeal[(y + dy) * W + x + dx]);
+      if (!beira && !fora0[k]) continue;
+      let melhor = -1;
+      for (let r = 1; r <= 3 && melhor < 0; r++)
+        for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+          const xx = x + dx, yy = y + dy, n = yy * W + xx;
+          // (vale o contorno original que ficou de fora da reta: é dele que vem a cor da borda nova)
+          if (xx < 0 || yy < 0 || xx >= W || yy >= W || fora0[n] || (!beira && foraIdeal[n])) continue;
+          if (melhor < 0 || (beira ? soma(n) < soma(melhor) : Math.abs(dx) + Math.abs(dy) < Math.abs((melhor % W) - x) + Math.abs(((melhor / W) | 0) - y))) melhor = n;
+        }
+      if (melhor >= 0) for (let c = 0; c < 3; c++) img[k * 4 + c] = fonte[melhor * 4 + c];
     }
   }
+  const foraDia = foraIdeal, foraNoite = foraIdeal;
   // O QUADRO DA COMUNIDADE (no salão, 15/10/2026: "o quadro precisa mostrar a imagem da comunidade"). É o quadro de
   // fotos com a imagem no lugar das fotos, por código: a parte de dentro da moldura (medida no recorte, parede/quadro/,
   // nas coordenadas da parede da direita onde foi pintado) é um paralelogramo — colunas em pé, e o alto e o pé subindo
@@ -652,7 +689,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       for (const k of LUZES) for (let c = 0; c < 3; c++) A[k * 4 + c] = F[k * 4 + c];
     if (!T.cortinaDia) cortinaDia = base;
     cortinaNoite = noiteSemLuar;
-    contorno(base, foraDia); contorno(noite, foraNoite); contorno(noiteAbajur, foraNoite);
+    for (const A of new Set([base, noite, noiteAbajur, noiteSemLuar, abajurSemLuar, cortinaDia, abertaDia])) contornoLimpo(A);
     vidro = new Uint8ClampedArray(W * W * 4);
     naJanela.fill(0); noCaixilho.fill(0); vao.fill(0); vidroAberto.fill(0); origemDoVidro.fill(-1);
     for (let k = 0; k < W * W; k++) {
