@@ -1217,6 +1217,18 @@ function Stage({
     ],
     { onlySubscribed: false },
   );
+  // A TRANSMISSÃO QUE O SERVIDOR DE MÍDIA RECUSOU (a de um menor com "só para amigos", ou a de quem não é amigo para um
+  // menor com "assistir só de amigos"; ver protecao.ts): o quadro diz que não está disponível, em vez de ficar
+  // carregando para sempre. De propósito, não diz o porquê: dizer "é de um menor" seria marcar quem é menor para
+  // estranhos.
+  const [, setPermissoes] = useState(0);
+  useEffect(() => {
+    const mudou = () => setPermissoes((n) => n + 1);
+    voice.room.on(RoomEvent.TrackSubscriptionPermissionChanged, mudou);
+    return () => {
+      voice.room.off(RoomEvent.TrackSubscriptionPermissionChanged, mudou);
+    };
+  }, [voice.room]);
   // O que o palco mostra (as duas escolhas do menu): sem elas, os cartões de quem está sem câmera e o da sua.
   const tracks = todasAsFaixas.filter((ref) => {
     if (ref.source !== Track.Source.Camera) return true;
@@ -1287,8 +1299,9 @@ function Stage({
   };
 
   const tile = (ref: TrackReferenceOrPlaceholder, avatarSize: number, naFaixa = false) => {
-    // Transmissão que você ainda não abriu vira convite, e clicar nele abre (não fixa).
-    if (ref.source === Track.Source.ScreenShare && !aberta(ref)) {
+    // Transmissão que você ainda não abriu vira convite, e clicar nele abre (não fixa) — menos a que está fechada para
+    // você (ver "recusada", logo abaixo).
+    if (ref.source === Track.Source.ScreenShare && !aberta(ref) && !voice.videoBloqueado(ref.participant.identity)) {
       return (
         <div
           key={trackKey(ref)}
@@ -1301,6 +1314,19 @@ function Stage({
             membro={members.find((m) => String(m.userId) === ref.participant.identity)}
             onAssistir={() => voice.assistir(ref.participant.identity, true)}
           />
+        </div>
+      );
+    }
+    const recusada =
+      !ref.participant.isLocal &&
+      ((ref.publication as { permissionStatus?: string } | undefined)?.permissionStatus === 'not_allowed' || voice.videoBloqueado(ref.participant.identity));
+    if (recusada && ref.source === Track.Source.ScreenShare) {
+      return (
+        <div key={trackKey(ref)} className="tile" onContextMenu={(e) => abrirMenu(e, ref)}>
+          <div className="stream-invite">
+            <strong className="stream-invite-name">{ref.participant.name || ref.participant.identity}</strong>
+            <span className="stream-invite-what">{t('Esta transmissão não está disponível para você.')}</span>
+          </div>
         </div>
       );
     }

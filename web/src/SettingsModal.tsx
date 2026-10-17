@@ -16,6 +16,7 @@ import { Accessibility, Languages,
   ShieldPlus,
   Smile,
   Sparkles,
+  HeartHandshake,
   Trash2,
   UserX,
   Users,
@@ -49,6 +50,7 @@ import { chave, t, useT } from './i18n';
 import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
 import { API_URL, api, loadToken, mediaUrl, saveToken } from './api';
+import { FamiliaSection } from './Familia';
 import { procurarRepetidos } from './somParecido';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
@@ -89,7 +91,7 @@ import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
+type Section = 'account' | 'familia' | 'aparencia' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
@@ -99,6 +101,9 @@ const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   // perfil: cor do nome, fundo, moldura e insígnias se escolhiam em dois lugares diferentes, e a
   // moldura só num deles. Ver web/src/Aparencia.tsx.
   { id: 'aparencia', label: chave('Aparência'), icon: <Sparkles size={20} /> },
+  // A FAMÍLIA (17/10/2026, ECA Digital): o menor vê as proteções dele e o código para o responsável; o adulto liga a
+  // conta de um filho e acompanha. Ver Familia.tsx.
+  { id: 'familia', label: chave('Família'), icon: <HeartHandshake size={20} /> },
   { id: 'voice', label: chave('Voz e vídeo'), icon: <AnimatedIcon name="microfone" size={20} /> },
   // O despertador sacode forte demais no ritmo original; num menu, meia velocidade basta para dar vida.
   { id: 'sounds', label: chave('Notificações'), icon: <AnimatedIcon name="alarme" size={20} speed={0.5} /> },
@@ -198,6 +203,7 @@ export function SettingsModal({
               <PessoasBloqueadas />
             </>
           )}
+          {section === 'familia' && <FamiliaSection />}
           {section === 'aparencia' && <Aparencia user={user} aoAbrirPacotes={() => setSection('soundboard')} />}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}

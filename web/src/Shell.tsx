@@ -31,6 +31,7 @@ import { Sidebar } from './Sidebar';
 import { TextChannel } from './TextChannel';
 import { type SettingsSection, SettingsModal } from './SettingsModal';
 import type { Channel, Community, DirectChannel, Message, PresenceEntry, PresenceStatus, User, VoiceMember } from './types';
+import { avisarBarreira, type Barreira } from './protecao';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
 import { VoiceStage } from './VoiceStage';
@@ -381,9 +382,10 @@ export function Shell({
     s.on('disconnect', (reason) => {
       setOnline(false);
       // O servidor só derruba a conexão de propósito quando a conta foi excluída; nos outros casos, reconecta.
+      // Ou quando ela foi BARRADA (banida, o tempo do dia acabou: ver protecao.ts) — aí a tela vira a da barreira.
       if (reason === 'io server disconnect') {
-        api('/api/me').then(
-          () => s.connect(),
+        api<User>('/api/me').then(
+          (eu) => (eu.barreira ? avisarBarreira(eu.barreira) : s.connect()),
           (error) => (error instanceof ApiError && error.status === 401 ? onLogoutRef.current() : s.connect()),
         );
       }
@@ -391,7 +393,11 @@ export function Shell({
     s.on('connect_error', (error) => {
       setOnline(false);
       if (error.message === 'unauthorized') onLogoutRef.current();
+      if (error.message === 'barreira') void api<User>('/api/me').then((eu) => avisarBarreira(eu.barreira ?? null), () => {});
     });
+    s.on('barreira', (barreira: Barreira) => avisarBarreira(barreira));
+    // O responsável mudou alguma regra (ou ligou, ou desligou): quem depende delas relê (a chamada, as configurações).
+    s.on('protecao:mudou', () => window.dispatchEvent(new Event('syden:protecao')));
     s.on('presence', setPresence);
     // Conversas privadas: entram, mudam de nome/gente ou somem da lista na hora.
     const upsertDirect = (conversa: DirectChannel) =>

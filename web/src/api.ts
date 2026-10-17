@@ -108,6 +108,11 @@ export async function api<T>(
     throw new ApiError('Não foi possível falar com o servidor.', 0);
   }
   const data = await response.json().catch(() => ({}));
+  // A CONTA FOI BARRADA no meio do uso (ver protecao.ts): qualquer pedido recusado com a barreira troca a tela.
+  if (response.status === 403 && data?.barreira) {
+    const { avisarBarreira } = await import('./protecao');
+    avisarBarreira(data.barreira);
+  }
   if (!response.ok) throw new ApiError(data.error ?? `Erro ${response.status}`, response.status, data);
   return data as T;
 }

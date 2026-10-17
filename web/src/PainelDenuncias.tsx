@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Flag } from 'lucide-react';
 import { API_URL, api, loadToken } from './api';
 import { chave, useT } from './i18n';
+import { BarrarConta } from './PainelBarrados';
 
 interface Denuncia {
   id: number;
@@ -55,6 +56,7 @@ export function PainelDenuncias() {
   const [resolvendo, setResolvendo] = useState<number | null>(null);
   const [texto, setTexto] = useState('');
   const [protocolo, setProtocolo] = useState<Record<number, string>>({});
+  const [barrando, setBarrando] = useState<number | null>(null);
 
   function carregar() {
     api<{ denuncias: Denuncia[] }>('/api/reports')
@@ -152,6 +154,13 @@ export function PainelDenuncias() {
               </button>
             )}
 
+            {/* Banir ou suspender por idade direto da denúncia (o nome já vem preenchido). */}
+            {d.status === 'aberta' && d.targetName && barrando === d.id && <BarrarConta username={d.targetName} />}
+            {d.status === 'aberta' && d.targetName && barrando !== d.id && (
+              <button type="button" className="btn-secondary" onClick={() => setBarrando(d.id)}>
+                {t('Banir ou suspender {nome}', { nome: d.targetName })}
+              </button>
+            )}
             {d.status === 'resolvida' ? (
               <p className="settings-hint">
                 Resolvida por {d.resolvedBy}: {d.resolution}
@@ -170,7 +179,7 @@ export function PainelDenuncias() {
                     {t('Cancelar')}
                   </button>
                   <button type="button" className="btn-primary" disabled={!texto.trim()} onClick={() => resolver(d.id)}>
-                    Marcar como resolvida
+                    {t('Marcar como resolvida')}
                   </button>
                 </div>
               </div>

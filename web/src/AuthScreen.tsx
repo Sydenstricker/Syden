@@ -40,6 +40,9 @@ export function AuthScreen({
   const [password, setPassword] = useState('');
   const [inviteCode] = useState(initialInviteCode ?? '');
   const [email, setEmail] = useState('');
+  // A DATA DE NASCIMENTO (ECA Digital, 17/10/2026): o Syden é para quem tem 13 anos ou mais, e de 13 a 15 a conta se
+  // liga a um responsável. Só a faixa etária é usada; a data não aparece para ninguém.
+  const [nascimento, setNascimento] = useState('');
   /** Cadastrou e falta abrir o link: a tela sai do formulário e vira o aviso. */
   const [aguardandoConfirmacao, setAguardandoConfirmacao] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -98,7 +101,7 @@ export function AuthScreen({
     try {
       const result = await api<{ token?: string; user?: User; precisaConfirmar?: boolean }>(`/api/auth/${mode}`, {
         method: 'POST',
-        body: { username, password, email, inviteCode, turnstile: turnstileToken },
+        body: { username, password, email, inviteCode, turnstile: turnstileToken, ...(mode === 'register' && { nascimento }) },
         token: null,
       });
       // Cadastro não devolve mais sessão: devolve a tarefa de abrir o e-mail.
@@ -236,6 +239,20 @@ export function AuthScreen({
                 <span className="auth-hint">
                   {t('Mandamos um link para confirmar. É por ele que você recupera a senha, se um dia esquecer.')}
                 </span>
+              </label>
+            )}
+            {mode === 'register' && (
+              <label>
+                {t('Data de nascimento')}
+                <input
+                  type="date"
+                  value={nascimento}
+                  onChange={(e) => setNascimento(e.target.value)}
+                  max={new Date().toISOString().slice(0, 10)}
+                  autoComplete="bday"
+                  required
+                />
+                <span className="auth-hint">{t('O Syden é para quem tem 13 anos ou mais. Ninguém vê a sua data.')}</span>
               </label>
             )}
             <label>

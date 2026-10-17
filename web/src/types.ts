@@ -25,6 +25,10 @@ export interface User {
   selo?: { texto: string; icone: string; cor: string } | null;
   /** Conta de quem entrou só para uma aula, pelo link (ver aula.ts): até quando ela existe. */
   temporarioAte?: string | null;
+  /** A pendência que trava a conta (banida, sem a idade, o tempo do dia acabou…): ver protecao.ts. Só no /api/me. */
+  barreira?: import('./protecao').Barreira | null;
+  /** A faixa etária (nunca a data). Só no /api/me. */
+  faixa?: import('./protecao').Faixa | null;
 }
 
 export type UserRef = Pick<User, 'id' | 'username'> & {

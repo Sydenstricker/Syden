@@ -15144,3 +15144,102 @@ body.arrastando-barra {
   color: var(--text);
   font: inherit;
 }
+
+/* ---------- A tela da barreira e a família (17/10/2026, ECA Digital) ---------- */
+
+.barreira-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 460px;
+}
+
+.barreira-card h2 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  font-size: calc(18px * var(--escala-do-texto));
+  color: var(--text-strong);
+}
+
+.barreira-card p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.barreira-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barreira-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--bg-raised);
+  border-radius: 8px;
+  background: var(--bg-input, var(--bg-sidebar));
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
+
+.barreira-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.codigo-responsavel-codigo {
+  margin: 4px 0;
+  font-family: ui-monospace, 'Cascadia Mono', monospace;
+  font-size: calc(26px * var(--escala-do-texto));
+  letter-spacing: 0.18em;
+  color: var(--text-strong);
+  user-select: all;
+}
+
+.codigo-responsavel ol {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.familia-menor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--bg-raised);
+  border-radius: var(--radius);
+  background: var(--bg-sidebar);
+}
+
+.familia-menor h4 {
+  margin: 0;
+  color: var(--text-strong);
+}
+
+.familia-regra {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.familia-adultos {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.aviso-responsavel {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  font-size: calc(13px * var(--escala-do-texto));
+}

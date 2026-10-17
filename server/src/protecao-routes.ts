@@ -100,6 +100,11 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
         podeMudarRegras: podeMudarRegras(eu, eu),
         responsavel: sup?.responsavelId ? { username: db.findUserById(sup.responsavelId)?.username ?? '?' } : null,
         responsavelObrigatorio: faixa === '13-15',
+        // até quando dá para usar sem o responsável (de 13 a 15 anos; depois, a barreira)
+        prazoResponsavel:
+          faixa === '13-15' && !sup?.responsavelId
+            ? new Date((Date.parse(db.protecaoDe(eu)?.nascimentoEm ?? '') || Date.now()) + DIAS_PARA_LIGAR_RESPONSAVEL * 86_400_000).toISOString()
+            : null,
         codigo: codigoValido ? { codigo: sup!.codigo, ate: new Date(Date.parse(sup!.codigoEm!) + CODIGO_VALE_MS).toISOString() } : null,
         usoHoje: regras ? db.usoDoDia(eu, hojeEmBrasilia()) : null,
         // a lista que o app usa para as permissões do vídeo (só amigos recebem a tela de um menor)
@@ -241,9 +246,10 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       ['/api/admin/banir', 'banir'],
       ['/api/admin/suspender-idade', 'suspender'],
     ] as const) {
-      authed.post<{ Body: { userId?: number; motivo?: string } }>(rota, async (request, reply) => {
+      authed.post<{ Body: { userId?: number; username?: string; motivo?: string } }>(rota, async (request, reply) => {
         if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só quem cuida do Syden faz isto.' });
-        const alvo = Number(request.body?.userId);
+        // pelo número (o painel de denúncias) ou pelo nome (o formulário do painel)
+        const alvo = request.body?.username ? (db.findUserByName(String(request.body.username).trim())?.id ?? 0) : Number(request.body?.userId);
         const erro = alvoValido(request, alvo);
         if (erro) return reply.code(404).send({ error: erro });
         // O MOTIVO É OBRIGATÓRIO (art. 30): a pessoa lê na tela dela, e é dele que ela recorre.

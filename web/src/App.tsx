@@ -12,6 +12,9 @@ import type { User } from './types';
 import { esquecerLinkDaAula, guardarAulaEmCurso, lerLinkDaAula } from './aula';
 import { EntradaNaAula } from './EntradaNaAula';
 import { chave, useT } from './i18n';
+import { avisarBarreira, useBarreira } from './protecao';
+import { TelaDaBarreira } from './TelaDaBarreira';
+import { AvisoDoResponsavel } from './AvisoDoResponsavel';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
 
@@ -49,6 +52,10 @@ function lerConfirmacaoDaUrl(): string | null {
 export function App() {
   const t = useT();
   const [session, setSession] = useState<Session>({ status: 'loading' });
+  // A BARREIRA (ver protecao.ts): a que veio no /api/me ao abrir, ou a que chegou no meio do uso (o socket, um pedido
+  // recusado). Com ela, a tela é a da pendência, e não o Syden.
+  const barreiraAoVivo = useBarreira();
+  const barreira = session.status === 'ready' ? (barreiraAoVivo ?? session.user.barreira ?? null) : null;
   const [inviteCode] = useState(readInviteFromUrl);
   // O link da aula (?aula=…): sem conta, a porta é a EntradaNaAula; com conta, o Shell põe na sala.
   const [linkDaAula, setLinkDaAula] = useState(lerLinkDaAula);
@@ -218,6 +225,7 @@ export function App() {
           </button>
         </p>
       )}
+      {session.status === 'ready' && !barreira && <AvisoDoResponsavel />}
       <div className="app-body">
         {/* Enquanto carrega não se desenha nada: quem está na tela é a abertura (web/index.html), e
             ela só sai quando esta espera acaba. Duas animações em fila para o mesmo ato de abrir o
@@ -250,7 +258,22 @@ export function App() {
             }}
           />
         )}
-        {session.status === 'ready' && (
+        {session.status === 'ready' && barreira && (
+          <TelaDaBarreira
+            barreira={barreira}
+            aoResolver={async () => {
+              const user = await api<User>('/api/me');
+              avisarBarreira(user.barreira ?? null);
+              setSession({ status: 'ready', token: session.token, user });
+            }}
+            aoSair={() => {
+              avisarBarreira(null);
+              saveToken(null);
+              setSession({ status: 'anonymous' });
+            }}
+          />
+        )}
+        {session.status === 'ready' && !barreira && (
           <Shell
             token={session.token}
             user={session.user}
@@ -262,6 +285,7 @@ export function App() {
               setLinkDaAula(null);
             }}
             onLogout={() => {
+              avisarBarreira(null);
               saveToken(null);
               setSession({ status: 'anonymous' });
             }}

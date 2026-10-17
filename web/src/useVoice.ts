@@ -44,6 +44,7 @@ import { type VoiceEffectId } from './voiceEffects';
 import { ProcessadorDoMicrofone, supressaoDisponivel } from './microfone';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { definirSurdez, sounds } from './sounds';
+import type { MinhaProtecao, Regras } from './protecao';
 
 export interface LocalMedia {
   muted: boolean;
@@ -890,6 +891,12 @@ export function useVoice(socket: Socket | null) {
    * servidor pode parar de mandar — recusar o vídeo depois de baixado não economizaria nem internet nem
    * processador.
    */
+  /**
+   * AS REGRAS DO MENOR NA CHAMADA (17/10/2026, ECA Digital; ver protecao.ts). Lidas do servidor ao abrir e quando o
+   * responsável muda alguma (o evento syden:protecao). Para adulto, nulas, e nada muda.
+   */
+  const protecaoRef = useRef<{ regras: Regras; amigos: Set<string> } | null>(null);
+
   const aplicarInscricoes = useCallback(() => {
     /**
      * EM SALA GRANDE, O ÁUDIO DE QUEM ESTÁ CALADO NÃO É BAIXADO.
@@ -905,13 +912,70 @@ export function useVoice(socket: Socket | null) {
     const preferidos = new Set<string>([...assistindoRef.current, ...idsComVolumeAjustado()]);
     const vozesQueridas = quemOuvir(todos, falantesRef.current, preferidos);
 
+    // Menor com "assistir só de amigos": o vídeo (tela, câmera e o som da tela) de quem não é amigo nem é pedido.
+    const soDeAmigos = protecaoRef.current?.regras.assistirSoAmigos ? protecaoRef.current.amigos : null;
     for (const pessoa of room.remoteParticipants.values()) {
       for (const publicacao of pessoa.trackPublications.values()) {
-        const querido = queroEstaFaixa(fonteDa(publicacao), pessoa.identity, vozesQueridas, assistindoRef.current);
+        const fonte = fonteDa(publicacao);
+        const bloqueado = soDeAmigos !== null && fonte !== 'microfone' && !soDeAmigos.has(pessoa.identity);
+        const querido = !bloqueado && queroEstaFaixa(fonte, pessoa.identity, vozesQueridas, assistindoRef.current);
         if (publicacao.isDesired !== querido) publicacao.setSubscribed(querido);
       }
     }
   }, [room]);
+
+  /**
+   * Menor com "transmitir só para amigos": a tela e a câmera dele só podem ser recebidas pelos amigos. A trava é a
+   * permissão de inscrição do LiveKit (o servidor de mídia recusa a quem não está na lista); a voz continua para todos.
+   * Refeita a cada pessoa que chega e a cada faixa publicada. O servidor do Syden confere de novo (vigiarVideoDosMenores).
+   */
+  const aplicarPermissoesDoMenor = useCallback(() => {
+    const local = room.localParticipant;
+    const p = protecaoRef.current;
+    if (!p?.regras.transmitirSoAmigos) {
+      local.setTrackSubscriptionPermissions(true);
+      return;
+    }
+    const microfone = [...local.trackPublications.values()]
+      .filter((pub) => pub.source === Track.Source.Microphone && pub.trackSid)
+      .map((pub) => pub.trackSid);
+    local.setTrackSubscriptionPermissions(
+      false,
+      [...room.remoteParticipants.values()].map((pessoa) =>
+        p.amigos.has(pessoa.identity)
+          ? { participantIdentity: pessoa.identity, allowAll: true }
+          : { participantIdentity: pessoa.identity, allowAll: false, allowedTrackSids: microfone },
+      ),
+    );
+  }, [room]);
+
+  useEffect(() => {
+    let vivo = true;
+    const ler = () =>
+      api<MinhaProtecao>('/api/me/protecao').then(
+        (eu) => {
+          if (!vivo) return;
+          protecaoRef.current = eu.regras ? { regras: eu.regras, amigos: new Set(eu.amigos.map(String)) } : null;
+          aplicarPermissoesDoMenor();
+          aplicarInscricoes();
+        },
+        () => {},
+      );
+    void ler();
+    window.addEventListener('syden:protecao', ler);
+    room
+      .on(RoomEvent.Connected, aplicarPermissoesDoMenor)
+      .on(RoomEvent.ParticipantConnected, aplicarPermissoesDoMenor)
+      .on(RoomEvent.LocalTrackPublished, aplicarPermissoesDoMenor);
+    return () => {
+      vivo = false;
+      window.removeEventListener('syden:protecao', ler);
+      room
+        .off(RoomEvent.Connected, aplicarPermissoesDoMenor)
+        .off(RoomEvent.ParticipantConnected, aplicarPermissoesDoMenor)
+        .off(RoomEvent.LocalTrackPublished, aplicarPermissoesDoMenor);
+    };
+  }, [room, aplicarInscricoes, aplicarPermissoesDoMenor]);
 
   useEffect(() => {
     aplicarInscricoes();
@@ -1600,6 +1664,9 @@ export function useVoice(socket: Socket | null) {
     mandarEfeitoVisual,
     assistindo,
     assistir,
+    /** O vídeo desta pessoa está fechado para mim (sou menor com "assistir só de amigos", e ela não é amiga). */
+    videoBloqueado: (identity: string) =>
+      !!protecaoRef.current?.regras.assistirSoAmigos && !protecaoRef.current.amigos.has(identity),
     recentSounds,
     playSound,
     stopSounds,

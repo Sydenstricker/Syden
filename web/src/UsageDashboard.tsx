@@ -5,6 +5,7 @@ import { PainelAuditoria } from './PainelAuditoria';
 import { PainelDeAviso } from './PainelDeAviso';
 import { PainelDeCrescimento } from './PainelDeCrescimento';
 import { PainelDenuncias } from './PainelDenuncias';
+import { PainelBarrados } from './PainelBarrados';
 import { PainelDireitoAutoral } from './PainelDireitoAutoral';
 import { PainelDeAudiencia } from './PainelDeAudiencia';
 import { PainelDeComunidades } from './PainelDeComunidades';
@@ -123,7 +124,12 @@ export function UsageDashboard({
         </div>
       )}
 
-      {tab === 'denuncias' && <PainelDenuncias />}
+      {tab === 'denuncias' && (
+        <>
+          <PainelDenuncias />
+          <PainelBarrados />
+        </>
+      )}
       {tab === 'direito' && <PainelDireitoAutoral />}
 
       {tab === 'auditoria' && <PainelAuditoria />}
