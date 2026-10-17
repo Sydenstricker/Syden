@@ -652,6 +652,11 @@ a cama do quarto, onde o coelho dorme quando a pessoa está ausente.
 saídas de `parede/avulsos.py <item>=<n>`; a escolha vai no campo `cores` da arrumação, o mesmo do tapete, sem mexer no
 servidor, e a barra de arrumar mostra as figuras enquanto o objeto está na parede.
 
+**O CARTÃO DA PEÇA (pedido dele, 17/10/2026), nos dois ambientes:** clicar numa peça SEM função abre a figura grande, o
+nome e uma frase curta, sempre pertinente ao objeto (`descricaoDaPeca`, em `web/src/nomesDaCena.ts`, nos 80 idiomas;
+`CartaoDaPeca.tsx`). A peça com função continua abrindo a função, e o cartão dela fica no "i" da barrinha do Editar. Peça
+nova pede a frase dela. Quando houver peça ganha por conquista, o cartão diz também de onde ela veio.
+
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
 parte: põe-se no tampo de qualquer móvel que tenha tampo, anda e gira com ele, e tem as suas posições. "Aumenta as

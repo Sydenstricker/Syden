@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { API_URL, loadToken, mediaUrl } from './api';
 import { useT } from './i18n';
+import type { PecaClicada } from './CartaoDaPeca';
 import { type Arrumacao, EditorDaCena, type Figuras } from './QuartoNovo';
 import type { AcoesDoSalao } from './Salao';
 import type { Community } from './types';
@@ -72,6 +73,7 @@ export function SalaoNovo({
   const [pronto, setPronto] = useState(false);
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
+  const [peca, setPeca] = useState<PecaClicada | null>(null);
 
   const enviar = (msg: Record<string, unknown>) =>
     ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
@@ -84,6 +86,7 @@ export function SalaoNovo({
         if (e.data.figuras) setFiguras(e.data.figuras);
       }
       if (e.data.arrumacao) setArrumacao(e.data.arrumacao);
+      if (e.data.detalhe && typeof e.data.detalhe.id === 'string') setPeca(e.data.detalhe);
       if (typeof e.data.acao === 'string') acoesRef.current[e.data.acao as keyof AcoesDoSalao]?.onClick();
       if (e.data.canal === 1 || e.data.canal === -1) trocarRef.current?.(e.data.canal);
     };
@@ -172,7 +175,7 @@ export function SalaoNovo({
   }, [socket, pronto, community.id]);
 
   return (
-    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeEditar} carregando={!pronto} noite={noite}>
+    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeEditar} carregando={!pronto} noite={noite} peca={peca} aoFecharPeca={() => setPeca(null)}>
       <div className="quarto-novo-caixa salao-novo">
         <div className="quarto-novo">
           <iframe ref={ref} src={endereco} title={t('Início')} />

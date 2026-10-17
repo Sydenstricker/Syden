@@ -1,6 +1,7 @@
 import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
+import { CartaoDaPeca, type PecaClicada } from './CartaoDaPeca';
 import { desktopBridge } from './desktop';
 import { Mascote } from './Mascote';
 import { useT } from './i18n';
@@ -92,6 +93,7 @@ export function QuartoNovo({
   const [pronto, setPronto] = useState(false);
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
+  const [peca, setPeca] = useState<PecaClicada | null>(null);
 
   const enviar = (msg: Record<string, unknown>) => ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
 
@@ -103,6 +105,7 @@ export function QuartoNovo({
         if (e.data.figuras) setFiguras(e.data.figuras);
       }
       if (e.data.arrumacao) setArrumacao(e.data.arrumacao);
+      if (e.data.detalhe && typeof e.data.detalhe.id === 'string') setPeca(e.data.detalhe);
       if (typeof e.data.acao === 'string') acoesRef.current[e.data.acao]?.onClick();
     };
     window.addEventListener('message', ouvir);
@@ -144,6 +147,8 @@ export function QuartoNovo({
       podeEditar={pronto}
       carregando={!pronto}
       noite={noite}
+      peca={peca}
+      aoFecharPeca={() => setPeca(null)}
       // a engrenagem abre a Aparência (os gráficos do quarto moram lá), como o guarda-roupa
       aoConfigurar={acoes.gavetas ? () => acoesRef.current.gavetas?.onClick() : undefined}
     >
@@ -189,6 +194,8 @@ export function EditorDaCena({
   carregando,
   noite,
   aoConfigurar,
+  peca,
+  aoFecharPeca,
   children,
 }: {
   titulo: string;
@@ -202,6 +209,9 @@ export function EditorDaCena({
   /** O dia e a noite do app: o do Editar é só uma prévia, e volta a este ao sair. */
   noite: boolean;
   aoConfigurar?: () => void;
+  /** A peça clicada na cena (sem função), cujo cartão está aberto. */
+  peca?: PecaClicada | null;
+  aoFecharPeca?: () => void;
   children: React.ReactNode;
 }) {
   const t = useT();
@@ -217,7 +227,7 @@ export function EditorDaCena({
   }, [editando]);
   // Os nomes da barrinha que a cena põe em cima do que está escolhido.
   useEffect(() => {
-    enviarRef.current({ rotulos: { mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela') } });
+    enviarRef.current({ rotulos: { mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela'), sobre: t('Sobre') } });
   }, [t]);
   // A prévia de dia ou de noite vale só no Editar; ao sair, volta o do app.
   useEffect(() => {
@@ -426,6 +436,7 @@ export function EditorDaCena({
           </div>
         )}
       </div>
+      {peca && aoFecharPeca && <CartaoDaPeca peca={peca} figuras={figuras} aoFechar={aoFecharPeca} />}
       {editando ? (
         <footer className="editor-base">
           <div className="editor-atalhos">

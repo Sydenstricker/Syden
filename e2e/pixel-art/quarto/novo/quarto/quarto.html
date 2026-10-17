@@ -3367,6 +3367,25 @@ void main() {
     document.getElementById('acao-teste').textContent = 'No app, abriria: ' + FUNCOES[f].rotulo + (FUNCOES[f].sub ? ' (' + FUNCOES[f].sub + ')' : '') + '.';
     if (f === 'abajur') botoes[modo === 'dia' ? 'noite' : 'dia'].click(); // aqui, o próprio quarto troca
   }
+  // OS DETALHES DE UMA PEÇA (pedido dele, 17/10/2026: "o usuário clica no item e aparecem mais detalhes"). O clique numa
+  // peça SEM função conta ao app qual foi, e o app mostra o cartão: a figura, o nome e uma frase, traduzidos lá
+  // (web/src/CartaoDaPeca.tsx). A peça com função continua abrindo a função; o cartão dela fica no "i" da barrinha do Editar.
+  // Um ouvinte só, na janela e antes de todos (os da parede e de quem visita param o clique na própria cena): clicar é
+  // soltar a menos de 6 px de onde apertou, fora do Editar.
+  function detalhar(grupo, id) {
+    if (window.parent !== window && MODO_APP) { window.parent.postMessage({ syden: 'quarto', detalhe: { grupo, id } }, location.origin); return; }
+    document.getElementById('acao-teste').textContent = 'No app, mostraria os detalhes de ' + id + '.';
+  }
+  const chaveDoDetalhe = (ch) => (!ch || ch[0] === 'j' ? null : ch[0] === 'o' ? (EM_CIMA[ch.slice(1)] ? ['o', EM_CIMA[ch.slice(1)].tipo] : null) : [ch[0], ch.slice(1)]);
+  let apertoDoDetalhe = null;
+  addEventListener('pointerdown', (e) => { apertoDoDetalhe = e.target === tela && e.button === 0 && !EDITANDO ? { x: e.clientX, y: e.clientY, k: pixelDo(e) } : null; }, true);
+  addEventListener('pointerup', (e) => {
+    const a = apertoDoDetalhe; apertoDoDetalhe = null;
+    if (!a || EDITANDO || Math.hypot(e.clientX - a.x, e.clientY - a.y) >= 6 || funcaoEm(a.k)) return;
+    const d = chaveDoDetalhe(escolhaEm(a.k));
+    if (d) detalhar(d[0], d[1]);
+  }, true);
+  window.detalheDoTeste = (x, y) => chaveDoDetalhe(escolhaEm(y * W + x)); // para o teste
   const bFuncoes = document.getElementById('funcoes');
   bFuncoes.onclick = () => { FUNCOES = FUNCOES ? null : FUNCOES_DE_TESTE; bFuncoes.setAttribute('aria-pressed', String(!!FUNCOES)); bFuncoes.textContent = 'Funções do app: ' + (FUNCOES ? 'ligadas' : 'desligadas'); };
   // O CONTORNO DE QUEM TEM FUNÇÃO (pedido dele, 16/10/2026: "quando passo em cima de móvel que tenha função, deveria dar
@@ -4055,10 +4074,11 @@ void main() {
   // fica ESCOLHIDO, com o contorno claro, e ganha em cima dele uma barrinha com o que se faz com ELE: girar, tirar, as
   // opções (a cor do tapete, a arte do pôster, o tipo de janela) e, na janela, a cortina e abrir. Antes o Girar ficava na
   // barra do app e girava "o último móvel tocado", o que ninguém adivinha. Os nomes (dica e leitor de tela) vêm do app.
-  let ROTULOS = { mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela' };
+  let ROTULOS = { mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela', sobre: 'Sobre' };
   const barrinha = document.getElementById('barrinha');
   let opcoesAbertas = false, FIGURAS = null;
   const figurasCache = () => (FIGURAS ??= figurasDaBarra());
+  window.figurasDoTeste = () => figurasCache(); // para o teste
   const ICONES = {
     mover: '<path d="M12 2v20"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="m5 9-3 3 3 3"/><path d="m9 5 3-3 3 3"/>',
     duplicar: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
@@ -4067,6 +4087,7 @@ void main() {
     opcoes: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
     cortina: '<path d="M3 3h18"/><path d="M5 3v18c2.5-1.5 4-5 4-9S7.5 4.5 5 3"/><path d="M19 3v18c-2.5-1.5-4-5-4-9s1.5-7.5 4-9"/>',
     janela: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 3v18"/><path d="M4 12h16"/>',
+    sobre: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
   };
   function escolhaEm(k) {
     const uo = donoObj[k];
@@ -4133,6 +4154,9 @@ void main() {
       const janelas = figurasCache().janelas ?? {};
       if (Object.keys(janelas).length > 1) for (const [t2, src] of Object.entries(janelas)) opcoes.push(figuraDaBarrinha(src, JAN.tipo === t2, () => { mudarJanela({ ...JAN, tipo: t2 }); selecao && (selecao.cena = null); }));
     }
+    // o cartão da peça (o mesmo do clique fora do Editar), para as que têm função também
+    const dd = chaveDoDetalhe(ch);
+    if (dd) botoesB.push(botaoDaBarrinha('sobre', () => detalhar(dd[0], dd[1])));
     if (opcoes.length) botoesB.push(botaoDaBarrinha('opcoes', () => { opcoesAbertas = !opcoesAbertas; montarBarrinha(); }, { pressionado: opcoesAbertas }));
     const linha = document.createElement('div'); linha.className = 'botoes'; linha.append(...botoesB);
     const partes = [linha];
