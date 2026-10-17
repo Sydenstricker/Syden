@@ -1111,7 +1111,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
   // (o criado-mudo era 50, e a caneca flutuava na altura da cúpula: a "mancha" no abajur, relato de 15/10/2026)
-  const TOPOS = porTipo({ ilha: 42, 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 });
+  const TOPOS = porTipo({ ilha: 42, 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 76, balcao: 54, mesinha: 22, tv: 30, estante: 122 });
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
@@ -1315,8 +1315,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const a = {};
     if (CENA === 'salao') {
       if (OBJ_VISTAS.pipoca && VISTAS.mesinha) a.o1 = { tipo: 'pipoca', em: 'mesinha', s: 0.5, t: 0.5, lado: 0 };
-      if (OBJ_VISTAS.suco && VISTAS.balcao) a.o2 = { tipo: 'suco', em: 'balcao', s: 0.5, t: 0.3, lado: 0 };
-      if (OBJ_VISTAS.refrigerante && VISTAS.balcao) a.o3 = { tipo: 'refrigerante', em: 'balcao', s: 0.5, t: 0.7, lado: 0 };
+      if (OBJ_VISTAS.suco && VISTAS.balcao) a.o2 = { tipo: 'suco', em: 'balcao', s: 0.5, t: 0.15, lado: 0 };
+      if (OBJ_VISTAS.refrigerante && VISTAS.balcao) a.o3 = { tipo: 'refrigerante', em: 'balcao', s: 0.5, t: 0.42, lado: 0 };
       if (OBJ_VISTAS.videogame && VISTAS.tv) a.o4 = { tipo: 'videogame', em: 'tv', s: 0.5, t: 0.82, lado: 0 };
       // as comidas em cima da ilha
       if (OBJ_VISTAS.pizza && VISTAS.ilha) a.o5 = { tipo: 'pizza', em: 'ilha', s: 0.3, t: 0.3, lado: 0 };
@@ -1910,7 +1910,16 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const OPOSTO = { sudoeste: 'nordeste', nordeste: 'sudoeste', sudeste: 'noroeste', noroeste: 'sudeste' };
       const olha = ORIENTA[ARR.balcao.lado], [fu, fv] = VET[olha], pe = peDe('balcao'), [cu, cv] = centro(pe);
       const atras = [Math.floor(cu - fu * ((pe[1] - pe[0]) / 2 + 0.5)), Math.floor(cv - fv * ((pe[3] - pe[2]) / 2 + 0.5))];
-      r.balcao = { ao: [atras].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha, atras: true };
+      // ONDE NADA DO TAMPO O COBRE (relato de 17/10/2026: "o refrigerante está atravessando o coelho"): ao longo do balcão,
+      // ele fica na casa mais longe dos objetos que estão em cima; empatando, a do meio.
+      const aoLongo = fu === 0 ? 0 : 1, [a0, a1] = aoLongo === 0 ? [pe[0], pe[1]] : [pe[2], pe[3]];
+      const objs = Object.values(EM_CIMA).filter((o) => o.em === 'balcao').map((o) => ondeEmCima(o)[aoLongo]);
+      const casas = [];
+      for (let i = Math.floor(a0); i < Math.ceil(a1); i++) { const c = [...atras]; c[aoLongo] = i; if (livre(c[0], c[1])) casas.push(c); }
+      const cobrem = (c) => objs.filter((x) => Math.abs(c[aoLongo] + 0.5 - x) < 0.75).length;
+      const folga = (c) => Math.min(9, ...objs.map((x) => Math.abs(c[aoLongo] + 0.5 - x)));
+      casas.sort((x, y) => cobrem(x) - cobrem(y) || folga(y) - folga(x) || Math.abs(x[aoLongo] - atras[aoLongo]) - Math.abs(y[aoLongo] - atras[aoLongo]));
+      r.balcao = { ao: casas.length ? casas.slice(0, 1) : [atras].filter(([i, j]) => livre(i, j)), onde: null, sobe: 0, pose: 'parado', olha, atras: true };
       void OPOSTO; void vizinhas;
     }
     return r;
@@ -3603,13 +3612,19 @@ void main() {
   // guardado. Seguro, a rodinha (ou o R) o gira.
   let objPego = null;
   const guardarObjetos = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'objetos', JSON.stringify(EM_CIMA)); } catch { /* fica só nesta visita */ } enviar(); };
+  // A FOLGA DA BEIRADA (relato de 17/10/2026: "dificuldade de colocar os objetos pequenos na mesa"): o tampo só valia com
+  // a base exatamente dentro do pé do móvel, e soltar um pouco além da beirada devolvia o objeto ao lugar de antes. Sem
+  // tampo exato, vale o mais perto até meia casa fora, com o objeto puxado para dentro.
   function tampoDoPonteiro(e, mao = [0, 0]) {
+    return tampoEm(e, mao, 0) ?? tampoEm(e, mao, 0.5);
+  }
+  function tampoEm(e, mao, folga) {
     const r = tela.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width - mao[0], y = (e.clientY - r.top) * W / r.height - mao[1];
     let melhor = null;
     for (const id of Object.keys(TOPOS)) {
       if (!ARR[id]) continue;
       const [u, v] = uvDe(x, y + TOPOS[id]), pe = peDe(id);
-      if (u < pe[0] || u > pe[1] || v < pe[2] || v > pe[3]) continue;
+      if (u < pe[0] - folga || u > pe[1] + folga || v < pe[2] - folga || v > pe[3] + folga) continue;
       let a = (u - pe[0]) / (pe[1] - pe[0]), b = (v - pe[2]) / (pe[3] - pe[2]);
       for (let k = 0; k < ARR[id].lado; k++) [a, b] = [b, 1 - a]; // o avesso do giro de ondeEmCima
       const [s2, t2] = foraDoQueEstaEmPe(id, Math.min(0.96, Math.max(0.04, a)), Math.min(0.96, Math.max(0.04, b)));
@@ -3674,6 +3689,7 @@ void main() {
     caixa.replaceChildren(...Object.entries(OBJETOS_DE_CIMA).map(([id, it]) => { const b = document.createElement('button'); b.textContent = 'Pôr ' + it.nome; b.onclick = () => { if (!soVer) porObjeto(id); }; return b; }));
   }
   window.objetosDoTeste = () => EM_CIMA; // para o teste
+  window.tampoDoTeste = (x, y) => { const r = tela.getBoundingClientRect(); return tampoDoPonteiro({ clientX: r.left + (x + 0.5) * r.width / W, clientY: r.top + (y + 0.5) * r.height / W }); }; // para o teste
 
   // ============================== OS OBJETOS DA PAREDE: arrastar, pôr e guardar ==============================
   // Pegos como a janela, andam pelas duas paredes e também sobem e descem. Clicar sem arrastar faz a função.
