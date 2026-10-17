@@ -2568,7 +2568,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
         // O vidro da folha aberta: ela abre para DENTRO, então atrás dele está a PAREDE, não a paisagem (relato de
         // 15/10/2026: com a vista de árvores, a folha aparecia salpicada de verde). A parede vista pelo vidro, com o
         // reflexo claro dele.
-        else if (vidroAberto[k]) { D[k * 3 + c] = semDia[k * 4 + c] * 0.82 + [250, 243, 224][c] * 0.18; fundoNoite[k * 3 + c] = semNoite[k * 4 + c] * 0.85 + [40, 46, 80][c] * 0.15; }
+        // VIDRO, E NÃO NÉVOA (relato dele, 17/10/2026: "os vidros ainda estão embaçados"): a parede atrás é creme, e somar o
+        // creme do reflexo por cima dava um painel leitoso. Agora a parede passa ESCURECIDA e um pouco azulada (o vidro
+        // come luz), e o reflexo é só uma faixa diagonal fina, que é o que o olho lê como vidro.
+        else if (vidroAberto[k]) {
+          const brilho = (x + y) % 11 < 2 ? 1 : 0;
+          D[k * 3 + c] = semDia[k * 4 + c] * 0.7 + [150, 178, 205][c] * 0.12 + brilho * [60, 62, 58][c];
+          fundoNoite[k * 3 + c] = semNoite[k * 4 + c] * 0.72 + [40, 52, 90][c] * 0.12 + brilho * [26, 30, 40][c];
+        }
         else { D[k * 3 + c] = abertaDia[k * 4 + c]; fundoNoite[k * 3 + c] = abertaDia[k * 4 + c] * Math.min(1, noitePe[k * 4 + c] / Math.max(1, diaPe[k * 4 + c])); }
       }
     }
