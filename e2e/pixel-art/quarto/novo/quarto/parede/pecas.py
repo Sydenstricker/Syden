@@ -26,10 +26,12 @@ borrar = lambda a: np.stack([gaussian_filter(a[..., c], 10) for c in range(3)], 
 razao = borrar(semNoite) / np.maximum(1, borrar(semDia))
 # O que cada um é (o nome para a página) e o que ele abre no app (a ação da home de hoje, Home.tsx).
 ITENS = {
-    'fone': {'nome': 'o fone', 'funcao': 'fone'},
+    # (17/10/2026: o creme da parede por dentro do arco do fone ficava na peça; o vaso claro da prateleira era tomado por
+    # parede e descascado, e sobrava só a metade escura dele)
+    'fone': {'nome': 'o fone', 'funcao': 'fone', 'vaos': True, 'contorno': True, 'tingida': 0.8},
     'quadro': {'nome': 'o quadro de fotos', 'funcao': 'quadro'},
     'cortica': {'nome': 'a cortiça', 'funcao': 'cortica'},
-    'prateleira': {'nome': 'a prateleira', 'funcao': None},
+    'prateleira': {'nome': 'a prateleira', 'funcao': None, 'contorno': True, 'escuro': 110},
     'pintura': {'nome': 'a pintura', 'funcao': None},
     # O salão (15/10/2026). "luz": as cores claras ficam acesas de noite e brilham em volta; "chao": fica no chão (a porta).
     'prateleira-bar': {'nome': 'a prateleira do bar', 'funcao': None, 'luz': True, 'vaos': True},
@@ -80,7 +82,7 @@ for item, meta in ITENS.items():
     # só numa faixa de 4 px da borda de fora: sem isso, entrava por uma falha do contorno e comia o mostrador do relógio, o
     # vidro dos potes e a placa da porta
     parece_parede = (lum > 105) & (sat < 0.42) & (distance_transform_edt(m) <= 4)
-    for _ in range(0 if SALAO else 4):
+    for _ in range(0 if SALAO or meta.get('descascar') is False else 4):
         fora = ~m
         borda = m & (np.roll(fora, 1, 0) | np.roll(fora, -1, 0) | np.roll(fora, 1, 1) | np.roll(fora, -1, 1))
         tira = borda & parece_parede
@@ -97,6 +99,20 @@ for item, meta in ITENS.items():
     # "vaos": o que é parede pura por dentro da peça (o vão entre as tábuas da prateleira) também sai. Não vale para
     # todas: o mostrador do relógio é creme como a parede.
     if meta.get('vaos'): m = m & (dif > 14)
+    # "contorno" (17/10/2026): a peça é tudo o que fica DENTRO do contorno escuro do desenho. Inunda-se de fora para dentro
+    # pelo que é parede (quase igual à vazia, ou ela escurecida pela sombra, ou tingida pela peça: claro e pouco vivo), e
+    # para no contorno. Serve à peça clara como a parede (o vaso da prateleira) e ao halo pintado em volta (o fone).
+    if meta.get('contorno'):
+        escuro = lum < meta.get('escuro', 80)
+        parede_ou_sombra = ((dif <= 26) | sombra | ((lum > 105) & (sat < meta.get('tingida', 0.42)))) & ~escuro
+        caixa = binary_dilation(m, iterations=12)  # (com 3, a metade do vaso que o recorte de antes perdia ficava fora, e a inundação entrava por ela)
+        livre = (parede_ou_sombra & caixa) | ~caixa
+        rot4, _ = label(livre)
+        fora = np.isin(rot4, np.unique(np.concatenate([rot4[0], rot4[-1], rot4[:, 0], rot4[:, -1]])))
+        m = binary_fill_holes(~fora & caixa & PAREDE)
+        if meta.get('vaos'): m = m & ~(dif <= 14)
+        rot5, _ = label(m); t5 = np.bincount(rot5.ravel()); t5[0] = 0
+        m = rot5 == np.argmax(t5)
     for nome, cor in [('peca-dia', dia), ('peca-noite', dia if SALAO else dia * razao)]:
         # (a cor fora da peça vai a zero: ela não aparece, e sem isso cada arquivo pesava 140 KB; no salão, a peça sobe
         # os 27 px para as coordenadas do quarto)
@@ -107,5 +123,5 @@ for item, meta in ITENS.items():
     # a altura: de quanto acima do chão até quanto (medida na coluna do meio)
     meio = int((cols.min() + cols.max()) / 2)
     hs = chao(meio) - np.nonzero(m[:, cols.min():cols.max() + 1].any(1))[0]
-    json.dump({**{k: v for k, v in meta.items() if k != 'vaos'}, 'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)]}, open(os.path.join(d, 'item.json'), 'w', encoding='utf8'), ensure_ascii=False)
+    json.dump({**{k: v for k, v in meta.items() if k not in ('vaos', 'descascar', 'contorno', 'tingida', 'escuro')}, 'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)]}, open(os.path.join(d, 'item.json'), 'w', encoding='utf8'), ensure_ascii=False)
     print(item, json.load(open(os.path.join(d, 'item.json'))))

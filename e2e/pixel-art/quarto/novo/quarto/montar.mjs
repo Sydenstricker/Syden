@@ -190,8 +190,12 @@ for (const tipo of CENA === 'salao' ? ['tijolo', 'original', 'arco', 'redonda', 
 // OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
 const ITENS_PAREDE = {};
 for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta', 'poster']) {
-  // no salão, a versão pintada no tijolo dele, se houver (parede-salao/)
-  const ds = path.join(AQUI, 'parede-salao', item), d = CENA === 'salao' && fs.existsSync(path.join(ds, 'item.json')) ? ds : path.join(AQUI, 'parede', item);
+  // no salão, a versão pintada no tijolo dele, se houver (parede-salao/). E a GERADA SEM PAREDE (avulsos.py: "avulso" no
+  // item.json) vale nos dois: o recorte do quarto, tirado da pintura na parede, trazia pedaços dela e um contorno sujo
+  // (relato dele, 17/10/2026: "não estamos usando o asset limpo sem fundo que veio do PixelLab?").
+  const ds = path.join(AQUI, 'parede-salao', item), dq = path.join(AQUI, 'parede', item);
+  const limpo = fs.existsSync(path.join(ds, 'item.json')) && JSON.parse(fs.readFileSync(path.join(ds, 'item.json'), 'utf8')).avulso != null;
+  const d = fs.existsSync(path.join(ds, 'item.json')) && (CENA === 'salao' || (limpo && fs.existsSync(path.join(dq, 'item.json')))) ? ds : dq;
   if (!fs.existsSync(path.join(d, 'item.json'))) continue;
   ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
   for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-' + q] = png(path.join(d, 'peca-' + q + '.png'));
@@ -976,7 +980,25 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // comuns nas últimas linhas, mas aparecem no móvel inteiro (tirá-las deixava a mesa transparente, 14/10/2026).
     const [sr, sg, sb] = sombraCor.split(',').map(Number), parecida = (k) => Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18;
     let emCima = 0; for (let k = K0; k < Math.max(K0, (fundo - 25) * W); k++) if (movel[k * 4 + 3] > 127 && parecida(k)) emCima++;
-    if (vezes > 12 && emCima <= vezes * 0.1) for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
+    if (vezes > 12 && emCima <= vezes * 0.1) {
+      for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
+      // O QUE SOBRA DA SOMBRA, SOLTO (relato dele, 17/10/2026: "a poltrona está com uma mancha na base, parece um pixel
+      // perdido"): o pixel da sombra num tom um pouco diferente não sai pela cor, e fica sozinho embaixo do móvel. Pedaço de
+      // até 3 pixels, sem vizinho do móvel, sai.
+      const visto = new Uint8Array(W * W);
+      for (let k = K0; k < K1; k++) {
+        if (visto[k] || movel[k * 4 + 3] < 128) continue;
+        const grupo = [k]; visto[k] = 1;
+        for (let i = 0; i < grupo.length; i++) {
+          const q = grupo[i], x = q % W;
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            const v = q + dy * W + dx; if ((!dx && !dy) || x + dx < 0 || x + dx >= W || v < K0 || v >= K1 || visto[v] || movel[v * 4 + 3] < 128) continue;
+            visto[v] = 1; grupo.push(v);
+          }
+        }
+        if (grupo.length <= 3) for (const q of grupo) movel[q * 4 + 3] = 0;
+      }
+    }
     // A TELA TRANSPARENTE (ele recortou as telas da TV, 15/10/2026): o buraco FECHADO dentro do móvel (o transparente que
     // não se alcança pela borda da imagem) é a tela. Ele vira pixel do móvel, escuro, e a tela por código pinta por cima.
     let buraco = null;
