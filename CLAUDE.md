@@ -533,6 +533,15 @@ ficou combinado:
   servidor aceita cópias e avisa (`copias`), e a página só oferece Duplicar então. **Cada peça tem nome traduzido nos 80**
   (`web/src/nomesDaCena.ts`), para a busca e as dicas.
 - **Ainda depois:** animação na vista, variações de tapete (cor por código), mais móveis que giram.
+- **TODA PEÇA NASCE AVULSA (decisão dele, 17/10/2026).** Gerada sozinha, sem fundo (`no_background`), com o quarto ou o
+  salão como referência de estilo; nunca mais pintada dentro da cena e recortada. O recorte foi a saída de 07/10, para
+  herdar a luz pintada; desde que a luz é feita por código, ele só traz custo: restos do chão e da parede, contorno sujo
+  e um script de limpeza por peça (relato dele: pufe, tapete, fone, prateleira, troféus, prateleira do bar). **O
+  compromisso: refazer avulsas as que ainda são recorte**, e apagar os recortes e os scripts de limpeza
+  (`limpar-recorte.py`, o "contorno" de `parede/pecas.py`) quando a última sair. Faltam, em 17/10: os objetos da parede
+  fone, quadro, cortiça, prateleira e pintura; o pufe e o tapete (`pecas/`); as janelas original (com aberta e cortina),
+  arco, redonda, floreira e cortinas. Onde já existe a avulsa (os objetos do salão em `parede-salao/`), ela vale nos dois
+  ambientes.
 - **DÍVIDA DE ARTE (pedidos dele, à espera de créditos do PixelLab):**
   - **Um ventilador ou um ar-condicionado** (16/10/2026).
   - **Um gatinho olhando a janela** (16/10/2026): deitado, dormindo; clicado, ele se espreguiça e senta. Precisa das
