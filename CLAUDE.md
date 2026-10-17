@@ -625,7 +625,7 @@ O pixel acompanha a largura da vista, para o coelho ficar do tamanho de sempre. 
 **Gráficos e o jogo (15/10/2026):** o quarto e o salão são desenhados pelo PROCESSADOR (a luz e as sombras pixel a pixel;
 a placa só mostra a imagem pronta). Por isso: (1) **param de desenhar quando a janela do Syden perde o foco ou fica
 escondida** — o app desliga o freio de janela escondida por causa da chamada, e sem isso o quarto seguiria desenhando
-atrás do jogo, que é o uso principal; (2) **opção de Gráficos** nas Configurações (Aparência), no ar já: partículas, sombras e telas
+atrás do jogo, que é o uso principal; (2) **opção de Gráficos** nas Configurações (seção própria desde 17/10/2026; antes ficava dentro da Aparência), no ar já: partículas, sombras e telas
 animadas, **TODAS DESLIGADAS DE FÁBRICA** (decisão dele: quem quiser o enfeite liga), sem "ajustar sozinho" (ele tirou).
 
 **A LUZ NA PLACA (WebGL2, feito em 16/10/2026, decisão dele: "o usuário só renderiza o quarto e o salão no início e na
