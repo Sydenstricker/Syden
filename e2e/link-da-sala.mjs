@@ -32,6 +32,7 @@ const bia = vigiar(await ctxBia.newPage());
 await bia.goto(linkDaSala);
 await bia.getByLabel('Nome de usuário').fill('bia' + s);
 await bia.getByLabel('E-mail').fill(`bia${s}@exemplo.test`);
+await bia.getByLabel('Data de nascimento').fill('1990-01-01');
 await bia.getByLabel('Senha', { exact: true }).fill('segredo123');
 await bia.getByRole('button', { name: 'Cadastrar' }).click();
 await dispensarPresentes(bia);

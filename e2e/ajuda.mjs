@@ -139,6 +139,8 @@ export async function cadastrar(page, username) {
   await page.goto(SITE + (SITE.includes('?') ? '&' : '?') + 'convite=' + encodeURIComponent(CONVITE));
   await page.getByLabel('Nome de usuário').fill(username);
   await page.getByLabel('E-mail').fill(username + '@exemplo.test');
+  // A data de nascimento (17/10/2026, ECA Digital): sem ela o cadastro não sai; adulto, para não cair nas regras de menor.
+  await page.getByLabel('Data de nascimento').fill('1990-01-01');
   // O `exact` é obrigatório: a dica embaixo do e-mail fala em recuperar a SENHA, então "Senha" sem ele
   // casa com dois campos e o Playwright recusa a jogada inteira.
   await page.getByLabel('Senha', { exact: true }).fill('segredo123');

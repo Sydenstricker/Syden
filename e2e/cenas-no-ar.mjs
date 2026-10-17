@@ -50,7 +50,7 @@ const pedir = async (metodo, rota, token, corpo) => {
   return j;
 };
 const sufixo = Date.now().toString(36).slice(-5);
-await pedir('POST', '/api/auth/register', null, { username: 'cena' + sufixo, password: 'segredo123', email: `cena${sufixo}@exemplo.teste`, inviteCode: 'teste' });
+await pedir('POST', '/api/auth/register', null, { username: 'cena' + sufixo, password: 'segredo123', email: `cena${sufixo}@exemplo.teste`, inviteCode: 'teste', nascimento: '1990-01-01' });
 const token = (await pedir('POST', '/api/auth/login', null, { username: 'cena' + sufixo, password: 'segredo123' })).token;
 const comunidade = await pedir('POST', '/api/communities', token, { name: 'Cena ' + sufixo });
 

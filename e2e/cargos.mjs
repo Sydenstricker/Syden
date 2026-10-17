@@ -15,6 +15,7 @@ async function entrar(nome, url) {
     await page.goto(url);
     await page.getByLabel('Nome de usuário').fill(nome);
     await page.getByLabel('E-mail').fill(`${nome}@exemplo.test`);
+    await page.getByLabel('Data de nascimento').fill('1990-01-01');
     await page.getByLabel('Senha', { exact: true }).fill('segredo123');
     await page.getByRole('button', { name: 'Cadastrar' }).click();
   } else {

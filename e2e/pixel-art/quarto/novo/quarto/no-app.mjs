@@ -12,7 +12,7 @@ const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:
 const API = 'http://localhost:3099', APP = 'http://localhost:5174/app/', FOTOS = path.join(AQUI, 'fotos');
 fs.mkdirSync(FOTOS, { recursive: true });
 const nome = 'quarto' + Date.now().toString(36).slice(-5);
-const c = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste' }) });
+const c = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste', nascimento: '1990-01-01' }) });
 if (!c.ok) throw new Error('cadastro: ' + (await c.text()));
 const { token } = await (await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123' }) })).json();
 

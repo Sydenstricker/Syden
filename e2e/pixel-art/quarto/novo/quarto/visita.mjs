@@ -15,7 +15,7 @@ const servidor = http.createServer((_, r) => { r.writeHead(200, { 'content-type'
 
 const sufixo = Date.now().toString(36).slice(-5);
 async function conta(nome) {
-  const c = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste' }) });
+  const c = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste', nascimento: '1990-01-01' }) });
   if (!c.ok) throw new Error('cadastro ' + nome + ': ' + (await c.text()));
   const e = await (await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123' }) })).json();
   return { nome, id: e.user.id };

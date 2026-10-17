@@ -21,7 +21,7 @@ const pedir = async (metodo, rota, token, corpo) => {
   return j;
 };
 async function conta(nome) {
-  await pedir('POST', '/api/auth/register', null, { username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste' });
+  await pedir('POST', '/api/auth/register', null, { username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste', nascimento: '1990-01-01' });
   return (await pedir('POST', '/api/auth/login', null, { username: nome, password: 'segredo123' })).token;
 }
 const dona = await conta('dona' + sufixo), membro = await conta('membro' + sufixo), falante = await conta('voz' + sufixo);

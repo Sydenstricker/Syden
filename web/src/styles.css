@@ -15243,3 +15243,31 @@ body.arrastando-barra {
   background: var(--bg-raised);
   font-size: calc(13px * var(--escala-do-texto));
 }
+
+/* As caixinhas da Família são frases, não rótulos de campo: sem o maiúsculo dos rótulos do formulário. */
+.settings-form .familia-regra,
+.familia-regra {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: calc(14px * var(--escala-do-texto));
+  font-weight: 400;
+  text-transform: none;
+  color: var(--text);
+}
+
+.familia-regras {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.familia-regras input[type='number'] {
+  width: 140px;
+  padding: 8px 10px;
+  border: 1px solid var(--bg-raised);
+  border-radius: 8px;
+  background: var(--bg-input, var(--bg-sidebar));
+  color: var(--text);
+  font: inherit;
+}

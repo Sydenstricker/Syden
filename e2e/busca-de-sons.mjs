@@ -63,7 +63,7 @@ try {
     await fetch(API + '/api/auth/register', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ username: usuario, password: 'segredo123', email: usuario + '@exemplo.test', inviteCode: 'teste' }),
+      body: JSON.stringify({ username: usuario, password: 'segredo123', email: usuario + '@exemplo.test', inviteCode: 'teste', nascimento: '1990-01-01' }),
     });
     const r = await fetch(API + '/api/auth/login', {
       method: 'POST',
