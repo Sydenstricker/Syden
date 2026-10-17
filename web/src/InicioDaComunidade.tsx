@@ -296,7 +296,7 @@ export function InicioDaComunidade({
         ) : salao.cena === 'conferindo' ? (
           <div className="salao-novo" aria-hidden="true">
             <div className="quarto-novo editor-esperando">
-              <Mascote nome="introducao" tamanho={180} />
+              <Mascote nome="ocioso" tamanho={180} />
             </div>
           </div>
         ) : (
