@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { API_URL, loadToken, mediaUrl } from './api';
 import { useT } from './i18n';
-import { type Arrumacao, BarraDeArrumar, type Figuras } from './QuartoNovo';
+import { type Arrumacao, EditorDaCena, type Figuras } from './QuartoNovo';
 import type { AcoesDoSalao } from './Salao';
 import type { Community } from './types';
 
@@ -42,7 +42,7 @@ export function SalaoNovo({
   socket,
   aoFalhar,
 }: {
-  community: Pick<Community, 'id' | 'iconVersion' | 'bannerVersion'>;
+  community: Pick<Community, 'id' | 'iconVersion' | 'bannerVersion' | 'name'>;
   acoes: AcoesDoSalao;
   naCall: PessoaNoSalao[];
   /** Alguém transmitindo: a TV mostra o Ao vivo e quem é. */
@@ -172,11 +172,12 @@ export function SalaoNovo({
   }, [socket, pronto, community.id]);
 
   return (
-    <div className="quarto-novo-caixa salao-novo">
-      <div className="quarto-novo">
-        <iframe ref={ref} src={endereco} title={t('Início')} />
+    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeEditar} noite={noite}>
+      <div className="quarto-novo-caixa salao-novo">
+        <div className="quarto-novo">
+          <iframe ref={ref} src={endereco} title={t('Início')} />
+        </div>
       </div>
-      {pronto && podeEditar && <BarraDeArrumar figuras={figuras} arrumacao={arrumacao} enviar={enviar} />}
-    </div>
+    </EditorDaCena>
   );
 }

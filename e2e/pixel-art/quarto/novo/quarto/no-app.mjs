@@ -51,44 +51,65 @@ await p.mouse.click(...ponto); await p.waitForTimeout(600);
 conferir(await p.locator('.vila-painel').isVisible(), 'clicar no fone abre o painel das Salas no app');
 await p.screenshot({ path: path.join(FOTOS, 'no-app-salas.png') });
 
-// A BARRA DE ARRUMAR do app: Editar, trocar a janela, a cor do tapete e pôr a pintura na parede; tudo vai ao servidor.
+// O EDITOR (o layout dele, 16/10/2026): Editar abre a tela inteira; pelo catálogo, trocar a janela, a cor do tapete e
+// pôr a pintura; nada vai ao servidor até Aplicar.
 await p.locator('.vila-painel-fechar').click().catch(() => {});
-// (em abas desde 16/10/2026: cada grupo de figuras aparece só com a aba dele aberta)
-const aba = (nome) => p.locator('.quarto-novo-abas').getByRole('tab', { name: nome, exact: true }).click();
-const figuras = p.locator('.quarto-novo-gaveta .quarto-novo-objeto');
-await p.locator('.quarto-novo-linha > button').first().click();
-await aba('Janela');
-await figuras.nth(1).click(); // a em arco (a figura de cada tipo; a original é a primeira)
-await aba('Tapete');
-await p.locator('.quarto-novo-cor').nth(2).click(); // o azul
+const categoria = (nome) => p.locator('.editor-categorias button', { hasText: nome }).first().click();
+const itens = p.locator('.editor-grade .editor-item');
+const doServidor = async () => (await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json());
+await p.locator('.editor-entrar button').click();
+await p.waitForTimeout(500);
+conferir(await p.locator('.editor-cena.editando').isVisible(), 'Editar abre o editor na tela inteira');
+await categoria('Janela');
+await itens.nth(1).click(); // a em arco (a original é a primeira)
+await categoria('Tapete');
+await itens.nth(2).click(); // o azul
 await p.waitForTimeout(600); // a marca volta do quarto, com a arrumação
-const corMarcada = await p.locator('.quarto-novo-cor').nth(2).getAttribute('aria-pressed');
-await aba('Objetos da parede');
-const nObjetos = await figuras.count();
-await figuras.nth(4).click(); // a pintura (estava guardada)
-await p.waitForTimeout(1800);
-conferir(nObjetos >= 5, 'a aba mostra os objetos da parede como figuras (' + nObjetos + ')');
-conferir(corMarcada === 'true', 'a cor escolhida fica marcada na barra');
-conferir(await figuras.nth(4).getAttribute('aria-pressed') === 'true', 'a pintura fica marcada como posta');
-await p.screenshot({ path: path.join(FOTOS, 'no-app-barra.png') });
-const guardado = await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json();
-conferir(guardado.arrumacao?.janela?.tipo === 'arco', 'a janela trocada pela barra foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
-conferir(guardado.arrumacao?.cores?.tapete === 'azul', 'a cor do tapete foi ao servidor (' + guardado.arrumacao?.cores?.tapete + ')');
-conferir(!!guardado.arrumacao?.parede?.pintura, 'a pintura posta foi ao servidor');
+const corMarcada = await itens.nth(2).getAttribute('aria-pressed');
+await categoria('Objetos da parede');
+const nObjetos = await itens.count();
+await itens.nth(4).click(); // a pintura (estava guardada)
+await p.waitForTimeout(1200);
+conferir(nObjetos >= 5, 'o catálogo mostra os objetos da parede (' + nObjetos + ')');
+conferir(corMarcada === 'true', 'a cor escolhida fica marcada no catálogo');
+conferir(await itens.nth(4).getAttribute('aria-pressed') === 'true', 'a pintura fica marcada como posta');
+conferir(!(await p.locator('.editor-topo .editor-botao', { hasText: 'Salvar' }).isDisabled()), 'há o que salvar');
+await p.screenshot({ path: path.join(FOTOS, 'no-app-editor.png') });
+conferir((await doServidor()).arrumacao?.janela?.tipo !== 'arco', 'antes de Aplicar, nada foi ao servidor');
+await p.locator('.editor-fim .editor-aplicar').click();
+await p.waitForTimeout(1500);
+let guardado = await doServidor();
+conferir(guardado.arrumacao?.janela?.tipo === 'arco', 'Aplicar levou a janela ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
+conferir(guardado.arrumacao?.cores?.tapete === 'azul', 'e a cor do tapete (' + guardado.arrumacao?.cores?.tapete + ')');
+conferir(!!guardado.arrumacao?.parede?.pintura, 'e a pintura posta');
+conferir(guardado.copias === true, 'o servidor diz que aceita cópias');
 
-// A BARRINHA em cima do escolhido e o DESFAZER (16/10/2026): tocar o pufe no Editar o escolhe, e a barrinha aparece com o
-// nome traduzido que o app mandou; o Desfazer da barra tira a pintura que acabou de ser posta.
+// CANCELAR volta ao que estava ao entrar, e não grava nada.
+await p.locator('.editor-entrar button').click(); await p.waitForTimeout(400);
+await categoria('Tapete'); await itens.nth(3).click(); await p.waitForTimeout(400); // mostarda
+await p.locator('.editor-fim .editor-botao', { hasText: 'Cancelar' }).click(); await p.waitForTimeout(1200);
+guardado = await doServidor();
+conferir(guardado.arrumacao?.cores?.tapete === 'azul', 'Cancelar não gravou a cor nova (' + guardado.arrumacao?.cores?.tapete + ')');
+conferir((await frame.evaluate(() => window.visitaDoTeste().retrato.cores.tapete)) === 'azul', 'e o quarto voltou à cor de antes');
+
+// A BARRINHA em cima do escolhido, DUPLICAR e DESFAZER.
+await p.locator('.editor-entrar button').click(); await p.waitForTimeout(500);
+const caixa = await frame.locator('#tela').boundingBox();
 const pufe = await frame.evaluate(() => window.ondeDoMovel('pufe'));
-await p.mouse.click(telaNoFrame.x + pufe[0] * telaNoFrame.width / 512, telaNoFrame.y + pufe[1] * telaNoFrame.height / 512);
+await p.mouse.click(caixa.x + pufe[0] * caixa.width / 512, caixa.y + pufe[1] * caixa.height / 512);
 await p.waitForTimeout(500);
 const barrinha = await frame.evaluate(() => ({ sel: window.selecaoDoTeste(), botoes: [...document.querySelectorAll('#barrinha .botoes button')].map((b) => b.getAttribute('aria-label')) }));
-conferir(barrinha.sel === 'mpufe' && barrinha.botoes.includes('Tirar'), 'tocar o pufe no Editar o escolhe, com a barrinha (' + JSON.stringify(barrinha) + ')');
+conferir(barrinha.sel === 'mpufe' && barrinha.botoes.includes('Duplicar'), 'tocar o pufe o escolhe, com a barrinha e o Duplicar (' + JSON.stringify(barrinha) + ')');
 await p.screenshot({ path: path.join(FOTOS, 'no-app-barrinha.png') });
-const desfazer = p.locator('.quarto-novo-linha > button', { hasText: 'Desfazer' });
-conferir(!(await desfazer.isDisabled()), 'há o que desfazer');
-await desfazer.click(); await p.waitForTimeout(1800);
-const depois = await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json();
-conferir(!depois.arrumacao?.parede?.pintura, 'o Desfazer tirou a pintura, e o servidor ficou sabendo');
+await p.locator('.editor-atalhos button', { hasText: 'Duplicar' }).click(); await p.waitForTimeout(800);
+conferir(Object.keys(await frame.evaluate(() => window.arrumacaoDoTeste())).includes('pufe~2'), 'o Duplicar dos atalhos pôs uma cópia do pufe');
+await p.locator('.editor-topo .editor-botao', { hasText: 'Desfazer' }).click(); await p.waitForTimeout(500);
+conferir(!Object.keys(await frame.evaluate(() => window.arrumacaoDoTeste())).includes('pufe~2'), 'Desfazer tirou a cópia');
+await p.locator('.editor-topo .editor-botao', { hasText: 'Refazer' }).click(); await p.waitForTimeout(500);
+conferir(Object.keys(await frame.evaluate(() => window.arrumacaoDoTeste())).includes('pufe~2'), 'Refazer pôs de volta');
+await p.locator('.editor-fim .editor-aplicar').click(); await p.waitForTimeout(1500);
+guardado = await doServidor();
+conferir(!!guardado.arrumacao?.moveis?.['pufe~2'], 'a cópia foi ao servidor com o Aplicar');
 
 await navegador.close();
 console.log(falhas.length ? falhas.length + ' falha(s)' : 'tudo certo');

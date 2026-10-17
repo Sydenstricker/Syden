@@ -70,7 +70,7 @@ describe('o meu quarto', () => {
       { moveis: { cama: { c: [9, 1], lado: 0 } } }, // fora do quarto
       { moveis: { cama: { c: [1, 1], lado: 4 } } }, // não existe posição 4
       { moveis: { 'Cama!': { c: [1, 1], lado: 0 } } }, // código que não é código
-      { moveis: Object.fromEntries(Array.from({ length: 41 }, (_, i) => ['m' + i, { c: [1, 1], lado: 0 }])) },
+      { moveis: Object.fromEntries(Array.from({ length: 81 }, (_, i) => ['m' + i, { c: [1, 1], lado: 0 }])) },
       { moveis: {}, cadeira: { u: 1, v: 1, th: 'gira' } },
       { moveis: {}, janela: { tipo: 'arco', parede: 'teto', v: 0 } },
       { moveis: {}, cortina: 'sim' },
@@ -80,11 +80,29 @@ describe('o meu quarto', () => {
       { moveis: {}, emCima: { o1: { tipo: 'caneca', em: 'mesa', s: 2, t: 0.5, lado: 0 } } },
       { moveis: {}, guardados: 'poltrona' },
       { moveis: {}, guardados: ['<b>'] },
-      { moveis: {}, guardados: Array.from({ length: 41 }, (_, i) => 'm' + i) },
+      { moveis: {}, guardados: Array.from({ length: 81 }, (_, i) => 'm' + i) },
+      { moveis: { 'cama~0': { c: [1, 1], lado: 0 } } }, // cópia número zero não existe
+      { moveis: { 'cama~2~3': { c: [1, 1], lado: 0 } } },
+      { moveis: {}, guardados: ['cama~2'] }, // só o original se guarda; a cópia se tira
       { moveis: {}, conhecidos: [1, 2] },
     ];
     for (const r of ruins) assert.equal((await ana('PUT', '/api/quarto', r)).statusCode, 400, JSON.stringify(r)?.slice(0, 80));
     assert.deepEqual((await ana('GET', '/api/quarto')).json().arrumacao, ARRUMACAO, 'a recusa não mexeu no que estava');
+  });
+
+  it('aceita CÓPIAS de móveis e objetos da parede (16/10/2026), e diz que aceita', async () => {
+    const comCopias = {
+      ...ARRUMACAO,
+      moveis: { ...ARRUMACAO.moveis, 'cama~2': { c: [4, 6], lado: 1 }, 'planta-alta~3': { c: [7, 1], lado: 0 } },
+      parede: { ...ARRUMACAO.parede, 'quadro~2': { parede: 'direita', v: 3, h: 10 } },
+      cores: { tapete: 'azul', 'poster~2': 'neon' },
+      emCima: { o1: { tipo: 'caneca', em: 'cama~2', s: 0.5, t: 0.5, lado: 0 } },
+    };
+    assert.equal((await ana('PUT', '/api/quarto', comCopias)).statusCode, 200);
+    const j = (await ana('GET', '/api/quarto')).json();
+    assert.deepEqual(j.arrumacao, comCopias);
+    assert.equal(j.copias, true);
+    await ana('PUT', '/api/quarto', ARRUMACAO);
   });
 });
 

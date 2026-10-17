@@ -68,13 +68,13 @@ conferir(nomes.includes('voz' + sufixo), 'quem está na call de verdade aparece 
 conferir(!(await D.frame.evaluate(() => window.visitaDoTeste().soVer)), 'a dona pode arrumar');
 const rec = await D.frame.evaluate(() => window.recadoDoTeste());
 conferir((await D.frame.locator('#recado').textContent()).includes('karaokê'), 'o coelho do balcão lê o recado da dona ' + JSON.stringify(rec));
-conferir(await D.p.locator('.salao-novo .quarto-novo-barra').isVisible(), 'a dona tem a barra de arrumar');
+conferir(await D.p.locator('.editor-entrar button').isVisible(), 'a dona tem o Editar');
 await D.p.screenshot({ path: path.join(FOTOS, 'no-app-dona.png') });
 
 const M = await abrirSalao(membro, 'membro');
 await M.p.waitForTimeout(2500);
 conferir(await M.frame.evaluate(() => window.visitaDoTeste().soVer), 'o membro só olha a arrumação');
-conferir(!(await M.p.locator('.salao-novo .quarto-novo-barra').isVisible()), 'o membro não tem a barra de arrumar');
+conferir(!(await M.p.locator('.editor-entrar button').isVisible()), 'o membro não tem o Editar');
 // A TV: o nome da função ao passar o mouse, e o clique entra na sala de voz.
 const tv = await M.frame.evaluate(() => { const L = window.arrumacaoDoTeste(); return L.tv && window.ondeDoMovel ? window.ondeDoMovel('tv') : null; });
 if (tv) {
@@ -87,13 +87,14 @@ if (tv) {
   await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro-tv.png') });
 } else conferir(false, 'achar a TV na tela');
 
-// A dona troca a janela pela barra: vai ao servidor e chega ao salão aberto do membro.
-// (em abas desde 16/10/2026: cada grupo de figuras aparece só com a aba dele aberta)
-const aba = (nome) => D.p.locator('.salao-novo .quarto-novo-abas').getByRole('tab', { name: nome, exact: true }).click();
-const figuras = D.p.locator('.salao-novo .quarto-novo-gaveta .quarto-novo-objeto');
-await D.p.locator('.salao-novo .quarto-novo-linha > button').first().click();
-await aba('Janela');
-await D.p.locator('.salao-novo .quarto-novo-gaveta .quarto-novo-objeto[aria-pressed="false"]').first().click(); // outro tipo de janela
+// A dona troca a janela pelo EDITOR (o layout dele, 16/10/2026): vai ao servidor no Aplicar e chega ao salão do membro.
+const categoria = (nome) => D.p.locator('.editor-categorias button', { hasText: nome }).first().click();
+const itens = D.p.locator('.editor-grade .editor-item');
+await D.p.locator('.editor-entrar button').click(); await D.p.waitForTimeout(500);
+await categoria('Janela');
+await D.p.locator('.editor-grade .editor-item[aria-pressed="false"]').first().click(); // outro tipo de janela
+await D.p.waitForTimeout(600);
+await D.p.locator('.editor-fim .editor-aplicar').click();
 await D.p.waitForTimeout(2500);
 const guardado = await pedir('GET', `/api/communities/${comunidade.id}/salao`, membro);
 conferir(guardado.arrumacao?.janela?.tipo && guardado.arrumacao.janela.tipo !== 'floreira', 'a janela trocada pela dona foi ao servidor (' + guardado.arrumacao?.janela?.tipo + ')');
@@ -101,15 +102,18 @@ await M.p.waitForTimeout(1500);
 const doMembro = await M.frame.evaluate(() => window.visitaDoTeste().retrato.janela.tipo);
 conferir(doMembro === guardado.arrumacao?.janela?.tipo, 'o salão do membro relê na hora (' + doMembro + ')');
 await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro.png') });
-// GUARDAR UM MÓVEL E ESCOLHER O PÔSTER pela barra (16/10/2026): vão ao servidor (guardados, cores.poster e conhecidos)
-// e chegam ao salão aberto do membro.
+// GUARDAR UM MÓVEL (escolhido, Tirar) E ESCOLHER O PÔSTER (as opções da barrinha): vão ao servidor no Aplicar e chegam
+// ao salão aberto do membro.
 const primeiroMovel = await D.frame.evaluate(() => Object.keys(window.visitaDoTeste().retrato.moveis).find((id) => ['sofa', 'mesinha', 'poltrona'].includes(id)));
-const ordemDosMoveis = await D.frame.evaluate(() => [...document.querySelectorAll('#moveis button')].map((b) => b.textContent));
-const indice = ordemDosMoveis.findIndex((t) => t.toLowerCase().startsWith(primeiroMovel === 'sofa' ? 'sofá' : primeiroMovel));
-await aba('Móveis');
-await figuras.nth(indice).click();
-await aba('Objetos da parede');
-await D.p.locator('.salao-novo .quarto-novo-opcoes').first().locator('button').nth(2).click(); // o pôster "fogo"
+await D.p.locator('.editor-entrar button').click(); await D.p.waitForTimeout(500);
+await D.frame.evaluate((id) => window.selecionarDoTeste('m' + id), primeiroMovel); await D.p.waitForTimeout(300);
+await D.p.locator('.editor-atalhos button', { hasText: 'Tirar' }).click(); await D.p.waitForTimeout(500);
+await D.frame.evaluate(() => window.selecionarDoTeste('pposter')); await D.p.waitForTimeout(400);
+await D.frame.locator('#barrinha [data-acao="opcoes"]').click(); await D.p.waitForTimeout(200);
+await D.frame.locator('#barrinha .opcoes button').nth(2).click(); // o pôster "fogo"
+await D.p.waitForTimeout(400);
+await D.p.screenshot({ path: path.join(FOTOS, 'no-app-dona-editor.png') });
+await D.p.locator('.editor-fim .editor-aplicar').click();
 await D.p.waitForTimeout(2500);
 const depois = (await pedir('GET', `/api/communities/${comunidade.id}/salao`, membro)).arrumacao;
 conferir(depois.guardados?.includes(primeiroMovel), 'o móvel guardado pela dona foi ao servidor (' + JSON.stringify(depois.guardados) + ')');

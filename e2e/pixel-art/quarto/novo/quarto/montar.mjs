@@ -374,11 +374,20 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
 </div>
 </main>
 <script>
+// AS CÓPIAS (16/10/2026, decisão dele: "tudo pode duplicar"): "cama~2" é a segunda cama, "quadro~3" o terceiro quadro. O
+// TIPO é o que vem antes do "~", e as tabelas por tipo (desenho, forma, peso, função, nome…) respondem pela cópia com os
+// dados do original (porTipo). O que é do ORIGINAL de propósito continua pelo id: o coelho dorme na cama original, só o
+// guarda-roupa original abre, a imagem da comunidade vai no quadro original.
+const tipoDe = (id) => { const s = String(id), i = s.indexOf('~'); return i < 0 ? s : s.slice(0, i); };
+const ehCopia = (id) => String(id).includes('~');
+// (a cópia pode ter o que é SÓ dela, no mapa "proprio": a arte e o tamanho do pôster escolhido para ela)
+const porTipo = (o, proprio = null) => new Proxy(o, { get: (t, k) => (typeof k === 'string' && !(k in t) && k.includes('~') ? (proprio && k in proprio ? proprio[k] : t[tipoDe(k)]) : t[k]) });
+const TEXTURAS_DA_COPIA = {}, ITENS_DA_COPIA = {};
 const IMAGENS = ${JSON.stringify(IMAGENS)};
 const PACOTE = ${JSON.stringify(PACOTE && { url: PACOTE.url, indice: PACOTE.indice })};
 const MOVEIS = ${JSON.stringify(MOVEIS)};
 const JANELAS = ${JSON.stringify(JANELAS)};
-const ITENS_PAREDE = ${JSON.stringify(ITENS_PAREDE)};
+const ITENS_PAREDE = porTipo(${JSON.stringify(ITENS_PAREDE)}, ITENS_DA_COPIA);
 const OBJETOS_DE_CIMA = ${JSON.stringify(OBJETOS_DE_CIMA)};
 // Cada quadro vai UMA vez (as animações repetem quadros entre si: a pose parada no começo de cada uma, as pastas de
 // reserva); as animações guardam o número dele.
@@ -561,7 +570,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (gp) NA_PAREDE = comNovos(Object.fromEntries(Object.entries(gp).filter(([id]) => ITENS_PAREDE[id])), JSON.parse(localStorage.getItem(PREFIXO + 'conhecidos') ?? 'null'));
   } catch { /* a de fábrica */ }
   const guardarParede = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'parede', JSON.stringify(NA_PAREDE)); localStorage.setItem(PREFIXO + 'conhecidos', JSON.stringify(Object.keys(ITENS_PAREDE))); } catch { /* fica só nesta visita */ } enviar(); };
-  const TEXTURAS_PAREDE = {};
+  const TEXTURAS_PAREDE = porTipo({}, TEXTURAS_DA_COPIA);
   const caixasDaParede = {};
   const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
   for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
@@ -571,7 +580,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const guardarCores = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'cores', JSON.stringify(CORES)); } catch { /* fica só nesta visita */ } enviar(); };
   // As opções: a textura e o tamanho de cada uma. Escolher troca o objeto NO LUGAR (TEXTURAS_PAREDE e ITENS_PAREDE), e
   // tudo o que desenha, mede ou encaixa o objeto continua lendo dali.
-  const OPCOES_PAREDE = {};
+  const OPCOES_PAREDE = porTipo({});
   for (const [id, it] of Object.entries(ITENS_PAREDE)) if (it.opcoes) {
     OPCOES_PAREDE[id] = Object.fromEntries(Object.entries(it.opcoes).map(([nome, o]) => [nome, { ...o, dia: dados(im['par-' + id + '@' + nome + '-dia']), noite: dados(im['par-' + id + '@' + nome + '-noite']) }]));
   }
@@ -581,6 +590,15 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const o = ops[opcaoDe(id)];
       TEXTURAS_PAREDE[id] = { dia: o.dia, noite: o.noite };
       ITENS_PAREDE[id].ocupa = o.ocupa; ITENS_PAREDE[id].alto = o.alto;
+      delete caixasDaParede[id];
+    }
+    // as cópias com opção: cada uma com a arte e o tamanho da que foi escolhida para ela
+    for (const id of Object.keys(NA_PAREDE)) {
+      if (!ehCopia(id) || !OPCOES_PAREDE[tipoDe(id)]) continue;
+      const o = OPCOES_PAREDE[tipoDe(id)][opcaoDe(id)];
+      if (!o) continue;
+      TEXTURAS_DA_COPIA[id] = { dia: o.dia, noite: o.noite };
+      ITENS_DA_COPIA[id] = { ...ITENS_PAREDE[tipoDe(id)], ocupa: o.ocupa, alto: o.alto };
       delete caixasDaParede[id];
     }
   }
@@ -882,7 +900,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   let noiteLimpa = null, ordemDaParede = [], luzesDaParede = [];
   aplicarJanela();
-  const pecas = {};
+  const pecas = porTipo({});
   for (const m of MOVEIS) {
     const movel = deslocar(dados(im[m.id])), sombra = deslocar(dados(im[m.id + '-sombra']));
     // O TAPETE NO SALÃO (relato de 15/10/2026, "manchas no tapete"): recortado da pintura do quarto, ele traz na borda
@@ -993,7 +1011,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const meioDaBase = [(bx0 + bx1 + 1) / 2, y1 - (bx1 - bx0 + 1) / 4];
     return { id, movel, buraco, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, caixa: [x0, y0, x1 + 1, y1 + 1] };
   }
-  const VISTAS = {};
+  const VISTAS = porTipo({});
   for (const id of MOVEIS_GIRADOS) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
   // ============================== OS OBJETOS DE CIMA (15/10/2026) ==============================
   // Decisão dele: "o móvel deve ser uma coisa, os elementos outra". O que vai no tampo é peça à parte: mora num móvel,
@@ -1007,7 +1025,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
   // (o criado-mudo era 50, e a caneca flutuava na altura da cúpula: a "mancha" no abajur, relato de 15/10/2026)
-  const TOPOS = { ilha: 42, 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 };
+  const TOPOS = porTipo({ ilha: 42, 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 136, balcao: 54, mesinha: 22, tv: 30, estante: 122 });
   // A TELA DO COMPUTADOR (pedido dele, 14/10/2026: "o monitor fica desligado; seria legal ele ter variações, como a
   // janela"). A mesa veio com a tela lisa, de um cinza só (estado.mjs, "teclado"); a tela é a maior região ligada dessa
   // cor no alto do desenho, e o CONTEÚDO é desenhado por código, coluna a coluna (a tela é um paralelogramo inclinado):
@@ -1238,7 +1256,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  const NOMES = { cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão', ilha: 'a ilha da cozinha', geladeira: 'a geladeira' };
+  const NOMES = porTipo({ cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão', ilha: 'a ilha da cozinha', geladeira: 'a geladeira' });
   const pufes = MOVEIS.filter((m) => m.pufe);
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -1247,8 +1265,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const LADO_PINTADO = { abajur: 3, 'guarda-roupa': 3, cama: 0, tapete: 0 };
   // O tamanho em casas inteiras, para a grade: o pufe 2 × 2, o tapete 4 × 4, o resto medido no desenho.
   const tamDe = (id, lado) => {
-    if (id === 'pufe') return [2, 2];
-    if (id === 'tapete') return [4, 4];
+    if (tipoDe(id) === 'pufe') return [2, 2];
+    if (tipoDe(id) === 'tapete') return [4, 4];
     const m = VISTAS[id]?.[lado].mede;
     if (m) return m.map((d) => Math.max(1, Math.ceil(d - 0.25)));
     const pe = pintado(id).pe; return [pe[1] - pe[0], pe[3] - pe[2]];
@@ -1326,7 +1344,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   try {
     const guardada = JSON.parse(localStorage.getItem(PREFIXO + 'arrumacao-2') ?? 'null');
     // Móvel novo (as plantas, 15/10/2026) entra no lugar de fábrica, sem desfazer o resto do que a pessoa arrumou.
-    if (guardada) for (const id of Object.keys(INICIAL)) if (guardada[id]?.c) ARR[id] = guardada[id];
+    if (guardada) for (const id of Object.keys(guardada)) if ((INICIAL[id] || (ehCopia(id) && INICIAL[tipoDe(id)])) && guardada[id]?.c) ARR[id] = guardada[id];
   } catch { /* sem guardar: começa da inicial */ }
   // A planta guardada quando ocupava 2 × 2 (até 16/10/2026) tem o centro no canto de uma casa: volta para dentro de uma.
   const reencaixarPlantas = () => { for (const id of ['planta-alta', 'planta-baixa']) if (ARR[id]) ARR[id].c = encaixar(id, ...ARR[id].c, ARR[id].lado); };
@@ -1349,7 +1367,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const guardarGuardados = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'guardados', JSON.stringify([...GUARDADOS])); } catch { /* fica só nesta visita */ } };
   window.arrumacaoDoTeste = () => ARR; // para o teste
   const guardar = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } enviar(); };
-  const ehDeitado = (id) => id === 'tapete';
+  const ehDeitado = (id) => tipoDe(id) === 'tapete';
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
   const noLugar = (id, c = ARR[id].c, lado = ARR[id].lado) =>
     id !== 'pufe' && id !== 'poltrona' && !(id === 'guarda-roupa' && VISTAS_ABERTO) && !(id === 'abajur' && VISTAS.abajur) && pintado(id) && !(id === 'cama' && VISTAS.cama) && !(id === 'mesa')
@@ -1510,7 +1528,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = { pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 };
+  const PESO = porTipo({ pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 });
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -2236,7 +2254,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // (a sombra). Móvel novo traz a forma dele; nada de camada recortada à mão (relato de 14/10/2026: a borda reta da
   // camada da frente cortava o coelho).
   const BRACO_POLTRONA = 34; // a altura do tampo dos braços da poltrona
-  const FORMAS = {
+  const FORMAS = porTipo({
     poltrona: [{ h: [0, 22] }, { lado: 'tras', fatia: 0.32, h: [0, 62] }, { lado: 'lados', fatia: 0.22, h: [0, BRACO_POLTRONA] }],
     pufe: [{ h: [0, 30] }],
     mesa: [{ h: [0, 42] }],
@@ -2256,7 +2274,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     mesinha: [{ h: [0, 20] }],
     banqueta: [{ h: [0, 40] }],
     'banqueta-2': [{ h: [0, 40] }],
-  };
+  });
   const OLHA_DE = { cama: 'sudoeste' };
   // O TIPO de cada caixa, guardado por pixel: as pernas do coelho sentado passam à frente do assento, mas nunca do
   // encosto nem da face dos braços (relato de 14/10/2026: o rabo e o quadril apareciam por cima do encosto).
@@ -2609,7 +2627,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   function itemSemObjetos(id) {
     const { c, lado: l } = ARR[id], olha = ORIENTA[l], [mx, my] = ponto(N / 2, N / 2);
-    if (id === 'pufe') {
+    if (tipoDe(id) === 'pufe') {
       const [pu, pv] = c, p = pecas[varianteDoPufe().id];
       const [ox, oy] = p.base, [nx, ny] = ponto(pu, pv);
       // Só intensidade: a luz do chão onde ele está, sobre a luz do chão onde ele foi pintado.
@@ -2617,7 +2635,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       return { p: { ...p, id: 'pufe' }, dx: Math.round(nx - ox), dy: Math.round(ny - oy), fator, pe: [pu - 0.75, pu + 0.75, pv - 0.75, pv + 0.75], forma: FORMAS.pufe };
     }
     if (noLugar(id)) { const m = pintado(id); return { p: id === 'tapete' ? tingir(pecas[id]) : pecas[id], dx: 0, dy: 0, fator: 1, pe: m.pe, deitado: m.deitado, forma: FORMAS[id], olha }; }
-    if (id === 'tapete') return { p: tingir(tapeteEm(c, l)), dx: 0, dy: 0, fator: 1, pe: peDe(id), deitado: true };
+    if (tipoDe(id) === 'tapete') return { p: tingir(tapeteEm(c, l)), dx: 0, dy: 0, fator: 1, pe: peDe(id), deitado: true };
     // A vista solta: a quina da frente do desenho vai para a quina da frente do pé, e a luz é a do lugar.
     const p = VISTAS[id][l], pe = peMedidoDe(id), [fx, fy] = ponto(pe[1], pe[3]), [nx, ny] = ponto(c[0], c[1]);
     const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
@@ -2710,7 +2728,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // Os móveis, de trás para a frente (a ordem pela área no chão).
     // O móvel que está sendo arrastado ou deslizando não entra na fotografia: ele é desenhado vivo, a cada quadro.
     variante = varianteDoPufe();
-    const lista0 = Object.keys(ARR).filter((id) => !(viva && viva.id === id)).map(itemDe);
+    const lista0 = Object.keys(ARR).filter((id) => !(viva && viva.id === id)).map((id) => ({ ...itemDe(id), dono: id }));
     const pessoas = CENA === 'salao' ? itensDasPessoas() : [];
     lista0.push(...pessoas);
     for (const it of lista0) if (it.forma) it.caixas = caixasDe(it.pe, it.olha, it.forma);
@@ -2759,7 +2777,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         if (a) { const f = 1 - a / 255; for (let c = 0; c < 3; c++) { D[d * 3 + c] *= f; fundoNoite[d * 3 + c] *= f; } }
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
-          eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = p.id; donoObj[d] = p.objPx ? p.objPx[k] : '';
+          eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = it.dono ?? p.id; donoObj[d] = p.objPx ? p.objPx[k] : '';
           // A altura visível (da forma) dá o ponto do chão embaixo dele e a profundidade; fora da forma, o pé da coluna.
           const h = hs.h(k);
           // O que fica DEITADO (o tapete) nunca está na frente de nada: com a profundidade do próprio pixel, a borda da
@@ -3423,7 +3441,7 @@ void main() {
     : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
   // O móvel e a função dele (o guarda-roupa é a função "gavetas" da home: lá eram as gavetas da cama).
   // (no salão, as do Salao.tsx: a TV leva à voz, o fliperama aos mini-games, a estante aos canais, o balcão ao recado)
-  const FUNCAO_DO_MOVEL = CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador' } /* (os mini-games só na mesa: a cadeira é de arrastar pelo quarto, decisão dele de 16/10/2026) */;
+  const FUNCAO_DO_MOVEL = porTipo(CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador' } /* (os mini-games só na mesa: a cadeira é de arrastar pelo quarto, decisão dele de 16/10/2026) */);
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
@@ -3722,7 +3740,7 @@ void main() {
   // A cadeira saiu da frente do móvel arrastado? (colidir sem acordar à toa)
   const colidirQuieto = () => { const a = [cadeira.u, cadeira.v]; colidir(); return Math.hypot(cadeira.u - a[0], cadeira.v - a[1]) > 1e-4; };
   const bgirar = document.getElementById('girar');
-  const escolher = (id) => { selecionado = id; bgirar.textContent = 'Girar ' + NOMES[id]; bgirar.disabled = id === 'pufe'; };
+  const escolher = (id) => { selecionado = id; bgirar.textContent = 'Girar ' + NOMES[id]; bgirar.disabled = tipoDe(id) === 'pufe'; };
   tela.addEventListener('pointerdown', (e) => {
     // Um OBJETO DE CIMA sob o ponteiro: pega-se ele, e não o móvel embaixo.
     const uo = donoObj[pixelDo(e)];
@@ -3826,7 +3844,7 @@ void main() {
   const girar = () => {
     if (selecionado === 'cadeira') { levarCadeira([cadeira.u, cadeira.v], cadeira.th + Math.PI / 4, 250); return; }
     const id = selecionado;
-    if (id === 'pufe' || !ARR[id]) return;
+    if (tipoDe(id) === 'pufe' || !ARR[id]) return;
     for (let passo = 1; passo < 4; passo++) {
       const lado = (ARR[id].lado + passo) % 4, c = noLugar(id) ? encaixar(id, ...ARR[id].c, lado) : encaixar(id, ...ARR[id].c, lado);
       if (!ocupa(c, id, lado)) { ARR[id] = { c, lado }; guardar(); decidir(); desenhar(); return; }
@@ -3845,7 +3863,7 @@ void main() {
   function girarSegurado(sentido) {
     if (objPego && objPego.vivo) { objPego.o = { ...objPego.o, lado: (objPego.o.lado + (sentido > 0 ? 1 : 3)) % 4 }; objPego.vivo = { ...objPego.vivo, lado: (objPego.vivo.lado + (sentido > 0 ? 1 : 3)) % 4 }; objPego.girou = true; desenhar(); return true; }
     if (objPego) { const o = EM_CIMA[objPego.uid]; EM_CIMA = { ...EM_CIMA, [objPego.uid]: { ...o, lado: (o.lado + (sentido > 0 ? 1 : 3)) % 4 } }; objPego.girou = true; guardarObjetos(); desenhar(); return true; }
-    if (arrastando && viva && viva.modo === 'arrasto' && viva.id !== 'pufe') {
+    if (arrastando && viva && viva.modo === 'arrasto' && tipoDe(viva.id) !== 'pufe') {
       const id = viva.id, lado = (ARR[id].lado + (sentido > 0 ? 1 : 3)) % 4;
       ARR[id] = { c: [...ARR[id].c], lado }; alvo = encaixar(id, ...ARR[id].c, lado); viva.girou = true; desenhar(); return true;
     }
@@ -3858,10 +3876,23 @@ void main() {
     if (performance.now() - ultimaRodinha < 180) return;
     ultimaRodinha = performance.now(); girarSegurado(e.deltaY);
   }, { passive: false });
+  // OS ATALHOS (o layout dele, 16/10/2026): os de editar valem no Editar, com algo escolhido.
   document.addEventListener('keydown', (e) => {
-    if (soVer) return;
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); desfazer(); return; }
-    if (e.key === 'r' || e.key === 'R') girarSegurado(e.shiftKey ? -1 : 1);
+    if (soVer || e.target?.closest?.('input, textarea')) return;
+    const ctrl = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
+    if (ctrl && !e.shiftKey && k === 'z') { e.preventDefault(); desfazer(); return; }
+    if (ctrl && (k === 'y' || (e.shiftKey && k === 'z'))) { e.preventDefault(); refazer(); return; }
+    if (ctrl && k === 's' && rascunho !== null) { e.preventDefault(); salvarRascunho(); return; }
+    if (EDITANDO && selecao) {
+      if (ctrl && k === 'd') { e.preventDefault(); duplicarEscolhido(); return; }
+      if (!ctrl && (k === 'delete' || k === 'backspace')) { e.preventDefault(); tirarEscolhido(); return; }
+      if (!ctrl && k === 'g') { if (movendo) pararDeMover(); else comecarAMover(); return; }
+      if (!ctrl && k === 'e') { opcoesAbertas = !opcoesAbertas; montarBarrinha(); return; }
+      if (k === 'escape') { if (movendo) pararDeMover(); else selecionar(null); return; }
+      if (!ctrl && k === 'r' && !arrastando && !objPego && selecao.chave[0] === 'm') { escolher(selecao.chave.slice(1)); girar(); return; }
+      if (!ctrl && k === 'r' && !objPego && selecao.chave[0] === 'o') { const id = selecao.chave.slice(1), o = EM_CIMA[id]; if (o) { EM_CIMA = { ...EM_CIMA, [id]: { ...o, lado: (o.lado + (e.shiftKey ? 3 : 1)) % 4 } }; guardarObjetos(); desenhar(); } return; }
+    }
+    if (k === 'r') girarSegurado(e.shiftKey ? -1 : 1);
   });
   document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
   escolher(ARR.poltrona ? 'poltrona' : Object.keys(ARR)[0]);
@@ -3894,7 +3925,7 @@ void main() {
   // falta nela fica onde está na de fábrica.
   function vestir(a) {
     const novo = JSON.parse(JSON.stringify(INICIAL));
-    for (const [id, m] of Object.entries(a.moveis ?? {})) if (novo[id] && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
+    for (const [id, m] of Object.entries(a.moveis ?? {})) if ((novo[id] || (ehCopia(id) && INICIAL[tipoDe(id)])) && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
     GUARDADOS = new Set((Array.isArray(a.guardados) ? a.guardados : []).filter(podeGuardar));
     for (const id of GUARDADOS) delete novo[id];
     ARR = novo; reencaixarPlantas();
@@ -3912,6 +3943,7 @@ void main() {
     assinaturaCena = ''; decidir(); desenhar();
   }
   window.vestirDoTeste = (a) => vestir(a); // para o teste
+  window.tiposDoTeste = () => ({ moveis: Object.fromEntries(Object.keys(INICIAL).map((id) => [id, NOMES[id] ?? null])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, ITENS_PAREDE[id].nome ?? null])), deCima: Object.fromEntries(Object.entries(OBJETOS_DE_CIMA).map(([id, o]) => [id, o.nome])), janelas: Object.fromEntries(Object.entries(TIPOS_JANELA).map(([id, j]) => [id, j.nome])) }); // para o teste
   const campo = (id) => document.getElementById(id);
   let conta = null; // { api, token, nome, id }
   // Onde a arrumação mora: o quarto é de cada um (/api/quarto); o salão, da comunidade (o app manda a rota dela).
@@ -3929,46 +3961,85 @@ void main() {
   // DESFAZER (16/10/2026, da referência de interface dele): toda mudança da arrumação passa por aqui, e o retrato de
   // antes vai para uma pilha; Ctrl+Z (ou o Desfazer da barra do app) volta um passo. Sem "Aplicar": cada mudança já vale
   // ("depois do sim, não pergunte de novo"), e desfazer é o arrependimento.
-  const historico = [];
+  // REFAZER (16/10/2026, o layout dele): o que se desfez vai para outra pilha, e uma mudança nova a esvazia.
+  const historico = [], refeitos = [];
   let retratoAtual = null, desfazendo = false;
-  const marcarBase = () => { retratoAtual = JSON.stringify(retrato()); historico.length = 0; relatar(); };
+  const marcarBase = () => { retratoAtual = JSON.stringify(retrato()); historico.length = 0; refeitos.length = 0; relatar(); };
   function anotar() {
     if (soVer) return;
     const r = JSON.stringify(retrato());
-    if (retratoAtual !== null && r !== retratoAtual && !desfazendo) { historico.push(retratoAtual); if (historico.length > 50) historico.shift(); }
+    if (retratoAtual !== null && r !== retratoAtual && !desfazendo) { historico.push(retratoAtual); if (historico.length > 50) historico.shift(); refeitos.length = 0; }
     retratoAtual = r;
   }
-  function desfazer() {
-    if (soVer || !historico.length || arrastando || viva || paredePega || janelaPega || objPego) return;
+  const ocupadoAgora = () => arrastando || viva || paredePega || janelaPega || objPego;
+  function vestirEGuardar(retr) {
     desfazendo = true;
     try {
-      vestir(JSON.parse(historico.pop()));
+      vestir(JSON.parse(retr));
       guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
     } finally { desfazendo = false; }
     selecionar(null);
   }
+  function desfazer() {
+    if (soVer || !historico.length || ocupadoAgora()) return;
+    refeitos.push(retratoAtual ?? JSON.stringify(retrato()));
+    vestirEGuardar(historico.pop());
+  }
+  function refazer() {
+    if (soVer || !refeitos.length || ocupadoAgora()) return;
+    historico.push(retratoAtual ?? JSON.stringify(retrato()));
+    vestirEGuardar(refeitos.pop());
+  }
   window.desfazerDoTeste = () => historico.length; // para o teste
+  window.refazerDoTeste = () => refeitos.length; // para o teste
+  // O RASCUNHO DO EDITAR (decisão dele, 16/10/2026: "pendente até Aplicar"). Editando, as mudanças valem na tela e no
+  // navegador, mas só vão ao servidor no Salvar ou no Aplicar; Cancelar volta ao que estava ao entrar (ou ao último
+  // Salvar). Fora do Editar (arrastar sem entrar nele, a cortina, a cadeira), tudo continua indo na hora.
+  let rascunho = null; // o retrato do que está no servidor, enquanto se edita
+  const pendente = () => rascunho !== null && JSON.stringify(retrato()) !== rascunho;
+  function enviarAgora() {
+    clearTimeout(esperaDoEnvio);
+    if (!conta || soVer) return;
+    envioPendente = true;
+    pedir('PUT', ROTA, retrato()).then(() => dizer('Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)).finally(() => { envioPendente = false; });
+  }
+  function comecarRascunho() { rascunho = JSON.stringify(retrato()); relatar(); }
+  function salvarRascunho() { if (rascunho === null) return; enviarAgora(); rascunho = JSON.stringify(retrato()); relatar(); }
+  function aplicarRascunho() { if (rascunho === null) return; if (pendente()) enviarAgora(); rascunho = null; relatar(); }
+  function cancelarRascunho() {
+    if (rascunho === null) return;
+    const volta = rascunho; rascunho = null;
+    if (JSON.stringify(retrato()) !== volta) { vestirEGuardar(volta); anotar(); }
+    relatar();
+  }
+  window.rascunhoDoTeste = () => ({ ativo: rascunho !== null, pendente: pendente() }); // para o teste
+  // A página só oferece o Duplicar quando o servidor diz que aceita cópias (um servidor antigo recusaria a arrumação
+  // inteira). Sem servidor (a página de teste), pode.
+  let PODE_COPIAR = !MODO_APP || window.parent === window; // (aberta sozinha, para teste: pode)
   enviar = () => {
     anotar();
     relatar();
-    if (!conta || soVer) return;
+    if (!conta || soVer || rascunho !== null) return; // no rascunho, só no Salvar ou no Aplicar
     clearTimeout(esperaDoEnvio);
     envioPendente = true;
     esperaDoEnvio = setTimeout(() => { pedir('PUT', ROTA, retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)).finally(() => { envioPendente = false; }); }, 700);
   };
   async function carregarMeu() {
-    const { arrumacao } = await pedir('GET', ROTA);
+    const { arrumacao, copias } = await pedir('GET', ROTA);
+    PODE_COPIAR = !!copias;
     if (arrumacao) vestir(arrumacao); else enviar(); // ainda não tinha: o que está na tela vira o dele
     marcarBase(); // desfazer não volta para antes do que veio do servidor
+    if (rascunho !== null) rascunho = JSON.stringify(retrato());
+    dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + ').');
   }
   // O SALÃO MUDOU (salao:mudou): relê. O aviso chega também para quem mudou; aí a arrumação lida é a mesma da tela, e o
   // desfazer dele continua valendo.
   async function reler() {
     const { arrumacao } = await pedir('GET', ROTA);
-    if (!arrumacao || envioPendente || arrastando || viva) return;
+    // (quem está com um rascunho aberto não é atropelado pela mudança de outra pessoa)
+    if (!arrumacao || envioPendente || arrastando || viva || rascunho !== null) return;
     vestir(arrumacao);
     if (JSON.stringify(retrato()) !== retratoAtual) marcarBase();
-    dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + ').');
   }
   campo('entrar').onclick = async () => {
     const api = campo('api').value.replace(/[/]+$/, '');
@@ -4006,7 +4077,7 @@ void main() {
   // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
   function relatar() {
     if (!MODO_APP || window.parent === window) return;
-    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, refazer: refeitos.length > 0, pendente: pendente(), rascunho: rascunho !== null, copias: PODE_COPIAR, presentes: presentes(), selecao: selecao?.chave ?? null, janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
   }
   // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
   function figurasDaBarra() {
@@ -4039,17 +4110,22 @@ void main() {
     const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(o.dia)]))]));
     // e cada móvel que se pode guardar: a vista de fábrica dele (ou o recorte da pintura, como o tapete)
     const moveis = {};
-    for (const id of Object.keys(INICIAL).filter(podeGuardar)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel; if (fonte) moveis[id] = recorte(fonte); }
+    // (todos, desde 16/10/2026: no catálogo do Editar, o que já está no quarto ganha uma cópia; os que se guardam vão
+    // também em "guardaveis", a lista de antes)
+    for (const id of Object.keys(INICIAL)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel; if (fonte) moveis[id] = recorte(fonte); }
+    const guardaveis = Object.keys(INICIAL).filter((id) => podeGuardar(id) && moveis[id]);
     // e cada tipo de janela (com a cortina, na que tem): a barra mostra a figura de cada uma, e não um botão que troca às
     // cegas (relato dele, 16/10/2026: o "Janela" trocava o tipo, e só a original tem cortina e abre)
     const janelas = {};
     for (const [t, T2] of Object.entries(TIPOS_JANELA)) {
       if (!T2.dia) continue;
       const d = new Uint8ClampedArray(T2.dia);
+      // o vidro vem na cor-máscara (magenta): na figura, um céu claro
+      for (let k = 0; k < W * W; k++) if (d[k * 4 + 3] > 127 && ((T2.vidro && T2.vidro[k * 4] > 127) || (d[k * 4] > 200 && d[k * 4 + 1] < 80 && d[k * 4 + 2] > 200))) { d[k * 4] = 168; d[k * 4 + 1] = 206; d[k * 4 + 2] = 232; }
       if (T2.cortinaDia) for (let k = 0; k < W * W; k++) if (T2.cortinaDia[k * 4 + 3] > 127) for (let q = 0; q < 4; q++) d[k * 4 + q] = T2.cortinaDia[k * 4 + q];
       janelas[t] = recorte(d);
     }
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, janelas };
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, guardaveis, janelas };
   }
 
   // ============================== A BARRINHA DO QUE ESTÁ ESCOLHIDO (16/10/2026) ==============================
@@ -4057,11 +4133,13 @@ void main() {
   // fica ESCOLHIDO, com o contorno claro, e ganha em cima dele uma barrinha com o que se faz com ELE: girar, tirar, as
   // opções (a cor do tapete, a arte do pôster, o tipo de janela) e, na janela, a cortina e abrir. Antes o Girar ficava na
   // barra do app e girava "o último móvel tocado", o que ninguém adivinha. Os nomes (dica e leitor de tela) vêm do app.
-  let ROTULOS = { girar: 'Girar', tirar: 'Tirar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela' };
+  let ROTULOS = { mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela' };
   const barrinha = document.getElementById('barrinha');
   let opcoesAbertas = false, FIGURAS = null;
   const figurasCache = () => (FIGURAS ??= figurasDaBarra());
   const ICONES = {
+    mover: '<path d="M12 2v20"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="m5 9-3 3 3 3"/><path d="m9 5 3-3 3 3"/>',
+    duplicar: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
     girar: '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
     tirar: '<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>',
     opcoes: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
@@ -4081,8 +4159,10 @@ void main() {
     selecao = chave ? { chave, caixa: null, cena: null } : null; opcoesAbertas = false;
     if (chave?.[0] === 'm') escolher(chave.slice(1));
     montarBarrinha(); desenhar();
+    relatar(); // os atalhos do editor do app acendem com algo escolhido
   }
   window.selecaoDoTeste = () => selecao && selecao.chave; // para o teste
+  window.selecionarDoTeste = (chave) => selecionar(chave); // para o teste
   // No Editar, tocar escolhe (antes de os outros pegarem o clique: o objeto da parede o segura só para ele).
   tela.addEventListener('pointerdown', (e) => { if (EDITANDO && !soVer) selecionar(escolhaEm(pixelDo(e))); }, true);
   const botaoDaBarrinha = (nome, acao, { pressionado, desligado } = {}) => {
@@ -4105,19 +4185,24 @@ void main() {
     const ch = selecao?.chave;
     if (!ch) { barrinha.hidden = true; barrinha.replaceChildren(); return; }
     const tipo = ch[0], id = ch.slice(1), botoesB = [], opcoes = [];
+    // mover, girar, tirar, duplicar e "…" (a ordem da referência dele)
+    if (tipo !== 'j' && ch !== 'mcadeira') botoesB.push(botaoDaBarrinha('mover', () => (movendo ? pararDeMover() : comecarAMover()), { pressionado: !!movendo }));
     if (tipo === 'm') {
-      if (id !== 'pufe') botoesB.push(botaoDaBarrinha('girar', () => { escolher(id); girar(); }));
-      if (podeGuardar(id)) botoesB.push(botaoDaBarrinha('tirar', () => { selecionar(null); alternarMovel(id); }));
-      if (id === 'tapete') for (const [cor, css] of Object.entries(figurasCache().cores)) {
+      if (tipoDe(id) !== 'pufe') botoesB.push(botaoDaBarrinha('girar', () => { escolher(id); girar(); }));
+      if (podeTirar(ch)) botoesB.push(botaoDaBarrinha('tirar', () => tirarEscolhido()));
+      if (podeDuplicar(ch)) botoesB.push(botaoDaBarrinha('duplicar', () => duplicarEscolhido()));
+      if (tipoDe(id) === 'tapete') for (const [cor, css] of Object.entries(figurasCache().cores)) {
         const bola = document.createElement('span'); bola.className = 'cor'; bola.style.background = css;
         opcoes.push(figuraDaBarrinha(bola, (CORES.tapete ?? 'salvia') === cor, () => { CORES = { ...CORES, tapete: cor }; guardarCores(); botaoDaCor(); desenhar(); }));
       }
     } else if (tipo === 'p') {
-      botoesB.push(botaoDaBarrinha('tirar', () => { selecionar(null); alternarNaParede(id); }));
-      if (OPCOES_PAREDE[id] && Object.keys(OPCOES_PAREDE[id]).length > 1) for (const [nome, src] of Object.entries(figurasCache().opcoes[id] ?? {})) opcoes.push(figuraDaBarrinha(src, opcaoDe(id) === nome, () => escolherOpcao(id, nome)));
+      botoesB.push(botaoDaBarrinha('tirar', () => tirarEscolhido()));
+      if (podeDuplicar(ch)) botoesB.push(botaoDaBarrinha('duplicar', () => duplicarEscolhido()));
+      if (OPCOES_PAREDE[id] && Object.keys(OPCOES_PAREDE[id]).length > 1) for (const [nome, src] of Object.entries(figurasCache().opcoes[tipoDe(id)] ?? {})) opcoes.push(figuraDaBarrinha(src, opcaoDe(id) === nome, () => escolherOpcao(id, nome)));
     } else if (tipo === 'o') {
       botoesB.push(botaoDaBarrinha('girar', () => { const o = EM_CIMA[id]; if (o) { EM_CIMA = { ...EM_CIMA, [id]: { ...o, lado: (o.lado + 1) % 4 } }; guardarObjetos(); desenhar(); } }));
-      botoesB.push(botaoDaBarrinha('tirar', () => { selecionar(null); const { [id]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; guardarObjetos(); desenhar(); }));
+      botoesB.push(botaoDaBarrinha('tirar', () => tirarEscolhido()));
+      if (podeDuplicar(ch)) botoesB.push(botaoDaBarrinha('duplicar', () => duplicarEscolhido()));
     } else if (tipo === 'j') {
       const T = TIPOS_JANELA[JAN.tipo];
       if (T.cortina) botoesB.push(botaoDaBarrinha('cortina', () => trocarCortina(), { pressionado: fechada }));
@@ -4146,6 +4231,144 @@ void main() {
     barrinha.style.transform = 'translateX(-50%)';
   }
   addEventListener('resize', () => { if (selecao) desenhar(); });
+
+  // ============================== DUPLICAR, TIRAR, MOVER E PÔR (16/10/2026, o layout dele) ==============================
+  // "Tudo pode duplicar" (decisão dele): a cópia de um móvel vai para a casa livre mais perto dele; a de um objeto da
+  // parede, para o lado dele na mesma parede; a de um objeto de cima, para perto dele no mesmo tampo. TIRAR a cópia a
+  // apaga; tirar o original o guarda (como antes). MOVER (G) leva o escolhido com o ponteiro até o próximo clique.
+  const MAX_PECAS = 80; // o servidor aceita até 80 móveis e 80 objetos da parede
+  const novoIdDe = (tipo, tem) => { for (let n = 2; ; n++) if (!tem[tipo + '~' + n]) return tipo + '~' + n; };
+  const temDesenho = (tipo) => !!VISTAS[tipo] || tipo === 'tapete' || tipo === 'pufe';
+  function podeDuplicar(ch) {
+    if (!PODE_COPIAR || soVer || !ch) return false;
+    const t = ch[0], id = ch.slice(1), tipo = tipoDe(id);
+    if (t === 'm') return tipo !== 'cadeira' && !!ARR[id] && temDesenho(tipo) && Object.keys(ARR).length < MAX_PECAS;
+    if (t === 'p') return !!NA_PAREDE[id] && Object.keys(NA_PAREDE).length < MAX_PECAS;
+    if (t === 'o') return !!EM_CIMA[id] && Object.keys(EM_CIMA).length < 60;
+    return false;
+  }
+  const podeTirar = (ch) => !soVer && !!ch && (ch[0] === 'p' || ch[0] === 'o' || (ch[0] === 'm' && (ehCopia(ch.slice(1)) || podeGuardar(ch.slice(1)))));
+  // A casa livre mais perto de c0 (a de fábrica, ou a do original): a mesma busca de pôr um móvel guardado de volta.
+  function lugarLivre(id, c0, lado) {
+    const base = encaixar(id, ...c0, lado), opcoes = [];
+    for (let di = -N; di <= N; di++) for (let dj = -N; dj <= N; dj++) opcoes.push(encaixar(id, base[0] + di, base[1] + dj, lado));
+    opcoes.sort((a, b) => Math.hypot(a[0] - base[0], a[1] - base[1]) - Math.hypot(b[0] - base[0], b[1] - base[1]));
+    return opcoes.find((p) => !ocupa(p, id, lado)) ?? null;
+  }
+  function porCopiaDoMovel(tipo, perto) {
+    if (!temDesenho(tipo) || Object.keys(ARR).length >= MAX_PECAS) return null;
+    const id = novoIdDe(tipo, ARR), lado = (perto && ARR[perto] ? ARR[perto].lado : INICIAL[tipo]?.lado) ?? 0;
+    const c0 = perto && ARR[perto] ? ARR[perto].c : INICIAL[tipo]?.c ?? [N / 2, N / 2];
+    ARR[id] = { c: [...c0], lado };
+    const c = lugarLivre(id, c0, lado);
+    if (!c) { delete ARR[id]; dizer('Não há espaço livre para mais um.'); return null; }
+    ARR[id] = { c, lado }; soltarFaiscas(peDe(id));
+    guardar(); colidir(); assinaturaCena = ''; botoesDosMoveis(); decidir(); desenhar();
+    return id;
+  }
+  function porCopiaNaParede(tipo, perto) {
+    if (Object.keys(NA_PAREDE).length >= MAX_PECAS) return null;
+    const id = novoIdDe(tipo, NA_PAREDE);
+    if (perto && CORES[perto] && OPCOES_PAREDE[tipo]) { CORES = { ...CORES, [id]: CORES[perto] }; guardarCores(); }
+    NA_PAREDE[id] = perto && NA_PAREDE[perto] ? { ...NA_PAREDE[perto] } : prenderNaParede(id, { parede: 'esquerda', v: 0, h: 0 });
+    vestirOpcoes();
+    // ao lado do original, na mesma parede e altura; senão, onde couber
+    let lugar = null;
+    if (perto && NA_PAREDE[perto]) {
+      const it = ITENS_PAREDE[id], larg = it.ocupa[1] - it.ocupa[0] + 0.25;
+      for (const dv of [larg, -larg, 2 * larg, -2 * larg, 3 * larg, -3 * larg]) { const P = prenderNaParede(id, { ...NA_PAREDE[perto], v: NA_PAREDE[perto].v + dv }); if (livreNaParede(id, P)) { lugar = P; break; } }
+    }
+    if (lugar) { mudarParede(id, lugar); botoesDaParede(); } else { delete NA_PAREDE[id]; alternarNaParede(id); }
+    return NA_PAREDE[id] ? id : null;
+  }
+  function copiaDoObjeto(uid) {
+    const o = EM_CIMA[uid]; if (!o || Object.keys(EM_CIMA).length >= 60) return null;
+    const outros = Object.values(EM_CIMA).filter((x) => x.em === o.em);
+    let lugar = [o.s, o.t];
+    for (const [ds, dt] of [[0.22, 0], [-0.22, 0], [0, 0.22], [0, -0.22], [0.22, 0.22], [-0.22, -0.22]]) {
+      const s2 = Math.min(0.9, Math.max(0.1, o.s + ds)), t2 = Math.min(0.9, Math.max(0.1, o.t + dt));
+      if (outros.every((x) => Math.hypot(x.s - s2, x.t - t2) > 0.18)) { lugar = [s2, t2]; break; }
+    }
+    const novo = 'o' + Date.now().toString(36) + Math.floor(Math.random() * 36).toString(36);
+    EM_CIMA = { ...EM_CIMA, [novo]: { ...o, s: lugar[0], t: lugar[1] } };
+    guardarObjetos(); desenhar();
+    return novo;
+  }
+  function duplicarEscolhido() {
+    if (!selecao || !podeDuplicar(selecao.chave)) return;
+    const t = selecao.chave[0], id = selecao.chave.slice(1);
+    const novo = t === 'm' ? porCopiaDoMovel(tipoDe(id), id) : t === 'p' ? porCopiaNaParede(tipoDe(id), id) : copiaDoObjeto(id);
+    if (novo) selecionar(t + novo);
+  }
+  function tirarCopiaDoMovel(id) {
+    if (!ARR[id] || viva?.id === id || pegado === id) return;
+    delete ARR[id];
+    EM_CIMA = Object.fromEntries(Object.entries(EM_CIMA).filter(([, o]) => o.em !== id)); guardarObjetos();
+    guardar(); colidir(); assinaturaCena = ''; botoesDosMoveis(); desenhar();
+  }
+  function tirarEscolhido() {
+    if (!selecao || !podeTirar(selecao.chave)) return;
+    const t = selecao.chave[0], id = selecao.chave.slice(1);
+    selecionar(null);
+    if (t === 'm') { if (ehCopia(id)) tirarCopiaDoMovel(id); else alternarMovel(id); }
+    else if (t === 'p') { alternarNaParede(id); if (ehCopia(id) && CORES[id]) { const { [id]: _fora, ...resto } = CORES; CORES = resto; guardarCores(); } }
+    else if (t === 'o') { const { [id]: _fora, ...resto } = EM_CIMA; EM_CIMA = resto; guardarObjetos(); desenhar(); }
+  }
+  // Pelo catálogo (a lateral do Editar): o original guardado volta; o que já está no quarto ganha uma cópia.
+  function porDoCatalogo(grupo, tipo) {
+    if (soVer) return;
+    let novo = null;
+    if (grupo === 'm' && INICIAL[tipo]) {
+      if (!ARR[tipo]) { alternarMovel(tipo); novo = ARR[tipo] ? tipo : null; }
+      else if (PODE_COPIAR) novo = porCopiaDoMovel(tipo, tipo);
+    } else if (grupo === 'p' && ITENS_PAREDE[tipo]) {
+      if (!NA_PAREDE[tipo]) { alternarNaParede(tipo); novo = NA_PAREDE[tipo] ? tipo : null; }
+      else if (PODE_COPIAR) novo = porCopiaNaParede(tipo, tipo);
+    } else if (grupo === 'o' && OBJ_VISTAS[tipo]) {
+      const antes = new Set(Object.keys(EM_CIMA)); porObjeto(tipo); novo = Object.keys(EM_CIMA).find((u) => !antes.has(u)) ?? null;
+    }
+    if (novo && EDITANDO) selecionar(grupo + novo);
+  }
+  // Quantos de cada tipo estão no quarto (a lateral marca o que está posto, e quantas cópias).
+  function presentes() {
+    const conta = (ids) => { const r = {}; for (const id of ids) { const t = tipoDe(id); r[t] = (r[t] ?? 0) + 1; } return r; };
+    return { m: conta(Object.keys(ARR)), p: conta(Object.keys(NA_PAREDE)), o: conta(Object.values(EM_CIMA).map((o) => o.tipo)) };
+  }
+  // MOVER: o escolhido segue o ponteiro (de casa em casa, só onde cabe) até o próximo clique.
+  let movendo = null;
+  function comecarAMover() {
+    if (!EDITANDO || soVer || !selecao || movendo) return;
+    const t = selecao.chave[0];
+    if (t === 'j' || selecao.chave === 'mcadeira') return; // a janela e a cadeira já andam arrastando
+    movendo = { chave: selecao.chave }; tela.style.cursor = 'move'; montarBarrinha(); desenhar();
+  }
+  function pararDeMover() {
+    if (!movendo) return;
+    const { chave } = movendo, t = chave[0], id = chave.slice(1);
+    movendo = null; tela.style.cursor = '';
+    if (t === 'm' && ARR[id]) { guardar(); colidir(); decidir(); }
+    if (t === 'p' && NA_PAREDE[id]) mudarParede(id, NA_PAREDE[id]);
+    if (t === 'o') guardarObjetos();
+    assinaturaCena = ''; montarBarrinha(); desenhar();
+  }
+  window.movendoDoTeste = () => movendo && movendo.chave; // para o teste
+  tela.addEventListener('pointermove', (e) => {
+    if (!movendo) return;
+    const t = movendo.chave[0], id = movendo.chave.slice(1);
+    if (t === 'm' && ARR[id]) {
+      const [u, v] = uvDoPonteiro(e), { lado } = ARR[id], c = encaixar(id, u, v, lado);
+      if ((c[0] !== ARR[id].c[0] || c[1] !== ARR[id].c[1]) && !ocupa(c, id, lado)) { ARR[id] = { c, lado }; assinaturaCena = ''; desenhar(); }
+    } else if (t === 'p' && NA_PAREDE[id]) {
+      const p = naParedeDo(e), it = ITENS_PAREDE[id], meio = (it.ocupa[0] + it.ocupa[1]) / 2;
+      const novo = prenderNaParede(id, { parede: p.parede, v: Math.round((p.v - meio) * 4) / 4, h: NA_PAREDE[id].h });
+      if (novo.parede !== NA_PAREDE[id].parede || novo.v !== NA_PAREDE[id].v) mudarParede(id, novo, true);
+    } else if (t === 'o' && EM_CIMA[id]) {
+      const tp = tampoDoPonteiro(e);
+      if (tp && (tp.em !== EM_CIMA[id].em || Math.abs(tp.s - EM_CIMA[id].s) > 0.02 || Math.abs(tp.t - EM_CIMA[id].t) > 0.02)) { EM_CIMA = { ...EM_CIMA, [id]: { ...EM_CIMA[id], em: tp.em, s: +tp.s.toFixed(3), t: +tp.t.toFixed(3) } }; desenhar(); }
+    }
+  });
+  // o clique que solta vem antes de todos os outros (senão ele também escolheria e pegaria o que está embaixo)
+  addEventListener('pointerdown', (e) => { if (movendo && e.target === tela) { e.stopImmediatePropagation(); e.preventDefault(); pararDeMover(); } }, true);
   marcarBase(); // o ponto de partida do desfazer (sem servidor: o que está na tela; com, carregarMeu marca de novo)
 
   // ============================== NO APP (15/10/2026) ==============================
@@ -4159,7 +4382,21 @@ void main() {
       const d = e.data;
       if (d.funcoes) FUNCOES = d.funcoes;
       if (d.fecharGuardaRoupa && guardaRoupaAberto) { guardaRoupaAberto = false; gavetasPedidas = false; }
-      if ('editando' in d) { EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null); if (!EDITANDO) selecionar(null); }
+      if ('editando' in d) {
+        const antes = EDITANDO; EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null);
+        if (EDITANDO && !antes) comecarRascunho();
+        // sair do Editar sem dizer como (o app fechou a barra): o que estava pendente vale, como no Aplicar
+        if (!EDITANDO) { selecionar(null); pararDeMover(); if (rascunho !== null) aplicarRascunho(); }
+      }
+      if (d.comando === 'salvar') salvarRascunho();
+      if (d.comando === 'aplicar') aplicarRascunho();
+      if (d.comando === 'cancelar') cancelarRascunho();
+      if (d.comando === 'refazer') refazer();
+      if (d.comando === 'duplicar') duplicarEscolhido();
+      if (d.comando === 'tirar') tirarEscolhido();
+      if (d.comando === 'mover') comecarAMover();
+      if (d.comando === 'opcoes' && selecao) { opcoesAbertas = !opcoesAbertas; montarBarrinha(); }
+      if (d.comando === 'por' && typeof d.id === 'string') porDoCatalogo(d.grupo, d.id);
       if (d.rotulos) { ROTULOS = { ...ROTULOS, ...d.rotulos }; montarBarrinha(); }
       if (d.comando === 'desfazer') desfazer();
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
@@ -4172,7 +4409,7 @@ void main() {
         carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ });
       }
       // Quem administra mudou o salão (salao:mudou): relê. Não no meio de um arraste.
-      if (d.recarregar && conta && !arrastando && !viva && !envioPendente) reler().catch(() => {});
+      if (d.recarregar && conta && !arrastando && !viva && !envioPendente && rascunho === null) reler().catch(() => {});
       if ('aoVivo' in d) { AO_VIVO = d.aoVivo || null; desenhar(); }
       if ('imagem' in d) carregarImagem(d.imagem);
       if ('recado' in d) { const antes = JSON.stringify(RECADO); RECADO = d.recado && (d.recado.titulo || d.recado.texto) ? d.recado : null; if (RECADO && JSON.stringify(RECADO) !== antes) abrirRecado(); else posicionarRecado(true); }

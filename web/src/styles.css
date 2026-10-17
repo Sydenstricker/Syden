@@ -12682,124 +12682,431 @@ body.arrastando-barra {
   gap: 8px;
 }
 
-/* A barra de arrumar: figuras em vez de nomes (o recorte de cada objeto da parede, a cor de cada tapete), em abas: a
-   linha de cima com o Editar, as abas e o Voltar ao padrão; embaixo, só as figuras da aba aberta. */
-.quarto-novo-barra {
+/* O EDITOR DA CENA (QuartoNovo.tsx, EditorDaCena), o layout dele de 16/10/2026. Fora do Editar, a cena e o botão
+   embaixo; no Editar, a tela inteira: o topo, as categorias e o catálogo à esquerda, a cena no meio, os atalhos e
+   Cancelar/Aplicar embaixo. O iframe da cena não muda de lugar: o "tela inteira" é só este CSS. */
+.editor-cena {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  max-width: 100%;
-  padding: 0 16px;
 }
 
-.quarto-novo-linha {
+.editor-entrar {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
+}
+
+.editor-cena.editando {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--bg-main);
+  display: grid;
+  grid-template-columns: minmax(400px, 470px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'topo topo'
+    'lado palco'
+    'base base';
+  gap: 12px;
+  padding: 12px;
+  align-items: stretch;
+}
+
+.editor-topo {
+  grid-area: topo;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.editor-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-raised);
+  color: var(--text-strong);
+  font-weight: 700;
+  font-size: calc(17px * var(--escala-do-texto, 1));
+  max-width: 40ch;
+}
+
+.editor-titulo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-titulo svg {
+  color: var(--accent);
+  flex: none;
+}
+
+.editor-botao {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.quarto-novo-abas {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2px;
-  padding: 2px;
+  padding: 8px 14px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--bg-raised);
-}
-
-.quarto-novo-abas > button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
+  color: var(--text);
   font: inherit;
   cursor: pointer;
 }
 
-.quarto-novo-abas > button:hover {
-  color: var(--text);
+.editor-botao:hover:not(:disabled) {
   background: var(--bg-hover);
 }
 
-.quarto-novo-abas > button[aria-selected='true'] {
-  color: var(--text-strong);
-  background: var(--bg-active);
+.editor-botao:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
-.quarto-novo-gaveta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  max-width: 100%;
-  min-height: 48px;
-  padding: 6px 10px;
-  border-radius: 10px;
+.editor-icone {
+  padding: 8px 10px;
+}
+
+/* as teclas: escritas em minúsculas no código (não são texto para traduzir) e mostradas como teclas */
+.editor-cena kbd {
+  font: inherit;
+  font-size: 11px;
+  padding: 1px 5px;
   border: 1px solid var(--border);
-  background: var(--bg-sidebar);
+  border-radius: 4px;
+  color: var(--text-muted);
+  text-transform: uppercase;
 }
 
-/* as opções do pôster, separadas dos objetos por um traço */
-.quarto-novo-opcoes {
-  padding-left: 8px;
-  margin-left: 4px;
-  border-left: 1px solid var(--border);
-}
-
-.quarto-novo-linha > button,
-.quarto-novo-acao,
-.quarto-novo-objeto {
+.editor-par {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 8px;
   border: 1px solid var(--border);
+  border-radius: 10px;
   background: var(--bg-raised);
-  color: var(--text);
-  font: inherit;
+}
+
+.editor-par .editor-botao {
+  border: none;
+  background: transparent;
+}
+
+.editor-vao {
+  flex: 1;
+}
+
+.editor-dia-noite {
+  padding: 2px;
+}
+
+.editor-dia-noite button {
+  display: grid;
+  place-items: center;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
   cursor: pointer;
 }
 
-.quarto-novo-barra button[aria-pressed='true'] {
+.editor-dia-noite button[aria-pressed='true'] {
+  background: var(--bg-active);
+  color: var(--accent);
+}
+
+.editor-lado {
+  grid-area: lado;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  min-height: 0;
+}
+
+.editor-categorias {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-raised);
+  overflow-y: auto;
+}
+
+.editor-categorias button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.editor-categorias button:hover {
+  background: var(--bg-hover);
+}
+
+.editor-categorias button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-active);
+}
+
+.editor-catalogo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-raised);
+  min-height: 0;
+}
+
+.editor-busca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+}
+
+.editor-busca input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.editor-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+  overflow-y: auto;
+  align-content: start;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-item {
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-main);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.editor-item:hover {
+  border-color: var(--text-muted);
+}
+
+.editor-item[aria-pressed='true'] {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
 }
 
-.quarto-novo-grupo {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
+.editor-item img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
-.quarto-novo-cor {
-  width: 26px;
-  height: 26px;
+.editor-cor {
+  width: 60%;
+  aspect-ratio: 1;
   border-radius: 50%;
   border: 2px solid var(--border);
+}
+
+.editor-quantos {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: var(--bg-active);
+  color: var(--text-strong);
+  font-size: 11px;
+}
+
+.editor-padrao {
+  align-self: flex-start;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 13px;
   cursor: pointer;
 }
 
-.quarto-novo-objeto {
-  padding: 2px 6px;
-  height: 40px;
+.editor-palco {
+  grid-area: palco;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
 }
 
-.quarto-novo-objeto img {
-  height: 32px;
-  width: auto;
-  image-rendering: pixelated;
+.editor-cena.editando .quarto-novo-caixa {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.editor-cena.editando .quarto-novo {
+  width: min(100%, calc(100vh - 190px));
+}
+
+.editor-cena.editando .salao-novo .quarto-novo {
+  width: min(100%, calc((100vh - 190px) * 4 / 3));
+}
+
+.editor-base {
+  grid-area: base;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.editor-atalhos {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-raised);
+}
+
+.editor-atalhos-nome {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 4px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.editor-atalhos button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.editor-atalhos button span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.editor-atalhos button:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.editor-atalhos button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.editor-fim {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.editor-aplicar {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-texto, #1b1b1b);
+  font-weight: 600;
+}
+
+.editor-aplicar:hover:not(:disabled) {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+/* no celular: o topo, a cena, o catálogo embaixo dela (as categorias numa fileira, só os ícones) e a base */
+@media (max-width: 760px) {
+  .editor-cena.editando {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'topo'
+      'palco'
+      'lado'
+      'base';
+    overflow-y: auto;
+  }
+
+  .editor-lado {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-categorias {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .editor-categorias button span,
+  .editor-cena kbd,
+  .editor-botao kbd {
+    display: none;
+  }
+
+  .editor-cena.editando .quarto-novo {
+    width: min(100%, 55vh);
+  }
+
+  .editor-grade {
+    max-height: 32vh;
+  }
 }
 
 .quarto-cena {

@@ -98,7 +98,7 @@ cabecalhos = DEPOIS;
   const t0 = Date.now();
   const quarto = await (await p.$('.home-cena iframe')).contentFrame();
   await quarto.waitForFunction(() => window.gpuDoTeste && document.querySelector('#tela'), null, { timeout: 60000 });
-  await p.waitForSelector('.quarto-novo-barra', { timeout: 60000 }); // a barra só aparece com o "pronto" da cena
+  await p.waitForSelector('.editor-entrar button', { timeout: 60000 }); // o Editar só aparece com o "pronto" da cena
   conferir(true, `o quarto novo abriu e disse "pronto" (${((Date.now() - t0) / 1000).toFixed(1)} s; ${await quarto.evaluate(() => window.gpuDoTeste())})`);
   await p.screenshot({ path: 'e2e/fotos/cenas-quarto.png' });
   // as imagens vêm num pacote (2 arquivos por cena, e não ~350), e o do salão é baixado antes de alguém entrar na comunidade

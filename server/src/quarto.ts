@@ -15,9 +15,17 @@
 export const CASAS_DO_QUARTO = 8;
 export const CASAS_DO_SALAO = 16;
 const CODIGO = /^[a-z][a-z0-9-]{0,23}$/;
-const MAX_MOVEIS = 40;
+/**
+ * UMA PEÇA NO QUARTO: o código do tipo e, nas CÓPIAS, "~" e o número dela ("cama~2"). Duplicar móvel e objeto da parede
+ * entrou em 16/10/2026 (decisão dele: "tudo pode duplicar"); o tipo é o que vem antes do "~".
+ */
+const PECA = /^[a-z][a-z0-9-]{0,23}(~[1-9][0-9]{0,2})?$/;
+/** (era 40: o salão já tem perto de 30 móveis, e as cópias passariam disso) */
+const MAX_MOVEIS = 80;
+/** Esta versão aceita cópias: a página só oferece o Duplicar quando o servidor diz isto (ver as rotas). */
+export const ACEITA_COPIAS = true;
 /** Folgado para 40 móveis com números longos; o que passa disto não é arrumação. */
-export const MAX_BYTES = 8000;
+export const MAX_BYTES = 16000; // (era 8000: com cópias, o salão passaria disso)
 
 export interface Arrumacao {
   moveis: Record<string, { c: [number, number]; lado: number }>;
@@ -52,7 +60,7 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
   const moveis: Arrumacao['moveis'] = {};
   for (const id of ids) {
     const it = (m as Record<string, unknown>)[id] as { c?: unknown; lado?: unknown } | null;
-    if (!CODIGO.test(id) || !it || typeof it !== 'object' || !Array.isArray(it.c) || it.c.length !== 2) return { erro: 'Móvel inválido.' };
+    if (!PECA.test(id) || !it || typeof it !== 'object' || !Array.isArray(it.c) || it.c.length !== 2) return { erro: 'Móvel inválido.' };
     const u = numero(it.c[0], 0, N), v = numero(it.c[1], 0, N);
     if (u === null || v === null || !Number.isInteger(it.lado) || (it.lado as number) < 0 || (it.lado as number) > 3) return { erro: 'Móvel fora do quarto.' };
     moveis[id] = { c: [u, v], lado: it.lado as number };
@@ -82,7 +90,7 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     saida.parede = {};
     for (const [id, q] of Object.entries(p as Record<string, { parede?: unknown; v?: unknown; h?: unknown } | null>)) {
       const v = numero(q?.v, -N, N), h = numero(q?.h, -300, 300);
-      if (!CODIGO.test(id) || (q?.parede !== 'direita' && q?.parede !== 'esquerda') || v === null || h === null) return { erro: 'Objeto da parede inválido.' };
+      if (!PECA.test(id) || (q?.parede !== 'direita' && q?.parede !== 'esquerda') || v === null || h === null) return { erro: 'Objeto da parede inválido.' };
       saida.parede[id] = { parede: q.parede, v, h };
     }
   }
@@ -91,7 +99,7 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     if (!c || typeof c !== 'object' || Array.isArray(c) || Object.keys(c).length > MAX_MOVEIS) return { erro: 'Cores inválidas.' };
     saida.cores = {};
     for (const [id, cor] of Object.entries(c as Record<string, unknown>)) {
-      if (!CODIGO.test(id) || typeof cor !== 'string' || !CODIGO.test(cor)) return { erro: 'Cor inválida.' };
+      if (!PECA.test(id) || typeof cor !== 'string' || !CODIGO.test(cor)) return { erro: 'Cor inválida.' };
       saida.cores[id] = cor;
     }
   }
@@ -111,7 +119,7 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     saida.emCima = {};
     for (const [uid, o] of Object.entries(e as Record<string, { tipo?: unknown; em?: unknown; s?: unknown; t?: unknown; lado?: unknown } | null>)) {
       const s0 = numero(o?.s, 0, 1), t0 = numero(o?.t, 0, 1);
-      if (!CODIGO.test(uid) || typeof o?.tipo !== 'string' || !CODIGO.test(o.tipo) || typeof o.em !== 'string' || !CODIGO.test(o.em) || s0 === null || t0 === null || !Number.isInteger(o.lado) || (o.lado as number) < 0 || (o.lado as number) > 3) return { erro: 'Objeto inválido.' };
+      if (!CODIGO.test(uid) || typeof o?.tipo !== 'string' || !CODIGO.test(o.tipo) || typeof o.em !== 'string' || !PECA.test(o.em) || s0 === null || t0 === null || !Number.isInteger(o.lado) || (o.lado as number) < 0 || (o.lado as number) > 3) return { erro: 'Objeto inválido.' };
       saida.emCima[uid] = { tipo: o.tipo, em: o.em, s: s0, t: t0, lado: o.lado as number };
     }
   }

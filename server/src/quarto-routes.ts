@@ -14,7 +14,7 @@ import type { FastifyInstance } from 'fastify';
 import * as db from './db.js';
 import { Freio } from './freio.js';
 import { requireUser } from './routes.js';
-import { MAX_BYTES, validarArrumacao } from './quarto.js';
+import { ACEITA_COPIAS, MAX_BYTES, validarArrumacao } from './quarto.js';
 
 /** Sessenta visitas por hora, por conta: folgado para gente, apertado para varrer ids. */
 const freioDeVisitas = new Freio(60, 60 * 60_000);
@@ -26,7 +26,7 @@ export function registerQuartoRoutes(app: FastifyInstance) {
     /** O meu quarto: a arrumação guardada, ou null (ainda não mexeu: a página usa a de fábrica). */
     authed.get('/api/quarto', async (request) => {
       const q = db.lerQuarto(request.user.id);
-      return { arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null };
+      return { arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null, copias: ACEITA_COPIAS };
     });
 
     authed.put<{ Body: unknown }>('/api/quarto', { bodyLimit: MAX_BYTES * 2 }, async (request, reply) => {

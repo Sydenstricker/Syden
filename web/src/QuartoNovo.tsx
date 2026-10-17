@@ -1,7 +1,8 @@
-import { AppWindow, Coffee, Frame, Grid2x2, Pencil, Sofa, Undo, Undo2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { useT } from './i18n';
+import { casaComABusca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { AcoesDoQuarto } from './Quarto';
 
 /**
@@ -17,8 +18,8 @@ import type { AcoesDoQuarto } from './Quarto';
  * - de lá para cá: que o quarto está pronto (com as figuras da barra), o que está escolhido na arrumação, e o clique numa
  *   função (o fone, o quadro, o guarda-roupa…).
  *
- * A BARRA DE ARRUMAR mostra figuras e não nomes (o recorte de cada objeto da parede, a cor de cada tapete): é o que
- * fica igual nos 80 idiomas sem um texto novo por objeto.
+ * O EDITOR (EditorDaCena, abaixo) é o layout dele de 16/10/2026: o catálogo com figuras e os nomes traduzidos
+ * (nomesDaCena.ts), e o rascunho até Aplicar.
  */
 /** A página do quarto, servida pelo Vite no desenvolvimento (vite.config.ts). */
 export const ENDERECO_DO_QUARTO = import.meta.env.BASE_URL + 'quarto-novo/';
@@ -36,14 +37,25 @@ export interface Figuras {
   deCima?: Record<string, string>;
   /** As opções de um objeto da parede (o pôster: palco, neon, fogo), com o recorte de cada uma. */
   opcoes?: Record<string, Record<string, string>>;
-  /** Os móveis que se podem guardar (os sem função), com a figura de cada um. */
+  /** Todos os móveis, com a figura de cada um (no catálogo, o que já está no quarto ganha uma cópia). */
   moveis?: Record<string, string>;
+  /** Os que se podem guardar (os sem função). */
+  guardaveis?: string[];
   /** Cada tipo de janela, com a figura dele (só a original tem cortina e abre). */
   janelas?: Record<string, string>;
 }
 export interface Arrumacao {
-  /** Há o que desfazer (a cena guarda os passos da arrumação). */
+  /** Há o que desfazer e o que refazer (a cena guarda os passos da arrumação). */
   desfazer?: boolean;
+  refazer?: boolean;
+  /** No Editar: há mudanças que ainda não foram ao servidor (o Salvar acende). */
+  pendente?: boolean;
+  /** O servidor aceita cópias (a cena só oferece o Duplicar então). */
+  copias?: boolean;
+  /** Quantos de cada tipo estão na cena: móveis, objetos da parede e objetos de cima. */
+  presentes?: { m: Record<string, number>; p: Record<string, number>; o: Record<string, number> };
+  /** O que está escolhido na cena ("m" + móvel, "p" + objeto da parede, "o" + objeto de cima, "j" a janela). */
+  selecao?: string | null;
   janela: string;
   tapete: string;
   /** A opção escolhida de cada objeto que tem opções (o pôster). */
@@ -122,137 +134,294 @@ export function QuartoNovo({
   }, [pronto]);
 
   return (
-    <div className="quarto-novo-caixa">
-      <div className="quarto-novo">
-        <iframe ref={ref} src={endereco} title={t('Início')} />
+    <EditorDaCena
+      titulo={t('Meu quarto')}
+      figuras={figuras}
+      arrumacao={arrumacao}
+      enviar={enviar}
+      podeEditar={pronto}
+      noite={noite}
+      // a engrenagem abre a Aparência (os gráficos do quarto moram lá), como o guarda-roupa
+      aoConfigurar={acoes.gavetas ? () => acoesRef.current.gavetas?.onClick() : undefined}
+    >
+      <div className="quarto-novo-caixa">
+        <div className="quarto-novo">
+          <iframe ref={ref} src={endereco} title={t('Início')} />
+        </div>
       </div>
-      {pronto && <BarraDeArrumar figuras={figuras} arrumacao={arrumacao} enviar={enviar} />}
-    </div>
+    </EditorDaCena>
   );
 }
 
 /**
- * A BARRA DE ARRUMAR, a mesma no quarto e no salão (SalaoNovo.tsx): os comandos vão por mensagem para a página da cena,
- * que faz o mesmo que os botões da página de teste.
+ * O EDITOR DA CENA, o mesmo no quarto e no salão (SalaoNovo.tsx), pelo layout dele de 16/10/2026. Fora do Editar, é só a
+ * cena e o botão Editar embaixo. No Editar, ocupa a tela: em cima, o nome, Salvar, Desfazer/Refazer, dia e noite e as
+ * configurações; à esquerda, as categorias, a busca e o catálogo; no meio, a cena (com a barrinha do que está escolhido,
+ * desenhada pela página dela); embaixo, os atalhos, Cancelar e Aplicar.
  *
- * EM ABAS (pedido dele, 16/10/2026: "essas opções precisam de um agrupamento mais adequado"): eram umas 40 figuras numa
- * fila só, misturando cores, objetos da parede, móveis e o que vai em cima deles. Agora a linha de cima tem o Editar, uma
- * aba por grupo e o Voltar ao padrão, e embaixo aparecem só as figuras da aba aberta. Os nomes das abas já existiam
- * traduzidos; nenhum texto novo.
+ * O IFRAME DA CENA NUNCA MUDA DE LUGAR: as partes do Editar entram e saem em volta dele (com o lugar delas guardado
+ * mesmo vazias), e o "tela inteira" é só CSS. Mudá-lo de pai na árvore recarregaria a página da cena.
+ *
+ * As mudanças do Editar ficam PENDENTES até Aplicar (decisão dele): a página da cena guarda o rascunho; Salvar grava sem
+ * sair, Cancelar volta ao que estava. Os comandos vão por mensagem e a página faz o mesmo que os botões de teste dela.
  */
-type Aba = 'moveis' | 'parede' | 'emCima' | 'tapete' | 'janela';
+type Categoria = 'tudo' | 'moveis' | 'plantas' | 'parede' | 'emCima' | 'tapete' | 'janela';
+const PLANTAS = new Set(['planta-alta', 'planta-baixa', 'plantinha']);
 
-export function BarraDeArrumar({ figuras, arrumacao, enviar }: { figuras: Figuras | null; arrumacao: Arrumacao | null; enviar: (msg: Record<string, unknown>) => void }) {
+/** Um item do catálogo: o que ele põe (grupo e códigos: os iguais com número no salão vão juntos) e a figura. */
+interface ItemDoCatalogo {
+  chave: string;
+  grupo: GrupoDaCena;
+  ids: string[];
+  src?: string;
+  cor?: string;
+}
+
+export function EditorDaCena({
+  titulo,
+  figuras,
+  arrumacao,
+  enviar,
+  podeEditar,
+  noite,
+  aoConfigurar,
+  children,
+}: {
+  titulo: string;
+  figuras: Figuras | null;
+  arrumacao: Arrumacao | null;
+  enviar: (msg: Record<string, unknown>) => void;
+  /** Sem a cena pronta (ou no salão de quem não administra), não há Editar. */
+  podeEditar: boolean;
+  /** O dia e a noite do app: o do Editar é só uma prévia, e volta a este ao sair. */
+  noite: boolean;
+  aoConfigurar?: () => void;
+  children: React.ReactNode;
+}) {
   const t = useT();
-  const [arrumando, setArrumando] = useState(false);
-  const [aba, setAba] = useState<Aba>('moveis');
-  // Editando, o clique na cena arruma (a cortina, abrir a janela) e não abre a função do objeto.
+  const [editando, setEditando] = useState(false);
+  const [categoria, setCategoria] = useState<Categoria>('tudo');
+  const [busca, setBusca] = useState('');
+  const [previa, setPrevia] = useState<boolean | null>(null);
   const enviarRef = useRef(enviar);
   enviarRef.current = enviar;
+
   useEffect(() => {
-    enviarRef.current({ editando: arrumando });
-  }, [arrumando]);
-  // Os nomes da barrinha que a cena põe em cima do que está escolhido (girar, tirar, opções, cortina, janela).
+    enviarRef.current({ editando });
+  }, [editando]);
+  // Os nomes da barrinha que a cena põe em cima do que está escolhido.
   useEffect(() => {
-    enviarRef.current({ rotulos: { girar: t('Girar'), tirar: t('Tirar'), opcoes: t('Opções'), cortina: t('Cortina'), janela: t('Janela') } });
+    enviarRef.current({ rotulos: { mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela') } });
   }, [t]);
-  // Ctrl+Z com o foco aqui fora (depois de clicar na barra); com o foco na cena, a própria cena desfaz.
+  // A prévia de dia ou de noite vale só no Editar; ao sair, volta o do app.
   useEffect(() => {
-    if (!arrumando) return;
+    if (!editando && previa !== null) {
+      setPrevia(null);
+      enviarRef.current({ noite });
+    }
+  }, [editando, previa, noite]);
+
+  const sair = (como: 'aplicar' | 'cancelar') => {
+    enviar({ comando: como });
+    setEditando(false);
+  };
+
+  // Os atalhos com o foco aqui fora (depois de clicar num botão do editor); com o foco na cena, ela mesma os atende.
+  useEffect(() => {
+    if (!editando) return;
     const tecla = (e: KeyboardEvent) => {
       const alvo = e.target as HTMLElement | null;
       if (alvo?.closest('input, textarea, [contenteditable="true"]')) return;
-      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+      const ctrl = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
+      const cmd = (comando: string) => {
         e.preventDefault();
-        enviarRef.current({ comando: 'desfazer' });
-      }
+        enviarRef.current({ comando });
+      };
+      if (ctrl && !e.shiftKey && k === 'z') cmd('desfazer');
+      else if (ctrl && (k === 'y' || (e.shiftKey && k === 'z'))) cmd('refazer');
+      else if (ctrl && k === 's') cmd('salvar');
+      else if (ctrl && k === 'd') cmd('duplicar');
+      else if (!ctrl && (k === 'delete' || k === 'backspace')) cmd('tirar');
+      else if (!ctrl && k === 'g') cmd('mover');
+      else if (!ctrl && k === 'r') cmd('girar');
+      else if (!ctrl && k === 'e') cmd('opcoes');
     };
     window.addEventListener('keydown', tecla);
     return () => window.removeEventListener('keydown', tecla);
-  }, [arrumando]);
+  }, [editando]);
 
-  const moveis = figuras?.moveis ?? {};
-  const deCima = figuras?.deCima ?? {};
-  const janelas = figuras?.janelas ?? {};
-  const abas: { id: Aba; rotulo: string; Icone: typeof Sofa }[] = [
+  // O CATÁLOGO: tudo o que se pode pôr, por categoria e pela busca.
+  const itens = useMemo(() => {
+    if (!figuras) return [] as ItemDoCatalogo[];
+    const r: ItemDoCatalogo[] = [];
+    // os iguais com número no salão (cadeira, cadeira-2…) são um item só: a mesma figura
+    const porFigura = new Map<string, ItemDoCatalogo>();
+    for (const [id, src] of Object.entries(figuras.moveis ?? {})) {
+      const junto = porFigura.get(src);
+      if (junto) junto.ids.push(id);
+      else {
+        const it: ItemDoCatalogo = { chave: 'm' + id, grupo: 'm', ids: [id], src };
+        porFigura.set(src, it);
+        r.push(it);
+      }
+    }
+    for (const id of figuras.ordem) r.push({ chave: 'p' + id, grupo: 'p', ids: [id], src: figuras.miniaturas[id] });
+    for (const [id, src] of Object.entries(figuras.deCima ?? {})) r.push({ chave: 'o' + id, grupo: 'o', ids: [id], src });
+    for (const [id, cor] of Object.entries(figuras.cores)) r.push({ chave: 'c' + id, grupo: 'c', ids: [id], cor });
+    for (const [id, src] of Object.entries(figuras.janelas ?? {})) r.push({ chave: 'j' + id, grupo: 'j', ids: [id], src });
+    return r;
+  }, [figuras]);
+  const naCategoria = (it: ItemDoCatalogo) => {
+    switch (categoria) {
+      case 'moveis':
+        return it.grupo === 'm' && !PLANTAS.has(it.ids[0]);
+      case 'plantas':
+        return PLANTAS.has(it.ids[0]);
+      case 'parede':
+        return it.grupo === 'p';
+      case 'emCima':
+        return it.grupo === 'o' && !PLANTAS.has(it.ids[0]);
+      case 'tapete':
+        return it.grupo === 'c';
+      case 'janela':
+        return it.grupo === 'j';
+      default:
+        return true;
+    }
+  };
+  // a busca vale em todas as categorias
+  const visiveis = itens.filter((it) => (busca.trim() ? casaComABusca(t, it.grupo, it.ids[0], busca) : naCategoria(it)));
+  const quantos = (it: ItemDoCatalogo) => {
+    const p = arrumacao?.presentes;
+    if (it.grupo === 'c') return arrumacao?.tapete === it.ids[0] ? 1 : 0;
+    if (it.grupo === 'j') return arrumacao?.janela === it.ids[0] ? 1 : 0;
+    const tabela = it.grupo === 'm' ? p?.m : it.grupo === 'p' ? p?.p : p?.o;
+    return it.ids.reduce((s, id) => s + (tabela?.[id] ?? 0), 0);
+  };
+  const por = (it: ItemDoCatalogo) => {
+    if (it.grupo === 'c') return enviar({ comando: 'tapete', cor: it.ids[0] });
+    if (it.grupo === 'j') return enviar({ comando: 'janela', tipo: it.ids[0] });
+    // o original guardado volta primeiro; com todos postos, o primeiro ganha uma cópia
+    const tabela = it.grupo === 'm' ? arrumacao?.presentes?.m : it.grupo === 'p' ? arrumacao?.presentes?.p : undefined;
+    const fora = it.ids.find((id) => !(tabela?.[id] ?? 0));
+    enviar({ comando: 'por', grupo: it.grupo, id: fora ?? it.ids[0] });
+  };
+  const categorias: { id: Categoria; rotulo: string; Icone: typeof Sofa }[] = [
+    { id: 'tudo', rotulo: t('Tudo'), Icone: LayoutGrid },
     { id: 'moveis', rotulo: t('Móveis'), Icone: Sofa },
+    { id: 'plantas', rotulo: t('Plantas'), Icone: Sprout },
     { id: 'parede', rotulo: t('Objetos da parede'), Icone: Frame },
     { id: 'emCima', rotulo: t('Em cima dos móveis'), Icone: Coffee },
     { id: 'tapete', rotulo: t('Tapete'), Icone: Grid2x2 },
     { id: 'janela', rotulo: t('Janela'), Icone: AppWindow },
   ];
-  const visiveis = abas.filter((a) => a.id !== 'emCima' || Object.keys(deCima).length > 0);
-  const aberta = visiveis.some((a) => a.id === aba) ? aba : 'moveis';
-
-  const figura = (chave: string, src: string, rotulo: string, ligada: boolean | undefined, msg: Record<string, unknown>) => (
-    <button key={chave} type="button" className="quarto-novo-objeto" aria-label={rotulo} aria-pressed={ligada} onClick={() => enviar(msg)}>
-      <img src={src} alt="" />
-    </button>
-  );
+  const atalhos: { comando: string; rotulo: string; tecla: string; Icone: typeof Sofa }[] = [
+    { comando: 'mover', rotulo: t('Mover'), tecla: 'g', Icone: Move },
+    { comando: 'girar', rotulo: t('Girar'), tecla: 'r', Icone: RotateCw },
+    { comando: 'tirar', rotulo: t('Tirar'), tecla: 'del', Icone: Archive },
+    { comando: 'duplicar', rotulo: t('Duplicar'), tecla: 'ctrl+d', Icone: Copy },
+    { comando: 'opcoes', rotulo: t('Mais opções'), tecla: 'e', Icone: Ellipsis },
+  ];
+  const semEscolha = !arrumacao?.selecao;
+  const noiteAgora = previa ?? noite;
 
   return (
-    <div className="quarto-novo-barra">
-      <div className="quarto-novo-linha">
-        <button type="button" aria-pressed={arrumando} onClick={() => setArrumando((a) => !a)}>
-          <Pencil size={16} aria-hidden="true" /> {arrumando ? t('Pronto') : t('Editar')}
-        </button>
-        {arrumando && (
-          <>
-            <div className="quarto-novo-abas" role="tablist">
-              {visiveis.map(({ id, rotulo, Icone }) => (
-                <button key={id} type="button" role="tab" aria-selected={aberta === id} onClick={() => setAba(id)}>
-                  <Icone size={16} aria-hidden="true" /> <span>{rotulo}</span>
-                </button>
-              ))}
-            </div>
-            <button type="button" disabled={!arrumacao?.desfazer} onClick={() => enviar({ comando: 'desfazer' })}>
-              <Undo size={16} aria-hidden="true" /> {t('Desfazer')}
+    <div className={'editor-cena' + (editando ? ' editando' : '')}>
+      {editando ? (
+        <header className="editor-topo">
+          <div className="editor-titulo">
+            <Home size={20} aria-hidden="true" /> <span>{titulo}</span>
+          </div>
+          <button type="button" className="editor-botao" disabled={!arrumacao?.pendente} onClick={() => enviar({ comando: 'salvar' })}>
+            <Save size={18} aria-hidden="true" /> {t('Salvar')} <kbd>{'ctrl+s'}</kbd>
+          </button>
+          <div className="editor-par">
+            <button type="button" className="editor-botao" disabled={!arrumacao?.desfazer} onClick={() => enviar({ comando: 'desfazer' })}>
+              <Undo2 size={18} aria-hidden="true" /> {t('Desfazer')} <kbd>{'ctrl+z'}</kbd>
             </button>
-            <button type="button" onClick={() => enviar({ comando: 'inicial' })}>
-              <Undo2 size={16} aria-hidden="true" /> {t('Voltar ao padrão')}
+            <button type="button" className="editor-botao" disabled={!arrumacao?.refazer} onClick={() => enviar({ comando: 'refazer' })}>
+              <Redo2 size={18} aria-hidden="true" /> {t('Refazer')} <kbd>{'ctrl+y'}</kbd>
             </button>
-          </>
-        )}
-      </div>
-      {arrumando && figuras && (
-        <div className="quarto-novo-gaveta" role="tabpanel">
-          {aberta === 'moveis' && (
-            <>
-              {Object.entries(moveis).map(([id, src], i) => figura(id, src, `${t('Móveis')} ${i + 1}`, arrumacao?.moveis?.[id] !== false, { comando: 'movel', id }))}
-            </>
+          </div>
+          <div className="editor-vao" />
+          <div className="editor-par editor-dia-noite" role="group">
+            <button type="button" aria-pressed={!noiteAgora} aria-label={t('Dia')} title={t('Dia')} onClick={() => { setPrevia(false); enviar({ noite: false }); }}>
+              <Sun size={18} aria-hidden="true" />
+            </button>
+            <button type="button" aria-pressed={noiteAgora} aria-label={t('Noite')} title={t('Noite')} onClick={() => { setPrevia(true); enviar({ noite: true }); }}>
+              <Moon size={18} aria-hidden="true" />
+            </button>
+          </div>
+          {aoConfigurar && (
+            <button type="button" className="editor-botao editor-icone" aria-label={t('Configurações')} title={t('Configurações')} onClick={aoConfigurar}>
+              <Settings size={18} aria-hidden="true" />
+            </button>
           )}
-          {aberta === 'parede' && (
-            <>
-              {figuras.ordem.map((id, i) => figura(id, figuras.miniaturas[id], `${t('Objetos da parede')} ${i + 1}`, !!arrumacao?.parede[id], { comando: 'parede', id }))}
-              {/* as opções de um objeto (o pôster), só enquanto ele está na parede, separadas por um traço */}
-              {Object.entries(figuras.opcoes ?? {})
-                .filter(([id]) => arrumacao?.parede[id])
-                .map(([id, ops]) => (
-                  <div key={id} className="quarto-novo-grupo quarto-novo-opcoes" role="group" aria-label={t('Objetos da parede')}>
-                    {Object.entries(ops).map(([opcao, src], i) =>
-                      figura(opcao, src, `${t('Objetos da parede')} ${i + 1}`, arrumacao?.opcoes?.[id] === opcao, { comando: 'opcao', id, opcao }),
-                    )}
-                  </div>
-                ))}
-            </>
-          )}
-          {aberta === 'emCima' && Object.entries(deCima).map(([id, src], i) => figura(id, src, `${t('Em cima dos móveis')} ${i + 1}`, undefined, { comando: 'objeto', tipo: id }))}
-          {aberta === 'tapete' &&
-            Object.entries(figuras.cores).map(([id, cor], i) => (
-              <button
-                key={id}
-                type="button"
-                className="quarto-novo-cor"
-                style={{ background: cor }}
-                aria-label={`${t('Tapete')} ${i + 1}`}
-                aria-pressed={arrumacao?.tapete === id}
-                onClick={() => enviar({ comando: 'tapete', cor: id })}
-              />
+        </header>
+      ) : null}
+      {editando ? (
+        <aside className="editor-lado">
+          <nav className="editor-categorias">
+            {categorias.map(({ id, rotulo, Icone }) => (
+              <button key={id} type="button" aria-pressed={!busca.trim() && categoria === id} onClick={() => { setCategoria(id); setBusca(''); }}>
+                <Icone size={18} aria-hidden="true" /> <span>{rotulo}</span>
+              </button>
             ))}
-          {/* cada tipo de janela como figura: só a original tem cortina e abre (clicando nela, na cena) */}
-          {aberta === 'janela' && Object.entries(janelas).map(([id, src], i) => figura(id, src, `${t('Janela')} ${i + 1}`, arrumacao?.janela === id, { comando: 'janela', tipo: id }))}
+          </nav>
+          <div className="editor-catalogo">
+            <label className="editor-busca">
+              <Search size={16} aria-hidden="true" />
+              <input type="search" value={busca} placeholder={t('Buscar objeto…')} onChange={(e) => setBusca(e.target.value)} />
+            </label>
+            <div className="editor-grade">
+              {visiveis.map((it) => {
+                const nome = nomeDaPeca(t, it.grupo, it.ids[0]), n = quantos(it);
+                return (
+                  <button key={it.chave} type="button" className="editor-item" title={nome} aria-label={nome} aria-pressed={n > 0} onClick={() => por(it)}>
+                    {it.cor ? <span className="editor-cor" style={{ background: it.cor }} /> : <img src={it.src} alt="" />}
+                    {n > 1 && <span className="editor-quantos">×{n}</span>}
+                  </button>
+                );
+              })}
+            </div>
+            <button type="button" className="editor-padrao" onClick={() => enviar({ comando: 'inicial' })}>
+              <RotateCcw size={14} aria-hidden="true" /> {t('Voltar ao padrão')}
+            </button>
+          </div>
+        </aside>
+      ) : null}
+      <div className="editor-palco">{children}</div>
+      {editando ? (
+        <footer className="editor-base">
+          <div className="editor-atalhos">
+            <span className="editor-atalhos-nome">
+              <Mouse size={18} aria-hidden="true" /> {t('Atalhos')}
+            </span>
+            {atalhos.map(({ comando, rotulo, tecla, Icone }) => (
+              <button key={comando} type="button" disabled={semEscolha} onClick={() => enviar({ comando })}>
+                <Icone size={18} aria-hidden="true" />
+                <span>
+                  {rotulo} <kbd>{tecla}</kbd>
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="editor-fim">
+            <button type="button" className="editor-botao" onClick={() => sair('cancelar')}>
+              <X size={18} aria-hidden="true" /> {t('Cancelar')}
+            </button>
+            <button type="button" className="editor-botao editor-aplicar" onClick={() => sair('aplicar')}>
+              <Check size={18} aria-hidden="true" /> {t('Aplicar')}
+            </button>
+          </div>
+        </footer>
+      ) : podeEditar ? (
+        <div className="editor-entrar">
+          <button type="button" className="editor-botao" onClick={() => setEditando(true)}>
+            <Pencil size={16} aria-hidden="true" /> {t('Editar')}
+          </button>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

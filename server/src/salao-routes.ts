@@ -14,7 +14,7 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { communityRoom } from './realtime.js';
 import { manages, requireUser, roleIn } from './routes.js';
-import { CASAS_DO_SALAO, MAX_BYTES, validarArrumacao } from './quarto.js';
+import { ACEITA_COPIAS, CASAS_DO_SALAO, MAX_BYTES, validarArrumacao } from './quarto.js';
 
 export function registerSalaoRoutes(app: FastifyInstance, io: IOServer) {
   app.register(async (authed) => {
@@ -35,7 +35,7 @@ export function registerSalaoRoutes(app: FastifyInstance, io: IOServer) {
       const m = membro(request, reply);
       if (!m) return reply;
       const s = db.lerSalao(m.communityId);
-      return { arrumacao: s ? JSON.parse(s.arrumacao) : null, em: s?.em ?? null, podeEditar: manages(m.role) };
+      return { arrumacao: s ? JSON.parse(s.arrumacao) : null, em: s?.em ?? null, podeEditar: manages(m.role), copias: ACEITA_COPIAS };
     });
 
     authed.put<{ Params: { id: string }; Body: unknown }>('/api/communities/:id/salao', { bodyLimit: MAX_BYTES * 2 }, async (request, reply) => {
