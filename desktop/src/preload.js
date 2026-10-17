@@ -87,7 +87,9 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
    */
   screenAudio: {
     available: () => ipcRenderer.invoke('screen-audio:available'),
-    start: () => ipcRenderer.invoke('screen-audio:start'),
+    // { porta: true }: os pedaços vão por uma MessagePort direto ao tocador (chega como 'syden-screen-audio-porta',
+    // abaixo), e não por onChunk. A resposta diz { porta: true } quando foi assim.
+    start: (opcoes) => ipcRenderer.invoke('screen-audio:start', opcoes),
     stop: () => ipcRenderer.send('screen-audio:stop'),
     onChunk: (callback) => {
       const handler = (_event, pcm) => callback(pcm);
@@ -124,4 +126,8 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
 // janela, na mesma origem: nenhum quadro de fora a recebe.
 ipcRenderer.on('ruido:porta', (event) => {
   window.postMessage('syden-ruido-porta', window.location.origin, event.ports);
+});
+// A do som da transmissão, do mesmo jeito (ver screenAudio.start).
+ipcRenderer.on('screen-audio:porta', (event) => {
+  window.postMessage('syden-screen-audio-porta', window.location.origin, event.ports);
 });

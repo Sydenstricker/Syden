@@ -200,7 +200,11 @@ export class ProcessadorDoMicrofone implements TrackProcessor<Track.Kind.Audio, 
       porta?.close();
       return;
     }
-    const ctx = new AudioContext({ sampleRate: 16000, latencyHint: 'interactive' });
+    // 'balanced', e não 'interactive' (auditoria do áudio, 17/10/2026): o GTCRN roda um quadro INTEIRO dentro de um só
+    // bloco de 128 amostras, que a 16 kHz dura 8 ms. Com a menor folga de saída que o 'interactive' pede, qualquer
+    // quadro um pouco mais caro (o PC ocupado com o jogo) estoura o bloco e vira estalo na voz de quem fala. A folga
+    // a mais (alguns ms, conforme o navegador e a placa) é pequena perto dos 32 ms que a janela do modelo já põe.
+    const ctx = new AudioContext({ sampleRate: 16000, latencyHint: 'balanced' });
     this.contexto = ctx;
     await ctx.resume().catch(() => {});
 

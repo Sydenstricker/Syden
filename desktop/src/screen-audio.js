@@ -1,5 +1,5 @@
 // @ts-check
-const { ipcMain } = require('electron');
+const { ipcMain, MessageChannelMain } = require('electron');
 
 /**
  * Som da transmissão sem devolver a chamada junto.
@@ -96,13 +96,35 @@ function available() {
   return Boolean(native) || fake;
 }
 
-function stop() {
+/**
+ * A porta que leva os pedaços DIRETO à thread de áudio da página (o tocador em web/public/pcm-player.worklet.js), como a
+ * supressão de ruído faz (ver ruido/index.js). Antes cada pedaço de 10 ms ia por webContents.send até a thread
+ * principal da página, e de lá ao tocador: dois saltos, e a página divide tempo com o quarto, o salão e a chamada — um
+ * engasgo dela era um buraco no som (auditoria do áudio, 17/10/2026). Só existe quando a página pede (site novo); o
+ * site anterior continua recebendo por 'screen-audio:chunk'. Sobrevive ao religar a captura: a página não fica sabendo.
+ * @type {Electron.MessagePortMain | null}
+ */
+let porta = null;
+
+function fecharPorta() {
+  porta?.close();
+  porta = null;
+}
+
+/** Para a captura (o módulo ou o tom de teste), sem mexer na porta: religar usa a mesma. */
+function pararCaptura() {
   running = false;
   if (fakeTimer) {
     clearInterval(fakeTimer);
     fakeTimer = null;
   }
   native?.stop();
+}
+
+/** Para de vez: a captura e a porta. */
+function stop() {
+  pararCaptura();
+  fecharPorta();
 }
 
 /** Conta à página o que aconteceu com a captura, para o diário da aba de saúde (ver web/src/screenAudio.ts). */
@@ -122,7 +144,7 @@ function morreuNoMeio(/** @type {Electron.WebContents} */ webContents, /** @type
   const agora = Date.now();
   religadas = religadas.filter((t) => agora - t < 60_000);
   if (religadas.length >= 3) {
-    stop();
+    pararCaptura();
     avisar(webContents, `${erro}; desisti de religar (3 vezes no último minuto)`);
     return;
   }
@@ -135,12 +157,22 @@ function morreuNoMeio(/** @type {Electron.WebContents} */ webContents, /** @type
   });
 }
 
-/** Liga a captura e passa a mandar os pedaços de som para a janela. */
-function start(/** @type {Electron.WebContents} */ webContents) {
+/**
+ * Liga a captura e passa a mandar os pedaços de som para a janela. `querPorta`: a página pediu a porta direta (só quem
+ * chama pelo IPC; religar por dentro mantém a que já existe).
+ */
+function start(/** @type {Electron.WebContents} */ webContents, querPorta = false) {
   if (!available()) return { ok: false, source: null };
-  if (running) stop();
+  if (running) pararCaptura();
   running = true;
   destino = webContents;
+  if (querPorta) {
+    fecharPorta();
+    const { port1, port2 } = new MessageChannelMain();
+    porta = port1;
+    // Vai antes da resposta do start: a página já está esperando por ela (ver web/src/screenAudio.ts).
+    webContents.postMessage('screen-audio:porta', null, [port2]);
+  }
 
   const send = (/** @type {Float32Array | null} */ pcm, /** @type {string | undefined} */ erro) => {
     if (!running || webContents.isDestroyed()) return;
@@ -148,8 +180,10 @@ function start(/** @type {Electron.WebContents} */ webContents) {
       morreuNoMeio(webContents, erro ?? 'a captura de som parou no meio');
       return;
     }
-    webContents.send('screen-audio:chunk', pcm);
+    if (porta) porta.postMessage(pcm);
+    else webContents.send('screen-audio:chunk', pcm);
   };
+  const resposta = (/** @type {'native' | 'fake'} */ source) => ({ ok: true, source, porta: Boolean(porta) });
 
   try {
     if (native) {
@@ -158,25 +192,26 @@ function start(/** @type {Electron.WebContents} */ webContents) {
       if (pid !== null) {
         try {
           native.start(send, { sampleRate: SAMPLE_RATE, channels: CHANNELS, includePid: pid });
-          return { ok: true, source: 'native' };
+          return resposta('native');
         } catch (error) {
           console.error('Só o som da janela não abriu; vai o do computador sem o Syden:', error);
         }
       }
       native.start(send, { sampleRate: SAMPLE_RATE, channels: CHANNELS, excludePid: process.pid });
-      return { ok: true, source: 'native' };
+      return resposta('native');
     }
     startFake(send);
-    return { ok: true, source: 'fake' };
+    return resposta('fake');
   } catch (error) {
     console.error('Não foi possível capturar o som do computador:', error);
     running = false;
+    if (querPorta) fecharPorta();
     return { ok: false, source: null };
   }
 }
 
 function setupScreenAudio() {
-  ipcMain.handle('screen-audio:start', (event) => start(event.sender));
+  ipcMain.handle('screen-audio:start', (event, opcoes) => start(event.sender, Boolean(opcoes?.porta)));
   ipcMain.on('screen-audio:stop', () => stop());
   ipcMain.handle('screen-audio:available', () => available());
 }

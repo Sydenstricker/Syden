@@ -39,7 +39,8 @@ interface DesktopBridge {
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;
-    start(): Promise<{ ok: boolean; source: 'native' | 'fake' | null }>;
+    /** { porta: true } só é atendido pelos apps a partir de 17/10/2026; os anteriores ignoram e respondem sem `porta`. */
+    start(opcoes?: { porta: boolean }): Promise<{ ok: boolean; source: 'native' | 'fake' | null; porta?: boolean }>;
     stop(): void;
     onChunk(callback: (pcm: Float32Array) => void): () => void;
     /** Só nos apps a partir de 17/10/2026: a captura morreu no meio, religou ou desistiu. */
