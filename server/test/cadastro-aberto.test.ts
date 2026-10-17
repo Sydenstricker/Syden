@@ -28,7 +28,7 @@ const cadastrar = (username: string, inviteCode?: string) =>
   app.inject({
     method: 'POST',
     url: '/api/auth/register',
-    payload: { username, password: 'segredo123', email: `${username}@exemplo.teste`, inviteCode },
+    payload: { username, password: 'segredo123', email: `${username}@exemplo.teste`, inviteCode, nascimento: '1990-01-01' },
   });
 
 /** Cadastra, confirma o e-mail e entra — o caminho inteiro de quem chega hoje. */

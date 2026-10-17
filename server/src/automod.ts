@@ -1,4 +1,5 @@
 import * as db from './db.js';
+import { podeConversarNoParticular } from './protecao.js';
 
 /**
  * A MODERAÇÃO AUTOMÁTICA (ver o bloco no fim de db.ts): o que barra uma mensagem antes de ela existir.
@@ -54,7 +55,18 @@ export function barrarMensagem(
   conteudo: string,
   agora = Date.now(),
 ): string | null {
-  if (channel.communityId === null) return null;
+  if (channel.communityId === null) {
+    // A CONVERSA PRIVADA COM UM MENOR (ECA Digital; ver protecao.ts): a conversa que já existia antes da regra, ou de
+    // antes de a amizade acabar, para de aceitar mensagem entre quem não pode mais conversar.
+    if (channel.type === 'dm') {
+      for (const outro of db.channelMemberIds(channel.id)) {
+        if (outro !== userId && !podeConversarNoParticular(userId, outro)) {
+          return 'Por segurança, menores de idade conversam no particular só com amigos.';
+        }
+      }
+    }
+    return null;
+  }
   // O SILÊNCIO vem antes de tudo (ver advertencias-routes.ts): quem está calado não escreve, ponto.
   const silencio = db.silenciadoAte(channel.communityId, userId, agora);
   if (silencio) {

@@ -90,11 +90,11 @@ export async function servidorDeTeste() {
  *
  * Os testes que querem exercitar a confirmação em si não usam esta função: chamam as rotas na mão.
  */
-export async function criarConta(app: FastifyInstance, username: string, password = 'segredo123') {
+export async function criarConta(app: FastifyInstance, username: string, password = 'segredo123', nascimento = '1990-01-01') {
   const cadastro = await app.inject({
     method: 'POST',
     url: '/api/auth/register',
-    payload: { username, password, email: `${username}@exemplo.teste`, inviteCode: CONVITE },
+    payload: { username, password, email: `${username}@exemplo.teste`, inviteCode: CONVITE, nascimento },
   });
   if (cadastro.statusCode !== 200) throw new Error(`não consegui criar ${username}: ${cadastro.body}`);
 

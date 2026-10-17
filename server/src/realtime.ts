@@ -6,6 +6,7 @@ import { responderComando } from './comandos-routes.js';
 import * as db from './db.js';
 import { apagarSeVazia } from './salas-temporarias.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
+import { barreiraDe, hojeEmBrasilia, podeVerVideo, regrasDe } from './protecao.js';
 
 /** Sala do socket com todo mundo que participa de uma comunidade. */
 export const communityRoom = (communityId: number) => `community:${communityId}`;
@@ -221,6 +222,49 @@ export function disconnectUser(io: IOServer, userId: number) {
 }
 
 /**
+ * O TEMPO DE USO DOS MENORES (ECA Digital, art. 18): cada minuto com o Syden aberto soma no dia (horário de Brasília).
+ * De adulto não se mede nada. Esgotado o limite diário que o responsável pôs, a pessoa sai da chamada, recebe a
+ * barreira e as conexões caem (a tela mostra "o tempo de hoje acabou" até a meia-noite).
+ */
+function contarMinutoDosMenores(io: IOServer) {
+  const hoje = hojeEmBrasilia();
+  for (const userId of onlineSockets.keys()) {
+    if (!regrasDe(userId)) continue;
+    db.somarUso(userId, hoje, USAGE_HEARTBEAT_MS / 1000);
+    const barreira = barreiraDe(userId);
+    if (barreira) void aplicarBarreira(io, userId, barreira);
+  }
+}
+
+/** Barrou agora: avisa a tela, tira da chamada e derruba as conexões (o login continua valendo, a barreira não). */
+export async function aplicarBarreira(io: IOServer, userId: number, barreira: unknown) {
+  emitToUser(io, userId, 'barreira', barreira);
+  const naVoz = voiceMembers.get(userId);
+  if (naVoz) {
+    const { tirarDaChamada } = await import('./routes.js');
+    await tirarDaChamada(naVoz.channelId, userId);
+  }
+  // um instante para o aviso chegar antes de a conexão cair
+  setTimeout(() => disconnectUser(io, userId), 300).unref();
+}
+
+/**
+ * A REDE DE SEGURANÇA DO VÍDEO DOS MENORES. A trava principal está no app de quem transmite (as permissões de inscrição
+ * do LiveKit: só os amigos recebem a tela e a câmera de um menor com "transmitir só para amigos") e no app de quem
+ * assiste (um menor com "assistir só de amigos" não se inscreve no vídeo de quem não é amigo). Esta volta, a cada
+ * 10 segundos, confere pelo servidor e desinscreve à força o que escapou — um app antigo, ou modificado.
+ */
+async function vigiarVideoDosMenores() {
+  const salas = new Map<number, number[]>();
+  for (const m of voiceMembers.values()) salas.set(m.channelId, [...(salas.get(m.channelId) ?? []), m.userId]);
+  for (const [channelId, pessoas] of salas) {
+    if (pessoas.length < 2 || !pessoas.some((id) => regrasDe(id))) continue;
+    const { forcarDesinscricao } = await import('./routes.js');
+    await forcarDesinscricao(channelId, (espectador, transmissor) => podeVerVideo(espectador, transmissor)).catch(() => {});
+  }
+}
+
+/**
  * Quantas pessoas estão com o Syden aberto agora, no Syden inteiro.
  *
  * É por PESSOA, e não por conexão: quem deixa o app no computador e o site no celular conta uma vez.
@@ -277,6 +321,9 @@ export function setupRealtime(io: IOServer) {
     const achado = sessao === null ? undefined : db.findUserForSession(sessao.userId);
     // Mesma conferência das rotas: token de sessão derrubada não abre conexão em tempo real.
     if (!achado || achado.sessionVersion !== sessao!.sessionVersion) return next(new Error('unauthorized'));
+    // Conta barrada (banida, suspensa, sem a idade, sem o responsável, com o tempo do dia esgotado) não fica online:
+    // a tela dela é a da barreira, que fala só pelas rotas (ver protecao.ts).
+    if (barreiraDe(achado.user.id)) return next(new Error('barreira'));
     socket.data.user = achado.user;
     next();
   });
@@ -285,7 +332,10 @@ export function setupRealtime(io: IOServer) {
     db.touchUsageSessions([...voiceMembers.values()].flatMap(activeUsageSessionIds));
     // O minuto de voz dos níveis: quem não está sozinho na sala ganha pontos (ver niveis.ts).
     pontuarMinutoDeVoz(io, [...voiceMembers.values()]);
+    contarMinutoDosMenores(io);
   }, USAGE_HEARTBEAT_MS).unref();
+  // A rede de segurança do vídeo dos menores (ver vigiarVideoDosMenores), mais curta que o minuto.
+  setInterval(() => void vigiarVideoDosMenores(), 10_000).unref();
 
   io.on('connection', (socket: Socket) => {
     const user = socket.data.user as db.User;

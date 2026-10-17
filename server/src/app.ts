@@ -14,6 +14,7 @@ import { comecarLimpezaDeRecados } from './expiry.js';
 import { registerKaraokeRoutes } from './karaoke-routes.js';
 import { registerMediaRoutes } from './media-routes.js';
 import { registerModeracaoRoutes } from './moderacao-routes.js';
+import { registerProtecaoRoutes } from './protecao-routes.js';
 import { registerDireitoAutoralRoutes } from './direito-autoral-routes.js';
 import { registerPackRoutes } from './pack-routes.js';
 import { registerRoutes } from './routes.js';
@@ -72,6 +73,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerDirectRoutes(app, io);
   registerEmailRoutes(app);
   registerModeracaoRoutes(app, io);
+  registerProtecaoRoutes(app, io);
   registerDireitoAutoralRoutes(app, io);
   registerSocialRoutes(app);
   registerAmigosRoutes(app, io);

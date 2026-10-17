@@ -96,6 +96,7 @@ test('provedor inventado não existe', async () => {
 // devolve uma senha para uma conta que não tem porta de senha.
 test('não dá para desligar o ÚNICO jeito de entrar', async () => {
   const semSenha = db.createUserSemSenha('sosocial', null);
+  db.guardarNascimento(semSenha.id, '1990-01-01', 'declarada'); // (sem a data, a barreira da idade fecharia as rotas)
   db.ligarContaSocial('google', 'google-do-sosocial', semSenha.id);
 
   // Entra como essa pessoa pelo caminho social, para ter um token de verdade dela.
@@ -127,6 +128,7 @@ test('não dá para desligar o ÚNICO jeito de entrar', async () => {
 /** Entra como uma conta sem senha e devolve o atalho autenticado dela. */
 async function entrarSemSenha(nome: string) {
   const pessoa = db.createUserSemSenha(nome, null);
+  db.guardarNascimento(pessoa.id, '1990-01-01', 'declarada');
   const segredo = sortear();
   const estado = sortear();
   db.criarEstadoSocial(estado, 'google', resumo(segredo));

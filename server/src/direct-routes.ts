@@ -3,6 +3,7 @@
 import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
+import { podeConversarNoParticular } from './protecao.js';
 import { INSIGNIAS, entregar } from './presentes.js';
 import { anunciarPerfil, directRoom, emitToUser, joinDirectRoom, leaveDirectRoom } from './realtime.js';
 import { barrarTemporario, requireUser } from './routes.js';
@@ -33,6 +34,8 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       // depois que alguém a fechou. É a primeira linha de propósito — uma exceção acrescentada
       // acima dela passaria por cima da proteção sem ninguém notar.
       if (db.haBloqueio(a, b)) return false;
+      // MENOR COM "SÓ AMIGOS" (ECA Digital, arts. 7 e 17; ver protecao.ts): comunidade em comum não basta.
+      if (!podeConversarNoParticular(a, b)) return false;
       if (db.amizadeEntre(a, b)?.situacao === 'aceita') return true;
       const mine = new Set(db.communityIdsForUser(a));
       return db.communityIdsForUser(b).some((id) => mine.has(id));
@@ -162,6 +165,10 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
           return reply.code(403).send({ error: 'Você só conversa com quem divide uma comunidade com você ou já é seu amigo.' });
         }
       }
+      // Num grupo, a regra do menor vale entre TODOS: ninguém de fora da amizade dele entra junto.
+      if (wanted.some((a) => wanted.some((b) => a < b && !podeConversarNoParticular(a, b)))) {
+        return reply.code(403).send({ error: 'Por segurança, menores de idade conversam no particular só com amigos.' });
+      }
 
       const name = String(request.body?.name ?? '').trim().slice(0, 50);
       // Conversa de duas pessoas sem nome: se já existe, devolve a mesma em vez de criar outra.
@@ -219,6 +226,9 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       }
       const members = db.channelMemberIds(channel.id);
       if (members.includes(userId)) return reply.code(409).send({ error: 'Essa pessoa já está na conversa.' });
+      if (members.some((m) => !podeConversarNoParticular(m, userId))) {
+        return reply.code(403).send({ error: 'Por segurança, menores de idade conversam no particular só com amigos.' });
+      }
       if (members.length + 1 > MAX_GROUP_MEMBERS) {
         return reply.code(400).send({ error: `Uma conversa em grupo cabe até ${MAX_GROUP_MEMBERS} pessoas.` });
       }

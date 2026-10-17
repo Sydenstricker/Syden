@@ -4,6 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
+import { barreiraDe, dataValida, faixaDe, regrasDe } from './protecao.js';
 import { Freio } from './freio.js';
 import { seedExpressions } from './expressions.js';
 import { salaDaPessoa,
@@ -45,6 +46,48 @@ const USERNAME_RE = /^[\p{L}\p{N}_.-]{2,32}$/u;
 export async function tirarDaChamada(channelId: number, userId: number) {
   await rooms.removeParticipant(voiceRoomName(channelId), String(userId)).catch(() => {});
 }
+
+/**
+ * A rede de segurança do vídeo dos menores (ver vigiarVideoDosMenores, em realtime.ts): desinscreve à força cada
+ * espectador do vídeo (tela e câmera) que ele não pode ver. Quem espia a prévia entra como "peek-<id>".
+ */
+export async function forcarDesinscricao(channelId: number, pode: (espectador: number, transmissor: number) => boolean) {
+  const room = voiceRoomName(channelId);
+  const participantes = await rooms.listParticipants(room);
+  const idDe = (identidade: string) => Number(identidade.replace(/^peek-/, ''));
+  for (const espectador of participantes) {
+    const quem = idDe(espectador.identity);
+    if (!Number.isFinite(quem)) continue;
+    const proibidos: string[] = [];
+    for (const transmissor of participantes) {
+      const de = idDe(transmissor.identity);
+      if (transmissor.identity === espectador.identity || !Number.isFinite(de) || pode(quem, de)) continue;
+      for (const track of transmissor.tracks) {
+        if (track.source === TrackSource.CAMERA || track.source === TrackSource.SCREEN_SHARE || track.source === TrackSource.SCREEN_SHARE_AUDIO) {
+          proibidos.push(track.sid);
+        }
+      }
+    }
+    if (proibidos.length) await rooms.updateSubscriptions(room, espectador.identity, proibidos, false).catch(() => {});
+  }
+}
+
+/**
+ * O QUE UMA CONTA BARRADA AINDA ALCANÇA (ver protecao.ts): ver a si mesma e a barreira, resolvê-la (a data de nascimento,
+ * o recurso, o código para o responsável), e os direitos que nenhuma barreira tira (levar os dados, excluir a conta).
+ */
+const LIVRES_NA_BARREIRA = new Set([
+  'GET /api/me',
+  'GET /api/me/protecao',
+  'PUT /api/me/nascimento',
+  'POST /api/me/recurso',
+  'POST /api/me/responsavel/codigo',
+  'GET /api/me/dados',
+  'POST /api/me/delete',
+  'GET /api/me/preferencias',
+  'PUT /api/me/preferencias',
+  'GET /api/aviso',
+]);
 
 export function voiceRoomName(channelId: number) {
   return `channel-${channelId}`;
@@ -172,6 +215,10 @@ export async function requireUser(request: FastifyRequest, reply: FastifyReply) 
     return reply.code(401).send({ error: 'Sessão inválida. Entre novamente.' });
   }
   request.user = achado.user;
+  const barreira = barreiraDe(achado.user.id);
+  if (barreira && !LIVRES_NA_BARREIRA.has(`${request.method} ${request.routeOptions.url}`)) {
+    return reply.code(403).send({ error: 'Sua conta tem uma pendência. Abra o Syden de novo para ver o que fazer.', barreira });
+  }
 }
 
 export function registerRoutes(app: FastifyInstance, io: IOServer) {
@@ -225,7 +272,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     return true;
   }
 
-  app.post<{ Body: { username?: string; password?: string; email?: string; inviteCode?: string; turnstile?: string } }>(
+  app.post<{ Body: { username?: string; password?: string; email?: string; inviteCode?: string; turnstile?: string; nascimento?: string } }>(
     '/api/auth/register',
     async (request, reply) => {
       if (enderecoFreado(request, reply)) return reply;
@@ -275,6 +322,15 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (db.findUserByEmail(email)) {
         return reply.code(409).send({ error: 'Já existe uma conta com esse e-mail. Entre por ela, ou use "Esqueci a minha senha".' });
       }
+      // A IDADE (ECA Digital; ver protecao.ts): a data de nascimento é pedida no cadastro, e abaixo de 13 a conta não nasce.
+      // Sem a data (um app antigo), a conta nasce e a primeira entrada pede (a barreira "nascimento").
+      const nascimento = request.body?.nascimento;
+      if (nascimento !== undefined && !dataValida(nascimento)) {
+        return reply.code(400).send({ error: 'Escreva a sua data de nascimento.' });
+      }
+      if (nascimento && faixaDe(nascimento) === 'crianca') {
+        return reply.code(400).send({ error: 'O Syden é para quem tem 13 anos ou mais.', idadeMinima: 13 });
+      }
 
       /*
        * DOIS PORTÕES DIFERENTES, e é isso que permite crescer sem abrir a casa dos outros:
@@ -299,6 +355,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       // a conta e jogaria fora a chave — ver o comentário em config.email.exigirConfirmacao.
       const exigir = config.email.exigirConfirmacao;
       const user = db.createUser(username, await hashPassword(password), email, exigir);
+      if (nascimento) db.guardarNascimento(user.id, nascimento, 'declarada');
 
       if (!db.defaultCommunity()) {
         // Primeiro cadastro do Syden inteiro: ganha a comunidade inicial.
@@ -425,8 +482,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     // Abrir o Syden também confere: quem já estava logado (o app de desktop fica aberto dias) não fica
     // esperando o próximo login para receber o que passou a ter direito.
     authed.get('/api/me', async (request) => {
-      const novos = conferirPresentes(request.user);
-      return novos.length ? db.findUserById(request.user.id) : request.user;
+      // A barreira e a faixa etária vão junto: é por elas que a tela decide se abre o Syden ou a tela da pendência,
+      // e se mostra o que é de menor (ver protecao.ts). A data de nascimento em si nunca sai daqui.
+      const barreira = barreiraDe(request.user.id);
+      const faixa = faixaDe(db.protecaoDe(request.user.id)?.nascimento);
+      const novos = barreira ? [] : conferirPresentes(request.user);
+      return { ...(novos.length ? db.findUserById(request.user.id) : request.user), barreira, faixa };
     });
 
     // Enfeites do perfil. O servidor não conhece as cores: guarda o nome da opção e confia no app para
@@ -1600,6 +1661,11 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       if (!channel) return reply;
       if (channel.type !== 'voice') return reply.code(404).send({ error: 'Sala de voz não encontrada.' });
 
+      // Menor com "assistir só de amigos" não espia a prévia da sala: ela mostra a tela de quem estiver transmitindo, e a
+      // prévia não tem como escolher de quem.
+      if (regrasDe(request.user.id)?.assistirSoAmigos) {
+        return reply.code(403).send({ error: 'Por segurança, a prévia das transmissões fica fechada para menores de idade.' });
+      }
       const token = new AccessToken(config.livekit.apiKey, config.livekit.apiSecret, {
         identity: `peek-${request.user.id}`,
         name: request.user.username,

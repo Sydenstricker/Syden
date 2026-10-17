@@ -5858,3 +5858,253 @@ export function definirCargosDeEntrada(communityId: number, cargoIds: number[]) 
 export function entregarCargosDeEntrada(communityId: number, userId: number) {
   for (const cargoId of cargosDeEntrada(communityId)) darCargo(communityId, userId, cargoId);
 }
+
+// ---------------------------------------------------------------------------------------------------
+// A PROTEÇÃO DE CRIANÇAS E ADOLESCENTES (17/10/2026, ECA Digital: ver "Adolescentes no Syden" no CLAUDE.md, e a lógica
+// em protecao.ts). Idade mínima 13; de 13 a 15 a conta é ligada a um responsável (art. 24); o mais protetivo por padrão
+// para menores (arts. 7 e 17). E o banimento geral, que usa a mesma "barreira" na entrada.
+//
+// A DATA DE NASCIMENTO serve SÓ para a faixa etária (art. 13 do ECA Digital: o dado da verificação de idade não tem outro
+// uso). Nunca sai para outra pessoa: nem o responsável a vê, só a faixa. O aniversário do perfil é outra coisa (dia e
+// mês, escolha da pessoa, ver OS ANIVERSÁRIOS).
+// ---------------------------------------------------------------------------------------------------
+addColumnIfMissing('users', 'nascimento', 'TEXT');
+// De onde veio a idade: 'declarada' (o cadastro), e depois 'windows' (o sinal de idade da conta Microsoft) e 'govbr' (o
+// token de idade do governo, quando existir). A verificação é em camadas e trocável.
+addColumnIfMissing('users', 'idade_fonte', 'TEXT');
+// Quando a data foi informada: de 13 a 15, o prazo para ligar o responsável conta daqui (7 dias).
+addColumnIfMissing('users', 'nascimento_em', 'TEXT');
+addColumnIfMissing('users', 'banido_em', 'TEXT');
+addColumnIfMissing('users', 'banido_motivo', 'TEXT');
+// Suspensa por suspeita de idade (menos de 13, ou mentiu: art. 24), com o recurso rápido da própria pessoa.
+addColumnIfMissing('users', 'suspensa_em', 'TEXT');
+addColumnIfMissing('users', 'suspensa_motivo', 'TEXT');
+addColumnIfMissing('users', 'recurso', 'TEXT');
+addColumnIfMissing('users', 'recurso_em', 'TEXT');
+db.exec(`
+  -- A supervisão de um menor: as regras (o mais protetivo de fábrica) e, quando ligado, o responsável. Existe para todo
+  -- menor; o responsável é obrigatório de 13 a 15 anos.
+  CREATE TABLE IF NOT EXISTS supervisao (
+    menor_id             INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    responsavel_id       INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    vinculado_em         TEXT,
+    -- o código que o menor manda ao responsável para ele ligar as contas (vale 7 dias)
+    codigo               TEXT UNIQUE,
+    codigo_em            TEXT,
+    dm_so_amigos         INTEGER NOT NULL DEFAULT 1,
+    transmitir_so_amigos INTEGER NOT NULL DEFAULT 1,
+    assistir_so_amigos   INTEGER NOT NULL DEFAULT 1,
+    -- minutos por dia; null = sem limite
+    limite_minutos       INTEGER
+  );
+  CREATE INDEX IF NOT EXISTS idx_supervisao_responsavel ON supervisao(responsavel_id);
+
+  -- O tempo de uso por dia (horário de Brasília), SÓ de menores: é o que o responsável vê (art. 18) e o que o limite
+  -- diário confere. De adulto não se mede nada.
+  CREATE TABLE IF NOT EXISTS uso_diario (
+    user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    dia      TEXT NOT NULL,
+    segundos INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_id, dia)
+  );
+`);
+
+export interface Protecao {
+  nascimento: string | null;
+  nascimentoEm: string | null;
+  idadeFonte: string | null;
+  banidoEm: string | null;
+  banidoMotivo: string | null;
+  suspensaEm: string | null;
+  suspensaMotivo: string | null;
+  recurso: string | null;
+  recursoEm: string | null;
+}
+
+export function protecaoDe(userId: number): Protecao | undefined {
+  return db
+    .prepare(
+      `SELECT nascimento, nascimento_em AS nascimentoEm, idade_fonte AS idadeFonte, banido_em AS banidoEm, banido_motivo AS banidoMotivo, suspensa_em AS suspensaEm,
+              suspensa_motivo AS suspensaMotivo, recurso, recurso_em AS recursoEm
+         FROM users WHERE id = ?`,
+    )
+    .get(userId) as Protecao | undefined;
+}
+
+export function guardarNascimento(userId: number, nascimento: string, fonte: string) {
+  db.prepare("UPDATE users SET nascimento = ?, idade_fonte = ?, nascimento_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = ?").run(
+    nascimento,
+    fonte,
+    userId,
+  );
+}
+
+export function banir(userId: number, motivo: string) {
+  db.prepare("UPDATE users SET banido_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), banido_motivo = ?, recurso = NULL, recurso_em = NULL WHERE id = ?").run(
+    motivo,
+    userId,
+  );
+}
+
+export function desbanir(userId: number) {
+  db.prepare('UPDATE users SET banido_em = NULL, banido_motivo = NULL, recurso = NULL, recurso_em = NULL WHERE id = ?').run(userId);
+}
+
+export function suspenderPorIdade(userId: number, motivo: string) {
+  db.prepare("UPDATE users SET suspensa_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), suspensa_motivo = ?, recurso = NULL, recurso_em = NULL WHERE id = ?").run(
+    motivo,
+    userId,
+  );
+}
+
+export function levantarSuspensao(userId: number) {
+  db.prepare('UPDATE users SET suspensa_em = NULL, suspensa_motivo = NULL, recurso = NULL, recurso_em = NULL WHERE id = ?').run(userId);
+}
+
+export function guardarRecurso(userId: number, texto: string) {
+  db.prepare("UPDATE users SET recurso = ?, recurso_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = ?").run(texto, userId);
+}
+
+/** Banidos e suspensos, com o recurso de cada um, para o painel de quem cuida do Syden. */
+export function listarBarrados() {
+  return db
+    .prepare(
+      `SELECT id AS userId, username, banido_em AS banidoEm, banido_motivo AS banidoMotivo, suspensa_em AS suspensaEm,
+              suspensa_motivo AS suspensaMotivo, recurso, recurso_em AS recursoEm
+         FROM users WHERE banido_em IS NOT NULL OR suspensa_em IS NOT NULL
+        ORDER BY COALESCE(recurso_em, '') DESC, COALESCE(banido_em, suspensa_em) DESC`,
+    )
+    .all() as unknown as (Omit<Protecao, 'nascimento' | 'nascimentoEm' | 'idadeFonte'> & { userId: number; username: string })[];
+}
+
+export interface Supervisao {
+  menorId: number;
+  responsavelId: number | null;
+  vinculadoEm: string | null;
+  codigo: string | null;
+  codigoEm: string | null;
+  dmSoAmigos: boolean;
+  transmitirSoAmigos: boolean;
+  assistirSoAmigos: boolean;
+  limiteMinutos: number | null;
+}
+
+const supervisaoColunas = `menor_id AS menorId, responsavel_id AS responsavelId, vinculado_em AS vinculadoEm, codigo, codigo_em AS codigoEm,
+  dm_so_amigos AS dmSoAmigos, transmitir_so_amigos AS transmitirSoAmigos, assistir_so_amigos AS assistirSoAmigos, limite_minutos AS limiteMinutos`;
+const comoSupervisao = (r: unknown): Supervisao | undefined => {
+  if (!r) return undefined;
+  const l = r as Record<string, unknown>;
+  return { ...(l as unknown as Supervisao), dmSoAmigos: !!l.dmSoAmigos, transmitirSoAmigos: !!l.transmitirSoAmigos, assistirSoAmigos: !!l.assistirSoAmigos };
+};
+
+/** A supervisão do menor; nasce com o mais protetivo de fábrica na primeira vez que é pedida. */
+export function supervisaoDe(menorId: number): Supervisao {
+  db.prepare('INSERT OR IGNORE INTO supervisao (menor_id) VALUES (?)').run(menorId);
+  return comoSupervisao(db.prepare(`SELECT ${supervisaoColunas} FROM supervisao WHERE menor_id = ?`).get(menorId))!;
+}
+
+/** Só lê (sem criar): quem nunca foi menor não tem linha. */
+export function supervisaoSeHouver(menorId: number): Supervisao | undefined {
+  return comoSupervisao(db.prepare(`SELECT ${supervisaoColunas} FROM supervisao WHERE menor_id = ?`).get(menorId));
+}
+
+export function ajustarSupervisao(
+  menorId: number,
+  regras: Partial<Pick<Supervisao, 'dmSoAmigos' | 'transmitirSoAmigos' | 'assistirSoAmigos' | 'limiteMinutos'>>,
+): Supervisao {
+  supervisaoDe(menorId);
+  const campos: [string, number | null][] = [];
+  if (regras.dmSoAmigos !== undefined) campos.push(['dm_so_amigos', regras.dmSoAmigos ? 1 : 0]);
+  if (regras.transmitirSoAmigos !== undefined) campos.push(['transmitir_so_amigos', regras.transmitirSoAmigos ? 1 : 0]);
+  if (regras.assistirSoAmigos !== undefined) campos.push(['assistir_so_amigos', regras.assistirSoAmigos ? 1 : 0]);
+  if (regras.limiteMinutos !== undefined) campos.push(['limite_minutos', regras.limiteMinutos]);
+  if (campos.length) {
+    db.prepare(`UPDATE supervisao SET ${campos.map(([c]) => `${c} = ?`).join(', ')} WHERE menor_id = ?`).run(...campos.map(([, v]) => v), menorId);
+  }
+  return supervisaoDe(menorId);
+}
+
+export function guardarCodigoDoResponsavel(menorId: number, codigo: string) {
+  supervisaoDe(menorId);
+  db.prepare("UPDATE supervisao SET codigo = ?, codigo_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE menor_id = ?").run(codigo, menorId);
+}
+
+export function supervisaoPeloCodigo(codigo: string): Supervisao | undefined {
+  return comoSupervisao(db.prepare(`SELECT ${supervisaoColunas} FROM supervisao WHERE codigo = ?`).get(codigo));
+}
+
+export function ligarResponsavel(menorId: number, responsavelId: number) {
+  db.prepare(
+    "UPDATE supervisao SET responsavel_id = ?, vinculado_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), codigo = NULL, codigo_em = NULL WHERE menor_id = ?",
+  ).run(responsavelId, menorId);
+}
+
+export function desligarResponsavel(menorId: number) {
+  db.prepare('UPDATE supervisao SET responsavel_id = NULL, vinculado_em = NULL WHERE menor_id = ?').run(menorId);
+}
+
+/** Os menores de quem esta pessoa é responsável. */
+export function menoresDe(responsavelId: number): { menorId: number; username: string; nascimento: string | null }[] {
+  return db
+    .prepare(
+      `SELECT s.menor_id AS menorId, u.username, u.nascimento FROM supervisao s JOIN users u ON u.id = s.menor_id
+        WHERE s.responsavel_id = ? ORDER BY u.username COLLATE NOCASE`,
+    )
+    .all(responsavelId) as { menorId: number; username: string; nascimento: string | null }[];
+}
+
+export function somarUso(userId: number, dia: string, segundos: number) {
+  db.prepare(
+    `INSERT INTO uso_diario (user_id, dia, segundos) VALUES (?, ?, ?)
+     ON CONFLICT(user_id, dia) DO UPDATE SET segundos = segundos + excluded.segundos`,
+  ).run(userId, dia, segundos);
+}
+
+export function usoDoDia(userId: number, dia: string): number {
+  return (db.prepare('SELECT segundos FROM uso_diario WHERE user_id = ? AND dia = ?').get(userId, dia) as { segundos: number } | undefined)?.segundos ?? 0;
+}
+
+export function usoDosDias(userId: number, desde: string): { dia: string; segundos: number }[] {
+  return db.prepare('SELECT dia, segundos FROM uso_diario WHERE user_id = ? AND dia >= ? ORDER BY dia').all(userId, desde) as {
+    dia: string;
+    segundos: number;
+  }[];
+}
+
+/** Os amigos aceitos de alguém (só os ids): a regra "só amigos" do menor confere contra esta lista. */
+export function idsDosAmigos(userId: number): number[] {
+  return (
+    db
+      .prepare(
+        `SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END AS id FROM friendships
+          WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'`,
+      )
+      .all(userId, userId) as { id: number }[]
+  ).map((r) => r.id);
+}
+
+/** As datas de nascimento de várias pessoas (só para calcular a faixa no servidor; nunca sai daqui). */
+export function nascimentosDe(ids: number[]): Map<number, string | null> {
+  const mapa = new Map<number, string | null>();
+  if (!ids.length) return mapa;
+  const linhas = db.prepare(`SELECT id, nascimento FROM users WHERE id IN (${ids.map(() => '?').join(',')})`).all(...ids) as {
+    id: number;
+    nascimento: string | null;
+  }[];
+  for (const l of linhas) mapa.set(l.id, l.nascimento);
+  return mapa;
+}
+
+/** Com quem o menor conversa no particular: o responsável vê quais desses são adultos (art. 18). */
+export function parceirosDeConversa(userId: number): number[] {
+  return (
+    db
+      .prepare(
+        `SELECT DISTINCT cm.user_id AS id FROM channel_members cm
+           JOIN channels ch ON ch.id = cm.channel_id AND ch.type = 'dm'
+           JOIN channel_members eu ON eu.channel_id = ch.id AND eu.user_id = ?
+          WHERE cm.user_id <> ?`,
+      )
+      .all(userId, userId) as { id: number }[]
+  ).map((r) => r.id);
+}
