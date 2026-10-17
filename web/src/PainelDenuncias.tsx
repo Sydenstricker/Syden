@@ -1,19 +1,45 @@
 import { useEffect, useState } from 'react';
 import { Flag } from 'lucide-react';
-import { api } from './api';
-import { useT } from './i18n';
+import { API_URL, api, loadToken } from './api';
+import { chave, useT } from './i18n';
 
 interface Denuncia {
   id: number;
   at: string;
   reporterName: string;
-  kind: 'mensagem' | 'pessoa';
+  kind: 'mensagem' | 'pessoa' | 'transmissao' | 'idade';
   targetName: string | null;
+  temImagem: boolean;
+  grave: boolean;
+  autoridadeEm: string | null;
+  autoridadeProtocolo: string | null;
   snapshot: string | null;
   reason: string;
   status: 'aberta' | 'resolvida';
   resolvedBy: string | null;
   resolution: string | null;
+}
+
+const TIPO = { mensagem: chave('Mensagem'), pessoa: chave('Pessoa'), transmissao: chave('Transmissão'), idade: chave('Idade') } as const;
+
+/** A imagem do momento da transmissão: pedida com a sessão (a rota é só de quem cuida do Syden), nunca guardada. */
+function ImagemDaDenuncia({ id }: { id: number }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    let feito = false;
+    let criada: string | null = null;
+    fetch(`${API_URL}/api/reports/${id}/imagem`, { headers: { authorization: `Bearer ${loadToken() ?? ''}` } })
+      .then((r) => (r.ok ? r.blob() : null))
+      .then((b) => {
+        if (b && !feito) setUrl((criada = URL.createObjectURL(b)));
+      })
+      .catch(() => {});
+    return () => {
+      feito = true;
+      if (criada) URL.revokeObjectURL(criada);
+    };
+  }, [id]);
+  return url ? <img className="denuncia-imagem-painel" src={url} alt="" /> : null;
 }
 
 const quando = (iso: string) => new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
@@ -28,6 +54,7 @@ export function PainelDenuncias() {
   const [erro, setErro] = useState<string | null>(null);
   const [resolvendo, setResolvendo] = useState<number | null>(null);
   const [texto, setTexto] = useState('');
+  const [protocolo, setProtocolo] = useState<Record<number, string>>({});
 
   function carregar() {
     api<{ denuncias: Denuncia[] }>('/api/reports')
@@ -41,6 +68,24 @@ export function PainelDenuncias() {
       await api(`/api/reports/${id}/resolver`, { method: 'POST', body: { resolucao: texto } });
       setResolvendo(null);
       setTexto('');
+      carregar();
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
+
+  async function comunicar(id: number) {
+    try {
+      await api(`/api/reports/${id}/autoridade`, { method: 'POST', body: { protocolo: protocolo[id] ?? '' } });
+      carregar();
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
+
+  async function marcarGrave(id: number, grave: boolean) {
+    try {
+      await api(`/api/reports/${id}/grave`, { method: 'POST', body: { grave } });
       carregar();
     } catch (e) {
       setErro((e as Error).message);
@@ -68,10 +113,11 @@ export function PainelDenuncias() {
       </h3>
       <ul className="denuncias-lista">
         {denuncias.map((d) => (
-          <li key={d.id} className={`denuncia-item${d.status === 'resolvida' ? ' resolvida' : ''}`}>
+          <li key={d.id} className={`denuncia-item${d.status === 'resolvida' ? ' resolvida' : ''}${d.grave ? ' grave' : ''}`}>
             <div className="denuncia-topo">
               <strong>
-                {d.kind === 'mensagem' ? 'Mensagem' : 'Pessoa'}
+                {d.grave && <span className="denuncia-selo-grave">{t('Grave')} · </span>}
+                {t(TIPO[d.kind])}
                 {d.targetName && ` de ${d.targetName}`}
               </strong>
               <small>
@@ -80,6 +126,31 @@ export function PainelDenuncias() {
             </div>
             <p className="denuncia-motivo">{d.reason}</p>
             {d.snapshot && <blockquote className="denuncia-copia">{d.snapshot}</blockquote>}
+            {d.temImagem && <ImagemDaDenuncia id={d.id} />}
+            {/* O CASO GRAVE (ECA Digital, arts. 27 e 28): remover na hora, guardar a prova e comunicar às autoridades.
+                O passo a passo está em docs/autoridades.md; aqui fica o registro de que foi feito. */}
+            {d.grave &&
+              (d.autoridadeEm ? (
+                <p className="settings-hint">
+                  {t('Comunicada às autoridades em {quando}: {protocolo}', { quando: quando(d.autoridadeEm), protocolo: d.autoridadeProtocolo ?? '' })}
+                </p>
+              ) : (
+                <div className="denuncia-autoridade">
+                  <input
+                    value={protocolo[d.id] ?? ''}
+                    onChange={(e) => setProtocolo((p) => ({ ...p, [d.id]: e.target.value }))}
+                    placeholder={t('Para quem foi comunicado e o protocolo (ex.: SaferNet 123)')}
+                  />
+                  <button type="button" className="btn-primary" disabled={!(protocolo[d.id] ?? '').trim()} onClick={() => comunicar(d.id)}>
+                    {t('Registrar a comunicação')}
+                  </button>
+                </div>
+              ))}
+            {!d.autoridadeEm && (
+              <button type="button" className="btn-secondary" onClick={() => marcarGrave(d.id, !d.grave)}>
+                {d.grave ? t('Não é grave') : t('Marcar como grave')}
+              </button>
+            )}
 
             {d.status === 'resolvida' ? (
               <p className="settings-hint">

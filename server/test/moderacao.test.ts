@@ -80,6 +80,62 @@ describe('denunciar', () => {
   });
 });
 
+describe('denunciar uma transmissão e a idade (ECA Digital, 17/10/2026)', () => {
+  // um PNG de 1 × 1, o quadro da tela no momento
+  const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+  let voz: { id: number };
+  let comunidadeId: number;
+
+  before(async () => {
+    const lista = (await dono('GET', '/api/communities')).json();
+    comunidadeId = (lista.communities ?? lista).find((c: { name: string }) => c.name === 'Praça').id;
+    voz = (await dono('POST', `/api/communities/${comunidadeId}/channels`, { name: 'sala', type: 'voice' })).json();
+  });
+
+  it('quem vê denuncia quem transmite, com a imagem do momento, que só quem cuida do Syden abre', async () => {
+    const r = await bia('POST', '/api/reports', { tipo: 'transmissao', alvo: biaId, canal: voz.id, imagem: PNG, motivo: 'mostrou algo horrível', grave: true });
+    assert.equal(r.statusCode, 200);
+    const id = r.json().id;
+    const denuncia = (await dono('GET', '/api/reports')).json().denuncias.find((d: { id: number }) => d.id === id);
+    assert.equal(denuncia.kind, 'transmissao');
+    assert.equal(denuncia.temImagem, true);
+    assert.equal(denuncia.grave, true);
+    assert.equal(denuncia.channelId, voz.id);
+    const imagem = await dono('GET', `/api/reports/${id}/imagem`);
+    assert.equal(imagem.statusCode, 200);
+    assert.equal(imagem.headers['content-type'], 'image/png');
+    assert.equal((await bia('GET', `/api/reports/${id}/imagem`)).statusCode, 403);
+  });
+
+  it('não deixa denunciar a transmissão de uma sala que a pessoa não enxerga', async () => {
+    const r = await estranho('POST', '/api/reports', { tipo: 'transmissao', alvo: biaId, canal: voz.id, motivo: 'chute no escuro' });
+    assert.equal(r.statusCode, 404);
+  });
+
+  it('recusa o que não é imagem', async () => {
+    const r = await bia('POST', '/api/reports', { tipo: 'transmissao', alvo: biaId, canal: voz.id, imagem: 'data:image/png;base64,AAAA', motivo: 'imagem falsa' });
+    assert.equal(r.statusCode, 400);
+  });
+
+  it('denunciar a idade de alguém (parece ter menos de 13)', async () => {
+    const r = await bia('POST', '/api/reports', { tipo: 'idade', alvo: biaId, motivo: 'disse que tem 11 anos' });
+    assert.equal(r.statusCode, 200);
+  });
+
+  it('as graves vêm primeiro, e a comunicação às autoridades fica registrada com o protocolo', async () => {
+    const lista = (await dono('GET', '/api/reports')).json().denuncias;
+    assert.equal(lista[0].grave, true, 'a grave no topo');
+    const id = lista[0].id;
+    assert.equal((await dono('POST', `/api/reports/${id}/autoridade`, { protocolo: '' })).statusCode, 400);
+    const feita = (await dono('POST', `/api/reports/${id}/autoridade`, { protocolo: 'SaferNet 2026-123' })).json();
+    assert.equal(feita.autoridadeProtocolo, 'SaferNet 2026-123');
+    assert.ok(feita.autoridadeEm);
+    assert.equal((await bia('POST', `/api/reports/${id}/autoridade`, { protocolo: 'x' })).statusCode, 403);
+    const auditoria = (await dono('GET', '/api/audit')).json();
+    assert.ok(auditoria.some((l: { action: string }) => l.action === 'denuncia.autoridade'));
+  });
+});
+
 describe('levar os meus dados embora (LGPD)', () => {
   it('entrega um arquivo com o que o Syden guarda sobre a pessoa', async () => {
     const resposta = await bia('GET', '/api/me/dados');

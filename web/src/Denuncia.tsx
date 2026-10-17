@@ -17,11 +17,20 @@ export function DialogoDeDenuncia({
   aoFechar,
 }: {
   titulo: string;
-  corpo: { tipo: 'mensagem' | 'pessoa'; alvo: number };
+  /**
+   * 'transmissao' (17/10/2026, o caso Discord) leva o canal e a imagem do momento, tirada da tela de quem assiste;
+   * 'idade' é "parece ter menos de 13 anos, ou mentiu a idade" (ECA Digital, art. 24).
+   */
+  corpo:
+    | { tipo: 'mensagem' | 'pessoa' | 'idade'; alvo: number }
+    | { tipo: 'transmissao'; alvo: number; canal: number; imagem?: string | null };
   aoFechar: () => void;
 }) {
   const t = useT();
   const [motivo, setMotivo] = useState('');
+  // "Envolve risco a criança ou adolescente": vai para o topo, com prazo para remover e comunicar às autoridades.
+  const [grave, setGrave] = useState(false);
+  const [comImagem, setComImagem] = useState(true);
   const [enviada, setEnviada] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState(false);
@@ -31,7 +40,8 @@ export function DialogoDeDenuncia({
     setOcupado(true);
     setErro(null);
     try {
-      await api('/api/reports', { method: 'POST', body: { ...corpo, motivo } });
+      const enviar = corpo.tipo === 'transmissao' && !comImagem ? { ...corpo, imagem: undefined } : corpo;
+      await api('/api/reports', { method: 'POST', body: { ...enviar, motivo, grave } });
       setEnviada(true);
     } catch (e) {
       setErro((e as Error).message);
@@ -69,6 +79,19 @@ export function DialogoDeDenuncia({
                 autoFocus
                 placeholder={t('O que aconteceu?')}
               />
+            </label>
+            {corpo.tipo === 'transmissao' && corpo.imagem && (
+              <label className="denuncia-imagem">
+                <img src={corpo.imagem} alt={t('A imagem da transmissão neste momento')} />
+                <span>
+                  <input type="checkbox" checked={comImagem} onChange={(e) => setComImagem(e.target.checked)} />{' '}
+                  {t('Enviar esta imagem junto (só quem cuida do Syden vê)')}
+                </span>
+              </label>
+            )}
+            <label className="denuncia-grave">
+              <input type="checkbox" checked={grave} onChange={(e) => setGrave(e.target.checked)} />{' '}
+              {t('Envolve risco a uma criança ou adolescente')}
             </label>
             {erro && <p className="form-error">{erro}</p>}
             <div className="dialog-actions">

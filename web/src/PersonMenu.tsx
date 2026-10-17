@@ -8,6 +8,7 @@ import { Ban,
   MessageSquare,
   MicOff,
   MonitorPlay,
+  MonitorX,
   PenLine,
   PhoneOff,
   ShieldOff,
@@ -142,6 +143,8 @@ export function PersonMenu({
     aoAlternarSemVideo: () => void;
     minhaCamera: boolean;
     aoAlternarMinhaCamera: () => void;
+    /** O quadro aberto mostra vídeo de outra pessoa: tira a imagem do momento, para a denúncia de transmissão. */
+    quadroDoVideo?: () => string | null;
   };
 }) {
   const t = useT();
@@ -158,6 +161,7 @@ export function PersonMenu({
   const [apelidando, setApelidando] = useState(false);
   const [apelido, setApelido] = useState(membro?.apelido ?? '');
   const [denunciando, setDenunciando] = useState(false);
+  const [denunciandoTransmissao, setDenunciandoTransmissao] = useState<{ imagem: string | null } | null>(null);
 
   const bloqueados = useBloqueados();
   const bloqueado = bloqueados.has(target.userId);
@@ -522,6 +526,21 @@ export function PersonMenu({
         </>
       )}
 
+      {palco?.quadroDoVideo && !isSelf && channelId !== null && (
+        <Item icone={<Flag size={16} />} onClick={() => setDenunciandoTransmissao({ imagem: palco.quadroDoVideo!() })}>
+          {t('Denunciar esta transmissão')}
+        </Item>
+      )}
+      {denunciandoTransmissao && channelId !== null && (
+        <DialogoDeDenuncia
+          titulo={t('Denunciar a transmissão de {nome}', { nome: target.username })}
+          corpo={{ tipo: 'transmissao', alvo: target.userId, canal: channelId, imagem: denunciandoTransmissao.imagem }}
+          aoFechar={() => {
+            setDenunciandoTransmissao(null);
+            onClose();
+          }}
+        />
+      )}
       {denunciando && (
         <DialogoDeDenuncia
           titulo={t('Denunciar {nome}', { nome: target.username })}
@@ -543,6 +562,12 @@ export function PersonMenu({
               <Item icone={<MicOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/mute`, { muted: true })}>
                 {t('Silenciar microfone para todos')}
               </Item>
+              {/* Cortar só a tela e a câmera, sem tirar da chamada (17/10/2026, o caso Discord). */}
+              {inVoiceChannel === channelId && (
+                <Item icone={<MonitorX size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/parar-video`, {})}>
+                  {t('Cortar a transmissão e a câmera')}
+                </Item>
+              )}
               <Item icone={<PhoneOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/kick`, {})}>
                 {t('Desconectar da chamada')}
               </Item>

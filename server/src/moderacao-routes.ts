@@ -7,12 +7,17 @@
  */
 import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
+import { abrirArquivo, arquivoExiste, guardarArquivo } from './arquivos.js';
 import * as db from './db.js';
+import { entregarArquivo } from './entregar.js';
+import { decodeDataUrl, sniffMime } from './media.js';
 import { emitToUser } from './realtime.js';
 import { requireUser } from './routes.js';
 
 /** Quantas denúncias uma pessoa pode abrir por dia. Quem denuncia tudo o tempo todo também é um problema. */
 const DENUNCIAS_POR_DIA = 20;
+/** A imagem do momento da transmissão: um quadro da tela, em PNG ou JPEG. */
+const MAX_IMAGEM_DA_DENUNCIA = 4 * 1024 * 1024;
 
 export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
   app.register(async (authed) => {
@@ -20,10 +25,18 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
 
     // ---------- Denunciar ----------
 
-    authed.post<{ Body: { tipo?: string; alvo?: number; motivo?: string } }>('/api/reports', async (request, reply) => {
+    authed.post<{ Body: { tipo?: string; alvo?: number; motivo?: string; canal?: number; imagem?: string; grave?: boolean } }>(
+      '/api/reports',
+      { bodyLimit: Math.ceil(MAX_IMAGEM_DA_DENUNCIA * 1.4) + 64 * 1024 },
+      async (request, reply) => {
       const tipo = request.body?.tipo;
       const motivo = String(request.body?.motivo ?? '').trim();
-      if (tipo !== 'mensagem' && tipo !== 'pessoa') return reply.code(400).send({ error: 'Tipo de denúncia inválido.' });
+      // "Envolve risco a criança ou adolescente": quem denuncia marca, e a denúncia vai para o topo do painel, com o
+      // lembrete de remover e comunicar às autoridades (ECA Digital, arts. 27 e 28).
+      const grave = request.body?.grave === true;
+      if (tipo !== 'mensagem' && tipo !== 'pessoa' && tipo !== 'transmissao' && tipo !== 'idade') {
+        return reply.code(400).send({ error: 'Tipo de denúncia inválido.' });
+      }
       if (motivo.length < 3 || motivo.length > 1000) {
         return reply.code(400).send({ error: 'Conte em poucas palavras o que houve (de 3 a 1000 caracteres).' });
       }
@@ -52,18 +65,57 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           snapshot: (db.findMessageContent(mensagem.id) ?? '').slice(0, 2000),
           reason: motivo,
           communityId: canal.communityId,
+          grave,
+        };
+      } else if (tipo === 'transmissao') {
+        // A TRANSMISSÃO (17/10/2026, o caso Discord): quem assiste denuncia quem transmite, com a imagem do momento.
+        // Nada é gravado no Syden; a imagem é a prova, tirada por quem viu, e só quem cuida do Syden a abre.
+        const pessoa = db.findUserById(alvo);
+        const canal = db.findChannel(Number(request.body?.canal));
+        if (!pessoa || !canal || canal.type !== 'voice' || !podeVer(request.user, canal)) {
+          return reply.code(404).send({ error: 'Transmissão não encontrada.' });
+        }
+        let sha: string | null = null;
+        let ehGrave = grave;
+        if (request.body?.imagem) {
+          const bytes = decodeDataUrl(request.body.imagem, MAX_IMAGEM_DA_DENUNCIA);
+          if (typeof bytes === 'string') return reply.code(400).send({ error: bytes });
+          const mime = sniffMime(bytes);
+          if (mime !== 'image/png' && mime !== 'image/jpeg') return reply.code(400).send({ error: 'Imagem inválida.' });
+          // A imagem passa pelo Shield como qualquer outra; aqui ela NÃO é recusada (é a prova), mas a correspondência
+          // marca a denúncia como grave e fica anotada para quem cuida do Syden.
+          const { conferir, anotarBloqueio } = await import('./shield.js');
+          const veredito = await conferir(bytes, mime);
+          if (veredito.veredito === 'bloqueado') {
+            anotarBloqueio(veredito, 'denuncia-de-transmissao', pessoa.id);
+            ehGrave = true;
+          }
+          sha = guardarArquivo(bytes).sha;
+        }
+        dados = {
+          reporter: request.user,
+          kind: 'transmissao',
+          targetId: pessoa.id,
+          targetName: pessoa.username,
+          reason: motivo,
+          communityId: canal.communityId,
+          channelId: canal.id,
+          sha,
+          grave: ehGrave,
         };
       } else {
+        // 'pessoa', e 'idade' (parece ter menos de 13 anos, ou mentiu a idade: art. 24 do ECA Digital)
         const pessoa = db.findUserById(alvo);
         if (!pessoa) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
-        dados = { reporter: request.user, kind: 'pessoa', targetId: pessoa.id, targetName: pessoa.username, reason: motivo };
+        dados = { reporter: request.user, kind: tipo, targetId: pessoa.id, targetName: pessoa.username, reason: motivo, grave };
       }
 
       const denuncia = db.criarDenuncia(dados);
       // Quem cuida do Syden vê o aviso na hora, sem precisar ficar conferindo o painel.
       for (const admin of db.listAdmins()) emitToUser(io, admin.id, 'report:new', { abertas: db.contarDenunciasAbertas() });
       return { ok: true, id: denuncia.id };
-    });
+      },
+    );
 
     // ---------- Ver e resolver (só quem cuida do Syden) ----------
 
@@ -86,6 +138,45 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
         target: `#${denuncia.id} sobre ${denuncia.targetName ?? 'alguém'}`,
         detail: resolucao,
       });
+      return denuncia;
+    });
+
+    /** A imagem do momento de uma denúncia de transmissão. Só para quem cuida do Syden, e nunca em cache. */
+    authed.get<{ Params: { id: string } }>('/api/reports/:id/imagem', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem as denúncias.' });
+      const sha = db.imagemDaDenuncia(Number(request.params.id));
+      if (!sha || !arquivoExiste(sha)) return reply.code(404).send({ error: 'Esta denúncia não tem imagem.' });
+      const cabeca = await new Promise<Buffer>((ok, falha) => {
+        const partes: Buffer[] = [];
+        abrirArquivo(sha, 0, 15)
+          .on('data', (c) => partes.push(Buffer.from(c)))
+          .on('end', () => ok(Buffer.concat(partes)))
+          .on('error', falha);
+      });
+      return entregarArquivo(request, reply, { mime: sniffMime(cabeca) ?? 'application/octet-stream', sha }, { 'cache-control': 'no-store' });
+    });
+
+    /** Grave ou não: quem cuida do Syden corrige a marca de quem denunciou. */
+    authed.post<{ Params: { id: string }; Body: { grave?: boolean } }>('/api/reports/:id/grave', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores mexem nas denúncias.' });
+      const denuncia = db.marcarDenunciaGrave(Number(request.params.id), request.body?.grave === true);
+      if (!denuncia) return reply.code(404).send({ error: 'Denúncia não encontrada.' });
+      db.registrarAuditoria({ actor: request.user, action: 'denuncia.grave', target: `#${denuncia.id}`, detail: denuncia.grave ? 'grave' : 'não grave' });
+      return denuncia;
+    });
+
+    /**
+     * A COMUNICAÇÃO ÀS AUTORIDADES (ECA Digital, arts. 27 e 28; o passo a passo está em docs/autoridades.md): quem cuida
+     * do Syden comunica fora do app (SaferNet, Polícia Federal) e registra aqui para quem e com que protocolo. O registro
+     * fica para sempre: é o que mostra que a obrigação foi cumprida.
+     */
+    authed.post<{ Params: { id: string }; Body: { protocolo?: string } }>('/api/reports/:id/autoridade', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores mexem nas denúncias.' });
+      const protocolo = String(request.body?.protocolo ?? '').trim().slice(0, 200);
+      if (!protocolo) return reply.code(400).send({ error: 'Escreva para quem foi comunicado e o protocolo recebido.' });
+      const denuncia = db.registrarComunicacaoAutoridade(Number(request.params.id), protocolo);
+      if (!denuncia) return reply.code(404).send({ error: 'Denúncia não encontrada.' });
+      db.registrarAuditoria({ actor: request.user, action: 'denuncia.autoridade', target: `#${denuncia.id}`, detail: protocolo });
       return denuncia;
     });
 

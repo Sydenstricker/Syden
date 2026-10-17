@@ -86,6 +86,23 @@ function cardSize(count: number) {
   return { width: 180, avatar: 56 };
 }
 
+/** O quadro de agora de um vídeo, em JPEG (no máximo 1280 de largura), ou null se ele ainda não tem imagem. */
+function quadroDoVideo(video: HTMLVideoElement): string | null {
+  if (!video.videoWidth || !video.videoHeight) return null;
+  const escala = Math.min(1, 1280 / video.videoWidth);
+  const c = document.createElement('canvas');
+  c.width = Math.round(video.videoWidth * escala);
+  c.height = Math.round(video.videoHeight * escala);
+  const g = c.getContext('2d');
+  if (!g) return null;
+  g.drawImage(video, 0, 0, c.width, c.height);
+  try {
+    return c.toDataURL('image/jpeg', 0.85);
+  } catch {
+    return null;
+  }
+}
+
 export function VoiceStage({
   channel,
   voice,
@@ -1524,6 +1541,8 @@ function Stage({
             aoAlternarSemVideo: () => updateSettings({ mostrarSemVideo: !ajustes.mostrarSemVideo }),
             minhaCamera: ajustes.mostrarMinhaCamera,
             aoAlternarMinhaCamera: () => updateSettings({ mostrarMinhaCamera: !ajustes.mostrarMinhaCamera }),
+            // A imagem do momento, para a denúncia de transmissão: o quadro que quem denuncia está vendo agora.
+            quadroDoVideo: videoDoMenu ? () => quadroDoVideo(videoDoMenu) : undefined,
           }}
         />
       )}

@@ -48,7 +48,7 @@ import { isolar } from './bidi';
 import { chave, t, useT } from './i18n';
 import { MOLDURAS } from './guardaRoupa';
 import { IdiomaSection } from './IdiomaSection';
-import { api, mediaUrl, saveToken } from './api';
+import { API_URL, api, loadToken, mediaUrl, saveToken } from './api';
 import { procurarRepetidos } from './somParecido';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
@@ -521,6 +521,8 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
 
       <OutrosAparelhos />
 
+      <LevarMeusDados />
+
       <DeleteAccount onDeleted={onDeleted} temSenha={temSenha !== false} username={user.username} />
 
       {/* Com a barra na frente: estas páginas moram na raiz do site, e o Syden mora em /app/. Sem ela
@@ -534,6 +536,45 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
           {t('Termos de uso')}
         </a>
       </p>
+    </>
+  );
+}
+
+/**
+ * LEVAR SEUS DADOS (LGPD, art. 18): a política prometia o botão, e a tela não tinha (achado de 17/10/2026). Baixa o
+ * arquivo com tudo o que o Syden guarda sobre a pessoa (GET /api/me/dados), em JSON, que qualquer programa lê.
+ */
+function LevarMeusDados() {
+  const t = useT();
+  const [erro, setErro] = useState<string | null>(null);
+  const [baixando, setBaixando] = useState(false);
+  async function baixar() {
+    setBaixando(true);
+    setErro(null);
+    try {
+      const r = await fetch(`${API_URL}/api/me/dados`, { headers: { authorization: `Bearer ${loadToken() ?? ''}` } });
+      if (!r.ok) throw new Error(t('Não deu para gerar o arquivo agora. Tente de novo.'));
+      const url = URL.createObjectURL(await r.blob());
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'meus-dados-no-syden.json';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+    setBaixando(false);
+  }
+  return (
+    <>
+      <h3>{t('Levar seus dados')}</h3>
+      <div className="settings-card">
+        <p className="settings-hint">{t('Baixa um arquivo com tudo o que o Syden guarda sobre você.')}</p>
+        <button type="button" className="btn-secondary" disabled={baixando} onClick={() => void baixar()}>
+          {baixando ? t('Gerando…') : t('Baixar meus dados')}
+        </button>
+        {erro && <p className="form-error">{erro}</p>}
+      </div>
     </>
   );
 }

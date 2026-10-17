@@ -1155,6 +1155,49 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true };
     });
 
+    /**
+     * CORTAR A TRANSMISSÃO (17/10/2026, o caso Discord): quem administra a comunidade, ou quem cuida do Syden, tira a
+     * tela e a câmera de alguém sem tirá-lo da chamada. A trava é na PERMISSÃO do LiveKit (só o microfone, até sair da
+     * sala), e não num aviso: a tela some para todos na hora, e um cliente modificado não consegue publicar de novo.
+     */
+    authed.post<{ Params: { id: string }; Body: { userId?: number } }>('/api/channels/:id/parar-video', async (request, reply) => {
+      const channel = channelAccess(request, reply, false);
+      if (!channel) return reply;
+      const role = roleIn(request.user, channel.communityId);
+      if (!manages(role) && !request.user.isAdmin) {
+        return reply.code(403).send({ error: 'Só quem administra a comunidade pode cortar a transmissão de alguém.' });
+      }
+      const targetId = Number(request.body?.userId);
+      const targetRole = db.memberRole(channel.communityId, targetId);
+      if (!targetRole) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
+      if (targetRole === 'owner' && role !== 'owner' && !request.user.isAdmin) {
+        return reply.code(403).send({ error: 'Quem criou a comunidade não pode ter a transmissão cortada.' });
+      }
+      const room = voiceRoomName(channel.id);
+      const participants = await rooms.listParticipants(room).catch(() => []);
+      const target = participants.find((p) => p.identity === String(targetId));
+      if (!target) return reply.code(404).send({ error: 'Essa pessoa não está nesta sala.' });
+      await rooms
+        .updateParticipant(room, String(targetId), undefined, {
+          canPublish: true,
+          canSubscribe: true,
+          canPublishData: true,
+          canPublishSources: [TrackSource.MICROPHONE],
+        })
+        .catch(() => {});
+      for (const track of target.tracks) {
+        if (track.source !== TrackSource.MICROPHONE) await rooms.mutePublishedTrack(room, String(targetId), track.sid, true).catch(() => {});
+      }
+      db.registrarAuditoria({
+        actor: request.user,
+        action: 'transmissao.cortada',
+        target: db.findUserById(targetId)?.username ?? String(targetId),
+        communityId: channel.communityId,
+        detail: `sala #${channel.id}`,
+      });
+      return { ok: true };
+    });
+
     // Erro no app de alguém (microfone, câmera, conexão): vai para o diário da aba de saúde, para o
     // administrador enxergar problemas que acontecem no computador dos outros.
     // `onde` é "app 0.1.7" ou "Chrome 154" (ver ondeRoda.ts, no site), para comparar onde dá mais problema.

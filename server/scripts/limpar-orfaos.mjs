@@ -23,7 +23,7 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { CAMINHO_DO_BANCO, PASTA_DOS_ARQUIVOS } from './mover-arquivos.mjs';
 
-const TABELAS = ['avatars', 'community_icons', 'community_banners', 'emojis', 'emoji_pack_items', 'sounds', 'karaoke_songs', 'attachments'];
+const TABELAS = ['avatars', 'community_icons', 'community_banners', 'emojis', 'emoji_pack_items', 'sounds', 'karaoke_songs', 'attachments', 'reports'];
 
 const apagar = process.argv.includes('--apagar');
 const emMB = (bytes) => (bytes / 1024 / 1024).toFixed(1) + ' MB';

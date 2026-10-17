@@ -137,6 +137,7 @@ export function ThreadPanel({
               onDelete={() => {}}
               onPollChange={() => {}}
               onReactionsChange={onParentReactionsChange}
+              meuId={user.id}
             />
             <div className="thread-parent-line">{t('Respostas')}</div>
           </div>
@@ -158,6 +159,7 @@ export function ThreadPanel({
               canDelete={canManage(message)}
               canManagePoll={canManage(message)}
               onDelete={onDeleteMessage}
+              meuId={user.id}
               onPollChange={(poll) => setMessages((list) => replacePoll(list, poll))}
               onReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}
             />

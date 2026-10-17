@@ -228,6 +228,7 @@ export function TextChannel({
                 onOpenThread={setOpenThread}
                 onCreateThread={setThreadFor}
                 onAcolher={user.isOwner ? acolherIdeia : undefined}
+                meuId={user.id}
               />
             );
           })}

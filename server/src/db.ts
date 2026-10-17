@@ -1072,6 +1072,42 @@ migrar(MEDALHA_VIRA_ITEM, () => {
     WHERE accepted_ideas > 0 AND (vitrine IS NULL OR vitrine = '');
   `);
 });
+// AS DENÚNCIAS DE TRANSMISSÃO E DE IDADE (17/10/2026, depois do caso Discord: ver "Adolescentes no Syden" no CLAUDE.md).
+// O tipo era preso a 'mensagem' | 'pessoa' por um CHECK, e mudar um CHECK no SQLite é recriar a tabela (os ids ficam).
+// Chegam junto: a imagem do momento (sha, no disco como os anexos; a limpeza de órfãos olha esta coluna), o canal, e o
+// registro de quando e com que protocolo o caso foi comunicado às autoridades (ECA Digital, arts. 27 e 28).
+migrar('2026-10-17-denuncias-de-transmissao-e-idade', () => {
+  db.exec(`
+    CREATE TABLE reports_new (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+      reporter_id   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      reporter_name TEXT NOT NULL,
+      kind          TEXT NOT NULL CHECK (kind IN ('mensagem', 'pessoa', 'transmissao', 'idade')),
+      target_id     INTEGER,
+      target_name   TEXT,
+      snapshot      TEXT,
+      reason        TEXT NOT NULL,
+      community_id  INTEGER,
+      status        TEXT NOT NULL DEFAULT 'aberta' CHECK (status IN ('aberta', 'resolvida')),
+      resolved_by   TEXT,
+      resolved_at   TEXT,
+      resolution    TEXT,
+      sha           TEXT,
+      channel_id    INTEGER,
+      grave         INTEGER NOT NULL DEFAULT 0,
+      autoridade_em TEXT,
+      autoridade_protocolo TEXT
+    );
+    INSERT INTO reports_new (id, at, reporter_id, reporter_name, kind, target_id, target_name, snapshot, reason, community_id,
+      status, resolved_by, resolved_at, resolution)
+    SELECT id, at, reporter_id, reporter_name, kind, target_id, target_name, snapshot, reason, community_id,
+      status, resolved_by, resolved_at, resolution FROM reports;
+    DROP TABLE reports;
+    ALTER TABLE reports_new RENAME TO reports;
+    CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, id DESC);
+  `);
+});
 // De qual pacote o emoji veio, para dar para tirar o pacote inteiro depois. Null = enviado à mão.
 addColumnIfMissing('emojis', 'pack_id', 'INTEGER');
 // Recados em vídeo de tela ocupam muito espaço, então têm prazo: passado o dia marcado, somem sozinhos.
@@ -1695,9 +1731,17 @@ export interface Denuncia {
   id: number;
   at: string;
   reporterName: string;
-  kind: 'mensagem' | 'pessoa';
+  kind: TipoDeDenuncia;
   targetId: number | null;
   targetName: string | null;
+  /** Na de transmissão, há a imagem do momento (servida só a quem cuida do Syden). */
+  temImagem: boolean;
+  channelId: number | null;
+  /** Grave (abuso, aliciamento, exploração de criança ou adolescente): fica no topo e pede a comunicação às autoridades. */
+  grave: boolean;
+  /** Quando e com que protocolo foi comunicada às autoridades (ECA Digital, arts. 27 e 28). */
+  autoridadeEm: string | null;
+  autoridadeProtocolo: string | null;
   /** Cópia do que foi denunciado, para o caso de sumir antes de alguém olhar. */
   snapshot: string | null;
   reason: string;
@@ -1708,22 +1752,28 @@ export interface Denuncia {
   resolution: string | null;
 }
 
+export type TipoDeDenuncia = 'mensagem' | 'pessoa' | 'transmissao' | 'idade';
 const denunciaColumns = `id, at, reporter_name AS reporterName, kind, target_id AS targetId, target_name AS targetName,
-  snapshot, reason, community_id AS communityId, status, resolved_by AS resolvedBy, resolved_at AS resolvedAt, resolution`;
+  snapshot, reason, community_id AS communityId, status, resolved_by AS resolvedBy, resolved_at AS resolvedAt, resolution,
+  sha IS NOT NULL AS temImagem, channel_id AS channelId, grave, autoridade_em AS autoridadeEm, autoridade_protocolo AS autoridadeProtocolo`;
+const comoDenuncia = (r: unknown) => (r ? ({ ...(r as Denuncia), temImagem: !!(r as { temImagem: unknown }).temImagem, grave: !!(r as { grave: unknown }).grave }) : undefined);
 
 export function criarDenuncia(entrada: {
   reporter: { id: number; username: string };
-  kind: 'mensagem' | 'pessoa';
+  kind: TipoDeDenuncia;
   targetId?: number | null;
   targetName?: string | null;
   snapshot?: string | null;
   reason: string;
   communityId?: number | null;
+  sha?: string | null;
+  channelId?: number | null;
+  grave?: boolean;
 }): Denuncia {
   const { lastInsertRowid } = db
     .prepare(
-      `INSERT INTO reports (reporter_id, reporter_name, kind, target_id, target_name, snapshot, reason, community_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO reports (reporter_id, reporter_name, kind, target_id, target_name, snapshot, reason, community_id, sha, channel_id, grave)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       entrada.reporter.id,
@@ -1734,13 +1784,37 @@ export function criarDenuncia(entrada: {
       entrada.snapshot ?? null,
       entrada.reason,
       entrada.communityId ?? null,
+      entrada.sha ?? null,
+      entrada.channelId ?? null,
+      entrada.grave ? 1 : 0,
     );
-  return db.prepare(`SELECT ${denunciaColumns} FROM reports WHERE id = ?`).get(Number(lastInsertRowid)) as unknown as Denuncia;
+  return comoDenuncia(db.prepare(`SELECT ${denunciaColumns} FROM reports WHERE id = ?`).get(Number(lastInsertRowid)))!;
+}
+
+export function acharDenuncia(id: number): Denuncia | undefined {
+  return comoDenuncia(db.prepare(`SELECT ${denunciaColumns} FROM reports WHERE id = ?`).get(id));
+}
+
+/** Onde mora a imagem da denúncia de transmissão (só para quem cuida do Syden ver). */
+export function imagemDaDenuncia(id: number): string | null {
+  return (db.prepare('SELECT sha FROM reports WHERE id = ?').get(id) as { sha: string | null } | undefined)?.sha ?? null;
+}
+
+export function marcarDenunciaGrave(id: number, grave: boolean): Denuncia | undefined {
+  db.prepare('UPDATE reports SET grave = ? WHERE id = ?').run(grave ? 1 : 0, id);
+  return acharDenuncia(id);
+}
+
+/** Registra a comunicação às autoridades: o caso grave fica marcado com a data e o protocolo recebido. */
+export function registrarComunicacaoAutoridade(id: number, protocolo: string): Denuncia | undefined {
+  db.prepare("UPDATE reports SET grave = 1, autoridade_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), autoridade_protocolo = ? WHERE id = ?").run(protocolo, id);
+  return acharDenuncia(id);
 }
 
 export function listarDenuncias(status?: 'aberta' | 'resolvida'): Denuncia[] {
-  const sql = `SELECT ${denunciaColumns} FROM reports ${status ? 'WHERE status = ?' : ''} ORDER BY id DESC LIMIT 300`;
-  return (status ? db.prepare(sql).all(status) : db.prepare(sql).all()) as unknown as Denuncia[];
+  // as graves primeiro: são as que têm prazo (remover e comunicar)
+  const sql = `SELECT ${denunciaColumns} FROM reports ${status ? 'WHERE status = ?' : ''} ORDER BY grave DESC, id DESC LIMIT 300`;
+  return (status ? db.prepare(sql).all(status) : db.prepare(sql).all()).map((r) => comoDenuncia(r)!);
 }
 
 export function contarDenunciasAbertas(): number {
@@ -1751,7 +1825,7 @@ export function resolverDenuncia(id: number, quem: string, resolucao: string): D
   db.prepare(
     "UPDATE reports SET status = 'resolvida', resolved_by = ?, resolution = ?, resolved_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = ? AND status = 'aberta'",
   ).run(quem, resolucao, id);
-  return db.prepare(`SELECT ${denunciaColumns} FROM reports WHERE id = ?`).get(id) as unknown as Denuncia | undefined;
+  return acharDenuncia(id);
 }
 
 /** Quantas denúncias esta pessoa já abriu hoje: quem denuncia tudo o tempo todo também é um problema. */

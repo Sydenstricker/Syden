@@ -1,4 +1,5 @@
-import { Download, FileText, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { DialogoDeDenuncia } from './Denuncia';
 import { BotaoDeLembrete } from './Lembrete';
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -234,6 +235,7 @@ export function MessageItem({
   onOpenThread,
   onCreateThread,
   onAcolher,
+  meuId,
 }: {
   message: Message;
   grouped: boolean;
@@ -247,8 +249,12 @@ export function MessageItem({
   onCreateThread?: (message: Message) => void;
   /** Só para quem cuida do Syden, e só em mensagem de ideia: o joinha que acolhe a sugestão. */
   onAcolher?: (message: Message) => void;
+  /** Quem está lendo: a mensagem dos outros ganha o "Denunciar" (a própria, não). */
+  meuId?: number;
 }) {
   const t = useT();
+  const [denunciando, setDenunciando] = useState(false);
+  const podeDenunciar = meuId !== undefined && message.author.id !== meuId && !message.author.app;
   async function reactWith(emoji: string) {
     try {
       const reactions = await api<Reaction[]>(`/api/messages/${message.id}/reactions`, { method: 'POST', body: { emoji } });
@@ -296,6 +302,25 @@ export function MessageItem({
         >
           <MessageSquarePlus size={16} />
         </button>
+      )}
+      {/* Denunciar fica para qualquer pessoa, e não só para quem modera (os termos, seção 5): é quem não tem poder nenhum
+          que precisa de um caminho para dizer que algo está errado. */}
+      {podeDenunciar && (
+        <button
+          className="message-action"
+          title={t('Denunciar mensagem')}
+          aria-label={t('Denunciar mensagem')}
+          onClick={() => setDenunciando(true)}
+        >
+          <Flag size={16} />
+        </button>
+      )}
+      {denunciando && (
+        <DialogoDeDenuncia
+          titulo={t('Denunciar mensagem')}
+          corpo={{ tipo: 'mensagem', alvo: message.id }}
+          aoFechar={() => setDenunciando(false)}
+        />
       )}
       {canDelete && (
         <button
