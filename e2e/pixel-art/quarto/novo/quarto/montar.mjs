@@ -184,7 +184,7 @@ for (const tipo of CENA === 'salao' ? ['tijolo', 'original', 'arco', 'redonda', 
   const d = path.join(JAN_DIR, tipo);
   if (!fs.existsSync(path.join(d, 'janela.json'))) continue;
   JANELAS[tipo] = JSON.parse(fs.readFileSync(path.join(d, 'janela.json'), 'utf8'));
-  const arqs = ['peca-dia', 'peca-noite', 'vidro', 'luar', ...(JANELAS[tipo].cortina ? ['cortina-dia', 'cortina-noite'] : []), ...(JANELAS[tipo].abre ? ['aberta-dia', 'aberta-vao', 'aberta-vidro'] : [])];
+  const arqs = ['peca-dia', 'peca-noite', 'vidro', 'luar', ...(JANELAS[tipo].cortina ? ['cortina-dia', 'cortina-noite'] : []), ...(JANELAS[tipo].abre ? ['aberta-dia', 'aberta-vao', 'aberta-vidro', 'luar-aberta'] : [])];
   for (const a of arqs) IMAGENS[`jan-${tipo}-${a}`] = png(path.join(d, a + '.png'));
 }
 // OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
@@ -539,7 +539,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const TIPOS_JANELA = {};
   for (const [t, meta] of Object.entries(JANELAS)) {
     const d = (a) => (im['jan-' + t + '-' + a] ? dados(im['jan-' + t + '-' + a]) : null);
-    TIPOS_JANELA[t] = { ...meta, dia: d('peca-dia'), noite: d('peca-noite'), vidro: d('vidro'), luar: d('luar'), cortinaDia: d('cortina-dia'), cortinaNoite: d('cortina-noite'), aberta: d('aberta-dia'), vao: d('aberta-vao'), vidroAberto: d('aberta-vidro') };
+    TIPOS_JANELA[t] = { ...meta, dia: d('peca-dia'), noite: d('peca-noite'), vidro: d('vidro'), luar: d('luar'), cortinaDia: d('cortina-dia'), cortinaNoite: d('cortina-noite'), aberta: d('aberta-dia'), vao: d('aberta-vao'), vidroAberto: d('aberta-vidro'), luarAberto: d('luar-aberta') };
   }
   const ORDEM_JANELAS = Object.keys(TIPOS_JANELA);
   // No salão, a redonda na parede da direita, acima do lambri (a original, de cortinas até o chão, é a do quarto).
@@ -642,6 +642,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
     return out;
   }
   let base, noite, noiteAbajur, noiteSemLuar, abajurSemLuar, cortinaDia, cortinaNoite, abertaDia, vidro;
+  const luarAbertoNoChao = new Uint8Array(W * W);
+  window.luarAbertoDoTeste = () => ({ pixels: luarAbertoNoChao.reduce((n, v) => n + v, 0), ganho: ganhoDaJanela }); // para o teste
+  let ganhoDaJanela = [1, 1, 1];
   let diaBorrado, diaPouco, noitePouco, diaPe, noiteAbajurPouco, noitePe, noiteAbajurPe;
   const baseDaLuz = new Uint8ClampedArray(W * W * 4); // ver montarCena
   const naJanela = new Uint8Array(W * W), formaJanelaFechada = new Uint8Array(W * W), formaJanelaAberta = new Uint8Array(W * W), noCaixilho = new Uint8Array(W * W), vao = new Uint8Array(W * W), vidroAberto = new Uint8Array(W * W);
@@ -834,6 +837,28 @@ if (CENA === 'salao') document.body.classList.add('salao');
     cortinaDia = T.cortinaDia ? compor(semDia, T.cortinaDia, semDiaL, semDiaL, null, null, mapa) : base;
     cortinaNoite = noiteSemLuar;
     abertaDia = T.aberta ? compor(semDia, T.aberta, semDiaL, semDiaL, null, null, mapa) : base;
+    // O LUAR DA JANELA ABERTA (relato dele, 17/10/2026: "a sombra da janela aberta é a mesma da janela fechada"): o vão
+    // inteiro, sem a grade do meio, projetado no chão (janelas/pecas.py). Vale sobre o chão sem luar.
+    luarAbertoNoChao.fill(0);
+    if (T.luarAberto) for (let k = 0; k < W * W; k++) {
+      if (T.luarAberto[k * 4] < 128) continue;
+      const d = mapa(k % W, (k / W) | 0);
+      if (d >= 0 && ehChao[d]) luarAbertoNoChao[d] = 1;
+    }
+    // O ganho MEDIDO na noite com luar contra a noite sem ele (o luar da original é pintado, mais forte que o ganho do
+    // json): a média da razão nos pixels do chão que o luar clareia de verdade.
+    {
+      const soma = [0, 0, 0];
+      let n = 0;
+      for (let k = 0; k < W * W; k++) {
+        if (!ehChao[k]) continue;
+        const r = [0, 1, 2].map((c) => noite[k * 4 + c] / Math.max(8, noiteSemLuar[k * 4 + c]));
+        if (r[0] + r[1] + r[2] < 3.45) continue;
+        for (let c = 0; c < 3; c++) soma[c] += r[c];
+        n++;
+      }
+      ganhoDaJanela = n > 50 ? soma.map((v) => v / n) : T.ganho ?? [1, 1, 1];
+    }
     // Os objetos da parede, por cima da janela (pendurados na parede, à frente da cortina).
     naParede.fill(0); formaParede.fill(0); luzesDaParede = [];
     const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
@@ -2741,6 +2766,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
         else if (vidroAberto[k]) { D[k * 3 + c] = semDia[k * 4 + c] * 0.82 + [250, 243, 224][c] * 0.18; fundoNoite[k * 3 + c] = semNoite[k * 4 + c] * 0.85 + [40, 46, 80][c] * 0.15; }
         else { D[k * 3 + c] = abertaDia[k * 4 + c]; fundoNoite[k * 3 + c] = abertaDia[k * 4 + c] * Math.min(1, noitePe[k * 4 + c] / Math.max(1, diaPe[k * 4 + c])); }
       }
+    }
+    // a janela aberta (com a cortina aberta): o chão sem o luar da fechada, mais o luar do vão aberto
+    if (aberta && !fechada && luarAbertoNoChao.some(Boolean)) for (let k = 0; k < W * W; k++) {
+      if (casa[k] < 0 || naJanela[k]) continue;
+      const sem = pintada ? abajurSemLuar : noiteSemLuar;
+      for (let c = 0; c < 3; c++) fundoNoite[k * 3 + c] = sem[k * 4 + c] * (luarAbertoNoChao[k] ? ganhoDaJanela[c] : 1);
     }
     if (fechada) for (let k = 0; k < W * W; k++) {
       if (naJanela[k]) { for (let c = 0; c < 3; c++) { D[k * 3 + c] = cortinaDia[k * 4 + c]; fundoNoite[k * 3 + c] = cortinaNoite[k * 4 + c]; } }

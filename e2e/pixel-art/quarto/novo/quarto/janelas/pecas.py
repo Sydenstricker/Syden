@@ -91,7 +91,21 @@ mascara((ab[..., 0] > 200) & (ab[..., 1] < 70) & (ab[..., 2] > 200), o, 'aberta-
 vidroAb = (ab[..., 0] == 250) & (ab[..., 1] == 243) & (ab[..., 2] == 224) & DIREITA & ACIMA & (ys < 260) & (xs > 338) & (xs < 440)
 rot, n = label(vidroAb)
 tam = np.bincount(rot.ravel())
-mascara(vidroAb & (tam[rot] >= 3), o, 'aberta-vidro.png')
+vidroAb = vidroAb & (tam[rot] >= 3)
+# OS REFLEXOS DO VIDRO (relato dele, 17/10/2026: "a janela parece que tem tinta"): o vidro foi pintado com a cor exata acima
+# e com tons claros de reflexo, e os pontinhos da cor exata que são pequenos demais caíam fora. Tudo isso ficava pintado
+# por cima da vista. A máscara cresce dos vidros para os vizinhos claros e pouco saturados (a madeira é alaranjada),
+# dentro da mesma faixa das folhas.
+lum = ab.mean(2)
+sat = ab.max(2) - ab.min(2)
+claro = (lum >= 175) & (sat <= 80) & DIREITA & ACIMA & (ys < 262) & (xs > 338) & (xs < 440)
+for _ in range(6):
+    vidroAb = vidroAb | (binary_dilation(vidroAb) & claro)
+mascara(vidroAb, o, 'aberta-vidro.png')
+# O LUAR DA JANELA ABERTA (relato dele, 17/10/2026: "a sombra da janela aberta é a mesma da janela fechada"): a luz entra
+# pelo vão inteiro, sem a grade do meio, e pelo vidro das folhas. Projetado no chão como o luar dos tipos novos.
+vaoAb = (ab[..., 0] > 200) & (ab[..., 1] < 70) & (ab[..., 2] > 200)
+mascara(projetar(vaoAb | vidroAb), o, 'luar-aberta.png')
 vidroO = np.array(Image.open(os.path.join(Q, '..', 'janela', 'vidro.png')))[..., 3] > 127
 mascara(vidroO, o, 'vidro.png')
 json.dump({'nome': 'Grande, com cortinas', 'ocupa': extensao(mdia), 'ganho': luarOriginal, 'cortina': True, 'abre': True}, open(os.path.join(o, 'janela.json'), 'w'), ensure_ascii=False)

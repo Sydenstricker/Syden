@@ -126,6 +126,13 @@ plano = (xs < 256) & ~chaoM & ~FORA & ~lamp
 RAs = borrar(RA * plano[..., None], 4) / np.maximum(1e-4, gaussian_filter(plano.astype(float), 4))[..., None]
 faixa = paredeD & (xs <= 330)
 RA[faixa] = RAs[:, ::-1][faixa]
+# O FANTASMA DO LUAR (relato dele, 17/10/2026: com a janela aberta, o chão ainda mostrava a grade da fechada): a noite com o
+# abajur e a noite sem ele pintaram o luar um pouco diferente, e a razão entre as duas levava a grade junto. No chão do luar
+# (com folga), a luz do abajur vem alisada do chão em volta.
+fantasma = binary_dilation(luarM, iterations=3) & chaoM
+limpo = chaoM & ~fantasma
+RAf = borrar(RA * limpo[..., None], 6) / np.maximum(1e-4, gaussian_filter(limpo.astype(float), 6))[..., None]
+RA[fantasma] = RAf[fantasma]
 comAbajur = np.clip(semLuar * RA, 0, 255)
 Image.fromarray(comAbajur.astype(np.uint8)).save(os.path.join(AQUI, 'sem-janela-noite-abajur.png'))
 print('ok')
