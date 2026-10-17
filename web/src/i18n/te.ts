@@ -2008,4 +2008,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'మీకు కావాలంటే, మీ ఖాతాను తండ్రి, తల్లి లేదా సంరక్షకులతో లింక్ చేయవచ్చు.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'సాధనాలు',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'కాఫీ పోస్టర్',
 } satisfies Record<string, string>;

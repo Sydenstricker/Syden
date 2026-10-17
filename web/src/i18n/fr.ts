@@ -2048,4 +2048,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Tu peux lier ton compte à celui d’un parent ou d’un responsable légal, si tu veux.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Outils',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Affiche du café',
 } satisfies Record<string, string>;

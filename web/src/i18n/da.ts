@@ -2090,4 +2090,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Du kan knytte din konto til en forælder eller værge, hvis du vil.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Værktøjer',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Caféplakat',
 } satisfies Record<string, string>;

@@ -2037,4 +2037,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ushobora guhuza konti yawe n\'umubyeyi cyangwa umurezi, nubishaka.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Ibikoresho',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Ifoto y’ikawa',
 } satisfies Record<string, string>;

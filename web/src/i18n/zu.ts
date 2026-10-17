@@ -2097,4 +2097,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ungaxhuma i-akhawunti yakho nobaba, umama noma umnakekeli, uma uthanda.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Amathuluzi',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Iphosta yekhofi',
 } satisfies Record<string, string>;

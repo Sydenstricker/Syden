@@ -2032,4 +2032,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Más mian leat, is féidir leat do chuntas a nascadh le tuismitheoir nó caomhnóir.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Uirlisí',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Póstaer an chaife',
 } satisfies Record<string, string>;

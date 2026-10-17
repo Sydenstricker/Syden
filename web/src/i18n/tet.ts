@@ -2028,4 +2028,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ó bele liga ó-nia konta ho aman, inan ka responsavel, se ó hakarak.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Ferramenta',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Poster kafé',
 } satisfies Record<string, string>;

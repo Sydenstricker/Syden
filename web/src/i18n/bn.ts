@@ -2023,4 +2023,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'চাইলে তোমার অ্যাকাউন্ট বাবা, মা বা অভিভাবকের সঙ্গে যুক্ত করতে পারো।',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'টুল',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'কফির পোস্টার',
 } satisfies Record<string, string>;

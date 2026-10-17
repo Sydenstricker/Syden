@@ -2096,4 +2096,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Waxaad akoonkaaga ku xiri kartaa aabbe, hooyo ama mas’uul, haddii aad rabto.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Qalabka',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Boodhayska kafeega',
 } satisfies Record<string, string>;

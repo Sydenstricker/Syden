@@ -2104,4 +2104,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Xohlasangiz, hisobingizni ota, ona yoki vasiyga bogʻlashingiz mumkin.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Vositalar',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Kafe plakati',
 } satisfies Record<string, string>;

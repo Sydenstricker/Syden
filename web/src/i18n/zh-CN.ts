@@ -2013,4 +2013,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': '如果你愿意,可以把你的账号关联到父母或监护人。',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': '工具',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': '咖啡馆海报',
 } satisfies Record<string, string>;

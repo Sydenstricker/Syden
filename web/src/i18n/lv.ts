@@ -2098,4 +2098,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Ja vēlies, vari sasaistīt savu kontu ar vecāku vai aizbildni.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Rīki',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Kafejnīcas plakāts',
 } satisfies Record<string, string>;

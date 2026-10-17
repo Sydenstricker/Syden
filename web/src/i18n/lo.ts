@@ -2097,4 +2097,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ຖ້າຕ້ອງການ, ທ່ານສາມາດເຊື່ອມບັນຊີຂອງທ່ານກັບພໍ່, ແມ່ ຫຼື ຜູ້ປົກຄອງໄດ້.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'ເຄື່ອງມື',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'ໂປສເຕີຮ້ານກາເຟ',
 } satisfies Record<string, string>;

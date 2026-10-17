@@ -2090,4 +2090,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Jy kan jou rekening aan \'n pa, ma of voog koppel as jy wil.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Gereedskap',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Koffieplakkaat',
 } satisfies Record<string, string>;

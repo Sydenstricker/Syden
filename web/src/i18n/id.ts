@@ -2023,4 +2023,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Kamu bisa menghubungkan akunmu dengan ayah, ibu, atau wali jika mau.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Alat',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Poster kafe',
 } satisfies Record<string, string>;

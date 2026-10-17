@@ -2025,4 +2025,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Puoi collegare il tuo account a quello di un genitore o tutore, se vuoi.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Strumenti',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Poster del caffè',
 } satisfies Record<string, string>;

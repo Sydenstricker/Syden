@@ -2065,4 +2065,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'လိုချင်လျှင် သင့်အကောင့်ကို ဖခင်၊ မိခင် သို့မဟုတ် အုပ်ထိန်းသူနှင့် ချိတ်နိုင်သည်။',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'ကိရိယာများ',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'ကော်ဖီဆိုင် ပိုစတာ',
 } satisfies Record<string, string>;

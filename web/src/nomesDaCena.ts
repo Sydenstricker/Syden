@@ -52,6 +52,7 @@ const DA_PAREDE: Record<string, (t: T) => string> = {
   violao: (t) => t('Violão'),
   porta: (t) => t('Porta do banheiro'),
   poster: (t) => t('Pôster do karaokê'),
+  cafe: (t) => t('Pôster do café'),
 };
 
 const DE_CIMA: Record<string, (t: T) => string> = {

@@ -2028,4 +2028,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Kuna iya haɗa asusunku da uba, uwa ko mai kula, idan kuna so.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Kayan aiki',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Fostar kofi',
 } satisfies Record<string, string>;

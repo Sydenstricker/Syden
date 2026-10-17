@@ -2014,4 +2014,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': '원하면 계정을 부모님이나 보호자와 연결할 수 있어요.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': '도구',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': '카페 포스터',
 } satisfies Record<string, string>;

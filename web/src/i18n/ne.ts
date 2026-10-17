@@ -2098,4 +2098,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'चाहनुभयो भने आफ्नो खाता बुबा, आमा वा अभिभावकसँग जोड्न सक्नुहुन्छ।',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'उपकरणहरू',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'कफीको पोस्टर',
 } satisfies Record<string, string>;

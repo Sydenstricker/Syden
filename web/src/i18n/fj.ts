@@ -2025,4 +2025,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'E rawa ni o semata na nomu akaude vua na tamamu, tinamu se dauqaqa, kevaka o vinakata.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Iyaya',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Itaba ni kofi',
 } satisfies Record<string, string>;

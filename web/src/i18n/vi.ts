@@ -1996,4 +1996,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Bạn có thể liên kết tài khoản với cha, mẹ hoặc người giám hộ nếu muốn.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Công cụ',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Áp phích quán cà phê',
 } satisfies Record<string, string>;

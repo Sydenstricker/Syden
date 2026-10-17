@@ -2013,4 +2013,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'چاہیں تو اپنا اکاؤنٹ والد، والدہ یا سرپرست سے جوڑیں۔',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'ٹولز',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'کیفے کا پوسٹر',
 } satisfies Record<string, string>;

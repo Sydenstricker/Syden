@@ -2088,4 +2088,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Mund ta lidhësh llogarinë tënde me një prind ose kujdestar, nëse do.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Mjetet',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Posteri i kafenesë',
 } satisfies Record<string, string>;

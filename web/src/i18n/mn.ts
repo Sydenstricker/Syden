@@ -2110,4 +2110,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Хүсвэл бүртгэлээ аав, ээж эсвэл асран хамгаалагчтай холбож болно.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Хэрэгслүүд',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Кафены зурагт хуудас',
 } satisfies Record<string, string>;

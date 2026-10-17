@@ -2098,4 +2098,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Isleseň, hasabyňy kakaňa, ejeňe ýa-da hossaryňa baglap bilersiň.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Gurallar',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Kafe plakaty',
 } satisfies Record<string, string>;

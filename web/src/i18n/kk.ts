@@ -2092,4 +2092,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Қаласаңыз, аккаунтыңызды әке, ана немесе қамқоршыға байланыстыра аласыз.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Құралдар',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Кафе постері',
 } satisfies Record<string, string>;

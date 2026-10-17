@@ -189,7 +189,7 @@ for (const tipo of CENA === 'salao' ? ['tijolo', 'original', 'arco', 'redonda', 
 }
 // OS OBJETOS DA PAREDE (parede/itens.mjs e parede/pecas.py): como a janela, peças nas coordenadas de onde foram pintados.
 const ITENS_PAREDE = {};
-for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta', 'poster']) {
+for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prateleira-bar', 'prateleira-snacks', 'trofeus', 'neon', 'relogio', 'violao', 'porta', 'poster', 'cafe']) {
   // no salão, a versão pintada no tijolo dele, se houver (parede-salao/). E a GERADA SEM PAREDE (avulsos.py: "avulso" no
   // item.json) vale nos dois: o recorte do quarto, tirado da pintura na parede, trazia pedaços dela e um contorno sujo
   // (relato dele, 17/10/2026: "não estamos usando o asset limpo sem fundo que veio do PixelLab?").
@@ -199,6 +199,9 @@ for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prate
   if (!fs.existsSync(path.join(d, 'item.json'))) continue;
   ITENS_PAREDE[item] = JSON.parse(fs.readFileSync(path.join(d, 'item.json'), 'utf8'));
   for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-' + q] = png(path.join(d, 'peca-' + q + '.png'));
+  // COM TEXTO (o pôster do café, 17/10/2026): a parede da esquerda tem a peça própria, porque o espelho leria o texto ao
+  // contrário (ver parede/de-imagem.py).
+  if (ITENS_PAREDE[item].texto) for (const q of ['dia', 'noite']) IMAGENS['par-' + item + '-esq-' + q] = png(path.join(d, 'peca-' + q + '-esq.png'));
   // AS OPÇÕES DE UM OBJETO (o pôster, 16/10/2026: "o usuário pode escolher qual pôster usar?"): opcoes/<nome>/, geradas
   // por parede/avulsos.py forçando cada opção. A de fábrica é a do próprio item; a escolha vai em "cores" (como o tapete).
   const dop = path.join(d, 'opcoes');
@@ -558,6 +561,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     violao: { parede: 'direita', v: 9.7, h: 0 },
     // o pôster do coelho roqueiro, acima da jukebox: o canto do karaokê se anuncia (pedido dele, 15/10/2026)
     poster: { parede: 'direita', v: 8.6, h: 6 },
+    // o pôster "Café & Fofoca" na cozinha, ao lado da prateleira de snacks (dele, 17/10/2026, feito no ChatGPT)
+    cafe: { parede: 'esquerda', v: 12.6, h: 6 },
   } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
   // OBJETO NOVO ENTRA SOZINHO (relato dele, 16/10/2026: "atualizei a sala mas não vi o pôster"): a arrumação guarda quais
@@ -577,7 +582,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const TEXTURAS_PAREDE = porTipo({}, TEXTURAS_DA_COPIA);
   const caixasDaParede = {};
   const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
-  for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']) };
+  for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']), ...(ITENS_PAREDE[id].texto ? { esq: { dia: dados(im['par-' + id + '-esq-dia']), noite: dados(im['par-' + id + '-esq-noite']) } } : {}) };
+  // A arte de um objeto da parede onde ele está: na da esquerda, a peça própria quando ele tem texto.
+  const texturaNaParede = (id, parede) => (parede === 'esquerda' && TEXTURAS_PAREDE[id].esq) || TEXTURAS_PAREDE[id];
   // A escolha de cor do tapete e de OPÇÃO de um objeto da parede (o pôster): { tapete: 'azul', poster: 'fogo' }.
   let CORES = {};
   try { CORES = JSON.parse(localStorage.getItem(PREFIXO + 'cores') ?? '{}') || {}; } catch { /* as de fábrica */ }
@@ -900,7 +907,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     naParede.fill(0); formaParede.fill(0); luzesDaParede = [];
     const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
     ids.forEach((id, i) => {
-      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : TEXTURAS_PAREDE[id], mp = mapaDaParede(P);
+      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : texturaNaParede(id, P.parede), mp = mapaDaParede(P);
       base = compor(base, T2.dia, semDiaL, semDiaL, null, null, mp);
       if (T.cortinaDia) cortinaDia = compor(cortinaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
       abertaDia = compor(abertaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
@@ -3419,7 +3426,7 @@ void main() {
     // o objeto de parede vivo: os pixels dele levados para onde está agora
     let paredeViva = null;
     if (paredePega?.vivo && TEXTURAS_PAREDE[paredePega.id]) {
-      const id = paredePega.id, T2 = TEXTURAS_PAREDE[id], mp = mapaDaParede(paredePega.vivo), cx = caixaDoItemDaParede(id), px = [];
+      const id = paredePega.id, T2 = texturaNaParede(id, paredePega.vivo.parede), mp = mapaDaParede(paredePega.vivo), cx = caixaDoItemDaParede(id), px = [];
       let bx0 = W, by0 = W, bx1 = 0, by1 = 0;
       const tex = modo === 'noite' && CENA !== 'salao' ? T2.noite : T2.dia, f = modo === 'noite' && CENA === 'salao' ? 0.6 : 1;
       for (let y = cx[1]; y < cx[3]; y++) for (let x = cx[0]; x < cx[2]; x++) {

@@ -2096,4 +2096,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Halutessasi voit yhdistää tilisi vanhempaan tai huoltajaan.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Työkalut',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Kahvilajuliste',
 } satisfies Record<string, string>;

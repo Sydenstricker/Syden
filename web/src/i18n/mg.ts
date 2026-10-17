@@ -2096,4 +2096,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Afaka mampifandray ny kaontinao amin’ny ray, reny na mpiahy ianao, raha tianao.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Fitaovana',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Afisy kafe',
 } satisfies Record<string, string>;

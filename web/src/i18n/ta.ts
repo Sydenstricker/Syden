@@ -2011,4 +2011,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'விரும்பினால், உங்கள் கணக்கைத் தந்தை, தாய் அல்லது பாதுகாவலருடன் இணைக்கலாம்.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'கருவிகள்',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'காபி சுவரொட்டி',
 } satisfies Record<string, string>;

@@ -2026,4 +2026,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Anda boleh memautkan akaun anda kepada bapa, ibu atau penjaga jika mahu.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Alatan',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Poster kafe',
 } satisfies Record<string, string>;

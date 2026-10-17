@@ -2050,4 +2050,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Du kannst dein Konto mit einem Elternteil oder einer erziehungsberechtigten Person verknüpfen, wenn du möchtest.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Werkzeuge',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Café-Poster',
 } satisfies Record<string, string>;

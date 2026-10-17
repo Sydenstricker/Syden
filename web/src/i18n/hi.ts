@@ -2025,4 +2025,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'चाहें तो अपना खाता पिता, माता या अभिभावक से जोड़ें।',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'टूल',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'कॉफ़ी का पोस्टर',
 } satisfies Record<string, string>;

@@ -2025,4 +2025,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Unaweza kuunganisha akaunti yako na baba, mama au mlezi, ukipenda.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Zana',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Bango la kahawa',
 } satisfies Record<string, string>;

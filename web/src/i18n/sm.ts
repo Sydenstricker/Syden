@@ -2030,4 +2030,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'E mafai ona e faʻafesoʻotaʻi lau ʻakauni ma se tamā, tinā po o se tausi, pe a e manaʻo ai.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Meafaigaluega',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Pepa lautele o le kofe',
 } satisfies Record<string, string>;

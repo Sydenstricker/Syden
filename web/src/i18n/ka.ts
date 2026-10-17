@@ -2114,4 +2114,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'თუ გსურთ, შეგიძლიათ თქვენი ანგარიში დაუკავშიროთ მამას, დედას ან მეურვეს.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'ხელსაწყოები',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'კაფის პლაკატი',
 } satisfies Record<string, string>;

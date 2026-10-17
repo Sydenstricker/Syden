@@ -2096,4 +2096,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'කැමති නම් ඔබේ ගිණුම පියා, මව හෝ භාරකරුවෙකුට සම්බන්ධ කළ හැක.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'මෙවලම්',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'කෝපි පෝස්ටරය',
 } satisfies Record<string, string>;

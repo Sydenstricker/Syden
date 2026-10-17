@@ -2098,4 +2098,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Jei nori, gali susieti savo paskyrą su tėvais ar globėju.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Įrankiai',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Kavinės plakatas',
 } satisfies Record<string, string>;

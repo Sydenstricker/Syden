@@ -2109,4 +2109,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ཁྱོད་ཀྱིས་དགའ་བ་ཅིན་ ཁྱོད་ཀྱི་རྩིས་ཐོ་ ཨཔ་ ཨམ་ ཡང་ན་ འགན་འཁུར་པ་དང་མཐུད་ཚུགས།',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'ལག་ཆས།',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'ཇ་ཁང་གི་པར་རིས།',
 } satisfies Record<string, string>;

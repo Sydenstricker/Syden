@@ -2026,4 +2026,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'ከፈለጉ መለያዎን ከአባት፣ እናት ወይም አሳዳጊ ጋር ማገናኘት ይችላሉ።',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'መሳሪያዎች',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'የቡና ፖስተር',
 } satisfies Record<string, string>;

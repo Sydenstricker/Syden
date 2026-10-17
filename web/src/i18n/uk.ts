@@ -2076,4 +2076,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Якщо хочеш, можеш прив’язати свій обліковий запис до батьків або опікуна.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Інструменти',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Постер кав’ярні',
 } satisfies Record<string, string>;

@@ -2095,4 +2095,6 @@ export default {
   'Você pode ligar a sua conta a um pai, mãe ou responsável, se quiser.': 'Pokud chceš, můžeš svůj účet propojit s rodičem nebo zákonným zástupcem.',
   // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
   'Ferramentas': 'Nástroje',
+  // A proteção de crianças e adolescentes, a denúncia de transmissão e o banimento (17/10/2026)
+  'Pôster do café': 'Kavárenský plakát',
 } satisfies Record<string, string>;
