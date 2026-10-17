@@ -24,6 +24,7 @@ const ARRUMACAO = {
   janela: { tipo: 'arco', parede: 'esquerda', v: 1.5 },
   cortina: false,
   janelaAberta: false,
+  abajurApagado: true,
   vista: 2,
   parede: { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'direita', v: -2.5, h: -6 } },
   cores: { tapete: 'terracota' },

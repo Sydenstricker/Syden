@@ -917,11 +917,15 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? im['tela-' + id + l] ? telaDaMascara(im['tela-' + id + l], TELAS_MEDIDAS[id]?.[l]) : p.buraco ? telaDosPixels(p.buraco, null) : (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id][l].recuo ?? TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
-  const tipoDaTela = (id) => (id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
+  const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
   // O CONTEÚDO: "auto" segue o estado (em call, a chamada; à toa, a conversa; ausente, desligada); o botão escolhe.
   const CONTEUDOS = ['auto', 'call', 'conversa', 'jogo', 'desligada'];
   let conteudo = 'auto';
+  // OS ESTADOS DO BOTÃO DIREITO (16/10/2026, pedido dele: "com o botão direito alterne o estado do objeto; com o
+  // esquerdo, use a função"). O abajur apagado vai com a arrumação; as telas desligadas valem nesta visita.
+  let abajurApagado = false;
+  const telasDesligadas = new Set();
   const conteudoAgora = () => (conteudo !== 'auto' ? conteudo : estado === 'call' ? 'call' : estado === 'ausente' ? 'desligada' : 'conversa');
   const misturar = (a, b, f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
   // A cor de um ponto (s, t) da tela, no instante "q" (quartos de segundo). Pixel art: blocos chapados, poucas cores.
@@ -2424,7 +2428,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
   const naOrigem = (id) => !!origemPintada(id) && Math.abs(ARR[id].c[0] - origemPintada(id).c[0]) < 0.01 && Math.abs(ARR[id].c[1] - origemPintada(id).c[1]) < 0.01 && ARR[id].lado === origemPintada(id).lado;
-  const luzPintadaAgora = () => CENA === 'quarto' && modo === 'noite' && luzPintada && ARR.abajur && naOrigem('abajur');
+  const luzPintadaAgora = () => CENA === 'quarto' && modo === 'noite' && luzPintada && !abajurApagado && ARR.abajur && naOrigem('abajur');
   // A pintura da noite sem a silhueta do criado-mudo: o buraco é preenchido com a luz em volta, de fora para dentro
   // (cada pixel vira a média dos vizinhos já preenchidos), feito uma vez.
   function noiteAbajurSemMovel() {
@@ -2556,7 +2560,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
           // A cúpula do abajur é luz: o alto da peça, nas cores claras. O abajur foi pintado APAGADO, e quem acende
           // é o código (na v1 ele veio aceso, com um halo recortado que brigava com esta luz).
           const m4 = k * 4;
-          if (p.id === 'abajur' && ((k / W) | 0) < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
+          if (p.id === 'abajur' && !(abajurApagado && (it.dono ?? 'abajur') === 'abajur') && ((k / W) | 0) < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
           // AS LUZES DA JUKEBOX (15/10/2026): os pixels claros e quentes do desenho são lâmpadas, e de noite ficam acesos
           // como estão (acesa = 2: a cor do dia, sem escurecer).
           else if (p.id === 'jukebox' && p.movel[m4] > 200 && p.movel[m4 + 1] > 130 && p.movel[m4] - p.movel[m4 + 2] > 60) acesa[d] = 2;
@@ -2622,7 +2626,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // a lâmpada do abajur e o destino do arraste.
   function parametrosDaLuz() {
     const pintada = luzPintadaAgora(), razaoPe = pintada ? noiteAbajurPe : noitePe;
-    const [lx, ly0] = lampada(), ly = ly0 + 6;
+    // (apagado, a lâmpada vai para longe: a luz quente some, na placa e no processador, sem mexer na conta)
+    const [lx, ly0] = abajurApagado ? [-1e5, -1e5] : lampada(), ly = ly0 + 6;
     const alvoOcupado = alvo ? ocupa(alvo) : false;
     const paAlvo = alvo && pegado && ARR[pegado] ? peDe(pegado, alvo) : null; // uma vez por quadro, e não por pixel
     // A luz da tela, de noite: o centro e a cor média, para clarear em volta.
@@ -3213,7 +3218,7 @@ void main() {
     const ip = naParede[k];
     if (ip && !dono[k]) { const f = ITENS_PAREDE[ordemDaParede[ip - 1]].funcao; return f && FUNCOES[f] ? f : null; }
     if (dono[k]) { const f = FUNCAO_DO_MOVEL[dono[k]]; return f && FUNCOES[f] ? f : null; }
-    if (naJanela[k] && (vidro[k * 4 + 3] > 127 || noCaixilho[k]) && FUNCOES.janela) return 'janela';
+    if (naJanela[k] && FUNCOES.janela) return 'janela'; // (a janela inteira: a cortina e abrir vão no botão direito)
     return null;
   }
   function acao(f) {
@@ -3494,6 +3499,7 @@ void main() {
     if (mexeu) { mudarJanela(JAN); return; }
     // No vidro, abre e fecha a janela; no resto da janela (as cortinas), abre e fecha as cortinas. Com as cortinas
     // fechadas, o clique é sempre delas.
+    if (EDITANDO) return; // no Editar, o clique escolhe (a barrinha e o botão direito mexem nela)
     if (funcaoEm(k) === 'janela') { acao('janela'); return; }
     if (T.abre && noCaixilho[k] && !fechada) trocarJanela(); else if (T.cortina) trocarCortina();
   });
@@ -3678,7 +3684,7 @@ void main() {
   const retrato = () => ({
     moveis: Object.fromEntries(Object.entries(ARR).map(([id, m]) => [id, { c: [+m.c[0].toFixed(3), +m.c[1].toFixed(3)], lado: m.lado }])),
     cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
-    janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, vista,
+    janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, abajurApagado, vista,
     cores: { ...CORES },
     guardados: [...GUARDADOS],
     conhecidos: Object.keys(ITENS_PAREDE),
@@ -3701,6 +3707,7 @@ void main() {
     NA_PAREDE = a.parede ? prenderTudo(comNovos(Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id])), a.conhecidos)) : prenderTudo(PAREDE_INICIAL);
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
+    abajurApagado = !!a.abajurApagado;
     if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }
     botoesDaJanela(); botoesDaParede(); botoesDosMoveis();
     if (!ARR[selecionado] && selecionado !== 'cadeira') escolher(Object.keys(ARR)[0]);
@@ -4000,6 +4007,39 @@ void main() {
     barrinha.style.transform = 'translateX(-50%)';
   }
   addEventListener('resize', () => { if (selecao) desenhar(); });
+
+  // ============================== O ESTADO DE CADA OBJETO, NO BOTÃO DIREITO (16/10/2026) ==============================
+  // O esquerdo usa a função (abre o Explorar, o Dia e noite, a Aparência…); o direito muda o objeto: a janela abre,
+  // depois fecha a cortina, depois volta; o abajur apaga e acende; o guarda-roupa abre e fecha as portas; o computador,
+  // a TV e o fliperama ligam e desligam a tela. No Editar vale igual.
+  function alternarEstado(k) {
+    const podeArrumar = !soVer;
+    if (naJanela[k] && !dono[k]) {
+      if (!podeArrumar) return false;
+      const T = TIPOS_JANELA[JAN.tipo];
+      // (fechada com a cortina aberta → aberta → cortina fechada → de volta)
+      if (fechada) trocarCortina();
+      else if (aberta) { trocarJanela(); if (T.cortina) trocarCortina(); }
+      else if (T.abre) trocarJanela();
+      else if (T.cortina) trocarCortina();
+      else return false;
+      return true;
+    }
+    const d = dono[k], tipo = d ? tipoDe(d) : '';
+    if (tipo === 'abajur' && CENA === 'quarto' && podeArrumar) { abajurApagado = !abajurApagado; assinaturaCena = ''; enviar(); desenhar(); return true; }
+    if (d === 'guarda-roupa' && VISTAS_ABERTO && podeArrumar) { guardaRoupaAberto = !guardaRoupaAberto; gavetasPedidas = false; desenhar(); return true; }
+    if (d === 'mesa' && CENA === 'quarto') { conteudo = conteudoAgora() === 'desligada' ? 'conversa' : 'desligada'; assinaturaCena = ''; desenhar(); return true; }
+    if (d === 'tv' || d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; desenhar(); return true; }
+    return false;
+  }
+  window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], cortina: fechada, aberta }); // para o teste
+  // (o botão direito não pega, não arrasta nem escolhe: só o menu de contexto, logo abaixo, o atende)
+  addEventListener('pointerdown', (e) => { if (e.target === tela && e.button !== 0) e.stopImmediatePropagation(); }, true);
+  tela.addEventListener('contextmenu', (e) => {
+    e.preventDefault(); // nunca o menu do navegador em cima da cena
+    if (movendo || arrastando || objPego || paredePega || janelaPega) return;
+    alternarEstado(pixelDo(e));
+  });
 
   // ============================== DUPLICAR, TIRAR, MOVER E PÔR (16/10/2026, o layout dele) ==============================
   // "Tudo pode duplicar" (decisão dele): a cópia de um móvel vai para a casa livre mais perto dele; a de um objeto da

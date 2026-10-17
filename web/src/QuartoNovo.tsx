@@ -2,6 +2,7 @@ import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { desktopBridge } from './desktop';
+import { Mascote } from './Mascote';
 import { useT } from './i18n';
 import { casaComABusca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { AcoesDoQuarto } from './Quarto';
@@ -141,6 +142,7 @@ export function QuartoNovo({
       arrumacao={arrumacao}
       enviar={enviar}
       podeEditar={pronto}
+      carregando={!pronto}
       noite={noite}
       // a engrenagem abre a Aparência (os gráficos do quarto moram lá), como o guarda-roupa
       aoConfigurar={acoes.gavetas ? () => acoesRef.current.gavetas?.onClick() : undefined}
@@ -184,6 +186,7 @@ export function EditorDaCena({
   arrumacao,
   enviar,
   podeEditar,
+  carregando,
   noite,
   aoConfigurar,
   children,
@@ -194,6 +197,8 @@ export function EditorDaCena({
   enviar: (msg: Record<string, unknown>) => void;
   /** Sem a cena pronta (ou no salão de quem não administra), não há Editar. */
   podeEditar: boolean;
+  /** A cena ainda não disse "pronto": no lugar dela, o mascote esperando. */
+  carregando?: boolean;
   /** O dia e a noite do app: o do Editar é só uma prévia, e volta a este ao sair. */
   noite: boolean;
   aoConfigurar?: () => void;
@@ -411,7 +416,16 @@ export function EditorDaCena({
           </div>
         </aside>
       ) : null}
-      <div className="editor-palco">{children}</div>
+      <div className="editor-palco">
+        {children}
+        {/* O MASCOTE ESPERANDO enquanto a cena se monta (pedido dele, 16/10/2026: o salão ficava vazio uns segundos). Sem
+            texto, como toda espera do Syden (ver CLAUDE.md, "Animações"). */}
+        {carregando && (
+          <div className="editor-carregando" aria-hidden="true">
+            <Mascote nome="ocioso" tamanho={180} />
+          </div>
+        )}
+      </div>
       {editando ? (
         <footer className="editor-base">
           <div className="editor-atalhos">

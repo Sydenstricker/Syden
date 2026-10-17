@@ -13000,7 +13000,21 @@ body.arrastando-barra {
   cursor: pointer;
 }
 
+.editor-esperando {
+  display: grid;
+  place-items: center;
+}
+
+.editor-carregando {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
 .editor-palco {
+  position: relative;
   grid-area: palco;
   display: flex;
   align-items: center;

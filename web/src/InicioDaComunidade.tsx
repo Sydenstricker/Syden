@@ -1,4 +1,5 @@
 import { Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
+import { Mascote } from './Mascote';
 import { useState } from 'react';
 import { api } from './api';
 import { acharArte, acharCoelho, type CoelhoDoRecado } from './boasVindas';
@@ -294,7 +295,9 @@ export function InicioDaComunidade({
           />
         ) : salao.cena === 'conferindo' ? (
           <div className="salao-novo" aria-hidden="true">
-            <div className="quarto-novo" />
+            <div className="quarto-novo editor-esperando">
+              <Mascote nome="ocioso" tamanho={180} />
+            </div>
           </div>
         ) : (
           <Salao

@@ -537,6 +537,9 @@ ficou combinado:
   - **Um ventilador ou um ar-condicionado** (16/10/2026).
   - **Um gatinho olhando a janela** (16/10/2026): deitado, dormindo; clicado, ele se espreguiça e senta. Precisa das
     poses (deitado dormindo, espreguiçando, sentado) e da passagem entre elas, como o coelho; é peça viva, não móvel.
+  - **O coelho sentado no sofá do salão, por lugar** (16/10/2026, relato dele: "os coelhos continuam flutuando"): com o
+    sofá de frente, eles ficam por cima do encosto; de costas, o encosto já os cobre (`atras`), mas não basta. Pede uma
+    pose sentada para cada posição do sofá e a CAMADA DA FRENTE do assento à parte, como a poltrona do quarto.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.

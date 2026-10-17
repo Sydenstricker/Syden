@@ -33,6 +33,8 @@ export interface Arrumacao {
   janela?: { tipo: string; parede: 'direita' | 'esquerda'; v: number };
   cortina?: boolean;
   janelaAberta?: boolean;
+  /** O abajur apagado (o botão direito nele, 16/10/2026). */
+  abajurApagado?: boolean;
   vista?: number;
   /** Os objetos da parede (quadro, fone, prateleira…): a parede, quantas casas andaram nela e quantos px subiram. */
   parede?: Record<string, { parede: 'direita' | 'esquerda'; v: number; h: number }>;
@@ -79,7 +81,7 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     if (typeof j?.tipo !== 'string' || !CODIGO.test(j.tipo) || (j.parede !== 'direita' && j.parede !== 'esquerda') || v === null) return { erro: 'Janela inválida.' };
     saida.janela = { tipo: j.tipo, parede: j.parede, v };
   }
-  for (const k of ['cortina', 'janelaAberta'] as const) {
+  for (const k of ['cortina', 'janelaAberta', 'abajurApagado'] as const) {
     if (a[k] === undefined) continue;
     if (typeof a[k] !== 'boolean') return { erro: 'Arrumação inválida.' };
     saida[k] = a[k] as boolean;

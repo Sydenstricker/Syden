@@ -1,4 +1,5 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
+import { Mascote } from './Mascote';
 import { JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
 import { SiteEmbutido } from './SiteEmbutido';
 import { type FormEvent, useRef, useState } from 'react';
@@ -220,7 +221,10 @@ export function Home({
           <Quarto noite={periodo === 'noite'} acoes={acoes} />
         ) : (
           <div className="quarto-novo-caixa" aria-hidden="true">
-            <div className="quarto-novo" />
+            {/* o mascote esperando (a espera não diz qual quarto vem: só espera) */}
+            <div className="quarto-novo editor-esperando">
+              <Mascote nome="ocioso" tamanho={180} />
+            </div>
           </div>
         )}
         {salasAbertas && (

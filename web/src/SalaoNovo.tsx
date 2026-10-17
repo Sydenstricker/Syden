@@ -172,7 +172,7 @@ export function SalaoNovo({
   }, [socket, pronto, community.id]);
 
   return (
-    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeEditar} noite={noite}>
+    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeEditar} carregando={!pronto} noite={noite}>
       <div className="quarto-novo-caixa salao-novo">
         <div className="quarto-novo">
           <iframe ref={ref} src={endereco} title={t('Início')} />
