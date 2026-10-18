@@ -702,18 +702,27 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
 - **O formato e o passo a passo** estão em `e2e/pixel-art/personagem/README.md`. Plano do PixelLab: Tier 2 desde
   14/10/2026 (a repintura `inpaint-v3` e a API de personagens com 8 direções e animação).
 - **O CAMINHO DAS ANIMAÇÕES: PixelLab para a base, Meshy para o 3D, Blender para animar (decisão dele, 18/10/2026; a
-  testar em novembro, quando os créditos do PixelLab renovarem).** O PixelLab desenha cada coelho (de frente, corpo
-  inteiro, em pose A: braços abertos uns 45°, pernas afastadas, orelhas em pé e separadas, fundo liso); o Meshy o
-  transforma em modelo 3D (GLB, textura 2k, SEM o esqueleto deles); e o Blender, por script, põe o NOSSO esqueleto (com
-  ossos para as orelhas), anima e renderiza como pixel art, com as cores presas à paleta do mascote. Por quê: animação
-  feita uma vez serve a TODOS os coelhos de mesma proporção, o objeto na mão (vassoura, bandeja) sai igual em todo
-  quadro, as 8 direções saem de graça e animação nova não gasta crédito.
+  testar em novembro, quando os créditos do PixelLab renovarem).** Por quê: animação feita uma vez serve a todos os
+  coelhos (mesmo esqueleto), o objeto na mão (vassoura, bandeja) sai igual em todo quadro, as 8 direções saem de graça e
+  animação nova não gasta crédito.
+  1. **PixelLab: TODOS os 17 coelhos em pose A** — o mascote base (o branco de moletom, `personagem/mascote/`) e os 16
+     prontos de avatar (`web/public/avatares/`; o 16 só tem o busto). De frente, corpo inteiro, braços abertos uns 45°,
+     pernas um pouco afastadas, orelhas em pé e separadas (as caídas, como a do 03, como são), fundo liso, sem sombra,
+     cada um com a roupa, os acessórios e o rosto dele.
+  2. **Meshy: UM MODELO POR COELHO**, nunca uma base com variações: os corpos não são iguais (medido: de 48 a 57 px de
+     altura; o 03 tem orelha caída, o 05 não tem roupa, o 06 usa jardineira, o 14 é mais baixo e largo, e bonés, gorros e
+     fones mudam a cabeça), e a textura de um não serve ao outro. GLB, textura 2k, SEM o esqueleto deles. Os 17 cabem num
+     mês do plano (20 downloads, licença privada para uso comercial); depois de baixados, os modelos são nossos e a
+     assinatura pode acabar — a dependência do Meshy é de um mês.
+  3. **Blender, por script e no repositório:** o NOSSO esqueleto, o mesmo em todos (com ossos para as orelhas), as
+     animações feitas uma vez, e o render como pixel art com as cores presas à paleta de cada coelho. Por coelho, só
+     conferir o que atravessa o corpo em cada animação (o braço na barriga do 14, o boné na orelha) e ajustar.
+  - **Primeiro o piloto com o mascote** (esqueleto, parado, andando, varrendo, no salão de verdade); só aprovado, os 16.
   - **Medido em 18/10/2026** (`e2e/pixel-art/personagem/blender/`): o coelho montado por código segura a vassoura
     idêntica em 32 quadros, mas fica abaixo do desenho; o sprite projetado nele falhou pela silhueta. O Meshy ganhou do
     Tripo (simulação no salão, cores presas à paleta): forma do mascote, malha lisa que dobra bem; o Tripo vem em blocos,
     com os degraus dos pixels e o contorno pintados na textura, e o esqueleto automático dele pôs os braços nas orelhas.
-  - **O plano do Meshy** dá licença privada para uso comercial e 20 downloads por mês (o mascote + 17 coelhos = 18).
-    **Primeiro o piloto com o mascote** (esqueleto, parado, andando, varrendo, no salão de verdade); só aprovado, os 17.
+    O Meshy fez um bom modelo até do desenho de braços para baixo; a pose A é para o esqueleto encaixar melhor.
   - Ao pôr no motor: a âncora vem do `pe` explícito do json da animação (a vassoura desce abaixo do pé, e a regra do
     primeiro quadro cairia na palha).
 
