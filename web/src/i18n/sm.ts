@@ -1847,6 +1847,8 @@ export default {
   'Começar': 'Amata',
   'Esperando {nome} começar.': 'O loʻo faʻatali mo {nome} e amata.',
   'Girar': 'Taamilo',
+  'Ampliar': 'Faalapopoa',
+  'Reduzir': 'Faaitiitia',
   'Tapete': 'Fala',
   'Objetos da parede': 'Teuga o le puipui',
   'Em cima dos móveis': 'I luga o meafale',

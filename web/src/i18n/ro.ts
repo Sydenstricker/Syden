@@ -1843,6 +1843,8 @@ export default {
   'Começar': 'Începe',
   'Esperando {nome} começar.': 'Se așteaptă ca {nome} să înceapă.',
   'Girar': 'Rotește',
+  'Ampliar': 'Mărește',
+  'Reduzir': 'Micșorează',
   'Tapete': 'Covor',
   'Objetos da parede': 'Decorațiuni de perete',
   'Em cima dos móveis': 'Pe mobilă',

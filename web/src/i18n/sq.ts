@@ -1905,6 +1905,8 @@ export default {
   'Começar': 'Nis',
   'Esperando {nome} começar.': 'Në pritje që {nome} të nisë.',
   'Girar': 'Rrotullo',
+  'Ampliar': 'Zmadho',
+  'Reduzir': 'Zvogëlo',
   'Tapete': 'Qilim',
   'Objetos da parede': 'Zbukurime muri',
   'Em cima dos móveis': 'Mbi mobiljet',

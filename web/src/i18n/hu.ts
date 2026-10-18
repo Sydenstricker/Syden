@@ -1915,6 +1915,8 @@ export default {
   'Começar': 'Kezdés',
   'Esperando {nome} começar.': 'Várjuk, hogy {nome} elindítsa.',
   'Girar': 'Forgatás',
+  'Ampliar': 'Nagyítás',
+  'Reduzir': 'Kicsinyítés',
   'Tapete': 'Szőnyeg',
   'Objetos da parede': 'Falidíszek',
   'Em cima dos móveis': 'A bútorokon',

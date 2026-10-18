@@ -3681,6 +3681,28 @@ void main() {
     if (d) detalhar(d[0], d[1]);
   }, true);
   window.detalheDoTeste = (x, y) => chaveDoDetalhe(escolhaEm(y * W + x)); // para o teste
+  // AS VISTAS DE UMA PEÇA, PARA GIRAR NO CARTÃO (pedido dele, 18/10/2026, "como no Resident Evil"): as mesmas que giram a
+  // peça na cena — 4 nos móveis e nos objetos de cima, 8 na cadeira do computador (que é física e não mora na arrumação, e
+  // por isso o cartão dela saía sem figura). Só sob pedido e só da peça clicada: recortar todas de uma vez pesaria na
+  // abertura. A da parede tem uma vista só (o app usa a miniatura dela).
+  const recorteDe = (rgba) => {
+    let x0 = W, y0 = W, x1 = -1, y1 = -1;
+    for (let k = 0; k < W * W; k++) if (rgba[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return null;
+    const c = document.createElement('canvas'); c.width = x1 - x0 + 1; c.height = y1 - y0 + 1;
+    const d = new ImageData(c.width, c.height);
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = rgba[k + q]; }
+    c.getContext('2d').putImageData(d, 0, 0);
+    return c.toDataURL();
+  };
+  function vistasDaPeca(grupo, id) {
+    const tipo = tipoDe(id);
+    const lista = grupo === 'm' && CENA === 'quarto' && id === 'cadeira' ? VISTAS_CADEIRA
+      : grupo === 'm' ? VISTAS[tipo] ?? VISTAS[id]
+      : grupo === 'o' ? OBJ_VISTAS[id] : null;
+    return (lista ?? []).map((v) => v && recorteDe(v.movel)).filter(Boolean);
+  }
+  window.vistasDoTeste = vistasDaPeca; // para o teste
   const bFuncoes = document.getElementById('funcoes');
   bFuncoes.onclick = () => { FUNCOES = FUNCOES ? null : FUNCOES_DE_TESTE; bFuncoes.setAttribute('aria-pressed', String(!!FUNCOES)); bFuncoes.textContent = 'Funções do app: ' + (FUNCOES ? 'ligadas' : 'desligadas'); };
   // O CONTORNO DE QUEM TEM FUNÇÃO (pedido dele, 16/10/2026: "quando passo em cima de móvel que tenha função, deveria dar
@@ -4742,6 +4764,7 @@ void main() {
       if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
       // A BARRA DE ARRUMAR do app (QuartoNovo.tsx): os mesmos botões da página de teste.
       if (d.comando === 'girar') girar();
+      if (d.vistasDe && typeof d.vistasDe.id === 'string') window.parent.postMessage({ syden: 'quarto', vistas: { grupo: d.vistasDe.grupo, id: d.vistasDe.id, imagens: vistasDaPeca(d.vistasDe.grupo, d.vistasDe.id) } }, location.origin);
       if (d.comando === 'janela') { if (TIPOS_JANELA[d.tipo]) mudarJanela({ ...JAN, tipo: d.tipo }); else btj.click(); }
       if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);

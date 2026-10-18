@@ -1909,6 +1909,8 @@ export default {
   'Começar': 'Començar',
   'Esperando {nome} começar.': 'Esperant que {nome} comenci.',
   'Girar': 'Girar',
+  'Ampliar': 'Amplia',
+  'Reduzir': 'Redueix',
   'Tapete': 'Catifa',
   'Objetos da parede': 'Objectes de la paret',
   'Em cima dos móveis': 'Sobre els mobles',

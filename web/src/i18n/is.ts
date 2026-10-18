@@ -1914,6 +1914,8 @@ export default {
   'Começar': 'Byrja',
   'Esperando {nome} começar.': 'Beðið eftir að {nome} byrji.',
   'Girar': 'Snúa',
+  'Ampliar': 'Stækka',
+  'Reduzir': 'Minnka',
   'Tapete': 'Gólfmotta',
   'Objetos da parede': 'Veggskraut',
   'Em cima dos móveis': 'Á húsgögnunum',

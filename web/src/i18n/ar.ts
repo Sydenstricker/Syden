@@ -1863,6 +1863,8 @@ export default {
   'Começar': 'البدء',
   'Esperando {nome} começar.': 'بانتظار البدء من {nome}.',
   'Girar': 'تدوير',
+  'Ampliar': 'تكبير',
+  'Reduzir': 'تصغير',
   'Tapete': 'السجادة',
   'Objetos da parede': 'أغراض الجدار',
   'Em cima dos móveis': 'فوق الأثاث',

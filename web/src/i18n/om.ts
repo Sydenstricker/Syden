@@ -1883,6 +1883,8 @@ export default {
   'Começar': 'Jalqabi',
   'Esperando {nome} começar.': '{nome} akka jalqaban eegaa jirra.',
   'Girar': 'Naannessi',
+  'Ampliar': 'Guddisi',
+  'Reduzir': 'Xiqqeessi',
   'Tapete': 'Afata lafaa',
   'Objetos da parede': 'Miidhagina keenyan',
   'Em cima dos móveis': 'Meeshaa irratti',

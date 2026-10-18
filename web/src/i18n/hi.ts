@@ -1842,6 +1842,8 @@ export default {
   'Começar': 'शुरू करो',
   'Esperando {nome} começar.': '{nome} के शुरू करने का इंतज़ार है।',
   'Girar': 'घुमाएँ',
+  'Ampliar': 'बड़ा करें',
+  'Reduzir': 'छोटा करें',
   'Tapete': 'कालीन',
   'Objetos da parede': 'दीवार की सजावट',
   'Em cima dos móveis': 'फ़र्नीचर के ऊपर',

@@ -1912,6 +1912,8 @@ export default {
   'Começar': 'ចាប់ផ្តើម',
   'Esperando {nome} começar.': 'កំពុងរង់ចាំ {nome} ចាប់ផ្តើម។',
   'Girar': 'បង្វិល',
+  'Ampliar': 'ពង្រីក',
+  'Reduzir': 'បង្រួម',
   'Tapete': 'កម្រាលព្រំ',
   'Objetos da parede': 'គ្រឿងតុបតែងជញ្ជាំង',
   'Em cima dos móveis': 'លើគ្រឿងសង្ហារិម',

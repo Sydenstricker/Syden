@@ -1921,6 +1921,8 @@ export default {
   'Começar': 'Boshlash',
   'Esperando {nome} começar.': '{nome} boshlashini kutyapmiz.',
   'Girar': 'Burish',
+  'Ampliar': 'Kattalashtirish',
+  'Reduzir': 'Kichiklashtirish',
   'Tapete': 'Gilam',
   'Objetos da parede': 'Devor bezaklari',
   'Em cima dos móveis': 'Mebel ustida',

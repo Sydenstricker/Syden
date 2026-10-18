@@ -1842,6 +1842,8 @@ export default {
   'Começar': 'Tekivu',
   'Esperando {nome} começar.': 'Waraka tiko me tekivuna o {nome}.',
   'Girar': 'Vukica',
+  'Ampliar': 'Vakalevutaka',
+  'Reduzir': 'Vakalailaitaka',
   'Tapete': 'Ibe',
   'Objetos da parede': 'iUkuuku ni lalaga',
   'Em cima dos móveis': 'E dela ni iyaya',

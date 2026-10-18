@@ -1856,6 +1856,8 @@ export default {
   'Começar': 'เริ่ม',
   'Esperando {nome} começar.': 'รอ {nome} เริ่มเกม',
   'Girar': 'หมุน',
+  'Ampliar': 'ขยาย',
+  'Reduzir': 'ย่อ',
   'Tapete': 'พรม',
   'Objetos da parede': 'ของตกแต่งผนัง',
   'Em cima dos móveis': 'บนเฟอร์นิเจอร์',

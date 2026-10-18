@@ -1849,6 +1849,8 @@ export default {
   'Começar': 'Έναρξη',
   'Esperando {nome} começar.': 'Περιμένουμε να ξεκινήσει {nome}.',
   'Girar': 'Περιστροφή',
+  'Ampliar': 'Μεγέθυνση',
+  'Reduzir': 'Σμίκρυνση',
   'Tapete': 'Χαλί',
   'Objetos da parede': 'Διακοσμητικά τοίχου',
   'Em cima dos móveis': 'Πάνω στα έπιπλα',

@@ -1907,6 +1907,8 @@ export default {
   'Começar': 'Begin',
   'Esperando {nome} começar.': 'Wag dat {nome} begin.',
   'Girar': 'Draai',
+  'Ampliar': 'Zoem in',
+  'Reduzir': 'Zoem uit',
   'Tapete': 'Mat',
   'Objetos da parede': 'Muurversierings',
   'Em cima dos móveis': 'Op die meubels',

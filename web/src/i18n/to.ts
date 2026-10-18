@@ -1849,6 +1849,8 @@ export default {
   'Começar': 'Kamata',
   'Esperando {nome} começar.': 'ʻOku tatali ke kamata ʻe {nome}.',
   'Girar': 'Takai',
+  'Ampliar': 'Fakalahi',
+  'Reduzir': 'Fakasi‘isi‘i',
   'Tapete': 'Kapeti',
   'Objetos da parede': 'Teuteu ʻo e holisi',
   'Em cima dos móveis': 'ʻI he ngaahi naunau',

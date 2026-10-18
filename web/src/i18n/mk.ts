@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'Почни',
   'Esperando {nome} começar.': 'Се чека {nome} да почне.',
   'Girar': 'Сврти',
+  'Ampliar': 'Зголеми',
+  'Reduzir': 'Намали',
   'Tapete': 'Тепих',
   'Objetos da parede': 'Украси за ѕид',
   'Em cima dos móveis': 'На мебелот',

@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'Aloita',
   'Esperando {nome} começar.': 'Odotetaan, että {nome} aloittaa.',
   'Girar': 'Käännä',
+  'Ampliar': 'Lähennä',
+  'Reduzir': 'Loitonna',
   'Tapete': 'Matto',
   'Objetos da parede': 'Seinäkoristeet',
   'Em cima dos móveis': 'Huonekalujen päällä',

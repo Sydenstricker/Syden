@@ -2008,6 +2008,8 @@ textarea {
 }
 .cartao-da-peca-figura {
   position: relative;
+  overflow: hidden; /* ampliada, a figura não sai da caixa */
+  touch-action: none; /* o arraste e a pinça são do cartão, não da página */
   width: 100%;
   height: 200px;
   border-radius: var(--radius);
@@ -2024,6 +2026,23 @@ textarea {
   box-sizing: border-box;
   object-fit: contain;
   image-rendering: pixelated;
+  transition: transform 0.12s ease-out;
+  user-select: none;
+}
+.cartao-da-peca-figura.giravel {
+  cursor: ew-resize; /* arrastar para os lados gira a peça */
+}
+/* girar, reduzir, ampliar, girar: embaixo da figura */
+.cartao-da-peca-controles {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: -4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cartao-da-peca-figura img {
+    transition: none;
+  }
 }
 .cartao-da-peca-figura.original {
   height: 300px;

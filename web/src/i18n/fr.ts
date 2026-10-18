@@ -1865,6 +1865,8 @@ export default {
   'Começar': 'Commencer',
   'Esperando {nome} começar.': 'En attente du départ de {nome}.',
   'Girar': 'Tourner',
+  'Ampliar': 'Agrandir',
+  'Reduzir': 'Réduire',
   'Tapete': 'Tapis',
   'Objetos da parede': 'Objets muraux',
   'Em cima dos móveis': 'Sur les meubles',

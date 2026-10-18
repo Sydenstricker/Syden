@@ -1831,6 +1831,8 @@ export default {
   'Começar': 'شروع',
   'Esperando {nome} começar.': 'منتظر شروع بازی توسط {nome}.',
   'Girar': 'چرخاندن',
+  'Ampliar': 'بزرگ‌نمایی',
+  'Reduzir': 'کوچک‌نمایی',
   'Tapete': 'فرش',
   'Objetos da parede': 'وسایل دیوار',
   'Em cima dos móveis': 'روی وسایل',

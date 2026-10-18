@@ -1927,6 +1927,8 @@ export default {
   'Começar': 'Эхлүүлэх',
   'Esperando {nome} começar.': '{nome} эхлүүлэхийг хүлээж байна.',
   'Girar': 'Эргүүлэх',
+  'Ampliar': 'Томруулах',
+  'Reduzir': 'Жижигрүүлэх',
   'Tapete': 'Хивс',
   'Objetos da parede': 'Ханын чимэглэл',
   'Em cima dos móveis': 'Тавилга дээр',

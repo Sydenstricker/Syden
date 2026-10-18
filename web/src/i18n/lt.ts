@@ -1915,6 +1915,8 @@ export default {
   'Começar': 'Pradėti',
   'Esperando {nome} começar.': 'Laukiame, kol {nome} pradės.',
   'Girar': 'Pasukti',
+  'Ampliar': 'Priartinti',
+  'Reduzir': 'Nutolinti',
   'Tapete': 'Kilimas',
   'Objetos da parede': 'Sienų dekoracijos',
   'Em cima dos móveis': 'Ant baldų',

@@ -1854,6 +1854,8 @@ export default {
   'Começar': 'Tangira',
   'Esperando {nome} começar.': 'Dutegereje ko {nome} atangira.',
   'Girar': 'Hindukiza',
+  'Ampliar': 'Kongera ingano',
+  'Reduzir': 'Kugabanya ingano',
   'Tapete': 'Itapi',
   'Objetos da parede': 'Imitako yo ku rukuta',
   'Em cima dos móveis': 'Ku bikoresho byo mu nzu',

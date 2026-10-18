@@ -1932,6 +1932,8 @@ export default {
   'Começar': 'Սկսել',
   'Esperando {nome} começar.': 'Սպասում ենք, որ {nome} սկսի։',
   'Girar': 'Պտտել',
+  'Ampliar': 'Մեծացնել',
+  'Reduzir': 'Փոքրացնել',
   'Tapete': 'Գորգ',
   'Objetos da parede': 'Պատի զարդեր',
   'Em cima dos móveis': 'Կահույքի վրա',

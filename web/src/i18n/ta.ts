@@ -1828,6 +1828,8 @@ export default {
   'Começar': 'தொடங்கு',
   'Esperando {nome} começar.': '{nome} தொடங்குவதற்காகக் காத்திருக்கிறோம்.',
   'Girar': 'சுழற்று',
+  'Ampliar': 'பெரிதாக்கு',
+  'Reduzir': 'சிறிதாக்கு',
   'Tapete': 'விரிப்பு',
   'Objetos da parede': 'சுவர் அலங்காரங்கள்',
   'Em cima dos móveis': 'தளவாடங்களின் மேல்',

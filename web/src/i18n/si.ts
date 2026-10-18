@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'පටන් ගන්න',
   'Esperando {nome} começar.': '{nome} පටන් ගන්නකම් බලාගෙන ඉන්නවා.',
   'Girar': 'කරකවන්න',
+  'Ampliar': 'විශාලනය',
+  'Reduzir': 'කුඩා කිරීම',
   'Tapete': 'පාපිස්ස',
   'Objetos da parede': 'බිත්ති සැරසිලි',
   'Em cima dos móveis': 'ගෘහ භාණ්ඩ මත',

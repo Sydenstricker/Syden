@@ -1830,6 +1830,8 @@ export default {
   'Começar': 'شروع کریں',
   'Esperando {nome} começar.': '{nome} کے شروع کرنے کا انتظار ہے۔',
   'Girar': 'گھمائیں',
+  'Ampliar': 'بڑا کریں',
+  'Reduzir': 'چھوٹا کریں',
   'Tapete': 'قالین',
   'Objetos da parede': 'دیوار کی سجاوٹ',
   'Em cima dos móveis': 'فرنیچر کے اوپر',

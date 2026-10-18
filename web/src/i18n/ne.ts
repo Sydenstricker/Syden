@@ -1915,6 +1915,8 @@ export default {
   'Começar': 'सुरु गर्नुहोस्',
   'Esperando {nome} começar.': '{nome} ले सुरु गर्ने प्रतीक्षा गर्दै।',
   'Girar': 'घुमाउनुहोस्',
+  'Ampliar': 'ठूलो बनाउनुहोस्',
+  'Reduzir': 'सानो बनाउनुहोस्',
   'Tapete': 'गलैँचा',
   'Objetos da parede': 'भित्ताका सजावट',
   'Em cima dos móveis': 'फर्निचरमाथि',

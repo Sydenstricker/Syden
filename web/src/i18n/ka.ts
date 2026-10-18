@@ -1931,6 +1931,8 @@ export default {
   'Começar': 'დაწყება',
   'Esperando {nome} começar.': 'ველოდებით, როდის დაიწყებს {nome}.',
   'Girar': 'შემობრუნება',
+  'Ampliar': 'გადიდება',
+  'Reduzir': 'შემცირება',
   'Tapete': 'ხალიჩა',
   'Objetos da parede': 'კედლის დეკორი',
   'Em cima dos móveis': 'ავეჯზე',

@@ -1912,6 +1912,8 @@ export default {
   'Começar': 'Počni',
   'Esperando {nome} começar.': 'Čeka se da {nome} počne.',
   'Girar': 'Okreni',
+  'Ampliar': 'Uvećaj',
+  'Reduzir': 'Umanji',
   'Tapete': 'Tepih',
   'Objetos da parede': 'Ukrasi za zid',
   'Em cima dos móveis': 'Na namještaju',

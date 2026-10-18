@@ -1910,6 +1910,8 @@ export default {
   'Começar': 'Alusta',
   'Esperando {nome} começar.': 'Ootame, et {nome} alustaks.',
   'Girar': 'Pööra',
+  'Ampliar': 'Suurenda',
+  'Reduzir': 'Vähenda',
   'Tapete': 'Vaip',
   'Objetos da parede': 'Seinakaunistused',
   'Em cima dos móveis': 'Mööbli peal',

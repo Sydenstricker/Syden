@@ -1915,6 +1915,8 @@ export default {
   'Começar': 'Başla',
   'Esperando {nome} começar.': '{nome} başlamagyna garaşylýar.',
   'Girar': 'Aýlamak',
+  'Ampliar': 'Ulalt',
+  'Reduzir': 'Kiçelt',
   'Tapete': 'Haly',
   'Objetos da parede': 'Diwar bezegleri',
   'Em cima dos móveis': 'Mebelleriň üstünde',

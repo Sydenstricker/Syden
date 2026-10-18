@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'Start',
   'Esperando {nome} começar.': 'Venter på at {nome} skal starte.',
   'Girar': 'Roter',
+  'Ampliar': 'Zoom inn',
+  'Reduzir': 'Zoom ut',
   'Tapete': 'Teppe',
   'Objetos da parede': 'Veggpynt',
   'Em cima dos móveis': 'På møblene',

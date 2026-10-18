@@ -1858,6 +1858,8 @@ export default {
   'Começar': 'Bẹ̀rẹ̀',
   'Esperando {nome} começar.': 'À ń dúró de {nome} láti bẹ̀rẹ̀.',
   'Girar': 'Yí i padà',
+  'Ampliar': 'Sún mọ́',
+  'Reduzir': 'Sún sẹ́yìn',
   'Tapete': 'Kápẹ́ẹ̀tì',
   'Objetos da parede': 'Ọ̀ṣọ́ ògiri',
   'Em cima dos móveis': 'Lórí àga àti tábìlì',

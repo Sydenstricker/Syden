@@ -446,7 +446,7 @@ export function EditorDaCena({
           </div>
         )}
       </div>
-      {peca && aoFecharPeca && <CartaoDaPeca peca={peca} figuras={figuras} aoFechar={aoFecharPeca} />}
+      {peca && aoFecharPeca && <CartaoDaPeca peca={peca} figuras={figuras} aoFechar={aoFecharPeca} enviar={enviar} />}
       {editando ? (
         <footer className="editor-base">
           <div className="editor-atalhos">

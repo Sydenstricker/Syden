@@ -1905,6 +1905,8 @@ export default {
   'Começar': 'Börja',
   'Esperando {nome} começar.': 'Väntar på att {nome} ska börja.',
   'Girar': 'Rotera',
+  'Ampliar': 'Zooma in',
+  'Reduzir': 'Zooma ut',
   'Tapete': 'Matta',
   'Objetos da parede': 'Väggdekor',
   'Em cima dos móveis': 'På möblerna',

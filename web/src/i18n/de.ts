@@ -1867,6 +1867,8 @@ export default {
   'Começar': 'Starten',
   'Esperando {nome} começar.': 'Warte darauf, dass {nome} startet.',
   'Girar': 'Drehen',
+  'Ampliar': 'Vergrößern',
+  'Reduzir': 'Verkleinern',
   'Tapete': 'Teppich',
   'Objetos da parede': 'Wanddeko',
   'Em cima dos móveis': 'Auf den Möbeln',

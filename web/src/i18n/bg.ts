@@ -1910,6 +1910,8 @@ export default {
   'Começar': 'Започни',
   'Esperando {nome} começar.': 'Чакаме {nome} да започне.',
   'Girar': 'Завърти',
+  'Ampliar': 'Увеличаване',
+  'Reduzir': 'Намаляване',
   'Tapete': 'Килим',
   'Objetos da parede': 'Декорации за стена',
   'Em cima dos móveis': 'Върху мебелите',

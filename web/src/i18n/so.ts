@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'Bilow',
   'Esperando {nome} começar.': 'Waxaa la sugayaa bilowga {nome}.',
   'Girar': 'Wareeji',
+  'Ampliar': 'Weyneey',
+  'Reduzir': 'Yaree',
   'Tapete': 'Roog',
   'Objetos da parede': 'Qurxinta derbiga',
   'Em cima dos móveis': 'Alaabta dusheeda',

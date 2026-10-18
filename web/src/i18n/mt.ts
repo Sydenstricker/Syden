@@ -1859,6 +1859,8 @@ export default {
   'Começar': 'Ibda',
   'Esperando {nome} começar.': 'Qed nistennew il-bidu minn {nome}.',
   'Girar': 'Dawwar',
+  'Ampliar': 'Kabbar',
+  'Reduzir': 'Ċekken',
   'Tapete': 'Tapit',
   'Objetos da parede': 'Tiżjin tal-ħajt',
   'Em cima dos móveis': 'Fuq l-għamara',

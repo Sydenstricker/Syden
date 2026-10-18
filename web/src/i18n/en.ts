@@ -1838,6 +1838,8 @@ export default {
   'Começar': 'Start',
   'Esperando {nome} começar.': 'Waiting for {nome} to start.',
   'Girar': 'Rotate',
+  'Ampliar': 'Zoom in',
+  'Reduzir': 'Zoom out',
   'Tapete': 'Rug',
   'Objetos da parede': 'Wall decor',
   'Em cima dos móveis': 'On the furniture',

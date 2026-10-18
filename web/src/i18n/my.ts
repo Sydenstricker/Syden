@@ -1882,6 +1882,8 @@ export default {
   'Começar': 'စတင်ရန်',
   'Esperando {nome} começar.': '{nome} စတာကို စောင့်နေပါတယ်။',
   'Girar': 'လှည့်ရန်',
+  'Ampliar': 'ချဲ့ရန်',
+  'Reduzir': 'ချုံ့ရန်',
   'Tapete': 'ကော်ဇော',
   'Objetos da parede': 'နံရံအလှဆင်ပစ္စည်းများ',
   'Em cima dos móveis': 'ပရိဘောဂပေါ်မှာ',

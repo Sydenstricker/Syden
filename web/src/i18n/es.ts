@@ -1838,6 +1838,8 @@ export default {
   'Começar': 'Empezar',
   'Esperando {nome} começar.': 'Esperando a que {nome} empiece.',
   'Girar': 'Girar',
+  'Ampliar': 'Ampliar',
+  'Reduzir': 'Reducir',
   'Tapete': 'Alfombra',
   'Objetos da parede': 'Objetos de la pared',
   'Em cima dos móveis': 'Sobre los muebles',

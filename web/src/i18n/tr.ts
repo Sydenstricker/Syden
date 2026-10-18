@@ -1837,6 +1837,8 @@ export default {
   'Começar': 'Başlat',
   'Esperando {nome} começar.': 'Başlatması bekleniyor: {nome}',
   'Girar': 'Döndür',
+  'Ampliar': 'Yakınlaştır',
+  'Reduzir': 'Uzaklaştır',
   'Tapete': 'Halı',
   'Objetos da parede': 'Duvar süsleri',
   'Em cima dos móveis': 'Mobilyaların üstünde',

@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'Atombohy',
   'Esperando {nome} começar.': 'Miandry an’i {nome} hanomboka.',
   'Girar': 'Ahodino',
+  'Ampliar': 'Hanalehibe',
+  'Reduzir': 'Hanakely',
   'Tapete': 'Karipetra',
   'Objetos da parede': 'Haingon\'ny rindrina',
   'Em cima dos móveis': 'Ambonin\'ny fanaka',

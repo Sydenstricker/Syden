@@ -1849,6 +1849,8 @@ export default {
   'Começar': 'Tosaigh',
   'Esperando {nome} começar.': 'Ag fanacht go dtosóidh {nome}.',
   'Girar': 'Rothlaigh',
+  'Ampliar': 'Zúmáil isteach',
+  'Reduzir': 'Zúmáil amach',
   'Tapete': 'Ruga',
   'Objetos da parede': 'Maisiúcháin bhalla',
   'Em cima dos móveis': 'Ar an troscán',

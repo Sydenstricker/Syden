@@ -1923,6 +1923,8 @@ export default {
   'Começar': 'Kòmanse',
   'Esperando {nome} começar.': 'N ap tann {nome} kòmanse.',
   'Girar': 'Vire',
+  'Ampliar': 'Grosi',
+  'Reduzir': 'Rapetise',
   'Tapete': 'Tapi',
   'Objetos da parede': 'Dekorasyon miray',
   'Em cima dos móveis': 'Sou mèb yo',

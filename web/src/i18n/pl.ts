@@ -1908,6 +1908,8 @@ export default {
   'Começar': 'Zacznij',
   'Esperando {nome} começar.': 'Czekamy, aż {nome} zacznie.',
   'Girar': 'Obróć',
+  'Ampliar': 'Powiększ',
+  'Reduzir': 'Pomniejsz',
   'Tapete': 'Dywan',
   'Objetos da parede': 'Ozdoby na ścianę',
   'Em cima dos móveis': 'Na meblach',

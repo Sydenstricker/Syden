@@ -1851,6 +1851,8 @@ export default {
   'Começar': 'Malite',
   'Esperando {nome} começar.': 'Na-eche ka {nome} malite.',
   'Girar': 'Tụgharịa',
+  'Ampliar': 'Mee ka ọ buo ibu',
+  'Reduzir': 'Mee ka ọ dị obere',
   'Tapete': 'Kapeeti',
   'Objetos da parede': 'Ihe ịchọ mma mgbidi',
   'Em cima dos móveis': 'N\'elu ngwongwo ụlọ',

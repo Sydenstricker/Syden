@@ -1840,6 +1840,8 @@ export default {
   'Começar': 'শুরু করো',
   'Esperando {nome} começar.': '{nome} শুরু করবে, তার অপেক্ষা।',
   'Girar': 'ঘোরাও',
+  'Ampliar': 'বড় করুন',
+  'Reduzir': 'ছোট করুন',
   'Tapete': 'কার্পেট',
   'Objetos da parede': 'দেয়ালের জিনিস',
   'Em cima dos móveis': 'আসবাবের ওপর',

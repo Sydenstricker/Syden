@@ -1912,6 +1912,8 @@ export default {
   'Começar': 'Začít',
   'Esperando {nome} começar.': 'Čeká se, až {nome} začne.',
   'Girar': 'Otočit',
+  'Ampliar': 'Přiblížit',
+  'Reduzir': 'Oddálit',
   'Tapete': 'Koberec',
   'Objetos da parede': 'Ozdoby na zeď',
   'Em cima dos móveis': 'Na nábytku',

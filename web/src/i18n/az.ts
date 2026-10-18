@@ -1877,6 +1877,8 @@ export default {
   'Começar': 'Başla',
   'Esperando {nome} começar.': '{nome} başlamasını gözləyirik.',
   'Girar': 'Döndər',
+  'Ampliar': 'Böyüt',
+  'Reduzir': 'Kiçilt',
   'Tapete': 'Xalça',
   'Objetos da parede': 'Divar bəzəkləri',
   'Em cima dos móveis': 'Mebel üstündə',

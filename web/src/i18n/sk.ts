@@ -1913,6 +1913,8 @@ export default {
   'Começar': 'Začať',
   'Esperando {nome} começar.': 'Čaká sa, kým {nome} začne.',
   'Girar': 'Otočiť',
+  'Ampliar': 'Priblížiť',
+  'Reduzir': 'Oddialiť',
   'Tapete': 'Koberec',
   'Objetos da parede': 'Ozdoby na stenu',
   'Em cima dos móveis': 'Na nábytku',

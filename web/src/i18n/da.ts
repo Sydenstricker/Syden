@@ -1907,6 +1907,8 @@ export default {
   'Começar': 'Start',
   'Esperando {nome} começar.': 'Venter på, at {nome} starter.',
   'Girar': 'Drej',
+  'Ampliar': 'Zoom ind',
+  'Reduzir': 'Zoom ud',
   'Tapete': 'Tæppe',
   'Objetos da parede': 'Vægpynt',
   'Em cima dos móveis': 'På møblerne',

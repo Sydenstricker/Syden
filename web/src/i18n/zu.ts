@@ -1914,6 +1914,8 @@ export default {
   'Começar': 'Qala',
   'Esperando {nome} começar.': 'Silinde u-{nome} ukuthi aqale.',
   'Girar': 'Jikisa',
+  'Ampliar': 'Sondeza',
+  'Reduzir': 'Hlehlisa',
   'Tapete': 'Umata',
   'Objetos da parede': 'Imihlobiso yodonga',
   'Em cima dos móveis': 'Phezu kwefenisha',

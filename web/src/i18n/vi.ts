@@ -1813,6 +1813,8 @@ export default {
   'Começar': 'Bắt đầu',
   'Esperando {nome} começar.': 'Đang chờ {nome} bắt đầu.',
   'Girar': 'Xoay',
+  'Ampliar': 'Phóng to',
+  'Reduzir': 'Thu nhỏ',
   'Tapete': 'Thảm',
   'Objetos da parede': 'Đồ treo tường',
   'Em cima dos móveis': 'Trên đồ nội thất',

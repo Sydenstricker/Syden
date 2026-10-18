@@ -1843,6 +1843,8 @@ export default {
   'Começar': 'ይጀምሩ',
   'Esperando {nome} começar.': '{nome} እስኪጀምሩ በመጠበቅ ላይ።',
   'Girar': 'ማዞር',
+  'Ampliar': 'አጉላ',
+  'Reduzir': 'አሳንስ',
   'Tapete': 'ምንጣፍ',
   'Objetos da parede': 'የግድግዳ ጌጦች',
   'Em cima dos móveis': 'በዕቃዎቹ ላይ',

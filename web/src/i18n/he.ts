@@ -1893,6 +1893,8 @@ export default {
   'Começar': 'להתחיל',
   'Esperando {nome} começar.': 'ממתינים להתחלה של {nome}.',
   'Girar': 'סיבוב',
+  'Ampliar': 'הגדלה',
+  'Reduzir': 'הקטנה',
   'Tapete': 'שטיח',
   'Objetos da parede': 'קישוטי קיר',
   'Em cima dos móveis': 'על הרהיטים',

@@ -1824,6 +1824,8 @@ export default {
   'Começar': 'スタート',
   'Esperando {nome} começar.': '{nome} さんが始めるのを待っています。',
   'Girar': '回転',
+  'Ampliar': '拡大',
+  'Reduzir': '縮小',
   'Tapete': 'ラグ',
   'Objetos da parede': '壁の飾り',
   'Em cima dos móveis': '家具の上',

@@ -1831,6 +1831,8 @@ export default {
   'Começar': '시작',
   'Esperando {nome} começar.': '{nome}님이 시작하기를 기다리는 중이에요.',
   'Girar': '회전',
+  'Ampliar': '확대',
+  'Reduzir': '축소',
   'Tapete': '러그',
   'Objetos da parede': '벽 장식',
   'Em cima dos móveis': '가구 위',

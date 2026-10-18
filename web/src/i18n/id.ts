@@ -1840,6 +1840,8 @@ export default {
   'Começar': 'Mulai',
   'Esperando {nome} começar.': 'Menunggu {nome} memulai.',
   'Girar': 'Putar',
+  'Ampliar': 'Perbesar',
+  'Reduzir': 'Perkecil',
   'Tapete': 'Karpet',
   'Objetos da parede': 'Hiasan dinding',
   'Em cima dos móveis': 'Di atas perabot',

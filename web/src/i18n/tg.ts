@@ -1914,6 +1914,8 @@ export default {
   'Começar': 'Оғоз кардан',
   'Esperando {nome} começar.': 'Интизори оғози {nome}.',
   'Girar': 'Гардонидан',
+  'Ampliar': 'Калон кардан',
+  'Reduzir': 'Хурд кардан',
   'Tapete': 'Қолин',
   'Objetos da parede': 'Ороишҳои девор',
   'Em cima dos móveis': 'Дар болои мебел',

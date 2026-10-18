@@ -1915,6 +1915,8 @@ export default {
   'Começar': 'Sākt',
   'Esperando {nome} começar.': 'Gaidām, kad {nome} sāks.',
   'Girar': 'Pagriezt',
+  'Ampliar': 'Tuvināt',
+  'Reduzir': 'Tālināt',
   'Tapete': 'Paklājs',
   'Objetos da parede': 'Sienas rotājumi',
   'Em cima dos móveis': 'Uz mēbelēm',

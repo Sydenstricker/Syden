@@ -1842,6 +1842,8 @@ export default {
   'Começar': 'Anza',
   'Esperando {nome} começar.': 'Tunamsubiri {nome} aanze.',
   'Girar': 'Zungusha',
+  'Ampliar': 'Kuza',
+  'Reduzir': 'Punguza',
   'Tapete': 'Zulia',
   'Objetos da parede': 'Vitu vya ukutani',
   'Em cima dos móveis': 'Juu ya samani',

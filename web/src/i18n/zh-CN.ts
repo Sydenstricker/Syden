@@ -1830,6 +1830,8 @@ export default {
   'Começar': '开始',
   'Esperando {nome} começar.': '等 {nome} 开始。',
   'Girar': '旋转',
+  'Ampliar': '放大',
+  'Reduzir': '缩小',
   'Tapete': '地毯',
   'Objetos da parede': '墙面装饰',
   'Em cima dos móveis': '家具上的物品',

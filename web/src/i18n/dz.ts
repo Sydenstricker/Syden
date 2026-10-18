@@ -1926,6 +1926,8 @@ export default {
   'Começar': 'འགོ་བཙུགས།',
   'Esperando {nome} começar.': '{nome} གིས་ འགོ་བཙུགས་ནི་ལུ་ བསྒུག་དོ།',
   'Girar': 'བསྐོར།',
+  'Ampliar': 'ཆེ་རུ་བཏང་',
+  'Reduzir': 'ཆུང་རུ་བཏང་',
   'Tapete': 'གདན།',
   'Objetos da parede': 'གྱང་རྒྱན།',
   'Em cima dos móveis': 'ཅ་ཆས་ཀྱི་ཁར།',

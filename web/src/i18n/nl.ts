@@ -1842,6 +1842,8 @@ export default {
   'Começar': 'Beginnen',
   'Esperando {nome} começar.': 'Wachten tot {nome} begint.',
   'Girar': 'Draaien',
+  'Ampliar': 'Inzoomen',
+  'Reduzir': 'Uitzoomen',
   'Tapete': 'Vloerkleed',
   'Objetos da parede': 'Wanddecoratie',
   'Em cima dos móveis': 'Op de meubels',

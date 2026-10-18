@@ -1845,6 +1845,8 @@ export default {
   'Começar': 'Fara',
   'Esperando {nome} começar.': 'Ana jiran {nome} su fara.',
   'Girar': 'Juya',
+  'Ampliar': 'Ƙara girma',
+  'Reduzir': 'Rage girma',
   'Tapete': 'Kafet',
   'Objetos da parede': 'Kayan bango',
   'Em cima dos móveis': 'A kan kayan daki',

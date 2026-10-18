@@ -1845,6 +1845,8 @@ export default {
   'Começar': 'Hahú',
   'Esperando {nome} começar.': 'Hein {nome} hahú.',
   'Girar': 'Fila',
+  'Ampliar': 'Hamboot',
+  'Reduzir': 'Hamenus',
   'Tapete': 'Tapete',
   'Objetos da parede': 'Dekorasaun parede nian',
   'Em cima dos móveis': 'Iha mobília leten',

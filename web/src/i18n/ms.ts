@@ -1843,6 +1843,8 @@ export default {
   'Começar': 'Mula',
   'Esperando {nome} começar.': 'Menunggu {nome} memulakan.',
   'Girar': 'Putar',
+  'Ampliar': 'Zum masuk',
+  'Reduzir': 'Zum keluar',
   'Tapete': 'Permaidani',
   'Objetos da parede': 'Hiasan dinding',
   'Em cima dos móveis': 'Di atas perabot',

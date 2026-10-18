@@ -1861,6 +1861,8 @@ export default {
   'Começar': 'Начать',
   'Esperando {nome} começar.': 'Ждём, когда {nome} даст старт.',
   'Girar': 'Повернуть',
+  'Ampliar': 'Увеличить',
+  'Reduzir': 'Уменьшить',
   'Tapete': 'Ковёр',
   'Objetos da parede': 'Предметы на стене',
   'Em cima dos móveis': 'На мебели',

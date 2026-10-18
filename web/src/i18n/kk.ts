@@ -1909,6 +1909,8 @@ export default {
   'Começar': 'Бастау',
   'Esperando {nome} começar.': '{nome} бастауын күтудеміз.',
   'Girar': 'Бұру',
+  'Ampliar': 'Үлкейту',
+  'Reduzir': 'Кішірейту',
   'Tapete': 'Кілем',
   'Objetos da parede': 'Қабырға әшекейлері',
   'Em cima dos móveis': 'Жиһаздың үстінде',

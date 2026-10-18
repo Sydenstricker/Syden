@@ -1923,6 +1923,8 @@ export default {
   'Começar': 'ފަށާ',
   'Esperando {nome} começar.': '{nome} ފަށަންދެން މަޑުކުރަނީ.',
   'Girar': 'އަނބުރާ',
+  'Ampliar': 'ބޮޑުކުރުން',
+  'Reduzir': 'ކުޑަކުރުން',
   'Tapete': 'ފަރުދާ',
   'Objetos da parede': 'ފާރުގެ ޒީނަތްތެރިކަން',
   'Em cima dos móveis': 'ފަރުނީޗަރުގެ މައްޗަށް',

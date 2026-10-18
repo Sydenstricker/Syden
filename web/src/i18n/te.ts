@@ -1825,6 +1825,8 @@ export default {
   'Começar': 'మొదలుపెట్టు',
   'Esperando {nome} começar.': '{nome} మొదలుపెట్టడం కోసం ఎదురుచూస్తున్నాం.',
   'Girar': 'తిప్పు',
+  'Ampliar': 'పెద్దది చేయి',
+  'Reduzir': 'చిన్నది చేయి',
   'Tapete': 'తివాచీ',
   'Objetos da parede': 'గోడ అలంకరణలు',
   'Em cima dos móveis': 'ఫర్నిచర్ మీద',
