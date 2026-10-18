@@ -1706,6 +1706,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const DIAGONAL = (du, dv) => (Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : dv > 0 ? 'sudeste' : 'noroeste');
   // Quantos px o assento da banqueta sobe do chão (a pose da banqueta tem o pé na ponta da perna pendurada).
   const SOBE_NA_BANQUETA = 19; // o assento está a ~34 px; a perna pendurada desce uns 15
+  // Até onde um assento conta como "vendo a TV" (casas do centro dela): o sofá da frente cabe, o do outro lado do salão não.
+  const PERTO_DA_TV = 5;
   function lugaresDoSalao() {
     const sentar = [], tv = [], fliperama = [], chao = [];
     for (const id of ['sofa', 'sofa-2']) if (ARR[id]) {
@@ -1756,18 +1758,30 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const longeDaTv = (x) => (ARR.tv ? -Math.hypot(x.u - centro(peDe('tv'))[0], x.v - centro(peDe('tv'))[1]) : 0);
     fliperama.push(...emVolta('fliperama', [[1.0, 1.1], [1.0, -1.1], [2.0, 0]]).sort((a, b) => longeDaTv(a) - longeDaTv(b)));
     tv.push(...emVolta('tv', [[1.6, 1], [1.6, -1]]));
-    // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
-    const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, N / 2];
-    const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
+    // O CHÃO PERTO DA TV (relato dele, 17/10/2026: "um coelho vendo transmissão foi parar no sofá da sala"): quem está na
+    // call está vendo a TV, e quem não cabe no sofá dela fica de pé ali perto, olhando para a tela, e não no outro sofá,
+    // do outro lado do salão. O centro da roda é um ponto a 2,5 casas da frente da TV (sem TV, a mesinha ou o meio); as
+    // casas a menos de 2 do centro dela ficam de fora, para ninguém ficar colado na tela.
+    const alvoTv = ARR.tv ? centro(peDe('tv')) : [0, N / 2];
+    const frenteTv = naFrente('tv', 2.5);
+    const meio = frenteTv ? [frenteTv.u, frenteTv.v] : ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2];
+    const dist = (c, p) => Math.hypot(c[0] + 0.5 - p[0], c[1] + 0.5 - p[1]);
+    const livres = todasAsCasas()
+      .filter(([i, j]) => livre(i, j) && (!ARR.tv || dist([i, j], alvoTv) >= 2))
+      .sort((a, b) => dist(a, meio) - dist(b, meio));
     for (const [i, j] of livres.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: DIAGONAL(alvoTv[0] - i - 0.5, alvoTv[1] - j - 0.5), sobre: null });
-    return { sentar, tv, fliperama, chao };
+    // OS ASSENTOS, DO MAIS PERTO DA TV AO MAIS LONGE; os perto (até PERTO_DA_TV casas) vêm antes do chão, os longe depois
+    const dTv = (x) => (ARR.tv ? Math.hypot(x.u - alvoTv[0], x.v - alvoTv[1]) : 0);
+    sentar.sort((a, b) => dTv(a) - dTv(b));
+    const perto = sentar.filter((x) => dTv(x) <= PERTO_DA_TV), longe = sentar.filter((x) => dTv(x) > PERTO_DA_TV);
+    return { sentar: perto, tv, fliperama, chao, longe };
   }
   function lugaresDasPessoas() {
     const L = lugaresDoSalao(), usados = [];
     // um lugar DE PÉ a menos de 0,8 casa de outro já tomado é pulado (as rodas da TV e do fliperama se cruzam); os assentos
     // do sofá são mais juntos que isso e valem todos
     const pegar = (lista) => { let x; while ((x = lista.shift()) && !x.sobre && usados.some((y) => Math.hypot(y.u - x.u, y.v - x.v) < 0.8)); if (x) usados.push(x); return x; };
-    return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || null })).filter((x) => x.lugar);
+    return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || pegar(L.longe) || null })).filter((x) => x.lugar);
   }
   // Cada pessoa vira uma PEÇA da cena, como um móvel: o mascote parado naquela pose, com a profundidade do pé dele (e, sentado,
   // desenhado depois do móvel em que senta).

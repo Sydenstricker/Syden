@@ -1952,6 +1952,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const DIAGONAL = (du, dv) => (Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : dv > 0 ? 'sudeste' : 'noroeste');
   // Quantos px o assento da banqueta sobe do chão (a pose da banqueta tem o pé na ponta da perna pendurada).
   const SOBE_NA_BANQUETA = 19; // o assento está a ~34 px; a perna pendurada desce uns 15
+  // Até onde um assento conta como "vendo a TV" (casas do centro dela): o sofá da frente cabe, o do outro lado do salão não.
+  const PERTO_DA_TV = 5;
   function lugaresDoSalao() {
     const sentar = [], tv = [], fliperama = [], chao = [];
     for (const id of ['sofa', 'sofa-2']) if (ARR[id]) {
@@ -2002,18 +2004,41 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const longeDaTv = (x) => (ARR.tv ? -Math.hypot(x.u - centro(peDe('tv'))[0], x.v - centro(peDe('tv'))[1]) : 0);
     fliperama.push(...emVolta('fliperama', [[1.0, 1.1], [1.0, -1.1], [2.0, 0]]).sort((a, b) => longeDaTv(a) - longeDaTv(b)));
     tv.push(...emVolta('tv', [[1.6, 1], [1.6, -1]]));
-    // o chão: casas livres perto da mesinha (ou do meio), olhando para a TV
-    const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2], alvoTv = ARR.tv ? centro(peDe('tv')) : [0, N / 2];
-    const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
-    for (const [i, j] of livres.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: DIAGONAL(alvoTv[0] - i - 0.5, alvoTv[1] - j - 0.5), sobre: null });
-    return { sentar, tv, fliperama, chao };
+    // O CHÃO PERTO DA TV (relato dele, 17/10/2026: "um coelho vendo transmissão foi parar no sofá da sala"): quem está na
+    // call está vendo a TV, e quem não cabe no sofá dela fica de pé AO LADO do sofá, na mesma fileira, virado para a tela,
+    // e não no outro sofá, do outro lado do salão. Nunca entre o sofá e a TV (taparia a tela e embolaria os nomes).
+    // Medido no eixo da TV: "frente" é o quanto a casa está diante da tela, "lado" o quanto está para o lado.
+    const alvoTv = ARR.tv ? centro(peDe('tv')) : null;
+    if (alvoTv) {
+      const [fu, fv] = VET[ORIENTA[ARR.tv.lado]], [lu, lv] = [fv, fu];
+      const eixo = (u, v) => [(u - alvoTv[0]) * fu + (v - alvoTv[1]) * fv, (u - alvoTv[0]) * lu + (v - alvoTv[1]) * lv];
+      // a fileira do sofá que vê a TV (o mais perto dela); sem sofá, uma fileira a 3 casas
+      const sofa = ['sofa', 'sofa-2'].filter((id) => ARR[id]).map((id) => ({ id, c: centro(peDe(id)) })).sort((a, b) => Math.hypot(a.c[0] - alvoTv[0], a.c[1] - alvoTv[1]) - Math.hypot(b.c[0] - alvoTv[0], b.c[1] - alvoTv[1]))[0];
+      const [fileira] = sofa ? eixo(...sofa.c) : [3];
+      const pe = sofa && peDe(sofa.id), meiaDoSofa = sofa ? Math.max(Math.abs(pe[1] - pe[0]), Math.abs(pe[3] - pe[2])) / 2 + 0.4 : 0.6;
+      const lugares = todasAsCasas()
+        .filter(([i, j]) => livre(i, j))
+        .map(([i, j]) => ({ i, j, e: eixo(i + 0.5, j + 0.5) }))
+        .filter(({ e: [frente, lado] }) => frente >= 1.5 && frente <= fileira + 1.5 && !(frente < fileira + 0.6 && Math.abs(lado) < meiaDoSofa))
+        .sort((a, b) => Math.abs(a.e[0] - fileira) + 0.5 * Math.abs(a.e[1]) - (Math.abs(b.e[0] - fileira) + 0.5 * Math.abs(b.e[1])));
+      for (const { i, j } of lugares.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: DIAGONAL(alvoTv[0] - i - 0.5, alvoTv[1] - j - 0.5), sobre: null });
+    } else {
+      const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2];
+      const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
+      for (const [i, j] of livres.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: 'sudoeste', sobre: null });
+    }
+    // OS ASSENTOS, DO MAIS PERTO DA TV AO MAIS LONGE; os perto (até PERTO_DA_TV casas) vêm antes do chão, os longe depois
+    const dTv = (x) => (alvoTv ? Math.hypot(x.u - alvoTv[0], x.v - alvoTv[1]) : 0);
+    sentar.sort((a, b) => dTv(a) - dTv(b));
+    const perto = sentar.filter((x) => dTv(x) <= PERTO_DA_TV), longe = sentar.filter((x) => dTv(x) > PERTO_DA_TV);
+    return { sentar: perto, tv, fliperama, chao, longe };
   }
   function lugaresDasPessoas() {
     const L = lugaresDoSalao(), usados = [];
     // um lugar DE PÉ a menos de 0,8 casa de outro já tomado é pulado (as rodas da TV e do fliperama se cruzam); os assentos
     // do sofá são mais juntos que isso e valem todos
     const pegar = (lista) => { let x; while ((x = lista.shift()) && !x.sobre && usados.some((y) => Math.hypot(y.u - x.u, y.v - x.v) < 0.8)); if (x) usados.push(x); return x; };
-    return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || null })).filter((x) => x.lugar);
+    return PESSOAS.map((pessoa) => ({ pessoa, lugar: (pessoa.papel === 'transmitindo' && pegar(L.tv)) || (pessoa.papel === 'jogando' && pegar(L.fliperama)) || pegar(L.sentar) || pegar(L.chao) || pegar(L.longe) || null })).filter((x) => x.lugar);
   }
   // Cada pessoa vira uma PEÇA da cena, como um móvel: o mascote parado naquela pose, com a profundidade do pé dele (e, sentado,
   // desenhado depois do móvel em que senta).
