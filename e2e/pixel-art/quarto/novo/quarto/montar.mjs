@@ -1556,7 +1556,16 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (tipo === 'ao-vivo') {
       // AO VIVO: o selo vermelho piscando no canto e, no resto, o desenho do GÊNERO do jogo transmitido (quando o app
       // sabe, 18/10/2026); sem gênero, alguém jogando (o joguinho do computador do quarto).
-      if (s < 0.32 && t < 0.26) return s > 0.05 && s < 0.27 && t > 0.06 && t < 0.2 ? (q % 4 < 3 ? [228, 64, 64] : [120, 40, 48]) : [24, 22, 34];
+      // O selo (pedido dele, 18/10/2026: "uma bola vermelha e um ícone de câmera, me parece universal"): sem letras, a
+      // bolinha pulsando e a câmera de vídeo ao lado, numa plaquinha escura.
+      // (a tela tem uns 50 × 36 pixels, e em perspectiva: abaixo deste tamanho a bola vira um risco torto)
+      if (s < 0.46 && t < 0.4) {
+        if (Math.hypot((s - 0.12) * 1.35, t - 0.2) < (q % 4 < 3 ? 0.12 : 0.085)) return [232, 60, 60];
+        const cs = s - 0.23, ct = t - 0.09;
+        if (cs > 0 && cs < 0.13 && ct > 0 && ct < 0.22) return [236, 236, 244]; // o corpo da câmera
+        if (cs >= 0.13 && cs < 0.2 && Math.abs(ct - 0.11) < 0.04 + (cs - 0.13) * 1.2) return [236, 236, 244]; // o funil da frente
+        return [24, 22, 34];
+      }
       return corDaTela(s, t, q, DESENHO_DO_GENERO[AO_VIVO?.genero] ?? 'jogo');
     }
     if (tipo === 'fliperama') {
