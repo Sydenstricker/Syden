@@ -129,8 +129,10 @@ export function SalaoNovo({
   }, [pronto, aoFalhar]);
 
   // Só o que se mostra de cada função (o clique volta para cá, onde mora a ação).
+  // A JANELA É AMBIENTAÇÃO, NÃO CONVITE (decisão dele, 18/10/2026: "a janela convidar não vejo sentido"): ela mostra o lado
+  // de fora, e clicar nela não faz nada. O "Chamar alguém" continua nos atalhos em texto, embaixo do salão.
   const funcoes = JSON.stringify(
-    Object.fromEntries(Object.entries(acoes).map(([id, a]) => [id, { rotulo: a?.rotulo, sub: a?.sub }])),
+    Object.fromEntries(Object.entries(acoes).filter(([id]) => id !== 'janela').map(([id, a]) => [id, { rotulo: a?.rotulo, sub: a?.sub }])),
   );
   useEffect(() => {
     if (pronto) enviar({ funcoes: JSON.parse(funcoes), noite });

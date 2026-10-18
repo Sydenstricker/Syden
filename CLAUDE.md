@@ -658,7 +658,26 @@ servidor, e a barra de arrumar mostra as figuras enquanto o objeto está na pare
 **O CARTÃO DA PEÇA (pedido dele, 17/10/2026), nos dois ambientes:** clicar numa peça SEM função abre a figura grande, o
 nome e uma frase curta, sempre pertinente ao objeto (`descricaoDaPeca`, em `web/src/nomesDaCena.ts`, nos 80 idiomas;
 `CartaoDaPeca.tsx`). A peça com função continua abrindo a função, e o cartão dela fica no "i" da barrinha do Editar. Peça
-nova pede a frase dela. Quando houver peça ganha por conquista, o cartão diz também de onde ela veio.
+nova pede a frase dela. Quando houver peça ganha por conquista, o cartão diz também de onde ela veio. **Desde 18/10/2026 ele
+gira e amplia, como no Resident Evil** (as vistas da peça, pedidas à página quando o cartão abre; até 4×, pixels nítidos).
+
+**OS ESPAÇOS QUE FALTAM NO SALÃO (conversa com ele, 18/10/2026), cada um com uma função de verdade, pela regra de que a
+tela não mente. Pendentes: todos pedem arte nova (PixelLab em novembro, ou o caminho 3D dos coelhos).**
+- **A janela é AMBIENTAÇÃO, não convite** (decisão dele, feito no mesmo dia: clicar nela não faz nada, e o "Chamar alguém"
+  ficou só nos atalhos em texto). O rumo é a vitrine da referência dele (`imagem/` da conversa: um café com uma janela
+  grande para as montanhas, luminárias pendentes): a vista de fora, com a hora do dia, como a do quarto.
+- **Cantinho do café** (ele sentiu falta): máquina de café, mesinha redonda, banquetas. Quem está na call e marcou
+  "ausente" vai tomar café, em vez de ficar na frente da TV.
+- **Calendário na parede**: os eventos principais da comunidade E os aniversários dos membros. Aniversário já existe
+  (`aniversarios-routes.ts`); EVENTO DA COMUNIDADE NÃO EXISTE (só mensagens agendadas): pede a função nova, quem
+  administra marca data, hora e nome, e todo membro vê.
+- **Um bicho do salão** (ele sentiu falta, "valioso na ambientação"): cachorro ou gato, com o comportamento ligado ao real
+  (dorme com o salão vazio, acorda e vai até quem chega na call, deita perto de quem assiste). Bom candidato ao caminho
+  3D dos coelhos (um modelo, as animações por script).
+- **Forno a lenha na copa**: pizza sem forno não faz sentido (dele). A comida aparece com motivo — no aniversário de alguém,
+  sai pizza do forno ou aparece bolo na ilha. A copa é hoje o único canto sem função.
+- Sugeridos e ainda sem a palavra dele: **troféus** (os níveis e o ranking que já existem) e **a porta de entrada** (o membro
+  novo chega por ela, e o coelho do balcão acena).
 
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à
