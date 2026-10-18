@@ -11,6 +11,9 @@
  * ver "Saber que alguém está jogando" no CLAUDE.md). O executável é o do próprio jogo, e o que não está na tabela
  * simplesmente não tem gênero. Os nomes foram conferidos, quando dava, na lista de jogos que o Windows reconhece
  * (HKCU\System\GameConfigStore) no computador dele. Jogo novo: uma linha aqui, sem versão nova do app.
+ *
+ * OS GÊNEROS saíram dos da Steam (referência dele, 18/10/2026), juntando os que dão o MESMO desenho numa tela pequena
+ * (FPS e TPS no tiro, metroidvania na plataforma, defesa de torres na estratégia, RPG de ação e hack & slash na aventura).
  */
 export const GENEROS = [
   'moba',
@@ -26,6 +29,13 @@ export const GENEROS = [
   'terror',
   'plataforma',
   'festa',
+  'espaco',
+  'quebracabeca',
+  'esportes',
+  'voo',
+  'turnos',
+  'historia',
+  'ritmo',
 ] as const;
 export type Genero = (typeof GENEROS)[number];
 
@@ -87,8 +97,6 @@ const POR_GENERO: Record<Genero, string[]> = {
     'nightreign.exe',
     'darksoulsiii.exe',
     'sekiro.exe',
-    'bg3.exe',
-    'bg3_dx11.exe',
     'diablo iv.exe',
     'wow.exe',
     'wowclassic.exe',
@@ -110,8 +118,10 @@ const POR_GENERO: Record<Genero, string[]> = {
     'starwarsjedifallenorder.exe',
     'hades.exe',
     'hades2.exe',
-    'darkest.exe',
-    'darkest dungeon ii.exe',
+    'awayout.exe',
+    'eastward.exe',
+    'dungeoncrawler.exe',
+    'starwarsg.exe',
     'ragexe.exe',
     'ragnarok.exe',
     'warhammer 40000 space marine 2 - retail.exe',
@@ -130,7 +140,6 @@ const POR_GENERO: Record<Genero, string[]> = {
     'sonsoftheforest.exe',
     'subnautica.exe',
     'robloxplayerbeta.exe',
-    'ksp_x64.exe',
   ],
   fazenda: ['stardew valley.exe', 'ts4_x64.exe', 'coral island.exe', 'fields of mistria.exe'],
   estrategia: [
@@ -147,11 +156,19 @@ const POR_GENERO: Record<Genero, string[]> = {
     'warhammer3.exe',
     'hwr.exe',
     'hwr2.exe',
+    '9kings.exe',
   ],
-  cartas: ['hearthstone.exe', 'balatro.exe', 'mtga.exe', 'lor.exe', 'snap.exe', 'masterduel.exe', 'super auto pets.exe', "liar's bar.exe", 'buckshot roulette.exe'],
+  cartas: ['hearthstone.exe', 'balatro.exe', 'mtga.exe', 'lor.exe', 'snap.exe', 'masterduel.exe', 'super auto pets.exe', "liar's bar.exe", 'buckshot roulette.exe', 'hand of fate 2.exe'],
   terror: ['phasmophobia.exe', 'deadbydaylight-win64-shipping.exe', 'lethal company.exe', 'content warning.exe', 'repo.exe', 'inside.exe', 'projectwinter.exe'],
   plataforma: ['hollow_knight.exe', 'celeste.exe', 'cuphead.exe', 'oriwotw.exe', 'gris.exe', 'broforce_beta.exe', 'huntdown.exe', 'hoa.exe'],
   festa: ['among us.exe', 'fallguys_client_game.exe', 'stumble guys.exe', 'pummelparty.exe', 'peak.exe', 'gang beasts.exe'],
+  espaco: ['nomanssky.exe', 'elitedangerous64.exe', 'starfield.exe', 'exefile.exe', 'ksp_x64.exe', 'ksp2_x64.exe', 'starcitizen.exe', 'outerwilds.exe', 'spaceengineers.exe'],
+  quebracabeca: ['portal2.exe', 'baba is you.exe', 'witness64_d3d11.exe', 'tetriseffect-win64-shipping.exe', 'papersplease.exe', 'opus magnum.exe', 'the talos principle 2.exe'],
+  esportes: ['nba2k26.exe', 'nba2k25.exe', 'nba2k24.exe', 'madden26.exe', 'madden25.exe', 'pga2k25.exe', 'tiebreak.exe', 'wwe2k25.exe'],
+  voo: ['flightsimulator.exe', 'flightsimulator2024.exe', 'dcs.exe', 'x-plane.exe', 'ace7game.exe', 'aces.exe'],
+  turnos: ['bg3.exe', 'bg3_dx11.exe', 'darkest.exe', 'darkest dungeon ii.exe', 'p5r.exe', 'xcom2.exe', 'eocapp.exe', 'seaofstars.exe', 'sandfall-win64-shipping.exe'],
+  historia: ['ddlc.exe', 'stanley.exe', 'disco elysium.exe', 'coffee talk.exe', 'oneshot.exe', 'va-11 hall-a.exe'],
+  ritmo: ['osu!.exe', 'beat saber.exe', 'necrodancer.exe', 'musedash.exe', 'clone hero.exe', 'rhythm doctor.exe'],
 };
 
 const TABELA = new Map<string, Genero>(

@@ -47,7 +47,7 @@ for (let i = 0; i < 4; i++) await direito();
 conferir((await canal()) === 'desligada', '… → desligada');
 await direito(); conferir((await canal()) === 'ao-vivo', 'desligada → ao vivo (o primeiro, havendo transmissão)');
 // O AO VIVO COM O GÊNERO do jogo transmitido (18/10/2026): uma foto de cada, de noite e com as telas animadas.
-for (const g of ['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa']) {
+for (const g of ['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa', 'espaco', 'quebracabeca', 'esportes', 'voo', 'turnos', 'historia', 'ritmo']) {
   await p.evaluate((g) => window.generoDoTeste(g), g); await p.waitForTimeout(700);
   await foto('genero-' + g);
 }

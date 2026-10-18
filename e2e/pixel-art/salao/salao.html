@@ -1010,7 +1010,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // verdade. null é o automático (a transmissão, havendo; senão o desenho); uma transmissão que começa volta a ele.
   const CANAIS_DA_TV = ['tv', 'futebol', 'tatico', 'arena'];
   // O gênero do jogo transmitido (web/src/generoDoJogo.ts) → o desenho da TV.
-  const DESENHO_DO_GENERO = { moba: 'arena', tiro: 'tatico', futebol: 'futebol', corrida: 'corrida', luta: 'luta', aventura: 'aventura', construcao: 'construcao', fazenda: 'fazenda', estrategia: 'estrategia', cartas: 'cartas', terror: 'terror', plataforma: 'jogo', festa: 'festa' };
+  const DESENHO_DO_GENERO = { moba: 'arena', tiro: 'tatico', futebol: 'futebol', corrida: 'corrida', luta: 'luta', aventura: 'aventura', construcao: 'construcao', fazenda: 'fazenda', estrategia: 'estrategia', cartas: 'cartas', terror: 'terror', plataforma: 'jogo', festa: 'festa', espaco: 'espaco', quebracabeca: 'quebracabeca', esportes: 'esportes', voo: 'voo', turnos: 'turnos', historia: 'historia', ritmo: 'ritmo' };
   let canalDaTv = null;
   const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : 'tv'));
   const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? canalDaTvAgora() : 'fliperama');
@@ -1223,6 +1223,90 @@ if (CENA === 'salao') document.body.classList.add('salao');
         if (Math.hypot((s - bx) / 0.055, (t - by) / 0.12) < 1) return Math.abs(s - bx - 0.015) < 0.02 && Math.abs(t - by + 0.04) < 0.025 ? [250, 250, 250] : [[236, 90, 120], [60, 140, 230], [240, 170, 40], [90, 180, 80], [150, 100, 220]][i];
       }
       return t > 0.5 ? (Math.floor(t * 8) % 2 ? [246, 214, 226] : [214, 228, 246]) : [210, 236, 252];
+    }
+    // MAIS SETE GÊNEROS (18/10/2026, da lista da Steam que ele mandou): os que dão um desenho diferente numa tela pequena.
+    if (tipo === 'espaco') {
+      // O espaço: as estrelas passando, um planeta com anel, e a nave com o fogo do motor.
+      if (Math.hypot((s - 0.72) * 1.4, t - 0.32) < 0.16) return Math.hypot((s - 0.68) * 1.4, t - 0.27) < 0.1 ? [214, 150, 110] : [176, 110, 90];
+      if (Math.abs((t - 0.32) - (s - 0.72) * 0.25) < 0.015 && Math.abs(s - 0.72) < 0.2) return [230, 210, 170];
+      const nx = 0.3, ny = 0.62 + Math.sin(q / 6) * 0.04;
+      if (Math.abs(t - ny) < 0.05 - Math.abs(s - nx) * 0.4 && s > nx - 0.1 && s < nx + 0.08) return [200, 210, 226];
+      if (Math.abs(t - ny) < 0.025 && s > nx - 0.16 && s <= nx - 0.1) return q % 2 ? [250, 180, 80] : [250, 120, 60];
+      const e = Math.floor(((s + q / 30) % 1) * 40) * 7 + Math.floor(t * 30) * 13;
+      return e % 37 === 0 ? [240, 240, 250] : [14, 12, 30];
+    }
+    if (tipo === 'quebracabeca') {
+      // O quebra-cabeça: as peças de cor caindo num poço e a pilha embaixo, o placar ao lado.
+      if (s > 0.68) return t > 0.1 && t < 0.3 && s > 0.74 && s < 0.92 ? (t < 0.17 ? [240, 220, 140] : [60, 56, 80]) : [36, 32, 50];
+      const cx = Math.floor(s / 0.068), cy = Math.floor(t / 0.1), queda = Math.floor(q / 2) % 6;
+      const CORES = [[230, 90, 90], [90, 170, 230], [240, 200, 80], [130, 200, 110], [190, 120, 220]];
+      const borda = (s % 0.068) < 0.01 || (t % 0.1) < 0.014;
+      if (cy >= 7 || (cy === 6 && cx !== 4)) return borda ? [30, 26, 40] : CORES[(cx * 3 + cy) % 5];
+      if (cy === 5 && (cx === 1 || cx === 2 || cx === 7)) return borda ? [30, 26, 40] : CORES[(cx + 2) % 5];
+      if ((cy === queda && cx >= 3 && cx <= 5) || (cy === queda + 1 && cx === 4)) return borda ? [30, 26, 40] : [190, 120, 220];
+      return [24, 22, 34];
+    }
+    if (tipo === 'esportes') {
+      // Os esportes: a quadra de madeira com as linhas, a cesta, e a bola subindo em arco até ela.
+      const bp = (q % 16) / 16, bx = 0.25 + bp * 0.55, by = 0.7 - Math.sin(bp * Math.PI) * 0.45;
+      if (Math.hypot((s - bx) * 1.4, t - by) < 0.045) return [230, 120, 50];
+      if (s > 0.84 && s < 0.88 && t > 0.2 && t < 0.62) return [150, 150, 160]; // o poste
+      if (s > 0.76 && s < 0.86 && Math.abs(t - 0.3) < 0.015) return [220, 80, 60]; // o aro
+      if (s > 0.8 && s < 0.86 && t > 0.12 && t < 0.28) return [236, 236, 240]; // a tabela
+      if (t < 0.5) return t < 0.4 ? [60, 70, 110] : [80, 90, 130]; // a arquibancada
+      if (Math.abs(t - 0.75) < 0.012 || Math.abs(Math.hypot((s - 0.5) * 1.4, t - 0.75) - 0.12) < 0.012) return [246, 236, 210];
+      return Math.floor(s * 14) % 2 ? [212, 160, 100] : [200, 148, 90];
+    }
+    if (tipo === 'voo') {
+      // O voo: o horizonte inclinado, as nuvens passando, a mira do painel e o avião visto de trás.
+      const h = 0.55 + (s - 0.5) * Math.sin(q / 9) * 0.3;
+      if (Math.abs(t - 0.66) < 0.025 && Math.abs(s - 0.5) < 0.2) return [90, 96, 110]; // as asas
+      if (Math.abs(s - 0.5) < 0.04 && t > 0.6 && t < 0.78) return [110, 116, 130]; // a fuselagem
+      if ((Math.abs(t - 0.4) < 0.012 && Math.abs(s - 0.5) < 0.08 && Math.abs(s - 0.5) > 0.03) || (Math.abs(s - 0.5) < 0.008 && Math.abs(t - 0.4) < 0.06 && Math.abs(t - 0.4) > 0.02)) return [140, 240, 160];
+      if (t > h) return Math.floor((s + t) * 10 + q / 4) % 2 ? [96, 150, 90] : [110, 164, 100];
+      const nuvem = Math.sin((s + q / 40) * 12) * Math.sin(t * 18) > 0.75;
+      return nuvem ? [246, 248, 252] : t < 0.25 ? [110, 160, 220] : [150, 190, 236];
+    }
+    if (tipo === 'turnos') {
+      // O RPG por turnos: o monstro à esquerda, o grupo à direita, e embaixo a caixa de menu com a setinha piscando.
+      if (t > 0.6) {
+        if (t < 0.64 || t > 0.95 || s < 0.04 || s > 0.96) return [236, 236, 244];
+        const lin = t < 0.8 ? 0 : 1;
+        if (Math.abs(t - [0.72, 0.87][lin]) < 0.04 && s > 0.16 && s < 0.16 + [0.32, 0.24][lin]) return [236, 236, 244];
+        if (lin === Math.floor(q / 6) % 2 && Math.abs(t - [0.72, 0.87][lin]) < 0.04 && s > 0.08 && s < 0.12) return [250, 220, 100];
+        return [36, 50, 110];
+      }
+      const m = Math.hypot((s - 0.26) / 0.14, (t - 0.4) / 0.22);
+      if (m < 1) return m > 0.75 ? [60, 110, 70] : Math.abs(t - 0.34) < 0.03 && Math.abs(Math.abs(s - 0.26) - 0.05) < 0.02 ? [250, 80, 70] : [90, 150, 90];
+      for (const [i, [px, py]] of [[0.66, 0.3], [0.78, 0.42], [0.66, 0.54]].entries()) {
+        const ataca = Math.floor(q / 6) % 3 === i ? -0.04 : 0;
+        if (Math.abs(s - px - ataca) < 0.025 && Math.abs(t - py) < 0.05) return t < py - 0.02 ? [240, 204, 170] : [[200, 80, 80], [80, 120, 210], [230, 190, 80]][i];
+      }
+      return t > 0.55 ? [96, 84, 70] : [70, 76, 104];
+    }
+    if (tipo === 'historia') {
+      // A história (visual novel): o quarto ao fundo, a pessoa em primeiro plano, e a caixa de fala com o texto aparecendo.
+      if (t > 0.58) {
+        if (t < 0.62 || s < 0.04 || s > 0.96 || t > 0.95) return [236, 200, 220];
+        if (t < 0.7 && s > 0.08 && s < 0.32) return [210, 120, 160]; // o nome
+        const lin = t < 0.82 ? 0 : 1, escrito = (((q + 16) % 24) / 24) * 2.2 - lin; // (parada, q = 0: a frase já pela metade)
+        if (Math.abs(t - [0.77, 0.88][lin]) < 0.035 && s > 0.08 && s < 0.08 + Math.max(0, Math.min(0.8, escrito * 0.8))) return [250, 246, 250];
+        return [70, 50, 80];
+      }
+      const cabeca = Math.hypot((s - 0.5) * 1.3, t - 0.3) < 0.13;
+      if (cabeca) return Math.abs(t - 0.31) < 0.015 && Math.abs(Math.abs(s - 0.5) - 0.05) < 0.015 ? [60, 50, 70] : [246, 214, 190];
+      if (Math.hypot((s - 0.5) * 1.3, t - 0.24) < 0.16 && t < 0.3) return [120, 80, 60]; // o cabelo
+      if (Math.abs(s - 0.5) < 0.16 - (0.66 - t) * 0.2 && t > 0.42) return [180, 110, 150];
+      return s < 0.2 && t < 0.5 ? [200, 220, 240] : [236, 214, 190];
+    }
+    if (tipo === 'ritmo') {
+      // O ritmo: quatro pistas escuras, as notas descendo até a linha de acerto, e o brilho quando acerta.
+      const pista = Math.floor((s - 0.2) / 0.15);
+      if (s < 0.2 || s > 0.8) return [20, 16, 30];
+      const CORES = [[240, 90, 120], [90, 200, 240], [250, 210, 90], [140, 230, 120]];
+      if (Math.abs(t - 0.84) < 0.02) return ((q + pista * 3) % 8 < 2) ? [255, 255, 255] : misturar(CORES[pista], [20, 16, 30], 0.3);
+      for (let k = 0; k < 3; k++) { const nt = ((q / 10 + k * 0.33 + pista * 0.21) % 1) * 0.84; if (Math.abs(t - nt) < 0.03 && ((s - 0.2) % 0.15) > 0.02 && ((s - 0.2) % 0.15) < 0.13) return CORES[pista]; }
+      return ((s - 0.2) % 0.15) < 0.006 ? [50, 44, 70] : [30, 26, 44];
     }
     if (tipo === 'ao-vivo') {
       // AO VIVO: o selo vermelho piscando no canto e, no resto, o desenho do GÊNERO do jogo transmitido (quando o app

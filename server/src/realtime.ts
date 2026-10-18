@@ -9,7 +9,7 @@ import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 import { barreiraDe, hojeEmBrasilia, podeVerVideo, regrasDe } from './protecao.js';
 
 /** Os gêneros que a TV do salão sabe desenhar (a mesma lista de web/src/generoDoJogo.ts). */
-const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa']);
+const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa', 'espaco', 'quebracabeca', 'esportes', 'voo', 'turnos', 'historia', 'ritmo']);
 
 /** Sala do socket com todo mundo que participa de uma comunidade. */
 export const communityRoom = (communityId: number) => `community:${communityId}`;
