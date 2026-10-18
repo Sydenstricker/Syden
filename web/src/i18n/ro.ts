@@ -2066,4 +2066,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'O pungă de chipsuri deschisă.',
   'Um bolo de chocolate com uma cereja em cima.': 'Un tort de ciocolată cu o cireașă deasupra.',
   'Sobre': 'Despre',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Adaugă pe cineva',
+  'Renomear grupo': 'Redenumește grupul',
+  'Sair do grupo': 'Ieși din grup',
+  'Nome do grupo': 'Numele grupului',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesajele grupului nu-ți mai vin. Ca să revii, cineva din grup trebuie să te cheme din nou.',
+  'Editar pacote': 'Editează pachetul',
 } satisfies Record<string, string>;

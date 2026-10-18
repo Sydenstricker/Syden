@@ -2079,4 +2079,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ขนมขบเคี้ยวห่อที่เปิดแล้ว',
   'Um bolo de chocolate com uma cereja em cima.': 'เค้กช็อกโกแลตที่มีเชอร์รี่อยู่ด้านบน',
   'Sobre': 'เกี่ยวกับ',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'เพิ่มคน',
+  'Renomear grupo': 'เปลี่ยนชื่อกลุ่ม',
+  'Sair do grupo': 'ออกจากกลุ่ม',
+  'Nome do grupo': 'ชื่อกลุ่ม',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ข้อความของกลุ่มจะไม่มาถึงอีก ถ้าจะกลับเข้ามา ต้องมีคนในกลุ่มชวนเข้ามาใหม่',
+  'Editar pacote': 'แก้ไขแพ็ก',
 } satisfies Record<string, string>;

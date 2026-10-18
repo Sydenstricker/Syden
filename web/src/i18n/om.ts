@@ -2106,4 +2106,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Qabxii nyaata xixiqqoo banamaa.',
   'Um bolo de chocolate com uma cereja em cima.': 'Keekii chokoleetii cheerii gubbaa isaa qabu.',
   'Sobre': 'Waa\'ee',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Nama dabali',
+  'Renomear grupo': 'Maqaa garee jijjiiri',
+  'Sair do grupo': 'Garee keessaa ba’i',
+  'Nome do grupo': 'Maqaa garee',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ergaawwan garee siif hin dhufan. Deebi’uuf, namni garee keessa jiru tokko irra deebi’ee si waamuu qaba.',
+  'Editar pacote': 'Kuusaa gulaali',
 } satisfies Record<string, string>;

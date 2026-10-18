@@ -2144,4 +2144,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Ochilgan bir paket chips.',
   'Um bolo de chocolate com uma cereja em cima.': 'Ustida gilos bilan shokoladli tort.',
   'Sobre': 'Haqida',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Odam qoʻshish',
+  'Renomear grupo': 'Guruh nomini oʻzgartirish',
+  'Sair do grupo': 'Guruhdan chiqish',
+  'Nome do grupo': 'Guruh nomi',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Guruh xabarlari endi kelmaydi. Qaytish uchun guruhdagi kimdir seni yana chaqirishi kerak.',
+  'Editar pacote': 'Toʻplamni tahrirlash',
 } satisfies Record<string, string>;

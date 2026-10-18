@@ -2137,4 +2137,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Як бастаи кушодаи чипс.',
   'Um bolo de chocolate com uma cereja em cima.': 'Торти шоколадӣ бо як олуболу дар болояш.',
   'Sobre': 'Дар бораи',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Илова кардани одам',
+  'Renomear grupo': 'Номи гурӯҳро иваз кардан',
+  'Sair do grupo': 'Баромадан аз гурӯҳ',
+  'Nome do grupo': 'Номи гурӯҳ',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Паёмҳои гурӯҳ дигар намерасанд. Барои баргаштан, касе аз гурӯҳ бояд туро дубора даъват кунад.',
+  'Editar pacote': 'Таҳрири баста',
 } satisfies Record<string, string>;

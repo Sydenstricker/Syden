@@ -2116,4 +2116,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'שקית חטיפים פתוחה.',
   'Um bolo de chocolate com uma cereja em cima.': 'עוגת שוקולד עם דובדבן למעלה.',
   'Sobre': 'אודות',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'להוסיף אדם',
+  'Renomear grupo': 'לשנות את שם הקבוצה',
+  'Sair do grupo': 'לצאת מהקבוצה',
+  'Nome do grupo': 'שם הקבוצה',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ההודעות של הקבוצה יפסיקו להגיע. כדי לחזור, מישהו מהקבוצה צריך להזמין שוב.',
+  'Editar pacote': 'עריכת החבילה',
 } satisfies Record<string, string>;

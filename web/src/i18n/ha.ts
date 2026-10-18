@@ -2068,4 +2068,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Buɗaɗɗen fakitin cips.',
   'Um bolo de chocolate com uma cereja em cima.': 'Kek na cakulan da ceri a samansa.',
   'Sobre': 'Game da',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Ƙara mutum',
+  'Renomear grupo': 'Canza sunan rukuni',
+  'Sair do grupo': 'Fita daga rukuni',
+  'Nome do grupo': 'Sunan rukuni',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Saƙonnin rukunin ba za su ƙara zuwa muku ba. Don ku dawo, dole wani daga cikin rukunin ya sake gayyatar ku.',
+  'Editar pacote': 'Gyara fakiti',
 } satisfies Record<string, string>;

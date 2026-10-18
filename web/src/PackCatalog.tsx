@@ -5,6 +5,7 @@ import { reloadSounds } from './directory';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import type { Pack, Sound, User } from './types';
 import { MAX_SOUND_SECONDS, prepareSound } from './upload';
+import { EditarPacote } from './EditarPacote';
 import { useT } from './i18n';
 
 // Catálogo de pacotes de sons: os que vêm com o Syden e os que as pessoas montam. Cada um instala os que
@@ -67,6 +68,7 @@ function PackCard({
   const t = useT();
   const [sounds, setSounds] = useState<Sound[] | null>(null);
   const [editando, setEditando] = useState(false);
+  const [editandoPacote, setEditandoPacote] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const mine = pack.createdBy === user.id;
@@ -177,12 +179,25 @@ function PackCard({
             <Pencil size={14} /> {editando ? t('Pronto') : t('Editar sons')}
           </button>
         )}
+        {podeEditar && (
+          <button className="link-button" onClick={() => setEditandoPacote(true)}>
+            <Pencil size={14} /> {t('Editar pacote')}
+          </button>
+        )}
         {(mine || user.isAdmin) && !pack.builtin && (
           <button className="link-button danger" disabled={busy} onClick={() => void remove()}>
             <Trash2 size={14} /> {t('Apagar pacote')}
           </button>
         )}
       </div>
+      {editandoPacote && (
+        <EditarPacote
+          inicial={{ name: pack.name, description: pack.description, icon: pack.icon }}
+          maxDescricao={200}
+          salvar={async (dados) => onChange(await api<Pack>(`/api/packs/${pack.id}`, { method: 'PATCH', body: dados }))}
+          aoFechar={() => setEditandoPacote(false)}
+        />
+      )}
     </div>
   );
 }

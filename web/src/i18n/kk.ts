@@ -2132,4 +2132,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Ашылған чипсы қаптамасы.',
   'Um bolo de chocolate com uma cereja em cima.': 'Үстінде шиесі бар шоколад торты.',
   'Sobre': 'Ақпарат',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Адам қосу',
+  'Renomear grupo': 'Топтың атын өзгерту',
+  'Sair do grupo': 'Топтан шығу',
+  'Nome do grupo': 'Топ атауы',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Топтың хабарлары енді келмейді. Қайту үшін топтағы біреу сені қайта шақыруы керек.',
+  'Editar pacote': 'Жинақты өңдеу',
 } satisfies Record<string, string>;

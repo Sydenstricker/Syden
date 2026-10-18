@@ -2061,4 +2061,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Una bolsa de papas fritas abierta.',
   'Um bolo de chocolate com uma cereja em cima.': 'Un pastel de chocolate con una cereza encima.',
   'Sobre': 'Acerca de',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Añadir persona',
+  'Renomear grupo': 'Renombrar grupo',
+  'Sair do grupo': 'Salir del grupo',
+  'Nome do grupo': 'Nombre del grupo',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Dejarán de llegarte los mensajes del grupo. Para volver, alguien de dentro tiene que invitarte de nuevo.',
+  'Editar pacote': 'Editar paquete',
 } satisfies Record<string, string>;

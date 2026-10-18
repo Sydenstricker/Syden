@@ -110,6 +110,28 @@ try {
   chora && depois.streamer.length === 0 ? ok('o "Não chora" saiu do Streamer e foi para o Estourado') : falhou('depois de mover: ' + JSON.stringify(depois));
   chora && chora.volume === 0.8 ? ok('e levou o volume baixado (80%)') : falhou('volume do som do pacote: ' + chora?.volume);
   (await cartao.locator('.pack-meta').innerText()).includes('0 sons') ? ok('o cartão do Streamer conta 0 sons') : falhou('o cartão não atualizou');
+
+  // ---------- Editar o pacote: nome, descrição e ícone (17/10/2026) ----------
+  await cartao.getByRole('button', { name: 'Editar pacote' }).click();
+  const dialogo = page.getByRole('dialog', { name: 'Editar pacote' });
+  await dialogo.getByLabel('Ícone').fill('🎙️');
+  await dialogo.getByLabel('Nome do pacote').fill('Live ' + s);
+  await dialogo.getByLabel('Descrição').fill('Os bordões da live');
+  await dialogo.getByRole('button', { name: 'Salvar' }).click();
+  const renomeado = page.locator('.pack-card', { hasText: 'Live ' + s });
+  await renomeado
+    .waitFor({ timeout: 5000 })
+    .then(() => ok('o pacote mudou de nome na tela, sem recarregar'), () => falhou('o cartão não mostrou o nome novo'));
+  const noServidor = await page.evaluate(
+    async ({ api, id }) => {
+      const cabecalho = { authorization: 'Bearer ' + localStorage.getItem('janja.token') };
+      return (await (await fetch(api + '/api/packs', { headers: cabecalho })).json()).find((p) => p.id === id);
+    },
+    { api: API, id: ids.streamer },
+  );
+  noServidor?.name === 'Live ' + s && noServidor.description === 'Os bordões da live' && noServidor.icon === '🎙️'
+    ? ok('nome, descrição e ícone ficaram guardados')
+    : falhou('no servidor: ' + JSON.stringify(noServidor));
 } finally {
   await browser.close();
 }

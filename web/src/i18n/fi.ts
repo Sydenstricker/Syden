@@ -2136,4 +2136,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Avattu sipsipussi.',
   'Um bolo de chocolate com uma cereja em cima.': 'Suklaakakku, kirsikka päällä.',
   'Sobre': 'Tietoja',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Lisää henkilö',
+  'Renomear grupo': 'Nimeä ryhmä uudelleen',
+  'Sair do grupo': 'Poistu ryhmästä',
+  'Nome do grupo': 'Ryhmän nimi',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ryhmän viestit lakkaavat tulemasta sinulle. Palataksesi jonkun ryhmästä täytyy kutsua sinut uudelleen.',
+  'Editar pacote': 'Muokkaa pakettia',
 } satisfies Record<string, string>;

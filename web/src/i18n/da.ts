@@ -2130,4 +2130,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'En åben pose chips.',
   'Um bolo de chocolate com uma cereja em cima.': 'En chokoladekage med et kirsebær på toppen.',
   'Sobre': 'Om',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Tilføj person',
+  'Renomear grupo': 'Omdøb gruppe',
+  'Sair do grupo': 'Forlad gruppe',
+  'Nome do grupo': 'Gruppenavn',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Du får ikke længere beskeder fra gruppen. For at komme tilbage skal nogen i gruppen invitere dig igen.',
+  'Editar pacote': 'Rediger pakke',
 } satisfies Record<string, string>;

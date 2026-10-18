@@ -1973,6 +1973,13 @@ textarea {
 }
 
 /* O cartão de uma peça do quarto ou do salão (CartaoDaPeca.tsx): a figura grande em pixel art, o nome e a frase. */
+/* Os botões da conversa privada (AcoesDaConversa.tsx), no fim do cabeçalho. */
+.acoes-da-conversa {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
 .cartao-da-peca {
   position: relative;
   width: min(340px, 100%);

@@ -2036,4 +2036,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Một gói snack đã mở.',
   'Um bolo de chocolate com uma cereja em cima.': 'Bánh sô-cô-la với một quả anh đào bên trên.',
   'Sobre': 'Giới thiệu',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Thêm người',
+  'Renomear grupo': 'Đổi tên nhóm',
+  'Sair do grupo': 'Rời nhóm',
+  'Nome do grupo': 'Tên nhóm',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Tin nhắn của nhóm sẽ không đến nữa. Muốn quay lại, cần ai đó trong nhóm mời bạn lần nữa.',
+  'Editar pacote': 'Sửa gói',
 } satisfies Record<string, string>;

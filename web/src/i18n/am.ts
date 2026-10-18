@@ -2066,4 +2066,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'የተከፈተ የቺፕስ ፓኬት።',
   'Um bolo de chocolate com uma cereja em cima.': 'ላዩ ላይ ቼሪ ያለው የቸኮሌት ኬክ።',
   'Sobre': 'ስለ',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'ሰው ያክሉ',
+  'Renomear grupo': 'የቡድኑን ስም ይቀይሩ',
+  'Sair do grupo': 'ከቡድኑ ይውጡ',
+  'Nome do grupo': 'የቡድኑ ስም',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'የቡድኑ መልዕክቶች ከእንግዲህ አይደርሱም። ለመመለስ፣ ከቡድኑ ውስጥ ያለ ሰው እንደገና መጋበዝ አለበት።',
+  'Editar pacote': 'ጥቅሉን ያርትዑ',
 } satisfies Record<string, string>;

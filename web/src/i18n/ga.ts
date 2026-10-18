@@ -2072,4 +2072,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Paicéad criospaí oscailte.',
   'Um bolo de chocolate com uma cereja em cima.': 'Cáca seacláide le silín ar a bharr.',
   'Sobre': 'Faoi',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Cuir duine leis',
+  'Renomear grupo': 'Athainmnigh an grúpa',
+  'Sair do grupo': 'Fág an grúpa',
+  'Nome do grupo': 'Ainm an ghrúpa',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ní thiocfaidh teachtaireachtaí an ghrúpa chugat a thuilleadh. Chun filleadh, caithfidh duine éigin sa ghrúpa cuireadh a thabhairt duit arís.',
+  'Editar pacote': 'Cuir an pacáiste in eagar',
 } satisfies Record<string, string>;

@@ -2154,4 +2154,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ჩიფსის გახსნილი შეკვრა.',
   'Um bolo de chocolate com uma cereja em cima.': 'შოკოლადის ტორტი, ზემოდან ალუბლით.',
   'Sobre': 'ინფო',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'ადამიანის დამატება',
+  'Renomear grupo': 'ჯგუფის სახელის გადარქმევა',
+  'Sair do grupo': 'ჯგუფიდან გასვლა',
+  'Nome do grupo': 'ჯგუფის სახელი',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ჯგუფის შეტყობინებები აღარ მოგივა. დასაბრუნებლად ჯგუფიდან ვინმემ თავიდან უნდა მოგიწვიოს.',
+  'Editar pacote': 'პაკეტის რედაქტირება',
 } satisfies Record<string, string>;

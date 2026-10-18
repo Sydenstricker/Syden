@@ -2105,4 +2105,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ဖောက်ထားတဲ့ မုန့်ထုပ်တစ်ထုပ်။',
   'Um bolo de chocolate com uma cereja em cima.': 'အပေါ်မှာ ချယ်ရီသီးပါတဲ့ ချောကလက်ကိတ်။',
   'Sobre': 'အကြောင်း',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'လူ ထည့်ရန်',
+  'Renomear grupo': 'အုပ်စု အမည်ပြောင်းရန်',
+  'Sair do grupo': 'အုပ်စုမှ ထွက်ရန်',
+  'Nome do grupo': 'အုပ်စု အမည်',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'အုပ်စု မက်ဆေ့ချ်တွေ ထပ်မရောက်တော့ဘူး။ ပြန်ဝင်ချင်ရင် အုပ်စုထဲက တစ်ယောက်ယောက်က ပြန်ခေါ်ပေးရမယ်။',
+  'Editar pacote': 'အထုပ် ပြင်ရန်',
 } satisfies Record<string, string>;

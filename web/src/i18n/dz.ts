@@ -2149,4 +2149,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ཁ་ཕྱེ་ཡོད་པའི་ཅིབ་སི་ཐུམ་སྒྲིལ།',
   'Um bolo de chocolate com uma cereja em cima.': 'ལྟག་ལུ་ཆེ་རི་ཡོད་པའི་ཅོ་ཀོ་ལེཊ་ཀེཀ།',
   'Sobre': 'སྐོར་ལས',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'མི་ཁ་སྐོང་།',
+  'Renomear grupo': 'སྡེ་ཚན་གྱི་མིང་སོར།',
+  'Sair do grupo': 'སྡེ་ཚན་ལས་ཕྱིར་ཐོན།',
+  'Nome do grupo': 'སྡེ་ཚན་གྱི་མིང་།',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'སྡེ་ཚན་གྱི་འཕྲིན་དོན་ད་ལས་ཕར་མི་འོང་། ལོག་འོང་ནིའི་དོན་ལུ་ སྡེ་ཚན་ནང་གི་མི་གཅིག་གིས་ ལོག་སྟེ་འབོ་དགོ།',
+  'Editar pacote': 'ཐུམ་སྒྲིལ་ཞུན་དག',
 } satisfies Record<string, string>;

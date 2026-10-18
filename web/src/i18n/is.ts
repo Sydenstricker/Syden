@@ -2137,4 +2137,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Opinn snakkpoki.',
   'Um bolo de chocolate com uma cereja em cima.': 'Súkkulaðikaka með kirsuberi ofan á.',
   'Sobre': 'Um',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Bæta við manneskju',
+  'Renomear grupo': 'Endurnefna hóp',
+  'Sair do grupo': 'Fara úr hópnum',
+  'Nome do grupo': 'Heiti hóps',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Skilaboð hópsins hætta að berast þér. Til að koma aftur þarf einhver í hópnum að bjóða þér aftur.',
+  'Editar pacote': 'Breyta pakka',
 } satisfies Record<string, string>;

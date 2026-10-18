@@ -2137,4 +2137,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Iphakethe lama-chips elivuliwe.',
   'Um bolo de chocolate com uma cereja em cima.': 'Ikhekhe likashokoledi elinesherry phezulu.',
   'Sobre': 'Mayelana',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Engeza umuntu',
+  'Renomear grupo': 'Qamba kabusha iqembu',
+  'Sair do grupo': 'Phuma eqenjini',
+  'Nome do grupo': 'Igama leqembu',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Imilayezo yeqembu ngeke isafika kuwe. Ukuze ubuyele, othile oseqenjini kufanele aphinde akumeme.',
+  'Editar pacote': 'Hlela iphakethe',
 } satisfies Record<string, string>;

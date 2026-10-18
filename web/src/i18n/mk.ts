@@ -2136,4 +2136,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Отворено пакетче грицки.',
   'Um bolo de chocolate com uma cereja em cima.': 'Чоколадна торта со цреша одозгора.',
   'Sobre': 'За',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Додај некого',
+  'Renomear grupo': 'Преименувај ја групата',
+  'Sair do grupo': 'Излези од групата',
+  'Nome do grupo': 'Име на групата',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Пораките од групата повеќе нема да стигнуваат. За да се вратиш, некој од групата треба повторно да те повика.',
+  'Editar pacote': 'Уреди го пакетот',
 } satisfies Record<string, string>;

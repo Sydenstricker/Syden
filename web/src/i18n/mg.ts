@@ -2136,4 +2136,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Fonosana sakafo madinika voasokatra.',
   'Um bolo de chocolate com uma cereja em cima.': 'Mofomamy sôkôla misy serizy eo amboniny.',
   'Sobre': 'Momba',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Hanampy olona',
+  'Renomear grupo': 'Ovay anarana ny vondrona',
+  'Sair do grupo': 'Mivoaha amin’ny vondrona',
+  'Nome do grupo': 'Anaran’ny vondrona',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Tsy ho tonga intsony ny hafatry ny vondrona. Raha hiverina, dia tsy maintsy misy olona ao anatiny manasa anao indray.',
+  'Editar pacote': 'Ovay ny fonosana',
 } satisfies Record<string, string>;

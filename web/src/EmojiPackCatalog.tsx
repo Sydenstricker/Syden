@@ -1,8 +1,9 @@
-import { Check, Download, Plus, Star, Trash2, Upload, X } from 'lucide-react';
+import { Check, Download, Pencil, Plus, Star, Trash2, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api, mediaUrl } from './api';
 import type { Community, EmojiPack, EmojiPackItem, User } from './types';
 import { prepareImage } from './upload';
+import { EditarPacote } from './EditarPacote';
 import { useT } from './i18n';
 
 // Catálogo de pacotes de emoji. A diferença para o de sons: som cada um instala no seu soundboard, emoji
@@ -64,6 +65,7 @@ function PackCard({
   const [emojis, setEmojis] = useState<EmojiPackItem[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [editandoPacote, setEditandoPacote] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const meu = pack.createdBy === user.id;
 
@@ -240,12 +242,28 @@ function PackCard({
         <button className="link-button" onClick={() => void verEmojis()}>
           {emojis ? t('Esconder os emojis') : meu ? t('Ver e mexer nos emojis') : t('Ver os emojis')}
         </button>
+        {meu && (
+          <button className="link-button" onClick={() => setEditandoPacote(true)}>
+            <Pencil size={14} /> {t('Editar pacote')}
+          </button>
+        )}
         {(meu || user.isAdmin) && (
           <button className="link-button danger" disabled={busy} onClick={() => void apagar()}>
             <Trash2 size={14} /> {t('Apagar pacote')}
           </button>
         )}
       </div>
+      {editandoPacote && (
+        <EditarPacote
+          inicial={{ name: pack.name, description: pack.description, icon: pack.icon }}
+          maxDescricao={140}
+          salvar={async (dados) => {
+            await api(`/api/emoji-packs/${pack.id}`, { method: 'PATCH', body: dados });
+            await recarregar();
+          }}
+          aoFechar={() => setEditandoPacote(false)}
+        />
+      )}
     </div>
   );
 }

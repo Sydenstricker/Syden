@@ -2138,4 +2138,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Açylan bir paket çips.',
   'Um bolo de chocolate com uma cereja em cima.': 'Üstünde alçaly şokolad torty.',
   'Sobre': 'Barada',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Adam goş',
+  'Renomear grupo': 'Topary adyny üýtget',
+  'Sair do grupo': 'Topardan çyk',
+  'Nome do grupo': 'Toparyň ady',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Toparyň habarlary indi gelmez. Yzyna gaýtmak üçin topardaky biri seni ýene çagyrmaly.',
+  'Editar pacote': 'Toplumy üýtget',
 } satisfies Record<string, string>;

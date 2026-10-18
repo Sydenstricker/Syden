@@ -2138,4 +2138,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Egy kibontott zacskó chips.',
   'Um bolo de chocolate com uma cereja em cima.': 'Csokitorta, a tetején egy cseresznyével.',
   'Sobre': 'Infó',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Személy hozzáadása',
+  'Renomear grupo': 'Csoport átnevezése',
+  'Sair do grupo': 'Kilépés a csoportból',
+  'Nome do grupo': 'Csoport neve',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Nem kapod tovább a csoport üzeneteit. Ahhoz, hogy visszatérj, valakinek a csoportból újra meg kell hívnia.',
+  'Editar pacote': 'Csomag szerkesztése',
 } satisfies Record<string, string>;

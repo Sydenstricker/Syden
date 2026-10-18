@@ -2065,4 +2065,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Pakiti ya vitafunio iliyofunguliwa.',
   'Um bolo de chocolate com uma cereja em cima.': 'Keki ya chokoleti yenye cheri juu.',
   'Sobre': 'Kuhusu',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Ongeza mtu',
+  'Renomear grupo': 'Badilisha jina la kikundi',
+  'Sair do grupo': 'Toka kwenye kikundi',
+  'Nome do grupo': 'Jina la kikundi',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ujumbe wa kikundi hautakufikia tena. Ili urudi, mtu aliye ndani ya kikundi anahitaji kukualika tena.',
+  'Editar pacote': 'Hariri kifurushi',
 } satisfies Record<string, string>;

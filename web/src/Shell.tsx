@@ -23,6 +23,7 @@ import { countUnread, forgetMissing, markRead, subscribeUnread } from './unread'
 import { contaExcluida, DirectList, DirectRailButton, directName } from './DirectList';
 import { MemberList } from './MemberList';
 import { NewGroupDialog } from './NewGroupDialog';
+import { AcoesDaConversa } from './AcoesDaConversa';
 import { loadMyStatus, saveMyStatus } from './presenceStatus';
 import { Revelacao } from './Revelacao';
 import { escutarCodigoSecreto } from './codigoSecreto';
@@ -1067,6 +1068,7 @@ export function Shell({
                 user={user}
                 role="member"
                 onMobileBack={() => setMobileChannels(true)}
+                acoesDoCabecalho={openDirect && <AcoesDaConversa conversa={openDirect} selfId={user.id} />}
               />
             </>
           )}

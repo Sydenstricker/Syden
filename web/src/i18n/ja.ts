@@ -2047,4 +2047,11 @@ export default {
   'Um pacote de salgadinho aberto.': '開けたスナック菓子の袋。',
   'Um bolo de chocolate com uma cereja em cima.': 'さくらんぼをのせたチョコレートケーキ。',
   'Sobre': '情報',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': '人を追加',
+  'Renomear grupo': 'グループ名を変える',
+  'Sair do grupo': 'グループを抜ける',
+  'Nome do grupo': 'グループ名',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'グループのメッセージが届かなくなります。戻るには、グループの誰かにまた招待してもらう必要があります。',
+  'Editar pacote': 'パックを編集',
 } satisfies Record<string, string>;

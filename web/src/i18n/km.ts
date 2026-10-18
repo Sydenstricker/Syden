@@ -2135,4 +2135,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'កញ្ចប់នំកំប៉ុងដែលបានបើក។',
   'Um bolo de chocolate com uma cereja em cima.': 'នំសូកូឡាមួយ មានផ្លែឆឺរីនៅលើ។',
   'Sobre': 'អំពី',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'បន្ថែមមនុស្ស',
+  'Renomear grupo': 'ប្តូរឈ្មោះក្រុម',
+  'Sair do grupo': 'ចាកចេញពីក្រុម',
+  'Nome do grupo': 'ឈ្មោះក្រុម',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'សាររបស់ក្រុមនឹងលែងមកដល់ទៀតហើយ។ ដើម្បីត្រឡប់មកវិញ ត្រូវមានអ្នកណាម្នាក់ក្នុងក្រុមអញ្ជើញម្ដងទៀត។',
+  'Editar pacote': 'កែកញ្ចប់',
 } satisfies Record<string, string>;

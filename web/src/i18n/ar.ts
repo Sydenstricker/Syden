@@ -2086,4 +2086,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'كيس رقائق مفتوح.',
   'Um bolo de chocolate com uma cereja em cima.': 'كعكة شوكولاتة وفوقها كرزة.',
   'Sobre': 'حول',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'إضافة شخص',
+  'Renomear grupo': 'إعادة تسمية المجموعة',
+  'Sair do grupo': 'مغادرة المجموعة',
+  'Nome do grupo': 'اسم المجموعة',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'لن تصل رسائل المجموعة بعد الآن. وللعودة، يجب أن يرسل أحد أعضاء المجموعة دعوة من جديد.',
+  'Editar pacote': 'تعديل الحزمة',
 } satisfies Record<string, string>;

@@ -2065,4 +2065,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'चिप्स का खुला पैकेट।',
   'Um bolo de chocolate com uma cereja em cima.': 'ऊपर चेरी वाला चॉकलेट केक।',
   'Sobre': 'जानकारी',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'व्यक्ति जोड़ो',
+  'Renomear grupo': 'ग्रुप का नाम बदलो',
+  'Sair do grupo': 'ग्रुप से निकलो',
+  'Nome do grupo': 'ग्रुप का नाम',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ग्रुप के मैसेज आना बंद हो जाएँगे। वापस आने के लिए ग्रुप में से किसी को तुम्हें फिर से बुलाना होगा।',
+  'Editar pacote': 'पैक संपादित करो',
 } satisfies Record<string, string>;

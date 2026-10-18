@@ -2072,4 +2072,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Ko ha kato meʻakai siʻi kuo fakaava.',
   'Um bolo de chocolate com uma cereja em cima.': 'Ko ha keke sokoleti mo ha seli ʻi ʻolunga.',
   'Sobre': 'Fekauʻaki',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Tānaki ha taha',
+  'Renomear grupo': 'Fakahingoa foʻou ʻa e kulupu',
+  'Sair do grupo': 'Mavahe mei he kulupu',
+  'Nome do grupo': 'Hingoa ʻo e kulupu',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ʻE ʻikai toe aʻu mai ʻa e ngaahi pōpoaki ʻa e kulupu. Ke ke foki mai, kuo pau ke toe fakaafeʻi koe ʻe ha taha ʻi he kulupu.',
+  'Editar pacote': 'Liliu ʻa e pake',
 } satisfies Record<string, string>;

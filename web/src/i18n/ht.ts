@@ -2146,4 +2146,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Yon sache chips louvri.',
   'Um bolo de chocolate com uma cereja em cima.': 'Yon gato chokola ak yon seriz anlè.',
   'Sobre': 'Enfòmasyon',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Ajoute yon moun',
+  'Renomear grupo': 'Chanje non gwoup la',
+  'Sair do grupo': 'Soti nan gwoup la',
+  'Nome do grupo': 'Non gwoup la',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesaj gwoup la p ap rive ankò. Pou retounen, yon moun nan gwoup la dwe envite w ankò.',
+  'Editar pacote': 'Modifye pakè a',
 } satisfies Record<string, string>;

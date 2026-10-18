@@ -2082,4 +2082,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Pakkett snacks miftuħ.',
   'Um bolo de chocolate com uma cereja em cima.': 'Kejk taċ-ċikkulata b\'ċirasa fuqu.',
   'Sobre': 'Dwar',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Żid persuna',
+  'Renomear grupo': 'Semmi l-grupp mill-ġdid',
+  'Sair do grupo': 'Oħroġ mill-grupp',
+  'Nome do grupo': 'Isem il-grupp',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Il-messaġġi tal-grupp ma jibqgħux jaslu. Biex terġa\' lura, xi ħadd mill-grupp irid jistiednek mill-ġdid.',
+  'Editar pacote': 'Editja l-pakkett',
 } satisfies Record<string, string>;

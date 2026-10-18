@@ -2074,4 +2074,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Akpa chips emepere emepe.',
   'Um bolo de chocolate com uma cereja em cima.': 'Achịcha chocolate nwere cherry n\'elu ya.',
   'Sobre': 'Banyere',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Tinye mmadụ',
+  'Renomear grupo': 'Gbanwee aha otu',
+  'Sair do grupo': 'Pụọ n\'otu',
+  'Nome do grupo': 'Aha otu',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ozi otu ahụ agaghị abịakwute gị ọzọ. Ka ị laghachi, onye nọ n\'otu ahụ ga-akpọ gị ọzọ.',
+  'Editar pacote': 'Dezie ngwugwu',
 } satisfies Record<string, string>;

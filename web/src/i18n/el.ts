@@ -2072,4 +2072,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Ένα ανοιχτό σακουλάκι πατατάκια.',
   'Um bolo de chocolate com uma cereja em cima.': 'Μια σοκολατένια τούρτα με ένα κεράσι από πάνω.',
   'Sobre': 'Πληροφορίες',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Προσθήκη ατόμου',
+  'Renomear grupo': 'Μετονομασία ομάδας',
+  'Sair do grupo': 'Έξοδος από την ομάδα',
+  'Nome do grupo': 'Όνομα ομάδας',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Τα μηνύματα της ομάδας σταματούν να έρχονται. Για να επιστρέψεις, κάποιος από την ομάδα πρέπει να σε προσκαλέσει ξανά.',
+  'Editar pacote': 'Επεξεργασία πακέτου',
 } satisfies Record<string, string>;

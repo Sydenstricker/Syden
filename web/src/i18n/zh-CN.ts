@@ -2053,4 +2053,11 @@ export default {
   'Um pacote de salgadinho aberto.': '一包打开的零食。',
   'Um bolo de chocolate com uma cereja em cima.': '一个顶上放着樱桃的巧克力蛋糕。',
   'Sobre': '关于',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': '加人',
+  'Renomear grupo': '重命名群组',
+  'Sair do grupo': '退出群组',
+  'Nome do grupo': '群组名称',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': '你将不再收到群组的消息。想回来的话，需要群里的人再拉你进来。',
+  'Editar pacote': '编辑包',
 } satisfies Record<string, string>;

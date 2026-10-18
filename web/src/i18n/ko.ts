@@ -2054,4 +2054,11 @@ export default {
   'Um pacote de salgadinho aberto.': '뜯어 놓은 과자 한 봉지.',
   'Um bolo de chocolate com uma cereja em cima.': '체리를 올린 초콜릿 케이크.',
   'Sobre': '정보',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': '사람 추가',
+  'Renomear grupo': '그룹 이름 바꾸기',
+  'Sair do grupo': '그룹 나가기',
+  'Nome do grupo': '그룹 이름',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': '그룹 메시지가 더 이상 오지 않아요. 돌아오려면 그룹 안의 누군가가 다시 초대해야 해요.',
+  'Editar pacote': '팩 편집',
 } satisfies Record<string, string>;

@@ -2133,4 +2133,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Avatud krõpsupakk.',
   'Um bolo de chocolate com uma cereja em cima.': 'Šokolaadikook, kirss peal.',
   'Sobre': 'Teave',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Lisa inimene',
+  'Renomear grupo': 'Nimeta grupp ümber',
+  'Sair do grupo': 'Lahku grupist',
+  'Nome do grupo': 'Grupi nimi',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grupi sõnumid ei jõua enam sinuni. Tagasi tulemiseks peab keegi grupist sind uuesti kutsuma.',
+  'Editar pacote': 'Muuda paketti',
 } satisfies Record<string, string>;

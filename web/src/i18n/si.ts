@@ -2136,4 +2136,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ඇරපු ස්නැක්ස් පැකට් එකක්.',
   'Um bolo de chocolate com uma cereja em cima.': 'උඩින් චෙරියක් තියෙන චොකලට් කේක් එකක්.',
   'Sobre': 'තොරතුරු',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'කෙනෙක් එක් කරන්න',
+  'Renomear grupo': 'කණ්ඩායම නැවත නම් කරන්න',
+  'Sair do grupo': 'කණ්ඩායමෙන් ඉවත් වන්න',
+  'Nome do grupo': 'කණ්ඩායමේ නම',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'කණ්ඩායමේ පණිවිඩ තවදුරටත් එන්නේ නැහැ. ආපසු එන්න නම්, කණ්ඩායමේ කෙනෙක් ඔයාට ආයෙත් ආරාධනා කරන්න ඕනේ.',
+  'Editar pacote': 'පැකේජය සංස්කරණය',
 } satisfies Record<string, string>;

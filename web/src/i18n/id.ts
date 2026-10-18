@@ -2063,4 +2063,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Sebungkus keripik yang sudah dibuka.',
   'Um bolo de chocolate com uma cereja em cima.': 'Kue cokelat dengan ceri di atasnya.',
   'Sobre': 'Info',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Tambah orang',
+  'Renomear grupo': 'Ganti nama grup',
+  'Sair do grupo': 'Keluar dari grup',
+  'Nome do grupo': 'Nama grup',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Pesan grup tidak akan sampai lagi. Untuk kembali, seseorang di grup harus mengajakmu lagi.',
+  'Editar pacote': 'Edit paket',
 } satisfies Record<string, string>;

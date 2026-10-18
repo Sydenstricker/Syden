@@ -34,6 +34,7 @@ export function TextChannel({
   role,
   mensagensIniciais,
   onMobileBack,
+  acoesDoCabecalho,
 }: {
   channel: Channel;
   socket: Socket;
@@ -43,6 +44,8 @@ export function TextChannel({
   mensagensIniciais?: Message[];
   /** Tela estreita: volta para a lista de canais. */
   onMobileBack: () => void;
+  /** Botões no fim do cabeçalho (na conversa privada: chamar alguém, renomear e sair do grupo). */
+  acoesDoCabecalho?: React.ReactNode;
 }) {
   const t = useT();
   const [messages, setMessages] = useState<Message[]>(mensagensIniciais ?? []);
@@ -182,6 +185,7 @@ export function TextChannel({
         <header className="main-header">
           <MobileBackButton onBack={onMobileBack} />
           {privada ? <AtSign size={22} className="muted-icon" /> : <Hash size={22} className="muted-icon" />} {channel.name}
+          {acoesDoCabecalho}
         </header>
 
         <div

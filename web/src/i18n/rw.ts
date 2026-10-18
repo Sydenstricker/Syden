@@ -2077,4 +2077,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Agapaki k\'utuntu two kurya gafunguye.',
   'Um bolo de chocolate com uma cereja em cima.': 'Keke ya shokola ifite cheri hejuru.',
   'Sobre': 'Ibyerekeye',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Ongeramo umuntu',
+  'Renomear grupo': 'Hindura izina ry\'itsinda',
+  'Sair do grupo': 'Va mu itsinda',
+  'Nome do grupo': 'Izina ry\'itsinda',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ubutumwa bw\'itsinda ntibuzongera kukugeraho. Kugira ngo ugaruke, umuntu uri mu itsinda agomba kongera kugutumira.',
+  'Editar pacote': 'Hindura paki',
 } satisfies Record<string, string>;

@@ -2137,4 +2137,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ຖົງຂະໜົມກອບທີ່ເປີດແລ້ວ.',
   'Um bolo de chocolate com uma cereja em cima.': 'ເຄັກຊັອກໂກແລັດ ມີໝາກເຊີຣີຢູ່ເທິງ.',
   'Sobre': 'ກ່ຽວກັບ',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'ເພີ່ມຄົນ',
+  'Renomear grupo': 'ປ່ຽນຊື່ກຸ່ມ',
+  'Sair do grupo': 'ອອກຈາກກຸ່ມ',
+  'Nome do grupo': 'ຊື່ກຸ່ມ',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ຂໍ້ຄວາມຂອງກຸ່ມຈະບໍ່ມາຮອດອີກ. ເພື່ອກັບຄືນມາ, ຕ້ອງມີຄົນໃນກຸ່ມເຊີນອີກຄັ້ງ.',
+  'Editar pacote': 'ແກ້ໄຂຊຸດ',
 } satisfies Record<string, string>;

@@ -2081,4 +2081,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Àpò ìpanu kan tí a ti ṣí.',
   'Um bolo de chocolate com uma cereja em cima.': 'Kéèkì ṣokoléètì pẹ̀lú ṣẹ́rí kan lórí rẹ̀.',
   'Sobre': 'Nípa',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Fi ènìyàn kún un',
+  'Renomear grupo': 'Yí orúkọ ẹgbẹ́ padà',
+  'Sair do grupo': 'Jáde nínú ẹgbẹ́',
+  'Nome do grupo': 'Orúkọ ẹgbẹ́',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Àwọn ìfiránṣẹ́ ẹgbẹ́ kò ní dé ọ̀dọ̀ rẹ mọ́. Láti padà, ẹnìkan nínú ẹgbẹ́ gbọ́dọ̀ tún pè ọ́.',
+  'Editar pacote': 'Ṣàtúnṣe ìdì',
 } satisfies Record<string, string>;

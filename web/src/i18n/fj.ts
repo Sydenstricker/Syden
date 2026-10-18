@@ -2065,4 +2065,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'E dua na kato ni tsipi sa dolavi.',
   'Um bolo de chocolate com uma cereja em cima.': 'E dua na keke sokoleti kei na dua na seri e dela.',
   'Sobre': 'iVakamacala',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Vakuria e dua',
+  'Renomear grupo': 'Veisautaka na yaca ni ilawalawa',
+  'Sair do grupo': 'Lako tani mai na ilawalawa',
+  'Nome do grupo': 'Yaca ni ilawalawa',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ena sega ni yaco tale vei iko na itukutuku ni ilawalawa. Me o lesu mai, e dodonu me dua mai na ilawalawa me sureti iko tale.',
+  'Editar pacote': 'Veisautaka na ikoro',
 } satisfies Record<string, string>;

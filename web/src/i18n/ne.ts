@@ -2138,4 +2138,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'खोलिएको चिप्सको प्याकेट।',
   'Um bolo de chocolate com uma cereja em cima.': 'माथि चेरी भएको चकलेट केक।',
   'Sobre': 'बारेमा',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'मान्छे थप्नुहोस्',
+  'Renomear grupo': 'समूहको नाम बदल्नुहोस्',
+  'Sair do grupo': 'समूहबाट निस्कनुहोस्',
+  'Nome do grupo': 'समूहको नाम',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'समूहका सन्देशहरू आउन बन्द हुन्छन्। फर्कन, समूहभित्रको कसैले फेरि बोलाउनुपर्छ।',
+  'Editar pacote': 'प्याक सम्पादन',
 } satisfies Record<string, string>;

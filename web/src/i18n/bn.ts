@@ -2063,4 +2063,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'খোলা এক প্যাকেট চিপস।',
   'Um bolo de chocolate com uma cereja em cima.': 'ওপরে চেরি দেওয়া চকোলেট কেক।',
   'Sobre': 'সম্পর্কে',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'মানুষ যোগ করো',
+  'Renomear grupo': 'গ্রুপের নাম বদলাও',
+  'Sair do grupo': 'গ্রুপ থেকে বেরোও',
+  'Nome do grupo': 'গ্রুপের নাম',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'গ্রুপের মেসেজ আর আসবে না। ফিরে আসতে হলে গ্রুপের কাউকে তোমাকে আবার ডাকতে হবে।',
+  'Editar pacote': 'প্যাক সম্পাদনা করো',
 } satisfies Record<string, string>;

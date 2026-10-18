@@ -2051,4 +2051,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'திறந்த ஒரு நொறுக்குத்தீனிப் பொட்டலம்.',
   'Um bolo de chocolate com uma cereja em cima.': 'மேலே செர்ரியுடன் ஒரு சாக்லேட் கேக்.',
   'Sobre': 'விவரம்',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'ஆளைச் சேர்',
+  'Renomear grupo': 'குழுவின் பெயரை மாற்று',
+  'Sair do grupo': 'குழுவிலிருந்து வெளியேறு',
+  'Nome do grupo': 'குழுவின் பெயர்',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'குழுவின் செய்திகள் இனி வராது. திரும்ப வர, குழுவில் உள்ள யாராவது உன்னை மீண்டும் அழைக்க வேண்டும்.',
+  'Editar pacote': 'தொகுப்பைத் திருத்து',
 } satisfies Record<string, string>;

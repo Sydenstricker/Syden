@@ -2146,4 +2146,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'ހުޅުވާފައިވާ ޗިޕްސް ޕެކެޓެއް.',
   'Um bolo de chocolate com uma cereja em cima.': 'މަތީގައި ޗެރީއެއް ހުރި ޗޮކްލެޓް ކޭކެއް.',
   'Sobre': 'މަޢުލޫމާތު',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'މީހަކު އިތުރުކުރޭ',
+  'Renomear grupo': 'ގްރޫޕުގެ ނަން ބަދަލުކުރޭ',
+  'Sair do grupo': 'ގްރޫޕުން ނުކުމޭ',
+  'Nome do grupo': 'ގްރޫޕުގެ ނަން',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ގްރޫޕުގެ މެސެޖުތައް އިތުރަށް ނާދާނެ. އެނބުރި އައުމަށް، ގްރޫޕުގައި ތިބި މީހަކު އަލުން ދަޢުވަތު ދޭންޖެހޭނެ.',
+  'Editar pacote': 'ޕެކު އެޑިޓްކުރޭ',
 } satisfies Record<string, string>;

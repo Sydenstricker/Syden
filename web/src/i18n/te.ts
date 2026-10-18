@@ -2048,4 +2048,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'తెరిచిన స్నాక్స్ ప్యాకెట్.',
   'Um bolo de chocolate com uma cereja em cima.': 'పైన చెర్రీతో చాక్లెట్ కేక్.',
   'Sobre': 'వివరాలు',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'వ్యక్తిని చేర్చు',
+  'Renomear grupo': 'గ్రూప్ పేరు మార్చు',
+  'Sair do grupo': 'గ్రూప్ నుండి బయటికి',
+  'Nome do grupo': 'గ్రూప్ పేరు',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'గ్రూప్ సందేశాలు ఇక రావు. తిరిగి రావాలంటే, గ్రూప్‌లో ఎవరైనా నిన్ను మళ్ళీ పిలవాలి.',
+  'Editar pacote': 'ప్యాక్ సవరించు',
 } satisfies Record<string, string>;

@@ -2065,4 +2065,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Een open zak chips.',
   'Um bolo de chocolate com uma cereja em cima.': 'Een chocoladetaart met een kers erop.',
   'Sobre': 'Info',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Iemand toevoegen',
+  'Renomear grupo': 'Groep hernoemen',
+  'Sair do grupo': 'Groep verlaten',
+  'Nome do grupo': 'Groepsnaam',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Je krijgt geen berichten meer van de groep. Om terug te komen, moet iemand in de groep je opnieuw uitnodigen.',
+  'Editar pacote': 'Pakket bewerken',
 } satisfies Record<string, string>;

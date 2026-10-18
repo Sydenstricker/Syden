@@ -2138,4 +2138,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Atplėštas traškučių maišelis.',
   'Um bolo de chocolate com uma cereja em cima.': 'Šokoladinis tortas su vyšnia viršuje.',
   'Sobre': 'Apie',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Pridėti žmogų',
+  'Renomear grupo': 'Pervadinti grupę',
+  'Sair do grupo': 'Išeiti iš grupės',
+  'Nome do grupo': 'Grupės pavadinimas',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grupės žinutės nebeateis. Norint grįžti, kas nors iš grupės turi tave vėl pakviesti.',
+  'Editar pacote': 'Redaguoti paketą',
 } satisfies Record<string, string>;

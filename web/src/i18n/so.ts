@@ -2136,4 +2136,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Baako cunto fudud oo furan.',
   'Um bolo de chocolate com uma cereja em cima.': 'Keeg shukulaato ah oo cherry korkiisa leh.',
   'Sobre': 'Faahfaahin',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Ku dar qof',
+  'Renomear grupo': 'Kooxda magac cusub u bixi',
+  'Sair do grupo': 'Ka bax kooxda',
+  'Nome do grupo': 'Magaca kooxda',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Fariimaha kooxda kuuma iman doonaan mar dambe. Si aad u soo noqoto, qof kooxda ku jira waa inuu mar kale ku casuumaa.',
+  'Editar pacote': 'Wax ka beddel xirmada',
 } satisfies Record<string, string>;

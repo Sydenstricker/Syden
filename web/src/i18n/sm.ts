@@ -2070,4 +2070,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'O se taga mea ʻai māmā ua tatala.',
   'Um bolo de chocolate com uma cereja em cima.': 'O se keke sukalati ma se cherry i luga.',
   'Sobre': 'Faʻamatalaga',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Faʻaopoopo se tagata',
+  'Renomear grupo': 'Toe faʻaigoa le vaega',
+  'Sair do grupo': 'Alu ese mai le vaega',
+  'Nome do grupo': 'Igoa o le vaega',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'O le a le toe oʻo mai feʻau a le vaega. Ina ia toe foʻi mai, e tatau i se tasi o le vaega ona toe valaʻaulia oe.',
+  'Editar pacote': 'Teuteu le afifi',
 } satisfies Record<string, string>;

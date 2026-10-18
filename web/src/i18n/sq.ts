@@ -2128,4 +2128,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Një qese e hapur me patatina.',
   'Um bolo de chocolate com uma cereja em cima.': 'Një tortë me çokollatë me një qershi sipër.',
   'Sobre': 'Rreth',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Shto dikë',
+  'Renomear grupo': 'Riemërto grupin',
+  'Sair do grupo': 'Dil nga grupi',
+  'Nome do grupo': 'Emri i grupit',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesazhet e grupit nuk do të të vijnë më. Për t\'u kthyer, dikush nga grupi duhet të të ftojë përsëri.',
+  'Editar pacote': 'Ndrysho paketën',
 } satisfies Record<string, string>;

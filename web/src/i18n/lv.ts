@@ -2138,4 +2138,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Atvērta čipsu paciņa.',
   'Um bolo de chocolate com uma cereja em cima.': 'Šokolādes kūka ar ķirsi virsū.',
   'Sobre': 'Par',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Pievienot cilvēku',
+  'Renomear grupo': 'Pārdēvēt grupu',
+  'Sair do grupo': 'Iziet no grupas',
+  'Nome do grupo': 'Grupas nosaukums',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grupas ziņas vairs nepienāks. Lai atgrieztos, kādam no grupas tevi jāuzaicina vēlreiz.',
+  'Editar pacote': 'Rediģēt pakotni',
 } satisfies Record<string, string>;

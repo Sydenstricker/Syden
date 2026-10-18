@@ -2155,4 +2155,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Չիպսի բացված փաթեթ։',
   'Um bolo de chocolate com uma cereja em cima.': 'Շոկոլադե տորթ՝ վրան մի բալ։',
   'Sobre': 'Մասին',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Ավելացնել մարդ',
+  'Renomear grupo': 'Վերանվանել խումբը',
+  'Sair do grupo': 'Դուրս գալ խմբից',
+  'Nome do grupo': 'Խմբի անուն',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Խմբի հաղորդագրություններն այլևս չեն գա։ Վերադառնալու համար խմբից որևէ մեկը պետք է քեզ նորից հրավիրի։',
+  'Editar pacote': 'Խմբագրել փաթեթը',
 } satisfies Record<string, string>;

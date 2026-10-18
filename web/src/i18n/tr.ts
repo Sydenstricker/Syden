@@ -2060,4 +2060,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Açılmış bir paket cips.',
   'Um bolo de chocolate com uma cereja em cima.': 'Üstünde kirazıyla bir çikolatalı pasta.',
   'Sobre': 'Hakkında',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Kişi ekle',
+  'Renomear grupo': 'Grubu yeniden adlandır',
+  'Sair do grupo': 'Gruptan çık',
+  'Nome do grupo': 'Grup adı',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grubun mesajları artık gelmez. Geri dönmek için gruptan biri seni yeniden çağırmalı.',
+  'Editar pacote': 'Paketi düzenle',
 } satisfies Record<string, string>;

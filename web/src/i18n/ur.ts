@@ -2053,4 +2053,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'چپس کا کھلا پیکٹ۔',
   'Um bolo de chocolate com uma cereja em cima.': 'اوپر چیری والا چاکلیٹ کیک۔',
   'Sobre': 'تعارف',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'کسی کو شامل کریں',
+  'Renomear grupo': 'گروپ کا نام بدلیں',
+  'Sair do grupo': 'گروپ سے باہر نکلیں',
+  'Nome do grupo': 'گروپ کا نام',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'گروپ کے پیغامات آنا بند ہو جائیں گے۔ واپس آنے کے لیے، گروپ میں سے کسی کو دوبارہ بلانا ہوگا۔',
+  'Editar pacote': 'پیکیج میں ترمیم',
 } satisfies Record<string, string>;

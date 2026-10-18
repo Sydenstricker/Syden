@@ -2068,4 +2068,11 @@ export default {
   'Um pacote de salgadinho aberto.': 'Pakote salgadinhu ida ne\'ebé loke ona.',
   'Um bolo de chocolate com uma cereja em cima.': 'Bolu xokolate ida ho serea ida iha leten.',
   'Sobre': 'Kona-ba',
+  // As ações do grupo na conversa privada e editar pacote (17/10/2026)
+  'Adicionar pessoa': 'Aumenta ema',
+  'Renomear grupo': 'Troka naran grupu',
+  'Sair do grupo': 'Sai husi grupu',
+  'Nome do grupo': 'Naran grupu nian',
+  'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mensajen grupu nian sei la to\'o ó tan. Atu fila, ema ida husi grupu tenke bolu fali ó.',
+  'Editar pacote': 'Edita pakote',
 } satisfies Record<string, string>;
