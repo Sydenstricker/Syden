@@ -2004,6 +2004,12 @@ textarea {
   object-fit: contain;
   image-rendering: pixelated;
 }
+.cartao-da-peca-figura.original {
+  height: 300px;
+}
+.cartao-da-peca-figura.original img {
+  image-rendering: auto; /* a arte original é grande: reduzida, fica lisa (o pixelated a serrilharia) */
+}
 .cartao-da-peca-fechar {
   position: absolute;
   top: 8px;

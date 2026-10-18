@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useEffect } from 'react';
+import cafeOriginal from './assets/cartao/cafe.webp';
 import { useT } from './i18n';
 import { descricaoDaPeca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { Figuras } from './QuartoNovo';
@@ -9,12 +10,22 @@ export interface PecaClicada {
   id: string;
 }
 
-/** A figura da peça no catálogo do Editar (as cópias "cama~2" e os iguais com número usam a do tipo). */
-function figuraDe(figuras: Figuras | null, { grupo, id }: PecaClicada): string | undefined {
-  if (!figuras) return undefined;
+/**
+ * A IMAGEM ORIGINAL da peça que nasceu de uma imagem de fora (relato dele, 17/10/2026: "a imagem original ficou
+ * diferente quando clicado"). Na parede ela é reduzida a pixel art e inclinada (parede/de-imagem.py); no cartão, quem
+ * clicou quer ver a arte inteira. A versão leve sai de parede-salao/<peça>/origem.png (1,5 MB lá, ~50 KB aqui).
+ */
+const ORIGINAIS: Partial<Record<GrupoDaCena, Record<string, string>>> = { p: { cafe: cafeOriginal } };
+
+/** A figura da peça: a original, se houver; senão a do catálogo do Editar (as cópias "cama~2" usam a do tipo). */
+function figuraDe(figuras: Figuras | null, { grupo, id }: PecaClicada): { src: string; original: boolean } | undefined {
   const tipo = id.split('~')[0];
+  const original = ORIGINAIS[grupo]?.[tipo];
+  if (original) return { src: original, original: true };
+  if (!figuras) return undefined;
   const tabela = grupo === 'm' ? figuras.moveis : grupo === 'p' ? figuras.miniaturas : grupo === 'o' ? figuras.deCima : undefined;
-  return tabela?.[tipo] ?? tabela?.[tipo.replace(/-\d+$/, '')];
+  const src = tabela?.[tipo] ?? tabela?.[tipo.replace(/-\d+$/, '')];
+  return src ? { src, original: false } : undefined;
 }
 
 /**
@@ -41,8 +52,8 @@ export function CartaoDaPeca({ peca, figuras, aoFechar }: { peca: PecaClicada; f
           <X size={18} aria-hidden="true" />
         </button>
         {figura && (
-          <div className="cartao-da-peca-figura">
-            <img src={figura} alt="" />
+          <div className={`cartao-da-peca-figura${figura.original ? ' original' : ''}`}>
+            <img src={figura.src} alt="" />
           </div>
         )}
         <h2 id="cartao-da-peca-nome">{nome}</h2>
