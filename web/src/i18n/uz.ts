@@ -504,6 +504,8 @@ export default {
   'Nome do cargo': 'Rol nomi',
   'Quem participa': 'Ishtirokchilar',
   'Separado na lista': 'Roʻyxatda alohida',
+  'Pode arrumar o salão': 'Zalni bezash',
+  'Última mudança no salão: {nome}': 'Zaldagi soʻnggi oʻzgarish: {nome}',
   'Tirar o cargo {cargo}': '{cargo} rolini olib tashlash',
   'Copiar link': 'Havoladan nusxa olish',
   'Paleta de cores': 'Ranglar palitrasi',

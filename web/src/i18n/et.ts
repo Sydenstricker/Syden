@@ -493,6 +493,8 @@ export default {
   'Nome do cargo': 'Rolli nimi',
   'Quem participa': 'Osalejad',
   'Separado na lista': 'Loendis eraldi',
+  'Pode arrumar o salão': 'Võib salongi sisustada',
+  'Última mudança no salão: {nome}': 'Viimane muudatus salongis: {nome}',
   'Tirar o cargo {cargo}': 'Eemalda roll {cargo}',
   'Copiar link': 'Kopeeri link',
   'Paleta de cores': 'Värvipalett',

@@ -449,6 +449,8 @@ export default {
   'Nome do cargo': 'Numele rolului',
   'Quem participa': 'Participanți',
   'Separado na lista': 'Separat în listă',
+  'Pode arrumar o salão': 'Poate aranja salonul',
+  'Última mudança no salão: {nome}': 'Ultima modificare în salon: {nome}',
   'Tirar o cargo {cargo}': 'Scoate rolul {cargo}',
   'Copiar link': 'Copiază linkul',
   'Paleta de cores': 'Paletă de culori',

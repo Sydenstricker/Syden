@@ -493,6 +493,8 @@ export default {
   'Nome do cargo': 'Име на ролята',
   'Quem participa': 'Участници',
   'Separado na lista': 'Отделно в списъка',
+  'Pode arrumar o salão': 'Подреждане на салона',
+  'Última mudança no salão: {nome}': 'Последна промяна в салона: {nome}',
   'Tirar o cargo {cargo}': 'Махни ролята {cargo}',
   'Copiar link': 'Копирай връзката',
   'Paleta de cores': 'Цветова палитра',

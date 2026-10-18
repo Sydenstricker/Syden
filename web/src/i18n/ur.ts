@@ -433,6 +433,8 @@ export default {
   'Nome do cargo': 'کردار کا نام',
   'Quem participa': 'شرکاء',
   'Separado na lista': 'فہرست میں الگ',
+  'Pode arrumar o salão': 'لاؤنج سجانا',
+  'Última mudança no salão: {nome}': 'لاؤنج میں آخری تبدیلی: {nome}',
   'Tirar o cargo {cargo}': 'کردار {cargo} ہٹائیں',
   'Copiar link': 'لنک کاپی کریں',
   'Paleta de cores': 'رنگوں کا پیلیٹ',

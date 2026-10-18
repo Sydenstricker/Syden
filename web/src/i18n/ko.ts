@@ -338,6 +338,8 @@ export default {
   'Nome do cargo': '역할 이름',
   'Quem participa': '참여자',
   'Separado na lista': '목록에서 따로 표시',
+  'Pode arrumar o salão': '라운지 꾸미기',
+  'Última mudança no salão: {nome}': '라운지 마지막 변경: {nome}',
   'Tirar o cargo {cargo}': '{cargo} 역할 빼기',
   'Copiar link': '링크 복사',
   'Paleta de cores': '색상 팔레트',

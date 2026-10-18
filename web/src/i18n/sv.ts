@@ -488,6 +488,8 @@ export default {
   'Nome do cargo': 'Rollnamn',
   'Quem participa': 'Deltagare',
   'Separado na lista': 'Separat i listan',
+  'Pode arrumar o salão': 'Får inreda loungen',
+  'Última mudança no salão: {nome}': 'Senaste ändringen i loungen: {nome}',
   'Tirar o cargo {cargo}': 'Ta rollen {cargo} ifrån',
   'Copiar link': 'Kopiera länk',
   'Paleta de cores': 'Färgpalett',

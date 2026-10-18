@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'Roolin nimi',
   'Quem participa': 'Osallistujat',
   'Separado na lista': 'Erikseen listassa',
+  'Pode arrumar o salão': 'Saa järjestellä oleskelutilaa',
+  'Última mudança no salão: {nome}': 'Viimeisin muutos oleskelutilaan: {nome}',
   'Tirar o cargo {cargo}': 'Poista rooli: {cargo}',
   'Copiar link': 'Kopioi linkki',
   'Paleta de cores': 'Väripaletti',

@@ -449,6 +449,8 @@ export default {
   'Nome do cargo': 'የሚና ስም',
   'Quem participa': 'አባላት',
   'Separado na lista': 'በዝርዝሩ ላይ ለብቻ',
+  'Pode arrumar o salão': 'ሳሎኑን ማስተካከል',
+  'Última mudança no salão: {nome}': 'በሳሎኑ የመጨረሻ ለውጥ፦ {nome}',
   'Tirar o cargo {cargo}': 'ሚናውን {cargo} አንሳ',
   'Copiar link': 'ሊንኩን ቅዳ',
   'Paleta de cores': 'የቀለም ስብስብ',

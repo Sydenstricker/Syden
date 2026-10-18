@@ -498,6 +498,8 @@ export default {
   'Nome do cargo': 'Ime vloge',
   'Quem participa': 'Udeleženci',
   'Separado na lista': 'Posebej na seznamu',
+  'Pode arrumar o salão': 'Urejanje salona',
+  'Última mudança no salão: {nome}': 'Zadnja sprememba v salonu: {nome}',
   'Tirar o cargo {cargo}': 'Odvzemi vlogo {cargo}',
   'Copiar link': 'Kopiraj povezavo',
   'Paleta de cores': 'Barvna paleta',

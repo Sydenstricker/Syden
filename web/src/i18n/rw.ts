@@ -519,6 +519,8 @@ export default {
   'Nome do cargo': 'Izina ry\'umwanya',
   'Quem participa': 'Abawufite',
   'Separado na lista': 'Ukwawo ku rutonde',
+  'Pode arrumar o salão': 'Gutunganya icyumba cy’uruhuko',
+  'Última mudança no salão: {nome}': 'Impinduka iheruka mu cyumba cy’uruhuko: {nome}',
   'Tirar o cargo {cargo}': 'Kuraho umwanya {cargo}',
   'Copiar link': 'Koporora ihuza',
   'Paleta de cores': 'Amabara',

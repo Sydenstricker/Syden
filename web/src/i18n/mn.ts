@@ -511,6 +511,8 @@ export default {
   'Nome do cargo': 'Үүргийн нэр',
   'Quem participa': 'Оролцогчид',
   'Separado na lista': 'Жагсаалтад тусад нь',
+  'Pode arrumar o salão': 'Танхимыг засаж янзлах',
+  'Última mudança no salão: {nome}': 'Танхимын сүүлийн өөрчлөлт: {nome}',
   'Tirar o cargo {cargo}': '{cargo} үүргийг авах',
   'Copiar link': 'Холбоос хуулах',
   'Paleta de cores': 'Өнгөний палитр',

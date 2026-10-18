@@ -427,6 +427,8 @@ export default {
   'Nome do cargo': 'ロール名',
   'Quem participa': '参加者',
   'Separado na lista': 'リストで分けて表示',
+  'Pode arrumar o salão': 'ラウンジの模様替え',
+  'Última mudança no salão: {nome}': 'ラウンジの最後の変更：{nome}',
   'Tirar o cargo {cargo}': 'ロール {cargo} を外す',
   'Copiar link': 'リンクをコピー',
   'Paleta de cores': 'カラーパレット',

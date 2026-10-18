@@ -516,6 +516,8 @@ export default {
   'Nome do cargo': 'Դերի անունը',
   'Quem participa': 'Մասնակիցներ',
   'Separado na lista': 'Առանձին ցուցակում',
+  'Pode arrumar o salão': 'Սրահի դասավորում',
+  'Última mudança no salão: {nome}': 'Վերջին փոփոխությունը սրահում՝ {nome}',
   'Tirar o cargo {cargo}': 'Հանել {cargo} դերը',
   'Copiar link': 'Պատճենել հղումը',
   'Paleta de cores': 'Գունապնակ',

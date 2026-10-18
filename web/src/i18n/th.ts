@@ -459,6 +459,8 @@ export default {
   'Nome do cargo': 'ชื่อบทบาท',
   'Quem participa': 'ผู้เข้าร่วม',
   'Separado na lista': 'แยกในรายชื่อ',
+  'Pode arrumar o salão': 'จัดห้องนั่งเล่น',
+  'Última mudança no salão: {nome}': 'การเปลี่ยนแปลงล่าสุดในห้องนั่งเล่น: {nome}',
   'Tirar o cargo {cargo}': 'เอาบทบาท {cargo} ออก',
   'Copiar link': 'คัดลอกลิงก์',
   'Paleta de cores': 'ชุดสี',

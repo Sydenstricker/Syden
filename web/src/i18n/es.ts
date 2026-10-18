@@ -484,6 +484,8 @@ export default {
   'Nome do cargo': 'Nombre del rol',
   'Quem participa': 'Quién participa',
   'Separado na lista': 'Separado en la lista',
+  'Pode arrumar o salão': 'Puede arreglar el salón',
+  'Última mudança no salão: {nome}': 'Último cambio en el salón: {nome}',
   'Tirar o cargo {cargo}': 'Quitar el rol {cargo}',
   'Copiar link': 'Copiar enlace',
   'Paleta de cores': 'Paleta de colores',

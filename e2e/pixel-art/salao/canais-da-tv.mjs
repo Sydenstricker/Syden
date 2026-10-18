@@ -1,4 +1,4 @@
-// Os canais da TV do salão, um a um pelo botão direito (pedido dele, 18/10/2026): fotografa cada canal de perto e confere
+// Os canais da TV do salão e a jukebox, pelo botão direito (pedidos dele, 18/10/2026): fotografa cada canal de perto e confere
 // que o ciclo é desenho → futebol → tiro tático → arena → desligada → desenho, e que uma transmissão vem primeiro.
 //   node e2e/pixel-art/salao/canais-da-tv.mjs [pasta das fotos]
 import fs from 'node:fs';
@@ -23,11 +23,11 @@ const foto = async (nome) => {
   });
   fs.writeFileSync(path.join(S, nome + '.png'), Buffer.from(url.split(',')[1], 'base64'));
 };
-const direito = async () => {
-  await p.evaluate(() => {
-    const [x, y] = window.ondeEsta('tv'), c = document.getElementById('tela'), r = c.getBoundingClientRect();
+const direito = async (id = 'tv') => {
+  await p.evaluate((id) => {
+    const [x, y] = window.ondeEsta(id), c = document.getElementById('tela'), r = c.getBoundingClientRect();
     c.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: r.left + (x / c.width) * r.width, clientY: r.top + ((y - 8) / c.height) * r.height }));
-  });
+  }, id);
   await p.waitForTimeout(300);
 };
 const canal = () => p.evaluate(() => (window.estadoDoTeste().telas.includes('tv') ? 'desligada' : window.estadoDoTeste().canalDaTv));
@@ -46,6 +46,14 @@ await direito(); conferir((await canal()) === 'tv', 'do ao vivo → desenho');
 for (let i = 0; i < 4; i++) await direito();
 conferir((await canal()) === 'desligada', '… → desligada');
 await direito(); conferir((await canal()) === 'ao-vivo', 'desligada → ao vivo (o primeiro, havendo transmissão)');
+// o que vale para a turma vai com a arrumação (18/10/2026): o canal escolhido e o que está desligado
+await direito(); await direito();
+conferir((await p.evaluate(() => window.retratoDoTeste().canalDaTv)) === 'futebol', 'o canal escolhido vai com a arrumação');
+await direito('jukebox');
+conferir((await p.evaluate(() => window.retratoDoTeste().desligados)).includes('jukebox'), 'a jukebox desligada vai com a arrumação');
+await foto('jukebox-desligada');
+await direito('jukebox');
+conferir(!(await p.evaluate(() => window.retratoDoTeste().desligados)).includes('jukebox'), 'e liga de novo');
 conferir(!erros.length, 'sem erros na página ' + erros.join(' | '));
 await fechar();
 process.exit(falhas ? 1 : 0);

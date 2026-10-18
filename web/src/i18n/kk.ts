@@ -492,6 +492,8 @@ export default {
   'Nome do cargo': 'Рөл атауы',
   'Quem participa': 'Қатысушылар',
   'Separado na lista': 'Тізімде бөлек',
+  'Pode arrumar o salão': 'Залды безендіру',
+  'Última mudança no salão: {nome}': 'Залдағы соңғы өзгеріс: {nome}',
   'Tirar o cargo {cargo}': '{cargo} рөлін алу',
   'Copiar link': 'Сілтемені көшіру',
   'Paleta de cores': 'Түстер палитрасы',

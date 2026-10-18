@@ -498,6 +498,8 @@ export default {
   'Nome do cargo': 'Roluň ady',
   'Quem participa': 'Gatnaşyjylar',
   'Separado na lista': 'Sanawda aýratyn',
+  'Pode arrumar o salão': 'Zaly bezemek',
+  'Última mudança no salão: {nome}': 'Zaldaky soňky üýtgeşme: {nome}',
   'Tirar o cargo {cargo}': '{cargo} roluny aýyr',
   'Copiar link': 'Baglanyşygy göçür',
   'Paleta de cores': 'Reňk palitrasy',

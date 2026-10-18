@@ -497,6 +497,8 @@ export default {
   'Nome do cargo': 'ຊື່ບົດບາດ',
   'Quem participa': 'ຜູ້ເຂົ້າຮ່ວມ',
   'Separado na lista': 'ແຍກໃນລາຍຊື່',
+  'Pode arrumar o salão': 'ຈັດຫ້ອງພັກຜ່ອນ',
+  'Última mudança no salão: {nome}': 'ການປ່ຽນແປງຫຼ້າສຸດໃນຫ້ອງພັກຜ່ອນ: {nome}',
   'Tirar o cargo {cargo}': 'ເອົາບົດບາດ {cargo} ອອກ',
   'Copiar link': 'ສຳເນົາລິ້ງ',
   'Paleta de cores': 'ຊຸດສີ',

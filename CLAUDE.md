@@ -615,7 +615,7 @@ vermelho, que é só da transmissão de verdade); o botão direito passa de cana
 Havendo transmissão, ela é o primeiro canal, e uma transmissão que começa leva a TV a ela.** Teste: `salao/canais-da-tv.mjs`. o quadro mostra a CAPA da comunidade
 (ou o ícone, inteiro) no plano da parede; quem transmite fica na frente da TV, quem está numa partida no fliperama (pose
 própria), e as banquetas têm a pose sentada alta. **A arrumação é da COMUNIDADE** (`saloes`, `salao-routes.ts`): todo
-membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`).
+membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`). **A turma ajuda a arrumar (18/10/2026, decisão dele):** quem administra marca no cargo "Pode arrumar o salão", e quem tem o cargo arruma — é a ÚNICA exceção, de propósito, ao "cargo é identidade, não poder" (db.ts). Contra a bagunça, o salão guarda quem mexeu por último e o salão de ANTES dessa pessoa começar, e quem administra desfaz ("Última mudança no salão: fulano · Desfazer"). O canal da TV e o que está desligado (TV, fliperama, jukebox) vão com a arrumação: valem para a turma, e só quem arruma muda.
 Testes: `salao/no-app.mjs` (no app de desenvolvimento) e `e2e/cenas-no-ar.mjs` (no build de produção).
 
 **O SALÃO É 16 × 16, COM CÂMERA (decisão dele, 15/10/2026: "imaginei 4× o tamanho"; "câmera que anda").** A casca sai por

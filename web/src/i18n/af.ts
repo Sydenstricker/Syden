@@ -490,6 +490,8 @@ export default {
   'Nome do cargo': 'Rolnaam',
   'Quem participa': 'Lede',
   'Separado na lista': 'Apart in die lys',
+  'Pode arrumar o salão': 'Mag die sitkamer inrig',
+  'Última mudança no salão: {nome}': 'Laaste verandering aan die sitkamer: {nome}',
   'Tirar o cargo {cargo}': 'Neem rol {cargo} weg',
   'Copiar link': 'Kopieer skakel',
   'Paleta de cores': 'Kleurpalet',

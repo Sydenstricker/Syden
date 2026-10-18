@@ -431,6 +431,8 @@ export default {
   'Nome do cargo': 'பங்கின் பெயர்',
   'Quem participa': 'பங்கேற்பாளர்கள்',
   'Separado na lista': 'பட்டியலில் தனியாக',
+  'Pode arrumar o salão': 'ஓய்வறையை அமைத்தல்',
+  'Última mudança no salão: {nome}': 'ஓய்வறையில் கடைசி மாற்றம்: {nome}',
   'Tirar o cargo {cargo}': '{cargo} பங்கை எடு',
   'Copiar link': 'இணைப்பை நகலெடு',
   'Paleta de cores': 'வண்ணத் தட்டு',

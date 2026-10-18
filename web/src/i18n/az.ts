@@ -470,6 +470,8 @@ export default {
   'Nome do cargo': 'Rolun adı',
   'Quem participa': 'İştirakçılar',
   'Separado na lista': 'Siyahıda ayrıca',
+  'Pode arrumar o salão': 'Salonu tərtib etmək',
+  'Última mudança no salão: {nome}': 'Salonda son dəyişiklik: {nome}',
   'Tirar o cargo {cargo}': '{cargo} rolunu götür',
   'Copiar link': 'Linki kopyala',
   'Paleta de cores': 'Rəng palitrası',

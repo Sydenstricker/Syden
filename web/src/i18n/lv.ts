@@ -498,6 +498,8 @@ export default {
   'Nome do cargo': 'Lomas nosaukums',
   'Quem participa': 'Dalībnieki',
   'Separado na lista': 'Atsevišķi sarakstā',
+  'Pode arrumar o salão': 'Salona iekārtošana',
+  'Última mudança no salão: {nome}': 'Pēdējās izmaiņas salonā: {nome}',
   'Tirar o cargo {cargo}': 'Noņemt lomu {cargo}',
   'Copiar link': 'Kopēt saiti',
   'Paleta de cores': 'Krāsu palete',

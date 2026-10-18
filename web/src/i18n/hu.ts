@@ -497,6 +497,8 @@ export default {
   'Nome do cargo': 'Szerep neve',
   'Quem participa': 'Résztvevők',
   'Separado na lista': 'Külön a listában',
+  'Pode arrumar o salão': 'Berendezheti a társalgót',
+  'Última mudança no salão: {nome}': 'Utolsó változtatás a társalgóban: {nome}',
   'Tirar o cargo {cargo}': '{cargo} szerep elvétele',
   'Copiar link': 'Link másolása',
   'Paleta de cores': 'Színpaletta',

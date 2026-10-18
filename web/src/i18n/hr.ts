@@ -495,6 +495,8 @@ export default {
   'Nome do cargo': 'Naziv uloge',
   'Quem participa': 'Sudionici',
   'Separado na lista': 'Zasebno na popisu',
+  'Pode arrumar o salão': 'Uređivanje salona',
+  'Última mudança no salão: {nome}': 'Posljednja promjena u salonu: {nome}',
   'Tirar o cargo {cargo}': 'Ukloni ulogu {cargo}',
   'Copiar link': 'Kopiraj poveznicu',
   'Paleta de cores': 'Paleta boja',

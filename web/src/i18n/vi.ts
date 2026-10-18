@@ -416,6 +416,8 @@ export default {
   'Nome do cargo': 'Tên vai trò',
   'Quem participa': 'Thành viên',
   'Separado na lista': 'Tách riêng trong danh sách',
+  'Pode arrumar o salão': 'Được sắp xếp phòng chờ',
+  'Última mudança no salão: {nome}': 'Thay đổi gần nhất ở phòng chờ: {nome}',
   'Tirar o cargo {cargo}': 'Gỡ vai trò {cargo}',
   'Copiar link': 'Sao chép liên kết',
   'Paleta de cores': 'Bảng màu',

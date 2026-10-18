@@ -497,6 +497,8 @@ export default {
   'Nome do cargo': 'Igama lendima',
   'Quem participa': 'Ababambiqhaza',
   'Separado na lista': 'Ngokwehlukile ohlwini',
+  'Pode arrumar o salão': 'Ukuhlela ilawunji',
+  'Última mudança no salão: {nome}': 'Ushintsho lokugcina elawunji: {nome}',
   'Tirar o cargo {cargo}': 'Khipha indima {cargo}',
   'Copiar link': 'Kopisha isixhumanisi',
   'Paleta de cores': 'Iqoqo lemibala',

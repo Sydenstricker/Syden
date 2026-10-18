@@ -484,6 +484,8 @@ export default {
   'Nome do cargo': 'Role name',
   'Quem participa': 'Members',
   'Separado na lista': 'Separate in the list',
+  'Pode arrumar o salão': 'Can arrange the lounge',
+  'Última mudança no salão: {nome}': 'Last change to the lounge: {nome}',
   'Tirar o cargo {cargo}': 'Remove role {cargo}',
   'Copiar link': 'Copy link',
   'Paleta de cores': 'Color palette',

@@ -509,6 +509,8 @@ export default {
   'Nome do cargo': 'ལཱ་འགན་གྱི་མིང',
   'Quem participa': 'བཅའ་མར་གཏོགས་མི',
   'Separado na lista': 'ཐོ་ཡིག་ནང་ སོ་སོར',
+  'Pode arrumar o salão': 'ལའུནཇ་བཀོད་སྒྲིག',
+  'Última mudança no salão: {nome}': 'ལའུནཇ་ནང་མཇུག་གི་འགྱུར་བ། {nome}',
   'Tirar o cargo {cargo}': 'ལཱ་འགན་ {cargo} བཏོན',
   'Copiar link': 'འབྲེལ་ལམ་འདྲ་བཤུས་རྐྱབ',
   'Paleta de cores': 'ཚོས་གཞི་གི་པེ་ལེཊ',

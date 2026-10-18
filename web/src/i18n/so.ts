@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'Magaca doorka',
   'Quem participa': 'Ka-qaybgalayaasha',
   'Separado na lista': 'Gooni ku ah liiska',
+  'Pode arrumar o salão': 'Habaynta qolka nasashada',
+  'Última mudança no salão: {nome}': 'Isbeddelkii ugu dambeeyay ee qolka nasashada: {nome}',
   'Tirar o cargo {cargo}': 'Ka qaad doorka {cargo}',
   'Copiar link': 'Koobiyee xiriirka',
   'Paleta de cores': 'Midabada',

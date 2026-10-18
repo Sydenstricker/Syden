@@ -488,6 +488,8 @@ export default {
   'Nome do cargo': 'שם התפקיד',
   'Quem participa': 'משתתפים',
   'Separado na lista': 'בנפרד ברשימה',
+  'Pode arrumar o salão': 'סידור הטרקלין',
+  'Última mudança no salão: {nome}': 'השינוי האחרון בטרקלין: {nome}',
   'Tirar o cargo {cargo}': 'הסרת התפקיד {cargo}',
   'Copiar link': 'העתקת קישור',
   'Paleta de cores': 'ערכת צבעים',

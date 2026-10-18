@@ -455,6 +455,8 @@ export default {
   'Nome do cargo': 'Όνομα ρόλου',
   'Quem participa': 'Συμμετέχοντες',
   'Separado na lista': 'Χωριστά στη λίστα',
+  'Pode arrumar o salão': 'Διαμόρφωση του σαλονιού',
+  'Última mudança no salão: {nome}': 'Τελευταία αλλαγή στο σαλόνι: {nome}',
   'Tirar o cargo {cargo}': 'Αφαίρεση ρόλου {cargo}',
   'Copiar link': 'Αντιγραφή συνδέσμου',
   'Paleta de cores': 'Παλέτα χρωμάτων',

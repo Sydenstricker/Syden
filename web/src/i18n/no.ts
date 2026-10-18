@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'Rollenavn',
   'Quem participa': 'Deltakere',
   'Separado na lista': 'Separat i listen',
+  'Pode arrumar o salão': 'Kan innrede salongen',
+  'Última mudança no salão: {nome}': 'Siste endring i salongen: {nome}',
   'Tirar o cargo {cargo}': 'Fjern rollen {cargo}',
   'Copiar link': 'Kopier lenke',
   'Paleta de cores': 'Fargepalett',

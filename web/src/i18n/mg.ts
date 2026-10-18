@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'Anaran’ny andraikitra',
   'Quem participa': 'Mpandray anjara',
   'Separado na lista': 'Misaraka ao amin’ny lisitra',
+  'Pode arrumar o salão': 'Afaka mandamina ny efitra fandraisana',
+  'Última mudança no salão: {nome}': 'Fanovana farany tao amin’ny efitra fandraisana: {nome}',
   'Tirar o cargo {cargo}': 'Esory ny andraikitra {cargo}',
   'Copiar link': 'Adikao ny rohy',
   'Paleta de cores': 'Lokon’ny loko',

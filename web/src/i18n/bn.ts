@@ -342,6 +342,8 @@ export default {
   'Nome do cargo': 'ভূমিকার নাম',
   'Quem participa': 'সদস্যরা',
   'Separado na lista': 'তালিকায় আলাদা',
+  'Pode arrumar o salão': 'লাউঞ্জ সাজানো',
+  'Última mudança no salão: {nome}': 'লাউঞ্জে শেষ পরিবর্তন: {nome}',
   'Tirar o cargo {cargo}': '{cargo} ভূমিকা সরান',
   'Copiar link': 'লিংক কপি করুন',
   'Paleta de cores': 'রঙের প্যালেট',

@@ -344,6 +344,8 @@ export default {
   'Nome do cargo': 'Nama peranan',
   'Quem participa': 'Peserta',
   'Separado na lista': 'Berasingan dalam senarai',
+  'Pode arrumar o salão': 'Boleh menyusun ruang rehat',
+  'Última mudança no salão: {nome}': 'Perubahan terakhir di ruang rehat: {nome}',
   'Tirar o cargo {cargo}': 'Tarik balik peranan {cargo}',
   'Copiar link': 'Salin pautan',
   'Paleta de cores': 'Palet warna',

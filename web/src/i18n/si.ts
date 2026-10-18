@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'භූමිකාවේ නම',
   'Quem participa': 'සහභාගිවන්නන්',
   'Separado na lista': 'ලැයිස්තුවේ වෙනම',
+  'Pode arrumar o salão': 'විවේකාගාරය සැකසීම',
+  'Última mudança no salão: {nome}': 'විවේකාගාරයේ අවසන් වෙනස: {nome}',
   'Tirar o cargo {cargo}': '{cargo} භූමිකාව ඉවත් කරන්න',
   'Copiar link': 'සබැඳිය පිටපත් කරන්න',
   'Paleta de cores': 'වර්ණ තලය',

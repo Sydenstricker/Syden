@@ -488,6 +488,8 @@ export default {
   'Nome do cargo': 'Emri i rolit',
   'Quem participa': 'Pjesëmarrësit',
   'Separado na lista': 'Veçmas në listë',
+  'Pode arrumar o salão': 'Rregullimi i sallonit',
+  'Última mudança no salão: {nome}': 'Ndryshimi i fundit në sallon: {nome}',
   'Tirar o cargo {cargo}': 'Hiq rolin {cargo}',
   'Copiar link': 'Kopjo lidhjen',
   'Paleta de cores': 'Paleta e ngjyrave',

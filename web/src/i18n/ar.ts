@@ -319,6 +319,8 @@ export default {
   'Nome do cargo': 'اسم الدور',
   'Quem participa': 'المشاركون',
   'Separado na lista': 'منفصل في القائمة',
+  'Pode arrumar o salão': 'ترتيب الصالة',
+  'Última mudança no salão: {nome}': 'آخر تغيير في الصالة: {nome}',
   'Tirar o cargo {cargo}': 'إزالة الدور {cargo}',
   'Copiar link': 'نسخ الرابط',
   'Paleta de cores': 'لوحة الألوان',

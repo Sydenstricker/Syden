@@ -495,6 +495,8 @@ export default {
   'Nome do cargo': 'ឈ្មោះតួនាទី',
   'Quem participa': 'អ្នកចូលរួម',
   'Separado na lista': 'ដាច់ដោយឡែកក្នុងបញ្ជី',
+  'Pode arrumar o salão': 'រៀបចំបន្ទប់សម្រាក',
+  'Última mudança no salão: {nome}': 'ការផ្លាស់ប្ដូរចុងក្រោយក្នុងបន្ទប់សម្រាក៖ {nome}',
   'Tirar o cargo {cargo}': 'ដកតួនាទី {cargo}',
   'Copiar link': 'ចម្លងតំណ',
   'Paleta de cores': 'ផ្ទាំងពណ៌',

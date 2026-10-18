@@ -21,7 +21,7 @@ let raide = 0;
 test('quem administra cria cargos com nome e cor; eles entram no fim da lista', async () => {
   const r1 = await dona('POST', `/api/communities/${comunidade.id}/cargos`, { nome: '  Veterano  ', cor: '#F5B83D', separado: true });
   assert.equal(r1.statusCode, 200, r1.body);
-  assert.deepEqual({ ...r1.json(), id: 0 }, { id: 0, communityId: comunidade.id, nome: 'Veterano', cor: '#f5b83d', separado: true, posicao: 0 });
+  assert.deepEqual({ ...r1.json(), id: 0 }, { id: 0, communityId: comunidade.id, nome: 'Veterano', cor: '#f5b83d', separado: true, posicao: 0, arrumaSalao: false });
   veterano = r1.json().id;
   const r2 = await dona('POST', `/api/communities/${comunidade.id}/cargos`, { nome: 'Raide', cor: '#2fbf71' });
   raide = r2.json().id;

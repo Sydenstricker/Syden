@@ -11843,6 +11843,22 @@ body.arrastando-barra {
   aspect-ratio: 4 / 3;
 }
 
+/* Para quem administra: quem mexeu no salão por último, e o Desfazer (18/10/2026). */
+.salao-desfazer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.editor-cena.editando .salao-desfazer {
+  display: none;
+}
+
 .quarto-novo-caixa {
   display: flex;
   flex-direction: column;

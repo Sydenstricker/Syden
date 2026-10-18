@@ -434,6 +434,8 @@ export default {
   'Nome do cargo': 'نام نقش',
   'Quem participa': 'شرکت‌کنندگان',
   'Separado na lista': 'جدا در فهرست',
+  'Pode arrumar o salão': 'چیدن سالن',
+  'Última mudança no salão: {nome}': 'آخرین تغییر در سالن: {nome}',
   'Tirar o cargo {cargo}': 'برداشتن نقش {cargo}',
   'Copiar link': 'کپی پیوند',
   'Paleta de cores': 'پالت رنگ',

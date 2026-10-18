@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'Názov roly',
   'Quem participa': 'Kto sa zúčastňuje',
   'Separado na lista': 'Osobitne v zozname',
+  'Pode arrumar o salão': 'Úprava salónika',
+  'Última mudança no salão: {nome}': 'Posledná zmena v salóniku: {nome}',
   'Tirar o cargo {cargo}': 'Odobrať rolu {cargo}',
   'Copiar link': 'Kopírovať odkaz',
   'Paleta de cores': 'Farebná paleta',

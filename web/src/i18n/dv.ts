@@ -507,6 +507,8 @@ export default {
   'Nome do cargo': 'ދައުރުގެ ނަން',
   'Quem participa': 'ބައިވެރިން',
   'Separado na lista': 'ލިސްޓުގައި ވަކިން',
+  'Pode arrumar o salão': 'ލައުންޖް ތަރުތީބުކުރުން',
+  'Última mudança no salão: {nome}': 'ލައުންޖަށް އެންމެ ފަހުން ބަދަލު ގެނައީ: {nome}',
   'Tirar o cargo {cargo}': '{cargo} ދައުރު ނަގާ',
   'Copiar link': 'ލިންކު ކޮޕީ ކުރޭ',
   'Paleta de cores': 'ކުލަތަކުގެ ޕެލެޓް',

@@ -334,6 +334,8 @@ export default {
   'Nome do cargo': 'Jina la jukumu',
   'Quem participa': 'Washiriki',
   'Separado na lista': 'Tofauti kwenye orodha',
+  'Pode arrumar o salão': 'Kupanga sebule',
+  'Última mudança no salão: {nome}': 'Badiliko la mwisho sebuleni: {nome}',
   'Tirar o cargo {cargo}': 'Ondoa jukumu {cargo}',
   'Copiar link': 'Nakili kiungo',
   'Paleta de cores': 'Mpangilio wa rangi',

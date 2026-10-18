@@ -514,6 +514,8 @@ export default {
   'Nome do cargo': 'Ainm an róil',
   'Quem participa': 'Baill',
   'Separado na lista': 'Ar leith sa liosta',
+  'Pode arrumar o salão': 'Is féidir an tolglann a shocrú',
+  'Última mudança no salão: {nome}': 'An t-athrú is déanaí ar an tolglann: {nome}',
   'Tirar o cargo {cargo}': 'Bain an ról {cargo}',
   'Copiar link': 'Cóipeáil an nasc',
   'Paleta de cores': 'Pailéad dathanna',

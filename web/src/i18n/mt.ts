@@ -524,6 +524,8 @@ export default {
   'Nome do cargo': 'Isem ir-rwol',
   'Quem participa': 'Min hu parti',
   'Separado na lista': 'Separat fil-lista',
+  'Pode arrumar o salão': 'Jista’ jirranġa s-salott',
+  'Última mudança no salão: {nome}': 'L-aħħar bidla fis-salott: {nome}',
   'Tirar o cargo {cargo}': 'Neħħi r-rwol {cargo}',
   'Copiar link': 'Ikkopja l-link',
   'Paleta de cores': 'Paletta tal-kuluri',

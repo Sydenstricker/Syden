@@ -342,6 +342,8 @@ export default {
   'Nome do cargo': 'Naam van de rol',
   'Quem participa': 'Wie meedoet',
   'Separado na lista': 'Apart in de lijst',
+  'Pode arrumar o salão': 'Mag de lounge inrichten',
+  'Última mudança no salão: {nome}': 'Laatste wijziging aan de lounge: {nome}',
   'Tirar o cargo {cargo}': 'Rol {cargo} afnemen',
   'Copiar link': 'Link kopiëren',
   'Paleta de cores': 'Kleurenpalet',

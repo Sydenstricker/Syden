@@ -46,6 +46,10 @@ export interface Arrumacao {
   guardados?: string[];
   /** Os objetos da parede que a página conhecia ao salvar: um que vier depois entra sozinho (16/10/2026). */
   conhecidos?: string[];
+  /** O canal da TV do salão (18/10/2026, decisão dele: "o canal da TV também fica salvo para a turma"). */
+  canalDaTv?: string;
+  /** O que está desligado pelo botão direito e vale para a turma: a TV, o fliperama, a jukebox (18/10/2026). */
+  desligados?: string[];
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -124,6 +128,15 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
       if (!CODIGO.test(uid) || typeof o?.tipo !== 'string' || !CODIGO.test(o.tipo) || typeof o.em !== 'string' || !PECA.test(o.em) || s0 === null || t0 === null || !Number.isInteger(o.lado) || (o.lado as number) < 0 || (o.lado as number) > 3) return { erro: 'Objeto inválido.' };
       saida.emCima[uid] = { tipo: o.tipo, em: o.em, s: s0, t: t0, lado: o.lado as number };
     }
+  }
+  if (a.canalDaTv !== undefined) {
+    if (typeof a.canalDaTv !== 'string' || !CODIGO.test(a.canalDaTv)) return { erro: 'Canal inválido.' };
+    saida.canalDaTv = a.canalDaTv;
+  }
+  if (a.desligados !== undefined) {
+    const d = a.desligados;
+    if (!Array.isArray(d) || d.length > MAX_MOVEIS || !d.every((id) => typeof id === 'string' && PECA.test(id))) return { erro: 'Arrumação inválida.' };
+    saida.desligados = [...new Set(d as string[])];
   }
   if (a.vista !== undefined) {
     if (!Number.isInteger(a.vista) || (a.vista as number) < 0 || (a.vista as number) > 15) return { erro: 'Vista inválida.' };

@@ -514,6 +514,8 @@ export default {
   'Nome do cargo': 'Hingoa ʻo e lakanga',
   'Quem participa': 'Ngaahi mēmipa',
   'Separado na lista': 'Mavahe ʻi he lisi',
+  'Pode arrumar o salão': 'Lava ke fokotu’utu’u ‘a e loki mālōlō',
+  'Última mudança no salão: {nome}': 'Liliu faka‘osi ‘i he loki mālōlō: {nome}',
   'Tirar o cargo {cargo}': 'Toʻo ʻa e lakanga {cargo}',
   'Copiar link': 'Hiki ʻa e link',
   'Paleta de cores': 'Ngaahi lanu',

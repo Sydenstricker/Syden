@@ -516,6 +516,8 @@ export default {
   'Nome do cargo': 'Aha ọrụ',
   'Quem participa': 'Ndị otu',
   'Separado na lista': 'Kewapụ ha na ndepụta',
+  'Pode arrumar o salão': 'Nwere ike ịhazi ọnụ ụlọ ezumike',
+  'Última mudança no salão: {nome}': 'Mgbanwe ikpeazụ n’ọnụ ụlọ ezumike: {nome}',
   'Tirar o cargo {cargo}': 'Wepụ ọrụ {cargo}',
   'Copiar link': 'Detuo njikọ',
   'Paleta de cores': 'Agba dị iche iche',

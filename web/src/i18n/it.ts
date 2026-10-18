@@ -342,6 +342,8 @@ export default {
   'Nome do cargo': 'Nome del ruolo',
   'Quem participa': 'Chi partecipa',
   'Separado na lista': 'A parte nell’elenco',
+  'Pode arrumar o salão': 'Può sistemare il salone',
+  'Última mudança no salão: {nome}': 'Ultima modifica al salone: {nome}',
   'Tirar o cargo {cargo}': 'Togli il ruolo {cargo}',
   'Copiar link': 'Copia link',
   'Paleta de cores': 'Tavolozza dei colori',

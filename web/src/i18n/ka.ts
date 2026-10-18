@@ -515,6 +515,8 @@ export default {
   'Nome do cargo': 'როლის სახელი',
   'Quem participa': 'მონაწილეები',
   'Separado na lista': 'ცალკე სიაში',
+  'Pode arrumar o salão': 'დარბაზის მოწყობა',
+  'Última mudança no salão: {nome}': 'ბოლო ცვლილება დარბაზში: {nome}',
   'Tirar o cargo {cargo}': 'როლის მოხსნა: {cargo}',
   'Copiar link': 'ბმულის კოპირება',
   'Paleta de cores': 'ფერთა პალიტრა',

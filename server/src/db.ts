@@ -747,7 +747,7 @@ db.exec(`
   );
 
   -- O SALÃO de cada comunidade (15/10/2026): a arrumação do salão isométrico, no mesmo formato do quarto (quarto.ts).
-  -- É da TURMA: todo membro vê igual, e só quem administra mexe (salao-routes.ts).
+  -- É da TURMA: todo membro vê igual, e mexe quem administra ou tem um cargo que arruma o salão (salao-routes.ts).
   CREATE TABLE IF NOT EXISTS saloes (
     community_id INTEGER PRIMARY KEY REFERENCES communities(id) ON DELETE CASCADE,
     arrumacao    TEXT NOT NULL,
@@ -3893,18 +3893,46 @@ export function guardarQuarto(userId: number, arrumacao: string) {
 
 // ---------- O salão de cada comunidade ----------
 
-export function lerSalao(communityId: number): { arrumacao: string; em: string } | null {
+// O PONTO DE VOLTA (18/10/2026): com a turma arrumando, quem administra precisa de um jeito de desfazer. A página salva a
+// cada mudança, então "a versão anterior" seria só o último passo; o que se guarda é o salão COMO ESTAVA ANTES de a
+// pessoa que mexeu por último começar (outra pessoa mexendo = novo ponto de volta). Desfazer volta a ele, e ele se apaga.
+addColumnIfMissing('saloes', 'anterior', 'TEXT');
+
+export interface SalaoGuardado {
+  arrumacao: string;
+  em: string;
+  /** Quem mexeu por último (null: a conta já não existe). */
+  por: number | null;
+  /** Há como voltar ao salão de antes dessa pessoa? */
+  temAnterior: boolean;
+}
+
+export function lerSalao(communityId: number): SalaoGuardado | null {
   const linha = db
-    .prepare('SELECT arrumacao, updated_at AS em FROM saloes WHERE community_id = ?')
-    .get(communityId) as { arrumacao: string; em: string } | undefined;
-  return linha ?? null;
+    .prepare('SELECT arrumacao, updated_at AS em, updated_by AS por, anterior IS NOT NULL AS temAnterior FROM saloes WHERE community_id = ?')
+    .get(communityId) as (Omit<SalaoGuardado, 'temAnterior'> & { temAnterior: number }) | undefined;
+  return linha ? { ...linha, temAnterior: linha.temAnterior === 1 } : null;
 }
 
 export function guardarSalao(communityId: number, userId: number, arrumacao: string) {
+  // Outra pessoa começou a mexer: o salão como está agora vira o ponto de volta.
+  db.prepare('UPDATE saloes SET anterior = arrumacao WHERE community_id = ? AND (updated_by IS NULL OR updated_by != ?)').run(communityId, userId);
   db.prepare(
     `INSERT INTO saloes (community_id, arrumacao, updated_by, updated_at) VALUES (?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
      ON CONFLICT(community_id) DO UPDATE SET arrumacao = excluded.arrumacao, updated_by = excluded.updated_by, updated_at = excluded.updated_at`,
   ).run(communityId, arrumacao, userId);
+}
+
+/** Volta o salão ao que era antes de quem mexeu por último. false: não havia ponto de volta. */
+export function voltarSalao(communityId: number, userId: number): boolean {
+  return (
+    db
+      .prepare(
+        `UPDATE saloes SET arrumacao = anterior, anterior = NULL, updated_by = ?, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+         WHERE community_id = ? AND anterior IS NOT NULL`,
+      )
+      .run(userId, communityId).changes > 0
+  );
 }
 
 // ---------- Amizades ----------
@@ -4647,6 +4675,11 @@ export function limparTemporariosVencidos(): number {
 // administrador, membro). Um cargo que desse poder de moderação abriria um flanco que hoje não existe —
 // errar a configuração de um "Ajudante" daria a alguém o botão de apagar mensagens de todo mundo. Se um
 // dia for preciso, entra de propósito, com teste, e não como efeito colateral de um enfeite.
+//
+// A EXCEÇÃO, de propósito (decisão dele, 18/10/2026): ARRUMAR O SALÃO. Quem administra marca no cargo "Pode
+// arrumar o salão", e quem tem o cargo mexe nos móveis e nos estados do salão (salao-routes.ts) — e em nada
+// mais. É o equilíbrio que ele pediu entre o dono fazer toda a manutenção e a turma contribuir sem bagunçar:
+// o salão guarda quem mexeu por último, e quem administra desfaz (ver "O salão de cada comunidade").
 // ---------------------------------------------------------------------------------------------------
 
 db.exec(`
@@ -4671,6 +4704,7 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS cargos_de_quem ON cargos_dos_membros(community_id, user_id);
 `);
+addColumnIfMissing('cargos', 'arruma_salao', 'INTEGER NOT NULL DEFAULT 0');
 
 export interface Cargo {
   id: number;
@@ -4679,26 +4713,26 @@ export interface Cargo {
   cor: string;
   separado: boolean;
   posicao: number;
+  /** O único poder que um cargo dá: arrumar o salão (ver A EXCEÇÃO, acima). */
+  arrumaSalao: boolean;
 }
 
 /** Um teto, como o de emojis e sons: cargo demais vira lista que ninguém lê. */
 export const MAXIMO_DE_CARGOS = 50;
 
-const colunasDoCargo = 'id, community_id AS communityId, nome, cor, separado, posicao';
-const paraCargo = (linha: Omit<Cargo, 'separado'> & { separado: number }): Cargo => ({ ...linha, separado: linha.separado === 1 });
+const colunasDoCargo = 'id, community_id AS communityId, nome, cor, separado, posicao, arruma_salao AS arrumaSalao';
+type LinhaDoCargo = Omit<Cargo, 'separado' | 'arrumaSalao'> & { separado: number; arrumaSalao: number };
+const paraCargo = (linha: LinhaDoCargo): Cargo => ({ ...linha, separado: linha.separado === 1, arrumaSalao: linha.arrumaSalao === 1 });
 
 export function listarCargos(communityId: number): Cargo[] {
   return (
-    db.prepare(`SELECT ${colunasDoCargo} FROM cargos WHERE community_id = ? ORDER BY posicao, id`).all(communityId) as unknown as (Omit<
-      Cargo,
-      'separado'
-    > & { separado: number })[]
+    db.prepare(`SELECT ${colunasDoCargo} FROM cargos WHERE community_id = ? ORDER BY posicao, id`).all(communityId) as unknown as LinhaDoCargo[]
   ).map(paraCargo);
 }
 
 export function acharCargo(communityId: number, cargoId: number): Cargo | undefined {
   const linha = db.prepare(`SELECT ${colunasDoCargo} FROM cargos WHERE id = ? AND community_id = ?`).get(cargoId, communityId) as
-    | (Omit<Cargo, 'separado'> & { separado: number })
+    | LinhaDoCargo
     | undefined;
   return linha && paraCargo(linha);
 }
@@ -4714,15 +4748,20 @@ export function criarCargo(communityId: number, nome: string, cor: string, separ
   return acharCargo(communityId, Number(lastInsertRowid))!;
 }
 
-export function editarCargo(communityId: number, cargoId: number, mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number }) {
+export function editarCargo(
+  communityId: number,
+  cargoId: number,
+  mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean },
+) {
   const atual = acharCargo(communityId, cargoId);
   if (!atual) return undefined;
   const novo = { ...atual, ...mudanca };
-  db.prepare('UPDATE cargos SET nome = ?, cor = ?, separado = ?, posicao = ? WHERE id = ? AND community_id = ?').run(
+  db.prepare('UPDATE cargos SET nome = ?, cor = ?, separado = ?, posicao = ?, arruma_salao = ? WHERE id = ? AND community_id = ?').run(
     novo.nome,
     novo.cor,
     novo.separado ? 1 : 0,
     novo.posicao,
+    novo.arrumaSalao ? 1 : 0,
     cargoId,
     communityId,
   );
@@ -4740,6 +4779,16 @@ export function darCargo(communityId: number, userId: number, cargoId: number) {
 
 export function tirarCargo(communityId: number, userId: number, cargoId: number) {
   db.prepare('DELETE FROM cargos_dos_membros WHERE cargo_id = ? AND community_id = ? AND user_id = ?').run(cargoId, communityId, userId);
+}
+
+/** A pessoa tem algum cargo que arruma o salão? (o único poder de um cargo: ver A EXCEÇÃO, acima) */
+export function cargoArrumaSalao(communityId: number, userId: number): boolean {
+  return !!db
+    .prepare(
+      `SELECT 1 FROM cargos_dos_membros cm JOIN cargos c ON c.id = cm.cargo_id
+       WHERE cm.community_id = ? AND cm.user_id = ? AND c.arruma_salao = 1 LIMIT 1`,
+    )
+    .get(communityId, userId);
 }
 
 /** Os cargos de cada pessoa da comunidade, por id de pessoa. Uma consulta só, para a lista inteira. */

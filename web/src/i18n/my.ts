@@ -477,6 +477,8 @@ export default {
   'Nome do cargo': 'အခန်းကဏ္ဍ အမည်',
   'Quem participa': 'ပါဝင်သူများ',
   'Separado na lista': 'စာရင်းတွင် သီးခြား',
+  'Pode arrumar o salão': 'နားနေခန်းကို စီစဉ်ခြင်း',
+  'Última mudança no salão: {nome}': 'နားနေခန်း နောက်ဆုံးပြောင်းလဲမှု- {nome}',
   'Tirar o cargo {cargo}': '{cargo} အခန်းကဏ္ဍကို ဖယ်ရန်',
   'Copiar link': 'လင့်ခ်ကို ကူးယူရန်',
   'Paleta de cores': 'အရောင်စုံ',

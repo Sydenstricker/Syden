@@ -9,7 +9,7 @@ import { manages, requireUser } from './routes.js';
  * e apaga, e dá ou tira de quem quiser. Todo membro vê a lista, porque ela aparece no perfil e na lista
  * de membros.
  *
- * Cargo é identidade, não poder — nada aqui muda o que alguém pode fazer na comunidade.
+ * Cargo é identidade, não poder — com UMA exceção de propósito: "Pode arrumar o salão" (ver A EXCEÇÃO em db.ts).
  */
 const NOME_MAXIMO = 32;
 const COR_RE = /^#[0-9a-f]{6}$/i;
@@ -95,14 +95,14 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.patch<{
       Params: { id: string; cargoId: string };
-      Body: { nome?: string; cor?: string; separado?: boolean; posicao?: number };
+      Body: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean };
     }>('/api/communities/:id/cargos/:cargoId', async (request, reply) => {
       const communityId = Number(request.params.id);
       const papel = db.memberRole(communityId, request.user.id);
       if (!papel) return reply.code(404).send({ error: NAO_ENCONTRADA });
       if (!manages(papel)) return reply.code(403).send({ error: 'Só quem administra a comunidade edita cargos.' });
       const corpo = request.body ?? {};
-      const mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number } = {};
+      const mudanca: { nome?: string; cor?: string; separado?: boolean; posicao?: number; arrumaSalao?: boolean } = {};
       if (corpo.nome !== undefined) {
         const nome = lerNome(corpo.nome);
         if (!nome) return reply.code(400).send({ error: `O nome do cargo deve ter de 1 a ${NOME_MAXIMO} caracteres.` });
@@ -113,6 +113,8 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
         mudanca.cor = String(corpo.cor).toLowerCase();
       }
       if (corpo.separado !== undefined) mudanca.separado = corpo.separado === true;
+      // O único poder de um cargo (ver A EXCEÇÃO em db.ts): quem tem o cargo passa a poder arrumar o salão.
+      if (corpo.arrumaSalao !== undefined) mudanca.arrumaSalao = corpo.arrumaSalao === true;
       if (corpo.posicao !== undefined) {
         if (!Number.isInteger(corpo.posicao) || corpo.posicao < 0 || corpo.posicao > 10_000) {
           return reply.code(400).send({ error: 'Posição inválida.' });
@@ -122,6 +124,8 @@ export function registerCargosRoutes(app: FastifyInstance, io: IOServer) {
       const cargo = db.editarCargo(communityId, Number(request.params.cargoId), mudanca);
       if (!cargo) return reply.code(404).send({ error: 'Cargo não encontrado.' });
       avisarCargos(communityId);
+      // quem tem o cargo pode ter ganhado ou perdido a barra de arrumar: o salão aberto relê
+      if (mudanca.arrumaSalao !== undefined) io.to(communityRoom(communityId)).emit('salao:mudou', { communityId, por: request.user.id });
       return cargo;
     });
 

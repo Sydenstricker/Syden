@@ -496,6 +496,8 @@ export default {
   'Nome do cargo': 'Име на улогата',
   'Quem participa': 'Учесници',
   'Separado na lista': 'Одделно во списокот',
+  'Pode arrumar o salão': 'Уредување на салонот',
+  'Última mudança no salão: {nome}': 'Последна промена во салонот: {nome}',
   'Tirar o cargo {cargo}': 'Отстрани ја улогата {cargo}',
   'Copiar link': 'Копирај врска',
   'Paleta de cores': 'Палета на бои',

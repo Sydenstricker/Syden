@@ -55,3 +55,44 @@ test('o que quebraria o salão é recusado', async () => {
   assert.equal((await dona('PUT', url, { moveis: { sofa: { c: [17, 1], lado: 0 } } })).statusCode, 400);
   assert.deepEqual((await membro('GET', url)).json().arrumacao, SALAO);
 });
+
+// O CARGO QUE ARRUMA O SALÃO (decisão dele, 18/10/2026): o único poder que um cargo dá. E quem administra desfaz.
+test('membro com um cargo marcado "Pode arrumar o salão" arruma; sem a marca, não', async () => {
+  const membroId = ((await dona('GET', `/api/communities/${comunidade.id}/members`)).json() as { id: number; username: string }[]).find(
+    (m) => m.username === 'membro-salao',
+  )!.id;
+  const cargo = (await dona('POST', `/api/communities/${comunidade.id}/cargos`, { nome: 'Decoração', cor: '#88aa66' })).json();
+  assert.equal(cargo.arrumaSalao, false);
+  await dona('PUT', `/api/communities/${comunidade.id}/members/${membroId}/cargos/${cargo.id}`);
+  // o cargo sozinho é identidade: ainda não arruma
+  assert.equal((await membro('GET', url)).json().podeEditar, false);
+  assert.equal((await membro('PUT', url, { moveis: {} })).statusCode, 403);
+  // só quem administra dá a marca
+  assert.equal((await membro('PATCH', `/api/communities/${comunidade.id}/cargos/${cargo.id}`, { arrumaSalao: true })).statusCode, 403);
+  assert.equal((await dona('PATCH', `/api/communities/${comunidade.id}/cargos/${cargo.id}`, { arrumaSalao: true })).json().arrumaSalao, true);
+  assert.equal((await membro('GET', url)).json().podeEditar, true);
+  const DELE = { ...SALAO, canalDaTv: 'futebol', desligados: ['jukebox'] };
+  assert.equal((await membro('PUT', url, DELE)).statusCode, 200);
+  const visto = (await dona('GET', url)).json();
+  assert.deepEqual(visto.arrumacao, DELE);
+  assert.equal(visto.porUltimo.nome, 'membro-salao');
+  // e não ganhou nada além do salão: desfazer é de quem administra
+  assert.equal((await membro('POST', `${url}/desfazer`)).statusCode, 403);
+  assert.equal((await membro('GET', url)).json().podeDesfazer, false);
+});
+
+test('quem administra desfaz o que a última pessoa fez (todas as mudanças dela, não só a última)', async () => {
+  assert.equal((await dona('GET', url)).json().podeDesfazer, true);
+  // mais uma mudança da mesma pessoa: o ponto de volta continua o de antes dela
+  assert.equal((await membro('PUT', url, { ...SALAO, canalDaTv: 'arena' })).statusCode, 200);
+  assert.equal((await dona('POST', `${url}/desfazer`)).statusCode, 200);
+  assert.deepEqual((await membro('GET', url)).json().arrumacao, SALAO);
+  // desfeito, não há mais o que desfazer
+  assert.equal((await dona('GET', url)).json().podeDesfazer, false);
+  assert.equal((await dona('POST', `${url}/desfazer`)).statusCode, 409);
+});
+
+test('o canal e os desligados são validados', async () => {
+  assert.equal((await dona('PUT', url, { ...SALAO, canalDaTv: 'Canal <b>' })).statusCode, 400);
+  assert.equal((await dona('PUT', url, { ...SALAO, desligados: [1] })).statusCode, 400);
+});

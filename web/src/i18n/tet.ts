@@ -510,6 +510,8 @@ export default {
   'Nome do cargo': 'Naran kargu nian',
   'Quem participa': 'Se mak partisipa',
   'Separado na lista': 'Ketak iha lista',
+  'Pode arrumar o salão': 'Bele arranja salaun',
+  'Última mudança no salão: {nome}': 'Mudansa ikus iha salaun: {nome}',
   'Tirar o cargo {cargo}': 'Hasai kargu {cargo}',
   'Copiar link': 'Kopia link',
   'Paleta de cores': 'Paleta kór',

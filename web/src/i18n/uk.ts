@@ -488,6 +488,8 @@ export default {
   'Nome do cargo': 'Назва ролі',
   'Quem participa': 'Учасники',
   'Separado na lista': 'Окремо у списку',
+  'Pode arrumar o salão': 'Облаштування зали',
+  'Última mudança no salão: {nome}': 'Остання зміна в залі: {nome}',
   'Tirar o cargo {cargo}': 'Зняти роль {cargo}',
   'Copiar link': 'Копіювати посилання',
   'Paleta de cores': 'Палітра кольорів',

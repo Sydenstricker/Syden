@@ -344,6 +344,8 @@ export default {
   'Nome do cargo': 'भूमिका का नाम',
   'Quem participa': 'सदस्य',
   'Separado na lista': 'सूची में अलग',
+  'Pode arrumar o salão': 'लाउंज सजाना',
+  'Última mudança no salão: {nome}': 'लाउंज में आख़िरी बदलाव: {nome}',
   'Tirar o cargo {cargo}': 'भूमिका {cargo} हटाएँ',
   'Copiar link': 'लिंक कॉपी करें',
   'Paleta de cores': 'रंग पैलेट',

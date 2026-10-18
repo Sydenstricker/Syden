@@ -339,6 +339,8 @@ export default {
   'Nome do cargo': 'Rol adı',
   'Quem participa': 'Katılanlar',
   'Separado na lista': 'Listede ayrı',
+  'Pode arrumar o salão': 'Salonu düzenleyebilir',
+  'Última mudança no salão: {nome}': 'Salondaki son değişiklik: {nome}',
   'Tirar o cargo {cargo}': '{cargo} rolünü kaldır',
   'Copiar link': 'Bağlantıyı kopyala',
   'Paleta de cores': 'Renk paleti',

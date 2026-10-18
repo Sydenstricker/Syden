@@ -428,6 +428,8 @@ export default {
   'Nome do cargo': 'పాత్ర పేరు',
   'Quem participa': 'పాల్గొనేవారు',
   'Separado na lista': 'జాబితాలో విడిగా',
+  'Pode arrumar o salão': 'లాంజ్ అమర్చడం',
+  'Última mudança no salão: {nome}': 'లాంజ్‌లో చివరి మార్పు: {nome}',
   'Tirar o cargo {cargo}': '{cargo} పాత్రను తీసివేయి',
   'Copiar link': 'లింక్ కాపీ చేయండి',
   'Paleta de cores': 'రంగుల పాలెట్',

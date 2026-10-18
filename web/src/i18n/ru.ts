@@ -314,6 +314,8 @@ export default {
   'Nome do cargo': 'Название роли',
   'Quem participa': 'Участники',
   'Separado na lista': 'Отдельно в списке',
+  'Pode arrumar o salão': 'Обустройство зала',
+  'Última mudança no salão: {nome}': 'Последнее изменение в зале: {nome}',
   'Tirar o cargo {cargo}': 'Снять роль {cargo}',
   'Copiar link': 'Копировать ссылку',
   'Paleta de cores': 'Цветовая палитра',

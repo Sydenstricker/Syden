@@ -127,6 +127,32 @@ await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro-guardado.png') });
 const r = await fetch(API + `/api/communities/${comunidade.id}/salao`, { method: 'PUT', headers: { authorization: 'Bearer ' + membro, 'content-type': 'application/json' }, body: JSON.stringify({ moveis: {} }) });
 conferir(r.status === 403, 'o servidor recusa o membro (' + r.status + ')');
 
+// O CARGO QUE ARRUMA O SALÃO (18/10/2026): a dona marca no cargo, dá ao membro, e o salão ABERTO dele ganha o Editar sem
+// recarregar; o que ele desliga (a jukebox) vai para a turma; e a dona vê quem mexeu por último e desfaz.
+const membroId = (await pedir('GET', `/api/communities/${comunidade.id}/members`, dona)).find((m) => m.username === 'membro' + sufixo).id;
+const cargo = await pedir('POST', `/api/communities/${comunidade.id}/cargos`, dona, { nome: 'Decoração', cor: '#88aa66' });
+await pedir('PUT', `/api/communities/${comunidade.id}/members/${membroId}/cargos/${cargo.id}`, dona);
+await pedir('PATCH', `/api/communities/${comunidade.id}/cargos/${cargo.id}`, dona, { arrumaSalao: true });
+await M.p.locator('.editor-entrar button').waitFor({ timeout: 15000 }).catch(() => {});
+conferir(await M.p.locator('.editor-entrar button').isVisible(), 'o membro com o cargo ganha o Editar, sem recarregar');
+conferir(!(await M.frame.evaluate(() => window.visitaDoTeste().soVer)), 'e a página deixa ele arrumar');
+await M.frame.evaluate(() => {
+  const [x, y] = window.ondeEsta('jukebox'), c = document.getElementById('tela'), q = c.getBoundingClientRect();
+  c.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: q.left + (x / c.width) * q.width, clientY: q.top + ((y - 8) / c.height) * q.height }));
+});
+await M.p.waitForTimeout(2500);
+const comJukebox = await pedir('GET', `/api/communities/${comunidade.id}/salao`, dona);
+conferir(comJukebox.arrumacao.desligados?.includes('jukebox'), 'a jukebox desligada pelo membro vai para a turma (' + JSON.stringify(comJukebox.arrumacao.desligados) + ')');
+await D.p.locator('.salao-desfazer').waitFor({ timeout: 15000 }).catch(() => {});
+const linha = await D.p.locator('.salao-desfazer').textContent().catch(() => '');
+conferir(linha.includes('membro' + sufixo), 'a dona vê quem mexeu por último: ' + linha);
+await D.p.screenshot({ path: path.join(FOTOS, 'no-app-dona-desfazer.png') });
+await D.p.locator('.salao-desfazer button').click();
+await D.p.waitForTimeout(2500);
+const desfeito = await pedir('GET', `/api/communities/${comunidade.id}/salao`, dona);
+conferir(!desfeito.arrumacao.desligados?.includes('jukebox') && desfeito.arrumacao.cores?.poster === 'fogo', 'desfazer volta ao salão de antes do membro');
+conferir(!(await M.frame.evaluate(() => window.visitaDoTeste().retrato.desligados.includes('jukebox'))), 'e o salão aberto do membro relê');
+
 s.close();
 await navegador.close();
 console.log(falhas.length ? falhas.length + ' falha(s)' : 'tudo certo');

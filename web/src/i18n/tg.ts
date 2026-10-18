@@ -497,6 +497,8 @@ export default {
   'Nome do cargo': 'Номи нақш',
   'Quem participa': 'Иштирокчиён',
   'Separado na lista': 'Дар рӯйхат алоҳида',
+  'Pode arrumar o salão': 'Ороиши толор',
+  'Última mudança no salão: {nome}': 'Охирин тағйирот дар толор: {nome}',
   'Tirar o cargo {cargo}': 'Гирифтани нақши {cargo}',
   'Copiar link': 'Нусха бардоштани пайванд',
   'Paleta de cores': 'Палитраи рангҳо',

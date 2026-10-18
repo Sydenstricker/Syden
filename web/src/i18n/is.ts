@@ -497,6 +497,8 @@ export default {
   'Nome do cargo': 'Heiti hlutverks',
   'Quem participa': 'Þátttakendur',
   'Separado na lista': 'Sér á listanum',
+  'Pode arrumar o salão': 'Má raða í setustofuna',
+  'Última mudança no salão: {nome}': 'Síðasta breyting á setustofunni: {nome}',
   'Tirar o cargo {cargo}': 'Taka hlutverkið {cargo}',
   'Copiar link': 'Afrita tengil',
   'Paleta de cores': 'Litaspjald',

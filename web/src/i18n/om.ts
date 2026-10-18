@@ -478,6 +478,8 @@ export default {
   'Nome do cargo': 'Maqaa gahee',
   'Quem participa': 'Hirmaattota',
   'Separado na lista': 'Tarree keessatti adda',
+  'Pode arrumar o salão': 'Kutaa boqonnaa qindeessuu',
+  'Última mudança no salão: {nome}': 'Jijjiirama dhumaa kutaa boqonnaa: {nome}',
   'Tirar o cargo {cargo}': 'Gahee {cargo} irraa fudhadhu',
   'Copiar link': 'Liinkii garagalchi',
   'Paleta de cores': 'Gurmuu halluu',

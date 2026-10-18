@@ -498,6 +498,8 @@ export default {
   'Nome do cargo': 'भूमिकाको नाम',
   'Quem participa': 'सहभागीहरू',
   'Separado na lista': 'सूचीमा छुट्टै',
+  'Pode arrumar o salão': 'लाउन्ज सजाउने',
+  'Última mudança no salão: {nome}': 'लाउन्जमा अन्तिम परिवर्तन: {nome}',
   'Tirar o cargo {cargo}': 'भूमिका {cargo} हटाउनुहोस्',
   'Copiar link': 'लिङ्क प्रतिलिपि गर्नुहोस्',
   'Paleta de cores': 'रङ प्यालेट',

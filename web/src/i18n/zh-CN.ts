@@ -339,6 +339,8 @@ export default {
   'Nome do cargo': '身份组名称',
   'Quem participa': '成员',
   'Separado na lista': '在列表中单独显示',
+  'Pode arrumar o salão': '可以布置大厅',
+  'Última mudança no salão: {nome}': '大厅最近一次修改：{nome}',
   'Tirar o cargo {cargo}': '移除身份组 {cargo}',
   'Copiar link': '复制链接',
   'Paleta de cores': '配色方案',

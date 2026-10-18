@@ -498,6 +498,8 @@ export default {
   'Nome do cargo': 'Vaidmens pavadinimas',
   'Quem participa': 'Dalyviai',
   'Separado na lista': 'Atskirai sąraše',
+  'Pode arrumar o salão': 'Salono tvarkymas',
+  'Última mudança no salão: {nome}': 'Paskutinis pakeitimas salone: {nome}',
   'Tirar o cargo {cargo}': 'Atimti vaidmenį {cargo}',
   'Copiar link': 'Kopijuoti nuorodą',
   'Paleta de cores': 'Spalvų paletė',

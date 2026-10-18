@@ -512,6 +512,8 @@ export default {
   'Nome do cargo': 'Igoa o le tofiga',
   'Quem participa': 'O ē o loʻo i ai',
   'Separado na lista': 'Vaʻaeseese i le lisi',
+  'Pode arrumar o salão': 'E mafai ona faatulaga le potu malolo',
+  'Última mudança no salão: {nome}': 'Suiga mulimuli i le potu malolo: {nome}',
   'Tirar o cargo {cargo}': 'Aveese le tofiga {cargo}',
   'Copiar link': 'Kopi le fesoʻotaʻiga',
   'Paleta de cores': 'Paleti o lanu',

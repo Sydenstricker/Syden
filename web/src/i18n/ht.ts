@@ -507,6 +507,8 @@ export default {
   'Nome do cargo': 'Non wòl la',
   'Quem participa': 'Moun ki patisipe',
   'Separado na lista': 'Apa nan lis la',
+  'Pode arrumar o salão': 'Ka ranje salon an',
+  'Última mudança no salão: {nome}': 'Dènye chanjman nan salon an: {nome}',
   'Tirar o cargo {cargo}': 'Retire wòl {cargo}',
   'Copiar link': 'Kopye lyen',
   'Paleta de cores': 'Palèt koulè',

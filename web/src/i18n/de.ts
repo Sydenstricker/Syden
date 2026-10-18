@@ -315,6 +315,8 @@ export default {
   'Nome do cargo': 'Name der Rolle',
   'Quem participa': 'Wer dabei ist',
   'Separado na lista': 'Getrennt in der Liste',
+  'Pode arrumar o salão': 'Darf die Lounge einrichten',
+  'Última mudança no salão: {nome}': 'Letzte Änderung an der Lounge: {nome}',
   'Tirar o cargo {cargo}': 'Rolle {cargo} entfernen',
   'Copiar link': 'Link kopieren',
   'Paleta de cores': 'Farbpalette',

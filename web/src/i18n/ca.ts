@@ -492,6 +492,8 @@ export default {
   'Nome do cargo': 'Nom del rol',
   'Quem participa': 'Qui hi participa',
   'Separado na lista': 'Separat a la llista',
+  'Pode arrumar o salão': 'Pot arreglar el saló',
+  'Última mudança no salão: {nome}': 'Darrer canvi al saló: {nome}',
   'Tirar o cargo {cargo}': 'Treu el rol {cargo}',
   'Copiar link': 'Copia l’enllaç',
   'Paleta de cores': 'Paleta de colors',

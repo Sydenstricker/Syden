@@ -448,6 +448,8 @@ export default {
   'Nome do cargo': 'Sunan matsayi',
   'Quem participa': 'Mahalarta',
   'Separado na lista': 'Daban a cikin jeri',
+  'Pode arrumar o salão': 'Tsara falo',
+  'Última mudança no salão: {nome}': 'Canjin ƙarshe a falo: {nome}',
   'Tirar o cargo {cargo}': 'Cire matsayin {cargo}',
   'Copiar link': 'Kwafi mahaɗi',
   'Paleta de cores': 'Jerin launuka',

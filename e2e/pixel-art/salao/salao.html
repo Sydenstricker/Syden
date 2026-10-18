@@ -1019,7 +1019,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // OS ESTADOS DO BOTÃO DIREITO (16/10/2026, pedido dele: "com o botão direito alterne o estado do objeto; com o
   // esquerdo, use a função"). O abajur apagado vai com a arrumação; as telas desligadas valem nesta visita.
   let abajurApagado = false;
+  // (no salão, o que está desligado vale para a TURMA e vai com a arrumação: a TV, o fliperama e a jukebox, decisão dele
+  // de 18/10/2026; quem não arruma o salão não liga nem desliga)
   const telasDesligadas = new Set();
+  const DESLIGAVEIS_DO_SALAO = ['tv', 'fliperama', 'jukebox'];
   // O FOGÃO (relato dele, 17/10/2026: "o fogão não desliga?"): as bocas ficavam acesas a noite inteira, sem ninguém
   // cozinhando. Agora começa apagado, e o botão direito acende e apaga, nesta visita, como as telas.
   let fogaoAceso = false;
@@ -2467,7 +2470,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (emPausa()) { ultimo = performance.now(); return; }
     // AS NOTAS DA JUKEBOX (ideia dele, 15/10/2026): uma notinha a cada ~0,9 s, que sobe balançando e some. É partícula:
     // só com a opção ligada (Gráficos → Partículas), porque animação obriga a redesenhar.
-    if (topoDaJukebox && liga('particulas')) {
+    if (topoDaJukebox && !telasDesligadas.has('jukebox') && liga('particulas')) {
       const t = performance.now();
       notas = notas.filter((n) => t - n.t0 < n.vida);
       if (notas.length < 4 && t > proximaNota) { proximaNota = t + 700 + Math.random() * 500; notas.push({ x: topoDaJukebox[0] + (Math.random() - 0.5) * 16, y: topoDaJukebox[1], t0: t, vida: 2600 + Math.random() * 800, lado: Math.random() < 0.5 ? -1 : 1, dupla: Math.random() < 0.35, cor: [[255, 214, 120], [255, 170, 110], [250, 150, 190], [170, 220, 255]][Math.floor(Math.random() * 4)] }); }
@@ -2794,7 +2797,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
           if (p.id === 'abajur' && !(abajurApagado && (it.dono ?? 'abajur') === 'abajur') && ((k / W) | 0) < p.topo + 12 && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] > 360) acesa[d] = 1;
           // AS LUZES DA JUKEBOX (15/10/2026): os pixels claros e quentes do desenho são lâmpadas, e de noite ficam acesos
           // como estão (acesa = 2: a cor do dia, sem escurecer).
-          else if (p.id === 'jukebox' && p.movel[m4] > 200 && p.movel[m4 + 1] > 130 && p.movel[m4] - p.movel[m4 + 2] > 60) acesa[d] = 2;
+          else if (p.id === 'jukebox' && !telasDesligadas.has('jukebox') && p.movel[m4] > 200 && p.movel[m4 + 1] > 130 && p.movel[m4] - p.movel[m4 + 2] > 60) acesa[d] = 2;
           // O COOKTOP DA ILHA: o preto que está no tampo dela (dentro do tampo, recolhido, para o contorno não acender)
           else if (p.id === 'ilha' && tampoDaIlha && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] < 130 && dentroDoPoligono(x, y, tampoDaIlha)) acesa[d] = 3;
         }
@@ -2822,7 +2825,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         if (AO_VIVO.sub) { const sm = document.createElement('small'); sm.textContent = AO_VIVO.sub; meio.append(sm); }
         e.replaceChildren(...(AO_VIVO.total > 1 ? [seta(-1, '‹'), meio, seta(1, '›')] : [meio]));
       } }
-    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.75 + jb.dy]; topoDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + jb.dy + 6]; } else luzDaJukebox = topoDaJukebox = null; }
+    { const jb = lista.find((i) => i.p.id === 'jukebox'); if (jb && !telasDesligadas.has('jukebox')) { const [x0, y0, x1, y1] = caixaDaPeca(jb.p); luzDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + (y1 - y0) * 0.75 + jb.dy]; topoDaJukebox = [(x0 + x1) / 2 + jb.dx, y0 + jb.dy + 6]; } else luzDaJukebox = topoDaJukebox = null; }
     const ab = lista.find((i) => i.p.id === 'abajur');
     lampadaAgora = ab ? [ab.p.centroTopo + ab.dx, ab.p.topo + ab.dy] : [0, 0];
     pessoasNaTela = pessoas.map((it) => ({ x: it.cabeca[0], y: it.cabeca[1] + 30 }));
@@ -3947,7 +3950,10 @@ void main() {
     conhecidos: Object.keys(ITENS_PAREDE),
     emCima: Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => [uid, { tipo: o.tipo, em: o.em, s: +o.s.toFixed(3), t: +o.t.toFixed(3), lado: o.lado }])),
     parede: Object.fromEntries(Object.entries(NA_PAREDE).map(([id, P]) => [id, { parede: P.parede, v: +P.v.toFixed(2), h: Math.round(P.h) }])),
+    // o canal (o automático não vai: a transmissão de agora não é escolha de ninguém) e o que está desligado
+    ...(CENA === 'salao' && { desligados: [...telasDesligadas].filter((id) => DESLIGAVEIS_DO_SALAO.includes(id)), ...(canalDaTv && canalDaTv !== 'ao-vivo' && { canalDaTv }) }),
   });
+  window.retratoDoTeste = () => retrato(); // para o teste
   // Põe no quarto uma arrumação (a guardada, ou a de quem se visita). Móvel que o quarto não conhece fica de fora; o que
   // falta nela fica onde está na de fábrica.
   function vestir(a) {
@@ -3965,6 +3971,12 @@ void main() {
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     abajurApagado = !!a.abajurApagado;
+    if (CENA === 'salao') {
+      canalDaTv = CANAIS_DA_TV.includes(a.canalDaTv) ? a.canalDaTv : null;
+      telasDesligadas.clear();
+      for (const id of Array.isArray(a.desligados) ? a.desligados : []) if (DESLIGAVEIS_DO_SALAO.includes(id)) telasDesligadas.add(id);
+      assinaturaCena = '';
+    }
     if (Number.isInteger(a.vista)) { vista = a.vista % 4; bv.textContent = 'Vista: ' + (vista + 1); }
     botoesDaJanela(); botoesDaParede(); botoesDosMoveis();
     if (!ARR[selecionado] && selecionado !== 'cadeira') escolher(Object.keys(ARR)[0]);
@@ -4293,14 +4305,19 @@ void main() {
     if (d === 'mesa' && CENA === 'quarto') { conteudo = conteudoAgora() === 'desligada' ? 'conversa' : 'desligada'; assinaturaCena = ''; desenhar(); return true; }
     if (d === 'ilha') { fogaoAceso = !fogaoAceso; assinaturaCena = ''; desenhar(); return true; }
     // A TV troca de canal (o ao vivo primeiro, havendo) e, depois do último, desliga; desligada, volta ao primeiro.
+    if (CENA === 'salao' && DESLIGAVEIS_DO_SALAO.includes(d) && !podeArrumar) return false;
+    if (d === 'jukebox' && CENA === 'salao') {
+      if (telasDesligadas.has('jukebox')) telasDesligadas.delete('jukebox'); else telasDesligadas.add('jukebox');
+      assinaturaCena = ''; enviar(); desenhar(); return true;
+    }
     if (d === 'tv') {
       const ciclo = [...(AO_VIVO ? ['ao-vivo'] : []), ...CANAIS_DA_TV], i = ciclo.indexOf(canalDaTvAgora());
       if (telasDesligadas.has('tv')) { telasDesligadas.delete('tv'); canalDaTv = ciclo[0]; }
       else if (i === ciclo.length - 1) telasDesligadas.add('tv');
       else canalDaTv = ciclo[i + 1];
-      assinaturaCena = ''; desenhar(); return true;
+      assinaturaCena = ''; if (CENA === 'salao') enviar(); desenhar(); return true;
     }
-    if (d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; desenhar(); return true; }
+    if (d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; if (CENA === 'salao') enviar(); desenhar(); return true; }
     return false;
   }
   window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], canalDaTv: canalDaTvAgora(), fogaoAceso, cortina: fechada, aberta }); // para o teste
@@ -4511,6 +4528,8 @@ void main() {
         if (d.conta.podeEditar === false) { soVer = true; tela.style.cursor = 'default'; }
         carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ });
       }
+      // Quem arruma mudou (ganhou ou perdeu o cargo que arruma o salão, 18/10/2026).
+      if (typeof d.podeEditar === 'boolean' && conta) { soVer = !d.podeEditar; tela.style.cursor = soVer ? 'default' : ''; }
       // Quem administra mudou o salão (salao:mudou): relê. Não no meio de um arraste.
       if (d.recarregar && conta && !arrastando && !viva && !envioPendente && rascunho === null) reler().catch(() => {});
       if ('aoVivo' in d) { if (!AO_VIVO && d.aoVivo) canalDaTv = null; AO_VIVO = d.aoVivo || null; desenhar(); } // começou uma transmissão: a TV vai a ela

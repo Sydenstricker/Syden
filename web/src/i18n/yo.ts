@@ -464,6 +464,8 @@ export default {
   'Nome do cargo': 'Orúkọ ipa',
   'Quem participa': 'Àwọn olùkópa',
   'Separado na lista': 'Lọ́tọ̀ nínú àkójọ',
+  'Pode arrumar o salão': 'Lè ṣètò yàrá ìsinmi',
+  'Última mudança no salão: {nome}': 'Ìyípadà tó kẹ́yìn nínú yàrá ìsinmi: {nome}',
   'Tirar o cargo {cargo}': 'Yọ ipa {cargo} kúrò',
   'Copiar link': 'Da ìjápọ̀ kọ',
   'Paleta de cores': 'Àkójọ àwọ̀',

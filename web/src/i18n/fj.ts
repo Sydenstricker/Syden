@@ -507,6 +507,8 @@ export default {
   'Nome do cargo': 'Yaca ni itavi',
   'Quem participa': 'O ira era tiko kina',
   'Separado na lista': 'Duatani ena lisi',
+  'Pode arrumar o salão': 'Rawa ni vakarautaka na lounge',
+  'Última mudança no salão: {nome}': 'Veisau vakaoti ena lounge: {nome}',
   'Tirar o cargo {cargo}': 'Kauta tani na itavi {cargo}',
   'Copiar link': 'Kopitaka na isema',
   'Paleta de cores': 'Iyaya ni roka',
