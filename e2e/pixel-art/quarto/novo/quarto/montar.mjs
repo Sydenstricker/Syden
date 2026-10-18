@@ -223,6 +223,9 @@ const QUADROS = [], ANIMACOES_IDX = {};
 const OBJ_DIR = path.join(AQUI, '..', '..', '..', 'objetos');
 const OBJETOS_DE_CIMA = {};
 if (fs.existsSync(path.join(OBJ_DIR, 'escolhidos.json'))) for (const [id, meta] of Object.entries(JSON.parse(fs.readFileSync(path.join(OBJ_DIR, 'escolhidos.json'), 'utf8')))) {
+  // A PIZZA SAI até o forno a lenha existir (decisão dele, 18/10/2026: "a pizza sem forno não vejo sentido"); sem ela no
+  // catálogo, a que estava num salão salvo some sozinha (a arrumação só veste o que a página conhece).
+  if (id === 'pizza') continue;
   const giros = path.join(OBJ_DIR, id + '-giros');
   const vistas = ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(giros, d + '.png'))) ? ORDEM_DO_GIRO.map((d) => path.join(giros, d + '.png')) : [0, 1, 2, 3].map(() => path.join(OBJ_DIR, id + '-' + meta.opcao + '.png'));
   if (!vistas.every((f) => fs.existsSync(f))) continue;
