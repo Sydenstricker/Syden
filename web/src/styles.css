@@ -12182,6 +12182,12 @@ body.arrastando-barra {
   pointer-events: none;
 }
 
+/* Enquanto espera a arrumação, a cena some (continua viva para receber as mensagens): o quarto de fábrica não aparece
+   por um instante antes do da pessoa (relato de 18/10/2026). */
+.editor-palco.carregando iframe {
+  visibility: hidden;
+}
+
 .editor-palco {
   position: relative;
   grid-area: palco;

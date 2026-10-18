@@ -81,6 +81,9 @@ export function SalaoNovo({
   // abertura (trocar o endereço recarregaria a cena; depois, a troca vai por mensagem).
   const [endereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
   const [pronto, setPronto] = useState(false);
+  // A arrumação da pessoa (ou da comunidade) já está na cena. Até lá, o mascote espera e a cena fica escondida: senão ela
+  // aparecia de fábrica (o abajur aceso) e mudava um instante depois. Sem resposta em 5 s, mostra assim mesmo.
+  const [arrumado, setArrumado] = useState(false);
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
   const [peca, setPeca] = useState<PecaClicada | null>(null);
@@ -102,6 +105,7 @@ export function SalaoNovo({
         setPronto(true);
         if (e.data.figuras) setFiguras(e.data.figuras);
       }
+      if (e.data.arrumado) setArrumado(true);
       if (e.data.arrumacao) setArrumacao(e.data.arrumacao);
       if (e.data.detalhe && typeof e.data.detalhe.id === 'string') setPeca(e.data.detalhe);
       if (typeof e.data.acao === 'string') acoesRef.current[e.data.acao as keyof AcoesDoSalao]?.onClick();
@@ -110,6 +114,12 @@ export function SalaoNovo({
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);
   }, []);
+
+  useEffect(() => {
+    if (!pronto || arrumado) return;
+    const prazo = setTimeout(() => setArrumado(true), 5000);
+    return () => clearTimeout(prazo);
+  }, [pronto, arrumado]);
 
   // Sem o "pronto" da cena a tempo (a página não carregou, ou foi barrada): volta o salão antigo (ver cenaNova.ts).
   useEffect(() => {
@@ -211,7 +221,7 @@ export function SalaoNovo({
   }, [socket, pronto, community.id]);
 
   return (
-    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeArrumar} carregando={!pronto} noite={noite} peca={peca} aoFecharPeca={() => setPeca(null)}>
+    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeArrumar} carregando={!pronto || !arrumado} noite={noite} peca={peca} aoFecharPeca={() => setPeca(null)}>
       <div className="quarto-novo-caixa salao-novo">
         <div className="quarto-novo">
           <iframe ref={ref} src={endereco} title={t('Início')} />

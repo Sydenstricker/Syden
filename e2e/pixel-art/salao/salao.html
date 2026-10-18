@@ -4726,7 +4726,11 @@ void main() {
         // O SALÃO: a arrumação da comunidade, e só quem administra mexe (o servidor confere; aqui é só não deixar tentar).
         if (d.conta.rota) ROTA = d.conta.rota;
         if (d.conta.podeEditar === false) { soVer = true; tela.style.cursor = 'default'; }
-        carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ });
+        // ARRUMADO (relato dele, 18/10/2026: "quando abro o quarto inicia uma luz, depois fica como eu deixei"): o app só
+        // mostra a cena depois disto. Antes, o "pronto" já a mostrava com a arrumação de fábrica (o abajur aceso), e a dele
+        // chegava um instante depois — a tela afirmando um estado que não é o real.
+        carregarMeu().catch(() => { /* sem servidor: o quarto de fábrica, sem guardar */ })
+          .finally(() => { desenhar(); window.parent.postMessage({ syden: 'quarto', arrumado: true }, location.origin); });
       }
       // Quem arruma mudou (ganhou ou perdeu o cargo que arruma o salão, 18/10/2026).
       if (typeof d.podeEditar === 'boolean' && conta) { soVer = !d.podeEditar; tela.style.cursor = soVer ? 'default' : ''; }

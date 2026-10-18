@@ -91,6 +91,9 @@ export function QuartoNovo({
   // abertura (trocar o endereço recarregaria a cena; depois, a troca vai por mensagem).
   const [endereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
   const [pronto, setPronto] = useState(false);
+  // A arrumação da pessoa (ou da comunidade) já está na cena. Até lá, o mascote espera e a cena fica escondida: senão ela
+  // aparecia de fábrica (o abajur aceso) e mudava um instante depois. Sem resposta em 5 s, mostra assim mesmo.
+  const [arrumado, setArrumado] = useState(false);
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
   const [peca, setPeca] = useState<PecaClicada | null>(null);
@@ -104,6 +107,7 @@ export function QuartoNovo({
         setPronto(true);
         if (e.data.figuras) setFiguras(e.data.figuras);
       }
+      if (e.data.arrumado) setArrumado(true);
       if (e.data.arrumacao) setArrumacao(e.data.arrumacao);
       if (e.data.detalhe && typeof e.data.detalhe.id === 'string') setPeca(e.data.detalhe);
       if (typeof e.data.acao === 'string') acoesRef.current[e.data.acao]?.onClick();
@@ -111,6 +115,12 @@ export function QuartoNovo({
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);
   }, []);
+
+  useEffect(() => {
+    if (!pronto || arrumado) return;
+    const prazo = setTimeout(() => setArrumado(true), 5000);
+    return () => clearTimeout(prazo);
+  }, [pronto, arrumado]);
 
   // Sem o "pronto" da cena a tempo (a página não carregou, ou foi barrada): volta a cena antiga (ver cenaNova.ts).
   useEffect(() => {
@@ -145,7 +155,7 @@ export function QuartoNovo({
       arrumacao={arrumacao}
       enviar={enviar}
       podeEditar={pronto}
-      carregando={!pronto}
+      carregando={!pronto || !arrumado}
       noite={noite}
       peca={peca}
       aoFecharPeca={() => setPeca(null)}
@@ -426,7 +436,7 @@ export function EditorDaCena({
           </div>
         </aside>
       ) : null}
-      <div className="editor-palco">
+      <div className={'editor-palco' + (carregando ? ' carregando' : '')}>
         {children}
         {/* O MASCOTE ESPERANDO enquanto a cena se monta (pedido dele, 16/10/2026: o salão ficava vazio uns segundos). Sem
             texto, como toda espera do Syden (ver CLAUDE.md, "Animações"). */}
