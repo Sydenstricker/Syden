@@ -13,6 +13,8 @@ interface DesktopBridge {
   telaEscolhida?(): string | null;
   /** Se a caixinha "compartilhar áudio" ficou marcada no seletor do app. null = app que não conta. */
   somEscolhido?(): boolean | null;
+  /** O programa dono da janela escolhida ("dota2.exe"), só para o gênero do jogo (generoDoJogo.ts). */
+  programaEscolhido?(): string | null;
   /** A aba em que o seletor do app abre no próximo pedido de captura. */
   prepararSeletor?(tipo: 'screen' | 'window'): void;
   /** Pinta a barra de título do app (desenhada pelo Windows) com as cores do tema. */

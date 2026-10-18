@@ -8,6 +8,9 @@ import { apagarSeVazia } from './salas-temporarias.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 import { barreiraDe, hojeEmBrasilia, podeVerVideo, regrasDe } from './protecao.js';
 
+/** Os gêneros que a TV do salão sabe desenhar (a mesma lista de web/src/generoDoJogo.ts). */
+const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa']);
+
 /** Sala do socket com todo mundo que participa de uma comunidade. */
 export const communityRoom = (communityId: number) => `community:${communityId}`;
 
@@ -80,6 +83,8 @@ export interface VoiceMember {
   screen: boolean;
   /** O que está sendo transmitido ("League of Legends"), quando dá para saber. */
   screenName: string | null;
+  /** O gênero do jogo transmitido, de uma lista fechada (web/src/generoDoJogo.ts): a TV do salão desenha o dele. */
+  screenGenero: string | null;
   /**
    * De quem são as transmissões que esta pessoa ABRIU (ids). É o que conta "quantas pessoas assistem":
    * estar na sala não basta, porque abrir a transmissão é escolha de cada um (ver assistir, em useVoice.ts).
@@ -445,6 +450,7 @@ export function setupRealtime(io: IOServer) {
         video: false,
         screen: false,
         screenName: null,
+        screenGenero: null,
         assistindo: [],
         socketId: socket.id,
         voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId),
@@ -456,7 +462,7 @@ export function setupRealtime(io: IOServer) {
       ack?.({ ok: true, communityId: channel.communityId });
     });
 
-    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'assistindo'>>) => {
+    socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'screenGenero' | 'assistindo'>>) => {
       const member = voiceMembers.get(user.id);
       if (!member || member.socketId !== socket.id) return;
       for (const key of ['muted', 'deafened', 'video', 'screen'] as const) {
@@ -466,6 +472,8 @@ export function setupRealtime(io: IOServer) {
       // corta no tamanho e só vale enquanto a transmissão estiver de pé.
       const nome = typeof patch?.screenName === 'string' ? patch.screenName.trim().slice(0, 60) : null;
       member.screenName = member.screen ? nome || null : null;
+      // O gênero: só um da lista, e só com a transmissão de pé.
+      member.screenGenero = member.screen && typeof patch?.screenGenero === 'string' && GENEROS_DE_JOGO.has(patch.screenGenero) ? patch.screenGenero : null;
       // Só números, e só gente DA MESMA SALA: o que vem da tela não decide nada além disso. (Quem parou de
       // transmitir continua na lista: se voltar, a transmissão reabre sozinha para quem tinha aberto.)
       if (Array.isArray(patch?.assistindo)) {

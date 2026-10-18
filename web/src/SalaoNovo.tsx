@@ -60,6 +60,8 @@ export function SalaoNovo({
     sub: string;
     canal: number;
     total: number;
+    /** O gênero do jogo transmitido (generoDoJogo.ts): a TV desenha o dele. */
+    genero?: string | null;
     aoTrocar: (passo: 1 | -1) => void;
   } | null;
   recado: { titulo: string; texto: string } | null;
@@ -137,6 +139,7 @@ export function SalaoNovo({
       sub: aoVivo.sub,
       canal: aoVivo.canal,
       total: aoVivo.total,
+      genero: aoVivo.genero ?? null,
     });
   useEffect(() => {
     if (pronto) enviar({ aoVivo: tv ? JSON.parse(tv) : null });

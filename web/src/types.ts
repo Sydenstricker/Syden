@@ -273,6 +273,8 @@ export interface VoiceMember {
   screen: boolean;
   /** O que a pessoa está transmitindo, quando dá para saber pelo título da janela. */
   screenName: string | null;
+  /** O gênero do jogo transmitido (moba, tiro, futebol…), quando o app sabe. Ver generoDoJogo.ts. */
+  screenGenero?: string | null;
   /** De quem são as transmissões que esta pessoa abriu (ids). Vazio em servidor antigo. */
   assistindo?: number[];
 }

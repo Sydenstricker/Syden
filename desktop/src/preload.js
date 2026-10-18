@@ -7,16 +7,20 @@ const { contextBridge, ipcRenderer } = require('electron');
 let ultimaTelaEscolhida = null;
 // A caixinha "compartilhar áudio" do seletor, na mesma escolha. null = app antigo, que não contava.
 let ultimoSomEscolhido = null;
+// O executável dono da janela escolhida ("dota2.exe"), para o gênero do jogo. null = tela inteira ou app antigo.
+let ultimoProgramaEscolhido = null;
 ipcRenderer.on('tela:escolhida', (_event, escolha) => {
   // Versões antigas do processo principal mandavam só o nome; este preload vai junto com ele, mas o
   // formato velho não custa nada aceitar.
   if (typeof escolha === 'string' || escolha === null) {
     ultimaTelaEscolhida = escolha;
     ultimoSomEscolhido = null;
+    ultimoProgramaEscolhido = null;
     return;
   }
   ultimaTelaEscolhida = escolha.nome ?? null;
   ultimoSomEscolhido = typeof escolha.som === 'boolean' ? escolha.som : null;
+  ultimoProgramaEscolhido = typeof escolha.programa === 'string' ? escolha.programa : null;
 });
 
 contextBridge.exposeInMainWorld('sydenDesktop', {
@@ -36,6 +40,11 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
    * o som — que era justamente a saída para não levar as vozes do Discord junto.
    */
   somEscolhido: () => ultimoSomEscolhido,
+  /**
+   * O programa dono da janela escolhida no seletor ("dota2.exe"), ou null. O site só o usa para achar o GÊNERO do jogo
+   * (a TV do salão mostra o nosso desenho dele); o nome do programa não é mandado a ninguém.
+   */
+  programaEscolhido: () => ultimoProgramaEscolhido,
   /**
    * O que o menu do Syden pediu ("tela inteira" ou "uma janela"), para o seletor abrir nessa aba.
    * Síncrono de propósito: tem de chegar ao processo principal ANTES do pedido de captura.

@@ -284,6 +284,7 @@ export function InicioDaComunidade({
                 sub: [canais.find((c) => c.id === noAr.channelId)?.name, noAr.screenName].filter(Boolean).join(' · '),
                 canal: canal % transmissoes.length,
                 total: transmissoes.length,
+                genero: noAr.screenGenero ?? null,
                 aoTrocar: (passo) => setCanal((c) => (c + passo + transmissoes.length) % transmissoes.length),
               }
             }

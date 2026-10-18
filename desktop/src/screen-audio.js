@@ -91,6 +91,22 @@ function processoDaJanela() {
   }
 }
 
+/**
+ * O executável dono de uma fonte do seletor ("League of Legends.exe"), ou null (tela inteira, módulo antigo, falha). O site
+ * o converte no GÊNERO do jogo para a TV do salão (web/src/generoDoJogo.ts); o nome do programa não sai do computador.
+ * @param {string | null} id
+ */
+function programaDaFonte(id) {
+  const hwnd = /^window:(\d+):/.exec(id ?? '')?.[1];
+  if (!hwnd || !native?.windowProcess) return null;
+  try {
+    const dono = native.windowProcess(Number(hwnd));
+    return dono && dono.pid !== process.pid ? String(dono.exe).split(/[\\/]/).pop() || null : null;
+  } catch {
+    return null;
+  }
+}
+
 /** O app consegue mandar o som sem devolver a chamada? */
 function available() {
   return Boolean(native) || fake;
@@ -221,6 +237,7 @@ module.exports = {
   screenAudioAvailable: available,
   stopScreenAudio: stop,
   escolherFonteDoSom: escolherFonte,
+  programaDaFonte,
   startScreenAudio: start,
   SAMPLE_RATE,
   CHANNELS,

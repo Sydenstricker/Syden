@@ -46,6 +46,8 @@ import { ProcessadorDoMicrofone, supressaoDisponivel } from './microfone';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { definirSurdez, sounds } from './sounds';
 import type { MinhaProtecao, Regras } from './protecao';
+import { type Genero, generoDoPrograma } from './generoDoJogo';
+
 
 export interface LocalMedia {
   muted: boolean;
@@ -293,6 +295,8 @@ export function useVoice(socket: Socket | null) {
   const [connecting, setConnecting] = useState(false);
   // O que está sendo transmitido agora, em palavras ("League of Legends"), para os outros verem.
   const nomeDaTelaRef = useRef<string | null>(null);
+  // O GÊNERO do jogo transmitido (18/10/2026): o que vai para os outros, no lugar do nome do programa.
+  const generoDaTelaRef = useRef<Genero | null>(null);
   // A sala cuja chamada outro aparelho ou aba assumiu (voice:substituida): nela não se reanuncia sozinho.
   const substituidaRef = useRef<number | null>(null);
   const [media, setMedia] = useState<LocalMedia>({ muted: false, video: false, screen: false });
@@ -361,11 +365,16 @@ export function useVoice(socket: Socket | null) {
       if (!next.screen) {
         stopAppAudioRef.current();
         nomeDaTelaRef.current = null;
+        generoDaTelaRef.current = null;
         setEcoNaTransmissao(false);
       }
       setMedia(next);
       if (channelRef.current !== null) {
-        socketRef.current?.emit('voice:update', { ...next, screenName: next.screen ? nomeDaTelaRef.current : null });
+        socketRef.current?.emit('voice:update', {
+          ...next,
+          screenName: next.screen ? nomeDaTelaRef.current : null,
+          screenGenero: next.screen ? generoDaTelaRef.current : null,
+        });
       }
     };
     const syncIfLocal = (_: TrackPublication, participant: Participant) => {
@@ -615,6 +624,7 @@ export function useVoice(socket: Socket | null) {
         ...media,
         // Sem o nome, quem caiu e voltou seguia "AO VIVO", mas sem dizer o quê (o voice:join zera tudo).
         screenName: media.screen ? nomeDaTelaRef.current : null,
+        screenGenero: media.screen ? generoDaTelaRef.current : null,
         deafened: deafenedRef.current,
         assistindo: [...assistindoRef.current].map(Number),
       });
@@ -1277,8 +1287,14 @@ export function useVoice(socket: Socket | null) {
         const doSeletor = desktopBridge?.telaEscolhida?.();
         const capturado = lp.getTrackPublication(Track.Source.ScreenShare)?.videoTrack?.mediaStreamTrack?.label;
         nomeDaTelaRef.current = nomeDaTransmissao(doSeletor || capturado, surface);
+        // E o gênero, pelo programa dono da janela (só no app, só janela). Tela inteira: o seletor diz null.
+        generoDaTelaRef.current = generoDoPrograma(desktopBridge?.programaEscolhido?.());
         if (channelRef.current !== null) {
-          socketRef.current?.emit('voice:update', { ...readLocalMedia(lp), screenName: nomeDaTelaRef.current });
+          socketRef.current?.emit('voice:update', {
+            ...readLocalMedia(lp),
+            screenName: nomeDaTelaRef.current,
+            screenGenero: generoDaTelaRef.current,
+          });
         }
         // A caixinha de som do seletor do app. Ligava-se a captura SEMPRE, e desmarcar não tirava o
         // som; só um app antigo, que não conta a escolha (null), segue ligando sempre. Numa troca, ela

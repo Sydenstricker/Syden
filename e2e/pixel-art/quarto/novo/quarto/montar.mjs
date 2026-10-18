@@ -1254,6 +1254,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // logo ou mapa de jogo de verdade). Nenhum deles tem o selo vermelho: AO VIVO só existe quando alguém transmite de
   // verdade. null é o automático (a transmissão, havendo; senão o desenho); uma transmissão que começa volta a ele.
   const CANAIS_DA_TV = ['tv', 'futebol', 'tatico', 'arena'];
+  // O gênero do jogo transmitido (web/src/generoDoJogo.ts) → o desenho da TV.
+  const DESENHO_DO_GENERO = { moba: 'arena', tiro: 'tatico', futebol: 'futebol', corrida: 'corrida', luta: 'luta', aventura: 'aventura', construcao: 'construcao', fazenda: 'fazenda', estrategia: 'estrategia', cartas: 'cartas', terror: 'terror', plataforma: 'jogo', festa: 'festa' };
   let canalDaTv = null;
   const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : 'tv'));
   const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? canalDaTvAgora() : 'fliperama');
@@ -1363,10 +1365,115 @@ if (CENA === 'salao') document.body.classList.add('salao');
       if (Math.abs(u - v) < 0.06) return [86, 140, 196];
       return Math.sin(u * 41) * Math.sin(v * 33) > 0.55 ? [46, 88, 54] : [70, 118, 70];
     }
+    // OS GÊNEROS QUE FALTAVAM (18/10/2026), para o Ao vivo mostrar o gênero do jogo transmitido (web/src/generoDoJogo.ts).
+    // Genéricos, como os canais: nada de jogo de verdade.
+    if (tipo === 'corrida') {
+      // A corrida, por trás do carro: a pista afunilando, as faixas do meio passando, a grama dos lados.
+      if (t < 0.36) return t < 0.2 ? [150, 196, 236] : [176, 210, 238];
+      const meia = 0.06 + (t - 0.36) * 0.75; // a meia largura da pista nesta linha
+      const d = Math.abs(s - 0.5);
+      if (t > 0.72 && t < 0.92 && d < 0.1) return t > 0.86 && (d > 0.06) ? [30, 30, 36] : t < 0.78 ? [250, 220, 120] : [214, 64, 64]; // o carro
+      if (d < meia) {
+        if (d < 0.012 + (t - 0.36) * 0.02 && Math.floor(1 / (t - 0.3) * 3 - q / 2) % 2 === 0) return [240, 236, 226]; // as faixas
+        if (d > meia - 0.025) return Math.floor(t * 30 + q) % 2 ? [220, 70, 60] : [240, 236, 226]; // a zebra
+        return [92, 94, 104];
+      }
+      return Math.floor(1 / (t - 0.3) * 2 - q / 3) % 2 ? [96, 160, 84] : [86, 148, 76];
+    }
+    if (tipo === 'luta') {
+      // A luta: as duas barras de vida em cima, o palco no fim de tarde, dois lutadores frente a frente, um golpe às vezes.
+      if (t < 0.14) {
+        if (t > 0.04 && t < 0.1 && s > 0.04 && s < 0.44) return s > 0.04 + 0.4 * (0.3 + 0.1 * Math.sin(q / 9)) ? [236, 200, 70] : [200, 60, 60];
+        if (t > 0.04 && t < 0.1 && s > 0.56 && s < 0.96) return s < 0.96 - 0.4 * 0.75 ? [200, 60, 60] : [236, 200, 70];
+        return [24, 22, 34];
+      }
+      const golpe = q % 10 < 3 ? 0.06 : 0;
+      const corpo = (cx, cor) => Math.abs(s - cx) < 0.05 && t > 0.5 && t < 0.86 ? cor : Math.abs(s - cx) < 0.035 && t > 0.4 && t <= 0.5 ? [240, 204, 170] : null;
+      const a = corpo(0.38, [70, 110, 210]) || corpo(0.64, [210, 80, 70]);
+      if (a) return a;
+      if (t > 0.58 && t < 0.63 && s > 0.42 && s < 0.48 + golpe) return [240, 204, 170]; // o soco
+      if (t > 0.86) return [120, 84, 70];
+      return t < 0.5 ? [240, 160, 120] : [210, 132, 120];
+    }
+    if (tipo === 'aventura') {
+      // A aventura: o herói com a espada diante de um monstro grande (com a vida dele em cima), os corações no canto.
+      if (t < 0.12 && s < 0.3) return Math.floor(s * 20) % 2 === 0 && s > 0.03 ? [228, 70, 90] : [24, 22, 34];
+      if (t > 0.18 && t < 0.22 && s > 0.55 && s < 0.85) return s < 0.55 + 0.3 * 0.6 ? [180, 60, 200] : [50, 40, 60];
+      const m = Math.hypot((s - 0.7) / 0.14, (t - 0.5 - Math.sin(q / 5) * 0.02) / 0.22);
+      if (m < 1) return m > 0.7 ? [110, 60, 140] : (Math.abs(s - 0.66) < 0.02 || Math.abs(s - 0.74) < 0.02) && Math.abs(t - 0.44) < 0.04 ? [250, 230, 120] : [150, 90, 180];
+      if (Math.abs(s - 0.3) < 0.035 && t > 0.56 && t < 0.78) return t < 0.62 ? [240, 204, 170] : [60, 120, 90];
+      if (s > 0.33 && s < 0.36 && t > 0.44 + (q % 8 < 2 ? 0.06 : 0) && t < 0.66) return [220, 226, 236]; // a espada
+      if (t > 0.78) return [86, 70, 64];
+      return Math.sin(s * 30) * Math.sin(t * 20) > 0.7 ? [56, 72, 66] : [64, 84, 74];
+    }
+    if (tipo === 'construcao') {
+      // A construção com blocos: o céu, o terreno em degraus (grama e terra), uma árvore, e a barra de blocos embaixo.
+      if (t > 0.86) { const k = (s - 0.2) / 0.1; return s > 0.2 && s < 0.8 && k % 1 > 0.12 && t > 0.89 && t < 0.97 ? [[120, 170, 90], [140, 100, 70], [150, 150, 156], [200, 180, 120], [90, 70, 50], [110, 190, 230]][Math.floor(k)] : [40, 40, 46]; }
+      const col = Math.floor(s * 12), chao = 0.5 + [0, 0, 0.08, 0.08, 0.08, 0, -0.08, -0.08, 0, 0, 0.08, 0.08][col];
+      if (col === 3 && t > chao - 0.24 && t < chao) return [110, 80, 54];
+      if (col >= 2 && col <= 4 && t > chao - 0.4 && t < chao - 0.22) return [70, 140, 70];
+      if (t > chao) return t < chao + 0.06 ? [110, 180, 80] : Math.floor(t * 12) % 3 === 2 && col % 3 === 1 ? [150, 150, 156] : [140, 100, 70];
+      if (t > 0.12 && t < 0.18 && ((s + q / 80) % 1) > 0.3 && ((s + q / 80) % 1) < 0.5) return [246, 246, 250];
+      return [130, 190, 236];
+    }
+    if (tipo === 'fazenda') {
+      // A fazenda, de cima: os canteiros em fileiras com as mudas crescendo, a cerca, e a pessoa regando.
+      if (t < 0.1 || t > 0.92 || s < 0.04 || s > 0.96) return Math.floor(s * 25) % 2 ? [176, 136, 90] : [150, 110, 70];
+      const quem = [0.2 + ((q / 60) % 0.6), 0.5];
+      if (Math.abs(s - quem[0]) < 0.03 && Math.abs(t - quem[1]) < 0.06) return t < quem[1] - 0.02 ? [240, 204, 170] : [220, 120, 90];
+      const fil = Math.floor((t - 0.14) / 0.2), dentro = ((t - 0.14) / 0.2) % 1;
+      if (fil >= 0 && fil < 4 && dentro > 0.15 && dentro < 0.75 && s > 0.1 && s < 0.9) {
+        const muda = ((s - 0.1) / 0.1) % 1;
+        if (muda > 0.35 && muda < 0.65 && dentro > 0.3 && dentro < 0.6) return fil === 1 ? [240, 140, 60] : [96, 176, 80];
+        return [120, 84, 60];
+      }
+      return [126, 176, 90];
+    }
+    if (tipo === 'estrategia') {
+      // A estratégia, de cima: os recursos em cima, o rio, as duas bases com as construções, as tropas marchando, o minimapa.
+      if (t < 0.1) return t > 0.03 && t < 0.08 && ((s > 0.05 && s < 0.1) || (s > 0.3 && s < 0.35) || (s > 0.55 && s < 0.6)) ? [[240, 200, 80], [150, 110, 70], [170, 170, 180]][Math.floor(s / 0.25)] : [30, 28, 36];
+      if (s > 0.76 && t > 0.72) return s > 0.78 && t > 0.75 ? (Math.abs(s - 0.88) < 0.02 && Math.abs(t - 0.86) < 0.03 ? [250, 250, 250] : [70, 110, 70]) : [20, 18, 26];
+      const casa = (cx, cy, cor) => Math.abs(s - cx) < 0.045 && Math.abs(t - cy) < 0.06 ? (t < cy - 0.02 ? misturar(cor, [255, 255, 255], 0.25) : cor) : null;
+      const c = casa(0.14, 0.3, [80, 120, 200]) || casa(0.26, 0.5, [80, 120, 200]) || casa(0.62, 0.26, [200, 90, 80]) || casa(0.6, 0.5, [200, 90, 80]);
+      if (c) return c;
+      for (let i = 0; i < 4; i++) { const ux = 0.3 + ((q / 40 + i * 0.05) % 0.24), uy = 0.62 + i * 0.03; if (Math.abs(s - ux) < 0.014 && Math.abs(t - uy) < 0.02) return [120, 160, 240]; }
+      if (Math.abs(s - 0.45 - Math.sin(t * 9) * 0.04) < 0.03) return [80, 140, 200];
+      return Math.sin(s * 37) * Math.sin(t * 29) > 0.6 ? [92, 134, 74] : [110, 150, 84];
+    }
+    if (tipo === 'cartas') {
+      // As cartas, na mesa: as costas das cartas de quem joga contra em cima, duas na mesa, a mão embaixo (uma sobe).
+      const carta = (cx, cy, frente, sobe = 0) => {
+        if (Math.abs(s - cx) > 0.065 || Math.abs(t - cy + sobe) > 0.13) return null;
+        if (!frente) return Math.abs(s - cx) > 0.05 || Math.abs(t - cy) > 0.11 ? [240, 236, 226] : [120, 70, 150];
+        const naipe = Math.abs(s - cx) < 0.02 && Math.abs(t - cy + sobe) < 0.04;
+        return naipe ? (Math.floor(cx * 10) % 2 ? [210, 60, 70] : [40, 40, 50]) : [246, 242, 232];
+      };
+      for (const cx of [0.32, 0.43, 0.54, 0.65]) { const c = carta(cx, 0.16, false); if (c) return c; }
+      for (const cx of [0.42, 0.58]) { const c = carta(cx, 0.48, true); if (c) return c; }
+      for (const [i, cx] of [0.26, 0.38, 0.5, 0.62, 0.74].entries()) { const c = carta(cx, 0.84, true, i === Math.floor((q % 20) / 4) ? 0.06 : 0); if (c) return c; }
+      return Math.floor((s + t) * 18) % 7 === 0 ? [44, 104, 70] : [50, 116, 78];
+    }
+    if (tipo === 'terror') {
+      // O terror: um corredor escuro, a lanterna balançando, e de vez em quando dois olhos no fundo.
+      const lx = 0.5 + Math.sin(q / 7) * 0.12, ly = 0.55 + Math.sin(q / 5) * 0.04, luz = Math.hypot((s - lx) * 1.3, t - ly);
+      if (q % 30 < 6 && Math.abs(t - 0.42) < 0.025 && (Math.abs(s - 0.47) < 0.015 || Math.abs(s - 0.53) < 0.015)) return [240, 236, 200];
+      const fundo = Math.abs(s - 0.5) < 0.12 && t > 0.3 && t < 0.62 ? [8, 8, 12] : t > 0.62 ? [30, 26, 24] : [22, 22, 30];
+      return luz < 0.22 ? misturar(fundo, [200, 186, 130], 0.55 * (1 - luz / 0.22)) : fundo;
+    }
+    if (tipo === 'festa') {
+      // A festa: a pista de obstáculos em listras de cor, os bonequinhos coloridos correndo, o confete caindo.
+      if (((s * 7 + t * 3 + q / 4) % 1) < 0.08 && ((s * 13 + t * 17) % 1) < 0.12) return [[250, 210, 90], [120, 200, 250], [250, 120, 180]][Math.floor(s * 3) % 3];
+      for (let i = 0; i < 5; i++) {
+        const bx = (0.1 + i * 0.19 + (q / 50) * (1 + i * 0.1)) % 1, by = 0.58 + (i % 2) * 0.14 - Math.abs(Math.sin(q / 3 + i)) * 0.06;
+        if (Math.hypot((s - bx) / 0.055, (t - by) / 0.12) < 1) return Math.abs(s - bx - 0.015) < 0.02 && Math.abs(t - by + 0.04) < 0.025 ? [250, 250, 250] : [[236, 90, 120], [60, 140, 230], [240, 170, 40], [90, 180, 80], [150, 100, 220]][i];
+      }
+      return t > 0.5 ? (Math.floor(t * 8) % 2 ? [246, 214, 226] : [214, 228, 246]) : [210, 236, 252];
+    }
     if (tipo === 'ao-vivo') {
-      // AO VIVO: o selo vermelho piscando no canto e, no resto, alguém jogando (o joguinho do computador do quarto).
+      // AO VIVO: o selo vermelho piscando no canto e, no resto, o desenho do GÊNERO do jogo transmitido (quando o app
+      // sabe, 18/10/2026); sem gênero, alguém jogando (o joguinho do computador do quarto).
       if (s < 0.32 && t < 0.26) return s > 0.05 && s < 0.27 && t > 0.06 && t < 0.2 ? (q % 4 < 3 ? [228, 64, 64] : [120, 40, 48]) : [24, 22, 34];
-      return corDaTela(s, t, q, 'jogo');
+      return corDaTela(s, t, q, DESENHO_DO_GENERO[AO_VIVO?.genero] ?? 'jogo');
     }
     if (tipo === 'fliperama') {
       // O fliperama: os invasores marchando de um lado para o outro, e a navinha atirando embaixo.
@@ -4886,6 +4993,7 @@ void main() {
   window.addEventListener('storage', (e) => { if (e.key === 'syden:graficos') { GRAFICOS = lerGraficos(); botoesDosGraficos(); assinaturaCena = ''; desenhar(); } });
   window.graficosDoTeste = () => ({ ...GRAFICOS }); // para o teste
   botoesDosGraficos();
+  window.generoDoTeste = (g) => { if (AO_VIVO) { AO_VIVO = { ...AO_VIVO, genero: g }; desenhar(); } }; // para o teste
   // O canal da TV: no app, o app troca (e manda o novo AO_VIVO); aqui, a lista de teste.
   let canaisDeTeste = [];
   function trocarCanal(passo) {
