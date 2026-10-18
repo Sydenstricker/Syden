@@ -1796,7 +1796,8 @@ function EmojisSection({ user, community }: { user: User; community: Community }
         {/* O `:nome:` fica como {campo} e não como <code> no meio da frase: o que importa é a frase
             chegar inteira a quem traduz. */}
         {t('Todo mundo desta comunidade pode usar estes emojis escrevendo {exemplo} ou pelo botão de emoji do chat. Sem assinatura: está tudo liberado.', {
-          exemplo: ':nome:',
+          // um emoji DESTA comunidade, que se lê em qualquer língua (era ":nome:", em português, nos 80 idiomas)
+          exemplo: `:${emojis[0]?.name ?? 'emoji'}:`,
         })}
       </p>
 
