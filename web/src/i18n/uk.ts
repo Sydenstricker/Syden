@@ -808,6 +808,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Чотири символи, значок і колір, що з’являються біля імені тих, хто звідси.',
   'Que bom te ver de novo.': 'Раді бачити тебе знову.',
   'Que legal!': 'Клас!',
+  'Feliz aniversário, {nome}!': 'З днем народження, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Нехай цей рік буде повний добрих розмов, добрих ігор і доброї компанії.',
   'Quem abre o site': 'Хто відкриває сайт',
   'Quem anda com você': 'Хто з тобою',
   'Quem canta': 'Хто співає',

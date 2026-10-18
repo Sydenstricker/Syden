@@ -573,6 +573,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'Ekran paylaşımı kalitesi',
   'Que bom te ver de novo.': 'Seni yeniden görmek güzel.',
   'Que legal!': 'Harika!',
+  'Feliz aniversário, {nome}!': 'Doğum günün kutlu olsun, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Bu yıl güzel sohbetlerle, güzel oyunlarla ve güzel dostluklarla dolu olsun.',
   'Quem abre o site': 'Siteyi açanlar',
   'Quem anda com você': 'Seninle takılanlar',
   'Quem canta': 'Söyleyen',

@@ -576,6 +576,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'Kualitas berbagi layar',
   'Que bom te ver de novo.': 'Senang ketemu kamu lagi.',
   'Que legal!': 'Keren!',
+  'Feliz aniversário, {nome}!': 'Selamat ulang tahun, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Semoga tahun ini penuh obrolan seru, permainan seru, dan teman yang menyenangkan.',
   'Quem abre o site': 'Yang membuka situs',
   'Quem anda com você': 'Yang sering bareng kamu',
   'Quem canta': 'Yang menyanyi',

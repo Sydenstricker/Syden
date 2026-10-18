@@ -837,6 +837,8 @@ export default {
     'Quatre caràcters, una icona i un color que apareixen al costat del nom de qui és d’aquí.',
   'Que bom te ver de novo.': 'Quina alegria tornar-te a veure.',
   'Que legal!': 'Que guai!',
+  'Feliz aniversário, {nome}!': 'Per molts anys, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Que aquest any vingui ple de bones converses, bones partides i bona companyia.',
   'Quem abre o site': 'Qui obre el web',
   'Quem anda com você': 'La teva gent',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

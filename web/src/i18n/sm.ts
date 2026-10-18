@@ -359,6 +359,8 @@ export default {
   'Sua ideia foi acolhida': 'Ua talia lou manatu',
   'Sua ideia entrou no Syden!': 'Ua ulu atu lou manatu i Syden!',
   'Que legal!': 'Manaia!',
+  'Feliz aniversário, {nome}!': 'Manuia lou aso fanau, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ia tumu lenei tausaga i talanoaga lelei, taaloga lelei ma uo lelei.',
   'Opções': 'Filifiliga',
   'Baixar o app para Windows': 'Lau mai le app mo Windows',
   'O que vamos jogar hoje?': 'O le ā la tatou taʻaloga i le asō?',

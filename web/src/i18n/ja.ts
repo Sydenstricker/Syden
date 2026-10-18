@@ -708,6 +708,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': '4文字とアイコンと色。ここのメンバーの名前の横に表示されます。',
   'Que bom te ver de novo.': 'また会えてうれしいです。',
   'Que legal!': 'いいですね！',
+  'Feliz aniversário, {nome}!': '{nome}、誕生日おめでとう！',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'この一年が、楽しいおしゃべりと楽しいゲームと、いい仲間でいっぱいになりますように。',
   'Quem abre o site': 'サイトを開いた人',
   'Quem anda com você': 'いっしょにいる人',
   'Quem canta': '歌っている人',

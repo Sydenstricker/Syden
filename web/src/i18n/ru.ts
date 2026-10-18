@@ -593,6 +593,8 @@ export default {
   'Teve uma ideia que entrou no app': 'Предложил идею, которая попала в приложение',
   'Teve {quantas} ideias que entraram no app': 'Предложил идей, попавших в приложение: {quantas}',
   'Que legal!': 'Здорово!',
+  'Feliz aniversário, {nome}!': 'С днём рождения, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Пусть этот год будет полон хороших разговоров, хороших игр и хорошей компании.',
   Emojis: 'Эмодзи',
   'Deste servidor': 'Из этого сообщества',
   'Dois emojis com o mesmo nome: cada um precisa do seu.': 'Два эмодзи с одинаковым именем: у каждого должно быть своё.',

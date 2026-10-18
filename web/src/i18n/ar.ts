@@ -595,6 +595,8 @@ export default {
   'Teve uma ideia que entrou no app': 'فكرة دخلت التطبيق',
   'Teve {quantas} ideias que entraram no app': '{quantas} أفكار دخلت التطبيق',
   'Que legal!': 'رائع!',
+  'Feliz aniversário, {nome}!': 'عيد ميلاد سعيد يا {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'عسى أن تكون هذه السنة مليئة بالأحاديث الجميلة والمباريات الممتعة والصحبة الطيبة.',
   Emojis: 'الرموز',
   'Deste servidor': 'من هذا المجتمع',
   'Dois emojis com o mesmo nome: cada um precisa do seu.': 'رمزان بالاسم نفسه: لكل واحد اسمه.',

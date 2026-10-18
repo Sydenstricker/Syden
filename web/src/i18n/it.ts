@@ -576,6 +576,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'Qualità della condivisione schermo',
   'Que bom te ver de novo.': 'Che bello rivederti.',
   'Que legal!': 'Che bello!',
+  'Feliz aniversário, {nome}!': 'Buon compleanno, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Che quest’anno sia pieno di belle chiacchierate, belle partite e buona compagnia.',
   'Quem abre o site': 'Chi apre il sito',
   'Quem anda com você': 'Chi sta con te',
   'Quem canta': 'Chi canta',

@@ -842,6 +842,8 @@ export default {
     'ສີ່ຕົວອັກສອນ ໄອຄອນໜຶ່ງ ແລະສີໜຶ່ງ ທີ່ສະແດງຂ້າງຊື່ຂອງຄົນໃນນີ້',
   'Que bom te ver de novo.': 'ດີໃຈທີ່ໄດ້ເຫັນເຈົ້າອີກ',
   'Que legal!': 'ດີຫຼາຍ!',
+  'Feliz aniversário, {nome}!': 'ສຸກສັນວັນເກີດ, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ຂໍໃຫ້ປີນີ້ເຕັມໄປດ້ວຍການລົມກັນທີ່ດີ, ເກມທີ່ດີ ແລະ ໝູ່ທີ່ດີ.',
   'Quem abre o site': 'ຄົນທີ່ເປີດເວັບ',
   'Quem anda com você': 'ຄົນທີ່ຢູ່ນຳເຈົ້າ',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

@@ -715,6 +715,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'چهار نویسه، یک نماد و یک رنگ، که کنار نام اهالی اینجا دیده می‌شوند.',
   'Que bom te ver de novo.': 'چه خوب که دوباره می‌بینیمتان.',
   'Que legal!': 'چه خوب!',
+  'Feliz aniversário, {nome}!': 'تولدت مبارک، {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'امسال پر از گفت‌وگوهای خوب، بازی‌های خوب و همراهی خوب باشد.',
   'Quem abre o site': 'کسانی که سایت را باز می‌کنند',
   'Quem anda com você': 'کسانی که با شما هستند',
   'Quem canta': 'خواننده',

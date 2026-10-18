@@ -24,7 +24,7 @@ test('a pessoa informa dia e mês, sem ano; data impossível é recusada; e dá 
   assert.deepEqual((await membro('PUT', '/api/me/aniversario', { dia: 29, mes: 2 })).json(), { mes: 2, dia: 29 }, '29 de fevereiro existe');
   assert.deepEqual((await membro('PUT', '/api/me/aniversario', { dia: null, mes: null })).json(), { mes: null, dia: null });
   assert.deepEqual((await membro('PUT', '/api/me/aniversario', { dia: 7, mes: 10 })).json(), { mes: 10, dia: 7 });
-  assert.deepEqual((await membro('GET', '/api/me/aniversario')).json(), { mes: 10, dia: 7 });
+  assert.deepEqual((await membro('GET', '/api/me/aniversario')).json(), { mes: 10, dia: 7, parabensVistoEm: null });
 });
 
 test('os parabéns da comunidade: só quem administra, canal de texto, e o texto precisa de {pessoa}', async () => {
@@ -54,4 +54,15 @@ test('comunidade que desligou não anuncia', async () => {
   publicadas.length = 0;
   anunciarAniversarios(io, Date.parse('2028-10-07T13:00:00Z'));
   assert.deepEqual(publicadas, []);
+});
+
+// A FESTA DE ANIVERSÁRIO DO SYDEN (18/10/2026): o ano em que a pessoa já viu fica no servidor, para não repetir em outro aparelho.
+test('a festa vista neste ano fica guardada, e um ano absurdo é recusado', async () => {
+  const pessoa = comToken(app, (await criarConta(app, 'festa-aniversario')).token);
+  await pessoa('PUT', '/api/me/aniversario', { dia: 5, mes: 6 });
+  assert.equal((await pessoa('GET', '/api/me/aniversario')).json().parabensVistoEm, null);
+  const ano = new Date().getUTCFullYear();
+  assert.equal((await pessoa('POST', '/api/me/aniversario/parabens-visto', { ano })).statusCode, 200);
+  assert.equal((await pessoa('GET', '/api/me/aniversario')).json().parabensVistoEm, ano);
+  assert.equal((await pessoa('POST', '/api/me/aniversario/parabens-visto', { ano: 1990 })).statusCode, 400);
 });

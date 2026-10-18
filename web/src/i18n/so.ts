@@ -841,6 +841,8 @@ export default {
     'Afar xaraf, astaan iyo midab oo ka muuqda magaca dadka halkan agtiisa.',
   'Que bom te ver de novo.': 'Waa ku faraxsanahay inaan mar kale ku aragno.',
   'Que legal!': 'Waa fiican tahay!',
+  'Feliz aniversário, {nome}!': 'Dhalasho wanaagsan, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Sannadkan ha ka buuxsamo sheekooyin wanaagsan, ciyaaro wanaagsan iyo saaxiibbo wanaagsan.',
   'Quem abre o site': 'Kuwa furaya bogga',
   'Quem anda com você': 'Kuwa kula socda',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

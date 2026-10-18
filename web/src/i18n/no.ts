@@ -841,6 +841,8 @@ export default {
     'Fire tegn, et ikon og en farge som vises ved siden av navnet til dem som hører til her.',
   'Que bom te ver de novo.': 'Godt å se deg igjen.',
   'Que legal!': 'Så kult!',
+  'Feliz aniversário, {nome}!': 'Gratulerer med dagen, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Måtte dette året bli fullt av gode samtaler, gode spill og godt selskap.',
   'Quem abre o site': 'De som åpner nettstedet',
   'Quem anda com você': 'Dem du henger med',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

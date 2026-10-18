@@ -331,6 +331,8 @@ export default {
   'Sua ideia foi acolhida': 'Tu idea fue acogida',
   'Sua ideia entrou no Syden!': '¡Tu idea entró en Syden!',
   'Que legal!': '¡Qué bueno!',
+  'Feliz aniversário, {nome}!': '¡Feliz cumpleaños, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Que este año venga lleno de buenas charlas, buenas partidas y buena compañía.',
   'Opções': 'Opciones',
   'Baixar o app para Windows': 'Descargar la app para Windows',
   'O que vamos jogar hoje?': '¿A qué jugamos hoy?',

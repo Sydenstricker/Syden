@@ -849,6 +849,8 @@ export default {
     'Shu hamjamiyatdagilarning ismi yonida koʻrinadigan toʻrtta belgi, ikonka va rang.',
   'Que bom te ver de novo.': 'Sizni yana koʻrib turganimizdan xursandmiz.',
   'Que legal!': 'Zoʻr!',
+  'Feliz aniversário, {nome}!': 'Tugʻilgan kuning muborak, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Bu yil yaxshi suhbatlar, yaxshi oʻyinlar va yaxshi davralarga toʻla boʻlsin.',
   'Quem abre o site': 'Saytni kim ochadi',
   'Quem anda com você': 'Siz bilan yuradiganlar',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

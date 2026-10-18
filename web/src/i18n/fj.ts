@@ -354,6 +354,8 @@ export default {
   'Sua ideia foi acolhida': 'Sa ciqomi na nomu nanuma',
   'Sua ideia entrou no Syden!': 'Na nomu nanuma sa curu ena Syden!',
   'Que legal!': 'Vinaka sara!',
+  'Feliz aniversário, {nome}!': 'Siganisucu marau, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Me sinai na yabaki oqo ena veitalanoa vinaka, qito vinaka kei na veitokani vinaka.',
   'Opções': 'Digidigi',
   'Baixar o app para Windows': 'Vakasobura na app me baleta na Windows',
   'O que vamos jogar hoje?': 'Na cava eda na qito kina nikua?',

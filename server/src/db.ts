@@ -5227,6 +5227,18 @@ export function aniversarioDe(userId: number): string | null {
   return (db.prepare('SELECT aniversario FROM users WHERE id = ?').get(userId) as { aniversario: string | null } | undefined)?.aniversario ?? null;
 }
 
+// A FESTA DE ANIVERSÁRIO DO PRÓPRIO SYDEN (pedido dele, 18/10/2026): no dia, ao abrir, a pessoa vê a festa uma vez. O
+// ano em que ela já viu mora aqui, e não no aparelho: aberta no computador, não aparece de novo no celular.
+addColumnIfMissing('users', 'parabens_visto_ano', 'INTEGER');
+
+export function parabensVistoAno(userId: number): number | null {
+  return (db.prepare('SELECT parabens_visto_ano AS ano FROM users WHERE id = ?').get(userId) as { ano: number | null } | undefined)?.ano ?? null;
+}
+
+export function marcarParabensVisto(userId: number, ano: number) {
+  db.prepare('UPDATE users SET parabens_visto_ano = ? WHERE id = ?').run(ano, userId);
+}
+
 export function definirAniversario(userId: number, mesDia: string | null) {
   db.prepare('UPDATE users SET aniversario = ? WHERE id = ?').run(mesDia, userId);
 }

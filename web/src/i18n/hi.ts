@@ -578,6 +578,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'स्क्रीन साझा करने की गुणवत्ता',
   'Que bom te ver de novo.': 'तुम्हें फिर देखकर अच्छा लगा।',
   'Que legal!': 'वाह!',
+  'Feliz aniversário, {nome}!': 'जन्मदिन मुबारक, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'यह साल अच्छी बातों, अच्छे खेलों और अच्छी संगत से भरा रहे।',
   'Quem abre o site': 'साइट खोलने वाले',
   'Quem anda com você': 'जो तुम्हारे साथ रहते हैं',
   'Quem canta': 'कौन गा रहा है',

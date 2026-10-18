@@ -797,6 +797,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'ဒီကလူများရဲ့ အမည်ဘေးမှာ ပေါ်မည့် စာလုံး လေးလုံး၊ အိုင်ကွန်တစ်ခုနဲ့ အရောင်တစ်ခု။',
   'Que bom te ver de novo.': 'ပြန်တွေ့ရတာ ဝမ်းသာပါတယ်။',
   'Que legal!': 'မိုက်လိုက်တာ!',
+  'Feliz aniversário, {nome}!': 'မွေးနေ့ မင်္ဂလာပါ {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ဒီနှစ်ဟာ စကားကောင်းတွေ၊ ဂိမ်းကောင်းတွေ၊ အပေါင်းအသင်းကောင်းတွေနဲ့ ပြည့်နေပါစေ။',
   'Quem abre o site': 'ဆိုက်ကို ဖွင့်သူ',
   'Quem anda com você': 'သင်နဲ့ အတူရှိသူများ',
   'Quem canta': 'သီဆိုသူ',

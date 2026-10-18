@@ -569,6 +569,8 @@ export default {
   'Qualidade do compartilhamento de tela': '화면 공유 화질',
   'Que bom te ver de novo.': '다시 만나서 반가워요.',
   'Que legal!': '좋네요!',
+  'Feliz aniversário, {nome}!': '생일 축하해, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': '올해는 즐거운 대화와 신나는 게임, 좋은 친구들로 가득하길.',
   'Quem abre o site': '사이트를 여는 사람',
   'Quem anda com você': '자주 같이 있는 사람',
   'Quem canta': '부르는 사람',

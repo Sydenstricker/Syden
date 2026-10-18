@@ -564,6 +564,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'Ubora wa kushiriki skrini',
   'Que bom te ver de novo.': 'Vizuri kukuona tena.',
   'Que legal!': 'Poa sana!',
+  'Feliz aniversário, {nome}!': 'Heri ya siku ya kuzaliwa, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Mwaka huu ujae mazungumzo mazuri, michezo mizuri na marafiki wazuri.',
   'Quem abre o site': 'Wanaofungua tovuti',
   'Quem canta': 'Anayeimba',
   'Quem cuida do Syden vai olhar. Obrigado por avisar.': 'Wanaosimamia Syden wataangalia. Asante kwa kutujulisha.',

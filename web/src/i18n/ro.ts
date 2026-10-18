@@ -733,6 +733,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Patru caractere, o pictogramă și o culoare care apar lângă numele celor de aici.',
   'Que bom te ver de novo.': 'Ce bine că te vedem din nou.',
   'Que legal!': 'Ce tare!',
+  'Feliz aniversário, {nome}!': 'La mulți ani, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Să fie anul acesta plin de conversații bune, partide bune și companie bună.',
   'Quem abre o site': 'Cine deschide site-ul',
   'Quem anda com você': 'Cine umblă cu tine',
   'Quem canta': 'Cine cântă',

@@ -790,6 +790,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Buradan olanların adının yanında görünən dörd simvol, bir ikon və bir rəng.',
   'Que bom te ver de novo.': 'Səni yenidən görmək xoşdur.',
   'Que legal!': 'Əla!',
+  'Feliz aniversário, {nome}!': 'Ad günün mübarək, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Qoy bu il gözəl söhbətlər, yaxşı oyunlar və xoş dostluqla dolu olsun.',
   'Quem abre o site': 'Saytı açanlar',
   'Quem anda com você': 'Səninlə olanlar',
   'Quem canta': 'Oxuyan',

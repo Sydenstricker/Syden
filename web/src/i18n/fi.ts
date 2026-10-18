@@ -841,6 +841,8 @@ export default {
     'Neljä merkkiä, kuvake ja väri, jotka näkyvät täkäläisten nimen vieressä.',
   'Que bom te ver de novo.': 'Kiva nähdä sinut taas.',
   'Que legal!': 'Siistiä!',
+  'Feliz aniversário, {nome}!': 'Hyvää syntymäpäivää, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Olkoon tämä vuosi täynnä hyviä keskusteluja, hyviä pelejä ja hyvää seuraa.',
   'Quem abre o site': 'Sivuston avaajat',
   'Quem anda com você': 'Kenen kanssa hengailet',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

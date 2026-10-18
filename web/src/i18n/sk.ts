@@ -841,6 +841,8 @@ export default {
     'Štyri znaky, ikona a farba, ktoré sa zobrazujú pri mene tých, čo sem patria.',
   'Que bom te ver de novo.': 'Je fajn ťa znova vidieť.',
   'Que legal!': 'Paráda!',
+  'Feliz aniversário, {nome}!': 'Všetko najlepšie k narodeninám, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Nech je tento rok plný dobrých rozhovorov, dobrých hier a dobrej spoločnosti.',
   'Quem abre o site': 'Kto otvára web',
   'Quem anda com você': 'S kým sa kamarátiš',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

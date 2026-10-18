@@ -833,6 +833,8 @@ export default {
     'Katër shenja, një ikonë dhe një ngjyrë që shfaqen pranë emrit të atyre që janë nga këtu.',
   'Que bom te ver de novo.': 'Gëzohemi që të shohim sërish.',
   'Que legal!': 'Sa bukur!',
+  'Feliz aniversário, {nome}!': 'Gëzuar ditëlindjen, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ky vit qoftë plot biseda të mira, lojëra të mira dhe shoqëri të mirë.',
   'Quem abre o site': 'Kush e hap faqen',
   'Quem anda com você': 'Me kë rri',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

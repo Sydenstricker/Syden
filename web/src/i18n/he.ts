@@ -808,6 +808,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'ארבעה תווים, סמל וצבע שמופיעים ליד השם של מי שמכאן.',
   'Que bom te ver de novo.': 'כיף לראות אותך שוב.',
   'Que legal!': 'איזה כיף!',
+  'Feliz aniversário, {nome}!': 'יום הולדת שמח, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'שהשנה הזאת תהיה מלאה בשיחות טובות, במשחקים טובים ובחברה טובה.',
   'Quem abre o site': 'מי פותח את האתר',
   'Quem anda com você': 'מי איתך',
   'Quem canta': 'מי שר',

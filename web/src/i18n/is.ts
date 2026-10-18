@@ -842,6 +842,8 @@ export default {
     'Fjórir stafir, tákn og litur sem birtast við nafn þeirra sem eiga heima hér.',
   'Que bom te ver de novo.': 'Gott að sjá þig aftur.',
   'Que legal!': 'Frábært!',
+  'Feliz aniversário, {nome}!': 'Til hamingju með afmælið, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Megi þetta ár verða fullt af góðum samtölum, góðum leikjum og góðum félagsskap.',
   'Quem abre o site': 'Hver opnar vefinn',
   'Quem anda com você': 'Fólkið þitt',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

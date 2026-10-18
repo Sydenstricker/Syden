@@ -823,6 +823,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Cztery znaki, ikona i kolor, które pojawiają się obok nazwy osób stąd.',
   'Que bom te ver de novo.': 'Miło cię znowu widzieć.',
   'Que legal!': 'Super!',
+  'Feliz aniversário, {nome}!': 'Wszystkiego najlepszego z okazji urodzin, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Niech ten rok będzie pełen dobrych rozmów, dobrych gier i dobrego towarzystwa.',
   'Quem abre o site': 'Kto otwiera stronę',
   'Quem anda com você': 'Kto jest z tobą',
   'Quem canta': 'Kto śpiewa',

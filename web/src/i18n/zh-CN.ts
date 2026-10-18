@@ -567,6 +567,8 @@ export default {
   'Qualidade do compartilhamento de tela': '屏幕共享画质',
   'Que bom te ver de novo.': '很高兴又见到你。',
   'Que legal!': '太棒了！',
+  'Feliz aniversário, {nome}!': '{nome}，生日快乐！',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': '愿这一年充满愉快的聊天、精彩的游戏和好的陪伴。',
   'Quem abre o site': '打开网站的人',
   'Quem canta': '谁在唱',
   'Quem anda com você': '常和你一起的人',

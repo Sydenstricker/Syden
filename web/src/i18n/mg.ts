@@ -841,6 +841,8 @@ export default {
     'Litera efatra, sary kely iray ary loko iray miseho eo akaikin’ny anaran’ireo avy eto.',
   'Que bom te ver de novo.': 'Faly mahita anao indray.',
   'Que legal!': 'Tsara izany!',
+  'Feliz aniversário, {nome}!': 'Tratry ny andro nahaterahana, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Enga anie ka ho feno resaka tsara, lalao tsara ary namana tsara ity taona ity.',
   'Quem abre o site': 'Ireo manokatra ny tranonkala',
   'Quem anda com você': 'Ireo miaraka aminao',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

@@ -861,6 +861,8 @@ export default {
     'Չորս նիշ, պատկերակ և գույն, որոնք երևում են այստեղի բոլոր անդամների անվան կողքին։',
   'Que bom te ver de novo.': 'Ուրախ եմ քեզ նորից տեսնել։',
   'Que legal!': 'Ինչ լավ է։',
+  'Feliz aniversário, {nome}!': 'Ծնունդդ շնորհավոր, {nome}։',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Թող այս տարին լի լինի լավ զրույցներով, լավ խաղերով ու լավ ընկերակցությամբ։',
   'Quem abre o site': 'Ով է բացում կայքը',
   'Quem anda com você': 'Ով է քեզ հետ',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

@@ -840,6 +840,8 @@ export default {
     'តួអក្សរបួន រូបតំណាងមួយ និងពណ៌មួយ ដែលបង្ហាញក្បែរឈ្មោះអ្នកនៅទីនេះ។',
   'Que bom te ver de novo.': 'រីករាយដែលបានឃើញអ្នកម្តងទៀត។',
   'Que legal!': 'ល្អណាស់!',
+  'Feliz aniversário, {nome}!': 'រីករាយថ្ងៃកំណើត {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'សូមឱ្យឆ្នាំនេះពោរពេញដោយការជជែកល្អៗ ការលេងល្បែងល្អៗ និងមិត្តភាពល្អ។',
   'Quem abre o site': 'អ្នកដែលបើកគេហទំព័រ',
   'Quem anda com você': 'អ្នកដែលដើរជាមួយអ្នក',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

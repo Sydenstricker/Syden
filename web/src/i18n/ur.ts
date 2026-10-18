@@ -714,6 +714,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'چار حروف، ایک آئیکن اور ایک رنگ، جو یہاں کے لوگوں کے نام کے ساتھ دکھتے ہیں۔',
   'Que bom te ver de novo.': 'آپ کو دوبارہ دیکھ کر خوشی ہوئی۔',
   'Que legal!': 'کیا بات ہے!',
+  'Feliz aniversário, {nome}!': 'سالگرہ مبارک، {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'یہ سال اچھی باتوں، اچھے کھیلوں اور اچھی صحبت سے بھرا رہے۔',
   'Quem abre o site': 'جو سائٹ کھولتے ہیں',
   'Quem anda com você': 'جو آپ کے ساتھ چلتے ہیں',
   'Quem canta': 'گانے والا',

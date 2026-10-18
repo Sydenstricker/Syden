@@ -357,6 +357,8 @@ export default {
   'Sua ideia foi acolhida': 'Ó-nia ideia simu ona',
   'Sua ideia entrou no Syden!': 'Ó-nia ideia tama ona iha Syden!',
   'Que legal!': 'Di\'ak loos!',
+  'Feliz aniversário, {nome}!': 'Parabéns ba aniversáriu, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Hakarak tinan ida-ne\'e nakonu ho koko-koalia di\'ak, jogu di\'ak no kompañia di\'ak.',
   'Opções': 'Opsaun sira',
   'Baixar o app para Windows': 'Download aplikasaun ba Windows',
   'O que vamos jogar hoje?': 'Ohin ita halimar saida?',

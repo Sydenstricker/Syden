@@ -363,6 +363,8 @@ export default {
   'Sua ideia foi acolhida': 'A nabatala echiche gị',
   'Sua ideia entrou no Syden!': 'Echiche gị abanyela na Syden!',
   'Que legal!': 'Ọ dị mma nke ukwuu!',
+  'Feliz aniversário, {nome}!': 'Ụbọchị ọmụmụ ọma, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ka afọ a jupụta na mkparịta ụka ọma, egwuregwu ọma na ezigbo enyi.',
   'Opções': 'Nhọrọ',
   'Baixar o app para Windows': 'Budata ngwa Windows',
   'O que vamos jogar hoje?': 'Gịnị ka anyị na-egwu taa?',

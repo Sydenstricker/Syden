@@ -596,6 +596,8 @@ export default {
   'Teve uma ideia que entrou no app': 'Hatte eine Idee, die es in die App geschafft hat',
   'Teve {quantas} ideias que entraram no app': 'Hatte {quantas} Ideen, die es in die App geschafft haben',
   'Que legal!': 'Wie schön!',
+  'Feliz aniversário, {nome}!': 'Alles Gute zum Geburtstag, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Möge dieses Jahr voller guter Gespräche, guter Spiele und guter Gesellschaft sein.',
   Emojis: 'Emojis',
   'Deste servidor': 'Aus dieser Community',
   'Dois emojis com o mesmo nome: cada um precisa do seu.':

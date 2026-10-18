@@ -740,6 +740,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'สี่ตัวอักษร ไอคอนหนึ่งอัน และสีหนึ่งสี ที่แสดงข้างชื่อคนของที่นี่',
   'Que bom te ver de novo.': 'ดีใจที่ได้เจอคุณอีก',
   'Que legal!': 'เจ๋งไปเลย!',
+  'Feliz aniversário, {nome}!': 'สุขสันต์วันเกิด {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ขอให้ปีนี้เต็มไปด้วยบทสนทนาดี ๆ เกมสนุก ๆ และเพื่อนดี ๆ',
   'Quem abre o site': 'คนที่เปิดเว็บ',
   'Quem anda com você': 'คนที่อยู่กับคุณบ่อย',
   'Quem canta': 'คนร้อง',

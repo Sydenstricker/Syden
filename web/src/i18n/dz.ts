@@ -854,6 +854,8 @@ export default {
     'ནཱ་གི་མི་ཚུ་གི་མིང་གི་བོཝ་ལུ་སྟོན་མི་ ཡིག་འབྲུ་ ༤ དང་ རྟགས་ཅིག་ ཚོས་གཞི་ཅིག',
   'Que bom te ver de novo.': 'ལོག་སྟེ་མཐོང་སྟེ་དགའ་ཏོག་ཏོ་ཨིན།',
   'Que legal!': 'ལེགས་ཤོམ་འདུག',
+  'Feliz aniversário, {nome}!': 'འཁྲུངས་སྐར་བཀྲ་ཤིས་བདེ་ལེགས། {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ལོ་འདི་ཁ་སླབ་ལེགས་ཤོམ་དང་ རྩེད་རིགས་ལེགས་ཤོམ་ དེ་ལས་ ཆ་རོགས་ལེགས་ཤོམ་གྱིས་ གང་ཡོད་པར་ཤོག',
   'Quem abre o site': 'ཡོངས་འབྲེལ་ས་ཁོངས་ཁ་ཕྱེ་མི།',
   'Quem anda com você': 'ཁྱོད་དང་གཅིག་ཁར་ཡོད་མི།',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

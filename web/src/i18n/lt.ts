@@ -843,6 +843,8 @@ export default {
     'Keturi simboliai, piktograma ir spalva, kurie rodomi šalia čia priklausančiųjų vardų.',
   'Que bom te ver de novo.': 'Smagu tave vėl matyti.',
   'Que legal!': 'Šaunu!',
+  'Feliz aniversário, {nome}!': 'Su gimtadieniu, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Tegul šie metai būna pilni gerų pokalbių, gerų žaidimų ir geros kompanijos.',
   'Quem abre o site': 'Kas atidaro svetainę',
   'Quem anda com você': 'Su kuo leidi laiką',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

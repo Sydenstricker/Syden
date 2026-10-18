@@ -16,7 +16,18 @@ export function registerAniversariosRoutes(app: FastifyInstance) {
 
     authed.get('/api/me/aniversario', async (request) => {
       const mesDia = db.aniversarioDe(request.user.id);
-      return mesDia ? { mes: Number(mesDia.slice(0, 2)), dia: Number(mesDia.slice(3)) } : { mes: null, dia: null };
+      // parabensVistoEm: o ano em que a pessoa já viu a festa do Syden (o app decide se hoje é o dia, na hora dela)
+      const vistoEm = db.parabensVistoAno(request.user.id);
+      return mesDia ? { mes: Number(mesDia.slice(0, 2)), dia: Number(mesDia.slice(3)), parabensVistoEm: vistoEm } : { mes: null, dia: null, parabensVistoEm: vistoEm };
+    });
+
+    /** A festa de aniversário foi vista neste ano: não aparece de novo, em aparelho nenhum. */
+    authed.post<{ Body: { ano?: unknown } }>('/api/me/aniversario/parabens-visto', async (request, reply) => {
+      const ano = request.body?.ano, atual = new Date().getUTCFullYear();
+      // (o ano do aparelho pode estar um à frente ou atrás do do servidor na virada do ano, pelo fuso)
+      if (!Number.isInteger(ano) || Math.abs((ano as number) - atual) > 1) return reply.code(400).send({ error: 'Ano inválido.' });
+      db.marcarParabensVisto(request.user.id, ano as number);
+      return { ok: true };
     });
 
     /** { dia, mes } guarda; { dia: null, mes: null } apaga. Sem ano, de propósito. */

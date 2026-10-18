@@ -28,7 +28,7 @@ interface Papel {
  * O confete é desenhado num canvas, e não com elementos na tela: são mais de cem papeizinhos girando ao
  * mesmo tempo, e cada um como elemento faria o navegador recalcular a página toda a cada quadro.
  */
-function Confete() {
+export function Confete() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

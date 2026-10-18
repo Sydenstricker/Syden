@@ -842,6 +842,8 @@ export default {
     'Izinhlamvu ezine, isithonjana nombala okuvela eceleni kwegama labantu abalapha.',
   'Que bom te ver de novo.': 'Kuhle ukukubona futhi.',
   'Que legal!': 'Kuhle kakhulu!',
+  'Feliz aniversário, {nome}!': 'Usuku lokuzalwa oluhle, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Kwangathi lo nyaka ungagcwala izingxoxo ezinhle, imidlalo emihle nobungane obuhle.',
   'Quem abre o site': 'Abavula isayithi',
   'Quem anda com você': 'Abahamba nawe',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

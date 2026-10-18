@@ -852,6 +852,8 @@ export default {
     'Kat karaktè, yon ikòn ak yon koulè ki parèt bò kote non moun ki fè pati isit la.',
   'Que bom te ver de novo.': 'Sa fè m plezi wè w ankò.',
   'Que legal!': 'Sa bèl!',
+  'Feliz aniversário, {nome}!': 'Bòn fèt, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ke ane sa a plen bon konvèsasyon, bon pati ak bon konpayi.',
   'Quem abre o site': 'Moun ki louvri sit la',
   'Quem anda com você': 'Moun ki mache avè w',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

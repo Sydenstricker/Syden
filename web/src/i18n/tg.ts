@@ -842,6 +842,8 @@ export default {
     'Чор аломат, нишона ва ранг, ки дар паҳлӯи номи касоне, ки аз ин ҷоянд, намоён мешаванд.',
   'Que bom te ver de novo.': 'Хуш аст, ки шуморо боз мебинем.',
   'Que legal!': 'Чӣ хуб!',
+  'Feliz aniversário, {nome}!': 'Зодрӯзат муборак, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Бигзор ин сол пур аз суҳбатҳои хуб, бозиҳои хуб ва ҳамроҳии хуб бошад.',
   'Quem abre o site': 'Кӣ сомонаро мекушояд',
   'Quem anda com você': 'Шумо бо кӣ ҳамроҳед',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

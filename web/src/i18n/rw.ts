@@ -366,6 +366,8 @@ export default {
   'Sua ideia foi acolhida': 'Igitekerezo cyawe cyakiriwe',
   'Sua ideia entrou no Syden!': 'Igitekerezo cyawe cyinjiye muri Syden!',
   'Que legal!': 'Mbega byiza!',
+  'Feliz aniversário, {nome}!': 'Isabukuru nziza, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Uyu mwaka nubanze wuzure ibiganiro byiza, imikino myiza n\'inshuti nziza.',
   'Opções': 'Amahitamo',
   'Baixar o app para Windows': 'Kuramo porogaramu ya Windows',
   'O que vamos jogar hoje?': 'Turakina iki uyu munsi?',

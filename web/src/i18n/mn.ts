@@ -856,6 +856,8 @@ export default {
     'Энд харьяалагдах хүмүүсийн нэрийн хажууд харагдах дөрвөн тэмдэгт, дүрс, өнгө.',
   'Que bom te ver de novo.': 'Чамайг дахин харсандаа баяртай байна.',
   'Que legal!': 'Ямар гоё вэ!',
+  'Feliz aniversário, {nome}!': 'Төрсөн өдрийн мэнд, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Энэ жил сайхан яриа, сайхан тоглоом, сайн нөхөрлөлөөр дүүрэн байх болтугай.',
   'Quem abre o site': 'Сайтыг хэн нээдэг вэ',
   'Quem anda com você': 'Чамтай хамт байдаг хүмүүс',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':

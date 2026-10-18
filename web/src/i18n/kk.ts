@@ -837,6 +837,8 @@ export default {
     'Осы жердегілердің атының жанында көрінетін төрт таңба, белгіше және түс.',
   'Que bom te ver de novo.': 'Сізді қайта көргенімізге қуаныштымыз.',
   'Que legal!': 'Керемет!',
+  'Feliz aniversário, {nome}!': 'Туған күніңмен, {nome}!',
+  'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Бұл жыл жақсы әңгімелерге, жақсы ойындарға және жақсы достарға толы болсын.',
   'Quem abre o site': 'Сайтты ашатындар',
   'Quem anda com você': 'Сізбен бірге жүретіндер',
   'Quem bloqueia é o Windows. Abra Configurações do Windows → Privacidade e segurança → Microfone e ligue o acesso para o navegador.':
