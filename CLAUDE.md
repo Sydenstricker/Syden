@@ -701,6 +701,21 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
   todos (com o nome em cima). Trocar os coelhos prontos de avatar, um a um, pela receita validada do mascote.
 - **O formato e o passo a passo** estão em `e2e/pixel-art/personagem/README.md`. Plano do PixelLab: Tier 2 desde
   14/10/2026 (a repintura `inpaint-v3` e a API de personagens com 8 direções e animação).
+- **O CAMINHO DAS ANIMAÇÕES: PixelLab para a base, Meshy para o 3D, Blender para animar (decisão dele, 18/10/2026; a
+  testar em novembro, quando os créditos do PixelLab renovarem).** O PixelLab desenha cada coelho (de frente, corpo
+  inteiro, em pose A: braços abertos uns 45°, pernas afastadas, orelhas em pé e separadas, fundo liso); o Meshy o
+  transforma em modelo 3D (GLB, textura 2k, SEM o esqueleto deles); e o Blender, por script, põe o NOSSO esqueleto (com
+  ossos para as orelhas), anima e renderiza como pixel art, com as cores presas à paleta do mascote. Por quê: animação
+  feita uma vez serve a TODOS os coelhos de mesma proporção, o objeto na mão (vassoura, bandeja) sai igual em todo
+  quadro, as 8 direções saem de graça e animação nova não gasta crédito.
+  - **Medido em 18/10/2026** (`e2e/pixel-art/personagem/blender/`): o coelho montado por código segura a vassoura
+    idêntica em 32 quadros, mas fica abaixo do desenho; o sprite projetado nele falhou pela silhueta. O Meshy ganhou do
+    Tripo (simulação no salão, cores presas à paleta): forma do mascote, malha lisa que dobra bem; o Tripo vem em blocos,
+    com os degraus dos pixels e o contorno pintados na textura, e o esqueleto automático dele pôs os braços nas orelhas.
+  - **O plano do Meshy** dá licença privada para uso comercial e 20 downloads por mês (o mascote + 17 coelhos = 18).
+    **Primeiro o piloto com o mascote** (esqueleto, parado, andando, varrendo, no salão de verdade); só aprovado, os 17.
+  - Ao pôr no motor: a âncora vem do `pe` explícito do json da animação (a vassoura desce abaixo do pé, e a regra do
+    primeiro quadro cairia na palha).
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
