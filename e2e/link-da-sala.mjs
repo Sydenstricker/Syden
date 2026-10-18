@@ -19,7 +19,13 @@ await ana.locator('.channel-name', { hasText: /^Sala 2$/ }).first().waitFor({ ti
 async function copiar(nome) {
   const linha = ana.locator('.channel-row', { has: ana.locator('.channel-name', { hasText: new RegExp(`^${nome}$`) }) }).first();
   await linha.hover();
-  await linha.getByRole('button', { name: `Copiar link: ${nome}` }).click();
+  // Quem administra (a Ana é a primeira conta, dona da comunidade inicial) tem "Link da sala", que abre um balão com o
+  // link da turma e os de visitante; os outros têm "Copiar link", que copia direto (LinkDaSala.tsx).
+  const balao = linha.getByRole('button', { name: `Link da sala: ${nome}` });
+  if (await balao.count()) {
+    await balao.click();
+    await ana.locator('.link-sala-turma button').click();
+  } else await linha.getByRole('button', { name: `Copiar link: ${nome}` }).click();
   return ana.evaluate(() => navigator.clipboard.readText());
 }
 

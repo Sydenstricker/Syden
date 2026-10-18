@@ -308,8 +308,6 @@ html:not(.com-js) .obj:hover::after,
 .obj-poster .corte { background-size: 1304.167% 603.846%; background-position: 38.062% 13.359%; mask-image: url("quarto/mascara-poster.png"); -webkit-mask-image: url("quarto/mascara-poster.png"); }
 .obj-computador { left: 67.412%; top: 36.624%; width: 18.211%; height: 23.885%; }
 .obj-computador .corte { background-size: 549.123% 418.667%; background-position: 82.422% 48.117%; mask-image: url("quarto/mascara-computador.png"); -webkit-mask-image: url("quarto/mascara-computador.png"); }
-.obj-cortica { left: 75.719%; top: 23.248%; width: 8.946%; height: 12.739%; }
-.obj-cortica .corte { background-size: 1117.857% 785%; background-position: 83.158% 26.642%; mask-image: url("quarto/mascara-cortica.png"); -webkit-mask-image: url("quarto/mascara-cortica.png"); }
 .obj-vaso { left: 7.987%; top: 56.688%; width: 9.904%; height: 10.828%; }
 .obj-vaso .corte { background-size: 1009.677% 923.529%; background-position: 8.865% 63.571%; mask-image: url("quarto/mascara-vaso.png"); -webkit-mask-image: url("quarto/mascara-vaso.png"); }
 .obj-pufe { left: 52.077%; top: 67.516%; width: 17.572%; height: 14.013%; }
@@ -418,21 +416,6 @@ html:not(.com-js) .obj:hover::after,
   }
 }
 
-/* O selo de "em breve": diz que a função ainda não existe, sem esconder que ela vem. */
-.em-breve {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 6px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--marca);
-  color: var(--marca);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 /* ---------- seções ---------- */
 
 section {
@@ -538,11 +521,6 @@ section h2 {
   width: 100%;
   height: auto;
   image-rendering: pixelated;
-}
-
-.captura-estreita {
-  max-width: 520px;
-  justify-self: center;
 }
 
 /* ---------- idiomas ---------- */

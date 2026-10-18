@@ -3,7 +3,7 @@
 import { existsSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
-/** Onde o site de teste está servindo. Trocável: SITE=http://localhost:5173 node e2e/coelhos.mjs */
+/** Onde o site de teste está servindo. Trocável: SITE=http://localhost:5173 node e2e/rodar.mjs */
 export const SITE = process.env.SITE ?? 'http://localhost:5174';
 
 /** O código de convite usado para criar as contas de teste. */
@@ -111,7 +111,7 @@ export async function dispensarPresentes(page) {
  * O `exact` no rótulo da senha também é necessário: a dica embaixo do e-mail fala em recuperar a
  * SENHA, então "Senha" sem exact casa com os dois campos.
  *
- * Conta nova não entra em comunidade nenhuma: quem se cadastra cai na vila, sozinho. Para pôr duas
+ * Conta nova não entra em comunidade nenhuma: quem se cadastra cai no quarto, sozinho. Para pôr duas
  * pessoas na mesma comunidade, uma cria e passa o código para a outra (ver e2e/lixeira.mjs).
  */
 export async function criarConta(page, prefixo) {
@@ -146,10 +146,10 @@ export async function cadastrar(page, username) {
   await page.getByLabel('Senha', { exact: true }).fill('segredo123');
   await page.getByRole('button', { name: 'Cadastrar' }).click();
   // DUAS CHEGADAS POSSÍVEIS, e esperar só uma trava o teste por meio minuto sem dizer por quê. Quem
-  // entra sem convite para comunidade nenhuma cai na vila. Mas o PRIMEIRO cadastro do banco inteiro
+  // entra sem convite para comunidade nenhuma cai no quarto (a home). Mas o PRIMEIRO cadastro do banco inteiro
   // ganha a comunidade inicial do Syden e cai dentro dela — e num banco de teste recém-criado o
   // primeiro cadastro é sempre o do teste.
-  await page.locator('.quarto, .channel-name').first().waitFor({ timeout: 30_000 });
+  await page.locator('.quarto-novo, .quarto, .channel-name').first().waitFor({ timeout: 30_000 });
   return username;
 }
 

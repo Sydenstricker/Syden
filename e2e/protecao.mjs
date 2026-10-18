@@ -80,14 +80,14 @@ const { browser } = await abrirNavegador();
     await foto(page, 'barreira-nascimento');
     await page.getByLabel('Data de nascimento').fill(comAnos(30));
     await page.getByRole('button', { name: 'Continuar' }).click();
-    (await page.locator('.quarto, .channel-name, .sidebar').first().waitFor({ timeout: 20000 }).then(() => true, () => false))
+    (await page.locator('.quarto-novo, .quarto, .channel-name, .sidebar').first().waitFor({ timeout: 20000 }).then(() => true, () => false))
       ? ok('barreira: depois de informar, o Syden abre')
       : falhou('barreira: não abriu o Syden depois da data');
   } else falhou('barreira: a pergunta da data não apareceu');
 }
 
 const abrirFamilia = async (page) => {
-  await page.locator('.quarto, .channel-name, .sidebar').first().waitFor({ timeout: 20000 });
+  await page.locator('.quarto-novo, .quarto, .channel-name, .sidebar').first().waitFor({ timeout: 20000 });
   await dispensarPresentes(page);
   await page.getByRole('button', { name: 'Configurações' }).first().click();
   await page.getByRole('button', { name: 'Família' }).click();
@@ -150,7 +150,7 @@ let codigo = null;
   await new Promise((pronto) => s.emit('message:send', { channelId: texto.id, content: 'mensagem para denunciar' }, pronto));
   s.close();
   const page = await entrarCom(browser, mae);
-  await page.locator('.quarto, .channel-name, .sidebar').first().waitFor({ timeout: 20000 });
+  await page.locator('.quarto-novo, .quarto, .channel-name, .sidebar').first().waitFor({ timeout: 20000 });
   await dispensarPresentes(page);
   await page.getByRole('button', { name: 'Praça ' + sufixo }).first().click().catch(() => {});
   await page.locator('.channel-name', { hasText: texto.name }).first().click().catch(() => {});

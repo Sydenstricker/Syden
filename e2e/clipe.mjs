@@ -192,8 +192,8 @@ if ((await tesoura.count()) === 0) {
     await bia.page.waitForTimeout(4000);
 
     const dialogo = await bia.page.locator('.clipe-dialog').count();
-    const erro = await bia.page.locator('.clipe-erro').count();
-    const textoDoErro = erro ? await bia.page.locator('.clipe-erro').first().innerText() : '';
+    const erro = await bia.page.locator('.clipe-aviso').count();
+    const textoDoErro = erro ? await bia.page.locator('.clipe-aviso').first().innerText() : '';
     console.log(`  depois do clique: diálogo=${dialogo} erro=${erro} ${textoDoErro}`);
 
     dialogo === 1 ? ok('a prévia do clipe abriu') : falhou(`a prévia não abriu${textoDoErro ? ` — disse: ${textoDoErro}` : ' e não disse nada'}`);

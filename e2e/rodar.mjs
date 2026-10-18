@@ -1,7 +1,7 @@
 // Roda os testes de ponta a ponta, um de cada vez, e conta o resultado no fim.
 //
 //   npm run test:e2e              todos
-//   npm run test:e2e -- quarto-home   só um (ou alguns)
+//   npm run test:e2e -- rebrand   só um (ou alguns)
 //
 // Cada teste roda no seu próprio processo: um que trave não leva os outros junto.
 import { spawn } from 'node:child_process';
@@ -22,7 +22,7 @@ const PRECISAM_DE_LIVEKIT = new Set(['sob-demanda', 'menu-mais-da-chamada', 'cli
 const PRECISAM_SER_A_PRIMEIRA_CONTA = new Set(['ideias', 'menu-elegante']);
 
 const todos = readdirSync(AQUI)
-  .filter((nome) => nome.endsWith('.mjs') && !['ajuda.mjs', 'rodar.mjs'].includes(nome))
+  .filter((nome) => nome.endsWith('.mjs') && !['ajuda.mjs', 'rodar.mjs', 'politica-de-seguranca.mjs'].includes(nome))
   .map((nome) => nome.replace(/\.mjs$/, ''));
 
 const pedidos = process.argv.slice(2);

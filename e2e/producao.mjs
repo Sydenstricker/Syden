@@ -27,7 +27,7 @@ resposta?.ok() ? ok(`${SITE} respondeu ${resposta.status()}`) : falhou(`o site r
 
 // ---------- 1. o app montou ----------
 // A home virou o quarto em 08/10/2026; até publicar, a produção ainda tem a vila. Os dois servem.
-await page.locator('.auth, .vila, .quarto, .rail-list').first().waitFor({ timeout: 30_000 });
+await page.locator('.auth, .quarto-novo, .quarto, .rail-list').first().waitFor({ timeout: 30_000 });
 ok('o Syden carregou e desenhou a tela');
 
 const titulo = await page.title();

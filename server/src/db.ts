@@ -1349,10 +1349,6 @@ export function findCommunityByInvite(code: string) {
   return db.prepare(`SELECT ${communityColumns} FROM communities WHERE invite_code = ?`).get(code.trim()) as Community | undefined;
 }
 
-export function communityInviteCode(id: number) {
-  return (db.prepare('SELECT invite_code AS code FROM communities WHERE id = ?').get(id) as { code: string } | undefined)?.code;
-}
-
 export function setCommunityInviteCode(id: number, code: string) {
   db.prepare('UPDATE communities SET invite_code = ? WHERE id = ?').run(code, id);
 }
@@ -2642,19 +2638,9 @@ export function somDaComunidadeComOAudio(communityId: number, sha: string) {
     | undefined;
 }
 
-/** Quem pode tocar este som: quem é da comunidade dele, ou qualquer um, se ele for de um pacote. */
-export function soundIsPublic(sound: Sound) {
-  return sound.packId !== null;
-}
-
 export function setFavoriteSound(userId: number, soundId: number, favorite: boolean) {
   if (favorite) db.prepare('INSERT OR IGNORE INTO favorite_sounds (user_id, sound_id) VALUES (?, ?)').run(userId, soundId);
   else db.prepare('DELETE FROM favorite_sounds WHERE user_id = ? AND sound_id = ?').run(userId, soundId);
-}
-
-/** Todo mundo que já tem conta, para instalar um pacote de fábrica em quem entrou antes dele existir. */
-export function allUserIds(): number[] {
-  return (db.prepare('SELECT id FROM users WHERE sistema = 0').all() as { id: number }[]).map((row) => row.id);
 }
 
 export function findUserById(id: number) {
@@ -3708,10 +3694,6 @@ export function temSenha(userId: number): boolean {
   return Boolean(linha && linha.hash.includes(':'));
 }
 
-export function definirSenha(userId: number, passwordHash: string) {
-  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
-}
-
 // ---------- Servidores de jogo ----------
 
 const COLUNAS_JOGO =
@@ -4172,21 +4154,6 @@ export function vestirSelo(userId: number, communityId: number | null): boolean 
   return true;
 }
 
-/**
- * Tira o selo de quem não pode mais usá-lo.
- *
- * Roda quando alguém sai (ou é removido) de uma comunidade, e quando uma comunidade perde o selo.
- * Sem isso, a camiseta continuaria no corpo de quem saiu do time — e ninguém repararia, porque nada
- * daria erro.
- */
-export function limparSelosInvalidos(communityId: number) {
-  db.prepare(
-    `UPDATE users SET selo_comunidade = NULL
-      WHERE selo_comunidade = ?
-        AND id NOT IN (SELECT user_id FROM community_members WHERE community_id = ?)`,
-  ).run(communityId, communityId);
-}
-
 /** Tira este selo do corpo de todo mundo: usado quando a comunidade deixa de ter selo. */
 export function despirSeloDaComunidade(communityId: number) {
   db.prepare('UPDATE users SET selo_comunidade = NULL WHERE selo_comunidade = ?').run(communityId);
@@ -4251,19 +4218,6 @@ export function desbloquear(quemBloqueou: number, bloqueado: number): boolean {
   return (
     db.prepare('DELETE FROM blocks WHERE quem_bloqueou = ? AND bloqueado = ?').run(quemBloqueou, bloqueado).changes > 0
   );
-}
-
-/** Os números de quem esta pessoa bloqueou OU que a bloquearam: é o que a tela usa para esconder. */
-export function idsBloqueadosDe(userId: number): number[] {
-  return (
-    db
-      .prepare(
-        `SELECT bloqueado AS id FROM blocks WHERE quem_bloqueou = ?
-         UNION
-         SELECT quem_bloqueou AS id FROM blocks WHERE bloqueado = ?`,
-      )
-      .all(userId, userId) as { id: number }[]
-  ).map((linha) => linha.id);
 }
 
 // ---------------------------------------------------------------------------------------------------

@@ -123,7 +123,7 @@ if (process.argv.includes('--chamada')) {
     await page.getByLabel('Nome de usuário').fill(nome);
     await page.getByLabel('Senha').fill(SENHA);
     await page.getByRole('button', { name: 'Entrar', exact: true }).click();
-    await page.locator('.quarto').waitFor({ timeout: 45_000 });
+    await page.locator('.quarto-novo, .quarto').first().waitFor({ timeout: 45_000 });
     await dispensarPresentes(page);
     await page.locator(`.rail-item[title="${COMUNIDADE}"]`).click();
     await page.locator('.channel-name', { hasText: sala.name }).first().click();

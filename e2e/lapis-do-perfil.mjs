@@ -38,7 +38,7 @@ try {
   const escolhas = cartao.locator('.perfil-escolhas');
   await escolhas.waitFor({ timeout: 8000 });
   await escolhas.locator('.perfil-escolha').first().waitFor({ timeout: 8000 });
-  if (await page.locator('.settings-modal, .settings-content').count()) falhou('o lápis abriu as Configurações em vez das escolhas');
+  if (await page.locator('.settings[role="dialog"], .settings-content').count()) falhou('o lápis abriu as Configurações em vez das escolhas');
   else ok('o lápis abre as escolhas dentro do cartão');
   await page.screenshot({ path: path.join(FOTOS, 'lapis-cor.png'), clip: (await cartao.boundingBox()) ?? undefined });
 
@@ -73,8 +73,15 @@ try {
       () => ok('vestir um fundo muda o cartão na hora'),
       () => falhou('o fundo do cartão não mudou depois de vestir'),
     );
-  if (await escolhas.locator('.perfil-escolha.vestido').count()) ok('o fundo vestido aparece marcado');
-  else falhou('nenhuma escolha aparece marcada como em uso');
+  // (a faixa muda na hora; a marca vem quando a resposta do servidor chega, e conferir no mesmo instante falhava)
+  await escolhas
+    .locator('.perfil-escolha.vestido')
+    .first()
+    .waitFor({ timeout: 5000 })
+    .then(
+      () => ok('o fundo vestido aparece marcado'),
+      () => falhou('nenhuma escolha aparece marcada como em uso'),
+    );
 
   // O cartão cresceu: ele inteiro precisa caber na janela.
   const caixa = await cartao.boundingBox();

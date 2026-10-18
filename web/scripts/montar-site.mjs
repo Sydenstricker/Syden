@@ -79,7 +79,7 @@ for (const icone of ICONES_DA_MARCA) {
  * O quarto do topo da apresentação é o MESMO da home do app, e pelo mesmo motivo dos ícones: uma fonte,
  * dois destinos. Quando a arte do quarto mudar (hibrido/exportar.mjs), o site muda junto.
  */
-const QUARTO = ['noite.png', 'dia.png', 'coelho.png', 'gato.png', ...['abajur', 'computador', 'cortica', 'fone', 'gavetas', 'janela', 'poster', 'prateleira', 'pufe', 'quadro', 'vaso'].map((o) => `mascara-${o}.png`)];
+const QUARTO = ['noite.png', 'dia.png', 'coelho.png', 'gato.png', ...['abajur', 'computador', 'janela', 'poster', 'pufe', 'vaso'].map((o) => `mascara-${o}.png`)];
 mkdirSync(join(DIST, 'quarto'), { recursive: true });
 for (const arquivo of QUARTO) {
   const de = join(AQUI, 'src', 'assets', 'quarto', arquivo);

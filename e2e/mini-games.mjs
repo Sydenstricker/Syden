@@ -61,10 +61,12 @@ try {
 
   // A Duda vai pela home: o computador do quarto.
   await duda.locator('.rail-logo').click(); // o ícone do Syden: a home (o .rail-item seria uma comunidade)
-  await duda.locator('.quarto').waitFor({ timeout: 20000 });
-  // Os objetos do quarto respondem ao desenho; o botão por baixo é o do teclado (foco + Enter).
-  await duda.getByRole('button', { name: /^Mini-games/ }).first().focus();
-  await duda.keyboard.press('Enter');
+  // O quarto é uma página num iframe (QuartoNovo.tsx): o clique no computador chega ao app como a ação "computador",
+  // e é essa mensagem que o teste manda, de dentro do quarto (clicar no desenho dependeria de onde a mesa está).
+  const quarto = await (await duda.waitForSelector('.quarto-novo iframe', { timeout: 30000 })).contentFrame();
+  await quarto.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
+  await duda.waitForTimeout(1000); // o app manda as funções logo depois do "pronto"
+  await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
   const painel = duda.locator('.jogos-painel');
   await painel.waitFor();
   const sitesDeFora = await painel.locator('.jogos-de-fora li').allInnerTexts();

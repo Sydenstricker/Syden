@@ -84,7 +84,7 @@ await bia.waitForTimeout(10000);
 if ((await aviso.count()) === 1) {
   await aviso.click();
   await ana.locator('.settings-tab.active, .settings-tab[aria-selected="true"]').first().waitFor({ timeout: 5000 }).catch(() => {});
-  const aba = await ana.locator('.settings-modal h2, .settings-content h2').first().innerText().catch(() => '');
+  const aba = await ana.locator('.settings-content h2').first().innerText().catch(() => '');
   /Voz e vídeo/.test(aba) ? ok('clicar no aviso abre "Voz e vídeo"') : falhou(`clicar no aviso abriu: "${aba}"`);
 }
 

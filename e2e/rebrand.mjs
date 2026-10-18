@@ -26,7 +26,7 @@ const logo = ana.locator('.rail-logo svg');
 // ---------- 2. a home ----------
 // A vila tinha estrela e bandeira do logo antigo, e este trecho conferia que tinham saído. Desde 08/10/2026 a home é
 // o quarto do coelho (Quarto.tsx), uma pintura sem logo nenhum: basta ela aparecer.
-await ana.locator('.quarto').waitFor({ timeout: 25000 });
+await ana.locator('.quarto-novo, .quarto').first().waitFor({ timeout: 25000 });
 ok('a home é o quarto, sem o logo antigo');
 await ana.screenshot({ path: 'e2e/fotos/rebrand-home.png' });
 

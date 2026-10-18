@@ -1,4 +1,4 @@
-import { AlarmClock, CircleUser, Mic, Monitor, Music, PersonStanding, Smile, Video } from 'lucide-react';
+import { AlarmClock, CircleUser, Mic, Music, Smile } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSettings } from './settings';
 
@@ -13,7 +13,7 @@ import { useSettings } from './settings';
 //   Syden), então elas são trocadas na hora de carregar: a cor mais escura vira a cor do texto e a outra
 //   vira o destaque do app.
 
-export type AnimatedIconName = 'tela' | 'emoji' | 'musica' | 'microfone' | 'avatar' | 'alarme' | 'pessoa' | 'chamada';
+export type AnimatedIconName = 'emoji' | 'musica' | 'microfone' | 'avatar' | 'alarme';
 
 /**
  * O MESMO ÍCONE, DESENHADO EM TRAÇO, PARA QUANDO A ANIMAÇÃO NÃO VIER.
@@ -34,14 +34,11 @@ export type AnimatedIconName = 'tela' | 'emoji' | 'musica' | 'microfone' | 'avat
  * que computador for e pelo motivo que for, o menu continua inteiro.
  */
 const DE_TRACO: Record<AnimatedIconName, typeof Mic> = {
-  tela: Monitor,
   emoji: Smile,
   musica: Music,
   microfone: Mic,
   avatar: CircleUser,
   alarme: AlarmClock,
-  pessoa: PersonStanding,
-  chamada: Video,
 };
 
 /*

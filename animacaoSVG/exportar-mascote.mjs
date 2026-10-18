@@ -25,14 +25,14 @@ const RAIZ = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '
 const ESTUDIO = new URL('./animacoes_d4.html', import.meta.url).href;
 const PASTA = RAIZ + 'web/public/mascote/';
 
-/** Os presets que vão para o Syden: o mascote, os modos da sala, os erros e o agradecimento do site. */
+/**
+ * Os presets que vão para o Syden: o mascote, os modos da sala e os erros. Só os que alguma tela usa (auditoria de
+ * 17/10/2026): digitando, falando, ciclo de status, ouvindo música e agradecendo continuam no estúdio, mas saíram daqui,
+ * porque nenhuma tela os carregava. Voltar um deles é uma linha aqui e a tela que o usa.
+ */
 const PRESETS = {
   13: 'ocioso',
   14: 'introducao',
-  15: 'digitando',
-  16: 'falando',
-  17: 'ciclo-de-status',
-  18: 'ouvindo-musica',
   19: 'karaoke',
   20: 'assistir-junto',
   21: 'apresentacao',
@@ -48,8 +48,10 @@ const PRESETS = {
   28: 'avatar-parou-de-falar',
   29: 'avatar-digitando',
   30: 'avatar-parou-de-digitar',
-  31: 'agradecendo',
 };
+
+/** Os que vão só ESCRITOS DENTRO de uma página (ver abaixo), e não como arquivo: ninguém os carrega como imagem. */
+const SO_DENTRO_DA_PAGINA = new Set(['sem-internet']);
 
 /**
  * O AVATAR É RECORTADO PERTO DA CABEÇA. Ele aparece com 32 px numa lista de membros; com o quadro
@@ -145,6 +147,7 @@ const AVISO = '<!-- GERADO por animacaoSVG/exportar-mascote.mjs a partir do est�
 
 mkdirSync(PASTA, { recursive: true });
 for (const [nome, svg] of Object.entries(svgs)) {
+  if (SO_DENTRO_DA_PAGINA.has(nome)) continue;
   writeFileSync(PASTA + nome + '.svg', svg.replace('<svg ', AVISO + '\n<svg ') + '\n');
   console.log(`  web/public/mascote/${nome}.svg`.padEnd(44) + `${(svg.length / 1024).toFixed(1)} KB`);
 }
