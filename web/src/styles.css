@@ -2032,6 +2032,139 @@ textarea {
 .cartao-da-peca-figura.giravel {
   cursor: ew-resize; /* arrastar para os lados gira a peça */
 }
+/* O CALENDÁRIO DA COMUNIDADE (Calendario.tsx, 18/10/2026): o mês em grade, a lista e o "novo evento". */
+.calendario {
+  width: min(420px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.calendario-topo,
+.calendario-mes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.calendario-topo h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.calendario-grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.calendario-semana {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  text-transform: uppercase;
+}
+.calendario-dia {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.calendario-dia:hover {
+  background: var(--bg-hover);
+}
+.calendario-dia.hoje {
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.calendario-dia.escolhido {
+  background: var(--accent);
+  color: var(--accent-texto);
+}
+.calendario-marcas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+.calendario-marca {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.calendario-marca.evento {
+  background: var(--accent);
+}
+.calendario-marca.aniversario {
+  background: #e8679a; /* rosa de festa, fixo: o destaque de cada tema é amarelo, azul ou verde-água, e o link e o verde
+     coincidem com ele em algum tema */
+}
+.calendario-dia.escolhido .calendario-marca {
+  background: var(--accent-texto);
+}
+.calendario-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.calendario-lista li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+.calendario-lista .calendario-vazio {
+  justify-content: center;
+  color: var(--text-muted);
+  background: transparent;
+}
+.calendario-quando {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.calendario-nome {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+.calendario-novo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.calendario-novo input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font: inherit;
+}
+.calendario-novo-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.calendario-novo-linha input {
+  flex: 1;
+  min-width: 120px;
+}
+
 /* girar, reduzir, ampliar, girar: embaixo da figura */
 .cartao-da-peca-controles {
   display: flex;

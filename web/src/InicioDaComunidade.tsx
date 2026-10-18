@@ -1,4 +1,5 @@
-import { Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
+import { CalendarDays, Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
+import { Calendario } from './Calendario';
 import { Mascote } from './Mascote';
 import { useState } from 'react';
 import { api } from './api';
@@ -125,6 +126,8 @@ export function InicioDaComunidade({
   const t = useT();
   const { members: membros } = useDirectory();
   const [copiado, setCopiado] = useState(false);
+  // O CALENDÁRIO (18/10/2026): por um atalho, até o calendário de parede do salão ganhar arte.
+  const [calendario, setCalendario] = useState(false);
   // A TV AO VIVO: quem transmite agora, nesta comunidade. O canal é um índice nessa lista, e volta ao começo
   // quando a lista encolhe (alguém parou de transmitir).
   const transmissoes = naVoz.filter((m) => m.screen);
@@ -333,8 +336,13 @@ export function InicioDaComunidade({
             </button>
           );
         })}
+        <button className="bv-atalho" onClick={() => setCalendario(true)}>
+          <CalendarDays size={16} />
+          <span>{t('Calendário')}</span>
+        </button>
         <AbrirTicket community={community} aoAbrir={aoAbrirConversa} />
       </div>
+      {calendario && <Calendario communityId={community.id} socket={socket} aoFechar={() => setCalendario(false)} />}
 
       <button className="bv-pular" onClick={fechar}>
         {t('Ir para os canais')}

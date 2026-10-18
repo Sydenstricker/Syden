@@ -668,9 +668,11 @@ tela não mente. Pendentes: todos pedem arte nova (PixelLab em novembro, ou o ca
   grande para as montanhas, luminárias pendentes): a vista de fora, com a hora do dia, como a do quarto.
 - **Cantinho do café** (ele sentiu falta): máquina de café, mesinha redonda, banquetas. Quem está na call e marcou
   "ausente" vai tomar café, em vez de ficar na frente da TV.
-- **Calendário na parede**: os eventos principais da comunidade E os aniversários dos membros. Aniversário já existe
-  (`aniversarios-routes.ts`); EVENTO DA COMUNIDADE NÃO EXISTE (só mensagens agendadas): pede a função nova, quem
-  administra marca data, hora e nome, e todo membro vê.
+- **Calendário**: os eventos principais da comunidade E os aniversários dos membros. **A FUNÇÃO ESTÁ FEITA (18/10/2026)**
+  (`calendario-routes.ts`, `Calendario.tsx`; teste `e2e/calendario.mjs`): quem administra marca nome, dia e hora; todo
+  membro vê, e o calendário aberto relê na hora; os aniversários só nas comunidades com os PARABÉNS LIGADOS (lá a data já
+  seria anunciada no dia: mostrar antes não expõe nada além do que a pessoa aceitou). Abre por um atalho embaixo do
+  salão; o calendário de PAREDE espera a arte.
 - **Um bicho do salão** (ele sentiu falta, "valioso na ambientação"): cachorro ou gato, com o comportamento ligado ao real
   (dorme com o salão vazio, acorda e vai até quem chega na call, deita perto de quem assiste). Bom candidato ao caminho
   3D dos coelhos (um modelo, as animações por script).

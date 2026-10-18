@@ -6247,3 +6247,71 @@ export function limparProtecaoVencida(): { usos: number; imagens: number } {
     .run().changes;
   return { usos: Number(usos), imagens: Number(imagens) };
 }
+
+// ---------------------------------------------------------------------------------------------------
+// O CALENDÁRIO DA COMUNIDADE (pedido dele, 18/10/2026: "um calendário com os eventos principais da comunidade, e os
+// aniversários dos membros marcados"). Os EVENTOS são novos (só havia mensagens agendadas): quem administra marca nome,
+// dia e hora, e todo membro vê. O instante é guardado em UTC; cada tela mostra na hora de quem lê.
+// OS ANIVERSÁRIOS vêm do que cada pessoa já informa em Minha conta (dia e mês), e SÓ nas comunidades que ligaram os
+// parabéns: lá a data já seria anunciada no dia, então mostrá-la no calendário não expõe nada além do que a pessoa aceitou.
+// ---------------------------------------------------------------------------------------------------
+db.exec(`
+  CREATE TABLE IF NOT EXISTS eventos_da_comunidade (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    titulo       TEXT NOT NULL,
+    quando       TEXT NOT NULL,
+    criado_por   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    criado_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS eventos_por_data ON eventos_da_comunidade(community_id, quando);
+`);
+
+export interface EventoDaComunidade {
+  id: number;
+  titulo: string;
+  /** ISO, em UTC. */
+  quando: string;
+  criadoPor: number | null;
+}
+
+/** Os eventos entre dois instantes (ISO), em ordem. */
+export function eventosDaComunidade(communityId: number, de: string, ate: string): EventoDaComunidade[] {
+  return db
+    .prepare(
+      `SELECT id, titulo, quando, criado_por AS criadoPor FROM eventos_da_comunidade
+       WHERE community_id = ? AND quando >= ? AND quando < ? ORDER BY quando, id LIMIT 300`,
+    )
+    .all(communityId, de, ate) as unknown as EventoDaComunidade[];
+}
+
+/** Quantos eventos ainda vão acontecer (o teto vale para eles: os passados não atrapalham). */
+export function eventosFuturos(communityId: number, agora: string): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM eventos_da_comunidade WHERE community_id = ? AND quando >= ?').get(communityId, agora) as { n: number }).n;
+}
+
+export function criarEvento(communityId: number, titulo: string, quando: string, userId: number): EventoDaComunidade {
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO eventos_da_comunidade (community_id, titulo, quando, criado_por) VALUES (?, ?, ?, ?)')
+    .run(communityId, titulo, quando, userId);
+  return { id: Number(lastInsertRowid), titulo, quando, criadoPor: userId };
+}
+
+export function apagarEvento(communityId: number, eventoId: number): boolean {
+  return db.prepare('DELETE FROM eventos_da_comunidade WHERE id = ? AND community_id = ?').run(eventoId, communityId).changes > 0;
+}
+
+/** Os aniversários dos membros, só se a comunidade ligou os parabéns (ver o bloco acima). */
+export function aniversariosNoCalendario(communityId: number): { userId: number; nome: string; mes: number; dia: number }[] {
+  const p = parabensDaComunidade(communityId);
+  if (!p.canalId || !p.texto) return [];
+  return (
+    db
+      .prepare(
+        `SELECT u.id AS userId, COALESCE(m.apelido, u.username) AS nome, u.aniversario AS md
+         FROM community_members m JOIN users u ON u.id = m.user_id
+         WHERE m.community_id = ? AND u.aniversario IS NOT NULL ORDER BY u.aniversario`,
+      )
+      .all(communityId) as { userId: number; nome: string; md: string }[]
+  ).map(({ userId, nome, md }) => ({ userId, nome, mes: Number(md.slice(0, 2)), dia: Number(md.slice(3)) }));
+}
