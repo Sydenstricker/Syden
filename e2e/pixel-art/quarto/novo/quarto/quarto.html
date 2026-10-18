@@ -1528,6 +1528,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const ASSENTO_CADEIRA = 34, SOBE_CADEIRA = 20, AVANCO_NA_CADEIRA = 0.4;
   const cadeira = { u: 6, v: 6, vu: 0, vv: 0, th: 0, w: 0, presa: false, kin: null, alvo: null };
   window.cadeiraDoTeste = cadeira; // para as fotos e o teste
+  window.coelhoNaCadeiraDoTeste = () => ({ u: coelho.u, v: coelho.v, fase: coelho.cadeiraFase ?? null, destino: coelho.destino, andando: coelho.caminho.length > 0 || !!coelho.aproximar, trans: !!coelho.trans, dir: coelho.dirVista ?? coelho.dir }); // para o teste
   // O lugar dela na mesa: S é sentado à mesa (encostado); P0, puxada para trás, de onde se senta. Virada para a mesa.
   function lugarNaMesa() {
     if (!ARR.mesa) return null;
@@ -1864,15 +1865,26 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   // NA CADEIRA DO COMPUTADOR: ele senta com ela puxada para trás (P0) e então ela rola até a mesa com ele. O lugar de
   // chegada (as casas de onde se chega) é o da beirada em P0; sentado, ele vai onde a cadeira for.
-  const OLHA_DO_VETOR = { '1,0': 'sudoeste', '0,1': 'sudeste', '-1,0': 'nordeste', '0,-1': 'noroeste' };
+  // A DIREÇÃO DE UM ÂNGULO DA CADEIRA, nas 8 do coelho (a mesma ordem das vistas dela: 0 = sudoeste, 90° = sudeste…).
+  const DIR_DO_ANGULO = ['sudoeste', 'sul', 'sudeste', 'leste', 'nordeste', 'norte', 'noroeste', 'oeste'];
+  const dirDoAngulo = (th) => DIR_DO_ANGULO[((Math.round(th / (Math.PI / 4)) % 8) + 8) % 8];
+  // SENTAR NA CADEIRA COMO GENTE (relato dele, 18/10/2026: "ele atravessa a cadeira e senta nela; o correto seria ele
+  // rotacionar nela, sentar e então se aproximar do PC"). A cadeira sai da mesa VIRADA PARA O QUARTO, e a frente do assento
+  // fica do lado de onde o coelho vem; ele senta de frente para o quarto; a cadeira gira com ele até o computador (ele
+  // acompanha, direção por direção, pelas 8 poses de sentado); e só então ela rola até a mesa. Levantar é o contrário.
+  // As fases (coelho.cadeiraFase): null ou 'sentar' (a cadeira virada para o quarto), 'girando' (ele sentado, seguindo o
+  // ângulo dela, a cada quadro) e 'mesa' (na mesa, a pose de mexer no computador). Antes ela ficava virada para a mesa, a
+  // frente do assento caía entre ela e o computador, e ele atravessava a cadeira para chegar lá.
   function pontoDaCadeira() {
-    const L = lugarNaMesa(), olha = OLHA_DO_VETOR[Math.round(Math.cos(L.th)) + ',' + Math.round(Math.sin(L.th))] ?? 'sudoeste';
-    const [fu, fv] = VET[olha], beira = [L.P0[0] + fu * 0.7, L.P0[1] + fv * 0.7];
+    const L = lugarNaMesa(), fase = coelho.cadeiraFase;
+    const thRef = fase === 'girando' || fase === 'mesa' ? cadeira.th : L.th + Math.PI;
+    const olha = dirDoAngulo(thRef);
+    const beira = [L.P0[0] + Math.round(Math.cos(thRef)) * 0.7, L.P0[1] + Math.round(Math.sin(thRef)) * 0.7];
     const perto = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - beira[0], a[1] + 0.5 - beira[1]) - Math.hypot(b[0] + 0.5 - beira[0], b[1] + 0.5 - beira[1]));
     // A pose ao computador é ancorada pelo fim do desenho, e sentado com as pernas para a frente esse ponto não é o meio
     // do assento: ele ficava para trás e fora da cadeira (relato de 14/10/2026). O lugar dele é um pouco à frente do
-    // meio dela, para onde ela olha.
-    const [ou, ov] = VET[olha];
+    // meio dela, para onde ela olha AGORA (girando, ele vai junto).
+    const ou = Math.cos(cadeira.th), ov = Math.sin(cadeira.th);
     return { ao: perto.slice(0, 1), onde: [cadeira.u + ou * AVANCO_NA_CADEIRA, cadeira.v + ov * AVANCO_NA_CADEIRA], sobe: SOBE_CADEIRA, pose: 'sentado', olha, sobre: 'cadeira', atras: olha.startsWith('n') };
   }
   function pontos() {
@@ -2158,7 +2170,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const c = caminho(saida(), alvos);
     if (!c) return cumprirNaChegada(destinoDe(id), true);
     if (id === 'mesa') return ir('cadeira');
-    if (id === 'cadeira') { const L = lugarNaMesa(); levarCadeira(L.P0, L.th, 900); }
+    // a cadeira sai da mesa e gira para o quarto, com a frente do assento do lado de onde ele vem
+    if (id === 'cadeira') { const L = lugarNaMesa(); coelho.cadeiraFase = 'sentar'; levarCadeira(L.P0, L.th + Math.PI, 900); }
     coelho.pose = 'parado'; coelho.destino = id;
     andarAte(c);
   }
@@ -2177,7 +2190,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // (relato de 14/10/2026: ele dormia e levantava com o livro, porque o estado já tinha virado "à toa").
   function poseDoAssento(id, dormindo) {
     if (id === 'cama') return dormindo ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : 'lendo';
-    return id === 'poltrona' ? 'sentado-poltrona' : id === 'cadeira' ? 'no-computador' : 'sentado';
+    return id === 'poltrona' ? 'sentado-poltrona' : 'sentado'; // (na cadeira, senta de frente para o quarto; o computador vem depois)
   }
   function roteiro(id, pt, dormindo = estado === 'ausente') {
     let beira, nomeT;
@@ -2229,13 +2242,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
     aproximar(ro.beira, ro.atrasNaBeira, id, () => { coelho.dir = p2.olha; tocar(id, p2, ro, false, () => chegarDeVez()); });
   }
   function levantar(depois) {
-    if (coelho.destino === 'cadeira') {
+    // Da cadeira: ela sai da mesa, gira com ele de volta para o quarto, e só então ele levanta (pela frente do assento).
+    if (coelho.destino === 'cadeira' && coelho.cadeiraFase !== 'sentar') {
       const L = lugarNaMesa();
-      if (Math.hypot(cadeira.u - L.P0[0], cadeira.v - L.P0[1]) > 0.05) {
-        coelho.descendo = true;
-        levarCadeira(L.P0, L.th, 700, () => { coelho.descendo = false; levantar(depois); });
-        return;
-      }
+      coelho.descendo = true; coelho.cadeiraFase = 'girando';
+      levarCadeira(L.P0, L.th, 700, () => levarCadeira(L.P0, L.th + Math.PI, 1000, () => { coelho.descendo = false; coelho.cadeiraFase = 'sentar'; levantar(depois); }));
+      return;
     }
     // No pufe, virado para outro lado: primeiro se vira de volta para o lado por onde subiu (a virada suave leva até
     // 400 ms), e só então desce por ele.
@@ -2248,6 +2260,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const id = coelho.destino, pt = pontos()[id], ro = roteiro(id, pt, coelho.pose === 'dormindo');
     coelho.destino = null; coelho.pose = 'parado';
     tocar(id, pt, ro, true, () => {
+      if (id === 'cadeira') coelho.cadeiraFase = null;
       coelho.u = ro.beira[0]; coelho.v = ro.beira[1];
       const c = saida();
       aproximar([c[0] + 0.5, c[1] + 0.5], ro.atrasNaBeira, id, () => depois());
@@ -2258,7 +2271,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (!pt) { coelho.pose = 'parado'; return; }
     coelho.dir = pt.olha;
     coelho.pose = coelho.destino === 'cama' ? (estado === 'ausente' ? 'dormindo' : 'lendo') : pt.pose;
-    if (coelho.destino === 'cadeira') { const L = lugarNaMesa(); coelho.descendo = true; levarCadeira(L.S, L.th, 700, () => { coelho.descendo = false; cumprirNaChegada('cadeira'); if (coelho.redecidir) { coelho.redecidir = false; decidir(); } }); }
+    // Sentado de frente para o quarto: a cadeira gira com ele até o computador e rola até a mesa.
+    if (coelho.destino === 'cadeira') {
+      const L = lugarNaMesa(); coelho.descendo = true; coelho.cadeiraFase = 'girando';
+      levarCadeira(L.P0, L.th, 1000, () => levarCadeira(L.S, L.th, 700, () => { coelho.cadeiraFase = 'mesa'; coelho.descendo = false; cumprirNaChegada('cadeira'); if (coelho.redecidir) { coelho.redecidir = false; decidir(); } }));
+    }
     else cumprirNaChegada(coelho.destino);
     // DORMINDO (ideia dele): às vezes rígido, às vezes largado; o rígido relaxa sozinho depois de um tempo.
     coelho.desde = performance.now();
@@ -2337,7 +2354,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     // A ANIMAÇÃO pelo que ele está fazendo: andando, sentado (lendo ou dormindo, na cama), falando de pé, ou parado.
     const nomeAnim = coelho.caminho.length || ap ? 'andando'
-      : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' ? 'sentado-poltrona' : coelho.destino === 'cadeira' ? 'no-computador' : 'sentado')
+      : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' ? 'sentado-poltrona' : coelho.destino === 'cadeira' ? (coelho.cadeiraFase === 'mesa' ? 'no-computador' : 'sentado') : 'sentado')
       : falando ? 'falando' : 'parado';
     // A VIRADA SUAVE (ideia dele, 14/10/2026): a direção que APARECE anda um passo por quadro no círculo das 8, pelo lado
     // mais curto, até a que ele quer; os passos do meio são a pose dele (de pé ou sentado) naquela direção. 90° = 200 ms.
