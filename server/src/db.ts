@@ -4386,6 +4386,11 @@ export function tirarDaFilaDoShield(sha256: string, onde: string, alvoId: number
   db.prepare('DELETE FROM shield_fila WHERE sha256 = ? AND onde = ? AND alvo_id = ?').run(sha256, onde, alvoId);
 }
 
+/** Tira da fila TODAS as entradas de um arquivo: o positivo já levou todas as cópias dele. */
+export function tirarShaDaFilaDoShield(sha256: string) {
+  db.prepare('DELETE FROM shield_fila WHERE sha256 = ?').run(sha256);
+}
+
 /**
  * Conta mais uma tentativa que falhou.
  *
@@ -4397,6 +4402,128 @@ export function maisUmaTentativaNoShield(sha256: string, onde: string, alvoId: n
   db.prepare(
     'UPDATE shield_fila SET tentativas = tentativas + 1 WHERE sha256 = ? AND onde = ? AND alvo_id = ?',
   ).run(sha256, onde, alvoId);
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A PROVA DO SHIELD: o que a reconferência achou depois de a imagem já estar no ar (ver reconferencia.ts)
+// ---------------------------------------------------------------------------------------------------
+
+/*
+ * Quando a fila do Shield é reconferida e uma imagem que JÁ ESTAVA NO AR dá positivo, ela sai de todo lugar onde
+ * aparecia, e o arquivo fica guardado aqui como prova (ECA Digital, arts. 27 e 28: remover, guardar e comunicar).
+ *
+ * AS MESMAS REGRAS DA CAIXA-PRETA, e pelo mesmo motivo: NÃO EXISTE ROTA. A denúncia grave que nasce junto não
+ * aponta o arquivo (sem `sha`), então o painel não tem imagem para mostrar — quem cuida do Syden não deve ver nem
+ * repassar o material (docs/autoridades.md). Só sai pelo servidor, a pedido de autoridade. Um teste varre
+ * server/src e falha se outro arquivo além deste citar a tabela. Sem prazo de limpeza: fica enquanto a autoridade
+ * precisar, e a vassoura de órfãos (scripts/limpar-orfaos.mjs) não apaga o arquivo porque lê esta tabela.
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS shield_provas (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    quando        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    sha           TEXT NOT NULL,
+    onde          TEXT NOT NULL,
+    alvo_id       INTEGER NOT NULL,
+    autor_id      INTEGER,
+    classificacao TEXT,
+    tipo          TEXT,
+    denuncia_id   INTEGER
+  );
+`);
+
+/** As tabelas onde mora uma imagem enviada, com o que diz quem a subiu. */
+const IMAGENS_POR_SHA = [
+  { tabela: 'avatars', autor: 'user_id' },
+  { tabela: 'community_icons', autor: 'NULL' },
+  { tabela: 'community_banners', autor: 'NULL' },
+  { tabela: 'emojis', autor: 'created_by' },
+  { tabela: 'emoji_pack_items', autor: '(SELECT created_by FROM emoji_packs p WHERE p.id = emoji_pack_items.pack_id)' },
+  { tabela: 'attachments', autor: '(SELECT user_id FROM messages m WHERE m.id = attachments.message_id)' },
+];
+
+/** O tipo e, se a linha é antiga (antes dos arquivos irem para o disco), os bytes de uma imagem pelo sha. */
+export function imagemPeloSha(sha: string): { mime: string; data: Buffer } | undefined {
+  for (const { tabela } of IMAGENS_POR_SHA) {
+    const linha = db.prepare(`SELECT mime, data FROM ${tabela} WHERE sha = ? LIMIT 1`).get(sha) as { mime: string; data: Uint8Array } | undefined;
+    if (linha) return { mime: linha.mime, data: Buffer.from(linha.data) };
+  }
+  return undefined;
+}
+
+export interface RetiradoPeloShield {
+  avatares: number[];
+  icones: number[];
+  capas: number[];
+  emojis: { id: number; communityId: number }[];
+  anexos: { id: number; messageId: number; channelId: number; mensagemApagada: boolean }[];
+  /** Quem subiu cada cópia (sem repetição; vazio quando não se sabe, como no ícone da comunidade). */
+  autores: number[];
+}
+
+/**
+ * Tira a imagem de TODO lugar onde ela aparece (todas as cópias, pelo sha), inclusive das conversas privadas — ao
+ * contrário da retirada por direito autoral, aqui não há o que preservar. Não apaga o arquivo: ele fica como prova.
+ */
+export function retirarPeloShield(sha: string): RetiradoPeloShield {
+  const r: RetiradoPeloShield = { avatares: [], icones: [], capas: [], emojis: [], anexos: [], autores: [] };
+  const autores = new Set<number>();
+  db.exec('BEGIN');
+  try {
+    for (const { tabela, autor } of IMAGENS_POR_SHA) {
+      for (const { quem } of db.prepare(`SELECT ${autor} AS quem FROM ${tabela} WHERE sha = ?`).all(sha) as { quem: number | null }[]) {
+        if (quem !== null) autores.add(quem);
+      }
+    }
+    for (const { id } of db.prepare('SELECT user_id AS id FROM avatars WHERE sha = ?').all(sha) as { id: number }[]) {
+      db.prepare('DELETE FROM avatars WHERE user_id = ?').run(id);
+      db.prepare('UPDATE users SET avatar_version = NULL WHERE id = ?').run(id);
+      r.avatares.push(id);
+    }
+    for (const { id } of db.prepare('SELECT community_id AS id FROM community_icons WHERE sha = ?').all(sha) as { id: number }[]) {
+      setCommunityIcon(id, null);
+      r.icones.push(id);
+    }
+    for (const { id } of db.prepare('SELECT community_id AS id FROM community_banners WHERE sha = ?').all(sha) as { id: number }[]) {
+      setCommunityBanner(id, null);
+      r.capas.push(id);
+    }
+    r.emojis = db.prepare('SELECT id, community_id AS communityId FROM emojis WHERE sha = ?').all(sha) as RetiradoPeloShield['emojis'];
+    db.prepare('DELETE FROM emojis WHERE sha = ?').run(sha);
+    db.prepare('DELETE FROM emoji_pack_items WHERE sha = ?').run(sha);
+    const anexos = db
+      .prepare('SELECT a.id, a.message_id AS messageId, m.channel_id AS channelId FROM attachments a JOIN messages m ON m.id = a.message_id WHERE a.sha = ?')
+      .all(sha) as { id: number; messageId: number; channelId: number }[];
+    for (const l of anexos) {
+      db.prepare('DELETE FROM attachments WHERE id = ?').run(l.id);
+      // Mensagem que ficou sem texto e sem anexo some, como na retirada por direito autoral.
+      const resto = db.prepare('SELECT COUNT(*) AS n FROM attachments WHERE message_id = ?').get(l.messageId) as { n: number };
+      const mensagem = db.prepare('SELECT content FROM messages WHERE id = ?').get(l.messageId) as { content: string } | undefined;
+      const vazia = !!mensagem && resto.n === 0 && mensagem.content.trim() === '';
+      if (vazia) db.prepare('DELETE FROM messages WHERE id = ?').run(l.messageId);
+      r.anexos.push({ ...l, mensagemApagada: vazia });
+    }
+    db.exec('COMMIT');
+  } catch (erro) {
+    db.exec('ROLLBACK');
+    throw erro;
+  }
+  r.autores = [...autores];
+  return r;
+}
+
+export function guardarProvaDoShield(prova: {
+  sha: string;
+  onde: string;
+  alvoId: number;
+  autorId: number | null;
+  classificacao?: string;
+  tipo?: string;
+  denunciaId: number;
+}) {
+  db.prepare(
+    `INSERT INTO shield_provas (sha, onde, alvo_id, autor_id, classificacao, tipo, denuncia_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  ).run(prova.sha, prova.onde, prova.alvoId, prova.autorId, prova.classificacao ?? null, prova.tipo ?? null, prova.denunciaId);
 }
 
 // ---------------------------------------------------------------------------------------------------

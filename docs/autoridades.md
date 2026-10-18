@@ -13,6 +13,10 @@ Escrito em 17/10/2026, junto com a proteção de adolescentes (ver "Adolescentes
 - **O Shield bloqueou uma imagem** (correspondência com material conhecido): o registro do servidor ganha a linha
   `SHIELD BLOQUEOU UM ENVIO — olhe isto`, com o sha256. A imagem de uma denúncia de transmissão não é recusada (é a
   prova): a denúncia nasce GRAVE.
+- **A reconferência do Shield achou uma imagem que já estava no ar** (ela entrou enquanto o Shield estava fora; ver
+  `server/src/reconferencia.ts`): o Syden já a tirou de todo lugar e guardou o arquivo como prova, sem rota e sem
+  mostrar a ninguém, e abriu uma denúncia GRAVE para cada conta que a subiu. O registro ganha a mesma linha do
+  bloqueio. Falta o passo 1 (banir) e os passos 3 a 5; a prova já está guardada.
 - **Qualquer outro caminho** (e-mail para contato@syden.chat, algo visto por acaso): abra uma denúncia você mesmo e
   marque como grave, para o caso ficar registrado no mesmo lugar.
 

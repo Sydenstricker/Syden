@@ -38,6 +38,7 @@ import { registerSalasTemporariasRoutes } from './salas-temporarias.js';
 import { registerContadoresRoutes } from './contadores-routes.js';
 import { registerMinijogosRoutes } from './minijogos-routes.js';
 import { iniciarAgendador } from './agendador.js';
+import { iniciarReconferencia } from './reconferencia.js';
 import { startTrafficSampling } from './traffic.js';
 import { countServerError, startHealthSampling } from './health.js';
 
@@ -130,6 +131,9 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
 
     // Mensagens agendadas e lembretes: o relógio de 30 s (ver agendador.ts).
     iniciarAgendador(io);
+
+    // A fila do Shield: o que entrou com ele fora do ar é conferido quando ele volta (ver reconferencia.ts).
+    iniciarReconferencia(io, app.log);
   }
 
   return { app, io };
