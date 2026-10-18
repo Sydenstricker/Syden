@@ -92,23 +92,6 @@ export function registerEmailRoutes(app: FastifyInstance) {
       const { resultado, link } = await mandar(request.user.id, request.user.username, email, 'verificar');
       return { ok: true, email, enviado: resultado.enviado, rascunho: resultado.rascunho, link };
     });
-
-    /** Pedir o link de confirmação de novo. */
-    authed.post('/api/me/email/reenviar', async (request, reply) => {
-      const { email, verifiedAt } = db.emailDe(request.user.id);
-      if (!email) return reply.code(400).send({ error: 'Você ainda não cadastrou um e-mail.' });
-      if (verifiedAt) return { ok: true, jaConfirmado: true };
-      if (freioDeEnvio.tentar(request.ip) || freioPorAlvo.tentar(email)) {
-        return reply.code(429).send({ error: 'Já mandamos há pouco. Olhe a sua caixa de entrada e o spam.' });
-      }
-      const { resultado, link } = await mandar(request.user.id, request.user.username, email, 'verificar');
-      return { ok: true, enviado: resultado.enviado, rascunho: resultado.rascunho, link };
-    });
-
-    authed.delete('/api/me/email', async (request) => {
-      db.definirEmail(request.user.id, null);
-      return { ok: true };
-    });
   });
 
   // ---------- Sem estar logado: confirmar o endereço e recuperar a senha ----------

@@ -79,7 +79,8 @@ describe('painéis de dono', () => {
 
   it('não deixam alguém se promover a administrador', async () => {
     const eu = (await estranho('GET', '/api/me')).json();
-    assert.equal((await estranho('PUT', `/api/users/${eu.id}/admin`, { isAdmin: true })).statusCode, 403);
+    // (a rota de dar o cargo saiu em 17/10/2026: nenhuma tela a usava; o cargo só muda direto no banco)
+    assert.equal((await estranho('PUT', `/api/users/${eu.id}/admin`, { isAdmin: true })).statusCode, 404);
     assert.equal((await estranho('GET', '/api/me')).json().isAdmin, false, 'continua sem ser administrador');
   });
 });

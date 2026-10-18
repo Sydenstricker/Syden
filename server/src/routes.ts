@@ -1133,43 +1133,6 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return { ok: true };
     });
 
-    // ---------- Conta (Syden inteiro) ----------
-
-    authed.delete<{ Params: { id: string } }>('/api/users/:id', async (request, reply) => {
-      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só quem administra o Syden pode excluir contas.' });
-      const target = db.findUserById(Number(request.params.id));
-      if (!target) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
-      if (target.id === request.user.id) {
-        return reply.code(400).send({ error: 'Para sair, use "Excluir minha conta" em Minha conta.' });
-      }
-      if (target.isOwner) return reply.code(403).send({ error: 'O dono do Syden não pode ser removido.' });
-      if (target.isAdmin && !request.user.isOwner) {
-        return reply.code(403).send({ error: 'Só o dono do Syden pode remover quem também administra.' });
-      }
-      db.registrarAuditoria({ actor: request.user, action: 'conta.excluida', target: target.username });
-      removeAccount(io, target.id);
-      return { ok: true };
-    });
-
-    // Cargo de administrador do Syden inteiro: só o dono dá e tira, e o dele não sai.
-    authed.put<{ Params: { id: string }; Body: { isAdmin?: boolean } }>('/api/users/:id/admin', async (request, reply) => {
-      if (!request.user.isOwner) {
-        return reply.code(403).send({ error: 'Só o dono do Syden pode dar ou tirar o cargo de administrador.' });
-      }
-      if (typeof request.body?.isAdmin !== 'boolean') return reply.code(400).send({ error: 'Pedido inválido.' });
-      const target = db.findUserById(Number(request.params.id));
-      if (!target) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
-      if (target.isOwner) return reply.code(400).send({ error: 'O dono do Syden é sempre administrador.' });
-      const user = db.setAdmin(target.id, request.body.isAdmin)!;
-      db.registrarAuditoria({
-        actor: request.user,
-        action: request.body.isAdmin ? 'admin.dado' : 'admin.tirado',
-        target: target.username,
-      });
-      io.emit('user:updated', user);
-      return user;
-    });
-
     /**
      * Silenciar o microfone de alguém na sala, como o Discord: quem administra a comunidade corta a fala de
      * quem está atrapalhando. É feito no servidor de mídia, então vale mesmo se o app da pessoa não colaborar.

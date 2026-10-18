@@ -43,12 +43,12 @@ describe('a caixa-preta das contas excluídas', () => {
   };
 
   it('guarda quem era a pessoa e o que ela escreveu', async () => {
-    const dono = await criarConta(app, 'donodatudo');
     const reu = await criarConta(app, 'quemsumiu');
-    const comoDono = comToken(app, dono.token);
 
     const antes = caixa().length;
-    const apagou = await comoDono('DELETE', `/api/users/${reu.user.id}`);
+    // A própria pessoa exclui a conta: desde 17/10/2026 não há mais rota para um administrador apagar a de outro
+    // (banir é o caminho, e a conta banida continua inteira enquanto a autoridade precisar).
+    const apagou = await comToken(app, reu.token)('POST', '/api/me/delete', { password: reu.password });
     assert.equal(apagou.statusCode, 200, apagou.body);
 
     const depois = caixa();

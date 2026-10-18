@@ -62,26 +62,7 @@ describe('o operador do Syden dentro da comunidade dos outros', () => {
 });
 
 describe('o registro de auditoria', () => {
-  it('guarda quem deu e quem tirou o cargo de administrador', async () => {
-    const zeca = (await visitante('GET', '/api/me')).json();
-    await dono('PUT', `/api/users/${zeca.id}/admin`, { isAdmin: true });
-    await dono('PUT', `/api/users/${zeca.id}/admin`, { isAdmin: false });
-
-    const acoes = (await dono('GET', '/api/audit')).json().map((l: { action: string }) => l.action);
-    assert.ok(acoes.includes('admin.dado'));
-    assert.ok(acoes.includes('admin.tirado'));
-  });
-
   it('não abre para quem não administra o Syden', async () => {
     assert.equal((await visitante('GET', '/api/audit')).statusCode, 403);
-  });
-
-  it('guarda o nome por extenso, para continuar legível depois de a conta sumir', async () => {
-    const alvo = await criarConta(app, 'passageiro');
-    await dono('DELETE', `/api/users/${alvo.user.id}`);
-
-    const linha = (await dono('GET', '/api/audit')).json().find((l: { action: string }) => l.action === 'conta.excluida');
-    assert.ok(linha, 'a exclusão tinha que estar no registro');
-    assert.match(linha.target, /^passageiro/, 'o nome fica escrito, não só o número da conta');
   });
 });

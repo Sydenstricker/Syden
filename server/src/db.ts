@@ -2006,12 +2006,6 @@ export function findOwner(): User | undefined {
   return toUser(db.prepare(`SELECT ${userColumns} FROM users WHERE is_owner = 1`).get() as UserRow | undefined);
 }
 
-/** Dá ou tira o cargo de administrador. O dono é administrador sempre. */
-export function setAdmin(userId: number, isAdmin: boolean): User | undefined {
-  db.prepare('UPDATE users SET is_admin = ? WHERE id = ? AND is_owner = 0').run(isAdmin ? 1 : 0, userId);
-  return findUserById(userId);
-}
-
 export function setAvatar(userId: number, avatar: { mime: string; data: Buffer } | null): User {
   if (avatar) {
     const no = aoDisco(avatar.data);
