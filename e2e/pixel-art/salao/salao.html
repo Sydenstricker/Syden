@@ -2895,16 +2895,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const x = k % W, y = (k / W) | 0;
       for (let c = 0; c < 3; c++) {
         if (vao[k]) { D[k * 3 + c] = daVista(vistasDia[vista], k, c); fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], k, c); }
-        // O vidro da folha aberta: ela abre para DENTRO, então atrás dele está a PAREDE, não a paisagem (relato de
-        // 15/10/2026: com a vista de árvores, a folha aparecia salpicada de verde). A parede vista pelo vidro, com o
-        // reflexo claro dele.
-        // VIDRO, E NÃO NÉVOA (relato dele, 17/10/2026: "os vidros ainda estão embaçados"): a parede atrás é creme, e somar o
-        // creme do reflexo por cima dava um painel leitoso. Agora a parede passa ESCURECIDA e um pouco azulada (o vidro
-        // come luz), e o reflexo é só uma faixa diagonal fina, que é o que o olho lê como vidro.
+        // O VIDRO DA FOLHA ABERTA MOSTRA A PAISAGEM, TRANSPARENTE (decisão dele, 18/10/2026, entre três lado a lado). A
+        // folha abre para dentro, e atrás dela estaria a parede; mas a parede creme e lisa pelo vidro lia como vidro fosco
+        // (relatos de 17 e 18/10: "embaçados", "transparente fechada e borrada aberta"), escurecida ou com reflexo listrado.
+        // A paisagem pelo vidro é o que o olho lê como vidro, igual à janela fechada, e com um véu ainda mais leve que o
+        // dela. (Os salpicos verdes de 15/10 eram a máscara do vidro, consertada em 74a7e8d.)
         else if (vidroAberto[k]) {
-          const brilho = (x + y) % 11 < 2 ? 1 : 0;
-          D[k * 3 + c] = semDia[k * 4 + c] * 0.7 + [150, 178, 205][c] * 0.12 + brilho * [60, 62, 58][c];
-          fundoNoite[k * 3 + c] = semNoite[k * 4 + c] * 0.72 + [40, 52, 90][c] * 0.12 + brilho * [26, 30, 40][c];
+          D[k * 3 + c] = daVista(vistasDia[vista], k, c) * 0.94 + [250, 243, 224][c] * 0.06;
+          fundoNoite[k * 3 + c] = daVista(vistasNoite[vista], k, c) * 0.95 + [40, 46, 80][c] * 0.05;
         }
         else { D[k * 3 + c] = abertaDia[k * 4 + c]; fundoNoite[k * 3 + c] = abertaDia[k * 4 + c] * Math.min(1, noitePe[k * 4 + c] / Math.max(1, diaPe[k * 4 + c])); }
       }
