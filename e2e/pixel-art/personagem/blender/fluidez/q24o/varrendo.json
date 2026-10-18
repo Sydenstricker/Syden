@@ -1,0 +1,28 @@
+{
+  "quadro": [
+    120,
+    120
+  ],
+  "quadros": 24,
+  "fps": 30,
+  "repete": true,
+  "pe": {
+    "south-east": [
+      58.8,
+      101
+    ],
+    "south-west": [
+      60.2,
+      101
+    ],
+    "north-east": [
+      63.4,
+      100
+    ],
+    "north-west": [
+      55.6,
+      100
+    ]
+  },
+  "nota": "pe = âncora explícita (do coelho parado); a vassoura desce abaixo dos pés"
+}

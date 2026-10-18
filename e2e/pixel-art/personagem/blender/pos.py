@@ -13,12 +13,17 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 ESCALA = int(sys.argv[1]) if len(sys.argv) > 1 else 4
 # "python pos.py 4 projecao": a alternativa B (os quadros do coelho.py "-- 4 projecao"), saída em projecao/
 PROJECAO = len(sys.argv) > 2 and sys.argv[2] == 'projecao'
-ENTRADA = os.path.join(AQUI, 'saida', f"quadros{'-proj' if PROJECAO else ''}-{ESCALA}x")
+# o teste de fluidez (QUADROS e ORGANICO no ambiente, como no coelho.py): entra e sai à parte, em fluidez/
+QUADROS = int(os.environ.get('QUADROS', '8'))
+ORGANICO = os.environ.get('ORGANICO') == '1'
+VARIANTE = f"q{QUADROS}{'o' if ORGANICO else ''}" if QUADROS != 8 or ORGANICO else ''
+ENTRADA = os.path.join(AQUI, 'saida', f"quadros{'-proj' if PROJECAO else ''}{'-' + VARIANTE if VARIANTE else ''}-{ESCALA}x")
 # a escala 4 é a escolhida e vai para a pasta; as outras ficam em saida/final-<n>x/, só para comparar
 SAIDA = os.path.join(AQUI, 'projecao') if PROJECAO else AQUI if ESCALA == 4 else os.path.join(AQUI, 'saida', f'final-{ESCALA}x')
+if VARIANTE:
+    SAIDA = os.path.join(AQUI, 'fluidez', VARIANTE)
 os.makedirs(SAIDA, exist_ok=True)
 DIRS = ['south-east', 'south-west', 'north-east', 'north-west']
-QUADROS = 8
 MASCOTE = os.path.join(AQUI, '..', 'mascote', 'baixa-120')
 SALAO = os.path.join(AQUI, '..', '..', 'salao')
 CONTORNO = (2, 1, 2, 255)   # o preto do contorno do mascote
@@ -158,7 +163,7 @@ for d in DIRS:
     xs = [x for y in range(fundo_y - 3, fundo_y + 1) for x in range(120) if a.getpixel((x, y))[3]]
     anc[d] = [round(sum(xs) / len(xs), 1), fundo_y]
 with open(os.path.join(SAIDA, 'varrendo.json'), 'w', encoding='utf-8') as f:
-    json.dump({'quadro': [120, 120], 'quadros': QUADROS, 'fps': 10, 'repete': True,
+    json.dump({'quadro': [120, 120], 'quadros': QUADROS, 'fps': round(QUADROS * 10 / 8), 'repete': True,
                'pe': anc, 'nota': 'pe = âncora explícita (do coelho parado); a vassoura desce abaixo dos pés'},
               f, ensure_ascii=False, indent=2)
 
@@ -203,7 +208,7 @@ for i in range(QUADROS):
     for k, d in enumerate(DIRS):
         q.alpha_composite(faixas[d].crop((120 * i, 0, 120 * i + 120, 120)), (120 * k, 0))
     gif.append(x3(q).convert('RGB'))
-gif[0].save(os.path.join(SAIDA, 'varrendo.gif'), save_all=True, append_images=gif[1:], duration=100, loop=0)
+gif[0].save(os.path.join(SAIDA, 'varrendo.gif'), save_all=True, append_images=gif[1:], duration=round(800 / QUADROS), loop=0)
 # A e B lado a lado (só na rodada da B): por direção, PixelLab | A parado | B parado | A e B em dois quadros varrendo
 if PROJECAO:
     linhas = []

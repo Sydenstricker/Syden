@@ -20,6 +20,13 @@ PROJECAO = len(ARGS) > 1 and ARGS[1] == 'projecao'
 # para o pós riscar as quinas (escuro onde dobra para dentro, claro onde dobra para fora)
 ABORDAGEM_C = len(ARGS) > 1 and ARGS[1] == 'c'
 SUF = '-proj' if PROJECAO else '-c' if ABORDAGEM_C else ''
+# O TESTE DE FLUIDEZ (pedido dele, 18/10/2026: "com modelo 3D, não poderíamos aumentar os frames?"): QUADROS=24 no ambiente
+# troca os 8 quadros por mais (o mesmo ciclo, mais fatiado), e ORGANICO=1 troca o seno puro por um golpe com pressa e uma
+# volta mais lenta, com o corpo atrasado em relação à vassoura. Saem em fluidez/, sem tocar no resto.
+QUADROS_PEDIDOS = int(os.environ.get('QUADROS', '8'))
+ORGANICO = os.environ.get('ORGANICO') == '1'
+if QUADROS_PEDIDOS != 8 or ORGANICO:
+    SUF += f"-q{QUADROS_PEDIDOS}{'o' if ORGANICO else ''}"
 LOG = open(os.path.join(SAIDA, f'log{SUF}-{ESCALA}x.txt'), 'w', encoding='utf-8')
 sys.stdout = LOG
 sys.stderr = LOG
@@ -346,7 +353,7 @@ try:
             ARM.pose.bones[n].ik_stretch = 0.5
 
     # ============================ A ANIMAÇÃO "VARRENDO" ============================
-    QUADROS = 8
+    QUADROS = QUADROS_PEDIDOS
     cena.frame_start, cena.frame_end = 1, QUADROS
     pbs = ARM.pose.bones
     for pb in pbs:
@@ -361,9 +368,16 @@ try:
 
     ARCO = float(os.environ.get('ARCO', '40'))   # graus para cada lado (era 30)
 
+    def onda(p):
+        # o seno puro vai e volta no mesmo ritmo; o orgânico corre no golpe e desacelera na volta (o tempo é torto)
+        return math.sin(p + 0.55 * math.sin(p)) if ORGANICO else math.sin(p)
+
     def pose(i):
         p = 2 * math.pi * i / QUADROS
-        sw = math.sin(p)
+        sw = onda(p)
+        # o corpo vai um pouco DEPOIS da vassoura, e a cabeça depois do corpo (o atraso que dá peso)
+        swc = onda(p - 0.35) if ORGANICO else sw
+        swh = onda(p - 0.7) if ORGANICO else sw
         ang = math.radians(ARCO) * sw
         v = pbs['vassoura']
         v.rotation_quaternion = Quaternion(local(v, EIXO_BALANCO), ang)
@@ -372,15 +386,15 @@ try:
         v.location = v.bone.matrix_local.to_3x3().inverted() @ desl
         t = pbs['tronco']
         # rodada 2: o tronco torce e se inclina PARA DENTRO do golpe (antes era 9° e mal se via em 1×)
-        t.rotation_quaternion = Quaternion(local(t, Vector((0, 0, 1))), math.radians(16) * sw) @ \
-            Quaternion(local(t, Vector((0, 1, 0))), math.radians(-6) * sw) @ \
+        t.rotation_quaternion = Quaternion(local(t, Vector((0, 0, 1))), math.radians(16) * swc) @ \
+            Quaternion(local(t, Vector((0, 1, 0))), math.radians(-6) * swc) @ \
             Quaternion(local(t, Vector((1, 0, 0))), math.radians(-12))
         r = pbs['raiz']
         # o peso passa de um pé para o outro junto com a vassoura
-        r.location = r.bone.matrix_local.to_3x3().inverted() @ Vector((0.12 * sw, 0, -0.05 + 0.05 * math.cos(2 * p)))
+        r.location = r.bone.matrix_local.to_3x3().inverted() @ Vector((0.12 * swc, 0, -0.05 + 0.05 * math.cos(2 * p)))
         c = pbs['cabeca']
-        c.rotation_quaternion = Quaternion(local(c, Vector((0, 0, 1))), math.radians(-9) * sw) @ \
-            Quaternion(local(c, Vector((0, 1, 0))), math.radians(3) * sw) @ \
+        c.rotation_quaternion = Quaternion(local(c, Vector((0, 0, 1))), math.radians(-9) * swh) @ \
+            Quaternion(local(c, Vector((0, 1, 0))), math.radians(3) * swh) @ \
             Quaternion(local(c, Vector((1, 0, 0))), math.radians(6))
         # as orelhas atrasadas: seguem o balanço com um quarto de volta de atraso, e balançam no ritmo do quique
         for lado, s in (('L', 1), ('R', -1)):
@@ -543,12 +557,16 @@ try:
     def poeira(i, d_graus):
         for o, _, _ in POEIRA:
             o.hide_render = True
-        fim = {2: (1, 0), 3: (1, 1), 6: (-1, 0), 7: (-1, 1)}.get(i)
-        if not fim:
+        # (em oitavos do ciclo, para valer com qualquer número de quadros: a poeira nasce no 2.º e no 6.º oitavo)
+        f = i * 8 / QUADROS
+        if 2 <= f < 4:
+            lado, depois = 1, (f - 2) / 2
+        elif 6 <= f < 8:
+            lado, depois = -1, (f - 6) / 2
+        else:
             return
-        lado, depois = fim
         # o pé da vassoura no quadro do fim do golpe, um pouco além, no sentido do golpe
-        cena.frame_set((2 if lado > 0 else 6) + 1)
+        cena.frame_set(round((2 if lado > 0 else 6) * QUADROS / 8) + 1)
         pe = ARM.matrix_world @ pbs['vassoura'].tail
         cena.frame_set(i + 1)
         rot = Matrix.Rotation(math.radians(d_graus), 3, 'Z')
@@ -594,7 +612,7 @@ try:
         print('ok', d)
 
     ARM.rotation_euler = (0, 0, math.radians(45))
-    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, 'projecao', 'coelho-projecao.blend') if PROJECAO else os.path.join(AQUI, 'c', 'coelho-c.blend') if ABORDAGEM_C else os.path.join(AQUI, 'coelho.blend'))
+    if '-q' not in SUF: bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, 'projecao', 'coelho-projecao.blend') if PROJECAO else os.path.join(AQUI, 'c', 'coelho-c.blend') if ABORDAGEM_C else os.path.join(AQUI, 'coelho.blend'))
     print('FIM')
 except Exception:
     import traceback
