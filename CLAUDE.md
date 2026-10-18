@@ -725,6 +725,13 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
     O Meshy fez um bom modelo até do desenho de braços para baixo; a pose A é para o esqueleto encaixar melhor.
   - Ao pôr no motor: a âncora vem do `pe` explícito do json da animação (a vassoura desce abaixo do pé, e a regra do
     primeiro quadro cairia na palha).
+  - **O RITMO PADRÃO É "EM DOIS": 12 desenhos por segundo (decisão dele, 18/10/2026).** Renderiza-se a 24 e cada desenho
+    segura dois tempos, como na animação feita à mão e em muita pixel art: o olho lê a pose e o movimento ganha peso, e
+    quadro demais destoa da estética pixel. Comparado no mesmo ciclo com "em um" (24/s, liso demais), "em três" (8/s,
+    travado) e o variável (em um no golpe, em dois na volta). **A CADA ANIMAÇÃO NOVA o comparativo se refaz**
+    (`personagem/blender/fluidez/tempos.py` → `ritmos.gif`), e ela fica em 12 ou muda, caso a caso. O movimento é
+    "orgânico" (golpe com pressa e volta lenta, o corpo e a cabeça atrasados): o seno puro fica mecânico. O jogo segue a
+    60 por segundo; só o coelho anda no ritmo dele.
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
