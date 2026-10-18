@@ -1733,7 +1733,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'پذیرفتن: این ایده وارد Syden شد',
   'Acolher a ideia': 'پذیرفتن ایده',
   'Voltar aos canais': 'بازگشت به کانال‌ها',
-  'Grupo': 'گروه',
   'Criando…': 'در حال ساختن…',
   'Começar conversa': 'شروع گفتگو',
   'Tirar a sua nota': 'برداشتن امتیازتان',
@@ -2061,4 +2060,6 @@ export default {
   'Nome do grupo': 'نام گروه',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'پیام‌های گروه دیگر به تو نمی‌رسد. برای برگشتن، یکی از اعضای گروه باید دوباره دعوتت کند.',
   'Editar pacote': 'ویرایش بسته',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'درخواست‌ها',
 } satisfies Record<string, string>;

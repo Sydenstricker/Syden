@@ -1785,7 +1785,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Fudhadhu: yaadni kun Syden keessa seeneera',
   'Acolher a ideia': 'Yaada fudhadhu',
   'Voltar aos canais': 'Gara chaanaaliitti deebi’i',
-  'Grupo': 'Garee',
   'Criando…': 'Uumaa jira…',
   'Começar conversa': 'Haasaa jalqabi',
   'Tirar a sua nota': 'Qabxii kee haqi',
@@ -2113,4 +2112,6 @@ export default {
   'Nome do grupo': 'Maqaa garee',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ergaawwan garee siif hin dhufan. Deebi’uuf, namni garee keessa jiru tokko irra deebi’ee si waamuu qaba.',
   'Editar pacote': 'Kuusaa gulaali',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Gaaffiiwwan',
 } satisfies Record<string, string>;

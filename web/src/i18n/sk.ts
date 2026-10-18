@@ -1815,7 +1815,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Prijať: tento nápad je v Sydene',
   'Acolher a ideia': 'Prijať nápad',
   'Voltar aos canais': 'Späť na kanály',
-  'Grupo': 'Skupina',
   'Criando…': 'Vytvára sa…',
   'Começar conversa': 'Začať konverzáciu',
   'Tirar a sua nota': 'Odobrať svoje hodnotenie',
@@ -2143,4 +2142,6 @@ export default {
   'Nome do grupo': 'Názov skupiny',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Správy zo skupiny ti už nebudú chodiť. Ak sa chceš vrátiť, niekto zo skupiny ťa musí znova pozvať.',
   'Editar pacote': 'Upraviť balíček',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Žiadosti',
 } satisfies Record<string, string>;

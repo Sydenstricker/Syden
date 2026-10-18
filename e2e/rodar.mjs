@@ -19,7 +19,14 @@ const PRECISAM_DE_LIVEKIT = new Set(['sob-demanda', 'menu-mais-da-chamada', 'cli
  * Estes contam com ser a PRIMEIRA conta de um Syden recém-criado, porque a primeira conta vira dona e é
  * ela que acolhe ideias e administra. Dois deles na mesma rodada não cabem: o segundo já não seria dona.
  */
-const PRECISAM_SER_A_PRIMEIRA_CONTA = new Set(['ideias', 'menu-elegante']);
+const PRECISAM_SER_A_PRIMEIRA_CONTA = new Set(['ideias', 'menu-elegante', 'avisos-ao-vivo']);
+
+/**
+ * Não são testes, são GERADORES: escrevem as imagens publicadas do site (web/site/capturas/) e as fotos da Store, com a
+ * comunidade de demonstração. Rodando com "todos", trocavam as imagens boas pelas de um banco de teste (auditoria de
+ * 17/10/2026). Ficam fora da rodada inteira; pedidos pelo nome, rodam.
+ */
+const GERADORES = new Set(['call-animada', 'caprichar-demonstracao', 'capturas-da-loja', 'conversa-animada', 'vitrine-animada']);
 
 const todos = readdirSync(AQUI)
   .filter((nome) => nome.endsWith('.mjs') && !['ajuda.mjs', 'rodar.mjs', 'politica-de-seguranca.mjs'].includes(nome))
@@ -34,7 +41,7 @@ if (desconhecidos.length) {
 }
 
 // A ordem pedida é respeitada: quem precisa ser a primeira conta tem que poder ser posto na frente.
-const escolhidos = pedidos.length ? pedidos : todos;
+const escolhidos = pedidos.length ? pedidos : todos.filter((nome) => !GERADORES.has(nome));
 
 const disputam = escolhidos.filter((nome) => PRECISAM_SER_A_PRIMEIRA_CONTA.has(nome));
 if (disputam.length > 1) {

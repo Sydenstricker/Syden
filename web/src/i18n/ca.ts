@@ -1811,7 +1811,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Acollir: aquesta idea ha entrat al Syden',
   'Acolher a ideia': 'Acollir la idea',
   'Voltar aos canais': 'Tornar als canals',
-  'Grupo': 'Grup',
   'Criando…': 'Creant…',
   'Começar conversa': 'Començar la conversa',
   'Tirar a sua nota': 'Treure la teva valoració',
@@ -2139,4 +2138,6 @@ export default {
   'Nome do grupo': 'Nom del grup',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Els missatges del grup deixaran d\'arribar-te. Per tornar, algú de dins t\'ha de tornar a convidar.',
   'Editar pacote': 'Edita el paquet',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Sol·licituds',
 } satisfies Record<string, string>;

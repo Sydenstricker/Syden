@@ -1815,7 +1815,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Прифати: оваа идеја влезе во Syden',
   'Acolher a ideia': 'Прифати ја идејата',
   'Voltar aos canais': 'Назад кон каналите',
-  'Grupo': 'Група',
   'Criando…': 'Се создава…',
   'Começar conversa': 'Започни разговор',
   'Tirar a sua nota': 'Тргни ја твојата оценка',
@@ -2143,4 +2142,6 @@ export default {
   'Nome do grupo': 'Име на групата',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Пораките од групата повеќе нема да стигнуваат. За да се вратиш, некој од групата треба повторно да те повика.',
   'Editar pacote': 'Уреди го пакетот',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Барања',
 } satisfies Record<string, string>;

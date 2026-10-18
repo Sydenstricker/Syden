@@ -233,8 +233,8 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(400).send({ error: `Uma conversa em grupo cabe até ${MAX_GROUP_MEMBERS} pessoas.` });
       }
 
-      // Uma conversa de duas pessoas não tem nome; virando grupo, ganha um para não ficar "sem título".
-      if (members.length === 2 && !channel.name) db.renameChannel(channel.id, 'Grupo');
+      // O grupo SEM NOME fica sem nome: a tela mostra o nome das pessoas (directName, em DirectList.tsx). Antes ele ganhava
+      // "Grupo", em português, para todo mundo, inclusive para quem lê o Syden em japonês (auditoria de 17/10/2026).
       db.addChannelMember(channel.id, userId);
       announce(channel.id, 'direct:created'); // para quem chegou, é conversa nova; para os outros, atualização
       return { ok: true };

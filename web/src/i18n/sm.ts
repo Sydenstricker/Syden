@@ -1749,7 +1749,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Talia: ua ulu atu lenei manatu i Syden',
   'Acolher a ideia': 'Talia le manatu',
   'Voltar aos canais': 'Toe foʻi i kanela',
-  'Grupo': 'Vaega',
   'Criando…': 'O loʻo faia…',
   'Começar conversa': 'Amata se talanoaga',
   'Tirar a sua nota': 'Aveese lau faʻailoga',
@@ -2077,4 +2076,6 @@ export default {
   'Nome do grupo': 'Igoa o le vaega',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'O le a le toe oʻo mai feʻau a le vaega. Ina ia toe foʻi mai, e tatau i se tasi o le vaega ona toe valaʻaulia oe.',
   'Editar pacote': 'Teuteu le afifi',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Talosaga',
 } satisfies Record<string, string>;

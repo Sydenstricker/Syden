@@ -8,7 +8,7 @@ import { useT } from './i18n';
 
 /**
  * Criar uma conversa em grupo: escolhe quem entra (entre quem está na comunidade aberta) e, se quiser,
- * dá um nome. Sem nome, o grupo nasce chamado "Grupo" e dá para renomear depois.
+ * dá um nome. Sem nome, cada um vê o nome das pessoas, e dá para renomear depois.
  */
 export function NewGroupDialog({
   selfId,
@@ -40,7 +40,9 @@ export function NewGroupDialog({
     try {
       const conversa = await api<DirectChannel>('/api/direct', {
         method: 'POST',
-        body: { userIds: chosen, name: name.trim() || (chosen.length > 1 ? t('Grupo') : '') },
+        // Sem nome, o grupo fica sem nome, e cada um vê o nome das pessoas (directName): "Grupo" chegaria a todo mundo
+        // na língua de quem criou.
+        body: { userIds: chosen, name: name.trim() },
       });
       onCreated(conversa);
     } catch (e) {

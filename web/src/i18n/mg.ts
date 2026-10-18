@@ -1815,7 +1815,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Raiso: tafiditra tao amin’ny Syden ity hevitra ity',
   'Acolher a ideia': 'Raiso ilay hevitra',
   'Voltar aos canais': 'Miverena any amin’ny fantsona',
-  'Grupo': 'Vondrona',
   'Criando…': 'Mamorona…',
   'Começar conversa': 'Atombohy ny resaka',
   'Tirar a sua nota': 'Esory ny naotinao',
@@ -2143,4 +2142,6 @@ export default {
   'Nome do grupo': 'Anaran’ny vondrona',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Tsy ho tonga intsony ny hafatry ny vondrona. Raha hiverina, dia tsy maintsy misy olona ao anatiny manasa anao indray.',
   'Editar pacote': 'Ovay ny fonosana',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Fangatahana',
 } satisfies Record<string, string>;

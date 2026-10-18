@@ -1742,7 +1742,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'গ্রহণ করো: এই ভাবনা Syden-এ এসেছে',
   'Acolher a ideia': 'ভাবনা গ্রহণ করো',
   'Voltar aos canais': 'চ্যানেলে ফিরে যাও',
-  'Grupo': 'গ্রুপ',
   'Criando…': 'বানানো হচ্ছে…',
   'Começar conversa': 'কথোপকথন শুরু করো',
   'Tirar a sua nota': 'তোমার রেটিং সরাও',
@@ -2070,4 +2069,6 @@ export default {
   'Nome do grupo': 'গ্রুপের নাম',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'গ্রুপের মেসেজ আর আসবে না। ফিরে আসতে হলে গ্রুপের কাউকে তোমাকে আবার ডাকতে হবে।',
   'Editar pacote': 'প্যাক সম্পাদনা করো',
+  // A aba de pedidos de amizade (17/10/2026)
+  Pedidos: 'অনুরোধ',
 } satisfies Record<string, string>;

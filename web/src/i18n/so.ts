@@ -1815,7 +1815,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Aqbal: fikraddan waxay gashay Syden',
   'Acolher a ideia': 'Aqbal fikradda',
   'Voltar aos canais': 'Ku noqo kanaalada',
-  'Grupo': 'Koox',
   'Criando…': 'Waa la sameynayaa…',
   'Começar conversa': 'Bilow wadahadal',
   'Tirar a sua nota': 'Ka saar qiimayntaada',
@@ -2143,4 +2142,6 @@ export default {
   'Nome do grupo': 'Magaca kooxda',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Fariimaha kooxda kuuma iman doonaan mar dambe. Si aad u soo noqoto, qof kooxda ku jira waa inuu mar kale ku casuumaa.',
   'Editar pacote': 'Wax ka beddel xirmada',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Codsiyada',
 } satisfies Record<string, string>;

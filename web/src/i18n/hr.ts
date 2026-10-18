@@ -1814,7 +1814,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Prihvati: ova ideja ušla je u Syden',
   'Acolher a ideia': 'Prihvati ideju',
   'Voltar aos canais': 'Natrag na kanale',
-  'Grupo': 'Grupa',
   'Criando…': 'Stvara se…',
   'Começar conversa': 'Započni razgovor',
   'Tirar a sua nota': 'Ukloni svoju ocjenu',
@@ -2142,4 +2141,6 @@ export default {
   'Nome do grupo': 'Ime grupe',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Poruke iz grupe više ti neće stizati. Za povratak te netko iz grupe mora ponovno pozvati.',
   'Editar pacote': 'Uredi paket',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Zahtjevi',
 } satisfies Record<string, string>;

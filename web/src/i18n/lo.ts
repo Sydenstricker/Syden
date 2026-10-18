@@ -1816,7 +1816,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'ຮັບໄວ້: ແນວຄິດນີ້ເຂົ້າໄປໃນ Syden ແລ້ວ',
   'Acolher a ideia': 'ຮັບແນວຄິດນີ້',
   'Voltar aos canais': 'ກັບໄປທີ່ຊ່ອງ',
-  'Grupo': 'ກຸ່ມ',
   'Criando…': 'ກຳລັງສ້າງ…',
   'Começar conversa': 'ເລີ່ມການສົນທະນາ',
   'Tirar a sua nota': 'ເອົາຄະແນນຂອງເຈົ້າອອກ',
@@ -2144,4 +2143,6 @@ export default {
   'Nome do grupo': 'ຊື່ກຸ່ມ',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ຂໍ້ຄວາມຂອງກຸ່ມຈະບໍ່ມາຮອດອີກ. ເພື່ອກັບຄືນມາ, ຕ້ອງມີຄົນໃນກຸ່ມເຊີນອີກຄັ້ງ.',
   'Editar pacote': 'ແກ້ໄຂຊຸດ',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'ຄຳຂໍ',
 } satisfies Record<string, string>;

@@ -1829,7 +1829,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Хүлээн авах: энэ санаа Syden-д орсон',
   'Acolher a ideia': 'Санааг хүлээн авах',
   'Voltar aos canais': 'Сувгууд руу буцах',
-  'Grupo': 'Бүлэг',
   'Criando…': 'Үүсгэж байна…',
   'Começar conversa': 'Яриа эхлүүлэх',
   'Tirar a sua nota': 'Үнэлгээгээ хасах',
@@ -2157,4 +2156,6 @@ export default {
   'Nome do grupo': 'Бүлгийн нэр',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Бүлгийн мессеж ирэхээ болино. Буцаж орохын тулд бүлгийн хэн нэг нь чамайг дахин урих хэрэгтэй.',
   'Editar pacote': 'Багц засах',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Хүсэлтүүд',
 } satisfies Record<string, string>;

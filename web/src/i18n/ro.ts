@@ -1745,7 +1745,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Primește: această idee a intrat în Syden',
   'Acolher a ideia': 'Primește ideea',
   'Voltar aos canais': 'Înapoi la canale',
-  'Grupo': 'Grup',
   'Criando…': 'Se creează…',
   'Começar conversa': 'Începe conversația',
   'Tirar a sua nota': 'Retrage-ți nota',
@@ -2073,4 +2072,6 @@ export default {
   'Nome do grupo': 'Numele grupului',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesajele grupului nu-ți mai vin. Ca să revii, cineva din grup trebuie să te cheme din nou.',
   'Editar pacote': 'Editează pachetul',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Cereri',
 } satisfies Record<string, string>;

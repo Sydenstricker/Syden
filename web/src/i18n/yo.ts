@@ -1760,7 +1760,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Gbà á: èrò yìí ti wọ Syden',
   'Acolher a ideia': 'Gba èrò náà',
   'Voltar aos canais': 'Padà sí àwọn ikànnì',
-  'Grupo': 'Ẹgbẹ́',
   'Criando…': 'Ó ń dá a sílẹ̀…',
   'Começar conversa': 'Bẹ̀rẹ̀ ìbánisọ̀rọ̀',
   'Tirar a sua nota': 'Yọ ìdíwọ̀n yín kúrò',
@@ -2088,4 +2087,6 @@ export default {
   'Nome do grupo': 'Orúkọ ẹgbẹ́',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Àwọn ìfiránṣẹ́ ẹgbẹ́ kò ní dé ọ̀dọ̀ rẹ mọ́. Láti padà, ẹnìkan nínú ẹgbẹ́ gbọ́dọ̀ tún pè ọ́.',
   'Editar pacote': 'Ṣàtúnṣe ìdì',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Àwọn ìbéèrè',
 } satisfies Record<string, string>;

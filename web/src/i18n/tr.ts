@@ -1739,7 +1739,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Kabul et: bu fikir Syden’a girdi',
   'Acolher a ideia': 'Fikri kabul et',
   'Voltar aos canais': 'Kanallara dön',
-  'Grupo': 'Grup',
   'Criando…': 'Oluşturuluyor…',
   'Começar conversa': 'Sohbet başlat',
   'Tirar a sua nota': 'Puanını geri al',
@@ -2067,4 +2066,6 @@ export default {
   'Nome do grupo': 'Grup adı',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grubun mesajları artık gelmez. Geri dönmek için gruptan biri seni yeniden çağırmalı.',
   'Editar pacote': 'Paketi düzenle',
+  // A aba de pedidos de amizade (17/10/2026)
+  Pedidos: 'İstekler',
 } satisfies Record<string, string>;

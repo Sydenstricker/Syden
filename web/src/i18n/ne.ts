@@ -1817,7 +1817,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'अपनाउनुहोस्: यो सुझाव Syden मा समावेश भयो',
   'Acolher a ideia': 'सुझाव अपनाउनुहोस्',
   'Voltar aos canais': 'च्यानलहरूमा फर्कनुहोस्',
-  'Grupo': 'समूह',
   'Criando…': 'बनाउँदै…',
   'Começar conversa': 'कुराकानी सुरु गर्नुहोस्',
   'Tirar a sua nota': 'आफ्नो मूल्याङ्कन हटाउनुहोस्',
@@ -2145,4 +2144,6 @@ export default {
   'Nome do grupo': 'समूहको नाम',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'समूहका सन्देशहरू आउन बन्द हुन्छन्। फर्कन, समूहभित्रको कसैले फेरि बोलाउनुपर्छ।',
   'Editar pacote': 'प्याक सम्पादन',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'अनुरोधहरू',
 } satisfies Record<string, string>;

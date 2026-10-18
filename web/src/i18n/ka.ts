@@ -1833,7 +1833,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'მიღება: ეს იდეა Syden-ში მოხვდა',
   'Acolher a ideia': 'იდეის მიღება',
   'Voltar aos canais': 'არხებზე დაბრუნება',
-  'Grupo': 'ჯგუფი',
   'Criando…': 'იქმნება…',
   'Começar conversa': 'საუბრის დაწყება',
   'Tirar a sua nota': 'თქვენი შეფასების მოხსნა',
@@ -2161,4 +2160,6 @@ export default {
   'Nome do grupo': 'ჯგუფის სახელი',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ჯგუფის შეტყობინებები აღარ მოგივა. დასაბრუნებლად ჯგუფიდან ვინმემ თავიდან უნდა მოგიწვიოს.',
   'Editar pacote': 'პაკეტის რედაქტირება',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'მოთხოვნები',
 } satisfies Record<string, string>;

@@ -1727,7 +1727,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'స్వీకరించు: ఈ ఆలోచన Sydenలో చేరింది',
   'Acolher a ideia': 'ఆలోచనను స్వీకరించు',
   'Voltar aos canais': 'ఛానెల్‌లకు తిరిగి',
-  'Grupo': 'గ్రూప్',
   'Criando…': 'సృష్టిస్తోంది…',
   'Começar conversa': 'సంభాషణ ప్రారంభించు',
   'Tirar a sua nota': 'మీ రేటింగ్ తీసివేయి',
@@ -2055,4 +2054,6 @@ export default {
   'Nome do grupo': 'గ్రూప్ పేరు',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'గ్రూప్ సందేశాలు ఇక రావు. తిరిగి రావాలంటే, గ్రూప్‌లో ఎవరైనా నిన్ను మళ్ళీ పిలవాలి.',
   'Editar pacote': 'ప్యాక్ సవరించు',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'అభ్యర్థనలు',
 } satisfies Record<string, string>;

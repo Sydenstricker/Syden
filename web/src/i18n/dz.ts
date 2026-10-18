@@ -1828,7 +1828,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'ངོས་ལེན: འཆར་སྣང་འདི་ Syden ནང་ཚུད་ཡི།',
   'Acolher a ideia': 'འཆར་སྣང་ངོས་ལེན།',
   'Voltar aos canais': 'བརྒྱུད་ལམ་ཚུ་ལུ་ལོག',
-  'Grupo': 'སྡེ་ཚན།',
   'Criando…': 'བཟོ་དོ…',
   'Começar conversa': 'གཏམ་གླེང་འགོ་བཙུགས།',
   'Tirar a sua nota': 'ཁྱོད་ཀྱི་གནས་རིམ་བཏོན།',
@@ -2156,4 +2155,6 @@ export default {
   'Nome do grupo': 'སྡེ་ཚན་གྱི་མིང་།',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'སྡེ་ཚན་གྱི་འཕྲིན་དོན་ད་ལས་ཕར་མི་འོང་། ལོག་འོང་ནིའི་དོན་ལུ་ སྡེ་ཚན་ནང་གི་མི་གཅིག་གིས་ ལོག་སྟེ་འབོ་དགོ།',
   'Editar pacote': 'ཐུམ་སྒྲིལ་ཞུན་དག',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'ཞུ་བ།',
 } satisfies Record<string, string>;

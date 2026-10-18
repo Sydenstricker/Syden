@@ -4,7 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { arquivoExiste, caminhoDe } from './arquivos.js';
 import * as db from './db.js';
 import { sniffMime } from './media.js';
-import { channelRoom, communityRoom } from './realtime.js';
+import { channelRoom, communityRoom, emitToUser } from './realtime.js';
 import { anotarBloqueio, conferir, type Resultado, shieldConfigurado } from './shield.js';
 
 /**
@@ -77,6 +77,8 @@ function positivo(io: IOServer, log: FastifyBaseLogger, item: db.NaFila, resulta
   // Todas as entradas do arquivo saem da fila: o positivo já levou todas as cópias dele.
   db.tirarShaDaFilaDoShield(item.sha256);
   anotarBloqueio(resultado, item.onde, item.alvoId);
+  // quem administra vê o número de denúncias abertas subir na hora (o mesmo aviso da denúncia feita por alguém)
+  for (const admin of db.listAdmins()) emitToUser(io, admin.id, 'report:new', { abertas: db.contarDenunciasAbertas() });
 
   // Some da tela de quem está com o Syden aberto, pelos mesmos avisos da exclusão comum.
   for (const id of saiu.avatares) {

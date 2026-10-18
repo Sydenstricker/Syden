@@ -1809,7 +1809,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Tag imod: denne idé er kommet med i Syden',
   'Acolher a ideia': 'Tag imod idéen',
   'Voltar aos canais': 'Tilbage til kanalerne',
-  'Grupo': 'Gruppe',
   'Criando…': 'Opretter…',
   'Começar conversa': 'Start samtale',
   'Tirar a sua nota': 'Fjern din bedømmelse',
@@ -2137,4 +2136,6 @@ export default {
   'Nome do grupo': 'Gruppenavn',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Du får ikke længere beskeder fra gruppen. For at komme tilbage skal nogen i gruppen invitere dig igen.',
   'Editar pacote': 'Rediger pakke',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Anmodninger',
 } satisfies Record<string, string>;

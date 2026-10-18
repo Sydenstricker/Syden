@@ -1812,7 +1812,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Võta vastu: see idee jõudis Sydenisse',
   'Acolher a ideia': 'Võta idee vastu',
   'Voltar aos canais': 'Tagasi kanalite juurde',
-  'Grupo': 'Grupp',
   'Criando…': 'Loomine…',
   'Começar conversa': 'Alusta vestlust',
   'Tirar a sua nota': 'Eemalda oma hinnang',
@@ -2140,4 +2139,6 @@ export default {
   'Nome do grupo': 'Grupi nimi',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grupi sõnumid ei jõua enam sinuni. Tagasi tulemiseks peab keegi grupist sind uuesti kutsuma.',
   'Editar pacote': 'Muuda paketti',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Taotlused',
 } satisfies Record<string, string>;

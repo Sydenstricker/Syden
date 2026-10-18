@@ -1973,6 +1973,20 @@ textarea {
 }
 
 /* O cartão de uma peça do quarto ou do salão (CartaoDaPeca.tsx): a figura grande em pixel art, o nome e a frase. */
+/* Quantas denúncias esperam alguém, ao lado de "Uso do servidor" (só quem administra vê). */
+.usage-denuncias {
+  margin-left: auto;
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: var(--red);
+  color: #fff;
+  font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
 /* Os botões da conversa privada (AcoesDaConversa.tsx), no fim do cabeçalho. */
 .acoes-da-conversa {
   margin-left: auto;

@@ -1816,7 +1816,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Пазируфтан: ин ғоя ба Syden ворид шуд',
   'Acolher a ideia': 'Пазируфтани ғоя',
   'Voltar aos canais': 'Бозгашт ба каналҳо',
-  'Grupo': 'Гурӯҳ',
   'Criando…': 'Сохта мешавад…',
   'Começar conversa': 'Оғози сӯҳбат',
   'Tirar a sua nota': 'Бекор кардани баҳои шумо',
@@ -2144,4 +2143,6 @@ export default {
   'Nome do grupo': 'Номи гурӯҳ',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Паёмҳои гурӯҳ дигар намерасанд. Барои баргаштан, касе аз гурӯҳ бояд туро дубора даъват кунад.',
   'Editar pacote': 'Таҳрири баста',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Дархостҳо',
 } satisfies Record<string, string>;

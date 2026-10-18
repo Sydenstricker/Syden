@@ -1815,7 +1815,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'පිළිගන්න: මෙම අදහස Syden වෙත ඇතුළු විය',
   'Acolher a ideia': 'අදහස පිළිගන්න',
   'Voltar aos canais': 'නාලිකා වෙත ආපසු',
-  'Grupo': 'කණ්ඩායම',
   'Criando…': 'සාදමින්…',
   'Começar conversa': 'සංවාදය අරඹන්න',
   'Tirar a sua nota': 'ඔබේ ශ්‍රේණිය ඉවත් කරන්න',
@@ -2143,4 +2142,6 @@ export default {
   'Nome do grupo': 'කණ්ඩායමේ නම',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'කණ්ඩායමේ පණිවිඩ තවදුරටත් එන්නේ නැහැ. ආපසු එන්න නම්, කණ්ඩායමේ කෙනෙක් ඔයාට ආයෙත් ආරාධනා කරන්න ඕනේ.',
   'Editar pacote': 'පැකේජය සංස්කරණය',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'ඉල්ලීම්',
 } satisfies Record<string, string>;

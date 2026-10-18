@@ -1765,7 +1765,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'اعتماد: دخلت هذه الفكرة إلى Syden',
   'Acolher a ideia': 'اعتماد الفكرة',
   'Voltar aos canais': 'العودة إلى القنوات',
-  'Grupo': 'مجموعة',
   'Criando…': 'جارٍ الإنشاء…',
   'Começar conversa': 'بدء المحادثة',
   'Tirar a sua nota': 'إزالة تقييمك',
@@ -2093,4 +2092,6 @@ export default {
   'Nome do grupo': 'اسم المجموعة',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'لن تصل رسائل المجموعة بعد الآن. وللعودة، يجب أن يرسل أحد أعضاء المجموعة دعوة من جديد.',
   'Editar pacote': 'تعديل الحزمة',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'الطلبات',
 } satisfies Record<string, string>;

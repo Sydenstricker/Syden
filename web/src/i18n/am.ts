@@ -1745,7 +1745,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'ተቀበል፦ ይህ ሐሳብ ወደ Syden ገብቷል',
   'Acolher a ideia': 'ሐሳቡን ተቀበል',
   'Voltar aos canais': 'ወደ ቻናሎቹ ተመለስ',
-  'Grupo': 'ቡድን',
   'Criando…': 'በመፍጠር ላይ…',
   'Começar conversa': 'ውይይት ጀምር',
   'Tirar a sua nota': 'ደረጃዎን ያስወግዱ',
@@ -2073,4 +2072,6 @@ export default {
   'Nome do grupo': 'የቡድኑ ስም',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'የቡድኑ መልዕክቶች ከእንግዲህ አይደርሱም። ለመመለስ፣ ከቡድኑ ውስጥ ያለ ሰው እንደገና መጋበዝ አለበት።',
   'Editar pacote': 'ጥቅሉን ያርትዑ',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'ጥያቄዎች',
 } satisfies Record<string, string>;

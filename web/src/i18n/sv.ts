@@ -1807,7 +1807,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Anta: den här idén har kommit in i Syden',
   'Acolher a ideia': 'Anta idén',
   'Voltar aos canais': 'Tillbaka till kanalerna',
-  'Grupo': 'Grupp',
   'Criando…': 'Skapar…',
   'Começar conversa': 'Starta konversation',
   'Tirar a sua nota': 'Ta bort ditt betyg',
@@ -2135,4 +2134,6 @@ export default {
   'Nome do grupo': 'Gruppnamn',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Du får inte längre meddelanden från gruppen. För att komma tillbaka måste någon i gruppen bjuda in dig igen.',
   'Editar pacote': 'Redigera paket',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Förfrågningar',
 } satisfies Record<string, string>;

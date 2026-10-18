@@ -1744,7 +1744,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Aannemen: dit idee zit nu in Syden',
   'Acolher a ideia': 'Het idee aannemen',
   'Voltar aos canais': 'Terug naar de kanalen',
-  'Grupo': 'Groep',
   'Criando…': 'Maken…',
   'Começar conversa': 'Gesprek beginnen',
   'Tirar a sua nota': 'Je beoordeling weghalen',
@@ -2072,4 +2071,6 @@ export default {
   'Nome do grupo': 'Groepsnaam',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Je krijgt geen berichten meer van de groep. Om terug te komen, moet iemand in de groep je opnieuw uitnodigen.',
   'Editar pacote': 'Pakket bewerken',
+  // A aba de pedidos de amizade (17/10/2026)
+  Pedidos: 'Verzoeken',
 } satisfies Record<string, string>;

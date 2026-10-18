@@ -1751,7 +1751,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Tali: kuo hū ʻa e fakakaukau ni ki Syden',
   'Acolher a ideia': 'Tali ʻa e fakakaukau',
   'Voltar aos canais': 'Foki ki he ngaahi sanele',
-  'Grupo': 'Kulupu talanoa',
   'Criando…': 'ʻOku fakatupu…',
   'Começar conversa': 'Kamata ha talanoa',
   'Tirar a sua nota': 'Toʻo hoʻo maaka',
@@ -2079,4 +2078,6 @@ export default {
   'Nome do grupo': 'Hingoa ʻo e kulupu',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ʻE ʻikai toe aʻu mai ʻa e ngaahi pōpoaki ʻa e kulupu. Ke ke foki mai, kuo pau ke toe fakaafeʻi koe ʻe ha taha ʻi he kulupu.',
   'Editar pacote': 'Liliu ʻa e pake',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Ngaahi kole',
 } satisfies Record<string, string>;

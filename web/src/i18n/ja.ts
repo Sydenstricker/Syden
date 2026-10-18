@@ -1726,7 +1726,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': '採用：このアイデアはSydenに入りました',
   'Acolher a ideia': 'アイデアを採用',
   'Voltar aos canais': 'チャンネルに戻る',
-  'Grupo': 'グループ',
   'Criando…': '作成中…',
   'Começar conversa': '会話を始める',
   'Tirar a sua nota': '自分の評価を取り消す',
@@ -2054,4 +2053,6 @@ export default {
   'Nome do grupo': 'グループ名',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'グループのメッセージが届かなくなります。戻るには、グループの誰かにまた招待してもらう必要があります。',
   'Editar pacote': 'パックを編集',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'リクエスト',
 } satisfies Record<string, string>;

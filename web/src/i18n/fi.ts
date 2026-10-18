@@ -1815,7 +1815,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Ota vastaan: tämä idea pääsi Sydeniin',
   'Acolher a ideia': 'Ota idea vastaan',
   'Voltar aos canais': 'Takaisin kanaviin',
-  'Grupo': 'Ryhmä',
   'Criando…': 'Luodaan…',
   'Começar conversa': 'Aloita keskustelu',
   'Tirar a sua nota': 'Poista arviosi',
@@ -2143,4 +2142,6 @@ export default {
   'Nome do grupo': 'Ryhmän nimi',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ryhmän viestit lakkaavat tulemasta sinulle. Palataksesi jonkun ryhmästä täytyy kutsua sinut uudelleen.',
   'Editar pacote': 'Muokkaa pakettia',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Pyynnöt',
 } satisfies Record<string, string>;

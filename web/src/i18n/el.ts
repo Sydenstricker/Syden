@@ -1751,7 +1751,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Υιοθέτηση: αυτή η ιδέα μπήκε στο Syden',
   'Acolher a ideia': 'Υιοθέτηση της ιδέας',
   'Voltar aos canais': 'Πίσω στα κανάλια',
-  'Grupo': 'Ομάδα',
   'Criando…': 'Δημιουργία…',
   'Começar conversa': 'Έναρξη συνομιλίας',
   'Tirar a sua nota': 'Αφαίρεση της βαθμολογίας σου',
@@ -2079,4 +2078,6 @@ export default {
   'Nome do grupo': 'Όνομα ομάδας',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Τα μηνύματα της ομάδας σταματούν να έρχονται. Για να επιστρέψεις, κάποιος από την ομάδα πρέπει να σε προσκαλέσει ξανά.',
   'Editar pacote': 'Επεξεργασία πακέτου',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Αιτήματα',
 } satisfies Record<string, string>;

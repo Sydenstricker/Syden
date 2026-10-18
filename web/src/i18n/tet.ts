@@ -1747,7 +1747,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Simu: ideia ne\'e tama ona iha Syden',
   'Acolher a ideia': 'Simu ideia',
   'Voltar aos canais': 'Fila ba kanál sira',
-  'Grupo': 'Grupu',
   'Criando…': 'Kria hela…',
   'Começar conversa': 'Hahú konversa',
   'Tirar a sua nota': 'Hasai ó-nia nota',
@@ -2075,4 +2074,6 @@ export default {
   'Nome do grupo': 'Naran grupu nian',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mensajen grupu nian sei la to\'o ó tan. Atu fila, ema ida husi grupu tenke bolu fali ó.',
   'Editar pacote': 'Edita pakote',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Pedidu',
 } satisfies Record<string, string>;

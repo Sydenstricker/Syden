@@ -1817,7 +1817,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Priimti: ši idėja pateko į Syden',
   'Acolher a ideia': 'Priimti idėją',
   'Voltar aos canais': 'Atgal į kanalus',
-  'Grupo': 'Grupė',
   'Criando…': 'Kuriama…',
   'Começar conversa': 'Pradėti pokalbį',
   'Tirar a sua nota': 'Pašalinti savo įvertinimą',
@@ -2145,4 +2144,6 @@ export default {
   'Nome do grupo': 'Grupės pavadinimas',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grupės žinutės nebeateis. Norint grįžti, kas nors iš grupės turi tave vėl pakviesti.',
   'Editar pacote': 'Redaguoti paketą',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Prašymai',
 } satisfies Record<string, string>;

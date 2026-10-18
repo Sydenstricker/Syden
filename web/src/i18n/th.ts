@@ -1758,7 +1758,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'รับไว้: ไอเดียนี้เข้าไปอยู่ใน Syden แล้ว',
   'Acolher a ideia': 'รับไอเดียนี้',
   'Voltar aos canais': 'กลับไปที่ช่อง',
-  'Grupo': 'กลุ่ม',
   'Criando…': 'กำลังสร้าง…',
   'Começar conversa': 'เริ่มการสนทนา',
   'Tirar a sua nota': 'เอาคะแนนของคุณออก',
@@ -2086,4 +2085,6 @@ export default {
   'Nome do grupo': 'ชื่อกลุ่ม',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'ข้อความของกลุ่มจะไม่มาถึงอีก ถ้าจะกลับเข้ามา ต้องมีคนในกลุ่มชวนเข้ามาใหม่',
   'Editar pacote': 'แก้ไขแพ็ก',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'คำขอ',
 } satisfies Record<string, string>;

@@ -1834,7 +1834,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Ընդունել՝ այս գաղափարը մտավ Syden',
   'Acolher a ideia': 'Ընդունել գաղափարը',
   'Voltar aos canais': 'Վերադառնալ ալիքներին',
-  'Grupo': 'Խումբ',
   'Criando…': 'Ստեղծվում է…',
   'Começar conversa': 'Սկսել զրույց',
   'Tirar a sua nota': 'Հանել ձեր գնահատականը',
@@ -2162,4 +2161,6 @@ export default {
   'Nome do grupo': 'Խմբի անուն',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Խմբի հաղորդագրություններն այլևս չեն գա։ Վերադառնալու համար խմբից որևէ մեկը պետք է քեզ նորից հրավիրի։',
   'Editar pacote': 'Խմբագրել փաթեթը',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Հայտեր',
 } satisfies Record<string, string>;

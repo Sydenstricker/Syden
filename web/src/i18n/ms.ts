@@ -1745,7 +1745,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Terima: idea ini masuk ke dalam Syden',
   'Acolher a ideia': 'Terima idea ini',
   'Voltar aos canais': 'Kembali ke saluran',
-  'Grupo': 'Kumpulan',
   'Criando…': 'Mencipta…',
   'Começar conversa': 'Mulakan perbualan',
   'Tirar a sua nota': 'Tarik balik penilaian anda',
@@ -2073,4 +2072,6 @@ export default {
   'Nome do grupo': 'Nama kumpulan',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesej kumpulan tidak akan sampai lagi. Untuk kembali, seseorang dalam kumpulan perlu menjemput anda semula.',
   'Editar pacote': 'Sunting pakej',
+  // A aba de pedidos de amizade (17/10/2026)
+  Pedidos: 'Permintaan',
 } satisfies Record<string, string>;

@@ -1807,7 +1807,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Prano: kjo ide hyri në Syden',
   'Acolher a ideia': 'Prano idenë',
   'Voltar aos canais': 'Kthehu te kanalet',
-  'Grupo': 'Grup',
   'Criando…': 'Po krijohet…',
   'Começar conversa': 'Fillo bisedën',
   'Tirar a sua nota': 'Hiq notën tënde',
@@ -2135,4 +2134,6 @@ export default {
   'Nome do grupo': 'Emri i grupit',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesazhet e grupit nuk do të të vijnë më. Për t\'u kthyer, dikush nga grupi duhet të të ftojë përsëri.',
   'Editar pacote': 'Ndrysho paketën',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Kërkesat',
 } satisfies Record<string, string>;

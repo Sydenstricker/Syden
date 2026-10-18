@@ -58,6 +58,8 @@ interface Props {
   voiceMembers: VoiceMember[];
   voice: Voice;
   usageActive: boolean;
+  /** Quantas denúncias esperam alguém (só para quem administra; zero esconde o número). */
+  denunciasAbertas?: number;
   jogosActive: boolean;
   /** O ranking dos níveis está aberto (só existe com os níveis ligados). */
   rankingActive: boolean;
@@ -89,6 +91,7 @@ export function Sidebar({
   channels,
   selectedId,
   usageActive,
+  denunciasAbertas = 0,
   jogosActive,
   rankingActive,
   arteDaComunidade,
@@ -211,6 +214,7 @@ export function Sidebar({
         {user.isAdmin && (
           <button className={`channel usage-link${usageActive ? ' active' : ''}`} onClick={onOpenUsage}>
             <BarChart3 size={18} /> {t('Uso do servidor')}
+            {denunciasAbertas > 0 && <span className="usage-denuncias">{denunciasAbertas > 99 ? '99+' : denunciasAbertas}</span>}
           </button>
         )}
 

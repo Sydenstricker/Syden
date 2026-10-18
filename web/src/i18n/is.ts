@@ -1816,7 +1816,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Taka upp: þessi hugmynd komst inn í Syden',
   'Acolher a ideia': 'Taka hugmyndina upp',
   'Voltar aos canais': 'Til baka í rásirnar',
-  'Grupo': 'Hópur',
   'Criando…': 'Býr til…',
   'Começar conversa': 'Hefja samtal',
   'Tirar a sua nota': 'Fjarlægja einkunnina þína',
@@ -2144,4 +2143,6 @@ export default {
   'Nome do grupo': 'Heiti hóps',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Skilaboð hópsins hætta að berast þér. Til að koma aftur þarf einhver í hópnum að bjóða þér aftur.',
   'Editar pacote': 'Breyta pakka',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Beiðnir',
 } satisfies Record<string, string>;

@@ -1825,7 +1825,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Aksepte: lide sa a antre nan Syden',
   'Acolher a ideia': 'Aksepte lide a',
   'Voltar aos canais': 'Retounen nan chanèl yo',
-  'Grupo': 'Gwoup',
   'Criando…': 'Ap kreye…',
   'Começar conversa': 'Kòmanse konvèsasyon',
   'Tirar a sua nota': 'Retire nòt ou',
@@ -2153,4 +2152,6 @@ export default {
   'Nome do grupo': 'Non gwoup la',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Mesaj gwoup la p ap rive ankò. Pou retounen, yon moun nan gwoup la dwe envite w ankò.',
   'Editar pacote': 'Modifye pakè a',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Demann',
 } satisfies Record<string, string>;

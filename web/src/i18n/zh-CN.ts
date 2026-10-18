@@ -1732,7 +1732,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': '采纳：这个想法已进入 Syden',
   'Acolher a ideia': '采纳这个想法',
   'Voltar aos canais': '返回频道',
-  'Grupo': '群组',
   'Criando…': '正在创建…',
   'Começar conversa': '开始对话',
   'Tirar a sua nota': '撤回你的评分',
@@ -2060,4 +2059,6 @@ export default {
   'Nome do grupo': '群组名称',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': '你将不再收到群组的消息。想回来的话，需要群里的人再拉你进来。',
   'Editar pacote': '编辑包',
+  // A aba de pedidos de amizade (17/10/2026)
+  Pedidos: '申请',
 } satisfies Record<string, string>;

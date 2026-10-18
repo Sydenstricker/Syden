@@ -1784,7 +1784,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'လက်ခံရန်- ဒီအကြံဉာဏ် Syden ထဲ ဝင်သွားပြီ',
   'Acolher a ideia': 'အကြံဉာဏ်ကို လက်ခံရန်',
   'Voltar aos canais': 'ချန်နယ်များသို့ ပြန်ရန်',
-  'Grupo': 'အုပ်စု',
   'Criando…': 'ဖန်တီးနေသည်…',
   'Começar conversa': 'စကားဝိုင်း စတင်ရန်',
   'Tirar a sua nota': 'သင့်အမှတ်ပေးချက်ကို ဖယ်ရန်',
@@ -2112,4 +2111,6 @@ export default {
   'Nome do grupo': 'အုပ်စု အမည်',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'အုပ်စု မက်ဆေ့ချ်တွေ ထပ်မရောက်တော့ဘူး။ ပြန်ဝင်ချင်ရင် အုပ်စုထဲက တစ်ယောက်ယောက်က ပြန်ခေါ်ပေးရမယ်။',
   'Editar pacote': 'အထုပ် ပြင်ရန်',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'တောင်းဆိုချက်များ',
 } satisfies Record<string, string>;

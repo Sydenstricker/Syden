@@ -1744,7 +1744,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Ciqoma: sa curu na nanuma oqo ki na Syden',
   'Acolher a ideia': 'Ciqoma na nanuma',
   'Voltar aos canais': 'Lesu ki na janeli',
-  'Grupo': 'Ilawalawa',
   'Criando…': 'Buli tiko…',
   'Começar conversa': 'Tekivu veitalanoa',
   'Tirar a sua nota': 'Kauta tani na nomu maka',
@@ -2072,4 +2071,6 @@ export default {
   'Nome do grupo': 'Yaca ni ilawalawa',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ena sega ni yaco tale vei iko na itukutuku ni ilawalawa. Me o lesu mai, e dodonu me dua mai na ilawalawa me sureti iko tale.',
   'Editar pacote': 'Veisautaka na ikoro',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Kerekere',
 } satisfies Record<string, string>;

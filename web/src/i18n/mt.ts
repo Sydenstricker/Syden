@@ -1761,7 +1761,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Ilqa\': din l-idea daħlet f\'Syden',
   'Acolher a ideia': 'Ilqa\' l-idea',
   'Voltar aos canais': 'Lura għall-kanali',
-  'Grupo': 'Grupp',
   'Criando…': 'Qed jinħoloq…',
   'Começar conversa': 'Ibda konversazzjoni',
   'Tirar a sua nota': 'Neħħi l-vot tiegħek',
@@ -2089,4 +2088,6 @@ export default {
   'Nome do grupo': 'Isem il-grupp',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Il-messaġġi tal-grupp ma jibqgħux jaslu. Biex terġa\' lura, xi ħadd mill-grupp irid jistiednek mill-ġdid.',
   'Editar pacote': 'Editja l-pakkett',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Talbiet',
 } satisfies Record<string, string>;

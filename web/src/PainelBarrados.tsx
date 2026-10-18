@@ -66,6 +66,11 @@ export function PainelBarrados() {
     api<{ barrados: Barrado[] }>('/api/admin/barrados').then((r) => setBarrados(r.barrados), (e) => setErro((e as Error).message));
   }, []);
   useEffect(carregar, [carregar]);
+  // recurso novo chegando com o painel aberto (Shell.tsx repassa o 'recurso:novo')
+  useEffect(() => {
+    window.addEventListener('syden:recursos', carregar);
+    return () => window.removeEventListener('syden:recursos', carregar);
+  }, [carregar]);
 
   async function desfazer(b: Barrado) {
     await api(b.banidoEm ? '/api/admin/desbanir' : '/api/admin/levantar-suspensao', { method: 'POST', body: { userId: b.userId } }).catch((e) =>

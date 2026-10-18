@@ -1817,7 +1817,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Pieņemt: šī ideja nonāca Syden',
   'Acolher a ideia': 'Pieņemt ideju',
   'Voltar aos canais': 'Atpakaļ uz kanāliem',
-  'Grupo': 'Grupa',
   'Criando…': 'Veido…',
   'Começar conversa': 'Sākt sarunu',
   'Tirar a sua nota': 'Noņemt savu vērtējumu',
@@ -2145,4 +2144,6 @@ export default {
   'Nome do grupo': 'Grupas nosaukums',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Grupas ziņas vairs nepienāks. Lai atgrieztos, kādam no grupas tevi jāuzaicina vēlreiz.',
   'Editar pacote': 'Rediģēt pakotni',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Pieprasījumi',
 } satisfies Record<string, string>;

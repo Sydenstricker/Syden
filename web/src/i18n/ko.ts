@@ -1733,7 +1733,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': '채택: 이 아이디어가 Syden에 들어갔어요',
   'Acolher a ideia': '아이디어 채택하기',
   'Voltar aos canais': '채널로 돌아가기',
-  'Grupo': '그룹',
   'Criando…': '만드는 중…',
   'Começar conversa': '대화 시작',
   'Tirar a sua nota': '내 평점 지우기',
@@ -2061,4 +2060,6 @@ export default {
   'Nome do grupo': '그룹 이름',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': '그룹 메시지가 더 이상 오지 않아요. 돌아오려면 그룹 안의 누군가가 다시 초대해야 해요.',
   'Editar pacote': '팩 편집',
+  // A aba de pedidos de amizade (17/10/2026)
+  Pedidos: '요청',
 } satisfies Record<string, string>;

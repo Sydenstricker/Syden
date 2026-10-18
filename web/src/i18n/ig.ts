@@ -1753,7 +1753,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Nabata: echiche a abanyela na Syden',
   'Acolher a ideia': 'Nabata echiche ahụ',
   'Voltar aos canais': 'Laghachi na ọwa',
-  'Grupo': 'Otu',
   'Criando…': 'Na-emepụta…',
   'Começar conversa': 'Malite nkata',
   'Tirar a sua nota': 'Wepụ akara gị',
@@ -2081,4 +2080,6 @@ export default {
   'Nome do grupo': 'Aha otu',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ozi otu ahụ agaghị abịakwute gị ọzọ. Ka ị laghachi, onye nọ n\'otu ahụ ga-akpọ gị ọzọ.',
   'Editar pacote': 'Dezie ngwugwu',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Arịrịọ',
 } satisfies Record<string, string>;

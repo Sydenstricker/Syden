@@ -1715,7 +1715,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Đón nhận: ý tưởng này đã vào Syden',
   'Acolher a ideia': 'Đón nhận ý tưởng',
   'Voltar aos canais': 'Quay lại các kênh',
-  'Grupo': 'Nhóm',
   'Criando…': 'Đang tạo…',
   'Começar conversa': 'Bắt đầu trò chuyện',
   'Tirar a sua nota': 'Bỏ đánh giá của bạn',
@@ -2043,4 +2042,6 @@ export default {
   'Nome do grupo': 'Tên nhóm',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Tin nhắn của nhóm sẽ không đến nữa. Muốn quay lại, cần ai đó trong nhóm mời bạn lần nữa.',
   'Editar pacote': 'Sửa gói',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Lời mời',
 } satisfies Record<string, string>;

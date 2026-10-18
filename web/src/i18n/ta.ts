@@ -1730,7 +1730,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'ஏற்றுக்கொள்: இந்த யோசனை Syden-இல் சேர்ந்தது',
   'Acolher a ideia': 'யோசனையை ஏற்றுக்கொள்',
   'Voltar aos canais': 'அலைவரிசைகளுக்குத் திரும்பு',
-  'Grupo': 'குழு',
   'Criando…': 'உருவாக்குகிறது…',
   'Começar conversa': 'உரையாடலைத் தொடங்கு',
   'Tirar a sua nota': 'உங்கள் மதிப்பீட்டை நீக்கு',
@@ -2058,4 +2057,6 @@ export default {
   'Nome do grupo': 'குழுவின் பெயர்',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'குழுவின் செய்திகள் இனி வராது. திரும்ப வர, குழுவில் உள்ள யாராவது உன்னை மீண்டும் அழைக்க வேண்டும்.',
   'Editar pacote': 'தொகுப்பைத் திருத்து',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'கோரிக்கைகள்',
 } satisfies Record<string, string>;

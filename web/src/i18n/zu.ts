@@ -1816,7 +1816,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Yamukela: lo mbono ungene ku-Syden',
   'Acolher a ideia': 'Yamukela umbono',
   'Voltar aos canais': 'Buyela eziteshini',
-  'Grupo': 'Iqembu',
   'Criando…': 'Iyadala…',
   'Começar conversa': 'Qala ingxoxo',
   'Tirar a sua nota': 'Susa amamaki akho',
@@ -2144,4 +2143,6 @@ export default {
   'Nome do grupo': 'Igama leqembu',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Imilayezo yeqembu ngeke isafika kuwe. Ukuze ubuyele, othile oseqenjini kufanele aphinde akumeme.',
   'Editar pacote': 'Hlela iphakethe',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Izicelo',
 } satisfies Record<string, string>;

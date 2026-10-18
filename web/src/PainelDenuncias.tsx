@@ -64,6 +64,11 @@ export function PainelDenuncias() {
       .catch((e) => setErro((e as Error).message));
   }
   useEffect(carregar, []);
+  // denúncia nova chegando com o painel aberto (Shell.tsx repassa o 'report:new')
+  useEffect(() => {
+    window.addEventListener('syden:denuncias', carregar);
+    return () => window.removeEventListener('syden:denuncias', carregar);
+  }, []);
 
   async function resolver(id: number) {
     try {
@@ -71,6 +76,7 @@ export function PainelDenuncias() {
       setResolvendo(null);
       setTexto('');
       carregar();
+      window.dispatchEvent(new Event('syden:denuncia-resolvida')); // o número ao lado de "Uso do servidor
     } catch (e) {
       setErro((e as Error).message);
     }

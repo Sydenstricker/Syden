@@ -70,6 +70,12 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
   useEffect(() => {
     void carregar();
   }, [carregar]);
+  // pedido aceito, recusado ou desfeito do outro lado (Shell.tsx repassa o 'amigos:mudou')
+  useEffect(() => {
+    const aoMudar = () => void carregar();
+    window.addEventListener('syden:amigos', aoMudar);
+    return () => window.removeEventListener('syden:amigos', aoMudar);
+  }, [carregar]);
 
   const aceitos = amigos.filter((a) => a.situacao === 'aceita');
   const recebidos = amigos.filter((a) => a.situacao === 'pendente' && !a.euPedi);
@@ -97,9 +103,10 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
       <header className="amigos-abas" role="tablist">
         {(
           [
-            ['amigos', 'Amigos', aceitos.length],
-            ['pedidos', 'Pedidos', recebidos.length],
-            ['adicionar', 'Adicionar', 0],
+            // (traduzidos desde a auditoria de 17/10/2026: estavam em português cravado)
+            ['amigos', t('Amigos'), aceitos.length],
+            ['pedidos', t('Pedidos'), recebidos.length],
+            ['adicionar', t('Adicionar'), 0],
           ] as const
         ).map(([id, rotulo, quantos]) => (
           <button

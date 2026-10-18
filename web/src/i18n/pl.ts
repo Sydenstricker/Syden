@@ -1810,7 +1810,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Przyjmij: ten pomysł trafił do Syden',
   'Acolher a ideia': 'Przyjmij pomysł',
   'Voltar aos canais': 'Wróć do kanałów',
-  'Grupo': 'Grupa',
   'Criando…': 'Tworzenie…',
   'Começar conversa': 'Zacznij rozmowę',
   'Tirar a sua nota': 'Usuń swoją ocenę',
@@ -2138,4 +2137,6 @@ export default {
   'Nome do grupo': 'Nazwa grupy',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Wiadomości z grupy przestaną przychodzić. Żeby wrócić, ktoś z grupy musi cię znowu zaprosić.',
   'Editar pacote': 'Edytuj paczkę',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Zaproszenia',
 } satisfies Record<string, string>;

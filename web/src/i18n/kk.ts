@@ -1811,7 +1811,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Қабылдау: бұл идея Syden-ге енді',
   'Acolher a ideia': 'Идеяны қабылдау',
   'Voltar aos canais': 'Арналарға оралу',
-  'Grupo': 'Топ',
   'Criando…': 'Жасалуда…',
   'Começar conversa': 'Әңгіме бастау',
   'Tirar a sua nota': 'Бағаңызды алып тастау',
@@ -2139,4 +2138,6 @@ export default {
   'Nome do grupo': 'Топ атауы',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Топтың хабарлары енді келмейді. Қайту үшін топтағы біреу сені қайта шақыруы керек.',
   'Editar pacote': 'Жинақты өңдеу',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Сұраныстар',
 } satisfies Record<string, string>;

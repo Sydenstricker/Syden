@@ -1817,7 +1817,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Kabul et: bu pikir Syden-e girdi',
   'Acolher a ideia': 'Pikiri kabul et',
   'Voltar aos canais': 'Kanallara gaýt',
-  'Grupo': 'Topar',
   'Criando…': 'Döredilýär…',
   'Começar conversa': 'Söhbete başla',
   'Tirar a sua nota': 'Bahaňy aýyr',
@@ -2145,4 +2144,6 @@ export default {
   'Nome do grupo': 'Toparyň ady',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Toparyň habarlary indi gelmez. Yzyna gaýtmak üçin topardaky biri seni ýene çagyrmaly.',
   'Editar pacote': 'Toplumy üýtget',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Haýyşlar',
 } satisfies Record<string, string>;

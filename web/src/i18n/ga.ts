@@ -1751,7 +1751,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Glac leis: tháinig an smaoineamh seo isteach in Syden',
   'Acolher a ideia': 'Glac leis an smaoineamh',
   'Voltar aos canais': 'Ar ais chuig na cainéil',
-  'Grupo': 'Grúpa',
   'Criando…': 'Á chruthú…',
   'Começar conversa': 'Tosaigh comhrá',
   'Tirar a sua nota': 'Bain do rátáil',
@@ -2079,4 +2078,6 @@ export default {
   'Nome do grupo': 'Ainm an ghrúpa',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ní thiocfaidh teachtaireachtaí an ghrúpa chugat a thuilleadh. Chun filleadh, caithfidh duine éigin sa ghrúpa cuireadh a thabhairt duit arís.',
   'Editar pacote': 'Cuir an pacáiste in eagar',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Iarratais',
 } satisfies Record<string, string>;

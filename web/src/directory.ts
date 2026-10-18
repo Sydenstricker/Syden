@@ -138,7 +138,14 @@ export function syncDirectory(socket: Socket) {
   socket.on('emoji:deleted', onEmojiDeleted);
   socket.on('sound:created', onSoundCreated);
   socket.on('sound:deleted', onSoundDeleted);
+  // O SELO DA COMUNIDADE mudou ou saiu: quem o veste aparece com ele resolvido na lista de membros, então ela é relida
+  // (raro, e só para quem é da comunidade do selo).
+  const onSelo = () => {
+    if (state.communityId !== null) loadDirectory(state.communityId).catch(console.error);
+  };
+  socket.on('selo:mudou', onSelo);
   return () => {
+    socket.off('selo:mudou', onSelo);
     socket.off('connect', onConnect);
     socket.off('member:updated', onMember);
     socket.off('member:removed', onMemberRemoved);

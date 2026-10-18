@@ -1817,7 +1817,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Elfogadás: ez az ötlet bekerült a Sydenbe',
   'Acolher a ideia': 'Ötlet elfogadása',
   'Voltar aos canais': 'Vissza a csatornákhoz',
-  'Grupo': 'Csoport',
   'Criando…': 'Létrehozás…',
   'Começar conversa': 'Beszélgetés indítása',
   'Tirar a sua nota': 'Értékelésed törlése',
@@ -2145,4 +2144,6 @@ export default {
   'Nome do grupo': 'Csoport neve',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Nem kapod tovább a csoport üzeneteit. Ahhoz, hogy visszatérj, valakinek a csoportból újra meg kell hívnia.',
   'Editar pacote': 'Csomag szerkesztése',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Kérések',
 } satisfies Record<string, string>;

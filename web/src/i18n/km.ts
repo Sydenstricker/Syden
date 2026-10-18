@@ -1814,7 +1814,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'ទទួលយក៖ គំនិតនេះបានចូលក្នុង Syden',
   'Acolher a ideia': 'ទទួលយកគំនិតនេះ',
   'Voltar aos canais': 'ត្រឡប់ទៅឆានែល',
-  'Grupo': 'ក្រុម',
   'Criando…': 'កំពុងបង្កើត…',
   'Começar conversa': 'ចាប់ផ្តើមការសន្ទនា',
   'Tirar a sua nota': 'ដកការវាយតម្លៃរបស់អ្នក',
@@ -2142,4 +2141,6 @@ export default {
   'Nome do grupo': 'ឈ្មោះក្រុម',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'សាររបស់ក្រុមនឹងលែងមកដល់ទៀតហើយ។ ដើម្បីត្រឡប់មកវិញ ត្រូវមានអ្នកណាម្នាក់ក្នុងក្រុមអញ្ជើញម្ដងទៀត។',
   'Editar pacote': 'កែកញ្ចប់',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'សំណើ',
 } satisfies Record<string, string>;

@@ -1747,7 +1747,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Karɓa: wannan ra’ayi ya shiga Syden',
   'Acolher a ideia': 'Karɓi ra’ayin',
   'Voltar aos canais': 'Koma tashoshi',
-  'Grupo': 'Rukuni',
   'Criando…': 'Ana ƙirƙira…',
   'Começar conversa': 'Fara tattaunawa',
   'Tirar a sua nota': 'Cire makinku',
@@ -2075,4 +2074,6 @@ export default {
   'Nome do grupo': 'Sunan rukuni',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Saƙonnin rukunin ba za su ƙara zuwa muku ba. Don ku dawo, dole wani daga cikin rukunin ya sake gayyatar ku.',
   'Editar pacote': 'Gyara fakiti',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Buƙatu',
 } satisfies Record<string, string>;

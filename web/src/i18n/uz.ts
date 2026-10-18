@@ -1823,7 +1823,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Qabul qilish: bu gʻoya Syden-ga kirdi',
   'Acolher a ideia': 'Gʻoyani qabul qilish',
   'Voltar aos canais': 'Kanallarga qaytish',
-  'Grupo': 'Guruh',
   'Criando…': 'Yaratilmoqda…',
   'Começar conversa': 'Suhbatni boshlash',
   'Tirar a sua nota': 'Bahoyingizni olib tashlash',
@@ -2151,4 +2150,6 @@ export default {
   'Nome do grupo': 'Guruh nomi',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Guruh xabarlari endi kelmaydi. Qaytish uchun guruhdagi kimdir seni yana chaqirishi kerak.',
   'Editar pacote': 'Toʻplamni tahrirlash',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Soʻrovlar',
 } satisfies Record<string, string>;

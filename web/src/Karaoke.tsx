@@ -203,6 +203,15 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
   useEffect(() => {
     api<KaraokeSong[]>(`/api/communities/${communityId}/karaoke`).then(setMusicas, (e) => setErro((e as Error).message));
   }, [communityId]);
+  // música retirada (por quem cuida da comunidade, ou por direito autoral) some da lista aberta (Shell.tsx repassa)
+  useEffect(() => {
+    const aoApagar = (e: Event) => {
+      const { id, communityId: de } = (e as CustomEvent<{ id: number; communityId: number }>).detail;
+      if (de === communityId) setMusicas((lista) => lista && lista.filter((m) => m.id !== id));
+    };
+    window.addEventListener('syden:karaoke-apagada', aoApagar);
+    return () => window.removeEventListener('syden:karaoke-apagada', aoApagar);
+  }, [communityId]);
 
   const emCartaz = voice.karaoke;
   const song = emCartaz ? musicas?.find((m) => m.id === emCartaz.songId) : undefined;

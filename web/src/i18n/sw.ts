@@ -1744,7 +1744,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Kubali: wazo hili limeingia kwenye Syden',
   'Acolher a ideia': 'Kubali wazo',
   'Voltar aos canais': 'Rudi kwenye vituo',
-  'Grupo': 'Kikundi',
   'Criando…': 'Inaunda…',
   'Começar conversa': 'Anzisha mazungumzo',
   'Tirar a sua nota': 'Ondoa alama yako',
@@ -2072,4 +2071,6 @@ export default {
   'Nome do grupo': 'Jina la kikundi',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ujumbe wa kikundi hautakufikia tena. Ili urudi, mtu aliye ndani ya kikundi anahitaji kukualika tena.',
   'Editar pacote': 'Hariri kifurushi',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Maombi',
 } satisfies Record<string, string>;

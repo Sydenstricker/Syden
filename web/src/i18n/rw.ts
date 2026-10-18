@@ -1756,7 +1756,6 @@ export default {
   'Acolher: esta ideia entrou no Syden': 'Akira: iki gitekerezo cyinjiye muri Syden',
   'Acolher a ideia': 'Akira igitekerezo',
   'Voltar aos canais': 'Subira ku miyoboro',
-  'Grupo': 'Itsinda',
   'Criando…': 'Birimo gutangizwa…',
   'Começar conversa': 'Tangira ikiganiro',
   'Tirar a sua nota': 'Kuraho amanota yawe',
@@ -2084,4 +2083,6 @@ export default {
   'Nome do grupo': 'Izina ry\'itsinda',
   'As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.': 'Ubutumwa bw\'itsinda ntibuzongera kukugeraho. Kugira ngo ugaruke, umuntu uri mu itsinda agomba kongera kugutumira.',
   'Editar pacote': 'Hindura paki',
+  // A aba de pedidos de amizade (17/10/2026)
+  'Pedidos': 'Ubusabe',
 } satisfies Record<string, string>;

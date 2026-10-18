@@ -138,6 +138,10 @@ export function Shell({
   const [preCarregado, setPreCarregado] = useState<{ channelId: number; mensagens: Message[] } | null>(null);
   const preferences = useSettings();
   const [showUsage, setShowUsage] = useState(false);
+  // AS DENÚNCIAS ABERTAS, para quem administra (auditoria de 17/10/2026: o servidor avisava 'report:new' com a contagem, e
+  // ninguém ouvia; uma denúncia grave só era vista quando alguém abria o painel por acaso). O número fica ao lado de "Uso
+  // do servidor".
+  const [denunciasAbertas, setDenunciasAbertas] = useState(0);
   // A agenda de servidores de jogo toma o lugar do canal aberto, igual ao painel de uso. Os dois nunca
   // ficam abertos ao mesmo tempo: abrir um fecha o outro.
   // O painel aberto no lugar da conversa: a agenda de servidores de jogo ou o ranking dos níveis.
@@ -218,6 +222,15 @@ export function Shell({
   useEffect(() => {
     void carregarBloqueios();
   }, []);
+
+  useEffect(() => {
+    if (!user.isAdmin) return;
+    const contar = () =>
+      void api<{ denuncias: { status: string }[] }>('/api/reports').then((r) => setDenunciasAbertas(r.denuncias.filter((d) => d.status === 'aberta').length), console.error);
+    contar();
+    window.addEventListener('syden:denuncia-resolvida', contar);
+    return () => window.removeEventListener('syden:denuncia-resolvida', contar);
+  }, [user.isAdmin]);
 
   useEffect(() => {
     if (!socket) return;
@@ -399,6 +412,15 @@ export function Shell({
     s.on('barreira', (barreira: Barreira) => avisarBarreira(barreira));
     // O responsável mudou alguma regra (ou ligou, ou desligou): quem depende delas relê (a chamada, as configurações).
     s.on('protecao:mudou', () => window.dispatchEvent(new Event('syden:protecao')));
+    // OS AVISOS QUE NINGUÉM OUVIA (auditoria de 17/10/2026): o servidor mandava e a tela só mudava ao recarregar. Cada um
+    // vira um evento da janela, e a tela interessada (fora daqui, sem o socket) escuta o seu.
+    s.on('amigos:mudou', () => window.dispatchEvent(new Event('syden:amigos')));
+    s.on('recurso:novo', () => window.dispatchEvent(new Event('syden:recursos')));
+    s.on('karaoke:deleted', (d: { id: number; communityId: number }) => window.dispatchEvent(new CustomEvent('syden:karaoke-apagada', { detail: d })));
+    s.on('report:new', ({ abertas }: { abertas: number }) => {
+      setDenunciasAbertas(abertas);
+      window.dispatchEvent(new Event('syden:denuncias'));
+    });
     s.on('presence', setPresence);
     // Conversas privadas: entram, mudam de nome/gente ou somem da lista na hora.
     const upsertDirect = (conversa: DirectChannel) =>
@@ -925,6 +947,7 @@ export function Shell({
             channels={channels}
             selectedId={usageOpen || jogosOpen || rankingOpen ? null : selectedId}
             usageActive={usageOpen}
+            denunciasAbertas={user.isAdmin ? denunciasAbertas : 0}
             jogosActive={jogosOpen}
             rankingActive={rankingOpen}
             arteDaComunidade={boasVindas?.boasVindas?.arte}
