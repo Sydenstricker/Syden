@@ -609,7 +609,10 @@ com o mascote base até os outros virarem isométricos.
 quarto em 16/10/2026, com a mesma volta ao salão de frente se a página não puder abrir):** as funções do Salao.tsx nos objetos (TV → voz e Ao vivo, fliperama →
 mini-games, estante → canais, janela → chamar alguém, balcão → o recado num balão sobre o coelho, quadro → montar a tela);
 a TV e o fliperama têm TELA POR CÓDIGO (a TV à toa passa um desenho calmo e, com transmissão, o selo Ao vivo e quem
-transmite em cima, com as setas de canal; a imagem de verdade continua fora da TV); o quadro mostra a CAPA da comunidade
+transmite em cima, com as setas de canal; a imagem de verdade continua fora da TV); **a TV tem CANAIS (18/10/2026, pedido dele): o desenho, futebol,
+um tiro tático e uma arena de rotas, todos por código e genéricos (sem nome, logo ou mapa de jogo de verdade, e SEM o selo
+vermelho, que é só da transmissão de verdade); o botão direito passa de canal em canal e, depois do último, desliga.
+Havendo transmissão, ela é o primeiro canal, e uma transmissão que começa leva a TV a ela.** Teste: `salao/canais-da-tv.mjs`. o quadro mostra a CAPA da comunidade
 (ou o ícone, inteiro) no plano da parede; quem transmite fica na frente da TV, quem está numa partida no fliperama (pose
 própria), e as banquetas têm a pose sentada alta. **A arrumação é da COMUNIDADE** (`saloes`, `salao-routes.ts`): todo
 membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`).

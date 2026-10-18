@@ -1004,8 +1004,15 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   for (const id of ['tv', 'fliperama']) if (VISTAS[id]) TELAS_DO_MOVEL[id] = VISTAS[id].map((p, l) => (l === 0 || l === 3 ? im['tela-' + id + l] ? telaDaMascara(im['tela-' + id + l], TELAS_MEDIDAS[id]?.[l]) : p.buraco ? telaDosPixels(p.buraco, null) : (TELAS_MEDIDAS[id]?.[l] ? telaMedida(p, TELAS_MEDIDAS[id][l], TELAS_MEDIDAS[id][l].recuo ?? TELAS_MEDIDAS[id].recuo, TELAS_MEDIDAS[id].painel) : telaDaVista(p, id === 'tv' ? 3 : 0)) : null));
   let AO_VIVO = null; // { rotulo, nome, sub, canal, total }: quem transmite agora (o app manda, já traduzido)
-  const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? (AO_VIVO ? 'ao-vivo' : 'tv') : 'fliperama');
-  const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210] };
+  // OS CANAIS DA TV (pedido dele, 18/10/2026: "canais de esporte, de esports… o botão direito alterna entre canais e por
+  // fim desliga"): o desenho, futebol, um tiro tático e uma arena de rotas, todos por código e GENÉRICOS (nada de nome,
+  // logo ou mapa de jogo de verdade). Nenhum deles tem o selo vermelho: AO VIVO só existe quando alguém transmite de
+  // verdade. null é o automático (a transmissão, havendo; senão o desenho); uma transmissão que começa volta a ele.
+  const CANAIS_DA_TV = ['tv', 'futebol', 'tatico', 'arena'];
+  let canalDaTv = null;
+  const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : 'tv'));
+  const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? canalDaTvAgora() : 'fliperama');
+  const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210], futebol: [110, 170, 110], tatico: [180, 160, 120], arena: [100, 140, 120] };
   // O CONTEÚDO: "auto" segue o estado (em call, a chamada; à toa, a conversa; ausente, desligada); o botão escolhe.
   const CONTEUDOS = ['auto', 'call', 'conversa', 'jogo', 'desligada'];
   let conteudo = 'auto';
@@ -1048,6 +1055,65 @@ if (CENA === 'salao') document.body.classList.add('salao');
       if (t > morro) return t > 0.84 ? [92, 140, 84] : [122, 178, 98];
       if ((s - 0.72) ** 2 * 2.4 + (t - 0.32) ** 2 < 0.014) return [250, 216, 124];
       return t < 0.3 ? [232, 150, 126] : t < 0.5 ? [240, 184, 140] : [246, 208, 158];
+    }
+    if (tipo === 'futebol') {
+      // O futebol: o placar no canto, o campo listrado com as linhas, dois times de cinco e a bola.
+      if (t < 0.16 && s < 0.36) return t > 0.04 && t < 0.12 && ((s > 0.04 && s < 0.15) || (s > 0.21 && s < 0.32)) ? (s < 0.18 ? [120, 170, 236] : [240, 200, 90]) : [24, 28, 40];
+      const b = [0.5 + Math.sin(q / 7) * 0.3, 0.58 + Math.sin(q / 5) * 0.18];
+      if (Math.abs(s - b[0]) < 0.018 && Math.abs(t - b[1]) < 0.03) return [250, 250, 244];
+      for (let i = 0; i < 10; i++) {
+        const lado = i < 5 ? 0 : 1, j = i % 5;
+        const ps = (lado ? 0.62 : 0.14) + [0, 0.1, 0.1, 0.2, 0.2][j] +Math.sin(q / 6 + i * 1.7) * 0.05 + (b[0] - 0.5) * 0.25;
+        const pt = 0.26 + [0.36, 0.16, 0.56, 0.26, 0.46][j] * 1.1 + Math.cos(q / 7 + i) * 0.04;
+        if (Math.abs(s - ps) < 0.02 && Math.abs(t - pt) < 0.045) return lado ? [240, 200, 90] : [120, 170, 236];
+      }
+      if (Math.abs(s - 0.5) < 0.012 || Math.abs(t - 0.2) < 0.016 || Math.abs(t - 0.97) < 0.02) return [226, 236, 220];
+      if (Math.abs(Math.hypot((s - 0.5) * 1.4, t - 0.58) - 0.13) < 0.016) return [226, 236, 220];
+      if ((s < 0.03 || s > 0.97) && t > 0.46 && t < 0.7) return [236, 236, 236];
+      return Math.floor(s * 8) % 2 ? [92, 156, 82] : [104, 170, 92];
+    }
+    if (tipo === 'tatico') {
+      // O tiro tático, em primeira pessoa: o placar dos dois times em cima, um corredor de areia com caixas, a mira no
+      // meio, a arma no canto; de vez em quando alguém espia da porta do fundo.
+      if (t < 0.13) {
+        if (t > 0.03 && t < 0.11 && s > 0.35 && s < 0.45) return [110, 160, 230];
+        if (t > 0.03 && t < 0.11 && s > 0.55 && s < 0.65) return [230, 170, 90];
+        if (t > 0.05 && t < 0.09 && s > 0.47 && s < 0.53) return [220, 220, 220];
+        return [22, 24, 32];
+      }
+      const cs = Math.abs(s - 0.5), ct = Math.abs(t - 0.52);
+      if ((cs < 0.012 && ct > 0.03 && ct < 0.09) || (ct < 0.016 && cs > 0.02 && cs < 0.06)) return [140, 240, 140];
+      if (t > 0.7 && s > 0.64 && (s - 0.64) * 0.9 + (t - 0.7) > 0.16) return t - 0.7 + (s - 0.64) * 0.9 < 0.2 ? [120, 122, 132] : [62, 64, 72];
+      if (q % 24 < 8 && Math.abs(s - 0.5) < 0.03 && t > 0.45 && t < 0.53) return [86, 70, 62];
+      if (s > 0.29 && s < 0.43 && t > 0.54 && t < 0.72) return s < 0.31 || t < 0.57 ? [176, 132, 76] : [146, 106, 58];
+      if (t > 0.62) return Math.floor((t - 0.62) * 30) % 3 === 0 ? [184, 158, 110] : [198, 172, 122];
+      if (s < 0.24) return [170, 144, 104];
+      if (s > 0.78) return [154, 128, 92];
+      if (t > 0.4) return s > 0.44 && s < 0.56 ? [58, 48, 42] : [204, 180, 134];
+      return t < 0.26 ? [138, 182, 222] : [168, 202, 230];
+    }
+    if (tipo === 'arena') {
+      // A arena de rotas, vista de cima: as duas bases nos cantos, o rio na diagonal, as três rotas, as tropas dos dois
+      // lados se encontrando no meio, e a barra de habilidades embaixo.
+      if (t > 0.86) {
+        const k = (s - 0.25) / 0.125, slot = Math.floor(k);
+        if (s > 0.25 && s < 0.75 && k % 1 > 0.18 && t > 0.89 && t < 0.97) return [[110, 170, 230], [150, 220, 160], [230, 190, 110], [220, 130, 200]][slot];
+        return [26, 24, 36];
+      }
+      const u = s, v = t / 0.86;
+      if (u < 0.14 && v > 0.8) return [90, 140, 220];
+      if (u > 0.86 && v < 0.2) return [220, 110, 100];
+      for (let i = 0; i < 3; i++) {
+        const pa = 0.16 + ((q / 50 + i * 0.07) % 0.3), pb = 0.84 - ((q / 50 + i * 0.07) % 0.3);
+        if (Math.abs(u - pa) < 0.022 && Math.abs(v - (1 - pa)) < 0.035) return [130, 180, 250];
+        if (Math.abs(u - pb) < 0.022 && Math.abs(v - (1 - pb)) < 0.035) return [250, 130, 120];
+      }
+      const h = [0.47 + Math.sin(q / 9) * 0.05, 0.47 - Math.sin(q / 9) * 0.05];
+      if (Math.abs(u - h[0]) < 0.05 && Math.abs(v - (h[1] - 0.12)) < 0.02) return u < h[0] + 0.02 ? [110, 220, 110] : [40, 40, 40];
+      if (Math.abs(u - h[0]) < 0.026 && Math.abs(v - h[1]) < 0.05) return [250, 230, 160];
+      if (Math.abs(u + v - 1) < 0.05 || u < 0.07 || v < 0.08 || u > 0.93 || v > 0.92) return [176, 156, 112];
+      if (Math.abs(u - v) < 0.06) return [86, 140, 196];
+      return Math.sin(u * 41) * Math.sin(v * 33) > 0.55 ? [46, 88, 54] : [70, 118, 70];
     }
     if (tipo === 'ao-vivo') {
       // AO VIVO: o selo vermelho piscando no canto e, no resto, alguém jogando (o joguinho do computador do quarto).
@@ -4226,10 +4292,18 @@ void main() {
     if (d === 'guarda-roupa' && VISTAS_ABERTO && podeArrumar) { guardaRoupaAberto = !guardaRoupaAberto; gavetasPedidas = false; desenhar(); return true; }
     if (d === 'mesa' && CENA === 'quarto') { conteudo = conteudoAgora() === 'desligada' ? 'conversa' : 'desligada'; assinaturaCena = ''; desenhar(); return true; }
     if (d === 'ilha') { fogaoAceso = !fogaoAceso; assinaturaCena = ''; desenhar(); return true; }
-    if (d === 'tv' || d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; desenhar(); return true; }
+    // A TV troca de canal (o ao vivo primeiro, havendo) e, depois do último, desliga; desligada, volta ao primeiro.
+    if (d === 'tv') {
+      const ciclo = [...(AO_VIVO ? ['ao-vivo'] : []), ...CANAIS_DA_TV], i = ciclo.indexOf(canalDaTvAgora());
+      if (telasDesligadas.has('tv')) { telasDesligadas.delete('tv'); canalDaTv = ciclo[0]; }
+      else if (i === ciclo.length - 1) telasDesligadas.add('tv');
+      else canalDaTv = ciclo[i + 1];
+      assinaturaCena = ''; desenhar(); return true;
+    }
+    if (d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; desenhar(); return true; }
     return false;
   }
-  window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], fogaoAceso, cortina: fechada, aberta }); // para o teste
+  window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], canalDaTv: canalDaTvAgora(), fogaoAceso, cortina: fechada, aberta }); // para o teste
   // (o botão direito não pega, não arrasta nem escolhe: só o menu de contexto, logo abaixo, o atende)
   addEventListener('pointerdown', (e) => { if (e.target === tela && e.button !== 0) e.stopImmediatePropagation(); }, true);
   tela.addEventListener('contextmenu', (e) => {
@@ -4439,7 +4513,7 @@ void main() {
       }
       // Quem administra mudou o salão (salao:mudou): relê. Não no meio de um arraste.
       if (d.recarregar && conta && !arrastando && !viva && !envioPendente && rascunho === null) reler().catch(() => {});
-      if ('aoVivo' in d) { AO_VIVO = d.aoVivo || null; desenhar(); }
+      if ('aoVivo' in d) { if (!AO_VIVO && d.aoVivo) canalDaTv = null; AO_VIVO = d.aoVivo || null; desenhar(); } // começou uma transmissão: a TV vai a ela
       if ('imagem' in d) carregarImagem(d.imagem);
       if ('recado' in d) { const antes = JSON.stringify(RECADO); RECADO = d.recado && (d.recado.titulo || d.recado.texto) ? d.recado : null; if (RECADO && JSON.stringify(RECADO) !== antes) abrirRecado(); else posicionarRecado(true); }
       if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
@@ -4551,6 +4625,7 @@ void main() {
   // O canal da TV: no app, o app troca (e manda o novo AO_VIVO); aqui, a lista de teste.
   let canaisDeTeste = [];
   function trocarCanal(passo) {
+    canalDaTv = null; telasDesligadas.delete('tv'); // as setas de cima são das transmissões: a TV vai a elas
     if (MODO_APP && window.parent !== window) { window.parent.postMessage({ syden: 'quarto', canal: passo }, location.origin); return; }
     if (!canaisDeTeste.length || !AO_VIVO) return;
     const i = (AO_VIVO.canal + passo + canaisDeTeste.length) % canaisDeTeste.length;
@@ -4563,6 +4638,7 @@ void main() {
       // ninguém → uma transmissão → duas → ninguém
       const n = AO_VIVO ? (AO_VIVO.total === 1 ? 2 : 0) : 1;
       canaisDeTeste = [{ rotulo: 'Ao vivo', nome: 'Zeca', sub: 'Em Sala 1 · Stardew Valley' }, { rotulo: 'Ao vivo', nome: 'Bia', sub: 'Em Sala 2' }].slice(0, n);
+      if (!AO_VIVO && n) canalDaTv = null;
       AO_VIVO = n ? { ...canaisDeTeste[0], canal: 0, total: n } : null;
       ba.setAttribute('aria-pressed', String(!!n)); ba.textContent = 'Ao vivo: ' + (n ? n + ' transmissão' + (n > 1 ? 'ões' : '') : 'ninguém'); desenhar();
     };
