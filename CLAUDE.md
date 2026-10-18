@@ -732,6 +732,11 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
     (`personagem/blender/fluidez/tempos.py` → `ritmos.gif`), e ela fica em 12 ou muda, caso a caso. O movimento é
     "orgânico" (golpe com pressa e volta lenta, o corpo e a cabeça atrasados): o seno puro fica mecânico. O jogo segue a
     60 por segundo; só o coelho anda no ritmo dele.
+  - **O SMEAR TAMBÉM É PADRÃO (decisão dele, 18/10/2026):** nos desenhos do golpe mais rápido, o que se move depressa
+    (a palha da vassoura) ganha o RASTRO: a faixa contínua por onde passou nos quadros que o ritmo em dois pula, tirada do
+    passe de partes do Blender, em tom da própria peça e POR TRÁS do coelho (`personagem/blender/fluidez/smear.py`).
+    Só a parte que corre (a palha, não o cabo), e preenchida linha a linha: os pixels soltos das posições puladas viram
+    "objetos-fantasma", não borrão. Animação nova: escolher qual peça leva o rastro e conferir no `smear.gif`.
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
