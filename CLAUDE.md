@@ -802,6 +802,17 @@ Syden. A qualidade decide: inglês e espanhol bons, árabe razoável, japonês f
 português do Brasil (CC BY 4.0, maior) para a segunda perna (inglês → português). Em qualquer motor, o original fica
 visível e a tradução diz que é automática (o Chrome traduziu "a base" do árabe como "Al-Qaeda").
 
+**Decidido no mesmo dia, depois da medição:** *"as soluções leves do navegador são problemáticas"*. O tradutor é **só do
+APP**, o melhor possível pela QUALIDADE, e só consome o computador quando a pessoa traduz (para não prejudicar quem joga):
+nada carregado até o clique, num processo à parte com prioridade baixa e metade dos núcleos, a placa de vídeo só sem jogo
+em primeiro plano, descarregado depois de uns minutos sem uso, e o download só quando a pessoa ativa, com o tamanho dito.
+**Os candidatos a medir, EM OUTRO MOMENTO (decisão dele, 19/10/2026: "vamos testar os modelos em outro momento"):**
+TranslateGemma 4B (Google, licença Gemma, 55 idiomas, aceita `pt-BR` no prompt), MiLMMT-46 4B (Xiaomi, Gemma, 46 idiomas,
+sem África), Qwen3 4B (Apache 2.0) e MADLAD-400 3B (Apache 2.0, 400+ idiomas, para a África e o Pacífico), uns 2–2,5 GB
+cada em Q4, pelo llama.cpp (node-llama-cpp, MIT), com o Bergamot de referência. Fora pela licença: NLLB-200 (não
+comercial), Hunyuan-MT (exclui territórios), Seed-X. Medir com as 20 mensagens de `e2e/tradutor-local/`, com o
+processador limitado como ficaria no jogo, e mensagens em hauçá e suaíli para o MADLAD.
+
 Nomes de canal e de comunidade são conteúdo de quem criou e NÃO passam pelo `t()`; os canais que o Syden cria
 sozinho numa comunidade nova é que nascem no idioma de quem a cria (desde 09/10/2026).
 
