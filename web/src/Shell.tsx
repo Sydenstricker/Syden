@@ -7,6 +7,8 @@ import { carregarBloqueios, guardarBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
 import { Comemoracao } from './Comemoracao';
 import { ParabensDoSyden } from './ParabensDoSyden';
+import { AniversarioDoSyden } from './AniversarioDoSyden';
+import { ehAniversarioDoSyden } from './diaDoSyden';
 import { ehAniversarioHoje } from './aniversarioHoje';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { isolar, nomeDeCanal } from './bidi';
@@ -58,10 +60,11 @@ function rememberView(view: View) {
 }
 
 /**
- * Onde o Syden abre: onde a pessoa parou. Só cai na tela inicial quem nunca entrou ou quem estava lá —
- * assim quem só quer conversar não ganha um clique a mais todo dia.
+ * Onde o Syden abre: no quarto, por padrão (decisão dele, 19/10/2026: o quarto é a casa de cada um), ou onde a pessoa
+ * parou, para quem escolher "Onde parei" em Minha conta — quem só quer conversar não ganha um clique a mais todo dia.
  */
 function firstView(): View {
+  if (getSettings().aoAbrir !== 'ondeParei') return 'home';
   try {
     const saved = localStorage.getItem(LAST_VIEW_KEY);
     if (saved === 'community' || saved === 'direct' || saved === 'home') return saved;
@@ -154,6 +157,8 @@ export function Shell({
   const [porRevelar, setPorRevelar] = useState<string[]>([]);
   // A FESTA DE ANIVERSÁRIO (18/10/2026): hoje é o dia da pessoa, e ela ainda não viu a festa neste ano.
   const [aniversarioHoje, setAniversarioHoje] = useState(false);
+  // E o do PRÓPRIO Syden (19/09), uma vez por ano: o ano visto mora nas preferências (ver AniversarioDoSyden.tsx).
+  const [festaDoSyden, setFestaDoSyden] = useState(() => ehAniversarioDoSyden() && getSettings().festaDoSydenVistaEm !== new Date().getFullYear());
   // A fila de itens só pode começar depois que se sabe se há festa de ideia acolhida esperando. Sem isso,
   // o presente aparecia e sumia meio segundo depois, quando a resposta da festa chegava.
   const [festasConferidas, setFestasConferidas] = useState(false);
@@ -689,6 +694,10 @@ export function Shell({
       .then((a) => setAniversarioHoje(ehAniversarioHoje(a.mes, a.dia) && a.parabensVistoEm !== new Date().getFullYear()))
       .catch(() => {});
   }, []);
+  function fecharFestaDoSyden() {
+    setFestaDoSyden(false);
+    updateSettings({ festaDoSydenVistaEm: new Date().getFullYear() });
+  }
   function fecharParabens() {
     setAniversarioHoje(false);
     void api('/api/me/aniversario/parabens-visto', { method: 'POST', body: { ano: new Date().getFullYear() } }).catch(() => {});
@@ -1243,9 +1252,10 @@ export function Shell({
         insígnia que veio com ela (o prêmio). Os dois juntos na tela se atropelavam — literalmente: um
         ficava por cima do botão do outro. Os itens da fila também esperam a vez, um por um.
       */}
-      {/* as festas, uma de cada vez: a ideia acolhida, o aniversário, e as insígnias */}
+      {/* as festas, uma de cada vez: a ideia acolhida, o aniversário da pessoa, o do Syden, e as insígnias */}
       {festasConferidas && !comemorar[0] && aniversarioHoje && <ParabensDoSyden nome={me?.username ?? loggedUser.username} aoFechar={fecharParabens} />}
-      {festasConferidas && !comemorar[0] && !aniversarioHoje && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
+      {festasConferidas && !comemorar[0] && !aniversarioHoje && festaDoSyden && <AniversarioDoSyden aoFechar={fecharFestaDoSyden} />}
+      {festasConferidas && !comemorar[0] && !aniversarioHoje && !festaDoSyden && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
 
       {settingsOpen !== null && (
         <SettingsModal

@@ -2,6 +2,7 @@ import { Cake, CalendarDays, ChevronLeft, ChevronRight, Trash2, X } from 'lucide
 import { useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
+import { NASCIMENTO_DO_SYDEN } from './diaDoSyden';
 import { idiomaAtual, useT } from './i18n';
 
 /**
@@ -23,7 +24,11 @@ interface Aniversario {
   mes: number;
   dia: number;
 }
-type Item = { tipo: 'evento'; data: Date; evento: Evento } | { tipo: 'aniversario'; data: Date; aniversario: Aniversario };
+type Item =
+  | { tipo: 'evento'; data: Date; evento: Evento }
+  | { tipo: 'aniversario'; data: Date; aniversario: Aniversario }
+  // o aniversário do próprio Syden (diaDoSyden.ts), em toda comunidade, a partir do primeiro ano
+  | { tipo: 'syden'; data: Date };
 
 const mesmoDia = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 const doisDigitos = (n: number) => String(n).padStart(2, '0');
@@ -90,6 +95,9 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
     ...(dados?.aniversarios ?? [])
       .filter((a) => a.mes === mes.getMonth() + 1)
       .map((aniversario) => ({ tipo: 'aniversario' as const, data: new Date(mes.getFullYear(), aniversario.mes - 1, aniversario.dia), aniversario })),
+    ...(mes.getFullYear() > NASCIMENTO_DO_SYDEN.ano && mes.getMonth() + 1 === NASCIMENTO_DO_SYDEN.mes
+      ? [{ tipo: 'syden' as const, data: new Date(mes.getFullYear(), NASCIMENTO_DO_SYDEN.mes - 1, NASCIMENTO_DO_SYDEN.dia) }]
+      : []),
   ]
     .filter((i) => i.data.getMonth() === mes.getMonth())
     .sort((a, b) => a.data.getTime() - b.data.getTime());
@@ -171,7 +179,7 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
           {Array.from({ length: diasNoMes }, (_, i) => {
             const dia = new Date(mes.getFullYear(), mes.getMonth(), i + 1);
             const doDiaI = itens.filter((it) => mesmoDia(it.data, dia));
-            const evento = doDiaI.some((it) => it.tipo === 'evento'), aniversario = doDiaI.some((it) => it.tipo === 'aniversario');
+            const evento = doDiaI.some((it) => it.tipo === 'evento'), aniversario = doDiaI.some((it) => it.tipo !== 'evento');
             const classes = ['calendario-dia', mesmoDia(dia, hoje) && 'hoje', escolhido && mesmoDia(dia, escolhido) && 'escolhido'].filter(Boolean).join(' ');
             return (
               <button
@@ -213,6 +221,13 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
                     <Trash2 size={15} aria-hidden="true" />
                   </button>
                 )}
+              </li>
+            ) : i.tipo === 'syden' ? (
+              <li key="syden">
+                <span className="calendario-quando">{primeiraMaiuscula(fmtDia.format(i.data))}</span>
+                <span className="calendario-nome">
+                  <Cake size={14} aria-hidden="true" /> {t('Aniversário do Syden')}
+                </span>
               </li>
             ) : (
               <li key={'a' + i.aniversario.userId}>

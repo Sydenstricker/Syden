@@ -119,6 +119,18 @@ seria outra coisa: mais invasivo e mais errado (VPN, quem mora fora, quem viaja)
 
 A detecção é **padrão inicial, nunca trava**: a escolha explícita fica guardada e não é sobreposta.
 
+## O aniversário do Syden é 19/09, e ele abre no quarto
+
+**Decidido em 19/10/2026, pelo Sydenstricker.** O aniversário do Syden é **19/09**: o dia em que o projeto ganhou o nome e
+virou app instalável (a v0.1.0 é de 19/09/2026, 13:27; o nome Syden, das 15:01). O primeiro commit, ainda como "Janja", é
+de 18/09/2026, e já trazia quase 10 mil linhas: o trabalho começou antes do que o git conta. Nos dois lugares: marcado no
+calendário de toda comunidade (a partir de 2027) e com festa ao abrir o Syden no dia (`AniversarioDoSyden.tsx`,
+`diaDoSyden.ts`), uma vez por ano, guardado nas preferências.
+
+**O Syden abre no QUARTO por padrão**, e "Onde parei" fica em Minha conta → Ao abrir o Syden. Desde 22/09/2026 ele abria
+onde a pessoa tinha parado (para quem só conversa não ganhar um clique), mas o quarto virou a casa de cada um e quase não
+aparecia. No quarto, a barra lateral continua com os canais da última comunidade.
+
 ## A tela não interrompe, não insiste e não mente
 
 Quatro regras que vieram da pessoa que usa o Syden, na noite de 28/09/2026, olhando a entrada pelo

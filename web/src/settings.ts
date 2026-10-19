@@ -58,6 +58,13 @@ export interface Settings {
   mostrarSemVideo: boolean;
   /** No palco da call: o quadro da sua própria câmera. */
   mostrarMinhaCamera: boolean;
+  /**
+   * Onde o Syden abre (decisão dele, 19/10/2026): no QUARTO, por padrão, ou onde a pessoa parou (a comunidade ou as
+   * conversas). Até então abria sempre onde parou, e o quarto, que virou a casa de cada um, quase não aparecia.
+   */
+  aoAbrir: 'quarto' | 'ondeParei';
+  /** O ano em que a pessoa já viu a festa do aniversário do Syden (AniversarioDoSyden.tsx); null = nunca. */
+  festaDoSydenVistaEm: number | null;
 }
 
 const DEFAULTS: Settings = {
@@ -78,6 +85,8 @@ const DEFAULTS: Settings = {
   efeitosVisuais: true,
   mostrarSemVideo: true,
   mostrarMinhaCamera: true,
+  aoAbrir: 'quarto',
+  festaDoSydenVistaEm: null,
   notifications: true,
   corDeDestaque: null,
   escalaDoTexto: 1,
