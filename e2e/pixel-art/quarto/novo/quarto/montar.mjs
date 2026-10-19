@@ -4217,7 +4217,8 @@ void main() {
   bop.onclick = () => { const ops = Object.keys(OPCOES_PAREDE.poster); escolherOpcao('poster', ops[(ops.indexOf(opcaoDe('poster')) + 1) % ops.length]); };
   botaoDaOpcao();
   window.ondeDoMovel = (id) => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (dono[k] === id) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
-  window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
+  // para o teste: o pixel DO objeto mais perto do centro dele (o centro do fone, em arco, cai no vão, na parede)
+  window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; const seus = []; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) seus.push([k % W, (k / W) | 0]); if (!seus.length) return null; const cx = seus.reduce((s, q) => s + q[0], 0) / seus.length, cy = seus.reduce((s, q) => s + q[1], 0) / seus.length; let melhor = seus[0], d = Infinity; for (const q of seus) { const dq = (q[0] - cx) ** 2 + (q[1] - cy) ** 2; if (dq < d) { d = dq; melhor = q; } } return [melhor[0] + 0.5, melhor[1] + 0.5]; };
 
   tela.addEventListener('pointerdown', (e) => {
     const k = pixelDo(e);
