@@ -14721,3 +14721,45 @@ body.arrastando-barra {
   background: var(--overlay-strong);
   color: var(--text);
 }
+
+/* O ranking do karaokê (Karaoke.tsx): duas listas numeradas, o número à direita. */
+.karaoke-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.karaoke-ranking h4 {
+  margin: 0 0 4px;
+  font-size: calc(12px * var(--escala-do-texto));
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.karaoke-ranking ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.karaoke-ranking li {
+  padding: 4px 0;
+}
+
+.karaoke-ranking li > span {
+  display: inline-block;
+  max-width: calc(100% - 48px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.karaoke-ranking li > strong {
+  float: right;
+}
+
+.karaoke-topo-acoes .link-button[aria-pressed='true'] {
+  text-decoration: underline;
+}

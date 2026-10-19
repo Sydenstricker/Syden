@@ -604,6 +604,9 @@ export function useVoice(socket: Socket | null) {
       await room.localParticipant
         .publishData(new TextEncoder().encode(JSON.stringify(aviso)), { reliable: true, topic: KARAOKE_TOPIC })
         .catch(console.error);
+      // O aviso acima vai pela chamada e não passa pelo servidor: este é o que conta para o ranking do karaokê e as
+      // conquistas da comunidade (o servidor decide se vale: ver karaoke-routes.ts). Falhar não atrapalha cantar.
+      if (songId !== null) void api(`/api/karaoke/${songId}/cantada`, { method: 'POST' }).catch(() => {});
     },
     [room],
   );

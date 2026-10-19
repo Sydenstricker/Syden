@@ -55,6 +55,66 @@ function ListaDeMusicas({
   );
 }
 
+interface Ranking {
+  cantores: { userId: number; nome: string; cantadas: number }[];
+  musicas: { songId: number; title: string; artist: string | null; cantadas: number }[];
+  total: number;
+}
+
+/**
+ * O ranking do karaokê da comunidade (server/src/karaoke-routes.ts): quem mais pôs música para cantar com a turma na sala
+ * e as músicas mais cantadas. Relê a cada música que começa.
+ */
+function RankingDoKaraoke({ communityId, versao }: { communityId: number; versao: unknown }) {
+  const t = useT();
+  const [ranking, setRanking] = useState<Ranking | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
+
+  useEffect(() => {
+    api<Ranking>(`/api/communities/${communityId}/karaoke/ranking`).then(setRanking, (e) => setErro((e as Error).message));
+  }, [communityId, versao]);
+
+  if (erro) return <p className="form-error">{erro}</p>;
+  if (!ranking) return <p className="settings-hint">{t('Carregando…')}</p>;
+  if (ranking.total === 0) {
+    return <p className="settings-hint">{t('Ninguém cantou ainda. Conta quando alguém põe uma música com a turma na sala.')}</p>;
+  }
+  return (
+    <div className="karaoke-ranking">
+      <p className="settings-hint">{t('Músicas cantadas: {n}', { n: ranking.total })}</p>
+      {ranking.cantores.length > 0 && (
+        <section>
+          <h4>{t('Quem mais cantou')}</h4>
+          <ol>
+            {ranking.cantores.map((c) => (
+              <li key={c.userId}>
+                <span>{c.nome}</span>
+                <strong>{c.cantadas}</strong>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+      {ranking.musicas.length > 0 && (
+        <section>
+          <h4>{t('Mais cantadas')}</h4>
+          <ol>
+            {ranking.musicas.map((m) => (
+              <li key={m.songId}>
+                <span>
+                  {m.title}
+                  {m.artist && <span className="karaoke-artista"> · {m.artist}</span>}
+                </span>
+                <strong>{m.cantadas}</strong>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+    </div>
+  );
+}
+
 /** A letra rolando, com a linha do momento acesa. */
 function Letra({ linhas, soltas, segundos }: { linhas: LinhaDaLetra[]; soltas: string[]; segundos: number }) {
   const t = useT();
@@ -196,6 +256,7 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
   const t = useT();
   const [musicas, setMusicas] = useState<KaraokeSong[] | null>(null);
   const [subindo, setSubindo] = useState(false);
+  const [vendoRanking, setVendoRanking] = useState(false);
   const [segundos, setSegundos] = useState(0);
   const [erro, setErro] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -287,7 +348,12 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
           <Music size={17} /> {t('Karaokê')}
         </h3>
         <div className="karaoke-topo-acoes">
-          {!emCartaz && (
+          {!emCartaz && !subindo && (
+            <button className="link-button" aria-pressed={vendoRanking} onClick={() => setVendoRanking(!vendoRanking)}>
+              {t('Ranking')}
+            </button>
+          )}
+          {!emCartaz && !vendoRanking && (
             <button className="link-button" onClick={() => setSubindo(!subindo)}>
               {subindo ? t('Cancelar') : t('Subir música')}
             </button>
@@ -318,6 +384,8 @@ export function Karaoke({ voice, communityId, onClose }: { voice: Voice; communi
           </div>
           <Letra linhas={linhas} soltas={soltas} segundos={segundos} />
         </>
+      ) : vendoRanking ? (
+        <RankingDoKaraoke communityId={communityId} versao={emCartaz} />
       ) : subindo ? (
         <Subir
           communityId={communityId}

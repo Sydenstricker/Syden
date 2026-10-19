@@ -698,6 +698,10 @@ continuidade"). O que ainda falta desenhar quando voltar:
 - **Quais vêm liberados e quais cada conquista abre**, e os marcos (ex.: 10 horas de call juntos, 50 partidas).
 - **O servidor:** a arrumação de cada comunidade e as conquistas dela, numa tabela; quem administra escolhe e arruma.
 - **Sem sequência diária e sem cobrança** (regra da etapa 2 e da avaliação da sondagem de jogos: nada de "volte todo dia").
+- **Os números das conquistas JÁ EXISTEM (19/10/2026):** horas de call e de tela por comunidade (`usage_sessions.community_id`,
+  desde 27/09), partidas (`minijogo_partidas`) e, desde 19/10, as vezes que se cantou (`karaoke_cantadas`, com o ranking do
+  karaokê: conta só com a turma na sala, numa sala da comunidade). Quem exclui a conta deixa a soma (`tempo_de_quem_saiu`,
+  `karaoke_de_quem_saiu`, sem data nem pessoa), para um marco alcançado não desacontecer.
 
 ## Os coelhos vivem nos ambientes: um sistema isométrico só, e o personagem antes da arte
 

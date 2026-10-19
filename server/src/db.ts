@@ -1377,6 +1377,8 @@ export function renameCommunity(id: number, name: string) {
 export function deleteCommunity(id: number) {
   db.prepare('DELETE FROM communities WHERE id = ?').run(id);
   db.prepare('DELETE FROM tempo_de_quem_saiu WHERE community_id = ?').run(id);
+  db.prepare('DELETE FROM karaoke_cantadas WHERE community_id = ?').run(id);
+  db.prepare('DELETE FROM karaoke_de_quem_saiu WHERE community_id = ?').run(id);
 }
 
 /** Guarda (ou apaga, com null) a imagem da comunidade e marca a versão nova. */
@@ -2117,6 +2119,91 @@ export function createKaraokeSong(song: {
   return findKaraokeSong(Number(result.lastInsertRowid))!;
 }
 
+/*
+ * AS VEZES QUE SE CANTOU (19/10/2026, pedido dele): cada música posta para cantar numa sala de voz vira uma linha, com quem
+ * a pôs. Serve ao ranking do karaokê na comunidade e às conquistas coletivas do salão. A música apagada não leva as linhas
+ * (a comunidade cantou do mesmo jeito); quem exclui a conta leva as dela, e a soma fica em karaoke_de_quem_saiu (sem data
+ * e sem nada que leve de volta à pessoa, como o TEMPO DE QUEM SAIU).
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS karaoke_cantadas (
+    id           INTEGER PRIMARY KEY,
+    community_id INTEGER NOT NULL,
+    song_id      INTEGER NOT NULL,
+    user_id      INTEGER NOT NULL REFERENCES users(id),
+    cantada_em   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_karaoke_cantadas ON karaoke_cantadas(community_id, user_id);
+  CREATE TABLE IF NOT EXISTS karaoke_de_quem_saiu (
+    community_id INTEGER PRIMARY KEY,
+    cantadas     INTEGER NOT NULL DEFAULT 0
+  );
+`);
+
+/** Quando esta pessoa pôs esta música para cantar pela última vez (null: nunca). É o freio de quem recomeça a música. */
+export function ultimaCantada(userId: number, songId: number): string | null {
+  return (
+    (db.prepare('SELECT MAX(cantada_em) AS em FROM karaoke_cantadas WHERE user_id = ? AND song_id = ?').get(userId, songId) as {
+      em: string | null;
+    }).em ?? null
+  );
+}
+
+export function registrarCantada(communityId: number, songId: number, userId: number) {
+  db.prepare('INSERT INTO karaoke_cantadas (community_id, song_id, user_id) VALUES (?, ?, ?)').run(communityId, songId, userId);
+}
+
+/** O ranking do karaokê: quem mais cantou (só quem ainda é membro), as músicas mais cantadas (só as que existem) e o total. */
+export function rankingDoKaraoke(communityId: number, limite = 10) {
+  const cantores = db
+    .prepare(
+      `SELECT k.user_id AS userId, COALESCE(m.apelido, u.username) AS nome, COUNT(*) AS cantadas
+         FROM karaoke_cantadas k
+         JOIN community_members m ON m.community_id = k.community_id AND m.user_id = k.user_id
+         JOIN users u ON u.id = k.user_id
+        WHERE k.community_id = ?
+        GROUP BY k.user_id ORDER BY cantadas DESC, MIN(k.id) ASC LIMIT ?`,
+    )
+    .all(communityId, limite) as { userId: number; nome: string; cantadas: number }[];
+  const musicas = db
+    .prepare(
+      `SELECT s.id AS songId, s.title, s.artist, COUNT(*) AS cantadas
+         FROM karaoke_cantadas k JOIN karaoke_songs s ON s.id = k.song_id AND s.community_id = k.community_id
+        WHERE k.community_id = ?
+        GROUP BY s.id ORDER BY cantadas DESC, MIN(k.id) ASC LIMIT 5`,
+    )
+    .all(communityId) as { songId: number; title: string; artist: string | null; cantadas: number }[];
+  return { cantores, musicas, total: cantadasNaComunidade(communityId) };
+}
+
+/** Quantas vezes se cantou na comunidade, contando quem já excluiu a conta. */
+export function cantadasNaComunidade(communityId: number): number {
+  const n = (sql: string) => (db.prepare(sql).get(communityId) as { n: number }).n;
+  return (
+    n('SELECT COUNT(*) AS n FROM karaoke_cantadas WHERE community_id = ?') +
+    n('SELECT COALESCE(SUM(cantadas), 0) AS n FROM karaoke_de_quem_saiu WHERE community_id = ?')
+  );
+}
+
+/** Para o "Levar seus dados": quantas vezes a pessoa cantou, por comunidade. */
+export function cantadasDe(userId: number): { comunidade: string | null; cantadas: number }[] {
+  return db
+    .prepare(
+      `SELECT c.name AS comunidade, COUNT(*) AS cantadas FROM karaoke_cantadas k
+         LEFT JOIN communities c ON c.id = k.community_id WHERE k.user_id = ? GROUP BY k.community_id`,
+    )
+    .all(userId) as { comunidade: string | null; cantadas: number }[];
+}
+
+function guardarCantadasDeQuemSaiu(userId: number) {
+  db.prepare(
+    `INSERT INTO karaoke_de_quem_saiu (community_id, cantadas)
+       SELECT community_id, COUNT(*) FROM karaoke_cantadas WHERE user_id = ? GROUP BY community_id
+     ON CONFLICT (community_id) DO UPDATE SET cantadas = cantadas + excluded.cantadas`,
+  ).run(userId);
+  db.prepare('DELETE FROM karaoke_cantadas WHERE user_id = ?').run(userId);
+}
+
 export function deleteKaraokeSong(id: number) {
   db.prepare('DELETE FROM karaoke_songs WHERE id = ?').run(id);
 }
@@ -2820,6 +2907,7 @@ export function deleteAccount(userId: number) {
     db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
     // O tempo dela continua somado ao total de cada comunidade, só como número (ver TEMPO DE QUEM SAIU).
     guardarTempoDeQuemSaiu(userId);
+    guardarCantadasDeQuemSaiu(userId);
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM minijogo_jogadores WHERE user_id = ?').run(userId);
     db.prepare('UPDATE minijogo_partidas SET criada_por = NULL WHERE criada_por = ?').run(userId);
