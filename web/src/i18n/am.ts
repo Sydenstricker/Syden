@@ -733,6 +733,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'አራት ፊደላት፣ አንድ አዶና አንድ ቀለም፣ የዚህ ማህበረሰብ አባል ከሆነ ሰው ስም አጠገብ የሚታዩ።',
   'Que bom te ver de novo.': 'እንደገና በማየቴ ደስ ብሎኛል።',
   'Que legal!': 'በጣም ጥሩ!',
+  'Jogando agora': "አሁን እየተጫወቱ ያሉ",
+  'Estou aqui': "እዚህ ነኝ",
   'Feliz aniversário, {nome}!': 'መልካም ልደት፣ {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ይህ ዓመት በመልካም ውይይቶች፣ በጥሩ ጨዋታዎች እና በመልካም ጓደኝነት የተሞላ ይሁን።',
   'Quem abre o site': 'ጣቢያውን የሚከፍቱ',

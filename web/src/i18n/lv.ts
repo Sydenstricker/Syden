@@ -843,6 +843,8 @@ export default {
     'Četras rakstzīmes, ikona un krāsa, kas redzamas blakus šejieniešu vārdiem.',
   'Que bom te ver de novo.': 'Prieks tevi atkal redzēt.',
   'Que legal!': 'Forši!',
+  'Jogando agora': "Pašlaik spēlē",
+  'Estou aqui': "Esmu šeit",
   'Feliz aniversário, {nome}!': 'Daudz laimes dzimšanas dienā, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Lai šis gads ir pilns labu sarunu, labu spēļu un labas kompānijas.',
   'Quem abre o site': 'Kas atver vietni',

@@ -798,6 +798,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Qubee afur, mallattoo tokko fi halluu tokko kan maqaa namoota asii cinaa mul’atu.',
   'Que bom te ver de novo.': 'Irra deebi’ee si arguun gammachiisaadha.',
   'Que legal!': 'Baay’ee gaarii!',
+  'Jogando agora': "Amma taphachaa jiru",
+  'Estou aqui': "As jira",
   'Feliz aniversário, {nome}!': 'Ayyaana dhalootaa gaarii, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Waggaan kun haasaa gaarii, taphoota gaarii fi hiriyyummaa gaariin haa guutamu.',
   'Quem abre o site': 'Kan marsariitii banu',

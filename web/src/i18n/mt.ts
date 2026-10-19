@@ -371,6 +371,8 @@ export default {
   'Sua ideia foi acolhida': 'L-idea tiegħek ġiet milqugħa',
   'Sua ideia entrou no Syden!': 'L-idea tiegħek daħlet f\'Syden!',
   'Que legal!': 'X\'sabiħ!',
+  'Jogando agora': "Qed jilagħbu issa",
+  'Estou aqui': "Jien hawn",
   'Feliz aniversário, {nome}!': 'Għeluq sninek it-tajjeb, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Din is-sena tkun mimlija taħdidiet sbieħ, logħob tajjeb u kumpanija tajba.',
   'Opções': 'Għażliet',

@@ -588,6 +588,8 @@ export default {
   'Teve uma ideia que entrou no app': 'A eu une idée qui est entrée dans l’application',
   'Teve {quantas} ideias que entraram no app': 'A eu {quantas} idées qui sont entrées dans l’application',
   'Que legal!': 'Super !',
+  'Jogando agora': "En jeu maintenant",
+  'Estou aqui': "Je suis là",
   'Feliz aniversário, {nome}!': 'Joyeux anniversaire, {nome} !',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Que cette année soit pleine de belles conversations, de bonnes parties et de bonne compagnie.',
   Emojis: 'Émojis',

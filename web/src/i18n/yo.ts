@@ -748,6 +748,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Lẹ́tà mẹ́rin, àmì kan àti àwọ̀ kan tí ń farahàn lẹ́gbẹ̀ẹ́ orúkọ ẹni tó jẹ́ ti ibí.',
   'Que bom te ver de novo.': 'Ó dára láti tún rí yín.',
   'Que legal!': 'Ó dùn!',
+  'Jogando agora': "Ń ṣeré báyìí",
+  'Estou aqui': "Mo wà níbí",
   'Feliz aniversário, {nome}!': 'Ẹ kú ọjọ́ìbí, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Kí ọdún yìí kún fún ìjíròrò dáadáa, eré dáadáa àti àjọṣepọ̀ dáadáa.',
   'Quem abre o site': 'Ẹni tó ń ṣí ojú òpó náà',

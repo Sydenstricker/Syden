@@ -576,6 +576,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'পর্দা শেয়ারের মান',
   'Que bom te ver de novo.': 'তোমাকে আবার দেখে ভালো লাগল।',
   'Que legal!': 'বাহ!',
+  'Jogando agora': "এখন খেলছে",
+  'Estou aqui': "আমি এখানে",
   'Feliz aniversário, {nome}!': 'শুভ জন্মদিন, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'এই বছরটা ভরে উঠুক ভালো আড্ডা, ভালো খেলা আর ভালো সঙ্গে।',
   'Quem abre o site': 'যারা সাইট খোলে',

@@ -856,6 +856,8 @@ export default {
     'Энд харьяалагдах хүмүүсийн нэрийн хажууд харагдах дөрвөн тэмдэгт, дүрс, өнгө.',
   'Que bom te ver de novo.': 'Чамайг дахин харсандаа баяртай байна.',
   'Que legal!': 'Ямар гоё вэ!',
+  'Jogando agora': "Одоо тоглож байгаа",
+  'Estou aqui': "Би энд байна",
   'Feliz aniversário, {nome}!': 'Төрсөн өдрийн мэнд, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Энэ жил сайхан яриа, сайхан тоглоом, сайн нөхөрлөлөөр дүүрэн байх болтугай.',
   'Quem abre o site': 'Сайтыг хэн нээдэг вэ',

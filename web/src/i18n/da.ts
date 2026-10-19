@@ -835,6 +835,8 @@ export default {
     'Fire tegn, et ikon og en farve, der vises ved siden af navnet på dem, der hører til her.',
   'Que bom te ver de novo.': 'Godt at se dig igen.',
   'Que legal!': 'Hvor fedt!',
+  'Jogando agora': "Spiller nu",
+  'Estou aqui': "Jeg er her",
   'Feliz aniversário, {nome}!': 'Tillykke med fødselsdagen, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Må dette år være fyldt med gode samtaler, gode spil og godt selskab.',
   'Quem abre o site': 'Dem, der åbner webstedet',

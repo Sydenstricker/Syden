@@ -3700,6 +3700,19 @@ export function servidoresDeJogo(communityId: number): ServidorDeJogo[] {
     .all(communityId) as unknown as ServidorDeJogo[];
 }
 
+/** O nome de cada pessoa como a comunidade a vê (o apelido de lá, ou o nome da conta). Só quem ainda é membro. */
+export function nomesNaComunidade(communityId: number, userIds: number[]): Map<number, string> {
+  if (userIds.length === 0) return new Map();
+  const linhas = db
+    .prepare(
+      `SELECT u.id AS userId, COALESCE(m.apelido, u.username) AS nome FROM community_members m
+         JOIN users u ON u.id = m.user_id
+        WHERE m.community_id = ? AND m.user_id IN (${userIds.map(() => '?').join(',')})`,
+    )
+    .all(communityId, ...userIds) as { userId: number; nome: string }[];
+  return new Map(linhas.map((l) => [l.userId, l.nome]));
+}
+
 export function contarServidoresDeJogo(communityId: number): number {
   return (db.prepare('SELECT COUNT(*) AS n FROM game_servers WHERE community_id = ?').get(communityId) as { n: number }).n;
 }

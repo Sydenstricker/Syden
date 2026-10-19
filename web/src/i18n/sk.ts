@@ -841,6 +841,8 @@ export default {
     'Štyri znaky, ikona a farba, ktoré sa zobrazujú pri mene tých, čo sem patria.',
   'Que bom te ver de novo.': 'Je fajn ťa znova vidieť.',
   'Que legal!': 'Paráda!',
+  'Jogando agora': "Práve hrajú",
+  'Estou aqui': "Som tu",
   'Feliz aniversário, {nome}!': 'Všetko najlepšie k narodeninám, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Nech je tento rok plný dobrých rozhovorov, dobrých hier a dobrej spoločnosti.',
   'Quem abre o site': 'Kto otvára web',

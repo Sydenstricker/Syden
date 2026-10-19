@@ -739,6 +739,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Τέσσερις χαρακτήρες, ένα εικονίδιο και ένα χρώμα που εμφανίζονται δίπλα στο όνομα όποιου ανήκει εδώ.',
   'Que bom te ver de novo.': 'Χαρά μας που σε ξαναβλέπουμε.',
   'Que legal!': 'Τέλεια!',
+  'Jogando agora': "Παίζουν τώρα",
+  'Estou aqui': "Είμαι εδώ",
   'Feliz aniversário, {nome}!': 'Χρόνια πολλά, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Να είναι αυτή η χρονιά γεμάτη ωραίες κουβέντες, καλά παιχνίδια και καλή παρέα.',
   'Quem abre o site': 'Όποιος ανοίγει τον ιστότοπο',

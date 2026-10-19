@@ -359,6 +359,8 @@ export default {
   'Sua ideia foi acolhida': 'Ua talia lou manatu',
   'Sua ideia entrou no Syden!': 'Ua ulu atu lou manatu i Syden!',
   'Que legal!': 'Manaia!',
+  'Jogando agora': "O lo'o ta'a'alo nei",
+  'Estou aqui': "O a'u lenei",
   'Feliz aniversário, {nome}!': 'Manuia lou aso fanau, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ia tumu lenei tausaga i talanoaga lelei, taaloga lelei ma uo lelei.',
   'Opções': 'Filifiliga',

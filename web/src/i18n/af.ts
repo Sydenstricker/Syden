@@ -835,6 +835,8 @@ export default {
     'Vier karakters, ’n ikoon en ’n kleur wat langs die naam verskyn van wie hiervandaan is.',
   'Que bom te ver de novo.': 'Lekker om jou weer te sien.',
   'Que legal!': 'Hoe lekker!',
+  'Jogando agora': "Speel nou",
+  'Estou aqui': "Ek is hier",
   'Feliz aniversário, {nome}!': 'Gelukkige verjaarsdag, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Mag hierdie jaar vol goeie gesprekke, goeie potjies en goeie geselskap wees.',
   'Quem abre o site': 'Wie die webwerf oopmaak',

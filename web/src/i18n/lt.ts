@@ -843,6 +843,8 @@ export default {
     'Keturi simboliai, piktograma ir spalva, kurie rodomi šalia čia priklausančiųjų vardų.',
   'Que bom te ver de novo.': 'Smagu tave vėl matyti.',
   'Que legal!': 'Šaunu!',
+  'Jogando agora': "Dabar žaidžia",
+  'Estou aqui': "Aš čia",
   'Feliz aniversário, {nome}!': 'Su gimtadieniu, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Tegul šie metai būna pilni gerų pokalbių, gerų žaidimų ir geros kompanijos.',
   'Quem abre o site': 'Kas atidaro svetainę',

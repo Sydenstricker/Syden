@@ -843,6 +843,8 @@ export default {
     'Štirje znaki, ikona in barva, ki se prikažejo ob imenu tistih, ki spadajo sem.',
   'Que bom te ver de novo.': 'Lepo te je spet videti.',
   'Que legal!': 'Super!',
+  'Jogando agora': "Zdaj igrajo",
+  'Estou aqui': "Sem tukaj",
   'Feliz aniversário, {nome}!': 'Vse najboljše za rojstni dan, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Naj bo to leto polno dobrih pogovorov, dobrih iger in dobre družbe.',
   'Quem abre o site': 'Kdo odpira stran',

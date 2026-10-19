@@ -843,6 +843,8 @@ export default {
     'Bu ýerdenleriň adynyň ýanynda görünýän dört nyşan, bir ikonka we bir reňk.',
   'Que bom te ver de novo.': 'Seni ýene görmek nähili gowy.',
   'Que legal!': 'Nähili gowy!',
+  'Jogando agora': "Häzir oýunda",
+  'Estou aqui': "Men şu ýerde",
   'Feliz aniversário, {nome}!': 'Doglan günüň gutly bolsun, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Goý, bu ýyl gowy söhbetdeşliklerden, gowy oýunlardan we gowy dostlukdan doly bolsun.',
   'Quem abre o site': 'Saýty kim açýar',

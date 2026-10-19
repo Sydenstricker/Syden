@@ -729,6 +729,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Haruffa huɗu, alama ɗaya da launi ɗaya da ke bayyana kusa da sunan wanda yake na nan.',
   'Que bom te ver de novo.': 'Ina farin cikin sake ganin ku.',
   'Que legal!': 'Madalla!',
+  'Jogando agora': "Suna wasa yanzu",
+  'Estou aqui': "Ina nan",
   'Feliz aniversário, {nome}!': 'Barka da zagayowar ranar haihuwa, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Allah ya sa wannan shekarar ta cika da hirarraki masu daɗi, wasanni masu kyau da abokantaka mai kyau.',
   'Quem abre o site': 'Masu buɗe shafin',

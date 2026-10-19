@@ -576,6 +576,8 @@ export default {
   'Qualidade do compartilhamento de tela': 'Kwaliteit van het schermdelen',
   'Que bom te ver de novo.': 'Fijn je weer te zien.',
   'Que legal!': 'Wat leuk!',
+  'Jogando agora': "Nu in het spel",
+  'Estou aqui': "Ik ben er",
   'Feliz aniversário, {nome}!': 'Gefeliciteerd met je verjaardag, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Moge dit jaar vol goede gesprekken, goede potjes en goed gezelschap zijn.',
   'Quem abre o site': 'Wie de site opent',

@@ -838,6 +838,8 @@ export default {
     'Neli märki, ikoon ja värv, mis kuvatakse siia kuulujate nime kõrval.',
   'Que bom te ver de novo.': 'Tore sind jälle näha.',
   'Que legal!': 'Lahe!',
+  'Jogando agora': "Praegu mängus",
+  'Estou aqui': "Olen siin",
   'Feliz aniversário, {nome}!': 'Palju õnne sünnipäevaks, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Olgu see aasta täis häid vestlusi, häid mänge ja head seltskonda.',
   'Quem abre o site': 'Kes saidi avab',

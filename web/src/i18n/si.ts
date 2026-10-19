@@ -841,6 +841,8 @@ export default {
     'මෙහි අයගේ නම අසල දිස්වන අක්ෂර හතරක්, අයිකනයක් සහ වර්ණයක්.',
   'Que bom te ver de novo.': 'ඔබව නැවත දැකීම සතුටක්.',
   'Que legal!': 'නියමයි!',
+  'Jogando agora': "දැන් සෙල්ලම් කරමින්",
+  'Estou aqui': "මම මෙතන",
   'Feliz aniversário, {nome}!': 'සුබ උපන්දිනයක්, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'මේ අවුරුද්ද හොඳ කතාබහ, හොඳ ක්‍රීඩා සහ හොඳ ඇසුරෙන් පිරී පවතින්න.',
   'Quem abre o site': 'අඩවිය විවෘත කරන අය',

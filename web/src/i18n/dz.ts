@@ -854,6 +854,8 @@ export default {
     'ནཱ་གི་མི་ཚུ་གི་མིང་གི་བོཝ་ལུ་སྟོན་མི་ ཡིག་འབྲུ་ ༤ དང་ རྟགས་ཅིག་ ཚོས་གཞི་ཅིག',
   'Que bom te ver de novo.': 'ལོག་སྟེ་མཐོང་སྟེ་དགའ་ཏོག་ཏོ་ཨིན།',
   'Que legal!': 'ལེགས་ཤོམ་འདུག',
+  'Jogando agora': "ད་ལྟ་རྩེད་མོ་རྩེ་དོ",
+  'Estou aqui': "ང་ནཱ་ལུ་ཡོད",
   'Feliz aniversário, {nome}!': 'འཁྲུངས་སྐར་བཀྲ་ཤིས་བདེ་ལེགས། {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ལོ་འདི་ཁ་སླབ་ལེགས་ཤོམ་དང་ རྩེད་རིགས་ལེགས་ཤོམ་ དེ་ལས་ ཆ་རོགས་ལེགས་ཤོམ་གྱིས་ གང་ཡོད་པར་ཤོག',
   'Quem abre o site': 'ཡོངས་འབྲེལ་ས་ཁོངས་ཁ་ཕྱེ་མི།',

@@ -361,6 +361,8 @@ export default {
   'Sua ideia foi acolhida': 'Kuo tali ʻa hoʻo fakakaukau',
   'Sua ideia entrou no Syden!': 'Kuo hū hoʻo fakakaukau ki Syden!',
   'Que legal!': 'Fakafiefia ē!',
+  'Jogando agora': "'Oku va'inga he taimí ni",
+  'Estou aqui': "'Oku ou 'i heni",
   'Feliz aniversário, {nome}!': 'Fakamonū ʻaho fāʻeleʻi, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ke fonu ʻa e taʻu ni ʻi he ngaahi talanoa lelei, vaʻinga lelei mo e kaungāmeʻa lelei.',
   'Opções': 'Ngaahi fili',

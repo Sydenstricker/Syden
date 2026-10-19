@@ -697,6 +697,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'Bốn ký tự, một biểu tượng và một màu, hiện cạnh tên của người thuộc nơi này.',
   'Que bom te ver de novo.': 'Thật vui được gặp lại bạn.',
   'Que legal!': 'Hay quá!',
+  'Jogando agora': "Đang chơi",
+  'Estou aqui': "Mình ở đây",
   'Feliz aniversário, {nome}!': 'Chúc mừng sinh nhật, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Mong năm nay đầy những cuộc trò chuyện vui, những ván chơi hay và những người bạn tốt.',
   'Quem abre o site': 'Người mở trang web',

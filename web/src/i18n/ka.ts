@@ -860,6 +860,8 @@ export default {
     'ოთხი სიმბოლო, ხატულა და ფერი, რომლებიც აქაურების სახელის გვერდით ჩანს.',
   'Que bom te ver de novo.': 'მიხარია, რომ ისევ გხედავ.',
   'Que legal!': 'რა მაგარია!',
+  'Jogando agora': "ახლა თამაშობენ",
+  'Estou aqui': "აქ ვარ",
   'Feliz aniversário, {nome}!': 'გილოცავ დაბადების დღეს, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'დაე, ეს წელი სავსე იყოს კარგი საუბრებით, კარგი თამაშებითა და კარგი კომპანიით.',
   'Quem abre o site': 'ვინ ხსნის საიტს',

@@ -16,6 +16,7 @@ import { salaDaPessoa,
   emitToUser,
   joinCommunityRoom,
   leaveCommunityRoom,
+  estaOnline,
   pessoasNaSala,
   removeVoiceChannelMembers,
   salaDeVozDe,
@@ -25,7 +26,8 @@ import { INSIGNIAS, LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js'
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
-import { lerServidor, TETO_POR_COMUNIDADE } from './jogos.js';
+import { lerServidor, type ServidorDeJogo, TETO_POR_COMUNIDADE } from './jogos.js';
+import { esquecerServidor, jogandoNaComunidade, marcarJogando, tirarJogando, varrerJogando } from './jogando-agora.js';
 import { CATALOGO, podeVestir } from './guardaRoupa.js';
 import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
@@ -579,6 +581,23 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
      */
     // ---------- Servidores de jogo ----------
     //
+    // Cada servidor vai com `jogando`: quem disse que está nele agora, com o nome de dentro da comunidade.
+    const comQuemJoga = (communityId: number, servidores: ServidorDeJogo[]) => {
+      const porServidor = jogandoNaComunidade(communityId);
+      const nomes = db.nomesNaComunidade(communityId, [...porServidor.values()].flat().map((j) => j.userId));
+      return servidores.map((servidor) => ({
+        ...servidor,
+        jogando: (porServidor.get(servidor.id) ?? [])
+          .filter((j) => nomes.has(j.userId))
+          .map((j) => ({ userId: j.userId, nome: nomes.get(j.userId)!, desde: j.desde })),
+      }));
+    };
+    const avisarJogando = (communityId: number) => io.to(communityRoom(communityId)).emit('jogos:mudou', { communityId });
+    setInterval(() => {
+      const mudaram = varrerJogando(estaOnline, (communityId, userId) => db.memberRole(communityId, userId) !== undefined);
+      for (const communityId of mudaram) avisarJogando(communityId);
+    }, 60_000).unref();
+    //
     // Uma agenda de endereços da comunidade. O Syden guarda e mostra; não fala com esses servidores
     // (o porquê está em jogos.ts). Ver é de quem é membro; mexer é de quem administra a comunidade —
     // é a mesma régua dos canais, e pela mesma razão: o endereço errado manda a turma para outro lugar.
@@ -586,7 +605,25 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.get<{ Params: { id: string } }>('/api/communities/:id/jogos', async (request, reply) => {
       const communityId = Number(request.params.id);
       if (!roleIn(request.user, communityId)) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
-      return db.servidoresDeJogo(communityId);
+      return comQuemJoga(communityId, db.servidoresDeJogo(communityId));
+    });
+
+    // "Estou jogando neste agora" (ver jogando-agora.ts): qualquer membro marca a si mesmo, e só a si mesmo.
+    authed.post<{ Params: { id: string; jogoId: string } }>('/api/communities/:id/jogos/:jogoId/jogando', async (request, reply) => {
+      const communityId = Number(request.params.id);
+      if (!roleIn(request.user, communityId)) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
+      const atual = db.acharServidorDeJogo(Number(request.params.jogoId));
+      if (!atual || atual.communityId !== communityId) return reply.code(404).send({ error: 'Esse servidor não existe aqui.' });
+      marcarJogando(communityId, request.user.id, atual.id);
+      avisarJogando(communityId);
+      return { ok: true };
+    });
+
+    authed.delete<{ Params: { id: string } }>('/api/communities/:id/jogando', async (request, reply) => {
+      const communityId = Number(request.params.id);
+      if (!roleIn(request.user, communityId)) return reply.code(403).send({ error: 'Você não é desta comunidade.' });
+      if (tirarJogando(communityId, request.user.id)) avisarJogando(communityId);
+      return { ok: true };
     });
 
     authed.post<{ Params: { id: string } }>('/api/communities/:id/jogos', async (request, reply) => {
@@ -631,6 +668,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const atual = db.acharServidorDeJogo(Number(request.params.jogoId));
       if (!atual || atual.communityId !== communityId) return reply.code(404).send({ error: 'Esse servidor não existe aqui.' });
       db.apagarServidorDeJogo(atual.id);
+      if (esquecerServidor(communityId, atual.id)) avisarJogando(communityId);
       return { ok: true };
     });
 

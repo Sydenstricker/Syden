@@ -1,5 +1,6 @@
 import { Check, Copy, Gamepad2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
+import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MobileBackButton } from './MobileBackButton';
@@ -11,6 +12,9 @@ import { useT } from './i18n';
 // O problema que isto resolve é bobo e real: o endereço do servidor vive perdido numa mensagem de três
 // semanas atrás, e toda vez que alguém novo chega a mesma pergunta volta. Aqui ele fica num lugar fixo,
 // com botão de copiar — porque ninguém digita "mc.exemplo.com:25565" a mão sem errar.
+//
+// E cada servidor diz quem está nele AGORA: a pessoa aperta "Estou aqui" e a turma vê. Não é detecção (ver
+// "Saber que alguém está jogando" no CLAUDE.md): só o que ela escolheu contar, e some sozinho.
 
 const VAZIO = { nome: '', jogo: '', endereco: '', senha: '', observacao: '' };
 
@@ -97,7 +101,17 @@ function Formulario({
   );
 }
 
-export function ServidoresDeJogo({ community, onMobileBack }: { community: Community; onMobileBack: () => void }) {
+export function ServidoresDeJogo({
+  community,
+  eu,
+  socket,
+  onMobileBack,
+}: {
+  community: Community;
+  eu: number;
+  socket: Socket | null;
+  onMobileBack: () => void;
+}) {
   const t = useT();
   const [servidores, setServidores] = useState<ServidorDeJogo[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -117,6 +131,30 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
         setServidores([]);
       });
   }, [base]);
+
+  // alguém disse que entrou ou saiu (ou o prazo venceu): relê
+  useEffect(() => {
+    if (!socket) return;
+    const mudou = (d: { communityId: number }) => {
+      if (d.communityId === community.id) void api<ServidorDeJogo[]>(base).then(setServidores).catch(() => {});
+    };
+    socket.on('jogos:mudou', mudou);
+    return () => {
+      socket.off('jogos:mudou', mudou);
+    };
+  }, [socket, community.id, base]);
+
+  async function jogando(servidor: ServidorDeJogo, entrar: boolean) {
+    setErro(null);
+    try {
+      await api(entrar ? `${base}/${servidor.id}/jogando` : `/api/communities/${community.id}/jogando`, {
+        method: entrar ? 'POST' : 'DELETE',
+      });
+      setServidores(await api<ServidorDeJogo[]>(base));
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
 
   async function salvar(dados: typeof VAZIO) {
     setSalvando(true);
@@ -209,6 +247,25 @@ export function ServidoresDeJogo({ community, onMobileBack }: { community: Commu
                       </span>
                     )}
                     {servidor.observacao && <small>{servidor.observacao}</small>}
+                    {servidor.jogando && (
+                      <div className="jogo-agora">
+                        {servidor.jogando.length > 0 && (
+                          <span>
+                            <span className="jogo-agora-ponto" aria-hidden /> {t('Jogando agora')}:{' '}
+                            <strong>{servidor.jogando.map((j) => j.nome).join(', ')}</strong>
+                          </span>
+                        )}
+                        {servidor.jogando.some((j) => j.userId === eu) ? (
+                          <button type="button" className="btn-secondary" onClick={() => void jogando(servidor, false)}>
+                            {t('Sair')}
+                          </button>
+                        ) : (
+                          <button type="button" className="btn-secondary" onClick={() => void jogando(servidor, true)}>
+                            {t('Estou aqui')}
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                   {administra && (
                     <div className="jogo-cartao-acoes">

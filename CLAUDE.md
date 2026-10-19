@@ -963,6 +963,11 @@ dizer "estou neste agora" e os outros verem. Funciona no navegador, no celular e
 de loja, não fala com terceiro e não conta nada que a pessoa não tenha escolhido contar. **O risco
 dele é o oposto do da sobreposição: status que ninguém atualiza vira enfeite morto.**
 
+**Feito em 19/10/2026 (pedido dele):** cada cartão da agenda tem o "Estou aqui", e a turma vê "Jogando agora: fulano"
+na hora (`jogos:mudou`). Contra o enfeite morto, a marca SOME SOZINHA: 4 horas depois de marcada, ou quando a pessoa
+fica sem o Syden aberto por duas varreduras seguidas (recarregar não apaga). Mora só na memória do servidor
+(`server/src/jogando-agora.ts`), como quem está em chamada. Teste de tela: `e2e/jogando-agora.mjs`.
+
 ## O som da transmissão pega o Discord junto, e isso não é defeito do Syden
 
 **Diagnosticado em 02/10/2026; consertado para JANELA em 13/10/2026.** A turma usa Discord para voz e Syden para tela; quem

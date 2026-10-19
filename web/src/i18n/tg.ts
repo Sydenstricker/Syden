@@ -842,6 +842,8 @@ export default {
     'Чор аломат, нишона ва ранг, ки дар паҳлӯи номи касоне, ки аз ин ҷоянд, намоён мешаванд.',
   'Que bom te ver de novo.': 'Хуш аст, ки шуморо боз мебинем.',
   'Que legal!': 'Чӣ хуб!',
+  'Jogando agora': "Ҳоло бозӣ мекунанд",
+  'Estou aqui': "Ман инҷоям",
   'Feliz aniversário, {nome}!': 'Зодрӯзат муборак, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Бигзор ин сол пур аз суҳбатҳои хуб, бозиҳои хуб ва ҳамроҳии хуб бошад.',
   'Quem abre o site': 'Кӣ сомонаро мекушояд',

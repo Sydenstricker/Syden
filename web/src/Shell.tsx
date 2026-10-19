@@ -1191,7 +1191,7 @@ export function Shell({
             <UsageDashboard voiceMembers={voiceMembers} onMobileBack={() => setMobileChannels(true)} />
           )}
           {view === 'community' && jogosOpen && community && (
-            <ServidoresDeJogo community={community} onMobileBack={() => setMobileChannels(true)} />
+            <ServidoresDeJogo community={community} eu={user.id} socket={socket} onMobileBack={() => setMobileChannels(true)} />
           )}
           {view === 'community' && rankingOpen && community && (
             <Ranking community={community} onMobileBack={() => setMobileChannels(true)} />

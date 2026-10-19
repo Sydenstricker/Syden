@@ -841,6 +841,8 @@ export default {
     'Neljä merkkiä, kuvake ja väri, jotka näkyvät täkäläisten nimen vieressä.',
   'Que bom te ver de novo.': 'Kiva nähdä sinut taas.',
   'Que legal!': 'Siistiä!',
+  'Jogando agora': "Pelissä nyt",
+  'Estou aqui': "Olen täällä",
   'Feliz aniversário, {nome}!': 'Hyvää syntymäpäivää, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Olkoon tämä vuosi täynnä hyviä keskusteluja, hyviä pelejä ja hyvää seuraa.',
   'Quem abre o site': 'Sivuston avaajat',

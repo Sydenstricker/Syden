@@ -331,6 +331,8 @@ export default {
   'Sua ideia foi acolhida': 'Your idea was taken in',
   'Sua ideia entrou no Syden!': 'Your idea made it into Syden!',
   'Que legal!': 'How nice!',
+  'Jogando agora': "Playing now",
+  'Estou aqui': "I'm here",
   'Feliz aniversário, {nome}!': 'Happy birthday, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'May this year be full of good conversations, good games and good company.',
   'Opções': 'Options',

@@ -709,6 +709,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'నాలుగు అక్షరాలు, ఒక చిహ్నం, ఒక రంగు — ఇక్కడి వారి పేరు పక్కన కనిపిస్తాయి.',
   'Que bom te ver de novo.': 'మిమ్మల్ని మళ్ళీ చూడటం సంతోషం.',
   'Que legal!': 'భలే!',
+  'Jogando agora': "ఇప్పుడు ఆడుతున్నారు",
+  'Estou aqui': "నేను ఇక్కడ ఉన్నాను",
   'Feliz aniversário, {nome}!': 'పుట్టినరోజు శుభాకాంక్షలు, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'ఈ సంవత్సరం మంచి మాటలు, మంచి ఆటలు, మంచి తోడుతో నిండిపోవాలి.',
   'Quem abre o site': 'సైట్ తెరిచేవారు',

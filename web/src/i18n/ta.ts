@@ -712,6 +712,8 @@ export default {
   'Quatro caracteres, um ícone e uma cor que aparecem ao lado do nome de quem é daqui.': 'நான்கு எழுத்துகள், ஒரு சின்னம், ஒரு நிறம் — இங்குள்ளவர்களின் பெயருக்கு அருகில் தெரியும்.',
   'Que bom te ver de novo.': 'உங்களை மீண்டும் பார்ப்பது மகிழ்ச்சி.',
   'Que legal!': 'அருமை!',
+  'Jogando agora': "இப்போது விளையாடுகிறார்கள்",
+  'Estou aqui': "நான் இங்கே இருக்கிறேன்",
   'Feliz aniversário, {nome}!': 'பிறந்தநாள் வாழ்த்துகள், {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'இந்த ஆண்டு நல்ல உரையாடல்கள், நல்ல விளையாட்டுகள், நல்ல நட்பால் நிறையட்டும்.',
   'Quem abre o site': 'தளத்தைத் திறப்பவர்கள்',

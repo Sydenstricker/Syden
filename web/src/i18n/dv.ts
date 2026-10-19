@@ -852,6 +852,8 @@ export default {
     'މިތަނުގެ މީހުންގެ ނަމުގެ ކައިރީގައި ފެންނަ ހަތަރު އަކުރާއި، އައިކަނަކާއި، ކުލައެއް.',
   'Que bom te ver de novo.': 'އަލުން ދިމާވީތީ އުފާވެއްޖެ.',
   'Que legal!': 'ވަރަށް ރަނގަޅު!',
+  'Jogando agora': "މިހާރު ކުޅެނީ",
+  'Estou aqui': "އަހަރެން މިތާ",
   'Feliz aniversário, {nome}!': 'އުފަން ދުވަހުގެ ތަހުނިޔާ، {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'މި އަހަރު ރަނގަޅު ވާހަކަތަކާއި، ރަނގަޅު ކުޅިވަރުތަކާއި، ރަނގަޅު އެކުވެރިކަމުން ފުރިފައި ވާނދޭވެ.',
   'Quem abre o site': 'ސައިޓް ހުޅުވާ މީހުން',

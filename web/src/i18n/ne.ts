@@ -843,6 +843,8 @@ export default {
     'यहाँका मान्छेहरूको नामको छेउमा देखिने चार अक्षर, एउटा आइकन र एउटा रङ।',
   'Que bom te ver de novo.': 'तपाईंलाई फेरि देखेर खुसी लाग्यो।',
   'Que legal!': 'कस्तो राम्रो!',
+  'Jogando agora': "अहिले खेल्दै",
+  'Estou aqui': "म यहाँ छु",
   'Feliz aniversário, {nome}!': 'जन्मदिनको शुभकामना, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'यो वर्ष राम्रा कुराकानी, राम्रा खेल र राम्रो साथले भरिएको होस्।',
   'Quem abre o site': 'साइट खोल्नेहरू',

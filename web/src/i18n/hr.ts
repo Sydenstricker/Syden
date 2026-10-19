@@ -840,6 +840,8 @@ export default {
     'Četiri znaka, ikona i boja koji se pojavljuju uz ime onih koji su odavde.',
   'Que bom te ver de novo.': 'Lijepo te opet vidjeti.',
   'Que legal!': 'Super!',
+  'Jogando agora': "Sada igraju",
+  'Estou aqui': "Ovdje sam",
   'Feliz aniversário, {nome}!': 'Sretan rođendan, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Neka ova godina bude puna dobrih razgovora, dobrih partija i dobrog društva.',
   'Quem abre o site': 'Tko otvara stranicu',

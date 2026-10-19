@@ -833,6 +833,8 @@ export default {
     'Fyra tecken, en ikon och en färg som visas bredvid namnet på den som hör hemma här.',
   'Que bom te ver de novo.': 'Kul att se dig igen.',
   'Que legal!': 'Vad roligt!',
+  'Jogando agora': "Spelar nu",
+  'Estou aqui': "Jag är här",
   'Feliz aniversário, {nome}!': 'Grattis på födelsedagen, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Må det här året bli fullt av goda samtal, bra spel och gott sällskap.',
   'Quem abre o site': 'Den som öppnar webbplatsen',

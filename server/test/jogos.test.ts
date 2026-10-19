@@ -98,3 +98,24 @@ test('a lista tem teto: uma comunidade não vira uma tela que ninguém usa', asy
   const passou = await dona('POST', `/api/communities/${comunidade}/jogos`, { ...SURVIVAL, nome: 'O que não cabe' });
   assert.equal(passou.statusCode, 409);
 });
+
+// "Estou jogando neste agora" (ver jogando-agora.ts).
+test('qualquer membro diz que está jogando num servidor, e a turma vê com o nome de dentro', async () => {
+  const lista = () => dona('GET', `/api/communities/${comunidade}/jogos`).then((r) => r.json());
+  const servidor = (await lista())[0];
+  assert.deepEqual(servidor.jogando, []);
+
+  assert.equal((await amiga('POST', `/api/communities/${comunidade}/jogos/${servidor.id}/jogando`)).statusCode, 200);
+  const jogando = (await lista()).find((s: { id: number }) => s.id === servidor.id).jogando;
+  assert.deepEqual(jogando.map((j: { nome: string }) => j.nome), ['amiga']);
+
+  assert.equal((await amiga('DELETE', `/api/communities/${comunidade}/jogando`)).statusCode, 200);
+  assert.deepEqual((await lista()).find((s: { id: number }) => s.id === servidor.id).jogando, []);
+});
+
+test('não se marca servidor de outra comunidade, nem numa comunidade que não é sua', async () => {
+  const daDona = (await dona('POST', '/api/communities', { name: 'Fechada' })).json();
+  const servidor = (await dona('POST', `/api/communities/${daDona.id}/jogos`, SURVIVAL)).json();
+  assert.equal((await amiga('POST', `/api/communities/${daDona.id}/jogos/${servidor.id}/jogando`)).statusCode, 403);
+  assert.equal((await dona('POST', `/api/communities/${comunidade}/jogos/${servidor.id}/jogando`)).statusCode, 404);
+});

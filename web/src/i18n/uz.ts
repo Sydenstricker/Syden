@@ -849,6 +849,8 @@ export default {
     'Shu hamjamiyatdagilarning ismi yonida koʻrinadigan toʻrtta belgi, ikonka va rang.',
   'Que bom te ver de novo.': 'Sizni yana koʻrib turganimizdan xursandmiz.',
   'Que legal!': 'Zoʻr!',
+  'Jogando agora': "Hozir oʻyinda",
+  'Estou aqui': "Men shu yerdaman",
   'Feliz aniversário, {nome}!': 'Tugʻilgan kuning muborak, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Bu yil yaxshi suhbatlar, yaxshi oʻyinlar va yaxshi davralarga toʻla boʻlsin.',
   'Quem abre o site': 'Saytni kim ochadi',

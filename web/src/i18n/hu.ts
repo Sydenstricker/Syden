@@ -842,6 +842,8 @@ export default {
     'Négy karakter, egy ikon és egy szín, amely az ide tartozók neve mellett jelenik meg.',
   'Que bom te ver de novo.': 'Jó újra látni.',
   'Que legal!': 'De jó!',
+  'Jogando agora': "Most játékban",
+  'Estou aqui': "Itt vagyok",
   'Feliz aniversário, {nome}!': 'Boldog születésnapot, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Legyen ez az év tele jó beszélgetésekkel, jó játékokkal és jó társasággal.',
   'Quem abre o site': 'Akik megnyitják az oldalt',

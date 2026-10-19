@@ -837,6 +837,8 @@ export default {
     'Осы жердегілердің атының жанында көрінетін төрт таңба, белгіше және түс.',
   'Que bom te ver de novo.': 'Сізді қайта көргенімізге қуаныштымыз.',
   'Que legal!': 'Керемет!',
+  'Jogando agora': "Қазір ойында",
+  'Estou aqui': "Мен осындамын",
   'Feliz aniversário, {nome}!': 'Туған күніңмен, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Бұл жыл жақсы әңгімелерге, жақсы ойындарға және жақсы достарға толы болсын.',
   'Quem abre o site': 'Сайтты ашатындар',

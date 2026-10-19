@@ -838,6 +838,8 @@ export default {
     'Четири знака, икона и цвят, които се показват до името на хората оттук.',
   'Que bom te ver de novo.': 'Хубаво е да те видим пак.',
   'Que legal!': 'Супер!',
+  'Jogando agora': "Играят сега",
+  'Estou aqui': "Тук съм",
   'Feliz aniversário, {nome}!': 'Честит рожден ден, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Нека тази година бъде пълна с хубави разговори, добри игри и добра компания.',
   'Quem abre o site': 'Кой отваря сайта',

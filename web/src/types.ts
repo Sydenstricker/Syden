@@ -401,6 +401,8 @@ export interface ServidorDeJogo {
   observacao: string | null;
   createdBy: number;
   createdAt: string;
+  /** Quem disse que está jogando nele agora (some sozinho: ver server/src/jogando-agora.ts). Servidor antigo não manda. */
+  jogando?: { userId: number; nome: string; desde: string }[];
 }
 
 /** Um item da loja de cosméticos. O que cada código desenha mora em loja.ts. */

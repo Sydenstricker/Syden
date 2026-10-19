@@ -9097,6 +9097,33 @@ textarea {
   white-space: nowrap;
 }
 
+/* Quem está no servidor agora: o ponto verde é o mesmo "aceso" da presença. */
+.jogo-agora {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.jogo-agora strong {
+  color: var(--text);
+}
+
+.jogo-agora-ponto {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.jogo-agora .btn-secondary {
+  padding: 3px 10px;
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
 .jogo-senha {
   display: inline-flex;
   align-items: center;

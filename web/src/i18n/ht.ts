@@ -852,6 +852,8 @@ export default {
     'Kat karaktè, yon ikòn ak yon koulè ki parèt bò kote non moun ki fè pati isit la.',
   'Que bom te ver de novo.': 'Sa fè m plezi wè w ankò.',
   'Que legal!': 'Sa bèl!',
+  'Jogando agora': "Ap jwe kounye a",
+  'Estou aqui': "Mwen la",
   'Feliz aniversário, {nome}!': 'Bòn fèt, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Ke ane sa a plen bon konvèsasyon, bon pati ak bon konpayi.',
   'Quem abre o site': 'Moun ki louvri sit la',

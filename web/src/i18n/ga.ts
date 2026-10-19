@@ -361,6 +361,8 @@ export default {
   'Sua ideia foi acolhida': 'Glacadh le do smaoineamh',
   'Sua ideia entrou no Syden!': 'Tá do smaoineamh ar Syden anois!',
   'Que legal!': 'Nach iontach!',
+  'Jogando agora': "Ag imirt anois",
+  'Estou aqui': "Táim anseo",
   'Feliz aniversário, {nome}!': 'Lá breithe sona, {nome}!',
   'Que este ano venha cheio de boas conversas, boas partidas e boa companhia.': 'Go raibh an bhliain seo lán de chomhráite maithe, de chluichí maithe agus de chomhluadar maith.',
   'Opções': 'Roghanna',
