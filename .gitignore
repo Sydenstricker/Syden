@@ -69,3 +69,6 @@ e2e/fotos/syden-loja*/
 
 # O som que o e2e/clipe.mjs grava para medir (vozes e clipe final): saída de teste, como as fotos.
 e2e/fotos/*.webm
+
+# Modelos do tradutor local (e2e/tradutor-local/baixar.mjs baixa de novo): 36-70 MB cada
+e2e/tradutor-local/modelos/

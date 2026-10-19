@@ -1,0 +1,158 @@
+{
+ "ambiente": {
+  "node": "v24.13.0",
+  "electron": null,
+  "plataforma": "win32"
+ },
+ "memoria": {
+  "inicio": 37,
+  "depoisDoMotor": 56.2,
+  "depoisDe_es-en+en-pt": 166.2,
+  "pico": 357.5,
+  "wasmHeap": 289.7
+ },
+ "cargas": {
+  "motorMs": 21,
+  "es-en": {
+   "ms": 112,
+   "mb": 35.3
+  },
+  "en-pt": {
+   "ms": 77,
+   "mb": 34.7
+  }
+ },
+ "pares": {
+  "es": {
+   "rota": [
+    "es-en",
+    "en-pt"
+   ],
+   "primeiraMs": 363,
+   "medianaMs": 55,
+   "maxMs": 363,
+   "linhas": [
+    {
+     "original": "Alguém vai jogar hoje à noite?",
+     "de": "¿Alguien va a jugar esta noche?",
+     "traducao": "Alguém vai jogar hoje à noite?",
+     "ms": 363
+    },
+    {
+     "original": "Entra na call, tô te esperando faz meia hora",
+     "de": "Entra a la llamada, te estoy esperando hace media hora",
+     "traducao": "Vá lá, estou à tua espera há meia hora",
+     "ms": 74
+    },
+    {
+     "original": "Meu microfone tá chiando, vou trocar o fone",
+     "de": "Mi micrófono está chirriando, voy a cambiar los audífonos",
+     "traducao": "O meu microfone está a espremer, vou mudar os aparelhos auditivos",
+     "ms": 90
+    },
+    {
+     "original": "Kkkkk você caiu do mapa de novo",
+     "de": "Jajaja te caíste del mapa otra vez",
+     "traducao": "Hahaha você caiu do mapa novamente",
+     "ms": 53
+    },
+    {
+     "original": "Quem pegou meu loot? Era meu",
+     "de": "¿Quién agarró mi botín? Era mío",
+     "traducao": "Quem agarrou o meu saque? Foi meu",
+     "ms": 71
+    },
+    {
+     "original": "Vou ali jantar e já volto",
+     "de": "Voy a cenar y ya vuelvo",
+     "traducao": "Vou jantar e volto",
+     "ms": 54
+    },
+    {
+     "original": "Essa atualização quebrou o jogo inteiro",
+     "de": "Esta actualización rompió todo el juego",
+     "traducao": "Esta atualização quebrou todo o jogo",
+     "ms": 41
+    },
+    {
+     "original": "Bora fazer uma partida de Stop depois?",
+     "de": "¿Echamos una partida de Basta después?",
+     "traducao": "Vamos ter um jogo de Basta depois?",
+     "ms": 57
+    },
+    {
+     "original": "Valeu pela ajuda ontem, salvou demais",
+     "de": "Gracias por la ayuda ayer, me salvaste",
+     "traducao": "Obrigado pela ajuda ontem, você me salvou",
+     "ms": 55
+    },
+    {
+     "original": "Tô sem internet direito, a imagem da tela tá travando",
+     "de": "No tengo bien el internet, la pantalla compartida se congela",
+     "traducao": "Eu não tenho a internet certa, o compartilhamento de tela congela",
+     "ms": 82
+    },
+    {
+     "original": "Alguém sabe o endereço do servidor de Minecraft?",
+     "de": "¿Alguien sabe la dirección del servidor de Minecraft?",
+     "traducao": "Alguém sabe o endereço do servidor Minecraft?",
+     "ms": 52
+    },
+    {
+     "original": "Amanhã eu acordo cedo, então hoje só até meia-noite",
+     "de": "Mañana me levanto temprano, así que hoy solo hasta la medianoche",
+     "traducao": "Amanhã acordo cedo, por isso, só hoje até à meia-noite",
+     "ms": 71
+    },
+    {
+     "original": "Que jogada absurda, como você fez isso?",
+     "de": "Qué jugada tan increíble, ¿cómo hiciste eso?",
+     "traducao": "Que movimento incrível, como você fez isso?",
+     "ms": 55
+    },
+    {
+     "original": "Não esquece de trazer o carregador",
+     "de": "No te olvides de traer el cargador",
+     "traducao": "Não se esqueça de trazer o carregador",
+     "ms": 44
+    },
+    {
+     "original": "A gente perdeu porque ninguém defendeu a base",
+     "de": "Perdimos porque nadie defendió la base",
+     "traducao": "Perdemos porque ninguém defendeu a base",
+     "ms": 50
+    },
+    {
+     "original": "Parabéns pelo aniversário! Muitas felicidades",
+     "de": "¡Feliz cumpleaños! Muchas felicidades",
+     "traducao": "Feliz aniversário! Muitas felicitações",
+     "ms": 39
+    },
+    {
+     "original": "Esse filme é muito bom, recomendo",
+     "de": "Esta película es muy buena, la recomiendo",
+     "traducao": "Este filme é muito bom, recomendo",
+     "ms": 43
+    },
+    {
+     "original": "Minha mãe tá me chamando, falo com vocês depois",
+     "de": "Mi mamá me está llamando, hablamos después",
+     "traducao": "A minha mãe está a ligar-me, falamos depois",
+     "ms": 61
+    },
+    {
+     "original": "Preciso de mais um pra completar o time",
+     "de": "Necesito uno más para completar el equipo",
+     "traducao": "Preciso de mais um para completar a equipe",
+     "ms": 41
+    },
+    {
+     "original": "Boa noite, pessoal, até amanhã",
+     "de": "Buenas noches, gente, hasta mañana",
+     "traducao": "Boa noite, pessoal, até amanhã",
+     "ms": 44
+    }
+   ]
+  }
+ }
+}

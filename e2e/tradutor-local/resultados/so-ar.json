@@ -1,0 +1,158 @@
+{
+ "ambiente": {
+  "node": "v24.13.0",
+  "electron": null,
+  "plataforma": "win32"
+ },
+ "memoria": {
+  "inicio": 37,
+  "depoisDoMotor": 56.3,
+  "depoisDe_ar-en+en-pt": 166.4,
+  "pico": 356.3,
+  "wasmHeap": 290.1
+ },
+ "cargas": {
+  "motorMs": 20,
+  "ar-en": {
+   "ms": 124,
+   "mb": 35.3
+  },
+  "en-pt": {
+   "ms": 90,
+   "mb": 34.7
+  }
+ },
+ "pares": {
+  "ar": {
+   "rota": [
+    "ar-en",
+    "en-pt"
+   ],
+   "primeiraMs": 356,
+   "medianaMs": 63,
+   "maxMs": 356,
+   "linhas": [
+    {
+     "original": "Alguém vai jogar hoje à noite?",
+     "de": "هل سيلعب أحد الليلة؟",
+     "traducao": "Alguém está a jogar hoje?",
+     "ms": 356
+    },
+    {
+     "original": "Entra na call, tô te esperando faz meia hora",
+     "de": "ادخل المكالمة، أنتظرك منذ نصف ساعة",
+     "traducao": "Vá na chamada, estou à tua espera há meia hora.",
+     "ms": 85
+    },
+    {
+     "original": "Meu microfone tá chiando, vou trocar o fone",
+     "de": "الميكروفون عندي يصدر طنينًا، سأغيّر السماعة",
+     "traducao": "O meu microfone está a zumbir, vou mudar de telefone.",
+     "ms": 86
+    },
+    {
+     "original": "Kkkkk você caiu do mapa de novo",
+     "de": "ههههه سقطت من الخريطة مرة أخرى",
+     "traducao": "Hahahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+     "ms": 122
+    },
+    {
+     "original": "Quem pegou meu loot? Era meu",
+     "de": "من أخذ الغنائم؟ كانت لي",
+     "traducao": "Quem levou os despojos? Foi meu",
+     "ms": 63
+    },
+    {
+     "original": "Vou ali jantar e já volto",
+     "de": "سأتناول العشاء وأعود حالًا",
+     "traducao": "Vou jantar e volto já.",
+     "ms": 54
+    },
+    {
+     "original": "Essa atualização quebrou o jogo inteiro",
+     "de": "هذا التحديث أفسد اللعبة كلها",
+     "traducao": "Esta atualização arruinou todo o jogo.",
+     "ms": 44
+    },
+    {
+     "original": "Bora fazer uma partida de Stop depois?",
+     "de": "ما رأيكم في جولة من لعبة الكلمات لاحقًا؟",
+     "traducao": "Que tal uma rodada de jogo de palavras depois?",
+     "ms": 63
+    },
+    {
+     "original": "Valeu pela ajuda ontem, salvou demais",
+     "de": "شكرًا على المساعدة أمس، أنقذتني فعلًا",
+     "traducao": "Obrigado por ajudar ontem, salvaste-me mesmo.",
+     "ms": 62
+    },
+    {
+     "original": "Tô sem internet direito, a imagem da tela tá travando",
+     "de": "الإنترنت عندي ضعيف، ومشاركة الشاشة تتجمد",
+     "traducao": "Tenho uma Internet fraca, e o compartilhamento de tela está congelando.",
+     "ms": 65
+    },
+    {
+     "original": "Alguém sabe o endereço do servidor de Minecraft?",
+     "de": "هل يعرف أحد عنوان خادم ماينكرافت؟",
+     "traducao": "Alguém sabe o endereço do servidor Ceincraft?",
+     "ms": 60
+    },
+    {
+     "original": "Amanhã eu acordo cedo, então hoje só até meia-noite",
+     "de": "سأستيقظ مبكرًا غدًا، لذلك اليوم حتى منتصف الليل فقط",
+     "traducao": "Amanhã vou estar acordado amanhã, então o dia só é até à meia-noite",
+     "ms": 75
+    },
+    {
+     "original": "Que jogada absurda, como você fez isso?",
+     "de": "يا لها من حركة مذهلة، كيف فعلت ذلك؟",
+     "traducao": "Que jogada incrível. Como você fez isso?",
+     "ms": 62
+    },
+    {
+     "original": "Não esquece de trazer o carregador",
+     "de": "لا تنسَ إحضار الشاحن",
+     "traducao": "Não se esqueça de trazer o carregador.",
+     "ms": 50
+    },
+    {
+     "original": "A gente perdeu porque ninguém defendeu a base",
+     "de": "خسرنا لأن لا أحد دافع عن القاعدة",
+     "traducao": "Perdemos porque ninguém defendeu a regra.",
+     "ms": 57
+    },
+    {
+     "original": "Parabéns pelo aniversário! Muitas felicidades",
+     "de": "عيد ميلاد سعيد! أتمنى لك كل الخير",
+     "traducao": "Feliz aniversário! Desejo-lhe tudo de bom.",
+     "ms": 57
+    },
+    {
+     "original": "Esse filme é muito bom, recomendo",
+     "de": "هذا الفيلم رائع جدًا، أنصح به",
+     "traducao": "Esse filme é tão legal, eu recomendo.",
+     "ms": 55
+    },
+    {
+     "original": "Minha mãe tá me chamando, falo com vocês depois",
+     "de": "أمي تناديني، أكلمكم لاحقًا",
+     "traducao": "A mãe está a ligar-me, fala contigo mais tarde.",
+     "ms": 84
+    },
+    {
+     "original": "Preciso de mais um pra completar o time",
+     "de": "نحتاج شخصًا آخر لإكمال الفريق",
+     "traducao": "Precisamos de outra pessoa para completar a equipa.",
+     "ms": 58
+    },
+    {
+     "original": "Boa noite, pessoal, até amanhã",
+     "de": "تصبحون على خير يا جماعة، أراكم غدًا",
+     "traducao": "Boa noite, rapazes, vemo-nos amanhã.",
+     "ms": 65
+    }
+   ]
+  }
+ }
+}

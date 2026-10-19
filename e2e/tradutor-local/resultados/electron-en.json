@@ -1,0 +1,153 @@
+{
+ "ambiente": {
+  "node": "v24.21.0",
+  "electron": "44.4.3",
+  "plataforma": "win32"
+ },
+ "memoria": {
+  "inicio": 37.1,
+  "depoisDoMotor": 55.4,
+  "depoisDe_en-pt": 134,
+  "pico": 270.1,
+  "wasmHeap": 194.9
+ },
+ "cargas": {
+  "motorMs": 509,
+  "en-pt": {
+   "ms": 340,
+   "mb": 34.7
+  }
+ },
+ "pares": {
+  "en": {
+   "rota": [
+    "en-pt"
+   ],
+   "primeiraMs": 641,
+   "medianaMs": 30,
+   "maxMs": 641,
+   "linhas": [
+    {
+     "original": "Alguém vai jogar hoje à noite?",
+     "de": "Is anyone playing tonight?",
+     "traducao": "Alguém está a jogar hoje?",
+     "ms": 641
+    },
+    {
+     "original": "Entra na call, tô te esperando faz meia hora",
+     "de": "Get in the call, I've been waiting for you for half an hour",
+     "traducao": "Entra na chamada, estou à tua espera há meia hora",
+     "ms": 92
+    },
+    {
+     "original": "Meu microfone tá chiando, vou trocar o fone",
+     "de": "My mic is buzzing, I'm going to switch headsets",
+     "traducao": "O meu microfone está a zumbir, vou trocar de auriso",
+     "ms": 75
+    },
+    {
+     "original": "Kkkkk você caiu do mapa de novo",
+     "de": "Lmao you fell off the map again",
+     "traducao": "Lmao você caiu do mapa novamente",
+     "ms": 31
+    },
+    {
+     "original": "Quem pegou meu loot? Era meu",
+     "de": "Who took my loot? That was mine",
+     "traducao": "Quem levou o meu saque? Isso era meu",
+     "ms": 48
+    },
+    {
+     "original": "Vou ali jantar e já volto",
+     "de": "Gonna grab dinner, be right back",
+     "traducao": "Vou buscar o jantar, já volta",
+     "ms": 28
+    },
+    {
+     "original": "Essa atualização quebrou o jogo inteiro",
+     "de": "This update broke the whole game",
+     "traducao": "Esta atualização quebrou todo o jogo",
+     "ms": 22
+    },
+    {
+     "original": "Bora fazer uma partida de Stop depois?",
+     "de": "Wanna play a round of Scattergories later?",
+     "traducao": "Quer jogar uma rodada de Scattergories mais tarde?",
+     "ms": 36
+    },
+    {
+     "original": "Valeu pela ajuda ontem, salvou demais",
+     "de": "Thanks for the help yesterday, you really saved me",
+     "traducao": "Obrigado pela ajuda ontem, você realmente me salvou",
+     "ms": 26
+    },
+    {
+     "original": "Tô sem internet direito, a imagem da tela tá travando",
+     "de": "My internet is bad, the screen share keeps freezing",
+     "traducao": "Minha internet é ruim, o compartilhamento de tela continua congelante",
+     "ms": 30
+    },
+    {
+     "original": "Alguém sabe o endereço do servidor de Minecraft?",
+     "de": "Does anyone know the Minecraft server address?",
+     "traducao": "Alguém sabe o endereço do servidor Minecraft?",
+     "ms": 23
+    },
+    {
+     "original": "Amanhã eu acordo cedo, então hoje só até meia-noite",
+     "de": "I have to wake up early tomorrow, so only until midnight today",
+     "traducao": "Tenho de acordar cedo amanhã, só até à meia-noite de hoje",
+     "ms": 40
+    },
+    {
+     "original": "Que jogada absurda, como você fez isso?",
+     "de": "That play was insane, how did you do that?",
+     "traducao": "Essa peça foi uma loucura, como você fez isso?",
+     "ms": 30
+    },
+    {
+     "original": "Não esquece de trazer o carregador",
+     "de": "Don't forget to bring the charger",
+     "traducao": "Não se esqueça de trazer o carregador",
+     "ms": 24
+    },
+    {
+     "original": "A gente perdeu porque ninguém defendeu a base",
+     "de": "We lost because nobody defended the base",
+     "traducao": "Perdemos porque ninguém defendeu a base",
+     "ms": 23
+    },
+    {
+     "original": "Parabéns pelo aniversário! Muitas felicidades",
+     "de": "Happy birthday! Wishing you all the best",
+     "traducao": "Feliz aniversário! Desejando tudo de bom",
+     "ms": 26
+    },
+    {
+     "original": "Esse filme é muito bom, recomendo",
+     "de": "This movie is really good, I recommend it",
+     "traducao": "Este filme é muito bom, eu recomendo",
+     "ms": 21
+    },
+    {
+     "original": "Minha mãe tá me chamando, falo com vocês depois",
+     "de": "My mom is calling me, talk to you guys later",
+     "traducao": "A minha mãe está a ligar-me, falar com vocês mais tarde",
+     "ms": 36
+    },
+    {
+     "original": "Preciso de mais um pra completar o time",
+     "de": "We need one more person to complete the team",
+     "traducao": "Precisamos de mais uma pessoa para completar a equipa",
+     "ms": 24
+    },
+    {
+     "original": "Boa noite, pessoal, até amanhã",
+     "de": "Good night, everyone, see you tomorrow",
+     "traducao": "Boa noite, pessoal, até amanhã",
+     "ms": 24
+    }
+   ]
+  }
+ }
+}

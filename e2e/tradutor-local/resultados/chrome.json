@@ -1,0 +1,346 @@
+{
+ "en": {
+  "cargaMs": 10121,
+  "medianaMs": 21,
+  "linhas": [
+   {
+    "traducao": "Alguém vai jogar esta noite?",
+    "ms": 42
+   },
+   {
+    "traducao": "Entre na ligação, estou esperando por você há meia hora",
+    "ms": 28
+   },
+   {
+    "traducao": "meu microfone está zumbindo, vou trocar de fones de ouvido",
+    "ms": 33
+   },
+   {
+    "traducao": "lmao você caiu do mapa novamente",
+    "ms": 21
+   },
+   {
+    "traducao": "Quem pegou meu saque? isso era meu",
+    "ms": 17
+   },
+   {
+    "traducao": "Vou pegar o jantar, já volto",
+    "ms": 16
+   },
+   {
+    "traducao": "essa atualização quebrou o jogo inteiro",
+    "ms": 15
+   },
+   {
+    "traducao": "Quer jogar uma rodada de Scattergories mais tarde?",
+    "ms": 25
+   },
+   {
+    "traducao": "Obrigado pela ajuda ontem, você realmente me salvou",
+    "ms": 20
+   },
+   {
+    "traducao": "minha internet está ruim, o compartilhamento da tela continua congelando",
+    "ms": 23
+   },
+   {
+    "traducao": "Alguém sabe o endereço do servidor Minecraft?",
+    "ms": 20
+   },
+   {
+    "traducao": "Eu tenho que acordar cedo amanhã, então só até meia-noite hoje",
+    "ms": 27
+   },
+   {
+    "traducao": "Essa peça foi insana, como você fez isso?",
+    "ms": 22
+   },
+   {
+    "traducao": "Não se esqueça de levar o carregador",
+    "ms": 17
+   },
+   {
+    "traducao": "Perdemos porque ninguém defendeu a base",
+    "ms": 19
+   },
+   {
+    "traducao": "Feliz aniversário! Desejando-lhe tudo de bom",
+    "ms": 21
+   },
+   {
+    "traducao": "esse filme é muito bom, recomendo",
+    "ms": 18
+   },
+   {
+    "traducao": "Minha mãe está me ligando, falo com vocês mais tarde",
+    "ms": 25
+   },
+   {
+    "traducao": "Precisamos de mais uma pessoa para completar a equipe",
+    "ms": 24
+   },
+   {
+    "traducao": "Boa noite a todos, até amanhã",
+    "ms": 18
+   }
+  ]
+ },
+ "es": {
+  "cargaMs": 7213,
+  "medianaMs": 40,
+  "linhas": [
+   {
+    "traducao": "Alguém vai jogar esta noite?",
+    "ms": 87
+   },
+   {
+    "traducao": "Digite a ligação, estou esperando por você meia hora atrás",
+    "ms": 52
+   },
+   {
+    "traducao": "Meu microfone está chiando, vou trocar os fones de ouvido",
+    "ms": 66
+   },
+   {
+    "traducao": "hahaha você caiu do mapa novamente",
+    "ms": 37
+   },
+   {
+    "traducao": "Quem pegou meu bumbum? era meu",
+    "ms": 44
+   },
+   {
+    "traducao": "vou jantar e volto",
+    "ms": 39
+   },
+   {
+    "traducao": "essa atualização quebrou o jogo inteiro",
+    "ms": 29
+   },
+   {
+    "traducao": "Vamos jogar um jogo de Basta mais tarde?",
+    "ms": 39
+   },
+   {
+    "traducao": "Obrigado pela ajuda ontem, você me salvou",
+    "ms": 39
+   },
+   {
+    "traducao": "Eu não tenho a Internet bem, o compartilhamento de tela congela",
+    "ms": 50
+   },
+   {
+    "traducao": "Alguém sabe o endereço do servidor Minecraft?",
+    "ms": 45
+   },
+   {
+    "traducao": "Amanhã eu acordo cedo, então hoje só até meia-noite",
+    "ms": 57
+   },
+   {
+    "traducao": "Que peça incrível, como você fez isso?",
+    "ms": 42
+   },
+   {
+    "traducao": "Não se esqueça de levar o carregador",
+    "ms": 40
+   },
+   {
+    "traducao": "Perdemos porque ninguém defendeu a base",
+    "ms": 37
+   },
+   {
+    "traducao": "Feliz aniversário! Parabéns",
+    "ms": 27
+   },
+   {
+    "traducao": "esse filme é muito bom, recomendo",
+    "ms": 37
+   },
+   {
+    "traducao": "Minha mãe está me ligando, conversamos mais tarde",
+    "ms": 47
+   },
+   {
+    "traducao": "Preciso de mais um para completar a equipe",
+    "ms": 36
+   },
+   {
+    "traducao": "Boa noite pessoal, até amanhã",
+    "ms": 36
+   }
+  ]
+ },
+ "ja": {
+  "cargaMs": 7279,
+  "medianaMs": 49,
+  "linhas": [
+   {
+    "traducao": "Alguém está jogando hoje à noite?",
+    "ms": 74
+   },
+   {
+    "traducao": "Eu entrei na ligação, estou esperando há 30 minutos",
+    "ms": 62
+   },
+   {
+    "traducao": "O microfone está tilintando, então vou trocar o fone de ouvido",
+    "ms": 66
+   },
+   {
+    "traducao": "lol eu caí do mapa novamente",
+    "ms": 49
+   },
+   {
+    "traducao": "Quem pegou meu saque? mesmo sendo meu",
+    "ms": 49
+   },
+   {
+    "traducao": "Eu vou ter um jantar, estarei de volta em breve",
+    "ms": 55
+   },
+   {
+    "traducao": "Todo o jogo foi destruído por esta atualização",
+    "ms": 39
+   },
+   {
+    "traducao": "Você gostaria de jogar jogos de todas as idades e países mais tarde?",
+    "ms": 49
+   },
+   {
+    "traducao": "Obrigado por me ajudar ontem, foi muito útil",
+    "ms": 40
+   },
+   {
+    "traducao": "A Internet não está funcionando bem e o compartilhamento de tela congela.",
+    "ms": 56
+   },
+   {
+    "traducao": "Alguém sabe o endereço do servidor Minecraft?",
+    "ms": 43
+   },
+   {
+    "traducao": "Acordo cedo amanhã, então hoje é até as 12 horas",
+    "ms": 62
+   },
+   {
+    "traducao": "A jogada atual é muito ruim, como você fez isso?",
+    "ms": 61
+   },
+   {
+    "traducao": "Não se esqueça de levar um carregador",
+    "ms": 42
+   },
+   {
+    "traducao": "Perdemos porque ninguém manteve nossa base",
+    "ms": 45
+   },
+   {
+    "traducao": "Feliz aniversário! Que seja um ano maravilhoso",
+    "ms": 35
+   },
+   {
+    "traducao": "esse filme é muito bom, recomendo",
+    "ms": 45
+   },
+   {
+    "traducao": "Minha mãe me ligou, então até mais tarde",
+    "ms": 48
+   },
+   {
+    "traducao": "Precisamos de mais uma pessoa para formar uma equipe",
+    "ms": 43
+   },
+   {
+    "traducao": "Boa noite a todos, até amanhã",
+    "ms": 33
+   }
+  ]
+ },
+ "ar": {
+  "cargaMs": 32495,
+  "medianaMs": 44,
+  "linhas": [
+   {
+    "traducao": "Alguém vai jogar esta noite?",
+    "ms": 76
+   },
+   {
+    "traducao": "Digite a ligação, eu estive esperando por você meia hora atrás",
+    "ms": 67
+   },
+   {
+    "traducao": "meu microfone está tocando, vou trocar os fones de ouvido",
+    "ms": 53
+   },
+   {
+    "traducao": "haha eu caí do mapa novamente",
+    "ms": 40
+   },
+   {
+    "traducao": "Quem pegou os despojos? era meu",
+    "ms": 38
+   },
+   {
+    "traducao": "vou jantar e volto agora",
+    "ms": 35
+   },
+   {
+    "traducao": "essa atualização estragou todo o jogo",
+    "ms": 30
+   },
+   {
+    "traducao": "O que você acha de um tour pelo jogo das palavras depois?",
+    "ms": 49
+   },
+   {
+    "traducao": "Obrigado pela ajuda de ontem, você realmente me salvou.",
+    "ms": 39
+   },
+   {
+    "traducao": "Minha internet está fraca e o compartilhamento de tela está congelando",
+    "ms": 47
+   },
+   {
+    "traducao": "Alguém sabe o endereço do servidor Minecraft?",
+    "ms": 42
+   },
+   {
+    "traducao": "Vou acordar cedo amanhã, então hoje até meia-noite",
+    "ms": 51
+   },
+   {
+    "traducao": "Que jogada incrível, como você fez isso?",
+    "ms": 42
+   },
+   {
+    "traducao": "Não se esqueça de levar o carregador",
+    "ms": 44
+   },
+   {
+    "traducao": "Perdemos porque ninguém defendeu a Al-Qaeda.",
+    "ms": 47
+   },
+   {
+    "traducao": "Feliz aniversário! desejo tudo de bom",
+    "ms": 37
+   },
+   {
+    "traducao": "esse filme é muito bom, recomendo",
+    "ms": 62
+   },
+   {
+    "traducao": "Minha mãe está me ligando, falo com você mais tarde.",
+    "ms": 61
+   },
+   {
+    "traducao": "Precisamos de outra pessoa para completar a equipe.",
+    "ms": 38
+   },
+   {
+    "traducao": "Boa noite pessoal, até amanhã",
+    "ms": 39
+   }
+  ]
+ }
+}

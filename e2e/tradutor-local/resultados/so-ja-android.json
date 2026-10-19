@@ -1,0 +1,158 @@
+{
+ "ambiente": {
+  "node": "v24.13.0",
+  "electron": null,
+  "plataforma": "win32"
+ },
+ "memoria": {
+  "inicio": 37,
+  "depoisDoMotor": 56.2,
+  "depoisDe_ja-en-android+en-pt": 191.2,
+  "pico": 442.2,
+  "wasmHeap": 454.4
+ },
+ "cargas": {
+  "motorMs": 21,
+  "ja-en-android": {
+   "ms": 169,
+   "mb": 52.2
+  },
+  "en-pt": {
+   "ms": 69,
+   "mb": 34.7
+  }
+ },
+ "pares": {
+  "ja-android": {
+   "rota": [
+    "ja-en-android",
+    "en-pt"
+   ],
+   "primeiraMs": 498,
+   "medianaMs": 58,
+   "maxMs": 498,
+   "linhas": [
+    {
+     "original": "Alguém vai jogar hoje à noite?",
+     "de": "今夜だれかゲームする？",
+     "traducao": "Queres jogar um jogo hoje à noite?",
+     "ms": 498
+    },
+    {
+     "original": "Entra na call, tô te esperando faz meia hora",
+     "de": "通話に入ってよ、もう30分も待ってるんだけど",
+     "traducao": "Vá lá, vou esperar meia hora.",
+     "ms": 81
+    },
+    {
+     "original": "Meu microfone tá chiando, vou trocar o fone",
+     "de": "マイクがジージー鳴ってるから、ヘッドセット替えるね",
+     "traducao": "O microfone está a sming, por isso vou mudar o fone de ouvido.",
+     "ms": 96
+    },
+    {
+     "original": "Kkkkk você caiu do mapa de novo",
+     "de": "www また マップから落ちてる",
+     "traducao": "www. É para baixo do mapa novamente.",
+     "ms": 54
+    },
+    {
+     "original": "Quem pegou meu loot? Era meu",
+     "de": "誰が俺の戦利品取った？俺のだったのに",
+     "traducao": "Quem levou os meus despojos? Era eu.",
+     "ms": 71
+    },
+    {
+     "original": "Vou ali jantar e já volto",
+     "de": "ちょっと晩ご飯食べてくる、すぐ戻る",
+     "traducao": "Vou jantar, volto em breve.",
+     "ms": 58
+    },
+    {
+     "original": "Essa atualização quebrou o jogo inteiro",
+     "de": "このアップデートでゲーム全体が壊れた",
+     "traducao": "Esta atualização quebrou o jogo inteiro",
+     "ms": 34
+    },
+    {
+     "original": "Bora fazer uma partida de Stop depois?",
+     "de": "あとで古今東西ゲームやらない？",
+     "traducao": "Você quer jogar jogos antigos mais tarde?",
+     "ms": 48
+    },
+    {
+     "original": "Valeu pela ajuda ontem, salvou demais",
+     "de": "昨日は手伝ってくれてありがとう、本当に助かった",
+     "traducao": "Obrigado por me ajudar ontem, isso realmente me ajudou.",
+     "ms": 58
+    },
+    {
+     "original": "Tô sem internet direito, a imagem da tela tá travando",
+     "de": "ネットの調子が悪くて、画面共有が固まる",
+     "traducao": "A Internet é ruim e o compartilhamento de tela é solidificado",
+     "ms": 66
+    },
+    {
+     "original": "Alguém sabe o endereço do servidor de Minecraft?",
+     "de": "マイクラのサーバーのアドレス知ってる人いる？",
+     "traducao": "Alguém sabe o endereço do servidor da Michaela?",
+     "ms": 57
+    },
+    {
+     "original": "Amanhã eu acordo cedo, então hoje só até meia-noite",
+     "de": "明日早起きだから、今日は12時までね",
+     "traducao": "Vou levantar-me cedo amanhã, por isso são doze dias",
+     "ms": 70
+    },
+    {
+     "original": "Que jogada absurda, como você fez isso?",
+     "de": "今のプレイやばすぎ、どうやったの？",
+     "traducao": "É um jogo demais agora, como você fez isso?",
+     "ms": 74
+    },
+    {
+     "original": "Não esquece de trazer o carregador",
+     "de": "充電器持ってくるの忘れないでね",
+     "traducao": "Não se esqueça de trazer um carregador.",
+     "ms": 53
+    },
+    {
+     "original": "A gente perdeu porque ninguém defendeu a base",
+     "de": "誰も拠点を守らなかったから負けた",
+     "traducao": "Ninguém perdeu porque não protegeu a sua base.",
+     "ms": 57
+    },
+    {
+     "original": "Parabéns pelo aniversário! Muitas felicidades",
+     "de": "誕生日おめでとう！素敵な一年になりますように",
+     "traducao": "Feliz aniversário! Espero que você tenha um ano maravilhoso.",
+     "ms": 63
+    },
+    {
+     "original": "Esse filme é muito bom, recomendo",
+     "de": "この映画すごくいいよ、おすすめ",
+     "traducao": "Este filme é ótimo, recomendo.",
+     "ms": 43
+    },
+    {
+     "original": "Minha mãe tá me chamando, falo com vocês depois",
+     "de": "お母さんに呼ばれてるから、また後でね",
+     "traducao": "A minha mãe ligou-me e vemo-nos mais tarde.",
+     "ms": 65
+    },
+    {
+     "original": "Preciso de mais um pra completar o time",
+     "de": "チームを組むのにあと一人必要",
+     "traducao": "Precisamos de mais uma equipa.",
+     "ms": 38
+    },
+    {
+     "original": "Boa noite, pessoal, até amanhã",
+     "de": "みんなおやすみ、また明日",
+     "traducao": "Boa noite, todos vocês, amanhã.",
+     "ms": 43
+    }
+   ]
+  }
+ }
+}

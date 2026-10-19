@@ -780,6 +780,16 @@ dá para traduzir? Ele achou válido e deixou para depois. O que ficou levantado
   por caractere, e entra na política de privacidade).
 - Esforço estimado: meio dia com o tradutor do navegador; mais um dia e um serviço novo com o LibreTranslate.
 
+**Medido em 19/10/2026 (pedido dele: "vamos começar medindo"; tudo em `e2e/tradutor-local/README.md`):** o tradutor do
+navegador NÃO existe no Electron 44 e, no Edge, diz indisponível; só o Chrome o tem. O LibreTranslate no servidor (2–4 GB
+de RAM sempre) ele achou inviável. O tradutor NO COMPUTADOR de quem clica, o **Bergamot do Firefox** (MPL-2.0, motor e
+modelos), cabe: 5 MB de motor + 36–70 MB por idioma baixados na hora, 30–70 ms por mensagem, 250–500 MB de memória só
+enquanto traduz (num processo à parte, desligado sem uso: o heap do wasm não devolve memória). Cobre 48 dos 82 idiomas do
+Syden. A qualidade decide: inglês e espanhol bons, árabe razoável, japonês fraco (erra o sentido em ~6 de 20), e o
+**português sai de Portugal** em metade das frases. Pendente da palavra dele: seguir assim, ou medir antes o Opus-MT com
+português do Brasil (CC BY 4.0, maior) para a segunda perna (inglês → português). Em qualquer motor, o original fica
+visível e a tradução diz que é automática (o Chrome traduziu "a base" do árabe como "Al-Qaeda").
+
 Nomes de canal e de comunidade são conteúdo de quem criou e NÃO passam pelo `t()`; os canais que o Syden cria
 sozinho numa comunidade nova é que nascem no idioma de quem a cria (desde 09/10/2026).
 
