@@ -64,6 +64,7 @@ import { ModeracaoSection } from './Moderacao';
 import { ComandosSection } from './Comandos';
 import { AgendadasSection } from './Agendadas';
 import { MeuAniversario } from './Aniversario';
+import { MeusIdiomas } from './IdiomasDoPerfil';
 import { SorteiosSection } from './Sorteios';
 import { TicketsSection } from './Tickets';
 import { CargosAutomaticosSection } from './CargosAutomaticos';
@@ -224,6 +225,7 @@ export function SettingsModal({
             <>
               <AccountSection user={user} onDeleted={onLogout} />
               <MeuAniversario />
+              <MeusIdiomas />
               {/* O selo e os bloqueios são escolhas da PESSOA, não da comunidade: por isso moram na
                   aba da conta, junto com o resto do que só diz respeito a ela. */}
               <EscolherSelo />

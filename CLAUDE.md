@@ -800,7 +800,9 @@ porque duas das conclusões abaixo custaram investigação:
 4. **O caminho mais barato para descobrir se alguém quer**, antes de construir qualquer coisa: um
    campo no perfil — "idiomas que falo" e "idiomas que estou aprendendo". Usa o que já existe, não
    licencia nada, e cria o encontro de mão dupla que é a parte boa da ideia (quem ensina um precisa
-   de quem ensina o outro).
+   de quem ensina o outro). **Feito em 19/10/2026 (pedido dele):** "Idiomas falados" e "Idiomas em estudo" em
+   Minha conta, até 6 em cada, no cartão de perfil pelo nome na própria língua (`IdiomasDoPerfil.tsx`,
+   `server/src/idiomas-routes.ts`; já na política). O sinal a medir antes de construir mais: quantas pessoas preenchem.
 5. **O bloqueio real não é técnico, é moderação.** Intercâmbio de idioma é desconhecido encontrando
    desconhecido, que é o problema mais difícil que existe — e o Syden tem uma pessoa moderando.
 

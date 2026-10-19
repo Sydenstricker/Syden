@@ -197,6 +197,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           criadaEm: db.criadaEm(eu.id),
           // Dia e mês, se informados (ver OS ANIVERSÁRIOS em db.ts).
           aniversario: db.aniversarioDe(eu.id),
+          // Os idiomas do cartão de perfil, se informados (ver idiomas-routes.ts).
+          idiomas: db.idiomasDe(eu.id),
         },
         // Os cargos personalizados e os pontos de nível também são dados sobre a pessoa, e vão junto.
         comunidades: db.listCommunitiesForUser(eu.id).map((c) => {

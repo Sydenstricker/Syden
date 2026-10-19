@@ -5236,6 +5236,33 @@ db.exec(`
 `);
 
 /** "MM-DD", ou null quando a pessoa não informou. */
+// OS IDIOMAS DA PESSOA (ver idiomas-routes.ts): duas listas de códigos, em JSON. Nulo = não informou.
+addColumnIfMissing('users', 'idiomas_falados', 'TEXT');
+addColumnIfMissing('users', 'idiomas_estudo', 'TEXT');
+
+export function idiomasDe(userId: number): { falados: string[]; estudo: string[] } {
+  const linha = db.prepare('SELECT idiomas_falados AS f, idiomas_estudo AS e FROM users WHERE id = ?').get(userId) as
+    | { f: string | null; e: string | null }
+    | undefined;
+  const ler = (v: string | null | undefined) => {
+    try {
+      const l = JSON.parse(v ?? '[]');
+      return Array.isArray(l) ? (l as string[]) : [];
+    } catch {
+      return [];
+    }
+  };
+  return { falados: ler(linha?.f), estudo: ler(linha?.e) };
+}
+
+export function definirIdiomas(userId: number, { falados, estudo }: { falados: string[]; estudo: string[] }) {
+  db.prepare('UPDATE users SET idiomas_falados = ?, idiomas_estudo = ? WHERE id = ?').run(
+    falados.length ? JSON.stringify(falados) : null,
+    estudo.length ? JSON.stringify(estudo) : null,
+    userId,
+  );
+}
+
 export function aniversarioDe(userId: number): string | null {
   return (db.prepare('SELECT aniversario FROM users WHERE id = ?').get(userId) as { aniversario: string | null } | undefined)?.aniversario ?? null;
 }

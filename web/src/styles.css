@@ -14662,3 +14662,62 @@ body.arrastando-barra {
 .settings-tab.settings-sub {
   padding-left: 22px;
 }
+
+/* Os idiomas da pessoa (IdiomasDoPerfil.tsx): no cartão, rótulo pequeno em cima e os nomes embaixo. */
+.perfil-idiomas {
+  margin: 8px 0 0;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.perfil-idiomas dt {
+  color: var(--text-muted);
+  font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.perfil-idiomas dd {
+  margin: 2px 0 6px;
+}
+
+.meus-idiomas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.meus-idiomas-rotulo {
+  font-weight: 600;
+}
+
+.meus-idiomas-fichas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.meus-idiomas-ficha {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: var(--overlay);
+}
+
+.meus-idiomas-ficha button {
+  display: inline-flex;
+  padding: 3px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.meus-idiomas-ficha button:hover {
+  background: var(--overlay-strong);
+  color: var(--text);
+}

@@ -5,6 +5,7 @@ import { Avatar } from './Avatar';
 import { EscolhasDoCartao } from './Aparencia';
 import { useDirectory } from './directory';
 import { EtiquetasDeCargo } from './Cargos';
+import { IdiomasNoCartao } from './IdiomasDoPerfil';
 import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
 import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
@@ -141,6 +142,7 @@ export function ProfileCard({
               </span>
             </span>
           )}
+          <IdiomasNoCartao userId={membro.id} />
           {nota && (
             <p className="perfil-nota" title={t('Anotação sua, guardada só neste computador')}>
               {nota}

@@ -33,6 +33,7 @@ import { registerTicketsRoutes } from './tickets-routes.js';
 import { registerCargosAutomaticosRoutes } from './cargos-automaticos-routes.js';
 import { registerAgendadasRoutes } from './agendadas-routes.js';
 import { registerAniversariosRoutes } from './aniversarios-routes.js';
+import { registerIdiomasRoutes } from './idiomas-routes.js';
 import { registerSorteiosRoutes } from './sorteios-routes.js';
 import { registerDestaquesRoutes } from './destaques-routes.js';
 import { registerSalasTemporariasRoutes } from './salas-temporarias.js';
@@ -92,6 +93,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerCargosAutomaticosRoutes(app, io);
   registerAgendadasRoutes(app);
   registerAniversariosRoutes(app);
+  registerIdiomasRoutes(app);
   registerSorteiosRoutes(app, io);
   registerDestaquesRoutes(app);
   registerSalasTemporariasRoutes(app, io);
