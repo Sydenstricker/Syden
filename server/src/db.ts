@@ -1376,6 +1376,7 @@ export function renameCommunity(id: number, name: string) {
 /** Apaga a comunidade inteira: canais, mensagens, emojis, sons e a lista de membros (ON DELETE CASCADE). */
 export function deleteCommunity(id: number) {
   db.prepare('DELETE FROM communities WHERE id = ?').run(id);
+  db.prepare('DELETE FROM tempo_de_quem_saiu WHERE community_id = ?').run(id);
 }
 
 /** Guarda (ou apaga, com null) a imagem da comunidade e marca a versão nova. */
@@ -2788,11 +2789,37 @@ export function limparCaixaPreta(): number {
   return Number(changes);
 }
 
+/*
+ * TEMPO DE QUEM SAIU (19/10/2026, pedido dele). Excluir a conta apaga o histórico de uso da pessoa (a política promete),
+ * e com ele sumiam as horas de chamada dela do total da comunidade: um marco já alcançado (o selo das 5 horas de voz, e as
+ * conquistas coletivas do salão, quando vierem) podia "desacontecer". Fica só a SOMA, por comunidade e por tipo: sem data,
+ * sem sessão e sem nada que leve de volta à pessoa. A janela de dias do panorama do painel não a usa (não tem data).
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tempo_de_quem_saiu (
+    community_id INTEGER NOT NULL,
+    kind         TEXT NOT NULL CHECK (kind IN ('voice', 'screen')),
+    segundos     INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (community_id, kind)
+  );
+`);
+
+function guardarTempoDeQuemSaiu(userId: number) {
+  db.prepare(
+    `INSERT INTO tempo_de_quem_saiu (community_id, kind, segundos)
+       SELECT community_id, kind, CAST(SUM(strftime('%s', ended_at) - strftime('%s', started_at)) AS INTEGER)
+         FROM usage_sessions WHERE user_id = ? AND community_id IS NOT NULL GROUP BY community_id, kind
+     ON CONFLICT (community_id, kind) DO UPDATE SET segundos = segundos + excluded.segundos`,
+  ).run(userId);
+}
+
 export function deleteAccount(userId: number) {
   db.exec('BEGIN');
   try {
     guardarNaCaixaPreta(userId);
     db.prepare('DELETE FROM messages WHERE user_id = ?').run(userId);
+    // O tempo dela continua somado ao total de cada comunidade, só como número (ver TEMPO DE QUEM SAIU).
+    guardarTempoDeQuemSaiu(userId);
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM minijogo_jogadores WHERE user_id = ?').run(userId);
     db.prepare('UPDATE minijogo_partidas SET criada_por = NULL WHERE criada_por = ?').run(userId);
@@ -4132,10 +4159,12 @@ export function fatosDaComunidade(communityId: number) {
       `SELECT COUNT(DISTINCT substr(ms.created_at, 1, 10)) AS n FROM messages ms
          JOIN channels ch ON ch.id = ms.channel_id WHERE ch.community_id = ?`,
     ),
-    segundosDeVoz: uma(
-      `SELECT COALESCE(SUM(strftime('%s', ended_at) - strftime('%s', started_at)), 0) AS n
-         FROM usage_sessions WHERE community_id = ? AND kind = 'voice'`,
-    ),
+    // o de quem ainda tem conta, mais a soma de quem a excluiu (ver TEMPO DE QUEM SAIU)
+    segundosDeVoz:
+      uma(
+        `SELECT COALESCE(SUM(strftime('%s', ended_at) - strftime('%s', started_at)), 0) AS n
+           FROM usage_sessions WHERE community_id = ? AND kind = 'voice'`,
+      ) + uma(`SELECT COALESCE(SUM(segundos), 0) AS n FROM tempo_de_quem_saiu WHERE community_id = ? AND kind = 'voice'`),
   };
 }
 
