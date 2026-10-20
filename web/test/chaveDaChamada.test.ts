@@ -74,6 +74,16 @@ describe('a chamada de ponta a ponta', () => {
     assert.equal(chavesDe(tres, '1').length, antes);
   });
 
+  it('quem entra recebe só a chave nova, nunca a de antes de chegar', async () => {
+    const { gente } = await sala(['1', '2', '3']);
+    const [um, tres] = [gente.get('1')!, gente.get('3')!];
+    // O 1 trocou a chave quando o 3 entrou; os índices que o 3 recebeu do 1 são só os de depois.
+    const doUm = chavesDe(um, '1').map((r) => r.indice);
+    const recebidasPeloTres = chavesDe(tres, '1').map((r) => r.indice);
+    assert.ok(doUm.length >= 3, 'o 1 trocou de chave a cada um que entrou');
+    assert.deepEqual(recebidasPeloTres, [doUm.at(-1)]);
+  });
+
   it('um servidor que troca as chaves públicas no caminho não entrega chave nenhuma, e os códigos não batem', async () => {
     // O "servidor" põe a SUA chave pública no lugar da de cada um. Sem a privada correspondente, ele não abre o que
     // vem embrulhado para ele — e quem recebe a dele embrulha para ele, não para o outro.

@@ -928,7 +928,8 @@ anunciar como ponta a ponta seria enganoso. Ficaram três degraus, e ele escolhe
    (`e2ee: true`; `CHAMADAS_E2EE=nao` desliga numa emergência), para os dois lados de uma sala concordarem; navegador sem
    cifra por quadro não entra, com o aviso. O código de segurança fica no cadeado de "Voz conectada". Testes:
    `chaveDaChamada.test.ts` (inclusive o servidor trocando as chaves no meio) e `e2e/chamada-cifrada.mjs` (o LiveKit
-   vê as faixas cifradas, e o som chega). Não troca a chave quando alguém ENTRA (só quando sai). O protocolo é nosso
+   vê as faixas cifradas, e o som chega). A chave troca quando alguém SAI e quando alguém ENTRA (este, desde 20/10/2026:
+   quem chega não recebe a chave de antes). Medido em 12 escritas (`e2e/telas-novas-nos-idiomas.mjs`). O protocolo é nosso
    sobre peças padrão: mudou, vale pedir revisão de fora.
 3. **Mensagens privadas de ponta a ponta: FORA** ("polêmico", nas palavras dele). Com menores no Syden, bate de frente
    com o dever de detectar e remover do ECA Digital, quebraria o Shield nas imagens privadas e deixaria a caixa-preta

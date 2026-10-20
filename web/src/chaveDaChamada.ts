@@ -14,7 +14,8 @@
  * 3. Tudo isso passa pelo socket do Syden (`e2ee:chave`), que só repassa entre duas pessoas da mesma sala e não
  *    consegue abrir o embrulho.
  * 4. Quando alguém SAI, cada um que ficou troca a própria chave de mídia e manda a nova só a quem ficou: quem saiu não
- *    entende mais nada do que vier depois.
+ *    entende mais nada do que vier depois. Quando alguém ENTRA, a troca também acontece, e quem chega recebe só a
+ *    nova: não entende nada do que veio antes.
  * 5. O que o servidor ainda poderia fazer é trocar as chaves públicas no meio do caminho (fingir ser o outro para
  *    cada um). É contra isso o CÓDIGO DE SEGURANÇA: ele sai de todas as chaves públicas da sala, e se todo mundo vê o
  *    mesmo código, ninguém está no meio. É o mesmo recurso do Zoom e do WhatsApp.
@@ -118,7 +119,8 @@ export class ChamadaCifrada {
       const pub = deB64(msg.pub);
       const conhecido = this.outros.get(de);
       // A mesma chave de novo (a apresentação repetida, depois de uma reconexão): só reenviar a nossa de mídia.
-      if (!conhecido || !iguais(conhecido.pub, pub)) {
+      const novo = !conhecido || !iguais(conhecido.pub, pub);
+      if (novo) {
         try {
           this.outros.set(de, { pub, embrulho: await this.combinar(de, pub) });
         } catch {
@@ -127,7 +129,11 @@ export class ChamadaCifrada {
         this.aoMudar();
       }
       if (!msg.resposta) this.mandar(de, { v: 1, t: 'ola', pub: paraB64(this.minhaPub), resposta: true });
-      await this.mandarChaveDeMidia(de);
+      // ALGUÉM ENTROU (a apresentação dele, não a resposta de quem já estava): troca-se a chave antes de entregá-la, e a
+      // nova vai a todos. Quem entra não recebe a chave de antes, então nem com a gravação cifrada guardada por alguém
+      // decifraria o que se disse antes de ele chegar. É o que o Zoom faz; feito em 20/10/2026, era a ressalva do degrau 2.
+      if (novo && !msg.resposta) await this.trocarEMandarATodos();
+      else await this.mandarChaveDeMidia(de);
     } else if (msg.t === 'chave' && Number.isInteger(msg.idx) && msg.idx >= 0 && msg.idx < ANEL) {
       const outro = this.outros.get(de);
       if (!outro) return;
@@ -153,6 +159,11 @@ export class ChamadaCifrada {
   private async trocarChaveSem(identidade: string) {
     if (this.encerrada || !this.outros.delete(identidade)) return;
     this.aoMudar();
+    await this.trocarEMandarATodos();
+  }
+
+  /** Uma chave de mídia nova, no índice seguinte, para todos os que estão na sala agora. */
+  private async trocarEMandarATodos() {
     this.indice = (this.indice + 1) % ANEL;
     await this.novaChaveDeMidia();
     await Promise.all([...this.outros.keys()].map((id) => this.mandarChaveDeMidia(id)));
