@@ -107,11 +107,15 @@ for (const idioma of IDIOMAS) {
   await cadeado.waitFor({ timeout: 30000 });
   await cadeado.click();
   await p.locator('.codigo-de-seguranca').waitFor();
-  const textoCodigo = (await p.locator('.codigo-de-seguranca').textContent()) + ' ' + (await cadeado.getAttribute('title'));
+  const textoCodigo = (await p.locator('.codigo-de-seguranca').textContent()) + ' ' + (await cadeado.textContent());
   const sobrandoC = NOVOS.filter((pt) => textoCodigo.includes(pt));
   conferir(sobrandoC.length === 0, `${idioma}: cadeado e código sem português${sobrandoC.length ? ' (sobrou: ' + sobrandoC.join(' | ') + ')' : ''}`);
   const codigo = (await p.locator('.codigo-de-seguranca code').textContent()).trim();
   conferir(/^\d{4} \d{4} \d{4}$/.test(codigo), `${idioma}: o código sai em algarismos comuns, da esquerda para a direita (${codigo})`);
+  // o nome da segurança escrito ao lado do cadeado (o cadeado sozinho era lido como o do HTTPS), sem estourar a barra
+  conferir((await cadeado.textContent()).trim().length > 3, `${idioma}: o cadeado diz o nome ("${(await cadeado.textContent()).trim()}")`);
+  const estP = await estouros(p, '.voice-panel');
+  conferir(estP.length === 0, `${idioma}: painel da voz sem estouro${estP.length ? ' (' + estP.join(' | ') + ')' : ''}`);
   const estK = await estouros(p, '.codigo-de-seguranca');
   conferir(estK.length === 0, `${idioma}: código sem estouro${estK.length ? ' (' + estK.join(' | ') + ')' : ''}`);
   await p.locator('.sidebar').screenshot({ path: path.join(FOTOS, `telas-novas-${idioma}-cadeado.png`) });

@@ -1172,17 +1172,25 @@ textarea {
   color: var(--text-muted);
 }
 
-/* O cadeado da chamada de ponta a ponta, ao lado de "Voz conectada": abre o código de segurança. */
+/* "Criptografada de ponta a ponta", embaixo do nome da sala: abre o código de segurança. */
 .chamada-cifrada {
   display: inline-flex;
-  vertical-align: -1px;
-  margin-inline-start: 6px;
-  padding: 2px;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0 0;
+  margin-inline-start: -3px;
+  padding: 1px 3px;
   border: 0;
   border-radius: 4px;
   background: none;
   color: var(--green);
+  font: inherit;
+  font-size: calc(11px * var(--escala-do-texto));
+  text-align: start;
   cursor: pointer;
+}
+.chamada-cifrada svg {
+  flex-shrink: 0;
 }
 .chamada-cifrada:hover,
 .chamada-cifrada[aria-expanded='true'] {

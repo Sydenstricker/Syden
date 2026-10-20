@@ -291,21 +291,16 @@ export function Sidebar({
       {connectedChannel && (
         <div className="voice-panel">
           <div>
-            <div className="voice-panel-status">
-              {t('Voz conectada')}
-              {voice.codigoDeSeguranca && (
-                <button
-                  className="chamada-cifrada"
-                  title={t('Criptografada de ponta a ponta')}
-                  aria-label={t('Criptografada de ponta a ponta')}
-                  aria-expanded={verCodigo}
-                  onClick={() => setVerCodigo((v) => !v)}
-                >
-                  <Lock size={12} />
-                </button>
-              )}
-            </div>
+            <div className="voice-panel-status">{t('Voz conectada')}</div>
             <div className="voice-panel-channel">{connectedChannel.name}</div>
+            {/* COM O NOME ESCRITO, e não só o cadeado (relato de 20/10/2026: "usuários achavam que era https"). Um
+                cadeado sozinho é o símbolo do HTTPS para todo mundo; o que este diz é outra coisa, e precisa dizer. */}
+            {voice.codigoDeSeguranca && (
+              <button className="chamada-cifrada" aria-expanded={verCodigo} onClick={() => setVerCodigo((v) => !v)}>
+                <Lock size={11} aria-hidden="true" />
+                <span>{t('Criptografada de ponta a ponta')}</span>
+              </button>
+            )}
           </div>
           <div className="icon-row">
             <ScreenShareButton voice={voice} />
