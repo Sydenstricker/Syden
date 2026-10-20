@@ -293,7 +293,7 @@ export function Sidebar({
           <div>
             <div className="voice-panel-status">{t('Voz conectada')}</div>
             <div className="voice-panel-channel">{connectedChannel.name}</div>
-            {/* COM O NOME ESCRITO, e não só o cadeado (relato de 20/10/2026: "usuários achavam que era https"). Um
+            {/* COM O NOME ESCRITO, e não só o cadeado (relato de 20/10/2026: os usuários o liam como o do HTTPS). Um
                 cadeado sozinho é o símbolo do HTTPS para todo mundo; o que este diz é outra coisa, e precisa dizer. */}
             {voice.codigoDeSeguranca && (
               <button className="chamada-cifrada" aria-expanded={verCodigo} onClick={() => setVerCodigo((v) => !v)}>
