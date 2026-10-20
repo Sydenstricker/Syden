@@ -272,6 +272,10 @@ de assinatura de código, que é pago.
   pessoas subiram — grande, quase nunca muda). Copiar só o banco perde os avatares; copiar só os
   arquivos perde tudo o mais. Um arquivo em `arquivos/` nunca é reescrito — o nome dele é o hash do
   conteúdo —, então cópia incremental funciona bem.
+- **O cofre:** em produção, o banco e os arquivos moram num disco cifrado que só abre com a senha, digitada
+  depois de cada reinício da máquina (`deploy/cofre-criar.sh`, uma vez; `deploy/cofre-abrir.sh`, a cada reinício).
+  Com ele, `DADOS=/srv/syden-cofre/dados` no `.env` troca o volume pela pasta do cofre. Passo a passo em
+  [docs/cofre.md](docs/cofre.md).
 
 ## Painel de uso
 

@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -29,6 +30,21 @@ if (isProd && !inviteCode && !cadastroAberto) {
   throw new Error(
     'INVITE_CODE está vazio: o cadastro ficaria aberto para qualquer pessoa. ' +
       'Defina um código de convite, ou escreva CADASTRO_ABERTO=sim se for mesmo essa a intenção.',
+  );
+}
+
+/**
+ * O COFRE (deploy/cofre-criar.sh): em produção, o banco e os arquivos moram num disco cifrado que só abre com a senha,
+ * digitada por quem cuida do Syden depois de cada reinício da máquina. Enquanto ele não for aberto, a pasta /data do
+ * container está vazia — e um servidor que subisse ali criaria um banco NOVO e vazio, ao lado do verdadeiro, e todo
+ * mundo entraria num Syden sem contas. Por isso, com COFRE=sim, sem a marca que só existe dentro do cofre aberto,
+ * o servidor prefere não subir.
+ */
+const pastaDosDados = dirname(process.env.DATABASE_PATH || './janja.db');
+if (ligado(process.env.COFRE) && !existsSync(join(pastaDosDados, '.cofre'))) {
+  throw new Error(
+    `O cofre não está aberto (falta ${join(pastaDosDados, '.cofre')}). ` +
+      'Depois de reiniciar a máquina, rode deploy/cofre-abrir.sh e digite a senha.',
   );
 }
 

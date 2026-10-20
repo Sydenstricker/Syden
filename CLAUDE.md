@@ -898,6 +898,30 @@ trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem
   termos); o advogado; e o deploy (servidor e site juntos: com o servidor novo, TODA conta antiga é perguntada pela data
   de nascimento na próxima vez que abrir o Syden, inclusive a dele).
 
+## Criptografia: guardado com cifra e chamadas de ponta a ponta, mas mensagens não
+
+**Decidido em 20/10/2026, pelo Sydenstricker** (a conversa começou em 18/10). A ideia dele era "ponta a ponta nas
+mensagens, com exceção nos casos legais", e isso não existe: se o servidor abre em algum caso, ele tem as chaves, e
+anunciar como ponta a ponta seria enganoso. Ficaram três degraus, e ele escolheu dois:
+
+1. **O que fica guardado, cifrado (o COFRE, `docs/cofre.md`).** O banco e os arquivos num disco LUKS2, e **a senha
+   NÃO fica no servidor** (escolha dele): os backups da Hetzner copiam o disco inteiro, e chave ao lado dos dados não
+   protege nada. O preço aceito: depois de cada reinício, o Syden só volta quando ele roda `deploy/cofre-abrir.sh`. A
+   API com `COFRE=sim` não sobe sem a marca `.cofre` (senão criaria um banco vazio ao lado do verdadeiro). O Syden
+   continua lendo tudo (mostrar, buscar, moderar, responder à justiça): a política diz "guardado com criptografia",
+   nunca "nem nós lemos", e só DEPOIS de o cofre estar aberto no servidor.
+2. **Chamadas e transmissões de ponta a ponta DE VERDADE** (escolha dele, contra a chave entregue pelo servidor, que
+   não poderia ser anunciada assim): cada aparelho combina a chave com os outros, o servidor só repassa embrulhada, a
+   chave troca quando alguém sai, e um código de verificação na chamada mostra que ninguém está no meio. Convive com o
+   ECA Digital porque o servidor já não olha as transmissões: a imagem da denúncia sai do aparelho de quem denuncia.
+3. **Mensagens privadas de ponta a ponta: FORA** ("polêmico", nas palavras dele). Com menores no Syden, bate de frente
+   com o dever de detectar e remover do ECA Digital, quebraria o Shield nas imagens privadas e deixaria a caixa-preta
+   guardando só cifra.
+
+**Nenhuma lei brasileira exige ponta a ponta.** A LGPD (art. 46) pede segurança adequada; o degrau 1 é o que mais
+pesa nela (e num incidente, dado cifrado conta como risco menor). Estar em dia com a lei é o conjunto (proteção de
+adolescentes, Marco Civil, política) e o advogado, não a criptografia.
+
 ## A caixa-preta: exclusão apaga, mas 90 dias ficam para a justiça
 
 **Decidido em 02/10/2026, pelo Sydenstricker.** O Syden apagava tudo de quem excluía a conta — o que

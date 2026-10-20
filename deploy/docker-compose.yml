@@ -50,7 +50,9 @@ services:
       DATABASE_PATH: /data/janja.db
       LIVEKIT_URL: wss://${LIVEKIT_DOMAIN}
     volumes:
-      - janja_data:/data
+      # Com o cofre (deploy/cofre-criar.sh), DADOS=/srv/syden-cofre/dados no .env: o banco e os arquivos passam a
+      # morar no disco cifrado. Sem ele, continua o volume de sempre.
+      - ${DADOS:-janja_data}:/data
     # O Docker pergunta de tempo em tempo se o servidor está vivo (server/scripts/saude.mjs).
     #
     # Vale por dois motivos. O primeiro é `docker compose up -d --build --wait`: com isto, o comando de
