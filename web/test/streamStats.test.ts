@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { describeStats, proximaParada, proximoFluido, taxaRedonda } from '../src/streamStats.js';
+import { APERTO_INICIAL, describeStats, proximaParada, proximoAperto, proximoFluido, resumoDoAperto, taxaRedonda } from '../src/streamStats.js';
 
 // ===================================================================================================
 // O NÚMERO DE QUADROS NÃO PODE FAZER UMA TRANSMISSÃO SAUDÁVEL PARECER QUEBRADA.
@@ -120,5 +120,41 @@ describe('a tela parada pede nitidez', () => {
   it('aperto conta como movimento: um jogo estrangulado não fica preso na nitidez', () => {
     assert.deepEqual(proximaParada(nitida, 6, true), inicio);
     assert.equal(proximaParada(proximaParada(inicio, 2, true), 2, true).nitida, false);
+  });
+});
+
+// ===================================================================================================
+// A TRANSMISSÃO APERTADA VAI PARA O DIÁRIO (20/10/2026): "está toda embaçada" sem os números de quem transmitia
+// não tinha como ser respondido. Três medições apertadas seguidas, pelo mesmo motivo, dão UMA linha; o mesmo motivo
+// não se repete na mesma transmissão, e tela sem ninguém assistindo (nada codificando) não conta.
+// ===================================================================================================
+describe('o aperto registrado', () => {
+  const contar = (amostras: [string, boolean][]) => {
+    let a = APERTO_INICIAL;
+    const registros: string[] = [];
+    for (const [motivo, codificando] of amostras) {
+      const r = proximoAperto(a, motivo as 'cpu' | 'bandwidth' | 'none', codificando);
+      a = r.aperto;
+      if (r.registrar) registros.push(a.motivo!);
+    }
+    return registros;
+  };
+
+  it('três medições apertadas seguidas dão uma linha, e só uma', () => {
+    assert.deepEqual(contar([['bandwidth', true], ['bandwidth', true], ['bandwidth', true], ['bandwidth', true], ['bandwidth', true]]), ['bandwidth']);
+  });
+  it('um soluço não registra; voltar ao normal zera a conta', () => {
+    assert.deepEqual(contar([['bandwidth', true], ['bandwidth', true], ['none', true], ['bandwidth', true], ['bandwidth', true]]), []);
+  });
+  it('trocar de motivo recomeça a conta, e o outro motivo também é registrado', () => {
+    assert.deepEqual(contar([['cpu', true], ['cpu', true], ['cpu', true], ['bandwidth', true], ['bandwidth', true], ['bandwidth', true]]), ['cpu', 'bandwidth']);
+  });
+  it('sem ninguém assistindo, nada conta', () => {
+    assert.deepEqual(contar([['bandwidth', false], ['bandwidth', false], ['bandwidth', false]]), []);
+  });
+  it('a linha diz o motivo, o tamanho, a taxa, a estimativa e o codec, e cabe nos 200', () => {
+    const linha = resumoDoAperto({ motivo: 'bandwidth', segundos: 12, largura: 640, altura: 360, fps: 29.4, kbps: 610, estimativaKbps: 900, codec: 'VP8', naPlaca: false, modo: 'Padrão' });
+    assert.equal(linha, 'apertada há 12 s pela internet · sai 640×360 a 29 fps, 610 kbps (a internet estima 900) · VP8 pelo processador · Padrão');
+    assert.ok(linha.length <= 200);
   });
 });

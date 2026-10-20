@@ -37,6 +37,10 @@ import {
   type StreamStats,
   nextQuality,
   proximaParada,
+  proximoAperto,
+  resumoDoAperto,
+  APERTO_INICIAL,
+  type Aperto,
   proximoFluido,
 } from './streamStats';
 import { filaUltimaVale } from './fila';
@@ -1457,6 +1461,10 @@ export function useVoice(socket: Socket | null) {
     // os dois zero, e só a segunda quer dizer "ninguém assistindo".
     let quadrosAntes = new Map<string, number>();
     let quandoAntes = 0;
+    // O aperto que vai para o diário de saúde (ver proximoAperto, em streamStats.ts), e os bytes enviados da medição
+    // anterior, para a taxa de verdade.
+    let aperto: Aperto = APERTO_INICIAL;
+    let bytesAntes: number | null = null;
 
     const check = async () => {
       if (busy) return;
@@ -1469,12 +1477,26 @@ export function useVoice(socket: Socket | null) {
         const quadrosAgora = new Map<string, number>();
         let quadrosNoIntervalo: number | null = null;
         const agora = performance.now();
-        (await sender.getStats()).forEach((entry: Record<string, unknown>) => {
+        // Para a linha do diário: a maior camada ativa, o codec dela, os bytes enviados e a estimativa da internet.
+        let maior: Record<string, unknown> | null = null;
+        let bytes = 0;
+        let estimativa: number | null = null;
+        const codecs = new Map<string, string>();
+        const relatorio = await sender.getStats();
+        relatorio.forEach((entry: Record<string, unknown>) => {
+          if (entry.type === 'codec' && typeof entry.mimeType === 'string') codecs.set(String(entry.id), entry.mimeType.replace(/^video\//i, '').toUpperCase());
+          if (entry.type === 'candidate-pair' && entry.nominated && typeof entry.availableOutgoingBitrate === 'number') {
+            estimativa = Math.round(entry.availableOutgoingBitrate / 1000);
+          }
+        });
+        relatorio.forEach((entry: Record<string, unknown>) => {
           if (entry.type !== 'outbound-rtp' || entry.kind !== 'video') return;
           fps = Math.max(fps, Number(entry.framesPerSecond ?? 0));
           const reason = String(entry.qualityLimitationReason ?? 'none');
           if (reason === 'cpu' || reason === 'bandwidth') limitedBy = reason;
           if (entry.active === false) return; // camada pausada (ninguém assistindo): não diz nada da tela
+          bytes += Number(entry.bytesSent ?? 0);
+          if (!maior || Number(entry.frameHeight ?? 0) > Number(maior.frameHeight ?? 0)) maior = entry;
           const camada = String(entry.rid ?? entry.ssrc ?? '');
           const quadros = Number(entry.framesEncoded ?? 0);
           quadrosAgora.set(camada, quadros);
@@ -1483,8 +1505,31 @@ export function useVoice(socket: Socket | null) {
         });
         const segundos = (agora - quandoAntes) / 1000;
         const fpsCodificado = quadrosNoIntervalo !== null && quandoAntes > 0 ? quadrosNoIntervalo / segundos : null;
+        const kbps = bytesAntes !== null && quandoAntes > 0 && bytes >= bytesAntes ? Math.round(((bytes - bytesAntes) * 8) / segundos / 1000) : null;
         quadrosAntes = quadrosAgora;
         quandoAntes = agora;
+        bytesAntes = bytes;
+
+        const contado = proximoAperto(aperto, limitedBy, fpsCodificado !== null);
+        aperto = contado.aperto;
+        const camada = maior as Record<string, unknown> | null;
+        if (contado.registrar && camada && aperto.motivo) {
+          reportProblem(
+            'transmissão',
+            resumoDoAperto({
+              motivo: aperto.motivo,
+              segundos: (aperto.seguidas * SCREEN_CHECK_MS) / 1000,
+              largura: Number(camada.frameWidth ?? 0),
+              altura: Number(camada.frameHeight ?? 0),
+              fps: fpsCodificado ?? fps,
+              kbps,
+              estimativaKbps: estimativa,
+              codec: codecs.get(String(camada.codecId ?? '')) ?? null,
+              naPlaca: typeof camada.powerEfficientEncoder === 'boolean' ? camada.powerEfficientEncoder : null,
+              modo: modoNoArRef.current === 'smooth' ? 'Fluido' : 'Padrão',
+            }),
+          );
+        }
 
         if (modoNoArRef.current === 'smooth' && !fluido.em30) {
           fluido = proximoFluido(fluido, { fps, limitedBy });

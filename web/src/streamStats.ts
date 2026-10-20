@@ -246,3 +246,58 @@ export function proximaParada(atual: Parada, fps: number | null, apertado = fals
   const paradas = atual.paradas + 1;
   return { paradas, nitida: paradas >= PARADAS_PARA_NITIDEZ };
 }
+
+// ---------- O aperto que fica registrado ----------
+
+/**
+ * A TRANSMISSÃO APERTADA VAI PARA O DIÁRIO DE SAÚDE (20/10/2026). O relato foi "a transmissão está toda embaçada", e a
+ * causa (internet de quem transmite, processador dele, ou a internet de quem assiste) só aparecia no "i" de quem
+ * TRANSMITIA, enquanto transmitia — ninguém lembra de abrir, e depois já não há como saber. Agora, apertada por umas três
+ * medições seguidas (~12 s), uma linha sai sozinha com os números, uma vez por motivo em cada transmissão.
+ */
+export const MEDIDAS_PARA_REGISTRAR = 3;
+
+export interface Aperto {
+  /** Medições apertadas seguidas, e por qual motivo. */
+  seguidas: number;
+  motivo: 'cpu' | 'bandwidth' | null;
+  /** Os motivos já registrados nesta transmissão. */
+  registrados: ('cpu' | 'bandwidth')[];
+}
+
+export const APERTO_INICIAL: Aperto = { seguidas: 0, motivo: null, registrados: [] };
+
+/** Conta a medição; `registrar` diz se é a hora de mandar a linha (uma vez por motivo). */
+export function proximoAperto(atual: Aperto, limitedBy: StreamStats['limitedBy'], codificando: boolean): { aperto: Aperto; registrar: boolean } {
+  const motivo = limitedBy === 'cpu' || limitedBy === 'bandwidth' ? limitedBy : null;
+  if (!codificando || !motivo) return { aperto: { ...atual, seguidas: 0, motivo: null }, registrar: false };
+  const seguidas = motivo === atual.motivo ? atual.seguidas + 1 : 1;
+  if (seguidas >= MEDIDAS_PARA_REGISTRAR && !atual.registrados.includes(motivo)) {
+    return { aperto: { seguidas, motivo, registrados: [...atual.registrados, motivo] }, registrar: true };
+  }
+  return { aperto: { ...atual, seguidas, motivo }, registrar: false };
+}
+
+/** A linha do diário (cabe nos 200 caracteres que o servidor guarda). */
+export function resumoDoAperto(m: {
+  motivo: 'cpu' | 'bandwidth';
+  segundos: number;
+  largura: number;
+  altura: number;
+  fps: number;
+  kbps: number | null;
+  estimativaKbps: number | null;
+  codec: string | null;
+  naPlaca: boolean | null;
+  modo: string;
+}): string {
+  const partes = [
+    `apertada há ${Math.round(m.segundos)} s pel${m.motivo === 'cpu' ? 'o processador' : 'a internet'}`,
+    `sai ${m.largura}×${m.altura} a ${Math.round(m.fps)} fps` +
+      (m.kbps !== null ? `, ${m.kbps} kbps` : '') +
+      (m.estimativaKbps !== null ? ` (a internet estima ${m.estimativaKbps})` : ''),
+    [m.codec ?? 'codec ?', m.naPlaca === true ? 'pela placa' : m.naPlaca === false ? 'pelo processador' : null].filter(Boolean).join(' '),
+    m.modo,
+  ];
+  return partes.join(' · ').slice(0, 200);
+}
