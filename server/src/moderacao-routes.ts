@@ -201,6 +201,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           idiomas: db.idiomasDe(eu.id),
           // Quantas vezes cantou no karaokê, por comunidade (é o que o ranking de lá mostra).
           karaoke: db.cantadasDe(eu.id),
+          // o tempo transmitindo com 2 ou mais assistindo, por comunidade e dia (a "Sessão de cinema" das conquistas)
+          transmissaoAssistida: db.cinemaDe(eu.id),
         },
         // Os cargos personalizados e os pontos de nível também são dados sobre a pessoa, e vão junto.
         comunidades: db.listCommunitiesForUser(eu.id).map((c) => {

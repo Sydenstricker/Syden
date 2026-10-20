@@ -885,6 +885,9 @@ function daLinha(linha: { sha?: string | null; bytes?: number | null; data?: Uin
 // na tela "contado a partir de tal dia" em vez de mostrar um número que parece o histórico inteiro e
 // não é. Sem ON DELETE: a comunidade pode sumir e o registro de uso continua valendo para o total.
 addColumnIfMissing('usage_sessions', 'community_id', 'INTEGER');
+// A SALA da sessão (20/10/2026), para as conquistas saberem quem estava JUNTO (na mesma sala, não só na mesma comunidade).
+// As sessões de antes não sabem: para elas, a comunidade inteira conta como uma sala só.
+addColumnIfMissing('usage_sessions', 'channel_id', 'INTEGER');
 // O selo da comunidade: quatro caracteres, um icone e uma cor, exibidos ao lado do nome dos membros.
 // Fica nulo enquanto a comunidade nao alcancou o primeiro marco, ou nao escolheu o selo dela.
 addColumnIfMissing('communities', 'selo_texto', 'TEXT');
@@ -2911,6 +2914,7 @@ export function deleteAccount(userId: number) {
     db.prepare('DELETE FROM usage_sessions WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM minijogo_jogadores WHERE user_id = ?').run(userId);
     db.prepare('UPDATE minijogo_partidas SET criada_por = NULL WHERE criada_por = ?').run(userId);
+    db.prepare('DELETE FROM cinema_segundos WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
     // O ON DELETE CASCADE já daria conta, mas aqui dentro estão as ANOTAÇÕES QUE A PESSOA ESCREVEU
     // SOBRE OUTRAS — dado pessoal de terceiro. Apagar por efeito indireto de uma configuração que
@@ -3453,11 +3457,11 @@ export function deleteThread(id: number) {
 
 export type UsageKind = 'voice' | 'screen';
 
-export function startUsageSession(kind: UsageKind, userId: number, communityId: number | null = null): number {
+export function startUsageSession(kind: UsageKind, userId: number, communityId: number | null = null, channelId: number | null = null): number {
   const now = new Date().toISOString();
   const result = db
-    .prepare('INSERT INTO usage_sessions (kind, user_id, started_at, ended_at, community_id) VALUES (?, ?, ?, ?, ?)')
-    .run(kind, userId, now, now, communityId);
+    .prepare('INSERT INTO usage_sessions (kind, user_id, started_at, ended_at, community_id, channel_id) VALUES (?, ?, ?, ?, ?, ?)')
+    .run(kind, userId, now, now, communityId, channelId);
   return Number(result.lastInsertRowid);
 }
 
@@ -6483,4 +6487,118 @@ export function aniversariosNoCalendario(communityId: number): { userId: number;
       )
       .all(communityId) as { userId: number; nome: string; md: string }[]
   ).map(({ userId, nome, md }) => ({ userId, nome, mes: Number(md.slice(0, 2)), dia: Number(md.slice(3)) }));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// AS CONQUISTAS DA TURMA (20/10/2026, decisão dele; o desenho e a pesquisa em docs/conquistas-coletivas.md, as contas em
+// conquistas.ts). Aqui só o que se guarda: o degrau alcançado, que NUNCA desacontece (quem sai ou apaga a conta leva os
+// seus dados, não o marco da turma), e o tempo de transmissão assistida, que antes não ficava em lugar nenhum.
+// ---------------------------------------------------------------------------------------------------------------------
+db.exec(`
+  CREATE TABLE IF NOT EXISTS conquistas_alcancadas (
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    conquista    TEXT NOT NULL,
+    degrau       INTEGER NOT NULL,
+    alcancada_em TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (community_id, conquista, degrau)
+  );
+  -- "Sessão de cinema": segundos em que alguém transmitiu com pelo menos 2 pessoas assistindo, por dia. Quem assistia
+  -- não fica guardado, só quem transmitiu (para os bons exemplos) e quanto.
+  CREATE TABLE IF NOT EXISTS cinema_segundos (
+    community_id INTEGER NOT NULL,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    dia          TEXT NOT NULL,
+    segundos     INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (community_id, user_id, dia)
+  );
+`);
+
+/** Para o "Levar seus dados": o tempo que a pessoa transmitiu com 2 ou mais assistindo, por comunidade e dia. */
+export function cinemaDe(userId: number) {
+  return db
+    .prepare(
+      `SELECT c.name AS comunidade, k.dia, k.segundos FROM cinema_segundos k
+         LEFT JOIN communities c ON c.id = k.community_id WHERE k.user_id = ? ORDER BY k.dia`,
+    )
+    .all(userId) as { comunidade: string | null; dia: string; segundos: number }[];
+}
+
+/** Mais `segundos` de transmissão assistida por 2 ou mais, para quem transmitiu, no dia de hoje. */
+export function somarCinema(communityId: number, userId: number, segundos: number) {
+  db.prepare(
+    `INSERT INTO cinema_segundos (community_id, user_id, dia, segundos) VALUES (?, ?, date('now'), ?)
+     ON CONFLICT (community_id, user_id, dia) DO UPDATE SET segundos = segundos + excluded.segundos`,
+  ).run(communityId, userId, segundos);
+}
+
+export interface SessaoDeVoz {
+  userId: number;
+  channelId: number | null;
+  inicio: number;
+  fim: number;
+}
+
+/** O que as contas das conquistas precisam de uma comunidade, lido de uma vez. */
+export function dadosDasConquistas(communityId: number) {
+  const sessoes = (
+    db
+      .prepare(
+        `SELECT user_id AS userId, channel_id AS channelId, started_at AS ini, ended_at AS fim
+           FROM usage_sessions WHERE community_id = ? AND kind = 'voice' AND ended_at > started_at`,
+      )
+      .all(communityId) as { userId: number; channelId: number | null; ini: string; fim: string }[]
+  ).map((s): SessaoDeVoz => ({ userId: s.userId, channelId: s.channelId, inicio: Date.parse(s.ini), fim: Date.parse(s.fim) }));
+  const membros = db
+    .prepare('SELECT user_id AS userId, joined_at AS entrou FROM community_members WHERE community_id = ?')
+    .all(communityId) as { userId: number; entrou: string }[];
+  const partidas = db
+    .prepare(
+      `SELECT p.jogo, p.jogadores, p.comecou_em AS em,
+              (SELECT group_concat(j.user_id) FROM minijogo_jogadores j WHERE j.partida_id = p.id) AS quem
+         FROM minijogo_partidas p WHERE p.community_id = ? AND p.jogadores >= 2`,
+    )
+    .all(communityId) as { jogo: string; jogadores: number; em: string; quem: string | null }[];
+  const cantadas = db
+    .prepare('SELECT user_id AS userId, song_id AS songId, cantada_em AS em FROM karaoke_cantadas WHERE community_id = ?')
+    .all(communityId) as { userId: number; songId: number; em: string }[];
+  const cantadasDeQuemSaiu =
+    (db.prepare('SELECT cantadas FROM karaoke_de_quem_saiu WHERE community_id = ?').get(communityId) as { cantadas: number } | undefined)?.cantadas ?? 0;
+  const cinema = db
+    .prepare('SELECT user_id AS userId, dia, segundos FROM cinema_segundos WHERE community_id = ?')
+    .all(communityId) as { userId: number; dia: string; segundos: number }[];
+  const comunidade = db.prepare('SELECT created_at AS criada FROM communities WHERE id = ?').get(communityId) as { criada: string } | undefined;
+  const parabens = (db.prepare('SELECT COUNT(*) AS n FROM aniversarios_anunciados WHERE community_id = ?').get(communityId) as { n: number }).n;
+  const mensagens = (
+    db.prepare('SELECT COUNT(*) AS n FROM messages m JOIN channels c ON c.id = m.channel_id WHERE c.community_id = ?').get(communityId) as { n: number }
+  ).n;
+  const eventos = (
+    db.prepare('SELECT quando FROM eventos_da_comunidade WHERE community_id = ? AND quando <= ?').all(communityId, new Date().toISOString()) as { quando: string }[]
+  ).map((e) => Date.parse(e.quando));
+  return {
+    sessoes,
+    membros: membros.map((m) => ({ userId: m.userId, entrou: Date.parse(m.entrou) })),
+    partidas: partidas.map((p) => ({ jogo: p.jogo, jogadores: p.jogadores, em: Date.parse(p.em), quem: p.quem ? p.quem.split(',').map(Number) : [] })),
+    cantadas: cantadas.map((c) => ({ userId: c.userId, songId: c.songId, em: Date.parse(c.em) })),
+    cantadasDeQuemSaiu,
+    cinema: cinema.map((c) => ({ userId: c.userId, dia: Date.parse(c.dia + 'T00:00:00Z'), segundos: c.segundos })),
+    criadaEm: comunidade ? Date.parse(comunidade.criada) : Date.now(),
+    parabens,
+    mensagens,
+    eventos,
+  };
+}
+
+export type DadosDasConquistas = ReturnType<typeof dadosDasConquistas>;
+
+/** Os degraus já alcançados, com a data. */
+export function conquistasAlcancadas(communityId: number) {
+  return db
+    .prepare('SELECT conquista, degrau, alcancada_em AS em FROM conquistas_alcancadas WHERE community_id = ?')
+    .all(communityId) as { conquista: string; degrau: number; em: string }[];
+}
+
+/** Guarda os degraus novos (os que já estavam ficam como estão, com a data de quando foram alcançados). */
+export function guardarConquistas(communityId: number, novos: { conquista: string; degrau: number }[]) {
+  const st = db.prepare('INSERT OR IGNORE INTO conquistas_alcancadas (community_id, conquista, degrau) VALUES (?, ?, ?)');
+  for (const n of novos) st.run(communityId, n.conquista, n.degrau);
 }

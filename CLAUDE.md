@@ -694,8 +694,15 @@ tela não mente. Pendentes: todos pedem arte nova (PixelLab em novembro, ou o ca
   3D dos coelhos (um modelo, as animações por script).
 - **Forno a lenha na copa**: pizza sem forno não faz sentido (dele). A comida aparece com motivo — no aniversário de alguém,
   sai pizza do forno ou aparece bolo na ilha. A copa é hoje o único canto sem função.
-- **O troféu já está no salão; o que falta são as CONQUISTAS** que ele mostra. A pesquisa (20/10/2026, pedido dele:
-  positivas, de equipe) e uma proposta de 19 estão em `docs/conquistas-coletivas.md`; quais entram é decisão dele.
+- **AS CONQUISTAS DA TURMA (feitas em 20/10/2026; ele aprovou as 19 da pesquisa e pediu a maestria por jogo).** O
+  troféu do salão (e um atalho embaixo dele) abre o painel (`Conquistas.tsx`); as contas em `server/src/conquistas.ts`,
+  a pesquisa e a lista em `docs/conquistas-coletivas.md`. São 28 (19 + "A turma do jogo", uma por mini-game). Regras: conta
+  GENTE JUNTA (call só na mesma sala, com 2 ou mais; partida só com 2 ou mais); o degrau alcançado é gravado e NUNCA se
+  perde (`conquistas_alcancadas`); nada de prazo, sequência, "faltam" ou barra de progresso; os BONS EXEMPLOS (pedido
+  dele: "dar ênfase aos bons exemplos", não competição) são até 3 nomes de quem mais contribuiu em 30 dias, sem posição.
+  Medição nova: `cinema_segundos` (transmitir com 2+ assistindo) e a sala em `usage_sessions.channel_id` (as sessões
+  antigas contam a comunidade como uma sala só). **Os enfeites que cada degrau abre no salão esperam a arte** (PixelLab,
+  novembro): hoje o degrau aparece só no painel.
   **A porta de entrada foi aprovada** (20/10/2026) e está na dívida de arte do PixelLab (novembro).
 
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem

@@ -1,5 +1,6 @@
-import { CalendarDays, Gamepad2, Hash, Link2, Mic, Sparkles, X } from 'lucide-react';
+import { CalendarDays, Gamepad2, Hash, Link2, Mic, Sparkles, Trophy, X } from 'lucide-react';
 import { Calendario } from './Calendario';
+import { Conquistas } from './Conquistas';
 import { Mascote } from './Mascote';
 import { useState } from 'react';
 import { api } from './api';
@@ -128,6 +129,7 @@ export function InicioDaComunidade({
   const [copiado, setCopiado] = useState(false);
   // O CALENDÁRIO (18/10/2026): por um atalho, até o calendário de parede do salão ganhar arte.
   const [calendario, setCalendario] = useState(false);
+  const [conquistas, setConquistas] = useState(false);
   // A TV AO VIVO: quem transmite agora, nesta comunidade. O canal é um índice nessa lista, e volta ao começo
   // quando a lista encolhe (alguém parou de transmitir).
   const transmissoes = naVoz.filter((m) => m.screen);
@@ -220,6 +222,8 @@ export function InicioDaComunidade({
         };
         return { microfone: karaoke, jukebox: karaoke };
       })()),
+    // O TROFÉU abre as conquistas da turma (20/10/2026, ver Conquistas.tsx); no salão de frente, só pelo atalho.
+    trofeu: { rotulo: t('Conquistas'), sub: t('O que a turma fez junta'), onClick: () => setConquistas(true) },
     // O balcão do salão novo abre o recado (o balão é desenhado lá; o nome é o título do recado).
     ...(salaoNovo && dados.boasVindas?.texto && { balcao: { rotulo: dados.boasVindas.titulo || t('Bem-vindo!'), onClick: () => {} } }),
     ...(dados.podeEditar && {
@@ -236,6 +240,7 @@ export function InicioDaComunidade({
     { id: 'fliperama', icone: <Gamepad2 size={16} /> },
     { id: 'estante', icone: <Hash size={16} /> },
     { id: 'janela', icone: <Link2 size={16} /> },
+    { id: 'trofeu', icone: <Trophy size={16} /> },
     { id: 'quadro', icone: <Sparkles size={16} /> },
   ];
 
@@ -343,6 +348,16 @@ export function InicioDaComunidade({
         <AbrirTicket community={community} aoAbrir={aoAbrirConversa} />
       </div>
       {calendario && <Calendario communityId={community.id} socket={socket} aoFechar={() => setCalendario(false)} />}
+      {conquistas && (
+        <Conquistas
+          communityId={community.id}
+          nomeDe={(id) => {
+            const m = membros.get(id);
+            return m ? nomeNaComunidade(id, m.username) : null;
+          }}
+          aoFechar={() => setConquistas(false)}
+        />
+      )}
 
       <button className="bv-pular" onClick={fechar}>
         {t('Ir para os canais')}

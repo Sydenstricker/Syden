@@ -2073,6 +2073,86 @@ textarea {
   cursor: ew-resize; /* arrastar para os lados gira a peça */
 }
 /* O CALENDÁRIO DA COMUNIDADE (Calendario.tsx, 18/10/2026): o mês em grade, a lista e o "novo evento". */
+/* As conquistas da turma (Conquistas.tsx): o que já foi feito, sem barra de progresso nem prazo. */
+.conquistas {
+  width: min(480px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.conquistas-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.conquistas-topo h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.conquistas-grupo h3 {
+  margin: 16px 0 6px;
+  font-size: calc(12px * var(--escala-do-texto));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.conquista {
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  background: var(--bg-darkest);
+  opacity: 0.75;
+}
+.conquista[data-alcancada] {
+  opacity: 1;
+}
+.conquista-cabeca {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.conquista-valor {
+  margin-inline-start: auto;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+.conquista-novo {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #10140f;
+  font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 700;
+}
+.conquista-sobre,
+.conquista-exemplos {
+  margin: 2px 0 0;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+.conquista-degraus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.conquista-degrau {
+  min-width: 28px;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  text-align: center;
+  font-size: calc(11px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+.conquista-degrau[data-cheio] {
+  border-color: transparent;
+  background: #e0b24a;
+  color: #241a06;
+  font-weight: 700;
+}
+
 .calendario {
   width: min(420px, 100%);
   max-height: 92vh;

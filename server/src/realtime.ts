@@ -341,6 +341,8 @@ export function setupRealtime(io: IOServer) {
     db.touchUsageSessions([...voiceMembers.values()].flatMap(activeUsageSessionIds));
     // O minuto de voz dos níveis: quem não está sozinho na sala ganha pontos (ver niveis.ts).
     pontuarMinutoDeVoz(io, [...voiceMembers.values()]);
+    // A "Sessão de cinema" das conquistas: transmitir com 2 ou mais assistindo (ver conquistas.ts).
+    for (const m of voiceMembers.values()) if (m.screen && m.assistindo.length >= 2) db.somarCinema(m.communityId, m.userId, USAGE_HEARTBEAT_MS / 1000);
     contarMinutoDosMenores(io);
   }, USAGE_HEARTBEAT_MS).unref();
   // A rede de segurança do vídeo dos menores (ver vigiarVideoDosMenores), mais curta que o minuto.
@@ -453,7 +455,7 @@ export function setupRealtime(io: IOServer) {
         screenGenero: null,
         assistindo: [],
         socketId: socket.id,
-        voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId),
+        voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId, channel.id),
         screenSessionId: null,
       });
       if (previous !== undefined && previous !== channel.communityId) broadcastVoice(io, previous);
