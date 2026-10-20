@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'කණ්ඩායම කාමරයේ සිටියදී කවුරුන් හෝ කැරෝකේ ගායනා කළ වාර ගණන.',
   'Vila completa': 'සම්පූර්ණ ගම',
   'Voz e conversa': 'හඬ සහ කතාබහ',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'යතුර තිබෙන්නේ ඇමතුමේ සිටින අයගේ උපාංගවල පමණයි.',
+  'A chave muda quando alguém entra ou sai.': 'කවුරුහරි එක් වන විට හෝ ඉවත් වන විට යතුර වෙනස් වේ.',
+  'Conferir com quem está na chamada': 'ඇමතුමේ සිටින අය සමඟ සසඳන්න',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'සේවාදායකය හඬ සහ රූපය යවයි, නමුත් ඒවා ඇසීමට හෝ දැකීමට නොහැක.',
 } satisfies Record<string, string>;

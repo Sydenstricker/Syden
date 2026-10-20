@@ -2232,4 +2232,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Skipti sem einhver söng karókí með hópinn í herberginu.',
   'Vila completa': 'Fullt þorp',
   'Voz e conversa': 'Rödd og spjall',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Lykillinn er aðeins í tækjum þeirra sem eru í símtalinu.',
+  'A chave muda quando alguém entra ou sai.': 'Lykillinn breytist þegar einhver kemur inn eða fer.',
+  'Conferir com quem está na chamada': 'Berðu saman við þau sem eru í símtalinu',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Þjónninn áframsendir rödd og mynd án þess að geta heyrt þær eða séð.',
 } satisfies Record<string, string>;

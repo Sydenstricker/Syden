@@ -2161,4 +2161,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kali seseorang menyanyi karaoke dengan kumpulan di dalam bilik.',
   'Vila completa': 'Kampung lengkap',
   'Voz e conversa': 'Suara dan perbualan',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Kunci hanya berada pada peranti orang yang ada dalam panggilan.',
+  'A chave muda quando alguém entra ou sai.': 'Kunci bertukar apabila seseorang masuk atau keluar.',
+  'Conferir com quem está na chamada': 'Semak dengan orang dalam panggilan',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Pelayan menghantar suara dan imej tanpa dapat mendengar atau melihatnya.',
 } satisfies Record<string, string>;

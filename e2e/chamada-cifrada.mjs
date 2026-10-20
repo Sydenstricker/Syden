@@ -44,6 +44,9 @@ async function codigo(page) {
   const cadeado = page.locator('.chamada-cifrada');
   await cadeado.waitFor({ timeout: 20000 });
   if ((await cadeado.getAttribute('aria-expanded')) !== 'true') await cadeado.click();
+  // o código fica dentro de "Conferir com quem está na chamada", fechado por padrão
+  const conferir = page.locator('.codigo-de-seguranca details');
+  if (!(await conferir.evaluate((d) => d.open))) await conferir.locator('summary').click();
   return (await page.locator('.codigo-de-seguranca code').innerText()).trim();
 }
 /** O som que chega dos outros, medido nos elementos de áudio da página: o maior volume em 3 s (0 a 1). */

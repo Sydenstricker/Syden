@@ -2241,4 +2241,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'ގްރޫޕް ރޫމުގައި ހުރިއިރު މީހަކު ކަރައޯކޭގައި ލަވަ ކިޔި ފަހަރުތައް.',
   'Vila completa': 'ފުރިހަމަ ރަށް',
   'Voz e conversa': 'އަޑާއި ވާހަކަ',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'ކީ އޮންނަނީ ހަމައެކަނި ކޯލުގައި ތިބި މީހުންގެ ޑިވައިސްތަކުގައި.',
+  'A chave muda quando alguém entra ou sai.': 'މީހަކު ވަދެ ނުވަތަ ނިކުމެއްޖެނަމަ ކީ ބަދަލުވެއެވެ.',
+  'Conferir com quem está na chamada': 'ކޯލުގައި ތިބި މީހުންނާ އަޅާކިޔުން',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ސާވަރު އަޑާއި ފޮޓޯ ފޮނުވައިދެއެވެ، އެކަމަކު އަޑުއަހައެއް ނުވަތަ ދެކެވެއެއް ނުކުރެވޭނެ.',
 } satisfies Record<string, string>;

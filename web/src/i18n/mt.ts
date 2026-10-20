@@ -2177,4 +2177,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kemm-il darba xi ħadd kanta karaoke bil-grupp fil-kamra.',
   'Vila completa': 'Raħal sħiħ',
   'Voz e conversa': 'Vuċi u konversazzjoni',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Iċ-ċavetta tibqa’ biss fuq l-apparati ta’ min hu fis-sejħa.',
+  'A chave muda quando alguém entra ou sai.': 'Iċ-ċavetta tinbidel meta xi ħadd jidħol jew joħroġ.',
+  'Conferir com quem está na chamada': 'Iċċekkja ma’ min hu fis-sejħa',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Is-server jgħaddi l-vuċi u l-istampa mingħajr ma jista’ jisma’ jew jara.',
 } satisfies Record<string, string>;

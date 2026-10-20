@@ -26,6 +26,12 @@
  */
 import { BaseKeyProvider, createKeyMaterialFromBuffer } from 'livekit-client';
 
+/**
+ * As peças, pelo nome que têm em toda parte: é o que a caixinha do cadeado mostra (Sidebar.tsx). Mudou uma peça aqui,
+ * muda o nome junto — a tela não pode anunciar uma cifra que não é a usada.
+ */
+export const ALGORITMOS_DA_CHAMADA = ['AES-GCM', 'ECDH P-256', 'HKDF-SHA-256'].join(' · ');
+
 /** O provedor de chaves que o LiveKit consulta: uma chave POR PESSOA (sharedKey: false), entregue por nós. */
 export class ChavesDaChamada extends BaseKeyProvider {
   constructor() {

@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Isan’ny nihiran’olona karaoke teo anatrehan’ny vondrona tao amin’ny efitrano.',
   'Vila completa': 'Tanàna feno',
   'Voz e conversa': 'Feo sy resaka',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Ao amin’ny fitaovan’ireo ao amin’ny antso ihany ny lakile.',
+  'A chave muda quando alguém entra ou sai.': 'Miova ny lakile rehefa misy miditra na mivoaka.',
+  'Conferir com quem está na chamada': 'Hamarino miaraka amin’ireo ao amin’ny antso',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Ampitain’ny mpizara ny feo sy ny sary nefa tsy afaka mandre na mahita izy.',
 } satisfies Record<string, string>;

@@ -1219,6 +1219,27 @@ textarea {
 .codigo-de-seguranca p {
   margin: 0;
 }
+.codigo-de-seguranca ul {
+  margin: 0;
+  padding-inline-start: 16px;
+}
+.codigo-de-seguranca li + li {
+  margin-top: 2px;
+}
+.codigo-de-seguranca .codigo-algoritmos {
+  margin: 6px 0;
+  font-family: ui-monospace, monospace;
+  font-size: calc(11px * var(--escala-do-texto));
+  direction: ltr;
+  text-align: start;
+}
+.codigo-de-seguranca summary {
+  cursor: pointer;
+  color: var(--text-strong);
+}
+.codigo-de-seguranca details[open] summary {
+  margin-bottom: 4px;
+}
 
 .user-panel {
   display: flex;

@@ -2228,4 +2228,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kordi, kui keegi laulis karaoket, kui seltskond oli toas.',
   'Vila completa': 'Täis küla',
   'Voz e conversa': 'Hääl ja vestlus',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Võti on ainult kõnes olijate seadmetes.',
+  'A chave muda quando alguém entra ou sai.': 'Võti muutub, kui keegi liitub või lahkub.',
+  'Conferir com quem está na chamada': 'Kontrolli kõnes olijatega',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Server edastab hääle ja pildi, suutmata neid kuulda ega näha.',
 } satisfies Record<string, string>;

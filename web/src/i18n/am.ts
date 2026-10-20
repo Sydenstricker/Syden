@@ -2161,4 +2161,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'ቡድኑ ክፍሉ ውስጥ እያለ አንድ ሰው በካራኦኬ የዘመረባቸው ጊዜያት።',
   'Vila completa': 'ሙሉ መንደር',
   'Voz e conversa': 'ድምፅ እና ውይይት',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'ቁልፉ በጥሪው ውስጥ ባሉ ሰዎች መሣሪያዎች ላይ ብቻ ይቀመጣል።',
+  'A chave muda quando alguém entra ou sai.': 'አንድ ሰው ሲገባ ወይም ሲወጣ ቁልፉ ይቀየራል።',
+  'Conferir com quem está na chamada': 'በጥሪው ውስጥ ካሉ ጋር ያረጋግጡ',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ሰርቨሩ ድምፁንና ምስሉን ያስተላልፋል፤ ግን መስማትም ሆነ ማየት አይችልም።',
 } satisfies Record<string, string>;

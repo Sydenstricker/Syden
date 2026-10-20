@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Ganger noen har sunget karaoke med gjengen i rommet.',
   'Vila completa': 'Full landsby',
   'Voz e conversa': 'Stemme og prat',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Nøkkelen finnes bare på enhetene til dem i samtalen.',
+  'A chave muda quando alguém entra ou sai.': 'Nøkkelen byttes når noen blir med eller går.',
+  'Conferir com quem está na chamada': 'Sjekk med dem i samtalen',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serveren sender stemme og bilde videre uten å kunne høre eller se dem.',
 } satisfies Record<string, string>;

@@ -2156,4 +2156,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Times someone sang karaoke with the group in the room.',
   'Vila completa': 'Full village',
   'Voz e conversa': 'Voice and chat',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'The key stays only on the devices of the people on the call.',
+  'A chave muda quando alguém entra ou sai.': 'The key changes when someone joins or leaves.',
+  'Conferir com quem está na chamada': 'Verify with the people on the call',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'The server relays the voice and video without being able to hear or see them.',
 } satisfies Record<string, string>;

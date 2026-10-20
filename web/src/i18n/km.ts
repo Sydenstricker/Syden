@@ -2230,4 +2230,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'ចំនួនដងដែលនរណាម្នាក់ច្រៀងខារ៉ាអូខេ ខណៈក្រុមនៅក្នុងបន្ទប់។',
   'Vila completa': 'ភូមិពេញលេញ',
   'Voz e conversa': 'សំឡេង និងការសន្ទនា',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'សោនៅតែលើឧបករណ៍របស់អ្នកដែលនៅក្នុងការហៅប៉ុណ្ណោះ។',
+  'A chave muda quando alguém entra ou sai.': 'សោផ្លាស់ប្តូរនៅពេលមាននរណាម្នាក់ចូល ឬចេញ។',
+  'Conferir com quem está na chamada': 'ផ្ទៀងផ្ទាត់ជាមួយអ្នកដែលនៅក្នុងការហៅ',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ម៉ាស៊ីនមេបញ្ជូនសំឡេង និងរូបភាពបន្ត ដោយមិនអាចស្តាប់ឮ ឬមើលឃើញបានទេ។',
 } satisfies Record<string, string>;

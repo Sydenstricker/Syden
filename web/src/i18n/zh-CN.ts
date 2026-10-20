@@ -2148,4 +2148,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': '大家在房间里时，有人唱卡拉OK的次数。',
   'Vila completa': '满村',
   'Voz e conversa': '语音与聊天',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': '密钥只保存在通话中各人的设备上。',
+  'A chave muda quando alguém entra ou sai.': '有人加入或离开时，密钥就会更换。',
+  'Conferir com quem está na chamada': '与通话中的人核对',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': '服务器只负责转发语音和画面，既听不到也看不到。',
 } satisfies Record<string, string>;

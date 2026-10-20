@@ -2158,4 +2158,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'দল রুমে থাকা অবস্থায় কেউ কারাওকেতে যতবার গেয়েছে।',
   'Vila completa': 'পুরো গ্রাম',
   'Voz e conversa': 'কণ্ঠ আর আলাপ',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'চাবিটি শুধু কলে থাকা মানুষদের যন্ত্রেই থাকে।',
+  'A chave muda quando alguém entra ou sai.': 'কেউ ঢুকলে বা বেরিয়ে গেলে চাবি বদলে যায়।',
+  'Conferir com quem está na chamada': 'কলে থাকা সবার সঙ্গে মিলিয়ে দেখো',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'সার্ভার কণ্ঠ আর ছবি পৌঁছে দেয়, কিন্তু শুনতে বা দেখতে পারে না।',
 } satisfies Record<string, string>;

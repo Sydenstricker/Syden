@@ -2131,4 +2131,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Số lần có người hát karaoke khi cả nhóm đang trong phòng.',
   'Vila completa': 'Làng đầy đủ',
   'Voz e conversa': 'Giọng nói và trò chuyện',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Khóa chỉ nằm trên thiết bị của những người trong cuộc gọi.',
+  'A chave muda quando alguém entra ou sai.': 'Khóa thay đổi khi có người vào hoặc rời đi.',
+  'Conferir com quem está na chamada': 'Đối chiếu với những người trong cuộc gọi',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Máy chủ chuyển tiếp giọng nói và hình ảnh mà không thể nghe hay xem được.',
 } satisfies Record<string, string>;

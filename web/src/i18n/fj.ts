@@ -2160,4 +2160,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Na vica na gauna e lagasere karaoke kina e dua ni ra tiko na ilawalawa ena rumu.',
   'Vila completa': 'Koro taucoko',
   'Voz e conversa': 'Domo kei na veitalanoa',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Na ki e tiko ga ena misini ni ira era tiko ena veiqiri.',
+  'A chave muda quando alguém entra ou sai.': 'Na ki e veisau ni curu se lako tani e dua.',
+  'Conferir com quem está na chamada': 'Vakadeitaka vata kei ira era tiko ena veiqiri',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Na sava e vakau yani na domo kei na itaba, ia e sega ni rogoca se raica rawa.',
 } satisfies Record<string, string>;

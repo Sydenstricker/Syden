@@ -2161,4 +2161,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'De câte ori cineva a cântat karaoke cu gașca în cameră.',
   'Vila completa': 'Satul complet',
   'Voz e conversa': 'Voce și conversație',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Cheia rămâne doar pe dispozitivele celor din apel.',
+  'A chave muda quando alguém entra ou sai.': 'Cheia se schimbă când cineva intră sau iese.',
+  'Conferir com quem está na chamada': 'Verifică împreună cu cei din apel',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serverul transmite vocea și imaginea fără să le poată auzi sau vedea.',
 } satisfies Record<string, string>;

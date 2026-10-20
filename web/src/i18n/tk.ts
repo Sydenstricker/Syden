@@ -2233,4 +2233,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Topar otagda wagty kimdir biriniň karaokede aýdym aýdan gezekleri.',
   'Vila completa': 'Tutuş oba',
   'Voz e conversa': 'Ses we söhbet',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Açar diňe jaňdakylaryň enjamlarynda bolýar.',
+  'A chave muda quando alguém entra ou sai.': 'Kimdir goşulanda ýa-da çykanda açar üýtgeýär.',
+  'Conferir com quem está na chamada': 'Jaňdakylar bilen deňeşdir',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serwer sesi we şekili geçirýär, emma olary eşidip-de, görüp-de bilmeýär.',
 } satisfies Record<string, string>;

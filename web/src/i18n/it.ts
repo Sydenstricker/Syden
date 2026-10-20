@@ -2160,4 +2160,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Volte in cui qualcuno ha cantato al karaoke con il gruppo nella stanza.',
   'Vila completa': 'Villaggio al completo',
   'Voz e conversa': 'Voce e chiacchiere',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'La chiave resta solo sui dispositivi di chi è nella chiamata.',
+  'A chave muda quando alguém entra ou sai.': 'La chiave cambia quando qualcuno entra o esce.',
+  'Conferir com quem está na chamada': 'Verifica con chi è nella chiamata',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Il server inoltra voce e immagine senza poterle sentire né vedere.',
 } satisfies Record<string, string>;

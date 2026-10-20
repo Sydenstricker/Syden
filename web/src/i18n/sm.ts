@@ -2165,4 +2165,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Taimi na pese ai se tasi i le karaoke a o i ai le ʻau i le potu.',
   'Vila completa': 'Nuʻu atoa',
   'Voz e conversa': 'Leo ma talanoaga',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'O le ki e na o masini o ē o loʻo i le valaʻau.',
+  'A chave muda quando alguém entra ou sai.': 'E suia le ki pe a ulu mai se tasi pe alu ese.',
+  'Conferir com quem está na chamada': 'Siaki faatasi ma ē o loʻo i le valaʻau',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'E pasia e le server le leo ma le ata e aunoa ma le mafai ona faalogo pe vaʻai.',
 } satisfies Record<string, string>;

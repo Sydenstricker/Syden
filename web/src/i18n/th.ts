@@ -2174,4 +2174,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'จำนวนครั้งที่มีคนร้องคาราโอเกะตอนที่แก๊งอยู่ในห้อง',
   'Vila completa': 'หมู่บ้านครบ',
   'Voz e conversa': 'เสียงและบทสนทนา',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'กุญแจอยู่แค่ในอุปกรณ์ของคนที่อยู่ในสายเท่านั้น',
+  'A chave muda quando alguém entra ou sai.': 'กุญแจจะเปลี่ยนเมื่อมีคนเข้าหรือออก',
+  'Conferir com quem está na chamada': 'ตรวจสอบกับคนที่อยู่ในสาย',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'เซิร์ฟเวอร์ส่งต่อเสียงและภาพโดยไม่สามารถได้ยินหรือมองเห็น',
 } satisfies Record<string, string>;

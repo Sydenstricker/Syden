@@ -2223,4 +2223,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Herë që dikush këndoi karaoke me shoqërinë në dhomë.',
   'Vila completa': 'Fshati i plotë',
   'Voz e conversa': 'Zë dhe bisedë',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Çelësi ndodhet vetëm në pajisjet e atyre që janë në telefonatë.',
+  'A chave muda quando alguém entra ou sai.': 'Çelësi ndryshon kur dikush hyn ose del.',
+  'Conferir com quem está na chamada': 'Krahaso me ata që janë në telefonatë',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serveri e përcjell zërin dhe figurën pa mundur t’i dëgjojë apo t’i shohë.',
 } satisfies Record<string, string>;

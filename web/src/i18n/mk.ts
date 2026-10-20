@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Колку пати некој пеел караоке додека друштвото е во собата.',
   'Vila completa': 'Цело село',
   'Voz e conversa': 'Глас и разговор',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Клучот е само на уредите на луѓето во повикот.',
+  'A chave muda quando alguém entra ou sai.': 'Клучот се менува кога некој ќе влезе или излезе.',
+  'Conferir com quem está na chamada': 'Провери со луѓето во повикот',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Серверот ги препраќа гласот и сликата без да може да ги слушне или види.',
 } satisfies Record<string, string>;

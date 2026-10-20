@@ -2163,4 +2163,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Dala hira ema ida kanta karaoké ho grupu iha sala.',
   'Vila completa': 'Knua kompletu',
   'Voz e conversa': 'Lian no konversa',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Xave hela de\'it iha aparellu sira husi ema ne\'ebé iha xamada.',
+  'A chave muda quando alguém entra ou sai.': 'Xave muda bainhira ema ruma tama ka sai.',
+  'Conferir com quem está na chamada': 'Konfere ho ema ne\'ebé iha xamada',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Servidór haruka lian no imajen maibé labele rona ka haree.',
 } satisfies Record<string, string>;

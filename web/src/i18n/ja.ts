@@ -2142,4 +2142,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': '仲間がルームにいるときにカラオケで誰かが歌った回数。',
   'Vila completa': '村がいっぱい',
   'Voz e conversa': '声と会話',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': '鍵は通話にいる人の端末にだけあります。',
+  'A chave muda quando alguém entra ou sai.': '誰かが入ったり抜けたりすると、鍵が変わります。',
+  'Conferir com quem está na chamada': '通話にいる人と照らし合わせる',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'サーバーは声と映像を中継するだけで、聞くことも見ることもできません。',
 } satisfies Record<string, string>;

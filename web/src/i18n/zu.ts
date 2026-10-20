@@ -2232,4 +2232,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Izikhathi umuntu acule ngazo i-karaoke iqembu likhona egumbini.',
   'Vila completa': 'Isigodi esiphelele',
   'Voz e conversa': 'Izwi nengxoxo',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Ukhiye usemadivayisini alabo abasocingweni kuphela.',
+  'A chave muda quando alguém entra ou sai.': 'Ukhiye uyashintsha uma othile engena noma ephuma.',
+  'Conferir com quem está na chamada': 'Qinisekisa nalabo abasocingweni',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Iseva idlulisa izwi nesithombe ngaphandle kokukwazi ukuzwa noma ukubona.',
 } satisfies Record<string, string>;

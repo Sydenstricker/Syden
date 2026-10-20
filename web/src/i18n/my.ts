@@ -2200,4 +2200,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'အဖွဲ့ အခန်းထဲရှိနေစဉ် တစ်ယောက်ယောက် ကာရာအိုကေ သီဆိုခဲ့တဲ့ အကြိမ်ရေ။',
   'Vila completa': 'ပြည့်စုံတဲ့ ရွာ',
   'Voz e conversa': 'အသံနဲ့ စကားဝိုင်း',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'ကီးက ခေါ်ဆိုမှုထဲရှိသူတွေရဲ့ စက်တွေထဲမှာပဲ ရှိပါတယ်။',
+  'A chave muda quando alguém entra ou sai.': 'တစ်ယောက်ယောက် ဝင်လာရင် ဒါမှမဟုတ် ထွက်သွားရင် ကီး ပြောင်းပါတယ်။',
+  'Conferir com quem está na chamada': 'ခေါ်ဆိုမှုထဲရှိသူတွေနဲ့ တိုက်စစ်ရန်',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ဆာဗာက အသံနဲ့ ပုံရိပ်ကို ဆက်ပို့ပေးပေမယ့် ကြားလို့လည်း မရ၊ မြင်လို့လည်း မရပါဘူး။',
 } satisfies Record<string, string>;

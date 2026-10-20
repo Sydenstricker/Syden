@@ -33,6 +33,8 @@ const NOVOS = [
   'Palco aberto', 'Boas-vindas de verdade', 'Primeira partida', 'Primeira canção', 'A turma cresce', 'Aniversário da comunidade',
   'Encontro marcado', 'Conversa viva', 'Partidas deste jogo em grupo.', 'Pessoas na comunidade.', 'Criptografada de ponta a ponta',
   'Código de segurança', 'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.',
+  'A chave fica só nos aparelhos de quem está na chamada.', 'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.',
+  'A chave muda quando alguém entra ou sai.', 'Conferir com quem está na chamada',
 ];
 
 const falhas = [];
@@ -107,6 +109,11 @@ for (const idioma of IDIOMAS) {
   await cadeado.waitFor({ timeout: 30000 });
   await cadeado.click();
   await p.locator('.codigo-de-seguranca').waitFor();
+  // o que fazemos e os algoritmos à vista; o código dentro de "Conferir…", que se abre aqui para medir tudo
+  conferir((await p.locator('.codigo-de-seguranca li').count()) === 3, `${idioma}: as três frases do que fazemos`);
+  conferir((await p.locator('.codigo-algoritmos').textContent()).includes('AES-GCM'), `${idioma}: os algoritmos pelo nome`);
+  conferir(!(await p.locator('.codigo-de-seguranca details').evaluate((d) => d.open)), `${idioma}: o código começa recolhido`);
+  await p.locator('.codigo-de-seguranca summary').click();
   const textoCodigo = (await p.locator('.codigo-de-seguranca').textContent()) + ' ' + (await cadeado.textContent());
   const sobrandoC = NOVOS.filter((pt) => textoCodigo.includes(pt));
   conferir(sobrandoC.length === 0, `${idioma}: cadeado e código sem português${sobrandoC.length ? ' (sobrou: ' + sobrandoC.join(' | ') + ')' : ''}`);

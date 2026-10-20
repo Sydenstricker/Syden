@@ -2225,4 +2225,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kere wat iemand karaoke gesing het met die groep in die kamer.',
   'Vila completa': 'Volledige dorp',
   'Voz e conversa': 'Stem en gesels',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Die sleutel bly net op die toestelle van dié wat in die oproep is.',
+  'A chave muda quando alguém entra ou sai.': 'Die sleutel verander wanneer iemand inkom of uitgaan.',
+  'Conferir com quem está na chamada': 'Vergelyk met dié in die oproep',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Die bediener stuur die stem en beeld aan sonder om dit te kan hoor of sien.',
 } satisfies Record<string, string>;

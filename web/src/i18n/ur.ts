@@ -2148,4 +2148,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'جتنی بار کسی نے ٹولی کے کمرے میں ہوتے ہوئے کراوکے میں گایا۔',
   'Vila completa': 'پورا گاؤں',
   'Voz e conversa': 'آواز اور گفتگو',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'کی صرف کال میں موجود لوگوں کے آلات پر رہتی ہے۔',
+  'A chave muda quando alguém entra ou sai.': 'جب کوئی آتا یا جاتا ہے تو کی بدل جاتی ہے۔',
+  'Conferir com quem está na chamada': 'کال میں موجود لوگوں سے ملائیں',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'سرور آواز اور تصویر آگے بھیجتا ہے، مگر انہیں نہ سن سکتا ہے نہ دیکھ سکتا ہے۔',
 } satisfies Record<string, string>;

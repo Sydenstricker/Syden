@@ -2245,4 +2245,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Баг өрөөнд байхад хэн нэгэн караоке дуулсан удаа.',
   'Vila completa': 'Бүтэн тосгон',
   'Voz e conversa': 'Дуу хоолой ба яриа',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Түлхүүр зөвхөн дуудлагад байгаа хүмүүсийн төхөөрөмж дээр байна.',
+  'A chave muda quando alguém entra ou sai.': 'Хэн нэгэн нэгдэх эсвэл гарахад түлхүүр солигдоно.',
+  'Conferir com quem está na chamada': 'Дуудлагад байгаа хүмүүстэй тулгах',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Сервер дуу хоолой, дүрсийг дамжуулдаг ч сонсож, харж чаддаггүй.',
 } satisfies Record<string, string>;

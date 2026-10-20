@@ -2149,4 +2149,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': '친구들이 방에 있을 때 누군가 노래방에서 노래한 횟수.',
   'Vila completa': '마을이 가득',
   'Voz e conversa': '목소리와 대화',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': '키는 통화에 있는 사람들의 기기에만 있어요.',
+  'A chave muda quando alguém entra ou sai.': '누군가 들어오거나 나가면 키가 바뀌어요.',
+  'Conferir com quem está na chamada': '통화에 있는 사람들과 확인하기',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': '서버는 음성과 영상을 전달만 하고, 듣거나 볼 수 없어요.',
 } satisfies Record<string, string>;

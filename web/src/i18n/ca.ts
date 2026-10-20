@@ -2227,4 +2227,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Vegades que algú ha cantat al karaoke amb la colla a la sala.',
   'Vila completa': 'Poble complet',
   'Voz e conversa': 'Veu i conversa',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'La clau només és als dispositius de qui és a la trucada.',
+  'A chave muda quando alguém entra ou sai.': 'La clau canvia quan algú entra o surt.',
+  'Conferir com quem está na chamada': 'Comprovar-ho amb qui és a la trucada',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'El servidor reenvia la veu i la imatge sense poder-les sentir ni veure.',
 } satisfies Record<string, string>;

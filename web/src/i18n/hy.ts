@@ -2250,4 +2250,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Քանի անգամ է ինչ-որ մեկը կարաոկե երգել, երբ խումբը սենյակում էր։',
   'Vila completa': 'Ամբողջ գյուղը',
   'Voz e conversa': 'Ձայն և զրույց',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Բանալին միայն զանգի մասնակիցների սարքերում է։',
+  'A chave muda quando alguém entra ou sai.': 'Բանալին փոխվում է, երբ որևէ մեկը միանում է կամ դուրս գալիս։',
+  'Conferir com quem está na chamada': 'Ստուգել զանգի մասնակիցների հետ',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Սերվերը փոխանցում է ձայնը և պատկերը՝ առանց կարողանալու լսել կամ տեսնել դրանք։',
 } satisfies Record<string, string>;

@@ -2143,4 +2143,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'బృందం గదిలో ఉన్నప్పుడు ఎవరైనా కరోకేలో పాడిన సార్లు.',
   'Vila completa': 'పూర్తి గ్రామం',
   'Voz e conversa': 'గొంతు, సంభాషణ',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'కీ కాల్‌లో ఉన్నవారి పరికరాల్లో మాత్రమే ఉంటుంది.',
+  'A chave muda quando alguém entra ou sai.': 'ఎవరైనా చేరినప్పుడు లేదా వెళ్లినప్పుడు కీ మారుతుంది.',
+  'Conferir com quem está na chamada': 'కాల్‌లో ఉన్నవారితో సరిచూడండి',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'సర్వర్ వాయిస్‌నూ చిత్రాన్నీ పంపుతుంది, కానీ వినలేదు, చూడలేదు.',
 } satisfies Record<string, string>;

@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Koľkokrát niekto spieval karaoke, keď bola partia v miestnosti.',
   'Vila completa': 'Celá dedina',
   'Voz e conversa': 'Hlas a chat',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Kľúč je len v zariadeniach ľudí v hovore.',
+  'A chave muda quando alguém entra ou sai.': 'Kľúč sa mení, keď sa niekto pripojí alebo odíde.',
+  'Conferir com quem está na chamada': 'Overiť s ľuďmi v hovore',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Server odovzdáva hlas a obraz bez toho, aby ich mohol počuť alebo vidieť.',
 } satisfies Record<string, string>;

@@ -2233,4 +2233,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kartai, kai kas nors dainavo karaoke, kol kompanija buvo kambaryje.',
   'Vila completa': 'Visas kaimas',
   'Voz e conversa': 'Balsas ir pokalbis',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Raktas yra tik skambučio dalyvių įrenginiuose.',
+  'A chave muda quando alguém entra ou sai.': 'Raktas pasikeičia, kai kas nors prisijungia ar išeina.',
+  'Conferir com quem está na chamada': 'Patikrinti su skambučio dalyviais',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serveris perduoda balsą ir vaizdą, negalėdamas jų girdėti ar matyti.',
 } satisfies Record<string, string>;

@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kerrat, kun joku lauloi karaokea porukan ollessa huoneessa.',
   'Vila completa': 'Täysi kylä',
   'Voz e conversa': 'Ääni ja keskustelu',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Avain on vain puhelussa olevien laitteilla.',
+  'A chave muda quando alguém entra ou sai.': 'Avain vaihtuu, kun joku liittyy tai lähtee.',
+  'Conferir com quem está na chamada': 'Vertaa puhelussa olevien kanssa',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Palvelin välittää äänen ja kuvan pystymättä kuulemaan tai näkemään niitä.',
 } satisfies Record<string, string>;

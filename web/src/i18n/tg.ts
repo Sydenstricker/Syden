@@ -2232,4 +2232,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Шумораи дафъаҳое, ки касе ҳангоми дар утоқ будани гурӯҳ дар караоке суруд хондааст.',
   'Vila completa': 'Тамоми деҳа',
   'Voz e conversa': 'Овоз ва сӯҳбат',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Калид танҳо дар дастгоҳҳои онҳое аст, ки дар занг ҳастанд.',
+  'A chave muda quando alguém entra ou sai.': 'Калид вақте иваз мешавад, ки касе медарояд ё мебарояд.',
+  'Conferir com quem está na chamada': 'Санҷиш бо онҳое, ки дар занг ҳастанд',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Сервер овоз ва тасвирро интиқол медиҳад, вале онҳоро на шунида метавонад, на дида.',
 } satisfies Record<string, string>;

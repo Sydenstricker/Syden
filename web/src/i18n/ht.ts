@@ -2241,4 +2241,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Kantite fwa yon moun chante karaoke ak gwoup la nan sal la.',
   'Vila completa': 'Vilaj konplè',
   'Voz e conversa': 'Vwa ak konvèsasyon',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Kle a rete sèlman sou aparèy moun ki nan apèl la.',
+  'A chave muda quando alguém entra ou sai.': 'Kle a chanje lè yon moun antre oswa soti.',
+  'Conferir com quem está na chamada': 'Verifye ak moun ki nan apèl la',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sèvè a pase vwa a ak imaj la san li pa ka tande ni wè.',
 } satisfies Record<string, string>;

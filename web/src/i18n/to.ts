@@ -2167,4 +2167,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Ngaahi taimi naʻe hiva ai ha taha ʻi he kalaoke lolotonga ʻoku ʻi he loki ʻa e kulupu.',
   'Vila completa': 'Kolo kakato',
   'Voz e conversa': 'Leʻo mo e talanoa',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'ʻOku ʻi he ngaahi naunau pē ʻo kinautolu ʻoku ʻi he ui ʻa e kī.',
+  'A chave muda quando alguém entra ou sai.': 'ʻOku liliu ʻa e kī ʻi he taimi ʻoku hū mai pe mavahe ai ha taha.',
+  'Conferir com quem está na chamada': 'Fakapapauʻi mo kinautolu ʻoku ʻi he ui',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ʻOku fakaʻatu ʻe he sēvea ʻa e leʻo mo e ʻata taʻe lava ke ne fanongo pe sio ki ai.',
 } satisfies Record<string, string>;

@@ -2172,4 +2172,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Inshuro umuntu yaririmbye karaoke itsinda riri mu cyumba.',
   'Vila completa': 'Umudugudu wuzuye',
   'Voz e conversa': 'Ijwi n\'ikiganiro',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Urufunguzo ruba ku bikoresho by\'abari mu ihamagara gusa.',
+  'A chave muda quando alguém entra ou sai.': 'Urufunguzo ruhinduka iyo hari uwinjiye cyangwa usohotse.',
+  'Conferir com quem está na chamada': 'Genzura hamwe n\'abari mu ihamagara',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seriveri inyuza ijwi n\'ishusho idashobora kumva cyangwa kubona.',
 } satisfies Record<string, string>;

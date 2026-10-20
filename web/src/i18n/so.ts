@@ -2231,4 +2231,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Inta jeer ee qof karaoke ku heesay iyadoo kooxdu qolka joogto.',
   'Vila completa': 'Tuulo dhammaystiran',
   'Voz e conversa': 'Cod iyo sheeko',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Furaha wuxuu ku jiraa oo keliya qalabka dadka wicitaanka ku jira.',
+  'A chave muda quando alguém entra ou sai.': 'Furuhu wuu isbeddelaa marka qof soo galo ama ka baxo.',
+  'Conferir com quem está na chamada': 'La xaqiiji dadka wicitaanka ku jira',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seerfarku wuxuu gudbiyaa codka iyo sawirka isagoo aan maqli karin, arkina karin.',
 } satisfies Record<string, string>;

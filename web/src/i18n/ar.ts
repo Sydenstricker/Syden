@@ -2181,4 +2181,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'عدد مرات الغناء في الكاريوكي والمجموعة في الغرفة.',
   'Vila completa': 'قرية مكتملة',
   'Voz e conversa': 'صوت وحديث',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'يبقى المفتاح فقط على أجهزة الموجودين في المكالمة.',
+  'A chave muda quando alguém entra ou sai.': 'يتغيّر المفتاح عندما ينضم أحد أو يغادر.',
+  'Conferir com quem está na chamada': 'التحقق مع الموجودين في المكالمة',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'يمرّر الخادم الصوت والصورة دون أن يتمكّن من سماعهما أو رؤيتهما.',
 } satisfies Record<string, string>;

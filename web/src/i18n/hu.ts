@@ -2233,4 +2233,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Hányszor énekelt valaki karaokét, miközben a csapat a szobában volt.',
   'Vila completa': 'Teljes falu',
   'Voz e conversa': 'Hang és beszélgetés',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'A kulcs csak a hívásban lévők eszközein van meg.',
+  'A chave muda quando alguém entra ou sai.': 'A kulcs megváltozik, ha valaki belép vagy kilép.',
+  'Conferir com quem está na chamada': 'Egyeztetés a hívásban lévőkkel',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'A szerver továbbítja a hangot és a képet, de nem hallja és nem látja őket.',
 } satisfies Record<string, string>;

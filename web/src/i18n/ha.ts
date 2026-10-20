@@ -2163,4 +2163,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Sau nawa wani ya rera karaoke tare da abokai a ɗakin.',
   'Vila completa': 'Ƙauye cikakke',
   'Voz e conversa': 'Murya da hira',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Makullin yana kan na’urorin waɗanda ke cikin kiran ne kawai.',
+  'A chave muda quando alguém entra ou sai.': 'Makullin yana canjawa idan wani ya shiga ko ya fita.',
+  'Conferir com quem está na chamada': 'Tantance tare da waɗanda ke cikin kiran',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sabar tana isar da murya da hoto ba tare da ta iya ji ko gani ba.',
 } satisfies Record<string, string>;

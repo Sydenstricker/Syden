@@ -2249,4 +2249,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'რამდენჯერ იმღერა ვინმემ კარაოკე, როცა ჯგუფი ოთახში იყო.',
   'Vila completa': 'მთელი სოფელი',
   'Voz e conversa': 'ხმა და საუბარი',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'გასაღები მხოლოდ ზარის მონაწილეების მოწყობილობებზეა.',
+  'A chave muda quando alguém entra ou sai.': 'გასაღები იცვლება, როცა ვინმე შემოდის ან გადის.',
+  'Conferir com quem está na chamada': 'შეადარე ზარის მონაწილეებთან',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'სერვერი გადასცემს ხმას და გამოსახულებას, მაგრამ ვერც ისმენს და ვერც ხედავს მათ.',
 } satisfies Record<string, string>;

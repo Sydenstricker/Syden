@@ -2233,4 +2233,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Reizes, kad kāds dziedāja karaoke, kamēr kompānija bija istabā.',
   'Vila completa': 'Pilns ciems',
   'Voz e conversa': 'Balss un saruna',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Atslēga ir tikai zvana dalībnieku ierīcēs.',
+  'A chave muda quando alguém entra ou sai.': 'Atslēga mainās, kad kāds pievienojas vai aiziet.',
+  'Conferir com quem está na chamada': 'Salīdzināt ar zvana dalībniekiem',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serveris pārsūta balsi un attēlu, nespējot tos dzirdēt vai redzēt.',
 } satisfies Record<string, string>;

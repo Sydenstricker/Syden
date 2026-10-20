@@ -2201,4 +2201,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Yeroo namni tokko garee kutaa keessa jiru waliin karaookee weeddise.',
   'Vila completa': 'Ganda guutuu',
   'Voz e conversa': 'Sagalee fi haasaa',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Furtaan meeshaalee warra bilbila irra jiranii qofa irra jira.',
+  'A chave muda quando alguém entra ou sai.': 'Namni tokko yeroo seenu ykn ba’u furtaan ni jijjiirama.',
+  'Conferir com quem está na chamada': 'Warra bilbila irra jiran waliin mirkaneessi',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sarvarichi sagalee fi suuraa dabarsa, garuu dhaga’uu ykn arguu hin danda’u.',
 } satisfies Record<string, string>;

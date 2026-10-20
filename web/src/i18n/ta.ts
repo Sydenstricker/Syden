@@ -2146,4 +2146,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'குழு அறையில் இருக்கும்போது யாராவது கரோக்கேயில் பாடிய முறைகள்.',
   'Vila completa': 'முழு கிராமம்',
   'Voz e conversa': 'குரலும் உரையாடலும்',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'சாவி அழைப்பில் உள்ளவர்களின் சாதனங்களில் மட்டுமே இருக்கும்.',
+  'A chave muda quando alguém entra ou sai.': 'யாராவது சேரும்போதோ வெளியேறும்போதோ சாவி மாறும்.',
+  'Conferir com quem está na chamada': 'அழைப்பில் உள்ளவர்களுடன் சரிபார்க்கவும்',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'சேவையகம் குரலையும் படத்தையும் கடத்துகிறது, ஆனால் கேட்கவோ பார்க்கவோ முடியாது.',
 } satisfies Record<string, string>;

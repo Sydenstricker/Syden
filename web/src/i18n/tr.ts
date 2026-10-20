@@ -2155,4 +2155,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Grup odadayken birinin karaokede şarkı söylediği seferler.',
   'Vila completa': 'Tüm köy',
   'Voz e conversa': 'Ses ve sohbet',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Anahtar yalnızca aramadakilerin cihazlarında bulunur.',
+  'A chave muda quando alguém entra ou sai.': 'Biri katıldığında veya ayrıldığında anahtar değişir.',
+  'Conferir com quem está na chamada': 'Aramadakilerle karşılaştır',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sunucu sesi ve görüntüyü iletir ama duyamaz ve göremez.',
 } satisfies Record<string, string>;

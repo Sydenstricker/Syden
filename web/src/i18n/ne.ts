@@ -2233,4 +2233,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'टोली कोठामा हुँदा कसैले कराओकेमा गाएको पटक।',
   'Vila completa': 'पूरा गाउँ',
   'Voz e conversa': 'आवाज र कुराकानी',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'कुञ्जी कलमा भएकाहरूको उपकरणमा मात्र रहन्छ।',
+  'A chave muda quando alguém entra ou sai.': 'कोही आउँदा वा जाँदा कुञ्जी बदलिन्छ।',
+  'Conferir com quem está na chamada': 'कलमा भएकाहरूसँग मिलाउनुहोस्',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'सर्भरले आवाज र तस्बिर अगाडि पठाउँछ, तर सुन्न वा हेर्न सक्दैन।',
 } satisfies Record<string, string>;

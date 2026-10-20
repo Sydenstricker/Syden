@@ -2167,4 +2167,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'Φορές που κάποιος τραγούδησε καραόκε με την παρέα στο δωμάτιο.',
   'Vila completa': 'Ολόκληρο το χωριό',
   'Voz e conversa': 'Φωνή και κουβέντα',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Το κλειδί υπάρχει μόνο στις συσκευές όσων είναι στην κλήση.',
+  'A chave muda quando alguém entra ou sai.': 'Το κλειδί αλλάζει όταν κάποιος μπαίνει ή βγαίνει.',
+  'Conferir com quem está na chamada': 'Επιβεβαίωση με όσους είναι στην κλήση',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Ο διακομιστής προωθεί τη φωνή και την εικόνα χωρίς να μπορεί να ακούσει ή να δει.',
 } satisfies Record<string, string>;

@@ -22,6 +22,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
+import { ALGORITMOS_DA_CHAMADA } from './chaveDaChamada';
 import { api } from './api';
 import { DIAS_NA_LIXEIRA } from './lixeira';
 import { SeloDaComunidade } from './SeloDaComunidade';
@@ -310,12 +311,26 @@ export function Sidebar({
           </div>
         </div>
       )}
-      {/* Comparado de viva voz: se todos leem o mesmo, as chaves que cada um recebeu são as dos outros de verdade. */}
+      {/* O QUE FAZEMOS, e não só um número (pedido dele, 20/10/2026: "o que o usuário vai sentir seguro é o que fazemos
+          para ter a segurança"). Os nomes dos algoritmos, iguais em toda língua, para quem quer conferir. O código de
+          segurança fica um nível abaixo, como no WhatsApp: só ele pega um servidor se metendo no meio, mas só vale
+          comparado de viva voz, e por isso não precisa estar à vista de todo mundo o tempo todo. */}
       {connectedChannel && verCodigo && voice.codigoDeSeguranca && (
         <div className="codigo-de-seguranca">
-          <strong>{t('Código de segurança')}</strong>
-          <code>{voice.codigoDeSeguranca}</code>
-          <p>{t('Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.')}</p>
+          <ul>
+            <li>{t('A chave fica só nos aparelhos de quem está na chamada.')}</li>
+            <li>{t('O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.')}</li>
+            <li>{t('A chave muda quando alguém entra ou sai.')}</li>
+          </ul>
+          <p className="codigo-algoritmos" lang="en">
+            {ALGORITMOS_DA_CHAMADA}
+          </p>
+          <details>
+            <summary>{t('Conferir com quem está na chamada')}</summary>
+            <strong>{t('Código de segurança')}</strong>
+            <code>{voice.codigoDeSeguranca}</code>
+            <p>{t('Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.')}</p>
+          </details>
         </div>
       )}
       {voice.connecting && <div className="voice-panel voice-panel-status">{t('Conectando…')}</div>}

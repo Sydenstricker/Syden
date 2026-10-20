@@ -2167,4 +2167,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'An líon uaireanta a chan duine karaoke leis an ngrúpa sa seomra.',
   'Vila completa': 'Sráidbhaile iomlán',
   'Voz e conversa': 'Guth agus comhrá',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'Níl an eochair ach ar ghléasanna na ndaoine sa ghlao.',
+  'A chave muda quando alguém entra ou sai.': 'Athraíonn an eochair nuair a thagann duine isteach nó nuair a imíonn duine.',
+  'Conferir com quem está na chamada': 'Seiceáil leis na daoine sa ghlao',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seolann an freastalaí an guth agus an íomhá ar aghaidh gan iad a chloisteáil ná a fheiceáil.',
 } satisfies Record<string, string>;

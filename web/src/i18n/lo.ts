@@ -2232,4 +2232,9 @@ export default {
   'Vezes que alguém cantou no karaokê com a turma na sala.': 'ຈຳນວນເທື່ອທີ່ມີຄົນຮ້ອງຄາລາໂອເກະຕອນທີ່ກຸ່ມຢູ່ໃນຫ້ອງ.',
   'Vila completa': 'ໝູ່ບ້ານຄົບ',
   'Voz e conversa': 'ສຽງ ແລະ ການລົມກັນ',
+  // O que a chamada de ponta a ponta faz (20/10/2026)
+  'A chave fica só nos aparelhos de quem está na chamada.': 'ກະແຈຢູ່ໃນອຸປະກອນຂອງຄົນທີ່ຢູ່ໃນການໂທເທົ່ານັ້ນ',
+  'A chave muda quando alguém entra ou sai.': 'ກະແຈຈະປ່ຽນເມື່ອມີຄົນເຂົ້າ ຫຼື ອອກ',
+  'Conferir com quem está na chamada': 'ກວດສອບກັບຄົນທີ່ຢູ່ໃນການໂທ',
+  'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ເຊີບເວີສົ່ງຕໍ່ສຽງ ແລະ ພາບ ໂດຍບໍ່ສາມາດໄດ້ຍິນ ຫຼື ເຫັນ',
 } satisfies Record<string, string>;
