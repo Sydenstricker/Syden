@@ -85,6 +85,9 @@
       ],
       "addAutoLaunchExtension": false,
       "backgroundColor": "transparent",
+      "capabilities": [
+        "userAccountInformation"
+      ],
       "customManifestPath": "appxmanifest.xml"
     },
     "protocols": [

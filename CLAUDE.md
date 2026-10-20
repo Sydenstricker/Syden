@@ -881,11 +881,15 @@ trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem
   conclusivo nas comissões de Comunicação, de Infância/Família e de CCJ, e depois vai ao Senado. A ANPD (agora agência) deve
   regulamentar a verificação etária. O Windows: `GetUserAgeRangeAsync` (faixas <10, 10–12, 13–15, 16–17, 18+) e
   `GetAgeVerificationStatusAsync` saíram para os Insiders em 09/2026, ainda sem data de lançamento geral e com documentação
-  rala; o acesso exige registrar o app na plataforma de segurança digital da Microsoft, uma conta Microsoft na sessão do
-  Windows e a permissão de informações da conta. Quando devolver valores de verdade: chamar pelo módulo nativo
+  rala. **A página oficial (Microsoft Learn, "Age signals overview", 24/09/2026) pede só duas coisas:** a permissão
+  `userAccountInformation` no pacote e o "sim" de cada pessoa em Privacidade → Informações da conta, com uma conta Microsoft
+  na sessão do Windows. O "registrar o app na plataforma de segurança digital" vem só de reportagens, sem formulário nem
+  passo publicado (conferido em 20/10/2026): **não há cadastro a fazer até a Microsoft publicar um.** A permissão está
+  declarada desde 20/10/2026 (`appx.capabilities` em desktop/package.json, a partir do pacote 0.1.8), a pedido dele.
+  Quando devolver valores de verdade: chamar pelo módulo nativo
   (`desktop/native`), gravar `idade_fonte = 'windows'`, e o "verificado" sobrepõe a data declarada.
-- **Falta, e é dele ou de fora:** cadastrar o Syden na plataforma de segurança digital da Microsoft para usar a faixa de
-  idade do Windows (`GetUserAgeRangeAsync`) no app; o token do gov.br quando o governo oferecer (o compromisso está nos
+- **Falta, e é dele ou de fora:** a Microsoft ligar a idade do Windows para todos (e publicar o registro, se houver um);
+  o token do gov.br quando o governo oferecer (o compromisso está nos
   termos); o advogado; e o deploy (servidor e site juntos: com o servidor novo, TODA conta antiga é perguntada pela data
   de nascimento na próxima vez que abrir o Syden, inclusive a dele).
 
