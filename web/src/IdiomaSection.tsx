@@ -36,7 +36,7 @@ export function IdiomaSection() {
   const [trocando, setTrocando] = useState<string | null>(null);
   const atual = idiomaAtual();
   const prontos = IDIOMAS.filter((i) => i.codigo === PADRAO || TRADUCOES[i.codigo]);
-  const aCaminho = IDIOMAS.filter((i) => i.codigo !== PADRAO && !TRADUCOES[i.codigo]);
+  const aCaminho = IDIOMAS.filter((i) => i.codigo !== PADRAO && !TRADUCOES[i.codigo] && !i.semTraducao);
 
   async function escolher(codigo: string) {
     setTrocando(codigo);
@@ -76,30 +76,36 @@ export function IdiomaSection() {
           idioma troca a grade na hora, junto com o resto. */}
       <GradeDePaises idioma={atual} />
 
-      <h3>{t('Os outros idiomas')}</h3>
-      <p className="settings-hint">
-        {t(
-          'O Syden já sabe escrever em qualquer uma destas línguas — falta a tradução dos textos. Enquanto ela não chega, o que não estiver traduzido aparece em português, e as letras de cada alfabeto aparecem certas, sem quadradinhos.',
-        )}
-      </p>
-      <p className="settings-hint">
-        <Languages size={14} aria-hidden="true" />{' '}
-        {t('Hoje dá para atender {paises} países da ONU; a lista abaixo cobre praticamente todos os outros.', {
-          paises: paisesCobertos(),
-        })}
-      </p>
-      <div className="idiomas-futuros">
-        {aCaminho.map((idioma) => (
-          <span
-            key={idioma.codigo}
-            className="idioma-futuro"
-            lang={idioma.codigo}
-            title={nomeNaMinhaLingua(idioma.codigo, idioma.nativo, idioma.nome, atual) ?? undefined}
-          >
-            {idioma.nativo}
-          </span>
-        ))}
-      </div>
+      {/* Sem idioma a caminho, a seção some: anunciar como a caminho um idioma que não vem seria a tela
+          prometendo o que não é. */}
+      {aCaminho.length > 0 && (
+        <>
+          <h3>{t('Os outros idiomas')}</h3>
+          <p className="settings-hint">
+            {t(
+              'O Syden já sabe escrever em qualquer uma destas línguas — falta a tradução dos textos. Enquanto ela não chega, o que não estiver traduzido aparece em português, e as letras de cada alfabeto aparecem certas, sem quadradinhos.',
+            )}
+          </p>
+          <p className="settings-hint">
+            <Languages size={14} aria-hidden="true" />{' '}
+            {t('Hoje dá para atender {paises} países da ONU; a lista abaixo cobre praticamente todos os outros.', {
+              paises: paisesCobertos(),
+            })}
+          </p>
+          <div className="idiomas-futuros">
+            {aCaminho.map((idioma) => (
+              <span
+                key={idioma.codigo}
+                className="idioma-futuro"
+                lang={idioma.codigo}
+                title={nomeNaMinhaLingua(idioma.codigo, idioma.nativo, idioma.nome, atual) ?? undefined}
+              >
+                {idioma.nativo}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
     </>
   );
 }

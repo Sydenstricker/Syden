@@ -509,7 +509,9 @@ ficou combinado:
   página de teste** (conta numa API de teste; `visita.mjs` testa): o quarto novo entra no app quando substituir o atual
   (decisão dele: "quando eu lançar, ele vai substituir o quarto atual").
 - **As camas para desbloquear já têm 4 candidatas** (`avulsos/cama-casal-1..4.png`, madeiras e cabeceiras diferentes);
-  a 2 é a de fábrica. O que libera cama nova ainda é decisão dele.
+  a 2 é a de fábrica. **Decisão dele (20/10/2026): as quatro vêm LIBERADAS de uma vez**, sem conquista; pacote temático
+  (o de Halloween, da caixa de correio) é para o futuro. Falta a arte: só a 2 tem os giros (`cama-casal-giros`), e cama
+  que não gira quebraria o "todo móvel gira"; as outras três pedem os giros dela (~25 gerações cada) em novembro.
 - **As portas do guarda-roupa abrem animadas (15/10/2026):** os quadros do meio entre o fechado e o aberto
   (`animar-estado.mjs`, interpolation-v2, 40 gerações nas 4 vistas); fechar toca ao avesso.
 - **A janela se arrasta pelas duas paredes e troca de tipo (15/10/2026, pedido dele):** o quarto ficou SEM janela
@@ -561,6 +563,8 @@ ficou combinado:
   até isso), ~150 a 200 gerações; depois, os pedidos novos abaixo. Registrar no `custos.jsonl` também o custo das gerações avulsas (hoje só giros e estados ficam lá).
 - **DÍVIDA DE ARTE (pedidos dele, à espera de créditos do PixelLab):**
   - **Um ventilador ou um ar-condicionado** (16/10/2026).
+  - **A porta de entrada do salão** (aprovada em 20/10/2026): o membro novo chega por ela, e o coelho do balcão acena.
+  - **Os giros das camas 1, 3 e 4** (20/10/2026), para elas entrarem liberadas no quarto (~75 gerações).
   - **Um gatinho olhando a janela** (16/10/2026): deitado, dormindo; clicado, ele se espreguiça e senta. Precisa das
     poses (deitado dormindo, espreguiçando, sentado) e da passagem entre elas, como o coelho; é peça viva, não móvel.
   - **O coelho sentado no sofá do salão, por lugar** (16/10/2026, relato dele: "os coelhos continuam flutuando"): com o
@@ -690,8 +694,9 @@ tela não mente. Pendentes: todos pedem arte nova (PixelLab em novembro, ou o ca
   3D dos coelhos (um modelo, as animações por script).
 - **Forno a lenha na copa**: pizza sem forno não faz sentido (dele). A comida aparece com motivo — no aniversário de alguém,
   sai pizza do forno ou aparece bolo na ilha. A copa é hoje o único canto sem função.
-- Sugeridos e ainda sem a palavra dele: **troféus** (os níveis e o ranking que já existem) e **a porta de entrada** (o membro
-  novo chega por ela, e o coelho do balcão acena).
+- **O troféu já está no salão; o que falta são as CONQUISTAS** que ele mostra. A pesquisa (20/10/2026, pedido dele:
+  positivas, de equipe) e uma proposta de 19 estão em `docs/conquistas-coletivas.md`; quais entram é decisão dele.
+  **A porta de entrada foi aprovada** (20/10/2026) e está na dívida de arte do PixelLab (novembro).
 
 **MÓVEL É UMA COISA, OBJETO É OUTRA (decisão dele, 15/10/2026), nos dois ambientes:** o móvel vem LIMPO (o balcão sem
 garrafas, a mesinha sem canecas, o rack sem o videogame, a mesa do quarto sem enfeites), e o que vai em cima é peça à

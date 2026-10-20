@@ -77,6 +77,11 @@ export interface Idioma {
   rtl?: boolean;
   /** Em quantos países da ONU ele é idioma oficial — é o que dá a ordem desta lista. */
   paises: number;
+  /**
+   * Fora da fila de tradução, por decisão dele: continua na lista para quem diz no perfil que fala a
+   * língua, mas a tela de Idioma não o anuncia como "a caminho", porque ele não vem.
+   */
+  semTraducao?: true;
 }
 
 /**
@@ -167,11 +172,13 @@ export const IDIOMAS: Idioma[] = [
   // O FULA É UMA LÍNGUA SÓ COM MUITOS NOMES — pulaar no Senegal, pular na Guiné, fulfulde no Mali e
   // na Nigéria. São variedades da mesma, e o código ISO é um só: ff. Escreve-se em latino com os
   // MESMOS ganchos do hauçá (ɓ ɗ ŋ ƴ), então a fonte e o teste de escrita já estão prontos.
-  { codigo: 'ff', nativo: 'Pulaar', nome: 'Fula', escrita: 'latina', paises: 4 },
+  // FORA DA FILA DE TRADUÇÃO (decisão dele, 20/10/2026), o fula e o bambara: cada um pedia escolher variante e
+  // alfabeto (adlam, N'Ko), com confiança baixa, e os países deles já leem francês ou inglês no Syden.
+  { codigo: 'ff', nativo: 'Pulaar', nome: 'Fula', escrita: 'latina', paises: 4, semTraducao: true },
   // "MANDINGA" NÃO É UMA LÍNGUA, É UM GRUPO (bambara, malinquê, dioula, mandinga), e por isso não
   // tem código próprio. Quem entra é o BAMBARA, que é o de mais falantes e o que o Mali reconhece em
   // lei — traduzir "mandinga" seria escolher uma das quatro sem dizer qual.
-  { codigo: 'bm', nativo: 'Bamanankan', nome: 'Bambara', escrita: 'latina', paises: 1 },
+  { codigo: 'bm', nativo: 'Bamanankan', nome: 'Bambara', escrita: 'latina', paises: 1, semTraducao: true },
   { codigo: 'so', nativo: 'Soomaali', nome: 'Somali', escrita: 'latina', paises: 1 },
   { codigo: 'ha', nativo: 'Hausa', nome: 'Hauçá', escrita: 'latina', paises: 2 },
   { codigo: 'rw', nativo: 'Kinyarwanda', nome: 'Quiniaruanda', escrita: 'latina', paises: 1 },

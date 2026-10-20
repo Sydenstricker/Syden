@@ -43,9 +43,11 @@ escolhas.length >= 3 ? ok('a aba de Idioma está dentro do app, com os idiomas p
 await page.screenshot({ path: 'e2e/fotos/idioma-configuracoes.png' });
 
 const quantosFuturos = await page.locator('.idioma-futuro').count();
-quantosFuturos > 50
-  ? ok(`e mais ${quantosFuturos} idiomas já mapeados, escritos no próprio alfabeto`)
-  : falhou(`só ${quantosFuturos} idiomas mapeados`);
+// O fula e o bambara saíram da fila (decisão dele, 20/10/2026), e nenhum outro está a caminho: a lista
+// de "Os outros idiomas" não pode anunciar tradução que não vem.
+quantosFuturos === 0
+  ? ok('nenhum idioma anunciado como "a caminho" sem estar')
+  : falhou(`${quantosFuturos} idiomas anunciados como a caminho`);
 
 // ---------- 3. a troca vale NA HORA, sem recarregar ----------
 await page.locator('.idioma', { hasText: 'English' }).click();
