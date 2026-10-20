@@ -2177,4 +2177,9 @@ export default {
   'Editar pacote': 'Таҳрири баста',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Дархостҳо',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Аз аввал то охир рамзгузорӣ шудааст',
+  'Código de segurança': 'Рамзи амниятӣ',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Агар ҳама дар занг як рамзро бинанд, дар мобайни сӯҳбат касе нест.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ин браузер ба зангҳои рамзгузоришуда пайваст шуда наметавонад. Онро нав кунед ё барномаи Syden-ро истифода баред.',
 } satisfies Record<string, string>;

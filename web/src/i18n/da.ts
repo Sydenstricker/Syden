@@ -2170,4 +2170,9 @@ export default {
   'Editar pacote': 'Rediger pakke',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Anmodninger',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'End-to-end-krypteret',
+  'Código de segurança': 'Sikkerhedskode',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Hvis alle i opkaldet ser den samme kode, sidder ingen midt i samtalen.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Denne browser kan ikke deltage i krypterede opkald. Opdater den, eller brug Syden-appen.',
 } satisfies Record<string, string>;

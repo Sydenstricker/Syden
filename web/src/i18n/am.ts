@@ -2106,4 +2106,9 @@ export default {
   'Editar pacote': 'ጥቅሉን ያርትዑ',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'ጥያቄዎች',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'ከጫፍ እስከ ጫፍ የተመሰጠረ',
+  'Código de segurança': 'የደህንነት ኮድ',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'በጥሪው ያሉ ሁሉ አንድ አይነት ኮድ ካዩ፣ በውይይቱ መሀል ማንም የለም።',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'ይህ አሳሽ የተመሰጠሩ ጥሪዎችን መቀላቀል አይችልም። እባክዎ ያዘምኑት ወይም የSyden መተግበሪያን ይጠቀሙ።',
 } satisfies Record<string, string>;

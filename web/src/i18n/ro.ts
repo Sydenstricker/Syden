@@ -2106,4 +2106,9 @@ export default {
   'Editar pacote': 'Editează pachetul',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Cereri',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Criptat integral',
+  'Código de segurança': 'Cod de securitate',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Dacă toți cei din apel văd același cod, nimeni nu e la mijlocul conversației.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Acest browser nu poate intra în apeluri criptate. Actualizează-l sau folosește aplicația Syden.',
 } satisfies Record<string, string>;

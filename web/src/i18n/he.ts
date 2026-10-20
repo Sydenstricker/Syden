@@ -2156,4 +2156,9 @@ export default {
   'Editar pacote': 'עריכת החבילה',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'בקשות',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'מוצפנת מקצה לקצה',
+  'Código de segurança': 'קוד אבטחה',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'אם כולם בשיחה רואים את אותו הקוד, אף אחד לא נמצא באמצע השיחה.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'הדפדפן הזה לא יכול להצטרף לשיחות מוצפנות. יש לעדכן אותו או להשתמש באפליקציה של Syden.',
 } satisfies Record<string, string>;

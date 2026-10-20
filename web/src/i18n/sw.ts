@@ -2105,4 +2105,9 @@ export default {
   'Editar pacote': 'Hariri kifurushi',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Maombi',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Imesimbwa kutoka mwanzo hadi mwisho',
+  'Código de segurança': 'Msimbo wa usalama',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Ikiwa kila mtu kwenye simu anaona msimbo uleule, hakuna mtu katikati ya mazungumzo.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Kivinjari hiki hakiwezi kujiunga na simu zilizosimbwa. Kisasishe au tumia programu ya Syden.',
 } satisfies Record<string, string>;

@@ -1753,7 +1753,10 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         // isto mudaria coisas que não têm nada a ver com falar.
         canPublishData: true,
       });
-      return { url: config.livekit.url, token: await token.toJwt(), channelId: channel.id };
+      // e2ee: a chamada é de ponta a ponta (web/src/chaveDaChamada.ts). Vem do servidor, e não só do site, para os dois
+      // lados de uma sala concordarem: com um servidor antigo, sem o campo, ninguém liga a cifra e ninguém fica surdo.
+      // CHAMADAS_E2EE=nao no .env desliga, para uma emergência (um navegador que não decifre, por exemplo).
+      return { url: config.livekit.url, token: await token.toJwt(), channelId: channel.id, e2ee: process.env.CHAMADAS_E2EE !== 'nao' };
     });
   });
 }

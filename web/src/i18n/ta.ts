@@ -2091,4 +2091,9 @@ export default {
   'Editar pacote': 'தொகுப்பைத் திருத்து',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'கோரிக்கைகள்',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'முனையிலிருந்து முனை வரை மறையாக்கப்பட்டது',
+  'Código de segurança': 'பாதுகாப்புக் குறியீடு',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'அழைப்பில் உள்ள அனைவரும் ஒரே குறியீட்டைப் பார்த்தால், உரையாடலின் நடுவில் யாரும் இல்லை.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'இந்த உலாவியால் மறையாக்கப்பட்ட அழைப்புகளில் சேர முடியாது. அதைப் புதுப்பி அல்லது Syden செயலியைப் பயன்படுத்து.',
 } satisfies Record<string, string>;

@@ -2103,4 +2103,9 @@ export default {
   'Editar pacote': 'Edit paket',
   // A aba de pedidos de amizade (17/10/2026)
   Pedidos: 'Permintaan',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Terenkripsi end-to-end',
+  'Código de segurança': 'Kode keamanan',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Kalau semua orang di panggilan melihat kode yang sama, tidak ada yang berada di tengah percakapan.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Peramban ini tidak bisa masuk ke panggilan terenkripsi. Perbarui peramban ini atau pakai aplikasi Syden.',
 } satisfies Record<string, string>;

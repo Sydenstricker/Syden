@@ -2186,4 +2186,9 @@ export default {
   'Editar pacote': 'Modifye pakè a',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Demann',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Chifre de bout an bout',
+  'Código de segurança': 'Kòd sekirite',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Si tout moun nan apèl la wè menm kòd la, pa gen pèsonn nan mitan konvèsasyon an.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Navigatè sa a pa ka antre nan apèl ki chifre. Mete l ajou oswa sèvi ak app Syden an.',
 } satisfies Record<string, string>;

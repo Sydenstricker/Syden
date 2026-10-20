@@ -2156,4 +2156,9 @@ export default {
   'Editar pacote': 'Редагувати набір',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Запити',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Наскрізне шифрування',
+  'Código de segurança': 'Код безпеки',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Якщо всі в дзвінку бачать той самий код, посеред розмови нікого немає.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Цей браузер не може приєднатися до зашифрованих дзвінків. Онови його або скористайся застосунком Syden.',
 } satisfies Record<string, string>;

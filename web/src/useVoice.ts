@@ -13,7 +13,10 @@ import {
   type TrackPublication,
   VideoPreset,
   VideoPresets,
+  isE2EESupported,
 } from 'livekit-client';
+import { ChamadaCifrada, ChavesDaChamada } from './chaveDaChamada';
+import { t } from './i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { avisarChamada } from './VersaoNova';
 import type { Socket } from 'socket.io-client';
@@ -255,9 +258,16 @@ export type Voice = ReturnType<typeof useVoice>;
  * e espelha o estado local (mudo, câmera, tela) no servidor para a barra lateral de todos.
  */
 export function useVoice(socket: Socket | null) {
+  // A chamada de ponta a ponta (chaveDaChamada.ts): o provedor de chaves é da sala inteira do LiveKit, e só existe
+  // onde o navegador sabe cifrar quadro a quadro. Ligar ou não, em cada entrada, é o servidor que diz (o "e2ee" do
+  // voice-token), para os dois lados de uma sala concordarem.
+  const [chaves] = useState(() => (isE2EESupported() ? new ChavesDaChamada() : null));
+  const chamadaRef = useRef<ChamadaCifrada | null>(null);
+  const [codigoDeSeguranca, setCodigoDeSeguranca] = useState<string | null>(null);
   const [room] = useState(() => {
     const settings = getSettings();
     return new Room({
+      encryption: chaves ? { keyProvider: chaves, worker: new Worker(new URL('livekit-client/e2ee-worker', import.meta.url), { type: 'module' }) } : undefined,
       // Só baixa a resolução que o elemento de vídeo realmente mostra, contando pixel de CSS (o padrão do
       // LiveKit até a escala 2).
       //
@@ -381,6 +391,9 @@ export function useVoice(socket: Socket | null) {
       if (participant === lp) sync();
     };
     const onDisconnected = () => {
+      chamadaRef.current?.encerrar(); // as chaves desta chamada morrem com ela
+      chamadaRef.current = null;
+      setCodigoDeSeguranca(null);
       stopAllSounds(); // som de soundboard é da sala: não acompanha quem saiu
       if (channelRef.current !== null) socketRef.current?.emit('voice:leave');
       channelRef.current = null;
@@ -451,6 +464,29 @@ export function useVoice(socket: Socket | null) {
         .off(RoomEvent.LocalTrackPublished, onPublished);
     };
   }, [room]);
+
+  // As mensagens da chamada de ponta a ponta: o que chega pelo socket, quem sai, e a reapresentação. Ao entrar, cada
+  // um se apresenta a quem já está; quem chegou junto (entrou no LiveKit antes de o servidor saber) pode ficar sem
+  // resposta, e por isso, a cada 3 s, quem ainda não trocou chave com alguém da sala se apresenta de novo.
+  useEffect(() => {
+    if (!socket) return;
+    const aoReceber = (m: { de?: number; dados?: string }) => {
+      if (typeof m?.de === 'number' && typeof m.dados === 'string') void chamadaRef.current?.receber(String(m.de), m.dados);
+    };
+    const aoSair = (p: RemoteParticipant) => void chamadaRef.current?.saiu(p.identity);
+    const reapresentar = setInterval(() => {
+      const chamada = chamadaRef.current;
+      if (!chamada || room.state !== ConnectionState.Connected) return;
+      chamada.apresentarA([...room.remoteParticipants.keys()].filter((id) => !chamada.conhece(id)));
+    }, 3000);
+    socket.on('e2ee:chave', aoReceber);
+    room.on(RoomEvent.ParticipantDisconnected, aoSair);
+    return () => {
+      clearInterval(reapresentar);
+      socket.off('e2ee:chave', aoReceber);
+      room.off(RoomEvent.ParticipantDisconnected, aoSair);
+    };
+  }, [socket, room]);
 
   // Soundboard: o ícone do som aparece por alguns segundos no quadro de quem tocou.
   const [recentSounds, setRecentSounds] = useState<Map<string, { icon: string; key: number }>>(new Map());
@@ -813,11 +849,19 @@ export function useVoice(socket: Socket | null) {
         if (room.state !== ConnectionState.Disconnected) await room.disconnect();
         // A SALA PODE SER OUTRA: a que cria salas devolve a senha da sala temporária da pessoa, e é nela
         // que se entra (ver server/src/salas-temporarias.ts).
-        const { url, token, channelId: destino } = await api<{ url: string; token: string; channelId?: number }>(`/api/channels/${id}/voice-token`, {
-          method: 'POST',
-        });
+        const { url, token, channelId: destino, e2ee } = await api<{ url: string; token: string; channelId?: number; e2ee?: boolean }>(
+          `/api/channels/${id}/voice-token`,
+          { method: 'POST' },
+        );
         const sala = destino ?? id;
         pedindoSenha = false;
+        // Sala de ponta a ponta num navegador que não sabe cifrar: entrar seria ouvir só ruído e mandar ruído.
+        if (e2ee && !chaves) {
+          setError(t('Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.'));
+          setConnecting(false);
+          return null;
+        }
+        if (room.isE2EEEnabled !== !!e2ee) await room.setE2EEEnabled(!!e2ee);
         // autoSubscribe: false — quem decide o que baixar é o Syden, logo abaixo (aplicarInscricoes).
         // Antes o servidor empurrava TODAS as faixas de todos ao entrar, transmissões de tela incluídas:
         // numa sala com quatro telas ligadas o computador decodificava quatro vídeos que ninguém pediu.
@@ -828,6 +872,19 @@ export function useVoice(socket: Socket | null) {
         socketRef.current.emit('voice:join', { channelId: sala }, (r?: { communityId?: number }) => {
           if (typeof r?.communityId === 'number') comunidadeRef.current = r.communityId;
         });
+        if (e2ee && chaves) {
+          // As chaves desta chamada, antes de o microfone abrir: o primeiro quadro já sai cifrado.
+          const atualizarCodigo = () => void chamadaRef.current?.codigo().then(setCodigoDeSeguranca);
+          chamadaRef.current = await ChamadaCifrada.iniciar(
+            chaves,
+            room.localParticipant.identity,
+            String(sala),
+            (para, dados) => socketRef.current?.emit('e2ee:chave', { para: Number(para), dados }),
+            atualizarCodigo,
+          );
+          atualizarCodigo();
+          chamadaRef.current.apresentarA([...room.remoteParticipants.keys()]);
+        }
         sounds.selfJoin();
       } catch (e) {
         console.error(e);
@@ -1708,5 +1765,7 @@ export function useVoice(socket: Socket | null) {
     comandarKaraoke,
     voiceEffect,
     setVoiceEffect,
+    /** O código de segurança da chamada de ponta a ponta; null fora dela (ou numa sala sem cifra). */
+    codigoDeSeguranca,
   };
 }

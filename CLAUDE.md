@@ -914,6 +914,14 @@ anunciar como ponta a ponta seria enganoso. Ficaram três degraus, e ele escolhe
    não poderia ser anunciada assim): cada aparelho combina a chave com os outros, o servidor só repassa embrulhada, a
    chave troca quando alguém sai, e um código de verificação na chamada mostra que ninguém está no meio. Convive com o
    ECA Digital porque o servidor já não olha as transmissões: a imagem da denúncia sai do aparelho de quem denuncia.
+   **Feito em 20/10/2026** (`web/src/chaveDaChamada.ts`): par ECDH por aparelho e por chamada, chave de mídia própria
+   embrulhada (HKDF + AES-GCM) para cada um, repassada pelo socket (`e2ee:chave`, só entre duas pessoas da mesma sala);
+   a cifra dos quadros é a do LiveKit (`encryption`, que cifra também o canal de dados). O servidor LIGA pelo voice-token
+   (`e2ee: true`; `CHAMADAS_E2EE=nao` desliga numa emergência), para os dois lados de uma sala concordarem; navegador sem
+   cifra por quadro não entra, com o aviso. O código de segurança fica no cadeado de "Voz conectada". Testes:
+   `chaveDaChamada.test.ts` (inclusive o servidor trocando as chaves no meio) e `e2e/chamada-cifrada.mjs` (o LiveKit
+   vê as faixas cifradas, e o som chega). Não troca a chave quando alguém ENTRA (só quando sai). O protocolo é nosso
+   sobre peças padrão: mudou, vale pedir revisão de fora.
 3. **Mensagens privadas de ponta a ponta: FORA** ("polêmico", nas palavras dele). Com menores no Syden, bate de frente
    com o dever de detectar e remover do ECA Digital, quebraria o Shield nas imagens privadas e deixaria a caixa-preta
    guardando só cifra.

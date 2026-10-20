@@ -2093,4 +2093,9 @@ export default {
   'Editar pacote': 'پیکیج میں ترمیم',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'درخواستیں',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'اینڈ ٹو اینڈ انکرپٹڈ',
+  'Código de segurança': 'سیکیورٹی کوڈ',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'اگر کال میں سب کو ایک ہی کوڈ نظر آئے تو بات چیت کے بیچ میں کوئی نہیں ہے۔',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'یہ براؤزر انکرپٹڈ کالز میں شامل نہیں ہو سکتا۔ اسے اپ ڈیٹ کریں یا Syden کی ایپ استعمال کریں۔',
 } satisfies Record<string, string>;

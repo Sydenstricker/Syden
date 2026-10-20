@@ -2146,4 +2146,9 @@ export default {
   'Editar pacote': 'Kuusaa gulaali',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Gaaffiiwwan',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Jalqaba hanga dhumaatti iccitiin eegame',
+  'Código de segurança': 'Koodii nageenyaa',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Namoonni bilbila irra jiran hundi koodii tokkicha yoo argan, haasaa gidduu namni tokkollee hin jiru.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Brawuzariin kun bilbila iccitiin eegame keessa seenuu hin danda’u. Haaromsi ykn appii Syden fayyadami.',
 } satisfies Record<string, string>;

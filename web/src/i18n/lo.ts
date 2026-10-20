@@ -2177,4 +2177,9 @@ export default {
   'Editar pacote': 'ແກ້ໄຂຊຸດ',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'ຄຳຂໍ',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'ເຂົ້າລະຫັດຕົ້ນທາງເຖິງປາຍທາງ',
+  'Código de segurança': 'ລະຫັດຄວາມປອດໄພ',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'ຖ້າທຸກຄົນໃນການໂທເຫັນລະຫັດດຽວກັນ ກໍບໍ່ມີໃຜຢູ່ກາງການສົນທະນາ.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'ບຣາວເຊີນີ້ເຂົ້າຮ່ວມການໂທທີ່ເຂົ້າລະຫັດບໍ່ໄດ້. ອັບເດດມັນ ຫຼື ໃຊ້ແອັບ Syden.',
 } satisfies Record<string, string>;

@@ -2076,4 +2076,9 @@ export default {
   'Editar pacote': 'Sửa gói',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Lời mời',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Mã hóa đầu cuối',
+  'Código de segurança': 'Mã bảo mật',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Nếu mọi người trong cuộc gọi đều thấy cùng một mã, không ai đứng giữa cuộc trò chuyện.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Trình duyệt này không thể tham gia cuộc gọi được mã hóa. Hãy cập nhật trình duyệt hoặc dùng ứng dụng Syden.',
 } satisfies Record<string, string>;

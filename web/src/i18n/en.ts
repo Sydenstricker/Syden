@@ -2101,4 +2101,9 @@ export default {
   'Editar pacote': 'Edit pack',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Requests',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'End-to-end encrypted',
+  'Código de segurança': 'Security code',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'If everyone on the call sees the same code, nobody is in the middle of the conversation.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'This browser can’t join encrypted calls. Update it or use the Syden app.',
 } satisfies Record<string, string>;

@@ -2178,4 +2178,9 @@ export default {
   'Editar pacote': 'Toplumy üýtget',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Haýyşlar',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Başdan-aýak şifrlenen',
+  'Código de segurança': 'Howpsuzlyk kody',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Jaňdaky hemmeler şol bir kody görýän bolsa, gürrüňiň ortasynda hiç kim ýok.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Bu brauzer şifrlenen jaňlara goşulyp bilmeýär. Ony täzele ýa-da Syden programmasyny ulan.',
 } satisfies Record<string, string>;

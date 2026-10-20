@@ -2121,4 +2121,9 @@ export default {
   'Editar pacote': 'Ṣàtúnṣe ìdì',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Àwọn ìbéèrè',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Ti a fi pa mọ́ láti ìbẹ̀rẹ̀ dé òpin',
+  'Código de segurança': 'Kóòdù ààbò',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Bí gbogbo ènìyàn nínú ìpè bá rí kóòdù kan náà, kò sí ẹnikẹ́ni ní àárín ìjíròrò náà.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Awáròyìn yìí kò lè darapọ̀ mọ́ àwọn ìpè tí a fi pa mọ́. Ẹ ṣe àtúnṣe rẹ̀ tàbí kí ẹ lo áàpù Syden.',
 } satisfies Record<string, string>;

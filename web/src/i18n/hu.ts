@@ -2178,4 +2178,9 @@ export default {
   'Editar pacote': 'Csomag szerkesztése',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Kérések',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Végpontok között titkosítva',
+  'Código de segurança': 'Biztonsági kód',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Ha a hívásban mindenki ugyanazt a kódot látja, senki sincs a beszélgetés közepén.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ez a böngésző nem tud titkosított hívásokhoz csatlakozni. Frissítsd, vagy használd a Syden alkalmazást.',
 } satisfies Record<string, string>;

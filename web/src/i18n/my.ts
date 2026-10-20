@@ -2145,4 +2145,9 @@ export default {
   'Editar pacote': 'အထုပ် ပြင်ရန်',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'တောင်းဆိုချက်များ',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'အစမှအဆုံး ကုဒ်ဝှက်ထားသည်',
+  'Código de segurança': 'လုံခြုံရေးကုဒ်',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'ခေါ်ဆိုမှုထဲက လူတိုင်း ကုဒ်တူတူ မြင်ရရင် စကားပြောနေတာရဲ့ အလယ်မှာ ဘယ်သူမှ မရှိပါဘူး။',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'ဒီဘရောက်ဇာနဲ့ ကုဒ်ဝှက်ထားတဲ့ ခေါ်ဆိုမှုတွေထဲ ဝင်လို့မရပါဘူး။ ဘရောက်ဇာကို အပ်ဒိတ်လုပ်ပါ ဒါမှမဟုတ် Syden အက်ပ်ကို သုံးပါ။',
 } satisfies Record<string, string>;

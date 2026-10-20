@@ -2140,4 +2140,9 @@ export default {
   'Editar pacote': 'Paketi redaktə et',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Sorğular',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Başdan-başa şifrələnib',
+  'Código de segurança': 'Təhlükəsizlik kodu',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Zəngdə hamı eyni kodu görürsə, söhbətin ortasında heç kim yoxdur.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Bu brauzer şifrələnmiş zənglərə qoşula bilmir. Onu yenilə və ya Syden tətbiqindən istifadə et.',
 } satisfies Record<string, string>;

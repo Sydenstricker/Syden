@@ -2176,4 +2176,9 @@ export default {
   'Editar pacote': 'Upraviť balíček',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Žiadosti',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Šifrované od konca po koniec',
+  'Código de segurança': 'Bezpečnostný kód',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Ak všetci v hovore vidia rovnaký kód, nikto nie je uprostred rozhovoru.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Tento prehliadač sa nedokáže pripojiť k šifrovaným hovorom. Aktualizuj ho alebo použi aplikáciu Syden.',
 } satisfies Record<string, string>;

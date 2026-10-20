@@ -2186,4 +2186,9 @@ export default {
   'Editar pacote': 'ޕެކު އެޑިޓްކުރޭ',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'ރިކުއެސްޓްތައް',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'އެންޑް-ޓު-އެންޑް އެންކްރިޕްޓްކޮށްފައި',
+  'Código de segurança': 'ސެކިއުރިޓީ ކޯޑު',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'ކޯލުގައި ތިބި އެންމެން ދެކެނީ އެއް ކޯޑެއް ނަމަ، ވާހަކައިގެ މެދުގައި އެއްވެސް މީހަކު ނެތް.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'މި ބްރައުޒަރަށް އެންކްރިޕްޓްކޮށްފައިވާ ކޯލްތަކަށް ވަނުމެއް ނުކުރެވޭ. އެ އަޕްޑޭޓް ކުރޭ، ނުވަތަ Syden ގެ އެޕް ބޭނުން ކުރޭ.',
 } satisfies Record<string, string>;

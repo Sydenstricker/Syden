@@ -2176,4 +2176,9 @@ export default {
   'Editar pacote': 'Muokkaa pakettia',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Pyynnöt',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Päästä päähän salattu',
+  'Código de segurança': 'Turvakoodi',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Jos kaikki puhelussa näkevät saman koodin, kukaan ei ole keskustelun välissä.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Tämä selain ei pääse salattuihin puheluihin. Päivitä se tai käytä Syden-sovellusta.',
 } satisfies Record<string, string>;

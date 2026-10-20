@@ -2112,4 +2112,9 @@ export default {
   'Editar pacote': 'Επεξεργασία πακέτου',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Αιτήματα',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Κρυπτογραφημένη από άκρο σε άκρο',
+  'Código de segurança': 'Κωδικός ασφαλείας',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Αν όλοι στην κλήση βλέπουν τον ίδιο κωδικό, κανείς δεν είναι στη μέση της συζήτησης.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Αυτός ο περιηγητής δεν μπορεί να μπει σε κρυπτογραφημένες κλήσεις. Ενημέρωσέ τον ή χρησιμοποίησε την εφαρμογή του Syden.',
 } satisfies Record<string, string>;

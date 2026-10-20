@@ -2112,4 +2112,9 @@ export default {
   'Editar pacote': 'Liliu ʻa e pake',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Ngaahi kole',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Fakapulipuliʻi mei he kamataʻanga ki he ngataʻanga',
+  'Código de segurança': 'Kouti malu',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Kapau ʻoku sio kotoa ʻa e kakai ʻi he ui ki he kouti tatau, ʻoku ʻikai ha taha ʻi he lotolotonga ʻo e talanoa.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'ʻOku ʻikai lava ʻe he palausa ko ʻeni ʻo kau ki he ngaahi ui fakapulipuliʻi. Fakafoʻou ia pe ngāueʻaki ʻa e polokalama ʻa Syden.',
 } satisfies Record<string, string>;

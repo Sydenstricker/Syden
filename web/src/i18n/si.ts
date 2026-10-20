@@ -2176,4 +2176,9 @@ export default {
   'Editar pacote': 'පැකේජය සංස්කරණය',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'ඉල්ලීම්',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'අග සිට අගට සංකේතනය කර ඇත',
+  'Código de segurança': 'ආරක්ෂක කේතය',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'ඇමතුමේ සිටින සියලු දෙනාම එකම කේතය දකිනවා නම්, සංවාදය මැද කිසිවෙක් නැත.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'මෙම බ්‍රවුසරයට සංකේතනය කළ ඇමතුම්වලට එක් විය නොහැක. එය යාවත්කාලීන කරන්න, නැතහොත් Syden යෙදුම භාවිත කරන්න.',
 } satisfies Record<string, string>;

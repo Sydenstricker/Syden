@@ -2190,4 +2190,9 @@ export default {
   'Editar pacote': 'Багц засах',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Хүсэлтүүд',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Төгсгөлөөс төгсгөл хүртэл шифрлэгдсэн',
+  'Código de segurança': 'Аюулгүй байдлын код',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Дуудлагад байгаа бүгд ижил код харж байвал ярианы дунд хэн ч байхгүй.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Энэ хөтөч шифрлэгдсэн дуудлагад нэгдэж чадахгүй. Хөтчөө шинэчил эсвэл Syden аппыг ашигла.',
 } satisfies Record<string, string>;

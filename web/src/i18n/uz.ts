@@ -2184,4 +2184,9 @@ export default {
   'Editar pacote': 'Toʻplamni tahrirlash',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Soʻrovlar',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Boshidan oxirigacha shifrlangan',
+  'Código de segurança': 'Xavfsizlik kodi',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Agar qoʻngʻiroqdagi hamma bir xil kodni koʻrsa, suhbatning oʻrtasida hech kim yoʻq.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Bu brauzer shifrlangan qoʻngʻiroqlarga qoʻshila olmaydi. Uni yangilang yoki Syden ilovasidan foydalaning.',
 } satisfies Record<string, string>;

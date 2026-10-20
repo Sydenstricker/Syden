@@ -1172,6 +1172,46 @@ textarea {
   color: var(--text-muted);
 }
 
+/* O cadeado da chamada de ponta a ponta, ao lado de "Voz conectada": abre o código de segurança. */
+.chamada-cifrada {
+  display: inline-flex;
+  vertical-align: -1px;
+  margin-inline-start: 6px;
+  padding: 2px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--green);
+  cursor: pointer;
+}
+.chamada-cifrada:hover,
+.chamada-cifrada[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.codigo-de-seguranca {
+  padding: 8px;
+  background: var(--bg-darkest);
+  border-bottom: 1px solid rgba(78, 80, 88, 0.48);
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+.codigo-de-seguranca strong {
+  display: block;
+  color: var(--text-strong);
+}
+.codigo-de-seguranca code {
+  display: block;
+  margin: 4px 0;
+  font-size: calc(15px * var(--escala-do-texto));
+  letter-spacing: 0.06em;
+  color: var(--green);
+  direction: ltr;
+}
+.codigo-de-seguranca p {
+  margin: 0;
+}
+
 .user-panel {
   display: flex;
   align-items: center;

@@ -2195,4 +2195,9 @@ export default {
   'Editar pacote': 'Խմբագրել փաթեթը',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Հայտեր',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Ծայրից ծայր գաղտնագրված',
+  'Código de segurança': 'Անվտանգության կոդ',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Եթե զանգի բոլոր մասնակիցները նույն կոդն են տեսնում, զրույցի մեջտեղում ոչ ոք չկա։',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Այս դիտարկիչը չի կարող միանալ գաղտնագրված զանգերին։ Թարմացրու այն կամ օգտագործիր Syden-ի հավելվածը։',
 } satisfies Record<string, string>;

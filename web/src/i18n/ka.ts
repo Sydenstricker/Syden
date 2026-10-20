@@ -2194,4 +2194,9 @@ export default {
   'Editar pacote': 'პაკეტის რედაქტირება',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'მოთხოვნები',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'ბოლომდე დაშიფრული',
+  'Código de segurança': 'უსაფრთხოების კოდი',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'თუ ზარში ყველა ერთსა და იმავე კოდს ხედავს, საუბრის შუაში არავინ არის.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'ამ ბრაუზერს დაშიფრულ ზარებში შესვლა არ შეუძლია. განაახლე ის ან გამოიყენე Syden-ის აპი.',
 } satisfies Record<string, string>;

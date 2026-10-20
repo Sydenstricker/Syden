@@ -2103,4 +2103,9 @@ export default {
   'Editar pacote': 'প্যাক সম্পাদনা করো',
   // A aba de pedidos de amizade (17/10/2026)
   Pedidos: 'অনুরোধ',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'এন্ড-টু-এন্ড এনক্রিপ্টেড',
+  'Código de segurança': 'নিরাপত্তা কোড',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'কলে থাকা সবাই যদি একই কোড দেখে, তাহলে কথোপকথনের মাঝখানে কেউ নেই।',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'এই ব্রাউজার এনক্রিপ্টেড কলে যোগ দিতে পারে না। এটি আপডেট করো অথবা Syden অ্যাপ ব্যবহার করো।',
 } satisfies Record<string, string>;

@@ -2108,4 +2108,9 @@ export default {
   'Editar pacote': 'Gyara fakiti',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Buƙatu',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'An ɓoye shi daga farko zuwa ƙarshe',
+  'Código de segurança': 'Lambar tsaro',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Idan kowa a cikin kiran yana ganin lamba ɗaya, babu wanda ke tsakiyar tattaunawar.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Wannan burauzar ba za ta iya shiga kiran da aka ɓoye ba. Ku sabunta ta ko ku yi amfani da manhajar Syden.',
 } satisfies Record<string, string>;

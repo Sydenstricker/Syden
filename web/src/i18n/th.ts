@@ -2119,4 +2119,9 @@ export default {
   'Editar pacote': 'แก้ไขแพ็ก',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'คำขอ',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'เข้ารหัสตั้งแต่ต้นทางถึงปลายทาง',
+  'Código de segurança': 'รหัสความปลอดภัย',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'ถ้าทุกคนในสายเห็นรหัสเดียวกัน ก็ไม่มีใครอยู่ตรงกลางบทสนทนา',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'เบราว์เซอร์นี้เข้าร่วมการโทรที่เข้ารหัสไม่ได้ อัปเดตเบราว์เซอร์หรือใช้แอป Syden',
 } satisfies Record<string, string>;

@@ -2130,4 +2130,9 @@ export default {
   'Editar pacote': 'Paket bearbeiten',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Anfragen',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Ende-zu-Ende-verschlüsselt',
+  'Código de segurança': 'Sicherheitscode',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Wenn alle im Anruf denselben Code sehen, sitzt niemand mitten im Gespräch.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Dieser Browser kann verschlüsselten Anrufen nicht beitreten. Aktualisiere ihn oder nutze die Syden-App.',
 } satisfies Record<string, string>;

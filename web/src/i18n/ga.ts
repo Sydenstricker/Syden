@@ -2112,4 +2112,9 @@ export default {
   'Editar pacote': 'Cuir an pacáiste in eagar',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Iarratais',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Criptithe ó cheann ceann',
+  'Código de segurança': 'Cód slándála',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Má fheiceann gach duine sa ghlao an cód céanna, níl aon duine i lár an chomhrá.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ní féidir leis an mbrabhsálaí seo dul isteach i nglaonna criptithe. Nuashonraigh é nó úsáid aip Syden.',
 } satisfies Record<string, string>;

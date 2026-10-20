@@ -5,6 +5,7 @@ import {
   Gamepad2,
   Hash,
   Headphones,
+  Lock,
   HeadphoneOff,
   Mic,
   MicOff,
@@ -117,6 +118,8 @@ export function Sidebar({
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
   const connectedChannel = channels.find((c) => c.id === voice.channelId);
   const [deleting, setDeleting] = useState<Channel | null>(null);
+  // O código de segurança da chamada de ponta a ponta, aberto pelo cadeado: só quando a pessoa pede.
+  const [verCodigo, setVerCodigo] = useState(false);
   const statusMenu = useStatusMenu();
   const t = useT();
   const menu = usePersonMenu();
@@ -288,7 +291,20 @@ export function Sidebar({
       {connectedChannel && (
         <div className="voice-panel">
           <div>
-            <div className="voice-panel-status">{t('Voz conectada')}</div>
+            <div className="voice-panel-status">
+              {t('Voz conectada')}
+              {voice.codigoDeSeguranca && (
+                <button
+                  className="chamada-cifrada"
+                  title={t('Criptografada de ponta a ponta')}
+                  aria-label={t('Criptografada de ponta a ponta')}
+                  aria-expanded={verCodigo}
+                  onClick={() => setVerCodigo((v) => !v)}
+                >
+                  <Lock size={12} />
+                </button>
+              )}
+            </div>
             <div className="voice-panel-channel">{connectedChannel.name}</div>
           </div>
           <div className="icon-row">
@@ -297,6 +313,14 @@ export function Sidebar({
               <PhoneOff size={18} />
             </IconButton>
           </div>
+        </div>
+      )}
+      {/* Comparado de viva voz: se todos leem o mesmo, as chaves que cada um recebeu são as dos outros de verdade. */}
+      {connectedChannel && verCodigo && voice.codigoDeSeguranca && (
+        <div className="codigo-de-seguranca">
+          <strong>{t('Código de segurança')}</strong>
+          <code>{voice.codigoDeSeguranca}</code>
+          <p>{t('Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.')}</p>
         </div>
       )}
       {voice.connecting && <div className="voice-panel voice-panel-status">{t('Conectando…')}</div>}

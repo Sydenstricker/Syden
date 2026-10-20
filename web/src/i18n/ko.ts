@@ -2094,4 +2094,9 @@ export default {
   'Editar pacote': '팩 편집',
   // A aba de pedidos de amizade (17/10/2026)
   Pedidos: '요청',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': '종단 간 암호화됨',
+  'Código de segurança': '보안 코드',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': '통화에 있는 모두가 같은 코드를 보고 있다면, 대화 중간에 끼어든 사람은 없어요.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': '이 브라우저로는 암호화된 통화에 들어갈 수 없어요. 브라우저를 업데이트하거나 Syden 앱을 써 주세요.',
 } satisfies Record<string, string>;

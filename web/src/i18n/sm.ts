@@ -2110,4 +2110,9 @@ export default {
   'Editar pacote': 'Teuteu le afifi',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Talosaga',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Faʻailoga faalilolilo mai le amataga i le iʻuga',
+  'Código de segurança': 'Kota o le saogalemu',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Afai e vaʻaia e tagata uma i le valaʻau le kota e tasi, e leai se tasi o loʻo i le ogatotonu o le talanoaga.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'E le mafai e lenei polokalame suʻe ona auai i valaʻau faalilolilo. Faʻafou pe faʻaaogā le app a Syden.',
 } satisfies Record<string, string>;

@@ -2168,4 +2168,9 @@ export default {
   'Editar pacote': 'Ndrysho paketën',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Kërkesat',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'E enkriptuar nga skaji në skaj',
+  'Código de segurança': 'Kodi i sigurisë',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Nëse të gjithë në telefonatë shohin të njëjtin kod, askush nuk është në mes të bisedës.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ky shfletues nuk mund të hyjë në telefonata të enkriptuara. Përditësoje ose përdor aplikacionin Syden.',
 } satisfies Record<string, string>;

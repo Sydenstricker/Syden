@@ -2177,4 +2177,9 @@ export default {
   'Editar pacote': 'Breyta pakka',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Beiðnir',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Dulkóðað enda á milli',
+  'Código de segurança': 'Öryggiskóði',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Ef allir í símtalinu sjá sama kóðann er enginn mitt í samtalinu.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Þessi vafri getur ekki tekið þátt í dulkóðuðum símtölum. Uppfærðu hann eða notaðu Syden-forritið.',
 } satisfies Record<string, string>;

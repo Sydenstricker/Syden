@@ -2178,4 +2178,9 @@ export default {
   'Editar pacote': 'Rediģēt pakotni',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Pieprasījumi',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Pilnībā šifrēts',
+  'Código de segurança': 'Drošības kods',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Ja visi zvanā redz vienu un to pašu kodu, neviens nav sarunas vidū.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Šī pārlūkprogramma nevar pievienoties šifrētiem zvaniem. Atjaunini to vai izmanto Syden lietotni.',
 } satisfies Record<string, string>;

@@ -2122,4 +2122,9 @@ export default {
   'Editar pacote': 'Editja l-pakkett',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Talbiet',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Ikkriptat minn tarf għal tarf',
+  'Código de segurança': 'Kodiċi tas-sigurtà',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Jekk kulħadd fis-sejħa jara l-istess kodiċi, ħadd mhu fin-nofs tal-konversazzjoni.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Dan il-browser ma jistax jidħol f’sejħiet ikkriptati. Aġġornah jew uża l-app ta’ Syden.',
 } satisfies Record<string, string>;

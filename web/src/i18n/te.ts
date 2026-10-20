@@ -2088,4 +2088,9 @@ export default {
   'Editar pacote': 'ప్యాక్ సవరించు',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'అభ్యర్థనలు',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'ఎండ్-టు-ఎండ్ ఎన్‌క్రిప్ట్ చేయబడింది',
+  'Código de segurança': 'భద్రతా కోడ్',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'కాల్‌లో ఉన్న అందరికీ ఒకే కోడ్ కనిపిస్తే, సంభాషణ మధ్యలో ఎవరూ లేరు.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'ఈ బ్రౌజర్ ఎన్‌క్రిప్ట్ చేసిన కాల్స్‌లో చేరలేదు. దాన్ని అప్‌డేట్ చేయండి లేదా Syden యాప్‌ను ఉపయోగించండి.',
 } satisfies Record<string, string>;

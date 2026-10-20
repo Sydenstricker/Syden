@@ -2178,4 +2178,9 @@ export default {
   'Editar pacote': 'Uredi paket',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Prošnje',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Šifrirano od konca do konca',
+  'Código de segurança': 'Varnostna koda',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Če vsi v klicu vidijo isto kodo, nihče ni sredi pogovora.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ta brskalnik se ne more pridružiti šifriranim klicem. Posodobi ga ali uporabi aplikacijo Syden.',
 } satisfies Record<string, string>;

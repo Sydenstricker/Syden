@@ -2114,4 +2114,9 @@ export default {
   'Editar pacote': 'Dezie ngwugwu',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Arịrịọ',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Ezoro ezo site na njedebe ruo na njedebe',
+  'Código de segurança': 'Koodu nchekwa',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Ọ bụrụ na onye ọ bụla nọ n’oku ahụ hụrụ otu koodu ahụ, ọ dịghị onye nọ n’etiti mkparịta ụka ahụ.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ihe nchọgharị a enweghị ike ịbanye n’oku ezoro ezo. Melite ya ma ọ bụ jiri ngwa Syden.',
 } satisfies Record<string, string>;

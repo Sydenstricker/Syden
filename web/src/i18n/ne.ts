@@ -2178,4 +2178,9 @@ export default {
   'Editar pacote': 'प्याक सम्पादन',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'अनुरोधहरू',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'एन्ड-टु-एन्ड इन्क्रिप्टेड',
+  'Código de segurança': 'सुरक्षा कोड',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'कलमा भएका सबैले एउटै कोड देखे भने, कुराकानीको बीचमा कोही छैन।',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'यो ब्राउजर इन्क्रिप्टेड कलमा सामेल हुन सक्दैन। यसलाई अपडेट गर्नुहोस् वा Syden एप प्रयोग गर्नुहोस्।',
 } satisfies Record<string, string>;

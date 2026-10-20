@@ -2178,4 +2178,9 @@ export default {
   'Editar pacote': 'Redaguoti paketą',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Prašymai',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Užšifruota ištisai',
+  'Código de segurança': 'Saugos kodas',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Jei visi skambutyje mato tą patį kodą, niekas nėra pokalbio viduryje.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Ši naršyklė negali prisijungti prie užšifruotų skambučių. Atnaujink ją arba naudok Syden programą.',
 } satisfies Record<string, string>;

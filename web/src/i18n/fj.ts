@@ -2105,4 +2105,9 @@ export default {
   'Editar pacote': 'Veisautaka na ikoro',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Kerekere',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Vunitaki mai na itekiteki ki na ivakataotioti',
+  'Código de segurança': 'Kode ni taqomaki',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Kevaka era raica kece ena veiqiri na kode vata ga, e sega ni dua e tu ena kedrau maliwa.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'E sega ni rawa ni curu na browser oqo ena veiqiri vunitaki. Vakavoui ka se vakayagataka na app ni Syden.',
 } satisfies Record<string, string>;

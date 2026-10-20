@@ -2172,4 +2172,9 @@ export default {
   'Editar pacote': 'Edita el paquet',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Sol·licituds',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Xifrada d’extrem a extrem',
+  'Código de segurança': 'Codi de seguretat',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Si tothom a la trucada veu el mateix codi, ningú no s’ha ficat enmig de la conversa.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Aquest navegador no pot entrar a les trucades xifrades. Actualitza’l o fes servir l’app del Syden.',
 } satisfies Record<string, string>;

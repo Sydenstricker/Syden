@@ -2117,4 +2117,9 @@ export default {
   'Editar pacote': 'Hindura paki',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Ubusabe',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Byabitswe mu ibanga kuva ku ntangiriro kugeza ku iherezo',
+  'Código de segurança': 'Kode y\'umutekano',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Niba buri wese uri mu ihamagara abona kode imwe, nta muntu uri hagati mu kiganiro.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Iyi mushakisha ntishobora kwinjira mu mahamagara abitswe mu ibanga. Yivugurure cyangwa ukoreshe porogaramu ya Syden.',
 } satisfies Record<string, string>;

@@ -489,6 +489,18 @@ export function setupRealtime(io: IOServer) {
       broadcastVoice(io, member.communityId);
     });
 
+    // A CHAMADA DE PONTA A PONTA (web/src/chaveDaChamada.ts): o servidor só REPASSA, entre duas pessoas da mesma
+    // sala, as chaves que os aparelhos combinam entre si. O conteúdo vai embrulhado e ele não o abre — nem
+    // precisaria: é justamente o que o deixa de fora da chamada. Confere só quem manda, para quem, e o tamanho.
+    socket.on('e2ee:chave', (payload: { para?: unknown; dados?: unknown }) => {
+      const eu = voiceMembers.get(user.id);
+      if (!eu || eu.socketId !== socket.id) return;
+      const outro = voiceMembers.get(Number(payload?.para));
+      if (!outro || outro.userId === user.id || outro.channelId !== eu.channelId) return;
+      if (typeof payload?.dados !== 'string' || payload.dados.length > 2048) return;
+      io.to(outro.socketId).emit('e2ee:chave', { de: user.id, dados: payload.dados });
+    });
+
     const leaveVoice = () => {
       // Só remove se a sessão de voz pertence a esta aba (o usuário pode ter entrado por outra).
       const member = voiceMembers.get(user.id);

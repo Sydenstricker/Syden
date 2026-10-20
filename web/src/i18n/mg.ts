@@ -2176,4 +2176,9 @@ export default {
   'Editar pacote': 'Ovay ny fonosana',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Fangatahana',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Voaaro hatramin’ny voalohany ka hatramin’ny farany',
+  'Código de segurança': 'Kaody fiarovana',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Raha mahita kaody mitovy daholo izay ao amin’ny antso, dia tsy misy olona eo afovoan’ny resaka.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Tsy afaka miditra amin’ny antso voaaro ity mpitety ity. Havaozy izy na ampiasao ny fampiharana Syden.',
 } satisfies Record<string, string>;

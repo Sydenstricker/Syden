@@ -2176,4 +2176,9 @@ export default {
   'Editar pacote': 'Wax ka beddel xirmada',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'Codsiyada',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'Si sir ah loo xiray bilow ilaa dhammaad',
+  'Código de segurança': 'Koodhka amniga',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'Haddii qof kasta oo wicitaanka ku jira uu arko isla koodh, cidna ma joogto bartamaha wada-hadalka.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'Biraawsarkani kuma biiri karo wicitaanno sir ah. Cusboonaysii ama isticmaal app-ka Syden.',
 } satisfies Record<string, string>;

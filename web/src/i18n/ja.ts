@@ -2087,4 +2087,9 @@ export default {
   'Editar pacote': 'パックを編集',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'リクエスト',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'エンドツーエンドで暗号化',
+  'Código de segurança': 'セキュリティコード',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': '通話にいる全員に同じコードが見えていれば、会話の間に入り込んでいる人はいません。',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'このブラウザでは暗号化された通話に参加できません。ブラウザを更新するか、Syden のアプリを使ってください。',
 } satisfies Record<string, string>;

@@ -2094,4 +2094,9 @@ export default {
   'Editar pacote': 'ویرایش بسته',
   // A aba de pedidos de amizade (17/10/2026)
   'Pedidos': 'درخواست‌ها',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': 'رمزگذاری‌شده سرتاسری',
+  'Código de segurança': 'کد امنیتی',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': 'اگر همه در تماس همان کد را ببینند، کسی وسط گفتگو نیست.',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': 'این مرورگر نمی‌تواند وارد تماس‌های رمزگذاری‌شده شود. آن را به‌روز کنید یا از برنامهٔ Syden استفاده کنید.',
 } satisfies Record<string, string>;

@@ -2093,4 +2093,9 @@ export default {
   'Editar pacote': '编辑包',
   // A aba de pedidos de amizade (17/10/2026)
   Pedidos: '申请',
+  // A chamada de ponta a ponta (20/10/2026)
+  'Criptografada de ponta a ponta': '端到端加密',
+  'Código de segurança': '安全码',
+  'Se todos na chamada virem o mesmo código, ninguém está no meio da conversa.': '如果通话中的每个人看到的安全码都一样，就没有人插在对话中间。',
+  'Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.': '此浏览器无法加入加密通话。请更新浏览器或使用 Syden 应用。',
 } satisfies Record<string, string>;
