@@ -917,6 +917,7 @@ anunciar como ponta a ponta seria enganoso. Ficaram três degraus, e ele escolhe
    API com `COFRE=sim` não sobe sem a marca `.cofre` (senão criaria um banco vazio ao lado do verdadeiro). O Syden
    continua lendo tudo (mostrar, buscar, moderar, responder à justiça): a política diz "guardado com criptografia",
    nunca "nem nós lemos", e só DEPOIS de o cofre estar aberto no servidor.
+   **NO AR desde 20/10/2026** (ele rodou o `cofre-criar.sh`; a política ganhou a linha no mesmo dia).
 2. **Chamadas e transmissões de ponta a ponta DE VERDADE** (escolha dele, contra a chave entregue pelo servidor, que
    não poderia ser anunciada assim): cada aparelho combina a chave com os outros, o servidor só repassa embrulhada, a
    chave troca quando alguém sai, e um código de verificação na chamada mostra que ninguém está no meio. Convive com o
