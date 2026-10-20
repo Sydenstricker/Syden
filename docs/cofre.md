@@ -20,6 +20,11 @@ levaria as duas coisas.
 DIFERENTES — por exemplo, a primeira no gerenciador de senhas e a segunda impressa, num lugar seguro. **Perder as duas
 é perder o Syden inteiro:** não existe "esqueci a senha" num disco cifrado, nem a Hetzner consegue abrir.
 
+## Criar a senha de recuperação depois
+
+Se ela não foi criada no `cofre-criar.sh`: `sudo cryptsetup luksAddKey /var/lib/syden/cofre.img`. A PRIMEIRA pergunta
+(`Enter any existing passphrase`) é a senha do cofre que já existe; as duas seguintes, a nova de recuperação.
+
 ## Criar o cofre (uma vez)
 
 1. **Antes:** faça um snapshot do servidor no painel da Hetzner (Servidor → Snapshots). É a volta se algo der errado.

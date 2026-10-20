@@ -69,9 +69,18 @@ rsync -aHAX "$ORIGEM/" "$DADOS/"
 touch "$DADOS/.cofre"
 chown --reference="$ORIGEM" "$DADOS" "$DADOS/.cofre"
 
+# A SENHA DE RECUPERAÇÃO. O cryptsetup pergunta PRIMEIRO pela senha que já existe ("Enter any existing passphrase") e só
+# depois pela nova — e em 20/10/2026, na primeira vez que isto rodou de verdade, a de recuperação foi digitada na
+# primeira pergunta, o script parou aqui e deixou o Syden fora do ar. Por isso o aviso diz qual é qual, e errar a
+# senha não derruba mais nada: dá para tentar de novo, ou pular e criar a de recuperação depois (docs/cofre.md).
 echo
-echo "== SENHA DE RECUPERAÇÃO (uma segunda senha, que também abre o cofre). Guarde num lugar DIFERENTE da primeira. =="
-cryptsetup luksAddKey "$ARQUIVO"
+echo "== SENHA DE RECUPERAÇÃO: uma segunda senha que também abre o cofre. Guarde num lugar DIFERENTE da primeira. =="
+echo "   1ª pergunta (Enter any existing passphrase): a senha do COFRE, a que você acabou de criar."
+echo "   2ª e 3ª (Enter new passphrase / Verify): a NOVA senha de recuperação."
+until cryptsetup luksAddKey "$ARQUIVO"; do
+  read -r -p "Não deu. Tentar de novo? (n pula; crie depois com: sudo cryptsetup luksAddKey $ARQUIVO) [S/n] " de_novo
+  [ "$de_novo" = "n" ] && break
+done
 
 printf '\n# O cofre (deploy/cofre-criar.sh, %s): os dados moram no disco cifrado.\nDADOS=%s\nCOFRE=sim\n' "$(date +%F)" "$DADOS" >> .env
 docker compose up -d --wait api
