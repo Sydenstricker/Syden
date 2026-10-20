@@ -45,6 +45,10 @@ decisão dele.**
 6. **Repertório:** jogos diferentes jogados em grupo — 3, 6, todos.
 7. **Vila completa:** Lobisomem com 6, 8, 10 jogadores.
 8. **Todo mundo joga:** pessoas diferentes que já jogaram uma partida — 5, 15, 30.
+8b. **A turma do jogo** (pergunta dele, 20/10/2026: "não existe maestria em mini jogo específico?"): uma por jogo —
+    "A turma do Stop", "A vila do Lobisomem", "Os enxadristas" — com partidas EM GRUPO daquele jogo: 10, 50, 200. É a
+    maestria da turma, não de uma pessoa; a individual (quem resolveu mais problemas de xadrez, por exemplo) é selo da
+    pessoa, não enfeite do salão, e entra no placar de bons exemplos daquele jogo.
 
 **Karaokê** (`karaoke_cantadas`, que já só conta com a turma na sala)
 9. **Palco aberto:** vezes que se cantou — 10, 50, 200.
