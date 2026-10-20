@@ -201,6 +201,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           idiomas: db.idiomasDe(eu.id),
           // Quantas vezes cantou no karaokê, por comunidade (é o que o ranking de lá mostra).
           karaoke: db.cantadasDe(eu.id),
+          // a faixa de idade que o Windows verificou, se o app a mandou (ver protecao.ts, faixaDaConta)
+          idadeDoWindows: db.protecaoDe(eu.id)?.faixaWindows ?? null,
           // o tempo transmitindo com 2 ou mais assistindo, por comunidade e dia (a "Sessão de cinema" das conquistas)
           transmissaoAssistida: db.cinemaDe(eu.id),
         },

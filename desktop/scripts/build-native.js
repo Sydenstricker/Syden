@@ -8,6 +8,9 @@ const path = require('node:path');
 const electronVersion = require('electron/package.json').version;
 const nativeDir = path.join(__dirname, '..', 'native');
 
+// As declarações da idade pelo Windows (gerar-winrt.js) antes: o node-gyp rebuild apaga build/, e elas moram em gerado/.
+require('./gerar-winrt.js');
+
 console.log(`Compilando o módulo de som para o Electron ${electronVersion}…`);
 execFileSync(
   process.execPath,

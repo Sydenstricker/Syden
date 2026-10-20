@@ -23,7 +23,7 @@ const CHANNELS = 2;
 const CHUNK_MS = 10;
 const CHUNK_FRAMES = (SAMPLE_RATE * CHUNK_MS) / 1000;
 
-/** @type {{ start(onChunk: (pcm: Float32Array | null, erro?: string) => void, options: { sampleRate: number, channels: number, excludePid?: number, includePid?: number }): void, stop(): void, windowProcess?: (hwnd: number) => { pid: number, exe: string } | null } | null} */
+/** @type {{ start(onChunk: (pcm: Float32Array | null, erro?: string) => void, options: { sampleRate: number, channels: number, excludePid?: number, includePid?: number }): void, stop(): void, windowProcess?: (hwnd: number) => { pid: number, exe: string } | null, faixaDeIdade?: () => Promise<any> } | null} */
 let native = null;
 try {
   const path = require('node:path');
@@ -226,10 +226,25 @@ function start(/** @type {Electron.WebContents} */ webContents, querPorta = fals
   }
 }
 
+/**
+ * A FAIXA DE IDADE QUE O WINDOWS INFORMA (native/src/idade.cpp; ver "Adolescentes no Syden" no CLAUDE.md). Mora no
+ * mesmo módulo nativo do som, por isso aqui. Sem o módulo, ou com um módulo de antes, responde "sem-api".
+ * @returns {Promise<{ motivo: string, verificacao: string, faixa: { menor: number, maior: number | null } | null }>}
+ */
+async function faixaDeIdade() {
+  if (!native?.faixaDeIdade) return { motivo: 'sem-api', verificacao: 'nao-se-aplica', faixa: null };
+  try {
+    return await native.faixaDeIdade();
+  } catch {
+    return { motivo: 'erro', verificacao: 'nao-se-aplica', faixa: null };
+  }
+}
+
 function setupScreenAudio() {
   ipcMain.handle('screen-audio:start', (event, opcoes) => start(event.sender, Boolean(opcoes?.porta)));
   ipcMain.on('screen-audio:stop', () => stop());
   ipcMain.handle('screen-audio:available', () => available());
+  ipcMain.handle('idade:faixa', () => faixaDeIdade());
 }
 
 module.exports = {

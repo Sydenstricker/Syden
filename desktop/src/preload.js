@@ -91,6 +91,11 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
   /** Pinta a barra de título (que é do Windows, não do site) com as cores do tema escolhido. */
   setTitleBarTheme: (cores) => ipcRenderer.send('app:title-bar', cores),
   /**
+   * A faixa de idade que o Windows informa (13-15, 16-17, 18+…) e se a Microsoft a VERIFICOU. Nunca a data. O site a
+   * manda ao Syden só quando verificada (ver web/src/idadeDoWindows.ts).
+   */
+  faixaDeIdade: () => ipcRenderer.invoke('idade:faixa'),
+  /**
    * Som da transmissão sem a própria chamada dentro (só no Windows, com o módulo nativo instalado).
    * start() responde { ok, source }; onChunk entrega pedaços de som (Float32, dois canais, 48 kHz).
    */

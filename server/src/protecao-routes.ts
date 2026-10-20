@@ -6,7 +6,7 @@ import { randomInt } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
-import { barreiraDe, dataValida, DIAS_PARA_LIGAR_RESPONSAVEL, ehMenor, faixaDe, hojeEmBrasilia, podeMudarRegras, regrasDe } from './protecao.js';
+import { barreiraDe, dataValida, DIAS_PARA_LIGAR_RESPONSAVEL, ehMenor, faixaDaConta, faixaDe, faixaDoWindows, hojeEmBrasilia, podeMudarRegras, regrasDe } from './protecao.js';
 import { aplicarBarreira, emitToUser } from './realtime.js';
 import { requireUser } from './routes.js';
 
@@ -84,7 +84,7 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/me/protecao', async (request) => {
       const eu = request.user.id;
-      const faixa = faixaDe(db.protecaoDe(eu)?.nascimento);
+      const faixa = faixaDaConta(db.protecaoDe(eu));
       const regras = regrasDe(eu);
       const sup = regras ? db.supervisaoDe(eu) : undefined;
       const codigoValido = sup?.codigo && sup.codigoEm && Date.now() - Date.parse(sup.codigoEm) < CODIGO_VALE_MS;
@@ -136,6 +136,23 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       return { faixa: faixaDe(nascimento), barreira: barreiraDe(eu) };
     });
 
+    /**
+     * A IDADE PELO WINDOWS (20/10/2026): o app manda a faixa que o Windows informa, e o servidor guarda SÓ a verificada
+     * (pela Microsoft). A não verificada não diz nada que a data informada já não diga, e guardá-la seria dado sem uso
+     * (art. 13 do ECA Digital: dado de verificação só serve para verificar). Abaixo de 13, verificado, a conta é
+     * suspensa como na data declarada.
+     */
+    authed.post<{ Body: { menor?: unknown; maior?: unknown; verificacao?: unknown } }>('/api/me/idade-do-windows', async (request, reply) => {
+      const eu = request.user.id;
+      if (request.body?.verificacao !== 'verificada') return { guardada: false, barreira: barreiraDe(eu) };
+      const faixa = faixaDoWindows(request.body?.menor, request.body?.maior ?? null);
+      if (!faixa) return reply.code(400).send({ error: 'Faixa de idade inválida.' });
+      const antes = db.protecaoDe(eu)?.faixaWindows ?? null;
+      db.guardarFaixaDoWindows(eu, faixa);
+      if (faixa === 'crianca' && antes !== 'crianca') db.suspenderPorIdade(eu, 'O Syden é para quem tem 13 anos ou mais.');
+      return { guardada: true, faixa, barreira: barreiraDe(eu) };
+    });
+
     /** O RECURSO (art. 30; art. 24 para a idade): quem foi banido ou suspenso explica, e quem cuida do Syden lê. */
     authed.post<{ Body: { texto?: string } }>('/api/me/recurso', async (request, reply) => {
       const barreira = barreiraDe(request.user.id);
@@ -154,7 +171,7 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
     /** O código que o menor manda ao responsável (vale 7 dias; pedir de novo troca). */
     authed.post('/api/me/responsavel/codigo', async (request, reply) => {
       const eu = request.user.id;
-      if (!ehMenor(faixaDe(db.protecaoDe(eu)?.nascimento))) {
+      if (!ehMenor(faixaDaConta(db.protecaoDe(eu)))) {
         return reply.code(409).send({ error: 'Só contas de menores de idade se ligam a um responsável.' });
       }
       if (db.supervisaoDe(eu).responsavelId) return reply.code(409).send({ error: 'A sua conta já está ligada a um responsável.' });
@@ -182,7 +199,7 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
      */
     authed.post<{ Body: { codigo?: string; declaro?: boolean } }>('/api/responsavel/ligar', async (request, reply) => {
       const eu = request.user.id;
-      if (faixaDe(db.protecaoDe(eu)?.nascimento) !== 'adulto') {
+      if (faixaDaConta(db.protecaoDe(eu)) !== 'adulto') {
         return reply.code(403).send({ error: 'Só um adulto pode ser o responsável por outra conta.' });
       }
       if (request.body?.declaro !== true) {

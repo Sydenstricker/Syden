@@ -9,6 +9,8 @@ interface DesktopBridge {
   aoVoltarDaEntrada?(callback: (url: string) => void): () => void;
   /** Os idiomas preferidos do sistema, em ordem. No navegador isto não existe: lá vale navigator.languages. */
   idiomasDoSistema?(): string[];
+  /** A faixa de idade que o Windows informa e se foi verificada (ver idadeDoWindows.ts). Só no app a partir da 0.1.9. */
+  faixaDeIdade?(): Promise<{ motivo: string; verificacao: string; faixa: { menor: number; maior: number | null } | null }>;
   /** O título da janela escolhida no seletor do app ("League of Legends"), ou null. */
   telaEscolhida?(): string | null;
   /** Se a caixinha "compartilhar áudio" ficou marcada no seletor do app. null = app que não conta. */

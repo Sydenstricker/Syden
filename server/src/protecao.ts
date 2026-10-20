@@ -51,6 +51,31 @@ export function faixaDe(nascimento: string | null | undefined, hoje = hojeEmBras
 
 export const ehMenor = (faixa: Faixa | null) => faixa === '13-15' || faixa === '16-17';
 
+const FAIXAS: Faixa[] = ['crianca', '13-15', '16-17', 'adulto'];
+
+/**
+ * A FAIXA QUE VALE para a conta: a que o Windows VERIFICOU, se houver (desktop/native/src/idade.cpp), e senão a da data
+ * informada. É a decisão do CLAUDE.md: "o verificado sobrepõe a data declarada" — nos dois sentidos, porque quem a
+ * Microsoft verificou como 13-15 tem as proteções mesmo tendo dito 18, e quem ela verificou adulto não fica preso a um
+ * erro de digitação.
+ */
+export function faixaDaConta(p: { nascimento: string | null; faixaWindows?: string | null } | undefined, hoje = hojeEmBrasilia()): Faixa | null {
+  if (!p) return null;
+  if (p.faixaWindows && (FAIXAS as string[]).includes(p.faixaWindows)) return p.faixaWindows as Faixa;
+  return faixaDe(p.nascimento, hoje);
+}
+
+/** A faixa do Windows ({menor, maior}, com maior null em "18 ou mais") na nossa, ou null se não bate com nenhuma. */
+export function faixaDoWindows(menor: unknown, maior: unknown): Faixa | null {
+  if (typeof menor !== 'number' || !Number.isInteger(menor)) return null;
+  if (maior !== null && (typeof maior !== 'number' || !Number.isInteger(maior))) return null;
+  if (maior !== null && maior < 13) return 'crianca';
+  if (menor >= 18) return 'adulto';
+  if (menor === 13 && maior === 15) return '13-15';
+  if (menor === 16 && maior === 17) return '16-17';
+  return null;
+}
+
 export type Barreira =
   | { tipo: 'banido'; motivo: string; em: string; recursoEm: string | null }
   | { tipo: 'suspensa'; motivo: string; em: string; recursoEm: string | null }
@@ -70,7 +95,7 @@ export function barreiraDe(userId: number, agora = new Date()): Barreira | null 
   // dela (ver "A AULA" em db.ts): não pede idade, como a turma também não pede para entrar na sala.
   if (db.findUserById(userId)?.temporarioAte) return null;
   if (!p.nascimento) return { tipo: 'nascimento' };
-  const faixa = faixaDe(p.nascimento, hojeEmBrasilia(agora));
+  const faixa = faixaDaConta(p, hojeEmBrasilia(agora));
   if (!ehMenor(faixa)) return null;
   const sup = db.supervisaoDe(userId);
   if (faixa === '13-15' && !sup.responsavelId) {
@@ -86,7 +111,7 @@ export function barreiraDe(userId: number, agora = new Date()): Barreira | null 
 
 /** As regras de um menor (ou null, para adulto e para quem ainda não informou a idade). */
 export function regrasDe(userId: number): (db.Supervisao & { faixa: Faixa }) | null {
-  const faixa = faixaDe(db.protecaoDe(userId)?.nascimento);
+  const faixa = faixaDaConta(db.protecaoDe(userId));
   if (!ehMenor(faixa)) return null;
   return { ...db.supervisaoDe(userId), faixa: faixa! };
 }

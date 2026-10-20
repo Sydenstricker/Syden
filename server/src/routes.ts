@@ -4,7 +4,7 @@ import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
-import { barreiraDe, dataValida, faixaDe, regrasDe } from './protecao.js';
+import { barreiraDe, dataValida, faixaDaConta, faixaDe, regrasDe } from './protecao.js';
 import { Freio } from './freio.js';
 import { seedExpressions } from './expressions.js';
 import { salaDaPessoa,
@@ -508,7 +508,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       // A barreira e a faixa etária vão junto: é por elas que a tela decide se abre o Syden ou a tela da pendência,
       // e se mostra o que é de menor (ver protecao.ts). A data de nascimento em si nunca sai daqui.
       const barreira = barreiraDe(request.user.id);
-      const faixa = faixaDe(db.protecaoDe(request.user.id)?.nascimento);
+      const faixa = faixaDaConta(db.protecaoDe(request.user.id));
       const novos = barreira ? [] : conferirPresentes(request.user);
       return { ...(novos.length ? db.findUserById(request.user.id) : request.user), barreira, faixa };
     });

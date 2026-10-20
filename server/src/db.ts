@@ -6210,6 +6210,8 @@ export interface Protecao {
   nascimento: string | null;
   nascimentoEm: string | null;
   idadeFonte: string | null;
+  /** A faixa que o Windows VERIFICOU (ver IDADE PELO WINDOWS, abaixo), ou null. */
+  faixaWindows: string | null;
   banidoEm: string | null;
   banidoMotivo: string | null;
   suspensaEm: string | null;
@@ -6221,11 +6223,21 @@ export interface Protecao {
 export function protecaoDe(userId: number): Protecao | undefined {
   return db
     .prepare(
-      `SELECT nascimento, nascimento_em AS nascimentoEm, idade_fonte AS idadeFonte, banido_em AS banidoEm, banido_motivo AS banidoMotivo, suspensa_em AS suspensaEm,
+      `SELECT nascimento, nascimento_em AS nascimentoEm, idade_fonte AS idadeFonte, faixa_windows AS faixaWindows, banido_em AS banidoEm, banido_motivo AS banidoMotivo, suspensa_em AS suspensaEm,
               suspensa_motivo AS suspensaMotivo, recurso, recurso_em AS recursoEm
          FROM users WHERE id = ?`,
     )
     .get(userId) as Protecao | undefined;
+}
+
+// A IDADE PELO WINDOWS (20/10/2026; desktop/native/src/idade.cpp): a faixa que a Microsoft VERIFICOU na conta do
+// Windows de quem usa o app. Só a faixa e quando, nunca a data (o Windows nem a entrega). Vale acima da data declarada
+// (protecao.ts, faixaDaConta) e é relida a cada abertura do app, então acompanha quem faz aniversário.
+addColumnIfMissing('users', 'faixa_windows', 'TEXT');
+addColumnIfMissing('users', 'faixa_windows_em', 'TEXT');
+
+export function guardarFaixaDoWindows(userId: number, faixa: string) {
+  db.prepare("UPDATE users SET faixa_windows = ?, faixa_windows_em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = ?").run(faixa, userId);
 }
 
 export function guardarNascimento(userId: number, nascimento: string, fonte: string) {

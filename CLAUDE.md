@@ -898,9 +898,16 @@ trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem
   na sessão do Windows. O "registrar o app na plataforma de segurança digital" vem só de reportagens, sem formulário nem
   passo publicado (conferido em 20/10/2026): **não há cadastro a fazer até a Microsoft publicar um.** A permissão está
   declarada desde 20/10/2026 (`appx.capabilities` em desktop/package.json, a partir do pacote 0.1.8), a pedido dele.
+  **A LEITURA ESTÁ PRONTA desde 20/10/2026 (pedido dele):** `desktop/native/src/idade.cpp` chama `GetUserAgeRangeAsync` e
+  `GetAgeVerificationStatusAsync`, que ainda não estão em SDK nenhum: as declarações são GERADAS da descrição do próprio
+  Windows dos Insiders (`desktop/scripts/gerar-winrt.js`, rodado pelo `build:native`; 85 MB em `native/gerado/`, fora do
+  git). Máquina sem as funções compila com a leitura desligada ("sem-api"). Medido nesta máquina (Windows 26300): **18+,
+  verificada**, funcionando até fora do pacote. O site (`idadeDoWindows.ts`) manda ao servidor SÓ a faixa verificada
+  (`POST /api/me/idade-do-windows`, `users.faixa_windows`), que vale acima da data declarada nos dois sentidos
+  (`faixaDaConta`, em protecao.ts); abaixo de 13 verificado suspende como a data. Na política, seção Idade.
   Quando devolver valores de verdade: chamar pelo módulo nativo
   (`desktop/native`), gravar `idade_fonte = 'windows'`, e o "verificado" sobrepõe a data declarada.
-- **Falta, e é dele ou de fora:** a Microsoft ligar a idade do Windows para todos (e publicar o registro, se houver um);
+- **Falta, e é dele ou de fora:** a Microsoft ligar a idade do Windows para todos (o app já lê; publicar o registro, se houver um);
   o token do gov.br quando o governo oferecer (o compromisso está nos
   termos); o advogado; e o deploy (servidor e site juntos: com o servidor novo, TODA conta antiga é perguntada pela data
   de nascimento na próxima vez que abrir o Syden, inclusive a dele).

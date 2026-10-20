@@ -52,6 +52,8 @@ IconesAnimados/
 
 # Resultado da compilação do módulo de som (gerado por npm run build:native -w desktop).
 desktop/native/build/
+# As declarações C++/WinRT da idade pelo Windows (desktop/scripts/gerar-winrt.js): 85 MB, refeitas a cada compilação.
+desktop/native/gerado/
 
 # Vídeos de referência que o Sydenstricker grava para mostrar o que quer (pesados, não versionar).
 video/

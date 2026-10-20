@@ -12,6 +12,9 @@
 
 #include <napi.h>
 
+// A faixa de idade que o Windows informa (idade.cpp).
+Napi::Value FaixaDeIdade(const Napi::CallbackInfo& info);
+
 #include <windows.h>
 #include <objidl.h>
 #include <audioclient.h>
@@ -414,6 +417,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("start", Napi::Function::New(env, Start));
   exports.Set("windowProcess", Napi::Function::New(env, WindowProcess));
   exports.Set("stop", Napi::Function::New(env, Stop));
+  exports.Set("faixaDeIdade", Napi::Function::New(env, FaixaDeIdade));
   return exports;
 }
 

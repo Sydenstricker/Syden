@@ -14,6 +14,7 @@ import { EntradaNaAula } from './EntradaNaAula';
 import { chave, useT } from './i18n';
 import { avisarBarreira, useBarreira } from './protecao';
 import { TelaDaBarreira } from './TelaDaBarreira';
+import { enviarIdadeDoWindows } from './idadeDoWindows';
 import { AvisoDoResponsavel } from './AvisoDoResponsavel';
 
 type Session = { status: 'loading' } | { status: 'anonymous' } | { status: 'ready'; token: string; user: User };
@@ -98,6 +99,20 @@ export function App() {
   useEffect(() => {
     if (session.status !== 'loading') esconderAbertura();
   }, [session.status]);
+
+  // A IDADE PELO WINDOWS (idadeDoWindows.ts): no app, a faixa verificada pela Microsoft vai ao servidor ao abrir. Se ela
+  // muda a faixa da conta, a tela relê quem é a pessoa (e a barreira, se a idade verificada pede uma).
+  const contaPronta = session.status === 'ready' ? session.user.id : null;
+  useEffect(() => {
+    if (contaPronta === null || session.status !== 'ready') return;
+    const { token, user } = session;
+    void enviarIdadeDoWindows(contaPronta).then((r) => {
+      if (!r || r.faixa === user.faixa) return;
+      avisarBarreira(r.barreira);
+      void api<User>('/api/me').then((novo) => setSession({ status: 'ready', token, user: novo }), () => {});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só quando a conta muda, não a cada atualização do usuário
+  }, [contaPronta]);
 
   useEffect(() => {
     if (!codigoDeConfirmacao) return;
