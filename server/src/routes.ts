@@ -103,6 +103,8 @@ const LIVRES_NA_BARREIRA = new Set([
   'GET /api/me',
   'GET /api/me/protecao',
   'PUT /api/me/nascimento',
+  // a faixa do Windows só deixa a conta mais protegida (faixaDaConta): pode chegar com qualquer pendência aberta
+  'POST /api/me/idade-do-windows',
   'POST /api/me/recurso',
   'POST /api/me/responsavel/codigo',
   'GET /api/me/dados',

@@ -54,15 +54,23 @@ export const ehMenor = (faixa: Faixa | null) => faixa === '13-15' || faixa === '
 const FAIXAS: Faixa[] = ['crianca', '13-15', '16-17', 'adulto'];
 
 /**
- * A FAIXA QUE VALE para a conta: a que o Windows VERIFICOU, se houver (desktop/native/src/idade.cpp), e senão a da data
- * informada. É a decisão do CLAUDE.md: "o verificado sobrepõe a data declarada" — nos dois sentidos, porque quem a
- * Microsoft verificou como 13-15 tem as proteções mesmo tendo dito 18, e quem ela verificou adulto não fica preso a um
- * erro de digitação.
+ * A FAIXA QUE VALE para a conta: a MAIS NOVA entre a da data informada e a que o Windows verificou
+ * (desktop/native/src/idade.cpp).
+ *
+ * SÓ PARA O LADO MAIS PROTEGIDO (correção de 21/10/2026, achada na revisão). A primeira versão deixava a faixa do Windows
+ * valer nos dois sentidos, e o servidor não tem como saber que ela veio MESMO do Windows: é o app que conta, e quem
+ * abre o console do navegador conta o que quiser. Um menor mandava "adulto, verificada" e saía de todas as proteções.
+ * Para baixo não há o que explorar — quem se declara mais novo só se protege mais. Quem a Microsoft verificou adulto e
+ * errou a data ao se cadastrar corrige com quem cuida do Syden, como antes. Para o Windows poder também AFROUXAR, seria
+ * preciso uma prova que o servidor confira sozinho (um token assinado, como o que o gov.br promete).
  */
 export function faixaDaConta(p: { nascimento: string | null; faixaWindows?: string | null } | undefined, hoje = hojeEmBrasilia()): Faixa | null {
   if (!p) return null;
-  if (p.faixaWindows && (FAIXAS as string[]).includes(p.faixaWindows)) return p.faixaWindows as Faixa;
-  return faixaDe(p.nascimento, hoje);
+  const daData = faixaDe(p.nascimento, hoje);
+  const doWindows = p.faixaWindows && (FAIXAS as string[]).includes(p.faixaWindows) ? (p.faixaWindows as Faixa) : null;
+  if (!doWindows) return daData;
+  if (!daData) return doWindows;
+  return FAIXAS.indexOf(doWindows) < FAIXAS.indexOf(daData) ? doWindows : daData;
 }
 
 /** A faixa do Windows ({menor, maior}, com maior null em "18 ou mais") na nossa, ou null se não bate com nenhuma. */

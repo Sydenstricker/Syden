@@ -903,8 +903,10 @@ trabalho de implementação e ficarmos com um produto mais seguro"*. O Syden tem
   Windows dos Insiders (`desktop/scripts/gerar-winrt.js`, rodado pelo `build:native`; 85 MB em `native/gerado/`, fora do
   git). Máquina sem as funções compila com a leitura desligada ("sem-api"). Medido nesta máquina (Windows 26300): **18+,
   verificada**, funcionando até fora do pacote. O site (`idadeDoWindows.ts`) manda ao servidor SÓ a faixa verificada
-  (`POST /api/me/idade-do-windows`, `users.faixa_windows`), que vale acima da data declarada nos dois sentidos
-  (`faixaDaConta`, em protecao.ts); abaixo de 13 verificado suspende como a data. Na política, seção Idade.
+  (`POST /api/me/idade-do-windows`, `users.faixa_windows`). **ELA SÓ DEIXA A CONTA MAIS PROTEGIDA, NUNCA MENOS**
+  (`faixaDaConta`, em protecao.ts; corrigido em 21/10/2026, achado da revisão): o servidor não tem como provar que a faixa
+  veio do Windows, e um menor mandava "adulto, verificada" pelo console e saía das proteções. Afrouxar só com uma prova
+  que o servidor confira sozinho (token assinado, como o do gov.br). Abaixo de 13 verificado suspende como a data.
   Quando devolver valores de verdade: chamar pelo módulo nativo
   (`desktop/native`), gravar `idade_fonte = 'windows'`, e o "verificado" sobrepõe a data declarada.
 - **Falta, e é dele ou de fora:** a Microsoft ligar a idade do Windows para todos (o app já lê; publicar o registro, se houver um);

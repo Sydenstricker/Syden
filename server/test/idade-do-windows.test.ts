@@ -1,7 +1,7 @@
 /**
  * A idade pelo Windows (POST /api/me/idade-do-windows; ver protecao.ts, faixaDaConta):
  *   1. Só a faixa VERIFICADA é guardada; a não verificada não muda nada.
- *   2. A verificada vale acima da data informada, nos dois sentidos.
+ *   2. A verificada só deixa a conta MAIS protegida, nunca menos (o servidor não prova que ela veio do Windows).
  *   3. Abaixo de 13, verificado, a conta é suspensa como na data declarada.
  *   4. Faixa que não bate com as do Windows é recusada.
  */
@@ -36,10 +36,18 @@ test('a verificada vale acima da data: quem disse 30 e o Windows verificou 13-15
   assert.equal((await eu('GET', '/api/me/protecao')).json().faixa, '13-15');
 });
 
-test('e no outro sentido: quem disse 15 e o Windows verificou 18+ é adulto', async () => {
+test('mas NUNCA no outro sentido: quem disse 15 e manda "18+ verificada" continua com as proteções', async () => {
+  // O servidor não tem como provar que a faixa veio do Windows: qualquer um a manda pelo console do navegador.
   const eu = comToken(app, (await criarConta(app, 'disse-menor', 'segredo123', comAnos(15))).token);
   await eu('POST', rota, { menor: 18, maior: null, verificacao: 'verificada' });
-  assert.equal((await eu('GET', '/api/me')).json().faixa, 'adulto');
+  assert.equal((await eu('GET', '/api/me')).json().faixa, '13-15');
+  assert.equal((await eu('GET', '/api/me/protecao')).json().faixa, '13-15');
+});
+
+test('a rota responde mesmo com a conta barrada (sem a data): ela só protege mais', async () => {
+  const eu = comToken(app, (await criarConta(app, 'sem-data-windows', 'segredo123')).token);
+  const r = await eu('POST', rota, { menor: 13, maior: 15, verificacao: 'verificada' });
+  assert.equal(r.statusCode, 200);
 });
 
 test('abaixo de 13, verificado, a conta é suspensa', async () => {

@@ -138,7 +138,8 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
 
     /**
      * A IDADE PELO WINDOWS (20/10/2026): o app manda a faixa que o Windows informa, e o servidor guarda SÓ a verificada
-     * (pela Microsoft). A não verificada não diz nada que a data informada já não diga, e guardá-la seria dado sem uso
+     * (pela Microsoft). Ela só deixa a conta MAIS protegida, nunca menos (faixaDaConta, em protecao.ts): o servidor não
+     * tem como provar que ela veio do Windows. A não verificada não diz nada que a data informada já não diga, e guardá-la seria dado sem uso
      * (art. 13 do ECA Digital: dado de verificação só serve para verificar). Abaixo de 13, verificado, a conta é
      * suspensa como na data declarada.
      */
