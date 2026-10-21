@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
 import { useT } from './i18n';
+import { Lock } from 'lucide-react';
 
 const WIDTH = 320;
 const HEIGHT = 216; // vídeo 16:9 mais a legenda
@@ -66,6 +67,10 @@ export function LivePreview({
               <VideoTrack trackRef={inRoom} />
             ) : peeked.track ? (
               <PeekVideo track={peeked.track} />
+            ) : peeked.cifrada ? (
+              <div className="live-preview-empty">
+                <Lock size={14} aria-hidden="true" /> {t('Criptografada de ponta a ponta')}
+              </div>
             ) : (
               <div className="live-preview-empty">{peeked.error ?? t('Carregando a imagem…')}</div>
             )}
@@ -103,6 +108,7 @@ function PeekVideo({ track }: { track: RemoteTrack }) {
 function usePeekScreen({ channelId, userId, active }: { channelId: number; userId: number; active: boolean }) {
   const [track, setTrack] = useState<RemoteTrack | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [cifrada, setCifrada] = useState(false);
 
   useEffect(() => {
     if (!active) {
@@ -118,10 +124,12 @@ function usePeekScreen({ channelId, userId, active }: { channelId: number; userI
 
     (async () => {
       try {
-        const { url, token } = await api<{ url: string; token: string }>(`/api/channels/${channelId}/peek-token`, {
+        const { url, token, e2ee } = await api<{ url?: string; token?: string; e2ee?: boolean }>(`/api/channels/${channelId}/peek-token`, {
           method: 'POST',
         });
         if (cancelled) return;
+        // A chamada é de ponta a ponta: de fora não há chave, e a prévia diz isso em vez de ficar preta.
+        if (e2ee || !url || !token) return void setCifrada(true);
         room = new Room({ adaptiveStream: false, dynacast: false });
         room.on(RoomEvent.TrackSubscribed, (subscribed, publication, participant) => {
           if (isTheScreen(publication, participant.identity)) setTrack(subscribed);
@@ -146,5 +154,5 @@ function usePeekScreen({ channelId, userId, active }: { channelId: number; userI
     };
   }, [active, channelId, userId]);
 
-  return { track, error };
+  return { track, error, cifrada };
 }

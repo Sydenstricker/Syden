@@ -6611,6 +6611,15 @@ export function conquistasAlcancadas(communityId: number) {
 
 /** Guarda os degraus novos (os que já estavam ficam como estão, com a data de quando foram alcançados). */
 export function guardarConquistas(communityId: number, novos: { conquista: string; degrau: number }[]) {
+  if (!novos.length) return;
+  // Numa transação só: são dezenas de linhas a cada abertura do painel, e cada uma fora dela seria uma escrita em disco.
   const st = db.prepare('INSERT OR IGNORE INTO conquistas_alcancadas (community_id, conquista, degrau) VALUES (?, ?, ?)');
-  for (const n of novos) st.run(communityId, n.conquista, n.degrau);
+  db.exec('BEGIN');
+  try {
+    for (const n of novos) st.run(communityId, n.conquista, n.degrau);
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
 }

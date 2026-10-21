@@ -34,12 +34,17 @@ LIVRE_MB=$(df -m --output=avail /var/lib | tail -1 | tr -d ' ')
 # Tamanho: o pedido, ou 3× o que os dados ocupam hoje (no mínimo 10 GB), sem passar do livre menos 5 GB.
 if [ $# -ge 1 ]; then
   TAMANHO="$1"
+  TAMANHO_MB=$(( $(numfmt --from=iec "$1") / 1048576 ))
 else
   QUER_MB=$(( USADO_MB * 3 )); [ "$QUER_MB" -lt 10240 ] && QUER_MB=10240
   CABE_MB=$(( LIVRE_MB - 5120 ))
   [ "$QUER_MB" -gt "$CABE_MB" ] && QUER_MB=$CABE_MB
   TAMANHO="${QUER_MB}M"
+  TAMANHO_MB=$QUER_MB
 fi
+# O cofre não pode ser menor que os dados, com folga (achado da revisão, 21/10/2026): com o disco quase cheio, o corte em
+# "livre menos 5 GB" fazia o rsync falhar no meio da cópia.
+[ "$TAMANHO_MB" -ge $(( USADO_MB * 12 / 10 + 512 )) ] || falha "o cofre ($TAMANHO) ficaria pequeno para ${USADO_MB} MB de dados. Libere espaço no disco ou escolha um tamanho maior."
 echo "Dados de hoje: ${USADO_MB} MB em $ORIGEM. Livre no disco: ${LIVRE_MB} MB. Cofre: $TAMANHO."
 read -r -p "Seguir? O Syden fica fora do ar durante a cópia. [s/N] " ok
 [ "$ok" = "s" ] || exit 1
@@ -63,6 +68,17 @@ mount "/dev/mapper/$NOME" "$MONTAGEM"
 
 echo "Parando a API e copiando os dados para dentro do cofre…"
 cd "$AQUI"
+# SE ALGO FALHAR DAQUI ATÉ O .env MUDAR, a API volta a subir com os dados de sempre, e o cofre é fechado e apagado para
+# poder tentar de novo. Sem isto, um erro no meio deixava o Syden fora do ar (achado da revisão, 21/10/2026).
+desfazer() {
+  echo "ERRO no meio da criação do cofre: voltando ao volume de sempre." >&2
+  docker compose start api || true
+  umount "$MONTAGEM" 2>/dev/null || true
+  cryptsetup close "$NOME" 2>/dev/null || true
+  rm -f "$ARQUIVO"
+  echo "O Syden voltou com os dados de antes. Nada foi perdido; dá para rodar ./cofre-criar.sh de novo." >&2
+}
+trap desfazer ERR
 docker compose stop api
 mkdir -p "$DADOS"
 rsync -aHAX "$ORIGEM/" "$DADOS/"
@@ -83,6 +99,7 @@ until cryptsetup luksAddKey "$ARQUIVO"; do
 done
 
 printf '\n# O cofre (deploy/cofre-criar.sh, %s): os dados moram no disco cifrado.\nDADOS=%s\nCOFRE=sim\n' "$(date +%F)" "$DADOS" >> .env
+trap - ERR # daqui em diante o .env já aponta para o cofre: desfazer seria pior que avisar
 docker compose up -d --wait api
 
 echo

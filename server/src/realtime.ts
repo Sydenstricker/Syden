@@ -341,8 +341,15 @@ export function setupRealtime(io: IOServer) {
     db.touchUsageSessions([...voiceMembers.values()].flatMap(activeUsageSessionIds));
     // O minuto de voz dos níveis: quem não está sozinho na sala ganha pontos (ver niveis.ts).
     pontuarMinutoDeVoz(io, [...voiceMembers.values()]);
-    // A "Sessão de cinema" das conquistas: transmitir com 2 ou mais assistindo (ver conquistas.ts).
-    for (const m of voiceMembers.values()) if (m.screen && m.assistindo.length >= 2) db.somarCinema(m.communityId, m.userId, USAGE_HEARTBEAT_MS / 1000);
+    // A "Sessão de cinema" das conquistas: transmitir com 2 ou mais assistindo (ver conquistas.ts). Quem assiste é quem
+    // tem o id de quem transmite no PRÓPRIO `assistindo` (a lista das transmissões que cada um abriu) — e não o contrário,
+    // que era o erro da primeira versão (achado da revisão, 21/10/2026).
+    const membros = [...voiceMembers.values()];
+    for (const m of membros) {
+      if (!m.screen) continue;
+      const plateia = membros.filter((o) => o.channelId === m.channelId && o.userId !== m.userId && o.assistindo.includes(m.userId)).length;
+      if (plateia >= 2) db.somarCinema(m.communityId, m.userId, USAGE_HEARTBEAT_MS / 1000);
+    }
     contarMinutoDosMenores(io);
   }, USAGE_HEARTBEAT_MS).unref();
   // A rede de segurança do vídeo dos menores (ver vigiarVideoDosMenores), mais curta que o minuto.

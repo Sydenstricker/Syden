@@ -52,6 +52,8 @@ const TEXTO = new TextEncoder();
 const SAL = TEXTO.encode('syden-chamada-e2ee-v1');
 /** O LiveKit guarda 16 chaves por pessoa (keyringSize); o índice dá a volta. */
 const ANEL = 16;
+/** Quanto a chave nova espera, depois de mandada, para passar a cifrar o que sai (ver trocarEMandarATodos). */
+const PAUSA_DA_TROCA_MS = 800;
 
 const paraB64 = (b: ArrayBuffer | Uint8Array) => btoa(String.fromCharCode(...new Uint8Array(b)));
 const deB64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -168,11 +170,34 @@ export class ChamadaCifrada {
     await this.trocarEMandarATodos();
   }
 
-  /** Uma chave de mídia nova, no índice seguinte, para todos os que estão na sala agora. */
+  /**
+   * Uma chave de mídia nova, no índice seguinte, para todos os que estão na sala agora.
+   *
+   * PRIMEIRO OS OUTROS, DEPOIS NÓS (achado da revisão, 21/10/2026): passar a cifrar com a chave nova na hora fazia todo
+   * mundo ficar um instante sem nos ouvir a cada entrada e saída, até a chave chegar. Agora ela vai, e só depois de uma
+   * pausa curta passamos a usá-la; até lá os quadros saem com a anterior, que todos ainda têm.
+   */
   private async trocarEMandarATodos() {
     this.indice = (this.indice + 1) % ANEL;
-    await this.novaChaveDeMidia();
+    this.chaveDeMidia = crypto.getRandomValues(new Uint8Array(32));
     await Promise.all([...this.outros.keys()].map((id) => this.mandarChaveDeMidia(id)));
+    await new Promise((r) => setTimeout(r, PAUSA_DA_TROCA_MS));
+    if (this.encerrada) return;
+    this.chaves.definir(await createKeyMaterialFromBuffer(this.chaveDeMidia.buffer), this.eu, this.indice);
+  }
+
+  /**
+   * SE ALGUÉM FICOU SEM A NOSSA CHAVE (achado da revisão, 21/10/2026): uma troca que aconteceu enquanto o socket estava
+   * caído, ou o servidor reiniciando, se perde, e quem não a recebeu ficava surdo para nós até a próxima entrada ou
+   * saída. Reapresentar faz o outro lado mandar a dele de novo; reenviar a nossa fecha o outro sentido.
+   */
+  reencontrar(identidades: string[]) {
+    return this.emFila(async () => {
+      for (const id of identidades) {
+        this.mandar(id, { v: 1, t: 'ola', pub: paraB64(this.minhaPub) });
+        await this.mandarChaveDeMidia(id);
+      }
+    });
   }
 
   /** Já temos a chave pública desta pessoa? (Sem ela, o que ela manda ainda não se decifra.) */

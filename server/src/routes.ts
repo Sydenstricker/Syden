@@ -1703,6 +1703,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         canSubscribe: true,
         hidden: true,
       });
+      // Com a chamada de ponta a ponta, quem espia não tem a chave: entraria só para receber ruído. Sem senha nenhuma, e a
+      // prévia diz por quê (LivePreview.tsx; achado da revisão de 21/10/2026: ela ficava preta).
+      if (process.env.CHAMADAS_E2EE !== 'nao') return { e2ee: true };
       return { url: config.livekit.url, token: await token.toJwt() };
     });
 

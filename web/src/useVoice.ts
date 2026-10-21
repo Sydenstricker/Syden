@@ -478,17 +478,26 @@ export function useVoice(socket: Socket | null) {
       if (typeof m?.de === 'number' && typeof m.dados === 'string') void chamadaRef.current?.receber(String(m.de), m.dados);
     };
     const aoSair = (p: RemoteParticipant) => void chamadaRef.current?.saiu(p.identity);
+    // Quadro que não decifra: a chave de alguém se perdeu no caminho. Reencontra essa pessoa (no máximo a cada 5 s).
+    const ultimaVez = new Map<string, number>();
+    const aoFalharDecifrar = (_e: Error, p?: Participant) => {
+      if (!p || p.isLocal || !chamadaRef.current) return;
+      const agora = Date.now();
+      if (agora - (ultimaVez.get(p.identity) ?? 0) < 5000) return;
+      ultimaVez.set(p.identity, agora);
+      void chamadaRef.current.reencontrar([p.identity]);
+    };
     const reapresentar = setInterval(() => {
       const chamada = chamadaRef.current;
       if (!chamada || room.state !== ConnectionState.Connected) return;
       chamada.apresentarA([...room.remoteParticipants.keys()].filter((id) => !chamada.conhece(id)));
     }, 3000);
     socket.on('e2ee:chave', aoReceber);
-    room.on(RoomEvent.ParticipantDisconnected, aoSair);
+    room.on(RoomEvent.ParticipantDisconnected, aoSair).on(RoomEvent.EncryptionError, aoFalharDecifrar);
     return () => {
       clearInterval(reapresentar);
       socket.off('e2ee:chave', aoReceber);
-      room.off(RoomEvent.ParticipantDisconnected, aoSair);
+      room.off(RoomEvent.ParticipantDisconnected, aoSair).off(RoomEvent.EncryptionError, aoFalharDecifrar);
     };
   }, [socket, room]);
 
@@ -662,6 +671,8 @@ export function useVoice(socket: Socket | null) {
     const onConnect = () => {
       if (channelRef.current === null) return;
       socket.emit('voice:join', { channelId: channelRef.current });
+      // O socket caído pode ter perdido uma troca de chave da chamada cifrada: reencontra todo mundo da sala.
+      void chamadaRef.current?.reencontrar([...room.remoteParticipants.keys()]);
       const media = readLocalMedia(room.localParticipant);
       socket.emit('voice:update', {
         ...media,
@@ -878,7 +889,13 @@ export function useVoice(socket: Socket | null) {
         });
         if (e2ee && chaves) {
           // As chaves desta chamada, antes de o microfone abrir: o primeiro quadro já sai cifrado.
-          const atualizarCodigo = () => void chamadaRef.current?.codigo().then(setCodigoDeSeguranca);
+          // A última conta é a que vale: duas mudanças seguidas podiam terminar fora de ordem e deixar um código velho na
+          // tela (achado da revisão, 21/10/2026).
+          let pedido = 0;
+          const atualizarCodigo = () => {
+            const meu = ++pedido;
+            void chamadaRef.current?.codigo().then((c) => meu === pedido && setCodigoDeSeguranca(c));
+          };
           chamadaRef.current = await ChamadaCifrada.iniciar(
             chaves,
             room.localParticipant.identity,

@@ -99,6 +99,24 @@ describe('a chamada de ponta a ponta', () => {
     assert.notEqual(await um.chamada!.codigo(), await dois.chamada!.codigo());
   });
 
+  it('uma troca perdida no caminho se recupera com o reencontrar', async () => {
+    const { gente, esperar } = await sala(['1', '2', '3']);
+    const [um, dois] = [gente.get('1')!, gente.get('2')!];
+    // o 3 sai; a chave nova do 2 para o 1 se "perde" (como num socket caído): o 1 fica com a velha
+    const chamada2 = dois.chamada!;
+    const mandarOriginal = (chamada2 as unknown as { enviar: (p: string, d: string) => void }).enviar;
+    (chamada2 as unknown as { enviar: (p: string, d: string) => void }).enviar = () => {};
+    await chamada2.saiu('3');
+    (chamada2 as unknown as { enviar: (p: string, d: string) => void }).enviar = mandarOriginal;
+    await um.chamada!.saiu('3');
+    await esperar();
+    const atualDoDois = chavesDe(dois, '2').at(-1)!.indice;
+    assert.notEqual(chavesDe(um, '2').at(-1)!.indice, atualDoDois, 'o 1 ficou com a chave velha do 2');
+    await chamada2.reencontrar(['1']);
+    await esperar();
+    assert.equal(chavesDe(um, '2').at(-1)!.indice, atualDoDois);
+  });
+
   it('mensagem estragada não derruba nada', async () => {
     const { gente } = await sala(['1', '2']);
     const um = gente.get('1')!;
