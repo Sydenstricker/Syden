@@ -67,6 +67,7 @@ import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
 import { describeStats, useStreamStats } from './streamStats';
+import { useRegistroDoQueChega } from './oQueChega';
 import { prepareSound } from './upload';
 
 import { alternarMudoDaTela, getScreenVolume, setScreenVolume, TETO_DA_TRANSMISSAO } from './voiceVolumes';
@@ -960,6 +961,8 @@ function BotaoTelaCheia({ alvo }: { alvo: RefObject<HTMLDivElement | null> }) {
  */
 function ScreenTile({ trackRef, membro, plateia }: { trackRef: TrackReferenceOrPlaceholder; membro?: VoiceMember; plateia: VoiceMember[] }) {
   useDirectory();
+  // Chegando embaçada para quem assiste, uma linha vai ao diário de saúde (oQueChega.ts).
+  useRegistroDoQueChega(trackRef.publication, isTrackReference(trackRef) && !trackRef.participant.isLocal);
   return (
     <ParticipantTile trackRef={trackRef}>
       {/* A guarda estreita o tipo: um quadro pode ser um lugar reservado, ainda sem faixa. */}
