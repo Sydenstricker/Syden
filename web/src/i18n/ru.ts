@@ -2184,4 +2184,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Ключ меняется, когда кто-то входит или выходит.',
   'Conferir com quem está na chamada': 'Сверить с теми, кто в звонке',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Сервер пересылает голос и изображение, но не может ни слышать, ни видеть их.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Разблокировать микрофон',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Модерация выключила твой микрофон. Разблокировать его может только тот, кто управляет сообществом.',
+  'Microfone travado pela moderação': 'Микрофон заблокирован модерацией',
 } satisfies Record<string, string>;

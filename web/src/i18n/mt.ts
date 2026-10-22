@@ -2182,4 +2182,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Iċ-ċavetta tinbidel meta xi ħadd jidħol jew joħroġ.',
   'Conferir com quem está na chamada': 'Iċċekkja ma’ min hu fis-sejħa',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Is-server jgħaddi l-vuċi u l-istampa mingħajr ma jista’ jisma’ jew jara.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Ħeles il-mikrofonu',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Il-moderazzjoni itfiet il-mikrofonu tiegħek. Dawk biss li jmexxu l-komunità jistgħu jeħilsuh.',
+  'Microfone travado pela moderação': 'Il-mikrofonu msakkar mill-moderazzjoni',
 } satisfies Record<string, string>;

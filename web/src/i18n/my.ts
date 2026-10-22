@@ -2205,4 +2205,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'တစ်ယောက်ယောက် ဝင်လာရင် ဒါမှမဟုတ် ထွက်သွားရင် ကီး ပြောင်းပါတယ်။',
   'Conferir com quem está na chamada': 'ခေါ်ဆိုမှုထဲရှိသူတွေနဲ့ တိုက်စစ်ရန်',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ဆာဗာက အသံနဲ့ ပုံရိပ်ကို ဆက်ပို့ပေးပေမယ့် ကြားလို့လည်း မရ၊ မြင်လို့လည်း မရပါဘူး။',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'မိုက်ခရိုဖုန်း ပြန်ဖွင့်ခွင့်ပေးရန်',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'စီမံသူများက သင့်မိုက်ခရိုဖုန်းကို ပိတ်ထားသည်။ အသိုင်းအဝိုင်းကို စီမံသူများသာ ပြန်ဖွင့်ပေးနိုင်သည်။',
+  'Microfone travado pela moderação': 'စီမံသူများက မိုက်ခရိုဖုန်းကို သော့ခတ်ထားသည်',
 } satisfies Record<string, string>;

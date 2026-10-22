@@ -2237,4 +2237,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Калид вақте иваз мешавад, ки касе медарояд ё мебарояд.',
   'Conferir com quem está na chamada': 'Санҷиш бо онҳое, ки дар занг ҳастанд',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Сервер овоз ва тасвирро интиқол медиҳад, вале онҳоро на шунида метавонад, на дида.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Озод кардани микрофон',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Модератсия микрофони туро хомӯш кард. Онро танҳо идоракунандагони ҷомеа озод карда метавонанд.',
+  'Microfone travado pela moderação': 'Микрофонро модератсия қулф кардааст',
 } satisfies Record<string, string>;

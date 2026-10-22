@@ -2216,4 +2216,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'המפתח מתחלף כשמישהו נכנס או יוצא.',
   'Conferir com quem está na chamada': 'לבדוק מול מי שנמצא בשיחה',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'השרת מעביר את הקול והתמונה בלי יכולת לשמוע או לראות.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'לשחרר מיקרופון',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'המיקרופון הושתק על ידי צוות הניהול. רק מי שמנהל את הקהילה יכול לשחרר אותו.',
+  'Microfone travado pela moderação': 'המיקרופון ננעל על ידי צוות הניהול',
 } satisfies Record<string, string>;

@@ -2228,4 +2228,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Nyckeln byts när någon går med eller lämnar.',
   'Conferir com quem está na chamada': 'Kontrollera med dem i samtalet',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Servern skickar vidare röst och bild utan att kunna höra eller se dem.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Frigör mikrofonen',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Modereringen har tystat din mikrofon. Bara de som sköter gemenskapen kan frigöra den.',
+  'Microfone travado pela moderação': 'Mikrofonen är låst av modereringen',
 } satisfies Record<string, string>;

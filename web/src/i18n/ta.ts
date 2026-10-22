@@ -2151,4 +2151,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'யாராவது சேரும்போதோ வெளியேறும்போதோ சாவி மாறும்.',
   'Conferir com quem está na chamada': 'அழைப்பில் உள்ளவர்களுடன் சரிபார்க்கவும்',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'சேவையகம் குரலையும் படத்தையும் கடத்துகிறது, ஆனால் கேட்கவோ பார்க்கவோ முடியாது.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'ஒலிவாங்கியை விடுவி',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'நெறியாளர்கள் உன் ஒலிவாங்கியை அடக்கியுள்ளனர். சமூகத்தை நிர்வகிப்பவர்கள் மட்டுமே அதை விடுவிக்க முடியும்.',
+  'Microfone travado pela moderação': 'நெறியாளர்கள் ஒலிவாங்கியைப் பூட்டியுள்ளனர்',
 } satisfies Record<string, string>;

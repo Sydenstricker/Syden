@@ -2228,4 +2228,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Çelësi ndryshon kur dikush hyn ose del.',
   'Conferir com quem está na chamada': 'Krahaso me ata që janë në telefonatë',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serveri e përcjell zërin dhe figurën pa mundur t’i dëgjojë apo t’i shohë.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Liro mikrofonin',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderimi ta heshti mikrofonin. Vetëm ata që administrojnë komunitetin mund ta lirojnë.',
+  'Microfone travado pela moderação': 'Mikrofoni është kyçur nga moderimi',
 } satisfies Record<string, string>;

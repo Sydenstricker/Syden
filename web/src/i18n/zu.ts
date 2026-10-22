@@ -2237,4 +2237,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Ukhiye uyashintsha uma othile engena noma ephuma.',
   'Conferir com quem está na chamada': 'Qinisekisa nalabo abasocingweni',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Iseva idlulisa izwi nesithombe ngaphandle kokukwazi ukuzwa noma ukubona.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Khulula imakrofoni',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Abaqaphi bathulise imakrofoni yakho. Abaphethe umphakathi kuphela abangayikhulula.',
+  'Microfone travado pela moderação': 'Imakrofoni ikhiywe ngabaqaphi',
 } satisfies Record<string, string>;

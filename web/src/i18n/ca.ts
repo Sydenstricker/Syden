@@ -2232,4 +2232,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'La clau canvia quan algú entra o surt.',
   'Conferir com quem está na chamada': 'Comprovar-ho amb qui és a la trucada',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'El servidor reenvia la veu i la imatge sense poder-les sentir ni veure.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Alliberar el micròfon',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'La moderació t’ha silenciat el micròfon. Només qui administra la comunitat el pot alliberar.',
+  'Microfone travado pela moderação': 'Micròfon bloquejat per la moderació',
 } satisfies Record<string, string>;

@@ -2166,4 +2166,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Kunci bertukar apabila seseorang masuk atau keluar.',
   'Conferir com quem está na chamada': 'Semak dengan orang dalam panggilan',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Pelayan menghantar suara dan imej tanpa dapat mendengar atau melihatnya.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Lepaskan mikrofon',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderator telah menyenyapkan mikrofon kamu. Hanya pengurus komuniti yang boleh melepaskannya.',
+  'Microfone travado pela moderação': 'Mikrofon dikunci oleh moderator',
 } satisfies Record<string, string>;

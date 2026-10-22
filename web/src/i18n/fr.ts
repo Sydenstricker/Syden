@@ -2188,4 +2188,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'La clé change quand quelqu’un arrive ou part.',
   'Conferir com quem está na chamada': 'Vérifier avec les personnes dans l’appel',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Le serveur relaie la voix et l’image sans pouvoir les entendre ni les voir.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Libérer le micro',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'La modération a coupé ton micro. Seules les personnes qui gèrent la communauté peuvent le libérer.',
+  'Microfone travado pela moderação': 'Micro bloqué par la modération',
 } satisfies Record<string, string>;

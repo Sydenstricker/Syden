@@ -2166,4 +2166,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'አንድ ሰው ሲገባ ወይም ሲወጣ ቁልፉ ይቀየራል።',
   'Conferir com quem está na chamada': 'በጥሪው ውስጥ ካሉ ጋር ያረጋግጡ',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ሰርቨሩ ድምፁንና ምስሉን ያስተላልፋል፤ ግን መስማትም ሆነ ማየት አይችልም።',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'ማይክሮፎኑን መልቀቅ',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'አወያዮች ማይክሮፎንዎን ዘግተዋል። ማህበረሰቡን የሚያስተዳድሩ ብቻ ሊለቁት ይችላሉ።',
+  'Microfone travado pela moderação': 'ማይክሮፎኑ በአወያዮች ተቆልፏል',
 } satisfies Record<string, string>;

@@ -2236,4 +2236,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Avain vaihtuu, kun joku liittyy tai lähtee.',
   'Conferir com quem está na chamada': 'Vertaa puhelussa olevien kanssa',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Palvelin välittää äänen ja kuvan pystymättä kuulemaan tai näkemään niitä.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Vapauta mikrofoni',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderointi mykisti mikrofonisi. Vain yhteisön ylläpitäjät voivat vapauttaa sen.',
+  'Microfone travado pela moderação': 'Moderointi on lukinnut mikrofonin',
 } satisfies Record<string, string>;

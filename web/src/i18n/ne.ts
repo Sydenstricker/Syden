@@ -2238,4 +2238,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'कोही आउँदा वा जाँदा कुञ्जी बदलिन्छ।',
   'Conferir com quem está na chamada': 'कलमा भएकाहरूसँग मिलाउनुहोस्',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'सर्भरले आवाज र तस्बिर अगाडि पठाउँछ, तर सुन्न वा हेर्न सक्दैन।',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'माइक्रोफोन फुकुवा गर्नुहोस्',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'मोडरेसनले तपाईंको माइक्रोफोन म्युट गरेको छ। समुदाय चलाउनेहरूले मात्र यसलाई फुकुवा गर्न सक्छन्।',
+  'Microfone travado pela moderação': 'मोडरेसनले माइक्रोफोन लक गरेको छ',
 } satisfies Record<string, string>;

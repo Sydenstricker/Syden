@@ -2172,4 +2172,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Athraíonn an eochair nuair a thagann duine isteach nó nuair a imíonn duine.',
   'Conferir com quem está na chamada': 'Seiceáil leis na daoine sa ghlao',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seolann an freastalaí an guth agus an íomhá ar aghaidh gan iad a chloisteáil ná a fheiceáil.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Scaoil an micreafón',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Bhalbhaigh an mhodhnóireacht do mhicreafón. Níl ach lucht bainistíochta an phobail in ann é a scaoileadh.',
+  'Microfone travado pela moderação': 'Micreafón glasáilte ag an mhodhnóireacht',
 } satisfies Record<string, string>;

@@ -2172,4 +2172,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'ʻOku liliu ʻa e kī ʻi he taimi ʻoku hū mai pe mavahe ai ha taha.',
   'Conferir com quem está na chamada': 'Fakapapauʻi mo kinautolu ʻoku ʻi he ui',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ʻOku fakaʻatu ʻe he sēvea ʻa e leʻo mo e ʻata taʻe lava ke ne fanongo pe sio ki ai.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Tukuange ʻa e maika',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Kuo fakalongo ʻe he kau tokangaʻi hoʻo maika. Ko kinautolu pē ʻoku puleʻi ʻa e kulupú ʻe lava ʻo tukuange ia.',
+  'Microfone travado pela moderação': 'Kuo loka ʻe he kau tokangaʻi ʻa e maika',
 } satisfies Record<string, string>;

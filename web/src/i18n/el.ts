@@ -2172,4 +2172,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Το κλειδί αλλάζει όταν κάποιος μπαίνει ή βγαίνει.',
   'Conferir com quem está na chamada': 'Επιβεβαίωση με όσους είναι στην κλήση',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Ο διακομιστής προωθεί τη φωνή και την εικόνα χωρίς να μπορεί να ακούσει ή να δει.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Αποδέσμευση μικροφώνου',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Η συντονιστική ομάδα έκανε σίγαση στο μικρόφωνό σου. Μόνο όσοι διαχειρίζονται την κοινότητα μπορούν να το αποδεσμεύσουν.',
+  'Microfone travado pela moderação': 'Μικρόφωνο κλειδωμένο από τη συντονιστική ομάδα',
 } satisfies Record<string, string>;

@@ -6,6 +6,7 @@ import { Ban,
   Flag,
   IdCard,
   MessageSquare,
+  Mic,
   MicOff,
   MonitorPlay,
   MonitorX,
@@ -105,6 +106,7 @@ export function PersonMenu({
   channels,
   inVoiceChannel,
   targetScreen,
+  targetTravado = false,
   targetRole,
   isSelf,
   onWatchStream,
@@ -125,6 +127,8 @@ export function PersonMenu({
   inVoiceChannel: number | null;
   /** Se a pessoa está transmitindo a tela agora. */
   targetScreen: boolean;
+  /** O microfone da pessoa está travado pela moderação (ver travarMicrofone, no servidor): o menu oferece liberar. */
+  targetTravado?: boolean;
   targetRole: Role;
   isSelf: boolean;
   /** Abre a sala da pessoa na tela E abre a transmissão dela — usado por "Assistir transmissão". */
@@ -557,11 +561,20 @@ export function PersonMenu({
           <hr className="person-menu-linha" />
           <div className="person-menu-grupo">{t('Moderação')}</div>
 
-          {channelId !== null && (
-            <>
-              <Item icone={<MicOff size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/mute`, { muted: true })}>
+          {/* Na sala em que a PESSOA está. É uma trava, como no Discord: liberar não liga o microfone de ninguém, só
+              devolve à pessoa o poder de ligá-lo. */}
+          {inVoiceChannel !== null &&
+            (targetTravado ? (
+              <Item icone={<Mic size={16} />} onClick={() => act(`/api/channels/${inVoiceChannel}/mute`, { muted: false })}>
+                {t('Liberar microfone')}
+              </Item>
+            ) : (
+              <Item icone={<MicOff size={16} />} perigo onClick={() => act(`/api/channels/${inVoiceChannel}/mute`, { muted: true })}>
                 {t('Silenciar microfone para todos')}
               </Item>
+            ))}
+          {channelId !== null && (
+            <>
               {/* Cortar só a tela e a câmera, sem tirar da chamada (17/10/2026, o caso Discord). */}
               {inVoiceChannel === channelId && (
                 <Item icone={<MonitorX size={16} />} perigo onClick={() => act(`/api/channels/${channelId}/parar-video`, {})}>

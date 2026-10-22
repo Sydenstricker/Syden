@@ -211,6 +211,7 @@ export function MemberList({
           channels={channels}
           inVoiceChannel={voiceById.get(menu.target.userId)?.channelId ?? null}
           targetScreen={voiceById.get(menu.target.userId)?.screen ?? false}
+          targetTravado={voiceById.get(menu.target.userId)?.travado}
           targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === selfId}
           onWatchStream={onWatchStream}

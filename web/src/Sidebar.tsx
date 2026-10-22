@@ -345,7 +345,7 @@ export function Sidebar({
         <div className="icon-row">
           {/* Funciona fora de qualquer sala: quem se silencia aqui entra mudo na próxima chamada. */}
           <IconButton
-            label={voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
+            label={voice.microfoneTravado ? t('Microfone travado pela moderação') : voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
             danger={voice.media.muted}
             onClick={voice.toggleMute}
           >
@@ -377,6 +377,7 @@ export function Sidebar({
           channels={channels}
           inVoiceChannel={voiceMembers.find((m) => m.userId === menu.target!.userId)?.channelId ?? null}
           targetScreen={voiceMembers.find((m) => m.userId === menu.target!.userId)?.screen ?? false}
+          targetTravado={voiceMembers.find((m) => m.userId === menu.target!.userId)?.travado}
           targetRole={members.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === user.id}
           onWatchStream={onWatchStream}

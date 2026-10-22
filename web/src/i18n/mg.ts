@@ -2236,4 +2236,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Miova ny lakile rehefa misy miditra na mivoaka.',
   'Conferir com quem está na chamada': 'Hamarino miaraka amin’ireo ao amin’ny antso',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Ampitain’ny mpizara ny feo sy ny sary nefa tsy afaka mandre na mahita izy.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Avoahy ny mikrô',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Nampangina ny mikrônao ny mpandrindra. Ireo mitantana ny vondrona ihany no afaka manafaka azy.',
+  'Microfone travado pela moderação': 'Nohidian’ny mpandrindra ny mikrô',
 } satisfies Record<string, string>;

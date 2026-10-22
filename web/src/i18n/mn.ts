@@ -2250,4 +2250,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Хэн нэгэн нэгдэх эсвэл гарахад түлхүүр солигдоно.',
   'Conferir com quem está na chamada': 'Дуудлагад байгаа хүмүүстэй тулгах',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Сервер дуу хоолой, дүрсийг дамжуулдаг ч сонсож, харж чаддаггүй.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Микрофоныг чөлөөлөх',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Зохицуулагчид таны микрофоныг хаасан. Зөвхөн нийгэмлэгийг удирддаг хүмүүс л чөлөөлж чадна.',
+  'Microfone travado pela moderação': 'Микрофоныг зохицуулагчид түгжсэн',
 } satisfies Record<string, string>;

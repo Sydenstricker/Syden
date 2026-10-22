@@ -2186,4 +2186,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'يتغيّر المفتاح عندما ينضم أحد أو يغادر.',
   'Conferir com quem está na chamada': 'التحقق مع الموجودين في المكالمة',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'يمرّر الخادم الصوت والصورة دون أن يتمكّن من سماعهما أو رؤيتهما.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'تحرير الميكروفون',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'كتم فريق الإشراف الميكروفون. لا يمكن تحريره إلا لمن يدير المجتمع.',
+  'Microfone travado pela moderação': 'الميكروفون مقفل من الإشراف',
 } satisfies Record<string, string>;

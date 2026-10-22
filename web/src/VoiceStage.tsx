@@ -1441,7 +1441,15 @@ function Stage({
         </button>
       )}
 
-      {voice.mutedWarning && (
+      {/* Travado pela moderação: fica enquanto durar, como o microfone bloqueado. Sem isto, o botão que não liga
+          pareceria defeito. */}
+      {voice.microfoneTravado && (
+        <div className="muted-warning" role="status">
+          <MicOff size={16} /> {t('A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.')}
+        </div>
+      )}
+
+      {voice.mutedWarning && !voice.microfoneTravado && (
         <div className="muted-warning" role="status">
           <MicOff size={16} /> {t('Você está silenciado!')}
         </div>
@@ -1451,7 +1459,7 @@ function Stage({
 
       <div className="stage-controls">
         <IconButton
-          label={voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
+          label={voice.microfoneTravado ? t('Microfone travado pela moderação') : voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
           danger={voice.media.muted}
           onClick={voice.toggleMute}
         >
@@ -1558,6 +1566,7 @@ function Stage({
           channels={canais}
           inVoiceChannel={channelId}
           targetScreen={members.find((m) => m.userId === menu.target!.userId)?.screen ?? false}
+          targetTravado={members.find((m) => m.userId === menu.target!.userId)?.travado}
           targetRole={daComunidade.get(menu.target.userId)?.role ?? 'member'}
           isSelf={menu.target.userId === eu}
           onWatchStream={(_, userId) => voice.assistir(String(userId), true)}

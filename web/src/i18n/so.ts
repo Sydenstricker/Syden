@@ -2236,4 +2236,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Furuhu wuu isbeddelaa marka qof soo galo ama ka baxo.',
   'Conferir com quem está na chamada': 'La xaqiiji dadka wicitaanka ku jira',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seerfarku wuxuu gudbiyaa codka iyo sawirka isagoo aan maqli karin, arkina karin.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Fur makarafoonka',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Maamulayaashu waxay aamusiyeen makarafoonkaaga. Kuwa bulshada maamula oo keliya ayaa furi kara.',
+  'Microfone travado pela moderação': 'Makarafoonka waxaa xiray maamulayaasha',
 } satisfies Record<string, string>;

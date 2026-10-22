@@ -2179,4 +2179,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'กุญแจจะเปลี่ยนเมื่อมีคนเข้าหรือออก',
   'Conferir com quem está na chamada': 'ตรวจสอบกับคนที่อยู่ในสาย',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'เซิร์ฟเวอร์ส่งต่อเสียงและภาพโดยไม่สามารถได้ยินหรือมองเห็น',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'ปลดล็อกไมโครโฟน',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'ทีมดูแลปิดเสียงไมโครโฟนของคุณแล้ว มีเพียงผู้ดูแลชุมชนเท่านั้นที่ปลดล็อกได้',
+  'Microfone travado pela moderação': 'ไมโครโฟนถูกทีมดูแลล็อกไว้',
 } satisfies Record<string, string>;

@@ -2165,4 +2165,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Na ki e veisau ni curu se lako tani e dua.',
   'Conferir com quem está na chamada': 'Vakadeitaka vata kei ira era tiko ena veiqiri',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Na sava e vakau yani na domo kei na itaba, ia e sega ni rogoca se raica rawa.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Sereka na maikorofoni',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Era sa vakagaluya na nomu maikorofoni na ivakatawa. Ko ira walega era lewa na matabose era rawa ni sereka.',
+  'Microfone travado pela moderação': 'Sa lokataki na maikorofoni mai vei ira na ivakatawa',
 } satisfies Record<string, string>;

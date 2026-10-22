@@ -2249,4 +2249,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'མི་ལེ་ཤ་ཅིག་ནང་འཛུལ་ཞུགས་ ཡང་ན་ ཕྱིར་ཐོན་པའི་སྐབས་ ལྡེ་མིག་སོར་འགྱོཝ་ཨིན།',
   'Conferir com quem está na chamada': 'སྐད་འབོད་ནང་ཡོད་མི་ཚུ་དང་གཅིག་ཁར་བརྟག་ཞིབ།',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'སར་བར་གྱིས་ སྐད་དང་པར་ཚུ་བསྐྱལ་དོ་ཡི་ འདི་འབདཝ་ད་ ཐོས་ནི་དང་མཐོང་ནི་མི་ཚུགས།',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'མའི་ཀོ་ཕོན་བཀག་ཆ་ཕྱེ།',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'བར་འཛིན་པས་ཁྱོད་ཀྱི་མའི་ཀོ་ཕོན་སྒྲ་བཀག་ཡི། མི་སྡེ་འཛིན་སྐྱོང་འཐབ་མི་ཚུ་གིས་རྐྱངམ་ཅིག་ ཕྱེ་ཚུགས།',
+  'Microfone travado pela moderação': 'བར་འཛིན་པས་མའི་ཀོ་ཕོན་བཀག་ཡོད།',
 } satisfies Record<string, string>;

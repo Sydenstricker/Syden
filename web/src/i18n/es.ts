@@ -2161,4 +2161,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'La clave cambia cuando alguien entra o sale.',
   'Conferir com quem está na chamada': 'Comprobar con quienes están en la llamada',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'El servidor reenvía la voz y la imagen sin poder oírlas ni verlas.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Liberar el micrófono',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'La moderación silenció tu micrófono. Solo quien administra la comunidad puede liberarlo.',
+  'Microfone travado pela moderação': 'Micrófono bloqueado por la moderación',
 } satisfies Record<string, string>;

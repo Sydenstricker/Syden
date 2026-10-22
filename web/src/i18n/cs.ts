@@ -2235,4 +2235,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Klíč se mění, když se někdo připojí nebo odejde.',
   'Conferir com quem está na chamada': 'Ověřit s lidmi v hovoru',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Server předává hlas a obraz, aniž by je mohl slyšet nebo vidět.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Uvolnit mikrofon',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderace ti ztlumila mikrofon. Uvolnit ho může jen ten, kdo spravuje komunitu.',
+  'Microfone travado pela moderação': 'Mikrofon zamkla moderace',
 } satisfies Record<string, string>;

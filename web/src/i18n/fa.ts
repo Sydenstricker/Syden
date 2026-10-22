@@ -2154,4 +2154,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'وقتی کسی وارد می‌شود یا بیرون می‌رود، کلید عوض می‌شود.',
   'Conferir com quem está na chamada': 'بررسی با کسانی که در تماس هستند',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'سرور صدا و تصویر را رد می‌کند، بی‌آنکه بتواند آن‌ها را بشنود یا ببیند.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'آزاد کردن میکروفون',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'ناظران میکروفون تو را بی‌صدا کرده‌اند. فقط کسانی که انجمن را مدیریت می‌کنند می‌توانند آن را آزاد کنند.',
+  'Microfone travado pela moderação': 'میکروفون را ناظران قفل کرده‌اند',
 } satisfies Record<string, string>;

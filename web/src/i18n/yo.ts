@@ -2181,4 +2181,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Kọ́kọ́rọ́ náà máa ń yí padà nígbà tí ẹnìkan bá wọlé tàbí jáde.',
   'Conferir com quem está na chamada': 'Ẹ ṣàyẹ̀wò pẹ̀lú àwọn tó wà nínú ìpè',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sáfà ń gbé ohùn àti àwòrán kọjá láìlè gbọ́ tàbí rí wọn.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Tú máíkì sílẹ̀',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Àwọn alábòójútó ti pa máíkì rẹ. Àwọn tó ń ṣàkóso àwùjọ nìkan ló lè tú u sílẹ̀.',
+  'Microfone travado pela moderação': 'Àwọn alábòójútó ti ti máíkì pa',
 } satisfies Record<string, string>;

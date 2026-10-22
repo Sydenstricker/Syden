@@ -2166,4 +2166,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Cheia se schimbă când cineva intră sau iese.',
   'Conferir com quem está na chamada': 'Verifică împreună cu cei din apel',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serverul transmite vocea și imaginea fără să le poată auzi sau vedea.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Deblochează microfonul',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderarea ți-a oprit microfonul. Doar cei care administrează comunitatea îl pot debloca.',
+  'Microfone travado pela moderação': 'Microfon blocat de moderare',
 } satisfies Record<string, string>;

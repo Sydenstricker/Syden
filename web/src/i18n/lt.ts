@@ -2238,4 +2238,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Raktas pasikeičia, kai kas nors prisijungia ar išeina.',
   'Conferir com quem está na chamada': 'Patikrinti su skambučio dalyviais',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serveris perduoda balsą ir vaizdą, negalėdamas jų girdėti ar matyti.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Atlaisvinti mikrofoną',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderacija nutildė tavo mikrofoną. Atlaisvinti jį gali tik tie, kurie tvarko bendruomenę.',
+  'Microfone travado pela moderação': 'Mikrofoną užrakino moderacija',
 } satisfies Record<string, string>;

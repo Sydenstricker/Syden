@@ -2148,4 +2148,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'ఎవరైనా చేరినప్పుడు లేదా వెళ్లినప్పుడు కీ మారుతుంది.',
   'Conferir com quem está na chamada': 'కాల్‌లో ఉన్నవారితో సరిచూడండి',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'సర్వర్ వాయిస్‌నూ చిత్రాన్నీ పంపుతుంది, కానీ వినలేదు, చూడలేదు.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'మైక్‌ను విడుదల చేయి',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'మోడరేషన్ నీ మైక్‌ను మ్యూట్ చేసింది. కమ్యూనిటీని నిర్వహించేవాళ్లు మాత్రమే దాన్ని విడుదల చేయగలరు.',
+  'Microfone travado pela moderação': 'మోడరేషన్ మైక్‌ను లాక్ చేసింది',
 } satisfies Record<string, string>;

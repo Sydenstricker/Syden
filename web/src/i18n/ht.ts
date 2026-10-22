@@ -2246,4 +2246,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Kle a chanje lè yon moun antre oswa soti.',
   'Conferir com quem está na chamada': 'Verifye ak moun ki nan apèl la',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sèvè a pase vwa a ak imaj la san li pa ka tande ni wè.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Debloke mikwo a',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderasyon an koupe mikwo ou. Se sèlman moun k ap jere kominote a ki ka debloke l.',
+  'Microfone travado pela moderação': 'Moderasyon an bloke mikwo a',
 } satisfies Record<string, string>;

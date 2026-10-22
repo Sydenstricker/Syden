@@ -90,6 +90,8 @@ export interface VoiceMember {
    * estar na sala não basta, porque abrir a transmissão é escolha de cada um (ver assistir, em useVoice.ts).
    */
   assistindo: number[];
+  /** O microfone está TRAVADO pela moderação da comunidade (ver travarMicrofone): a pessoa não consegue ligá-lo. */
+  travado: boolean;
 }
 
 type Ack = (result: { ok: true; communityId?: number } | { ok: false; error: string }) => void;
@@ -103,6 +105,18 @@ interface VoiceSession extends VoiceMember {
 // Estado em memória: suficiente para uma instância. Para rodar várias instâncias do servidor,
 // isto passa para o Redis (junto com o @socket.io/redis-adapter).
 const voiceMembers = new Map<number, VoiceSession>();
+/**
+ * MICROFONES TRAVADOS PELA MODERAÇÃO ("comunidade:pessoa"), como o "silenciar no servidor" do Discord: vale para a
+ * comunidade inteira, sobrevive a sair e voltar da chamada, e só quem administra tira. A trava de verdade é a permissão
+ * do LiveKit (ver permissaoNaSala, em routes.ts); isto é o que ela lê. Em memória: some se o servidor reiniciar.
+ */
+const microfonesTravados = new Set<string>();
+/**
+ * A TELA E A CÂMERA CORTADAS pela moderação (parar-video, em routes.ts): pessoa → sala. Fora da sessão de voz de
+ * propósito (achado da revisão de 21/10/2026): o socket que cai apaga a sessão, e a próxima conta da permissão
+ * devolveria a tela. Sai quando a pessoa SAI da sala pelo botão, ou entra noutra.
+ */
+const videosCortados = new Map<number, number>();
 const onlineSockets = new Map<number, { username: string; sockets: Set<string>; status: PresenceStatus }>();
 
 const USAGE_HEARTBEAT_MS = 60_000;
@@ -111,7 +125,10 @@ const USAGE_HEARTBEAT_MS = 60_000;
 function voiceState(communityId: number): VoiceMember[] {
   return [...voiceMembers.values()]
     .filter((member) => member.communityId === communityId)
-    .map(({ socketId: _s, voiceSessionId: _v, screenSessionId: _c, ...member }) => member);
+    .map(({ socketId: _s, voiceSessionId: _v, screenSessionId: _c, ...member }) => ({
+      ...member,
+      travado: microfoneTravado(communityId, member.userId),
+    }));
 }
 
 function broadcastVoice(io: IOServer, communityId: number) {
@@ -184,6 +201,26 @@ function endVoiceSession(userId: number) {
   // avisar a saída antes de a sala desaparecer da lista.
   const io = ioDoServidor;
   if (io) setImmediate(() => apagarSeVazia(io, session.channelId));
+}
+
+export function microfoneTravado(communityId: number, userId: number): boolean {
+  return microfonesTravados.has(`${communityId}:${userId}`);
+}
+
+/** Trava ou solta o microfone de alguém na comunidade, e a lista das salas mostra na hora. */
+export function travarMicrofone(io: IOServer, communityId: number, userId: number, travar: boolean) {
+  if (travar) microfonesTravados.add(`${communityId}:${userId}`);
+  else microfonesTravados.delete(`${communityId}:${userId}`);
+  broadcastVoice(io, communityId);
+}
+
+/** A tela e a câmera de alguém foram cortadas na sala em que está (até sair dela). */
+export function cortarVideo(userId: number, channelId: number) {
+  videosCortados.set(userId, channelId);
+}
+
+export function videoCortado(userId: number, channelId: number): boolean {
+  return videosCortados.get(userId) === channelId;
 }
 
 /** Quantas pessoas estão numa sala de voz agora. */
@@ -449,6 +486,7 @@ export function setupRealtime(io: IOServer) {
       // "reanunciar" a cada 3 s e tomar a chamada de volta (os dois ficavam se alternando na lista para sempre).
       if (anterior && anterior.socketId !== socket.id) io.to(anterior.socketId).emit('voice:substituida', { channelId: anterior.channelId });
       endVoiceSession(user.id); // trocou de sala, ou entrou por outra aba
+      if (videosCortados.has(user.id) && videosCortados.get(user.id) !== channel.id) videosCortados.delete(user.id);
       voiceMembers.set(user.id, {
         userId: user.id,
         username: user.username,
@@ -461,6 +499,7 @@ export function setupRealtime(io: IOServer) {
         screenName: null,
         screenGenero: null,
         assistindo: [],
+        travado: false, // o voiceState lê de microfonesTravados
         socketId: socket.id,
         voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId, channel.id),
         screenSessionId: null,
@@ -518,7 +557,11 @@ export function setupRealtime(io: IOServer) {
         broadcastVoice(io, member.communityId);
       }
     };
-    socket.on('voice:leave', leaveVoice);
+    socket.on('voice:leave', () => {
+      // Saiu pelo botão: o corte da tela termina com a sala. Socket que CAI não conta (ver videosCortados).
+      if (voiceMembers.get(user.id)?.socketId === socket.id) videosCortados.delete(user.id);
+      leaveVoice();
+    });
 
     socket.on('disconnect', () => {
       leaveVoice();

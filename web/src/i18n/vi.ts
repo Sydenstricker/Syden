@@ -2136,4 +2136,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Khóa thay đổi khi có người vào hoặc rời đi.',
   'Conferir com quem está na chamada': 'Đối chiếu với những người trong cuộc gọi',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Máy chủ chuyển tiếp giọng nói và hình ảnh mà không thể nghe hay xem được.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Mở khóa micro',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Ban quản trị đã tắt micro của bạn. Chỉ người quản lý cộng đồng mới mở khóa được.',
+  'Microfone travado pela moderação': 'Micro bị ban quản trị khóa',
 } satisfies Record<string, string>;

@@ -2233,4 +2233,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Võti muutub, kui keegi liitub või lahkub.',
   'Conferir com quem está na chamada': 'Kontrolli kõnes olijatega',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Server edastab hääle ja pildi, suutmata neid kuulda ega näha.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Vabasta mikrofon',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Modereerijad vaigistasid su mikrofoni. Vabastada saavad seda ainult kogukonna haldajad.',
+  'Microfone travado pela moderação': 'Modereerijad on mikrofoni lukustanud',
 } satisfies Record<string, string>;

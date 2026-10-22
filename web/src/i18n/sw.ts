@@ -2165,4 +2165,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Ufunguo hubadilika mtu anapoingia au kutoka.',
   'Conferir com quem está na chamada': 'Hakikisha pamoja na walio kwenye simu',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seva hupitisha sauti na picha bila kuweza kusikia wala kuona.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Achilia maikrofoni',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Wasimamizi wamenyamazisha maikrofoni yako. Ni wanaoendesha jumuiya pekee wanaoweza kuiachilia.',
+  'Microfone travado pela moderação': 'Maikrofoni imefungwa na wasimamizi',
 } satisfies Record<string, string>;

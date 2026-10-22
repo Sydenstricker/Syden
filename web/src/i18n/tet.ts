@@ -2168,4 +2168,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Xave muda bainhira ema ruma tama ka sai.',
   'Conferir com quem está na chamada': 'Konfere ho ema ne\'ebé iha xamada',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Servidór haruka lian no imajen maibé labele rona ka haree.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Hasai xave mikrofone',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderasaun halo nonok ó-nia mikrofone. Só ema ne’ebé jere komunidade mak bele hasai xave.',
+  'Microfone travado pela moderação': 'Moderasaun taka xave mikrofone',
 } satisfies Record<string, string>;

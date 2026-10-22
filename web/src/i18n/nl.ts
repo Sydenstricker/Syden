@@ -2165,4 +2165,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'De sleutel verandert als iemand erbij komt of weggaat.',
   'Conferir com quem está na chamada': 'Controleren met wie in het gesprek zit',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'De server stuurt stem en beeld door zonder ze te kunnen horen of zien.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Microfoon vrijgeven',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'De moderatie heeft je microfoon gedempt. Alleen wie de community beheert, kan hem vrijgeven.',
+  'Microfone travado pela moderação': 'Microfoon vergrendeld door de moderatie',
 } satisfies Record<string, string>;

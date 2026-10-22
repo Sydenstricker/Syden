@@ -2233,4 +2233,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Ключът се сменя, когато някой влезе или излезе.',
   'Conferir com quem está na chamada': 'Сверяване с хората в разговора',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Сървърът препраща гласа и образа, без да може да ги чува или вижда.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Освободи микрофона',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Модерацията заглуши микрофона ти. Само който управлява общността може да го освободи.',
+  'Microfone travado pela moderação': 'Микрофонът е заключен от модерацията',
 } satisfies Record<string, string>;

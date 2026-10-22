@@ -20,6 +20,10 @@ import { salaDaPessoa,
   pessoasNaSala,
   removeVoiceChannelMembers,
   salaDeVozDe,
+  cortarVideo,
+  microfoneTravado,
+  travarMicrofone,
+  videoCortado,
 } from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
 import { INSIGNIAS, LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
@@ -166,6 +170,33 @@ export function poderDeOperador(user: db.User, action: string, sobre: { target?:
 }
 
 export const manages = (role: db.Role | undefined) => role === 'owner' || role === 'admin';
+
+/**
+ * O QUE ALGUÉM PODE PUBLICAR NUMA SALA, numa conta só, porque três travas mexem na mesma permissão do LiveKit e cada
+ * troca a substitui INTEIRA: a apresentação (só quem tem a palavra fala), o corte da tela e da câmera (parar-video) e
+ * o microfone travado pela moderação (mute). Calcular só uma delas desfaria as outras.
+ */
+export function permissaoNaSala(channel: { id: number; communityId: number }, userId: number) {
+  const podeFalar =
+    !db.ehApresentacao(channel.id) || manages(db.memberRole(channel.communityId, userId)) || db.situacaoNoPalco(channel.id, userId) === 'palco';
+  const fontes: TrackSource[] = [];
+  const travado = microfoneTravado(channel.communityId, userId);
+  if (!travado) fontes.push(TrackSource.MICROPHONE);
+  if (!videoCortado(userId, channel.id)) {
+    fontes.push(TrackSource.CAMERA, TrackSource.SCREEN_SHARE);
+    // Quem diz a fonte de uma faixa é o cliente: com o som da transmissão liberado, o microfone travado sairia pelo
+    // console como "som da tela" (achado da revisão de 21/10/2026). O preço: travado, transmite sem som.
+    if (!travado) fontes.push(TrackSource.SCREEN_SHARE_AUDIO);
+  }
+  return {
+    // A lista VAZIA quer dizer "tudo" para o LiveKit: sem fonte nenhuma, quem tranca é o canPublish.
+    canPublish: podeFalar && fontes.length > 0,
+    canSubscribe: true,
+    // Continua verdadeiro na plateia: é por aqui que passam os avisos do próprio LiveKit.
+    canPublishData: true,
+    canPublishSources: fontes.length === 4 ? [] : fontes,
+  };
+}
 
 /**
  * Quem entrou só para uma aula (conta temporária, ver aula-routes.ts) faz o que a aula precisa: falar,
@@ -1185,20 +1216,40 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         const role = roleIn(request.user, channel.communityId);
         if (!manages(role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode silenciar alguém.' });
         const targetId = Number(request.body?.userId);
-        const muted = request.body?.muted !== false;
+        const travar = request.body?.muted !== false;
         const targetRole = db.memberRole(channel.communityId, targetId);
         if (!targetRole) return reply.code(404).send({ error: 'Essa pessoa não participa da comunidade.' });
         if (targetRole === 'owner' && role !== 'owner') {
           return reply.code(403).send({ error: 'Quem criou a comunidade não pode ser silenciado.' });
         }
+        // Um admin travado por outro não se solta sozinho: só o dono, ou outra pessoa que administre.
+        if (!travar && targetId === request.user.id && role !== 'owner') {
+          return reply.code(403).send({ error: 'Outra pessoa que administra a comunidade precisa liberar o seu microfone.' });
+        }
 
-        const room = voiceRoomName(channel.id);
-        const participants = await rooms.listParticipants(room).catch(() => []);
-        const target = participants.find((p) => p.identity === String(targetId));
-        const audio = target?.tracks.find((t) => t.source === TrackSource.MICROPHONE);
-        if (!audio) return reply.code(404).send({ error: 'Essa pessoa não está com microfone nesta sala.' });
-        await rooms.mutePublishedTrack(room, String(targetId), audio.sid, muted);
-        return { ok: true };
+        travarMicrofone(io, channel.communityId, targetId, travar);
+        // Na sala em que a pessoa está AGORA (pode ser outra da mesma comunidade), a permissão muda na hora. Sem sessão
+        // de voz (o socket reconectando), tenta a sala do pedido assim mesmo: o LiveKit pode já tê-la lá dentro.
+        const sessao = salaDeVozDe(targetId);
+        const sala = sessao && sessao.communityId === channel.communityId ? sessao : { channelId: channel.id, communityId: channel.communityId };
+        {
+          const room = voiceRoomName(sala.channelId);
+          await rooms.updateParticipant(room, String(targetId), undefined, permissaoNaSala({ id: sala.channelId, communityId: sala.communityId }, targetId)).catch(() => {});
+          // Travar também desliga o que está aberto. SOLTAR não liga nada: abrir o microfone de alguém sem ela pedir
+          // é invasão (a pessoa pode estar falando em casa achando que está muda). Ela liga quando quiser.
+          if (travar) {
+            const participants = await rooms.listParticipants(room).catch(() => []);
+            const audio = participants.find((p) => p.identity === String(targetId))?.tracks.find((t) => t.source === TrackSource.MICROPHONE);
+            if (audio) await rooms.mutePublishedTrack(room, String(targetId), audio.sid, true).catch(() => {});
+          }
+        }
+        db.registrarAuditoria({
+          actor: request.user,
+          action: travar ? 'microfone.travado' : 'microfone.liberado',
+          target: db.findUserById(targetId)?.username ?? String(targetId),
+          communityId: channel.communityId,
+        });
+        return { ok: true, travado: travar };
       },
     );
 
@@ -1262,14 +1313,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const participants = await rooms.listParticipants(room).catch(() => []);
       const target = participants.find((p) => p.identity === String(targetId));
       if (!target) return reply.code(404).send({ error: 'Essa pessoa não está nesta sala.' });
-      await rooms
-        .updateParticipant(room, String(targetId), undefined, {
-          canPublish: true,
-          canSubscribe: true,
-          canPublishData: true,
-          canPublishSources: [TrackSource.MICROPHONE],
-        })
-        .catch(() => {});
+      cortarVideo(targetId, channel.id);
+      await rooms.updateParticipant(room, String(targetId), undefined, permissaoNaSala(channel, targetId)).catch(() => {});
       for (const track of target.tracks) {
         if (track.source !== TrackSource.MICROPHONE) await rooms.mutePublishedTrack(room, String(targetId), track.sid, true).catch(() => {});
       }
@@ -1568,14 +1613,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
      * certo na próxima entrada, pelo token, e derrubar a resposta HTTP por causa disso deixaria a tela
      * de quem apresenta parecendo quebrada.
      */
-    async function ajustarPermissao(channelId: number, userId: number, podePublicar: boolean) {
-      await rooms
-        .updateParticipant(voiceRoomName(channelId), String(userId), undefined, {
-          canPublish: podePublicar,
-          canSubscribe: true,
-          canPublishData: true,
-        })
-        .catch(() => {});
+    async function ajustarPermissao(channel: CommunityChannel, userId: number) {
+      await rooms.updateParticipant(voiceRoomName(channel.id), String(userId), undefined, permissaoNaSala(channel, userId)).catch(() => {});
     }
 
     /** O estado do palco vai para todo mundo da comunidade: a tela de cada um se ajusta sozinha. */
@@ -1613,14 +1652,12 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         db.definirApresentacao(channel.id, ligado);
 
         // Quem está na sala AGORA precisa ter a permissão trocada na hora. Ao ligar, cala todo mundo
-        // que não administra; ao desligar, devolve a voz a todos — inclusive a quem estava calado.
+        // que não administra; ao desligar, devolve a voz a todos — menos a quem a moderação travou.
         const naSala = await rooms.listParticipants(voiceRoomName(channel.id)).catch(() => []);
         for (const participante of naSala) {
           const id = Number(participante.identity);
           if (!Number.isInteger(id)) continue;
-          const papel = db.memberRole(channel.communityId, id);
-          const podeFalar = !ligado || manages(papel);
-          await ajustarPermissao(channel.id, id, podeFalar);
+          await ajustarPermissao(channel, id);
         }
         avisarPalco(channel);
         return { apresentacao: ligado, palco: db.lerPalco(channel.id) };
@@ -1670,7 +1707,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         else db.tirarDoPalco(channel.id, alvo);
 
         // A permissão muda na hora, sem a pessoa precisar sair e voltar da chamada.
-        await ajustarPermissao(channel.id, alvo, subir);
+        await ajustarPermissao(channel, alvo);
         avisarPalco(channel);
         return { palco: db.lerPalco(channel.id) };
       },
@@ -1740,28 +1777,26 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
        * Quem administra a comunidade publica sempre — precisa poder falar para organizar a sessão sem
        * ter que se dar palco primeiro.
        */
-      const apresentando = db.ehApresentacao(channel.id);
-      const role = roleIn(request.user, channel.communityId);
-      const podeFalar = !apresentando || manages(role) || db.situacaoNoPalco(channel.id, request.user.id) === 'palco';
+      const permissao = permissaoNaSala(channel, request.user.id);
 
       const token = new AccessToken(config.livekit.apiKey, config.livekit.apiSecret, {
         identity: String(request.user.id),
         name: request.user.username,
         ttl: '6h',
       });
-      token.addGrant({
-        room: voiceRoomName(channel.id),
-        roomJoin: true,
-        canPublish: podeFalar,
-        canSubscribe: true,
-        // Continua verdadeiro na plateia: é por aqui que passam os avisos do próprio LiveKit. Cortar
-        // isto mudaria coisas que não têm nada a ver com falar.
-        canPublishData: true,
-      });
+      // O microfone travado pela moderação também mora aqui (permissaoNaSala): sair e voltar não o destrava.
+      token.addGrant({ room: voiceRoomName(channel.id), roomJoin: true, ...permissao });
       // e2ee: a chamada é de ponta a ponta (web/src/chaveDaChamada.ts). Vem do servidor, e não só do site, para os dois
       // lados de uma sala concordarem: com um servidor antigo, sem o campo, ninguém liga a cifra e ninguém fica surdo.
       // CHAMADAS_E2EE=nao no .env desliga, para uma emergência (um navegador que não decifre, por exemplo).
-      return { url: config.livekit.url, token: await token.toJwt(), channelId: channel.id, e2ee: process.env.CHAMADAS_E2EE !== 'nao' };
+      return {
+        url: config.livekit.url,
+        token: await token.toJwt(),
+        channelId: channel.id,
+        e2ee: process.env.CHAMADAS_E2EE !== 'nao',
+        // O app não tenta abrir o microfone ao entrar (seria recusado e pareceria defeito); ver useVoice.ts.
+        microfoneTravado: microfoneTravado(channel.communityId, request.user.id),
+      };
     });
   });
 }

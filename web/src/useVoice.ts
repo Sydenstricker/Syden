@@ -363,6 +363,17 @@ export function useVoice(socket: Socket | null) {
   const stopAppAudioRef = useRef<() => void>(() => {});
   const deafenedRef = useRef(false);
   /**
+   * O MICROFONE TRAVADO PELA MODERAÇÃO (21/10/2026, como o "silenciar no servidor" do Discord). Quem trava é o servidor,
+   * na permissão do LiveKit; aqui o app só deixa de TENTAR abrir o microfone, porque a tentativa seria recusada e
+   * pareceria defeito, e o palco diz o motivo. Vem do voice-token ao entrar e da lista da sala (voice:state) depois.
+   */
+  const [microfoneTravado, setMicrofoneTravado] = useState(false);
+  const travadoRef = useRef(false);
+  const definirTravado = useCallback((travado: boolean) => {
+    travadoRef.current = travado;
+    setMicrofoneTravado(travado);
+  }, []);
+  /**
    * Se o microfone já estava desligado ANTES de ensurdecer. Tirar o ensurdecer devolve o microfone a esse estado, como
    * no Discord: quem estava mudo e ensurdeceu continua mudo ao voltar a ouvir. Antes, voltar a ouvir LIGAVA o microfone
    * de quem tinha se mutado de propósito (auditoria do áudio, 17/10/2026). null: não se sabe (ensurdecido de outra visita).
@@ -403,6 +414,7 @@ export function useVoice(socket: Socket | null) {
       channelRef.current = null;
       deafenedRef.current = false;
       definirSurdez(false);
+      definirTravado(false);
       setAssistindo(new Set()); // transmissão aberta é coisa daquela sala
       setChannelId(null);
       setDeafened(false);
@@ -699,9 +711,11 @@ export function useVoice(socket: Socket | null) {
       conferir = undefined;
     };
     const naLista = () => ultima.includes(Number(room.localParticipant.identity));
-    const onState = ({ communityId, members }: { communityId: number; members: { userId: number }[] }) => {
+    const onState = ({ communityId, members }: { communityId: number; members: { userId: number; travado?: boolean }[] }) => {
       if (communityId !== comunidadeRef.current) return;
       ultima = members.map((m) => m.userId);
+      const eu = members.find((m) => m.userId === Number(room.localParticipant.identity));
+      if (eu) definirTravado(!!eu.travado);
       if (channelRef.current === null || room.state !== ConnectionState.Connected || naLista() || conferir) return;
       if (substituidaRef.current === channelRef.current) return;
       conferir = setTimeout(() => {
@@ -864,12 +878,19 @@ export function useVoice(socket: Socket | null) {
         if (room.state !== ConnectionState.Disconnected) await room.disconnect();
         // A SALA PODE SER OUTRA: a que cria salas devolve a senha da sala temporária da pessoa, e é nela
         // que se entra (ver server/src/salas-temporarias.ts).
-        const { url, token, channelId: destino, e2ee } = await api<{ url: string; token: string; channelId?: number; e2ee?: boolean }>(
+        const { url, token, channelId: destino, e2ee, microfoneTravado: travado } = await api<{
+          url: string;
+          token: string;
+          channelId?: number;
+          e2ee?: boolean;
+          microfoneTravado?: boolean;
+        }>(
           `/api/channels/${id}/voice-token`,
           { method: 'POST' },
         );
         const sala = destino ?? id;
         pedindoSenha = false;
+        definirTravado(!!travado);
         // Sala de ponta a ponta num navegador que não sabe cifrar: entrar seria ouvir só ruído e mandar ruído.
         if (e2ee && !chaves) {
           setError(t('Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.'));
@@ -930,7 +951,7 @@ export function useVoice(socket: Socket | null) {
       try {
         const settings = getSettings();
         if (settings.startDeafened) setDeafenedState(true);
-        await room.localParticipant.setMicrophoneEnabled(!settings.startMuted && !settings.startDeafened);
+        await room.localParticipant.setMicrophoneEnabled(!settings.startMuted && !settings.startDeafened && !travadoRef.current);
         // Entrando mudo, o LiveKit não publica faixa nenhuma e nenhum evento avisa a tela: o estado
         // precisa ser dito na mão, senão o botão mostraria o microfone ligado com ele desligado.
         const estado = readLocalMedia(room.localParticipant);
@@ -1167,6 +1188,8 @@ export function useVoice(socket: Socket | null) {
     }
     const lp = room.localParticipant;
     const enable = !lp.isMicrophoneEnabled;
+    // Travado pela moderação: ligar seria recusado. O aviso do palco já diz por quê.
+    if (enable && travadoRef.current) return;
     try {
       await lp.setMicrophoneEnabled(enable);
       updateSettings({ startMuted: !enable });
@@ -1200,7 +1223,7 @@ export function useVoice(socket: Socket | null) {
     setWantDeafened(next);
     (next ? sounds.deafen : sounds.undeafen)();
     // Ensurdecer desliga o microfone; voltar a ouvir só o religa se ele estava ligado antes.
-    const ligar = !next && !(mudoAntesDeEnsurdecerRef.current ?? false);
+    const ligar = !next && !(mudoAntesDeEnsurdecerRef.current ?? false) && !travadoRef.current;
     await lp.setMicrophoneEnabled(ligar).catch(console.error);
   }, [room, setDeafenedState]);
 
@@ -1239,7 +1262,8 @@ export function useVoice(socket: Socket | null) {
   stopAppAudioRef.current = stopAppAudio;
 
   const startAppAudio = useCallback(async () => {
-    if (appAudioRef.current) return;
+    // Travado pela moderação, o som da transmissão também fica de fora (o servidor recusaria: ver permissaoNaSala).
+    if (appAudioRef.current || travadoRef.current) return;
     // (cada coisa que deixa a transmissão sem som vai para o diário da aba de saúde, com onde aconteceu)
     const aoProblema = (motivo: string) => reportProblem('transmissão', `som do app: ${motivo} · ${onde()}`.slice(0, 200));
     const audio = await captureAppAudio(aoProblema);
@@ -1318,8 +1342,10 @@ export function useVoice(socket: Socket | null) {
           // solta do getDisplayMedia. Estava no lugar errado, o navegador ignorava calado, e o som da
           // chamada voltava para dentro da transmissão: todo mundo se ouvia. Logo abaixo, o app
           // confere se a opção pegou de verdade, em vez de confiar.
-          audio: { restrictOwnAudio: true },
-          systemAudio: 'include',
+          // Com o microfone travado pela moderação, a transmissão vai sem som: o servidor recusa o som da tela, que
+          // pelo console seria um jeito de falar travado, e a recusa derrubaria a transmissão inteira.
+          audio: travadoRef.current ? false : { restrictOwnAudio: true },
+          systemAudio: travadoRef.current ? 'exclude' : 'include',
           selfBrowserSurface: 'exclude',
           video: { displaySurface: surface },
           preferCurrentTab: false,
@@ -1747,7 +1773,7 @@ export function useVoice(socket: Socket | null) {
 
   /** Liga o microfone de novo depois de um bloqueio — pelo botão ou sozinho, quando a permissão muda. */
   const tentarMicrofoneDeNovo = useCallback(async () => {
-    if (channelRef.current === null) return;
+    if (channelRef.current === null || travadoRef.current) return;
     try {
       await room.localParticipant.setMicrophoneEnabled(true);
       setMicrofoneBloqueado(null);
@@ -1800,6 +1826,7 @@ export function useVoice(socket: Socket | null) {
     mutedWarning,
     microfoneSemSom,
     microfoneBloqueado,
+    microfoneTravado,
     tentarMicrofoneDeNovo,
     clearError: () => setError(null),
     join,

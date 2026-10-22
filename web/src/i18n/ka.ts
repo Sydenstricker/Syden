@@ -2254,4 +2254,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'გასაღები იცვლება, როცა ვინმე შემოდის ან გადის.',
   'Conferir com quem está na chamada': 'შეადარე ზარის მონაწილეებთან',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'სერვერი გადასცემს ხმას და გამოსახულებას, მაგრამ ვერც ისმენს და ვერც ხედავს მათ.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'მიკროფონის განბლოკვა',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'მოდერაციამ შენი მიკროფონი დაადუმა. მისი განბლოკვა მხოლოდ საზოგადოების მმართველებს შეუძლიათ.',
+  'Microfone travado pela moderação': 'მიკროფონი მოდერაციამ დაბლოკა',
 } satisfies Record<string, string>;

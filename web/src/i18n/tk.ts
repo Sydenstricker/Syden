@@ -2238,4 +2238,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Kimdir goşulanda ýa-da çykanda açar üýtgeýär.',
   'Conferir com quem está na chamada': 'Jaňdakylar bilen deňeşdir',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Serwer sesi we şekili geçirýär, emma olary eşidip-de, görüp-de bilmeýär.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Mikrofony boşat',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderasiýa mikrofonyňy ýapdy. Ony diňe jemgyýeti dolandyrýanlar boşadyp biler.',
+  'Microfone travado pela moderação': 'Mikrofony moderasiýa gulplady',
 } satisfies Record<string, string>;

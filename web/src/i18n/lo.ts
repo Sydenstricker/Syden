@@ -2237,4 +2237,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'ກະແຈຈະປ່ຽນເມື່ອມີຄົນເຂົ້າ ຫຼື ອອກ',
   'Conferir com quem está na chamada': 'ກວດສອບກັບຄົນທີ່ຢູ່ໃນການໂທ',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ເຊີບເວີສົ່ງຕໍ່ສຽງ ແລະ ພາບ ໂດຍບໍ່ສາມາດໄດ້ຍິນ ຫຼື ເຫັນ',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'ປົດລັອກໄມ',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'ຜູ້ດູແລໄດ້ປິດສຽງໄມຂອງເຈົ້າ. ມີແຕ່ຜູ້ທີ່ຄຸ້ມຄອງຊຸມຊົນເທົ່ານັ້ນທີ່ປົດໄດ້.',
+  'Microfone travado pela moderação': 'ໄມຖືກຜູ້ດູແລລັອກໄວ້',
 } satisfies Record<string, string>;

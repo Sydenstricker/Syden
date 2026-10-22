@@ -2168,4 +2168,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Makullin yana canjawa idan wani ya shiga ko ya fita.',
   'Conferir com quem está na chamada': 'Tantance tare da waɗanda ke cikin kiran',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sabar tana isar da murya da hoto ba tare da ta iya ji ko gani ba.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Saki makirufo',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Masu kula da al’umma sun kashe makirufonku. Masu gudanar da al’ummar ne kaɗai za su iya sakin sa.',
+  'Microfone travado pela moderação': 'Masu kula sun kulle makirufo',
 } satisfies Record<string, string>;

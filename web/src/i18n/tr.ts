@@ -2160,4 +2160,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Biri katıldığında veya ayrıldığında anahtar değişir.',
   'Conferir com quem está na chamada': 'Aramadakilerle karşılaştır',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sunucu sesi ve görüntüyü iletir ama duyamaz ve göremez.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Mikrofonun kilidini aç',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderasyon mikrofonunu susturdu. Kilidi yalnızca topluluğu yönetenler açabilir.',
+  'Microfone travado pela moderação': 'Mikrofon moderasyon tarafından kilitlendi',
 } satisfies Record<string, string>;

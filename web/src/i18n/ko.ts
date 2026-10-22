@@ -2154,4 +2154,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': '누군가 들어오거나 나가면 키가 바뀌어요.',
   'Conferir com quem está na chamada': '통화에 있는 사람들과 확인하기',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': '서버는 음성과 영상을 전달만 하고, 듣거나 볼 수 없어요.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': '마이크 잠금 해제',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': '운영진이 마이크를 음소거했어요. 커뮤니티를 관리하는 사람만 해제할 수 있어요.',
+  'Microfone travado pela moderação': '운영진이 마이크를 잠갔어요',
 } satisfies Record<string, string>;

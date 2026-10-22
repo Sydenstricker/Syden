@@ -277,6 +277,8 @@ export interface VoiceMember {
   screenGenero?: string | null;
   /** De quem são as transmissões que esta pessoa abriu (ids). Vazio em servidor antigo. */
   assistindo?: number[];
+  /** O microfone está travado pela moderação da comunidade. Ausente em servidor antigo. */
+  travado?: boolean;
 }
 
 export type Traffic =

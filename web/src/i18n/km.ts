@@ -2235,4 +2235,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'សោផ្លាស់ប្តូរនៅពេលមាននរណាម្នាក់ចូល ឬចេញ។',
   'Conferir com quem está na chamada': 'ផ្ទៀងផ្ទាត់ជាមួយអ្នកដែលនៅក្នុងការហៅ',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'ម៉ាស៊ីនមេបញ្ជូនសំឡេង និងរូបភាពបន្ត ដោយមិនអាចស្តាប់ឮ ឬមើលឃើញបានទេ។',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'ដោះសោមីក្រូហ្វូន',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'អ្នកសម្របសម្រួលបានបិទសំឡេងមីក្រូហ្វូនរបស់អ្នក។ មានតែអ្នកគ្រប់គ្រងសហគមន៍ទេដែលអាចដោះសោវាបាន។',
+  'Microfone travado pela moderação': 'មីក្រូហ្វូនត្រូវបានចាក់សោដោយអ្នកសម្របសម្រួល',
 } satisfies Record<string, string>;

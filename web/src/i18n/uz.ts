@@ -2244,4 +2244,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Kimdir qoʻshilganda yoki chiqib ketganda kalit oʻzgaradi.',
   'Conferir com quem está na chamada': 'Qoʻngʻiroqdagilar bilan tekshirish',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Server ovoz va tasvirni uzatadi, lekin ularni eshita ham, koʻra ham olmaydi.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Mikrofonni boʻshatish',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Moderatsiya mikrofoningni oʻchirdi. Uni faqat hamjamiyatni boshqaradiganlar boʻshata oladi.',
+  'Microfone travado pela moderação': 'Mikrofon moderatsiya tomonidan qulflangan',
 } satisfies Record<string, string>;

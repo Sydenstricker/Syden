@@ -2206,4 +2206,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Namni tokko yeroo seenu ykn ba’u furtaan ni jijjiirama.',
   'Conferir com quem está na chamada': 'Warra bilbila irra jiran waliin mirkaneessi',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Sarvarichi sagalee fi suuraa dabarsa, garuu dhaga’uu ykn arguu hin danda’u.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Maayikiroofoonii gadhiisi',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Too’attoonni maayikiroofoonii keessan callisaniiru. Warra hawaasa bulchan qofatu gadhiisuu danda’a.',
+  'Microfone travado pela moderação': 'Maayikiroofoonii too’attoonni cufaniiru',
 } satisfies Record<string, string>;

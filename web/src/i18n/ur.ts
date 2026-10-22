@@ -2153,4 +2153,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'جب کوئی آتا یا جاتا ہے تو کی بدل جاتی ہے۔',
   'Conferir com quem está na chamada': 'کال میں موجود لوگوں سے ملائیں',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'سرور آواز اور تصویر آگے بھیجتا ہے، مگر انہیں نہ سن سکتا ہے نہ دیکھ سکتا ہے۔',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'مائیک بحال کریں',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'ماڈریشن نے آپ کا مائیک خاموش کر دیا ہے۔ صرف کمیونٹی چلانے والے ہی اسے بحال کر سکتے ہیں۔',
+  'Microfone travado pela moderação': 'ماڈریشن نے مائیک بند کر رکھا ہے',
 } satisfies Record<string, string>;

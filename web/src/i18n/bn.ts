@@ -2163,4 +2163,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'কেউ ঢুকলে বা বেরিয়ে গেলে চাবি বদলে যায়।',
   'Conferir com quem está na chamada': 'কলে থাকা সবার সঙ্গে মিলিয়ে দেখো',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'সার্ভার কণ্ঠ আর ছবি পৌঁছে দেয়, কিন্তু শুনতে বা দেখতে পারে না।',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'মাইক ছেড়ে দাও',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'মডারেশন তোমার মাইক চুপ করিয়েছে। শুধু যারা কমিউনিটি চালায় তারাই এটা ছেড়ে দিতে পারে।',
+  'Microfone travado pela moderação': 'মডারেশন মাইক আটকে রেখেছে',
 } satisfies Record<string, string>;

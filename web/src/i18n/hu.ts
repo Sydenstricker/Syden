@@ -2238,4 +2238,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'A kulcs megváltozik, ha valaki belép vagy kilép.',
   'Conferir com quem está na chamada': 'Egyeztetés a hívásban lévőkkel',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'A szerver továbbítja a hangot és a képet, de nem hallja és nem látja őket.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Mikrofon feloldása',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'A moderáció lenémította a mikrofonodat. Csak a közösség kezelői oldhatják fel.',
+  'Microfone travado pela moderação': 'A moderáció lezárta a mikrofont',
 } satisfies Record<string, string>;

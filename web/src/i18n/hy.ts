@@ -2255,4 +2255,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Բանալին փոխվում է, երբ որևէ մեկը միանում է կամ դուրս գալիս։',
   'Conferir com quem está na chamada': 'Ստուգել զանգի մասնակիցների հետ',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Սերվերը փոխանցում է ձայնը և պատկերը՝ առանց կարողանալու լսել կամ տեսնել դրանք։',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Ազատել խոսափողը',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Մոդերացիան լռեցրել է քո խոսափողը։ Միայն համայնքը կառավարողները կարող են այն ազատել։',
+  'Microfone travado pela moderação': 'Խոսափողը կողպված է մոդերացիայի կողմից',
 } satisfies Record<string, string>;

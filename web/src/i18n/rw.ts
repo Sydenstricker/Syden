@@ -2177,4 +2177,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'Urufunguzo ruhinduka iyo hari uwinjiye cyangwa usohotse.',
   'Conferir com quem está na chamada': 'Genzura hamwe n\'abari mu ihamagara',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'Seriveri inyuza ijwi n\'ishusho idashobora kumva cyangwa kubona.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Rekura mikoro',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Abagenzuzi bacecekesheje mikoro yawe. Abayobora umuryango ni bo bonyine bashobora kuyirekura.',
+  'Microfone travado pela moderação': 'Mikoro yafunzwe n’abagenzuzi',
 } satisfies Record<string, string>;

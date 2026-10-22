@@ -2153,4 +2153,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': '有人加入或离开时，密钥就会更换。',
   'Conferir com quem está na chamada': '与通话中的人核对',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': '服务器只负责转发语音和画面，既听不到也看不到。',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': '解除麦克风锁定',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': '管理人员已将你的麦克风静音。只有社区管理员可以解除。',
+  'Microfone travado pela moderação': '麦克风已被管理人员锁定',
 } satisfies Record<string, string>;

@@ -2236,4 +2236,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'කවුරුහරි එක් වන විට හෝ ඉවත් වන විට යතුර වෙනස් වේ.',
   'Conferir com quem está na chamada': 'ඇමතුමේ සිටින අය සමඟ සසඳන්න',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'සේවාදායකය හඬ සහ රූපය යවයි, නමුත් ඒවා ඇසීමට හෝ දැකීමට නොහැක.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'මයික්‍රෆෝනය නිදහස් කරන්න',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'මොඩරේටර්වරු ඔබේ මයික්‍රෆෝනය නිහඬ කළා. ප්‍රජාව කළමනාකරණය කරන අයට පමණයි එය නිදහස් කළ හැක්කේ.',
+  'Microfone travado pela moderação': 'මොඩරේටර්වරු මයික්‍රෆෝනය අගුළු දමා ඇත',
 } satisfies Record<string, string>;

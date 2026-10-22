@@ -2170,4 +2170,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': 'E suia le ki pe a ulu mai se tasi pe alu ese.',
   'Conferir com quem está na chamada': 'Siaki faatasi ma ē o loʻo i le valaʻau',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'E pasia e le server le leo ma le ata e aunoa ma le mafai ona faalogo pe vaʻai.',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'Tatala le loka o le maikalofoni',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'Ua faʻalologo e le au vaavaai lau maikalofoni. E na o i latou e pulea le nuʻu e mafai ona tatalaina.',
+  'Microfone travado pela moderação': 'Ua loka e le au vaavaai le maikalofoni',
 } satisfies Record<string, string>;

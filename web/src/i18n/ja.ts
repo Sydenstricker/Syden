@@ -2147,4 +2147,8 @@ export default {
   'A chave muda quando alguém entra ou sai.': '誰かが入ったり抜けたりすると、鍵が変わります。',
   'Conferir com quem está na chamada': '通話にいる人と照らし合わせる',
   'O servidor repassa a voz e a imagem sem conseguir ouvir nem ver.': 'サーバーは声と映像を中継するだけで、聞くことも見ることもできません。',
+  // O microfone travado pela moderação (21/10/2026)
+  'Liberar microfone': 'マイクのロックを解除',
+  'A moderação silenciou seu microfone. Só quem administra a comunidade pode liberar.': 'モデレーションによってマイクがミュートされました。解除できるのはコミュニティの管理者だけです。',
+  'Microfone travado pela moderação': 'マイクはモデレーションによってロックされています',
 } satisfies Record<string, string>;
