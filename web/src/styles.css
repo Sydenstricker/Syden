@@ -1167,7 +1167,7 @@ textarea {
   font-weight: 600;
 }
 
-/* O ping ao lado de "Voz conectada": verde, amarelo ou vermelho pelo atraso (ping.ts). */
+/* O ping ao lado de "Voz conectada": verde até 300 ms (o normal do Brasil à Alemanha), amarelo até 450, vermelho acima (ping.ts). */
 .voice-ping {
   display: inline-flex;
   align-items: center;

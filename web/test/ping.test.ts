@@ -28,8 +28,10 @@ describe('ping', () => {
   });
 
   it('a cor', () => {
+    // Do Brasil à Alemanha é o normal, e o normal é verde.
     assert.equal(nivelDoPing(40), 'bom');
-    assert.equal(nivelDoPing(180), 'medio');
-    assert.equal(nivelDoPing(400), 'ruim');
+    assert.equal(nivelDoPing(220), 'bom');
+    assert.equal(nivelDoPing(350), 'medio');
+    assert.equal(nivelDoPing(500), 'ruim');
   });
 });

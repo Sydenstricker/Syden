@@ -3,7 +3,13 @@
  *
  * Vem das estatísticas do próprio navegador, do par de rotas que a conexão escolheu (`candidate-pair`): é o caminho por
  * onde a voz passa de verdade. A cor é a referência que o número sozinho não dá ("medida sem referência alarma", ver
- * CLAUDE.md): verde é conversa sem atraso perceptível, amarelo já se nota, vermelho atrapalha.
+ * CLAUDE.md): verde é conversa normal, amarelo já se nota, vermelho atrapalha.
+ *
+ * OS CORTES SÃO OS DA CONVERSA, NÃO OS DE UM SERVIDOR VIZINHO. O servidor de voz fica na Alemanha, e do Brasil o ping
+ * normal é de 180 a 230 ms: com o verde abaixo de 100, a tela ficaria amarela para todo mundo, sempre, e uma cor que nunca
+ * muda não diz nada. A ITU (G.114) dá até 150 ms de ida como bom para conversa, ou seja, uns 300 de ida e volta; daí para
+ * cima a pessoa começa a falar por cima da outra. Assim o amarelo e o vermelho aparecem só quando a conexão DE QUEM VÊ
+ * piorou, que é quando vale olhar.
  */
 
 export type NivelDoPing = 'bom' | 'medio' | 'ruim';
@@ -25,7 +31,7 @@ export function pingDoRelatorio(relatorio: RTCStatsReport | undefined): number |
 }
 
 export function nivelDoPing(ms: number): NivelDoPing {
-  if (ms < 100) return 'bom';
-  if (ms < 250) return 'medio';
+  if (ms < 300) return 'bom';
+  if (ms < 450) return 'medio';
   return 'ruim';
 }
