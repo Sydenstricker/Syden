@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { chave, idiomaAtual } from './i18n';
+import type { IdDoQuiz } from './quiz';
 
 /**
  * Os mini-games da sala de voz, do lado do site (o servidor decide tudo: server/src/minijogos.ts).
@@ -293,7 +294,7 @@ export interface EstadoPalavra {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra';
+export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: dá para jogar sozinho, e quem estiver na sala entra na
@@ -326,6 +327,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; grupo: GrupoDoJo
     nome: chave('Lobisomem'),
     dica: chave('Cada um recebe um papel em segredo. À noite os lobisomens atacam; de dia a vila conversa e vota em quem tirar do jogo. Precisa de 4 pessoas ou mais.'),
     grupo: 'coletivo',
+  },
+  {
+    // O primeiro quiz de adivinhar (quiz.ts): o formato dos "-dle", com os monstros do SRD 5.1, que é livre.
+    id: 'monstros',
+    nome: chave('Monstros de fantasia'),
+    dica: chave('Sai um monstro secreto, e cada um chuta outros da lista. Cada chute mostra o que bate com o secreto: tipo, tamanho, nível, alinhamento e como ele se desloca. Quem acertar com menos chutes ganha mais pontos.'),
+    grupo: 'solo',
   },
   {
     id: 'xadrez',

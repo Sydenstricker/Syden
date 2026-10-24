@@ -5,6 +5,7 @@ import { desenho } from './minijogo-desenho.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
 import { palavra } from './minijogo-palavra.js';
+import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
@@ -30,7 +31,19 @@ import { manages, requireUser } from './routes.js';
  * A PARTIDA MORA SÓ NA MEMÓRIA. Ela dura minutos e não vale nada depois; reiniciar o servidor acaba com
  * ela, como acaba com a chamada. Sem tabela, sem limpeza.
  */
-export const JOGOS: Record<string, Definicao> = { tamanho, stop, sudoku, gomoku, mancala, xadrez, lobisomem, desenho, palavra };
+export const JOGOS: Record<string, Definicao> = {
+  tamanho,
+  stop,
+  sudoku,
+  gomoku,
+  mancala,
+  xadrez,
+  lobisomem,
+  desenho,
+  palavra,
+  // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
+  ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
+};
 
 interface Partida {
   channelId: number;
@@ -174,6 +187,13 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     }
 
     const estaNaSala = (userId: number, channelId: number) => salaDeVozDe(userId)?.channelId === channelId;
+
+    // A lista de um quiz para chutar: id e nome no idioma de quem pede. Não diz qual é o secreto, e por isso não pede sala.
+    authed.get<{ Params: { tema: string }; Querystring: { idioma?: string } }>('/api/minijogos/quiz/:tema', async (request, reply) => {
+      const tema = TEMAS[request.params.tema];
+      if (!tema) return reply.code(404).send({ error: 'Quiz desconhecido.' });
+      return { itens: catalogo(tema, String(request.query.idioma ?? 'pt-BR').slice(0, 20)) };
+    });
 
     authed.get<{ Params: { id: string } }>('/api/channels/:id/minijogo', async (request, reply) => {
       const canal = sala(request.params.id, request.user.id, reply);

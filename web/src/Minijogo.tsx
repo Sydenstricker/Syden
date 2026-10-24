@@ -8,6 +8,8 @@ import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
+import { JogoQuiz } from './JogoQuiz';
+import { ehQuiz, type EstadoQuiz } from './quiz';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -141,7 +143,7 @@ export function PainelDoMinijogo({
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
-    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra') && !partida.terminada
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || ehQuiz(partida.jogo)) && !partida.terminada
       ? (partida as unknown as EstadoTamanho)
       : null;
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
@@ -232,6 +234,9 @@ export function PainelDoMinijogo({
       )}
       {jogoNaTela?.jogo === 'xadrez' && <JogoXadrez estado={jogoNaTela as unknown as EstadoXadrez & Partida} eu={eu} restante={restante} agir={agir} />}
       {jogoNaTela?.jogo === 'palavra' && <JogoPalavra estado={jogoNaTela as unknown as EstadoPalavra & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />}
+      {jogoNaTela && ehQuiz(jogoNaTela.jogo) && (
+        <JogoQuiz tema={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoQuiz & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
         <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />

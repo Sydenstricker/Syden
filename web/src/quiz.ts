@@ -1,0 +1,142 @@
+import { chave } from './i18n';
+import type { LinhaDoPlacar } from './minijogos';
+
+/**
+ * OS QUIZZES DE ADIVINHAR (ver server/src/minijogo-quiz.ts): o mesmo motor, um tema por jogo da estante. O servidor manda
+ * os valores CRUS de cada coluna ("dragon", 4, ["walk","fly"]); aqui eles viram texto traduzido. Tema novo: o id em
+ * QUIZZES, os rótulos em ROTULOS e, se a fonte pedir, o crédito em CREDITOS.
+ */
+export const QUIZZES = ['monstros'] as const;
+export type IdDoQuiz = (typeof QUIZZES)[number];
+export const ehQuiz = (jogo: string): jogo is IdDoQuiz => (QUIZZES as readonly string[]).includes(jogo);
+
+export interface Veredito {
+  /** 2 bate, 1 bate em parte, 0 não bate. */
+  cor: 0 | 1 | 2;
+  /** O secreto tem mais (1) ou menos (-1). */
+  seta?: 1 | -1;
+}
+
+export interface EstadoQuiz {
+  rodada: number;
+  rodadas: number;
+  fase: 'chutando' | 'revelando' | 'fim';
+  colunas: { id: string; tipo: string }[];
+  meu: { id: string; vereditos: Veredito[]; valores: Record<string, unknown> }[];
+  acertei: boolean;
+  resposta: { id: string; valores: Record<string, unknown> } | null;
+  outros: { userId: number; username: string; cores: number[][]; acertou: boolean; chutes: string[] | null }[];
+  placar: LinhaDoPlacar[];
+}
+
+interface Rotulos {
+  /** O nome de cada coluna, na ordem do servidor. */
+  colunas: Record<string, string>;
+  /** Como cada valor aparece (a chave do texto, para o t()). Número sem rótulo aparece como número. */
+  valores: Record<string, Record<string, string>>;
+  /** Para colunas de número que não se mostram cruas (o nível de desafio 0,125 é "1/8"). */
+  numero?: Record<string, (valor: number) => string>;
+}
+
+const FRACOES: Record<number, string> = { 0.125: '1/8', 0.25: '1/4', 0.5: '1/2' };
+
+export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
+  monstros: {
+    colunas: {
+      tipo: chave('Tipo'),
+      tamanho: chave('Tamanho'),
+      nd: chave('Nível'),
+      alinhamento: chave('Alinhamento'),
+      deslocamento: chave('Deslocamento'),
+    },
+    valores: {
+      // Os nomes da edição em português do jogo, quando são claros para quem nunca jogou ("Gosma", e não "Limo").
+      tipo: {
+        aberration: chave('Aberração'),
+        beast: chave('Fera'),
+        celestial: chave('Celestial'),
+        construct: chave('Constructo'),
+        dragon: chave('Dragão'),
+        elemental: chave('Elemental'),
+        fey: chave('Fada'),
+        fiend: chave('Demônio'),
+        giant: chave('Gigante'),
+        humanoid: chave('Humanoide'),
+        monstrosity: chave('Monstruosidade'),
+        ooze: chave('Gosma'),
+        plant: chave('Planta'),
+        undead: chave('Morto-vivo'),
+      },
+      tamanho: {
+        0: chave('Miúdo'),
+        1: chave('Pequeno'),
+        2: chave('Médio'),
+        3: chave('Grande'),
+        4: chave('Enorme'),
+        5: chave('Imenso'),
+      },
+      alinhamento: {
+        'lawful good': chave('Leal e bom'),
+        'neutral good': chave('Neutro e bom'),
+        'chaotic good': chave('Caótico e bom'),
+        'lawful neutral': chave('Leal e neutro'),
+        neutral: chave('Neutro'),
+        'chaotic neutral': chave('Caótico e neutro'),
+        'lawful evil': chave('Leal e mau'),
+        'neutral evil': chave('Neutro e mau'),
+        'chaotic evil': chave('Caótico e mau'),
+        evil: chave('Mau'),
+        unaligned: chave('Sem alinhamento'),
+        any: chave('Qualquer'),
+      },
+      deslocamento: {
+        walk: chave('A pé'),
+        fly: chave('Voo'),
+        swim: chave('Nado'),
+        climb: chave('Escalada'),
+        burrow: chave('Escavação'),
+        '': chave('Imóvel'),
+      },
+    },
+    numero: { nd: (v) => FRACOES[v] ?? String(v) },
+  },
+};
+
+/**
+ * O crédito que a fonte pede, na tela do jogo. O do SRD vai nas palavras exatas da Wizards of the Coast (por isso em
+ * inglês, em todo idioma): é a condição da licença CC BY 4.0.
+ */
+export const CREDITOS: Partial<Record<IdDoQuiz, string>> = {
+  monstros:
+    'This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.',
+};
+
+/** O texto de um valor, já traduzido. Lista vira "A pé, Voo"; lista vazia, o rótulo de ''. */
+export function textoDoValor(tema: IdDoQuiz, coluna: string, valor: unknown, t: (chave: string) => string): string {
+  const rotulos = ROTULOS[tema];
+  const mapa = rotulos.valores[coluna];
+  if (Array.isArray(valor)) {
+    if (valor.length === 0) return mapa?.[''] ? t(mapa['']) : '—';
+    return valor.map((v) => (mapa?.[String(v)] ? t(mapa[String(v)]) : String(v))).join(', ');
+  }
+  if (mapa?.[String(valor)]) return t(mapa[String(valor)]);
+  if (typeof valor === 'number' && rotulos.numero?.[coluna]) return rotulos.numero[coluna](valor);
+  return String(valor);
+}
+
+/** Sem acento e em minúscula: é assim que a busca da lista compara o que se escreve com os nomes. */
+export const paraBusca = (texto: string) =>
+  texto
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+
+/** Os nomes que aparecem para o que se escreveu: primeiro os que começam assim, depois os que contêm; sem os já chutados. */
+export function sugestoes(itens: { id: string; nome: string }[], escrito: string, jaChutados: ReadonlySet<string>, limite = 8) {
+  const busca = paraBusca(escrito.trim());
+  if (!busca) return [];
+  const livres = itens.filter((i) => !jaChutados.has(i.id));
+  const comeca = livres.filter((i) => paraBusca(i.nome).startsWith(busca));
+  const contem = livres.filter((i) => !paraBusca(i.nome).startsWith(busca) && paraBusca(i.nome).includes(busca));
+  return [...comeca, ...contem].slice(0, limite);
+}

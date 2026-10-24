@@ -1,0 +1,13 @@
+Os monstros do quiz (server/src/minijogo-quiz.ts) vêm do SRD 5.1 do Dungeons & Dragons, passado a JSON pela
+5e-database (github.com/5e-bits/5e-database, licença MIT). Só os fatos: nome, tipo, tamanho, nível de desafio,
+alinhamento e deslocamento. Gerado por server/scripts/quiz-monstros.mjs.
+
+O crédito que a licença pede, nas palavras exatas da Wizards of the Coast (vai também na tela do jogo):
+
+This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC
+and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the
+Creative Commons Attribution 4.0 International License available at
+https://creativecommons.org/licenses/by/4.0/legalcode.
+
+Nada aqui é endossado pela Wizards of the Coast. "Dungeons & Dragons" e "D&D" são marcas dela, e por isso o jogo
+não usa esses nomes: chama-se "Monstros de fantasia" e diz de onde vêm os monstros só no crédito.

@@ -27,6 +27,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaDesenho />;
     case 'palavra':
       return <CapaPalavraSecreta />;
+    case 'monstros':
+      return <CapaMonstros />;
   }
 }
 
@@ -78,6 +80,30 @@ function CapaPalavraSecreta() {
       )}
       <circle cx="44" cy="17" r="6" fill="#f2c9a0" />
       <circle cx="116" cy="17" r="6" fill="#a0c4f2" />
+    </svg>
+  );
+}
+
+/**
+ * Monstros de fantasia (o quiz de adivinhar): a cabeça de um dragão de perfil, nossa e genérica, e embaixo uma linha de
+ * chute com as três cores e a seta — o que o jogo é.
+ */
+function CapaMonstros() {
+  const linha = ['#3aa394', '#3aa394', '#c8553d', '#d3ad69', '#3aa394'];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2b1f3a" />
+      <g fill="#7a4fbf">
+        <path d="M46 70 Q44 44 66 34 L60 14 L76 30 Q84 27 92 30 L98 12 L100 34 Q118 40 124 54 L120 62 Q110 60 104 64 L98 70 Q80 78 46 70 Z" />
+      </g>
+      <path d="M104 64 L112 70 L102 72 Z" fill="#f2e6c9" />
+      <circle cx="94" cy="44" r="4" fill="#f2c94c" />
+      <path d="M94 41 L94 47" stroke="#2b1f3a" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M118 56 L124 56" stroke="#2b1f3a" strokeWidth="2" strokeLinecap="round" />
+      {linha.map((cor, i) => (
+        <rect key={i} x={22 + i * 24} y="86" width="20" height="20" rx="3" fill={cor} />
+      ))}
+      <path d="M80 102 L80 90 M75 95 L80 90 L85 95" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
