@@ -26,6 +26,11 @@ test('Quiz: todo tema tem itens de id único, todas as colunas preenchidas, e o 
     assert.ok(tema.itens.filter(tema.sorteavel ?? (() => true)).length >= 30, `${id}: pouco para sortear`);
   }
   assert.ok(TEMAS.monstros.itens.length >= 250);
+  assert.ok(TEMAS.mitologia.itens.length >= 100);
+  // A mitologia: a mesma é verde, outra do mesmo continente é amarela.
+  const coluna = { id: 'mitologia', tipo: 'partes' } as const;
+  assert.equal(comparar(coluna, 'grega europa', 'nordica europa').cor, 1);
+  assert.equal(comparar(coluna, 'grega europa', 'egipcia africa').cor, 0);
 });
 
 test('Quiz: a distância e o rumo do Worldle', () => {
@@ -52,6 +57,9 @@ test('Quiz: o nome do item na língua de quem lê, com reserva', () => {
   assert.equal(brasil('pt-BR'), 'Brasil');
   assert.equal(brasil('de'), 'Brasilien');
   assert.equal(brasil('xx-nao-existe'), 'Brazil', 'idioma que o Intl não conhece: o inglês');
+  const xango = (idioma: string) => catalogo(TEMAS.mitologia, idioma).find((p) => p.id === 'Q1547934')!.nome;
+  assert.equal(xango('pt-BR'), 'Xangô', 'os nomes da mitologia vêm do Wikidata, por idioma');
+  assert.equal(xango('en'), 'Shango');
 });
 
 function sala(ids: number[]) {

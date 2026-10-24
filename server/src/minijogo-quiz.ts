@@ -123,6 +123,20 @@ export const TEMAS: Record<string, Tema> = {
     sorteavel: (m) => m.tipo !== 'beast' || Number(m.nd) >= 2,
   },
   /**
+   * MITOLOGIA: 124 figuras de 11 mitologias, numa lista nossa (server/scripts/quiz-mitologia.mjs), com os nomes de cada
+   * idioma tirados do Wikidata (CC0). A coluna da mitologia é de PARTES ("grega europa"): outra mitologia do mesmo
+   * continente fica amarela.
+   */
+  mitologia: {
+    itens: lerItens('mitologia.json'),
+    colunas: [
+      { id: 'mitologia', tipo: 'partes' },
+      { id: 'tipo', tipo: 'igual' },
+      { id: 'forma', tipo: 'igual' },
+      { id: 'dominios', tipo: 'conjunto' },
+    ],
+  },
+  /**
    * PAÍSES (o Worldle, sem anúncio): os 193 da ONU, com os dados da Natural Earth (domínio público). O nome sai do
    * Intl.DisplayNames, que já fala todas as línguas. Saem só os de 500 mil habitantes ou mais (Tuvalu é chute, não
    * resposta); todos podem ser chutados.

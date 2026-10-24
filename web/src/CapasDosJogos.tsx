@@ -31,6 +31,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaMonstros />;
     case 'paises':
       return <CapaPaises />;
+    case 'mitologia':
+      return <CapaMitologia />;
   }
 }
 
@@ -106,6 +108,27 @@ function CapaMonstros() {
         <rect key={i} x={22 + i * 24} y="86" width="20" height="20" rx="3" fill={cor} />
       ))}
       <path d="M80 102 L80 90 M75 95 L80 90 L85 95" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Mitologia: uma coluna de templo com o raio por cima, e a linha de chute. */
+function CapaMitologia() {
+  const linha = ['#d3ad69', '#3aa394', '#3aa394', '#a8473a'];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#3a2a1c" />
+      <g fill="#e8dcc0">
+        <rect x="58" y="22" width="44" height="7" rx="1" />
+        <rect x="62" y="29" width="36" height="4" />
+        <rect x="66" y="33" width="8" height="34" />
+        <rect x="86" y="33" width="8" height="34" />
+        <rect x="58" y="67" width="44" height="7" rx="1" />
+      </g>
+      <path d="M112 14 L100 40 L110 40 L102 62 L124 32 L113 32 L120 14 Z" fill="#f2c94c" />
+      {linha.map((cor, i) => (
+        <rect key={i} x={30 + i * 26} y="86" width="22" height="20" rx="3" fill={cor} />
+      ))}
     </svg>
   );
 }

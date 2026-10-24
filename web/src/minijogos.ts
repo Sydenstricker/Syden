@@ -336,6 +336,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; grupo: GrupoDoJo
     grupo: 'solo',
   },
   {
+    // 124 figuras de 11 mitologias, com os nomes de cada idioma (do Wikidata).
+    id: 'mitologia',
+    nome: chave('Mitologia'),
+    dica: chave('Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.'),
+    grupo: 'solo',
+  },
+  {
     // O Worldle sem anúncio: os 193 países da ONU, com a distância e a direção até o secreto.
     id: 'paises',
     nome: chave('Países'),

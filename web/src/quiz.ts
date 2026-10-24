@@ -6,7 +6,7 @@ import type { LinhaDoPlacar } from './minijogos';
  * os valores CRUS de cada coluna ("dragon", 4, ["walk","fly"]); aqui eles viram texto traduzido. Tema novo: o id em
  * QUIZZES, os rótulos em ROTULOS e, se a fonte pedir, o crédito em CREDITOS.
  */
-export const QUIZZES = ['monstros', 'paises'] as const;
+export const QUIZZES = ['monstros', 'mitologia', 'paises'] as const;
 export type IdDoQuiz = (typeof QUIZZES)[number];
 export const ehQuiz = (jogo: string): jogo is IdDoQuiz => (QUIZZES as readonly string[]).includes(jogo);
 
@@ -102,6 +102,74 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
       },
     },
     numero: { nd: (v) => FRACOES[v] ?? String(v) },
+  },
+  mitologia: {
+    colunas: {
+      mitologia: chave('Mitologia'),
+      tipo: chave('Tipo'),
+      forma: chave('Forma'),
+      dominios: chave('Domínios'),
+    },
+    valores: {
+      // O valor guarda o continente depois da mitologia ("grega europa"), para o amarelo; a tela mostra só a mitologia.
+      mitologia: {
+        'grega europa': chave('Grega'),
+        'nordica europa': chave('Nórdica'),
+        'celta europa': chave('Celta'),
+        'egipcia africa': chave('Egípcia'),
+        'ioruba africa': chave('Iorubá'),
+        'hindu asia': chave('Hindu'),
+        'japonesa asia': chave('Japonesa'),
+        'chinesa asia': chave('Chinesa'),
+        'mesopotamica asia': chave('Mesopotâmica'),
+        'asteca americas': chave('Asteca'),
+        'brasileira americas': chave('Brasileira'),
+      },
+      tipo: {
+        divindade: chave('Divindade'),
+        heroi: chave('Herói ou heroína'),
+        criatura: chave('Criatura'),
+      },
+      forma: {
+        humana: chave('Humana'),
+        hibrida: chave('Parte bicho'),
+        animal: chave('Animal'),
+      },
+      dominios: {
+        ceu: chave('Céu'),
+        trovao: chave('Trovão'),
+        agua: chave('Águas'),
+        vento: chave('Vento'),
+        terra: chave('Terra'),
+        sol: chave('Sol'),
+        lua: chave('Lua'),
+        fogo: chave('Fogo'),
+        submundo: chave('Submundo'),
+        morte: chave('Morte'),
+        guerra: chave('Guerra'),
+        forca: chave('Força'),
+        sabedoria: chave('Sabedoria'),
+        magia: chave('Magia'),
+        trapaca: chave('Trapaça'),
+        amor: chave('Amor'),
+        familia: chave('Família'),
+        fertilidade: chave('Fertilidade'),
+        colheita: chave('Colheita'),
+        caca: chave('Caça'),
+        animais: chave('Animais'),
+        cura: chave('Cura'),
+        artes: chave('Artes'),
+        oficios: chave('Ofícios'),
+        viagem: chave('Viagens'),
+        justica: chave('Justiça'),
+        protecao: chave('Proteção'),
+        festa: chave('Festa'),
+        riqueza: chave('Riqueza'),
+        criacao: chave('Criação'),
+        tempo: chave('Tempo'),
+        caos: chave('Caos'),
+      },
+    },
   },
   paises: {
     colunas: {

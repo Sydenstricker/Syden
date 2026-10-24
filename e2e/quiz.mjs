@@ -83,11 +83,13 @@ try {
   const cores = await duda.locator('.quiz-tabela tbody tr').first().locator('td.bate, td.em-parte, td.nao-bate').count();
   cores === 5 ? ok('as 5 colunas têm cor') : falhou(`só ${cores} colunas com cor`);
   (await duda.locator('.quiz-credito').innerText()).includes('System Reference Document 5.1') ? ok('o crédito do SRD está na tela') : falhou('sem o crédito do SRD');
-  // Mais um chute, para a foto ter duas linhas.
-  await duda.locator('.quiz-busca input').fill('lich');
-  await duda.locator('.quiz-busca li').first().waitFor({ timeout: 5000 });
-  await duda.keyboard.press('Enter');
-  await duda.locator('.quiz-tabela tbody tr').nth(1).waitFor({ timeout: 5000 });
+  // Mais um chute, para a foto ter duas linhas (a não ser que o dragão vermelho fosse o secreto).
+  if (await duda.locator('.quiz-busca input').count()) {
+    await duda.locator('.quiz-busca input').fill('lich');
+    await duda.locator('.quiz-busca li').first().waitFor({ timeout: 5000 });
+    await duda.keyboard.press('Enter');
+    await duda.locator('.quiz-tabela tbody tr').nth(1).waitFor({ timeout: 5000 });
+  }
   await foto(duda, 'chutes');
 
   const daDuda = edu.locator('.palavra-outros li', { hasText: 'duda' + s });
@@ -121,6 +123,7 @@ try {
   await duda.locator('.quiz-tabela tbody tr').first().waitFor({ timeout: 5000 });
   // Um chute de cada vez: o próximo só sai depois que a linha do anterior chegou (o campo espera o pedido terminar).
   for (const [i, pais] of ['japao', 'brasil'].entries()) {
+    if ((await duda.locator('.quiz-busca input').count()) === 0) break;
     await duda.locator('.quiz-busca input').fill(pais);
     await duda.locator('.quiz-busca li').first().waitFor({ timeout: 5000 });
     await duda.keyboard.press('Enter');
@@ -131,6 +134,30 @@ try {
     ? ok(`Países: a linha tem distância, região e sub-região: ${brasil.replace(/\s+/g, ' ')}`)
     : falhou(`Países: a linha do Brasil: ${brasil}`);
   await foto(duda, 'paises');
+
+  // ---- Mitologia: os nomes vêm do Wikidata, no idioma de quem lê ----
+  await duda.getByRole('button', { name: 'Encerrar partida' }).click();
+  await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
+  await duda.getByRole('button', { name: 'Mini-games' }).click();
+  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
+  await duda.locator('.minijogo-jogo', { hasText: /^Mitologia$/ }).click();
+  await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
+  await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
+  await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
+  await duda.getByRole('button', { name: 'Começar' }).click();
+  for (const [i, nome] of ['xango', 'zeus', 'anubis'].entries()) {
+    // Se um chute era o secreto, a Duda acertou e o campo some: não é falha, é sorte.
+    if ((await duda.locator('.quiz-busca input').count()) === 0) break;
+    await duda.locator('.quiz-busca input').fill(nome);
+    await duda.locator('.quiz-busca li').first().waitFor({ timeout: 5000 });
+    await duda.keyboard.press('Enter');
+    await duda.locator('.quiz-tabela tbody tr').nth(i).waitFor({ timeout: 5000 });
+  }
+  const xango = await duda.locator('.quiz-tabela tbody tr').last().innerText();
+  /Xangô/.test(xango) && /Iorubá/.test(xango) && /Trovão/.test(xango)
+    ? ok(`Mitologia: o nome em português e os valores traduzidos: ${xango.replace(/\s+/g, ' ')}`)
+    : falhou(`Mitologia: a linha do Xangô: ${xango}`);
+  await foto(duda, 'mitologia');
 } catch (e) {
   falhou(e.stack ?? String(e));
 } finally {
