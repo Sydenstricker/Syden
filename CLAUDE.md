@@ -285,6 +285,12 @@ esqueleto, e anúncio só se mede com o navegador rodando.
   Magnitudle, sizeitup.games, sudoku.com, Wordle, Nerdle, Quordle, e (de 06/10) Globle, Worldle,
   GuessThe.Game, WhenTaken, Skribbl, Letreco, GeoGuessr.
 - Gartic Phone e Gartic.io quase não carregaram nada na entrada, mas mostram anúncio jogando: fora.
+- **Loldle e a família dele (Pokédle, Dotadle, Smashdle, OnePiecedle, Narutodle), medidos em 24/10/2026, a pedido da
+  turma:** todos com a rede Venatus, Google Ad Manager e Amazon (até ~80 domínios de anúncio). Sem API pública. E um
+  "-dle" NOSSO de LoL também não pode: as duas políticas da Riot (a de fãs, "Legal Jibber Jabber", e a de
+  desenvolvedores) dizem com todas as letras que proíbem usar a propriedade intelectual dela em jogos ("We prohibit the
+  use of our IP in games and apps"; "Do not create or develop games utilizing Riot's IP"). O Loldle existe por
+  tolerância, não por licença. Pokémon, Naruto, One Piece, Dota e Smash nem têm política de fãs.
 - Ressalva: só a página de entrada foi medida. Anúncio pode aparecer no meio da partida.
 - **A promessa da lista é "sem anúncio", não "sem rastreio"** (decisão dele, 13/10/2026: "sem anúncio é honesto"). O
   rastreio de um site que a pessoa abre por vontade própria é entre ela e o site. Por isso o **Termo** entrou (só Google
