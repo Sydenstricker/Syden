@@ -336,6 +336,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; grupo: GrupoDoJo
     grupo: 'solo',
   },
   {
+    // O Worldle sem anúncio: os 193 países da ONU, com a distância e a direção até o secreto.
+    id: 'paises',
+    nome: chave('Países'),
+    dica: chave('Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.'),
+    grupo: 'solo',
+  },
+  {
     id: 'xadrez',
     nome: chave('Problemas de xadrez'),
     dica: chave('Todo mundo recebe o mesmo problema do Lichess. Quem achar o lance certo mais rápido ganha o ponto extra.'),

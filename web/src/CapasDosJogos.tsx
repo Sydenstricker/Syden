@@ -29,6 +29,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaPalavraSecreta />;
     case 'monstros':
       return <CapaMonstros />;
+    case 'paises':
+      return <CapaPaises />;
   }
 }
 
@@ -104,6 +106,27 @@ function CapaMonstros() {
         <rect key={i} x={22 + i * 24} y="86" width="20" height="20" rx="3" fill={cor} />
       ))}
       <path d="M80 102 L80 90 M75 95 L80 90 L85 95" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Países (o Worldle nosso): o globo com os meridianos, e a linha de chute com a seta de direção. */
+function CapaPaises() {
+  const linha = ['#d3ad69', '#3aa394', '#a8473a', '#3aa394'];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#16324a" />
+      <circle cx="80" cy="44" r="32" fill="#2f7fb8" />
+      <path d="M62 30 Q70 22 82 26 Q90 30 86 40 Q78 44 74 54 Q66 58 62 48 Q56 40 62 30 Z" fill="#5fb873" />
+      <path d="M90 50 Q100 46 104 54 Q102 64 94 66 Q88 60 90 50 Z" fill="#5fb873" />
+      <g fill="none" stroke="#bfe0f5" strokeWidth="1" opacity="0.6">
+        <ellipse cx="80" cy="44" rx="14" ry="32" />
+        <path d="M48 44 H112 M53 28 H107 M53 60 H107" />
+      </g>
+      {linha.map((cor, i) => (
+        <rect key={i} x={30 + i * 26} y="86" width="22" height="20" rx="3" fill={cor} />
+      ))}
+      <path d="M36 101 L46 91 M40 91 L46 91 L46 97" fill="none" stroke="#1d1d1f" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

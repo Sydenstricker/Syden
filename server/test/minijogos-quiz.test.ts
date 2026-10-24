@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { Contexto } from '../src/minijogo-motor.js';
-import { _testeQuiz, catalogo, comparar, criarQuiz, nomeDoItem, pontosDoQuiz, RODADAS_QUIZ, TEMAS } from '../src/minijogo-quiz.js';
+import { _testeQuiz, catalogo, comparar, criarQuiz, distanciaERumo, nomeDoItem, pontosDoQuiz, RODADAS_QUIZ, TEMAS } from '../src/minijogo-quiz.js';
 
 test('Quiz: cada tipo de coluna compara do seu jeito', () => {
   assert.deepEqual(comparar({ id: 'x', tipo: 'igual' }, 'dragon', 'dragon'), { cor: 2 });
@@ -28,12 +28,30 @@ test('Quiz: todo tema tem itens de id único, todas as colunas preenchidas, e o 
   assert.ok(TEMAS.monstros.itens.length >= 250);
 });
 
+test('Quiz: a distância e o rumo do Worldle', () => {
+  // De Brasília a Lisboa: uns 7.300 km, para nordeste.
+  const { km, rumo } = distanciaERumo([-15.8, -47.9], [38.7, -9.1]);
+  assert.ok(km > 7000 && km < 7600, String(km));
+  assert.ok(rumo > 20 && rumo < 60, String(rumo));
+  assert.equal(distanciaERumo([0, 10], [0, 20]).rumo, 90, 'pelo equador, para leste');
+  const paises = new Map(TEMAS.paises.itens.map((p) => [p.id, p]));
+  const coluna = { id: 'local', tipo: 'distancia' } as const;
+  assert.deepEqual(comparar(coluna, paises.get('BR')!.local, paises.get('BR')!.local), { cor: 2, km: 0 });
+  assert.equal(comparar(coluna, paises.get('AR')!.local, paises.get('UY')!.local).cor, 1, 'vizinho é amarelo');
+  assert.equal(comparar(coluna, paises.get('JP')!.local, paises.get('BR')!.local).cor, 0);
+  assert.equal(TEMAS.paises.itens.length, 193);
+});
+
 test('Quiz: o nome do item na língua de quem lê, com reserva', () => {
   const item = { id: 'x', nome: { en: 'Zeus', 'pt-BR': 'Zeus', el: 'Δίας' } };
   assert.equal(nomeDoItem(item, 'el'), 'Δίας');
   assert.equal(nomeDoItem(item, 'el-GR'), 'Δίας');
   assert.equal(nomeDoItem(item, 'ja'), 'Zeus', 'sem a língua, o inglês');
   assert.deepEqual(catalogo(TEMAS.monstros, 'ja')[0], { id: 'aboleth', nome: 'Aboleth' }, 'o catálogo não leva as colunas');
+  const brasil = (idioma: string) => catalogo(TEMAS.paises, idioma).find((p) => p.id === 'BR')!.nome;
+  assert.equal(brasil('pt-BR'), 'Brasil');
+  assert.equal(brasil('de'), 'Brasilien');
+  assert.equal(brasil('xx-nao-existe'), 'Brazil', 'idioma que o Intl não conhece: o inglês');
 });
 
 function sala(ids: number[]) {

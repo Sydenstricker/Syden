@@ -25,7 +25,9 @@ export type TipoDeColuna =
   /** Lista: bate inteira, bate em parte (amarelo) ou nada em comum (como se desloca: anda, voa, nada). */
   | 'conjunto'
   /** Texto de palavras: igual, ou com alguma palavra em comum ("leal e mau" contra "caótico e mau"). */
-  | 'partes';
+  | 'partes'
+  /** Um ponto [latitude, longitude]: a distância e o rumo até o secreto (o Worldle). Amarelo até PERTO_KM. */
+  | 'distancia';
 
 export interface Coluna {
   id: string;
@@ -44,12 +46,32 @@ export interface Tema {
   colunas: Coluna[];
   /** Os que podem SAIR (todos podem ser chutados): tira da sorte o que quase ninguém conhece. */
   sorteavel?: (item: ItemDoQuiz) => boolean;
+  /** O nome por idioma quando ele não está nos dados (os países: o Intl já sabe todos). */
+  nomePor?: (item: ItemDoQuiz, idioma: string) => string;
 }
 
 /** 2 = bate, 1 = bate em parte, 0 = não bate. A seta: o secreto tem MAIS (1) ou MENOS (-1). */
 export interface Veredito {
   cor: 0 | 1 | 2;
   seta?: 1 | -1;
+  /** Na coluna de distância: quantos km e para onde (graus, 0 = norte, 90 = leste) fica o secreto. */
+  km?: number;
+  rumo?: number;
+}
+
+/** Até quantos km a distância fica amarela: o vizinho, ou o país do outro lado da fronteira grande. */
+export const PERTO_KM = 1500;
+
+const rad = (graus: number) => (graus * Math.PI) / 180;
+
+/** A distância (km, pelo círculo máximo) e o rumo inicial de `de` até `para`. */
+export function distanciaERumo(de: [number, number], para: [number, number]): { km: number; rumo: number } {
+  const [la1, lo1, la2, lo2] = [rad(de[0]), rad(de[1]), rad(para[0]), rad(para[1])];
+  const a = Math.sin((la2 - la1) / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin((lo2 - lo1) / 2) ** 2;
+  const km = Math.round(2 * 6371 * Math.asin(Math.min(1, Math.sqrt(a))));
+  const y = Math.sin(lo2 - lo1) * Math.cos(la2);
+  const x = Math.cos(la1) * Math.sin(la2) - Math.sin(la1) * Math.cos(la2) * Math.cos(lo2 - lo1);
+  return { km, rumo: Math.round(((Math.atan2(y, x) * 180) / Math.PI + 360) % 360) };
 }
 
 export function comparar(coluna: Coluna, chute: unknown, secreto: unknown): Veredito {
@@ -66,6 +88,10 @@ export function comparar(coluna: Coluna, chute: unknown, secreto: unknown): Vere
       const b = new Set(secreto as string[]);
       if (a.size === b.size && [...a].every((x) => b.has(x))) return { cor: 2 };
       return { cor: [...a].some((x) => b.has(x)) ? 1 : 0 };
+    }
+    case 'distancia': {
+      const { km, rumo } = distanciaERumo(chute as [number, number], secreto as [number, number]);
+      return km === 0 ? { cor: 2, km: 0 } : { cor: km <= PERTO_KM ? 1 : 0, km, rumo };
     }
     case 'partes': {
       if (chute === secreto) return { cor: 2 };
@@ -96,6 +122,28 @@ export const TEMAS: Record<string, Tema> = {
     ],
     sorteavel: (m) => m.tipo !== 'beast' || Number(m.nd) >= 2,
   },
+  /**
+   * PAÍSES (o Worldle, sem anúncio): os 193 da ONU, com os dados da Natural Earth (domínio público). O nome sai do
+   * Intl.DisplayNames, que já fala todas as línguas. Saem só os de 500 mil habitantes ou mais (Tuvalu é chute, não
+   * resposta); todos podem ser chutados.
+   */
+  paises: {
+    itens: lerItens('paises.json').map((p) => ({ ...p, nome: p.id })),
+    colunas: [
+      { id: 'local', tipo: 'distancia' },
+      { id: 'regiao', tipo: 'igual' },
+      { id: 'subregiao', tipo: 'igual' },
+      { id: 'populacao', tipo: 'ordem' },
+    ],
+    sorteavel: (p) => Number(p.populacao) >= 500_000,
+    nomePor: (p, idioma) => {
+      try {
+        return new Intl.DisplayNames([idioma, 'en'], { type: 'region' }).of(p.id) ?? p.id;
+      } catch {
+        return new Intl.DisplayNames(['en'], { type: 'region' }).of(p.id) ?? p.id;
+      }
+    },
+  },
 };
 
 /** O nome de um item na língua de quem lê: a exata, a base ("pt" de "pt-BR"), o inglês, ou o primeiro que houver. */
@@ -106,7 +154,7 @@ export function nomeDoItem(item: ItemDoQuiz, idioma: string): string {
 
 /** A lista que o site usa para chutar: só id e nome, nunca as colunas (a resposta não sai daqui, sai do chute). */
 export function catalogo(tema: Tema, idioma: string) {
-  return tema.itens.map((item) => ({ id: item.id, nome: nomeDoItem(item, idioma) }));
+  return tema.itens.map((item) => ({ id: item.id, nome: tema.nomePor ? tema.nomePor(item, idioma) : nomeDoItem(item, idioma) }));
 }
 
 export const RODADAS_QUIZ = 3;

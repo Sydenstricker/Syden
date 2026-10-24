@@ -103,6 +103,34 @@ try {
   const estouro = await edu.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   estouro <= 0 ? ok('no estreito, a página não ganha rolagem lateral') : falhou(`no estreito, a página estoura ${estouro} px`);
   await foto(edu, 'estreito');
+
+  // ---- Países: o Worldle, com a distância e a direção ----
+  await duda.getByRole('button', { name: 'Encerrar partida' }).click();
+  await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
+  await duda.getByRole('button', { name: 'Mini-games' }).click();
+  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
+  await duda.locator('.minijogo-jogo', { hasText: /^Países$/ }).click();
+  await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
+  await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
+  await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
+  await duda.getByRole('button', { name: 'Começar' }).click();
+  await duda.locator('.quiz-busca input').fill('alem');
+  await duda.locator('.quiz-busca li', { hasText: 'Alemanha' }).waitFor({ timeout: 5000 });
+  ok('Países: a lista tem os nomes em português (Alemanha)');
+  await duda.keyboard.press('Enter');
+  await duda.locator('.quiz-tabela tbody tr').first().waitFor({ timeout: 5000 });
+  // Um chute de cada vez: o próximo só sai depois que a linha do anterior chegou (o campo espera o pedido terminar).
+  for (const [i, pais] of ['japao', 'brasil'].entries()) {
+    await duda.locator('.quiz-busca input').fill(pais);
+    await duda.locator('.quiz-busca li').first().waitFor({ timeout: 5000 });
+    await duda.keyboard.press('Enter');
+    await duda.locator('.quiz-tabela tbody tr').nth(i + 1).waitFor({ timeout: 5000 });
+  }
+  const brasil = await duda.locator('.quiz-tabela tbody tr').first().innerText();
+  /km|✓/.test(brasil) && /Américas/.test(brasil) && /América do Sul/.test(brasil)
+    ? ok(`Países: a linha tem distância, região e sub-região: ${brasil.replace(/\s+/g, ' ')}`)
+    : falhou(`Países: a linha do Brasil: ${brasil}`);
+  await foto(duda, 'paises');
 } catch (e) {
   falhou(e.stack ?? String(e));
 } finally {

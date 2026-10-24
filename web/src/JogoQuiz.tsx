@@ -4,7 +4,7 @@ import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
-import { CREDITOS, type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor } from './quiz';
+import { CREDITOS, type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor, type Veredito } from './quiz';
 
 const QUIZ_MS = 3 * 60_000;
 const CLASSE = ['nao-bate', 'em-parte', 'bate'];
@@ -71,6 +71,17 @@ export function JogoQuiz({
   const rotulos = ROTULOS[tema];
   const colunas = estado.colunas;
   const celula = (coluna: string, valor: unknown) => textoDoValor(tema, coluna, valor, t);
+  const tipoDe = new Map(colunas.map((c) => [c.id, c.tipo]));
+  /** A coluna de distância (o Worldle) mostra os km e uma seta para onde fica o secreto, e não o valor cru. */
+  const distancia = (v: Veredito) =>
+    v.km === 0 ? (
+      '✓'
+    ) : (
+      <>
+        {new Intl.NumberFormat(idioma).format(v.km ?? 0)} km
+        <ArrowUp size={14} style={{ transform: `rotate(${v.rumo ?? 0}deg)` }} aria-hidden="true" />
+      </>
+    );
   // A linha mais nova em cima: é ela que se lê depois de chutar.
   const minhas = [...estado.meu].reverse();
 
@@ -138,7 +149,7 @@ export function JogoQuiz({
                   <th scope="row">{nome.get(estado.resposta.id) ?? estado.resposta.id}</th>
                   {colunas.map((c) => (
                     <td key={c.id} className="bate">
-                      {celula(c.id, estado.resposta!.valores[c.id])}
+                      {tipoDe.get(c.id) === 'distancia' ? '✓' : celula(c.id, estado.resposta!.valores[c.id])}
                     </td>
                   ))}
                 </tr>
@@ -150,7 +161,7 @@ export function JogoQuiz({
                     const v = linha.vereditos[i];
                     return (
                       <td key={c.id} className={CLASSE[v.cor]}>
-                        {celula(c.id, linha.valores[c.id])}
+                        {tipoDe.get(c.id) === 'distancia' ? distancia(v) : celula(c.id, linha.valores[c.id])}
                         {v.seta === 1 && <ArrowUp size={14} aria-label={t('Mais')} />}
                         {v.seta === -1 && <ArrowDown size={14} aria-label={t('Menos')} />}
                       </td>

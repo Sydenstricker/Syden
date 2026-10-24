@@ -1,4 +1,4 @@
-import { chave } from './i18n';
+import { chave, idiomaAtual } from './i18n';
 import type { LinhaDoPlacar } from './minijogos';
 
 /**
@@ -6,7 +6,7 @@ import type { LinhaDoPlacar } from './minijogos';
  * os valores CRUS de cada coluna ("dragon", 4, ["walk","fly"]); aqui eles viram texto traduzido. Tema novo: o id em
  * QUIZZES, os rótulos em ROTULOS e, se a fonte pedir, o crédito em CREDITOS.
  */
-export const QUIZZES = ['monstros'] as const;
+export const QUIZZES = ['monstros', 'paises'] as const;
 export type IdDoQuiz = (typeof QUIZZES)[number];
 export const ehQuiz = (jogo: string): jogo is IdDoQuiz => (QUIZZES as readonly string[]).includes(jogo);
 
@@ -15,6 +15,9 @@ export interface Veredito {
   cor: 0 | 1 | 2;
   /** O secreto tem mais (1) ou menos (-1). */
   seta?: 1 | -1;
+  /** Na coluna de distância: os km até o secreto e o rumo (graus, 0 = norte). */
+  km?: number;
+  rumo?: number;
 }
 
 export interface EstadoQuiz {
@@ -99,6 +102,51 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
       },
     },
     numero: { nd: (v) => FRACOES[v] ?? String(v) },
+  },
+  paises: {
+    colunas: {
+      local: chave('Distância'),
+      regiao: chave('Região'),
+      subregiao: chave('Sub-região'),
+      populacao: chave('População'),
+    },
+    valores: {
+      // As cinco regiões da ONU: os mesmos textos da grade de países (GradeDePaises.tsx).
+      regiao: {
+        africa: chave('África'),
+        americas: chave('Américas'),
+        asia: chave('Ásia'),
+        europa: chave('Europa'),
+        oceania: chave('Oceania'),
+      },
+      // As sub-regiões do geoscheme da ONU, como a Natural Earth as escreve.
+      subregiao: {
+        'Northern Africa': chave('Norte da África'),
+        'Western Africa': chave('África Ocidental'),
+        'Middle Africa': chave('África Central'),
+        'Eastern Africa': chave('África Oriental'),
+        'Southern Africa': chave('África Austral'),
+        'Northern America': chave('América do Norte'),
+        'Central America': chave('América Central'),
+        Caribbean: chave('Caribe'),
+        'South America': chave('América do Sul'),
+        'Central Asia': chave('Ásia Central'),
+        'Eastern Asia': chave('Ásia Oriental'),
+        'South-Eastern Asia': chave('Sudeste Asiático'),
+        'Southern Asia': chave('Sul da Ásia'),
+        'Western Asia': chave('Ásia Ocidental'),
+        'Northern Europe': chave('Norte da Europa'),
+        'Western Europe': chave('Europa Ocidental'),
+        'Eastern Europe': chave('Europa Oriental'),
+        'Southern Europe': chave('Sul da Europa'),
+        'Australia and New Zealand': chave('Austrália e Nova Zelândia'),
+        Melanesia: chave('Melanésia'),
+        Micronesia: chave('Micronésia'),
+        Polynesia: chave('Polinésia'),
+      },
+    },
+    // "214 mi", "38 mil": o número compacto do próprio idioma.
+    numero: { populacao: (v) => new Intl.NumberFormat(idiomaAtual(), { notation: 'compact', maximumFractionDigits: 1 }).format(v) },
   },
 };
 
