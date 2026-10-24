@@ -14650,6 +14650,11 @@ body.arrastando-barra {
   color: #fff;
 }
 
+.quiz-seta {
+  margin-inline-start: 3px;
+  font-size: 1.15em;
+}
+
 .quiz-tabela td svg {
   vertical-align: middle;
   margin-inline-start: 2px;

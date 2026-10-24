@@ -1,5 +1,5 @@
 import { chave, idiomaAtual } from './i18n';
-import type { LinhaDoPlacar } from './minijogos';
+import { type LinhaDoPlacar, primeiraForma } from './minijogos';
 
 /**
  * OS QUIZZES DE ADIVINHAR (ver server/src/minijogo-quiz.ts): o mesmo motor, um tema por jogo da estante. O servidor manda
@@ -136,7 +136,8 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
         animal: chave('Animal'),
       },
       dominios: {
-        ceu: chave('Céu'),
+        // "Céus", e não "Céu": "Céu" já é o nome de uma cor do guarda-roupa, e em várias línguas virou "azul-céu".
+        ceu: chave('Céus'),
         trovao: chave('Trovão'),
         agua: chave('Águas'),
         vento: chave('Vento'),
@@ -228,7 +229,10 @@ export const CREDITOS: Partial<Record<IdDoQuiz, string>> = {
 };
 
 /** O texto de um valor, já traduzido. Lista vira "A pé, Voo"; lista vazia, o rótulo de ''. */
-export function textoDoValor(tema: IdDoQuiz, coluna: string, valor: unknown, t: (chave: string) => string): string {
+export function textoDoValor(tema: IdDoQuiz, coluna: string, valor: unknown, traduzir: (chave: string) => string): string {
+  // Algumas chaves ("Dragão", "Sol") são também palavras do desenha e adivinha, que guardam as formas aceitas no chute
+  // separadas por "|" ("ドラゴン|竜|龍"): aqui só se mostra, e vale a primeira.
+  const t = (chave: string) => primeiraForma(traduzir(chave));
   const rotulos = ROTULOS[tema];
   const mapa = rotulos.valores[coluna];
   if (Array.isArray(valor)) {

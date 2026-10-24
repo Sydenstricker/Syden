@@ -145,6 +145,7 @@ try {
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
   await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
   await duda.getByRole('button', { name: 'Começar' }).click();
+  await duda.locator('.quiz-busca input').waitFor({ timeout: 10000 });
   for (const [i, nome] of ['xango', 'zeus', 'anubis'].entries()) {
     // Se um chute era o secreto, a Duda acertou e o campo some: não é falha, é sorte.
     if ((await duda.locator('.quiz-busca input').count()) === 0) break;

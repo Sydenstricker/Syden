@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
@@ -162,8 +162,10 @@ export function JogoQuiz({
                     return (
                       <td key={c.id} className={CLASSE[v.cor]}>
                         {tipoDe.get(c.id) === 'distancia' ? distancia(v) : celula(c.id, linha.valores[c.id])}
-                        {v.seta === 1 && <ArrowUp size={14} aria-label={t('Mais')} />}
-                        {v.seta === -1 && <ArrowDown size={14} aria-label={t('Menos')} />}
+                        {/* A seta é o caractere, e não um texto: o leitor de tela a anuncia na língua de quem ouve, e a
+                            chave Mais do app quer dizer mais opções (um menu) em várias línguas. */}
+                        {v.seta === 1 && <span className="quiz-seta">↑</span>}
+                        {v.seta === -1 && <span className="quiz-seta">↓</span>}
                       </td>
                     );
                   })}
@@ -187,7 +189,7 @@ export function JogoQuiz({
                   linha.map((cor, i) => <span key={`${l}-${i}`} className={CLASSE[cor]} />),
                 )}
               </div>
-              {o.chutes && <small className="quiz-chutes">{t('{n} chutes', { n: o.chutes.length })}</small>}
+              {o.chutes && <small className="quiz-chutes">{t('Chutes: {n}', { n: o.chutes.length })}</small>}
             </li>
           ))}
         </ul>
