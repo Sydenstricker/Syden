@@ -20,7 +20,9 @@ import {
   UsersRound,
   Home,
   Trophy,
+  Signal,
 } from 'lucide-react';
+import { nivelDoPing } from './ping';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { ALGORITMOS_DA_CHAMADA } from './chaveDaChamada';
 import { api } from './api';
@@ -292,7 +294,16 @@ export function Sidebar({
       {connectedChannel && (
         <div className="voice-panel">
           <div>
-            <div className="voice-panel-status">{t('Voz conectada')}</div>
+            <div className="voice-panel-status">
+              {t('Voz conectada')}
+              {/* O PING, como no Discord: a cor diz se está bom, e o número fica para quem quer saber quanto. */}
+              {voice.ping !== null && (
+                <span className="voice-ping" data-nivel={nivelDoPing(voice.ping)} title={`ping ${voice.ping} ms`}>
+                  <Signal size={12} aria-hidden="true" />
+                  {voice.ping} ms
+                </span>
+              )}
+            </div>
             <div className="voice-panel-channel">{connectedChannel.name}</div>
             {/* COM O NOME ESCRITO, e não só o cadeado (relato de 20/10/2026: os usuários o liam como o do HTTPS). Um
                 cadeado sozinho é o símbolo do HTTPS para todo mundo; o que este diz é outra coisa, e precisa dizer. */}

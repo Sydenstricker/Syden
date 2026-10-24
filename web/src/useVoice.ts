@@ -208,6 +208,7 @@ function erroDaTransmissao(error: unknown) {
 }
 
 import { criarVigiaDePicote } from './vigiaDePicote';
+import { pingDoRelatorio } from './ping';
 
 /**
  * Conta ao servidor um problema que só acontece no computador da pessoa (microfone bloqueado, voz barrada
@@ -1815,6 +1816,43 @@ export function useVoice(socket: Socket | null) {
     };
   }, [channelId, microfoneBloqueado, tentarMicrofoneDeNovo]);
 
+  /**
+   * O PING (ver ping.ts), lido a cada 2 s enquanto há chamada. Qualquer faixa serve, minha ou de outra pessoa: todas vão
+   * ao mesmo servidor de voz. Sozinho na sala e mudo não há faixa nenhuma, e vale o ping do canal de sinalização.
+   */
+  const [ping, setPing] = useState<number | null>(null);
+  useEffect(() => {
+    if (channelId === null) {
+      setPing(null);
+      return;
+    }
+    let vivo = true;
+    const medir = async () => {
+      const faixas = [
+        ...[...room.localParticipant.trackPublications.values()].map((p) => p.track),
+        ...[...room.remoteParticipants.values()].flatMap((pessoa) => [...pessoa.trackPublications.values()].map((p) => p.track)),
+      ];
+      let ms: number | null = null;
+      for (const faixa of faixas) {
+        if (!faixa) continue;
+        try {
+          ms = pingDoRelatorio(await faixa.getRTCStatsReport());
+        } catch {
+          ms = null;
+        }
+        if (ms !== null) break;
+      }
+      if (ms === null && room.engine.client.rtt > 0) ms = Math.round(room.engine.client.rtt);
+      if (vivo) setPing(ms);
+    };
+    void medir();
+    const relogio = window.setInterval(() => void medir(), 2000);
+    return () => {
+      vivo = false;
+      window.clearInterval(relogio);
+    };
+  }, [channelId, room]);
+
   return {
     room,
     channelId,
@@ -1856,5 +1894,7 @@ export function useVoice(socket: Socket | null) {
     setVoiceEffect,
     /** O código de segurança da chamada de ponta a ponta; null fora dela (ou numa sala sem cifra). */
     codigoDeSeguranca,
+    /** O ping até o servidor de voz, em ms; null fora da chamada ou enquanto não há medida. */
+    ping,
   };
 }

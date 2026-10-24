@@ -1167,6 +1167,24 @@ textarea {
   font-weight: 600;
 }
 
+/* O ping ao lado de "Voz conectada": verde, amarelo ou vermelho pelo atraso (ping.ts). */
+.voice-ping {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  font-size: calc(11px * var(--escala-do-texto));
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--green);
+}
+.voice-ping[data-nivel='medio'] {
+  color: var(--amber, #f0b232);
+}
+.voice-ping[data-nivel='ruim'] {
+  color: var(--red);
+}
+
 .voice-panel-channel {
   font-size: calc(12px * var(--escala-do-texto));
   color: var(--text-muted);
