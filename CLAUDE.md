@@ -291,6 +291,11 @@ esqueleto, e anúncio só se mede com o navegador rodando.
   desenvolvedores) dizem com todas as letras que proíbem usar a propriedade intelectual dela em jogos ("We prohibit the
   use of our IP in games and apps"; "Do not create or develop games utilizing Riot's IP"). O Loldle existe por
   tolerância, não por licença. Pokémon, Naruto, One Piece, Dota e Smash nem têm política de fãs.
+  **O padrão das políticas de fãs (lidas em 24/10/2026): todas proíbem jogo**, de graça ou não — Wizards ("Don't use
+  Wizards' IP in other games… regardless of whether it is distributed for free"), Supercell ("You cannot create new
+  products… Not even if they were free"), Riot. Um "-dle" com franquia de terceiro só com licença por escrito; o que
+  dá para lançar sem pedir é conteúdo LIVRE (o SRD 5.1 do D&D em CC BY 4.0, folclore e mitologia em domínio público,
+  países e bandeiras, as figuras Fluent que o "Qual é o tamanho?" já usa).
 - Ressalva: só a página de entrada foi medida. Anúncio pode aparecer no meio da partida.
 - **A promessa da lista é "sem anúncio", não "sem rastreio"** (decisão dele, 13/10/2026: "sem anúncio é honesto"). O
   rastreio de um site que a pessoa abre por vontade própria é entre ela e o site. Por isso o **Termo** entrou (só Google
