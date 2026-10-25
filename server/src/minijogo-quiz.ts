@@ -48,6 +48,17 @@ export interface Tema {
   sorteavel?: (item: ItemDoQuiz) => boolean;
   /** O nome por idioma quando ele não está nos dados (os países: o Intl já sabe todos). */
   nomePor?: (item: ItemDoQuiz, idioma: string) => string;
+  /**
+   * As CATEGORIAS que quem começa escolhe (como no "Qual é o tamanho?"): o filtro vale para o sorteio E para a lista de
+   * chutes. "tudo" é a de reserva, quando o pedido não diz qual (ou diz uma que não existe).
+   */
+  categorias?: Record<string, (item: ItemDoQuiz) => boolean>;
+}
+
+/** Os itens de uma categoria do tema (todos, se o tema não tem categorias ou se ela não existe). */
+export function itensDaCategoria(tema: Tema, categoria: unknown): ItemDoQuiz[] {
+  const filtro = tema.categorias?.[String(categoria)];
+  return filtro ? tema.itens.filter(filtro) : tema.itens;
 }
 
 /** 2 = bate, 1 = bate em parte, 0 = não bate. A seta: o secreto tem MAIS (1) ou MENOS (-1). */
@@ -129,6 +140,15 @@ export const TEMAS: Record<string, Tema> = {
    */
   mitologia: {
     itens: lerItens('mitologia.json'),
+    // Por continente (pedido dele, 24/10/2026: "é muito difícil como está"): 124 figuras de uma vez deixavam o primeiro
+    // chute às cegas. As Américas têm 14, a Ásia 38, a África 24 e a Europa 48.
+    categorias: {
+      tudo: () => true,
+      americas: (f) => String(f.mitologia).endsWith(' americas'),
+      asia: (f) => String(f.mitologia).endsWith(' asia'),
+      africa: (f) => String(f.mitologia).endsWith(' africa'),
+      europa: (f) => String(f.mitologia).endsWith(' europa'),
+    },
     colunas: [
       { id: 'mitologia', tipo: 'partes' },
       { id: 'tipo', tipo: 'igual' },
@@ -167,8 +187,8 @@ export function nomeDoItem(item: ItemDoQuiz, idioma: string): string {
 }
 
 /** A lista que o site usa para chutar: só id e nome, nunca as colunas (a resposta não sai daqui, sai do chute). */
-export function catalogo(tema: Tema, idioma: string) {
-  return tema.itens.map((item) => ({ id: item.id, nome: tema.nomePor ? tema.nomePor(item, idioma) : nomeDoItem(item, idioma) }));
+export function catalogo(tema: Tema, idioma: string, categoria?: unknown) {
+  return itensDaCategoria(tema, categoria).map((item) => ({ id: item.id, nome: tema.nomePor ? tema.nomePor(item, idioma) : nomeDoItem(item, idioma) }));
 }
 
 export const RODADAS_QUIZ = 3;
@@ -195,8 +215,10 @@ export function criarQuiz(tema: Tema): Definicao {
   const valores = (item: ItemDoQuiz) => Object.fromEntries(tema.colunas.map((c) => [c.id, item[c.id]]));
 
   return {
-    comecar(ctx, { naSala }) {
-      const sorteio = tema.itens.filter(tema.sorteavel ?? (() => true));
+    comecar(ctx, { naSala, corpo }) {
+      const categoria = tema.categorias?.[String(corpo.categoria)] ? String(corpo.categoria) : tema.categorias ? 'tudo' : null;
+      const daPartida = new Set(itensDaCategoria(tema, categoria).map((i) => i.id));
+      const sorteio = tema.itens.filter((i) => daPartida.has(i.id)).filter(tema.sorteavel ?? (() => true));
       if (sorteio.length < RODADAS_QUIZ) return 'A lista do quiz não está no servidor.';
       const secretos = (_testeQuiz.itens ?? embaralhar([...sorteio]).slice(0, RODADAS_QUIZ).map((i) => i.id)).map((id) => porId.get(id)!);
       let rodada = 1;
@@ -247,6 +269,7 @@ export function criarQuiz(tema: Tema): Definicao {
             rodada,
             rodadas: RODADAS_QUIZ,
             fase,
+            categoria,
             colunas: tema.colunas,
             // As minhas linhas com os valores do que chutei (o site traduz e mostra); dos outros, só as cores.
             meu: (meu?.linhas ?? []).map((l) => ({ ...l, valores: valores(porId.get(l.id)!) })),
@@ -267,7 +290,7 @@ export function criarQuiz(tema: Tema): Definicao {
           if (corpo.tipo !== 'chute') return 'Ação desconhecida.';
           if (fase !== 'chutando') return 'Esta rodada já acabou.';
           const item = porId.get(String(corpo.id ?? ''));
-          if (!item) return 'Escolha um da lista.';
+          if (!item || !daPartida.has(item.id)) return 'Escolha um da lista.';
           let q = quadros.get(quem);
           if (!q) {
             q = { linhas: [], acertouEm: null };

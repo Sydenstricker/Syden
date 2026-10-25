@@ -208,10 +208,10 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     const estaNaSala = (userId: number, channelId: number) => salaDeVozDe(userId)?.channelId === channelId;
 
     // A lista de um quiz para chutar: id e nome no idioma de quem pede. Não diz qual é o secreto, e por isso não pede sala.
-    authed.get<{ Params: { tema: string }; Querystring: { idioma?: string } }>('/api/minijogos/quiz/:tema', async (request, reply) => {
+    authed.get<{ Params: { tema: string }; Querystring: { idioma?: string; categoria?: string } }>('/api/minijogos/quiz/:tema', async (request, reply) => {
       const tema = TEMAS[request.params.tema];
       if (!tema) return reply.code(404).send({ error: 'Quiz desconhecido.' });
-      return { itens: catalogo(tema, String(request.query.idioma ?? 'pt-BR').slice(0, 20)) };
+      return { itens: catalogo(tema, String(request.query.idioma ?? 'pt-BR').slice(0, 20), request.query.categoria) };
     });
 
     // ---- A PARTIDA SOLO (ver JOGOS_SOLO): da pessoa, sem sala. ----

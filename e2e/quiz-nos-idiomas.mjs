@@ -63,6 +63,8 @@ try {
         continue;
       }
       await capa.click(); // no Solo, começa na hora (sem convite nem largada)
+      // A mitologia pede a região antes: "Tudo" é a primeira.
+      if (tema === 'mitologia') await p.locator('.quiz-categorias button').first().click();
       const campo = p.locator('.quiz-busca input');
       await campo.waitFor({ timeout: 10000 });
       await campo.fill(chute.slice(0, Math.max(3, Math.ceil(chute.length / 2))));

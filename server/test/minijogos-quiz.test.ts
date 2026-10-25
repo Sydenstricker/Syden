@@ -33,6 +33,24 @@ test('Quiz: todo tema tem itens de id único, todas as colunas preenchidas, e o 
   assert.equal(comparar(coluna, 'grega europa', 'egipcia africa').cor, 0);
 });
 
+test('Quiz: a categoria da mitologia vale para o sorteio e para a lista de chutes', () => {
+  const americas = catalogo(TEMAS.mitologia, 'pt-BR', 'americas');
+  assert.ok(americas.length >= 10 && americas.length < 30, String(americas.length));
+  assert.ok(americas.some((f) => f.nome === 'Tupã') && !americas.some((f) => f.nome === 'Zeus'));
+  assert.equal(catalogo(TEMAS.mitologia, 'pt-BR', 'nao-existe').length, TEMAS.mitologia.itens.length, 'sem categoria válida: tudo');
+  const s = sala([1]);
+  const jogo = criarQuiz(TEMAS.mitologia).comecar(s.ctx, { naSala: [1], criadaPor: 1, corpo: { categoria: 'americas' } });
+  assert.ok(typeof jogo !== 'string');
+  assert.equal(jogo.publico(1).categoria, 'americas');
+  assert.equal(jogo.acao(1, { tipo: 'chute', id: 'Q34201' }), 'Escolha um da lista.', 'Zeus não está nas Américas');
+  assert.equal(jogo.acao(1, { tipo: 'chute', id: 'Q7853613' }), null, 'Tupã está');
+  for (let r = 0; r < RODADAS_QUIZ; r++) {
+    const visto = jogo.publico(1) as { resposta: { id: string } | null };
+    s.disparar(); // a rodada acaba (ou a revelação passa)
+    if (visto.resposta) assert.ok(americas.some((f) => f.id === visto.resposta!.id), 'o secreto é das Américas');
+  }
+});
+
 test('Quiz: a distância e o rumo do Worldle', () => {
   // De Brasília a Lisboa: uns 7.300 km, para nordeste.
   const { km, rumo } = distanciaERumo([-15.8, -47.9], [38.7, -9.1]);

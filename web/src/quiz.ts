@@ -20,8 +20,24 @@ export interface Veredito {
   rumo?: number;
 }
 
+/**
+ * As categorias que quem começa escolhe, por tema (o servidor as conhece pelo mesmo id: minijogo-quiz.ts). O nome é o
+ * mesmo texto das regiões da grade de países e da categoria "Tudo" do "Qual é o tamanho?".
+ */
+export const CATEGORIAS_DO_QUIZ: Partial<Record<IdDoQuiz, { id: string; nome: string }[]>> = {
+  mitologia: [
+    { id: 'tudo', nome: chave('Tudo') },
+    { id: 'americas', nome: chave('Américas') },
+    { id: 'asia', nome: chave('Ásia') },
+    { id: 'africa', nome: chave('África') },
+    { id: 'europa', nome: chave('Europa') },
+  ],
+};
+
 export interface EstadoQuiz {
   rodada: number;
+  /** A categoria escolhida ao começar (null num tema sem categorias). */
+  categoria?: string | null;
   rodadas: number;
   fase: 'chutando' | 'revelando' | 'fim';
   colunas: { id: string; tipo: string }[];

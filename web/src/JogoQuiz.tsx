@@ -39,13 +39,14 @@ export function JogoQuiz({
   // A lista para chutar, no idioma de quem lê (só id e nome: qual é o secreto, o servidor não conta).
   useEffect(() => {
     let vivo = true;
-    void api<{ itens: { id: string; nome: string }[] }>(`/api/minijogos/quiz/${tema}?idioma=${encodeURIComponent(idioma)}`)
+    const categoria = estado.categoria ? `&categoria=${encodeURIComponent(estado.categoria)}` : '';
+    void api<{ itens: { id: string; nome: string }[] }>(`/api/minijogos/quiz/${tema}?idioma=${encodeURIComponent(idioma)}${categoria}`)
       .then((r) => vivo && setItens(r.itens))
       .catch(() => {});
     return () => {
       vivo = false;
     };
-  }, [tema, idioma]);
+  }, [tema, idioma, estado.categoria]);
   const nome = useMemo(() => new Map(itens.map((i) => [i.id, i.nome])), [itens]);
 
   const chutando = jogador && estado.fase === 'chutando' && !estado.acertei;
@@ -201,5 +202,36 @@ export function JogoQuiz({
         </p>
       )}
     </div>
+  );
+}
+
+/** A escolha de categoria de um quiz (a mitologia por continente), antes de começar: como a do "Qual é o tamanho?". */
+export function EscolhaDoQuiz({
+  categorias,
+  aoEscolher,
+  aoVoltar,
+}: {
+  categorias: { id: string; nome: string }[];
+  aoEscolher: (categoria: string) => void;
+  aoVoltar: () => void;
+}) {
+  const t = useT();
+  return (
+    <>
+      <ul className="quiz-categorias">
+        {categorias.map((categoria) => (
+          <li key={categoria.id}>
+            <button type="button" className="minijogo-jogo" onClick={() => aoEscolher(categoria.id)}>
+              <span>{t(categoria.nome)}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </>
   );
 }

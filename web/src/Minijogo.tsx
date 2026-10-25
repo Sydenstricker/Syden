@@ -8,8 +8,8 @@ import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
-import { JogoQuiz } from './JogoQuiz';
-import { ehQuiz, type EstadoQuiz } from './quiz';
+import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
+import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -115,8 +115,12 @@ export function PainelDoMinijogo({
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
   const [agora, setAgora] = useState(Date.now());
-  /** O "Qual é o tamanho?" pede a categoria antes de começar. */
-  const [escolhendoCategoria, setEscolhendoCategoria] = useState(false);
+  /** O jogo que pede a categoria antes de começar ("Qual é o tamanho?", a mitologia), enquanto ela é escolhida. */
+  const [escolhendo, setEscolhendo] = useState<IdDoJogo | null>(null);
+  const escolhendoCategoria = escolhendo !== null;
+  const setEscolhendoCategoria = (sim: boolean) => setEscolhendo(sim ? 'tamanho' : null);
+  /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
+  const pedeCategoria = (jogo: IdDoJogo) => jogo === 'tamanho' || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
   /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
   const [abaEscolhida, setAba] = useState<GrupoDoJogo>(() => {
     try {
@@ -140,7 +144,7 @@ export function PainelDoMinijogo({
   useEffect(() => {
     if (!comecarCom || partida || comecou.current) return;
     comecou.current = true;
-    if (comecarCom === 'tamanho') setEscolhendoCategoria(true);
+    if (pedeCategoria(comecarCom)) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -192,7 +196,14 @@ export function PainelDoMinijogo({
 
       {/* A ESTANTE DE JOGOS (pedido do Sydenstricker: a tela mais limpa). Uma capa por jogo, e clicar já
           começa para a sala inteira. A explicação mora na dica do mouse: a capa diz o que é. */}
-      {!partida && escolhendoCategoria && (
+      {!partida && escolhendo !== null && ehQuiz(escolhendo) && (
+        <EscolhaDoQuiz
+          categorias={CATEGORIAS_DO_QUIZ[escolhendo] ?? []}
+          aoEscolher={(categoria) => tentar(() => aoComecar(escolhendo, { categoria }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {!partida && escolhendo === 'tamanho' && (
         <EscolhaDeCategoria
           aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }, aba === 'solo').then(() => setEscolhendoCategoria(false)))}
           aoVoltar={() => setEscolhendoCategoria(false)}
@@ -206,7 +217,7 @@ export function PainelDoMinijogo({
                 type="button"
                 className="minijogo-jogo"
                 title={t(jogo.dica)}
-                onClick={() => (jogo.id === 'tamanho' ? setEscolhendoCategoria(true) : tentar(() => aoComecar(jogo.id, {}, aba === 'solo')))}
+                onClick={() => (pedeCategoria(jogo.id) ? setEscolhendo(jogo.id) : tentar(() => aoComecar(jogo.id, {}, aba === 'solo')))}
               >
                 <CapaDoJogo jogo={jogo.id} />
                 <span>
@@ -266,7 +277,7 @@ export function PainelDoMinijogo({
           <button
             type="button"
             className="btn-primary"
-            onClick={() => tentar(() => aoComecar(partida.jogo, partida.jogo === 'tamanho' ? { categoria: partida.categoria } : {}, partida.solo === true))}
+            onClick={() => tentar(() => aoComecar(partida.jogo, partida.categoria ? { categoria: partida.categoria } : {}, partida.solo === true))}
           >
             {t('Jogar de novo')}
           </button>

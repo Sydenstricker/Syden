@@ -135,18 +135,25 @@ try {
     : falhou(`Países: a linha do Brasil: ${brasil}`);
   await foto(duda, 'paises');
 
-  // ---- Mitologia: os nomes vêm do Wikidata, no idioma de quem lê ----
+  // ---- Mitologia: escolhe-se a região antes (pedido dele, 24/10/2026), e os nomes vêm do Wikidata ----
   await duda.getByRole('button', { name: 'Encerrar partida' }).click();
   await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
   await duda.getByRole('button', { name: 'Mini-games' }).click();
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: /^Mitologia$/ }).click();
+  const regioes = await duda.locator('.quiz-categorias li').allInnerTexts();
+  regioes.join(',') === 'Tudo,Américas,Ásia,África,Europa' ? ok(`Mitologia: a escolha de região abriu (${regioes.join(', ')})`) : falhou(`as regiões: ${regioes.join(', ')}`);
+  await foto(duda, 'mitologia-regioes');
+  await duda.locator('.quiz-categorias button', { hasText: 'Américas' }).click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
   await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
   await duda.getByRole('button', { name: 'Começar' }).click();
   await duda.locator('.quiz-busca input').waitFor({ timeout: 10000 });
-  for (const [i, nome] of ['xango', 'zeus', 'anubis'].entries()) {
+  await duda.locator('.quiz-busca input').fill('zeu');
+  await duda.waitForTimeout(600);
+  (await duda.locator('.quiz-busca li').count()) === 0 ? ok('nas Américas, o Zeus nem aparece na lista') : falhou('o Zeus apareceu na lista das Américas');
+  for (const [i, nome] of ['tupa', 'saci'].entries()) {
     // Se um chute era o secreto, a Duda acertou e o campo some: não é falha, é sorte.
     if ((await duda.locator('.quiz-busca input').count()) === 0) break;
     await duda.locator('.quiz-busca input').fill(nome);
@@ -154,10 +161,10 @@ try {
     await duda.keyboard.press('Enter');
     await duda.locator('.quiz-tabela tbody tr').nth(i).waitFor({ timeout: 5000 });
   }
-  const xango = await duda.locator('.quiz-tabela tbody tr').last().innerText();
-  /Xangô/.test(xango) && /Iorubá/.test(xango) && /Trovão/.test(xango)
-    ? ok(`Mitologia: o nome em português e os valores traduzidos: ${xango.replace(/\s+/g, ' ')}`)
-    : falhou(`Mitologia: a linha do Xangô: ${xango}`);
+  const tupa = await duda.locator('.quiz-tabela tbody tr').last().innerText();
+  /Tupã/.test(tupa) && /Brasileira/.test(tupa) && /Trovão/.test(tupa)
+    ? ok(`Mitologia: o nome em português e os valores traduzidos: ${tupa.replace(/\s+/g, ' ')}`)
+    : falhou(`Mitologia: a linha do Tupã: ${tupa}`);
   await foto(duda, 'mitologia');
 } catch (e) {
   falhou(e.stack ?? String(e));
