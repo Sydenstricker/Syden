@@ -1467,7 +1467,10 @@ textarea {
   z-index: 1;
 }
 
-.member-placa {
+/* `.member >` e não só `.member-placa`: o fundo Cosmos (.fundo-cosmos, mais abaixo no arquivo) diz position: relative, e
+   com o mesmo peso ele vencia — a placa saía de trás da linha e virava um item vazio antes do avatar, empurrando avatar e
+   nome para a direita (relato de 24/10/2026: "desnível no card"). */
+.member > .member-placa {
   position: absolute;
   inset: 0;
   z-index: 0;
