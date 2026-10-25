@@ -14734,15 +14734,6 @@ body.arrastando-barra {
   color: var(--text-muted);
 }
 
-.quiz-credito {
-  max-width: 520px;
-  margin: 4px 0 0;
-  color: var(--text-muted);
-  font-size: calc(10px * var(--escala-do-texto));
-  line-height: 1.35;
-  text-align: center;
-}
-
 .palavra-outros {
   list-style: none;
   margin: 0;

@@ -82,7 +82,6 @@ try {
     : falhou(`a linha do chute: ${linha}`);
   const cores = await duda.locator('.quiz-tabela tbody tr').first().locator('td.bate, td.em-parte, td.nao-bate').count();
   cores === 5 ? ok('as 5 colunas têm cor') : falhou(`só ${cores} colunas com cor`);
-  (await duda.locator('.quiz-credito').innerText()).includes('System Reference Document 5.1') ? ok('o crédito do SRD está na tela') : falhou('sem o crédito do SRD');
   // Mais um chute, para a foto ter duas linhas (a não ser que o dragão vermelho fosse o secreto).
   if (await duda.locator('.quiz-busca input').count()) {
     await duda.locator('.quiz-busca input').fill('lich');

@@ -397,6 +397,9 @@ com "· português" ao lado do nome.
 **Os quizzes de adivinhar (24/10/2026):** o formato dos "-dle" num motor só (`server/src/minijogo-quiz.ts`): o tema é a
 lista e as colunas. Monstros de fantasia (SRD 5.1, CC BY 4.0), Países (Natural Earth) e Mitologia (lista nossa, nomes do
 Wikidata). Franquia de terceiro entra como mais um tema SÓ com licença por escrito.
+**O crédito de terceiro mora nos TERMOS, seção 10 "Créditos" (decisão dele, 25/10/2026), e não na tela do jogo:** a CC BY
+4.0 aceita "qualquer maneira razoável", e o parágrafo do SRD em inglês no meio do quiz era ruído. Material livre novo
+(dados, figuras, fontes) ganha a linha dele lá, nas duas línguas; se foi traduzido ou adaptado, a linha diz isso.
 
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar

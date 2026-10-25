@@ -4,7 +4,7 @@ import { type LinhaDoPlacar, primeiraForma } from './minijogos';
 /**
  * OS QUIZZES DE ADIVINHAR (ver server/src/minijogo-quiz.ts): o mesmo motor, um tema por jogo da estante. O servidor manda
  * os valores CRUS de cada coluna ("dragon", 4, ["walk","fly"]); aqui eles viram texto traduzido. Tema novo: o id em
- * QUIZZES, os rótulos em ROTULOS e, se a fonte pedir, o crédito em CREDITOS.
+ * QUIZZES, os rótulos em ROTULOS e, se a fonte pedir crédito, a linha dela nos termos (seção 10, "Créditos").
  */
 export const QUIZZES = ['monstros', 'mitologia', 'paises'] as const;
 export type IdDoQuiz = (typeof QUIZZES)[number];
@@ -233,15 +233,6 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
     // "214 mi", "38 mil": o número compacto do próprio idioma.
     numero: { populacao: (v) => new Intl.NumberFormat(idiomaAtual(), { notation: 'compact', maximumFractionDigits: 1 }).format(v) },
   },
-};
-
-/**
- * O crédito que a fonte pede, na tela do jogo. O do SRD vai nas palavras exatas da Wizards of the Coast (por isso em
- * inglês, em todo idioma): é a condição da licença CC BY 4.0.
- */
-export const CREDITOS: Partial<Record<IdDoQuiz, string>> = {
-  monstros:
-    'This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.',
 };
 
 /** O texto de um valor, já traduzido. Lista vira "A pé, Voo"; lista vazia, o rótulo de ''. */

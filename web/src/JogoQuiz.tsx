@@ -3,7 +3,7 @@ import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
-import { CREDITOS, type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor, type Veredito } from './quiz';
+import { type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor, type Veredito } from './quiz';
 
 const QUIZ_MS = 3 * 60_000;
 const CLASSE = ['nao-bate', 'em-parte', 'bate'];
@@ -106,7 +106,6 @@ export function JogoQuiz({
   else situacao = t('Escreva o começo do nome e escolha da lista.');
 
   const outros = estado.outros.filter((o) => o.userId !== eu);
-  const credito = CREDITOS[tema];
   return (
     <div className="quiz">
       {chutando && (
@@ -210,11 +209,6 @@ export function JogoQuiz({
         </ul>
       )}
       {estado.fase === 'chutando' && <Relogio restante={restante} total={QUIZ_MS} />}
-      {credito && (
-        <p className="quiz-credito" lang="en">
-          {credito}
-        </p>
-      )}
     </div>
   );
 }
