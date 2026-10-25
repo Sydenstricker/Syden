@@ -88,13 +88,14 @@ try {
   await painel.locator('.jogos-do-syden li button', { hasText: 'Sala 1' }).click();
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
-  // As abas (14/10/2026): Coletivo primeiro, com os 6 da turma; Solo com os 3 de jogar sozinho e o Termo.
+  // As abas (14/10/2026; desde 24/10/2026 os seis que se jogam sozinho estão nas duas): Coletivo com os 12, Solo com os 6
+  // e o Termo.
   const coletivos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
-  coletivos === 6 ? ok('a Duda caiu na sala com a estante aberta, na aba Coletivo: 6 jogos') : falhou(`a aba Coletivo tem ${coletivos} jogos`);
+  coletivos === 12 ? ok('a Duda caiu na sala com a estante aberta, na aba Coletivo: 12 jogos') : falhou(`a aba Coletivo tem ${coletivos} jogos`);
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
   const solos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
   const parceiros = await duda.locator('.minijogo-parceiro').count();
-  solos === 3 && parceiros === 1 ? ok('a aba Solo tem 3 jogos e o Termo') : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
+  solos === 6 && parceiros === 1 ? ok('a aba Solo tem 6 jogos e o Termo') : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
   await foto(duda, 'estante-solo');
   // O Termo também está na estante da sala: abre NO PALCO (o lugar do vídeo), só para quem clicou, e a barra da call
   // continua à vista embaixo (desenho do Sydenstricker).
@@ -121,10 +122,10 @@ try {
   await duda.locator('.minijogo-estante').waitFor({ timeout: 5000 });
   await foto(duda, 'estante');
 
-  const SOLO = ['Qual é o tamanho?', 'Sudoku', 'Problemas de xadrez'];
   const comecar = async (nome) => {
     if ((await duda.locator('.minijogo-estante').count()) === 0) await duda.getByRole('button', { name: 'Mini-games' }).click();
-    await duda.locator('.minijogo-abas').getByRole('tab', { name: SOLO.includes(nome) ? 'Solo' : 'Coletivo' }).click();
+    // Com a turma é sempre pelo Coletivo: a aba Solo, desde 24/10/2026, é a partida só de quem joga (e2e/minijogo-solo.mjs).
+    await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
     await duda.locator('.minijogo-jogo', { hasText: nome }).click();
   };
   const encerrar = async () => {

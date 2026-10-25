@@ -1080,6 +1080,7 @@ export function Shell({
               comunidades={communities}
               vozDeTodas={voiceByCommunity}
               eu={user.id}
+              socket={socket}
               aoIrParaComunidade={(id) => {
                 setView('community');
                 setCommunityId(id);

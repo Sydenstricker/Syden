@@ -389,6 +389,15 @@ em `server/assets/palavra-secreta/` com o leia-me dele. **Ele fica só no servid
 Por enquanto só em português — idioma novo pede um dicionário, e tradução não produz um; quem lê noutra língua vê o jogo
 com "· português" ao lado do nome.
 
+**A aba Solo é jogar sozinho, e o Coletivo chama a turma (24/10/2026, pedido dele).** Os seis que funcionam com uma pessoa
+(Qual é o tamanho?, xadrez, sudoku e os três quizzes) estão nas DUAS abas. No Solo a partida é da PESSOA, não da sala
+(`/api/minijogo-solo`): começa sem convite, não ocupa a sala (a turma começa o jogo dela ao mesmo tempo), não pede chamada
+(o computador do quarto tem a seção Solo) e não conta nas conquistas, que medem gente junta.
+
+**Os quizzes de adivinhar (24/10/2026):** o formato dos "-dle" num motor só (`server/src/minijogo-quiz.ts`): o tema é a
+lista e as colunas. Monstros de fantasia (SRD 5.1, CC BY 4.0), Países (Natural Earth) e Mitologia (lista nossa, nomes do
+Wikidata). Franquia de terceiro entra como mais um tema SÓ com licença por escrito.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

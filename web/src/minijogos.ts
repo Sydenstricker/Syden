@@ -140,6 +140,8 @@ export interface PartidaPublica {
   recusaram?: { userId: number; username: string }[];
   souJogador?: boolean;
   recusei?: boolean;
+  /** A partida solo (a aba Solo): só de quem a começou, sem sala nem convite. */
+  solo?: boolean;
   [campo: string]: unknown;
 }
 
@@ -297,87 +299,88 @@ export interface EstadoPalavra {
 export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
- * As duas abas da estante (pedido dele, 14/10/2026). SOLO: dá para jogar sozinho, e quem estiver na sala entra na
- * corrida se quiser. COLETIVO: o jogo é a turma (precisa de outra pessoa, ou não tem graça sem ela).
+ * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
+ * a sala e não pede chamada (desde 24/10/2026, pedido dele: "na aba solo joga sozinho, na coletiva manda convite").
+ * COLETIVO: a sala inteira é convidada. Os jogos que funcionam com uma pessoa só estão nas DUAS abas.
  */
 export type GrupoDoJogo = 'solo' | 'coletivo';
 
 /** A estante: a ordem é a da tela. O nome e a dica de cada jogo, traduzidos. */
-export const JOGOS: { id: IdDoJogo; nome: string; dica: string; grupo: GrupoDoJogo; idioma?: string }[] = [
+export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJogo[]; idioma?: string }[] = [
   {
     id: 'tamanho',
     nome: chave('Qual é o tamanho?'),
     dica: chave('Ao lado de um objeto de tamanho conhecido aparece outro, e cada um aumenta ou diminui esse outro até achar o tamanho certo. Quem chegar mais perto ganha mais pontos.'),
-    grupo: 'solo',
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'stop',
     nome: chave('Stop'),
     dica: chave('Sai uma letra e cada um escreve uma palavra com ela em cada categoria. Quem completar primeiro aperta STOP, e a turma decide o que vale.'),
-    grupo: 'coletivo',
+    abas: ['coletivo'],
   },
   {
     id: 'desenho',
     nome: chave('Desenha e adivinha'),
     dica: chave('Cada um desenha uma vez, e a sala chuta o que é. Quem acerta mais rápido ganha mais pontos.'),
-    grupo: 'coletivo',
+    abas: ['coletivo'],
   },
   {
     id: 'lobisomem',
     nome: chave('Lobisomem'),
     dica: chave('Cada um recebe um papel em segredo. À noite os lobisomens atacam; de dia a vila conversa e vota em quem tirar do jogo. Precisa de 4 pessoas ou mais.'),
-    grupo: 'coletivo',
+    abas: ['coletivo'],
   },
   {
     // O primeiro quiz de adivinhar (quiz.ts): o formato dos "-dle", com os monstros do SRD 5.1, que é livre.
     id: 'monstros',
     nome: chave('Monstros de fantasia'),
     dica: chave('Sai um monstro secreto, e cada um chuta outros da lista. Cada chute mostra o que bate com o secreto: tipo, tamanho, nível, alinhamento e como ele se desloca. Quem acertar com menos chutes ganha mais pontos.'),
-    grupo: 'solo',
+    abas: ['solo', 'coletivo'],
   },
   {
     // 124 figuras de 11 mitologias, com os nomes de cada idioma (do Wikidata).
     id: 'mitologia',
     nome: chave('Mitologia'),
     dica: chave('Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.'),
-    grupo: 'solo',
+    abas: ['solo', 'coletivo'],
   },
   {
     // O Worldle sem anúncio: os 193 países da ONU, com a distância e a direção até o secreto.
     id: 'paises',
     nome: chave('Países'),
     dica: chave('Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.'),
-    grupo: 'solo',
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'xadrez',
     nome: chave('Problemas de xadrez'),
     dica: chave('Todo mundo recebe o mesmo problema do Lichess. Quem achar o lance certo mais rápido ganha o ponto extra.'),
-    grupo: 'solo',
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'sudoku',
     nome: chave('Sudoku'),
     dica: chave('Todo mundo recebe o mesmo sudoku, e a sala vê quem está mais perto de terminar.'),
-    grupo: 'solo',
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'gomoku',
     nome: chave('Cinco em linha'),
     dica: chave('Duas pessoas põem pedras no tabuleiro, uma de cada vez. Vence quem fizer cinco seguidas. A sala assiste.'),
-    grupo: 'coletivo',
+    abas: ['coletivo'],
   },
   {
     id: 'mancala',
     nome: chave('Mancala'),
     dica: chave('O jogo de semear: pegue as sementes de uma casa e espalhe uma por casa. Vence quem guardar mais no depósito. A sala assiste.'),
-    grupo: 'coletivo',
+    abas: ['coletivo'],
   },
   {
     id: 'palavra',
     nome: chave('Palavra secreta'),
     dica: chave('Todo mundo tenta adivinhar a mesma palavra de 5 letras, em 6 chutes. A sala vê as cores dos outros, mas não as letras. Quem acertar com menos chutes ganha mais pontos.'),
-    grupo: 'coletivo',
+    abas: ['coletivo'],
     // As palavras são do dicionário do servidor, que por enquanto só existe em português.
     idioma: 'pt',
   },
@@ -811,6 +814,48 @@ export function usarMinijogo(channelId: number | null, socket: Socket | null) {
   }, [channelId]);
 
   return { partida, comecar, agir, encerrar, responder, largar };
+}
+
+/**
+ * A PARTIDA SOLO (a aba Solo da estante): a mesma conversa com o servidor, mas da pessoa e não da sala (rotas
+ * /api/minijogo-solo). Não precisa de chamada: o computador do quarto também a usa.
+ */
+export function usarMinijogoSolo(socket: Socket | null) {
+  const [partida, setPartida] = useState<Partida | null>(null);
+  const guardar = (p: PartidaPublica | null) => setPartida(p ? { ...p, recebidaEm: Date.now() } : null);
+
+  const recarregar = useCallback(() => {
+    void api<{ partida: PartidaPublica | null }>('/api/minijogo-solo')
+      .then(({ partida: p }) => guardar(p))
+      .catch(() => {});
+  }, []);
+
+  useEffect(recarregar, [recarregar]);
+  useEffect(() => {
+    if (!socket) return;
+    // O relógio da partida anda no servidor (a rodada que acaba, a revelação): o aviso vem só para quem joga.
+    socket.on('minijogo-solo:mudou', recarregar);
+    socket.on('connect', recarregar);
+    return () => {
+      socket.off('minijogo-solo:mudou', recarregar);
+      socket.off('connect', recarregar);
+    };
+  }, [socket, recarregar]);
+
+  const comecar = useCallback(async (jogo: IdDoJogo, escolhas: Record<string, unknown> = {}) => {
+    const { partida: p } = await api<{ partida: PartidaPublica }>('/api/minijogo-solo', { method: 'POST', body: { jogo, ...escolhas } });
+    guardar(p);
+  }, []);
+  const agir = useCallback(async (corpo: Record<string, unknown>) => {
+    const { partida: p } = await api<{ partida: PartidaPublica }>('/api/minijogo-solo/acao', { method: 'POST', body: corpo });
+    guardar(p);
+  }, []);
+  const encerrar = useCallback(async () => {
+    await api('/api/minijogo-solo', { method: 'DELETE' });
+    setPartida(null);
+  }, []);
+
+  return { partida, comecar, agir, encerrar };
 }
 
 /**

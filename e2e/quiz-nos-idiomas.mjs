@@ -62,8 +62,7 @@ try {
         await p.keyboard.press('Escape');
         continue;
       }
-      await capa.click();
-      await p.getByRole('button', { name: traduzir(idioma, 'Começar') }).click();
+      await capa.click(); // no Solo, começa na hora (sem convite nem largada)
       const campo = p.locator('.quiz-busca input');
       await campo.waitFor({ timeout: 10000 });
       await campo.fill(chute.slice(0, Math.max(3, Math.ceil(chute.length / 2))));

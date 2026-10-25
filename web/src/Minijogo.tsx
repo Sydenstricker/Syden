@@ -1,5 +1,5 @@
 import { Gamepad2, Trophy, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
 import { IconButton } from './IconButton';
@@ -66,7 +66,8 @@ interface Acao {
   (): Promise<void>;
 }
 interface Comecar {
-  (jogo: IdDoJogo, escolhas?: Record<string, unknown>): Promise<void>;
+  /** `solo`: a partida é só minha (a aba Solo); senão, a sala é convidada. */
+  (jogo: IdDoJogo, escolhas?: Record<string, unknown>, solo?: boolean): Promise<void>;
 }
 /** A resposta ao convite (ver o convite em minijogos-routes.ts, no servidor). */
 interface Responder {
@@ -89,6 +90,8 @@ export function PainelDoMinijogo({
   socket,
   channelId,
   aoAbrirSite,
+  soSolo = false,
+  comecarCom = null,
 }: {
   partida: Partida | null;
   eu: number;
@@ -104,6 +107,10 @@ export function PainelDoMinijogo({
   channelId: number;
   /** Abre um jogo de parceiro (o Termo) no palco da sala: só para quem clicou. */
   aoAbrirSite: (site: { nome: string; endereco: string }) => void;
+  /** Fora da sala (o computador do quarto): só a aba Solo, sem as abas. */
+  soSolo?: boolean;
+  /** Abre já começando este jogo (no Solo), ou a escolha de categoria se for o "Qual é o tamanho?". */
+  comecarCom?: IdDoJogo | null;
 }) {
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
@@ -111,13 +118,14 @@ export function PainelDoMinijogo({
   /** O "Qual é o tamanho?" pede a categoria antes de começar. */
   const [escolhendoCategoria, setEscolhendoCategoria] = useState(false);
   /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
-  const [aba, setAba] = useState<GrupoDoJogo>(() => {
+  const [abaEscolhida, setAba] = useState<GrupoDoJogo>(() => {
     try {
       return localStorage.getItem('syden:aba-dos-minijogos') === 'solo' ? 'solo' : 'coletivo';
     } catch {
       return 'coletivo';
     }
   });
+  const aba: GrupoDoJogo = soSolo ? 'solo' : abaEscolhida;
   const escolherAba = (grupo: GrupoDoJogo) => {
     setAba(grupo);
     try {
@@ -126,6 +134,16 @@ export function PainelDoMinijogo({
       /* sem guardar: volta no Coletivo */
     }
   };
+
+  // Veio do computador do quarto com um jogo escolhido: começa (no Solo) assim que o painel abre, uma vez só.
+  const comecou = useRef(false);
+  useEffect(() => {
+    if (!comecarCom || partida || comecou.current) return;
+    comecou.current = true;
+    if (comecarCom === 'tamanho') setEscolhendoCategoria(true);
+    else void tentar(() => aoComecar(comecarCom, {}, true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comecarCom]);
 
   // O relógio anda na tela; quem manda no fim de cada fase é o servidor.
   const andando = partida !== null && !partida.terminada;
@@ -157,7 +175,7 @@ export function PainelDoMinijogo({
           <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}
         </strong>
         {/* As abas da estante (pedido dele, 14/10/2026): o que se joga sozinho e o que é da turma. */}
-        {!partida && !escolhendoCategoria && (
+        {!partida && !escolhendoCategoria && !soSolo && (
           <div className="minijogo-abas" role="tablist" aria-label={t('Mini-games')}>
             {(['solo', 'coletivo'] as const).map((grupo) => (
               <button key={grupo} type="button" role="tab" aria-selected={aba === grupo} className={aba === grupo ? 'ativa' : ''} onClick={() => escolherAba(grupo)}>
@@ -176,19 +194,19 @@ export function PainelDoMinijogo({
           começa para a sala inteira. A explicação mora na dica do mouse: a capa diz o que é. */}
       {!partida && escolhendoCategoria && (
         <EscolhaDeCategoria
-          aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }).then(() => setEscolhendoCategoria(false)))}
+          aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }, aba === 'solo').then(() => setEscolhendoCategoria(false)))}
           aoVoltar={() => setEscolhendoCategoria(false)}
         />
       )}
       {!partida && !escolhendoCategoria && (
         <ul className="minijogo-estante">
-          {JOGOS.filter((jogo) => jogo.grupo === aba).map((jogo) => (
+          {JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((jogo) => (
             <li key={jogo.id}>
               <button
                 type="button"
                 className="minijogo-jogo"
                 title={t(jogo.dica)}
-                onClick={() => (jogo.id === 'tamanho' ? setEscolhendoCategoria(true) : tentar(() => aoComecar(jogo.id)))}
+                onClick={() => (jogo.id === 'tamanho' ? setEscolhendoCategoria(true) : tentar(() => aoComecar(jogo.id, {}, aba === 'solo')))}
               >
                 <CapaDoJogo jogo={jogo.id} />
                 <span>
@@ -248,7 +266,7 @@ export function PainelDoMinijogo({
           <button
             type="button"
             className="btn-primary"
-            onClick={() => tentar(() => aoComecar(partida.jogo, partida.jogo === 'tamanho' ? { categoria: partida.categoria } : {}))}
+            onClick={() => tentar(() => aoComecar(partida.jogo, partida.jogo === 'tamanho' ? { categoria: partida.categoria } : {}, partida.solo === true))}
           >
             {t('Jogar de novo')}
           </button>

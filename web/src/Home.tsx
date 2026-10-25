@@ -1,6 +1,8 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
 import { Mascote } from './Mascote';
-import { JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR } from './minijogos';
+import { type IdDoJogo, JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR, usarMinijogoSolo } from './minijogos';
+import { PainelDoMinijogo } from './Minijogo';
+import type { Socket } from 'socket.io-client';
 import { SiteEmbutido } from './SiteEmbutido';
 import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
@@ -139,6 +141,7 @@ export function Home({
   comunidades,
   vozDeTodas,
   eu,
+  socket,
   aoIrParaComunidade,
 }: {
   /** Nome da comunidade aberta agora, se houver. */
@@ -159,6 +162,8 @@ export function Home({
   comunidades: Community[];
   vozDeTodas: Record<number, VoiceMember[]>;
   eu: number;
+  /** O aviso do servidor de que a partida solo andou (a rodada que acaba sozinha). */
+  socket: Socket | null;
   aoIrParaComunidade: (communityId: number) => void;
 }) {
   const t = useT();
@@ -166,6 +171,10 @@ export function Home({
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
   const [jogosAbertos, setJogosAbertos] = useState(false);
+  // JOGAR SOZINHO PELO COMPUTADOR DO QUARTO (24/10/2026): os jogos da aba Solo, sem entrar em sala nenhuma.
+  const solo = usarMinijogoSolo(socket);
+  const [soloAberto, setSoloAberto] = useState(false);
+  const [soloCom, setSoloCom] = useState<IdDoJogo | null>(null);
   // O QUARTO NOVO, para todo mundo desde 16/10/2026; o antigo só se a página do novo não puder abrir (cenaNova.ts).
   const quarto = usarCenaNova(ENDERECO_DO_QUARTO);
   /** O jogo de parceiro aberto aqui dentro (SiteEmbutido.tsx). */
@@ -274,6 +283,32 @@ export function Home({
                 ✕
               </button>
             </header>
+            {/* Sozinho, aqui mesmo: a partida é só sua, e não precisa de sala nem de chamada. */}
+            <section className="jogos-do-syden jogos-solo">
+              <h4>
+                <Gamepad2 size={16} aria-hidden="true" /> {t('Solo')}
+              </h4>
+              <ul>
+                {JOGOS.filter((jogo) => jogo.abas.includes('solo')).map((jogo) => (
+                  <li key={jogo.id}>
+                    <button
+                      title={t(jogo.dica)}
+                      onClick={() => {
+                        setJogosAbertos(false);
+                        // Escolher outro jogo troca a partida solo de antes (é uma só por pessoa).
+                        void (solo.partida ? solo.encerrar() : Promise.resolve()).finally(() => {
+                          setSoloCom(jogo.id);
+                          setSoloAberto(true);
+                        });
+                      }}
+                    >
+                      <Gamepad2 size={14} aria-hidden="true" />
+                      <span className="vila-sala-nome">{t(jogo.nome)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
             <section className="jogos-do-syden">
               <h4>
                 <Gamepad2 size={16} aria-hidden="true" /> {t('Na sala de voz, com a turma')}
@@ -352,6 +387,33 @@ export function Home({
 
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
       {siteAberto && <SiteEmbutido nome={siteAberto.nome} endereco={siteAberto.endereco} aoFechar={() => setSiteAberto(null)} />}
+      {soloAberto && (
+        <div className="minijogo-no-quarto">
+          <PainelDoMinijogo
+            key={soloCom ?? 'estante'}
+            partida={solo.partida}
+            eu={eu}
+            podeEncerrar
+            aoComecar={(jogo, escolhas) => solo.comecar(jogo, escolhas)}
+            aoAgir={solo.agir}
+            aoEncerrar={solo.encerrar}
+            aoResponder={async () => {}}
+            aoLargar={async () => {}}
+            aoFechar={() => {
+              setSoloAberto(false);
+              setSoloCom(null);
+            }}
+            socket={socket}
+            channelId={0}
+            aoAbrirSite={(site) => {
+              setSoloAberto(false);
+              setSiteAberto(site);
+            }}
+            soSolo
+            comecarCom={soloCom}
+          />
+        </div>
+      )}
 
 
       <div ref={ideiasRef}>

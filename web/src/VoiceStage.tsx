@@ -60,7 +60,7 @@ import { Karaoke, pegarPedidoDeKaraoke } from './Karaoke';
 import { ScreenShareButton } from './ScreenShareButton';
 import { BotaoMinijogo, ConviteDoMinijogo, PainelDoMinijogo } from './Minijogo';
 import { SiteNoPalco } from './SiteEmbutido';
-import { convitePendente, pegarPedidoDeAbrir, souJogador, usarMinijogo } from './minijogos';
+import { convitePendente, pegarPedidoDeAbrir, souJogador, usarMinijogo, usarMinijogoSolo } from './minijogos';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
 import { MaisNaChamada } from './MaisNaChamada';
@@ -1247,13 +1247,18 @@ function Stage({
   // O mini-game: o painel abre sozinho para quem JOGA (quem começou, quem aceitou o convite) e fecha quando a partida
   // acaba. Quem não respondeu recebe o convite pequeno; quem não joga pode abrir pelo botão e assistir.
   const minijogo = usarMinijogo(channelId, socket);
+  // A partida SOLO (a aba Solo): só minha, não ocupa a sala. Enquanto ela existe, é ela que o painel mostra; o convite
+  // de um jogo da turma continua chegando pelo aviso pequeno.
+  const solo = usarMinijogoSolo(socket);
   const eu = Number(useLocalParticipant().localParticipant.identity);
   const [minijogoAberto, setMinijogoAberto] = useState(false);
   /** O jogo de parceiro (o Termo) aberto no palco, no lugar dos cartões e das transmissões: só para mim. */
   const [siteNoPalco, setSiteNoPalco] = useState<{ nome: string; endereco: string } | null>(null);
   const temPartida = minijogo.partida !== null;
   const participo = souJogador(minijogo.partida);
-  useEffect(() => setMinijogoAberto(participo), [participo, temPartida]);
+  const jogandoSozinho = solo.partida !== null;
+  // Quem joga sozinho continua com o painel aberto quando a turma começa ou termina o jogo dela.
+  useEffect(() => setMinijogoAberto((aberto) => (jogandoSozinho ? aberto : participo)), [participo, temPartida, jogandoSozinho]);
   // Veio da home (o computador do quarto → escolher a sala): a estante de jogos abre assim que entra.
   useEffect(() => {
     if (pegarPedidoDeAbrir(channelId)) setMinijogoAberto(true);
@@ -1472,7 +1477,7 @@ function Stage({
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         {!simples && <ScreenShareButton voice={voice} />}
-        {!simples && <BotaoMinijogo partida={minijogo.partida} aberto={minijogoAberto} aoAlternar={() => setMinijogoAberto(!minijogoAberto)} />}
+        {!simples && <BotaoMinijogo partida={solo.partida ?? minijogo.partida} aberto={minijogoAberto} aoAlternar={() => setMinijogoAberto(!minijogoAberto)} />}
         {/*
           Ver lado a lado fica FORA do menu: só aparece quando há mais de uma transmissão aberta, e
           nesse momento é exatamente o que a pessoa quer fazer. Botão que só existe quando é útil não
@@ -1532,12 +1537,12 @@ function Stage({
         )}
         {minijogoAberto && (
           <PainelDoMinijogo
-            partida={minijogo.partida}
+            partida={solo.partida ?? minijogo.partida}
             eu={eu}
-            podeEncerrar={minijogo.partida?.criadaPor === eu}
-            aoComecar={minijogo.comecar}
-            aoAgir={minijogo.agir}
-            aoEncerrar={minijogo.encerrar}
+            podeEncerrar={solo.partida !== null || minijogo.partida?.criadaPor === eu}
+            aoComecar={(jogo, escolhas, emSolo) => (emSolo ? solo.comecar(jogo, escolhas) : minijogo.comecar(jogo, escolhas))}
+            aoAgir={solo.partida ? solo.agir : minijogo.agir}
+            aoEncerrar={solo.partida ? solo.encerrar : minijogo.encerrar}
             aoResponder={minijogo.responder}
             aoLargar={minijogo.largar}
             aoFechar={() => setMinijogoAberto(false)}

@@ -1,6 +1,6 @@
 // O QUIZ DE ADIVINHAR (24/10/2026): "Monstros de fantasia", de ponta a ponta, com duas pessoas na sala.
 //
-// - A Duda abre a estante, aba Solo, e escolhe o quiz; o Edu aceita o convite, e ela dá a largada.
+// - A Duda abre a estante, aba Coletivo, e escolhe o quiz; o Edu aceita o convite, e ela dá a largada.
 // - A Duda escreve o começo do nome, a lista mostra os monstros, e o Enter chuta o primeiro: vem uma linha com as
 //   colunas coloridas, os valores traduzidos e o crédito do SRD embaixo.
 // - O Edu vê a linha da Duda só com as cores, sem o nome do monstro.
@@ -57,9 +57,9 @@ try {
   ok('os dois estão na Sala 1');
 
   await duda.getByRole('button', { name: 'Mini-games' }).click();
-  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
+  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   const capa = duda.locator('.minijogo-jogo', { hasText: 'Monstros de fantasia' });
-  (await capa.count()) === 1 ? ok('o quiz está na aba Solo') : falhou('o quiz não está na aba Solo');
+  (await capa.count()) === 1 ? ok('o quiz está na aba Coletivo') : falhou('o quiz não está na aba Coletivo');
   await foto(duda, 'estante');
   await capa.click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
@@ -110,7 +110,7 @@ try {
   await duda.getByRole('button', { name: 'Encerrar partida' }).click();
   await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
   await duda.getByRole('button', { name: 'Mini-games' }).click();
-  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
+  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: /^Países$/ }).click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
@@ -139,7 +139,7 @@ try {
   await duda.getByRole('button', { name: 'Encerrar partida' }).click();
   await duda.locator('.minijogo').waitFor({ state: 'detached', timeout: 10000 });
   await duda.getByRole('button', { name: 'Mini-games' }).click();
-  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
+  await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: /^Mitologia$/ }).click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();

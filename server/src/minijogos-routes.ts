@@ -45,9 +45,19 @@ export const JOGOS: Record<string, Definicao> = {
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };
 
+/**
+ * OS JOGOS QUE SE JOGAM SOZINHO (pedido dele, 24/10/2026: "na aba solo joga sozinho, na coletiva manda convite"). Os
+ * mesmos seis aparecem nas duas abas da estante; no Solo, a partida é da PESSOA, e não da sala: começa sem convite, não
+ * ocupa a sala (a turma continua podendo começar o jogo dela), não pede chamada (dá para jogar pelo computador do
+ * quarto) e não conta nas conquistas da turma, que medem gente junta.
+ */
+export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', ...Object.keys(TEMAS)]);
+
 interface Partida {
   channelId: number;
   communityId: number;
+  /** A partida solo: de quem a começou (`criadaPor`), sem sala; channelId e communityId valem 0. */
+  solo: boolean;
   jogo: string;
   criadaPor: number;
   terminada: boolean;
@@ -69,18 +79,23 @@ interface Partida {
 export const CONVITE_MS = 3 * 60_000;
 
 const partidas = new Map<number, Partida>();
+/** As partidas solo, por pessoa. */
+const solos = new Map<number, Partida>();
 
 /** Para os testes: as partidas de agora. */
 export const _partidas = partidas;
+export const _solos = solos;
 
 export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
   const nome = (userId: number) => db.findUserById(userId)?.username ?? '?';
   /** Quem joga e está na sala agora (com o convite, só quem aceitou). */
   const presentes = (p: Partida) => {
+    if (p.solo) return [p.criadaPor];
     const naSala = quemEstaNaSala(p.channelId);
     return p.jogadores ? naSala.filter((id) => p.jogadores!.has(id)) : naSala;
   };
-  const avisar = (p: Partida) => io.to(communityRoom(p.communityId)).emit('minijogo:mudou', { channelId: p.channelId });
+  const avisar = (p: Partida) =>
+    p.solo ? emitToUser(io, p.criadaPor, 'minijogo-solo:mudou', {}) : io.to(communityRoom(p.communityId)).emit('minijogo:mudou', { channelId: p.channelId });
 
   function agendar(p: Partida, ms: number, depois: () => void) {
     if (p.relogio) clearTimeout(p.relogio);
@@ -97,7 +112,9 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     if (p.relogio) clearTimeout(p.relogio);
     // Encerrada antes do placar final (se já tinha terminado, a linha já está fechada e nada muda).
     if (p.registro !== null) db.fecharPartida(p.registro, false);
-    if (partidas.get(p.channelId) === p) partidas.delete(p.channelId);
+    if (p.solo) {
+      if (solos.get(p.criadaPor) === p) solos.delete(p.criadaPor);
+    } else if (partidas.get(p.channelId) === p) partidas.delete(p.channelId);
     avisar(p);
   }
 
@@ -105,6 +122,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
   const estado = (p: Partida, quem: number) => ({
     jogo: p.jogo,
     criadaPor: p.criadaPor,
+    solo: p.solo,
     terminada: p.terminada,
     restanteMs: Math.max(0, p.ate - Date.now()),
     // O convite: quem vai jogar, quem disse "agora não", e o mínimo para dar a largada.
@@ -146,13 +164,14 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     }
     p.instancia = instancia;
     p.convite = null;
-    p.registro = db.registrarPartida(p.jogo, p.communityId, p.channelId, p.criadaPor, naSala);
+    // A partida solo não entra na estatística: ela é da turma (conquistas, painel de uso), e conta gente junta.
+    if (!p.solo) p.registro = db.registrarPartida(p.jogo, p.communityId, p.channelId, p.criadaPor, naSala);
     return null;
   }
 
   // QUEM SAIU DA SALA (revisão de 16/10/2026): a rodada que só esperava essa pessoa segue sem ela, sem esperar o relógio.
   const conferencia = setInterval(() => {
-    for (const p of partidas.values()) if (p.instancia && !p.terminada && !p.convite) p.instancia.conferir?.();
+    for (const p of [...partidas.values(), ...solos.values()]) if (p.instancia && !p.terminada && !p.convite) p.instancia.conferir?.();
   }, 4000);
   conferencia.unref?.();
   app.addHook('onClose', async () => clearInterval(conferencia));
@@ -195,6 +214,54 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       return { itens: catalogo(tema, String(request.query.idioma ?? 'pt-BR').slice(0, 20)) };
     });
 
+    // ---- A PARTIDA SOLO (ver JOGOS_SOLO): da pessoa, sem sala. ----
+    authed.get('/api/minijogo-solo', async (request) => {
+      const p = solos.get(request.user.id);
+      return { partida: p ? estado(p, request.user.id) : null };
+    });
+
+    authed.post<{ Body: Record<string, unknown> & { jogo?: string } }>('/api/minijogo-solo', async (request, reply) => {
+      const jogo = request.body?.jogo ?? '';
+      if (!JOGOS_SOLO.has(jogo) || !JOGOS[jogo]) return reply.code(400).send({ error: 'Este jogo não se joga sozinho.' });
+      // Começar outra troca a de antes: a partida solo é uma só por pessoa.
+      const antes = solos.get(request.user.id);
+      if (antes) encerrar(antes);
+      const { jogo: _, convidar: __, ...corpo } = request.body ?? {};
+      const p: Partida = {
+        channelId: 0,
+        communityId: 0,
+        solo: true,
+        jogo,
+        criadaPor: request.user.id,
+        terminada: false,
+        ate: 0,
+        relogio: null,
+        instancia: null,
+        registro: null,
+        jogadores: null,
+        recusaram: new Set(),
+        convite: null,
+      };
+      const erro = largar(p, corpo);
+      if (erro) return reply.code(400).send({ error: erro });
+      solos.set(request.user.id, p);
+      return { partida: estado(p, request.user.id) };
+    });
+
+    authed.post<{ Body: Record<string, unknown> }>('/api/minijogo-solo/acao', async (request, reply) => {
+      const p = solos.get(request.user.id);
+      if (!p?.instancia || p.terminada) return reply.code(409).send({ error: 'A partida acabou.' });
+      const erro = p.instancia.acao(request.user.id, request.body ?? {});
+      if (erro) return reply.code(409).send({ error: erro });
+      return { partida: estado(p, request.user.id) };
+    });
+
+    authed.delete('/api/minijogo-solo', async (request) => {
+      const p = solos.get(request.user.id);
+      if (p) encerrar(p);
+      return { ok: true };
+    });
+
     authed.get<{ Params: { id: string } }>('/api/channels/:id/minijogo', async (request, reply) => {
       const canal = sala(request.params.id, request.user.id, reply);
       if (!canal) return reply;
@@ -221,6 +288,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         const p: Partida = {
           channelId: canal.id,
           communityId: canal.communityId,
+          solo: false,
           jogo: request.body!.jogo!,
           criadaPor: request.user.id,
           terminada: false,

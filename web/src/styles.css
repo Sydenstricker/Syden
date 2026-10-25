@@ -7271,6 +7271,22 @@ textarea {
   color: var(--text-muted);
 }
 
+/* Jogar sozinho pelo computador do quarto: o painel dos mini-games no meio da tela, e não em cima da barra da sala. */
+.minijogo-no-quarto .minijogo {
+  position: fixed;
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  max-height: calc(100vh - 40px);
+}
+
+.jogos-solo ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+
 .jogos-painel .jogos-escolha {
   color: var(--text);
 }
