@@ -14685,6 +14685,14 @@ body.arrastando-barra {
   color: #fff;
 }
 
+.quiz-tabela .quiz-bussola {
+  width: 22px;
+  height: 22px;
+  margin-inline-start: 5px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
 .quiz-seta {
   margin-inline-start: 3px;
   font-size: 1.15em;

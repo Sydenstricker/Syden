@@ -1,4 +1,3 @@
-import { ArrowUp } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
@@ -8,6 +7,21 @@ import { CREDITOS, type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoVa
 
 const QUIZ_MS = 3 * 60_000;
 const CLASSE = ['nao-bate', 'em-parte', 'bate'];
+
+/**
+ * A BÚSSOLA da coluna de distância (pedido dele, 24/10/2026: a seta sozinha não dizia que era direção). O mostrador fica
+ * parado, com a marca do norte em cima; a seta gira para onde fica o secreto (0° = norte, 90° = leste). Sem letra
+ * nenhuma: "N" seria um texto a traduzir, e a marca em cima já diz qual é o norte.
+ */
+function Bussola({ rumo }: { rumo: number }) {
+  return (
+    <svg className="quiz-bussola" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="10.5" fill="rgba(0,0,0,0.28)" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M12 0.6 L14 3.6 L10 3.6 Z" fill="currentColor" />
+      <path transform={`rotate(${rumo} 12 12)`} d="M12 4 L16.5 10 L13.3 10 L13.3 18 L10.7 18 L10.7 10 L7.5 10 Z" fill="currentColor" />
+    </svg>
+  );
+}
 
 /**
  * O QUIZ DE ADIVINHAR, EM CORRIDA (ver server/src/minijogo-quiz.ts e quiz.ts): escreve-se o começo do nome, escolhe-se
@@ -80,7 +94,7 @@ export function JogoQuiz({
     ) : (
       <>
         {new Intl.NumberFormat(idioma).format(v.km ?? 0)} km
-        <ArrowUp size={14} style={{ transform: `rotate(${v.rumo ?? 0}deg)` }} aria-hidden="true" />
+        <Bussola rumo={v.rumo ?? 0} />
       </>
     );
   // A linha mais nova em cima: é ela que se lê depois de chutar.
