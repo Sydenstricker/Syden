@@ -271,6 +271,8 @@ export default {
   'Alterar apelido': 'Verander bynaam',
   'Apelido nesta comunidade': 'Bynaam in hierdie gemeenskap',
   'Vazio volta ao nome da conta': 'Leeg gaan terug na die rekeningnaam',
+  'Nome de exibição': 'Vertoonnaam',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Dis die naam wat almal in Syden sien. Om aan te meld en vir @-vermeldings bly die rekeningnaam geld.',
   'Cargo': 'Rol',
   'Mover para': 'Skuif na',
   'Desbloqueado': 'Ontsluit',

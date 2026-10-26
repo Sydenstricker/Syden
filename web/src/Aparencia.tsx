@@ -2,7 +2,7 @@ import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { Avatar, enderecoDoCoelhoPronto } from './Avatar';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { primeiraForma } from './minijogos';
 import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
@@ -423,7 +423,7 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
   if (erro && !dados) return <p className="form-error">{erro}</p>;
   if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
 
-  const cobreMeuNome = (item: ItemDoGuardaRoupa) => cobreONome(item, dados, user.username);
+  const cobreMeuNome = (item: ItemDoGuardaRoupa) => cobreONome(item, dados, nomeDe(user));
   const doTipo = dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item));
   const escondidas = dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length;
   const vestidoAgora = (item: ItemDoGuardaRoupa) => estaVestido(item, dados);
@@ -442,13 +442,13 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
           referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é
           exatamente assim que os outros vão te ver. */}
       <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
-        <Avatar name={user.username} userId={user.id} size={56} />
+        <Avatar name={nomeDe(user)} userId={user.id} size={56} />
         <strong
           data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}
           data-efeito={efeitoDoNome(dados.vestindo.efeito)}
           style={{ fontFamily: letraDoNome(dados.vestindo.letra) }}
         >
-          {user.username}
+          {nomeDe(user)}
         </strong>
       </div>
       <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>

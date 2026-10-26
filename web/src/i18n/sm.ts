@@ -124,6 +124,8 @@ export default {
   'Alterar apelido': 'Sui le igoa fai',
   'Apelido nesta comunidade': 'Igoa fai i lenei nuu',
   'Vazio volta ao nome da conta': 'Afai e avanoa, e toe foi i le igoa o le tala',
+  'Nome de exibição': 'Igoa e faʻaali',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'O le igoa lea e vaʻaia e tagata uma i Syden. Mo le ulufale ma le taʻua i le @, o loʻo faʻaaogā pea le igoa o le tala.',
   'Cargo': 'Tofiga',
   'Mover para': 'Siaki i',
   'Desligar câmera': 'Tape le meapueata',

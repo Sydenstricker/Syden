@@ -8,7 +8,7 @@ import { acharArte, acharCoelho, type CoelhoDoRecado } from './boasVindas';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
-import { nomeNaComunidade, useDirectory } from './directory';
+import { nomeDe, nomeNaComunidade, useDirectory } from './directory';
 import { useT } from './i18n';
 import { pedirKaraokeAoEntrar } from './Karaoke';
 import { pedirParaAbrirAoEntrar, usarMinijogo } from './minijogos';
@@ -182,7 +182,7 @@ export function InicioDaComunidade({
       tv: noAr
         ? {
             rotulo: t('Assistir transmissão'),
-            sub: noAr.screenName ? `${noAr.username} · ${noAr.screenName}` : noAr.username,
+            sub: noAr.screenName ? `${nomeDe(noAr)} · ${noAr.screenName}` : nomeDe(noAr),
             onClick: () => aoAssistir(noAr.channelId, noAr.userId),
           }
         : { rotulo: t('Entrar na voz'), sub: naChamada, onClick: () => aoAbrirCanal(salaDeVoz) },
@@ -282,13 +282,13 @@ export function InicioDaComunidade({
             naCall={naVoz.map(
               (m): PessoaNoSalao => ({
                 id: m.userId,
-                nome: nomeNaComunidade(m.userId, m.username),
+                nome: nomeDe(m),
                 papel: m.screen ? 'transmitindo' : jogando.has(m.userId) ? 'jogando' : 'call',
               }),
             )}
             aoVivo={
               noAr && {
-                nome: noAr.username,
+                nome: nomeDe(noAr),
                 sub: [canais.find((c) => c.id === noAr.channelId)?.name, noAr.screenName].filter(Boolean).join(' · '),
                 canal: canal % transmissoes.length,
                 total: transmissoes.length,
@@ -311,13 +311,13 @@ export function InicioDaComunidade({
         ) : (
           <Salao
             acoes={acoes}
-            naCall={naVoz.map((m) => ({ nome: nomeNaComunidade(m.userId, m.username), pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
+            naCall={naVoz.map((m) => ({ nome: nomeDe(m), pronto: membros.get(m.userId)?.avatarPronto ?? null }))}
             quadro={<CommunityIcon community={community} size={40} standalone />}
             recado={<RecadoDoBalcao titulo={dados.boasVindas?.titulo || t('Bem-vindo!')} texto={dados.boasVindas?.texto ?? ''} coelho={dados.boasVindas?.coelho} />}
             aoVivo={
               noAr && {
                 userId: noAr.userId,
-                nome: noAr.username,
+                nome: nomeDe(noAr),
                 sala: canais.find((c) => c.id === noAr.channelId)?.name ?? '',
                 titulo: noAr.screenName,
                 canal: canal % transmissoes.length,

@@ -1,3 +1,4 @@
+import { nomeDe } from './directory';
 import { MessagesSquare, Plus, Users } from 'lucide-react';
 import { Avatar } from './Avatar';
 import { isUnread } from './unread';
@@ -23,7 +24,7 @@ export function directName(conversa: DirectChannel, selfId: number, t: (s: strin
   if (conversa.name) return conversa.name;
   const outros = conversa.members.filter((m) => m.id !== selfId);
   if (outros.length === 0) return t('Conta excluída');
-  return outros.map((m) => m.username).join(', ');
+  return outros.map((m) => nomeDe(m)).join(', ');
 }
 
 /** Quem ilustra a conversa: a outra pessoa, ou (no grupo) a primeira que não é você. */
@@ -80,7 +81,7 @@ export function DirectList({
                   <Users size={18} />
                 </span>
               ) : (
-                <Avatar name={face?.username ?? '?'} userId={face?.id} size={32} />
+                <Avatar name={face ? nomeDe(face) : '?'} userId={face?.id} size={32} />
               )}
               <span className="direct-info">
                 <span className="direct-name">{directName(conversa, selfId, t)}</span>

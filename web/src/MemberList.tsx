@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Puxador } from './Puxador';
 import { Avatar } from './Avatar';
 import { SeloDaComunidade } from './SeloDaComunidade';
-import { nomeNaComunidade, useDirectory } from './directory';
+import { nomeDe, nomeNaComunidade, useDirectory } from './directory';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
 import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
@@ -68,7 +68,7 @@ export function MemberList({
   const plateia = quemAssiste(voiceMembers);
   const channelName = (id: number) => channels.find((c) => c.id === id)?.name ?? t('uma sala');
 
-  const all = [...members.values()].sort((a, b) => (a.apelido || a.username).localeCompare(b.apelido || b.username));
+  const all = [...members.values()].sort((a, b) => nomeDe(a).localeCompare(nomeDe(b)));
   const aqui = all.filter((m) => onlineIds.has(m.id));
   const fora = all.filter((m) => !onlineIds.has(m.id));
 
@@ -78,7 +78,7 @@ export function MemberList({
     if (voice.screen) return { text: fraseDaTransmissao(voice.screenName, channelName(voice.channelId)), live: true };
     // Quem está de pipoca diz QUEM assiste: é a legenda do coelho de pipoca, que sozinho ninguém lia.
     const alvo = plateia.has(id) ? voiceMembers.find((m) => m.screen && voice.assistindo?.includes(m.userId)) : undefined;
-    if (alvo) return { text: t('Assistindo {pessoa}', { pessoa: nomeNaComunidade(alvo.userId, alvo.username) }), live: false };
+    if (alvo) return { text: t('Assistindo {pessoa}', { pessoa: nomeDe(alvo) }), live: false };
     if (voice.video) return { text: t('Com câmera em {sala}', { sala: channelName(voice.channelId) }), live: false };
     return { text: t('Em {sala}', { sala: channelName(voice.channelId) }), live: false };
   };
@@ -105,7 +105,7 @@ export function MemberList({
       >
         {placa && <span className={`member-placa ${classeDoFundo(placa)}`} aria-hidden="true" />}
         <Avatar
-          name={member.apelido || member.username}
+          name={nomeDe(member)}
           userId={member.id}
           online
           status={presenceById.get(member.id)?.status}
@@ -113,7 +113,7 @@ export function MemberList({
         />
         <span className="member-info">
           <span className={`member-name ${className}`} data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)} style={{ fontFamily: letraDoNome(member.nameFont) }}>
-            {member.apelido || member.username}
+            {nomeDe(member)}
           </span>
           {member.selo && <SeloDaComunidade selo={member.selo} />}
           {silencioVale(member.silenciadoAte) && (
@@ -176,10 +176,10 @@ export function MemberList({
               onClick={(e) => setPerfil({ membro: member, x: e.clientX - 150, y: e.clientY - 40 })}
               onContextMenu={(e) => menu.open(e, member.id, member.username)}
             >
-              <Avatar name={member.apelido || member.username} userId={member.id} offline />
+              <Avatar name={nomeDe(member)} userId={member.id} offline />
               <span className="member-info">
                 <span className="member-name" data-cor={corDoNome(member.nameColor)} data-efeito={efeitoDoNome(member.nameEffect)} style={{ fontFamily: letraDoNome(member.nameFont) }}>
-                  {member.apelido || member.username}
+                  {nomeDe(member)}
                 </span>
               </span>
             </div>

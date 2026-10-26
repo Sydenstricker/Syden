@@ -241,6 +241,8 @@ export default {
   'Alterar apelido': 'Canza suna na laƙabi',
   'Apelido nesta comunidade': 'Suna na laƙabi a wannan al\'umma',
   'Vazio volta ao nome da conta': 'Ku bar shi fanko zai koma sunan asusu',
+  'Nome de exibição': 'Sunan da ake nunawa',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Wannan ne sunan da kowa ke gani a Syden. Don shiga da ambato da @, sunan asusu ne har yanzu.',
   'Cargo': 'Matsayi',
   'Mover para': 'Mayar zuwa',
   'Desbloqueado': 'An buɗe',

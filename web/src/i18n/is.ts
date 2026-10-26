@@ -278,6 +278,8 @@ export default {
   'Alterar apelido': 'Breyta gælunafni',
   'Apelido nesta comunidade': 'Gælunafn í þessu samfélagi',
   'Vazio volta ao nome da conta': 'Autt fer aftur í nafn reikningsins',
+  'Nome de exibição': 'Birtingarnafn',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Þetta er nafnið sem allir sjá á Syden. Til að skrá þig inn og í @-tilvísunum gildir áfram nafn reikningsins.',
   'Cargo': 'Hlutverk',
   'Mover para': 'Færa í',
   'Desbloqueado': 'Opnað',

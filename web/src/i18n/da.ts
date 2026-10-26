@@ -271,6 +271,8 @@ export default {
   'Alterar apelido': 'Skift kaldenavn',
   'Apelido nesta comunidade': 'Kaldenavn i dette fællesskab',
   'Vazio volta ao nome da conta': 'Tomt går tilbage til kontonavnet',
+  'Nome de exibição': 'Visningsnavn',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Det er navnet, alle ser i Syden. Til at logge ind og til omtaler med @ gælder kontonavnet stadig.',
   'Cargo': 'Rolle',
   'Mover para': 'Flyt til',
   'Desbloqueado': 'Låst op',

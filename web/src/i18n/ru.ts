@@ -422,6 +422,8 @@ export default {
   'Alterar apelido': 'Изменить никнейм',
   'Apelido nesta comunidade': 'Никнейм в этом сообществе',
   'Vazio volta ao nome da conta': 'Если оставить пустым, вернётся имя аккаунта',
+  'Nome de exibição': 'Отображаемое имя',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Это имя все видят в Syden. Для входа и упоминаний через @ по-прежнему используется имя аккаунта.',
   'Cargo': 'Роль',
   'Mover para': 'Переместить в',
   'Abrir em janela flutuante': 'Открыть в плавающем окне',

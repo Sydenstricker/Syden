@@ -40,7 +40,7 @@ import { useT } from './i18n';
 import { Puxador } from './Puxador';
 import { IconButton } from './IconButton';
 import { LivePreview } from './LivePreview';
-import { nomeNaComunidade, useDirectory } from './directory';
+import { nomeDe, nomeNaComunidade, useDirectory } from './directory';
 import { corDoNome } from './profileStyles';
 import { PersonMenu, usePersonMenu } from './PersonMenu';
 import { ProfileCard } from './ProfileCard';
@@ -262,21 +262,21 @@ export function Sidebar({
                       {/* A música do karaokê só é conhecida dentro da chamada em que ela toca: por isso o
                           fone aparece só na sala em que VOCÊ está. */}
                       <Avatar
-                        name={nomeNaComunidade(m.userId, m.username)}
+                        name={nomeDe(m)}
                         userId={m.userId}
                         size={22}
                         speaking={speaking.has(String(m.userId))}
                         musica={voice.karaoke !== null && m.channelId === voice.channelId}
                         assistindo={plateia.has(m.userId)}
                       />
-                      <span className="voice-member-name">{nomeNaComunidade(m.userId, m.username)}</span>
+                      <span className="voice-member-name">{nomeDe(m)}</span>
                       {/* A PIPOCA COM LEGENDA: o coelho de pipoca a 22 px ninguém distinguia do coelho comum
                           (relato de 06/10/2026: funcionou, mas ninguém reparou). Igual ao "AO VIVO": texto e cor. */}
                       {plateia.has(m.userId) && <span className="assistindo-badge">🍿 {t('Assistindo')}</span>}
                       {m.screen && (
                         <LivePreview
                           userId={m.userId}
-                          username={m.username}
+                          username={nomeDe(m)}
                           transmitindo={m.screenName}
                           channelId={c.id}
                           connected={voice.channelId === c.id}
@@ -348,10 +348,10 @@ export function Sidebar({
 
       <div className="user-panel">
         <span onContextMenu={statusMenu.onOpen} title={t('Botão direito para mudar o status')}>
-          <Avatar name={user.username} userId={user.id} online status={myStatus} />
+          <Avatar name={nomeDe(user)} userId={user.id} online status={myStatus} />
         </span>
         <span className="user-panel-name" data-cor={corDoNome(members.get(user.id)?.nameColor)} title={user.username}>
-          {user.username}
+          {nomeDe(user)}
         </span>
         <div className="icon-row">
           {/* Funciona fora de qualquer sala: quem se silencia aqui entra mudo na próxima chamada. */}

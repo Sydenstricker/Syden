@@ -4592,8 +4592,9 @@ void main() {
     try {
       const j = await pedir('GET', '/api/quarto/' + encodeURIComponent(campo('visitar-id').value.trim()));
       if (!soVer) meu = retrato();
-      modoVisita(j.dono.username); vestir(j.arrumacao); modoVisita(j.dono.username);
-      dizer('Visitando o quarto de ' + j.dono.username + ' (só olhar).');
+      const quem = j.dono.nomeDeExibicao || j.dono.username;
+      modoVisita(quem); vestir(j.arrumacao); modoVisita(quem);
+      dizer('Visitando o quarto de ' + quem + ' (só olhar).');
     } catch (e) { dizer('Não deu para visitar: ' + e.message); }
   };
   campo('voltar').onclick = () => { modoVisita(null); if (meu) vestir(meu); meu = null; dizer(conta ? 'De volta ao seu quarto, ' + conta.nome + '.' : ''); };

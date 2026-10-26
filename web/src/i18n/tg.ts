@@ -278,6 +278,8 @@ export default {
   'Alterar apelido': 'Тағйири лақаб',
   'Apelido nesta comunidade': 'Лақаб дар ин ҷомеа',
   'Vazio volta ao nome da conta': 'Агар холӣ монӣ, ба номи ҳисоб бармегардад',
+  'Nome de exibição': 'Номи намоишӣ',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ин номест, ки ҳама дар Syden мебинанд. Барои воридшавӣ ва ёдоварӣ бо @ ҳамоно номи ҳисоб амал мекунад.',
   'Cargo': 'Нақш',
   'Mover para': 'Интиқол ба',
   'Desbloqueado': 'Кушода шуд',

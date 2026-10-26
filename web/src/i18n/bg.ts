@@ -274,6 +274,8 @@ export default {
   'Alterar apelido': 'Промяна на прякора',
   'Apelido nesta comunidade': 'Прякор в тази общност',
   'Vazio volta ao nome da conta': 'Празно връща към името на профила',
+  'Nome de exibição': 'Показвано име',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Това е името, което всички виждат в Syden. За вход и за споменаване с @ остава името на профила.',
   'Cargo': 'Роля',
   'Mover para': 'Премести в',
   'Desbloqueado': 'Отключено',

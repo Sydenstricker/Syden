@@ -424,6 +424,8 @@ export default {
   'Alterar apelido': 'Nickname ändern',
   'Apelido nesta comunidade': 'Nickname in dieser Community',
   'Vazio volta ao nome da conta': 'Leer lassen setzt auf den Kontonamen zurück',
+  'Nome de exibição': 'Anzeigename',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Das ist der Name, den alle in Syden sehen. Zum Anmelden und für Erwähnungen mit @ gilt weiter der Kontoname.',
   'Cargo': 'Rolle',
   'Mover para': 'Verschieben nach',
   'Abrir em janela flutuante': 'In schwebendem Fenster öffnen',

@@ -73,7 +73,7 @@ import { DestaquesSection } from './Destaques';
 import { ConfirmDialog } from './ConfirmDialog';
 import { SHORTCUT_LABELS, desktopBridge } from './desktop';
 import { NOME_DO_MOTOR, aoMudarMotor, lerEstadoDaSupressao, supressaoPrevista, type EstadoDaSupressao } from './microfone';
-import { useDirectory } from './directory';
+import { nomeDaConta, nomeDe, useDirectory } from './directory';
 import { CapaDaComunidade } from './CapaDaComunidade';
 import { CommunityIcon } from './CommunityIcon';
 import { PainelDoSelo } from './PainelDoSelo';
@@ -524,6 +524,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
     <>
       <h2>{t('Minha conta')}</h2>
       <AvatarEditor user={user} />
+      <NomeDeExibicao user={user} />
 
       <h3>{temSenha === false ? t('Definir uma senha') : t('Trocar senha')}</h3>
       <form className="settings-form" onSubmit={submit}>
@@ -1361,7 +1362,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
   const [error, setError] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
   const rank = (m: CommunityMember) => (m.role === 'owner' ? 2 : m.role === 'admin' ? 1 : 0);
-  const members = [...directory.values()].sort((a, b) => rank(b) - rank(a) || a.username.localeCompare(b.username));
+  const members = [...directory.values()].sort((a, b) => rank(b) - rank(a) || nomeDe(a).localeCompare(nomeDe(b)));
   const isOwner = community.role === 'owner';
   const canManage = isOwner || community.role === 'admin';
 
@@ -1428,23 +1429,23 @@ function MembersSection({ user, community }: { user: User; community: Community 
       <div className="expression-list">
         {members.map((member) => (
           <div key={member.id} className="expression-row">
-            <Avatar name={member.username} userId={member.id} size={32} />
-            <span className="expression-name">{member.username}</span>
+            <Avatar name={nomeDe(member)} userId={member.id} size={32} />
+            <span className="expression-name">{nomeDe(member)}</span>
             <RoleBadge role={member.role} />
             {member.id === user.id && <span className="expression-author">{t('você')}</span>}
             {canManage ? <CargosDoMembro community={community} member={member} /> : <EtiquetasDeCargo ids={member.cargos} />}
             {isOwner && member.role !== 'owner' && (
               <button
                 className="icon-plain expression-play"
-                title={member.role === 'admin' ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
-                aria-label={member.role === 'admin' ? `Tirar o cargo de administrador de ${member.username}` : `Tornar ${member.username} administrador`}
+                title={member.role === 'admin' ? `Tirar o cargo de administrador de ${nomeDe(member)}` : `Tornar ${nomeDe(member)} administrador`}
+                aria-label={member.role === 'admin' ? `Tirar o cargo de administrador de ${nomeDe(member)}` : `Tornar ${nomeDe(member)} administrador`}
                 onClick={() => toggleAdmin(member)}
               >
                 {member.role === 'admin' ? <ShieldOff size={16} /> : <ShieldPlus size={16} />}
               </button>
             )}
             {canRemove(member) && (
-              <button className="icon-plain expression-delete" title={`Remover ${member.username}`} aria-label={`Remover ${member.username}`} onClick={() => setRemoving(member)}>
+              <button className="icon-plain expression-delete" title={`Remover ${nomeDe(member)}`} aria-label={`Remover ${nomeDe(member)}`} onClick={() => setRemoving(member)}>
                 <UserX size={16} />
               </button>
             )}
@@ -1463,7 +1464,7 @@ function MembersSection({ user, community }: { user: User; community: Community 
             setError(null);
           }}
         >
-          {t('Remover')} <strong>{removing.username}</strong> de {community.name}? A pessoa perde o acesso aos canais e sai de
+          {t('Remover')} <strong>{nomeDe(removing)}</strong> de {community.name}? A pessoa perde o acesso aos canais e sai de
           qualquer chamada na hora. A conta dela no Syden continua existindo. Para ela não voltar com o mesmo convite,
           troque o código em "Comunidade".
         </ConfirmDialog>
@@ -1517,8 +1518,8 @@ function PerfilEditor({ user }: { user: User }) {
       <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
 
       <div className={`perfil-previa ${classeDoFundo(fundo)}`}>
-        <Avatar name={user.username} userId={user.id} size={56} />
-        <strong data-cor={corDoNome(cor)}>{user.username}</strong>
+        <Avatar name={nomeDe(user)} userId={user.id} size={56} />
+        <strong data-cor={corDoNome(cor)}>{nomeDe(user)}</strong>
       </div>
 
       <h4 className="perfil-titulo">{t('Cor do nome')}</h4>
@@ -1575,6 +1576,48 @@ function PerfilEditor({ user }: { user: User }) {
   );
 }
 
+/**
+ * O NOME DE EXIBIÇÃO (o "display name" do Discord): o nome que aparece em todo o Syden, conversas privadas incluídas. O
+ * apelido de cada comunidade fica por cima dele lá dentro. Vazio volta ao nome da conta, que não muda e continua sendo o
+ * de entrar e o do @. O servidor avisa todo mundo ("user:updated"), e a tela inteira troca o nome na hora.
+ */
+function NomeDeExibicao({ user }: { user: User }) {
+  const t = useT();
+  useDirectory(); // redesenha quando o nome muda (por esta aba ou por outra)
+  const atual = nomeDaConta(user) === user.username ? '' : nomeDaConta(user);
+  const [nome, setNome] = useState(atual);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+
+  async function salvar(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setMessage(null);
+    try {
+      const novo = await api<User>('/api/me/nome-de-exibicao', { method: 'PUT', body: { nomeDeExibicao: nome } });
+      setNome(novo.nomeDeExibicao ?? '');
+      setMessage({ ok: true, text: t('Salvo.') });
+    } catch (e) {
+      setMessage({ ok: false, text: (e as Error).message });
+    }
+    setBusy(false);
+  }
+
+  return (
+    <>
+      <h3>{t('Nome de exibição')}</h3>
+      <form className="settings-form" onSubmit={salvar}>
+        <input value={nome} maxLength={32} placeholder={user.username} aria-label={t('Nome de exibição')} onChange={(e) => setNome(e.target.value)} />
+        <p className="settings-hint">{t('É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.')}</p>
+        {message && <p className={message.ok ? 'form-success' : 'form-error'}>{message.text}</p>}
+        <button className="btn-primary" disabled={busy || nome.trim() === atual}>
+          {t('Salvar')}
+        </button>
+      </form>
+    </>
+  );
+}
+
 function AvatarEditor({ user }: { user: User }) {
   const t = useT();
   const { members } = useDirectory();
@@ -1614,7 +1657,9 @@ function AvatarEditor({ user }: { user: User }) {
       <div className="settings-card account-card">
         <Avatar name={user.username} userId={user.id} size={80} />
         <div className="account-info">
-          <div className="account-name">{user.username}</div>
+          <div className="account-name">{nomeDaConta(user)}</div>
+          {/* Com nome de exibição, o nome da conta fica embaixo: é por ele que se entra e se é mencionado. */}
+          {nomeDaConta(user) !== user.username && <div className="perfil-conta">{user.username}</div>}
           
         </div>
         <div className="account-actions">
@@ -2306,12 +2351,12 @@ function soundNameFromFile(fileName: string) {
   return { name: (base || 'Som').slice(0, 32).trim(), icon };
 }
 
-function authorLabel(createdBy: number | null, members: Map<number, { username: string }>) {
+function authorLabel(createdBy: number | null, members: Map<number, { id: number; username: string; nomeDeExibicao?: string | null }>) {
   // FUNÇÃO AUXILIAR, E NÃO COMPONENTE: aqui o t() vem do import, nunca do useT(). Hook fora de
   // componente não dá erro de compilação — dá erro em tempo de execução, na cara da pessoa, e só
   // naquela tela.
   if (createdBy === null) return t('Pacote do Syden');
-  return t('por {quem}', { quem: isolar(members.get(createdBy)?.username ?? t('alguém')) });
+  return t('por {quem}', { quem: isolar(members.has(createdBy) ? nomeDe(members.get(createdBy)!) : t('alguém')) });
 }
 
 function DeleteButton({ label, path }: { label: string; path: string }) {

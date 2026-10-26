@@ -278,6 +278,8 @@ export default {
   'Alterar apelido': 'ປ່ຽນຊື່ຫຼິ້ນ',
   'Apelido nesta comunidade': 'ຊື່ຫຼິ້ນໃນຊຸມຊົນນີ້',
   'Vazio volta ao nome da conta': 'ຖ້າປະວ່າງໄວ້ ຈະກັບໄປໃຊ້ຊື່ບັນຊີ',
+  'Nome de exibição': 'ຊື່ທີ່ສະແດງ',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'ນີ້ແມ່ນຊື່ທີ່ທຸກຄົນເຫັນໃນ Syden. ສຳລັບການເຂົ້າສູ່ລະບົບ ແລະ ການກ່າວເຖິງດ້ວຍ @ ຍັງໃຊ້ຊື່ບັນຊີຄືເກົ່າ.',
   'Cargo': 'ບົດບາດ',
   'Mover para': 'ຍ້າຍໄປ',
   'Desbloqueado': 'ປົດລັອກແລ້ວ',

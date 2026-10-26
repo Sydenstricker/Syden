@@ -13,7 +13,7 @@ import { ehAniversarioHoje } from './aniversarioHoje';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { isolar, nomeDeCanal } from './bidi';
 import { desktopBridge } from './desktop';
-import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, syncDirectory, useDirectory } from './directory';
+import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, nomeDe, syncDirectory, useDirectory } from './directory';
 import { ligarDigitacao } from './digitando';
 import { EmptyCommunities } from './EmptyCommunities';
 import { Home } from './Home';
@@ -645,7 +645,7 @@ export function Shell({
       // desenhada pelo sistema, com o idioma do Syden dentro dela: em árabe, `#` solto antes de um
       // nome latino ia para o outro lado e o título dizia `combinados#`. Ver web/src/bidi.ts.
       const titulo = t('{quem} em {canal}', {
-        quem: isolar(message.author.username),
+        quem: isolar(nomeDe(message.author)),
         canal: channel ? nomeDeCanal(channel.name, channel.type === 'text') : t('um canal'),
       });
       const notification = new Notification(titulo, {
@@ -1254,7 +1254,7 @@ export function Shell({
         ficava por cima do botão do outro. Os itens da fila também esperam a vez, um por um.
       */}
       {/* as festas, uma de cada vez: a ideia acolhida, o aniversário da pessoa, o do Syden, e as insígnias */}
-      {festasConferidas && !comemorar[0] && aniversarioHoje && <ParabensDoSyden nome={me?.username ?? loggedUser.username} aoFechar={fecharParabens} />}
+      {festasConferidas && !comemorar[0] && aniversarioHoje && <ParabensDoSyden nome={nomeDe(me ?? loggedUser)} aoFechar={fecharParabens} />}
       {festasConferidas && !comemorar[0] && !aniversarioHoje && festaDoSyden && <AniversarioDoSyden aoFechar={fecharFestaDoSyden} />}
       {festasConferidas && !comemorar[0] && !aniversarioHoje && !festaDoSyden && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
 

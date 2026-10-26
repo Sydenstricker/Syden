@@ -1,3 +1,4 @@
+import { nomeDe } from './directory';
 import { useCallback, useEffect, useState } from 'react';
 import { Check, UserPlus, UserX, X } from 'lucide-react';
 import { ApiError, api } from './api';
@@ -7,6 +8,7 @@ import { useT } from './i18n';
 interface Amigo {
   userId: number;
   username: string;
+  nomeDeExibicao?: string | null;
   avatarVersion: number | null;
   situacao: 'pendente' | 'aceita';
   euPedi: boolean;
@@ -16,6 +18,7 @@ interface Amigo {
 interface Sugestao {
   userId: number;
   username: string;
+  nomeDeExibicao?: string | null;
   avatarVersion: number | null;
   emComum: number;
   /** Vocês já têm conversa privada: é o motivo mais forte, e vem escrito na tela. */
@@ -137,8 +140,8 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
         <ul className="amigos-lista">
           {aceitos.map((a) => (
             <li key={a.userId}>
-              <Avatar name={a.username} userId={a.userId} size={36} />
-              <span className="amigos-nome">{a.username}</span>
+              <Avatar name={nomeDe(a)} userId={a.userId} size={36} />
+              <span className="amigos-nome">{nomeDe(a)}</span>
               {aoConversar && (
                 <button className="btn-sutil" onClick={() => aoConversar(a.userId)}>
                   {t('Conversar')}
@@ -148,7 +151,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                 className="btn-sutil perigo"
                 disabled={ocupado}
                 onClick={() => agir(() => api(`/api/amigos/${a.userId}`, { method: 'DELETE' }))}
-                aria-label={t('Desfazer amizade com {nome}', { nome: a.username })}
+                aria-label={t('Desfazer amizade com {nome}', { nome: nomeDe(a) })}
                 title={t('Desfazer amizade')}
               >
                 <UserX size={15} aria-hidden="true" />
@@ -169,8 +172,8 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           <ul className="amigos-lista">
             {recebidos.map((a) => (
               <li key={a.userId}>
-                <Avatar name={a.username} userId={a.userId} size={36} />
-                <span className="amigos-nome">{a.username}</span>
+                <Avatar name={nomeDe(a)} userId={a.userId} size={36} />
+                <span className="amigos-nome">{nomeDe(a)}</span>
                 <button
                   className="btn-sutil"
                   disabled={ocupado}
@@ -182,7 +185,7 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
                   className="btn-sutil perigo"
                   disabled={ocupado}
                   onClick={() => agir(() => api(`/api/amigos/${a.userId}`, { method: 'DELETE' }))}
-                  aria-label={t('Recusar o pedido de {nome}', { nome: a.username })}
+                  aria-label={t('Recusar o pedido de {nome}', { nome: nomeDe(a) })}
                 >
                   <X size={15} aria-hidden="true" />
                 </button>
@@ -195,14 +198,14 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           <ul className="amigos-lista">
             {enviados.map((a) => (
               <li key={a.userId}>
-                <Avatar name={a.username} userId={a.userId} size={36} />
-                <span className="amigos-nome">{a.username}</span>
+                <Avatar name={nomeDe(a)} userId={a.userId} size={36} />
+                <span className="amigos-nome">{nomeDe(a)}</span>
                 <small className="amigos-esperando">{t('esperando resposta')}</small>
                 <button
                   className="btn-sutil perigo"
                   disabled={ocupado}
                   onClick={() => agir(() => api(`/api/amigos/${a.userId}`, { method: 'DELETE' }))}
-                  aria-label={t('Cancelar o pedido para {nome}', { nome: a.username })}
+                  aria-label={t('Cancelar o pedido para {nome}', { nome: nomeDe(a) })}
                 >
                   <X size={15} aria-hidden="true" />
                 </button>
@@ -249,9 +252,9 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           <ul className="amigos-lista">
             {sugestoes.map((s) => (
               <li key={s.userId}>
-                <Avatar name={s.username} userId={s.userId} size={36} />
+                <Avatar name={nomeDe(s)} userId={s.userId} size={36} />
                 <span className="amigos-nome">
-                  {s.username}
+                  {nomeDe(s)}
                   <small>{porQue(s, t)}</small>
                 </span>
                 <button className="btn-sutil" disabled={ocupado} onClick={() => pedir(s.username)}>

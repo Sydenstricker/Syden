@@ -2,7 +2,7 @@ import { Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import type { DirectChannel } from './types';
 import { useT } from './i18n';
 
@@ -32,7 +32,7 @@ export function NewGroupDialog({
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const pessoas = [...members.values()].filter((m) => m.id !== selfId).sort((a, b) => a.username.localeCompare(b.username));
+  const pessoas = [...members.values()].filter((m) => m.id !== selfId).sort((a, b) => nomeDe(a).localeCompare(nomeDe(b)));
   const toggle = (id: number) => setChosen((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
 
   async function create() {
@@ -67,8 +67,8 @@ export function NewGroupDialog({
                 aria-pressed={chosen.includes(pessoa.id)}
                 onClick={() => toggle(pessoa.id)}
               >
-                <Avatar name={pessoa.username} userId={pessoa.id} size={28} />
-                <span className="group-person-name">{pessoa.username}</span>
+                <Avatar name={nomeDe(pessoa)} userId={pessoa.id} size={28} />
+                <span className="group-person-name">{nomeDe(pessoa)}</span>
                 {chosen.includes(pessoa.id) && <Check size={16} />}
               </button>
             ))}

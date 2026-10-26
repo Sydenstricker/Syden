@@ -277,6 +277,8 @@ export default {
   'Alterar apelido': 'Vaihda lempinimi',
   'Apelido nesta comunidade': 'Lempinimi tässä yhteisössä',
   'Vazio volta ao nome da conta': 'Tyhjänä palaa tilin nimeen',
+  'Nome de exibição': 'Näyttönimi',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Tämän nimen kaikki näkevät Sydenissä. Kirjautumiseen ja @-mainintoihin käytetään yhä tilin nimeä.',
   'Cargo': 'Rooli',
   'Mover para': 'Siirrä',
   'Desbloqueado': 'Avattu',

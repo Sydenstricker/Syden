@@ -224,6 +224,8 @@ export default {
   'Alterar apelido': 'புனைப்பெயரை மாற்று',
   'Apelido nesta comunidade': 'இந்தச் சமூகத்தில் புனைப்பெயர்',
   'Vazio volta ao nome da conta': 'காலியாக விட்டால் கணக்கின் பெயருக்குத் திரும்பும்',
+  'Nome de exibição': 'காட்சிப் பெயர்',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden-இல் எல்லோரும் பார்க்கும் பெயர் இதுதான். உள்நுழைவுக்கும் @ குறிப்பிடலுக்கும் கணக்கின் பெயரே தொடர்ந்து செல்லுபடியாகும்.',
   'Cargo': 'பங்கு',
   'Mover para': 'நகர்த்து',
   'Desbloqueado': 'தடை நீக்கப்பட்டது',

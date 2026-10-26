@@ -274,6 +274,8 @@ export default {
   'Alterar apelido': 'Muuda hüüdnime',
   'Apelido nesta comunidade': 'Hüüdnimi selles kogukonnas',
   'Vazio volta ao nome da conta': 'Tühjaks jättes naaseb konto nimi',
+  'Nome de exibição': 'Kuvatav nimi',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Seda nime näevad Sydenis kõik. Sisselogimiseks ja @-mainimisteks kehtib endiselt konto nimi.',
   'Cargo': 'Roll',
   'Mover para': 'Teisalda',
   'Desbloqueado': 'Avatud',

@@ -136,6 +136,8 @@ export default {
   'Alterar apelido': 'Ibdel il-laqam',
   'Apelido nesta comunidade': 'Laqam f\'din il-komunità',
   'Vazio volta ao nome da conta': 'Jekk titlaq vojt, jerġa\' jmur għall-isem tal-kont',
+  'Nome de exibição': 'Isem muri',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Dan hu l-isem li jara kulħadd fuq Syden. Biex tidħol u għat-tismijiet b’@, jibqa’ jgħodd l-isem tal-kont.',
   'Cargo': 'Rwol',
   'Mover para': 'Mexxi lejn',
   'Desligar câmera': 'Itfi l-kamera',

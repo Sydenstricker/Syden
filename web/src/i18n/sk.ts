@@ -277,6 +277,8 @@ export default {
   'Alterar apelido': 'Zmeniť prezývku',
   'Apelido nesta comunidade': 'Prezývka v tejto komunite',
   'Vazio volta ao nome da conta': 'Prázdne sa vráti na meno účtu',
+  'Nome de exibição': 'Zobrazované meno',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Toto meno vidia v Sydene všetci. Na prihlásenie a zmienky cez @ naďalej platí meno účtu.',
   'Cargo': 'Rola',
   'Mover para': 'Presunúť do',
   'Desbloqueado': 'Odomknuté',

@@ -17,7 +17,7 @@ import { useT } from './i18n';
 export function QuemDigita({ channelId }: { channelId: number }) {
   const t = useT();
   useDirectory();
-  const quem = useDigitando(channelId).map((q) => ({ ...q, username: nomeNaComunidade(q.userId, q.username) }));
+  const quem = useDigitando(channelId).map((q) => ({ ...q, username: nomeNaComunidade(q.userId, q.username, q.nomeDeExibicao) }));
   const frase =
     quem.length === 0
       ? ''

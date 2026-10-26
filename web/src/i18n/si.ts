@@ -277,6 +277,8 @@ export default {
   'Alterar apelido': 'අන්වර්ථ නාමය වෙනස් කරන්න',
   'Apelido nesta comunidade': 'මෙම ප්‍රජාවේ අන්වර්ථ නාමය',
   'Vazio volta ao nome da conta': 'හිස්ව තැබුවොත් ගිණුමේ නමට ආපසු යයි',
+  'Nome de exibição': 'පෙන්වන නම',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden හි සැමට පෙනෙන්නේ මෙම නමයි. ඇතුළු වීමට සහ @ සමඟ සඳහන් කිරීමට තවමත් ගිණුමේ නම භාවිත වේ.',
   'Cargo': 'භූමිකාව',
   'Mover para': 'ගෙන යන්න',
   'Desbloqueado': 'අගුළු හැර ඇත',

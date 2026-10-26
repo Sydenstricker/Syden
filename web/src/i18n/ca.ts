@@ -273,6 +273,8 @@ export default {
   'Alterar apelido': 'Canvia el sobrenom',
   'Apelido nesta comunidade': 'Sobrenom en aquesta comunitat',
   'Vazio volta ao nome da conta': 'Si ho deixes buit, torna al nom del compte',
+  'Nome de exibição': 'Nom visible',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'És el nom que tothom veu a Syden. Per entrar i per a les mencions amb @, continua valent el nom del compte.',
   'Cargo': 'Rol',
   'Mover para': 'Moure a',
   'Desbloqueado': 'Desbloquejat',

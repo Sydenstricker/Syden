@@ -279,6 +279,8 @@ export default {
   'Alterar apelido': 'Keisti slapyvardį',
   'Apelido nesta comunidade': 'Slapyvardis šioje bendruomenėje',
   'Vazio volta ao nome da conta': 'Tuščias grįžta prie paskyros vardo',
+  'Nome de exibição': 'Rodomas vardas',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Šį vardą Sydene mato visi. Prisijungimui ir paminėjimams su @ ir toliau galioja paskyros vardas.',
   'Cargo': 'Vaidmuo',
   'Mover para': 'Perkelti į',
   'Desbloqueado': 'Atrakinta',

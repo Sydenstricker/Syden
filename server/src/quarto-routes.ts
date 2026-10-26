@@ -50,7 +50,7 @@ export function registerQuartoRoutes(app: FastifyInstance) {
       if (!pessoa || db.ehContaDoSistema(dono) || db.haBloqueio(request.user.id, dono)) return reply.code(404).send(nada);
       const q = db.lerQuarto(dono);
       if (!q) return reply.code(404).send(nada);
-      return { dono: { id: pessoa.id, username: pessoa.username }, arrumacao: JSON.parse(q.arrumacao), em: q.em };
+      return { dono: { id: pessoa.id, username: pessoa.username, nomeDeExibicao: pessoa.nomeDeExibicao }, arrumacao: JSON.parse(q.arrumacao), em: q.em };
     });
   });
 }

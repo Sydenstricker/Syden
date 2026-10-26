@@ -279,6 +279,8 @@ export default {
   'Alterar apelido': 'Spremeni vzdevek',
   'Apelido nesta comunidade': 'Vzdevek v tej skupnosti',
   'Vazio volta ao nome da conta': 'Prazno se vrne na ime računa',
+  'Nome de exibição': 'Prikazno ime',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'To je ime, ki ga v Sydenu vidijo vsi. Za prijavo in omembe z @ še naprej velja ime računa.',
   'Cargo': 'Vloga',
   'Mover para': 'Premakni v',
   'Desbloqueado': 'Odklenjeno',

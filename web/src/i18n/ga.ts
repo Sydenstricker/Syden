@@ -126,6 +126,8 @@ export default {
   'Alterar apelido': 'Athraigh leasainm',
   'Apelido nesta comunidade': 'Leasainm sa phobal seo',
   'Vazio volta ao nome da conta': 'Má fhágann tú folamh é, filleann sé ar ainm an chuntais',
+  'Nome de exibição': 'Ainm taispeána',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Seo an t-ainm a fheiceann gach duine ar Syden. Chun logáil isteach agus le haghaidh lua le @, is é ainm an chuntais a bhíonn i bhfeidhm fós.',
   'Cargo': 'Ról',
   'Mover para': 'Bog go',
   'Desligar câmera': 'Múch an ceamara',

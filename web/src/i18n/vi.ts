@@ -209,6 +209,8 @@ export default {
   'Alterar apelido': 'Đổi biệt danh',
   'Apelido nesta comunidade': 'Biệt danh trong cộng đồng này',
   'Vazio volta ao nome da conta': 'Để trống sẽ quay về tên tài khoản',
+  'Nome de exibição': 'Tên hiển thị',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Đây là tên mọi người thấy trên Syden. Để đăng nhập và nhắc đến bằng @, vẫn dùng tên tài khoản.',
   'Cargo': 'Vai trò',
   'Mover para': 'Chuyển đến',
   'Desbloqueado': 'Đã bỏ chặn',

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
 import { ConfirmDialog } from './ConfirmDialog';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { useT } from './i18n';
 import type { DirectChannel } from './types';
 
@@ -59,7 +59,7 @@ function Adicionar({ conversa, selfId, aoFechar }: { conversa: DirectChannel; se
   const [erro, setErro] = useState<string | null>(null);
   useEsc(aoFechar);
   const dentro = new Set(conversa.members.map((m) => m.id));
-  const pessoas = [...members.values()].filter((m) => m.id !== selfId && !dentro.has(m.id)).sort((a, b) => a.username.localeCompare(b.username));
+  const pessoas = [...members.values()].filter((m) => m.id !== selfId && !dentro.has(m.id)).sort((a, b) => nomeDe(a).localeCompare(nomeDe(b)));
 
   async function chamar(userId: number) {
     setOcupado(userId);
@@ -82,8 +82,8 @@ function Adicionar({ conversa, selfId, aoFechar }: { conversa: DirectChannel; se
             {pessoas.length === 0 && <p className="settings-hint">{t('Ninguém mais nesta comunidade ainda.')}</p>}
             {pessoas.map((pessoa) => (
               <button key={pessoa.id} className="group-person" disabled={ocupado !== null} onClick={() => void chamar(pessoa.id)}>
-                <Avatar name={pessoa.username} userId={pessoa.id} size={28} />
-                <span className="group-person-name">{pessoa.username}</span>
+                <Avatar name={nomeDe(pessoa)} userId={pessoa.id} size={28} />
+                <span className="group-person-name">{nomeDe(pessoa)}</span>
               </button>
             ))}
           </div>

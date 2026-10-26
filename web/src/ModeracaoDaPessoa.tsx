@@ -1,3 +1,4 @@
+import { nomeDe } from './directory';
 import { Clock, MessageSquareWarning, TimerOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
@@ -128,7 +129,7 @@ export function ModeracaoDaPessoa({
           </span>
           <select
             value=""
-            aria-label={t('Silenciar {pessoa} por', { pessoa: membro.username })}
+            aria-label={t('Silenciar {pessoa} por', { pessoa: nomeDe(membro) })}
             onChange={(e) => e.target.value && void fazer(`${base}/silencio`, 'PUT', { minutos: Number(e.target.value) })}
           >
             <option value="" disabled>

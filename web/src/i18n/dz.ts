@@ -290,6 +290,8 @@ export default {
   'Alterar apelido': 'མིང་གཞན་བསྒྱུར།',
   'Apelido nesta comunidade': 'ཁྱིམ་ཚང་འདིའི་ནང་གི་མིང་གཞན།',
   'Vazio volta ao nome da conta': 'སྟོངམ་བཞག་ན་ཐོ་ཁྲའི་མིང་ལུ་ལོག་འགྱོ།',
+  'Nome de exibição': 'སྟོན་མིང་།',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'འདི་ Syden ནང་ མི་ག་ར་གིས་ མཐོང་མི་ མིང་ཨིན། ནང་འཛུལ་དང་ @ གིས་ གསལ་བཀོད་ཀྱི་དོན་ལུ་ ཐོ་ཁྲའི་མིང་ རང་ ལག་ལེན་འཐབ་ཨིན།',
   'Cargo': 'ལཱ་འགན',
   'Mover para': 'སྤོ་ནི།',
   'Desbloqueado': 'ལྡེ་མིག་ཕྱེ་ཡི།',

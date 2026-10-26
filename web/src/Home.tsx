@@ -6,7 +6,7 @@ import type { Socket } from 'socket.io-client';
 import { SiteEmbutido } from './SiteEmbutido';
 import { type FormEvent, useRef, useState } from 'react';
 import { api } from './api';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
@@ -85,7 +85,7 @@ function CaixaDeIdeias({ souODono }: { souODono: boolean }) {
       </h2>
       <p className="ideias-lead">
         {t('Escreva aqui o que você gostaria que existisse — ou o que está atrapalhando. Chega como mensagem privada para')}{' '}
-        {dono ? <strong>{dono.username}</strong> : t('quem cuida do Syden')}
+        {dono ? <strong>{nomeDe(dono)}</strong> : t('quem cuida do Syden')}
         {t(', e a resposta volta pela mesma conversa.')}
       </p>
       {estado === 'enviado' ? (
@@ -265,7 +265,7 @@ export function Home({
                         <Volume2 size={16} aria-hidden="true" />
                         <span className="vila-sala-nome">{sala.name}</span>
                         <span className={`vila-sala-gente${gente.length > 0 ? ' cheia' : ''}`}>
-                          {gente.length === 0 ? t('vazia') : gente.map((g) => g.username).join(', ')}
+                          {gente.length === 0 ? t('vazia') : gente.map((g) => nomeDe(g)).join(', ')}
                         </span>
                       </button>
                     </li>
@@ -336,7 +336,7 @@ export function Home({
                             <Volume2 size={16} aria-hidden="true" />
                             <span className="vila-sala-nome">{sala.name}</span>
                             <span className={`vila-sala-gente${gente.length > 0 ? ' cheia' : ''}`}>
-                              {gente.length === 0 ? t('vazia') : gente.map((g) => g.username).join(', ')}
+                              {gente.length === 0 ? t('vazia') : gente.map((g) => nomeDe(g)).join(', ')}
                             </span>
                           </button>
                         </li>

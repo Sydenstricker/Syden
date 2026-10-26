@@ -119,6 +119,8 @@ export default {
   'Alterar apelido': 'Veisautaka na yaca cecere',
   'Apelido nesta comunidade': 'Yaca cecere ena yasana qo',
   'Vazio volta ao nome da conta': 'Ke lala, na lesu ki na yaca ni akaude',
+  'Nome de exibição': 'Yaca e laurai',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Oqo na yaca era raica kece e Syden. Me curu kei na kena vakatokai ena @, se na yaca ni akaude ga.',
   'Cargo': 'Itavi',
   'Mover para': 'Toso ki',
   'Desligar câmera': 'Vakamatea na kamera',

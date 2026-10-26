@@ -227,6 +227,8 @@ export default {
   'Alterar apelido': 'تغییر نام مستعار',
   'Apelido nesta comunidade': 'نام مستعار در این انجمن',
   'Vazio volta ao nome da conta': 'اگر خالی بماند به نام حساب برمی‌گردد',
+  'Nome de exibição': 'نام نمایشی',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'این نامی است که همه در Syden می‌بینند. برای ورود و اشاره با @ همچنان نام حساب به کار می‌رود.',
   'Cargo': 'نقش',
   'Mover para': 'انتقال به',
   'Desbloqueado': 'رفع مسدودی شد',

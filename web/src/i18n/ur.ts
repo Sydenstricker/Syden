@@ -226,6 +226,8 @@ export default {
   'Alterar apelido': 'عرفی نام تبدیل کریں',
   'Apelido nesta comunidade': 'اس کمیونٹی میں عرفی نام',
   'Vazio volta ao nome da conta': 'خالی چھوڑنے پر اکاؤنٹ کے نام پر واپس آ جاتا ہے',
+  'Nome de exibição': 'ظاہری نام',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'یہی نام Syden پر سب کو نظر آتا ہے۔ لاگ اِن اور @ سے ذکر کے لیے اکاؤنٹ کا نام ہی چلتا ہے۔',
   'Cargo': 'کردار',
   'Mover para': 'منتقل کریں',
   'Desbloqueado': 'بلاک ہٹا دیا گیا',

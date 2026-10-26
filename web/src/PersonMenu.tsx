@@ -23,7 +23,7 @@ import { createPortal } from 'react-dom';
 import { api } from './api';
 import { carregarBloqueios, useBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
-import { useDirectory } from './directory';
+import { nomeNaComunidade, useDirectory } from './directory';
 import { DialogoDeDenuncia } from './Denuncia';
 import { Vitrine } from './Vitrine';
 import { ModeracaoDaPessoa, podeAgirSobre } from './ModeracaoDaPessoa';
@@ -154,6 +154,8 @@ export function PersonMenu({
   const t = useT();
   const { members, cargos } = useDirectory();
   const membro = members.get(target.userId);
+  // O nome que se vê (apelido, nome de exibição, nome da conta). O `username` fica para mencionar: é a identidade.
+  const nomeVisto = nomeNaComunidade(target.userId, target.username);
   /** A lista que está aberta embaixo de "Cargo" ou de "Mover para" (os submenus do Discord, aqui abrindo no lugar). */
   const [aberto, setAberto] = useState<'cargo' | 'mover' | null>(null);
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
@@ -270,15 +272,15 @@ export function PersonMenu({
       ref={ref}
       className="person-menu"
       role="menu"
-      aria-label={t('Opções de {nome}', { nome: target.username })}
+      aria-label={t('Opções de {nome}', { nome: nomeVisto })}
       style={{ top: lugar.top, left: lugar.left }}
       onPointerDown={(e) => e.stopPropagation()}
     >
       {/* O topo é a identificação: avatar, nome na cor da pessoa e o cargo dela aqui. */}
       <div className="person-menu-topo">
-        <Avatar name={target.username} userId={target.userId} size={36} />
+        <Avatar name={nomeVisto} userId={target.userId} size={36} />
         <div className="person-menu-quem">
-          <strong data-cor={corDoNome(membro?.nameColor ?? null)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>{membro?.apelido || target.username}</strong>
+          <strong data-cor={corDoNome(membro?.nameColor ?? null)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>{nomeVisto}</strong>
           <small>{t(CARGO[targetRole])}</small>
         </div>
       </div>
@@ -306,7 +308,7 @@ export function PersonMenu({
               autoFocus
               value={apelido}
               maxLength={32}
-              placeholder={target.username}
+              placeholder={membro?.nomeDeExibicao || target.username}
               aria-label={t('Apelido nesta comunidade')}
               onChange={(e) => setApelido(e.target.value)}
               onKeyDown={(e) => {
@@ -430,8 +432,8 @@ export function PersonMenu({
               rows={2}
               value={rascunho}
               maxLength={LIMITE_DA_NOTA}
-              placeholder={t('Anotação sobre {nome}', { nome: target.username })}
-              aria-label={t('Anotação sobre {nome}', { nome: target.username })}
+              placeholder={t('Anotação sobre {nome}', { nome: nomeVisto })}
+              aria-label={t('Anotação sobre {nome}', { nome: nomeVisto })}
               onChange={(e) => setRascunho(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -480,7 +482,7 @@ export function PersonMenu({
               max={1}
               step={0.05}
               value={volume}
-              aria-label={t('Volume de {nome}', { nome: target.username })}
+              aria-label={t('Volume de {nome}', { nome: nomeVisto })}
               onChange={(e) => changeVolume(Number(e.target.value))}
             />
           </label>
@@ -537,7 +539,7 @@ export function PersonMenu({
       )}
       {denunciandoTransmissao && channelId !== null && (
         <DialogoDeDenuncia
-          titulo={t('Denunciar a transmissão de {nome}', { nome: target.username })}
+          titulo={t('Denunciar a transmissão de {nome}', { nome: nomeVisto })}
           corpo={{ tipo: 'transmissao', alvo: target.userId, canal: channelId, imagem: denunciandoTransmissao.imagem }}
           aoFechar={() => {
             setDenunciandoTransmissao(null);
@@ -547,7 +549,7 @@ export function PersonMenu({
       )}
       {denunciando && (
         <DialogoDeDenuncia
-          titulo={t('Denunciar {nome}', { nome: target.username })}
+          titulo={t('Denunciar {nome}', { nome: nomeVisto })}
           corpo={{ tipo: 'pessoa', alvo: target.userId }}
           aoFechar={() => {
             setDenunciando(false);

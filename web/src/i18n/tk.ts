@@ -279,6 +279,8 @@ export default {
   'Alterar apelido': 'Lakamy üýtget',
   'Apelido nesta comunidade': 'Bu jemgyýetdäki lakam',
   'Vazio volta ao nome da conta': 'Boş goýsaň, hasap adyna dolanýar',
+  'Nome de exibição': 'Görkezilýän at',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Bu Syden-de hemmeleriň görýän ady. Girmek we @ bilen agzamak üçin hasap ady güýjünde galýar.',
   'Cargo': 'Rol',
   'Mover para': 'Göçür',
   'Desbloqueado': 'Açyldy',

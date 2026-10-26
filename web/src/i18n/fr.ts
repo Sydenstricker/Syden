@@ -417,6 +417,8 @@ export default {
   'Alterar apelido': 'Changer de pseudo',
   'Apelido nesta comunidade': 'Pseudo dans cette communauté',
   'Vazio volta ao nome da conta': 'Vide, il revient au nom du compte',
+  'Nome de exibição': 'Nom affiché',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'C’est le nom que tout le monde voit sur Syden. Pour te connecter et pour les mentions avec @, c’est toujours le nom du compte qui compte.',
   'Cargo': 'Rôle',
   'Mover para': 'Déplacer vers',
   'Abrir em janela flutuante': 'Ouvrir dans une fenêtre flottante',

@@ -53,6 +53,8 @@ export interface CommunityForUser extends Community {
 export interface User {
   id: number;
   username: string;
+  /** O nome que a pessoa escolheu mostrar em todo o Syden; null = o username. Ver setNomeDeExibicao. */
+  nomeDeExibicao: string | null;
   /** Administradores moderam o servidor: canais, mensagens, emojis e sons de todos, e membros comuns. */
   isAdmin: boolean;
   /** O dono (o primeiro cadastro) também é administrador e é quem dá e tira o cargo de administrador. */
@@ -82,6 +84,8 @@ export interface User {
 
 /** Identificação pública de alguém (autor de mensagem, lista de online). */
 export type UserRef = Pick<User, 'id' | 'username'> & {
+  /** O nome de exibição, quando a pessoa escolheu um (o site o mostra no lugar do username). */
+  nomeDeExibicao?: string | null;
   /** Autor que não é pessoa: a conta do Syden (ver A CONTA DO SYDEN). */
   app?: boolean;
 };
@@ -89,7 +93,7 @@ export type UserRef = Pick<User, 'id' | 'username'> & {
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'avatarVersion' | 'avatarPronto' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
+  'id' | 'username' | 'nomeDeExibicao' | 'avatarVersion' | 'avatarPronto' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
 >;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
@@ -916,6 +920,10 @@ addColumnIfMissing('communities', 'bv_arte', 'TEXT');
 addColumnIfMissing('communities', 'bv_coelho', 'TEXT');
 // O APELIDO NA COMUNIDADE, como o do Discord: o nome que a pessoa usa SÓ ali. Nulo = o nome da conta.
 addColumnIfMissing('community_members', 'apelido', 'TEXT');
+// O NOME DE EXIBIÇÃO da conta (o "display name" do Discord): vale em todo o Syden, conversas privadas incluídas. O apelido
+// da comunidade fica por cima dele lá dentro. Null = o nome da conta (username), que continua sendo a identidade: é por ele
+// que se entra, se menciona (@nome) e se acha a pessoa.
+addColumnIfMissing('users', 'nome_exibicao', 'TEXT');
 
 // Quando esta pessoa viu as boas-vindas desta comunidade. Nulo = nunca viu.
 //
@@ -1490,7 +1498,7 @@ export function removeMember(communityId: number, userId: number) {
 export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
-      `SELECT u.id, u.username, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_pronto AS avatarPronto,
+      `SELECT u.id, u.username, u.nome_exibicao AS nomeDeExibicao, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_pronto AS avatarPronto,
               u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role, m.silenciado_ate AS silenciadoAte, m.apelido
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
@@ -1516,7 +1524,7 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, avatar_pronto AS avatarPronto, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
+  'id, username, nome_exibicao AS nomeDeExibicao, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, avatar_pronto AS avatarPronto, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
   // O selo vestido, resolvido aqui mesmo. Guarda-se o NÚMERO da comunidade e não uma cópia do selo:
   // quando ela troca o dela, o de quem veste troca junto, sem ninguém precisar reescolher.
   '(SELECT selo_texto FROM communities c WHERE c.id = users.selo_comunidade) AS seloTexto, ' +
@@ -1526,6 +1534,7 @@ const userColumns =
 type UserRow = {
   id: number;
   username: string;
+  nomeDeExibicao: string | null;
   isAdmin: number;
   isOwner: number;
   avatarVersion: number | null;
@@ -1548,6 +1557,7 @@ function toUser(row: UserRow | undefined): User | undefined {
     row && {
       id: row.id,
       username: row.username,
+      nomeDeExibicao: row.nomeDeExibicao ?? null,
       isAdmin: row.isAdmin === 1,
       isOwner: row.isOwner === 1,
       avatarVersion: row.avatarVersion,
@@ -2038,6 +2048,12 @@ export function setAvatarPronto(userId: number, numero: number): User {
 }
 
 /** Cor do nome e fundo do perfil. Passar null em qualquer um dos dois volta ao padrão. */
+/** Troca (ou tira, com null) o nome de exibição da conta. */
+export function setNomeDeExibicao(userId: number, nome: string | null): User {
+  db.prepare('UPDATE users SET nome_exibicao = ? WHERE id = ?').run(nome, userId);
+  return findUserById(userId)!;
+}
+
 export function setProfile(
   userId: number,
   perfil: { nameColor: string | null; banner: string | null; moldura: string | null; nameEffect: string | null; nameFont: string | null },
@@ -2160,7 +2176,7 @@ export function registrarCantada(communityId: number, songId: number, userId: nu
 export function rankingDoKaraoke(communityId: number, limite = 10) {
   const cantores = db
     .prepare(
-      `SELECT k.user_id AS userId, COALESCE(m.apelido, u.username) AS nome, COUNT(*) AS cantadas
+      `SELECT k.user_id AS userId, COALESCE(m.apelido, u.nome_exibicao, u.username) AS nome, COUNT(*) AS cantadas
          FROM karaoke_cantadas k
          JOIN community_members m ON m.community_id = k.community_id AND m.user_id = k.user_id
          JOIN users u ON u.id = k.user_id
@@ -2239,7 +2255,7 @@ export interface EmojiPackItem {
 
 const emojiPackColumns = `
   p.id, p.name, p.description, p.icon, p.created_by AS createdBy, p.created_at AS createdAt,
-  u.username AS authorName,
+  COALESCE(u.nome_exibicao, u.username) AS authorName,
   (SELECT COUNT(*) FROM emoji_pack_items i WHERE i.pack_id = p.id) AS emojiCount,
   (SELECT COUNT(*) FROM emoji_pack_installs n WHERE n.pack_id = p.id) AS installs,
   (SELECT COUNT(*) FROM emoji_pack_ratings r WHERE r.pack_id = p.id) AS ratings,
@@ -2561,7 +2577,7 @@ export interface BoardSound extends Sound {
 
 const packColumns = `
   p.id, p.name, p.description, p.icon, p.created_by AS createdBy, p.builtin, p.created_at AS createdAt,
-  u.username AS authorName,
+  COALESCE(u.nome_exibicao, u.username) AS authorName,
   (SELECT COUNT(*) FROM sounds s WHERE s.pack_id = p.id) AS soundCount,
   (SELECT COUNT(*) FROM pack_installs i WHERE i.pack_id = p.id) AS installs,
   (SELECT COUNT(*) FROM pack_ratings r WHERE r.pack_id = p.id) AS ratings,
@@ -2831,7 +2847,7 @@ export function ensureCommunityOwners() {
  */
 function guardarNaCaixaPreta(userId: number) {
   const pessoa = db
-    .prepare('SELECT id, username, email, created_at AS criadaEm, is_admin AS admin, is_owner AS dono FROM users WHERE id = ?')
+    .prepare('SELECT id, username, nome_exibicao AS nomeDeExibicao, email, created_at AS criadaEm, is_admin AS admin, is_owner AS dono FROM users WHERE id = ?')
     .get(userId) as Record<string, unknown> | undefined;
   if (!pessoa) return;
 
@@ -3102,11 +3118,11 @@ export function listDirectChannels(userId: number): DirectChannel[] {
 
   const members = db
     .prepare(
-      `SELECT m.channel_id AS channelId, u.id, u.username
+      `SELECT m.channel_id AS channelId, u.id, u.username, u.nome_exibicao AS nomeDeExibicao
        FROM channel_members m JOIN users u ON u.id = m.user_id
        WHERE m.channel_id IN (${idList(rows.map((r) => r.id))})`,
     )
-    .all() as unknown as { channelId: number; id: number; username: string }[];
+    .all() as unknown as { channelId: number; id: number; username: string; nomeDeExibicao: string | null }[];
 
   const byChannel = new Map<number, UserRef[]>(rows.map((row) => [row.id, []]));
   for (const { channelId, ...user } of members) byChannel.get(channelId)?.push(user);
@@ -3121,12 +3137,13 @@ interface MessageRow {
   threadId: number | null;
   userId: number;
   username: string;
+  nomeDeExibicao: string | null;
   sistema: number;
 }
 
 const messageSelect = `
   SELECT m.id, m.channel_id AS channelId, m.content, m.created_at AS createdAt, m.thread_id AS threadId,
-         u.id AS userId, u.username, u.sistema
+         u.id AS userId, u.username, u.nome_exibicao AS nomeDeExibicao, u.sistema
   FROM messages m JOIN users u ON u.id = m.user_id`;
 
 function toMessage(row: MessageRow): Message {
@@ -3137,7 +3154,7 @@ function toMessage(row: MessageRow): Message {
     createdAt: row.createdAt,
     threadId: row.threadId,
     // A conta do Syden leva a marca de app: o site desenha "Syden" com o selo APP (ver A CONTA DO SYDEN).
-    author: row.sistema === 1 ? { id: row.userId, username: 'Syden', app: true } : { id: row.userId, username: row.username },
+    author: row.sistema === 1 ? { id: row.userId, username: 'Syden', app: true } : { id: row.userId, username: row.username, nomeDeExibicao: row.nomeDeExibicao ?? null },
     attachments: [],
     poll: null,
     thread: null,
@@ -3824,7 +3841,7 @@ export function nomesNaComunidade(communityId: number, userIds: number[]): Map<n
   if (userIds.length === 0) return new Map();
   const linhas = db
     .prepare(
-      `SELECT u.id AS userId, COALESCE(m.apelido, u.username) AS nome FROM community_members m
+      `SELECT u.id AS userId, COALESCE(m.apelido, u.nome_exibicao, u.username) AS nome FROM community_members m
          JOIN users u ON u.id = m.user_id
         WHERE m.community_id = ? AND m.user_id IN (${userIds.map(() => '?').join(',')})`,
     )
@@ -4085,6 +4102,7 @@ export interface Amizade {
   /** A OUTRA pessoa — quem pergunta nunca aparece na própria lista. */
   userId: number;
   username: string;
+  nomeDeExibicao: string | null;
   avatarVersion: number | null;
   situacao: SituacaoDeAmizade;
   /** Verdadeiro quando o pedido partiu de quem está perguntando. Só vale enquanto pendente. */
@@ -4096,6 +4114,7 @@ const amizadeSelect = `
   SELECT
     CASE WHEN f.menor_id = ? THEN f.maior_id ELSE f.menor_id END AS userId,
     u.username        AS username,
+    u.nome_exibicao   AS nomeDeExibicao,
     u.avatar_version  AS avatarVersion,
     f.situacao        AS situacao,
     f.quem_pediu = ?  AS euPedi,
@@ -4107,7 +4126,7 @@ const amizadeSelect = `
 
 export function listarAmizades(userId: number): Amizade[] {
   const linhas = db
-    .prepare(`${amizadeSelect} ORDER BY u.username COLLATE NOCASE`)
+    .prepare(`${amizadeSelect} ORDER BY COALESCE(u.nome_exibicao, u.username) COLLATE NOCASE`)
     .all(userId, userId, userId, userId) as unknown as (Omit<Amizade, 'euPedi'> & { euPedi: number })[];
   // O SQLite devolve 0 e 1 para comparação, não booleano: converte aqui para a tela não precisar saber.
   return linhas.map((l) => ({ ...l, euPedi: Boolean(l.euPedi) }));
@@ -4175,6 +4194,7 @@ export function desfazerAmizade(a: number, b: number): boolean {
 export interface SugestaoDeAmizade {
   userId: number;
   username: string;
+  nomeDeExibicao: string | null;
   avatarVersion: number | null;
   /** Quantas comunidades vocês dividem. Pode ser zero quando a ligação é só a conversa privada. */
   emComum: number;
@@ -4207,6 +4227,7 @@ export function sugestoesDeAmizade(userId: number, limite = 12): SugestaoDeAmiza
        )
        SELECT u.id                                AS userId,
               u.username                          AS username,
+              u.nome_exibicao                     AS nomeDeExibicao,
               u.avatar_version                    AS avatarVersion,
               COUNT(DISTINCT c.comunidade)        AS emComum,
               MAX(c.conversa)                     AS jaConversaram
@@ -4223,7 +4244,7 @@ export function sugestoesDeAmizade(userId: number, limite = 12): SugestaoDeAmiza
     )
     .all(userId, userId, userId, userId, userId, userId, limite)
     .map((l) => {
-      const linha = l as { userId: number; username: string; avatarVersion: number | null; emComum: number; jaConversaram: number };
+      const linha = l as { userId: number; username: string; nomeDeExibicao: string | null; avatarVersion: number | null; emComum: number; jaConversaram: number };
       // O SQLite devolve 0 e 1 no lugar de booleano; a tela não precisa saber disso.
       return { ...linha, jaConversaram: Boolean(linha.jaConversaram) };
     });
@@ -4334,14 +4355,14 @@ export function haBloqueio(a: number, b: number): boolean {
 }
 
 /** Quem esta pessoa bloqueou. Só ela vê a própria lista. */
-export function listarBloqueios(userId: number): { userId: number; username: string; desde: string }[] {
+export function listarBloqueios(userId: number): { userId: number; username: string; nomeDeExibicao: string | null; desde: string }[] {
   return db
     .prepare(
-      `SELECT u.id AS userId, u.username AS username, b.criado_em AS desde
+      `SELECT u.id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, b.criado_em AS desde
          FROM blocks b JOIN users u ON u.id = b.bloqueado
         WHERE b.quem_bloqueou = ? ORDER BY u.username COLLATE NOCASE`,
     )
-    .all(userId) as unknown as { userId: number; username: string; desde: string }[];
+    .all(userId) as unknown as { userId: number; username: string; nomeDeExibicao: string | null; desde: string }[];
 }
 
 /**
@@ -5427,7 +5448,7 @@ export function definirParabens(communityId: number, canalId: number | null, tex
 export function aniversariantesParaAnunciar(mesDia: string, ano: number): { communityId: number; userId: number; username: string; canalId: number; texto: string }[] {
   return db
     .prepare(
-      `SELECT c.id AS communityId, u.id AS userId, u.username, c.aniversario_canal AS canalId, c.aniversario_texto AS texto
+      `SELECT c.id AS communityId, u.id AS userId, COALESCE(m.apelido, u.nome_exibicao, u.username) AS username, c.aniversario_canal AS canalId, c.aniversario_texto AS texto
        FROM communities c
        JOIN community_members m ON m.community_id = c.id
        JOIN users u ON u.id = m.user_id
@@ -6493,7 +6514,7 @@ export function aniversariosNoCalendario(communityId: number): { userId: number;
   return (
     db
       .prepare(
-        `SELECT u.id AS userId, COALESCE(m.apelido, u.username) AS nome, u.aniversario AS md
+        `SELECT u.id AS userId, COALESCE(m.apelido, u.nome_exibicao, u.username) AS nome, u.aniversario AS md
          FROM community_members m JOIN users u ON u.id = m.user_id
          WHERE m.community_id = ? AND u.aniversario IS NOT NULL ORDER BY u.aniversario`,
       )

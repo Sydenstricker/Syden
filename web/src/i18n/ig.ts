@@ -128,6 +128,8 @@ export default {
   'Alterar apelido': 'Gbanwee aha ndana',
   'Apelido nesta comunidade': 'Aha ndana n\'obodo a',
   'Vazio volta ao nome da conta': 'Ọ bụrụ na ị hapụ ya efu, ọ ga-alọghachi na aha akaụntụ',
+  'Nome de exibição': 'Aha ngosi',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Nke a bụ aha onye ọ bụla na-ahụ na Syden. Maka ịbanye na ịkpọ aha site na @, aha akaụntụ ka na-arụ ọrụ.',
   'Cargo': 'Ọrụ',
   'Mover para': 'Bugharịa gaa',
   'Desligar câmera': 'Gbanyụọ igwefoto',

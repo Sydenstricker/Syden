@@ -263,6 +263,8 @@ export default {
   'Alterar apelido': 'ခေါ်ရိုးခေါ်စဉ်နာမည် ပြောင်းပါ',
   'Apelido nesta comunidade': 'ဤအသိုင်းအဝိုင်းရှိ ခေါ်ရိုးခေါ်စဉ်နာမည်',
   'Vazio volta ao nome da conta': 'ဗလာထားလျှင် အကောင့်အမည်သို့ ပြန်သွားမည်',
+  'Nome de exibição': 'ပြသမည့်အမည်',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'ဤအမည်ကို Syden တွင် လူတိုင်း မြင်ရသည်။ ဝင်ရောက်ရန်နှင့် @ ဖြင့် ဖော်ပြရန်အတွက် အကောင့်အမည်ကိုသာ ဆက်သုံးသည်။',
   'Cargo': 'အခန်းကဏ္ဍ',
   'Mover para': 'ရွှေ့ရန်',
   'Desbloqueado': 'ဖွင့်ပြီး',

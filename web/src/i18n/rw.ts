@@ -131,6 +131,8 @@ export default {
   'Alterar apelido': 'Hindura izina ry\'irihimbano',
   'Apelido nesta comunidade': 'Izina ry\'irihimbano muri uru rubuga',
   'Vazio volta ao nome da conta': 'Iyo usize ubusa risubira ku izina rya konti',
+  'Nome de exibição': 'Izina rigaragara',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Iri ni izina buri wese abona kuri Syden. Kwinjira no kuvugwa ukoresheje @ bikomeza gukoresha izina rya konti.',
   'Cargo': 'Umwanya',
   'Mover para': 'Himura ujye',
   'Desligar câmera': 'Zimya kamera',

@@ -15,6 +15,7 @@ import type { Socket } from 'socket.io-client';
 export interface QuemDigita {
   userId: number;
   username: string;
+  nomeDeExibicao?: string | null;
   ate: number;
 }
 
@@ -37,12 +38,12 @@ function tirar(channelId: number, userId: number) {
 
 /** Liga os avisos de um socket. Devolve o desligar. Os próprios avisos (outras abas) são ignorados. */
 export function ligarDigitacao(socket: Socket, euId: number) {
-  const aoDigitar = (aviso: { channelId: number; userId: number; username: string }) => {
+  const aoDigitar = (aviso: { channelId: number; userId: number; username: string; nomeDeExibicao?: string | null }) => {
     if (aviso.userId === euId) return;
     let canal = porCanal.get(aviso.channelId);
     if (!canal) porCanal.set(aviso.channelId, (canal = new Map()));
     const ate = Date.now() + VALIDADE_MS;
-    canal.set(aviso.userId, { userId: aviso.userId, username: aviso.username, ate });
+    canal.set(aviso.userId, { userId: aviso.userId, username: aviso.username, nomeDeExibicao: aviso.nomeDeExibicao, ate });
     mudou();
     // Vencido, sai sozinho — a não ser que um aviso mais novo tenha chegado no meio.
     setTimeout(() => {

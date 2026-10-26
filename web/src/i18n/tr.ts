@@ -145,6 +145,8 @@ export default {
   'Alterar apelido': 'Takma adı değiştir',
   'Apelido nesta comunidade': 'Bu topluluktaki takma ad',
   'Vazio volta ao nome da conta': 'Boş bırakırsan hesap adına döner',
+  'Nome de exibição': 'Görünen ad',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden’da herkesin gördüğü ad bu. Giriş yapmak ve @ ile anmak için hesap adı geçerli olmaya devam eder.',
   'Cargo': 'Rol',
   'Mover para': 'Taşı',
   Desbloqueado: 'Engeli kaldırıldı',

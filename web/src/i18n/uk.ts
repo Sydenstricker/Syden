@@ -274,6 +274,8 @@ export default {
   'Alterar apelido': 'Змінити нікнейм',
   'Apelido nesta comunidade': 'Нікнейм у цій спільноті',
   'Vazio volta ao nome da conta': 'Якщо залишити порожнім, повернеться ім\'я облікового запису',
+  'Nome de exibição': 'Відображуване ім’я',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Це ім’я всі бачать у Syden. Для входу та згадок через @ і надалі діє ім’я облікового запису.',
   'Cargo': 'Роль',
   'Mover para': 'Перемістити до',
   'Desbloqueado': 'Розблоковано',

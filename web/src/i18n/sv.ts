@@ -269,6 +269,8 @@ export default {
   'Alterar apelido': 'Ändra smeknamn',
   'Apelido nesta comunidade': 'Smeknamn i den här gemenskapen',
   'Vazio volta ao nome da conta': 'Tomt går tillbaka till kontonamnet',
+  'Nome de exibição': 'Visningsnamn',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Det är namnet alla ser på Syden. För inloggning och omnämnanden med @ gäller fortfarande kontonamnet.',
   'Cargo': 'Roll',
   'Mover para': 'Flytta till',
   'Desbloqueado': 'Upplåst',

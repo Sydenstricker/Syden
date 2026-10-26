@@ -75,6 +75,8 @@ export function avisoDeDigitacao(
 export interface VoiceMember {
   userId: number;
   username: string;
+  /** Lido na hora de entrar (o `user` do socket é de quando ele conectou). */
+  nomeDeExibicao: string | null;
   communityId: number;
   channelId: number;
   muted: boolean;
@@ -472,6 +474,7 @@ export function setupRealtime(io: IOServer) {
         communityId: aviso.communityId,
         userId: user.id,
         username: user.username,
+        nomeDeExibicao: db.findUserById(user.id)?.nomeDeExibicao ?? null,
       });
     });
 
@@ -490,6 +493,7 @@ export function setupRealtime(io: IOServer) {
       voiceMembers.set(user.id, {
         userId: user.id,
         username: user.username,
+        nomeDeExibicao: db.findUserById(user.id)?.nomeDeExibicao ?? null,
         communityId: channel.communityId,
         channelId: channel.id,
         muted: false,

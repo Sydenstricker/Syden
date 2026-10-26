@@ -146,6 +146,8 @@ export default {
   'Alterar apelido': '별명 변경',
   'Apelido nesta comunidade': '이 커뮤니티에서의 별명',
   'Vazio volta ao nome da conta': '비워 두면 계정 이름으로 돌아가요',
+  'Nome de exibição': '표시 이름',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden에서 모두에게 보이는 이름이에요. 로그인과 @ 멘션에는 계속 계정 이름이 쓰여요.',
   'Cargo': '역할',
   'Mover para': '이동',
   Desbloqueado: '차단을 풀었어요',

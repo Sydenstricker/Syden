@@ -276,6 +276,8 @@ export default {
   'Alterar apelido': 'Promijeni nadimak',
   'Apelido nesta comunidade': 'Nadimak u ovoj zajednici',
   'Vazio volta ao nome da conta': 'Prazno se vraća na ime naloga',
+  'Nome de exibição': 'Prikazno ime',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'To je ime koje svi vide u Sydenu. Za prijavu i pominjanje sa @ i dalje važi ime naloga.',
   'Cargo': 'Uloga',
   'Mover para': 'Premjesti u',
   'Desbloqueado': 'Otključano',

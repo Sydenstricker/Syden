@@ -257,6 +257,8 @@ export default {
   'Alterar apelido': 'Yí orúkọ apèjé padà',
   'Apelido nesta comunidade': 'Orúkọ apèjé ní àwùjọ yìí',
   'Vazio volta ao nome da conta': 'Tí o bá fi sílẹ̀ ní òfo, yóò padà sí orúkọ àkántì',
+  'Nome de exibição': 'Orúkọ ìfihàn',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Èyí ni orúkọ tí gbogbo ènìyàn ń rí lórí Syden. Fún wíwọlé àti ìtọ́kasí pẹ̀lú @, orúkọ àkántì ṣì ni a ń lò.',
   'Cargo': 'Ipa',
   'Mover para': 'Gbé lọ sí',
   'Desbloqueado': 'A ti tú u sílẹ̀',

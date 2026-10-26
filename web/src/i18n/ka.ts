@@ -295,6 +295,8 @@ export default {
   'Alterar apelido': 'მეტსახელის შეცვლა',
   'Apelido nesta comunidade': 'მეტსახელი ამ თემში',
   'Vazio volta ao nome da conta': 'ცარიელი დაბრუნდება ანგარიშის სახელზე',
+  'Nome de exibição': 'საჩვენებელი სახელი',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'ამ სახელს ყველა ხედავს Syden-ში. შესასვლელად და @-ით მოხსენიებისთვის კვლავ ანგარიშის სახელი გამოიყენება.',
   'Cargo': 'როლი',
   'Mover para': 'გადაყვანა',
   'Desbloqueado': 'განბლოკილია',

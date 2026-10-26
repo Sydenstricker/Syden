@@ -278,6 +278,8 @@ export default {
   'Alterar apelido': 'Becenév módosítása',
   'Apelido nesta comunidade': 'Becenév ebben a közösségben',
   'Vazio volta ao nome da conta': 'Üresen a fiók nevére áll vissza',
+  'Nome de exibição': 'Megjelenített név',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ezt a nevet látja mindenki a Sydenen. A belépéshez és a @-os említésekhez továbbra is a fiók neve érvényes.',
   'Cargo': 'Szerep',
   'Mover para': 'Áthelyezés ide',
   'Desbloqueado': 'Feloldva',

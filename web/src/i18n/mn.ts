@@ -291,6 +291,8 @@ export default {
   'Alterar apelido': 'Хоч нэр солих',
   'Apelido nesta comunidade': 'Энэ нийгэмлэг дэх хоч нэр',
   'Vazio volta ao nome da conta': 'Хоосон бол акаунтын нэр рүү буцна',
+  'Nome de exibição': 'Харагдах нэр',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Энэ бол Syden-д бүгд хардаг нэр. Нэвтрэх болон @-ээр дурдахад акаунтын нэр хэвээр хүчинтэй.',
   'Cargo': 'Үүрэг',
   'Mover para': 'Зөөх',
   'Desbloqueado': 'Блокоос гарсан',

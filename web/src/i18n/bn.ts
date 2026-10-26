@@ -148,6 +148,8 @@ export default {
   'Alterar apelido': 'ডাকনাম পরিবর্তন করো',
   'Apelido nesta comunidade': 'এই কমিউনিটিতে ডাকনাম',
   'Vazio volta ao nome da conta': 'খালি রাখলে অ্যাকাউন্টের নামে ফিরে যায়',
+  'Nome de exibição': 'প্রদর্শিত নাম',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden-এ সবাই এই নামটিই দেখে। লগ ইন এবং @ দিয়ে উল্লেখের জন্য অ্যাকাউন্টের নামই চলবে।',
   'Cargo': 'ভূমিকা',
   'Mover para': 'সরাও',
   Desbloqueado: 'বাধা তুলে নেওয়া হয়েছে',

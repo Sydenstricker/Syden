@@ -276,6 +276,8 @@ export default {
   'Alterar apelido': 'ប្តូរឈ្មោះហៅក្រៅ',
   'Apelido nesta comunidade': 'ឈ្មោះហៅក្រៅក្នុងសហគមន៍នេះ',
   'Vazio volta ao nome da conta': 'ទុកទទេនឹងត្រឡប់ទៅឈ្មោះគណនីវិញ',
+  'Nome de exibição': 'ឈ្មោះបង្ហាញ',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'នេះជាឈ្មោះដែលអ្នករាល់គ្នាឃើញនៅក្នុង Syden។ សម្រាប់ចូល និងការលើកឡើងដោយ @ ឈ្មោះគណនីនៅតែប្រើដដែល។',
   'Cargo': 'តួនាទី',
   'Mover para': 'ផ្លាស់ទីទៅ',
   'Desbloqueado': 'បានដោះសោ',

@@ -126,6 +126,8 @@ export default {
   'Alterar apelido': 'Fakaleva\'i e hingoa fakatupu',
   'Apelido nesta comunidade': 'Hingoa fakatupu \'i he komunití ni',
   'Vazio volta ao nome da conta': 'Kapau \'e tuku \'ikai ha me\'a, \'e foki ki he hingoa \'o e \'akauni',
+  'Nome de exibição': 'Hingoa ke fakahā',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ko e hingoa ʻeni ʻoku sio ki ai ʻa e tokotaha kotoa ʻi Syden. Ki he hū mai mo e lave ʻaki ʻa e @, ʻoku kei ngāueʻaki ʻa e hingoa ʻo e ʻakauní.',
   'Cargo': 'Lakanga',
   'Mover para': 'Tuku ki',
   'Desligar câmera': 'Tāmateʻi e kāmeli',

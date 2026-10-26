@@ -277,6 +277,8 @@ export default {
   'Alterar apelido': 'Beddel naanaysta',
   'Apelido nesta comunidade': 'Naanaysta bulshadan dhexdeeda',
   'Vazio volta ao nome da conta': 'Haddii aad banaan ka dhigto, waxay ku noqonaysaa magaca akoonka',
+  'Nome de exibição': 'Magaca la muujiyo',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Kani waa magaca qof kastaa ku arko Syden. Galitaanka iyo xusidda @ waxaa weli lagu isticmaalaa magaca akoonka.',
   'Cargo': 'Door',
   'Mover para': 'U wareeji',
   'Desbloqueado': 'Waa la furay',

@@ -248,6 +248,8 @@ export default {
   'Alterar apelido': 'Αλλαγή ψευδωνύμου',
   'Apelido nesta comunidade': 'Ψευδώνυμο σε αυτήν την κοινότητα',
   'Vazio volta ao nome da conta': 'Αν μείνει κενό, επιστρέφει στο όνομα του λογαριασμού',
+  'Nome de exibição': 'Εμφανιζόμενο όνομα',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Είναι το όνομα που βλέπουν όλοι στο Syden. Για τη σύνδεση και τις αναφορές με @ ισχύει ακόμα το όνομα του λογαριασμού.',
   'Cargo': 'Ρόλος',
   'Mover para': 'Μετακίνηση σε',
   'Desbloqueado': 'Ξεμπλοκαρίστηκε',

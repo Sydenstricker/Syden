@@ -1,7 +1,7 @@
 import { Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { useT } from './i18n';
 import type { Cargo, Community, CommunityMember } from './types';
 
@@ -69,7 +69,7 @@ export function CargosDoMembro({ community, member }: { community: Community; me
       {faltam.length > 0 && (
         <select
           className="cargo-dar"
-          aria-label={t('Dar cargo a {pessoa}', { pessoa: member.username })}
+          aria-label={t('Dar cargo a {pessoa}', { pessoa: nomeDe(member) })}
           value=""
           onChange={(e) => e.target.value && void mudar(Number(e.target.value), true)}
         >

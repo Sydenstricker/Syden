@@ -242,6 +242,8 @@ export default {
   'Alterar apelido': 'Schimbă porecla',
   'Apelido nesta comunidade': 'Poreclă în această comunitate',
   'Vazio volta ao nome da conta': 'Gol revine la numele contului',
+  'Nome de exibição': 'Nume afișat',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Este numele pe care îl văd toți pe Syden. Pentru conectare și pentru mențiunile cu @ rămâne valabil numele contului.',
   'Cargo': 'Rol',
   'Mover para': 'Mută în',
   'Desbloqueado': 'Deblocat',

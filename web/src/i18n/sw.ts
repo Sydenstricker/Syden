@@ -143,6 +143,8 @@ export default {
   'Alterar apelido': 'Badilisha jina la utani',
   'Apelido nesta comunidade': 'Jina la utani katika jumuiya hii',
   'Vazio volta ao nome da conta': 'Ukiacha tupu, litarudi kwenye jina la akaunti',
+  'Nome de exibição': 'Jina la kuonyeshwa',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Hili ndilo jina ambalo kila mtu analiona kwenye Syden. Kwa kuingia na kutajwa kwa @, jina la akaunti bado ndilo linalotumika.',
   'Cargo': 'Jukumu',
   'Mover para': 'Hamisha hadi',
   Desbloqueado: 'Amefunguliwa',

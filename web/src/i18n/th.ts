@@ -252,6 +252,8 @@ export default {
   'Alterar apelido': 'เปลี่ยนชื่อเล่น',
   'Apelido nesta comunidade': 'ชื่อเล่นในชุมชนนี้',
   'Vazio volta ao nome da conta': 'เว้นว่างไว้เพื่อกลับไปใช้ชื่อบัญชี',
+  'Nome de exibição': 'ชื่อที่แสดง',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'นี่คือชื่อที่ทุกคนเห็นใน Syden สำหรับการเข้าสู่ระบบและการกล่าวถึงด้วย @ ยังคงใช้ชื่อบัญชี',
   'Cargo': 'บทบาท',
   'Mover para': 'ย้ายไป',
   'Desbloqueado': 'ปลดบล็อกแล้ว',

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Avatar } from './Avatar';
 import { EscolhasDoCartao } from './Aparencia';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { EtiquetasDeCargo } from './Cargos';
 import { IdiomasNoCartao } from './IdiomasDoPerfil';
 import { Vitrine, legendaDaVitrine } from './Vitrine';
@@ -94,7 +94,7 @@ export function ProfileCard({
         className="perfil-cartao"
         style={{ left: lugar.left, top: lugar.top }}
         role="dialog"
-        aria-label={`Perfil de ${membro.username}`}
+        aria-label={`Perfil de ${nomeDe(membro)}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`perfil-banner ${classeDoFundo(membro.banner)}`} aria-hidden="true" />
@@ -110,14 +110,14 @@ export function ProfileCard({
           </button>
         )}
         <div className="perfil-avatar">
-          <Avatar name={membro.apelido || membro.username} userId={membro.id} size={72} />
+          <Avatar name={nomeDe(membro)} userId={membro.id} size={72} />
         </div>
         <div className="perfil-corpo">
           <h3 className="perfil-nome" data-cor={corDoNome(membro.nameColor)} data-efeito={efeitoDoNome(membro.nameEffect)} style={{ fontFamily: letraDoNome(membro.nameFont) }}>
-            {membro.apelido || membro.username}
+            {nomeDe(membro)}
           </h3>
-          {/* Com apelido, o nome da conta fica embaixo, como no Discord: é por ele que se acha a pessoa. */}
-          {membro.apelido && <p className="perfil-conta">{membro.username}</p>}
+          {/* Com apelido ou nome de exibição, o nome da conta fica embaixo, como no Discord: é por ele que se acha a pessoa. */}
+          {nomeDe(membro) !== membro.username && <p className="perfil-conta">{membro.username}</p>}
           <p className="perfil-linha">{t(CARGO[membro.role] ?? chave('Membro'))}</p>
           <EtiquetasDeCargo ids={membro.cargos} />
           <p className="perfil-linha">{t(status ? PRESENCA[status] : chave('Offline'))}</p>

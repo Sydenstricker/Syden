@@ -122,6 +122,8 @@ export default {
   'Alterar apelido': 'Troka naran ki\'ik',
   'Apelido nesta comunidade': 'Naran ki\'ik iha komunidade ida ne\'e',
   'Vazio volta ao nome da conta': 'Se husik mamuk, fila fali ba naran konta nian',
+  'Nome de exibição': 'Naran atu hatudu',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ida-ne’e naran ne’ebé ema hotu haree iha Syden. Atu tama no ba menshaun ho @, sei uza naran konta nian.',
   'Cargo': 'Kargu',
   'Mover para': 'Book ba',
   'Desligar câmera': 'Hamate kámara',

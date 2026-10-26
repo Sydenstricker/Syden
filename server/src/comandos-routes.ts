@@ -33,7 +33,7 @@ export function responderComando(io: IOServer, channel: db.Channel, autor: db.Us
   if (agora - (ultimaResposta.get(chave) ?? 0) < ESPERA_POR_CANAL_MS) return;
   ultimaResposta.set(chave, agora);
   const comunidade = db.findCommunity(channel.communityId)?.name ?? '';
-  publicarComoSyden(io, channel, preencher(comando.resposta, { pessoa: autor.username, comunidade }), threadId);
+  publicarComoSyden(io, channel, preencher(comando.resposta, { pessoa: db.nomesNaComunidade(channel.communityId, [autor.id]).get(autor.id) ?? autor.nomeDeExibicao ?? autor.username, comunidade }), threadId);
 }
 
 export function registerComandosRoutes(app: FastifyInstance) {

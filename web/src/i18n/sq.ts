@@ -269,6 +269,8 @@ export default {
   'Alterar apelido': 'Ndrysho nofkën',
   'Apelido nesta comunidade': 'Nofka në këtë komunitet',
   'Vazio volta ao nome da conta': 'Bosh kthehet te emri i llogarisë',
+  'Nome de exibição': 'Emri i shfaqur',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ky është emri që e shohin të gjithë në Syden. Për hyrjen dhe përmendjet me @ vlen ende emri i llogarisë.',
   'Cargo': 'Roli',
   'Mover para': 'Zhvendos te',
   'Desbloqueado': 'I zhbllokuar',

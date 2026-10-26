@@ -278,6 +278,8 @@ export default {
   'Alterar apelido': 'Shintsha isidlaliso',
   'Apelido nesta comunidade': 'Isidlaliso kule nhlangano',
   'Vazio volta ao nome da conta': 'Uma ushiya kungenalutho, kubuyela egameni le-akhawunti',
+  'Nome de exibição': 'Igama elibonakalayo',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Leli yigama wonke umuntu alibona ku-Syden. Ukungena nokukhulunywa nge-@, kusasebenza igama le-akhawunti.',
   'Cargo': 'Indima',
   'Mover para': 'Hambisa ku-',
   'Desbloqueado': 'Kuvuliwe',

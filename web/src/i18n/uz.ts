@@ -285,6 +285,8 @@ export default {
   'Alterar apelido': 'Taxallusni o\'zgartirish',
   'Apelido nesta comunidade': 'Bu jamiyatdagi taxallus',
   'Vazio volta ao nome da conta': 'Boʻsh qoldirilsa, hisob nomiga qaytadi',
+  'Nome de exibição': 'Koʻrinadigan ism',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Bu Syden’da hamma koʻradigan ism. Kirish va @ bilan tilga olish uchun hisob nomi amal qilishda davom etadi.',
   'Cargo': 'Rol',
   'Mover para': 'Koʻchirish',
   'Desbloqueado': 'Ochilgan',

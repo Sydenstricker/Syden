@@ -273,6 +273,8 @@ export default {
   'Alterar apelido': 'Лақап атты өзгерту',
   'Apelido nesta comunidade': 'Осы қауымдастықтағы лақап ат',
   'Vazio volta ao nome da conta': 'Бос қалдырсаң, аккаунт атына қайтады',
+  'Nome de exibição': 'Көрсетілетін ат',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Бұл Syden-де бәрі көретін ат. Кіру және @ арқылы атап өту үшін аккаунт аты қолданыла береді.',
   'Cargo': 'Рөл',
   'Mover para': 'Көшіру',
   'Desbloqueado': 'Ашылған',

@@ -150,6 +150,8 @@ export default {
   'Alterar apelido': 'उपनाम बदलो',
   'Apelido nesta comunidade': 'इस कम्युनिटी में उपनाम',
   'Vazio volta ao nome da conta': 'खाली छोड़ने पर अकाउंट का नाम लौट आता है',
+  'Nome de exibição': 'दिखने वाला नाम',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'यही नाम Syden पर सबको दिखता है। लॉग इन और @ से ज़िक्र के लिए अकाउंट का नाम ही चलता है।',
   'Cargo': 'भूमिका',
   'Mover para': 'यहाँ ले जाओ',
   Desbloqueado: 'रोक हटा दी',

@@ -256,6 +256,8 @@ export default {
   'Alterar apelido': 'Ləqəbi dəyiş',
   'Apelido nesta comunidade': 'Bu icmada ləqəb',
   'Vazio volta ao nome da conta': 'Boş buraxsan hesab adına qayıdır',
+  'Nome de exibição': 'Görünən ad',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Bu, Syden-də hamının gördüyü addır. Daxil olmaq və @ ilə qeyd etmək üçün hesab adı keçərli qalır.',
   'Cargo': 'Rol',
   'Mover para': 'Köçür',
   'Desbloqueado': 'Açıldı',

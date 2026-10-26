@@ -287,6 +287,8 @@ export default {
   'Alterar apelido': 'Chanje metrik',
   'Apelido nesta comunidade': 'Metrik nan kominote sa a',
   'Vazio volta ao nome da conta': 'Si ou kite l vid, l tounen sou non kont lan',
+  'Nome de exibição': 'Non ki parèt',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Se non tout moun wè sou Syden. Pou konekte ak pou mansyon ak @, se toujou non kont lan ki konte.',
   'Cargo': 'Wòl',
   'Mover para': 'Deplase nan',
   'Desbloqueado': 'Debloke',

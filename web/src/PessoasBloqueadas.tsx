@@ -1,3 +1,4 @@
+import { nomeDe } from './directory';
 import { useCallback, useEffect, useState } from 'react';
 import { Ban } from 'lucide-react';
 import { api } from './api';
@@ -8,6 +9,7 @@ import { useT } from './i18n';
 interface Bloqueado {
   userId: number;
   username: string;
+  nomeDeExibicao?: string | null;
   desde: string;
 }
 
@@ -71,9 +73,9 @@ export function PessoasBloqueadas() {
         <ul className="amigos-lista">
           {lista.map((b) => (
             <li key={b.userId}>
-              <Avatar name={b.username} userId={b.userId} size={36} />
+              <Avatar name={nomeDe(b)} userId={b.userId} size={36} />
               <span className="amigos-nome">
-                {b.username}
+                {nomeDe(b)}
                 <small>bloqueada em {quando(b.desde)}</small>
               </span>
               <button className="btn-sutil" disabled={ocupado} onClick={() => void desbloquear(b.userId)}>

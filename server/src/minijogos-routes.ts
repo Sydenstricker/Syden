@@ -87,7 +87,11 @@ export const _partidas = partidas;
 export const _solos = solos;
 
 export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
-  const nome = (userId: number) => db.findUserById(userId)?.username ?? '?';
+  /** O nome como a turma vê: o apelido da comunidade, o nome de exibição, ou o nome da conta. */
+  const nomeNa = (p: Partida, userId: number) => {
+    const conta = db.findUserById(userId);
+    return db.nomesNaComunidade(p.communityId, [userId]).get(userId) ?? conta?.nomeDeExibicao ?? conta?.username ?? '?';
+  };
   /** Quem joga e está na sala agora (com o convite, só quem aceitou). */
   const presentes = (p: Partida) => {
     if (p.solo) return [p.criadaPor];
@@ -118,7 +122,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     avisar(p);
   }
 
-  const pessoas = (ids: Iterable<number>) => [...ids].map((userId) => ({ userId, username: nome(userId) }));
+  const pessoas = (p: Partida, ids: Iterable<number>) => [...ids].map((userId) => ({ userId, username: nomeNa(p, userId) }));
   const estado = (p: Partida, quem: number) => ({
     jogo: p.jogo,
     criadaPor: p.criadaPor,
@@ -128,8 +132,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     // O convite: quem vai jogar, quem disse "agora não", e o mínimo para dar a largada.
     // ("presentes": dos que aceitaram, quantos estão na sala agora: é o que a largada conta)
     convite: p.convite ? { minimo: JOGOS[p.jogo].minimo ?? 1, presentes: presentes(p).length } : null,
-    jogadores: p.jogadores ? pessoas(p.jogadores) : null,
-    recusaram: pessoas(p.recusaram),
+    jogadores: p.jogadores ? pessoas(p, p.jogadores) : null,
+    recusaram: pessoas(p, p.recusaram),
     souJogador: p.jogadores ? p.jogadores.has(quem) : true,
     recusei: p.recusaram.has(quem),
     ...p.instancia?.publico(quem),
@@ -147,7 +151,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         avisar(p);
       },
       naSala: () => presentes(p),
-      nome,
+      nome: (userId) => nomeNa(p, userId),
     };
     // O relógio do convite sai antes: um jogo que não marca relógio ao começar herdaria o fim do convite.
     if (p.relogio) clearTimeout(p.relogio);

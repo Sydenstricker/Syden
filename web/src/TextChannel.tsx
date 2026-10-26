@@ -4,7 +4,7 @@ import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useBloqueados } from './bloqueios';
 import { useT } from './i18n';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem, MessageText } from './MessageItem';
@@ -309,7 +309,7 @@ function DeleteMessageDialog({ message, onClose }: { message: Message; onClose: 
 
   return (
     <ConfirmDialog title={t('Apagar mensagem')} confirmLabel="Apagar" busy={busy} error={error} onConfirm={confirm} onCancel={onClose}>
-      {t('Tem certeza que quer apagar esta mensagem de')} <strong>{message.author.username}</strong>? Ela some para todos.
+      {t('Tem certeza que quer apagar esta mensagem de')} <strong>{nomeDe(message.author)}</strong>? Ela some para todos.
       <blockquote className="dialog-quote">{preview}</blockquote>
     </ConfirmDialog>
   );

@@ -264,6 +264,8 @@ export default {
   'Alterar apelido': 'Maqaa moggaasaa jijjiiri',
   'Apelido nesta comunidade': 'Maqaa moggaasaa hawaasa kana keessatti',
   'Vazio volta ao nome da conta': 'Duwwaa yoo hambifte maqaa herregaatti deebi\'a',
+  'Nome de exibição': 'Maqaa mul’atu',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Kun maqaa namni hundi Syden irratti argudha. Seenuu fi @ dhaan caqasuuf, ammas maqaan herregaa hojii irra oola.',
   'Cargo': 'Gahee',
   'Mover para': 'Geeddari gara',
   'Desbloqueado': 'Banameera',

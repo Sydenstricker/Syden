@@ -53,12 +53,33 @@ export async function buscarComunidade(communityId: number): Promise<DadosDaComu
 }
 
 /**
- * O NOME QUE APARECE NA COMUNIDADE ABERTA: o apelido dela, ou o nome da conta (`reserva`). Fora de comunidade (início,
- * conversas privadas) o diretório está vazio, e sai sempre o nome da conta. Quem chama e precisa redesenhar quando o
- * apelido muda deve estar inscrito com useDirectory().
+ * OS NOMES DE EXIBIÇÃO que chegaram depois da carga (pelo "user:updated"), de qualquer pessoa, membro ou não. Valem mais do
+ * que o que veio junto com uma mensagem ou uma lista, porque são mais novos. null = a pessoa tirou o nome de exibição.
  */
-export function nomeNaComunidade(userId: number, reserva: string): string {
-  return state.members.get(userId)?.apelido || reserva;
+const exibicoes = new Map<number, string | null>();
+
+/**
+ * O NOME QUE APARECE, EM TODO O SYDEN: o apelido da comunidade aberta, senão o nome de exibição da conta, senão o nome da
+ * conta (`username`). Fora de comunidade (início, conversas privadas) o diretório está vazio, e vale o nome de exibição.
+ * `nomeDeExibicao` é o que veio com o dado (a mensagem, a lista de amigos…); quem chama e precisa redesenhar quando um
+ * nome muda deve estar inscrito com useDirectory().
+ */
+export function nomeNaComunidade(userId: number, username: string, nomeDeExibicao?: string | null): string {
+  const membro = state.members.get(userId);
+  if (membro?.apelido) return membro.apelido;
+  const exibicao = exibicoes.has(userId) ? exibicoes.get(userId) : membro ? membro.nomeDeExibicao : nomeDeExibicao;
+  return exibicao || username;
+}
+
+/** O nome da CONTA, sem o apelido de comunidade nenhuma: o nome de exibição, ou o username. É o de Minha conta. */
+export function nomeDaConta(pessoa: { id: number; username: string; nomeDeExibicao?: string | null }): string {
+  const exibicao = exibicoes.has(pessoa.id) ? exibicoes.get(pessoa.id) : pessoa.nomeDeExibicao;
+  return exibicao || pessoa.username;
+}
+
+/** O mesmo, para quem tem a pessoa inteira na mão (uma mensagem, um amigo, um membro). */
+export function nomeDe(pessoa: { id?: number; userId?: number; username: string; nomeDeExibicao?: string | null }): string {
+  return nomeNaComunidade(pessoa.id ?? pessoa.userId ?? -1, pessoa.username, pessoa.nomeDeExibicao);
 }
 
 /** Põe na tela o que `buscarComunidade` trouxe. */
@@ -96,8 +117,11 @@ export function syncDirectory(socket: Socket) {
   };
   // Avatar ou cargo no Syden inteiro mudou: atualiza quem já está na lista.
   const onUser = (user: PublicUser) => {
+    // Um servidor mais velho que o site não manda o campo: aí não se sabe, e nada muda.
+    if (user.nomeDeExibicao !== undefined) exibicoes.set(user.id, user.nomeDeExibicao);
     const member = state.members.get(user.id);
-    if (member) set({ members: new Map(state.members).set(user.id, { ...member, ...user }) });
+    // Sem ser membro, o set vazio só avisa quem desenha nomes (a conversa privada, os amigos).
+    set(member ? { members: new Map(state.members).set(user.id, { ...member, ...user }) } : {});
   };
   const onUserDeleted = ({ id }: { id: number }) => onMemberRemoved({ communityId: state.communityId ?? -1, userId: id });
   const onCargos = ({ communityId, cargos }: { communityId: number; cargos: Cargo[] }) => {

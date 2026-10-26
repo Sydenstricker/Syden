@@ -147,6 +147,8 @@ export default {
   'Alterar apelido': '更改昵称',
   'Apelido nesta comunidade': '在此社区的昵称',
   'Vazio volta ao nome da conta': '留空则恢复为账号名称',
+  'Nome de exibição': '显示名称',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': '这是大家在 Syden 上看到的名字。登录和用 @ 提及时，仍然使用账号名称。',
   'Cargo': '身份组',
   'Mover para': '移动到',
   Desbloqueado: '已解除屏蔽',

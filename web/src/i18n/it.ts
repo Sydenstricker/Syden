@@ -148,6 +148,8 @@ export default {
   'Alterar apelido': 'Cambia soprannome',
   'Apelido nesta comunidade': 'Soprannome in questa community',
   'Vazio volta ao nome da conta': 'Se lo lasci vuoto torna al nome dell\'account',
+  'Nome de exibição': 'Nome visualizzato',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'È il nome che tutti vedono su Syden. Per entrare e per le menzioni con @ vale sempre il nome dell’account.',
   'Cargo': 'Ruolo',
   'Mover para': 'Sposta in',
   Desbloqueado: 'Sbloccato',

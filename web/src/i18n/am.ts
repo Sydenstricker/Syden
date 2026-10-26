@@ -242,6 +242,8 @@ export default {
   'Alterar apelido': 'ቅጽል ስም ይቀይሩ',
   'Apelido nesta comunidade': 'በዚህ ማህበረሰብ ውስጥ ያለ ቅጽል ስም',
   'Vazio volta ao nome da conta': 'ባዶ ሲተው ወደ የመለያው ስም ይመለሳል',
+  'Nome de exibição': 'የሚታይ ስም',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'ይህ በSyden ውስጥ ሁሉም የሚያዩት ስም ነው። ለመግባትና በ@ ለመጥቀስ የመለያው ስም ይሠራል።',
   'Cargo': 'ሚና',
   'Mover para': 'ውሰድ ወደ',
   'Desbloqueado': 'ተከፍቷል',

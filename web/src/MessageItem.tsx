@@ -7,7 +7,7 @@ import { api, mediaUrl } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { Avatar } from './Avatar';
 import { corrigirDuracao } from './clips';
-import { useDirectory } from './directory';
+import { nomeDe, nomeNaComunidade, useDirectory } from './directory';
 import { RECIBO_DA_IDEIA } from './recibo';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
@@ -112,7 +112,7 @@ function SeloDeApp() {
   );
 }
 
-function AutorNome({ id, nome, app }: { id: number; nome: string; app?: boolean }) {
+function AutorNome({ id, nome, nomeDeExibicao, app }: { id: number; nome: string; nomeDeExibicao?: string | null; app?: boolean }) {
   const { members } = useDirectory();
   const membro = members.get(id);
   if (app) {
@@ -126,7 +126,7 @@ function AutorNome({ id, nome, app }: { id: number; nome: string; app?: boolean 
   return (
     <>
       <span className="message-author" data-cor={corDoNome(membro?.nameColor)} data-efeito={efeitoDoNome(membro?.nameEffect)} style={{ fontFamily: letraDoNome(membro?.nameFont) }}>
-        {membro?.apelido || nome}
+        {nomeNaComunidade(id, nome, nomeDeExibicao)}
       </span>
       {/* O selo vem do DIRETÓRIO, como a moldura do avatar: assim ele aparece em toda parte onde já
           se desenha um nome, sem passar a escolha de mão em mão, e muda sozinho pelo mesmo
@@ -346,10 +346,10 @@ export function MessageItem({
 
   return (
     <div className="message">
-      {message.author.app ? <AvatarDoApp size={40} /> : <Avatar name={message.author.username} userId={message.author.id} size={40} />}
+      {message.author.app ? <AvatarDoApp size={40} /> : <Avatar name={nomeDe(message.author)} userId={message.author.id} size={40} />}
       <div className="message-body">
         <div className="message-meta">
-          <AutorNome id={message.author.id} nome={message.author.username} app={message.author.app} />
+          <AutorNome id={message.author.id} nome={message.author.username} nomeDeExibicao={message.author.nomeDeExibicao} app={message.author.app} />
           <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
         </div>
         {body}

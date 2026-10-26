@@ -277,6 +277,8 @@ export default {
   'Alterar apelido': 'Промени го прекарот',
   'Apelido nesta comunidade': 'Прекар во оваа заедница',
   'Vazio volta ao nome da conta': 'Празно се враќа на името на сметката',
+  'Nome de exibição': 'Прикажано име',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ова е името што сите го гледаат во Syden. За најава и за спомнувања со @ и понатаму важи името на сметката.',
   'Cargo': 'Улога',
   'Mover para': 'Премести во',
   'Desbloqueado': 'Отклучено',

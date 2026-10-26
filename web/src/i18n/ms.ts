@@ -150,6 +150,8 @@ export default {
   'Alterar apelido': 'Tukar nama panggilan',
   'Apelido nesta comunidade': 'Nama panggilan dalam komuniti ini',
   'Vazio volta ao nome da conta': 'Kosongkan untuk kembali ke nama akaun',
+  'Nome de exibição': 'Nama paparan',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ini nama yang dilihat semua orang di Syden. Untuk log masuk dan sebutan dengan @, nama akaun masih digunakan.',
   'Cargo': 'Peranan',
   'Mover para': 'Alihkan ke',
   Desbloqueado: 'Sudah dinyahsekat',

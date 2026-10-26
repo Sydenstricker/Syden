@@ -296,6 +296,8 @@ export default {
   'Alterar apelido': 'Փոխել մականունը',
   'Apelido nesta comunidade': 'Մականուն այս համայնքում',
   'Vazio volta ao nome da conta': 'Դատարկը վերադառնում է հաշվի անվանը',
+  'Nome de exibição': 'Ցուցադրվող անուն',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Սա այն անունն է, որը բոլորը տեսնում են Syden-ում։ Մուտքի և @-ով նշումների համար շարունակում է գործել հաշվի անունը։',
   'Cargo': 'Դեր',
   'Mover para': 'Տեղափոխել',
   'Desbloqueado': 'Արգելափակումը հանված է',

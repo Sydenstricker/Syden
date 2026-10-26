@@ -279,6 +279,8 @@ export default {
   'Alterar apelido': 'Mainīt iesauku',
   'Apelido nesta comunidade': 'Iesauka šajā kopienā',
   'Vazio volta ao nome da conta': 'Tukšs atgriež konta vārdu',
+  'Nome de exibição': 'Parādāmais vārds',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Šo vārdu Syden redz visi. Pieteikšanās un pieminēšanai ar @ joprojām derīgs ir konta vārds.',
   'Cargo': 'Loma',
   'Mover para': 'Pārvietot uz',
   'Desbloqueado': 'Atbloķēts',

@@ -425,6 +425,8 @@ export default {
   'Alterar apelido': 'تغيير الاسم المستعار',
   'Apelido nesta comunidade': 'الاسم المستعار في هذا المجتمع',
   'Vazio volta ao nome da conta': 'إذا تُرك فارغًا يعود إلى اسم الحساب',
+  'Nome de exibição': 'الاسم الظاهر',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'هذا هو الاسم الذي يراه الجميع في Syden. أما لتسجيل الدخول والإشارة بـ @ فيبقى اسم الحساب هو المعتمد.',
   'Cargo': 'الدور',
   'Mover para': 'نقل إلى',
   'Abrir em janela flutuante': 'الفتح في نافذة عائمة',

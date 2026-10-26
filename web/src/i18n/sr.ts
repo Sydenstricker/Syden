@@ -274,6 +274,8 @@ export default {
   'Alterar apelido': 'Промени надимак',
   'Apelido nesta comunidade': 'Надимак у овој заједници',
   'Vazio volta ao nome da conta': 'Празно се враћа на име налога',
+  'Nome de exibição': 'Приказно име',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'То је име које сви виде у Syden-у. За пријаву и помињање са @ и даље важи име налога.',
   'Cargo': 'Улога',
   'Mover para': 'Премести у',
   'Desbloqueado': 'Откључано',

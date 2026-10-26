@@ -1,3 +1,4 @@
+import { limparNomeVisivel, NOME_VISIVEL_MAXIMO } from './nome-visivel.js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { AccessToken, RoomServiceClient, TrackSource } from 'livekit-server-sdk';
 import type { Server as IOServer } from 'socket.io';
@@ -576,6 +577,18 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         return user;
       },
     );
+
+    // O NOME DE EXIBIÇÃO (o "display name" do Discord): vale em todo o Syden, e o apelido de cada comunidade fica por cima
+    // dele lá dentro. Vazio volta ao nome da conta, que continua sendo a identidade (entrar, mencionar, achar a pessoa).
+    authed.put<{ Body: { nomeDeExibicao?: string | null } }>('/api/me/nome-de-exibicao', async (request, reply) => {
+      const texto = limparNomeVisivel(request.body?.nomeDeExibicao);
+      if (texto.length > NOME_VISIVEL_MAXIMO) {
+        return reply.code(400).send({ error: `O nome de exibição pode ter até ${NOME_VISIVEL_MAXIMO} caracteres.` });
+      }
+      const user = db.setNomeDeExibicao(request.user.id, texto || null);
+      io.emit('user:updated', user);
+      return user;
+    });
 
     authed.post<{ Body: { currentPassword?: string; newPassword?: string } }>(
       '/api/me/password',

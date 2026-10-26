@@ -148,6 +148,8 @@ export default {
   'Alterar apelido': 'Bijnaam wijzigen',
   'Apelido nesta comunidade': 'Bijnaam in deze community',
   'Vazio volta ao nome da conta': 'Leeg laten gaat terug naar de accountnaam',
+  'Nome de exibição': 'Weergavenaam',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Dit is de naam die iedereen op Syden ziet. Voor inloggen en vermeldingen met @ blijft de accountnaam gelden.',
   'Cargo': 'Rol',
   'Mover para': 'Verplaatsen naar',
   Desbloqueado: 'Gedeblokkeerd',

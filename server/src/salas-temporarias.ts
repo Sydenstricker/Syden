@@ -43,7 +43,7 @@ export function salaParaEntrar(io: IOServer, canal: db.Channel, user: db.User): 
   if (!canal.criaSalas || canal.communityId === null) return canal;
   const existente = db.salaTemporariaDe(canal.communityId, user.id);
   if (existente) return existente;
-  const nova = db.criarSalaTemporaria(canal, user.id, user.username.slice(0, 50));
+  const nova = db.criarSalaTemporaria(canal, user.id, (db.nomesNaComunidade(canal.communityId, [user.id]).get(user.id) ?? user.nomeDeExibicao ?? user.username).slice(0, 50));
   // depoisDe: a lista de quem já está com a tela aberta põe a sala nova no lugar certo, logo abaixo.
   io.to(communityRoom(canal.communityId)).emit('channel:created', { ...nova, depoisDe: canal.id });
   return nova;

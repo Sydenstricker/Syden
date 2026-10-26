@@ -76,6 +76,8 @@ export default {
   'Alterar apelido': 'Change nickname',
   'Apelido nesta comunidade': 'Nickname in this community',
   'Vazio volta ao nome da conta': 'Leave empty to go back to the account name',
+  'Nome de exibição': 'Display name',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'This is the name everyone sees on Syden. For signing in and @ mentions, the account name still applies.',
   'Cargo': 'Role',
   'Mover para': 'Move to',
   'Desligar câmera': 'Turn camera off',

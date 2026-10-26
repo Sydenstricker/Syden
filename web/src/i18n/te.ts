@@ -221,6 +221,8 @@ export default {
   'Alterar apelido': 'ముద్దుపేరు మార్చు',
   'Apelido nesta comunidade': 'ఈ కమ్యూనిటీలో ముద్దుపేరు',
   'Vazio volta ao nome da conta': 'ఖాళీగా వదిలితే ఖాతా పేరుకు తిరిగి వస్తుంది',
+  'Nome de exibição': 'ప్రదర్శన పేరు',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden‌లో అందరికీ కనిపించే పేరు ఇదే. లాగిన్‌కి, @ తో ప్రస్తావనలకి ఖాతా పేరే కొనసాగుతుంది.',
   'Cargo': 'పాత్ర',
   'Mover para': 'తరలించు',
   'Desbloqueado': 'నిరోధం తొలగించారు',

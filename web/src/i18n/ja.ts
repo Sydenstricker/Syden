@@ -220,6 +220,8 @@ export default {
   'Alterar apelido': 'ニックネームを変更',
   'Apelido nesta comunidade': 'このコミュニティでのニックネーム',
   'Vazio volta ao nome da conta': '空にするとアカウント名に戻ります',
+  'Nome de exibição': '表示名',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden でみんなに見える名前です。ログインと @ でのメンションには、これまでどおりアカウント名を使います。',
   'Cargo': 'ロール',
   'Mover para': '移動先',
   'Desbloqueado': 'ブロックを解除しました',

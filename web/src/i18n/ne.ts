@@ -279,6 +279,8 @@ export default {
   'Alterar apelido': 'उपनाम परिवर्तन गर',
   'Apelido nesta comunidade': 'यस समुदायमा उपनाम',
   'Vazio volta ao nome da conta': 'खाली छोड्दा खाताको नाममा फर्कन्छ',
+  'Nome de exibição': 'देखिने नाम',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Syden मा सबैले यही नाम देख्छन्। लग इन र @ ले उल्लेख गर्न खाताको नाम नै चल्छ।',
   'Cargo': 'भूमिका',
   'Mover para': 'सार्नुहोस्',
   'Desbloqueado': 'खुलेको',

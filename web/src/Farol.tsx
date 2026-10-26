@@ -1,3 +1,4 @@
+import { nomeDe } from './directory';
 import { MonitorUp, Radio, Volume2 } from 'lucide-react';
 import { algarismos } from './algarismos';
 import { CommunityIcon } from './CommunityIcon';
@@ -39,7 +40,7 @@ export function atividadeAgora(
  * lugar de "e mais 3" é de propósito — dispensa a forma de plural, que muda de língua para língua.
  */
 function quem(pessoas: VoiceMember[]): string {
-  const nomes = pessoas.slice(0, 3).map((p) => p.username).join(', ');
+  const nomes = pessoas.slice(0, 3).map((p) => nomeDe(p)).join(', ');
   const resto = pessoas.length - 3;
   return resto > 0 ? `${nomes} +${algarismos(resto)}` : nomes;
 }
@@ -78,8 +79,8 @@ export function Farol({
                       <span key={p.userId} className="farol-tela">
                         <MonitorUp size={14} aria-hidden="true" />{' '}
                         {p.screenName
-                          ? t('{quem} transmitindo {oque}', { quem: p.username, oque: p.screenName })
-                          : t('{quem} transmitindo a tela', { quem: p.username })}
+                          ? t('{quem} transmitindo {oque}', { quem: nomeDe(p), oque: p.screenName })
+                          : t('{quem} transmitindo a tela', { quem: nomeDe(p) })}
                       </span>
                     ))}
                   </span>

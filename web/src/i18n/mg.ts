@@ -277,6 +277,8 @@ export default {
   'Alterar apelido': 'Ovay ny anaram-bosotra',
   'Apelido nesta comunidade': 'Anaram-bosotra amin\'ity vondrom-piarahamonina ity',
   'Vazio volta ao nome da conta': 'Raha avela foana dia miverina amin\'ny anaran\'ny kaonty',
+  'Nome de exibição': 'Anarana aseho',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'Ity no anarana hitan’ny rehetra ao amin’ny Syden. Amin’ny fidirana sy ny fanononana amin’ny @, mbola ny anaran’ny kaonty no manan-kery.',
   'Cargo': 'Andraikitra',
   'Mover para': 'Afindrao any',
   'Desbloqueado': 'Voavoha',

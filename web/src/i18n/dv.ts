@@ -287,6 +287,8 @@ export default {
   'Alterar apelido': 'ނިކްނޭމް ބަދަލުކުރޭ',
   'Apelido nesta comunidade': 'މި ކޮމިއުނިޓީގައި ނިކްނޭމް',
   'Vazio volta ao nome da conta': 'ހުސްކޮށް ބަހައްޓައިފިނަމަ އެކައުންޓުގެ ނަމަށް އެނބުރޭ',
+  'Nome de exibição': 'ދައްކާ ނަން',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'މިއީ Syden ގައި ހުރިހާ މީހުންނަށް ފެންނާނެ ނަމެވެ. ލޮގިން ވުމަށާއި @ ގެ ޒަރީއާއިން ފާހަގަކުރުމަށް ބޭނުންވާނީ އެކައުންޓުގެ ނަމެވެ.',
   'Cargo': 'ދައުރު',
   'Mover para': 'ބަދަލުކުރޭ',
   'Desbloqueado': 'އަންބްލޮކް ކުރެވިއްޖެ',

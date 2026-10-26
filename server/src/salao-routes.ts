@@ -48,7 +48,7 @@ export function registerSalaoRoutes(app: FastifyInstance, io: IOServer) {
         arrumacao: s ? JSON.parse(s.arrumacao) : null,
         em: s?.em ?? null,
         podeEditar: podeArrumar(m.communityId, m.role, request.user.id),
-        porUltimo: quem ? { id: quem.id, nome: quem.username } : null,
+        porUltimo: quem ? { id: quem.id, nome: db.nomesNaComunidade(m.communityId, [quem.id]).get(quem.id) ?? quem.nomeDeExibicao ?? quem.username } : null,
         podeDesfazer: manages(m.role) && !!s?.temAnterior,
         copias: ACEITA_COPIAS,
       };

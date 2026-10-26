@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { algarismos } from './algarismos';
 import { Avatar } from './Avatar';
-import { useDirectory } from './directory';
+import { nomeDe, useDirectory } from './directory';
 import { useT } from './i18n';
 import { MobileBackButton } from './MobileBackButton';
 import type { Community } from './types';
@@ -91,9 +91,9 @@ export function Ranking({ community, onMobileBack }: { community: Community; onM
                 return (
                   <li key={linha.userId} className={membro?.id === undefined ? 'saiu' : ''}>
                     <span className="ranking-posicao">{algarismos(i + 1)}</span>
-                    <Avatar name={membro?.username ?? '?'} userId={linha.userId} size={32} />
+                    <Avatar name={membro ? nomeDe(membro) : '?'} userId={linha.userId} size={32} />
                     <span className="ranking-nome">
-                      <bdi>{membro?.username ?? '…'}</bdi>
+                      <bdi>{membro ? nomeDe(membro) : '…'}</bdi>
                       <Barra progresso={linha} />
                     </span>
                     <span className="ranking-nivel">{t('Nível {nivel}', { nivel: algarismos(linha.nivel) })}</span>

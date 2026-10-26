@@ -274,6 +274,8 @@ export default {
   'Alterar apelido': 'שינוי כינוי',
   'Apelido nesta comunidade': 'כינוי בקהילה הזו',
   'Vazio volta ao nome da conta': 'ריק חוזר לשם החשבון',
+  'Nome de exibição': 'שם תצוגה',
+  'É o nome que todos veem no Syden. Para entrar e nas menções com @, continua valendo o nome da conta.': 'זה השם שכולם רואים ב-Syden. לכניסה ולאזכורים עם @ נשאר שם החשבון.',
   'Cargo': 'תפקיד',
   'Mover para': 'להעביר אל',
   'Desbloqueado': 'שוחרר',

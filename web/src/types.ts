@@ -1,6 +1,8 @@
 export interface User {
   id: number;
   username: string;
+  /** O nome que a pessoa escolheu mostrar em todo o Syden (Minha conta); null/ausente = o username. Ver nomeNaComunidade. */
+  nomeDeExibicao?: string | null;
   isAdmin: boolean;
   /** O dono do servidor é quem dá e tira o cargo de administrador. */
   isOwner: boolean;
@@ -31,7 +33,7 @@ export interface User {
   faixa?: import('./protecao').Faixa | null;
 }
 
-export type UserRef = Pick<User, 'id' | 'username'> & {
+export type UserRef = Pick<User, 'id' | 'username' | 'nomeDeExibicao'> & {
   /** Autor que não é pessoa: a conta do Syden, que publica o que a comunidade configurou. */
   app?: boolean;
 };
@@ -50,6 +52,7 @@ export type PublicUser = Pick<
   User,
   | 'id'
   | 'username'
+  | 'nomeDeExibicao'
   | 'avatarVersion'
   | 'avatarPronto'
   | 'isAdmin'
@@ -265,6 +268,8 @@ export interface Message {
 export interface VoiceMember {
   userId: number;
   username: string;
+  /** O nome de exibição de quando entrou; o diretório tem o mais novo. Ver nomeNaComunidade. */
+  nomeDeExibicao?: string | null;
   communityId: number;
   channelId: number;
   muted: boolean;
