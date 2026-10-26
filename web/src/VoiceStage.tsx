@@ -348,13 +348,19 @@ function Soundboard({ voice, communityId, onClose }: { voice: Voice; communityId
   const [ouvindo, setOuvindo] = useState<number | null>(null);
   const previa = useRef<HTMLAudioElement | null>(null);
   useEffect(() => () => previa.current?.pause(), []);
+  // Com o áudio desativado, a prévia também cala: o botão diz "Desativar áudio", e isso inclui o que se ouve aqui.
+  useEffect(() => {
+    if (!voice.deafened) return;
+    previa.current?.pause();
+    setOuvindo(null);
+  }, [voice.deafened]);
   // A barra de volume vale também para a prévia que já está tocando.
   useEffect(() => {
     if (previa.current) previa.current.volume = settings.soundboardVolume * Number(previa.current.dataset.volumeDoSom ?? 1);
   }, [settings.soundboardVolume]);
   function ouvir(id: number, volumeDoSom = 1) {
     previa.current?.pause();
-    if (ouvindo === id) {
+    if (ouvindo === id || voice.deafened) {
       setOuvindo(null);
       return;
     }

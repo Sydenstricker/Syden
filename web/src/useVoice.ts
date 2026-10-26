@@ -850,6 +850,9 @@ export function useVoice(socket: Socket | null) {
   const setDeafenedState = useCallback((value: boolean) => {
     deafenedRef.current = value;
     definirSurdez(value);
+    // Desativar o áudio cala também o efeito que JÁ está tocando (relato de 25/10/2026: ele tocava até o fim, porque a
+    // surdez só era conferida no começo de cada som). O karaokê faz o mesmo em Karaoke.tsx. Voltar a ouvir não o retoma.
+    if (value) stopAllSounds();
     setDeafened(value);
     socketRef.current?.emit('voice:update', { deafened: value });
   }, []);
