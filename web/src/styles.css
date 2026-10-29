@@ -985,6 +985,191 @@ textarea {
   white-space: nowrap;
 }
 
+.convidar-voz {
+  display: flex;
+  align-items: center;
+  margin: 4px 8px 4px 16px;
+  border-radius: var(--radius);
+  background: var(--bg-hover);
+}
+
+.convidar-voz-abrir {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px 6px 6px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: calc(14px * var(--escala-do-texto));
+  text-align: start;
+  cursor: pointer;
+}
+
+.convidar-voz-icone {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+}
+
+.convidar-voz-texto {
+  min-width: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.convidar-voz-fechar {
+  display: grid;
+  place-items: center;
+  padding: 6px 6px 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.convidar-voz-abrir:hover,
+.convidar-voz-fechar:hover {
+  color: var(--text-strong);
+}
+
+/* A lista, ao lado da barra: a mesma caixa flutuante do menu da pessoa. */
+.convidar-voz-lista {
+  position: fixed;
+  z-index: 70;
+  width: 280px;
+  max-height: min(372px, calc(100vh - 16px));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 8px 28px var(--shadow);
+}
+
+.convidar-voz-pessoa {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+}
+
+.convidar-voz-pessoa:hover {
+  background: var(--bg-hover);
+}
+
+.convidar-voz-nome {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convidar-voz-nome small {
+  color: var(--text-muted);
+  white-space: normal;
+}
+
+.convidar-voz-botao {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.convidar-voz-botao:hover:not(:disabled) {
+  color: var(--text-strong);
+  background: var(--bg-active);
+}
+
+.convidar-voz-botao:disabled {
+  cursor: default;
+  color: var(--green, var(--text-strong));
+}
+
+.convidar-voz-mais {
+  cursor: pointer;
+}
+
+.convidar-voz-mais-icone {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  color: var(--text-muted);
+}
+
+/* O convite recebido: no canto, por cima de tudo, sem tomar a tela. */
+.convite-voz {
+  position: fixed;
+  z-index: 80;
+  right: 16px;
+  bottom: 16px;
+  width: min(340px, calc(100vw - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--bg-main);
+  box-shadow: 0 8px 28px var(--shadow);
+}
+
+.convite-voz-texto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.convite-voz-texto > span {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convite-voz-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.convite-voz-botoes > button {
+  padding: 7px 12px;
+}
+
+.convite-voz-fechar {
+  padding: 2px;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
 .live-badge {
   background: var(--red);
   color: white;

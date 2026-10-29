@@ -6,7 +6,7 @@ import { responderComando } from './comandos-routes.js';
 import * as db from './db.js';
 import { apagarSeVazia } from './salas-temporarias.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
-import { barreiraDe, hojeEmBrasilia, podeVerVideo, regrasDe } from './protecao.js';
+import { barreiraDe, hojeEmBrasilia, podeConversarNoParticular, podeVerVideo, regrasDe } from './protecao.js';
 
 /** Os gêneros que a TV do salão sabe desenhar (a mesma lista de web/src/generoDoJogo.ts). */
 const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa', 'espaco', 'quebracabeca', 'esportes', 'voo', 'turnos', 'historia', 'ritmo']);
@@ -120,6 +120,8 @@ const microfonesTravados = new Set<string>();
  */
 const videosCortados = new Map<number, number>();
 const onlineSockets = new Map<number, { username: string; sockets: Set<string>; status: PresenceStatus }>();
+/** Quando cada pessoa convidou cada outra para a voz ("quem:alvo"), para o freio de um aviso por minuto. */
+const convitesParaVoz = new Map<string, number>();
 
 const USAGE_HEARTBEAT_MS = 60_000;
 
@@ -551,6 +553,35 @@ export function setupRealtime(io: IOServer) {
       if (!outro || outro.userId === user.id || outro.channelId !== eu.channelId) return;
       if (typeof payload?.dados !== 'string' || payload.dados.length > 2048) return;
       io.to(outro.socketId).emit('e2ee:chave', { de: user.id, dados: payload.dados });
+    });
+
+    // CONVIDAR PARA A VOZ (29/10/2026, como o "Convidar para voz" do Discord): quem está numa sala chama alguém da mesma
+    // comunidade que está online, e só essa pessoa recebe o aviso, com o botão de entrar. O servidor confere tudo de novo,
+    // porque a lista da tela é só uma sugestão: mesma comunidade, online e visível, fora da sala, sem bloqueio em nenhum
+    // sentido e, com menor de idade, só entre amigos (a mesma regra da conversa privada: é contato direto). A recusa NÃO
+    // DIZ O PORQUÊ, como a da transmissão: "é menor" dito a um estranho seria dar o mapa a quem procura criança.
+    socket.on('voice:convidar', (payload: { userId?: unknown }, ack?: (r: { ok: boolean }) => void) => {
+      const eu = voiceMembers.get(user.id);
+      const alvo = Number(payload?.userId);
+      const recusar = () => ack?.({ ok: false });
+      if (!eu || eu.socketId !== socket.id || !Number.isInteger(alvo) || alvo === user.id) return recusar();
+      const online = onlineSockets.get(alvo);
+      if (!online || online.status === 'invisivel' || !db.memberRole(eu.communityId, alvo)) return recusar();
+      if (voiceMembers.get(alvo)?.channelId === eu.channelId || db.haBloqueio(user.id, alvo)) return recusar();
+      if (!podeConversarNoParticular(user.id, alvo)) return recusar();
+      // Um aviso por minuto para a mesma pessoa: clicar de novo não vira insistência no outro lado.
+      const chave = `${user.id}:${alvo}`, agora = Date.now();
+      if ((convitesParaVoz.get(chave) ?? 0) > agora - 60_000) return ack?.({ ok: true });
+      convitesParaVoz.set(chave, agora);
+      for (const [k, quando] of convitesParaVoz) if (quando <= agora - 60_000) convitesParaVoz.delete(k);
+      io.to(salaDaPessoa(alvo)).emit('voice:convite', {
+        de: { id: user.id, username: user.username, nomeDeExibicao: db.findUserById(user.id)?.nomeDeExibicao ?? null },
+        channelId: eu.channelId,
+        sala: db.findChannel(eu.channelId)?.name ?? '',
+        communityId: eu.communityId,
+        comunidade: db.findCommunity(eu.communityId)?.name ?? '',
+      });
+      ack?.({ ok: true });
     });
 
     const leaveVoice = () => {

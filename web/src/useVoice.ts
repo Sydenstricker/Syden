@@ -1872,6 +1872,12 @@ export function useVoice(socket: Socket | null) {
     clearError: () => setError(null),
     join,
     leave,
+    /** Chama alguém da comunidade para a sala em que você está (ver 'voice:convidar' em server/src/realtime.ts). */
+    convidar: (userId: number) =>
+      new Promise<boolean>((resolver) => {
+        if (!socketRef.current) return resolver(false);
+        socketRef.current.timeout(10_000).emit('voice:convidar', { userId }, (falhou: Error | null, r?: { ok: boolean }) => resolver(!falhou && !!r?.ok));
+      }),
     toggleMute,
     toggleDeafen,
     toggleCamera,

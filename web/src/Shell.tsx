@@ -6,6 +6,7 @@ import { API_URL, ApiError, api, loadToken } from './api';
 import { carregarBloqueios, guardarBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
 import { Comemoracao } from './Comemoracao';
+import { type ConviteRecebido, ConviteParaVoz } from './ConviteParaVoz';
 import { ParabensDoSyden } from './ParabensDoSyden';
 import { AniversarioDoSyden } from './AniversarioDoSyden';
 import { ehAniversarioDoSyden } from './diaDoSyden';
@@ -153,6 +154,8 @@ export function Shell({
   const [painel, setPainel] = useState<'jogos' | 'ranking' | null>(null);
   // Ideias suas que o dono acolheu e você ainda não viu comemorar. Cai confete uma de cada vez.
   const [comemorar, setComemorar] = useState<{ id: number; content: string }[]>([]);
+  // Alguém chamou você para a voz (ver ConviteParaVoz.tsx): o último convite, até entrar, recusar ou ele perder o sentido.
+  const [conviteVoz, setConviteVoz] = useState<ConviteRecebido | null>(null);
   // Itens que você ganhou e ainda não abriu. A tela de destaque mostra um de cada vez, em fila.
   const [porRevelar, setPorRevelar] = useState<string[]>([]);
   // A FESTA DE ANIVERSÁRIO (18/10/2026): hoje é o dia da pessoa, e ela ainda não viu a festa neste ano.
@@ -528,6 +531,23 @@ export function Shell({
         aviso.close();
       };
     });
+    // Chamaram você para a voz: o cartão no canto e, com o Syden atrás de outra janela, a notificação do sistema — que só
+    // traz o Syden para a frente; entrar é no botão do cartão, de propósito (a voz precisa do clique para tocar o som).
+    // Em "ocupado", só o cartão.
+    s.on('voice:convite', (convite: ConviteRecebido) => {
+      setConviteVoz(convite);
+      if (document.hasFocus() || loadMyStatus() === 'ocupado' || !getSettings().notifications) return;
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const aviso = new Notification(t('{quem} chama você para a voz', { quem: isolar(nomeDe(convite.de)) }), {
+        body: `${convite.sala} · ${convite.comunidade}`,
+        tag: `voz-${convite.channelId}`,
+      });
+      aviso.onclick = () => {
+        desktopBridge?.focus();
+        window.focus();
+        aviso.close();
+      };
+    });
     // Subiu de nível: o aviso é só seu, na faixa de avisos, e não na conversa dos outros (ver niveis.ts).
     s.on('nivel:subiu', ({ nivel }: { communityId: number; nivel: number }) =>
       setNotice(t('Você chegou ao nível {nivel}!', { nivel })),
@@ -857,6 +877,21 @@ export function Shell({
     setIrParaCanal(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [irParaCanal, communityId, visivelId, channels, view, trocando]);
+
+  // O convite para a voz some quando perde o sentido: quem chamou saiu da sala, você já entrou nela, ou passaram 5 minutos.
+  useEffect(() => {
+    if (!conviteVoz) return;
+    const quemChamou = voiceByCommunity[conviteVoz.communityId]?.find((m) => m.userId === conviteVoz.de.id);
+    if (quemChamou?.channelId !== conviteVoz.channelId || voice.channelId === conviteVoz.channelId) return setConviteVoz(null);
+    const relogio = window.setTimeout(() => setConviteVoz(null), 5 * 60_000);
+    return () => window.clearTimeout(relogio);
+  }, [conviteVoz, voiceByCommunity, voice.channelId]);
+
+  function entrarPeloConvite(convite: ConviteRecebido) {
+    setConviteVoz(null);
+    void voice.join(convite.channelId);
+    setIrParaCanal({ communityId: convite.communityId, channelId: convite.channelId });
+  }
 
   // A conta temporária sem aula marcada nesta aba (abriu outra aba, por exemplo): a sala dela é a
   // primeira sala de voz da única comunidade que ela tem.
@@ -1247,6 +1282,7 @@ export function Shell({
         />
       )}
       {/* Ideia acolhida: confete na tela, uma festa de cada vez. */}
+      {conviteVoz && <ConviteParaVoz convite={conviteVoz} aoEntrar={() => entrarPeloConvite(conviteVoz)} aoFechar={() => setConviteVoz(null)} />}
       {comemorar[0] && <Comemoracao ideia={comemorar[0].content} aoFechar={() => fecharComemoracao(comemorar[0].id)} />}
       {/*
         Um anúncio de cada vez, e nesta ordem: primeiro a festa da ideia acolhida (a notícia), depois a

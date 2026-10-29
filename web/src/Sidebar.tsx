@@ -35,6 +35,7 @@ import { AnimatedIcon } from './AnimatedIcon';
 import { CapaDaComunidade } from './CapaDaComunidade';
 import { efeitoDaComunidade, pilhaDaFonte } from './fontesDaComunidade';
 import { Avatar } from './Avatar';
+import { ConvidarParaVoz } from './ConvidarParaVoz';
 import { Mascote } from './Mascote';
 import { useT } from './i18n';
 import { Puxador } from './Puxador';
@@ -286,6 +287,9 @@ export function Sidebar({
                       {m.deafened ? <HeadphoneOff size={14} className="muted-icon" /> : m.muted && <MicOff size={14} className="muted-icon" />}
                     </div>
                   ))}
+                {voice.channelId === c.id && (
+                  <ConvidarParaVoz channelId={c.id} selfId={user.id} online={online} voiceMembers={voiceMembers} convidar={voice.convidar} />
+                )}
               </div>
             ))}
         </ChannelGroup>
