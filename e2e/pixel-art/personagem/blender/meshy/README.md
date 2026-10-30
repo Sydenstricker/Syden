@@ -50,3 +50,20 @@ Ordem: `powershell -File rodar.ps1` (~2 min) e depois `python pos.py` (~20 s).
    pernas, no `mascote.py`) e os cortes dos pesos.
 4. **Falta ver no motor:** este piloto mostra os quadros e o salão em imagem, não o coelho andando pela grade do salão
    de verdade. É o próximo passo, se ele aprovar: ligar as faixas ao `montar.mjs`, com a âncora do `animacoes.json`.
+
+## A segunda malha: braços abertos (`t/`, 30/10/2026)
+
+`e2e/3D/Personagens/mascote-t.glb`, feita por ele no Meshy noutra pose (braços na horizontal). Veio com o esqueleto
+automático do Meshy (o de gente, do Mixamo: 32 ossos, SEM osso nas orelhas) e duas animações de gente (Walking e
+Running, em que o coelho anda curvado e o moletom amassa). **O script tira esse esqueleto e põe o nosso**, como decidido
+em 18/10. `MODELO=t` no ambiente, no `rodar.ps1` e no `pos.py`, faz tudo com ela; as medidas de cada malha estão em
+`MEDIDAS`, no `mascote.py`. Abrir `t/comparar-malhas.png` (por animação: a primeira malha em cima, esta embaixo) e
+`t/no-salao.png`.
+
+- **Melhor:** os braços separados do moletom; os pesos saem limpos e o braço baixado não amassa a axila. A mão aparece
+  segurando o cabo, o que na primeira malha mal se via.
+- **Pior:** o rosto sai mais apagado (olhos menores, a boca some em 120 px), o rosa de dentro das orelhas fica
+  acinzentado, e o moletom vem com textura salpicada. É a TEXTURA desta geração, não o esqueleto.
+- **As mãos continuam sem se encontrar na frente:** o braço ficou mais comprido, mas os dois ombros só alcançam o mesmo
+  ponto 1,2 à frente do eixo do corpo, e a barriga sai 1,8. O varrer continua com uma mão.
+- O braço baixado vai até perto dos joelhos: o desenho tem a mão na barra do moletom.

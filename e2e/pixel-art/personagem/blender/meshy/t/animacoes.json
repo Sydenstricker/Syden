@@ -1,0 +1,31 @@
+{
+  "quadro": [
+    120,
+    120
+  ],
+  "fps": 12,
+  "animacoes": {
+    "parado": 16,
+    "andando": 8,
+    "varrendo": 8
+  },
+  "pe": {
+    "south-east": [
+      55.1,
+      101
+    ],
+    "south-west": [
+      63.9,
+      101
+    ],
+    "north-east": [
+      67.9,
+      99
+    ],
+    "north-west": [
+      51.8,
+      99
+    ]
+  },
+  "nota": "pe = âncora explícita (do parado); 12 desenhos por segundo, \"em dois\""
+}

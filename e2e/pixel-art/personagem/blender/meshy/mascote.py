@@ -9,10 +9,29 @@ import bpy, bmesh, math, os, sys, json
 from mathutils import Vector, Matrix, Quaternion
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-SAIDA = os.path.join(AQUI, 'saida')
+# MODELO=t: a malha de braços abertos (mascote-t.glb, 30/10/2026). Sem nada: a primeira, de braços para baixo.
+# Cada malha tem as suas medidas (o esqueleto é o mesmo, posto em lugares diferentes); a do T sai em t/.
+VARIANTE = os.environ.get('MODELO', '')
+SAIDA = os.path.join(AQUI, VARIANTE, 'saida') if VARIANTE else os.path.join(AQUI, 'saida')
 os.makedirs(SAIDA, exist_ok=True)
-MODELO = os.path.normpath(os.path.join(AQUI, '..', '..', '..', '..', '3D', 'Personagens', 'mascote.glb'))
+MODELO = os.path.normpath(os.path.join(AQUI, '..', '..', '..', '..', '3D', 'Personagens',
+                                       f'mascote-{VARIANTE}.glb' if VARIANTE else 'mascote.glb'))
 ESCALA = 4
+
+# AS MEDIDAS de cada malha, na altura 8,4 (tiradas fatiando a malha; ver o README):
+#   pescoço (onde a cabeça começa), cintura (tronco), ombro/cotovelo/mão (o lado +X), base e ponta das orelhas,
+#   o corte dos pesos (orelha acima de, braço fora de |x| e na faixa de z, perna abaixo de), e o quanto o braço desce
+#   no repouso (a malha em T precisa baixar os braços; a primeira já vem com eles para baixo).
+MEDIDAS = {
+    '': dict(pescoco=2.9, cintura=1.4, ombro=(1.5, -0.15, 2.55), cotovelo=(1.82, -0.2, 1.95), mao=(1.92, -0.2, 1.2),
+             orelha_base=((0.9, -0.05, 5.7), (-0.9, -0.05, 5.7)), orelha_ponta=((1.0, 0.15, 8.3), (-1.0, 0.15, 8.3)),
+             corte_orelha=(5.6, 6.3), corte_braco=(1.45, -1, 2.85), corte_perna=1.1, perna=(0.8, 1.0), baixar=0,
+             pegada=(1.6, -1.1, 1.95), pe_vassoura=(2.0, -2.2, 0.0)),
+    't': dict(pescoco=3.65, cintura=1.6, ombro=(1.5, -0.25, 3.1), cotovelo=(2.3, -0.25, 3.1), mao=(3.35, -0.25, 3.1),
+              orelha_base=((0.9, -0.1, 5.85), (-0.9, -0.15, 5.85)), orelha_ponta=((0.85, 0.0, 8.35), (-1.4, 0.0, 8.05)),
+              corte_orelha=(5.9, 6.4), corte_braco=(1.55, 2.3, 3.9), corte_perna=1.2, perna=(0.82, 1.2), baixar=74,
+              pegada=(1.85, -1.25, 1.95), pe_vassoura=(2.3, -2.4, 0.0)),
+}[VARIANTE]
 LOG = open(os.path.join(SAIDA, 'log.txt'), 'w', encoding='utf-8')
 sys.stdout = LOG
 sys.stderr = LOG
@@ -31,10 +50,19 @@ try:
     bpy.ops.import_scene.gltf(filepath=MODELO)
     MESH = [o for o in cena.objects if o.type == 'MESH'][0]
     MESH.name = 'mascote'
-    for o in list(cena.objects):
-        if o is not MESH and o.type == 'EMPTY':
-            bpy.data.objects.remove(o)
+    # se o arquivo veio com o esqueleto do Meshy (o de gente, do Mixamo), ele sai: fica a malha na pose em que foi
+    # feita, e o esqueleto é o nosso
+    mw = MESH.matrix_world.copy()
+    for m in list(MESH.modifiers):
+        MESH.modifiers.remove(m)
+    MESH.vertex_groups.clear()
     MESH.parent = None
+    MESH.matrix_world = mw
+    for o in list(cena.objects):
+        if o is not MESH:
+            bpy.data.objects.remove(o)
+    for a in list(bpy.data.actions):
+        bpy.data.actions.remove(a)
     bpy.context.view_layer.objects.active = MESH
     MESH.select_set(True)
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
@@ -107,23 +135,28 @@ try:
             b.use_connect = ligado
         return b
 
-    OMBRO, COTOVELO, MAO = (1.5, -0.15, 2.55), (1.82, -0.2, 1.95), (1.92, -0.2, 1.2)
+    M = MEDIDAS
+    OMBRO, COTOVELO, MAO = M['ombro'], M['cotovelo'], M['mao']
     osso('raiz', (0, 0, 0), (0, 0, 0.6), deforma=False)
-    osso('quadril', (0, 0, 0.7), (0, 0, 1.4), 'raiz')
-    osso('tronco', (0, 0, 1.4), (0, 0, 2.9), 'quadril', True)
-    osso('cabeca', (0, 0, 2.9), (0, 0, 5.8), 'tronco', True)
-    for lado, s in (('L', 1), ('R', -1)):
-        osso(f'orelha.{lado}', (s * 0.9, -0.05, 5.7), (s * 1.0, 0.15, 8.3), 'cabeca')
+    osso('quadril', (0, 0, 0.7), (0, 0, M['cintura']), 'raiz')
+    osso('tronco', (0, 0, M['cintura']), (0, 0, M['pescoco']), 'quadril', True)
+    osso('cabeca', (0, 0, M['pescoco']), (0, 0, 5.8), 'tronco', True)
+    for k, (lado, s) in enumerate((('L', 1), ('R', -1))):
+        osso(f'orelha.{lado}', M['orelha_base'][k], M['orelha_ponta'][k], 'cabeca')
         osso(f'braco.{lado}', (s * OMBRO[0], OMBRO[1], OMBRO[2]), (s * COTOVELO[0], COTOVELO[1], COTOVELO[2]), 'tronco')
         osso(f'antebraco.{lado}', (s * COTOVELO[0], COTOVELO[1], COTOVELO[2]), (s * MAO[0], MAO[1], MAO[2]), f'braco.{lado}', True)
-        osso(f'perna.{lado}', (s * 0.8, -0.1, 1.0), (s * 0.83, -0.2, 0.05), 'quadril')
-        osso(f'polo.{lado}', (s * 2.8, 0.9, 1.9), (s * 2.8, 0.9, 2.3), 'tronco', deforma=False)
+        px, pz = M['perna']
+        osso(f'perna.{lado}', (s * px, -0.1, pz), (s * (px + 0.03), -0.2, 0.05), 'quadril')
+        # o polo (para onde o cotovelo aponta no IK): para trás e para fora, na altura do cotovelo pendurado
+        osso(f'polo.{lado}', (s * 2.8, 0.9, OMBRO[2] - 0.6), (s * 2.8, 0.9, OMBRO[2] - 0.2), 'tronco', deforma=False)
 
     # A vassoura, como no coelho.py: um osso da pegada ao pé dela no chão, e a mão segue um alvo preso a ele (IK).
     # MAS COM UMA MÃO SÓ, DO LADO: o braço deste corpo é curto (1,35 do ombro à mão) e a barriga sai 1,85 para a frente.
     # Medido na primeira rodada: as duas mãos num cabo na frente esticavam a manga ao dobro e arrastavam o moletom junto.
-    PE_VASSOURA = Vector((2.0, -2.2, 0.0))
-    PEGADA = Vector((1.6, -1.1, 1.95))
+    # (na malha em T também: o braço é mais comprido, mas os dois ombros só alcançam o mesmo ponto 1,2 à frente do
+    # eixo do corpo, e a barriga ali sai 1,8. As mãos continuam sem se encontrar na frente.)
+    PE_VASSOURA = Vector(M['pe_vassoura'])
+    PEGADA = Vector(M['pegada'])
     EIXO = (PEGADA - PE_VASSOURA).normalized()
     osso('vassoura', PEGADA, PE_VASSOURA, 'raiz', deforma=False)
     osso('alvo.L', PEGADA, PEGADA + Vector((0, 0, 0.3)), 'vassoura', deforma=False)
@@ -144,26 +177,27 @@ try:
         if tot < 1e-4:
             sem_peso += 1
         for lado, s in (('L', 1), ('R', -1)):
-            # orelha só acima de 5,6, e acima de 6,3 é toda dela
-            if co.z < 5.6:
+            # orelha só acima da testa, e mais acima é toda dela
+            if co.z < M['corte_orelha'][0]:
                 grupos[f'orelha.{lado}'].remove([v.index])
-            elif s * co.x > 0.25 and co.z > 6.3:
+            elif s * co.x > 0.25 and co.z > M['corte_orelha'][1]:
                 for g in grupos.values():
                     g.remove([v.index])
                 grupos[f'orelha.{lado}'].add([v.index], 1.0, 'REPLACE')
-            # braço só fora do flanco (|x| > 1,45) e abaixo do ombro
-            if s * co.x < 1.45 or co.z > 2.85:
+            # braço só fora do flanco e na faixa de altura do braço
+            bx, bz0, bz1 = M['corte_braco']
+            if s * co.x < bx or not bz0 < co.z < bz1:
                 grupos[f'braco.{lado}'].remove([v.index])
                 grupos[f'antebraco.{lado}'].remove([v.index])
             # perna só abaixo da barra
-            if co.z > 1.1:
+            if co.z > M['corte_perna']:
                 grupos[f'perna.{lado}'].remove([v.index])
     print('sem peso antes', sem_peso)
     # quem ficou sem peso nenhum (o corte acima pode zerar) vai para o osso mais perto entre tronco, quadril e cabeça
     for v in MESH.data.vertices:
         if sum(x.weight for x in v.groups) < 1e-4:
             z = v.co.z
-            nome = 'cabeca' if z > 2.9 else 'tronco' if z > 1.4 else 'quadril'
+            nome = 'cabeca' if z > M['pescoco'] else 'tronco' if z > M['cintura'] else 'quadril'
             grupos[nome].add([v.index], 1.0, 'REPLACE')
     # normalizar
     bpy.context.view_layer.objects.active = MESH
@@ -265,9 +299,14 @@ try:
 
     BRACOS_SOLTOS = 18   # graus: o braço afasta um pouco do corpo, para não sumir no moletom
 
+    def braco(lado, abre=0.0, balanco=0.0):
+        # primeiro desce (a malha em T vem de braços abertos), depois balança para a frente e para trás
+        s = 1 if lado == 'L' else -1
+        gira(pbs[f'braco.{lado}'], ((1, 0, 0), balanco), ((0, 1, 0), s * (M['baixar'] + BRACOS_SOLTOS * 0.3 + abre)))
+
     def bracos(abre=0.0, balanco=0.0):
         for lado, s in (('L', 1), ('R', -1)):
-            gira(pbs[f'braco.{lado}'], ((0, 1, 0), s * (BRACOS_SOLTOS * 0.3 + abre)), ((1, 0, 0), s * balanco))
+            braco(lado, abre, s * balanco)
 
     def pose_parado(i, n):
         p = 2 * math.pi * i / n
@@ -285,7 +324,7 @@ try:
         # perna curta de chibi: o passo é o pé indo à frente e atrás (±28°), o corpo quica 2× por ciclo
         for lado, s in (('L', 1), ('R', -1)):
             gira(pbs[f'perna.{lado}'], ((1, 0, 0), s * 28 * math.sin(p)))
-            gira(pbs[f'braco.{lado}'], ((0, 1, 0), s * BRACOS_SOLTOS * 0.3), ((1, 0, 0), -s * 22 * math.sin(p)))
+            braco(lado, balanco=-s * 22 * math.sin(p))
         anda(pbs['quadril'], (0, 0, 0.16 * abs(math.cos(p)) - 0.08))
         gira(pbs['quadril'], ((0, 0, 1), 6 * math.sin(p)), ((0, 1, 0), 3 * math.sin(p)))
         gira(pbs['tronco'], ((0, 0, 1), -8 * math.sin(p)), ((1, 0, 0), -4))
@@ -310,7 +349,7 @@ try:
         anda(pbs['quadril'], (0.08 * swc, 0, -0.04 + 0.04 * math.cos(2 * p)))
         gira(pbs['cabeca'], ((0, 0, 1), -6 * swh), ((0, 1, 0), -3 + 3 * swh), ((1, 0, 0), 6))
         # a outra mão, solta, balança ao contrário
-        gira(pbs['braco.R'], ((0, 1, 0), -BRACOS_SOLTOS * 0.3), ((1, 0, 0), 10 * swc))
+        braco('R', balanco=10 * swc)
         orelhas(p - 1.3, 1.6)
 
     POSES = {'parado': pose_parado, 'andando': pose_andando, 'varrendo': pose_varrendo}
@@ -395,7 +434,7 @@ try:
     ARM.rotation_euler = (0, 0, 0)
     with open(os.path.join(SAIDA, 'animacoes.json'), 'w') as f:
         json.dump(ANIMACOES, f)
-    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, 'mascote.blend'))
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, VARIANTE, 'mascote.blend'))
     print('FIM')
 except Exception:
     import traceback

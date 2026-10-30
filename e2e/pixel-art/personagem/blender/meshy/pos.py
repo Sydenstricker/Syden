@@ -10,11 +10,15 @@ from collections import Counter
 from PIL import Image
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
+# MODELO=t: os quadros da malha de braços abertos, e a saída em t/ (como no mascote.py)
+VARIANTE = os.environ.get('MODELO', '')
+RAIZ = AQUI
+AQUI = os.path.join(AQUI, VARIANTE) if VARIANTE else AQUI
 ENTRADA = os.path.join(AQUI, 'saida', 'quadros')
 ESCALA = 4
 DIRS = ['south-east', 'south-west', 'north-east', 'north-west']
-MASCOTE = os.path.join(AQUI, '..', '..', 'mascote', 'baixa-120')
-SALAO = os.path.join(AQUI, '..', '..', '..', 'salao')
+MASCOTE = os.path.join(RAIZ, '..', '..', 'mascote', 'baixa-120')
+SALAO = os.path.join(RAIZ, '..', '..', '..', 'salao')
 CONTORNO = (2, 1, 2)
 with open(os.path.join(AQUI, 'saida', 'animacoes.json')) as f:
     ANIMACOES = json.load(f)
@@ -192,3 +196,21 @@ for nome, n in ANIMACOES.items():
         gif.append(x3(q).convert('RGB'))
     gif[0].save(os.path.join(AQUI, f'{nome}.gif'), save_all=True, append_images=gif[1:], duration=round(1000 / FPS), loop=0)
 print('FIM')
+
+# AS DUAS MALHAS LADO A LADO (só na variante): por animação, a primeira em cima e esta embaixo, sudeste, 4 desenhos (3×)
+if VARIANTE:
+    linhas = []
+    for nome, n in ANIMACOES.items():
+        for pasta in (RAIZ, AQUI):
+            f = os.path.join(pasta, f'{nome}-south-east.png')
+            if not os.path.exists(f):
+                continue
+            fx = Image.open(f).convert('RGBA')
+            l = Image.new('RGBA', (480, 120), (90, 90, 110, 255))
+            for k, i in enumerate(range(0, n, n // 4)):
+                l.alpha_composite(fx.crop((120 * i, 0, 120 * i + 120, 120)), (120 * k, 0))
+            linhas.append(l)
+    v = Image.new('RGBA', (480, 120 * len(linhas)))
+    for k, l in enumerate(linhas):
+        v.paste(l, (0, 120 * k))
+    x3(v).save(os.path.join(AQUI, 'comparar-malhas.png'))
