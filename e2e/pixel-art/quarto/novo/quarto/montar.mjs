@@ -2493,7 +2493,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   function chegar() {
     const pt = coelho.destino && pontos()[coelho.destino];
-    if (!pt) { coelho.pose = 'parado'; return; }
+    if (!pt) { coelho.pose = 'parado'; if (coelho.varrendoNoSalao) coelho.varrendoAte = performance.now() + 5000; return; }
     if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer && !EDITANDO) gavetasPedidas = true; } return chegarDeVez(); }
     coelho.largado = Math.random() < 0.5; // dormindo rígido ou largado: sorteado antes, a transição já vai para ele
     const id = coelho.destino, p2 = pontos()[id], ro = roteiro(id, p2);
@@ -2541,7 +2541,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O ESTADO REAL DECIDE O LUGAR. Em call, a poltrona faz o papel do computador, que o quarto ainda não tem.
   function decidir() {
     if (coelho.trans || coelho.aproximar || coelho.descendo) { coelho.redecidir = true; return; } // no meio de sentar ou levantar: decide quando terminar
-    if (CENA === 'salao') { if (pontos().balcao && coelho.destino !== 'balcao') ir('balcao'); return; } // o recado, atrás do balcão
+    if (CENA === 'salao') { coelho.varrendoNoSalao = false; if (pontos().balcao && coelho.destino !== 'balcao') ir('balcao'); return; } // o recado, atrás do balcão
     if (estado === 'ausente' || (estado === 'atoa' && modo === 'noite')) {
       // Já na cama: só troca entre ler e dormir, sem levantar.
       if (coelho.destino === 'cama' && !coelho.caminho.length) { chegarDeVez(); return; }
@@ -2553,9 +2553,27 @@ if (CENA === 'salao') document.body.classList.add('salao');
     coelho.destino = null; coelho.pose = 'parado';
     const c = caminho(saida(), [saida()]); if (c) andarAte(c);
   }
+  // NO SALÃO, O COELHO DO RECADO VARRE (pedido dele, 30/10/2026, a opção 1): de vez em quando ele sai do balcão, vai a
+  // uma casa livre perto dele, varre uns 5 s e volta. Não sai com o recado aberto, e clicar no balcão o chama de volta
+  // (acao): o balão só aparece com ele lá, e o tempo de leitura conta de quando aparece.
+  function varrerOSalao() {
+    if (semAndar || !Object.keys(ANIM.varrendo ?? {}).length || coelho.trans || coelho.aproximar || coelho.caminho.length) return;
+    if (coelho.varrendoNoSalao) {
+      if (performance.now() < (coelho.varrendoAte ?? 0)) return;
+      coelho.varrendoNoSalao = false;
+      return ir('balcao');
+    }
+    if (coelho.destino !== 'balcao' || !ARR.balcao || !document.getElementById('recado').hidden || Math.random() >= 1 / 4) return;
+    const [bu, bv] = centro(peDe('balcao'));
+    const perto = todasAsCasas().filter(([i, j]) => { const d = Math.hypot(i + 0.5 - bu, j + 0.5 - bv); return livre(i, j) && d > 2.5 && d < 5.5; });
+    const c = perto.length && caminho(saida(), [perto[Math.floor(Math.random() * perto.length)]]);
+    if (!c) return;
+    coelho.destino = null; coelho.pose = 'parado'; coelho.varrendoNoSalao = true; coelho.varrendoAte = 0;
+    andarAte(c);
+  }
   // À toa, de dia: de tempos em tempos, uma casa livre qualquer.
   function passear() {
-    if (CENA === 'salao') return;
+    if (CENA === 'salao') return varrerOSalao();
     if (estado !== 'atoa' || modo === 'noite' || coelho.caminho.length || coelho.destino || coelho.trans || coelho.aproximar) return;
     // VARRER (pedido dele, 30/10/2026): numa parada a cada três, em vez de sair andando, ele varre onde está, por uns 4 s
     // (o próximo passeio vem de 4 a 7 s depois). Com movimento reduzido, não: varrer é só movimento.
@@ -2616,7 +2634,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // A ANIMAÇÃO pelo que ele está fazendo: andando, sentado (lendo ou dormindo, na cama), falando de pé, ou parado.
     const nomeAnim = coelho.caminho.length || ap ? 'andando'
       : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' ? 'sentado-poltrona' : coelho.destino === 'cadeira' ? (coelho.cadeiraFase === 'mesa' ? 'no-computador' : 'sentado') : 'sentado')
-      : falando ? 'falando' : estado === 'atoa' && performance.now() < (coelho.varrendoAte ?? 0) ? 'varrendo' : 'parado';
+      : falando ? 'falando' : (estado === 'atoa' || CENA === 'salao') && performance.now() < (coelho.varrendoAte ?? 0) ? 'varrendo' : 'parado';
     // A VIRADA SUAVE (ideia dele, 14/10/2026): a direção que APARECE anda um passo por quadro no círculo das 8, pelo lado
     // mais curto, até a que ele quer; os passos do meio são a pose dele (de pé ou sentado) naquela direção. 90° = 200 ms.
     const ANEL = ['sudeste', 'sul', 'sudoeste', 'oeste', 'noroeste', 'norte', 'nordeste', 'leste'];
@@ -3932,6 +3950,8 @@ void main() {
   }
   function acao(f) {
     // O balcão abre e fecha o recado, aqui mesmo (o balão é da página).
+    // Longe do balcão (varrendo o salão), o clique o chama de volta, e o recado abre quando ele chega.
+    if (f === 'balcao' && CENA === 'salao' && RECADO && (coelho.destino !== 'balcao' || coelho.caminho.length)) { coelho.varrendoNoSalao = false; coelho.varrendoAte = 0; ir('balcao'); abrirRecado(); return; }
     if (f === 'balcao' && CENA === 'salao' && RECADO) { if (recadoAberto) { recadoAberto = false; contarLeitura = false; clearTimeout(fimDoRecado); posicionarRecado(true); } else abrirRecado(); return; }
     if (window.parent !== window && MODO_APP) { window.parent.postMessage({ syden: 'quarto', acao: f }, location.origin); return; }
     document.getElementById('acao-teste').textContent = 'No app, abriria: ' + FUNCOES[f].rotulo + (FUNCOES[f].sub ? ' (' + FUNCOES[f].sub + ')' : '') + '.';
@@ -4351,7 +4371,7 @@ void main() {
     if (!viva) { // clicou sem arrastar
       // Editando, o clique arruma: a função não abre (relato dele, 16/10/2026).
       const f = FUNCOES && !soVer && !EDITANDO ? FUNCAO_DO_MOVEL[pegado] : null, comFuncao = !!(f && FUNCOES[f]);
-      if (CENA === 'salao' && f) { if (comFuncao) acao(f); alvo = null; pegado = null; desenhar(); return; } // no salão o coelho do recado não sai do balcão
+      if (CENA === 'salao' && f) { if (comFuncao) acao(f); alvo = null; pegado = null; desenhar(); return; } // no salão a função abre na hora (o balcão chama de volta o coelho que saiu para varrer)
       if (funcaoNaChegada) { clearTimeout(funcaoNaChegada.prazo); funcaoNaChegada = null; } // mudou de ideia: a função de antes não abre mais
       if (pegado === 'guarda-roupa' && guardaRoupaAberto) guardaRoupaAberto = false;
       // a animação primeiro, e a função na chegada (o guarda-roupa conta a dele quando as portas abrem)

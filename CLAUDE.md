@@ -796,6 +796,9 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
     `MASCOTE=pixellab` no `montar.mjs` volta ao desenho. Os outros 16 coelhos seguem o formato DESTE (decisão dele). O
     braço do chibi não alcança a frente da barriga: nada de segurar com as duas mãos na frente. Os deitados usam a
     câmera do chão (32°, diagonais a 45°); na do coelho em pé (20°, 32°) o corpo deitado some.
+    **Ele VARRE (30/10/2026):** no quarto, à toa, numa parada a cada três; no salão, o coelho do recado sai do balcão de
+    vez em quando (nunca com o recado aberto), varre uns 5 s perto dele e volta, e clicar no balcão o chama de volta (o
+    balão só aparece com ele lá).
   - **Medido em 18/10/2026** (`e2e/pixel-art/personagem/blender/`): o coelho montado por código segura a vassoura
     idêntica em 32 quadros, mas fica abaixo do desenho; o sprite projetado nele falhou pela silhueta. O Meshy ganhou do
     Tripo (simulação no salão, cores presas à paleta): forma do mascote, malha lisa que dobra bem; o Tripo vem em blocos,
