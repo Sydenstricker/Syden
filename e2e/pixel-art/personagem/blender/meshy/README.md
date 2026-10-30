@@ -44,7 +44,9 @@ Ordem: `powershell -File rodar.ps1` (~2 min) e depois `python pos.py` (~20 s).
    **uma mão, do lado, com o cabo quase em pé**, e o outro braço balançando. Isso é PROPORÇÃO, não falta de técnica:
    animação que pega coisa com as duas mãos na frente do corpo (bandeja, caixa) vai esbarrar no mesmo limite em todos os
    coelhos chibi, e a pose A não muda o comprimento do braço.
-3. **A pose A ainda vale para os outros 16:** com os braços colados ao corpo, a malha do braço e a do moletom se
-   encostam, e os pesos precisaram de corte à mão. Com os braços afastados, os pesos automáticos acertariam sozinhos.
+3. **O formato deste mascote é o que os outros 16 vão replicar** (decisão dele, 30/10/2026). Com os braços colados ao
+   corpo, a malha do braço e a do moletom se encostam, e os pesos precisaram de corte à mão; ele vai refazer a malha do
+   mascote noutra pose. Malha nova pede medir de novo os pontos do esqueleto (`OMBRO`, `COTOVELO`, `MAO`, orelhas,
+   pernas, no `mascote.py`) e os cortes dos pesos.
 4. **Falta ver no motor:** este piloto mostra os quadros e o salão em imagem, não o coelho andando pela grade do salão
    de verdade. É o próximo passo, se ele aprovar: ligar as faixas ao `montar.mjs`, com a âncora do `animacoes.json`.
