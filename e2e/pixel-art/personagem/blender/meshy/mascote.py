@@ -26,11 +26,13 @@ MEDIDAS = {
     '': dict(pescoco=2.9, cintura=1.4, ombro=(1.5, -0.15, 2.55), cotovelo=(1.82, -0.2, 1.95), mao=(1.92, -0.2, 1.2),
              orelha_base=((0.9, -0.05, 5.7), (-0.9, -0.05, 5.7)), orelha_ponta=((1.0, 0.15, 8.3), (-1.0, 0.15, 8.3)),
              corte_orelha=(5.6, 6.3), corte_braco=(1.45, -1, 2.85), corte_perna=1.1, perna=(0.8, 1.0), baixar=0,
-             pegada=(1.6, -1.1, 1.95), pe_vassoura=(2.0, -2.2, 0.0)),
+             pegada=(1.6, -1.1, 1.95), pe_vassoura=(2.0, -2.2, 0.0), duas_maos=False),
     't': dict(pescoco=3.65, cintura=1.6, ombro=(1.5, -0.25, 3.1), cotovelo=(2.3, -0.25, 3.1), mao=(3.35, -0.25, 3.1),
               orelha_base=((0.9, -0.1, 5.85), (-0.9, -0.15, 5.85)), orelha_ponta=((0.85, 0.0, 8.35), (-1.4, 0.0, 8.05)),
               corte_orelha=(5.9, 6.4), corte_braco=(1.55, 2.3, 3.9), corte_perna=1.2, perna=(0.82, 1.2), baixar=74,
-              pegada=(1.85, -1.25, 1.95), pe_vassoura=(2.3, -2.4, 0.0)),
+              # as DUAS mãos (pedido dele, 30/10/2026: "com um braço só é inviável"): o cabo na frente do PEITO, onde o
+              # corpo é mais estreito que a barriga, quase em pé; o tronco se inclina 12° e o braço estica 5 a 20%
+              pegada=(0.15, -1.95, 3.0), pe_vassoura=(-0.45, -2.45, 0.0), duas_maos=True),
 }[VARIANTE]
 LOG = open(os.path.join(SAIDA, 'log.txt'), 'w', encoding='utf-8')
 sys.stdout = LOG
@@ -150,16 +152,19 @@ try:
         # o polo (para onde o cotovelo aponta no IK): para trás e para fora, na altura do cotovelo pendurado
         osso(f'polo.{lado}', (s * 2.8, 0.9, OMBRO[2] - 0.6), (s * 2.8, 0.9, OMBRO[2] - 0.2), 'tronco', deforma=False)
 
-    # A vassoura, como no coelho.py: um osso da pegada ao pé dela no chão, e a mão segue um alvo preso a ele (IK).
-    # MAS COM UMA MÃO SÓ, DO LADO: o braço deste corpo é curto (1,35 do ombro à mão) e a barriga sai 1,85 para a frente.
-    # Medido na primeira rodada: as duas mãos num cabo na frente esticavam a manga ao dobro e arrastavam o moletom junto.
-    # (na malha em T também: o braço é mais comprido, mas os dois ombros só alcançam o mesmo ponto 1,2 à frente do
-    # eixo do corpo, e a barriga ali sai 1,8. As mãos continuam sem se encontrar na frente.)
+    # A vassoura, como no coelho.py: um osso da pegada ao pé dela no chão, e as mãos seguem alvos presos a ele (IK).
+    # Na PRIMEIRA malha, uma mão só, do lado: o braço é curto (1,35 do ombro à mão), a barriga sai 1,85 para a frente, e
+    # as duas mãos num cabo na frente esticavam a manga ao dobro e arrastavam o moletom junto (os pesos do braço pegavam o
+    # flanco). Na malha em T, com os braços soltos do corpo, as duas: o cabo na frente do peito e um pouco de estica.
     PE_VASSOURA = Vector(M['pe_vassoura'])
     PEGADA = Vector(M['pegada'])
     EIXO = (PEGADA - PE_VASSOURA).normalized()
     osso('vassoura', PEGADA, PE_VASSOURA, 'raiz', deforma=False)
     osso('alvo.L', PEGADA, PEGADA + Vector((0, 0, 0.3)), 'vassoura', deforma=False)
+    DUAS_MAOS = M['duas_maos']
+    if DUAS_MAOS:
+        PEGADA2 = PEGADA - EIXO * 0.55
+        osso('alvo.R', PEGADA2, PEGADA2 + Vector((0, 0, 0.3)), 'vassoura', deforma=False)
     bpy.ops.object.mode_set(mode='OBJECT')
 
     # PESOS AUTOMÁTICOS (o "calor" do Blender), depois corrigidos onde a geometria engana: o braço encosta no moletom e
@@ -256,13 +261,16 @@ try:
     bpy.context.view_layer.update()
     VASS.matrix_world = mw
 
-    ik = ARM.pose.bones['antebraco.L'].constraints.new('IK')
-    ik.name = 'IK'
-    ik.target, ik.subtarget = ARM, 'alvo.L'
-    ik.pole_target, ik.pole_subtarget = ARM, 'polo.L'
-    ik.pole_angle = math.radians(-90)
-    ik.chain_count = 2
-    ik.use_stretch = False
+    for lado in (('L', 'R') if DUAS_MAOS else ('L',)):
+        ik = ARM.pose.bones[f'antebraco.{lado}'].constraints.new('IK')
+        ik.name = 'IK'
+        ik.target, ik.subtarget = ARM, f'alvo.{lado}'
+        ik.pole_target, ik.pole_subtarget = ARM, f'polo.{lado}'
+        ik.pole_angle = math.radians(-90)
+        ik.chain_count = 2
+        ik.use_stretch = DUAS_MAOS
+        for n in (f'braco.{lado}', f'antebraco.{lado}'):
+            ARM.pose.bones[n].ik_stretch = 0.25
 
     # ============================ AS POSES ============================
     pbs = ARM.pose.bones
@@ -344,18 +352,24 @@ try:
         v.rotation_quaternion = Quaternion(local(v, EIXO_BALANCO), ang)
         # a mão vai um pouco junto com a palha, e desce o que o arco levantaria (a palha não sai do chão)
         anda(v, (0.18 * sw, 0, -L_CABO * (1 - math.cos(ang)) * 0.9))
-        # o corpo acompanha o golpe: torce para o lado da vassoura e se inclina um pouco para ela
-        gira(pbs['tronco'], ((0, 0, 1), 7 + 9 * swc), ((0, 1, 0), 4 + 4 * swc), ((1, 0, 0), -6))
+        # o corpo acompanha o golpe: torce para o lado da vassoura e se inclina um pouco para ela (com as duas mãos, para a
+        # FRENTE, que é o que leva os ombros até o cabo)
+        if DUAS_MAOS:
+            gira(pbs['tronco'], ((0, 0, 1), 8 * swc), ((0, 1, 0), 3 * swc), ((1, 0, 0), 12))
+        else:
+            gira(pbs['tronco'], ((0, 0, 1), 7 + 9 * swc), ((0, 1, 0), 4 + 4 * swc), ((1, 0, 0), -6))
         anda(pbs['quadril'], (0.08 * swc, 0, -0.04 + 0.04 * math.cos(2 * p)))
-        gira(pbs['cabeca'], ((0, 0, 1), -6 * swh), ((0, 1, 0), -3 + 3 * swh), ((1, 0, 0), 6))
+        gira(pbs['cabeca'], ((0, 0, 1), -6 * swh), ((0, 1, 0), -3 + 3 * swh), ((1, 0, 0), -4 if DUAS_MAOS else 6))
         # a outra mão, solta, balança ao contrário
-        braco('R', balanco=10 * swc)
+        if not DUAS_MAOS:
+            braco('R', balanco=10 * swc)
         orelhas(p - 1.3, 1.6)
 
     POSES = {'parado': pose_parado, 'andando': pose_andando, 'varrendo': pose_varrendo}
 
     def ik(f):
-        pbs['antebraco.L'].constraints['IK'].influence = f
+        for lado in (('L', 'R') if DUAS_MAOS else ('L',)):
+            pbs[f'antebraco.{lado}'].constraints['IK'].influence = f
 
     # ============================ CÂMERA E RENDER (as do coelho.py) ============================
     ELEV = math.radians(20)

@@ -26,3 +26,11 @@ e as transições para deitar passam de uma à outra junto com o corpo.
 
 **O que falta para ficar bom (é o mínimo viável):** o rosto sai apagado (a textura desta malha); deitado, o chibi fica
 curto perto do desenho; sentado, as pernas de toco quase não aparecem; e não há variação dentro das poses paradas.
+
+**Sentado é o desenho do PixelLab (30/10/2026, decisão dele).** As pernas desta malha ficam dentro do moletom e, sentado, ele
+parecia em pé, em qualquer pose (tentado: pernas para a frente, penduradas, abertas e até esticadas 40%). O motor usa
+`../mascote/estados/sentado-2`, `sentado-poltrona`, `sentado-banqueta` e as passagens de sentar e dos braços do desenho
+("pl:" no FONTES). As poses sentadas daqui (`estados/sentado-2`, respirando, e `estados/sentado-sofa`) ficam para quando houver
+uma malha do mascote sentado, gerada no Meshy a partir de `../mascote/estados/sentado-2/south-east.png`.
+
+**O varrer é com as duas mãos** (pedido dele): o cabo na frente do peito, o tronco inclinado 12° e o braço esticado até 20%.

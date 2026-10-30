@@ -48,16 +48,41 @@ def sentar_raiz():
     anda(pbs['raiz'], (0, 0, -0.85))
 
 
-def pernas(frente=0.0, abre=0.0):
+def pernas(frente=0.0, abre=0.0, estica=1.0):
+    # estica: a perna do chibi é um toco (~1 unidade) e, sentado, some atrás da barriga; o desenho do PixelLab também a
+    # desenhava maior sentado. Esticar o osso é a mesma licença, em 3D.
     for lado, s in (('L', 1), ('R', -1)):
         gira(pbs[f'perna.{lado}'], ((1, 0, 0), -frente), ((0, 1, 0), s * abre))
+        pbs[f'perna.{lado}'].scale = (1, estica, 1)
 
 
 def p_sentado():
-    zerar(); sentar_raiz(); pernas(85, 6)
-    gira(pbs['tronco'], ((1, 0, 0), -5))
-    gira(pbs['cabeca'], ((1, 0, 0), 4))
-    bracos(abre=-10, balanco=-35)
+    # As pernas do chibi são tocos e a barriga é redonda: com as pernas só para a frente, elas somem embaixo da barriga e,
+    # visto de frente, ele parece em pé no assento (relato dele, 30/10/2026, no sofá). Então: as pernas um pouco ACIMA da
+    # horizontal e abertas (os pés aparecem dos lados da barriga), o tronco recostado e as mãos apoiadas do lado.
+    zerar(); pernas(95, 30, 1.4)
+    anda(pbs['raiz'], (0, 0.25, -1.05))
+    gira(pbs['tronco'], ((1, 0, 0), -14))
+    gira(pbs['cabeca'], ((1, 0, 0), 9))
+    bracos(abre=-2, balanco=-14)
+
+
+def a_sentado(i, n):
+    # sentado, respirando (relato dele, 30/10/2026: "engessados"): a pose de cima, com o peito subindo e descendo e a
+    # cabeça e as orelhas atrasadas, como no parado
+    p = 2 * math.pi * i / n
+    p_sentado()
+    anda(pbs['tronco'], (0, 0, 0.05 * (1 - math.cos(p))))
+    gira(pbs['tronco'], ((1, 0, 0), -14 + 1.5 * math.sin(p)))
+    gira(pbs['cabeca'], ((1, 0, 0), 9 + 2.5 * math.sin(p - 0.5)), ((0, 1, 0), 2 * math.sin(p * 0.5 + 0.3)))
+    orelhas(p - 0.8, 1.0)
+
+
+def a_sentado_sofa(i, n):
+    # no sofá: o mesmo corpo do sentado (o motor usa a âncora dele), com as pernas PENDURADAS por cima da almofada, para a
+    # frente e para baixo, onde aparecem inteiras (para a frente só, apontavam para a câmera e sumiam atrás da barriga)
+    a_sentado(i, n)
+    pernas(78, 30, 1.45)
 
 
 def p_poltrona():
@@ -199,7 +224,8 @@ GRAVAR = {
     # varrendo (30/10/2026): à toa, de vez em quando. A palha desce abaixo dos pés: o motor ancora pelo parado.
     'baixa-120/animacoes/varrendo': (OITO, 8, pose_varrendo, False, None),
     'baixa-120/animacoes/digitando-maos': (OITO, 5, lambda i, n: p_computador(i), False, None),
-    'estados/sentado-2': (OITO, 1, estado(p_sentado), False, None),
+    'estados/sentado-2': (OITO, 16, a_sentado, False, None),
+    'estados/sentado-sofa': (OITO, 16, a_sentado_sofa, False, None),
     'estados/sentado-poltrona': (OITO, 1, estado(p_poltrona), False, None),
     'estados/sentado-banqueta': (OITO, 1, estado(p_banqueta), False, None),
     'estados/no-computador': (OITO, 1, estado(p_computador), False, None),
