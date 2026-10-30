@@ -11,6 +11,7 @@ as MESMAS do mascote do PixelLab (`../mascote/`), para o motor achar tudo trocan
 | `baixa-120/animacoes/parado` | respirando | 8 | 16 |
 | `baixa-120/animacoes/andando-v3` | andando | 8 | 8 |
 | `baixa-120/animacoes/falando` | gesticulando | 8 | 8 |
+| `baixa-120/animacoes/varrendo` | varrendo, à toa numa parada a cada três (o motor ancora pelo parado: a palha desce abaixo do pé) | 8 | 8 |
 | `baixa-120/animacoes/digitando-maos` | ao computador: 0 a pose, 1–2 um toque, 3–4 o mouse (o roteiro do motor) | 8 | 5 |
 | `estados/sentado-2`, `sentado-poltrona`, `sentado-banqueta`, `no-computador`, `no-fliperama` | sentado e de pé com as mãos no controle | 8 | 1 |
 | `estados/lendo-deitado`, `dormindo`, `dormindo-largado` | deitado (na câmera do chão, ver abaixo) | 8 | 1 |

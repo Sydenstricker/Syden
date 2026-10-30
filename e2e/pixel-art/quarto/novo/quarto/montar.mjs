@@ -83,6 +83,8 @@ const PERS = path.join(AQUI, '..', '..', '..', 'personagem', PASTA_DO_MASCOTE);
 const FONTES = {
   andando: ['baixa-120/animacoes/andando-v3', 'baixa-120/animacoes/andando-v3b'],
   parado: ['baixa-120/animacoes/parado', 'baixa-120'],
+  // à toa, de vez em quando (só o mascote 3D tem; sem a pasta, não acontece). Depois do parado: a âncora vem dele.
+  varrendo: ['baixa-120/animacoes/varrendo'],
   falando: ['baixa-120/animacoes/falando'],
   sentado: ['estados/sentado-2', 'estados/sentado'],
   // Na poltrona, afundado e com os braços nos apoios (pedido dele, 14/10/2026).
@@ -2070,6 +2072,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
       for (let x = 0; x < q0.w; x++) for (let y = fundo - 3; y <= fundo; y++) if (q0.px[(y * q0.w + x) * 4 + 3] > 127) { sx += x; n++; }
       let topo = q0.h; for (let k = 0; k < q0.w * q0.h; k++) if (q0.px[k * 4 + 3] > 127) { topo = (k / q0.w) | 0; break; }
       ANIM[nome][d] = { quadros, peX: sx / Math.max(1, n), peY: fundo, topo };
+      // VARRENDO, a palha desce à frente e abaixo dos pés: o pixel mais baixo é a vassoura. O pé é o do parado (a mesma
+      // câmera, os pés no mesmo lugar do quadro).
+      if (nome === 'varrendo' && ANIM.parado?.[d]) Object.assign(ANIM[nome][d], { peX: ANIM.parado[d].peX, peY: ANIM.parado[d].peY });
       // DEITADO, a âncora é o meio do corpo (ele fica estendido sobre a cama, não de pé num ponto).
       if (nome.startsWith('dormindo') || nome === 'lendo') {
         let x0 = q0.w, x1 = 0, y0 = q0.h, y1 = 0;
@@ -2552,6 +2557,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function passear() {
     if (CENA === 'salao') return;
     if (estado !== 'atoa' || modo === 'noite' || coelho.caminho.length || coelho.destino || coelho.trans || coelho.aproximar) return;
+    // VARRER (pedido dele, 30/10/2026): numa parada a cada três, em vez de sair andando, ele varre onde está, por uns 4 s
+    // (o próximo passeio vem de 4 a 7 s depois). Com movimento reduzido, não: varrer é só movimento.
+    if (!semAndar && Object.keys(ANIM.varrendo ?? {}).length && Math.random() < 1 / 3) { coelho.varrendoAte = performance.now() + 4000; return; }
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j));
     const c = caminho(saida(), [livres[Math.floor(Math.random() * livres.length)]]);
     if (c) andarAte(c);
@@ -2608,7 +2616,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // A ANIMAÇÃO pelo que ele está fazendo: andando, sentado (lendo ou dormindo, na cama), falando de pé, ou parado.
     const nomeAnim = coelho.caminho.length || ap ? 'andando'
       : pt && pt.onde ? (coelho.pose === 'lendo' ? 'lendo' : coelho.pose === 'dormindo' ? (coelho.largado || performance.now() - coelho.desde > 20000 ? 'dormindo-largado' : 'dormindo') : coelho.destino === 'poltrona' ? 'sentado-poltrona' : coelho.destino === 'cadeira' ? (coelho.cadeiraFase === 'mesa' ? 'no-computador' : 'sentado') : 'sentado')
-      : falando ? 'falando' : 'parado';
+      : falando ? 'falando' : estado === 'atoa' && performance.now() < (coelho.varrendoAte ?? 0) ? 'varrendo' : 'parado';
     // A VIRADA SUAVE (ideia dele, 14/10/2026): a direção que APARECE anda um passo por quadro no círculo das 8, pelo lado
     // mais curto, até a que ele quer; os passos do meio são a pose dele (de pé ou sentado) naquela direção. 90° = 200 ms.
     const ANEL = ['sudeste', 'sul', 'sudoeste', 'oeste', 'noroeste', 'norte', 'nordeste', 'leste'];

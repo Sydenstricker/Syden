@@ -196,6 +196,8 @@ GRAVAR = {
     'baixa-120/animacoes/parado': (OITO, 16, pose_parado, False, None),
     'baixa-120/animacoes/andando-v3': (OITO, 8, pose_andando, False, None),
     'baixa-120/animacoes/falando': (OITO, 8, a_falando, False, None),
+    # varrendo (30/10/2026): à toa, de vez em quando. A palha desce abaixo dos pés: o motor ancora pelo parado.
+    'baixa-120/animacoes/varrendo': (OITO, 8, pose_varrendo, False, None),
     'baixa-120/animacoes/digitando-maos': (OITO, 5, lambda i, n: p_computador(i), False, None),
     'estados/sentado-2': (OITO, 1, estado(p_sentado), False, None),
     'estados/sentado-poltrona': (OITO, 1, estado(p_poltrona), False, None),
@@ -226,6 +228,9 @@ for pasta_, (dirs, n, f, livro, cam_) in GRAVAR.items():
         continue
     destino = os.path.join(raiz_poses, *pasta_.split('/'))
     os.makedirs(destino, exist_ok=True)
+    vassoura = pasta_.endswith('/varrendo')
+    VASS.hide_render = not vassoura
+    ik(1 if vassoura else 0)
     if f is None:
         quadro_t = transicao(CADEIAS[pasta_], n)
         f = lambda i, n, q=quadro_t: q(i)
@@ -241,6 +246,8 @@ for pasta_, (dirs, n, f, livro, cam_) in GRAVAR.items():
             renderizar(os.path.join(destino, f'{d}-{i}.png'))
     print('ok', pasta_)
 LIVRO.hide_render = True
+VASS.hide_render = True
+ik(0)
 camera(DE_PE[0])
 with open(os.path.join(SAIDA, 'poses.json'), 'w') as f_:
     json.dump({p: {'direcoes': list(d), 'desenhos': n} for p, (d, n, _, _, _) in GRAVAR.items()}, f_, indent=1)
