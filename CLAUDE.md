@@ -790,6 +790,12 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
      animações feitas uma vez, e o render como pixel art com as cores presas à paleta de cada coelho. Por coelho, só
      conferir o que atravessa o corpo em cada animação (o braço na barriga do 14, o boné na orelha) e ajustar.
   - **Primeiro o piloto com o mascote** (esqueleto, parado, andando, varrendo, no salão de verdade); só aprovado, os 16.
+  - **O MASCOTE 3D ESTÁ NO APP desde 30/10/2026** (pedido dele: "algo minimamente viável funcionando"). A malha de
+    braços abertos (`e2e/3D/Personagens/mascote-t.glb`, do Meshy, SEM o esqueleto deles, que o script descarta) com
+    TODAS as poses do motor em `personagem/mascote-3d/` (as mesmas pastas do PixelLab; `blender/meshy/poses.py`).
+    `MASCOTE=pixellab` no `montar.mjs` volta ao desenho. Os outros 16 coelhos seguem o formato DESTE (decisão dele). O
+    braço do chibi não alcança a frente da barriga: nada de segurar com as duas mãos na frente. Os deitados usam a
+    câmera do chão (32°, diagonais a 45°); na do coelho em pé (20°, 32°) o corpo deitado some.
   - **Medido em 18/10/2026** (`e2e/pixel-art/personagem/blender/`): o coelho montado por código segura a vassoura
     idêntica em 32 quadros, mas fica abaixo do desenho; o sprite projetado nele falhou pela silhueta. O Meshy ganhou do
     Tripo (simulação no salão, cores presas à paleta): forma do mascote, malha lisa que dobra bem; o Tripo vem em blocos,

@@ -1,9 +1,9 @@
 # O mascote 3D, nas poses do motor
 
 Gravado em 30/10/2026 a partir de `e2e/3D/Personagens/mascote-t.glb`, pelo `blender/meshy/` (o `poses.py`). As pastas são
-as MESMAS do mascote do PixelLab (`../mascote/`), para o motor achar tudo trocando só a raiz: `MASCOTE=3d node
-e2e/pixel-art/quarto/novo/quarto/montar.mjs [salao]` monta `quarto-3d.html` e `salao-3d.html`. Sem `MASCOTE=3d`, o motor (e
-o app) continua com o do PixelLab.
+as MESMAS do mascote do PixelLab (`../mascote/`), para o motor achar tudo trocando só a raiz. **É o mascote do app desde
+30/10/2026:** o `montar.mjs` usa esta pasta; `MASCOTE=pixellab` no ambiente volta ao desenho, numa página à parte
+(`quarto-pixellab.html`, `salao-pixellab.html`).
 
 | pasta | o que é | direções | desenhos |
 |---|---|---|---|
