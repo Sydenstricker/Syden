@@ -159,6 +159,7 @@ também), ou se o modelo ficar bem mais fiel ao desenho (gerado de imagem, abaix
 - **Custo de cada animação nova (A ou C):** com o coelho e o esqueleto prontos, uma animação simples (acenar, comer
   cenoura, regar) é uma função de poses no `coelho.py` e mais um objeto se tiver: **~30 min a 1 h**. Com contato em
   móvel (sentar no sofá, deitar na cama) ou um andar bem feito: **1–2 h**. Nenhuma custa crédito.
+- **FEITO em 30/10/2026, com o Meshy: ver `meshy/README.md`.** O texto abaixo é o de 18/10.
 - **Um modelo mais fiel ao mascote:** gerar o 3D a partir da imagem do mascote (Tripo, Meshy, Rodin) daria a forma do
   desenho, e é o que também faria a B funcionar. **Pede conta dele** num desses serviços. O esqueleto, a vassoura e os
   pós daqui servem igual.
