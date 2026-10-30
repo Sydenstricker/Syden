@@ -128,6 +128,36 @@ def ancora(fig):
     return round(sum(xs) / len(xs), 1), fy
 
 
+# AS POSES DO MOTOR (POSES=1, depois do mascote.py com POSES=1): de saida/poses/ para personagem/mascote-3d/, nas mesmas
+# pastas do mascote do PixelLab. Pose de um desenho só vira <direção>.png (como nos estados de lá); animação,
+# <direção>-<n>.png. O parado de frente também vira baixa-120/<direção>.png, o mascote parado do motor.
+if os.environ.get('POSES'):
+    import sys
+    with open(os.path.join(AQUI, 'saida', 'poses.json')) as f:
+        POSES = json.load(f)
+    DESTINO = os.path.join(RAIZ, '..', '..', 'mascote-3d')
+    folha = []
+    for pasta, info in POSES.items():
+        sai = os.path.join(DESTINO, *pasta.split('/'))
+        os.makedirs(sai, exist_ok=True)
+        n = info['desenhos']
+        for d in info['direcoes']:
+            for i in range(n):
+                q = processar(os.path.join('..', 'poses', *pasta.split('/'), f'{d}-{i}.png'))
+                q.save(os.path.join(sai, f'{d}.png' if n == 1 else f'{d}-{i}.png'))
+                if pasta.endswith('/parado') and i == 0:
+                    q.save(os.path.join(DESTINO, 'baixa-120', f'{d}.png'))
+                if d == 'south-east' and i in (0, n // 2):
+                    folha.append(q)
+        print('ok', pasta)
+    # a folha para olhar: o sudeste de cada pose (o primeiro desenho e o do meio), em 3×
+    f = Image.new('RGBA', (120 * min(8, len(folha)), 120 * -(-len(folha) // 8)), (90, 90, 110, 255))
+    for k, q in enumerate(folha):
+        f.alpha_composite(q, (120 * (k % 8), 120 * (k // 8)))
+    x3(f).save(os.path.join(DESTINO, 'folha.png'))
+    sys.exit()
+
+
 faixas = {}
 for nome, n in ANIMACOES.items():
     for d in DIRS:

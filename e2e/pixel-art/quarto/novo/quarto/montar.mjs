@@ -72,10 +72,13 @@ const IMAGENS = {
 };
 // O MASCOTE ISOMÉTRICO (personagem/mascote/baixa-120, 14/10/2026): as 4 diagonais, paradas. Os nomes do PixelLab
 // (south-east...) viram os do README (sudeste...).
-const MASCOTE = path.join(AQUI, '..', '..', '..', 'personagem', 'mascote', 'baixa-120');
+// O MASCOTE 3D (30/10/2026, personagem/blender/meshy/): MASCOTE=3d no ambiente monta com as poses gravadas do modelo do
+// Meshy (personagem/mascote-3d/, as mesmas pastas). Sem ele, o do PixelLab, que é o do app até ele aprovar a troca.
+const PASTA_DO_MASCOTE = process.env.MASCOTE === '3d' ? 'mascote-3d' : 'mascote';
+const MASCOTE = path.join(AQUI, '..', '..', '..', 'personagem', PASTA_DO_MASCOTE, 'baixa-120');
 // AS ANIMAÇÕES DO MASCOTE (personagem/animar.mjs e estado.mjs): para cada animação, as pastas em ordem de preferência;
 // cada direção vem da primeira que a tiver. Uma pasta com <direção>-<n>.png é uma animação; com <direção>.png, uma pose.
-const PERS = path.join(AQUI, '..', '..', '..', 'personagem', 'mascote');
+const PERS = path.join(AQUI, '..', '..', '..', 'personagem', PASTA_DO_MASCOTE);
 const FONTES = {
   andando: ['baixa-120/animacoes/andando-v3', 'baixa-120/animacoes/andando-v3b'],
   parado: ['baixa-120/animacoes/parado', 'baixa-120'],
@@ -5188,7 +5191,9 @@ if (PUBLICAR) {
   fs.writeFileSync(path.join(PUBLICAR.pagina, 'precarregar.json'), JSON.stringify([PUBLICAR.url + nomeJs, PACOTE.url]));
   console.log(CENA, 'publicado:', Math.round(pagina.length / 1024), 'KB de página +', Math.round(js.length / 1024), 'KB de script +', Math.round(PACOTE.bytes / 1024), 'KB de imagens num pacote (' + PACOTE_ITENS.size + ')');
 } else {
-  const SAIDA = CENA === 'salao' ? path.join(SALAO, 'salao.html') : path.join(AQUI, 'quarto.html');
+  // com o mascote 3D, uma página à parte (quarto-3d.html, salao-3d.html), para não trocar a de teste de sempre
+  const sufixo = PASTA_DO_MASCOTE === 'mascote-3d' ? '-3d' : '';
+  const SAIDA = CENA === 'salao' ? path.join(SALAO, `salao${sufixo}.html`) : path.join(AQUI, `quarto${sufixo}.html`);
   fs.writeFileSync(SAIDA, html);
   console.log(path.basename(SAIDA), Math.round(html.length / 1024), 'KB');
 }

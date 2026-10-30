@@ -416,6 +416,9 @@ try:
         DIRS = {k: float(v) for k, v in (x.split(':') for x in os.environ['VISTAS'].split(','))}
     pasta = os.path.join(SAIDA, 'quadros')
     os.makedirs(pasta, exist_ok=True)
+    if os.environ.get('POSES'):   # o conjunto do motor (poses.py), no lugar das três animações do piloto
+        exec(open(os.path.join(AQUI, 'poses.py'), encoding='utf-8').read())
+        ANIMACOES = {}
     for nome, n in ANIMACOES.items():
         if SO and nome != SO:
             continue
@@ -432,9 +435,11 @@ try:
 
     zerar()
     ARM.rotation_euler = (0, 0, 0)
-    with open(os.path.join(SAIDA, 'animacoes.json'), 'w') as f:
-        json.dump(ANIMACOES, f)
-    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, VARIANTE, 'mascote.blend'))
+    if ANIMACOES:
+        with open(os.path.join(SAIDA, 'animacoes.json'), 'w') as f:
+            json.dump(ANIMACOES, f)
+    if not os.environ.get('POSES'):
+        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, VARIANTE, 'mascote.blend'))
     print('FIM')
 except Exception:
     import traceback
