@@ -5,11 +5,14 @@
 // o servidor certo. É o que pega problema de AMBIENTE: caminho de arquivo errado, CORS recusando, endereço
 // antigo esquecido no meio do caminho, certificado fora de prazo.
 //
-//   node e2e/producao.mjs                      confere https://syden.chat
-//   SITE=https://outro node e2e/producao.mjs   confere outro endereço
+//   node e2e/producao.mjs                           confere https://syden.chat/app/
+//   SITE=https://outro/app/ node e2e/producao.mjs   confere outro endereço
+//
+// O APP MORA EM /app/ desde a reforma do site (10/10/2026); a raiz é a página de apresentação, sem entrada e sem
+// API, e o teste ficou apontando para ela até 02/11/2026. As páginas legais continuam na RAIZ do domínio.
 import { abrirNavegador, falhou, novaAba, ok, resumo } from './ajuda.mjs';
 
-const SITE = process.env.SITE ?? 'https://syden.chat';
+const SITE = process.env.SITE ?? 'https://syden.chat/app/';
 const API = process.env.API ?? 'https://api.syden.chat';
 
 const { browser, contexto } = await abrirNavegador();
@@ -71,7 +74,7 @@ for (const [arquivo, esperado] of [
   ['privacidade.html', 'Política de privacidade'],
   ['termos.html', 'Termos de uso'],
 ]) {
-  const r = await page.goto(`${SITE}/${arquivo}`, { timeout: 20_000 });
+  const r = await page.goto(new URL('/' + arquivo, SITE).href, { timeout: 20_000 });
   const texto = await page.locator('h1').first().innerText();
   r?.ok() && texto.includes(esperado) ? ok(`${arquivo} abre: "${texto}"`) : falhou(`${arquivo}: ${r?.status()} — "${texto}"`);
 }
