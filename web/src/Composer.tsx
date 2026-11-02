@@ -53,7 +53,9 @@ export const Composer = forwardRef<ComposerHandle, {
   /** A mensagem que se está respondendo (o "Responder" dela foi clicado); vai junto com a próxima que sair daqui. */
   respondendo?: Message | null;
   aoCancelarResposta?: () => void;
-}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0, silenciadoAte = null, respondendo = null, aoCancelarResposta }, ref) {
+  /** Envio recusado (modo lento, moderação): a citação volta, como o texto volta para a caixa. */
+  devolverResposta?: (message: Message) => void;
+}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0, silenciadoAte = null, respondendo = null, aoCancelarResposta, devolverResposta }, ref) {
   const t = useT();
   const [draft, setDraft] = useState('');
   const [staged, setStaged] = useState<Staged[]>([]);
@@ -132,8 +134,10 @@ export const Composer = forwardRef<ComposerHandle, {
    */
   function mandarGif(gif: Gif) {
     setGifOpen(false);
+    const citada = respondendo;
     socket.emit('message:send', { channelId, content: gif.url, threadId, replyTo }, (result: { ok: boolean; error?: string }) => {
       setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
+      if (!result.ok && citada) devolverResposta?.(citada);
     });
     respondida();
     onSent?.();
@@ -144,12 +148,14 @@ export const Composer = forwardRef<ComposerHandle, {
     if (sending) return;
     if (staged.length === 0) {
       if (!content) return;
+      const citada = respondendo;
       socket.emit('message:send', { channelId, content, threadId, replyTo }, (result: { ok: boolean; error?: string }) => {
         setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
         // RECUSADA, O TEXTO VOLTA PARA A CAIXA: a moderação da comunidade barrou (palavra, link, modo
         // lento) e quem escreveu precisa poder editar, e não reescrever do zero. Só se a caixa ainda
         // estiver vazia — se a pessoa já começou outra, não se passa por cima dela.
         if (!result.ok) setDraft((agora) => agora || content);
+        if (!result.ok && citada) devolverResposta?.(citada);
       });
       setDraft('');
       respondida();

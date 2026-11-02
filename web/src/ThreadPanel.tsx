@@ -5,7 +5,7 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem } from './MessageItem';
-import { applyReactionUpdate, applyTally, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
+import { applyReactionUpdate, applyTally, removeAuthor, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
 import type { Message, Reaction, Role, ThreadSummary, User } from './types';
 import { useT } from './i18n';
 
@@ -58,7 +58,7 @@ export function ThreadPanel({
       setMessages((list) => removeMessage(list, id));
       setRespondendo((r) => (r?.id === id ? null : r));
     };
-    const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
+    const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => removeAuthor(list, id));
     const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
     const onReaction = (update: ReactionUpdate) => setMessages((list) => applyReactionUpdate(list, update));
     socket.on('message:new', onMessage);
@@ -181,6 +181,7 @@ export function ThreadPanel({
         onSent={() => (stick.current = true)}
         respondendo={respondendo}
         aoCancelarResposta={() => setRespondendo(null)}
+        devolverResposta={(m) => setRespondendo((r) => r ?? m)}
       />
 
       {deleting && (

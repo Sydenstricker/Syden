@@ -429,7 +429,8 @@ export function setupRealtime(io: IOServer) {
       socket.emit('voice:state', { communityId: id, members: voiceState(id) });
     }
     // E também as conversas privadas de que ela participa.
-    for (const conversa of db.listDirectChannels(user.id)) socket.join(directRoom(conversa.id));
+    // Inclusive as que ela apagou: é pela sala que chega a mensagem nova que traz a conversa de volta.
+    for (const id of db.idsDasConversas(user.id)) socket.join(directRoom(id));
 
     // Uma sala por PESSOA, juntando todas as abas dela. É por onde chega o que é dirigido a ela e
     // não a um lugar — hoje, os pedidos de amizade. Sem ela, avisar alguém exigiria procurar todos

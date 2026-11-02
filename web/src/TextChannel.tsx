@@ -15,6 +15,7 @@ import {
   applyReactionUpdate,
   applyTally,
   applyThread,
+  removeAuthor,
   removeMessage,
   removeThread,
   replacePoll,
@@ -85,7 +86,7 @@ export function TextChannel({
       setRespondendo((r) => (r?.id === id ? null : r));
     };
     // Conta excluída: as mensagens dela somem da tela também.
-    const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
+    const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => removeAuthor(list, id));
     const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
     const onReaction = (update: ReactionUpdate) => setMessages((list) => applyReactionUpdate(list, update));
     const onThread = (thread: ThreadSummary) => {
@@ -262,6 +263,7 @@ export function TextChannel({
           silenciadoAte={members.get(user.id)?.silenciadoAte ?? null}
           respondendo={respondendo?.channelId === channel.id ? respondendo : null}
           aoCancelarResposta={() => setRespondendo(null)}
+          devolverResposta={(m) => setRespondendo((r) => r ?? m)}
         />
 
         {dragging && <div className="drop-overlay">{t('Solte para enviar o arquivo')}</div>}

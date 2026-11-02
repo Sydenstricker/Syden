@@ -64,7 +64,12 @@ export function replaceReactions(list: Message[], messageId: number, reactions: 
  * faria ao recarregar (a tabela `respostas` perde o alvo).
  */
 export function removeMessage(list: Message[], id: number): Message[] {
-  return list
-    .filter((m) => m.id !== id)
-    .map((m) => (m.replyTo?.id === id ? { ...m, replyTo: { id: null, author: null, content: '', anexos: 0, enquete: null } } : m));
+  return list.filter((m) => m.id !== id).map((m) => (m.replyTo?.id === id ? { ...m, replyTo: CITACAO_APAGADA } : m));
 }
+
+/** Conta excluída: as mensagens dela saem, e as respostas a elas citam "mensagem apagada", como o servidor. */
+export function removeAuthor(list: Message[], userId: number): Message[] {
+  return list.filter((m) => m.author.id !== userId).map((m) => (m.replyTo?.author?.id === userId ? { ...m, replyTo: CITACAO_APAGADA } : m));
+}
+
+const CITACAO_APAGADA = { id: null, author: null, content: '', anexos: 0, enquete: null };

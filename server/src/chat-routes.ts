@@ -243,7 +243,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Params: { id: string }; Body: { optionId?: number } }>('/api/polls/:id/vote', async (request, reply) => {
       const poll = db.findPoll(Number(request.params.id));
       const channel = poll && channelFor(poll.channelId, request.user);
-      if (!poll || !channel) return reply.code(404).send({ error: 'Enquete não encontrada.' });
+      if (!poll || !channel || !db.mensagemVisivelPara(poll.messageId, request.user.id)) return reply.code(404).send({ error: 'Enquete não encontrada.' });
       if (poll.closed) return reply.code(400).send({ error: 'Esta enquete já foi encerrada.' });
       const optionId = Number(request.body?.optionId);
       if (!db.optionBelongsToPoll(poll.id, optionId)) return reply.code(400).send({ error: 'Opção inválida.' });
@@ -264,7 +264,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Params: { id: string } }>('/api/polls/:id/close', async (request, reply) => {
       const poll = db.findPoll(Number(request.params.id));
       const channel = poll && channelFor(poll.channelId, request.user);
-      if (!poll || !channel) return reply.code(404).send({ error: 'Enquete não encontrada.' });
+      if (!poll || !channel || !db.mensagemVisivelPara(poll.messageId, request.user.id)) return reply.code(404).send({ error: 'Enquete não encontrada.' });
       if (poll.createdBy !== request.user.id && !podeModerarMensagem(channel, request.user, 'enquete ' + poll.id)) {
         return reply.code(403).send({ error: 'Só quem criou a enquete ou quem administra a comunidade pode encerrá-la.' });
       }
@@ -285,7 +285,8 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Params: { id: string }; Body: { title?: string } }>('/api/messages/:id/thread', async (request, reply) => {
       const message = db.findMessage(Number(request.params.id));
       const channel = message && channelFor(message.channelId, request.user);
-      if (!message || !channel) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      // Quem apagou a conversa não age sobre o que apagou (nem recebe de volta o título do tópico que já existia).
+      if (!message || !channel || !db.mensagemVisivelPara(message.id, request.user.id)) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
       if (message.threadId !== null) return reply.code(400).send({ error: 'Não dá para abrir um tópico dentro de outro.' });
 
       const existing = db.findThreadByMessage(message.id);
@@ -343,7 +344,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
     authed.post<{ Params: { id: string }; Body: { emoji?: string } }>('/api/messages/:id/reactions', async (request, reply) => {
       const message = db.findMessage(Number(request.params.id));
       const channel = message && channelFor(message.channelId, request.user);
-      if (!message || !channel) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      if (!message || !channel || !db.mensagemVisivelPara(message.id, request.user.id)) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
       const emoji = validReaction(request.body?.emoji, channel.communityId);
       if (!emoji) return reply.code(400).send({ error: 'Emoji inválido.' });
 

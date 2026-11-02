@@ -65,7 +65,8 @@ export function registerAgendadasRoutes(app: FastifyInstance) {
       const enxerga =
         canal &&
         (canal.communityId === null ? db.isChannelMember(canal.id, request.user.id) : db.memberRole(canal.communityId, request.user.id) !== undefined);
-      if (!mensagem || !enxerga) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
+      // Quem apagou a conversa não pede lembrete do que apagou: ele traria o texto de volta.
+      if (!mensagem || !enxerga || !db.mensagemVisivelPara(mensagem.id, request.user.id)) return reply.code(404).send({ error: 'Mensagem não encontrada.' });
       const minutos = Number(request.body?.minutos);
       if (!MINUTOS_DE_LEMBRETE.includes(minutos)) return reply.code(400).send({ error: 'Tempo de lembrete inválido.' });
       const quando = new Date(Date.now() + minutos * 60_000).toISOString();
