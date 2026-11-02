@@ -2296,4 +2296,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Satu tokoh mitologi rahasia dipilih, dan setiap orang menebak tokoh lain. Setiap tebakan menunjukkan apa yang cocok dengan yang rahasia: mitologinya, jenisnya, wujudnya, dan apa yang dikuasainya. Yang benar dengan tebakan paling sedikit mendapat poin lebih banyak.',
   'Países': 'Negara',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Satu negara rahasia dipilih, dan setiap orang menebak negara lain. Setiap tebakan menunjukkan jarak dan arah ke negara rahasia, wilayah, subwilayah, dan populasinya. Yang benar dengan tebakan paling sedikit mendapat poin lebih banyak.',
+  'Apagar conversa': 'Hapus percakapan',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Percakapan keluar dari daftarmu dan pesannya hilang hanya untukmu. Orang lain tetap melihat semuanya, dan pesan baru akan mengembalikan percakapan.',
 } satisfies Record<string, string>;

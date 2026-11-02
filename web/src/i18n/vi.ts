@@ -2269,4 +2269,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Một nhân vật thần thoại bí mật được chọn, và mỗi người đoán những nhân vật khác. Mỗi lượt đoán cho thấy điểm nào khớp với nhân vật bí mật: thần thoại, loại, hình dạng và những gì nhân vật đó cai quản. Ai đoán đúng với ít lượt hơn sẽ được nhiều điểm hơn.',
   'Países': 'Quốc gia',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Một quốc gia bí mật được chọn, và mỗi người đoán những nước khác. Mỗi lượt đoán cho thấy khoảng cách và hướng đến nước bí mật, khu vực, tiểu vùng và dân số. Ai đoán đúng với ít lượt hơn sẽ được nhiều điểm hơn.',
+  'Apagar conversa': 'Xóa cuộc trò chuyện',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Cuộc trò chuyện sẽ rời khỏi danh sách của bạn và tin nhắn chỉ biến mất với bạn. Mọi người khác vẫn thấy tất cả, và một tin nhắn mới sẽ đưa cuộc trò chuyện trở lại.',
 } satisfies Record<string, string>;

@@ -171,6 +171,8 @@ export function Shell({
   // Conversas privadas: a barra lateral troca a lista de canais pela lista de conversas.
   const [view, setView] = useState<View>(firstView);
   const [directs, setDirects] = useState<DirectChannel[]>([]);
+  const directsRef = useRef(directs);
+  directsRef.current = directs;
   const [directId, setDirectId] = useState<number | null>(null);
   const [newGroupOpen, setNewGroupOpen] = useState(false);
   // Qual conversa está aberta agora, para o aviso de mensagem nova não marcar a bolinha nela.
@@ -449,6 +451,12 @@ export function Shell({
     // Mensagem nova numa conversa privada: atualiza a prévia e sobe ela para o topo da lista.
     s.on('message:new', (message: Message & { communityId: number | null }) => {
       if (message.communityId !== null) return;
+      // Conversa que não está na lista: foi apagada deste lado ("Apagar conversa") e a mensagem nova a traz de volta,
+      // só com o que veio depois. Quem sabe disso é o servidor; relê-se a lista.
+      if (!directsRef.current.some((c) => c.id === message.channelId)) {
+        void api<DirectChannel[]>('/api/direct').then(setDirects, console.error);
+        return;
+      }
       setDirects((list) => {
         const conversa = list.find((c) => c.id === message.channelId);
         if (!conversa) return list;

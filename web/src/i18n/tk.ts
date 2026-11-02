@@ -2371,4 +2371,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Mifologiýadan gizlin bir keşp saýlanýar, her kim başgalaryny çaklaýar. Her çaklama gizlin bilen näme gabat gelýändigini görkezýär: mifologiýa, görnüş, şekil we onuň nämä höküm sürýändigi. Az çaklama bilen tapan köp utuk alýar.',
   'Países': 'Ýurtlar',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Gizlin bir ýurt saýlanýar, her kim başgalaryny çaklaýar. Her çaklama gizlin ýurda çenli aralygy we ugry, sebiti, kiçi sebiti we ilaty görkezýär. Az çaklama bilen tapan köp utuk alýar.',
+  'Apagar conversa': 'Söhbetdeşligi poz',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Söhbetdeşlik sanawyňdan çykýar we hatlar diňe seniň üçin ýitýär. Beýlekiler hemme zady görmegi dowam edýär, täze hat bolsa söhbetdeşligi yzyna getirýär.',
 } satisfies Record<string, string>;

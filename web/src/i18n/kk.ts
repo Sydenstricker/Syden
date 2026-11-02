@@ -2365,4 +2365,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Мифологиядан құпия кейіпкер таңдалады, әркім басқаларын болжайды. Әр болжам құпиямен не сәйкес келетінін көрсетеді: мифологиясы, түрі, пішіні және неге билік ететіні. Азырақ болжаммен тапқан көбірек ұпай алады.',
   'Países': 'Елдер',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Құпия ел таңдалады, әркім басқаларын болжайды. Әр болжам құпия елге дейінгі қашықтық пен бағытты, аймақты, кіші аймақты және халық санын көрсетеді. Азырақ болжаммен тапқан көбірек ұпай алады.',
+  'Apagar conversa': 'Сөйлесуді жою',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Сөйлесу тізіміңнен шығады, ал хабарламалар тек сен үшін жойылады. Басқалар бәрін көре береді, ал жаңа хабарлама сөйлесуді қайтарады.',
 } satisfies Record<string, string>;

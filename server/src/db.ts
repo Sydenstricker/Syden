@@ -1009,6 +1009,17 @@ addColumnIfMissing('channels', 'deleted_at', 'TEXT');
 addColumnIfMissing('channel_members', 'last_read_id', 'INTEGER');
 
 /**
+ * "APAGAR CONVERSA", SÓ PARA QUEM APAGA (pedido dele, 02/11/2026: "tipo o Instagram").
+ *
+ * NADA SE APAGA DE VERDADE, e é isso que deixa a função existir com menores no Syden: o outro lado continua com a
+ * conversa inteira para denunciar, e apagar não vira jeito de sumir com a prova (ver "A caixa-preta" no CLAUDE.md).
+ * `apagada_ate` é o número da última mensagem no momento de apagar: daí para trás, esta pessoa não vê mais nada.
+ * `escondida` tira a conversa da lista dela até chegar mensagem nova, ou até ela mesma abrir a conversa de novo.
+ */
+addColumnIfMissing('channel_members', 'apagada_ate', 'INTEGER');
+addColumnIfMissing('channel_members', 'escondida', 'INTEGER NOT NULL DEFAULT 0');
+
+/**
  * ===================================================================================================
  * A CAIXA-PRETA: o que fica de uma conta excluída, por 90 dias, e só para a justiça.
  *
@@ -3100,17 +3111,35 @@ export function marcarLido(userId: number, channelId: number, messageId: number)
   ).run(messageId, channelId, userId, messageId);
 }
 
+/**
+ * Apaga a conversa SÓ PARA ESTA PESSOA: some da lista dela, e o que veio até agora não aparece mais para ela. As
+ * mensagens continuam no banco e na tela dos outros. Fica lida, para não voltar com bolinha quando reaparecer.
+ */
+export function apagarConversaParaMim(userId: number, channelId: number) {
+  const { ultima } = db.prepare('SELECT COALESCE(MAX(id), 0) AS ultima FROM messages WHERE channel_id = ?').get(channelId) as { ultima: number };
+  db.prepare(
+    `UPDATE channel_members SET apagada_ate = ?, escondida = 1, last_read_id = MAX(COALESCE(last_read_id, 0), ?)
+     WHERE channel_id = ? AND user_id = ?`,
+  ).run(ultima, ultima, channelId, userId);
+}
+
+/** Quem apagou e abriu a conversa de novo a vê na lista outra vez, vazia: o que tinha apagado continua apagado. */
+export function reexibirConversa(userId: number, channelId: number) {
+  db.prepare('UPDATE channel_members SET escondida = 0 WHERE channel_id = ? AND user_id = ?').run(channelId, userId);
+}
+
 export function listDirectChannels(userId: number): DirectChannel[] {
   const rows = db
     .prepare(
       `SELECT c.id, c.name, c.created_by AS createdBy,
-              (SELECT MAX(m.created_at) FROM messages m WHERE m.channel_id = c.id) AS lastMessageAt,
-              (SELECT m.content FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessage,
-              (SELECT m.id FROM messages m WHERE m.channel_id = c.id ORDER BY m.id DESC LIMIT 1) AS lastMessageId,
+              (SELECT MAX(m.created_at) FROM messages m WHERE m.channel_id = c.id AND m.id > COALESCE(mine.apagada_ate, 0)) AS lastMessageAt,
+              (SELECT m.content FROM messages m WHERE m.channel_id = c.id AND m.id > COALESCE(mine.apagada_ate, 0) ORDER BY m.id DESC LIMIT 1) AS lastMessage,
+              (SELECT m.id FROM messages m WHERE m.channel_id = c.id AND m.id > COALESCE(mine.apagada_ate, 0) ORDER BY m.id DESC LIMIT 1) AS lastMessageId,
               mine.last_read_id AS lastReadId
        FROM channels c
        JOIN channel_members mine ON mine.channel_id = c.id AND mine.user_id = ?
        WHERE c.type = 'dm'
+         AND (mine.escondida = 0 OR EXISTS (SELECT 1 FROM messages m WHERE m.channel_id = c.id AND m.id > COALESCE(mine.apagada_ate, 0)))
        ORDER BY COALESCE(lastMessageAt, '') DESC, c.id DESC`,
     )
     .all(userId) as unknown as Omit<DirectChannel, 'members'>[];
@@ -3232,19 +3261,25 @@ function hydrate(messages: Message[], viewerId: number): Message[] {
   return messages;
 }
 
+/**
+ * Até onde quem lê apagou a conversa (ver apagarConversaParaMim); 0 nos canais de comunidade, que não têm a linha.
+ * Espera o id de quem lê como parâmetro.
+ */
+const apagadaParaQuemLe = `COALESCE((SELECT cm.apagada_ate FROM channel_members cm WHERE cm.channel_id = m.channel_id AND cm.user_id = ?), 0)`;
+
 /** Mensagens mais recentes do canal (ou anteriores a `beforeId`), em ordem cronológica. */
 export function listMessages(channelId: number, beforeId: number | undefined, viewerId: number, limit = 50): Message[] {
   const rows = db
-    .prepare(`${messageSelect} WHERE m.channel_id = ? AND m.thread_id IS NULL AND m.id < ? ORDER BY m.id DESC LIMIT ?`)
-    .all(channelId, beforeId ?? Number.MAX_SAFE_INTEGER, limit) as unknown as MessageRow[];
+    .prepare(`${messageSelect} WHERE m.channel_id = ? AND m.thread_id IS NULL AND m.id < ? AND m.id > ${apagadaParaQuemLe} ORDER BY m.id DESC LIMIT ?`)
+    .all(channelId, beforeId ?? Number.MAX_SAFE_INTEGER, viewerId, limit) as unknown as MessageRow[];
   return hydrate(rows.reverse().map(toMessage), viewerId);
 }
 
 /** As respostas de um tópico, no mesmo formato das mensagens do canal. */
 export function listThreadMessages(threadId: number, beforeId: number | undefined, viewerId: number, limit = 50): Message[] {
   const rows = db
-    .prepare(`${messageSelect} WHERE m.thread_id = ? AND m.id < ? ORDER BY m.id DESC LIMIT ?`)
-    .all(threadId, beforeId ?? Number.MAX_SAFE_INTEGER, limit) as unknown as MessageRow[];
+    .prepare(`${messageSelect} WHERE m.thread_id = ? AND m.id < ? AND m.id > ${apagadaParaQuemLe} ORDER BY m.id DESC LIMIT ?`)
+    .all(threadId, beforeId ?? Number.MAX_SAFE_INTEGER, viewerId, limit) as unknown as MessageRow[];
   return hydrate(rows.reverse().map(toMessage), viewerId);
 }
 

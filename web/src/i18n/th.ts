@@ -2312,4 +2312,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'ระบบสุ่มตัวละครลับจากตำนานมาหนึ่งตัว แล้วทุกคนทายตัวอื่น ทุกครั้งที่ทายจะเห็นว่าอะไรตรงกับตัวลับบ้าง ทั้งตำนาน ประเภท รูปร่าง และสิ่งที่ตัวละครนั้นดูแล ใครทายถูกโดยใช้ครั้งน้อยกว่าได้คะแนนมากกว่า',
   'Países': 'ประเทศ',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ระบบสุ่มประเทศลับมาหนึ่งประเทศ แล้วทุกคนทายประเทศอื่น ทุกครั้งที่ทายจะเห็นระยะทางและทิศทางไปยังประเทศลับ ภูมิภาค อนุภูมิภาค และประชากร ใครทายถูกโดยใช้ครั้งน้อยกว่าได้คะแนนมากกว่า',
+  'Apagar conversa': 'ลบการสนทนา',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'การสนทนาจะหายไปจากรายการของคุณ และข้อความจะหายไปเฉพาะฝั่งคุณ คนอื่นยังเห็นทุกอย่างเหมือนเดิม และเมื่อมีข้อความใหม่ การสนทนาจะกลับมา',
 } satisfies Record<string, string>;

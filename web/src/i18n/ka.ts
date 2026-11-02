@@ -2387,4 +2387,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'ირჩევა მითოლოგიის საიდუმლო ფიგურა, და ყველა სხვებს ვარაუდობს. ყოველი ვარაუდი აჩვენებს, რა ემთხვევა საიდუმლოს: მითოლოგია, ტიპი, ფორმა და რას განაგებს. ვინც ნაკლები ვარაუდით გამოიცნობს, მეტ ქულას იღებს.',
   'Países': 'ქვეყნები',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ირჩევა საიდუმლო ქვეყანა, და ყველა სხვებს ვარაუდობს. ყოველი ვარაუდი აჩვენებს მანძილს და მიმართულებას საიდუმლომდე, რეგიონს, ქვერეგიონს და მოსახლეობას. ვინც ნაკლები ვარაუდით გამოიცნობს, მეტ ქულას იღებს.',
+  'Apagar conversa': 'საუბრის წაშლა',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'საუბარი გაქრება შენი სიიდან და შეტყობინებები მხოლოდ შენთვის გაქრება. დანარჩენები კვლავ ყველაფერს ხედავენ, ახალი შეტყობინება კი საუბარს დააბრუნებს.',
 } satisfies Record<string, string>;

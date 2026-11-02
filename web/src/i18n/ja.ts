@@ -2280,4 +2280,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': '神話の秘密のキャラクターが1人選ばれ、みんなで別のキャラクターを予想します。予想するたびに、秘密のキャラクターと一致するものが表示されます：神話、種別、姿、司るもの。少ない回数で当てた人ほど高得点です。',
   'Países': '国',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': '秘密の国が1つ選ばれ、みんなで別の国を予想します。予想するたびに、秘密の国までの距離と方角、地域、小地域、人口が表示されます。少ない回数で当てた人ほど高得点です。',
+  'Apagar conversa': '会話を削除',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': '会話があなたのリストから消え、メッセージもあなたにだけ見えなくなります。ほかの人には引き続きすべて表示され、新しいメッセージが届くと会話が戻ってきます。',
 } satisfies Record<string, string>;

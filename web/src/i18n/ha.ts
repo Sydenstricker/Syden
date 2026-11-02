@@ -2301,4 +2301,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Za a zaɓi wani daga tatsuniya a sirri, kowa kuma ya yi hasashen wasu. Kowane hasashe yana nuna abin da ya yi daidai da na sirrin: tatsuniyar, iri, siffa da abin da yake mulka. Wanda ya gano da ƙarancin hasashe yana samun ƙarin maki.',
   'Países': 'Ƙasashe',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Za a zaɓi ƙasa ta sirri, kowa kuma ya yi hasashen wasu. Kowane hasashe yana nuna nisa da alkiblar zuwa ƙasar sirrin, yanki, ƙaramin yanki da yawan jama’a. Wanda ya gano da ƙarancin hasashe yana samun ƙarin maki.',
+  'Apagar conversa': 'Goge tattaunawa',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Tattaunawar za ta fita daga jerinku, kuma saƙonnin za su ɓace muku kawai. Sauran mutane za su ci gaba da ganin komai, kuma sabon saƙo zai dawo da tattaunawar.',
 } satisfies Record<string, string>;

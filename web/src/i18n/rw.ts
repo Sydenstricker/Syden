@@ -2310,4 +2310,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Hatoranywa ikiremwa cy\'ibanga cyo mu migani, buri wese agakeka ibindi. Igisubizo cyose cyerekana ibihuye n\'icy\'ibanga: imigani, ubwoko, ishusho n\'icyo gitegeka. Ugitahura mu bisubizo bike abona amanota menshi.',
   'Países': 'Ibihugu',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Hatoranywa igihugu cy\'ibanga, buri wese agakeka ibindi. Igisubizo cyose cyerekana intera n\'icyerekezo kugera ku gihugu cy\'ibanga, akarere, agace n\'abaturage. Ugitahura mu bisubizo bike abona amanota menshi.',
+  'Apagar conversa': 'Siba ikiganiro',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Ikiganiro kiva ku rutonde rwawe kandi ubutumwa bukabura kuri wowe gusa. Abandi bakomeza kubona byose, kandi ubutumwa bushya bugarura ikiganiro.',
 } satisfies Record<string, string>;

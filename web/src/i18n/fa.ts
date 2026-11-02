@@ -2287,4 +2287,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'یک شخصیت مخفی از اساطیر انتخاب می‌شود و هر کس شخصیت‌های دیگری را حدس می‌زند. هر حدس نشان می‌دهد چه چیزی با شخصیت مخفی جور است: اساطیر، نوع، شکل و آنچه بر آن فرمان می‌راند. هر کس با حدس‌های کمتر درست بزند، امتیاز بیشتری می‌گیرد.',
   'Países': 'کشورها',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'یک کشور مخفی انتخاب می‌شود و هر کس کشورهای دیگری را حدس می‌زند. هر حدس فاصله و جهت تا کشور مخفی، منطقه، زیرمنطقه و جمعیت را نشان می‌دهد. هر کس با حدس‌های کمتر درست بزند، امتیاز بیشتری می‌گیرد.',
+  'Apagar conversa': 'حذف گفتگو',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'گفتگو از فهرستت حذف می‌شود و پیام‌ها فقط برای تو پاک می‌شوند. بقیه همچنان همه‌چیز را می‌بینند و یک پیام تازه گفتگو را برمی‌گرداند.',
 } satisfies Record<string, string>;

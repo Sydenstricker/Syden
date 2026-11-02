@@ -2349,4 +2349,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'נבחרת דמות סודית מהמיתולוגיה, ומנחשים דמויות אחרות. כל ניחוש מראה מה תואם לסודית: המיתולוגיה, הסוג, הצורה ועל מה היא שולטת. ככל שמנחשים נכון בפחות ניחושים, מקבלים יותר נקודות.',
   'Países': 'מדינות',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'נבחרת מדינה סודית, ומנחשים מדינות אחרות. כל ניחוש מראה את המרחק והכיוון עד הסודית, את האזור, התת-אזור והאוכלוסייה. ככל שמנחשים נכון בפחות ניחושים, מקבלים יותר נקודות.',
+  'Apagar conversa': 'מחיקת השיחה',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'השיחה יוצאת מהרשימה וההודעות נמחקות רק בצד הזה. האחרים ממשיכים לראות הכול, והודעה חדשה מחזירה את השיחה.',
 } satisfies Record<string, string>;

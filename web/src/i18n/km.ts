@@ -2368,4 +2368,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'មានតួអង្គសម្ងាត់មួយពីទេវកថា ហើយម្នាក់ៗទាយតួអង្គផ្សេងទៀត។ ការទាយនីមួយៗបង្ហាញអ្វីដែលត្រូវនឹងតួអង្គសម្ងាត់៖ ទេវកថា ប្រភេទ រូបរាង និងអ្វីដែលតួអង្គនោះគ្រប់គ្រង។ អ្នកដែលទាយត្រូវដោយទាយតិចជាង ទទួលបានពិន្ទុច្រើនជាង។',
   'Países': 'ប្រទេស',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'មានប្រទេសសម្ងាត់មួយ ហើយម្នាក់ៗទាយប្រទេសផ្សេងទៀត។ ការទាយនីមួយៗបង្ហាញចម្ងាយ និងទិសដៅទៅប្រទេសសម្ងាត់ តំបន់ អនុតំបន់ និងប្រជាជន។ អ្នកដែលទាយត្រូវដោយទាយតិចជាង ទទួលបានពិន្ទុច្រើនជាង។',
+  'Apagar conversa': 'លុបការសន្ទនា',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ការសន្ទនានឹងចេញពីបញ្ជីរបស់អ្នក ហើយសារនឹងបាត់សម្រាប់តែអ្នកប៉ុណ្ណោះ។ អ្នកផ្សេងទៀតនៅតែឃើញទាំងអស់ ហើយសារថ្មីនឹងនាំការសន្ទនាត្រឡប់មកវិញ។',
 } satisfies Record<string, string>;

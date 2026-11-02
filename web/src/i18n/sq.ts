@@ -2361,4 +2361,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Del një figurë e fshehtë e mitologjisë, dhe të gjithë hamendësojnë të tjera. Çdo hamendje tregon çfarë përputhet me të fshehtën: mitologjia, lloji, forma dhe çfarë sundon. Kush e gjen me më pak hamendje, merr më shumë pikë.',
   'Países': 'Shtetet',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Del një shtet i fshehtë, dhe të gjithë hamendësojnë të tjerë. Çdo hamendje tregon distancën dhe drejtimin deri te shteti i fshehtë, rajonin, nënrajonin dhe popullsinë. Kush e gjen me më pak hamendje, merr më shumë pikë.',
+  'Apagar conversa': 'Fshi bisedën',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Biseda del nga lista jote dhe mesazhet zhduken vetëm për ty. Të tjerët vazhdojnë të shohin gjithçka, dhe një mesazh i ri e kthen bisedën.',
 } satisfies Record<string, string>;

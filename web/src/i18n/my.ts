@@ -2338,4 +2338,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'ဒဏ္ဍာရီထဲမှ လျှို့ဝှက်ပုဂ္ဂိုလ်တစ်ဦး ထွက်လာပြီး လူတိုင်း အခြားသူများကို ခန့်မှန်းပါ။ ခန့်မှန်းတိုင်း လျှို့ဝှက်ပုဂ္ဂိုလ်နှင့် ကိုက်ညီသည်များကို ပြသည်- ဒဏ္ဍာရီ၊ အမျိုးအစား၊ ပုံသဏ္ဌာန်နှင့် စိုးမိုးရာ။ ခန့်မှန်းမှု နည်းနည်းဖြင့် မှန်သူသည် အမှတ်ပိုရသည်။',
   'Países': 'နိုင်ငံများ',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'လျှို့ဝှက်နိုင်ငံတစ်ခု ထွက်လာပြီး လူတိုင်း အခြားနိုင်ငံများကို ခန့်မှန်းပါ။ ခန့်မှန်းတိုင်း လျှို့ဝှက်နိုင်ငံသို့ အကွာအဝေးနှင့် ဦးတည်ရာ၊ ဒေသ၊ ဒေသခွဲနှင့် လူဦးရေကို ပြသည်။ ခန့်မှန်းမှု နည်းနည်းဖြင့် မှန်သူသည် အမှတ်ပိုရသည်။',
+  'Apagar conversa': 'စကားဝိုင်းကို ဖျက်ရန်',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'စကားဝိုင်းသည် သင့်စာရင်းမှ ထွက်သွားပြီး မက်ဆေ့ချ်များသည် သင့်အတွက်သာ ပျောက်သွားမည်။ အခြားသူများသည် အားလုံးကို ဆက်မြင်နေမည်ဖြစ်ပြီး မက်ဆေ့ချ်အသစ်တစ်ခုက စကားဝိုင်းကို ပြန်ယူလာမည်။',
 } satisfies Record<string, string>;

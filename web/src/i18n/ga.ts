@@ -2305,4 +2305,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Roghnaítear pearsa rúnda ón miotaseolaíocht, agus tomhaiseann gach duine cinn eile. Taispeánann gach tomhas cad a mheaitseálann leis an bpearsa rúnda: an mhiotaseolaíocht, an cineál, an cruth agus na réimsí. Is mó pointí don té a aimsíonn í le níos lú tomhas.',
   'Países': 'Tíortha',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Roghnaítear tír rúnda, agus tomhaiseann gach duine cinn eile. Taispeánann gach tomhas an fad agus an treo go dtí an tír rúnda, an réigiún, an fo-réigiún agus an daonra. Is mó pointí don té a aimsíonn í le níos lú tomhas.',
+  'Apagar conversa': 'Scrios an comhrá',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Imíonn an comhrá as do liosta agus imíonn na teachtaireachtaí duitse amháin. Feiceann na daoine eile gach rud fós, agus tugann teachtaireacht nua an comhrá ar ais.',
 } satisfies Record<string, string>;

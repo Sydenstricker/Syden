@@ -2371,4 +2371,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'पौराणिक कथाको एउटा गोप्य पात्र छानिन्छ, र सबैले अरू पात्रको अनुमान गर्छन्। हरेक अनुमानले गोप्यसँग के मिल्छ देखाउँछ: मिथक, प्रकार, रूप र अधिकार। कम अनुमानमा ठीक बुझ्नेलाई बढी अङ्क मिल्छ।',
   'Países': 'देशहरू',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'एउटा गोप्य देश छानिन्छ, र सबैले अरू देशको अनुमान गर्छन्। हरेक अनुमानले गोप्य देशसम्मको दूरी र दिशा, क्षेत्र, उपक्षेत्र र जनसंख्या देखाउँछ। कम अनुमानमा ठीक बुझ्नेलाई बढी अङ्क मिल्छ।',
+  'Apagar conversa': 'कुराकानी मेटाऊ',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'कुराकानी तिम्रो सूचीबाट हट्छ र सन्देशहरू तिम्रो लागि मात्र मेटिन्छन्। अरूले सबै कुरा देखिरहन्छन्, र नयाँ सन्देश आएपछि कुराकानी फर्किन्छ।',
 } satisfies Record<string, string>;

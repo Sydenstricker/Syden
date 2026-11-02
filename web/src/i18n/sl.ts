@@ -2371,4 +2371,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Izžreba se skrivno bitje iz mitologije, vsi pa ugibajo druga. Vsak poskus pokaže, kaj se ujema s skrivnim: mitologija, tip, oblika in čemu vlada. Kdor ugane z manj poskusi, dobi več točk.',
   'Países': 'Države',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Izžreba se skrivna država, vsi pa ugibajo druge. Vsak poskus pokaže razdaljo in smer do skrivne države, regijo, podregijo in prebivalstvo. Kdor ugane z manj poskusi, dobi več točk.',
+  'Apagar conversa': 'Izbriši pogovor',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Pogovor izgine s tvojega seznama, sporočila pa izginejo samo zate. Drugi še naprej vidijo vse, novo sporočilo pa pogovor vrne.',
 } satisfies Record<string, string>;

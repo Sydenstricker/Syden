@@ -2286,4 +2286,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': '系统随机选出一位神话中的秘密人物，每个人猜其他人物。每次猜测都会显示与秘密人物相符的地方：所属神话、类型、形态和掌管的领域。用越少次数猜中的人得分越多。',
   'Países': '国家',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': '系统随机选出一个秘密国家，每个人猜其他国家。每次猜测都会显示到秘密国家的距离和方向、地区、次区域和人口。用越少次数猜中的人得分越多。',
+  'Apagar conversa': '删除对话',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': '对话会从你的列表中消失，消息也只对你隐藏。其他人仍能看到全部内容，有新消息时对话会重新出现。',
 } satisfies Record<string, string>;

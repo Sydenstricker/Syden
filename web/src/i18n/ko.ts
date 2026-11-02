@@ -2287,4 +2287,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': '신화 속 비밀 인물이 하나 정해지고, 모두가 다른 인물을 맞혀 봐요. 추측할 때마다 비밀 인물과 맞는 것이 보여요: 신화, 유형, 형태, 다스리는 영역. 적은 횟수로 맞힌 사람이 더 많은 점수를 받아요.',
   'Países': '국가',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': '비밀 국가가 하나 정해지고, 모두가 다른 국가를 맞혀 봐요. 추측할 때마다 비밀 국가까지의 거리와 방향, 지역, 하위 지역, 인구가 보여요. 적은 횟수로 맞힌 사람이 더 많은 점수를 받아요.',
+  'Apagar conversa': '대화 삭제',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': '대화가 목록에서 사라지고 메시지는 나에게만 보이지 않게 돼요. 다른 사람들은 계속 모두 볼 수 있고, 새 메시지가 오면 대화가 다시 나타나요.',
 } satisfies Record<string, string>;

@@ -2333,4 +2333,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Mifologiyadan gizli bir obraz seçilir, hər kəs başqalarını təxmin edir. Hər təxmin gizli olanla nəyin uyğun gəldiyini göstərir: mifologiya, növ, forma və onun nəyə hökm etdiyi. Daha az təxminlə tapan daha çox xal qazanır.',
   'Países': 'Ölkələr',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Gizli bir ölkə seçilir, hər kəs başqalarını təxmin edir. Hər təxmin gizli ölkəyə qədər məsafəni və istiqaməti, regionu, alt regionu və əhalini göstərir. Daha az təxminlə tapan daha çox xal qazanır.',
+  'Apagar conversa': 'Söhbəti sil',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Söhbət siyahından çıxır və mesajlar yalnız sənin üçün silinir. Digər insanlar hər şeyi görməyə davam edir, yeni mesaj isə söhbəti geri qaytarır.',
 } satisfies Record<string, string>;

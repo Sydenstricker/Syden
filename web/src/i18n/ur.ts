@@ -2286,4 +2286,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'دیومالا کی ایک خفیہ ہستی چنی جاتی ہے، اور ہر کوئی دوسری ہستیوں کا اندازہ لگاتا ہے۔ ہر اندازہ دکھاتا ہے کہ خفیہ ہستی سے کیا ملتا ہے: دیومالا، قسم، شکل اور اس کا دائرہ۔ کم اندازوں میں درست بوجھنے والے کو زیادہ پوائنٹس ملتے ہیں۔',
   'Países': 'ممالک',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ایک خفیہ ملک چنا جاتا ہے، اور ہر کوئی دوسرے ممالک کا اندازہ لگاتا ہے۔ ہر اندازہ خفیہ ملک تک فاصلہ اور سمت، خطہ، ذیلی خطہ اور آبادی دکھاتا ہے۔ کم اندازوں میں درست بوجھنے والے کو زیادہ پوائنٹس ملتے ہیں۔',
+  'Apagar conversa': 'گفتگو مٹاؤ',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'گفتگو تمہاری فہرست سے ہٹ جائے گی اور پیغامات صرف تمہارے لیے مٹیں گے۔ باقی لوگ سب کچھ دیکھتے رہیں گے، اور نیا پیغام آنے پر گفتگو واپس آ جائے گی۔',
 } satisfies Record<string, string>;

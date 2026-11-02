@@ -2364,4 +2364,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Losowana jest tajna postać z mitologii, a każdy typuje inne. Każdy strzał pokazuje, co zgadza się z tajną: mitologia, typ, kształt i to, czym włada. Im mniej strzałów do trafienia, tym więcej punktów.',
   'Países': 'Kraje',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Losowany jest tajny kraj, a każdy typuje inne. Każdy strzał pokazuje odległość i kierunek do tajnego kraju, region, podregion i ludność. Im mniej strzałów do trafienia, tym więcej punktów.',
+  'Apagar conversa': 'Usuń rozmowę',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Rozmowa znika z twojej listy, a wiadomości znikają tylko dla ciebie. Pozostali nadal widzą wszystko, a nowa wiadomość przywraca rozmowę.',
 } satisfies Record<string, string>;

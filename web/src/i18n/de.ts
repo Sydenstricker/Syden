@@ -2323,4 +2323,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Eine geheime Gestalt aus der Mythologie wird gezogen, und alle raten andere. Jeder Tipp zeigt, was mit der geheimen übereinstimmt: die Mythologie, der Typ, die Gestalt und worüber sie herrscht. Wer sie mit weniger Tipps errät, bekommt mehr Punkte.',
   'Países': 'Länder',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Ein geheimes Land wird gezogen, und alle raten andere. Jeder Tipp zeigt die Entfernung und die Richtung zum geheimen Land, die Region, die Teilregion und die Bevölkerung. Wer es mit weniger Tipps errät, bekommt mehr Punkte.',
+  'Apagar conversa': 'Unterhaltung löschen',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Die Unterhaltung verschwindet aus deiner Liste, und die Nachrichten verschwinden nur für dich. Die anderen sehen weiterhin alles, und eine neue Nachricht holt die Unterhaltung zurück.',
 } satisfies Record<string, string>;

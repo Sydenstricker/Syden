@@ -2296,4 +2296,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'পুরাণের একটা গোপন চরিত্র বেছে নেওয়া হয়, আর সবাই অন্য চরিত্র আন্দাজ করে। প্রতিটা অনুমান দেখায় গোপনটার সঙ্গে কী মেলে: পুরাণ, ধরন, রূপ আর তার অধিকার। যে কম অনুমানে ঠিকটা ধরে, সে বেশি পয়েন্ট পায়।',
   'Países': 'দেশ',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'একটা গোপন দেশ বেছে নেওয়া হয়, আর সবাই অন্য দেশ আন্দাজ করে। প্রতিটা অনুমান দেখায় গোপন দেশটার দূরত্ব আর দিক, অঞ্চল, উপ-অঞ্চল আর জনসংখ্যা। যে কম অনুমানে ঠিকটা ধরে, সে বেশি পয়েন্ট পায়।',
+  'Apagar conversa': 'কথোপকথন মুছো',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'কথোপকথনটি তোমার তালিকা থেকে সরে যাবে আর বার্তাগুলো শুধু তোমার জন্য মুছে যাবে। অন্যরা সবকিছু দেখতে থাকবে, আর নতুন বার্তা এলে কথোপকথনটি ফিরে আসবে।',
 } satisfies Record<string, string>;

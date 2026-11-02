@@ -2369,4 +2369,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'මිථ්‍යා කතාවලින් රහස් චරිතයක් තෝරාගනු ලැබේ, සෑම කෙනෙක්ම වෙනත් චරිත අනුමාන කරයි. සෑම අනුමානයක්ම රහස් එක සමඟ ගැළපෙන දේ පෙන්වයි: මිථ්‍යාව, වර්ගය, හැඩය සහ එය පාලනය කරන දේ. අඩු අනුමානවලින් නිවැරදි කරන අයට වැඩි ලකුණු ලැබේ.',
   'Países': 'රටවල්',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'රහස් රටක් තෝරාගනු ලැබේ, සෑම කෙනෙක්ම වෙනත් රටවල් අනුමාන කරයි. සෑම අනුමානයක්ම රහස් රටට ඇති දුර සහ දිශාව, කලාපය, උප කලාපය සහ ජනගහනය පෙන්වයි. අඩු අනුමානවලින් නිවැරදි කරන අයට වැඩි ලකුණු ලැබේ.',
+  'Apagar conversa': 'සංවාදය මකන්න',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'සංවාදය ඔබේ ලැයිස්තුවෙන් ඉවත් වන අතර පණිවිඩ ඔබට පමණක් නැති වේ. අනෙක් අයට තවමත් සියල්ල පෙනේ, නව පණිවිඩයක් සංවාදය නැවත ගෙන එයි.',
 } satisfies Record<string, string>;

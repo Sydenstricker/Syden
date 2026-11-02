@@ -2298,4 +2298,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Er wordt een geheime figuur uit de mythologie getrokken, en iedereen raadt andere. Elke gok laat zien wat overeenkomt met de geheime: de mythologie, het type, de vorm en waarover die heerst. Wie het met minder gokken raadt, krijgt meer punten.',
   'Países': 'Landen',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Er wordt een geheim land getrokken, en iedereen raadt andere. Elke gok laat de afstand en de richting naar het geheime land zien, de regio, de subregio en de bevolking. Wie het met minder gokken raadt, krijgt meer punten.',
+  'Apagar conversa': 'Gesprek verwijderen',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Het gesprek verdwijnt uit je lijst en de berichten verdwijnen alleen voor jou. De anderen blijven alles zien, en een nieuw bericht brengt het gesprek terug.',
 } satisfies Record<string, string>;

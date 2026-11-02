@@ -2299,4 +2299,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Se alege o figură secretă din mitologie, și fiecare încearcă altele. Fiecare încercare arată ce se potrivește cu cea secretă: mitologia, tipul, forma și peste ce domnește. Cine ghicește din mai puține încercări primește mai multe puncte.',
   'Países': 'Țări',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Se alege o țară secretă, și fiecare încearcă altele. Fiecare încercare arată distanța și direcția până la cea secretă, regiunea, subregiunea și populația. Cine ghicește din mai puține încercări primește mai multe puncte.',
+  'Apagar conversa': 'Șterge conversația',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Conversația dispare din lista ta, iar mesajele dispar doar pentru tine. Ceilalți văd în continuare totul, iar un mesaj nou aduce conversația înapoi.',
 } satisfies Record<string, string>;

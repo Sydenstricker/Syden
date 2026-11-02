@@ -175,6 +175,7 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       if (wanted.length === 1 && !name) {
         const existing = db.findDirectBetween(request.user.id, wanted[0]);
         if (existing) {
+          db.reexibirConversa(request.user.id, existing.id);
           announce(existing.id, 'direct:updated');
           return db.listDirectChannels(request.user.id).find((c) => c.id === existing.id);
         }
@@ -237,6 +238,19 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       // "Grupo", em português, para todo mundo, inclusive para quem lê o Syden em japonês (auditoria de 17/10/2026).
       db.addChannelMember(channel.id, userId);
       announce(channel.id, 'direct:created'); // para quem chegou, é conversa nova; para os outros, atualização
+      return { ok: true };
+    });
+
+    /**
+     * Apagar a conversa SÓ PARA QUEM APAGA (ver apagarConversaParaMim). Ninguém mais fica sabendo: não sai aviso para
+     * os outros, e a pessoa continua dentro (mensagem nova faz a conversa voltar, só com o que veio depois). Para
+     * todas as abas DELA, a conversa some como se tivesse saído.
+     */
+    authed.post<{ Params: { id: string } }>('/api/direct/:id/apagar', async (request, reply) => {
+      const channel = myConversation(Number(request.params.id), request.user.id);
+      if (!channel) return reply.code(404).send({ error: 'Conversa não encontrada.' });
+      db.apagarConversaParaMim(request.user.id, channel.id);
+      emitToUser(io, request.user.id, 'direct:removed', { id: channel.id });
       return { ok: true };
     });
 

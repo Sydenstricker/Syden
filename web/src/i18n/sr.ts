@@ -2366,4 +2366,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Извлачи се тајна личност из митологије, а сви погађају друге. Сваки покушај показује шта се поклапа са тајном: митологија, тип, облик и чиме влада. Ко погоди из мање покушаја, добија више поена.',
   'Países': 'Земље',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Извлачи се тајна земља, а сви погађају друге. Сваки покушај показује удаљеност и смер до тајне земље, регион, подрегион и становништво. Ко погоди из мање покушаја, добија више поена.',
+  'Apagar conversa': 'Обриши разговор',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Разговор нестаје са твоје листе, а поруке нестају само за тебе. Остали и даље виде све, а нова порука враћа разговор.',
 } satisfies Record<string, string>;

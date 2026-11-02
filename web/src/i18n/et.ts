@@ -2366,4 +2366,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Loositakse salajane tegelane mütoloogiast ja igaüks pakub teisi. Iga pakkumine näitab, mis salajasega kattub: mütoloogia, tüüp, kuju ja mille üle see valitseb. Mida vähemate pakkumistega ära arvata, seda rohkem punkte.',
   'Países': 'Riigid',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Loositakse salajane riik ja igaüks pakub teisi. Iga pakkumine näitab kaugust ja suunda salajase riigini, piirkonda, alampiirkonda ja rahvaarvu. Mida vähemate pakkumistega ära arvata, seda rohkem punkte.',
+  'Apagar conversa': 'Kustuta vestlus',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Vestlus kaob sinu nimekirjast ja sõnumid kaovad ainult sinu jaoks. Teised näevad endiselt kõike ja uus sõnum toob vestluse tagasi.',
 } satisfies Record<string, string>;

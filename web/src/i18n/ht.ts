@@ -2379,4 +2379,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Yon figi sekrè nan mitoloji soti, epi chak moun devine lòt. Chak esè montre sa ki matche ak figi sekrè a: mitoloji a, kalite, fòm ak sa li gouvène. Moun ki jwenn li ak mwens esè genyen plis pwen.',
   'Países': 'Peyi',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Yon peyi sekrè soti, epi chak moun devine lòt. Chak esè montre distans ak direksyon pou rive nan peyi sekrè a, rejyon, sourejyon ak popilasyon. Moun ki jwenn li ak mwens esè genyen plis pwen.',
+  'Apagar conversa': 'Efase konvèsasyon an',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Konvèsasyon an soti nan lis ou epi mesaj yo disparèt pou ou sèlman. Lòt moun yo kontinye wè tout bagay, epi yon nouvo mesaj fè konvèsasyon an tounen.',
 } satisfies Record<string, string>;

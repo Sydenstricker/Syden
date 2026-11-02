@@ -2382,4 +2382,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'གཏམ་རྒྱུད་ནང་གི་མི་སྣ་གསང་བ་ཅིག་ཐོན་ཏེ་ མི་རེ་རེ་གིས་གཞན་ཚུ་ཚོད་དཔག་རྐྱབ། ཚོད་དཔག་རེ་རེ་གིས་ གསང་བ་དང་མཐུན་མི་ཚུ་སྟོནམ་ཨིན: གཏམ་རྒྱུད་ རིགས་ དབྱིབས་ དང་དབང་ཁོངས། ཚོད་དཔག་ཉུང་ཤོས་ཅིག་གིས་ཐོབ་མི་ལུ་ སྐུགས་མང་བ་ཐོབ།',
   'Países': 'རྒྱལ་ཁབ།',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'རྒྱལ་ཁབ་གསང་བ་ཅིག་ཐོན་ཏེ་ མི་རེ་རེ་གིས་རྒྱལ་ཁབ་གཞན་ཚུ་ཚོད་དཔག་རྐྱབ། ཚོད་དཔག་རེ་རེ་གིས་ རྒྱལ་ཁབ་གསང་བ་ཚུན་གྱི་བར་ཐག་དང་ཁ་ཕྱོགས་ ས་ཁོངས་ ས་ཁོངས་ཆུང་བ་ དང་མི་འབོར་སྟོནམ་ཨིན། ཚོད་དཔག་ཉུང་ཤོས་ཅིག་གིས་ཐོབ་མི་ལུ་ སྐུགས་མང་བ་ཐོབ།',
+  'Apagar conversa': 'གྲོས་བསྡུར་བཏོན་གཏང་',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'གྲོས་བསྡུར་འདི་ཁྱོད་ཀྱི་ཐོ་ཡིག་ནང་ལས་མེདཔ་འགྱོ་འོང་། འཕྲིན་དོན་ཚུ་ཁྱོད་རའི་དོན་ལུ་རྐྱངམ་ཅིག་མེདཔ་འགྱོ་འོང་། གཞན་ཚུ་གིས་ག་ར་མཐོང་འོང་། འཕྲིན་དོན་གསརཔ་ཅིག་འོངམ་ད་གྲོས་བསྡུར་ལོག་འབྱུང་འོང་།',
 } satisfies Record<string, string>;

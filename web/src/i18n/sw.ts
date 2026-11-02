@@ -2298,4 +2298,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Mhusika wa siri wa hekaya anachaguliwa, na kila mmoja anakisia wengine. Kila kisio kinaonyesha kinacholingana na wa siri: hekaya, aina, umbo na anachotawala. Anayepata kwa makisio machache zaidi anapata pointi nyingi zaidi.',
   'Países': 'Nchi',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Nchi ya siri inachaguliwa, na kila mmoja anakisia nyingine. Kila kisio kinaonyesha umbali na mwelekeo hadi nchi ya siri, kanda, kanda ndogo na idadi ya watu. Anayepata kwa makisio machache zaidi anapata pointi nyingi zaidi.',
+  'Apagar conversa': 'Futa mazungumzo',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Mazungumzo yanaondoka kwenye orodha yako na ujumbe unatoweka kwako tu. Wengine wanaendelea kuona kila kitu, na ujumbe mpya unarudisha mazungumzo.',
 } satisfies Record<string, string>;

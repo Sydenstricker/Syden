@@ -2369,4 +2369,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Mytologiasta arvotaan salainen hahmo, ja jokainen arvaa muita. Jokainen arvaus näyttää, mikä täsmää salaiseen: mytologia, tyyppi, muoto ja mitä hahmo hallitsee. Mitä vähemmillä arvauksilla osuu, sitä enemmän pisteitä.',
   'Países': 'Maat',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Salainen maa arvotaan, ja jokainen arvaa muita. Jokainen arvaus näyttää etäisyyden ja suunnan salaiseen maahan, alueen, osa-alueen ja väkiluvun. Mitä vähemmillä arvauksilla osuu, sitä enemmän pisteitä.',
+  'Apagar conversa': 'Poista keskustelu',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Keskustelu katoaa listaltasi, ja viestit katoavat vain sinulta. Muut näkevät edelleen kaiken, ja uusi viesti tuo keskustelun takaisin.',
 } satisfies Record<string, string>;

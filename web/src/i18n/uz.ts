@@ -2377,4 +2377,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Mifologiyadan yashirin obraz tanlanadi, har kim boshqalarini taxmin qiladi. Har bir taxmin yashirin bilan nima mos kelishini koʻrsatadi: mifologiya, tur, shakl va u nimaga hukmronlik qilishi. Kamroq taxmin bilan topgan koʻproq ball oladi.',
   'Países': 'Mamlakatlar',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Yashirin mamlakat tanlanadi, har kim boshqalarini taxmin qiladi. Har bir taxmin yashirin mamlakatgacha boʻlgan masofa va yoʻnalishni, mintaqani, kichik mintaqani va aholini koʻrsatadi. Kamroq taxmin bilan topgan koʻproq ball oladi.',
+  'Apagar conversa': 'Suhbatni o‘chirish',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Suhbat ro‘yxatingdan chiqadi va xabarlar faqat sen uchun yo‘qoladi. Boshqalar hammasini ko‘rishda davom etadi, yangi xabar esa suhbatni qaytaradi.',
 } satisfies Record<string, string>;

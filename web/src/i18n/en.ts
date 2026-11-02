@@ -2294,4 +2294,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'A secret figure from mythology is drawn, and everyone guesses others. Each guess shows what matches the secret one: the mythology, the type, the shape and what it rules over. Whoever gets it in fewer guesses scores more points.',
   'Países': 'Countries',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'A secret country is drawn, and everyone guesses others. Each guess shows the distance and direction to the secret one, the region, the subregion and the population. Whoever gets it in fewer guesses scores more points.',
+  'Apagar conversa': 'Delete conversation',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'The conversation leaves your list and the messages disappear only for you. Everyone else still sees everything, and a new message brings the conversation back.',
 } satisfies Record<string, string>;

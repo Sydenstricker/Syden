@@ -1,4 +1,4 @@
-import { LogOut, Pencil, UserPlus } from 'lucide-react';
+import { LogOut, Pencil, Trash2, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
@@ -7,13 +7,15 @@ import { nomeDe, useDirectory } from './directory';
 import { useT } from './i18n';
 import type { DirectChannel } from './types';
 
-type Aberto = 'adicionar' | 'renomear' | 'sair' | null;
+type Aberto = 'adicionar' | 'renomear' | 'sair' | 'apagar' | null;
 
 /**
  * OS BOTÕES DA CONVERSA PRIVADA, no cabeçalho dela (auditoria de 17/10/2026: o servidor já sabia renomear o grupo,
  * chamar mais alguém e sair, e nenhuma tela usava). Chamar alguém vale em toda conversa: a de duas pessoas vira grupo
  * ao receber a terceira. Renomear e sair, só no grupo: a conversa de duas pessoas não tem nome, e "sair" dela seria
  * outra coisa ("quem vai pode voltar" vale para o grupo, de onde antes não havia saída).
+ *
+ * "Apagar conversa" vale nas duas, e só para quem apaga, como no Instagram (ver apagarConversaParaMim, no servidor).
  *
  * A lista muda sozinha pelo socket (direct:updated, direct:removed, em Shell.tsx): aqui só se pede ao servidor.
  */
@@ -36,9 +38,13 @@ export function AcoesDaConversa({ conversa, selfId }: { conversa: DirectChannel;
           </button>
         </>
       )}
+      <button type="button" className="icon-plain" title={t('Apagar conversa')} aria-label={t('Apagar conversa')} onClick={() => setAberto('apagar')}>
+        <Trash2 size={18} />
+      </button>
       {aberto === 'adicionar' && <Adicionar conversa={conversa} selfId={selfId} aoFechar={() => setAberto(null)} />}
       {aberto === 'renomear' && <Renomear conversa={conversa} aoFechar={() => setAberto(null)} />}
       {aberto === 'sair' && <Sair conversa={conversa} aoFechar={() => setAberto(null)} />}
+      {aberto === 'apagar' && <Apagar conversa={conversa} aoFechar={() => setAberto(null)} />}
     </div>
   );
 }
@@ -172,6 +178,34 @@ function Sair({ conversa, aoFechar }: { conversa: DirectChannel; aoFechar: () =>
       }}
     >
       {t('As mensagens do grupo deixam de chegar. Para voltar, alguém de dentro precisa chamar de novo.')}
+    </ConfirmDialog>
+  );
+}
+
+/** A frase diz que é só para você: sem isso, a pessoa acharia que a conversa sumiu para os dois (a tela não mente). */
+function Apagar({ conversa, aoFechar }: { conversa: DirectChannel; aoFechar: () => void }) {
+  const t = useT();
+  const [ocupado, setOcupado] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  return (
+    <ConfirmDialog
+      title={t('Apagar conversa')}
+      confirmLabel={t('Apagar')}
+      busy={ocupado}
+      error={erro}
+      onCancel={aoFechar}
+      onConfirm={async () => {
+        setOcupado(true);
+        try {
+          await api(`/api/direct/${conversa.id}/apagar`, { method: 'POST' });
+          aoFechar();
+        } catch (e) {
+          setErro((e as Error).message);
+          setOcupado(false);
+        }
+      }}
+    >
+      {t('A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.')}
     </ConfirmDialog>
   );
 }

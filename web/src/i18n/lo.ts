@@ -2370,4 +2370,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'ລະບົບສຸ່ມຕົວລະຄອນລັບຈາກເທບນິຍາຍມາໜຶ່ງຕົວ ແລ້ວທຸກຄົນທາຍຕົວອື່ນ ທຸກເທື່ອທີ່ທາຍຈະເຫັນວ່າມີຫຍັງກົງກັບຕົວລັບແດ່ ທັງເທບນິຍາຍ ປະເພດ ຮູບຮ່າງ ແລະສິ່ງທີ່ຕົວລະຄອນນັ້ນດູແລ ໃຜທາຍຖືກໂດຍໃຊ້ໜ້ອຍເທື່ອກວ່າໄດ້ຄະແນນຫຼາຍກວ່າ',
   'Países': 'ປະເທດ',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ລະບົບສຸ່ມປະເທດລັບມາໜຶ່ງປະເທດ ແລ້ວທຸກຄົນທາຍປະເທດອື່ນ ທຸກເທື່ອທີ່ທາຍຈະເຫັນໄລຍະທາງ ແລະທິດທາງໄປຫາປະເທດລັບ ພາກພື້ນ ອະນຸພາກພື້ນ ແລະພົນລະເມືອງ ໃຜທາຍຖືກໂດຍໃຊ້ໜ້ອຍເທື່ອກວ່າໄດ້ຄະແນນຫຼາຍກວ່າ',
+  'Apagar conversa': 'ລຶບການສົນທະນາ',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ການສົນທະນາຈະອອກຈາກລາຍການຂອງເຈົ້າ ແລະ ຂໍ້ຄວາມຈະຫາຍໄປສະເພາະເຈົ້າເທົ່ານັ້ນ. ຄົນອື່ນຍັງເຫັນທຸກຢ່າງ, ແລະ ຂໍ້ຄວາມໃໝ່ຈະນຳການສົນທະນາກັບມາ.',
 } satisfies Record<string, string>;

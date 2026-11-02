@@ -2388,4 +2388,6 @@ export default {
   'Sai uma figura secreta da mitologia, e cada um chuta outras. Cada chute mostra o que bate com a secreta: a mitologia, o tipo, a forma e o que ela governa. Quem acertar com menos chutes ganha mais pontos.': 'Ընտրվում է դիցաբանության գաղտնի կերպար, և ամեն մեկը ուրիշներին է գուշակում։ Ամեն փորձ ցույց է տալիս, թե ինչն է համընկնում գաղտնիի հետ․ դիցաբանությունը, տեսակը, ձևը և այն, ինչի վրա նա իշխում է։ Ով ավելի քիչ փորձով գուշակի, ավելի շատ միավոր կստանա։',
   'Países': 'Երկրներ',
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Ընտրվում է գաղտնի երկիր, և ամեն մեկը ուրիշներին է գուշակում։ Ամեն փորձ ցույց է տալիս հեռավորությունը և ուղղությունը մինչև գաղտնի երկիրը, տարածաշրջանը, ենթատարածաշրջանը և բնակչությունը։ Ով ավելի քիչ փորձով գուշակի, ավելի շատ միավոր կստանա։',
+  'Apagar conversa': 'Ջնջել զրույցը',
+  'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Զրույցը դուրս է գալիս քո ցուցակից, և հաղորդագրությունները անհետանում են միայն քեզ համար։ Մյուսները շարունակում են տեսնել ամեն ինչ, իսկ նոր հաղորդագրությունը վերադարձնում է զրույցը։',
 } satisfies Record<string, string>;
