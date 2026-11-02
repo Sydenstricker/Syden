@@ -396,10 +396,11 @@ export function MessageItem({
   }
 
   return (
-    <div className="message" data-mensagem={message.id}>
+    <div className={`message${message.replyTo ? ' com-citacao' : ''}`} data-mensagem={message.id}>
+      {/* A citação numa linha própria, por cima: dentro do corpo, o avatar ficava ao lado dela e não do nome. */}
+      {message.replyTo && <CitacaoDaResposta citacao={message.replyTo} />}
       {message.author.app ? <AvatarDoApp size={40} /> : <Avatar name={nomeDe(message.author)} userId={message.author.id} size={40} />}
       <div className="message-body">
-        {message.replyTo && <CitacaoDaResposta citacao={message.replyTo} />}
         <div className="message-meta">
           <AutorNome id={message.author.id} nome={message.author.username} nomeDeExibicao={message.author.nomeDeExibicao} app={message.author.app} />
           <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>

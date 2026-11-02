@@ -15310,6 +15310,22 @@ body.arrastando-barra {
   cursor: pointer;
 }
 
+/* Linha própria acima do avatar e do nome, começando onde começa o texto (avatar 40 + vão 16). */
+.message.com-citacao {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+
+.message.com-citacao > .citacao {
+  flex-basis: calc(100% - 56px);
+  margin-inline-start: 56px;
+}
+
+/* Sem isto, um texto longo empurraria o corpo para a linha de baixo do avatar. */
+.message.com-citacao > .message-body {
+  flex: 1 1 0;
+}
+
 .citacao:hover .citacao-texto {
   color: var(--text);
 }
